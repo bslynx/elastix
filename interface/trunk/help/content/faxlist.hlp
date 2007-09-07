@@ -1,0 +1,18 @@
+<html>
+<header>
+  <link rel="stylesheet" href="/themes/default/styles.css">
+  <link rel="stylesheet" href="/themes/default/help.css">
+</header>
+<body>
+<h1>Virtual Fax List</h1>
+<p>The "Fax" menu allows you to manage virtual fax devices. Through this interface, a virtual device that provides a fax signal can be created.</p>
+
+<p>This device works with the IAX protocol so you will also have to configure an IAX extension in the freePBX interface before creating the virtual fax device.</p>
+
+<p>The virtual fax device will get connected through the 127.0.0.1 IP because it resides in the PBX server. Also, it will get authenticated with the use of an "extension number" and an "IAX secret" just like a physical IAX device would.</p>
+
+<p>Once the IAX extension has been configured in the freePBX interface and the virtual fax device has been created, the latter will try to establish a connection with the PBX server and be ready to receive faxes from that IAX extension.</p>
+
+<p>When the virtual fax device receives a fax, it will send it to a pre-configured recipient via email. The recipient will receive the fax as a PDF attachment to an email message.</p>
+</body>
+</html>
