@@ -91,5 +91,28 @@ class paloSantoGrid {
     {
         $this->smarty->assign("contentFilter", $htmlFilter);
     }
+
+    function getOffSet($limit,$total,$accion,$start)
+    {
+        // Si se quiere avanzar a la sgte. pagina
+        if(isset($accion) && $accion=="next") {
+            $offset = $start + $limit - 1;
+        }
+        // Si se quiere retroceder
+        else if(isset($accion) && $accion=="previous") {
+            $offset = $start - $limit - 1;
+        }
+        else if(isset($accion) && $accion=="end") {
+            if(($total%$limit)==0) 
+                $offset = $total - $limit;
+            else 
+                $offset = $total - $total%$limit;
+        }
+        else if(isset($accion) && $accion=="start") {
+            $offset = 0;
+        }
+        else $offset = 0;
+        return $offset;
+    }
 }
 ?>

@@ -25,16 +25,36 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: paloSantoForm.class.php,v 1.1.1.1 2007/07/06 21:31:55 gcarrillo Exp $ */
+  $Id: paloSantoForm.class.php,v 1.4 2007/05/09 01:07:03 gcarrillo Exp $ */
 
 /* A continuacion se ilustra como luce un tipico elemento del arreglo $this->arrFormElements
 
 "telefono" => array("LABEL"                  => "Telefono",
                     "REQUIRED"               => "yes",
                     "INPUT_TYPE"             => "text",
-                    "INPUT_EXTRA_PARAM"      => "",
+                    "INPUT_EXTRA_PARAM"      => array("width" => "16"),
                     "VALIDATION_TYPE"        => "number",
                     "VALIDATION_EXTRA_PARAM" => "");
+
+"today"  => array(
+            "LABEL"                  => "Today",
+            "REQUIRED"               => "yes",
+            "INPUT_TYPE"             => "DATE",
+            "INPUT_EXTRA_PARAM"      => array("TIME" => true, "FORMAT" => "'%d %b %Y' %H:%M","TIMEFORMAT" => "12"),
+            "VALIDATION_TYPE"        => '',
+            "VALIDATION_EXTRA_PARAM" => ''
+
+'formulario'       => array(
+            "LABEL"                  => $arrLang["Form"],
+            "REQUIRED"               => "yes",
+            "INPUT_TYPE"             => "SELECT",
+            "INPUT_EXTRA_PARAM"      => $arrSelectForm,
+            "VALIDATION_TYPE"        => "text",
+            "VALIDATION_EXTRA_PARAM" => "",
+            "MULTIPLE"               => true,
+            "SIZE"                   => "5"
+        ),
+
 */
 
 class paloForm
@@ -62,9 +82,23 @@ class paloForm
             $strInput = "";
 
             switch($arrVars['INPUT_TYPE']) {
+                case "TEXTAREA":
+                    if($this->modo=='input' or ($this->modo=='edit' and $arrVars['EDITABLE']!='no')) {
+                        $cols = isset($arrVars['COLS'])?$arrVars['COLS']:20;
+                        $rows = isset($arrVars['ROWS'])?$arrVars['ROWS']:3;
+                        $strInput = "<textarea name='$varName' rows='$rows' cols='$cols'>$arrPreFilledValues[$varName]</textarea>";
+                    } else {
+                        $strInput = "$arrPreFilledValues[$varName]";
+                    }
+                    break;
                 case "TEXT":
                     if($this->modo=='input' or ($this->modo=='edit' and $arrVars['EDITABLE']!='no')) {
-                        $strInput = "<input type='text' name='$varName' value='$arrPreFilledValues[$varName]'>";
+                        $extras="";
+                        if(is_array($arrVars['INPUT_EXTRA_PARAM']) && count($arrVars['INPUT_EXTRA_PARAM'])>0) {
+                            foreach($arrVars['INPUT_EXTRA_PARAM'] as $key => $value)
+                                $extras .= " $key = '$value' ";
+                        }
+                        $strInput = "<input type='text' name='$varName' value='$arrPreFilledValues[$varName]' $extras >";
                     } else {
                         $strInput = "$arrPreFilledValues[$varName]";
                     }
@@ -136,36 +170,82 @@ class paloForm
                     break;
                 case "SELECT":
                     if($this->modo=='input' or ($this->modo=='edit' and $arrVars['EDITABLE']!='no')) {
-                        $strInput  = "<select name='$varName'>";
+                        $multiple = "";
+                        $size = "";
+                        if(isset($arrVars['SIZE']) || $arrVars['SIZE']!="") {
+                            $size=" size='".$arrVars['SIZE']."' ";
+                        }
+                        if(isset($arrVars['MULTIPLE']) || $arrVars['MULTIPLE']!="" || $arrVars['MULTIPLE']==true) {
+                            $multiple=" multiple='multiple' ";
+                        }
+                        $strInput  = "<select name='$varName' $multiple $size>";
                         if(is_array($arrVars['INPUT_EXTRA_PARAM'])) {
                             foreach($arrVars['INPUT_EXTRA_PARAM'] as $idSeleccion => $nombreSeleccion) {
-                                if($idSeleccion==$arrPreFilledValues[$varName]) {
-                                    $strInput .= "<option value='$idSeleccion' selected>$nombreSeleccion</option>";
-                                } else {
-                                    $strInput .= "<option value='$idSeleccion'>$nombreSeleccion</option>";
+                                if(is_array($arrPreFilledValues[$varName])){
+                                    $bandera = true;
+                                    foreach($arrPreFilledValues[$varName] as $key => $value){ //si hay mas  de uno elegido informacion como arreglo
+                                        if($idSeleccion==$value) {
+                                            $strInput .= "<option value='$idSeleccion' selected>$nombreSeleccion</option>";
+                                            $bandera = false; //bandera que me ayuda a que no se cree otro option en el caso de que ya se creo uno en forma seleccionada
+                                            break; // rompo porque ya lo encontre
+                                        }
+                                    }
+                                    if($bandera) //si es true $idSeleccion es no seleccionado
+                                         $strInput .= "<option value='$idSeleccion' >$nombreSeleccion</option>";    
+                                }
+                                else{ //solo uno elegido informacion como texto
+                                    if($idSeleccion==$arrPreFilledValues[$varName]) {
+                                        $strInput .= "<option value='$idSeleccion' selected>$nombreSeleccion</option>";
+                                    } else {
+                                        $strInput .= "<option value='$idSeleccion' >$nombreSeleccion</option>";
+                                    }
                                 }
                             }
                         }
                         $strInput .= "</select>";
-                    } else {
-                        $idSeleccion = $arrPreFilledValues[$varName];
-                        $strInput .= $arrVars['INPUT_EXTRA_PARAM'][$idSeleccion];
+                    } else { 
+                            if(is_array($arrPreFilledValues[$varName])){
+                                $strInput .= "| ";
+                                foreach($arrVars['INPUT_EXTRA_PARAM'] as $idSeleccion => $nombreSeleccion) {
+                                    foreach($arrPreFilledValues[$varName] as $key => $value){ //si hay mas  de uno elegido informacion como arreglo
+                                        if($idSeleccion==$value) {
+                                            $strInput .=  $arrVars['INPUT_EXTRA_PARAM'][$idSeleccion]." | ";
+                                            break; // rompo porque ya lo encontre
+                                        }
+                                    }
+                                }
+                            }
+                            else{//solo uno elegido, informacion como texto
+                                $idSeleccion = $arrPreFilledValues[$varName];
+                                $strInput .= $arrVars['INPUT_EXTRA_PARAM'][$idSeleccion];
+                            }
                     }
                     break;
                 case "DATE":
                     if($this->modo=='input' or ($this->modo=='edit' and $arrVars['EDITABLE']!='no')) {
-
                         require_once("libs/js/jscalendar/calendar.php");    
-                        $oCal = new DHTML_Calendar("/libs/js/jscalendar/", "en", "calendar-win2k-2", false);
-
+                        $time = false;
+                        $format = '%d %b %Y';
+                        $timeformat = '12';
+                        if(is_array($arrVars['INPUT_EXTRA_PARAM']) && count($arrVars['INPUT_EXTRA_PARAM'])>0) {
+                            foreach($arrVars['INPUT_EXTRA_PARAM'] as $key => $value){
+                                if($key=='TIME')
+                                    $time=$value;
+                                if($key=='FORMAT')
+                                    $format = $value;
+                                if($key=='TIMEFORMAT')
+                                    $timeformat = $value;
+                            }
+                        }
+                        $oCal = new DHTML_Calendar("/libs/js/jscalendar/", "en", "calendar-win2k-2", $time);
                         $this->smarty->assign("HEADER", $oCal->load_files());
 
                         $strInput .= $oCal->make_input_field(
                                         array('firstDay'       => 1, // show Monday first
                                               'showsTime'      => true,
                                               'showOthers'     => true,
-                                              'ifFormat'       => '%d %b %Y',
-                                              'timeFormat'     => '12'),
+                                              'ifFormat'       => $format,
+                                              'timeFormat'     => $timeformat),
                                         // field attributes go here
                                         array('style'          => 'width: 10em; color: #840; background-color: #fafafa; ' .
                                                                    'border: 1px solid #999999; text-align: center',

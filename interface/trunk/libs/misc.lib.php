@@ -220,6 +220,25 @@ function set_key_settings($pDB,$key,$value){
     }
     return $bExito;
 }
+
+function load_theme($ruta_base='')
+{
+	if (!extension_loaded('sqlite3')) dl('sqlite3.so');
+    include_once $ruta_base."libs/paloSantoDB.class.php";
+
+//conectarse a la base de settings para obtener el thema actual
+    $pDB = new paloDB("sqlite3:////var/www/db/settings.db");
+    if(empty($pDB->errMsg)) {
+        $theme=get_key_settings($pDB,'theme');
+    }
+//si no se encuentra setear el tema por default
+    if (empty($theme)){
+        set_key_settings($pDB,'theme','default');
+        return "default";
+    }
+    else return $theme;
+}
+
 function load_language($ruta_base='')
 {
 	if (!extension_loaded('sqlite3')) dl('sqlite3.so');
@@ -549,5 +568,18 @@ function eliminar_cuenta($db,$username,$errMsg){
         return TRUE;
     }
     return $bExito;
+}
+
+/**
+* Genera la lista de opciones para el tag SELECT_INPUT
+* @generic
+*/
+function combo($arreglo_valores, $selected) {
+    $cadena = '';
+    if(!is_array($arreglo_valores) or empty($arreglo_valores)) return '';
+
+    foreach($arreglo_valores as $key => $value) if ($selected == $key)
+        $cadena .= "<option value='$key' selected>$value</option>\n"; else $cadena .= "<option value='$key'>$value</option>\n";
+    return $cadena;
 }
 ?>

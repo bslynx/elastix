@@ -59,7 +59,7 @@ function Xajax()
 			
 		return req;
 	}
-
+   
 	// xajax.$() is shorthand for document.getElementById()
 	this.$ = function(sId)
 	{
@@ -397,8 +397,8 @@ function Xajax()
 			default:
 				alert("Illegal request type: " + xajaxRequestType); return false; break;
 		}
-		r = this.getRequestObject();
-		if (!r) return false;
+		r = this.getRequestObject(); 
+		if (!r) return false; 
 		r.open(xajaxRequestType==xajaxDefinedGet?"GET":"POST", uri, true);
 		if (xajaxRequestType == xajaxDefinedPost)
 		{
@@ -413,8 +413,9 @@ function Xajax()
 				return false;
 			}
 		}
-		r.onreadystatechange = function()
-		{
+
+                r.onreadystatechange = function()
+		{ 
 			if (r.readyState != 4)
 				return;
 			
@@ -430,7 +431,21 @@ function Xajax()
 					trimmedResponseText = trimmedResponseText.replace( /\s+$/g, "" );// strip trailing
 					if (trimmedResponseText != r.responseText)
 						errorString += "\nYou have whitespace in your response.";
-					alert(errorString);
+
+                                        /*Cambio por Bruno Macias Manejo de error de XMLResponse */
+                                        if(showMsgErrorResponse){
+                                            if(messageError==null)
+					       alert(errorString);
+                                            else
+                                               alert(messageError);
+                                        }
+                                        if(refreshAfterError)
+                                            window.open(uri,"_parent");
+                                        /* Fin de cambio para el manejo de error de XMLResponse por Bruno Macias*/
+
+                                        /* Forma anterios de mostrar error XML Response antes de cambio por Bruno Macias
+                                         * alert(errorString);
+                                         */
 					document.body.style.cursor = 'default';
 					if (xajaxStatusMessages == true) window.status = 'Invalid XML response error';				
 				}
@@ -697,5 +712,25 @@ function Xajax()
 	}
 }
 
+/*Configuración del xajax por Bruno Macias
+ *
+ *Realizo esta seccion para configuración en que cuando no se tenga
+ *un XMLResponse muestre un mensaje mas apropiado por nosotros
+ *
+ *variable: showMsgErrorResponse indica que muestre el erro de mensaje del response
+ *variable: messageError si es null se muestra el error propio generado por xajax
+ *          si lo modificamos muestra el mensaje que queramos.
+ *variable: refreshAfterError indica hacer un page refresh despues del error de XMLResponse
+ *          util cuando en manejo de session se ha cerrado la session y ajax falla por no tener
+ *          un Response de Un HttpRequest
+ */
+
+showMsgErrorResponse = true;
+messageError = "Error: Not response from the Server, maybe the Session expired.";
+refreshAfterError = true;
+/*Fin de Configuración del xajax por Bruno Macias*/
+
+/*Variables sin cambio de xajax */
 var xajax = new Xajax();
 xajaxLoaded = true;
+/*Fin Variables sin cambio de xajax */

@@ -25,7 +25,7 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: paloSantoFax.class.php,v 1.3 2007/09/07 00:20:03 gcarrillo Exp $ */
+  $Id: paloSantoFax.class.php,v 1.1.1.1 2007/03/23 00:13:58 elandivar Exp $ */
 
 /*-
 CREATE TABLE fax 
@@ -709,10 +709,12 @@ function buscar_faxes($arrConfig)
     $xajax = new xajax();
     //asociamos la función creada anteriormente al objeto xajax
     $xajax->registerFunction("faxes");
-    //El objeto xajax tiene que procesar cualquier petición
-    $xajax->processRequests();
+//     if($xajax->canProcessRequests()){        
+        //El objeto xajax tiene que procesar cualquier petición        
+        $xajax->processRequests();  
+//     }
     //En el {$javascript_xajax} indicamos al objeto xajax se encargue de generar el javascript necesario
-    $javascript_xajax = $xajax->printJavascript($base_dir.$arrConfig['xajax_path_lib']);
+    $javascript_xajax = $xajax->printJavascript($base_dir.$arrConfig['xajax_path_lib'],"xajax_js/xajax.js");
     return $javascript_xajax;
 }
 
