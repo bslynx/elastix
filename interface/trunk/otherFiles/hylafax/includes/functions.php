@@ -16,18 +16,27 @@
 
         function fax_info_insert ($tiff_file,$modemdev,$commID,$errormsg,$company_name,$company_fax) {
 		global $db_object;
+             
 		$id_destiny=obtener_id_destiny($modemdev);
-		$db_object->query ("INSERT INTO info_fax_recvq (pdf_file,modemdev,commID,errormsg,company_name,company_fax,fax_destiny_id,date) 
+		if($id_destiny != -1)
+		{
+			$db_object->query ("INSERT INTO info_fax_recvq (pdf_file,modemdev,commID,errormsg,company_name,company_fax,fax_destiny_id,date) 
                                     VALUES ('$tiff_file','$modemdev','$commID','$errormsg','$company_name','$company_fax',$id_destiny,datetime('now','localtime'))");
+		}
+		else{
+			faxes_log("Error al Obtener id de destino");
+		}
 	} 
 
 	function obtener_id_destiny($modemdev)
 	{
+		$id = -1;
 		global $db_object;
 		$sql= "select id from fax where ttyIAX=?";
 		$recordset =& $db_object->query($sql, array($modemdev));
-		while ($tupla = $recordset->fetchRow(DB_FETCHMODE_OBJECT)) 
-        		$id = $tupla->id;
+		while($tupla = $recordset->fetchRow(DB_FETCHMODE_OBJECT)){ 
+			$id = $tupla->id;
+		}
 		return $id;
 	}
     
@@ -109,8 +118,8 @@
             
             $separador = "_separador_de_trozos_".md5 (uniqid (rand())); 
             
-            $cabecera  = "Date: ".date("l j F Y, G:i").$un_enter; 
-            $cabecera .= "MIME-Version: 1.0".$un_enter; 
+            /*$cabecera  = "Date: ".date("l j F Y, G:i").$un_enter; */
+            $cabecera  = "MIME-Version: 1.0".$un_enter; 
             $cabecera .= "From: ".$remitente."<".$remite.">".$un_enter;
             $cabecera .= "Return-path: ". $remite.$un_enter;
             $cabecera .= "Reply-To: ".$remite.$un_enter;
@@ -138,7 +147,7 @@
             $adj1 .=chunk_split(base64_encode($buff)); 
             
             $mensaje=$texto.$adj1; 
-            // envio del mensaje 
+            // envio del mensaje
             if(mail($destinatario, $titulo, $mensaje,$cabecera)){
                 faxes_log ("enviar_mail_adjunto> SE envio correctamenete el mail ".$titulo);
             }

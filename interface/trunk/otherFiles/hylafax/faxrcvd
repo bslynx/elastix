@@ -48,7 +48,7 @@
     exec("sudo chmod -R 755 $faxes_path");
     // METO EL FAX EN LA BASE DE DATOS?
     fax_info_insert($name_pdf,$modemdev,$commID,$errormsg,$company_name,$company_fax);
-    faxes_log ("faxrcvd> Se copio el $name_pdf en $faxes_path/recvq y se gravo en la BD".$name_pdf);
+    faxes_log ("faxrcvd> Se copio el $name_pdf en $faxes_path/recvq y se grabo en la BD".$name_pdf);
     /**********************************************
      *         3) ENVIO EMAIL                     *
      **********************************************/
@@ -56,8 +56,10 @@
     $destinatario=obtener_mail_destiny($modemdev);
     $titulo="Fax ".$name_pdf;
     $contenido="Fax ".$name_pdf;
-    $remite=$company_name;
-    $remitente=$company_name;
+    /*$remite=$company_name;
+    $remitente=$company_name;*/
+    $remite = "Fax Adjunto";
+    $remitente = "Fax Adjunto";
     $archivo=$pdffile;
     $archivo_name=$name_pdf;
     enviar_mail_adjunto($destinatario,$titulo,$contenido,$remite,$remitente,$archivo,$archivo_name);
