@@ -56,11 +56,11 @@
         <tr onMouseOver="this.style.backgroundColor='#f2f2f2';" onMouseOut="this.style.backgroundColor='#ffffff';">
           {if $smarty.foreach.filas.last}
             {section name=columnNum loop=$numColumns start=0 step=1}
-            <td class="table_data_last_row">{$data[$smarty.section.columnNum.index]}</td>
+            <td class="table_data_last_row">{if $data[$smarty.section.columnNum.index] eq ''}&nbsp;{/if}{$data[$smarty.section.columnNum.index]}</td>
             {/section}
           {else}
             {section name=columnNum loop=$numColumns start=0 step=1}
-            <td class="table_data">{$data[$smarty.section.columnNum.index]}</td>
+            <td class="table_data">{if $data[$smarty.section.columnNum.index] eq ''}&nbsp;{/if}{$data[$smarty.section.columnNum.index]}</td>
             {/section}
           {/if}
         </tr>
