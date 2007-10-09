@@ -416,5 +416,60 @@ configuraci&oacute;n porque algunos <br> procesos prodr&iacute;an necesitarlos."
 
 "File installer.php doesn't exist in package" =>"Archivo installer.php no existe en el paquete",
 "File module.xml doesn't exist in package"=>"Archivo module.xml no existe en el paquete",
+
+
+
+// Elastix 0.9 
+
+//Inicio SubModule Themes
+"Themes" => "Temas",
+"Change Theme" => "Cambiar Tema",
+"Themes not Found" => "Temas no encontrados",
+"The theme could not be updated" => "No se pudo actualizar el tema",
+//Fin SubModule Themes
+
+/* Inicio Ports Details */
+"Ports Details" => "Detalles de Puertos",
+"Ports not Founds" => "Puertos no Encontrados",
+"Card" => "Slopt PCI",
+"Type port" => "Tipo",
+"No. Port" => "Puerto #",
+"(In Use)" => "Activo",
+"Hardware Detect" => "Detectar Hardware",
+/* Fin Ports Details */
+
+
+/* Modulo system.updates*/
+"Updates" => "Actualizaciones",
+"Repositories" =>"Repositorios",
+"Package Name" => "Nombre Paquete",
+"Package Info" => "Informacion Paquete",
+"Package Version" => "Version",
+"Package Installed" => "Instalado",
+"Package Upgrade" => "Actualizado",
+"Package Delete" => "Eliminar",
+"Package Release" => "Release",
+"Packages not Founds" => "Paquetes no encontrados",
+"All Package" => "Todos",
+"Packages" => "Paquetes",
+"Package Noninstalled" => "No instalado",
+"Repositor not Found" => "Repositorios no encontrados",
+"Package Search" => "Buscar",
+"Repositor Place" => "Repositorio",
+"Package Update" => "Actualizar Paquetes",
+"Updating Packages" => "Actualizando Paquetes",
+"Satisfactory Update" => "Actualizacion Satisfactoria",
+"Choice" => "Elegir",
+"Updated" => "Actualizado",
+"Install" => "Instalar",
+"Repositories Update" => "Actualzar Repositorios",
+"Updating Repositories" => "Actualizando Repositorios",
+"Satisfactory Install" => "Instalacion Exitosa",
+"Installing Package" => "Instalando Paquete",
+"Updating for dependencies" => "Actualizados por Dependencias",
+"Installing for dependencies" => "Instalados por Dependencias",
+"Installing" => "Instalados",
+"Total Packages" => "Total Paquetes",
+"There is an action in process" => "Hay una accion en proceso",
 );
 ?>
