@@ -1,14 +1,17 @@
 Summary: Implementation of the Primary Rate ISDN specification
 Name: libpri
 Version: 1.4.1
-Release: 1%{?lptver}
+Release: 2%{?lptver}
 License: GPL
 Group: System Environment/Libraries
 URL: http://www.asterisk.org/
 Source: http://ftp.digium.com/pub/libpri/libpri-%{version}.tar.gz
 
 Patch1: libpri_bristuff-0.4.0-test4.patch
+Patch2: libpri-libname.diff
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
+
+%define bristuff_dir bristuff
 
 %description
 C implementation of the Primary Rate ISDN specification.
@@ -27,16 +30,34 @@ will use libpri.
 
 %prep
 %setup
-%patch1 -p1 
+#%patch1 -p1 
+%patch2 -p1
+
 %{__perl} -pi -e 's|(\$\(INSTALL_BASE\)/)lib|$1%{_lib}|g' Makefile
+
+
+mkdir %{bristuff_dir}
+tar cf - . --exclude=./debian/ --exclude=./%{bristuff_dir}/ \
+        | tar xf - -C %{bristuff_dir}
+cd %{bristuff_dir}
+%patch1 -p1
+cd ..
 
 %build
 export CFLAGS="%{optflags}"
 %{__make} %{?_smp_mflags}
 
+cd %{bristuff_dir}
+%{__make} %{?_smp_mflags} LIB_SUF=bristuff
+cd ..
+
 %install
 %{__rm} -rf %{buildroot}
 %{__make} install INSTALL_PREFIX=%{buildroot}
+
+cd %{bristuff_dir}
+%{__make} install INSTALL_PREFIX=%{buildroot} LIB_SUF=bristuff
+cd ..
 
 %clean
 %{__rm} -rf %{buildroot}
@@ -57,10 +78,15 @@ export CFLAGS="%{optflags}"
 %{_libdir}/*.so
 
 %changelog
-* Sun Oct  7 2007 Edgar Landivar <e_landivar@palosanto.com>
+* Sun Oct  8 2007 Tzafrir Cohen <tzafrir.cohen@xorcom.com> 1.4.1-2
+- Apply bristuff patch to a separate copy in a subdirectory.
+- libpri-libname.diff (libname patch from Debian) to put the bristuff
+  copy under a different prefix.
+
+* Sun Oct  7 2007 Edgar Landivar <e_landivar@palosanto.com> 1.4.1-1
 - Update to 1.4.1.
 
-* Sat Mar 17 2007 Joel Barrios <http://joel-barrios.blogspot.com/>
+* Sat Mar 17 2007 Joel Barrios <http://joel-barrios.blogspot.com/> 1.4.1-0
 - Update to 1.4.0.
 
 * Fri Nov 24 2006 Matthias Saou <http://freshrpms.net/> 1.2.4-1 #4932
