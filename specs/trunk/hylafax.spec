@@ -1,4 +1,5 @@
 %define name        hylafax
+#%define version     4.4.2
 %define version     4.3.3
 #
 ## OS version detection
@@ -44,7 +45,7 @@
 %define ostag sles%{sles_version}
 %endif
 
-%define release 1%{ostag}
+%define release 2%{ostag}
 %define htmldoc_rpm 0
 %define serial      %(echo `date +%Y%m%d`)
 
@@ -74,6 +75,7 @@ Source10:  hylafax_hyla.conf
 Source11:  hylafax_FaxDispatch
 Source12:  hylafax_jobcontrol.sh
 Source13:  hylafax_sysconfig
+Source14:  hylafax-4.3.3-elastix.tar.gz
 
 BuildPrereq: libjpeg-devel, libtiff-devel, zlib-devel
 Requires:    ghostscript >= 5.5
@@ -202,7 +204,6 @@ install -m 644 %{SOURCE11} $RPM_BUILD_ROOT%{faxspool}/etc/FaxDispatch
 install -m 644 %{SOURCE12} $RPM_BUILD_ROOT%{faxspool}/bin/jobcontrol.sh
 install -m 644 %{SOURCE13} $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/hylafax
 
-
 # some symlinks
 ln -s ../..%{faxspool}/etc $RPM_BUILD_ROOT%{_sysconfdir}/hylafax/etc
 ln -s ../..%{faxspool}/log $RPM_BUILD_ROOT%{_sysconfdir}/hylafax/log
@@ -219,6 +220,18 @@ rm -f $RPM_BUILD_ROOT%{faxspool}/bin/{ps2fax.imp,ps2fax.dps}
 # avoid rpm 4.x errors about files in buildroot but not in file list
 rm -f $RPM_BUILD_ROOT%{faxspool}/etc/xferfaxlog 
 rm -f $RPM_BUILD_ROOT%{faxspool}/COPYRIGHT
+
+# Some specific changes for Elastix
+tar -xvzf %{SOURCE14} 
+cd %{name}-%{version}-elastix
+mv includes/ $RPM_BUILD_ROOT%{faxspool}/bin/
+mv $RPM_BUILD_ROOT%{faxspool}/bin/faxrcvd $RPM_BUILD_ROOT%{faxspool}/bin/faxrcvd.old
+mv faxrcvd $RPM_BUILD_ROOT%{faxspool}/bin/faxrcvd
+chmod -R 755 $RPM_BUILD_ROOT%{faxspool}/bin/includes
+chmod -R 755 $RPM_BUILD_ROOT%{faxspool}/bin/faxrcvd
+chown root:root $RPM_BUILD_ROOT%{faxspool}/bin/includes
+chown root:root  $RPM_BUILD_ROOT%{faxspool}/bin/faxrcvd
+
 
 %clean
 [ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
@@ -350,6 +363,9 @@ fi
 
 
 %changelog
+* Tue Oct  9 2007 Edgar Landivar <elandivar@palosanto.com> 4.3.3-2
+  - changes for Elastix distro. 
+
 * Fri Mar 02 2007 Patrice Fournier <patrice.fournier@ifax.com> 4.3.3-1
   - update to official 4.3.3 release
 

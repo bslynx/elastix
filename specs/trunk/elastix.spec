@@ -1,10 +1,10 @@
 Summary: Elastix is a Web based software to administrate a PBX based in open source programs
 Name: elastix
-Version: 0.8
-Release: 5.7
+Version: 0.9.0
+Release: 1
 License: GPL
 Group: Applications/System
-Source: elastix-0.8-5.tgz
+Source: elastix-0.9-0.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
 Prereq: /etc/sudoers
@@ -47,7 +47,7 @@ mv $RPM_BUILD_ROOT/tmp/otherFiles/configs/CentOS-Base.repo $RPM_BUILD_ROOT/tmp/
 mv $RPM_BUILD_ROOT/tmp/otherFiles/configs/FaxDictionary $RPM_BUILD_ROOT/tmp/
 mv $RPM_BUILD_ROOT/tmp/otherFiles/configs/virtual.db $RPM_BUILD_ROOT/tmp/
 mv $RPM_BUILD_ROOT/tmp/otherFiles/configs/elastix.repo $RPM_BUILD_ROOT/etc/yum.repos.d
-mv $RPM_BUILD_ROOT/tmp/otherFiles/hylafax $RPM_BUILD_ROOT/tmp/
+#mv $RPM_BUILD_ROOT/tmp/otherFiles/hylafax $RPM_BUILD_ROOT/tmp/
 
 
 #Elimino archivos temporales que sobran
@@ -129,12 +129,12 @@ chmod -R 755 /var/www/html/modules/faxvisor
 chmod 777 /var/www/db
 chmod 777 /var/www/db/fax.db
 
-mv /var/spool/hylafax/bin/faxrcvd /var/spool/hylafax/bin/faxrcvd.old
-mv /tmp/hylafax/* /var/spool/hylafax/bin/
-chmod -R 755 /var/spool/hylafax/bin/includes
-chmod -R 755 /var/spool/hylafax/bin/faxrcvd
-chown root:root /var/spool/hylafax/bin/includes
-chown root:root  /var/spool/hylafax/bin/faxrcvd
+#mv /var/spool/hylafax/bin/faxrcvd /var/spool/hylafax/bin/faxrcvd.old
+#mv /tmp/hylafax/* /var/spool/hylafax/bin/
+#chmod -R 755 /var/spool/hylafax/bin/includes
+#chmod -R 755 /var/spool/hylafax/bin/faxrcvd
+#chown root:root /var/spool/hylafax/bin/includes
+#chown root:root  /var/spool/hylafax/bin/faxrcvd
 
 %pre
 # if not exist add the asterisk group
@@ -170,3 +170,9 @@ rm -rf $RPM_BUILD_ROOT
 /var/spool/hylafax/etc/setup.cache
 %dir
 /var/log/iaxmodem
+
+
+%changelog
+* Tue Oct  9 2007 Edgar Landivar <elandivar@palosanto.com> 0.9.0.1
+  - Hylafax changes removed. These changes should be made in the hylafax RPM.
+
