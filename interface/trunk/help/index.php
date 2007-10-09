@@ -25,10 +25,11 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: index.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
+  $Id: index.php,v 1.2 2007/09/07 23:05:29 gcarrillo Exp $ */
 
+include_once("../libs/misc.lib.php");
 include_once "../configs/default.conf.php";
-include_once "../configs/menu.php";
+//include_once "../configs/menu.php";
 
 session_name("elastixSession");
 session_start();
@@ -37,12 +38,12 @@ session_start();
 require_once("../libs/smarty/libs/Smarty.class.php");
 $smarty = new Smarty();
 
-$smarty->template_dir = "../themes/" . $arrConf['theme'];
+$smarty->template_dir = "../themes/" . $arrConf['mainTheme'];
 $smarty->compile_dir =  "../var/templates_c/";
 $smarty->config_dir =   "../configs/";
 $smarty->cache_dir =    "../var/cache/";
 
-$smarty->assign("THEMENAME", $arrConf['theme']);
+$smarty->assign("THEMENAME", $arrConf['mainTheme']);
 $smarty->assign("titulo", "Help Window");
 $smarty->assign("id_nodo", $_GET['id_nodo']);
 $smarty->display("_common/help.tpl");

@@ -27,15 +27,12 @@
   +----------------------------------------------------------------------+
   $Id: index.php,v 1.3 2007/07/17 00:03:42 gcarrillo Exp $ */
 
+dl('sqlite3.so');
+include_once("libs/misc.lib.php");
 include_once "configs/default.conf.php";
 include_once "libs/paloSantoNavigation.class.php"; 
 include_once "libs/paloSantoDB.class.php";
-include_once("libs/paloSantoACL.class.php");
-
-include_once("libs/misc.lib.php");
-dl('sqlite3.so');
-
-// Don activate unless you know what you are doing. Too risky!
+include_once("libs/paloSantoACL.class.php");// Don activate unless you know what you are doing. Too risky!
 $developerMode=false;
 
 session_name("elastixSession");
@@ -67,7 +64,7 @@ if(!empty($pACL->errMsg)) {
 require_once("libs/smarty/libs/Smarty.class.php");
 $smarty = new Smarty();
 
-$smarty->template_dir = "themes/" . $arrConf['theme'];
+$smarty->template_dir = "themes/" . $arrConf['mainTheme'];
 $smarty->compile_dir =  "var/templates_c/";
 $smarty->config_dir =   "configs/";
 $smarty->cache_dir =    "var/cache/";
@@ -129,7 +126,7 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
     }
     $oPn = new paloSantoNavigation($arrConf, $arrMenuFiltered, $smarty);
     
-    $smarty->assign("THEMENAME", $arrConf['theme']);
+    $smarty->assign("THEMENAME", $arrConf['mainTheme']);
     $smarty->assign("LOGOUT",    $arrLang['Logout']);
     $menu= (isset($_GET['menu']))?$_GET['menu']:''; 
     if (count($arrMenuFiltered)>0)

@@ -28,7 +28,8 @@
   $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
 
 $arrConf['basePath'] = '/var/www/html';
-$arrConf['theme'] = 'default';
+$arrConf['theme'] = 'default'; //theme personal para los modulos esencialmente
+$arrConf['mainTheme'] = load_theme($arrConf['basePath']."/"); //theme para la parte plantilla principal del elastix (se usa para la inclusion de los css)
 $arrConf['defaultMenu'] = 'config';
 $arrConf['language'] = 'en';
-?>
+$arrConf['cadena_dsn'] = "mysql://asterisk:asterisk@localhost/call_center";
