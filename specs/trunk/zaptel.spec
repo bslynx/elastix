@@ -11,7 +11,7 @@
 Summary: Telephony interface support
 Name: zaptel
 Version: 1.4.5.1
-Release: 1%{?lptver}
+Release: 20%{?lptver}
 License: GPL
 Group: System Environment/Libraries
 URL: http://www.asterisk.org/
@@ -20,11 +20,14 @@ Source1: zaptel-makedev.d.txt
 Patch0: ystdm8xx-zaptel-1.4.5.patch
 #Patch1: zaptel-sysconfig-yeastar.patch
 Patch2: zaptel-init.patch
-#Patch3: zaptel-Makefile.patch
+Patch3: zaptel-zma8xx-1.4.5.1.patch
+#Patch4: zaptel-oslec-1.4.5.1.patch
+Patch5: zaptel-octasic-1.4.5.1.patch
 Prereq: kernel-module-zaptel, kernel-module-zaptel-xen
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires: kernel%{?ksmp}-devel = %{kversion}
 BuildRequires: newt-devel, libusb-devel, MAKEDEV
+#BuildRequires: newt-devel, MAKEDEV
 
 %description
 This package contains the libraries, device entries, startup scripts and tools
@@ -45,7 +48,7 @@ will use Zaptel, such as Asterisk.
 
 %package -n kernel%{?ksmp}-module-zaptel
 Summary: Kernel modules required for some hardware to operate with Zaptel
-Release: %{krelver}_%{release}
+Release: %{release}_%{krelver}
 Group: System Environment/Kernel
 Requires: kernel%{?ksmp} = %{kversion}, /sbin/depmod
 Provides: kernel-modules
@@ -56,12 +59,22 @@ Provides: kernel-modules
 This package contains the zaptel kernel modules for the Linux kernel package :
 %{kversion} (%{_target_cpu}%{?ksmp:, SMP}).
 
+%package octasic
+Summary: Support for the Octasic echo canceller in Elastix
+Group: System Environment/Kernel
+Requires: %{name} = %{version}
+
+%description octasic
+Support for the Octasic echo canceller in Elastix 
+
 %prep
 %setup
 %patch0 -p1
 #%patch1 -p0 
 %patch2 -p0 
-#%patch3 -p1
+%patch3 -p1
+#%patch4 -p1
+%patch5 -p1
 # Fix lib vs. lib64
 %{__perl} -pi -e 's|/usr/lib|%{_libdir}|g' Makefile
 # Force mknod calls to never happen
@@ -128,6 +141,27 @@ ${MAKEDEV} \
 %{__install} -Dp -m0755 zaptel.conf.sample \
     %{buildroot}%{_sysconfdir}/zaptel.conf
 
+# Install Octasic support
+cd octvqe
+%{__make} \
+    KVERS="%{kernel}" \
+    INSTALL_PREFIX="%{buildroot}" \
+    DESTDIR="%{buildroot}" \
+    ROOT_PREFIX="%{buildroot}"
+
+%{__mkdir_p} %{buildroot}/lib/modules/%{kernel}/misc/octvqe 
+%{__install} -Dp -m0755 octvqe.ko %{buildroot}/lib/modules/%{kernel}/misc/octvqe/
+%{__install} -Dp -m0755 octvqe.o %{buildroot}/lib/modules/%{kernel}/misc/octvqe/
+%{__install} -Dp -m0755 octvqed.init %{buildroot}%{_sysconfdir}/init.d/octvqed
+%{__install} -Dp -m0755 octvqed.conf %{buildroot}%{_sysconfdir}/
+# Instalo el daemon octvqed, pero depende de la plataforma asi que a lo mejor
+# puedo instalar 2 versiones. Una para AMD y otra para INTEL y en el post
+# recien elijo cual instalar dependiendo de la arquitectura del host
+%{__mkdir_p} %{buildroot}/usr/sbin
+%{__install} -Dp -m0755 octvqed %{buildroot}/usr/sbin/
+# Falta el register, pero esto solo es poner el binario de 32 bits
+%{__install} -Dp -m0755 register32 %{buildroot}/usr/sbin/
+
 %clean
 %{__rm} -rf %{buildroot}
 
@@ -138,6 +172,9 @@ ${MAKEDEV} \
 # deactivate the original zaptel udev rules in /etc/udev/rules.d/50-udev.rules
 # perl -pi -e's,KERNEL\=\=\"zap,#KERNEL\=\=\"zap,g' /etc/udev/rules.d/50-udev.rules
 mkdir -p /var/lib/digium/licenses
+
+# To maintain compatibility with the older genzaptelconf location in Elastix
+ln -s /usr/sbin/genzaptelconf /usr/local/sbin/genzaptelconf
 
 %postun 
 /sbin/ldconfig
@@ -171,11 +208,21 @@ mkdir -p /var/lib/digium/licenses
 %{_libdir}/*.so.*
 %{_libdir}/*.a
 %{_mandir}/man8/*
+%exclude /usr/sbin/octvqed
+%exclude /usr/sbin/register32
 
 %files devel
 %defattr(-, root, root, 0755)
 %{_includedir}/zaptel/*.h
 %{_libdir}/*.so
+
+%files octasic
+%defattr(-, root, root, 0755)
+%{_sysconfdir}/init.d/octvqed
+%{_sysconfdir}/octvqed.conf
+# Falta el daemon y el register32
+/usr/sbin/octvqed
+/usr/sbin/register32
 
 %files -n kernel%{?ksmp}-module-zaptel
 %defattr(-, root, root, 0755)
@@ -183,6 +230,24 @@ mkdir -p /var/lib/digium/licenses
 #/lib/modules/%{kernel}/kernel/extra/
 
 %changelog
+* Tue Oct  9 2007 Edgar Landivar <elandivar@palosanto.com>1.4.5.1-20
+- Symbolic Link from /usr/local/sbin/genzaptelconf to /usr/sbin/genzaptelconf 
+  to maintain compatibility with the older genzaptelconf location in Elastix
+
+* Fri Sep 14 2007 Edgar Landivar <elandivar@palosanto.com>1.4.5.1-12
+- Octasic echo canceller support added
+- OSLEC temporally removed because it does not work against this zaptel version
+
+* Tue Sep 11 2007 Edgar Landivar <elandivar@palosanto.com>1.4.5.1-6
+- Zapmicro ZMA800 patch added
+
+* Tue Sep 11 2007 Edgar Landivar <elandivar@palosanto.com>1.4.5.1-4
+- OSLEC echo canceller support added 
+
+* Wed Sep 5 2007 Edgar Landivar <elandivar@palosanto.com>1.4.5.1-2
+- Removing the libusb-devel requirement until the next version, when that 
+  package will be included in the distro
+
 * Fri Aug 24 2007 Tzafrir Cohen <tzafrir.cohen@xorcom.com> 1.4.5.1-1
 - New upstrem release - fixes Makefile typo.
 - Removing makefile typo.
