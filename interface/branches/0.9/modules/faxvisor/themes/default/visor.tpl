@@ -22,9 +22,9 @@
     </tr>
     <tr>        
         <td>
-            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table_data" align="center" height="350">
+            <table width="100%" border="0" cellspacing="0" cellpadding="0"  align="center" height="350">
                 <tr class="table_navigation_row">
-                    <td id="td_paginacion" class="table_navigation_row"></td>
+                    <td id="td_paginacion" class="table_navigation_row" height='28'></td>
                 </tr>
                 <tr>
                     <td id='td_contenido' vAlign='top'></td>
@@ -36,8 +36,9 @@
 
 {literal}
 <script type="text/javascript">
+
 function buscar_faxes_ajax(accion)
-{
+{   
     if(existen_nodos()){
         primer_registro_mostrado = document.getElementById('primer_registro_mostrado_paginacion').value;
         ultimo_registro_mostrado = document.getElementById('ultimo_registro_mostrado_paginacion').value;
