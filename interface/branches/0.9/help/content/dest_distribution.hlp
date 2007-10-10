@@ -1,0 +1,27 @@
+<html>
+<header>
+  <link rel="stylesheet" href="/themes/default/styles.css">
+  <link rel="stylesheet" href="/themes/default/help.css">
+</header>
+<body>
+<h1>Destination Distribution</h1>
+
+<p>The &quot;Destination Distribution&quot; option of the &quot;Billing&quot; menu allows us to view the distribution of outgoing calls grouped by billing rate in a graph.</p>
+
+<p>The graph will change depending on the filters applied on top of the page:</p>
+
+<table class="inline">
+	<tr>
+		<td>Start Date:</td><td> This is the date from which calls will be displayed</td>
+	</tr>
+	<tr>
+
+		<td>End Date:</td><td> This is the date until which calls will be displayed</td>
+	</tr>
+	<tr>
+		<td>Criteria:</td><td> Distribution Criteria – By Time, By Number of Calls, By Cost</td>
+	</tr>
+</table>
+
+</body>
+</html>

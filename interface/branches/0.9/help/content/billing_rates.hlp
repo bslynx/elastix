@@ -1,0 +1,39 @@
+<html>
+<header>
+  <link rel="stylesheet" href="/themes/default/styles.css">
+  <link rel="stylesheet" href="/themes/default/help.css">
+</header>
+<body>
+<h1>Rates</h1>
+<p>The &quot;Rates&quot; option of the &quot;Billing&quot; menu allows us to display and configure the rates per minute that are used to bill for the calls</p>
+
+<h3>Edit, Delete and Display</h3>
+
+<p>The View link takes the user to a screen showing the rates information currently entered.</p>
+
+<p>In order to delete a rate, simply click on the Delete button.</p>
+
+<p>You can also edit the value associated with a given rate by clicking on the Edit button. The only values that you can change are: Name, Rate and Rate Offset.</p>
+
+<h3>Create New Rate</h3>
+
+<p>In order to add a new rate, you need to click on the Create New Rate Button. This will show a form with the following fields: </p>
+
+<table class="inline">
+	<tr>
+		<td>Prefix</td><td>This is the telephone numeral prefix to which the rate will apply</td>
+	</tr>
+	<tr>
+		<td>Name</td><td>Name of the rate</td>
+
+	</tr>
+	<tr>
+		<td>Rate</td><td>Monetary value of the Rate per minute</td>
+	</tr>
+	<tr>
+		<td>Rate Offset</td><td>Setup charge</td>
+	</tr>
+
+</table>
+</body>
+</html>

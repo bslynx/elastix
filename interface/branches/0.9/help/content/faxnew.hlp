@@ -1,0 +1,22 @@
+<html>
+<header>
+  <link rel="stylesheet" href="/themes/default/styles.css">
+  <link rel="stylesheet" href="/themes/default/help.css">
+</header>
+<body>
+<h1>New Virtual Fax</h1>
+
+<p><b>Remember:</b> Before creating a new virtual fax device you must have configured the corresponding IAX extension from the freePBX interface.</p>
+
+<p>The web form to create new virtual fax devices contains the following fields:</p>
+
+<ul>
+  <li><b>Virtual Fax Name:</b> This is the Name that will be used to easily identify the device. Example: "Marketing Department Fax"</li>
+  <li><b>Destination Email:</b> Email address for the user that will receive faxes in this virtual fax device</li>
+  <li><b>Fax Extension (IAX):</b> The IAX extension that was pre-configured in freePBX</li>
+  <li><b>Secret (IAX):</b> The "IAX secret" that was pre-configured in freePBX</li>
+  <li><b>Caller ID Name:</b> The name that will be associated with the calling extension. Example: "Marketing, PaloSanto Solutions"</li>
+  <li><b>Caller ID Number:</b> The telephone number from which you want to pretend to have sent the fax</li>
+</ul>
+</body>
+</html>

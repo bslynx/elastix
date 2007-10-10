@@ -1,0 +1,34 @@
+<html>
+<header>
+  <link rel="stylesheet" href="/themes/default/styles.css">
+  <link rel="stylesheet" href="/themes/default/help.css">
+</header>
+<body>
+<h1>System Info</h1>
+
+<p>The System Info interface provides information about the current state of the hardware where the PBX resides. This section has two components: System Resources, and Hard Drives.</p>
+
+<p><b>System Resources</b></p>
+
+<p>Here there is a graph where the number of simultaneous calls are shown as well as the used resources such as memory and CPU usage with respect to time.</p>
+
+<ul>
+<li><b>CPU Info:</b> Shows the type of processor that is installed in the PBX</li>
+<li><b>Uptime:</b> The time elapsed since the PBX server was last restarted</li>
+<li><b>CPU usage:</b> CPU resources being used shown graphically</li>
+<li><b>Memory usage:</b> Main memory being used shown graphically</li>
+<li><b>Swap usage:</b> SWAP memory being used shown graphically</li>
+</ul>
+
+<p><b>Hard Drives</b></p>
+
+<p>In this section you will find a graph where the percentage of maximum storage space in the hard drive that has been used to date is shown.</p>
+
+<ul>
+<li><b>Partition name:</b> The name of the partition in the hard drive. Example:"HDA2"</li>
+<li><b>Capacity:</b> The maximum storage capacity for the installed hard drive</li>
+<li><b>Usage:</b> The percentage of the maximum storage capacity of the hard drive that has been used already</li>
+<li><b>Mount point:</b> The name of the point in the filesystem where the partition is to be mounted</li>
+</ul>
+</body>
+</html>
