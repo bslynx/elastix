@@ -11,7 +11,7 @@
 Summary: Telephony interface support
 Name: zaptel
 Version: 1.4.5.1
-Release: 20%{?lptver}
+Release: 21%{?lptver}
 License: GPL
 Group: System Environment/Libraries
 URL: http://www.asterisk.org/
@@ -152,15 +152,17 @@ cd octvqe
 %{__mkdir_p} %{buildroot}/lib/modules/%{kernel}/misc/octvqe 
 %{__install} -Dp -m0755 octvqe.ko %{buildroot}/lib/modules/%{kernel}/misc/octvqe/
 %{__install} -Dp -m0755 octvqe.o %{buildroot}/lib/modules/%{kernel}/misc/octvqe/
-%{__install} -Dp -m0755 octvqed.init %{buildroot}%{_sysconfdir}/init.d/octvqed
-%{__install} -Dp -m0755 octvqed.conf %{buildroot}%{_sysconfdir}/
+
+#%{__install} -Dp -m0755 octvqed.init %{buildroot}%{_sysconfdir}/init.d/octvqed
+#%{__install} -Dp -m0755 octvqed.conf %{buildroot}%{_sysconfdir}/
+
 # Instalo el daemon octvqed, pero depende de la plataforma asi que a lo mejor
 # puedo instalar 2 versiones. Una para AMD y otra para INTEL y en el post
 # recien elijo cual instalar dependiendo de la arquitectura del host
-%{__mkdir_p} %{buildroot}/usr/sbin
-%{__install} -Dp -m0755 octvqed %{buildroot}/usr/sbin/
+#%{__mkdir_p} %{buildroot}/usr/sbin
+#%{__install} -Dp -m0755 octvqed %{buildroot}/usr/sbin/
 # Falta el register, pero esto solo es poner el binario de 32 bits
-%{__install} -Dp -m0755 register32 %{buildroot}/usr/sbin/
+#%{__install} -Dp -m0755 register32 %{buildroot}/usr/sbin/
 
 %clean
 %{__rm} -rf %{buildroot}
@@ -208,28 +210,36 @@ ln -s /usr/sbin/genzaptelconf /usr/local/sbin/genzaptelconf
 %{_libdir}/*.so.*
 %{_libdir}/*.a
 %{_mandir}/man8/*
-%exclude /usr/sbin/octvqed
-%exclude /usr/sbin/register32
+#%exclude /usr/sbin/octvqed
+#%exclude /usr/sbin/register32
 
 %files devel
 %defattr(-, root, root, 0755)
 %{_includedir}/zaptel/*.h
 %{_libdir}/*.so
 
-%files octasic
-%defattr(-, root, root, 0755)
-%{_sysconfdir}/init.d/octvqed
-%{_sysconfdir}/octvqed.conf
-# Falta el daemon y el register32
-/usr/sbin/octvqed
-/usr/sbin/register32
-
 %files -n kernel%{?ksmp}-module-zaptel
 %defattr(-, root, root, 0755)
-/lib
-#/lib/modules/%{kernel}/kernel/extra/
+/lib/modules
+#/lib
+%exclude /lib/modules/%{kernel}/misc/octvqe/octvqe.ko
+%exclude /lib/modules/%{kernel}/misc/octvqe/octvqe.o
+
+%files octasic
+%defattr(-, root, root, 0755)
+/lib/modules/%{kernel}/misc/octvqe/octvqe.ko
+/lib/modules/%{kernel}/misc/octvqe/octvqe.o
+#%{_sysconfdir}/init.d/octvqed
+#%{_sysconfdir}/octvqed.conf
+# Falta el daemon y el register32
+#/usr/sbin/octvqed
+#/usr/sbin/register32
 
 %changelog
+* Tue Oct 11 2007 Edgar Landivar <elandivar@palosanto.com>1.4.5.1-21
+- Some changes regarding Octasic support. Some files will belong to a new 
+  octasic package. Just the octasic modules remain in the zaptel package.
+
 * Tue Oct  9 2007 Edgar Landivar <elandivar@palosanto.com>1.4.5.1-20
 - Symbolic Link from /usr/local/sbin/genzaptelconf to /usr/sbin/genzaptelconf 
   to maintain compatibility with the older genzaptelconf location in Elastix
@@ -246,7 +256,7 @@ ln -s /usr/sbin/genzaptelconf /usr/local/sbin/genzaptelconf
 
 * Wed Sep 5 2007 Edgar Landivar <elandivar@palosanto.com>1.4.5.1-2
 - Removing the libusb-devel requirement until the next version, when that 
-  package will be included in the distro
+  package will be included in the rpm builder machine.
 
 * Fri Aug 24 2007 Tzafrir Cohen <tzafrir.cohen@xorcom.com> 1.4.5.1-1
 - New upstrem release - fixes Makefile typo.
