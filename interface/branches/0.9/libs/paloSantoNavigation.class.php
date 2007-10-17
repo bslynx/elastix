@@ -218,7 +218,11 @@ class paloSantoNavigation {
             $retVar .= "\" src=\"" . $this->arrMenu[$this->currSubMenu]['Link'] . "\" name=\"myframe\" id=\"myframe\" frameborder=\"0\"";
             $retVar .= " width=\"100%\"></iframe>";
 */ 
+            /*Version 0.9 agregado variable $ip*/
+            $ip = "http://".$_SERVER["SERVER_ADDR"];
 	    $link=$bSubMenu2Framed?$this->arrMenu[$this->currSubMenu2]['Link']:$this->arrMenu[$this->currSubMenu]['Link'];
+            $link = str_replace("{IP_SERVER}",$ip,$link);
+
             $retVar  = "<iframe marginwidth=\"0\" marginheight=\"0\" style=\"border: 1px solid rgb(200, 200, 200); background-color: rgb(255, 255, 255);";
             $retVar .= "\" src=\"" . $link . "\" name=\"myframe\" id=\"myframe\" frameborder=\"0\"";
             $retVar .= " width=\"100%\" onLoad=\"calcHeight();\"></iframe>"; 
