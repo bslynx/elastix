@@ -471,5 +471,17 @@ configuraci&oacute;n porque algunos <br> procesos prodr&iacute;an necesitarlos."
 "Installing" => "Instalados",
 "Total Packages" => "Total Paquetes",
 "There is an action in process" => "Hay una accion en proceso",
+
+/* inicio Cancelador de echo*/
+"Echo Canceller"=>"Cancelador de Eco",
+"Status"=>"Estado",
+"Could not get oslec info"=>"No se pudo obtener informacion del oslec",
+"Active"=>"Activo",
+"Inactive"=>"Inactivo",
+"Inactivate"=>"Inactivar",
+"Activate"=>"Activar",
+"Info"=>"Info",
+
+/* fin Cancelador de echo*/
 );
 ?>

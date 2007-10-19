@@ -460,5 +460,16 @@ configuration because some <br> processes could need them.",
 "Installing" => "Installing",
 "Total Packages" => "Total Packages",
 "There is an action in process" => "There is an action in process",
+
+/* inicio Cancelador de echo*/
+"Echo Canceller"=>"Echo Canceller",
+"Status"=>"Status",
+"Could not get oslec info"=>"Could not get oslec info",
+"Active"=>"Active",
+"Inactive"=>"Inactive",
+"Inactivate"=>"Inactivate",
+"Activate"=>"Activate",
+"Info"=>"Info",
+/* fin Cancelador de echo*/
 );
 ?>
