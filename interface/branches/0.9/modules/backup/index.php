@@ -106,28 +106,34 @@ function _moduleContent($smarty, $module_name)
         {
 
             #crear la carpeta donde se va a copiar el respaldo que se realice
-            $dir_respaldo = "/tmp";
+            $dir_respaldo = "backup";
             //$timestamp=time();
-            $timestamp="backup";
-            $ruta_respaldo="/tmp/$timestamp";
+            $valor_unico = "-".date("YmdHis")."-".substr(session_id(), 0, 1).substr(session_id(), -1, 1);
+            $carpeta_respaldo = "backup";
+            $timestamp= $carpeta_respaldo.$valor_unico;
+            $ruta_respaldo="$dir_respaldo/$timestamp";
+
+            $ruta_respaldo_sin_valor_unico = "$dir_respaldo/$carpeta_respaldo";
+
             //asegurarme que ya no exista la carpeta
             //si ya existe BORRO contenido
-            if (file_exists($ruta_respaldo)){
-            exec("rm -rf $ruta_respaldo",$output,$retval);
+            if (file_exists($ruta_respaldo_sin_valor_unico)){
+            exec("rm -rf $ruta_respaldo_sin_valor_unico",$output,$retval);
             }
-            mkdir($ruta_respaldo);
+            mkdir($ruta_respaldo_sin_valor_unico); // ??
+
             #hacer el respaldo de las opciones seleccionadas
             #tengo que mostrar cuales de las opciones seleccionadas, se hizo el respaldo correctamente por eso envio $arrBackupOptions
-            process_backup($arrSelectedOptions,$ruta_respaldo,$arrBackupOptions);
+            process_backup($arrSelectedOptions,$ruta_respaldo_sin_valor_unico,$arrBackupOptions);
             #en la carpeta backup ya deberia tener los respaldos
             #comprimo la carpeta
             #y la envio al navegador
-            exec("tar -C $dir_respaldo -cvzf $dir_respaldo/elastix$timestamp.tgz $timestamp ",$output,$retval);
+            exec("tar -C $dir_respaldo -cvzf $dir_respaldo/elastix$timestamp.tgz $carpeta_respaldo ",$output,$retval);
             if ($retval<>0) //no se pudo generar el archivo comprimido
                 $errMsg= $arrLang["Could not generate backup file"]." : $dir_respaldo/elastix$timestamp.tgz\n";
             else{
                 #mensaje que se ha completado el backup
-                $smarty->assign("ERROR_MSG", $arrLang["Backup Complete!"]." : /tmp/elastix$timestamp.tgz");
+                $smarty->assign("ERROR_MSG", $arrLang["Backup Complete!"]." : $dir_respaldo/elastix$timestamp.tgz");
              /*   #lo envio al browser
                 header("Cache-Control: private");
                 header("Pragma: cache");
@@ -140,9 +146,9 @@ function _moduleContent($smarty, $module_name)
           #      print "Backup file location: $dir_respaldo/elastixBackup.tgz\n";
             }
             //borro la carpeta de backup
-            exec("rm $ruta_respaldo -rf");
+            exec("rm $ruta_respaldo_sin_valor_unico -rf");
          //   exec("rm $dir_respaldo/elastixBackup.tgz");
-//            rmdir($ruta_respaldo);
+//            rmdir($ruta_respaldo_sin_valor_unico);
         }
     }
     $all_checked=$backup_all?"checked":"";
@@ -288,11 +294,9 @@ function process_backup($arrSelectedOptions,$ruta_respaldo,&$arrBackupOptions)
 function respaldar_carpeta($arrInfoRespaldo,$ruta_respaldo,&$error)
 {
     $bExito=true;
-
     $comando="tar -C ".$arrInfoRespaldo['folder_path'] .
              " -cvzf $ruta_respaldo/$arrInfoRespaldo[nombre_archivo_respaldo] ".
              $arrInfoRespaldo['folder_name'];
-
     exec($comando,$output,$retval);
     if ($retval<>0) $bExito=false;
 
