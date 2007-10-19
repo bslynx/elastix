@@ -472,6 +472,14 @@ configuraci&oacute;n porque algunos <br> procesos prodr&iacute;an necesitarlos."
 "Total Packages" => "Total Paquetes",
 "There is an action in process" => "Hay una accion en proceso",
 
+/*Backup List*/
+"Backup List" => "Listado de Respaldos",
+"Name Backup" => "Nombre del Respaldo",
+"Error when deleting backup file" => "Error al borrar el archivo de respaldo",
+"There are not backup file selected" => "No hay archivo de respaldo seleccionado",
+"Action" => "Accion",
+"Folder backup doesn't exist"=>"El directorio backup no existe",
+
 /* inicio Cancelador de echo*/
 "Echo Canceller"=>"Cancelador de Eco",
 "Status"=>"Estado",
@@ -483,5 +491,6 @@ configuraci&oacute;n porque algunos <br> procesos prodr&iacute;an necesitarlos."
 "Info"=>"Info",
 
 /* fin Cancelador de echo*/
+
 );
 ?>
