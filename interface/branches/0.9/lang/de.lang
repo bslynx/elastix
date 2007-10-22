@@ -465,6 +465,7 @@ configuration because some <br> processes could need them.",
 "There is an action in process" => "There is an action in process",
 
 /*Backup List*/
+"Backup/Restore" => "Backup/Restore",
 "Backup List" => "Backup List",
 "Name Backup" => "Name Backup",
 "Error when deleting backup file" => "Error when deleting backup file",
@@ -484,5 +485,11 @@ configuration because some <br> processes could need them.",
 "Info"=>"Info",
 /* fin Cancelador de echo*/
 
+/*Module IM*/
+"IM" => "IM",
+"OpenFire" => "OpenFire",
+"vTigerCRM" => "vTigerCRM",
+/* Preferences*/
+"Preferences" => "Preferences",
 );
 ?>

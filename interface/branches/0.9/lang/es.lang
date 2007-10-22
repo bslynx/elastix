@@ -473,6 +473,7 @@ configuraci&oacute;n porque algunos <br> procesos prodr&iacute;an necesitarlos."
 "There is an action in process" => "Hay una accion en proceso",
 
 /*Backup List*/
+"Backup/Restore" => "Respaldar/Restaurar",
 "Backup List" => "Listado de Respaldos",
 "Name Backup" => "Nombre del Respaldo",
 "Error when deleting backup file" => "Error al borrar el archivo de respaldo",
@@ -492,5 +493,11 @@ configuraci&oacute;n porque algunos <br> procesos prodr&iacute;an necesitarlos."
 
 /* fin Cancelador de echo*/
 
+/*Module IM*/
+"IM" => "IM",
+"OpenFire" => "OpenFire",
+"vTigerCRM" => "vTigerCRM",
+/* Preferences*/
+"Preferences" => "Preferencias",
 );
 ?>
