@@ -423,7 +423,7 @@ configuration because some <br> processes could need them.",
 /* Inicio Ports Details */
 "Ports Details" => "Ports Details",
 "Ports not Founds" => "Ports not Founds",
-"Card" => "PCI Slopt",
+"Card" => "PCI Slot",
 "Type port" => "Type",
 "No. Port" => "Port #",
 "(In Use)" => "Active",

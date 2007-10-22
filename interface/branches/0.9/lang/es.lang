@@ -431,7 +431,7 @@ configuraci&oacute;n porque algunos <br> procesos prodr&iacute;an necesitarlos."
 /* Inicio Ports Details */
 "Ports Details" => "Detalles de Puertos",
 "Ports not Founds" => "Puertos no Encontrados",
-"Card" => "Slopt PCI",
+"Card" => "Slot PCI",
 "Type port" => "Tipo",
 "No. Port" => "Puerto #",
 "(In Use)" => "Activo",
