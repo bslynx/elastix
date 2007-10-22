@@ -326,7 +326,7 @@ configuration <br>because some processes need it.",
 "You don't have extension number associated with user" => "You don't have extension number associated with user",
 //system - date/time
 "Date/Time" => "Date/Time",
-"Date and Time Configuration" => "Date and Time Configuration",
+"Date and Time Configuration" => "Date/Time",
 "Current Datetime" => "Current Datetime",
 "New Date" => "New Date",
 "New Time" => "New Time",

@@ -331,7 +331,7 @@ que pueden existir procesos que la necesiten para su correcto funcionamiento.",
 
 //system - date/time
 "Date/Time" => "Fecha/Hora",
-"Date and Time Configuration" => "Establecer de Fecha y Hora",
+"Date and Time Configuration" => "Fecha/Hora",
 "Current Datetime" => "Fecha y Hora actual",
 "New Date" => "Nueva Fecha",
 "New Time" => "Nueva Hora",
