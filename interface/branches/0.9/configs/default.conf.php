@@ -33,3 +33,5 @@ $arrConf['mainTheme'] = load_theme($arrConf['basePath']."/"); //theme para la pa
 $arrConf['defaultMenu'] = 'config';
 $arrConf['language'] = 'en';
 $arrConf['cadena_dsn'] = "mysql://asterisk:asterisk@localhost/call_center";
+
+$arrConf['dir_backup'] = "backup";
