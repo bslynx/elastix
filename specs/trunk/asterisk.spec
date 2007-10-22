@@ -1,7 +1,7 @@
 Summary: The Open Source Linux PBX
 Name: asterisk
-Version: 1.4.12.1
-Release: 1
+Version: 1.4.13
+Release: 2
 Epoch: 1
 License: GPL
 Group: Applications/Internet
@@ -40,6 +40,8 @@ Patch3: asterisk-1.4-spandsp.patch
 Patch4: asterisk-rc-chown.patch
 #Patch5: asterisk-1.4-palosanto1.patch
 #Patch6: asterisk-hold.patch
+Patch7: asterisk-unicall.patch
+#Patch8: chan_unicall.msilva.patch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 BuildRequires: gcc-c++
 BuildRequires: bison, m4
@@ -122,6 +124,8 @@ done
 %patch4 -p0
 #%patch5 -p1
 #%patch6 -p1
+%patch7 -p1
+#%patch8 -p0
 cp %{SOURCE1} %{SOURCE2} apps/
 find . -type f | xargs grep -l /usr/lib/ | xargs perl -pi -e's,/usr/lib/,%{_libdir}/,'
 perl -pi -e's,^OPTIMIZE.*,,' Makefile
@@ -293,6 +297,9 @@ fi
 %{_localstatedir}/lib/asterisk/sounds/fr
 
 %changelog
+* Thu Oct 18 2007 Edgar Landivar <e_landivar@palosanto.com>
+- Update to 1.4.13
+
 * Mon Oct  8 2007 Edgar Landivar <e_landivar@palosanto.com>
 - Update to 1.4.12.1
 

@@ -1,10 +1,10 @@
 Summary: Elastix is a Web based software to administrate a PBX based in open source programs
 Name: elastix
-Version: 0.9.0
+Version: 0.9
 Release: 1
 License: GPL
 Group: Applications/System
-Source: elastix-0.9-0.tar.gz
+Source: elastix-0.9-1.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
 Prereq: /etc/sudoers
@@ -173,6 +173,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Tue Oct  9 2007 Edgar Landivar <elandivar@palosanto.com> 0.9.0.1
+* Wed Oct 19 2007 Bruno Macias   <bmacias@palosanto.com> 0.9-1
+  - Add new modules in this version elastix-0.9-1.tar.gz
+* Tue Oct  9 2007 Edgar Landivar <elandivar@palosanto.com> 0.9.0-1
   - Hylafax changes removed. These changes should be made in the hylafax RPM.
 

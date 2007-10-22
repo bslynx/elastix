@@ -1,11 +1,13 @@
 Summary: FreePBX is the most powerful GUI configuration tool for Asterisk. It provides everything that a standard legacy phone system can, plus a huge amount of new features.
 Name: freePBX
 Version: 2.2.3
-Release: 12
+Release: 15
 License: GPL
 Group: Applications/System
 Source: freepbx-%{version}-withmodules.tar.gz
 Patch0: freepbx-elastix.patch
+Patch1: freepbx-2.2.3-elastix-0.8.5.patch
+Patch2: freepbx-2.2.3-amportal.patch
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
 Requires: asterisk, elastix >= 0.8-5, php
@@ -17,6 +19,8 @@ FreePBX is the most powerful GUI configuration tool for Asterisk. It provides ev
 %prep
 %setup -n freepbx-%{version}
 %patch0 -p1
+%patch1 -p1
+%patch2 -p1
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -97,3 +101,8 @@ rm -rf $RPM_BUILD_ROOT
 /etc/rc.d
 /usr/sbin/amportal
 /tmp/*
+
+%changelog
+* Mon Oct 15 2007 Adonis Figueroa <afigueroa@palosanto.com> 2.2.3-14
+  - FIX TO BUG: cant upload wav files.
+  - FIX TO BUG: Operator Panel not update!
