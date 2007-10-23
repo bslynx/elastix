@@ -52,5 +52,6 @@ $languages=array(
 "cn"=>"简体中文",
 "tw"=>"繁體中文",
 "th"=>"ไทย",
+"sr"=>"Srpski",
 );
 ?>
