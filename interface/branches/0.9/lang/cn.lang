@@ -417,15 +417,17 @@ configuration because some <br> processes could need them.",
 "The theme could not be updated" => "The theme could not be updated",
 //Fin SubModule Themes
 
-/* Inicio Ports Details */
-"Ports Details" => "Ports Details",
+/* Inicio Hardware Detection */
+"Hardware Detection" => "Hardware Detection",
 "Ports not Founds" => "Ports not Founds",
 "Card" => "PCI Slot",
 "Type port" => "Type",
 "No. Port" => "Port #",
 "(In Use)" => "Active",
 "Hardware Detect" => "Hardware Detect",
-/* Fin Ports Details */
+"Cards undetected on your system, press for detecting hardware detection." => "Cards undetected on your system, press for detecting hardware detection.",
+"Information" => "Information",
+/* Fin PHardware Detection */
 
 /* Modulo system.updates*/
 "Updates" => "Updates",

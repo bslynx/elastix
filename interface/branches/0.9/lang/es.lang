@@ -428,16 +428,17 @@ configuraci&oacute;n porque algunos <br> procesos prodr&iacute;an necesitarlos."
 "The theme could not be updated" => "No se pudo actualizar el tema",
 //Fin SubModule Themes
 
-/* Inicio Ports Details */
-"Ports Details" => "Detalles de Puertos",
+/* Inicio Hardware Detection */
+"Hardware Detection" => "Deteccion de Hardware",
 "Ports not Founds" => "Puertos no Encontrados",
 "Card" => "Slot PCI",
 "Type port" => "Tipo",
 "No. Port" => "Puerto #",
 "(In Use)" => "Activo",
 "Hardware Detect" => "Detectar Hardware",
-/* Fin Ports Details */
-
+"Cards undetected on your system, press for detecting hardware detection." => "Tarjetas no detectadas en su sistema, presione detectar hardware para la deteccion",
+"Information" => "Informacion",
+/* Fin PHardware Detection */
 
 /* Modulo system.updates*/
 "Updates" => "Actualizaciones",
