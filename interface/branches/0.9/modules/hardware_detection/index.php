@@ -31,6 +31,7 @@ require_once "libs/paloSantoForm.class.php";
 require_once "libs/paloSantoTrunk.class.php";
 include_once "libs/paloSantoConfig.class.php";
 include_once "libs/paloSantoGrid.class.php";
+include_once "libs/xajax/xajax.inc.php";
 
 function _moduleContent(&$smarty, $module_name)
 {
@@ -44,8 +45,13 @@ function _moduleContent(&$smarty, $module_name)
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
     $templates_dir=(isset($arrConfig['templates_dir']))?$arrConfig['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
-
-    $contenidoModulo = listPorts($smarty, $module_name, $local_templates_dir);
+    
+    $xajax = new xajax();
+    $xajax->registerFunction("hardwareDetect");
+    $xajax->processRequests();
+    
+    $contenidoModulo  = $xajax->printJavascript("libs/xajax/");
+    $contenidoModulo  .= listPorts($smarty, $module_name, $local_templates_dir);
 
     return $contenidoModulo;
 }
@@ -59,7 +65,7 @@ function listPorts($smarty, $module_name, $local_templates_dir) {
 
     $smarty->assign("HARDWARE_DETECT",$arrLang['Hardware Detect']);
     $smarty->assign("MODULE_NAME",$module_name);
-    $smarty->assign("MENSAJE_CONFIRM",$arrLang['Hardware Detect']);
+    $smarty->assign("detectandoHardware",$arrLang['Hardware Detecting']);
     $smarty->assign("CARD",$arrLang['Card']);
     $smarty->assign("CARD_NO_MOSTRAR",'ZTDUMMY/1');
     $smarty->assign("PORT_NOT_FOUND",$arrLang['Ports not Founds']);
@@ -84,5 +90,19 @@ function llenarTpl($local_templates_dir,$smarty,$arrGrid, $arrData)
     $smarty->assign("width", $arrGrid['width']);
     $smarty->assign("arrData", $arrData);
     return $smarty->fetch($local_templates_dir."/listPorts.tpl");
+}
+
+function hardwareDetect()
+{
+    global $arrLang;
+    $respuesta = new xajaxResponse();
+    $oHardwareDetect = new PaloSantoHardwareDetection();
+    $resultado = $oHardwareDetect->hardwareDetection();
+    $respuesta->addAlert($resultado);
+    $respuesta->addAssign("relojArena","innerHTML","");
+    $respuesta->addAssign("nombre_paquete","value","");
+    $respuesta->addAssign("estaus_reloj","value","apagado");
+    $respuesta->addScript("document.getElementById('form_dectect').submit();\n");
+    return $respuesta;
 }
 ?>

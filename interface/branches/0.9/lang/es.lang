@@ -435,9 +435,11 @@ configuraci&oacute;n porque algunos <br> procesos prodr&iacute;an necesitarlos."
 "Type port" => "Tipo",
 "No. Port" => "Puerto #",
 "(In Use)" => "Activo",
+"Hardware Detecting" => "Detectando Hardware",
 "Hardware Detect" => "Detectar Hardware",
 "Cards undetected on your system, press for detecting hardware detection." => "Tarjetas no detectadas en su sistema, presione detectar hardware para la deteccion",
 "Information" => "Informacion",
+"Satisfactory Hardware Detection" => "Satisfactoria deteccion de Hardware",
 /* Fin PHardware Detection */
 
 /* Modulo system.updates*/

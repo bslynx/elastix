@@ -426,9 +426,11 @@ configuration because some <br> processes could need them.",
 "Type port" => "Type",
 "No. Port" => "Port #",
 "(In Use)" => "Active",
+"Hardware Detecting" => "Hardware Detecting",
 "Hardware Detect" => "Hardware Detect",
 "Cards undetected on your system, press for detecting hardware detection." => "Cards undetected on your system, press for detecting hardware detection.",
 "Information" => "Information",
+"Satisfactory Hardware Detection" => "Satisfactory Hardware Detection",
 /* Fin PHardware Detection */
 
 /* Modulo system.updates*/

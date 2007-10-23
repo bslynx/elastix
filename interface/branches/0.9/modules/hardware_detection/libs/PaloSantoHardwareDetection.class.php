@@ -108,5 +108,19 @@ class PaloSantoHardwareDetection
         }
         return($tarjetas);
     } 
+
+    function hardwareDetection()
+    {
+        global $arrLang;
+        exec("/usr/sbin/genzaptelconf -d -s -M -F",$respuesta,$retorno);
+         if(is_array($respuesta)){
+            foreach($respuesta as $key => $linea){
+                //falta validar algun error
+                //if(ereg("^(\[Errno [[:digit:]]{1,}\])",$linea,$reg))
+                //  return $linea;
+            }
+            return $arrLang["Satisfactory Hardware Detection"];
+        } 
+    }
 }
 ?>
