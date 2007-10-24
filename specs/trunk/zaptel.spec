@@ -12,7 +12,7 @@
 Summary: Telephony interface support
 Name: zaptel
 Version: 1.4.5.1
-Release: 25
+Release: 28
 License: GPL
 Group: System Environment/Libraries
 URL: http://www.asterisk.org/
@@ -24,7 +24,9 @@ Patch2: zaptel-init.patch
 Patch3: zaptel-zma8xx-1.4.5.1.patch
 Patch4: zaptel-oslec-1.4.5.1.patch
 #Patch5: zaptel-octasic-1.4.5.1.patch
+Patch6: zaptel-openvox-elastix.patch
 Prereq: kernel-module-zaptel, kernel-module-zaptel-xen
+Prereq: kernel-module-oslec, kernel-module-oslec-xen
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires: kernel%{?kxensufix}-devel = %{kversion}
 BuildRequires: newt-devel, libusb-devel, MAKEDEV
@@ -76,11 +78,11 @@ This package contains the zaptel kernel modules for the Linux kernel package :
 %patch3 -p1
 %patch4 -p1
 #%patch5 -p1
+%patch6 -p1
 # Fix lib vs. lib64
 %{__perl} -pi -e 's|/usr/lib|%{_libdir}|g' Makefile
 # Force mknod calls to never happen
 %{__perl} -pi -e 's|mknod |true |g' Makefile
-
 
 %build
 export CFLAGS="%{optflags}"
@@ -161,6 +163,8 @@ else
     ln -s /usr/sbin/genzaptelconf /usr/local/sbin/genzaptelconf
 fi
 
+touch /etc/fxotune.conf
+
 %postun 
 /sbin/ldconfig
 
@@ -203,6 +207,13 @@ fi
 /lib/modules
 
 %changelog
+* Thu Oct 23 2007 Edgar Landivar <elandivar@palosanto.com>1.4.5.1-28
+- OpenVox patch applied to support A800 and A1200 cards.
+- Now kernel-module-oslec is required
+
+* Thu Oct 22 2007 Edgar Landivar <elandivar@palosanto.com>1.4.5.1-26
+- Touching fxotune file
+
 * Thu Oct 20 2007 Edgar Landivar <elandivar@palosanto.com>1.4.5.1-25
 - Better XEN support when building the RPM.
 - Fixed minor typo error in the postun section related with the depmod invocation.

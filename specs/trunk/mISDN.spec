@@ -39,10 +39,10 @@
 
 %define prefix /usr
 %define	_libmoddir /lib/modules
-%define	version 1.1.5
-%define tarballversion 1_1_5
-%define release 15
-%define kmodrelease 15
+%define	version 1.1.6
+%define tarballversion 1_1_6
+%define release 17
+%define kmodrelease 17
 
 Summary: The mISDN applications and kernel modules
 Name: mISDN
@@ -55,6 +55,7 @@ Source0: http://www.misdn.org/downloads/releases/%{name}-%{tarballversion}.tar.g
 Source1: mISDN.rules
 Source2: mISDN.rules.rhel4
 Source3: mISDN.init
+#Patch0: misdn-openvox-elastix.patch
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 # RHEL4 & CentOS4.4 still use kernel-smp-version & kernel-smp-devel-version
 # Fedora no longer has a separate kernel for SMP so test which to Require
@@ -111,6 +112,7 @@ The mISDN kernel modules. This package is built for kernel %{kvers} (%{_target_c
 %prep
 %setup -q -n %{name}-%{tarballversion}
 
+#%patch0 -p1
 
 %build
 # prevent depmod from being run and disable unsupported scripts
@@ -219,6 +221,9 @@ fi || :
 %attr(0744,root,root)		%{_libmoddir}/%{kvers}/extra/*
 
 %changelog
+* Thu Oct 16 2007 PaloSanto Solutions <info@elastix.org> - 1.1.6-17
+- Change of source mISDN release of 1.1.5 to 1.1.6
+
 * Thu Sep 6 2007 PaloSanto Solutions <info@elastix.org> - 1.1.5-15
 - Just recompiling the package in our servers to include it in the Elastix distro
 

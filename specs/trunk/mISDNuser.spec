@@ -3,9 +3,9 @@
 
 %define prefix /usr
 %define	_libmoddir /lib/modules
-%define version 1.1.5
-%define tarballversion 1_1_5
-%define release 10
+%define version 1.1.6
+%define tarballversion 1_1_6
+%define release 11
 
 Summary: mISDNuser libraries
 Name: mISDNuser
@@ -99,6 +99,9 @@ if [ -x /usr/sbin/sestatus ] && (/usr/sbin/sestatus | grep "SELinux status:" | g
 %exclude %_libdir/*.a
 
 %changelog
+* Thu Oct 16 2007 PaloSanto Solutions <info@elastix.org> - 1.1.6-16
+- Change of source mISDN release of 1.1.5 to 1.1.6
+
 * Thu Sep 6 2007 PaloSanto Solutions <info@elastix.org> - 1.1.5-10
 - Just recompiling the package in our servers to include it in the Elastix distro
 
