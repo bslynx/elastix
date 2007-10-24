@@ -158,7 +158,7 @@ class PaloSantoPackages
     function checkUpdate()
     {
         global $arrLang;
-        exec("yum check-update",$respuesta,$retorno);
+        exec("sudo yum check-update",$respuesta,$retorno);
          if(is_array($respuesta)){
             foreach($respuesta as $key => $linea){
                 //Es algo no muy concreto si hay alguna manera de saber las posibles salidas hay que cambiar esta condicion para buscar el error
