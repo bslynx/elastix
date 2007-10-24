@@ -112,7 +112,7 @@ class PaloSantoHardwareDetection
     function hardwareDetection()
     {
         global $arrLang;
-        exec("/usr/sbin/genzaptelconf -d -s -M -F",$respuesta,$retorno);
+        exec("sudo /usr/sbin/genzaptelconf -d -s -M -F",$respuesta,$retorno);
          if(is_array($respuesta)){
             foreach($respuesta as $key => $linea){
                 //falta validar algun error
