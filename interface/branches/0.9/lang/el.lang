@@ -502,5 +502,14 @@ configuration because some <br> processes could need them.",
 "vTigerCRM" => "vTigerCRM",
 /* Preferences*/
 "Preferences" => "Preferences",
+
+/* Start About Elastix */
+"About Elastix"=>"About Elastix",
+"About Elastix Content"=>"Elastix was created under the premise of becoming a reliable, easy-to-use,
+web-based system for the management of communications over IP. This open
+source software started in Ecuador has become the solution of choice for
+implementations of Voice over IP around the globe.",
+"About Elastix Closed"=>"Close",
+/* End About Elastix */
 );
 ?>

@@ -125,9 +125,13 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
         $arrMenuFiltered[$idMenu]['Name']=isset($arrLang[$arrMenuItem['Name']])?$arrLang[$arrMenuItem['Name']]:$arrMenuItem['Name'];
     }
     $oPn = new paloSantoNavigation($arrConf, $arrMenuFiltered, $smarty);
-    
+
     $smarty->assign("THEMENAME", $arrConf['mainTheme']);
+    $smarty->assign("ABOUT_ELASTIX",$arrLang['About Elastix']." ".$arrConf['elastix_version']);
+    $smarty->assign("ABOUT_ELASTIX_CONTENT",$arrLang['About Elastix Content']);
+    $smarty->assign("ABOUT_CLOSED",$arrLang['About Elastix Closed']);
     $smarty->assign("LOGOUT",    $arrLang['Logout']);
+
     $menu= (isset($_GET['menu']))?$_GET['menu']:''; 
     if (count($arrMenuFiltered)>0)
         $smarty->assign("MENU", $oPn->showMenu($menu));

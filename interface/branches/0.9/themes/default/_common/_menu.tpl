@@ -26,7 +26,37 @@
             </td>
             {/if}
             {/foreach}
-            <td class="menuaftertab" width="60%" align="right">&nbsp;<a href="/?logout=yes">{$LOGOUT}</a></td>
+            <td>
+                <div id='acerca_de'>
+                    <table border='0' cellspacing="0" cellpadding="2" width='100%'>
+                        <tr class="moduleTitle">
+                            <td class="moduleTitle" align="center" colspan='2'>
+                                {$ABOUT_ELASTIX}
+                            </td>
+                        </tr>
+                        <!--<tr class="tabForm">
+                            <td class="tabForm" >
+                                <img src="images/logo_elastix_about.gif" />
+                            </td>
+                            <td class="tabForm" >
+                                <img src="images/logo_palosanto_about.gif" />
+                            </td>
+                        </tr>-->
+                        <tr class="tabForm" >
+                            <td class="tabForm"  height='138' colspan='2' align='center'>
+                                {$ABOUT_ELASTIX_CONTENT}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="moduleTitle" align="center" colspan='2'>
+                                <input type='button' value='{$ABOUT_CLOSED}' onclick="javascript:cerrar();" />
+                            </td>
+                        </tr>
+                    </table> 
+                </div>
+            </td>
+            <td class="menuaftertab" width="40%" align="right">&nbsp;<a href="javascript:mostrar();">{$ABOUT_ELASTIX}</a></td>
+            <td class="menuaftertab" width="20%" align="right">&nbsp;<a href="/?logout=yes">{$LOGOUT}</a></td>
           </tr>
         </table>
       </td>
@@ -84,3 +114,30 @@
       </table>
     </td>
     {/if}
+{literal}
+<style type='text/css'>
+#acerca_de{
+    position:absolute; 
+    width:440px;
+    height:200px;
+    border:1px solid #800000;
+}
+</style>
+<script type='text/javascript'>
+cerrar();
+function cerrar()
+{
+    var div_contenedor = document.getElementById('acerca_de');
+    div_contenedor.style.display = 'none';
+}
+
+function mostrar()
+{
+    var ancho = 440;
+    var div_contenedor = document.getElementById('acerca_de');
+    var eje_x=(screen.width - ancho) / 2;
+    div_contenedor.setAttribute("style","left:"+ eje_x + "px; top:123px");
+    div_contenedor.style.display = 'block';
+}
+</script>
+{/literal}

@@ -502,5 +502,15 @@ configuraci&oacute;n porque algunos <br> procesos prodr&iacute;an necesitarlos."
 "vTigerCRM" => "vTigerCRM",
 /* Preferences*/
 "Preferences" => "Preferencias",
+
+/* Start About Elastix */
+"About Elastix"=>"Acerda de Elastix",
+"About Elastix Content"=>"Elastix fue creado bajo la premisa de ser un sistema de manejo para
+comunicaciones basadas en IP que sea accesible desde el Web, confiable y
+facil de usar. Este software de codigo abierto iniciado en Ecuador se ha
+convertido en la solucion preferida para implementaciones de Voz sobre IP
+alrededor del mundo.",
+"About Elastix Closed"=>"Cerrar",
+/* End About Elastix */
 );
 ?>

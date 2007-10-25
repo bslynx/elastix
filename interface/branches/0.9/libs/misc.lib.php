@@ -221,6 +221,24 @@ function set_key_settings($pDB,$key,$value){
     return $bExito;
 }
 
+function load_version_elastix($ruta_base='')
+{
+	if (!extension_loaded('sqlite3')) dl('sqlite3.so');
+    include_once $ruta_base."libs/paloSantoDB.class.php";
+
+//conectarse a la base de settings para obtener la version y release del sistema elastix
+    $pDB = new paloDB("sqlite3:////var/www/db/settings.db");
+    if(empty($pDB->errMsg)) {
+        $theme=get_key_settings($pDB,'elastix_version_release');
+    }
+//si no se encuentra setear solo ?
+    if (empty($theme)){
+        set_key_settings($pDB,'elastix_version_release','?');
+        return "?";
+    }
+    else return $theme;
+}
+
 function load_theme($ruta_base='')
 {
 	if (!extension_loaded('sqlite3')) dl('sqlite3.so');
