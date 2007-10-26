@@ -27,7 +27,7 @@
   +----------------------------------------------------------------------+
   $Id: frameLeft.php,v 1.2 2007/09/07 23:05:29 gcarrillo Exp $ */
 
-include_once("../configs/menu.php");
+
 include_once("../libs/paloSantoTree.class.php");
 include_once("../libs/paloSantoDB.class.php");
 include_once("../libs/paloSantoACL.class.php");
@@ -83,12 +83,20 @@ if(!empty($_SESSION['elastix_user'])) {
     $arrMenuFiltered = $arrMenu;
 }
 
+
+
+include_once("../configs/menu.php");
 foreach($arrMenuFiltered as $id => $menu) {
+    
     $arrTmp = array();
     $arrTmp['id_nodo']   = $id;
-    if(empty($menu['IdParent'])) {
+    
+    if($arrMenu[$arrTmp['id_nodo']]['HasChild']){
+        if(empty($menu['IdParent']))
+            $arrTmp['id_parent'] = "root";
+        else
+            $arrTmp['id_parent'] = $menu['IdParent'];
         $arrTmp['tipo']      = "C";
-        $arrTmp['id_parent'] = "root";
     } else {
         $arrTmp['tipo']      = "A";
         $arrTmp['id_parent'] = $menu['IdParent'];
