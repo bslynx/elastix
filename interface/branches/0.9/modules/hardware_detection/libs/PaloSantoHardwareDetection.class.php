@@ -87,9 +87,16 @@ class PaloSantoHardwareDetection
                    $tarjetas["TARJETA$idTarjeta"]['DESC'] = array('ID' => $regs[2], 'SPAM' => $regs[1],'TIPO' => $regs[3], 'ADICIONAL' => $regs[4]);
                 }
                 else if(ereg("[[:space:]]{0,}([[:digit:]]{1,})[[:space:]]{1}([[:alnum:]]{1,})[[:space:]]{1,}([[:alnum:]]{1,})[[:space:]]{1,}(\(?.+\))",$linea,$regs1)){
-                    if($regs1[4] == '(In use)'){
+                   if($regs1[4] == '(In use)'){
                         $estado = $arrLang['(In Use)'];
                         $colorEstado = 'green';
+                   }
+                   $tarjetas["TARJETA$idTarjeta"]['PUERTOS']["PUERTO$regs1[1]"] = array('LOCALIDAD' =>$regs1[1],'TIPO' => $regs1[2], 'ADICIONAL' => $regs1[3], 'ESTADO' => $estado,'COLOR' => $colorEstado);
+                }
+                else if(ereg("[[:space:]]{0,}([[:digit:]]{1,})[[:space:]]{1}([[:alnum:]]{1,})[[:space:]]{1,}([[:alnum:]]{1,})()",$linea,$regs1)){
+                   if($regs1[4] == ''){
+                        $estado = $arrLang['Not Connected'];
+                        $colorEstado = 'red';
                    }
                    $tarjetas["TARJETA$idTarjeta"]['PUERTOS']["PUERTO$regs1[1]"] = array('LOCALIDAD' =>$regs1[1],'TIPO' => $regs1[2], 'ADICIONAL' => $regs1[3], 'ESTADO' => $estado,'COLOR' => $colorEstado);
                 }
