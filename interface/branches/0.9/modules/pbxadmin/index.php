@@ -78,10 +78,30 @@ function _moduleContent(&$smarty, $module_name)
     	'setup'=>'Setup',
     	'cdrcost'=>'Call Cost',
     );
-    //$GLOBALS['astman'] = $astman;
-    //$GLOBALS['amp_conf_defaults'] = $amp_conf_defaults;
-    //require_once('functions.inc.php');
+
     include('/var/www/html/admin/header.php');
+
+    /**********************************************************/
+    /* Este bloque pertenece al archivo header.php pero no se */
+    /* estaban registrando ciertas variables globales asi que */
+    /* lo repito aqui y evito parchar el archivo header.php   */
+    /**********************************************************/
+
+    // get settings
+    $GLOBALS['amp_conf']       = parse_amportal_conf("/etc/amportal.conf");
+    $GLOBALS['asterisk_conf']  = parse_asterisk_conf($amp_conf["ASTETCDIR"]."/asterisk.conf");
+    $GLOBALS['astman']         = new AGI_AsteriskManager();
+
+    // attempt to connect to asterisk manager proxy
+    if (!isset($amp_conf["ASTMANAGERPROXYPORT"]) || !$res = $astman->connect("127.0.0.1:".$amp_conf["ASTMANAGERPROXYPORT"], $amp_conf["AMPMGRUSER"] , $amp_conf["AMPMGRPASS"])) {
+            // attempt to connect directly to asterisk, if no proxy or if proxy failed
+            if (!$res = $astman->connect("127.0.0.1:".$amp_conf["ASTMANAGERPORT"], $amp_conf["AMPMGRUSER"] , $amp_conf["AMPMGRPASS"])) {
+                    // couldn't connect at all
+                    unset( $astman );
+            }
+    }
+
+    /**********************************************************/
   
     $GLOBALS['title'] = $title;
     $GLOBALS['type']  = $type;
@@ -92,11 +112,6 @@ function _moduleContent(&$smarty, $module_name)
     $GLOBALS['quietmode'] = $quietmode;
     $GLOBALS['message'] = $message;
     $GLOBALS['fpbx_menu'] = $fpbx_menu;
-    //$GLOBALS['amp_conf_defaults'] = $amp_conf_defaults;
-//    $GLOBALS['db'] = $db;   
- //   $GLOBALS['amp_conf'] = $amp_conf;
- //   $GLOBALS['asterisk_conf'] = $asterisk_conf;
-    //$GLOBALS['astman'] = $astman;
  
     // handle special requests
     if (isset($_REQUEST['handler'])) {
