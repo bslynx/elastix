@@ -81,6 +81,9 @@ function _moduleContent(&$smarty, $module_name)
 
     include('/var/www/html/admin/header.php');
 
+    // Hack to avoid patching admin/functions.inc.php
+    $GLOBALS['amp_conf_defaults'] = $amp_conf_defaults;
+
     /**********************************************************/
     /* Este bloque pertenece al archivo header.php pero no se */
     /* estaban registrando ciertas variables globales asi que */
