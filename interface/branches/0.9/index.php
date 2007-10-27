@@ -136,6 +136,8 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
     if(isset($_GET['menu'])) $menu=$_GET['menu'];
     elseif(empty($menu) and !empty($_SESSION['menu'])) $menu=$_SESSION['menu'];
     else $menu='';
+
+    $_SESSION['menu']=$menu; 
  
     if (count($arrMenuFiltered)>0)
         $smarty->assign("MENU", $oPn->showMenu($menu));
