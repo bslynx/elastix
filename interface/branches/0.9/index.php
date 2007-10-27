@@ -132,7 +132,11 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
     $smarty->assign("ABOUT_CLOSED",$arrLang['About Elastix Closed']);
     $smarty->assign("LOGOUT",    $arrLang['Logout']);
 
-    $menu= (isset($_GET['menu']))?$_GET['menu']:''; 
+    //$menu= (isset($_GET['menu']))?$_GET['menu']:'';
+    if(isset($_GET['menu'])) $menu=$_GET['menu'];
+    elseif(empty($menu) and !empty($_SESSION['menu'])) $menu=$_SESSION['menu'];
+    else $menu='';
+ 
     if (count($arrMenuFiltered)>0)
         $smarty->assign("MENU", $oPn->showMenu($menu));
     else
