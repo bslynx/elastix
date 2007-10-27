@@ -88,9 +88,9 @@ function _moduleContent(&$smarty, $module_name)
     /**********************************************************/
 
     // get settings
-    $GLOBALS['amp_conf']       = parse_amportal_conf("/etc/amportal.conf");
-    $GLOBALS['asterisk_conf']  = parse_asterisk_conf($amp_conf["ASTETCDIR"]."/asterisk.conf");
-    $GLOBALS['astman']         = new AGI_AsteriskManager();
+    $amp_conf       = parse_amportal_conf("/etc/amportal.conf");
+    $asterisk_conf  = parse_asterisk_conf($amp_conf["ASTETCDIR"]."/asterisk.conf");
+    $astman         = new AGI_AsteriskManager();
 
     // attempt to connect to asterisk manager proxy
     if (!isset($amp_conf["ASTMANAGERPROXYPORT"]) || !$res = $astman->connect("127.0.0.1:".$amp_conf["ASTMANAGERPROXYPORT"], $amp_conf["AMPMGRUSER"] , $amp_conf["AMPMGRPASS"])) {
@@ -100,6 +100,10 @@ function _moduleContent(&$smarty, $module_name)
                     unset( $astman );
             }
     }
+
+    $GLOBALS['amp_conf'] = $amp_conf;
+    $GLOBALS['asterisk_conf']  = $asterisk_conf;
+    $GLOBALS['astman'] = $astman;
 
     /**********************************************************/
   
