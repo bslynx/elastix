@@ -21,12 +21,12 @@
                 </tr>
                 <tr> 
                     <td>
-                    <table border ='0' align="center" cellspacing="0" cellpadding="0" class="table_title_row">
+                    <table border ='0' align="center" cellspacing="0" cellpadding="0" class="table_title_row" width='100%'>
                         {if $data.PUERTOS}
                             <tr>
                                 {foreach from=$data.PUERTOS key=q item=puerto name=filasPuerto}
                                     <td>
-                                        <table style='border:1px #CCCCCC solid;padding:1px;background-color:white' border='0' callpadding='0' cellspacing='0' onMouseOver="this.style.backgroundColor='#f2f2f2';" onMouseOut="this.style.backgroundColor='#ffffff';">                              
+                                        <table style='border:1px #CCCCCC solid;padding:1px;background-color:white' border='0' callpadding='0' cellspacing='0' onMouseOver="this.style.backgroundColor='#f2f2f2';" onMouseOut="this.style.backgroundColor='#ffffff';" width='100%'>                              
                                             <tr><td  align='center'>{$NO_PUERTO} {$puerto.LOCALIDAD}</td></tr>
                                             <tr><td  align='center'>{$puerto.TIPO}</td></tr>
                                             <tr><td  align='center' style='background-color:{$puerto.COLOR}'>{$puerto.ESTADO}</td></tr>

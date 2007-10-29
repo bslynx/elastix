@@ -48,35 +48,7 @@ class PaloSantoHardwareDetection
     {
         global $arrLang;
         $tarjetas = array();
-        /* VERSION ANTERIOR
-        unset($respuesta);
-        exec('sudo /root/genzaptelconf -l',$respuesta,$retorno);
-        if($retorno==0 && $respuesta!=null && count($respuesta) > 0 && is_array($respuesta)){
-            $idTarjeta = 0;
-            foreach($respuesta as $key => $linea){
-                if(ereg("^(### Span ([[:digit:]]{1,}):)[[:space:]]{1}([[:alnum:]]{1,}/[[:digit:]]{1,})(\"?.+\")",$linea,$regs2)){
-                   $idTarjeta = $regs2[2];
-                   $tarjetas["TARJETA$idTarjeta"]['DESC'] = array('ID' => $regs2[2], 'SPAM' => $regs2[1],'TIPO' => $regs2[3], 'ADICIONAL' => $regs2[4]);
-                }
-                else if(ereg("^([[:digit:]]{1,})[[:space:]]{1}([[:alnum:]]{1,})",$linea,$regs1)){
-                   unset($puertos);
-                   exec("cat /proc/zaptel/$idTarjeta",$puertos,$retorno2);
-                   if($retorno2==0 && $puertos!=null && count($puertos) > 0 && is_array($puertos)){
-                        foreach($puertos as $puerto){
-                                if(ereg("[[:space:]]{1,}([[:digit:]]{1,})[[:space:]]{1}[[:alnum:]]{1,}/[[:digit:]]{1,}/[[:digit:]]{1,}[[:space:]]{1,}[[:alnum:]]{1,}[[:space:]]{1}(\(?.+\))",$puerto,$regs3)){
-                                        if($regs3[1]==$regs1[1])
-                                                $estado = $regs3[2];
-                                        }
-                        }
-                   }
-                   $tarjetas["TARJETA$idTarjeta"]['PUERTOS']["PUERTO$regs1[1]"] = array('LOCALIDAD' =>$regs1[1],'TIPO' => $regs1[2], 'ESTADO' => $estado);
-                }
-            }
-        } 
-        else 
-            $this->errMsg = $arrLang["Ports not Founds"];
-        return($tarjetas);*/
-
+       
         unset($respuesta);
 	exec('lszaptel',$respuesta,$retorno);
         if($retorno==0 && $respuesta!=null && count($respuesta) > 0 && is_array($respuesta)){
@@ -91,14 +63,29 @@ class PaloSantoHardwareDetection
                         $estado = $arrLang['(In Use)'];
                         $colorEstado = 'green';
                    }
-                   $tarjetas["TARJETA$idTarjeta"]['PUERTOS']["PUERTO$regs1[1]"] = array('LOCALIDAD' =>$regs1[1],'TIPO' => $regs1[2], 'ADICIONAL' => $regs1[3], 'ESTADO' => $estado,'COLOR' => $colorEstado);
+                   if($regs1[2]=='FXS')
+                        $tipo ='FXO'; 
+                   else if($regs1[2]=='FXO')
+                        $tipo ='FXS';
+                   $tarjetas["TARJETA$idTarjeta"]['PUERTOS']["PUERTO$regs1[1]"] = array('LOCALIDAD' =>$regs1[1],'TIPO' => $tipo, 'ADICIONAL' => $regs1[3], 'ESTADO' => $estado,'COLOR' => $colorEstado);
                 }
                 else if(ereg("[[:space:]]{0,}([[:digit:]]{1,})[[:space:]]{1}([[:alnum:]]{1,})[[:space:]]{1,}([[:alnum:]]{1,})()",$linea,$regs1)){
                    if($regs1[4] == ''){
-                        $estado = $arrLang['Not Connected'];
-                        $colorEstado = 'red';
+                        $estado = "&nbsp;";
+                        $colorEstado = '';
                    }
-                   $tarjetas["TARJETA$idTarjeta"]['PUERTOS']["PUERTO$regs1[1]"] = array('LOCALIDAD' =>$regs1[1],'TIPO' => $regs1[2], 'ADICIONAL' => $regs1[3], 'ESTADO' => $estado,'COLOR' => $colorEstado);
+                   if($regs1[2]=='FXS')
+                        $tipo ='FXO'; 
+                   else if($regs1[2]=='FXO')
+                        $tipo ='FXS'; 
+                   $tarjetas["TARJETA$idTarjeta"]['PUERTOS']["PUERTO$regs1[1]"] = array('LOCALIDAD' =>$regs1[1],'TIPO' => $tipo, 'ADICIONAL' => $regs1[3], 'ESTADO' => $estado,'COLOR' => $colorEstado);
+                }
+                else if(ereg("[[:space:]]{0,}([[:digit:]]{1,})[[:space:]]{1}([[:alnum:]]{1,})",$linea,$regs1)){
+                   if($regs1[2] == 'unknown'){
+                        $estado = $arrLang['Unknown'];
+                        $colorEstado = 'gray';
+                   }
+                   $tarjetas["TARJETA$idTarjeta"]['PUERTOS']["PUERTO$regs1[1]"] = array('LOCALIDAD' =>$regs1[1],'TIPO' => "&nbsp;", 'ADICIONAL' => "", 'ESTADO' => $estado,'COLOR' => $colorEstado);
                 }
             }
         }
@@ -108,7 +95,7 @@ class PaloSantoHardwareDetection
             $tarjetas = array();
         }
         if(count($tarjetas)==1){ //si aparace la tarjeta por default ZTDUMMY
-            if($tarjetas["TARJETA0"]['DESC']['TIPO']=='ZTDUMMY/1'){
+            if($tarjetas["TARJETA1"]['DESC']['TIPO']=='ZTDUMMY/1'){
                 $this->errMsg = $arrLang["Cards undetected on your system, press for detecting hardware detection."];
                 $tarjetas = array();
             }

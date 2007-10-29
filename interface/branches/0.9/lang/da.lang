@@ -435,6 +435,7 @@ configuration because some <br> processes could need them.",
 "Cards undetected on your system, press for detecting hardware detection." => "Cards undetected on your system, press for detecting hardware detection.",
 "Information" => "Information",
 "Satisfactory Hardware Detection" => "Satisfactory Hardware Detection",
+"Unknown" => "Unknown",
 /* Fin PHardware Detection */
 
 /* Modulo system.updates*/

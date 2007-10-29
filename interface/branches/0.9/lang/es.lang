@@ -439,7 +439,8 @@ configuraci&oacute;n porque algunos <br> procesos prodr&iacute;an necesitarlos."
 "Hardware Detect" => "Detectar Hardware",
 "Cards undetected on your system, press for detecting hardware detection." => "Tarjetas no detectadas en su sistema, presione detectar hardware para la deteccion",
 "Information" => "Informacion",
-"Satisfactory Hardware Detection" => "Satisfactoria deteccion de Hardware",
+"Satisfactory Hardware Detection" => "Satisfactoria detección de Hardware",
+"Unknown" => "Desconocido",
 /* Fin PHardware Detection */
 
 /* Modulo system.updates*/
