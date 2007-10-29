@@ -626,8 +626,8 @@ class paloFax {
     function _editFaxInDB($idFax, $name, $extension, $secret, $email, $devId, $clidname, $clidnumber, $port) {
         $errMsg="";
         if ($db = sqlite3_open($this->rutaDB)) {
-            $query  = "REPLACE INTO fax (id, name, extension, secret, clid_name, clid_number, dev_id, date_creation, email, port)  ".
-            $query .= "VALUES ($idFax,'$name', '$extension', '$secret', '$clidname', '$clidnumber', '$devId', '$dateNow', '$email', '$port')";
+            $query  = "REPLACE INTO fax (id, name, ttyIAX, extension, secret, clid_name, clid_number, dev_id, date_creation, email, port)  ".
+            $query .= "VALUES ($idFax,'$name','ttyIAX$devId' ,'$extension', '$secret', '$clidname', '$clidnumber', '$devId', '$dateNow', '$email', '$port')";
             $bExito = $this->_db->genQuery($query);
         	if (!$bExito) {
             	$this->errMsg = $this->_db->errMsg;
