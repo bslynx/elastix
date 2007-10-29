@@ -79,16 +79,19 @@ function _moduleContent(&$smarty, $module_name)
     	'cdrcost'=>'Call Cost',
     );
 
-    include('/var/www/html/admin/header.php');
+    /*************************************************************/
+    /* Este bloque pertenece en su mayoria al archivo header.php */
+    /* ya que no estaban registrando ciertas variables globales; */
+    /* asi que lo repito aqui y evito parchar dicho archivo y    */
+    /* otros mas.                                                */
+    /*************************************************************/
+
+    // include base functions
+    require_once('/var/www/html/admin/functions.inc.php');
+    require_once('/var/www/html/admin/common/php-asmanager.php');
 
     // Hack to avoid patching admin/functions.inc.php
     $GLOBALS['amp_conf_defaults'] = $amp_conf_defaults;
-
-    /**********************************************************/
-    /* Este bloque pertenece al archivo header.php pero no se */
-    /* estaban registrando ciertas variables globales asi que */
-    /* lo repito aqui y evito parchar el archivo header.php   */
-    /**********************************************************/
 
     // get settings
     $amp_conf       = parse_amportal_conf("/etc/amportal.conf");
@@ -108,8 +111,26 @@ function _moduleContent(&$smarty, $module_name)
     $GLOBALS['asterisk_conf']  = $asterisk_conf;
     $GLOBALS['astman'] = $astman;
 
-    /**********************************************************/
-  
+    // Hack to avoid patching common/db_connect.php
+    // I suppose the used database is mysql
+    require_once('DB.php'); //PEAR must be installed
+    $db_user = $amp_conf["AMPDBUSER"];
+    $db_pass = $amp_conf["AMPDBPASS"];
+    $db_host = $amp_conf["AMPDBHOST"];
+    $db_name = $amp_conf["AMPDBNAME"];
+
+    $datasource = 'mysql://'.$db_user.':'.$db_pass.'@'.$db_host.'/'.$db_name;
+    $db = DB::connect($datasource); // attempt connection
+
+    $GLOBALS['db'] = $db;
+
+    // Requiring header.php
+    include('/var/www/html/admin/header.php');
+
+    /*************************************************************/
+    /* Fin del bloque                                            */
+    /*************************************************************/
+
     $GLOBALS['title'] = $title;
     $GLOBALS['type']  = $type;
     $GLOBALS['display'] = $display;
