@@ -33,6 +33,7 @@ include_once "libs/paloSantoGrid.class.php";
 define("MYSQL_ROOT_PASSWORD","eLaStIx.2oo7");
 function _moduleContent(&$smarty, $module_name)
 {
+
     require_once "libs/misc.lib.php";
     require_once "libs/paloSantoForm.class.php";
     include_once "libs/cyradm.php";
