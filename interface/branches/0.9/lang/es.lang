@@ -429,19 +429,19 @@ configuraci&oacute;n porque algunos <br> procesos prodr&iacute;an necesitarlos."
 //Fin SubModule Themes
 
 /* Inicio Hardware Detection */
-"Hardware Detection" => "Deteccion de Hardware",
+"Hardware Detection" => "Detección de Hardware",
 "Ports not Founds" => "Puertos no Encontrados",
 "Card" => "Slot PCI",
 "Type port" => "Tipo",
 "No. Port" => "Puerto #",
 "(In Use)" => "Activo",
 "Hardware Detecting" => "Detectando Hardware",
-"Hardware Detect" => "Detectar Hardware",
-"Cards undetected on your system, press for detecting hardware detection." => "Tarjetas no detectadas en su sistema, presione detectar hardware para la deteccion",
+"Hardware Detect" => "Detectar Nuevo Hardware",
+"Cards undetected on your system, press for detecting hardware detection." => "Tarjetas no detectadas en su sistema, presione \"Detectar Nuevo Hardware\" para la detección",
 "Information" => "Informacion",
 "Satisfactory Hardware Detection" => "Satisfactoria detección de Hardware",
 "Unknown" => "Desconocido",
-/* Fin PHardware Detection */
+/* Fin Hardware Detection */
 
 /* Modulo system.updates*/
 "Updates" => "Actualizaciones",
