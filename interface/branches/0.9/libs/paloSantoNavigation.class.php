@@ -219,7 +219,7 @@ class paloSantoNavigation {
             $retVar .= " width=\"100%\"></iframe>";
 */ 
             /*Version 0.9 agregado variable $ip*/
-            $ip = "http://".$_SERVER["SERVER_ADDR"];
+            $ip = $_SERVER["SERVER_ADDR"];
 	    $link=$bSubMenu2Framed?$this->arrMenu[$this->currSubMenu2]['Link']:$this->arrMenu[$this->currSubMenu]['Link'];
             $link = str_replace("{IP_SERVER}",$ip,$link);
 

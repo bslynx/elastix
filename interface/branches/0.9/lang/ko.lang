@@ -490,6 +490,7 @@ configuration because some <br> processes could need them.",
 /*Module IM*/
 "IM" => "IM",
 "OpenFire" => "OpenFire",
+"The service Openfire No running" => "The service Openfire No running",
 "vTigerCRM" => "vTigerCRM",
 /* Preferences*/
 "Preferences" => "Preferences",

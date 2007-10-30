@@ -500,6 +500,7 @@ configuraci&oacute;n porque algunos <br> procesos prodr&iacute;an necesitarlos."
 /*Module IM*/
 "IM" => "IM",
 "OpenFire" => "OpenFire",
+"The service Openfire No running" => "El servicio Openfire no esta corriendo",
 "vTigerCRM" => "vTigerCRM",
 /* Preferences*/
 "Preferences" => "Preferencias",
