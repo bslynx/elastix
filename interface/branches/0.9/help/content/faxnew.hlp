@@ -6,17 +6,40 @@
 <body>
 <h1>New Virtual Fax</h1>
 
-<p><b>Remember:</b> Before creating a new virtual fax device you must have configured the corresponding IAX extension from the freePBX interface.</p>
+<p>The option “New Virtual Fax” from the Menu “FAX” in Elastix lets us create a new virtual fax. You should have previously created an IAX type of fax extension; for more information about this, go to: Creating a new extension.</p>
 
-<p>The web form to create new virtual fax devices contains the following fields:</p>
+<div><img src="/images/help/fax/fax_virtual_new.jpg" border="0"></div>
+<div>Figure 1</div>
+<br />
 
-<ul>
-  <li><b>Virtual Fax Name:</b> This is the Name that will be used to easily identify the device. Example: "Marketing Department Fax"</li>
-  <li><b>Destination Email:</b> Email address for the user that will receive faxes in this virtual fax device</li>
-  <li><b>Fax Extension (IAX):</b> The IAX extension that was pre-configured in freePBX</li>
-  <li><b>Secret (IAX):</b> The "IAX secret" that was pre-configured in freePBX</li>
-  <li><b>Caller ID Name:</b> The name that will be associated with the calling extension. Example: "Marketing, PaloSanto Solutions"</li>
-  <li><b>Caller ID Number:</b> The telephone number from which you want to pretend to have sent the fax</li>
-</ul>
+<p>To create a new virtual fax, input the name, e-mail, extension and secret code for the virtual fax --these are the required fields. Besides these, there are 2 other fields that are the name of the Caller ID and the number of the Caller ID. After this information is added, click on the “Save” button to save the virtual fax or “Cancel” to leave without saving.</p>
+
+<p>Note that the extension of the virtual fax will be used to receive the fax.</p>
+
+<p>Here are more details about the data to input:</p>
+
+<table class="inline">
+	<tr>
+		<td>Virtual Fax Name</td><td>Name to identify the virtual fax.</td>
+	</tr>
+	<tr>
+
+		<td>Fax Extension (IAX)</td><td>Extension used for fax. This extension should have been previously created as a type IAX in the module “Extensions” of the Menu “PBX Configuration”.</td>
+	</tr>
+	<tr>
+		<td>Destination Email</td><td>Email to which the notifications will be sent by the telephone system of the faxes received and of errors, in case there are any.</td>
+	</tr>
+	<tr>
+		<td>Secret (IAX)</td><td>It should be the same as the one inputted at the creation of the fax extension.</td>
+
+	</tr>
+	<tr>
+		<td>Caller ID Name</td><td>The name of the caller. This field is not mandatory; if it is not filled in who receives the fax at that extension, the name will not be shown.</td>
+	</tr>
+	<tr>
+		<td>Caller ID Number</td><td>The number of the caller. Similar to the “Caller ID Name,” this field is not required. And if it is not filled in who receives the fax at that extension, the number will not be shown.</td>
+	</tr>
+</table>
+
 </body>
 </html>

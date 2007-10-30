@@ -5,23 +5,40 @@
 </header>
 <body>
 <h1>Rates</h1>
+
 <p>The &quot;Rates&quot; option of the &quot;Billing&quot; menu allows us to display and configure the rates per minute that are used to bill for the calls</p>
 
-<h3>Edit, Delete and Display</h3>
+<div><img src="/images/help/reports/billing_rates.jpg" border="0"></div>
+<div>Figure 1</div>
+<br />
 
-<p>The View link takes the user to a screen showing the rates information currently entered.</p>
+<h3>View, Edit and Delete</h3>
 
-<p>In order to delete a rate, simply click on the Delete button.</p>
+<p>The link View will take us to a screen where we will see the rate details.</p>
 
-<p>You can also edit the value associated with a given rate by clicking on the Edit button. The only values that you can change are: Name, Rate and Rate Offset.</p>
+<div><img src="/images/help/reports/billing_rates_view.jpg" border="0"></div>
+<div>Figure 2</div>
+<br />
+
+<p>To delete a rate, click on the “Delete” button.</p>
+
+<p>You can also modify the values of the rate by clicking on the “Edit” button. The only values that can change are: Name, Rate and Rate Offset.</p>
+
+<div><img src="/images/help/reports/billing_rates_edit.jpg" border="0"></div>
+<div>Figure 3</div>
+<br />
 
 <h3>Create New Rate</h3>
 
-<p>In order to add a new rate, you need to click on the Create New Rate Button. This will show a form with the following fields: </p>
+<p>To add a new rate, click on the “Create New Rate” button. A form will be shown in which you will input the following fields:</p>
+
+<div><img src="/images/help/reports/billing_rates_new.jpg" border="0"></div>
+<div>Figure 4</div>
+<br />
 
 <table class="inline">
 	<tr>
-		<td>Prefix</td><td>This is the telephone numeral prefix to which the rate will apply</td>
+		<td>Prefix</td><td>The telephone prefix in which the rate will be applied.</td>
 	</tr>
 	<tr>
 		<td>Name</td><td>Name of the rate</td>
@@ -31,7 +48,7 @@
 		<td>Rate</td><td>Monetary value of the Rate per minute</td>
 	</tr>
 	<tr>
-		<td>Rate Offset</td><td>Setup charge</td>
+		<td>Rate Offset</td><td>Value of the connection.</td>
 	</tr>
 
 </table>

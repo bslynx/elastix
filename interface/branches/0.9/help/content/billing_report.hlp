@@ -5,20 +5,24 @@
 </header>
 <body>
 <h1>Billing Report</h1>
-<p>The &quot;Billing Report&quot; option of the &quot;Billing&quot; menu allows us to display de call details with their associated cost and rate.</p>
+<p>The “Billing Report” option of the Menu “Billing” in Elastix lets us view the details of the call with respect to cost and applied rate.</p>
 
-<p>This report will change depending on the filters values selected on top:</p>
+<div><img src="/images/help/reports/billing_report.jpg" border="0"></div>
+<div>Figure 1</div>
+<br />
+
+<p>The report will change depending on the values of the filter:</p>
 
 <table class="inline">
 	<tr>
-		<td>Start Date:</td><td> This is the date from which calls will be displayed</td>
+		<td>Start Date:</td><td>The start date for the calls to be selected.</td>
 
 	</tr>
 	<tr>
-		<td>End Date:</td><td> This is the date until which calls will be displayed</td>
+		<td>End Date:</td><td>The end date for the calls to be selected.</td>
 	</tr>
 	<tr>
-		<td>Field:</td><td> Additional filters: Source, Destination, Dst. Channel</td>
+		<td>Field:</td><td>Additional fields for filtering: Source, Destination, Dst. Channel</td>
 
 	</tr>
 </table>

@@ -6,22 +6,40 @@
 <body>
 <h1>Destination Distribution</h1>
 
-<p>The &quot;Destination Distribution&quot; option of the &quot;Billing&quot; menu allows us to view the distribution of outgoing calls grouped by billing rate in a graph.</p>
-
-<p>The graph will change depending on the filters applied on top of the page:</p>
+<p>The “Destination Distribution” option of the “Billing” Menu in Elastix lets us view graphically the distribution of the outgoing calls grouped by rate. The graph will change depending the values of the filter:</p>
 
 <table class="inline">
 	<tr>
-		<td>Start Date:</td><td> This is the date from which calls will be displayed</td>
+		<td>Start Date</td><td>The start date for calls to be selected.</td>
 	</tr>
 	<tr>
 
-		<td>End Date:</td><td> This is the date until which calls will be displayed</td>
+		<td>End Date</td><td>The end date for calls to be selected.</td>
 	</tr>
 	<tr>
-		<td>Criteria:</td><td> Distribution Criteria – By Time, By Number of Calls, By Cost</td>
+		<td>Criteria</td><td>Criteria for distribution: Distribution by Time, Distribution by Number of Calls, Distribution by Cost.</td>
 	</tr>
 </table>
+
+<br />
+
+<p>Distribution by Time</p>
+
+<div><img src="/images/help/reports/dest_distrib_time.jpg" border="0"></div>
+<div>Figure 1</div>
+<br />
+
+<p>Distribution by Number of Calls</p>
+
+<div><img src="/images/help/reports/dest_distrib_calls.jpg" border="0"></div>
+<div>Figure 2</div>
+<br />
+
+<p>Distribution by Cost</p>
+
+<div><img src="/images/help/reports/dest_distrib_cost.jpg" border="0"></div>
+<div>Figure 3</div>
+<br />
 
 </body>
 </html>

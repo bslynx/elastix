@@ -9,6 +9,10 @@
 
 <p>The option “CDR Reports” of the Menu “Reports” in Elastix lets us view a list with the details of the calls.</p>
 
+<div><img src="/images/help/reports/cdr_report_list.jpg" border="0"></div>
+<div>Figure 1</div>
+<br />
+
 <p>The report will change depending on the values of the filter:</p>
 
 <table class="inline">
