@@ -150,7 +150,7 @@ function _moduleContent(&$smarty, $module_name)
     			include_once('/var/www/html/admin/common/json.inc.php');
     			$response = do_reload();
     			$json = new Services_JSON();
-    			echo $json->encode($response);
+    			//echo $json->encode($response);
     		break;
     		case 'file':
     			/** Handler to pass-through file requests 
@@ -200,7 +200,7 @@ function _moduleContent(&$smarty, $module_name)
     			die_freepbx("not allowed");
     		break;
     	}
-    	exit();
+    	//exit();
     }
     
     module_run_notification_checks();
