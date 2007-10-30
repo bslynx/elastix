@@ -158,7 +158,7 @@
 $arrMenu = array(	"system"	=>	array(	"Name"		=>	"System",
 							"IdParent"	=>	"",
                                                         "HasChild"	=>	true),
-			"pbx"		=>	array(	"Name"		=>	"PBX",
+			"pbxconfig"	=>	array(	"Name"		=>	"PBX",
 							"IdParent"	=>	"",
                                                         "HasChild"	=>	true),
 			"fax"		=>	array(	"Name"		=>	"Fax",
@@ -200,9 +200,6 @@ $arrMenu = array(	"system"	=>	array(	"Name"		=>	"System",
 							"Type"		=>	"module",
 							"IdParent"	=>	"usermgr",
                                                         "HasChild"	=>	false),
-
-
-
 
 			"load_module"	=>	array(	"Name"		=>	"Load Module",
 							"Type"		=>	"module",
@@ -256,33 +253,33 @@ $arrMenu = array(	"system"	=>	array(	"Name"		=>	"System",
 
 			"pbxadmin"	=>	array(	"Name"		=>	"PBX Configuration",
 							"Type"		=>	"framed",
-							"Link"		=>	"pbxadmin",
+							"Link"		=>	"pbxconfig",
 							"IdParent"	=>	"pbx",
                                                         "HasChild"	=>	false),
 			"asterisk_cli"	=>	array(	"Name"		=>	"Asterisk-Cli",
 							"Type"		=>	"module",
-							"IdParent"	=>	"pbx",
+							"IdParent"	=>	"pbxconfig",
                                                         "HasChild"	=>	false),
 			"fop"		=>	array(	"Name"		=>	"Flash Operator Panel",
 							"Type"		=>	"framed",
 							"Link"		=>	"panel",
-							"IdParent"	=>	"pbx",
+							"IdParent"	=>	"pbxconfig",
                                                         "HasChild"	=>	false),
 			"voicemail"	=>	array(	"Name"		=>	"Voicemails",
 							"Type"		=>	"module",
-							"IdParent"	=>	"pbx",
+							"IdParent"	=>	"pbxconfig",
                                                         "HasChild"	=>	false),
 			"monitoring"	=>	array(	"Name"		=>	"Monitoring",
 							"Type"		=>	"module",
-							"IdParent"	=>	"pbx",
+							"IdParent"	=>	"pbxconfig",
                                                         "HasChild"	=>	false),
 			"file_editor"	=>	array(	"Name"		=>	"File Editor",
 							"Type"		=>	"module",
-							"IdParent"	=>	"pbx",
+							"IdParent"	=>	"pbxconfig",
                                                         "HasChild"	=>	false),
-			"echo_cancel"	=>	array(	"Name"		=>	"Echo Canceller",
+			"echo_canceller"=>	array(	"Name"		=>	"Echo Canceller",
 							"Type"		=>	"module",
-							"IdParent"	=>	"pbx",
+							"IdParent"	=>	"pbxconfig",
                                                         "HasChild"	=>	false),
 
 
@@ -401,27 +398,5 @@ $arrMenu = array(	"system"	=>	array(	"Name"		=>	"System",
 							"Link"		=>	"vtigercrm",
 							"IdParent"	=>	"extras",
                                                         "HasChild"	=>	false),
-
-
-
-
-
-
-
-			"developer"   => array( "Name"     => "Developer",
-                                              "IdParent" => ""),
-                      "ari"         => array( "Name"     => "Asterisk Recording Interface",
-                                              "Type"     => "framed",
-                                              "Link"     => "recordings",
-                                              "IdParent" => "voicemails"),
-                      "outgoingcalls"=> array( "Name" => "Outgoing Calls",
-                                              "Type"     => "module",
-                                              "IdParent" => "reports"),
-                      "incomingcalls"=> array( "Name" => "Incoming Calls",
-                                              "Type"     => "module",
-                                              "IdParent" => "reports"),
-                      "menuadmin"   => array( "Name"     => "Menu Administrator",
-                                              "Type"     => "module",
-                                              "IdParent" => "developer"),
                       );
 ?>
