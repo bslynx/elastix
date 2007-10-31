@@ -124,6 +124,11 @@ function _moduleContent(&$smarty, $module_name)
 
     $GLOBALS['db'] = $db;
 
+    if (!isset($_SESSION['AMP_user'])) {
+        $_SESSION['AMP_user'] = new ampuser($amp_conf['AMPDBUSER']);
+        $_SESSION['AMP_user']->setAdmin();
+    }
+
     // Requiring header.php
     include('/var/www/html/admin/header.php');
 
