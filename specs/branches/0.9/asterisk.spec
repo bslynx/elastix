@@ -1,7 +1,7 @@
 Summary: The Open Source Linux PBX
 Name: asterisk
-Version: 1.4.12.1
-Release: 1
+Version: 1.4.13
+Release: 4
 Epoch: 1
 License: GPL
 Group: Applications/Internet
@@ -9,6 +9,9 @@ URL: http://www.asterisk.org
 Source0: http://ftp.digium.com/pub/%{name}/releases/%{name}-%{version}.tar.gz
 Source1: http://www.soft-switch.org/downloads/spandsp/spandsp-0.0.2pre26/asterisk-1.2.x/app_rxfax.c
 Source2: http://www.soft-switch.org/downloads/spandsp/spandsp-0.0.2pre26/asterisk-1.2.x/app_txfax.c
+Source3: asterisk-spanish-sounds.tgz
+Source4: asterisk-add.logrotate
+Source5: unicall.conf.sample
 #Source101: http://ftp.digium.com/pub/telephony/sounds/releases/asterisk-core-sounds-en-alaw-1.4.6.tar.gz
 #Source102: http://ftp.digium.com/pub/telephony/sounds/releases/asterisk-core-sounds-en-g722-1.4.6.tar.gz
 #Source103: http://ftp.digium.com/pub/telephony/sounds/releases/asterisk-core-sounds-en-g729-1.4.6.tar.gz
@@ -40,6 +43,8 @@ Patch3: asterisk-1.4-spandsp.patch
 Patch4: asterisk-rc-chown.patch
 #Patch5: asterisk-1.4-palosanto1.patch
 #Patch6: asterisk-hold.patch
+Patch7: asterisk-unicall.patch
+#Patch8: chan_unicall.msilva.patch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 BuildRequires: gcc-c++
 BuildRequires: bison, m4
@@ -122,6 +127,8 @@ done
 %patch4 -p0
 #%patch5 -p1
 #%patch6 -p1
+%patch7 -p1
+#%patch8 -p0
 cp %{SOURCE1} %{SOURCE2} apps/
 find . -type f | xargs grep -l /usr/lib/ | xargs perl -pi -e's,/usr/lib/,%{_libdir}/,'
 perl -pi -e's,^OPTIMIZE.*,,' Makefile
@@ -143,32 +150,21 @@ mkdir -p %{buildroot}%{_initrddir}
 install -m 0644 include/asterisk.h %{buildroot}%{_includedir}/asterisk.h
 install -p contrib/init.d/rc.redhat.asterisk %{buildroot}%{_initrddir}/asterisk
 
-%{__mkdir_p} %{buildroot}%{_localstatedir}/lib/asterisk/sounds/{es,fr}
+#%{__mkdir_p} %{buildroot}%{_localstatedir}/lib/asterisk/sounds/{es,fr}
 
-tar zxvf %{SOURCE110} -C %{buildroot}%{_localstatedir}/lib/asterisk/sounds/es
+# Sonidos Asterisk en Espanol
+tar zxvf %{SOURCE3} -C %{buildroot}%{_localstatedir}/lib/asterisk/sounds/
+
+# Installing french sounds
+%{__mkdir_p} %{buildroot}%{_localstatedir}/lib/asterisk/sounds/fr
 tar zxvf %{SOURCE116} -C %{buildroot}%{_localstatedir}/lib/asterisk/sounds/fr
 
-# Asterisk looks for these ones in 
-# %{_localstatedir}/lib/asterisk/sounds/digits using spanish sounds
+# Installing the logrotate script
+%{__mkdir_p} %{buildroot}/etc/logrotate.d
+install -m 0755 %{SOURCE4} %{buildroot}/etc/logrotate.d/
 
-for f in \
-	1M.gsm 100-and.gsm 1F.gsm 200.gsm 20-and.gsm 21.gsm 22.gsm 23.gsm 24.gsm \
-	25.gsm 26.gsm 27.gsm 28.gsm 29.gsm 300.gsm 400.gsm 500.gsm 600.gsm \
-	700.gsm 800.gsm 900.gsm afternoon.gsm and.gsm at_s.gsm es-de.gsm \
-	millions.gsm es-el.gsm
-do
-	ln -s  \
-	../es/digits/${f} \
-	%{buildroot}%{_localstatedir}/lib/asterisk/sounds/digits/
-done
-
-for f in \
-	vm-INBOXs.gsm vm-Olds.gsm vm-youhaveno.gsm
-do
-	ln -s  \
-	es/${f} \
-	%{buildroot}%{_localstatedir}/lib/asterisk/sounds/
-done
+# Installing unicall sample file
+install -m 0664 %{SOURCE5} %{buildroot}/etc/asterisk/unicall.conf
 
 %clean
 rm -rf %{buildroot}
@@ -212,43 +208,11 @@ fi
 %defattr(-,asterisk,asterisk,-)
 %dir %{_sysconfdir}/asterisk
 %config(noreplace) %{_sysconfdir}/asterisk/*
+%{_sysconfdir}/logrotate.d/*
 %{_localstatedir}/lib/asterisk
 %{_localstatedir}/run/asterisk
 %{_localstatedir}/spool/asterisk
 %{_localstatedir}/log/asterisk
-# These simbolic links go in sounds-es
-%exclude %{_localstatedir}/lib/asterisk/sounds/vm-INBOXs.gsm
-%exclude %{_localstatedir}/lib/asterisk/sounds/vm-Olds.gsm
-%exclude %{_localstatedir}/lib/asterisk/sounds/vm-youhaveno.gsm
-%exclude %{_localstatedir}/lib/asterisk/sounds/es
-%exclude %{_localstatedir}/lib/asterisk/sounds/fr
-%exclude %{_localstatedir}/lib/asterisk/sounds/digits/1M.gsm
-%exclude %{_localstatedir}/lib/asterisk/sounds/digits/100-and.gsm
-%exclude %{_localstatedir}/lib/asterisk/sounds/digits/1F.gsm
-%exclude %{_localstatedir}/lib/asterisk/sounds/digits/200.gsm
-%exclude %{_localstatedir}/lib/asterisk/sounds/digits/20-and.gsm
-%exclude %{_localstatedir}/lib/asterisk/sounds/digits/21.gsm
-%exclude %{_localstatedir}/lib/asterisk/sounds/digits/22.gsm
-%exclude %{_localstatedir}/lib/asterisk/sounds/digits/23.gsm
-%exclude %{_localstatedir}/lib/asterisk/sounds/digits/24.gsm
-%exclude %{_localstatedir}/lib/asterisk/sounds/digits/25.gsm
-%exclude %{_localstatedir}/lib/asterisk/sounds/digits/26.gsm
-%exclude %{_localstatedir}/lib/asterisk/sounds/digits/27.gsm
-%exclude %{_localstatedir}/lib/asterisk/sounds/digits/28.gsm
-%exclude %{_localstatedir}/lib/asterisk/sounds/digits/29.gsm
-%exclude %{_localstatedir}/lib/asterisk/sounds/digits/300.gsm
-%exclude %{_localstatedir}/lib/asterisk/sounds/digits/400.gsm
-%exclude %{_localstatedir}/lib/asterisk/sounds/digits/500.gsm
-%exclude %{_localstatedir}/lib/asterisk/sounds/digits/600.gsm
-%exclude %{_localstatedir}/lib/asterisk/sounds/digits/700.gsm
-%exclude %{_localstatedir}/lib/asterisk/sounds/digits/800.gsm
-%exclude %{_localstatedir}/lib/asterisk/sounds/digits/900.gsm
-%exclude %{_localstatedir}/lib/asterisk/sounds/digits/afternoon.gsm
-%exclude %{_localstatedir}/lib/asterisk/sounds/digits/and.gsm
-%exclude %{_localstatedir}/lib/asterisk/sounds/digits/at_s.gsm
-%exclude %{_localstatedir}/lib/asterisk/sounds/digits/es-de.gsm
-%exclude %{_localstatedir}/lib/asterisk/sounds/digits/millions.gsm
-
 
 %files devel
 %defattr(-,root,root,-)
@@ -258,41 +222,23 @@ fi
 %files sounds-es
 %defattr(-,root,root,-)
 %{_localstatedir}/lib/asterisk/sounds/es
-%{_localstatedir}/lib/asterisk/sounds/vm-INBOXs.gsm
-%{_localstatedir}/lib/asterisk/sounds/vm-Olds.gsm
-%{_localstatedir}/lib/asterisk/sounds/vm-youhaveno.gsm
-%{_localstatedir}/lib/asterisk/sounds/digits/1M.gsm
-%{_localstatedir}/lib/asterisk/sounds/digits/100-and.gsm
-%{_localstatedir}/lib/asterisk/sounds/digits/1F.gsm
-%{_localstatedir}/lib/asterisk/sounds/digits/200.gsm
-%{_localstatedir}/lib/asterisk/sounds/digits/20-and.gsm
-%{_localstatedir}/lib/asterisk/sounds/digits/21.gsm
-%{_localstatedir}/lib/asterisk/sounds/digits/22.gsm
-%{_localstatedir}/lib/asterisk/sounds/digits/23.gsm
-%{_localstatedir}/lib/asterisk/sounds/digits/24.gsm
-%{_localstatedir}/lib/asterisk/sounds/digits/25.gsm
-%{_localstatedir}/lib/asterisk/sounds/digits/26.gsm
-%{_localstatedir}/lib/asterisk/sounds/digits/27.gsm
-%{_localstatedir}/lib/asterisk/sounds/digits/28.gsm
-%{_localstatedir}/lib/asterisk/sounds/digits/29.gsm
-%{_localstatedir}/lib/asterisk/sounds/digits/300.gsm
-%{_localstatedir}/lib/asterisk/sounds/digits/400.gsm
-%{_localstatedir}/lib/asterisk/sounds/digits/500.gsm
-%{_localstatedir}/lib/asterisk/sounds/digits/600.gsm
-%{_localstatedir}/lib/asterisk/sounds/digits/700.gsm
-%{_localstatedir}/lib/asterisk/sounds/digits/800.gsm
-%{_localstatedir}/lib/asterisk/sounds/digits/900.gsm
-%{_localstatedir}/lib/asterisk/sounds/digits/afternoon.gsm
-%{_localstatedir}/lib/asterisk/sounds/digits/and.gsm
-%{_localstatedir}/lib/asterisk/sounds/digits/at_s.gsm
-%{_localstatedir}/lib/asterisk/sounds/digits/es-de.gsm
-%{_localstatedir}/lib/asterisk/sounds/digits/millions.gsm
+%{_localstatedir}/lib/asterisk/sounds/digits/es
+%{_localstatedir}/lib/asterisk/sounds/letters/es
+%{_localstatedir}/lib/asterisk/sounds/phonetic/es
 
 %files sounds-fr
 %defattr(-,root,root,-)
 %{_localstatedir}/lib/asterisk/sounds/fr
 
 %changelog
+* Thu Oct 22 2007 Edgar Landivar <e_landivar@palosanto.com>1.4.13-4
+- Fixing issue with spanish sounds
+- Adding a logrotate script
+- Support for chan_unicall
+
+* Thu Oct 18 2007 Edgar Landivar <e_landivar@palosanto.com>
+- Update to 1.4.13
+
 * Mon Oct  8 2007 Edgar Landivar <e_landivar@palosanto.com>
 - Update to 1.4.12.1
 

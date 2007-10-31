@@ -1,15 +1,15 @@
 Summary: Elastix is a Web based software to administrate a PBX based in open source programs
 Name: elastix
 Version: 0.9.0
-Release: 1
+Release: 7 
 License: GPL
 Group: Applications/System
-Source: elastix-0.9-0.tar.gz
+Source: elastix-0.9.0-7.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
 Prereq: /etc/sudoers
 Prereq: httpd, sudo, php, php-sqlite3, php-gd, iaxmodem, hylafax, asterisk, mysql-server, ntp, php-pear, postfix
-Prereq: freePBX >= 2.2.2-4
+Prereq: freePBX >= 2.3
 
 %description
 Elastix is a Web based software to administrate a PBX based in open source programs
@@ -173,6 +173,20 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Tue Oct  9 2007 Edgar Landivar <elandivar@palosanto.com> 0.9.0.1
+* Tue Oct 30 2007 Bruno Macias   <bmacias@palosanto.com> 0.9.0-7
+  - Add new menus in the help link package elastix-0.9.0-7.
+* Mon Oct 29 2007 Bruno Macias   <bmacias@palosanto.com> 0.9.0-6
+  - Changes in freePBX version 2.3 and inteface web freePBX is dual operation correction error.
+* Fri Oct 26 2007 Bruno Macias   <bmacias@palosanto.com> 0.9.0-5
+  - Changes in freePBX version 2.3 and inteface web freePBX is dual operation, standar format the version rpms.
+* Thu Oct 25 2007 Bruno Macias   <bmacias@palosanto.com> 0.9-4
+  - Add Link version Elastix, changes in the module Backup in this version elastix-0.9-4.tar.gz
+* Mon Oct 22 2007 Bruno Macias   <bmacias@palosanto.com> 0.9-3
+  - Add new modules and better funcionality in this version elastix-0.9-3.tar.gz
+* Mon Oct 22 2007 Bruno Macias   <bmacias@palosanto.com> 0.9-2
+  - Add new modules, changes order in menus in this version elastix-0.9-2.tar.gz
+* Wed Oct 19 2007 Bruno Macias   <bmacias@palosanto.com> 0.9-1
+  - Add new modules in this version elastix-0.9-1.tar.gz
+* Tue Oct  9 2007 Edgar Landivar <elandivar@palosanto.com> 0.9.0-1
   - Hylafax changes removed. These changes should be made in the hylafax RPM.
 

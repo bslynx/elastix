@@ -3,8 +3,9 @@
 
 %define rname asterisk-perl
 %define prefix /usr
+%define asteriskver 1.2.17
 %define version 0.09
-%define release 7
+%define release 6
 
 Summary: A perl agi interface module for asterisk
 Name: asterisk-perl
@@ -16,7 +17,9 @@ URL: http://asterisk.gnuinter.net/
 Source0: http://asterisk.gnuinter.net/files/asterisk-perl-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildRequires: perl >= 0:5.80
+BuildRequires: asterisk-devel >= %{asteriskver}
 Requires: perl >= 0:5.80
+Requires: asterisk >= %{asteriskver}
 BuildArch: noarch
 
 %description
@@ -44,13 +47,10 @@ CFLAGS="%{optflags}" %{__perl} Makefile.PL \
 %files
 %defattr(-, root, root, 0755)
 %doc README CHANGES
-%attr(0644,root,root)	%{_mandir}/man3/Asterisk*
-%attr(0644,root,root)	%{perl_vendorlib}/*
+%attr(0444,root,root)	%{_mandir}/man3/Asterisk*
+%attr(0444,root,root)	%{perl_vendorlib}/*
 
 %changelog
-* Thu Mar 22 2007 Tzafrir Cohen <tzafrir.cohen@xorcom.com> - 0.09-7
-- Asterisk is not required (build/runtime). Consider the manager module.
-
 * Thu Mar 22 2007 Laimbock Consulting <asterisk@laimbock.com> - 0.09-6
 - Autobuild: new asterisk version 1.2.17 for (build)requires
 - bump to release 6
