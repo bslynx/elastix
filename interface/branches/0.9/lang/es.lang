@@ -502,6 +502,8 @@ configuraci&oacute;n porque algunos <br> procesos prodr&iacute;an necesitarlos."
 "OpenFire" => "OpenFire",
 "The service Openfire No running" => "El servicio Openfire no esta corriendo",
 "vTigerCRM" => "vTigerCRM",
+"The vTiger installation is almost done. To complete it please" => "Para finalizar la instalación de vTiger haga ",
+"click here" => "click aquí",
 /* Preferences*/
 "Preferences" => "Preferencias",
 

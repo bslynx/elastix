@@ -498,6 +498,8 @@ configuration because some <br> processes could need them.",
 "OpenFire" => "OpenFire",
 "The service Openfire No running" => "The Openfire service is not running",
 "vTigerCRM" => "vTigerCRM",
+"The vTiger installation is almost done. To complete it please" => "The vTiger installation is almost done. To complete it please ",
+"click here" => "click here",
 /* Preferences*/
 "Preferences" => "Preferences",
 
