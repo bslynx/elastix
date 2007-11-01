@@ -31,21 +31,7 @@ include_once("libs/misc.lib.php");
 include_once("configs/default.conf.php");
 load_language();
 
-// Revisar si el openfire esta corriendo
-exec("sudo /sbin/service openfire status", $arrSalida, $var);
-
-$statusOpenfire = true;
-foreach($arrSalida as $linea) {
-    if(ereg("not running", $linea)) {
-        $statusOpenfire = false;
-        break;
-    }
-}
-
-if($statusOpenfire==true) {
-    header("Location: http://".$_GET['IP'].":".$_GET['PORT']);
-} else {
-    $style = "<style type='text/css'>
+$style = "<style type='text/css'>
                 .moduleTitle {
                     padding: 4px 4px 4px 4px;
                     color: #444;
@@ -57,13 +43,48 @@ if($statusOpenfire==true) {
                     FONT-WEIGHT: bold;
                 }
               </style>";
-    $html  = "<table class='table_data' border='0' cellspacing='6' cellpading='6' align='center'  width='100%'>
-                <tr class='moduleTitle'>
-                    <td class='moduleTitle' align='center'>
-                        ".$arrLang['The service Openfire No running']."
-                    </td>
-                </tr>
-             </table>";
-    echo $style.$html;
+
+$tabla_ini = $style."
+              <table class='table_data' border='0' cellspacing='6' cellpading='6' align='center'  width='100%'>
+                    <tr class='moduleTitle'>
+                        <td class='moduleTitle' align='center'>";
+$tabla_fin ="          </td>
+                    </tr>
+              </table>";
+
+
+//PASO 1
+// Revisar si el openfire esta corriendo
+exec("sudo /sbin/service openfire status", $arrSalida, $var);
+$statusOpenfire = 'on';
+foreach($arrSalida as $linea) { //obtengo el estado de openfire
+    if(ereg("not running", $linea)) {
+        $statusOpenfire = 'off';
+        break;
+    }
+}
+
+//PASO 2
+if($statusOpenfire == 'off' && $_GET['accion']=='activar') { //no activo openfire y decide activarlo
+    exec("sudo /sbin/chkconfig --level 2345 openfire on",$arrSalida, $var);
+    if($var==0){
+        exec("sudo /sbin/service openfire start",$arrSalida,$var);
+        if($var==0){
+            sleep(10);
+            header("Location: http://".$_GET['IP'].":".$_GET['PORT']);
+        }
+        else{
+            echo $tabla_ini.$arrLang['ERROR'].$tabla_fin;
+        }
+    }
+    else{
+        echo $tabla_ini.$arrLang['ERROR'].$tabla_fin;
+    }
+}
+else if($statusOpenfire == 'off') { 
+    echo $tabla_ini.$arrLang['The service Openfire No running']."<a href='openfireWrapper.php?IP={$_GET['IP']}&PORT={$_GET['PORT']}&accion=activar'>".$arrLang['click here']."</a>".$tabla_fin;
+}
+else{ //esta activo openfire
+    header("Location: http://".$_GET['IP'].":".$_GET['PORT']);
 }
 ?>

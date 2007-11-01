@@ -469,7 +469,7 @@ $arrLang=array(
 /*Module IM*/
 "IM" => "IM",
 "OpenFire" => "OpenFire",
-"The service Openfire No running" => "The Openfire service is not running",
+"The service Openfire No running" => "The Openfire service is not active at this moment. If you want to activate it please ",
 "vTigerCRM" => "vTigerCRM",
 "The vTiger installation is almost done. To complete it please" => "The vTiger installation is almost done. To complete it please ",
 "click here" => "click here",

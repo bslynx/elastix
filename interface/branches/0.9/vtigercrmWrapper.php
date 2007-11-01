@@ -35,22 +35,7 @@ $usuario = "root";
 $clave   = "eLaStIx.2oo7";
 load_language();
 
-$pDB = new paloDB("mysql://$usuario:$clave@localhost/information_schema");
-if(!empty($pDB->errMsg)) {
-    echo "ERROR DE DB: $pDB->errMsg <br>";
-}
-
-$sql = "select count(*) existe from tables where table_schema='vtigercrm503'";
-$result = $pDB->getFirstRowQuery($sql,true);
-
-if(is_array($result) && count($result) > 0){
-    if($result['existe']==0 && $_GET['accion']=='crear'){ // no existe la base completamente 
-        // ejecutar comanado para crear la base de datos.
-        exec("/usr/bin/mysql --user=$usuario --password=$clave < /var/www/html/schema.vtiger", $arrSalida, $var); 
-        header("Location: http://".$_GET['IP'].$_GET['URL']);
-    }
-    else if($result['existe']==0){
-        $style = "<style type='text/css'>
+$style = "<style type='text/css'>
                 .moduleTitle {
                     padding: 4px 4px 4px 4px;
                     color: #444;
@@ -62,17 +47,47 @@ if(is_array($result) && count($result) > 0){
                     FONT-WEIGHT: bold;
                 }
               </style>";
-        $html  = "<table class='table_data' border='0' cellspacing='6' cellpading='6' align='center'  width='100%'>
+
+$tabla_ini = $style."
+              <table class='table_data' border='0' cellspacing='6' cellpading='6' align='center'  width='100%'>
                     <tr class='moduleTitle'>
-                        <td class='moduleTitle' align='center'>
-                            ".$arrLang['The vTiger installation is almost done. To complete it please']."<a href='vtigercrmWrapper.php?IP={$_GET['IP']}&URL={$_GET['URL']}&accion=crear'>".$arrLang['click here']."</a>
-                        </td>
+                        <td class='moduleTitle' align='center'>";
+$tabla_fin ="          </td>
                     </tr>
-                </table>";
-        echo $style.$html;
+              </table>";
+
+
+
+//PASO 1
+$pDB = new paloDB("mysql://$usuario:$clave@localhost/information_schema");
+if(!empty($pDB->errMsg)) {
+    echo $tabla_ini.$arrLang['ERROR']." DB: ".$pDB->errMsg.$tabla_fin;
+}
+
+$sql = "select count(*) existe from tables where table_schema='vtigercrm503'";
+$result = $pDB->getFirstRowQuery($sql,true);
+
+//PASO 2
+if(is_array($result) && count($result) > 0){
+    if($result['existe']==0 && $_GET['accion']=='crear'){ // no existe la base completamente 
+        // ejecutar comanado para crear la base de datos.
+        exec("/usr/bin/mysql --user=$usuario --password=$clave < /var/www/html/schema.vtiger", $arrSalida, $var); 
+        if($var==0){
+            sleep(5);
+            header("Location: http://".$_GET['IP'].$_GET['URL']);
+        }
+        else{
+            echo $tabla_ini.$arrLang['ERROR'].$tabla_fin;
+        }
+    }
+    else if($result['existe']==0){
+        echo $tabla_ini.$arrLang['The vTiger installation is almost done. To complete it please']."<a href='vtigercrmWrapper.php?IP={$_GET['IP']}&URL={$_GET['URL']}&accion=crear'>".$arrLang['click here']."</a>".$tabla_fin;
     }
     else{  //si existe la base de datos
         header("Location: http://".$_GET['IP'].$_GET['URL']);
     }
+}
+else{
+    echo $tabla_ini.$arrLang['ERROR']." DB: ".$pDB->errMsg.$tabla_fin;
 }
 ?>
