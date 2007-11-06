@@ -132,6 +132,18 @@ function _moduleContent(&$smarty, $module_name)
     // Requiring header.php
     include('/var/www/html/admin/header.php');
 
+    // The next block is to fix a music on hold issue
+    $category = strtr(isset($_REQUEST['category'])?$_REQUEST['category']:''," ./\"\'\`", "------");
+    if ($category == null) $category = 'default';
+    $display='music';
+
+    if ($category == "default")
+        $path_to_dir = $asterisk_conf['astvarlibdir']."/mohmp3"; //path to directory u want to read.
+    else
+        $path_to_dir = $asterisk_conf['astvarlibdir']."/mohmp3/$category"; //path to directory u want to read.
+
+    $GLOBALS['path_to_dir'] = $path_to_dir;
+
     /*************************************************************/
     /* Fin del bloque                                            */
     /*************************************************************/
