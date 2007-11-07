@@ -135,7 +135,6 @@ function _moduleContent(&$smarty, $module_name)
     // The next block is to fix a music on hold issue
     $category = strtr(isset($_REQUEST['category'])?$_REQUEST['category']:''," ./\"\'\`", "------");
     if ($category == null) $category = 'default';
-    $display='music';
 
     if ($category == "default")
         $path_to_dir = $asterisk_conf['astvarlibdir']."/mohmp3"; //path to directory u want to read.
