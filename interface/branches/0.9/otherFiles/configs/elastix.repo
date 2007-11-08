@@ -9,6 +9,6 @@ exclude=elastix-mysqldbdata
 name=Elastix-Beta RPM Repository for CentOS
 baseurl=http://repo.elastix.org/centos/$releasever/updates/beta/RPMS/
 gpgcheck=0
-enabled=1
+enabled=0
 exclude=elastix-mysqldbdata
 

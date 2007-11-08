@@ -232,6 +232,7 @@ $arrLang=array(
 "Calling Cards"=>"Cartões de Chamadas",
 "Softphones"=>"Softphones",
 "Fax Utilities"=>"Utilitários de FAX",
+"Instant Messaging" => "Instant Messaging",
 "Menu Administrator"=>"Menu do Administrador" ,
 //
 "Channels Usage Report"=>"Channels Usage Report",

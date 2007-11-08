@@ -228,6 +228,7 @@ $arrLang=array(
 "Calling Cards"=>"콜링카드",
 "Softphones"=>"소프트폰",
 "Fax Utilities"=>"팩스 운용",
+"Instant Messaging" => "Instant Messaging",
 "Menu Administrator"=>"관리자 메뉴",
 //
 "Channels Usage Report"=>"Channels Usage Report",

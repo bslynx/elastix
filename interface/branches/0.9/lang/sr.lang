@@ -225,6 +225,7 @@ $arrLang=array(
 "Calling Cards"=>"Calling Cards",
 "Softphones"=>"Softverski telefoni",
 "Fax Utilities"=>"Faks dodaci",
+"Instant Messaging" => "Instant Messaging",
 "Menu Administrator"=>"Administratorski meni",
 "Channels Usage Report"=>"Izvestaj o iskoriscenosti kanala",
 "Default Rate Configuration "=>"Konfiguracija standardne tarife",
