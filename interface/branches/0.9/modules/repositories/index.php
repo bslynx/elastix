@@ -52,8 +52,16 @@ function listRepositories($smarty, $module_name, $local_templates_dir,$arrConfig
 
     global $arrLang;
     $oRepositories = new PaloSantoRepositories();
+    $arrReposActivos=array();
+    if(isset($_POST['submit_aceptar'])){
+        foreach($_POST as $key => $value){
+            if(substr($key,0,5)=='repo-')
+                $arrReposActivos[]=substr($key,5);
+        }
+        $oRepositories->setRepositorios($arrConfig['ruta_repos'],$arrReposActivos);
+    }
+
     $arrRepositorios = $oRepositories->getRepositorios($arrConfig['ruta_repos']);
-    
     $limit  = 50;
     $total  = count($arrRepositorios); 
     $oGrid  = new paloSantoGrid($smarty);
@@ -61,16 +69,15 @@ function listRepositories($smarty, $module_name, $local_templates_dir,$arrConfig
     $end    = ($offset+$limit)<=$total ? $offset+$limit : $total;
     $smarty->assign("url","?menu=".$module_name);
     $arrData = array();
+    $version = $oRepositories->obtenerVersionDistro();
     if (is_array($arrRepositorios)) {
         for($i=$offset;$i<$end;$i++){
             $activo = "";
             if($arrRepositorios[$i]['activo'])
                 $activo="checked='checked'";
              $arrData[] = array(
-                            "<input $activo id='".$arrRepositorios[$i]['id']."' name='".$arrRepositorios[$i]['name']."' type='checkbox'>",
-                            /*$arrRepositorios[$i]['id'],*/
-                            str_replace("\$releasever"," ",$arrRepositorios[$i]['name']),
-                            /*$arrRepositorios[$i]['file']*/);
+                            "<input $activo name='repo-".$arrRepositorios[$i]['id']."' type='checkbox'>",
+                            str_replace("\$releasever",$version,$arrRepositorios[$i]['name']),);
         }
     }
 
@@ -85,8 +92,10 @@ function listRepositories($smarty, $module_name, $local_templates_dir,$arrConfig
                             1 => array("name"      => $arrLang["Name"], 
                                        "property1" => "")));
 
-
-    $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
+    $oGrid->showFilter( "<input type='submit' name='submit_aceptar' value='{$arrLang['Activate']}' class='button' />");
+    $contenidoModulo  = "<form style='margin-bottom:0;' method='POST' action='?menu=$module_name'>";
+    $contenidoModulo .= $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
+    $contenidoModulo .= "</form>";
     return $contenidoModulo;
 }
 ?>
