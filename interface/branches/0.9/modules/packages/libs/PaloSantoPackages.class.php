@@ -109,19 +109,22 @@ class PaloSantoPackages
 
     function getPaquetesDelRepositorio($ruta,$repositorio,$filtro)
     {
-        $cadena_dsn = "sqlite3:///$ruta"."$repositorio"."/primary.xml.gz.sqlite";
-       // se conecta a la base
-        $pDB = new paloDB($cadena_dsn);
-        if(!empty($pDB->errMsg)) {
-            $this->errMsg = $arrLang["Error when connecting to database"]."<br/>".$pDB->errMsg;
-            return array();
-        }
-        $sQuery = "select name,summary,version,release,'$repositorio' repositorio from packages $filtro";
-        
-        $arr_paquetes = $pDB->fetchTable($sQuery,true);
-        $pDB->disconnect();
-        if (is_array($arr_paquetes) && count($arr_paquetes) > 0) {
-            return $arr_paquetes;
+        if(file_exists($ruta.$repositorio."/primary.xml.gz.sqlite")){
+            $cadena_dsn = "sqlite3:///$ruta"."$repositorio"."/primary.xml.gz.sqlite";
+        // se conecta a la base
+            $pDB = new paloDB($cadena_dsn);
+            if(!empty($pDB->errMsg)) {
+                $this->errMsg = $arrLang["Error when connecting to database"]."<br/>".$pDB->errMsg;
+                return array();
+            }
+            $sQuery = "select name,summary,version,release,'$repositorio' repositorio from packages $filtro";
+            
+            $arr_paquetes = $pDB->fetchTable($sQuery,true);
+            $pDB->disconnect();
+            if (is_array($arr_paquetes) && count($arr_paquetes) > 0) {
+                return $arr_paquetes;
+            }
+            else return array();
         }
         else return array();
     }
@@ -159,13 +162,19 @@ class PaloSantoPackages
     {
         global $arrLang;
         exec("sudo yum check-update",$respuesta,$retorno);
-         if(is_array($respuesta)){
+
+        if(is_array($respuesta)){
             foreach($respuesta as $key => $linea){
                 //Es algo no muy concreto si hay alguna manera de saber las posibles salidas hay que cambiar esta condicion para buscar el error
-                if(ereg("^(\[Errno [[:digit:]]{1,}\])",$linea,$reg))
+                if(ereg("(\[Errno [[:digit:]]{1,}\])",$linea,$reg))
                     return $linea;
             }
-            return $arrLang["Satisfactory Update"];
+            if($retorno==1) //Error debido a los repositorios de elastix
+                return $arrLang["ERROR"].": url don't open.";
+            else if($retorno==100 || $retorno == 0) //codigo 100 de q hay paquetes para actualizar y 0 que no hay. (ver man yum )
+                return $arrLang["Satisfactory Update"];
+            else //por si acaso se presenta algo desconocido
+                return "";
         } 
     }
 
