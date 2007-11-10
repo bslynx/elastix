@@ -100,58 +100,35 @@
 	
 	// enviar_mail_adjunto ()
 	function enviar_mail_adjunto(
-                $destinatario="test@prueba.com",
-                $titulo="Prueba de envio de adjunto",
-                $contenido="Hola a todos",
-                $remite="bmacias@palosanto.com",
-                $remitente="Bruno Macias",
-                $archivo="/tmp/fax.pdf",
-                $archivo_name="fax.pdf"
+                $destinatario="test@example.com",
+                $titulo="Prueba de envio de fax",
+                $contenido="Prueba de envio de fax",
+                $remite="test@example.com",
+                $remitente="Fax",
+                $archivo="/path/archivo.pdf",
+                $archivo_name="archivo.pdf"
             )
         {
-            $un_enter="\r\n";
-            $dos_enter="\r\n\r\n";
+
+            require_once("phpmailer/class.phpmailer.php");
+	    $mail = new PHPMailer();
+
+            $mail->From = $remite;
+            $mail->FromName = $remitente;
+            $mail->AddAddress($destinatario);
+            $mail->WordWrap = 50;                                 // set word wrap to 50 characters
+            $mail->AddAttachment($archivo);
+            $mail->IsHTML(false);                                  // set email format to TEXT
             
-            $mensaje="<html><head></head><body bgcolor=\"#0000ff\">";
-            $mensaje .="<font face=\"Arial\" size=6>$contenido</font>";
-            $mensaje .="</body></html>";   
+            $mail->Subject = $titulo;
+            $mail->Body    = $contenido;
+            $mail->AltBody = "This is the body in plain text for non-HTML mail clients";
             
-            $separador = "_separador_de_trozos_".md5 (uniqid (rand())); 
-            
-            /*$cabecera  = "Date: ".date("l j F Y, G:i").$un_enter; */
-            $cabecera  = "MIME-Version: 1.0".$un_enter; 
-            $cabecera .= "From: ".$remitente."<".$remite.">".$un_enter;
-            $cabecera .= "Return-path: ". $remite.$un_enter;
-            $cabecera .= "Reply-To: ".$remite.$un_enter;
-            $cabecera .= "X-Mailer: PHP/". phpversion().$un_enter;
-            $cabecera .= "Content-Type: multipart/mixed;".$un_enter; 
-            $cabecera .= " boundary=$separador".$dos_enter; 
-            
-            // Parte primera -Mensaje en formato HTML 
-            $texto ="--$separador".$un_enter; 
-            $texto .="Content-Type: text/html; charset=\"ISO-8859-1\"".$un_enter; 
-            $texto .="Content-Transfer-Encoding: 7bit".$dos_enter; 
-            $texto .= $mensaje;
-            $adj1 = $un_enter."--$separador".$un_enter; 
-            
-            // Parte segunda -Fichero adjunto nº 1 
-            $adj1 .="Content-Type: application/pdf; name=\"$archivo\"".$un_enter;  
-            $adj1 .="Content-Disposition: attachment; filename=\"$archivo_name\"".$un_enter;
-            $adj1 .="Content-Transfer-Encoding: base64".$dos_enter; 
-            
-            # lectura  del fichero adjunto  
-            $fp = fopen($archivo, "r"); 
-            $buff = fread($fp, filesize($archivo)); 
-            fclose($fp); 
-            # codificación del fichero adjunto  
-            $adj1 .=chunk_split(base64_encode($buff)); 
-            
-            $mensaje=$texto.$adj1; 
             // envio del mensaje
-            if(mail($destinatario, $titulo, $mensaje,$cabecera)){
+            if($mail->Send())
                 faxes_log ("enviar_mail_adjunto> SE envio correctamenete el mail ".$titulo);
-            }
-            else faxes_log ("enviar_mail_adjunto> Error al enviar el mail ".$titulo);
+            else 
+                faxes_log ("enviar_mail_adjunto> Error al enviar el mail ".$titulo);
         }
 	
 	// -- convert tiff to pdf and check for corruption

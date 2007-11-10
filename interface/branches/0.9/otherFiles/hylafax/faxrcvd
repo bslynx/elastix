@@ -58,8 +58,8 @@
     $contenido="Fax ".$name_pdf;
     /*$remite=$company_name;
     $remitente=$company_name;*/
-    $remite = "Fax Adjunto";
-    $remitente = "Fax Adjunto";
+    $remite = "elastix@example.com";
+    $remitente = "Fax Elastix";
     $archivo=$pdffile;
     $archivo_name=$name_pdf;
     enviar_mail_adjunto($destinatario,$titulo,$contenido,$remite,$remitente,$archivo,$archivo_name);
