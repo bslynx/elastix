@@ -39,8 +39,7 @@ CREATE TABLE fax
     id INTEGER PRIMARY KEY, 
     name varchar(60), 
     port varchar(60), 
-    secret varchar(20),
-    ttyIAX VARCHAR(100)
+    secret varchar(20)
 );
 CREATE TABLE info_fax_recvq
 (
@@ -234,10 +233,9 @@ class paloFax {
     function _createFaxIntoDB($name, $extension, $secret, $email, $devId, $clidname, $clidnumber, $port)
     {
         $errMsg="";
-        $ttyIAX = "ttyIAX".$devId;
         $dateNow=date("Y-m-d H:i:s");
-        $query  = "INSERT INTO fax (name, ttyIAX, extension, secret, clid_name, clid_number, dev_id, date_creation, email, port) ";
-        $query .= "values ('$name','$ttyIAX','$extension', '$secret', '$clidname', '$clidnumber', '$devId', '$dateNow', '$email', '$port')";
+        $query  = "INSERT INTO fax (name, extension, secret, clid_name, clid_number, dev_id, date_creation, email, port) ";
+        $query .= "values ('$name','$extension', '$secret', '$clidname', '$clidnumber', '$devId', '$dateNow', '$email', '$port')";
         $bExito = $this->_db->genQuery($query);
         if (!$bExito) {
             $this->errMsg = $this->_db->errMsg;
@@ -626,8 +624,16 @@ class paloFax {
     function _editFaxInDB($idFax, $name, $extension, $secret, $email, $devId, $clidname, $clidnumber, $port) {
         $errMsg="";
         if ($db = sqlite3_open($this->rutaDB)) {
-            $query  = "REPLACE INTO fax (id, name, ttyIAX, extension, secret, clid_name, clid_number, dev_id, date_creation, email, port)  ".
-            $query .= "VALUES ($idFax,'$name','ttyIAX$devId' ,'$extension', '$secret', '$clidname', '$clidnumber', '$devId', '$dateNow', '$email', '$port')";
+            $query  = "UPDATE fax set 
+                            name='$name', 
+                            extension='$extension',
+                            secret='$secret',
+                            clid_name='$clidname',
+                            clid_number='$clidnumber',
+                            dev_id='$devId',
+                            email='$email',
+                            port='$port' 
+                        where id=$idFax;";
             $bExito = $this->_db->genQuery($query);
         	if (!$bExito) {
             	$this->errMsg = $this->_db->errMsg;

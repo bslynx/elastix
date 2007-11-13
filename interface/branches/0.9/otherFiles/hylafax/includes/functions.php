@@ -30,10 +30,11 @@
 
 	function obtener_id_destiny($modemdev)
 	{
-		$id = -1;
 		global $db_object;
-		$sql= "select id from fax where ttyIAX=?";
-		$recordset =& $db_object->query($sql, array($modemdev));
+                $id = -1;
+                $dev_id = str_replace("ttyIAX","",$modemdev);
+		$sql= "select id from fax where dev_id=?";
+		$recordset =& $db_object->query($sql, array($dev_id));
 		while($tupla = $recordset->fetchRow(DB_FETCHMODE_OBJECT)){ 
 			$id = $tupla->id;
 		}
@@ -43,8 +44,9 @@
         function obtener_mail_destiny($modemdev)
 	{
 		global $db_object;
-		$sql= "select email from fax where ttyIAX=?";
-		$recordset =& $db_object->query($sql, array($modemdev));
+                $dev_id = str_replace("ttyIAX","",$modemdev);
+		$sql= "select email from fax where dev_id=?";
+		$recordset =& $db_object->query($sql, array($dev_id));
 		while ($tupla = $recordset->fetchRow(DB_FETCHMODE_OBJECT)) 
         		$id = $tupla->email;
 		return $id;
