@@ -66,7 +66,12 @@ function _moduleContent(&$smarty, $module_name)
     
     $type = isset($_REQUEST['type'])?$_REQUEST['type']:'setup';
     // Ojo, modifique ligeramente la sgte. linea para que la opcion por omision sea extensions
-    $display = isset($_REQUEST['display'])?$_REQUEST['display']:'extensions';
+    if(isset($_REQUEST['display'])) {
+        $display = $_REQUEST['display'];
+    } else {
+        $display = 'extensions';
+        $_REQUEST['display'] = 'extensions';
+    }
     $extdisplay = isset($_REQUEST['extdisplay'])?$_REQUEST['extdisplay']:null;
     $skip = isset($_REQUEST['skip'])?$_REQUEST['skip']:0;
     $action = isset($_REQUEST['action'])?$_REQUEST['action']:null;
