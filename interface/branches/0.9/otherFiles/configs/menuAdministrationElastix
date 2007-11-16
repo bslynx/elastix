@@ -19,10 +19,10 @@ modificadoPorUsuarioFaxDb=$?
 
 mv $pathDB/*.rpmnew $pathTmpDB/
 
-pre_elastix_version=$1
-echo "pre version elastix %{pre_elastix_version}" 
+elastix_version=$1
+echo "pre version elastix $elastix_version" 
 
-if [ "%{pre_elastix_version}" \< "0.9" ]; then
+if [ "$elastix_version" \< "0.9" ]; then
     #Update only menu.db and acl.db (tables acl_resource, acl_group)
     #paso 1: repaldo de bases
         cp $pathDB/menu.db $pathDB/menu_old.db
