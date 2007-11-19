@@ -466,7 +466,12 @@ function _moduleContent(&$smarty, $module_name)
     ob_end_clean();
 
     if(check_reload_needed()) {
-        $salida .= "<table border=0 cellpadding=2 cellspacing=0 align='center' width='100%'><tr bgcolor='#f6bbbb'><td align='center'><a href='".$_SERVER['REQUEST_URI']."&handler=reload'>Apply Configuration Changes Here</a></td></tr></table>";
+        // Reviso si el REQUEST_URI tiene ya variables tipo get. Solo busco por un signo de ?
+        $pos=strpos($_SERVER['REQUEST_URI'], '?');
+        if($pos>0) $URL_RELOAD = $_SERVER['REQUEST_URI']."&handler=reload";
+        else $URL_RELOAD = $_SERVER['REQUEST_URI']."?handler=reload";
+
+        $salida .= "<table border=0 cellpadding=2 cellspacing=0 align='center' width='100%'><tr bgcolor='#f6bbbb'><td align='center'><a href='$URL_RELOAD'>Apply Configuration Changes Here</a></td></tr></table>";
     }
 
     $smarty->assign("htmlFPBX", $htmlFPBX);
