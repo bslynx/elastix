@@ -926,5 +926,23 @@ class paloACL {
         }
         return $id_resource;
     }
+
+    /**
+     * Procedimiento para saber si un usuario (login) pertenece al grupo administrador
+     *
+     * @param string   $username  Username del usuario
+     *
+     * @return boolean true or false 
+     */
+    function isUserAdministratorGroup($username)
+    {
+        $is=false;
+        $idUser = $this->getIdUser($username);
+        if($idUser){
+            $arrGroup = $this->getMembership($idUser);
+            $is = array_key_exists('administrator',$arrGroup);
+        }
+        return $is;
+    }
 }
 ?>

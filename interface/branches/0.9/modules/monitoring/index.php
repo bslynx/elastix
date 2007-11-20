@@ -67,6 +67,11 @@ function _moduleContent(&$smarty, $module_name)
     $llamadas = array();
     $inicio= $fin = $total = 0;
     $extension = $pACL->getUserExtension($_SESSION['elastix_user']);
+    $esAdministrador = $pACL->isUserAdministratorGroup($_SESSION['elastix_user']);
+    $tmpExtension=$extension;
+    if($esAdministrador)
+        $extension="[[:digit:]]+";
+
     //filtro de fechas
     $smarty->assign("menu","monitoring");
     $smarty->assign("Filter",$arrLang['Filter']);
@@ -124,7 +129,7 @@ function _moduleContent(&$smarty, $module_name)
 
     //si tiene extension consulto sino, muestro un mensaje de que no tiene asociada extension
 
-    if (!is_null($extension)){
+    if (!is_null($extension) && $extension!=""){
         $path = "/var/spool/asterisk/monitor";
         $archivos = array();
 
@@ -142,6 +147,7 @@ function _moduleContent(&$smarty, $module_name)
             // No vale la ruta
         }
         rsort($archivos);
+        
         foreach($archivos as $archivo) {
             //tengo que obtener los archivos que pertenezcan a la extension
            //obtener los archivos con formato auto-timestamp-extension... grabacion ONDEMAND
@@ -227,7 +233,18 @@ function _moduleContent(&$smarty, $module_name)
                  $llamada['type'] = "auto - outgoing";
                  $llamadas[strtotime($llamada['calldate'])]=$llamada;
              }
+             // El caso para cuando a la extension se le configuró sus records incoming or outgoing a always 
+             if (ereg("[[:digit:]]+\-[[:digit:]]+\-([[:digit:]]+.[[:digit:]]+).[wav|WAV|gsm]",$archivo,$regs)){
+            	 $unique_id=$regs[1];
+            	 $llamada=obtenerCDR_with_uniqueid($pDBCDR,$unique_id);
+            	 $llamada['archivo'] = $archivo;
+            	 $llamada['type'] = "always";
+                 if($extension==$llamada['src'] || $extension==$llamada['dst'] || $extension=="[[:digit:]]+") //se se cumple esto es porque es el usuario solo puede ver sus llamadas y la otra es porque es administrador
+                    $llamadas[strtotime($llamada['calldate'])]=$llamada;
+             }
         }
+        if($tmpExtension=="" || is_null($tmpExtension))//validacion solo para usuarios del grupo administrator
+            $smarty->assign("mb_message", "<b>".$arrLang["You don't have extension number associated with user"]."</b>");
         rsort($llamadas);
         foreach ($llamadas as $llamada){
             $fecha = date("Y-m-d",strtotime($llamada['calldate']));

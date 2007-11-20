@@ -27,7 +27,7 @@ include_once "$gsRutaBase/configs/default.conf.php";
 require_once "$gsRutaBase/libs/smarty/libs/Smarty.class.php";
 $smarty = new Smarty();
 
-$smarty->template_dir = "$gsRutaBase/themes/" . $arrConf['theme'];
+$smarty->template_dir = "$gsRutaBase/themes/" . $arrConf['mainTheme'];
 $smarty->compile_dir  = "$gsRutaBase/var/templates_c/";
 $smarty->config_dir   = "$gsRutaBase/configs/";
 $smarty->cache_dir    = "$gsRutaBase/var/cache/";
