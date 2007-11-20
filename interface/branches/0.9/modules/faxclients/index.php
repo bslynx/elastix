@@ -47,6 +47,7 @@ function _moduleContent(&$smarty, $module_name)
     $conf_hosts = "/var/spool/hylafax/etc/hosts.hfaxd";
     $val = new PaloValidar();
     if(isset($_POST['update_hosts']) ) {
+        $arrHostsFinal = array();
         $in_lista_hosts = trim($_POST['lista_hosts']);
         if(!empty($in_lista_hosts)) {
             $arrHosts = explode("\n", $in_lista_hosts);
@@ -55,8 +56,15 @@ function _moduleContent(&$smarty, $module_name)
                 foreach ($arrHosts as $ip_host) {
                     //validar
                     $ip_host = trim($ip_host);
-                    if ($ip_host!='localhost')
-                    $val->validar("$arrLang[IP] $ip_host", $ip_host, "ip");
+                    if ($ip_host!='localhost'){
+                        if($val->validar("$arrLang[IP] $ip_host", $ip_host, "ip"))
+                            $arrHostsFinal[]=$ip_host;
+                        else
+                            $bGuardar=FALSE;
+                    }
+                    else{
+                        $arrHostsFinal[]=$ip_host;
+                    }
                 }
             } else {
                 $smarty->assign("mb_message", $arrLang["No IP entered, you must keep at least the IP 127.0.0.1"]);
@@ -76,20 +84,24 @@ function _moduleContent(&$smarty, $module_name)
             $smarty->assign("mb_message", $arrLang["Validation Error"]."<br><br>$msgErrorVal");
             $bGuardar=FALSE;
         } 
+
         if($bGuardar) {
             // Si no hay errores de validacion entonces ingreso las redes al archivo de host
             if(file_exists($conf_hosts)) {
                 exec("sudo -u root chown asterisk.asterisk $conf_hosts");
-                if($fh = @fopen($conf_hosts, "w")) {
-                    if(fwrite($fh, "$in_lista_hosts\n")) {
+                if($fh = fopen($conf_hosts, "w")){
+                    if(is_array($arrHostsFinal) && count($arrHostsFinal) > 0){
+                        foreach($arrHostsFinal as $key => $line){
+                            fputs($fh,$line."\n");
+                        }
                         $smarty->assign("mb_message", $arrLang["Configuration updated successfully"]);
-                    } else {
-                        $smarty->assign("mb_message", $arrLang["Write error when writing the new configuration."]);
                     }
-                    fclose($fh);
-                } else {
-                    $smarty->assign("mb_message", $arrLang["Write error when writing the new configuration."]);
+                    else
+                        $smarty->assign("mb_message", $arrLang["Write error when writing the new configuration."]);
                 }
+                else
+                    $smarty->assign("mb_message", $arrLang["Write error when writing the new configuration."]);
+                fclose($fh);
                 exec("sudo -u root chown uucp.uucp $conf_hosts");
             }
         }
