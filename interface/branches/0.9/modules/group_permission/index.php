@@ -59,12 +59,21 @@ function _moduleContent(&$smarty, $module_name)
     }
     $contenidoModulo='';
     $arrResources=$pACL->getResources();
-   // $arrGrupos=$pACL->getGroups();   
+
+    $arrGruposACL=$pACL->getGroups();
+    for($i=0; $i<count($arrGruposACL); $i++)
+    {
+        $arrGrupos[$arrGruposACL[$i][0]] = $arrGruposACL[$i][1];
+    }
+
     //obtener valor de grupo 
     $idGroup=(isset($_POST['group']))?$_POST['group']:1;
-    $arrGrupos=array(1 => "Administrator",
+
+    /*$arrGrupos=array(1 => "Administrator",
                      2 => "Operator",
                      3 => "Extension User");
+*/
+
     if (!isset($_POST['group'])) $_POST['group']=1;
     if(isset($_POST['apply'])) {
        $arrPermisos=$pACL->getGroupPermissions($idGroup);
