@@ -465,6 +465,18 @@ function _moduleContent(&$smarty, $module_name)
     $htmlFPBX .= @ob_get_contents();
     ob_end_clean();
 
+    // Aqui reviso si hay modulos deshabilitados
+    $modulos_desabilitados=0;
+    foreach($active_modules as $modulo) {
+        if($modulo['status']=='1') {
+            $modulos_desabilitados=1;
+        }
+    }
+
+    if($modulos_desabilitados==1) {
+        $salida .= "<table border=0 cellpadding=2 cellspacing=0 align='center' width='100%'><tr bgcolor='#cccccc'><td align='center'>There is at least one freePBX module that has been disabled. Please go to the unembedded freePBX option and update this module(s). Otherwise unexpected things could happen with your PBX configuration</td></tr></table>";
+    }
+
     if(check_reload_needed()) {
         // Reviso si el REQUEST_URI tiene ya variables tipo get. Solo busco por un signo de ?
         $pos=strpos($_SERVER['REQUEST_URI'], '?');
