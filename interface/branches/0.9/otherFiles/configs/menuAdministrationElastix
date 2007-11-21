@@ -39,8 +39,17 @@ if [ "$elastix_version" \< "0.9" ]; then
             sqlite3 $pathDB/menu.db "delete from menu where id='outgoingcalls';"
             sqlite3 $pathDB/menu.db "delete from menu where id='incomingcalls';"
             sqlite3 $pathDB/menu.db "delete from menu where id='menuadmin';"
+            sqlite3 $pathDB/menu.db "delete from menu where id='backup';"
+            sqlite3 $pathDB/menu.db "delete from menu where id='restore';"
+            sqlite3 $pathDB/menu.db "delete from menu where id='backuplist';"
             sqlite3 $pathDB/acl.db  "delete from acl_group_permission where id_resource=(select id from acl_resource where name='freepbx');"
             sqlite3 $pathDB/acl.db  "delete from acl_resource where name='freepbx';"
+            sqlite3 $pathDB/acl.db  "delete from acl_group_permission where id_resource=(select id from acl_resource where name='backup');"
+            sqlite3 $pathDB/acl.db  "delete from acl_resource where name='backup';"
+            sqlite3 $pathDB/acl.db  "delete from acl_group_permission where id_resource=(select id from acl_resource where name='restore');"
+            sqlite3 $pathDB/acl.db  "delete from acl_resource where name='restore';"
+            sqlite3 $pathDB/acl.db  "delete from acl_group_permission where id_resource=(select id from acl_resource where name='backuplist');"
+            sqlite3 $pathDB/acl.db  "delete from acl_resource where name='backuplist';"
             echo "End step 2, delete menus olds"
         
         #paso 3: Insertar menus creados por usuarios
