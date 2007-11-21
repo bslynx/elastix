@@ -31,17 +31,29 @@ if [ "$elastix_version" \< "0.9" ]; then
     if [ $modificadoPorUsuarioMenuDb -eq 0 ]; then
         #paso 2: elimino menus viejos
             sqlite3 $pathDB/menu.db "delete from menu where id='freepbx';"
+            echo "delete old menu freepbx." ;
             sqlite3 $pathDB/menu.db "delete from menu where id='poper';"
+            echo "delete old menu poper." ;
             sqlite3 $pathDB/menu.db "delete from menu where id='recordings';"
+            echo "delete old menu recordings." ;
             sqlite3 $pathDB/menu.db "delete from menu where id='voicemails';"
+            echo "delete old menu voicemails." ;
             sqlite3 $pathDB/menu.db "delete from menu where id='developer';"
+            echo "delete old menu developer." ;
             sqlite3 $pathDB/menu.db "delete from menu where id='ari';"
+            echo "delete old menu ari." ;
             sqlite3 $pathDB/menu.db "delete from menu where id='outgoingcalls';"
+            echo "delete old menu outgoingcalls." ;
             sqlite3 $pathDB/menu.db "delete from menu where id='incomingcalls';"
+            echo "delete old menu incomingcalls." ;
             sqlite3 $pathDB/menu.db "delete from menu where id='menuadmin';"
+            echo "delete old menu menuadmin." ;
             sqlite3 $pathDB/menu.db "delete from menu where id='backup';"
+            echo "delete old menu backup." ;
             sqlite3 $pathDB/menu.db "delete from menu where id='restore';"
+            echo "delete old menu restore." ;
             sqlite3 $pathDB/menu.db "delete from menu where id='backuplist';"
+            echo "delete old menu backuplist." ;
             sqlite3 $pathDB/acl.db  "delete from acl_group_permission where id_resource=(select id from acl_resource where name='freepbx');"
             sqlite3 $pathDB/acl.db  "delete from acl_resource where name='freepbx';"
             sqlite3 $pathDB/acl.db  "delete from acl_group_permission where id_resource=(select id from acl_resource where name='backup');"
