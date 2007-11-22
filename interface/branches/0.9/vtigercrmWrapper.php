@@ -74,7 +74,7 @@ if(is_array($result) && count($result) > 0){
         exec("/usr/bin/mysql --user=$usuario --password=$clave < /var/www/html/schema.vtiger", $arrSalida, $var); 
         if($var==0){
             sleep(5);
-            header("Location: http://".$_GET['IP'].$_GET['URL']);
+            header("Location: ".$_GET['URL']);
         }
         else{
             echo $tabla_ini.$arrLang['ERROR'].$tabla_fin;
@@ -84,7 +84,7 @@ if(is_array($result) && count($result) > 0){
         echo $tabla_ini.$arrLang['The vTiger installation is almost done. To complete it please']."<a href='vtigercrmWrapper.php?IP={$_GET['IP']}&URL={$_GET['URL']}&accion=crear'>".$arrLang['click here']."</a>".$tabla_fin;
     }
     else{  //si existe la base de datos
-        header("Location: http://".$_GET['IP'].$_GET['URL']);
+        header("Location: ".$_GET['URL']);
     }
 }
 else{

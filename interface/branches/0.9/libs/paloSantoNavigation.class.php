@@ -76,6 +76,7 @@ class paloSantoNavigation {
     function getArrChildrenIds($idMenuSelected)
     {
         $limite=10;
+        $arrResult = array();
         $idSubMenu=$this->getIdFirstSubMenu($idMenuSelected);
         for($i=1; $i<=$limite; $i++) {
             if($idSubMenu==false) {
@@ -119,9 +120,22 @@ class paloSantoNavigation {
             // En este punto $arrIds deberia contener los Ids activos de cada menu para los n niveles
             // Como por ahora manejamos hasta 3 niveles unicamente voy a mapear los 3 primeros elementos
            
-            $currMainMenu=$arrIds[0];
-            $currSubMenu =$arrIds[1];
-            $currSubMenu2=$arrIds[2];
+            $currMainMenu=NULL;
+            $currSubMenu =NULL;
+            $currSubMenu2=NULL;
+
+            if(count($arrIds)==1){
+                $currMainMenu=$arrIds[0];
+            }
+            if(count($arrIds)==2){
+                $currMainMenu=$arrIds[0];
+                $currSubMenu =$arrIds[1];
+            }
+            if(count($arrIds)==3){
+                $currMainMenu=$arrIds[0];
+                $currSubMenu =$arrIds[1];
+                $currSubMenu2=$arrIds[2];
+            }
 
         } else {
             // Is not a valid menu
@@ -219,7 +233,9 @@ class paloSantoNavigation {
             $retVar .= " width=\"100%\"></iframe>";
 */ 
             /*Version 0.9 agregado variable $ip*/
-            $ip = $_SERVER["SERVER_ADDR"];
+            $ip = $this->obtenerIpServer("eth0");
+            if($ip==false)
+                $ip="127.0.0.1";		
 	    $link=$bSubMenu2Framed?$this->arrMenu[$this->currSubMenu2]['Link']:$this->arrMenu[$this->currSubMenu]['Link'];
             $link = str_replace("{IP_SERVER}",$ip,$link);
 
@@ -242,6 +258,19 @@ class paloSantoNavigation {
         } else {
             return "Error: The module <b>modules/$module/index.php</b> could not be found<br>";
         }
+    }
+
+    function obtenerIpServer($eth)
+    {
+        exec("which ifconfig 2>/dev/null||echo /sbin/ifconfig",$arrSalidaIfConfig,$flagSalidaIfConfig);
+        if($flagSalidaIfConfig==0 && is_array($arrSalidaIfConfig)  && count($arrSalidaIfConfig)>0){
+            exec("$arrSalidaIfConfig[0] $eth|gawk '/inet addr/{print $2}'|gawk -F: '{print $2}'",$arrSalidaIpServer,$flagSalidaIpServer);
+            if($flagSalidaIpServer==0 && is_array($arrSalidaIpServer)  && count($arrSalidaIpServer)>0){
+                return $arrSalidaIpServer[0];
+            }
+            return false;
+        }
+        return false;
     }
 }
 ?>
