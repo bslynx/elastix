@@ -74,11 +74,15 @@ function _moduleContent(&$smarty, $module_name)
 	    $arrData[$item["null"]] = "No extension";
 	    foreach($arrayResult as $item) {            
                 $arrData[$item["extension"]] = $item["extension"];	
-            }	    
+            }
 	}
     }
 
-
+    $arrGruposACL=$pACL->getGroups();
+    for($i=0; $i<count($arrGruposACL); $i++)
+    {
+        $arrGrupos[$arrGruposACL[$i][0]] = $arrGruposACL[$i][1];
+    }
 
     $arrFormElements = array("description" => array("LABEL"                  => "{$arrLang['Name']} (Ex. John Doe)",
                                                     "REQUIRED"               => "yes",
@@ -108,9 +112,7 @@ function _moduleContent(&$smarty, $module_name)
                              "group"       => array("LABEL"                  => $arrLang["Group"],
                                                     "REQUIRED"               => "no",
                                                     "INPUT_TYPE"             => "SELECT",
-                                                    "INPUT_EXTRA_PARAM"      => array( 1 => "Administrator",
-                                                                                       2 => "Operator",
-                                                                                       3 => "Extension User"),
+                                                    "INPUT_EXTRA_PARAM"      => $arrGrupos,
                                                     "VALIDATION_TYPE"        => "text",
                                                     "VALIDATION_EXTRA_PARAM" => ""),
  			     "extension"   => array("LABEL"                  => "Extension",
@@ -162,7 +164,7 @@ function _moduleContent(&$smarty, $module_name)
             }
         }
         $arrFillUser['group'] = $id_group;
-	$arrFillUser['extension'] = $arrUser[0][3];
+        $arrFillUser['extension'] = $arrUser[0][3];
 
         // Implementar
         include_once("libs/paloSantoForm.class.php");
@@ -187,10 +189,6 @@ function _moduleContent(&$smarty, $module_name)
             if(empty($_POST['password1']) or ($_POST['password1']!=$_POST['password2'])) {
                 // Error claves
                 $smarty->assign("mb_message", $arrLang["The passwords are empty or don't match"]);
-                $contenidoModulo=$oForm->fetchForm("$local_templates_dir/new.tpl", $arrLang["New User"], $_POST);
-            } else if($_POST['group']<1 or $_POST['group']>3) {
-                // Error grupo
-                $smarty->assign("mb_message", $arrLang["The group is wrong"]);
                 $contenidoModulo=$oForm->fetchForm("$local_templates_dir/new.tpl", $arrLang["New User"], $_POST);
             } else {
 
@@ -315,7 +313,7 @@ function _moduleContent(&$smarty, $module_name)
         $arrTmp['description'] = $arrUser[0][2];
         $arrTmp['password1'] = "****";
         $arrTmp['password2'] = "****";
-	$arrTmp['extension'] = $arrUser[0][3];
+        $arrTmp['extension'] = $arrUser[0][3];
         //- TODO: Falta llenar el grupo
         $arrMembership  = $pACL->getMembership($_GET['id']);
         $id_group="";
