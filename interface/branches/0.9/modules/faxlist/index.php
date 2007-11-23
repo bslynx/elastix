@@ -31,7 +31,6 @@ function _moduleContent($smarty, $module_name)
 {
     include_once "libs/paloSantoFax.class.php";
     include_once "libs/paloSantoGrid.class.php";
-    include_once "libs/paloSantoForm.class.php";
 
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
