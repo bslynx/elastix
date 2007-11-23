@@ -465,5 +465,33 @@ configuration because some <br> processes could need them.",
 web-based system for the management of communications over IP. This open
 source software started in Ecuador has become the solution of choice for
 implementations of Voice over IP around the globe.",
+
+//Elastix 0.9.1
+/*Star module Template Email */
+"Template Email"=>"Template Email",
+"Fax From"=>"Fax From",
+"Fax From Name"=>"Fax From Name",
+"Fax Suject"=>"Fax Suject",
+"Fax Content"=>"Fax Content",
+"Configuration Sending Fax Mail"=>"Configuration Sending Fax Mail",
+"Edit Parameters"=>"Edit Parameters",
+/* End module Template Email */
+
+/*Start module Group List*/
+"Groups"=>"Groups",
+"Group List"=>"Group List",
+"Description"=>"Description",
+"New Group"=>"New Group",
+"Create New Group"=>"Create New Group",
+"View Group"=>"View Group",
+"Edit Group"=>"Edit Group",
+"The Group have users assigned. You can delete any group that does not
+have any users assigned in it."=>"The Group have users assigned. You can
+delete any group that does not have any users assigned in it.",
+"The administrator group cannot be deleted because is the default Elastix
+Group. You can delete any other group."=>"The administrator group cannot
+be deleted because is the default Elastix Group. You can delete any other
+group.",
+/*End module Group List*/
 );
 ?>

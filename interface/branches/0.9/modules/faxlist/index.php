@@ -31,6 +31,7 @@ function _moduleContent($smarty, $module_name)
 {
     include_once "libs/paloSantoFax.class.php";
     include_once "libs/paloSantoGrid.class.php";
+    include_once "libs/paloSantoForm.class.php";
 
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
@@ -40,13 +41,19 @@ function _moduleContent($smarty, $module_name)
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
     $templates_dir=(isset($arrConfig['templates_dir']))?$arrConfig['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
-    
+
+    $contenidoModulo = listFax($smarty, $module_name, $local_templates_dir);
+    return $contenidoModulo;
+}
+
+function listFax($smarty, $module_name, $local_templates_dir)
+{
+    global $arrLang;
     $arrData = array();
     $oFax    = new paloFax();
     $arrFax  = $oFax->getFaxList();
-    
+
     $end = count($arrFax);
-   
     $arrFaxStatus = $oFax->getFaxStatus();
  
     foreach($arrFax as $fax) {

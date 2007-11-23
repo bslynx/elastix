@@ -29,8 +29,8 @@
         exit;
     }
     $company_name = ($CIDName) ? $CIDName : $sender;
-    $company_fax  = ($CIDNumber) ? clean_faxnum ($CIDNumber) : $sender;
-    faxes_log ("faxrcvd> Processing FAX from $company_fax");
+    $company_number  = ($CIDNumber) ? clean_faxnum ($CIDNumber) : $sender;
+    faxes_log ("faxrcvd> Processing FAX from company_name: $company_name, company_number: $company_number");
 
 
     /**********************************************
@@ -47,21 +47,23 @@
     tiff2pdf ($tiff_file, $pdffile);
     exec("sudo chmod -R 755 $faxes_path");
     // METO EL FAX EN LA BASE DE DATOS?
-    fax_info_insert($name_pdf,$modemdev,$commID,$errormsg,$company_name,$company_fax);
+    fax_info_insert($name_pdf,$modemdev,$commID,$errormsg,$company_name,$company_number);
     faxes_log ("faxrcvd> Se copio el $name_pdf en $faxes_path/recvq y se grabo en la BD".$name_pdf);
     /**********************************************
      *         3) ENVIO EMAIL                     *
      **********************************************/
 
-    $destinatario=obtener_mail_destiny($modemdev);
-    $titulo="Fax ".$name_pdf;
-    $contenido="Fax ".$name_pdf;
-    /*$remite=$company_name;
-    $remitente=$company_name;*/
-    $remite = "elastix@example.com";
-    $remitente = "Fax Elastix";
-    $archivo=$pdffile;
-    $archivo_name=$name_pdf;
+    $destinatario = obtener_mail_destiny($modemdev);
+    $arrConfig    = getConfigurationSendingFaxMail($name_pdf,$company_name,$company_number);
+    $titulo       = $arrConfig['subject'];
+    $contenido    = $arrConfig['content'];
+    $remite       = $arrConfig['remite'];
+    $remitente    = $arrConfig['remitente'];
+    $archivo      = $pdffile;
+    $archivo_name = $name_pdf;
+
+    print_r($arrConfig);
+    echo $destinatario;
     enviar_mail_adjunto($destinatario,$titulo,$contenido,$remite,$remitente,$archivo,$archivo_name);
 
      /*

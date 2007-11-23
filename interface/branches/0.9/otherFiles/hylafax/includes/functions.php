@@ -14,14 +14,14 @@
 		if ($echo) echo "$text\n";
 	}
 
-        function fax_info_insert ($tiff_file,$modemdev,$commID,$errormsg,$company_name,$company_fax) {
+        function fax_info_insert ($tiff_file,$modemdev,$commID,$errormsg,$company_name,$company_number) {
 		global $db_object;
              
 		$id_destiny=obtener_id_destiny($modemdev);
 		if($id_destiny != -1)
 		{
 			$db_object->query ("INSERT INTO info_fax_recvq (pdf_file,modemdev,commID,errormsg,company_name,company_fax,fax_destiny_id,date) 
-                                    VALUES ('$tiff_file','$modemdev','$commID','$errormsg','$company_name','$company_fax',$id_destiny,datetime('now','localtime'))");
+                                    VALUES ('$tiff_file','$modemdev','$commID','$errormsg','$company_name','$company_number',$id_destiny,datetime('now','localtime'))");
 		}
 		else{
 			faxes_log("Error al Obtener id de destino");
@@ -50,6 +50,34 @@
 		while ($tupla = $recordset->fetchRow(DB_FETCHMODE_OBJECT)) 
         		$id = $tupla->email;
 		return $id;
+	}
+
+        function getConfigurationSendingFaxMail($namePDF,$companyNameFrom,$companyNumberFrom)
+	{
+		global $db_object;
+                $arrData['remite']="elastix@example.com";
+                $arrData['remitente']="Fax Elastix";
+                $arrData['subject']="Fax $namePDF";
+                $arrData['content']="Fax $namePDF of $companyNameFrom - $companyNumberFrom";
+
+                $sql  = " select 
+                            remite,remitente,subject,content
+                        from 
+                            configuration_fax_mail
+                        where 
+                            id=?";
+		$recordset =& $db_object->query($sql, array(1));
+		while ($tupla = $recordset->fetchRow(DB_FETCHMODE_OBJECT)){ 
+        		$arrData['remite'] = utf8_decode($tupla->remite);
+                        $arrData['remitente'] = utf8_decode($tupla->remitente);
+                        $arrData['subject'] = utf8_decode(str_replace("{NAME_PDF}",$namePDF,$tupla->subject));
+                        $arrData['content'] = $tupla->content;
+                        $arrData['content'] = str_replace("{NAME_PDF}",$namePDF,$arrData['content']);
+                        $arrData['content'] = str_replace("{COMPANY_NAME_FROM}",$companyNameFrom,$arrData['content']);
+                        $arrData['content'] = utf8_decode(str_replace("{COMPANY_NUMBER_FROM}",$companyNumberFrom,$arrData['content']));
+                        
+                }
+		return $arrData;
 	}
 
 	function clean_faxnum ($fnum) {

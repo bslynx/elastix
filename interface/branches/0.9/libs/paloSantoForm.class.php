@@ -28,33 +28,45 @@
   $Id: paloSantoForm.class.php,v 1.4 2007/05/09 01:07:03 gcarrillo Exp $ */
 
 /* A continuacion se ilustra como luce un tipico elemento del arreglo $this->arrFormElements
+"subject"  => array(
+                "LABEL"                  => $arrLang["Fax Suject"],
+                "REQUIRED"               => "yes",
+                "INPUT_TYPE"             => "TEXT",
+                "INPUT_EXTRA_PARAM"      => array("style" => "width:240px"),
+                "VALIDATION_TYPE"        => "text",
+                "EDITABLE"               => "si",
+                "VALIDATION_EXTRA_PARAM" => "")
 
-"telefono" => array("LABEL"                  => "Telefono",
-                    "REQUIRED"               => "yes",
-                    "INPUT_TYPE"             => "text",
-                    "INPUT_EXTRA_PARAM"      => array("width" => "16"),
-                    "VALIDATION_TYPE"        => "number",
-                    "VALIDATION_EXTRA_PARAM" => "");
+"content" => array(
+                "LABEL"                  => $arrLang["Fax Content"],
+                "REQUIRED"               => "no",
+                "INPUT_TYPE"             => "TEXTAREA",
+                "INPUT_EXTRA_PARAM"      => "",
+                "VALIDATION_TYPE"        => "text",
+                "EDITABLE"               => "si",
+                "COLS"                   => "50",
+                "ROWS"                   => "4",
+                "VALIDATION_EXTRA_PARAM" => "")
 
 "today"  => array(
-            "LABEL"                  => "Today",
-            "REQUIRED"               => "yes",
-            "INPUT_TYPE"             => "DATE",
-            "INPUT_EXTRA_PARAM"      => array("TIME" => true, "FORMAT" => "'%d %b %Y' %H:%M","TIMEFORMAT" => "12"),
-            "VALIDATION_TYPE"        => '',
-            "VALIDATION_EXTRA_PARAM" => ''
+                "LABEL"                  => "Today",
+                "REQUIRED"               => "yes",
+                "INPUT_TYPE"             => "DATE",
+                "INPUT_EXTRA_PARAM"      => array("TIME" => true, "FORMAT" => "'%d %b %Y' %H:%M","TIMEFORMAT" => "12"),
+                "VALIDATION_TYPE"        => '',
+                "EDITABLE"               => "si",
+                "VALIDATION_EXTRA_PARAM" => '')
 
 'formulario'       => array(
-            "LABEL"                  => $arrLang["Form"],
-            "REQUIRED"               => "yes",
-            "INPUT_TYPE"             => "SELECT",
-            "INPUT_EXTRA_PARAM"      => $arrSelectForm,
-            "VALIDATION_TYPE"        => "text",
-            "VALIDATION_EXTRA_PARAM" => "",
-            "MULTIPLE"               => true,
-            "SIZE"                   => "5"
-        ),
-
+                "LABEL"                  => $arrLang["Form"],
+                "REQUIRED"               => "yes",
+                "INPUT_TYPE"             => "SELECT",
+                "INPUT_EXTRA_PARAM"      => $arrSelectForm,
+                "VALIDATION_TYPE"        => "text",
+                "VALIDATION_EXTRA_PARAM" => "",
+                "EDITABLE"               => "si",
+                "MULTIPLE"               => true,
+                "SIZE"                   => "5")
 */
 
 class paloForm

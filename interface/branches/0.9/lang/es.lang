@@ -517,5 +517,33 @@ convertido en la solución preferida para implementaciones de Voz sobre IP
 alrededor del mundo.",
 "About Elastix Closed"=>"Cerrar",
 /* End About Elastix */
+
+//Elastix 0.9.1
+/*Star module Template Email */
+"Template Email"=>"Plantilla de Correo",
+"Fax From"=>"Fax Remite",
+"Fax From Name"=>"Fax Remitente",
+"Fax Suject"=>"Fax Asunto",
+"Fax Content"=>"Fax Contenido",
+"Configuration Sending Fax Mail"=>"Configuracion de Envio de Fax a Correo",
+"Edit Parameters"=>"Editar Parametros",
+/* End module Template Email */
+
+/*Start module Group List*/
+"Groups"=>"Grupos",
+"Group List"=>"Lista de Grupos",
+"Description"=>"Descripción",
+"New Group"=>"Nuevo Grupo",
+"Create New Group"=>"Crear Nuevo Grupo",
+"View Group"=>"Ver Grupo",
+"Edit Group"=>"Editar Grupo",
+"The Group have users assigned. You can delete any group that does not
+have any users assigned in it."=>"El Grupo tiene usuarios asignados. Puede
+eliminar cualquier grupo que no tenga usuarios asignados.",
+"The administrator group cannot be deleted because is the default Elastix
+Group. You can delete any other group."=>"El Grupo administrador no puede
+ser eliminado porque es el Grupo Elastix por defecto. Puede eliminar
+cualquier otro grupo.",
+/*End module Group List*/
 );
 ?>

@@ -61,6 +61,14 @@ CREATE TABLE SysLog (
   logdate timestamp NOT NULL ,
   logtext varchar(255) NOT NULL 
 );
+
+CREATE TABLE configuration_fax_mail (
+  id         integer      primary key,
+  remite     varchar(255) NOT NULL,
+  remitente  varchar(255) NOT NULL,
+  subject    varchar(255) NOT NULL,
+  content    varchar(255)
+);
 */
 
 class paloFax {
@@ -698,6 +706,59 @@ class paloFax {
         }
 
         return $arrReturn;
+    }
+
+    function getConfigurationSendingFaxMail()
+    {
+        $errMsg="";
+        $sqliteError='';
+        $arrReturn=-1;
+        if ($db = sqlite3_open($this->rutaDB)) {
+            $query  = " select 
+                            remite,remitente,subject,content
+                        from 
+                            configuration_fax_mail
+                        where 
+                            id=1";
+
+            $result = @sqlite3_query($db, $query);
+            if(count($result)>0){
+                while ($row = @sqlite3_fetch_array($result)) {
+                    $arrReturn=$row;
+                }
+            }
+        } 
+        else 
+        {
+            $errMsg = $sqliteError;
+        }
+
+        return $arrReturn;
+    }
+
+    function setConfigurationSendingFaxMail($remite, $remitente, $subject, $content) {
+        $errMsg="";
+        $bExito = false;
+        if ($db = sqlite3_open($this->rutaDB)) {
+            $query  = " update 
+                            configuration_fax_mail 
+                        set 
+                            remite='$remite', 
+                            remitente='$remitente',
+                            subject='$subject',
+                            content='$content'
+                       where 
+                            id=1;";
+            $bExito = $this->_db->genQuery($query);
+            if (!$bExito) {
+                $this->errMsg = $this->_db->errMsg;
+            }
+            return $bExito; 
+        } 
+        else {
+            $this->errMsg = $this->_db->errMsg;
+        }
+        return $bExito;
     }
 }
 
