@@ -22,7 +22,7 @@ mv $pathDB/*.rpmnew $pathTmpDB/
 elastix_version=$1
 echo "pre version elastix $elastix_version" 
 
-if [ "$elastix_version" \< "0.9" ]; then
+if [ "$elastix_version" \< "0.9.1" ]; then
     #Update only menu.db and acl.db (tables acl_resource, acl_group)
     #paso 1: repaldo de bases
         cp $pathDB/menu.db $pathDB/menu_old.db
@@ -88,8 +88,10 @@ if [ "$elastix_version" \< "0.9" ]; then
             sqlite3 $pathDB/acl.db " select arn.name  from acl_resource_new arn left join acl_resource ar on arn.name=ar.name where ar.name is null;" > $pathTmpDB/user_acl_resource.data
             
             for i in `cat $pathTmpDB/user_acl_resource.data`; do 
-                echo "insert row $i to table acl_resource." ; 
-                sqlite3 $pathDB/acl.db "insert into acl_resource(name,description) select name,description from acl_resource_new where name='$i'; insert into acl_group_permission(id_action,id_group,id_resource) values (1,1,(select last_insert_rowid()))"
+                if [ `sqlite3 $pathDB/acl.db "select count(*) from acl_resource where name='$i';"` -eq 0 ]; then
+                    echo "insert row $i to table acl_resource." ; 
+                    sqlite3 $pathDB/acl.db "insert into acl_resource(name,description) select name,description from acl_resource_new where name='$i'; insert into acl_group_permission(id_action,id_group,id_resource) values (1,1,(select last_insert_rowid()))"
+                fi
             done
             echo "End step 5, insert permission new menus at user administrator"
         
@@ -105,7 +107,9 @@ if [ "$elastix_version" \< "0.9" ]; then
             existeTableSysLog=$?
             sqlite3 $pathDB/fax.db "select count(*) from info_fax_recvq" &>/dev/null  
             existeTableInfoFaxRecq=$?
-            
+            sqlite3 $pathDB/fax.db "select count(*) from configuration_fax_mail" &>/dev/null  
+            existeTableConfigFaxMail=$?
+
             if [ $existeTableFax -ne 0 ]; then
                 echo "Not exists table fax."
                 sqlite3 $pathTmpDB/fax.db.rpmnew ".dump fax" > $pathTmpDB/fax.table
@@ -123,6 +127,12 @@ if [ "$elastix_version" \< "0.9" ]; then
                 sqlite3 $pathTmpDB/fax.db.rpmnew ".dump info_fax_recvq" > $pathTmpDB/info_fax_recvq.table
                 sqlite3 $pathDB/fax.db ".read $pathTmpDB/info_fax_recvq.table"
                 echo "created table info_fax_recvq."
+            fi
+            if [ $existeTableConfigFaxMail -ne 0 ]; then
+                echo "Not exists table configuration_fax_mail"
+                sqlite3 $pathTmpDB/fax.db.rpmnew ".dump configuration_fax_mail" > $pathTmpDB/configuration_fax_mail.table
+                sqlite3 $pathDB/fax.db ".read $pathTmpDB/configuration_fax_mail.table"
+                echo "created table configuration_fax_mail"
             fi
             echo "End step 7, DataBase fax verification and tables complete"
     fi
