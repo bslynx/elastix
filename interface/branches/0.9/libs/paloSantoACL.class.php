@@ -944,5 +944,159 @@ class paloACL {
         }
         return $is;
     }
+
+      /**
+     * Procedimiento para crear un nuevo grupo
+     *
+     * @param string    $group       Login del usuario a crear
+     * @param string    $description    Descripción del usuario a crear
+     *
+     * @return bool     VERDADERO si el grupo se crea correctamente, FALSO en error
+     */
+    function createGroup($group, $description)
+    {
+        $bExito = FALSE;
+        if ($group == "") {
+            $this->errMsg = "Group can't be empty";
+        } else {
+            if ( !$description ) $description = $group;
+
+            // Verificar que el nombre de Grupo no existe previamente
+            $id_group = $this->getIdGroup($group);
+            if ($id_group !== FALSE) {
+                $this->errMsg = "Group already exists";
+            } elseif ($this->errMsg == "") {
+
+                $sPeticionSQL = paloDB::construirInsert(
+                    "acl_group",
+                    array(
+                        "name"          =>  paloDB::DBCAMPO($group),
+                        "description"   =>  paloDB::DBCAMPO($description)
+                    )
+                );
+                if ($this->_DB->genQuery($sPeticionSQL)) {
+                    $bExito = TRUE;
+                } else {
+                    $this->errMsg = $this->_DB->errMsg;
+                }
+            }
+        }
+
+        return $bExito;
+    }
+
+    /**
+     * Procedimiento para modificar al grupo con el ID de grupo especificado, para
+     * darle un nuevo nombre y descripción.
+     *
+     * @param int       $id_group        Indica el ID del grupo a modificar
+     * @param string    $group           Grupo a modificar
+     * @param string    $description     Descripción del grupo a modificar
+     *
+     * @return bool VERDADERO si se ha modificado correctamente el grupo, FALSO si ocurre un error.
+     */
+    function updateGroup($id_group, $group, $description)
+    {
+        $bExito = FALSE;
+        if ($group == "") {
+            $this->errMsg = "Group can't be empty";
+        } else if (!ereg("^[[:digit:]]+$", "$id_group")) {
+            $this->errMsg = "Group ID is not numeric";
+        } else {
+            if ( !$description ) $description = $group;
+
+            // Verificar que el grupo indicado existe
+            $tuplaGroup =& $this->getGroups($id_group);
+            if (!is_array($tuplaGroup)) {
+                $this->errMsg = "On having checked group's existence - ".$this->errMsg;
+            } else if (count($tuplaGroup) == 0) {
+                $this->errMsg = "The group doesn't exist";
+            } else {
+                $bContinuar = TRUE;
+
+                // Si el nuevo group es distinto al anterior, se verifica si el nuevo
+                // group colisiona con uno ya existente
+                if ($tuplaGroup[0][1] != $group) {
+                    $id_group_conflicto = $this->getIdGroup($group);
+                    if ($id_group_conflicto !== FALSE) {
+                        $this->errMsg = "Group already exists";
+                        $bContinuar = FALSE;
+                    } elseif ($this->errMsg != "") {
+                        $bContinuar = FALSE;
+                    }
+                }
+
+                if ($bContinuar) {
+                    // Proseguir con la modificación del grupo
+                    $sPeticionSQL = paloDB::construirUpdate(
+                        "acl_group",
+                        array(
+                            "name"          =>  paloDB::DBCAMPO($group),
+                            "description"   =>  paloDB::DBCAMPO($description),
+                            ),
+                        array(
+                            "id"  =>  $id_group));
+                    if ($this->_DB->genQuery($sPeticionSQL)) {
+                        $bExito = TRUE;
+                    } else {
+                        $this->errMsg = $this->_DB->errMsg;
+                    }
+                }
+            }
+        }
+        return $bExito;
+    }
+
+    /**
+     * Procedimiento para borrar un grupo ACL, dado su ID numérico de grupo
+     *
+     * @param int   $id_group    ID del grupo que debe eliminarse
+     *
+     * @return bool VERDADERO si el grupo puede borrarse correctamente
+     */
+    function deleteGroup($id_group)
+    {
+        $bExito = FALSE;
+        if (!ereg('^[[:digit:]]+$', "$id_group")) {
+            $this->errMsg = "Group ID is not numeric";
+        } else {
+            $this->errMsg = "";
+            $listaSQL = array(
+                "DELETE FROM acl_group_permission WHERE id_group = '$id_group'",
+                "DELETE FROM acl_group WHERE id = '$id_group'",
+            );
+            $bExito = TRUE;
+
+            foreach ($listaSQL as $sPeticionSQL) {
+                $bExito = $this->_DB->genQuery($sPeticionSQL);
+                if (!$bExito) {
+                    $this->errMsg = $this->_DB->errMsg;
+                    break;
+                }
+            }
+        }
+        return $bExito;
+    }
+
+    function HaveUsersTheGroup($id_group)
+    {
+        $Haveusers = TRUE;
+        if (!is_null($id_group) && !ereg('^[[:digit:]]+$', "$id_group")) {
+            $this->errMsg = "Group ID is not numeric";
+        } else {
+            $sPeticionSQL = "SELECT count(*) FROM acl_membership WHERE id_group = $id_group";
+            $result =& $this->_DB->conn->query($sPeticionSQL);
+            if (DB::isError($result)) {
+                $this->errMsg = $result->getMessage();
+            } else {
+                if($row = $result->fetchRow()) {
+                    $users = (int)$row[0];
+                    if($users==0)
+                        $Haveusers = FALSE; 
+                }
+            }
+        }
+        return $Haveusers;
+    }
 }
 ?>

@@ -161,6 +161,7 @@ function _moduleContent(&$smarty, $module_name)
     $GLOBALS['quietmode'] = $quietmode;
     $GLOBALS['message'] = $message;
     $GLOBALS['fpbx_menu'] = $fpbx_menu;
+    $GLOBALS['recordings_save_path'] = "/tmp/";
  
     // handle special requests
     if (isset($_REQUEST['handler'])) {
