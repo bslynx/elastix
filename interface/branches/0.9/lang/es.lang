@@ -550,6 +550,8 @@ cualquier otro grupo.",
 "Time"=>"Hora",
 "Message"=>"Mensaje",
 "Are you sure you wish to delete recordings?"=>"¿Est&aacute; seguro que desea eliminar los recordings?",
+"Download"=>"Descargar",
+"Listen"=>"Escuchar",
 /*End module Monitoring*/
 );
 ?>

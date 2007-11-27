@@ -538,6 +538,8 @@ group.",
 "Time"=>"Time",
 "Message"=>"Message",
 "Are you sure you wish to delete recordings?"=>"Are you sure you wish to delete recordings?",
+"Download"=>"Download",
+"Listen"=>"Listen",
 /*End module Monitoring*/
 );
 ?>

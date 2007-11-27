@@ -95,10 +95,7 @@ function _moduleContent(&$smarty, $module_name)
     $date_start = date("Y-m-d") . " 00:00:00"; 
     $date_end   = date("Y-m-d") . " 23:59:59";
 
-    if(isset($_POST['submit_eliminar'])) {
-        borrarRecordings(); 
-    }
-    else if(isset($_POST['filter'])) {
+    if(isset($_POST['filter'])) {
             if($oFilterForm->validateForm($_POST)) {
                 // Exito, puedo procesar los datos ahora.
                 $date_start = translateDate($_POST['date_start']) . " 00:00:00"; 
@@ -127,6 +124,18 @@ function _moduleContent(&$smarty, $module_name)
     } else {
         $htmlFilter = $contenidoModulo=$oFilterForm->fetchForm("$local_templates_dir/filter.tpl", "", 
         array('date_start' => date("d M Y"), 'date_end' => date("d M Y")));
+    }
+
+    if(isset($_POST['submit_eliminar'])) {
+        borrarRecordings(); 
+        if($oFilterForm->validateForm($_POST)) {
+                // Exito, puedo procesar los datos ahora.
+                $date_start = translateDate($_POST['date_start']) . " 00:00:00"; 
+                $date_end   = translateDate($_POST['date_end']) . " 23:59:59";
+                $arrFilterExtraVars = array("date_start" => $_POST['date_start'], "date_end" => $_POST['date_end']
+                                            );
+        }
+        $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl", "", $_POST);
     }
 
 
@@ -242,8 +251,8 @@ function _moduleContent(&$smarty, $module_name)
             	 $llamada=obtenerCDR_with_uniqueid($pDBCDR,$unique_id);
             	 $llamada['archivo'] = $archivo;
             	 $llamada['type'] = "always";
-                 //if($extension==$llamada['src'] || $extension==$llamada['dst'] || $extension=="[[:digit:]]+") //se se cumple esto es porque es el usuario solo puede ver sus llamadas y la otra es porque es administrador
-                    $llamadas[$i++]=$llamada;
+                 if($extension==$llamada['src'] || $extension==$llamada['dst'] || $extension=="[[:digit:]]+") //se se cumple esto es porque es el usuario solo puede ver sus llamadas y la otra es porque es administrador
+                    $llamadas[strtotime($llamada['calldate'])]=$llamada;
              }
         }
 
@@ -254,7 +263,7 @@ function _moduleContent(&$smarty, $module_name)
             $fecha = date("Y-m-d",strtotime($llamada['calldate']));
             $hora = date("H:i:s",strtotime($llamada['calldate']));
 
-            //if (strtotime("$fecha $hora")<=strtotime($date_end) && strtotime("$fecha $hora")>=strtotime($date_start)){
+            if (strtotime("$fecha $hora")<=strtotime($date_end) && strtotime("$fecha $hora")>=strtotime($date_start)){
                 $pathRecordFile="$path/".$llamada['archivo'];
                 $arrTmp[0] = "<input type='checkbox' name='".utf8_encode("rcd-".$llamada['archivo'])."' />";
                 $arrTmp[1] = $fecha;
@@ -267,7 +276,7 @@ function _moduleContent(&$smarty, $module_name)
                 $recordingLink .= "<a href='includes/audio.php?recording=".base64_encode($pathRecordFile)."'>{$arrLang['Download']}</a>";
                 $arrTmp[7] = $recordingLink;
                 $arrData[] = $arrTmp;
-         //   }
+            }
         }
     
         $total=count($arrData);
@@ -340,9 +349,9 @@ function _moduleContent(&$smarty, $module_name)
                     );
 
 
+    $contenidoModulo  = "<form style='margin-bottom:0;' method='POST' action='?menu=$module_name'>";
     $oGrid = new paloSantoGrid($smarty);
     $oGrid->showFilter($htmlFilter);
-    $contenidoModulo  = "<form style='margin-bottom:0;' method='POST' action='?menu=$module_name'>";
     $contenidoModulo  .= $oGrid->fetchGrid($arrGrid, $arrVoiceData,$arrLang);
     $contenidoModulo .= "</form>";
     return $contenidoModulo;
