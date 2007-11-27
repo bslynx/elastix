@@ -545,5 +545,11 @@ Group. You can delete any other group."=>"El Grupo administrador no puede
 ser eliminado porque es el Grupo Elastix por defecto. Puede eliminar
 cualquier otro grupo.",
 /*End module Group List*/
+
+/*Star module Monitoring*/
+"Time"=>"Hora",
+"Message"=>"Mensaje",
+"Are you sure you wish to delete recordings?"=>"¿Est&aacute; seguro que desea eliminar los recordings?",
+/*End module Monitoring*/
 );
 ?>

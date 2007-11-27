@@ -95,7 +95,10 @@ function _moduleContent(&$smarty, $module_name)
     $date_start = date("Y-m-d") . " 00:00:00"; 
     $date_end   = date("Y-m-d") . " 23:59:59";
 
-    if(isset($_POST['filter'])) {
+    if(isset($_POST['submit_eliminar'])) {
+        borrarRecordings(); 
+    }
+    else if(isset($_POST['filter'])) {
             if($oFilterForm->validateForm($_POST)) {
                 // Exito, puedo procesar los datos ahora.
                 $date_start = translateDate($_POST['date_start']) . " 00:00:00"; 
@@ -235,34 +238,36 @@ function _moduleContent(&$smarty, $module_name)
              }
              // El caso para cuando a la extension se le configuró sus records incoming or outgoing a always 
              if (ereg("[[:digit:]]+\-[[:digit:]]+\-([[:digit:]]+.[[:digit:]]+).[wav|WAV|gsm]",$archivo,$regs)){
-            	 $unique_id=$regs[1];
+            	 $unique_id=$regs[1]; 
             	 $llamada=obtenerCDR_with_uniqueid($pDBCDR,$unique_id);
             	 $llamada['archivo'] = $archivo;
             	 $llamada['type'] = "always";
-                 if($extension==$llamada['src'] || $extension==$llamada['dst'] || $extension=="[[:digit:]]+") //se se cumple esto es porque es el usuario solo puede ver sus llamadas y la otra es porque es administrador
-                    $llamadas[strtotime($llamada['calldate'])]=$llamada;
+                 //if($extension==$llamada['src'] || $extension==$llamada['dst'] || $extension=="[[:digit:]]+") //se se cumple esto es porque es el usuario solo puede ver sus llamadas y la otra es porque es administrador
+                    $llamadas[$i++]=$llamada;
              }
         }
+
         if($tmpExtension=="" || is_null($tmpExtension))//validacion solo para usuarios del grupo administrator
             $smarty->assign("mb_message", "<b>".$arrLang["You don't have extension number associated with user"]."</b>");
         rsort($llamadas);
-        foreach ($llamadas as $llamada){
+        foreach ($llamadas as $llamada){ 
             $fecha = date("Y-m-d",strtotime($llamada['calldate']));
             $hora = date("H:i:s",strtotime($llamada['calldate']));
 
-            if (strtotime("$fecha $hora")<=strtotime($date_end) && strtotime("$fecha $hora")>=strtotime($date_start)){
-                $arrTmp[0] = $fecha;
-                $arrTmp[1] = $hora;
-                $arrTmp[2] = empty($llamada['src'])?'-':$llamada['src'];
-                $arrTmp[3] = $llamada['dst'];
-                $arrTmp[4] = $llamada['duration'].' sec.';
-                $arrTmp[5] = $llamada['type'];
+            //if (strtotime("$fecha $hora")<=strtotime($date_end) && strtotime("$fecha $hora")>=strtotime($date_start)){
                 $pathRecordFile="$path/".$llamada['archivo'];
-                $recordingLink = "<a href='#' onClick=\"javascript:popUp('includes/popup.php?action=display_record&record_file=" . base64_encode($pathRecordFile) ."',350,100); return false;\">Listen</a>&nbsp;";
-                $recordingLink .= "<a href='includes/audio.php?recording=".base64_encode($pathRecordFile)."'>Download</a>";
-                $arrTmp[6] = $recordingLink;
+                $arrTmp[0] = "<input type='checkbox' name='".utf8_encode("rcd-".$llamada['archivo'])."' />";
+                $arrTmp[1] = $fecha;
+                $arrTmp[2] = $hora;
+                $arrTmp[3] = empty($llamada['src'])?'-':$llamada['src'];
+                $arrTmp[4] = $llamada['dst'];
+                $arrTmp[5] = $llamada['duration'].' sec.';
+                $arrTmp[6] = $llamada['type'];                
+                $recordingLink = "<a href='#' onClick=\"javascript:popUp('includes/popup.php?action=display_record&record_file=" . base64_encode($pathRecordFile) ."',350,100); return false;\">{$arrLang['Listen']}</a>&nbsp;";
+                $recordingLink .= "<a href='includes/audio.php?recording=".base64_encode($pathRecordFile)."'>{$arrLang['Download']}</a>";
+                $arrTmp[7] = $recordingLink;
                 $arrData[] = $arrTmp;
-            }
+         //   }
         }
     
         $total=count($arrData);
@@ -315,19 +320,21 @@ function _moduleContent(&$smarty, $module_name)
                      "start"    => $inicio,
                      "end"      => $fin,
                      "total"    => $total,
-                     "columns"  => array(0 => array("name"      => "Date",
+                     "columns"  => array(0 => array("name"      => "<input type='submit' onClick=\"return confirmSubmit('{$arrLang["Are you sure you wish to delete recordings?"]}');\" name='submit_eliminar' value='{$arrLang["Delete"]}' class='button' />",
                                                     "property1" => ""),
-                                         1 => array("name"      => "Time",
+                                         1 => array("name"      => $arrLang["Date"],
                                                     "property1" => ""),
-                                         2 => array("name"      => "Source",
+                                         2 => array("name"      => $arrLang["Time"],
                                                     "property1" => ""),
-                                         3 => array("name"      => "Destination",
+                                         3 => array("name"      => $arrLang["Source"],
                                                     "property1" => ""),
-                                         4 => array("name"      => "Duration",
+                                         4 => array("name"      => $arrLang["Destination"],
                                                     "property1" => ""),
-                                         5 => array("name"      => "Type",
+                                         5 => array("name"      => $arrLang["Duration"],
                                                     "property1" => ""),
-                                         6 => array("name"      => "Message",
+                                         6 => array("name"      => $arrLang["Type"],
+                                                    "property1" => ""),
+                                         7 => array("name"      => $arrLang["Message"],
                                                     "property1" => ""),
                                         )
                     );
@@ -335,7 +342,10 @@ function _moduleContent(&$smarty, $module_name)
 
     $oGrid = new paloSantoGrid($smarty);
     $oGrid->showFilter($htmlFilter);
-    return $oGrid->fetchGrid($arrGrid, $arrVoiceData,$arrLang);
+    $contenidoModulo  = "<form style='margin-bottom:0;' method='POST' action='?menu=$module_name'>";
+    $contenidoModulo  .= $oGrid->fetchGrid($arrGrid, $arrVoiceData,$arrLang);
+    $contenidoModulo .= "</form>";
+    return $contenidoModulo;
 }
 
 function obtenerCDROnDemand($db,$extension, $start_time)
@@ -387,5 +397,20 @@ function obtenerCDR_with_uniqueid($db,$uniqueid)
     if (is_array($arr_result) && count($arr_result)>0) {
     }
     return $arr_result;
+}
+
+function borrarRecordings()
+{
+    $path = "/var/spool/asterisk/monitor";
+    
+    if(is_array($_POST) && count($_POST) > 0){
+        foreach($_POST as $name => $on){
+            if(substr($name,0,4)=='rcd-'){
+                $file = substr($name,4);
+                $file = str_replace("_",".",$file);
+                unlink("$path/$file");
+            }
+        }
+    }
 }
 ?>

@@ -536,5 +536,11 @@ Group. You can delete any other group."=>"The administrator group cannot
 be deleted because is the default Elastix Group. You can delete any other
 group.",
 /*End module Group List*/
+
+/*Star module Monitoring*/
+"Time"=>"Time",
+"Message"=>"Message",
+"Are you sure you wish to delete recordings?"=>"Are you sure you wish to delete recordings?",
+/*End module Monitoring*/
 );
 ?>
