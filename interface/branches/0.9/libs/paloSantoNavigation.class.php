@@ -233,11 +233,13 @@ class paloSantoNavigation {
             $retVar .= " width=\"100%\"></iframe>";
 */ 
             /*Version 0.9 agregado variable $ip*/
-            $ip = $this->obtenerIpServer("eth0");
-            if($ip==false)
-                $ip="127.0.0.1";		
+            $name_server = $this->obtenerNameServer();	
+            $ip_server   = $this->obtenerIpServer("eth0");
+            if($ip_server==null)
+                $ip_server="127.0.0.1";
 	    $link=$bSubMenu2Framed?$this->arrMenu[$this->currSubMenu2]['Link']:$this->arrMenu[$this->currSubMenu]['Link'];
-            $link = str_replace("{IP_SERVER}",$ip,$link);
+            $link = str_replace("{NAME_SERVER}",$name_server,$link);
+            $link = str_replace("{IP_SERVER}",$ip_server,$link);
 
             $retVar  = "<iframe marginwidth=\"0\" marginheight=\"0\" style=\"border: 1px solid rgb(200, 200, 200); background-color: rgb(255, 255, 255);";
             $retVar .= "\" src=\"" . $link . "\" name=\"myframe\" id=\"myframe\" frameborder=\"0\"";
@@ -271,6 +273,11 @@ class paloSantoNavigation {
             return false;
         }
         return false;
+    }
+
+    function obtenerNameServer()
+    {
+        return $_SERVER['SERVER_NAME']; 
     }
 }
 ?>
