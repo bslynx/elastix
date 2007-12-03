@@ -54,6 +54,8 @@ if [ "$elastix_version" \< "0.9.1" ]; then
             echo "delete old menu restore." ;
             sqlite3 $pathDB/menu.db "delete from menu where id='backuplist';"
             echo "delete old menu backuplist." ;
+            sqlite3 $pathDB/menu.db "delete from menu where id='ports_details';"
+            echo "delete old menu ports_details." ;
             sqlite3 $pathDB/acl.db  "delete from acl_group_permission where id_resource=(select id from acl_resource where name='freepbx');"
             sqlite3 $pathDB/acl.db  "delete from acl_resource where name='freepbx';"
             sqlite3 $pathDB/acl.db  "delete from acl_group_permission where id_resource=(select id from acl_resource where name='backup');"
@@ -62,6 +64,8 @@ if [ "$elastix_version" \< "0.9.1" ]; then
             sqlite3 $pathDB/acl.db  "delete from acl_resource where name='restore';"
             sqlite3 $pathDB/acl.db  "delete from acl_group_permission where id_resource=(select id from acl_resource where name='backuplist');"
             sqlite3 $pathDB/acl.db  "delete from acl_resource where name='backuplist';"
+            sqlite3 $pathDB/acl.db  "delete from acl_group_permission where id_resource=(select id from acl_resource where name='ports_details');"
+            sqlite3 $pathDB/acl.db  "delete from acl_resource where name='ports_details';"
             echo "End step 2, delete menus olds"
         
         #paso 3: Insertar menus creados por usuarios
