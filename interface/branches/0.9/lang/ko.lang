@@ -526,13 +526,8 @@ implementations of Voice over IP around the globe.",
 "Create New Group"=>"Create New Group",
 "View Group"=>"View Group",
 "Edit Group"=>"Edit Group",
-"The Group have users assigned. You can delete any group that does not
-have any users assigned in it."=>"The Group have users assigned. You can
-delete any group that does not have any users assigned in it.",
-"The administrator group cannot be deleted because is the default Elastix
-Group. You can delete any other group."=>"The administrator group cannot
-be deleted because is the default Elastix Group. You can delete any other
-group.",
+"The Group have users assigned. You can delete any group that does not have any users assigned in it."=>"The Group have users assigned. You can delete any group that does not have any users assigned in it.",
+"The administrator group cannot be deleted because is the default Elastix Group. You can delete any other group."=>"The administrator group cannot be deleted because is the default Elastix Group. You can delete any other group.",
 /*End module Group List*/
 
 /*Star module Monitoring*/

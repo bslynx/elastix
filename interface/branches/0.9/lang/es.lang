@@ -537,13 +537,8 @@ alrededor del mundo.",
 "Create New Group"=>"Crear Nuevo Grupo",
 "View Group"=>"Ver Grupo",
 "Edit Group"=>"Editar Grupo",
-"The Group have users assigned. You can delete any group that does not
-have any users assigned in it."=>"El Grupo tiene usuarios asignados. Puede
-eliminar cualquier grupo que no tenga usuarios asignados.",
-"The administrator group cannot be deleted because is the default Elastix
-Group. You can delete any other group."=>"El Grupo administrador no puede
-ser eliminado porque es el Grupo Elastix por defecto. Puede eliminar
-cualquier otro grupo.",
+"The Group have users assigned. You can delete any group that does not have any users assigned in it."=>"El Grupo tiene usuarios asignados. Puede eliminar cualquier grupo que no tenga usuarios asignados.",
+"The administrator group cannot be deleted because is the default Elastix Group. You can delete any other group."=>"El Grupo administrador no puede ser eliminado porque es el Grupo Elastix por defecto. Puede eliminar cualquier otro grupo.",
 /*End module Group List*/
 
 /*Star module Monitoring*/
