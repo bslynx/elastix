@@ -437,6 +437,9 @@ configuration because some processes need it."=>"Въведените мрежи
 "Information" => "Информация",
 "Satisfactory Hardware Detection" => "Достатъчно Откриване на Хардуер",
 "Unknown" => "Неизвестен",
+"Replace file zapata.conf" => "Replace file zapata.conf",
+"Unable to backup file zapata.conf by zapata.conf.replace_for_elastix" => "Unable to backup file zapata.conf by zapata.conf.replace_for_elastix",
+"Unable to replace file zapata.conf" => "Unable to replace file zapata.conf",
 /* Fin Hardware Detection */
 
 /* Modulo system.updates*/

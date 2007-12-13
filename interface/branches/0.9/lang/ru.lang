@@ -438,6 +438,9 @@ $arrLang=array(
 "About Elastix Closed" => "Закрыть",
 
 
+"Replace file zapata.conf" => "Replace file zapata.conf",
+"Unable to backup file zapata.conf by zapata.conf.replace_for_elastix" => "Unable to backup file zapata.conf by zapata.conf.replace_for_elastix",
+"Unable to replace file zapata.conf" => "Unable to replace file zapata.conf",
 "Instant Messaging" => "Instant Messaging",
 "These networks are allowed to send e-mail to external domains through the Elastix <br>using the SMTP protocol.
 You must insert one network per row and each network must have the format

@@ -4,7 +4,9 @@
   </tr>
   <tr class="filterForm">
     <td class="filterForm" valign="middle"> 
-            <input type='button' name='submit_harware_detect' value='{$HARDWARE_DETECT}'  onclick="detectar()" class='button' /> 
+            <input type='checkbox' name='chk_zapata_replace' id='chk_zapata_replace' />&nbsp; <b>{$ZAPATA_REPLACE}<b> &nbsp;&nbsp;&nbsp;&nbsp;
+            <input type='button'   name='submit_harware_detect' value='{$HARDWARE_DETECT}'  onclick="detectar()" class='button' /> 
+            
     </td>
   </tr>
   <tr>
@@ -58,10 +60,12 @@
     {
         var nodoReloj = document.getElementById('relojArena');
         var estatus   = document.getElementById('estaus_reloj');
+        var chk_zapata_replace = document.getElementById('chk_zapata_replace');
+
         if(estatus.value=='apagado'){
             estatus.value='prendido';
             nodoReloj.innerHTML = "<img src='images/hourglass.gif' align='absmiddle' /> <br /> <font style='font-size:12px; color:red'>{/literal}{$detectandoHardware}{literal}...</font>";
-            xajax_hardwareDetect();
+            xajax_hardwareDetect(chk_zapata_replace.checked);
         }
         else alert("{/literal}{$accionEnProceso}{literal}");
     } 

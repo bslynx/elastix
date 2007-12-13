@@ -39,7 +39,7 @@ function _moduleContent(&$smarty, $module_name)
     include_once "modules/$module_name/configs/default.conf.php";
     global $arrConf;
     global $arrLang;
-    
+//     print_r($_POST);
     require_once "modules/$module_name/libs/PaloSantoHardwareDetection.class.php";
     //folder path for custom templates
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
@@ -64,6 +64,7 @@ function listPorts($smarty, $module_name, $local_templates_dir) {
     $contenidoModulo = "";
 
     $smarty->assign("HARDWARE_DETECT",$arrLang['Hardware Detect']);
+    $smarty->assign("ZAPATA_REPLACE",$arrLang['Replace file zapata.conf']);
     $smarty->assign("MODULE_NAME",$module_name);
     $smarty->assign("detectandoHardware",$arrLang['Hardware Detecting']);
     $smarty->assign("CARD",$arrLang['Card']);
@@ -92,12 +93,12 @@ function llenarTpl($local_templates_dir,$smarty,$arrGrid, $arrData)
     return $smarty->fetch($local_templates_dir."/listPorts.tpl");
 }
 
-function hardwareDetect()
+function hardwareDetect($chk_zapata_replace)
 {
     global $arrLang;
     $respuesta = new xajaxResponse();
     $oHardwareDetect = new PaloSantoHardwareDetection();
-    $resultado = $oHardwareDetect->hardwareDetection();
+    $resultado = $oHardwareDetect->hardwareDetection($chk_zapata_replace,"/etc/asterisk");
     $respuesta->addAlert($resultado);
     $respuesta->addAssign("relojArena","innerHTML","");
     $respuesta->addAssign("nombre_paquete","value","");

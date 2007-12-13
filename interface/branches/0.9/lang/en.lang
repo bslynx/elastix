@@ -431,12 +431,15 @@ configuration because some <br> processes could need them.",
 "Type port" => "Type",
 "No. Port" => "Port #",
 "(In Use)" => "Active",
-"Hardware Detecting" => "Hardware Detecting",
+"Hardware Detecting" => "Detecting Hardware",
 "Hardware Detect" => "Detect New Hardware",
 "Cards undetected on your system, press for detecting hardware detection." => "No cards were detected on your system. Please press the \"Detect New Hardware\" button to detect new hardware.",
 "Information" => "Information",
-"Satisfactory Hardware Detection" => "Satisfactory Hardware Detection",
+"Satisfactory Hardware Detection" => "Done",
 "Unknown" => "Unknown",
+"Replace file zapata.conf" => "Replace file zapata.conf",
+"Unable to backup file zapata.conf by zapata.conf.replace_for_elastix" => "Unable to backup file zapata.conf by zapata.conf.replace_for_elastix",
+"Unable to replace file zapata.conf" => "Unable to replace file zapata.conf",
 /* Fin Hardware Detection */
 
 /* Modulo system.updates*/
