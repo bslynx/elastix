@@ -119,7 +119,7 @@ class PaloSantoHardwareDetection
             if($retorno==0){// no hubo errores al correr el comando genzaptelconf, nota: aun no se ha confirmado que esta sea la forma correcta de validar errores
                 if($chk_zapata_replace=="true"){
                     $fileZapata = "$path_file_zapata/zapata.conf";
-                    exec("cp $fileZapata $fileZapata.replace_for_elastix",$respuesta,$retorno);
+                    exec("cp $fileZapata $fileZapata.replaced_for_elastix",$respuesta,$retorno);
                     if($retorno==0){//se pudo respaldar zapata.conf
                         if(!$this->writeZapataConfFile($fileZapata)){
                             $message = $arrLang["Unable to replace file zapata.conf"];
