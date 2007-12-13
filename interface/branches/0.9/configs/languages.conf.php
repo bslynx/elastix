@@ -37,6 +37,7 @@ $languages=array(
 "fr"=>"Français",
 "it"=>"Italiano",
 "hu"=>"Magyar",
+"hr"=>"hrvatski",
 "nl"=>"Nederlands",
 "no"=>"Norsk",
 "pl"=>"Polski",
