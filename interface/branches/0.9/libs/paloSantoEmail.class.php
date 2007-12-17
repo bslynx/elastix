@@ -215,7 +215,7 @@ class paloEmail {
     function deleteAliasesFromAccount($username)
     {
         $bExito = TRUE;
-        if (!ereg('^([-_[:alnum:]]+[\.[a-z0-9\-_]+]*)$', "$username")) {
+        if (!ereg('^([a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*)$', "$username")) {
             $this->errMsg = "Username is not valid";
         }
         else {
@@ -235,7 +235,7 @@ class paloEmail {
     function getAccount($username)
     {
         $arr_result = FALSE;
-        if (!is_null($username) && !ereg('^([-_[:alnum:]]+[\.[a-z0-9\-_]+]*)$', "$username")) {
+        if (!is_null($username) && !ereg('^([a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*)$', "$username")) {
             $this->errMsg = "Username is not valid";
         } 
         else {
@@ -244,7 +244,7 @@ class paloEmail {
                 (is_null($username) ? '' : " WHERE username = '$username'");
             $sPeticionSQL .=" ORDER BY username";
             $arr_result =& $this->_DB->fetchTable($sPeticionSQL);
-            if (!is_array($arr_result)) {
+            if (!is_array($arr_result) && count($arr_result)>0) {
                 $arr_result = FALSE;
                 $this->errMsg = $this->_DB->errMsg;
             }
@@ -309,7 +309,7 @@ class paloEmail {
     function deleteAccount($username)
     {
         $bExito = TRUE;
-        if (!ereg('^([-_[:alnum:]]+[\.[a-z0-9\-_]+]*)$', "$username")) {
+        if (!ereg('^([a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*)$', "$username")) {
             $this->errMsg = "Username is not valid";
         }
         else {
@@ -350,7 +350,7 @@ class paloEmail {
     function getAliasAccount($username)
     {
         $arr_result = FALSE;
-        if (!is_null($username) && !ereg('^([-_[:alnum:]]+[\.[a-z0-9\-_]+]*)$', "$username")) {
+        if (!is_null($username) && !ereg('^([a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*)$', "$username")) {
             $this->errMsg = "Username is not valid";
         } 
         else {
@@ -371,7 +371,7 @@ class paloEmail {
     function updateAccount($username, $quota)
     {
         $bExito = FALSE;
-        if (!is_null($username) && !ereg('^([-_[:alnum:]]+[\.[a-z0-9\-_]+]*)$', "$username")) {
+        if (!is_null($username) && !ereg('^([a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*)$', "$username")) {
             $this->errMsg = "Username is not valid";
         }  else {
             //modificar cuenta
