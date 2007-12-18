@@ -18,10 +18,16 @@ function _moduleContent(&$smarty, $module_name)
     $templates_dir=(isset($arrConfig['templates_dir']))?$arrConfig['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
 
-    $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
-    $formCampos= array();
+    $arrFormElements = array("file"  => array("LABEL" => $arrLang["File"],
+                                                        "REQUIRED"               => "no",
+                                                        "INPUT_TYPE"             => "TEXT",
+                                                        "INPUT_EXTRA_PARAM"      => "",
+                                                        "VALIDATION_TYPE"        => "text",
+                                                        "VALIDATION_EXTRA_PARAM" => ""),
+                                 );
 
-        
+    $smarty->assign("Filter",$arrLang['Filter']);
+
 ////codigo para mostrar la lista de archivos
     $path=$arrOtro['etc_asterisk'];
 
@@ -30,7 +36,7 @@ function _moduleContent(&$smarty, $module_name)
         $directorio=dir($path);
         $arreglo_archivos = array();
         while ($archivo = $directorio->read())
-        {   
+        {
             if ($archivo!="." && $archivo!=".."){
                 array_push($arreglo_archivos, $archivo);
             }
@@ -43,10 +49,18 @@ function _moduleContent(&$smarty, $module_name)
 //para mostrar la lista de archivos
     $arrData=array();
     if (is_array($arreglo_archivos)) {
+        sort($arreglo_archivos);
         foreach($arreglo_archivos as $item){
-            $arrTmp    = array();
-            $arrTmp[0] = "&nbsp;<a href='?menu=$module_name&action=EditarArchivo&archivo=$item'>".$item."</a>" ;
-            $arrData[] = $arrTmp;
+            //Filtrar
+            $file = "";
+            if (isset($_GET['action']) && $_GET['action']=="filter")
+                $file = $_POST['file'];
+            if(eregi("^$file", $item))
+            {
+                $arrTmp    = array();
+                $arrTmp[0] = "&nbsp;<a href='?menu=$module_name&action=EditarArchivo&archivo=$item'>".$item."</a>" ;
+                $arrData[] = $arrTmp;
+            }
         }
     }
 
@@ -121,12 +135,13 @@ function _moduleContent(&$smarty, $module_name)
                     );
     
     $oGrid = new paloSantoGrid($smarty);
-    $oForm = new paloForm($smarty, $formCampos);
+    $oForm = new paloForm($smarty, $arrFormElements);
     $smarty->assign("module_name",$module_name);
-    $contenidoModulo = $oGrid->fetchGrid($arrGrid,$arr_archivos_final,$arrLang);
-    $contenidoModulo .= $oForm->fetchForm("$local_templates_dir/new.tpl", $arrLang["File Editor"], $_POST);
-   
-    
+
+    $htmlFilter = $oForm->fetchForm("$local_templates_dir/new.tpl", $arrLang["File Editor"], $_POST);
+    $oGrid->showFilter(trim($htmlFilter));
+
+    $contenidoModulo  = "<form  method='POST' style='margin-bottom:0;' action='?menu=file_editor&action=filter'>".$oGrid->fetchGrid($arrGrid,$arr_archivos_final,$arrLang)."</form>";
 
 
     ////PARA EJECUTAR EL ACTION DEL TPL
@@ -136,12 +151,9 @@ function _moduleContent(&$smarty, $module_name)
        break;
 
     case "regresar":
-
-
        return $contenidoModulo;
        break;
     }
-   
     return $contenidoModulo;
 
 }
@@ -213,12 +225,8 @@ else{
     else{
         $contenidoModulo ='<form method="POST" enctype="multipart/form-data"><table class="message_board"  width="99%" border="0" cellspacing="0" cellpadding="0" >
         <tr><td class="mb_message"><font size="2px">'.$se_guardo.'<br>'.$msj_no_escritura3.'<br>'.$msj_no_lectura_2.'</font></td></tr></table></br><center><b>'.$fichero.'</b><br><textarea cols="60" rows="17" name="archivo_textarea">'.$contenido.'</textarea><br><br><input type="submit" name="back" id="back"  onclick="" value='.'<<&nbsp;'. $arrLang["Back"].'>'.'&nbsp;&nbsp;'.'<input type="submit" name="guardar" onclick=" " value="Saved"/></center></form>';
-    
     }
     return $contenidoModulo;
-    
 }
-
-
 
 ?>
