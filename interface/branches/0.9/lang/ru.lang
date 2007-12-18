@@ -303,6 +303,7 @@ $arrLang=array(
 "Monitorig List" => "Список Записанных Сообщений",
 "Voicemail List" => "Список Голосовых Сообщений",
 "You don't have extension number associated with user" => "Вы не связали внутренний номер с пользователем",
+"Are you sure you wish to delete voicemails?" => "Are you sure you wish to delete voicemails?",
 "Date/Time" => "Дата и Время",
 "Date and Time Configuration" => "Дата и Время",
 "Current Datetime" => "Текущее Время",

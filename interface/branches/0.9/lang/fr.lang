@@ -324,6 +324,7 @@ Vous devez inserer un reseau par ligne et chaque reseau <br>doit avoir le format
 "Monitorig List" => "Monitoring List",
 "Voicemail List" => "Voicemail List",
 "You don't have extension number associated with user" => "You don't have extension number associated with user",
+"Are you sure you wish to delete voicemails?" => "Are you sure you wish to delete voicemails?",
 "Date/Time"  =>  "Date/Time",
 "Date and Time Configuration"  =>  "Date/Time",
 "Current Datetime"  =>  "Current Datetime",

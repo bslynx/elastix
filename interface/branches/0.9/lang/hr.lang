@@ -324,6 +324,7 @@ Morate upisati po jednu mrežu po retku i svaka mreža mora biti u formi <br>
 "Monitorig List" => "Listamonitoriranja",
 "Voicemail List" => "Lista govornih poruka",
 "You don't have extension number associated with user" => "Broj lokala nije pridružen korisniku",
+"Are you sure you wish to delete voicemails?" => "Are you sure you wish to delete voicemails?",
 "Date/Time"  =>  "Date/Time",
 "Date and Time Configuration"  =>  "Date and Time Configuration",
 "Current Datetime"  =>  "Current Datetime",

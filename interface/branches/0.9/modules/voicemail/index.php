@@ -112,6 +112,18 @@ function _moduleContent(&$smarty, $module_name)
         array('date_start' => date("d M Y"), 'date_end' => date("d M Y")));
     }
 
+    if(isset($_POST['submit_eliminar'])) {
+        borrarVoicemails($extension);
+        if($oFilterForm->validateForm($_POST)) {
+                // Exito, puedo procesar los datos ahora.
+                $date_start = translateDate($_POST['date_start']) . " 00:00:00"; 
+                $date_end   = translateDate($_POST['date_end']) . " 23:59:59";
+                $arrFilterExtraVars = array("date_start" => $_POST['date_start'], "date_end" => $_POST['date_end']
+                                           );
+        }
+        $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl", "", $_POST);
+    }
+
     //si tiene extension consulto sino, muestro un mensaje de que no tiene asociada extension
     $archivos=array();
     if (!is_null($extension)){
@@ -149,15 +161,16 @@ function _moduleContent(&$smarty, $module_name)
                     $hora = date("H:i:s",$arrVoiceMailDes['origtime']['valor']);
                     
                     if (strtotime("$fecha $hora")<=strtotime($date_end) && strtotime("$fecha $hora")>=strtotime($date_start)){
-                        $arrTmp[0] = $fecha;
-                        $arrTmp[1] = $hora;
-                        $arrTmp[2] = $arrVoiceMailDes['callerid']['valor'];
-                        $arrTmp[3] = $arrVoiceMailDes['origmailbox']['valor'];
-                        $arrTmp[4] = $arrVoiceMailDes['duration']['valor'].' sec.';
+                        $arrTmp[0] = "<input type='checkbox' name='".utf8_encode("voc-".$archivo)."' />";
+                        $arrTmp[1] = $fecha;
+                        $arrTmp[2] = $hora;
+                        $arrTmp[3] = $arrVoiceMailDes['callerid']['valor'];
+                        $arrTmp[4] = $arrVoiceMailDes['origmailbox']['valor'];
+                        $arrTmp[5] = $arrVoiceMailDes['duration']['valor'].' sec.';
                         $pathRecordFile="$voicemailPath/".$regs[1].'.wav';
                         $recordingLink = "<a href='#' onClick=\"javascript:popUp('includes/popup.php?action=display_record&record_file=" . base64_encode($pathRecordFile) ."',350,100); return false;\">Listen</a>&nbsp;";
                         $recordingLink .= "<a href='includes/audio.php?recording=".base64_encode($pathRecordFile)."'>Download</a>";
-                        $arrTmp[5] = $recordingLink;
+                        $arrTmp[6] = $recordingLink;
                         $arrData[] = $arrTmp;
                     }
                 }
@@ -215,24 +228,48 @@ function _moduleContent(&$smarty, $module_name)
                      "start"    => $inicio,
                      "end"      => $fin,
                      "total"    => $total,
-                     "columns"  => array(0 => array("name"      => "Date",
+                     "columns"  => array(0 => array("name"      => "<input type='submit' onClick=\"return confirmSubmit('{$arrLang["Are you sure you wish to delete voicemails?"]}');\" name='submit_eliminar' value='{$arrLang["Delete"]}' class='button' />",
                                                     "property1" => ""),
-                                         1 => array("name"      => "Time",
+                                         1 => array("name"      => "Date",
                                                     "property1" => ""),
-                                         2 => array("name"      => "CallerID",
+                                         2 => array("name"      => "Time",
                                                     "property1" => ""),
-                                         3 => array("name"      => "Extension",
+                                         3 => array("name"      => "CallerID",
                                                     "property1" => ""),
-                                         4 => array("name"      => "Duration",
+                                         4 => array("name"      => "Extension",
                                                     "property1" => ""),
-                                         5 => array("name"      => "Message",
+                                         5 => array("name"      => "Duration",
+                                                    "property1" => ""),
+                                         6 => array("name"      => "Message",
                                                     "property1" => ""),
                                         )
                     );
 
-
+    $contenidoModulo  = "<form style='margin-bottom:0;' method='POST' action='?menu=$module_name'>";
     $oGrid = new paloSantoGrid($smarty);
     $oGrid->showFilter($htmlFilter);
-    return $oGrid->fetchGrid($arrGrid, $arrVoiceData,$arrLang);
+    $contenidoModulo  .= $oGrid->fetchGrid($arrGrid, $arrVoiceData,$arrLang);
+    $contenidoModulo .= "</form>";
+    return $contenidoModulo;
+}
+
+function borrarVoicemails($extension)
+{
+    $path = "/var/spool/asterisk/voicemail/default";
+    $folder = "INBOX";
+    $voicemailPath = "$path/$extension/$folder";
+    
+    if(is_array($_POST) && count($_POST) > 0){
+        foreach($_POST as $name => $on){
+            if(substr($name,0,4)=='voc-'){
+                $file = substr($name,4);
+                $pos = strrpos($file, '_');
+                $file = substr($file, 0, strrpos($file, '_'));
+                unlink("$voicemailPath/$file.txt");
+                unlink("$voicemailPath/$file.wav");
+                unlink("$voicemailPath/$file.WAV");
+            }
+        }
+    }
 }
 ?>
