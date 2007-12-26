@@ -426,6 +426,9 @@ konfiguraciji jer neki <br> procesi ih mogu trebati.",
 "File"            => "Datoteka",        /*Bruno agrego modulo*/
 "Fax Destiny"     => "Fax odredište", /*Bruno agrego modulo*/
 "No Data Found"   => "Nema pronađenih podataka", /*Bruno agrego modulo*/
+"Are you sure you wish to delete fax (es)?" => "Are you sure you wish to delete fax (es)?",
+"Unable to eliminate pdf file from the path." => "Unable to eliminate pdf file from the path.",
+"Unable to eliminate pdf file from the database." => "Unable to eliminate pdf file from the database.",
 
 "Backup"=>"Pričuva",
 "Process"=>"Procesi",

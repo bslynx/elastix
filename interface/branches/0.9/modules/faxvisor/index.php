@@ -64,7 +64,7 @@ function _moduleContent(&$smarty, $module_name)
 
     $oForm = new paloForm($smarty, $arrFormElements);   
     $smarty->assign("SEARCH", $arrLang["Search"]);    
-    $javascript_xajax = buscar_faxes($arrConfig); //En paloSantoFax.class.php
+    $javascript_xajax = ajax_faxes($arrConfig); //En paloSantoFax.class.php
     $smarty->assign("javascript_xajax", $javascript_xajax);    
     $contenidoModulo=$oForm->fetchForm("$local_templates_dir/visor.tpl", $arrLang["Fax Visor"],$_POST);
     return $contenidoModulo;

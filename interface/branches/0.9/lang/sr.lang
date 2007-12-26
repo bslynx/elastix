@@ -351,6 +351,9 @@ $arrLang=array(
 "File"            => "File",        /*Bruno agrego modulo*/
 "Fax Destiny"     => "Fax Destiny", /*Bruno agrego modulo*/
 "No Data Found"   => "No Data Found", /*Bruno agrego modulo*/
+"Are you sure you wish to delete fax (es)?" => "Are you sure you wish to delete fax (es)?",
+"Unable to eliminate pdf file from the path." => "Unable to eliminate pdf file from the path.",
+"Unable to eliminate pdf file from the database." => "Unable to eliminate pdf file from the database.",
 
 "Backup"=>"Backup",
 "Process"=>"Process",

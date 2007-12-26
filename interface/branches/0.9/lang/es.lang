@@ -382,6 +382,9 @@ configuraci&oacute;n porque algunos <br> procesos prodr&iacute;an necesitarlos."
 "File"            => "Archivo",        /*Bruno agrego modulo*/
 "Fax Destiny"     => "Fax Destino", /*Bruno agrego modulo*/
 "No Data Found"   => "No se encontraron datos", /*Bruno agrego modulo*/
+"Are you sure you wish to delete fax (es)?" => "Estás seguro de eliminar el(los) fax (es)?",
+"Unable to eliminate pdf file from the path." => "No se pudo eliminar el archivo pdf de la ruta.",
+"Unable to eliminate pdf file from the database." => "No se pudo eliminar el archivo pdf desde la base de datos.",
 
 "Backup"=>"Respaldar",
 "Process"=>"Procesar",
