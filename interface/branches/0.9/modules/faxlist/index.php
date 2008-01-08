@@ -63,7 +63,7 @@ function listFax($smarty, $module_name, $local_templates_dir)
         $arrTmp[3] = $fax['email'];
         $arrTmp[4] = $fax['clid_name'] . "&nbsp;";
         $arrTmp[5] = $fax['clid_number'] . "&nbsp;";
-        $arrTmp[6] = $arrFaxStatus['ttyIAX' . $fax['id']];
+        $arrTmp[6] = $arrFaxStatus['ttyIAX' . $fax['dev_id']];
         $arrData[] = $arrTmp;
     }
     

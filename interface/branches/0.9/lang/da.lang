@@ -549,5 +549,38 @@ implementations of Voice over IP around the globe.",
 "Download"=>"Download",
 "Listen"=>"Listen",
 /*End module Monitoring*/
+
+/** Elastix 1.0 **/
+
+/*Start module DHCP Server */
+"DHCP Server" => "DHCP Server",
+"Update" => "Update",
+"Service Start" => "Service Start",
+"Service Stop" => "Service Stop",
+"Start range of IPs" => "Start range of IPs",
+"End range of IPs" => "End range of IPs",
+"DNS 1" => "DNS 1",
+"DNS 2" => "DNS 2",
+"WINS" => "WINS",
+"Gateway" => "Gateway",
+"Optional" => "Optional",
+"Of 1 to 50000 Seconds" => "Of 1 to 50000 Seconds",
+"Time of client refreshment" => "Time of client refreshment",
+"DHCP Configuration" => "DHCP Configuration",
+"Could not find IP range" => "Could not find IP range",
+"DHCP configuration reading error: Verify that the DHCP service is installed and try again." => "DHCP configuration reading error: Verify that the DHCP service is installed and try again.",
+"Information DHCP" => "Information",
+"The Service dhcpd can't stop" => "The Service dhcpd can't stop",
+"The Service dhcpd can't start" => "The Service dhcpd can't start",
+"The start IP is outside the LAN network" => "The start IP is outside the LAN network",
+"The final IP is outside the LAN network" => "The final IP is outside the LAN network",
+"IP Range is invalid for available devices" => "IP Range is invalid for available devices",
+"Gateway is outside the LAN network" => "Gateway is outside the LAN network",
+"You can only choose between Enabled and Disabled" => "You can only choose between Enabled and Disabled",
+"Value outside the range (1-50000)" => "Value outside the range (1-50000)",
+"Failed to update the file configuration" => "Failed to update the file configuration",
+"The update was successful, but was unable to reestablish the permissions of the file dhcp.conf" => "The update was successful, but was unable to reestablish the permissions of the file dhcp.conf",
+"Update Error" => "Update Error",
+/*End module DHCP Server */
 );
 ?>
