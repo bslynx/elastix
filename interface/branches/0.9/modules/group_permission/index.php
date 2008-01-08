@@ -76,7 +76,7 @@ function _moduleContent(&$smarty, $module_name)
 
     if (!isset($_POST['group'])) $_POST['group']=1;
     if(isset($_POST['apply'])) {
-       $arrPermisos=$pACL->getGroupPermissions($idGroup);
+        $arrPermisos=$pACL->getGroupPermissions($idGroup);
         $listaPermisos=array_keys($arrPermisos);
         $selectedResources= isset($_POST['groupPermission'])?array_keys($_POST['groupPermission']):array();
         $listaPermisosNuevos = array_diff($selectedResources, $listaPermisos);
@@ -100,6 +100,8 @@ function _moduleContent(&$smarty, $module_name)
         if (!empty($msgError))
                 $smarty->assign("mb_message", $msgError);
 
+        //borra los menus q tiene de permisos que estan guardados en la session, el index.php principal (html) volvera a generar esta arreglo de permisos.
+        unset($_SESSION['elastix_user_permission']); 
     } 
 
        $arrFormElements = array(
