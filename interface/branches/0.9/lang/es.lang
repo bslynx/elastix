@@ -417,6 +417,10 @@ configuraci&oacute;n porque algunos <br> procesos prodr&iacute;an necesitarlos."
 "The changes was saved in the file"=>"Los cambios han sido guardados en el archivo.",
 "Doesn't have permisses to read"=>"no tiene permisos de lectura",
 "This is not a valid directory"=>"No es un directorio válido",
+"Please write the file name" => "Por favor escriba el nombre del archivo",
+"Save" => "Guardar",
+"New File" => "Nuevo Archivo",
+"File already exist" => "El archivo ya existe",
 /* FIN: File Editor */
 
 "File installer.php doesn't exist in package" =>"Archivo installer.php no existe en el paquete",

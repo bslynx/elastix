@@ -406,6 +406,10 @@ configuration because some <br> processes could need them.",
 "The changes was saved in the file" => "The changes was saved in the file",
 "Doesn't have permisses to read"=>"doesn't have permisses to read",
 "This is not a valid directory"=>"This is not a valid directory",
+"Please write the file name" => "Please write the file name",
+"Save" => "Save",
+"New File" => "New File",
+"File already exist" => "File already exist",
 /* FIN: File Editor */
 
 "File installer.php doesn't exist in package" =>"File installer.php doesn't exist in package",

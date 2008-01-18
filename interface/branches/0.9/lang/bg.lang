@@ -412,6 +412,10 @@ configuration because some processes need it."=>"Въведените мрежи
 "The changes was saved in the file" => "Промените са записани във Файла",
 "Doesn't have permisses to read"=>"не е позволен за четене",
 "This is not a valid directory"=>"Неправилна директория",
+"Please write the file name" => "Please write the file name",
+"Save" => "Save",
+"New File" => "New File",
+"File already exist" => "File already exist",
 /* FIN: File Editor */
 
 "File installer.php doesn't exist in package" =>"Файлът install.php не е намерен в архива на модула",

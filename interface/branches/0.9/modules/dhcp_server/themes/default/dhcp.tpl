@@ -24,11 +24,11 @@
             <td>
                 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="tabForm">
                     <tr> 
-                        <td width="22%"><b>{$STATUS}:</b></td>
+                        <td width="26%"><b>{$STATUS}:</b></td>
                         <td><b>{$DHCP_STATUS}</b></td>
                     </tr>
                     <tr> 
-                        <td width="22%"><b>{$START_RANGE_OF_IPS}: <span  class="required">*</span></b></td>
+                        <td width="26%"><b>{$START_RANGE_OF_IPS}: <span  class="required">*</span></b></td>
                         <td> 
                             {$in_ip_ini_1.LABEL}{$in_ip_ini_1.INPUT}
                             {$in_ip_ini_2.LABEL}{$in_ip_ini_2.INPUT}
@@ -37,7 +37,7 @@
                         </td>
                     </tr>
                     <tr> 
-                        <td width="22%"><b>{$END_RANGE_OF_IPS}: <span  class="required">*</span></b></td>
+                        <td width="26%"><b>{$END_RANGE_OF_IPS}: <span  class="required">*</span></b></td>
                         <td> 
                             {$in_ip_fin_1.LABEL}{$in_ip_fin_1.INPUT}
                             {$in_ip_fin_2.LABEL}{$in_ip_fin_2.INPUT}
@@ -46,11 +46,11 @@
                         </td>
                     </tr>
                     <tr> 
-                        <td width="22%">{$in_lease_time.LABEL} <span  class="required">*</span></td>
+                        <td width="26%">{$in_lease_time.LABEL} <span  class="required">*</span></td>
                         <td>{$in_lease_time.INPUT}&nbsp;&nbsp;({$OF_1_TO_50000_SECONDS})</td>
                     </tr>
                     <tr> 
-                        <td width="22%"><b>{$DNS_1}: <span  class="required">*</span></b></td>
+                        <td width="26%"><b>{$DNS_1}: <span  class="required">*</span></b></td>
                         <td> 
                             {$in_dns1_1.LABEL}{$in_dns1_1.INPUT}
                             {$in_dns1_2.LABEL}{$in_dns1_2.INPUT}
@@ -59,7 +59,7 @@
                         </td>
                     </tr>
                     <tr> 
-                        <td width="22%"><b>{$DNS_2}: </b></td>
+                        <td width="26%"><b>{$DNS_2}: </b></td>
                         <td> 
                             {$in_dns2_1.LABEL}{$in_dns2_1.INPUT}
                             {$in_dns2_2.LABEL}{$in_dns2_2.INPUT}
@@ -68,7 +68,7 @@
                         </td> 
                     </tr>
                     <tr> 
-                        <td width="22%"><b>{$WINS}: </b></td>
+                        <td width="26%"><b>{$WINS}: </b></td>
                         <td>
                             {$in_wins_1.LABEL}{$in_wins_1.INPUT}
                             {$in_wins_2.LABEL}{$in_wins_2.INPUT}
@@ -77,7 +77,7 @@
                         </td> 
                     </tr>
                     <tr> 
-                        <td width="22%"><b>{$GATEWAY}: <span  class="required">*</span></b></td>
+                        <td width="26%"><b>{$GATEWAY}: <span  class="required">*</span></b></td>
                         <td> 
                             {$in_gw_1.LABEL}{$in_gw_1.INPUT}
                             {$in_gw_2.LABEL}{$in_gw_2.INPUT}
