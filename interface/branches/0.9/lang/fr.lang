@@ -2,19 +2,20 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.5                                                  |
+  | Elastix version 0.9                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
-  | Copyright (c) 2006 Palosanto Solutions S. A.                         |
+  | Copyright (c) 2008 Palosanto Solutions S. A.                         |
   +----------------------------------------------------------------------+
   | Cdla. Nueva Kennedy Calle E 222 y 9na. Este                          |
   | Telfs. 2283-268, 2294-440, 2284-356                                  |
   | Guayaquil - Ecuador                                                  |
-  | http://www.palosanto.com 											 |
+  | http://www.palosanto.com    					 |
   |                                                                      |
-  | Translate bye: Erwan DESVERGNES - SDCI                               |
+  | Translated by: Erwan DESVERGNES - SDCI                               |
   | erwan.desvergnes@SDCI.fr                                             |
-  |                                                                      |                                               |
+  |   revision 0.9.2 by Gregory BOUZINAC - GMixon                        | 
+  | greg@gmixon.com                                                      |
   +----------------------------------------------------------------------+
   | The contents of this file are subject to the General Public License  |
   | (GPL) Version 2 (the "License"); you may not use this file except in |
@@ -29,9 +30,9 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: fr.lang,v 1.6 2007/09/05 00:36:42 gcarrillo Exp $ */
-global $arrLang;
-$arrLang=array(
+  $Id: fr.lang,v 1.6 2008/01/20 00:36:42 gcarrillo Exp $ */
+global $arrLang2;
+$arrLang2=array(
 "System Resources"=>"Ressources systeme",
 "CPU Info"=>"Info CPU",
 "Uptime"=>"Temps de fonctionnement",
@@ -66,7 +67,7 @@ $arrLang=array(
 "Edit Interface"=>"Modifier Interface",
 "Validation Error"=>"Erreur de validation",
 "The following fields contain errors"=>"Les champs suivants contiennent des erreurs",
-"Host"=>"Host",
+"Host"=>"Hote",
 "Primary DNS"=>"DNS primaire",
 "Secondary DNS"=>"DNS secondaire",
 "Default Gateway"=>"Passerelle par defaut",
@@ -105,15 +106,16 @@ $arrLang=array(
 "Are you sure you wish to continue?"=>"Etes vous sur de vouloir continuer?",
 "Edit"=>"Editer",
 "Delete"=>"Supprimer",
-"Shutdown"=>"Arreter",
+"Shutdown"=>"Arret",
 "Accept"=>"Accepter",
 "Halt"=>"Eteindre", //shutdown mode
 "Reboot"=>"Redemarrer", //shutdown mode
 "Shutdown in progress"=>"Arret en cours",
-"Your system in shutting down now. Please, try again later."=>"Votre systeme est en cours d'arret. Veuillez patienter.",
+"Your system in shutting down now. Please, try again later."=>"Operation en cours. Veuillez patienter.",
 "Apply"=>"Appliquer",
 "Resource"=>"Ressource",
 "Group Permission"=>"Permissions des Groupes",
+"Users"=>"Utilisateurs",
 "Show"=>"Afficher",
 "Virtual Fax List"=>"Liste des Fax virtuels",
 "Virtual Fax Name"=>"Nom du fax virtuel",
@@ -219,7 +221,7 @@ $arrLang=array(
 "PBX Configuration"=>"Configuration PABX",
 "Network"=>"Reseau",
 "User Management"=>"Gestion des utilisateurs",
-"Flash Operator Panel"=>"Panneau Operateur instantanne",
+"Flash Operator Panel"=>"Panneau Operateur Flash",
 "Asterisk Recording Interface"=>"Interface d\'enregistrement d\'Asterisk",
 "CDR Report"=>"Rapport CDR",
 "Channels Usage"=>"Utilisation des canaux",
@@ -333,7 +335,7 @@ Vous devez inserer un reseau par ligne et chaque reseau <br>doit avoir le format
 "New Timezone"  =>  "Nouveau fuseau horaire",
 "The change of date and time can concern important  system processes."  =>  "Le changement de la date et du temps peuvent influencer d'important processus systeme.",
 "File name"  =>  "Nom fichier",
-"Load Module"  =>  "Charger Module",
+"Load Module"  =>  "Chargement Module",
 "Refresh"  =>  "Rafraichir",
 "Menu Location"  =>  "Emplacement Menu",
 "Module File"  =>  "Fichier du Module",
@@ -409,13 +411,12 @@ Vous devez inserer une IP par ligne.  Nous recommandons de garder <br> localhost
 "Doesn't have permisses to read"=>"n'a pas les permissions de lecture",
 "This is not a valid directory"=>"Ce n'est pas un repertoire valide",
 "Please write the file name" => "Please write the file name",
-"Save" => "Save",
 "New File" => "New File",
 "File already exist" => "File already exist",
 /* FIN: File Editor */
 
-"File installer.php doesn't exist in package" =>"Fichier installer.php inexistant dans le package",
-"File module.xml doesn't exist in package"=>"Fichier module.xml inexistant dans le package",
+"File installer.php doesn't exist in package" =>"Fichier installer.php inexistant dans le paquet",
+"File module.xml doesn't exist in package"=>"Fichier module.xml inexistant dans le paquet",
 
 
 
@@ -448,40 +449,40 @@ Vous devez inserer une IP par ligne.  Nous recommandons de garder <br> localhost
 
 /* Modulo system.updates*/
 "Updates" => "Mises a jour",
-"Repositories" =>"Repositories",
-"Package Name" => "Nom Package",
-"Package Info" => "Info Package",
+"Repositories" =>"Installateurs",
+"Package Name" => "Nom Paquet",
+"Package Info" => "Info Paquet",
 "Package Version" => "Version",
 "Package Installed" => "Installe",
 "Package Upgrade" => "Mettre a jour",
 "Package Delete" => "Effacer",
 "Package Release" => "Version",
-"Packages not Founds" => "Packages non trouves",
+"Packages not Founds" => "Paquets non trouves",
 "All Package" => "Tous",
-"Packages" => "Packages",
+"Packages" => "Paquets",
 "Package Noninstalled" => "Non installe",
-"Repositor not Found" => "Repositor non trouve",
+"Repositor not Found" => "Installateur non trouve",
 "Package Search" => "Chercher",
-"Repositor Place" => "Repositor",
-"Repositor Place" => "Repositor",
-"Package Update" => "Mettre a jour Packages",
-"Updating Packages" => "Mises a jour Packages",
+"Repositor Place" => "Emplacement Installateur",
+"Repositor Place" => "Emplacement Installateur",
+"Package Update" => "Mettre a jour Paquet",
+"Updating Packages" => "Mise a jour Paquets",
 "Satisfactory Update" => "Satisfactory Update",
 "Choice" => "Choix",
-"Updated" => "Mis a jour",
+"Updated" => "A jour",
 "Install" => "Installer",
-"Repositories Update" => "Mettre a jour Repositories",
-"Updating Repositories" => "Mises a jour Repositories",
+"Repositories Update" => "Mettre a jour Installateurs",
+"Updating Repositories" => "Mise a jour Installateurs",
 "Satisfactory Install" => "Installer Satisfactory",
-"Installing Package" => "Installation Package",
+"Installing Package" => "Installation Paquet",
 "Updating for dependencies" => "Mise a jour pour dependances",
 "Installing for dependencies" => "Installation pour dependances",
 "Installing" => "Installation",
-"Total Packages" => "Packages Totaux",
+"Total Packages" => "Paquets Totaux",
 "There is an action in process" => "Il y a une action en cours",
 
 /*Backup List*/
-"Backup/Restore" => "Sauvegarder/Restaurer",
+"Backup/Restore" => "Sauvegarde/Restauration",
 "Backup List" => "Liste Sauvegardes",
 "Name Backup" => "Nom Sauvegarde",
 "Error when deleting backup file" => "Erreur lors de l'effacement du fichier de sauvegarde",

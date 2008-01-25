@@ -462,7 +462,6 @@ konfiguraciji jer neki <br> procesi ih mogu trebati.",
 "Doesn't have permisses to read"=>"Nema dozvola za čitanje",
 "This is not a valid directory"=>"Ovo nije ispravna mapa",
 "Please write the file name" => "Please write the file name",
-"Save" => "Save",
 "New File" => "New File",
 "File already exist" => "File already exist",
 /* FIN: File Editor */

@@ -387,7 +387,6 @@ $arrLang=array(
 "Doesn't have permisses to read"=>"doesn't have permisses to read",
 "This is not a valid directory"=>"This is not a valid directory",
 "Please write the file name" => "Please write the file name",
-"Save" => "Save",
 "New File" => "New File",
 "File already exist" => "File already exist",
 /* FIN: File Editor */

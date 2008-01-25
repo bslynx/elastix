@@ -413,7 +413,6 @@ configuration because some processes need it."=>"Въведените мрежи
 "Doesn't have permisses to read"=>"не е позволен за четене",
 "This is not a valid directory"=>"Неправилна директория",
 "Please write the file name" => "Please write the file name",
-"Save" => "Save",
 "New File" => "New File",
 "File already exist" => "File already exist",
 /* FIN: File Editor */

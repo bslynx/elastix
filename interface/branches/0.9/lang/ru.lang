@@ -366,7 +366,6 @@ $arrLang=array(
 "Doesn't have permisses to read" => "Нет прав на чтение",
 "This is not a valid directory" => "Некорректная директория",
 "Please write the file name" => "Please write the file name",
-"Save" => "Save",
 "New File" => "New File",
 "File already exist" => "File already exist",
 "File installer.php doesn't exist in package" => "Файл installer.php отсутствует в пакете",
