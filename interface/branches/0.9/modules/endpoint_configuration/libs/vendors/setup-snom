@@ -1,0 +1,51 @@
+#!/bin/sh
+# Name: setup-snom
+# Version: 1.0
+# Date: 05/01/07
+#
+# Copyright (C) 2007 Fonality Inc. (fonality.com)
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+
+echo ""
+echo "--------------------------------------------------------------"
+echo "Creating default config files for Snom phones"
+echo "--------------------------------------------------------------"
+echo ""
+
+#############################
+cat > /tftpboot/snom.cnf <<EOF
+# After each setting (before the colon) you can set a flag, which means respectively:
+# ! means writeable by the user, but will not overwrite existing 
+# $ means writeable by the user, but will overwrite existing (available since version 4.2)
+# & (or no flag) means read only, but will overwrite existing
+
+language: English
+ring_sound: Ringer6
+timezone: USA-6
+user_phone: off
+challenge_response: off
+filter_registrar: off
+auto_dial: 5
+tone_scheme: USA
+logon_wizard: off
+# edit_alpha_mode: 123
+display_method: display_name_number
+mwi_dialtone: normal
+# firmware: http://www.snom.com/download/snom360-6.2.3-SIP-j.bin
+intercom_enabled: on
+text_softkey: on
+ringer_animation: off
+EOF
+
+echo "Created /tftpboot/snom.cfg"
+echo ""

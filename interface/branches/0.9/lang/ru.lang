@@ -540,5 +540,31 @@ implementations of Voice over IP around the globe.",
 "The update was successful, but was unable to reestablish the permissions of the file dhcp.conf" => "The update was successful, but was unable to reestablish the permissions of the file dhcp.conf",
 "Update Error" => "Update Error",
 /*End module DHCP Server */
+
+/*Start module Endpoint Manager*/
+"Endpoint Configuration" => "Endpoint Configuration",
+"Endpoint Scan" => "Endpoint Scan",
+"Display Name" => "Display Name",
+"MAC Adress" => "MAC Adress",
+"Phone Type" => "Phone Type",
+"IP Adress" => "IP Adress",
+"Vendor" => "Vendor",
+"User Extension" => "User Extension",
+"Set" => "Set",
+"Unset" => "Unset",
+"Are you sure you wish to unset endpoint(s)?" => "Are you sure you wish to unset endpoint(s)?",
+"Are you sure you wish to set endpoint(s)?" => "Are you sure you wish to set endpoint(s)?",
+"Configured without incident." => "Configured without incident.",
+"Not Set" => "Not Set",
+"Unable write the file" => "Unable write the file",
+"Users" => "Users",
+"User Name in Endpoint is" => "User Name in Endpoint is",
+"And secrets no equals in FreePBX and Endpoint" => "And secrets no equals in FreePBX and Endpoint",
+"Don't exist in FreePBX extension" => "Don't exist in FreePBX extension",
+"Don't exist in Endpoint extension" => "Don't exist in Endpoint extension",
+"UPDATE" => "UPDATE",
+"Unable delete the file" => "Unable delete the file",
+"Unselected" => "Unselected",
+/*End module Endpoint Manager*/
 );
 ?>

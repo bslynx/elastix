@@ -1,0 +1,51 @@
+#!/bin/sh
+#
+# Copyright (C) 2007 Fonality Inc. (fonality.com)
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+clear
+function setup_aastra {
+
+IPADDR=$1
+cat > /tftpboot/aastra.cfg <<EOF
+#aastra default config file
+time server disabled: 0
+time server1: $IPADDR
+
+sip proxy ip: $IPADDR
+sip proxy port: 5060
+sip registrar ip: $IPADDR
+sip registrar port: 5060
+
+sip digit timeout: 6
+
+xml application post list: $IPADDR
+
+softkey1 type: speeddial
+softkey1 label: "Voice Mail"
+softkey1 value: *97
+
+softkey2 type: speeddial
+softkey2 label: "DND On"
+softkey2 value: *78
+
+softkey3 type: speeddial
+softkey3 label: "DND Off"
+softkey3 value: *79
+EOF
+
+chmod 666 /tftpboot/aastra.cfg
+
+echo "Created /tftpboot/aastra.cfg using $IPADDR for the proxy."
+}
+
+setup_aastra $1

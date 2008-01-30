@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 1.0                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -232,7 +232,7 @@ class PaloSantoDHCP
                 $ip_dns1, 
                 $ip_dns2, 
                 $IPSubnet, 
-                $lan_mask,
+                $conf_red_actual,
                 $ip_ini,
                 $ip_fin,
                 $in_lease_time)
@@ -244,7 +244,8 @@ class PaloSantoDHCP
         $arrAttributes['ip_dns1']       = $ip_dns1;
         $arrAttributes['ip_dns2']       = $ip_dns2;
         $arrAttributes['IPSubnet']      = $IPSubnet; 
-        $arrAttributes['lan_mask']      = $lan_mask; 
+        $arrAttributes['lan_mask']      = $conf_red_actual['lan_mask']; 
+        $arrAttributes['lan_ip']        = $conf_red_actual['lan_ip']; 
         $arrAttributes['ip_ini']        = $ip_ini;
         $arrAttributes['ip_fin']        = $ip_fin;
         $arrAttributes['in_lease_time'] = $in_lease_time;
@@ -295,7 +296,9 @@ class PaloSantoDHCP
         $lineas_dns  = "\toption domain-name-servers\t{$arrAttributes['ip_dns1']};\n";
         if($arrAttributes['ip_dns2']!="...") $lineas_dns .= "\toption domain-name-servers\t{$arrAttributes['ip_dns2']};\n";
 
-        $tpl = str_replace("{CONF_DOMAIN_NAME_SERVER}",$lineas_dns,   $tpl);
+        $tpl = str_replace("{CONF_DOMAIN_NAME_SERVER}",$lineas_dns,                    $tpl);
+        $tpl = str_replace("{CONF_NTP_SERVERS}",       $arrAttributes['lan_ip'],       $tpl);
+        $tpl = str_replace("{CONF_TFTP_SERVER_NAME}",  $arrAttributes['lan_ip'],       $tpl);
         $tpl = str_replace("{CONF_IP_INICIO}",         $arrAttributes['ip_ini'],       $tpl);
         $tpl = str_replace("{CONF_IP_FIN}",            $arrAttributes['ip_fin'],       $tpl);
         $tpl = str_replace("{CONF_LEASE_TIME}",        $arrAttributes['in_lease_time'],$tpl);
@@ -310,8 +313,13 @@ class PaloSantoDHCP
                     "subnet {IP_SUBNET_LAN} netmask {MASK_SUBNET_LAN} {\n".
 
 	            "\toption routers\t\t\t{CONF_GATEWAY};\n\n".
-
+                    "\toption subnet-mask\t\t{MASK_SUBNET_LAN};\n".
+                    "\toption nis-domain\t\t\"asterisk.local\";\n".
+                    "\toption domain-name\t\t\"asterisk.local\";\n".
                     "{CONF_DOMAIN_NAME_SERVER}\n".
+                    "\toption time-offset\t\t-18000; # Eastern Standard Time\n".
+                    "\toption ntp-servers\t\t{CONF_NTP_SERVERS};\n".
+                    "\toption tftp-server-name\t\t\"{CONF_TFTP_SERVER_NAME}\";\n".
                     "{CONF_WINS}\n\n".
 
 	            "\trange dynamic-bootp {CONF_IP_INICIO} {CONF_IP_FIN};\n".

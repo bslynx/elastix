@@ -456,7 +456,7 @@ function serviceUpdateDHCP($smarty, $module_name, $local_templates_dir, $pDB, &$
     else {
         // Pase la validacion, empiezo a generar la data que constituira el archivo de configuracion nuevo
         if(!$paloDHCP->updateFileConfDHCP($ip_gw,$ip_gw_nm,$ip_wins,$ip_dns1,$ip_dns2,
-                                          $IPSubnet,$configuracion_de_red_actual["lan_mask"],
+                                          $IPSubnet,$configuracion_de_red_actual,
                                           $ip_ini,$ip_fin,$in_lease_time)){
             $smarty->assign("mb_title",$arrLang["Update Error"].":");
             $smarty->assign("mb_message",$paloDHCP->errMsg); 
