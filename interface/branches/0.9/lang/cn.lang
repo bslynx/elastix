@@ -318,6 +318,7 @@ configuration because some processes need it."=>"这些网络可以通过Elastix
 "Campaigns List"  =>  "Campaigns List",
 "Recordings" => "Recordings",
 "Voicemail"  =>  "Voicemail",
+"CallerID"=>"CallerID",
 "Monitoring"  =>  "Monitoring",
 "Monitorig List" => "Monitoring List",
 "Voicemail List" => "Voicemail List",

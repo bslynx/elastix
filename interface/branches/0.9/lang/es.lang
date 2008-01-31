@@ -325,6 +325,7 @@ que pueden existir procesos que la necesiten para su correcto funcionamiento.",
 
 //recordings - voicemail
 "Recordings"=>"Recordings",
+"CallerID"=>"Id LLamada",
 "Voicemail" => "Correo de Voz",
 "Monitoring" => "Monitoreo",
 "Monitorig List" => "Lista de Grabaciones",

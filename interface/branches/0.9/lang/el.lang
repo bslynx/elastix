@@ -327,6 +327,7 @@ configuration <br>because some processes need it.",
 //recordings - voicemail
 "Recordings"=>"Recordings",
 "Voicemail" => "Voicemail",
+"CallerID"=>"CallerID",
 "Monitoring" => "Monitoring",
 "Monitorig List" => "Monitoring List",
 "Voicemail List" => "Voicemail List",

@@ -300,6 +300,7 @@ $arrLang=array(
 "View User" => "View User",
 "Recordings" => "Сообщения и Записи",
 "Voicemail" => "Голосовая Почта",
+"CallerID"=>"CallerID",
 "Monitoring" => "Записанные Сообщения",
 "Monitorig List" => "Список Записанных Сообщений",
 "Voicemail List" => "Список Голосовых Сообщений",

@@ -304,6 +304,7 @@ $arrLang=array(
 "View User" => "Felhasználót néz",
 "Recordings" => "Felvételek",
 "Voicemail" => "Hangüzenetek",
+"CallerID"=>"CallerID",
 "Monitoring" => "Felügyelet",
 "Monitorig List" => "Felügyelet lista",
 "Voicemail List" => "Hangüzenet lista",

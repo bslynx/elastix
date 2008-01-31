@@ -321,6 +321,7 @@ Morate upisati po jednu mrežu po retku i svaka mreža mora biti u formi <br>
 "Campaigns List"  =>  "Lista kampanja",
 "Recordings" => "Snimke",
 "Voicemail"  =>  "Govorna pošta",
+"CallerID"=>"CallerID",
 "Monitoring"  =>  "Monitoriranje",
 "Monitorig List" => "Listamonitoriranja",
 "Voicemail List" => "Lista govornih poruka",

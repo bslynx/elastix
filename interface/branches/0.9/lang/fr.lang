@@ -323,6 +323,7 @@ Vous devez ins&eacute;rer un r&eacute;seau par ligne et chaque r&eacute;seau <br
 "Campaigns List"  =>  "Liste Campagnes",
 "Recordings" => "Enregistrements",
 "Voicemail"  =>  "Boite vocale",
+"CallerID"=>"CallerID",
 "Monitoring"  =>  "Surveillance",
 "Monitorig List" => "Liste Conversations",
 "Voicemail List" => "Liste Messages",

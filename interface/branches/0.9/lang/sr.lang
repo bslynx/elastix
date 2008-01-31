@@ -302,6 +302,7 @@ $arrLang=array(
 "Campaigns List"=>"Lista kampanja",
 "Recordings"=>"Zapisi",
 "Voicemail"=>"Govorna posta",
+"CallerID"=>"CallerID",
 "Monitoring"=>"Monitoring",
 "Monitorig List"=>"Monitoring lista",
 "Voicemail List"=>"Lista govorne poste",

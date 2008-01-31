@@ -320,6 +320,7 @@ configuration because some processes need it."=>"Въведените мрежи
 
 
 //recordings - voicemail
+"CallerID"=>"CallerID",
 "Recordings"=>"Записи",
 "Voicemail" => "Гласова Поща",
 "Monitoring" => "Мониторинг",
