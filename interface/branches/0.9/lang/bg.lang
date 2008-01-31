@@ -588,7 +588,7 @@ configuration because some processes need it."=>"Въведените мрежи
 "Update Error" => "Update Error",
 /*End module DHCP Server */
 
-/*Start module Endpoint Manager*/
+/*Start module Endpoint Configuration*/
 "Endpoint Configuration" => "Endpoint Configuration",
 "Endpoint Scan" => "Endpoint Scan",
 "Display Name" => "Display Name",
@@ -612,6 +612,6 @@ configuration because some processes need it."=>"Въведените мрежи
 "UPDATE" => "UPDATE",
 "Unable delete the file" => "Unable delete the file",
 "Unselected" => "Unselected",
-/*End module Endpoint Manager*/
+/*End module Endpoint Configuration*/
 );
 ?>
