@@ -127,6 +127,7 @@ $arrLang=array(
 "Field Name"=>"필드 이름",
 "Field"=>"필드",
 "CDR Report List"=>"CDR 보고서",
+"Account Code"=>"Account Code",
 "Date"=>"날자",
 "Source"=>"자원",
 "Destination"=>"목적지",

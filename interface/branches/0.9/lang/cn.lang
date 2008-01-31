@@ -126,6 +126,7 @@ $arrLang=array(
 "Field Name"=>"项目名称",
 "Field"=>"项目",
 "CDR Report List"=>"CDR报告列表",
+"Account Code" => "Account Code",
 "Date"=>"日期",
 "Source"=>"来源",
 "Destination"=>"目的地",

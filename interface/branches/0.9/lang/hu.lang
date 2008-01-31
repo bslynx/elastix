@@ -129,6 +129,7 @@ $arrLang=array(
 "Field Name" => "Mező név",
 "Field" => "Mező  ",
 "CDR Report List" => "CDR jelentés lista",
+"Account Code" => "Account Code",
 "Date" => "Dátum",
 "Source" => "Forrás",
 "Destination" => "Cél",

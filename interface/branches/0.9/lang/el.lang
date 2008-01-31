@@ -130,6 +130,7 @@ $arrLang=array(
 "Field Name" => "Όνομα Πεδίου",
 "Field" => "Πεδίο",
 "CDR Report List" => "Λίστα Αναφοράς CDR",
+"Account Code" => "Account Code",
 "Date" => "Ημερομηνία",
 "Source" => "Πηγή",
 "Destination" => "Προορισμός",

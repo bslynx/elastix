@@ -130,6 +130,7 @@ $arrLang=array(
 "Field Name"=>"Naziv polja",
 "Field"=>"Polje",
 "CDR Report List"=>"CDR izvještaj",
+"Account Code"=>"Account Code",
 "Date"=>"Datum",
 "Source"=>"Izvorište",
 "Destination"=>"Odredište",

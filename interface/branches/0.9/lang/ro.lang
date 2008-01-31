@@ -130,6 +130,7 @@ $arrLang=array(
 "Field Name"=>"Numele Campului",
 "Field"=>"Camp",
 "CDR Report List"=>"Liste de raportare CDR",
+"Account Code"=>"Account Code",
 "Date"=>"Data",
 "Source"=>"Soursa",
 "Destination"=>"Destinatie",

@@ -124,6 +124,7 @@ $arrLang=array(
 "Field Name"=>"Ime polja",
 "Field"=>"Polje",
 "CDR Report List"=>"CDR izvestajna lista",
+"Account Code"=>"Account Code",
 "Date"=>"Datum",
 "Source"=>"Izvor",
 "Destination"=>"Odrediste",

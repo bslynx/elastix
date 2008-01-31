@@ -127,6 +127,7 @@ $arrLang=array(
 "Field Name"=>"Nome Campo",
 "Field"=>"Campo",
 "CDR Report List"=>"Lista Report CDR",
+"Account Code"=>"Account Code",
 "Date"=>"Data",
 "Source"=>"Sorgente",
 "Destination"=>"Destinazione",
