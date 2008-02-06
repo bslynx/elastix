@@ -618,6 +618,8 @@ alrededor del mundo.",
 "UPDATE" => "ACTUALIZAR",
 "Unable delete the file" => "No se puede borra el archivo",
 "Unselected" => "No Seleccionado",
+"No Models" => "No Modelos",
+"No Extensions" => "No Extensiones",
 /*End module Endpoint Configuration*/
 );
 ?>

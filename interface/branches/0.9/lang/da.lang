@@ -612,6 +612,8 @@ implementations of Voice over IP around the globe.",
 "UPDATE" => "UPDATE",
 "Unable delete the file" => "Unable delete the file",
 "Unselected" => "Unselected",
+"No Models" => "No Models",
+"No Extensions" => "No Extensions",
 /*End module Endpoint Configuration*/
 );
 ?>

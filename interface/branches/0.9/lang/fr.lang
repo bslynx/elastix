@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.9                                                  |
+  | Elastix version 1.0                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2008 Palosanto Solutions S. A.                         |
@@ -10,7 +10,7 @@
   | Cdla. Nueva Kennedy Calle E 222 y 9na. Este                          |
   | Telfs. 2283-268, 2294-440, 2284-356                                  |
   | Guayaquil - Ecuador                                                  |
-  | http://www.palosanto.com 											 |
+  | http://www.palosanto.com 						 |
   |                                                                      |
   | Translated by: Erwan DESVERGNES - SDCI                               |
   | erwan.desvergnes@SDCI.fr                                             |
@@ -30,7 +30,7 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: fr.lang,v 1.6 2008/01/20 00:36:42 gcarrillo Exp $ */
+  $Id: fr.lang,v 1.7 2008/01/20 00:36:42 bmacias Exp $ */
 global $arrLang;
 $arrLang=array(
 "System Resources"=>"Ressources syst&egrave;me",
@@ -609,6 +609,8 @@ de Voix sur IP tout autour du globe.",
 "UPDATE" => "METTRE A JOUR",
 "Unable delete the file" => "Impossible d'effacer le fichier",
 "Unselected" => "Non S&eacute;lectionn&eacute;",
+"No Models" => "No Models",
+"No Extensions" => "No Extensions",
 /*End module Endpoint Configuration*/
 );
 ?>
