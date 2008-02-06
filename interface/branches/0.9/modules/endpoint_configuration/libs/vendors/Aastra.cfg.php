@@ -40,4 +40,36 @@ sip line1 mode: 0 ";
 
     return $content;
 }
+
+function templatesFileAastra($ipAdressServer)
+{
+    $content= <<<TEMP
+#aastra default config file
+time server disabled: 0
+time server1: $ipAdressServer
+
+sip proxy ip: $ipAdressServer
+sip proxy port: 5060
+sip registrar ip: $ipAdressServer
+sip registrar port: 5060
+
+sip digit timeout: 6
+
+xml application post list: $ipAdressServer
+
+softkey1 type: speeddial
+softkey1 label: "Voice Mail"
+softkey1 value: *97
+
+softkey2 type: speeddial
+softkey2 label: "DND On"
+softkey2 value: *78
+
+softkey3 type: speeddial
+softkey3 label: "DND Off"
+softkey3 value: *79
+TEMP;
+
+    return $content;
+}
 ?>

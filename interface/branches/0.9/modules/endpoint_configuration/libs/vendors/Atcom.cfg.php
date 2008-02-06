@@ -1,10 +1,85 @@
-#!/bin/sh
+<?php
+/*
+    PrincipalFileAtcom nos retorna el contenido del archivo de configuracion de los EndPoint
+    Atcom, para ello es necesario enviarle el DisplayName, id_device, secret, ipAdressServer, mac_adress.
+*/
+function PrincipalFileAtcom($DisplayName, $id_device, $secret, $ipAdressServer, $macAdress)
+{
+    $content=
+"<<VOIP CONFIG FILE>>Version:2.0002
 
-clear
-function setup_atcom {
+<GLOBAL CONFIG MODULE>
+DHCP Mode          :1
+SNTP Server        :$ipAdressServer
+Enable SNTP        :1
 
-IPADDR=$1
-cat > /tftpboot/atcom530.cfg <<EOF
+<DHCP CONFIG MODULE>
+DHCP Update Flag   :1
+TFTP  Server       :$ipAdressServer
+
+<SIP CONFIG MODULE>
+SIP  Port          :5060
+Stun Address       :
+Stun Port          :3478
+Stun Effect Time   :50
+SIP  Differv       :0
+DTMF Mode          :1
+Extern Address     :
+Url Convert        :1
+--SIP Line List--  :
+SIP1 Phone Number  :$id_device
+SIP1 Display Name  :$DisplayName
+SIP1 Register Addr :$ipAdressServer
+SIP1 Register Port :5060
+SIP1 Register User :$id_device
+SIP1 Register Pwd  :$secret
+SIP1 Register TTL  :60
+SIP1 Enable Reg    :1
+SIP1 Proxy Addr    :$ipAdressServer
+SIP1 Proxy Port    :5060
+SIP1 Proxy User    :$id_device
+SIP1 Proxy Pwd     :$secret
+SIP1 Signal Enc    :0
+SIP1 Signal Key    :
+SIP1 Media Enc     :0
+SIP1 Media Key     :
+SIP1 Local Domain  :$ipAdressServer
+SIP1 Fwd Service   :0
+SIP1 Fwd Number    :
+SIP1 Enable Detect :0
+SIP1 Detect TTL    :60
+SIP1 Server Type   :0
+SIP1 User Agent    :Voip Phone 1.0
+SIP1 PRACK         :1
+SIP1 KEEP AUTH     :1
+SIP1 Session Timer :0
+SIP1 DTMF Mode     :0
+SIP1 Use Stun      :0
+SIP1 Via Port      :1
+SIP1 Subscribe     :0
+SIP1 Sub Expire    :300
+SIP1 Single Codec  :0
+SIP1 RFC Ver       :1
+SIP1 Use Mixer     :0
+SIP1 Mixer Uri     :
+
+<AUTOUPDATE CONFIG MODULE>
+Download Username  :user
+Download password  :pass
+Download Server IP :$ipAdressServer
+Config File Name   :atc$macAdress.cfg
+Config File Key    :
+Download Protocol  :2
+Download Mode      :1
+Download Interval  :1
+<<END OF FILE>>";
+
+    return $content;
+}
+
+function templatesFileAtcom($ipAdressServer)
+{
+    $content= <<<TEMP
 <<VOIP CONFIG FILE>>Version:2.0002                            
 
 <GLOBAL CONFIG MODULE>
@@ -20,7 +95,7 @@ Host Name          :VOIP
 Pppoe Mode         :0
 HTL Start Port     :10000
 HTL Port Number    :200
-SNTP Server        :$IPADDR
+SNTP Server        :$ipAdressServer
 Enable SNTP        :1
 Time Zone          :22
 Enable Daylight    :0
@@ -93,13 +168,13 @@ Url Convert        :1
 --SIP Line List--  :
 SIP1 Phone Number  :
 SIP1 Display Name  :
-SIP1 Register Addr :$IPADDR
+SIP1 Register Addr :$ipAdressServer
 SIP1 Register Port :5060
 SIP1 Register User :
 SIP1 Register Pwd  :
 SIP1 Register TTL  :60
 SIP1 Enable Reg    :1
-SIP1 Proxy Addr    :$IPADDR
+SIP1 Proxy Addr    :$ipAdressServer
 SIP1 Proxy Port    :5060
 SIP1 Proxy User    :
 SIP1 Proxy Pwd     :
@@ -107,7 +182,7 @@ SIP1 Signal Enc    :0
 SIP1 Signal Key    :
 SIP1 Media Enc     :0
 SIP1 Media Key     :
-SIP1 Local Domain  :$IPADDR
+SIP1 Local Domain  :$ipAdressServer
 SIP1 Fwd Service   :0
 SIP1 Fwd Number    :
 SIP1 Enable Detect :0
@@ -257,8 +332,8 @@ Memory Key 10      :
 <AUTOUPDATE CONFIG MODULE>
 Download Username  :user
 Download password  :pass
-Download Server IP :$IPADDR
-Config File Name   :at\$MAC.cfg
+Download Server IP :$ipAdressServer
+Config File Name   :atc\$MAC.cfg
 Config File Key    :
 Download Protocol  :2
 Download Mode      :1
@@ -274,10 +349,9 @@ VPN Server IP      :0.0.0.0
 VPN Server Port    :80
 Server Group ID    :VPN
 Server Area Code   :12345
-<<END OF FILE>>
-EOF
+<<END OF FILE>>softkey3 value: *79
+TEMP;
 
-echo "Created /tftpboot/atcom530.cfg, sip.cfg using $IPADDR for the proxy."
+    return $content;
 }
-
-setup_atcom $1
+?>

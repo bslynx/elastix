@@ -25,7 +25,7 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: paloSantoFile.class.php,v 1.1 2008/01/22 15:05:57 afigueroa Exp $ */
+  $Id: paloSantoFileEndPoint.class.php,v 1.1 2008/01/22 15:05:57 afigueroa Exp $ */
 
 class PaloSantoFileEndPoint
 {
@@ -45,7 +45,7 @@ class PaloSantoFileEndPoint
      */
     function createFiles($ArrayData)
     {
-        include_once "vendors/{$ArrayData['vendor']}XML.php";
+        include_once "vendors/{$ArrayData['vendor']}.cfg.php";
         switch($ArrayData['vendor'])
         {
             case 'Polycom':
@@ -90,7 +90,7 @@ class PaloSantoFileEndPoint
 
             case 'Atcom':
                 $contentFileAtcom =PrincipalFileAtcom($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer,$ArrayData['data']['filename']);
-                if($this->createFileConf($this->directory,"at".$ArrayData['data']['filename'].".cfg", $contentFileAtcom))
+                if($this->createFileConf($this->directory,"atc".$ArrayData['data']['filename'].".cfg", $contentFileAtcom))
                     return true;
                 else return false;
 
@@ -134,24 +134,25 @@ class PaloSantoFileEndPoint
         switch($ArrayData['vendor'])
         {
             case 'Polycom':
-                $this->deleteFileConf($this->directory, $ArrayData['data']['filename']."reg.cfg");
-                $this->deleteFileConf($this->directory, $ArrayData['data']['filename'].".cfg");
+                if($this->deleteFileConf($this->directory, $ArrayData['data']['filename']."reg.cfg")){
+                    return $this->deleteFileConf($this->directory, $ArrayData['data']['filename'].".cfg");
+                } else false;
                 break;
 
             case 'Linksys':
-                $this->deleteFileConf($this->directory, "spa".$ArrayData['data']['filename'].".cfg");
+                return $this->deleteFileConf($this->directory, "spa".$ArrayData['data']['filename'].".cfg");
                 break;
 
             case 'Aastra':
-                $this->deleteFileConf($this->directory, $ArrayData['data']['filename'].".cfg");
+                return $this->deleteFileConf($this->directory, $ArrayData['data']['filename'].".cfg");
                 break;
 
             case 'Cisco':
-                $this->deleteFileConf($this->directory, $ArrayData['data']['filename'].".cnf");
+                return $this->deleteFileConf($this->directory, $ArrayData['data']['filename'].".cnf");
                 break;
 
             case 'Atcom':
-                $this->deleteFileConf($this->directory, "at".$ArrayData['data']['filename'].".cfg");
+                return $this->deleteFileConf($this->directory, "atc".$ArrayData['data']['filename'].".cfg");
                 break;
 
             case 'Snom':
@@ -180,12 +181,57 @@ class PaloSantoFileEndPoint
         }
     }
 
-    function executeScript($vendor, $module_name)
+    function createFilesGlobal($vendor)
     {
-        $dir = $_SERVER['DOCUMENT_ROOT']."/modules/$module_name/libs/vendors/";
-        $cmd = "{$vendor}Script ".$this->ipAdressServer;
-        exec($dir.$cmd,$arrConsole,$flagReturn);
-        return ($flagReturn)?false:true;
+        include_once "vendors/{$vendor}.cfg.php";
+
+        switch($vendor){
+            case 'Polycom':
+                //PASO 1: Creo los directorios Polycom.
+                if(mkdirFilePolycom($this->directory)){
+                    $contentFilePolycom = serverFilePolycom($this->ipAdressServer);
+
+                    //PASO 2: Creo el archivo server.cfg
+                    if($this->createFileConf($this->directory, "server.cfg", $contentFilePolycom)){
+                        $contentFilePolycom = sipFilePolycom($this->ipAdressServer);
+
+                        //PASO 3: Creo el archivo sip.cfg
+                        return $this->createFileConf($this->directory, "sip.cfg", $contentFilePolycom);
+                    } else return false;
+                } else return false;
+
+                break;
+
+            case 'Linksys':
+                //Creando archivos de ejemplo.
+                $contentFileLinksys = templatesFileLinksys($this->ipAdressServer);
+                $this->createFileConf($this->directory, "spaxxxxxxxxxxxx.template.cfg", $contentFileLinksys);
+                return true; //no es tan importante la necesidad de estos archivos solo son de ejemplo.
+                break;
+
+            case 'Aastra':
+                //Creando archivos de ejemplo.
+                $contentFileAatra = templatesFileAastra($this->ipAdressServer);
+                $this->createFileConf($this->directory, "aasxxxxxxxxxxxx.template.cfg", $contentFileAatra);
+                return true; //no es tan importante la necesidad de estos archivos solo son de ejemplo.
+                break;
+
+            case 'Cisco':
+                break;
+
+            case 'Atcom':
+                //Creando archivos de ejemplo.
+                $contentFileAtcom = templatesFileAtcom($this->ipAdressServer);
+                $this->createFileConf($this->directory, "atcxxxxxxxxxxxx.template.cfg", $contentFileAtcom);
+                return true; //no es tan importante la necesidad de estos archivos solo son de ejemplo.
+                break;
+
+            case 'Snom':
+                break;
+
+            case 'Grandstream':
+                break;
+        }
     }
 }
 ?>

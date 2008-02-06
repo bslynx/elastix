@@ -209,6 +209,9 @@ class paloSantoEndPoint
                 $arrDevices[$device['id']] = $device['label'];
             }
         }
+        else{
+            $arrDevices['no_device'] = "-- {$arrLang['No Extensions']} --";
+        }
 	return $arrDevices;
     }
 
@@ -219,19 +222,16 @@ class paloSantoEndPoint
         $pDB = $this->connectDataBase("sqlite","endpoint");
         if($pDB==false)
             return false;
-        $sqlPeticion = "select id from vendor where name ='$nameVendor';";
+        $sqlPeticion = "select m.id,m.name from vendor v inner join model m on v.id=m.id_vendor where v.name ='$nameVendor' order by m.name;";
         $result = $pDB->fetchTable($sqlPeticion,true); //se consulta a la base endpoints
         $arrModels = array();
         if(is_array($result) && count($result)>0){
-            foreach($result as $key => $vendor){
-                $sqlPeticion = "select id,name from model where id_vendor={$vendor['id']} order by name;";
-                $result2 = $pDB->fetchTable($sqlPeticion,true); //se consulta a la base endpoints
-                if(is_array($result2) && count($result2)>0){
-                    $arrModels['unselected'] = "-- {$arrLang['Unselected']} --";
-                    foreach($result2 as $key => $model)
-                        $arrModels[$model['id']] = $model['name'];
-                }
-            }
+            $arrModels['unselected'] = "-- {$arrLang['Unselected']} --";
+            foreach($result as $key => $model)
+                $arrModels[$model['id']] = $model['name'];
+        }
+        else{
+            $arrModels['no_model'] = "-- {$arrLang["No Models"]} --";
         }
         $pDB->disconnect(); 
 	return $arrModels;

@@ -1,49 +1,79 @@
-#!/bin/sh
-# Name: setup-polycom
-# Version: 1.2
-# Date: 04/26/07
-#
-# Copyright (C) 2007 Fonality Inc. (fonality.com)
-#
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License
-# as published by the Free Software Foundation; either version 2
-# of the License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-clear
-function setup_polycom {
+<?php
+/*
+    HeaderFilePolycom nos retorna el archivo de cabecera para la configuracion de los
+    EndPoint Polycom
+*/
+function HeaderFilePolycom($MACfile)
+{
+    $content="<?xml version=\"1.0\" standalone=\"yes\"?>
+<APPLICATION APP_FILE_PATH=\"sip.ld\" CONFIG_FILES=\"{$MACfile}reg.cfg, server.cfg, sip.cfg\" MISC_FILES=\"\" LOG_FILE_DIRECTORY=\"/polycom/logs/\" OVERRIDES_DIRECTORY=\"/polycom/overrides/\" CONTACTS_DIRECTORY=\"/polycom/contacts/\"/>";
 
-IPADDR=$1
-mkdir -p /tftpboot/polycom/logs
-mkdir -p /tftpboot/polycom/overrides
-mkdir -p /tftpboot/polycom/contacts
+    return $content;
+}
 
-#############################
-cat > /tftpboot/server.cfg <<EOF
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+/*
+    PrincipalFilePolycom nos retorna el contenido del archivo de configuracion de los EndPoint
+    Polycom, para ello es necesario enviarle el DisplayName, Address y AuthPassword.
+*/
+function PrincipalFilePolycom($DisplayName, $id_device, $secret)
+{
+    $content="<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>
+<reginfo>
+    <reg
+        reg.1.displayName=\"$DisplayName\"
+        reg.1.address=\"$id_device\"
+        reg.1.label=\"$id_device\"
+        reg.1.auth.userId=\"$id_device\"
+        reg.1.auth.password=\"$secret\"
+        reg.1.lineKeys=\"1\"
+        reg.1.server.1.address=\"\"
+        reg.1.server.1.expires=\"\"
+        reg.1.server.1.expires.lineSeize=\"30\"
+        reg.1.server.1.port=\"5060\"
+        reg.1.server.1.register=\"1\"
+        reg.1.server.1.retryMaxCount=\"\"
+        reg.1.server.1.retryTimeOut=\"\"
+        reg.1.server.1.transport=\"DNSnaptr\"
+        reg.1.server.2.transport=\"DNSnaptr\"
+        reg.1.thirdPartyName=\"\"
+        reg.1.type=\"private\"
+    />
+    <msg msg.bypassInstantMessage=\"1\">
+        <mwi msg.mwi.1.callBack=\"*97\" msg.mwi.1.callBackMode=\"contact\" msg.mwi.1.subscribe=\"224\" msg.mwi.2.callBack=\"\" msg.mwi.2.callBackMode=\"disabled\" msg.mwi.2.subscribe=\"\" msg.mwi.3.callBack=\"\" msg.mwi.3.callBackMode=\"disabled\" msg.mwi.3.subscribe=\"\" msg.mwi.4.callBack=\"\" msg.mwi.4.callBackMode=\"disabled\" msg.mwi.4.subscribe=\"\" msg.mwi.5.callBack=\"\" msg.mwi.5.callBackMode=\"disabled\" msg.mwi.5.subscribe=\"\" msg.mwi.6.callBack=\"\" msg.mwi.6.callBackMode=\"disabled\" msg.mwi.6.subscribe=\"\"></mwi>
+    </msg>
+</reginfo>";
+
+    return $content;
+}
+
+/*
+    serverFilePolycom nos retorna el contenido del archivo de configuracion del server
+    Polycom, para ello es necesario enviarle el ipAdressServer.
+*/
+function serverFilePolycom($ipAdressServer)
+{
+    $content="
+<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>
 <localcfg>
- <server voIpProt.server.1.address="$IPADDR"/>
- <SIP>
-   <outboundProxy voIpProt.SIP.outboundProxy.address="$IPADDR"/>
- </SIP>
-   <SNTP
-   tcpIpApp.sntp.daylightSavings.enable="1"
-   tcpIpApp.sntp.address="$IPADDR"
-   tcpIpApp.sntp.gmtOffset="-18000"
-   />
-<localcfg>
-EOF
+    <server voIpProt.server.1.address=\"$ipAdressServer\"/>
+    <SIP>
+        <outboundProxy voIpProt.SIP.outboundProxy.address=\"$ipAdressServer\"/>
+    </SIP>
+    <SNTP tcpIpApp.sntp.daylightSavings.enable=\"1\" tcpIpApp.sntp.address=\"$ipAdressServer\"  tcpIpApp.sntp.gmtOffset=\"-18000\" />
+<localcfg>";
 
-#############################
-cat > /tftpboot/sip.cfg <<EOF
+    return $content;
+}
+
+/*
+    sipFilePolycom nos retorna el contenido del archivo de configuracion del sip
+    Polycom, para ello es necesario enviarle el ipAdressServer.
+*/
+function sipFilePolycom($ipAdressServer)
+{
+    $content= <<<SIP
 <?xml version="1.0" standalone="yes"?>
 <!-- SIP Application Configuration File -->
-<!-- $Revision: 1.130.2.51.2.6 $  $Date: 2007/01/17 17:03:49 $ -->
 <sip>
    <voIpProt>
       <local voIpProt.local.port=""/>
@@ -582,7 +612,7 @@ cat > /tftpboot/sip.cfg <<EOF
       <quotas res.quotas.1.name="tone" res.quotas.1.value="600" res.quotas.2.name="bitmap" res.quotas.2.value="20" res.quotas.3.name="font" res.quotas.3.value="10" res.quotas.4.name="xmlui" res.quotas.4.value="10"/>
    </resource>
    <microbrowser mb.proxy="">
-      <main mb.main.home="http://$IPADDR/xmlservices/index.php"/>
+      <main mb.main.home="http://$ipAdressServer/xmlservices/index.php"/>
       <idleDisplay mb.idleDisplay.home="" mb.idleDisplay.refresh="0"/>
       <limits mb.limits.nodes="" mb.limits.cache=""/>
    </microbrowser>
@@ -590,10 +620,20 @@ cat > /tftpboot/sip.cfg <<EOF
       <bulkDrive usb.bulkDrive.enable="" usb.bulkDrive.name="usbDrive"/>
    </usb>
 </sip>
-EOF
+SIP;
 
-
-echo "Created /tftpboot/server.cfg, sip.cfg using $IPADDR for the proxy."
+    return $content;
 }
 
-setup_polycom $1
+/*
+    mkdirFilePolycom nos crea los directorios para
+    Polycom, para ello es necesario enviarle el directory donde va a crear los directorios.
+*/
+function mkdirFilePolycom($directory)
+{
+    exec("mkdir -p {$directory}polycom/logs"     ,$arrConsole,$dirLogs);
+    exec("mkdir -p {$directory}polycom/overrides",$arrConsole,$dirOver);
+    exec("mkdir -p {$directory}polycom/contacts" ,$arrConsole,$dirCont);
+    return (!$dirLogs && !$dirOver && !$dirCont);
+}
+?>

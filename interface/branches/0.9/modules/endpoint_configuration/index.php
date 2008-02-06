@@ -72,6 +72,8 @@ function _moduleContent(&$smarty, $module_name)
             $content = endpointConfiguratedUnset($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrLang, $arrConfig);
             break;
         default: // endpoint_show
+            if(isset($_SESSION['elastix_endpoints']))//si existe este arreglo lo borro, esto asegura de q cada vez q entre al modulo endpoint configuration vuelva a crear el arreglo de los endpoint en la SESSION
+                unset($_SESSION['elastix_endpoints']);
             $content = endpointConfiguratedShow($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrLang, $arrConfig);
             break;
     }
@@ -107,7 +109,7 @@ function endpointConfiguratedShow($smarty, $module_name, $local_templates_dir, $
                     $status = createStatus(2,$arrLang['Not Set']);
                 }
     
-                $arrTmp[0] = "<input type='checkbox' name='epmac_{$endspoint['mac_adress']}'  />";;
+                $arrTmp[0] = "<input type='checkbox' name='epmac_{$endspoint['mac_adress']}'  />";
                 $arrTmp[1] = $unset;
                 $arrTmp[2] = $endspoint['mac_adress'];
                 $arrTmp[3] = "<a href='http://{$endspoint['ip_adress']}/' target='_blank'>{$endspoint['ip_adress']}</a>";
@@ -129,7 +131,11 @@ function endpointConfiguratedShow($smarty, $module_name, $local_templates_dir, $
     else{
         $arrData = $_SESSION['elastix_endpoints'];
     }
+    return buildReport($arrData,$smarty,$module_name,$arrLang);
+}
 
+function buildReport($arrData, $smarty, $module_name, $arrLang)
+{
     $limit  = 20;
     $total  = count($arrData); 
     $oGrid  = new paloSantoGrid($smarty);
@@ -177,10 +183,16 @@ function endpointConfiguratedSet($smarty, $module_name, $local_templates_dir, $d
 {
     $paloEndPoint     = new paloSantoEndPoint($dsnAsterisk,$dsnSqlite);
     $paloFileEndPoint = new PaloSantoFileEndPoint($arrConfig["tftpboot_path"]);
-    $arrFindVendor    = array(); //variable de ayuda, para correr solo una vez el {$vendor}script de cada vendor
+    $arrFindVendor    = array(); //variable de ayuda, para llamar solo una vez la funcion createFilesGlobal de cada vendor
 
+    $valid = validateParameterEndpoint($_POST,$dsnAsterisk,$dsnSqlite);
+    if($valid!=false){
+        $smarty->assign("mb_title",$arrLang['ERROR'].":");
+        $smarty->assign("mb_message",$valid);
+        return buildReport($_SESSION['elastix_endpoints'],$smarty,$module_name,$arrLang);
+    }
     foreach($_POST as $key => $values){
-        if(substr($key,0,6) == "epmac_"){ //encontre una mac seleccionada entoces por forma empirica los 3 siguientes indices son: id_vendor_device, model_device y id_device.
+        if(substr($key,0,6) == "epmac_"){ //encontre una mac seleccionada entoces por forma empirica con ayuda del mac_adress obtego los parametros q se relacionan con esa mac.
             $tmpMac = substr($key,6);
             $freePBXParameters = $paloEndPoint->getDeviceFreePBXParameters($_POST["id_device_$tmpMac"]);
 
@@ -195,9 +207,9 @@ function endpointConfiguratedSet($smarty, $module_name, $local_templates_dir, $d
             $tmpEndpoint['comment']     = "Nada";
 
             if($paloEndPoint->createEndpointDB($tmpEndpoint)){
-                //verifico si el script del vendor ya fue ejecutado
+                //verifico si la funcion createFilesGlobal del vendor ya fue ejecutado
                 if(!in_array($tmpEndpoint['name_vendor'],$arrFindVendor)){
-                    if($paloFileEndPoint->executeScript($tmpEndpoint['name_vendor'],$module_name))
+                    if($paloFileEndPoint->createFilesGlobal($tmpEndpoint['name_vendor']))
                         $arrFindVendor[] = $tmpEndpoint['name_vendor'];
                 }
                 //escribir archivos
@@ -208,12 +220,43 @@ function endpointConfiguratedSet($smarty, $module_name, $local_templates_dir, $d
                         "id_device"    => $tmpEndpoint['id_device'], 
                         "secret"       => $tmpEndpoint['secret']);
 
+                //Falta si hay error en la creacion de un archivo, ya esta para saber q error es, el problema es como manejar un error o los errores dentro del este lazo (foreach).
+                    //ejemplo: if($paloFile->createFiles($ArrayData)==false){ $paloFile->errMsg  (mostrar error con smarty)}
                 $paloFileEndPoint->createFiles($ArrayData);
             }
         }
     }
     unset($_SESSION['elastix_endpoints']);
     header("Location: /?menu=$module_name");
+}
+
+function validateParameterEndpoint($arrParameters, $dsnAsterisk, $dsnSqlite)
+{
+    $paloEndPoint = new paloSantoEndPoint($dsnAsterisk,$dsnSqlite);
+    $arrDeviceFreePBX = $paloEndPoint->getDeviceFreePBX();
+    $error = false;
+    foreach($arrParameters as $key => $values){
+        if(substr($key,0,6) == "epmac_"){ //encontre una mac seleccionada entoces por forma empirica con ayuda del mac_adress obtego los parametros q se relacionan con esa mac.
+            $tmpMac    = substr($key,6);
+            $tmpDevice = $arrParameters["id_device_$tmpMac"];
+            $tmpModel  = $arrParameters["id_model_device_$tmpMac"];
+            $tmpVendor = $arrParameters["name_vendor_device_$tmpMac"];
+            if($tmpDevice == "unselected" || $tmpModel == "unselected") //el primero que encuentre sin seleccionar mantiene el error
+                $error .= "The mac adress $tmpMac unselected Phone Type or User Extension. <br />";
+
+            //PASO 2: Recorro el arreglo de la sesion para modificar y mantener los valores q el usuario ha decidido elegir asi cuando halla un error los datos persisten.
+            if(isset($_SESSION['elastix_endpoints'])){
+                foreach($_SESSION['elastix_endpoints'] as &$data){//tomo la referencia del elemento para poder modificar su contenido por referencia.
+                    if($data[2]==$tmpMac){
+                        $data[0] = "<input type='checkbox' name='epmac_$tmpMac' checked='checked' />";
+                        $data[5] = "<select name='id_model_device_$tmpMac' >".combo($paloEndPoint->getAllModelsVendor($tmpVendor),$tmpModel)."</select>";
+                        $data[6] = "<select name='id_device_$tmpMac'       >".combo($arrDeviceFreePBX,$tmpDevice)                           ."</select>";
+                    }
+                }
+            } 
+        }
+    }
+    return $error;
 }
 
 function endpointConfiguratedUnset($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrLang, $arrConfig)
@@ -232,6 +275,8 @@ function endpointConfiguratedUnset($smarty, $module_name, $local_templates_dir, 
                     $ArrayData['data'] = array(
                             "filename"     => strtolower(str_replace(":","",$tmpMac)));
 
+                    //Falta si hay error en la eliminacion de un archivo, ya esta para saber q error es, el problema es como manejar un error o los errores dentro del este lazo (foreach).
+                    //ejemplo: if($paloFile->deleteFiles($ArrayData)==false){ $paloFile->errMsg  (mostrar error con smarty)}
                     $paloFile->deleteFiles($ArrayData);
                 }
             }

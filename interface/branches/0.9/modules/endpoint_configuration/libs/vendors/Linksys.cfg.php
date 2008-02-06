@@ -1,28 +1,47 @@
-#!/bin/sh
-#
-# Copyright (C) 2007 Fonality Inc. (fonality.com)
-#
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License
-# as published by the Free Software Foundation; either version 2
-# of the License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-clear
-function setup_linksys {
+<?php
+/*
+    PrincipalFileLinksys nos retorna el contenido del archivo de configuracion de los EndPoint
+    Linksys, para ello es necesario enviarle el UserID, Password.
+*/
+function PrincipalFileLinksys($DisplayName, $id_device, $secret, $ipAdressServer)
+{
+    $content="<flat-profile>
+    <Resync_Periodic ua=\"na\">3600</Resync_Periodic>
+    <Proxy_1_ ua=\"na\">$ipAdressServer</Proxy_1_>
+    <Outbound_Proxy_1_ ua=\"na\">$ipAdressServer</Outbound_Proxy_1_>
+    <Primary_NTP_Server ua=\"na\">$ipAdressServer</Primary_NTP_Server>
+    <Profile_Rule ua=\"na\">tftp://$ipAdressServer/spa\$MA.cfg</Profile_Rule>
+ <!-- Subscriber Information -->
+    <Text_Logo group=\"Phone/General\">$DisplayName</Text_Logo>
+    <Station_Name group=\"Phone/General\">$DisplayName</Station_Name>
+    <Voice_Mail_Number group=\"Phone/General\"></Voice_Mail_Number>
+    <Display_Name_1_ ua=\"na\">$DisplayName</Display_Name_1_>
+    <Short_Name_1_ ua=\"na\">$id_device</Short_Name_1_> 
+    <User_ID_1_ ua=\"na\">$id_device</User_ID_1_>
+    <Password_1_ ua=\"na\">$secret</Password_1_>
+ <!-- Speed Dial -->
+    <Speed_Dial_2 ua=\"rw\"/>
+    <Speed_Dial_3 ua=\"rw\"/>
+    <Speed_Dial_4 ua=\"rw\"/>
+    <Speed_Dial_5 ua=\"rw\"/>
+    <Speed_Dial_6 ua=\"rw\"/>
+    <Speed_Dial_7 ua=\"rw\"/>
+    <Speed_Dial_8 ua=\"rw\"/>
+    <Speed_Dial_9 ua=\"rw\"/>
+</flat-profile>";
 
-IPADDR=$1
-cat > /tftpboot/spa841.cfg <<EOF
+    return $content;
+}
+
+function templatesFileLinksys($ipAdressServer)
+{
+    $content= <<<TEMP
 <flat-profile>
   <Resync_Periodic ua="na">2</Resync_Periodic>
-  <Profile_Rule ua="na">/spa\$MA.cfg</Profile_Rule>
+  <Profile_Rule ua="na">tftp://$ipAdressServer/spa\$MA.cfg</Profile_Rule>
  <!-- Proxy and Registration -->
-  <Proxy_1_ ua="na">$IPADDR</Proxy_1_>
-  <Primary_NTP_Server ua="na">$IPADDR</Primary_NTP_Server>
+  <Proxy_1_ ua="na">$ipAdressServer</Proxy_1_>
+  <Primary_NTP_Server ua="na">$ipAdressServer</Primary_NTP_Server>
   <Voice_Mail_Number  ua="na">*97</Voice_Mail_Number>
   <Display_Name_1_ ua="na">\$USER</Display_Name_1_>
   <Dial_Plan_1_ ua="na">(**xxx|**xxxx|*xx|xxx*|xxx**|xxxx*|xxxx**[3469]11|0|00|[2-9]xxxxxx|1xxx[2-9]xxxxxxS0|xxxxxxxxxxxx.)</Dial_Plan_1_>
@@ -68,17 +87,8 @@ cat > /tftpboot/spa841.cfg <<EOF
   <Referral_Services_Codes group="Regional/Vertical_Service_Activation_Codes" /> 
 
 </flat-profile>
-EOF
+TEMP;
 
-cp /tftpboot/spa841.cfg /tftpboot/spa921.cfg 
-cp /tftpboot/spa841.cfg /tftpboot/spa922.cfg 
-cp /tftpboot/spa841.cfg /tftpboot/spa941.cfg 
-cp /tftpboot/spa841.cfg /tftpboot/spa942.cfg 
-cp /tftpboot/spa841.cfg /tftpboot/spa962.cfg
-
-echo "Created /tftpboot/spaXXX.cfg, sip.cfg using $IPADDR for the proxy."
+    return $content;
 }
-
-setup_linksys $1
-
-
+?>
