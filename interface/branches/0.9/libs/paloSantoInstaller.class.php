@@ -22,6 +22,11 @@
   +----------------------------------------------------------------------+
   $Id: paloSantoInstaller.class.php,v 1.1 2007/09/05 00:25:25 gcarrillo Exp $
 */
+define("MYSQL_ROOT_PASSWORD","eLaStIx.2oo7");
+//define("DIRECTORIO","/var/www/html/lang/")
+
+include_once("libs/paloSantoDB.class.php");
+require_once "paloSantoModuloXML.class.php";
 
 class Installer
 {
@@ -76,6 +81,68 @@ class Installer
         $comando="cat $path_script_db | sqlite3 $sqlite_db_path/$db_name.db";
         exec($comando,$output,$retval);
         return $retval;
+    }
+    function createNewDatabaseMySQL($path_script_db, $db_name, $datos_conexion)
+    {
+        $db = 'mysql://root:'.MYSQL_ROOT_PASSWORD.'@localhost/';
+        $pDB = new paloDB ($db);
+        $sPeticionSQL = "CREATE DATABASE $db_name";
+        $result = $pDB->genQuery($sPeticionSQL);
+        if($datos_conexion['locate'] == "")
+            $datos_conexion['locate'] = "localhost";
+        $GrantSQL = "GRANT SELECT, INSERT, UPDATE, DELETE ON $db_name.* TO ";
+        $GrantSQL .= $datos_conexion['user']."@".$datos_conexion['locate']." IDENTIFIED BY '".                          $datos_conexion['password']."'";
+        $result = $pDB->genQuery($GrantSQL);
+        $comando="mysql --password=".MYSQL_ROOT_PASSWORD." --user=root $db_name < $path_script_db";
+        exec($comando,$output,$retval);
+        return $retval;
+    }
+    function addModuleLanguage($tmpDir,$DocumentRoot)
+    {
+        //array que incluye todos los lenguages que existan en /html/lang
+        $languages = array("bg","br","cn","da","de","el","en","es","fr","it","ko","pl","ro","ru","sl","sr");
+        
+        $oModuloXML= new ModuloXML("$tmpDir/module.xml");
+        //Se recorre por cada lenguaje
+        foreach ($languages as $lang)
+        {
+            if (file_exists("$DocumentRoot/lang/$lang.lang")) {
+                require_once("$DocumentRoot/lang/$lang.lang");
+                global $arrLang;
+                //Se realiza por cada modulo
+                if (count(($oModuloXML->_arbolMenu))>0) {
+                    foreach (($oModuloXML->_arbolMenu) as $menulist) {
+                        foreach ($menulist['ITEMS'] as $item_modules) {
+                                $menuid = $item_modules['MENUID'];
+        //                         echo "MENUID".$menuid;
+                                if (!empty($menuid))
+                                {
+                                    if (file_exists("$tmpDir/$menuid/lang/menu.lang")) {
+                                        require("$tmpDir/$menuid/lang/menu.lang");
+        
+                                        global $arrMenuLang;
+                                        $nodo = array( $arrMenuLang['module'] => $arrMenuLang["$lang"]);
+                                        $result = array_merge($arrLang,$nodo);
+                                        if($lang=="en") print_r($arrMenuLang);                $arrLang = $result;
+                                        //$arrLang = $result;
+                                    } else {
+                                        echo "no existe";
+                                    }
+                                }
+                        }
+                    }
+                }
+                $gestor = fopen("$DocumentRoot/lang/$lang.lang", "w");
+                $contenido = "<?php \nglobal \$arrLang; \n\$arrLang =";
+                $contenido .= var_export($arrLang,TRUE)."?>";
+                if (fwrite($gestor, $contenido) === FALSE) {
+                        echo "Error al escribir archivo";
+                }
+                fclose($gestor);
+            } else {
+                echo "No existe";
+            }
+        }
     }
 }
 ?>
