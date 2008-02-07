@@ -620,5 +620,25 @@ implementations of Voice over IP around the globe.",
 "No Models" => "No Models",
 "No Extensions" => "No Extensions",
 /*End module Endpoint Configuration*/
+
+/*Start module Call Center*/
+"Outgoing Campaigns" => "Outgoing Campaigns",
+"Agent Console" => "Agent Console",
+"Agents" => "Agents",
+"Break Administrator" => "Break Administrator",
+"Ingoing Calls" => "Ingoing Calls",
+"Client" => "Client",
+"Forms" => "Forms",
+"Form Designer" => "Form Designer",
+"Form List" => "Form List",
+"Reports Break" => "Reports Break",
+"Calls Detail" => "Calls Detail",
+"Calls per hour" => "Calls per hour",
+"Ingoing Calls Success" => "Ingoing Calls Success",
+"Calls per Agent" => "Calls per Agent",
+"Hold Time" => "Hold Time",
+"Login Logout" => "Login Logout",
+"Graphic Calls per hour" => "Graphic Calls per hour",
+/*End module Call Center*/
 );
 ?>

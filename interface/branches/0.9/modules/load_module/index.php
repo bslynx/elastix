@@ -266,6 +266,8 @@ function verifyFileContent($pDB, &$errorMsg, $arrLang,$oMenu,$oACL)
                             deleteTmpFolder($tmpDir);
                             return false;
     			}
+                //Actualizo paramentros de mantencion de permisos de menus por usuarios y borro los templates de smarty.
+                $oInstaller->refresh($_SERVER['DOCUMENT_ROOT']);
                     }
 		//borrar directorio temporal 
                 }else

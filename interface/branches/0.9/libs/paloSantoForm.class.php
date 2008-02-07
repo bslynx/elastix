@@ -67,6 +67,16 @@
                 "EDITABLE"               => "si",
                 "MULTIPLE"               => true,
                 "SIZE"                   => "5")
+
+
+"checkbox"  => array(
+                "LABEL"                  => "Habiltar",
+                "REQUIRED"               => "no",
+                "INPUT_TYPE"             => "CHECKBOX",
+                "INPUT_EXTRA_PARAM"      => "",
+                "VALIDATION_TYPE"        => "",
+                "EDITABLE"               => "si",
+                "VALIDATION_EXTRA_PARAM" => "")
 */
 
 class paloForm
@@ -90,6 +100,8 @@ class paloForm
     function fetchForm($templateName, $title, $arrPreFilledValues=array())
     {
         foreach($this->arrFormElements as $varName=>$arrVars) {
+            if(!isset($arrPreFilledValues[$varName]))
+                $arrPreFilledValues[$varName] = "";
             $arrMacro = array();
             $strInput = "";
 
@@ -113,6 +125,16 @@ class paloForm
                         $strInput = "<input type='text' name='$varName' value='$arrPreFilledValues[$varName]' $extras >";
                     } else {
                         $strInput = "$arrPreFilledValues[$varName]";
+                    }
+                    break;
+                case "CHECKBOX":
+                    $checked = "";
+                    if($this->modo=='input' or ($this->modo=='edit' and $arrVars['EDITABLE']!='no')) {
+                        if($arrPreFilledValues[$varName]==true)
+                            $checked = "checked='checked'";
+                        $strInput = "<input type='checkbox' name='$varName' $checked>";
+                    } else {
+                        $strInput = "<input type='checkbox' name='$varName' $checked disabled='disabled'>";
                     }
                     break;
                 case "PASSWORD":

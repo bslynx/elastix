@@ -621,5 +621,25 @@ alrededor del mundo.",
 "No Models" => "No Modelos",
 "No Extensions" => "No Extensiones",
 /*End module Endpoint Configuration*/
+
+/*Start module Call Center*/
+"Outgoing Campaigns" => "Campañas Salientes",
+"Agent Console" => "Agent Console",
+"Agents" => "Agents",
+"Break Administrator" => "Administrador de Break",
+"Ingoing Calls" => "Llamadas Entrantes",
+"Client" => "Cliente",
+"Forms" => "Formularios",
+"Form Designer" => "Diseño de Formularios",
+"Form List" => "Lista de Formularios",
+"Reports Break" => "Reporte de Breaks",
+"Calls Detail" => "Detalle de Llamadas",
+"Calls per hour" => "Llamadas por Hora",
+"Ingoing Calls Success" => "Llamadas Entrantes",
+"Calls per Agent" => "Llamadas por Agente",
+"Hold Time" => "Tiempo de Espera",
+"Login Logout" => "Tiempo de Login-Logout",
+"Graphic Calls per hour" => "Gráfico de Llamadas por Hora",
+/*End module Call Center*/
 );
 ?>

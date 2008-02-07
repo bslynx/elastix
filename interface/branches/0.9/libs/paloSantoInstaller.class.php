@@ -97,11 +97,13 @@ class Installer
         exec($comando,$output,$retval);
         return $retval;
     }
+
     function addModuleLanguage($tmpDir,$DocumentRoot)
     {
+        require_once("configs/languages.conf.php");
         //array que incluye todos los lenguages que existan en /html/lang
-        $languages = array("bg","br","cn","da","de","el","en","es","fr","it","ko","pl","ro","ru","sl","sr");
-        
+        $languages = array_keys($languages);
+
         $oModuloXML= new ModuloXML("$tmpDir/module.xml");
         //Se recorre por cada lenguaje
         foreach ($languages as $lang)
@@ -117,17 +119,9 @@ class Installer
         //                         echo "MENUID".$menuid;
                                 if (!empty($menuid))
                                 {
-                                    if (file_exists("$tmpDir/$menuid/lang/menu.lang")) {
-                                        require("$tmpDir/$menuid/lang/menu.lang");
-        
-                                        global $arrMenuLang;
-                                        $nodo = array( $arrMenuLang['module'] => $arrMenuLang["$lang"]);
-                                        $result = array_merge($arrLang,$nodo);
-                                        if($lang=="en") print_r($arrMenuLang);                $arrLang = $result;
-                                        //$arrLang = $result;
-                                    } else {
-                                        echo "no existe";
-                                    }
+                                    $nodo = array($item_modules['DESC'] => $item_modules['DESC']);
+                                    $result = array_merge($arrLang,$nodo);
+                                    $arrLang = $result;
                                 }
                         }
                     }
@@ -143,6 +137,17 @@ class Installer
                 echo "No existe";
             }
         }
+    }
+
+    function refresh($documentRoot='/var/www/html')
+    {
+        //STEP 1: Delete tmp templates of smarty.
+        exec("rm -rf $documentRoot/var/templates_c/*",$arrConsole,$flagStatus); 
+
+        //STEP 2: Update menus elastix permission.
+        unset($_SESSION['elastix_user_permission']);
+
+        return $flagStatus;
     }
 }
 ?>

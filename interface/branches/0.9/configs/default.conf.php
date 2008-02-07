@@ -34,6 +34,5 @@ $arrConf['elastix_version'] = load_version_elastix($arrConf['basePath']."/"); //
 $arrConf['defaultMenu'] = 'config';
 $arrConf['language'] = 'en';
 $arrConf['cadena_dsn'] = "mysql://asterisk:asterisk@localhost/call_center";
-
 $arrConf['dir_backup'] = "backup";
 
