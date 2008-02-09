@@ -30,7 +30,7 @@
   </tr>
 </table>
 <br>
-<div align="center" class="copyright">Elastix is licensed under <a href="http://www.opensource.org/licenses/gpl-license.php" target='_blank'>GPL</a> by <a href="http://www.palosanto.com" target='_blank'>PaloSanto Solutions</a>. 2006, 2007.</div>
+<div align="center" class="copyright">Elastix is licensed under <a href="http://www.opensource.org/licenses/gpl-license.php">GPL</a> by <a href="http://www.palosanto.com">PaloSanto Solutions</a>. 2006, 2007.</div>
 <br>
 </td></tr></table>
 </body>

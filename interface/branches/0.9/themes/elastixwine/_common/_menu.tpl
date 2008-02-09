@@ -2,27 +2,26 @@
   <table cellspacing=0 cellpadding=0 width="100%" border=0>
     <tr>
       <td>
-        <table cellSpacing="0" cellPadding="0" width="100%" border="0">
+        <table cellSpacing="0" cellPadding="0" width="100%" border="0" height="76">
           <tr>
-            <td class="menulogo" width=380><a href='http://www.elastix.org' target='_blank'><img src="images/logo_elastix.png" width="233" height="75" border='0' /></a></td>
+            <td class="menulogo" width=380><img src="images/logo_elastix_new3.gif"></td>
             {foreach from=$arrMainMenu key=idMenu item=menu}
             {if $idMenu eq $idMainMenuSelected}
-            <td class="headlinkspacer"><IMG src="images/1x1.gif"></td>
             <td class="headlinkon" valign="bottom">
               <table cellSpacing="0" cellPadding="2" height="30" border="0">
-                <tr><td class="menutabletabon" title="" nowrap><a
-                        class="menutableon" href="/?menu={$idMenu}">{$menu.Name}</a></td>
+                <tr><td class="menutabletabon_left" nowrap valign="top"><IMG src="/images/1x1.gif"></td><td class="menutabletabon" title="" nowrap><a
+                        class="menutableon" href="/?menu={$idMenu}">{$menu.Name}</a></td><td class="menutabletabon_right" nowrap valign="top"><IMG src="/images/1x1.gif"></td>
                 </tr>
               </table>
             </td>
-            <td class="headlinkspacer"><IMG src="images/1x1.gif"></td>
             {else}
             <td class="headlink" valign="bottom">
+              <div style="position:absolute; z-index:200; top:65px;"><a href="#" onClick="javascript:alert('Future Dropdown Menu to be released in Elastix 1.0 Beta version')"><img src="/images/esquinita2.gif" border="0"></a></div>
               <table cellSpacing="0" cellPadding="2" height="29" border="0">
-                <tr><td class="menutabletaboff" title="" nowrap><a
-                        class="menutable" href="/?menu={$idMenu}">{$menu.Name}</a></td>
+                <tr><td class="menutabletaboff_left" nowrap valign="top"><IMG src="/images/1x1.gif"></td><td class="menutabletaboff" title="" nowrap><a
+                        class="menutable" href="/?menu={$idMenu}">{$menu.Name}</a></td><td class="menutabletaboff_right" nowrap valign="top"><IMG src="/images/1x1.gif"></td>
                 </tr>
-              </table>
+              </table> 
             </td>
             {/if}
             {/foreach}
@@ -44,8 +43,7 @@
                         </tr>-->
                         <tr class="tabForm" >
                             <td class="tabForm"  height='138' colspan='2' align='center'>
-                                {$ABOUT_ELASTIX_CONTENT}<br />
-                                <a href='http://www.elastix.org' target='_blank'>www.elastix.org</a>
+                                {$ABOUT_ELASTIX_CONTENT}
                             </td>
                         </tr>
                         <tr>
@@ -86,6 +84,7 @@
         </table>
       </td>
     </tr>
+    <tr class="downshadow"><td><img src="images/1x1.gif" height="5"></td></tr>
   </table>
 </div>
 <div id="miniMenu" style="display: none;">
