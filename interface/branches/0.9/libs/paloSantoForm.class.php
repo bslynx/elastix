@@ -79,6 +79,8 @@
                 "VALIDATION_EXTRA_PARAM" => "")
 */
 
+require_once("misc.lib.php");
+
 class paloForm
 {
     var $smarty;
@@ -128,14 +130,15 @@ class paloForm
                     }
                     break;
                 case "CHECKBOX":
-                    $checked = "";
-                    if($this->modo=='input' or ($this->modo=='edit' and $arrVars['EDITABLE']!='no')) {
-                        if($arrPreFilledValues[$varName]==true)
-                            $checked = "checked='checked'";
-                        $strInput = "<input type='checkbox' name='$varName' $checked>";
-                    } else {
-                        $strInput = "<input type='checkbox' name='$varName' $checked disabled='disabled'>";
-                    }
+                    $checked = 'off';
+                    $disable = 'on';
+                    if($arrPreFilledValues[$varName]==true)
+                        $checked = 'on';
+                    if($this->modo=='input' or ($this->modo=='edit' and $arrVars['EDITABLE']!='no'))
+                        $disable = 'off';
+
+                    //Funcion definida en misc.lib.php
+                    $strInput = checkbox($varName,$checked, $disable);
                     break;
                 case "PASSWORD":
                     if($this->modo=='input' or ($this->modo=='edit' and $arrVars['EDITABLE']!='no')) {
