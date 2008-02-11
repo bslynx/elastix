@@ -682,6 +682,7 @@ implementations of Voice over IP around the globe.",
 "Muted" => "Muted",
 "UnMuted" => "UnMuted",
 "Error when connecting to Asterisk Manager" => "Error when connecting to Asterisk Manager",
+"The conference installation is almost done. To complete it please" => "The conference installation is almost done. To complete it please",
 /*End module conference*/
 );
 ?>

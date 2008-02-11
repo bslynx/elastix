@@ -47,6 +47,27 @@ function _moduleContent(&$smarty, $module_name)
     $templates_dir=(isset($arrConfig['templates_dir']))?$arrConfig['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
 
+
+    /** Inicio de Wrapper para terminar la instalacion de la base de datos meetme de este modulo. */
+    $accion = (isset($_GET['accion']))?$_GET['accion']:"";
+    $msmError = "";
+    $isInstalled = isModuleTotalInstalled($module_name,$accion,$arrLang,$msmError);
+    if($isInstalled == "error"){
+        $smarty->assign("MESSAGE",$msmError);
+        return $smarty->fetch("file:$local_templates_dir/wrapper.tpl");
+    }
+    else if($isInstalled == "not_installed"){
+        $smarty->assign("MESSAGE",$msmError);
+        return $smarty->fetch("file:$local_templates_dir/wrapper.tpl");
+    }
+    else if($isInstalled == "now_installed" || $isInstalled == "installed"){
+        //No se hace nada se supone todo esta bien, por lo tanto se deja que continue la ejecucion
+        //del modulo.
+    }
+    /** Fin de Wrapper para terminar la instalacion de la base de datos meetme de este modulo. */
+
+
+
     $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
     $arrConfig = $pConfig->leer_configuracion(false);
 
@@ -56,6 +77,7 @@ function _moduleContent(&$smarty, $module_name)
     $dsn_agi_manager['password'] = $arrConfig['AMPMGRPASS']['valor'];
     $dsn_agi_manager['host'] = $arrConfig['AMPDBHOST']['valor'];
     $dsn_agi_manager['user'] = 'admin';
+
 
     $pDB     = new paloDB($dsn);
 
@@ -614,5 +636,47 @@ function getParametro($parametro)
         return $_GET[$parametro];
     else
         return null;
+}
+
+function isModuleTotalInstalled($module_name, $accion, $arrLang, &$msmError)
+{
+    $usuario = "root";
+    $clave   = "eLaStIx.2oo7";
+
+    //PASO 1
+    $pDB = new paloDB("mysql://$usuario:$clave@localhost/information_schema");
+    if(!empty($pDB->errMsg)) {
+        $msmError = $arrLang['ERROR']." DB: ".$pDB->errMsg;
+    }
+    $sql     = "select count(*) existe from tables where table_schema='meetme'";
+    $result  = $pDB->getFirstRowQuery($sql,true);
+    $pDB->disconnect();
+
+    //PASO 2
+    if(is_array($result) && count($result) > 0){
+        if($result['existe']==0 && $accion=='crear'){ // no existe la base completamente 
+            // ejecutar comanado para crear la base de datos.
+            exec("/usr/bin/mysql --user=$usuario --password=$clave < /var/www/html/schema.meetme", $arrConsole,$flagStatus); 
+            if($flagStatus==0){
+                sleep(5);
+                return "now_installed";
+            }
+            else{
+                $msmError = $arrLang['ERROR'];
+                return "Error";
+            }
+        }
+        else if($result['existe']==0){
+            $msmError = $arrLang['The conference installation is almost done. To complete it please']." <a href='?menu=$module_name&accion=crear'>".$arrLang['click here']."</a>";
+            return "not_installed";
+        }
+        else{  //si existe la base de datos
+            return "installed";
+        }
+    }
+    else{
+        $msmError =  $arrLang['ERROR']." DB: ".$pDB->errMsg;
+        return "Error";
+    }
 }
 ?>

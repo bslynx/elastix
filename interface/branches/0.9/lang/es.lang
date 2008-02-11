@@ -687,6 +687,7 @@ alrededor del mundo.",
 "Muted" => "Callado",
 "UnMuted" => "No Callado",
 "Error when connecting to Asterisk Manager" => "Error cuando se conectaba al Adminstrador de Asterisk",
+"The conference installation is almost done. To complete it please" => "Para finalizar la instalación de conferencia haga ",
 /*End module conference*/
 );
 ?>
