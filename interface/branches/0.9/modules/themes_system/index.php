@@ -116,6 +116,7 @@ function updateTheme($pDB, $smarty, $module_name, $local_templates_dir, $formCam
         $exito   = $oThemes->updateTheme($_POST['themes']);
 
         if ($exito) {
+            $oThemes->smartyRefresh($_SERVER['DOCUMENT_ROOT']);
             header("Location: ?menu=$module_name");
         } else {
             $smarty->assign("mb_title", $arrLang["Validation Error"]);

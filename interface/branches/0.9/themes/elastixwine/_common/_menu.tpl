@@ -4,7 +4,7 @@
       <td>
         <table cellSpacing="0" cellPadding="0" width="100%" border="0" height="76">
           <tr>
-            <td class="menulogo" width=380><img src="images/logo_elastix_new3.gif"></td>
+            <td class="menulogo" width=380><a href='http://www.elastix.org' target='_blank'><img src="images/logo_elastix_new3.gif" border='0' /></a></td>
             {foreach from=$arrMainMenu key=idMenu item=menu}
             {if $idMenu eq $idMainMenuSelected}
             <td class="headlinkon" valign="bottom">
@@ -43,7 +43,8 @@
                         </tr>-->
                         <tr class="tabForm" >
                             <td class="tabForm"  height='138' colspan='2' align='center'>
-                                {$ABOUT_ELASTIX_CONTENT}
+                                {$ABOUT_ELASTIX_CONTENT}<br />
+                                <a href='http://www.elastix.org' target='_blank'>www.elastix.org</a>
                             </td>
                         </tr>
                         <tr>

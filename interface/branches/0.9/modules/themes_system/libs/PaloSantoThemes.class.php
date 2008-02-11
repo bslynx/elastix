@@ -28,6 +28,7 @@
   $Id: new_themes.php $ */
 
 include_once("libs/paloSantoDB.class.php");
+include_once("libs/paloSantoInstaller.class.php");
 
 /* Clase que implementa themes */
 class PaloSantoThemes
@@ -105,6 +106,22 @@ class PaloSantoThemes
             $this->errMsg = $arrLang['The theme could not be updated'];
             return false;
         }
+    } 
+
+    /**
+     * Procedimiento para borrar los tpl temporales de smarty
+     *
+     * @param   $documentRoot        ruta del document root de la aplicacion
+     * 
+     * @return  bool    true or false si refresco o no
+     */
+    function smartyRefresh($documentRoot='/var/www/html')
+    {
+        $paloInstaller = new Installer();
+        if($paloInstaller->refresh($documentRoot)==1){ //hubo un error, se valida si es igual a 1. 
+            return false;
+        }
+        return true;
     } 
 }
 ?>
