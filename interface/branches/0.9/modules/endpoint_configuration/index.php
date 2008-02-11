@@ -241,7 +241,7 @@ function validateParameterEndpoint($arrParameters, $dsnAsterisk, $dsnSqlite)
             $tmpDevice = $arrParameters["id_device_$tmpMac"];
             $tmpModel  = $arrParameters["id_model_device_$tmpMac"];
             $tmpVendor = $arrParameters["name_vendor_device_$tmpMac"];
-            if($tmpDevice == "unselected" || $tmpModel == "unselected") //el primero que encuentre sin seleccionar mantiene el error
+            if($tmpDevice == "unselected" || $tmpDevice == "no_device" || $tmpModel == "unselected") //el primero que encuentre sin seleccionar mantiene el error
                 $error .= "The mac adress $tmpMac unselected Phone Type or User Extension. <br />";
 
             //PASO 2: Recorro el arreglo de la sesion para modificar y mantener los valores q el usuario ha decidido elegir asi cuando halla un error los datos persisten.
