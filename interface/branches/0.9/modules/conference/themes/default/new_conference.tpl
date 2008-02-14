@@ -1,6 +1,6 @@
 <table width="99%" border="0" cellspacing="0" cellpadding="0" align="center">
     <tr class="moduleTitle">
-        <td class="moduleTitle" valign="middle">&nbsp;&nbsp;<img src="images/user.png" border="0" align="absmiddle">&nbsp;&nbsp;{$TITLE}</td>
+        <td class="moduleTitle" valign="middle">&nbsp;&nbsp;<img src="images/conference.png" border="0" align="absmiddle">&nbsp;&nbsp;{$TITLE}</td>
     </tr>
     <tr>
         <td align="left">

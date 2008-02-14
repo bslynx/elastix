@@ -237,6 +237,22 @@ class paloSantoEndPoint
 	return $arrModels;
     }
 
+    function getModelById($id_model)
+    {
+        global $arrLang;
+
+        $pDB = $this->connectDataBase("sqlite","endpoint");
+        if($pDB==false)
+            return false;
+        $sqlPeticion = "select m.name from model m where m.id ='$id_model';";
+        $result = $pDB->getFirstRowQuery($sqlPeticion,true); //se consulta a la base endpoints
+
+        if(is_array($result) && count($result)>0)
+            return $result['name'];
+        else return false;
+        $pDB->disconnect();
+    }
+
     function getDeviceFreePBXParameters($id_device) {
         $pDB = $this->connectDataBase("mysql","asterisk");
         $parameters = array();

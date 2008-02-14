@@ -71,15 +71,22 @@ function _moduleContent(&$smarty, $module_name)
     $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
     $arrConfig = $pConfig->leer_configuracion(false);
 
-    $dsn     = $arrConfig['AMPDBENGINE']['valor'] . "://" . $arrConfig['AMPDBUSER']['valor'] . ":" . $arrConfig['AMPDBPASS']['valor'] . "@" .
-               $arrConfig['AMPDBHOST']['valor'] . "/meetme";
+    $dsnMeetme =  $arrConfig['AMPDBENGINE']['valor'] . "://".
+                  $arrConfig['AMPDBUSER']['valor'] . ":". 
+                  $arrConfig['AMPDBPASS']['valor'] . "@".
+                  $arrConfig['AMPDBHOST']['valor'] . "/meetme";
 
     $dsn_agi_manager['password'] = $arrConfig['AMPMGRPASS']['valor'];
     $dsn_agi_manager['host'] = $arrConfig['AMPDBHOST']['valor'];
     $dsn_agi_manager['user'] = 'admin';
 
+    //solo para obtener los devices (extensiones) creadas.
+    $dsnAsterisk = $arrConfig['AMPDBENGINE']['valor']."://".
+                   $arrConfig['AMPDBUSER']['valor']. ":".
+                   $arrConfig['AMPDBPASS']['valor']. "@".
+                   $arrConfig['AMPDBHOST']['valor']."/asterisk";
 
-    $pDB     = new paloDB($dsn);
+    $pDB     = new paloDB($dsnMeetme);
 
     if(isset($_POST["new_conference"])) $accion = "new_conference";
     else if(isset($_POST["add_conference"])) $accion = "add_conference";
@@ -88,44 +95,57 @@ function _moduleContent(&$smarty, $module_name)
     else if(isset($_GET["accion"]) && $_GET["accion"]=="show_callers") $accion = "show_callers";
     else if(isset($_POST["callers_mute"])) $accion = "callers_mute";
     else if(isset($_POST["callers_kick"])) $accion = "callers_kick";
+    else if(isset($_POST["callers_kick_all"])) $accion = "callers_kick_all";
+    else if(isset($_POST["caller_invite"])) $accion = "caller_invite";
+    else if(isset($_POST["update_show_callers"])) $accion = "update_show_callers";
     else if(isset($_GET["accion"]) && $_GET["accion"]=="view_conference") $accion = "view_conference";
     else $accion ="report_conference";
     $content = "";
     switch($accion)
     {
         case "new_conference":
-            $content = new_conference($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig);
+            $content = new_conference($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig,$dsnAsterisk);
             break;
         case "add_conference":
-            $content = add_conference($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig);
+            $content = add_conference($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig,$dsnAsterisk);
             break;
         case "cancel":
             header("Location: ?menu=$module_name");
             break;
         case "delete_conference":
-            $content = delete_conference($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig);
+            $content = delete_conference($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig,$dsnAsterisk);
             break;
         case "show_callers":
-            $content = show_callers($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig, $dsn_agi_manager);
+            $content = show_callers($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig, $dsn_agi_manager,$dsnAsterisk);
             break;
         case "callers_mute":
-            $content = callers_mute($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig, $dsn_agi_manager);
+            $content = callers_mute($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig, $dsn_agi_manager,$dsnAsterisk);
             break;
         case "callers_kick":
-            $content = callers_kick($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig, $dsn_agi_manager);
+            $content = callers_kick($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig, $dsn_agi_manager,$dsnAsterisk);
             break;
         case "view_conference":
-            $content = view_conference($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig);
+            $content = view_conference($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig,$dsnAsterisk);
+            break;
+        case "callers_kick_all":
+            $content = callers_kick_all($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig, $dsn_agi_manager,$dsnAsterisk);
+            break;
+        case "caller_invite":
+            $content = caller_invite($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig, $dsn_agi_manager,$dsnAsterisk);
+            break;
+        case "update_show_callers":
+            $room = getParametro('roomNo');
+            header("location: ?menu=$module_name&accion=show_callers&roomNo=$room");
             break;
         default:
-            $content = report_conference($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig);
+            $content = report_conference($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig, $dsn_agi_manager,$dsnAsterisk);
             break;
     }
 
     return $content;
 }
 
-function report_conference($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig)
+function report_conference($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig, $dsn_agi_manager, $dsnAsterisk)
 {
     $arrConference = array("Past_Conferences" => $arrLang["Past Conferences"], "Current_Conferences" => $arrLang["Current Conferences"], "Future_Conferences" => $arrLang["Future Conferences"]);
 
@@ -165,7 +185,7 @@ function report_conference($smarty, $module_name, $local_templates_dir, $pDB, $a
     $total_datos =$pConference->ObtainNumConferences($startDate, $endDate, "confDesc", $field_pattern, $conference);
 
     //Paginacion
-    $limit  = 15;
+    $limit  = 8;
     $total  = $total_datos[0];
 
     $oGrid  = new paloSantoGrid($smarty);
@@ -188,14 +208,19 @@ function report_conference($smarty, $module_name, $local_templates_dir, $pDB, $a
             $arrTmp[3] = $conference['startTime'];
             $arrTmp[4] = $conference['endTime'];
             if($_POST['conference'] == "Current_Conferences")
-                $arrTmp[5] = "<a href='?menu=$module_name&accion=show_callers&roomNo=".$conference['roomNo']."'>{$conference['maxUser']}</a>";
-            else $arrTmp[5] = $conference['maxUser'];
+            {
+                $arrCallers = $pConference->ObtainCallers($dsn_agi_manager, $conference['roomNo']);
+                $numCallers = count($arrCallers);
+                $arrTmp[5] = "<a href='?menu=$module_name&accion=show_callers&roomNo=".$conference['roomNo']."'>{$numCallers} / {$conference['maxUser']}</a>";
+            }
+            else
+                $arrTmp[5] = $conference['maxUser'];
             $arrData[] = $arrTmp;
         }
     }
 
     $arrGrid = array("title"    => $arrLang["Conference"],
-                        "icon"     => "images/user.png",
+                        "icon"     => "images/conference.png",
                         "width"    => "99%",
                         "start"    => ($total==0) ? 0 : $offset + 1,
                         "end"      => $end,
@@ -221,7 +246,7 @@ function report_conference($smarty, $module_name, $local_templates_dir, $pDB, $a
     return $contenidoModulo;
 }
 
-function new_conference($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig)
+function new_conference($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig, $dsnAsterisk)
 {
     $arrFormConference = createFieldForm($arrLang);
     $oForm = new paloForm($smarty,$arrFormConference);
@@ -383,7 +408,7 @@ function createFieldForm($arrLang)
     return $arrFields;
 }
 
-function add_conference($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig)
+function add_conference($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig, $dsnAsterisk)
 {
     $arrFormConference = createFieldForm($arrLang);
     $oForm = new paloForm($smarty, $arrFormConference);
@@ -465,7 +490,7 @@ function add_conference($smarty, $module_name, $local_templates_dir, $pDB, $arrL
     }
 }
 
-function delete_conference($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig)
+function delete_conference($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig, $dsnAsterisk)
 {
     $pConference = new paloSantoConference($pDB);
 
@@ -482,18 +507,18 @@ function delete_conference($smarty, $module_name, $local_templates_dir, $pDB, $a
     return $content;
 }
 
-function show_callers($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig, $dsn_agi_manager)
+function show_callers($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig, $dsn_agi_manager, $dsnAsterisk)
 {
     $pConference = new paloSantoConference($pDB);
     $room = getParametro("roomNo");
     $arrCallers = $pConference->ObtainCallers($dsn_agi_manager, $room);
-
+    $arrDevices = $pConference->getDeviceFreePBX($dsnAsterisk);
     $arrData = null;
 
     if(is_array($arrCallers) && count($arrCallers)>0){
         foreach($arrCallers as $key => $caller){
             $arrTmp[0] = $caller['userId'];
-            $arrTmp[1] = $caller['callerId'];
+            $arrTmp[1] = $arrDevices[$caller['callerId']];
             $arrTmp[2] = $caller['duration'];
             $mode = strstr($caller['mode'], "Muted");
             if(!$mode)
@@ -513,7 +538,7 @@ function show_callers($smarty, $module_name, $local_templates_dir, $pDB, $arrLan
     $total = count($arrCallers);
 
     $arrGrid = array("title"    => $arrLang["Conference"],
-                        "icon"     => "images/user.png",
+                        "icon"     => "images/conference.png",
                         "width"    => "99%",
                         "start"    => 1,
                         "end"      => $total,
@@ -534,13 +559,33 @@ function show_callers($smarty, $module_name, $local_templates_dir, $pDB, $arrLan
                     );
     $oGrid  = new paloSantoGrid($smarty);
 
+    $smarty->assign("INVITE_CALLER", $arrLang["Invite Caller"]);
+    $smarty->assign("KICK_ALL", $arrLang["Kick All"]);
+    $smarty->assign("UPDATE", $arrLang["Update"]);
+    $smarty->assign("CANCEL", $arrLang["Cancel"]);
+    $smarty->assign("accion", "show_callers");
+
+    $arrFormElements = array(
+                            "device"  => array(     "LABEL"                  => "DEVICE",
+                                                    "REQUIRED"               => "no",
+                                                    "INPUT_TYPE"             => "SELECT",
+                                                    "INPUT_EXTRA_PARAM"      => $arrDevices,
+                                                    "VALIDATION_TYPE"        => "numeric",
+                                                    "VALIDATION_EXTRA_PARAM" => "")
+                                );
+
+    $oFilterForm = new paloForm($smarty, $arrFormElements);
+    $_POST['device']="unselected";
+    $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/conference.tpl", "", $_POST);
+    $oGrid->showFilter(trim($htmlFilter));
+
     $url_room= "&roomNo=".$_GET['roomNo'];
     $contenidoModulo = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name$url_room'>".$oGrid->fetchGrid($arrGrid, $arrData,$arrLang)."</form>";
 
     return $contenidoModulo;
 }
 
-function callers_mute($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig, $dsn_agi_manager)
+function callers_mute($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig, $dsn_agi_manager, $dsnAsterisk)
 {
     $pConference = new paloSantoConference($pDB);
 
@@ -557,7 +602,7 @@ function callers_mute($smarty, $module_name, $local_templates_dir, $pDB, $arrLan
     header("location: ?menu=$module_name&accion=show_callers&roomNo=$room");
 }
 
-function callers_kick($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig, $dsn_agi_manager)
+function callers_kick($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig, $dsn_agi_manager, $dsnAsterisk)
 {
     $pConference = new paloSantoConference($pDB);
 
@@ -575,7 +620,51 @@ function callers_kick($smarty, $module_name, $local_templates_dir, $pDB, $arrLan
     header("location: ?menu=$module_name&accion=show_callers&roomNo=$room");
 }
 
-function view_conference($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig)
+function callers_kick_all($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig, $dsn_agi_manager, $dsnAsterisk)
+{
+    $pConference = new paloSantoConference($pDB);
+
+    $room = getParametro('roomNo');
+
+    $pConference->KickAllCallers($dsn_agi_manager, $room);
+
+    sleep(3);
+    header("location: ?menu=$module_name");
+}
+
+function caller_invite($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig, $dsn_agi_manager, $dsnAsterisk)
+{
+    $pConference = new paloSantoConference($pDB);
+
+    $room = getParametro('roomNo');
+
+    $device = getParametro("device");
+
+    if($device != null)
+    {
+        if(eregi('^[0-9]+$', $device))
+        {
+            $callerId = $arrLang['Conference']. "<$room>";
+            $result = $pConference->InviteCaller($dsn_agi_manager, $room, $device, $callerId);
+            if(!$result)
+            {
+                $smarty->assign("mb_title", $arrLang['ERROR'].":");
+                $smarty->assign("mb_message", $arrLang["The device couldn't be added to the conference"]);
+            }else sleep(3);
+        }else{
+            $smarty->assign("mb_title", $arrLang['ERROR'].":");
+            $smarty->assign("mb_message", $arrLang["The device must be numeric"]);
+        }
+    }
+    else{
+        $smarty->assign("mb_title", $arrLang['ERROR'].":");
+        $smarty->assign("mb_message", $arrLang["The device wasn't write"]);
+    }
+
+    return show_callers($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig, $dsn_agi_manager,$dsnAsterisk);
+}
+
+function view_conference($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig, $dsnAsterisk)
 {
     $arrFormConference = createFieldForm($arrLang);
     $oForm = new paloForm($smarty,$arrFormConference);

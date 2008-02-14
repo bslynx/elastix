@@ -89,10 +89,18 @@ class PaloSantoFileEndPoint
                 break;
 
             case 'Atcom':
-                $contentFileAtcom =PrincipalFileAtcom($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer,$ArrayData['data']['filename']);
-                if($this->createFileConf($this->directory,"atc".$ArrayData['data']['filename'].".cfg", $contentFileAtcom))
-                    return true;
-                else return false;
+                if($ArrayData['data']['model'] == "AT 320")
+                {
+                    $contentFileAtcom = templatesFileAtcom320($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer,$ArrayData['data']['filename']);
+                    $result = telnet($ArrayData['data']['ip_endpoint'], "", "12345678", $contentFileAtcom);
+                    if($result) return true;
+                    else return false;
+                }else{
+                    $contentFileAtcom =PrincipalFileAtcom($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer,$ArrayData['data']['filename']);
+                    if($this->createFileConf($this->directory,"atc".$ArrayData['data']['filename'].".cfg", $contentFileAtcom))
+                        return true;
+                    else return false;
+                }
 
                 break;
 

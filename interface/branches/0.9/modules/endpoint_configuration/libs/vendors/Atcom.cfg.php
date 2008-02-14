@@ -354,4 +354,110 @@ TEMP;
 
     return $content;
 }
+
+function templatesFileAtcom320($DisplayName, $id_device, $secret, $ipAdressServer)
+{
+$arrAtcom320 = array(
+//***************Network Settings***************
+"iptype"    => "1", //dhcp
+// "vlan"      => "0", //disable
+
+//***************Audio Settings***************
+"codec1"    => "2", //g711u
+// "codec2"    => "6", //null
+// "codec3"    => "6", //null
+// "codec4"    => "6", //null
+// "codec5"    => "6", //null
+// "codec6"    => "6", //null
+// "vad"           => "0", //disable
+// "agc"           => "0", //disable
+// "aec"           => "1", //enable
+// "audioframes"   => "2",
+// "6.3k"          => "1", //enable
+// "ilbcpayload"   => "97",
+// "jittersize"    => "0",
+// "handsetin"     => "7",
+// "handsetout"    => "20",
+"ringtype"      => "2", //user define
+// "speakerout"    => "31",
+// "speakerin"     => "15",
+
+//***************Dial Plan Settings***************
+// "dialplan"  => "0", //disable
+// "innerline"     => "0", //disable
+// "callwaiting"   => "0", //disable
+// "fwdpoweroff"   => "0", //disable
+// "fwdalways"     => "0", //disable
+// "fwdbusy"   => "0", //disable
+// "fwdnoanswer"   => "0", //disable
+// "digitmap"  => "0", //disable
+
+//***************Protocol Settings***************
+"service"       => "1", //enable
+// "registerttl"   => "60",
+"servicetype"   => "13", //sipphone
+"sipproxy"      => $ipAdressServer,
+"domain"        => $ipAdressServer,
+// "nattraversal"  => "0", //disable
+// "nataddr"       => "empty",
+// "natttl"        => "30",
+"phonenumber"   => $id_device,
+"account"       => $id_device,
+"pin"           => $secret,
+// "registerport"  => "1720",
+// "rtpport"       => "1722",
+// "tos"           => "0",
+// "dtmfpayload"   => "101",
+"dtmf"          => "1", //rfc2833
+// "prack"         => "0", //disable
+"outboundproxy" => "1", //enable
+
+//***************Other Settings***************
+// "superpassword" => "12345678",
+// "debug"         => "0", //disable
+// "password"      => "1234",
+// "upgradetype"   => "0", //disable
+// "upgradeaddr"   => "empty",
+"sntpip"        => $ipAdressServer,
+// "daylight"      => "0", //disable
+// "timezone"      => "55", //(GMT+07:00)Bangkok,Jakarta,Hanoi
+//***************Save Settings***************
+"write"         => "",
+);
+
+    return $arrAtcom320;
+}
+
+function telnet($ip, $user, $password, $arrComandos){
+    if ($fsock = fsockopen($ip, 23, $errno, $errstr, 30))
+    {
+        if(is_array($arrComandos) && count($arrComandos)>0)
+        {
+            if($user!="" && $user!=null){
+                fputs($fsock, "$user\r");
+                sleep(1);
+            }
+            if($password!="" && $password!=null){
+                fputs($fsock, "$password\r");
+                sleep(1);
+            }
+            foreach($arrComandos as $comando => $valor)
+            {
+                if($comando=='write' || $comando=='save')
+                {
+                    fputs($fsock, "$comando\r");
+                    sleep(1);
+                }
+                else{
+                    fputs($fsock, "set $comando $valor\r");
+                    sleep(1);
+                }
+            }
+        }
+        fread($fsock,32); //Necesario para ejecutar la ultima linea de comandos (write - save)
+
+        fclose($fsock);
+        return true;
+    }else return false;
+}
 ?>

@@ -27,6 +27,7 @@
   +----------------------------------------------------------------------+
   $Id: paloSantoCDR.class.php,v 1.1.1.1 2008/01/31 21:31:55 afigueroa Exp $ */
 
+ini_set("display_errors", true);
 require_once "/var/lib/asterisk/agi-bin/phpagi-asmanager.php";
 
 class paloSantoConference {
@@ -142,7 +143,7 @@ class paloSantoConference {
         $arrCallers = array();
         if(is_array($arrResult) && count($arrResult)>0){
             foreach($arrResult as $Key => $linea){
-                if(eregi("^User #:[[:space:]]*([[:digit:]]+)[[:space:]]*([[:alnum:]| ]+)[[:space:]]*Channel: ([[:alnum:]|/|-]+)[[:space:]]*([[:alnum:]|\(|\)| ]+\))[[:space:]]*([[:digit:]|\:]+)$",$linea,$arrReg))
+                if(eregi("^User #:[[:space:]]*([[:digit:]]+)[[:space:]]*([[:digit:]]+)[[:alnum:]| |<|>]*Channel: ([[:alnum:]|/|-]+)[[:space:]]*([[:alnum:]|\(|\)| ]+\))[[:space:]]*([[:digit:]|\:]+)$",$linea,$arrReg))
                 {
                     $arrCallers[] = array('userId' => $arrReg[1], 'callerId' => $arrReg[2], 'mode' => $arrReg[4], 'duration' => $arrReg[5]);
                 }
@@ -168,6 +169,20 @@ class paloSantoConference {
         $arrResult = $this->AsteriskManager_Command($data_connection['host'], $data_connection['user'], $data_connection['password'], $command);
     }
 
+    function KickAllCallers($data_connection, $room)
+    {
+        $command = "meetme kick $room all";
+        $arrResult = $this->AsteriskManager_Command($data_connection['host'], $data_connection['user'], $data_connection['password'], $command);
+    }
+
+    function InviteCaller($data_connection, $room, $device, $callerId)
+    {
+        $command_data['device'] = $device;
+        $command_data['room'] = $room;
+        $command_data['callerid'] = $callerId;
+        return $this->AsteriskManager_Originate($data_connection['host'], $data_connection['user'], $data_connection['password'], $command_data);
+    }
+
     function AsteriskManager_Command($host, $user, $password, $command) {
         global $arrLang;
         $astman = new AGI_AsteriskManager( );
@@ -176,11 +191,65 @@ class paloSantoConference {
         } else{
             $salida = $astman->Command("$command");
             $astman->disconnect();
-            if ($salida["Response"] != strtoupper("ERROR")) {
+            if (strtoupper($salida["Response"]) != "ERROR") {
                 return split("\n", $salida["data"]);
             }
         }
         return false;
+    }
+
+    function AsteriskManager_Originate($host, $user, $password, $command_data) {
+        global $arrLang;
+        $astman = new AGI_AsteriskManager();
+
+        if (!$astman->connect("$host", "$user" , "$password")) {
+            $this->errMsg = $arrLang["Error when connecting to Asterisk Manager"];
+        } else{
+            $parameters = $this->Originate($command_data['device'], $command_data['callerid'], $command_data['room']);
+            $salida = $astman->send_request('Originate', $parameters);
+
+            $astman->disconnect();
+            if (strtoupper($salida["Response"]) != "ERROR") {
+                return split("\n", $salida["Response"]);
+            }else return false;
+        }
+        return false;
+    }
+
+    function Originate($channel, $callerid, $data)
+    {
+        $parameters = array();
+        $parameters['Channel'] = "Local/" . $channel;
+        $parameters['CallerID'] = $callerid;
+        $parameters['Data'] = $data . "|d";
+        $parameters['Context'] = "default";
+        $parameters['Application'] = "MeetMe";
+        $parameters['Priority'] = 1;
+
+        return $parameters;
+    }
+
+    function getDeviceFreePBX($dsn)
+    {
+        global $arrLang;
+
+        $pDB = new paloDB($dsn);
+        if($pDB->connStatus)
+            return false;
+        $sqlPeticion = "select id, concat(description,' <',user,'>') label FROM devices WHERE tech = 'sip' ORDER BY id ASC;";
+        $result = $pDB->fetchTable($sqlPeticion,true); //se consulta a la base asterisk
+        $pDB->disconnect(); 
+        $arrDevices = array();
+        if(is_array($result) && count($result)>0){
+                $arrDevices['unselected'] = "-- {$arrLang['Unselected']} --";
+            foreach($result as $key => $device){
+                $arrDevices[$device['id']] = $device['label'];
+            }
+        }
+        else{
+            $arrDevices['no_device'] = "-- {$arrLang['No Extensions']} --";
+        }
+	return $arrDevices;
     }
 }
 ?>

@@ -112,7 +112,7 @@ function endpointConfiguratedShow($smarty, $module_name, $local_templates_dir, $
                 $arrTmp[0] = "<input type='checkbox' name='epmac_{$endspoint['mac_adress']}'  />";
                 $arrTmp[1] = $unset;
                 $arrTmp[2] = $endspoint['mac_adress'];
-                $arrTmp[3] = "<a href='http://{$endspoint['ip_adress']}/' target='_blank'>{$endspoint['ip_adress']}</a>";
+                $arrTmp[3] = "<a href='http://{$endspoint['ip_adress']}/' target='_blank'>{$endspoint['ip_adress']}</a><input type='hidden' name='ip_adress_endpoint_{$endspoint['mac_adress']}' value='{$endspoint['ip_adress']}' />";
                 $arrTmp[4] = $endspoint['name_vendor']." / ".$endspoint['desc_vendor']."&nbsp;<input type='hidden' name='id_vendor_device_{$endspoint['mac_adress']}' value='{$endspoint['id_vendor']}' />&nbsp;<input type='hidden' name='name_vendor_device_{$endspoint['mac_adress']}' value='{$endspoint['name_vendor']}' />";
                 $arrTmp[5] = "<select name='id_model_device_{$endspoint['mac_adress']}' >".combo($paloEndPoint->getAllModelsVendor($endspoint['name_vendor']),$endspoint['model_no'])."</select>";
                 $arrTmp[6] = "<select name='id_device_{$endspoint['mac_adress']}'    >".combo($arrDeviceFreePBX,$endspoint['account'])                                               ."</select>";
@@ -204,6 +204,7 @@ function endpointConfiguratedSet($smarty, $module_name, $local_templates_dir, $d
             $tmpEndpoint['mac_adress']  = $tmpMac;
             $tmpEndpoint['id_vendor']   = $_POST["id_vendor_device_$tmpMac"];
             $tmpEndpoint['name_vendor'] = $_POST["name_vendor_device_$tmpMac"];
+            $tmpEndpoint['ip_adress']   = $_POST["ip_adress_endpoint_$tmpMac"];
             $tmpEndpoint['comment']     = "Nada";
 
             if($paloEndPoint->createEndpointDB($tmpEndpoint)){
@@ -216,9 +217,11 @@ function endpointConfiguratedSet($smarty, $module_name, $local_templates_dir, $d
                 $ArrayData['vendor'] = $tmpEndpoint['name_vendor'];
                 $ArrayData['data'] = array(
                         "filename"     => strtolower(str_replace(":","",$tmpEndpoint['mac_adress'])), 
-                        "DisplayName"  => $tmpEndpoint['desc_device'], 
-                        "id_device"    => $tmpEndpoint['id_device'], 
-                        "secret"       => $tmpEndpoint['secret']);
+                        "DisplayName"  => $tmpEndpoint['desc_device'],
+                        "id_device"    => $tmpEndpoint['id_device'],
+                        "secret"       => $tmpEndpoint['secret'],
+                        "model"        => $paloEndPoint->getModelById($tmpEndpoint['id_model']),
+                        "ip_endpoint"  => $tmpEndpoint['ip_adress']);
 
                 //Falta si hay error en la creacion de un archivo, ya esta para saber q error es, el problema es como manejar un error o los errores dentro del este lazo (foreach).
                     //ejemplo: if($paloFile->createFiles($ArrayData)==false){ $paloFile->errMsg  (mostrar error con smarty)}
