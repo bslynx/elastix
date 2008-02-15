@@ -128,7 +128,7 @@ function _moduleContent($smarty, $module_name)
     }
 
     
-    $sContenido .= $smarty->fetch("$local_templates_dir/canceller.tpl");
+    $sContenido = $smarty->fetch("$local_templates_dir/canceller.tpl");
     return $sContenido;
 
 }
