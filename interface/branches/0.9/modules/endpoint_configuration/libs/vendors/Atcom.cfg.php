@@ -361,6 +361,9 @@ DHCP Mode          :1
 SNTP Server        :$ipAdressServer
 Enable SNTP        :1
 
+<LAN CONFIG MODULE>
+Bridge Mode        :1
+
 <DHCP CONFIG MODULE>
 DHCP Update Flag   :1
 TFTP  Server       :$ipAdressServer

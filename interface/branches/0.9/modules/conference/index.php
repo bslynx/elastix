@@ -113,7 +113,7 @@ function _moduleContent(&$smarty, $module_name)
             header("Location: ?menu=$module_name");
             break;
         case "delete_conference":
-            $content = delete_conference($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig,$dsnAsterisk);
+            $content = delete_conference($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig, $dsn_agi_manager, $dsnAsterisk);
             break;
         case "show_callers":
             $content = show_callers($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig, $dsn_agi_manager,$dsnAsterisk);
@@ -490,7 +490,7 @@ function add_conference($smarty, $module_name, $local_templates_dir, $pDB, $arrL
     }
 }
 
-function delete_conference($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig, $dsnAsterisk)
+function delete_conference($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig, $dsn_agi_manager, $dsnAsterisk)
 {
     $pConference = new paloSantoConference($pDB);
 
@@ -502,7 +502,7 @@ function delete_conference($smarty, $module_name, $local_templates_dir, $pDB, $a
             $result = $pConference->DeleteConference($tmpBookID);
         }
     }
-    $content = report_conference($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig);
+    $content = report_conference($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig, $dsn_agi_manager, $dsnAsterisk);
 
     return $content;
 }
