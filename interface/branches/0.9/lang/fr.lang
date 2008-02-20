@@ -611,6 +611,7 @@ de Voix sur IP tout autour du globe.",
 "Unselected" => "Non S&eacute;lectionn&eacute;",
 "No Models" => "No Models",
 "No Extensions" => "No Extensions",
+"Invalid Format in Parameter" => "Invalid Format in Parameter",
 /*End module Endpoint Configuration*/
 
 /*Start module Call Center*/
@@ -679,6 +680,11 @@ de Voix sur IP tout autour du globe.",
 "UnMuted" => "UnMuted",
 "Error when connecting to Asterisk Manager" => "Error when connecting to Asterisk Manager",
 "The conference installation is almost done. To complete it please" => "The conference installation is almost done. To complete it please",
+"Kick All" => "Kick All",
+"Invite Caller" => "Invite Caller",
+"The device wasn't write" => "The device wasn't write",
+"The device must be numeric" => "The device must be numeric",
+"The device couldn't be added to the conference" => "The device couldn't be added to the conference",
 /*End module conference*/
 );
 ?>

@@ -82,59 +82,73 @@ function _moduleContent(&$smarty, $module_name)
 
 function endpointConfiguratedShow($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrLang, $arrConfig)
 {
-    $arrData = array(); 
+    $arrData = array();
     if(!isset($_SESSION['elastix_endpoints']) || !is_array($_SESSION['elastix_endpoints']) || empty($_SESSION['elastix_endpoints'])){
         $paloEndPoint = new paloSantoEndPoint($dsnAsterisk,$dsnSqlite);
         $arrEndpointsConf = $paloEndPoint->listEndpointConf();
         $arrVendor        = $paloEndPoint->listVendor();
         $arrDeviceFreePBX = $paloEndPoint->getDeviceFreePBX();
-        $arrEndpointsMap  = $paloEndPoint->endpointMap("192.168.1.0/24",$arrVendor,$arrEndpointsConf);
-
-        if($arrEndpointsMap==false){
+        $endpoint_mask = isset($_POST['endpoint_mask'])?$_POST['endpoint_mask']:"192.168.1.0/24";
+        $pValidator = new PaloValidar();
+        if(!$pValidator->validar('endpoint_mask', $endpoint_mask, 'ip/mask'))
+        {
             $smarty->assign("mb_title",$arrLang['ERROR'].":");
-            $smarty->assign("mb_message",$paloEndPoint->errMsg);
-        }
-        else if(is_array($arrEndpointsMap) && count($arrEndpointsMap)>0){
-            foreach($arrEndpointsMap as $key => $endspoint){
-                if($endspoint['configurated']){
-                    $unset  = "<input type='checkbox' name='epmac_{$endspoint['mac_adress']}'  />";
-                    $report = $paloEndPoint->compareDevicesAsteriskSqlite($endspoint['account']);
-                    if($report!=false)
-                        $status = createStatus(3,$arrLang['UPDATE'].": $report");
-                    else
-                        $status = createStatus(1,$arrLang['Configured without incident.']);
+            $strErrorMsg = "";
+            if(is_array($pValidator->arrErrores) && count($pValidator->arrErrores) > 0){
+                foreach($pValidator->arrErrores as $k=>$v) {
+                    $strErrorMsg .= "$k, ";
                 }
-                else{
-                    $unset  = "";
-                    $status = createStatus(2,$arrLang['Not Set']);
-                }
-    
-                $arrTmp[0] = "<input type='checkbox' name='epmac_{$endspoint['mac_adress']}'  />";
-                $arrTmp[1] = $unset;
-                $arrTmp[2] = $endspoint['mac_adress'];
-                $arrTmp[3] = "<a href='http://{$endspoint['ip_adress']}/' target='_blank'>{$endspoint['ip_adress']}</a><input type='hidden' name='ip_adress_endpoint_{$endspoint['mac_adress']}' value='{$endspoint['ip_adress']}' />";
-                $arrTmp[4] = $endspoint['name_vendor']." / ".$endspoint['desc_vendor']."&nbsp;<input type='hidden' name='id_vendor_device_{$endspoint['mac_adress']}' value='{$endspoint['id_vendor']}' />&nbsp;<input type='hidden' name='name_vendor_device_{$endspoint['mac_adress']}' value='{$endspoint['name_vendor']}' />";
-                $arrTmp[5] = "<select name='id_model_device_{$endspoint['mac_adress']}' >".combo($paloEndPoint->getAllModelsVendor($endspoint['name_vendor']),$endspoint['model_no'])."</select>";
-                $arrTmp[6] = "<select name='id_device_{$endspoint['mac_adress']}'    >".combo($arrDeviceFreePBX,$endspoint['account'])                                               ."</select>";
-    //             $arrTmp[7] = $endspoint['desc_device'];
-                $arrTmp[7] = $status;
-                $arrData[] = $arrTmp;
             }
-            $_SESSION['elastix_endpoints'] = $arrData; 
-            //Lo guardo en la session para hacer mucho mas rapido el proceso 
-            //de configuracion de los endpoint. Solo la primera vez corre el 
-            //comado nmap y cuando quiera el usuario correrlo de nuevo lo debe 
-            //hacer por medio del boton Endpoint Scan, ahi de nuevo vuelve a 
-            //construir el arreglo $arrData.
+            $smarty->assign("mb_message",$arrLang['Invalid Format in Parameter'].": ".$strErrorMsg);
+        }else{
+            $arrEndpointsMap  = $paloEndPoint->endpointMap($endpoint_mask,$arrVendor,$arrEndpointsConf);
+
+            if($arrEndpointsMap==false){
+                $smarty->assign("mb_title",$arrLang['ERROR'].":");
+                $smarty->assign("mb_message",$paloEndPoint->errMsg);
+            }
+            else if(is_array($arrEndpointsMap) && count($arrEndpointsMap)>0){
+                foreach($arrEndpointsMap as $key => $endspoint){
+                    if($endspoint['configurated']){
+                        $unset  = "<input type='checkbox' name='epmac_{$endspoint['mac_adress']}'  />";
+                        $report = $paloEndPoint->compareDevicesAsteriskSqlite($endspoint['account']);
+                        if($report!=false)
+                            $status = createStatus(3,$arrLang['UPDATE'].": $report");
+                        else
+                            $status = createStatus(1,$arrLang['Configured without incident.']);
+                    }
+                    else{
+                        $unset  = "";
+                        $status = createStatus(2,$arrLang['Not Set']);
+                    }
+        
+                    $arrTmp[0] = "<input type='checkbox' name='epmac_{$endspoint['mac_adress']}'  />";
+                    $arrTmp[1] = $unset;
+                    $arrTmp[2] = $endspoint['mac_adress'];
+                    $arrTmp[3] = "<a href='http://{$endspoint['ip_adress']}/' target='_blank'>{$endspoint['ip_adress']}</a><input type='hidden' name='ip_adress_endpoint_{$endspoint['mac_adress']}' value='{$endspoint['ip_adress']}' />";
+                    $arrTmp[4] = $endspoint['name_vendor']." / ".$endspoint['desc_vendor']."&nbsp;<input type='hidden' name='id_vendor_device_{$endspoint['mac_adress']}' value='{$endspoint['id_vendor']}' />&nbsp;<input type='hidden' name='name_vendor_device_{$endspoint['mac_adress']}' value='{$endspoint['name_vendor']}' />";
+                    $arrTmp[5] = "<select name='id_model_device_{$endspoint['mac_adress']}' >".combo($paloEndPoint->getAllModelsVendor($endspoint['name_vendor']),$endspoint['model_no'])."</select>";
+                    $arrTmp[6] = "<select name='id_device_{$endspoint['mac_adress']}'    >".combo($arrDeviceFreePBX,$endspoint['account'])                                               ."</select>";
+        //             $arrTmp[7] = $endspoint['desc_device'];
+                    $arrTmp[7] = $status;
+                    $arrData[] = $arrTmp;
+                }
+                $_SESSION['elastix_endpoints'] = $arrData; 
+                //Lo guardo en la session para hacer mucho mas rapido el proceso 
+                //de configuracion de los endpoint. Solo la primera vez corre el 
+                //comado nmap y cuando quiera el usuario correrlo de nuevo lo debe 
+                //hacer por medio del boton Endpoint Scan, ahi de nuevo vuelve a 
+                //construir el arreglo $arrData.
+            }
         }
     }
     else{
         $arrData = $_SESSION['elastix_endpoints'];
     }
-    return buildReport($arrData,$smarty,$module_name,$arrLang);
+    return buildReport($arrData,$smarty,$module_name,$arrLang, $endpoint_mask);
 }
 
-function buildReport($arrData, $smarty, $module_name, $arrLang)
+function buildReport($arrData, $smarty, $module_name, $arrLang, $endpoint_mask)
 {
     $limit  = 20;
     $total  = count($arrData); 
@@ -144,7 +158,7 @@ function buildReport($arrData, $smarty, $module_name, $arrLang)
     $smarty->assign("url","?menu=".$module_name);
 
     $arrGrid = array("title"    => $arrLang["Endpoint Configuration"],
-        "icon"     => "images/list.png",
+        "icon"     => "images/endpoint.png",
         "width"    => "99%",
         "start"    => ($total==0) ? 0 : $offset + 1,
         "end"      => $end,
@@ -165,8 +179,9 @@ function buildReport($arrData, $smarty, $module_name, $arrLang)
                                        "property1" => ""),
                             7 => array("name"      => $arrLang["Status"],
                                        "property1" => "")));
-
-    $oGrid->showFilter("<input type='submit' name='endpoint_scan' value='{$arrLang['Endpoint Scan']}' class='button' />");
+    $html_filter = "<input type='submit' name='endpoint_scan' value='{$arrLang['Endpoint Scan']}' class='button' />";
+    $html_filter.= "&nbsp;&nbsp;<input type='text' name='endpoint_mask' value='$endpoint_mask' style='text-align:right; width:90px;' />";
+    $oGrid->showFilter($html_filter);
     $contenidoModulo  = "<form style='margin-bottom:0;' method='POST' action='?menu=$module_name'>";
     $contenidoModulo .= $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
     $contenidoModulo .= "</form>";
@@ -176,7 +191,8 @@ function buildReport($arrData, $smarty, $module_name, $arrLang)
 function endpointScan($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrLang, $arrConfig)
 {
     unset($_SESSION['elastix_endpoints']);
-    header("Location: /?menu=$module_name");
+    return endpointConfiguratedShow($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrLang, $arrConfig);
+    //header("Location: /?menu=$module_name");
 }
 
 function endpointConfiguratedSet($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrLang, $arrConfig)
@@ -189,7 +205,8 @@ function endpointConfiguratedSet($smarty, $module_name, $local_templates_dir, $d
     if($valid!=false){
         $smarty->assign("mb_title",$arrLang['ERROR'].":");
         $smarty->assign("mb_message",$valid);
-        return buildReport($_SESSION['elastix_endpoints'],$smarty,$module_name,$arrLang);
+        $endpoint_mask = isset($_POST['endpoint_mask'])?$_POST['endpoint_mask']:'192.168.1.0/24';
+        return buildReport($_SESSION['elastix_endpoints'],$smarty,$module_name,$arrLang, $endpoint_mask);
     }
     foreach($_POST as $key => $values){
         if(substr($key,0,6) == "epmac_"){ //encontre una mac seleccionada entoces por forma empirica con ayuda del mac_adress obtego los parametros q se relacionan con esa mac.
@@ -207,6 +224,12 @@ function endpointConfiguratedSet($smarty, $module_name, $local_templates_dir, $d
             $tmpEndpoint['ip_adress']   = $_POST["ip_adress_endpoint_$tmpMac"];
             $tmpEndpoint['comment']     = "Nada";
 
+            //Variables usadas para parametros extras
+            $name_model = $paloEndPoint->getModelById($tmpEndpoint['id_model']);
+            $arrParametersOld = $paloEndPoint->getParameters($tmpEndpoint['mac_adress']);
+            $arrParameters = $paloFileEndPoint->updateArrParameters($tmpEndpoint['name_vendor'], $name_model, $arrParametersOld);
+            $tmpEndpoint['arrParameters']=$arrParameters;
+
             if($paloEndPoint->createEndpointDB($tmpEndpoint)){
                 //verifico si la funcion createFilesGlobal del vendor ya fue ejecutado
                 if(!in_array($tmpEndpoint['name_vendor'],$arrFindVendor)){
@@ -220,8 +243,10 @@ function endpointConfiguratedSet($smarty, $module_name, $local_templates_dir, $d
                         "DisplayName"  => $tmpEndpoint['desc_device'],
                         "id_device"    => $tmpEndpoint['id_device'],
                         "secret"       => $tmpEndpoint['secret'],
-                        "model"        => $paloEndPoint->getModelById($tmpEndpoint['id_model']),
-                        "ip_endpoint"  => $tmpEndpoint['ip_adress']);
+                        "model"        => $name_model,
+                        "ip_endpoint"  => $tmpEndpoint['ip_adress'],
+                        "arrParameters"=> $tmpEndpoint['arrParameters']
+                        );
 
                 //Falta si hay error en la creacion de un archivo, ya esta para saber q error es, el problema es como manejar un error o los errores dentro del este lazo (foreach).
                     //ejemplo: if($paloFile->createFiles($ArrayData)==false){ $paloFile->errMsg  (mostrar error con smarty)}
@@ -230,7 +255,8 @@ function endpointConfiguratedSet($smarty, $module_name, $local_templates_dir, $d
         }
     }
     unset($_SESSION['elastix_endpoints']);
-    header("Location: /?menu=$module_name");
+    return endpointConfiguratedShow($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrLang, $arrConfig);
+    //header("Location: /?menu=$module_name");
 }
 
 function validateParameterEndpoint($arrParameters, $dsnAsterisk, $dsnSqlite)
@@ -286,7 +312,8 @@ function endpointConfiguratedUnset($smarty, $module_name, $local_templates_dir, 
         }
     }
     unset($_SESSION['elastix_endpoints']);
-    header("Location: /?menu=$module_name");
+    return endpointConfiguratedShow($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrLang, $arrConfig);
+    //header("Location: /?menu=$module_name");
 }
 
 function createStatus($type,$text)

@@ -1,86 +1,8 @@
 <?php
-/*
-    PrincipalFileAtcom nos retorna el contenido del archivo de configuracion de los EndPoint
-    Atcom, para ello es necesario enviarle el DisplayName, id_device, secret, ipAdressServer, mac_adress.
-*/
-function PrincipalFileAtcom($DisplayName, $id_device, $secret, $ipAdressServer, $macAdress)
-{
-    $content=
-"<<VOIP CONFIG FILE>>Version:2.0002
-
-<GLOBAL CONFIG MODULE>
-DHCP Mode          :1
-SNTP Server        :$ipAdressServer
-Enable SNTP        :1
-
-<DHCP CONFIG MODULE>
-DHCP Update Flag   :1
-TFTP  Server       :$ipAdressServer
-
-<SIP CONFIG MODULE>
-SIP  Port          :5060
-Stun Address       :
-Stun Port          :3478
-Stun Effect Time   :50
-SIP  Differv       :0
-DTMF Mode          :1
-Extern Address     :
-Url Convert        :1
---SIP Line List--  :
-SIP1 Phone Number  :$id_device
-SIP1 Display Name  :$DisplayName
-SIP1 Register Addr :$ipAdressServer
-SIP1 Register Port :5060
-SIP1 Register User :$id_device
-SIP1 Register Pwd  :$secret
-SIP1 Register TTL  :60
-SIP1 Enable Reg    :1
-SIP1 Proxy Addr    :$ipAdressServer
-SIP1 Proxy Port    :5060
-SIP1 Proxy User    :$id_device
-SIP1 Proxy Pwd     :$secret
-SIP1 Signal Enc    :0
-SIP1 Signal Key    :
-SIP1 Media Enc     :0
-SIP1 Media Key     :
-SIP1 Local Domain  :$ipAdressServer
-SIP1 Fwd Service   :0
-SIP1 Fwd Number    :
-SIP1 Enable Detect :0
-SIP1 Detect TTL    :60
-SIP1 Server Type   :0
-SIP1 User Agent    :Voip Phone 1.0
-SIP1 PRACK         :1
-SIP1 KEEP AUTH     :1
-SIP1 Session Timer :0
-SIP1 DTMF Mode     :0
-SIP1 Use Stun      :0
-SIP1 Via Port      :1
-SIP1 Subscribe     :0
-SIP1 Sub Expire    :300
-SIP1 Single Codec  :0
-SIP1 RFC Ver       :1
-SIP1 Use Mixer     :0
-SIP1 Mixer Uri     :
-
-<AUTOUPDATE CONFIG MODULE>
-Download Username  :user
-Download password  :pass
-Download Server IP :$ipAdressServer
-Config File Name   :atc$macAdress.cfg
-Config File Key    :
-Download Protocol  :2
-Download Mode      :1
-Download Interval  :1
-<<END OF FILE>>";
-
-    return $content;
-}
-
 function templatesFileAtcom($ipAdressServer)
 {
     $content= <<<TEMP
-<<VOIP CONFIG FILE>>Version:2.0002                            
+<<VOIP CONFIG FILE>>Version:2.0002
 
 <GLOBAL CONFIG MODULE>
 Static IP          :
@@ -355,72 +277,72 @@ TEMP;
     return $content;
 }
 
-function templatesFileAtcom320($DisplayName, $id_device, $secret, $ipAdressServer)
+function PrincipalFileAtcom320($DisplayName, $id_device, $secret, $ipAdressServer)
 {
 $arrAtcom320 = array(
 //***************Network Settings***************
-"iptype"    => "1", //dhcp
-// "vlan"      => "0", //disable
+"set iptype"    => "1", //dhcp
+// "set vlan"      => "0", //disable
 
 //***************Audio Settings***************
-"codec1"    => "2", //g711u
-// "codec2"    => "6", //null
-// "codec3"    => "6", //null
-// "codec4"    => "6", //null
-// "codec5"    => "6", //null
-// "codec6"    => "6", //null
-// "vad"           => "0", //disable
-// "agc"           => "0", //disable
-// "aec"           => "1", //enable
-// "audioframes"   => "2",
-// "6.3k"          => "1", //enable
-// "ilbcpayload"   => "97",
-// "jittersize"    => "0",
-// "handsetin"     => "7",
-// "handsetout"    => "20",
-"ringtype"      => "2", //user define
-// "speakerout"    => "31",
-// "speakerin"     => "15",
+"set codec1"    => "2", //g711u
+// "set codec2"    => "6", //null
+// "set codec3"    => "6", //null
+// "set codec4"    => "6", //null
+// "set codec5"    => "6", //null
+// "set codec6"    => "6", //null
+// "set vad"           => "0", //disable
+// "set agc"           => "0", //disable
+// "set aec"           => "1", //enable
+// "set audioframes"   => "2",
+// "set 6.3k"          => "1", //enable
+// "set ilbcpayload"   => "97",
+// "set jittersize"    => "0",
+// "set handsetin"     => "7",
+// "set handsetout"    => "20",
+"set ringtype"      => "2", //user define
+// "set speakerout"    => "31",
+// "set speakerin"     => "15",
 
 //***************Dial Plan Settings***************
-// "dialplan"  => "0", //disable
-// "innerline"     => "0", //disable
-// "callwaiting"   => "0", //disable
-// "fwdpoweroff"   => "0", //disable
-// "fwdalways"     => "0", //disable
-// "fwdbusy"   => "0", //disable
-// "fwdnoanswer"   => "0", //disable
-// "digitmap"  => "0", //disable
+// "set dialplan"  => "0", //disable
+// "set innerline"     => "0", //disable
+// "set callwaiting"   => "0", //disable
+// "set fwdpoweroff"   => "0", //disable
+// "set fwdalways"     => "0", //disable
+// "set fwdbusy"   => "0", //disable
+// "set fwdnoanswer"   => "0", //disable
+// "set digitmap"  => "0", //disable
 
 //***************Protocol Settings***************
-"service"       => "1", //enable
-// "registerttl"   => "60",
-"servicetype"   => "13", //sipphone
-"sipproxy"      => $ipAdressServer,
-"domain"        => $ipAdressServer,
-// "nattraversal"  => "0", //disable
-// "nataddr"       => "empty",
-// "natttl"        => "30",
-"phonenumber"   => $id_device,
-"account"       => $id_device,
-"pin"           => $secret,
-// "registerport"  => "1720",
-// "rtpport"       => "1722",
-// "tos"           => "0",
-// "dtmfpayload"   => "101",
-"dtmf"          => "1", //rfc2833
-// "prack"         => "0", //disable
-"outboundproxy" => "1", //enable
+"set service"       => "1", //enable
+// "set registerttl"   => "60",
+"set servicetype"   => "13", //sipphone
+"set sipproxy"      => $ipAdressServer,
+"set domain"        => $ipAdressServer,
+// "set nattraversal"  => "0", //disable
+// "set nataddr"       => "empty",
+// "set natttl"        => "30",
+"set phonenumber"   => $id_device,
+"set account"       => $id_device,
+"set pin"           => $secret,
+// "set registerport"  => "1720",
+// "set rtpport"       => "1722",
+// "set tos"           => "0",
+// "set dtmfpayload"   => "101",
+"set dtmf"          => "1", //rfc2833
+// "set prack"         => "0", //disable
+"set outboundproxy" => "1", //enable
 
 //***************Other Settings***************
-// "superpassword" => "12345678",
-// "debug"         => "0", //disable
-// "password"      => "1234",
-// "upgradetype"   => "0", //disable
-// "upgradeaddr"   => "empty",
-"sntpip"        => $ipAdressServer,
-// "daylight"      => "0", //disable
-// "timezone"      => "55", //(GMT+07:00)Bangkok,Jakarta,Hanoi
+// "set superpassword" => "12345678",
+// "set debug"         => "0", //disable
+// "set password"      => "1234",
+// "set upgradetype"   => "0", //disable
+// "set upgradeaddr"   => "empty",
+"set sntpip"        => $ipAdressServer,
+// "set daylight"      => "0", //disable
+// "set timezone"      => "55", //(GMT+07:00)Bangkok,Jakarta,Hanoi
 //***************Save Settings***************
 "write"         => "",
 );
@@ -428,36 +350,89 @@ $arrAtcom320 = array(
     return $arrAtcom320;
 }
 
-function telnet($ip, $user, $password, $arrComandos){
-    if ($fsock = fsockopen($ip, 23, $errno, $errstr, 30))
-    {
-        if(is_array($arrComandos) && count($arrComandos)>0)
-        {
-            if($user!="" && $user!=null){
-                fputs($fsock, "$user\r");
-                sleep(1);
-            }
-            if($password!="" && $password!=null){
-                fputs($fsock, "$password\r");
-                sleep(1);
-            }
-            foreach($arrComandos as $comando => $valor)
-            {
-                if($comando=='write' || $comando=='save')
-                {
-                    fputs($fsock, "$comando\r");
-                    sleep(1);
-                }
-                else{
-                    fputs($fsock, "set $comando $valor\r");
-                    sleep(1);
-                }
-            }
-        }
-        fread($fsock,32); //Necesario para ejecutar la ultima linea de comandos (write - save)
+function PrincipalFileAtcom530($DisplayName, $id_device, $secret, $ipAdressServer, $macAdress, $versionCfg)
+{
+   $versionCfg = isset($versionCfg)?$versionCfg:'2.0008';
+   $content=
+"<<VOIP CONFIG FILE>>Version:$versionCfg
 
-        fclose($fsock);
-        return true;
-    }else return false;
+<GLOBAL CONFIG MODULE>
+DHCP Mode          :1
+SNTP Server        :$ipAdressServer
+Enable SNTP        :1
+
+<DHCP CONFIG MODULE>
+DHCP Update Flag   :1
+TFTP  Server       :$ipAdressServer
+
+<SIP CONFIG MODULE>
+SIP  Port          :5060
+Stun Address       :
+Stun Port          :3478
+Stun Effect Time   :50
+SIP  Differv       :0
+DTMF Mode          :1
+Extern Address     :
+Url Convert        :1
+--SIP Line List--  :
+SIP1 Phone Number  :$id_device
+SIP1 Display Name  :$DisplayName
+SIP1 Register Addr :$ipAdressServer
+SIP1 Register Port :5060
+SIP1 Register User :$id_device
+SIP1 Register Pwd  :$secret
+SIP1 Register TTL  :60
+SIP1 Enable Reg    :1
+SIP1 Proxy Addr    :$ipAdressServer
+SIP1 Proxy Port    :5060
+SIP1 Proxy User    :$id_device
+SIP1 Proxy Pwd     :$secret
+SIP1 Signal Enc    :0
+SIP1 Signal Key    :
+SIP1 Media Enc     :0
+SIP1 Media Key     :
+SIP1 Local Domain  :$ipAdressServer
+SIP1 Fwd Service   :0
+SIP1 Fwd Number    :
+SIP1 Enable Detect :0
+SIP1 Detect TTL    :60
+SIP1 Server Type   :0
+SIP1 User Agent    :Voip Phone 1.0
+SIP1 PRACK         :1
+SIP1 KEEP AUTH     :1
+SIP1 Session Timer :0
+SIP1 DTMF Mode     :0
+SIP1 Use Stun      :0
+SIP1 Via Port      :1
+SIP1 Subscribe     :0
+SIP1 Sub Expire    :300
+SIP1 Single Codec  :0
+SIP1 RFC Ver       :1
+SIP1 Use Mixer     :0
+SIP1 Mixer Uri     :
+
+<AUTOUPDATE CONFIG MODULE>
+Download Username  :
+Download password  :
+Download Server IP :$ipAdressServer
+Config File Name   :atc$macAdress.cfg
+Config File Key    :
+Download Protocol  :2
+Download Mode      :1
+Download Interval  :1
+<<END OF FILE>>";
+
+    return $content;
+}
+
+function arrAtcom530($ipAdressServer, $macAdress)
+{
+    $arrAtcom530 = array(
+        "download"  => "tftp -ip $ipAdressServer -file atc$macAdress.cfg",
+        "save"      => "",
+        "reload"    => "",
+);
+
+    return $arrAtcom530;
 }
 ?>

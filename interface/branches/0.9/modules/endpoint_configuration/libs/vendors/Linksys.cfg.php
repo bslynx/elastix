@@ -6,7 +6,7 @@
 function PrincipalFileLinksys($DisplayName, $id_device, $secret, $ipAdressServer)
 {
     $content="<flat-profile>
-    <Resync_Periodic ua=\"na\">3600</Resync_Periodic>
+    <Resync_Periodic ua=\"na\">86400</Resync_Periodic>
     <Proxy_1_ ua=\"na\">$ipAdressServer</Proxy_1_>
     <Outbound_Proxy_1_ ua=\"na\">$ipAdressServer</Outbound_Proxy_1_>
     <Primary_NTP_Server ua=\"na\">$ipAdressServer</Primary_NTP_Server>
@@ -90,5 +90,14 @@ function templatesFileLinksys($ipAdressServer)
 TEMP;
 
     return $content;
+}
+
+function conexionHTTP($ip_endpoint, $ipAdressServer, $mac_address){
+    $url_resync = "http://$ip_endpoint/admin/resync?$ipAdressServer/spa{$mac_address}.cfg";
+    $fp = @fopen($url_resync, 'r');
+    if ($fp == false)
+        return false;
+    @fclose($fp);
+        return true;
 }
 ?>

@@ -67,7 +67,11 @@ class PaloSantoFileEndPoint
             case 'Linksys':
                 $contentFileLinksys =PrincipalFileLinksys($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer);
                 if($this->createFileConf($this->directory, "spa".$ArrayData['data']['filename'].".cfg", $contentFileLinksys))
-                    return true;
+                {
+                    if(conexionHTTP($ArrayData['data']['ip_endpoint'], $this->ipAdressServer, $ArrayData['data']['filename']))
+                        return true;
+                    else return false;
+                }
                 else return false;
 
                 break;
@@ -91,15 +95,19 @@ class PaloSantoFileEndPoint
             case 'Atcom':
                 if($ArrayData['data']['model'] == "AT 320")
                 {
-                    $contentFileAtcom = templatesFileAtcom320($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer,$ArrayData['data']['filename']);
-                    $result = telnet($ArrayData['data']['ip_endpoint'], "", "12345678", $contentFileAtcom);
+                    $contentFileAtcom = PrincipalFileAtcom320($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer,$ArrayData['data']['filename']);
+                    $result = $this->telnet($ArrayData['data']['ip_endpoint'], "", "12345678", $contentFileAtcom);
                     if($result) return true;
                     else return false;
-                }else{
-                    $contentFileAtcom =PrincipalFileAtcom($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer,$ArrayData['data']['filename']);
+                }else if($ArrayData['data']['model'] == "AT 530"){
+                    $contentFileAtcom = PrincipalFileAtcom530($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer,$ArrayData['data']['filename'], $ArrayData['data']['arrParameters']['versionCfg']);
                     if($this->createFileConf($this->directory,"atc".$ArrayData['data']['filename'].".cfg", $contentFileAtcom))
-                        return true;
-                    else return false;
+                    {
+                        $arrComandos = arrAtcom530($this->ipAdressServer, $ArrayData['data']['filename']);
+                        $result = $this->telnet($ArrayData['data']['ip_endpoint'], "admin", "admin", $arrComandos);
+                        if($result) return true;
+                        else return false;
+                    }else return false;
                 }
 
                 break;
@@ -122,7 +130,7 @@ class PaloSantoFileEndPoint
 
         $nameFileConf = strtolower($nameFileConf);
         $fd = fopen ($tftpBootPath.$nameFileConf, "w");
-        if ($fd){ 
+        if ($fd){
             fputs($fd,$contentConf,strlen($contentConf)); // write config file
         fclose ($fd);
             return true;
@@ -240,6 +248,66 @@ class PaloSantoFileEndPoint
             case 'Grandstream':
                 break;
         }
+    }
+
+    function telnet($ip, $user, $password, $arrComandos){
+        if ($fsock = fsockopen($ip, 23, $errno, $errstr, 30))
+        {
+            if(is_array($arrComandos) && count($arrComandos)>0)
+            {
+                if($user!="" && $user!=null){
+                    fputs($fsock, "$user\r");
+                    fread($fsock,1024);
+                }
+                if($password!="" && $password!=null){
+                    fputs($fsock, "$password\r");
+                    fread($fsock,1024);
+                }
+                foreach($arrComandos as $comando => $valor)
+                {
+                    fputs($fsock, "$comando $valor\r");
+                    fread($fsock,1024);
+                }
+            }
+            fclose($fsock);
+            return true;
+        }else return false;
+    }
+
+    function updateArrParameters($vendor, $model, $arrParametersOld)
+    {
+        switch($vendor)
+        {
+            case 'Polycom':
+                break;
+
+            case 'Linksys':
+                break;
+
+            case 'Aastra':
+                break;
+
+            case 'Cisco':
+                break;
+
+            case 'Atcom':
+                if($model == 'AT 530')
+                {
+                    if(isset($arrParametersOld['versionCfg']))
+                        $arrParametersOld['versionCfg'] = $arrParametersOld['versionCfg'] + 0.0001;
+                    else
+                        $arrParametersOld['versionCfg'] = '2.0005';
+                }
+                break;
+
+            case 'Snom':
+                break;
+
+            case 'Grandstream':
+                break;
+        }
+
+        return $arrParametersOld;
     }
 }
 ?>

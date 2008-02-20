@@ -588,6 +588,7 @@ implementations of Voice over IP around the globe.",
 "Unselected" => "Unselected",
 "No Models" => "No Models",
 "No Extensions" => "No Extensions",
+"Invalid Format in Parameter" => "Invalid Format in Parameter",
 /*End module Endpoint Configuration*/
 
 /*Start module Call Center*/
@@ -657,5 +658,48 @@ implementations of Voice over IP around the globe.",
 "Error when connecting to Asterisk Manager" => "Error when connecting to Asterisk Manager",
 "The conference installation is almost done. To complete it please" => "The conference installation is almost done. To complete it please",
 /*End module conference*/
+
+"It was not possible to obtain information about the graph" => "It was not possible to obtain information about the graph",
+"Secondary DNS" => "Secondary DNS",
+"Halt" => "Halt",
+"Reboot" => "Reboot",
+"Default Rate Configuration" => "Default Rate Configuration",
+"Default Rate" => "Default Rate",
+"Default Rate Offset" => "Default Rate Offset",
+"Value for rate is not valid" => "Value for rate is not valid",
+"These networks are allowed to send e-mail to external domains through the Elastix <br>using the SMTP protocol.
+You must insert one network per row and each network must have the format
+<b>IP/MASK.</b> For example, to allow RELAY from the Elastix you must insert <br>
+127.0.0.1/32 We recommend keeping the 127.0.0.1/32 network in the <br>
+configuration because some processes need it." => "These networks are allowed to send e-mail to external domains through the Elastix <br> using the SMTP protocol.
+You must insert one network per row and each network <br>must have the format
+<b>IP/MASK</b>.<br>For example, to allow RELAY from the Elastix you must insert
+127.0.0.1/32. <br> We recommend keeping the 127.0.0.1/32 network in the
+configuration <br>because some processes need it.",
+"Fax Master" => "Fax Master",
+"Fax Master Email" => "Fax Master Email",
+"You don't have extension number associated with user" => "You don't have extension number associated with user",
+"Date and Time Configuration" => "Date/Time",
+"Current Datetime" => "Current Datetime",
+"The change of date and time can concern important  system processes." => "The change of date and time can concern important  system processes.",
+"Invalid file extension.- It must be tar.gz / zip / tgz" => "Invalid file extension.- It must be tar.gz / zip / tgz",
+"Module sucessfully loaded" => "Module sucessfully loaded",
+"Folder name doesn't exist in module file" => "Folder name doesn't exist in module file",
+"Folder configs doesn't exist in module file" => "Folder configs doesn't exist in module file",
+"Folder themes doesn't exist in module file" => "Folder themes doesn't exist in module file",
+"File index.php doesn't exist in module file" => "File index.php doesn't exist in module file",
+"File install.php doesn't exist in module file" => "File install.php doesn't exist in module file",
+"Could not uncompress file" => "Could not uncompress file",
+"install.php failed" => "install.php failed",
+"No IP entered, you must keep at least the IP 127.0.0.1" => "No IP entered, you must keep at least the IP 127.0.0.1",
+"These IPs are allowed to send faxes through Elastix.  You must insert one IP per row.  We recommend keeping localhost and 127.0.0.1  in the configuration because some processes could need them." => "These IPs are allowed to send faxes through Elastix.<br>
+You must insert one IP per row.  We recommend keeping <br> localhost and 127.0.0.1 in the
+configuration because some <br> processes could need them.",
+"Kick All" => "Kick All",
+"Invite Caller" => "Invite Caller",
+"The device wasn't write" => "The device wasn't write",
+"The device must be numeric" => "The device must be numeric",
+"The device couldn't be added to the conference" => "The device couldn't be added to the conference",
+
 );
 ?>

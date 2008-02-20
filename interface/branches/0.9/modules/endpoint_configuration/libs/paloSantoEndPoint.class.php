@@ -301,7 +301,7 @@ class paloSantoEndPoint
                             id_vendor   = {$endpointVars['id_vendor']},
                             edit_date   = datetime('now','localtime'),
                             comment     = '{$endpointVars['comment']}'
-                          where mac_adress = '{$endpointVars['mac_adress']}';";            
+                          where mac_adress = '{$endpointVars['mac_adress']}';";
         }
         else{ // Si no existe entonces lo inserto
             $sqlPeticion = "insert into endpoint(id_device,desc_device,account,secret,id_model,
@@ -314,17 +314,48 @@ class paloSantoEndPoint
                                     '{$endpointVars['mac_adress']}',
                                     {$endpointVars['id_vendor']},
                                     datetime('now','localtime'),
-                                    '{$endpointVars['comment']}');";  
+                                    '{$endpointVars['comment']}');";
         }
 
         //Realizo el query.
         if(!$pDB->genQuery($sqlPeticion)){
             $this->errMsg = $pDB->errMsg;
-            $pDB->disconnect(); 
+            $pDB->disconnect();
             return false;
+        }else{
+            if(isset($endpointVars['arrParameters']) && is_array($endpointVars['arrParameters']) && count($endpointVars['arrParameters'])>0)
+                $result = $this->setParameters($endpointVars['arrParameters'], $endpointVars['mac_adress'], $pDB);
         }
-        $pDB->disconnect(); 
+        $pDB->disconnect();
+        if(isset($result) && !$result) return false;
         return true;
+    }
+
+    function setParameters($arrParameters, $mac_adress, $pDB)
+    {
+        foreach($arrParameters as $key => $value)
+        {
+            $sqlPeticion = " select count(*) as exist from parameter where name='$key' and id_endpoint = (select id from endpoint where mac_adress = '$mac_adress');";
+            $result = $pDB->getFirstRowQuery($sqlPeticion,true); //se consulta a la base
+            if(is_array($result) && count($result)>0 && $result['exist']==1)
+            {
+                $sqlPeticion = "update parameter set 
+                                  value   = '$value'
+                                  where name='$key' and id_endpoint = (select id from endpoint where mac_adress = '$mac_adress');";
+            }else{
+                $sqlPeticion = "insert into parameter (name, value, id_endpoint) values 
+                                  ('$key', '$value', (select id from endpoint where mac_adress = '$mac_adress'));";
+            }
+
+            //Realizo el query.
+            if(!$pDB->genQuery($sqlPeticion)){
+                $this->errMsg = $pDB->errMsg;
+                $pDB->disconnect();
+                return false;
+            }
+
+            return true;
+        }
     }
 
     /** Funcion que compara si hay incongruencia de informacion entre las bases asterisk(mysql) y endpoint(sqlite)
@@ -369,6 +400,27 @@ class paloSantoEndPoint
         }
         if($report=="") return false;
         else return $report;
+    }
+
+    function getParameters($mac_adress)
+    {
+        $pDB = $this->connectDataBase("sqlite","endpoint");
+        if($pDB==false)
+            return false;
+
+        $arrParameters = array();
+        $sqlPeticion = " select name, value from parameter where id_endpoint = (select id from endpoint where mac_adress = '$mac_adress');";
+        $result = $pDB->fetchTable($sqlPeticion,true); //se consulta a la base
+        if(is_array($result) && count($result)>0)
+        {
+            foreach($result as $key => $value)
+            {
+                $arrParameters["{$value['name']}"] = $value['value'];
+            }
+        }
+
+        $pDB->disconnect();
+        return $arrParameters;
     }
 }
 

@@ -620,6 +620,7 @@ alrededor del mundo.",
 "Unselected" => "No Seleccionado",
 "No Models" => "No Modelos",
 "No Extensions" => "No Extensiones",
+"Invalid Format in Parameter" => "Formato Invalido en Parametro",
 /*End module Endpoint Configuration*/
 
 /*Start module Call Center*/
@@ -688,6 +689,11 @@ alrededor del mundo.",
 "UnMuted" => "No Callado",
 "Error when connecting to Asterisk Manager" => "Error cuando se conectaba al Adminstrador de Asterisk",
 "The conference installation is almost done. To complete it please" => "Para finalizar la instalación de conferencia haga ",
+"Kick All" => "Botar a todos",
+"Invite Caller" => "Llamada a Invitar",
+"The device wasn't write" => "La extension no se puedo escribir.",
+"The device must be numeric" => "La extension debe ser numerica",
+"The device couldn't be added to the conference" => "La extension no se pudo agregar a la conferencia",
 /*End module conference*/
 );
 ?>
