@@ -1,3 +1,4 @@
 <?
 echo phpinfo();
+echo "asdasdas";
 ?>
