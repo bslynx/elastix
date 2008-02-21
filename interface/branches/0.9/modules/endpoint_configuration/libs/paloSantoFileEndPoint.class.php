@@ -265,7 +265,11 @@ class PaloSantoFileEndPoint
                 }
                 foreach($arrComandos as $comando => $valor)
                 {
-                    fputs($fsock, "$comando $valor\r");
+                    $line = $comando;
+                    if($valor!="")
+                        $line = "$comando $valor";
+
+                    fputs($fsock, "$line\r");
                     fread($fsock,1024);
                 }
             }
