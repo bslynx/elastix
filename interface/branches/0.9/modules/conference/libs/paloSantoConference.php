@@ -27,7 +27,7 @@
   +----------------------------------------------------------------------+
   $Id: paloSantoCDR.class.php,v 1.1.1.1 2008/01/31 21:31:55 afigueroa Exp $ */
 
-ini_set("display_errors", true);
+//ini_set("display_errors", true);
 require_once "/var/lib/asterisk/agi-bin/phpagi-asmanager.php";
 
 class paloSantoConference {

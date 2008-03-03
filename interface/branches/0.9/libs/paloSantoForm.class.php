@@ -132,7 +132,7 @@ class paloForm
                 case "CHECKBOX":
                     $checked = 'off';
                     $disable = 'on';
-                    if($arrPreFilledValues[$varName]==true)
+                    if($arrPreFilledValues[$varName]=='on')
                         $checked = 'on';
                     if($this->modo=='input' or ($this->modo=='edit' and $arrVars['EDITABLE']!='no'))
                         $disable = 'off';
