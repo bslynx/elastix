@@ -16,7 +16,68 @@
             </td>
             {else}
             <td class="headlink" valign="bottom">
-              <div style="position:absolute; z-index:200; top:65px;"><a href="#" onClick="javascript:alert('Future Dropdown Menu to be released in Elastix 1.0 Beta version')"><img src="/images/esquinita2.gif" border="0"></a></div>
+              <div style="position:absolute; z-index:200; top:65px;"><a href="javascript:mostrar_Menu('{$idMenu}')"><img src="/images/esquinita2.gif" border="0"></a></div>
+              <input type="hidden" id="idMenu" value=""></input>
+              <div class="vertical_menu_oculto" id="{$idMenu}">
+                <table cellpadding=0 cellspacing=0>
+                {if $idMenu eq "system"}
+                    {foreach from=$arrMenuSystem key=idSubMenu item=Submenu}
+                        <tr><td>
+                        <a href="/?menu={$idSubMenu}">{$Submenu.Name}</a>
+                        </td></tr>
+                    {/foreach}
+                {/if}
+                {if $idMenu eq "pbxconfig"}
+                    {foreach from=$arrMenuPbx key=idSubMenu item=Submenu}
+                        <tr><td>
+                        <a href="/?menu={$idSubMenu}">{$Submenu.Name}</a>
+                        </td></tr>
+                    {/foreach}
+                {/if}
+                {if $idMenu eq "fax"}
+                    {foreach from=$arrMenuFax key=idSubMenu item=Submenu}
+                        <tr><td>
+                        <a href="/?menu={$idSubMenu}">{$Submenu.Name}</a>
+                        </td></tr>
+                    {/foreach}
+                {/if}
+                {if $idMenu eq "email"}
+                    {foreach from=$arrMenuEmail key=idSubMenu item=Submenu}
+                        <tr><td>
+                        <a href="/?menu={$idSubMenu}">{$Submenu.Name}</a>
+                        </td></tr>
+                    {/foreach}
+                {/if}
+                {if $idMenu eq "im"}
+                    {foreach from=$arrMenuIm key=idSubMenu item=Submenu}
+                        <tr><td>
+                        <a href="/?menu={$idSubMenu}">{$Submenu.Name}</a>
+                        </td></tr>
+                    {/foreach}
+                {/if}
+                {if $idMenu eq "reports"}
+                    {foreach from=$arrMenuReports key=idSubMenu item=Submenu}
+                        <tr><td>
+                        <a href="/?menu={$idSubMenu}">{$Submenu.Name}</a>
+                        </td></tr>
+                    {/foreach}
+                {/if}
+                {if $idMenu eq "extras"}
+                    {foreach from=$arrMenuExtras key=idSubMenu item=Submenu}
+                        <tr><td>
+                        <a href="/?menu={$idSubMenu}">{$Submenu.Name}</a>
+                        </td></tr>
+                    {/foreach}
+                {/if}
+                {if $idMenu eq "call_center"}
+                    {foreach from=$arrMenuCallCenter key=idSubMenu item=Submenu}
+                        <tr><td>
+                        <a href="/?menu={$idSubMenu}">{$Submenu.Name}</a>
+                        </td></tr>
+                    {/foreach}
+                {/if}
+                </table>
+              </div>
               <table cellSpacing="0" cellPadding="2" height="29" border="0">
                 <tr><td class="menutabletaboff_left" nowrap valign="top"><IMG src="/images/1x1.gif"></td><td class="menutabletaboff" title="" nowrap><a
                         class="menutable" href="/?menu={$idMenu}">{$menu.Name}</a></td><td class="menutabletaboff_right" nowrap valign="top"><IMG src="/images/1x1.gif"></td>
@@ -139,6 +200,25 @@ function mostrar()
     var eje_x=(screen.width - ancho) / 2;
     div_contenedor.setAttribute("style","left:"+ eje_x + "px; top:123px");
     div_contenedor.style.display = 'block';
+}
+
+function mostrar_Menu(element)
+{
+    var subMenu;
+
+    var idMenu = document.getElementById("idMenu");
+    if(idMenu.value!="")
+    {
+        subMenu = document.getElementById(idMenu.value);
+        subMenu.setAttribute("class", "vertical_menu_oculto");
+    }
+    if(element != idMenu.value)
+    {
+        subMenu = document.getElementById(element);
+        subMenu.setAttribute("class", "vertical_menu_visible");
+        idMenu.setAttribute("value", element);
+    }
+    else idMenu.setAttribute("value", "");
 }
 </script>
 {/literal}

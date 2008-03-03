@@ -348,30 +348,6 @@ TD.menuaftertab {
     BORDER-BOTTOM: #444444 1px solid;
     COLOR: #FFFFFF;
 }
-TABLE.menuflotante td{
-    FONT-FAMILY: verdana, arial, helvetica, sans-serif;
-    FONT-SIZE: 12px;
-    BACKGROUND-IMAGE: url(/images/bgblue.gif); 
-    PADDING-RIGHT: 20px;
-    PADDING-LEFT: 10px;
-    PADDING-BOTTOM: 3px;
-    PADDING-TOP: 3px;
-    BORDER-LEFT: #999999 1px solid;
-    BORDER-BOTTOM: #999999 1px solid;
-    BORDER-RIGHT: #444444 1px solid;
-    COLOR: #FFFFFF;
-}
-A.menuflotante {
-    TEXT-DECORATION: none;
-    FONT-FAMILY: verdana, arial, helvetica, sans-serif;
-    FONT-SIZE: 12px;
-    FONT-WEIGHT: bold;
-    COLOR: #444444;
-}
-A:hover.menuflotante {
-    COLOR: #662222;
-
-}
 TD.menudescription {
     FONT-FAMILY: verdana, arial, helvetica, sans-serif;
     FONT-SIZE: 9pt;
@@ -826,4 +802,37 @@ td.botonoff a {
 a.letranodec:link, a.letranodec:visited {
     text-decoration: none;
     color: #444444;
+}
+.vertical_menu_visible {
+    visibility: show;
+    position: absolute;
+    z-index: 200;
+    top: 77px;
+}
+
+.vertical_menu_visible table tr td{
+    FONT-FAMILY: verdana, arial, helvetica, sans-serif;
+    background-color: #e1e1e1;
+    border: 1px solid #e88f03;
+    border-top: 0;
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+.vertical_menu_visible table tr td a{
+    color: #444444;
+    font-size: 12px;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.vertical_menu_visible table tr td a:hover {
+    color: #e88f03;
+}
+
+.vertical_menu_oculto {
+    visibility: hidden;
+    position: absolute;
+    z-index: 200;
+    top: 77px;
 }

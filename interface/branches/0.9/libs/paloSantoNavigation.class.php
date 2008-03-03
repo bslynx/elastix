@@ -167,6 +167,25 @@ class paloSantoNavigation {
         $this->smarty->assign("nameSubMenuSelected",  $arrSubMenu[$currSubMenu]['Name']);
         $this->smarty->assign("nameSubMenu2Selected",  $arrSubMenu2[$currSubMenu2]['Name']);
 
+        /*************** Submenus para template elastix wine ********************/
+        $arrSubMenuSystem = $this->getArrSubMenu("system");
+        $this->smarty->assign("arrMenuSystem", $arrSubMenuSystem);
+        $arrSubMenuPbx = $this->getArrSubMenu("pbxconfig");
+        $this->smarty->assign("arrMenuPbx", $arrSubMenuPbx);
+        $arrSubMenuFax = $this->getArrSubMenu("fax");
+        $this->smarty->assign("arrMenuFax", $arrSubMenuFax);
+        $arrSubMenuEmail = $this->getArrSubMenu("email");
+        $this->smarty->assign("arrMenuEmail", $arrSubMenuEmail);
+        $arrSubMenuIm = $this->getArrSubMenu("im");
+        $this->smarty->assign("arrMenuIm", $arrSubMenuIm);
+        $arrSubMenuReports = $this->getArrSubMenu("reports");
+        $this->smarty->assign("arrMenuReports", $arrSubMenuReports);
+        $arrSubMenuExtras = $this->getArrSubMenu("extras");
+        $this->smarty->assign("arrMenuExtras", $arrSubMenuExtras);
+        $arrSubMenuExtras = $this->getArrSubMenu("call_center");
+        $this->smarty->assign("arrMenuCallCenter", $arrSubMenuExtras);
+        /*************** Submenus para template elastix wine ********************/
+
         return $this->smarty->fetch("_common/_menu.tpl");
     }
 
@@ -278,6 +297,10 @@ class paloSantoNavigation {
     function obtenerNameServer()
     {
         return $_SERVER['SERVER_NAME']; 
+    }
+
+    function ObtenerMenu()
+    {
     }
 }
 ?>
