@@ -6,23 +6,32 @@
 <body>
 <h1>System Info</h1>
 
-<p>The System Info interface provides information about the current state of the hardware where the PBX resides. This section has two components: System Resources, and Hard Drives.</p>
+<p>The option “System Info” of the Menu “System” in Elastix lets us monitor the server’s hardware resources.<p>
+<p>Within this option, we have two sections:</p>
 
 <p><b>System Resources</b></p>
 
-<p>Here there is a graph where the number of simultaneous calls are shown as well as the used resources such as memory and CPU usage with respect to time.</p>
+<p>“System Resource” shows us the values of actual use of both the memory as well as the processor.</p>
+
+<div><img src="/images/help/system/system_resources_1.jpg" border="0"></div>
 
 <ul>
-<li><b>CPU Info:</b> Shows the type of processor that is installed in the PBX</li>
-<li><b>Uptime:</b> The time elapsed since the PBX server was last restarted</li>
-<li><b>CPU usage:</b> CPU resources being used shown graphically</li>
-<li><b>Memory usage:</b> Main memory being used shown graphically</li>
-<li><b>Swap usage:</b> SWAP memory being used shown graphically</li>
+<li><b>CPU Info:</b> Information about brand, model and processor speed</li>
+<li><b>Uptime:</b> Time from the last reboot of the server</li>
+<li><b>CPU usage:</b> Percentage of use of processor capacity</li>
+<li><b>Memory usage:</b> Percentage of RAM memory utilized</li>
+<li><b>Swap usage:</b> Percentage of SWAP memory utilized</li>
 </ul>
+
+<p>Here is a graphic with the statistics of simultaneous calls, percentage of use of processor and percentage of use of RAM memory.</p>
+
+<div><img src="/images/help/system/system_resources_2.jpg" border="0"></div>
 
 <p><b>Hard Drives</b></p>
 
-<p>In this section you will find a graph where the percentage of maximum storage space in the hard drive that has been used to date is shown.</p>
+<p>This section shows a summary of the utilization of storage available on the server.</p>
+
+<div><img src="/images/help/system/system_resources_3.jpg" border="0"></div>
 
 <ul>
 <li><b>Partition name:</b> The name of the partition in the hard drive. Example:"HDA2"</li>

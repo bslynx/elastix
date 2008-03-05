@@ -34,9 +34,11 @@ $languages=array(
 "en"=>"English",
 "el"=>"Ελληνικά",
 "es"=>"Español",
+"fa"=>"پارسی",
 "fr"=>"Français",
 "it"=>"Italiano",
 "hu"=>"Magyar",
+"hr"=>"hrvatski",
 "nl"=>"Nederlands",
 "no"=>"Norsk",
 "pl"=>"Polski",
@@ -52,5 +54,6 @@ $languages=array(
 "cn"=>"简体中文",
 "tw"=>"繁體中文",
 "th"=>"ไทย",
+"sr"=>"Srpski",
 );
 ?>

@@ -51,30 +51,11 @@ function buscar_faxes_ajax(accion)
    }
    company_name             = obtener_nodo_por_name('name_company').value;
    company_fax              = obtener_nodo_por_name('fax_company').value;
-   fecha_fax                 = obtener_nodo_por_name('date_fax').value;
+   fecha_fax                = obtener_nodo_por_name('date_fax').value;
 
-//    var tamanio_busqueda = 10;
-//    switch(accion)
-//    {
-//         case 'search':
-//             xajax_faxes(company_name,company_fax,fecha_fax,0,tamanio_busqueda);
-//             break;
-//         case 'next':
-//             xajax_faxes(company_name,company_fax,fecha_fax,ultimo_registro_mostrado,tamanio_busqueda);
-//             break;
-//         case 'previous':
-            xajax_faxes(company_name,company_fax,fecha_fax,primer_registro_mostrado,accion);
-//             break;
-//         case 'start':
-//             xajax_faxes(company_name,company_fax,fecha_fax,0,tamanio_busqueda);
-//             break;
-//         case 'end':
-//             var pagina = parseInt(total_registros/tamanio_busqueda);
-//             var pagina_ultima = pagina * tamanio_busqueda;
-//             xajax_faxes(company_name,company_fax,fecha_fax,pagina_ultima,tamanio_busqueda);
-//             break;
-//    }
+   xajax_faxes(company_name,company_fax,fecha_fax,primer_registro_mostrado,accion);
 }
+
 function existen_nodos()
 {
     primer_registro_mostrado = document.getElementById('primer_registro_mostrado_paginacion');
@@ -94,6 +75,37 @@ function obtener_nodo_por_name(nodo_name)
     if(nodos)
         return nodos[0];
     else return null;
+}
+
+function elimimar_faxes()
+{
+    nodos = document.getElementsByTagName('input');
+    csv_faxes = "";
+    bandera = "";
+    for(i=0; i<nodos.length; i++){
+        nodoName = nodos[i].name;
+        if(nodoName.substring(0,7)=='faxpdf_' && nodos[i].checked){
+            csv_faxes += nodoName.substring(7) + ",";
+            bandera ="seleccionado";
+        }
+    }
+    if(bandera == "seleccionado"){
+        if(existen_nodos()){
+            primer_registro_mostrado = document.getElementById('primer_registro_mostrado_paginacion').value;
+            ultimo_registro_mostrado = document.getElementById('ultimo_registro_mostrado_paginacion').value;
+            total_registros          = document.getElementById('total_registros_paginacion').value;      
+        }
+        else{
+            primer_registro_mostrado = 0;
+            ultimo_registro_mostrado = 0;
+            total_registros          = 0;
+        }
+        company_name             = obtener_nodo_por_name('name_company').value;
+        company_fax              = obtener_nodo_por_name('fax_company').value;
+        fecha_fax                = obtener_nodo_por_name('date_fax').value;
+
+        xajax_deleteFaxes(csv_faxes.substring(0,csv_faxes.length - 1),company_name,company_fax,fecha_fax,primer_registro_mostrado);
+    }
 }
 </script>
 {/literal}

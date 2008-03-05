@@ -40,13 +40,19 @@ function _moduleContent($smarty, $module_name)
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
     $templates_dir=(isset($arrConfig['templates_dir']))?$arrConfig['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
-    
+
+    $contenidoModulo = listFax($smarty, $module_name, $local_templates_dir);
+    return $contenidoModulo;
+}
+
+function listFax($smarty, $module_name, $local_templates_dir)
+{
+    global $arrLang;
     $arrData = array();
     $oFax    = new paloFax();
     $arrFax  = $oFax->getFaxList();
-    
+
     $end = count($arrFax);
-   
     $arrFaxStatus = $oFax->getFaxStatus();
  
     foreach($arrFax as $fax) {
@@ -57,7 +63,7 @@ function _moduleContent($smarty, $module_name)
         $arrTmp[3] = $fax['email'];
         $arrTmp[4] = $fax['clid_name'] . "&nbsp;";
         $arrTmp[5] = $fax['clid_number'] . "&nbsp;";
-        $arrTmp[6] = $arrFaxStatus['ttyIAX' . $fax['id']];
+        $arrTmp[6] = $arrFaxStatus['ttyIAX' . $fax['dev_id']].' on ttyIAX' . $fax['dev_id'];
         $arrData[] = $arrTmp;
     }
     

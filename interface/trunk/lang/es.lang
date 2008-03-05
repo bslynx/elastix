@@ -126,6 +126,7 @@ $arrLang=array(
 "Field Name"=>"Nombre del Campo",
 "Field"=>"Campo",
 "CDR Report List"=>"Reporte CDR",
+"Account Code" => "Account Code",
 "Date"=>"Fecha",
 "Source"=>"Fuente",
 "Destination"=>"Destino",
@@ -230,6 +231,7 @@ $arrLang=array(
 "Calling Cards"=>"Calling Cards",
 "Softphones"=>"Softphones",
 "Fax Utilities"=>"Utilidades para Fax",
+"Instant Messaging" => "Mensajería Instantánea",
 "Menu Administrator"=>"Administrador de Men&uacute;",
 //
 "Channels Usage Report"=>"Reporte de Uso de Canales",
@@ -323,15 +325,17 @@ que pueden existir procesos que la necesiten para su correcto funcionamiento.",
 
 //recordings - voicemail
 "Recordings"=>"Recordings",
+"CallerID"=>"Id LLamada",
 "Voicemail" => "Correo de Voz",
 "Monitoring" => "Monitoreo",
 "Monitorig List" => "Lista de Grabaciones",
 "Voicemail List" => "Lista de Correos de Voz",
 "You don't have extension number associated with user" => "Extension no ha sido asignada para su usuario",
+"Are you sure you wish to delete voicemails?" => "Esta seguro de eliminar el correo de voz?",
 
 //system - date/time
 "Date/Time" => "Fecha/Hora",
-"Date and Time Configuration" => "Establecer de Fecha y Hora",
+"Date and Time Configuration" => "Fecha/Hora",
 "Current Datetime" => "Fecha y Hora actual",
 "New Date" => "Nueva Fecha",
 "New Time" => "Nueva Hora",
@@ -380,6 +384,9 @@ configuraci&oacute;n porque algunos <br> procesos prodr&iacute;an necesitarlos."
 "File"            => "Archivo",        /*Bruno agrego modulo*/
 "Fax Destiny"     => "Fax Destino", /*Bruno agrego modulo*/
 "No Data Found"   => "No se encontraron datos", /*Bruno agrego modulo*/
+"Are you sure you wish to delete fax (es)?" => "Estás seguro de eliminar el(los) fax (es)?",
+"Unable to eliminate pdf file from the path." => "No se pudo eliminar el archivo pdf de la ruta.",
+"Unable to eliminate pdf file from the database." => "No se pudo eliminar el archivo pdf desde la base de datos.",
 
 "Backup"=>"Respaldar",
 "Process"=>"Procesar",
@@ -412,6 +419,9 @@ configuraci&oacute;n porque algunos <br> procesos prodr&iacute;an necesitarlos."
 "The changes was saved in the file"=>"Los cambios han sido guardados en el archivo.",
 "Doesn't have permisses to read"=>"no tiene permisos de lectura",
 "This is not a valid directory"=>"No es un directorio válido",
+"Please write the file name" => "Por favor escriba el nombre del archivo",
+"New File" => "Nuevo Archivo",
+"File already exist" => "El archivo ya existe",
 /* FIN: File Editor */
 
 "File installer.php doesn't exist in package" =>"Archivo installer.php no existe en el paquete",
@@ -428,16 +438,23 @@ configuraci&oacute;n porque algunos <br> procesos prodr&iacute;an necesitarlos."
 "The theme could not be updated" => "No se pudo actualizar el tema",
 //Fin SubModule Themes
 
-/* Inicio Ports Details */
-"Ports Details" => "Detalles de Puertos",
+/* Inicio Hardware Detection */
+"Hardware Detection" => "Detección de Hardware",
 "Ports not Founds" => "Puertos no Encontrados",
-"Card" => "Slopt PCI",
+"Card" => "Slot PCI",
 "Type port" => "Tipo",
 "No. Port" => "Puerto #",
 "(In Use)" => "Activo",
-"Hardware Detect" => "Detectar Hardware",
-/* Fin Ports Details */
-
+"Hardware Detecting" => "Detectando Hardware",
+"Hardware Detect" => "Detectar Nuevo Hardware",
+"Cards undetected on your system, press for detecting hardware detection." => "Tarjetas no detectadas en su sistema, presione \"Detectar Nuevo Hardware\" para la detección",
+"Information" => "Informacion",
+"Satisfactory Hardware Detection" => "Hecho",
+"Unknown" => "Desconocido",
+"Replace file zapata.conf" => "Replace file zapata.conf",
+"Unable to backup file zapata.conf by zapata.conf.replace_for_elastix" => "Unable to backup file zapata.conf by zapata.conf.replace_for_elastix",
+"Unable to replace file zapata.conf" => "Unable to replace file zapata.conf",
+/* Fin Hardware Detection */
 
 /* Modulo system.updates*/
 "Updates" => "Actualizaciones",
@@ -471,5 +488,212 @@ configuraci&oacute;n porque algunos <br> procesos prodr&iacute;an necesitarlos."
 "Installing" => "Instalados",
 "Total Packages" => "Total Paquetes",
 "There is an action in process" => "Hay una accion en proceso",
+
+/*Backup List*/
+"Backup/Restore" => "Respaldar/Restaurar",
+"Backup List" => "Listado de Respaldos",
+"Name Backup" => "Nombre del Respaldo",
+"Error when deleting backup file" => "Error al borrar el archivo de respaldo",
+"There are not backup file selected" => "No hay archivo de respaldo seleccionado",
+"Action" => "Accion",
+"Folder backup doesn't exist"=>"El directorio backup no existe",
+
+/* inicio Cancelador de echo*/
+"Echo Canceller"=>"Cancelador de Eco",
+"Status"=>"Estado",
+"Could not get oslec info"=>"No se pudo obtener informacion del oslec",
+"Active"=>"Activo",
+"Inactive"=>"Inactivo",
+"Inactivate"=>"Inactivar",
+"Activate"=>"Activar",
+"Info"=>"Info",
+
+/* fin Cancelador de echo*/
+
+/*Module IM*/
+"IM" => "IM",
+"OpenFire" => "OpenFire",
+"The service Openfire No running" => "El servicio Openfire no esta activo en este momento. Si deseas activarlo haga ",
+"vTigerCRM" => "vTigerCRM",
+"The vTiger installation is almost done. To complete it please" => "Para finalizar la instalación de vTiger haga ",
+"click here" => "click aquí",
+/* Preferences*/
+"Preferences" => "Preferencias",
+
+/* Start About Elastix */
+"About Elastix"=>"Acerca de Elastix",
+"About Elastix Content"=>"Elastix fue creado bajo la premisa de ser un sistema de manejo para
+comunicaciones basadas en IP que sea accesible desde el Web, confiable y
+fácil de usar. Este software de código abierto iniciado en Ecuador se ha
+convertido en la solución preferida para implementaciones de Voz sobre IP
+alrededor del mundo.",
+"About Elastix Closed"=>"Cerrar",
+/* End About Elastix */
+
+//Elastix 0.9.1
+/*Star module Template Email */
+"Template Email"=>"Plantilla de Correo",
+"Fax From"=>"Fax Remite",
+"Fax From Name"=>"Fax Remitente",
+"Fax Suject"=>"Fax Asunto",
+"Fax Content"=>"Fax Contenido",
+"Configuration Sending Fax Mail"=>"Configuracion de Envio de Fax a Correo",
+"Edit Parameters"=>"Editar Parametros",
+/* End module Template Email */
+
+/*Start module Group List*/
+"Groups"=>"Grupos",
+"Group List"=>"Lista de Grupos",
+"Description"=>"Descripción",
+"New Group"=>"Nuevo Grupo",
+"Create New Group"=>"Crear Nuevo Grupo",
+"View Group"=>"Ver Grupo",
+"Edit Group"=>"Editar Grupo",
+"The Group have users assigned. You can delete any group that does not have any users assigned in it."=>"El Grupo tiene usuarios asignados. Puede eliminar cualquier grupo que no tenga usuarios asignados.",
+"The administrator group cannot be deleted because is the default Elastix Group. You can delete any other group."=>"El Grupo administrador no puede ser eliminado porque es el Grupo Elastix por defecto. Puede eliminar cualquier otro grupo.",
+/*End module Group List*/
+
+/*Star module Monitoring*/
+"Time"=>"Hora",
+"Message"=>"Mensaje",
+"Are you sure you wish to delete recordings?"=>"¿Est&aacute; seguro que desea eliminar los recordings?",
+"Download"=>"Descargar",
+"Listen"=>"Escuchar",
+/*End module Monitoring*/
+
+/** Elastix 1.0 **/
+
+/*Start module DHCP Server */
+"DHCP Server" => "Servidor DHCP",
+"Update" => "Actualizar",
+"Service Start" => "Iniciar Servicio",
+"Service Stop" => "Parar Servicio",
+"Start range of IPs" => "Inicio del rango de IPs",
+"End range of IPs" => "Fin del rango de IPs",
+"DNS 1" => "DNS 1",
+"DNS 2" => "DNS 2",
+"WINS" => "WINS",
+"Gateway" => "Gateway",
+"Optional" => "Opcional",
+"Of 1 to 50000 Seconds" => "de 1 a 50000 Segundos",
+"Time of client refreshment" => "Tiempo de refrescamiento del cliente",
+"DHCP Configuration" => "Configuración DHCP",
+"Could not find IP range" => "No se puedo encontrar el rango de IP",
+"DHCP configuration reading error: Verify that the DHCP service is installed and try again." => "Error al leer la configuración DHCP: Verifique que el servicio DHCP este instalado e intente de nuevo.",
+"Information DHCP" => "Información",
+"The Service dhcpd can't stop" => "No se puedo parar el Servicio DHCP",
+"The Service dhcpd can't start" => "No se puedo iniciar el Servicio DHCP",
+"The start IP is outside the LAN network" => "EL inicio de la IP está fuera del area de trabajo de la red LAN",
+"The final IP is outside the LAN network" => "El final de la IP estáis fuera del area de trabajo de la red LAN",
+"IP Range is invalid for available devices" => "Rango de IP es invalido para el dispositivo disponible",
+"Gateway is outside the LAN network" => "Gateway esta fuera del area de trabajo de la red LAN",
+"You can only choose between Enabled and Disabled" => "Tu puedes solo elegir entre habilitar y Desabilitar",
+"Value outside the range (1-50000)" => "Valor fuera del rango (1-50000)",
+"Failed to update the file configuration" => "No se pudo actualizar el archivo de configuración",
+"The update was successful, but was unable to reestablish the permissions of the file dhcp.conf" => "La actualización fue exitosa, pero no se pudo reestablecer los permisos del archivo dhcp.conf",
+"Update Error" => "Error al Actualizar",
+/*End module DHCP Server */
+
+/*Start module Endpoint Configuration*/
+"Endpoint Configuration" => "Configuracion de Endpoint",
+"Endpoint Scan" => "Mapear Endpoint",
+"Display Name" => "Ver Nombre",
+"MAC Adress" => "Direccion MAC",
+"Phone Type" => "Modelo Telefono",
+"IP Adress" => "Direccion IP",
+"Vendor" => "Fabricante",
+"User Extension" => "Extension de Usuario",
+"Set" => "Configurar",
+"Unset" => "Desconfigurar",
+"Are you sure you wish to unset endpoint(s)?" => "¿Estas seguro de desconfigurar el/los endpoint(s)?",
+"Are you sure you wish to set endpoint(s)?" => "¿Estas segiro de configurar el/los endpoint(s)?",
+"Configured without incident." => "Configured without incident.",
+"Not Set" => "No Configurado",
+"Unable write the file" => "No se pudo escribor el archivo",
+"Users" => "Usuarios",
+"User Name in Endpoint is" => "Nombre de Usuario en Endpoint es",
+"And secrets no equals in FreePBX and Endpoint" => "Y la clave no es igual tanto en FreePBX y Endpoint",
+"Don't exist in FreePBX extension" => "No existe la extension en FreePBX",
+"Don't exist in Endpoint extension" => "No existe la extension en el Endpoint",
+"UPDATE" => "ACTUALIZAR",
+"Unable delete the file" => "No se puede borra el archivo",
+"Unselected" => "No Seleccionado",
+"No Models" => "No Modelos",
+"No Extensions" => "No Extensiones",
+"Invalid Format in Parameter" => "Formato Invalido en Parametro",
+/*End module Endpoint Configuration*/
+
+/*Start module Call Center*/
+"Outgoing Campaigns" => "Campañas Salientes",
+"Agent Console" => "Agent Console",
+"Agents" => "Agents",
+"Break Administrator" => "Administrador de Break",
+"Ingoing Calls" => "Llamadas Entrantes",
+"Client" => "Cliente",
+"Forms" => "Formularios",
+"Form Designer" => "Diseño de Formularios",
+"Form List" => "Lista de Formularios",
+"Reports Break" => "Reporte de Breaks",
+"Calls Detail" => "Detalle de Llamadas",
+"Calls per hour" => "Llamadas por Hora",
+"Ingoing Calls Success" => "Llamadas Entrantes",
+"Calls per Agent" => "Llamadas por Agente",
+"Hold Time" => "Tiempo de Espera",
+"Login Logout" => "Tiempo de Login-Logout",
+"Graphic Calls per hour" => "Gráfico de Llamadas por Hora",
+/*End module Call Center*/
+
+/*Start module conference*/
+"Conference" => "Conferencia",
+"State" => "Estado",
+"Past Conferences" => "Conferencias Pasadas",
+"Current Conferences" => "Conferencias Actuales",
+"Future Conferences" => "Conferencias Futuras",
+"Conference #" => "Conferencia #",
+"Conference Name" => "Nombre de Conferencia",
+"Starts" => "Inicio",
+"Ends" => "Fin",
+"Participants" => "Participantes",
+"All" => "Todos",
+"New Conference" => "Nueva Conferencia",
+"Conference Owner" => "Conferencia Propia",
+"Conference Number" => "Numero de Conferencia",
+"Moderator PIN" => "PIN Moderador",
+"Moderator Options" => "Opciones de Moderador",
+"Announce" => "Anuncio",
+"Record" => "Grabar",
+"User PIN" => "PIN Usuario",
+"Listen Only" => "Solo Escuchar",
+"Wait for Leader" => "Esperar por Lider",
+"User Options" => "Opciones de Usuario",
+"Start Time (PST/PDT)" => "Tiempo Inicio (PST/PDT)",
+"Duration (HH:MM)" => "Duración (HH:MM)",
+"Recurs" => "Recurs",
+"Max Participants" => "Max Participantes",
+"Reoccurs" => "Reoccurs",
+"for" => "para",
+"days" => "dias",
+"Daily" => "Diariamente",
+"Weekly" => "Semanalmete",
+"Bi-weekly" => "Bi-semanalmete",
+"Moderator and user PINs must not be equal" => "Moderador y usuario PINs no deben se iguales",
+"Are you sure you wish to delete conference (es)?" => "Estás seguro de eliminar la/las conferencia (as)?",
+"Id" => "Id",
+"CallerId" => "Id de llamada",
+"Mode" => "Modo",
+"Mute" => "Callar",
+"Kick" => "Botar",
+"Are you sure you wish to Mute caller (s)?" => "Estás seguro de callar a/las llamada(s)?",
+"Are you sure you wish to Kick caller (s)?" => "Estás seguro de botar a/las llamadas(s)?",
+"Muted" => "Callado",
+"UnMuted" => "No Callado",
+"Error when connecting to Asterisk Manager" => "Error cuando se conectaba al Adminstrador de Asterisk",
+"The conference installation is almost done. To complete it please" => "Para finalizar la instalación de conferencia haga ",
+"Kick All" => "Botar a todos",
+"Invite Caller" => "Llamada a Invitar",
+"The device wasn't write" => "La extension no se puedo escribir.",
+"The device must be numeric" => "La extension debe ser numerica",
+"The device couldn't be added to the conference" => "La extension no se pudo agregar a la conferencia",
+/*End module conference*/
 );
 ?>

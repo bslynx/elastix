@@ -90,45 +90,63 @@ $arrMenu = cargar_menu($pDBMenu) ;
 
 // 2) Autentico usuario
 if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL->authenticateUser($_SESSION['elastix_user'], $_SESSION['elastix_pass']) or $developerMode==true) {
+    $idUser = $pACL->getIdUser($_SESSION['elastix_user']);
 
-    if($developerMode!=true) {
-        $idUser = $pACL->getIdUser($_SESSION['elastix_user']);
-        $arrMenuFiltered=array();
-        //- TODO: Mejorar el siguiente bloque. Seguro debe de haber una forma mas 
-        //-       eficiente de hacerlo
-        //- Primero me barro todos los submenus
-        $arrSubmenu=array();
-        foreach($arrMenu as $idMenu=>$arrMenuItem) {
-            if(!empty($arrMenuItem['IdParent'])) {
-                if ($pACL->isUserAuthorizedById($idUser, "access", $idMenu)) {
-                    $arrSubmenu[$idMenu] = $arrMenuItem;
-                    $arrMenuFiltered[$idMenu] = $arrMenuItem;
-                }
-            }
-        }
-        //- Ahora me barro el menu principal
-        foreach($arrMenu as $idMenu=>$arrMenuItem) {
-            if(empty($arrMenuItem['IdParent'])) {
-                foreach($arrSubmenu as $idSubMenu=>$arrSubMenuItem) {
-                    if($arrSubMenuItem['IdParent']==$idMenu) {
+    if(!isset($_SESSION['elastix_user_permission'])){
+        if($developerMode!=true) {
+            $arrMenuFiltered=array();
+            //- TODO: Mejorar el siguiente bloque. Seguro debe de haber una forma mas 
+            //-       eficiente de hacerlo
+            //- Primero me barro todos los submenus
+            $arrSubmenu=array();
+            foreach($arrMenu as $idMenu=>$arrMenuItem) {
+                if(!empty($arrMenuItem['IdParent'])) {
+                    if ($pACL->isUserAuthorizedById($idUser, "access", $idMenu)) {
+                        $arrSubmenu[$idMenu] = $arrMenuItem;
                         $arrMenuFiltered[$idMenu] = $arrMenuItem;
                     }
                 }
             }
+            //- Ahora me barro el menu principal
+            foreach($arrMenu as $idMenu=>$arrMenuItem) {
+                if(empty($arrMenuItem['IdParent'])) {
+                    foreach($arrSubmenu as $idSubMenu=>$arrSubMenuItem) {
+                        if($arrSubMenuItem['IdParent']==$idMenu) {
+                            $arrMenuFiltered[$idMenu] = $arrMenuItem;
+                        }
+                    }
+                }
+            }
+        } else {    
+            $arrMenuFiltered = $arrMenu;
         }
-    } else {    
-        $arrMenuFiltered = $arrMenu;
+        //Guardo en la session los menus q tiene con permisos el usuario logoneado, esto se implementó para mejorar 
+        //el proceso del httpd ya que consumia mucho recurso. Reportado por Ana Vivar <avivar@palosanto.com>
+        //Una vez q exista en la session solo se lo sacara de ahi y no se vovera a consultar a la base.
+        $_SESSION['elastix_user_permission']= $arrMenuFiltered;
     }
+
+    $arrMenuFiltered = $_SESSION['elastix_user_permission'];
 
     //traducir el menu al idioma correspondiente
     foreach($arrMenuFiltered as $idMenu=>$arrMenuItem) {
         $arrMenuFiltered[$idMenu]['Name']=isset($arrLang[$arrMenuItem['Name']])?$arrLang[$arrMenuItem['Name']]:$arrMenuItem['Name'];
     }
     $oPn = new paloSantoNavigation($arrConf, $arrMenuFiltered, $smarty);
-    
+
     $smarty->assign("THEMENAME", $arrConf['mainTheme']);
+    $smarty->assign("ABOUT_ELASTIX",$arrLang['About Elastix']." ".$arrConf['elastix_version']);
+    $smarty->assign("ABOUT_ELASTIX_CONTENT",$arrLang['About Elastix Content']);
+    $smarty->assign("ABOUT_CLOSED",$arrLang['About Elastix Closed']);
     $smarty->assign("LOGOUT",    $arrLang['Logout']);
-    $menu= (isset($_GET['menu']))?$_GET['menu']:''; 
+
+    //$menu= (isset($_GET['menu']))?$_GET['menu']:'';
+    if(isset($_GET['menu'])) $menu=$_GET['menu'];
+    elseif(empty($menu) and !empty($_SESSION['menu'])) $menu=$_SESSION['menu'];
+    else $menu='';
+
+    $_SESSION['menu']=$menu; 
+ 
     if (count($arrMenuFiltered)>0)
         $smarty->assign("MENU", $oPn->showMenu($menu));
     else

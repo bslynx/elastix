@@ -39,8 +39,7 @@ CREATE TABLE fax
     id INTEGER PRIMARY KEY, 
     name varchar(60), 
     port varchar(60), 
-    secret varchar(20),
-    ttyIAX VARCHAR(100)
+    secret varchar(20)
 );
 CREATE TABLE info_fax_recvq
 (
@@ -61,6 +60,14 @@ CREATE TABLE SysLog (
   syslogid INTEGER PRIMARY KEY ,
   logdate timestamp NOT NULL ,
   logtext varchar(255) NOT NULL 
+);
+
+CREATE TABLE configuration_fax_mail (
+  id         integer      primary key,
+  remite     varchar(255) NOT NULL,
+  remitente  varchar(255) NOT NULL,
+  subject    varchar(255) NOT NULL,
+  content    varchar(255)
 );
 */
 
@@ -234,10 +241,9 @@ class paloFax {
     function _createFaxIntoDB($name, $extension, $secret, $email, $devId, $clidname, $clidnumber, $port)
     {
         $errMsg="";
-        $ttyIAX = "ttyIAX".$devId;
         $dateNow=date("Y-m-d H:i:s");
-        $query  = "INSERT INTO fax (name, ttyIAX, extension, secret, clid_name, clid_number, dev_id, date_creation, email, port) ";
-        $query .= "values ('$name','$ttyIAX','$extension', '$secret', '$clidname', '$clidnumber', '$devId', '$dateNow', '$email', '$port')";
+        $query  = "INSERT INTO fax (name, extension, secret, clid_name, clid_number, dev_id, date_creation, email, port) ";
+        $query .= "values ('$name','$extension', '$secret', '$clidname', '$clidnumber', '$devId', '$dateNow', '$email', '$port')";
         $bExito = $this->_db->genQuery($query);
         if (!$bExito) {
             $this->errMsg = $this->_db->errMsg;
@@ -626,8 +632,16 @@ class paloFax {
     function _editFaxInDB($idFax, $name, $extension, $secret, $email, $devId, $clidname, $clidnumber, $port) {
         $errMsg="";
         if ($db = sqlite3_open($this->rutaDB)) {
-            $query  = "REPLACE INTO fax (id, name, extension, secret, clid_name, clid_number, dev_id, date_creation, email, port)  ".
-            $query .= "VALUES ($idFax,'$name', '$extension', '$secret', '$clidname', '$clidnumber', '$devId', '$dateNow', '$email', '$port')";
+            $query  = "UPDATE fax set 
+                            name='$name', 
+                            extension='$extension',
+                            secret='$secret',
+                            clid_name='$clidname',
+                            clid_number='$clidnumber',
+                            dev_id='$devId',
+                            email='$email',
+                            port='$port' 
+                        where id=$idFax;";
             $bExito = $this->_db->genQuery($query);
         	if (!$bExito) {
             	$this->errMsg = $this->_db->errMsg;
@@ -647,10 +661,17 @@ class paloFax {
         $arrReturn=array();
         if ($db = sqlite3_open($this->rutaDB)) {
             $query  = "
-                    SELECT r.pdf_file,r.modemdev,r.commID,r.errormsg,r.company_name,r.company_fax,r.fax_destiny_id,r.date, f.name destiny_name,f.extension destiny_fax
-                    FROM info_fax_recvq r inner join fax f on f.id = r.fax_destiny_id
-                    where company_name like '%$company_name%' and company_fax like '%$company_fax%' and date like '%$fecha_fax%'
-                      limit $cantidad offset $offset";
+                    SELECT 
+                        r.pdf_file,r.modemdev,r.commID,r.errormsg,r.company_name,r.company_fax,r.fax_destiny_id,r.date, f.name destiny_name,f.extension destiny_fax
+                    FROM 
+                        info_fax_recvq r inner join fax f on f.id = r.fax_destiny_id
+                    where 
+                        company_name like '%$company_name%' and company_fax like '%$company_fax%' and date like '%$fecha_fax%'
+                    order by 
+                        r.id desc 
+                    limit 
+                        $cantidad offset $offset
+                    ";
 
             $result = @sqlite3_query($db, $query);
             if(count($result)>0){
@@ -693,11 +714,81 @@ class paloFax {
 
         return $arrReturn;
     }
+
+    function getConfigurationSendingFaxMail()
+    {
+        $errMsg="";
+        $sqliteError='';
+        $arrReturn=-1;
+        if ($db = sqlite3_open($this->rutaDB)) {
+            $query  = " select 
+                            remite,remitente,subject,content
+                        from 
+                            configuration_fax_mail
+                        where 
+                            id=1";
+
+            $result = @sqlite3_query($db, $query);
+            if(count($result)>0){
+                while ($row = @sqlite3_fetch_array($result)) {
+                    $arrReturn=$row;
+                }
+            }
+        } 
+        else 
+        {
+            $errMsg = $sqliteError;
+        }
+
+        return $arrReturn;
+    }
+
+    function setConfigurationSendingFaxMail($remite, $remitente, $subject, $content) {
+        $errMsg="";
+        $bExito = false;
+        if ($db = sqlite3_open($this->rutaDB)) {
+            $query  = " update 
+                            configuration_fax_mail 
+                        set 
+                            remite='$remite', 
+                            remitente='$remitente',
+                            subject='$subject',
+                            content='$content'
+                       where 
+                            id=1;";
+            $bExito = $this->_db->genQuery($query);
+            if (!$bExito) {
+                $this->errMsg = $this->_db->errMsg;
+            }
+            return $bExito; 
+        } 
+        else {
+            $this->errMsg = $this->_db->errMsg;
+        }
+        return $bExito;
+    }
+
+    function deleteInfoFaxFromDB($pdfFileInfoFax) {
+        
+        $query  = "DELETE FROM info_fax_recvq WHERE pdf_file='$pdfFileInfoFax'";
+        $bExito = $this->_db->genQuery($query);
+        if (!$bExito) {
+            $this->errMsg = $this->_db->errMsg;
+            return false;
+        }
+        return true;
+    }
+
+    function deleteInfoFaxFromPathFile($pdfFileInfoFax) {
+        $path = "/var/www/html/faxes/recvq";
+        $file = "$path/$pdfFileInfoFax";
+        return unlink($file);
+    }
 }
 
 
 //IMPLEMENTACION DE VISOR DE FAXES CON XAJAX EN EL MODULO EXTRAS
-function buscar_faxes($arrConfig)
+function ajax_faxes($arrConfig)
 {
     $base_dir=dirname($_SERVER['SCRIPT_NAME']);
     if($base_dir=="/")
@@ -709,6 +800,7 @@ function buscar_faxes($arrConfig)
     $xajax = new xajax();
     //asociamos la función creada anteriormente al objeto xajax
     $xajax->registerFunction("faxes");
+    $xajax->registerFunction("deleteFaxes");
 //     if($xajax->canProcessRequests()){        
         //El objeto xajax tiene que procesar cualquier petición        
         $xajax->processRequests();  
@@ -768,6 +860,7 @@ function html_faxes($arr_faxes)
 
     $nodoTablaInicio = "<table border='0' cellspacing='0' cellpadding='0' width='100%' align='center'>
                             <tr class='table_title_row'>
+                                <td class='table_title_row'><input type='button' name='faxes_delete' class='button' value='".$arrLang['Delete']."' onclick=\"if(confirmSubmit('{$arrLang["Are you sure you wish to delete fax (es)?"]}')) elimimar_faxes();\" /></td>
                                 <td class='table_title_row'>".$arrLang['File']."</td>
                                 <td class='table_title_row'>".$arrLang['Company Name']."</td>
                                 <td class='table_title_row'>".$arrLang['Company Fax']."</td>
@@ -782,6 +875,7 @@ function html_faxes($arr_faxes)
         foreach($arr_faxes as $key => $fax)
         {
             $nodoContenido .= "<tr style='background-color: rgb(255, 255, 255);' onmouseover="."this.style.backgroundColor='#f2f2f2';"." onmouseout="."this.style.backgroundColor='#ffffff';".">\n";
+            $nodoContenido .= " <td class='table_data'><input type='checkbox' name='faxpdf_".$fax['pdf_file']."' id='faxpdf_".$fax['pdf_file']."' /></td>\n";
             $nodoContenido .= " <td class='table_data'><a href='".$self."/faxes/recvq/".$fax['pdf_file']."'".">".$fax['pdf_file']."</a></td>\n";
             $nodoContenido .= " <td class='table_data'>".$fax['company_name']."</td>\n";
             $nodoContenido .= " <td class='table_data'>".$fax['company_fax']."</td>\n";
@@ -792,7 +886,7 @@ function html_faxes($arr_faxes)
     }
     else
     {
-         $nodoContenido .= "<tr><td colspan='5'><center>".$arrLang['No Data Found']."</center></td></tr>";
+         $nodoContenido .= "<tr><td colspan='6'><center>".$arrLang['No Data Found']."</center></td></tr>";
     }
     return $nodoTablaInicio.$nodoContenido.$nodoTablaFin;
 }
@@ -835,5 +929,30 @@ function html_paginacion_faxes($regPrimeroMostrado,$regTotal,$tamanio_busqueda,$
     }
     return " <table class='table_navigation_text' align='center' cellspacing='0' cellpadding='0' width='100%' border='0'
                 <tr><td align='right'>".$parteIzquierda.$parteCentro.$parteDerecha."</td></tr></table>";
+}
+
+function deleteFaxes($csv_files,$company_name,$company_fax,$fecha_fax,$inicio_paginacion)
+{
+    global $arrLang;
+    $arrFaxes = explode(",",$csv_files); 
+    $oFax = new paloFax(); 
+    $respuesta = new xajaxResponse();
+
+    if(is_array($arrFaxes) && count($arrFaxes) > 0){
+        foreach($arrFaxes as $key => $pdf_file){
+            if($oFax->deleteInfoFaxFromDB($pdf_file)){
+                if($oFax->deleteInfoFaxFromPathFile($pdf_file)){
+                    $respuesta = faxes($company_name,$company_fax,$fecha_fax,$inicio_paginacion,"search");
+                }
+                else{
+                    $respuesta->addAlert($arrLang["Unable to eliminate pdf file from the path."]." /var/www/html/faxes/recvq/");
+                }
+            }
+            else{
+                $respuesta->addAlert($arrLang["Unable to eliminate pdf file from the database."]);
+            }
+        }
+    }
+    return $respuesta;
 }
 ?>

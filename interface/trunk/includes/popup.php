@@ -21,13 +21,15 @@
 // $Id: popup.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $
 
 
+
 $gsRutaBase="..";
+include_once "$gsRutaBase/libs/misc.lib.php";
 include_once "$gsRutaBase/configs/default.conf.php";
 // Load smarty 
 require_once "$gsRutaBase/libs/smarty/libs/Smarty.class.php";
 $smarty = new Smarty();
 
-$smarty->template_dir = "$gsRutaBase/themes/" . $arrConf['theme'];
+$smarty->template_dir = "$gsRutaBase/themes/" . $arrConf['mainTheme'];
 $smarty->compile_dir  = "$gsRutaBase/var/templates_c/";
 $smarty->config_dir   = "$gsRutaBase/configs/";
 $smarty->cache_dir    = "$gsRutaBase/var/cache/";
@@ -39,12 +41,12 @@ switch($id){
 case "display_record":
     $file_path=$_GET["record_file"]; 
     $sContenido=<<<contenido
-    <embed src='audio.php?recording=$file_path width=300, height=20 autoplay=true loop=false></embed><br>
+    <embed src='audio.php?recording=$file_path' width=300, height=20 autoplay=true loop=false></embed><br>
 contenido;
     break;
 }
 
 $smarty->assign("CONTENT", $sContenido);
-$smarty->assign("items", $items);
+//$smarty->assign("items", $items);
 $smarty->display("_common/popup.tpl");   
 ?>

@@ -221,6 +221,24 @@ function set_key_settings($pDB,$key,$value){
     return $bExito;
 }
 
+function load_version_elastix($ruta_base='')
+{
+	if (!extension_loaded('sqlite3')) dl('sqlite3.so');
+    include_once $ruta_base."libs/paloSantoDB.class.php";
+
+//conectarse a la base de settings para obtener la version y release del sistema elastix
+    $pDB = new paloDB("sqlite3:////var/www/db/settings.db");
+    if(empty($pDB->errMsg)) {
+        $theme=get_key_settings($pDB,'elastix_version_release');
+    }
+//si no se encuentra setear solo ?
+    if (empty($theme)){
+        set_key_settings($pDB,'elastix_version_release','?');
+        return "?";
+    }
+    else return $theme;
+}
+
 function load_theme($ruta_base='')
 {
 	if (!extension_loaded('sqlite3')) dl('sqlite3.so');
@@ -581,5 +599,39 @@ function combo($arreglo_valores, $selected) {
     foreach($arreglo_valores as $key => $value) if ($selected == $key)
         $cadena .= "<option value='$key' selected>$value</option>\n"; else $cadena .= "<option value='$key'>$value</option>\n";
     return $cadena;
+}
+
+/**
+* Funcion que sirve para obtener informacion de un checkbox si esta o no seteado.
+* Habia un problema q cunado un checkbox no era seleccionado, este no devolvia nada por POST
+* Esta funcion garantiza que siempre q defina un checkbox voy a tener un 'false' si no esta
+* seteado y un 'true' si lo esta.
+*
+* Ejemplo: $html = checkbox("chk_01",'true'); //define un checkbox y esta seteado.
+           $smarty("eje",$html); //lo paso a las plantilla.
+           ......... por POST lo recibo ......
+*          $check = $_POST['chk_01'] //recibo 'true' or 'false' segun el caso de q este seteado o  no.
+*/
+
+function checkbox($id_name, $checked='off', $disable='off')
+{
+    $check = $disab = "";
+
+    if(!($checked=='off'))
+        $check = "checked='checked'";
+    if(!($disable=='off'))
+        $disab = "disabled='disabled'";
+
+    $checkbox  = "<input type='checkbox' name='chkold{$id_name}' $check $disab onclick='javascript:{$id_name}check();' /> 
+                  <input type='hidden'   name='{$id_name}' id='{$id_name}'   value='{$checked}' />
+                  <script type='text/javascript'>
+                    function {$id_name}check(){
+                        var node = document.getElementById('$id_name');
+                        if(node.value == 'on')
+                            node.value = 'off';
+                        else node.value = 'on';
+                    }
+                  </script>";
+    return $checkbox;
 }
 ?>

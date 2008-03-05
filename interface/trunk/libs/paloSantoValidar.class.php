@@ -295,7 +295,7 @@ class PaloValidar
                         $this->arrErrores[$nombre_variable]['mensaje'] = PALOVALIDAR_MSG_ERROR_1;
                     }
                 } else {
-                    if(!eregi("^([a-z0-9]+(\.[a-z0-9\-_]+)*@[a-z0-9]+(\.[a-z0-9\-_]+)*(\.[a-z]{2,3}))+$", $variable)) {
+                    if(!ereg("^[a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*@[a-z0-9]+([\._\-]?[a-z0-9]+)*(\.[a-z0-9]{2,4})+$", $variable)) {
                         if($nombre_variable!="just_test") {
                             $this->arrErrores[$nombre_variable]['mensaje'] = PALOVALIDAR_MSG_ERROR_2;
                         }

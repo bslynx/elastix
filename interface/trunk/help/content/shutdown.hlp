@@ -4,8 +4,14 @@
   <link rel="stylesheet" href="/themes/default/help.css">
 </header>
 <body>
+
 <h1>Shutdown</h1>
-<p>This option allows you to shutdown or restart the PBX. When you choose either option, the system will ask you to confirm the desire to execute it.</p>
-<img src="/images/help_shutdown_1.jpg">
+
+<p>This option allows for the shutdown and rebooting of the telephone system. Upon choosing whichever of the two options, you will be prompted to confirm the desired option to execute.</p>
+
+<div><img src="/images/help/system/shutdown.jpg" border="0"></div>
+<div>Figure 1</div>
+<br />
+
 </body>
 </html>

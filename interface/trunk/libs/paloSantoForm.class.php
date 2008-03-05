@@ -28,34 +28,58 @@
   $Id: paloSantoForm.class.php,v 1.4 2007/05/09 01:07:03 gcarrillo Exp $ */
 
 /* A continuacion se ilustra como luce un tipico elemento del arreglo $this->arrFormElements
+"subject"  => array(
+                "LABEL"                  => $arrLang["Fax Suject"],
+                "REQUIRED"               => "yes",
+                "INPUT_TYPE"             => "TEXT",
+                "INPUT_EXTRA_PARAM"      => array("style" => "width:240px"),
+                "VALIDATION_TYPE"        => "text",
+                "EDITABLE"               => "si",
+                "VALIDATION_EXTRA_PARAM" => "")
 
-"telefono" => array("LABEL"                  => "Telefono",
-                    "REQUIRED"               => "yes",
-                    "INPUT_TYPE"             => "text",
-                    "INPUT_EXTRA_PARAM"      => array("width" => "16"),
-                    "VALIDATION_TYPE"        => "number",
-                    "VALIDATION_EXTRA_PARAM" => "");
+"content" => array(
+                "LABEL"                  => $arrLang["Fax Content"],
+                "REQUIRED"               => "no",
+                "INPUT_TYPE"             => "TEXTAREA",
+                "INPUT_EXTRA_PARAM"      => "",
+                "VALIDATION_TYPE"        => "text",
+                "EDITABLE"               => "si",
+                "COLS"                   => "50",
+                "ROWS"                   => "4",
+                "VALIDATION_EXTRA_PARAM" => "")
 
 "today"  => array(
-            "LABEL"                  => "Today",
-            "REQUIRED"               => "yes",
-            "INPUT_TYPE"             => "DATE",
-            "INPUT_EXTRA_PARAM"      => array("TIME" => true, "FORMAT" => "'%d %b %Y' %H:%M","TIMEFORMAT" => "12"),
-            "VALIDATION_TYPE"        => '',
-            "VALIDATION_EXTRA_PARAM" => ''
+                "LABEL"                  => "Today",
+                "REQUIRED"               => "yes",
+                "INPUT_TYPE"             => "DATE",
+                "INPUT_EXTRA_PARAM"      => array("TIME" => true, "FORMAT" => "'%d %b %Y' %H:%M","TIMEFORMAT" => "12"),
+                "VALIDATION_TYPE"        => '',
+                "EDITABLE"               => "si",
+                "VALIDATION_EXTRA_PARAM" => '')
 
 'formulario'       => array(
-            "LABEL"                  => $arrLang["Form"],
-            "REQUIRED"               => "yes",
-            "INPUT_TYPE"             => "SELECT",
-            "INPUT_EXTRA_PARAM"      => $arrSelectForm,
-            "VALIDATION_TYPE"        => "text",
-            "VALIDATION_EXTRA_PARAM" => "",
-            "MULTIPLE"               => true,
-            "SIZE"                   => "5"
-        ),
+                "LABEL"                  => $arrLang["Form"],
+                "REQUIRED"               => "yes",
+                "INPUT_TYPE"             => "SELECT",
+                "INPUT_EXTRA_PARAM"      => $arrSelectForm,
+                "VALIDATION_TYPE"        => "text",
+                "VALIDATION_EXTRA_PARAM" => "",
+                "EDITABLE"               => "si",
+                "MULTIPLE"               => true,
+                "SIZE"                   => "5")
 
+
+"checkbox"  => array(
+                "LABEL"                  => "Habiltar",
+                "REQUIRED"               => "no",
+                "INPUT_TYPE"             => "CHECKBOX",
+                "INPUT_EXTRA_PARAM"      => "",
+                "VALIDATION_TYPE"        => "",
+                "EDITABLE"               => "si",
+                "VALIDATION_EXTRA_PARAM" => "")
 */
+
+require_once("misc.lib.php");
 
 class paloForm
 {
@@ -78,6 +102,8 @@ class paloForm
     function fetchForm($templateName, $title, $arrPreFilledValues=array())
     {
         foreach($this->arrFormElements as $varName=>$arrVars) {
+            if(!isset($arrPreFilledValues[$varName]))
+                $arrPreFilledValues[$varName] = "";
             $arrMacro = array();
             $strInput = "";
 
@@ -102,6 +128,17 @@ class paloForm
                     } else {
                         $strInput = "$arrPreFilledValues[$varName]";
                     }
+                    break;
+                case "CHECKBOX":
+                    $checked = 'off';
+                    $disable = 'on';
+                    if($arrPreFilledValues[$varName]=='on')
+                        $checked = 'on';
+                    if($this->modo=='input' or ($this->modo=='edit' and $arrVars['EDITABLE']!='no'))
+                        $disable = 'off';
+
+                    //Funcion definida en misc.lib.php
+                    $strInput = checkbox($varName,$checked, $disable);
                     break;
                 case "PASSWORD":
                     if($this->modo=='input' or ($this->modo=='edit' and $arrVars['EDITABLE']!='no')) {
@@ -172,11 +209,13 @@ class paloForm
                     if($this->modo=='input' or ($this->modo=='edit' and $arrVars['EDITABLE']!='no')) {
                         $multiple = "";
                         $size = "";
-                        if(isset($arrVars['SIZE']) || $arrVars['SIZE']!="") {
-                            $size=" size='".$arrVars['SIZE']."' ";
+                        if(isset($arrVars['SIZE'])){
+                            if($arrVars['SIZE']!="")
+                                $size=" size='".$arrVars['SIZE']."' ";
                         }
-                        if(isset($arrVars['MULTIPLE']) || $arrVars['MULTIPLE']!="" || $arrVars['MULTIPLE']==true) {
-                            $multiple=" multiple='multiple' ";
+                        if(isset($arrVars['MULTIPLE'])){
+                            if($arrVars['MULTIPLE']!="" || $arrVars['MULTIPLE']==true)
+                                $multiple=" multiple='multiple' ";
                         }
                         $strInput  = "<select name='$varName' $multiple $size>";
                         if(is_array($arrVars['INPUT_EXTRA_PARAM'])) {

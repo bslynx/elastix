@@ -25,17 +25,22 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: frameLeft.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
+  $Id: frameLeft.php,v 1.2 2007/09/07 23:05:29 gcarrillo Exp $ */
 
-include_once("../configs/menu.php");
+
 include_once("../libs/paloSantoTree.class.php");
 include_once("../libs/paloSantoDB.class.php");
 include_once("../libs/paloSantoACL.class.php");
+include_once("../libs/misc.lib.php");
 
 session_name("elastixSession");
 session_start();
 
+dl('sqlite3.so');
 $pDB = new paloDB("sqlite3:////var/www/db/acl.db");
+
+$pDBMenu = new paloDB("sqlite3:////var/www/db/menu.db");
+$arrMenu = cargar_menu($pDBMenu) ;
 
 if(!empty($pDB->errMsg)) {
     echo "ERROR DE DB: $pDB->errMsg <br>";
@@ -78,12 +83,20 @@ if(!empty($_SESSION['elastix_user'])) {
     $arrMenuFiltered = $arrMenu;
 }
 
+
+
+include_once("../configs/menu.php");
 foreach($arrMenuFiltered as $id => $menu) {
+    
     $arrTmp = array();
     $arrTmp['id_nodo']   = $id;
-    if(empty($menu['IdParent'])) {
+    
+    if($arrMenu[$arrTmp['id_nodo']]['HasChild']){
+        if(empty($menu['IdParent']))
+            $arrTmp['id_parent'] = "root";
+        else
+            $arrTmp['id_parent'] = $menu['IdParent'];
         $arrTmp['tipo']      = "C";
-        $arrTmp['id_parent'] = "root";
     } else {
         $arrTmp['tipo']      = "A";
         $arrTmp['id_parent'] = $menu['IdParent'];

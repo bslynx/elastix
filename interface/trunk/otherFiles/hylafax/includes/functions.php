@@ -14,14 +14,14 @@
 		if ($echo) echo "$text\n";
 	}
 
-        function fax_info_insert ($tiff_file,$modemdev,$commID,$errormsg,$company_name,$company_fax) {
+        function fax_info_insert ($tiff_file,$modemdev,$commID,$errormsg,$company_name,$company_number) {
 		global $db_object;
              
 		$id_destiny=obtener_id_destiny($modemdev);
 		if($id_destiny != -1)
 		{
 			$db_object->query ("INSERT INTO info_fax_recvq (pdf_file,modemdev,commID,errormsg,company_name,company_fax,fax_destiny_id,date) 
-                                    VALUES ('$tiff_file','$modemdev','$commID','$errormsg','$company_name','$company_fax',$id_destiny,datetime('now','localtime'))");
+                                    VALUES ('$tiff_file','$modemdev','$commID','$errormsg','$company_name','$company_number',$id_destiny,datetime('now','localtime'))");
 		}
 		else{
 			faxes_log("Error al Obtener id de destino");
@@ -30,10 +30,11 @@
 
 	function obtener_id_destiny($modemdev)
 	{
-		$id = -1;
 		global $db_object;
-		$sql= "select id from fax where ttyIAX=?";
-		$recordset =& $db_object->query($sql, array($modemdev));
+                $id = -1;
+                $dev_id = str_replace("ttyIAX","",$modemdev);
+		$sql= "select id from fax where dev_id=?";
+		$recordset =& $db_object->query($sql, array($dev_id));
 		while($tupla = $recordset->fetchRow(DB_FETCHMODE_OBJECT)){ 
 			$id = $tupla->id;
 		}
@@ -43,11 +44,40 @@
         function obtener_mail_destiny($modemdev)
 	{
 		global $db_object;
-		$sql= "select email from fax where ttyIAX=?";
-		$recordset =& $db_object->query($sql, array($modemdev));
+                $dev_id = str_replace("ttyIAX","",$modemdev);
+		$sql= "select email from fax where dev_id=?";
+		$recordset =& $db_object->query($sql, array($dev_id));
 		while ($tupla = $recordset->fetchRow(DB_FETCHMODE_OBJECT)) 
         		$id = $tupla->email;
 		return $id;
+	}
+
+        function getConfigurationSendingFaxMail($namePDF,$companyNameFrom,$companyNumberFrom)
+	{
+		global $db_object;
+                $arrData['remite']="elastix@example.com";
+                $arrData['remitente']="Fax Elastix";
+                $arrData['subject']="Fax $namePDF";
+                $arrData['content']="Fax $namePDF of $companyNameFrom - $companyNumberFrom";
+
+                $sql  = " select 
+                            remite,remitente,subject,content
+                        from 
+                            configuration_fax_mail
+                        where 
+                            id=?";
+		$recordset =& $db_object->query($sql, array(1));
+		while ($tupla = $recordset->fetchRow(DB_FETCHMODE_OBJECT)){ 
+        		$arrData['remite'] = utf8_decode($tupla->remite);
+                        $arrData['remitente'] = utf8_decode($tupla->remitente);
+                        $arrData['subject'] = utf8_decode(str_replace("{NAME_PDF}",$namePDF,$tupla->subject));
+                        $arrData['content'] = $tupla->content;
+                        $arrData['content'] = str_replace("{NAME_PDF}",$namePDF,$arrData['content']);
+                        $arrData['content'] = str_replace("{COMPANY_NAME_FROM}",$companyNameFrom,$arrData['content']);
+                        $arrData['content'] = utf8_decode(str_replace("{COMPANY_NUMBER_FROM}",$companyNumberFrom,$arrData['content']));
+                        
+                }
+		return $arrData;
 	}
 
 	function clean_faxnum ($fnum) {
@@ -100,58 +130,35 @@
 	
 	// enviar_mail_adjunto ()
 	function enviar_mail_adjunto(
-                $destinatario="test@prueba.com",
-                $titulo="Prueba de envio de adjunto",
-                $contenido="Hola a todos",
-                $remite="bmacias@palosanto.com",
-                $remitente="Bruno Macias",
-                $archivo="/tmp/fax.pdf",
-                $archivo_name="fax.pdf"
+                $destinatario="test@example.com",
+                $titulo="Prueba de envio de fax",
+                $contenido="Prueba de envio de fax",
+                $remite="test@example.com",
+                $remitente="Fax",
+                $archivo="/path/archivo.pdf",
+                $archivo_name="archivo.pdf"
             )
         {
-            $un_enter="\r\n";
-            $dos_enter="\r\n\r\n";
+
+            require_once("phpmailer/class.phpmailer.php");
+	    $mail = new PHPMailer();
+
+            $mail->From = $remite;
+            $mail->FromName = $remitente;
+            $mail->AddAddress($destinatario);
+            $mail->WordWrap = 50;                                 // set word wrap to 50 characters
+            $mail->AddAttachment($archivo);
+            $mail->IsHTML(false);                                  // set email format to TEXT
             
-            $mensaje="<html><head></head><body bgcolor=\"#0000ff\">";
-            $mensaje .="<font face=\"Arial\" size=6>$contenido</font>";
-            $mensaje .="</body></html>";   
+            $mail->Subject = $titulo;
+            $mail->Body    = $contenido;
+            $mail->AltBody = "This is the body in plain text for non-HTML mail clients";
             
-            $separador = "_separador_de_trozos_".md5 (uniqid (rand())); 
-            
-            /*$cabecera  = "Date: ".date("l j F Y, G:i").$un_enter; */
-            $cabecera  = "MIME-Version: 1.0".$un_enter; 
-            $cabecera .= "From: ".$remitente."<".$remite.">".$un_enter;
-            $cabecera .= "Return-path: ". $remite.$un_enter;
-            $cabecera .= "Reply-To: ".$remite.$un_enter;
-            $cabecera .= "X-Mailer: PHP/". phpversion().$un_enter;
-            $cabecera .= "Content-Type: multipart/mixed;".$un_enter; 
-            $cabecera .= " boundary=$separador".$dos_enter; 
-            
-            // Parte primera -Mensaje en formato HTML 
-            $texto ="--$separador".$un_enter; 
-            $texto .="Content-Type: text/html; charset=\"ISO-8859-1\"".$un_enter; 
-            $texto .="Content-Transfer-Encoding: 7bit".$dos_enter; 
-            $texto .= $mensaje;
-            $adj1 = $un_enter."--$separador".$un_enter; 
-            
-            // Parte segunda -Fichero adjunto nº 1 
-            $adj1 .="Content-Type: application/pdf; name=\"$archivo\"".$un_enter;  
-            $adj1 .="Content-Disposition: attachment; filename=\"$archivo_name\"".$un_enter;
-            $adj1 .="Content-Transfer-Encoding: base64".$dos_enter; 
-            
-            # lectura  del fichero adjunto  
-            $fp = fopen($archivo, "r"); 
-            $buff = fread($fp, filesize($archivo)); 
-            fclose($fp); 
-            # codificación del fichero adjunto  
-            $adj1 .=chunk_split(base64_encode($buff)); 
-            
-            $mensaje=$texto.$adj1; 
             // envio del mensaje
-            if(mail($destinatario, $titulo, $mensaje,$cabecera)){
+            if($mail->Send())
                 faxes_log ("enviar_mail_adjunto> SE envio correctamenete el mail ".$titulo);
-            }
-            else faxes_log ("enviar_mail_adjunto> Error al enviar el mail ".$titulo);
+            else 
+                faxes_log ("enviar_mail_adjunto> Error al enviar el mail ".$titulo);
         }
 	
 	// -- convert tiff to pdf and check for corruption

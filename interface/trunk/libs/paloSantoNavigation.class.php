@@ -76,6 +76,7 @@ class paloSantoNavigation {
     function getArrChildrenIds($idMenuSelected)
     {
         $limite=10;
+        $arrResult = array();
         $idSubMenu=$this->getIdFirstSubMenu($idMenuSelected);
         for($i=1; $i<=$limite; $i++) {
             if($idSubMenu==false) {
@@ -119,9 +120,22 @@ class paloSantoNavigation {
             // En este punto $arrIds deberia contener los Ids activos de cada menu para los n niveles
             // Como por ahora manejamos hasta 3 niveles unicamente voy a mapear los 3 primeros elementos
            
-            $currMainMenu=$arrIds[0];
-            $currSubMenu =$arrIds[1];
-            $currSubMenu2=$arrIds[2];
+            $currMainMenu=NULL;
+            $currSubMenu =NULL;
+            $currSubMenu2=NULL;
+
+            if(count($arrIds)==1){
+                $currMainMenu=$arrIds[0];
+            }
+            if(count($arrIds)==2){
+                $currMainMenu=$arrIds[0];
+                $currSubMenu =$arrIds[1];
+            }
+            if(count($arrIds)==3){
+                $currMainMenu=$arrIds[0];
+                $currSubMenu =$arrIds[1];
+                $currSubMenu2=$arrIds[2];
+            }
 
         } else {
             // Is not a valid menu
@@ -152,6 +166,25 @@ class paloSantoNavigation {
         $this->smarty->assign("nameMainMenuSelected", $arrMainMenu[$currMainMenu]['Name']);
         $this->smarty->assign("nameSubMenuSelected",  $arrSubMenu[$currSubMenu]['Name']);
         $this->smarty->assign("nameSubMenu2Selected",  $arrSubMenu2[$currSubMenu2]['Name']);
+
+        /*************** Submenus para template elastix wine ********************/
+        $arrSubMenuSystem = $this->getArrSubMenu("system");
+        $this->smarty->assign("arrMenuSystem", $arrSubMenuSystem);
+        $arrSubMenuPbx = $this->getArrSubMenu("pbxconfig");
+        $this->smarty->assign("arrMenuPbx", $arrSubMenuPbx);
+        $arrSubMenuFax = $this->getArrSubMenu("fax");
+        $this->smarty->assign("arrMenuFax", $arrSubMenuFax);
+        $arrSubMenuEmail = $this->getArrSubMenu("email");
+        $this->smarty->assign("arrMenuEmail", $arrSubMenuEmail);
+        $arrSubMenuIm = $this->getArrSubMenu("im");
+        $this->smarty->assign("arrMenuIm", $arrSubMenuIm);
+        $arrSubMenuReports = $this->getArrSubMenu("reports");
+        $this->smarty->assign("arrMenuReports", $arrSubMenuReports);
+        $arrSubMenuExtras = $this->getArrSubMenu("extras");
+        $this->smarty->assign("arrMenuExtras", $arrSubMenuExtras);
+        $arrSubMenuExtras = $this->getArrSubMenu("call_center");
+        $this->smarty->assign("arrMenuCallCenter", $arrSubMenuExtras);
+        /*************** Submenus para template elastix wine ********************/
 
         return $this->smarty->fetch("_common/_menu.tpl");
     }
@@ -218,7 +251,15 @@ class paloSantoNavigation {
             $retVar .= "\" src=\"" . $this->arrMenu[$this->currSubMenu]['Link'] . "\" name=\"myframe\" id=\"myframe\" frameborder=\"0\"";
             $retVar .= " width=\"100%\"></iframe>";
 */ 
+            /*Version 0.9 agregado variable $ip*/
+            $name_server = $this->obtenerNameServer();	
+            $ip_server   = $this->obtenerIpServer("eth0");
+            if($ip_server==null)
+                $ip_server="127.0.0.1";
 	    $link=$bSubMenu2Framed?$this->arrMenu[$this->currSubMenu2]['Link']:$this->arrMenu[$this->currSubMenu]['Link'];
+            $link = str_replace("{NAME_SERVER}",$name_server,$link);
+            $link = str_replace("{IP_SERVER}",$ip_server,$link);
+
             $retVar  = "<iframe marginwidth=\"0\" marginheight=\"0\" style=\"border: 1px solid rgb(200, 200, 200); background-color: rgb(255, 255, 255);";
             $retVar .= "\" src=\"" . $link . "\" name=\"myframe\" id=\"myframe\" frameborder=\"0\"";
             $retVar .= " width=\"100%\" onLoad=\"calcHeight();\"></iframe>"; 
@@ -238,6 +279,28 @@ class paloSantoNavigation {
         } else {
             return "Error: The module <b>modules/$module/index.php</b> could not be found<br>";
         }
+    }
+
+    function obtenerIpServer($eth)
+    {
+        exec("which ifconfig 2>/dev/null||echo /sbin/ifconfig",$arrSalidaIfConfig,$flagSalidaIfConfig);
+        if($flagSalidaIfConfig==0 && is_array($arrSalidaIfConfig)  && count($arrSalidaIfConfig)>0){
+            exec("$arrSalidaIfConfig[0] $eth|gawk '/inet addr/{print $2}'|gawk -F: '{print $2}'",$arrSalidaIpServer,$flagSalidaIpServer);
+            if($flagSalidaIpServer==0 && is_array($arrSalidaIpServer)  && count($arrSalidaIpServer)>0){
+                return $arrSalidaIpServer[0];
+            }
+            return false;
+        }
+        return false;
+    }
+
+    function obtenerNameServer()
+    {
+        return $_SERVER['SERVER_NAME']; 
+    }
+
+    function ObtenerMenu()
+    {
     }
 }
 ?>

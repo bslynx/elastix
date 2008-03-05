@@ -30,6 +30,9 @@
 $arrConf['basePath'] = '/var/www/html';
 $arrConf['theme'] = 'default'; //theme personal para los modulos esencialmente
 $arrConf['mainTheme'] = load_theme($arrConf['basePath']."/"); //theme para la parte plantilla principal del elastix (se usa para la inclusion de los css)
+$arrConf['elastix_version'] = load_version_elastix($arrConf['basePath']."/"); //la version y le release  del sistema elastix
 $arrConf['defaultMenu'] = 'config';
 $arrConf['language'] = 'en';
 $arrConf['cadena_dsn'] = "mysql://asterisk:asterisk@localhost/call_center";
+$arrConf['dir_backup'] = "backup";
+

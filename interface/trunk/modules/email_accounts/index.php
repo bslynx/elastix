@@ -66,7 +66,7 @@ function _moduleContent(&$smarty, $module_name)
                                                     "INPUT_TYPE"             => "TEXT",
                                                     "INPUT_EXTRA_PARAM"      => "",
                                                     "VALIDATION_TYPE"        => "ereg",
-                                                    "VALIDATION_EXTRA_PARAM" => "^([-_[:alnum:]]+[\.[a-z0-9\-_]+]*)$"),
+                                                    "VALIDATION_EXTRA_PARAM" => "^([a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*)$"),
                              "quota"   => array("LABEL"                  => $arrLang["Quota (Kb)"],
                                                     "REQUIRED"               => "yes",
                                                     "INPUT_TYPE"             => "TEXT",
@@ -142,6 +142,7 @@ function _moduleContent(&$smarty, $module_name)
         $oForm = new paloForm($smarty, $arrFormElements);
         $arrDomain= $pEmail->getDomains($_POST['id_domain']);
         $domain_name=$arrDomain[0][1];
+        
         $bMostrarForm=FALSE;
         if($oForm->validateForm($_POST)) {
             // Exito, puedo procesar los datos ahora.
@@ -304,7 +305,7 @@ function _moduleContent(&$smarty, $module_name)
                 $arrTmp    = array();
                 $username=$account[0];
                 $arrAlias=$pEmail->getAliasAccount($username);
-                $direcciones='';
+                $direcciones=''; 
                 if(is_array($arrAlias) && count($arrAlias)>0){
                    foreach($arrAlias as $fila){
                         $direcciones.=(empty($direcciones))?'':'<br>';
@@ -365,8 +366,8 @@ function create_email_account($pDB,$domain_name,&$errMsg)
 
     $username=$_POST['address'].'.'.$domain_name;
     $arrAccount=$pEmail->getAccount($username);
-
-    if (count($arrAccount)>0){
+    
+    if (is_array($arrAccount) && count($arrAccount)>0 ){
        //YA EXISTE ESA CUENTA
         $errMsg=$arrLang["The e-mail address already exists"].": $_POST[address]@$domain_name";
         return FALSE;
@@ -379,10 +380,10 @@ function create_email_account($pDB,$domain_name,&$errMsg)
     //inserto la cuenta de usuario en la bd
      $bExito=$pEmail->createAccount($_POST['id_domain'],$username,$_POST['password1'],$_POST['quota']);
     if ($bExito){
+        
         //crear el mailbox para la nueva cuenta
-        $bReturn=crear_mailbox_usuario($pDB,$email,$username,$errMsg);
-
-    }else{
+        $bReturn=crear_mailbox_usuario($pDB,$email,$username,$errMsg); 
+    }else{ 
         //tengo que borrar el usuario creado en el sistema
         $bReturn=eliminar_usuario_correo_sistema($username,$email,$errMsg);
         $errMsg= (isset($arrLang[$pEmail->errMsg]))?$arrLang[$pEmail->errMsg]:$pEmail->errMsg;
