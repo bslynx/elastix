@@ -319,7 +319,7 @@ class PaloSantoDHCP
                     "{CONF_DOMAIN_NAME_SERVER}\n".
                     "\toption time-offset\t\t-18000; # Eastern Standard Time\n".
                     "\toption ntp-servers\t\t{CONF_NTP_SERVERS};\n".
-                    "\toption tftp-server-name\t\t\"{CONF_TFTP_SERVER_NAME}\";\n".
+                    "\toption tftp-server-name\t\t\"tftp://{CONF_TFTP_SERVER_NAME}\";\n".
                     "{CONF_WINS}\n\n".
 
 	            "\trange dynamic-bootp {CONF_IP_INICIO} {CONF_IP_FIN};\n".
