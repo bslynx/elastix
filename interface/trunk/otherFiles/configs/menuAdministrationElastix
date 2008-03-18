@@ -2,7 +2,7 @@
 ######### Administration Menus and permission ###############
 #Install or Update sqlite3 database
 pathDB="/var/www/db"
-pathTmpDB="/tmp/sqlite3/db"
+pathTmpDB="/usr/share/elastix/tmp/sqlite3/db"
 mkdir -p $pathTmpDB
 
 echo "#############################################"
@@ -17,12 +17,12 @@ modificadoPorUsuarioAclDb=$?
 ls $pathDB/fax.db.rpmnew &>/dev/null
 modificadoPorUsuarioFaxDb=$?
 
-mv $pathDB/*.rpmnew $pathTmpDB/
+mv $pathDB/*.rpmnew $pathTmpDB/ &>/dev/null
 
 elastix_version=$1
 echo "pre version elastix $elastix_version" 
 
-if [ "$elastix_version" \< "0.9.1" ]; then
+if [ "$elastix_version" \< "1.0" ]; then
     #Update only menu.db and acl.db (tables acl_resource, acl_group)
     #paso 1: repaldo de bases
         cp $pathDB/menu.db $pathDB/menu_old.db
@@ -68,7 +68,7 @@ if [ "$elastix_version" \< "0.9.1" ]; then
             sqlite3 $pathDB/acl.db  "delete from acl_resource where name='ports_details';"
             echo "End step 2, delete menus olds"
         
-        #paso 3: Insertar menus creados por usuarios
+        #paso 3: Insertar menus creados por usuarios, se inserta primero todos los menus nuevos y despues los del usuario.
             sqlite3 $pathDB/menu.db "alter table menu rename to menu_old;"
             sqlite3 $pathTmpDB/menu.db.rpmnew ".dump menu" > $pathTmpDB/menu.table
             sqlite3 $pathDB/menu.db ".read $pathTmpDB/menu.table"
@@ -141,7 +141,7 @@ if [ "$elastix_version" \< "0.9.1" ]; then
             echo "End step 7, DataBase fax verification and tables complete"
     fi
     #paso 8: Eliminar los temporales
-        rm -rf /tmp/sqlite3/
+        rm -rf /usr/share/elastix/tmp/sqlite3/
         echo "End step 8, delete path temporaly"
 fi
 
