@@ -213,7 +213,7 @@ class paloSantoLoadExtension {
 
             //Extension
             foreach($result as $key => $extension){
-                isset($arrCW[$extension['extension']]) ? $extension['callwaiting']=$arrCW[$extension['extension']] : 'DISABLED';
+                $extension['callwaiting']=isset($arrCW[$extension['extension']]) ? $arrCW[$extension['extension']] : 'DISABLED';
 
                 $grep = exec("grep '^{$extension['extension']}' $path");
                 if($grep != '' && $grep!=null)
