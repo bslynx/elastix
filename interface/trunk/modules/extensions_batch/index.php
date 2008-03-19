@@ -121,7 +121,7 @@ function load_extension($smarty, $module_name, $local_templates_dir, $arrLang, $
             load_extension_from_csv($smarty, $arrLang, $ruta_archivo, $base_dir, $pDB, $arrAST, $arrAMP);
         }else {
             $smarty->assign("mb_title", $arrLang["Error"]);
-            $smarty->assign("mb_message", $arrLang["It isn't possible upload the file. Namefile"] ." :". $_FILES['userfile']['name']);
+            $smarty->assign("mb_message", $arrLang["Possible file upload attack. Filename"] ." :". $_FILES['userfile']['name']);
         }
     }
     $content = report_extension($smarty, $module_name, $local_templates_dir, $arrLang, $arrConfig);
@@ -228,22 +228,24 @@ function isValidCSV($arrLang, $sFilePath, &$arrayColumnas){
             if(isset($arrayColumnas[0]) && isset($arrayColumnas[1]) && isset($arrayColumnas[4]))
             {
                 //Paso 2: Obtener Datos (Validacion que esten llenos los mismos de las cabeceras)
+                $count = 2;
                 while ($tupla = fgetcsv($hArchivo, 4096,",")) {
                     if(is_array($tupla) && count($tupla)>=3)
                     {
                             $Ext          = $tupla[$arrayColumnas[1]];
                             if($Ext != '')
                                 $arrExt[] = array("ext" => $Ext);
-                            else return $arrLang["Can't exist a extension empty"];
+                            else return $arrLang["Can't exist a extension empty. Line"].": $count. - ". $arrLang["Please read the lines in the footer"];
 
                             $Secret       = $tupla[$arrayColumnas[4]];
                             if($Secret == '')
-                                return $arrLang["Can't exist a secret empty"];
+                                return $arrLang["Can't exist a secret empty. Line"].": $count. - ". $arrLang["Please read the lines in the footer"];
 
                             $Display      = $tupla[$arrayColumnas[0]];
                             if($Display == '')
-                                return $arrLang["Can't exist a display name empty"];
+                                return $arrLang["Can't exist a display name empty. Line"].": $count. - ". $arrLang["Please read the lines in the footer"];
                     }
+                    $count++;
                 }
 
                 //Paso 3: Validacion extensiones repetidas
@@ -251,7 +253,7 @@ function isValidCSV($arrLang, $sFilePath, &$arrayColumnas){
                     foreach($arrExt as $key1 => $values1){
                         foreach($arrExt as $key2 => $values2){
                             if( ($values1['ext']==$values2['ext'])  &&  ($key1!=$key2) ){
-                                return "{$arrLang["Error, extension"]} ".$values1['ext']." {$arrLang["repeat in lines"]} ".($key1 + 1)." {$arrLang["with"]} ".($key2 + 1);
+                                return "{$arrLang["Error, extension"]} ".$values1['ext']." {$arrLang["repeat in lines"]} ".($key1 + 2)." {$arrLang["with"]} ".($key2 + 2);
                             }
                         }
                     }
