@@ -695,5 +695,32 @@ alrededor del mundo.",
 "The device must be numeric" => "La extension debe ser numerica",
 "The device couldn't be added to the conference" => "La extension no se pudo agregar a la conferencia",
 /*End module conference*/
+
+/*Extensions Batch*/
+"Extensions Batch" => "Extensions Batch",
+"Invalid file extension.- It must be csv" => "Invalid file extension.- It must be csv",
+"Possible file upload attack. Filename" => "Possible file upload attack. Filename",
+"Error" => "Error",
+"Error updating Sip" => "Error updating Sip",
+"Error updating Users" => "Error updating Users",
+"Error updating Devices" => "Error updating Devices",
+"Error updating Voicemail" => "Error updating Voicemail",
+"Error processing CallWaiting" => "Error processing CallWaiting",
+"Total extension updated" => "Total extension updated",
+"Error, extension" => "Error, extension",
+"repeat in lines" => "repeat in lines",
+"with" => "with",
+"The file is incorrect or empty" => "The file is incorrect or empty",
+"Incomplete Columns" => "Incomplete Columns",
+"Verify the header" => "Verify the header",
+"At minimum there must be the columns" => "At minimum there must be the columns",
+"Can't exist a extension empty" => "Can't exist a extension empty",
+"Can't exist a secret empty" => "Can't exist a secret empty",
+"Can't exist a display name empty" => "Can't exist a display name empty",
+"Header File Extensions Batch" => "The header of the file must be in the first line and it must have at minimum three columns: Display Name, User Extension, Secret",
+"About Update Extensions Batch" => "If you load a file with extensions already created, these extensions will be updated",
+"There aren't extensions" => "There aren't extensions",
+"Download Extensions" => "Download Extensions",
+/*Extensions Batch*/
 );
 ?>

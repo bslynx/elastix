@@ -693,5 +693,32 @@ implementations of Voice over IP around the globe.",
 "The device must be numeric" => "The device must be numeric",
 "The device couldn't be added to the conference" => "The device couldn't be added to the conference",
 /*End module conference*/
+
+/*Extensions Batch*/
+"Extensions Batch" => "Lotes de Extensiones",
+"Invalid file extension.- It must be csv" => "Archivo de extensión no válido.- Debe ser csv",
+"It isn't possible upload the file. Namefile" => "No es posible subir el archivo. Nombre de archivo",
+"Error" => "Error",
+"Error updating Sip" => "Error actualizando Sip",
+"Error updating Users" => "Error actualizando Users",
+"Error updating Devices" => "Error actualizando Devices",
+"Error updating Voicemail" => "Error actualizando Voicemail",
+"Error processing CallWaiting" => "Error procesando CallWaiting",
+"Total extension updated" => "Total de extensiones actualizadas",
+"Error, extension" => "Error, extensión",
+"repeat in lines" => "Repetido en lineas",
+"with" => "con",
+"The file is incorrect or empty" => "The archivo es incorrecto o vacío",
+"Incomplete Columns" => "Columnas Incompletas",
+"Verify the header" => "Verificar la cabecera",
+"At minimum there must be the columns" => "Como mínimo deben estar las columnas",
+"Can't exist a extension empty" => "No puede existir una extensión vacía",
+"Can't exist a secret empty" => "No puede existir un secret vacío",
+"Can't exist a display name empty" => "No puede existir un display name vacío",
+"Header File Extensions Batch" => "La cabecera del archivo debe estar en la primera linea y debe tener como mínimo 3 columnas: Display Name, User Extension, Secret",
+"About Update Extensions Batch" => "Si carga un archivo con extensiones ya creadas, estas extensiones serán actualizadas",
+"There aren't extensions" => "No hay extensiones",
+"Download Extensions" => "Descargar Extensiones",
+/*Extensions Batch*/
 );
 ?>
