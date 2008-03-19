@@ -721,5 +721,9 @@ configuration because some processes need it."=>"Въведените мрежи
 "There aren't extensions" => "There aren't extensions",
 "Download Extensions" => "Download Extensions",
 /*Extensions Batch*/
+
+/*File Editor*/
+"Permission denied" => "Permission denied",
+/*File Editor*/
 );
 ?>

@@ -141,7 +141,7 @@ function _moduleContent(&$smarty, $module_name)
         if(isset($_GET['archivo']) && $_GET['archivo']!="") {
             $sAccion='editar';
         }
-        
+
         if(isset($_POST['back'])) {
             $sAccion='regresar';
             $_POST['action'] = $_GET['action'] = "";
@@ -153,10 +153,10 @@ function _moduleContent(&$smarty, $module_name)
         // LISTADO
         $limit = 25;
         $offset = 0;
-        
+
         // Si se quiere avanzar a la sgte. pagina
-        if($_GET['nav']=="end") {
-    
+        if(isset($_GET['nav']) && $_GET['nav']=="end") {
+
             // Mejorar el sgte. bloque.
             if(($total%$limit)==0) {
                 $offset = $total - $limit;
@@ -164,26 +164,26 @@ function _moduleContent(&$smarty, $module_name)
                 $offset = $total - $total%$limit;
             }
         }
-        
+
         // Si se quiere avanzar a la sgte. pagina
-        if($_GET['nav']=="next") {
+        if(isset($_GET['nav']) && $_GET['nav']=="next") {
             $offset = $_GET['start'] + $limit - 1;
         }
-    
+
         // Si se quiere retroceder
-        if($_GET['nav']=="previous") {
+        if(isset($_GET['nav']) && $_GET['nav']=="previous") {
             $offset = $_GET['start'] - $limit - 1;
         }
-    
+
         // Construyo el URL base
         if(is_array($arreglo_archivos) and count($arreglo_archivos)>0) {
-        
+
             $url = construirURL($arreglo_archivos, array("nav", "start"));
         } else {
             $url = construirURL(array(), array("nav", "start")); 
         }
         $smarty->assign("url", $url);
-    
+
         $inicio = ($total==0) ? 0 : $offset + 1;
         $fin = ($offset+$limit)<=$total ? $offset+$limit : $total;
         $leng=$fin-$inicio;
@@ -216,6 +216,14 @@ function _moduleContent(&$smarty, $module_name)
     switch ($sAccion) {
         case "editar":
             $fichero = $_GET['archivo'];
+            $directorio = dirname($fichero);
+            if($directorio!=".")
+            {
+                $smarty->assign("mb_title", $arrLang["Validation Error"]);
+                $smarty->assign("mb_message", $arrLang["Permission denied"]);
+                return $contenidoModulo;
+                break;
+            }
 
             $smarty->assign("File",$arrLang['File']);
             $smarty->assign("Back",$arrLang["Back"]);
@@ -288,7 +296,7 @@ function EscribirArchivo($arrOtro,$contenidoModulo,$arrLang,$_GET,$_POST, $smart
         else{
                 $msj_no_escritura3 = $arrLang["This file doesn't have permisses to write"];
         }
-    
+
         //para saber si es de lectura   
         if(is_readable($ruta_archivo)){ 
             if($fp = fopen($ruta_archivo,"r")){ 
@@ -298,7 +306,7 @@ function EscribirArchivo($arrOtro,$contenidoModulo,$arrLang,$_GET,$_POST, $smart
             else{
                 $msj_no_lectura2 = $arrLang["This file doesn't have permisses to read"];
             }
-    
+
             fclose($fp);
         }else{
                 //$msj_no_lectura2 = $arrLang["This file doesn't have permisses to read"];
@@ -306,7 +314,7 @@ function EscribirArchivo($arrOtro,$contenidoModulo,$arrLang,$_GET,$_POST, $smart
                 $contenidoModulo='<center><table class="message_board" align="center"><tr><td class="mb_message"><b>'.$fichero .' '.$msj.'</b></td></tr>'.$contenidoModulo.'</table></center>';
                 return;
         }
-        
+
         $smarty->assign("se_guardo", $se_guardo);
         $smarty->assign("msj_no_escritura3", $msj_no_escritura3);
         $smarty->assign("msj_no_lectura2", $msj_no_lectura2);
