@@ -676,5 +676,9 @@ implementations of Voice over IP around the globe.",
 /*File Editor*/
 "Permission denied" => "Permission denied",
 /*File Editor*/
+
+/*Sugarcrm*/
+"The SugarCRM installation is almost done. To complete it please" => "The SugarCRM installation is almost done. To complete it please",
+/*Sugarcrm*/
 );
 ?>

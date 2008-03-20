@@ -767,5 +767,9 @@ konfiguraciji jer neki <br> procesi ih mogu trebati.",
 /*File Editor*/
 "Permission denied" => "Permission denied",
 /*File Editor*/
+
+/*Sugarcrm*/
+"The SugarCRM installation is almost done. To complete it please" => "The SugarCRM installation is almost done. To complete it please",
+/*Sugarcrm*/
 );
 ?>

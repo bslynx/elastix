@@ -727,5 +727,9 @@ alrededor del mundo.",
 /*File Editor*/
 "Permission denied" => "Permiso denegado",
 /*File Editor*/
+
+/*Sugarcrm*/
+"The SugarCRM installation is almost done. To complete it please" => "Para finalizar la instalación de SugarCRM de",
+/*Sugarcrm*/
 );
 ?>
