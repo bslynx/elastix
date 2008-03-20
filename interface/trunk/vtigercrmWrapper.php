@@ -69,7 +69,7 @@ $result = $pDB->getFirstRowQuery($sql,true);
 
 //PASO 2
 if(is_array($result) && count($result) > 0){
-    if($result['existe']==0 && $_GET['accion']=='crear'){ // no existe la base completamente 
+    if($result['existe']==0 && isset($_GET['accion']) && $_GET['accion']=='crear'){ // no existe la base completamente
         // ejecutar comanado para crear la base de datos.
         exec("/usr/bin/mysql --user=$usuario --password=$clave < /var/www/html/schema.vtiger", $arrSalida, $var); 
         if($var==0){
@@ -81,7 +81,7 @@ if(is_array($result) && count($result) > 0){
         }
     }
     else if($result['existe']==0){
-        echo $tabla_ini.$arrLang['The vTiger installation is almost done. To complete it please']."<a href='vtigercrmWrapper.php?IP={$_GET['IP']}&URL={$_GET['URL']}&accion=crear'>".$arrLang['click here']."</a>".$tabla_fin;
+        echo $tabla_ini.$arrLang['The vTiger installation is almost done. To complete it please']."<a href='vtigercrmWrapper.php?URL={$_GET['URL']}&accion=crear'>".$arrLang['click here']."</a>".$tabla_fin;
     }
     else{  //si existe la base de datos
         header("Location: ".$_GET['URL']);
