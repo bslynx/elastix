@@ -125,7 +125,7 @@ function _moduleContent(&$smarty, $module_name)
             $checked=array_key_exists($resource[1],$arrPermisos)?"checked":'';
             $arrTmp[0] = "<input type='checkbox' name='groupPermission[".$resource[1]."][".$resource[0]."]' $checked>";
             
-            $arrTmp[1] = $arrLang[$resource[2]];
+            $arrTmp[1] = isset($arrLang[$resource[2]])?$arrLang[$resource[2]]:'';
             
             $arrData[] = $arrTmp;
         }
