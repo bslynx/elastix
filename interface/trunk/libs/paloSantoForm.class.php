@@ -106,6 +106,7 @@ class paloForm
                 $arrPreFilledValues[$varName] = "";
             $arrMacro = array();
             $strInput = "";
+            $arrVars['EDITABLE'] = isset($arrVars['EDITABLE'])?$arrVars['EDITABLE']:'';
 
             switch($arrVars['INPUT_TYPE']) {
                 case "TEXTAREA":
