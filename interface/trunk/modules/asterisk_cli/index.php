@@ -21,13 +21,14 @@ function _moduleContent(&$smarty, $module_name)
 
     $formCampos= array();
 
+    $txtCommand = isset($_POST['txtCommand'])?$_POST['txtCommand']:'';
+
     $oForm = new paloForm($smarty, $formCampos);
     $smarty->assign("asterisk", "Asterisk CLI");
     $smarty->assign("command", $arrLang["Command"]);
     $smarty->assign("txtCommand" , htmlspecialchars($txtCommand));
     $smarty->assign("execute", $arrLang["Execute"]);
 
-    $txtCommand = isset($_POST['txtCommand'])?$_POST['txtCommand']:'';
     $result = "";
     if (!isBlank($txtCommand)) {
         $result=  "<pre>";
