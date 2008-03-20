@@ -43,7 +43,7 @@ function _moduleContent(&$smarty, $module_name)
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
     $templates_dir=(isset($arrConfig['templates_dir']))?$arrConfig['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
-    
+
     $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
     $arrConfig = $pConfig->leer_configuracion(false);
 
@@ -89,7 +89,7 @@ function _moduleContent(&$smarty, $module_name)
                                                         "VALIDATION_TYPE"        => "ereg",
                                                         "VALIDATION_EXTRA_PARAM" => "^[[:digit:]]{1,2}[[:space:]]+[[:alnum:]]{3}[[:space:]]+[[:digit:]]{4}$"),
                                  );
-    
+
     $oFilterForm = new paloForm($smarty, $arrFormElements);
         // Por omision las fechas toman el sgte. valor (la fecha de hoy)
     $date_start = date("Y-m-d") . " 00:00:00"; 
@@ -114,7 +114,7 @@ function _moduleContent(&$smarty, $module_name)
                 $smarty->assign("mb_message", $strErrorMsg);
             }
             $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl", "", $_POST);
-    
+
     } else if (isset($_GET['date_start']) AND isset($_GET['date_end'])) {
         $date_start = translateDate($_GET['date_start']) . " 00:00:00";
         $date_end   = translateDate($_GET['date_end']) . " 23:59:59";
@@ -159,7 +159,7 @@ function _moduleContent(&$smarty, $module_name)
             // No vale la ruta
         }
         rsort($archivos);
-        
+
         foreach($archivos as $archivo) {
             //tengo que obtener los archivos que pertenezcan a la extension
            //obtener los archivos con formato auto-timestamp-extension... grabacion ONDEMAND
@@ -171,16 +171,16 @@ function _moduleContent(&$smarty, $module_name)
                  $llamada['type'] = "on demand";
                  $llamadas[strtotime($llamada['calldate'])]=$llamada;
              }
-			 $llamada_incoming=false;
+            $llamada_incoming=false;
             //buscar llamadas incoming IN-extension-uniqueid
             if (ereg("IN\-$extension\-([[:digit:]]+(\.[[:digit:]]+)*)\.[wav|WAV|gsm]",$archivo,$regs)){
-            	$llamada_incoming = true;
-            	$unique_id=$regs[1];
-            	$llamada=obtenerCDR_with_uniqueid($pDBCDR,$unique_id);
-            	$llamada['archivo'] = $archivo;
-            	$llamada['type'] = "auto - incoming";
+                $llamada_incoming = true;
+                $unique_id=$regs[1];
+                $llamada=obtenerCDR_with_uniqueid($pDBCDR,$unique_id);
+                $llamada['archivo'] = $archivo;
+                $llamada['type'] = "auto - incoming";
                 $llamadas[strtotime($llamada['calldate'])]=$llamada;
-              }
+            }
             //buscar llamadas incoming IN-extension-fecha-hora
             if (!$llamada_incoming && ereg("IN\-$extension\-([[:digit:]]+)\-([[:digit:]]+)\.[wav|WAV|gsm]",$archivo,$regs)){
                  //formar la fecha y la hora
@@ -208,18 +208,18 @@ function _moduleContent(&$smarty, $module_name)
                  $llamadas[strtotime($llamada['calldate'])]=$llamada;
              }
              //buscar llamadas OUTGOING
-             
+
              //OUT-ext-uniqueid.wav
-          	$llamada_outgoing = false;
-              if (ereg("OUT\-$extension\-([[:digit:]]+(\.[[:digit:]]+)*)\.[wav|WAV|gsm]",$archivo,$regs)){
-            	$llamada_outgoing = true;
-            	$unique_id=$regs[1];
-            	$llamada=obtenerCDR_with_uniqueid($pDBCDR,$unique_id);
-            	$llamada['archivo'] = $archivo;
-            	$llamada['type'] = "auto - outgoing";
+            $llamada_outgoing = false;
+            if (ereg("OUT\-$extension\-([[:digit:]]+(\.[[:digit:]]+)*)\.[wav|WAV|gsm]",$archivo,$regs)){
+                $llamada_outgoing = true;
+                $unique_id=$regs[1];
+                $llamada=obtenerCDR_with_uniqueid($pDBCDR,$unique_id);
+                $llamada['archivo'] = $archivo;
+                $llamada['type'] = "auto - outgoing";
                 $llamadas[strtotime($llamada['calldate'])]=$llamada;
-              }
-             //OUT404--20070426-090918.wav
+            }
+            //OUT404--20070426-090918.wav
 
             if (!$llamada_outgoing && ereg("OUT$extension\-([[:digit:]]+)\-([[:digit:]]+)(.+)\.[wav|WAV|gsm]",$archivo,$regs)){
                  //formar la fecha y la hora
@@ -244,16 +244,16 @@ function _moduleContent(&$smarty, $module_name)
                  $llamada['archivo'] = $archivo;
                  $llamada['type'] = "auto - outgoing";
                  $llamadas[strtotime($llamada['calldate'])]=$llamada;
-             }
+            }
              // El caso para cuando a la extension se le configuró sus records incoming or outgoing a always 
-             if (ereg("[[:digit:]]+\-[[:digit:]]+\-([[:digit:]]+.[[:digit:]]+).[wav|WAV|gsm]",$archivo,$regs)){
-            	 $unique_id=$regs[1]; 
-            	 $llamada=obtenerCDR_with_uniqueid($pDBCDR,$unique_id);
-            	 $llamada['archivo'] = $archivo;
-            	 $llamada['type'] = "always";
-                 if($extension==$llamada['src'] || $extension==$llamada['dst'] || $extension=="[[:digit:]]+") //se se cumple esto es porque es el usuario solo puede ver sus llamadas y la otra es porque es administrador
+            if (ereg("[[:digit:]]+\-[[:digit:]]+\-([[:digit:]]+.[[:digit:]]+).[wav|WAV|gsm]",$archivo,$regs)){
+                $unique_id=$regs[1];
+                $llamada=obtenerCDR_with_uniqueid($pDBCDR,$unique_id);
+                $llamada['archivo'] = $archivo;
+                $llamada['type'] = "always";
+                if($extension==$llamada['src'] || $extension==$llamada['dst'] || $extension=="[[:digit:]]+") //se se cumple esto es porque es el usuario solo puede ver sus llamadas y la otra es porque es administrador
                     $llamadas[strtotime($llamada['calldate'])]=$llamada;
-             }
+            }
         }
 
         if($tmpExtension=="" || is_null($tmpExtension))//validacion solo para usuarios del grupo administrator
@@ -278,16 +278,15 @@ function _moduleContent(&$smarty, $module_name)
                 $arrData[] = $arrTmp;
             }
         }
-    
+
         $total=count($arrData);
-    // LISTADO
-        
+        // LISTADO
         $limit = 15;
         $offset = 0;
-    
+
         // Si se quiere avanzar a la sgte. pagina
-        if($_GET['nav']=="end") {
-    
+        if(isset($_GET['nav']) && $_GET['nav']=="end") {
+
             // Mejorar el sgte. bloque.
             if(($total%$limit)==0) {
                 $offset = $total - $limit;
@@ -295,25 +294,25 @@ function _moduleContent(&$smarty, $module_name)
                 $offset = $total - $total%$limit;
             }
         }
-    
+
         // Si se quiere avanzar a la sgte. pagina
-        if($_GET['nav']=="next") {
+        if(isset($_GET['nav']) && $_GET['nav']=="next") {
             $offset = $_GET['start'] + $limit - 1;
         }
-    
+
         // Si se quiere retroceder
-        if($_GET['nav']=="previous") {
+        if(isset($_GET['nav']) && $_GET['nav']=="previous") {
             $offset = $_GET['start'] - $limit - 1;
         }
-    
+
         // Construyo el URL base
-        if(is_array($arrFilterExtraVars) and count($arrFilterExtraVars)>0) {
+        if(isset($arrFilterExtraVars) && is_array($arrFilterExtraVars) and count($arrFilterExtraVars)>0) {
             $url = construirURL($arrFilterExtraVars, array("nav", "start")); 
         } else {
             $url = construirURL(array(), array("nav", "start")); 
         }
         $smarty->assign("url", $url);
-    
+
         $inicio = ($total==0) ? 0 : $offset + 1;
         $fin = ($offset+$limit)<=$total ? $offset+$limit : $total;
         $leng=$fin-$inicio;
