@@ -45,7 +45,7 @@ function _moduleContent(&$smarty, $module_name)
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
     $templates_dir=(isset($arrConfig['templates_dir']))?$arrConfig['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
-    
+
     $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
     $arrConfig = $pConfig->leer_configuracion(false);
 
@@ -71,8 +71,8 @@ function _moduleContent(&$smarty, $module_name)
         $error = $pDBa->errMsg;
     }else{	
 	if (is_array($arrayResult) && count($arrayResult)>0) {
-	    $arrData[$item["null"]] = "No extension";
-	    foreach($arrayResult as $item) {            
+	    //$arrData[$item["null"]] = "No extension";
+	    foreach($arrayResult as $item) {
                 $arrData[$item["extension"]] = $item["extension"];	
             }
 	}
@@ -115,7 +115,7 @@ function _moduleContent(&$smarty, $module_name)
                                                     "INPUT_EXTRA_PARAM"      => $arrGrupos,
                                                     "VALIDATION_TYPE"        => "text",
                                                     "VALIDATION_EXTRA_PARAM" => ""),
- 			     "extension"   => array("LABEL"                  => "Extension",
+                            "extension"   => array("LABEL"                  => "Extension",
                                                     "REQUIRED"               => "no",
                                                     "INPUT_TYPE"             => "SELECT",
                                                     "INPUT_EXTRA_PARAM"      => $arrData,
@@ -246,10 +246,10 @@ function _moduleContent(&$smarty, $module_name)
 		
                 $contenidoModulo=$oForm->fetchForm("$local_templates_dir/new.tpl", $arrLang["Edit User"], $arrFillUser);
             } else {
-    
+
                 // Exito, puedo procesar los datos ahora.
                 $pACL = new paloACL($pDB);
-         
+
                 // Lleno el grupo
                 $arrMembership  = $pACL->getMembership($_POST['id_user']);
                 $id_group="";
@@ -260,13 +260,13 @@ function _moduleContent(&$smarty, $module_name)
                         break;
                     }
                 }
-    
+
                 // El usuario trato de cambiar de grupo
                 if($id_group!=$_POST['group']) {
                     $pACL->delFromGroup($_POST['id_user'], $id_group);
                     $pACL->addToGroup($_POST['id_user'], $_POST['group']);
                 }
-    
+
                 //- La updateUser no es la adecuada porque pide el username. Deberia
                 //- hacer una que no pida username en la proxima version
                 $pACL->updateUser($_POST['id_user'], $username, $_POST['description'],$_POST['extension']);
@@ -342,19 +342,19 @@ function _moduleContent(&$smarty, $module_name)
         }
 
         $arrUsers = $pACL->getUsers();
-    
+
         $end = count($arrUsers);
         $arrData = array();
         foreach($arrUsers as $user) {
             $arrMembership  = $pACL->getMembership($user[0]);
-    
+
             $group="";
             if(is_array($arrMembership)) {
                 foreach($arrMembership as $groupName=>$groupId) {
                     $group .= ucfirst($groupName) . " ";
                 }
             }
-    
+
             $arrTmp    = array();
             //$arrTmp[0] = "&nbsp;<a href='?menu=usernew&action=view&id=" . $user['id'] . "'>" . $user['name'] . "</a>";
             //$arrTmp[1] = $user['description'];
@@ -365,7 +365,7 @@ function _moduleContent(&$smarty, $module_name)
             $arrData[] = $arrTmp;
 
         }
-        
+
         $arrGrid = array("title"    => $arrLang["User List"],
                          "icon"     => "images/user.png",
                          "width"    => "99%",
@@ -382,7 +382,7 @@ function _moduleContent(&$smarty, $module_name)
                                                         "property1" => "")
                                             )
                         );
-        
+
         $oGrid = new paloSantoGrid($smarty);
         $oGrid->showFilter("<form style='margin-bottom:0;' method='POST' action='?menu=userlist'>" .
                            "<input type='submit' name='submit_create_user' value='{$arrLang['Create New User']}' class='button'></form>");
