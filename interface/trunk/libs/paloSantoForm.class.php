@@ -257,7 +257,7 @@ class paloForm
                             }
                             else{//solo uno elegido, informacion como texto
                                 $idSeleccion = $arrPreFilledValues[$varName];
-                                $strInput .= $arrVars['INPUT_EXTRA_PARAM'][$idSeleccion];
+                                $strInput .= isset($arrVars['INPUT_EXTRA_PARAM'][$idSeleccion])?$arrVars['INPUT_EXTRA_PARAM'][$idSeleccion]:'';
                             }
                     }
                     break;
