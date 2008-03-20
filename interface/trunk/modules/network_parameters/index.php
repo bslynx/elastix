@@ -217,7 +217,7 @@ function _moduleContent(&$smarty, $module_name)
     
         if(is_array($arrNetwork)) {
             $arrNetworkData['dns1'] = $arrNetwork['dns'][0];
-            $arrNetworkData['dns2'] = $arrNetwork['dns'][1];
+            $arrNetworkData['dns2'] = isset($arrNetwork['dns'][1])?$arrNetwork['dns'][1]:'';
             $arrNetworkData['host'] = $arrNetwork['host'];
             $arrNetworkData['gateway'] = $arrNetwork['gateway'];
         }
@@ -240,11 +240,11 @@ function _moduleContent(&$smarty, $module_name)
             $arrTmp[2] = $arrEth['Inet Addr'];
             $arrTmp[3] = $arrEth['Mask'];
             $arrTmp[4] = $arrEth['HWaddr'];
-            $arrTmp[5] = $arrEth['HW_info']; //- Deberia acotar este campo pues puede ser muy largo
+            $arrTmp[5] = isset($arrEth['HW_info'])?$arrEth['HW_info']:''; //- Deberia acotar este campo pues puede ser muy largo
             $arrTmp[6] = ($arrEth['Running']=="Yes" ? "<font color=green>{$arrLang["Connected"]}</font>" : "<font color=red>{$arrLang["Not Connected"]}</font>");
             $arrData[] = $arrTmp;
         }
-        
+
         $oGrid = new paloSantoGrid($smarty);
 
         $arrGrid = array("title"    => $arrLang["Ethernet Interfaces List"],
