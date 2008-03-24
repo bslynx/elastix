@@ -35,7 +35,7 @@ function _moduleContent(&$smarty, $module_name)
     include_once "libs/paloSantoConfig.class.php";
     include_once "libs/paloSantoCDR.class.php";
     require_once "libs/misc.lib.php";
-    
+
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
     global $arrConf;
@@ -44,7 +44,6 @@ function _moduleContent(&$smarty, $module_name)
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
     $templates_dir=(isset($arrConfig['templates_dir']))?$arrConfig['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
-    
 
     $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
     $arrConfig = $pConfig->leer_configuracion(false);
@@ -58,8 +57,10 @@ function _moduleContent(&$smarty, $module_name)
 
     $smarty->assign("menu","cdrreport");
     $smarty->assign("Filter",$arrLang['Filter']);
-    if(isset($_GET['exportcsv']) && $_GET['exportcsv']=='yes') {
+    $smarty->assign("Delete",$arrLang['Delete']);
+    $smarty->assign("Delete_Warning",$arrLang['Are you sure you wish to delete CDR(s) Report(s)?']);
 
+    if(isset($_GET['exportcsv']) && $_GET['exportcsv']=='yes') {
         $limit = "";
         $offset = 0;
         if(empty($_GET['date_start'])) {
@@ -83,9 +84,7 @@ function _moduleContent(&$smarty, $module_name)
         header('Content-Type: application/force-download');
         //header('Content-Length: '.strlen($this->buffer));
         //header('Content-disposition: attachment; filename="'.$name.'"');
-
-    } else {
-    
+    } else{
         $arrFormElements = array("date_start"  => array("LABEL"                  => $arrLang["Start Date"],
                                                         "REQUIRED"               => "yes",
                                                         "INPUT_TYPE"             => "DATE",
@@ -104,7 +103,7 @@ function _moduleContent(&$smarty, $module_name)
                                                         "INPUT_EXTRA_PARAM"      => array( "dst"         => $arrLang["Destination"],
                                                                                            "src"         => $arrLang["Source"],
                                                                                            "channel"     => $arrLang["Src. Channel"],
-																						   "accountcode" => $arrLang["Account Code"],
+                                                                                           "accountcode" => $arrLang["Account Code"],
                                                                                            "dstchannel"  => $arrLang["Dst. Channel"]),
                                                         "VALIDATION_TYPE"        => "ereg",
                                                         "VALIDATION_EXTRA_PARAM" => "^(dst|src|channel|dstchannel|accountcode)$"),
@@ -126,26 +125,30 @@ function _moduleContent(&$smarty, $module_name)
                                                         "VALIDATION_TYPE"        => "text",
                                                         "VALIDATION_EXTRA_PARAM" => ""),
                                  );
-    
+
         $oFilterForm = new paloForm($smarty, $arrFormElements);
-    
+
         // Por omision las fechas toman el sgte. valor (la fecha de hoy)
         $date_start = date("Y-m-d") . " 00:00:00"; 
         $date_end   = date("Y-m-d") . " 23:59:59";
         $field_name = "";
         $field_pattern = ""; 
-        $status = "ALL"; 
-    
-        if(isset($_POST['filter'])) {
+        $status = "ALL";
+
+        if(isset($_POST['delete']) || isset($_POST['filter']) )
+        {
             if($oFilterForm->validateForm($_POST)) {
                 // Exito, puedo procesar los datos ahora.
                 $date_start = translateDate($_POST['date_start']) . " 00:00:00"; 
                 $date_end   = translateDate($_POST['date_end']) . " 23:59:59";
                 $field_name = $_POST['field_name'];
                 $field_pattern = $_POST['field_pattern'];
-                $status = $_POST['status'];    
-                $arrFilterExtraVars = array("date_start" => $_POST['date_start'], "date_end" => $_POST['date_end'], 
+                $status = $_POST['status'];
+
+                $arrFilterExtraVars = array("date_start" => $_POST['date_start'], "date_end" => $_POST['date_end'],
                                             "field_name" => $_POST['field_name'], "field_pattern" => $_POST['field_pattern'],"status" => $_POST['status']);
+                if(isset($_POST['delete']))
+                    $oCDR->Delete_All_CDRs($date_start, $date_end, $field_name, $field_pattern, $status);
             } else {
                 // Error
                 $smarty->assign("mb_title", $arrLang["Validation Error"]);
@@ -158,7 +161,6 @@ function _moduleContent(&$smarty, $module_name)
                 $smarty->assign("mb_message", $strErrorMsg);
             }
             $htmlFilter = $contenidoModulo=$oFilterForm->fetchForm("$local_templates_dir/filter.tpl", "", $_POST);
-    
         } else if(isset($_GET['date_start']) AND isset($_GET['date_end'])) {
             $date_start = translateDate($_GET['date_start']) . " 00:00:00";
             $date_end   = translateDate($_GET['date_end']) . " 23:59:59";
@@ -171,12 +173,11 @@ function _moduleContent(&$smarty, $module_name)
             $htmlFilter = $contenidoModulo=$oFilterForm->fetchForm("$local_templates_dir/filter.tpl", "", 
                           array('date_start' => date("d M Y"), 'date_end' => date("d M Y"),'field_name' => 'dst','field_pattern' => '','status' => 'ALL' ));
         }
-    
+
         // LISTADO
-    
         $limit = 50;
         $offset = 0;
-    
+
         // Si se quiere avanzar a la sgte. pagina
         if(isset($_GET['nav']) && $_GET['nav']=="end") {
             $arrCDRTmp  = $oCDR->obtenerCDRs($limit, $offset, $date_start, $date_end, $field_name, $field_pattern,$status);
@@ -188,17 +189,17 @@ function _moduleContent(&$smarty, $module_name)
                 $offset = $totalCDRs - $totalCDRs%$limit;
             }
         }
-    
+
         // Si se quiere avanzar a la sgte. pagina
         if(isset($_GET['nav']) && $_GET['nav']=="next") {
             $offset = $_GET['start'] + $limit - 1;
         }
-    
+
         // Si se quiere retroceder
         if(isset($_GET['nav']) && $_GET['nav']=="previous") {
             $offset = $_GET['start'] - $limit - 1;
         }
-    
+
         // Construyo el URL base
         if(isset($arrFilterExtraVars) && is_array($arrFilterExtraVars) && count($arrFilterExtraVars)>0) {
             $url = construirURL($arrFilterExtraVars, array("nav", "start")); 
@@ -206,16 +207,13 @@ function _moduleContent(&$smarty, $module_name)
             $url = construirURL(array(), array("nav", "start")); 
         }
         $smarty->assign("url", $url);
-    
-    }    
-
+    }
 
     // Bloque comun
-
     $arrCDR  = $oCDR->obtenerCDRs($limit, $offset, $date_start, $date_end, $field_name, $field_pattern,$status);
 
     $total =$arrCDR['NumRecords'][0];
-   
+
     foreach($arrCDR['Data'] as $cdr) {
         $arrTmp    = array();
         $arrTmp[0] = $cdr[0];
@@ -237,30 +235,30 @@ function _moduleContent(&$smarty, $module_name)
                      "start"    => ($total==0) ? 0 : $offset + 1,
                      "end"      => ($offset+$limit)<=$total ? $offset+$limit : $total,
                      "total"    => $total,
-                     "columns"  => array(0 => array("name"      => $arrLang["Date"],
+                     "columns"  => array(
+                                         0 => array("name"      => $arrLang["Date"],
                                                     "property1" => ""),
                                          1 => array("name"      => $arrLang["Source"],
                                                     "property1" => ""),
                                          2 => array("name"      => $arrLang["Destination"],
                                                     "property1" => ""),
-                                         3 => array("name"		=> $arrLang["Src. Channel"],
-                                         			"property"	=> ""),
-                                         4 => array("name"		=> $arrLang["Account Code"],
-                                         			"property"	=> ""),                                   
-                                         5 => array("name"		=> $arrLang["Dst. Channel"],
-                                         			"property"	=> ""),
-                                         6 => array("name"		=> $arrLang["Status"],
-                                         			"property"	=> ""),
-                                         7 => array("name"		=> $arrLang["Duration"],
-                                         			"property"	=> ""),
-
+                                         3 => array("name"      => $arrLang["Src. Channel"],
+                                                    "property"  => ""),
+                                         4 => array("name"      => $arrLang["Account Code"],
+                                                    "property"  => ""),
+                                         5 => array("name"      => $arrLang["Dst. Channel"],
+                                                    "property"  => ""),
+                                         6 => array("name"      => $arrLang["Status"],
+                                                    "property"  => ""),
+                                         7 => array("name"      => $arrLang["Duration"],
+                                                    "property"  => ""),
                                         )
                     );
 
     // Creo objeto de grid
     $oGrid = new paloSantoGrid($smarty);
     $oGrid->enableExport();
-    
+
     if(isset($_GET['exportcsv']) && $_GET['exportcsv']=='yes') {
         return $oGrid->fetchGridCSV($arrGrid, $arrData);
     } else {

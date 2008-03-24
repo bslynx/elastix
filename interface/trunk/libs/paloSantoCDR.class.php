@@ -47,7 +47,7 @@ class paloSantoCDR {
             }
         }
     }
-    
+
     function obtenerCDRs($limit, $offset, $date_start="", $date_end="", $field_name="", $field_pattern="",$status="ALL",$calltype="",$troncales=NULL)
     {
         $strWhere = "";
@@ -75,19 +75,52 @@ class paloSantoCDR {
         if(!empty($strWhere)) $query .= "WHERE $strWhere ";
         // Limit
         if(!empty($limit)) {
-	        $query  .= " LIMIT $limit OFFSET $offset";
+            $query  .= " LIMIT $limit OFFSET $offset";
         }
 
-        $result=$this->_DB->fetchTable($query);          
+        $result=$this->_DB->fetchTable($query);
         $arrResult['Data'] = $result;
 
         $queryCount = "SELECT COUNT(*) FROM cdr ";
         // Clausula WHERE aqui
         if(!empty($strWhere)) $queryCount .= " WHERE $strWhere ";
 
-	    $arrResult['NumRecords'] = $this->_DB->getFirstRowQuery($queryCount);
+        $arrResult['NumRecords'] = $this->_DB->getFirstRowQuery($queryCount);
 
         return $arrResult;
+    }
+
+    function Delete_All_CDRs($date_start="", $date_end="", $field_name="", $field_pattern="",$status="ALL",$calltype="",$troncales=NULL)
+    {
+        $strWhere = "";
+        if(!empty($date_start)) $strWhere .= "calldate>='$date_start' ";
+        if(!empty($date_end))   $strWhere .= " AND calldate<='$date_end' ";
+
+        if(!empty($field_name) and !empty($field_pattern)) $strWhere .= " AND $field_name like '%$field_pattern%' ";
+        if(!empty($status) && $status!="ALL") $strWhere .= " AND disposition = '$status' ";
+        if(!empty($calltype) && $calltype=="outgoing"){
+            if (is_array($troncales) && count($troncales)>0){
+                 $condicion_troncal='';
+                foreach ($troncales as $troncal){
+                   $condicion_troncal.=!(empty($condicion_troncal))?' OR ':'';
+                   $condicion_troncal.="dstchannel like '%$troncal%'";
+                }
+                $strWhere .= " AND ($condicion_troncal)";
+            }else{
+                $strWhere .= " AND dstchannel like '%zap%' ";
+            }
+        }
+        if(!empty($calltype) && $calltype=="incoming") $strWhere .= " AND channel like '%zap%' ";
+
+
+        $query = "DELETE FROM cdr ";
+
+        if(!empty($strWhere)) $query .= "WHERE $strWhere ";
+
+        $result = $this->_DB->genQuery($query);
+        if($result[0] > 0)
+            return true;
+        else return false;
     }
 }
 ?>
