@@ -174,21 +174,7 @@ function _moduleContent(&$smarty, $module_name)
 
             // Exito, puedo procesar los datos ahora.
             $pACL = new paloACL($pDB);
-/*
-            if(strtolower($_POST['group'])=='administrator')
-                $_POST['group']='administrator';
-            else if(strtolower($_POST['group'])=='operator')
-                $_POST['group']='operator';
-            else if(strtolower($_POST['group'])=='extension')
-                $_POST['group']='extension';
 
-            if(strtolower($_POST['description'])=='total access')
-                $_POST['description'] = 'total access';
-            else if(strtolower($_POST['description'])=='operator')
-                $_POST['description'] = 'operator';
-            else if(strtolower($_POST['description'])=='extension user')
-                $_POST['description'] = 'extension user';
-*/
             if(!$pACL->updateGroup($_POST['id_group'], $_POST['group'],$_POST['description']))
             {
                 // Ocurrio algun error aqui
