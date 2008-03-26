@@ -722,5 +722,9 @@ de Voix sur IP tout autour du globe.",
 /*Sugarcrm*/
 "The SugarCRM installation is almost done. To complete it please" => "The SugarCRM installation is almost done. To complete it please",
 /*Sugarcrm*/
+
+/*CDR Report*/
+"Are you sure you wish to delete CDR(s) Report(s)?" => "Are you sure you wish to delete CDR(s) Report(s)?",
+/*CDR Report*/
 );
 ?>

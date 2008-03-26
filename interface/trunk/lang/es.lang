@@ -731,5 +731,9 @@ alrededor del mundo.",
 /*Sugarcrm*/
 "The SugarCRM installation is almost done. To complete it please" => "Para finalizar la instalación de SugarCRM de",
 /*Sugarcrm*/
+
+/*CDR Report*/
+"Are you sure you wish to delete CDR(s) Report(s)?" => "¿Está seguro que desea eliminar el(los) Reporte(s) CDR(s)?",
+/*CDR Report*/
 );
 ?>

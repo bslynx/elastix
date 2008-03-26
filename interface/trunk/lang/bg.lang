@@ -729,5 +729,9 @@ configuration because some processes need it."=>"Въведените мрежи
 /*Sugarcrm*/
 "The SugarCRM installation is almost done. To complete it please" => "The SugarCRM installation is almost done. To complete it please",
 /*Sugarcrm*/
+
+/*CDR Report*/
+"Are you sure you wish to delete CDR(s) Report(s)?" => "Are you sure you wish to delete CDR(s) Report(s)?",
+/*CDR Report*/
 );
 ?>
