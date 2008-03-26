@@ -726,5 +726,13 @@ de Voix sur IP tout autour du globe.",
 /*CDR Report*/
 "Are you sure you wish to delete CDR(s) Report(s)?" => "Are you sure you wish to delete CDR(s) Report(s)?",
 /*CDR Report*/
+
+/*Grouplist*/
+"administrator" => "Administrator",
+"operator" => "Operator",
+"extension" => "Extension",
+"total access" => "Total Access",
+"extension user" => "Extension User",
+/*Grouplist*/
 );
 ?>

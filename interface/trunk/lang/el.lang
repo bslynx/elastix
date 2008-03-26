@@ -663,4 +663,12 @@ implementations of Voice over IP around the globe.",
 /*CDR Report*/
 "Are you sure you wish to delete CDR(s) Report(s)?" => "Are you sure you wish to delete CDR(s) Report(s)?",
 /*CDR Report*/
+
+/*Grouplist*/
+"administrator" => "Administrator",
+"operator" => "Operator",
+"extension" => "Extension",
+"total access" => "Total Access",
+"extension user" => "Extension User",
+/*Grouplist*/
 );

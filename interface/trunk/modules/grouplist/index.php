@@ -101,6 +101,21 @@ function _moduleContent(&$smarty, $module_name)
 
         $arrGroup = $pACL->getGroups($_POST['id_group']);
 
+        if($arrGroup[0][1]=='administrator')
+            $arrGroup[0][1] = $arrLang['administrator'];
+        else if($arrGroup[0][1]=='operator')
+            $arrGroup[0][1] = $arrLang['operator'];
+        else if($arrGroup[0][1]=='extension')
+            $arrGroup[0][1] = $arrLang['extension'];
+
+        if($arrGroup[0][2]=='total access')
+            $arrGroup[0][2] = $arrLang['total access'];
+        else if($arrGroup[0][2]=='operator')
+            $arrGroup[0][2] = $arrLang['operator'];
+        else if($arrGroup[0][2]=='extension user')
+            $arrGroup[0][2] = $arrLang['extension user'];
+
+
         $arrFillGroup['group'] = $arrGroup[0][1];
         $arrFillGroup['description'] = $arrGroup[0][2];
 
@@ -159,7 +174,21 @@ function _moduleContent(&$smarty, $module_name)
 
             // Exito, puedo procesar los datos ahora.
             $pACL = new paloACL($pDB);
+/*
+            if(strtolower($_POST['group'])=='administrator')
+                $_POST['group']='administrator';
+            else if(strtolower($_POST['group'])=='operator')
+                $_POST['group']='operator';
+            else if(strtolower($_POST['group'])=='extension')
+                $_POST['group']='extension';
 
+            if(strtolower($_POST['description'])=='total access')
+                $_POST['description'] = 'total access';
+            else if(strtolower($_POST['description'])=='operator')
+                $_POST['description'] = 'operator';
+            else if(strtolower($_POST['description'])=='extension user')
+                $_POST['description'] = 'extension user';
+*/
             if(!$pACL->updateGroup($_POST['id_group'], $_POST['group'],$_POST['description']))
             {
                 // Ocurrio algun error aqui
@@ -196,6 +225,20 @@ function _moduleContent(&$smarty, $module_name)
         $arrGroup = $pACL->getGroups($_GET['id']);
 
         // Conversion de formato
+        if($arrGroup[0][1]=='administrator')
+            $arrGroup[0][1] = $arrLang['administrator'];
+        else if($arrGroup[0][1]=='operator')
+            $arrGroup[0][1] = $arrLang['operator'];
+        else if($arrGroup[0][1]=='extension')
+            $arrGroup[0][1] = $arrLang['extension'];
+
+        if($arrGroup[0][2]=='total access')
+            $arrGroup[0][2] = $arrLang['total access'];
+        else if($arrGroup[0][2]=='operator')
+            $arrGroup[0][2] = $arrLang['operator'];
+        else if($arrGroup[0][2]=='extension user')
+            $arrGroup[0][2] = $arrLang['extension user'];
+
         $arrTmp['group']        = $arrGroup[0][1];
         $arrTmp['description']  = $arrGroup[0][2];
 
@@ -220,6 +263,20 @@ function _moduleContent(&$smarty, $module_name)
         $arrData = array();
         foreach($arrGroups as $group) {
             $arrTmp    = array();
+
+            if($group[1]=='administrator')
+                $group[1] = $arrLang['administrator'];
+            else if($group[1]=='operator')
+                $group[1] = $arrLang['operator'];
+            else if($group[1]=='extension')
+                $group[1] = $arrLang['extension'];
+
+            if($group[2]=='total access')
+                $group[2] = $arrLang['total access'];
+            else if($group[2]=='operator')
+                $group[2] = $arrLang['operator'];
+            else if($group[2]=='extension user')
+                $group[2] = $arrLang['extension user'];
 
             $arrTmp[0] = "&nbsp;<a href='?menu=grouplist&action=view&id=" . $group[0] . "'>" . $group[1] . "</a>";//id_group   name
             $arrTmp[1] = $group[2];//description

@@ -735,5 +735,13 @@ alrededor del mundo.",
 /*CDR Report*/
 "Are you sure you wish to delete CDR(s) Report(s)?" => "¿Está seguro que desea eliminar el(los) Reporte(s) CDR(s)?",
 /*CDR Report*/
+
+/*Grouplist*/
+"administrator" => "Administrador",
+"operator" => "Operador",
+"extension" => "Extensión",
+"total access" => "Acceso Total",
+"extension user" => "Usuario de Extensión",
+/*Grouplist*/
 );
 ?>

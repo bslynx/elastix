@@ -69,18 +69,25 @@ function _moduleContent(&$smarty, $module_name)
     $sQuery="select extension from users order by extension";
     if (!$arrayResult = $pDBa->fetchTable($sQuery,true)){
         $error = $pDBa->errMsg;
-    }else{	
-	if (is_array($arrayResult) && count($arrayResult)>0) {
-	    //$arrData[$item["null"]] = "No extension";
-	    foreach($arrayResult as $item) {
-                $arrData[$item["extension"]] = $item["extension"];	
+    }else{  
+    if (is_array($arrayResult) && count($arrayResult)>0) {
+        //$arrData[$item["null"]] = "No extension";
+        foreach($arrayResult as $item) {
+                $arrData[$item["extension"]] = $item["extension"];  
             }
-	}
+    }
     }
 
     $arrGruposACL=$pACL->getGroups();
     for($i=0; $i<count($arrGruposACL); $i++)
     {
+        if($arrGruposACL[$i][1]=='administrator')
+            $arrGruposACL[$i][1] = $arrLang['administrator'];
+        else if($arrGruposACL[$i][1]=='operator')
+            $arrGruposACL[$i][1] = $arrLang['operator'];
+        else if($arrGruposACL[$i][1]=='extension')
+            $arrGruposACL[$i][1] = $arrLang['extension'];
+
         $arrGrupos[$arrGruposACL[$i][0]] = $arrGruposACL[$i][1];
     }
 
@@ -137,9 +144,9 @@ function _moduleContent(&$smarty, $module_name)
         $arrFillUser['description'] = '';
         $arrFillUser['name']        = '';
         $arrFillUser['group']       = '';
-	    $arrFillUser['extension']   = '';
-	    $arrFillUser['password1']   = '';
-	    $arrFillUser['password2']   = '';
+        $arrFillUser['extension']   = '';
+        $arrFillUser['password1']   = '';
+        $arrFillUser['password2']   = '';
         $oForm = new paloForm($smarty, $arrFormElements);
         $contenidoModulo=$oForm->fetchForm("$local_templates_dir/new.tpl", $arrLang["New User"],$arrFillUser);
 
@@ -168,8 +175,8 @@ function _moduleContent(&$smarty, $module_name)
 
         // Implementar
         include_once("libs/paloSantoForm.class.php");
-		$arrFormElements['password1']['REQUIRED']='no';
-		$arrFormElements['password2']['REQUIRED']='no';
+        $arrFormElements['password1']['REQUIRED']='no';
+        $arrFormElements['password2']['REQUIRED']='no';
         $oForm = new paloForm($smarty, $arrFormElements);
 
         $oForm->setEditMode();
@@ -225,8 +232,8 @@ function _moduleContent(&$smarty, $module_name)
         $arrUser = $pACL->getUsers($_POST['id_user']);
         $username = $arrUser[0][1];
         $description = $arrUser[0][2]; 
-		$arrFormElements['password1']['REQUIRED']='no';
-		$arrFormElements['password2']['REQUIRED']='no';
+        $arrFormElements['password1']['REQUIRED']='no';
+        $arrFormElements['password2']['REQUIRED']='no';
         include_once("libs/paloSantoForm.class.php");
 
         $oForm = new paloForm($smarty, $arrFormElements);
@@ -242,8 +249,8 @@ function _moduleContent(&$smarty, $module_name)
                 $arrFillUser['description'] = $_POST['description'];
                 $arrFillUser['name']        = $username;
                 $arrFillUser['group']       = $_POST['group'];
-				$arrFillUser['extension']   = $_POST['extension'];
-		
+                $arrFillUser['extension']   = $_POST['extension'];
+        
                 $contenidoModulo=$oForm->fetchForm("$local_templates_dir/new.tpl", $arrLang["Edit User"], $arrFillUser);
             } else {
 
@@ -272,7 +279,7 @@ function _moduleContent(&$smarty, $module_name)
                 $pACL->updateUser($_POST['id_user'], $username, $_POST['description'],$_POST['extension']);
                 //si se ha puesto algo en passwor se actualiza el password
                 if (!empty($_POST['password1']))
-                	$pACL->changePassword($_POST['id_user'], md5($_POST['password1']));
+                    $pACL->changePassword($_POST['id_user'], md5($_POST['password1']));
     
                 header("Location: ?menu=userlist");
             }
@@ -291,7 +298,7 @@ function _moduleContent(&$smarty, $module_name)
             $arrFillUser['description'] = $_POST['description'];
             $arrFillUser['name']        = $username;
             $arrFillUser['group']       = $_POST['group'];
-	    	$arrFillUser['extension']   = $_POST['extension'];		
+            $arrFillUser['extension']   = $_POST['extension'];      
             $smarty->assign("id_user", $_POST['id_user']);
             $contenidoModulo=$oForm->fetchForm("$local_templates_dir/new.tpl", $arrLang["Edit User"], $arrFillUser);
             /////////////////////////////////
@@ -351,6 +358,13 @@ function _moduleContent(&$smarty, $module_name)
             $group="";
             if(is_array($arrMembership)) {
                 foreach($arrMembership as $groupName=>$groupId) {
+                    if($groupName == 'administrator')
+                        $groupName = $arrLang['administrator'];
+                    else if($groupName == 'operator')
+                        $groupName = $arrLang['operator'];
+                    else if($groupName == 'extension')
+                        $groupName = $arrLang['extension'];
+
                     $group .= ucfirst($groupName) . " ";
                 }
             }

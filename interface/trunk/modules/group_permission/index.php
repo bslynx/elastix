@@ -42,7 +42,7 @@ function _moduleContent(&$smarty, $module_name)
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
     $templates_dir=(isset($arrConfig['templates_dir']))?$arrConfig['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
-    
+
 
     $pDB = new paloDB("sqlite3:////var/www/db/acl.db");
     $msgError='';
@@ -63,6 +63,13 @@ function _moduleContent(&$smarty, $module_name)
     $arrGruposACL=$pACL->getGroups();
     for($i=0; $i<count($arrGruposACL); $i++)
     {
+        if($arrGruposACL[$i][1]=='administrator')
+            $arrGruposACL[$i][1] = $arrLang['administrator'];
+        else if($arrGruposACL[$i][1]=='operator')
+            $arrGruposACL[$i][1] = $arrLang['operator'];
+        else if($arrGruposACL[$i][1]=='extension')
+            $arrGruposACL[$i][1] = $arrLang['extension'];
+
         $arrGrupos[$arrGruposACL[$i][0]] = $arrGruposACL[$i][1];
     }
 
@@ -111,9 +118,9 @@ function _moduleContent(&$smarty, $module_name)
                                                         "INPUT_EXTRA_PARAM"      => $arrGrupos,
                                                         "VALIDATION_TYPE"        => "integer",
                                                         "VALIDATION_EXTRA_PARAM" => ""),
-                                 
+
                                  );
-    
+
         $oFilterForm = new paloForm($smarty, $arrFormElements);
         $smarty->assign("SHOW", $arrLang["Show"]);
         $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/group_permission.tpl", "", $_POST);
@@ -124,12 +131,12 @@ function _moduleContent(&$smarty, $module_name)
         foreach($arrResources as $resource) {
             $checked=array_key_exists($resource[1],$arrPermisos)?"checked":'';
             $arrTmp[0] = "<input type='checkbox' name='groupPermission[".$resource[1]."][".$resource[0]."]' $checked>";
-            
+
             $arrTmp[1] = isset($arrLang[$resource[2]])?$arrLang[$resource[2]]:'';
-            
+
             $arrData[] = $arrTmp;
         }
-        
+
         $arrGrid = array("title"    => $arrLang["Group Permission"],
                          "icon"     => "images/user.png",
                          "width"    => "99%",
@@ -141,7 +148,7 @@ function _moduleContent(&$smarty, $module_name)
                                              1 => array("name"      => $arrLang["Resource"], 
                                                         "property1" => ""))
                         );
-        
+
         $oGrid = new paloSantoGrid($smarty);
         $oGrid->showFilter(trim($htmlFilter));
 
