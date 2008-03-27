@@ -26,8 +26,8 @@
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
   $Id: sv.lang,v 0.1 2008/03/25 00:36:42 IFIT DATA - http://www.ifit.se Exp $ */
-global $arrLang2;
-$arrLang2=array(
+global $arrLang;
+$arrLang=array(
 "System Resources"=>"System Resurser",
 "CPU Info"=>"CPU Information",
 "Uptime"=>"Drifttid",
