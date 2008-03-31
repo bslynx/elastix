@@ -783,5 +783,9 @@ konfiguraciji jer neki <br> procesi ih mogu trebati.",
 "total access" => "Total Access",
 "extension user" => "Extension User",
 /*Grouplist*/
+
+/*Menu*/
+"Tools" => "Tools",
+/*Menu*/
 );
 ?>

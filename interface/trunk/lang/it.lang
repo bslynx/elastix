@@ -663,4 +663,8 @@ configuration because some processes need it." => "Queste Reti sono abilitate al
 "total access" => "Total Access",
 "extension user" => "Extension User",
 /*Grouplist*/
+
+/*Menu*/
+"Tools" => "Tools",
+/*Menu*/
 );

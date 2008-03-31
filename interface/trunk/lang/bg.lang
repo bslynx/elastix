@@ -741,5 +741,9 @@ configuration because some processes need it."=>"Въведените мрежи
 "total access" => "Пълен Достъп",
 "extension user" => "Потребител",
 /*Grouplist*/
+
+/*Menu*/
+"Tools" => "Tools",
+/*Menu*/
 );
 ?>

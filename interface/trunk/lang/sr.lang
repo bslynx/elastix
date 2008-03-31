@@ -748,5 +748,9 @@ configuration because some <br> processes could need them.",
 "total access" => "Total Access",
 "extension user" => "Extension User",
 /*Grouplist*/
+
+/*Menu*/
+"Tools" => "Tools",
+/*Menu*/
 );
 ?>

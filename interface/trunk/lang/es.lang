@@ -743,5 +743,9 @@ alrededor del mundo.",
 "total access" => "Acceso Total",
 "extension user" => "Usuario de Extensión",
 /*Grouplist*/
+
+/*Menu*/
+"Tools" => "Herramientas",
+/*Menu*/
 );
 ?>
