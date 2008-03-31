@@ -91,8 +91,8 @@ function _moduleContent(&$smarty, $module_name)
                                  );
 
     $oFilterForm = new paloForm($smarty, $arrFormElements);
-        // Por omision las fechas toman el sgte. valor (la fecha de hoy)
-    $date_start = date("Y-m-d") . " 00:00:00"; 
+    // Por omision las fechas toman el sgte. valor (la fecha de hoy)
+    $date_start = date("Y-m-d") . " 00:00:00";
     $date_end   = date("Y-m-d") . " 23:59:59";
 
     if(isset($_POST['filter'])) {
@@ -114,7 +114,6 @@ function _moduleContent(&$smarty, $module_name)
                 $smarty->assign("mb_message", $strErrorMsg);
             }
             $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl", "", $_POST);
-
     } else if (isset($_GET['date_start']) AND isset($_GET['date_end'])) {
         $date_start = translateDate($_GET['date_start']) . " 00:00:00";
         $date_end   = translateDate($_GET['date_end']) . " 23:59:59";
@@ -127,7 +126,7 @@ function _moduleContent(&$smarty, $module_name)
     }
 
     if(isset($_POST['submit_eliminar'])) {
-        borrarRecordings(); 
+        borrarRecordings();
         if($oFilterForm->validateForm($_POST)) {
                 // Exito, puedo procesar los datos ahora.
                 $date_start = translateDate($_POST['date_start']) . " 00:00:00"; 
@@ -138,9 +137,7 @@ function _moduleContent(&$smarty, $module_name)
         $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl", "", $_POST);
     }
 
-
     //si tiene extension consulto sino, muestro un mensaje de que no tiene asociada extension
-
     if (!is_null($extension) && $extension!=""){
         $path = "/var/spool/asterisk/monitor";
         $archivos = array();
@@ -150,8 +147,11 @@ function _moduleContent(&$smarty, $module_name)
                 $bExito=true;
                 while (false !== ($file = readdir($handle))) {
                 //no tomar en cuenta . y ..
-                    if ($file!="." && $file!=".." )
-                        $archivos[]=$file;
+                    if ($file!="." && $file!="..")
+                    {
+                        if(Files_Between_Dates($file, $extension, $date_start, $date_end))
+                            $archivos[]=$file;
+                    }
                 }
                 closedir($handle);
             }
@@ -160,10 +160,34 @@ function _moduleContent(&$smarty, $module_name)
         }
         rsort($archivos);
 
-        foreach($archivos as $archivo) {
+
+        //Paginacion
+        $limit  = 15;
+        $total  = count($archivos);
+
+        $oGrid  = new paloSantoGrid($smarty);
+        $offset = $oGrid->getOffSet($limit,$total,(isset($_GET['nav']))?$_GET['nav']:NULL,(isset($_GET['start']))?$_GET['start']:NULL);
+
+        $end    = ($offset+$limit)<=$total ? $offset+$limit : $total;
+
+        // Construyo el URL base
+        if(isset($arrFilterExtraVars) && is_array($arrFilterExtraVars) and count($arrFilterExtraVars)>0) {
+            $url = construirURL($arrFilterExtraVars, array("nav", "start"));
+        } else {
+            $url = construirURL(array(), array("nav", "start")); 
+        }
+        $smarty->assign("url", $url);
+        //Fin Paginacion
+
+        for($i=$offset; $i<$end; $i++)
+        {
+            $archivo = $archivos[$i];
             //tengo que obtener los archivos que pertenezcan a la extension
            //obtener los archivos con formato auto-timestamp-extension... grabacion ONDEMAND
             //"auto\-[[:digit:]]+\-$extension(.+)\.[wav|WAV]$"
+
+            $llamada_incoming=false;
+            $llamada_outgoing = false;
             if (ereg("auto\-([[:digit:]]+)\-$extension(.+)\.[wav|WAV|gsm]",$archivo,$regs)){
                  //ya tengo el archivo, busco el correspondiente en el registro de llamadas - con el timestamp y la extension
                  $llamada=obtenerCDROnDemand($pDBCDR,$extension,$regs[1]);
@@ -171,9 +195,8 @@ function _moduleContent(&$smarty, $module_name)
                  $llamada['type'] = "on demand";
                  $llamadas[strtotime($llamada['calldate'])]=$llamada;
              }
-            $llamada_incoming=false;
             //buscar llamadas incoming IN-extension-uniqueid
-            if (ereg("IN\-$extension\-([[:digit:]]+(\.[[:digit:]]+)*)\.[wav|WAV|gsm]",$archivo,$regs)){
+            else if (ereg("IN\-$extension\-([[:digit:]]+(\.[[:digit:]]+)*)\.[wav|WAV|gsm]",$archivo,$regs)){
                 $llamada_incoming = true;
                 $unique_id=$regs[1];
                 $llamada=obtenerCDR_with_uniqueid($pDBCDR,$unique_id);
@@ -182,7 +205,7 @@ function _moduleContent(&$smarty, $module_name)
                 $llamadas[strtotime($llamada['calldate'])]=$llamada;
             }
             //buscar llamadas incoming IN-extension-fecha-hora
-            if (!$llamada_incoming && ereg("IN\-$extension\-([[:digit:]]+)\-([[:digit:]]+)\.[wav|WAV|gsm]",$archivo,$regs)){
+            else if (!$llamada_incoming && ereg("IN\-$extension\-([[:digit:]]+)\-([[:digit:]]+)\.[wav|WAV|gsm]",$archivo,$regs)){
                  //formar la fecha y la hora
                  $fecha=substr($regs[1], 0, 4).'-'.substr($regs[1], 4, 2).'-'.substr($regs[1], 6, 2);
                  $hora=substr($regs[2], 0, 2).':'.substr($regs[2], 2, 2).':'.substr($regs[2], 4, 2);
@@ -194,8 +217,8 @@ function _moduleContent(&$smarty, $module_name)
                  $llamada['type'] = "auto - incoming";
                  $llamadas[strtotime($llamada['calldate'])]=$llamada;
              }
-//g121-20070828-162421-1188336241.1610.wav
-            if (!$llamada_incoming && ereg("g$extension\-([[:digit:]]+)\-([[:digit:]]+)(.+)\.[wav|WAV|gsm]",$archivo,$regs)){
+            //g121-20070828-162421-1188336241.1610.wav
+            else if (!$llamada_incoming && ereg("g$extension\-([[:digit:]]+)\-([[:digit:]]+)(.+)\.[wav|WAV|gsm]",$archivo,$regs)){
                  //formar la fecha y la hora
                  $fecha=substr($regs[1], 0, 4).'-'.substr($regs[1], 4, 2).'-'.substr($regs[1], 6, 2);
                  $hora=substr($regs[2], 0, 2).':'.substr($regs[2], 2, 2).':'.substr($regs[2], 4, 2);
@@ -208,10 +231,8 @@ function _moduleContent(&$smarty, $module_name)
                  $llamadas[strtotime($llamada['calldate'])]=$llamada;
              }
              //buscar llamadas OUTGOING
-
              //OUT-ext-uniqueid.wav
-            $llamada_outgoing = false;
-            if (ereg("OUT\-$extension\-([[:digit:]]+(\.[[:digit:]]+)*)\.[wav|WAV|gsm]",$archivo,$regs)){
+            else if (ereg("OUT\-$extension\-([[:digit:]]+(\.[[:digit:]]+)*)\.[wav|WAV|gsm]",$archivo,$regs)){
                 $llamada_outgoing = true;
                 $unique_id=$regs[1];
                 $llamada=obtenerCDR_with_uniqueid($pDBCDR,$unique_id);
@@ -220,8 +241,7 @@ function _moduleContent(&$smarty, $module_name)
                 $llamadas[strtotime($llamada['calldate'])]=$llamada;
             }
             //OUT404--20070426-090918.wav
-
-            if (!$llamada_outgoing && ereg("OUT$extension\-([[:digit:]]+)\-([[:digit:]]+)(.+)\.[wav|WAV|gsm]",$archivo,$regs)){
+            else if (!$llamada_outgoing && ereg("OUT$extension\-([[:digit:]]+)\-([[:digit:]]+)(.+)\.[wav|WAV|gsm]",$archivo,$regs)){
                  //formar la fecha y la hora
                  $fecha=substr($regs[1], 0, 4).'-'.substr($regs[1], 4, 2).'-'.substr($regs[1], 6, 2);
                  $hora=substr($regs[2], 0, 2).':'.substr($regs[2], 2, 2).':'.substr($regs[2], 4, 2);
@@ -233,7 +253,7 @@ function _moduleContent(&$smarty, $module_name)
                  $llamada['type'] = "auto - outgoing";
                  $llamadas[strtotime($llamada['calldate'])]=$llamada;
              }
-            if (!$llamada_outgoing && ereg("OUT$extension\-[(.+)|\-]*([[:digit:]]+)\-([[:digit:]]+)\.[wav|WAV|gsm]",$archivo,$regs)){
+            else if (!$llamada_outgoing && ereg("OUT$extension\-[(.+)|\-]*([[:digit:]]+)\-([[:digit:]]+)\.[wav|WAV|gsm]",$archivo,$regs)){
                  //formar la fecha y la hora
                  $fecha=substr($regs[1], 0, 4).'-'.substr($regs[1], 4, 2).'-'.substr($regs[1], 6, 2);
                  $hora=substr($regs[2], 0, 2).':'.substr($regs[2], 2, 2).':'.substr($regs[2], 4, 2);
@@ -246,7 +266,7 @@ function _moduleContent(&$smarty, $module_name)
                  $llamadas[strtotime($llamada['calldate'])]=$llamada;
             }
              // El caso para cuando a la extension se le configuró sus records incoming or outgoing a always 
-            if (ereg("[[:digit:]]+\-[[:digit:]]+\-([[:digit:]]+.[[:digit:]]+).[wav|WAV|gsm]",$archivo,$regs)){
+            else if (ereg("[[:digit:]]+\-[[:digit:]]+\-([[:digit:]]+.[[:digit:]]+).[wav|WAV|gsm]",$archivo,$regs)){
                 $unique_id=$regs[1];
                 $llamada=obtenerCDR_with_uniqueid($pDBCDR,$unique_id);
                 $llamada['archivo'] = $archivo;
@@ -258,66 +278,24 @@ function _moduleContent(&$smarty, $module_name)
 
         if($tmpExtension=="" || is_null($tmpExtension))//validacion solo para usuarios del grupo administrator
             $smarty->assign("mb_message", "<b>".$arrLang["You don't have extension number associated with user"]."</b>");
-        rsort($llamadas);
+        //rsort($llamadas);
         foreach ($llamadas as $llamada){ 
             $fecha = date("Y-m-d",strtotime($llamada['calldate']));
             $hora = date("H:i:s",strtotime($llamada['calldate']));
 
-            if (strtotime("$fecha $hora")<=strtotime($date_end) && strtotime("$fecha $hora")>=strtotime($date_start)){
-                $pathRecordFile="$path/".$llamada['archivo'];
-                $arrTmp[0] = "<input type='checkbox' name='".utf8_encode("rcd-".$llamada['archivo'])."' />";
-                $arrTmp[1] = $fecha;
-                $arrTmp[2] = $hora;
-                $arrTmp[3] = empty($llamada['src'])?'-':$llamada['src'];
-                $arrTmp[4] = $llamada['dst'];
-                $arrTmp[5] = $llamada['duration'].' sec.';
-                $arrTmp[6] = $llamada['type'];                
-                $recordingLink = "<a href='#' onClick=\"javascript:popUp('includes/popup.php?action=display_record&record_file=" . base64_encode($pathRecordFile) ."',350,100); return false;\">{$arrLang['Listen']}</a>&nbsp;";
-                $recordingLink .= "<a href='includes/audio.php?recording=".base64_encode($pathRecordFile)."'>{$arrLang['Download']}</a>";
-                $arrTmp[7] = $recordingLink;
-                $arrData[] = $arrTmp;
-            }
+            $pathRecordFile="$path/".$llamada['archivo'];
+            $arrTmp[0] = "<input type='checkbox' name='".utf8_encode("rcd-".$llamada['archivo'])."' />";
+            $arrTmp[1] = $fecha;
+            $arrTmp[2] = $hora;
+            $arrTmp[3] = empty($llamada['src'])?'-':$llamada['src'];
+            $arrTmp[4] = $llamada['dst'];
+            $arrTmp[5] = $llamada['duration'].' sec.';
+            $arrTmp[6] = $llamada['type'];
+            $recordingLink = "<a href='#' onClick=\"javascript:popUp('includes/popup.php?action=display_record&record_file=" . base64_encode($pathRecordFile) ."',350,100); return false;\">{$arrLang['Listen']}</a>&nbsp;";
+            $recordingLink .= "<a href='includes/audio.php?recording=".base64_encode($pathRecordFile)."'>{$arrLang['Download']}</a>";
+            $arrTmp[7] = $recordingLink;
+            $arrData[] = $arrTmp;
         }
-
-        $total=count($arrData);
-        // LISTADO
-        $limit = 15;
-        $offset = 0;
-
-        // Si se quiere avanzar a la sgte. pagina
-        if(isset($_GET['nav']) && $_GET['nav']=="end") {
-
-            // Mejorar el sgte. bloque.
-            if(($total%$limit)==0) {
-                $offset = $total - $limit;
-            } else {
-                $offset = $total - $total%$limit;
-            }
-        }
-
-        // Si se quiere avanzar a la sgte. pagina
-        if(isset($_GET['nav']) && $_GET['nav']=="next") {
-            $offset = $_GET['start'] + $limit - 1;
-        }
-
-        // Si se quiere retroceder
-        if(isset($_GET['nav']) && $_GET['nav']=="previous") {
-            $offset = $_GET['start'] - $limit - 1;
-        }
-
-        // Construyo el URL base
-        if(isset($arrFilterExtraVars) && is_array($arrFilterExtraVars) and count($arrFilterExtraVars)>0) {
-            $url = construirURL($arrFilterExtraVars, array("nav", "start")); 
-        } else {
-            $url = construirURL(array(), array("nav", "start")); 
-        }
-        $smarty->assign("url", $url);
-
-        $inicio = ($total==0) ? 0 : $offset + 1;
-        $fin = ($offset+$limit)<=$total ? $offset+$limit : $total;
-        $leng=$fin-$inicio;
-        //muestro los registros correspondientes al offset
-        $arrVoiceData=array_slice($arrData,$inicio-1,$leng+1);
     } //fin if (!is_null(extension))
     else {
         $smarty->assign("mb_message", "<b>".$arrLang["You don't have extension number associated with user"]."</b>");
@@ -325,8 +303,8 @@ function _moduleContent(&$smarty, $module_name)
     $arrGrid = array("title"    => $arrLang["Monitorig List"],
                      "icon"     => "images/record.png",
                      "width"    => "99%",
-                     "start"    => $inicio,
-                     "end"      => $fin,
+                     "start"    => ($total==0) ? 0 : $offset + 1,
+                     "end"      => $end,
                      "total"    => $total,
                      "columns"  => array(0 => array("name"      => "<input type='submit' onClick=\"return confirmSubmit('{$arrLang["Are you sure you wish to delete recordings?"]}');\" name='submit_eliminar' value='{$arrLang["Delete"]}' class='button' />",
                                                     "property1" => ""),
@@ -351,9 +329,42 @@ function _moduleContent(&$smarty, $module_name)
     $contenidoModulo  = "<form style='margin-bottom:0;' method='POST' action='?menu=$module_name'>";
     $oGrid = new paloSantoGrid($smarty);
     $oGrid->showFilter($htmlFilter);
-    $contenidoModulo  .= $oGrid->fetchGrid($arrGrid, $arrVoiceData,$arrLang);
+    $contenidoModulo  .= $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
     $contenidoModulo .= "</form>";
     return $contenidoModulo;
+}
+
+function Files_Between_Dates($file, $extension, $date_start, $date_end)
+{
+    $fecha = 0;
+    if (ereg("auto\-([[:digit:]]+)\-$extension(.+)\.[wav|WAV|gsm]",$file,$regs))
+        $fecha = strtotime($regs[1]);
+    //buscar llamadas incoming IN-extension-uniqueid
+    //if (ereg("IN\-$extension\-([[:digit:]]+(\.[[:digit:]]+)*)\.[wav|WAV|gsm]",$file,$regs))
+        //$fecha = strtotime($regs[1]);
+    //buscar llamadas incoming IN-extension-fecha-hora
+    if (ereg("IN\-$extension\-([[:digit:]]+)\-([[:digit:]]+)\.[wav|WAV|gsm]",$file,$regs))
+        $fecha = strtotime($regs[1]);
+    //g121-20070828-162421-1188336241.1610.wav
+    if (ereg("g$extension\-([[:digit:]]+)\-([[:digit:]]+)(.+)\.[wav|WAV|gsm]",$file,$regs))
+        $fecha = strtotime($regs[1]);
+    //buscar llamadas OUTGOING
+    //OUT-ext-uniqueid.wav
+    //if (ereg("OUT\-$extension\-([[:digit:]]+(\.[[:digit:]]+)*)\.[wav|WAV|gsm]",$file,$regs))
+        //$fecha = strtotime($regs[1]);
+    //OUT404--20070426-090918.wav
+    if (ereg("OUT$extension\-([[:digit:]]+)\-([[:digit:]]+)(.+)\.[wav|WAV|gsm]",$file,$regs))
+        $fecha = strtotime($regs[1]);
+    if (ereg("OUT$extension\-[(.+)|\-]*([[:digit:]]+)\-([[:digit:]]+)\.[wav|WAV|gsm]",$file,$regs))
+        $fecha = strtotime($regs[1]);
+    // El caso para cuando a la extension se le configuró sus records incoming or outgoing a always
+    if (ereg("([[:digit:]]*)\-[[:digit:]]+\-[[:digit:]]+.[[:digit:]]+.[wav|WAV|gsm]",$file,$regs))
+        $fecha = strtotime($regs[1]);
+    //COMPARAR LAS FECHAS
+    if ($fecha<=strtotime($date_end) && $fecha>=strtotime($date_start))
+        return true;
+
+    return false;
 }
 
 function obtenerCDROnDemand($db,$extension, $start_time)
@@ -362,7 +373,7 @@ function obtenerCDROnDemand($db,$extension, $start_time)
     $query   = "SELECT calldate, src, dst, channel, dstchannel, disposition, uniqueid, duration, billsec, accountcode FROM cdr ";
     $query .= "WHERE (src='$extension' OR dst='$extension') AND $start_time BETWEEN UNIX_TIMESTAMP(calldate) AND (UNIX_TIMESTAMP(calldate)+duration)";
 
-    $arr_result=$db->getFirstRowQuery($query,TRUE);          
+    $arr_result=$db->getFirstRowQuery($query,TRUE);
     if (is_array($arr_result) && count($arr_result)>0) {
     }
     return $arr_result;
@@ -375,7 +386,7 @@ function obtenerCDRIncoming($db,$extension, $calldate)
     $query .= "WHERE dst='$extension' AND calldate='$calldate'";
 
 
-    $arr_result=$db->getFirstRowQuery($query,TRUE);          
+    $arr_result=$db->getFirstRowQuery($query,TRUE);
     if (is_array($arr_result) && count($arr_result)>0) {
     }
     return $arr_result;
@@ -388,7 +399,7 @@ function obtenerCDROutgoing($db,$extension, $calldate)
     $query .= "WHERE src='$extension' AND calldate='$calldate'";
 
 
-    $arr_result=$db->getFirstRowQuery($query,TRUE);          
+    $arr_result=$db->getFirstRowQuery($query,TRUE);
     if (is_array($arr_result) && count($arr_result)>0) {
     }
     return $arr_result;
@@ -401,7 +412,7 @@ function obtenerCDR_with_uniqueid($db,$uniqueid)
     $query .= "WHERE uniqueid='$uniqueid'";
 
 
-    $arr_result=$db->getFirstRowQuery($query,TRUE);          
+    $arr_result=$db->getFirstRowQuery($query,TRUE);
     if (is_array($arr_result) && count($arr_result)>0) {
     }
     return $arr_result;
@@ -410,7 +421,7 @@ function obtenerCDR_with_uniqueid($db,$uniqueid)
 function borrarRecordings()
 {
     $path = "/var/spool/asterisk/monitor";
-    
+
     if(is_array($_POST) && count($_POST) > 0){
         foreach($_POST as $name => $on){
             if(substr($name,0,4)=='rcd-'){
