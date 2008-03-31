@@ -252,7 +252,7 @@ function new_conference($smarty, $module_name, $local_templates_dir, $pDB, $arrL
     $oForm = new paloForm($smarty,$arrFormConference);
 
     $smarty->assign("Show", 1);
-    $smarty->assign("REQUIRED_FIELD", "Required field");
+    $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
     $smarty->assign("SAVE", $arrLang["Save"]);
     $smarty->assign("CANCEL", $arrLang["Cancel"]);
     $smarty->assign("TITLE", $arrLang["Conference"]);
@@ -431,7 +431,7 @@ function add_conference($smarty, $module_name, $local_templates_dir, $pDB, $arrL
         $smarty->assign("mb_message", $strErrorMsg);
 
         $smarty->assign("Show", 1);
-        $smarty->assign("REQUIRED_FIELD", "Required field");
+        $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
         $smarty->assign("SAVE", $arrLang["Save"]);
         $smarty->assign("CANCEL", $arrLang["Cancel"]);
         $smarty->assign("TITLE", $arrLang["Conference"]);
@@ -670,7 +670,7 @@ function view_conference($smarty, $module_name, $local_templates_dir, $pDB, $arr
     $oForm = new paloForm($smarty,$arrFormConference);
 
     $smarty->assign("Show", 0);
-    $smarty->assign("REQUIRED_FIELD", "Required field");
+    $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
     $smarty->assign("CANCEL", $arrLang["Cancel"]);
     $smarty->assign("TITLE", $arrLang["Conference"]);
     $smarty->assign("announce", $arrLang["Announce"]);
