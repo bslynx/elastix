@@ -127,7 +127,7 @@ $arrLang=array(
 "Start Date"=>"Начална Дата",
 "End Date"=>"Крайна Дата",
 "Field Name"=>"Име на Полето",
-"Field"=>"По",
+"Field"=>"Поле",
 "CDR Report List"=>"CDR Отчет",
 "Account Code" => "Акаунт Код",
 "Date"=>"Дата",
@@ -166,9 +166,9 @@ $arrLang=array(
 "Cost"=>"Стойност",
 "Rate Applied"=>"Приложена Тарифа",
 "Criteria"=>"Критерий",
-"Distribution by Time"=>"Подреди по Време",
-"Distribution by Number of Calls"=>"Подреди по Брой на Разговорите",
-"Distribution by Cost"=>"Подреди по Стойност",
+"Distribution by Time"=>"Distribution by Time",
+"Distribution by Number of Calls"=>"Distribution by Number of Calls",
+"Distribution by Cost"=>"Distribution by Cost",
 "Minutes"=>"Минути",
 "Number of Calls"=>"Брой Разговори",
 "others"=>"други",
@@ -377,7 +377,7 @@ configuration because some processes need it."=>"Въведените мрежи
 "Fax Visor" => "Получени Факсове",      /*Bruno agrego modulo*/
 "Search"    => "Търси",            /*Bruno agrego modulo*/
 "Company Name"    => "Име на Фирма",            /*Bruno agrego modulo*/
-"Company Fax"     => "Номер на Фирма",            /*Bruno agrego modulo*/
+"Company Fax"     => "Факс Номер на Фирма",            /*Bruno agrego modulo*/
 "Fax Date"        => "Факс Дата",        /*Bruno agrego modulo*/
 "File"            => "Файл",        /*Bruno agrego modulo*/
 "Fax Destiny"     => "Факс Получател", /*Bruno agrego modulo*/
@@ -415,7 +415,7 @@ configuration because some processes need it."=>"Въведените мрежи
 "This file doesn't have permisses to read"=>"Този файл не е позволен за четене",
 "This file doesn't have permisses to write"=>"Този файл не е позволен за запис",
 "The changes was saved in the file" => "Промените са записани във Файла",
-"Doesn't have permisses to read"=>"не е позволен за четене",
+"Doesn't have permisses to read"=>"Нямате права за четене",
 "This is not a valid directory"=>"Неправилна директория",
 "Please write the file name" => "Моля въведете име на файла",
 "New File" => "Нов Файл",
@@ -593,7 +593,7 @@ configuration because some processes need it."=>"Въведените мрежи
 /*End module DHCP Server */
 
 /*Start module Endpoint Configuration*/
-"Endpoint Configuration" => "Конфигурация Телефонни Апарати",
+"Endpoint Configuration" => "Конфигуриране Телефонни Апарати",
 "Endpoint Scan" => "Откриване Телефонни Апарати",
 "Display Name" => "Дисплей Име",
 "MAC Adress" => "MAC Адрес",
@@ -605,7 +605,7 @@ configuration because some processes need it."=>"Въведените мрежи
 "Unset" => "Демонтирай",
 "Are you sure you wish to unset endpoint(s)?" => "Сигурни ли сте че искате да демонтирате телефоните?",
 "Are you sure you wish to set endpoint(s)?" => "Сигурни ли сте че искате да монтирате телефоните?",
-"Configured without incident." => "Конфигуриран без проблеми.",
+"Configured without incident." => "Конфигуриран",
 "Not Set" => "Не е монтиран",
 "Unable write the file" => "Не може да се запише файла",
 "Users" => "Потребители",
@@ -618,7 +618,7 @@ configuration because some processes need it."=>"Въведените мрежи
 "Unselected" => "Немаркиран",
 "No Models" => "Няма Модели",
 "No Extensions" => "Няма Вътрешни Номера",
-"Invalid Format in Parameter" => "Invalid Format in Parameter",
+"Invalid Format in Parameter" => "Грешен Формат в Параметър",
 /*End module Endpoint Configuration*/
 
 /*Start module Call Center*/
@@ -687,59 +687,59 @@ configuration because some processes need it."=>"Въведените мрежи
 "UnMuted" => "Незаглушен",
 "Error when connecting to Asterisk Manager" => "Грешка при свързване с Asterisk Manager",
 "The conference installation is almost done. To complete it please" => "Инсталацията на Конференции е почти приключена. За да я завършите моля",
-"Kick All" => "Kick All",
-"Invite Caller" => "Invite Caller",
-"The device wasn't write" => "The device wasn't write",
-"The device must be numeric" => "The device must be numeric",
-"The device couldn't be added to the conference" => "The device couldn't be added to the conference",
+"Kick All" => "Отсрани Всички",
+"Invite Caller" => "Покани",
+"The device wasn't write" => "Телефонът не е записан",
+"The device must be numeric" => "Телефонът трябва да съдържа само цифри",
+"The device couldn't be added to the conference" => "Телефонът не може да бъде добавен към конференцията",
 /*End module conference*/
 
 /*Extensions Batch*/
-"Extensions Batch" => "Extensions Batch",
-"Invalid file extension.- It must be csv" => "Invalid file extension.- It must be csv",
-"Possible file upload attack. Filename" => "Possible file upload attack. Filename",
-"Error" => "Error",
-"Error updating Sip" => "Error updating Sip",
-"Error updating Users" => "Error updating Users",
-"Error updating Devices" => "Error updating Devices",
-"Error updating Voicemail" => "Error updating Voicemail",
-"Error processing CallWaiting" => "Error processing CallWaiting",
-"Total extension updated" => "Total extension updated",
-"Error, extension" => "Error, extension",
-"repeat in lines" => "repeat in lines",
-"with" => "with",
-"The file is incorrect or empty" => "The file is incorrect or empty",
-"Incomplete Columns" => "Incomplete Columns",
-"Verify the header" => "Verify the header",
-"At minimum there must be the columns" => "At minimum there must be the columns",
-"Can't exist a extension empty. Line" => "Can't exist a extension empty. Line",
-"Can't exist a secret empty. Line" => "Can't exist a secret empty. Line",
-"Can't exist a display name empty. Line" => "Can't exist a display name empty. Line",
-"Please read the lines in the footer"=>"Please read the lines in the footer",
-"Header File Extensions Batch" => "The header of the file must be in the first line and it must have at minimum three columns: Display Name, User Extension, Secret",
-"About Update Extensions Batch" => "If you load a file with extensions already created, these extensions will be updated",
-"There aren't extensions" => "There aren't extensions",
-"Download Extensions" => "Download Extensions",
+"Extensions Batch" => "Групиране Вътрешни",
+"Invalid file extension.- It must be csv" => "Грешно файлово разширение, трябва да бъде (.csv)",
+"Possible file upload attack. Filename" => "Възможна атака с качване на файлове. Файл с име",
+"Error" => "Грешка",
+"Error updating Sip" => "Грешка при обновяване на Sip",
+"Error updating Users" => "Грешка при обновяване на Users",
+"Error updating Devices" => "Грешка при обновяване на Devices",
+"Error updating Voicemail" => "Грешка при обновяване на Voicemail",
+"Error processing CallWaiting" => "Грешка при обновяване на CallWaiting",
+"Total extension updated" => "Общо обновени вътрешни номера",
+"Error, extension" => "Грешка, вътрешен номер",
+"repeat in lines" => "се повтаря в редове",
+"with" => "с",
+"The file is incorrect or empty" => "Файлът е грешен или празен",
+"Incomplete Columns" => "Непълни Колони",
+"Verify the header" => "Проверка на заглавна част",
+"At minimum there must be the columns" => "Поне трябва да има колони",
+"Can't exist a extension empty. Line" => "Не е въведен вътрешен номер. Ред",
+"Can't exist a secret empty. Line" => "Не е въведена парола. Ред",
+"Can't exist a display name empty. Line" => "Не е въведено име на вътрешен номер. Ред",
+"Please read the lines in the footer"=>"Моля прочетете текста в долната част на страницата",
+"Header File Extensions Batch" => "Заглавната част на файла трябва да бъде на първи ред и да съдържа минимум три колони: Display Name, User Extension, Secret",
+"About Update Extensions Batch" => "Ако заредите файл със съществуващи вътрешни номера, те ще бъдат обновени.",
+"There aren't extensions" => "Тук няма вътрешни номера",
+"Download Extensions" => "Изтегли Вътрешни",
 /*Extensions Batch*/
 
 /*File Editor*/
-"Permission denied" => "Permission denied",
+"Permission denied" => "Достъпът е забранен",
 /*File Editor*/
 
 /*Sugarcrm*/
-"The SugarCRM installation is almost done. To complete it please" => "The SugarCRM installation is almost done. To complete it please",
+"The SugarCRM installation is almost done. To complete it please" => "Инсталацията на SugarCRM е почти приключена. За да я завършите моля ",
 /*Sugarcrm*/
 
 /*CDR Report*/
-"Are you sure you wish to delete CDR(s) Report(s)?" => "Are you sure you wish to delete CDR(s) Report(s)?",
+"Are you sure you wish to delete CDR(s) Report(s)?" => "Сигурни ли сте че искате да изтриете CDR отчетите?",
 /*CDR Report*/
 
 /*Grouplist*/
-"administrator" => "Administrator",
-"operator" => "Operator",
-"extension" => "Extension",
-"total access" => "Total Access",
-"extension user" => "Extension User",
+"administrator" => "Администратор",
+"operator" => "Оператор",
+"extension" => "Потребител",
+"total access" => "Пълен Достъп",
+"extension user" => "Потребител",
 /*Grouplist*/
 );
 ?>
