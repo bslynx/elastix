@@ -12,3 +12,9 @@ gpgcheck=0
 enabled=0
 exclude=elastix-mysqldbdata
 
+[elastix-extras]
+name=Elastix-Extras RPM Repository for CentOS
+baseurl=http://repo.elastix.org/centos/$releasever/updates/extras/RPMS/
+gpgcheck=0
+enabled=0
+exclude=elastix-mysqldbdata
