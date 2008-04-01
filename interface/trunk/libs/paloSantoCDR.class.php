@@ -48,7 +48,7 @@ class paloSantoCDR {
         }
     }
 
-    function obtenerCDRs($limit, $offset, $date_start="", $date_end="", $field_name="", $field_pattern="",$status="ALL",$calltype="",$troncales=NULL)
+    function obtenerCDRs($limit, $offset, $date_start="", $date_end="", $field_name="", $field_pattern="",$status="ALL",$calltype="",$troncales=NULL, $extension="")
     {
         $strWhere = "";
         if(!empty($date_start)) $strWhere .= "calldate>='$date_start' ";
@@ -69,6 +69,7 @@ class paloSantoCDR {
             }
         }
         if(!empty($calltype) && $calltype=="incoming") $strWhere .= " AND channel like '%zap%' ";
+        if(!empty($extension)) $strWhere .= " AND (src='$extension' OR dst='$extension') ";
 
         $query   = "SELECT calldate, src, dst, channel, dstchannel, disposition, uniqueid, duration, billsec, accountcode FROM cdr ";
         // Clausula WHERE aqui

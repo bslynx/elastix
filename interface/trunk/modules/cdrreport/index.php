@@ -55,6 +55,20 @@ function _moduleContent(&$smarty, $module_name)
     $arrData = array();
     $oCDR    = new paloSantoCDR($pDB);
 
+
+    $pDBACL = new paloDB("sqlite3:////var/www/db/acl.db");
+    if (!empty($pDBACL->errMsg)) {
+        echo "ERROR DE DB: $pDBACL->errMsg <br>";
+    }
+    $pACL = new paloACL($pDBACL);
+    if (!empty($pACL->errMsg)) {
+        echo "ERROR DE ACL: $pACL->errMsg <br>";
+    }
+    $extension = $pACL->getUserExtension($_SESSION['elastix_user']);
+    $esAdministrador = $pACL->isUserAdministratorGroup($_SESSION['elastix_user']);
+    if($esAdministrador)
+        $extension = "";
+
     $smarty->assign("menu","cdrreport");
     $smarty->assign("Filter",$arrLang['Filter']);
     $smarty->assign("Delete",$arrLang['Delete']);
@@ -180,7 +194,7 @@ function _moduleContent(&$smarty, $module_name)
 
         // Si se quiere avanzar a la sgte. pagina
         if(isset($_GET['nav']) && $_GET['nav']=="end") {
-            $arrCDRTmp  = $oCDR->obtenerCDRs($limit, $offset, $date_start, $date_end, $field_name, $field_pattern,$status);
+            $arrCDRTmp  = $oCDR->obtenerCDRs($limit, $offset, $date_start, $date_end, $field_name, $field_pattern,$status, "", NULL, $extension);
             $totalCDRs  = $arrCDRTmp['NumRecords'][0];
             // Mejorar el sgte. bloque.
             if(($totalCDRs%$limit)==0) {
@@ -210,23 +224,27 @@ function _moduleContent(&$smarty, $module_name)
     }
 
     // Bloque comun
-    $arrCDR  = $oCDR->obtenerCDRs($limit, $offset, $date_start, $date_end, $field_name, $field_pattern,$status);
+    $arrCDR  = $oCDR->obtenerCDRs($limit, $offset, $date_start, $date_end, $field_name, $field_pattern,$status, "", NULL, $extension);
 
-    $total =$arrCDR['NumRecords'][0];
+    $total   = $arrCDR['NumRecords'][0];
 
-    foreach($arrCDR['Data'] as $cdr) {
-        $arrTmp    = array();
-        $arrTmp[0] = $cdr[0];
-        $arrTmp[1] = $cdr[1];
-        $arrTmp[2] = $cdr[2];
-        $arrTmp[3] = $cdr[3];
-        $arrTmp[4] = $cdr[9];
-        $arrTmp[5] = $cdr[4];
-        $arrTmp[6] = $cdr[5];
-//        $arrTmp[6] = $cdr[7];
-        $arrTmp[7] = $cdr[8];
+    $arrData = array();
+    if(isset($arrCDR['Data']) && is_array($arrCDR['Data']))
+    {
+        foreach($arrCDR['Data'] as $cdr) {
+            $arrTmp    = array();
+            $arrTmp[0] = $cdr[0];
+            $arrTmp[1] = $cdr[1];
+            $arrTmp[2] = $cdr[2];
+            $arrTmp[3] = $cdr[3];
+            $arrTmp[4] = $cdr[9];
+            $arrTmp[5] = $cdr[4];
+            $arrTmp[6] = $cdr[5];
+    //        $arrTmp[6] = $cdr[7];
+            $arrTmp[7] = $cdr[8];
 
-        $arrData[] = $arrTmp;
+            $arrData[] = $arrTmp;
+        }
     }
 
     $arrGrid = array("title"    => $arrLang["CDR Report List"],
