@@ -65,7 +65,7 @@ foreach($arrSalida as $linea) { //obtengo el estado de openfire
 }
 
 //PASO 2
-if($statusOpenfire == 'off' && $_GET['accion']=='activar') { //no activo openfire y decide activarlo
+if($statusOpenfire == 'off' && isset($_GET['accion']) && $_GET['accion']=='activar') { //no activo openfire y decide activarlo
     exec("sudo /sbin/chkconfig --level 2345 openfire on",$arrSalida, $var);
     if($var==0){
         exec("sudo /sbin/service openfire start",$arrSalida,$var);
