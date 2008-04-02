@@ -197,9 +197,11 @@ function _moduleContent(&$smarty, $module_name)
         usort($arrData, 'sort_voicemails_hora_desc');
         usort($arrData, 'sort_voicemails_fecha_desc');
         */
+        $fechas = array();
+        $horas  = array();
         foreach ($arrData as $llave => $fila) {
             $fechas[$llave]  = $fila[1];
-            $horas[$llave] = $fila[2];
+            $horas[$llave]   = $fila[2];
         }
         array_multisort($fechas,SORT_DESC,$horas,SORT_DESC,$arrData);
 
