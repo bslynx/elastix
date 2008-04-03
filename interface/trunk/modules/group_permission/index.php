@@ -128,9 +128,14 @@ function _moduleContent(&$smarty, $module_name)
 
         $end = count($arrResources);
         $arrPermisos=$pACL->getGroupPermissions($idGroup);
+
+        $disabled = "";
+        if($_POST['group']==1)
+            $disabled = "disabled='disabled'";
+
         foreach($arrResources as $resource) {
             $checked=array_key_exists($resource[1],$arrPermisos)?"checked":'';
-            $arrTmp[0] = "<input type='checkbox' name='groupPermission[".$resource[1]."][".$resource[0]."]' $checked>";
+            $arrTmp[0] = "<input type='checkbox' $disabled name='groupPermission[".$resource[1]."][".$resource[0]."]' $checked>";
 
             $arrTmp[1] = isset($arrLang[$resource[2]])?$arrLang[$resource[2]]:'';
 
