@@ -149,14 +149,20 @@ function load_extension_from_csv($smarty, $arrLang, $ruta_archivo, $base_dir, $p
         while ($tupla = fgetcsv($hArchivo, 4096, ",")) {
             if(is_array($tupla) && count($tupla)>=3)
             {
-                $Name           = $tupla[$arrayColumnas[0]];
-                $Ext            = $tupla[$arrayColumnas[1]];
-                $Direct_DID     = isset($arrayColumnas[2])?$tupla[$arrayColumnas[2]]:'NULL';
-                $Call_Waiting   = isset($arrayColumnas[3])?$tupla[$arrayColumnas[3]]:"";
-                $Secret         = $tupla[$arrayColumnas[4]];
-                $VoiceMail      = isset($arrayColumnas[5])?$tupla[$arrayColumnas[5]]:"";
-                $VoiceMail_PW   = isset($arrayColumnas[6])?$tupla[$arrayColumnas[6]]:"";
-                $VM_Options     = isset($arrayColumnas[7])?$tupla[$arrayColumnas[7]]:"";
+                $Name               = $tupla[$arrayColumnas[0]];
+                $Ext                = $tupla[$arrayColumnas[1]];
+                $Direct_DID         = isset($arrayColumnas[2]) ?$tupla[$arrayColumnas[2]]:'NULL';
+                $Call_Waiting       = isset($arrayColumnas[3]) ?$tupla[$arrayColumnas[3]]:"";
+                $Secret             = $tupla[$arrayColumnas[4]];
+                $VoiceMail          = isset($arrayColumnas[5]) ?$tupla[$arrayColumnas[5]]:"";
+                $VoiceMail_PW       = isset($arrayColumnas[6]) ?$tupla[$arrayColumnas[6]]:"";
+                $VM_Email_Address   = isset($arrayColumnas[7]) ?$tupla[$arrayColumnas[7]]:"";
+                $VM_Pager_Email_Addr= isset($arrayColumnas[8]) ?$tupla[$arrayColumnas[8]]:"";
+                $VM_Options         = isset($arrayColumnas[9]) ?$tupla[$arrayColumnas[9]]:"";
+                $VM_EmailAttachment = isset($arrayColumnas[10])?$tupla[$arrayColumnas[10]]:"";
+                $VM_Play_CID        = isset($arrayColumnas[11])?$tupla[$arrayColumnas[11]]:"";
+                $VM_Play_Envelope   = isset($arrayColumnas[12])?$tupla[$arrayColumnas[12]]:"";
+                $VM_Delete_Vmail    = isset($arrayColumnas[13])?$tupla[$arrayColumnas[13]]:"";
 
                 //Paso 1: creando en la tabla sip
                 if(!$pLoadExtension->createSipDevices($Ext,$Secret,$VoiceMail))
@@ -172,7 +178,11 @@ function load_extension_from_csv($smarty, $arrLang, $ruta_archivo, $base_dir, $p
                         $Messages .= "Ext: $Ext - ". $arrLang["Error updating Devices"].": ".$pLoadExtension->errMsg."<br />";
 
                     //Paso 4: creando en el archivo /etc/asterisk/voicemail.conf los voicemails
-                    if(!$pLoadExtension->writeFileVoiceMail($Ext,$Name,$VoiceMail,$VoiceMail_PW,$VM_Options))
+                    if(!$pLoadExtension->writeFileVoiceMail(
+                        $Ext,$Name,$VoiceMail,$VoiceMail_PW,$VM_Email_Address,
+                        $VM_Pager_Email_Addr,$VM_Options,$VM_EmailAttachment,$VM_Play_CID,
+                        $VM_Play_Envelope, $VM_Delete_Vmail)
+                      )
                         $Messages .= "Ext: $Ext - ". $arrLang["Error updating Voicemail"]."<br />";
 
                     //Paso 5: Configurando el call waiting
@@ -222,8 +232,20 @@ function isValidCSV($arrLang, $sFilePath, &$arrayColumnas){
                     $arrayColumnas[5] = $i;
                 else if($tupla[$i] == 'Voicemail Password')
                     $arrayColumnas[6] = $i;
-                else if($tupla[$i] == 'VM Options')
+                else if($tupla[$i] == 'VM Email Address')
                     $arrayColumnas[7] = $i;
+                else if($tupla[$i] == 'VM Pager Email Address')
+                    $arrayColumnas[8] = $i;
+                else if($tupla[$i] == 'VM Options')
+                    $arrayColumnas[9] = $i;
+                else if($tupla[$i] == 'VM Email Attachment')
+                    $arrayColumnas[10] = $i;
+                else if($tupla[$i] == 'VM Play CID')
+                    $arrayColumnas[11] = $i;
+                else if($tupla[$i] == 'VM Play Envelope')
+                    $arrayColumnas[12] = $i;
+                else if($tupla[$i] == 'VM Delete Vmail')
+                    $arrayColumnas[13] = $i;
             }
             if(isset($arrayColumnas[0]) && isset($arrayColumnas[1]) && isset($arrayColumnas[4]))
             {

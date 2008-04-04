@@ -215,20 +215,31 @@ class paloSantoLoadExtension {
             foreach($result as $key => $extension){
                 $extension['callwaiting']=isset($arrCW[$extension['extension']]) ? $arrCW[$extension['extension']] : 'DISABLED';
 
+                $extension['voicemail'] = 'disable';
+                $extension['vm_secret'] = '';
+                $extension['email_address'] = '';
+                $extension['pager_email_address'] = '';
+                $extension['vm_options'] = '';
+                $extension['email_attachment'] = 'no';
+                $extension['play_cid'] = 'no';
+                $extension['play_envelope'] = 'no';
+                $extension['delete_vmail'] = 'no';
+
                 $grep = exec("grep '^{$extension['extension']}' $path");
                 if($grep != '' && $grep!=null)
                 {
                     $extension['voicemail'] = 'enabled';
-                    if(eregi("^{$extension['extension']} => ([[:alnum:]]*),[[:alnum:]| ]*,[[:alnum:]| |@|\.]*,[[:alnum:]| |@|\.]*,([[:alnum:]| |=]*)\|attach",$grep, $arrResult))
+                    if(eregi("^{$extension['extension']} => ([[:alnum:]]*),[[:alnum:]| ]*,([[:alnum:]| |@|\.]*),([[:alnum:]| |@|\.]*),([[:alnum:]| |=]*)attach=(yes|no)\|saycid=(yes|no)\|envelope=(yes|no)\|delete=(yes|no)",$grep, $arrResult))
                     {
                         $extension['vm_secret'] = $arrResult[1];
-                        $extension['vm_options'] = $arrResult[2];
+                        $extension['email_address'] = $arrResult[2];
+                        $extension['pager_email_address'] = $arrResult[3];
+                        $extension['vm_options'] = substr($arrResult[4],0, strlen($arrResult[4])-1);
+                        $extension['email_attachment'] = $arrResult[5];
+                        $extension['play_cid'] = $arrResult[6];
+                        $extension['play_envelope'] = $arrResult[7];
+                        $extension['delete_vmail'] = $arrResult[8];
                     }
-                }
-                else{
-                    $extension['voicemail'] = 'disable';
-                    $extension['vm_secret'] = '';
-                    $extension['vm_options'] = '';
                 }
                 $arrExtensions[] = $extension;
             }
@@ -236,14 +247,23 @@ class paloSantoLoadExtension {
         return $arrExtensions;
     }
 
-    function writeFileVoiceMail($Ext,$Name,$VoiceMail,$VoiceMail_PW,$VM_Options)
+    function writeFileVoiceMail($Ext,$Name,$VoiceMail,$VoiceMail_PW,$VM_Email_Address,
+            $VM_Pager_Email_Addr, $VM_Options, $VM_EmailAttachment, $VM_Play_CID,
+            $VM_Play_Envelope, $VM_Delete_Vmail)
     {
         $path = "/etc/asterisk/voicemail.conf";
         $VoiceMail = strtolower($VoiceMail);
 
         if(eregi("^enable",$VoiceMail)){
             exec("sed -ie '/^$Ext =>/d' $path");
-            $adderLine = "$Ext => $VoiceMail_PW,$Name,,,$VM_Options|attach=no|saycid=no|envelope=no|delete=no";
+            if($VM_Options!="") $VM_Options .= "|";
+            if($VM_EmailAttachment!='yes') $VM_EmailAttachment = 'no';
+            if($VM_Play_CID!='yes')        $VM_Play_CID = 'no';
+            if($VM_Play_Envelope!='yes')   $VM_Play_Envelope = 'no';
+            if($VM_Delete_Vmail!='yes')    $VM_Delete_Vmail = 'no';
+            $adderLine = "$Ext => $VoiceMail_PW,$Name,$VM_Email_Address,$VM_Pager_Email_Addr,".
+                         "{$VM_Options}attach=$VM_EmailAttachment|saycid=$VM_Play_CID|".
+                         "envelope=$VM_Play_Envelope|delete=$VM_Delete_Vmail";
             if($fh = fopen($path, "a")){
                 fputs($fh,$adderLine."\n");
                 return true;

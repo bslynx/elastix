@@ -41,17 +41,23 @@ function backup_extensions($pDB, $smarty)
     $csv = "";
     $pLoadExtension = new paloSantoLoadExtension($pDB);
     $arrResult = $pLoadExtension->queryExtensions();
+
     if(!$arrResult)
     {
         $Messages .= $arrLang["There aren't extensions"].". ".$pLoadExtension->errMsg."<br />";
     }else{
         //cabecera
-        $csv .= "\"Display Name\",\"User Extension\",\"Direct DID\",\"Call Waiting\",\"Secret\",\"Voicemail Status\",\"Voicemail Password\",\"VM Options\"\n";
+        $csv .= "\"Display Name\",\"User Extension\",\"Direct DID\",\"Call Waiting\",".
+                "\"Secret\",\"Voicemail Status\",\"Voicemail Password\",\"VM Email Address\",".
+                "\"VM Pager Email Address\",\"VM Options\",\"VM Email Attachment\",".
+                "\"VM Play CID\",\"VM Play Envelope\",\"VM Delete Vmail\"\n";
         foreach($arrResult as $key => $extension)
         {
             $csv .= "\"{$extension['name']}\",\"{$extension['extension']}\",\"{$extension['directdid']}\",".
                     "\"{$extension['callwaiting']}\",\"{$extension['secret']}\",\"{$extension['voicemail']}\",".
-                    "\"{$extension['vm_secret']}\",\"{$extension['vm_options']}\"".
+                    "\"{$extension['vm_secret']}\",\"{$extension['email_address']}\",\"{$extension['pager_email_address']}\",".
+                    "\"{$extension['vm_options']}\",\"{$extension['email_attachment']}\",\"{$extension['play_cid']}\",".
+                    "\"{$extension['play_envelope']}\",\"{$extension['delete_vmail']}\"".
                     "\n";
         }
     }
