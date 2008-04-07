@@ -148,7 +148,7 @@ function _moduleContent(&$smarty, $module_name)
                          "start"    => ($end==0) ? 0 : 1,
                          "end"      => $end,
                          "total"    => $end,
-                         "columns"  => array(0 => array("name"      => "<input class='button' type='submit' name='apply' value='{$arrLang['Apply']}' >",
+                         "columns"  => array(0 => array("name"      => "<input class='button' $disabled type='submit' name='apply' value='{$arrLang['Apply']}' >",
                                                         "property1" => ""),
                                              1 => array("name"      => $arrLang["Resource"], 
                                                         "property1" => ""))
