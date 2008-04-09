@@ -29,6 +29,7 @@
 */
 $languages=array(
 "bg"=>"Български", //bulgarian
+"ca"=>"Català",    //Catalan
 "da"=>"Dansk",     //danish
 "de"=>"Deutsch",   //german
 "en"=>"English",   //english
