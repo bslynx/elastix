@@ -73,19 +73,29 @@ function _moduleContent(&$smarty, $module_name)
         $arrGrupos[$arrGruposACL[$i][0]] = $arrGruposACL[$i][1];
     }
 
+    if (!isset($_POST['group'])) 
+        $_POST['group']=1; //no me parece una buena validacion ya q deberia darsele a grupo de menor previlegios, no deberia ser el dafault el grupo administradores (problemas de seguridad)
+
     //obtener valor de grupo 
-    $idGroup=(isset($_POST['group']))?$_POST['group']:1;
+    $idGroup=$_POST['group'];
+    $isAdministrator = false;
 
-    /*$arrGrupos=array(1 => "Administrator",
-                     2 => "Operator",
-                     3 => "Extension User");
-*/
+    if($idGroup==1){
+        $isAdministrator = true;
+    }
 
-    if (!isset($_POST['group'])) $_POST['group']=1;
     if(isset($_POST['apply'])) {
         $arrPermisos=$pACL->getGroupPermissions($idGroup);
         $listaPermisos=array_keys($arrPermisos);
         $selectedResources= isset($_POST['groupPermission'])?array_keys($_POST['groupPermission']):array();
+
+        if($isAdministrator){
+            $selectedResources[] = "usermgr";
+            $selectedResources[] = "grouplist";
+            $selectedResources[] = "userlist";
+            $selectedResources[] = "group_permission";
+        }
+
         $listaPermisosNuevos = array_diff($selectedResources, $listaPermisos);
         $listaPermisosAusentes = array_diff($listaPermisos, $selectedResources);
         foreach($arrResources as $resource) {
@@ -129,12 +139,19 @@ function _moduleContent(&$smarty, $module_name)
         $end = count($arrResources);
         $arrPermisos=$pACL->getGroupPermissions($idGroup);
 
-        $disabled = "";
-        if($_POST['group']==1)
-            $disabled = "disabled='disabled'";
-
         foreach($arrResources as $resource) {
             $checked=array_key_exists($resource[1],$arrPermisos)?"checked":'';
+            
+            //only disabled the modules administratives
+            $disabled = ""; 
+            if(($resource[1] == 'usermgr'   || 
+               $resource[1] == 'grouplist' || 
+               $resource[1] == 'userlist'  || 
+               $resource[1] == 'group_permission'
+              ) & $isAdministrator){
+                $disabled = "disabled='disabled'"; 
+            }
+
             $arrTmp[0] = "<input type='checkbox' $disabled name='groupPermission[".$resource[1]."][".$resource[0]."]' $checked>";
 
             $arrTmp[1] = isset($arrLang[$resource[2]])?$arrLang[$resource[2]]:'';
@@ -148,7 +165,7 @@ function _moduleContent(&$smarty, $module_name)
                          "start"    => ($end==0) ? 0 : 1,
                          "end"      => $end,
                          "total"    => $end,
-                         "columns"  => array(0 => array("name"      => "<input class='button' $disabled type='submit' name='apply' value='{$arrLang['Apply']}' >",
+                         "columns"  => array(0 => array("name"      => "<input class='button' type='submit' name='apply' value='{$arrLang['Apply']}' >",
                                                         "property1" => ""),
                                              1 => array("name"      => $arrLang["Resource"], 
                                                         "property1" => ""))
