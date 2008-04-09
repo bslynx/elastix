@@ -160,8 +160,7 @@ txgain=0.0
 callgroup=1
 pickupgroup=1
 
-;Uncomment these lines if you have problems with the disconection of your
-analog lines
+;Uncomment these lines if you have problems with the disconection of your analog lines
 ;busydetect=yes
 ;busycount=3
 
