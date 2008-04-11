@@ -61,7 +61,7 @@ class paloSantoCDR {
                  $condicion_troncal='';
                 foreach ($troncales as $troncal){
                    $condicion_troncal.=!(empty($condicion_troncal))?' OR ':'';
-                   $condicion_troncal.="dstchannel like '%$troncal%'";
+                   $condicion_troncal.="dstchannel like '%$troncal-%'";
                 }
                 $strWhere .= " AND ($condicion_troncal)";
             }else{

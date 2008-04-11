@@ -63,11 +63,10 @@ class paloRate {
      * indicado por los valores datos. De otro modo, se listarán todos los rates.
      *
      * @param varchar   $prefix    Si != NULL, indica el prefix del rate a recoger
-     * @param int   $num_digits    Si != NULL, indica el num_digits del rate a recoger
      *
      * @return array    Listado de rates en el siguiente formato, o FALSE en caso de error:
      *  array(
-     *      array(prefix, num_digits, name, rate, rate_offset),
+     *      array(id, prefix, name, rate, rate_offset, trunk),
      *      ...
      *  )
      */
@@ -79,8 +78,7 @@ class paloRate {
         } 
         else {
             $this->errMsg = "";
-            //$sPeticionSQL = "SELECT id, prefix, num_digits, name, rate, rate_offset FROM rate".
-              $sPeticionSQL = "SELECT id, prefix, name, rate, rate_offset FROM rate".
+              $sPeticionSQL = "SELECT id, prefix, name, rate, rate_offset, trunk FROM rate".
                 (is_null($id_rate) ? '' : " WHERE id = $id_rate");
             $sPeticionSQL .=" ORDER BY name";
             $arr_result =& $this->_DB->fetchTable($sPeticionSQL);
@@ -96,14 +94,14 @@ class paloRate {
      * Procedimiento para crear un nuevo rate 
      *
      * @param string    $prefix       prefix para el rate
-     * @param string    $num_digits   num_digits para el rate
      * @param string    $name         nombre para el rate
      * @param string    $rate         rate
      * @param string    $rate_offset  rate_offset
+     * @param string    $trunk        trunk for this rate
      *
      * @return bool     VERDADERO si el rate se crea correctamente, FALSO en error
      */
-    function createRate($prefix,/* $num_digits,*/ $name, $rate, $rate_offset)
+    function createRate($prefix, $name, $rate, $rate_offset, $trunk)
     {
         $bExito = FALSE;
         if ($prefix == "" && $num_digits == "") {
@@ -111,7 +109,7 @@ class paloRate {
         } else {
             //verificar que no exista la misma combinacion de prefijo
             $sPeticionSQL = "SELECT id FROM rate ".
-                " WHERE prefix = '$prefix'";
+                " WHERE prefix = '$prefix' AND trunk = '$trunk'";
             $arr_result =& $this->_DB->fetchTable($sPeticionSQL);
             if (is_array($arr_result) && count($arr_result)>0) {
                 $bExito = FALSE;
@@ -121,10 +119,10 @@ class paloRate {
                     "rate",
                     array(
                         "prefix"       =>  paloDB::DBCAMPO($prefix),
-                       // "num_digits"   =>  paloDB::DBCAMPO($num_digits),
                         "name"         =>  paloDB::DBCAMPO($name),
                         "rate"         =>  paloDB::DBCAMPO($rate),
-                        "rate_offset"  =>  paloDB::DBCAMPO($rate_offset)
+                        "rate_offset"  =>  paloDB::DBCAMPO($rate_offset),
+                        "trunk"        =>  paloDB::DBCAMPO($trunk)
                     )
                 );
                 if ($this->_DB->genQuery($sPeticionSQL)) {
@@ -139,17 +137,17 @@ class paloRate {
     }
 
     /**
-     * Procedimiento para modificar el rate con el prefix y num_digits
+     * Procedimiento para modificar el rate con el prefix 
      *
      * @param string    $prefix       prefix para el rate
-     * @param string    $num_digits   num_digits para el rate
      * @param string    $name         nombre para el rate
      * @param string    $rate         rate
      * @param string    $rate_offset  rate_offset
+     * @param string    $trunk        trunk
      *
      * @return bool VERDADERO si se ha modificar correctamente el usuario, FALSO si ocurre un error.
      */
-    function updateRate($id_rate, $prefix, /*$num_digits,*/ $name, $rate, $rate_offset)
+    function updateRate($id_rate, $prefix, $name, $rate, $rate_offset ,$trunk)
     {
         $bExito = FALSE;
         if (!ereg("^[[:digit:]]+$", "$id_rate")) {
@@ -161,7 +159,8 @@ class paloRate {
                         array(
                             "name"          =>  paloDB::DBCAMPO($name),
                             "rate"          =>  paloDB::DBCAMPO($rate),
-                            "rate_offset"   =>  paloDB::DBCAMPO($rate_offset)
+                            "rate_offset"   =>  paloDB::DBCAMPO($rate_offset),
+                            "trunk"         =>  paloDB::DBCAMPO($trunk)
                          ),
                         array(
                             "id"  => $id_rate)
@@ -199,7 +198,7 @@ class paloRate {
 
 
 
-  function buscarTarifa($sNumeroMarcado,&$tarifa)
+  function buscarTarifa($sNumeroMarcado,&$tarifa,$trunk)
   {
     $bExito=TRUE;
 
@@ -213,14 +212,15 @@ class paloRate {
 
         $listaLimites = $this->_privado_construirListaLimitesPrefijo($sNumeroMarcado);
         if (is_null($listaLimites)) {
-           $sPeticionSQL="SELECT id, rate, rate_offset,name FROM rate ".
+           $sPeticionSQL="SELECT id, rate, rate_offset, name FROM rate ".
                      "WHERE prefix > ? ".
                      "AND prefix <= ? ".
                      "AND SUBSTR(?,1,length(prefix)) = prefix ".
+                     "AND trunk = '$trunk' ".
                      "ORDER BY prefix DESC LIMIT 0,1 ";
             $param=array($sLimiteInferior,$sNumeroMarcado,$sNumeroMarcado);
          }else{
-           $sPeticionSQL="SELECT id, rate, rate_offset,name FROM rate ".
+           $sPeticionSQL="SELECT id, rate, rate_offset, name FROM rate ".
                      "WHERE (
                           prefix = ? OR
                           prefix = ? OR
@@ -230,6 +230,7 @@ class paloRate {
                       ) ".
                      "AND prefix <= ? ".
                      "AND SUBSTR(?,1,length(prefix)) = prefix ".
+                     "AND trunk = '$trunk' ".
                      "ORDER BY prefix DESC LIMIT 0,1 ";
             $param=array($listaLimites[0],
                          $listaLimites[1],
