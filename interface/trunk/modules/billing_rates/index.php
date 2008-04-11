@@ -31,6 +31,7 @@ function _moduleContent(&$smarty, $module_name)
 {
     include_once "libs/paloSantoGrid.class.php";
     include_once "libs/paloSantoRate.class.php";
+    include_once "libs/paloSantoTrunk.class.php";
     
    //include module files
     include_once "modules/$module_name/configs/default.conf.php";
@@ -42,6 +43,10 @@ function _moduleContent(&$smarty, $module_name)
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
     
     $pDB = new paloDB("sqlite3:////var/www/db/rate.db");
+    $pDBTrunk = new paloDB("sqlite3:////var/www/db/trunk.db");
+    $oTrunk   = new paloTrunk($pDBTrunk);
+    $arrTrunksBill['None']='None';
+    foreach ($oTrunk->getTrunksBill() as $trunk) $arrTrunksBill[$trunk]=$trunk;
     if(!empty($pDB->errMsg)) {
         echo "ERROR DE DB: $pDB->errMsg <br>";
     }
@@ -53,39 +58,43 @@ function _moduleContent(&$smarty, $module_name)
     }
 
     $arrFormElements = array(
-                             "prefix"       => array("LABEL"                 => $arrLang["Prefix"],
-                                                    "REQUIRED"               => "yes",
-                                                    "INPUT_TYPE"             => "TEXT",
-                                                    "INPUT_EXTRA_PARAM"      => "",
-                                                    "VALIDATION_TYPE"        => "numeric",
-                                                    "VALIDATION_EXTRA_PARAM" => "",
-                                                    "EDITABLE"               => "no"),
-                          /*   "num_digits"       => array("LABEL"                   => "Number of Digits",
-                                                    "REQUIRED"               => "yes",
-                                                    "INPUT_TYPE"             => "TEXT",
-                                                    "INPUT_EXTRA_PARAM"      => "",
-                                                    "VALIDATION_TYPE"        => "numeric",
-                                                    "VALIDATION_EXTRA_PARAM" => "",
-                                                    "EDITABLE"               => "no"),
-*/
-                             "name"       => array("LABEL"                   => $arrLang["Name"],
-                                                    "REQUIRED"               => "yes",
-                                                    "INPUT_TYPE"             => "TEXT",
-                                                    "INPUT_EXTRA_PARAM"      => "",
-                                                    "VALIDATION_TYPE"        => "text",
-                                                    "VALIDATION_EXTRA_PARAM" => ""),
-                             "rate"       => array("LABEL"                   => $arrLang["Rate"],
-                                                    "REQUIRED"               => "yes",
-                                                    "INPUT_TYPE"             => "TEXT",
-                                                    "INPUT_EXTRA_PARAM"      => "",
-                                                    "VALIDATION_TYPE"        => "float",
-                                                    "VALIDATION_EXTRA_PARAM" => ""),
-                             "rate_offset"       => array("LABEL"                   => $arrLang["Rate Offset"],
-                                                    "REQUIRED"               => "yes",
-                                                    "INPUT_TYPE"             => "TEXT",
-                                                    "INPUT_EXTRA_PARAM"      => "",
-                                                    "VALIDATION_TYPE"        => "float",
-                                                    "VALIDATION_EXTRA_PARAM" => ""),
+                             "prefix"       => array("LABEL"                   => $arrLang["Prefix"],
+                                                     "REQUIRED"               => "yes",
+                                                     "INPUT_TYPE"             => "TEXT",
+                                                     "INPUT_EXTRA_PARAM"      => "",
+                                                     "VALIDATION_TYPE"        => "numeric",
+                                                     "VALIDATION_EXTRA_PARAM" => "",
+                                                     "EDITABLE"               => "no"),
+                             "name"         => array("LABEL"                   => $arrLang["Name"],
+                                                     "REQUIRED"               => "yes",
+                                                     "INPUT_TYPE"             => "TEXT",
+                                                     "INPUT_EXTRA_PARAM"      => "",
+                                                     "VALIDATION_TYPE"        => "text",
+                                                     "VALIDATION_EXTRA_PARAM" => ""),
+                             "rate"         => array("LABEL"                   => $arrLang["Rate"],
+                                                     "REQUIRED"               => "yes",
+                                                     "INPUT_TYPE"             => "TEXT",
+                                                     "INPUT_EXTRA_PARAM"      => "",
+                                                     "VALIDATION_TYPE"        => "float",
+                                                     "VALIDATION_EXTRA_PARAM" => ""),
+                             "rate_offset"  => array("LABEL"                   => $arrLang["Rate Offset"],
+                                                     "REQUIRED"               => "yes",
+                                                     "INPUT_TYPE"             => "TEXT",
+                                                     "INPUT_EXTRA_PARAM"      => "",
+                                                     "VALIDATION_TYPE"        => "float",
+                                                     "VALIDATION_EXTRA_PARAM" => ""),
+                             "trunk"        => array("LABEL"                   => $arrLang["Trunk"],
+                                                     "REQUIRED"               => "yes",
+                                                     "INPUT_TYPE"             => "SELECT",
+                                                     "INPUT_EXTRA_PARAM"      => $arrTrunksBill,
+                                                     "VALIDATION_TYPE"        => "text",
+                                                     "VALIDATION_EXTRA_PARAM" => ""),
+                             "importcsv"    => array("LABEL"                   => $arrLang["Import File"],
+                                                     "REQUIRED"               => "yes",
+                                                     "INPUT_TYPE"             => "FILE",
+                                                     "INPUT_EXTRA_PARAM"      => "",
+                                                     "VALIDATION_TYPE"        => "filename",
+                                                     "VALIDATION_EXTRA_PARAM" => "")
                          );
 
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
@@ -96,6 +105,7 @@ function _moduleContent(&$smarty, $module_name)
     $smarty->assign("DELETE", $arrLang["Delete"]);
     $smarty->assign("CONFIRM_CONTINUE", $arrLang["Are you sure you wish to continue?"]);
 
+    if($_POST['rate_offset']!="" && $_POST['rate_offset']==0) $_POST['rate_offset']='0.0';
     if(isset($_POST['submit_create_rate'])) {
          //AGREGAR NUEVA TARIFA
         include_once("libs/paloSantoForm.class.php");
@@ -103,6 +113,7 @@ function _moduleContent(&$smarty, $module_name)
         $arrFillUser['name']        = '';
         $arrFillUser['rate']        = '';
         $arrFillUser['rate_offset'] = '';
+        $arrFillUser['trunk']       = '';
         $oForm = new paloForm($smarty, $arrFormElements);
         $contenidoModulo=$oForm->fetchForm("$local_templates_dir/new_rate.tpl", $arrLang["New Rate"],$arrFillUser);
 
@@ -111,10 +122,10 @@ function _moduleContent(&$smarty, $module_name)
         // Tengo que recuperar los datos del rate
         $arrRate = $pRate->getRates($_POST['id_rate']);
         $arrFillUser['prefix']      = $arrRate[0][1];
-      //  $arrFillUser['num_digits']  = $arrRate[0][2];
         $arrFillUser['name']        = $arrRate[0][2];
         $arrFillUser['rate']        = $arrRate[0][3];
         $arrFillUser['rate_offset'] = $arrRate[0][4];
+        $arrFillUser['trunk']       = $arrRate[0][5];
 
         // Implementar
         include_once("libs/paloSantoForm.class.php");
@@ -124,26 +135,73 @@ function _moduleContent(&$smarty, $module_name)
         $smarty->assign("id_rate", $_POST['id_rate']);
         $contenidoModulo=$oForm->fetchForm("$local_templates_dir/new_rate.tpl", "{$arrLang['Edit Rate']} \"" . $arrFillUser['name'] . "\"", $arrFillUser);
 
+    } else if(isset($_POST['submit_import_rate'])) {
+        include_once("libs/paloSantoForm.class.php");
+
+        $oForm = new paloForm($smarty, $arrFormElements);
+        $contenidoModulo=$oForm->fetchForm("$local_templates_dir/import_rate.tpl", $arrLang["Import File"], $_POST);
+
+    } else if(isset($_POST['submit_import_changes'])) {
+        include_once("libs/paloSantoForm.class.php");
+        $oForm = new paloForm($smarty, $arrFormElements);
+	$pRate = new paloRate($pDB);
+
+	if (is_uploaded_file($_FILES['importcsv']['tmp_name'])) {
+		$contenido_archivo=file($_FILES['importcsv']['tmp_name']);
+		$count=0;
+		foreach ($contenido_archivo as $linea)
+                {
+                                $count++;
+				$rate_val=explode(';',$linea);
+				$record=array('prefix'      => $rate_val[0], 
+                                              'name'        => $rate_val[1],
+                                              'rate'        => $rate_val[2], 
+                                              'rate_offset' => ($rate_val[3]==0?'0.0':$rate_val[3]), 
+                                              'trunk'       => trim($rate_val[4]));
+                             //if no validation error             insert record         or        add error message
+			if($oForm->validateForm($record)) 
+                        {
+                                   if(!$pRate->createRate($rate_val[0],$rate_val[1],$rate_val[2],$rate_val[3],trim($rate_val[4])))
+                                   if(!empty($pRate->errMsg)) $arrErrorMsg['Insert Error'][$count]=$arrLang[$pRate->errMsg];
+                        } else $arrErrorMsg[$arrLang["Validation Error"]][$count]=$oForm->arrErroresValidacion;
+		}
+
+                $strErrorMsg='';
+                foreach ($arrErrorMsg as $Error_type => $on_line)
+                {
+                        $strErrorMsg.= "<B><font color=\"red\">".$Error_type.":</font></B><BR>";
+                        foreach ($on_line as $line=>$error_msg)
+                        {
+                                if (is_array($error_msg)) foreach ($error_msg as $k=>$msg)
+                                {
+                                     if (!is_array($msg)) $error_msg=$msg;
+                                     else foreach ($msg as $v) $error_msg= $k." has ".$v;
+                                }
+                                     $strErrorMsg.= "Error on line: ". $line."  ".$error_msg."<br>";
+                        }
+			$strErrorMsg.='<BR>';
+                }		
+
+	} else $strErrorMsg=$arrLang["File doesn't exist"];
+ 
+	if (isset($strErrorMsg)&&$strErrorMsg!="") {
+        	$smarty->assign("mb_message", $strErrorMsg);
+	        $contenidoModulo=$oForm->fetchForm("$local_templates_dir/import_rate.tpl", $arrLang["New Rate"], $_POST);
+	} else header("Location: ?menu=billing_rates");
+
     } else if(isset($_POST['submit_save_rate'])) {
         //GUARDAR NUEVA TARIFA
         include_once("libs/paloSantoForm.class.php");
 
         $oForm = new paloForm($smarty, $arrFormElements);
+
         if($oForm->validateForm($_POST)) {
             // Exito, puedo procesar los datos ahora.
             $pRate = new paloRate($pDB);
-            //revisar por errores
-            //el numero de digitos no debe ser mayor que la longitud del prefijos
-            //no debe existir un rate con la combinacion prefix num_digits
-           /* $arrRate = $pRate->getRates($_POST['prefix'],$_POST['num_digits']);
-            if($_POST['num_digits'] > strlen($_POST['prefix'])) {
-                // Error existe rate para combinacion prefix y num_digits
-                $smarty->assign("mb_message", "ERROR: Number of Digits can't be greater than length of prefix");
-                $contenidoModulo=$oForm->fetchForm("billing/new_rate.tpl", "New Rate", $_POST);
-            } else {*/
-                // Creo rate
 
-                $pRate->createRate($_POST['prefix'],/*$_POST['num_digits'],*/$_POST['name'], $_POST['rate'], $_POST['rate_offset']);
+            //Creo rate
+
+                $pRate->createRate($_POST['prefix'], $_POST['name'], $_POST['rate'], $_POST['rate_offset'], $_POST['trunk']);
                 // Creo la membresia
                 
                 if(!empty($pRate->errMsg)) {
@@ -176,7 +234,7 @@ function _moduleContent(&$smarty, $module_name)
         if($oForm->validateForm($_POST)) {
                 //- La updateUser no es la adecuada porque pide el username. Deberia
                 //- hacer una que no pida username en la proxima version
-            $bExito=$pRate->updateRate($_POST['id_rate'],$_POST['rate_prefix'],/*$_POST['rate_num_digits'],*/$_POST['name'], $_POST['rate'], $_POST['rate_offset']);
+            $bExito=$pRate->updateRate($_POST['id_rate'],$_POST['rate_prefix'], $_POST['name'], $_POST['rate'], $_POST['rate_offset'],$_POST['trunk']);
             header("Location: ?menu=billing_rates");
         } else {
             // Manejo de Error
@@ -208,11 +266,11 @@ function _moduleContent(&$smarty, $module_name)
         $oForm->setViewMode(); // Esto es para activar el modo "preview"
         $arrRate = $pRate->getRates($_GET['id']);
         // Conversion de formato
-        $arrTmp['prefix']        = $arrRate[0][1];
-       // $arrTmp['num_digits'] = $arrRate[0][2];
+        $arrTmp['prefix']      = $arrRate[0][1];
         $arrTmp['name']        = $arrRate[0][2];
-        $arrTmp['rate'] = $arrRate[0][3];
-        $arrTmp['rate_offset']        = $arrRate[0][4];
+        $arrTmp['rate']        = $arrRate[0][3];
+        $arrTmp['rate_offset'] = $arrRate[0][4];
+        $arrTmp['trunk']       = $arrRate[0][5];
 
         $smarty->assign("id_rate", $_GET['id']);
         
@@ -234,7 +292,8 @@ function _moduleContent(&$smarty, $module_name)
             $arrTmp[1] = $rate[2];
             $arrTmp[2] = number_format($rate[3],3);
             $arrTmp[3] = number_format($rate[4],3);
-            $arrTmp[4] = "&nbsp;<a href='?menu=billing_rates&action=view&id=".$rate[0]."'>{$arrLang['View']}</a>";
+            $arrTmp[4] = $rate[5];
+            $arrTmp[5] = "&nbsp;<a href='?menu=billing_rates&action=view&id=".$rate[0]."'>{$arrLang['View']}</a>";
             $arrData[] = $arrTmp;
         }
         
@@ -248,13 +307,13 @@ function _moduleContent(&$smarty, $module_name)
                                                         "property1" => ""),
                                              1 => array("name"      => $arrLang["Name"], 
                                                         "property1" => ""),
-                                            // 2 => array("name"      => "Number of Digits", 
-                                             //           "property1" => ""),
                                              2 => array("name"      => $arrLang["Rate"], 
                                                         "property1" => ""),
                                              3 => array("name"      => $arrLang["Rate Offset"], 
                                                         "property1" => ""),
-                                             4 => array("name"      => " ", 
+                                             4 => array("name"      => $arrLang["Trunk"],
+                                                        "property1" => ""),
+                                             5 => array("name"      => $arrLang["View"],
                                                         "property1" => "")
                                             )
                         );
@@ -262,7 +321,12 @@ function _moduleContent(&$smarty, $module_name)
         $oGrid = new paloSantoGrid($smarty);
         $oGrid->showFilter(
               "<form style='margin-bottom:0;' method='POST' action='?menu=billing_rates'>" .
-              "<input type='submit' name='submit_create_rate' value='{$arrLang['Create New Rate']}' class='button'></form>");
+              "<table><TR>".
+              "<TD><input type='submit' name='submit_create_rate' value='{$arrLang['Create New Rate']}' class='button'></TD>".
+              "<TD><input type='submit' name='submit_import_rate' value='{$arrLang['Import File']}' class='button'></TD>".
+              "</TR></table>".
+              "</form>");
+
         $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
     }
 
