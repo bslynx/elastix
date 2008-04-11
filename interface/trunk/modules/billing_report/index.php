@@ -119,7 +119,6 @@ function _moduleContent(&$smarty, $module_name)
                                                         "INPUT_TYPE"             => "SELECT",
                                                         "INPUT_EXTRA_PARAM"      => array( "dst"         => $arrLang["Destination"],
                                                                                            "src"         => $arrLang["Source"],
-                                                                                           //"channel"     => "Src. Channel",
                                                                                            "dstchannel"  => $arrLang["Dst. Channel"]),
                                                         "VALIDATION_TYPE"        => "ereg",
                                                         "VALIDATION_EXTRA_PARAM" => "^(dst|src|channel|dstchannel)$"),
@@ -129,18 +128,8 @@ function _moduleContent(&$smarty, $module_name)
                                                         "INPUT_EXTRA_PARAM"      => "",
                                                         "VALIDATION_TYPE"        => "ereg",
                                                         "VALIDATION_EXTRA_PARAM" => "^[[:alnum:]@_\.,/\-]+$"),
-                                 /*"status"  => array("LABEL"                  => "Status",
-                                                        "REQUIRED"               => "no",
-                                                        "INPUT_TYPE"             => "SELECT",
-                                                        "INPUT_EXTRA_PARAM"      => array(
-                                                                                    "ALL"         => "ALL",
-                                                                                    "ANSWERED"         => "ANSWERED",
-                                                                                    "BUSY"         => "BUSY",
-                                                                                    "FAILED"     => "FAILED",
-                                                                                    "NO ANSWER "  => "NO ANSWER"),
-                                                        "VALIDATION_TYPE"        => "text",
-                                                        "VALIDATION_EXTRA_PARAM" => ""),*/
                                  );
+
         $smarty->assign("Filter",$arrLang['Filter']);
         $oFilterForm = new paloForm($smarty, $arrFormElements);
     
@@ -158,9 +147,8 @@ function _moduleContent(&$smarty, $module_name)
                 $date_end   = translateDate($_POST['date_end']) . " 23:59:59";
                 $field_name = $_POST['field_name'];
                 $field_pattern = $_POST['field_pattern'];
-                //$status = $_POST['status'];    
                 $arrFilterExtraVars = array("date_start" => $_POST['date_start'], "date_end" => $_POST['date_end'], 
-                                            "field_name" => $_POST['field_name'], "field_pattern" => $_POST['field_pattern'],/*"status" => $_POST['status']*/);
+                                            "field_name" => $_POST['field_name'], "field_pattern" => $_POST['field_pattern'],);
             } else {
                 // Error
                 $smarty->assign("mb_title", $arrLang["Validation Error"]);
@@ -235,41 +223,33 @@ function _moduleContent(&$smarty, $module_name)
 
     //leer el archivo /etc/zapata.conf para poder reemplazar para ZAP g#  con los respectivos canales
     $ultGrupo="";
-    $grupos=array();
+
     if (file_exists("/etc/asterisk/zapata.conf")){
         $contenido_archivo=file("/etc/asterisk/zapata.conf");
         foreach ($contenido_archivo as $linea){
-            if (ereg("^(group|channel)=([[:space:]]*.*)",$linea,$regs)){
-                if ($regs[1]=="group"){
-                    $ultGrupo=$regs[2];
-                    $grupos[$regs[2]]['channel']="";
-                }
-                if ($regs[1]=="channel"){
-                    if (!empty($ultGrupo))
-                        $grupos[$ultGrupo]['channel']=$regs[2];
+            if (ereg("^(group|channel[[:space:]]*)=([[:space:]]*.*)",$linea,$regs)){
+                $regs_key=trim($regs[1]);
+                $regs_value=trim($regs[2]);
+                if ($regs_key=="group") $ultGrupo=$regs_value;
+                if ($regs_key=="channel"){
+                    if (isset($ultGrupo)&&$ultGrupo!=""){
+                        $channel=explode(',',$regs_value);
+                        foreach ($channel as $item){
+                           if ($item!=""){
+                                $item   = trim(preg_replace("%>| %","",$item));
+                                $range  = explode('-',$item);
+                                for ($i = min($range);$i<=max($range);$i++) { 
+                                     $canales[$ultGrupo][]=$i;
+                                     $grupos[$i]=$ultGrupo;
+				}
+                           }
+                        }
+                    }
                 }
             }
         }
     }
-    //poner los canales en un arreglo de la forma
-    //array(id_grupo => array (valor1, valor2, valor3,....))
-    $canales=array();
-    foreach ($grupos as $id_grupo =>$valores_grupo)
-    {
-        if (ereg("([[:digit:]])+([[:space:]]*-[[:space:]]*([[:digit:]])+)*",$valores_grupo['channel'],$regs1)){
-           //los valores vendrian en 1 y 3
-            $fin=0;
-            $inicio=$regs1[1];
-            if (isset($regs1[3])) $fin=$regs1[3];
-            if ($fin>0 && $fin>$inicio){
-               for ($i=$inicio;$i<=$fin;$i++)
-                    $canales[trim($id_grupo)][]=$i;
-            }else
-                   $canales[trim($id_grupo)][]=$inicio;
-            //print_r($regs1);
-        }
-    }
-   // print_r($canales);
+
     //reemplazo el id del grupo por el valor
     foreach ($arrTrunksBill as $trunkBill)
     {
@@ -282,36 +262,38 @@ function _moduleContent(&$smarty, $module_name)
             }
         }else
             $troncales[]=$trunkBill;
-
     }
-
-
+    //echo "<pre>".print_r($canales,1)."</pre>";
+    //echo "<pre>".print_r($grupos,1)."</pre>";
     if (is_array($troncales) && count($troncales)>0){
         $arrCDR  = $oCDR->obtenerCDRs($limit, $offset, $date_start, $date_end, $field_name, $field_pattern,"ANSWERED","outgoing",$troncales);
 
         $total =$arrCDR['NumRecords'][0];
-   
+
         foreach($arrCDR['Data'] as $cdr) {
         //tengo que buscar la tarifa para el numero de telefono
+            if (ereg("^Zap/([[:digit:]]+)",$cdr[4],$regs3)) $trunk='ZAP/g'.$grupos[$regs3[1]];
+            else $trunk=str_replace(strstr($cdr[4],'-'),'',$cdr[4]);
+
             $numero=$cdr[2];
             $arrTmp    = array();
             $arrTmp[0] = $cdr[0];
-            $arrTmp[1] = "<div title=\"{$arrLang['Channel']}: $cdr[3]\" align=\"left\">$cdr[1]</div>";
-       // $arrTmp[1] = $cdr[1];
+            $arrTmp[1] = "<div title=\"{$arrLang['Channel']}: $cdr[3]\" align=\"left\">".($cdr[1]?$cdr[1]:$arrLang["Unknown"])."</div>";
             $arrTmp[2] = $cdr[2];
-       // $arrTmp[3] = $cdr[3];
-            $arrTmp[3] = $cdr[4];
-      //  $arrTmp[5] = $cdr[5];
+            $arrTmp[3] = "<div title=\"{$arrLang['Trunk']}: $trunk\" align=\"left\">$cdr[4]</div>";
             $arrTmp[4] = $cdr[8];
             $charge=0;
             $tarifa=array();
-            $bExito=$pRate->buscarTarifa($numero,$tarifa);
+            $bExito=$pRate->buscarTarifa($numero,$tarifa,$trunk);
+            if (!count($tarifa)>0 && ($bExito)) $bExito=$pRate->buscarTarifa($numero,$tarifa,'None');
+
             $rate_name="";
             if (!$bExito)
             {
                 echo "ERROR DE RATE: $pRate->errMsg <br>";
             }else
             {
+
              //verificar si tiene tarifa
                 if (count($tarifa)>0)
                 {
@@ -333,10 +315,13 @@ function _moduleContent(&$smarty, $module_name)
                 }
             }
             $arrTmp[5] = number_format($charge,3);
-            $arrTmp[6] = $rate_name;
+            $sum_cost  = $sum_cost+$arrTmp[5]; 
+            $arrTmp[6] = $sum_cost;
+            $arrTmp[7] = $rate_name;
             $arrData[] = $arrTmp;
         }
     }
+
     $arrGrid = array("title"    => $arrLang["Billing Report"],
                      "icon"     => "images/user.png",
                      "width"    => "99%",
@@ -349,17 +334,15 @@ function _moduleContent(&$smarty, $module_name)
                                                     "property1" => ""),
                                          2 => array("name"      => $arrLang["Destination"],
                                                     "property1" => ""),
-                                        // 3 => array("name"	=> "Src. Channel",
-                                         //			"property"	=> ""),
                                          3 => array("name"	=> $arrLang["Dst. Channel"],
                                          			"property"	=> ""),
-                                       //  5 => array("name"	=> "Status",
-                                         //			"property"	=> ""),
                                          4 => array("name"	=> $arrLang["Duration in seconds"],
                                          			"property"	=> ""),
                                          5 => array("name"	=> $arrLang["Cost"],
                                          			"property"	=> ""),
-                                         6 => array("name"	=> $arrLang["Rate Applied"],
+                                         6 => array("name"      => $arrLang["Summary Cost"],
+                                                                "property"      => ""),
+                                         7 => array("name"	=> $arrLang["Rate Applied"],
                                          			"property"	=> ""),
                                         )
                     );
