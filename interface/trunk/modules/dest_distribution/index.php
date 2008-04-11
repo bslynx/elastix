@@ -186,41 +186,33 @@ function _moduleContent(&$smarty, $module_name)
 
     //leer el archivo /etc/zapata.conf para poder reemplazar para ZAP g#  con los respectivos canales
     $ultGrupo="";
-    $grupos=array();
+
     if (file_exists("/etc/asterisk/zapata.conf")){
         $contenido_archivo=file("/etc/asterisk/zapata.conf");
         foreach ($contenido_archivo as $linea){
-            if (ereg("^(group|channel)=([[:space:]]*.*)",$linea,$regs)){
-                if ($regs[1]=="group"){
-                    $ultGrupo=$regs[2];
-                    $grupos[$regs[2]]['channel']="";
-                }
-                if ($regs[1]=="channel"){
-                    if (!empty($ultGrupo))
-                        $grupos[$ultGrupo]['channel']=$regs[2];
+            if (ereg("^(group|channel[[:space:]]*)=([[:space:]]*.*)",$linea,$regs)){
+                $regs_key=trim($regs[1]);
+                $regs_value=trim($regs[2]);
+                if ($regs_key=="group") $ultGrupo=$regs_value;
+                if ($regs_key=="channel"){
+                    if (isset($ultGrupo)&&$ultGrupo!=""){
+                        $channel=explode(',',$regs_value);
+                        foreach ($channel as $item){
+                           if ($item!=""){
+                                $item   = trim(preg_replace("%>| %","",$item));
+                                $range  = explode('-',$item);
+                                for ($i = min($range);$i<=max($range);$i++) {
+                                     $canales[$ultGrupo][]=$i;
+                                     $grupos[$i]=$ultGrupo;
+                                }
+                           }
+                        }
+                    }
                 }
             }
         }
     }
-    //poner los canales en un arreglo de la forma
-    //array(id_grupo => array (valor1, valor2, valor3,....))
-    $canales=array();
-    foreach ($grupos as $id_grupo =>$valores_grupo)
-    {
-        if (ereg("([[:digit:]])+([[:space:]]*-[[:space:]]*([[:digit:]])+)*",$valores_grupo['channel'],$regs1)){
-           //los valores vendrian en 1 y 3
-            $fin=0;
-            $inicio=$regs1[1];
-            if (isset($regs1[3])) $fin=$regs1[3];
-            if ($fin>0 && $fin>$inicio){
-               for ($i=$inicio;$i<=$fin;$i++)
-                    $canales[trim($id_grupo)][]=$i;
-            }else
-                   $canales[trim($id_grupo)][]=$inicio;
-            //print_r($regs1);
-        }
-    }
-   // print_r($canales);
+
     //reemplazo el id del grupo por el valor
     foreach ($arrTrunksBill as $trunkBill)
     {
@@ -233,11 +225,7 @@ function _moduleContent(&$smarty, $module_name)
             }
         }else
             $troncales[]=$trunkBill;
-
     }
-
-
-
 
     $arrCDR  = $oCDR->obtenerCDRs("", 0, $date_start,$date_end, "", "","ANSWERED","outgoing",$troncales);
 
@@ -250,17 +238,21 @@ function _moduleContent(&$smarty, $module_name)
 
     if ($total>0){
         foreach($arrCDR['Data'] as $cdr) {
+            if (ereg("^Zap/([[:digit:]]+)",$cdr[4],$regs3)) $trunk='ZAP/g'.$grupos[$regs3[1]];
+            else $trunk=str_replace(strstr($cdr[4],'-'),'',$cdr[4]);
         //tengo que buscar la tarifa para el numero de telefono
             $numero=$cdr[2];
             $tarifa=array();
             $rate_name="";
             $charge=0;
-            $bExito=$pRate->buscarTarifa($numero,$tarifa);
+            $bExito=$pRate->buscarTarifa($numero,$tarifa,$trunk);
+            if (!count($tarifa)>0 && ($bExito)) $bExito=$pRate->buscarTarifa($numero,$tarifa,'None');
             if (!$bExito)
             {
                 echo "{$arrLang['ERROR']}: $pRate->errMsg <br>";
             }else
             {
+
              //verificar si tiene tarifa
                 if (count($tarifa)>0)
                 {
