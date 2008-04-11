@@ -28,7 +28,7 @@
     <table width="100%" border="0" cellspacing="0" cellpadding="0" class="tabForm">
       <tr>
 	<td width="15%">{$prefix.LABEL}: <span  class="required">*</span></td>
-	<td width="35%">{$prefix.INPUT}</td>
+	<td width="25%">{$prefix.INPUT}</td>
 	<td>{$rate.LABEL}: <span  class="required">*</span></td>
 	<td>{$rate.INPUT}</td>
       </tr>
@@ -38,6 +38,8 @@
 
 	<td>{$rate_offset.LABEL}: <span  class="required">*</span></td>
 	<td>{$rate_offset.INPUT}</td>
+        <td>{$trunk.LABEL}: <span  class="required">*</span></td>
+        <td>{$trunk.INPUT}</td>
       </tr>
     </table>
   </td>
