@@ -27,7 +27,7 @@
   +----------------------------------------------------------------------+
   $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
 
-$arrConfig['module_name'] = 'email_domains';
+$arrConfig['module_name'] = 'monitoring';
 $arrConfig['templates_dir'] = 'themes';
 
 ?>

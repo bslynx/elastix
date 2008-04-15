@@ -25,7 +25,8 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: index.php,v 1.3 2007/09/05 00:26:21 gcarrillo Exp $ */
+  $Id: index.php,v 1.3 2007/09/05 00:26:21 gcarrillo Exp $
+  $Id: index.php,v 1.3 2008/04/14 09:22:21 afigueroa Exp $  */
 
 function _moduleContent(&$smarty, $module_name)
 {
@@ -149,7 +150,7 @@ function _moduleContent(&$smarty, $module_name)
                 //no tomar en cuenta . y ..
                     if ($file!="." && $file!="..")
                     {
-                        if(Files_Between_Dates($file, $extension, $date_start, $date_end))
+                        if(Files_Between_Dates($file, $extension, $date_start, $date_end, $esAdministrador))
                             $archivos[]=$file;
                     }
                 }
@@ -190,7 +191,7 @@ function _moduleContent(&$smarty, $module_name)
             $llamada_outgoing = false;
             if (ereg("auto\-([[:digit:]]+)\-$extension(.+)\.[wav|WAV|gsm]",$archivo,$regs)){
                  //ya tengo el archivo, busco el correspondiente en el registro de llamadas - con el timestamp y la extension
-                 $llamada=obtenerCDROnDemand($pDBCDR,$extension,$regs[1]);
+                 $llamada=obtenerCDROnDemand($pDBCDR,$extension,$regs[1], $esAdministrador);
                  $llamada['archivo']=$archivo;
                  $llamada['type'] = "on demand";
                  $llamadas[strtotime($llamada['calldate'])]=$llamada;
@@ -212,12 +213,11 @@ function _moduleContent(&$smarty, $module_name)
                  $calldate="$fecha $hora";
                  //busco por fecha y extension destino
                  //ya tengo el archivo, busco el correspondiente en el registro de llamadas - con el timestamp y la extension
-                 $llamada=obtenerCDRIncoming($pDBCDR,$extension, $calldate);
+                 $llamada=obtenerCDRIncoming($pDBCDR,$extension, $calldate, $esAdministrador);
                  $llamada['archivo']=$archivo;
                  $llamada['type'] = "auto - incoming";
                  $llamadas[strtotime($llamada['calldate'])]=$llamada;
-             }
-            //g121-20070828-162421-1188336241.1610.wav
+            }/*
             else if (!$llamada_incoming && ereg("g$extension\-([[:digit:]]+)\-([[:digit:]]+)(.+)\.[wav|WAV|gsm]",$archivo,$regs)){
                  //formar la fecha y la hora
                  $fecha=substr($regs[1], 0, 4).'-'.substr($regs[1], 4, 2).'-'.substr($regs[1], 6, 2);
@@ -229,7 +229,29 @@ function _moduleContent(&$smarty, $module_name)
                  $llamada['archivo']=$archivo;
                  $llamada['type'] = "incoming";
                  $llamadas[strtotime($llamada['calldate'])]=$llamada;
-             }
+            }*/
+
+            //g1-1207292249.1473.wav
+            else if (!$llamada_incoming && ereg("^g$extension-([[:digit:]]+\.[[:digit:]]+)\.[wav|WAV|gsm]",$archivo,$regs))
+            {
+                $unique_id=$regs[1];
+                $llamada=obtenerCDR_with_uniqueid($pDBCDR,$unique_id);
+                $llamada['archivo'] = $archivo;
+                $llamada['type'] = "always";
+                if($extension==$llamada['src'] || $extension==$llamada['dst'] || $extension=="[[:digit:]]+") //se se cumple esto es porque es el usuario solo puede ver sus llamadas y la otra es porque es administrador
+                    $llamadas[strtotime($llamada['calldate'])]=$llamada;
+            }
+            //g121-20070828-162421-1188336241.1610.wav
+            else if (!$llamada_incoming && ereg("^g$extension-[[:digit:]]+-[[:digit:]]+-([[:digit:]]+\.[[:digit:]]+)\.[wav|WAV|gsm]",$archivo,$regs))
+            {
+                $unique_id=$regs[1];
+                $llamada=obtenerCDR_with_uniqueid($pDBCDR,$unique_id);
+                $llamada['archivo'] = $archivo;
+                $llamada['type'] = "always";
+                if($extension==$llamada['src'] || $extension==$llamada['dst'] || $extension=="[[:digit:]]+") //se se cumple esto es porque es el usuario solo puede ver sus llamadas y la otra es porque es administrador
+                    $llamadas[strtotime($llamada['calldate'])]=$llamada;
+            }
+
              //buscar llamadas OUTGOING
              //OUT-ext-uniqueid.wav
             else if (ereg("OUT\-$extension\-([[:digit:]]+(\.[[:digit:]]+)*)\.[wav|WAV|gsm]",$archivo,$regs)){
@@ -248,7 +270,7 @@ function _moduleContent(&$smarty, $module_name)
                  $calldate="$fecha $hora";
                  //busco por fecha y extension destino
                  //ya tengo el archivo, busco el correspondiente en el registro de llamadas - con el timestamp y la extension
-                 $llamada=obtenerCDROutgoing($pDBCDR,$extension, $calldate);
+                 $llamada=obtenerCDROutgoing($pDBCDR,$extension, $calldate, $esAdministrador);
                  $llamada['archivo'] = $archivo;
                  $llamada['type'] = "auto - outgoing";
                  $llamadas[strtotime($llamada['calldate'])]=$llamada;
@@ -260,15 +282,46 @@ function _moduleContent(&$smarty, $module_name)
                  $calldate="$fecha $hora";
                  //busco por fecha y extension destino
                  //ya tengo el archivo, busco el correspondiente en el registro de llamadas - con el timestamp y la extension
-                 $llamada=obtenerCDROutgoing($pDBCDR,$extension, $calldate);
+                 $llamada=obtenerCDROutgoing($pDBCDR,$extension, $calldate, $esAdministrador);
                  $llamada['archivo'] = $archivo;
                  $llamada['type'] = "auto - outgoing";
                  $llamadas[strtotime($llamada['calldate'])]=$llamada;
             }
-             // El caso para cuando a la extension se le configuró sus records incoming or outgoing a always 
-            else if (ereg("[[:digit:]]+\-[[:digit:]]+\-([[:digit:]]+.[[:digit:]]+).[wav|WAV|gsm]",$archivo,$regs)){
+
+            /****PARA LAS COLAS****/
+            //q7000-20080411-180242-1207954962.473.wav
+            else if($esAdministrador && ereg("^q[[:digit:]]+-[[:digit:]]+-[[:digit:]]+-([[:digit:]]+\.[[:digit:]]+)\.[wav|WAV|gsm]",$archivo,$regs))
+            {
                 $unique_id=$regs[1];
                 $llamada=obtenerCDR_with_uniqueid($pDBCDR,$unique_id);
+                $llamada['archivo'] = $archivo;
+                $llamada['type'] = "queue - total";
+                $llamadas[strtotime($llamada['calldate'])]=$llamada;
+            }
+            //q7000-20080411-162833-1207949313.9-in.wav
+            else if($esAdministrador && ereg("^q[[:digit:]]+-[[:digit:]]+-[[:digit:]]+-([[:digit:]]+\.[[:digit:]]+)-in\.[wav|WAV|gsm]",$archivo,$regs))
+            {
+                $unique_id=$regs[1];
+                $llamada=obtenerCDR_with_uniqueid($pDBCDR,$unique_id);
+                $llamada['archivo'] = $archivo;
+                $llamada['type'] = "queue - in";
+                $llamadas[strtotime($llamada['calldate'])."-in"]=$llamada;
+            }
+            //q7000-20080411-162833-1207949313.9-out.wav
+            else if($esAdministrador && ereg("^q[[:digit:]]+-[[:digit:]]+-[[:digit:]]+-([[:digit:]]+\.[[:digit:]]+)-out\.[wav|WAV|gsm]",$archivo,$regs))
+            {
+                $unique_id=$regs[1];
+                $llamada=obtenerCDR_with_uniqueid($pDBCDR,$unique_id);
+                $llamada['archivo'] = $archivo;
+                $llamada['type'] = "queue - out";
+            $llamadas[strtotime($llamada['calldate'])."-out"]=$llamada;
+            }
+
+
+             // El caso para cuando a la extension se le configuró sus records incoming or outgoing a always 
+            else if (ereg("[[:digit:]]+\-[[:digit:]]+\-([[:digit:]]+.[[:digit:]]+).[wav|WAV|gsm]",$archivo,$regs)){
+                $unique_id = $regs[1];
+                $llamada = obtenerCDR_with_uniqueid($pDBCDR,$unique_id);
                 $llamada['archivo'] = $archivo;
                 $llamada['type'] = "always";
                 if($extension==$llamada['src'] || $extension==$llamada['dst'] || $extension=="[[:digit:]]+") //se se cumple esto es porque es el usuario solo puede ver sus llamadas y la otra es porque es administrador
@@ -279,6 +332,7 @@ function _moduleContent(&$smarty, $module_name)
         if($tmpExtension=="" || is_null($tmpExtension))//validacion solo para usuarios del grupo administrator
             $smarty->assign("mb_message", "<b>".$arrLang["You don't have extension number associated with user"]."</b>");
         //rsort($llamadas);
+
         foreach ($llamadas as $llamada){ 
             $fecha = date("Y-m-d",strtotime($llamada['calldate']));
             $hora = date("H:i:s",strtotime($llamada['calldate']));
@@ -334,32 +388,79 @@ function _moduleContent(&$smarty, $module_name)
     return $contenidoModulo;
 }
 
-function Files_Between_Dates($file, $extension, $date_start, $date_end)
+function Files_Between_Dates($file, $extension, $date_start, $date_end, $esAdministrador)
 {
+    //Se obtiene la fecha por timestamp
+    //este valor es siempre unico generalmente lleva adjunto un id
     $fecha = 0;
-    if (ereg("auto\-([[:digit:]]+)\-$extension(.+)\.[wav|WAV|gsm]",$file,$regs))
-        $fecha = strtotime($regs[1]);
-    //buscar llamadas incoming IN-extension-uniqueid
-    //if (ereg("IN\-$extension\-([[:digit:]]+(\.[[:digit:]]+)*)\.[wav|WAV|gsm]",$file,$regs))
-        //$fecha = strtotime($regs[1]);
-    //buscar llamadas incoming IN-extension-fecha-hora
-    if (ereg("IN\-$extension\-([[:digit:]]+)\-([[:digit:]]+)\.[wav|WAV|gsm]",$file,$regs))
-        $fecha = strtotime($regs[1]);
+    if (ereg("^auto\-([[:digit:]]+)\-$extension(.+)\.[wav|WAV|gsm]$",$file,$regs))
+        $fecha = $regs[1];
+
+
+    /****llamadas incoming IN-extension-uniqueid****/
+    //IN-100-1207645055.197.wav
+    else if (ereg("^IN\-$extension\-([[:digit:]]+)[\.[[:digit:]]+]*\.[wav|WAV|gsm]",$file,$regs))
+        $fecha = $regs[1];
+    else if (ereg("^IN\-$extension\-([[:digit:]]+)\-([[:digit:]]+)\.[wav|WAV|gsm]",$file,$regs)){
+        //formar la fecha y la hora
+        $fecha=substr($regs[1], 0, 4).'-'.substr($regs[1], 4, 2).'-'.substr($regs[1], 6, 2);
+        $hora=substr($regs[2], 0, 2).':'.substr($regs[2], 2, 2).':'.substr($regs[2], 4, 2);
+        $calldate="$fecha $hora";
+        $fecha = strtotime($calldate);
+    }
+
+    //if (ereg("g$extension\-([[:digit:]]+)\-([[:digit:]]+)(.+)\.[wav|WAV|gsm]",$file,$regs))
+    //g1-1207292249.1473.wav
+    else if (ereg("^g$extension-([[:digit:]]+)\.[[:digit:]]+\.[wav|WAV|gsm]",$file,$regs))
+        $fecha = $regs[1];
     //g121-20070828-162421-1188336241.1610.wav
-    if (ereg("g$extension\-([[:digit:]]+)\-([[:digit:]]+)(.+)\.[wav|WAV|gsm]",$file,$regs))
-        $fecha = strtotime($regs[1]);
-    //buscar llamadas OUTGOING
-    //OUT-ext-uniqueid.wav
-    //if (ereg("OUT\-$extension\-([[:digit:]]+(\.[[:digit:]]+)*)\.[wav|WAV|gsm]",$file,$regs))
-        //$fecha = strtotime($regs[1]);
-    //OUT404--20070426-090918.wav
-    if (ereg("OUT$extension\-([[:digit:]]+)\-([[:digit:]]+)(.+)\.[wav|WAV|gsm]",$file,$regs))
-        $fecha = strtotime($regs[1]);
-    if (ereg("OUT$extension\-[(.+)|\-]*([[:digit:]]+)\-([[:digit:]]+)\.[wav|WAV|gsm]",$file,$regs))
-        $fecha = strtotime($regs[1]);
-    // El caso para cuando a la extension se le configuró sus records incoming or outgoing a always
-    if (ereg("([[:digit:]]*)\-[[:digit:]]+\-[[:digit:]]+.[[:digit:]]+.[wav|WAV|gsm]",$file,$regs))
-        $fecha = strtotime($regs[1]);
+    else if (ereg("^g$extension-[[:digit:]]+-[[:digit:]]+-([[:digit:]]+)\.[[:digit:]]+\.[wav|WAV|gsm]",$file,$regs))
+        $fecha = $regs[1];
+
+    /****llamadas incoming IN-extension-uniqueid****/
+
+
+
+    /****llamadas OUTGOING OUT-extension-uniqueid****/
+    //OUT-504-1207151691.420.wav
+    else if (ereg("^OUT\-$extension\-([[:digit:]]+)[\.[[:digit:]]+]*\.[wav|WAV|gsm]",$file,$regs))
+        $fecha = $regs[1];
+    //OUT404-20070426-090918.wav
+    //OUT504-20080402-133229-1207161149.873.wav
+    else if (ereg("^OUT$extension\-([[:digit:]]+)\-([[:digit:]]+)(.+)\.[wav|WAV|gsm]",$file,$regs))
+    {
+        $fecha=substr($regs[1], 0, 4).'-'.substr($regs[1], 4, 2).'-'.substr($regs[1], 6, 2);
+        $hora=substr($regs[2], 0, 2).':'.substr($regs[2], 2, 2).':'.substr($regs[2], 4, 2);
+        $calldate="$fecha $hora";
+        $fecha = strtotime($calldate);
+    }
+    else if (ereg("^OUT$extension\-[(.+)|\-]*([[:digit:]]+)\-([[:digit:]]+)\.[wav|WAV|gsm]",$file,$regs))
+    {
+        //formar la fecha y la hora
+        $fecha=substr($regs[1], 0, 4).'-'.substr($regs[1], 4, 2).'-'.substr($regs[1], 6, 2);
+        $hora=substr($regs[2], 0, 2).':'.substr($regs[2], 2, 2).':'.substr($regs[2], 4, 2);
+        $calldate="$fecha $hora";
+        $fecha = strtotime($calldate);
+    }
+    /****llamadas OUTGOING OUT-extension-uniqueid****/
+
+
+
+    /****Colas****/
+    //q7000-20080411-180242-1207954962.473.wav
+    //q7000-20080411-162833-1207949313.9-in.wav
+    //q7000-20080411-162833-1207949313.9-out.wav
+    else if($esAdministrador && ereg("^q[[:digit:]]+-[[:digit:]]+-[[:digit:]]+-([[:digit:]]+)\.[[[:digit:]]+|[[:digit:]]+-in|[[:digit:]]+-out]\.[wav|WAV|gsm]",$file,$regs))
+            $fecha = $regs[1];
+    /****Colas****/
+
+
+
+    //El caso para cuando a la extension se le configuró sus records incoming or outgoing a always
+    else if (ereg("^[[:digit:]]+\-[[:digit:]]+\-([[:digit:]]+).[[:digit:]]+.[wav|WAV|gsm]",$file,$regs))
+        $fecha = $regs[1];
+
+
     //COMPARAR LAS FECHAS
     if ($fecha<=strtotime($date_end) && $fecha>=strtotime($date_start))
         return true;
@@ -367,11 +468,13 @@ function Files_Between_Dates($file, $extension, $date_start, $date_end)
     return false;
 }
 
-function obtenerCDROnDemand($db,$extension, $start_time)
+function obtenerCDROnDemand($db,$extension, $start_time, $esAdministrador)
 {
     $arr_result=array();
     $query   = "SELECT calldate, src, dst, channel, dstchannel, disposition, uniqueid, duration, billsec, accountcode FROM cdr ";
-    $query .= "WHERE (src='$extension' OR dst='$extension') AND $start_time BETWEEN UNIX_TIMESTAMP(calldate) AND (UNIX_TIMESTAMP(calldate)+duration)";
+    $query .= "WHERE $start_time BETWEEN UNIX_TIMESTAMP(calldate) AND (UNIX_TIMESTAMP(calldate)+duration)";
+    if(!$esAdministrador)
+        $query .= " AND (src='$extension' OR dst='$extension')";
 
     $arr_result=$db->getFirstRowQuery($query,TRUE);
     if (is_array($arr_result) && count($arr_result)>0) {
@@ -379,12 +482,13 @@ function obtenerCDROnDemand($db,$extension, $start_time)
     return $arr_result;
 }
 
-function obtenerCDRIncoming($db,$extension, $calldate)
+function obtenerCDRIncoming($db,$extension, $calldate, $esAdministrador)
 {
     $arr_result=array();
     $query   = "SELECT calldate, src, dst, channel, dstchannel, disposition, uniqueid, duration, billsec, accountcode FROM cdr ";
-    $query .= "WHERE dst='$extension' AND calldate='$calldate'";
-
+    $query .= "WHERE calldate='$calldate'";
+    if(!$esAdministrador)
+        $query .= " AND dst='$extension'";
 
     $arr_result=$db->getFirstRowQuery($query,TRUE);
     if (is_array($arr_result) && count($arr_result)>0) {
@@ -392,12 +496,13 @@ function obtenerCDRIncoming($db,$extension, $calldate)
     return $arr_result;
 }
 
-function obtenerCDROutgoing($db,$extension, $calldate)
+function obtenerCDROutgoing($db,$extension, $calldate, $esAdministrador)
 {
     $arr_result=array();
-    $query   = "SELECT calldate, src, dst, channel, dstchannel, disposition, uniqueid, duration, billsec, accountcode FROM cdr ";
-    $query .= "WHERE src='$extension' AND calldate='$calldate'";
-
+    $query  = "SELECT calldate, src, dst, channel, dstchannel, disposition, uniqueid, duration, billsec, accountcode FROM cdr ";
+    $query .= "WHERE calldate='$calldate'";
+    if(!$esAdministrador)
+        $query .= " AND src='$extension'";
 
     $arr_result=$db->getFirstRowQuery($query,TRUE);
     if (is_array($arr_result) && count($arr_result)>0) {
@@ -410,7 +515,6 @@ function obtenerCDR_with_uniqueid($db,$uniqueid)
     $arr_result=array();
     $query   = "SELECT calldate, src, dst, channel, dstchannel, disposition, uniqueid, duration, billsec, accountcode FROM cdr ";
     $query .= "WHERE uniqueid='$uniqueid'";
-
 
     $arr_result=$db->getFirstRowQuery($query,TRUE);
     if (is_array($arr_result) && count($arr_result)>0) {
