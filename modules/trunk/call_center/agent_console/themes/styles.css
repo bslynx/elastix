@@ -1,0 +1,137 @@
+/*Estilos para el modulo call_center*/
+td.fondo_estatus_llamada {
+    background-color: #06640D;
+    color: #FFFFFF;
+    font-weight: bold;
+    padding: 5px 5px 5px 5px;
+}
+
+td.fondo_estatus_break {
+    background-color: #BD0000;
+    color: #FFFFFF;
+    font-weight: bold;
+    padding: 5px 5px 5px 5px;
+}
+
+td.fondo_estatus_no_llamada {
+    background-color: #094895;
+    color: #FFFFFF;
+    font-weight: bold;
+    padding: 5px 5px 5px 5px;
+}
+
+TD.celda_callcenter {
+    FONT-FAMILY: verdana, arial, helvetica, sans-serif;
+    FONT-SIZE: 11pt;
+    BACKGROUND: #FFFFFF;
+    text-align: left;
+    color: #000000;
+}
+
+.celda_callcenter_grande {
+    FONT-FAMILY: verdana, arial, helvetica, sans-serif;
+    FONT-SIZE: 14pt;
+    BACKGROUND: #FFFFFF;
+    text-align: left;
+    color: #000000;
+}
+
+/*Fin de estilos del modulo call_center*/
+
+.boton_normal{
+    width:85px;
+    height:75px;
+    font-size:16px;
+    font-weight:bold;
+/*     background-color:gray; */
+}
+/* Boton Break */
+.boton_unbreak{
+    width:85px;
+    height:75px;
+    font-size:16px;
+    font-weight:bold;
+    background-color:#BD0000;
+    color: #FFFFFF;
+}
+.boton_break{
+    width:85px;
+    height:75px;
+    font-size:16px;
+    font-weight:bold;
+    background-color:#094895;   
+    color: #FFFFFF;
+}
+input.boton_unbreak:focus{
+    background-color:#BD0000;
+    border-color:#BD0000;
+}
+input.boton_break:focus{
+    background-color:#094895;
+    border-color:#094895;
+}
+/* Fin Boton Break */
+/* Boton Hangup */
+.boton_activo{
+    width:85px;
+    height:75px;
+    font-size:16px;
+    font-weight:bold;
+    background-color:#06640D;
+    color: #FFFFFF;
+}
+.boton_desactivo{
+    width:85px;
+    height:75px;
+    font-size:16px;
+    font-weight:bold;
+    background-color:#D2C0CF;
+    color:#FFFFFF;
+}
+input.boton_activo:focus{
+    background-color:#06640D;
+    border-color:#06640D;
+}
+input.boton_desactivo:focus{
+     background-color:#D2C0CF;
+    border-color:#D2C0CF;
+}
+/* Fin Boton Hangup */
+
+/* Boton Tranfer */
+.boton_tranfer{
+    width:85px;
+    height:75px;
+    font-size:16px;
+    font-weight:bold;
+    background-color:white;
+/*     color: #FFFFFF; */
+}
+/* Fin Boton Tranfer */
+#div_list{
+    position:absolute;
+    top:292px;
+    left:105px;
+    float:left;
+    width:120px;
+    height:105px;
+    text-align:center;
+    background-color:#094895;   
+    font-size:16px;
+    font-weight:bold;
+    color: #FFFFFF;
+    border:1px black solid;
+}
+.style_label{
+    text-align:center;
+    font-size:16px;
+    font-weight:bold;
+    text-decoration:underline;
+}
+.classCronometro{
+    font-size:24px;
+    font-weight:bold;
+    padding:0px 0px 0px 0px;
+    margin:0px 0px 0px 0px;
+    color: #FFFFFF;
+}

@@ -1,0 +1,116 @@
+<?php
+/* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
+  Codificación: UTF-8
+  +----------------------------------------------------------------------+
+  | Elastix version 0.5                                                  |
+  | http://www.elastix.org                                               |
+  +----------------------------------------------------------------------+
+  | Copyright (c) 2006 Palosanto Solutions S. A.                         |
+  +----------------------------------------------------------------------+
+  | Cdla. Nueva Kennedy Calle E 222 y 9na. Este                          |
+  | Telfs. 2283-268, 2294-440, 2284-356                                  |
+  | Guayaquil - Ecuador                                                  |
+  | http://www.palosanto.com                                             |
+  +----------------------------------------------------------------------+
+  | The contents of this file are subject to the General Public License  |
+  | (GPL) Version 2 (the "License"); you may not use this file except in |
+  | compliance with the License. You may obtain a copy of the License at |
+  | http://www.opensource.org/licenses/gpl-license.php                   |
+  |                                                                      |
+  | Software distributed under the License is distributed on an "AS IS"  |
+  | basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See  |
+  | the License for the specific language governing rights and           |
+  | limitations under the License.                                       |
+  +----------------------------------------------------------------------+
+  | The Original Code is: Elastix Open Source.                           |
+  | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  +----------------------------------------------------------------------+
+  $Id: es.lang,v 1.2 2007/08/09 00:31:28 jmartinez Exp $ */
+global $arrLan;
+$arrLan=array(
+"Agent Console"=>"Agent Console",
+"Hangup"=>"Hangup",
+"Tranfer"=>"Tranfer",
+"Call"=>"Call",
+"Script"=>"Script",
+"Form" => "Form",
+"Agent" => "Agent",
+"Agent Number" => "Number",
+"Take Break" => "Take Break",
+"Fill the fields" => "Please fill the fields",
+"Break"=>"Break",
+"UnBreak"=>"UnBreak",
+"In Break"=>"In Break",
+"Welcome to Console Agent"=>"Welcome to Console Agent",
+"Please enter your number agent"=>"Please enter your number agent and extension",
+"Number Agent"=>"Number Agent",
+"Enter Agent" => "Enter",
+"Extension"=>"Extension",
+"Error when connecting to Asterisk Manager"=>"Error when connecting to Asterisk Manager",
+"Unable to add Agent to queue: No such queue" => "Unable to add Agent to queue: No such queue", //Bruno agrego
+"Error when consulting Agent in Asterisk Manager" => "Error when consulting Agent in Asterisk Manager",
+"Agent isn't in Queue Asterisk"=>"Agent isn't in Queue Asterisk",
+"Unable to pause Agent to queue: No such queue" => "Unable to pause Agent to queue: No such queue",
+"Audit Error" => "Audit Error",
+"Number Agent already connected with extension"=>"Number Agent already connected with extension",
+"Agent Error" => "Agent Error",
+"Audit of break could not be inserted" => "Audit of break could not be inserted",
+"Id of the agent could not be obtained" => "Id of the agent could not be obtained",
+"Number of audit nonassigned" => "Number of audit nonassigned",
+"Error saving client information"=>"Error saving client informations",
+"Information was saved"=>"Information was saved",
+"Call no active"=>"No Active Call",
+"Error when connecting to database Call Center"=>"Error when connecting to database Call Center",
+"Calling"=>"Calling",
+"Forms Nondefined" => "Forms Nondefined", //Bruno agrego
+"Call Number" => "Call Number", //Bruno agrego
+"Name" => "Name",
+"Last Name" => "Last Name",
+"Error when consulting contact information" => "Error when consulting contact information",
+"Phone" => "Phone",
+"Contacts" => "Contacts",
+"Number Phone not Registered" => "Number Phone not Registered",
+"Contact Basic Information" => "Contact Basic Information",
+"Number Identification" => "Number Identification",
+"Error when updating call information" => "Error when updating call information",
+"Id call or Id contact have format invalid" => "Id call or Id contact have format invalid",
+"Confirm"=>"Confirm",
+"vTigerCRM"=>"vTigerCRM",
+"Add Client"=>"Add Client",
+"View Client"=>"View Client",
+"Call can't be closed, channel is empty"=>"Call can't be closed, channel is empty",
+// para transferencia de llamadas
+"Accept"=>"Accept",
+"error when creating new object"=>"Error when creating new object",
+"No call"=>"No Call",
+"transfer_error"=>"Transfer Error : ",
+"Success"=>"Transfer Call Successfull",
+"Error when connecting to Call Center"=>"Error when connecting to Call Center",
+"Error query"=>"Error in query",
+"select extension"=>"select any extension",
+"consultar_llamada"=>"Transfer ?",
+// fin transferencia de llamadas
+
+// para poner llamada en hold
+"Hold"=>"Hold",
+"Unhold"=>"Unhold",
+// fin hold llamada
+
+
+// para Marcado de llamadas
+"Marcar"        => "Call",
+"Cancel"        => "Cancel",
+"Marked Error"  => "Marked Error",
+"Success Marked"=> "Call marked successful",
+"Please enter a number to mark" => "Please enter a number to mark",
+// fin de Envio de llamadas
+
+"vtigercrm"=>"vTiger CRM"
+);
+
+
+
+
+
+
+?>
