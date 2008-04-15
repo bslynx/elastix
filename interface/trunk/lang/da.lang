@@ -741,5 +741,26 @@ implementations of Voice over IP around the globe.",
 /*Menu*/
 "Tools" => "Tools",
 /*Menu*/
+
+/*Backup/Restore*/
+"Are you sure you wish to delete backup (s)?" => "Are you sure you wish to delete backup (s)?",
+"Database" => "Database",
+"PDF" => "PDF",
+"Endpoint" => "Endpoint",
+"Asterisk" => "Asterisk",
+"All options (Fax)" => "All options (Fax)",
+"All options (Email)" => "All options (Email)",
+"All options (Endpoint)" => "All options (Endpoint)",
+"All options (Asterisk)" => "All options (Asterisk)",
+"Zaptel Configuration" => "Zaptel Configuration",
+"Others" => "Others",
+"All options (Others)" => "All options (Others)",
+"SugarCRM Database" => "SugarCRM Database",
+"VtigerCRM Database" => "VtigerCRM Database",
+"A2billing Database" => "A2billing Database",
+"Mysql Database" => "Mysql Database",
+"Menus and Permissions" => "Menus and Permissions",
+"This process could take several minutes" => "This process could take several minutes",
+/*Backup/Restore*/
 );
 ?>

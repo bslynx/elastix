@@ -747,5 +747,26 @@ alrededor del mundo.",
 /*Menu*/
 "Tools" => "Herramientas",
 /*Menu*/
+
+/*Backup/Restore*/
+"Are you sure you wish to delete backup (s)?" => "Esta seguro de eliminar el correo el(los) backup(s)?",
+"Database" => "Base de Datos",
+"PDF" => "PDF",
+"Endpoint" => "Endpoint",
+"Asterisk" => "Asterisk",
+"All options (Fax)" => "Todas las opciones (Fax)",
+"All options (Email)" => "Todas las opciones (Email)",
+"All options (Endpoint)" => "Todas las opciones (Endpoint)",
+"All options (Asterisk)" => "Todas las opciones (Asterisk)",
+"All options (Others)" => "Todas las opciones (Others)",
+"Zaptel Configuration" => "Configuración de Zaptel",
+"Others" => "Otros",
+"SugarCRM Database" => "Base de Datos SugarCRM",
+"VtigerCRM Database" => "Base de Datos VtigerCRM",
+"A2billing Database" => "Base de Datos A2billing",
+"Mysql Database" => "Base de Datos Mysql",
+"Menus and Permissions" => "Menús y Permisos",
+"This process could take several minutes" => "Este proceso puede tomar varios minutos",
+/*Backup/Restore*/
 );
 ?>
