@@ -189,7 +189,7 @@ function _moduleContent(&$smarty, $module_name)
 
             $llamada_incoming=false;
             $llamada_outgoing = false;
-            if (ereg("auto\-([[:digit:]]+)\-$extension(.+)\.[wav|WAV|gsm]",$archivo,$regs)){
+            if (ereg("^auto\-([[:digit:]]+)\-$extension(.+)\.[wav|WAV|gsm]",$archivo,$regs)){
                  //ya tengo el archivo, busco el correspondiente en el registro de llamadas - con el timestamp y la extension
                  $llamada=obtenerCDROnDemand($pDBCDR,$extension,$regs[1], $esAdministrador);
                  $llamada['archivo']=$archivo;
@@ -197,7 +197,7 @@ function _moduleContent(&$smarty, $module_name)
                  $llamadas[strtotime($llamada['calldate'])]=$llamada;
              }
             //buscar llamadas incoming IN-extension-uniqueid
-            else if (ereg("IN\-$extension\-([[:digit:]]+(\.[[:digit:]]+)*)\.[wav|WAV|gsm]",$archivo,$regs)){
+            else if (ereg("^IN\-$extension\-([[:digit:]]+(\.[[:digit:]]+)*)\.[wav|WAV|gsm]",$archivo,$regs)){
                 $llamada_incoming = true;
                 $unique_id=$regs[1];
                 $llamada=obtenerCDR_with_uniqueid($pDBCDR,$unique_id);
@@ -206,7 +206,7 @@ function _moduleContent(&$smarty, $module_name)
                 $llamadas[strtotime($llamada['calldate'])]=$llamada;
             }
             //buscar llamadas incoming IN-extension-fecha-hora
-            else if (!$llamada_incoming && ereg("IN\-$extension\-([[:digit:]]+)\-([[:digit:]]+)\.[wav|WAV|gsm]",$archivo,$regs)){
+            else if (!$llamada_incoming && ereg("^IN\-$extension\-([[:digit:]]+)\-([[:digit:]]+)\.[wav|WAV|gsm]",$archivo,$regs)){
                  //formar la fecha y la hora
                  $fecha=substr($regs[1], 0, 4).'-'.substr($regs[1], 4, 2).'-'.substr($regs[1], 6, 2);
                  $hora=substr($regs[2], 0, 2).':'.substr($regs[2], 2, 2).':'.substr($regs[2], 4, 2);
@@ -254,7 +254,7 @@ function _moduleContent(&$smarty, $module_name)
 
              //buscar llamadas OUTGOING
              //OUT-ext-uniqueid.wav
-            else if (ereg("OUT\-$extension\-([[:digit:]]+(\.[[:digit:]]+)*)\.[wav|WAV|gsm]",$archivo,$regs)){
+            else if (ereg("^OUT\-$extension\-([[:digit:]]+(\.[[:digit:]]+)*)\.[wav|WAV|gsm]",$archivo,$regs)){
                 $llamada_outgoing = true;
                 $unique_id=$regs[1];
                 $llamada=obtenerCDR_with_uniqueid($pDBCDR,$unique_id);
@@ -263,7 +263,7 @@ function _moduleContent(&$smarty, $module_name)
                 $llamadas[strtotime($llamada['calldate'])]=$llamada;
             }
             //OUT404--20070426-090918.wav
-            else if (!$llamada_outgoing && ereg("OUT$extension\-([[:digit:]]+)\-([[:digit:]]+)(.+)\.[wav|WAV|gsm]",$archivo,$regs)){
+            else if (!$llamada_outgoing && ereg("^OUT$extension\-([[:digit:]]+)\-([[:digit:]]+)(.+)\.[wav|WAV|gsm]",$archivo,$regs)){
                  //formar la fecha y la hora
                  $fecha=substr($regs[1], 0, 4).'-'.substr($regs[1], 4, 2).'-'.substr($regs[1], 6, 2);
                  $hora=substr($regs[2], 0, 2).':'.substr($regs[2], 2, 2).':'.substr($regs[2], 4, 2);
@@ -275,7 +275,7 @@ function _moduleContent(&$smarty, $module_name)
                  $llamada['type'] = "auto - outgoing";
                  $llamadas[strtotime($llamada['calldate'])]=$llamada;
              }
-            else if (!$llamada_outgoing && ereg("OUT$extension\-[(.+)|\-]*([[:digit:]]+)\-([[:digit:]]+)\.[wav|WAV|gsm]",$archivo,$regs)){
+            else if (!$llamada_outgoing && ereg("^OUT$extension\-[(.+)|\-]*([[:digit:]]+)\-([[:digit:]]+)\.[wav|WAV|gsm]",$archivo,$regs)){
                  //formar la fecha y la hora
                  $fecha=substr($regs[1], 0, 4).'-'.substr($regs[1], 4, 2).'-'.substr($regs[1], 6, 2);
                  $hora=substr($regs[2], 0, 2).':'.substr($regs[2], 2, 2).':'.substr($regs[2], 4, 2);
@@ -393,7 +393,7 @@ function Files_Between_Dates($file, $extension, $date_start, $date_end, $esAdmin
     //Se obtiene la fecha por timestamp
     //este valor es siempre unico generalmente lleva adjunto un id
     $fecha = 0;
-    if (ereg("^auto\-([[:digit:]]+)\-$extension(.+)\.[wav|WAV|gsm]$",$file,$regs))
+    if (ereg("^auto\-([[:digit:]]+)\-$extension(.+)\.[wav|WAV|gsm]",$file,$regs))
         $fecha = $regs[1];
 
 
