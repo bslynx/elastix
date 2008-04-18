@@ -142,7 +142,7 @@ class paloFax {
         if ($db = sqlite3_open($this->rutaDB)) {
             $query  = "SELECT id, name, extension, secret, clid_name, clid_number, dev_id, date_creation, email FROM fax";
             $result = sqlite3_query($db, $query);
-            if(is_array($result))
+            if(isset($result))
             {
                 while ($row = sqlite3_fetch_array($result)) {
                     $arrReturn[]=$row;
