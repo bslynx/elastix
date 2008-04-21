@@ -145,4 +145,14 @@ if [ "$elastix_version" \< "1.0" ]; then
         echo "End step 8, delete path temporaly"
 fi
 
+#paso 9: 
+# Validation for rate.db exists column trunk.
+sqlite3  $pathDB/rate.db "alter table rate add column trunk TEXT;" &>/dev/null  
+existeColumnTrunk=$?
+if [ $existeColumnTrunk -ne 0 ]; then
+    echo "End step 9, Column trunk in database rate.db exists."
+else
+    echo "End step 9, Column trunk in database rate.db added."
+fi
+
 ################## End Administration Menus and permission ##########################
