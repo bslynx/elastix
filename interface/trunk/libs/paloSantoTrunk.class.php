@@ -140,6 +140,62 @@ class paloTrunk {
         return $trunks_bill;
     }
 
+    /**
+     * Method to parse zapata file and resolve his group to trunks
+     *
+     * @param    string $zapata_file     zapata configuration file
+     * @callback array  $grupos          group list
+     *
+     * @return   array  $troncales       array with resolved group
+     */
+
+    function getExtendedTrunksBill(&$grupos, $zapata_file='/etc/asterisk/zapata.conf')
+    {
+       $troncales=NULL;
+       //leer el archivo /etc/zapata.conf para poder reemplazar para ZAP g#  con los respectivos canales
+       $ultGrupo="";
+
+       if (file_exists($zapata_file)){
+           $contenido_archivo=file($zapata_file);
+           foreach ($contenido_archivo as $linea){
+               if (ereg("^(group|channel[[:space:]]*)=([[:space:]]*.*)",$linea,$regs)){
+                   $regs_key=trim($regs[1]);
+                   $regs_value=trim($regs[2]);
+                   if ($regs_key=="group") $ultGrupo=$regs_value;
+                   if ($regs_key=="channel"){
+                       if (isset($ultGrupo)&&$ultGrupo!=""){
+                           $channel=explode(',',$regs_value);
+                           foreach ($channel as $item){
+                              if ($item!=""){
+                                   $item   = trim(preg_replace("%>| %","",$item));
+                                   $range  = explode('-',$item);
+                                   for ($i = min($range);$i<=max($range);$i++) {
+                                        $canales[$ultGrupo][]=$i;
+                                        $grupos[$i]=$ultGrupo;
+                                   }
+                              }
+                           }
+                       }
+                   }
+               }
+           }
+       }
+
+       //reemplazo el id del grupo por el valor
+       foreach ($this->getTrunksBill() as $trunkBill)
+       {
+           if (ereg("^ZAP/g([[:digit:]]+)",$trunkBill,$regs2))
+           {
+               $id_group=$regs2[1];
+               if (isset($canales[$id_group])){
+                  foreach($canales[$id_group] as $canal)
+                   $troncales[]="ZAP/$canal";
+               }
+           }else
+               $troncales[]=$trunkBill;
+       }
+        return $troncales;
+    }
 
 }
 
