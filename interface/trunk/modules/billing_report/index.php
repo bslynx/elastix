@@ -216,7 +216,7 @@ function _moduleContent(&$smarty, $module_name)
     // Bloque comun
     //consulto cuales son los trunks de salida
     $oTrunk    = new paloTrunk($pDBTrunk);
-    $troncales = $oTrunk->getExtendedTrunksBill(&$grupos, $arrConfig['ASTETCDIR']['valor'].'/zapata.conf');//ej array("ZAP/1","ZAP/2");
+    $troncales = $oTrunk->getExtendedTrunksBill($grupos, $arrConfig['ASTETCDIR']['valor'].'/zapata.conf');//ej array("ZAP/1","ZAP/2");
 
     //echo "<pre>".print_r($troncales,1)."</pre>";
     //echo "<pre>".print_r($grupos,1)."</pre>";
