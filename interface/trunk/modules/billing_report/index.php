@@ -278,9 +278,14 @@ function _moduleContent(&$smarty, $module_name)
             $numero=$cdr[2];
             $arrTmp    = array();
             $arrTmp[0] = $cdr[0];
-            $arrTmp[1] = "<div title=\"{$arrLang['Channel']}: $cdr[3]\" align=\"left\">".($cdr[1]?$cdr[1]:$arrLang["Unknown"])."</div>";
+            if(isset($_GET['exportcsv']) && $_GET['exportcsv']=='yes'){
+                $arrTmp[1] = ($cdr[1]?$cdr[1]:$arrLang["Unknown"]);
+                $arrTmp[3] = $cdr[4];
+            } else {
+                $arrTmp[1] = "<div title=\"{$arrLang['Channel']}: $cdr[3]\" align=\"left\">".($cdr[1]?$cdr[1]:$arrLang["Unknown"])."</div>";
+                $arrTmp[3] = "<div title=\"{$arrLang['Trunk']}: $trunk\" align=\"left\">$cdr[4]</div>";
+            }
             $arrTmp[2] = $cdr[2];
-            $arrTmp[3] = "<div title=\"{$arrLang['Trunk']}: $trunk\" align=\"left\">$cdr[4]</div>";
             $arrTmp[4] = $cdr[8];
             $charge=0;
             $tarifa=array();
