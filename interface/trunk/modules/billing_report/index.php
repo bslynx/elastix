@@ -215,55 +215,10 @@ function _moduleContent(&$smarty, $module_name)
 
     // Bloque comun
     //consulto cuales son los trunks de salida
-    $oTrunk     = new paloTrunk($pDBTrunk);
-    $arrTrunksBill=$oTrunk->getTrunksBill();//ej array("ZAP/g0","ZAP/g1");
-    $troncales=NULL;
+    $oTrunk    = new paloTrunk($pDBTrunk);
+    $troncales = $oTrunk->getExtendedTrunksBill(&$grupos, $arrConfig['ASTETCDIR']['valor'].'/zapata.conf');//ej array("ZAP/1","ZAP/2");
 
-   //
-
-    //leer el archivo /etc/zapata.conf para poder reemplazar para ZAP g#  con los respectivos canales
-    $ultGrupo="";
-
-    if (file_exists("/etc/asterisk/zapata.conf")){
-        $contenido_archivo=file("/etc/asterisk/zapata.conf");
-        foreach ($contenido_archivo as $linea){
-            if (ereg("^(group|channel[[:space:]]*)=([[:space:]]*.*)",$linea,$regs)){
-                $regs_key=trim($regs[1]);
-                $regs_value=trim($regs[2]);
-                if ($regs_key=="group") $ultGrupo=$regs_value;
-                if ($regs_key=="channel"){
-                    if (isset($ultGrupo)&&$ultGrupo!=""){
-                        $channel=explode(',',$regs_value);
-                        foreach ($channel as $item){
-                           if ($item!=""){
-                                $item   = trim(preg_replace("%>| %","",$item));
-                                $range  = explode('-',$item);
-                                for ($i = min($range);$i<=max($range);$i++) { 
-                                     $canales[$ultGrupo][]=$i;
-                                     $grupos[$i]=$ultGrupo;
-				}
-                           }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    //reemplazo el id del grupo por el valor
-    foreach ($arrTrunksBill as $trunkBill)
-    {
-        if (ereg("^ZAP/g([[:digit:]]+)",$trunkBill,$regs2))
-        {
-            $id_group=$regs2[1];
-            if (isset($canales[$id_group])){
-               foreach($canales[$id_group] as $canal)
-                $troncales[]="ZAP/$canal";
-            }
-        }else
-            $troncales[]=$trunkBill;
-    }
-    //echo "<pre>".print_r($canales,1)."</pre>";
+    //echo "<pre>".print_r($troncales,1)."</pre>";
     //echo "<pre>".print_r($grupos,1)."</pre>";
     if (is_array($troncales) && count($troncales)>0){
         $arrCDR  = $oCDR->obtenerCDRs($limit, $offset, $date_start, $date_end, $field_name, $field_pattern,"ANSWERED","outgoing",$troncales);
