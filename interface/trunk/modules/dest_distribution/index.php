@@ -179,7 +179,7 @@ function _moduleContent(&$smarty, $module_name)
 
   //consulto cuales son los trunks de salida
     $oTrunk    = new paloTrunk($pDBTrunk);
-    $troncales = $oTrunk->getExtendedTrunksBill(&$grupos, $arrConfig['ASTETCDIR']['valor'].'/zapata.conf');//ej array("ZAP/1","ZAP/2");
+    $troncales = $oTrunk->getExtendedTrunksBill($grupos, $arrConfig['ASTETCDIR']['valor'].'/zapata.conf');//ej array("ZAP/1","ZAP/2");
 
     $arrCDR  = $oCDR->obtenerCDRs("", 0, $date_start,$date_end, "", "","ANSWERED","outgoing",$troncales);
 
