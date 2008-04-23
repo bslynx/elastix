@@ -28,6 +28,7 @@
   $Id: sampler.php,v 1.2 2007/07/07 22:50:40 admin Exp $ */
 
 require_once("/var/www/html/libs/misc.lib.php");
+require_once("/var/www/html/configs/default.conf.php");
 require_once("/var/www/html/libs/paloSantoSampler.class.php");
 require_once("/var/www/html/libs/paloSantoDB.class.php");
 
