@@ -78,6 +78,18 @@ function _moduleContent(&$smarty, $module_name)
                                                     "INPUT_EXTRA_PARAM"      => "",
                                                     "VALIDATION_TYPE"        => "text",
                                                     "VALIDATION_EXTRA_PARAM" => ""),
+                             "country_code" => array("LABEL"                  => $arrLang["Country Code"],
+                                                    "REQUIRED"               => "yes",
+                                                    "INPUT_TYPE"             => "TEXT",
+                                                    "INPUT_EXTRA_PARAM"      => "",
+                                                    "VALIDATION_TYPE"        => "numeric",
+                                                    "VALIDATION_EXTRA_PARAM" => ""),
+                             "area_code" => array("LABEL"                  => $arrLang["Area Code"],
+                                                    "REQUIRED"               => "yes",
+                                                    "INPUT_TYPE"             => "TEXT",
+                                                    "INPUT_EXTRA_PARAM"      => "",
+                                                    "VALIDATION_TYPE"        => "numeric",
+                                                    "VALIDATION_EXTRA_PARAM" => ""),
                              "port" => array("LABEL"                  => "Port",
                                                     "REQUIRED"               => "no",
                                                     "INPUT_TYPE"             => "HIDDEN",
@@ -107,7 +119,7 @@ function _moduleContent(&$smarty, $module_name)
             $oFax = new paloFax();
             // TODO: Debo revisar por errores aqui
             $oFax->createFaxExtension($_POST['name'], $_POST['extension'], $_POST['secret'], $_POST['email'], 
-                                      $_POST['clid_name'], $_POST['clid_number']);
+                                      $_POST['clid_name'], $_POST['clid_number'],$_POST['country_code'],$_POST['area_code']);
             header("Location: ?menu=faxlist");
         } else {
             // Error
@@ -128,7 +140,7 @@ function _moduleContent(&$smarty, $module_name)
         if($oForm->validateForm($_POST)) {
             // Exito, puedo procesar los datos ahora.
             $oFax = new paloFax();
-            $oFax->editFaxExtension($_POST['id_fax'],$_POST['name'], $_POST['extension'],                              $_POST['secret'], $_POST['email'],$_POST['clid_name'],                             $_POST['clid_number'],$_POST['dev_id'], $_POST['port']);
+            $oFax->editFaxExtension($_POST['id_fax'],$_POST['name'], $_POST['extension'],                              $_POST['secret'], $_POST['email'],$_POST['clid_name'],                             $_POST['clid_number'],$_POST['dev_id'], $_POST['port'],$_POST['country_code'],$_POST['area_code']);
             header("Location: ?menu=faxlist");
         } else {
             // Error
@@ -180,6 +192,8 @@ function _moduleContent(&$smarty, $module_name)
     	if (!isset($_POST['clid_number'])) $_POST['clid_number']='';
     	if (!isset($_POST['port'])) $_POST['port']='';
     	if (!isset($_POST['dev_id'])) $_POST['dev_id']='';
+        if (!isset($_POST['country_code'])) $_POST['country_code']='';
+    	if (!isset($_POST['area_code'])) $_POST['area_code']='';
         $contenidoModulo=$oForm->fetchForm("$local_templates_dir/new.tpl", $arrLang["New Virtual Fax"],$_POST);
     }
     return $contenidoModulo;

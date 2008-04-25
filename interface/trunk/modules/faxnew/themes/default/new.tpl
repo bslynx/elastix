@@ -41,14 +41,14 @@
       <tr>
 	<td>{$clid_name.LABEL}:</td>
 	<td>{$clid_name.INPUT}</td>
-	<td>&nbsp;</td>
-	<td>&nbsp;</td>
+	<td>{$country_code.LABEL}: <span class="required">*</span></td>
+	<td>{$country_code.INPUT}</td>
 	</tr>
 	<tr>
 	<td>{$clid_number.LABEL}: </td>
 	<td>{$clid_number.INPUT}</td>
-	<td>&nbsp;</td>
-	<td>&nbsp;</td>
+	<td>{$area_code.LABEL}: <span class="required">*</span></td>
+	<td>{$area_code.INPUT}</td>
 	</tr>
       </table>
     </td>

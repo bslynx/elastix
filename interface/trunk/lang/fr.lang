@@ -759,5 +759,8 @@ de Voix sur IP tout autour du globe.",
 "Menus and Permissions" => "Menus and Permissions",
 "This process could take several minutes" => "This process could take several minutes",
 /*Backup/Restore*/
+
+"Country Code" => "Country Code",
+"Area Code"=> "Area Code",
 );
 ?>

@@ -768,5 +768,8 @@ alrededor del mundo.",
 "Menus and Permissions" => "Menús y Permisos",
 "This process could take several minutes" => "Este proceso puede tomar varios minutos",
 /*Backup/Restore*/
+
+"Country Code" => "Código País",
+"Area Code"=> "Código Area",
 );
 ?>

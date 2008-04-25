@@ -773,5 +773,8 @@ configuration because some <br> processes could need them.",
 "Menus and Permissions" => "Menus and Permissions",
 "This process could take several minutes" => "This process could take several minutes",
 /*Backup/Restore*/
+
+"Country Code" => "Country Code",
+"Area Code"=> "Area Code",
 );
 ?>

@@ -103,7 +103,7 @@ class paloFax {
 	}
     }
 
-    function createFaxExtension($virtualFaxName, $extNumber, $extSecret, $destinationEmail, $CIDName="", $CIDNumber="")
+    function createFaxExtension($virtualFaxName, $extNumber, $extSecret, $destinationEmail, $CIDName="", $CIDNumber="",$countryCode, $areaCode)
     {
         $errMsg = "";
         
@@ -117,13 +117,13 @@ class paloFax {
         $nextPort=$this->_getNextAvailablePort(); 
         
         // 3) Creo la extension en la base de datos 
-        $this->_createFaxIntoDB($virtualFaxName, $extNumber, $extSecret, $destinationEmail, $devId, $CIDName, $CIDNumber, $nextPort);
+        $this->_createFaxIntoDB($virtualFaxName, $extNumber, $extSecret, $destinationEmail, $devId, $CIDName, $CIDNumber, $nextPort,$countryCode, $areaCode);
         
         // 4) Escribir el archivo de configuracion de iaxmodem
         $this->_configureIaxmodem($devId, $nextPort, $extNumber, $extSecret, $CIDName, $CIDNumber);
         
         // 5) Escribir el archivo de configuracion de hylafax
-        $this->_configureHylafax($devId, $destinationEmail, $CIDNumber, $CIDName, "593", "04");
+        $this->_configureHylafax($devId, $destinationEmail, $CIDNumber, $CIDName, $countryCode, $areaCode);
         
         // 6) Escribo el inittab
         $this->_writeInittab($devId);
@@ -140,7 +140,7 @@ class paloFax {
 		$sqliteError='';
 		$arrReturn=array();
         if ($db = sqlite3_open($this->rutaDB)) {
-            $query  = "SELECT id, name, extension, secret, clid_name, clid_number, dev_id, date_creation, email FROM fax";
+            $query  = "SELECT id, name, extension, secret, clid_name, clid_number, dev_id, date_creation, email, country_code, area_code FROM fax";
             $result = sqlite3_query($db, $query);
             if(isset($result))
             {
@@ -163,7 +163,7 @@ class paloFax {
         if($id<=0) return false;
 
         if ($db = sqlite3_open($this->rutaDB)) {
-            $query  = "SELECT id, name, extension, secret, clid_name, clid_number, dev_id, date_creation, email, port FROM fax WHERE id=$id";
+            $query  = "SELECT id, name, extension, secret, clid_name, clid_number, dev_id, date_creation, email, port, country_code, area_code FROM fax WHERE id=$id";
             $result = @sqlite3_query($db, $query);
             return @sqlite3_fetch_array($result);
         } else {
@@ -241,12 +241,12 @@ class paloFax {
     }
    
     // TODO: Hacer mejor manejo de errores 
-    function _createFaxIntoDB($name, $extension, $secret, $email, $devId, $clidname, $clidnumber, $port)
+    function _createFaxIntoDB($name, $extension, $secret, $email, $devId, $clidname, $clidnumber, $port,$countryCode, $areaCode)
     {
         $errMsg="";
         $dateNow=date("Y-m-d H:i:s");
-        $query  = "INSERT INTO fax (name, extension, secret, clid_name, clid_number, dev_id, date_creation, email, port) ";
-        $query .= "values ('$name','$extension', '$secret', '$clidname', '$clidnumber', '$devId', '$dateNow', '$email', '$port')";
+        $query  = "INSERT INTO fax (name, extension, secret, clid_name, clid_number, dev_id, date_creation, email, port,country_code, area_code) ";
+        $query .= "values ('$name','$extension', '$secret', '$clidname', '$clidnumber', '$devId', '$dateNow', '$email', '$port','$countryCode', '$areaCode')";
         $bExito = $this->_db->genQuery($query);
         if (!$bExito) {
             $this->errMsg = $this->_db->errMsg;
@@ -571,7 +571,7 @@ class paloFax {
         $this->_writeFaxDispatch();
 
         $nextHylafaxConfFilename = $this->dirHylafaxConf . "/config.ttyIAX" . $devId;
-        $contenidoArchivoHylafaxConf=$this->_getHylafaxContents($CIDNumber, $CIDName, "593", "04");
+        $contenidoArchivoHylafaxConf=$this->_getHylafaxContents($CIDNumber, $CIDName, $countryCode, $areaCode);
 
         exec("sudo -u root touch $nextHylafaxConfFilename");
         exec("sudo -u root chmod 646 $nextHylafaxConfFilename");
@@ -605,7 +605,7 @@ class paloFax {
     }
 
 
-    function editFaxExtension($idFax,$virtualFaxName, $extNumber, $extSecret, $destinationEmail, $CIDName, $CIDNumber, $devId, $port)
+    function editFaxExtension($idFax,$virtualFaxName, $extNumber, $extSecret, $destinationEmail, $CIDName, $CIDNumber, $devId, $port,$countryCode, $areaCode)
     {
         $errMsg = "";
         
@@ -616,13 +616,13 @@ class paloFax {
         
        
         // 2) Editar la extension en la base de datos 
-        $this->_editFaxInDB($idFax,$virtualFaxName, $extNumber, $extSecret, $destinationEmail, $devId, $CIDName, $CIDNumber, $port);
+        $this->_editFaxInDB($idFax,$virtualFaxName, $extNumber, $extSecret, $destinationEmail, $devId, $CIDName, $CIDNumber, $port,$countryCode, $areaCode);
 
         // 3) Modificar el archivo de configuracion de iaxmodem
         $this->_configureIaxmodem($devId, $port, $extNumber, $extSecret, $CIDName, $CIDNumber);
         
         // 4) Modificar el archivo de configuracion de hylafax
-        $this->_configureHylafax($devId, $destinationEmail, $CIDNumber, $CIDName, "593", "04");
+        $this->_configureHylafax($devId, $destinationEmail, $CIDNumber, $CIDName, $countryCode, $areaCode);
         
         
         // 5) Acciones finales
@@ -632,7 +632,7 @@ class paloFax {
     }
 
  
-    function _editFaxInDB($idFax, $name, $extension, $secret, $email, $devId, $clidname, $clidnumber, $port) {
+    function _editFaxInDB($idFax, $name, $extension, $secret, $email, $devId, $clidname, $clidnumber, $port,$countryCode, $areaCode) {
         $errMsg="";
         if ($db = sqlite3_open($this->rutaDB)) {
             $query  = "UPDATE fax set 
@@ -643,7 +643,9 @@ class paloFax {
                             clid_number='$clidnumber',
                             dev_id='$devId',
                             email='$email',
-                            port='$port' 
+                            port='$port',
+                            area_code='$countryCode',
+                            port='$areaCode' 
                         where id=$idFax;";
             $bExito = $this->_db->genQuery($query);
         	if (!$bExito) {
