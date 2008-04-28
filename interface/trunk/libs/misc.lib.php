@@ -122,7 +122,7 @@ function obtener_info_de_sistema()
     //-       /respaldos/INSTALADORES/fedora-1/disco1.iso
     //-                              644864    644864         0 100% /mnt/fc1/disc1
 
-    exec("/bin/df -P /etc/fstab", $arrExec, $varExec);
+    exec("/bin/df /etc/fstab", $arrExec, $varExec);
 
     if($varExec=="0") {
         foreach($arrExec as $lineaParticion) {
@@ -223,7 +223,7 @@ function set_key_settings($pDB,$key,$value){
 
 function load_version_elastix($ruta_base='')
 {
-	if (!extension_loaded('sqlite3')) dl('sqlite3.so');
+    if (!extension_loaded('sqlite3')) dl('sqlite3.so');
     include_once $ruta_base."libs/paloSantoDB.class.php";
 
 //conectarse a la base de settings para obtener la version y release del sistema elastix
@@ -241,7 +241,7 @@ function load_version_elastix($ruta_base='')
 
 function load_theme($ruta_base='')
 {
-	if (!extension_loaded('sqlite3')) dl('sqlite3.so');
+    if (!extension_loaded('sqlite3')) dl('sqlite3.so');
     include_once $ruta_base."libs/paloSantoDB.class.php";
 
 //conectarse a la base de settings para obtener el thema actual
@@ -259,7 +259,7 @@ function load_theme($ruta_base='')
 
 function load_language($ruta_base='')
 {
-	if (!extension_loaded('sqlite3')) dl('sqlite3.so');
+    if (!extension_loaded('sqlite3')) dl('sqlite3.so');
     include_once $ruta_base."libs/paloSantoDB.class.php";
     include $ruta_base."configs/default.conf.php";
     include_once $ruta_base."configs/languages.conf.php";
@@ -337,28 +337,37 @@ function guardar_dominio_sistema($domain_name,&$errMsg)
 
 
 function construir_valor_nuevo_postfix($valor_anterior,$dominio,$eliminar_dominio=FALSE){
-    $valor_nuevo=$valor_anterior;
+    $valor_nuevo="";
+    $existe = false;
 
-    if(is_null($valor_anterior)){
+    //Esto es para agregar el primer elemento
+    if(is_null($valor_anterior)|| trim($valor_anterior)==""){
         $elemento=(!$eliminar_dominio)?"$dominio":"";
         $valor_nuevo="$elemento";
     }
     else{
-        if(ereg("^(.*)$",$valor_anterior,$regs)){
-            $arr_valores=explode(',',$regs[1]);
-            if(!$eliminar_dominio)
-                $arr_valores[]="$dominio";
-
-            $valor_nuevo="";
-            for($i=0;$i<count($arr_valores);$i++){
-                $valor_nuevo.=$arr_valores[$i];
-                if($i<(count($arr_valores)-1))
-                    $valor_nuevo.=","; 
+        $arr_valores=explode(',',$valor_anterior);
+        //Si ya existe al menos un elemento y deseo añadir otro
+        if(!$eliminar_dominio)
+        {
+            //Antes de añadir verificar q no exista
+            foreach($arr_valores as $key => $valor)
+                if($valor==$dominio) $existe=true;
+            //Si no existe agregarlo sino mantener los mismos elementos
+            if(!$existe) $valor_nuevo = $valor_anterior.",$dominio";
+            else $valor_nuevo = $valor_anterior;
+        }
+        //Borrar elementos
+        else{
+            for($i=0; $i<count($arr_valores); $i++)
+            {
+                if($arr_valores[$i]!=$dominio)
+                {
+                    $valor_nuevo .= $arr_valores[$i];
+                    $valor_nuevo .= ",";
+                }
             }
-
-            if($eliminar_dominio==TRUE){
-                $valor_nuevo=str_replace(",$dominio","",$valor_nuevo);
-            }
+            $valor_nuevo = substr($valor_nuevo, 0, -1);
         }
     }
 
@@ -430,6 +439,7 @@ function eliminar_dominio($db,$arrDominio,&$errMsg)
         $valor_anterior=$conf_file->privado_get_valor($contenido,"mydomain2");
         $valor_nuevo=construir_valor_nuevo_postfix($valor_anterior,$arrDominio['domain_name'],TRUE);
         $arr_reemplazos=array('mydomain2'=>$valor_nuevo);
+
         $bValido=$conf_file->escribir_configuracion($arr_reemplazos);
 
         if($bValido){
@@ -473,11 +483,12 @@ function eliminar_virtual_sistema($email,&$error){
         if(isset($fila['clave']) && $fila['clave']==$email){
              unset($arr_direcciones[$key]);
              $eliminado=TRUE;
-        }
+        }/*
         elseif(ereg("^$email",$fila)){
+exec("echo 2 {$fila['clave']} >> /tmp/file");
              unset($arr_direcciones[$key]);
              $eliminado=TRUE;
-        }
+        }*/
     }
     if($eliminado){
         $bool=$config->escribir_configuracion($arr_direcciones,true);
