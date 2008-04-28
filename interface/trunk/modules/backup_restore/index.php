@@ -433,8 +433,8 @@ function Array_Options($arrLang, $disabled="")
             "asterisk"      =>  array(
                                     "as_db"             =>  array("desc"=>$arrLang["Database"],"check"=>"","msg"=>"","disable"=>"$disabled"),
                                     "as_config_files"   =>  array("desc"=>$arrLang["Configuration Files"],"check"=>"","msg"=>"","disable"=>"$disabled"),
-                                    "as_monitor"        =>  array("desc"=>$arrLang["Monitors"],"check"=>"","msg"=>"","disable"=>"$disabled"),
-                                    "as_voicemail"      =>  array("desc"=>$arrLang["Voicemails"],"check"=>"","msg"=>"","disable"=>"$disabled"),
+                                    "as_monitor"        =>  array("desc"=>$arrLang["Monitors"]."  ".$arrLang["(Heavy Content)"],"check"=>"","msg"=>"","disable"=>"$disabled"),
+                                    "as_voicemail"      =>  array("desc"=>$arrLang["Voicemails"]."  ".$arrLang["(Heavy Content)"],"check"=>"","msg"=>"","disable"=>"$disabled"),
                                     "as_sounds"         =>  array("desc"=>$arrLang["Sounds"],"check"=>"","msg"=>"","disable"=>"$disabled"),
                                     "as_zaptel"         =>  array("desc"=>$arrLang["Zaptel Configuration"],"check"=>"","msg"=>"","disable"=>"$disabled"),
                                 ),
@@ -444,7 +444,7 @@ function Array_Options($arrLang, $disabled="")
                                 ),
             "email"         =>  array(
                                     "em_db"             =>  array("desc"=>$arrLang["Database"],"check"=>"","msg"=>"","disable"=>"$disabled"),
-                                    "em_config_files"   =>  array("desc"=>$arrLang["Configuration Files"],"check"=>"","msg"=>"","disable"=>"$disabled"),
+                                    "em_mailbox"        =>  array("desc"=>$arrLang["Mailbox"],"check"=>"","msg"=>"","disable"=>"$disabled"),
                                 ),
             "endpoint"      =>  array(
                                     "ep_db"             =>  array("desc"=>$arrLang["Database"],"check"=>"","msg"=>"","disable"=>"$disabled"),
@@ -574,7 +574,7 @@ function process_each_backup($arrSelectedOptions,$ruta_respaldo,&$arrBackupOptio
             if ($retval!=0) $bExito = false;
             break;
 
-        case "em_config_files":
+        case "em_mailbox":
             //respaldar los  mailboxes ruta /var/spool/imap
             //primero cambiar los permisos a la carpeta
             $comando="sudo -u root /bin/chown asterisk:asterisk /var/spool/imap -R";
@@ -1033,7 +1033,7 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
             }else $bExito = false;
             break;
 
-        case "em_config_files"://user_buzon
+        case "em_mailbox":
             //Respaldo carpeta /var/spool/imap/ en un tgz
             $comando="sudo -u root touch /var/spool/imap.tgz";
             exec($comando, $output, $retval);

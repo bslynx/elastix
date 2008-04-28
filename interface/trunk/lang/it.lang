@@ -687,6 +687,8 @@ configuration because some processes need it." => "Queste Reti sono abilitate al
 "Mysql Database" => "Mysql Database",
 "Menus and Permissions" => "Menus and Permissions",
 "This process could take several minutes" => "This process could take several minutes",
+"Mailbox" => "Mailbox",
+"(Heavy Content)" => "(Heavy Content)",
 /*Backup/Restore*/
 
 "Country Code" => "Country Code",

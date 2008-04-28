@@ -807,6 +807,8 @@ konfiguraciji jer neki <br> procesi ih mogu trebati.",
 "Mysql Database" => "Mysql Database",
 "Menus and Permissions" => "Menus and Permissions",
 "This process could take several minutes" => "This process could take several minutes",
+"Mailbox" => "Mailbox",
+"(Heavy Content)" => "(Heavy Content)",
 /*Backup/Restore*/
 
 "Country Code" => "Country Code",

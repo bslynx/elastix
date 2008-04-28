@@ -675,6 +675,8 @@ configuration <br>because some processes need it.",
 "Mysql Database" => "Mysql Database",
 "Menus and Permissions" => "Menus and Permissions",
 "This process could take several minutes" => "This process could take several minutes",
+"Mailbox" => "Mailbox",
+"(Heavy Content)" => "(Heavy Content)",
 
 "Country Code" => "Country Code",
 "Area Code"=> "Area Code",
