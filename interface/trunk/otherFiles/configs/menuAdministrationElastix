@@ -155,4 +155,21 @@ else
     echo "End step 9, Column trunk in database rate.db added."
 fi
 
+#paso 10:
+# Validation for fax.db existeTableFax columns country_code and area_code
+sqlite3  $pathDB/fax.db "alter table fax add column country_code varchar(16);" &>/dev/null  
+existeColumnCountryCode=$?
+sqlite3  $pathDB/fax.db "alter table fax add column area_code varchar(16);" &>/dev/null  
+existeColumnAreaCode=$?
+if [ $existeColumnCountryCode -ne 0 ]; then
+    echo "End step 10, Column country_code in database fax.db exists."
+else
+    echo "End step 10, Column country_code in database fax.db added."
+fi
+
+if [ $existeColumnAreaCode -ne 0 ]; then
+    echo "End step 10, Column area_code in database fax.db exists."
+else
+    echo "End step 10, Column area_code in database fax.db exists."
+fi
 ################## End Administration Menus and permission ##########################
