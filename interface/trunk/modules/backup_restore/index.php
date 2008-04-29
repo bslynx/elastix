@@ -953,10 +953,10 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
                 //consultar en la base para crear en el sistema
                 crear_cuentas_fax($base_fax_respaldo,$base_fax);
 
-                /*$comando="mv -f $base_fax_respaldo $base_fax";
+                $comando="mv -f $base_fax_respaldo $base_fax";
                 exec($comando,$output,$retval);
                 if ($retval!=0) $bExito = false;
-                */
+
                 $comando="sudo -u root /bin/chmod 777 $base_fax";
                 exec($comando,$output,$retval);
             }else $bExito = false;
@@ -1193,37 +1193,21 @@ function restaurar_carpeta($arrInfoRestaurar,$ruta_respaldo,&$error)
 function crear_cuentas_fax($ruta_base_fax_respaldo,$base_fax)
 {
     $result=array();
-    $oFax = new paloFax(); 
+    $oFax = new paloFax();
 
     $pDB = new paloDB("sqlite3:///$ruta_base_fax_respaldo");
     if (!empty($pDB->errMsg)) {
         echo "DB ERROR: $pDB->errMsg \n";
-    }
-    else{
-        #borrar las cuentas de fax de /var/www/db
-        $pDBorig = new paloDB("sqlite3:///$base_fax");
-        if (!empty($pDBorig->errMsg)) {
-            echo "DB ERROR: $pDBorig->errMsg \n";
-        }
-        else{
-            #TODO:
-            #antes de borrar de la base de datos deberia seleccionar cada una e ir borrando del equipo
-            $query="SELECT id FROM fax";
-            $result=$pDBorig->fetchTable($query,true);
-            if(is_array($result) && count($result) > 0){
-                foreach($result as $key => $value)
-                    $oFax->deleteFaxExtensionById($value['id']);
-            }
-
-            $query="SELECT * FROM fax";
-            $result=$pDB->fetchTable($query,true);
-            if (is_array($result) && count($result) > 0){
-                foreach ($result as $arrFax)
-                {
-                    $arrFax['country_code'] = isset($arrFax['country_code'])?$arrFax['country_code']:"";
-                    $arrFax['area_code']    = isset($arrFax['area_code'])?$arrFax['area_code']:"";
-                    $oFax->createFaxExtension($arrFax['name'], $arrFax['extension'], $arrFax['secret'], $arrFax['email'],$arrFax['clid_name'], $arrFax['clid_number'], $arrFax['dev_id'], $arrFax['port'], $arrFax['country_code'], $arrFax['area_code']);
-                }
+    }else{
+        $query="SELECT * FROM fax";
+        $result=$pDB->fetchTable($query,true);
+        if (is_array($result) && count($result) > 0){
+            foreach ($result as $arrFax)
+            {
+                $arrFax['country_code'] = isset($arrFax['country_code'])?$arrFax['country_code']:"";
+                $arrFax['area_code']    = isset($arrFax['area_code'])?$arrFax['area_code']:"";
+                $oFax->_deleteFaxExtensionById($idFax);
+                $oFax->_createFaxSystem($arrFax['dev_id'], $arrFax['port'], $arrFax['extension'], $arrFax['secret'], $arrFax['clid_name'], $arrFax['clid_number'], $arrFax['email'], $arrFax['country_code'], $arrFax['area_code']);
             }
         }
     }
