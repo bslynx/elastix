@@ -52,7 +52,7 @@ CREATE TABLE info_fax_recvq
     company_name varchar(255)   NOT NULL DEFAULT '',
     company_fax  varchar(255)   NOT NULL DEFAULT '',
     fax_destiny_id       INTEGER NOT NULL DEFAULT 0,
-    date	 timestamp 	NOT NULL ,
+    date     timestamp  NOT NULL ,
     FOREIGN KEY (fax_destiny_id)   REFERENCES fax(id)
 );
 
@@ -96,39 +96,45 @@ class paloFax {
         $this->grupoWeb   = "asterisk";
         //instanciar clase paloDB
         $pDB = new paloDB("sqlite3:///".$this->rutaDB);
-	if(!empty($pDB->errMsg)) {
+    if(!empty($pDB->errMsg)) {
             echo "$pDB->errMsg <br>";
-	}else{
-	   $this->_db = $pDB;
-	}
+    }else{
+       $this->_db = $pDB;
+    }
     }
 
     function createFaxExtension($virtualFaxName, $extNumber, $extSecret, $destinationEmail, $CIDName="", $CIDNumber="",$countryCode, $areaCode)
     {
+        // 1) Averiguar el numero de dispositivo que se puede usar y el numero de puerto
+        $devId = $this->_getNextAvailableDevId();
+        $nextPort=$this->_getNextAvailablePort(); 
+
+        // 2) Creo la extension en la base de datos
+        $this->_createFaxIntoDB($virtualFaxName, $extNumber, $extSecret, $destinationEmail, $devId, $CIDName, $CIDNumber, $nextPort,$countryCode, $areaCode);
+
+        // 3) Create fax system
+        $this->_createFaxSystem($devId, $nextPort, $extNumber, $extSecret, $CIDName, $CIDNumber, $destinationEmail, $countryCode, $areaCode);
+    }
+
+    function _createFaxSystem($devId, $nextPort, $extNumber, $extSecret, $CIDName, $CIDNumber, $destinationEmail, $countryCode, $areaCode)
+    {
         $errMsg = "";
-        
+
         // 1) Verificar que las 2 carpetas donde residen los archivos de configuracion son escribibles
         if(!is_writable($this->dirIaxmodemConf) or !is_writable($this->dirHylafaxConf)) {
             $errMsg = "The directories \"" . $this->dirIaxmodemConf. "\" and \"" . $this->dirHylafaxConf . "\" must be writeable.";
         }
-        
-        // 2) Averiguar el numero de dispositivo que se puede usar y el numero de puerto
-        $devId = $this->_getNextAvailableDevId();
-        $nextPort=$this->_getNextAvailablePort(); 
-        
-        // 3) Creo la extension en la base de datos 
-        $this->_createFaxIntoDB($virtualFaxName, $extNumber, $extSecret, $destinationEmail, $devId, $CIDName, $CIDNumber, $nextPort,$countryCode, $areaCode);
-        
-        // 4) Escribir el archivo de configuracion de iaxmodem
+
+        // 2) Escribir el archivo de configuracion de iaxmodem
         $this->_configureIaxmodem($devId, $nextPort, $extNumber, $extSecret, $CIDName, $CIDNumber);
-        
-        // 5) Escribir el archivo de configuracion de hylafax
+
+        // 3) Escribir el archivo de configuracion de hylafax
         $this->_configureHylafax($devId, $destinationEmail, $CIDNumber, $CIDName, $countryCode, $areaCode);
-        
-        // 6) Escribo el inittab
+
+        // 4) Escribo el inittab
         $this->_writeInittab($devId);
-        
-        // 7) Acciones finales
+
+        // 5) Acciones finales
         exec("sudo -u root init q");
         exec("sudo -u root service iaxmodem restart");
         exec("sudo -u root service hylafax restart");
@@ -137,8 +143,8 @@ class paloFax {
     function getFaxList()
     {
         $errMsg="";
-		$sqliteError='';
-		$arrReturn=array();
+        $sqliteError='';
+        $arrReturn=array();
         if ($db = sqlite3_open($this->rutaDB)) {
             $query  = "SELECT id, name, extension, secret, clid_name, clid_number, dev_id, date_creation, email, country_code, area_code FROM fax";
             $result = sqlite3_query($db, $query);
@@ -644,14 +650,14 @@ class paloFax {
                             dev_id='$devId',
                             email='$email',
                             port='$port',
-                            area_code='$countryCode',
-                            port='$areaCode' 
+                            area_code='$areaCode',
+                            country_code='$countryCode'
                         where id=$idFax;";
             $bExito = $this->_db->genQuery($query);
-        	if (!$bExito) {
-            	$this->errMsg = $this->_db->errMsg;
-            	return false;
-        	}
+            if (!$bExito) {
+                $this->errMsg = $this->_db->errMsg;
+                return false;
+            }
             
             
         } else {
