@@ -99,7 +99,7 @@ function file_upload($smarty, $module_name, $local_templates_dir, $arrLang, $dir
     $name_file = $_FILES['file_upload']['name'];
     if (eregi('.tar$', $name_file)){
         $cmd_cp = escapeshellcmd("mv $tmpFile $dir_backup/$name_file");
-        exec($cmd_cp,$output,$retVal);
+        exec($cmd_cp,$output,$retval);
         if ($retval!=0){
             $bExito = false;
             $smarty->assign("mb_message", $arrLang["Error copying the file"]);
@@ -1223,6 +1223,22 @@ function crear_cuentas_fax($ruta_base_fax_respaldo,$base_fax)
     $result=array();
     $oFax = new paloFax();
 
+    #borrar las cuentas de fax de /var/www/db
+    $pDBorig = new paloDB("sqlite3:///$base_fax");
+    if (!empty($pDBorig->errMsg)) {
+        echo "DB ERROR: $pDBorig->errMsg \n";
+    }
+    else{
+        #TODO:
+        #antes de borrar de la base de datos deberia seleccionar cada una e ir borrando del equipo
+        $query="SELECT id FROM fax";
+        $result=$pDBorig->fetchTable($query,true);
+        if(is_array($result) && count($result) > 0){
+            foreach($result as $key => $value)
+                $oFax->deleteFaxExtensionById($value['id']);
+        }
+    }
+
     $pDB = new paloDB("sqlite3:///$ruta_base_fax_respaldo");
     if (!empty($pDB->errMsg)) {
         echo "DB ERROR: $pDB->errMsg \n";
@@ -1234,7 +1250,7 @@ function crear_cuentas_fax($ruta_base_fax_respaldo,$base_fax)
             {
                 $arrFax['country_code'] = isset($arrFax['country_code'])?$arrFax['country_code']:"";
                 $arrFax['area_code']    = isset($arrFax['area_code'])?$arrFax['area_code']:"";
-                $oFax->_deleteFaxExtensionById($idFax);
+                $oFax->_deleteLinesFromInittab($arrFax['dev_id']);
                 $oFax->_createFaxSystem($arrFax['dev_id'], $arrFax['port'], $arrFax['extension'], $arrFax['secret'], $arrFax['clid_name'], $arrFax['clid_number'], $arrFax['email'], $arrFax['country_code'], $arrFax['area_code']);
             }
         }
