@@ -61,6 +61,7 @@ function _moduleContent(&$smarty, $module_name)
     else if (isset($_POST["submit_restore"])) $accion = "submit_restore";
     else if (isset($_POST["process"]) && $_POST["option_url"]=="backup")  $accion = "process_backup";
     else if (isset($_POST["process"]) && $_POST["option_url"]=="restore") $accion = "process_restore";
+    else if (isset($_POST["upload"])) $accion = "upload";
     else $accion ="report_backup_restore";
     $content = "";
     switch($accion)
@@ -80,12 +81,37 @@ function _moduleContent(&$smarty, $module_name)
         case 'process_restore':
             $content = process_restore($smarty, $local_templates_dir, $arrLang, $dir_backup);
             break;
+        case 'upload':
+            $content = file_upload($smarty, $module_name, $local_templates_dir, $arrLang, $dir_backup);
+            break;
         default:
             $content = report_backup_restore($smarty, $module_name, $local_templates_dir, $arrLang, $dir_backup);
             break;
     }
 
     return $content;
+}
+
+function file_upload($smarty, $module_name, $local_templates_dir, $arrLang, $dir_backup)
+{
+    $bExito = true;
+    $tmpFile = $_FILES['file_upload']['tmp_name'];
+    $name_file = $_FILES['file_upload']['name'];
+    if (eregi('.tar$', $name_file)){
+        $cmd_cp = escapeshellcmd("mv $tmpFile $dir_backup/$name_file");
+        exec($cmd_cp,$output,$retVal);
+        if ($retval!=0){
+            $bExito = false;
+            $smarty->assign("mb_message", $arrLang["Error copying the file"]);
+        }
+    }else{
+        $bExito = false;
+        $smarty->assign("mb_message", $arrLang["The backup file would have a tar extension"]);
+    }
+    if($bExito)
+        $smarty->assign("mb_message", $arrLang["The file was copied correctly"].". ".$arrLang["File"].": ".$name_file);
+
+    return report_backup_restore($smarty, $module_name, $local_templates_dir, $arrLang, $dir_backup);
 }
 
 function report_backup_restore($smarty, $module_name, $local_templates_dir, $arrLang, $dir_backup)
@@ -140,11 +166,13 @@ function report_backup_restore($smarty, $module_name, $local_templates_dir, $arr
                                         )
                     );
 
-    //Button Backup
-    $htmlFilter = "<input class=\"button\" type=\"submit\" name=\"backup\" value=\"". $arrLang["Backup"]."\">";
+    $smarty->assign("FILE_UPLOAD", $arrLang["File Upload"]);
+    $smarty->assign("BACKUP", $arrLang["Backup"]);
+    $smarty->assign("UPLOAD", $arrLang["Upload"]);
+    $htmlFilter = $smarty->fetch("$local_templates_dir/filter.tpl");
 
     $oGrid->showFilter(trim($htmlFilter));
-    $contenidoModulo = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$oGrid->fetchGrid($arrGrid, $arrData,$arrLang)."</form>";
+    $contenidoModulo = "<form  method='POST' enctype='multipart/form-data' style='margin-bottom:0;' action='?menu=$module_name'>".$oGrid->fetchGrid($arrGrid, $arrData,$arrLang)."</form>";
 
     return $contenidoModulo;
 }

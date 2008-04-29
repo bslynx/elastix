@@ -769,6 +769,11 @@ implementations of Voice over IP around the globe.",
 "This process could take several minutes" => "This process could take several minutes",
 "Mailbox" => "Mailbox",
 "(Heavy Content)" => "(Heavy Content)",
+"Upload" => "Upload",
+"File Upload" => "File Upload",
+"The backup file would have a tar extension" => "The backup file would have a tar extension",
+"Error copying the file" => "Error copying the file",
+"The file was copied correctly" => "The file was copied correctly",
 /*Backup/Restore*/
 
 "Country Code" => "Country Code",
