@@ -54,7 +54,7 @@ class PaloSantoHardwareDetection
         if($retorno==0 && $respuesta!=null && count($respuesta) > 0 && is_array($respuesta)){
             $idTarjeta = 0;
             foreach($respuesta as $key => $linea){
-                if(ereg("^(### Span[[:space:]]{1,}([[:digit:]]{1,}):)[[:space:]]{1}([[:alnum:]| ]{1,}/[[:digit:]]{1,})(\"?.+\")",$linea,$regs)){
+                if(ereg("^(### Span[[:space:]]{1,}([[:digit:]]{1,}):)[[:space:]]{1}([[:alnum:]| |-]{1,}/[[:alnum:]| |-]{1,})(\"?.+\")",$linea,$regs)){
                    $idTarjeta = $regs[2];
                    $tarjetas["TARJETA$idTarjeta"]['DESC'] = array('ID' => $regs[2], 'SPAM' => $regs[1],'TIPO' => $regs[3], 'ADICIONAL' => $regs[4]);
                 }

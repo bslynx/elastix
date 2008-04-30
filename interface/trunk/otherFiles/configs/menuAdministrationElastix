@@ -170,6 +170,6 @@ fi
 if [ $existeColumnAreaCode -ne 0 ]; then
     echo "End step 10, Column area_code in database fax.db exists."
 else
-    echo "End step 10, Column area_code in database fax.db exists."
+    echo "End step 10, Column area_code in database fax.db added."
 fi
 ################## End Administration Menus and permission ##########################
