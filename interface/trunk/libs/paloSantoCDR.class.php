@@ -54,7 +54,22 @@ class paloSantoCDR {
         if(!empty($date_start)) $strWhere .= "calldate>='$date_start' ";
         if(!empty($date_end))   $strWhere .= " AND calldate<='$date_end' ";
 
-        if(!empty($field_name) and !empty($field_pattern)) $strWhere .= " AND $field_name like '%$field_pattern%' ";
+        if(!empty($field_name) and !empty($field_pattern)){
+                  $arrPattern = explode(",",trim($field_pattern));
+                  $condicion_pattern='';
+                 foreach ($arrPattern as $pattern) {
+                           $pattern = trim($pattern);
+                       if ($pattern!="") {
+                           if (ereg("/",$pattern)) {
+                                  if (!ereg("-",$pattern)) $pattern=$pattern.'-';
+                                  if ($field_name=='dst') continue;
+                           } else if ($field_name=='dstchannel') continue;
+                           $condicion_pattern.=!(empty($condicion_pattern))?' OR ':'';
+                           $condicion_pattern .= (ereg("/",$pattern) && $field_name=='src'?'channel':$field_name)." like '%$pattern%'";
+                       }
+                  }
+                  if ($condicion_pattern!="") $strWhere .= " AND ($condicion_pattern)";
+        }
         if(!empty($status) && $status!="ALL") $strWhere .= " AND disposition = '$status' ";
         if(!empty($calltype) && $calltype=="outgoing"){
             if (is_array($troncales) && count($troncales)>0){
