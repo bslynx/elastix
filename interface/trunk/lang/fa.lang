@@ -685,4 +685,120 @@ configuration <br>because some processes need it.",
 
 "Country Code" => "Country Code",
 "Area Code"=> "Area Code",
+
+/*Calendar*/
+"January" => "January",
+"February" => "February",
+"March" => "March",
+"April" => "April",
+"May_" => "May",
+"June" => "June",
+"July" => "July",
+"August" => "August",
+"September" => "September",
+"October" => "October",
+"November" => "November",
+"December" => "December",
+
+"Jan" => "Jan",
+"Feb" => "Feb",
+"Mar" => "Mar",
+"Apr" => "Apr",
+"May" => "May",
+"Jun" => "Jun",
+"Jul" => "Jul",
+"Aug" => "Aug",
+"Sep" => "Sep",
+"Oct" => "Oct",
+"Nov" => "Nov",
+"Dec" => "Dec",
+
+"Monday" => "Monday",
+"Tuesday" => "Tuesday",
+"Wednesday" => "Wednesday",
+"Thursday" => "Thursday",
+"Friday" => "Friday",
+"Saturday" => "Saturday",
+"Sunday" => "Sunday",
+
+"Normal" => "Normal",
+"Monthly" => "Monthly",
+
+"Add Event" => "Add Event",//Añadir Evento
+"Back to Calendar" => "Back to Calendar", //Volver al Calendario
+"View Date" => "View Date", //Ver Fecha
+
+"next month" => "next month", //mes siguiente
+"next year" => "next year", //año siguiente
+"last year" => "last year", //año anterior
+"last month" => "last month", //mes anterior
+
+"Title" => "Title",
+"Delete Selected" => "Delete Selected", //Borrar Seleccionado
+"(No subject)" => "(No subject)",
+"Modify" => "Modify",
+"No events on this day" => "No events on this day", //No hay eventos este día
+"year view not yet implemented" => "year view not yet implemented",
+"Software Error" => "Software Error",
+"Message:" => "Message:",
+"Backtrace" => "Backtrace",
+"AM" => "AM",
+"PM" => "PM",
+"Error in get_events_by_date" => "Error in get_events_by_date",
+"Error in get_event_by_id" => "Error in get_event_by_id",
+"item doesn't exist!" => "item doesn't exist!",
+"Html is not a valid Html class" => "Html is not a valid Html class",
+"Invalid class" => "Invalid class",
+"Error reading options" => "Error reading options",
+"Updated options" => "Updated options",
+
+"Error while removing an event" => "Error while removing an event",
+"Removed item" => "Removed item",
+"Could not remove item" => "Could not remove item",
+"No items selected" => "No items selected",
+
+"Adding event to calendar" => "Adding event to calendar",
+"Date of event" => "Date of event",
+"Date multiple day event ends" => "Date multiple day event ends", //Final del evento de múltiples días
+"Event type" => "Event type",
+"Subject" => "Subject",//Asunto
+"chars max" => "chars max",
+"Asterisk Call Me" => "Asterisk Call Me",
+"Submit Event" => "Submit Event", //Añadir Evento
+
+"No day was given" => "No day was given",
+"No month was given" => "No month was given",
+"No year was given" => "No year was given",
+"No hour was given" => "No hour was given",
+"No minute was given" => "No minute was given",
+"No type of event was given" => "No type of event was given",
+"No end day was given" => "No end day was given",
+"No end month was given" => "No end month was given",
+"No end year was given" => "No end year was given",
+"Your subject was too long" => "Your subject was too long",
+"characters max" => "characters max",
+"The start of the event cannot be after the end of the event" => "The start of the event cannot be after the end of the event",
+"Error processing event" => "Error processing event",
+"No changes were made" => "No changes were made",
+"Date updated" => "Date updated",
+"Editing Event" => "Editing Event",
+"yes" => "yes",
+"no" => "no",
+
+"Ascending" => "Ascending",
+"Decending" => "Decending",
+"Invalid sort option" => "Invalid sort option",
+"Invalid order option" => "Invalid order option",
+"Encountered an error while searching" => "Encountered an error while searching",
+"No events matched your search criteria" => "No events matched your search criteria",
+"Search Results" => "Search Results",
+"Date Time" => "Date Time",
+"Phrase" => "Phrase",
+"From" => "From",
+"To" => "To",
+"Sort By" => "Sort By",
+"Order" => "Order",
+"Calendar" => "Calendar",
+"Invalid action" => "Invalid action",
+/*Calendar*/
 );
