@@ -36,9 +36,9 @@ class PaloSantoHardwareDetection
 
     function PaloSantoHardwareDetection()
     {
-        
+
     }
-    
+
     /**
      * Procedimiento para obtener el listado los puertos con la descripcion de la tarjeta 
      *
@@ -48,13 +48,14 @@ class PaloSantoHardwareDetection
     {
         global $arrLang;
         $tarjetas = array();
-       
+
         unset($respuesta);
-	exec('lszaptel',$respuesta,$retorno);
+    exec('lszaptel',$respuesta,$retorno);
         if($retorno==0 && $respuesta!=null && count($respuesta) > 0 && is_array($respuesta)){
             $idTarjeta = 0;
             foreach($respuesta as $key => $linea){
-                if(ereg("^(### Span[[:space:]]{1,}([[:digit:]]{1,}):)[[:space:]]{1}([[:alnum:]| |-]{1,}/[[:alnum:]| |-]{1,})(\"?.+\")",$linea,$regs)){
+                if(ereg("^(### Span[[:space:]]{1,}([[:digit:]]{1,}):)[[:space:]]{1}([[:alnum:]||-]{1,}/[[:alnum:]| |-]{1,})(\"?.+\")",$linea,$regs)){
+                //if(ereg("^(### Span[[:space:]]{1,}([[:digit:]]{1,}):)[[:space:]]{1}([[:alnum:]]{1,}/[[:digit:]]{1,})(\"?.+\")",$linea,$regs)){
                    $idTarjeta = $regs[2];
                    $tarjetas["TARJETA$idTarjeta"]['DESC'] = array('ID' => $regs[2], 'SPAM' => $regs[1],'TIPO' => $regs[3], 'ADICIONAL' => $regs[4]);
                 }
@@ -63,29 +64,29 @@ class PaloSantoHardwareDetection
                         $estado = $arrLang['(In Use)'];
                         $colorEstado = 'green';
                    }
-                   if($regs1[2]=='FXS')
+                   if($regs1[3]=='FXSKS')
                         $tipo ='FXO'; 
-                   else if($regs1[2]=='FXO')
+                   else if($regs1[3]=='FXOKS')
                         $tipo ='FXS';
-                   $tarjetas["TARJETA$idTarjeta"]['PUERTOS']["PUERTO$regs1[1]"] = array('LOCALIDAD' =>$regs1[1],'TIPO' => $tipo, 'ADICIONAL' => $regs1[3], 'ESTADO' => $estado,'COLOR' => $colorEstado);
+                   $tarjetas["TARJETA$idTarjeta"]['PUERTOS']["PUERTO$regs1[1]"] = array('LOCALIDAD' =>$regs1[1],'TIPO' => $tipo, 'ADICIONAL' => "$regs1[2] - $regs1[3]", 'ESTADO' => $estado,'COLOR' => $colorEstado);
                 }
                 else if(ereg("[[:space:]]{0,}([[:digit:]]{1,})[[:space:]]{1}([[:alnum:]]{1,})[[:space:]]{1,}([[:alnum:]]{1,})()",$linea,$regs1)){
                    if($regs1[4] == ''){
                         $estado = "&nbsp;";
                         $colorEstado = '';
                    }
-                   if($regs1[2]=='FXS')
-                        $tipo ='FXO'; 
-                   else if($regs1[2]=='FXO')
-                        $tipo ='FXS'; 
-                   $tarjetas["TARJETA$idTarjeta"]['PUERTOS']["PUERTO$regs1[1]"] = array('LOCALIDAD' =>$regs1[1],'TIPO' => $tipo, 'ADICIONAL' => $regs1[3], 'ESTADO' => $estado,'COLOR' => $colorEstado);
+                   if($regs1[3]=='FXSKS')
+                        $tipo ='FXO';
+                   else if($regs1[3]=='FXOKS')
+                        $tipo ='FXS';
+                   $tarjetas["TARJETA$idTarjeta"]['PUERTOS']["PUERTO$regs1[1]"] = array('LOCALIDAD' =>$regs1[1],'TIPO' => $tipo, 'ADICIONAL' => "$regs1[2] - $regs1[3]", 'ESTADO' => $estado,'COLOR' => $colorEstado);
                 }
                 else if(ereg("[[:space:]]{0,}([[:digit:]]{1,})[[:space:]]{1}([[:alnum:]]{1,})",$linea,$regs1)){
                    if($regs1[2] == 'unknown'){
                         $estado = $arrLang['Unknown'];
                         $colorEstado = 'gray';
                    }
-                   $tarjetas["TARJETA$idTarjeta"]['PUERTOS']["PUERTO$regs1[1]"] = array('LOCALIDAD' =>$regs1[1],'TIPO' => "&nbsp;", 'ADICIONAL' => "", 'ESTADO' => $estado,'COLOR' => $colorEstado);
+                   $tarjetas["TARJETA$idTarjeta"]['PUERTOS']["PUERTO$regs1[1]"] = array('LOCALIDAD' =>$regs1[1],'TIPO' => "&nbsp;", 'ADICIONAL' => $regs1[2], 'ESTADO' => $estado,'COLOR' => $colorEstado);
                 }
             }
         }
@@ -101,7 +102,7 @@ class PaloSantoHardwareDetection
             }
         }
         return($tarjetas);
-    } 
+    }
 
     function hardwareDetection($chk_zapata_replace,$path_file_zapata)
     {
