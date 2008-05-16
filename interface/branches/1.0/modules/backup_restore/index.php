@@ -562,6 +562,9 @@ function process_each_backup($arrSelectedOptions,$ruta_respaldo,&$arrBackupOptio
         case "as_zaptel":
             exec("cp /etc/zaptel.conf $ruta_respaldo", $output, $retval);
             if ($retval!=0) $bExito = false;
+
+            exec("cp /etc/sysconfig/zaptel $ruta_respaldo", $output, $retval);
+            if ($retval!=0) $bExito = false;
             break;
 
         case "fx_db":
@@ -969,6 +972,24 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
             if ($retval!=0) $bExito = false;
 
             $comando="sudo -u root chmod 644 /etc/zaptel.conf";
+            exec($comando, $output, $retval);
+            break;
+
+
+
+            // /etc/sysconfig/zaptel
+            $comando="sudo -u root touch /etc/sysconfig/zaptel";
+            exec($comando, $output, $retval);
+
+            $comando="sudo -u root chmod 777 /etc/sysconfig/zaptel";
+            exec($comando, $output, $retval);
+
+            $comando="cat $ruta_respaldo/zaptel > /etc/sysconfig/zaptel";
+            exec($comando, $output, $retval);
+            //Solo en este verifico si se ejecuto correctamente pues aqui es donde se copia la info
+            if ($retval!=0) $bExito = false;
+
+            $comando="sudo -u root chmod 644 /etc/sysconfig/zaptel";
             exec($comando, $output, $retval);
             break;
 
