@@ -67,31 +67,12 @@ class Agentes {
                 return $arr_result[0];
             }
         }
-
-//         if (is_null($id)) {            
-//             $this->_read_agents();
-//             ksort($this->arrAgents);
-// print_r($this->arrAgents);
-//             return $this->arrAgents;
-//         } else {
-//             $arrAgt=null; 
-//             $this->_read_agents();
-//             foreach ($this->arrAgents as $agente){
-//              //   print "$agente[0] == $id";
-//                 if ($agente[0] == $id)
-//                     $arrAgt = $agente;
-//             }
-// print_r($arrAgt);
-//             return $arrAgt;
-//         }
-
     }
 
 
     function existAgent($agent, &$msj) {
         $this->_read_agents();
         foreach ($this->arrAgents as $agente){
-//print_r($agente);  "<br>";
             if ($agente[0] == $agent)
                 return $agente;
         }
@@ -111,7 +92,7 @@ class Agentes {
     function addAgent($agent=null,&$msj=""){
         if (!is_null($agent)){
             if (is_array($agent)){
-                if (count($agent)==4){
+                if (count($agent)==3){
                     return $this->_add_agent($agent,$msj);
                 } else return false;
             } else return false;
@@ -121,7 +102,7 @@ class Agentes {
     function editAgent($agent=null){
         if (!is_null($agent)){
             if (is_array($agent)){
-                if (count($agent)==4){
+                if (count($agent)==3){
                     return $this->_edit_agent($agent);
                 } else return false;
             } else return false;
@@ -159,18 +140,17 @@ class Agentes {
             "number"          =>  paloDB::DBCAMPO($agent[0]),
             "name"   =>  paloDB::DBCAMPO($agent[2]),
             "password"       =>  paloDB::DBCAMPO($agent[1]),
-            "queue"       =>  paloDB::DBCAMPO($agent[3]),
+//            "queue"       =>  paloDB::DBCAMPO($agent[3]),
             )
         );
-//echo $sPeticionSQL;
+echo "sql = ".$sPeticionSQL;
         $pDB->genQuery("SET AUTOCOMMIT = 0");
         $result = $pDB->genQuery($sPeticionSQL);
-        //echo $result;
+
         if (!$result) {
             $msj = $pDB->errMsg;
             $pDB->genQuery("ROLLBACK");
             $pDB->genQuery("SET AUTOCOMMIT = 1");
-  //          echo "ingreso";
             return false;
         }
 
@@ -228,7 +208,7 @@ class Agentes {
             array(
                 "name"   =>  paloDB::DBCAMPO($agent[2]),
                 "password"       =>  paloDB::DBCAMPO($agent[1]),
-                "queue"       =>  paloDB::DBCAMPO($agent[3]),
+//                "queue"       =>  paloDB::DBCAMPO($agent[3]),
             ),
             "number=".$agent[0]
         );
@@ -402,8 +382,14 @@ class Agentes {
 
         function _reloadAsterisk()
         {
+            // incluyendo archivo donde están los datos de acceso del asterisk
+            include_once "modules/agent_console/configs/default.conf.php";
+            $ip_asterisk = $acceso_asterisk["ip"];
+            $user_asterisk = $acceso_asterisk["user"];
+            $pass_asterisk = $acceso_asterisk["pass"];
+
             $astman = new AGI_AsteriskManager();
-            if (!$astman->connect("127.0.0.1", 'admin' , 'elastix456')) {
+            if (!$astman->connect($ip_asterisk, $user_asterisk , $pass_asterisk)) {
                 $resultado = "Error when connecting to Asterisk Manager";
             } else {
                 $strReload = $astman->Command(" reload");
@@ -412,8 +398,13 @@ class Agentes {
         }
 
         function isAgentOnline($agentNum) {
+            // incluyendo archivo donde están los datos de acceso del asterisk
+            include_once "modules/agent_console/configs/default.conf.php";
+            $ip_asterisk = $_SESSION["ip_asterisk"];
+            $user_asterisk = $_SESSION["user_asterisk"];
+            $pass_asterisk = $_SESSION["pass_asterisk"];
             $astman = new AGI_AsteriskManager();
-            if (!$astman->connect("127.0.0.1", 'admin' , 'elastix456')) {
+            if (!$astman->connect($ip_asterisk, $user_asterisk , $pass_asterisk)) {
                 $resultado = "Error when connecting to Asterisk Manager";
             } else {
                 $strAgentsOnline = $astman->Command("agent show online");
@@ -436,9 +427,15 @@ class Agentes {
                 $msj = $arrLang["Error when connecting to database"]." ".$pDB->errMsg;
                 return false;
             } else {
-                if(is_array($arrAgentes) && count($arrAgentes)>0) { 
+                if(is_array($arrAgentes) && count($arrAgentes)>0) {
+                    // incluyendo archivo donde están los datos de acceso del asterisk
+                    include_once "modules/agent_console/configs/default.conf.php";
+                    $ip_asterisk = $acceso_asterisk["ip"];
+                    $user_asterisk = $acceso_asterisk["user"];
+                    $pass_asterisk = $acceso_asterisk["pass"];
+ 
                     $astman = new AGI_AsteriskManager();
-                    if (!$astman->connect("127.0.0.1", 'admin' , 'elastix456')) {
+                    if (!$astman->connect($ip_asterisk, $user_asterisk , $pass_asterisk)) {
                         $msj = "Error when connecting to Asterisk Manager";
                     } else {
                         for($i =0 ; $i<count($arrAgentes) ; $i++) {
@@ -552,7 +549,6 @@ class Agentes {
                 $arrValor = array( "tipo"=>$tipo ,"id"=>$id );
                 return $arrValor;
             }
-echo "no call <br>";
             $msj .= $arrLan["No call"];
             return false;
         }
@@ -618,20 +614,3 @@ echo "no call <br>";
 
 
 ?>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

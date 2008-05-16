@@ -30,7 +30,6 @@ CREATE TABLE `agent` (
   `number` varchar(40) NOT NULL,
   `name` varchar(250) NOT NULL,
   `password` varchar(250) NOT NULL,
-  `queue` varchar(16) NOT NULL,
   `estatus` enum('A','I') default 'A',
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

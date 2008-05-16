@@ -34,10 +34,10 @@
 	<td width="15%">{$description.LABEL}: <span  class="required">*</span></td>
 	<td width="35%">{$description.INPUT}</td>
       </tr>
-      <tr>
+<!--      <tr>
         <td width="20%">{$queue.LABEL}: <span class="required">*</span></td>
         <td width="30%" colspan='3'>{$queue.INPUT}</td>
-      </tr>
+      </tr> -->
       <tr>
 {if $mode ne 'view'}
 	<td width="20%">{$password1.LABEL}: <span  class="required">*</span></td>
@@ -46,15 +46,17 @@
 	<td width="30%">{$password2.INPUT}</td>
 {/if}
       </tr>
-      <tr>
-
-      </tr>
+<!--      <tr>
+        <td width="20%">{$queue.LABEL}: <span  class="required">*</span></td>
+	<td width="30%">{$queue.INPUT}</td>	
+      </tr> -->
     </table>
   </td>
 </tr>
 </table>
 <input type="hidden" name="id_agent" value="{$id_agent}">
 </form>
+
 
 
 

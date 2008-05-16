@@ -86,7 +86,7 @@ class PaloSantoBreaks
         } 
         else {
             $this->errMsg = "";
-            $sPeticionSQL = "SELECT id, name, description,status from break where $where"; 
+            $sPeticionSQL = "SELECT id, name, description,status from break where $where and tipo='B'"; 
             $arr_result =& $this->_DB->fetchTable($sPeticionSQL, true);
             if (!is_array($arr_result)) {
                 $arr_result = FALSE;

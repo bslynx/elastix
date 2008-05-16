@@ -32,4 +32,12 @@ $arrConfig['templates_dir'] = 'themes';
 $tipo_equipos = 'SIP|IAX|ZAP|H323|OH323';
 $prefijo_objeto["prefijo"] = "form_agent_console_";
 $cadena_dsn = "mysql://asterisk:asterisk@localhost/call_center";
+
+$acceso_asterisk['ip']="127.0.0.1";
+$acceso_asterisk['user']="admin";
+$acceso_asterisk['pass']="elastix456";
+
+$acceso_asterisk['ext_parqueo']="70";
+$acceso_asterisk['hardware']="SIP|IAX|ZAP|H323|OH323";
+
 ?>

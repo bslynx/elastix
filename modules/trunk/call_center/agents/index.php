@@ -43,19 +43,25 @@ function _moduleContent(&$smarty, $module_name)
         include_once($lang_file);
     else
         include_once("modules/$module_name/lang/es.lang");
-   
 
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
+    include_once "modules/agent_console/configs/default.conf.php";
     global $arrConf;
     global $arrLang;
+    global $arrLan;
+
+    $_SESSION['ip_asterisk'] = $acceso_asterisk["ip"];
+    $_SESSION['user_asterisk'] = $acceso_asterisk["user"];
+    $_SESSION['pass_asterisk'] = $acceso_asterisk["pass"];
+
    //folder path for custom templates
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
     $templates_dir=(isset($arrConfig['templates_dir']))?$arrConfig['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
 
     $agents_file="/etc/asterisk/agents.conf";
-    include "libs/paloSantoQueue.class.php";
+//    include "libs/paloSantoQueue.class.php";
 
     // para obtener el listado de colas
     include_once "libs/paloSantoConfig.class.php";
@@ -65,14 +71,17 @@ function _moduleContent(&$smarty, $module_name)
     $dsn     = $arrConfig['AMPDBENGINE']['valor'] . "://" . $arrConfig['AMPDBUSER']['valor'] . ":" . $arrConfig['AMPDBPASS']['valor'] . "@" . $arrConfig['AMPDBHOST']['valor'] . "/asterisk";
     $aDB = new paloDB($dsn);
 
-    $oQueue = new paloQueue($aDB);
-    $arrQueues = $oQueue->getQueue();
+//     $oQueue = new paloQueue($aDB);
+//     $arrQueues = $oQueue->getQueue();
 
-    if (is_array($arrQueues) && count ($arrQueues)>0){
-        foreach($arrQueues as $queue) {
-            $arrDataQueues[$queue[0]] = $queue[1];
-        }
-    }
+    $contenidoModulo="";
+
+/*     if (is_array($arrQueues) && count ($arrQueues)>0){
+         foreach($arrQueues as $queue) {
+             $arrDataQueues[$queue[0]] = $queue[1];
+         }
+     }
+*/
 
 
     include_once("libs/Agentes.class.php");
@@ -105,12 +114,12 @@ function _moduleContent(&$smarty, $module_name)
                                                     "INPUT_EXTRA_PARAM"      => "",
                                                     "VALIDATION_TYPE"        => "text",
                                                     "VALIDATION_EXTRA_PARAM" => ""),
-                             "queue"      => array("LABEL"                  => $arrLan["Queue"],
-                                                    "REQUIRED"               => "yes",
-                                                    "INPUT_TYPE"             => "SELECT",
-                                                    "INPUT_EXTRA_PARAM"      => $arrDataQueues,
-                                                    "VALIDATION_TYPE"        => "text",
-                                                    "VALIDATION_EXTRA_PARAM" => ""),
+/*                              "queue"      => array("LABEL"                  => $arrLan["Queue"],
+                                                     "REQUIRED"               => "yes",
+                                                     "INPUT_TYPE"             => "SELECT",
+                                                     "INPUT_EXTRA_PARAM"      => $arrDataQueues,
+                                                     "VALIDATION_TYPE"        => "text",
+                                                     "VALIDATION_EXTRA_PARAM" => ""),*/
 
     );
 
@@ -133,7 +142,7 @@ function _moduleContent(&$smarty, $module_name)
         $arrFillagent['extension']   = '';
 	$arrFillagent['password1']   = '';
 	$arrFillagent['password2']   = '';
-	$arrFillagent['queue']       = '';
+//	$arrFillagent['queue']       = '';
         $contenidoModulo=$oForm->fetchForm("$local_templates_dir/new.tpl", $arrLan["New agent"],$arrFillagent);
 
     } else if(isset($_POST['edit'])) {
@@ -147,7 +156,7 @@ function _moduleContent(&$smarty, $module_name)
         $arrFillagent['description'] = $arragent["name"]; //desc
         $arrFillagent['password1'] = $arragent["password"];
         $arrFillagent['password2'] = $arragent["password"];
-        $arrFillagent['queue'] = $arragent["queue"];
+//        $arrFillagent['queue'] = $arragent["queue"];
 
         $arrFormElements['password1']['REQUIRED']='no';
         $arrFormElements['password2']['REQUIRED']='no';
@@ -161,7 +170,7 @@ function _moduleContent(&$smarty, $module_name)
             $_POST['extension'] = trim($_POST['extension']);
             $_POST['password1'] = trim($_POST['password1']);
             $_POST['description'] = trim($_POST['description']);
-            $_POST['queue'] = trim($_POST['queue']);
+//            $_POST['queue'] = trim($_POST['queue']);
 
             // Exito, puedo procesar los datos ahora.
             $oAgent = new paloACL($pDB);
@@ -181,7 +190,7 @@ function _moduleContent(&$smarty, $module_name)
                     0 => $_POST['extension'],
                     1 => $_POST['password1'],
                     2 => $_POST['description'],
-                    3 => $_POST['queue']
+//                    3 => $_POST['queue']
                 );
     
                 if (!$oAgentes->addAgent($agente,$message)) {
@@ -227,7 +236,7 @@ function _moduleContent(&$smarty, $module_name)
                 $arrFillagent['password1']   = $_POST['password1'];    
                 $arrFillagent['password2']   = $_POST['password1'];
                 $arrFillagent['extension']   = $_POST['id_agent'];
-                $arrFillagent['queue']       = $_POST['queue'];
+//                $arrFillagent['queue']       = $_POST['queue'];
 		
                 $contenidoModulo=$oForm->fetchForm("$local_templates_dir/new.tpl", $arrLan["Edit agent"], $arrFillagent);
             } else {
@@ -241,7 +250,7 @@ function _moduleContent(&$smarty, $module_name)
                         0 => $_POST['id_agent'],
                         1 => $_POST['password1'],
                         2 => $_POST['description'],
-                        3 => $_POST['queue']
+//                        3 => $_POST['queue']
                 );
 
                 //- La updateagent no es la adecuada porque pide el agentname. Deberia
@@ -268,7 +277,7 @@ function _moduleContent(&$smarty, $module_name)
             $smarty->assign("mb_message", $strErrorMsg);
             $arrFillagent['description']= $_POST['description'];
             $arrFillagent['extension']  = $_POST['extension'];
-            $arrFillagent['queue']      = $_POST['queue'];
+//            $arrFillagent['queue']      = $_POST['queue'];
             $smarty->assign("id_agent", $_POST['id_agent']);
             $contenidoModulo=$oForm->fetchForm("$local_templates_dir/new.tpl", $arrLan["Edit agent"], $arrFillagent);
             /////////////////////////////////
@@ -285,7 +294,7 @@ function _moduleContent(&$smarty, $module_name)
             $arrTmp['extension'] = $arragent["number"];
             $arrTmp['password1'] = $arragent["password"];
             $arrTmp['password2'] = $arragent["password"];
-            $arrTmp['queue'] = $arragent["queue"];
+//            $arrTmp['queue'] = $arragent["queue"];
 
             $smarty->assign("id_agent", $_GET['id']);
             $contenidoModulo=$oForm->fetchForm("$local_templates_dir/new.tpl", $arrLan["View agent"], $arrTmp); // hay que pasar el arreglo
@@ -312,7 +321,6 @@ function _moduleContent(&$smarty, $module_name)
 
             if(!$oAgentes->deleteAgentFile($_GET['id'])) {
                 $error = $msj;
-// echo "error 3<br>";
             }
 
         } elseif (isset($_POST['delete'])) {
@@ -356,34 +364,36 @@ function _moduleContent(&$smarty, $module_name)
                 }
             }
         }
-
-        foreach($arragents as $key=>$agent) {
-            $arrTmp    = array();
-            $arrTmp[2] = $agent["number"];
-            $arrTmp[3] = $agent["name"];
-            $arrTmp[4] = $agent["queue"];
-
-            if ($oAgentes->existAgent($agent["number"], $msj)) {
-                $arrTmp[1] = "<img src='modules/$module_name/themes/images/visto.gif' border='0'>";
-                $reparar = "";
-            } else {
-                $arrTmp[1] = "<img src='modules/$module_name/themes/images/error_small.png' border='0' title=\"".$arrLan["Agent doesn't exist in configuration file"]."\">";
-                //$reparar = "&nbsp;<a href='?menu=agents&action=reparar_en_db&id=" . $agent["number"] . "'>Reparar</a>";
-                $reparar = "&nbsp;<a href='javascript:preguntar_por_reparacion(\"".$agent["number"]."\",\"reparar_db\",\"".$arrLan["To rapair is necesary add an agent in configuration file. Do you want to continue?"]."\")'>Reparar</a>";
+        $arr_numberAgentDB = array();
+        if (isset($arragents) && is_array($arragents)) {
+            foreach($arragents as $key=>$agent) {
+                $arrTmp    = array();
+                $arrTmp[2] = $agent["number"];
+                $arrTmp[3] = $agent["name"];
+//                $arrTmp[6] = $agent["queue"];
+    
+                if ($oAgentes->existAgent($agent["number"], $msj)) {
+                    $arrTmp[1] = "<img src='modules/$module_name/themes/images/visto.gif' border='0'>";
+                    $reparar = "";
+                } else {
+                    $arrTmp[1] = "<img src='modules/$module_name/themes/images/error_small.png' border='0' title=\"".$arrLan["Agent doesn't exist in configuration file"]."\">";
+                    //$reparar = "&nbsp;<a href='?menu=agents&action=reparar_en_db&id=" . $agent["number"] . "'>{$arrLan['Repair']}</a>";
+                    $reparar = "&nbsp;<a href='javascript:preguntar_por_reparacion(\"".$agent["number"]."\",\"reparar_db\",\"".$arrLan["To rapair is necesary add an agent in configuration file. Do you want to continue?"]."\")'>{$arrLan['Repair']}</a>";
+                }
+    
+                if( $oAgentes->isAgentOnline( $agent["number"]) ) {
+                    $arrTmp[0] = "<input type='checkbox'  name='chk_{$agent["number"]}' id='chk_{$agent["number"]}'>";
+                    $arrTmp[4] = $arrLan["Online"];
+                }else{
+                    $arrTmp[0] = $arrTmp[0] = "<input type='checkbox' name='chk_{$agent["number"]}' id='chk_{$agent["number"]}' disabled>";
+                    $arrTmp[4] = $arrLan["Offline"];
+                }
+    
+                $arr_numberAgentDB[] = $agent["number"];
+    
+                $arrTmp[5] = "&nbsp;<a href='?menu=agents&action=view&id=" . $agent["number"] . "'>".$arrLang["View"]."</a>".$reparar;
+                $arrData[] = $arrTmp;
             }
-
-            if( $oAgentes->isAgentOnline( $agent["number"]) ) {
-                $arrTmp[0] = "<input type='checkbox'  name='chk_{$agent["number"]}' id='chk_{$agent["number"]}'>";
-                $arrTmp[5] = $arrLan["Online"];
-            }else{
-                $arrTmp[0] = $arrTmp[0] = "<input type='checkbox' name='chk_{$agent["number"]}' id='chk_{$agent["number"]}' disabled>";
-                $arrTmp[5] = $arrLan["Offline"];
-            }
-
-            $arr_numberAgentDB[] = $agent["number"];
-
-            $arrTmp[6] = "&nbsp;<a href='?menu=agents&action=view&id=" . $agent["number"] . "'>".$arrLang["View"]."</a>".$reparar;
-            $arrData[] = $arrTmp;
         }
 
         // OBTENIENDO DIFERENCIAS ENTRE BASE DE DATOS Y ARCHIVO. SI HAY MAS EN EL ARCHIVO QUE EN LA DB
@@ -397,10 +407,10 @@ function _moduleContent(&$smarty, $module_name)
                     $arrTmp[0] = $arrTmp[0] = "<input type='checkbox' name='chk_{$agent["number"]}' id='chk_{$agent["number"]}' disabled>";
                     $arrTmp[2] = $arr_agent_diff[0];
                     $arrTmp[3] = $arr_agent_diff[2];
-                    $arrTmp[4] = "&nbsp;";
+                    //$arrTmp[4] = "&nbsp;";
                     $arrTmp[1] = "<img src='modules/$module_name/themes/images/error_small.png' border='0' title=\"".$arrLan["Agent doesn't exist in database"]."\">";
-                    $arrTmp[5] = "&nbsp;";
-                    $arrTmp[6] = "&nbsp;<a href='javascript:preguntar_por_reparacion(\"".$arr_agent_diff[0]."\",\"reparar_file\",\"".$arrLan["To rapair is necesary delete agent from configuration file. Do you want to continue?"]."\")'>Reparar</a>";
+                    $arrTmp[4] = "&nbsp;";
+                    $arrTmp[5] = "&nbsp;<a href='javascript:preguntar_por_reparacion(\"".$arr_agent_diff[0]."\",\"reparar_file\",\"".$arrLan["To rapair is necesary delete agent from configuration file. Do you want to continue?"]."\")'>{$arrLan['Repair']}</a>";
                    
                     $arrData[] = $arrTmp;
             
@@ -458,7 +468,7 @@ function _moduleContent(&$smarty, $module_name)
         }
         $end = count($arrData);
         // fin datos pagineo
-        $boton_desconectar = "<input type='submit' name='btn_desconectar' value='{$arrLan['Desconect']}' class='button' >";
+        $boton_desconectar = "<input type='submit' name='btn_desconectar' value='{$arrLan['Disconect']}' class='button' >";
 
         $arrGrid = array("title"    => $arrLan["Agent List"],
                          "icon"     => "images/user.png",
@@ -475,11 +485,11 @@ function _moduleContent(&$smarty, $module_name)
                                                         "property1" => ""),
                                             3 => array("name"       => $arrLang["Name"],
                                                         "property1" => ""),
-                                            4 => array("name"       => $arrLan["Queue"],
+/*                                            6 => array("name"       => $arrLan["Queue"],
+                                                        "property1" => ""),*/
+                                            4 => array("name"       => $arrLang["Status"],
                                                         "property1" => ""),
-                                            5 => array("name"       => $arrLang["Status"],
-                                                        "property1" => ""),
-                                            6 => array("name"       => $arrLang["Options"],
+                                            5 => array("name"       => $arrLang["Options"],
                                                         "property1" => ""),
                                             )
                         );
@@ -509,7 +519,7 @@ function _moduleContent(&$smarty, $module_name)
 
         $oGrid->showFilter("
                 <form id='form_agents'style='margin-bottom:0;' method='POST' action='?menu=agents'>
-                    <input type='submit' name='submit_create_agent' value='Nuevo' class='button'>
+                    <input type='submit' name='submit_create_agent' value='{$arrLan["New agent"]}' class='button'>
                     <td align='right'>{$arrLang["Status"]}&nbsp;$combo_estados</td>
         ");
 

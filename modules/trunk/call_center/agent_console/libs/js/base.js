@@ -236,24 +236,18 @@ function consultarTransferenciaLlamada(extension){
     xajax_consultarTransferenciaLlamada(extension);
 }
 
-function holdearLlamada() {
-    xajax_holdearLlamada();
-}
-
-function unHoldearLlamada(channel) {
-    xajax_unHoldearLlamada(channel);
-}
-
 
 /*Fin Funciones para Transferencia de llamadas*/
 
 /* Funciones para el Envio de llamadas*/
 function mostrar_teclado() {
-
-    clase = document.getElementById('marcar').className;
+//alert("holaaaaaaaaaaa");
+    clase = document.getElementById('marcar2').className;
     if(clase == 'boton_marcar_activo') {
+//alert("activo");
         document.getElementById('div_marcar_list').style.display='';
     } else if (clase == 'boton_marcar_activo') {
+//alert("inactivo");
         document.getElementById('div_marcar_list').style.display='none'
     }
 }
@@ -267,6 +261,7 @@ function capturarValor(btn) {
 function marcarLLamada() {
     texto = document.getElementById('txtMarcar').value;
     document.getElementById('txtMarcar').value = '';
+//alert(texto);
     xajax_marcarLlamada(texto);
     document.getElementById('div_marcar_list').style.display='none';
 }

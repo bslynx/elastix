@@ -54,24 +54,22 @@ class paloSantoCallsAgent {
         $sqlQuery = "";
         $strWhereCalls = "";
         $strWheredateCallEn = "";
-//22/11/2007
+
         if(!isset($field_name['field_name']))
             $field_name['field_name'] = "";
-//fin
+
         $field_name_1 = $field_name['field_name'];
-//22/11//2007
+
         if(!isset($field_name['field_name_1']))
             $field_name['field_name_1'] = "";
-//fin
+
         $field_name_2 = $field_name['field_name_1'];
 
-//11/22/2007
         if(!isset($field_pattern['field_pattern']))
             $field_pattern['field_pattern']="";
         if(!isset($field_pattern['field_pattern_1']))
             $field_pattern['field_pattern_1']="";
 
-//fin
         $field_pattern_1 = strtoupper($field_pattern['field_pattern']);
         $field_pattern_2 = strtoupper($field_pattern['field_pattern_1']);
         

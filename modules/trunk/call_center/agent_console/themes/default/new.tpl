@@ -218,7 +218,7 @@ a.normal:link, a.normal:visited {
 <form method="POST" name="frm_agent_console" id="frm_agent_console">
 <table width="99%" border="0" cellspacing="0" cellpadding="0" align="center">
 <tr class="moduleTitle">
-  <td class="moduleTitle" valign="middle">&nbsp;&nbsp;<img src="images/icono_fono.jpg" border="0" align="absmiddle" height='70%'>&nbsp;&nbsp;{$title}</td>
+  <td class="moduleTitle" valign="middle">&nbsp;&nbsp;<img src="images/icono_fono.jpg" border="0" align="absmiddle" >&nbsp;&nbsp;{$title}</td>
 </tr>
 <tr>
   <td valign="middle" class="mb_message">{$ERROR_DB}<div id="mensajes_informacion"></div></td>
@@ -276,87 +276,80 @@ a.normal:link, a.normal:visited {
                                         </div> 
                                     </td>
                                 </tr>
-<!--                            ESPERA       -->
-                                <tr>
+<!--                            ESPERA: COMENTADA PORQUE AÚN NO FUNCIONA CORRECTAMENTE       -->
+<!--                                <tr>
                                     <td>
                                         <input class='{$STYLE_HOLD}' type='button' value='{$LABEL_HOLD}' name='hold' id='hold' size="35" onClick="xajax_hold();">
                                     </td>
                                 </tr>
+-->
+
+                                <!--  Marcado de llamadas     ************************************************************************* !-->
+<!--                                <tr>
+                                    <td>
+                                        <input class='boton_marcar_activo' type='button' value='{$MARCAR}' id='marcar2' size="40" 
+                                        onClick=" {literal} mostrar_teclado(); {/literal} "  $DESHABILITAR_MARCADO >
+                                
+                                        <table border='0' cellpadding='0' cellspacing='0' id='div_marcar_list' style='display:none'>
+                                            <tr>
+                                                <td><input type='text' id='txtMarcar' name='txtMarcar'></td>
+                                            </tr>
+                                            <tr>
+                                                <td align='Center'>
+                                                    <table >
+                                                        <tr>
+                                                            <td><input type='button' id='btn_1' name='btn_1' value='1' 
+                                                            onClick='{literal} capturarValor(this); {/literal}'></td>
+                                                            <td><input type='button' id='btn_2' name='btn_2' value='2' 
+                                                            onClick='{literal} capturarValor(this); {/literal}'></td>
+                                                            <td><input type='button' id='btn_3' name='btn_3' value='3' 
+                                                            onClick='{literal} capturarValor(this); {/literal}'></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td><input type='button' id='btn_4' name='btn_4' value='4' 
+                                                            onClick='{literal} capturarValor(this); {/literal}'></td>
+                                                            <td><input type='button' id='btn_5' name='btn_5' value='5' 
+                                                            onClick='{literal} capturarValor(this); {/literal}'></td>
+                                                            <td><input type='button' id='btn_6' name='btn_6' value='6' 
+                                                            onClick='{literal} capturarValor(this); {/literal}'></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td><input type='button' id='btn_7' name='btn_7' value='7' 
+                                                            onClick='{literal} capturarValor(this); {/literal}'></td>
+                                                            <td><input type='button' id='btn_8' name='btn_8' value='8' 
+                                                            onClick='{literal} capturarValor(this); {/literal}'></td>
+                                                            <td><input type='button' id='btn_9' name='btn_9' value='9' 
+                                                            onClick='{literal} capturarValor(this); {/literal}'></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td><input type='button' id='btn_aterisco' name='btn_aterisco' value='*' 
+                                                            onClick='{literal} capturarValor(this); {/literal}'></td>
+                                                            <td><input type='button' id='btn_0' name='btn_0' value='0' 
+                                                            onClick='{literal} capturarValor(this); {/literal}'></td>
+                                                            <td><input type='button' id='btn_numeral' name='btn_numeral' value='#' 
+                                                            onClick='{literal} capturarValor(this); {/literal}'></td>
+                                                        </tr> 
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td align='Center'><input type='button' id='btn_marcar' name='btn_marcar' value='{$BTN_MARCAR}' 
+                                                onClick='{literal} marcarLLamada(); {/literal}' ></td>
+                                            </tr>
+                                            <tr>
+                                                <td align='Center'><input type='button' id='btn_cancelar' name='btn_cancelar' value='{$BTN_CANCELAR}' 
+                                                onClick="{literal} cancelarMarcado(); {/literal}" ></td>
+                                            </tr>
+                                        </table>
+                                        
+                                    </td>
+                                </tr>
+-->
+                                <!-- Fin Marcar de llamadas     ************************************************************************* !-->
+
 <!--                            TRANSFER      -->
-
-
-<!--  Marcado de llamadas     ************************************************************************* 
-
-<tr>
-    <td>
-        <input class='boton_marcar_activo' type='button' value='{$MARCAR}' id='marcar' size="40" 
-        onClick=" {literal} mostrar_teclado(); {/literal} " {$DESHABILITAR_MARCADO}>
-
-        <table border='0' cellpadding='0' cellspacing='0' id='div_marcar_list' style='display:none'>
-            <tr>
-                <td><input type='text' id='txtMarcar' name='txtMarcar'></td>
-            </tr>
-            <tr>
-                <td align='Center'>
-                    <table >
-                        <tr>
-                            <td><input type='button' id='btn_1' name='btn_1' value='1' 
-                            onClick='{literal} capturarValor(this); {/literal}'></td>
-                            <td><input type='button' id='btn_2' name='btn_2' value='2' 
-                            onClick='{literal} capturarValor(this); {/literal}'></td>
-                            <td><input type='button' id='btn_3' name='btn_3' value='3' 
-                            onClick='{literal} capturarValor(this); {/literal}'></td>
-                        </tr>
-                        <tr>
-                            <td><input type='button' id='btn_4' name='btn_4' value='4' 
-                            onClick='{literal} capturarValor(this); {/literal}'></td>
-                            <td><input type='button' id='btn_5' name='btn_5' value='5' 
-                            onClick='{literal} capturarValor(this); {/literal}'></td>
-                            <td><input type='button' id='btn_6' name='btn_6' value='6' 
-                            onClick='{literal} capturarValor(this); {/literal}'></td>
-                        </tr>
-                        <tr>
-                            <td><input type='button' id='btn_7' name='btn_7' value='7' 
-                            onClick='{literal} capturarValor(this); {/literal}'></td>
-                            <td><input type='button' id='btn_8' name='btn_8' value='8' 
-                            onClick='{literal} capturarValor(this); {/literal}'></td>
-                            <td><input type='button' id='btn_9' name='btn_9' value='9' 
-                            onClick='{literal} capturarValor(this); {/literal}'></td>
-                        </tr>
-                        <tr>
-                            <td>&nbsp;</td>
-                            <td><input type='button' id='btn_0' name='btn_0' value='0' 
-                            onClick='{literal} capturarValor(this); {/literal}'></td>
-                            <td>&nbsp;</td>
-                        </tr> 
-                    </table>
-                </td>
-            </tr>
-            <tr>
-                <td align='Center'><input type='button' id='btn_marcar' name='btn_marcar' value='{$BTN_MARCAR}' 
-                onClick='{literal} marcarLLamada(); {/literal}' ></td>
-            </tr>
-            <tr>
-                <td align='Center'><input type='button' id='btn_cancelar' name='btn_cancelar' value='{$BTN_CANCELAR}' 
-                onClick="{literal} cancelarMarcado(); {/literal}" ></td>
-            </tr>
-        </table>
-        
-    </td>
-</tr>
-
-  Fin Marcar de llamadas     ************************************************************************* !-->
-
-
-
-
-
-
-
-
                                 <tr>
                                     <td>
-    <!--  Transferencia de llamadas     ************************************************************************* !-->
                                         <input class='boton_tranfer_activo' type='button' value='{$TRANFER}' id='transfer' size="35" onClick="{literal}  mostrar_lista_transferencia();  {/literal}" {$DESHABILITAR_TRANSFER}>
 
                                             <table border='0' cellpadding='0' cellspacing='0' id='div_transfer_list' style='display:none'>
@@ -385,7 +378,6 @@ a.normal:link, a.normal:visited {
                                             </table>
                                         </div> 
                                     </td> 
-    <!-- Fin de Transferencia de llamadas    ********************************************************************* !-->
                                 </tr>
 <!--                            VTIGERCRM      -->
                                 <tr>
@@ -432,7 +424,7 @@ a.normal:link, a.normal:visited {
                             </tr>
                             </table>
                           </td>
-                          <td class="headlink" valign="bottom"><input type='hidden' id='pestania' value='LLAMADA'><input type='text' id='control' readOnly size="3" value='1'>&nbsp;</td>
+                          <td class="headlink" valign="bottom"><input type='hidden' id='pestania' value='LLAMADA'><input type='hidden' id='control' readOnly size="3" value='1'>&nbsp;</td>
                           <td class="headlink" valign="bottom" align="right">
                             <table border="0" cellpadding="2" cellspacing="0" height="29" width="100%">
                                 <tr>

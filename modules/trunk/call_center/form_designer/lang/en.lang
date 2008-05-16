@@ -49,6 +49,7 @@ $arrLan=array(
 "Edit Form" => "Edit Form", //Bruno agrego
 "Activate" => "Activate",
 "Form List" => "Form List", //Bruno agrego 
+"Form Designer" => "Form Designer",
 "Create New Form" => "Create New Form", //Bruno agrego 
 "Activate Error" => "Activate Error", //Bruno agrego
 "Error when Activating the form" => "Error when Activating the form", //Bruno agrego
@@ -82,9 +83,7 @@ $arrLan=array(
 "Type Label"=>"Type Label",
 "Type Text"=>"Type Text",
 "Type List"=>"Type List",
-"Type Date"=>"Type Datet",
+"Type Date"=>"Type Date",
 "Type Text Area"=>"Type Text Area",
 );
-
-
 ?>

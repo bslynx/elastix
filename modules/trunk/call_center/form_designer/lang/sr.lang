@@ -85,6 +85,4 @@ $arrLan=array(
 "Type Date"=>"Type Datet",
 "Type Text Area"=>"Type Text Area",
 );
-
-
 ?>

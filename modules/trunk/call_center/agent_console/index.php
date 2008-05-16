@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.5                                                  |
+  | Elastix version 0.5                                                  |f
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -34,11 +34,12 @@ include_once "libs/paloSantoConfig.class.php";
 function _moduleContent(&$smarty, $module_name)
 {
   
-     #incluir el archivo de idioma de acuerdo al que este seleccionado
-    #si el archivo de idioma no existe incluir el idioma por defecto
+    // incluir el archivo de idioma de acuerdo al que este seleccionado
+    // si el archivo de idioma no existe incluir el idioma por defecto
     $lang=get_language();
     $script_dir=dirname($_SERVER['SCRIPT_FILENAME']);
     $lang_file="modules/$module_name/lang/$lang.lang";
+
     if (file_exists("$script_dir/$lang_file"))
         include_once($lang_file);
     else
@@ -49,11 +50,18 @@ function _moduleContent(&$smarty, $module_name)
     include_once "libs/xajax/xajax.inc.php";
     global $arrConf;
     global $arrLang;
-    //global $prefijo_objeto;
+
+    $_SESSION['ip_asterisk'] = $acceso_asterisk["ip"];
+    $_SESSION['user_asterisk'] = $acceso_asterisk["user"];
+    $_SESSION['pass_asterisk'] = $acceso_asterisk["pass"];
+    $_SESSION['ext_parqueo'] = $acceso_asterisk["ext_parqueo"];
+    $_SESSION["hardware"] = $acceso_asterisk["hardware"];
+
+//global $acceso_asterisk;
+//echo "** "; print_r($acceso_asterisk);
 
     session_name("elastixSessionAgent");
-    //session_start();
-//  print_r($_SESSION);
+
     require_once "modules/$module_name/libs/paloSantoAgentConsole.class.php";
   
     //folder path for custom templates
@@ -69,7 +77,6 @@ function _moduleContent(&$smarty, $module_name)
         disconnet_agent();
         $_SESSION['elastix_agent_user']=null;
         $_SESSION['elastix_extension']=null;
-echo "Se ha cerrado la sesión<br>";
     }
     //instanciamos el objeto de la clase xajax
     $xajax = new xajax();
@@ -78,7 +85,11 @@ echo "Se ha cerrado la sesión<br>";
     $xajax->registerFunction("colgarLlamadaEntrante");
     $xajax->registerFunction("wait_login");
     $xajax->registerFunction("evento_cerrar_navegador");
-//  print_r($_SESSION);
+
+    // se consultan las extensiones de la base del asterisk para mostrarlas en el combo
+    $extensions = getExtensions($arrConfig);
+    $extensions = convertir_extensiones_validas($extensions);
+
     // si esta logoneado el agente
     if(isset($_SESSION['elastix_agent_user']) && isset($_SESSION['elastix_extension'])) {
         //asociamos la función creada anteriormente al objeto xajax
@@ -90,15 +101,11 @@ echo "Se ha cerrado la sesión<br>";
         $xajax->registerFunction("transferirLlamadaCiega");
         $xajax->registerFunction("hold");
         $xajax->registerFunction("marcarLlamada");
-        //$xajax->registerFunction("consultarTransferenciaLlamada");
-        //$xajax->registerFunction("holdearLlamada");
-        //$xajax->registerFunction("unHoldearLlamada");
+        $xajax->registerFunction("sacar_hold");
 
         //El objeto xajax tiene que procesar cualquier petición
         $xajax->processRequests();
         $smarty->assign("SCRIPT_AJAX", $xajax->printJavascript("libs/xajax/"));
-
-        //$xajax->debugOn();
 
         // Texto de los botones
         $smarty->assign("HANGUP", $arrLan["Hangup"]);
@@ -109,14 +116,13 @@ echo "Se ha cerrado la sesión<br>";
         $smarty->assign("formulario", $arrLan["Form"]);
         $smarty->assign("title", $arrLan["Agent Console"]);
 
-        //Consulta a la base para obtener los datos del agente.
+        // Conexión a la base de datos
         $pDB = getDB();
-
         if (!is_object($pDB->conn) || $pDB->errMsg!="") {
             $smarty->assign("mb_message", $pDB->errMsg);
         }
-// print_R($_GET);
-// print_R($_POST);
+
+        //Consulta a la base para obtener los datos del agente.
         $nombre_agent = "";
         $informacion_agente = obtener_informacion_agente($pDB,$_SESSION['elastix_agent_user']);
         if($informacion_agente != null && is_array($informacion_agente) && count($informacion_agente) >0)
@@ -132,15 +138,13 @@ echo "Se ha cerrado la sesión<br>";
         $smarty->assign("ALL_BREAK", obtener_break());
 
 
-// codigo agregado para la transferencia y el marcado de llamadas
-
+        // codigo agregado para la transferencia y el marcado de llamadas
 
         $arrTipo = getTipoLlamada($pDB,$msj);
 
-        $ext = getExtensions($arrConfig);
+        //$extensions = getExtensions($arrConfig);
 
-        $opcion_select_extension = crearSelect($ext);
-
+        $opcion_select_extension = crearSelect($extensions);
         $smarty->assign("LLAMAR", $arrLan["Accept"]);
         $smarty->assign("CONSULTAR_LLAMADA",$arrLan["consultar_llamada"]);
         $smarty->assign("opcion_select_extension", $opcion_select_extension);
@@ -153,65 +157,29 @@ echo "Se ha cerrado la sesión<br>";
             $smarty->assign("DESHABILITAR_TRANSFER","disabled");
         }*/
         //$smarty->assign("ESTILO_TRANSFER",$estilo_transfer);
-
-        /*if( $arrTipo['tipo']== "SALIENTE" ) {
+        /*
+        if( $arrTipo['tipo']== "SALIENTE" ) {
             $estilo_marcado ="boton_marcar_activo";
             $smarty->assign("DESHABILITAR_MARCADO","");
         } else {
             $estilo_marcado ="boton_marcar_inactivo";
             $smarty->assign("DESHABILITAR_MARCADO","disabled=true");
         }*/
-/*
-<html>
-<body>
-<script language="JavaScript">
-<!--
-function disable(disableIt)
-{
-	document.frm.sel.disabled = disableIt;
-}
-//-->
-</script>
 
-<form name="frm">
-<select name="sel">
-<option value="1">one</option>
-<option value="2">two</option>
-</select>
-<br />
-<input type="checkbox" onclick="disable(this.checked)" /> Disable
-</form>
+        //$estilo_marcado ="boton_marcar_activo";
+        $smarty->assign("DESHABILITAR_MARCADO","");
 
-</body>
-</html>
-
-*/
-//$respuesta->addAssign( "document.getElementById('marcar').disabled  " );
-
-
+        //$respuesta->addAssign( "document.getElementById('marcar').disabled  " );
         //$smarty->assign("ESTILO_MARCADO",$estilo_marcado);
-
 
         $smarty->assign("MARCAR",$arrLan['Marcar']);
         $smarty->assign("BTN_MARCAR",$arrLan['Marcar']);
         $smarty->assign("BTN_CANCELAR",$arrLan['Cancel']);
 
-
 // fin de codigo agregado para la transferencia y el marcado de llamadas
 
 
-        // para la funcion hold llamada *********************************************
-        //print_r($_POST);
-        /*if( isset( $_POST['hold_llamada'] ) ) {
-            echo "si esta seteada";
-            //$etiqueta_hold = $arrLan["Unhold"];
-            //$estilo_hold = "boton_unhold";
-        } else {
-            echo "no esta seteada";
-            $etiqueta_hold = $arrLan["Hold"];
-            $estilo_hold = "boton_hold";
-        }*/
-        
+        // PARA IMPLEMENTACIÓN A LA FUNCIÓN HOLD. AÚN NO ESTÁ IMPLEMENTADA POR FALLO
         if (is_null($_SESSION['channel_active'])) {
             $etiqueta_hold = $arrLan["Hold"];
             $estilo_hold = 'boton_break';
@@ -219,31 +187,27 @@ function disable(disableIt)
             $etiqueta_hold = $arrLan["UnHold"];
             $estilo_hold = 'boton_unbreak';
         }
-
         $smarty->assign("LABEL_HOLD",$etiqueta_hold);
         $smarty->assign("STYLE_HOLD",$estilo_hold);
+        // FIN PARA IMPLEMENTACIÓN A LA FUNCIÓN HOLD.
 
-        // fin funcion hold llamada *************************************************
         // para el script
-        $script = "Este es el script a mostrar";
+        $script = "";
         $smarty->assign("DATOS_SCRIPT", $script);
 
         // para el formulario
-        //$smarty->assign("FORMULARIO", $data_field);
         $smarty->assign("formularios", $arrLan["Form"]);
         $smarty->assign("fill_fields", $arrLan["Fill the fields"]);
         $smarty->assign("SAVE", $arrLang["Save"]);
         $smarty->assign("option_form", "combo");
 
-        $arr_objetos = "este es el formulario a mostrar";
+        $arr_objetos = "";
         $smarty->assign("DATOS_FORMULARIO", $arr_objetos);
 
         //Se hace esto para cuando el usuario haga un page reload en la consola, 
         //esto controla que el boton break se matenga con su estilo y accion correcta.
         $agentnum = $_SESSION['elastix_agent_user'];
 
-        //$cola     = $_SESSION['elastix_queue_agent'];
-        //$astman = getDBAsterisk($arrConfig);
         if (!estaAgenteEnPausa(null,$agentnum)) {
             $name_pausa = $arrLan["Break"];
             $style_pause = 'boton_break';
@@ -262,13 +226,13 @@ function disable(disableIt)
 
         $contenidoModulo=$smarty->fetch("file:$local_templates_dir/new.tpl");
 
+    // este caso contrario es para cuando el agente aún no ha iniciado sesión en la consola del agente
     } else {
 
         //asociamos la función creada anteriormente al objeto xajax
         $xajax->registerFunction("loginAgente");
         $xajax->processRequests();
         $smarty->assign("SCRIPT_AJAX", $xajax->printJavascript("libs/xajax/"));
-        //$xajax->debugOn();
 
         $smarty->assign("WELCOME_AGENT", $arrLan["Welcome to Console Agent"]);
         $smarty->assign("ENTER_USER_PASSWORD", $arrLan["Please enter your number agent"]);
@@ -276,7 +240,6 @@ function disable(disableIt)
         $smarty->assign("SUBMIT", $arrLan["Enter Agent"]);
 
         $id_extension_channel="";
-        $extensions = getExtensions($arrConfig);
         $extensions_name = array_keys($extensions);
         $id_extension = getExtensionActual($_SESSION['elastix_user']);
 
@@ -285,7 +248,6 @@ function disable(disableIt)
         else if(isset($_POST['input_extension']) && $_POST['input_extension'])
             $id_extension_channel = $_POST['input_extension'];
 
-        //$smarty->assign("LIST_EXTENSIONS", $extensions);
         $smarty->assign("EXT_VALUE", $extensions);
         $smarty->assign("EXT_NAME", $extensions_name);
         $smarty->assign("agent_user_aux", isset($_POST['input_agent_user'])?$_POST['input_agent_user']:"");

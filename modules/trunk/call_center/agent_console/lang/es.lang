@@ -107,6 +107,7 @@ $arrLan=array(
 
 
 
-"vtigercrm"=>"vTiger CRM"
+"vtigercrm"=>"vTiger CRM",
+"Agent disconnected"=>"Agente desconectado"
 );
 ?>

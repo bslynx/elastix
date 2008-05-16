@@ -30,7 +30,7 @@ global $arrLan;
 $arrLan=array(
 "Agent Console"=>"Agent Console",
 "Hangup"=>"Hangup",
-"Tranfer"=>"Tranfer",
+"Tranfer"=>"Transfer",
 "Call"=>"Call",
 "Script"=>"Script",
 "Form" => "Form",
@@ -105,7 +105,9 @@ $arrLan=array(
 "Please enter a number to mark" => "Please enter a number to mark",
 // fin de Envio de llamadas
 
-"vtigercrm"=>"vTiger CRM"
+"vtigercrm"=>"vTiger CRM",
+
+"Agent disconnected"=>"Agent disconnected"
 );
 
 

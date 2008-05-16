@@ -49,6 +49,7 @@ $arrLan = array(
 "Edit Form" => "Editar Formulario", //Bruno agrego
 "Activate"=>"Activar",
 "Form List" => "Lista de Formularios", //Bruno agrego 
+"Form Designer" => "Diseño de Formularios",
 "Create New Form" => "Crear Nuevo Formulario", //Bruno agrego 
 "Activate Error" => "Error al Activar", //Bruno agrego
 "Error when Activating the form" => "Error cuando se estaba Activando el formulario", //Bruno agrego
@@ -86,6 +87,3 @@ $arrLan = array(
 "Type Text Area"=>"Type Text Area",
 );
 ?>
-
-
-

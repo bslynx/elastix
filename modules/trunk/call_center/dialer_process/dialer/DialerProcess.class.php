@@ -20,7 +20,7 @@
    | Autores: Alex Villacís Lasso <a_villacis@palosanto.com>              |
    +----------------------------------------------------------------------+
   
-   $Id: DialerProcess.class.php,v 1.57 2007/12/12 17:45:10 alex Exp $
+   $Id: DialerProcess.class.php,v 1.59 2008/02/01 21:55:27 alex Exp $
 */
 require_once('AbstractProcess.class.php');
 require_once 'DB.php';
@@ -55,7 +55,7 @@ class DialerProcess extends AbstractProcess
 
     private $_oGestorEntrante;      // Gestor de llamadas entrantes
     
-    var $DEBUG = TRUE;
+    var $DEBUG = FALSE;
     var $REPORTAR_TODO = FALSE;
     var $_iUltimoDebug = NULL;
 
@@ -274,13 +274,17 @@ class DialerProcess extends AbstractProcess
                 // Consumir todos los eventos de llamada durante 3 segundos
                 $iTimestampInicioEspera = time();
                 while (time() - $iTimestampInicioEspera <= 3) {
-                    $this->_astConn->SetTimeout(4);
-                    $r = $this->_astConn->wait_response(TRUE);
-                    if (is_null($r)) {
-                        $this->oMainLog->output("ERR: problema al esperar respuesta de Asterisk (en bucle de espera).");
-                        $this->iniciarConexionAsterisk();
-                        break;
-                    }
+                     $this->_astConn->SetTimeout(4);
+                     $r = $this->_astConn->wait_response(TRUE);
+                     if (is_null($r)) {
+                        // Lo siguiente debería estar interno en AG_AsteriskManager
+                        $metadata = stream_get_meta_data($this->_astConn->socket);
+                        if (is_array($metadata) && !$metadata['timed_out']) {
+                            $this->oMainLog->output("ERR: problema al esperar respuesta de Asterisk (en bucle de espera).");
+                            $this->iniciarConexionAsterisk();
+                            break;
+                        }
+                     }
                 }
                 if (!is_null($this->_astConn)) $this->_astConn->SetTimeout(10);
             } else {

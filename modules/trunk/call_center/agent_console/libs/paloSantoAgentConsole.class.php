@@ -34,41 +34,40 @@ require_once "/var/lib/asterisk/agi-bin/phpagi-asmanager.php";
 require_once("libs/js/jscalendar/calendar.php"); 
 require_once("modules/break_administrator/libs/PaloSantoBreaks.class.php");
 
-
-
 /*  FUNCION XAJAX:
     funcion que se llama cada 4 segundos para:
     - verificar que el usuario aun está conectado a una cola
     - verificar si hay una llamada conectada y si es asi traer los datos de la llamada.
       Se muestran diferentes datos dependiendo de la pestaña en que se encuentra.
 */
-
 function notificaLlamada($pestania, $prefijo_objeto, $nueva_llamada, $id_formulario=NULL) {
-    global $arrLan; $msj="";
+    global $arrLan; 
+    $msj="";
     $respuesta = new xajaxResponse();
-
     $agentnum = $_SESSION['elastix_agent_user'];
     $extn     = $_SESSION['elastix_extension'];
     $no_queue = false;
     $actualizar_pagina = false;
+
+    // si el agente no esta conectado en el asterisk se llama a la funcion disconnet_agent,
+    // se anulan las variables de sesión y
+    // se hace submit de la pagina para regresar a la pantalla del login del agente
     if (!estaAgenteConectado($agentnum,$extn,$mensaje,$no_queue)) {
         disconnet_agent();
         $_SESSION['elastix_agent_user'] = null;
         $_SESSION['elastix_extension']  = null;
         $_SESSION['channel_active'] = null;
-        // AMVB Sept27: $_SESSION['elastix_queue_agent']= null;
-        //if (isset($mensaje) && $mensaje!="")
-        $respuesta->addAlert("Saliendo de la Consola del Agente: \nMensaje: ".$mensaje);
+        $respuesta->addAlert($arrLan["Agent disconnected"]);
+        // se hace submit de la pagina para regresar a la pantalla del login del agente
         $respuesta->addScript("document.getElementById('frm_agent_console').submit();");
 
     } else {
-        //$respuesta->addAlert("Conectado...");
         // Conexión a la base de datos
         global $arrLang;
         $pDB = getDB();
 
+        // se comprueba la conexión a la base de datos
         if (!is_object($pDB) || $pDB->errMsg!="") {
-
             $respuesta->addAssign("mensajes_informacion","innerHTML",$pDB->errMsg);
             return $respuesta;
         }
@@ -77,7 +76,8 @@ function notificaLlamada($pestania, $prefijo_objeto, $nueva_llamada, $id_formula
         $colgar_disable = "true";
         $style= 'boton_desactivo';
 
-        $actualizar_llamada = $actualizar_script = $actualizar_form = false; // sirve para controlar los addAssign de los formularios, llamadas y scripts
+        // estas variables boleanas sirven para controlar los addAssign de los formularios, llamadas y scripts
+        $actualizar_llamada = $actualizar_script = $actualizar_form = false; 
 
         // la variable tipo de llamada nos ayudará a saber si hay o no llamadas y de que tipo son
         $tipo_llamada="";
@@ -85,30 +85,34 @@ function notificaLlamada($pestania, $prefijo_objeto, $nueva_llamada, $id_formula
 
         // SE CONSULTAN LAS LLAMADAS ENTRANTES
         $arr_ingoing_calls = getDataIngoingCall($pDB,$agentnum,$msj);
+
+        // si devuelve el array con datos, entonces la llamada es entrante
         if (is_array($arr_ingoing_calls) && count($arr_ingoing_calls)>0) {
             $tipo_llamada = "ENTRANTE";
         } else {
-            // SE CONSULTAN LAS LLAMADAS SALIENTES
+            // si la llamada no es entrante se consultan las llamadas salientes
             $arr_campania = getDataCampania($pDB,$agentnum,$msj);
             if (is_array($arr_campania) && count($arr_campania)>0) {
                 $tipo_llamada = "SALIENTE";
             }
         }
 
-
-        // SI HAY UNA LLAMADA_ACTIVA
+        // si tipo de llamada es diferente de nulo entonces SI HAY UNA LLAMADA_ACTIVA (entrante o saliente)
         if ($tipo_llamada != "") {
+            $respuesta->addScript("cancelarMarcado(); document.getElementById('marcar2').className='boton_marcar_inactivo';\n");
             $style= 'boton_activo';    // se asigna estilo del boton colgar llamada, como hay llamada esta activo
             $colgar_disable = "false"; // se las usa para habilitar el boton de colgar llamada
 
-
+            // template que se uso para tener la pantalla sin ningún dato
             $template = "vacio.tpl";
+
+            // variables que se usan para manejar el texto que va a ir en la pestaña de llamada y de script
             $texto_llamada = $texto_script = "";
 
             switch ($tipo_llamada) {
-/*-------------------------------------------------------------------------*/
-/*LLAMADAS ENTRANTES-------------------------------------------------------*/
-/*-------------------------------------------------------------------------*/
+                /*-------------------------------------------------------------------------*/
+                /*LLAMADAS ENTRANTES-------------------------------------------------------*/
+                /*-------------------------------------------------------------------------*/
                 case "ENTRANTE":
 
                     $id_call = $arr_ingoing_calls["id_call_entry"]; // id de la llamada
@@ -119,13 +123,14 @@ function notificaLlamada($pestania, $prefijo_objeto, $nueva_llamada, $id_formula
 
                     $tiempo_transcurso_llamada = explode(":",$arr_ingoing_calls["duracion_llamada"]);
 
-
+                    // este if pregunta si la llamada ha cambiado, esto es importante para evitar
+                    // que la barra de estado de llamadas se quede con información de una llamada anterior
                     if ($nueva_llamada["llamada"] == "" || $nueva_llamada["llamada"]!=$id_call) {
 
                         // defino el tipo de llamada, para luego poder saber como hacer la finalización de la llamada
                         $respuesta->addScript("document.getElementById('tipo_llamada').value= 'ENTRANTE';");
-                        $respuesta->addScript("document.getElementById('nueva_llamada').value = '$id_call';");
 
+                        $respuesta->addScript("document.getElementById('nueva_llamada').value = '$id_call';");
                         $respuesta->addScript("document.getElementById('transfer').className = 'boton_tranfer_activo';");
                         $respuesta->addScript("document.getElementById('transfer').disabled=false; \n");
                         $actualizar_pagina=true;
@@ -179,14 +184,12 @@ function notificaLlamada($pestania, $prefijo_objeto, $nueva_llamada, $id_formula
                             }
                         }
                         $respuesta->addAssign("numero_telefono","innerHTML",$telefono_cedula);
-
-
                     }
 
                 break;
-/*-------------------------------------------------------------------------*/
-/*LLAMADAS SALIENTES-------------------------------------------------------*/
-/*-------------------------------------------------------------------------*/
+                /*-------------------------------------------------------------------------*/
+                /*LLAMADAS SALIENTES-------------------------------------------------------*/
+                /*-------------------------------------------------------------------------*/
                 case "SALIENTE":
 
                     // defino el tipo de llamada, para luego poder saber como hacer la finalización de la llamada
@@ -250,18 +253,18 @@ function notificaLlamada($pestania, $prefijo_objeto, $nueva_llamada, $id_formula
                                 $actualizar_form=true;
                                 $mostrar_template=false;
                                 $arr_form = obtener_formularios($pDB,$arr_campania['id_campaign']); 
-            
+
                                 if(is_array($arr_form) && count($arr_form)>0){
-        
+
                                     if($id_formulario==NULL)
                                         $id_formulario = obtener_primer_formulario($arr_form);
-        
+
                                     $list_id_form = "";
                                     foreach ($arr_form as $key=>$form) {
                                         if ($list_id_form!="") $list_id_form .= ",";
                                         $list_id_form .= $form["id"];
                                     }
-            
+
                                     $smarty_option = smarty_option($arr_form,$id_formulario);
                                     $smarty->assign("option_form", $smarty_option);
                                     $id_form = $id_formulario;
@@ -325,8 +328,6 @@ function notificaLlamada($pestania, $prefijo_objeto, $nueva_llamada, $id_formula
                                 $texto_formulario=$smarty->fetch("file:/var/www/html/modules/agent_console/themes/default/$template");
                             } // fin del if q controla si hay nueva llamada
                         break;
-                        case "HOLD":
-                        break;
                     } // fin del switch de las pestañas en llamadas salientes
                 break;
 
@@ -356,6 +357,7 @@ function notificaLlamada($pestania, $prefijo_objeto, $nueva_llamada, $id_formula
             //FIN: DEL CODIGO QUE DEBE IR PARA LLAMADAS SALIENTES Y ENTRANTES
 
         } else { // CASO CONTRARIO: NO HAY LLAMADAS ACTIVAS
+            $respuesta->addScript("document.getElementById('marcar2').className='boton_marcar_activo';\n");
 
             $_SESSION['channel_active'] = null;
             // se limpia el link de crm
@@ -370,44 +372,36 @@ function notificaLlamada($pestania, $prefijo_objeto, $nueva_llamada, $id_formula
                                    document.getElementById('nuevo_form').value = '';");
             // si el agente $agentnum no esta en pausa entra por el if
             if (!estaAgenteEnPausa(null,$agentnum)) {
-//$respuesta->addAlert("no esta en pausa");
                 $estatus = $arrLan["Call no active"];
                 $respuesta->addScript("document.getElementById('celda_estatus_actual').className = 'fondo_estatus_no_llamada';");
-/////////////
-                $respuesta->addScript("document.getElementById('marcar').className = 'boton_marcar_inactivo';");
+                //$respuesta->addScript("document.getElementById('marcar').className = 'boton_marcar_inactivo';");
                 $respuesta->addScript("document.getElementById('transfer').className = 'boton_tranfer_inactivo';");
-                $respuesta->addScript("document.getElementById('marcar').disabled=true; \n");
+                //$respuesta->addScript("document.getElementById('marcar').disabled=true; \n");
                 $respuesta->addScript("document.getElementById('transfer').disabled=true; \n");
 
                 //PARA EL CRONOMETRO
                 $respuesta->addScript("estado_cronometro('noLlamada',null);\n");
 
             } else {
-                
                 if(is_null($_SESSION['elastix_agent_audit'])){
-//$respuesta->addAlert("dentro if");
                     $id_audit = auditoria_break_insert($_SESSION['elastix_agent_break'],$agentnum);
-//$respuesta->addAlert("este es el audit ".$id_audit);
                     if($id_audit!=null) {
-//$respuesta->addAlert("audit es no es null");
                         $_SESSION['elastix_agent_audit']=$id_audit;
-//$respuesta->addAlert("esta es la sesion ".$_SESSION['elastix_agent_audit']);
                     }
                 } 
                 $estatus = $arrLan["In Break"].": ".obtener_break_audit($pDB,$_SESSION['elastix_agent_audit']);
-//$respuesta->addAlert($estatus);
+
                 $respuesta->addScript("document.getElementById('celda_estatus_actual').className = 'fondo_estatus_break';");
-//$respuesta->addAlert("antes pregunta");
+
                 //PARA EL CRONOMETRO //HAY QUE VER COMO SOLUCIONAR PORQUE ESTA FUNCION SE LLAMA CADA 4 SEGUNDOS (SOLUCIONADO CON $soloUnaVez)
                 //VARIABLE GLOBLA PARA CONTROLAR EL LAMADO INNECESARIO DE LA FUNCION obtener_tiempo_acumulado_break
                 //AL REFRESCAR DE NUEVO CONSULTA Y ESO TRAIA PROBLEMAS DE MULTIPLES LLAMADO A LAFUNCION POR MOTIVOS DE
                 //LA PERSISTENCIA DEL CRONOMETRO  
                 if(!isset($_SESSION['elastix_agent_soloUnaVez'])){
-///////////////////////////////////////////////////////////////////////////////////// 
-   // temporal para que funcione no debe estar aqui
+
                     $_SESSION['elastix_agent_soloUnaVez']=true;
                     $tiempo_acumulado = obtener_tiempo_acumulado_break(date('Y-m-d'),$agentnum,$_SESSION['elastix_agent_break']);
-//$respuesta->addAlert("Este es el mensaje: "."no esta seteada");
+
                     if($tiempo_acumulado) {
                         $hora    = $tiempo_acumulado[0];
                         $minuto  = $tiempo_acumulado[1];
@@ -422,11 +416,10 @@ function notificaLlamada($pestania, $prefijo_objeto, $nueva_llamada, $id_formula
                                             estado_cronometro('enBreak',fecha_aux);");
                 }
             }
-    //////// este query si funciona ////
+
             $texto_script = getScriptCampaniaActiva($pDB);
     
             if ($texto_script) {
-                //$texto_script = $texto_script;
                 $texto_script = "<span class='celda_callcenter'>".$texto_script."</span>";
             } else {
                 $texto_script="";
@@ -463,348 +456,6 @@ function notificaLlamada($pestania, $prefijo_objeto, $nueva_llamada, $id_formula
     //tenemos que devolver la instanciación del objeto xajaxResponse
     return $respuesta;
 }
-
-
-// function notificaLlamada($pestania, $prefijo_objeto, $nueva_llamada, $id_formulario=NULL) {
-//     global $arrLan;
-//     $respuesta = new xajaxResponse();
-// 
-//     $agentnum = $_SESSION['elastix_agent_user'];
-//     $extn     = $_SESSION['elastix_extension'];
-// 
-//     if (!estaAgenteConectado($agentnum,$extn,$mensaje)) {
-//         disconnet_agent();
-//         $_SESSION['elastix_agent_user'] = null;
-//         $_SESSION['elastix_extension']  = null;
-//         // AMVB Sept27: $_SESSION['elastix_queue_agent']= null;
-//         if (isset($mensaje) && $mensaje!="")
-//             $respuesta->addScript("alert('".$mensaje."');");
-//         $respuesta->addScript("document.getElementById('frm_agent_console').submit();");
-//     } else {
-//         // Conexión a la base de datos
-//         global $arrLang;
-//         $pDB = getDB();
-// 
-//         if (!is_object($pDB) || $pDB->errMsg!="") {
-//             $respuesta->addAssign("mensajes_informacion","innerHTML",$pDB->errMsg);
-//             return $respuesta;
-//         }
-// 
-//         $smarty = getSmarty(); // Load smarty 
-//         $colgar_disable = "true";
-//         $style= 'boton_desactivo';
-// 
-//         $actualizar_llamada = $actualizar_script = $actualizar_form = false; // sirve para controlar los addAssign de los formularios, llamadas y scripts
-// 
-// 
-//         // SE CONSULTAN LAS LLAMADAS ENTRANTES
-//         $arr_ingoing_calls = getDataIngoingCall($pDB,$agentnum);
-//         // SI HAY LLAMADAS ENTRANTES SE MUESTRA LA INFORMACIÓN DE ESTA Y POR EL CASO CONTRARIO
-//         // SE CONSULTA POR LAS LLAMADAS SALIENTES
-//         if (is_array($arr_ingoing_calls) && count($arr_ingoing_calls)>0) {
-//             $style= 'boton_activo';
-//             $colgar_disable = "false";
-// 
-//             $id_call = $arr_ingoing_calls["id_call_entry"];
-//             $phone = $arr_ingoing_calls["callerid"];
-// 
-//             if ($nueva_llamada["llamada"] == "" || $nueva_llamada["llamada"]!=$id_call) {
-// 
-//                 // defino el tipo de llamada, para luego poder saber como hacer la finalización de la llamada
-//                 $respuesta->addScript("document.getElementById('tipo_llamada').value= 'ENTRANTE';");
-// 
-//                 $respuesta->addScript("document.getElementById('nueva_llamada').value = '$id_call';");
-//                 $actualizar_pagina=true;
-//                 // se prosigue a buscar si existe uno o varios contactos con ese número telefónico
-//                 $arr_contactos = getContactos($pDB,$phone);
-//                 // si existe el contacto en la tabla contacto
-//                 $combo_cedula_ruc = "";
-//                 $id_contact = "";
-//                 if (is_array($arr_contactos) && count($arr_contactos)>0) {
-//                     // en el foreach se crea el array para poder enviarlo a la funcion que crea el combo
-//                     $primer_contacto = 1; 
-//                     foreach($arr_contactos as $key=>$contact) {
-//                         // se pregunta por el primer numero de cedula ruc para luego hacer la consulta consultar_registro_contacto, puesto que si no se ejecuta el onChange del combo no se muestran los datos del contacto
-//                         if ($primer_contacto == 1) {
-//                             $id_contact = $contact["id"];
-//                         }
-//                         $cedula_ruc_contactos[$contact["id"]] = $contact["cedula_ruc"];
-//                         $primer_contacto++;
-//                     }
-//                     if (count($cedula_ruc_contactos)>1) {
-//                         $combo_cedula_ruc = "<select name='cedula_ruc' id='cedula_ruc' onChange='xajax_getDataContacto(this.value)'>".crea_combo($cedula_ruc_contactos, "")."</select>";
-//                     } else {
-//                         $msj="";
-//                         if (!confirmar_contacto($id_call, $id_contact, $msj)) {
-//                             $smarty->assign("mb_message", $msj);
-//                         }
-//                     }
-// 
-//                     // se consultan los datos del contacto porque que si no se ejecuta el onChange del combo no se muestran los datos del contacto
-//                     $data_contact = consultar_registro_contacto($id_contact);
-//                     $texto_llamada = $data_contact;
-//                 } else {
-//                     $combo_cedula_ruc .= $arrLan["Number Phone not Registered"];
-//                 }
-//                 $link_crm = crea_link_vtiger($id_contact);
-//                 $respuesta->addAssign("link_crm","innerHTML",$link_crm);
-// 
-//                 // se muestra el número telefónico de la llamada entrante
-//                 $telefono_cedula =  $arrLan["Phone"].": ".$phone."<br>";
-//                 // si hay mas de un contacto con el número telefonico, entonces se muestra una lista con
-//                 // los contactos que tienen ese número de telefono y un boton para confirmar cual es el contacto 
-//                 if ($combo_cedula_ruc!="") {
-//                     $telefono_cedula .= $arrLan["Contacts"].": ".$combo_cedula_ruc;
-//                     if ($combo_cedula_ruc!=$arrLan["Number Phone not Registered"]) {
-//                         $telefono_cedula .= " <input type='button' name='confirmar' id='confirmar' value='".$arrLan["Confirm"]."' onClick='xajax_confirmar_cedula_contacto($id_call, document.getElementById(\"cedula_ruc\").value)'>";
-//                     }
-//                 }
-//                 $respuesta->addAssign("numero_telefono","innerHTML",$telefono_cedula);
-//             }
-//         } else {  // ESTE ELSE SE DIRIJE A PREGUNTAR POR LLAMADAS SALIENTES
-// 
-//             $respuesta->addAssign("link_crm","innerHTML","");
-// 
-//             $arr_campania = getDataCampania($pDB,$agentnum);
-//             $template = "vacio.tpl";
-//             $texto_llamada = $texto_script = "";
-// 
-//             //$actualizar_llamada = $actualizar_script = $actualizar_form = false; // sirve para controlar los addAssign de los formularios, llamadas y scripts
-// 
-//             // PREGUNTA POR LLAMADAS SALIENTES
-//             if (is_array($arr_campania) && count($arr_campania)>0) {
-// 
-//                 // defino el tipo de llamada, para luego poder saber como hacer la finalización de la llamada
-//                 $respuesta->addScript("document.getElementById('tipo_llamada').value= 'ENTRANTE';");
-// 
-//                 $id_call = $arr_campania["id_calls"];
-//                 $texto = $arr_campania["script"];
-//                 $colgar_disable = "false";
-//                 $llamada = $arr_campania["phone"];
-//                 $cliente = $arr_campania["nombre_cliente"];
-//                 $tiempo_transcurso_llamada = explode(":",$arr_campania["duracion_llamada"]);
-//                 $style= 'boton_activo';
-// 
-//                 $numero_telefono  = "<span class='celda_callcenter_grande'><b>".$arrLan['Call Number'].":</b> ".$llamada."<br>";
-//                 $numero_telefono  .= "<b>".$arrLang['Name'].":</b> ".$cliente."</span>";
-// 
-//                 $respuesta->addAssign("numero_telefono","innerHTML",$numero_telefono);
-//     
-//                 $codigo_js="";
-// 
-//                     switch ($pestania) {
-//                         case 'LLAMADA':
-//                             if ($nueva_llamada["llamada"] == "" || $nueva_llamada["llamada"]!=$id_call) {
-//                                 $respuesta->addScript("document.getElementById('nueva_llamada').value = '$id_call';");
-//                                 $actualizar_pagina=true;
-//                                 $arr_atributos = getAttributesCall($pDB, $id_call);
-//                                 if (is_array($arr_atributos)) {
-//                                     $texto_llamada = "<br><table border='0'>";
-//                                     foreach ($arr_atributos as $id=>$atributo) {
-//                                         $texto_llamada .= "<tr>";
-//                                         $texto_llamada .= "<td with='350' class='celda_callcenter'><b>".$atributo["columna"].":</b></td>";
-//                                         $texto_llamada .= "<td class='celda_callcenter'>".$atributo["value"]."</td>";
-//                                         $texto_llamada .= "</tr>";
-//                                     }
-//                                     $texto_llamada .= "</table>";
-//                                 }
-//                             } // fin del if q controla si hay nueva llamada
-//                             //$template = "consola_llamada.tpl";
-//                         break;
-//                         case 'SCRIPT':
-//                             if ($nueva_llamada["script"] == "" || $nueva_llamada["nuevo_script"]!=$id_call) {
-//                                 $respuesta->addScript("document.getElementById('nuevo_script').value = '$id_call';");
-//                                 $actualizar_script=true;
-//                                 $arr_atributos = getAttributesCall($pDB, $id_call);
-//                                 if (is_array($arr_atributos)) {
-//                                     foreach ($arr_atributos as $id=>$atributo) {
-//                                         $texto = str_replace("{".$atributo['columna']."}", $atributo["value"], $texto);
-//                                     }
-//                                     $texto_script = $texto;
-//                                     $texto_script = "<span class='celda_callcenter'>".$texto_script."</span>";
-//                                 }
-//                             } // fin del if q controla si hay nueva llamada
-//                         break;
-//                         case 'FORMULARIO':
-//                             if ($nueva_llamada["form"] == "" || $nueva_llamada["form"]!=$id_call) {
-//                                 $respuesta->addScript("document.getElementById('nuevo_form').value = '$id_call';");
-//                                 $actualizar_form=true;
-//                                 $mostrar_template=false;
-//                                 $arr_form = obtener_formularios($pDB,$arr_campania['id_campaign']); 
-//             
-//                                 if(is_array($arr_form) && count($arr_form)>0){
-//         
-//                                     if($id_formulario==NULL)
-//                                         $id_formulario = obtener_primer_formulario($arr_form);
-//         
-//                                     $list_id_form = "";
-//                                     foreach ($arr_form as $key=>$form) {
-//                                         if ($list_id_form!="") $list_id_form .= ",";
-//                                         $list_id_form .= $form["id"];
-//                                     }
-//             
-//                                     $smarty_option = smarty_option($arr_form,$id_formulario);
-//                                     $smarty->assign("option_form", $smarty_option);
-//                                     $id_form = $id_formulario;
-//                                     if (strlen(trim($list_id_form))>0) {
-//                                         $sQuery = "
-//                                         SELECT
-//                                             field.id id_field,
-//                                             field.id_form,
-//                                             field.etiqueta,
-//                                             field.tipo,
-//                                             field.value value_field,
-//                                             field.orden,
-//                                             data.id id_data,
-//                                             data.id_calls,
-//                                             data.id_form_field,
-//                                             data.value value_data
-//                                         FROM form_field field LEFT JOIN form_data_recolected data
-//                                             ON field.id = data.id_form_field and data.id_calls=$id_call
-//                                         WHERE field.id_form in ($list_id_form)
-//                                         ORDER BY field.id_form, field.orden";
-//             
-//                                         $arr_fields = $pDB->fetchTable($sQuery, true);
-//                                         if (is_array($arr_fields) && count($arr_fields)>0) {
-//                                             $break_id = $id = $arr_fields[0]["id_form"];
-//                                             $ids_formularios=$id;
-//                                             foreach($arr_fields as $key=>$field) {
-//                                                 $funcion_js = "";
-//                                                 $input = crea_objeto($smarty, $field, $prefijo_objeto, $funcion_js);
-//                                                 $etiqueta = $field["etiqueta"];
-//                                                 $tipo = $field["tipo"];
-//                                                 if ($break_id != $field["id_form"]) {
-//                                                     $break_id = $field["id_form"];
-//                                                     $id = $break_id;
-//                                                     $ids_formularios.="-".$id;
-//                                                 }
-//             
-//                                                 $data_field[] = array("TYPE" => $tipo, "TAG" => $etiqueta, "INPUT" => $input, "ID_FORM" => $id);
-//                                                 $id = "";
-//                                                 $codigo_js .= $funcion_js;
-//                                             }
-//                                             foreach ($data_field as $key=>$data) {
-//                                                 $smarty->assign("FORMULARIO", $data);
-//                                             }
-//             
-//                                             $smarty->assign("FORMULARIO", $data_field);
-//                                             $smarty->assign("id_formularios", $ids_formularios);
-//                                             $smarty->assign("formularios", $arrLan["Form"]);
-//                                             $smarty->assign("fill_fields", $arrLan["Fill the fields"]);
-//                                             $smarty->assign("SAVE", $arrLang["Save"]);
-//                                             $mostrar_template=true;
-//                                         }
-//                                     }
-//                                     if ($mostrar_template) $template = "consola_formulario.tpl";
-//                                     else $template = "vacio.tpl";
-//                                 }
-//                                 else{
-//                                     global $arrLang;
-//                                     $smarty->assign("no_definidos_formularios",$arrLan['Forms Nondefined']);
-//                                     $template = "vacio.tpl";
-//                                 }
-//                                 $texto_formulario=$smarty->fetch("file:/var/www/html/modules/agent_console/themes/default/$template");
-//                             } // fin del if q controla si hay nueva llamada
-//                         break;
-//                     } // fin del switch
-//         
-//                     // SETEANDO MENSAJE DEL ESTATUS ACTUAL DE LA LLAMADA
-//                     $respuesta->addAssign("estatus_actual","innerHTML",$arrLan["Calling"]);
-//                     $respuesta->addScript("document.getElementById('celda_estatus_actual').className = 'fondo_estatus_llamada'; ");
-//                     //PARA EL CRONOMETRO 
-//                     if($tiempo_transcurso_llamada) {
-//                         $hora    = $tiempo_transcurso_llamada[0];
-//                         $minuto  = $tiempo_transcurso_llamada[1];
-//                         $segundo = $tiempo_transcurso_llamada[2];
-//                     }
-//                     else{
-//                         $hora    = 0;
-//                         $minuto  = 0;
-//                         $segundo = 0;
-//                     }
-//                     $respuesta->addScript(" var fecha_aux2 = breakCronometroSet(0,0,0,$hora,$minuto,$segundo);
-//                                                     estado_cronometro('llamada',fecha_aux2);");
-//             } else {
-//                 $respuesta->addAssign("numero_telefono","innerHTML","");
-//                 $actualizar_pagina=$actualizar_form=$actualizar_script=true;
-//                 $respuesta->addScript("document.getElementById('nueva_llamada').value = '';
-//                                     document.getElementById('nuevo_script').value = '';
-//                                     document.getElementById('nuevo_form').value = '';");
-//                 if (!estaAgenteEnPausa($agentnum)) {
-//                     $estatus = $arrLan["Call no active"];
-//                     $respuesta->addScript("document.getElementById('celda_estatus_actual').className = 'fondo_estatus_no_llamada';");
-//                     //PARA EL CRONOMETRO
-//                     $respuesta->addScript("estado_cronometro('noLlamada',null);\n");
-//                 } else {
-//                     $estatus = $arrLan["In Break"].": ".obtener_break_audit($pDB,$_SESSION['elastix_agent_audit']);
-//                     $respuesta->addScript("document.getElementById('celda_estatus_actual').className = 'fondo_estatus_break';");          
-//                     //PARA INGRESAR LA AUDITORIA DE BREAK
-//                     if(is_null($_SESSION['elastix_agent_audit'])){
-//                         $id_audit = auditoria_break_insert($_SESSION['elastix_agent_break'],$agentnum);
-//                         if($id_audit!=null)
-//                             $_SESSION['elastix_agent_audit']=$id_audit;
-//                     }
-//                     //PARA EL CRONOMETRO //HAY QUE VER COMO SOLUCIONAR PORQUE ESTA FUNCION SE LLAMA CADA 4 SEGUNDOS (SOLUCIONADO CON $soloUnaVez)
-//                     //VARIABLE GLOBLA PARA CONTROLAR EL LAMADO INNECESARIO DE LA FUNCION obtener_tiempo_acumulado_break
-//                     //AL REFRESCAR DE NUEVO CONSULTA Y ESO TRAIA PROBLEMAS DE MULTIPLES LLAMADO A LAFUNCION POR MOTIVOS DE
-//                     //LA PERSISTENCIA DEL CRONOMETRO  
-//                     if(!isset($_SESSION['elastix_agent_soloUnaVez'])){
-//                         $_SESSION['elastix_agent_soloUnaVez']=true;
-//                         $tiempo_acumulado = obtener_tiempo_acumulado_break(date('Y-m-d'),$agentnum,$_SESSION['elastix_agent_break']);
-//                         
-//                         if($tiempo_acumulado) {
-//                             $hora    = $tiempo_acumulado[0];
-//                             $minuto  = $tiempo_acumulado[1];
-//                             $segundo = $tiempo_acumulado[2];
-//                         }
-//                         else{
-//                             $hora    = 0;
-//                             $minuto  = 0;
-//                             $segundo = 0;
-//                         }
-//                         $respuesta->addScript(" var fecha_aux = breakCronometroSet(0,0,0,$hora,$minuto,$segundo);
-//                                                     estado_cronometro('enBreak',fecha_aux);");
-//                     }
-//                 }
-//     
-//                 $texto_script = getScriptCampaniaActiva($pDB);
-//                 if ($texto_script) {
-//                     //$texto_script = $texto_script;
-//                     $texto_script = "<span class='celda_callcenter'>".$texto_script."</span>";
-//                 } else {
-//                     $texto_script="";
-//                 }
-//     
-//                 $respuesta->addAssign("estatus_actual","innerHTML",$estatus);
-//                 $texto = "<span style='color:#000000; FONT-SIZE: 13px;'><b>Agente $agentnum</b><br>En este momento no se ha comunicado con ningún número telefónico.</span>";
-//             } // fin del if que consulta datos de la llamada activa
-//         } // FIN DEL ELSE DEL IF QUE PREGUNTA SI HAY LLAMADAS ENTRANTES ACTIVAS
-// 
-//         $pDB->disconnect();
-//         if ($actualizar_pagina) {
-//             $respuesta->addAssign("contenedor_llamada","innerHTML",$texto_llamada);
-//         }
-//         if ($actualizar_script) {
-//             $respuesta->addAssign("contenedor_script","innerHTML",$texto_script);
-//         }
-//         if ($actualizar_form) {
-//             $respuesta->addAssign("contenedor_formulario","innerHTML",$texto_formulario);
-//             if ($texto_formulario != "") {
-//                 $respuesta->addScript("mostrarFormularioSeleccionado('$id_formulario');");
-//             }
-//         }
-//         $respuesta->addScript("document.getElementById('hangup').disabled=$colgar_disable; \n");
-//         $respuesta->addScript("document.getElementById('hangup').className='$style'; \n");
-// 
-//         if (isset($codigo_js) && trim($codigo_js)!="") {
-//            $respuesta->addScript($codigo_js);
-//         }
-//         $respuesta->addAssign("control","value","1");
-//     }
-// //$respuesta->addScript("alert('xxx');");
-//     //tenemos que devolver la instanciación del objeto xajaxResponse
-//     return $respuesta;
-// }
 
 /*  FUNCION XAJAX:
     funcion que cuelga una llamada saliente conectada
@@ -878,13 +529,12 @@ function colgarLlamadaEntrante() {
           and agent.number = '$agentnum'
           and agent.estatus ='A'";
     $arr_llamada = $pDB->getFirstRowQuery($sQuery, true);
-//$respuesta->addScript("alert(Agent/$agentnum);");
     $resultado="";
     if (is_array($arr_llamada) && count($arr_llamada)>0) {
         $channel = "Agent/$agentnum";
         finalizar_llamada_asterisk($channel, $resultado);
     } else {
-        $resultado = $sQuery;//$arrLan["Call no active"];
+        $resultado = $sQuery;
     }
 
     //instanciamos el objeto para generar la respuesta con ajax
@@ -905,19 +555,22 @@ function colgarLlamadaEntrante() {
 function finalizar_llamada_asterisk($channel, &$resultado) {
     global $arrLan;
     if ($channel!="") {
+        $ip_asterisk = $_SESSION["ip_asterisk"];
+        $user_asterisk = $_SESSION["user_asterisk"];
+        $pass_asterisk = $_SESSION["pass_asterisk"];
+
         // Conexión con el Asterisk 
         $astman = new AGI_AsteriskManager();
-save_log_prueba("Conectando en finalizar_llamada_asterisk");
-        if (!$astman->connect("127.0.0.1", 'admin' , 'elastix456')) {
+        save_log_prueba("Conectando en finalizar_llamada_asterisk");
+        if (!$astman->connect($ip_asterisk, $user_asterisk, $pass_asterisk)) {
             $resultado = $arrLan["Error when connecting to database Call Center"];
-save_log_prueba("Error al conectar en finalizar_llamada_asterisk");
+        save_log_prueba("Error al conectar en finalizar_llamada_asterisk");
         } else {
-//            echo "-------".$channel."-----------";
             $arr_resultado = $astman->Hangup($channel);
             if ($arr_resultado["Response"] != "Success") {
                 $resultado = $arr_resultado["Response"]." - ".$arr_resultado["Message"];
             }
-save_log_prueba("Desconecta en finalizar_llamada_asterisk\n");
+            save_log_prueba("Desconecta en finalizar_llamada_asterisk\n");
             $astman->disconnect();
         }
     } else {
@@ -926,7 +579,7 @@ save_log_prueba("Desconecta en finalizar_llamada_asterisk\n");
 }
 
 /*  FUNCION XAJAX:
-    funcion que hace que una llamada se ponga en hold
+    funcion que hace que una llamada se ponga en hold 
 */
 function hold() {
     global $arrLang;
@@ -948,15 +601,13 @@ function hold() {
             $tipo_llamada = "SALIENTE";
         }
     }
-
-
-$respuesta->addAlert("tipo_llamada = '$tipo_llamada'");
+//$respuesta->addAlert("Tipo llamada = ".$tipo_llamada);
     if ($tipo_llamada != "") {
 
         //se obtiene el id del break que es para hold
         $break = get_break_hold($pDB);
         if (is_array($break)) {
-
+	    $id_break = $break['id'];
             // según el tipo de llamada se actualiza la tabla current_calls o current_call_entry
             switch ($tipo_llamada) {
                 case "ENTRANTE":
@@ -966,50 +617,47 @@ $respuesta->addAlert("tipo_llamada = '$tipo_llamada'");
                 break;
                 case "SALIENTE":
                     $tabla = "current_calls";
-                    $id_tabla = $arr_campania["id_campaign"];
-                    $channel = $arr_ingoing_calls["ChannelClient"];
+                    $id_tabla = $arr_campania["id_current_calls"];
+                    $channel = $arr_campania["ChannelClient"];
+//$respuesta->addAlert("Si entro a saliente y encontro el id del break para hold");
                 break;
             }
-$respuesta->addAlert("channel = $channel");
-            // hacer show parkedcall para saber hacia que extensión de parqueo se direcciono la llamada
-             $ext_parqueo = get_extension_parqueo(null,$channel);
-$respuesta->addAlert("ext_parqueo = '$ext_parqueo'");
+
+            // funcion que retorna la extensión de parqueo si esta estubiera parqueada, caso contrario retorna falso. En esta función se hace un show parkedcalls.
+            $ext_parqueo = get_extension_parqueo(null,$channel);
             // si la llamada no está en hold, hay que ponerla en hold
             if (!$ext_parqueo) {
-                // se actualiza el campo hold en la tabla current_calls o current_call_entry con el valor "S", esto indica que la llamada está el hold y no hay borrarla 
+//$respuesta->addAlert("Entro al if que indica que no está parkeada");
+                // se actualiza el campo hold en la tabla current_calls o current_call_entry con el valor "S", esto indica que la llamada está el hold y no hay borrarla
                 $sPeticionSQL = "update $tabla set hold='S' where id=$id_tabla ";
-//$respuesta->addAlert($sPeticionSQL);
                 $result = $pDB->genQuery($sPeticionSQL);
-    
+//$respuesta->addAlert("Se ejecuta update: ".$sPeticionSQL);
                 if ($result) {
+//$respuesta->addAlert("Se ejecuta exitosamente el update");
                     // se toma el id del break para pner al agente en ese break
-                    
                     $respuesta->addScript(agente_break($id_break));
-        
                     // redireccionar la llamada a la cola de parqueo y devuelve la extensión de parqueo a la que se direccionó la llamada 
                     $ext_parqueo = enviar_cola_parqueo($channel);
- $respuesta->addAlert("EXTENSION PARQUEO = ".$ext_parqueo);
-                }
-
-
+//$respuesta->addAlert("La ext de parqueo que se obtiene es ".$ext_parqueo);
+                 }
             // caso contrario, la llamada está el hold, hay que ponerla quitarle el hold 
             } else {
+//$respuesta->addAlert("Entro al else que indica que SI está parkeada");
                 if ($ext_parqueo) {
                     // origino la llamada para que el agente tome la llamada que puso en hold
+//$respuesta->addAlert("Toma la llamada parkeada en la ext_parque = $ext_parqueo");
                     tomar_llamada_parqueo($ext_parqueo);
                 }
                 // quitar la pausa al agente y grabar hora fin del break en audit
-                
                 $respuesta->addScript(agente_break($id_break));
-
                 // se actualiza el campo hold en la tabla current_calls o current_call_entry con el valor "N", esto indica que la llamada está el hold ya puede ser borrada
                 $sPeticionSQL = "update $tabla set hold='N' where id=$id_tabla ";
+//$respuesta->addAlert("Actualiza otra vez la tabla ".$sPeticionSQL);
                 $result = $pDB->genQuery($sPeticionSQL);
-
             } // fin del else del if que pregunta si no hay llamada en hold 
         } // fin del if que pregunta si encontro el break tipo hold 
     } // fin del if que pregunta si hay llamada activa (entrante o saliente)
-
+//$respuesta->addAlert("Saliendo de función hold");
     return $respuesta;
 }
 
@@ -1019,23 +667,27 @@ $respuesta->addAlert("ext_parqueo = '$ext_parqueo'");
 function agente_break($id_break) {
     global $arrLang;
     global $arrLan;
-    $agentnum = $_SESSION['elastix_agent_user'];
-    
-    $member = "Agent/$agentnum";
 
+    // datos para la conexión al asterisk
+    $ip_asterisk = $_SESSION["ip_asterisk"];
+    $user_asterisk = $_SESSION["user_asterisk"];
+    $pass_asterisk = $_SESSION["pass_asterisk"];
+
+    $agentnum = $_SESSION['elastix_agent_user'];
+    $member = "Agent/$agentnum";
     $respuesta = "";
     $astman = new AGI_AsteriskManager( );
-save_log_prueba("Conectando en agente_break");
-    if (!$astman->connect("127.0.0.1", 'admin' , 'elastix456')) {
+    save_log_prueba("Conectando en agente_break");
+    if (!$astman->connect($ip_asterisk, $user_asterisk, $pass_asterisk)) {
         $resultado = $arrLan["Error when connecting to Asterisk Manager"];
-save_log_prueba("Error al conectar en agente_break");
+        save_log_prueba("Error al conectar en agente_break");
     } 
     else{ 
         // si no está en pausa, quiere decir que se lo va a poner en pausa
         if (!estaAgenteEnPausa($astman, $agentnum)) {
             $salida = $astman->QueuePause(null,$member,"true");
-save_log_prueba("Desconecta en agente_break\n");
-        $astman->disconnect();
+            save_log_prueba("Desconecta en agente_break\n");
+            $astman->disconnect();
             $resultado = $salida['Message'];
             $_SESSION['elastix_agent_break']=$id_break;
             $_SESSION['elastix_agent_soloUnaVez']=null;
@@ -1043,14 +695,13 @@ save_log_prueba("Desconecta en agente_break\n");
             $_SESSION['elastix_agent_audit'] = $id_audit;
             $name_pausa = $arrLan["UnHold"];
             $style = 'boton_unbreak';
-            $respuesta .= "document.getElementById('div_list').style.display ='none'; alert('aki aki id_audit = ".$id_audit."');";
+            $respuesta .= "document.getElementById('div_list').style.display ='none';";
         // caso contrario, está en pausa, quiere decir que hay q quitar la pausa
         } else {
             $salida = $astman->QueuePause(null,$member,"false");
-save_log_prueba("Desconecta en agente_break\n");
+            save_log_prueba("Desconecta en agente_break\n");
         $astman->disconnect();
             $resultado = $salida['Message'];
-//$respuesta .= "alert('".$_SESSION['elastix_agent_audit']."');";
             if(!auditoria_break_update($_SESSION['elastix_agent_audit'])){
                 $smarty->assign("mb_title", $arrLan["Audit Error"]);
                 $smarty->assign("mb_message", $arrLan['Audit of break could not be inserted']);
@@ -1059,51 +710,68 @@ save_log_prueba("Desconecta en agente_break\n");
             $_SESSION['elastix_agent_break'] = null;
             $_SESSION['elastix_agent_soloUnaVez']=null;
             $name_pausa = $arrLan["Hold"];
-            $respuesta .= "estado_cronometro('unBreak',null); alert('aka aka');";
+            $respuesta .= "estado_cronometro('unBreak',null);";
             $style = 'boton_break';
          }
         $respuesta .= "document.getElementById('hold').value='".$name_pausa."';";
         $respuesta .= "document.getElementById('hold').className='".$style."';";
     }
-    //$respuesta->addAssign("respuesta_evento","innerHTML",$resultado);
     return $respuesta;
 }
 
 function enviar_cola_parqueo($channel) {
+
+    // datos para la conexión al asterisk
+    $ip_asterisk = $_SESSION["ip_asterisk"];
+    $user_asterisk = $_SESSION["user_asterisk"];
+    $pass_asterisk = $_SESSION["pass_asterisk"];
+    $ext_parqueo_asterisk = $_SESSION["ext_parqueo"];
+
     $ext_parqueo = false;
     $astman = new AGI_AsteriskManager( );
-save_log_prueba("Conectando en enviar_cola_parqueo");
-    if (!$astman->connect("127.0.0.1", 'admin' , 'elastix456')) {
+    save_log_prueba("Conectando en enviar_cola_parqueo");
+    if (!$astman->connect($ip_asterisk, $user_asterisk, $pass_asterisk)) {
         $resultado = $arrLan["Error when connecting to Asterisk Manager"];
-save_log_prueba("Error al conectar en enviar_cola_parqueo");
+        save_log_prueba("Error al conectar en enviar_cola_parqueo");
     } 
     else{
-        $salida = $astman->Redirect($channel,"","700","from-internal","1");
+        $salida = $astman->Redirect($channel,"",$ext_parqueo_asterisk,"from-internal","1");
         if ($salida["Response"] != strtoupper("ERROR")) {
+            sleep(3);
             $ext_parqueo = get_extension_parqueo($astman, $channel);
         }
-save_log_prueba("Desconecta en enviar_cola_parqueo\n");
+        save_log_prueba("Desconecta en enviar_cola_parqueo\n");
         $astman->disconnect();
     }
     return $ext_parqueo;
 }
 
 function tomar_llamada_parqueo($ext_parqueo) {
+    // datos para la conexión al asterisk
+    $ip_asterisk = $_SESSION["ip_asterisk"];
+    $user_asterisk = $_SESSION["user_asterisk"];
+    $pass_asterisk = $_SESSION["pass_asterisk"];
+
     $astman = new AGI_AsteriskManager( );
-save_log_prueba("Conectando en tomar_llamada_parqueo");
-    if (!$astman->connect("127.0.0.1", 'admin' , 'elastix456')) {
-save_log_prueba("Error al conectar en tomar_llamada_parqueo");
+    save_log_prueba("Conectando en tomar_llamada_parqueo");
+    if (!$astman->connect($ip_asterisk, $user_asterisk, $pass_asterisk)) {
+        save_log_prueba("Error al conectar en tomar_llamada_parqueo");
         $resultado = $arrLan["Error when connecting to Asterisk Manager"];
     } else{
+
         $agentnum = $_SESSION['elastix_agent_user'];
         $channel_agente = "Agent/$agentnum";
 
+
         $salida = $astman->Originate($channel_agente,$ext_parqueo,"from-internal","1",NULL, NULL, NULL, NULL, NULL, NULL, TRUE, NULL);
-save_log_prueba("Desconecta en tomar_llamada_parqueo\n");
+        save_log_prueba("Desconecta en tomar_llamada_parqueo\n");
         $astman->disconnect();
         if ($salida["Response"] != strtoupper("ERROR")) {
-            return true;
+            $resultado .= "ingreso $agentnum $channel_agente";
+            return $resultado;
         }
+
+
     }
     return false;
 }
@@ -1112,36 +780,36 @@ function get_extension_parqueo($astman, $channel) {
     $ext_parqueada = false;
     $desconectar = false;
     if (!is_object($astman)) {
+        // datos para la conexión al asterisk
+        $ip_asterisk = $_SESSION["ip_asterisk"];
+        $user_asterisk = $_SESSION["user_asterisk"];
+        $pass_asterisk = $_SESSION["pass_asterisk"];
+
         $desconectar = true;
-save_log_prueba("Conectando en get_extension_parqueo");
+        save_log_prueba("Conectando en get_extension_parqueo");
         $astman = new AGI_AsteriskManager( );	
-        if (!$astman->connect("127.0.0.1", 'admin' , 'elastix456')) {
-save_log_prueba("Error al conectar en get_extension_parqueo");
+        if (!$astman->connect($ip_asterisk, $user_asterisk, $pass_asterisk)) {
+            save_log_prueba("Error al conectar en get_extension_parqueo");
             $resultado = $arrLan["Error when connecting to Asterisk Manager"];
-            return "Error de conexion";
+            return false;
         }
     }
-
-    $hardware = "SIP|IAX|ZAP|H323|OH323";
+    $hardware = $_SESSION["hardware"];
+    //$hardware = "SIP|IAX|ZAP|H323|OH323";
     $salida = $astman->Command("show parkedcalls");
     $arrParkedCall = split("\n", $salida['data']);
-//return $salida['data'];
-//$ext_parqueada="INICIO \n";
+
+//$ext_parqueada = "no entro al foreach";
     foreach($arrParkedCall as $linea){
-//$ext_parqueada .= $linea." :: ";
         if(eregi("^[[:space:]]*([[:digit:]]{2,})[[:space:]]*$channel", $linea, $arrReg1)) {
             $ext_parqueada = $arrReg1[1];
             break;
         }
     }
 
-//701                          Zap/1-1 (from-internal   s            1   )     35s
-//702                          Zap/8-1 (from-internal   s            1   )     35s
-//703                          Zap/7-1 (from-internal   s            1   )     35s
-//704                          Zap/6-1 (from-internal   s            1   )     35s
     if ($desconectar) {
         $astman->disconnect();
-save_log_prueba("Desconecta en get_extension_parqueo\n");
+        save_log_prueba("Desconecta en get_extension_parqueo\n");
     }
     return $ext_parqueada;
 }
@@ -1162,16 +830,20 @@ function pausar_llamadas($id_break)
     global $arrLan;
     $respuesta = new xajaxResponse();
     $agentnum = $_SESSION['elastix_agent_user'];
-    
-    // AMVB Sept27: $cola = $_SESSION['elastix_queue_agent'];
+
     $member = "Agent/$agentnum";
     $smarty = getSmarty(); // Load smarty 
 
-save_log_prueba("Conectando en pausar_llamadas");
+    save_log_prueba("Conectando en pausar_llamadas");
+
+    // datos para la conexión al asterisk
+    $ip_asterisk = $_SESSION["ip_asterisk"];
+    $user_asterisk = $_SESSION["user_asterisk"];
+    $pass_asterisk = $_SESSION["pass_asterisk"];
 
     $astman = new AGI_AsteriskManager( );	
-    if (!$astman->connect("127.0.0.1", 'admin' , 'elastix456')) {
-save_log_prueba("Error al conectar en pausar_llamadas");
+    if (!$astman->connect($ip_asterisk, $user_asterisk, $pass_asterisk)) {
+        save_log_prueba("Error al conectar en pausar_llamadas");
         $resultado = $arrLan["Error when connecting to Asterisk Manager"];
     } 
     else{ 
@@ -1202,10 +874,9 @@ save_log_prueba("Error al conectar en pausar_llamadas");
         }
         $respuesta->addScript("document.getElementById('pause').value='".$name_pausa."'; \n");
         $respuesta->addScript("document.getElementById('pause').className='".$style."'; \n");
-save_log_prueba("Desconecta en pausar_llamadas\n");
+        save_log_prueba("Desconecta en pausar_llamadas\n");
         $astman->disconnect();
     }
-    //$respuesta->addAssign("respuesta_evento","innerHTML",$resultado);
     return $respuesta;
 }
 
@@ -1213,14 +884,19 @@ save_log_prueba("Desconecta en pausar_llamadas\n");
 /* Funcion que por seguridad cuando ingrese un agente ingrese como estado sin pausa*/
 function entrar_agente_sin_pausa($agente)
 {
-
     $member = "Agent/$agente";
     global $arrLang;
     global $arrLan;
+
+    // datos para la conexión al asterisk
+    $ip_asterisk = $_SESSION["ip_asterisk"];
+    $user_asterisk = $_SESSION["user_asterisk"];
+    $pass_asterisk = $_SESSION["pass_asterisk"];
+
     $astman = new AGI_AsteriskManager( );	
-save_log_prueba("Conectando en entrar_agente_sin_pausa");
-    if (!$astman->connect("127.0.0.1", 'admin' , 'elastix456')) {
-save_log_prueba("Error al conectar en entrar_agente_sin_pausa");
+    save_log_prueba("Conectando en entrar_agente_sin_pausa");
+    if (!$astman->connect($ip_asterisk, $user_asterisk, $pass_asterisk)) {
+        save_log_prueba("Error al conectar en entrar_agente_sin_pausa");
         $resultado = $arrLan["Error when connecting to Asterisk Manager"];
     } else { 
         if(estaAgenteEnPausa($astman, $agente)) {
@@ -1233,7 +909,7 @@ save_log_prueba("Error al conectar en entrar_agente_sin_pausa");
         } else {
             $mensaje_return = 'sin_pause';
         }
-save_log_prueba("Desconecta en entrar_agente_sin_pausa\n");
+        save_log_prueba("Desconecta en entrar_agente_sin_pausa\n");
         $astman->disconnect();
         return $mensaje_return;
     }
@@ -1247,14 +923,18 @@ function loginAgente($extn,$numAgente) {
 
     global $arrLang;
     global $arrLan;
+
+    $ip_asterisk = $_SESSION["ip_asterisk"];
+    $user_asterisk = $_SESSION["user_asterisk"];
+    $pass_asterisk = $_SESSION["pass_asterisk"];
+
     $result = 1;
     $respuesta = new xajaxResponse();
-//$respuesta->addAlert("ext ".$extn);
-save_log_prueba("Conectando en loginAgente");
+    save_log_prueba("Conectando en loginAgente");
     // Conexión con el Asterisk
     $astman = new AGI_AsteriskManager();
-    if (!$astman->connect("127.0.0.1", 'admin' , 'elastix456')) {
-save_log_prueba("Error al conectar en loginAgente");
+    if (!$astman->connect($ip_asterisk, $user_asterisk, $pass_asterisk)) {
+        save_log_prueba("Error al conectar en loginAgente");
         $respuesta->addScript("alert('".$arrLan["Error when connecting to Asterisk Manager"]."')");
     } else {
         if ($extn!="0" && $numAgente!="") {
@@ -1265,7 +945,7 @@ save_log_prueba("Error al conectar en loginAgente");
             $respuesta->addAssign("pregunta_logoneo", "value", "0");
         }
         $astman->disconnect();
-save_log_prueba("Desconecta en loginAgente\n");
+        save_log_prueba("Desconecta en loginAgente\n");
     }
     return $respuesta;
  
@@ -1282,49 +962,22 @@ function wait_login($extn, $num_agent) {
     $msj="";
     //instanciamos el objeto para generar la respuesta con ajax
     $respuesta = new xajaxResponse();
-    //$cola = "8000";
-//$respuesta->addAlert("0 ");
-    //$respuesta->addScript("alert('Cola = ".$queue["queue"]."')");
+
     $no_queue= false;
     if (estaAgenteConectado($num_agent,$extn,$mensaje,$no_queue)) {
         $respuesta->addAssign("status_login", "value","1");
         $encolado = entrar_agente_sin_pausa($num_agent);
         if($encolado=='se_quito_pause' || $encolado=='sin_pause'){
-//$respuesta->addAlert("2");
-
-// codigo para validar que se registre el login una sola vez
-            //$respuesta->addAlert($datetime_init); 
-            if(!yaEstaRegistrado($num_agent,$datetime_init,$msj)) {
-                if($msj=="") {
-                    if( !registrarLogin($num_agent,$datetime_init,$msj) ) {
-                        $respuesta->addAssign("mensaje","innerHTML","$msj");
-                    } else {
-                        //$respuesta->addAlert("registrado");
-                    }
-                } else {
-                    //$respuesta->addAlert("este es el mensaje ".$msj);
-                }
-            } else {
-                $respuesta->addAlert("ya esta registrado ".$msj); 
-            }
-            //$respuesta->addAssign("mensaje","innerHTML","dhshdshdya ta logeado");
-            
-// fin de codigo para validar que se registre el login una sola vez
-
             $_SESSION['elastix_agent_user'] = $num_agent;
             $_SESSION['elastix_extension'] = $extn;
-            // AMVB Sept27: $_SESSION['elastix_queue_agent']= $cola;
         }
         else{
-//$respuesta->addAlert("3");
             $respuesta->addAssign("mensaje","innerHTML","$encolado");
             $respuesta->addAssign("error_igual_numero_agente","value",1);
             $respuesta->addScript("document.getElementById('input_agent_user').value=''");
         }
     } else {
-//$respuesta->addAlert("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
         if ($mensaje!="" && !$no_queue) {
-//$respuesta->addAlert("5");
             $respuesta->addAssign("mensaje","innerHTML","$mensaje");
             $respuesta->addAssign("error_igual_numero_agente","value",1);
             $respuesta->addScript("document.getElementById('input_agent_user').value=''");
@@ -1354,8 +1007,6 @@ function guardar_informacion_cliente($data_cliente) {
             foreach($data_cliente as $indice=>$objeto) {
                 $id_form_field = $objeto[0];
                 $value = trim($objeto[1]);
-                //$value = str_replace("\n","",$value);
-                //$value = str_replace("\r","",$value);
 
                 $existe = existe_registro($pDB, $id_calls, $id_form_field);
 
@@ -1393,10 +1044,8 @@ function guardar_informacion_cliente($data_cliente) {
         }
     }
     if ($valido) {
-//        $respuesta->addAssign("mensaje","innerHTML",$arrLan["Information was saved"]);
         $respuesta->addScript("alert('".$arrLan["Information was saved"]."')");
     } else {
-//        $respuesta->addAssign("mensaje","innerHTML",$arrLan["Error saving client information"]);
         $respuesta->addScript("alert('".$arrLan["Error saving client information"]."')");
     }
     //$pDB->disconnect();
@@ -1419,7 +1068,6 @@ function evento_cerrar_navegador()
 }
 
 
-
 /* FUNCION AJAX:
    Funcion que es llamada desde el evento onChange del combo que tiene como opciones los contactos
    que tiene un mismo numero telefonico (Cedulas). Esto se muestra en las llamadas entrantes.
@@ -1432,7 +1080,6 @@ function getDataContacto($id_contact) {
     $respuesta->addAssign("contenedor_llamada","innerHTML",$result);
     $link_crm = crea_link_vtiger($id_contact, $row_contacto["origen"]);
     $respuesta->addAssign("link_crm","innerHTML",$link_crm);
-
     return $respuesta;
 }
 
@@ -1521,32 +1168,16 @@ function auditoria_break_insert($id_break,$num_agent,$ext_parqueo=NULL)
     global $arrLan;
     $pDB = getDB();
     $smarty = getSmarty(); // Load smarty 
-
     $informacion_agent = obtener_informacion_agente($pDB,$num_agent);
-
     if($informacion_agent != null && is_array($informacion_agent) && count($informacion_agent) >0){
-
-        /*$sPeticionSQL = paloDB::construirInsert(
-        "audit",
-        array(
-            "id_agent"      =>  $informacion_agent['id'],
-            "id_break"      =>  $id_break,
-            "datetime_init" =>  "'".date("Y-m-d H:i:s")."'",
-            "datetime_end"  =>  NULL,
-            "duration"      =>  NULL,
-            "ext_parked"   =>  $ext_parqueo
-         ));*/
         if (is_null($ext_parqueo)) {
             $sPeticionSQL = "INSERT INTO audit (id_agent,id_break,datetime_init,datetime_end,duration,ext_parked) VALUES(".$informacion_agent['id'].",".$id_break.",\"".date("Y-m-d H:i:s")."\","."null,null,null)";
         } else {
             $fecha_actual = date("Y-m-d G:i:s");
             $sPeticionSQL = "INSERT INTO audit (id_agent,id_break,datetime_init,datetime_end,duration,ext_parked) VALUES(".$informacion_agent['id'].",".$id_break.",\"".$fecha_actual."\","."null,null,".$ext_parqueo.")";
         }
- 
         $result = $pDB->genQuery($sPeticionSQL);
-
         if($result){
-
             $id_audit = $pDB->getFirstRowQuery("select last_insert_id() id_audit", true); //retorn el id recien insertado de la auditoria para actualizar las fechas de fin despues
             if($id_audit){
                 //return $id_audit;
@@ -1565,7 +1196,6 @@ function auditoria_break_insert($id_break,$num_agent,$ext_parqueo=NULL)
         }
     }
     else{
-//return "entro por el else de auditoria_break_insert";
         $smarty->assign("mb_title", $arrLan["Agent Error"]);
         $smarty->assign("mb_message", $arrLan['Id of the agent could not be obtained']);
         return null;
@@ -1581,18 +1211,8 @@ function auditoria_break_update($id_audit)
 {
     $pDB = getDB();
     $now = date("Y-m-d G:i:s");
-//     $sPeticionSQL = paloDB::construirUpdate(
-//     "audit",
-//     array(
-//         "datetime_end"  =>  "'$now'",
-//         "duration"      =>  "timediff('$now',datetime_init)"
-//     ),
-//     "id = $id_audit");
-
     $sPeticionSQL = "UPDATE audit SET datetime_end='".$now."', duration=timediff('".$now."',datetime_init) WHERE id = $id_audit";
-
     $result = $pDB->genQuery($sPeticionSQL);
-
     if($result)
         return true;
     else
@@ -1664,7 +1284,7 @@ function obtener_informacion_agente($pDB,$num_agente)
         return $result; 
     else {
         return null;
-    }    
+    }
 }
 function existe_registro($pDB, $id_calls, $id_form_field) {
     $sQuery = "SELECT id FROM form_data_recolected WHERE id_calls=$id_calls AND id_form_field=$id_form_field";
@@ -1680,6 +1300,7 @@ function existe_registro($pDB, $id_calls, $id_form_field) {
 function getDataCampania($pDB, $agentnum,&$msj) {
     $sQuery = "
     SELECT
+      current_calls.id id_current_calls,
       current_calls.ChannelClient,
       campaign.id id_campaign,
       campaign.script script,
@@ -1699,10 +1320,9 @@ function getDataCampania($pDB, $agentnum,&$msj) {
       and calls.id_campaign = campaign.id
       and calls.id = call_attribute.id_call
       and call_attribute.column_number = '1'";
-    //$result = $pDB->getFirstRowQuery($sQuery, true);
-    $result = $pDB->fetchTable($sQuery, true);
+    $result = @$pDB->getFirstRowQuery($sQuery, true);
     if( is_array($result) && count($result)>0 ) {
-        return $result[0];
+        return $result;
     }else {
         return false;
     }
@@ -1735,17 +1355,15 @@ function getDataIngoingCall($pDB,$agentnum,&$msj) {
       and current_call_entry.id_agent=agent.id
       and current_call_entry.id_queue_call_entry = queue_call_entry.id
       and current_call_entry.id_call_entry = call_entry.id";
-    //$result = $pDB->getFirstRowQuery($sQuery, true);
-    $result = $pDB->fetchTable($sQuery, true);
+    $result = @$pDB->getFirstRowQuery($sQuery, true);
+
     if( is_array($result) && count($result)>0 ) {
-        return $result[0];
+        return $result;
     }else {
         return false;
     }
 }
 
-//AQUI ME QUEDE
-//*************************************************
 /*
   Funcion que es invocada al momento de que entra una nueva llamada y que el callerid existe
   en la base de datos con un solo contacto. También es invocada cuando se presiona el boton confirmar,
@@ -1807,19 +1425,23 @@ function getScriptCampaniaActiva($pDB) {
 
 /* Funcion que hace que el agente se deslogonee */
 function disconnet_agent() {
-
     global $arrLang;
     global $arrLan;
+
+    // datos para la conexión al asterisk
+    $ip_asterisk = $_SESSION["ip_asterisk"];
+    $user_asterisk = $_SESSION["user_asterisk"];
+    $pass_asterisk = $_SESSION["pass_asterisk"];
+
     $agentnum = $_SESSION['elastix_agent_user'];
     $datetime_end = date("Y-m-d H:i:s");
     $msj = "";
-    // AMVB Sept27: $cola     = $_SESSION['elastix_queue_agent'];
     $resultado = 'ok';
-save_log_prueba("Conectando en disconnet_agent");
+    save_log_prueba("Conectando en disconnet_agent");
     // Conexión con el Asterisk
     $astman = new AGI_AsteriskManager();
-    if (!$astman->connect("127.0.0.1", 'admin' , 'elastix456')) {
-save_log_prueba("Error al conectar en disconnet_agent");
+    if (!$astman->connect($ip_asterisk, $user_asterisk, $pass_asterisk)) {
+        save_log_prueba("Error al conectar en disconnet_agent");
         $resultado = $arrLan["Error when connecting to Asterisk Manager"];
     } else { 
         if(estaAgenteEnPausa($astman, $agentnum)){
@@ -1836,7 +1458,7 @@ save_log_prueba("Error al conectar en disconnet_agent");
             $respuesta = $msj;
         }
         $resultado = $arr_resultado["Response"]." - ".$arr_resultado["Message"];
-save_log_prueba("Desconecta en disconnet_agent\n");
+        save_log_prueba("Desconecta en disconnet_agent\n");
         $astman->disconnect();
     }
     return $resultado;
@@ -1900,33 +1522,36 @@ function estaAgenteConectado($numAgente,$extn, & $mensaje, &$no_queue, $cont_vec
 {
     global $arrLang;
     global $arrLan;
+
+    // datos para la conexión al asterisk
+    $ip_asterisk = $_SESSION["ip_asterisk"];
+    $user_asterisk = $_SESSION["user_asterisk"];
+    $pass_asterisk = $_SESSION["pass_asterisk"];
+    $hardware = $_SESSION["hardware"];
+
     $mensaje = "";
-    $hardware = "SIP|IAX|ZAP|H323|OH323";
+    //$hardware = "SIP|IAX|ZAP|H323|OH323";
     //global $tipo_equipos; echo $tipo_equipos;
     $astman = new AGI_AsteriskManager();
-save_log_prueba("Conectando en estaAgenteConectado");
-    if (!$astman->connect("127.0.0.1", 'admin' , 'elastix456')) {
-save_log_prueba("Error al conectar en estaAgenteConectado");
-        $mensaje = "4 ".$arrLan["Error when connecting to Asterisk Manager"];
+    save_log_prueba("Conectando en estaAgenteConectado");
+    if (!$astman->connect($ip_asterisk, $user_asterisk, $pass_asterisk)) {
+        save_log_prueba("Error al conectar en estaAgenteConectado");
+        $mensaje = $arrLan["Error when connecting to Asterisk Manager"];
     } else {
         $strAgentShow = $astman->Command("agent show online");
-save_log_prueba("Desconecta en estaAgenteConectado\n");
+        save_log_prueba("Desconecta en estaAgenteConectado\n");
         $astman->disconnect();
         if ($strAgentShow["Response"] != "Error") {
             $arrAgentShow = split("\n", $strAgentShow['data']);
             if (is_array($arrAgentShow) && count($arrAgentShow)>0) {
                 foreach($arrAgentShow as $line) {
-//$mensaje .= "for - $strAgentShow[data] :::";
                     if(ereg("^[[:space:]]*([[:digit:]]{2,})", $line, $arrReg1)) {
-//$mensaje .= "$arrReg1[1] - ";
-                        // is la condicion es verdadera, quiere decir que el agente que llego como parametro ya esta conectado
+                        // si la condicion es verdadera, quiere decir que el agente que llego como parametro ya esta conectado
                         if($numAgente == $arrReg1[1]) {
                             ereg("(($hardware)/([[:digit:]]{2,}))", $line, $arrReg2);
                             // si la condicion es verdadera quiere decir que el agente con la extension seleccionada ya esta conectado
                             if($extn == $arrReg2[1]) {
-//$mensaje = "linea: ".$line."\nExt: ".$extn."\narrReg2[1]:".$arrReg2[1]; 
                                 return true;
-
                             } else {
                                 $mensaje = $arrLan["Number Agent already connected with extension"]." $extn";
                                 return false;
@@ -1935,7 +1560,8 @@ save_log_prueba("Desconecta en estaAgenteConectado\n");
                     }
                 }
                 $no_queue = true;
-                $mensaje = $arrLan["Agent isn't in Queue Asterisk"]."\n".$strAgentShow['data'];
+                //$mensaje = $arrLan["Agent isn't in Queue Asterisk"]."\n".$strAgentShow['data'];
+                $mensaje = "";
             } else {
                 $mensaje = $arrLan["Error when consulting Agent in Asterisk Manager"];
             }
@@ -1949,17 +1575,21 @@ save_log_prueba("Desconecta en estaAgenteConectado\n");
 
 /* funcion que retorna true si un agente esta en pause en la cola */
 function estaAgenteEnPausa($astman, $numAgente) {
-
     global $arrLang;
     global $arrLan;
 
     $desconectar = false;
     if (!is_object($astman)) {
-save_log_prueba("Conectando en estaAgenteEnPausa");
+        // datos para la conexión al asterisk
+        $ip_asterisk = $_SESSION["ip_asterisk"];
+        $user_asterisk = $_SESSION["user_asterisk"];
+        $pass_asterisk = $_SESSION["pass_asterisk"];
+
+        save_log_prueba("Conectando en estaAgenteEnPausa");
         $desconectar = true;
         $astman = new AGI_AsteriskManager();	
-        if (!$astman->connect("127.0.0.1", 'admin' , 'elastix456')) {
-save_log_prueba("Error al conectar en estaAgenteEnPausa");
+        if (!$astman->connect($ip_asterisk, $user_asterisk, $pass_asterisk)) {
+            save_log_prueba("Error al conectar en estaAgenteEnPausa");
             $resultado = $arrLan["Error when connecting to Asterisk Manager"];
             return false;
         }
@@ -1967,7 +1597,7 @@ save_log_prueba("Error al conectar en estaAgenteEnPausa");
 
     $strAgentShow = $astman->Command("queue show");
     if ($desconectar) {
-save_log_prueba("Desconecta en estaAgenteEnPausa\n");
+        save_log_prueba("Desconecta en estaAgenteEnPausa\n");
         $astman->disconnect();
     }
     $arrAgentShow=array();
@@ -2064,7 +1694,7 @@ function smarty_option($arr_values,$selected)
             $options['NAME'][] = $value['nombre'];
             if($selected == $value['id'])
                 $options['SELECTED'] = $value['id'];
-        }         
+        }
     }
     return $options;
 }
@@ -2083,13 +1713,11 @@ function getSmarty() {
 }
 function getDB() {
     global $arrConf;
-    //$sConnStr = "sqlite3:////var/www/db/$tabla";
     $pDB = new paloDB($arrConf["cadena_dsn"]);
     return $pDB;
 }
 function getDB1() {
     global $arrConf;
-    //$sConnStr = "sqlite3:////var/www/db/$tabla";
     $pDB = new paloDB($arrConf["cadena_dsn"]."d");
     return $pDB;
 }
@@ -2100,17 +1728,15 @@ function getDBAsterisk($arrConfig) {
 }
 
 
-
-                    /* ----------------------------------------- */
-                    /*                                           */
-                    /* FIN FUNCIONES DE TRANFERENCIA DE LLAMADAS */
-                    /*                                           */
-                    /* ----------------------------------------- */
+/* ----------------------------------------- */
+/*                                           */
+/* FIN FUNCIONES DE TRANFERENCIA DE LLAMADAS */
+/*                                           */
+/* ----------------------------------------- */
 
 /*
     Esta funcion devuelve el canal por el cual se esta recibiendo la llamada.
 */
-
 function getChannelClient($agentNum,$tipo,&$msj) {
     global $arrConf;
 
@@ -2135,25 +1761,27 @@ function getChannelClient($agentNum,$tipo,&$msj) {
             and a.estatus='A'
             and a.number=".$agentNum;
 
-        $resConsulta = $pDB->getFirstRowQuery($SQLConsultaChannelClient,true);
+        //$resConsulta = $pDB->getFirstRowQuery($SQLConsultaChannelClient,true);
+        $resConsulta = $pDB->fetchTable($SQLConsultaChannelClient,true);
 
         // si no hubo error en la consulta del queue
         if(!$resConsulta) {
             $msj = $arrLan["Error query"]." ".$pDB->errMsg;
-        } elseif( is_array($resConsulta) && count($resConsulta) > 0 ) {
-            return $resConsulta['channel'];
+        } elseif( is_array($resConsulta[0]) && count($resConsulta[0]) > 0 ) {
+            return $resConsulta[0]['channel'];
         }
     } elseif ($tipo=="SALIENTE") {
 
         $SQLConsultaChannelClient = "select ChannelClient as channel from current_calls where agentnum='$agentNum'";
 
-        $resConsulta = $pDB->getFirstRowQuery($SQLConsultaChannelClient,true);
+        //$resConsulta = $pDB->getFirstRowQuery($SQLConsultaChannelClient,true);
+        $resConsulta = $pDB->fetchtable($SQLConsultaChannelClient,true);
 
         // si no hubo error en la consulta del queue
         if( !$resConsulta ) {
             $msj = $arrLan["Error query"]." ".$pDB->errMsg;
-        } elseif( is_array($resConsulta) && count($resConsulta) > 0 ) {
-            return $resConsulta['channel'];
+        } elseif( is_array($resConsulta[0]) && count($resConsulta[0]) > 0 ) {
+            return $resConsulta[0]['channel'];
         }
     }
 
@@ -2165,45 +1793,50 @@ function getChannelClient($agentNum,$tipo,&$msj) {
     Esta funcion devuelve una tupla que contiene el tipo de llamada y el id respectivo del
     tipo de llamada
 */
-
 function getTipoLlamada($pDB,&$msj) {
+
     global $arrLan;
     $agentNum = $_SESSION['elastix_agent_user'];
 
     // se hace consulta para saber si hay llamadas entrantes para el agente que esta en $agentNum
     $SQLConsultaEntrante = "select cce.id_call_entry as id from agent as a,current_call_entry as cce where cce.id_agent=a.id and a.estatus='A' and a.number='$agentNum'";
-    $resConsultaEntrante = $pDB->getFirstRowQuery($SQLConsultaEntrante,true);
+
+    //$resConsultaEntrante = $pDB->getFirstRowQuery($SQLConsultaEntrante,true); //revisar esta funcion
+    $resConsultaEntrante = $pDB->fetchTable($SQLConsultaEntrante,true);
     // si hay llamadas entrantes ingresa al if
-    if(is_array($resConsultaEntrante) && count($resConsultaEntrante)>0) {
+
+    if(is_array( $resConsultaEntrante ) && count( $resConsultaEntrante )>0) {
         $tipo = "ENTRANTE";
-        $id = $resConsultaEntrante['id'];
+        $id = $resConsultaEntrante[0]['id'];
         $arrValor = array( "tipo"=>$tipo ,"id"=>$id );
         return $arrValor;
     }
 
     // se hace consulta para saber si hay llamadas salientes para el agente que esta en $agentNum
     $SQLConsultaSaliente = "select id_call as id from current_calls  where agentnum='$agentNum'";
-    $resConsultaSaliente = $pDB->getFirstRowQuery($SQLConsultaSaliente,true);
+    //$resConsultaSaliente = $pDB->getFirstRowQuery($SQLConsultaSaliente,true); //revisar esta funcion
+    $resConsultaSaliente = $pDB->fetchTable($SQLConsultaSaliente,true);
     // si hay llamadas salientes ingresa al if
     if(is_array($resConsultaSaliente) && count($resConsultaSaliente)>0)  {
         $tipo = "SALIENTE";
-        $id = $resConsultaSaliente['id'];
+        $id = $resConsultaSaliente[0]['id'];
         $arrValor = array( "tipo"=>$tipo ,"id"=>$id );
         return $arrValor;
     }
+
     $msj = $arrLan["No call"];
     return false;
 }
 
 
 /*
-    Esta fuincion se encarga de actualizar as tablas calls, y call_entry dependiendo si la llamada es
+    Esta funcion se encarga de actualizar as tablas calls, y call_entry dependiendo si la llamada es
     entrante o saliente.
 */
 
 function actualizarTablasLlamada($pDB,$extension,$tipo,$id,&$msj) {
     global $arrConf;
-   
+
     if($tipo=="ENTRANTE") {
 
         $SQLUpdate = paloDB::construirUpdate(
@@ -2251,7 +1884,6 @@ function transferirLlamadaCiega($id_extension) {
     $respuesta = new xajaxResponse();
     $agentNum = $_SESSION['elastix_agent_user'];
 
-
     $resultado= "";
     $pDB = new paloDB($arrConf['cadena_dsn']);
     if (!is_object($pDB->conn) || $pDB->errMsg!="") {
@@ -2274,10 +1906,15 @@ function transferirLlamadaCiega($id_extension) {
                 if($id_extension=="No extension"){
                     $resultado = $arrLan["select extension"];
                 } else {
+                    // datos para la conexión al asterisk
+                    $ip_asterisk = $_SESSION["ip_asterisk"];
+                    $user_asterisk = $_SESSION["user_asterisk"];
+                    $pass_asterisk = $_SESSION["pass_asterisk"];
+
                     $astman = new AGI_AsteriskManager();
-save_log_prueba("Conectando en transferirLlamadaCiega");
-                    if (!$astman->connect("127.0.0.1", 'admin' , 'elastix456')) {
-save_log_prueba("Error al conectar en transferirLlamadaCiega");
+                    save_log_prueba("Conectando en transferirLlamadaCiega");
+                    if (!$astman->connect($ip_asterisk, $user_asterisk, $pass_asterisk)) {
+                        save_log_prueba("Error al conectar en transferirLlamadaCiega");
                         $resultado = $arrLan["Error when connecting to Asterisk Manager"];
                     }else {
                         $res = $astman->Redirect($channel, "", $extension, "from-internal", "1");
@@ -2291,7 +1928,7 @@ save_log_prueba("Error al conectar en transferirLlamadaCiega");
                                 $resultado = $arrLan["Success"];
                             }
                         }
-save_log_prueba("Desconecta en transferirLlamadaCiega\n");
+                        save_log_prueba("Desconecta en transferirLlamadaCiega\n");
                         $astman->disconnect();
                     }
                 }
@@ -2304,53 +1941,6 @@ save_log_prueba("Desconecta en transferirLlamadaCiega\n");
     return $respuesta;
 }
 
-
-function consultarTransferenciaLlamada($id_extension) {
-   /* global $arrLan;
-
-    $resultado="";
-    $channel = getChannelClient();
-
-    $cadenaExt = explode('/',$id_extension);
-    $extension = $cadenaExt[1];
-
-    $respuesta = new xajaxResponse();
-
-    if (!$channel) {
-            $resultado = $arrLan["no_call"];
-    }elseif($id_extension=="No extension"){
-        $resultado = $arrLan["select extension"];
-    }else {
-        $astman = new AGI_AsteriskManager();
-    
-        if (!$astman->connect("127.0.0.1", 'admin' , 'elastix456')) {
-            $resultado = $arrLan["Error when connecting to Asterisk Manager"];
-        }else {
-            // paso 1 --> envio la llamada a hold
-            $res = $astman->Redirect($channel, "", "700", "from-internal", "1");
-
-            if ($res['Response']=='Error') {
-                $resultado = $arrLan["transfer_error"]." ".$res['Message'];
-            }else { 
-
-                // paso 2 --> hago la llamada a la extension deseada
-                $res = $astman->Originate($id_extension,"8000", "from-internal", "1",NULL, NULL, NULL, NULL, NULL, NULL, TRUE, "id");
-    
-                if ($res['Response']=='Error') {
-                    $resultado = $arrLan["transfer_error"]." ".$res['Message'];
-                }else {
-                    // paso 3 --> cierro la llamada a la extension
-                    $res = $astman->Hangup("Agent/8001");
-                }
-             }
-        }
-        $resultado = $arrLan["Success"];
-    }
-
-    $respuesta->addAssign("mensajes_informacion","innerHTML",$resultado);
-
-    return $respuesta;*/
-}
 
 /*
     Esta funcion recibe un arreglo que contiene las los valores a ser mostrados en una etiqueta
@@ -2374,84 +1964,32 @@ function crearSelect($arrOp) {
                 $cadenaOp .= "\n<option value='$value' >$key</option>";
             }
         }
+//         $cadenaOp .= "\n<option value='70/70' >70</option>";
+//         $cadenaOp .= "\n<option value='71/71' >71</option>";
     }
      return $cadenaOp;
 }
 
-function holdearLlamada() {
-   /* global $arrLan;
-    $hold_ext = "700";
-    $channel = getChannelClient();
-    $respuesta = new xajaxResponse();
-    if (!$channel) {
-            $resultado = $arrLan["no_call"];
-    }else {
-        $astman = new AGI_AsteriskManager();
-        if (!$astman->connect("127.0.0.1", 'admin' , 'elastix456')) {
-            $resultado = $arrLan["Error when connecting to Asterisk Manager"];
-        }else {
-            $res = $astman->Redirect($channel, "", $hold_ext, "from-internal", "1");
-            if ($res['Response']=='Error') {
-                 $resultado = $arrLan["transfer_error"]." ".$res['Message'];
-            }else {
-                $resultado = $arrLan["Success"];
-            }
-        }
-    }    
-    $respuesta->addAssign("mensajes_informacion","innerHTML",$resultado);
-    return $respuesta;*/
-}
-
-/*
-function marcarLlamada($number) {
-    global $arrLan;
-    global $arrConf;
-    $resultado = "";
-
-    $pDB = new paloDB($arrConf['cadena_dsn']);
-    if (!is_object($pDB->conn) || $pDB->errMsg!="") {
-        $resultado = $arrLan["Error when connecting to Call Center"];
-    }
-    if( !empty($number) && $number!="" && !is_null($number) && is_numeric($number) ) {
-        $respuesta = new xajaxResponse();
-        $agentNum = $_SESSION['elastix_agent_user'];
-
-        $arrValor = getTipoLlamada($pDB,$resultado);
-        $tipo = $arrValor['tipo'];
-
-
-//$respuesta->addAssign("mensajes_informacion","innerHTML","hghghg".$tipo.$resultado);
-
-
-        //$tipo = "SALIENTE";
-        $channel = getChannelClient($agentNum,$tipo,$resultado);
-        if($channel) {
-            //$resultado .= "nopo".$channel;
-            //$respuesta->addAssign("mensajes_informacion","innerHTML",$resultado);
-            $astman = new AGI_AsteriskManager();
-            if (!$astman->connect("127.0.0.1", 'admin' , 'elastix456')) {
-                $resultado .= $arrLan["Error when connecting to Asterisk Manager"];
-            }else {
-                $res = $astman->PlayDTMF($channel,$number);
-
-                if ($res['Response']=='Error') {
-                    $resultado .= "nopo";//$arrLan["Marked Error"]." ".$res['Message'];
-                }else {
-                    $resultado .= "Marcado Exitoso";//$arrLan["Success Marked"];
+// Funcion que convierte las extensiones en extensiones válidadas para hacer el marcado.
+// Un ejmplo de esto es las extenciones que tienen un formato IAX/502 se la convierte a IAX2/502 
+function convertir_extensiones_validas($extensions) {
+    if (is_array($extensions)) {
+        $reemplazos= array(
+                            "IAX"=>"IAX2",
+                         );
+        foreach($extensions as $key=>$extension) {
+            if (!is_null($key) && !is_null($extension)) {
+                foreach($reemplazos as $original=>$reemplazo) {
+                    if (ereg("^$original/([[:digit:]]+)$",$extension,$regs)) {
+                        $extensions[$key] = $reemplazo."/".$regs[1];
+                    }
                 }
             }
-           
-        } else {
-            $resultado .= "No hay llamada";
         }
-        if ($resultado!="") {
-            $respuesta->addAssign("mensajes_informacion","innerHTML",$resultado);
-        }
-         return $respuesta;
-
     }
+    return $extensions;
 }
-*/
+
 
 /*
     Esta funcion implementa la funcion DTFM del Asterisk
@@ -2463,18 +2001,26 @@ function marcarLlamada($number) {
     $resultado = "";
     $respuesta = new xajaxResponse();
     $pDB = new paloDB($arrConf['cadena_dsn']);
+
     if (!is_object($pDB->conn) || $pDB->errMsg!="") {
         $resultado = $arrLan["Error when connecting to Call Center"];
-    } else { 
-        if( !empty($number) && $number!="" && !is_null($number) && is_numeric($number) ) {
+    } else {
+        // datos para la conexión al asterisk
+        $ip_asterisk = $_SESSION["ip_asterisk"];
+        $user_asterisk = $_SESSION["user_asterisk"];
+        $pass_asterisk = $_SESSION["pass_asterisk"];
+ 
+        if( !empty($number) && $number!="" && !is_null($number)  ) {// && is_numeric($number) ) {
             $agentNum = $_SESSION['elastix_agent_user'];
             $arrValor = getTipoLlamada($pDB,$msj);
+
             if( is_array($arrValor) && count($arrValor)>0 ) {
+
                 $tipo = $arrValor['tipo'];
                 $channel = getChannelClient($agentNum,$tipo,$msj);
                 if($channel) {
                     $astman = new AGI_AsteriskManager();
-                    if (!$astman->connect("127.0.0.1", 'admin' , 'elastix456')) {
+                    if (!$astman->connect($ip_asterisk, $user_asterisk, $pass_asterisk)) {
                         $resultado .= $arrLan["Error when connecting to Asterisk Manager"];
                     }else {
                         $res = $astman->PlayDTMF($channel,$number);
@@ -2489,24 +2035,63 @@ function marcarLlamada($number) {
                     $resultado .= $msj;
                 }
             } else {
+                $astman = new AGI_AsteriskManager();
+		if (!$astman->connect($ip_asterisk, $user_asterisk, $pass_asterisk)) {
+		    $resultado .= $arrLan["Error when connecting to Asterisk Manager"];
+		}else {
+/**************************Originar Llamadas******************************************************/
+		    $res = $astman->Originate("ZAP/1/$number","8000","from-internal","1",NULL, NULL, NULL, NULL, NULL, NULL, TRUE, NULL);
+
+                    if ($res['Response']=='Error') {
+			$resultado .= $arrLan["Marked Error"]." ".$res['Message'];
+		    }else {
+			$resultado .= $arrLan["Success Marked"];
+		    }
+		    $astman->disconnect();
+                }
+/************************************************************************************************/
                 $resultado .= $msj;
             }
         } else {
             $resultado .= $arrLan["Please enter a number to mark"];
         }
+
     }
     if ($resultado!="") {
-        $respuesta->addAssign("mensajes_informacion","innerHTML",$resultado);
+        $respuesta->addAssign("mensajes_informacion","innerHTML",$resultado);//."-->".$channel.$number);
     }
     return $respuesta;
 }
 
+function sacar_hold(){
+        //global $arrLang;
+        //global $arrLan;
 
-                    /* ----------------------------------------- */
-                    /*                                           */
-                    /* FIN FUNCIONES DE TRANFERENCIA DE LLAMADAS */
-                    /*                                           */
-                    /* ----------------------------------------- */
+        $respuesta = new xajaxResponse();
+
+        $pDB = getDB();
+
+        $agentnum = $_SESSION['elastix_agent_user'];
+        $member = "Agent/$agentnum";
+
+        $aa="";
+
+        $ext_parqueo = get_extension_parqueo(null,$channel);
+
+        if ($ext_parqueo) {
+
+            $msj = tomar_llamada_parqueo($ext_parqueo);
+
+        }
+	$respuesta->addAlert("en hold");
+        return $respuesta;
+    }
+
+/* ----------------------------------------- */
+/*                                           */
+/* FIN FUNCIONES DE TRANFERENCIA DE LLAMADAS */
+/*                                           */
+/* ----------------------------------------- */
 
 
 /* ---------------------------------------- */
@@ -2518,16 +2103,19 @@ function marcarLlamada($number) {
 */
 function encolar_agente($agente,$cola)
 {
-//     $cola = $_SESSION['elastix_queue_agent'];
+    // datos para la conexión al asterisk
+    $ip_asterisk = $_SESSION["ip_asterisk"];
+    $user_asterisk = $_SESSION["user_asterisk"];
+    $pass_asterisk = $_SESSION["pass_asterisk"];
+
     $member = "Agent/$agente";
     global $arrLang;
     global $arrLan;
-    //$respuesta = new xajaxResponse();
-save_log_prueba("Conectando en encolar_agente");
+    save_log_prueba("Conectando en encolar_agente");
     $astman = new AGI_AsteriskManager( );	
 
-    if (!$astman->connect("127.0.0.1", 'admin' , 'elastix456')) {
-save_log_prueba("Error al conectar en encolar_agente");
+    if (!$astman->connect($ip_asterisk, $user_asterisk, $pass_asterisk)) {
+    save_log_prueba("Error al conectar en encolar_agente");
         $resultado = $arrLan["Error when connecting to Asterisk Manager"];
     } else { 
         if(!estaAgenteEnCola($agente,$cola))
@@ -2541,7 +2129,7 @@ save_log_prueba("Error al conectar en encolar_agente");
             return 'ya_encolado';
         }
         $astman->disconnect();
-save_log_prueba("Desconecta en encolar_agente\n");
+        save_log_prueba("Desconecta en encolar_agente\n");
     }
     return false;
 }
@@ -2551,17 +2139,20 @@ save_log_prueba("Desconecta en encolar_agente\n");
 function estaAgenteEnCola($numAgente,$cola) {
     global $arrLang;
     global $arrLan;
-    //$cola = $_SESSION['elastix_queue_agent'];
-    //$hardware = "SIP|IAX|ZAP|H323|OH323";
-    //global $tipo_equipos; echo $tipo_equipos;
-save_log_prueba("Conectando en estaAgenteEnCola");
+
+    // datos para la conexión al asterisk
+    $ip_asterisk = $_SESSION["ip_asterisk"];
+    $user_asterisk = $_SESSION["user_asterisk"];
+    $pass_asterisk = $_SESSION["pass_asterisk"];
+
+    save_log_prueba("Conectando en estaAgenteEnCola");
     $astman = new AGI_AsteriskManager();	
-    if (!$astman->connect("127.0.0.1", 'admin' , 'elastix456')) {
-save_log_prueba("Error al conectar en estaAgenteEnCola");
+    if (!$astman->connect($ip_asterisk, $user_asterisk, $pass_asterisk)) {
+    save_log_prueba("Error al conectar en estaAgenteEnCola");
         $resultado = $arrLan["Error when connecting to Asterisk Manager"];
     } else {
         $strAgentShow = $astman->Command(" queue show $cola");
-save_log_prueba("Desconecta en estaAgenteEnCola\n");
+        save_log_prueba("Desconecta en estaAgenteEnCola\n");
         $astman->disconnect();
         $arrAgentShow=array();
         if (is_array($strAgentShow))
@@ -2604,20 +2195,24 @@ function crea_link_vtiger($id_contact,$origen) {
 
 
 function save_log_prueba($texto){
-    /*$archivo = "/var/www/html/prueba_anita/prueba_conexionAsterisk.log";
-    $fp = fopen($archivo, "a");
-    if ($fp) {
-        $string = "[".date("Y-m-d G:i:s")."] [".$_SESSION['elastix_agent_user']."] ".$texto."\n";
-        $write = fputs($fp, $string);
-        fclose($fp);
-    }*/
+    $LOG=false;
+    if ($LOG) {
+        $archivo = "/var/www/html/prueba_anita/prueba_conexionAsterisk.log";
+        $fp = fopen($archivo, "a");
+        if ($fp) {
+            $string = "[".date("Y-m-d G:i:s")."] [".$_SESSION['elastix_agent_user']."] ".$texto."\n";
+            $write = fputs($fp, $string);
+            fclose($fp);
+        }
+    }
 }
 
 
-
 function registrarLogin($agentNum,$datetime_init,&$msj) {
+return true;
     global $arrConf;
     $pDB = new paloDB($arrConf['cadena_dsn']);
+
     if (!is_object($pDB->conn) || $pDB->errMsg!="") {
         $resultado = $arrLan["Error when connecting to Call Center"];
     } else { 
@@ -2632,10 +2227,11 @@ function registrarLogin($agentNum,$datetime_init,&$msj) {
                         "datetime_init" =>  paloDB::DBCAMPO($datetime_init),
                     )
             );
+
             $resSQLInsertAudit = $pDB->genQuery($SQLInsertAudit);
             if(!$resSQLInsertAudit) {
-                $msj .= $pDB->errMsg;
-                return false;
+                $msj .= $pDB->errMsg." ".$resSQLInsertAudit;
+                return  false;
             }else {
                 return true;
             }
