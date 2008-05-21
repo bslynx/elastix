@@ -54,7 +54,6 @@ $color5 = '#ffffcc'; //Amarillo
 ?>
 body {
   font-family: "Times New Roman", serif;
-  margin: 0 2%;
   padding: 0;
   background-color: <?php echo $bgcolor1 ?>;
   color: <?php echo $textcolor1 ?>;
