@@ -899,5 +899,42 @@ configuration because some <br> processes could need them.",
 "Calendar" => "Calendar",
 "Invalid action" => "Invalid action",
 /*Calendar*/
+
+/*Adress Book*/
+"New Contact"	=> "New Contact",
+"Adress Book"	=> "Address Book",
+"Are you sure you wish to delete the contact." => "Are you sure you wish to delete the contact.",
+"First Name"	=> "First Name",
+"Last Name"	=> "Last Name",
+"Phone Number"	=> "Phone Number",
+"Extension" => "Extension",
+/*Adress Book*/
+
+/*User information*/
+"You haven't extension" => "You haven't extension.",
+"Imap: Connection error" => "Imap: Conection error.",
+"You don't recibed emails" => "You don't recibed emails.",
+"You don't recibed faxes" => "You don't recibed faxes.",
+"Query error" => "Query error",
+"You don't recibed calls" => "You don't recibed calls.",
+"You don't recibed voicemails" => "You don't recibed voicemails.",
+"Unenabled to open file" => "Unenabled to open file",
+"User Info" => "User information",
+"Calls" => "Calls",
+"Em@ils" => "Em@ils",
+"Faxes" => "Faxes",
+"Voicem@ils" => "Voicem@ils",
+"answered" => "<font color='green'><b>Answered</b></font>",
+"missed" => "<font color='red'><b>Losed</b></font>",
+"unknow" => "<b>unknow</b>",
+"call record" => "{status} call on date {date} from number {source}",
+"call duration" => " and {time} segs. of duration.",
+"fax recived" => "Recived fax {file} from {source} on date {date}.",
+"voicemail recived" => "Voicemail from {source} on date {date} and {duration} seconds of duration",
+"mail recived" => "{date} {source} '{subject}'",
+"Quota asigned" => "Quota asigned:",
+"Quota Used" => "Quota used:",
+"Quota free space" => "Quota free space:",
+/*User information*/
 );
 ?>

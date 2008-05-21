@@ -894,5 +894,42 @@ alrededor del mundo.",
 "Calendar" => "Calendario",
 "Invalid action" => "Acción no Válida",
 /*Calendar*/
+
+/*Adress Book*/
+"New Contact"	=> "Nuevo Contacto",
+"Adress Book"	=> "Libro de Direcciones",
+"Are you sure you wish to delete the contact." => "Estás seguro de eliminar el contacto.",
+"First Name"	=> "Nombre",
+"Last Name"	=> "Apellido",
+"Phone Number"	=> "Teléfono",
+"Extension" => "Extensión",
+/*Adress Book*/
+
+/*User information*/
+"You haven't extension" => "Usted no tiene extension.",
+"Imap: Connection error" => "Imap: Error de conexion.",
+"You don't recibed emails" => "Usted no ha recibido emails.",
+"You don't recibed faxes" => "Usted no ha recibido faxes.",
+"Query error" => "Error en consulta.",
+"You don't recibed calls" => "Usted no ha recibido llamadas.",
+"You don't recibed voicemails" => "Usted no ha recibido mensajes de voz.",
+"Unenabled to open file" => "No es posible abrir el archivo.",
+"User Info" => "Informacion del Usuario",
+"Calls" => "Llamadas",
+"Em@ils" => "Em@ils",
+"Faxes" => "Faxes",
+"Voicem@ils" => "Voicem@ils",
+"answered" => "<font color='green'><b>contestada</b></font>",
+"missed" => "<font color='red'><b>perdida</b></font>",
+"unknow" => "desconocido",
+"call record" => "Llamada {status} con fecha {date} del numero {source}",
+"call duration" => " y {time} segs. de duracion.",
+"fax recived" => "Fax recibido {file} de {source} con fecha {date}.",
+"voicemail recived" => "Mensaje de voz recibido desde {source} con fecha {date} y dura {duration} segundos",
+"mail recived" => "{date} {source} '{subject}'",
+"Quota asigned" => "Espacio de mail asignada:",
+"Quota Used" => "Espacio de mail usada:",
+"Quota free space" => "Espacio de mail libre:",
+/*User information*/
 );
 ?>
