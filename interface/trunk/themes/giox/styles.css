@@ -333,7 +333,7 @@ TD.menutabletabon {
 /*    BACKGROUND-COLOR: #bb0000; */
     BACKGROUND-IMAGE: url(/themes/giox/images/bg_giox_top.gif);
     background-position: top;
-    BACKGROUND-COLOR: #e6a1a1;
+    BACKGROUND-COLOR: #186fc0;
     TEXT-ALIGN: center;
 }
 TD.menuaftertab {
@@ -354,8 +354,7 @@ TD.menudescription {
     FONT-WEIGHT: bold;
     VERTICAL-ALIGN: middle;
     COLOR: #FFFFFF;
-    BACKGROUND: #bb0000;
-/* background-image: url(/images/bgrojo.gif); */
+    BACKGROUND: #00579b;
     background-image: url(/themes/giox/images/bg_giox.gif);
     background-position: bottom;
     BORDER-BOTTOM: #444444 1px solid;

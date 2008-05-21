@@ -333,7 +333,7 @@ TD.menutabletabon {
 /*    BACKGROUND-COLOR: #bb0000; */
     BACKGROUND-IMAGE: url(/themes/slashdot/images/bg_slashdot_top.gif);
     background-position: top;
-    BACKGROUND-COLOR: #e6a1a1;
+    BACKGROUND-COLOR: #00b1b3;
     TEXT-ALIGN: center;
 }
 TD.menuaftertab {
@@ -354,7 +354,7 @@ TD.menudescription {
     FONT-WEIGHT: bold;
     VERTICAL-ALIGN: middle;
     COLOR: #FFFFFF;
-    BACKGROUND: #bb0000;
+    BACKGROUND: #007c7e;
 /* background-image: url(/images/bgrojo.gif); */
     background-image: url(/themes/slashdot/images/bg_slashdot.gif);
     background-position: bottom;
