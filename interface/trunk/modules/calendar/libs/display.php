@@ -74,26 +74,6 @@ function display_month($month, $year)
 		$days->add(tag('th', day_name($d)));
 	}
 
-/*
-    $html_navbar = month_navbar($month, $year);
-    $month_year = tag('div', attributes('style="color: #fbaa3f; font-size: 120%; font-weight: bold; position:absolute; right:50px; top:180px"'), month_name($month)." $year");
-    $html_navbar->add(tag('div', $month_year));
-    //$html_navbar .= $month_year;
-*/
-    //$html_navbar = month_navbar($month, $year);
-
-/*
-    $html = tag('div', attributes('class="phpc-navbar"'));
-    menu_item_append($html, $options['last year'], 'display', $year - 1, $month);
-    menu_item_append($html, $options['last month'], 'display', $year, $month - 1);
-
-    for($i = 1; $i <= 12; $i++) {
-        menu_item_append($html, short_month_name($i), 'display', $year,
-                $i);
-    }
-    menu_item_append($html,  $options['next month'], 'display', $year, $month + 1);
-    menu_item_append($html,  $options['next year'], 'display', $year + 1, $month);
-*/
     $month_year = $html = tag('div', attributes('class="month_div"'));
 
     $last_year  = "<img border='0' src='crm/themes/Sugar/images/start.gif' />";
@@ -132,9 +112,6 @@ function display_month($month, $year)
     menu_item_append($html, $next_month, 'display', $year, $month + 1);
     menu_item_append($html, $next_year,  'display', $year + 1, $month);
 
-    //$month_year = tag('div', attributes('class="month_div"'), month_name($month)." $year");
-    //$html_navbar->add(tag('div', $month_year));
-    //$html_navbar .= $month_year;
     $html_navbar = $month_year;
 
 	return tag('div',
