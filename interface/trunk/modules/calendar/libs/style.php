@@ -264,6 +264,20 @@ table.phpc-main li a:hover {
   text-align: right;
 }
 
+.month_div {
+  color: #fbaa3f;
+  font-weight: bold;
+  position:absolute;
+  right:50px;
+  top:170px;
+}
+
+.select_month_year {
+  font-size: 80%;
+  color: #fbaa3f;
+  font-weight: bold;
+}
+
 /* \*/ /*/
   #calendar {table-layout: auto;}
 /* */

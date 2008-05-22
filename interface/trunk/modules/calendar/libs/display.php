@@ -63,7 +63,7 @@ function month_navbar($month, $year)
 // returns XHTML data for the month
 function display_month($month, $year)
 {
-	global $config;
+	global $config, $options, $phpc_script, $month_names;
 
 	$days = tag('tr');
 	for($i = 0; $i < 7; $i++) {
@@ -74,10 +74,68 @@ function display_month($month, $year)
 		$days->add(tag('th', day_name($d)));
 	}
 
+/*
     $html_navbar = month_navbar($month, $year);
     $month_year = tag('div', attributes('style="color: #fbaa3f; font-size: 120%; font-weight: bold; position:absolute; right:50px; top:180px"'), month_name($month)." $year");
     $html_navbar->add(tag('div', $month_year));
     //$html_navbar .= $month_year;
+*/
+    //$html_navbar = month_navbar($month, $year);
+
+/*
+    $html = tag('div', attributes('class="phpc-navbar"'));
+    menu_item_append($html, $options['last year'], 'display', $year - 1, $month);
+    menu_item_append($html, $options['last month'], 'display', $year, $month - 1);
+
+    for($i = 1; $i <= 12; $i++) {
+        menu_item_append($html, short_month_name($i), 'display', $year,
+                $i);
+    }
+    menu_item_append($html,  $options['next month'], 'display', $year, $month + 1);
+    menu_item_append($html,  $options['next year'], 'display', $year + 1, $month);
+*/
+    $month_year = $html = tag('div', attributes('class="month_div"'));
+
+    $last_year  = "<img border='0' src='crm/themes/Sugar/images/start.gif' />";
+    $last_month = "<img border='0' src='crm/themes/Sugar/images/previous.gif' />";
+    $next_month = "<img border='0' src='crm/themes/Sugar/images/next.gif' />";
+    $next_year  = "<img border='0' src='crm/themes/Sugar/images/end.gif' />";
+
+    menu_item_append($html, $last_year,  'display', $year - 1, $month);
+    menu_item_append($html, $last_month, 'display', $year, $month - 1);
+
+    $year_sequence = create_sequence(2000, 2050);
+
+    $select_year  = "<select id='select_year' class='select_month_year' onchange='display_calendar()'>";
+    foreach($year_sequence as $year_n)
+    {
+        if($year_n==$year)
+            $select_year .= "<option value='$year_n' selected='selected'>$year_n</option>";
+        $select_year .= "<option value='$year_n'>$year_n</option>";
+    }
+    $select_year .= "</select>";
+
+    $select_month = "<select id='select_month' class='select_month_year' onchange='display_calendar()'>";
+    $i=1;
+    foreach($month_names as $month_n)
+    {
+        if($i==$month)
+            $select_month .= "<option value='$i' selected='selected'>$month_n</option>";
+        $select_month .= "<option value='$i'>$month_n</option>";
+        $i++;
+    }
+    $select_month .= "</select>";
+
+    $actual_month_year = "&nbsp;&nbsp;$select_month $select_year&nbsp;&nbsp;";
+    $html->add($actual_month_year);
+
+    menu_item_append($html, $next_month, 'display', $year, $month + 1);
+    menu_item_append($html, $next_year,  'display', $year + 1, $month);
+
+    //$month_year = tag('div', attributes('class="month_div"'), month_name($month)." $year");
+    //$html_navbar->add(tag('div', $month_year));
+    //$html_navbar .= $month_year;
+    $html_navbar = $month_year;
 
 	return tag('div',
                         $html_navbar,
