@@ -117,16 +117,18 @@ function file_upload($smarty, $module_name, $local_templates_dir, $arrLang, $dir
 function report_backup_restore($smarty, $module_name, $local_templates_dir, $arrLang, $dir_backup)
 {
     $nombre_archivos = array();
-    $nombre_archivos = Obtener_Backups($dir_backup, $smarty);
+    $num_backups = Obtener_Total_Backups($dir_backup);
 
     //Paginacion
-    $limit  = 15;
-    $total  = count($nombre_archivos);
+    $limit  = 5;
+    $total  = $num_backups;
 
     $oGrid  = new paloSantoGrid($smarty);
     $offset = $oGrid->getOffSet($limit,$total,(isset($_GET['nav']))?$_GET['nav']:NULL,(isset($_GET['start']))?$_GET['start']:NULL);
 
     $end    = ($offset+$limit)<=$total ? $offset+$limit : $total;
+
+    $nombre_archivos = Obtener_Backups($dir_backup, $total-$offset, $limit);
 
     $url = "?menu=$module_name";
     $smarty->assign("url", $url);
@@ -177,25 +179,22 @@ function report_backup_restore($smarty, $module_name, $local_templates_dir, $arr
     return $contenidoModulo;
 }
 
-function Obtener_Backups($dir_backup, $smarty)
+function Obtener_Total_Backups($dir_backup)
 {
-    $nombre_archivos = array();
-    // INICIO: se obtiene el listado de archivos de backup que hay en la carpeta backup
-    // se carga en dir el directorio de backups
-    $dir = dir($dir_backup);
-    if (file_exists($dir_backup)) {
-        // se obtienen todos los archivos del directorio si son archivos tgz
-        while ($archivo = $dir->read()) {
-            if ($archivo != "." && $archivo != ".." && eregi('\.(tar)$',$archivo))
-                $nombre_archivos[] = $archivo;
-        }
-    } else {
-        $smarty->assign("mb_message", $arrConf["Folder backup doesn't exist"]);
-    }
-    // se ordenan por fecha los archivos
-    rsort($nombre_archivos);
+    $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
+    $comando="ls $base_dir/$dir_backup/*.tar | grep -c .";
+    exec($comando,$output,$retval);
+    if ($retval!=0) return 0;
+    return $output[0];
+}
 
-    return $nombre_archivos;
+function Obtener_Backups($dir_backup, $offset_inv, $limit)
+{
+    $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
+    $comando="ls $base_dir/$dir_backup/*.tar -t | tail -n $offset_inv | head -n $limit | xargs -n 1 basename";
+    exec($comando,$output,$retval);
+    if ($retval!=0) return array();
+    return $output;
 }
 
 function delete_backup($smarty, $module_name, $local_templates_dir, $arrLang, $dir_backup)
