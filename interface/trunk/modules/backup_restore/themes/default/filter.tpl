@@ -3,9 +3,11 @@
   <td>
     <input class="button" type="submit" name="backup" value="{$BACKUP}">
   </td>
+<!--
   <td>
     {$FILE_UPLOAD}: <input type="file" name="file_upload">
     <input class="button" type="submit" name="upload" value="{$UPLOAD}">
   </td>
+-->
 </tr>
 </table>
