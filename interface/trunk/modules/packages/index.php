@@ -28,7 +28,6 @@
   $Id: packages.php $ */
 
 require_once "libs/paloSantoTrunk.class.php";
-include_once "libs/paloSantoConfig.class.php";
 include_once "libs/paloSantoGrid.class.php";
 include_once "libs/xajax/xajax.inc.php";
 
@@ -43,7 +42,7 @@ function _moduleContent(&$smarty, $module_name)
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
     $templates_dir=(isset($arrConfig['templates_dir']))?$arrConfig['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
-// print_R($_SESSION);
+
     $xajax = new xajax();
     $xajax->registerFunction("actualizarRepositorios");
     $xajax->registerFunction("installPaquete");
@@ -62,26 +61,31 @@ function listPackages($smarty, $module_name, $local_templates_dir,$arrConfig) {
     $submitInstalado = getParametro('submitInstalado');
     $nombre_paquete = getParametro('nombre_paquete');
 
-    if($submitInstalado =='all'){
-        $arrPaquetes = $oPackages->getAllPackages($arrConfig['ruta_yum'],$nombre_paquete);
-    }
-    else{  //si no hay post por default los instalados
-        $arrPaquetes = $oPackages->getPackagesInstalados($arrConfig['ruta_yum'],$nombre_paquete);
-    }
-    
+    $total_paquetes = $oPackages->ObtenerTotalPaquetes($submitInstalado, $arrConfig['ruta_yum']);
+
     $limit = 50;
-    $total = count($arrPaquetes);
+    $total = $total_paquetes;
     $oGrid = new paloSantoGrid($smarty);
     $offset = $oGrid->getOffSet($limit,$total,(isset($_GET['nav']))?$_GET['nav']:NULL,(isset($_GET['start']))?$_GET['start']:NULL);
     $end   = ($offset+$limit)<=$total ? $offset+$limit : $total;
+
+
+    if($submitInstalado =='all'){
+        $arrPaquetes = $oPackages->getAllPackages($arrConfig['ruta_yum'],$nombre_paquete, $offset, $limit);
+    }
+    else{  //si no hay post por default los instalados
+        $arrPaquetes = $oPackages->getPackagesInstalados($arrConfig['ruta_yum'],$nombre_paquete, $offset, $limit, $total);
+    }
+
+
     $smarty->assign("url","?menu=".$module_name."&submitInstalado=$submitInstalado&nombre_paquete=$nombre_paquete");
     $arrData = array();
     if (is_array($arrPaquetes)) {
-        for($i=$offset;$i<$end;$i++){
+        for($i=0;$i<count($arrPaquetes);$i++){
             $estado_paquete = $oPackages->estaPaqueteInstalado($arrPaquetes[$i]['name']);
             $instalar = "<center>{$arrLang['Updated']}</center>";
             $tmpPaquete = $arrPaquetes[$i]['name'];
-            if($estado_paquete==$arrLang["Package Noninstalled"]){
+            if(!$estado_paquete){
                 $instalar = "<a href='#'  onclick="."installPackage('$tmpPaquete')".">{$arrLang['Install']}</a>";
             }
             $arrData[] = array(
@@ -90,7 +94,7 @@ function listPackages($smarty, $module_name, $local_templates_dir,$arrConfig) {
                             $arrPaquetes[$i]['version'],
                             $arrPaquetes[$i]['release'],
                             $arrPaquetes[$i]['repositorio'],
-                            $estado_paquete,
+                            ($estado_paquete)?$arrLang["Package Installed"]:$arrLang["Package Noninstalled"],
                             $instalar);
         }
     }
