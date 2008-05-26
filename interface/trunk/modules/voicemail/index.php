@@ -116,7 +116,7 @@ function _moduleContent(&$smarty, $module_name)
     }
 
     if(isset($_POST['submit_eliminar'])) {
-        borrarVoicemails($extension);
+        borrarVoicemails();
         if($oFilterForm->validateForm($_POST)) {
                 // Exito, puedo procesar los datos ahora.
                 $date_start = translateDate($_POST['date_start']) . " 00:00:00"; 
@@ -170,7 +170,7 @@ function _moduleContent(&$smarty, $module_name)
                                 $hora = date("H:i:s",$arrVoiceMailDes['origtime']['valor']);
 
                                 if (strtotime("$fecha $hora")<=strtotime($date_end) && strtotime("$fecha $hora")>=strtotime($date_start)){
-                                    $arrTmp[0] = "<input type='checkbox' name='".utf8_encode("voc-".$file)."' />";
+                                    $arrTmp[0] = "<input type='checkbox' name='".utf8_encode("voc-".$file).",$directorio' />";
                                     $arrTmp[1] = $fecha;
                                     $arrTmp[2] = $hora;
                                     $arrTmp[3] = $arrVoiceMailDes['callerid']['valor'];
@@ -259,16 +259,19 @@ function _moduleContent(&$smarty, $module_name)
     return $contenidoModulo;
 }
 
-function borrarVoicemails($extension)
+function borrarVoicemails()
 {
+    $voicemailPath = "";
     $path = "/var/spool/asterisk/voicemail/default";
     $folder = "INBOX";
-    $voicemailPath = "$path/$extension/$folder";
+    //$voicemailPath = "$path/$extension/$folder";
 
     if(is_array($_POST) && count($_POST) > 0){
         foreach($_POST as $name => $on){
             if(substr($name,0,4)=='voc-'){
-                $file = substr($name,4);
+                $arrData = split(",", $name);
+                $file = substr($arrData[0],4);
+                $voicemailPath = "$path/{$arrData[1]}/$folder";
                 $pos = strrpos($file, '_');
                 $file = substr($file, 0, strrpos($file, '_'));
                 unlink("$voicemailPath/$file.txt");
