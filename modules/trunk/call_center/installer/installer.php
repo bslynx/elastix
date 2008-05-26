@@ -65,11 +65,6 @@ if (file_exists("$tmpDir/installer/call_center.sql") && file_exists("$tmpDir/ins
         exec("sudo -u root chmod 777 /etc/rc.d/init.d/",$arrConsole,$flagStatus);
         exec("mv $tmpDir/dialer_process/elastixdialer /etc/rc.d/init.d/",$arrConsole,$flagStatus);
         exec("sudo -u root chmod 755 /etc/rc.d/init.d/",$arrConsole,$flagStatus);
-
-        if($flagStatus == 0){ 
-            exec(". $tmpDir/installer/sqliteMenu.sh",$arrConsole,$flagStatus);
-            $return=$flagStatus;
-        }
     }
 }
 
