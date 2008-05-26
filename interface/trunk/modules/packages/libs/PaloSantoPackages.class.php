@@ -37,27 +37,28 @@ class PaloSantoPackages
     {
 
     }
-    
+
     /**
      * Procedimiento para obtener el listado de los paquetes instaldos en el sistema. 
      * @param  string   $filtro    Si !="" buscar los paquetes con el nombre que se pasa
      *
      * @return array    Listado de paquetes, o FALSE en caso de error:
      */
-    function getPackagesInstalados($ruta,$filtro="")
+    function getPackagesInstalados($ruta,$filtro="", $offset, $limit, $total)
     {
         global $arrLang;
         unset($respuesta);
         $paquetes = array(); 
         if($filtro!="")
             $filtro = " | grep $filtro";
-
-	exec("rpm -qa --queryformat '%{NAME}|%{SUMMARY}|%{VERSION}|%{RELEASE}\n' $filtro",$respuesta,$retorno);
+        $offset_inv = $total-$offset;
+        $comando = "rpm -qa --queryformat '%{NAME}|%{SUMMARY}|%{VERSION}|%{RELEASE}\n' $filtro | tail -n $offset_inv | head -n $limit";
+        exec($comando,$respuesta,$retorno);
 
          if($retorno==0 && $respuesta!=null && count($respuesta) > 0 && is_array($respuesta)){
             foreach($respuesta as $key => $paqueteLinea){
                 $paquete = explode("|",$paqueteLinea);
-                $repositorio = $this->buscarRepositorioDelPaquete($ruta,$paquete[0],$paquete[2],$paquete[3]);
+                $repositorio = $this->buscarRepositorioDelPaquete($ruta,$paquete[0],$paquete[2],$paquete[3], $offset, $limit);
                 $paquetes[] = array("name" =>$paquete[0],"summary" =>$paquete[1],"version" =>$paquete[2],"release" =>$paquete[3],'repositorio' => $repositorio);
             }
          }
@@ -66,15 +67,16 @@ class PaloSantoPackages
         return($paquetes);
     }
 
-    function getAllPackages($ruta,$filtro="")
+    function getAllPackages($ruta,$filtro="", $offset, $limit)
     {
         if($filtro!="")
-            $filtro = " where name like '%$filtro%';";
+            $filtro = " where name like '%$filtro%'";
+        $filtro .= " LIMIT $limit OFFSET $offset";
 
         $arr_repositorios = $this->getRepositorios($ruta); 
         $arrRepositoriosPaquetes = array(); 
         if (is_array($arr_repositorios) && count($arr_repositorios) > 0) {
-            foreach($arr_repositorios as $key => $repositorio){ 
+            foreach($arr_repositorios as $key => $repositorio){
                 $arr_paquetes = $this->getPaquetesDelRepositorio($ruta,$repositorio,$filtro);
                 //$arrRepositoriosPaquetes[$repositorio] = $arr_paquetes;
                 if(is_array($arr_paquetes) && count($arr_paquetes) > 0)
@@ -95,7 +97,7 @@ class PaloSantoPackages
 
         $arr_repositorios  = scandir($dir);
         $arr_respuesta = array();
-        
+
         if (is_array($arr_repositorios) && count($arr_repositorios) > 0) {
             foreach($arr_repositorios as $key => $repositorio){ 
                 if(is_dir($dir.$repositorio) && $repositorio!="." && $repositorio!="..")
@@ -107,18 +109,24 @@ class PaloSantoPackages
         return $arr_respuesta;
     }
 
-    function getPaquetesDelRepositorio($ruta,$repositorio,$filtro)
+    function getPaquetesDelRepositorio($ruta,$repositorio,$filtro, $contar=false)
     {
         if(file_exists($ruta.$repositorio."/primary.xml.gz.sqlite")){
             $cadena_dsn = "sqlite3:///$ruta"."$repositorio"."/primary.xml.gz.sqlite";
-        // se conecta a la base
+
+            // se conecta a la base
             $pDB = new paloDB($cadena_dsn);
+
             if(!empty($pDB->errMsg)) {
                 $this->errMsg = $arrLang["Error when connecting to database"]."<br/>".$pDB->errMsg;
                 return array();
             }
-            $sQuery = "select name,summary,version,release,'$repositorio' repositorio from packages $filtro";
-            
+
+            if($contar)
+                $sQuery  = "select count(*) as total from packages";
+            else
+                $sQuery  = "select name,summary,version,release,'$repositorio' repositorio from packages $filtro";
+
             $arr_paquetes = $pDB->fetchTable($sQuery,true);
             $pDB->disconnect();
             if (is_array($arr_paquetes) && count($arr_paquetes) > 0) {
@@ -130,21 +138,23 @@ class PaloSantoPackages
     }
 
     function estaPaqueteInstalado($paquete)
-    {   
+    {
         global $arrLang;
         exec("rpm -q $paquete",$respuesta,$retorno);
         if($retorno == 0)
-            return $arrLang["Package Installed"];
-        else return $arrLang["Package Noninstalled"];
+            return true;
+        else return false;
     }
 
-    function buscarRepositorioDelPaquete($ruta,$paquete,$version,$release)
+    function buscarRepositorioDelPaquete($ruta,$paquete,$version,$release, $offset, $limit)
     {
         global $arrLang;
-        $filtro = " where name = '$paquete' and version = '$version' and release = '$release';";
+        $filtro = " where name = '$paquete' and version = '$version' and release = '$release' ";
+        $filtro .= " LIMIT $limit OFFSET $offset";
+
         $arr_repositorios = $this->getRepositorios($ruta);
         if(is_array($arr_repositorios) && count($arr_repositorios) > 0) {
-             foreach($arr_repositorios as $key => $repositorio){ 
+             foreach($arr_repositorios as $key => $repositorio){
                 $arr_paquetes = $this->getPaquetesDelRepositorio($ruta,$repositorio,$filtro);
                 if(is_array($arr_paquetes) && count($arr_paquetes) > 0){
                     return $repositorio;
@@ -268,6 +278,27 @@ class PaloSantoPackages
         return $respuesta;
     }
 
-    
+    function ObtenerTotalPaquetes($submitInstalado, $ruta)
+    {
+        if($submitInstalado == "all")
+        {
+            $total = 0;
+            $arr_repositorios = $this->getRepositorios($ruta);
+            $arrRepositoriosPaquetes = array();
+            if (is_array($arr_repositorios) && count($arr_repositorios) > 0) {
+                foreach($arr_repositorios as $key => $repositorio){
+                    $total_rep = $this->getPaquetesDelRepositorio($ruta,$repositorio,'', true);
+                    $total += $total_rep[0]['total'];
+                }
+            }
+            return $total;
+        }
+        else{
+            $comando="rpm -qa | grep -c .";
+            exec($comando,$output,$retval);
+            if ($retval!=0) return 0;
+            return $output[0];
+        }
+    }
 }
 ?>
