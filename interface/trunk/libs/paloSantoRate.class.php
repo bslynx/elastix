@@ -213,51 +213,43 @@ class paloRate {
         $listaLimites = $this->_privado_construirListaLimitesPrefijo($sNumeroMarcado);
         if (is_null($listaLimites)) {
            $sPeticionSQL="SELECT id, rate, rate_offset, name FROM rate ".
-                     "WHERE prefix > ? ".
-                     "AND prefix <= ? ".
-                     "AND SUBSTR(?,1,length(prefix)) = prefix ".
+                     "WHERE prefix > '$sLimiteInferior' ".
+                     "AND prefix <= '$sNumeroMarcado' ".
+                     "AND SUBSTR('$sNumeroMarcado',1,length(prefix)) = prefix ".
                      "AND trunk = '$trunk' ".
                      "ORDER BY prefix DESC LIMIT 0,1 ";
-            $param=array($sLimiteInferior,$sNumeroMarcado,$sNumeroMarcado);
          }else{
            $sPeticionSQL="SELECT id, rate, rate_offset, name FROM rate ".
                      "WHERE (
-                          prefix = ? OR
-                          prefix = ? OR
-                          prefix = ? OR
-                          prefix = ? OR
-                          prefix >= ?
+                          prefix = '{$listaLimites[0]}' OR
+                          prefix = '{$listaLimites[1]}' OR
+                          prefix = '{$listaLimites[2]}' OR
+                          prefix = '{$listaLimites[3]}' OR
+                          prefix >= '{$listaLimites[4]}'
                       ) ".
-                     "AND prefix <= ? ".
-                     "AND SUBSTR(?,1,length(prefix)) = prefix ".
+                     "AND prefix <= '$sNumeroMarcado' ".
+                     "AND SUBSTR('$sNumeroMarcado',1,length(prefix)) = prefix ".
                      "AND trunk = '$trunk' ".
                      "ORDER BY prefix DESC LIMIT 0,1 ";
-            $param=array($listaLimites[0],
-                         $listaLimites[1],
-                         $listaLimites[2],
-                         $listaLimites[3],
-                         $listaLimites[4],
-                         $sNumeroMarcado,
-                         $sNumeroMarcado
-                   );
          }
         # Ejecutar la sentencia y verificar si se obtiene una tarifa
-            $result = $this->_DB->conn->query($sPeticionSQL,$param);
-            if (DB::isError($result)) {
+            $result = $this->_DB->fetchTable($sPeticionSQL, false);
+            if(!is_array($result))
+            {
                 $bExito=FALSE;
-                $this->errMsg = $result->getMessage();
+                $this->errMsg = $this->_DB->errMsg;
             } else {
                 $tarifa = array();
-                while($row = $result->fetchRow()) {
-                    $id  = $row[0];
-                    $tarifa[$id]['rate'] = $row[1];
-                    $tarifa[$id]['offset'] = $row[2];
-                    $tarifa[$id]['name'] = utf8_decode($row[3]);
+                foreach($result as $key => $value)
+                {
+                    $id  = $value[0];
+                    $tarifa[$id]['rate'] = $value[1];
+                    $tarifa[$id]['offset'] = $value[2];
+                    $tarifa[$id]['name'] = utf8_decode($value[3]);
                     $tarifa[$id]['id'] = $id;
                 }
             }
-
-    } 
+    }
     return $bExito;
   }
 
@@ -265,7 +257,7 @@ class paloRate {
 # de prefijos. Para un prefijo como 13232633128, se construye
 # la siguiente lista:
 #   1
-#   13
+#   13??
 #   132
 #   1323
 #   13232
@@ -281,7 +273,5 @@ class paloRate {
 
        return $lista;
     }
-
-
 }
 ?>

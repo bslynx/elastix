@@ -217,7 +217,7 @@ function _moduleContent(&$smarty, $module_name)
     //consulto cuales son los trunks de salida
     $oTrunk    = new paloTrunk($pDBTrunk);
     $troncales = $oTrunk->getExtendedTrunksBill($grupos, $arrConfig['ASTETCDIR']['valor'].'/zapata.conf');//ej array("ZAP/1","ZAP/2");
-
+    $sum_cost = 0;
     //echo "<pre>".print_r($troncales,1)."</pre>";
     //echo "<pre>".print_r($grupos,1)."</pre>";
     if (is_array($troncales) && count($troncales)>0){
@@ -275,7 +275,7 @@ function _moduleContent(&$smarty, $module_name)
                 }
             }
             $arrTmp[5] = number_format($charge,3);
-            $sum_cost  = $sum_cost+$arrTmp[5]; 
+            $sum_cost  = $sum_cost+$arrTmp[5];
             $arrTmp[6] = $sum_cost;
             $arrTmp[7] = $rate_name;
             $arrData[] = $arrTmp;

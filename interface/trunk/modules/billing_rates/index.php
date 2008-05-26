@@ -105,7 +105,7 @@ function _moduleContent(&$smarty, $module_name)
     $smarty->assign("DELETE", $arrLang["Delete"]);
     $smarty->assign("CONFIRM_CONTINUE", $arrLang["Are you sure you wish to continue?"]);
 
-    if($_POST['rate_offset']!="" && $_POST['rate_offset']==0) $_POST['rate_offset']='0.0';
+    if(isset($_POST['rate_offset']) && $_POST['rate_offset']!="" && $_POST['rate_offset']==0) $_POST['rate_offset']='0.0';
     if(isset($_POST['submit_create_rate'])) {
          //AGREGAR NUEVA TARIFA
         include_once("libs/paloSantoForm.class.php");
