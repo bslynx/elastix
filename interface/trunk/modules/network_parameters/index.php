@@ -104,7 +104,7 @@ function _moduleContent(&$smarty, $module_name)
 
         if(is_array($arrNetwork)) {
             $arrNetworkData['dns1'] = $arrNetwork['dns'][0];
-            $arrNetworkData['dns2'] = $arrNetwork['dns'][1];
+            $arrNetworkData['dns2'] = isset($arrNetwork['dns'][1])?$arrNetwork['dns'][1]:'';
             $arrNetworkData['host'] = $arrNetwork['host'];
             $arrNetworkData['gateway'] = $arrNetwork['gateway'];
         }
