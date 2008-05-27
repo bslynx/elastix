@@ -60,15 +60,20 @@ function _moduleContent(&$smarty, $module_name)
         case "cancel":
             header("Location: ?menu=$module_name");
             break;
-        case "delete_adress_book":
-            $content = delete_adress_book($smarty,$module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig);
+    case "commit":
+            $content = save_adress_book($smarty,$module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig,true);
             break;
-        case "show":
-	    echo "Entra:<br>";
+    case "edit":
             $content = view_adress_book($smarty,$module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig);
             break;
-	case "save":
-	    $content = add_adress_book($smarty,$module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig);
+        case "show":
+            $content = view_adress_book($smarty,$module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig);
+            break;
+    case "save":
+        $content = save_adress_book($smarty,$module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig);
+            break;
+    case "delete":
+        $content = deleteContact($smarty,$module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig);
             break;
         default:
             $content = report_adress_book($smarty,$module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig);
@@ -87,7 +92,7 @@ function new_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $arr
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
     $smarty->assign("SAVE", $arrLang["Save"]);
     $smarty->assign("CANCEL", $arrLang["Cancel"]);
-    $smarty->assign("TITLE", $arrLang["Adress Book"]);
+    $smarty->assign("TITLE", $arrLang["Address Book"]);
 
     $padress_book = new paloAdressBook($pDB);
 
@@ -103,8 +108,19 @@ function new_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $arr
 */
 function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig)
 {
-    $arrFormElements = array(   "filter" => array(  "LABEL"                  => $arrLang["Filter"],
+    $arrComboElements = array("name"        =>$arrLang["Name"],
+                  "last_name"   =>$arrLang["Last Name"],
+                  "telefono"    =>$arrLang["Phone Number"]);
+
+    $arrFormElements = array(   "field" => array(  "LABEL"                   => $arrLang["Filter"],
                                                     "REQUIRED"               => "no",
+                                                    "INPUT_TYPE"             => "SELECT",
+                                                    "INPUT_EXTRA_PARAM"      => $arrComboElements,
+                                                    "VALIDATION_TYPE"        => "text",
+                                                    "VALIDATION_EXTRA_PARAM" => ""),
+
+                "pattern" => array( "LABEL"          => "",
+                            "REQUIRED"               => "no",
                                                     "INPUT_TYPE"             => "TEXT",
                                                     "INPUT_EXTRA_PARAM"      => "",
                                                     "VALIDATION_TYPE"        => "text",
@@ -115,17 +131,25 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
     $smarty->assign("SHOW", $arrLang["Show"]);
     $smarty->assign("NEW_adress_book", $arrLang["New Contact"]);
 
+    $field   = NULL;
+    $pattern = NULL;
+
+    if(isset($_POST['field']) and isset($_POST['pattern'])){
+    $field      = $_POST['field'];
+    $pattern    = $_POST['pattern'];
+    }
+    
+
     $startDate = $endDate = date("Y-m-d H:i:s");
 
-    $pattern = getParametro("filter");
     $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter_adress_book.tpl", "", $_POST);
 
     $padress_book = new paloAdressBook($pDB);
-    $total_datos =$padress_book->getAddressBook(NULL,NULL,"name",$pattern,TRUE);
-
+    $total_datos =$padress_book->getAddressBook(NULL,NULL,$field,$pattern,TRUE);
+ 
     //Paginacion
     $limit  = 8;
-    $total  = $total_datos[0];
+    $total  = $total_datos[0]["total"];
 
     $oGrid  = new paloSantoGrid($smarty);
     $offset = $oGrid->getOffSet($limit,$total,(isset($_GET['nav']))?$_GET['nav']:NULL,(isset($_GET['start']))?$_GET['start']:NULL);
@@ -136,34 +160,34 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
     $smarty->assign("url", $url);
     //Fin Paginacion
 
-    $arrResult =$padress_book->getAddressBook($limit, $offset, "name", $pattern);
+    $arrResult =$padress_book->getAddressBook($limit, $offset, $field, $pattern);
 
     //echo "<pre>".print_r($arrResult,true)."</pre>";
 
     $arrData = null;
     if(is_array($arrResult) && $total>0){
         foreach($arrResult as $key => $adress_book){
-            $arrTmp[0]  = "<input type='checkbox' name='adress_book_{$adress_book['id']}'  />";
-            $arrTmp[1]	= "<a href='?menu=$module_name&action=show&id=".$adress_book['id']."'>{$adress_book['name']}</a>";
-	    $arrTmp[2]	= $adress_book['last_name'];
-            $arrTmp[3]	= $adress_book['telefono'];
-            $arrTmp[4]	= $adress_book['extension'];
-            $arrTmp[5]	= $adress_book['email'];
-            $arrData[]	= $arrTmp;
+            $arrTmp[0]  = "<input type='checkbox' name='contact_{$adress_book['id']}'  />";
+            $arrTmp[1]  = "<a href='?menu=$module_name&action=show&id=".$adress_book['id']."'>{$adress_book['name']}</a>";
+        $arrTmp[2]  = $adress_book['last_name'];
+            $arrTmp[3]  = $adress_book['telefono'];
+            $arrTmp[4]  = $adress_book['extension'];
+            $arrTmp[5]  = $adress_book['email'];
+            $arrData[]  = $arrTmp;
         }
     }
 
-    $arrGrid = array(   "title"    => $arrLang["Adress Book"],
+    $arrGrid = array(   "title"    => $arrLang["Address Book"],
                         "icon"     => "images/list.png",
                         "width"    => "99%",
                         "start"    => ($total==0) ? 0 : $offset + 1,
                         "end"      => $end,
                         "total"    => $total,
-                        "columns"  => array(0 => array("name"      => "<input type='submit' name='delete_adress_book' value='{$arrLang["Delete"]}' class='button' onclick=\" return confirmSubmit('{$arrLang["Are you sure you wish to delete the contact."]}');\" />",
+                        "columns"  => array(0 => array("name"      => "<input type='submit' name='delete' value='{$arrLang["Delete"]}' class='button' onclick=\" return confirmSubmit('{$arrLang["Are you sure you wish to delete the contact."]}');\" />",
                                                     "property1" => ""),
                                             1 => array("name"      => $arrLang["First Name"],
-						    "property1" => ""),	
-			    		    2 => array("name"	   => $arrLang["Last Name"],
+                            "property1" => ""), 
+                            2 => array("name"      => $arrLang["Last Name"],
                                                     "property1" => ""),
                                             3 => array("name"      => $arrLang["Phone Number"],
                                                     "property1" => ""),
@@ -182,43 +206,41 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
 
 function createFieldForm($arrLang)
 {
-    $arrFields =       array("name"		 => array("LABEL"             	   => $arrLang["First Name"],
-                                                     	  "REQUIRED"               => "yes",
-                                                     	  "INPUT_TYPE"             => "TEXT",
-                                                     	  "INPUT_EXTRA_PARAM"      => array("style" => "width:300px;"),
-                                                     	  "VALIDATION_TYPE"        => "text",
-                                                     	  "VALIDATION_EXTRA_PARAM" => ""),
-			     "last_name"              => array("LABEL"             => $arrLang["Last Name"],
+    $arrFields =       array("name"      => array("LABEL"                  => $arrLang["First Name"],
                                                           "REQUIRED"               => "yes",
                                                           "INPUT_TYPE"             => "TEXT",
                                                           "INPUT_EXTRA_PARAM"      => array("style" => "width:300px;"),
                                                           "VALIDATION_TYPE"        => "text",
                                                           "VALIDATION_EXTRA_PARAM" => ""),
-                             "telefono"		 => array("LABEL"              	   => $arrLang["Phone Number"],
-                                                     	  "REQUIRED"               => "no",
-                                                     	  "INPUT_TYPE"             => "TEXT",
-                                                     	  "INPUT_EXTRA_PARAM"      => "",
-                                                     	  "VALIDATION_TYPE"        => "text",
-                                                     	  "VALIDATION_EXTRA_PARAM" => ""),
-                            "extension"		 => array("LABEL"              	   => $arrLang["Extension"],
-                                                     	  "REQUIRED"               => "yes",
-                                                     	  "INPUT_TYPE"             => "TEXT",
-                                                     	  "INPUT_EXTRA_PARAM"      => "",
-                                                     	  "VALIDATION_TYPE"        => "text",
-                                                     	  "VALIDATION_EXTRA_PARAM" => ""),
-			    "email"          	 => array("LABEL"                  => $arrLang["Email"],
+                 "last_name"              => array("LABEL"             => $arrLang["Last Name"],
+                                                          "REQUIRED"               => "yes",
+                                                          "INPUT_TYPE"             => "TEXT",
+                                                          "INPUT_EXTRA_PARAM"      => array("style" => "width:300px;"),
+                                                          "VALIDATION_TYPE"        => "text",
+                                                          "VALIDATION_EXTRA_PARAM" => ""),
+                             "telefono"      => array("LABEL"                  => $arrLang["Phone Number"],
                                                           "REQUIRED"               => "yes",
                                                           "INPUT_TYPE"             => "TEXT",
                                                           "INPUT_EXTRA_PARAM"      => "",
-                                                          "VALIDATION_TYPE"        => "text",
-                                                          "VALIDATION_EXTRA_PARAM" => "")
+                                                          "VALIDATION_TYPE"        => "ereg",
+                                                          "VALIDATION_EXTRA_PARAM" => "([[:digit:]]|-){1,}"),
+                            "extension"      => array("LABEL"                  => $arrLang["Extension"],
+                                                          "REQUIRED"               => "no",
+                                                          "INPUT_TYPE"             => "TEXT",
+                                                          "INPUT_EXTRA_PARAM"      => "",
+                                                          "VALIDATION_TYPE"        => "ereg",
+                                                          "VALIDATION_EXTRA_PARAM" => "[[:digit:]]{1,}"),
+                "email"              => array("LABEL"                  => $arrLang["Email"],
+                                                          "REQUIRED"               => "no",
+                                                          "INPUT_TYPE"             => "TEXT",
+                                                          "INPUT_EXTRA_PARAM"      => "",
+                                                          "VALIDATION_TYPE"        => "ereg",
+                                                          "VALIDATION_EXTRA_PARAM" => "([[:alnum:]]|.|_|-){1,}@([[:alnum:]]|.|_|-){1,}")
                         );
     return $arrFields;
 }
 
-
-
-function add_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig)
+function save_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig,$update=FALSE)
 {
     $arrForm = createFieldForm($arrLang);
     $oForm = new paloForm($smarty, $arrForm);
@@ -242,7 +264,7 @@ function add_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $arr
         $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
         $smarty->assign("SAVE", $arrLang["Save"]);
         $smarty->assign("CANCEL", $arrLang["Cancel"]);
-        $smarty->assign("TITLE", $arrLang["adress_book"]);
+        $smarty->assign("TITLE", $arrLang["Adress Book"]);
 
         $htmlForm = $oForm->fetchForm("$local_templates_dir/new_adress_book.tpl", $arrLang, $_POST);
 
@@ -252,19 +274,26 @@ function add_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $arr
     }else{
         $data = array();
 
-        $data['name']		= $pDB->DBCAMPO($_POST['name']);
-	$data['last_name']	= $pDB->DBCAMPO($_POST['last_name']);
-        $data['telefono']	= $pDB->DBCAMPO($_POST['telefono']);
-        $data['extension']	= $pDB->DBCAMPO($_POST['extension']);
-        $data['email']		= $pDB->DBCAMPO($_POST['email']);
+        $data['name']       = $pDB->DBCAMPO($_POST['name']);
+    $data['last_name']  = $pDB->DBCAMPO($_POST['last_name']);
+        $data['telefono']   = $pDB->DBCAMPO($_POST['telefono']);
+        $data['extension']  = $pDB->DBCAMPO($_POST['extension']);
+        $data['email']      = $pDB->DBCAMPO($_POST['email']);
 
         $padress_book = new paloAdressBook($pDB);
+    
+    if($update)
+        $result = $padress_book->updateContact($data,array("id"=>$_POST['id']));
+    else
+            $result = $padress_book->addContact($data);
 
-       	$result = $padress_book->addContact($data);
+    if(!$result)
+        return($pDB->errMsg);
 
-	if(!$result)
-		die($pDB->errMsg);
-
+    //'?menu=$module_name&action=show&id=".$adress_book['id']."'
+    if($_POST['id'])
+            header("Location: ?menu=$module_name&action=show&id=".$_POST['id']);
+    else
         header("Location: ?menu=$module_name");
     }
 }
@@ -274,14 +303,13 @@ function deleteContact($smarty, $module_name, $local_templates_dir, $pDB, $arrLa
     $padress_book = new paloAdressBook($pDB);
 
     foreach($_POST as $key => $values){
-        if(substr($key,0,12) == "adress_book_")
+        if(substr($key,0,8) == "contact_")
         {
-            $tmpBookID = substr($key, 12);
-            $tmpBookID = substr($key, 12);
+            $tmpBookID = substr($key, 8);
             $result = $padress_book->deleteContact($tmpBookID);
         }
     }
-    $content = report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig, $dsn_agi_manager, $dsnAsterisk);
+    $content = report_adress_book($smarty,$module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig);
 
     return $content;
 }
@@ -291,7 +319,15 @@ function view_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $ar
     $arrFormadress_book = createFieldForm($arrLang);
     $oForm = new paloForm($smarty,$arrFormadress_book);
 
-    $smarty->assign("Show", 0);
+    if(isset($_POST["edit"])){
+    $oForm->setEditMode();
+        $smarty->assign("Commit", 1);
+    $smarty->assign("SAVE",$arrLang["Save"]);
+    }else{
+        $oForm->setViewMode();
+    $smarty->assign("Edit", 1);
+    }
+    $smarty->assign("EDIT", $arrLang["Edit"]);
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
     $smarty->assign("CANCEL", $arrLang["Cancel"]);
     $smarty->assign("TITLE", $arrLang["Adress Book"]);
@@ -302,18 +338,19 @@ function view_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $ar
     $smarty->assign("Email",$arrLang["Email"]);
     
     $padress_book = new paloAdressBook($pDB);
-    $id = isset($_GET['id'])?$_GET['id']:"";
+    $id = isset($_GET['id'])?$_GET['id']:(isset($_POST['id'])?$_POST['id']:"");
 
     $contactData = $padress_book->contactData($id);
 
-    $arrData['id'] 			= $contactData['id'];
-    $arrData['name']			= $contactData['name'];
-    $arrData['last_name']		= $contactData['last_name'];
-    $arrData['telefono'] 		= $contactData['telefono'];
-    $arrData['extension'] 		= $contactData['extension'];
-    $arrData['email'] 			= $contactData['email'];
+    $smarty->assign("ID",$id);
 
-    $oForm->setViewMode();
+    $arrData['id']          = $contactData['id'];
+    $arrData['name']            = $contactData['name'];
+    $arrData['last_name']       = $contactData['last_name'];
+    $arrData['telefono']        = $contactData['telefono'];
+    $arrData['extension']       = $contactData['extension'];
+    $arrData['email']           = $contactData['email'];
+
     $htmlForm = $oForm->fetchForm("$local_templates_dir/new_adress_book.tpl", "", $arrData);
 
     $contenidoModulo = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
@@ -327,16 +364,22 @@ function view_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $ar
 
 function getAction()
 {
-    if(getParametro("show"))
+    if(getParametro("edit"))
+        return "edit"; 
+    else if(getParametro("commit"))
+        return "commit";
+    else if(getParametro("show"))
         return "show";
+    else if(getParametro("delete"))
+        return "delete";
     else if(getParametro("new"))
         return "new";
     else if(getParametro("save"))
-	return "save";
+    return "save";
     else if(getParametro("delete"))
         return "delete";
     else if(getParametro("action")=="show")
-	return "show";
+    return "show";
     else
         return "report";
 }

@@ -53,15 +53,21 @@ class paloAdressBook {
         }
     }
 
-    function getAddressBook($limit=NULL, $offset=NULL, $field_name="", $field_pattern="",$count=FALSE)
+/*
+This function obtain all records in the table, but, if the param $count is passed as true the function only return
+a array with the field "total" containing the total of records.
+*/
+    function getAddressBook($limit=NULL, $offset=NULL, $field_name=NULL, $field_pattern=NULL,$count=FALSE)
     {
-	
-	$fields=($count)?"count(id) as total":"*";
+    //Defining the fields to get. If the param $count is true, then we will get the result of the sql function count(), else, we will get all fields in the table.
+    $fields=($count)?"count(id) as total":"*";
+
+    //Begin to build the query.
         $query   = "SELECT $fields FROM contact ";
 
         $strWhere = "";
 
-        if(!empty($field_name) and !empty($field_pattern)) $strWhere .= " AND $field_name like '%$field_pattern%' ";
+        if(!is_null($field_name) and !is_null($field_pattern)) $strWhere .= " $field_name like '%$field_pattern%' ";
 
         // Clausula WHERE aqui
         if(!empty($strWhere)) $query .= "WHERE $strWhere ";
@@ -73,8 +79,8 @@ class paloAdressBook {
         if(!is_null($limit))
             $query .= " LIMIT $limit ";
 
-	if(!is_null($offset) and $offset > 0)
-	    $query .= " OFFSET $offset";
+    if(!is_null($offset) and $offset > 0)
+        $query .= " OFFSET $offset";
 
         $result=$this->_DB->fetchTable($query, true);
 
@@ -97,8 +103,16 @@ class paloAdressBook {
     function addContact($data)
     {
         $queryInsert = $this->_DB->construirInsert('contact', $data);
-	echo "$queryInsert";
         $result = $this->_DB->genQuery($queryInsert);
+
+        return $result;
+    }
+
+    function updateContact($data,$where)
+    {
+        $queryUpdate = $this->_DB->construirUpdate('contact', $data,$where);
+//        die($queryUpdate);
+    $result = $this->_DB->genQuery($queryUpdate);
 
         return $result;
     }

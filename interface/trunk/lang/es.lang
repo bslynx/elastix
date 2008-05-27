@@ -899,7 +899,7 @@ alrededor del mundo.",
 
 /*Adress Book*/
 "New Contact"	=> "Nuevo Contacto",
-"Adress Book"	=> "Libro de Direcciones",
+"Address Book"	=> "Libro de Direcciones",
 "Are you sure you wish to delete the contact." => "Estás seguro de eliminar el contacto.",
 "First Name"	=> "Nombre",
 "Last Name"	=> "Apellido",

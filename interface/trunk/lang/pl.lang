@@ -889,7 +889,7 @@ implementations of Voice over IP around the globe.",
 
 /*Adress Book*/
 "New Contact"	=> "New Contact",
-"Adress Book"	=> "Address Book",
+"Address Book"	=> "Address Book",
 "Are you sure you wish to delete the contact." => "Are you sure you wish to delete the contact.",
 "First Name"	=> "First Name",
 "Last Name"	=> "Last Name",
