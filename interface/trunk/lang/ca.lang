@@ -789,20 +789,20 @@ a tot el mon.",
 "Normal" => "Normal",
 "Monthly" => "Monthly",
 
-"Add Event" => "Add Event",//Añadir Evento
-"Back to Calendar" => "Back to Calendar", //Volver al Calendario
-"View Date" => "View Date", //Ver Fecha
+"Add Event" => "Add Event",
+"Back to Calendar" => "Back to Calendar",
+"View Date" => "View Date",
 
-"next month" => "next month", //mes siguiente
-"next year" => "next year", //año siguiente
-"last year" => "last year", //año anterior
-"last month" => "last month", //mes anterior
+"next month" => "next month",
+"next year" => "next year",
+"last year" => "last year",
+"last month" => "last month",
 
 "Title" => "Title",
-"Delete Selected" => "Delete Selected", //Borrar Seleccionado
+"Delete Selected" => "Delete Selected",
 "(No subject)" => "(No subject)",
 "Modify" => "Modify",
-"No events on this day" => "No events on this day", //No hay eventos este día
+"No events on this day" => "No events on this day",
 "year view not yet implemented" => "year view not yet implemented",
 "Software Error" => "Software Error",
 "Message:" => "Message:",
@@ -824,12 +824,12 @@ a tot el mon.",
 
 "Adding event to calendar" => "Adding event to calendar",
 "Date of event" => "Date of event",
-"Date multiple day event ends" => "Date multiple day event ends", //Final del evento de múltiples días
+"Date multiple day event ends" => "Date multiple day event ends",
 "Event type" => "Event type",
-"Subject" => "Subject",//Asunto
+"Subject" => "Subject",
 "chars max" => "chars max",
 "Asterisk Call Me" => "Asterisk Call Me",
-"Submit Event" => "Submit Event", //Añadir Evento
+"Submit Event" => "Submit Event",
 
 "No day was given" => "No day was given",
 "No month was given" => "No month was given",
@@ -865,6 +865,8 @@ a tot el mon.",
 "Order" => "Order",
 "Calendar" => "Calendar",
 "Invalid action" => "Invalid action",
+"That year is too far in the past" => "That year is too far in the past",
+"That year is too far in the future" => "That year is too far in the future",
 /*Calendar*/
 
 /*Adress Book*/

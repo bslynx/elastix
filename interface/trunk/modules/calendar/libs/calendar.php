@@ -34,18 +34,18 @@ $urlmatch = new urlmatch;
 
 // make sure that we have _ defined
 if(!function_exists('_')) {
-	function _($str) { return $str; }
-	$no_gettext = 1;
+    function _($str) { return $str; }
+    $no_gettext = 1;
 }
 
 // called when some error happens
 function soft_error($str)
 {
     global $general;
-	echo '<html><head><title>'.$general['Error']."</title></head>\n"
-		.'<body><h1>'.$general['Software Error']."</h1>\n"
+    echo '<html><head><title>'.$general['Error']."</title></head>\n"
+        .'<body><h1>'.$general['Software Error']."</h1>\n"
                 ."<h2>".$general['Message:']."</h2>\n"
-		."<pre>$str</pre>\n";
+        ."<pre>$str</pre>\n";
         if(version_compare(phpversion(), '4.3.0', '>=')) {
                 echo "<h2>".$general['Backtrace']."</h2>\n";
                 echo "<ol>\n";
@@ -55,7 +55,7 @@ function soft_error($str)
                 echo "</ol>\n";
         }
         echo "</body></html>\n";
-	exit;
+    exit;
 }
 
 // called when there is an error involving the DB
@@ -75,16 +75,16 @@ function month_name($month)
 {
         global $month_names;
 
-	$month = ($month - 1) % 12 + 1;
+    $month = ($month - 1) % 12 + 1;
         return $month_names[$month];
 }
 
 //takes a day number of the week, returns a name (0 for the beginning)
 function day_name($day)
 {
-	global $day_names;
+    global $day_names;
 
-	$day = $day % 7;
+    $day = $day % 7;
 
         return $day_names[$day];
 }
@@ -93,7 +93,7 @@ function short_month_name($month)
 {
         global $short_month_names;
 
-	$month = ($month - 1) % 12 + 1;
+    $month = ($month - 1) % 12 + 1;
         return $short_month_names[$month];
 }
 
@@ -101,64 +101,64 @@ function short_month_name($month)
 // returns the formatted string
 function formatted_time_string($time, $type)
 {
-	global $config, $general;
+    global $config, $general;
 
-	preg_match('/(\d+):(\d+)/', $time, $matches);
-	$hour = $matches[1];
-	$minute = $matches[2];
+    preg_match('/(\d+):(\d+)/', $time, $matches);
+    $hour = $matches[1];
+    $minute = $matches[2];
 
-	if(!$config['hours_24']) {
-		if($hour >= 12) {
+    if(!$config['hours_24']) {
+        if($hour >= 12) {
                                 if($hour != 12) {
                                         $hour -= 12;
                                 }
-			$pm = ' '.$general['PM'];
+            $pm = ' '.$general['PM'];
                         } else {
                                 if($hour == 0) {
                                         $hour = 12;
                                 }
-			$pm = ' '.$general['AM'];
-		}
-	} else {
-		$pm = '';
-	}
+            $pm = ' '.$general['AM'];
+        }
+    } else {
+        $pm = '';
+    }
 
-	return sprintf('%d:%02d%s', $hour, $minute, $pm);
+    return sprintf('%d:%02d%s', $hour, $minute, $pm);
 }
 
 // takes start and end dates and returns a nice display
 function formatted_date_string($startyear, $startmonth, $startday, $endyear,
-		$endmonth, $endday)
+        $endmonth, $endday)
 {
-	$str = month_name($startmonth) . " $startday, $startyear";
+    $str = month_name($startmonth) . " $startday, $startyear";
 
-	if($startyear != $endyear || $startmonth != $endmonth || $startday !=
-			$endday) {
-		$str .= " - " . month_name($endmonth) . " $endday, $endyear";
-	}
-	return $str;
+    if($startyear != $endyear || $startmonth != $endmonth || $startday !=
+            $endday) {
+        $str .= " - " . month_name($endmonth) . " $endday, $endyear";
+    }
+    return $str;
 }
 
 // takes some xhtml data fragment and adds the calendar-wide menus, etc
 // returns a string containing an XHTML document ready to be output
 function create_xhtml($rest)
 {
-	global $config, $phpc_script, $year, $month;
+    global $config, $phpc_script, $year, $month;
 
-	$output = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-		."<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n"
-		."\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n";
-	$html = tag('html', attributes("xmlns=\"http://www.w3.org/1999/xhtml\"",
-				"xml:lang=\"en\"", "lang=\"en\""),
-			tag('head',
-				tag('title', $config['calendar_title']),
-				tag('link',
-					attributes('rel="stylesheet"'
-						.' type="text/css" href="'
-						.$phpc_script
-						.'?action=style"'))),
-			tag('body',
-				//tag('h1', $config['calendar_title']),
+    $output = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+        ."<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n"
+        ."\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n";
+    $html = tag('html', attributes("xmlns=\"http://www.w3.org/1999/xhtml\"",
+                "xml:lang=\"en\"", "lang=\"en\""),
+            tag('head',
+                tag('title', $config['calendar_title']),
+                tag('link',
+                    attributes('rel="stylesheet"'
+                        .' type="text/css" href="'
+                        .$phpc_script
+                        .'?action=style"'))),
+            tag('body',
+                //tag('h1', $config['calendar_title']),
                 tag('table', attributes( 'width="99%"'),
                     tag('tr',
                         tag('td', navbar())/*,
@@ -171,16 +171,16 @@ function create_xhtml($rest)
                             //tag('caption', month_name($month)." $year")*/
                     )
                 ),
-				$rest
+                $rest
             ));
 
-	return $output . $html->toString();
+    return $output . $html->toString();
 }
 
 // returns all the events for a particular day
 function get_events_by_date($day, $month, $year)
 {
-	global $calendar_name, $db, $general, $Elastix_Document_Root;
+    global $calendar_name, $db, $general, $Elastix_Document_Root;
 
 /* event types:
 1 - Normal event
@@ -210,7 +210,7 @@ function get_events_by_date($day, $month, $year)
     $user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
     $uid = Obtain_UID_From_User($user);
 
-	$query = 'SELECT * FROM '.SQL_PREFIX."events\n"
+    $query = 'SELECT * FROM '.SQL_PREFIX."events\n"
         ."WHERE $date >= $startdate AND $date <= $enddate\n"
                 // find normal events
                 ."AND (eventtype = 1 OR eventtype = 2 OR eventtype = 3 "
@@ -223,91 +223,91 @@ function get_events_by_date($day, $month, $year)
         ."AND uid = $uid "
         ."ORDER BY starttime";
 
-	$result = $db->fetchTable($query, true);
+    $result = $db->fetchTable($query, true);
     if($result==null)
         return array();
-	return $result;
+    return $result;
 }
 
 // returns the event that corresponds to $id
 function get_event_by_id($id)
 {
-	global $calendar_name, $db, $general;
+    global $calendar_name, $db, $general;
 
     $user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
     $uid = Obtain_UID_From_User($user);
 
-	$events_table = SQL_PREFIX . 'events';
-	$users_table = SQL_PREFIX . 'users';
+    $events_table = SQL_PREFIX . 'events';
+    $users_table = SQL_PREFIX . 'users';
 
-	$query = "SELECT $events_table.*,\n"
+    $query = "SELECT $events_table.*,\n"
         ."strftime('%Y', $events_table.startdate) AS year,\n"
         ."strftime('%m', $events_table.startdate) AS month,\n"
         ."strftime('%d', $events_table.startdate) AS day,\n"
         ."strftime('%Y', $events_table.enddate) AS end_year,\n"
         ."strftime('%m', $events_table.enddate) AS end_month,\n"
         ."strftime('%d', $events_table.enddate) AS end_day\n"
-		."FROM $events_table\n"
-		."WHERE $events_table.id = '$id'\n"
+        ."FROM $events_table\n"
+        ."WHERE $events_table.id = '$id'\n"
         ."AND $events_table.uid=$uid";
 
     $result = $db->getFirstRowQuery($query, true);
 
-	if($result == FALSE) {
-		db_error($general['Error in get_event_by_id'], $query);
+    if($result == FALSE) {
+        db_error($general['Error in get_event_by_id'], $query);
         return array();
-	}
+    }
 
-	if(!is_array($result) || count($result) == 0) {
-		soft_error($general["item doesn't exist!"]);
+    if(!is_array($result) || count($result) == 0) {
+        soft_error($general["item doesn't exist!"]);
         return array();
-	}
-	return $result;
+    }
+    return $result;
 }
 
 // parses a description and adds the appropriate mark-up
 function parse_desc($text)
 {
-	global $urlmatch;
+    global $urlmatch;
 
-	// get out the crap, put in breaks
+    // get out the crap, put in breaks
         $text = strip_tags($text);
-	// if you want to allow some tags, change the previous line to:
-	// $text = strip_tags($text, "a"); // change "a" to the list of tags
+    // if you want to allow some tags, change the previous line to:
+    // $text = strip_tags($text, "a"); // change "a" to the list of tags
         $text = htmlspecialchars($text, ENT_NOQUOTES);
-	// then uncomment the following line
-	// $text = preg_replace("/&lt;(.+?)&gt;/", "<$1>", $text);
+    // then uncomment the following line
+    // $text = preg_replace("/&lt;(.+?)&gt;/", "<$1>", $text);
         $text = nl2br($text);
 
-	//urls
-	$text = $urlmatch->match($text);
+    //urls
+    $text = $urlmatch->match($text);
 
-	// emails
-	$text = preg_replace("/([a-zA-Z][\w\.-]*[a-zA-Z0-9]@[a-zA-Z0-9][\w\.-]*"
-			."[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z])/",
-			"<a href=\"mailto:$1\">$1</a>", $text );
+    // emails
+    $text = preg_replace("/([a-zA-Z][\w\.-]*[a-zA-Z0-9]@[a-zA-Z0-9][\w\.-]*"
+            ."[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z])/",
+            "<a href=\"mailto:$1\">$1</a>", $text );
 
-	return $text;
+    return $text;
 }
 
 // returns the day of week number corresponding to 1st of $month
 function day_of_first($month, $year)
 {
-	return date('w', mktime(0, 0, 0, $month, 1, $year));
+    return date('w', mktime(0, 0, 0, $month, 1, $year));
 }
 
 // returns the number of days in $month
 function days_in_month($month, $year)
 {
-	return date('t', mktime(0, 0, 0, $month, 1, $year));
+    return date('t', mktime(0, 0, 0, $month, 1, $year));
 }
 
 //returns the number of weeks in $month
 function weeks_in_month($month, $year)
 {
-	global $first_day_of_week;
+    global $first_day_of_week;
 
-	return ceil((days_in_month($month, $year) + (7 + day_of_first($month, $year) - $first_day_of_week) % 7) / 7);
+    return ceil((days_in_month($month, $year) + (7 + day_of_first($month, $year) - $first_day_of_week) % 7) / 7);
 }
 
 // creates a link with text $text and GET attributes corresponding to the rest
@@ -315,18 +315,18 @@ function weeks_in_month($month, $year)
 // returns XHTML data for the link
 function create_id_link($text, $action, $id = false, $attribs = false)
 {
-	global $phpc_script;
+    global $phpc_script;
 
-	$url = "href=\"$phpc_script?action=$action";
-	if($id !== false) $url .= "&amp;id=$id";
-	$url .= '"';
+    $url = "href=\"$phpc_script?action=$action";
+    if($id !== false) $url .= "&amp;id=$id";
+    $url .= '"';
 
         if($attribs !== false) {
                 $as = attributes($url, $attribs);
         } else {
                 $as = attributes($url);
         }
-	return tag('a', $as, $text);
+    return tag('a', $as, $text);
 }
 
 function create_date_link($text, $action, $year = false, $month = false,
@@ -334,40 +334,40 @@ function create_date_link($text, $action, $year = false, $month = false,
 {
         global $phpc_script;
 
-	$url = "href=\"$phpc_script?action=$action";
-	if($year !== false) $url .= "&amp;year=$year";
-	if($month !== false) $url .= "&amp;month=$month";
-	if($day !== false) $url .= "&amp;day=$day";
+    $url = "href=\"$phpc_script?action=$action";
+    if($year !== false) $url .= "&amp;year=$year";
+    if($month !== false) $url .= "&amp;month=$month";
+    if($day !== false) $url .= "&amp;day=$day";
         if($lastaction !== false) $url .= "&amp;lastaction=$lastaction";
-	$url .= '"';
+    $url .= '"';
 
         if($attribs !== false) {
                 $as = attributes($url, $attribs);
         } else {
                 $as = attributes($url);
         }
-	return tag('a', $as, $text);
+    return tag('a', $as, $text);
 }
 
 // takes a menu $html and appends an entry
 function menu_item_append(&$html, $name, $action, $year = false, $month = false,
-		$day = false, $lastaction = false)
+        $day = false, $lastaction = false)
 {
         global $general;
         if(!is_object($html)) {
                 soft_error($general['Html is not a valid Html class.']);
         }
-	$html->add(create_date_link($name, $action, $year, $month,
+    $html->add(create_date_link($name, $action, $year, $month,
                                         $day, false, $lastaction));
         $html->add("\n");
 }
 
 // same as above, but prepends the entry
 function menu_item_prepend(&$html, $name, $action, $year = false,
-		$month = false, $day = false, $lastaction = false)
+        $month = false, $day = false, $lastaction = false)
 {
         $html->prepend("\n");
-	$html->prepend(create_date_link($name, $action, $year, $month,
+    $html->prepend(create_date_link($name, $action, $year, $month,
                                 $day, false, $lastaction));
 }
 
@@ -375,15 +375,15 @@ function menu_item_prepend(&$html, $name, $action, $year = false,
 // returns XHTML data for the input
 function create_hidden($name, $value)
 {
-	return tag('input', attributes("name=\"$name\"", "value=\"$value\"",
-				'type="hidden"'));
+    return tag('input', attributes("name=\"$name\"", "value=\"$value\"",
+                'type="hidden"'));
 }
 
 // creates a submit button for a form
 // return XHTML data for the button
 function create_submit($value)
 {
-	return tag('input', attributes('name="submit"', "value=\"$value\"",
+    return tag('input', attributes('name="submit"', "value=\"$value\"",
                                 'type="submit"'));
 }
 
@@ -391,74 +391,74 @@ function create_submit($value)
 // returns XHTML data for the entry
 function create_text($name, $value = false)
 {
-	$attributes = attributes("name=\"$name\"", 'type="text"');
-	if($value !== false) {
-		$attributes->add("value=\"$value\"");
-	}
-	return tag('input', $attributes);
+    $attributes = attributes("name=\"$name\"", 'type="text"');
+    if($value !== false) {
+        $attributes->add("value=\"$value\"");
+    }
+    return tag('input', $attributes);
 }
 
 // creates a checkbox for a form
 // returns XHTML data for the checkbox
 function create_checkbox($name, $value = false, $checked = false)
 {
-	$attributes = attributes("name=\"$name\"", 'type="checkbox"');
-	if($value !== false) $attributes->add("value=\"$value\"");
-	if(!empty($checked)) $attributes->add('checked="checked"');
-	return tag('input', $attributes);
+    $attributes = attributes("name=\"$name\"", 'type="checkbox"');
+    if($value !== false) $attributes->add("value=\"$value\"");
+    if(!empty($checked)) $attributes->add('checked="checked"');
+    return tag('input', $attributes);
 }
 
 // creates the navbar for the top of the calendar
 // returns XHTML data for the navbar
 function navbar()
 {
-	global $vars, $action, $config, $year, $month, $day, $menu;
+    global $vars, $action, $config, $year, $month, $day, $menu;
 
-	$html = tag('div', attributes('class="phpc-navbar"'));
+    $html = tag('div', attributes('class="phpc-navbar"'));
 
-	if($action != 'add') {
-		menu_item_append($html, $menu['Add Event'], 'event_form', $year,
-				$month, $day);
-	}
+    if($action != 'add') {
+        menu_item_append($html, $menu['Add Event'], 'event_form', $year,
+                $month, $day);
+    }
 
-	if($action != 'search') {
-		menu_item_append($html, $menu['Search'], 'search', $year, $month,
-				$day);
-	}
+    if($action != 'search') {
+        menu_item_append($html, $menu['Search'], 'search', $year, $month,
+                $day);
+    }
 
-	if(!empty($vars['day']) || !empty($vars['id']) || $action != 'display') {
-		menu_item_append($html, $menu['Back to Calendar'], 'display',
-				$year, $month);
-	}
+    if(!empty($vars['day']) || !empty($vars['id']) || $action != 'display') {
+        menu_item_append($html, $menu['Back to Calendar'], 'display',
+                $year, $month);
+    }
 
-	if($action != 'display' || !empty($vars['id'])) {
-		menu_item_append($html, $menu['View Date'], 'display', $year,
-				$month, $day);
-	}
+    if($action != 'display' || !empty($vars['id'])) {
+        menu_item_append($html, $menu['View Date'], 'display', $year,
+                $month, $day);
+    }
 
-	if(isset($var['display']) && $var['display'] == 'day') {
-		$monthname = month_name($month);
+    if(isset($var['display']) && $var['display'] == 'day') {
+        $monthname = month_name($month);
 
-		$lasttime = mktime(0, 0, 0, $month, $day - 1, $year);
-		$lastday = date('j', $lasttime);
-		$lastmonth = date('n', $lasttime);
-		$lastyear = date('Y', $lasttime);
-		$lastmonthname = month_name($lastmonth);
+        $lasttime = mktime(0, 0, 0, $month, $day - 1, $year);
+        $lastday = date('j', $lasttime);
+        $lastmonth = date('n', $lasttime);
+        $lastyear = date('Y', $lasttime);
+        $lastmonthname = month_name($lastmonth);
 
-		$nexttime = mktime(0, 0, 0, $month, $day + 1, $year);
-		$nextday = date('j', $nexttime);
-		$nextmonth = date('n', $nexttime);
-		$nextyear = date('Y', $nexttime);
-		$nextmonthname = month_name($nextmonth);
+        $nexttime = mktime(0, 0, 0, $month, $day + 1, $year);
+        $nextday = date('j', $nexttime);
+        $nextmonth = date('n', $nexttime);
+        $nextyear = date('Y', $nexttime);
+        $nextmonthname = month_name($nextmonth);
 
-		menu_item_prepend($html, "$lastmonthname $lastday",
-					'display', $lastyear, $lastmonth,
-					$lastday);
-		menu_item_append($html, "$nextmonthname $nextday",
-				'display', $nextyear, $nextmonth, $nextday);
-	}
+        menu_item_prepend($html, "$lastmonthname $lastday",
+                    'display', $lastyear, $lastmonth,
+                    $lastday);
+        menu_item_append($html, "$nextmonthname $nextday",
+                'display', $nextyear, $nextmonth, $nextday);
+    }
 
-	return $html;
+    return $html;
 }
 
 // creates an array from $start to $end, with an $interval
@@ -490,29 +490,29 @@ function get_day_of_month_sequence($month, $year)
 // returns XHTML data for the element
 function create_select($name, $type, $select)
 {
-	$html = tag('select', attributes('size="1"', "name=\"$name\""));
+    $html = tag('select', attributes('size="1"', "name=\"$name\""));
 
         foreach($type as $value => $text) {
-		$attributes = attributes("value=\"$value\"");
-		if ($select == $value) {
+        $attributes = attributes("value=\"$value\"");
+        if ($select == $value) {
                         $attributes->add('selected="selected"');
                 }
-		$html->add(tag('option', $attributes, $text));
-	}
+        $html->add(tag('option', $attributes, $text));
+    }
 
-	return $html;
+    return $html;
 }
 
 function redirect($page) {
-	global $phpc_script, $phpc_server, $phpc_protocol;
+    global $phpc_script, $phpc_server, $phpc_protocol;
 
-	if($page{0} == "/") {
-		$dir = '';
-	} else {
-		$dir = dirname($phpc_script) . "/";
-	}
+    if($page{0} == "/") {
+        $dir = '';
+    } else {
+        $dir = dirname($phpc_script) . "/";
+    }
 
-	header("Location: $phpc_protocol://$phpc_server$dir$page");
+    header("Location: $phpc_protocol://$phpc_server$dir$page");
 }
 
 /*FUNCIONES AÑADIDAS PARA ELASTIX*/

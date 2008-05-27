@@ -149,6 +149,8 @@ $general = array(
             'Error reading options' => $arrLang['Error reading options'],
             'Updated options' => $arrLang['Updated options'],
             'Invalid action' => $arrLang['Invalid action'],
+            'That year is too far in the past' => $arrLang['That year is too far in the past'],
+            'That year is too far in the future' => $arrLang['That year is too far in the future'],
             );
 
 $search_lang = array(

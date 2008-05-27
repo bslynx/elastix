@@ -64,8 +64,8 @@ function _moduleContent(&$smarty, $module_name)
     define('IN_PHPC', true);
 
     if(!empty($_GET['action']) && $_GET['action'] == 'style') {
-	    require_once($phpc_root_path . 'libs/style.php');
-	    exit;
+        require_once($phpc_root_path . 'libs/style.php');
+        exit;
     }
 
     require_once($phpc_root_path . 'libs/calendar.php');
@@ -76,7 +76,7 @@ function _moduleContent(&$smarty, $module_name)
                             'event_submit', 'search');
 
     if(!in_array($action, $legal_actions, true)) {
-	    //soft_error(_('Invalid action'));
+        //soft_error(_('Invalid action'));
         global $arrLang;
         require_once "display.php";
         $smarty->assign("mb_title", $arrLang["Validation Error"]);
