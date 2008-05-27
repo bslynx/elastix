@@ -26,25 +26,49 @@
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
   $Id: paloSantoGrid.class.php,v 1.1.1.1 2007/07/06 21:31:55 gcarrillo Exp $ */
-
+require_once "libs/xajax/xajax.inc.php";
 class paloSantoGrid {
 
     var $enableExport;
+    var $limit;
+    var $total;
+    var $offset;
+    var $end;
+
+    //Implementation AJAX
+    var $withAjax;
+    var $functionNameAjax;
+    var $prefixAjax;
+
     function paloSantoGrid($smarty)
     {
         $this->smarty = $smarty;
         $this->enableExport = false;
+        $this->offset = 0;
+        $this->end = 0;
+        $this->limit = 0;
+        $this->total = 0;
+        $this->withAjax = 0;
+        $this->functionNameAjax = "";
+        $this->prefixAjax = "xajax_";
     }
 
-    function enableExport()
+    function withAjax()
     {
-        $this->enableExport = true;
+        $this->withAjax = 1;
+    }
+
+    function withoutAjax()
+    {
+        $this->withAjax = 0;
     }
 
     function fetchGrid($arrGrid, $arrData,$arrLang=array())
     {
-        $numColumns=count($arrGrid["columns"]);
+        $this->smarty->assign("withAjax",$this->withAjax);
+        $this->smarty->assign("functionName",$this->prefixAjax.$this->functionNameAjax);
 
+        $numColumns=count($arrGrid["columns"]);
         $this->smarty->assign("title", $arrGrid['title']);
         $this->smarty->assign("icon",  $arrGrid['icon']);
         $this->smarty->assign("width", $arrGrid['width']);
@@ -52,6 +76,9 @@ class paloSantoGrid {
         $this->smarty->assign("start", $arrGrid['start']);
         $this->smarty->assign("end",   $arrGrid['end']);
         $this->smarty->assign("total", $arrGrid['total']);
+
+        if(isset($arrGrid['url']))
+            $this->smarty->assign("url", $arrGrid['url']);
 
         $this->smarty->assign("header",  $arrGrid["columns"]);
 
@@ -80,6 +107,8 @@ class paloSantoGrid {
         $this->smarty->assign("end",   $arrGrid['end']);
         $this->smarty->assign("total", $arrGrid['total']);
 
+        $this->smarty->assign("url",   isset($arrGrid['url'])?$arrGrid['url']:'');
+
         $this->smarty->assign("header",  $arrGrid["columns"]);
 
         $this->smarty->assign("arrData", $arrData);
@@ -90,6 +119,12 @@ class paloSantoGrid {
     function showFilter($htmlFilter)
     {
         $this->smarty->assign("contentFilter", $htmlFilter);
+    }
+
+    function calculatePagination($accion, $start)
+    {
+        $this->setOffsetValue($this->getOffSet($this->getLimit(),$this->getTotal(),$accion,$start));
+        $this->setEnd(($this->getOffsetValue() + $this->getLimit()) <= $this->getTotal() ? $this->getOffsetValue() + $this->getLimit() : $this->getTotal());
     }
 
     function getOffSet($limit,$total,$accion,$start)
@@ -113,6 +148,61 @@ class paloSantoGrid {
         }
         else $offset = 0;
         return $offset;
+    }
+
+    function enableExport()
+    {
+        $this->enableExport = true;
+    }
+
+    function setLimit($limit)
+    {
+        $this->limit = $limit;
+    }
+
+    function setTotal($total)
+    {
+        $this->total = $total;
+    }
+
+    function setOffsetValue($offset)
+    {
+        $this->offset = $offset;
+    }
+
+    function setEnd($end)
+    {
+        $this->end = $end;
+    }
+
+    function setPrefixAjax($prefixAjax)
+    {
+        $this->prefixAjax = $prefixAjax;
+    }
+
+    function setFunctionNameAjax($functionName)
+    {
+        $this->functionNameAjax = $functionName;
+    }
+ 
+    function getLimit()
+    {
+        return $this->limit;
+    }
+
+    function getTotal()
+    {
+        return $this->total;
+    }
+
+    function getOffsetValue()
+    {
+        return $this->offset;
+    }
+
+    function getEnd()
+    {
+        return $this->end;
     }
 }
 ?>

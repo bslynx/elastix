@@ -27,15 +27,12 @@
   +----------------------------------------------------------------------+
   $Id: paloSantoDB.class.php,v 1.2 2007/09/07 00:20:03 gcarrillo Exp $ */
 
-require_once "DB.php";
-
 // La siguiente clase es una clase prototipo... Usela bajo su propio riesgo
 class paloDB {
 
     var $conn;          // Referencia a la conexion activa a la DB
     var $connStatus;    // Se asigna a VERDADERO si ocurrió error de DB
     var $errMsg;        // Texto del mensaje de error
-    //var $conn; // Mensaje de error
 
     /**
      * Constructor de la clase, recibe como parámetro el DSN de PEAR a usar
@@ -56,19 +53,22 @@ class paloDB {
             $this->conn = $dsn;
             $this->connStatus = FALSE;
         } else {
-            $this->conn =& DB::connect($dsn, FALSE); // esto inicia una conexion persistente
+            $dsninfo = $this->parseDSN($dsn);
+            if($dsninfo['dbsyntax']=='sqlite3')
+                $dsn = "sqlite:".$dsninfo['database'];
+            else if($dsninfo['dbsyntax']=='mysql')
+                $dsn = "mysql:dbname=".$dsninfo['database'].";host=localhost";
 
-            // Ojo con DB::isConnection()... no sabia que existia tal funcion... a lo mejor me sirva para algo
+            $user       = $dsninfo['username'];
+            $password   = $dsninfo['password'];
 
-            if (DB::isError($this->conn)) {
-//                print '<pre>';print_r($this->conn);print '</pre>';
-                $this->errMsg = "Error de conexion a la base de datos - ".
-                    $this->conn->getMessage();//$this->conn->getUserInfo();
+            try {
+                $this->connStatus = false;
+                $this->conn = new PDO($dsn, $user, $password);
+            } catch (PDOException $e) {
+                $this->errMsg = "Error de conexion a la base de datos - " . $e->getMessage();
                 $this->connStatus = true;
                 $this->conn = NULL;
-            } else {
-                $this->connStatus = false;
-                $this->conn->setOption('autofree', TRUE);
             }
         }
     }
@@ -78,12 +78,14 @@ class paloDB {
      */
     function disconnect()
     {
-        if (!is_null($this->conn)) $this->conn->disconnect();
+        //Esta funcion deberia ser borrada pues se cambio de PEAR A PDO
+        //if (!is_null($this->conn)) $this->conn->disconnect();
     }
 
     /**
-     * Procedimiento para ejecutar una sentencia SQL que no devuelve filas de resultados.
+     * Procedimiento para ejecutar una sentencia SQL(DML Data Manipulation Language) que no devuelve filas de resultados.
      * En caso de error, se asigna mensaje a $this->errMsg
+     * Nota: Solo usado para hacer manipulacion de los datos de la base.
      *
      * @param string $query Sentencia SQL a ejecutar
      *
@@ -96,12 +98,12 @@ class paloDB {
             return false;
         } else {
             $this->errMsg = "";
-            $result =& $this->conn->query($query);
-            if (DB::isError($result)) {
-                $this->errMsg = $result->getMessage();
-                return FALSE;
-            } else {
+            try{
+                $result =& $this->conn->query($query);
                 return TRUE;
+            }catch(PDOException $e){
+                $this->errMsg = "Error de conexion a la base de datos - " . $e->getMessage();
+                return FALSE;
             }
         }
     }
@@ -116,23 +118,30 @@ class paloDB {
      *
      * @return  mixed   Matriz de las filas de recordset en éxito, o FALSE en error
      */
-    function & fetchTable($query, $arr_colnames = FALSE)
+    function fetchTable($query, $arr_colnames = FALSE)
     {
         if ($this->connStatus) {
             return FALSE;
         } else {
             $this->errMsg = "";
-            $result = $this->conn->query($query);
-            if (DB::isError($result)) {
-                $this->errMsg = "Query Error: " . $result->getMessage();
+            try{
+                $result = $this->conn->query($query);
+                $arrResult = array();
+                //while($row = $result->fetchRow($arr_colnames ? DB_FETCHMODE_OBJECT : DB_FETCHMODE_DEFAULT)) {
+                if($result!=null){
+                    while($row = $result->fetch($arr_colnames ? PDO::FETCH_OBJ : PDO::FETCH_NUM)) {
+                        $arrResult[] = (array)$row;
+                    }
+                }else{
+                    $this->errMsg = "Query Error";
+                    echo "Query Error $query";
+                    return FALSE;
+                }
+                return $arrResult;
+            }catch(PDOException $e){
+                $this->errMsg = "Query Error: " . $e->getMessage();
                 return FALSE;
             }
-
-            $arrResult = array();
-            while($row = $result->fetchRow($arr_colnames ? DB_FETCHMODE_OBJECT : DB_FETCHMODE_DEFAULT)) {
-                $arrResult[] = (array)$row;
-            }
-            return $arrResult;
         }
     }
 
@@ -148,9 +157,9 @@ class paloDB {
      *
      * @return  mixed   tupla del recordset en éxito, o FALSE en error
      */
-    function & getFirstRowQuery($query, $arr_colnames = FALSE)
+    function getFirstRowQuery($query, $arr_colnames = FALSE)
     {
-        $matriz =& $this->fetchTable($query, $arr_colnames);
+        $matriz = $this->fetchTable($query, $arr_colnames);
         if (is_array($matriz)) {
             if (count($matriz) > 0) {
                 return $matriz[0];
@@ -159,6 +168,32 @@ class paloDB {
             }
         } else {
             return FALSE;
+        }
+    }
+
+     /**
+     * Procedimiento para ejecutar una sentencia SQL(DDL Data Definition Language, DCL Data Control Language) que no devuelve filas de resultados.
+     * En caso de error, se asigna mensaje a $this->errMsg
+     * Nota: Solo usado para crear definiones de la metadata y permisos.
+     *
+     * @param string $query Sentencia SQL a ejecutar
+     *
+     * @return bool VERDADERO en caso de éxito, FALSO en caso de error
+     */
+    function genExec($query)
+    {
+        // Revisar existencia de conexión activa
+        if ($this->connStatus) {
+            return false;
+        } else {
+            $this->errMsg = "";
+            try{
+                $result =& $this->conn->exec($query);
+                return TRUE;
+            }catch(PDOException $e){
+                $this->errMsg = "Error de conexion a la base de datos - " . $e->getMessage();
+                return FALSE;
+            }
         }
     }
 
@@ -293,6 +328,125 @@ class paloDB {
         }
 
         return "UPDATE $sTabla SET $sValores $sCondicion";
+    }
+
+    function parseDSN($dsn)
+    {
+        $parsed = array(
+            'phptype'  => false,
+            'dbsyntax' => false,
+            'username' => false,
+            'password' => false,
+            'protocol' => false,
+            'hostspec' => false,
+            'port'     => false,
+            'socket'   => false,
+            'database' => false,
+        );
+
+        if (is_array($dsn)) {
+            $dsn = array_merge($parsed, $dsn);
+            if (!$dsn['dbsyntax']) {
+                $dsn['dbsyntax'] = $dsn['phptype'];
+            }
+            return $dsn;
+        }
+
+        // Find phptype and dbsyntax
+        if (($pos = strpos($dsn, '://')) !== false) {
+            $str = substr($dsn, 0, $pos);
+            $dsn = substr($dsn, $pos + 3);
+        } else {
+            $str = $dsn;
+            $dsn = null;
+        }
+
+        // Get phptype and dbsyntax
+        // $str => phptype(dbsyntax)
+        if (preg_match('|^(.+?)\((.*?)\)$|', $str, $arr)) {
+            $parsed['phptype']  = $arr[1];
+            $parsed['dbsyntax'] = !$arr[2] ? $arr[1] : $arr[2];
+        } else {
+            $parsed['phptype']  = $str;
+            $parsed['dbsyntax'] = $str;
+        }
+
+        if (!count($dsn)) {
+            return $parsed;
+        }
+
+        // Get (if found): username and password
+        // $dsn => username:password@protocol+hostspec/database
+        if (($at = strrpos($dsn,'@')) !== false) {
+            $str = substr($dsn, 0, $at);
+            $dsn = substr($dsn, $at + 1);
+            if (($pos = strpos($str, ':')) !== false) {
+                $parsed['username'] = rawurldecode(substr($str, 0, $pos));
+                $parsed['password'] = rawurldecode(substr($str, $pos + 1));
+            } else {
+                $parsed['username'] = rawurldecode($str);
+            }
+        }
+
+        // Find protocol and hostspec
+
+        if (preg_match('|^([^(]+)\((.*?)\)/?(.*?)$|', $dsn, $match)) {
+            // $dsn => proto(proto_opts)/database
+            $proto       = $match[1];
+            $proto_opts  = $match[2] ? $match[2] : false;
+            $dsn         = $match[3];
+
+        } else {
+            // $dsn => protocol+hostspec/database (old format)
+            if (strpos($dsn, '+') !== false) {
+                list($proto, $dsn) = explode('+', $dsn, 2);
+            }
+            if (strpos($dsn, '/') !== false) {
+                list($proto_opts, $dsn) = explode('/', $dsn, 2);
+            } else {
+                $proto_opts = $dsn;
+                $dsn = null;
+            }
+        }
+
+        // process the different protocol options
+        $parsed['protocol'] = (!empty($proto)) ? $proto : 'tcp';
+        $proto_opts = rawurldecode($proto_opts);
+        if (strpos($proto_opts, ':') !== false) {
+            list($proto_opts, $parsed['port']) = explode(':', $proto_opts);
+        }
+        if ($parsed['protocol'] == 'tcp') {
+            $parsed['hostspec'] = $proto_opts;
+        } elseif ($parsed['protocol'] == 'unix') {
+            $parsed['socket'] = $proto_opts;
+        }
+
+        // Get dabase if any
+        // $dsn => database
+        if ($dsn) {
+            if (($pos = strpos($dsn, '?')) === false) {
+                // /database
+                $parsed['database'] = rawurldecode($dsn);
+            } else {
+                // /database?param1=value1&param2=value2
+                $parsed['database'] = rawurldecode(substr($dsn, 0, $pos));
+                $dsn = substr($dsn, $pos + 1);
+                if (strpos($dsn, '&') !== false) {
+                    $opts = explode('&', $dsn);
+                } else { // database?param1=value1
+                    $opts = array($dsn);
+                }
+                foreach ($opts as $opt) {
+                    list($key, $value) = explode('=', $opt);
+                    if (!isset($parsed[$key])) {
+                        // don't allow params overwrite
+                        $parsed[$key] = rawurldecode($value);
+                    }
+                }
+            }
+        }
+
+        return $parsed;
     }
 }
 ?>

@@ -44,7 +44,7 @@ function _moduleContent(&$smarty, $module_name)
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
 
 
-    $pDB = new paloDB("sqlite3:////var/www/db/acl.db");
+    $pDB = new paloDB($arrConf['elastix_dsn']['acl']);
     $msgError='';
     $listaPermisosNuevosGrupo=array();
     $listaPermisosAusentesGrupo=array();
@@ -86,6 +86,7 @@ function _moduleContent(&$smarty, $module_name)
 
     if(isset($_POST['apply'])) {
         $arrPermisos=$pACL->getGroupPermissions($idGroup);
+        $arrPermisos = isset($arrPermisos)?$arrPermisos:array();
         $listaPermisos=array_keys($arrPermisos);
         $selectedResources= isset($_POST['groupPermission'])?array_keys($_POST['groupPermission']):array();
 
@@ -140,8 +141,9 @@ function _moduleContent(&$smarty, $module_name)
         $arrPermisos=$pACL->getGroupPermissions($idGroup);
 
         foreach($arrResources as $resource) {
+            $arrPermisos = isset($arrPermisos)?$arrPermisos:array();
             $checked=array_key_exists($resource[1],$arrPermisos)?"checked":'';
-            
+
             //only disabled the modules administratives
             $disabled = ""; 
             if(($resource[1] == 'usermgr'   || 

@@ -26,7 +26,7 @@
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
   $Id: paloSantoSampler.class.php,v 1.1.1.1 2007/07/06 21:31:55 gcarrillo Exp $ */
-if (!extension_loaded('sqlite3')) dl('sqlite3.so');
+
 class paloSampler {
 
     var $rutaDB;
@@ -35,15 +35,15 @@ class paloSampler {
 
     function paloSampler()
     {
-        $this->rutaDB = "/var/www/db/samples.db";
+        global $arrConf;
+        $this->rutaDB = $arrConf['elastix_dsn']['samples'];
         //instanciar clase paloDB
-        $pDB = new paloDB("sqlite3:///".$this->rutaDB);
+        $pDB = new paloDB($this->rutaDB);
 	    if(!empty($pDB->errMsg)) {
         	echo "$pDB->errMsg <br>";
 		}else{
 			$this->_db = $pDB;
 		}
-		
     }
 
     function insertSample($idLine, $timestamp, $value)
@@ -53,28 +53,20 @@ class paloSampler {
         $query = "INSERT INTO samples (id_line, timestamp, value) values ($idLine, '$timestamp', '$value')";
         $bExito = $this->_db->genQuery($query);
         if (!$bExito) {
-        	$this->errMsg = $this->_db->errMsg;
+            $this->errMsg = $this->_db->errMsg;
         }
-
     }
 
     function getSamplesByLineId($idLine) 
     {
         $this->errMsg='';
-        $sqliteError='';
-        $arrReturn = array();
-        if ($db = sqlite3_open($this->rutaDB)) {
-            $query = "SELECT timestamp, value FROM samples WHERE id_line='$idLine'";
-            $result = @sqlite3_query($db, $query);
-            while ($row = sqlite3_fetch_array($result)) {
-                //$arrReturn[$row['timestamp']]=$row['value'];
-                $arrReturn[]=$row;
-            }
-
-        } else {
-            $this->errMsg = $sqliteError;
+        $query = "SELECT timestamp, value FROM samples WHERE id_line='$idLine'";
+        $arrayResult = $this->_db->fetchTable($query, TRUE);
+        if (!$arrayResult){
+            $this->errMsg = $this->_db->errMsg;
+            return array();
         }
-        return $arrReturn;
+        return $arrayResult;
     }
 
     function getGraphLinesById($idGraph)
@@ -82,42 +74,29 @@ class paloSampler {
         $this->errMsg='';
         $arrReturn=array();
         $sqliteError='';
-        if ($db = sqlite3_open($this->rutaDB)) {
-            $query  = "SELECT l.id as id, l.name as name, l.color as color, l.line_type as line_type ";
-            $query .= " FROM graph_vs_line as gl, line as l WHERE gl.id_line=l.id AND gl.id_graph='$idGraph'";
-            $result = @sqlite3_query($db, $query);
-            if ($result!= FALSE){
-                while ($row = sqlite3_fetch_array($result)) {
-                    $arrReturn[]=$row;
-                }
-            }
-            else //mostrar un mensaje descriptivo
-                $this->errMsg = "It was not possible to obtain information about the graph";
-        } else {
-            $this->errMsg = $sqliteError;
+        $query  = "SELECT l.id as id, l.name as name, l.color as color, l.line_type as line_type ";
+        $query .= " FROM graph_vs_line as gl, line as l WHERE gl.id_line=l.id AND gl.id_graph='$idGraph'";
+
+        $arrayResult = $this->_db->fetchTable($query, TRUE);
+        if (!$arrayResult){
+            $this->errMsg = "It was not possible to obtain information about the graph - ".$this->_db->errMsg;
+            return array();
         }
-        return $arrReturn;
+        return $arrayResult;
     }
 
     function getGraphById($idGraph)
     {
         $this->errMsg='';
         $sqliteError='';
-        if ($db = sqlite3_open($this->rutaDB)) {
-            $query  = "SELECT name FROM graph WHERE id='$idGraph'";
-            $result = @sqlite3_query($db, $query);
-            if ($result!= FALSE){
-                while ($row = sqlite3_fetch_array($result)) {
-                    $arrReturn=$row;
-                }
-            }
-            else
-                $this->errMsg = "It was not possible to obtain information about the graph";
-        } else {
-            $this->errMsg = $sqliteError;
-        }
+        $query  = "SELECT name FROM graph WHERE id='$idGraph'";
 
-        return $arrReturn;
+        $arrayResult = $this->_db->getFirstRowQuery($query, TRUE);
+        if (!$arrayResult){
+            $this->errMsg = "It was not possible to obtain information about the graph - ".$this->_db->errMsg;
+            return array();
+        }
+        return $arrayResult;
     }
 
     function deleteDataBeforeThisTimestamp($timestamp)

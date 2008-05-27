@@ -78,7 +78,7 @@ function _moduleContent(&$smarty, $module_name)
                                                "VALIDATION_TYPE"        => "text",
                                                "VALIDATION_EXTRA_PARAM" => ""),);
         $oForm = new paloForm($smarty, $arrForm);
-        $pDB = new paloDB("sqlite3:////var/www/db/settings.db");
+        $pDB = new paloDB($arrConf['elastix_dsn']['settings']);
         if(empty($pDB->errMsg)) {
             $conexionDB=TRUE;
 

@@ -39,7 +39,7 @@ function _moduleContent($smarty, $module_name)
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
     $templates_dir=(isset($arrConfig['templates_dir']))?$arrConfig['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
-    
+
     $arrSysInfo = obtener_info_de_sistema();
 
     //print_r($arrSysInfo);

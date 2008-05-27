@@ -39,9 +39,9 @@ class Installer
     }
 
     function addMenu($oMenu,$arrTmp){
-	//verificar si tiene que crear un nuevo menu raiz
-	
-	if ($arrTmp['type']=='menu')
+    //verificar si tiene que crear un nuevo menu raiz
+
+    if ($arrTmp['type']=='menu')
         {
             $parentId="";
             $type="";
@@ -50,14 +50,14 @@ class Installer
             $parentId = $arrTmp['parent'];
             $type=$arrTmp['type'];
         }
-	//creo el menu
+    //creo el menu
 
-	$bExito = $oMenu->createMenu($arrTmp['menuid'],$arrTmp['tag'],$parentId,$type);
-	if (!$bExito){
+    $bExito = $oMenu->createMenu($arrTmp['menuid'],$arrTmp['tag'],$parentId,$type);
+    if (!$bExito){
             $this->_errMsg = $oMenu->errMsg;
             return false;
         }
-	return true;
+    return true;
     }
 
     function addResourceMembership($oACL,$arrTmp){
@@ -87,12 +87,12 @@ class Installer
         $db = 'mysql://root:'.MYSQL_ROOT_PASSWORD.'@localhost/';
         $pDB = new paloDB ($db);
         $sPeticionSQL = "CREATE DATABASE $db_name";
-        $result = $pDB->genQuery($sPeticionSQL);
+        $result = $pDB->genExec($sPeticionSQL);
         if($datos_conexion['locate'] == "")
             $datos_conexion['locate'] = "localhost";
         $GrantSQL = "GRANT SELECT, INSERT, UPDATE, DELETE ON $db_name.* TO ";
         $GrantSQL .= $datos_conexion['user']."@".$datos_conexion['locate']." IDENTIFIED BY '".                          $datos_conexion['password']."'";
-        $result = $pDB->genQuery($GrantSQL);
+        $result = $pDB->genExec($GrantSQL);
         $comando="mysql --password=".MYSQL_ROOT_PASSWORD." --user=root $db_name < $path_script_db";
         exec($comando,$output,$retval);
         return $retval;

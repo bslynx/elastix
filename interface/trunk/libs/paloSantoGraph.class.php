@@ -48,7 +48,7 @@ class PaloGraph {
 
         $this->lienzoAncho  = $ancho;
         $this->lienzoAltura = $altura;
-        $this->debug = false;        
+        $this->debug = false;
         //$this->debug = true;
 
         $this->image        = imagecreate($this->lienzoAncho, $this->lienzoAltura);

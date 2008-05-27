@@ -34,18 +34,17 @@ function _moduleContent(&$smarty, $module_name)
     include_once("libs/paloSantoGrid.class.php");
     include_once("libs/paloSantoACL.class.php");
     global $arrLang;
-    $pDB = new paloDB("sqlite3:////var/www/db/acl.db");
+    global $arrConf;
+    $pDB = new paloDB($arrConf['elastix_dsn']['acl']);
 
 /////conexion a php
 //include module files
     include_once "modules/$module_name/configs/default.conf.php";
-    global $arrConf;
-    global $arrLang;
     //folder path for custom templates
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
     $templates_dir=(isset($arrConfig['templates_dir']))?$arrConfig['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
-    
+
     $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
     $arrConfig = $pConfig->leer_configuracion(false);
 

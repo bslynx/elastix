@@ -28,7 +28,6 @@
   $Id: new_campaign.php $ */
 
 require_once "libs/paloSantoForm.class.php";
-require_once "libs/paloSantoTrunk.class.php";
 include_once "libs/paloSantoConfig.class.php";
 include_once "libs/paloSantoGrid.class.php";
 
@@ -55,7 +54,7 @@ function _moduleContent(&$smarty, $module_name)
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
 
     // se conecta a la base
-    $pDB = new paloDB("sqlite3:////var/www/db/settings.db");
+    $pDB = new paloDB($arrConf['elastix_dsn']['settings']);
     if(!empty($pDB->errMsg)) {
         $smarty->assign("mb_message", $arrLang["Error when connecting to database"]."<br/>".$pDB->errMsg);
     }

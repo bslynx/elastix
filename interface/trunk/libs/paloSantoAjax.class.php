@@ -25,20 +25,52 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
+  $Id: paloSantoGrid.class.php,v 1.1.1.1 2008/04/24 12:31:55 bmacias Exp $ */
 
-$arrConf['elastix_dsn'] = array(
-                                "acl"       =>  "sqlite3:////var/www/db/acl.db",
-                                "settings"  =>  "sqlite3:////var/www/db/settings.db",
-                                "menu"      =>  "sqlite3:////var/www/db/menu.db",
-                                "samples"   =>  "sqlite3:////var/www/db/samples.db",
-                            );
-$arrConf['basePath'] = '/var/www/html';
-$arrConf['theme'] = 'default'; //theme personal para los modulos esencialmente
-$arrConf['mainTheme'] = load_theme($arrConf['basePath']."/"); //theme para la parte plantilla principal del elastix (se usa para la inclusion de los css)
-$arrConf['elastix_version'] = load_version_elastix($arrConf['basePath']."/"); //la version y le release  del sistema elastix
-$arrConf['defaultMenu'] = 'config';
-$arrConf['language'] = 'en';
-$arrConf['dir_backup'] = "backup";
+require_once "libs/xajax/xajax.inc.php";
+class paloSantoAjax {
 
-$arrConf['cadena_dsn'] = "mysql://asterisk:asterisk@localhost/call_center";
+    var $xajax;
+    var $functionName;
+    var $printJavascript;
+    var $smarty;
+
+    function paloSantoAjax($smarty)
+    {
+        $this->smarty = $smarty;
+    }
+
+
+    function process($functionName, $arrArgs)
+    {
+        $this->xajax = new xajax();
+        $this->xajax->registerFunction($functionName);
+        $this->xajax->processRequests();
+        $this->functionName = $functionName;
+
+
+        $i=0;
+        $args = "";
+        foreach($arrArgs as $key => $arg){
+            if($i==0)
+                $args = "$arg";
+            else $args .= ", $arg";
+            $i++;
+        }
+        $javascript = $this->xajax->printJavascript("libs/xajax/");
+        $div = "<div id='id_".$this->functionName."'></div>
+                <script type='text/javascript'>
+                    xajax_".$this->functionName."($args);
+                </script>";
+        $this->printJavascript = $javascript.$div;
+        return $javascript.$div;
+    }
+
+    function sendResponse($functionName, $content)
+    {
+        $respuesta = new xajaxResponse();
+        $respuesta->addAssign("id_".$functionName,"innerHTML",$content);
+        return $respuesta;
+    }
+}
+?>

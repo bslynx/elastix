@@ -31,8 +31,8 @@ function recoger_valor($key, &$_GET, &$_POST, $default = NULL) {
     if (isset($_POST[$key])) return $_POST[$key];
     elseif (isset($_GET[$key])) return $_GET[$key];
     else return $default;
-}  
-    
+}
+
 function obtener_info_de_sistema()
 {
     $arrInfo=array();
@@ -197,25 +197,27 @@ function translateDate($dateOrig)
 }
 function get_key_settings($pDB,$key){
     $value='';
-    $sQuery="SELECT value FROM settings WHERE key=?";
-    $oResult=$pDB->conn->getOne($sQuery,array($key));
-    if (!DB::isError($oResult)) $value=$oResult;
+    $sQuery="SELECT value FROM settings WHERE key='$key'";
+    //$oResult=$pDB->conn->getOne($sQuery,array($key));
+    $oResult=$pDB->getFirstRowQuery($sQuery, FALSE);
+    if($oResult && count($oResult)>0)
+        $value=$oResult[0];
     return $value;
 }
 function set_key_settings($pDB,$key,$value){
     $bExito=FALSE;
     //tengo que verificar si existe el valor de configuracion 
-    $sQuery="SELECT count(*) FROM settings WHERE key=?";
-    $oResult=$pDB->conn->getOne($sQuery,array($key));
-    if (!DB::isError($oResult)){
-        if ($oResult>0){
-            $sQuery="UPDATE settings SET value = ? WHERE key= ?";
-            $oResult=$pDB->conn->query($sQuery,array($value,$key));
-            if (!DB::isError($oResult)) $bExito=TRUE;   
+    $sQuery="SELECT count(*) FROM settings WHERE key='$key'";
+    $oResult=$pDB->getFirstRowQuery($sQuery, FALSE);
+    if ($oResult){
+        if($oResult[0]>0){
+            $sQuery="UPDATE settings SET value ='$value' WHERE key='$key'";
+            $oResult=$pDB->genQuery($sQuery);
+            if ($oResult) $bExito=TRUE;
         }else{
-            $sQuery="INSERT INTO settings (key,value) VALUES ( ? , ? )";
-            $oResult=$pDB->conn->query($sQuery,array($key,$value));
-            if (!DB::isError($oResult)) $bExito=TRUE;
+            $sQuery="INSERT INTO settings (key,value) VALUES ( '$key', '$value' )";
+            $oResult=$pDB->genQuery($sQuery);
+            if ($oResult) $bExito=TRUE;
         }
     }
     return $bExito;
@@ -223,11 +225,12 @@ function set_key_settings($pDB,$key,$value){
 
 function load_version_elastix($ruta_base='')
 {
-    if (!extension_loaded('sqlite3')) dl('sqlite3.so');
+    require_once $ruta_base."configs/default.conf.php";
+    global $arrConf;
     include_once $ruta_base."libs/paloSantoDB.class.php";
 
-//conectarse a la base de settings para obtener la version y release del sistema elastix
-    $pDB = new paloDB("sqlite3:////var/www/db/settings.db");
+    //conectarse a la base de settings para obtener la version y release del sistema elastix
+    $pDB = new paloDB($arrConf['elastix_dsn']['settings']);
     if(empty($pDB->errMsg)) {
         $theme=get_key_settings($pDB,'elastix_version_release');
     }
@@ -241,15 +244,16 @@ function load_version_elastix($ruta_base='')
 
 function load_theme($ruta_base='')
 {
-    if (!extension_loaded('sqlite3')) dl('sqlite3.so');
+    require_once $ruta_base."configs/default.conf.php";
+    global $arrConf;
     include_once $ruta_base."libs/paloSantoDB.class.php";
 
-//conectarse a la base de settings para obtener el thema actual
-    $pDB = new paloDB("sqlite3:////var/www/db/settings.db");
+    //conectarse a la base de settings para obtener el thema actual
+    $pDB = new paloDB($arrConf['elastix_dsn']['settings']);
     if(empty($pDB->errMsg)) {
         $theme=get_key_settings($pDB,'theme');
     }
-//si no se encuentra setear el tema por default
+    //si no se encuentra setear el tema por default
     if (empty($theme)){
         set_key_settings($pDB,'theme','default');
         return "default";
@@ -259,22 +263,23 @@ function load_theme($ruta_base='')
 
 function load_language($ruta_base='')
 {
-    if (!extension_loaded('sqlite3')) dl('sqlite3.so');
+    require_once $ruta_base."configs/default.conf.php";
+    global $arrConf;
     include_once $ruta_base."libs/paloSantoDB.class.php";
     include $ruta_base."configs/default.conf.php";
     include_once $ruta_base."configs/languages.conf.php";
     $lang="";
-//conectarse a la base de settings para obtener el idioma actual
-    $pDB = new paloDB("sqlite3:////var/www/db/settings.db");
+    //conectarse a la base de settings para obtener el idioma actual
+    $pDB = new paloDB($arrConf['elastix_dsn']['settings']);
     if(empty($pDB->errMsg)) {
         $lang=get_key_settings($pDB,'language');
     }
-//si no se encuentra tomar del archivo de configuracion
+    //si no se encuentra tomar del archivo de configuracion
     if (empty($lang)) $lang=isset($arrConf['language'])?$arrConf['language']:"en";
 
-//verificar que exista en el arreglo de idiomas, sino por defecto en
+    //verificar que exista en el arreglo de idiomas, sino por defecto en
     if (!array_key_exists($lang,$languages)) $lang="en";
-    
+
     include_once $ruta_base."lang/".$lang.".lang";
 }
 function cargar_menu($db)
@@ -282,22 +287,21 @@ function cargar_menu($db)
    //leer el contenido de la tabla menu y devolver un arreglo con la estructura
     $menu = array ();
     $query="SELECT * FROM menu ";
-    $oRecordset=$db->conn->query($query);
-    if (!DB::isError($oRecordset)){
-        while ($tupla = $oRecordset->fetchRow(DB_FETCHMODE_ASSOC)) {
-                $menu[$tupla['id']]= $tupla;
-             //   $datos_tabla[]=$tupla;
-        }
+    $oRecordset=$db->fetchTable($query, true);
+    if ($oRecordset){
+        foreach($oRecordset as $key => $value)
+            $menu[$value['id']]= $value;
     }
-
     return $menu;
 }
 
 function get_language()
 {
+    require_once "configs/default.conf.php";
+    global $arrConf;
     $lang="";
-//conectarse a la base de settings para obtener el idioma actual
-    $pDB = new paloDB("sqlite3:////var/www/db/settings.db");
+    //conectarse a la base de settings para obtener el idioma actual
+    $pDB = new paloDB($arrConf['elastix_dsn']['settings']);
     if(empty($pDB->errMsg)) {
         $lang=get_key_settings($pDB,'language');
     }
@@ -307,8 +311,6 @@ function get_language()
 
 
 #funciones para menu
-
-
 
 function guardar_dominio_sistema($domain_name,&$errMsg)
 {
@@ -337,45 +339,33 @@ function guardar_dominio_sistema($domain_name,&$errMsg)
 
 
 function construir_valor_nuevo_postfix($valor_anterior,$dominio,$eliminar_dominio=FALSE){
-    $valor_nuevo="";
-    $existe = false;
+    $valor_nuevo=$valor_anterior;
 
-    //Esto es para agregar el primer elemento
-    if(is_null($valor_anterior)|| trim($valor_anterior)==""){
+    if(is_null($valor_anterior)){
         $elemento=(!$eliminar_dominio)?"$dominio":"";
         $valor_nuevo="$elemento";
     }
     else{
-        $arr_valores=explode(',',$valor_anterior);
-        //Si ya existe al menos un elemento y deseo añadir otro
-        if(!$eliminar_dominio)
-        {
-            //Antes de añadir verificar q no exista
-            foreach($arr_valores as $key => $valor)
-                if($valor==$dominio) $existe=true;
-            //Si no existe agregarlo sino mantener los mismos elementos
-            if(!$existe) $valor_nuevo = $valor_anterior.",$dominio";
-            else $valor_nuevo = $valor_anterior;
-        }
-        //Borrar elementos
-        else{
-            for($i=0; $i<count($arr_valores); $i++)
-            {
-                if($arr_valores[$i]!=$dominio)
-                {
-                    $valor_nuevo .= $arr_valores[$i];
-                    $valor_nuevo .= ",";
-                }
+        if(ereg("^(.*)$",$valor_anterior,$regs)){
+            $arr_valores=explode(',',$regs[1]);
+            if(!$eliminar_dominio)
+                $arr_valores[]="$dominio";
+
+            $valor_nuevo="";
+            for($i=0;$i<count($arr_valores);$i++){
+                $valor_nuevo.=$arr_valores[$i];
+                if($i<(count($arr_valores)-1))
+                    $valor_nuevo.=","; 
             }
-            $valor_nuevo = substr($valor_nuevo, 0, -1);
+
+            if($eliminar_dominio==TRUE){
+                $valor_nuevo=str_replace(",$dominio","",$valor_nuevo);
+            }
         }
     }
-
     return $valor_nuevo;
 }
 
-
-    
 function eliminar_dominio($db,$arrDominio,&$errMsg)
 { 
     $pEmail = new paloEmail($db);
@@ -391,16 +381,16 @@ function eliminar_dominio($db,$arrDominio,&$errMsg)
     if ($continuar){
         $query1 = "SELECT * FROM accountuser WHERE id_domain='$arrDominio[id_domain]' order by username";
         $result=$db->fetchTable($query1,TRUE);
-      
+
         if(is_array($result) && count($result)>0){
             foreach ($result as $fila){
                 $username = $fila['username'];
                 $bExito=eliminar_cuenta($db,$username,$errMsg);
-          
+
                 if (!$bExito) $output = $errMsg;
                 /*$cyr_conn->deletemb("user/".$username)."<br>";
                 exec("sudo -u root saslpasswd2 -d $username@".SASL_DOMAIN);
-            
+
                 if($cyr_conn->error_msg!="" && (strpos($cyr_conn->error_msg, "Mailbox does not exist")===false))
                     $output.=$cyr_conn->error_msg;
 
@@ -439,7 +429,6 @@ function eliminar_dominio($db,$arrDominio,&$errMsg)
         $valor_anterior=$conf_file->privado_get_valor($contenido,"mydomain2");
         $valor_nuevo=construir_valor_nuevo_postfix($valor_anterior,$arrDominio['domain_name'],TRUE);
         $arr_reemplazos=array('mydomain2'=>$valor_nuevo);
-
         $bValido=$conf_file->escribir_configuracion($arr_reemplazos);
 
         if($bValido){
@@ -483,12 +472,11 @@ function eliminar_virtual_sistema($email,&$error){
         if(isset($fila['clave']) && $fila['clave']==$email){
              unset($arr_direcciones[$key]);
              $eliminado=TRUE;
-        }/*
+        }
         elseif(ereg("^$email",$fila)){
-exec("echo 2 {$fila['clave']} >> /tmp/file");
              unset($arr_direcciones[$key]);
              $eliminado=TRUE;
-        }*/
+        }
     }
     if($eliminado){
         $bool=$config->escribir_configuracion($arr_direcciones,true);
@@ -514,7 +502,7 @@ exec("echo 2 {$fila['clave']} >> /tmp/file");
 
 function crear_usuario_correo_sistema($email,$username,$clave,&$error,$virtual=TRUE){
     $output=array();
-            
+
     exec("echo \"$clave\" | sudo -u root /usr/sbin/saslpasswd2 -c $username -u ".SASL_DOMAIN,$output);
 
 

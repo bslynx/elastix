@@ -44,7 +44,7 @@ class paloACL {
     {
         // Se recibe como parámetro una referencia a una conexión paloDB
         if (is_object($pDB)) {
-            $this->_DB =& $pDB;
+            $this->_DB = $pDB;
             $this->errMsg = $this->_DB->errMsg;
         } else {
             $dsn = (string)$pDB;
@@ -81,7 +81,7 @@ class paloACL {
             $this->errMsg = "";
             $sPeticionSQL = "SELECT id, name, description,extension FROM acl_user".
                 (is_null($id_user) ? '' : " WHERE id = $id_user");
-            $arr_result =& $this->_DB->fetchTable($sPeticionSQL);
+            $arr_result = $this->_DB->fetchTable($sPeticionSQL);
             if (!is_array($arr_result)) {
                 $arr_result = FALSE;
                 $this->errMsg = $this->_DB->errMsg;
@@ -156,7 +156,7 @@ class paloACL {
             if ( !$description ) $description = $username;
 
             // Verificar que el usuario indicado existe
-            $tuplaUser =& $this->getUsers($id_user);
+            $tuplaUser = $this->getUsers($id_user);
             if (!is_array($tuplaUser)) {
                 $this->errMsg = "On having checked user's existence - ".$this->errMsg;
             } else if (count($tuplaUser) == 0) {
@@ -276,14 +276,10 @@ class paloACL {
 
         $this->errMsg = '';
         $sPeticionSQL = "SELECT id FROM acl_user WHERE name = ".paloDB::DBCAMPO($sNombreUser);
-        $result = $this->_DB->conn->query($sPeticionSQL);
-        if (DB::isError($result)) {
-            $this->errMsg = $result->getMessage();
-        } else {
-            if($row = $result->fetchRow()) {
-                $idUser = (int)$row[0];
-            }
-        }
+        $result = $this->_DB->getFirstRowQuery($sPeticionSQL, FALSE);
+        if ($result && is_array($result) && count($result)>0) {
+            $idUser = $result[0];
+        }else $this->errMsg = $this->_DB->errMsg;
         return $idUser;
     }
 
@@ -309,7 +305,7 @@ class paloACL {
             $this->errMsg = "";
             $sPeticionSQL = "SELECT id, name, description FROM acl_group".
                 (is_null($id_group) ? '' : " WHERE id = $id_group");
-            $arr_result =& $this->_DB->fetchTable($sPeticionSQL);
+            $arr_result = $this->_DB->fetchTable($sPeticionSQL);
             if (!is_array($arr_result)) {
                 $arr_result = FALSE;
                 $this->errMsg = $this->_DB->errMsg;
@@ -342,15 +338,12 @@ class paloACL {
                 "SELECT g.id, g.name ".
                 "FROM acl_group as g, acl_membership as m ".
                 "WHERE m.id_group = g.id AND m.id_user = $id_user";
-            $recordset =& $this->_DB->conn->query($sPeticionSQL);
-            if (DB::isError($recordset)) {
-                $this->errMsg = $recordset->getMessage();
-            } else {
+            $result = $this->_DB->fetchTable($sPeticionSQL, FALSE);
+            if ($result && is_array($result) && count($result)>0) {
                 $arr_resultado = array();
-                while ($tupla = $recordset->fetchRow()) {
-                    $arr_resultado[$tupla[1]] = (int)$tupla[0];
-                }
-            }
+                foreach($result as $key => $value)
+                    $arr_resultado[$value[1]] = $value[0];
+            }else $this->errMsg = $this->_DB->errMsg;
         }
         return $arr_resultado;
     }
@@ -368,14 +361,10 @@ class paloACL {
 
         $this->errMsg = '';
         $sPeticionSQL = "SELECT id FROM acl_group WHERE name = ".paloDB::DBCAMPO($sNombreGroup);
-        $result =& $this->_DB->conn->query($sPeticionSQL);
-        if (DB::isError($result)) {
-            $this->errMsg = $result->getMessage();
-        } else {
-            if($row = $result->fetchRow()) {
-                $idGroup = (int)$row[0];
-            }
-        }
+        $result = $this->_DB->getFirstRowQuery($sPeticionSQL, FALSE);
+        if ($result && is_array($result) && count($result)>0) {
+            $idGroup = $result[0];
+        }else $this->errMsg = $this->_DB->errMsg;
         return $idGroup;
     }
     
@@ -394,8 +383,8 @@ class paloACL {
         $bExito = FALSE;
         if (is_null($id_user) || is_null($id_group)) {
             $this->errMsg = "Se debe proporcionar ID de usuario y de grupo";
-        } else if (is_array($listaUser =& $this->getUsers($id_user)) &&
-            is_array($listaGrupo =& $this->getGroups($id_group))) {
+        } else if (is_array($listaUser = $this->getUsers($id_user)) &&
+            is_array($listaGrupo = $this->getGroups($id_group))) {
 
             if (count($listaUser) == 0) {
                 $this->errMsg = "User doesn't exist";
@@ -404,7 +393,7 @@ class paloACL {
             } else {
                 // Verificar existencia de la combinación usuario-grupo
                 $sPeticionSQL = "SELECT id FROM acl_membership WHERE id_user = $id_user AND id_group = $id_group";
-                $listaMembresia =& $this->_DB->fetchTable($sPeticionSQL);
+                $listaMembresia = $this->_DB->fetchTable($sPeticionSQL);
                 if (!is_array($listaMembresia)) {
                     // Ocurre un error de base de datos
                     $this->errMsg = $this->_DB->errMsg;
@@ -476,7 +465,7 @@ class paloACL {
             $this->errMsg = "";
             $sPeticionSQL = "SELECT id, name, description FROM acl_action".
                 (is_null($id_action) ? '' : " WHERE id = $id_action");
-            $arr_result =& $this->_DB->fetchTable($sPeticionSQL);
+            $arr_result = $this->_DB->fetchTable($sPeticionSQL);
             if (!is_array($arr_result)) {
                 $arr_result = FALSE;
                 $this->errMsg = $this->_DB->errMsg;
@@ -508,7 +497,7 @@ class paloACL {
             $sPeticionSQL =
                 "SELECT description FROM acl_action ".
                 "WHERE name = ".paloDB::DBCAMPO($groupname);
-            $tupla =& $this->_DB->getFirstRowQuery($sPeticionSQL);
+            $tupla = $this->_DB->getFirstRowQuery($sPeticionSQL);
             if (!is_array($tupla)) {
                 // Ocurre error de DB en consulta
                 $this->errMsg = $this->_DB->errMsg;
@@ -571,7 +560,7 @@ class paloACL {
             $this->errMsg = "";
             $sPeticionSQL = "SELECT id, name, description FROM acl_resource".
                 (is_null($id_rsrc) ? '' : " WHERE id = $id_rsrc");
-            $arr_result =& $this->_DB->fetchTable($sPeticionSQL);
+            $arr_result = $this->_DB->fetchTable($sPeticionSQL);
             if (!is_array($arr_result)) {
                 $arr_result = FALSE;
                 $this->errMsg = $this->_DB->errMsg;
@@ -602,7 +591,7 @@ class paloACL {
             $sPeticionSQL =
                 "SELECT description FROM acl_resource ".
                 "WHERE name = ".paloDB::DBCAMPO($name);
-            $tupla =& $this->_DB->getFirstRowQuery($sPeticionSQL);
+            $tupla = $this->_DB->getFirstRowQuery($sPeticionSQL);
             if (!is_array($tupla)) {
                 // Ocurre error de DB en consulta
                 $this->errMsg = $this->_DB->errMsg;
@@ -661,7 +650,7 @@ class paloACL {
      */
     function getUserPermissions($id_user)
     {
-        $arr_resultado = NULL;
+         $arr_resultado = array();
         if (!ereg('^[[:digit:]]+$', "$id_user")) {
             $this->errMsg = "User ID is not numeric";
         } else {
@@ -669,18 +658,17 @@ class paloACL {
                 "SELECT a.name, r.name, up.id ".
                 "FROM acl_user_permission as up, acl_action as a, acl_resource as r ".
                 "WHERE up.id_user = $id_user AND up.id_action = a.id AND up.id_resource = r.id";
-            $result = $this->_DB->conn->query($sql);
-            if (DB::isError($result)) {
-                $this->errMsg = $result->getMessage();
-            } else {
+            $result = $this->_DB->fetchTable($sql, FALSE);
+            if ($result && is_array($result) && count($result)>0) {
                 $arr_resultado = array();
-                while($row = $result->fetchRow()) {
-                    $indice  = $row[1];
-                    $valor   = $row[0];
-                    $indice2 = "u" . $row[2];
+                foreach($result as $key => $value)
+                {
+                    $indice  = $value[1];
+                    $valor   = $value[0];
+                    $indice2 = "u" . $value[2];
                     $arr_resultado[$indice][$indice2] = $valor;
                 }
-            }
+            }else $this->errMsg = $this->_DB->errMsg;
         }
         return $arr_resultado;
     }
@@ -703,22 +691,21 @@ class paloACL {
         if (!ereg('^[[:digit:]]+$', "$id_group")) {
             $this->errMsg = "Group ID is not numeric";
         } else {
-            $sql =
+            $sPeticionSQL =
                 "SELECT a.name, r.name, gp.id ".
                 "FROM acl_group_permission as gp, acl_action as a , acl_resource as r ".
                 "WHERE gp.id_group = $id_group AND gp.id_action = a.id AND gp.id_resource = r.id";
-            $result = $this->_DB->conn->query($sql);
-            if (DB::isError($result)) {
-                $this->errMsg = $result->getMessage();
-            } else {
+            $result = $this->_DB->fetchTable($sPeticionSQL, FALSE);
+            if ($result && is_array($result) && count($result)>0) {
                 $arr_resultado = array();
-                while($row = $result->fetchRow()) {
-                    $indice  = $row[1];
-                    $valor   = $row[0];
-                    $indice2 = "g" . $row[2];
+                foreach($result as $key => $value)
+                {
+                    $indice  = $value[1];
+                    $valor   = $value[0];
+                    $indice2 = "g" . $value[2];
                     $arr_resultado[$indice][$indice2] = $valor;
                 }
-            }
+            }else $this->errMsg = $this->_DB->errMsg;
         }
         return $arr_resultado;
     }
@@ -819,7 +806,7 @@ class paloACL {
             }
 
             $sql = "SELECT name FROM acl_user WHERE name = '$user' AND md5_password = '$pass'";
-            $arr =& $this->_DB->fetchTable($sql);
+            $arr = $this->_DB->fetchTable($sql);
             if (is_array($arr)) {
                 return (count($arr) > 0);
             } else {
@@ -888,18 +875,14 @@ class paloACL {
         } else {
             $this->errMsg = "";
             $sPeticionSQL = "SELECT extension FROM acl_user WHERE name = '$username'";
-            $result = $this->_DB->conn->getOne($sPeticionSQL);
-            if (DB::isError($result)) {
-                $this->errMsg = $result->getMessage();
-            } else {
-                $extension = $result;
-
-            }
-
+            $result = $this->_DB->getFirstRowQuery($sPeticionSQL, FALSE);
+            if ($result && is_array($result) && count($result)>0) {
+                $extension = $result[0];
+            }else $this->errMsg = $this->_DB->errMs;
         }
         return $extension;
     }
-    
+
     /**
      * Procedimiento para obtener la extension de un usuario mediante su username. 
      *
@@ -915,14 +898,10 @@ class paloACL {
         } else {
             $this->errMsg = "";
             $sPeticionSQL = "SELECT id FROM acl_resource WHERE name = '$resource_name'";
-            $result = $this->_DB->conn->getOne($sPeticionSQL);
-            if (DB::isError($result)) {
-                $this->errMsg = $result->getMessage();
-            } else {
-                $id_resource = $result;
-
-            }
-
+            $result = $this->_DB->getFirstRowQuery($sPeticionSQL, FALSE);
+            if ($result && is_array($result) && count($result)>0) {
+                $id_resource = $result[0];
+            }else $this->errMsg = $this->_DB->errMs;
         }
         return $id_resource;
     }
@@ -1006,7 +985,7 @@ class paloACL {
             if ( !$description ) $description = $group;
 
             // Verificar que el grupo indicado existe
-            $tuplaGroup =& $this->getGroups($id_group);
+            $tuplaGroup = $this->getGroups($id_group);
             if (!is_array($tuplaGroup)) {
                 $this->errMsg = "On having checked group's existence - ".$this->errMsg;
             } else if (count($tuplaGroup) == 0) {
@@ -1085,16 +1064,12 @@ class paloACL {
             $this->errMsg = "Group ID is not numeric";
         } else {
             $sPeticionSQL = "SELECT count(*) FROM acl_membership WHERE id_group = $id_group";
-            $result =& $this->_DB->conn->query($sPeticionSQL);
-            if (DB::isError($result)) {
-                $this->errMsg = $result->getMessage();
-            } else {
-                if($row = $result->fetchRow()) {
-                    $users = (int)$row[0];
-                    if($users==0)
-                        $Haveusers = FALSE; 
-                }
-            }
+            $result = $this->_DB->getFirstRowQuery($sPeticionSQL, FALSE);
+            if ($result && is_array($result) && count($result)>0) {
+                $users = $result[0];
+                if($users==0)
+                    $Haveusers = FALSE;
+            }else $this->errMsg = $this->_DB->errMsg;
         }
         return $Haveusers;
     }

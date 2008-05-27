@@ -27,7 +27,6 @@
   +----------------------------------------------------------------------+
   $Id: index.php,v 1.3 2007/07/17 00:03:42 gcarrillo Exp $ */
 
-dl('sqlite3.so');
 include_once("libs/misc.lib.php");
 include_once "configs/default.conf.php";
 include_once "libs/paloSantoNavigation.class.php"; 
@@ -48,7 +47,7 @@ if(isset($_GET['logout']) && $_GET['logout']=='yes') {
 //include_once("lang/".$lang.".lang");
 load_language();
 
-$pDB = new paloDB("sqlite3:////var/www/db/acl.db");
+$pDB = new paloDB($arrConf['elastix_dsn']['acl']);
 
 if(!empty($pDB->errMsg)) {
     echo "ERROR DE DB: $pDB->errMsg <br>";
@@ -85,7 +84,7 @@ if(isset($_POST['submit_login']) and !empty($_POST['input_user'])) {
 }
 
 //include_once("configs/menu.php"); 
-$pDBMenu = new paloDB("sqlite3:////var/www/db/menu.db");
+$pDBMenu = new paloDB($arrConf['elastix_dsn']['menu']);
 $arrMenu = cargar_menu($pDBMenu) ;
 
 // 2) Autentico usuario
@@ -152,24 +151,20 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
     else
         $smarty->assign("MENU", "No modules");
 
-
     // rawmode es un modo de operacion que pasa directamente a la pantalla la salida
     // del modulo. Esto es util en ciertos casos.
     if(isset($_GET['rawmode']) && $_GET['rawmode']=='yes') {
-    
          // Autorizacion
         if($pACL->isUserAuthorizedById($idUser, "access", $oPn->currSubMenu) or $developerMode==true) {
             echo $oPn->showContent();
         }
-
     } else {
        // Autorizacion
         if($pACL->isUserAuthorizedById($idUser, "access", $oPn->currSubMenu) or $developerMode==true) {
             $smarty->assign("CONTENT",   $oPn->showContent());
         }
-                
-        $smarty->display("_common/index.tpl");
 
+        $smarty->display("_common/index.tpl");
     }
 
 } else {

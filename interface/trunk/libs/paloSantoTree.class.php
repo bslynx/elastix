@@ -37,7 +37,7 @@ class paloTree {
 
     var $RUTA_IMG;
     var $URLBase;
-    
+
     var $arrNodos;
 
     function paloTree($arrNodos)
@@ -52,7 +52,7 @@ class paloTree {
            pero es util y valido en ciertos enfoques. El modoJerarquia entonces es 1 (uno) para el metodo 1 y
            0 para el metodo 2. */
 
-        $this->URLBase=$URLBase;
+        $this->URLBase='';
         $this->arrNodos = $arrNodos;
     }
 
