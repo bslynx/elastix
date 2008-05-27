@@ -145,18 +145,26 @@ class paloFax {
         $errMsg="";
         $sqliteError='';
         $arrReturn=array();
-        if ($db = sqlite3_open($this->rutaDB)) {
-            $query  = "SELECT id, name, extension, secret, clid_name, clid_number, dev_id, date_creation, email, country_code, area_code FROM fax";
-            $result = sqlite3_query($db, $query);
+        //if ($db = sqlite3_open($this->rutaDB)) {
+        $query  = "SELECT id, name, extension, secret, clid_name, clid_number, dev_id, date_creation, email, country_code, area_code FROM fax";
+        $arrReturn = $this->_db->fetchTable($query, true);
+        if($arrReturn==FALSE)
+        {
+            $this->errMsg = $this->_db->errMsg;
+            return array();
+        }
+            //$result = sqlite3_query($db, $query);
+/*
             if(isset($result))
             {
                 while ($row = sqlite3_fetch_array($result)) {
                     $arrReturn[]=$row;
                 }
             }
-        } else {
+*/
+        /*} else {
             $errMsg = $sqliteError;
-        }
+        }*/
 
         return $arrReturn;
     }
@@ -168,13 +176,20 @@ class paloFax {
         // El id es mayor a cero?
         if($id<=0) return false;
 
-        if ($db = sqlite3_open($this->rutaDB)) {
-            $query  = "SELECT id, name, extension, secret, clid_name, clid_number, dev_id, date_creation, email, port, country_code, area_code FROM fax WHERE id=$id";
-            $result = @sqlite3_query($db, $query);
+        //if ($db = sqlite3_open($this->rutaDB)) {
+        $query  = "SELECT id, name, extension, secret, clid_name, clid_number, dev_id, date_creation, email, port, country_code, area_code FROM fax WHERE id=$id";
+        $arrReturn = $this->_db->getFirstRowQuery($query, true);
+        if($arrReturn==FALSE)
+        {
+            $this->errMsg = $this->_db->errMsg;
+            return array();
+        }
+        return $arrReturn;
+        /*    $result = @sqlite3_query($db, $query);
             return @sqlite3_fetch_array($result);
         } else {
             $errMsg = $sqliteError;
-        }
+        }*/
     }
    
     function deleteFaxExtensionById($idFax)
@@ -640,29 +655,27 @@ class paloFax {
  
     function _editFaxInDB($idFax, $name, $extension, $secret, $email, $devId, $clidname, $clidnumber, $port,$countryCode, $areaCode) {
         $errMsg="";
-        if ($db = sqlite3_open($this->rutaDB)) {
-            $query  = "UPDATE fax set 
-                            name='$name', 
-                            extension='$extension',
-                            secret='$secret',
-                            clid_name='$clidname',
-                            clid_number='$clidnumber',
-                            dev_id='$devId',
-                            email='$email',
-                            port='$port',
-                            area_code='$areaCode',
-                            country_code='$countryCode'
-                        where id=$idFax;";
-            $bExito = $this->_db->genQuery($query);
-            if (!$bExito) {
-                $this->errMsg = $this->_db->errMsg;
-                return false;
-            }
-            
-            
-        } else {
-            $errMsg = $sqliteError;
+        //if ($db = sqlite3_open($this->rutaDB)) {
+        $query  = "UPDATE fax set
+                        name='$name',
+                        extension='$extension',
+                        secret='$secret',
+                        clid_name='$clidname',
+                        clid_number='$clidnumber',
+                        dev_id='$devId',
+                        email='$email',
+                        port='$port',
+                        area_code='$areaCode',
+                        country_code='$countryCode'
+                    where id=$idFax;";
+        $bExito = $this->_db->genQuery($query);
+        if (!$bExito) {
+            $this->errMsg = $this->_db->errMsg;
+            return false;
         }
+        /*} else {
+            $errMsg = $sqliteError;
+        }*/
     }
 
     function obtener_faxes($company_name,$company_fax,$fecha_fax,$offset,$cantidad)
@@ -670,20 +683,27 @@ class paloFax {
         $errMsg="";
         $sqliteError='';
         $arrReturn=array();
-        if ($db = sqlite3_open($this->rutaDB)) {
-            $query  = "
-                    SELECT 
-                        r.pdf_file,r.modemdev,r.commID,r.errormsg,r.company_name,r.company_fax,r.fax_destiny_id,r.date, f.name destiny_name,f.extension destiny_fax
-                    FROM 
-                        info_fax_recvq r inner join fax f on f.id = r.fax_destiny_id
-                    where 
-                        company_name like '%$company_name%' and company_fax like '%$company_fax%' and date like '%$fecha_fax%'
-                    order by 
-                        r.id desc 
-                    limit 
-                        $cantidad offset $offset
-                    ";
+        //if ($db = sqlite3_open($this->rutaDB)) {
+        $query  = "
+                SELECT
+                    r.pdf_file,r.modemdev,r.commID,r.errormsg,r.company_name,r.company_fax,r.fax_destiny_id,r.date, f.name destiny_name,f.extension destiny_fax
+                FROM
+                    info_fax_recvq r inner join fax f on f.id = r.fax_destiny_id
+                where
+                    company_name like '%$company_name%' and company_fax like '%$company_fax%' and date like '%$fecha_fax%'
+                order by
+                    r.id desc
+                limit
+                    $cantidad offset $offset
+                ";
 
+        $arrReturn = $this->_db->fetchTable($query, true);
+        if($arrReturn==FALSE)
+        {
+            $this->errMsg = $this->_db->errMsg;
+            return array();
+        }
+/*
             $result = @sqlite3_query($db, $query);
             if(count($result)>0){
                 while ($row = @sqlite3_fetch_array($result)) {
@@ -694,7 +714,7 @@ class paloFax {
         else 
         {
             $errMsg = $sqliteError;
-         }
+         }*/
 
         return $arrReturn;
     }
@@ -704,13 +724,20 @@ class paloFax {
         $errMsg="";
         $sqliteError='';
         $arrReturn=-1;
-        if ($db = sqlite3_open($this->rutaDB)) {
-            $query  = "
-                    select count(*) cantidad from (SELECT pdf_file,modemdev,commID,errormsg,company_name,company_fax,fax_destiny_id,date 
-                    FROM info_fax_recvq
-                    where company_name like '%$company_name%' and company_fax like '%$company_fax%' and date like '%$fecha_fax%')
-                      ";
+        //if ($db = sqlite3_open($this->rutaDB)) {
+        $query  = "
+                select count(*) cantidad from (SELECT pdf_file,modemdev,commID,errormsg,company_name,company_fax,fax_destiny_id,date
+                FROM info_fax_recvq
+                where company_name like '%$company_name%' and company_fax like '%$company_fax%' and date like '%$fecha_fax%')
+                    ";
 
+        $arrReturn = $this->_db->getFirstRowQuery($query, true);
+        if($arrReturn==FALSE)
+        {
+            $this->errMsg = $this->_db->errMsg;
+            return array();
+        }
+/*
             $result = @sqlite3_query($db, $query);
             if(count($result)>0){
                 while ($row = @sqlite3_fetch_array($result)) {
@@ -722,8 +749,8 @@ class paloFax {
         {
             $errMsg = $sqliteError;
         }
-
-        return $arrReturn;
+*/
+        return $arrReturn['cantidad'];
     }
 
     function getConfigurationSendingFaxMail()
@@ -731,14 +758,21 @@ class paloFax {
         $errMsg="";
         $sqliteError='';
         $arrReturn=-1;
-        if ($db = sqlite3_open($this->rutaDB)) {
-            $query  = " select 
-                            remite,remitente,subject,content
-                        from 
-                            configuration_fax_mail
-                        where 
-                            id=1";
+        //if ($db = sqlite3_open($this->rutaDB)) {
+        $query  = " select
+                        remite,remitente,subject,content
+                    from
+                        configuration_fax_mail
+                    where
+                        id=1";
 
+        $arrReturn = $this->_db->getFirstRowQuery($query, true);
+        if($arrReturn==FALSE)
+        {
+            $this->errMsg = $this->_db->errMsg;
+            return array();
+        }
+/*
             $result = @sqlite3_query($db, $query);
             if(count($result)>0){
                 while ($row = @sqlite3_fetch_array($result)) {
@@ -750,37 +784,37 @@ class paloFax {
         {
             $errMsg = $sqliteError;
         }
-
+*/
         return $arrReturn;
     }
 
     function setConfigurationSendingFaxMail($remite, $remitente, $subject, $content) {
         $errMsg="";
         $bExito = false;
-        if ($db = sqlite3_open($this->rutaDB)) {
-            $query  = " update 
-                            configuration_fax_mail 
-                        set 
-                            remite='$remite', 
-                            remitente='$remitente',
-                            subject='$subject',
-                            content='$content'
-                       where 
-                            id=1;";
-            $bExito = $this->_db->genQuery($query);
-            if (!$bExito) {
-                $this->errMsg = $this->_db->errMsg;
-            }
-            return $bExito; 
-        } 
-        else {
+        //if ($db = sqlite3_open($this->rutaDB)) {
+        $query  = " update
+                        configuration_fax_mail
+                    set
+                        remite='$remite',
+                        remitente='$remitente',
+                        subject='$subject',
+                        content='$content'
+                    where
+                        id=1;";
+
+        $bExito = $this->_db->genQuery($query);
+        if (!$bExito) {
             $this->errMsg = $this->_db->errMsg;
         }
+        return $bExito; 
+/*        } 
+        else {
+            $this->errMsg = $this->_db->errMsg;
+        }*/
         return $bExito;
     }
 
     function deleteInfoFaxFromDB($pdfFileInfoFax) {
-        
         $query  = "DELETE FROM info_fax_recvq WHERE pdf_file='$pdfFileInfoFax'";
         $bExito = $this->_db->genQuery($query);
         if (!$bExito) {
