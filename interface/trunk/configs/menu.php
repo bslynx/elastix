@@ -314,6 +314,22 @@ $arrMenu = array(
                                             "IdParent"  =>  "extras",
                                             "HasChild"  =>  false),
 
+        "calendar"              =>  array(  "Name"      =>  "Calendar",
+                                            "Type"      =>  "module",
+                                            "IdParent"  =>  "extras",
+                                            "HasChild"  =>  false),
+
+        "user_inf"              =>  array(  "Name"      =>  "User Information",
+                                            "Type"      =>  "module",
+                                            "IdParent"  =>  "extras",
+                                            "HasChild"  =>  false),
+
+        "address_book"          =>  array(  "Name"      =>  "Address Book",
+                                            "Type"      =>  "module",
+                                            "IdParent"  =>  "extras",
+                                            "HasChild"  =>  false),
+
+
 
 
         "campaign_out"          =>  array(  "Name"      =>  "Outgoing Campaigns",
@@ -386,6 +402,18 @@ $arrMenu = array(
         "graphic_calls"         =>  array(  "Name"      =>  "Graphic Calls per Hour",
                                             "Type"      =>  "module",
                                             "IdParent"  =>  "reports_ingoing_call",
+                                            "HasChild"  =>  false),
+        "forms"                 =>  array(  "Name"      =>  "Forms",
+                                            "Type"      =>  "module",
+                                            "IdParent"  =>  "call_center",
+                                            "HasChild"  =>  true),
+        "form_designer"         =>  array(  "Name"      =>  "Form Designer",
+                                            "Type"      =>  "module",
+                                            "IdParent"  =>  "forms",
+                                            "HasChild"  =>  false),
+        "form_list"             =>  array(  "Name"      =>  "Form List",
+                                            "Type"      =>  "module",
+                                            "IdParent"  =>  "forms",
                                             "HasChild"  =>  false),
         );
 ?>
