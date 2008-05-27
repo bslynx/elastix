@@ -29,7 +29,6 @@
 
 include_once("../libs/misc.lib.php");
 include_once "../configs/default.conf.php";
-//include_once "../configs/menu.php";
 
 session_name("elastixSession");
 session_start();

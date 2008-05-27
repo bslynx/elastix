@@ -32,14 +32,16 @@ include_once("../libs/paloSantoTree.class.php");
 include_once("../libs/paloSantoDB.class.php");
 include_once("../libs/paloSantoACL.class.php");
 include_once("../libs/misc.lib.php");
+include_once("../configs/default.conf.php");
 
 session_name("elastixSession");
 session_start();
 
-dl('sqlite3.so');
-$pDB = new paloDB("sqlite3:////var/www/db/acl.db");
+global $arrConf;
 
-$pDBMenu = new paloDB("sqlite3:////var/www/db/menu.db");
+$pDB = new paloDB($arrConf['elastix_dsn']['acl']);
+
+$pDBMenu = new paloDB($arrConf['elastix_dsn']['menu']);
 $arrMenu = cargar_menu($pDBMenu) ;
 
 if(!empty($pDB->errMsg)) {
@@ -47,12 +49,6 @@ if(!empty($pDB->errMsg)) {
 }
 
 $pACL = new paloACL($pDB);
-
-
-/*
-echo "Elastix User: " . $_SESSION['elastix_user'] . "<br>";
-echo "Elastix Pass: " . $_SESSION['elastix_pass'] . "<br>";
-*/
 
 $arrTmp = array();
 
@@ -111,7 +107,9 @@ foreach($arrMenuFiltered as $id => $menu) {
 
 $oPt = new paloTree($arrNodos);
 
-$oPt->actualizarNodosAbiertos($_GET['id_nodo'], unserialize(urldecode($_GET['nodeserial'])));
+$nodeserial = isset($_GET['nodeserial'])?$_GET['nodeserial']:'';
+
+$oPt->actualizarNodosAbiertos($_GET['id_nodo'], unserialize(urldecode($nodeserial)));
 
 // Just to make sure that the parent node is open
 $idParent=$oPt->obtenerParent($_GET['id_nodo']);
