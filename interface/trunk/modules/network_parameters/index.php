@@ -33,7 +33,7 @@ function _moduleContent(&$smarty, $module_name)
     include_once "libs/paloSantoNetwork.class.php";
     include_once "libs/paloSantoGrid.class.php";
     //- SOME DEFINITIONS
-//include module files
+    //include module files
     include_once "modules/$module_name/configs/default.conf.php";
     global $arrConf;
     global $arrLang;
@@ -41,7 +41,7 @@ function _moduleContent(&$smarty, $module_name)
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
     $templates_dir=(isset($arrConfig['templates_dir']))?$arrConfig['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
-    
+
     $arrFormNetwork  = array("host"         => array("LABEL"                  => "{$arrLang['Host']} (Ex. host.example.com)",
                                                      "REQUIRED"               => "yes",
                                                      "INPUT_TYPE"             => "TEXT",
@@ -121,7 +121,6 @@ function _moduleContent(&$smarty, $module_name)
         $oForm = new paloForm($smarty, $arrFormNetwork);
 
         if($oForm->validateForm($_POST)) {
-          
             $arrNetConf['host'] = $_POST['host']; 
             $arrNetConf['dns_ip_1'] = $_POST['dns1'];
             $arrNetConf['dns_ip_2'] = $_POST['dns2'];
@@ -184,21 +183,18 @@ function _moduleContent(&$smarty, $module_name)
             $smarty->assign("CONFIRM_EDIT", $arrLang["Are you sure you want to edit network parameters?"]);
             $strReturn=$oForm->fetchForm("$local_templates_dir/network_edit_interfase.tpl", "{$arrLang['Edit Interface']} \"Ethernet ??\"", $_POST);
         }
-
     } else if(isset($_GET['action']) && $_GET['action'] == "editInterfase") {
 
         // TODO: Revisar si el $_GET['id'] contiene un id valido
-
         $arrEths = $pNet->obtener_interfases_red_fisicas();
-
         $arrEth = $arrEths[$_GET['id']];
-       
+
         if(is_array($arrEth)) {
             $arrInterfaseData['ip'] = $arrEth['Inet Addr'];
             $arrInterfaseData['mask'] = $arrEth['Mask'];
             $arrInterfaseData['type'] = $arrEth['Type'];
             $arrInterfaseData['dev_id'] = $_GET['id'];
-        } 
+        }
 
         $oForm = new paloForm($smarty, $arrFormInterfase);
         $smarty->assign("CANCEL", $arrLang["Cancel"]);
@@ -208,29 +204,23 @@ function _moduleContent(&$smarty, $module_name)
         $smarty->assign("CONFIRM_EDIT", $arrLang["Are you sure you want to edit network parameters?"]);
 
         $strReturn = $oForm->fetchForm("$local_templates_dir/network_edit_interfase.tpl", "{$arrLang['Edit Interface']} \"" . $arrEth['Name'] . "\"", $arrInterfaseData);
-
     } else {
-
         // SECCION NETWORK PARAMETERS
-    
         $arrNetwork = $pNet->obtener_configuracion_red();
-    
+
         if(is_array($arrNetwork)) {
-            $arrNetworkData['dns1'] = $arrNetwork['dns'][0];
+            $arrNetworkData['dns1'] = isset($arrNetwork['dns'][0])?$arrNetwork['dns'][0]:'';
             $arrNetworkData['dns2'] = isset($arrNetwork['dns'][1])?$arrNetwork['dns'][1]:'';
-            $arrNetworkData['host'] = $arrNetwork['host'];
-            $arrNetworkData['gateway'] = $arrNetwork['gateway'];
+            $arrNetworkData['host'] = isset($arrNetwork['host'])?$arrNetwork['host']:'';
+            $arrNetworkData['gateway'] = isset($arrNetwork['gateway'])?$arrNetwork['gateway']:'';
         }
-    
+
         $oForm = new paloForm($smarty, $arrFormNetwork);
         $oForm->setViewMode();
-    
+
         // SECCION ETHERNET LIST
-    
         $arrData = array();
-      
         $arrEths = $pNet->obtener_interfases_red_fisicas();
-      
         $end = count($arrEths);
 
         foreach($arrEths as $idEth=>$arrEth) {
@@ -286,7 +276,7 @@ function modificar_archivos_mail(&$error){
     if(ereg("[^\.]*\.(.*)$",$_POST['host'],$matches))
        $dominio=$matches[1];
 
-//Luego se modifica el archivo main.cf
+    //Luego se modifica el archivo main.cf
     $conf_file=new paloConfig("/etc/postfix","main.cf"," = ","[[:space:]]*=[[:space:]]*");
     $contenido=$conf_file->leer_configuracion();
     $arr_reemplazos=array('mydomain'=>$dominio,
@@ -301,13 +291,11 @@ function modificar_archivos_mail(&$error){
             if(is_array($output) && isset($output[1])){
                 $linea=$output[1];
                 if(!eregi("OK",$linea)){
-                    $error.="$arrLang[Error]: $linea";                     
+                    $error.="$arrLang[Error]: $linea";
                     $bValido*=FALSE;
                 }
             }
-    }  
-
-
+    }
 
     return $bValido;
 
@@ -324,7 +312,5 @@ function modificar_archivo_hosts(){
     $bValido=$conf_file->escribir_configuracion($arr_reemplazos);
 
     return $bValido;
-
 }
-
 ?>
