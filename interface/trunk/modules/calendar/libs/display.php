@@ -96,10 +96,10 @@ function display_month($month, $year)
 */
     $month_year = $html = tag('div', attributes('class="month_div"'));
 
-    $last_year  = "<img border='0' src='crm/themes/Sugar/images/start.gif' />";
-    $last_month = "<img border='0' src='crm/themes/Sugar/images/previous.gif' />";
-    $next_month = "<img border='0' src='crm/themes/Sugar/images/next.gif' />";
-    $next_year  = "<img border='0' src='crm/themes/Sugar/images/end.gif' />";
+    $last_year  = "<img border='0' src='images/start.gif' />";
+    $last_month = "<img border='0' src='images/previous.gif' />";
+    $next_month = "<img border='0' src='images/next.gif' />";
+    $next_year  = "<img border='0' src='images/end.gif' />";
 
     menu_item_append($html, $last_year,  'display', $year - 1, $month);
     menu_item_append($html, $last_month, 'display', $year, $month - 1);
