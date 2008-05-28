@@ -173,5 +173,4 @@ $search_lang = array(
             'Sort By' => $arrLang['Sort By'],
             'Order' => $arrLang['Order'],
             'Validation Error' => $arrLang['Validation Error'],
-            'No events matched your search criteria.' => $arrLang['No events matched your search criteria.'],
             );

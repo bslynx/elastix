@@ -118,7 +118,7 @@ function search_results()
 	}
 
 	if(sizeof($tags) == 0) {
-		$html = tag('div', tag('strong', $search_lang['No events matched your search criteria.']));
+		$html = tag('div', tag('strong', $search_lang['No events matched your search criteria']));
 	} else {
                 $html = tag('table',
                                 attributes('class="phpc-main"'),
