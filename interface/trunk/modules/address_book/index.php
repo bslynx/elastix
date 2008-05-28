@@ -264,7 +264,7 @@ function save_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $ar
         $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
         $smarty->assign("SAVE", $arrLang["Save"]);
         $smarty->assign("CANCEL", $arrLang["Cancel"]);
-        $smarty->assign("TITLE", $arrLang["Adress Book"]);
+        $smarty->assign("TITLE", $arrLang["Address Book"]);
 
         $htmlForm = $oForm->fetchForm("$local_templates_dir/new_adress_book.tpl", $arrLang, $_POST);
 
@@ -330,7 +330,7 @@ function view_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $ar
     $smarty->assign("EDIT", $arrLang["Edit"]);
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
     $smarty->assign("CANCEL", $arrLang["Cancel"]);
-    $smarty->assign("TITLE", $arrLang["Adress Book"]);
+    $smarty->assign("TITLE", $arrLang["Address Book"]);
     $smarty->assign("FirstName",$arrLang["First Name"]);
     $smarty->assign("LastName",$arrLang["Last Name"]);
     $smarty->assign("PhoneNumber",$arrLang["Phone Number"]);
