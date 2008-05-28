@@ -29,15 +29,15 @@
                 <td class="required" align="left">{$last_name.INPUT}</td>
             </tr>
             <tr>
-                <td align="left"><b>{$telefono.LABEL}: </b></td>
+                <td align="left"><b>{$telefono.LABEL}: <span  class="required">*</span></b></td>
                 <td align="left">{$telefono.INPUT}</td>
             </tr>
             <tr>
-                <td align="left"><b>{$extension.LABEL}: <span  class="required">*</span></b></td>
+                <td align="left"><b>{$extension.LABEL}: </b></td>
                 <td align="left">{$extension.INPUT}</td>
             </tr>
             <tr>
-                <td align="left"><b>{$email.LABEL}: <span  class="required">*</span></b></td>
+                <td align="left"><b>{$email.LABEL}: </b></td>
                 <td align="left">{$email.INPUT}</td>
             </tr>
         </table>
