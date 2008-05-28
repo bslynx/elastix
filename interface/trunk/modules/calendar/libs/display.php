@@ -111,7 +111,8 @@ function display_month($month, $year)
     {
         if($year_n==$year)
             $select_year .= "<option value='$year_n' selected='selected'>$year_n</option>";
-        $select_year .= "<option value='$year_n'>$year_n</option>";
+        else
+            $select_year .= "<option value='$year_n'>$year_n</option>";
     }
     $select_year .= "</select>";
 
@@ -121,7 +122,8 @@ function display_month($month, $year)
     {
         if($i==$month)
             $select_month .= "<option value='$i' selected='selected'>$month_n</option>";
-        $select_month .= "<option value='$i'>$month_n</option>";
+        else
+            $select_month .= "<option value='$i'>$month_n</option>";
         $i++;
     }
     $select_month .= "</select>";

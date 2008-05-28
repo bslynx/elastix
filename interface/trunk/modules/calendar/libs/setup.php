@@ -94,6 +94,24 @@ if (!isset($vars['month'])) {
     $month = date('n');
 } else {
     $month = $vars['month'];
+    if($month < 1)
+    {
+        if($vars['year'] == $min_year)
+        {
+            $smarty->assign("mb_title", $general["Invalid action"]);
+            $smarty->assign("mb_message", $general['That year is too far in the past'].": {$vars['year']}");
+            $month = $vars['month'] = 1;
+        }
+    }
+    else if($month > 12)
+    {
+        if($vars['year'] == $max_year)
+        {
+            $smarty->assign("mb_title", $general["Invalid action"]);
+            $smarty->assign("mb_message", $general['That year is too far in the future'].": {$vars['year']}");
+            $month = $vars['month'] = 12;
+        }
+    }
 }
 
 if(!isset($vars['year'])) {
@@ -103,7 +121,7 @@ if(!isset($vars['year'])) {
             $smarty->assign("mb_title", $general["Invalid action"]);
             $smarty->assign("mb_message", $general['That year is too far in the future'].": {$vars['year']}");
             $vars['year'] = $max_year;
-        } elseif($vars['year'] < $min_year) {
+        } else if($vars['year'] < $min_year) {
             $smarty->assign("mb_title", $general["Invalid action"]);
             $smarty->assign("mb_message", $general['That year is too far in the past'].": {$vars['year']}");
             $vars['year'] = $min_year;

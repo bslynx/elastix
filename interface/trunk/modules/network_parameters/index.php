@@ -103,10 +103,10 @@ function _moduleContent(&$smarty, $module_name)
         $arrNetwork = $pNet->obtener_configuracion_red();
 
         if(is_array($arrNetwork)) {
-            $arrNetworkData['dns1'] = $arrNetwork['dns'][0];
+            $arrNetworkData['dns1'] = isset($arrNetwork['dns'][0])?$arrNetwork['dns'][0]:'';
             $arrNetworkData['dns2'] = isset($arrNetwork['dns'][1])?$arrNetwork['dns'][1]:'';
-            $arrNetworkData['host'] = $arrNetwork['host'];
-            $arrNetworkData['gateway'] = $arrNetwork['gateway'];
+            $arrNetworkData['host'] = isset($arrNetwork['host'])?$arrNetwork['host']:'';
+            $arrNetworkData['gateway'] = isset($arrNetwork['gateway'])?$arrNetwork['gateway']:'';
         }
 
         $oForm = new paloForm($smarty, $arrFormNetwork);
