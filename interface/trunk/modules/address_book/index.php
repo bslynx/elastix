@@ -51,7 +51,6 @@ function _moduleContent(&$smarty, $module_name)
 
     $action = getAction();
     $content = "";
-
     switch($action)
     {
         case "new":
@@ -124,12 +123,14 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
                                                     "INPUT_TYPE"             => "TEXT",
                                                     "INPUT_EXTRA_PARAM"      => "",
                                                     "VALIDATION_TYPE"        => "text",
-                                                    "VALIDATION_EXTRA_PARAM" => ""),
+                                                    "VALIDATION_EXTRA_PARAM" => "",
+                                                    "INPUT_EXTRA_PARAM"      => array('onKeyPress' => 'handleEnter(this, event)')),
                                 );
 
     $oFilterForm = new paloForm($smarty, $arrFormElements);
     $smarty->assign("SHOW", $arrLang["Show"]);
     $smarty->assign("NEW_adress_book", $arrLang["New Contact"]);
+    $smarty->assign("module_name", $module_name);
 
     $field   = NULL;
     $pattern = NULL;
@@ -138,7 +139,6 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
     $field      = $_POST['field'];
     $pattern    = $_POST['pattern'];
     }
-    
 
     $startDate = $endDate = date("Y-m-d H:i:s");
 
@@ -199,8 +199,7 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
                     );
 
     $oGrid->showFilter(trim($htmlFilter));
-    $contenidoModulo = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$oGrid->fetchGrid($arrGrid, $arrData,$arrLang)."</form>";
-
+    $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
     return $contenidoModulo;
 }
 
