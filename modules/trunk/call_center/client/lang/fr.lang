@@ -3,15 +3,15 @@
 $lang=array(
 
 "client"=>"client",
-"fileCRM"=>"fileCRM",
-"Select file upload"=>"Select file to Upload",
-"Result"=>"Answer",
-"Load File"=>"Upload File",
-"Format File"=>"Format File",
-"Upload"=>"Upload",
-"File"=>"File",
-"Error"=>"Error",
-"Error when is loading file"=>"Error when is loading file",
+"fileCRM"=>"fichier CRM",
+"Select file upload"=>"S&eacute;lectionnez le fichier &agrave; charger",
+"Result"=>"R&eacute;sultat",
+"Load File"=>"Charger Fichier",
+"Format File"=>"Format Fichier",
+"Upload"=>"Charger",
+"File"=>"Fichier",
+"Error"=>"Erreur",
+"Error when is loading file"=>"Erreur en chargeant le fichier",
 
 );
 ?>

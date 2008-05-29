@@ -1,22 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module>
-    <menulist menuid="call_center" tag="Call Center" desc="Call Center">
-        <menuitem menuid="campaign_out" tag="Outgoing Campaigns" desc="Outgoing Campaigns"></menuitem>
-        <menuitem menuid="agent_console" tag="Agent Console" desc="Agent Console"></menuitem>
-        <menuitem menuid="form_designer" tag="Form Designer" desc="Form Designer"></menuitem>
-        <menuitem menuid="agents" tag="Agents" desc="Agents"></menuitem>
-        <menuitem menuid="break_administrator" tag="Break Administrator" desc="Break Administrator"></menuitem>
-        <menuitem menuid="ingoing_calls" tag="Ingoing Calls" desc="Ingoing Calls"></menuitem>
-        <menuitem menuid="client" tag="Client" desc="Client"></menuitem>
-        <menuitem menuid="form_list" tag="Form List" desc="Form List"></menuitem>
-        <menuitem menuid="reports_break" tag="Reports Break" desc="Reports Break"></menuitem>
-        <menuitem menuid="calls_detail" tag="Calls Detail" desc="Calls Detail"></menuitem>
-        <menuitem menuid="calls_per_hour" tag="Calls per hour" desc="Calls per hour"></menuitem>
-        <menuitem menuid="ingoings_calls_success" tag="Ingoing Calls Success" desc="Ingoing Calls Success"></menuitem>
-        <menuitem menuid="calls_per_agent" tag="Calls per Agent" desc="Calls per Agent"></menuitem>
-        <menuitem menuid="hold_time" tag="Hold Time" desc="Hold Time"></menuitem>
-        <menuitem menuid="login_logout" tag="Login Logout" desc="Login Logout"></menuitem>
-        <menuitem menuid="graphic_calls" tag="Graphic Calls per hour" desc="Graphic Calls per hour"></menuitem>
-        <menuitem menuid="" tag="" desc=""></menuitem>
-    </menulist>
+  <menulist>
+    <menuitem menuid="call_center" desc="Call Center" parent="" module="no"></menuitem>
+    <menuitem menuid="campaign_out" desc="Outgoing Campaigns" parent="call_center" module="yes"></menuitem>
+    <menuitem menuid="agent_console" desc="Agent Console" parent="call_center" module="yes"></menuitem>
+    <menuitem menuid="forms" desc="Forms" parent="call_center" module="no"></menuitem>
+    <menuitem menuid="form_designer" desc="Form Designer" parent="forms" module="yes"></menuitem>
+    <menuitem menuid="form_list" desc="Form List" parent="forms" module="yes"></menuitem>
+    <menuitem menuid="reports_ingoing_call" desc="Reports" parent="call_center" module="no"></menuitem>
+    <menuitem menuid="reports_break" desc="Reports Break" parent="reports_ingoing_call" module="yes"></menuitem>
+    <menuitem menuid="calls_detail" desc="Calls Detail" parent="reports_ingoing_call" module="yes"></menuitem>
+    <menuitem menuid="calls_per_hour" desc="Calls per hour" parent="reports_ingoing_call" module="yes"></menuitem>
+    <menuitem menuid="calls_per_agent" desc="Calls per Agent" parent="reports_ingoing_call" module="yes"></menuitem>
+    <menuitem menuid="hold_time" desc="Hold Time" parent="reports_ingoing_call" module="yes"></menuitem>
+    <menuitem menuid="login_logout" desc="Login Logout" parent="reports_ingoing_call" module="yes"></menuitem>
+    <menuitem menuid="ingoings_calls_success" desc="Ingoing Calls Success" parent="reports_ingoing_call" module="yes"></menuitem>
+    <menuitem menuid="graphic_calls" desc="Graphic Calls per hour" parent="reports_ingoing_call" module="yes"></menuitem>
+    <menuitem menuid="agents" desc="Agents" parent="call_center" module="yes"></menuitem>
+    <menuitem menuid="break_administrator" desc="Break Administrator" parent="call_center" module="yes"></menuitem>
+    <menuitem menuid="ingoing_calls" desc="Ingoing Calls" parent="call_center" module="yes"></menuitem>
+    <menuitem menuid="client" desc="Client" parent="call_center" module="yes"></menuitem>
+  </menulist>
 </module>

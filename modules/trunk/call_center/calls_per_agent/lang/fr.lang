@@ -1,26 +1,27 @@
 <?php
 global $arrLan;
 $arrLan = array(
-    "Calls per Agent"  => "Calls per Agent",
-    "Start Date"    => "Start Date",
-    "End Date"      => "End Date",
-    "Query"         => "Query",
+    "Calls per Agent"  => "Appels par Agent",
+    "Start Date"    => "Date de D&eacute;but",
+    "End Date"      => "Date de Fin",
+    "Query"         => "Filtrer",
     "No.Agent"      => "No. Agent",
     "Agent"         => "Agent",
-    "Queue"         => "Queue",
+    "Queue"         => "File",
     "Type"          => "Type",
-    "Column"        => "Column",
-    "Text"          => "Text",
-    "Error"         => "Error",
-    "Transfer"      => "Transfer",
-    "Duration"      => "Duration",
-    "Average"       => "Average",
-    "Call longest"  => "Call longest",
-    "Calls answered" => "Calls answered",
-    "Error when connecting to database"    => "Error when connecting to database",
-    
-    "Debe ingresar una fecha"   => "Debe ingresar una fecha",
-    "Debe ingresar una fecha valida"    => "Debe ingresar una fecha valida",
+    "Column"        => "Colonne",
+    "Text"          => "Texte",
+    "Error"         => "Erreur",
+    "Transfer"      => "Transfert",
+    "Duration"      => "Dur&eacute;e",
+    "Average"       => "Moyenne",
+    "Call longest"  => "Appel le plus long",
+    "Calls answered" => "Appels r&eacute;pondus",
+    "Error when connecting to database"    => "Erreur de connexion &agrave; la base de donn&eacute;es",
+    "Debe ingresar una fecha"   => "Vous devez entrer une date",
+    "Debe ingresar una fecha valida"    => "Vous devez entrer une date valide",
+
+    "Total"         => "Total",
 );
 
 ?>

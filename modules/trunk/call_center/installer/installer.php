@@ -40,24 +40,14 @@ $datos_conexion['password'] = "asterisk";
 $datos_conexion['locate'] = "";
 $oInstaller = new Installer();
 
-if (file_exists("$tmpDir/installer/call_center.sql") && file_exists("$tmpDir/installer/sqliteMenu.sh"))
+if (file_exists("$tmpDir/installer/call_center.sql"))
 {
     //STEP 1: Create database call_center
     $return=0;
     $return=$oInstaller->createNewDatabaseMySQL($path_script_db,"call_center",$datos_conexion);
     $return=($flagStatus)?1:0;
 
-    //STEP 2: Reorganization menus.
-    if($return == 0){ 
-        exec("sudo -u root chmod 755 $tmpDir/installer/sqliteMenu.sh",$arrConsole,$flagStatus);
-        if($flagStatus == 0){ 
-            exec(". $tmpDir/installer/sqliteMenu.sh",$arrConsole,$flagStatus);
-            $return=($flagStatus)?2:0;
-        }
-        else $return = 2;
-    }
-
-    //STEP 3: Dialer process
+    //STEP 2: Dialer process
     exec("sudo -u root chmod 777 /opt/",$arrConsole,$flagStatus);
     exec("mkdir /opt/elastix/",$arrConsole,$flagStatus);
     exec("mv $tmpDir/dialer_process/dialer/ /opt/elastix/",$arrConsole,$flagStatus);
@@ -66,7 +56,7 @@ if (file_exists("$tmpDir/installer/call_center.sql") && file_exists("$tmpDir/ins
     exec("sudo -u root chmod 777 /etc/rc.d/init.d/",$arrConsole,$flagStatus);
     exec("mv $tmpDir/dialer_process/elastixdialer /etc/rc.d/init.d/",$arrConsole,$flagStatus);
     exec("sudo -u root chmod 755 /etc/rc.d/init.d/",$arrConsole,$flagStatus);
-    $return = ($flagStatus)?3:0;
+    $return = ($flagStatus)?2:0;
 }
 
 exit($return);

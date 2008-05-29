@@ -2,10 +2,10 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.5                                                  |
+  | Elastix version 1.0-17                                               |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
-  | Copyright (c) 2006 Palosanto Solutions S. A.                         |
+  | Copyright (c) 2008 Palosanto Solutions S. A.                         |
   +----------------------------------------------------------------------+
   | Cdla. Nueva Kennedy Calle E 222 y 9na. Este                          |
   | Telfs. 2283-268, 2294-440, 2284-356                                  |
@@ -25,89 +25,89 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: es.lang,v 1.2 2007/08/09 00:31:28 jmartinez Exp $ */
+  $Id: fr.lang,v 1.3 2008/05/20 00:31:28 jmartinez Exp $ */
 global $arrLan;
 $arrLan=array(
-"Agent Console"=>"Agent Console",
-"Hangup"=>"Hangup",
-"Tranfer"=>"Transfer",
-"Call"=>"Call",
+"Agent Console"=>"Console d'Agent",
+"Hangup"=>"Raccrocher",
+"Tranfer"=>"Transferer",
+"Call"=>"Appeler",
 "Script"=>"Script",
-"Form" => "Form",
+"Form" => "Formulaire",
 "Agent" => "Agent",
-"Agent Number" => "Number",
-"Take Break" => "Take Break",
-"Fill the fields" => "Please fill the fields",
-"Break"=>"Break",
-"UnBreak"=>"UnBreak",
-"In Break"=>"In Break",
-"Welcome to Console Agent"=>"Welcome to Console Agent",
-"Please enter your number agent"=>"Please enter your number agent and extension",
-"Number Agent"=>"Number Agent",
-"Enter Agent" => "Enter",
+"Agent Number" => "Num&eacute;ro",
+"Take Break" => "Prendre une Pause",
+"Fill the fields" => "Veuillez renseigner les champs",
+"Break"=>"Pause",
+"UnBreak"=>"Reprendre",
+"In Break"=>"En Pause",
+"Welcome to Console Agent"=>"Bienvenue dans la Console d'Agent",
+"Please enter your number agent"=>"Veuillez entrer votre num&eacute;ro d'agent et votre extension",
+"Number Agent"=>"Agent Num&eacute;ro",
+"Enter Agent" => "Entrer",
 "Extension"=>"Extension",
-"Error when connecting to Asterisk Manager"=>"Error when connecting to Asterisk Manager",
-"Unable to add Agent to queue: No such queue" => "Unable to add Agent to queue: No such queue", //Bruno agrego
-"Error when consulting Agent in Asterisk Manager" => "Error when consulting Agent in Asterisk Manager",
-"Agent isn't in Queue Asterisk"=>"Agent isn't in Queue Asterisk",
-"Unable to pause Agent to queue: No such queue" => "Unable to pause Agent to queue: No such queue",
-"Audit Error" => "Audit Error",
-"Number Agent already connected with extension"=>"Number Agent already connected with extension",
-"Agent Error" => "Agent Error",
-"Audit of break could not be inserted" => "Audit of break could not be inserted",
-"Id of the agent could not be obtained" => "Id of the agent could not be obtained",
-"Number of audit nonassigned" => "Number of audit nonassigned",
-"Error saving client information"=>"Error saving client informations",
-"Information was saved"=>"Information was saved",
-"Call no active"=>"No Active Call",
-"Error when connecting to database Call Center"=>"Error when connecting to database Call Center",
-"Calling"=>"Calling",
-"Forms Nondefined" => "Forms Nondefined", //Bruno agrego
-"Call Number" => "Call Number", //Bruno agrego
-"Name" => "Name",
-"Last Name" => "Last Name",
-"Error when consulting contact information" => "Error when consulting contact information",
-"Phone" => "Phone",
+"Error when connecting to Asterisk Manager"=>"Erreur de connexion au Manager Asterisk",
+"Unable to add Agent to queue: No such queue" => "Impossible d'ajouter un Agent &agrave; la file: Pas de file", //Bruno agrego
+"Error when consulting Agent in Asterisk Manager" => "Erreur en consultant l'Agent dans le Manager Asterisk",
+"Agent isn't in Queue Asterisk"=>"L'Agent n'est pas dans la file Asterisk",
+"Unable to pause Agent to queue: No such queue" => "Impossible de sortir l'Agent de la file: Pas de file",
+"Audit Error" => "Erreur Audit",
+"Number Agent already connected with extension"=>"Num&eacute;ro de l'Agent d&eacute;j&agrave; connect&eacute; avec l'extension",
+"Agent Error" => "Erreur Agent",
+"Audit of break could not be inserted" => "L'Audit de pause n'&agrave; p&ucirc; &ecirc;tre ins&eacute;r&eacute;",
+"Id of the agent could not be obtained" => "L'Id de l'agent n'&agrave; p&ucirc; &ecirc;tre obtenu",
+"Number of audit nonassigned" => "Num&eacute;ro d'audit non assign&eacute;",
+"Error saving client information"=>"Erreur de sauvegarde des informations client",
+"Information was saved"=>"L'information &agrave; &eacute;t&eacute; sauvegard&eacute;e",
+"Call no active"=>"Aucun Appel Actif",
+"Error when connecting to database Call Center"=>"Erreur de connexion &agrave; la base de donn&eacute;es Centre d'Appels",
+"Calling"=>"Appelant",
+"Forms Nondefined" => "Formulaires Non d&eacute;finis", //Bruno agrego
+"Call Number" => "Appel Num&eacute;ro", //Bruno agrego
+"Name" => "Pr&eacute;nom",
+"Last Name" => "Nom",
+"Error when consulting contact information" => "Erreur en consultant les informations de contact",
+"Phone" => "T&eacute;l&eacute;phone",
 "Contacts" => "Contacts",
-"Number Phone not Registered" => "Number Phone not Registered",
-"Contact Basic Information" => "Contact Basic Information",
-"Number Identification" => "Number Identification",
-"Error when updating call information" => "Error when updating call information",
-"Id call or Id contact have format invalid" => "Id call or Id contact have format invalid",
-"Confirm"=>"Confirm",
+"Number Phone not Registered" => "Num&eacute;ro de T&eacute;l&eacute;phone non Enregistr&eacute;",
+"Contact Basic Information" => "Contact Information Basique",
+"Number Identification" => "Num&eacute;ro d'Identification",
+"Error when updating call information" => "Erreur de mise &agrave; jour des informations d'appels",
+"Id call or Id contact have format invalid" => "Id appel ou Id contact ont un format invalide",
+"Confirm"=>"Confirmer",
 "vTigerCRM"=>"vTigerCRM",
-"Add Client"=>"Add Client",
-"View Client"=>"View Client",
-"Call can't be closed, channel is empty"=>"Call can't be closed, channel is empty",
+"Add Client"=>"Ajouter Client",
+"View Client"=>"Voir Client",
+"Call can't be closed, channel is empty"=>"L'appel ne peut pas &ecirc; ferm&eacute;, le canal est vide",
 // para transferencia de llamadas
-"Accept"=>"Accept",
-"error when creating new object"=>"Error when creating new object",
-"No call"=>"No Call",
-"transfer_error"=>"Transfer Error : ",
-"Success"=>"Transfer Call Successfull",
-"Error when connecting to Call Center"=>"Error when connecting to Call Center",
-"Error query"=>"Error in query",
-"select extension"=>"select any extension",
-"consultar_llamada"=>"Transfer ?",
+"Accept"=>"Accepter",
+"error when creating new object"=>"Erreur de cr&eacute;ation d'un nouvel object",
+"No call"=>"Aucun Appel",
+"transfer_error"=>"Erreur de Transfert : ",
+"Success"=>"Transfert d'Appel R&eacute;ussi",
+"Error when connecting to Call Center"=>"Erreur de connexion au Centre d'Appels",
+"Error query"=>"Erreur en question",
+"select extension"=>"s&eacute;lectionnez une extension",
+"consultar_llamada"=>"Consulter Transferts ?",
 // fin transferencia de llamadas
 
 // para poner llamada en hold
-"Hold"=>"Hold",
-"Unhold"=>"Unhold",
+"Hold"=>"Mettre en Attente",
+"Unhold"=>"Reprendre",
 // fin hold llamada
 
 
 // para Marcado de llamadas
-"Marcar"        => "Call",
-"Cancel"        => "Cancel",
-"Marked Error"  => "Marked Error",
-"Success Marked"=> "Call marked successful",
-"Please enter a number to mark" => "Please enter a number to mark",
+"Marcar"        => "Marquer",
+"Cancel"        => "Annuler",
+"Marked Error"  => "Erreur Marqu&eacute;e",
+"Success Marked"=> "Appel marqu&eacute;v correctement",
+"Please enter a number to mark" => "Veuillez entrer un num&eacute;ro &agrave; marquer",
 // fin de Envio de llamadas
 
 "vtigercrm"=>"vTiger CRM",
 
-"Agent disconnected"=>"Agent disconnected"
+"Agent disconnected"=>"Agent d&eacute;connect&eacute;"
 );
 
 
