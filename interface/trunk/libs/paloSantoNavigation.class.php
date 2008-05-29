@@ -184,6 +184,8 @@ class paloSantoNavigation {
         $this->smarty->assign("arrMenuExtras", $arrSubMenuExtras);
         $arrSubMenuExtras = $this->getArrSubMenu("call_center");
         $this->smarty->assign("arrMenuCallCenter", $arrSubMenuExtras);
+        $arrSubMenuExtras = $this->getArrSubMenu("agenda");
+        $this->smarty->assign("arrMenuAgenda", $arrSubMenuExtras);
         /*************** Submenus para template elastix wine ********************/
 
         return $this->smarty->fetch("_common/_menu.tpl");
