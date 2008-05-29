@@ -199,7 +199,7 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
                     );
 
     $oGrid->showFilter(trim($htmlFilter));
-    $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
+    $contenidoModulo = "<form method='post' style='margin-bottom: 0pt;' action='?menu=$module_name'>".$oGrid->fetchGrid($arrGrid, $arrData,$arrLang)."</form>";
     return $contenidoModulo;
 }
 
