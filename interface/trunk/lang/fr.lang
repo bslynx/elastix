@@ -31,8 +31,8 @@
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
   $Id: fr.lang,v 1.8 2008/05/20 00:36:42 bmacias Exp $ */
-global $arrLang2;
-$arrLang2=array(
+global $arrLang;
+$arrLang=array(
 "System Resources"=>"Ressources syst&egrave;me",
 "CPU Info"=>"Info CPU",
 "Uptime"=>"Temps de fonctionnement",
