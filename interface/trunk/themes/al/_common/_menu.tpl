@@ -76,6 +76,14 @@
                         </td></tr>
                     {/foreach}
                 {/if}
+                {if $idMenu eq "agenda"}
+                    {foreach from=$arrMenuAgenda key=idSubMenu item=Submenu}
+                        <tr><td>
+                        <a href="/?menu={$idSubMenu}">{$Submenu.Name}</a>
+                        </td></tr>
+                    {/foreach}
+                {/if}
+
                 </table>
               </div>
               <table cellSpacing="0" cellPadding="2" height="29" border="0">
