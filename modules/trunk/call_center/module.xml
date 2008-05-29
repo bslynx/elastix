@@ -2,11 +2,15 @@
 <module>
   <menulist>
     <menuitem menuid="call_center" desc="Call Center" parent="" module="no"></menuitem>
-    <menuitem menuid="campaign_out" desc="Outgoing Campaigns" parent="call_center" module="yes"></menuitem>
     <menuitem menuid="agent_console" desc="Agent Console" parent="call_center" module="yes"></menuitem>
+    <menuitem menuid="campaign_out" desc="Outgoing Campaigns" parent="call_center" module="yes"></menuitem>
     <menuitem menuid="forms" desc="Forms" parent="call_center" module="no"></menuitem>
     <menuitem menuid="form_designer" desc="Form Designer" parent="forms" module="yes"></menuitem>
     <menuitem menuid="form_list" desc="Form List" parent="forms" module="yes"></menuitem>
+    <menuitem menuid="ingoing_calls" desc="Ingoing Calls" parent="call_center" module="yes"></menuitem>
+    <menuitem menuid="client" desc="Client" parent="call_center" module="yes"></menuitem>
+    <menuitem menuid="agents" desc="Agents" parent="call_center" module="yes"></menuitem>
+    <menuitem menuid="break_administrator" desc="Break Administrator" parent="call_center" module="yes"></menuitem>
     <menuitem menuid="reports_ingoing_call" desc="Reports" parent="call_center" module="no"></menuitem>
     <menuitem menuid="reports_break" desc="Reports Break" parent="reports_ingoing_call" module="yes"></menuitem>
     <menuitem menuid="calls_detail" desc="Calls Detail" parent="reports_ingoing_call" module="yes"></menuitem>
@@ -16,9 +20,5 @@
     <menuitem menuid="login_logout" desc="Login Logout" parent="reports_ingoing_call" module="yes"></menuitem>
     <menuitem menuid="ingoings_calls_success" desc="Ingoing Calls Success" parent="reports_ingoing_call" module="yes"></menuitem>
     <menuitem menuid="graphic_calls" desc="Graphic Calls per hour" parent="reports_ingoing_call" module="yes"></menuitem>
-    <menuitem menuid="agents" desc="Agents" parent="call_center" module="yes"></menuitem>
-    <menuitem menuid="break_administrator" desc="Break Administrator" parent="call_center" module="yes"></menuitem>
-    <menuitem menuid="ingoing_calls" desc="Ingoing Calls" parent="call_center" module="yes"></menuitem>
-    <menuitem menuid="client" desc="Client" parent="call_center" module="yes"></menuitem>
   </menulist>
 </module>
