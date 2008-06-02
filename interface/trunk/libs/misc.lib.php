@@ -122,11 +122,11 @@ function obtener_info_de_sistema()
     //-       /respaldos/INSTALADORES/fedora-1/disco1.iso
     //-                              644864    644864         0 100% /mnt/fc1/disc1
 
-    exec("/bin/df /etc/fstab", $arrExec, $varExec);
+    exec("/bin/df -P /etc/fstab", $arrExec, $varExec);
 
     if($varExec=="0") {
         foreach($arrExec as $lineaParticion) {
-            if(ereg("^([/-_\.[:alnum:]]+)[[:space:]]+([[:digit:]]+)[[:space:]]+([[:digit:]]+)[[:space:]]+([[:digit:]]+)" .
+            if(ereg("^([/-_\.[:alnum:]|-]+)[[:space:]]+([[:digit:]]+)[[:space:]]+([[:digit:]]+)[[:space:]]+([[:digit:]]+)" .
                     "[[:space:]]+([[:digit:]]{1,2}%)[[:space:]]+([/-_\.[:alnum:]]+)$", $lineaParticion, $arrReg)) {
                 $arrTmp="";
                 $arrTmp["fichero"]=$arrReg[1];
