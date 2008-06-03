@@ -27,23 +27,41 @@
   <td>
     <table width="100%" border="0" cellspacing="0" cellpadding="0" class="tabForm">
       <tr>
-	<td width="15%">{$name.LABEL}: <span  class="required">*</span></td>
-	<td width="35%">{$name.INPUT}</td>
-	<td>{$description.LABEL}: <span  class="required">*</span></td>
-	<td>{$description.INPUT}</td>
+	<td width="20%">{$name.LABEL}: <span  class="required">*</span></td>
+	<td width="30%">{$name.INPUT}</td>
+	<td width="25%">{$description.LABEL}: <span  class="required">*</span></td>
+	<td width="25%">{$description.INPUT}</td>
       </tr>
       <tr>
-
-		<td width="20%">{$password1.LABEL}: <span  class="required">*</span></td>
-	<td width="30%">{$password1.INPUT}</td>
-	<td width="20%">{$password2.LABEL}: <span class="required">*</span></td>
-	<td width="30%">{$password2.INPUT}</td>
+	<td>{$password1.LABEL}: <span  class="required">*</span></td>
+	<td>{$password1.INPUT}</td>
+	<td>{$password2.LABEL}: <span class="required">*</span></td>
+	<td>{$password2.INPUT}</td>
       </tr>
       <tr>
 	<td>{$group.LABEL}: <span  class="required">*</span></td>
 	<td>{$group.INPUT}</td>
-	<td width="20%">{$extension.LABEL}: <span class="required">*</span></td>
-	<td width="30%">{$extension.INPUT}</td>
+	<td>{$extension.LABEL}: <span class="required">*</span></td>
+	<td>{$extension.INPUT}</td>
+      </tr>
+</table>
+<table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
+<tr class="moduleTitle">
+  <td class="moduleTitle" valign="middle">{$title_webmail}</td>
+</tr>
+</table>
+<table width="100%" border="0" cellspacing="0" cellpadding="0" class="tabForm">
+      <tr>
+        <td width="20%">{$webmailuser.LABEL}: </td>
+        <td width="30%">{$webmailuser.INPUT}</td>
+        <td width="25%">{$webmaildomain.LABEL}: </td>
+        <td width="25%">{$webmaildomain.INPUT}</td>
+      </tr>
+      <tr>
+        <td>{$webmailpassword1.LABEL}: </td>
+        <td>{$webmailpassword1.INPUT}</td>
+        <td>{$webmailpassword2.LABEL}: </td>
+        <td>{$webmailpassword2.INPUT}</td>
       </tr>
     </table>
   </td>

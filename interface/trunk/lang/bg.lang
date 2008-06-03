@@ -933,5 +933,14 @@ configuration because some processes need it."=>"Въведените мрежи
 "Quota Used" => "Quota used:",
 "Quota free space" => "Quota free space:",
 /*User information*/
+
+/*USERLIST*/
+/* Additional strings for webmail auto-login extension */
+"Webmail User" => "Webmail User",
+"Webmail Domain" => "Webmail Domain",
+"Webmail Password" => "Webmail Password",
+"Retype Webmail password" => "Retype Webmail password",
+"Mail Profile" => "Mail Profile",
+/*USERLIST*/
 );
 ?>

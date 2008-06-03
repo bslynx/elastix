@@ -127,7 +127,31 @@ function _moduleContent(&$smarty, $module_name)
                                                     "INPUT_TYPE"             => "SELECT",
                                                     "INPUT_EXTRA_PARAM"      => $arrData,
                                                     "VALIDATION_TYPE"        => "text",
-                                                    "VALIDATION_EXTRA_PARAM" => "")
+                                                    "VALIDATION_EXTRA_PARAM" => ""),
+                             "webmailpassword1"   => array("LABEL"                  => $arrLang["Webmail Password"],
+                                                    "REQUIRED"               => "no",
+                                                    "INPUT_TYPE"             => "PASSWORD",
+                                                    "INPUT_EXTRA_PARAM"      => "",
+                                                    "VALIDATION_TYPE"        => "text",
+                                                    "VALIDATION_EXTRA_PARAM" => ""),
+                             "webmailpassword2"   => array("LABEL"                  => $arrLang["Retype Webmail password"],
+                                                    "REQUIRED"               => "no",
+                                                    "INPUT_TYPE"             => "PASSWORD",
+                                                    "INPUT_EXTRA_PARAM"      => "",
+                                                    "VALIDATION_TYPE"        => "text",
+                                                    "VALIDATION_EXTRA_PARAM" => ""),
+                             "webmailuser"       => array("LABEL"                  => $arrLang["Webmail User"],
+                                                    "REQUIRED"               => "no",
+                                                    "INPUT_TYPE"             => "TEXT",
+                                                    "INPUT_EXTRA_PARAM"      => "",
+                                                    "VALIDATION_TYPE"        => "text",
+                                                    "VALIDATION_EXTRA_PARAM" => ""),
+                             "webmaildomain"       => array("LABEL"                  => $arrLang["Webmail Domain"],
+                                                    "REQUIRED"               => "no",
+                                                    "INPUT_TYPE"             => "TEXT",
+                                                    "INPUT_EXTRA_PARAM"      => "",
+                                                    "VALIDATION_TYPE"        => "text",
+                                                    "VALIDATION_EXTRA_PARAM" => ""),
     );
 
 
@@ -138,6 +162,7 @@ function _moduleContent(&$smarty, $module_name)
     $smarty->assign("EDIT", $arrLang["Edit"]);
     $smarty->assign("DELETE", $arrLang["Delete"]);
     $smarty->assign("CONFIRM_CONTINUE", $arrLang["Are you sure you wish to continue?"]);
+    $smarty->assign("title_webmail", $arrLang["Mail Profile"]);
     if(isset($_POST['submit_create_user'])) {
         // Implementar
         include_once("libs/paloSantoForm.class.php");
@@ -179,6 +204,12 @@ function _moduleContent(&$smarty, $module_name)
         $arrFormElements['password2']['REQUIRED']='no';
         $oForm = new paloForm($smarty, $arrFormElements);
 
+        $listaPropiedades = leerPropiedadesWebmail($pDB, $smarty, $_POST['id_user']);
+        if (isset($listaPropiedades['login'])) $arrFillUser['webmailuser'] = $listaPropiedades['login'];
+        if (isset($listaPropiedades['domain'])) $arrFillUser['webmaildomain'] = $listaPropiedades['domain'];
+        if (isset($listaPropiedades['password'])) $arrFillUser['webmailpassword1'] = $arrFillUser['webmailpassword2'] = $listaPropiedades['password'];
+        //if (isset($listaPropiedades['imapsvr'])) $arrFillUser['webmailimapsvr'] = $listaPropiedades['imapsvr'];
+
         $oForm->setEditMode();
         $smarty->assign("id_user", $_POST['id_user']);
         $contenidoModulo=$oForm->fetchForm("$local_templates_dir/new.tpl", "{$arrLang['Edit User']} \"" . $arrFillUser['name'] . "\"", $arrFillUser);
@@ -193,7 +224,9 @@ function _moduleContent(&$smarty, $module_name)
             // Exito, puedo procesar los datos ahora.
             $pACL = new paloACL($pDB);
 
-            if(empty($_POST['password1']) or ($_POST['password1']!=$_POST['password2'])) {
+            if((empty($_POST['password1']) or ($_POST['password1']!=$_POST['password2'])) 
+                ||
+                (!empty($_POST['webmailpassword1']) && ($_POST['webmailpassword1']!=$_POST['webmailpassword2']))) {
                 // Error claves
                 $smarty->assign("mb_message", $arrLang["The passwords are empty or don't match"]);
                 $contenidoModulo=$oForm->fetchForm("$local_templates_dir/new.tpl", $arrLang["New User"], $_POST);
@@ -206,11 +239,20 @@ function _moduleContent(&$smarty, $module_name)
                 $idUser = $pACL->getIdUser($_POST['name']);
                 $pACL->addToGroup($idUser, $_POST['group']);
 
+                $bExito = TRUE;
+                if (empty($pACL->errMsg)) {
+                    $nuevasPropiedades = array();
+                    if (!empty($_POST['webmailuser'])) $nuevasPropiedades['login'] = $_POST['webmailuser'];
+                    if (!empty($_POST['webmailpassword1'])) $nuevasPropiedades['password'] = $_POST['webmailpassword1'];
+                    if (!empty($_POST['webmaildomain'])) $nuevasPropiedades['domain'] = $_POST['webmaildomain'];
+                    $bExito = actualizarPropiedades($pDB, $smarty, $idUser, 'webmail', 'default', $nuevasPropiedades);
+                }
+
                 if(!empty($pACL->errMsg)) {
                     // Ocurrio algun error aqui
                     $smarty->assign("mb_message", "ERROR: $pACL->errMsg");
                     $contenidoModulo=$oForm->fetchForm("$local_templates_dir/new.tpl", $arrLang["New User"], $_POST);
-                } else {
+                } else if ($bExito) {
                     header("Location: ?menu=userlist");
                 }
             }
@@ -238,10 +280,15 @@ function _moduleContent(&$smarty, $module_name)
 
         $oForm = new paloForm($smarty, $arrFormElements);
 
+        // Leer valores originales de propiedades
+        $listaPropiedades = leerPropiedadesWebmail($pDB, $smarty, $_POST['id_user']);
+
         $oForm->setEditMode();
         if($oForm->validateForm($_POST)) {
 
-            if(!empty($_POST['password1']) && ($_POST['password1']!=$_POST['password2'])) {
+            if((!empty($_POST['password1']) && ($_POST['password1']!=$_POST['password2'])) 
+                ||
+                (!empty($_POST['webmailpassword1']) && ($_POST['webmailpassword1']!=$_POST['webmailpassword2']))) {
                 // Error claves
                 $smarty->assign("mb_title", $arrLang["Validation Error"]);
                 $smarty->assign("mb_message", $arrLang["The passwords are empty or don't match"]);
@@ -250,6 +297,10 @@ function _moduleContent(&$smarty, $module_name)
                 $arrFillUser['name']        = $username;
                 $arrFillUser['group']       = $_POST['group'];
                 $arrFillUser['extension']   = $_POST['extension'];
+
+                if (isset($listaPropiedades['login'])) $arrFillUser['webmailuser'] = $listaPropiedades['login'];
+                if (isset($listaPropiedades['domain'])) $arrFillUser['webmaildomain'] = $listaPropiedades['domain'];
+                if (isset($listaPropiedades['password'])) $arrFillUser['webmailpassword1'] = $arrFillUser['webmailpassword2'] = $listaPropiedades['password'];
         
                 $contenidoModulo=$oForm->fetchForm("$local_templates_dir/new.tpl", $arrLang["Edit User"], $arrFillUser);
             } else {
@@ -280,8 +331,17 @@ function _moduleContent(&$smarty, $module_name)
                 //si se ha puesto algo en passwor se actualiza el password
                 if (!empty($_POST['password1']))
                     $pACL->changePassword($_POST['id_user'], md5($_POST['password1']));
+                    
+                $nuevasPropiedades = array(
+                    'login'     =>  $_POST['webmailuser'],
+                    'domain'    =>  $_POST['webmaildomain'],
+                    'password'  =>  $_POST['webmailpassword1'],
+                    //'imapsvr'   =>  $_POST['']
+                );
+                if (empty($_POST['webmailpassword1'])) unset($nuevasPropiedades['password']);
+                $bExito = actualizarPropiedades($pDB, $smarty, $_POST['id_user'], 'webmail', 'default', $nuevasPropiedades);
     
-                header("Location: ?menu=userlist");
+                if ($bExito) header("Location: ?menu=userlist");
             }
 
         } else {
@@ -298,7 +358,9 @@ function _moduleContent(&$smarty, $module_name)
             $arrFillUser['description'] = $_POST['description'];
             $arrFillUser['name']        = $username;
             $arrFillUser['group']       = $_POST['group'];
-            $arrFillUser['extension']   = $_POST['extension'];      
+            $arrFillUser['extension']   = $_POST['extension'];
+            foreach (array('webmailuser', 'webmaildomain', 'webmailpassword1', 'webmailpassword2') as $key) 
+                $arrFillUser[$key] = $_POST[$key];
             $smarty->assign("id_user", $_POST['id_user']);
             $contenidoModulo=$oForm->fetchForm("$local_templates_dir/new.tpl", $arrLang["Edit User"], $arrFillUser);
             /////////////////////////////////
@@ -332,6 +394,12 @@ function _moduleContent(&$smarty, $module_name)
             }
         }
         $arrTmp['group'] = $id_group;
+
+        $listaPropiedades = leerPropiedadesWebmail($pDB, $smarty, $_GET['id']);
+        if (isset($listaPropiedades['login'])) $arrTmp['webmailuser'] = $listaPropiedades['login'];
+        if (isset($listaPropiedades['domain'])) $arrTmp['webmaildomain'] = $listaPropiedades['domain'];
+        if (isset($listaPropiedades['password'])) $arrTmp['webmailpassword1'] = $arrTmp['webmailpassword2'] = '****';
+        //if (isset($listaPropiedades['imapsvr'])) $arrTmp['webmailimapsvr'] = $listaPropiedades['imapsvr'];
 
         $smarty->assign("id_user", $_GET['id']);
         $contenidoModulo=$oForm->fetchForm("$local_templates_dir/new.tpl", $arrLang["View User"], $arrTmp); // hay que pasar el arreglo
@@ -405,4 +473,123 @@ function _moduleContent(&$smarty, $module_name)
 
     return $contenidoModulo;
 }
+
+function leerPropiedadesWebmail(&$pDB, &$smarty, $idUser)
+{
+    // Obtener la información del usuario con respecto al perfil "default" del módulo "webmail"
+    $sPeticionPropiedades = 
+        'SELECT pp.property, pp.value '.
+        'FROM acl_profile_properties pp, acl_user_profile up, acl_resource r '.
+    	'WHERE up.id_user = ? '.
+            'AND up.profile = "default" '.
+            'AND up.id_profile = pp.id_profile '.
+            'AND up.id_resource = r.id '.
+            'AND r.name = "webmail"';
+    $listaPropiedades = array();
+    $tabla = $pDB->fetchTable($sPeticionPropiedades, FALSE, array($idUser));
+    if ($tabla === FALSE) {
+      print "ERROR DE DB: ".$pDB->errMsg;
+    } else {
+      foreach ($tabla as $tupla) {
+        $listaPropiedades[$tupla[0]] = $tupla[1];
+      }
+    }
+
+    return $listaPropiedades;
+}
+
+function actualizarPropiedades(&$pDB, &$smarty, $idUser, $sModulo, $sPerfil, $propiedades)
+{
+//    $oDBConn =& $pDB->conn;
+    // Verificar que existe realmente un perfil $sPerfil para el usuario $idUser y el módulo $sModulo,
+    // y crearlo si es necesario
+    
+    $sPeticionID = 
+        'SELECT up.id_profile '.
+        'FROM acl_user_profile up, acl_resource r '.
+        'WHERE up.id_user = ? AND up.id_resource = r.id AND r.name = ? AND up.profile = ?';
+    $tupla = $pDB->getFirstRowQuery($sPeticionID, FALSE, array($idUser, $sModulo, $sPerfil));
+    if ($tupla === FALSE) {
+        $smarty->assign("mb_message", "ERROR DE DB: ".$pDB->errMsg);
+        return FALSE;
+    } elseif (count($tupla) == 0) {
+        $idPerfil = NULL;
+    } else {
+        $idPerfil = $tupla[0];
+    }
+    if (is_null($idPerfil)) {
+        // La combinación de usuario/módulo/perfil no existe y hay que crearla
+        $pACL = new paloACL($pDB);
+        
+        // TODO: agregar función a paloACL para obtener ID de recurso, dado el nombre
+        $listaRecursos = $pACL->getResources();
+        $idRecurso = NULL;
+        foreach ($listaRecursos as $tuplaRecurso)
+        {
+            if ($tuplaRecurso[1] == $sModulo) {
+                $idRecurso = $tuplaRecurso[0];
+                break;
+            }
+        }
+        if (is_null($idRecurso)) {
+            $smarty->assign("mb_message", '(internal) No resource found for: '.$sModulo);
+            return FALSE;
+        }
+        
+        // Crear el nuevo perfil para el usuario indicado...
+        $sPeticionNuevoPerfil = 'INSERT INTO acl_user_profile (id_user, id_resource, profile) VALUES (?, ?, ?)';
+        $r = $pDB->genQuery($sPeticionNuevoPerfil, array($idUser, $idRecurso, $sPerfil));
+        if (!$r) {
+            $smarty->assign("mb_message", "ERROR DE DB: ".$pDB->errMsg);
+            return FALSE;
+        }
+        
+        // Una vez creado el perfil, el query de ID de perfil debe de funcionar
+        $tupla = $pDB->getFirstRowQuery($sPeticionID, FALSE, array($idUser, $sModulo, $sPerfil));
+        if ($tupla === FALSE) {
+            $smarty->assign("mb_message", "ERROR DE DB: ".$pDB->errMsg);
+            return FALSE;
+        } elseif (count($tupla) == 0) {
+            $smarty->assign("mb_message", '(internal) Unable to find just-inserted profile ID');
+            return FALSE;
+        } else {
+            $idPerfil = $tupla[0];
+        }
+    }
+    
+    // Aquí ya se tiene el ID del perfil a actualizar. Las propiedades deben de reemplazarse, o 
+    // crearse si no existen. Por ahora no deben borrarse en ausencia de la lista
+    $sPeticionPropiedades = 
+        'SELECT property, value '.
+        'FROM acl_profile_properties '.
+    	'WHERE id_profile = ?';
+    $listaPropiedades = array();
+    $tabla = $pDB->fetchTable($sPeticionPropiedades, FALSE, array($idPerfil));
+    if ($tabla === FALSE) {
+      $smarty->assign("mb_message", "ERROR DE DB (1): ".$pDB->errMsg);
+    } else {
+      foreach ($tabla as $tupla) {
+        $listaPropiedades[$tupla[0]] = $tupla[1];
+      }
+    }
+
+    foreach ($propiedades as $k => $v) {
+        $sPeticionSQL = NULL;
+        $params = NULL;
+        if (isset($listaPropiedades[$k])) {
+            $sPeticionSQL = 'UPDATE acl_profile_properties SET value = ? WHERE id_profile = ? AND property = ?';
+            $params = array($v, $idPerfil, $k);
+        } else {
+            $sPeticionSQL = 'INSERT INTO acl_profile_properties (id_profile, property, value) VALUES (?, ?, ?)';
+            $params = array($idPerfil, $k, $v);
+        }
+        $r = $pDB->genQuery($sPeticionSQL, $params);
+        if (!$r) {
+            $smarty->assign("mb_message", "ERROR DE DB (2): ".$pDB->errMsg);
+            return FALSE;
+        }
+    }
+    return TRUE;
+}
+
 ?>

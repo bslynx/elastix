@@ -935,5 +935,14 @@ alrededor del mundo.",
 "Quota Used" => "Espacio de mail usada:",
 "Quota free space" => "Espacio de mail libre:",
 /*User information*/
+
+/*USERLIST*/
+/* Additional strings for webmail auto-login extension */
+"Webmail User" => "Usuario de Webmail",
+"Webmail Domain" => "Dominio de Webmail",
+"Webmail Password" => "Contraseña de Webmail",
+"Retype Webmail password" => "Reingrese contraseña de Webmail",
+"Mail Profile" => "Perfil de Mail",
+/*USERLIST*/
 );
 ?>

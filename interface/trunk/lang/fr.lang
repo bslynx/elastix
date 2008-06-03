@@ -931,5 +931,14 @@ de Voix sur IP tout autour du globe.",
 "Error copying the file" => "Error copying the file",
 "The file was copied correctly" => "The file was copied correctly",
 /*********MISC*************/
+
+/*USERLIST*/
+/* Additional strings for webmail auto-login extension */
+"Webmail User" => "Webmail User",
+"Webmail Domain" => "Webmail Domain",
+"Webmail Password" => "Webmail Password",
+"Retype Webmail password" => "Retype Webmail password",
+"Mail Profile" => "Mail Profile",
+/*USERLIST*/
 );
 ?>
