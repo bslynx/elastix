@@ -18,9 +18,11 @@
   | de hacerlo, comuníquese con nosotros, podría estar infringiendo      |
   | la ley sin saberlo.                                                  |
   +----------------------------------------------------------------------+
-  | Autores: Gladys Carrillo B.   <gcarrillo@palosanto.com>              |
+  | Autores:      Gladys Carrillo B.   <gcarrillo@palosanto.com>         |
+  | Modificación: Adonis Figueroa A.   <afigueroa@palosanto.com>         |
   +----------------------------------------------------------------------+
   $Id: paloSantoModuloXML.class.php,v 1.1 2007/09/05 00:25:25 gcarrillo Exp $
+  $Id: paloSantoModuloXML.class.php,v 1.1 2008/05/29 11:25:25 afigueroa Exp $
 */
 
 
@@ -41,70 +43,34 @@ class ModuloXML
         $this->_rutaArchivo=$sRutaArchivo;
         $this->_privado_construirArbolMenu();
     }
-    
-    // Procedimiento que construye el árbol de menú a partir del archivo XML.
+
     function _privado_construirArbolMenu()
     {
         $this->_arbolMenu = array();
-        $sDocumento = file_get_contents($this->_rutaArchivo);
-        if ($sDocumento == '') {
-            $this->_errMsg='documento no se puede leer, o está vacío';
 
-        } else {
-            $xmlParser = xml_parser_create();
-            xml_parser_set_option($xmlParser, XML_OPTION_CASE_FOLDING, FALSE);
-            xml_set_element_handler($xmlParser, 
-                array(&$this, '_privado_startElement'), 
-                array(&$this, '_privado_endElement'));
-            if (!xml_parse($xmlParser, $sDocumento, TRUE)) {
-                $sMensaje = "Linea  ".xml_get_current_line_number($xmlParser)." - ".xml_error_string(xml_get_error_code($xmlParser));
-                xml_parser_free($xmlParser);
-                die ($sMensaje);
-            }
-            xml_parser_free($xmlParser);
-        }
-    }
-    
-    function _privado_startElement($xmlParser, $sName, $atributos)
-    {
-        switch ($sName)
-        {
-        case 'module':
-            $this->_tempMenuList = NULL;
-            break;
-        case 'menulist':
-            $this->_tempMenuList = array(
-                'MENUID'  =>  $atributos['menuid'],
-                'TAG'   =>  $atributos['tag'],
-                'DESC'  =>  $atributos['desc'],
-                'ITEMS' =>  array(),
-            );
-            break;
-        case 'menuitem':
-            if (!is_null($this->_tempMenuList)) {
-                $subItem = array(
-                    'MENUID'  =>  $atributos['menuid'],
-                    'TAG'   =>  $atributos['tag'],
-                    'DESC'  =>  $atributos['desc'],
-                );
-                $this->_tempMenuList['ITEMS'][] = $subItem;
-            }
-            break;
-        }
-    }    
+        $xmlDoc = new DOMDocument();
+        $xmlDoc->load($this->_rutaArchivo);
 
-    function _privado_endElement($xmlParser, $sName)
-    {
-        switch ($sName)
+        //copio el archivo en memoria
+        $root = $xmlDoc->documentElement;//apunto a el tag raiz
+
+        $arrMenuItem = $root->getElementsByTagName("menuitem");
+        $menu = array();
+        foreach($arrMenuItem as $menuitem)
         {
-        case 'menulist':
-            if (!is_null($this->_tempMenuList)) {
-                $this->_arbolMenu[$this->_tempMenuList['MENUID']] = $this->_tempMenuList;
-                $this->_tempMenuList = NULL;
-            }
-            break;
+            $attID      = $menuitem->getAttribute("menuid");
+            $attDesc    = $menuitem->getAttribute("desc");
+            $attParent  = $menuitem->getAttribute("parent");
+            $attModule  = $menuitem->getAttribute("module");
+            $menu[] = array(
+                            'menuid'    => $attID,
+                            'desc'      => $attDesc,
+                            'parent'    => $attParent,
+                            'module'    => $attModule,
+                        );
         }
+
+        $this->_arbolMenu = $menu;
     }
-    
 }
 ?>

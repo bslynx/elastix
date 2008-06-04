@@ -41,15 +41,14 @@ class Installer
     function addMenu($oMenu,$arrTmp){
     //verificar si tiene que crear un nuevo menu raiz
 
-    if ($arrTmp['type']=='menu')
-        {
-            $parentId="";
-            $type="";
-        }
-        else {
-            $parentId = $arrTmp['parent'];
-            $type=$arrTmp['type'];
-        }
+    $parentId = $arrTmp['parent'];
+    if ($parentId=="")
+    {
+        $type="";
+    }
+    else {
+        $type="module";
+    }
     //creo el menu
 
     $bExito = $oMenu->createMenu($arrTmp['menuid'],$arrTmp['tag'],$parentId,$type);
