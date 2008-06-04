@@ -16,66 +16,11 @@
             </td>
             {else}
             <td class="headlink" valign="bottom">
-              <div style="position:absolute; z-index:200; top:65px;"><a href="javascript:mostrar_Menu('{$idMenu}')"><img src="themes/giox/images/corner.gif" border="0"></a></div>
+              <div style="position:absolute; z-index:200; top:65px;"><a href="javascript:mostrar_Menu('{$idMenu}')"><img src="themes/al/images/corner.gif" border="0"></a></div>
               <input type="hidden" id="idMenu" value=""></input>
               <div class="vertical_menu_oculto" id="{$idMenu}">
                 <table cellpadding=0 cellspacing=0>
-                {if $idMenu eq "system"}
-                    {foreach from=$arrMenuSystem key=idSubMenu item=Submenu}
-                        <tr><td>
-                        <a href="/?menu={$idSubMenu}">{$Submenu.Name}</a>
-                        </td></tr>
-                    {/foreach}
-                {/if}
-                {if $idMenu eq "pbxconfig"}
-                    {foreach from=$arrMenuPbx key=idSubMenu item=Submenu}
-                        <tr><td>
-                        <a href="/?menu={$idSubMenu}">{$Submenu.Name}</a>
-                        </td></tr>
-                    {/foreach}
-                {/if}
-                {if $idMenu eq "fax"}
-                    {foreach from=$arrMenuFax key=idSubMenu item=Submenu}
-                        <tr><td>
-                        <a href="/?menu={$idSubMenu}">{$Submenu.Name}</a>
-                        </td></tr>
-                    {/foreach}
-                {/if}
-                {if $idMenu eq "email"}
-                    {foreach from=$arrMenuEmail key=idSubMenu item=Submenu}
-                        <tr><td>
-                        <a href="/?menu={$idSubMenu}">{$Submenu.Name}</a>
-                        </td></tr>
-                    {/foreach}
-                {/if}
-                {if $idMenu eq "im"}
-                    {foreach from=$arrMenuIm key=idSubMenu item=Submenu}
-                        <tr><td>
-                        <a href="/?menu={$idSubMenu}">{$Submenu.Name}</a>
-                        </td></tr>
-                    {/foreach}
-                {/if}
-                {if $idMenu eq "reports"}
-                    {foreach from=$arrMenuReports key=idSubMenu item=Submenu}
-                        <tr><td>
-                        <a href="/?menu={$idSubMenu}">{$Submenu.Name}</a>
-                        </td></tr>
-                    {/foreach}
-                {/if}
-                {if $idMenu eq "extras"}
-                    {foreach from=$arrMenuExtras key=idSubMenu item=Submenu}
-                        <tr><td>
-                        <a href="/?menu={$idSubMenu}">{$Submenu.Name}</a>
-                        </td></tr>
-                    {/foreach}
-                {/if}
-                {if $idMenu eq "call_center"}
-                    {foreach from=$arrMenuCallCenter key=idSubMenu item=Submenu}
-                        <tr><td>
-                        <a href="/?menu={$idSubMenu}">{$Submenu.Name}</a>
-                        </td></tr>
-                    {/foreach}
-                {/if}
+                    {$arrMenuTotal.$idMenu}
                 </table>
               </div>
               <table cellSpacing="0" cellPadding="2" height="29" border="0">
@@ -140,8 +85,8 @@
               </table>
             </td>
             <td align="right" valign="middle"><a href="javascript:openWindow('/help/?id_nodo={$idSubMenuSelected}')"><img
-                src="themes/giox/images/help_top.gif" border="0"></a>&nbsp;&nbsp;<a href="javascript:changeMenu()"><img
-                src="themes/giox/images/arrow_top.gif" border="0"></a>&nbsp;&nbsp;</td>
+                src="themes/al/images/help_top.gif" border="0"></a>&nbsp;&nbsp;<a href="javascript:changeMenu()"><img
+                src="themes/al/images/arrow_top.gif" border="0"></a>&nbsp;&nbsp;</td>
           </tr>
         </table>
       </td>

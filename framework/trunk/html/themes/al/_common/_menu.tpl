@@ -20,62 +20,7 @@
               <input type="hidden" id="idMenu" value=""></input>
               <div class="vertical_menu_oculto" id="{$idMenu}">
                 <table cellpadding=0 cellspacing=0>
-                {if $idMenu eq "system"}
-                    {foreach from=$arrMenuSystem key=idSubMenu item=Submenu}
-                        <tr><td>
-                        <a href="/?menu={$idSubMenu}">{$Submenu.Name}</a>
-                        </td></tr>
-                    {/foreach}
-                {/if}
-                {if $idMenu eq "pbxconfig"}
-                    {foreach from=$arrMenuPbx key=idSubMenu item=Submenu}
-                        <tr><td>
-                        <a href="/?menu={$idSubMenu}">{$Submenu.Name}</a>
-                        </td></tr>
-                    {/foreach}
-                {/if}
-                {if $idMenu eq "fax"}
-                    {foreach from=$arrMenuFax key=idSubMenu item=Submenu}
-                        <tr><td>
-                        <a href="/?menu={$idSubMenu}">{$Submenu.Name}</a>
-                        </td></tr>
-                    {/foreach}
-                {/if}
-                {if $idMenu eq "email"}
-                    {foreach from=$arrMenuEmail key=idSubMenu item=Submenu}
-                        <tr><td>
-                        <a href="/?menu={$idSubMenu}">{$Submenu.Name}</a>
-                        </td></tr>
-                    {/foreach}
-                {/if}
-                {if $idMenu eq "im"}
-                    {foreach from=$arrMenuIm key=idSubMenu item=Submenu}
-                        <tr><td>
-                        <a href="/?menu={$idSubMenu}">{$Submenu.Name}</a>
-                        </td></tr>
-                    {/foreach}
-                {/if}
-                {if $idMenu eq "reports"}
-                    {foreach from=$arrMenuReports key=idSubMenu item=Submenu}
-                        <tr><td>
-                        <a href="/?menu={$idSubMenu}">{$Submenu.Name}</a>
-                        </td></tr>
-                    {/foreach}
-                {/if}
-                {if $idMenu eq "extras"}
-                    {foreach from=$arrMenuExtras key=idSubMenu item=Submenu}
-                        <tr><td>
-                        <a href="/?menu={$idSubMenu}">{$Submenu.Name}</a>
-                        </td></tr>
-                    {/foreach}
-                {/if}
-                {if $idMenu eq "call_center"}
-                    {foreach from=$arrMenuCallCenter key=idSubMenu item=Submenu}
-                        <tr><td>
-                        <a href="/?menu={$idSubMenu}">{$Submenu.Name}</a>
-                        </td></tr>
-                    {/foreach}
-                {/if}
+                    {$arrMenuTotal.$idMenu}
                 </table>
               </div>
               <table cellSpacing="0" cellPadding="2" height="29" border="0">
