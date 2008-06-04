@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.5                                                  |
+  | Elastix version 1.1                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,7 +25,7 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: paloSantoDB.class.php,v 1.2 2007/09/07 00:20:03 gcarrillo Exp $ */
+  $Id: paloSantoDB.class.php,v 1.2 2007/09/07 00:20:03 bmacias Exp $ */
 
 // La siguiente clase es una clase prototipo... Usela bajo su propio riesgo
 class paloDB {
@@ -88,22 +88,39 @@ class paloDB {
      * Nota: Solo usado para hacer manipulacion de los datos de la base.
      *
      * @param string $query Sentencia SQL a ejecutar
+     * @param mixed  $param NULL, o parámetros a pasar a query parametrizado
      *
      * @return bool VERDADERO en caso de éxito, FALSO en caso de error
      */
-    function genQuery($query)
+    function genQuery($query, $param = NULL)
     {
         // Revisar existencia de conexión activa
         if ($this->connStatus) {
             return false;
         } else {
             $this->errMsg = "";
-            try{
-                $result =& $this->conn->query($query);
-                return TRUE;
-            }catch(PDOException $e){
-                $this->errMsg = "Error de conexion a la base de datos - " . $e->getMessage();
-                return FALSE;
+            if (is_array($param)) {
+                $sth = $this->conn->prepare($query);
+                if (!is_object($sth)) {
+                    $this->errMsg = "Error de conexion al preparar peticion - ".print_r($this->conn->errorInfo(), 1);
+                    return FALSE;
+                }
+                try {
+                  $result = $sth->execute($param);
+                  if (!$result) $this->errMsg = "Error de conexion a la base de datos - " . print_r($sth->errorInfo(), 1);
+                  return $result;
+                } catch(PDOException $e){
+                    $this->errMsg = "Error de conexion a la base de datos - " . $e->getMessage();
+                    return FALSE;
+                } 
+            } else {
+                try{
+                    $result =& $this->conn->query($query);
+                    return TRUE;
+                }catch(PDOException $e){
+                    $this->errMsg = "Error de conexion a la base de datos - " . $e->getMessage();
+                    return FALSE;
+                }
             }
         }
     }
@@ -115,17 +132,31 @@ class paloDB {
      * @param   string  $query          Cadena de la petición SQL
      * @param   bool    $arr_colnames   VERDADERO si se desea que cada tupla tenga por
      *  índice el nombre de columna
+     * @param mixed  $param NULL, o parámetros a pasar a query parametrizado
      *
      * @return  mixed   Matriz de las filas de recordset en éxito, o FALSE en error
      */
-    function fetchTable($query, $arr_colnames = FALSE)
+    function fetchTable($query, $arr_colnames = FALSE, $param = NULL)
     {
         if ($this->connStatus) {
             return FALSE;
         } else {
             $this->errMsg = "";
             try{
-                $result = $this->conn->query($query);
+                if (is_array($param)) {
+                    $result = $this->conn->prepare($query);
+                    if (!is_object($result)) {
+                        $this->errMsg = "Error de conexion al preparar peticion - ".print_r($this->conn->errorInfo(), 1);
+                        return FALSE;
+                    }
+                    $r = $result->execute($param);
+                    if (!$r) {
+                        $this->errMsg = "Error de conexion a la base de datos - " . print_r($result->errorInfo(), 1);
+                        return FALSE;
+                    }
+                } else {
+                    $result = $this->conn->query($query);
+                }
                 $arrResult = array();
                 //while($row = $result->fetchRow($arr_colnames ? DB_FETCHMODE_OBJECT : DB_FETCHMODE_DEFAULT)) {
                 if($result!=null){
@@ -154,12 +185,13 @@ class paloDB {
      * @param   string  $query          Cadena de la petición SQL
      * @param   bool    $arr_colnames   VERDADERO si se desea que la tupla tenga por
      *  índice el nombre de columna
+     * @param mixed  $param NULL, o parámetros a pasar a query parametrizado
      *
      * @return  mixed   tupla del recordset en éxito, o FALSE en error
      */
-    function getFirstRowQuery($query, $arr_colnames = FALSE)
+    function getFirstRowQuery($query, $arr_colnames = FALSE, $param = NULL)
     {
-        $matriz = $this->fetchTable($query, $arr_colnames);
+        $matriz = $this->fetchTable($query, $arr_colnames, $param);
         if (is_array($matriz)) {
             if (count($matriz) > 0) {
                 return $matriz[0];
@@ -177,22 +209,39 @@ class paloDB {
      * Nota: Solo usado para crear definiones de la metadata y permisos.
      *
      * @param string $query Sentencia SQL a ejecutar
+     * @param mixed  $param NULL, o parámetros a pasar a query parametrizado
      *
      * @return bool VERDADERO en caso de éxito, FALSO en caso de error
      */
-    function genExec($query)
+    function genExec($query, $param = NULL)
     {
         // Revisar existencia de conexión activa
         if ($this->connStatus) {
             return false;
         } else {
             $this->errMsg = "";
-            try{
-                $result =& $this->conn->exec($query);
-                return TRUE;
-            }catch(PDOException $e){
-                $this->errMsg = "Error de conexion a la base de datos - " . $e->getMessage();
-                return FALSE;
+            if (is_array($param)) {
+                $sth = $this->conn->prepare($query);
+                if (!is_object($sth)) {
+                    $this->errMsg = "Error de conexion al preparar peticion - ".print_r($this->conn->errorInfo(), 1);
+                    return FALSE;
+                }
+                try {
+                  $result = $sth->execute($param);
+                  if (!$result) $this->errMsg = "Error de conexion a la base de datos - " . print_r($sth->errorInfo(), 1);
+                  return $result;
+                } catch(PDOException $e){
+                    $this->errMsg = "Error de conexion a la base de datos - " . $e->getMessage();
+                    return FALSE;
+                } 
+            } else {
+                try{
+                    $result =& $this->conn->exec($query);
+                    return TRUE;
+                }catch(PDOException $e){
+                    $this->errMsg = "Error de conexion a la base de datos - " . $e->getMessage();
+                    return FALSE;
+                }
             }
         }
     }
