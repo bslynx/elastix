@@ -167,13 +167,14 @@ class paloSantoNavigation {
         $this->smarty->assign("nameSubMenuSelected",  $arrSubMenu[$currSubMenu]['Name']);
         $this->smarty->assign("nameSubMenu2Selected",  $arrSubMenu2[$currSubMenu2]['Name']);
 
-/*************** Submenus para template elastix wine ********************/
+        /*************** Submenus para template elastix wine ********************/
         $arrMenuTotal = array();
         foreach($arrMainMenu as $key => $valor)
         {
             $idMenu = $valor['id'];
             $arrTmp = $this->getArrSubMenu($idMenu);
 
+            $arrMenuTotal[$idMenu] = "";
             foreach($arrTmp as $keySub => $valorSub)
             {
                 $arrMenuTotal[$idMenu] .= "<tr><td>";
