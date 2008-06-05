@@ -31,6 +31,7 @@
 require_once "libs/paloSantoForm.class.php";
 require_once "libs/xajax/xajax.inc.php";
 require_once "libs/paloSantoDB.class.php";
+require_once("libs/paloSantoACL.class.php");
 
 function _moduleContent(&$smarty,$module_name){
     // require_once files this module
@@ -64,7 +65,7 @@ function startXajaxRefresh($local_templates_dir,$module_name)
         function ejecutarAjax()
         {
             xajax_refreshUserInformation('$local_templates_dir','$module_name');
-            setTimeout(ejecutarAjax(),20000);
+            setTimeout(ejecutarAjax(),10000);
         }
         ejecutarAjax();
      </script>";
@@ -88,17 +89,30 @@ function getUserInformation($local_templates_dir,$module_name)
     global $arrLang;
     global $smarty;
 
-    $dsn = "mysql://root:eLaStIx.2oo7@localhost/asteriskcdrdb";
-    $pDB = new paloDB($dsn);
-    $objUserInfo = new paloSantoUserInfo($pDB);
+    $callsRows   =$arrLang["Error at read yours calls."];
+    $faxRows     =$arrLang["Error at read yours faxes."];
+    $voiceMails  =$arrLang["Error at read yours voicemails."];
+    $mails       =$arrLang["Error at read yours mails."];
+    $systemStatus=$arrLang["Error at read status system."]; 
 
-    $callsRows	 = $objUserInfo->getLastCalls();
-    $faxRows	 = $objUserInfo->getLastFaxes();
-    $voiceMails	 = $objUserInfo->getVoiceMails();
-    //$mails	 = $objUserInfo->getMails();
-    $mails	 = "Implementation in 1.1 beta";
-    //$systemStatus= $objUserInfo->getSystemStatus();
-    $systemStatus= "Implementation in 1.1 beta";
+    $pDB = conectionAsteriskCDR();
+    if($pDB){
+        $objUserInfo = new paloSantoUserInfo($pDB);
+        $arrData     = $objUserInfo->getDataUserLogon($_SESSION["elastix_user"]);
+
+        if(is_array($arrData) && count($arrData)>0){
+            $extension = $arrData['extension'];
+            $email     = "{$arrData['login']}.{$arrData['domain']}";
+            $passw     = $arrData['password'];
+            $numRegs   = 5;
+
+            $callsRows   = $objUserInfo->getLastCalls($extension,$numRegs);
+            $faxRows	 = $objUserInfo->getLastFaxes($extension,$numRegs);
+            $voiceMails	 = $objUserInfo->getVoiceMails($extension,$numRegs);
+            $mails	 = $objUserInfo->getMails($email,$passw,$numRegs);
+            $systemStatus= $objUserInfo->getSystemStatus($email,$passw);
+        }
+    }
 
     $smarty->assign("userInf",$arrLang["User Info"]);
     $smarty->assign("calls",$arrLang["Calls"]);
@@ -117,5 +131,22 @@ function getUserInformation($local_templates_dir,$module_name)
     $oForm = new paloForm($smarty,array());
     $contenido = $oForm->fetchForm($local_templates_dir."/user_inf.tpl",$arrLang["User Info"]);
     return $contenido;
+}
+
+function conectionAsteriskCDR()
+{
+    include_once "libs/paloSantoConfig.class.php";
+    $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
+    $arrConfig = $pConfig->leer_configuracion(false);
+    $dsnAsteriskCDR = $arrConfig['AMPDBENGINE']['valor']."://".
+                      $arrConfig['AMPDBUSER']['valor']. ":".
+                      $arrConfig['AMPDBPASS']['valor']. "@".
+                      $arrConfig['AMPDBHOST']['valor']."/asteriskcdrdb";
+    $pDB = new paloDB($dsnAsteriskCDR);
+
+    if(!empty($pDB->errMsg)) 
+        return false;
+    else
+        return $pDB;
 }
 ?>

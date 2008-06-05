@@ -934,6 +934,11 @@ alrededor del mundo.",
 "Quota asigned" => "Espacio de mail asignada:",
 "Quota Used" => "Espacio de mail usada:",
 "Quota free space" => "Espacio de mail libre:",
+"Error at read yours calls." => "Error al leer tus llamadas.",
+"Error at read yours faxes." => "Error al leer tus faxes.",
+"Error at read yours voicemails." => "Error al leer tus correos de voz.",
+"Error at read yours mails." => "Error al leer tus correos.",
+"Error at read status system." => "Error al leer el estado de tu sistema.",
 /*User information*/
 
 /*USERLIST*/

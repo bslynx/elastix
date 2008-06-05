@@ -27,25 +27,12 @@
   +----------------------------------------------------------------------+
   $Id: paloSantoUserInfo.class.php,v 1.1.1.1 2008/01/31 21:31:55  Exp $ */
 
-require_once("libs/paloSantoACL.class.php");
-
 class paloSantoUserInfo {
     var $_DB;
-    var $numRegs;
-    var $extension;
     var $errMsg;
 
-    function paloSantoUserInfo(&$pDB,$calls=5)
+    function paloSantoUserInfo(&$pDB)
     {
-	$this->numRegs = $calls;
-
-	$dbAcl= new paloDB("sqlite3:////var/www/db/acl.db");
-	
-	$pACL= new paloACL($dbAcl);
-
-	$this->extension = $pACL->getUserExtension($_SESSION["elastix_user"]);
-	$this->errMsg.=$pACL->errMsg;
-
         // Se recibe como parámetro una referencia a una conexión paloDB
         if (is_object($pDB)) {
             $this->_DB =& $pDB;
@@ -63,35 +50,26 @@ class paloSantoUserInfo {
         }
     }
 
-   function getSystemStatus(){
+   function getSystemStatus($email,$passw){
 	global $arrLang;
+        global $arrConf;
 	
 	$dbEmails = new paloDB("sqlite3:////var/www/db/email.db");
-
-	$email = "afigueroa.dominio.org";
-	$passw = "afigueroa";
-	
 	$imap = imap_open("{localhost:143}",$email,$passw);
 
 	if (!$imap)
 		return $arrLang["Imap: Connection error"];
-	
 	$quotainfo = imap_get_quotaroot($imap,"INBOX");
-
 	imap_close($imap);
 
 	$content = $arrLang["Quota asigned"]." $quotainfo[limit] KB<br>".$arrLang["Quota Used"]." $quotainfo[usage] KB<br>".$arrLang["Quota free space"]." ". (string)($quotainfo['limit'] - $quotainfo['usage']) . " KB";
-
 	return $content;
    }
 
-   function getMails(){
+   function getMails($email,$passw,$numRegs){
 	global $arrLang;
 	
 	$counter	= 0;
-	$email		= "afigueroa.dominio.org";
-	$passw		= "afigueroa";
-	
 	$imap = imap_open("{localhost:143}INBOX",$email,$passw);
 
 	if(!$imap)
@@ -105,7 +83,7 @@ class paloSantoUserInfo {
 	$result = imap_fetch_overview($imap,"1:{$tmp->Nmsgs}",0);
 	
 	$mails = array();
-
+        //print_r($result);
 	foreach ($result as $overview) {
 		$mails[] = array("seen"=>$overview->seen,
 				 "recent"=>$overview->recent,
@@ -117,7 +95,7 @@ class paloSantoUserInfo {
 	
 	imap_close($imap);
 	
-	$mails = array_slice($mails,-$this->numRegs,$this->numRegs);
+	$mails = array_slice($mails,-$numRegs,$numRegs);
         krsort($mails);
 
 	$content = "";
@@ -129,34 +107,33 @@ class paloSantoUserInfo {
                 $temp = str_replace("{subject}",$value["subject"],$temp);
 
                 $b = ($value["seen"] or $value["answered"])?false:true;
-                
                 if($b)
                 	$temp = "<b>$temp</b>";
                 $content.=$temp."<br>";
 	}
-
 	return $content;
     }
    
-   function getVoiceMails(){
+   function getVoiceMails($extension,$numRegs){
 	global $arrLang;
 	$exists = false;
 	$count = 0;
 
-	if(is_null($this->extension))
+	if(is_null($extension))
                 return $arrLang["You haven't extension"];
 
-	$voicePath = "/var/spool/asterisk/voicemail/default/$this->extension/INBOX";
+	$voicePath = "/var/spool/asterisk/voicemail/default/$extension/INBOX";
 
 	$exists = file_exists($voicePath);
 	
+        $result = array();
 	if($exists)
-		exec("ls -t $voicePath/*txt | head -n $this->numRegs",$result);
+		exec("ls -t $voicePath/*txt | head -n $numRegs",$result);
 	
 	$count = count($result);
 	
 	if(!$exists or ($count == 0))
-		return $arrLAng["You don't recibed voicemails"];
+		return $arrLang["You don't recibed voicemails"];
 	$data ="";
 
 	foreach ($result as $value){
@@ -169,7 +146,6 @@ class paloSantoUserInfo {
 			if(isset($row[1]))
 				$content[$row[0]]=$row[1];
 		}
-
 		fclose($file);
 
 		$date = date('Y/m/d H:i:s',$content["origtime"]);
@@ -177,12 +153,9 @@ class paloSantoUserInfo {
 		$duration = $content["duration"];
 
 		$temp = $arrLang["voicemail recived"];
-
 		$temp = str_replace("{source}",$source,$temp);
                 $temp = str_replace("{date}",$date,$temp);
 		$temp = str_replace("{duration}",$duration,$temp);
-
-
 		$data.="$temp.<br>";
 		
 	}
@@ -190,46 +163,38 @@ class paloSantoUserInfo {
 	return $data;
    }
 
-   function getLastFaxes(){
+   function getLastFaxes($extension,$numRegs){
 	global $arrLang;
 
 	$dbFax = new paloDB("sqlite3:////var/www/db/fax.db");
 
-	if(is_null($this->extension))
+	if(is_null($extension))
                 return $arrLang["You haven't extension"];
 	
-	$result = $dbFax->fetchTable("select a.pdf_file,a.company_name,a.date from info_fax_recvq a,fax b where b.extension='".$this->extension."' and b.id=a.fax_destiny_id order by a.id desc limit $this->numRegs");
-
+	$result = $dbFax->fetchTable("select a.pdf_file,a.company_name,a.date from info_fax_recvq a,fax b where b.extension='$extension' and b.id=a.fax_destiny_id order by a.id desc limit $numRegs");
 	if(!$result)
-		return $arrLang["Query error"];
-
-	if(count($result)==0)
-                return $arrLang["You don't recibed faxes"];
+		return $arrLang["You don't recibed faxes"];
 
 	$data = "";
 
 	foreach($result as $value){
 		$temp = $arrLang["fax recived"];
-		
 		$link="<a href='/faxes/recvq/$value[0]'>$value[0]</a>";
-
 		$temp = str_replace("{file}",$link,$temp);
 		$temp = str_replace("{source}",($value[1]=="XXXXXXX")?$arrLang["unknow"]:$value[1],$temp);
-		$temp = str_replace("{date}",$value[2],$temp);
-		
+		$temp = str_replace("{date}",$value[2],$temp);	
 		$data.= $temp."<br>";
-	}
-	
+	}	
 	return $data;
    }
    
-   function getLastCalls(){
+   function getLastCalls($extension,$numRegs){
 	global $arrLang;
 
-	if(is_null($this->extension))
+	if(is_null($extension))
 		return $arrLang["You haven't extension"];
 	
-	$result = $this->_DB->fetchTable("select calldate,src,duration,disposition from cdr where dst='".$this->extension."'  order by calldate desc limit $this->numRegs");
+	$result = $this->_DB->fetchTable("select calldate,src,duration,disposition from cdr where dst='".$extension."'  order by calldate desc limit $numRegs");
 	if(count($result)==0)
 		return $arrLang["You don't recibed calls"];
 	
@@ -250,6 +215,48 @@ class paloSantoUserInfo {
 	}
 	
 	return $data;
+   }
+
+    function getDataUserLogon($nameUser)
+    {
+        global $arrConf;
+        //consulto datos del usuario logoneado
+        $dbAcl = new paloDB($arrConf["elastix_dsn"]["acl"]);	
+        $pACL  = new paloACL($dbAcl);
+
+        $arrData = null;
+        //paso 1: consulta de los datos de webmail si existen
+        $userId  = $pACL->getIdUser($nameUser);
+        $arrData = $this->leerPropiedadesWebmail($dbAcl,$userId);
+
+        //paso 2: consulta de la extension si tiene asignada
+        $extension = $pACL->getUserExtension($nameUser);
+        if($extension)
+            $arrData['extension'] = $extension;
+        return $arrData;
+    }
+
+    function leerPropiedadesWebmail($pDB, $idUser)
+    {
+        // Obtener la información del usuario con respecto al perfil "default" del módulo "webmail"
+        $sPeticionPropiedades = 
+            'SELECT pp.property, pp.value '.
+            'FROM acl_profile_properties pp, acl_user_profile up, acl_resource r '.
+            'WHERE up.id_user = ? '.
+                'AND up.profile = "default" '.
+                'AND up.id_profile = pp.id_profile '.
+                'AND up.id_resource = r.id '.
+                'AND r.name = "webmail"';
+        $listaPropiedades = array();
+        $tabla = $pDB->fetchTable($sPeticionPropiedades, FALSE, array($idUser));
+        if ($tabla === FALSE) {
+        print "ERROR DE DB: ".$pDB->errMsg;
+        } else {
+        foreach ($tabla as $tupla) {
+            $listaPropiedades[$tupla[0]] = $tupla[1];
+        }
+        }
+        return $listaPropiedades;
    }
 }
 ?>
