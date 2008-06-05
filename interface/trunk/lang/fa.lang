@@ -812,6 +812,9 @@ configuration <br>because some processes need it.",
 "Last Name"	=> "Last Name",
 "Phone Number"	=> "Phone Number",
 "Extension" => "Extension",
+"The call couldn't be realized" => "The call couldn't be realized",
+"Internal" => "Internal",
+"External" => "External",
 /*Adress Book*/
 
 /*User information*/

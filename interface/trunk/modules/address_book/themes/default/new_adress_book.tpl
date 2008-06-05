@@ -7,9 +7,9 @@
         <td align="left">
             {if $Show}
                 <input class="button" type="submit" name="save" value="{$SAVE}">&nbsp;&nbsp;&nbsp;&nbsp;
-        {elseif $Edit}
-        <input class="button" type="submit" name="edit" value="{$EDIT}">&nbsp;&nbsp;&nbsp;&nbsp;
-        {elseif $Commit}
+            {elseif $Edit}
+                <input class="button" type="submit" name="edit" value="{$EDIT}">&nbsp;&nbsp;&nbsp;&nbsp;
+            {elseif $Commit}
                 <input class="button" type="submit" name="commit" value="{$SAVE}">&nbsp;&nbsp;&nbsp;&nbsp;
             {/if}
             <input class="button" type="submit" name="cancel" value="{$CANCEL}">
@@ -24,17 +24,25 @@
                 <td align="left" width="20%"><b>{$name.LABEL}: <span  class="required">*</span></b></td>
                 <td class="required" align="left">{$name.INPUT}</td>
             </tr>
-        <tr>
+            <tr>
                 <td align="left" width="20%"><b>{$last_name.LABEL}: <span  class="required">*</span></b></td>
                 <td class="required" align="left">{$last_name.INPUT}</td>
             </tr>
             <tr>
-                <td align="left"><b>{$telefono.LABEL}: <span  class="required">*</span></b></td>
-                <td align="left">{$telefono.INPUT}</td>
+                {if $Edit}
+                    <td align="left" width="20%"><b>{$type_2.LABEL}: <span  class="required">*</span></b></td>
+                    <td class="required" align="left">{$type_2.INPUT}</td>
+                {else}
+                    {$type}
+                {/if}
             </tr>
-            <tr>
-                <td align="left"><b>{$extension.LABEL}: </b></td>
-                <td align="left">{$extension.INPUT}</td>
+            <tr id='tr_phone'>
+                <td align="left" width="20%"><b>{$telefono.LABEL}: <span  class="required">*</span></b></td>
+                <td class="required" align="left">{$telefono.INPUT}</td>
+            </tr>
+            <tr id='tr_extension'>
+                <td align="left" width="20%"><b>{$extension.LABEL}: <span  class="required">*</span></b></td>
+                <td class="required" align="left">{$extension.INPUT}</td>
             </tr>
             <tr>
                 <td align="left"><b>{$email.LABEL}: </b></td>
@@ -43,3 +51,26 @@
         </table>
     </tr>
 </table>
+{literal}
+    <script type="text/javascript">
+        display_inputs();
+
+        function display_inputs()
+        {
+            var select = document.getElementById('s_type');
+            var valor = select.options[select.selectedIndex].value;
+
+            var phone = document.getElementById('tr_phone');
+            var span_ext = document.getElementById('span_ext');
+            if(valor == "internal")
+            {
+                phone.setAttribute('style', 'display:none;');
+                span_ext.setAttribute('style', 'display:display;');
+            }
+            else{
+                phone.setAttribute('style', 'display:display;');
+                span_ext.setAttribute('style', 'display:none;');
+            }
+        }
+    </script>
+{/literal}

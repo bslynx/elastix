@@ -856,6 +856,9 @@ implementations of Voice over IP around the globe.",
 "Last Name"	=> "Last Name",
 "Phone Number"	=> "Phone Number",
 "Extension" => "Extension",
+"The call couldn't be realized" => "The call couldn't be realized",
+"Internal" => "Internal",
+"External" => "External",
 /*Adress Book*/
 
 /*User information*/

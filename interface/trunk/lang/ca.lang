@@ -898,5 +898,11 @@ a tot el mon.",
 "Retype Webmail password" => "Retype Webmail password",
 "Mail Profile" => "Mail Profile",
 /*USERLIST*/
+
+/*Adress Book*/
+"The call couldn't be realized" => "The call couldn't be realized",
+"Internal" => "Internal",
+"External" => "External",
+/*Adress Book*/
 );
 ?>

@@ -907,6 +907,9 @@ alrededor del mundo.",
 "Last Name"	=> "Apellido",
 "Phone Number"	=> "Teléfono",
 "Extension" => "Extensión",
+"The call couldn't be realized" => "La llamada no pudo ser realizada",
+"Internal" => "Interno",
+"External" => "Externo",
 /*Adress Book*/
 
 /*User information*/
