@@ -64,11 +64,6 @@ a {
   /* background-color: inherit;*/
 }
 
-a:hover {
-  color: <?php echo $color4 ?>;
-  background-color: inherit;
-}
-
 h1 {
   font-size: 200%;
   text-align: center;
