@@ -25,33 +25,33 @@ if ( !defined('IN_PHPC') ) {
 
 function event_submit()
 {
-	global $calendar_name, $day, $month, $year, $db, $vars, $config,
-	       $phpc_script, $view_events, $smarty;
+    global $calendar_name, $day, $month, $year, $db, $vars, $config,
+           $phpc_script, $view_events, $smarty;
 
     $sDirectorioBase = '/tmp';
     $dir_outgoing = "/var/spool/asterisk/outgoing";
 
         /* Validate input */
-	if(isset($vars['id'])) {
-		$id = $vars['id'];
-		$modify = 1;
-	} else {
-		$modify = 0;
-	}
+    if(isset($vars['id'])) {
+        $id = $vars['id'];
+        $modify = 1;
+    } else {
+        $modify = 0;
+    }
 
-	if(isset($vars['description'])) {
-		$description = $vars['description'];
-	} else {
-		$description = '';
-	}
+    if(isset($vars['description'])) {
+        $description = $vars['description'];
+    } else {
+        $description = '';
+    }
 
-	if(isset($vars['subject'])) {
-		$subject = $vars['subject'];
-	} else {
-		$subject = '';
-	}
+    if(isset($vars['subject'])) {
+        $subject = $vars['subject'];
+    } else {
+        $subject = '';
+    }
 
-	if(empty($vars['day']))
+    if(empty($vars['day']))
     {
         require_once "event_form.php";
         $smarty->assign("mb_title", $view_events["Validation Error"]);
@@ -59,7 +59,7 @@ function event_submit()
         return event_form();
     }
 
-	if(empty($vars['month']))
+    if(empty($vars['month']))
     {
         require_once "event_form.php";
         $smarty->assign("mb_title", $view_events["Validation Error"]);
@@ -67,7 +67,7 @@ function event_submit()
         return event_form();
     }
 
-	if(empty($vars['year']))
+    if(empty($vars['year']))
     {
         require_once "event_form.php";
         $smarty->assign("mb_title", $view_events["Validation Error"]);
@@ -75,9 +75,9 @@ function event_submit()
         return event_form();
     }
 
-	if(isset($vars['hour'])) {
+    if(isset($vars['hour'])) {
         $hour = $vars['hour'];
-	} else {
+    } else {
         require_once "event_form.php";
         $smarty->assign("mb_title", $view_events["Validation Error"]);
         $smarty->assign("mb_message", $view_events['No hour was given']);
@@ -104,43 +104,43 @@ function event_submit()
         return event_form();
     }
 
-	if(isset($vars['typeofevent']))
-		$typeofevent = $vars['typeofevent'];
-	else {
+    if(isset($vars['typeofevent']))
+        $typeofevent = $vars['typeofevent'];
+    else {
         require_once "event_form.php";
         $smarty->assign("mb_title", $view_events["Validation Error"]);
         $smarty->assign("mb_message", $view_events['No type of event was given']);
         return event_form();
     }
 
-	if(isset($vars['endday']))
-		$end_day = $vars['endday'];
-	else {
+    if(isset($vars['endday']))
+        $end_day = $vars['endday'];
+    else {
         require_once "event_form.php";
         $smarty->assign("mb_title", $view_events["Validation Error"]);
         $smarty->assign("mb_message", $view_events['No end day was given']);
         return event_form();
     }
 
-	if(isset($vars['endmonth']))
-		$end_month = $vars['endmonth'];
-	else {
+    if(isset($vars['endmonth']))
+        $end_month = $vars['endmonth'];
+    else {
         require_once "event_form.php";
         $smarty->assign("mb_title", $view_events["Validation Error"]);
         $smarty->assign("mb_message", $view_events['No end month was given']);
         return event_form();
     }
 
-	if(isset($vars['endyear']))
-		$end_year = $vars['endyear'];
-	else {
+    if(isset($vars['endyear']))
+        $end_year = $vars['endyear'];
+    else {
         require_once "event_form.php";
         $smarty->assign("mb_title", $view_events["Validation Error"]);
         $smarty->assign("mb_message", $view_events['No end year was given']);
         return event_form();
     }
 
-	if(strlen($subject) > $config['subject_max']) {
+    if(strlen($subject) > $config['subject_max']) {
         require_once "event_form.php";
         $smarty->assign("mb_title", $view_events["Validation Error"]);
         $strErrorMsg = $view_events['Your subject was too long'];
@@ -157,9 +157,9 @@ function event_submit()
     $user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
     $uid = Obtain_UID_From_User($user);
 
-	$startstamp = mktime($hour, $minute, 0, $month, $day, $year);
+    $startstamp = mktime($hour, $minute, 0, $month, $day, $year);
     $date_startstamp = "'" . date('Y-m-d H:i:s', $startstamp) . "'";
-	$endstamp = mktime(0, 0, 0, $end_month, $end_day, $end_year);
+    $endstamp = mktime(0, 0, 0, $end_month, $end_day, $end_year);
     $date_endstamp   = "'" . date('Y-m-d', $endstamp) . "'";
 
     if($endstamp < mktime(0, 0, 0, $month, $day, $year)) {
@@ -169,14 +169,14 @@ function event_submit()
         return event_form();
     }
 
-	$startdate = "strftime('%Y-%m-%d', $date_startstamp)";
+    $startdate = "strftime('%Y-%m-%d', $date_startstamp)";
     $starttime = "strftime('%Y-%m-%d %H:%M:%S', $date_startstamp)";
 
-	$enddate = "strftime('%Y-%m-%d', $date_endstamp)";
+    $enddate = "strftime('%Y-%m-%d', $date_endstamp)";
 
-	$table = SQL_PREFIX . 'events';
+    $table = SQL_PREFIX . 'events';
 
-	if($modify) {
+    if($modify) {
         //Eliminar las llamadas anteriores
         if($modify) {
             $event = get_event_by_id($id);
@@ -218,25 +218,25 @@ function event_submit()
             }
         }
 
-		$query = "UPDATE $table\n"
-			."SET startdate=$startdate,\n"
-			."enddate=$enddate,\n"
-			."starttime=$starttime,\n"
-			."subject='$subject',\n"
-			."description='$description',\n"
-			."eventtype='$typeofevent',\n"
+        $query = "UPDATE $table\n"
+            ."SET startdate=$startdate,\n"
+            ."enddate=$enddate,\n"
+            ."starttime=$starttime,\n"
+            ."subject='$subject',\n"
+            ."description='$description',\n"
+            ."eventtype='$typeofevent',\n"
             ."asterisk_call='$asterisk_call'\n"
-			."WHERE id='$id'";
-	} else {
-		$query = "INSERT INTO $table\n"
-			."(uid, startdate, enddate, starttime,"
-			." subject, description, eventtype, asterisk_call"
+            ."WHERE id='$id'";
+    } else {
+        $query = "INSERT INTO $table\n"
+            ."(uid, startdate, enddate, starttime,"
+            ." subject, description, eventtype, asterisk_call"
             .")\n"
-			."VALUES ('$uid', $startdate, $enddate,"
-			."$starttime, '$subject',"
-			."'$description', '$typeofevent', '$asterisk_call'"
+            ."VALUES ('$uid', $startdate, $enddate,"
+            ."$starttime, '$subject',"
+            ."'$description', '$typeofevent', '$asterisk_call'"
             .")";
-	}
+    }
 
     $result = $db->genQuery($query);
     if(!$result)
@@ -263,8 +263,8 @@ function event_submit()
         }
     }
 
-	//$affected = $db->Affected_Rows($result);
-	//if($affected < 1) return tag('div', $view_events['No changes were made.']);
+    //$affected = $db->Affected_Rows($result);
+    //if($affected < 1) return tag('div', $view_events['No changes were made.']);
 
     //AÑADIDO PARA ELASTIX
     //else
@@ -276,16 +276,24 @@ function event_submit()
         if($asterisk_call=="on")
         {
             $iRetries = 2;
-            $sContenido =   //"Channel: $sTrunk/$tuplaTelf[phone]\n".
-                            "Channel: SIP/212\n".
-                            "CallerID: Reminder <2000>\n".
-                            "MaxRetries: $iRetries\n".
-                            "RetryTime: 60\n".
-                            "WaitTime: 30\n".
-                            "Context: conferences\n".
-                            "Extension: Reminder\n".
-                            "Priority: 1\n".
-                            "Set: ID_EVENT_CALL=$id\n";
+            //Obtener datos sobre quien esta usando el sistema
+            //Channel, description, extension
+            $result = Obtain_Protocol_Current_User();
+
+            $sContenido = "";
+            if($result!=FALSE)
+            {
+                $sContenido =   //"Channel: $sTrunk/$tuplaTelf[phone]\n".
+                                "Channel: {$result['dial']}\n".
+                                "CallerID: Calendar Event <{$result['id']}>\n".
+                                "MaxRetries: $iRetries\n".
+                                "RetryTime: 60\n".
+                                "WaitTime: 30\n".
+                                "Context: calendar-event\n".
+                                "Extension: *7899\n".
+                                "Priority: 1\n".
+                                "Set: ID_EVENT_CALL=$id\n";
+            }
 
             $endstamp = mktime($hour, $minute, 0, $end_month, $end_day, $end_year);
 
@@ -351,7 +359,47 @@ function event_submit()
 
     session_write_close();
 
-	redirect("$phpc_script?action=display&id=$id");
-	return tag('div', attributes('class="box"'), $view_events['Date updated'].": $affected");
+    redirect("$phpc_script?action=display&id=$id");
+    $affected = isset($affected)?$affected:'';
+    return tag('div', attributes('class="box"'), $view_events['Date updated'].": $affected");
+}
+
+function Obtain_Protocol_Current_User()
+{
+    require_once "libs/paloSantoACL.class.php";
+    require_once "libs/paloSantoConfig.class.php";
+
+    global $arrConf;
+
+    $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
+    $arrConfig = $pConfig->leer_configuracion(false);
+
+    $dsnAsterisk = $arrConfig['AMPDBENGINE']['valor']."://".
+                   $arrConfig['AMPDBUSER']['valor']. ":".
+                   $arrConfig['AMPDBPASS']['valor']. "@".
+                   $arrConfig['AMPDBHOST']['valor']."/asterisk";
+
+    $pDB_acl = new paloDB($arrConf['elastix_dsn']['acl']);
+
+    $pACL = new paloACL($pDB_acl);
+    $id_user = $pACL->getIdUser($_SESSION["elastix_user"]);
+    if($id_user != FALSE)
+    {
+        $user = $pACL->getUsers($id_user);
+        if($user != FALSE)
+        {
+            $extension = $user[0][3];
+            if($extension != "")
+            {
+                $pDB = new paloDB($dsnAsterisk);
+
+                $query = "SELECT dial, description, id FROM devices WHERE id=$extension";
+                $result = $pDB->getFirstRowQuery($query, TRUE);
+                if($result != FALSE)
+                    return $result;
+                else return FALSE;
+            }else return FALSE;
+        }else return FALSE;
+    }else return FALSE;
 }
 ?>

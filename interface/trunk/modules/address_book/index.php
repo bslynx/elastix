@@ -177,27 +177,16 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
 
     $arrResult =$padress_book->getAddressBook($limit, $offset, $field, $pattern);
 
-    //echo "<pre>".print_r($arrResult,true)."</pre>";
-
     $arrData = null;
     if(is_array($arrResult) && $total>0){
         foreach($arrResult as $key => $adress_book){
-            $link_phone = "";
-            $link_ext = "";
-
-            if($adress_book['telefono']!="")
-            {
-                $link_phone = "<a href='?menu=$module_name&action=call2phone&id=".$adress_book['id']."'>{$adress_book['telefono']}</a>";
-                $link_ext = $adress_book['extension'];
-            }
-            else $link_ext = "<a href='?menu=$module_name&action=call2phone&id=".$adress_book['id']."'>{$adress_book['extension']}</a>";
-
             $arrTmp[0]  = "<input type='checkbox' name='contact_{$adress_book['id']}'  />";
             $arrTmp[1]  = "<a href='?menu=$module_name&action=show&id=".$adress_book['id']."'>{$adress_book['name']}</a>";
             $arrTmp[2]  = $adress_book['last_name'];
-            $arrTmp[3]  = $link_phone;
-            $arrTmp[4]  = $link_ext;
+            $arrTmp[3]  = $adress_book['telefono'];
+            $arrTmp[4]  = $adress_book['extension'];
             $arrTmp[5]  = $adress_book['email'];
+            $arrTmp[6]  = "<a href='?menu=$module_name&action=call2phone&id=".$adress_book['id']."'><img border=0 src='images/call.png' /></a>";
             $arrData[]  = $arrTmp;
         }
     }
@@ -219,6 +208,8 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
                                             4=> array("name"      => $arrLang["Extension"],
                                                     "property1" => ""),
                                             5=> array("name"      => $arrLang["Email"],
+                                                    "property1" => ""),
+                                            6=> array("name"      => $arrLang["Call"],
                                                     "property1" => "")
                                         )
                     );
@@ -433,11 +424,11 @@ function view_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $ar
 
     $smarty->assign("ID",$id);
 
-    $arrData['name']          = $contactData['name'];
-    $arrData['last_name']     = $contactData['last_name'];
-    $arrData['telefono']      = $contactData['telefono'];
-    $arrData['extension']     = $contactData['extension'];
-    $arrData['email']         = $contactData['email'];
+    $arrData['name']          = isset($_POST['name'])?$_POST['name']:$contactData['name'];
+    $arrData['last_name']     = isset($_POST['last_name'])?$_POST['last_name']:$contactData['last_name'];
+    $arrData['telefono']      = isset($_POST['telefono'])?$_POST['telefono']:$contactData['telefono'];
+    $arrData['extension']     = isset($_POST['extension'])?$_POST['extension']:$contactData['extension'];
+    $arrData['email']         = isset($_POST['email'])?$_POST['email']:$contactData['email'];
 
     if($arrData['telefono']!="")
         $arrData['s_type']        = 'external';

@@ -830,6 +830,7 @@ configuration because some processes need it." => "Queste Reti sono abilitate al
 "The call couldn't be realized" => "The call couldn't be realized",
 "Internal" => "Internal",
 "External" => "External",
+"Call" => "Call",
 /*Adress Book*/
 
 /*User information*/
