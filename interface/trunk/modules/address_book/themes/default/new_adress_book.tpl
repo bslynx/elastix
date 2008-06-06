@@ -30,18 +30,18 @@
             </tr>
             <tr>
                 {if $Edit}
-                    <td align="left" width="20%"><b>{$type_2.LABEL}: <span  class="required">*</span></b></td>
-                    <td class="required" align="left">{$type_2.INPUT}</td>
+                    <td align="left" width="20%"><b>{$type_2.LABEL}: <span class="required">*</span></b></td>
+                    <td class="required" align="left" id="td_type_2">{$type_2.INPUT}</td>
                 {else}
                     {$type}
                 {/if}
             </tr>
             <tr id='tr_phone'>
-                <td align="left" width="20%"><b>{$telefono.LABEL}: <span  class="required">*</span></b></td>
+                <td align="left" width="20%"><b>{$telefono.LABEL}: <span id="span_phone" class="required">*</span></b></td>
                 <td class="required" align="left">{$telefono.INPUT}</td>
             </tr>
             <tr id='tr_extension'>
-                <td align="left" width="20%"><b>{$extension.LABEL}: <span  class="required">*</span></b></td>
+                <td align="left" width="20%"><b>{$extension.LABEL}: <span id="span_ext" style="display:none" class="required">*</span></b></td>
                 <td class="required" align="left">{$extension.INPUT}</td>
             </tr>
             <tr>
@@ -57,8 +57,12 @@
 
         function display_inputs()
         {
+            var valor = '';
             var select = document.getElementById('s_type');
-            var valor = select.options[select.selectedIndex].value;
+            if(select != null)
+                valor = select.options[select.selectedIndex].value;
+            else
+                valor = document.getElementById('td_type_2').firstChild.nodeValue;
 
             var phone = document.getElementById('tr_phone');
             var span_ext = document.getElementById('span_ext');
@@ -67,7 +71,7 @@
                 phone.setAttribute('style', 'display:none;');
                 span_ext.setAttribute('style', 'display:display;');
             }
-            else{
+            else if(valor == "external"){
                 phone.setAttribute('style', 'display:display;');
                 span_ext.setAttribute('style', 'display:none;');
             }

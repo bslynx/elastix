@@ -67,7 +67,10 @@ a array with the field "total" containing the total of records.
 
         $strWhere = "";
 
-        if(!is_null($field_name) and !is_null($field_pattern)) $strWhere .= " $field_name like '%$field_pattern%' ";
+        if(!is_null($field_name) and !is_null($field_pattern))
+            $strWhere .= " $field_name like '%$field_pattern%' ";
+        if($field_name=="telefono")
+            $strWhere .= " or extension like '%$field_pattern%' ";
 
         // Clausula WHERE aqui
         if(!empty($strWhere)) $query .= "WHERE $strWhere ";
@@ -126,5 +129,60 @@ a array with the field "total" containing the total of records.
         else return false;
     }
 
+    function Call2Phone($data_connection, $origen, $destino, $channel, $description)
+    {
+        $command_data['origen'] = $origen;
+        $command_data['destino'] = $destino;
+        $command_data['channel'] = $channel;
+        $command_data['description'] = $description;
+        return $this->AsteriskManager_Originate($data_connection['host'], $data_connection['user'], $data_connection['password'], $command_data);
+    }
+
+    function AsteriskManager_Originate($host, $user, $password, $command_data) {
+        global $arrLang;
+        $astman = new AGI_AsteriskManager();
+
+        if (!$astman->connect("$host", "$user" , "$password")) {
+            $this->errMsg = $arrLang["Error when connecting to Asterisk Manager"];
+        } else{
+            $parameters = $this->Originate($command_data['origen'], $command_data['destino'], $command_data['channel'], $command_data['description']);
+
+            $salida = $astman->send_request('Originate', $parameters);
+
+            $astman->disconnect();
+            if (strtoupper($salida["Response"]) != "ERROR") {
+                return split("\n", $salida["Response"]);
+            }else return false;
+        }
+        return false;
+    }
+
+    function Originate($origen, $destino, $channel="", $description="")
+    {
+        $parameters = array();
+        $parameters['Channel']      = $channel;
+        $parameters['CallerID']     = "$description <$origen>";
+        $parameters['Exten']        = $destino;
+        $parameters['Context']      = "";
+        $parameters['Priority']     = 1;
+        $parameters['Application']  = "";
+        $parameters['Data']         = "";
+
+        return $parameters;
+    }
+
+    function Obtain_Protocol_from_Ext($dsn, $id)
+    {
+        $pDB = new paloDB($dsn);
+
+        $query = "SELECT dial, description FROM devices WHERE id=$id";
+        $result = $pDB->getFirstRowQuery($query, TRUE);
+        if($result != FALSE)
+            return $result;
+        else{
+            $this->errMsg = $pDB->errMsg;
+            return FALSE;
+        }
+    }
 }
 ?>

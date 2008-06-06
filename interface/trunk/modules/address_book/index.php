@@ -221,7 +221,6 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
 
 function createFieldForm($arrLang)
 {
-//    $arrType = array("internal" => $arrLang["Internal"], "external" => $arrLang["External"]);
     $arrFields = array(
                 "name"          => array(   "LABEL"                 => $arrLang["First Name"],
                                             "REQUIRED"              => "yes",
@@ -253,14 +252,6 @@ function createFieldForm($arrLang)
                                             "INPUT_EXTRA_PARAM"     => "",
                                             "VALIDATION_TYPE"       => "ereg",
                                             "VALIDATION_EXTRA_PARAM"=> "([[:alnum:]]|.|_|-){1,}@([[:alnum:]]|.|_|-){1,}"),
-/*
-                "type"          => array(   "LABEL"                 => $arrLang["Type"],
-                                            "REQUIRED"              => "yes",
-                                            "INPUT_TYPE"            => "SELECT",
-                                            "INPUT_EXTRA_PARAM"     => $arrType,
-                                            "VALIDATION_TYPE"       => "",
-                                            "VALIDATION_EXTRA_PARAM"=> ""),
-*/
                 );
     return $arrFields;
 }
