@@ -106,7 +106,7 @@ function event_delete()
 	}
 
 	if($ids == 0) {
-		$html->add(tag('p', $view_events['No items selected.']));
+		$html->add(tag('p', $view_events['No items selected']));
 	}
 
         return $html;
