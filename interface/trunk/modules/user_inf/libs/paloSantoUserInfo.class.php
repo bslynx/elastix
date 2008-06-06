@@ -334,6 +334,9 @@ class paloSantoUserInfo {
             }
         }
 
+        if(count($arrEventos)<1)
+            return $arrLang["You don't have events"];
+
         //Ordenamiento por fechas en orden descendente (antiguos primero)
         $fechas = array();
         //$horas  = array();
