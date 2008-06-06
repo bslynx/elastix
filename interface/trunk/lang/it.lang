@@ -863,6 +863,8 @@ configuration because some processes need it." => "Queste Reti sono abilitate al
 "Error at read yours voicemails." => "Error at read yours voicemails.",
 "Error at read yours mails." => "Error at read yours mails.",
 "Error at read status system." => "Error at read status system.",
+"Error at read your calendar." => "Error at read your calendar.",
+"You don't have events" => "You don't have events.",
 /*User information*/
 
 /*USERLIST*/

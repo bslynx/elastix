@@ -37,10 +37,9 @@
     </td>
     <td width='30%' height="250px" style="padding:4px 0px 0px 4px">
         <table width="100%" height='100%' cellspacing="0" border="0" align="center" style='border:1px solid #000000'>
-                <th width="100%" height="20px" align="left" valign="center" class="moduleTitle">{$im}</th>
+                <th width="100%" height="20px" align="left" valign="center" class="moduleTitle">{$calendar}</th>
                 <tr>
-                <td width='100%' height="80%" valign="top" class="tabForm">
-                </td>
+                <td width='100%' height="80%" valign="top" class="tabForm">{$calendarEvents}</td>
                 </tr>
         </table>
     </td>

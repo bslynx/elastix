@@ -93,7 +93,8 @@ function getUserInformation($local_templates_dir,$module_name)
     $faxRows     =$arrLang["Error at read yours faxes."];
     $voiceMails  =$arrLang["Error at read yours voicemails."];
     $mails       =$arrLang["Error at read yours mails."];
-    $systemStatus=$arrLang["Error at read status system."]; 
+    $systemStatus=$arrLang["Error at read status system."];
+    $eventsRows  =$arrLang["Error at read your calendar."];
 
     $pDB = conectionAsteriskCDR();
     if($pDB){
@@ -107,10 +108,11 @@ function getUserInformation($local_templates_dir,$module_name)
             $numRegs   = 5;
 
             $callsRows   = $objUserInfo->getLastCalls($extension,$numRegs);
-            $faxRows	 = $objUserInfo->getLastFaxes($extension,$numRegs);
-            $voiceMails	 = $objUserInfo->getVoiceMails($extension,$numRegs);
-            $mails	 = $objUserInfo->getMails($email,$passw,$numRegs);
+            $faxRows     = $objUserInfo->getLastFaxes($extension,$numRegs);
+            $voiceMails  = $objUserInfo->getVoiceMails($extension,$numRegs);
+            $mails       = $objUserInfo->getMails($email,$passw,$numRegs);
             $systemStatus= $objUserInfo->getSystemStatus($email,$passw);
+            $eventsRows  = $objUserInfo->getEventsCalendar($arrData['id'], $numRegs);
         }
     }
 
@@ -119,14 +121,14 @@ function getUserInformation($local_templates_dir,$module_name)
     $smarty->assign("emails",$arrLang["Em@ils"]);
     $smarty->assign("faxes",$arrLang["Faxes"]);
     $smarty->assign("voicemails",$arrLang["Voicem@ils"]);
-    //$smarty->assign("im",$arrLang["IM"]);
-    $smarty->assign("im","&nbsp;");
+    $smarty->assign("calendar",$arrLang["Calendar"]);
     $smarty->assign("system",$arrLang["System"]);
     $smarty->assign("callsRows",$callsRows);
     $smarty->assign("faxRows",$faxRows);
     $smarty->assign("voiceMails",$voiceMails);
     $smarty->assign("mails",$mails);
     $smarty->assign("systemStatus",$systemStatus);
+    $smarty->assign("calendarEvents",$eventsRows);
 
     $oForm = new paloForm($smarty,array());
     $contenido = $oForm->fetchForm($local_templates_dir."/user_inf.tpl",$arrLang["User Info"]);

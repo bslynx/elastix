@@ -943,6 +943,8 @@ alrededor del mundo.",
 "Error at read yours voicemails." => "Error al leer tus correos de voz.",
 "Error at read yours mails." => "Error al leer tus correos.",
 "Error at read status system." => "Error al leer el estado de tu sistema.",
+"Error at read your calendar." => "Error al leer tu calendario.",
+"You don't have events" => "No tiene eventos.",
 /*User information*/
 
 /*USERLIST*/

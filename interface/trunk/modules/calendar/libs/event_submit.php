@@ -349,7 +349,7 @@ function event_submit()
                         system("mv $sDirectorioBase/$filename $dir_outgoing/ ");
                     }
 
-                    $iStartTimestamp = strtotime("+1 months", $iStartTimestamp);;
+                    $iStartTimestamp = strtotime("+1 months", $iStartTimestamp);
                     $i++;
                 }
             }
