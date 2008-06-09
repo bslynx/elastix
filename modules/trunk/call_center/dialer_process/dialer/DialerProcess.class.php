@@ -20,7 +20,7 @@
    | Autores: Alex Villacís Lasso <a_villacis@palosanto.com>              |
    +----------------------------------------------------------------------+
   
-   $Id: DialerProcess.class.php,v 1.59 2008/02/01 21:55:27 alex Exp $
+   $Id: DialerProcess.class.php,v 1.2 2008/06/06 06:46:14 alex Exp $
 */
 require_once('AbstractProcess.class.php');
 require_once 'DB.php';
@@ -366,10 +366,10 @@ class DialerProcess extends AbstractProcess
         }        
         
         // Leer tantas llamadas como fueron elegidas. Sólo se leen números con
-        // status == NULL
+        // status == NULL y bandera desactivada
         $sPeticionLlamadas = 
             'SELECT id_campaign, id, phone FROM calls '.
-            'WHERE id_campaign = ? AND status IS NULL LIMIT 0,?';
+            'WHERE id_campaign = ? AND status IS NULL AND dnc = 0 LIMIT 0,?';
 
         $recordset =& $this->_dbConn->query(
             $sPeticionLlamadas, 
@@ -395,6 +395,7 @@ class DialerProcess extends AbstractProcess
                 'WHERE id_campaign = ? '.
                     'AND status NOT IN ("Success", "Placing", "Ringing", "OnQueue", "OnHold") '.
                     'AND retries < ? '.
+                    'AND dnc = 0 '.
                 'ORDER BY fecha_llamada, retries '.
                 'LIMIT 0,?';
             $recordset =& $this->_dbConn->query(

@@ -136,13 +136,13 @@ CREATE TABLE `calls` (
   `transfer` varchar(6) default NULL,
   `datetime_entry_queue` datetime default NULL,
   `duration_wait` int(11) default NULL,
+  `dnc` int(1) NOT NULL default '0',
   PRIMARY KEY  (`id`),
   KEY `id_campaign` (`id_campaign`),
   KEY `calls_ibfk_2` (`id_agent`),
   CONSTRAINT `calls_ibfk_1` FOREIGN KEY (`id_campaign`) REFERENCES `campaign` (`id`),
   CONSTRAINT `calls_ibfk_2` FOREIGN KEY (`id_agent`) REFERENCES `agent` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 
 --
 -- Table structure for table `campaign`
@@ -297,6 +297,18 @@ CREATE TABLE `queue_call_entry` (
   `script` text,
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for table `dont_call`
+--
+DROP TABLE IF EXISTS `dont_call`;
+CREATE TABLE `dont_call` (
+  `id` int(11) NOT NULL auto_increment,
+  `caller_id` varchar(15) NOT NULL,
+  `date_income` datetime default NULL,
+  `status` varchar(1) default NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 /*!40000 ALTER TABLE `queue_call_entry` ENABLE KEYS */;

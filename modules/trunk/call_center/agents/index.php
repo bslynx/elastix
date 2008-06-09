@@ -25,7 +25,7 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: index.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
+  $Id: index.php,v 1.2 2008/06/07 06:28:13 cbarcos Exp $ */
 
 
 
@@ -178,7 +178,10 @@ function _moduleContent(&$smarty, $module_name)
                 // Error claves
                 $smarty->assign("mb_message", $arrLang["The passwords are empty or don't match"]);
                 $contenidoModulo=$oForm->fetchForm("$local_templates_dir/new.tpl", $arrLan["New agent"], $_POST);
-            } else if(!is_numeric($_POST['extension'])) {
+            }elseif( !is_numeric( $_POST['password1'] )) {
+                $smarty->assign("mb_message", $arrLan["The passwords aren't numeric values"]);
+                $contenidoModulo=$oForm->fetchForm("$local_templates_dir/new.tpl", $arrLan["New agent"], $_POST);
+	    }else if(!is_numeric($_POST['extension'])) {
                 // Error grupo
                 $smarty->assign("mb_message", "{$arrLan["Error Agent Number"]}");
                 $contenidoModulo=$oForm->fetchForm("$local_templates_dir/new.tpl", $arrLan["New agent"], $_POST);
@@ -239,7 +242,10 @@ function _moduleContent(&$smarty, $module_name)
 //                $arrFillagent['queue']       = $_POST['queue'];
 		
                 $contenidoModulo=$oForm->fetchForm("$local_templates_dir/new.tpl", $arrLan["Edit agent"], $arrFillagent);
-            } else {
+            } elseif( !is_numeric( $_POST['password1'] )) {
+                $smarty->assign("mb_message", $arrLan["The passwords aren't numeric values"]);
+                $contenidoModulo=$oForm->fetchForm("$local_templates_dir/new.tpl", $arrLan["New agent"], $_POST);
+	    }else {
     
                 // Exito, puedo procesar los datos ahora.
 

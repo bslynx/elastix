@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 0.5                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,19 +25,32 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/03/23 00:13:58 elandivar Exp $ */
+  $Id: es.lang,v 1.2 2007/08/09 00:31:28 jmartinez Exp $ */
+global $arrLan;
+$arrLan=array(
+"Phone List"=>"Phone List",
+"Number Phone's"=>"Number Phone's",
+"Date Income"=>"Date Income",
+"Add"=>"Add",
+"Apply"=>"Apply",
+"Status"=>"Status",
+"Upload File"=>"Upload File",
+"Add new Number"=>"Add new Number",
+"SAVE"=>"SAVE",
+"CANCEL"=>"CANCEL",
+"Remove"=>"Remove",
+"Result"=>"Result",
+"Load File"=>"Load File",
+"Please select any file"=>"Please select any file",
+"Please enter a number phone"=>"Please enter a number phone",
+"Number phone is not numeric value"=>"Number phone isn't a numeric value",
+"Add Number"=>"Add Number",
+"the number already exists"=>"The number already exists",
+"Active" => "Active",
+"Inactive" => "Inactive",
+"Desactivate"=>"Desactivate",
+"Activate"=>"Activate",
+);
 
-$arrConfig['module_name'] = 'agent_console';
-$arrConfig['templates_dir'] = 'themes';
-$tipo_equipos = 'SIP|IAX|ZAP|H323|OH323';
-$prefijo_objeto["prefijo"] = "form_agent_console_";
-$cadena_dsn = "mysql://asterisk:asterisk@localhost/call_center";
-
-$acceso_asterisk['ip']="127.0.0.1";
-$acceso_asterisk['user']="admin";
-$acceso_asterisk['pass']="elastix456";
-
-$acceso_asterisk['ext_parqueo']="70";
-$acceso_asterisk['hardware']="SIP|IAX2|ZAP|H323|OH323";
 
 ?>

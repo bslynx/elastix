@@ -241,12 +241,11 @@ function _moduleContent(&$smarty, $module_name)
 
         $id_extension_channel="";
         $extensions_name = array_keys($extensions);
-        $id_extension = getExtensionActual($_SESSION['elastix_user']);
 
-        if ($id_extension)
-            $id_extension_channel = getExtensionChannel($extensions, $id_extension);
-        else if(isset($_POST['input_extension']) && $_POST['input_extension'])
-            $id_extension_channel = $_POST['input_extension'];
+        // se lo usaba para obtener la extension según la que le pertenece al usuario del Elastix, pero está dando problemas
+        //$id_extension = getExtensionActual($_SESSION['elastix_user']);
+
+        $id_extension_channel = $_POST['input_extension'];
 
         $smarty->assign("EXT_VALUE", $extensions);
         $smarty->assign("EXT_NAME", $extensions_name);

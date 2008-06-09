@@ -25,7 +25,7 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: new_campaign.php $ */
+  $Id: paloSantoCampaignCC.class.php,v 1.2 2008/06/06 07:15:07 cbarcos Exp $ */
 
 include_once("libs/paloSantoDB.class.php");
 
@@ -504,11 +504,36 @@ class paloSantoCampaignCC
 //                 	$this->errMsg = $this->_DB->errMsg;
 //                 } else {
 					foreach ($listaValidada as $tuplaNumero) {
-						$campos = array(
-							'id_campaign'	=>	$idCampaign,
-							'phone'			=>	paloDB::DBCAMPO($tuplaNumero['__PHONE_NUMBER']),
-							'status'		=>	NULL,
-						);
+
+                        /********************************************
+                        ///// codigo agregado por Carlos Barcos
+                        *********************************************/
+                        // obtengo el numero para realizar la busqueda del mismo en la lista de llamadas bloqueadas
+                        $numero = $tuplaNumero['__PHONE_NUMBER'];
+                        // obtengo la lista de llamadas bloqueadas
+                        $listaDontCall=$this->convertir_array($this->getDontCallList());
+                        // evaluo si el numero obtenido esta en la lista dellamadas bloquedas
+			if( in_array($numero,$listaDontCall)){
+                            // si se encuentra marca el campo dnc a 1 para bloquear la llamada
+			    $dnc=1;
+			}else{
+                            // si se encuentra marca el campo dnc a 0 para permitir que se realice la llamada
+			    $dnc=0;
+			}
+                        /********************************************
+                        ///// fin codigo agregado por Carlos Barcos
+                        *********************************************/
+
+                        // arreglo con la informacion necesaria para realizar una llamada
+                        $campos = array(
+				'id_campaign'	=>	$idCampaign,
+				'phone'			=>	paloDB::DBCAMPO($tuplaNumero['__PHONE_NUMBER']),
+				'status'		=>	NULL,
+                                // campo agregado para permitir o denegar la llamada
+				'dnc'		=>	paloDB::DBCAMPO($dnc), // agregado por Carlos Barcos
+			);
+
+
                         $sPeticionSQL = paloDB::construirInsert("calls", $campos);
 						$result = $this->_DB->genQuery($sPeticionSQL);
 						if (!$result) {
@@ -728,6 +753,51 @@ class paloSantoCampaignCC
         }
         return $valido;
     }
+
+/********************************************
+///// codigo agregado por Carlos Barcos
+*********************************************/
+
+    /*
+        Funcion que me permite obtener una lista de llamadas a ser bloquedas
+    */
+    function getDontCallList(){
+	$sql = "select id,caller_id from dont_call where status='A'";
+	$arr_result =& $this->_DB->fetchTable($sql, true);
+	if (!is_array($arr_result)) {
+	    $arr_result = FALSE;
+	    $this->errMsg = $this->_DB->errMsg;
+	}
+	return $arr_result;
+    }
+
+    /*
+        Funcion que permite tomar un arreglo de la forma:
+            [0]=>array("clave"=>valor1)
+            [1]=>array("clave"=>valor2)
+                .
+                .
+                .
+        y convertirlo en otro de la forma:
+            [0]=>valor1
+            [1]=>valor1
+                .
+                .
+                .
+    */
+    function convertir_array($data){
+        $data_modificada=array();
+        if(is_array($data) && count($data)>0){
+            foreach($data as $d){
+                $data_modificada[] = $d["caller_id"];
+            }
+        }
+        return $data_modificada;
+    }
+
+/********************************************
+///// Fin codigo agregado por Carlos Barcos
+*********************************************/
 
 }
 

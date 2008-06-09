@@ -1491,17 +1491,19 @@ function getExtensions($arrConf) {
     return $arrData;
 }
 
+// SE LO USABA PARA OBTENER LA EXTENSIÓN SEGÚN LA QUE LE PERTENECE AL USUARIO DEL ELASTIX, PERO ESTÁ DANDO PROBLEMAS
+
 /* Funcion que retorna la extension asignada al usuario que ingreso a al aplicacion elastix */
-function getExtensionActual($username) {
-    $pDB = getDB();
-    $sQuery = "SELECT extension FROM acl_user WHERE name='$username'";
-    $extension = $pDB->getFirstRowQuery($sQuery, true);
-    if (is_array($extension) && count($extension)>0) {
-        return $extension["extension"];
-    }
-    //$pDB->disconnect();
-    return false;
-}
+// function getExtensionActual($username) {
+//     $pDB = getDB();
+//     $sQuery = "SELECT extension FROM acl_user WHERE name='$username'";
+//     $extension = $pDB->getFirstRowQuery($sQuery, true);
+//     if (is_array($extension) && count($extension)>0) {
+//         return $extension["extension"];
+//     }
+//     //$pDB->disconnect();
+//     return false;
+// }
 
 /* funcion que recive el canal (Ej: SIP/405) y devuelve la extensión (Ej: 405) */
 function getExtensionChannel($extensions, $id_extension) {
