@@ -907,5 +907,10 @@ a tot el mon.",
 "External" => "External",
 "Call" => "Call",
 /*Adress Book*/
+
+/*Calendar*/
+"To create new recordings click" => "To create new recordings click",
+"Here" => "Here",
+/*Calendar*/
 );
 ?>

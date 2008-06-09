@@ -65,6 +65,7 @@ function event_form()
 
         $typeofevent = $row['eventtype'];
         $asterisk_call = $row['asterisk_call']=='on'?'checked':'';
+        $recording = $row['recording'];
 
     } else {
         // case "add":
@@ -91,6 +92,7 @@ function event_form()
         $end_year = $year;
         $typeofevent = isset($vars['typeofevent'])?$vars['typeofevent']:1;
         $asterisk_call = (isset($vars['asterisk_call']) && $vars['asterisk_call']=='on')?'checked':'';
+        $recording = isset($vars['recording'])?$vars['recording']:'';
     }
 
     if($config['hours_24']) {
@@ -121,7 +123,9 @@ function event_form()
 
     $attributes = attributes('class="phpc-main"');
 
-        $day_of_month_sequence = get_day_of_month_sequence($month, $year);
+    $arrRecordings = Obtain_Recordings();
+
+    $day_of_month_sequence = get_day_of_month_sequence($month, $year);
     return tag('form', attributes("action=\"$phpc_script\""),
             tag('table', $attributes,
                 tag('caption', $title),
@@ -171,7 +175,29 @@ function event_form()
                                         )
                             )
                         )
+                    ),
+                    tag('tr',
+                        tag('th', $view_events['Recordings']),
+                        tag('td',
+                            create_select('recording', $arrRecordings, $recording),
+                            "<label style='font-size:8pt;'>".$view_events['To create new recordings click']." <a href='?menu=pbxconfig&display=recordings'> ".$view_events['Here']."</a></label>"
+                        )
                     )
                 )));
+}
+
+function Obtain_Recordings()
+{
+    $archivos = array();
+
+    $path = "/var/lib/asterisk/sounds/custom";
+    if ($handle = opendir($path)) {
+        while (false !== ($dir = readdir($handle))) {
+            if (ereg("(.*)\.[gsm$|wav$]", $dir, $regs)) {
+                $archivos[$regs[1]] = $regs[1];
+            }
+        }
+    }
+    return $archivos;
 }
 ?>

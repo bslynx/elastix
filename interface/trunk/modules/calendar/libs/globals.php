@@ -44,27 +44,27 @@ $month_names = array(
 
 $day_names = array(
                 _($arrLang['Sunday']),
-		_($arrLang['Monday']),
-		_($arrLang['Tuesday']),
-		_($arrLang['Wednesday']),
-		_($arrLang['Thursday']),
-		_($arrLang['Friday']),
-		_($arrLang['Saturday']),
+        _($arrLang['Monday']),
+        _($arrLang['Tuesday']),
+        _($arrLang['Wednesday']),
+        _($arrLang['Thursday']),
+        _($arrLang['Friday']),
+        _($arrLang['Saturday']),
                 );
 
 $short_month_names = array(
-		1 => _($arrLang['Jan']),
-		_($arrLang['Feb']),
-		_($arrLang['Mar']),
-		_($arrLang['Apr']),
-		_($arrLang['May']),
-		_($arrLang['Jun']),
-		_($arrLang['Jul']),
-		_($arrLang['Aug']),
-		_($arrLang['Sep']),
-		_($arrLang['Oct']),
-		_($arrLang['Nov']),
-		_($arrLang['Dec']),
+        1 => _($arrLang['Jan']),
+        _($arrLang['Feb']),
+        _($arrLang['Mar']),
+        _($arrLang['Apr']),
+        _($arrLang['May']),
+        _($arrLang['Jun']),
+        _($arrLang['Jul']),
+        _($arrLang['Aug']),
+        _($arrLang['Sep']),
+        _($arrLang['Oct']),
+        _($arrLang['Nov']),
+        _($arrLang['Dec']),
                 );
 
 $event_types = array(
@@ -131,6 +131,9 @@ $view_events = array(
             'Validation Error' => $arrLang['Validation Error'],
             'yes' => $arrLang['yes'],
             'no' => $arrLang['no'],
+            'Recordings' => $arrLang['Recordings'],
+            'To create new recordings click' => $arrLang['To create new recordings click'],
+            'Here' => $arrLang['Here'],
             );
 
 $general = array(

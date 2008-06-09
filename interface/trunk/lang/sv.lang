@@ -863,6 +863,9 @@ f&ouml;r hantering av kommunikation &ouml;ver IP. Detta Open source programvara 
 "Invalid action" => "Invalid action",
 "That year is too far in the past" => "That year is too far in the past",
 "That year is too far in the future" => "That year is too far in the future",
+
+"To create new recordings click" => "To create new recordings click",
+"Here" => "Here",
 /*Calendar*/
 
 /*Adress Book*/

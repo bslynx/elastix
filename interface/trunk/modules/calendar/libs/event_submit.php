@@ -154,6 +154,10 @@ function event_submit()
         $asterisk_call = 'on';
     else $asterisk_call = 'off';
 
+    if(isset($vars['recording']))
+        $recording = $vars['recording'];
+    else $recording = '';
+
     $user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
     $uid = Obtain_UID_From_User($user);
 
@@ -225,16 +229,17 @@ function event_submit()
             ."subject='$subject',\n"
             ."description='$description',\n"
             ."eventtype='$typeofevent',\n"
-            ."asterisk_call='$asterisk_call'\n"
+            ."asterisk_call='$asterisk_call',\n"
+            ."recording='$recording'\n"
             ."WHERE id='$id'";
     } else {
         $query = "INSERT INTO $table\n"
             ."(uid, startdate, enddate, starttime,"
-            ." subject, description, eventtype, asterisk_call"
+            ." subject, description, eventtype, asterisk_call, recording"
             .")\n"
             ."VALUES ('$uid', $startdate, $enddate,"
             ."$starttime, '$subject',"
-            ."'$description', '$typeofevent', '$asterisk_call'"
+            ."'$description', '$typeofevent', '$asterisk_call', '$recording'"
             .")";
     }
 
@@ -292,6 +297,7 @@ function event_submit()
                                 "Context: calendar-event\n".
                                 "Extension: *7899\n".
                                 "Priority: 1\n".
+                                "Set: FILE_CALL=custom/$recording\n".
                                 "Set: ID_EVENT_CALL=$id\n";
             }
 
