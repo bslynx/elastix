@@ -42,7 +42,7 @@
       <tr>
 	<td width="15%"><img src="images/arrow-8.gif">&nbsp;<b>{$PARTICION_NAME_TITLE}:</b></td>
         <td width="35%"><b>{$particion.fichero}</b></td>
-        <td width="50%" rowspan="5" align="left"><img src='images/pie2.php?du={$particion.uso}%' border='0'></td>
+        <td width="50%" rowspan="5" align="left"><img src='images/pie.php?du={$particion.uso}%' border='0'></td>
       </tr>
       <tr>
         <td width="15%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{$CAPACITY_TITLE}:</td>

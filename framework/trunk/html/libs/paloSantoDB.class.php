@@ -497,5 +497,56 @@ class paloDB {
 
         return $parsed;
     }
+
+    function beginTransaction()
+    {
+        // Revisar existencia de conexión activa
+        if ($this->connStatus) {
+            return false;
+        } else {
+            $this->errMsg = "";
+            if(!$this->conn->beginTransaction())
+            {
+                $this->errMsg = "Error iniciando transaccion - ".print_r($this->conn->errorInfo(), 1);
+                return false;
+            }
+
+            return true;
+        }
+    }
+
+    function commit()
+    {
+        // Revisar existencia de conexión activa
+        if ($this->connStatus) {
+            return false;
+        } else {
+            $this->errMsg = "";
+            if(!$this->conn->commit())
+            {
+                $this->errMsg = "Error ejecutando transaccion - ".print_r($this->conn->errorInfo(), 1);
+                return false;
+            }
+
+            return true;
+        }
+    }
+
+    function rollBack()
+    {
+        // Revisar existencia de conexión activa
+        if ($this->connStatus) {
+            return false;
+        } else {
+            $this->errMsg = "";
+            if(!$this->conn->rollBack())
+            {
+                $this->errMsg = "Error al retroceder transaccion - ".print_r($this->conn->errorInfo(), 1);
+                return false;
+            }
+
+            return true;
+        }
+    }
 }
 ?>
