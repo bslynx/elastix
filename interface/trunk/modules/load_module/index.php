@@ -179,7 +179,7 @@ function verifyFileContent($pDB, &$errorMsg, $arrLang,$oMenu,$oACL)
                                 //verificar que exista una carpeta con ese nombre de menu
                                 if (!file_exists("$tmpDir/$menuid"))
                                 {
-                                    $errorMsg = "No module defined";
+                                    $errorMsg = "No module defined - $menuid";
                                     deleteTmpFolder($tmpDir);
                                     return false;
                                 }
