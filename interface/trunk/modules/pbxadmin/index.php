@@ -26,10 +26,10 @@
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
   $Id: index.php,v 1.3 2007/07/17 00:03:42 gcarrillo Exp $ */
- 
+
 function _moduleContent(&$smarty, $module_name)
 {
-    global $arrConf;
+    global $arrConf, $arrLang;
 
     $salida="";
     $fromElastixAdminPBX=1;
@@ -63,7 +63,7 @@ function _moduleContent(&$smarty, $module_name)
     function microtime_float() { list($usec,$sec) = explode(' ',microtime()); return ((float)$usec+(float)$sec); }
     $benchmark_starttime = microtime_float();
     /*************/
-    
+
     $type = isset($_REQUEST['type'])?$_REQUEST['type']:'setup';
     // Ojo, modifique ligeramente la sgte. linea para que la opcion por omision sea extensions
     if(isset($_REQUEST['display'])) {
@@ -76,7 +76,7 @@ function _moduleContent(&$smarty, $module_name)
     $skip = isset($_REQUEST['skip'])?$_REQUEST['skip']:0;
     $action = isset($_REQUEST['action'])?$_REQUEST['action']:null;
     $quietmode = isset($_REQUEST['quietmode'])?$_REQUEST['quietmode']:'';
-    
+
     // determine module type to show, default to 'setup'
     $type_names = array(
         'tool'=>'Tools',
@@ -162,7 +162,7 @@ function _moduleContent(&$smarty, $module_name)
     $GLOBALS['message'] = isset($message)?$message:'';
     $GLOBALS['fpbx_menu'] = isset($fpbx_menu)?$fpbx_menu:'';
     $GLOBALS['recordings_save_path'] = "/tmp/";
- 
+
     // handle special requests
     if (isset($_REQUEST['handler'])) {
         switch ($_REQUEST['handler']) {
@@ -187,7 +187,7 @@ function _moduleContent(&$smarty, $module_name)
                 //TODO: this could probably be more efficient
                 $module = str_replace('..','.', preg_replace('/[^a-zA-Z0-9-\_\.]/','',$_REQUEST['module']));
                 $file = str_replace('..','.', preg_replace('/[^a-zA-Z0-9-\_\.]/','',$_REQUEST['file']));
-                
+
                 $allowed_exts = array(
                     '.js' => 'text/javascript',
                     '.js.php' => 'text/javascript',
@@ -204,7 +204,7 @@ function _moduleContent(&$smarty, $module_name)
                         $fullpath = 'modules/'.$module.'/'.$file;
                         if (file_exists($fullpath)) {
                             // file exists, and is allowed extension
-    
+
                             // image, css, js types - set Expires to an hour in advance so the client does
                             // not keep checking for them. Replace from header.php
                             if (!$amp_conf['DEVEL']) {
@@ -224,14 +224,14 @@ function _moduleContent(&$smarty, $module_name)
         }
         //exit();
     }
-    
+
     module_run_notification_checks();
-    
+
     $framework_asterisk_running =  checkAstMan();
-    
+
     // get all enabled modules
     // active_modules array used below and in drawselects function and genConf function
-//    $active_modules = module_getinfo(false, MODULE_STATUS_ENABLED);
+    // $active_modules = module_getinfo(false, MODULE_STATUS_ENABLED);
     $active_modules = module_getinfo(false);
 
     $GLOBALS['active_modules'] = $active_modules;
@@ -239,12 +239,12 @@ function _moduleContent(&$smarty, $module_name)
     // Esto lo he puesto aqui porque el modulo blacklist lo requiere
     // en caso de que o exista la clase extension
     require_once("/var/www/html/admin/extensions.class.php");
-    
+
     $fpbx_menu = array();
-    
+
     // pointer to current item in $fpbx_menu, if applicable
     $cur_menuitem = null;
-    
+
     // add module sections to $fpbx_menu
     // Aqui lleno el arreglo fpbx_menu que es quien contiene los elementos del menu
     // Tambien cargo unas funciones y se hacen otras cositas mas como setear la variable
@@ -256,13 +256,13 @@ function _moduleContent(&$smarty, $module_name)
             if (is_file("/var/www/html/admin/modules/{$key}/functions.inc.php")) {
                 require_once("/var/www/html/admin/modules/{$key}/functions.inc.php");
             }
-            
+
             //create an array of module sections to display
             // stored as [items][$type][$category][$name] = $displayvalue
             if (isset($module['items']) && is_array($module['items'])) {
                 // loop through the types
                 foreach($module['items'] as $itemKey => $item) {
-    
+
                     // check access, unless module.xml defines all have access
                     if (!isset($item['access']) || strtolower($item['access']) != 'all') {
                         if (!$_SESSION["AMP_user"]->checkSection($itemKey)) {
@@ -270,7 +270,7 @@ function _moduleContent(&$smarty, $module_name)
                             continue;
                         }
                     }
-    
+
                     if (!$framework_asterisk_running && 
                           ((isset($item['needsenginedb']) && strtolower($item['needsenginedb'] == 'yes')) || 
                           (isset($item['needsenginerunning']) && strtolower($item['needsenginerunning'] == 'yes')))
@@ -280,26 +280,26 @@ function _moduleContent(&$smarty, $module_name)
                     } else {
                         $item['disabled'] = false;
                     }
-    
+
                     if (!in_array($item['type'], $types)) {
                         $types[] = $item['type'];
                     }
-                    
+
                     if (!isset($item['display'])) {
                         $item['display'] = $itemKey;
                     }
-                    
+
                     // reference to the actual module
                     $item['module'] =& $active_modules[$key];
-                    
+
                     // item is an assoc array, with at least array(module=> name=>, category=>, type=>, display=>)
                     $fpbx_menu[$itemKey] = $item;
-                    
+
                     // allow a module to replace our main index page
                     if (($item['display'] == 'index') && ($display == '')) {
                         $display = 'index';
                     }
-                    
+
                     // check current item
                     if ($display == $item['display']) {
                         // found current menuitem, make a reference to it 
@@ -333,7 +333,7 @@ function _moduleContent(&$smarty, $module_name)
             }
         }
     }
-    
+
     // extensions vs device/users ... this is a bad design, but hey, it works
     // Este bloque distingue entre si mostrar el menu de extensiones o en su lugar
     // mostrar los menus de devices y users. Esto es porque existe la posibilidad de 
@@ -344,19 +344,19 @@ function _moduleContent(&$smarty, $module_name)
         unset($fpbx_menu["devices"]);
         unset($fpbx_menu["users"]);
     }
-    
+
     // check access
     if (!is_array($cur_menuitem) && $display != "") {
         showview("noaccess");
         exit;
     }
-    
+
     // load the component from the loaded modules
     if ( $display != '' && isset($configpageinits) && is_array($configpageinits) ) {
-    
+
         $currentcomponent = new component($display,$type);
         $GLOBALS['currentcomponent']=$currentcomponent;
-    
+
         // call every modules _configpageinit function which should just
         // register the gui and process functions for each module, if relevent
         // for this $display
@@ -370,13 +370,13 @@ function _moduleContent(&$smarty, $module_name)
     //  note: we buffer all the output from the 'page' being loaded..
     // This may change in the future, with proper returns, but for now, it's a simple 
     // way to support the old page.item.php include module format.
-    
+
     ob_start();
 
     $module_name = "";
     $module_page = "";
     $module_file = "";
-    
+
     // hack to have our default display handler show the "welcome" view 
     // Note: this probably isn't REALLY needed if there is no menu item for "Welcome"..
     // but it doesn't really hurt, and it provides a handler in case some page links
@@ -384,8 +384,7 @@ function _moduleContent(&$smarty, $module_name)
     if (($display == 'index') && ($cur_menuitem['module']['rawname'] == 'builtin')) {
         $display = '';
     }
-    
-    
+
     // show the appropriate page
     switch($display) {
         default:
@@ -393,7 +392,7 @@ function _moduleContent(&$smarty, $module_name)
             $module_name = $cur_menuitem['module']['rawname'];
             $module_page = $cur_menuitem['display'];
             $module_file = '/var/www/html/admin/modules/'.$module_name.'/page.'.$module_page.'.php';
-    
+
             //TODO Determine which item is this module displaying. Currently this is over the place, we should standarize on a "itemid" request var for now, we'll just cover all possibilities :-(
             $possibilites = array(
                 'userdisplay',
@@ -408,17 +407,16 @@ function _moduleContent(&$smarty, $module_name)
                 if ( isset($_REQUEST[$possibility]) && $_REQUEST[$possibility] != '' ) 
                     $itemid = $_REQUEST[$possibility];
             }
-    
+
             // create a module_hook object for this module's page
             $module_hook = new moduleHook;
-            
+
             // populate object variables
             $module_hook->install_hooks($module_page,$module_name,$itemid);
-    
+
             // let hooking modules process the $_REQUEST
             $module_hook->process_hooks($itemid, $module_name, $module_page, $_REQUEST);
-    
-    
+
             // include the module page
             if (isset($cur_menuitem['disabled']) && $cur_menuitem['disabled']) {
                 showview("menuitem_disabled",$cur_menuitem);
@@ -438,12 +436,12 @@ function _moduleContent(&$smarty, $module_name)
                 // TODO: make this a showview()
                 echo "404 Not found";
             }
-            
+
             // global component
             if ( isset($currentcomponent) ) {
                 echo $currentcomponent->generateconfigpage();
             }
-    
+
         break;
         case 'modules':
             // set these to avoide undefined variable warnings later
@@ -461,7 +459,7 @@ function _moduleContent(&$smarty, $module_name)
             }
         break;
     }
-    
+
     //$salida .= @ob_get_flush();
     $htmlFPBX .= @ob_get_contents();
     ob_end_clean();
@@ -486,6 +484,35 @@ function _moduleContent(&$smarty, $module_name)
 
         $salida .= "<table border=0 cellpadding=2 cellspacing=0 align='center' width='100%'><tr bgcolor='#f6bbbb'><td align='center'><a href='$URL_RELOAD'>Apply Configuration Changes Here</a></td></tr></table>";
     }
+
+    $smarty->assign("Option", $arrLang['Option']);
+    $smarty->assign("Unembedded_freePBX", $arrLang['Unembedded freePBX']);
+    $smarty->assign("Basic", $arrLang['Basic']);
+    $smarty->assign("Extensions", $arrLang['Extensions']);
+    $smarty->assign("Feature_Codes", $arrLang['Feature Codes']);
+    $smarty->assign("General_Settings", $arrLang['General Settings']);
+    $smarty->assign("Outbound_Routes", $arrLang['Outbound Routes']);
+    $smarty->assign("Trunks", $arrLang['Trunks']);
+    $smarty->assign("Inbound_Call_Control", $arrLang['Inbound Call Control']);
+    $smarty->assign("Inbound_Routes", $arrLang['Inbound Routes']);
+    $smarty->assign("Announcements", $arrLang['Announcements']);
+    $smarty->assign("Follow_Me", $arrLang['Follow Me']);
+    $smarty->assign("IVR", $arrLang['IVR']);
+    $smarty->assign("Misc_Destinations", $arrLang['Misc Destinations']);
+    $smarty->assign("Queues", $arrLang['Queues']);
+    $smarty->assign("Ring_Groups", $arrLang['Ring Groups']);
+    $smarty->assign("Time_Conditions", $arrLang['Time Conditions']);
+    $smarty->assign("Internal_Options_Configuration", $arrLang['Internal Options & Configuration']);
+    $smarty->assign("Conferences", $arrLang['Conferences']);
+    $smarty->assign("Misc_Applications", $arrLang['Misc Applications']);
+    $smarty->assign("Music_on_Hold", $arrLang['Music on Hold']);
+    $smarty->assign("PIN_Sets", $arrLang['PIN Sets']);
+    $smarty->assign("Paging_Intercom", $arrLang['Paging and Intercom']);
+    $smarty->assign("Parking_Lot", $arrLang['Parking Lot']);
+    $smarty->assign("System_Recordings", $arrLang['System Recordings']);
+    $smarty->assign("Remote_Access", $arrLang['Remote Access']);
+    $smarty->assign("Callback", $arrLang['Callback']);
+    $smarty->assign("DISA", $arrLang['DISA']);
 
     $smarty->assign("htmlFPBX", $htmlFPBX);
     $salida .= $smarty->fetch("$local_templates_dir/main.tpl");
