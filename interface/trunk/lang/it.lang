@@ -604,11 +604,7 @@ $arrLang=array(
 "Error when connecting to Asterisk Manager" => "Errore durante la connessione ad Asterisk Manager",
 "The conference installation is almost done. To complete it please" => "l\'installazione della conferenza è quasi completato. Per completarlo perfavore",
 
-"These networks are allowed to send e-mail to external domains through the Elastix <br>using the SMTP protocol.
-You must insert one network per row and each network must have the format
-<b>IP/MASK.</b> For example, to allow RELAY from the Elastix you must insert <br>
-127.0.0.1/32 We recommend keeping the 127.0.0.1/32 network in the <br>
-configuration because some processes need it." => "Queste Reti sono abilitate all\'invio di email a domini esterni tramite Elastix <br>usando il protocollo SMTP. Devi inserire un indirizzo per riga ed ognuno deve <br />avere il formato <b>IP/MASK.</b> <br />Per esempio per abilitare l\'invio da Elastix devi inserire <br> Raccomandiamo di mantenere la rete 127.0.0.1/32 nella <br> configurazione poiché alcuni processi ne hanno bisogno.",
+"message about email relay" => "Queste Reti sono abilitate all\'invio di email a domini esterni tramite Elastix <br>usando il protocollo SMTP. Devi inserire un indirizzo per riga ed ognuno deve <br />avere il formato <b>IP/MASK.</b> <br />Per esempio per abilitare l\'invio da Elastix devi inserire <br> Raccomandiamo di mantenere la rete 127.0.0.1/32 nella <br> configurazione poiché alcuni processi ne hanno bisogno.",
 "These IPs are allowed to send faxes through Elastix.  You must insert one IP per row.  We recommend keeping localhost and 127.0.0.1  in the configuration because some processes could need them." => "Questi IP sono abilitati a mandare fax tramite Elastix <br> Devi inserire un indirizzo per riga.  Raccomandiamo di lasciare <br> localhost e 127.0.0.1 nella configurazione poiché alcuni <br> processi ne hanno bisogno.",
 "About Elastix Content" => "Elastix è stato creato sotto la premessa di essere un Sistema di comunicazione Voice over IP basato su Web stabile e semplice da usare. Questo software open source è nato in Equador ed è diventato la soluzione di scelta per implementazioni di Voice over IP in tutto il mondo.",
 "Invalid Format in Parameter" => "Invalid Format in Parameter",

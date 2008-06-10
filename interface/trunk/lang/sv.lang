@@ -280,11 +280,7 @@ $arrLang=array(
 "Error deleting record from table domain"=>"Fel vid borttagning av data fr&aring;n dom&auml;n tabellen",
 "main.cf file was updated successfully but when restarting the mail service failed"=>"main.cf uppdaterades, Det uppstod ett fel vid omstart av mail servern",
 "Relay"=>"Relay",
-"These networks are allowed to send e-mail to external domains through the Elastix <br>using the SMTP protocol.
-You must insert one network per row and each network must have the format
-<b>IP/MASK.</b> For example, to allow RELAY from the Elastix you must insert <br>
-127.0.0.1/32 We recommend keeping the 127.0.0.1/32 network in the <br>
-configuration because some processes need it."=>"Dessa n&auml;tverk &auml;r till&aring;tna att skicka e-post till externa dom&auml;ner genom Elastix <br>SMTP protocol.
+"message about email relay"=>"Dessa n&auml;tverk &auml;r till&aring;tna att skicka e-post till externa dom&auml;ner genom Elastix <br>SMTP protocol.
 Du m&aring;ste skriva in ett n&auml;tverk per rad och varje n&auml;tverk m&aring;ste ha formatet
 <b>IP/MASK.</B> Till exempel, f&ouml;r att till&aring;ta RELAY fr&aring;n Elastix m&aring;ste du skriva in <br>
 127.0.0.1/32 Vi rekommenderar att ha kvar 127.0.0.1/32 n&auml;teverket i konfigurationen f&ouml;r att vissa system resurser kr&auml;ver det!",

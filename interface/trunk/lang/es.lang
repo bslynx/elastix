@@ -281,11 +281,7 @@ $arrLang=array(
 "Error deleting record from table domain"=>"Error al eliminar registro de la tabla dominio.",
 "main.cf file was updated successfully but when restarting the mail service failed"=>"Se modificó el archivo main.cf para incluir el nuevo dominio, pero al reiniciar el servidor de correo ha ocurrido un error",
 "Relay"=>"Relay",
-"These networks are allowed to send e-mail to external domains through the Elastix <br>using the SMTP protocol.
-You must insert one network per row and each network must have the format
-<b>IP/MASK.</b> For example, to allow RELAY from the Elastix you must insert <br>
-127.0.0.1/32 We recommend keeping the 127.0.0.1/32 network in the <br>
-configuration because some processes need it."=>"Estas redes son las que tienen permitido enviar correo a dominios externos, v&iacute;a SMTP, <br>a trav&eacute;s del Elastix.
+"message about email relay"=>"Estas redes son las que tienen permitido enviar correo a dominios externos, v&iacute;a SMTP, <br>a trav&eacute;s del Elastix.
 Se debe ingresar una red por l&iacute;nea y cada red debe tener el formato<br> <b>IP/MASCARA.</b><br>
 Por ejemplo, para permitir RELAY desde el propio Elastix se debe ingresar 127.0.0.1/32.<br>
 Es recomendable que se mantenga a la red 127.0.0.1/32 en la configuraci&oacute;n puesto<br>

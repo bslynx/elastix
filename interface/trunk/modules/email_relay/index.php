@@ -117,11 +117,7 @@ function _moduleContent(&$smarty, $module_name)
 
 
 
-    $relay_msg=$arrLang["These networks are allowed to send e-mail to external domains through the Elastix <br>using the SMTP protocol.
-You must insert one network per row and each network must have the format
-<b>IP/MASK.</b> For example, to allow RELAY from the Elastix you must insert <br>
-127.0.0.1/32 We recommend keeping the 127.0.0.1/32 network in the <br>
-configuration because some processes need it."];
+    $relay_msg=$arrLang["message about email relay"];
     $smarty->assign("APPLY_CHANGES",$arrLang["Apply changes"]);
     $smarty->assign("EMAIL_RELAY_MSG",$relay_msg);
     $smarty->assign("RELAY_CONTENT", $contenido);

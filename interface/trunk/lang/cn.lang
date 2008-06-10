@@ -280,11 +280,7 @@ $arrLang=array(
 "Error deleting record from table domain"=>"从域名表中删除记录出错",
 "main.cf file was updated successfully but when restarting the mail service failed"=>"main.cf文件成功上传但重启邮件服务时出错",
 "Relay"=>"延迟",
-"These networks are allowed to send e-mail to external domains through the Elastix <br>using the SMTP protocol.
-You must insert one network per row and each network must have the format
-<b>IP/MASK.</b> For example, to allow RELAY from the Elastix you must insert <br>
-127.0.0.1/32 We recommend keeping the 127.0.0.1/32 network in the <br>
-configuration because some processes need it."=>"这些网络可以通过Elastix使用SMTP协议 <br> 向外部域发送邮件.
+"message about email relay"=>"这些网络可以通过Elastix使用SMTP协议 <br> 向外部域发送邮件.
 你必须在每一行中输入网络信息，并且每一条网络信息<br>必须按照这样的格式：
 <b>IP/MASK</b>.<br>比如说，为了使Elastix支持RELAY，你必须输入
 127.0.0.1/32. <br> 我们建议在配置中保留 127.0.0.1/32 这条地址 <br>因为一些操作需要用到它。",
