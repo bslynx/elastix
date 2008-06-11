@@ -2,7 +2,7 @@
 require_once("../libs/jpgraph/jpgraph.php");
 require_once("../libs/jpgraph/jpgraph_pie.php");
 require_once("../libs/jpgraph/jpgraph_pie3d.php");
-dl('sqlite3.so');
+
 //cargar el idioma
 include_once("../libs/misc.lib.php");
 load_language("../");

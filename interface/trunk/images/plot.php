@@ -35,7 +35,7 @@ require_once "../libs/paloSantoSampler.class.php";
 //cargar el idioma
 include_once "../libs/misc.lib.php";
 load_language("../");
-if (!extension_loaded('sqlite3')) dl('sqlite3.so');
+
 $msgError='';
 $oSampler = new paloSampler();
 $arrLines = $oSampler->getGraphLinesById($_GET['id_graph']);
