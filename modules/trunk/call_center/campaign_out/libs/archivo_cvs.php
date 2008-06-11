@@ -4,7 +4,6 @@ include_once("../../../configs/default.conf.php");
 include_once("../../../libs/paloSantoDB.class.php");
 require_once("../../../libs/smarty/libs/Smarty.class.php");
 
-//if (!extension_loaded('sqlite3')) dl('sqlite3.so');
 load_language('../../../');
 load_language('../');
 //load_theme("../../../");
