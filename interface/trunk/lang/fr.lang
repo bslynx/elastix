@@ -983,5 +983,21 @@ de Voix sur IP tout autour du globe.",
 "Callback" => "Rappels",
 "DISA" => "DISA",
 /*PBX Configuration*/
+
+/*New Module*/
+"Filter Example" => "Filter Example",
+"Example" => "Example",
+/*New Module*/
+
+/*RECORDINGS*/
+"Recording Name" => "Recording Name",
+"Record" => "Record",
+"Insert the Recording Name" => "Insert the Recording Name",
+"The recording couldn't be realized" => "The recording couldn't be realized",
+"The recording was saved" => "The recording was saved",
+"To continue: record a message then click on save" => "To continue: record a message then click on save",
+"Recording File" => "Recording File",
+"Destiny directory couldn't be created" => "Destiny directory couldn't be created",
+/*RECORDINGS*/
 );
 ?>

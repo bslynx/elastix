@@ -987,5 +987,21 @@ alrededor del mundo.",
 "Callback" => "Devolver Llamada",
 "DISA" => "DISA",
 /*PBX Configuration*/
+
+/*New Module*/
+"Filter Example" => "Ejemplo de Filtro",
+"Example" => "Ejemplo",
+/*New Module*/
+
+/*RECORDINGS*/
+"Recording Name" => "Nombre de Grabación",
+"Record" => "Grabar",
+"Insert the Recording Name" => "Inserte el Nombre de la Grabación",
+"The recording couldn't be realized" => "La grabación no pudo ser realizada",
+"The recording was saved" => "La grabación fue guardada",
+"To continue: record a message then click on save" => "Para continuar: garbe un mensaje luego de click sobre Guardar",
+"Recording File" => "Archivo de Grabación",
+"Destiny directory couldn't be created" => "Directorio destino no pudo ser creado",
+/*RECORDINGS*/
 );
 ?>
