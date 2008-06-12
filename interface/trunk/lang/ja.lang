@@ -902,6 +902,8 @@ FAX送信可能なIPアドレスを１行ずつ入力してください。<br>El
 
 "To create new recordings click" => "To create new recordings click",
 "Here" => "Here",
+
+"No Recording was given, if no exists you must first create a new recording" => "No Recording was given, if no exists you must first create a new recording",
 /*Calendar*/
 
 /*Adress Book*/

@@ -150,13 +150,20 @@ function event_submit()
         return event_form();
     }
 
+    $recording = '';
     if(isset($vars['asterisk_call']))
+    {
         $asterisk_call = 'on';
+        if(isset($vars['recording']))
+            $recording = $vars['recording'];
+        else{
+            require_once "event_form.php";
+            $smarty->assign("mb_title", $view_events["Validation Error"]);
+            $smarty->assign("mb_message", $view_events['No Recording was given, if no exists you must first create a new recording']);
+            return event_form();
+        }
+    }
     else $asterisk_call = 'off';
-
-    if(isset($vars['recording']))
-        $recording = $vars['recording'];
-    else $recording = '';
 
     $user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
     $uid = Obtain_UID_From_User($user);
@@ -283,6 +290,7 @@ function event_submit()
             $iRetries = 2;
             //Obtener datos sobre quien esta usando el sistema
             //Channel, description, extension
+            require_once "elastix_user_info.php";
             $result = Obtain_Protocol_Current_User();
 
             $sContenido = "";
@@ -297,66 +305,69 @@ function event_submit()
                                 "Context: calendar-event\n".
                                 "Extension: *7899\n".
                                 "Priority: 1\n".
-                                "Set: FILE_CALL=custom/$recording\n".
+                                "Set: FILE_CALL=custom/{$result['id']}/$recording\n".
                                 "Set: ID_EVENT_CALL=$id\n";
             }
 
-            $endstamp = mktime($hour, $minute, 0, $end_month, $end_day, $end_year);
-
-            $iStartTimestamp = $startstamp;
-
-            if($typeofevent ==1 || $typeofevent==5)
+            if($sContenido!="")
             {
-                if($typeofevent==1)
-                {
-                    $segundos = 86400;
-                    $num_dias = (($endstamp-$startstamp)/$segundos)+1;//Sumo 1 para incluir el ultimo dia
-                }else if($typeofevent==5)
-                {
-                    $segundos = 604800;
-                    $num_dias = (($endstamp-$startstamp)/$segundos)+1;//Sumo 1 para incluir la ultima semana
-                    $num_dias = (int)$num_dias;
-                }
+                $endstamp = mktime($hour, $minute, 0, $end_month, $end_day, $end_year);
 
-                for($i=0; $i<$num_dias; $i++)
-                {
-                    $filename = "event_{$id}_{$i}.call";
-                    $sFechaInicio = date('Y-m-d H:i:s', $iStartTimestamp);
-                    $iStartTimestamp += $segundos;
-                    $hArchivo = fopen("$sDirectorioBase/$filename", 'w');
-                    if (!$hArchivo) {
-                        $bExito = FALSE;
-                        $this->errMsg = "No se puede crear archivo de llamada $filename";
-                        break;
-                    } else {
-                        fwrite($hArchivo, $sContenido);
-                        fclose($hArchivo);
-                        system("touch -d '$sFechaInicio' $sDirectorioBase/$filename");
-                        system("mv $sDirectorioBase/$filename $dir_outgoing/");
-                    }
-                }
-            }else if($typeofevent==6)
-            {
-                $i=0;
-                while($iStartTimestamp <= $endstamp)
-                {
-                    $filename = "event_{$id}_{$i}.call";
-                    $sFechaInicio = date('Y-m-d H:i:s', $iStartTimestamp);
+                $iStartTimestamp = $startstamp;
 
-                    $hArchivo = fopen("$sDirectorioBase/$filename", 'w');
-                    if (!$hArchivo) {
-                        $bExito = FALSE;
-                        $this->errMsg = "No se puede crear archivo de llamada $filename";
-                        break;
-                    } else {
-                        fwrite($hArchivo, $sContenido);
-                        fclose($hArchivo);
-                        system("touch -d '$sFechaInicio' $sDirectorioBase/$filename");
-                        system("mv $sDirectorioBase/$filename $dir_outgoing/ ");
+                if($typeofevent ==1 || $typeofevent==5)
+                {
+                    if($typeofevent==1)
+                    {
+                        $segundos = 86400;
+                        $num_dias = (($endstamp-$startstamp)/$segundos)+1;//Sumo 1 para incluir el ultimo dia
+                    }else if($typeofevent==5)
+                    {
+                        $segundos = 604800;
+                        $num_dias = (($endstamp-$startstamp)/$segundos)+1;//Sumo 1 para incluir la ultima semana
+                        $num_dias = (int)$num_dias;
                     }
 
-                    $iStartTimestamp = strtotime("+1 months", $iStartTimestamp);
-                    $i++;
+                    for($i=0; $i<$num_dias; $i++)
+                    {
+                        $filename = "event_{$id}_{$i}.call";
+                        $sFechaInicio = date('Y-m-d H:i:s', $iStartTimestamp);
+                        $iStartTimestamp += $segundos;
+                        $hArchivo = fopen("$sDirectorioBase/$filename", 'w');
+                        if (!$hArchivo) {
+                            $bExito = FALSE;
+                            $this->errMsg = "No se puede crear archivo de llamada $filename";
+                            break;
+                        } else {
+                            fwrite($hArchivo, $sContenido);
+                            fclose($hArchivo);
+                            system("touch -d '$sFechaInicio' $sDirectorioBase/$filename");
+                            system("mv $sDirectorioBase/$filename $dir_outgoing/");
+                        }
+                    }
+                }else if($typeofevent==6)
+                {
+                    $i=0;
+                    while($iStartTimestamp <= $endstamp)
+                    {
+                        $filename = "event_{$id}_{$i}.call";
+                        $sFechaInicio = date('Y-m-d H:i:s', $iStartTimestamp);
+
+                        $hArchivo = fopen("$sDirectorioBase/$filename", 'w');
+                        if (!$hArchivo) {
+                            $bExito = FALSE;
+                            $this->errMsg = "No se puede crear archivo de llamada $filename";
+                            break;
+                        } else {
+                            fwrite($hArchivo, $sContenido);
+                            fclose($hArchivo);
+                            system("touch -d '$sFechaInicio' $sDirectorioBase/$filename");
+                            system("mv $sDirectorioBase/$filename $dir_outgoing/ ");
+                        }
+
+                        $iStartTimestamp = strtotime("+1 months", $iStartTimestamp);
+                        $i++;
+                    }
                 }
             }
         }
@@ -368,44 +379,5 @@ function event_submit()
     redirect("$phpc_script?action=display&id=$id");
     $affected = isset($affected)?$affected:'';
     return tag('div', attributes('class="box"'), $view_events['Date updated'].": $affected");
-}
-
-function Obtain_Protocol_Current_User()
-{
-    require_once "libs/paloSantoACL.class.php";
-    require_once "libs/paloSantoConfig.class.php";
-
-    global $arrConf;
-
-    $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
-    $arrConfig = $pConfig->leer_configuracion(false);
-
-    $dsnAsterisk = $arrConfig['AMPDBENGINE']['valor']."://".
-                   $arrConfig['AMPDBUSER']['valor']. ":".
-                   $arrConfig['AMPDBPASS']['valor']. "@".
-                   $arrConfig['AMPDBHOST']['valor']."/asterisk";
-
-    $pDB_acl = new paloDB($arrConf['elastix_dsn']['acl']);
-
-    $pACL = new paloACL($pDB_acl);
-    $id_user = $pACL->getIdUser($_SESSION["elastix_user"]);
-    if($id_user != FALSE)
-    {
-        $user = $pACL->getUsers($id_user);
-        if($user != FALSE)
-        {
-            $extension = $user[0][3];
-            if($extension != "")
-            {
-                $pDB = new paloDB($dsnAsterisk);
-
-                $query = "SELECT dial, description, id FROM devices WHERE id=$extension";
-                $result = $pDB->getFirstRowQuery($query, TRUE);
-                if($result != FALSE)
-                    return $result;
-                else return FALSE;
-            }else return FALSE;
-        }else return FALSE;
-    }else return FALSE;
 }
 ?>

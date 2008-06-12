@@ -896,6 +896,8 @@ alrededor del mundo.",
 
 "To create new recordings click" => "Para crear una nueva grabación, click",
 "Here" => "Aquí",
+
+"No Recording was given, if no exists you must first create a new recording" => "No se dió una grabación, si no existe primero debe crear una nueva grabación",
 /*Calendar*/
 
 /*Adress Book*/

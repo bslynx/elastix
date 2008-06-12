@@ -123,7 +123,11 @@ function event_form()
 
     $attributes = attributes('class="phpc-main"');
 
-    $arrRecordings = Obtain_Recordings();
+    require_once "elastix_user_info.php";
+    $arrRecordings = Obtain_Recordings_Current_User();
+    $finSelect = '';
+    if(count($arrRecordings)<1)
+        $finSelect = '</select>';
 
     $day_of_month_sequence = get_day_of_month_sequence($month, $year);
     return tag('form', attributes("action=\"$phpc_script\""),
@@ -180,24 +184,10 @@ function event_form()
                         tag('th', $view_events['Recordings']),
                         tag('td',
                             create_select('recording', $arrRecordings, $recording),
-                            "<label style='font-size:8pt;'>".$view_events['To create new recordings click']." <a href='?menu=pbxconfig&display=recordings'> ".$view_events['Here']."</a></label>"
+                            $finSelect,
+                            "<label style='font-size:8pt;'>&nbsp;&nbsp;&nbsp;&nbsp;".$view_events['To create new recordings click']." <a href='?menu=recordings'> ".$view_events['Here']."</a></label>"
                         )
                     )
                 )));
-}
-
-function Obtain_Recordings()
-{
-    $archivos = array();
-
-    $path = "/var/lib/asterisk/sounds/custom";
-    if ($handle = opendir($path)) {
-        while (false !== ($dir = readdir($handle))) {
-            if (ereg("(.*)\.[gsm$|wav$]", $dir, $regs)) {
-                $archivos[$regs[1]] = $regs[1];
-            }
-        }
-    }
-    return $archivos;
 }
 ?>

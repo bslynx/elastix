@@ -843,6 +843,8 @@ implementations of Voice over IP around the globe.",
 
 "To create new recordings click" => "To create new recordings click",
 "Here" => "Here",
+
+"No Recording was given, if no exists you must first create a new recording" => "No Recording was given, if no exists you must first create a new recording",
 /*Calendar*/
 
 /*Adress Book*/
