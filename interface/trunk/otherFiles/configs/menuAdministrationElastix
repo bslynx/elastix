@@ -27,7 +27,7 @@ if [ "$elastix_version" \< "1.1" ]; then
     #paso 1: repaldo de bases
         cp $pathDB/menu.db $pathDB/menu_old.db
         cp $pathDB/acl.db  $pathDB/acl_old.db
-        echo "End step 1, backup databases"
+        echo "End step 1, backup databases..."
     if [ $modificadoPorUsuarioMenuDb -eq 0 ]; then
         #paso 2: elimino menus viejos
             sqlite3 $pathDB/menu.db "delete from menu where id='freepbx';"
@@ -66,7 +66,7 @@ if [ "$elastix_version" \< "1.1" ]; then
             sqlite3 $pathDB/acl.db  "delete from acl_resource where name='backuplist';"
             sqlite3 $pathDB/acl.db  "delete from acl_group_permission where id_resource=(select id from acl_resource where name='ports_details');"
             sqlite3 $pathDB/acl.db  "delete from acl_resource where name='ports_details';"
-            echo "End step 2, delete menus olds"
+            echo "End step 2, delete menus olds..."
         
         #paso 3: Insertar menus creados por usuarios, se inserta primero todos los menus nuevos y despues los del usuario.
             sqlite3 $pathDB/menu.db "alter table menu rename to menu_old;"
@@ -78,11 +78,11 @@ if [ "$elastix_version" \< "1.1" ]; then
                 echo "insert row $i to table menu." ; 
                 sqlite3 $pathDB/menu.db "insert into menu select id,idParent,link,name,type from menu_old where id='$i';"
             done
-            echo "End step 3, insert menus create for user"
+            echo "End step 3, insert menus create for user..."
         
         #paso 4: Eliminar tabla menu_old creada temporalmente
             sqlite3 $pathDB/menu.db "drop table menu_old;"
-            echo "End step 4, delete table temporalable menu_old"
+            echo "End step 4, delete table temporalable menu_old..."
     fi
     if [ $modificadoPorUsuarioAclDb -eq 0 ]; then
         #paso 5: Insertar permisos de nuevos menus al usuario administrador (tablas acl_resource y acl_group_permission) 
@@ -97,14 +97,34 @@ if [ "$elastix_version" \< "1.1" ]; then
                     sqlite3 $pathDB/acl.db "insert into acl_resource(name,description) select name,description from acl_resource_new where name='$i'; insert into acl_group_permission(id_action,id_group,id_resource) values (1,1,(select last_insert_rowid()))"
                 fi
             done
-            echo "End step 5, insert permission new menus at user administrator"
+            echo "End step 5, insert permission new menus at user administrator..."
         
         #paso 6: Eliminar tabla acl_resource_new creada temporalmente
             sqlite3 $pathDB/acl.db "drop table acl_resource_new;"
-            echo "End step 6, delete table temporalable acl_resource_new"
+            echo "End step 6, delete table temporalable acl_resource_new..."
+
+       #paso 7: En elastix 1.1 se agrego dos tablas a la base acl por lo tanto aumenta el numero de pasos y su enumeracion cambia.
+       #        Se agrega la tabla acl_profile_properties y la tabla acl_user_profile.
+            sqlite3 $pathDB/acl.db "select count(*) from acl_user_profile" &>/dev/null  
+            existeTableAclUserProfile=$?
+            sqlite3 $pathDB/acl.db "select count(*) from acl_profile_properties" &>/dev/null  
+            existeTableAclProfileProperties=$?
+            if [ $existeTableAclUserProfile -ne 0 ]; then
+                echo "Not exists table acl_user_profile."
+                sqlite3 $pathTmpDB/acl.db.rpmnew ".dump acl_user_profile" > $pathTmpDB/acl_user_profile.table
+                sqlite3 $pathDB/acl.db ".read $pathTmpDB/acl_user_profile.table"
+                echo "created table acl_user_profile."
+            fi
+            if [ $existeTableAclProfileProperties -ne 0 ]; then
+                echo "Not exists table acl_profile_properties."
+                sqlite3 $pathTmpDB/acl.db.rpmnew ".dump acl_profile_properties" > $pathTmpDB/acl_profile_properties.table
+                sqlite3 $pathDB/acl.db ".read $pathTmpDB/acl_profile_properties.table"
+                echo "created table acl_profile_properties."
+            fi
+            echo "End step 7, DataBase acl verification and tables complete..."
     fi
     if [ $modificadoPorUsuarioFaxDb -eq 0 ]; then
-        #paso 7: Ver si la base fax es la ultima
+        #paso 8: Ver si la base fax es la ultima
             sqlite3 $pathDB/fax.db "select count(*) from fax" &>/dev/null  
             existeTableFax=$?
             sqlite3 $pathDB/fax.db "select count(*) from syslog" &>/dev/null  
@@ -138,38 +158,39 @@ if [ "$elastix_version" \< "1.1" ]; then
                 sqlite3 $pathDB/fax.db ".read $pathTmpDB/configuration_fax_mail.table"
                 echo "created table configuration_fax_mail"
             fi
-            echo "End step 7, DataBase fax verification and tables complete"
+            echo "End step 8, DataBase fax verification and tables complete..."
     fi
-    #paso 8: Eliminar los temporales
+    #paso 9: Eliminar los temporales
         rm -rf /usr/share/elastix/tmp/sqlite3/
-        echo "End step 8, delete path temporaly"
+        echo "End step 9, delete path temporaly..."
 fi
 
-#paso 9: 
+#paso 10: 
 # Validation for rate.db exists column trunk.
 sqlite3  $pathDB/rate.db "alter table rate add column trunk TEXT;" &>/dev/null  
 existeColumnTrunk=$?
 if [ $existeColumnTrunk -ne 0 ]; then
-    echo "End step 9, Column trunk in database rate.db exists."
+    echo "End step 10, Column trunk in database rate.db exists."
 else
-    echo "End step 9, Column trunk in database rate.db added."
+    echo "End step 10, Column trunk in database rate.db added."
 fi
 
-#paso 10:
+#paso 11:
 # Validation for fax.db existeTableFax columns country_code and area_code
 sqlite3  $pathDB/fax.db "alter table fax add column country_code varchar(16);" &>/dev/null  
 existeColumnCountryCode=$?
 sqlite3  $pathDB/fax.db "alter table fax add column area_code varchar(16);" &>/dev/null  
 existeColumnAreaCode=$?
 if [ $existeColumnCountryCode -ne 0 ]; then
-    echo "End step 10, Column country_code in database fax.db exists."
+    echo "End step 11, Column country_code in database fax.db exists."
 else
-    echo "End step 10, Column country_code in database fax.db added."
+    echo "End step 11, Column country_code in database fax.db added."
 fi
 
+#paso 12:
 if [ $existeColumnAreaCode -ne 0 ]; then
-    echo "End step 11, Column area_code in database fax.db exists."
+    echo "End step 12, Column area_code in database fax.db exists."
 else
-    echo "End step 11, Column area_code in database fax.db added."
+    echo "End step 12, Column area_code in database fax.db added."
 fi
 ################## End Administration Menus and permission ##########################
