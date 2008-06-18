@@ -995,7 +995,7 @@ alrededor del mundo.",
 /*New Module*/
 
 /*RECORDINGS*/
-"Recording Name" => "Nombre de Grabación",
+"Record Name" => "Nombre de Grabación",
 "Record" => "Grabar",
 "Insert the Recording Name" => "Inserte el Nombre de la Grabación",
 "The recording couldn't be realized" => "La grabación no pudo ser realizada",

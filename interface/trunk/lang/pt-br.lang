@@ -992,7 +992,7 @@ implementations of Voice over IP around the globe.",
 /*New Module*/
 
 /*RECORDINGS*/
-"Recording Name" => "Recording Name",
+"Record Name" => "Record Name",
 "Record" => "Record",
 "Insert the Recording Name" => "Insert the Recording Name",
 "The recording couldn't be realized" => "The recording couldn't be realized",

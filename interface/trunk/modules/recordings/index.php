@@ -220,8 +220,8 @@ function form_Recordings($smarty, $module_name, $local_templates_dir, $arrLang)
 
     $oForm = new paloForm($smarty,array());
 
-    $smarty->assign("recording_name_Label", $arrLang["Recording Name"]);
-    $smarty->assign("record_Label", $arrLang["Recording File"]);
+    $smarty->assign("recording_name_Label", $arrLang["Record Name"]);
+    $smarty->assign("record_Label", $arrLang["File Upload"]);
 
     $smarty->assign("Record", $arrLang["Record"]);
     $smarty->assign("SAVE", $arrLang["Save"]);

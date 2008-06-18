@@ -13,8 +13,21 @@ function Obtain_Recordings_Current_User()
     $ext = $pACL->getUserExtension($username);
     if($ext)
     {
-        $path = "/var/lib/asterisk/sounds/custom/$ext";
-        if(file_exists($path))
+        $folder_path = "/var/lib/asterisk/sounds/custom";
+        $path = "$folder_path/$ext";
+
+        $retval = 0;
+        if(!file_exists($path))
+        {
+            $comando = "mkdir -p $path";
+            exec($comando, $output, $retval);
+            if ($retval==0){
+                $comando = "ln -s $folder_path/calendarEvent.gsm $path/calendarEvent.gsm";
+                exec($comando, $output, $retval);
+            }
+        }
+
+        if(!$retval)
         {
             if ($handle = opendir($path)) {
                 while (false !== ($dir = readdir($handle))) {

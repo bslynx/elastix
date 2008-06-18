@@ -1000,7 +1000,7 @@ configuration because some <br> processes could need them.",
 /*New Module*/
 
 /*RECORDINGS*/
-"Recording Name" => "Recording Name",
+"Record Name" => "Record Name",
 "Record" => "Record",
 "Insert the Recording Name" => "Insert the Recording Name",
 "The recording couldn't be realized" => "The recording couldn't be realized",
