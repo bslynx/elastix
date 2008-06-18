@@ -198,8 +198,7 @@ function new_recording($smarty, $module_name, $local_templates_dir, $arrLang, $p
                 $smarty->assign("mb_title", $arrLang['ERROR'].":");
                 $smarty->assign("mb_message", $arrLang["The call couldn't be realized"]);
             }
-        }
-        else{
+        }else{
             $smarty->assign("mb_title", $arrLang['ERROR'].":");
             $smarty->assign("mb_message", $arrLang["You don't have extension number associated with user"]);
         }
@@ -229,6 +228,8 @@ function form_Recordings($smarty, $module_name, $local_templates_dir, $arrLang)
     $smarty->assign("TITLE", "Recordings");
     $smarty->assign("IMG", "images/list.png");
     $smarty->assign("module_name", $module_name);
+    $smarty->assign("file_upload", $arrLang["File Upload"]);
+    $smarty->assign("record", $arrLang["Record"]);
 
     $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl", "", $_POST);
 

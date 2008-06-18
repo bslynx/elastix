@@ -5,15 +5,23 @@
     <tr>
         <table class="tabForm" style="font-size: 16px;" width="100%" >
             <tr class="letra12">
-                <td width="1%"><input type="radio" name="option_record" id="record_by_phone" value="by_record" {$check_record} onclick="Activate_Option_Record()" /></td>
-                <td width="20%" align="left"><b>{$recording_name_Label}</b></td>
+                <td>
+                    <input type="radio" name="option_record" id="record_by_phone" value="by_record" {$check_record} onclick="Activate_Option_Record()" />
+                    {$record}
+                </td>
+                <td>
+                    <input type="radio" name="option_record" id="record_by_file" value="by_file" {$check_file} onclick="Activate_Option_Record()" />
+                    {$file_upload}
+                </td>
+            </tr>
+            <tr class="letra12">
+                <td width="15%" align="left"><b>{$recording_name_Label}</b></td>
                 <td width="40%" align="left">
                     <input name="recording_name" id="recording_name" type="text" value="{$filename}" />[.gsm|.wav] <input class="button" type="submit" name="record" id="record" value="{$Record}" />
                 </td>
                 <td></td>
             </tr>
             <tr class="letra12">
-                <td><input type="radio" name="option_record" id="record_by_file" value="by_file" {$check_file} onclick="Activate_Option_Record()" /></td>
                 <td align="left"><b>{$record_Label}</b></td>
                 <td align="left">
                     <input name="file_record" id="file_record" type="file" value="{$file_record_name}" size='30' />
