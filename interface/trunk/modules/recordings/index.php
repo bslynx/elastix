@@ -199,6 +199,10 @@ function new_recording($smarty, $module_name, $local_templates_dir, $arrLang, $p
                 $smarty->assign("mb_message", $arrLang["The call couldn't be realized"]);
             }
         }
+        else{
+            $smarty->assign("mb_title", $arrLang['ERROR'].":");
+            $smarty->assign("mb_message", $arrLang["You don't have extension number associated with user"]);
+        }
     }
     else{
         $smarty->assign("mb_title", $arrLang["Validation Error"]);
