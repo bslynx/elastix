@@ -946,6 +946,7 @@ alrededor del mundo.",
 "Error at read status system." => "Error al leer el estado de tu sistema.",
 "Error at read your calendar." => "Error al leer tu calendario.",
 "You don't have events" => "No tiene eventos.",
+"You don't have a webmail account" => "No tiene una cuenta webmail",
 /*User information*/
 
 /*USERLIST*/

@@ -887,6 +887,7 @@ a tot el mon.",
 "Error at read status system." => "Error at read status system.",
 "Error at read your calendar." => "Error at read your calendar.",
 "You don't have events" => "You don't have events.",
+"You don't have a webmail account" => "You don't have a webmail account",
 
 /*USERLIST*/
 /* Additional strings for webmail auto-login extension */

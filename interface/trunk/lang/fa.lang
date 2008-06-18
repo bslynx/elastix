@@ -851,6 +851,7 @@ configuration <br>because some processes need it.",
 "Error at read status system." => "Error at read status system.",
 "Error at read your calendar." => "Error at read your calendar.",
 "You don't have events" => "You don't have events.",
+"You don't have a webmail account" => "You don't have a webmail account",
 /*User information*/
 
 /*USERLIST*/

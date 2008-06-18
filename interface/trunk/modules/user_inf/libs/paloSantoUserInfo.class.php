@@ -53,9 +53,11 @@ class paloSantoUserInfo {
    function getSystemStatus($email,$passw){
     global $arrLang;
         global $arrConf;
-    
+
     $dbEmails = new paloDB("sqlite3:////var/www/db/email.db");
-    $imap = imap_open("{localhost:143}",$email,$passw);
+    if($email!='' && $passw!='')
+        $imap = imap_open("{localhost:143}",$email,$passw);
+    else return $arrLang["You don't have a webmail account"];
 
     if (!$imap)
         return $arrLang["Imap: Connection error"];
@@ -68,9 +70,12 @@ class paloSantoUserInfo {
 
    function getMails($email,$passw,$numRegs){
     global $arrLang;
-    
+
     $counter    = 0;
-    $imap = imap_open("{localhost:143}INBOX",$email,$passw);
+
+    if($email!='' && $passw!='')
+        $imap = imap_open("{localhost:143}INBOX",$email,$passw);
+    else return $arrLang["You don't have a webmail account"];
 
     if(!$imap)
         return $arrLang["Imap: Connection error"];
@@ -81,7 +86,7 @@ class paloSantoUserInfo {
         return $arrLang["You don't recibed emails"];
 
     $result = imap_fetch_overview($imap,"1:{$tmp->Nmsgs}",0);
-    
+
     $mails = array();
         //print_r($result);
     foreach ($result as $overview) {
@@ -92,9 +97,9 @@ class paloSantoUserInfo {
                  "from"=>$overview->from,
                  "subject"=>$overview->subject);
     }
-    
+
     imap_close($imap);
-    
+
     $mails = array_slice($mails,-$numRegs,$numRegs);
         krsort($mails);
 
@@ -113,7 +118,7 @@ class paloSantoUserInfo {
     }
     return $content;
     }
-   
+
    function getVoiceMails($extension,$numRegs){
     global $arrLang;
     $exists = false;
@@ -125,13 +130,13 @@ class paloSantoUserInfo {
     $voicePath = "/var/spool/asterisk/voicemail/default/$extension/INBOX";
 
     $exists = file_exists($voicePath);
-    
+
         $result = array();
     if($exists)
         exec("ls -t $voicePath/*txt | head -n $numRegs",$result);
-    
+
     $count = count($result);
-    
+
     if(!$exists or ($count == 0))
         return $arrLang["You don't recibed voicemails"];
     $data ="";
@@ -141,7 +146,7 @@ class paloSantoUserInfo {
         $file = fopen($value,"r");
         if(!$file)
             return $arrLang["Unenabled to open file"];
-        
+
         while($row = fgetcsv($file,4096,"=")){
             if(isset($row[1]))
                 $content[$row[0]]=$row[1];
@@ -157,9 +162,7 @@ class paloSantoUserInfo {
                 $temp = str_replace("{date}",$date,$temp);
         $temp = str_replace("{duration}",$duration,$temp);
         $data.="$temp.<br>";
-        
     }
-    
     return $data;
    }
 
@@ -170,7 +173,7 @@ class paloSantoUserInfo {
 
     if(is_null($extension))
                 return $arrLang["You haven't extension"];
-    
+
     $result = $dbFax->fetchTable("select a.pdf_file,a.company_name,a.date from info_fax_recvq a,fax b where b.extension='$extension' and b.id=a.fax_destiny_id order by a.id desc limit $numRegs");
     if(!$result)
         return $arrLang["You don't recibed faxes"];
@@ -187,17 +190,17 @@ class paloSantoUserInfo {
     }   
     return $data;
    }
-   
+
    function getLastCalls($extension,$numRegs){
     global $arrLang;
 
     if(is_null($extension))
         return $arrLang["You haven't extension"];
-    
+
     $result = $this->_DB->fetchTable("select calldate,src,duration,disposition from cdr where dst='".$extension."'  order by calldate desc limit $numRegs");
     if(count($result)==0)
         return $arrLang["You don't recibed calls"];
-    
+
     $data = "";
     foreach($result as $value){
         $answ=($value[3]=="ANSWERED") ? true:false;
@@ -213,7 +216,7 @@ class paloSantoUserInfo {
 
         $data.=$temp . $duration."<br>";
     }
-    
+
     return $data;
    }
 
@@ -221,13 +224,19 @@ class paloSantoUserInfo {
     {
         global $arrConf;
         //consulto datos del usuario logoneado
-        $dbAcl = new paloDB($arrConf["elastix_dsn"]["acl"]);    
+        $dbAcl = new paloDB($arrConf["elastix_dsn"]["acl"]);
         $pACL  = new paloACL($dbAcl);
 
         $arrData = null;
         //paso 1: consulta de los datos de webmail si existen
         $userId  = $pACL->getIdUser($nameUser);
         $arrData = $this->leerPropiedadesWebmail($dbAcl,$userId);
+        if(!$arrData)
+        {
+            $arrData['login'] = '';
+            $arrData['domain'] = '';
+            $arrData['password'] = '';
+        }
 
         //paso 2: consulta de la extension si tiene asignada
         $extension = $pACL->getUserExtension($nameUser);
@@ -252,11 +261,11 @@ class paloSantoUserInfo {
         $listaPropiedades = array();
         $tabla = $pDB->fetchTable($sPeticionPropiedades, FALSE, array($idUser));
         if ($tabla === FALSE) {
-        print "ERROR DE DB: ".$pDB->errMsg;
+            return false;
         } else {
-        foreach ($tabla as $tupla) {
-            $listaPropiedades[$tupla[0]] = $tupla[1];
-        }
+            foreach ($tabla as $tupla) {
+                $listaPropiedades[$tupla[0]] = $tupla[1];
+            }
         }
         return $listaPropiedades;
    }
