@@ -32,8 +32,6 @@ require_once('GestorLlamadasEntrantes.class.php');
 // Número mínimo de muestras para poder confiar en predicciones de marcador
 define('MIN_MUESTRAS', 10);
 
-//dl('sqlite3.so');
-
 class DialerProcess extends AbstractProcess
 {
     private $oMainLog;      // Log abierto por framework de demonio
