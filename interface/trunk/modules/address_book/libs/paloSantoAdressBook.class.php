@@ -76,7 +76,7 @@ a array with the field "total" containing the total of records.
         if(!empty($strWhere)) $query .= "WHERE $strWhere ";
 
         //ORDER BY
-        $query .= " ORDER BY  id";
+        $query .= " ORDER BY  last_name, name";
 
         // Limit
         if(!is_null($limit))

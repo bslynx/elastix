@@ -181,8 +181,8 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
     if(is_array($arrResult) && $total>0){
         foreach($arrResult as $key => $adress_book){
             $arrTmp[0]  = "<input type='checkbox' name='contact_{$adress_book['id']}'  />";
-            $arrTmp[1]  = "<a href='?menu=$module_name&action=show&id=".$adress_book['id']."'>{$adress_book['name']}</a>";
-            $arrTmp[2]  = $adress_book['last_name'];
+            $arrTmp[1]  = $adress_book['last_name'];
+            $arrTmp[2]  = "<a href='?menu=$module_name&action=show&id=".$adress_book['id']."'>{$adress_book['name']}</a>";
             $arrTmp[3]  = $adress_book['telefono'];
             $arrTmp[4]  = $adress_book['extension'];
             $arrTmp[5]  = $adress_book['email'];
@@ -199,9 +199,9 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
                         "total"    => $total,
                         "columns"  => array(0 => array("name"      => "<input type='submit' name='delete' value='{$arrLang["Delete"]}' class='button' onclick=\" return confirmSubmit('{$arrLang["Are you sure you wish to delete the contact."]}');\" />",
                                                     "property1" => ""),
-                                            1 => array("name"      => $arrLang["First Name"],
+                                            1 => array("name"      => $arrLang["Last Name"],
                                                     "property1" => ""),
-                                            2 => array("name"      => $arrLang["Last Name"],
+                                            2 => array("name"      => $arrLang["First Name"],
                                                     "property1" => ""),
                                             3 => array("name"      => $arrLang["Phone Number"],
                                                     "property1" => ""),
@@ -477,7 +477,8 @@ function call2phone($smarty,$module_name, $local_templates_dir, $pDB, $arrLang, 
                 $result = $padress_book->Obtain_Protocol_from_Ext($dsnAsterisk, $extension);
                 if($result != FALSE)
                 {
-                    $result = $padress_book->Call2Phone($dsn_agi_manager, $extension, $extension2call, $result['dial'], $result['description']);
+                    $number2call = ($phone2call!='')?$phone2call:$extension2call;
+                    $result = $padress_book->Call2Phone($dsn_agi_manager, $extension, $number2call, $result['dial'], $result['description']);
                     if(!$result)
                     {
                         $smarty->assign("mb_title", $arrLang['ERROR'].":");
