@@ -606,10 +606,10 @@ function combo($arreglo_valores, $selected) {
 * Esta funcion garantiza que siempre q defina un checkbox voy a tener un 'false' si no esta
 * seteado y un 'true' si lo esta.
 *
-* Ejemplo: $html = checkbox("chk_01",'true'); //define un checkbox y esta seteado.
+* Ejemplo: $html = checkbox("chk_01",'on','off'); //define un checkbox y esta seteado.
            $smarty("eje",$html); //lo paso a las plantilla.
            ......... por POST lo recibo ......
-*          $check = $_POST['chk_01'] //recibo 'true' or 'false' segun el caso de q este seteado o  no.
+*          $check = $_POST['chk_01'] //recibo 'on' or 'off' segun el caso de q este seteado o  no.
 */
 
 function checkbox($id_name, $checked='off', $disable='off')
