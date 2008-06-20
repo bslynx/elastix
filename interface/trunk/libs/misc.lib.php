@@ -282,15 +282,21 @@ function load_language($ruta_base='')
 
     include_once $ruta_base."lang/".$lang.".lang";
 }
+
 function cargar_menu($db)
 {
    //leer el contenido de la tabla menu y devolver un arreglo con la estructura
     $menu = array ();
-    $query="SELECT * FROM menu ";
+    $query="Select m1.*, (Select count(*) from menu m2 where m2.IdParent=m1.id) as HasChild from menu m1;";
     $oRecordset=$db->fetchTable($query, true);
     if ($oRecordset){
         foreach($oRecordset as $key => $value)
+        {
+            if($value['HasChild']>0)
+                $value['HasChild'] = true;
+            else $value['HasChild'] = false;
             $menu[$value['id']]= $value;
+        }
     }
     return $menu;
 }
