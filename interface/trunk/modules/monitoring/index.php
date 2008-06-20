@@ -168,7 +168,6 @@ function _moduleContent(&$smarty, $module_name)
             $fechas[$llave]  = $valor[1];
         array_multisort($fechas,SORT_DESC,$archivos);
 
-
         //Paginacion
         $limit  = 15;
         $total  = count($archivos);
@@ -193,7 +192,6 @@ function _moduleContent(&$smarty, $module_name)
             //tengo que obtener los archivos que pertenezcan a la extension
            //obtener los archivos con formato auto-timestamp-extension... grabacion ONDEMAND
             //"auto\-[[:digit:]]+\-$extension(.+)\.[wav|WAV]$"
-
             $llamada_incoming=false;
             $llamada_outgoing = false;
             if (ereg("^auto\-([[:digit:]]+)\-$extension(.+)\.[wav|WAV|gsm]",$archivo,$regs)){
@@ -282,12 +280,12 @@ function _moduleContent(&$smarty, $module_name)
                     $llamadas[strtotime($llamada['calldate'])]=$llamada;
                 }
             }
-            //OUT404--20070426-090918.wav
-            else if (!$llamada_outgoing && ereg("^OUT$extension\-([[:digit:]]+)\-([[:digit:]]+)(.+)\.[wav|WAV|gsm]",$archivo,$regs)){
+            //OUT405-20080620-095526-1213973725.84.wav
+            else if (!$llamada_outgoing && ereg("^OUT$extension\-([[:digit:]]+)\-([[:digit:]]+)\-([[:digit:]]+)\.([[:digit:]]+)\.[wav|WAV|gsm]",$archivo,$regs))
+            {
                 //formar la fecha y la hora
-                $fecha=substr($regs[1], 0, 4).'-'.substr($regs[1], 4, 2).'-'.substr($regs[1], 6, 2);
-                $hora=substr($regs[2], 0, 2).':'.substr($regs[2], 2, 2).':'.substr($regs[2], 4, 2);
-                $calldate="$fecha $hora";
+                $time = $regs[3];
+                $calldate = date("Y-m-d H:i:s", $time);
                 //busco por fecha y extension destino
                 //ya tengo el archivo, busco el correspondiente en el registro de llamadas - con el timestamp y la extension
                 $llamada=obtenerCDROutgoing($pDBCDR,$extension, $calldate, $esAdministrador);
@@ -296,8 +294,9 @@ function _moduleContent(&$smarty, $module_name)
                     $llamada['type'] = "auto - outgoing";
                     $llamadas[strtotime($llamada['calldate'])]=$llamada;
                 }
-             }
-            else if (!$llamada_outgoing && ereg("^OUT$extension\-[(.+)|\-]*([[:digit:]]+)\-([[:digit:]]+)\.[wav|WAV|gsm]",$archivo,$regs)){
+            }
+            else if (!$llamada_outgoing && ereg("^OUT$extension\-[(.+)|\-]*([[:digit:]]+)\-([[:digit:]]+)\.[wav|WAV|gsm]",$archivo,$regs))
+            {
                 //formar la fecha y la hora
                 $fecha=substr($regs[1], 0, 4).'-'.substr($regs[1], 4, 2).'-'.substr($regs[1], 6, 2);
                 $hora=substr($regs[2], 0, 2).':'.substr($regs[2], 2, 2).':'.substr($regs[2], 4, 2);
@@ -363,9 +362,8 @@ function _moduleContent(&$smarty, $module_name)
 
         if($tmpExtension=="" || is_null($tmpExtension))//validacion solo para usuarios del grupo administrator
             $smarty->assign("mb_message", "<b>".$arrLang["You don't have extension number associated with user"]."</b>");
-        //rsort($llamadas);
 
-        foreach ($llamadas as $llamada){ 
+        foreach ($llamadas as $llamada){
             $fecha = date("Y-m-d",strtotime($llamada['calldate']));
             $hora = date("H:i:s",strtotime($llamada['calldate']));
 
@@ -457,15 +455,9 @@ function Files_Between_Dates($file, $extension, $date_start, $date_end, $esAdmin
     //OUT-504-1207151691.420.wav
     else if (ereg("^OUT\-$extension\-([[:digit:]]+)[\.[[:digit:]]+]*\.[wav|WAV|gsm]",$file,$regs))
         $fecha = $regs[1];
-    //OUT404-20070426-090918.wav
     //OUT504-20080402-133229-1207161149.873.wav
-    else if (ereg("^OUT$extension\-([[:digit:]]+)\-([[:digit:]]+)(.+)\.[wav|WAV|gsm]",$file,$regs))
-    {
-        $fecha=substr($regs[1], 0, 4).'-'.substr($regs[1], 4, 2).'-'.substr($regs[1], 6, 2);
-        $hora=substr($regs[2], 0, 2).':'.substr($regs[2], 2, 2).':'.substr($regs[2], 4, 2);
-        $calldate="$fecha $hora";
-        $fecha = strtotime($calldate);
-    }
+    else if (ereg("^OUT$extension\-([[:digit:]]+)\-([[:digit:]]+)\-([[:digit:]]+)\.([[:digit:]]+)\.[wav|WAV|gsm]",$file,$regs))
+        $fecha = $regs[3];
     else if (ereg("^OUT$extension\-[(.+)|\-]*([[:digit:]]+)\-([[:digit:]]+)\.[wav|WAV|gsm]",$file,$regs))
     {
         //formar la fecha y la hora
