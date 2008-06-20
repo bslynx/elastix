@@ -27,11 +27,9 @@
   +----------------------------------------------------------------------+
   $Id: frameRight.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
 
-include_once("../configs/menu.php");
-
-if(!empty($_GET['id_nodo']) and esMenuValido($_GET['id_nodo'])) {
+if(!empty($_GET['id_nodo'])){
     $idMenuMostrar = $_GET['id_nodo'];
-    
+
     if(existeArchivoAyuda($idMenuMostrar)) {
         include_once("content/$idMenuMostrar.hlp");
 
@@ -57,7 +55,7 @@ if(!empty($_GET['id_nodo']) and esMenuValido($_GET['id_nodo'])) {
 
 function menuHijoPorOmision($idMenu)
 {
-    global $arrMenu;
+    $arrMenu = $_SESSION['elastix_user_permission'];
 
     foreach($arrMenu as $k => $menu) {
         if($menu['IdParent']==$idMenu) {
@@ -70,18 +68,8 @@ function menuHijoPorOmision($idMenu)
 
 function obtenerMenuPadre($idMenu)
 {
-    global $arrMenu;
+    $arrMenu = $_SESSION['elastix_user_permission'];
     return $arrMenu[$idMenu]['IdParent'];
-}
-
-function esMenuValido($idMenu)
-{
-    global $arrMenu;
-    if(array_key_exists($idMenu, $arrMenu)) {
-        return true;
-    } else {
-        return false;
-    }
 }
 
 function existeArchivoAyuda($idMenu)

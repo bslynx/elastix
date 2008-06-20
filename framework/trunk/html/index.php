@@ -83,7 +83,6 @@ if(isset($_POST['submit_login']) and !empty($_POST['input_user'])) {
     }
 }
 
-//include_once("configs/menu.php"); 
 $pDBMenu = new paloDB($arrConf['elastix_dsn']['menu']);
 $arrMenu = cargar_menu($pDBMenu) ;
 

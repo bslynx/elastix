@@ -80,14 +80,11 @@ if(!empty($_SESSION['elastix_user'])) {
 }
 
 
-
-include_once("../configs/menu.php");
 foreach($arrMenuFiltered as $id => $menu) {
-    
     $arrTmp = array();
     $arrTmp['id_nodo']   = $id;
-    
-    if($arrMenu[$arrTmp['id_nodo']]['HasChild']){
+
+    if($menu['HasChild']){
         if(empty($menu['IdParent']))
             $arrTmp['id_parent'] = "root";
         else
@@ -101,7 +98,7 @@ foreach($arrMenuFiltered as $id => $menu) {
     $arrTmp['nombre']    = $menu['Name'];
     $arrTmp['url']       = $id . "." . $menu['IdParent'] . "hlp.htm";
     $arrTmp['keywords']  = "";
-    
+
     $arrNodos[] = $arrTmp;
 }
 
