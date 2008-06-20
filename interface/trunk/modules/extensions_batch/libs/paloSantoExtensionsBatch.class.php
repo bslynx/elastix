@@ -53,7 +53,7 @@ class paloSantoLoadExtension {
         }
     }
 
-    function createSipDevices($Ext, $Secret, $VoiceMail)
+    function createSipDevices($Ext, $Secret, $VoiceMail, $Context)
     {
         $VoiceMail = strtolower($VoiceMail);
 
@@ -73,15 +73,25 @@ class paloSantoLoadExtension {
                     $this->errMsg = $this->_DB->errMsg;
                     return false;
                 }
-                //2do sql se ejecuta abajo
                 $sql = "update sip set data = '$mailbox' where id='$Ext' and keyword='mailbox';";
+                if(!$this->_DB->genQuery($sql))
+                {
+                    $this->errMsg = $this->_DB->errMsg;
+                    return false;
+                }
+                $sql = "update sip set data = '$Context' where id='$Ext' and keyword='context';";
+                if(!$this->_DB->genQuery($sql))
+                {
+                    $this->errMsg = $this->_DB->errMsg;
+                    return false;
+                }
             }else{
                 $sql =
                     "insert into sip (id,keyword,data) values
                     ('$Ext','secret','$Secret'),
                     ('$Ext','dtmfmode','rfc2833'),
                     ('$Ext','canreinvite','no'),
-                    ('$Ext','context','from-internal'),
+                    ('$Ext','context','$Context'),
                     ('$Ext','host','dynamic'),
                     ('$Ext','type','friend'),
                     ('$Ext','nat','yes'),
@@ -99,12 +109,12 @@ class paloSantoLoadExtension {
                     ('$Ext','callerid','device <$Ext>'),
                     ('$Ext','record_in','Adhoc'),
                     ('$Ext','record_out','Adhoc');";
-            }
 
-            if(!$this->_DB->genQuery($sql))
-            {
-                $this->errMsg = $this->_DB->errMsg;
-                return false;
+                if(!$this->_DB->genQuery($sql))
+                {
+                    $this->errMsg = $this->_DB->errMsg;
+                    return false;
+                }
             }
             return true;
         }else{
@@ -195,8 +205,9 @@ class paloSantoLoadExtension {
 
         $sql = "select * from
                     (select u.extension, u.name, u.directdid, d.tech from users u, devices d where u.extension=d.id) as r1,
-                    (select data as secret, id from sip where keyword='secret') as r2
-                where r1.extension=r2.id;";
+                    (select data as secret, id from sip where keyword='secret') as r2,
+                    (select data as context, id from sip where keyword='context') as r3
+                where r1.extension=r2.id and r1.extension=r3.id;";
         $result = $this->_DB->fetchTable($sql, true);
         $arrExtensions = array();
 

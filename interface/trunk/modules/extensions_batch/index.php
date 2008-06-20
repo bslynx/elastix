@@ -163,9 +163,10 @@ function load_extension_from_csv($smarty, $arrLang, $ruta_archivo, $base_dir, $p
                 $VM_Play_CID        = isset($arrayColumnas[11])?$tupla[$arrayColumnas[11]]:"";
                 $VM_Play_Envelope   = isset($arrayColumnas[12])?$tupla[$arrayColumnas[12]]:"";
                 $VM_Delete_Vmail    = isset($arrayColumnas[13])?$tupla[$arrayColumnas[13]]:"";
+                $Context            = isset($arrayColumnas[14])?$tupla[$arrayColumnas[14]]:"from-internal";
 
                 //Paso 1: creando en la tabla sip
-                if(!$pLoadExtension->createSipDevices($Ext,$Secret,$VoiceMail))
+                if(!$pLoadExtension->createSipDevices($Ext,$Secret,$VoiceMail,$Context))
                 {
                     $Messages .= "Ext: $Ext - ". $arrLang["Error updating Sip"].": ".$pLoadExtension->errMsg."<br />";
                 }else{
@@ -246,6 +247,8 @@ function isValidCSV($arrLang, $sFilePath, &$arrayColumnas){
                     $arrayColumnas[12] = $i;
                 else if($tupla[$i] == 'VM Delete Vmail')
                     $arrayColumnas[13] = $i;
+                else if($tupla[$i] == 'Context')
+                    $arrayColumnas[14] = $i;
             }
             if(isset($arrayColumnas[0]) && isset($arrayColumnas[1]) && isset($arrayColumnas[4]))
             {

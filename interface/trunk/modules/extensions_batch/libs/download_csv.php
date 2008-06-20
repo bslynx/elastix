@@ -50,14 +50,14 @@ function backup_extensions($pDB, $smarty)
         $csv .= "\"Display Name\",\"User Extension\",\"Direct DID\",\"Call Waiting\",".
                 "\"Secret\",\"Voicemail Status\",\"Voicemail Password\",\"VM Email Address\",".
                 "\"VM Pager Email Address\",\"VM Options\",\"VM Email Attachment\",".
-                "\"VM Play CID\",\"VM Play Envelope\",\"VM Delete Vmail\"\n";
+                "\"VM Play CID\",\"VM Play Envelope\",\"VM Delete Vmail\",\"Context\"\n";
         foreach($arrResult as $key => $extension)
         {
             $csv .= "\"{$extension['name']}\",\"{$extension['extension']}\",\"{$extension['directdid']}\",".
                     "\"{$extension['callwaiting']}\",\"{$extension['secret']}\",\"{$extension['voicemail']}\",".
                     "\"{$extension['vm_secret']}\",\"{$extension['email_address']}\",\"{$extension['pager_email_address']}\",".
                     "\"{$extension['vm_options']}\",\"{$extension['email_attachment']}\",\"{$extension['play_cid']}\",".
-                    "\"{$extension['play_envelope']}\",\"{$extension['delete_vmail']}\"".
+                    "\"{$extension['play_envelope']}\",\"{$extension['delete_vmail']}\",\"{$extension['context']}\"".
                     "\n";
         }
     }
