@@ -918,6 +918,7 @@ FAX送信可能なIPアドレスを１行ずつ入力してください。<br>El
 "Internal" => "Internal",
 "External" => "External",
 "Call" => "Call",
+"Phone Directory" => "Phone Directory",
 /*Adress Book*/
 
 /*User information*/

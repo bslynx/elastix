@@ -76,7 +76,7 @@ a array with the field "total" containing the total of records.
         if(!empty($strWhere)) $query .= "WHERE $strWhere ";
 
         //ORDER BY
-        $query .= " ORDER BY  last_name, name";
+        $query .= " ORDER BY last_name, name";
 
         // Limit
         if(!is_null($limit))
@@ -115,7 +115,7 @@ a array with the field "total" containing the total of records.
     {
         $queryUpdate = $this->_DB->construirUpdate('contact', $data,$where);
 //        die($queryUpdate);
-    $result = $this->_DB->genQuery($queryUpdate);
+        $result = $this->_DB->genQuery($queryUpdate);
 
         return $result;
     }
@@ -183,6 +183,46 @@ a array with the field "total" containing the total of records.
             $this->errMsg = $pDB->errMsg;
             return FALSE;
         }
+    }
+
+    function getDeviceFreePBX($dsn, $limit=NULL, $offset=NULL, $field_name=NULL, $field_pattern=NULL,$count=FALSE)
+    {
+        //Defining the fields to get. If the param $count is true, then we will get the result of the sql function count(), else, we will get all fields in the table.
+        $fields=($count)?"count(id) as total":"*";
+
+        //Begin to build the query.
+        $query   = "SELECT $fields FROM devices ";
+
+        $strWhere = "";
+
+        if(!is_null($field_name) and !is_null($field_pattern))
+        {
+            if($field_name=='name')
+                $strWhere .= " description like '%$field_pattern%' ";
+            else if($field_name=='telefono')
+                $strWhere .= " id like '%$field_pattern%' ";
+        }
+
+        // Clausula WHERE aqui
+        if(!empty($strWhere)) $query .= "WHERE $strWhere ";
+
+        //ORDER BY
+        $query .= " ORDER BY  description";
+
+        // Limit
+        if(!is_null($limit))
+            $query .= " LIMIT $limit ";
+
+        if(!is_null($offset) and $offset > 0)
+            $query .= " OFFSET $offset";
+
+
+        $pDB = new paloDB($dsn);
+        if($pDB->connStatus)
+            return false;
+        $result = $pDB->fetchTable($query,true); //se consulta a la base asterisk
+
+        return $result;
     }
 }
 ?>

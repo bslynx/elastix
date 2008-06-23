@@ -817,6 +817,7 @@ configuration <br>because some processes need it.",
 "Internal" => "Internal",
 "External" => "External",
 "Call" => "Call",
+"Phone Directory" => "Phone Directory",
 /*Adress Book*/
 
 /*User information*/

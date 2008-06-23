@@ -28,21 +28,9 @@
                 <td align="left" width="20%"><b>{$last_name.LABEL}: <span  class="required">*</span></b></td>
                 <td class="required" align="left">{$last_name.INPUT}</td>
             </tr>
-            <tr>
-                {if $Edit}
-                    <td align="left" width="20%"><b>{$type_2.LABEL}: <span class="required">*</span></b></td>
-                    <td class="required" align="left" id="td_type_2">{$type_2.INPUT}</td>
-                {else}
-                    {$type}
-                {/if}
-            </tr>
             <tr id='tr_phone'>
                 <td align="left" width="20%"><b>{$telefono.LABEL}: <span id="span_phone" class="required">*</span></b></td>
                 <td class="required" align="left">{$telefono.INPUT}</td>
-            </tr>
-            <tr id='tr_extension'>
-                <td align="left" width="20%"><b>{$extension.LABEL}: <span id="span_ext" style="display:none" class="required">*</span></b></td>
-                <td class="required" align="left">{$extension.INPUT}</td>
             </tr>
             <tr>
                 <td align="left"><b>{$email.LABEL}: </b></td>
@@ -51,30 +39,3 @@
         </table>
     </tr>
 </table>
-{literal}
-    <script type="text/javascript">
-        display_inputs();
-
-        function display_inputs()
-        {
-            var valor = '';
-            var select = document.getElementById('s_type');
-            if(select != null)
-                valor = select.options[select.selectedIndex].value;
-            else
-                valor = document.getElementById('td_type_2').firstChild.nodeValue;
-
-            var phone = document.getElementById('tr_phone');
-            var span_ext = document.getElementById('span_ext');
-            if(valor == "internal")
-            {
-                phone.setAttribute('style', 'display:none;');
-                span_ext.setAttribute('style', 'display:display;');
-            }
-            else if(valor == "external"){
-                phone.setAttribute('style', 'display:display;');
-                span_ext.setAttribute('style', 'display:none;');
-            }
-        }
-    </script>
-{/literal}

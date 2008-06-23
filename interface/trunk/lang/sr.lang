@@ -917,6 +917,7 @@ configuration because some <br> processes could need them.",
 "Internal" => "Internal",
 "External" => "External",
 "Call" => "Call",
+"Phone Directory" => "Phone Directory",
 /*Adress Book*/
 
 /*User information*/
