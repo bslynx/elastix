@@ -27,6 +27,8 @@
   +----------------------------------------------------------------------+
   $Id: index.php,v 1.1 2008/05/16 15:55:57 afigueroa Exp $ */
 
+include_once "libs/xajax/xajax.inc.php";
+
 function _moduleContent(&$smarty, $module_name)
 {
     //include elastix framework
@@ -35,7 +37,6 @@ function _moduleContent(&$smarty, $module_name)
     include_once "libs/paloSantoConfig.class.php";
     include_once "libs/misc.lib.php";
     include_once "libs/paloSantoForm.class.php";
-    include_once "libs/xajax/xajax.inc.php";
 
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
@@ -144,6 +145,7 @@ function save_module($new_module_name, $new_id_module, $selected_gp, $module_typ
 
     global $arrLangModule;
     $respuesta = new xajaxResponse();
+
     $errMsg = $arrLangModule["The following fields contain errors"].": ";
     $errTitle = "";
     $error = false;
@@ -255,6 +257,7 @@ function save_module($new_module_name, $new_id_module, $selected_gp, $module_typ
         $errTitle = $arrLangModule["Validation Error"];
     }
     else{
+
         if($pNewMod_menu->Existe_Id_Module($new_id_module))
         {
             $error = true;
@@ -514,7 +517,7 @@ function save_module($new_module_name, $new_id_module, $selected_gp, $module_typ
         $htmlError .= "</table>";
         $respuesta->addAssign("error", "innerHTML", $htmlError);
     }else{
-        $respuesta->addScript("alert('{$arrLangModule["The module was crated successfully"]}');");
+        $respuesta->addAlert($arrLangModule["The module was crated successfully"]);
         $respuesta->addScript("document.location.href='?menu=$this_module_name'");
     }
 
