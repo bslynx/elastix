@@ -225,6 +225,9 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
             $arrData[]  = $arrTmp;
         }
     }
+    if($directory_type=='external')
+        $name = "<input type='submit' name='delete' value='{$arrLang["Delete"]}' class='button' onclick=\" return confirmSubmit('{$arrLang["Are you sure you wish to delete the contact."]}');\" />";
+    else $name = "";
 
     $arrGrid = array(   "title"    => $arrLang["Address Book"],
                         "icon"     => "images/list.png",
@@ -232,7 +235,7 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
                         "start"    => ($total==0) ? 0 : $offset + 1,
                         "end"      => $end,
                         "total"    => $total,
-                        "columns"  => array(0 => array("name"      => "<input type='submit' name='delete' value='{$arrLang["Delete"]}' class='button' onclick=\" return confirmSubmit('{$arrLang["Are you sure you wish to delete the contact."]}');\" />",
+                        "columns"  => array(0 => array("name"      => $name,
                                                     "property1" => ""),
                                             1 => array("name"      => $arrLang["Name"],
                                                     "property1" => ""),
