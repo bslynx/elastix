@@ -240,27 +240,28 @@ class paloFax {
     {
         $arrConfIaxmodem = $this->_getConfigFiles($this->dirIaxmodemConf, "iaxmodem-cfg.ttyIAX");
         $arrConfHylafax  = $this->_getConfigFiles($this->dirHylafaxConf, "config.ttyIAX");
-    
+
         if(is_array($arrConfIaxmodem) and is_array($arrConfHylafax)) {
-            
             $arrIds = array_merge($arrConfIaxmodem, $arrConfHylafax);
-            sort($arrIds);    
-        
+            sort($arrIds);
+
             $lastId = 0;
+            $id = 0;
             foreach($arrIds as $id) {
                 $incremento = $id - $lastId;
-                if($incremento>=2) {
-                    break;
-                }
+                //Si hubo salto >1 significa q hay al menos un eliminado => retornar ese hueco
+                if($incremento>1)
+                    return $lastId+1;
+
                 $lastId = $id;
-            } 
+            }
+            //Si no hubo hueco retorna el ultimo +1
             return $id+1;
-    
         } else {
             return 0;
         }
     }
-   
+
     // TODO: Hacer mejor manejo de errores 
     function _createFaxIntoDB($name, $extension, $secret, $email, $devId, $clidname, $clidnumber, $port,$countryCode, $areaCode)
     {
