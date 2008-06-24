@@ -186,7 +186,7 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
 
     $total_datos = $total[0]["total"];
     //Paginacion
-    $limit  = 8;
+    $limit  = 20;
     $total  = $total_datos;
 
     $oGrid  = new paloSantoGrid($smarty);
@@ -205,11 +205,22 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
 
     $arrData = null;
     if(is_array($arrResult) && $total>0){
+        $arrMails = array();
+
+        if($directory_type=='internal')
+            $arrMails = $padress_book->getMailsFromVoicemail();
+
         foreach($arrResult as $key => $adress_book){
+            if($directory_type=='external')
+                $email = $adress_book['email'];
+            else if(isset($arrMails[$adress_book['id']]))
+                $email = $arrMails[$adress_book['id']];
+            else $email = '';
+
             $arrTmp[0]  = ($directory_type=='external')?"<input type='checkbox' name='contact_{$adress_book['id']}'  />":'';
             $arrTmp[1]  = ($directory_type=='external')?"<a href='?menu=$module_name&action=show&id=".$adress_book['id']."'>{$adress_book['last_name']} {$adress_book['name']}</a>":$adress_book['description'];
             $arrTmp[2]  = ($directory_type=='external')?$adress_book['telefono']:$adress_book['id'];
-            $arrTmp[3]  = ($directory_type=='external')?$adress_book['email']:'';
+            $arrTmp[3]  = $email;
             $arrTmp[4]  = "<a href='?menu=$module_name&action=call2phone&id=".$adress_book['id']."&type=".$directory_type."'><img border=0 src='images/call.png' /></a>";
             $arrData[]  = $arrTmp;
         }

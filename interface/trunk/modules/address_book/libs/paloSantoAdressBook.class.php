@@ -224,5 +224,21 @@ a array with the field "total" containing the total of records.
 
         return $result;
     }
+
+    function getMailsFromVoicemail()
+    {
+        $result = array();
+        $path = "/etc/asterisk/voicemail.conf";
+        $lines = file($path);
+        foreach($lines as $line)
+        {
+            if(eregi("([[:alnum:]]*) => ",$line, $regs))
+            {
+                $arrVal = split(",", $line);
+                $result[$regs[1]] = $arrVal[2];
+            }
+        }
+        return $result;
+    }
 }
 ?>
