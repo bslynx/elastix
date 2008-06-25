@@ -25,7 +25,9 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: index.php,v 1.1 2008/01/30 15:55:57 bmacias Exp $ */
+  $Id: index.php,v 1.1 2008/01/30 15:55:57 bmacias Exp $
+  $Id: index.php,v 1.1 2008/06/25 16:51:50 afigueroa Exp $
+ */
 
 function _moduleContent(&$smarty, $module_name)
 {
@@ -83,7 +85,10 @@ function _moduleContent(&$smarty, $module_name)
             $content = view_adress_book($smarty,$module_name, $local_templates_dir, $pDB, $arrLang);
             break;
         case "save":
-            $content = save_adress_book($smarty,$module_name, $local_templates_dir, $pDB, $arrLang);
+            if($_POST['address_book_options']=="address_from_csv")
+                $content = save_csv($smarty,$module_name, $local_templates_dir, $pDB, $arrLang, $dsnAsterisk);
+            else
+                $content = save_adress_book($smarty,$module_name, $local_templates_dir, $pDB, $arrLang);
             break;
         case "delete":
             $content = deleteContact($smarty,$module_name, $local_templates_dir, $pDB, $arrLang, $dsnAsterisk);
@@ -99,6 +104,131 @@ function _moduleContent(&$smarty, $module_name)
     return $content;
 }
 
+function save_csv($smarty,$module_name, $local_templates_dir, $pDB, $arrLang, $dsnAsterisk)
+{
+    //valido el tipo de archivo
+    if (!eregi('.csv$', $_FILES['userfile']['name'])) {
+        $smarty->assign("mb_title", $arrLang["Validation Error"]);
+        $smarty->assign("mb_message", $arrLang["Invalid file extension.- It must be csv"]);
+    }else {
+        if(is_uploaded_file($_FILES['userfile']['tmp_name'])) {
+            $ruta_archivo = "/tmp/".$_FILES['userfile']['name'];
+            copy($_FILES['userfile']['tmp_name'], $ruta_archivo);
+            //Funcion para cargar las extensiones
+            load_address_book_from_csv($smarty, $arrLang, $ruta_archivo, $pDB);
+        }else {
+            $smarty->assign("mb_title", $arrLang["Error"]);
+            $smarty->assign("mb_message", $arrLang["Possible file upload attack. Filename"] ." :". $_FILES['userfile']['name']);
+        }
+    }
+    $content = new_adress_book($smarty,$module_name, $local_templates_dir, $pDB, $arrLang);
+    return $content;
+}
+
+function load_address_book_from_csv($smarty, $arrLang, $ruta_archivo, $pDB)
+{
+    $Messages = "";
+    $arrayColumnas = array();
+
+    $result = isValidCSV($arrLang, $ruta_archivo, $arrayColumnas);
+    if($result != 'true'){
+        $smarty->assign("mb_message", $result);
+        return;
+    }
+
+    $hArchivo = fopen($ruta_archivo, 'rt');
+    $cont = 0;
+    $pAdressBook = new paloAdressBook($pDB);
+
+    if ($hArchivo) {
+        //Linea 1 header ignorada
+        $tupla = fgetcsv($hArchivo, 4096, ",");
+        //Desde linea 2 son datos
+        while ($tupla = fgetcsv($hArchivo, 4096, ","))
+        {
+            if(is_array($tupla) && count($tupla)>=3)
+            {
+                $data = array();
+
+                $data['name']       = $pDB->DBCAMPO($tupla[$arrayColumnas[0]]);
+                $data['last_name']  = $pDB->DBCAMPO($tupla[$arrayColumnas[1]]);
+                $data['telefono']   = $pDB->DBCAMPO($tupla[$arrayColumnas[2]]);
+
+                $Email = isset($arrayColumnas[3])?$tupla[$arrayColumnas[3]]:"";
+                $data['email']      = $pDB->DBCAMPO($Email);
+
+                //Paso 1: verificar que no exista un usuario con los mismos datos
+                $result = $pAdressBook->existContact($data);
+                if(!$result)
+                    $Messages .= "{$arrLang["ERROR"]}:" . $pAdressBook->errMsg . "  <br />";
+                else if($result['total']>0)
+                    $Messages .= "{$arrLang["ERROR"]}: {$arrLang["Contact Data already exists"]}: {$data['name']} <br />";
+                else{
+                    //Paso 2: creando en la contact data
+                    if(!$pAdressBook->addContact($data))
+                        $Messages .= $arrLang["ERROR"] . $pDB->errMsg . "<br />";
+
+                    $cont++;
+                }
+            }
+        }
+
+        $Messages .= $arrLang["Total contacts created"].": $cont<br />";
+        $smarty->assign("mb_message", $Messages);
+    }
+
+    unlink($ruta_archivo);
+}
+
+function isValidCSV($arrLang, $sFilePath, &$arrayColumnas){
+    $hArchivo = fopen($sFilePath, 'rt');
+    $cont = 0;
+    $ColName = -1;
+
+    //Paso 1: Obtener Cabeceras (Minimas las cabeceras: Display Name, User Extension, Secret)
+    if ($hArchivo) {
+        $tupla = fgetcsv($hArchivo, 4096, ",");
+        if(count($tupla)>=3)
+        {
+            for($i=0; $i<count($tupla); $i++)
+            {
+                if($tupla[$i] == 'Name')
+                    $arrayColumnas[0] = $i;
+                else if($tupla[$i] == 'Last Name')
+                    $arrayColumnas[1] = $i;
+                else if($tupla[$i] == 'Phone Number')
+                    $arrayColumnas[2] = $i;
+                else if($tupla[$i] == 'Email')
+                    $arrayColumnas[3] = $i;
+            }
+            if(isset($arrayColumnas[0]) && isset($arrayColumnas[1]) && isset($arrayColumnas[2]))
+            {
+                //Paso 2: Obtener Datos (Validacion que esten llenos los mismos de las cabeceras)
+                $count = 2;
+                while ($tupla = fgetcsv($hArchivo, 4096,","))
+                {
+                    if(is_array($tupla) && count($tupla)>=3)
+                    {
+                            $Name           = $tupla[$arrayColumnas[0]];
+                            if($Name == '')
+                                return $arrLang["Can't exist a Name empty. Line"].": $count. - ". $arrLang["Please read the lines in the footer"];
+
+                            $LastName       = $tupla[$arrayColumnas[1]];
+                            if($LastName == '')
+                                return $arrLang["Can't exist a Last Name empty. Line"].": $count. - ". $arrLang["Please read the lines in the footer"];
+
+                            $PhoneNumber    = $tupla[$arrayColumnas[2]];
+                            if($PhoneNumber == '')
+                                return $arrLang["Can't exist a Phone Number empty. Line"].": $count. - ". $arrLang["Please read the lines in the footer"];
+                    }
+                    $count++;
+                }
+                return true;
+            }else return $arrLang["Verify the header"] ." - ". $arrLang["At minimum there must be the columns"].": \"Name\", \"Last Name\", \"Phone Number\"";
+        }else return $arrLang["Verify the header"] ." - ". $arrLang["Incomplete Columns"];
+    }else return $arrLang["The file is incorrect or empty"] .": $sFilePath";
+}
+
 function new_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $arrLang)
 {
     $arrFormadress_book = createFieldForm($arrLang);
@@ -110,11 +240,28 @@ function new_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $arr
     $smarty->assign("CANCEL", $arrLang["Cancel"]);
     $smarty->assign("TITLE", $arrLang["Address Book"]);
 
+    $smarty->assign("new_contact", $arrLang["New Contact"]);
+    $smarty->assign("address_from_csv", $arrLang["Address Book from CSV"]);
+
+    if(isset($_POST['address_book_options']) && $_POST['address_book_options']=='address_from_csv')
+        $smarty->assign("check_csv", "checked");
+    else $smarty->assign("check_new_contact", "checked");
+
+    $smarty->assign("SAVE", $arrLang["Save"]);
+    $smarty->assign("CANCEL", $arrLang["Cancel"]);
+    $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
+    $smarty->assign("label_file", $arrLang["File"]);
+    $smarty->assign("DOWNLOAD", $arrLang["Download Address Book"]);
+    $smarty->assign("HeaderFile", $arrLang["Header File Address Book"]);
+    $smarty->assign("AboutContacts", $arrLang["About Address Book"]);
+    $smarty->assign("LINK", "modules/$module_name/libs/download_csv.php");
+
+
     $padress_book = new paloAdressBook($pDB);
 
     $htmlForm = $oForm->fetchForm("$local_templates_dir/new_adress_book.tpl", "", $_POST);
 
-    $contenidoModulo = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
+    $contenidoModulo = "<form  method='POST' enctype='multipart/form-data' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
 
     return $contenidoModulo;
 }
@@ -140,15 +287,15 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
     if($directory_type=='external')
         $arrComboElements["last_name"] = $arrLang["Last Name"];
 
-    $arrFormElements = array(   "field" => array(  "LABEL"                   => $arrLang["Filter"],
+    $arrFormElements = array(   "field" => array(   "LABEL"                  => $arrLang["Filter"],
                                                     "REQUIRED"               => "no",
                                                     "INPUT_TYPE"             => "SELECT",
                                                     "INPUT_EXTRA_PARAM"      => $arrComboElements,
                                                     "VALIDATION_TYPE"        => "text",
                                                     "VALIDATION_EXTRA_PARAM" => ""),
 
-                "pattern" => array( "LABEL"          => "",
-                            "REQUIRED"               => "no",
+                                "pattern" => array( "LABEL"          => "",
+                                                    "REQUIRED"               => "no",
                                                     "INPUT_TYPE"             => "TEXT",
                                                     "INPUT_EXTRA_PARAM"      => "",
                                                     "VALIDATION_TYPE"        => "text",
@@ -159,6 +306,7 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
     $oFilterForm = new paloForm($smarty, $arrFormElements);
     $smarty->assign("SHOW", $arrLang["Show"]);
     $smarty->assign("NEW_adress_book", $arrLang["New Contact"]);
+    $smarty->assign("CSV", $arrLang["CSV"]);
     $smarty->assign("module_name", $module_name);
 
     $smarty->assign("Phone_Directory",$arrLang["Phone Directory"]);
@@ -273,7 +421,7 @@ function createFieldForm($arrLang)
                                             "INPUT_TYPE"            => "TEXT",
                                             "INPUT_EXTRA_PARAM"     => "",
                                             "VALIDATION_TYPE"       => "ereg",
-                                            "VALIDATION_EXTRA_PARAM"=> "([[:digit:]]|-){1,}"),
+                                            "VALIDATION_EXTRA_PARAM"=> "^[[:digit:]]*$"),
                 "email"         => array(   "LABEL"                 => $arrLang["Email"],
                                             "REQUIRED"              => "no",
                                             "INPUT_TYPE"            => "TEXT",
@@ -309,6 +457,22 @@ function save_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $ar
         $smarty->assign("CANCEL", $arrLang["Cancel"]);
         $smarty->assign("TITLE", $arrLang["Address Book"]);
 
+        $smarty->assign("new_contact", $arrLang["New Contact"]);
+        $smarty->assign("address_from_csv", $arrLang["Address Book from CSV"]);
+
+        if(isset($_POST['address_book_options']) && $_POST['address_book_options']=='address_from_csv')
+            $smarty->assign("check_csv", "checked");
+        else $smarty->assign("check_new_contact", "checked");
+
+        $smarty->assign("SAVE", $arrLang["Save"]);
+        $smarty->assign("CANCEL", $arrLang["Cancel"]);
+        $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
+        $smarty->assign("label_file", $arrLang["File"]);
+        $smarty->assign("DOWNLOAD", $arrLang["Download Address Book"]);
+        $smarty->assign("HeaderFile", $arrLang["Header File Address Book"]);
+        $smarty->assign("AboutContacts", $arrLang["About Address Book"]);
+        $smarty->assign("LINK", "modules/$module_name/libs/download_csv.php");
+
         if($update)
         {
             $_POST["edit"] = 'edit';
@@ -316,7 +480,7 @@ function save_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $ar
         }else{
             $smarty->assign("Show", 1);
             $htmlForm = $oForm->fetchForm("$local_templates_dir/new_adress_book.tpl", $arrLang, $_POST);
-            $contenidoModulo = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
+            $contenidoModulo = "<form  method='POST' enctype='multipart/form-data' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
             return $contenidoModulo;
         }
     }else{
@@ -382,6 +546,21 @@ function view_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $ar
     $smarty->assign("LastName",$arrLang["Last Name"]);
     $smarty->assign("PhoneNumber",$arrLang["Phone Number"]);
     $smarty->assign("Email",$arrLang["Email"]);
+
+    if(isset($_POST['address_book_options']) && $_POST['address_book_options']=='address_from_csv')
+        $smarty->assign("check_csv", "checked");
+    else $smarty->assign("check_new_contact", "checked");
+
+    $smarty->assign("SAVE", $arrLang["Save"]);
+    $smarty->assign("CANCEL", $arrLang["Cancel"]);
+    $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
+    $smarty->assign("label_file", $arrLang["File"]);
+    $smarty->assign("DOWNLOAD", $arrLang["Download Address Book"]);
+    $smarty->assign("HeaderFile", $arrLang["Header File Address Book"]);
+    $smarty->assign("AboutContacts", $arrLang["About Address Book"]);
+    $smarty->assign("LINK", "modules/$module_name/libs/download_csv.php");
+
+    $smarty->assign("style_address_options", "style='display:none'");
 
     $padress_book = new paloAdressBook($pDB);
     $id = isset($_GET['id'])?$_GET['id']:(isset($_POST['id'])?$_POST['id']:"");

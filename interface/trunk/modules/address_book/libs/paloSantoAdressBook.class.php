@@ -25,7 +25,9 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: paloSantoCDR.class.php,v 1.1.1.1 2008/01/31 21:31:55 bmacias Exp $ */
+  $Id: paloSantoCDR.class.php,v 1.1.1.1 2008/01/31 21:31:55 bmacias Exp $
+  $Id: paloSantoCDR.class.php,v 1.1.1.1 2008/06/25 16:51:50 afigueroa Exp $
+ */
 
 //ini_set("display_errors", true);
 require_once "/var/lib/asterisk/agi-bin/phpagi-asmanager.php";
@@ -117,6 +119,18 @@ a array with the field "total" containing the total of records.
 //        die($queryUpdate);
         $result = $this->_DB->genQuery($queryUpdate);
 
+        return $result;
+    }
+
+    function existContact($data)
+    {
+        $query =     " SELECT count(*) as total FROM contact "
+                    ." WHERE name={$data['name']} and last_name={$data['last_name']}"
+                    ." and telefono={$data['telefono']}";
+
+        $result=$this->_DB->getFirstRowQuery($query, true);
+        if(!$result)
+            $this->errMsg = $this->_DB->errMsg;
         return $result;
     }
 
