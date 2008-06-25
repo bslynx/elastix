@@ -913,6 +913,17 @@ alrededor del mundo.",
 "External" => "Externo",
 "Call" => "Llamar",
 "Phone Directory" => "Directorio Telefónico",
+"CSV" => "CSV",
+"Download Address Book" => "Descargar Libro de Direcciones",
+"Can't exist a Name empty. Line" => "No puede existir un Nombre vacío. Línea",
+"Can't exist a Last Name empty. Line" => "No puede existir un Apellido vacío. Línea",
+"Can't exist a Phone Number empty. Line" => "No puede existir un Número Telefónico vacío. Línea",
+"Total contacts created" => "Total de contactos creados",
+"Contact Data already exists" => "Datos de Contacto ya existe",
+"Header File Address Book" => "La cabecera del archivo debe estar en la primera línea y debe tener como mínimo tres columnas: Name, Last Name, Phone Number",
+"About Address Book" => "Si carga un archivo con datos de contactos ya creados, estos datos no serán usados",
+"There aren't contacts" => "No hay contactos",
+"Address Book from CSV" => "Libro de Direcciones desde CSV",
 /*Adress Book*/
 
 /*User information*/
