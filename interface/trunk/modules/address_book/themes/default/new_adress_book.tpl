@@ -1,7 +1,8 @@
 <input type='hidden' name='id' value='{$ID}'>
-<table width="99%" border="0" cellspacing="0" cellpadding="0" align="center">
+<table width="99%" border="0" cellspacing="0" cellpadding="4" align="center">
     <tr class="moduleTitle">
         <td class="moduleTitle" valign="middle">&nbsp;&nbsp;<img src="images/list.png" border="0" align="absmiddle">&nbsp;&nbsp;{$TITLE}</td>
+        <td></td>
     </tr>
     <tr>
         <td align="left">
@@ -14,8 +15,6 @@
             {/if}
             <input class="button" type="submit" name="cancel" value="{$CANCEL}">
         </td>
-    </tr>
-    <tr>
         <td align="right" nowrap><span class="letra12"><span  class="required">*</span> {$REQUIRED_FIELD}</span></td>
     </tr>
     <tr>
