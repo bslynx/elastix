@@ -439,13 +439,14 @@ echo "sql = ".$sPeticionSQL;
                         $msj = "Error when connecting to Asterisk Manager";
                     } else {
                         for($i =0 ; $i<count($arrAgentes) ; $i++) {
-                            $res = $astman->Agentlogoff($arrAgentes[$i]);
+                            $res = $this->Agentlogoff($astman, $arrAgentes[$i]);
                             $this->registrarLogout($_SESSION['elastix_agent_user'],$datetime_end,$msj);
                             if ($res['Response']=='Error') {
                                 $msj = $arrLan["Error logoff"]." ".$res['Message'];
                                 $astman->disconnect();
                                 return false;
                             } else {
+                                sleep(1);
                                 $tipoLlamada = $this->getTipoLlamada($pDB,$msj);
                                 if(!is_null($tipoLlamada) && !empty($tipoLlamada)) { 
                                     $this->actualizarTablas($pDB,$tipoLlamada,$msj);
@@ -609,6 +610,17 @@ echo "sql = ".$sPeticionSQL;
             return false;
         }
 
+    /* FUNCIONES DEL AGI*/
+        /**
+        * Agent Logoff
+        *
+        * @link http://www.voip-info.org/wiki/index.php?page=Asterisk+Manager+API+AgentLogoff
+        * @param Agent: Agent ID of the agent to login 
+        */
+        function Agentlogoff($obj_phpAgi, $agent)
+        {
+        return $obj_phpAgi->send_request('Agentlogoff', array('Agent'=>$agent));
+        }
 
 }
 

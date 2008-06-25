@@ -28,6 +28,7 @@
   $Id: new_campaign.php $ */
 
 include_once("libs/paloSantoDB.class.php");
+include_once("libs/agi-bin.class.php");
 require_once("libs/smarty/libs/Smarty.class.php");
 require_once "/var/lib/asterisk/agi-bin/phpagi-asmanager.php";
 //require_once("libs/xajax/xajaxResponse.inc.php");
@@ -685,7 +686,8 @@ function agente_break($id_break) {
     else{ 
         // si no está en pausa, quiere decir que se lo va a poner en pausa
         if (!estaAgenteEnPausa($astman, $agentnum)) {
-            $salida = $astman->QueuePause(null,$member,"true");
+            //$salida = $astman->QueuePause(null,$member,"true");
+            $salida = QueuePause($astman, null,$member,"true");
             save_log_prueba("Desconecta en agente_break\n");
             $astman->disconnect();
             $resultado = $salida['Message'];
@@ -698,7 +700,8 @@ function agente_break($id_break) {
             $respuesta .= "document.getElementById('div_list').style.display ='none';";
         // caso contrario, está en pausa, quiere decir que hay q quitar la pausa
         } else {
-            $salida = $astman->QueuePause(null,$member,"false");
+            //$salida = $astman->QueuePause(null,$member,"false");
+            $salida = QueuePause($astman, null,$member,"false");
             save_log_prueba("Desconecta en agente_break\n");
         $astman->disconnect();
             $resultado = $salida['Message'];
@@ -848,7 +851,8 @@ function pausar_llamadas($id_break)
     } 
     else{ 
         if (!estaAgenteEnPausa($astman, $agentnum)) {
-            $salida = $astman->QueuePause(null,$member,"true");
+            //$salida = $astman->QueuePause(null,$member,"true");
+            $salida = QueuePause($astman, null,$member,"true");
             $resultado = $salida['Message'];
             $_SESSION['elastix_agent_break']=$id_break;
             $_SESSION['elastix_agent_soloUnaVez']=null;
@@ -859,7 +863,8 @@ function pausar_llamadas($id_break)
             $style = 'boton_unbreak';
             $respuesta->addScript("document.getElementById('div_list').style.display ='none'; \n");
         } else {
-            $salida = $astman->QueuePause(null,$member,"false");
+            //$salida = $astman->QueuePause(null,$member,"false");
+            $salida = QueuePause($astman, null,$member,"false");
             $resultado = $salida['Message'];
             if(!auditoria_break_update($_SESSION['elastix_agent_audit'])){
                 $smarty->assign("mb_title", $arrLan["Audit Error"]);
@@ -900,7 +905,8 @@ function entrar_agente_sin_pausa($agente)
         $resultado = $arrLan["Error when connecting to Asterisk Manager"];
     } else { 
         if(estaAgenteEnPausa($astman, $agente)) {
-            $salida = $astman->QueuePause(null,$member,"false");
+            //$salida = $astman->QueuePause(null,$member,"false");
+            $salida = QueuePause($astman, null,$member,"false");
             if($salida['Response']=='Error') {
                 $mensaje_return = $arrLan['Unable to pause Agent to queue: No such queue']; 
             } else {
@@ -1445,7 +1451,8 @@ function disconnet_agent() {
         $resultado = $arrLan["Error when connecting to Asterisk Manager"];
     } else { 
         if(estaAgenteEnPausa($astman, $agentnum)){
-            $salida = $astman->QueuePause(null,"Agent/$agentnum","false");
+            //$salida = $astman->QueuePause(null,"Agent/$agentnum","false");
+            $salida = QueuePause($astman, null,"Agent/$agentnum","false");
             if($salida['Response']=='Error')
                 $resultado = $arrLan['Unable to pause Agent to queue: No such queue'];
             if(!auditoria_break_update($_SESSION['elastix_agent_audit']))
@@ -1453,7 +1460,8 @@ function disconnet_agent() {
             $_SESSION['elastix_agent_audit'] = null;
             $_SESSION['elastix_agent_break'] = null;
         }
-        $arr_resultado = $astman->Agentlogoff($agentnum);
+        //$arr_resultado = $astman->Agentlogoff($agentnum);
+        $arr_resultado = Agentlogoff($astman, $agentnum);
         if( !registrarLogout($agentnum,$datetime_end,$msj) ) {;
             $respuesta = $msj;
         }
@@ -2094,6 +2102,34 @@ function sacar_hold(){
 /* FIN FUNCIONES DE TRANFERENCIA DE LLAMADAS */
 /*                                           */
 /* ----------------------------------------- */
+
+
+/* FUNCIONES DEL AGI*/
+    /**
+    * Agent Logoff
+    *
+    * @link http://www.voip-info.org/wiki/index.php?page=Asterisk+Manager+API+AgentLogoff
+    * @param Agent: Agent ID of the agent to login 
+    */
+    function Agentlogoff($obj_phpAgi, $agent)
+    {
+      return $obj_phpAgi->send_request('Agentlogoff', array('Agent'=>$agent));
+    }
+
+   /**
+    * Queue Pause
+    *
+    * @link http://www.voip-info.org/wiki/index.php?page=Asterisk+Manager+API+Action+QueuePause
+    * @param string $queue
+    * @param string $interface
+    * @param bool   $paused
+    */
+    function QueuePause($obj_phpAgi, $queue, $interface, $paused=false)
+    {
+      $parameters = array('Queue'=>$queue, 'Interface'=>$interface);
+      if($paused) $parameters['Paused'] = $paused;
+      return $obj_phpAgi->send_request('QueuePause', $parameters);
+    } 
 
 
 /* ---------------------------------------- */
