@@ -22,7 +22,7 @@
 <p>&nbsp;</p>
 <table width="400" border="0" cellspacing="0" cellpadding="0" align="center">
   <tr>
-    <td width="498" bgcolor="#cc0000">
+    <td width="498"  class="menudescription">
       <table width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
         <tr>
           <td>
