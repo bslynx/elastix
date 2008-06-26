@@ -65,18 +65,21 @@ class paloNetwork
         $lineaIfcfg  = "";
         $type        = "static";
 
-        if($fh = fopen($fileIf, "r")) {
-            while(!feof($fh)) {
-                $lineaIfcfg = fgets($fh, 4048);
-                if(ereg("^BOOTPROTO[[:space:]]*=[[:space:]]*dhcp", $lineaIfcfg)) {
-                    $type = "dhcp";
+        if(file_exists($fileIf))
+        {
+            if($fh = fopen($fileIf, "r")) {
+                while(!feof($fh)) {
+                    $lineaIfcfg = fgets($fh, 4048);
+                    if(ereg("^BOOTPROTO[[:space:]]*=[[:space:]]*dhcp", $lineaIfcfg)) {
+                        $type = "dhcp";
+                    }
                 }
+                fclose($fh);
+            } else {
+                // error
+                $type = "";
             }
-            fclose($fh);
-        } else {
-            // error
-            $type = "";
-        }
+        }else $type = ""; //error
 
         return $type;
     }
