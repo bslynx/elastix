@@ -22,7 +22,7 @@ mv $pathDB/*.rpmnew $pathTmpDB/ &>/dev/null
 elastix_version=$1
 echo "pre version elastix $elastix_version" 
 
-if [ "$elastix_version" \< "1.1" ]; then
+if [ "$elastix_version" \< "1.2" ]; then
     #Update only menu.db and acl.db (tables acl_resource, acl_group)
     #paso 1: repaldo de bases
         cp $pathDB/menu.db $pathDB/menu_old.db
