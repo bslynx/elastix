@@ -2,7 +2,7 @@
 <head>
 <title>Elastix - {$PAGE_NAME}</title>
 <!--<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">-->
-<link rel="stylesheet" href="themes/default/styles.css">
+<link rel="stylesheet" href="themes/elastixwine/styles.css">
 </head>
 
 <body bgcolor="#ffffff" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
