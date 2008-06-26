@@ -26,6 +26,8 @@
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
   $Id: frameRight.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
+session_name("elastixSession");
+session_start();
 
 if(!empty($_GET['id_nodo'])){
     $idMenuMostrar = $_GET['id_nodo'];
@@ -36,11 +38,8 @@ if(!empty($_GET['id_nodo'])){
     // Si no existe el archivo de ayuda y se trata de un menu "padre",
     // muestro el menu hijo que encuentre primero
     } else {
-        $idParent = obtenerMenuPadre($_GET['id_nodo']);
         // Es menu de primer nivel, entonces busco el menu hijo por omision
-        if($idParent=="") {
-            $idMenuMostrar = menuHijoPorOmision($_GET['id_nodo']);
-        }
+        $idMenuMostrar = menuHijoPorOmision($_GET['id_nodo']);
 
         if(existeArchivoAyuda($idMenuMostrar)) {
             include_once("content/$idMenuMostrar.hlp");
@@ -55,12 +54,16 @@ if(!empty($_GET['id_nodo'])){
 
 function menuHijoPorOmision($idMenu)
 {
-    $arrMenu = $_SESSION['elastix_user_permission'];
-
-    foreach($arrMenu as $k => $menu) {
-        if($menu['IdParent']==$idMenu) {
-            return $k;
-            break;
+    $arrMenu = array();
+    if(isset($_SESSION['elastix_user_permission']))
+        $arrMenu = $_SESSION['elastix_user_permission'];
+    if(is_array($arrMenu))
+    {
+        foreach($arrMenu as $k => $menu) {
+            if($menu['IdParent']==$idMenu) {
+                return $k;
+                break;
+            }
         }
     }
     return false;
