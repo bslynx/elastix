@@ -28,10 +28,8 @@
   $Id: new_campaign.php $ */
 
 include_once("libs/paloSantoDB.class.php");
-include_once("libs/agi-bin.class.php");
 require_once("libs/smarty/libs/Smarty.class.php");
 require_once "/var/lib/asterisk/agi-bin/phpagi-asmanager.php";
-//require_once("libs/xajax/xajaxResponse.inc.php");
 require_once("libs/js/jscalendar/calendar.php"); 
 require_once("modules/break_administrator/libs/PaloSantoBreaks.class.php");
 
