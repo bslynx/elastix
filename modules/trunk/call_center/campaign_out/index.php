@@ -185,15 +185,15 @@ function _moduleContent(&$smarty, $module_name)
 
     $arreglo_colas = array();
     foreach($arr_call_entry as $cola){
-	foreach($cola as $row){
-		 array_push($arreglo_colas,$row);//llenamos el arreglo de colas que estan en queue_call_entry
-	}
+    foreach($cola as $row){
+         array_push($arreglo_colas,$row);//llenamos el arreglo de colas que estan en queue_call_entry
+    }
     }
  
     if (is_array($arrQueues)){
         foreach($arrQueues as $queue) {
             if (!in_array($queue[0],$arreglo_colas)){//si la cola de queue_call_entry no esta siendo usada la asignamos al combo
-	        $arrDataQueues[$queue[0]] = $queue[1];
+            $arrDataQueues[$queue[0]] = $queue[1];
             }
         }          
     }
@@ -228,6 +228,24 @@ function _moduleContent(&$smarty, $module_name)
     $smarty->assign("DESCATIVATE", $arrLan["Desactivate"]);
     $smarty->assign("relative_dir_rich_text", $relative_dir_rich_text);
 
+    $horas = array();
+    $i = 0;
+    for( $i=-1;$i<24;$i++)
+    {
+        if($i == -1)     $horas["HH"] = "HH";
+        else if($i < 10) $horas["0$i"] = '0'.$i;
+        else             $horas[$i] = $i;
+    }
+
+    $minutos = array();
+    $i = 0;
+    for( $i=-1;$i<60;$i++)
+    {
+        if($i == -1)     $minutos["MM"] = "MM";
+        else if($i < 10) $minutos["0$i"] = '0'.$i;
+        else             $minutos[$i] = $i;
+    }
+
     $formCampos = array(
         'nombre'    =>    array(
             "LABEL"                => $arrLan["Name Campaign"],
@@ -246,38 +264,73 @@ function _moduleContent(&$smarty, $module_name)
             "VALIDATION_TYPE"        => "text",
             "VALIDATION_EXTRA_PARAM" => ""
         ),
+        "fecha_str"       => array(
+            "LABEL"                  => $arrLan["Range Date"],
+            "REQUIRED"               => "yes",
+            "INPUT_TYPE"             => "",
+            "INPUT_EXTRA_PARAM"      => "",
+            "VALIDATION_TYPE"        => '',
+            "VALIDATION_EXTRA_PARAM" => ''
+        ),
         "fecha_ini"       => array(
-            "LABEL"                  => $arrLan["Start Date"],
+            "LABEL"                  => $arrLan["Start"],
             "REQUIRED"               => "yes",
             "INPUT_TYPE"             => "DATE",
-            "INPUT_EXTRA_PARAM"      => array("TIME" => true, "FORMAT" => "%d %b %Y %H:%M","TIMEFORMAT" => "24"),
+            //"INPUT_EXTRA_PARAM"      => array("TIME" => true, "FORMAT" => "%d %b %Y %H:%M","TIMEFORMAT" => "24"),
+            "INPUT_EXTRA_PARAM"      => array("TIME" => false, "FORMAT" => "%d %b %Y"),
             "VALIDATION_TYPE"        => 'ereg',
-            "VALIDATION_EXTRA_PARAM" => '^[[:digit:]]{2}[[:space:]]+[[:alpha:]]{3}[[:space:]]+[[:digit:]]{4}[[:space:]]+[[:digit:]]{2}:[[:digit:]]{2}$'
+            "VALIDATION_EXTRA_PARAM" => '^[[:digit:]]{2}[[:space:]]+[[:alpha:]]{3}[[:space:]]+[[:digit:]]{4}$'
         ),
         "fecha_fin"       => array(
-            "LABEL"                  => $arrLan["End Date"],
+            "LABEL"                  => $arrLan["End"],
             "REQUIRED"               => "yes",
             "INPUT_TYPE"             => "DATE",
-            "INPUT_EXTRA_PARAM"      => array("TIME" => true, "FORMAT" => "%d %b %Y %H:%M","TIMEFORMAT" => "24"),
+            //"INPUT_EXTRA_PARAM"      => array("TIME" => true, "FORMAT" => "%d %b %Y %H:%M","TIMEFORMAT" => "24"),
+            "INPUT_EXTRA_PARAM"      => array("TIME" => false, "FORMAT" => "%d %b %Y"),
             "VALIDATION_TYPE"        => 'ereg',
-            "VALIDATION_EXTRA_PARAM" => '^[[:digit:]]{2}[[:space:]]+[[:alpha:]]{3}[[:space:]]+[[:digit:]]{4}[[:space:]]+[[:digit:]]{2}:[[:digit:]]{2}$'
+            "VALIDATION_EXTRA_PARAM" => '^[[:digit:]]{2}[[:space:]]+[[:alpha:]]{3}[[:space:]]+[[:digit:]]{4}$'
         ),
-//         "hora_ini"   => array(
-//             "LABEL"                  => $arrLan["Start Time"],
-//             "REQUIRED"               => "yes",
-//             "INPUT_TYPE"             => "TEXT",
-//             "INPUT_EXTRA_PARAM"      => "",
-//             "VALIDATION_TYPE"        => 'ereg',
-//             "VALIDATION_EXTRA_PARAM" => '^[[:digit:]]{2}:[[:digit:]]{2}(:[[:digit:]]{2})?$',
-//         ),
-//         "hora_fin"   => array(
-//             "LABEL"                  => $arrLan["End Time"],
-//             "REQUIRED"               => "yes",
-//             "INPUT_TYPE"             => "TEXT",
-//             "INPUT_EXTRA_PARAM"      => "",
-//             "VALIDATION_TYPE"        => 'ereg',
-//             "VALIDATION_EXTRA_PARAM" => '^[[:digit:]]{2}:[[:digit:]]{2}(:[[:digit:]]{2})?$',
-//         ),
+        "hora_str"       => array(
+            "LABEL"                  => $arrLan["Schedule per Day"],
+            "REQUIRED"               => "yes",
+            "INPUT_TYPE"             => "",
+            "INPUT_EXTRA_PARAM"      => "",
+            "INPUT_EXTRA_PARAM"      => "",
+            "VALIDATION_TYPE"        => '',
+            "VALIDATION_EXTRA_PARAM" => ''
+        ),
+        "hora_ini_HH"   => array(
+            "LABEL"                  => $arrLan["Start time"],
+            "REQUIRED"               => "yes",
+            "INPUT_TYPE"             => "SELECT",
+            "INPUT_EXTRA_PARAM"      => $horas,
+            "VALIDATION_TYPE"        => 'numeric',
+            "VALIDATION_EXTRA_PARAM" => '',
+         ),
+        "hora_ini_MM"   => array(
+            "LABEL"                  => $arrLan["Start time"],
+            "REQUIRED"               => "yes",
+            "INPUT_TYPE"             => "SELECT",
+            "INPUT_EXTRA_PARAM"      => $minutos,
+            "VALIDATION_TYPE"        => 'numeric',
+            "VALIDATION_EXTRA_PARAM" => '',
+         ),
+         "hora_fin_HH"   => array(
+            "LABEL"                  => $arrLan["End time"],
+            "REQUIRED"               => "yes",
+            "INPUT_TYPE"             => "SELECT",
+            "INPUT_EXTRA_PARAM"      => $horas,
+            "VALIDATION_TYPE"        => 'numeric',
+            "VALIDATION_EXTRA_PARAM" => '',
+         ),
+         "hora_fin_MM"   => array(
+            "LABEL"                  => $arrLan["End time"],
+            "REQUIRED"               => "yes",
+            "INPUT_TYPE"             => "SELECT",
+            "INPUT_EXTRA_PARAM"      => $minutos,
+            "VALIDATION_TYPE"        => 'numeric',
+            "VALIDATION_EXTRA_PARAM" => '',
+         ),
          'formulario'       => array(
             "LABEL"                  => $arrLan["Form"],
             "REQUIRED"               => "yes",
@@ -342,27 +395,27 @@ function _moduleContent(&$smarty, $module_name)
         $contenidoModulo = new_campaign($pDB, $smarty, $module_name, $local_templates_dir, $formCampos, $oForm);
     } else if (isset($_POST['save'])) {
 
-	//verificamos nuevamente si la cola fue elegida
-	/*$error_cola=0; 
-	$call_entry = "SELECT queue FROM queue_call_entry WHERE estatus='A'";
-	$r_call_entry = $pDB->fetchTable($call_entry, true);
-	$arr_colas = array();
+    //verificamos nuevamente si la cola fue elegida
+    /*$error_cola=0; 
+    $call_entry = "SELECT queue FROM queue_call_entry WHERE estatus='A'";
+    $r_call_entry = $pDB->fetchTable($call_entry, true);
+    $arr_colas = array();
 
-    	foreach($r_call_entry as $colas){
-        	foreach($colas as $rows){
-                	array_push($arr_colas,$rows);//llenamos el arreglo de colas que estan en queue_call_entry
-        	}
-    	}
+        foreach($r_call_entry as $colas){
+            foreach($colas as $rows){
+                    array_push($arr_colas,$rows);//llenamos el arreglo de colas que estan en queue_call_entry
+            }
+        }
 
-	$query = "select * from campaign where estatus='A';";
-	if (is_array($arrDataQueues)){
+    $query = "select * from campaign where estatus='A';";
+    if (is_array($arrDataQueues)){
          foreach($arrDataQueues as $queue) {
             if (in_array($queue[0],$arr_colas)){
-    		$error_cola = 1;       
+            $error_cola = 1;       
             }
          }
         }
-	if($error_cola==1) $smarty->assign("mb_message","Esta cola ya ha sido seleccionada por otro usuario, seleccione otra cola");
+    if($error_cola==1) $smarty->assign("mb_message","Esta cola ya ha sido seleccionada por otro usuario, seleccione otra cola");
         else*/ $contenidoModulo = save_campaign($pDB, $smarty, $module_name, $local_templates_dir, $formCampos, $oForm);
     } else if (isset($_POST['edit'])) {
         $contenidoModulo = edit_campaign($pDB, $smarty, $module_name, $local_templates_dir, $formCampos, $oForm);
@@ -419,12 +472,17 @@ function save_campaign($pDBSQLite, $smarty, $module_name, $local_templates_dir, 
             $strErrorMsg .= $arrLan["Script"];
         $strErrorMsg .= "";
         $smarty->assign("mb_message", $strErrorMsg);
-    } else {
+    }else{
         $oCamp = new paloSantoCampaignCC($pDBSQLite);
-        $time_ini = obtenerDateTime('TIME',$_POST['fecha_ini']);
-        $time_fin = obtenerDateTime('TIME',$_POST['fecha_fin']);
-        $iFechaIni = strtotime(obtenerDateTime('DATE',$_POST['fecha_ini']));
-        $iFechaFin = strtotime(obtenerDateTime('DATE',$_POST['fecha_fin']));
+        //$time_ini = obtenerDateTime('TIME',$_POST['fecha_ini']);
+        //$time_fin = obtenerDateTime('TIME',$_POST['fecha_fin']);
+        $time_ini = $_POST['hora_ini_HH'].":".$_POST['hora_ini_MM'];
+        $time_fin = $_POST['hora_fin_HH'].":".$_POST['hora_fin_MM'];
+        print_r($_POST);
+        //$iFechaIni = strtotime(obtenerDateTime('DATE',$_POST['fecha_ini']));
+        //$iFechaFin = strtotime(obtenerDateTime('DATE',$_POST['fecha_fin']));
+        $iFechaIni = strtotime($_POST['fecha_ini']);
+        $iFechaFin = strtotime($_POST['fecha_fin']);
         $iHoraIni =  strtotime($time_ini);
         $iHoraFin =  strtotime($time_fin); 
         if ($iFechaIni == -1 || $iFechaIni === FALSE) {
@@ -441,9 +499,9 @@ function save_campaign($pDBSQLite, $smarty, $module_name, $local_templates_dir, 
             $smarty->assign("mb_message", $arrLan['Unable to parse end time specification']);
         } else {
 
-          if(!$pDBSQLite->genQuery("SET AUTOCOMMIT=0")) {
+        if(!$pDBSQLite->genQuery("SET AUTOCOMMIT=0")) {
             $smarty->assign("mb_message", $pDBSQLite->errMsg);
-          } else {
+        } else {
             $id_campaign = $oCamp->createEmptyCampaign(
                             $_POST['nombre'],
                             3,
@@ -456,7 +514,7 @@ function save_campaign($pDBSQLite, $smarty, $module_name, $local_templates_dir, 
                             $time_ini,
                             $time_fin,
                             $_POST['rte_script'],
-			    $_POST['queue']);
+                            $_POST['queue']);
             
             if (!is_null($id_campaign)) {
                 $bExito1=false;
@@ -486,7 +544,6 @@ function save_campaign($pDBSQLite, $smarty, $module_name, $local_templates_dir, 
     $contenidoModulo = $oForm->fetchForm("$local_templates_dir/new.tpl", $arrLan["New Campaign"],$_POST);
     return $contenidoModulo;
 }
-
 
 function obtenerDateTime($accion,$date_time)
 {
@@ -521,8 +578,14 @@ function view_campaign($pDB, $smarty, $module_name, $local_templates_dir, $formC
     $arrCampaign = $oCampaign->getCampaigns(NULL, NULL, $_GET['id']);
     // Conversion de formato
     $arrTmp['nombre']       = $arrCampaign[0]['name'];
-    $arrTmp['fecha_ini']    = date('d M Y H:i',strtotime($arrCampaign[0]['datetime_init']." ".$arrCampaign[0]['daytime_init']));
-    $arrTmp['fecha_fin']    = date('d M Y H:i',strtotime($arrCampaign[0]['datetime_end']." ".$arrCampaign[0]['daytime_end']));
+    $arrTmp['fecha_ini']    = date('d M Y',strtotime($arrCampaign[0]['datetime_init']));
+    $arrTmp['fecha_fin']    = date('d M Y',strtotime($arrCampaign[0]['datetime_end']));
+    $arrDateTimeInit = split(":",$arrCampaign[0]['daytime_init']);
+    $arrDateTimeEnd  = split(":",$arrCampaign[0]['daytime_end']);
+    $arrTmp['hora_ini_HH']  = isset($arrDateTimeInit[0])?$arrDateTimeInit[0]:"00";
+    $arrTmp['hora_ini_MM']  = isset($arrDateTimeInit[1])?$arrDateTimeInit[1]:"00";
+    $arrTmp['hora_fin_HH']  = isset($arrDateTimeEnd[0])?$arrDateTimeEnd[0]:"00";
+    $arrTmp['hora_fin_MM']  = isset($arrDateTimeEnd[1])?$arrDateTimeEnd[1]:"00";
     $arrTmp['reintentos']   = $arrCampaign[0]['retries'];
     $arrTmp['trunk']        = $arrCampaign[0]['trunk'];
     $arrTmp['queue']        = $arrCampaign[0]['queue'];
@@ -546,9 +609,14 @@ function edit_campaign($pDB, $smarty, $module_name, $local_templates_dir, $formC
     $arrCampaign = $oCampaign->getCampaigns(null, null, $_GET['id']);
 
     $arrTmp['nombre']       = $arrCampaign[0]['name'];
-    $arrTmp['fecha_ini']    = date('d M Y H:i',strtotime($arrCampaign[0]['datetime_init']." ".$arrCampaign[0]['daytime_init']));
-    $arrTmp['fecha_fin']    = date('d M Y H:i',strtotime($arrCampaign[0]['datetime_end']." ".$arrCampaign[0]['daytime_end']));
-    $arrTmp['reintentos']   = $arrCampaign[0]['retries'];
+    $arrTmp['fecha_ini']    = date('d M Y',strtotime($arrCampaign[0]['datetime_init']));
+    $arrTmp['fecha_fin']    = date('d M Y',strtotime($arrCampaign[0]['datetime_end']));
+    $arrDateTimeInit = split(":",$arrCampaign[0]['daytime_init']);
+    $arrDateTimeEnd  = split(":",$arrCampaign[0]['daytime_end']);
+    $arrTmp['hora_ini_HH']  = isset($arrDateTimeInit[0])?$arrDateTimeInit[0]:"00";
+    $arrTmp['hora_ini_MM']  = isset($arrDateTimeInit[1])?$arrDateTimeInit[1]:"00";
+    $arrTmp['hora_fin_HH']  = isset($arrDateTimeEnd[0])?$arrDateTimeEnd[0]:"00";
+    $arrTmp['hora_fin_MM']  = isset($arrDateTimeEnd[1])?$arrDateTimeEnd[1]:"00";$arrTmp['reintentos']   = $arrCampaign[0]['retries'];
     $arrTmp['trunk']        = $arrCampaign[0]['trunk'];
     $arrTmp['queue']        = $arrCampaign[0]['queue'];
     $arrTmp['context']      = $arrCampaign[0]['context'];
@@ -606,12 +674,18 @@ function update_campaign($pDBSQLite, $smarty, $module_name, $local_templates_dir
         $oForm->setEditMode();
     } else {
         $oCamp = new paloSantoCampaignCC($pDBSQLite);
-        $time_ini = obtenerDateTime('TIME',$_POST['fecha_ini']);
-        $time_fin = obtenerDateTime('TIME',$_POST['fecha_fin']);
-        $iFechaIni = strtotime(obtenerDateTime('DATE',$_POST['fecha_ini']));
-        $iFechaFin = strtotime(obtenerDateTime('DATE',$_POST['fecha_fin']));
+        //$time_ini = obtenerDateTime('TIME',$_POST['fecha_ini']);
+        //$time_fin = obtenerDateTime('TIME',$_POST['fecha_fin']);
+        $time_ini = $_POST['hora_ini_HH'].":".$_POST['hora_ini_MM'];
+        $time_fin = $_POST['hora_fin_HH'].":".$_POST['hora_fin_MM'];
+        print_r($_POST);
+        //$iFechaIni = strtotime(obtenerDateTime('DATE',$_POST['fecha_ini']));
+        //$iFechaFin = strtotime(obtenerDateTime('DATE',$_POST['fecha_fin']));
+        $iFechaIni = strtotime($_POST['fecha_ini']);
+        $iFechaFin = strtotime($_POST['fecha_fin']);
         $iHoraIni =  strtotime($time_ini);
         $iHoraFin =  strtotime($time_fin); 
+
         if ($iFechaIni == -1 || $iFechaIni === FALSE) {
             $smarty->assign("mb_title", $arrLang["Validation Error"]);
             $smarty->assign("mb_message", $arrLan['Unable to parse start date specification']);
@@ -683,6 +757,7 @@ function update_campaign($pDBSQLite, $smarty, $module_name, $local_templates_dir
 function listadoCampaign($pDB, $smarty, $module_name, $local_templates_dir) {
     global $arrLang;
     global $arrLan;
+    $arrData = '';
     $oCampaign = new paloSantoCampaignCC($pDB);
 
     //LISTADO DE RATES
@@ -856,27 +931,27 @@ function adaptar_nombre($nombre)
 }
 
 function adaptar_formato_rte($strText) {
-	//returns safe code for preloading in the RTE
-	$tmpString = $strText;
-	
-	//convert all types of single quotes
-	$tmpString = str_replace(chr(145), chr(39), $tmpString);
-	$tmpString = str_replace(chr(146), chr(39), $tmpString);
-	$tmpString = str_replace("'", "&#39;", $tmpString);
-	
-	//convert all types of double quotes
-	$tmpString = str_replace(chr(147), chr(34), $tmpString);
-	$tmpString = str_replace(chr(148), chr(34), $tmpString);
-//	$tmpString = str_replace("\"", "\"", $tmpString);
-	
-	//replace carriage returns & line feeds
-	$tmpString = str_replace(chr(10), " ", $tmpString);
-	$tmpString = str_replace(chr(13), " ", $tmpString);
+    //returns safe code for preloading in the RTE
+    $tmpString = $strText;
+    
+    //convert all types of single quotes
+    $tmpString = str_replace(chr(145), chr(39), $tmpString);
+    $tmpString = str_replace(chr(146), chr(39), $tmpString);
+    $tmpString = str_replace("'", "&#39;", $tmpString);
+    
+    //convert all types of double quotes
+    $tmpString = str_replace(chr(147), chr(34), $tmpString);
+    $tmpString = str_replace(chr(148), chr(34), $tmpString);
+//  $tmpString = str_replace("\"", "\"", $tmpString);
+    
+    //replace carriage returns & line feeds
+    $tmpString = str_replace(chr(10), " ", $tmpString);
+    $tmpString = str_replace(chr(13), " ", $tmpString);
 
         //replace comillas dobles por una
         $tmpString = str_replace("\"", "'", $tmpString);
-	
-	return $tmpString;
+    
+    return $tmpString;
 }
 
 function delete_campaign($pDB, $smarty, $module_name, $local_templates_dir, $formCampos, $oForm) {

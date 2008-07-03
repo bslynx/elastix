@@ -103,5 +103,11 @@ $arrLan = array(
 "Active"=>"Activa",
 "All"=>"Todos",
 "Inactive"=>"Inactiva",
+"Range Date" => "Range Date",
+"Start" => "Start",
+"End" => "End",
+"Schedule per Day" => "Schedule per Day",
+"Start time" => "Start time",
+"End time" => "End time",
 );
 ?>

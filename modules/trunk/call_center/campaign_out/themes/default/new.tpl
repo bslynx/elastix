@@ -37,71 +37,74 @@ var rte_script = new richTextEditor('rte_script');
 </tr>
 <tr>
   <td>
-    <table width="100%" border="1" cellspacing="0" cellpadding="0" class="tabForm">
-      <tr>
-		<td width="20%">{$nombre.LABEL}: <span  class="required">*</span></td>
-		<td width="80%">{$nombre.INPUT}</td>
-	  </tr>
-      <tr>
-		<td width="20%">{$fecha_ini.LABEL}: <span  class="required">*</span></td>
-		<td width="80%">{$fecha_ini.INPUT}</td>
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" class="tabForm">
+      <tr height='50'>
+          <td width="20%">{$nombre.LABEL}: <span  class="required">*</span></td>
+          <td colspan='2'>{$nombre.INPUT}</td>
       </tr>
       <tr>
-		<td width="20%">{$fecha_fin.LABEL}: <span  class="required">*</span></td>
-		<td width="80%">{$fecha_fin.INPUT}</td>
+          <td>{$fecha_str.LABEL}: <span  class="required">*</span></td>
+          <td width="25%">{$fecha_ini.INPUT}&nbsp;{$fecha_ini.LABEL}</td>
+          <td>{$fecha_fin.INPUT}&nbsp;{$fecha_fin.LABEL}</td>
       </tr>
-     <!-- <tr>
-		<td>{$hora_ini.LABEL}: <span  class="required">*</span></td>
-		<td>{$hora_ini.INPUT}</td>
-	  </tr>
-      <tr>
-		<td>{$hora_fin.LABEL}: <span  class="required">*</span></td>
-		<td>{$hora_fin.INPUT}</td>
-	  </tr>-->
+      <tr height='10'>
+          <td align='left' colspan='3'></td>
+      </tr>
+      <tr height='30'>
+          <td>{$hora_str.LABEL}: <span  class="required">*</span></td>
+          <td align='left' colspan='2'>{$hora_ini_HH.INPUT}&nbsp;:&nbsp;{$hora_ini_MM.INPUT}&nbsp;{$hora_ini_HH.LABEL}</td>
+      </tr>
+      <tr height='30'>
+          <td>&nbsp;</td>
+          <td align='left' colspan='2'>{$hora_fin_HH.INPUT}&nbsp;:&nbsp;{$hora_fin_MM.INPUT}&nbsp;{$hora_fin_HH.LABEL}</td>
+      </tr>
+      <tr height='10'>
+          <td align='left' colspan='3'></td>
+      </tr>
       <tr>
 		<td>{$formulario.LABEL}: <span  class="required">*</span></td>
-                <td>
-                    {if $mode eq 'edit' or $mode eq 'input'}
-                        <table border='0' cellpadding='0' cellspacing='0'>
-                            <tr>
-                                <td rowspan='2'>{$formulario.INPUT}</td>
-                                <td><input type='button' name='agregar_formulario' value="&gt;&gt;" onclick='add_form()'/></td>
-                                <td rowspan='2'>{$formularios_elegidos.INPUT}</td>
-                            </tr>
-                            <tr>
-                                <td><input type='button' name='quitar_formulario' value="&lt;&lt;" onclick='drop_form()'/></td>
-                            </tr>
-                        </table>  
-                    {else}
-                        {$formulario.INPUT}
-                    {/if}         
-                </td>
+          <td  colspan='2'>
+           {if $mode eq 'edit' or $mode eq 'input'}
+                <table border='0' cellpadding='0' cellspacing='0'>
+                    <tr>
+                        <td rowspan='3'>{$formulario.INPUT}</td>
+                        <td><input type='button' name='agregar_formulario' value="&gt;&gt;" onclick='add_form()'/></td>
+                        <td rowspan='3'>{$formularios_elegidos.INPUT}</td>
+                    </tr>
+                    <tr>
+                        <td><input type='button' name='quitar_formulario' value="&lt;&lt;" onclick='drop_form()'/></td>
+                    </tr>
+                </table>  
+           {else}
+               {$formulario.INPUT}
+            {/if}         
+            </td>
 	  </tr>
-      <tr>
-		<td width="20%">{$trunk.LABEL}: <span  class="required">*</span></td>
-		<td width="80%">{$trunk.INPUT}</td>
+      <tr  height='30'>
+		<td>{$trunk.LABEL}: <span  class="required">*</span></td>
+		<td colspan='2'>{$trunk.INPUT}</td>
       </tr>
-      <tr>
-		<td width="20%">{$context.LABEL}: <span  class="required">*</span></td>
-		<td width="80%">{$context.INPUT}</td>
+      <tr height='30'>
+		<td>{$context.LABEL}: <span  class="required">*</span></td>
+		<td colspan='2'>{$context.INPUT}</td>
       </tr>
-      <tr>
-		<td width="20%">{$queue.LABEL}: <span  class="required">*</span></td>
-		<td width="80%">{$queue.INPUT}</td>
+      <tr height='30'>
+		<td>{$queue.LABEL}: <span  class="required">*</span></td>
+		<td colspan='2'>{$queue.INPUT}</td>
       </tr>
-      <tr>
-	<td>{$reintentos.LABEL}: <span  class="required">*</span></td>
-	<td>{$reintentos.INPUT}</td>
+      <tr height='30'>
+	    <td>{$reintentos.LABEL}: <span  class="required">*</span></td>
+	    <td  colspan='4'>{$reintentos.INPUT}</td>
       </tr>
       {if $mode eq 'input'}
       <tr>
     	<td>Archivo de Llamadas: <span  class="required">*</span></td>
-    	<td><input type='file' name='phonefile'></td>
+    	<td  colspan='4'><input type='file' name='phonefile'></td>
       </tr>
       {/if}
       <tr>
         <td>{$script.LABEL}: <span  class="required">*</span></td>
-        <td> 
+        <td  colspan='2'> 
             {if $mode eq 'edit' or $mode eq 'input'}
                <script language="JavaScript" type="text/javascript">
                    rte_script.html ="{$rte_script}";

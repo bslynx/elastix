@@ -102,5 +102,11 @@ $arrLan=array(
 "Active" => "可用",
 "All" => "所有",
 "Inactive" => "不可用",
+"Range Date" => "Range Date",
+"Start" => "Start",
+"End" => "End",
+"Schedule per Day" => "Schedule per Day",
+"Start time" => "Start time",
+"End time" => "End time",
 );
 ?>
