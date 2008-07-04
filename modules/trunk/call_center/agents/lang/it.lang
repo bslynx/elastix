@@ -47,7 +47,7 @@ $arrLan=array(
 "Agent doesn't exist in database"=>"Agent doesn't exist in database",
 // desconectar agentes
 "Number"=>"Number",
-"Desconect"=>"Desconect",
+"Disconect"=>"Disconect",
 "Configure"=>"Configure",
 "Offline"=>"Off Line",
 "Online"=>"On Line",

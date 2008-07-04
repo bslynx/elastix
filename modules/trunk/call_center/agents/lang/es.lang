@@ -49,7 +49,7 @@ $arrLan=array(
 "To rapair is necesary add an agent in configuration file. Do you want to continue?"=>"Para reparar es necesario añadir el agente en el archivo de configuración. Desea continuar?",
 //desconectar agentes
 "Number"=>"N&uacute;mero",
-"Desconect"=>"Desconectar",
+"Disconect"=>"Desconectar",
 "Configure"=>"Configuraci&oacute;n",
 "Offline"=>"Desconectado",
 "Online"=>"Conectado",
