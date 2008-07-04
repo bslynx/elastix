@@ -34,7 +34,7 @@ class paloDB {
     var $connStatus;    // Se asigna a VERDADERO si ocurrió error de DB
     var $errMsg;        // Texto del mensaje de error
 
-    /*
+    /**
      * Constructor de la clase, recibe como parámetro el DSN de PEAR a usar
      * para la conexión a la base de datos. El DSN debe de indicar como base
      * por omisión la base donde se encuentran los ACLs.
@@ -63,7 +63,7 @@ class paloDB {
             $password   = $dsninfo['password'];
 
             try {
-                $this->connStatus = false;//logica negativa
+                $this->connStatus = false;  //logica negativa
                 $this->conn = new PDO($dsn, $user, $password);
             } catch (PDOException $e) {
                 $this->errMsg = "Error de conexion a la base de datos - " . $e->getMessage();
