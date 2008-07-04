@@ -1,16 +1,16 @@
 <?php
 	require_once "config.php";     
 
-        function obtener_nombre($ruta){
-            if(strpos($ruta,"/")===false)
-                return $ruta;
-            else
-                return substr($ruta,(strpos($ruta,"/") + 1));
-        }	
+    function obtener_nombre($ruta){
+        if(strpos($ruta,"/")===false)
+            return $ruta;
+        else
+            return substr($ruta,(strpos($ruta,"/") + 1));
+    }	
 
 	function faxes_log ($text, $echo = false) {
-                global $db_object;
-		  $db_object->query ("INSERT INTO SysLog (logtext,logdate) VALUES ('$text',datetime('now','localtime'))");
+        global $db_object;
+		$db_object->query ("INSERT INTO SysLog (logtext,logdate) VALUES ('$text',datetime('now','localtime'))");
 		if ($echo) echo "$text\n";
 	}
 
@@ -33,26 +33,26 @@
 		global $db_object;
                 $id = -1;
                 $dev_id = str_replace("ttyIAX","",$modemdev);
-		$sql= "select id from fax where dev_id=?";
-		$recordset =& $db_object->query($sql, array($dev_id));
-		while($tupla = $recordset->fetchRow(DB_FETCHMODE_OBJECT)){ 
+		$sql= "select id from fax where dev_id=$dev_id";
+		$recordset =& $db_object->query($sql);
+        while($tupla = $recordset->fetch(PDO::FETCH_OBJ)){ 
 			$id = $tupla->id;
 		}
 		return $id;
 	}
     
-        function obtener_mail_destiny($modemdev)
+    function obtener_mail_destiny($modemdev)
 	{
 		global $db_object;
                 $dev_id = str_replace("ttyIAX","",$modemdev);
-		$sql= "select email from fax where dev_id=?";
-		$recordset =& $db_object->query($sql, array($dev_id));
-		while ($tupla = $recordset->fetchRow(DB_FETCHMODE_OBJECT)) 
+		$sql= "select email from fax where dev_id=$dev_id";
+		$recordset = $db_object->query($sql);
+        while($tupla = $recordset->fetch(PDO::FETCH_OBJ))
         		$id = $tupla->email;
 		return $id;
 	}
 
-        function getConfigurationSendingFaxMail($namePDF,$companyNameFrom,$companyNumberFrom)
+    function getConfigurationSendingFaxMail($namePDF,$companyNameFrom,$companyNumberFrom)
 	{
 		global $db_object;
                 $arrData['remite']="elastix@example.com";
@@ -65,9 +65,9 @@
                         from 
                             configuration_fax_mail
                         where 
-                            id=?";
-		$recordset =& $db_object->query($sql, array(1));
-		while ($tupla = $recordset->fetchRow(DB_FETCHMODE_OBJECT)){ 
+                            id=1";
+        $recordset = $db_object->query($sql);
+        while($tupla = $recordset->fetch(PDO::FETCH_OBJ)){
         		$arrData['remite'] = utf8_decode($tupla->remite);
                         $arrData['remitente'] = utf8_decode($tupla->remitente);
                         $arrData['subject'] = utf8_decode(str_replace("{NAME_PDF}",$namePDF,$tupla->subject));
@@ -99,8 +99,12 @@
 		$values = array ();
 		
 		foreach ($array as $key=>$val) {
-			list ($left, $right) = explode (": ", $val);
-			$values[trim ($left)] = trim ($right);
+            $exp = explode (": ", $val);
+            if( count($exp) == 1  ){
+                $exp[]="";
+            }
+     	    list ($left, $right) = $exp;
+		    $values[trim ($left)] = trim ($right);
 		}
 		
 		if (isset($values['Sender'])) {
