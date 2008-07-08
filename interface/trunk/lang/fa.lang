@@ -921,5 +921,10 @@ configuration <br>because some processes need it.",
 "Recording File" => "Recording File",
 "Destiny directory couldn't be created" => "Destiny directory couldn't be created",
 /*RECORDINGS*/
+
+/*ASTERIX LOG*/
+"offset" => "offset",
+"Asterisk Logs" => "Asterisk Logs",
+/*ASTERIX LOG*/
 );
 ?>

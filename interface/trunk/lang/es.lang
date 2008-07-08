@@ -1016,5 +1016,10 @@ alrededor del mundo.",
 "Recording File" => "Archivo de Grabación",
 "Destiny directory couldn't be created" => "Directorio destino no pudo ser creado",
 /*RECORDINGS*/
+
+/*ASTERIX LOG*/
+"offset" => "offset",
+"Asterisk Logs" => "Asterisk Logs",
+/*ASTERIX LOG*/
 );
 ?>
