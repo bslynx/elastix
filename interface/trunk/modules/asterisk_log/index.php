@@ -60,7 +60,7 @@ function _moduleContent(&$smarty, $module_name)
 function report_AsteriskLogs($smarty, $module_name, $local_templates_dir, $arrLang)
 {
     $arrFormElements = array(
-            "filter"            => array(   "LABEL"                  => $arrLa_ng["Date"],
+            "filter"            => array(   "LABEL"                  => $arrLang["Date"],
                                             "REQUIRED"               => "no",
                                             "INPUT_TYPE"             => "SELECT",
                                             "INPUT_EXTRA_PARAM"      => NULL,
