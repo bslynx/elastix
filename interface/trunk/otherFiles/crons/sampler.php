@@ -74,7 +74,7 @@ $timestamp = time();
 $oSampler->insertSample(2, $timestamp, $cpuUsage);
 
 // Memory Usage
-$memUsage = number_format(($arrSysInfo['MemTotal'] - $arrSysInfo['MemFree'] - $arrSysInfo['MemBuffers'])/1024, 2);
+$memUsage = number_format(($arrSysInfo['MemTotal'] - $arrSysInfo['MemFree'] - $arrSysInfo['Cached'] - $arrSysInfo['MemBuffers'])/1024, 2);
 $timestamp = time();
 $oSampler->insertSample(3, $timestamp, $memUsage);
 
