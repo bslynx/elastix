@@ -45,7 +45,7 @@ function _moduleContent($smarty, $module_name)
     //print_r($arrSysInfo);
 
     $cpu_usage  = $arrSysInfo['CpuUsage'];
-    $mem_usage  = ($arrSysInfo['MemTotal'] - $arrSysInfo['MemFree'] - $arrSysInfo['MemBuffers'])/$arrSysInfo['MemTotal'];
+    $mem_usage  = ($arrSysInfo['MemTotal'] - $arrSysInfo['MemFree'] - $arrSysInfo['Cached'] - $arrSysInfo['MemBuffers'])/$arrSysInfo['MemTotal'];
     $swap_usage = ($arrSysInfo['SwapTotal'] - $arrSysInfo['SwapFree'])/$arrSysInfo['SwapTotal'];
 
     $smarty->assign("cpu_info", $arrSysInfo['CpuVendor'] . " " . $arrSysInfo['CpuModel']);
