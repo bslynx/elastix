@@ -58,6 +58,9 @@ function obtener_info_de_sistema()
             if(ereg("^SwapFree:[[:space:]]+([[:digit:]]+) kB", $linea, $arrReg)) {
                 $arrInfo["SwapFree"]=trim($arrReg[1]);
             }
+            if(ereg("^Cached:[[:space:]]+([[:digit:]]+) kB", $linea, $arrReg)) {
+                $arrInfo["Cached"]=trim($arrReg[1]);
+            }
         }
         fclose($fh);
     }
