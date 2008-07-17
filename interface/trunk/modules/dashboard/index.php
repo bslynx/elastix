@@ -31,11 +31,11 @@
 require_once "libs/paloSantoForm.class.php";
 require_once "libs/xajax/xajax.inc.php";
 require_once "libs/paloSantoDB.class.php";
-require_once("libs/paloSantoACL.class.php");
+require_once "libs/paloSantoACL.class.php";
 
 function _moduleContent(&$smarty,$module_name){
     // require_once files this module
-    require_once "modules/$module_name/libs/paloSantoUserInfo.class.php";
+    require_once "modules/$module_name/libs/paloSantoDashboard.class.php";
     require_once "modules/$module_name/configs/default.conf.php";
 
     //call to global array ()
@@ -48,7 +48,8 @@ function _moduleContent(&$smarty,$module_name){
     $local_templates_dir  = "$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
 
     //start ajax resource
-    $contenido = startXajaxRefresh($local_templates_dir,$module_name);
+    //$contenido = startXajaxRefresh($local_templates_dir,$module_name);
+    $contenido = getDashboard($local_templates_dir,$module_name);
     return $contenido;
 }
 
@@ -56,34 +57,33 @@ function _moduleContent(&$smarty,$module_name){
 function startXajaxRefresh($local_templates_dir,$module_name)
 {
     $xajax = new xajax();
-    $xajax->registerFunction("refreshUserInformation");
+    $xajax->registerFunction("refreshDashboard");
     $xajax->processRequests();
 
     $id_xajax_content = 
     "<div id='xajax_content'> </div>
      <script type='text/javascript'> 
-        function ejecutarAjax()
+        xajax_refreshDashboard('$local_templates_dir','$module_name');
+        /*function ejecutarAjax()
         {
-            xajax_refreshUserInformation('$local_templates_dir','$module_name');
+            xajax_refreshDashboard('$local_templates_dir','$module_name');
             setTimeout(ejecutarAjax(),10000);
-        }
-        ejecutarAjax();
+        }*/
      </script>";
-     $contenido = $xajax->printJavascript("libs/xajax/");
+    $contenido = $xajax->printJavascript("libs/xajax/");
     return $contenido.$id_xajax_content;
 }
 
-function refreshUserInformation($local_templates_dir,$module_name)
+function refreshDashboard($local_templates_dir,$module_name)
 {
     $respuesta = new xajaxResponse();
-    $contenido = getUserInformation($local_templates_dir,$module_name);
+    $contenido = getDashboard($local_templates_dir,$module_name);
     $respuesta->addAssign("xajax_content","innerHTML",$contenido);
-//     $respuesta->addAlert("Holas");
     return $respuesta;
 }
 /** End Implementation ajax*/
 
-function getUserInformation($local_templates_dir,$module_name)
+function getDashboard($local_templates_dir,$module_name)
 {
     global $arrConf;
     global $arrLang;
@@ -98,7 +98,7 @@ function getUserInformation($local_templates_dir,$module_name)
 
     $pDB = conectionAsteriskCDR();
     if($pDB){
-        $objUserInfo = new paloSantoUserInfo($pDB);
+        $objUserInfo = new paloSantoDashboard($pDB);
         $arrData     = $objUserInfo->getDataUserLogon($_SESSION["elastix_user"]);
 
         if(is_array($arrData) && count($arrData)>0){
@@ -116,7 +116,7 @@ function getUserInformation($local_templates_dir,$module_name)
         }
     }
 
-    $smarty->assign("userInf",$arrLang["User Info"]);
+    $smarty->assign("userInf",$arrLang["Dashboard"]);
     $smarty->assign("calls",$arrLang["Calls"]);
     $smarty->assign("emails",$arrLang["Em@ils"]);
     $smarty->assign("faxes",$arrLang["Faxes"]);
@@ -131,7 +131,7 @@ function getUserInformation($local_templates_dir,$module_name)
     $smarty->assign("calendarEvents",$eventsRows);
 
     $oForm = new paloForm($smarty,array());
-    $contenido = $oForm->fetchForm($local_templates_dir."/user_inf.tpl",$arrLang["User Info"]);
+    $contenido = $oForm->fetchForm($local_templates_dir."/dashboard.tpl",$arrLang["Dashboard"]);
     return $contenido;
 }
 

@@ -25,13 +25,13 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: paloSantoUserInfo.class.php,v 1.1.1.1 2008/01/31 21:31:55  Exp $ */
+  $Id: paloSantoDashboard.class.php,v 1.1.1.1 2008/01/31 21:31:55  Exp $ */
 
-class paloSantoUserInfo {
+class paloSantoDashboard {
     var $_DB;
     var $errMsg;
 
-    function paloSantoUserInfo(&$pDB)
+    function paloSantoDashboard(&$pDB)
     {
         // Se recibe como parámetro una referencia a una conexión paloDB
         if (is_object($pDB)) {

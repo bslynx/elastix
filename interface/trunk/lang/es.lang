@@ -926,7 +926,7 @@ alrededor del mundo.",
 "Address Book from CSV" => "Libro de Direcciones desde CSV",
 /*Adress Book*/
 
-/*User information*/
+/*Dashboard*/
 "You haven't extension" => "Usted no tiene extension.",
 "Imap: Connection error" => "Imap: Error de conexion.",
 "You don't recibed emails" => "Usted no ha recibido emails.",
@@ -935,7 +935,7 @@ alrededor del mundo.",
 "You don't recibed calls" => "Usted no ha recibido llamadas.",
 "You don't recibed voicemails" => "Usted no ha recibido mensajes de voz.",
 "Unenabled to open file" => "No es posible abrir el archivo.",
-"User Info" => "Informacion del Usuario",
+"Dashboard" => "Dashboard",
 "Calls" => "Llamadas",
 "Em@ils" => "Em@ils",
 "Faxes" => "Faxes",
@@ -959,7 +959,7 @@ alrededor del mundo.",
 "Error at read your calendar." => "Error al leer tu calendario.",
 "You don't have events" => "No tiene eventos.",
 "You don't have a webmail account" => "No tiene una cuenta webmail",
-/*User information*/
+/*Dashboard*/
 
 /*USERLIST*/
 /* Additional strings for webmail auto-login extension */

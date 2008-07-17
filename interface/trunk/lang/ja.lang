@@ -932,7 +932,7 @@ FAX送信可能なIPアドレスを１行ずつ入力してください。<br>El
 "Address Book from CSV" => "Address Book from CSV",
 /*Adress Book*/
 
-/*User information*/
+/*Dashboard*/
 "You haven't extension" => "You haven't extension.",
 "Imap: Connection error" => "Imap: Conection error.",
 "You don't recibed emails" => "You don't recibed emails.",
@@ -941,7 +941,7 @@ FAX送信可能なIPアドレスを１行ずつ入力してください。<br>El
 "You don't recibed calls" => "You don't recibed calls.",
 "You don't recibed voicemails" => "You don't recibed voicemails.",
 "Unenabled to open file" => "Unenabled to open file",
-"User Info" => "User information",
+"Dashboard" => "Dashboard",
 "Calls" => "Calls",
 "Em@ils" => "Em@ils",
 "Faxes" => "Faxes",
@@ -965,7 +965,7 @@ FAX送信可能なIPアドレスを１行ずつ入力してください。<br>El
 "Error at read your calendar." => "Error at read your calendar.",
 "You don't have events" => "You don't have events.",
 "You don't have a webmail account" => "You don't have a webmail account",
-/*User information*/
+/*Dashboard*/
 
 /*USERLIST*/
 /* Additional strings for webmail auto-login extension */
