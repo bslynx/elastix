@@ -626,13 +626,13 @@ function checkbox($id_name, $checked='off', $disable='off')
     $check = $disab = "";
 
     if(!($checked=='off'))
-        $check = "checked='checked'";
+        $check = "checked=\"checked\"";
     if(!($disable=='off'))
-        $disab = "disabled='disabled'";
+        $disab = "disabled=\"disabled\"";
 
-    $checkbox  = "<input type='checkbox' name='chkold{$id_name}' $check $disab onclick='javascript:{$id_name}check();' /> 
-                  <input type='hidden'   name='{$id_name}' id='{$id_name}'   value='{$checked}' />
-                  <script type='text/javascript'>
+    $checkbox  = "<input type=\"checkbox\" name=\"chkold{$id_name}\" $check $disab onclick=\"javascript:{$id_name}check();\" /> 
+                  <input type=\"hidden\"   name=\"{$id_name}\" id=\"{$id_name}\"   value=\"{$checked}\" />
+                  <script type=\"text/javascript\">
                     function {$id_name}check(){
                         var node = document.getElementById('$id_name');
                         if(node.value == 'on')
