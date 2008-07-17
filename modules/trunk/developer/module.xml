@@ -4,5 +4,6 @@
     <menuitem menuid="developer" desc="Developer" parent="" module="no"></menuitem>
     <menuitem menuid="build_module" desc="Build Module" parent="developer" module="yes"></menuitem>
     <menuitem menuid="delete_module" desc="Delete Module" parent="developer" module="yes"></menuitem>
+    <menuitem menuid="language_admin" desc="Language Admin" parent="developer" module="yes"></menuitem>
   </menulist>
 </module>
