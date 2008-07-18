@@ -20,7 +20,7 @@
    | Autores: Alex Villacís Lasso <a_villacis@palosanto.com>              |
    +----------------------------------------------------------------------+
   
-   $Id: DialerProcess.class.php,v 1.2 2008/06/06 06:46:14 alex Exp $
+   $Id: DialerProcess.class.php,v 1.4 2008/07/19 04:02:29 alex Exp $
 */
 require_once('AbstractProcess.class.php');
 require_once 'DB.php';
@@ -31,6 +31,8 @@ require_once('GestorLlamadasEntrantes.class.php');
 
 // Número mínimo de muestras para poder confiar en predicciones de marcador
 define('MIN_MUESTRAS', 10);
+
+//dl('sqlite3.so');
 
 class DialerProcess extends AbstractProcess
 {
@@ -149,6 +151,18 @@ class DialerProcess extends AbstractProcess
         } else {
         	$this->oMainLog->output("Usando umbral de llamada corta (por omisión): ".$this->_iUmbralLlamadaCorta." segundos.");
         }
+        
+        // Recoger nivel de depuración
+        $this->DEBUG = FALSE;
+        if (isset($infoConfig['dialer']) && isset($infoConfig['dialer']['debug'])) {
+        	$this->DEBUG = $infoConfig['dialer']['debug'] ? TRUE : FALSE;
+        	if ($this->DEBUG) $this->oMainLog->output("Información de depuración está ACTIVADA.");
+        }
+        $this->REPORTAR_TODO = FALSE;
+        if (isset($infoConfig['dialer']) && isset($infoConfig['dialer']['allevents'])) {
+        	$this->REPORTAR_TODO = $infoConfig['dialer']['allevents'] ? TRUE : FALSE;
+        	if ($this->REPORTAR_TODO) $this->oMainLog->output("Se reportará información de todos los eventos Asterisk.");
+        }
     }
 
     // Iniciar la conexión a la base de datos con los parámetros recogidos por
@@ -188,7 +202,7 @@ class DialerProcess extends AbstractProcess
             $this->oMainLog->output("FATAL: no se puede conectar a Asterisk Manager\n");
             return FALSE;
         } else {
-            if ($this->REPORTAR_TODO)
+            if ($this->DEBUG && $this->REPORTAR_TODO)
                 $astman->add_event_handler('*', array($this, 'OnDefault'));
             $astman->add_event_handler('Join', array($this, 'OnJoin'));
             $astman->add_event_handler('Link', array($this, 'OnLink'));
@@ -423,8 +437,15 @@ class DialerProcess extends AbstractProcess
                 if ($this->DEBUG) {
                     $this->oMainLog->output("DEBUG: generando llamada hacia $tupla->phone en cola $infoCampania->queue, contexto $infoCampania->context trunk $infoCampania->trunk");
                 }
+                
+                // Las cadenas personalizadas de trunks tienen $OUTNUM$ en el lugar
+                // donde se coloca el número a marcar. 
+                $sPlantillaTrunk = $infoCampania->trunk;
+                if (stripos($sPlantillaTrunk, '$OUTNUM$') === FALSE)
+                	$sPlantillaTrunk = $sPlantillaTrunk.'/$OUTNUM$';
+                $sCanalTrunk = str_replace('$OUTNUM$', $tupla->phone, $sPlantillaTrunk);
                 $resultado = $this->_astConn->Originate(
-                    $infoCampania->trunk."/".$tupla->phone, $infoCampania->queue, $infoCampania->context, 1,
+                    $sCanalTrunk, $infoCampania->queue, $infoCampania->context, 1,
                     NULL, NULL, NULL, NULL, NULL, NULL, 
                     TRUE, $sKey);
                 if (!is_array($resultado) || count($resultado) == 0) {

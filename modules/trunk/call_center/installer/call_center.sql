@@ -155,7 +155,7 @@ CREATE TABLE `campaign` (
   `daytime_init` time NOT NULL,
   `daytime_end` time NOT NULL,
   `retries` int(10) unsigned NOT NULL default '1',
-  `trunk` varchar(16) NOT NULL,
+  `trunk` varchar(255) NOT NULL,
   `context` varchar(32) NOT NULL,
   `queue` varchar(16) NOT NULL,
   `max_canales` int(10) unsigned NOT NULL default '0',
