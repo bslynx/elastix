@@ -211,19 +211,19 @@ class paloTrunk {
 */
 function getTrunks($oDB)
 {
-    $arr_result = FALSE;
-
-//    $this->errMsg = "";
-    $sPeticionSQL = 
+    $arrResult = false;
+    $arrTrunk = array();
+    $sPeticionSQL =
             "SELECT * FROM globals ".
             "WHERE variable LIKE 'OUT\\\_%' ".
             "ORDER BY RIGHT( variable, LENGTH( variable ) - 4 )+0";
-    $arr_result =& $oDB->fetchTable($sPeticionSQL);
-    if (!is_array($arr_result)) {//print $this->_DB->errMsg;
-        $arr_result = FALSE;
-      //  $this->errMsg = $oDB->errMsg;
+    $arrResult =& $oDB->fetchTable($sPeticionSQL);
+    if (is_array($arrResult) && count($arrResult)>0) {
+        foreach($arrResult as $key => $trunk)
+                $arrTrunk[$key] = str_replace("AMP:","",$trunk);
+        return $arrTrunk;
     }
-
-    return $arr_result;
+    return false;
 }
+
 ?>
