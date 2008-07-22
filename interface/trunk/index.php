@@ -32,7 +32,7 @@ include_once "configs/default.conf.php";
 include_once "libs/paloSantoNavigation.class.php"; 
 include_once "libs/paloSantoDB.class.php";
 include_once("libs/paloSantoACL.class.php");// Don activate unless you know what you are doing. Too risky!
-$developerMode=true;
+$developerMode=false;
 
 session_name("elastixSession");
 session_start();
