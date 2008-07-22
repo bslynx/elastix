@@ -56,7 +56,7 @@ function _moduleContent(&$smarty, $module_name)
 
     $dir_backup = $arrConf["dir_backup"];
 
-    if (isset($_POST["delete_backup"])) $accion = "delete_backup";
+    if      (isset($_POST["delete_backup"])) $accion = "delete_backup";
     else if (isset($_POST["backup"])) $accion = "backup";
     else if (isset($_POST["submit_restore"])) $accion = "submit_restore";
     else if (isset($_POST["process"]) && $_POST["option_url"]=="backup")  $accion = "process_backup";
@@ -66,13 +66,13 @@ function _moduleContent(&$smarty, $module_name)
     $content = "";
     switch($accion)
     {
-        case 'delete_backup':
+        case 'delete_backup': //BOTON DE BORRAR BACKUP "ELIMINAR"
             $content = delete_backup($smarty, $module_name, $local_templates_dir, $arrLang, $dir_backup);
             break;
-        case 'backup':
+        case 'backup': //BOTON "RESPALDAR"
             $content = backup_form($smarty, $local_templates_dir, $arrLang);
             break;
-        case 'submit_restore':
+        case 'submit_restore': //BOTON DE RSTAURAR, lleva a la ventana de seleccion para restaurar
             $content = restore_form($smarty, $local_templates_dir, $arrLang, $dir_backup);
             break;
         case 'process_backup':
@@ -152,20 +152,20 @@ function report_backup_restore($smarty, $module_name, $local_templates_dir, $arr
     }
 
     $arrGrid = array("title"    => $arrLang["Backup List"],
-                        "icon"     => "images/list.png",
-                        "width"    => "99%",
-                        "start"    => ($total==0) ? 0 : $offset + 1,
-                        "end"      => $end,
-                        "total"    => $total,
-                        "columns"  => array(0 => array("name"      => "<input type='submit' name='delete_backup' value='{$arrLang["Delete"]}' class='button' onclick=\" return confirmSubmit('{$arrLang["Are you sure you wish to delete backup (s)?"]}');\" />",
+                     "icon"     => "images/list.png",
+                     "width"    => "99%",
+                     "start"    => ($total==0) ? 0 : $offset + 1,
+                     "end"      => $end,
+                     "total"    => $total,
+                     "columns"  => array(0 => array("name"      => "<input type='submit' name='delete_backup' value='{$arrLang["Delete"]}' class='button' onclick=\" return confirmSubmit('{$arrLang["Are you sure you wish to delete backup (s)?"]}');\" />",
                                                     "property1" => ""),
-                                            1 => array("name"      => $arrLang["Name Backup"],
+                                         1 => array("name"      => $arrLang["Name Backup"],
                                                     "property1" => ""),
-                                            2 => array("name"      => $arrLang["Date"],
+                                         2 => array("name"      => $arrLang["Date"],
                                                     "property1" => ""),
-                                            3 => array("name"      => $arrLang["Action"],
+                                         3 => array("name"      => $arrLang["Action"],
                                                     "property1" => ""),
-                                        )
+                                    )
                     );
 
     $smarty->assign("FILE_UPLOAD", $arrLang["File Upload"]);
@@ -261,6 +261,7 @@ function form_general($smarty, $local_templates_dir, $arrLang, $arrBackupOptions
     $smarty->assign("backup_endpoint", $arrBackupOptions['endpoint']);
     $smarty->assign("backup_asterisk", $arrBackupOptions['asterisk']);
     $smarty->assign("backup_otros", $arrBackupOptions['otros']);
+    //$smarty->assign("backup_otros_next", $arrBackupOptions['otros_next']);//************************
 
     return $smarty->fetch("$local_templates_dir/backup.tpl");
 }
@@ -483,6 +484,7 @@ function Array_Options($arrLang, $disabled="")
                                     "a2billing_db"      =>  array("desc"=>$arrLang["A2billing Database"],"check"=>"","msg"=>"","disable"=>"$disabled"),
                                     "mysql_db"          =>  array("desc"=>$arrLang["Mysql Database"],"check"=>"","msg"=>"","disable"=>"$disabled"),
                                     "menus_permissions" =>  array("desc"=>$arrLang["Menus and Permissions"],"check"=>"","msg"=>"","disable"=>"$disabled"),
+                                    "fop_config"        =>  array("desc"=>"Flash Operator Panel Config Files","check"=>"","msg"=>"","disable"=>"$disabled"),
                                 ),
     );
     return $arrBackupOptions;
@@ -727,7 +729,23 @@ function process_each_backup($arrSelectedOptions,$ruta_respaldo,&$arrBackupOptio
             exec("cp /var/www/db/acl.db $ruta_respaldo", $output, $retval);
             if ($retval!=0) $bExito = false;
             break;
+
+        case "fop_config":
+            //FLASH
+            $arrInfoRespaldo = array('folder_path'            =>"/var/www/html/",
+                                     'folder_name'            =>"panel/*.cfg panel/*.txt",
+                                     'nombre_archivo_respaldo'=>"var.www.html.panel.tgz"
+                                );
+            if(!respaldar_carpeta($arrInfoRespaldo,$ruta_respaldo,$error))
+                $bExito = false;
+
+            //RETRIEVE FLASH
+            exec("cp /var/lib/asterisk/bin/retrieve_op_conf_from_mysql.pl $ruta_respaldo", $output, $retval);
+            if ($retval!=0) $bExito = false;
+
+            break;
         }
+
         if ($bExito) $msge="[ OK ]";
         else $msge="[ FAILED ]";
         $arrBackupOptions[][$option]["msg"]=$msge;
@@ -824,9 +842,6 @@ function respaldar_base_mysql($dir_resp_db,$base)
 
     return $bContinuar?0:($retorno>0?1:$retorno);
 }
-
-
-
 
 /* ------------------------------------------------------------------------------- */
 /* FUNCIONS PARA EL RESTORE*/
@@ -1219,7 +1234,25 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
             exec($comando, $output, $retval);
             if ($retval!=0) $bExito = false;
             break;
+
+        case "fop_config":
+            //FLASH
+            $arrInfoRespaldo = array(  'folder_path'              =>  "/var/www/html/",
+                                       'folder_name'              =>  "panel/*.cfg panel/*.txt",
+                                       'nombre_archivo_respaldo'  =>  "var.www.html.panel.tgz"
+                                );
+
+            if(!restaurar_carpeta($arrInfoRespaldo,$ruta_respaldo,$error))
+                $bExito = false;
+            
+            //RETRIEVE FLASH
+            $comando="cp $ruta_respaldo/retrieve_op_conf_from_mysql.pl /var/lib/asterisk/bin/";
+            exec($comando, $output, $retval);
+            if ($retval!=0) $bExito = false;            
+
+            break;
         }
+
         if ($bExito) $msge="[ OK ]";
         else $msge="[ FAILED ]";
         $arrRestoreOptions[$option]["msg"]=$msge;
