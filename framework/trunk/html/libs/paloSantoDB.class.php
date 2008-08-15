@@ -63,7 +63,7 @@ class paloDB {
             $password   = $dsninfo['password'];
 
             try {
-                $this->connStatus = false;
+                $this->connStatus = false;  //logica negativa
                 $this->conn = new PDO($dsn, $user, $password);
             } catch (PDOException $e) {
                 $this->errMsg = "Error de conexion a la base de datos - " . $e->getMessage();
@@ -96,7 +96,7 @@ class paloDB {
     {
         // Revisar existencia de conexión activa
         if ($this->connStatus) {
-            return false;
+            return FALSE;
         } else {
             $this->errMsg = "";
             if (is_array($param)) {
@@ -115,8 +115,12 @@ class paloDB {
                 } 
             } else {
                 try{
-                    $result =& $this->conn->query($query);
-                    return TRUE;
+                    if($this->conn->query($query))
+                        return TRUE;
+                    else{
+                        $this->errMsg = "Query Error: $query";
+                        return FALSE;
+                    }
                 }catch(PDOException $e){
                     $this->errMsg = "Error de conexion a la base de datos - " . $e->getMessage();
                     return FALSE;
@@ -164,8 +168,8 @@ class paloDB {
                         $arrResult[] = (array)$row;
                     }
                 }else{
-                    $this->errMsg = "Query Error";
-                    echo "Query Error $query";
+                    $this->errMsg = "Query Error $query";
+                    //echo "Query Error $query";
                     return FALSE;
                 }
                 return $arrResult;
@@ -236,8 +240,12 @@ class paloDB {
                 } 
             } else {
                 try{
-                    $result =& $this->conn->exec($query);
-                    return TRUE;
+                    if($this->conn->exec($query))
+                        return TRUE;
+                    else{
+                        $this->errMsg = "Query Error: $query";
+                        return FALSE;
+                    }
                 }catch(PDOException $e){
                     $this->errMsg = "Error de conexion a la base de datos - " . $e->getMessage();
                     return FALSE;
@@ -496,57 +504,6 @@ class paloDB {
         }
 
         return $parsed;
-    }
-
-    function beginTransaction()
-    {
-        // Revisar existencia de conexión activa
-        if ($this->connStatus) {
-            return false;
-        } else {
-            $this->errMsg = "";
-            if(!$this->conn->beginTransaction())
-            {
-                $this->errMsg = "Error iniciando transaccion - ".print_r($this->conn->errorInfo(), 1);
-                return false;
-            }
-
-            return true;
-        }
-    }
-
-    function commit()
-    {
-        // Revisar existencia de conexión activa
-        if ($this->connStatus) {
-            return false;
-        } else {
-            $this->errMsg = "";
-            if(!$this->conn->commit())
-            {
-                $this->errMsg = "Error ejecutando transaccion - ".print_r($this->conn->errorInfo(), 1);
-                return false;
-            }
-
-            return true;
-        }
-    }
-
-    function rollBack()
-    {
-        // Revisar existencia de conexión activa
-        if ($this->connStatus) {
-            return false;
-        } else {
-            $this->errMsg = "";
-            if(!$this->conn->rollBack())
-            {
-                $this->errMsg = "Error al retroceder transaccion - ".print_r($this->conn->errorInfo(), 1);
-                return false;
-            }
-
-            return true;
-        }
     }
 }
 ?>
