@@ -241,7 +241,7 @@ class paloSantoCallsAgent {
  	   $sumaInSec = $resConsulta['sec'];
  	}
 
-        if($valido) {
+        if($valido && $numRegistros>0) {
             $sumaInSec = $sumaInSec /  $numRegistros ;
 
             $SQLConsulta = "select sec_to_time('{$sumaInSec}') date";

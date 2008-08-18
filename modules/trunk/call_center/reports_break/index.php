@@ -213,7 +213,8 @@ function generarReporte($smarty,$fecha_init,$fecha_end,$oReportsBreak,$lang,&$ar
 
     $arrAgentes = $oReportsBreak->getAgents(null,$offset);
     $total = count($arrAgentes);
-    
+    $arrData = array();
+ 
     // Si se quiere avanzar a la sgte. pagina
     if(isset($_GET['nav']) && $_GET['nav']=="end") {
         $totalAgents  = count($arrAgentes);

@@ -70,6 +70,7 @@ function _moduleContent(&$smarty, $module_name)
 
     // se conecta a la base
     $pDB = new paloDB($arrConf["cadena_dsn"]);
+    $htmlFilter = "";
     if (!is_object($pDB->conn) || $pDB->errMsg!="") {
         $smarty->assign("mb_message", $arrLang["Error when connecting to database"]." ".$pDB->errMsg);
     }elseif(isset($_GET['exportcsv']) && $_GET['exportcsv']=='yes') {

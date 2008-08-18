@@ -258,6 +258,7 @@ function listBreaks($pDB, $smarty, $module_name, $local_templates_dir) {
 
     $end = count($arrBreaks);
 
+    $arrData = array();
     if (is_array($arrBreaks)) {
         foreach($arrBreaks as $break) {
             if( strcasecmp($break['name'],'hold') != 0){

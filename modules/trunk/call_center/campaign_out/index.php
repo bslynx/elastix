@@ -189,7 +189,8 @@ function _moduleContent(&$smarty, $module_name)
          array_push($arreglo_colas,$row);//llenamos el arreglo de colas que estan en queue_call_entry
     }
     }
- 
+
+    $arrDataQueues = array(); 
     if (is_array($arrQueues)){
         foreach($arrQueues as $queue) {
             if (!in_array($queue[0],$arreglo_colas)){//si la cola de queue_call_entry no esta siendo usada la asignamos al combo

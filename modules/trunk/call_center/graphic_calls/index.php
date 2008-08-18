@@ -404,6 +404,8 @@ function armarArrayGrafico($oCalls,$tipo,$entrantes,$salientes,$fecha_init, $fec
     $end = $arrCalls['NumRecords'];
 //Llenamos el contenido de las columnas
     $arrTmp    = array();
+    $arrData   = array();
+
     if (is_array($arrCalls)) {
         foreach($arrCalls['Data'] as $calls) {
             $arrTmp[0] = $calls['cola'];

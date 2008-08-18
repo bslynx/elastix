@@ -73,6 +73,8 @@ function _moduleContent(&$smarty, $module_name)
     if (!is_object($pDB->conn) || $pDB->errMsg!="") {
         $smarty->assign("mb_message", $arrLan["Error when connecting to database"]." ".$pDB->errMsg);
     }
+    
+    $htmlFilter = "";
     if(isset($_GET['exportcsv']) && $_GET['exportcsv']=='yes') {
 
         if(empty($_GET['txt_fecha_init'])) {
