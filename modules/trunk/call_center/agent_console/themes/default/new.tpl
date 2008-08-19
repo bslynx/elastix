@@ -3,6 +3,10 @@
 <script type="text/javascript" src="libs/js/jscalendar/lang/calendar-en.js"></script>
 <script type="text/javascript" src="libs/js/jscalendar/calendar-setup.js"></script>
 <script src="modules/{$MODULE_NAME}/libs/js/base.js"></script>
+<script type="text/javascript" >
+	// La variable activar_unload se define en modules/{$MODULE_NAME}/libs/js/base.js
+	activar_unload = true; 
+</script>
 <link rel="stylesheet" href="modules/{$MODULE_NAME}/themes/styles.css">
 {literal}
 <style type='text/css'>

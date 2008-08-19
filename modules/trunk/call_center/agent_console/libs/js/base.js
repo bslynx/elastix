@@ -181,6 +181,7 @@ function mostrarFormularioSeleccionado(id_formulario_seleccionado) {
 /*Funciones para capturar el manejo del evento al cerrar el navegador*/
 var even = null;
 var fue_unload = false;
+var activar_unload = false;
 
 if(navigator.appName=='Netscape'){ //si los navegadores son mozilla o netscape
     window.addEventListener('click',afuera,true); //para evento en navegador mozilla
@@ -198,7 +199,7 @@ function afuera(e)
 }
 function ConfirmarCierre(ev)
 {
-    if (window.XMLHttpRequest){
+    if (activar_unload && window.XMLHttpRequest){
         if(!even){
             xajax_evento_cerrar_navegador();
             setTimeout('fue_unload = false', 2000);

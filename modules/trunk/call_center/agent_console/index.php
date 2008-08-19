@@ -103,6 +103,8 @@ function _moduleContent(&$smarty, $module_name)
         $xajax->registerFunction("marcarLlamada");
         $xajax->registerFunction("sacar_hold");
 
+        $smarty->assign('BODYPARAMS', 'onbeforeunload="ConfirmarCierre()" onunload="ManejadorCierre()"');
+
         //El objeto xajax tiene que procesar cualquier petición
         $xajax->processRequests();
         $smarty->assign("SCRIPT_AJAX", $xajax->printJavascript("libs/xajax/"));
