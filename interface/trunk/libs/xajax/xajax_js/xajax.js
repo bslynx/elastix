@@ -87,7 +87,7 @@ r=this.getRequestObject();if(!r)return false;r.open(xajaxRequestType==xajaxDefin
 catch(e){alert("Your browser does not appear to  support asynchronous requests using POST.");return false;}
 }
 r.onreadystatechange=function(){if(r.readyState!=4)
-return;if(r.status==200){if(xajaxDebug)xajax.DebugMessage("Received:\n"+r.responseText);if(r.responseXML&&r.responseXML.documentElement)
+return;if (r.status==0) return;if(r.status==200){if(xajaxDebug)xajax.DebugMessage("Received:\n"+r.responseText);if(r.responseXML&&r.responseXML.documentElement)
 xajax.processResponse(r.responseXML);else{var errorString="Error: the XML response that was returned from the server is invalid.";errorString+="\nReceived:\n"+r.responseText;trimmedResponseText=r.responseText.replace(/^\s+/g,"");trimmedResponseText=trimmedResponseText.replace(/\s+$/g,"");if(trimmedResponseText!=r.responseText)
 errorString+="\nYou have whitespace in your response."; 
 /*Cambio por Bruno Macias Manejo de error de XMLResponse */

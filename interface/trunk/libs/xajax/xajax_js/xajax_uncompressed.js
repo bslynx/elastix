@@ -418,6 +418,7 @@ function Xajax()
 		{ 
 			if (r.readyState != 4)
 				return;
+			if (r.status == 0) return;
 			
 			if (r.status==200)
 			{
