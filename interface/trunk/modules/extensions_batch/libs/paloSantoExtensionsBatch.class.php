@@ -28,8 +28,8 @@
   $Id: paloSantoCDR.class.php,v 1.1.1.1 2008/01/31 21:31:55 afigueroa Exp $ */
 
 //ini_set("display_errors", true);
-require_once "/var/lib/asterisk/agi-bin/phpagi-asmanager.php";
-
+ require_once "/var/lib/asterisk/agi-bin/phpagi-asmanager.php";
+// require_once('/var/www/html/admin/common/php-asmanager.php');
 class paloSantoLoadExtension {
     var $_DB;
     var $errMsg;
@@ -88,27 +88,26 @@ class paloSantoLoadExtension {
             }else{
                 $sql =
                     "insert into sip (id,keyword,data) values
-                    ('$Ext','secret','$Secret'),
-                    ('$Ext','dtmfmode','rfc2833'),
-                    ('$Ext','canreinvite','no'),
-                    ('$Ext','context','$Context'),
-                    ('$Ext','host','dynamic'),
-                    ('$Ext','type','friend'),
-                    ('$Ext','nat','yes'),
-                    ('$Ext','port','5060'),
-                    ('$Ext','qualify','yes'),
-                    ('$Ext','callgroup',''),
-                    ('$Ext','pickupgroup',''),
-                    ('$Ext','disallow',''),
-                    ('$Ext','allow',''),
-                    ('$Ext','dial','SIP/$Ext'),
-                    ('$Ext','accountcode',''),
-                    ('$Ext','mailbox','$mailbox'),
-                    ('$Ext','call-limit','4'),
-                    ('$Ext','account','$Ext'),
-                    ('$Ext','callerid','device <$Ext>'),
+                    ('$Ext','record_out','Adhoc'),
                     ('$Ext','record_in','Adhoc'),
-                    ('$Ext','record_out','Adhoc');";
+                    ('$Ext','callerid','device <$Ext>'),
+                    ('$Ext','account','$Ext'),
+                    ('$Ext','mailbox','$mailbox'),
+                    ('$Ext','accountcode',''),
+                    ('$Ext','dial','SIP/$Ext'),
+                    ('$Ext','allow',''),
+                    ('$Ext','disallow',''),
+                    ('$Ext','pickupgroup',''),
+                    ('$Ext','callgroup',''),
+                    ('$Ext','qualify','yes'),
+                    ('$Ext','port','5060'),
+                    ('$Ext','nat','yes'),
+                    ('$Ext','type','friend'),
+                    ('$Ext','host','dynamic'),
+                    ('$Ext','context','$Context'),
+                    ('$Ext','canreinvite','no'),
+                    ('$Ext','dtmfmode','rfc2833'),
+                    ('$Ext','secret','$Secret');";
 
                 if(!$this->_DB->genQuery($sql))
                 {
@@ -123,7 +122,7 @@ class paloSantoLoadExtension {
         }
     }
 
-    function createUsers($Ext,$Name,$VoiceMail,$Direct_DID)
+    function createUsers($Ext,$Name,$VoiceMail,$Direct_DID,$Outbound_CID)
     {
         $VoiceMail = strtolower($VoiceMail);
 
@@ -138,18 +137,17 @@ class paloSantoLoadExtension {
             if($result[0]>0)
             {
                 $sql =
-                    "update users set name='$Name', voicemail='$voicemail', directdid='$Direct_DID'
+                    "update users set name='$Name', voicemail='$voicemail', directdid='$Direct_DID', outboundcid='$Outbound_CID'
                      where extension='$Ext';";
             }else{
                 $sql =
                     "insert into users (
-                        extension,name,voicemail,ringtimer,recording,
-                        directdid,faxexten,answer,wait,privacyman,
-                        mohclass) 
+                        extension,password,name,voicemail,ringtimer,noanswer,recording,outboundcid,
+                        directdid,didalert,faxexten,faxemail,answer,wait,privacyman,
+                        mohclass,sipname) 
                     values (
-                        '$Ext','$Name','$voicemail',0,'out=Adhoc|in=Adhoc',
-                        '$Direct_DID','default',0,0,0,
-                        'acc_1');";
+                        '$Ext','','$Name','$voicemail',0,'','out=Adhoc|in=Adhoc','$Outbound_CID',
+                        '$Direct_DID','','default','',0,0,0,'acc_1','');";
             }
             if(!$this->_DB->genQuery($sql))
             {
@@ -183,9 +181,9 @@ class paloSantoLoadExtension {
             }else{
                 $sql =
                     "insert into devices (
-                        id,tech,dial,devicetype,user,description) 
+                        id,tech,dial,devicetype,user,description,emergency_cid) 
                     values (
-                        '$Ext','$tech','$dial','fixed','$Ext','$Name');";
+                        '$Ext','$tech','$dial','fixed','$Ext','$Name','');";
             }
             if(!$this->_DB->genQuery($sql))
             {
@@ -204,7 +202,7 @@ class paloSantoLoadExtension {
         $path = "/etc/asterisk/voicemail.conf";
 
         $sql = "select * from
-                    (select u.extension, u.name, u.directdid, d.tech from users u, devices d where u.extension=d.id) as r1,
+                    (select u.extension, u.name, u.directdid, u.outboundcid, d.tech from users u, devices d where u.extension=d.id) as r1,
                     (select data as secret, id from sip where keyword='secret') as r2,
                     (select data as context, id from sip where keyword='context') as r3
                 where r1.extension=r2.id and r1.extension=r3.id;";
@@ -319,6 +317,49 @@ class paloSantoLoadExtension {
     }
 
     function do_reloadAll($data_connection, $arrAST, $arrAMP) {
+        /*require_once('/var/www/html/admin/functions.inc.php');
+        
+
+        // Hack to avoid patching admin/functions.inc.php
+        $GLOBALS['amp_conf_defaults'] = $amp_conf_defaults;
+    
+        // get settings
+        $amp_conf       = parse_amportal_conf("/etc/amportal.conf");
+        $asterisk_conf  = parse_asterisk_conf($amp_conf["ASTETCDIR"]."/asterisk.conf");
+        $astman         = new AGI_AsteriskManager();
+    
+        // attempt to connect to asterisk manager proxy
+        if (!isset($amp_conf["ASTMANAGERPROXYPORT"]) || !$res = $astman->connect("127.0.0.1:".$amp_conf["ASTMANAGERPROXYPORT"], $amp_conf["AMPMGRUSER"] , $amp_conf["AMPMGRPASS"])) {
+                // attempt to connect directly to asterisk, if no proxy or if proxy failed
+                if (!$res = $astman->connect("127.0.0.1:".$amp_conf["ASTMANAGERPORT"], $amp_conf["AMPMGRUSER"] , $amp_conf["AMPMGRPASS"])) {
+                        // couldn't connect at all
+                        unset( $astman );
+                }
+        }
+    
+        $GLOBALS['amp_conf'] = $amp_conf;
+        $GLOBALS['asterisk_conf']  = $asterisk_conf;
+        $GLOBALS['astman'] = $astman;
+    
+        // Hack to avoid patching common/db_connect.php
+        // I suppose the used database is mysql
+        require_once('DB.php'); //PEAR must be installed
+        $db_user = $amp_conf["AMPDBUSER"];
+        $db_pass = $amp_conf["AMPDBPASS"];
+        $db_host = $amp_conf["AMPDBHOST"];
+        $db_name = $amp_conf["AMPDBNAME"];
+    
+        $datasource = 'mysql://'.$db_user.':'.$db_pass.'@'.$db_host.'/'.$db_name;
+        $db = DB::connect($datasource); // attempt connection
+    
+        $GLOBALS['db'] = $db;
+    
+        if (!isset($_SESSION['AMP_user'])) {
+            $_SESSION['AMP_user'] = new ampuser($amp_conf['AMPDBUSER']);
+            $_SESSION['AMP_user']->setAdmin();
+        }
+
+        do_reload();*/
         $bandera = true;
 
         if (isset($arrAMP["PRE_RELOAD"]['valor']) && !empty($arrAMP['PRE_RELOAD']['valor'])){

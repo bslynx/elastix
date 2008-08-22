@@ -3,7 +3,7 @@ include_once("../../../libs/misc.lib.php");
 include_once("../../../libs/paloSantoDB.class.php");
 require_once("../../../libs/smarty/libs/Smarty.class.php");
 include_once("../../../libs/paloSantoConfig.class.php");
-include_once "paloSantoExtensionsBatch.class.php";
+include_once("paloSantoExtensionsBatch.class.php");
 
 load_language('../../../');
 
@@ -47,13 +47,13 @@ function backup_extensions($pDB, $smarty)
         $Messages .= $arrLang["There aren't extensions"].". ".$pLoadExtension->errMsg."<br />";
     }else{
         //cabecera
-        $csv .= "\"Display Name\",\"User Extension\",\"Direct DID\",\"Call Waiting\",".
+        $csv .= "\"Display Name\",\"User Extension\",\"Direct DID\",\"Outbound CID\",\"Call Waiting\",".
                 "\"Secret\",\"Voicemail Status\",\"Voicemail Password\",\"VM Email Address\",".
                 "\"VM Pager Email Address\",\"VM Options\",\"VM Email Attachment\",".
                 "\"VM Play CID\",\"VM Play Envelope\",\"VM Delete Vmail\",\"Context\"\n";
         foreach($arrResult as $key => $extension)
         {
-            $csv .= "\"{$extension['name']}\",\"{$extension['extension']}\",\"{$extension['directdid']}\",".
+            $csv .= "\"{$extension['name']}\",\"{$extension['extension']}\",\"{$extension['directdid']}\",\"{$extension['outboundcid']}\",".
                     "\"{$extension['callwaiting']}\",\"{$extension['secret']}\",\"{$extension['voicemail']}\",".
                     "\"{$extension['vm_secret']}\",\"{$extension['email_address']}\",\"{$extension['pager_email_address']}\",".
                     "\"{$extension['vm_options']}\",\"{$extension['email_attachment']}\",\"{$extension['play_cid']}\",".

@@ -151,19 +151,20 @@ function load_extension_from_csv($smarty, $arrLang, $ruta_archivo, $base_dir, $p
             {
                 $Name               = $tupla[$arrayColumnas[0]];
                 $Ext                = $tupla[$arrayColumnas[1]];
-                $Direct_DID         = isset($arrayColumnas[2]) ?$tupla[$arrayColumnas[2]]:'NULL';
-                $Call_Waiting       = isset($arrayColumnas[3]) ?$tupla[$arrayColumnas[3]]:"";
-                $Secret             = $tupla[$arrayColumnas[4]];
-                $VoiceMail          = isset($arrayColumnas[5]) ?$tupla[$arrayColumnas[5]]:"";
-                $VoiceMail_PW       = isset($arrayColumnas[6]) ?$tupla[$arrayColumnas[6]]:"";
-                $VM_Email_Address   = isset($arrayColumnas[7]) ?$tupla[$arrayColumnas[7]]:"";
-                $VM_Pager_Email_Addr= isset($arrayColumnas[8]) ?$tupla[$arrayColumnas[8]]:"";
-                $VM_Options         = isset($arrayColumnas[9]) ?$tupla[$arrayColumnas[9]]:"";
-                $VM_EmailAttachment = isset($arrayColumnas[10])?$tupla[$arrayColumnas[10]]:"";
-                $VM_Play_CID        = isset($arrayColumnas[11])?$tupla[$arrayColumnas[11]]:"";
-                $VM_Play_Envelope   = isset($arrayColumnas[12])?$tupla[$arrayColumnas[12]]:"";
-                $VM_Delete_Vmail    = isset($arrayColumnas[13])?$tupla[$arrayColumnas[13]]:"";
-                $Context            = isset($arrayColumnas[14])?$tupla[$arrayColumnas[14]]:"from-internal";
+                $Direct_DID         = isset($arrayColumnas[2]) ?$tupla[$arrayColumnas[2]]:"";
+                $Outbound_CID       = isset($arrayColumnas[3]) ?$tupla[$arrayColumnas[3]]:"";
+                $Call_Waiting       = isset($arrayColumnas[4]) ?$tupla[$arrayColumnas[4]]:"";
+                $Secret             = $tupla[$arrayColumnas[5]];
+                $VoiceMail          = isset($arrayColumnas[6]) ?$tupla[$arrayColumnas[6]]:"";
+                $VoiceMail_PW       = isset($arrayColumnas[7]) ?$tupla[$arrayColumnas[7]]:"";
+                $VM_Email_Address   = isset($arrayColumnas[8]) ?$tupla[$arrayColumnas[8]]:"";
+                $VM_Pager_Email_Addr= isset($arrayColumnas[9]) ?$tupla[$arrayColumnas[9]]:"";
+                $VM_Options         = isset($arrayColumnas[10]) ?$tupla[$arrayColumnas[10]]:"";
+                $VM_EmailAttachment = isset($arrayColumnas[11])?$tupla[$arrayColumnas[11]]:"";
+                $VM_Play_CID        = isset($arrayColumnas[12])?$tupla[$arrayColumnas[12]]:"";
+                $VM_Play_Envelope   = isset($arrayColumnas[13])?$tupla[$arrayColumnas[13]]:"";
+                $VM_Delete_Vmail    = isset($arrayColumnas[14])?$tupla[$arrayColumnas[14]]:"";
+                $Context            = isset($arrayColumnas[15])?$tupla[$arrayColumnas[15]]:"from-internal";
 
                 //Paso 1: creando en la tabla sip
                 if(!$pLoadExtension->createSipDevices($Ext,$Secret,$VoiceMail,$Context))
@@ -171,7 +172,7 @@ function load_extension_from_csv($smarty, $arrLang, $ruta_archivo, $base_dir, $p
                     $Messages .= "Ext: $Ext - ". $arrLang["Error updating Sip"].": ".$pLoadExtension->errMsg."<br />";
                 }else{
                     //Paso 2: creando en la tabla users
-                    if(!$pLoadExtension->createUsers($Ext,$Name,$VoiceMail,$Direct_DID))
+                    if(!$pLoadExtension->createUsers($Ext,$Name,$VoiceMail,$Direct_DID,$Outbound_CID))
                         $Messages .= "Ext: $Ext - ". $arrLang["Error updating Users"].": ".$pLoadExtension->errMsg."<br />";
 
                     //Paso 3: creando en la tabla devices
@@ -225,30 +226,32 @@ function isValidCSV($arrLang, $sFilePath, &$arrayColumnas){
                     $arrayColumnas[1] = $i;
                 else if($tupla[$i] == 'Direct DID')
                     $arrayColumnas[2] = $i;
-                else if($tupla[$i] == 'Call Waiting')
+                else if($tupla[$i] == 'Outbound CID')
                     $arrayColumnas[3] = $i;
-                else if($tupla[$i] == 'Secret')
+                else if($tupla[$i] == 'Call Waiting')
                     $arrayColumnas[4] = $i;
-                else if($tupla[$i] == 'Voicemail Status')
+                else if($tupla[$i] == 'Secret')
                     $arrayColumnas[5] = $i;
-                else if($tupla[$i] == 'Voicemail Password')
+                else if($tupla[$i] == 'Voicemail Status')
                     $arrayColumnas[6] = $i;
-                else if($tupla[$i] == 'VM Email Address')
+                else if($tupla[$i] == 'Voicemail Password')
                     $arrayColumnas[7] = $i;
-                else if($tupla[$i] == 'VM Pager Email Address')
+                else if($tupla[$i] == 'VM Email Address')
                     $arrayColumnas[8] = $i;
-                else if($tupla[$i] == 'VM Options')
+                else if($tupla[$i] == 'VM Pager Email Address')
                     $arrayColumnas[9] = $i;
-                else if($tupla[$i] == 'VM Email Attachment')
+                else if($tupla[$i] == 'VM Options')
                     $arrayColumnas[10] = $i;
-                else if($tupla[$i] == 'VM Play CID')
+                else if($tupla[$i] == 'VM Email Attachment')
                     $arrayColumnas[11] = $i;
-                else if($tupla[$i] == 'VM Play Envelope')
+                else if($tupla[$i] == 'VM Play CID')
                     $arrayColumnas[12] = $i;
-                else if($tupla[$i] == 'VM Delete Vmail')
+                else if($tupla[$i] == 'VM Play Envelope')
                     $arrayColumnas[13] = $i;
-                else if($tupla[$i] == 'Context')
+                else if($tupla[$i] == 'VM Delete Vmail')
                     $arrayColumnas[14] = $i;
+                else if($tupla[$i] == 'Context')
+                    $arrayColumnas[15] = $i;
             }
             if(isset($arrayColumnas[0]) && isset($arrayColumnas[1]) && isset($arrayColumnas[4]))
             {
