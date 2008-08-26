@@ -73,18 +73,38 @@ class paloQueue {
         $this->errMsg = "";
 
         $where_id = "";
-        if (!is_null($id)) {
-            $where_id = " and queues.id='$id'";
-        }
 
-        $sPeticionSQL = "SELECT distinct(queues.id), CONCAT(queues.id,' ',extensions.descr)
-                         FROM queues, extensions
-                         WHERE queues.id=extensions.extension and extensions.application='Queue' ".$where_id;
-
-        $arr_result =& $this->_DB->fetchTable($sPeticionSQL);
+        $arr_result =& $this->_DB->fetchTable("SHOW TABLES LIKE 'queues_config'");
         if (!is_array($arr_result)) {
             $this->errMsg = $this->_DB->errMsg;
             $arr_result = FALSE;
+        } else {
+            if (count($arr_result) > 0) {
+                // Tratar para esquema de base de datos de FreePBX 2.4.x
+                if (!is_null($id)) {
+                    $where_id = " and extension='$id'";
+                }
+                $sPeticionSQL = "SELECT DISTINCT(extension), CONCAT(extension, ' ', descr) FROM queues_config WHERE 1=1 ".$where_id;
+                $arr_result =& $this->_DB->fetchTable($sPeticionSQL);
+                if (!is_array($arr_result)) {
+                    $this->errMsg = $this->_DB->errMsg;
+                    $arr_result = FALSE;
+                }
+            } else {
+                // Tratar para esquema de base de datos de FreePBX 2.3.1
+                if (!is_null($id)) {
+                    $where_id = " and queues.id='$id'";
+                }
+                $sPeticionSQL = "SELECT distinct(queues.id), CONCAT(queues.id,' ',extensions.descr)
+                         FROM queues, extensions
+                         WHERE queues.id=extensions.extension and extensions.application='Queue' ".$where_id;
+
+                $arr_result =& $this->_DB->fetchTable($sPeticionSQL);
+                if (!is_array($arr_result)) {
+                    $this->errMsg = $this->_DB->errMsg;
+                    $arr_result = FALSE;
+                }
+            }
         }
         return $arr_result;
     }
