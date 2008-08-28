@@ -196,9 +196,9 @@ function event_form()
                         tag('td',
                             tag('input', attributes('type="text"',
                                                     'id="call_to"',
-                                                    'name="call_to"'
-                                        ),
-                                        $call_to
+                                                    'name="call_to"',
+                                                    'value="'.$call_to.'"'
+                                        )
                             ),
                             "<label style='font-size:8pt;'>&nbsp;&nbsp;&nbsp;&nbsp;".$view_events['To add phone number from address book click']." <a href='javascript: popup_phone_number(\"$url_popup\");'> ".$view_events['Here']."</a></label>"
                         )
@@ -215,17 +215,17 @@ function event_form()
                         tag('td',
                             tag('input', attributes('type="hidden"',
                                                     'id="phone_type"',
-                                                    'name="phone_type"'
-                                        ),
-                                        $phone_type
+                                                    'name="phone_type"',
+                                                    'value="'.$phone_type.'"'
+                                        )
                             )
                         ),
                         tag('td',
                             tag('input', attributes('type="hidden"',
                                                     'id="phone_id"',
-                                                    'name="phone_id"'
-                                        ),
-                                        $phone_id
+                                                    'name="phone_id"',
+                                                    'value="'.$phone_id.'"'
+                                        )
                             )
                         )
                     )
