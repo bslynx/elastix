@@ -34,7 +34,6 @@ include_once "libs/paloSantoDB.class.php";
 include_once("libs/paloSantoACL.class.php");// Don activate unless you know what you are doing. Too risky!
 $developerMode=false;
 
-Esto es una prueba de commit
 session_name("elastixSession");
 session_start();
 
