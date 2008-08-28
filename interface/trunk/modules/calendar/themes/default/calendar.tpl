@@ -36,5 +36,24 @@
 
         window.location = "index.php?action=display&year="+val_year+"&month="+val_month;
     }
+
+    function Mostrar_Ocultar_Call_To() {
+        var CheckBox = document.getElementById("asterisk_call");
+        var HideTRs = document.getElementById("tr_call_to");
+        if(CheckBox.checked)
+            HideTRs.style.display = "none";
+        else{
+            HideTRs.style.display = 'table-row';
+        }
+    }
+
+    function popup_phone_number(url_popup){
+        var ancho = 600;
+        var alto = 400;
+        my_window = window.open(url_popup,"my_window","width="+ancho+",height="+alto+",location=yes,status=yes,resizable=yes,scrollbars=yes,fullscreen=no,toolbar=yes");
+        my_window.moveTo((screen.width-ancho)/2,(screen.height-alto)/2);
+        my_window.document.close();
+        
+    }
 </script>
 {/literal}

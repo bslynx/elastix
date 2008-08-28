@@ -1021,5 +1021,10 @@ alrededor del mundo.",
 "offset" => "offset",
 "Asterisk Logs" => "Asterisk Logs",
 /*ASTERIX LOG*/
+
+/*Calendar*/
+"Call to" => "Llamar a",
+"To add phone number from address book click" => "Para añadir un número desde la libreta de direcciones, click",
+/*Calendar*/
 );
 ?>

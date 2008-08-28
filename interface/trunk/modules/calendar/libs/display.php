@@ -346,6 +346,7 @@ function display_id($id)
             $row['end_day']);
     $typeofevent = $event_types[$row['eventtype']];
     $asterisk_call = ($row['asterisk_call']=='on')?$view_events['yes']:$view_events['no'];
+    $call_to = $row['call_to'];
     $recording = $row['recording'];
 
     $subject = htmlspecialchars(strip_tags(stripslashes($row['subject'])));
@@ -370,6 +371,9 @@ function display_id($id)
                         tag('tr'),
                             tag('td', $view_events['Asterisk Call Me'].": "),
                             tag('td', $asterisk_call),
+                        tag('tr'),
+                            tag('td', $view_events['Call to'].": "),
+                            tag('td', $call_to),
                         tag('tr'),
                             tag('td', $view_events['Recordings'].": "),
                             tag('td', $recording)

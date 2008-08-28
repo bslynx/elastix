@@ -25,7 +25,7 @@ if ( !defined('IN_PHPC') ) {
 
 function event_form()
 {
-    global  $vars, $day, $month, $year, $db, $config, $phpc_script,
+    global  $vars, $day, $month, $year, $db, $config, $phpc_script, $phpc_root_path,
             $month_names, $event_types, $view_events, $general,
             $min_year, $max_year;
 
@@ -66,6 +66,9 @@ function event_form()
         $typeofevent = $row['eventtype'];
         $asterisk_call = $row['asterisk_call']=='on'?'checked':'';
         $recording = $row['recording'];
+        $call_to = $row['call_to'];
+        $phone_type = '';
+        $phone_id = '';
 
     } else {
         // case "add":
@@ -93,6 +96,9 @@ function event_form()
         $typeofevent = isset($vars['typeofevent'])?$vars['typeofevent']:1;
         $asterisk_call = (isset($vars['asterisk_call']) && $vars['asterisk_call']=='on')?'checked':'';
         $recording = isset($vars['recording'])?$vars['recording']:'';
+        $call_to = isset($vars['call_to'])?$vars['call_to']:'';
+        $phone_type = isset($vars['phone_type'])?$vars['phone_type']:'';
+        $phone_id = isset($vars['phone_id'])?$vars['phone_id']:'';
     }
 
     if($config['hours_24']) {
@@ -130,6 +136,9 @@ function event_form()
         $finSelect = '</select>';
 
     $day_of_month_sequence = get_day_of_month_sequence($month, $year);
+
+    $url_popup = $phpc_root_path."libs/phone_numbers.php";
+
     return tag('form', attributes("action=\"$phpc_script\""),
             tag('table', $attributes,
                 tag('caption', $title),
@@ -174,10 +183,24 @@ function event_form()
                         tag('th', $view_events['Asterisk Call Me']),
                         tag('td',
                             tag('input', attributes('type="checkbox"',
+                                                    'id="asterisk_call"',
                                                     'name="asterisk_call"',
+                                                    'onchange="Mostrar_Ocultar_Call_To()"',
                                                     $asterisk_call
                                         )
                             )
+                        )
+                    ),
+                    tag('tr', attributes('id="tr_call_to"', 'style="display:display"'),
+                        tag('th', $view_events['Call to']),
+                        tag('td',
+                            tag('input', attributes('type="text"',
+                                                    'id="call_to"',
+                                                    'name="call_to"'
+                                        ),
+                                        $call_to
+                            ),
+                            "<label style='font-size:8pt;'>&nbsp;&nbsp;&nbsp;&nbsp;".$view_events['To add phone number from address book click']." <a href='javascript: popup_phone_number(\"$url_popup\");'> ".$view_events['Here']."</a></label>"
                         )
                     ),
                     tag('tr',
@@ -186,6 +209,24 @@ function event_form()
                             create_select('recording', $arrRecordings, $recording),
                             $finSelect,
                             "<label style='font-size:8pt;'>&nbsp;&nbsp;&nbsp;&nbsp;".$view_events['To create new recordings click']." <a href='?menu=recordings'> ".$view_events['Here']."</a></label>"
+                        )
+                    ),
+                    tag('tr',
+                        tag('td',
+                            tag('input', attributes('type="hidden"',
+                                                    'id="phone_type"',
+                                                    'name="phone_type"'
+                                        ),
+                                        $phone_type
+                            )
+                        ),
+                        tag('td',
+                            tag('input', attributes('type="hidden"',
+                                                    'id="phone_id"',
+                                                    'name="phone_id"'
+                                        ),
+                                        $phone_id
+                            )
                         )
                     )
                 )));

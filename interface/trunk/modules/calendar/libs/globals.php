@@ -135,6 +135,8 @@ $view_events = array(
             'To create new recordings click' => $arrLang['To create new recordings click'],
             'Here' => $arrLang['Here'],
             'No Recording was given, if no exists you must first create a new recording' => $arrLang['No Recording was given, if no exists you must first create a new recording'],
+            'Call to' => $arrLang['Call to'],
+            'To add phone number from address book click' => $arrLang['To add phone number from address book click'],
             );
 
 $general = array(

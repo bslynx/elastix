@@ -1012,5 +1012,10 @@ inceputa in Ecuador a devenit o solutie aleasa pentru voip in intreaga lume.",
 "offset" => "offset",
 "Asterisk Logs" => "Asterisk Logs",
 /*ASTERIX LOG*/
+
+/*Calendar*/
+"Call to" => "Call to",
+"To add phone number from address book click" => "To add phone number from address book click",
+/*Calendar*/
 );
 ?>

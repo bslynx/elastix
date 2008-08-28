@@ -1034,5 +1034,10 @@ FAX送信可能なIPアドレスを１行ずつ入力してください。<br>El
 "offset" => "offset",
 "Asterisk Logs" => "Asterisk Logs",
 /*ASTERIX LOG*/
+
+/*Calendar*/
+"Call to" => "Call to",
+"To add phone number from address book click" => "To add phone number from address book click",
+/*Calendar*/
 );
 ?>

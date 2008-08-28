@@ -151,6 +151,7 @@ function event_submit()
     }
 
     $recording = '';
+    $call_to = '';
     if(isset($vars['asterisk_call']))
     {
         $asterisk_call = 'on';
@@ -163,7 +164,21 @@ function event_submit()
             return event_form();
         }
     }
-    else $asterisk_call = 'off';
+    else{
+        $asterisk_call = 'off';
+        if(isset($vars['call_to'])) {
+            $call_to = $vars['call_to'];
+
+            if(isset($vars['recording']))
+                $recording = $vars['recording'];
+            else{
+                require_once "event_form.php";
+                $smarty->assign("mb_title", $view_events["Validation Error"]);
+                $smarty->assign("mb_message", $view_events['No Recording was given, if no exists you must first create a new recording']);
+                return event_form();
+            }
+        }
+    }
 
     $user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
     $uid = Obtain_UID_From_User($user);
@@ -237,16 +252,17 @@ function event_submit()
             ."description='$description',\n"
             ."eventtype='$typeofevent',\n"
             ."asterisk_call='$asterisk_call',\n"
-            ."recording='$recording'\n"
+            ."recording='$recording',\n"
+            ."call_to='$call_to'\n"
             ."WHERE id='$id'";
     } else {
         $query = "INSERT INTO $table\n"
             ."(uid, startdate, enddate, starttime,"
-            ." subject, description, eventtype, asterisk_call, recording"
+            ." subject, description, eventtype, asterisk_call, recording, call_to"
             .")\n"
             ."VALUES ('$uid', $startdate, $enddate,"
             ."$starttime, '$subject',"
-            ."'$description', '$typeofevent', '$asterisk_call', '$recording'"
+            ."'$description', '$typeofevent', '$asterisk_call', '$recording', '$call_to'"
             .")";
     }
 
@@ -278,96 +294,110 @@ function event_submit()
     //$affected = $db->Affected_Rows($result);
     //if($affected < 1) return tag('div', $view_events['No changes were made.']);
 
-    //AÑADIDO PARA ELASTIX
+    //AÑDIDO PARA ELASTIX
     //else
     {
+        $iRetries = 2;
+
         $asterisk_call = "off";
         if(isset($vars['asterisk_call']))
             $asterisk_call = $vars['asterisk_call'];
 
+        $result = FALSE;
+
         if($asterisk_call=="on")
         {
-            $iRetries = 2;
             //Obtener datos sobre quien esta usando el sistema
             //Channel, description, extension
             require_once "elastix_user_info.php";
-            $result = Obtain_Protocol_Current_User();
-
-            $sContenido = "";
-            if($result!=FALSE)
+            $result = Obtain_Protocol(true);
+        }else
+        {
+            $call_to = isset($vars['call_to'])?$vars['call_to']:'';
+            if($call_to!="")
             {
-                $sContenido =   //"Channel: $sTrunk/$tuplaTelf[phone]\n".
-                                "Channel: {$result['dial']}\n".
-                                "CallerID: Calendar Event <{$result['id']}>\n".
-                                "MaxRetries: $iRetries\n".
-                                "RetryTime: 60\n".
-                                "WaitTime: 30\n".
-                                "Context: calendar-event\n".
-                                "Extension: *7899\n".
-                                "Priority: 1\n".
-                                "Set: FILE_CALL=custom/{$result['id']}/$recording\n".
-                                "Set: ID_EVENT_CALL=$id\n";
+                if(isset($vars['phone_type']) && $vars['phone_type']=="internal")
+                {
+                    require_once "elastix_user_info.php";
+                    $result = Obtain_Protocol(false, $call_to);
+                }
             }
+        }
 
-            if($sContenido!="")
+        $sContenido = "";
+        if($result!=FALSE)
+        {
+            $sContenido =   //"Channel: $sTrunk/$tuplaTelf[phone]\n".
+                            "Channel: {$result['dial']}\n".
+                            "CallerID: Calendar Event <{$result['id']}>\n".
+                            "MaxRetries: $iRetries\n".
+                            "RetryTime: 60\n".
+                            "WaitTime: 30\n".
+                            "Context: calendar-event\n".
+                            "Extension: *7899\n".
+                            "Priority: 1\n".
+                            "Set: FILE_CALL=custom/{$result['id']}/$recording\n".
+                            "Set: ID_EVENT_CALL=$id\n";
+        }
+
+        if($sContenido!="")
+        {
+            $endstamp = mktime($hour, $minute, 0, $end_month, $end_day, $end_year);
+
+            $iStartTimestamp = $startstamp;
+
+            if($typeofevent ==1 || $typeofevent==5)
             {
-                $endstamp = mktime($hour, $minute, 0, $end_month, $end_day, $end_year);
-
-                $iStartTimestamp = $startstamp;
-
-                if($typeofevent ==1 || $typeofevent==5)
+                if($typeofevent==1)
                 {
-                    if($typeofevent==1)
-                    {
-                        $segundos = 86400;
-                        $num_dias = (($endstamp-$startstamp)/$segundos)+1;//Sumo 1 para incluir el ultimo dia
-                    }else if($typeofevent==5)
-                    {
-                        $segundos = 604800;
-                        $num_dias = (($endstamp-$startstamp)/$segundos)+1;//Sumo 1 para incluir la ultima semana
-                        $num_dias = (int)$num_dias;
-                    }
-
-                    for($i=0; $i<$num_dias; $i++)
-                    {
-                        $filename = "event_{$id}_{$i}.call";
-                        $sFechaInicio = date('Y-m-d H:i:s', $iStartTimestamp);
-                        $iStartTimestamp += $segundos;
-                        $hArchivo = fopen("$sDirectorioBase/$filename", 'w');
-                        if (!$hArchivo) {
-                            $bExito = FALSE;
-                            $this->errMsg = "No se puede crear archivo de llamada $filename";
-                            break;
-                        } else {
-                            fwrite($hArchivo, $sContenido);
-                            fclose($hArchivo);
-                            system("touch -d '$sFechaInicio' $sDirectorioBase/$filename");
-                            system("mv $sDirectorioBase/$filename $dir_outgoing/");
-                        }
-                    }
-                }else if($typeofevent==6)
+                    $segundos = 86400;
+                    $num_dias = (($endstamp-$startstamp)/$segundos)+1;//Sumo 1 para incluir el ultimo dia
+                }else if($typeofevent==5)
                 {
-                    $i=0;
-                    while($iStartTimestamp <= $endstamp)
-                    {
-                        $filename = "event_{$id}_{$i}.call";
-                        $sFechaInicio = date('Y-m-d H:i:s', $iStartTimestamp);
+                    $segundos = 604800;
+                    $num_dias = (($endstamp-$startstamp)/$segundos)+1;//Sumo 1 para incluir la ultima semana
+                    $num_dias = (int)$num_dias;
+                }
 
-                        $hArchivo = fopen("$sDirectorioBase/$filename", 'w');
-                        if (!$hArchivo) {
-                            $bExito = FALSE;
-                            $this->errMsg = "No se puede crear archivo de llamada $filename";
-                            break;
-                        } else {
-                            fwrite($hArchivo, $sContenido);
-                            fclose($hArchivo);
-                            system("touch -d '$sFechaInicio' $sDirectorioBase/$filename");
-                            system("mv $sDirectorioBase/$filename $dir_outgoing/ ");
-                        }
-
-                        $iStartTimestamp = strtotime("+1 months", $iStartTimestamp);
-                        $i++;
+                for($i=0; $i<$num_dias; $i++)
+                {
+                    $filename = "event_{$id}_{$i}.call";
+                    $sFechaInicio = date('Y-m-d H:i:s', $iStartTimestamp);
+                    $iStartTimestamp += $segundos;
+                    $hArchivo = fopen("$sDirectorioBase/$filename", 'w');
+                    if (!$hArchivo) {
+                        $bExito = FALSE;
+                        $this->errMsg = "No se puede crear archivo de llamada $filename";
+                        break;
+                    } else {
+                        fwrite($hArchivo, $sContenido);
+                        fclose($hArchivo);
+                        system("touch -d '$sFechaInicio' $sDirectorioBase/$filename");
+                        system("mv $sDirectorioBase/$filename $dir_outgoing/");
                     }
+                }
+            }else if($typeofevent==6)
+            {
+                $i=0;
+                while($iStartTimestamp <= $endstamp)
+                {
+                    $filename = "event_{$id}_{$i}.call";
+                    $sFechaInicio = date('Y-m-d H:i:s', $iStartTimestamp);
+
+                    $hArchivo = fopen("$sDirectorioBase/$filename", 'w');
+                    if (!$hArchivo) {
+                        $bExito = FALSE;
+                        $this->errMsg = "No se puede crear archivo de llamada $filename";
+                        break;
+                    } else {
+                        fwrite($hArchivo, $sContenido);
+                        fclose($hArchivo);
+                        system("touch -d '$sFechaInicio' $sDirectorioBase/$filename");
+                        system("mv $sDirectorioBase/$filename $dir_outgoing/ ");
+                    }
+
+                    $iStartTimestamp = strtotime("+1 months", $iStartTimestamp);
+                    $i++;
                 }
             }
         }

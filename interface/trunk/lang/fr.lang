@@ -1017,5 +1017,10 @@ de Voix sur IP tout autour du globe.",
 "offset" => "offset",
 "Asterisk Logs" => "Asterisk Logs",
 /*ASTERIX LOG*/
+
+/*Calendar*/
+"Call to" => "Call to",
+"To add phone number from address book click" => "To add phone number from address book click",
+/*Calendar*/
 );
 ?>
