@@ -59,7 +59,7 @@ function VerificarCheck(chkbox, id)
             </td>
         </tr>
         <tr>
-            <td><table width="99%" BORDER=1>
+            <td><table width="99%" BORDER=0>
                 <tr>
                     <td colspan=4><INPUT type="checkbox" name="backup_total" id="backup_total" onClick=ChequearTodos(this);><b>{$LBL_TODOS}</b></td>
                 </tr>
