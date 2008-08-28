@@ -26,7 +26,7 @@
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
   $Id: paloSantoGrid.class.php,v 1.1.1.1 2007/07/06 21:31:55 gcarrillo Exp $ */
-require_once "libs/xajax/xajax.inc.php";
+require_once "/var/www/html/libs/xajax/xajax.inc.php";
 class paloSantoGrid {
 
     var $enableExport;
