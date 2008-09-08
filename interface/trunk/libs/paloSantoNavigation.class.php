@@ -177,6 +177,10 @@ class paloSantoNavigation {
             $arrMenuTotal[$idMenu] = "";
             foreach($arrTmp as $keySub => $valorSub)
             {
+                $idSub = $valorSub['id'];
+                //ALL: with this function getArrSubMenu our can to add the third level.
+                $arrTmp2 =$this->getArrSubMenu($idSub);
+                if($arrTmp2)$valorSub['Name'] = $valorSub['Name'].'...'; 
                 $arrMenuTotal[$idMenu] .= "<tr><td>";
                 $arrMenuTotal[$idMenu] .= "<a href=\"/?menu={$valorSub['id']}\">{$valorSub['Name']}</a>";
                 $arrMenuTotal[$idMenu] .= "</td></tr>";
