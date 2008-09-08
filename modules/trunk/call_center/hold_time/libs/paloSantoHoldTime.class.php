@@ -136,7 +136,7 @@ class paloSantoHoldTime
                  $where .= " and status='Abandoned'";
 
             //Query para llamadas salientes (calls)
-            $sPeticionSQL = "SELECT camp.queue as queue,  TIME(c.start_time) as hora,                               c.duration_wait as duration_wait, max(cduration_wait) as                               maximo
+            $sPeticionSQL = "SELECT camp.queue as queue,  TIME(c.start_time) as hora,                               c.duration_wait as duration_wait, max(c.duration_wait) as                               maximo
                             FROM calls c , campaign camp
                              WHERE   (
                                     start_time>='{$fechaInicial}'
