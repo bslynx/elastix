@@ -23,5 +23,6 @@
     <menuitem menuid="login_logout" desc="Login Logout" parent="reports_ingoing_call" module="yes"></menuitem>
     <menuitem menuid="ingoings_calls_success" desc="Ingoing Calls Success" parent="reports_ingoing_call" module="yes"></menuitem>
     <menuitem menuid="graphic_calls" desc="Graphic Calls per hour" parent="reports_ingoing_call" module="yes"></menuitem>
+    <menuitem menuid="callcenter_config" desc="Configuration" parent="call_center" module="yes"></menuitem>
   </menulist>
 </module>
