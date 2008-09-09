@@ -310,6 +310,16 @@ CREATE TABLE `dont_call` (
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+/*
+ * Tabla valor_config, almacena configuraciones compartidas de Web
+ */
+DROP TABLE IF EXISTS `valor_config`;
+CREATE TABLE valor_config
+(
+    config_key     varchar(32)     NOT NULL        PRIMARY KEY,
+    config_value   varchar(128)    NOT NULL,
+    config_blob    BLOB
+) ENGINE=InnoDB;
 
 /*!40000 ALTER TABLE `queue_call_entry` ENABLE KEYS */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
