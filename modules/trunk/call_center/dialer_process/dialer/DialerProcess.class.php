@@ -1,27 +1,31 @@
 <?php
-/* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4: */
-/* Codificación: UTF-8
-   +----------------------------------------------------------------------+
-   | Copyright (c) 1997-2003 PaloSanto Solutions S. A.                    |
-   +----------------------------------------------------------------------+
-   | Cdla. Nueva Kennedy Calle E #222 y 9na. Este                         |
-   | Telfs. 2283-268, 2294-440, 2284-356                                  |
-   | Guayaquil - Ecuador                                                  |
-   +----------------------------------------------------------------------+
-   | Este archivo fuente esta sujeto a las politicas de licenciamiento    |
-   | de PaloSanto Solutions S. A. y no esta disponible publicamente.      |
-   | El acceso a este documento esta restringido segun lo estipulado      |
-   | en los acuerdos de confidencialidad los cuales son parte de las      |
-   | politicas internas de PaloSanto Solutions S. A.                      |
-   | Si Ud. esta viendo este archivo y no tiene autorizacion explicita    |
-   | de hacerlo comuniquese con nosotros, podria estar infringiendo       |
-   | la ley sin saberlo.                                                  |
-   +----------------------------------------------------------------------+
-   | Autores: Alex Villacís Lasso <a_villacis@palosanto.com>              |
-   +----------------------------------------------------------------------+
-  
-   $Id: DialerProcess.class.php,v 1.4 2008/07/19 04:02:29 alex Exp $
-*/
+/* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
+  Codificación: UTF-8
+  +----------------------------------------------------------------------+
+  | Elastix version 1.2-2                                               |
+  | http://www.elastix.org                                               |
+  +----------------------------------------------------------------------+
+  | Copyright (c) 2006 Palosanto Solutions S. A.                         |
+  +----------------------------------------------------------------------+
+  | Cdla. Nueva Kennedy Calle E 222 y 9na. Este                          |
+  | Telfs. 2283-268, 2294-440, 2284-356                                  |
+  | Guayaquil - Ecuador                                                  |
+  | http://www.palosanto.com                                             |
+  +----------------------------------------------------------------------+
+  | The contents of this file are subject to the General Public License  |
+  | (GPL) Version 2 (the "License"); you may not use this file except in |
+  | compliance with the License. You may obtain a copy of the License at |
+  | http://www.opensource.org/licenses/gpl-license.php                   |
+  |                                                                      |
+  | Software distributed under the License is distributed on an "AS IS"  |
+  | basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See  |
+  | the License for the specific language governing rights and           |
+  | limitations under the License.                                       |
+  +----------------------------------------------------------------------+
+  | The Original Code is: Elastix Open Source.                           |
+  | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  +----------------------------------------------------------------------+
+  $Id: DialerProcess.class.php,v 1.7 2008/09/08 18:29:36 alex Exp $ */
 require_once('AbstractProcess.class.php');
 require_once 'DB.php';
 require_once "phpagi-asmanager-elastix.php";
@@ -72,6 +76,8 @@ class DialerProcess extends AbstractProcess
         $this->interpretarParametrosConfiguracion($infoConfig);
 
         if ($bContinuar) $bContinuar = $this->iniciarConexionBaseDatos();
+        $infoConfigDB = $this->leerConfiguracionDesdeDB();
+        $this->aplicarConfiguracionDB($infoConfigDB);
         if ($bContinuar) $bContinuar = $this->iniciarConexionAsterisk();
 
         // Cerrar DB si falla la conexión al Asterisk Manager
@@ -119,50 +125,6 @@ class DialerProcess extends AbstractProcess
             $this->_dbUser = $infoConfig['database']['dbuser'];
         if (isset($infoConfig['database']) && isset($infoConfig['database']['dbpass']))
             $this->_dbPass = $infoConfig['database']['dbpass'];
-        
-        // Recoger los parámetros para la conexión Asterisk
-        if (isset($infoConfig['asterisk']) && isset($infoConfig['asterisk']['asthost'])) {
-            $this->_sAsteriskHost = $infoConfig['asterisk']['asthost'];
-            $this->oMainLog->output("Usando host de Asterisk Manager: ".$this->_sAsteriskHost);
-        } else {
-        	$this->_sAsteriskHost = '127.0.0.1';
-            $this->oMainLog->output("Usando host (por omisión) de Asterisk Manager: ".$this->_sAsteriskHost);
-        }
-        $this->_sAsteriskUser = 
-            (isset($infoConfig['asterisk']) && isset($infoConfig['asterisk']['astuser'])) 
-            ? $infoConfig['asterisk']['astuser']
-            : '';
-        $this->_sAsteriskPass = 
-            (isset($infoConfig['asterisk']) && isset($infoConfig['asterisk']['astpass']))
-            ? $infoConfig['asterisk']['astpass']
-            : '';
-            
-        // Recoger parámetro de llamada corta
-        $this->_iUmbralLlamadaCorta = 10;
-        if (isset($infoConfig['dialer']) && isset($infoConfig['dialer']['llamada_corta'])) {
-            $regs = NULL;
-            if (ereg('^[[:space:]]*([[:digit:]]+)[[:space:]]*$', $infoConfig['dialer']['llamada_corta'], $regs)) {
-                $this->_iUmbralLlamadaCorta = $regs[1];
-                $this->oMainLog->output("Usando umbral de llamada corta: ".$this->_iUmbralLlamadaCorta." segundos.");
-            } else {
-            	$this->oMainLog->output("ERR: valor de ".$infoConfig['dialer']['llamada_corta']." no es válido para umbral de llamada corta.");
-                $this->oMainLog->output("Usando umbral de llamada corta (por omisión): ".$this->_iUmbralLlamadaCorta." segundos.");
-            }
-        } else {
-        	$this->oMainLog->output("Usando umbral de llamada corta (por omisión): ".$this->_iUmbralLlamadaCorta." segundos.");
-        }
-        
-        // Recoger nivel de depuración
-        $this->DEBUG = FALSE;
-        if (isset($infoConfig['dialer']) && isset($infoConfig['dialer']['debug'])) {
-        	$this->DEBUG = $infoConfig['dialer']['debug'] ? TRUE : FALSE;
-        	if ($this->DEBUG) $this->oMainLog->output("Información de depuración está ACTIVADA.");
-        }
-        $this->REPORTAR_TODO = FALSE;
-        if (isset($infoConfig['dialer']) && isset($infoConfig['dialer']['allevents'])) {
-        	$this->REPORTAR_TODO = $infoConfig['dialer']['allevents'] ? TRUE : FALSE;
-        	if ($this->REPORTAR_TODO) $this->oMainLog->output("Se reportará información de todos los eventos Asterisk.");
-        }
     }
 
     // Iniciar la conexión a la base de datos con los parámetros recogidos por
@@ -182,6 +144,128 @@ class DialerProcess extends AbstractProcess
             return TRUE;
         }
     } 
+
+	// Leer la configuración de la base de datos, validando los valores, pero sin comparar contra
+	// el estado actual de configuración del programa
+	private function leerConfiguracionDesdeDB()
+	{
+		$listaConfig =& $this->_dbConn->getAssoc('SELECT config_key, config_value FROM valor_config');
+		if (DB::isError($listaConfig)) {
+			$this->oMainLog->output('ERR: no se puede leer configuración actual - '.$listaConfig->getMessage());
+			return NULL;
+		}
+		$infoConfig = array(
+			'asterisk'	=>	array(
+				'asthost'	=>	'127.0.0.1',
+				'astuser'	=>	'',
+				'astpass'	=>	'',
+			),
+			'dialer'	=>	array(
+				'llamada_corta'	=>	10,
+				'tiempo_contestar' => 8,	// TODO: debería ser recalculado por campaña
+				'debug'			=>	0,
+				'allevents'		=>	0,
+			),
+		);
+		foreach ($infoConfig as $seccion => $infoSeccion) {
+			foreach ($infoSeccion as $clave => $valorOmision) {
+				$sClaveDB = "$seccion.$clave";
+				if (isset($listaConfig[$sClaveDB])) {
+					$infoConfig[$seccion][$clave] = $listaConfig[$sClaveDB]; 
+				}
+			}
+		}
+		return $infoConfig;
+	}
+
+	// Aplicar la configuración leída desde la base de datos
+	private function aplicarConfiguracionDB(&$infoConfig)
+	{
+		$bDesconectarAsterisk = FALSE;	// Seteado a TRUE si los parámetros Asterisk han cambiado
+
+        // Recoger los parámetros para la conexión Asterisk
+        if (isset($infoConfig['asterisk']) && isset($infoConfig['asterisk']['asthost'])) {
+            if ($this->_sAsteriskHost != $infoConfig['asterisk']['asthost']) { 
+            	$this->_sAsteriskHost = $infoConfig['asterisk']['asthost'];
+            	$this->oMainLog->output("Usando host de Asterisk Manager: ".$this->_sAsteriskHost);
+            	$bDesconectarAsterisk = TRUE;
+            }
+        } else {
+        	if ($this->_sAsteriskHost != '127.0.0.1') {
+        		$this->_sAsteriskHost = '127.0.0.1';
+            	$this->oMainLog->output("Usando host (por omisión) de Asterisk Manager: ".$this->_sAsteriskHost);
+            	$bDesconectarAsterisk = TRUE;
+        	}
+        }
+        $sNuevoAsteriskUser = 
+            (isset($infoConfig['asterisk']) && isset($infoConfig['asterisk']['astuser'])) 
+            ? $infoConfig['asterisk']['astuser']
+            : '';
+        $sNuevoAsteriskPass = 
+            (isset($infoConfig['asterisk']) && isset($infoConfig['asterisk']['astpass']))
+            ? $infoConfig['asterisk']['astpass']
+            : '';
+        if ($this->_sAsteriskUser != $sNuevoAsteriskUser) $bDesconectarAsterisk = TRUE;
+        if ($this->_sAsteriskPass != $sNuevoAsteriskPass) $bDesconectarAsterisk = TRUE;
+        $this->_sAsteriskUser = $sNuevoAsteriskUser;
+        $this->_sAsteriskPass = $sNuevoAsteriskPass;
+
+		// Recoger parámetro de tiempo de contestado
+		$bSet = isset($this->_iTiempoContestacion);
+		$this->_iTiempoContestacion = 8;
+        if (isset($infoConfig['dialer']) && isset($infoConfig['dialer']['tiempo_contestar'])) {
+            $regs = NULL;
+            if (ereg('^[[:space:]]*([[:digit:]]+)[[:space:]]*$', $infoConfig['dialer']['tiempo_contestar'], $regs)) {
+                $this->_iTiempoContestacion = $regs[1];
+                if (!$bSet) $this->oMainLog->output("Usando tiempo de contestado (inicial) de : ".$this->_iTiempoContestacion." segundos.");
+            } else {
+            	if (!$bSet) {
+	            	$this->oMainLog->output("ERR: valor de ".$infoConfig['dialer']['tiempo_contestar']." no es válido para tiempo de contestado (inicial).");
+    	            $this->oMainLog->output("Usando tiempo de contestado (inicial) (por omisión): ".$this->_iTiempoContestacion." segundos.");
+            	}
+            }
+        } else {
+        	if (!$bSet) $this->oMainLog->output("Usando tiempo de contestado (inicial) (por omision): ".$this->_iTiempoContestacion." segundos.");
+        }
+
+        // Recoger parámetro de llamada corta
+        $bUmbralSet = isset($this->_iUmbralLlamadaCorta);
+        $this->_iUmbralLlamadaCorta = 10;
+        if (isset($infoConfig['dialer']) && isset($infoConfig['dialer']['llamada_corta'])) {
+            $regs = NULL;
+            if (ereg('^[[:space:]]*([[:digit:]]+)[[:space:]]*$', $infoConfig['dialer']['llamada_corta'], $regs)) {
+                $this->_iUmbralLlamadaCorta = $regs[1];
+                if (!$bUmbralSet) $this->oMainLog->output("Usando umbral de llamada corta: ".$this->_iUmbralLlamadaCorta." segundos.");
+            } else {
+            	if (!$bUmbralSet) {
+	            	$this->oMainLog->output("ERR: valor de ".$infoConfig['dialer']['llamada_corta']." no es válido para umbral de llamada corta.");
+    	            $this->oMainLog->output("Usando umbral de llamada corta (por omisión): ".$this->_iUmbralLlamadaCorta." segundos.");
+            	}
+            }
+        } else {
+        	if (!$bUmbralSet) $this->oMainLog->output("Usando umbral de llamada corta (por omisión): ".$this->_iUmbralLlamadaCorta." segundos.");
+        }
+        
+        // Recoger nivel de depuración
+        $bDebugSet = isset($this->DEBUG);
+        $this->DEBUG = FALSE;
+        if (isset($infoConfig['dialer']) && isset($infoConfig['dialer']['debug'])) {
+        	$this->DEBUG = $infoConfig['dialer']['debug'] ? TRUE : FALSE;
+        	if (!$bDebugSet && $this->DEBUG) $this->oMainLog->output("Información de depuración está ACTIVADA.");
+        }
+        $bDebugSet = isset($this->REPORTAR_TODO);
+        $this->REPORTAR_TODO = FALSE;
+        if (isset($infoConfig['dialer']) && isset($infoConfig['dialer']['allevents'])) {
+        	$this->REPORTAR_TODO = $infoConfig['dialer']['allevents'] ? TRUE : FALSE;
+        	if (!$bDebugSet && $this->REPORTAR_TODO) $this->oMainLog->output("Se reportará información de todos los eventos Asterisk.");
+        }
+        
+        if ($bDesconectarAsterisk && !is_null($this->_astConn)) {
+            $this->oMainLog->output('INFO: Cambio de configuración, desconectando de sesión previa de Asterisk...');
+            $this->_astConn->disconnect();
+            $this->_astConn = NULL;            
+        }
+	}
 
     // Iniciar la conexión al Asterisk Manager
     private function iniciarConexionAsterisk()
@@ -254,6 +338,12 @@ class DialerProcess extends AbstractProcess
             $this->oMainLog->output("ERR: no se puede leer lista de campañas - ".$recordset->getMessage());
             usleep(1000000);
         } else {
+            // Verificar si se tiene que actualizar la configuración
+            $infoConfigDB = $this->leerConfiguracionDesdeDB();
+            if (!is_null($infoConfigDB)) {
+            	$this->aplicarConfiguracionDB($infoConfigDB);
+            }
+            
             if (is_null($this->_astConn)) {
             	$this->iniciarConexionAsterisk();
             }
@@ -341,7 +431,9 @@ class DialerProcess extends AbstractProcess
         	$oPredictor->setPromedioDuracion($infoCampania->queue, $infoCampania->promedio);
             $oPredictor->setDesviacionDuracion($infoCampania->queue, $infoCampania->desviacion);
             $oPredictor->setProbabilidadAtencion($infoCampania->queue, 0.97);
-            $oPredictor->setTiempoContestar($infoCampania->queue, 8);
+            
+            // TODO: calcular sobre la marcha en base a respuestas sucesivas
+            $oPredictor->setTiempoContestar($infoCampania->queue, $this->_iTiempoContestacion);
         }
         $iMaxPredecidos = $oPredictor->predecirNumeroLlamadas(
             $infoCampania->queue, 

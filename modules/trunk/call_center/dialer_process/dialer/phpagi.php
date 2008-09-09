@@ -4,7 +4,7 @@
   * phpagi.php : PHP AGI Functions for Asterisk
   * Website: http://phpagi.sourceforge.net/
   *
-  * $Id: phpagi.php,v 1.1 2007/08/06 17:00:07 alex Exp $
+  * $Id: phpagi.php,v 1.1.1.1 2008/06/02 22:23:59 avivar Exp $
   *
   * Copyright (c) 2003, 2004, 2005 Matthew Asham <matthewa@bcwireless.net>, David Eder <david@eder.us>
   * All Rights Reserved.

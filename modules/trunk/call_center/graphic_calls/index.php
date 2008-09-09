@@ -555,7 +555,7 @@ function insertarDateInit($fecha_init) {
     return 
     " <input style='width: 10em; color: #840; background-color: #fafafa; border: 1px solid #999999;text-align: center' name='txt_fecha_init' value='{$fecha_init}' id='f-calendar-field-1' type='text' editable='false' class='button'/> "
     .
-    insertarCalendario();
+    insertarCalendario(1);
 }
 
 /*
@@ -563,19 +563,19 @@ function insertarDateInit($fecha_init) {
 */
 function insertarDateEnd($fecha_end) {
     return 
-    " <input style='width: 10em; color: #840; background-color: #fafafa; border: 1px solid #999999;text-align: center' name='txt_fecha_end' value='{$fecha_end}' id='f-calendar-field-1' type='text' editable='false' class='button'/> "
+    " <input style='width: 10em; color: #840; background-color: #fafafa; border: 1px solid #999999;text-align: center' name='txt_fecha_end' value='{$fecha_end}' id='f-calendar-field-2' type='text' editable='false' class='button'/> "
     .
-    insertarCalendario();
+    insertarCalendario(2);
 }
 
 /*
     Esta funcion inserta el codigo necesario para visualizar y utilizar un calendario par escoger
     una fecha determinada.
 */
-function insertarCalendario() {
+function insertarCalendario($index) {
 
     return 
-    "<a href='#' id='f-calendar-trigger-1'>
+    "<a href='#' id='f-calendar-trigger-$index'>
         <img align='middle' border='0' src='/libs/js/jscalendar/img.gif' alt='' />
     </a>
     
@@ -588,8 +588,8 @@ function insertarCalendario() {
                 'showsTime':true,
                 'showOthers':true,
                 'timeFormat':24,
-                'inputField':'f-calendar-field-1',
-                'button':'f-calendar-trigger-1'
+                'inputField':'f-calendar-field-$index',
+                'button':'f-calendar-trigger-$index'
             }
         );
     </script> " ;

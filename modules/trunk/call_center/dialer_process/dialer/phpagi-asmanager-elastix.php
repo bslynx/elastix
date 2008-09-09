@@ -3,7 +3,7 @@
   * phpagi-asmanager.php : PHP Asterisk Manager functions
   * Website: http://phpagi.sourceforge.net
   *
-  * $Id: phpagi-asmanager-elastix.php,v 1.8 2007/08/24 19:27:49 alex Exp $
+  * $Id: phpagi-asmanager-elastix.php,v 1.1.1.1 2008/06/02 22:23:59 avivar Exp $
   *
   * Copyright (c) 2004, 2005 Matthew Asham <matthewa@bcwireless.net>, David Eder <david@eder.us>
   * All Rights Reserved.
