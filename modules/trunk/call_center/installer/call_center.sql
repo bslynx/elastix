@@ -25,7 +25,7 @@ USE `call_center`;
 --
 -- Table structure for table `agent`
 --
-CREATE TABLE `agent` (
+CREATE TABLE IF NOT EXISTS `agent` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `number` varchar(40) NOT NULL,
   `name` varchar(250) NOT NULL,
@@ -37,7 +37,7 @@ CREATE TABLE `agent` (
 --
 -- Table structure for table `audit`
 --
-CREATE TABLE `audit` (
+CREATE TABLE IF NOT EXISTS `audit` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `id_agent` int(10) unsigned NOT NULL,
   `id_break` int(10) unsigned DEFAULT NULL,
@@ -56,7 +56,7 @@ CREATE TABLE `audit` (
 -- Table structure for table `break`
 --
 
-CREATE TABLE `break` (
+CREATE TABLE IF NOT EXISTS `break` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(250) NOT NULL,
   `description` varchar(250) default NULL,
@@ -70,7 +70,7 @@ CREATE TABLE `break` (
 --
 /*!40000 ALTER TABLE `break` DISABLE KEYS */;
 LOCK TABLES `break` WRITE;
-INSERT INTO `break` VALUES (1,'Hold','Hold','A','H');
+REPLACE INTO `break` VALUES (1,'Hold','Hold','A','H');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `break` ENABLE KEYS */;
 
@@ -78,7 +78,7 @@ UNLOCK TABLES;
 --
 -- Table structure for table `call_attribute`
 --
-CREATE TABLE `call_attribute` (
+CREATE TABLE IF NOT EXISTS `call_attribute` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `id_call` int(10) unsigned NOT NULL,
   `columna` varchar(30) default NULL,
@@ -93,7 +93,7 @@ CREATE TABLE `call_attribute` (
 --
 -- Table structure for table `call_entry`
 --
-CREATE TABLE `call_entry` (
+CREATE TABLE IF NOT EXISTS `call_entry` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `id_agent` int(10) unsigned default NULL,
   `id_queue_call_entry` int(10) unsigned NOT NULL,
@@ -121,7 +121,7 @@ CREATE TABLE `call_entry` (
 -- Table structure for table `calls`
 --
 
-CREATE TABLE `calls` (
+CREATE TABLE IF NOT EXISTS `calls` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `id_campaign` int(10) unsigned NOT NULL,
   `phone` varchar(32) NOT NULL,
@@ -147,7 +147,7 @@ CREATE TABLE `calls` (
 --
 -- Table structure for table `campaign`
 --
-CREATE TABLE `campaign` (
+CREATE TABLE IF NOT EXISTS `campaign` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(64) NOT NULL,
   `datetime_init` date NOT NULL,
@@ -167,11 +167,15 @@ CREATE TABLE `campaign` (
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+/* Upgrade from old length, if it applies */
+ALTER TABLE campaign 
+CHANGE COLUMN trunk
+trunk varchar(255) NOT NULL;
 
 --
 -- Table structure for table `campaign_form`
 --
-CREATE TABLE `campaign_form` (
+CREATE TABLE IF NOT EXISTS `campaign_form` (
   `id_campaign` int(10) unsigned NOT NULL,
   `id_form` int(10) unsigned NOT NULL,
   PRIMARY KEY  (`id_campaign`,`id_form`),
@@ -185,7 +189,7 @@ CREATE TABLE `campaign_form` (
 --
 -- Table structure for table `contact`
 --
-CREATE TABLE `contact` (
+CREATE TABLE IF NOT EXISTS `contact` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `cedula_ruc` varchar(15) NOT NULL,
   `name` varchar(50) NOT NULL,
@@ -199,7 +203,7 @@ CREATE TABLE `contact` (
 --
 -- Table structure for table `current_call_entry`
 --
-CREATE TABLE `current_call_entry` (
+CREATE TABLE IF NOT EXISTS `current_call_entry` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `id_agent` int(10) unsigned NOT NULL,
   `id_queue_call_entry` int(10) unsigned NOT NULL,
@@ -222,7 +226,7 @@ CREATE TABLE `current_call_entry` (
 --
 -- Table structure for table `current_calls`
 --
-CREATE TABLE `current_calls` (
+CREATE TABLE IF NOT EXISTS `current_calls` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `id_call` int(10) unsigned NOT NULL,
   `fecha_inicio` datetime NOT NULL,
@@ -242,7 +246,7 @@ CREATE TABLE `current_calls` (
 --
 -- Table structure for table `form`
 --
-CREATE TABLE `form` (
+CREATE TABLE IF NOT EXISTS `form` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `nombre` varchar(40) NOT NULL,
   `descripcion` varchar(150) NOT NULL,
@@ -254,7 +258,7 @@ CREATE TABLE `form` (
 --
 -- Table structure for table `form_data_recolected`
 --
-CREATE TABLE `form_data_recolected` (
+CREATE TABLE IF NOT EXISTS `form_data_recolected` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `id_calls` int(10) unsigned NOT NULL,
   `id_form_field` int(10) unsigned NOT NULL,
@@ -270,7 +274,7 @@ CREATE TABLE `form_data_recolected` (
 --
 -- Table structure for table `form_field`
 --
-CREATE TABLE `form_field` (
+CREATE TABLE IF NOT EXISTS `form_field` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `id_form` int(10) unsigned NOT NULL,
   `etiqueta` varchar(40) NOT NULL,
@@ -286,7 +290,7 @@ CREATE TABLE `form_field` (
 --
 -- Table structure for table `queue_call_entry`
 --
-CREATE TABLE `queue_call_entry` (
+CREATE TABLE IF NOT EXISTS `queue_call_entry` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `queue` varchar(50) default NULL,
   `date_init` date default NULL,
@@ -301,8 +305,7 @@ CREATE TABLE `queue_call_entry` (
 --
 -- Table structure for table `dont_call`
 --
-DROP TABLE IF EXISTS `dont_call`;
-CREATE TABLE `dont_call` (
+CREATE TABLE IF NOT EXISTS `dont_call` (
   `id` int(11) NOT NULL auto_increment,
   `caller_id` varchar(15) NOT NULL,
   `date_income` datetime default NULL,
@@ -313,13 +316,52 @@ CREATE TABLE `dont_call` (
 /*
  * Tabla valor_config, almacena configuraciones compartidas de Web
  */
-DROP TABLE IF EXISTS `valor_config`;
-CREATE TABLE valor_config
+CREATE TABLE IF NOT EXISTS valor_config
 (
     config_key     varchar(32)     NOT NULL        PRIMARY KEY,
     config_value   varchar(128)    NOT NULL,
     config_blob    BLOB
 ) ENGINE=InnoDB;
+
+
+DELIMITER ++ ;
+
+DROP PROCEDURE IF EXISTS temp_actualizar_campos_2008_09_09 ++
+CREATE PROCEDURE temp_actualizar_campos_2008_09_09 ()
+    READS SQL DATA
+    MODIFIES SQL DATA
+BEGIN
+	DECLARE l_existe_columna tinyint(1);
+	
+	SET l_existe_columna = 0;
+
+	/* Verificar existencia de columna agent.queue que debe eliminarse */
+	SELECT COUNT(*) INTO l_existe_columna 
+	FROM INFORMATION_SCHEMA.COLUMNS 
+	WHERE TABLE_SCHEMA = 'call_center' 
+		AND TABLE_NAME = 'agent' 
+		AND COLUMN_NAME = 'queue';
+	IF l_existe_columna > 0 THEN
+		ALTER TABLE agent
+		DROP COLUMN queue;
+	END IF;
+	
+	/* Verificar existencia de columna calls.dnc que debe agregarse */
+	SELECT COUNT(*) INTO l_existe_columna 
+	FROM INFORMATION_SCHEMA.COLUMNS 
+	WHERE TABLE_SCHEMA = 'call_center' 
+		AND TABLE_NAME = 'calls' 
+		AND COLUMN_NAME = 'dnc';
+	IF l_existe_columna = 0 THEN
+		ALTER TABLE calls
+		ADD COLUMN dnc int(1) NOT NULL DEFAULT '0';
+	END IF;
+END;
+++
+DELIMITER ; ++
+
+CALL temp_actualizar_campos_2008_09_09();
+DROP PROCEDURE IF EXISTS temp_actualizar_campos_2008_09_09;
 
 /*!40000 ALTER TABLE `queue_call_entry` ENABLE KEYS */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
