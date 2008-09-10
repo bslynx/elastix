@@ -373,7 +373,7 @@ function _moduleContent(&$smarty, $module_name)
             $arrTmp[2] = $hora;
             $arrTmp[3] = empty($llamada['src'])?'-':$llamada['src'];
             $arrTmp[4] = $llamada['dst'];
-            $arrTmp[5] = $llamada['duration'].' sec.';
+            $arrTmp[5] = "<label title='".$llamada['duration']." seconds' style='color:green'><u>".SecToHHMMSS( $llamada['duration'] )."</u></label>";
             $arrTmp[6] = $llamada['type'];
             $recordingLink = "<a href='#' onClick=\"javascript:popUp('includes/popup.php?action=display_record&record_file=" . base64_encode($pathRecordFile) ."',350,100); return false;\">{$arrLang['Listen']}</a>&nbsp;";
             $recordingLink .= "<a href='includes/audio.php?recording=".base64_encode($pathRecordFile)."'>{$arrLang['Download']}</a>";
@@ -559,5 +559,17 @@ function borrarRecordings()
             }
         }
     }
+}
+
+function SecToHHMMSS($sec)
+{
+    $HH = 0;$MM = 0;$SS = 0;
+    $segundos = $sec;
+
+    if( $segundos/3600 >= 1 ){ $HH = (int)($segundos/3600);$segundos = $segundos%3600;} if($HH < 10) $HH = "0$HH";
+    if(  $segundos/60 >= 1  ){ $MM = (int)($segundos/60);  $segundos = $segundos%60;  } if($MM < 10) $MM = "0$MM";
+    $SS = $segundos; if($SS < 10) $SS = "0$SS";
+
+    return "$HH:$MM:$SS";
 }
 ?>
