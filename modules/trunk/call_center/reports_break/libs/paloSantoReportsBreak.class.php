@@ -105,34 +105,48 @@ class paloSantoReportsBreak {
         }
     }
 
-    /*
-        Esta funcion retorna un listado de los tipos de break en el sistema.
-    */
-    function getTiposBreak() {
-
+    /**
+     *  Esta funcion retorna un listado de los tipos de break en el sistema.
+     *
+     * @result  mixed   Arreglo de breaks en el formato [id, name] (posiblemente vacío)
+     *                  en caso de éxito, o FALSE en caso de error
+     */
+    function getTiposBreak()
+    {
         $SQLConsulta = "select id,name from break";
         $resConsulta = $this->pDB->fetchTable($SQLConsulta,true);
         $sResultado = "";
 
-        if(!$resConsulta || !is_array($resConsulta)) {
+        if (!is_array($resConsulta)) {
             $this->msgError = "Error en la consulta";
             return false;
-        }elseif(count($resConsulta)>0) {
+        } else {
             return $resConsulta;
-        }else {
-            $this->msgError = "La consulta no produjo resultados";
         }
-
-        if($sResultado=="") {
-            $sResultado = "No hay datos que presentar";
-        }
-        return $sResultado;
     }
 
-    /*
-        Esta funcion retorna un listado de agentes en el sistema.
-    */
-    function getAgents($limit=null,$offset=null) {
+    /**
+     * Esta funcion retorna un listado de agentes en el sistema.
+     *
+     * @param   mixed   $limit      Número máximo de registros a devolver, o 
+     *                              NULL si no hay límite. Si NULL, se ignora
+     *                              el valor de $offset.
+     * @param   mixed   $offset	    Offset de registro desde el cual empezar
+     *                              a leer, o NULL. Si NULL, se devuelve desde
+     *                              el primer registro.
+     *
+     * @result	mixed               Arreglo de registros en el formato
+     *                              [id_de_agente, nombre_de_agente, numero_de_agente]
+     *                              (el cual puede estar vacío) en éxito, o una
+     *                              cadena en error.
+     */
+    function getAgents($limit=null,$offset=null)
+    {
+        // Validar parámetros de límite y offset
+        if (!empty($limit) && !ereg('^[[:digit:]]+$', $limit)) $limit = NULL;
+        if (!empty($offset) && empty($limit)) $offset = NULL;
+        if (!empty($offset) && !ereg('^[[:digit:]]+$', $offset)) $offset = NULL;
+		
         $limite = "";
 
         if( !empty($limit) ){
@@ -148,17 +162,15 @@ class paloSantoReportsBreak {
 
         if(!$resConsulta || !is_array($resConsulta)) {
             $this->msgError = "Error en la consulta";
-        }elseif(count($resConsulta)>0) {
+        } else {
             return $resConsulta;
-        }else {
-            $this->msgError = "La consulta no produjo resultados";
         }
 
         if($sResultado=="") {
             $sResultado = "No hay datos que presentar";
         }
         return $sResultado;
-     }
+    }
 
     /*
         Esta funcion retorna los tiempos que un agente ha tomado un break en una fecha indicada.
@@ -248,22 +260,30 @@ class paloSantoReportsBreak {
         }
     }
 
-    /*
-        Esta funcion retorna un arreglo con el reporte de break tomados por cada agente, dada una fecha.
-    */
-    function getReportesBreak($fecha_init,$fecha_end) {
-
+    /**
+     * Esta funcion retorna un arreglo con el reporte de break tomados por cada agente, dada una fecha.
+     *
+     * @param   string  $fecha_init     Fecha de inicio de rango, en formato 'yyyy-mm-dd hh:mm:ss'
+     * @param   string  $fecha_end      Fecha de final de rango, en formato 'yyyy-mm-dd hh:mm:ss'
+     *
+     * @result  mixed   Arreglo de reporte de breaks de agentes, o FALSE en caso de error
+     */
+    function getReportesBreak($fecha_init,$fecha_end)
+    {
         $sConvert="";
         $arrAgentes = $this->getAgents();
         $arrTiposBreak = $this->getTiposBreak();
 
+        if (!is_array($arrAgentes) || !is_array($arrTiposBreak))
+            return false;
+
+        $result = array();
         foreach($arrAgentes as $agente) {
             foreach($arrTiposBreak as $break) {
                 $tiempo = $this->getSumaTiempos($agente['id'],$break['id'],$fecha_init,$fecha_end);
                 $result[$agente['id']][$break['id']] = $tiempo;
             }
         }
-        if (!is_array($result)) return false;
         return $result;
     }
 

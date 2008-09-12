@@ -1313,17 +1313,18 @@ function getDataCampania($pDB, $agentnum,&$msj) {
       call_attribute.value nombre_cliente,
       timediff(now(),current_calls.fecha_inicio) duracion_llamada
     FROM
-      current_calls,
+      (current_calls,
       calls,
-      campaign,
-      call_attribute
+      campaign)
+    LEFT JOIN call_attribute
+    ON 
+      calls.id = call_attribute.id_call
+      and call_attribute.column_number = '1'
     WHERE
       current_calls.agentnum='$agentnum'
       and current_calls.event='Link'
       and current_calls.id_call = calls.id
-      and calls.id_campaign = campaign.id
-      and calls.id = call_attribute.id_call
-      and call_attribute.column_number = '1'";
+      and calls.id_campaign = campaign.id";
     $result = @$pDB->getFirstRowQuery($sQuery, true);
     if( is_array($result) && count($result)>0 ) {
         return $result;
