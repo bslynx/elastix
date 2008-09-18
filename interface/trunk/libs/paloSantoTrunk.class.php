@@ -184,6 +184,9 @@ class paloTrunk {
        //reemplazo el id del grupo por el valor
        foreach ($this->getTrunksBill() as $trunkBill)
        {
+           // Sólo los grupos de puertos ZAP pueden tener un precio
+           if (substr($tupla[1], 0, 3) == 'ZAP' && $tupla[1]{4} != 'g') continue;  
+
            if (ereg("^ZAP/g([[:digit:]]+)",$trunkBill,$regs2))
            {
                $id_group=$regs2[1];

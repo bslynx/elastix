@@ -120,7 +120,7 @@ function _moduleContent(&$smarty, $module_name)
     $oTrunk     = new paloTrunk($pDBTrunk);
     //obtener todos los trunks que son para billing
     //$arrTrunksBill=array("ZAP/g0","ZAP/g1");
-    $arrTrunksBill=$oTrunk->getTrunksBill();
+    getTrunksBillFiltrado($pDB, $oTrunk, $arrConfig, $arrTrunks, $arrTrunksBill);
     if(isset($_POST['submit_bill_trunks'])) {
         //obtengo las que estan guardadas y las que ahora no estan
 
@@ -152,8 +152,7 @@ function _moduleContent(&$smarty, $module_name)
     } 
 
 
-    $arrTrunks=getTrunks($pDB);
-    $arrTrunksBill=$oTrunk->getTrunksBill();
+    getTrunksBillFiltrado($pDB, $oTrunk, $arrConfig, $arrTrunks, $arrTrunksBill);
 
     $end = count($arrTrunks);
     if (is_array($arrTrunks)){
@@ -192,5 +191,20 @@ function _moduleContent(&$smarty, $module_name)
     return $contenido;
 }
 
+function getTrunksBillFiltrado(&$oDB, &$oTrunk, $arrConfig, &$arrTrunks, &$arrTrunksBill)
+{
+    $arrTrunks = getTrunks($oDB);
+    $arrTrunksBill = $oTrunk->getTrunksBill();
+    $oTrunk->getExtendedTrunksBill($grupos, $arrConfig['ASTETCDIR']['valor'].'/zapata.conf');
 
+    // Sólo los puertos no-ZAP y los grupos de puertos ZAP son elegibles para tener un precio
+    $t = array();
+    if (is_array($arrTrunks)) {
+        foreach ($arrTrunks as $tupla) {
+            if (substr($tupla[1], 0, 3) != 'ZAP' || $tupla[1]{4} == 'g')
+                $t[] = $tupla;
+        }
+        $arrTrunks = $t;
+    }
+}
 ?>
