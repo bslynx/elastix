@@ -88,7 +88,8 @@ function endpointConfiguratedShow($smarty, $module_name, $local_templates_dir, $
         $arrEndpointsConf = $paloEndPoint->listEndpointConf();
         $arrVendor        = $paloEndPoint->listVendor();
         $arrDeviceFreePBX = $paloEndPoint->getDeviceFreePBX();
-        $endpoint_mask = isset($_POST['endpoint_mask'])?$_POST['endpoint_mask']:"192.168.1.0/24";
+        //$endpoint_mask = isset($_POST['endpoint_mask'])?$_POST['endpoint_mask']:"192.168.1.0/24";
+        $endpoint_mask = isset($_POST['endpoint_mask'])?$_POST['endpoint_mask']:network();
         $pValidator = new PaloValidar();
         if(!$pValidator->validar('endpoint_mask', $endpoint_mask, 'ip/mask'))
         {
@@ -205,7 +206,8 @@ function endpointConfiguratedSet($smarty, $module_name, $local_templates_dir, $d
     if($valid!=false){
         $smarty->assign("mb_title",$arrLang['ERROR'].":");
         $smarty->assign("mb_message",$valid);
-        $endpoint_mask = isset($_POST['endpoint_mask'])?$_POST['endpoint_mask']:'192.168.1.0/24';
+        $endpoint_mask = isset($_POST['endpoint_mask'])?$_POST['endpoint_mask']:network();
+        //$endpoint_mask = isset($_POST['endpoint_mask'])?$_POST['endpoint_mask']:'192.168.1.0/24';
         return buildReport($_SESSION['elastix_endpoints'],$smarty,$module_name,$arrLang, $endpoint_mask);
     }
     foreach($_POST as $key => $values){
@@ -324,5 +326,30 @@ function createStatus($type,$text)
         return "<label style='color:orange'>$text</label>";
     else if($type==3)//Configurado pero hay cambios, en el freepbx cambio y en el endpoint aun no.
         return "<label style='color:red'  >$text</label>";
+}
+
+function network()
+{
+    $ip=$_SERVER['SERVER_ADDR'];
+    $total = subMask($ip);
+    list($oc1, $oc2, $oc3, $oc4)=explode(".",$ip);
+    return $oc1.".".$oc2.".".$oc3.".0".$total;
+}
+
+function subMask($ip)
+{
+    $total = 0;
+    $binario = "";
+    $arrIp = array();
+    $result = `ifconfig | grep $ip`;
+ 
+    if(ereg("inet[[:space:]][[:alpha:]]{1,}:(([[:digit:]]*\.+[[:digit:]]{1,}){1,})[[:space:]]{1,}[[:alpha:]]{1,}:(([[:digit:]]*\.*[[:digit:]]{1,}){1,})[[:space:]]{1,}[[:alpha:]]{1,}:(([[:digit:]]*\.*[[:digit:]]{1,}){1,})",$result,$regs)){
+        $arrIp = explode(".",$regs[5]);
+        foreach($arrIp as $key => $valor){
+            $binario = decbin($valor);
+            $total += substr_count($binario,"1");
+        }
+        return "/".$total;
+    }
 }
 ?>
