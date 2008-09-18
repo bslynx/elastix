@@ -102,16 +102,21 @@ class PaloSantoHardwareDetection
                 $this->errMsg = $arrLang["Cards undetected on your system, press for detecting hardware detection."];
                 $tarjetas = array();
             }
-        }
+        }//print_r($tarjetas);
         return($tarjetas);
     }
 
-    function hardwareDetection($chk_zapata_replace,$path_file_zapata)
+    function hardwareDetection($chk_zapata_replace,$path_file_zapata,$there_is_sangoma_card)
     {
         global $arrLang;
         $message = $arrLang["Satisfactory Hardware Detection"];
-
-        exec("sudo /usr/sbin/genzaptelconf -d -s -M -F",$respuesta,$retorno);
+	
+        //exec("sudo /usr/sbin/genzaptelconf -d -s -M -F",$respuesta,$retorno);
+	if($there_is_sangoma_card)
+		$there_is_sangoma_card = "-t";
+        else $there_is_sangoma_card = "";
+        exec("sudo /usr/sbin/hardware_detector $there_is_sangoma_card",$respuesta,$retorno);
+	$_SESSION['zaptel'] = $respuesta;
          if(is_array($respuesta)){
             foreach($respuesta as $key => $linea){
                 //falta validar algun error

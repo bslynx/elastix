@@ -49,7 +49,8 @@ function _moduleContent(&$smarty, $module_name)
     $xajax = new xajax();
     $xajax->registerFunction("hardwareDetect");
     $xajax->processRequests();
-    
+   
+// 	print_r($_SESSION['zaptel']); 
     $contenidoModulo  = $xajax->printJavascript("libs/xajax/");
     $contenidoModulo  .= listPorts($smarty, $module_name, $local_templates_dir);
 
@@ -65,12 +66,14 @@ function listPorts($smarty, $module_name, $local_templates_dir) {
 
     $smarty->assign("HARDWARE_DETECT",$arrLang['Hardware Detect']);
     $smarty->assign("ZAPATA_REPLACE",$arrLang['Replace file zapata.conf']);
+    $smarty->assign("THERE_IS_SANGOMA", "There is Sangoma Card");
     $smarty->assign("MODULE_NAME",$module_name);
     $smarty->assign("detectandoHardware",$arrLang['Hardware Detecting']);
     $smarty->assign("CARD",$arrLang['Card']);
     $smarty->assign("CARD_NO_MOSTRAR",'ZTDUMMY/1');
     $smarty->assign("PORT_NOT_FOUND",$arrLang['Ports not Founds']);
-    $smarty->assign("NO_PUERTO",$arrLang['No. Port']);
+    //$smarty->assign("NO_PUERTO",$arrLang['No. Port']);
+    $smarty->assign("NO_PUERTO",$arrLang["Port"]." ");
     $arrPortsDetails = $oPortsDetails->getPorts();
 
     if(!(is_array($arrPortsDetails) && count($arrPortsDetails) >0)){
@@ -93,12 +96,12 @@ function llenarTpl($local_templates_dir,$smarty,$arrGrid, $arrData)
     return $smarty->fetch($local_templates_dir."/listPorts.tpl");
 }
 
-function hardwareDetect($chk_zapata_replace)
+function hardwareDetect($chk_zapata_replace,$there_is_sangoma_card)
 {
     global $arrLang;
     $respuesta = new xajaxResponse();
     $oHardwareDetect = new PaloSantoHardwareDetection();
-    $resultado = $oHardwareDetect->hardwareDetection($chk_zapata_replace,"/etc/asterisk");
+    $resultado = $oHardwareDetect->hardwareDetection($chk_zapata_replace,"/etc/asterisk",$there_is_sangoma_card);
     $respuesta->addAlert($resultado);
     $respuesta->addAssign("relojArena","innerHTML","");
     $respuesta->addAssign("nombre_paquete","value","");
