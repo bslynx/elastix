@@ -25,7 +25,7 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: DialerProcess.class.php,v 1.7 2008/09/08 18:29:36 alex Exp $ */
+  $Id: DialerProcess.class.php,v 1.19 2008/09/15 21:43:02 alex Exp $ */
 require_once('AbstractProcess.class.php');
 require_once 'DB.php';
 require_once "phpagi-asmanager-elastix.php";
@@ -59,6 +59,8 @@ class DialerProcess extends AbstractProcess
 
     private $_oGestorEntrante;      // Gestor de llamadas entrantes
     
+    private $_plantillasMarcado;
+    
     var $DEBUG = FALSE;
     var $REPORTAR_TODO = FALSE;
     var $_iUltimoDebug = NULL;
@@ -68,6 +70,7 @@ class DialerProcess extends AbstractProcess
         $bContinuar = TRUE;
         $this->_numLlamadasOriginadas = array();
         $this->_oGestorEntrante = NULL;
+        $this->_plantillasMarcado = array();
 
         // Guardar referencias al log del programa
         $this->oMainLog =& $oMainLog;
@@ -253,6 +256,7 @@ class DialerProcess extends AbstractProcess
         	$this->DEBUG = $infoConfig['dialer']['debug'] ? TRUE : FALSE;
         	if (!$bDebugSet && $this->DEBUG) $this->oMainLog->output("Información de depuración está ACTIVADA.");
         }
+        if (!is_null($this->_oGestorEntrante)) $this->_oGestorEntrante->DEBUG = $this->DEBUG;        
         $bDebugSet = isset($this->REPORTAR_TODO);
         $this->REPORTAR_TODO = FALSE;
         if (isset($infoConfig['dialer']) && isset($infoConfig['dialer']['allevents'])) {
@@ -420,6 +424,15 @@ class DialerProcess extends AbstractProcess
     {
         $iNumLlamadasColocar = 0;
 
+		// Construir patrón de marcado a partir de trunk de campaña
+		$datosTrunk = $this->_construirPlantillaMarcado($infoCampania->trunk);
+		if (is_null($datosTrunk)) {
+			$this->oMainLog->output("ERR: no se puede construir plantilla de marcado a partir de trunk '{$infoCampania->trunk}'!");
+			$this->oMainLog->output("ERR: Revise los mensajes previos. Si el problema es un tipo de trunk no manejado, ".
+				"se requiere informar este tipo de trunk y/o actualizar su versión de CallCenter");
+			return FALSE;
+		}
+
         // Leer cuántas llamadas (como máximo) se pueden hacer por campaña
         $iNumLlamadasColocar = $infoCampania->max_canales;
         if ($iNumLlamadasColocar <= 0) return FALSE;
@@ -526,19 +539,22 @@ class DialerProcess extends AbstractProcess
 
             // Colocar todas las llamadas elegidas para ser realizadas por el Asterisk.
             foreach ($listaLlamadas as $sKey => $tupla) {
+                $sCanalTrunk = str_replace('$OUTNUM$', $tupla->phone, $datosTrunk['TRUNK']);
                 if ($this->DEBUG) {
-                    $this->oMainLog->output("DEBUG: generando llamada hacia $tupla->phone en cola $infoCampania->queue, contexto $infoCampania->context trunk $infoCampania->trunk");
+                    $this->oMainLog->output("DEBUG: generando llamada\n".
+						"\tDestino..... $tupla->phone\n" .
+						"\tCola........ $infoCampania->queue\n" .
+						"\tContexto.... $infoCampania->context\n" .
+						"\tTrunk....... $infoCampania->trunk\n" .
+						"\tPlantilla... ".$datosTrunk['TRUNK']."\n" .
+						"\tCaller ID... ".(isset($datosTrunk['CID']) ? $datosTrunk['CID'] : "(no definido)").
+						"\tCadena de marcado $sCanalTrunk");
                 }
-                
-                // Las cadenas personalizadas de trunks tienen $OUTNUM$ en el lugar
-                // donde se coloca el número a marcar. 
-                $sPlantillaTrunk = $infoCampania->trunk;
-                if (stripos($sPlantillaTrunk, '$OUTNUM$') === FALSE)
-                	$sPlantillaTrunk = $sPlantillaTrunk.'/$OUTNUM$';
-                $sCanalTrunk = str_replace('$OUTNUM$', $tupla->phone, $sPlantillaTrunk);
                 $resultado = $this->_astConn->Originate(
                     $sCanalTrunk, $infoCampania->queue, $infoCampania->context, 1,
-                    NULL, NULL, NULL, NULL, NULL, NULL, 
+                    NULL, NULL, NULL, 
+                    (isset($datosTrunk['CID']) ? $datosTrunk['CID'] : NULL), 
+                    NULL, NULL, 
                     TRUE, $sKey);
                 if (!is_array($resultado) || count($resultado) == 0) {
                 	$this->oMainLog->output("ERR: problema al enviar Originate a Asterisk");
@@ -582,6 +598,163 @@ class DialerProcess extends AbstractProcess
             return FALSE;
         }
     }
+
+	/**
+	 * Procedimiento que construye una plantilla de marcado a partir de una 
+	 * definición de trunk. Una plantilla de marcado es una cadena de texto de
+	 * la forma 'blablabla$OUTNUM$blabla' donde $OUTNUM$ es el lugar en que
+	 * debe constar el número saliente que va a marcarse. Por ejemplo, para
+	 * trunks de canales ZAP, la plantilla debe ser algo como Zap/g0/$OUTNUM$
+	 * 
+	 * @param	string	$sTrunk		Patrón que define el trunk a usar por la campaña
+	 * 
+	 * @return	mixed	La cadena de plantilla de marcado, o NULL en error 
+	 */
+	private function _construirPlantillaMarcado($sTrunk)
+	{
+		if (stripos($sTrunk, '$OUTNUM$') !== FALSE) {
+			// Este es un trunk personalizado que provee $OUTNUM$ ya preparado
+			return array('TRUNK' => $sTrunk);
+		} elseif (ereg('^SIP/', $sTrunk) 
+			|| eregi('^Zap/.+', $sTrunk) 
+			|| ereg('^IAX/', $sTrunk)) {
+			// Este es un trunk Zap o SIP. Se debe concatenar el prefijo de marcado 
+			// (si existe), y a continuación el número a marcar.
+			$infoTrunk = $this->_leerPropiedadesTrunk($sTrunk);
+			if (is_null($infoTrunk)) return NULL;
+			
+			// SIP/TRUNKLABEL/<PREFIX>$OUTNUM$
+			$sPlantilla = $sTrunk.'/';
+			if (isset($infoTrunk['PREFIX'])) $sPlantilla .= $infoTrunk['PREFIX'];
+			$sPlantilla .= '$OUTNUM$';
+
+			// Agregar información de Caller ID, si está disponible
+			$plantilla = array('TRUNK' => $sPlantilla);
+			if (isset($infoTrunk['CID']) && trim($infoTrunk['CID']) != '')
+				$plantilla['CID'] = $infoTrunk['CID'];
+			return $plantilla;
+		} else {
+			$this->oMainLog->output("ERR: trunk '$sTrunk' es un tipo de trunk desconocido. Actualice su versión de CallCenter.");
+			return NULL;
+		}
+	}
+
+	/**
+	 * Procedimiento que lee las propiedades del trunk indicado a partir de la
+	 * base de datos de FreePBX. Este procedimiento puede tomar algo de tiempo,
+	 * porque se requiere la información de /etc/amportal.conf para obtener las
+	 * credenciales para conectarse a la base de datos.
+	 * 
+	 * @param	string	$sTrunk		Trunk sobre la cual leer información de DB
+	 * 
+	 * @return	mixed	NULL en caso de error, o arreglo de propiedades
+	 */
+	private function _leerPropiedadesTrunk($sTrunk)
+	{
+		$sNombreConfig = '/etc/amportal.conf';	// TODO: vale la pena poner esto en config?
+
+		/* Para evitar excesivas conexiones, se mantiene un cache de la información leída
+		 * acerca de un trunk durante los últimos 30 segundos. 
+		 */
+		if (isset($this->_plantillasMarcado[$sTrunk])) {
+			if (time() - $this->_plantillasMarcado[$sTrunk]['TIMESTAMP'] >= 30)
+				unset($this->_plantillasMarcado[$sTrunk]);
+		}
+		if (isset($this->_plantillasMarcado[$sTrunk])) {
+			return $this->_plantillasMarcado[$sTrunk]['PROPIEDADES'];
+		}
+		
+		// De algunas pruebas se desprende que parse_ini_file no puede parsear 
+		// /etc/amportal.conf, de forma que se debe abrir directamente.
+		$dbParams = array();
+		$hConfig = fopen($sNombreConfig, 'r');
+		if (!$hConfig) {
+			$this->oMainLog->output('ERR: no se puede abrir archivo '.$sNombreConfig.' para lectura de parámetros FreePBX.');
+			return NULL;
+		}
+		while (!feof($hConfig)) {
+			$sLinea = fgets($hConfig);
+			if ($sLinea === FALSE) break;
+			$sLinea = trim($sLinea);
+			if ($sLinea == '') continue;
+			if ($sLinea{0} == '#') continue;
+			
+			$regs = NULL;
+			if (ereg('^([[:alpha:]]+)[[:space:]]*=[[:space:]]*(.*)$', $sLinea, $regs)) switch ($regs[1]) {
+			case 'AMPDBHOST':
+			case 'AMPDBUSER':
+			case 'AMPDBENGINE':
+			case 'AMPDBPASS':
+				$dbParams[$regs[1]] = $regs[2];
+				break;
+			}
+		}
+		fclose($hConfig); unset($hConfig);
+		
+		// Abrir la conexión a la base de datos, si se tienen todos los parámetros
+		if (count($dbParams) < 4) {
+			$this->oMainLog->output('ERR: archivo '.$sNombreConfig.
+				' de parámetros FreePBX no tiene todos los parámetros requeridos para conexión.');
+			return NULL;
+		}
+		if ($dbParams['AMPDBENGINE'] != 'mysql' && $dbParams['AMPDBENGINE'] != 'mysqli') {
+			$this->oMainLog->output('ERR: archivo '.$sNombreConfig.
+				' de parámetros FreePBX especifica AMPDBENGINE='.$dbParams['AMPDBENGINE'].
+				' que no ha sido probado.');
+			return NULL;
+		}
+        $sConnStr = 'mysql://'.$dbParams['AMPDBUSER'].':'.$dbParams['AMPDBPASS'].'@'.$dbParams['AMPDBHOST'].'/asterisk';
+        $dbConn =  DB::connect($sConnStr);
+        if (DB::isError($dbConn)) {
+            $this->oMainLog->output("ERR: no se puede conectar a DB de FreePBX - ".($dbConn->getMessage()));
+            return NULL;
+        }
+        $dbConn->setOption('autofree', TRUE);
+
+		$infoTrunk = NULL;
+
+		/* Buscar cuál de las opciones describe el trunk indicado. En FreePBX, la información de los
+		 * trunks está guardada en la tabla 'globals', donde globals.value tiene el nombre del
+		 * trunk buscado, y globals.variable es de la forma OUT_NNNNN. El valor de NNN se usa para
+		 * consultar el resto de las variables 
+		 */
+		$regs = NULL;		 
+		$sPeticionSQL = "SELECT variable FROM globals WHERE value = ? AND variable LIKE 'OUT_%'";
+		$sVariable = $dbConn->getOne($sPeticionSQL, array($sTrunk));
+		if (DB::isError($sVariable)) {
+			$this->oMainLog->output("ERR: al consultar información de trunk '$sTrunk' en FreePBX (1) - ".($sVariable->getMessage()));
+		} elseif (is_null($sVariable)) {
+			$this->oMainLog->output("ERR: al consultar información de trunk '$sTrunk' en FreePBX (1) - trunk no se encuentra!");
+		} elseif (!ereg('^OUT_([[:digit:]]+)$', $sVariable, $regs)) {
+			$this->oMainLog->output("ERR: al consultar información de trunk '$sTrunk' en FreePBX (1) - se esperaba OUT_NNN pero se encuentra $sVariable - versión incompatible de FreePBX?");
+		} else {
+			$iNumTrunk = $regs[1];
+			
+			// Consultar todas las variables asociadas al trunk
+			$sPeticionSQL = 'SELECT variable, value FROM globals WHERE variable LIKE ?';
+			$recordset =& $dbConn->query($sPeticionSQL, array('OUT%_'.$iNumTrunk));
+			if (DB::isError($recordset)) {
+				$this->oMainLog->output("ERR: al consultar información de trunk '$sTrunk' en FreePBX (2) - ".($recordset->getMessage()));
+			} else {
+				$infoTrunk = array();
+				$sRegExp = '^OUT(.+)_'.$iNumTrunk.'$';
+				while ($tupla = $recordset->fetchRow(DB_FETCHMODE_ASSOC)) {
+					$regs = NULL;
+					if (ereg($sRegExp, $tupla['variable'], $regs)) {
+						$sValor = trim($tupla['value']);
+						if ($sValor != '') $infoTrunk[$regs[1]] = $sValor;
+					}
+				}
+				$this->_plantillasMarcado[$sTrunk] = array(
+					'TIMESTAMP'		=>	time(),
+					'PROPIEDADES'	=>	$infoTrunk,
+				);
+			}
+		}
+
+		$dbConn->disconnect();
+		return $infoTrunk;
+	}
 
     // Callback invocado al recibir el evento OriginateResponse
     function OnOriginateResponse($sEvent, $params, $sServer, $iPort)
