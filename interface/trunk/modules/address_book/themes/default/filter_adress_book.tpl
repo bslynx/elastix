@@ -7,8 +7,8 @@
             <td width="30%" align="right">{$Phone_Directory}:</td>
             <td width="15%" align="left">
                 <select name="select_directory_type" onchange='report_by_directory_type()'>
-                    <option value="Internal" {$internal_sel}>{$Internal}</option>
-                    <option value="External" {$external_sel}>{$External}</option>
+                    <option value="internal" {$internal_sel}>{$Internal}</option>
+                    <option value="external" {$external_sel}>{$External}</option>
                 </select>
             </td>
             <td width="10%" align="right">{$field.LABEL}: </td>

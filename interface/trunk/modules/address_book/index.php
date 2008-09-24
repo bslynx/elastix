@@ -271,7 +271,7 @@ function new_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $arr
 */
 function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $dsnAsterisk)
 {
-    if(isset($_POST['select_directory_type']) && $_POST['select_directory_type']=='External')
+    if(getParametro('select_directory_type') != null && getParametro('select_directory_type')=='external')
     {
         $smarty->assign("external_sel",'selected=selected');
         $directory_type = 'external';
@@ -342,7 +342,7 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
 
     $end    = ($offset+$limit)<=$total ? $offset+$limit : $total;
 
-    $url = "?menu=$module_name&filter=$pattern";
+    $url = "?menu=$module_name&filter=$pattern&select_directory_type=$directory_type";
     $smarty->assign("url", $url);
     //Fin Paginacion
 
