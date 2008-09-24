@@ -94,12 +94,14 @@ function generateWav($smarty, $module_name, $local_templates_dir, $arrLang)
         $smarty->assign("IMG", "images/list.png");
         $smarty->assign("FORMATO", getParameter('format'));	
         $smarty->assign("DOWNLOAD",$arrLang["Download File"]);
+        $path = "var";
+        $smarty->assign("PATH",$path);
 
         $format = getParameter('format');
         $message = stripslashes(trim(getParameter('message')));
         $message = substr($message, 0, 1024);
 
-        $audiodir = "/var/www/html/var";
+        $audiodir = "/var/www/html/$path";
         $oTextToWap = new paloSantoTexttoWav();
         $execute = $oTextToWap->TextoWav($audiodir, $format, $message);
         if($execute){	

@@ -29,7 +29,7 @@
 	{else}
 	<table class="tabForm" style="font-size: 16px;" width="100%" >
             <tr class="letra12">
-                <td align="left"><b> {if $EXECUTE}<a href="audio/{$FILENAME}{$EXTENSION}">{$DOWNLOAD} {$EXTENSION}</a>{/if}</b></td>
+                <td align="left"><b> {if $EXECUTE}<a href="{$PATH}/{$FILENAME}{$EXTENSION}">{$DOWNLOAD} {$EXTENSION}</a>{/if}</b></td>
             </tr>
         </table>
 	
