@@ -24,5 +24,4 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1 {DATE} {YOUR_NAME} Exp $ */
-
+  $Id: {FILE_NAME},v 1.1 {DATE} {YOUR_NAME} Exp $ */

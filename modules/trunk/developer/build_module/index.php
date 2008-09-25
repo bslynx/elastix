@@ -488,6 +488,20 @@ function save_module($new_module_name, $new_id_module, $selected_gp, $module_typ
                     }
                 }
 
+                $folder = "$new_id_module/lang";
+                $comando="mkdir $ruta/$folder";
+                exec($comando,$output,$retval);
+                if ($retval!=0){
+                    $error = true;
+                    $errMsg = $arrLangModule["Folders can't be created"]." $folder, ";
+                }else{
+                    if(!$pNewMod_menu->Create_File_Lang($new_module_name, $new_id_module, $your_name, $ruta, $elastix_Version, $arrLangModule, $this_module_name))
+                    {
+                        $error = true;
+                        $errMsg = $pNewMod_menu->errMsg;
+                    }
+                }
+
                 $folder = "$new_id_module/libs";
                 $comando="mkdir $ruta/$folder";
                 exec($comando,$output,$retval);

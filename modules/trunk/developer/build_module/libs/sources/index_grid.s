@@ -1,70 +1,74 @@
+//include elastix framework
+include_once "libs/paloSantoGrid.class.php";
+include_once "libs/paloSantoForm.class.php";
+
 function _moduleContent(&$smarty, $module_name)
 {
-    //include elastix framework
-    include_once "libs/paloSantoGrid.class.php";
-    include_once "libs/paloSantoForm.class.php";
-
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
     include_once "modules/$module_name/libs/paloSanto{NAME_CLASS}.class.php";
+
+    //include file language agree to elastix configuration
+    //if file language not exists, then include language by default (en)
+    $lang=get_language();
+    $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
+    $lang_file="modules/$module_name/lang/$lang.lang";
+    if (file_exists("$base_dir/$lang_file")) include_once "$lang_file";
+    else include_once "modules/$module_name/lang/en.lang";
+
+    //global variables
     global $arrConf;
+    global $arrConfModule;
     global $arrLang;
+    global $arrLangModule;
+    $arrConf = array_merge($arrConf,$arrConfModule);
+    $arrLang = array_merge($arrLang,$arrLangModule);
 
     //folder path for custom templates
-    $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
-    $templates_dir=(isset($arrConfig['templates_dir']))?$arrConfig['templates_dir']:'themes';
+    $templates_dir=(isset($arrConf['templates_dir']))?$arrConf['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
 
-    $accion = getAction();
+    //conexion resource
+    $pDB = "";
 
+
+    //actions
+    $accion = getAction();
     $content = "";
-    switch($accion)
-    {
+
+    switch($accion){
         default:
-            $content = report_{NAME_CLASS}($smarty, $module_name, $local_templates_dir, $arrLang);
+            $content = report{NAME_CLASS}($smarty, $module_name, $local_templates_dir, $pBD, $arrConf, $arrLang);
             break;
     }
-
     return $content;
 }
 
-function report_{NAME_CLASS}($smarty, $module_name, $local_templates_dir, $arrLang)
+function report{NAME_CLASS}($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
 {
-    $arrFormElements = array(
-            "filter"            => array(   "LABEL"                  => $arrLang["Filter Example"],
-                                            "REQUIRED"               => "no",
-                                            "INPUT_TYPE"             => "TEXT",
-                                            "INPUT_EXTRA_PARAM"      => "",
-                                            "VALIDATION_TYPE"        => "text",
-                                            "VALIDATION_EXTRA_PARAM" => ""),
-                                );
-
-    $oFilterForm = new paloForm($smarty, $arrFormElements);
-    $smarty->assign("SHOW", $arrLang["Show"]);
-
-    $field_pattern = getParameter("filter");
-
-    $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl", "", $_POST);
-
     $p{NAME_CLASS} = new paloSanto{NAME_CLASS}($pDB);
-    $total_datos = $p{NAME_CLASS}->ObtainNum{NAME_CLASS}();
+    $field_pattern = getParameter("filter");
+    $action = getParameter("nav");
+    $start  = getParameter("start");
 
-    //Paginacion
-    $limit  = 15;
-    $total  = $total_datos[0];
 
+    //begin grid parameters
     $oGrid  = new paloSantoGrid($smarty);
-    $offset = $oGrid->getOffSet($limit,$total,(isset($_GET['nav']))?$_GET['nav']:NULL,(isset($_GET['start']))?$_GET['start']:NULL);
+    $total{NAME_CLASS} = $p{NAME_CLASS}->ObtainNum{NAME_CLASS}();
 
-    $end    = ($offset+$limit)<=$total ? $offset+$limit : $total;
+    $limit  = 20;
+    $total  = $total{NAME_CLASS};
+    $oGrid->setLimit($limit);
+    $oGrid->setTotal($total);
 
-    $url = "?menu=$module_name&filter=$field_pattern";
-    $smarty->assign("url", $url);
-    //Fin Paginacion
-
-    $arrResult =$p{NAME_CLASS}->Obtain{NAME_CLASS}($limit, $offset, $field_pattern);
+    $oGrid->calculatePagination($action,$start);
+    $offset = $oGrid->getOffsetValue();
+    $end    = $oGrid->getEnd();
+    $url    = "?menu=$module_name&filter=$field_pattern";
 
     $arrData = null;
+    $arrResult =$p{NAME_CLASS}->Obtain{NAME_CLASS}($limit, $offset, $field_pattern);
+
     if(is_array($arrResult) && $total>0){
         foreach($arrResult as $key => $value){
             $arrTmp[0] = $value['campo1'];
@@ -74,12 +78,14 @@ function report_{NAME_CLASS}($smarty, $module_name, $local_templates_dir, $arrLa
         }
     }
 
-    $arrGrid = array("title"    => "{NEW_MODULE_NAME}",
+
+    $arrGrid = array("title"    => $arrLang["{NEW_MODULE_NAME}"],
                         "icon"     => "images/list.png",
                         "width"    => "99%",
                         "start"    => ($total==0) ? 0 : $offset + 1,
                         "end"      => $end,
                         "total"    => $total,
+                        "url"      => $url,
                         "columns"  => array(0 => array("name"      => $arrLang["Field"]." 1",
                                                     "property1" => ""),
                                             1 => array("name"      => $arrLang["Field"]." 2",
@@ -89,10 +95,33 @@ function report_{NAME_CLASS}($smarty, $module_name, $local_templates_dir, $arrLa
                                         )
                     );
 
+
+    //begin section filter
+    $arrFormFilter{NAME_CLASS} = createFieldForm($arrLang);
+    $oFilterForm = new paloForm($smarty, $arrFormFilter{NAME_CLASS});
+    $smarty->assign("SHOW", $arrLang["Show"]);
+
+    $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl","",$_POST);
+    //end section filter
+
     $oGrid->showFilter(trim($htmlFilter));
     $contenidoModulo = "<form  method='POST' style='margin-bottom:0;' action=$url>".$oGrid->fetchGrid($arrGrid, $arrData,$arrLang)."</form>";
+    //end grid parameters
 
     return $contenidoModulo;
+}
+
+
+function createFieldForm($arrLang){
+    $arrFormElements = array(
+            "filter"    => array(   "LABEL"                  => $arrLang["Filter Example"],
+                                    "REQUIRED"               => "no",
+                                    "INPUT_TYPE"             => "TEXT",
+                                    "INPUT_EXTRA_PARAM"      => "",
+                                    "VALIDATION_TYPE"        => "text",
+                                    "VALIDATION_EXTRA_PARAM" => ""),
+                    );
+    return $arrFormElements;
 }
 
 function getParameter($parameter)

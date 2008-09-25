@@ -114,6 +114,7 @@ class paloSantoBuildModule {
 
     function Create_File_Config($new_id_module, $your_name, $ruta, $elastix_Version, $arrLang, $this_module_name)
     {
+        $filename = 'default.conf.php';
         $date = date('Y-m-d h:m:s');
 
         $file = "$ruta/$this_module_name/libs/sources/comment.s";
@@ -125,6 +126,7 @@ class paloSantoBuildModule {
         $content = str_replace("{ELASTIX_VERSION}", "$elastix_Version", $content);
         $content = str_replace("{DATE}", "$date", $content);
         $content = str_replace("{YOUR_NAME}", "$your_name", $content);
+        $content = str_replace("{FILE_NAME}", "$filename", $content);
         fclose($gestor);
 
         $contenido = "<?php\n$content";
@@ -141,13 +143,12 @@ class paloSantoBuildModule {
         $contenido .= "$content?>";
 
         $ruta .= "/$new_id_module/configs";
-        $filename = 'default.conf.php';
         return $this->Create_File($ruta, $filename, $contenido, $arrLang);
     }
 
-    function Create_Module_Class_File($new_module_name, $new_id_module, $your_name, $ruta, $elastix_Version, $arrLang, $this_module_name)
+    function Create_File_Lang($new_module_name, $new_id_module, $your_name, $ruta, $elastix_Version, $arrLang, $this_module_name)
     {
-        $name_class = str_replace(" ", "", $new_module_name);
+        $filename = 'en.lang';
         $date = date('Y-m-d h:m:s');
 
         $file = "$ruta/$this_module_name/libs/sources/comment.s";
@@ -159,6 +160,42 @@ class paloSantoBuildModule {
         $content = str_replace("{ELASTIX_VERSION}", "$elastix_Version", $content);
         $content = str_replace("{DATE}", "$date", $content);
         $content = str_replace("{YOUR_NAME}", "$your_name", $content);
+        $content = str_replace("{FILE_NAME}", "$filename", $content);
+        fclose($gestor);
+
+        $contenido = "<?php\n$content";
+
+        $file = "$ruta/$this_module_name/libs/sources/lang.s";
+        if (!$gestor = fopen($file, 'r')) {
+            $this->errMsg = $arrLang["It isn't possible to open file for reading"]. ": $file";
+            return false;
+        }
+        $content = fread($gestor, filesize($file));
+        $content = str_replace("{LANG_CONTENT}", "\"$new_module_name\" => \"$new_module_name\",", $content);
+        fclose($gestor);
+
+        $contenido .= "$content?>";
+
+        $ruta .= "/$new_id_module/lang";
+        return $this->Create_File($ruta, $filename, $contenido, $arrLang);
+    }
+
+    function Create_Module_Class_File($new_module_name, $new_id_module, $your_name, $ruta, $elastix_Version, $arrLang, $this_module_name)
+    {
+        $name_class = str_replace(" ", "", $new_module_name);
+        $filename = "paloSanto$name_class.class.php";
+        $date = date('Y-m-d h:m:s');
+
+        $file = "$ruta/$this_module_name/libs/sources/comment.s";
+        if (!$gestor = fopen($file, 'r')) {
+            $this->errMsg = $arrLang["It isn't possible to open file for reading"]. ": $file";
+            return false;
+        }
+        $content = fread($gestor, filesize($file));
+        $content = str_replace("{ELASTIX_VERSION}", "$elastix_Version", $content);
+        $content = str_replace("{DATE}", "$date", $content);
+        $content = str_replace("{YOUR_NAME}", "$your_name", $content);
+        $content = str_replace("{FILE_NAME}", "$filename", $content);
         fclose($gestor);
 
         $contenido = "<?php\n$content";
@@ -175,13 +212,13 @@ class paloSantoBuildModule {
         $contenido .= "$content?>";
 
         $ruta .= "/$new_id_module/libs";
-        $filename = "paloSanto$name_class.class.php";
         return $this->Create_File($ruta, $filename, $contenido, $arrLang);
     }
 
     function Create_Index_File($new_module_name, $new_id_module, $your_name, $ruta, $elastix_Version, $arrLang, $type, $this_module_name)
     {
         $name_class = str_replace(" ", "", $new_module_name);
+        $filename = "index.php";
         $date = date('Y-m-d h:m:s');
 
         $file = "$ruta/$this_module_name/libs/sources/comment.s";
@@ -193,6 +230,7 @@ class paloSantoBuildModule {
         $content = str_replace("{ELASTIX_VERSION}", "$elastix_Version", $content);
         $content = str_replace("{DATE}", "$date", $content);
         $content = str_replace("{YOUR_NAME}", "$your_name", $content);
+        $content = str_replace("{FILE_NAME}", "$filename", $content);
         fclose($gestor);
 
         $contenido = "<?php\n$content";
@@ -210,7 +248,6 @@ class paloSantoBuildModule {
         $contenido .= "$content?>";
 
         $ruta .= "/$new_id_module";
-        $filename = "index.php";
         return $this->Create_File($ruta, $filename, $contenido, $arrLang);
     }
 

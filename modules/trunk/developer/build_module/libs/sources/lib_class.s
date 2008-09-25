@@ -34,10 +34,10 @@ class paloSanto{NAME_CLASS} {
             $this->errMsg = $this->_DB->errMsg;
             return 0;
         }
-        return $result;
+        return $result[0];
         */
 
-        /*THIS LINE SHOULD BE ERASE*/ return array(0 => 0); /*THIS LINE SHOULD BE ERASE*/
+        /*THIS LINE SHOULD BE ERASE*/ return 0; /*THIS LINE SHOULD BE ERASE*/
     }
 
     function Obtain{NAME_CLASS}($limit, $offset, $field_pattern)
