@@ -104,7 +104,7 @@ function getDashboard($local_templates_dir,$module_name)
         if(is_array($arrData) && count($arrData)>0){
             $extension = $arrData['extension'];
             $email     = "{$arrData['login']}.{$arrData['domain']}";
-            $passw     = $arrData['password'];
+            $passw     = isset($arrData['password'])?$arrData['password']:"";
             $numRegs   = 5;
 
             $callsRows   = $objUserInfo->getLastCalls($extension,$numRegs);

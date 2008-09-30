@@ -69,54 +69,70 @@ class paloSantoDashboard {
    }
 
    function getMails($email,$passw,$numRegs){
-    global $arrLang;
+        global $arrLang;
+        
+        $counter    = 0;
+        
+        if($email!='' && $passw!='')
+            $imap = imap_open("{localhost:143}INBOX",$email,$passw);
+        else return $arrLang["You don't have a webmail account"];
+        
+        if(!$imap)
+            return $arrLang["Imap: Connection error"];
+        
+        $tmp = imap_check($imap);
+        
+        if($tmp->Nmsgs==0)
+            return $arrLang["You don't recibed emails"];
+        
+        $result = imap_fetch_overview($imap,"1:{$tmp->Nmsgs}",0);
+        
+        $mails = array();
+            //print_r($result);
+        foreach ($result as $overview) {
+            $mails[] = array("seen"=>$overview->seen,
+                             "recent"=>$overview->recent,
+                             "answered"=>$overview->answered,
+                             "date"=>$overview->date,
+                             "from"=>$overview->from,
+                             "subject"=>$overview->subject);
+        }
+        
+        imap_close($imap);
+        
+        $mails = array_slice($mails,-$numRegs,$numRegs);
+            krsort($mails);
+        
+        $content = "";
+        
+        /*
+        foreach($mails as $value){
+            $temp = $arrLang["mail recived"];
+            $temp = str_replace("{source}",$value["from"],$temp);
+            $temp = str_replace("{date}",$value["date"],$temp);
+            $temp = str_replace("{subject}",$value["subject"],$temp);
+        
+            $b = ($value["seen"] or $value["answered"])?false:true;
+            if($b)
+                $temp = "<b>$temp</b>";
+            $content.=$temp."<br>";
+        }
 
-    $counter    = 0;
+        return $content;*/
 
-    if($email!='' && $passw!='')
-        $imap = imap_open("{localhost:143}INBOX",$email,$passw);
-    else return $arrLang["You don't have a webmail account"];
+        //print_r($mails);
 
-    if(!$imap)
-        return $arrLang["Imap: Connection error"];
+        $temp = '';
+        foreach($mails as $index => $value){
+            $b = ($value["seen"] or $value["answered"])?false:true;
+            if($b){
+                $temp .= "<font color='#000080' size='1'>".$value['date']."</font><br>";
+                $temp .= "<font  size='1'>"."From: ".substr($value['from'],0,50)."</font><br>";
+                $temp .= "<font  size='1'>"."Subject: ".substr($value['subject'],0,30)."</font><br>";
+            }
+        }
 
-    $tmp = imap_check($imap);
-
-    if($tmp->Nmsgs==0)
-        return $arrLang["You don't recibed emails"];
-
-    $result = imap_fetch_overview($imap,"1:{$tmp->Nmsgs}",0);
-
-    $mails = array();
-        //print_r($result);
-    foreach ($result as $overview) {
-        $mails[] = array("seen"=>$overview->seen,
-                 "recent"=>$overview->recent,
-                 "answered"=>$overview->answered,
-                 "date"=>$overview->date,
-                 "from"=>$overview->from,
-                 "subject"=>$overview->subject);
-    }
-
-    imap_close($imap);
-
-    $mails = array_slice($mails,-$numRegs,$numRegs);
-        krsort($mails);
-
-    $content = "";
-
-    foreach($mails as $value){
-        $temp = $arrLang["mail recived"];
-                $temp = str_replace("{source}",$value["from"],$temp);
-                $temp = str_replace("{date}",$value["date"],$temp);
-                $temp = str_replace("{subject}",$value["subject"],$temp);
-
-                $b = ($value["seen"] or $value["answered"])?false:true;
-                if($b)
-                    $temp = "<b>$temp</b>";
-                $content.=$temp."<br>";
-    }
-    return $content;
+        return "<b>".$temp."</b>";
     }
 
    function getVoiceMails($extension,$numRegs){
