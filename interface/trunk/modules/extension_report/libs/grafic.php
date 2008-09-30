@@ -1,8 +1,4 @@
 <?php
-//require_once("../../../libs/jpgraph/jpgraph.php");
-//require_once("../../../libs/jpgraph/jpgraph_pie.php");
-//require_once("../../../libs/jpgraph/jpgraph_pie3d.php");
-
 require_once("../../../libs/jpgraph/jpgraph.php");
 require_once("../../../libs/jpgraph/jpgraph_pie.php");
 require_once("../../../libs/jpgraph/jpgraph_pie3d.php");

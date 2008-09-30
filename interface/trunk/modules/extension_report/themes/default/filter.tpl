@@ -1,25 +1,38 @@
-<!-- <table class="tabForm" style="font-size: 16px;" width="100%" border="0"> -->
+<BODY onload="show_elements()">
+
 <table width="99%" border="0" cellspacing="0" cellpadding="4" align="center">
     <tr class="moduleTitle">
-        <td colspan="9" class="moduleTitle" valign="middle">&nbsp;&nbsp;<img src="images/list.png" border="0" align="absmiddle">&nbsp;&nbsp;{$title}</td>
+        <td colspan="5" class="moduleTitle" valign="middle">&nbsp;&nbsp;<img src="images/list.png" border="0" align="absmiddle">&nbsp;&nbsp;{$title}</td>
     </tr>
     <tr class="letra12">
-        <td width="10%" align="right">{$date_from.LABEL}: <span class="required">*</span></b></td>
-        <td width="12%" align="left" nowrap>{$date_from.INPUT} </td>
-        <td width="10%" align="right">{$date_to.LABEL}: </td>
-        <td width="12%" align="left" nowrap>{$date_to.INPUT}</td>
-        <td width="10%" align="right" nowrap>{$extensions.LABEL} <span class="required">*</span></b></td>
-<!--         <td width="12%" align="left" nowrap>{$extensions.INPUT}</td> -->
-        <td width="12%" align="left" nowrap>{$call_to.INPUT}<a href='javascript: popup_phone_number("modules/calendar/libs/phone_numbers.php");'> Here</a></td>
-<!--         <td width="10%" align="right" nowrap>{$calls.LABEL}:</td> -->
-<!--         <td>{$calls.INPUT}</td> -->
-        <td align="center"><input class="button" type="submit" name="show" value="{$SHOW}"></td>
+        <td width="30%" align="right">{$date_from.LABEL}: <span class="required">*</span></b></td>
+        <td width="20%" align="left" nowrap>{$date_from.INPUT} </td>
+        <td width="20%" onload="show_elements();">
+            <select id="menu" name="menu" size="1" onClick="show_elements();" >
+                <option value="Number"{$SELECTED_1} >Number</option>
+                <option value="Queue" {$SELECTED_2} >Queue</option>
+                <option value="Trunk" {$SELECTED_3} >Trunk</option>
+            </select>
+        </td>
         <td align="right" nowrap><span class="letra12"><span  class="required">*</span> {$REQUIRED_FIELD}</span></td>
+    </tr>
+    <tr class="letra12">
+        <td align="right">{$date_to.LABEL}: </td>
+        <td align="left" nowrap>{$date_to.INPUT}</td>
+
+        <td align="left" nowrap id="td_link">{$call_to.INPUT}
+            <a href='javascript: popup_phone_number("modules/calendar/libs/phone_numbers.php");'> Here</a>
+        </td>
+        <td id="id_vacio">&nbsp;</td>
+        <td id="id_trunk">{$trunks.INPUT}</td>
+
+        <td><input class="button" type="submit" name="show" value="{$SHOW}"></td>
     </tr>
 </table>
 <table class="tabForm" style="font-size: 16px;" width="100%" border="0">
     <tr class="letra12">
-        <td align="center"><img src='modules/{$module_name}/libs/grafic.php?du={$VALUE}%&in={$in}&out={$out}&ext={$ext}&tot={$tot}' border='0'></td>
+<!--         <td align="center">{$ruta_img}</td> -->
+        {$ruta_img}
     </tr>
 </table>
 <input type="hidden" name="nav" value="{$nav_value}" />
@@ -33,6 +46,7 @@
 
 {literal}
 <script type= "text/javascript">
+    show_elements();
     function popup_phone_number(url_popup)
     {
         var ancho = 600;
@@ -40,7 +54,33 @@
         my_window = window.open(url_popup,"my_window","width="+ancho+",height="+alto+",location=yes,status=yes,resizable=yes,scrollbars=yes,fullscreen=no,toolbar=yes");
         my_window.moveTo((screen.width-ancho)/2,(screen.height-alto)/2);
         my_window.document.close();
-        
+    }
+
+    function show_elements()
+    {
+        var number = document.getElementById('menu');
+
+        if( number.value == 'Number' )
+        {
+            document.getElementById('td_link').style.display = '';
+            document.getElementById('id_trunk').style.display = 'none';
+            document.getElementById('id_vacio').style.display = 'none';
+        }
+        else if( number.value == 'Queue' )
+        {
+            document.getElementById('td_link').style.display = 'none';
+            document.getElementById('id_vacio').style.display = '';
+            document.getElementById('id_trunk').style.display = 'none';
+            
+        }
+        else
+        {
+            document.getElementById('td_link').style.display = 'none';
+            document.getElementById('id_vacio').style.display = 'none';
+            document.getElementById('id_trunk').style.display = '';
+        }
     }
 </script>
 {/literal}
+
+</BODY>

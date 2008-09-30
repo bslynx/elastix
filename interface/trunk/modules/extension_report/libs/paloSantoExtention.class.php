@@ -27,6 +27,8 @@
   +----------------------------------------------------------------------+
   $Id: default.conf.php,v 1.1 2008-09-01 10:09:57 jjvega Exp $ */
 
+//include_once "libs/paloSantoQueue.class.php";
+
 class paloSantoExtention {
     var $_DB;
     var $errMsg;
@@ -176,6 +178,79 @@ class paloSantoExtention {
 
         if($result == FALSE)
         {
+            $this->errMsg = $this->_DB->errMsg;
+            return array();
+        }
+
+        return $result;
+    }
+
+    function countQueue($queue, $date_ini, $date_fin)
+    {
+        $query = "SELECT count(*) FROM cdr WHERE dst='$queue' ";
+
+        if( strlen($date_ini) >= 5 ){
+            if( strlen($date_fin) <= 5 )
+                $query .= " and ( TO_DAYS( DATE(calldate) ) > TO_DAYS( '$date_ini') OR TO_DAYS( DATE(calldate) ) = TO_DAYS( '$date_ini') )";
+            else{
+                $query .= " and ( TO_DAYS( DATE(calldate) ) > TO_DAYS( '$date_ini') OR TO_DAYS( DATE(calldate) ) = TO_DAYS( '$date_ini') )  ";
+                $query .= " and ( TO_DAYS( DATE(calldate) ) < TO_DAYS( '$date_fin') OR TO_DAYS( DATE(calldate) ) = TO_DAYS( '$date_fin') ) ";
+            }
+        }
+
+        $result = $this->_DB->getFirstRowQuery($query);
+
+        if( $result == false ){
+            $this->errMsg = $this->_DB->errMsg;
+            return 0;
+        }
+
+        return $result;
+    }
+
+    function loadTrunks($trunk, $min_call, $date_ini, $date_fin)
+    {
+        $str = "";
+        if( strlen($date_ini) >= 5 ){
+            if( strlen($date_fin) <= 5 )
+                $str .= " and ( TO_DAYS( DATE(calldate) ) > TO_DAYS( '$date_ini') OR TO_DAYS( DATE(calldate) ) = TO_DAYS( '$date_ini') )";
+            else{
+                $str .= " and ( TO_DAYS( DATE(calldate) ) > TO_DAYS( '$date_ini') OR TO_DAYS( DATE(calldate) ) = TO_DAYS( '$date_ini') )  ";
+                $str .= " and ( TO_DAYS( DATE(calldate) ) < TO_DAYS( '$date_fin') OR TO_DAYS( DATE(calldate) ) = TO_DAYS( '$date_fin') ) ";
+            }
+        }
+
+        $query = "";
+        if( $min_call == "min" ){// # minutos
+            $query = "SELECT entrante.totIN, saliente.totOut
+                      FROM (SELECT sum(duration) as totIN
+                            FROM cdr
+                            WHERE channel LIKE '%$trunk%' ".$str." ) as entrante,
+                           (SELECT sum(duration) as totOut
+                            FROM cdr
+                            WHERE dstchannel LIKE '%$trunk%' ".$str." ) as saliente ";
+        }
+        else{// # llamadas
+            $query = "SELECT entrante.numIN, saliente.numOut
+                      FROM (SELECT count(duration) as numIN
+                            FROM cdr
+                            WHERE channel LIKE '%$trunk%' ".$str." ) as entrante,
+                           (SELECT count(duration) as numOut
+                            FROM cdr
+                            WHERE dstchannel LIKE '%$trunk%' ".$str." ) as saliente ";
+        }
+/*
+        if( strlen($date_ini) >= 5 ){
+            if( strlen($date_fin) <= 5 )
+                $query .= " and ( TO_DAYS( DATE(calldate) ) > TO_DAYS( '$date_ini') OR TO_DAYS( DATE(calldate) ) = TO_DAYS( '$date_ini') )";
+            else{
+                $query .= " and ( TO_DAYS( DATE(calldate) ) > TO_DAYS( '$date_ini') OR TO_DAYS( DATE(calldate) ) = TO_DAYS( '$date_ini') )  ";
+                $query .= " and ( TO_DAYS( DATE(calldate) ) < TO_DAYS( '$date_fin') OR TO_DAYS( DATE(calldate) ) = TO_DAYS( '$date_fin') ) ";
+            }
+        }
+*/
+        $result = $this->_DB->fetchTable($query, false);
+        if( $result == false ){
             $this->errMsg = $this->_DB->errMsg;
             return array();
         }

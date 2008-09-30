@@ -72,7 +72,14 @@ function _moduleContent(&$smarty, $module_name)
                       $arrConfig['AMPDBHOST']['valor']."/asterisk";
 
     $pDB_ext = new paloDB($dsnAsteriskDev);//asterisk -> devices
-
+/*
+    include_once "libs/paloSantoTrunk.class.php";
+    print_r( getTrunks($pDB_ext) );
+*/
+/*
+    $p = new paloSantoExtention($pDB_cdr);
+    print_r( $p->loadTrunks("ZAP/2","dfh") );
+*/
     $accion = getAction();
 
     $content = "";
@@ -114,6 +121,13 @@ function report_Extention($smarty, $module_name, $local_templates_dir, $arrLang,
                                         "VALIDATION_TYPE"        => "text",
                                         "EDITABLE"               => "yes",
                                         "VALIDATION_EXTRA_PARAM" => ""),
+        "extensions_option" => array(   "LABEL"                  => "",
+                                        "REQUIRED"               => "no",
+                                        "INPUT_TYPE"             => "SELECT",
+                                        "INPUT_EXTRA_PARAM"      => array("Number"=>"Number","Queue"=>"Queue","Trunk"=>"Trunk"),
+                                        "VALIDATION_TYPE"        => "text",
+                                        "EDITABLE"               => "yes",
+                                        "VALIDATION_EXTRA_PARAM" => ""),
         "call_to"           => array(   "LABEL"                  => $arrLangModule["Number"],
                                         "REQUIRED"               => "yes",
                                         "INPUT_TYPE"             => "TEXT",
@@ -121,15 +135,13 @@ function report_Extention($smarty, $module_name, $local_templates_dir, $arrLang,
                                         "VALIDATION_TYPE"        => "text",
                                         "EDITABLE"               => "yes",
                                         "VALIDATION_EXTRA_PARAM" => ""),
-        "calls"              => array(  "LABEL"                  => $arrLang["Number"],
+        "trunks"            => array(   "LABEL"                  => "Trunk",
                                         "REQUIRED"               => "no",
                                         "INPUT_TYPE"             => "SELECT",
-                                        "INPUT_EXTRA_PARAM"      => "",
+                                        "INPUT_EXTRA_PARAM"      => loadTrunks($pDB_ext),
                                         "VALIDATION_TYPE"        => "text",
-                                        "VALIDATION_EXTRA_PARAM" => "",
-                                        "EDITABLE"               => "no",
-                                        "SIZE"                   => "1"),
-
+                                        "EDITABLE"               => "yes",
+                                        "VALIDATION_EXTRA_PARAM" => ""),
                             );
 
     $oFilterForm = new paloForm($smarty, $arrFormElements);
@@ -138,27 +150,54 @@ function report_Extention($smarty, $module_name, $local_templates_dir, $arrLang,
 
     $date_ini = getParameter("date_from");
     $date_fin = getParameter("date_to");
-    //$ext = getParameter("extensions");
     $ext = getParameter("call_to");
     $calls_io = getParameter("calls");
 
     $date_ini2 = ConverterDate($date_ini);
     $date_fin2 = ConverterDate($date_fin);
-    //$ext2 = "/".$ext."@";
     $ext2 = $ext;
 
+    //$option = getParameter("extensions_option");
+    $option = "";
+    if( isset($_POST["menu"]) ){
+        $option = $_POST["menu"];
+        $smarty->assign("menu",$option);
+    }
+
+/*
+    $option = "";
+    $str_check = "";
+    if( getParameter('option') == 'select_number' ){
+        $option = "Number";
+        $str_check = "check_number";
+    }
+    else if( getParameter('option') == 'select_queue'){
+        $option = "Queue";
+        $str_check = "check_queue";
+    }
+    else{
+        $option = "Trunk";
+        $str_check = "check_trunk";
+    }
+*/
+/*
     $action = getParameter('nav');
     $start = getParameter('start');
     $smarty->assign("start_value", $start);
     $smarty->assign("nav_value", $action);
-
+*/
     if( getAction() == "show" ){
+        //$smarty->assign($str_check, " checked='checked' ");
+
         $smarty->assign("date_from", $date_ini);
         $smarty->assign("date_1", $date_ini);
 
         $smarty->assign("date_to", $date_fin);
         $smarty->assign("date_2", $date_fin);
-    }
+
+        $date_ini2 = ConverterDate($date_ini);
+        $date_fin2 = ConverterDate($date_fin);
+    }/*
     else if( getParameter("nav") == "next" || getParameter("nav") == "previous" || 
              getParameter("nav") == "end" || getParameter("nav") == "start"){
         $_POST["date_from"] = getParameter('di'); 
@@ -166,8 +205,10 @@ function report_Extention($smarty, $module_name, $local_templates_dir, $arrLang,
 
         $_POST["date_to"] = getParameter('df'); 
         $smarty->assign("date_2", getParameter('df'));
-    }
+    }*/
     else{
+        //$smarty->assign("check_number", "checked='checked'");
+
         $_POST["date_from"] = date("d M Y");
         $_POST["date_to"] = date("d M Y");
         $date_ini = date("d M Y");
@@ -186,11 +227,13 @@ function report_Extention($smarty, $module_name, $local_templates_dir, $arrLang,
 
     $smarty->assign("value_2", $date_ini);
     $smarty->assign("module_name", $module_name);
-    //$htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl", "", $_POST);
 
     $pExtention = new paloSantoExtention($pDB_cdr);
 
+    //print_r( $pExtention->loadQueues($pDB_ext) );
 
+    //validad FORM
+    /*
     if(!$oFilterForm->validateForm($_POST)) {
         $smarty->assign("mb_title", $arrLang["Validation Error"]);
         $arrErrores=$oFilterForm->arrErroresValidacion;
@@ -203,52 +246,79 @@ function report_Extention($smarty, $module_name, $local_templates_dir, $arrLang,
 
         $date_ini2='-';$date_fin2="-";$ext2="-";$calls_io="-";
     }
+    */
+    if( $option == "Number" )
+    {
+        $smarty->assign("SELECTED_1","selected");
+        $smarty->assign("SELECTED_2","");
+        $smarty->assign("SELECTED_3","");
 
+        //Paginacion
+        //$limit  = 15;
+        $total_datos = $pExtention->ObtainNumExtention($date_ini2, $date_fin2, $ext2, $calls_io);
+        $total  = $total_datos[0];
+    
+        $numIn = 0; $numOut = 0; $numTot = 0;
+        if($calls_io=="Incoming_Calls"){//CUANDO ES INCOMING
+            $numTot_T = $pExtention->ObtainNumExtention($date_ini2, $date_fin2, $ext2, "");//total TODOS
+            $numTot = $numTot_T[0];
+            //$total -> incoming
+            $numIn = $total;
+            $numOut = $numTot - $numIn;  
+        }
+        else if($calls_io=="Outcoming_Calls"){
+            $numTot_T = $pExtention->ObtainNumExtention($date_ini2, $date_fin2, $ext2, "");//total todos
+            $numTot = $numTot_T[0];
+            //$total -> outcoming
+            $numIn = $numTot - $total;
+            $numOut = $total;
+        }
+        else{
+            $numIn_T = $pExtention->ObtainNumExtentionByIOrO($date_ini2, $date_fin2, $ext, 'in');
+            //$total -> todos
+            $numTot = $total;
+            $numIn = $numIn_T[0];
+            $numOut = $total - $numIn;
+        }
 
-    //Paginacion
-    $limit  = 15;
-    $total_datos = $pExtention->ObtainNumExtention($date_ini2, $date_fin2, $ext2, $calls_io);
-    $total  = $total_datos[0];
+        if($numIn != 0) $VALUE = (int)( 100*( $numIn/$numTot ) );
+        else $VALUE = 0;
 
-    $numIn = 0; $numOut = 0; $numTot = 0;
-    if($calls_io=="Incoming_Calls"){//CUANDO ES INCOMING
-        $numTot_T = $pExtention->ObtainNumExtention($date_ini2, $date_fin2, $ext2, "");//total TODOS
-        $numTot = $numTot_T[0];
-        //$total -> incoming
-        $numIn = $total;
-        $numOut = $numTot - $numIn;  
+        $ruta_img = "<td align='center'><img src='modules/{$module_name}/libs/grafic.php?du={$VALUE}%&in={$numIn}&out={$numOut}&ext={$ext2}&tot={$numTot}' border='0'></td>";
+        $smarty->assign("ruta_img", $ruta_img);
     }
-    else if($calls_io=="Outcoming_Calls"){
-        $numTot_T = $pExtention->ObtainNumExtention($date_ini2, $date_fin2, $ext2, "");//total todos
-        $numTot = $numTot_T[0];
-        //$total -> outcoming
-        $numIn = $numTot - $total;
-        $numOut = $total;
+    else if($option == "Queue"){
+        $smarty->assign("SELECTED_1","");
+        $smarty->assign("SELECTED_2","selected");
+        $smarty->assign("SELECTED_3","");
+
+        $ruta_img = "<td align='center'><img src='modules/{$module_name}/libs/grafic_queue.php?queue={$ext2}&dti={$date_ini2}&dtf={$date_fin2}' border='0'></td>";
+        $smarty->assign("ruta_img", $ruta_img);
     }
-    else{
-        $numIn_T = $pExtention->ObtainNumExtentionByIOrO($date_ini2, $date_fin2, $ext, 'in');
-        //$total -> todos
-        $numTot = $total;
-        $numIn = $numIn_T[0];
-        $numOut = $total - $numIn;
+    else if($option == "Trunk"){
+        $smarty->assign("SELECTED_1","");
+        $smarty->assign("SELECTED_2","");
+        $smarty->assign("SELECTED_3","selected");
+
+        $trunkT = getParameter("trunks");
+        $smarty->assign("trunks", $trunkT);
+
+        $ruta_img = "<td align='center'><img src='modules/{$module_name}/libs/grafic_trunk.php?trunk={$trunkT}&dti={$date_ini2}&dtf={$date_fin2}' border='0'></td>";
+        $smarty->assign("ruta_img", $ruta_img);
     }
-
-    $smarty->assign("in", $numIn);
-    $smarty->assign("out", $numOut);
-    $smarty->assign("ext", $ext2);
-    $smarty->assign("tot", $numTot);
-
-    if($numIn != 0) $smarty->assign("VALUE", (int)( 100*( $numIn/$numTot ) ));
-    else $smarty->assign("VALUE", 0);
-
+    else{//default
+        $ruta_img = "<td align='center'><img src='modules/{$module_name}/libs/grafic.php?du=0%&in=0&out=0&ext=0&tot=0' border='0'><td>";
+        $smarty->assign("ruta_img", $ruta_img);
+    }
+/*
     $oGrid  = new paloSantoGrid($smarty);
 
     $offset = $oGrid->getOffSet($limit,$total,$action,$start);
 
     $end    = ($offset+$limit)<=$total ? $offset+$limit : $total;
-
-    $url = "?menu=$module_name&date_from=$date_ini&date_to=$date_fin&extensions=$ext&calls=$calls_io&di=$date_ini&df=$date_fin";
-    $smarty->assign("url", $url);
+*/
+    //$url = "?menu=$module_name&date_from=$date_ini&date_to=$date_fin&extensions=$ext&calls=$calls_io&di=$date_ini&df=$date_fin";
+    //$smarty->assign("url", $url);
     
 /*
     $arrResult = $pExtention->ObtainExtention($limit, $offset, $date_ini2, $date_fin2, $ext2, $calls_io);
@@ -371,6 +441,23 @@ function redondear_dos_decimal($valor)
 
     return $float_redondeado;
 } 
+
+function loadTrunks($pDB_ext)
+{
+    //Array ( [0] => Array ( [0] => OUT_1 [1] => ZAP/g0 )
+    //        [1] => Array ( [0] => OUT_2 [1] => ZAP/g1 )
+    //        [2] => Array ( [0] => OUT_3 [1] => ZAP/g2 ) 
+
+    include_once "libs/paloSantoTrunk.class.php";
+
+    $arrTrunksTemp = getTrunks($pDB_ext);
+    $arrTrunk = array();
+    foreach($arrTrunksTemp as $key => $arr){
+        $arrTrunk[ $arr[1] ] = $arr[1]; 
+    }
+
+    return $arrTrunk;
+}
 
 function getParameter($parameter)
 {
