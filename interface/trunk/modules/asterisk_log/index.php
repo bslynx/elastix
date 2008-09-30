@@ -36,8 +36,22 @@ function _moduleContent(&$smarty, $module_name)
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
     include_once "modules/$module_name/libs/paloSantoAsteriskLogs.class.php";
+
+    // incluir el archivo de idioma de acuerdo al que este seleccionado
+    // si el archivo de idioma no existe incluir el idioma por defecto
+    $lang=get_language();
+    $script_dir=dirname($_SERVER['SCRIPT_FILENAME']);
+    $lang_file="modules/$module_name/lang/$lang.lang";
+
+    if (file_exists("$script_dir/$lang_file"))
+        include_once($lang_file);
+    else
+        include_once("modules/$module_name/lang/en.lang");
+
+
     global $arrConf;
     global $arrLang;
+    global $arrLangModule;
 
     //folder path for custom templates
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
@@ -50,7 +64,7 @@ function _moduleContent(&$smarty, $module_name)
     switch($accion)
     {
         default:
-            $content = report_AsteriskLogs($smarty, $module_name, $local_templates_dir, $arrLang);
+            $content = report_AsteriskLogs($smarty, $module_name, $local_templates_dir, array_merge($arrLang, $arrLangModule));
             break;
     }
 
@@ -66,21 +80,57 @@ function report_AsteriskLogs($smarty, $module_name, $local_templates_dir, $arrLa
                                             "INPUT_EXTRA_PARAM"      => NULL,
                                             "VALIDATION_TYPE"        => "ereg",
                                             "VALIDATION_EXTRA_PARAM" => '^[[:digit:]]{4}-[[:digit:]]{2}-[[:digit:]]{2}$'),
+
+            "busqueda"          => array(
+                                            "LABEL"                  => $arrLang['Search string'],
+                                            "REQUIRED"               => "no",
+                                            "INPUT_TYPE"             => "TEXT",
+                                            'VALIDATION_TYPE'           =>  'text',
+                                            'INPUT_EXTRA_PARAM'         =>  '',
+                                            'VALIDATION_EXTRA_PARAM'    =>  '',
+            ),
             "offset"            => array(   "LABEL"                  => $arrLang["offset"],
                                             "REQUIRED"               => "no",
-                                            "INPUT_TYPE"             => "hidden",
+                                            "INPUT_TYPE"             => "HIDDEN",
+                                            "INPUT_EXTRA_PARAM"      => NULL,
+                                            "VALIDATION_TYPE"        => "ereg",
+                                            "VALIDATION_EXTRA_PARAM" => '^[[:digit:]]+$'),
+
+            /* Variables requeridas para seguir la pista de la última búsqueda */
+            "ultima_busqueda"          => array(
+                                            "LABEL"                  => $arrLang['Search string'],
+                                            "REQUIRED"               => "no",
+                                            "INPUT_TYPE"             => "HIDDEN",
+                                            'VALIDATION_TYPE'           =>  'text',
+                                            'INPUT_EXTRA_PARAM'         =>  '',
+                                            'VALIDATION_EXTRA_PARAM'    =>  '',),
+            "ultimo_offset"            => array(   "LABEL"                  => $arrLang["offset"],
+                                            "REQUIRED"               => "no",
+                                            "INPUT_TYPE"             => "HIDDEN",
                                             "INPUT_EXTRA_PARAM"      => NULL,
                                             "VALIDATION_TYPE"        => "ereg",
                                             "VALIDATION_EXTRA_PARAM" => '^[[:digit:]]+$'),
                                 );
 
     $smarty->assign("SHOW", $arrLang["Show"]);
+    $smarty->assign("SEARCHNEXT", $arrLang['Search']);
     $field_pattern = getParameter("filter");
+    $busqueda = getParameter('busqueda');
+    if (is_null($busqueda) || trim($busqueda) == '') $busqueda = '';
+
+    /* Última búsqueda, si existe */
+    $sUltimaBusqueda = getParameter('ultima_busqueda');
+    $iUltimoOffset = getParameter('ultimo_offset');
+    if (is_null($sUltimaBusqueda) || $sUltimaBusqueda == '' ||
+        is_null($iUltimoOffset) || !ereg('^[[:digit:]]+$', $iUltimoOffset)) {
+        $sUltimaBusqueda = NULL;
+        $iUltimoOffset = NULL;
+    }
 
     $pAsteriskLogs = new paloSantoAsteriskLogs($pDB);
 
     $listaFechas = $pAsteriskLogs->astLog->listarFechas();
-    
+
     if (!ereg($arrFormElements['filter']['VALIDATION_EXTRA_PARAM'], $field_pattern))
         $field_pattern = $listaFechas[count($listaFechas) - 1];
     $_POST['filter'] = $field_pattern;
@@ -90,63 +140,17 @@ function report_AsteriskLogs($smarty, $module_name, $local_templates_dir, $arrLa
 
     $arrFormElements['filter']['INPUT_EXTRA_PARAM'] = $comboFechas;
     $oFilterForm = new paloForm($smarty, $arrFormElements);
-    $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl", "", $_POST);
+
+    if ($busqueda != '') $_POST['busqueda'] = $busqueda;
 
     $oGrid  = new paloSantoGrid($smarty);
 
-/*
-    //Paginacion
-    $limit  = 15 * 128;
-    $total  = $total_datos[0];
-
-    $offset = $oGrid->getOffSet(
-        $limit,
-        $total,
-        (isset($_GET['nav'])) ? $_GET['nav'] : NULL,
-        (isset($_GET['start'])) ? $_GET['start'] : NULL);
-
-    $end    = ($offset+$limit)<=$total ? $offset+$limit : $total;
-
-    $url = "?menu=$module_name&filter=$field_pattern";
-    $smarty->assign("url", $url);
-    //Fin Paginacion
-
-    $arrResult =$pAsteriskLogs->ObtainAsteriskLogs($limit, $offset, $field_pattern);
-    $posLog = $pAsteriskLogs->astLog->obtenerPosicionMensaje();
-    $arrData = null;
-    if(is_array($arrResult) && $total>0){
-        foreach($arrResult as $key => $value){
-            $arrTmp[0] = $value['fecha'];
-            $arrTmp[1] = $value['tipo'];
-            $arrTmp[2] = $value['linea'];
-
-            $arrData[] = $arrTmp;
-        }
-    }
-
-    $arrGrid = array("title"    => "Asterisk Logs",
-                        "icon"     => "images/list.png",
-                        "width"    => "99%",
-                        "start"    => ($total==0) ? 0 : $offset + 1,
-                        "end"      => $end,
-                        "total"    => $total,
-                        "columns"  => array(0 => array("name"      => 'Date',
-                                                    "property1" => ""),
-
-                                            1 => array("name"      => 'Type',
-                                                    "property1" => ""),
-                                            2 => array("name"      => 'Message',
-                                                    "property1" => "")
-                                        )
-                    );
-
-*/
     $iNumLineasPorPagina = 30;
     $iEstimadoBytesPagina = $iNumLineasPorPagina * 128;
 
     $iOffsetVerdadero = getParameter('offset');
     if (is_null($iOffsetVerdadero) || !ereg('^[[:digit:]]+$', $iOffsetVerdadero)) {
-        $iOffsetVerdadero = 0;
+        $iOffsetVerdadero = 0;        
     }
     $totalBytes = $total_datos[0];
     if ($iOffsetVerdadero >= $totalBytes) $iOffsetVerdadero = 0;
@@ -194,11 +198,41 @@ function report_AsteriskLogs($smarty, $module_name, $local_templates_dir, $arrLa
         break;
     }
 
-    $url = "?menu=$module_name&filter=$field_pattern&offset=$offset";
+    // Buscar la cadena de texto indicada, y modificar offset si se encuentra
+    if (isset($_POST['searchnext'])  && $busqueda != '') {
+        $pAsteriskLogs->astLog->posicionarMensaje($field_pattern, $offset);
+        $posBusqueda = $pAsteriskLogs->astLog->buscarTextoMensaje($busqueda);
+        if (!is_null($posBusqueda)) {
+            $offset = $posBusqueda[1];
+            $smarty->assign('SEARCHNEXT', $arrLang['Search next']);
+            $_POST['ultima_busqueda'] = $busqueda;
+            $_POST['ultimo_offset'] = $offset;
+            
+            // Si el offset anterior indicado es idéntico al offset recién encontrado
+            // y la cadena de búsqueda es también idéntica, se asume que se ha
+            // pedido una búsqueda de la siguiente ocurrencia.
+            if (!is_null($sUltimaBusqueda) && !is_null($iUltimoOffset) && 
+                $offset == $iUltimoOffset && $sUltimaBusqueda == $busqueda) {
+                $pAsteriskLogs->astLog->posicionarMensaje($field_pattern, $offset);
+                $pAsteriskLogs->astLog->siguienteMensaje(); // Sólo para ignorar primera ocurrencia
+                $posBusqueda = $pAsteriskLogs->astLog->buscarTextoMensaje($busqueda);
+                if (!is_null($posBusqueda)) {
+                    $offset = $posBusqueda[1];
+                    $_POST['ultimo_offset'] = $offset;
+                }
+            }
+        } else {
+        }
+    }
+
+    $url = "?menu=$module_name&filter=$field_pattern&offset=$offset&busqueda=$busqueda&ultima_busqueda=".
+        (isset($_POST['ultima_busqueda']) ? $_POST['ultima_busqueda'] : '')."&ultimo_offset=&".
+        (isset($_POST['ultimo_offset']) ? $_POST['ultimo_offset'] : '');
     $smarty->assign("url", $url);
     //Fin Paginacion
 
-    $arrResult =$pAsteriskLogs->ObtainAsteriskLogs(10 * $iEstimadoBytesPagina, $offset, $field_pattern);
+    $arrResult =$pAsteriskLogs->ObtainAsteriskLogs(10 * $iEstimadoBytesPagina, $offset, $field_pattern,
+        (($busqueda != '') ? $busqueda : NULL));
     $arrResult = array_slice($arrResult, 0, $iNumLineasPorPagina);
     $posLog = $pAsteriskLogs->astLog->obtenerPosicionMensaje();
     $arrData = null;
@@ -231,8 +265,8 @@ function report_AsteriskLogs($smarty, $module_name, $local_templates_dir, $arrLa
                                         )
                     );
 
-
-
+    $_POST['offset'] = $offset;
+    $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl", "", $_POST);
     $oGrid->showFilter(trim($htmlFilter));
     $contenidoModulo = 
         "<form  method='POST' style='margin-bottom:0;' action=$url>".

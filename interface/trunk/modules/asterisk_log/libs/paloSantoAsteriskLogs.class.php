@@ -62,7 +62,7 @@ class paloSantoAsteriskLogs {
         return array($total);
     }
 
-    function ObtainAsteriskLogs($limit, $offset, $sFecha)
+    function ObtainAsteriskLogs($limit, $offset, $sFecha, $sCadenaHighlight = NULL)
     {
         $iBytesLeidos = 0;
         $lineas = array();
@@ -71,6 +71,7 @@ class paloSantoAsteriskLogs {
         while ($bContinuar) {
             $pos = $this->astLog->obtenerPosicionMensaje();
             $s = $this->astLog->siguienteMensaje();            
+            // Se desactiva la condición porque ya no todas las líneas empiezan con corchete
             if (!(count($lineas) == 0 && !is_null($s) && $s{0} != '[')) {
                 $regs = NULL;
                 if (ereg('^\[([[:alnum:][:space:]\:]+)\][[:space:]]+([[:alpha:]]+)(\[[[:digit:]]+\][[:space:]]+[^[:space:]]+\.c:)[[:space:]]+(.*)$', $s, $regs)) {
@@ -81,15 +82,22 @@ class paloSantoAsteriskLogs {
                         'origen' => $regs[3],
                         'linea' => $regs[4],
                     );
-                    $lineas[] = $l;
                 } else {
-                    $lineas[] = array(
+                    $l = array(
                         'offset'=> $pos[1],
                         'fecha' =>  '',
                         'tipo'  =>  '',
+                        'origen'=> '',
                         'linea' =>  $s,
                     );
                 }
+                $l['linea'] = htmlentities($l['linea']);
+                //$l['linea'] = str_replace("\n", "<br/>", $l['linea']);
+                if (!is_null($sCadenaHighlight) && trim($sCadenaHighlight) != '') {
+                    $l['linea'] = str_replace($sCadenaHighlight, "<span style=\"background:#ffff00;\">$sCadenaHighlight</span>", $l['linea']);
+                }
+                $l['linea'] = '<pre>'.$l['linea'].'</pre>';
+                $lineas[] = $l;
             }
             $pos = $this->astLog->obtenerPosicionMensaje();
             $iBytesLeidos = $pos[1] - $offset;

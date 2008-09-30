@@ -40,6 +40,11 @@ class LogParser_Full
 			$listaArchivos = array_reverse($listaArchivos);
 			foreach ($listaArchivos as $sNombreArchivo) {
 				//print "DEBUG: analizando archivo $sNombreArchivo...\n";
+				
+				// Saltarse archivos vacíos
+				$iTamanioArchivo = filesize($sNombreArchivo);
+				if ($iTamanioArchivo === 0) continue;
+
 				$hArchivo = fopen($sNombreArchivo, 'rb');
 				if ($hArchivo !== FALSE) {
 					$infoLog = array(
@@ -85,7 +90,8 @@ class LogParser_Full
 
 						// Leer la fecha en el punto medio. Si la línea leída no empieza con
 						// una fecha, es porque el fseek() cayó en la mitad de una línea, 
-						// en cuyo caso el siguiente fgets() debe dar una línea completa
+						// en cuyo caso el siguiente fgets() debe dar una línea completa.
+						// TODO: esta suposición se rompe si mensaje en múltiples líneas.
 						$sFechaPuntoMedio = NULL;
 						fseek($hArchivo, $iPuntoMedio, SEEK_SET);
 						while (is_null($sFechaPuntoMedio) && !feof($hArchivo)) {
@@ -188,6 +194,7 @@ class LogParser_Full
 			//print_r($this->_infoArchivos);
 			foreach ($this->_infoArchivos as $infoArchivo) {
 				foreach ($infoArchivo['fechas'] as $k => $v) {
+					if (trim($k) == '') continue;
 					if (!isset($this->_infoFechas[$k])) $this->_infoFechas[$k] = array();
 					$v['ruta'] = $infoArchivo['ruta'];
 					$this->_infoFechas[$k][] = $v;
@@ -306,6 +313,20 @@ class LogParser_Full
 		if (!is_resource($this->_hArchivo)) return NULL;
 		$sLinea = fgets($this->_hArchivo);
 		$iPosArchivo = ftell($this->_hArchivo);
+
+        // Leer tentativamente las siguientes líneas. Si las líneas no empiezan con corchete,
+        // se asume que son continuación del mensaje anterior y se concatenan.
+        while (($sContinuacion = fgets($this->_hArchivo)) !== FALSE) {
+            if ($sContinuacion{0} == '[') {
+                // Siguiente línea es nuevo mensaje
+                fseek($this->_hArchivo, $iPosArchivo, SEEK_SET);
+                break;
+            } else {
+                // Siguiente línea es continuación de mensaje anterior
+                $sLinea .= $sContinuacion;
+                $iPosArchivo = ftell($this->_hArchivo);
+            }
+        }
 		
 		// Construir offset virtual a partir de archivo actual y posición		
 		$infoFecha = $this->_infoFechas[$this->_pos_Fecha];
@@ -348,6 +369,37 @@ class LogParser_Full
 		$this->_pos_OffsetMsg = $iOffsetVirtual;
 
 		return $sLinea;
+	}
+	
+	/**
+	 * Procedimiento que busca la primera ocurrencia de la cadena indicada a 
+	 * partir de la posición actual, hasta el límite de la fecha indicada.
+	 * Actualmente sólo busca hacia delante.
+	 *
+	 * @param   string  $text   Cadena que se busca
+	 *
+	 * @return  mixed   NULL si no se encuentra la cadena, o la posición de
+	 * la primera línea donde se encontró la cadena.
+	 */
+	function buscarTextoMensaje($text)
+	{
+	    // Guardar posición vieja
+	    $tuplaPosVieja = $this->obtenerPosicionMensaje();
+	    $tuplaPosTexto = NULL;
+	    
+        do {
+            $tuplaPosTexto = $this->obtenerPosicionMensaje();
+            $sLinea = $this->siguienteMensaje();
+            if (is_null($sLinea)) {
+                $tuplaPosTexto = NULL;
+                break;
+            }
+            if (strpos($sLinea, $text) !== FALSE) break;
+        } while(1);
+
+        // Restaurar posición anterior
+        $this->posicionarMensaje($tuplaPosVieja[0], $tuplaPosVieja[1]);
+	    return $tuplaPosTexto;
 	}
 }
 

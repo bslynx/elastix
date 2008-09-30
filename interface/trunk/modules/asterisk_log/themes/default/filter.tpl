@@ -4,4 +4,12 @@
         <td width="12%" align="left" nowrap>{$filter.INPUT}</td>
         <td width="12%" align="center"><input class="button" type="submit" name="show" value="{$SHOW}"></td>
     </tr>
+    <tr class="letra12">
+        <td align="right">{$busqueda.LABEL}:</td>
+        <td align="left">{$busqueda.INPUT}</td>
+        <td width="12%" align="center"><input class="button" type="submit" name="searchnext" value="{$SEARCHNEXT}"></td>
+    </tr>
 </table>
+{$ultima_busqueda.INPUT}
+{$ultimo_offset.INPUT}
+{$offset.INPUT}
