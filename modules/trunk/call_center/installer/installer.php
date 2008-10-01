@@ -49,7 +49,7 @@ if (file_exists("$tmpDir/installer/call_center.sql"))
 
     //STEP 2: Dialer process
     exec("sudo -u root chmod 777 /opt/",$arrConsole,$flagStatus);
-    exec("mkdir /opt/elastix/",$arrConsole,$flagStatus);
+    exec("mkdir -p /opt/elastix/",$arrConsole,$flagStatus);
     exec("mv $tmpDir/dialer_process/dialer/ /opt/elastix/",$arrConsole,$flagStatus);
     exec("sudo -u root chmod 755 /opt/",$arrConsole,$flagStatus);
  

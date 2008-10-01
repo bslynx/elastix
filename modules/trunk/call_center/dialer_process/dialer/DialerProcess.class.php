@@ -25,7 +25,7 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: DialerProcess.class.php,v 1.19 2008/09/15 21:43:02 alex Exp $ */
+  $Id: DialerProcess.class.php,v 1.24 2008/10/01 02:10:05 alex Exp $ */
 require_once('AbstractProcess.class.php');
 require_once 'DB.php';
 require_once "phpagi-asmanager-elastix.php";
@@ -399,6 +399,49 @@ class DialerProcess extends AbstractProcess
             }
         }
 
+
+		// Remover llamadas viejas luego de 5 * 60 segundos de espera sin respuesta
+		$listaClaves = array_keys($this->_infoLlamadas['llamadas']);
+		foreach ($listaClaves as $k ) {
+			$tupla = $this->_infoLlamadas['llamadas'][$k];
+			if (is_null($tupla->OriginateEnd)) {
+				$iEspera = time() - $tupla->OriginateStart;
+				if ($iEspera > 5 * 60) {
+					$this->oMainLog->output("ERR:llamada $k espera respuesta desde hace $iEspera segundos, se elimina.");
+	                $idCampania = $this->_infoLlamadas['llamadas'][$k]->id_campaign;
+	                $infoCampania = $this->_leerCampania($idCampania);
+	                if (!is_null($infoCampania)) {
+						// Marcar estado de fallo con esta llamada
+		                $result = $this->_dbConn->query(
+		                    'UPDATE calls SET status = ?, fecha_llamada = ?, start_time = NULL, end_time = NULL '.
+		                        'WHERE id_campaign = ? AND id = ?',
+		                    array('Failure', date('Y-m-d H:i:s'),
+		                        $infoCampania->id, $this->_infoLlamadas['llamadas'][$k]->id));
+		                if (DB::isError($result)) {
+		                    $this->oMainLog->output(
+		                        "ERR: no se puede actualizar llamada con limpieza de llamadas perdidas ".
+		                        "[id_campaign=$infoCampania->id, id=".$this->_infoLlamadas['llamadas'][$k]->id."]".
+		                        $result->getMessage());
+		                }
+
+						// Quitar llamada de lista de llamadas monitoreadas
+	                	if (!isset($this->_numLlamadasOriginadas[$infoCampania->queue])) {
+	                		$this->oMainLog->output("ERR: cola {$infoCampania->queue} no se encuentra entre llamadas originadas!");
+	                	} elseif ($this->_numLlamadasOriginadas[$infoCampania->queue] <= 0) {
+			                // Esta situación no debería ocurrir nunca
+			            	$this->oMainLog->output("ERR: (limpieza de llamadas perdidas) ha encontrado llamada ".
+			                    "propia, pero ".$this->_numLlamadasOriginadas[$infoCampania->queue].
+			                    " llamadas en espera de respuesta! \n");
+	                	} else {
+	                		$this->_numLlamadasOriginadas[$infoCampania->queue]--;
+	                	}
+	                }
+	                
+	                unset($this->_infoLlamadas['llamadas'][$k]);
+				}
+			}
+		}
+
         // Si se habilita debug, se muestra estado actual de las llamadas
         if ($iTimestamp - $this->_iUltimoDebug > 30) {
         	$this->_iUltimoDebug = $iTimestamp;
@@ -459,7 +502,15 @@ class DialerProcess extends AbstractProcess
         }
         if ($this->DEBUG) {
             if ($this->_numLlamadasOriginadas[$infoCampania->queue] > 0)
-                $this->oMainLog->output("DEBUG: (cola $infoCampania->queue) todavia quedan ".$this->_numLlamadasOriginadas[$infoCampania->queue]." llamadas pendientes de OriginateResponse!");
+                $this->oMainLog->output("DEBUG: (cola $infoCampania->queue) todavia quedan ".
+                	$this->_numLlamadasOriginadas[$infoCampania->queue].
+					" llamadas pendientes de OriginateResponse!");
+			foreach ($this->_infoLlamadas['llamadas'] as $k => $tupla) {
+				if (is_null($tupla->OriginateEnd) && $tupla->id_campaign == $infoCampania->id) {
+					$iEspera = time() - $tupla->OriginateStart;
+					$this->oMainLog->output("DEBUG:\tllamada $k espera respuesta desde hace $iEspera segundos.");
+				}
+			}
         }
         if ($iNumLlamadasColocar > $this->_numLlamadasOriginadas[$infoCampania->queue])
             $iNumLlamadasColocar -= $this->_numLlamadasOriginadas[$infoCampania->queue];
@@ -547,7 +598,7 @@ class DialerProcess extends AbstractProcess
 						"\tContexto.... $infoCampania->context\n" .
 						"\tTrunk....... $infoCampania->trunk\n" .
 						"\tPlantilla... ".$datosTrunk['TRUNK']."\n" .
-						"\tCaller ID... ".(isset($datosTrunk['CID']) ? $datosTrunk['CID'] : "(no definido)").
+						"\tCaller ID... ".(isset($datosTrunk['CID']) ? $datosTrunk['CID'] : "(no definido)")."\n".
 						"\tCadena de marcado $sCanalTrunk");
                 }
                 $resultado = $this->_astConn->Originate(
@@ -561,6 +612,10 @@ class DialerProcess extends AbstractProcess
                     $this->iniciarConexionAsterisk();
                 }
                 if ($resultado['Response'] == 'Success') {
+                    // Guardar el momento en que se originó la llamada
+                    $listaLlamadas[$sKey]->OriginateStart = time();
+                    $listaLlamadas[$sKey]->OriginateEnd = NULL;
+                    
                     $this->_numLlamadasOriginadas[$infoCampania->queue]++;
                     $bErrorLocked = FALSE;
                     do {
@@ -765,6 +820,7 @@ class DialerProcess extends AbstractProcess
         if (!isset($params['ActionID'])) return FALSE;
         $sKey = $params['ActionID'];
         if (isset($this->_infoLlamadas['llamadas'][$sKey])) {
+            $this->_infoLlamadas['llamadas'][$sKey]->OriginateEnd = time();
             $idCampaign = $this->_infoLlamadas['llamadas'][$sKey]->id_campaign;
             if (isset($this->_infoLlamadas['campanias'][$idCampaign])) {
                 $infoCampania = $this->_infoLlamadas['campanias'][$idCampaign];
@@ -815,8 +871,22 @@ class DialerProcess extends AbstractProcess
                     $this->_infoLlamadas['llamadas'][$sKey]->enterqueue_timestamp = NULL;
                     $this->_infoLlamadas['llamadas'][$sKey]->start_timestamp = NULL;
                     $this->_infoLlamadas['llamadas'][$sKey]->end_timestamp = NULL;
+                }
+                if ($this->DEBUG) {
+                	$iSegundosEspera = 
+                		$this->_infoLlamadas['llamadas'][$sKey]->OriginateEnd - 
+                		$this->_infoLlamadas['llamadas'][$sKey]->OriginateStart;
+                	$this->oMainLog->output("DEBUG: llamada colocada luego de $iSegundosEspera s. de espera."); 
                 }                    
             } else {
+				// Reportar tiempo transcurrido hasta fallo
+                if ($this->DEBUG) {
+                	$iSegundosEspera = 
+                		$this->_infoLlamadas['llamadas'][$sKey]->OriginateEnd - 
+                		$this->_infoLlamadas['llamadas'][$sKey]->OriginateStart;
+                	$this->oMainLog->output("DEBUG: llamada falla en ser colocada luego de $iSegundosEspera s. de espera."); 
+                }                    
+
                 // Remover llamada que no se pudo colocar
                 unset($this->_infoLlamadas['llamadas'][$sKey]);
                 $sMensaje = print_r($params, TRUE);
