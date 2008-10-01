@@ -30,10 +30,7 @@
     </tr>
 </table>
 <table class="tabForm" style="font-size: 16px;" width="100%" border="0">
-    <tr class="letra12">
-<!--         <td align="center">{$ruta_img}</td> -->
         {$ruta_img}
-    </tr>
 </table>
 <input type="hidden" name="nav" value="{$nav_value}" />
 <input type="hidden" name="start" value="{$start_value}" />

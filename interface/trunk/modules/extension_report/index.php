@@ -284,7 +284,7 @@ function report_Extention($smarty, $module_name, $local_templates_dir, $arrLang,
         if($numIn != 0) $VALUE = (int)( 100*( $numIn/$numTot ) );
         else $VALUE = 0;
 
-        $ruta_img = "<td align='center'><img src='modules/{$module_name}/libs/grafic.php?du={$VALUE}%&in={$numIn}&out={$numOut}&ext={$ext2}&tot={$numTot}' border='0'></td>";
+        $ruta_img = "<tr class='letra12'><td align='center'><img src='modules/{$module_name}/libs/grafic.php?du={$VALUE}%&in={$numIn}&out={$numOut}&ext={$ext2}&tot={$numTot}' border='0'></td></tr>";
         $smarty->assign("ruta_img", $ruta_img);
     }
     else if($option == "Queue"){
@@ -292,7 +292,7 @@ function report_Extention($smarty, $module_name, $local_templates_dir, $arrLang,
         $smarty->assign("SELECTED_2","selected");
         $smarty->assign("SELECTED_3","");
 
-        $ruta_img = "<td align='center'><img src='modules/{$module_name}/libs/grafic_queue.php?queue={$ext2}&dti={$date_ini2}&dtf={$date_fin2}' border='0'></td>";
+        $ruta_img = "<tr class='letra12'><td align='center'><img src='modules/{$module_name}/libs/grafic_queue.php?queue={$ext2}&dti={$date_ini2}&dtf={$date_fin2}' border='0'></td></tr>";
         $smarty->assign("ruta_img", $ruta_img);
     }
     else if($option == "Trunk"){
@@ -303,11 +303,12 @@ function report_Extention($smarty, $module_name, $local_templates_dir, $arrLang,
         $trunkT = getParameter("trunks");
         $smarty->assign("trunks", $trunkT);
 
-        $ruta_img = "<td align='center'><img src='modules/{$module_name}/libs/grafic_trunk.php?trunk={$trunkT}&dti={$date_ini2}&dtf={$date_fin2}' border='0'></td>";
+        $ruta_img  = "<tr class='letra12'><td align='center'><img src='modules/{$module_name}/libs/grafic_trunk.php?trunk={$trunkT}&dti={$date_ini2}&dtf={$date_fin2}' border='0'></td></tr>";
+        $ruta_img .= "<tr class='letra12'><td align='center'><img src='modules/{$module_name}/libs/grafic_trunk2.php?trunk={$trunkT}&dti={$date_ini2}&dtf={$date_fin2}' border='0'></td></tr>";
         $smarty->assign("ruta_img", $ruta_img);
     }
     else{//default
-        $ruta_img = "<td align='center'><img src='modules/{$module_name}/libs/grafic.php?du=0%&in=0&out=0&ext=0&tot=0' border='0'><td>";
+        $ruta_img = "<tr class='letra12'><td align='center'><img src='modules/{$module_name}/libs/grafic.php?du=0%&in=0&out=0&ext=0&tot=0' border='0'><td></tr>";
         $smarty->assign("ruta_img", $ruta_img);
     }
 /*
