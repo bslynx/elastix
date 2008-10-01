@@ -40,7 +40,7 @@ $datos_conexion['password'] = "asterisk";
 $datos_conexion['locate'] = "";
 $oInstaller = new Installer();
 
-if (file_exists("$tmpDir/installer/call_center.sql"))
+if (file_exists($path_script_db))
 {
     //STEP 1: Create database call_center
     $return=0;
@@ -50,7 +50,7 @@ if (file_exists("$tmpDir/installer/call_center.sql"))
     //STEP 2: Dialer process
     exec("sudo -u root chmod 777 /opt/",$arrConsole,$flagStatus);
     exec("mkdir -p /opt/elastix/",$arrConsole,$flagStatus);
-    exec("mv $tmpDir/dialer_process/dialer/ /opt/elastix/",$arrConsole,$flagStatus);
+    exec("mv -f $tmpDir/dialer_process/dialer/ /opt/elastix/",$arrConsole,$flagStatus);
     exec("sudo -u root chmod 755 /opt/",$arrConsole,$flagStatus);
  
     exec("sudo -u root chmod 777 /etc/rc.d/init.d/",$arrConsole,$flagStatus);
