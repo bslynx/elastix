@@ -49,8 +49,8 @@ if (file_exists($path_script_db))
 
     //STEP 2: Dialer process
     exec("sudo -u root chmod 777 /opt/",$arrConsole,$flagStatus);
-    exec("mkdir -p /opt/elastix/",$arrConsole,$flagStatus);
-    exec("mv -f $tmpDir/dialer_process/dialer/ /opt/elastix/",$arrConsole,$flagStatus);
+    exec("mkdir -p /opt/elastix/dialer/",$arrConsole,$flagStatus);
+    exec("mv -f $tmpDir/dialer_process/dialer/* /opt/elastix/dialer/",$arrConsole,$flagStatus);
     exec("sudo -u root chmod 755 /opt/",$arrConsole,$flagStatus);
  
     exec("sudo -u root chmod 777 /etc/rc.d/init.d/",$arrConsole,$flagStatus);
