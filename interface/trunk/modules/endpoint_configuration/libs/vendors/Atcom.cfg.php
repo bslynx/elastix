@@ -2,7 +2,7 @@
 function templatesFileAtcom($ipAdressServer)
 {
     $content= <<<TEMP
-<<VOIP CONFIG FILE>>Version:2.0002
+<<VOIP CONFIG FILE>>Version:2.0002                            
 
 <GLOBAL CONFIG MODULE>
 Static IP          :
@@ -12,6 +12,7 @@ Default Protocol   :2
 Primary DNS        :
 Alter DNS          :
 DHCP Mode          :1
+DHCP Dns           :1
 Domain Name        :
 Host Name          :VOIP
 Pppoe Mode         :0
@@ -19,7 +20,7 @@ HTL Start Port     :10000
 HTL Port Number    :200
 SNTP Server        :$ipAdressServer
 Enable SNTP        :1
-Time Zone          :22
+Time Zone          :12
 Enable Daylight    :0
 SNTP Time Out      :60
 MMI Set            :1
@@ -34,7 +35,7 @@ Dial End With #    :1
 Dial Fixed Length  :0
 Fixed Length       :11
 Dial With Timeout  :1
-Dial Timeout value :3
+Dial Timeout value :5
 Poll Sequence      :0
 Accept Any Call    :1
 Phone Prefix       :
@@ -61,21 +62,21 @@ P1 Enable Record   :0
 P1 Busy N/A Line   :0
 
 <DSP CONFIG MODULE>
-Signal Standard    :11
+Signal Standard    :3
 Handdown Time      :200
 G729 Payload Length:1
-VAD                :1
+VAD                :0
 Ring Type          :1
 Dtmf Payload Type  :101
 Disable Handfree   :0
 --Port Config--    :
-P1 Output Vol      :1
-P1 Input Vol       :1
-P1 HandFree Vol    :2
-P1 RingTone Vol    :6
-P1 Codec           :17
+P1 Output Vol      :7
+P1 Input Vol       :3
+P1 HandFree Vol    :4
+P1 RingTone Vol    :5
+P1 Codec           :1
 P1 Voice Record    :0
-P1 Record Playing  :0
+P1 Record Playing  :1
 P1 UserDef Voice   :0
 
 <SIP CONFIG MODULE>
@@ -86,7 +87,7 @@ Stun Effect Time   :50
 SIP  Differv       :0
 DTMF Mode          :1
 Extern Address     :
-Url Convert        :1
+Url Convert        :0
 --SIP Line List--  :
 SIP1 Phone Number  :
 SIP1 Display Name  :
@@ -104,15 +105,15 @@ SIP1 Signal Enc    :0
 SIP1 Signal Key    :
 SIP1 Media Enc     :0
 SIP1 Media Key     :
-SIP1 Local Domain  :$ipAdressServer
+SIP1 Local Domain  :
 SIP1 Fwd Service   :0
 SIP1 Fwd Number    :
 SIP1 Enable Detect :0
 SIP1 Detect TTL    :60
 SIP1 Server Type   :0
 SIP1 User Agent    :Voip Phone 1.0
-SIP1 PRACK         :1
-SIP1 KEEP AUTH     :1
+SIP1 PRACK         :0
+SIP1 KEEP AUTH     :0
 SIP1 Session Timer :0
 SIP1 DTMF Mode     :0
 SIP1 Use Stun      :0
@@ -120,6 +121,7 @@ SIP1 Via Port      :1
 SIP1 Subscribe     :0
 SIP1 Sub Expire    :300
 SIP1 Single Codec  :0
+SIP1 CLIR          :0
 SIP1 RFC Ver       :1
 SIP1 Use Mixer     :0
 SIP1 Mixer Uri     :
@@ -146,8 +148,8 @@ SIP2 Enable Detect :0
 SIP2 Detect TTL    :60
 SIP2 Server Type   :0
 SIP2 User Agent    :Voip Phone 1.0
-SIP2 PRACK         :1
-SIP2 KEEP AUTH     :1
+SIP2 PRACK         :0
+SIP2 KEEP AUTH     :0
 SIP2 Session Timer :0
 SIP2 DTMF Mode     :0
 SIP2 Use Stun      :0
@@ -155,6 +157,7 @@ SIP2 Via Port      :1
 SIP2 Subscribe     :0
 SIP2 Sub Expire    :300
 SIP2 Single Codec  :0
+SIP2 CLIR          :0
 SIP2 RFC Ver       :1
 SIP2 Use Mixer     :0
 SIP2 Mixer Uri     :
@@ -178,6 +181,7 @@ Enable   G.729     :0
 Pppoe User         :user123
 Pppoe Password     :password
 Pppoe Service      :ANY
+Pppoe Ip Address   :
 
 <MMI CONFIG MODULE>
 Telnet Port        :23
@@ -220,18 +224,18 @@ Enable In Access   :0
 Enable Out Access  :0
 
 <DHCP CONFIG MODULE>
-Enable DHCP Server :0
-Enable DNS Relay   :0
+Enable DHCP Server :1
+Enable DNS Relay   :1
 DHCP Update Flag   :0
 TFTP  Server       :0.0.0.0
 --DHCP List--      :
 Item1 name         :lan
-Item1 Start Ip     :192.168.10.2
-Item1 End Ip       :192.168.10.50
+Item1 Start Ip     :192.168.10.1
+Item1 End Ip       :192.168.10.30
 Item1 Param        :snmk=255.255.255.0:maxl=1440:rout=192.168.10.1:dnsv=192.168.10.1
 
 <NAT CONFIG MODULE>
-Enable Nat         :0
+Enable Nat         :1
 Enable Ftp ALG     :1
 Enable H323 ALG    :0
 Enable PPTP ALG    :1
@@ -240,6 +244,7 @@ Enable IPSec ALG   :1
 <PHONE CONFIG MODULE>
 Keypad Password    :123
 LCD Logo           :VOIP PHONE
+Time 12hours       :0
 Memory Key 1       :
 Memory Key 2       :
 Memory Key 3       :
@@ -271,7 +276,7 @@ VPN Server IP      :0.0.0.0
 VPN Server Port    :80
 Server Group ID    :VPN
 Server Area Code   :12345
-<<END OF FILE>>softkey3 value: *79
+<<END OF FILE>>
 TEMP;
 
     return $content;
@@ -352,21 +357,41 @@ $arrAtcom320 = array(
 
 function PrincipalFileAtcom530($DisplayName, $id_device, $secret, $ipAdressServer, $macAdress, $versionCfg)
 {
-   $versionCfg = isset($versionCfg)?$versionCfg:'2.0008';
+   $versionCfg = isset($versionCfg)?$versionCfg:'2.0002';
    $content=
-"<<VOIP CONFIG FILE>>Version:$versionCfg
+"<<VOIP CONFIG FILE>>Version:$versionCfg                         
 
 <GLOBAL CONFIG MODULE>
+Static IP          :
+Static NetMask     :
+Static GateWay     :
+Default Protocol   :2
+Primary DNS        :
+Alter DNS          :
 DHCP Mode          :1
+DHCP Dns           :1
 SNTP Server        :$ipAdressServer
 Enable SNTP        :1
+Time Zone          :12
+Enable Daylight    :0
 
 <LAN CONFIG MODULE>
+Lan Ip             :192.168.10.1
+Lan NetMask        :255.255.255.0
 Bridge Mode        :1
 
-<DHCP CONFIG MODULE>
-DHCP Update Flag   :1
-TFTP  Server       :$ipAdressServer
+<TELE CONFIG MODULE>
+Dial End With #    :1
+Dial Fixed Length  :0
+Fixed Length       :11
+Dial With Timeout  :1
+Dial Timeout value :5
+
+<DSP CONFIG MODULE>
+VAD                :0
+Ring Type          :1
+--Port Config--    :
+P1 Codec           :1
 
 <SIP CONFIG MODULE>
 SIP  Port          :5060
@@ -376,7 +401,7 @@ Stun Effect Time   :50
 SIP  Differv       :0
 DTMF Mode          :1
 Extern Address     :
-Url Convert        :1
+Url Convert        :0
 --SIP Line List--  :
 SIP1 Phone Number  :$id_device
 SIP1 Display Name  :$DisplayName
@@ -394,15 +419,15 @@ SIP1 Signal Enc    :0
 SIP1 Signal Key    :
 SIP1 Media Enc     :0
 SIP1 Media Key     :
-SIP1 Local Domain  :$ipAdressServer
+SIP1 Local Domain  :
 SIP1 Fwd Service   :0
 SIP1 Fwd Number    :
 SIP1 Enable Detect :0
 SIP1 Detect TTL    :60
 SIP1 Server Type   :0
 SIP1 User Agent    :Voip Phone 1.0
-SIP1 PRACK         :1
-SIP1 KEEP AUTH     :1
+SIP1 PRACK         :0
+SIP1 KEEP AUTH     :0
 SIP1 Session Timer :0
 SIP1 DTMF Mode     :0
 SIP1 Use Stun      :0
@@ -410,15 +435,16 @@ SIP1 Via Port      :1
 SIP1 Subscribe     :0
 SIP1 Sub Expire    :300
 SIP1 Single Codec  :0
+SIP1 CLIR          :0
 SIP1 RFC Ver       :1
 SIP1 Use Mixer     :0
 SIP1 Mixer Uri     :
 
 <AUTOUPDATE CONFIG MODULE>
-Download Username  :
-Download password  :
+Download Username  :user
+Download password  :pass
 Download Server IP :$ipAdressServer
-Config File Name   :atc$macAdress.cfg
+Config File Name   :atc\$MAC.cfg
 Config File Key    :
 Download Protocol  :2
 Download Mode      :1
