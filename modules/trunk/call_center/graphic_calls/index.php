@@ -98,7 +98,7 @@ function _moduleContent(&$smarty, $module_name)
     if(  isset( $_GET['exportcsv'] ) && $_GET['exportcsv']=='yes' ) {
 	return $oGrid->fetchGridCSV($arrGrid, $arrData);
     }else {
-	$oGrid->showFilter($htmlFilter);
+	//$oGrid->showFilter($htmlFilter);
 	return $contenidoModulo;//$oGrid->fetchGrid($arrGrid, $arrData,$lang);
     }
 
@@ -262,15 +262,18 @@ function listadoCalls($pDB, $smarty, $module_name, $local_templates_dir,&$oGrid,
     
     //Armar archivo para el grafico
     $queue = $_POST['cbo_queue'];
-    archivoGraficar($oCalls,'E',$queue,$fecha_init, $fecha_end, $limit, $offset);
+    archivoGraficar($oCalls,$tipo,$queue,$fecha_init, $fecha_end, $limit, $offset);
 
     //Llenamos las cabeceras
     $arrGrid = array("title"    => $arrLan["Graphic Calls per hour"],
         "icon"     => "images/list.png",
         "width"    => "99%",
-        "start"    => ($end==0) ? 0 : $offset + 1,//($end==0) ? 0 : 1,
-        "end"      => ($offset+$limit)<=$end ? $offset+$limit : $end,//$end,
-        "total"    => $end,
+        //"start"    => ($end==0) ? 0 : $offset + 1,//($end==0) ? 0 : 1,
+        //"end"      => ($offset+$limit)<=$end ? $offset+$limit : $end,//$end,
+        //"total"    => $end,
+        "start"    => 0,
+        "end"      => 0,
+        "total"    => 0,
         "columns"  => array(0 => array("name"      => $arrLan["Cola"],
                                        "property1" => ""),
                             1 => array("name"      => "00:00", 
@@ -327,7 +330,7 @@ function listadoCalls($pDB, $smarty, $module_name, $local_templates_dir,&$oGrid,
                         ));
 
     //Para el combo de tipos
-    $tipos = array("E"=>$arrLan["Ingoing"]/*, "S"=>$arrLan["Outgoing"]*/);
+    $tipos = array("E"=>$arrLan["Ingoing"], "S"=>$arrLan["Outgoing"]);
     $combo_tipos = "<select name='cbo_tipos' id='cbo_tipos' onChange='submit();'>".combo($tipos,$_POST['cbo_tipos'])."</select>";
     $array_queue=array();
     for ($i=0; $i<count($arrData); $i++)
@@ -368,7 +371,7 @@ function listadoCalls($pDB, $smarty, $module_name, $local_templates_dir,&$oGrid,
                             <td class='letra12'>
                                 &nbsp;
                             </td>
-                            ".$td."
+                            ". /*$td.*/ "
                             <td class='letra12' align='left'>{$arrLan["Cola"]}</td>
                             <td>$combo_queue</td>
                             <td class='letra12'>
@@ -491,15 +494,15 @@ function archivoGraficar($oCalls,$tipo,$queue,$fecha_init, $fecha_end, $limit, $
     $array_vacio = array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
     
     //Obtengo toda las listas de colas
-    $arrayTodas = armarArrayGrafico($oCalls,$tipo,'T',$salientes,$fecha_init, $fecha_end, $limit, $offset);
+    $arrayTodas = armarArrayGrafico($oCalls,$tipo,'T','T',$fecha_init, $fecha_end, $limit, $offset);
     if(!is_array($arrayTodas))
         $arrayTodas=$array_vacio;
 
-    $arrayExitosas = armarArrayGrafico($oCalls,$tipo,'E',$salientes,$fecha_init, $fecha_end, $limit, $offset);
+    $arrayExitosas = armarArrayGrafico($oCalls,$tipo,'E','E',$fecha_init, $fecha_end, $limit, $offset);
     if(!is_array($arrayExitosas))
         $arrayExitosas=$array_vacio;
 
-    $arrayAbandonadas = armarArrayGrafico($oCalls,$tipo,'A',$salientes,$fecha_init, $fecha_end, $limit, $offset);
+    $arrayAbandonadas = armarArrayGrafico($oCalls,$tipo,'A','A',$fecha_init, $fecha_end, $limit, $offset);
     if(!is_array($arrayAbandonadas))
         $arrayAbandonadas=$array_vacio;
 

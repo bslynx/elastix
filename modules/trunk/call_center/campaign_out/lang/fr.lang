@@ -111,5 +111,6 @@ $arrLan=array(
 "Schedule per Day" => "Schedule per Day",
 "Start time" => "Start time",
 "End time" => "End time",
+'Max. used channels' => 'Max. used channels',
 );
 ?>

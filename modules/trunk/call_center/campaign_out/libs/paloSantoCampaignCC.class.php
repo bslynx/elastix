@@ -93,7 +93,7 @@ class paloSantoCampaignCC
                 $where =  $where." ".(is_null($id_campaign) ? '' : " and id = $id_campaign");
             }
             $this->errMsg = "";
-            $sPeticionSQL = "SELECT id, name, trunk, context, queue, datetime_init, datetime_end, daytime_init, daytime_end, script, retries, promedio, num_completadas, estatus FROM campaign ".$where;
+            $sPeticionSQL = "SELECT id, name, trunk, context, queue, datetime_init, datetime_end, daytime_init, daytime_end, script, retries, promedio, num_completadas, estatus, max_canales FROM campaign ".$where;
             $sPeticionSQL .=" ORDER BY datetime_init, daytime_init";
             if (!is_null($limit)) {
                 $sPeticionSQL .= " LIMIT $limit OFFSET $offset";

@@ -55,9 +55,16 @@ class paloSantoCallsHour
     }
 
 
-
-     //Procedimiento para obtener el número de llamadas entrantes agrupadas por colas
-
+    /**
+     * Procedimiento para obtener el número de llamadas entrantes agrupadas por colas
+     * @param   string      $tipo       xxx
+     * @param   string      $entrantes  xxx
+     * @param   string      $salientes  xxx
+     * @param   string      $fecha_init Fecha de inicio del rango por el cual agrupar las
+     *                                  llamadas recuperadas, en formato yyyy-mm-dd
+     * @param   string      $fecha_end  Fecha del final del rango por el cual agrupar las
+     *                                  llamadas recuperadas, en formato yyyy-mm-dd
+     */
     function getCalls($tipo='all',$entrantes='all', $salientes='all',$fecha_init, $fecha_end, $limit, $offset)
     {
         global $arrLang;
@@ -174,8 +181,12 @@ class paloSantoCallsHour
     $arr_result =& $this->_DB->fetchTable($sPeticionSQL, true);
     if($entrantes=='T') {
             $arr_result_1 =& $this->_DB->fetchTable($sPeticionSQL, true);
-            $arr_result_2 =& $this->_DB->fetchTable($sPeticionSQL_2, true);
-            $arr_result = array_merge($arr_result_1, $arr_result_2);
+            if (isset($sPeticionSQL_2)) {
+                $arr_result_2 =& $this->_DB->fetchTable($sPeticionSQL_2, true);
+                $arr_result = array_merge($arr_result_1, $arr_result_2);
+            } else {
+                $arr_result = $arr_result_1;
+            }
     }
 
     if (!is_array($arr_result)) {

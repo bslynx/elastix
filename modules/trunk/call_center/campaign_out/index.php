@@ -265,6 +265,14 @@ function _moduleContent(&$smarty, $module_name)
             "VALIDATION_TYPE"        => "text",
             "VALIDATION_EXTRA_PARAM" => ""
         ),
+        "max_canales" => array(
+            "LABEL"                  => $arrLan['Max. used channels'],
+            "REQUIRED"               => "yes", 
+            "INPUT_TYPE"             => "TEXT",
+            "INPUT_EXTRA_PARAM"      => "",
+            "VALIDATION_TYPE"        => "numeric",
+            "VALIDATION_EXTRA_PARAM" => ""
+        ),
         "fecha_str"       => array(
             "LABEL"                  => $arrLan["Range Date"],
             "REQUIRED"               => "yes",
@@ -449,6 +457,10 @@ function new_campaign($pDB, $smarty, $module_name, $local_templates_dir, $formCa
     if (!isset($_POST["context"]) || $_POST["context"]=="") {
         $_POST["context"] = "from-internal";
     }
+    if (!isset($_POST['max_canales']) || $_POST['max_canales'] == '')
+        $_POST['max_canales'] = 3;
+    if (!isset($_POST['reintentos']) || $_POST['reintentos'] == '')
+        $_POST['reintentos'] = 5;
     $contenidoModulo = $oForm->fetchForm("$local_templates_dir/new.tpl", $arrLan["New Campaign"],$_POST);
     return $contenidoModulo;
 }
@@ -473,13 +485,15 @@ function save_campaign($pDBSQLite, $smarty, $module_name, $local_templates_dir, 
             $strErrorMsg .= $arrLan["Script"];
         $strErrorMsg .= "";
         $smarty->assign("mb_message", $strErrorMsg);
+    } elseif ($_POST['max_canales'] <= 0) { 
+        $smarty->assign("mb_message", 'At least 1 used channel must be allowed.');
     }else{
         $oCamp = new paloSantoCampaignCC($pDBSQLite);
         //$time_ini = obtenerDateTime('TIME',$_POST['fecha_ini']);
         //$time_fin = obtenerDateTime('TIME',$_POST['fecha_fin']);
         $time_ini = $_POST['hora_ini_HH'].":".$_POST['hora_ini_MM'];
         $time_fin = $_POST['hora_fin_HH'].":".$_POST['hora_fin_MM'];
-        print_r($_POST);
+        //print_r($_POST);
         //$iFechaIni = strtotime(obtenerDateTime('DATE',$_POST['fecha_ini']));
         //$iFechaFin = strtotime(obtenerDateTime('DATE',$_POST['fecha_fin']));
         $iFechaIni = strtotime($_POST['fecha_ini']);
@@ -505,7 +519,7 @@ function save_campaign($pDBSQLite, $smarty, $module_name, $local_templates_dir, 
         } else {
             $id_campaign = $oCamp->createEmptyCampaign(
                             $_POST['nombre'],
-                            3,
+                            $_POST['max_canales'],
                             $_POST['reintentos'],
                             $_POST['trunk'],
                             $_POST['context'],
@@ -592,6 +606,7 @@ function view_campaign($pDB, $smarty, $module_name, $local_templates_dir, $formC
     $arrTmp['queue']        = $arrCampaign[0]['queue'];
     $arrTmp['context']      = $arrCampaign[0]['context'];
     $arrTmp['script']       = $arrCampaign[0]['script'];
+    $arrTmp['max_canales']  = $arrCampaign[0]['max_canales'];
     $arrTmp['formulario']   = $oCampaign->obtenerCampaignForm($_GET['id']);
     $arrTmp['formularios_elegidos'] = "";
 
@@ -621,6 +636,7 @@ function edit_campaign($pDB, $smarty, $module_name, $local_templates_dir, $formC
     $arrTmp['trunk']        = $arrCampaign[0]['trunk'];
     $arrTmp['queue']        = $arrCampaign[0]['queue'];
     $arrTmp['context']      = $arrCampaign[0]['context'];
+    $arrTmp['max_canales']  = $arrCampaign[0]['max_canales'];
     $smarty->assign("rte_script",adaptar_formato_rte($arrCampaign[0]['script'])); 
     $arrTmp['script'] = "";
     $arrTmp['formulario'] = "";
@@ -673,13 +689,15 @@ function update_campaign($pDBSQLite, $smarty, $module_name, $local_templates_dir
         $strErrorMsg .= "";
         $smarty->assign("mb_message", $strErrorMsg);
         $oForm->setEditMode();
+    } elseif ($_POST['max_canales'] <= 0) { 
+        $smarty->assign("mb_message", 'At least 1 used channel must be allowed.');
     } else {
         $oCamp = new paloSantoCampaignCC($pDBSQLite);
         //$time_ini = obtenerDateTime('TIME',$_POST['fecha_ini']);
         //$time_fin = obtenerDateTime('TIME',$_POST['fecha_fin']);
         $time_ini = $_POST['hora_ini_HH'].":".$_POST['hora_ini_MM'];
         $time_fin = $_POST['hora_fin_HH'].":".$_POST['hora_fin_MM'];
-        print_r($_POST);
+        //print_r($_POST);
         //$iFechaIni = strtotime(obtenerDateTime('DATE',$_POST['fecha_ini']));
         //$iFechaFin = strtotime(obtenerDateTime('DATE',$_POST['fecha_fin']));
         $iFechaIni = strtotime($_POST['fecha_ini']);
@@ -707,7 +725,7 @@ function update_campaign($pDBSQLite, $smarty, $module_name, $local_templates_dir
             $bExito = $oCamp->updateCampaign(
                             $_POST['id_campaign'],
                             $_POST['nombre'],
-                            3,
+                            $_POST['max_canales'],
                             $_POST['reintentos'],
                             $_POST['trunk'],
                             $_POST['context'],

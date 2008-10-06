@@ -25,7 +25,7 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: Predictivo.class.php,v 1.2 2008/09/08 18:29:36 alex Exp $ */
+  $Id: Predictivo.class.php,v 1.3 2008/10/06 19:17:21 alex Exp $ */
 
 class Predictivo
 {
@@ -258,7 +258,14 @@ class Predictivo
                                 'attributes'    =>  array(),
                                 'status'        =>  NULL,
                                 'talkTime'      =>  NULL,
+                                'penalty'		=>	NULL,
                             );
+                            
+                            // Extraer la información de penalización, si existe
+                            if (ereg('^with penalty ([[:digit:]]+)[[:space:]]+(.*)', $sInfoAgente, $regs)) {
+                            	$sInfoAgente = $regs[2];
+                            	$estadoCola['members'][$sCodigoAgente]['penalty'] = $regs[1];
+                            }
                             
                             // Separar todos los atributos del agente en la cola
                             // ej: "(dynamic) (Unavailable) has taken..."

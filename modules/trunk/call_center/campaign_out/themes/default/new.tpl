@@ -84,6 +84,10 @@ var rte_script = new richTextEditor('rte_script');
 		<td>{$trunk.LABEL}: <span  class="required">*</span></td>
 		<td colspan='2'>{$trunk.INPUT}</td>
       </tr>
+      <tr  height='30'>
+		<td>{$max_canales.LABEL}: <span  class="required">*</span></td>
+		<td colspan='2'>{$max_canales.INPUT}</td>
+      </tr>
       <tr height='30'>
 		<td>{$context.LABEL}: <span  class="required">*</span></td>
 		<td colspan='2'>{$context.INPUT}</td>
