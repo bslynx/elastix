@@ -113,7 +113,7 @@ class paloForm
                     if($this->modo=='input' or ($this->modo=='edit' and $arrVars['EDITABLE']!='no')) {
                         $cols = isset($arrVars['COLS'])?$arrVars['COLS']:20;
                         $rows = isset($arrVars['ROWS'])?$arrVars['ROWS']:3;
-                        $strInput = "<textarea name='$varName' rows='$rows' cols='$cols'>$arrPreFilledValues[$varName]</textarea>";
+                        $strInput = "<textarea name=\"$varName\" rows=\"$rows\" cols=\"$cols\">$arrPreFilledValues[$varName]</textarea>";
                     } else {
                         $strInput = "$arrPreFilledValues[$varName]";
                     }
@@ -125,7 +125,7 @@ class paloForm
                             foreach($arrVars['INPUT_EXTRA_PARAM'] as $key => $value)
                                 $extras .= " $key = '$value' ";
                         }
-                        $strInput = "<input type='text' name='$varName' value='$arrPreFilledValues[$varName]' $extras >";
+                        $strInput = "<input type=\"text\" name=\"$varName\" value=\"$arrPreFilledValues[$varName]\" $extras />";
                     } else {
                         $strInput = "$arrPreFilledValues[$varName]";
                     }
@@ -143,13 +143,13 @@ class paloForm
                     break;
                 case "PASSWORD":
                     if($this->modo=='input' or ($this->modo=='edit' and $arrVars['EDITABLE']!='no')) {
-                        $strInput = "<input type='password' name='$varName' value='$arrPreFilledValues[$varName]'>";
+                        $strInput = "<input type=\"password\" name=\"$varName\" value=\"$arrPreFilledValues[$varName]\" />";
                     } else {
                         $strInput = "$arrPreFilledValues[$varName]";
                     }
                     break;
                 case "HIDDEN":
-                    $strInput = "<input type='hidden' name='$varName' value='$arrPreFilledValues[$varName]'>";
+                    $strInput = "<input type=\"hidden\" name=\"$varName\" value=\"$arrPreFilledValues[$varName]\" />";
                     break;
                 case "FILE":
                     if($this->modo=='input' or ($this->modo=='edit' and $arrVars['EDITABLE']!='no')) {
@@ -167,11 +167,11 @@ class paloForm
                             // O qué pasa si la copia da error, cómo notifico esto al programa?
                             copy($arrPreFilledValues[$varName]['tmp_name'], "/var/www/html/var/tmp/$tmpFilename");
 
-                            $strInput = "<div id='showFile'><i>File: " . $arrPreFilledValues[$varName]['name'] . 
+                            $strInput = "<div id=\"showFile\"><i>File: " . $arrPreFilledValues[$varName]['name'] . 
                                         //"</i>&nbsp;&nbsp;<input type='button' name='' value='Change file' class=button onClick=''>" . 
                                         "</i>" . 
-                                        "<input type='hidden' name='$varName' value='" . $arrPreFilledValues[$varName]['name'] . "'>" .
-                                        "<input type='hidden' name='_hidden_$varName' value='$tmpFilename'></div>";
+                                        "<input type=\"hidden\" name=\"$varName\" value=\"" . $arrPreFilledValues[$varName]['name'] . "\" />" .
+                                        "<input type=\"hidden\" name=\"_hidden_$varName\" value=\"$tmpFilename\" /></div>";
                         // It's not and array, but can be a hidden field
                         } else if (!is_array($arrPreFilledValues[$varName]) and !empty($arrPreFilledValues[$varName]) and
                                    !empty($arrPreFilledValues["_hidden_" . $varName]) ) {
@@ -182,7 +182,7 @@ class paloForm
                                         "<input type='hidden' name='_hidden_$varName' value='" . $arrPreFilledValues["_hidden_" . $varName] . "'></div>";
                         // default. It's not an array and there is not hidden field
                         } else {
-                            $strInput = "<input type='file' name='$varName'>";
+                            $strInput = "<input type=\"file\" name=\"$varName\" />";
                         }
                     } else {
                         $strInput = "$arrPreFilledValues[$varName]";
@@ -194,11 +194,11 @@ class paloForm
                         if(is_array($arrVars['INPUT_EXTRA_PARAM'])) {
                             foreach($arrVars['INPUT_EXTRA_PARAM'] as $radioValue => $radioLabel) {
                                 if($radioValue==$arrPreFilledValues[$varName]) {
-                                    $strInput .= "<input type='radio' name='$varName' value='$radioValue' " .
-                                                 "checked>&nbsp;$radioLabel&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+                                    $strInput .= "<input type=\"radio\" name=\"$varName\" value=\"$radioValue\" " .
+                                                 "checked=\"checked\" />&nbsp;$radioLabel&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
                                 } else {
-                                    $strInput .= "<input type='radio' name='$varName' value='$radioValue'" .
-                                                 ">&nbsp;$radioLabel&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+                                    $strInput .= "<input type=\"radio\" name=\"$varName\" value=\"$radioValue\"" .
+                                                 " />&nbsp;$radioLabel&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
                                 }
                             }
                         }
@@ -225,19 +225,19 @@ class paloForm
                                     $bandera = true;
                                     foreach($arrPreFilledValues[$varName] as $key => $value){ //si hay mas  de uno elegido informacion como arreglo
                                         if($idSeleccion==$value) {
-                                            $strInput .= "<option value='$idSeleccion' selected>$nombreSeleccion</option>";
+                                            $strInput .= "<option value=\"$idSeleccion\" selected=\"selected\">$nombreSeleccion</option>";
                                             $bandera = false; //bandera que me ayuda a que no se cree otro option en el caso de que ya se creo uno en forma seleccionada
                                             break; // rompo porque ya lo encontre
                                         }
                                     }
                                     if($bandera) //si es true $idSeleccion es no seleccionado
-                                         $strInput .= "<option value='$idSeleccion' >$nombreSeleccion</option>";    
+                                         $strInput .= "<option value=\"$idSeleccion\" >$nombreSeleccion</option>";    
                                 }
                                 else{ //solo uno elegido informacion como texto
                                     if($idSeleccion==$arrPreFilledValues[$varName]) {
-                                        $strInput .= "<option value='$idSeleccion' selected>$nombreSeleccion</option>";
+                                        $strInput .= "<option value=\"$idSeleccion\" selected=\"selected\">$nombreSeleccion</option>";
                                     } else {
-                                        $strInput .= "<option value='$idSeleccion' >$nombreSeleccion</option>";
+                                        $strInput .= "<option value=\"$idSeleccion\">$nombreSeleccion</option>";
                                     }
                                 }
                             }
