@@ -304,9 +304,9 @@ function cargar_menu($db)
     return $menu;
 }
 
-function get_language()
+function get_language($ruta_base='')
 {
-    require_once "configs/default.conf.php";
+    require_once $ruta_base."configs/default.conf.php";
     global $arrConf;
     $lang="";
     //conectarse a la base de settings para obtener el idioma actual
