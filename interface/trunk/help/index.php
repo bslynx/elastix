@@ -45,5 +45,6 @@ $smarty->cache_dir =    "../var/cache/";
 $smarty->assign("THEMENAME", $arrConf['mainTheme']);
 $smarty->assign("titulo", "Help Window");
 $smarty->assign("id_nodo", $_GET['id_nodo']);
+$smarty->assign("name_nodo", $_GET['name_nodo']);
 $smarty->display("_common/help.tpl");
 ?>

@@ -249,8 +249,8 @@ class paloTree {
       $nivel++;
       $salida=$style="";
       $nodo = $this->obtenerNodo($id_elemento);
-
-      $link="frameRight.php?id_nodo=$id_elemento";
+	  $name_nodo = $nodo['nombre'];
+      $link="frameRight.php?id_nodo=$id_elemento&name_nodo=$name_nodo";
 
       for($i=1; $i<=($nivel-2); $i++) {
          $salida .= "<img src='".$this->RUTA_IMG."/empty.gif'>";
@@ -263,7 +263,7 @@ class paloTree {
       }
       ///Se construye el link
       $salida .= "<a href='$link' $style target='contenido' class='link_ayuda'".
-                  "onClick=\"parent.navegacion.location='" . $this->URLBase . "&id_nodo=" . $nodo['id_nodo'] . "'\">".
+                  "onClick=\"parent.navegacion.location='" . $this->URLBase . "&id_nodo=" . $nodo['id_nodo']."&name_nodo='".$nodo['nombre']."'\">".
                      "<font class='letra_11'>" . $nodo['nombre'] . "</font>".
                   "</a><br>\n";
 
