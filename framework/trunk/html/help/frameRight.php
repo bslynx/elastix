@@ -26,28 +26,39 @@
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
   $Id: frameRight.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
+include_once("../libs/misc.lib.php");
+include_once "../configs/default.conf.php";
+
+
 session_name("elastixSession");
 session_start();
 
+require_once("../libs/smarty/libs/Smarty.class.php");
+$smarty = new Smarty();
+$smarty->template_dir = "../themes/" . $arrConf['mainTheme'];
+$smarty->compile_dir =  "../var/templates_c/";
+$smarty->config_dir =   "../configs/";
+$smarty->cache_dir =    "../var/cache/";
+$smarty->assign("THEMENAME", $arrConf['mainTheme']);
+
 if(!empty($_GET['id_nodo'])){
     $idMenuMostrar = $_GET['id_nodo'];
-
-    if(existeArchivoAyuda($idMenuMostrar)) {
-        include_once("content/$idMenuMostrar.hlp");
-
+    if(!empty($_GET['name_nodo'])){
+	    $nameMenuMostrar = $_GET['name_nodo'];
+        $smarty->assign("node_name", $nameMenuMostrar);
+    }
+                
     // Si no existe el archivo de ayuda y se trata de un menu "padre",
     // muestro el menu hijo que encuentre primero
-    } else {
-        // Es menu de primer nivel, entonces busco el menu hijo por omision
-        $idMenuMostrar = menuHijoPorOmision($_GET['id_nodo']);
-
-        if(existeArchivoAyuda($idMenuMostrar)) {
-            include_once("content/$idMenuMostrar.hlp");
-        } else {    
-            echo "The help file for the selected menu does not exists";
-        }
-    }
-
+    if(!existeArchivoAyuda($idMenuMostrar))
+		$idMenuMostrar = menuHijoPorOmision($idMenuMostrar);
+    		
+	if(existeArchivoAyuda($idMenuMostrar)) {
+	   $smarty->assign("node_id", $idMenuMostrar);	   
+	   $smarty->display($_SERVER["DOCUMENT_ROOT"]."/modules/$idMenuMostrar/help/$idMenuMostrar.hlp");
+	
+    } else    
+       echo "The help file for the selected menu does not exists";
 } else {
     echo "The selected menu is not valid.";
 }
@@ -61,7 +72,8 @@ function menuHijoPorOmision($idMenu)
     {
         foreach($arrMenu as $k => $menu) {
             if($menu['IdParent']==$idMenu) {
-                return $k;
+                echo "<h1>".$menu['Name']."</h1>";
+				return $k;
                 break;
             }
         }
@@ -77,7 +89,7 @@ function obtenerMenuPadre($idMenu)
 
 function existeArchivoAyuda($idMenu)
 {
-    if(file_exists("content/$idMenu.hlp")) {
+    if(file_exists($_SERVER["DOCUMENT_ROOT"]."/modules/$idMenu/help/$idMenu.hlp")) {
         return true;
     } else {
         return false;

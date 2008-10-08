@@ -84,7 +84,7 @@
                 </tr>
               </table>
             </td>
-            <td align="right" valign="middle"><a href="javascript:openWindow('/help/?id_nodo={$idSubMenuSelected}')"><img
+            <td align="right" valign="middle"><a href="javascript:openWindow('/help/?id_nodo={$idSubMenuSelected}&name_nodo={$nameSubMenuSelected}')"><img
                 src="themes/al/images/help_top.gif" border="0"></a>&nbsp;&nbsp;<a href="javascript:changeMenu()"><img
                 src="themes/al/images/arrow_top.gif" border="0"></a>&nbsp;&nbsp;</td>
           </tr>
@@ -99,7 +99,7 @@
     <tr>
       <td><img src="images/logo_elastix_mini.jpg" border="0"></td>
       <td align="right" class="letra_gris" valign="middle">{$nameMainMenuSelected} &rarr; {$nameSubMenuSelected} {if !empty($idSubMenu2Selected)} &rarr; {$nameSubMenu2Selected} {/if}
-          &nbsp;&nbsp;<a href="javascript:openWindow('/help/?id_nodo={$idSubMenuSelected}')"><img src="images/help_bottom.gif" border="0" 
+          &nbsp;&nbsp;<a href="javascript:openWindow('/help/?id_nodo={$idSubMenuSelected}&name_nodo={$nameSubMenuSelected}')"><img src="images/help_bottom.gif" border="0" 
           align="absmiddle"></a>
           &nbsp;&nbsp;<a href="javascript:changeMenu()"><img src="images/arrow_bottom.gif" border="0" align="absmiddle"></a>&nbsp;&nbsp;
       </td>
