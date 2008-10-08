@@ -62,12 +62,8 @@ function _moduleContent(&$smarty, $module_name)
     $pConfig = new paloConfig($arrAMP['ASTETCDIR']['valor'], "asterisk.conf", "=", "[[:space:]]*=[[:space:]]*");
     $arrAST  = $pConfig->leer_configuracion(false);
 
-    //if(isset($_POST["update"]) && $_POST["update"]=='on') $accion = "update_extension";
-    if(isset($_POST["save"])) $accion = "load_extension";
-    else if(isset($_POST["backup"])) $accion = "backup_extension";
-    else if(isset($_GET["accion"]) && $_GET["accion"]=="backup_extension") $accion = "backup_extension";
-    else $accion ="report_extension";
     $content = "";
+    $accion = getAction();
 
     //Sirve para todos los casos
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
@@ -101,8 +97,8 @@ function report_extension($smarty, $module_name, $local_templates_dir, $arrLang,
     return $contenidoModulo;
 }
 
-function load_extension($smarty, $module_name, $local_templates_dir, $arrLang, $arrConfig, $base_dir, $pDB, $arrAST, $arrAMP){
-
+function load_extension($smarty, $module_name, $local_templates_dir, $arrLang, $arrConfig, $base_dir, $pDB, $arrAST, $arrAMP)
+{
     $oForm = new paloForm($smarty, array());
     $html = $oForm->fetchForm("$local_templates_dir/extension.tpl", $arrLang["Extensions Batch"], $_POST);
 
@@ -133,7 +129,7 @@ function load_extension_from_csv($smarty, $arrLang, $ruta_archivo, $base_dir, $p
     $arrayColumnas = array();
 
     $result = isValidCSV($arrLang, $ruta_archivo, $arrayColumnas);
-    if($result != 'true'){
+    if($result != true){
         $smarty->assign("mb_message", $result);
         return;
     }
@@ -142,7 +138,7 @@ function load_extension_from_csv($smarty, $arrLang, $ruta_archivo, $base_dir, $p
     $cont = 0;
     $pLoadExtension = new paloSantoLoadExtension($pDB);
 
-    if ($hArchivo) {
+    if($hArchivo) {
         //Linea 1 header ignorada
         $tupla = fgetcsv($hArchivo, 4096, ",");
         //Desde linea 2 son datos
@@ -171,14 +167,15 @@ function load_extension_from_csv($smarty, $arrLang, $ruta_archivo, $base_dir, $p
                 {
                     $Messages .= "Ext: $Ext - ". $arrLang["Error updating Sip"].": ".$pLoadExtension->errMsg."<br />";
                 }else{
+                    
                     //Paso 2: creando en la tabla users
                     if(!$pLoadExtension->createUsers($Ext,$Name,$VoiceMail,$Direct_DID,$Outbound_CID))
                         $Messages .= "Ext: $Ext - ". $arrLang["Error updating Users"].": ".$pLoadExtension->errMsg."<br />";
-
+                    
                     //Paso 3: creando en la tabla devices
                     if(!$pLoadExtension->createDevices($Ext,"sip",$Name))
                         $Messages .= "Ext: $Ext - ". $arrLang["Error updating Devices"].": ".$pLoadExtension->errMsg."<br />";
-
+                    
                     //Paso 4: creando en el archivo /etc/asterisk/voicemail.conf los voicemails
                     if(!$pLoadExtension->writeFileVoiceMail(
                         $Ext,$Name,$VoiceMail,$VoiceMail_PW,$VM_Email_Address,
@@ -190,12 +187,10 @@ function load_extension_from_csv($smarty, $arrLang, $ruta_archivo, $base_dir, $p
                     //Paso 5: Configurando el call waiting
                     if(!$pLoadExtension->processCallWaiting($Call_Waiting,$Ext))
                         $Messages .= "Ext: $Ext - ". $arrLang["Error processing CallWaiting"]."<br />";
-
                     $cont++;
                 }
             }
         }
-
         //Paso 6: Realizo reload
         $data_connection = array('host' => "127.0.0.1", 'user' => "admin", 'password' => "elastix456");
         if(!$pLoadExtension->do_reloadAll($data_connection, $arrAST, $arrAMP))
@@ -220,58 +215,42 @@ function isValidCSV($arrLang, $sFilePath, &$arrayColumnas){
         {
             for($i=0; $i<count($tupla); $i++)
             {
-                if($tupla[$i] == 'Display Name')
-                    $arrayColumnas[0] = $i;
-                else if($tupla[$i] == 'User Extension')
-                    $arrayColumnas[1] = $i;
-                else if($tupla[$i] == 'Direct DID')
-                    $arrayColumnas[2] = $i;
-                else if($tupla[$i] == 'Outbound CID')
-                    $arrayColumnas[3] = $i;
-                else if($tupla[$i] == 'Call Waiting')
-                    $arrayColumnas[4] = $i;
-                else if($tupla[$i] == 'Secret')
-                    $arrayColumnas[5] = $i;
-                else if($tupla[$i] == 'Voicemail Status')
-                    $arrayColumnas[6] = $i;
-                else if($tupla[$i] == 'Voicemail Password')
-                    $arrayColumnas[7] = $i;
-                else if($tupla[$i] == 'VM Email Address')
-                    $arrayColumnas[8] = $i;
-                else if($tupla[$i] == 'VM Pager Email Address')
-                    $arrayColumnas[9] = $i;
-                else if($tupla[$i] == 'VM Options')
-                    $arrayColumnas[10] = $i;
-                else if($tupla[$i] == 'VM Email Attachment')
-                    $arrayColumnas[11] = $i;
-                else if($tupla[$i] == 'VM Play CID')
-                    $arrayColumnas[12] = $i;
-                else if($tupla[$i] == 'VM Play Envelope')
-                    $arrayColumnas[13] = $i;
-                else if($tupla[$i] == 'VM Delete Vmail')
-                    $arrayColumnas[14] = $i;
-                else if($tupla[$i] == 'Context')
-                    $arrayColumnas[15] = $i;
+                if($tupla[$i] == 'Display Name')            $arrayColumnas[0] = $i;
+                else if($tupla[$i] == 'User Extension')     $arrayColumnas[1] = $i;
+                else if($tupla[$i] == 'Direct DID')         $arrayColumnas[2] = $i;
+                else if($tupla[$i] == 'Outbound CID')       $arrayColumnas[3] = $i;
+                else if($tupla[$i] == 'Call Waiting')       $arrayColumnas[4] = $i;
+                else if($tupla[$i] == 'Secret')             $arrayColumnas[5] = $i;
+                else if($tupla[$i] == 'Voicemail Status')   $arrayColumnas[6] = $i;
+                else if($tupla[$i] == 'Voicemail Password') $arrayColumnas[7] = $i;
+                else if($tupla[$i] == 'VM Email Address')   $arrayColumnas[8] = $i;
+                else if($tupla[$i] == 'VM Pager Email Address') $arrayColumnas[9] = $i;
+                else if($tupla[$i] == 'VM Options')         $arrayColumnas[10] = $i;
+                else if($tupla[$i] == 'VM Email Attachment')$arrayColumnas[11] = $i;
+                else if($tupla[$i] == 'VM Play CID')        $arrayColumnas[12] = $i;
+                else if($tupla[$i] == 'VM Play Envelope')   $arrayColumnas[13] = $i;
+                else if($tupla[$i] == 'VM Delete Vmail')    $arrayColumnas[14] = $i;
+                else if($tupla[$i] == 'Context')            $arrayColumnas[15] = $i;
             }
-            if(isset($arrayColumnas[0]) && isset($arrayColumnas[1]) && isset($arrayColumnas[4]))
+            if(isset($arrayColumnas[0]) && isset($arrayColumnas[1]) && isset($arrayColumnas[5]))
             {
                 //Paso 2: Obtener Datos (Validacion que esten llenos los mismos de las cabeceras)
                 $count = 2;
                 while ($tupla = fgetcsv($hArchivo, 4096,",")) {
                     if(is_array($tupla) && count($tupla)>=3)
                     {
-                            $Ext          = $tupla[$arrayColumnas[1]];
-                            if($Ext != '')
-                                $arrExt[] = array("ext" => $Ext);
-                            else return $arrLang["Can't exist a extension empty. Line"].": $count. - ". $arrLang["Please read the lines in the footer"];
+                        $Ext = $tupla[$arrayColumnas[1]];
+                        if($Ext != '')
+                            $arrExt[] = array("ext" => $Ext);
+                        else return $arrLang["Can't exist a extension empty. Line"].": $count. - ". $arrLang["Please read the lines in the footer"];
 
-                            $Secret       = $tupla[$arrayColumnas[4]];
-                            if($Secret == '')
-                                return $arrLang["Can't exist a secret empty. Line"].": $count. - ". $arrLang["Please read the lines in the footer"];
+                        $Secret       = $tupla[$arrayColumnas[5]];
+                        if($Secret == '')
+                            return $arrLang["Can't exist a secret empty. Line"].": $count. - ". $arrLang["Please read the lines in the footer"];
 
-                            $Display      = $tupla[$arrayColumnas[0]];
-                            if($Display == '')
-                                return $arrLang["Can't exist a display name empty. Line"].": $count. - ". $arrLang["Please read the lines in the footer"];
+                        $Display      = $tupla[$arrayColumnas[0]];
+                        if($Display == '')
+                            return $arrLang["Can't exist a display name empty. Line"].": $count. - ". $arrLang["Please read the lines in the footer"];
                     }
                     $count++;
                 }
@@ -291,5 +270,18 @@ function isValidCSV($arrLang, $sFilePath, &$arrayColumnas){
         }
         else return $arrLang["Verify the header"] ." - ". $arrLang["Incomplete Columns"];
     }else return $arrLang["The file is incorrect or empty"] .": $sFilePath";
+}
+
+function getAction()
+{
+    //if(isset($_POST["update"]) && $_POST["update"]=='on') $accion = "update_extension";
+    if(isset($_POST["save"]))
+        return "load_extension";
+    else if(isset($_POST["backup"]))
+        return "backup_extension";
+    else if(isset($_GET["accion"]) && $_GET["accion"]=="backup_extension")
+        return "backup_extension";
+    else
+        return "report_extension";
 }
 ?>
