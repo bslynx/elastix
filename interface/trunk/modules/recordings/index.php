@@ -225,7 +225,7 @@ function form_Recordings($smarty, $module_name, $local_templates_dir, $arrLang)
 
     $smarty->assign("Record", $arrLang["Record"]);
     $smarty->assign("SAVE", $arrLang["Save"]);
-    $smarty->assign("TITLE", "Recordings");
+    $smarty->assign("TITLE", $arrLang["Recordings"]);
     $smarty->assign("IMG", "images/recording.png");
     $smarty->assign("module_name", $module_name);
     $smarty->assign("file_upload", $arrLang["File Upload"]);
