@@ -127,7 +127,7 @@ $arrLang=array(
 "Start Date"=>"Начална Дата",
 "End Date"=>"Крайна Дата",
 "Field Name"=>"Име на Полето",
-"Field"=>"Поле",
+"Field"=>"По",
 "CDR Report List"=>"CDR Отчет",
 "Account Code" => "Акаунт Код",
 "Date"=>"Дата",
@@ -160,13 +160,13 @@ $arrLang=array(
 "View"=>"Разгледай",
 "Rates List"=>"Списък Тарифи",
 "Create New Rate"=>"Създай Нова Тарифа",
-"Import File"=>"Import File",
+"Import File"=>"Внасяне от Файл",
 "Channel"=>"Линия",
 "Billing Report"=>"Сведение за Сметка",
 "Duration in seconds"=>"Продължителност в Секунди",
 "Cost"=>"Стойност",
-"Summary Cost"=>"Summary Cost",
-"Rate Applied"=>"Приложена Тарифа",
+"Summary Cost"=>"Общо Стойност",
+"Rate Applied"=>"Приложена Тарифа",	
 "Criteria"=>"Критерий",
 "Distribution by Time"=>"Distribution by Time",
 "Distribution by Number of Calls"=>"Distribution by Number of Calls",
@@ -176,13 +176,13 @@ $arrLang=array(
 "others"=>"други",
 "Rate Name"=>"Име на Тарифа",
 "default"=>"по подразбиране",
-
+ 
 "Date Range spans maximum number of days"=>"Периодът обхваща максимален брой дни",
 "ERROR"=>"ГРЕШКА",
 "Trunk Bill Configuration"=>"Използване за Градска Линия",
 "Billing Capable"=>"Използвай",
 "Trunk"=>"Градска Линия",
-
+ 
 "Values for trunks are invalid"=>"Стойностите за градските линии са неправилни",
 "Prefix can't be empty"=>"Префиксът е задължителен",
 "Username already exists"=>"Потребителското име вече съществува",
@@ -254,7 +254,7 @@ $arrLang=array(
 "Continue"=>"Продължи",
 "You can't change language"=>"Не е възможно да промените езика",
 "Logout"=>"Излез",
-
+ 
 //version 0.7
 "Email"=>"eMail",
 "Domains"=>"Домейни",
@@ -313,13 +313,13 @@ $arrLang=array(
 "Value for Fax Master is not valid"=>"Въведеното за Главен Факс е неправилно",
 "Fax Master Email" => "eMail на Главен Факс",
 "Write the email address which will receive the notifications of received messages, errors and activity summary of the Fax Server"=>"Въведете eMail който ще получава известия за получени съобщения, грешки и цялостната работа на Факс Сървъра.",
-
+ 
 //version 0.8
 //user
 "Extension"=>"Вътрешен Номер",
 "View User"=>"Разгледай Потребител",
-
-
+ 
+ 
 //recordings - voicemail
 "CallerID"=>"От Номер",
 "Recordings"=>"Записи",
@@ -337,7 +337,7 @@ $arrLang=array(
 "New Time" => "Нов Час",
 "New Timezone" => "Часова зона",
 "The change of date and time can concern important  system processes." => "Промяната на часът и датата може да засегне важни системни процеси.",
-
+ 
 //load module
 "Load Module" => "Модули",
 "Refresh" => "Опресни",
@@ -359,7 +359,7 @@ $arrLang=array(
 "File install.php doesn't exist in module file" => "Файлът install.php не е намерен в архива на модула",
 "Could not uncompress file" => "Файлът не може да бъде разархивиран",
 "install.php failed" => "install.php се провали",
-
+ 
 "Fax Clients"=>"Факс Клиенти",
 "Clients allowed to send faxes"=>"Клиенти оторизирани да изпращат факсове",
 "No IP entered, you must keep at least the IP 127.0.0.1" =>"Няма въведен IP адрес, трябва да запазите поне IP 127.0.0.1",
@@ -383,14 +383,14 @@ $arrLang=array(
 "Are you sure you wish to delete fax (es)?" => "Сигурни ли сте че искате да изтриете факсовете?",
 "Unable to eliminate pdf file from the path." => "Не е възможно да се премахне pdf файла от пътя.",
 "Unable to eliminate pdf file from the database." => "Не е възможно да се премахне pdf файла от базата данни.",
-
+ 
 "Backup"=>"Архивирай",
 "Process"=>"Напред",
 "Restore"=>"Възстанови",
 "Elastix Database"=>"Еластикс База Данни",
 "Sounds"=>"Звукозаписи",
 "Configuration Files"=>"Конфигурационни Файлове",
-"Monitors"=>"Контроли",
+"Monitors"=>"Мониторинг",
 "tFTP"=>"tFTP",
 "Email Acccounts"=>"eMail Акаунти",
 "Choose an option to backup"=>"Изберете опция за архивиране",
@@ -402,7 +402,7 @@ $arrLang=array(
 "Restore Complete!"=>"Възстановяването Завърши!",
 "Backup File Location"=>"Местоположение на Архива",
 "All options"=>"Всички опции",
-
+ 
 /* INICIO: File Editor */
 "Command"=> "Команда",
 "Execute"=> "Изпълни",
@@ -419,21 +419,21 @@ $arrLang=array(
 "New File" => "Нов Файл",
 "File already exist" => "Файлът вече съществува",
 /* FIN: File Editor */
-
+ 
 "File installer.php doesn't exist in package" =>"Файлът install.php не е намерен в архива на модула",
 "File module.xml doesn't exist in package"=>"Файлът module.xml не е намерен в архива на модула",
-
-
-
+ 
+ 
+ 
 // Elastix 0.9 
-
+ 
 //Inicio SubModule Themes
 "Themes" => "Изглед",
 "Change Theme" => "Промени Изглед",
 "Themes not Found" => "Изгледът не е намерен",
 "The theme could not be updated" => "Изгледът не може да бъде преработен",
 //Fin SubModule Themes
-
+ 
 /* Inicio Hardware Detection */
 "Hardware Detection" => "Откриване Хардуер",
 "Ports not Founds" => "Портовете не могат да бъдат намерени",
@@ -451,7 +451,7 @@ $arrLang=array(
 "Unable to backup file zapata.conf by zapata.conf.replace_for_elastix" => "Не е възможно да се запази файла zapata.conf като zapata.conf.replace_for_elastix",
 "Unable to replace file zapata.conf" => "Не е възможно да се замени файла zapata.conf",
 /* Fin Hardware Detection */
-
+ 
 /* Modulo system.updates*/
 "Updates" => "Обновяване",
 "Repositories" =>"Библиотеки",
@@ -485,7 +485,7 @@ $arrLang=array(
 "Installing" => "Инсталиране",
 "Total Packages" => "Общо Пакети",
 "There is an action in process" => "В момента не се извършва дейност",
-
+ 
 /*Backup List*/
 "Backup/Restore" => "Архивиране",
 "Backup List" => "Списък с Архиви",
@@ -494,8 +494,8 @@ $arrLang=array(
 "There are not backup file selected" => "Не е избран архив",
 "Action" => "Действие",
 "Folder backup doesn't exist"=>"Директорията с архиви не съществува",
-
-
+ 
+ 
 /* inicio Cancelador de echo*/
 "Echo Canceller"=>"Ехо Неутрализиране",
 "Status"=>"Състояние",
@@ -506,7 +506,7 @@ $arrLang=array(
 "Activate"=>"Включи",
 "Info"=>"Инфо",
 /* fin Cancelador de echo*/
-
+ 
 /*Module IM*/
 "IM" => "IM",
 "OpenFire" => "OpenFire",
@@ -516,7 +516,7 @@ $arrLang=array(
 "click here" => "кликнете тук",
 /* Preferences*/
 "Preferences" => "Настройки",
-
+ 
 /* Start About Elastix */
 "About Elastix"=>"За Еластикс",
 "About Elastix Content"=>"Еластикс бе създаден под нуждата от подходяща и надеждна, лесна за използуване,
@@ -525,7 +525,7 @@ $arrLang=array(
 за осъществяване на Глас върху IP разговори в целия свят.",
 "About Elastix Closed"=>"Затвори",
 /* End About Elastix */
-
+ 
 //Elastix 0.9.1
 /*Start module Template Email */
 "Template Email"=>"Шаблон на eMail",
@@ -548,7 +548,7 @@ $arrLang=array(
 "The Group have users assigned. You can delete any group that does not have any users assigned in it."=>"В групата има добавени потребители. Възможно е да изтриете всяка група която няма добавени потребители в нея.",
 "The administrator group cannot be deleted because is the default Elastix Group. You can delete any other group."=>"Група Administrator не може да бъде изтрита защото е група по подразбиране в Еластиск. Възможно е да изтриете всяка друга група.",
 /*End module Group List*/
-
+ 
 /*Start module Monitoring*/
 "Time"=>"Час",
 "Message"=>"Съобщение",
@@ -556,9 +556,9 @@ $arrLang=array(
 "Download"=>"Изтегли",
 "Listen"=>"Прослушай",
 /*End module Monitoring*/
-
+ 
 /** Elastix 1.0 **/
-
+ 
 /*Start module DHCP Server */
 "DHCP Server" => "DHCP Сървър",
 "Update" => "Обнови",
@@ -589,7 +589,7 @@ $arrLang=array(
 "The update was successful, but was unable to reestablish the permissions of the file dhcp.conf" => "Обновяването завърши успешно, но не се възстановиха забраните от файла dhcp.conf",
 "Update Error" => "Грешка При Обновяване",
 /*End module DHCP Server */
-
+ 
 /*Start module Endpoint Configuration*/
 "Endpoint Configuration" => "Конфигуриране Телефонни Апарати",
 "Endpoint Scan" => "Откриване Телефонни Апарати",
@@ -618,7 +618,7 @@ $arrLang=array(
 "No Extensions" => "Няма Вътрешни Номера",
 "Invalid Format in Parameter" => "Грешен Формат в Параметър",
 /*End module Endpoint Configuration*/
-
+ 
 /*Start module Call Center*/
 "Outgoing Campaigns" => "Изходящи Кампании",
 "Agent Console" => "Конзола Агент",
@@ -638,7 +638,7 @@ $arrLang=array(
 "Login Logout" => "Влизане Излизане",
 "Graphic Calls per hour" => "Графика Разговори По Часове",
 /*End module Call Center*/
-
+ 
 /*Start module conference*/
 "Conference" => "Конференции",
 "State" => "Състояние",
@@ -691,7 +691,7 @@ $arrLang=array(
 "The device must be numeric" => "Телефонът трябва да съдържа само цифри",
 "The device couldn't be added to the conference" => "Телефонът не може да бъде добавен към конференцията",
 /*End module conference*/
-
+ 
 /*Extensions Batch*/
 "Extensions Batch" => "Групиране Вътрешни",
 "Invalid file extension.- It must be csv" => "Грешно файлово разширение, трябва да бъде (.csv)",
@@ -719,19 +719,19 @@ $arrLang=array(
 "There aren't extensions" => "Тук няма вътрешни номера",
 "Download Extensions" => "Изтегли Вътрешни",
 /*Extensions Batch*/
-
+ 
 /*File Editor*/
 "Permission denied" => "Достъпът е забранен",
 /*File Editor*/
-
+ 
 /*Sugarcrm*/
 "The SugarCRM installation is almost done. To complete it please" => "Инсталацията на SugarCRM е почти приключена. За да я завършите моля ",
 /*Sugarcrm*/
-
+ 
 /*CDR Report*/
 "Are you sure you wish to delete CDR(s) Report(s)?" => "Сигурни ли сте че искате да изтриете CDR отчетите?",
 /*CDR Report*/
-
+ 
 /*Grouplist*/
 "administrator" => "Администратор",
 "operator" => "Оператор",
@@ -739,290 +739,290 @@ $arrLang=array(
 "total access" => "Пълен Достъп",
 "extension user" => "Потребител",
 /*Grouplist*/
-
+ 
 /*Menu*/
-"Tools" => "Tools",
+"Tools" => "Инструменти",
 /*Menu*/
-
+ 
 /*Backup/Restore*/
-"Are you sure you wish to delete backup (s)?" => "Are you sure you wish to delete backup (s)?",
-"Database" => "Database",
+"Are you sure you wish to delete backup (s)?" => "Сигурни ли сте че искате да изтриете архивите?",
+"Database" => "База Данни",
 "PDF" => "PDF",
-"Endpoint" => "Endpoint",
-"Asterisk" => "Asterisk",
-"All options (Fax)" => "All options (Fax)",
-"All options (Email)" => "All options (Email)",
-"All options (Endpoint)" => "All options (Endpoint)",
-"All options (Asterisk)" => "All options (Asterisk)",
-"Zaptel Configuration" => "Zaptel Configuration",
-"Others" => "Others",
-"All options (Others)" => "All options (Others)",
-"SugarCRM Database" => "SugarCRM Database",
-"VtigerCRM Database" => "VtigerCRM Database",
-"A2billing Database" => "A2billing Database",
-"Mysql Database" => "Mysql Database",
-"Menus and Permissions" => "Menus and Permissions",
-"This process could take several minutes" => "This process could take several minutes",
-"Mailbox" => "Mailbox",
-"(Heavy Content)" => "(Heavy Content)",
-"Upload" => "Upload",
-"File Upload" => "File Upload",
-"The backup file would have a tar extension" => "The backup file would have a tar extension",
-"Error copying the file" => "Error copying the file",
-"The file was copied correctly" => "The file was copied correctly",
+"Endpoint" => "Телефонни Апарати",
+"Asterisk" => "Астериск",
+"All options (Fax)" => "Всички опции (Факс)",
+"All options (Email)" => "Всички опции (eMail)",
+"All options (Endpoint)" => "Всички опции (Телефонни Апарати)",
+"All options (Asterisk)" => "Всички опции (Астериск)",
+"Zaptel Configuration" => "Заптел Настройки",
+"Others" => "Други",
+"All options (Others)" => "Всички опции (Други)",
+"SugarCRM Database" => "SugarCRM База Данни",
+"VtigerCRM Database" => "VtigerCRM База Данни",
+"A2billing Database" => "A2Billing База Данни",
+"Mysql Database" => "MySQL База Данни",
+"Menus and Permissions" => "Менюта и Забрани",
+"This process could take several minutes" => "Архивирането може да отнеме няколко минути",
+"Mailbox" => "Пощенски Кутии",
+"(Heavy Content)" => "(Голям Обем)",
+"Upload" => "Добавяне",
+"File Upload" => "Добавяне на Файл",
+"The backup file would have a tar extension" => "Файлът с архивите нямаше разширение .tar",
+"Error copying the file" => "Грешка при копиране на файл",
+"The file was copied correctly" => "Копирането завърши нормално",
 /*Backup/Restore*/
-
-"Country Code" => "Country Code",
-"Area Code"=> "Area Code",
-
+ 
+"Country Code" => "Национален Код",
+"Area Code"=> "Областен Код",
+ 
 /*Calendar*/
-"January" => "January",
-"February" => "February",
-"March" => "March",
-"April" => "April",
-"May_" => "May",
-"June" => "June",
-"July" => "July",
-"August" => "August",
-"September" => "September",
-"October" => "October",
-"November" => "November",
-"December" => "December",
-
-"Jan" => "Jan",
-"Feb" => "Feb",
-"Mar" => "Mar",
-"Apr" => "Apr",
-"May" => "May",
-"Jun" => "Jun",
-"Jul" => "Jul",
-"Aug" => "Aug",
-"Sep" => "Sep",
-"Oct" => "Oct",
-"Nov" => "Nov",
-"Dec" => "Dec",
-
-"Monday" => "Monday",
-"Tuesday" => "Tuesday",
-"Wednesday" => "Wednesday",
-"Thursday" => "Thursday",
-"Friday" => "Friday",
-"Saturday" => "Saturday",
-"Sunday" => "Sunday",
-
-"Normal" => "Normal",
-"Monthly" => "Monthly",
-
-"Add Event" => "Add Event",
-"Back to Calendar" => "Back to Calendar",
-"View Date" => "View Date",
-
-"next month" => "next month",
-"next year" => "next year",
-"last year" => "last year",
-"last month" => "last month",
-
-"Title" => "Title",
-"Delete Selected" => "Delete Selected",
-"(No subject)" => "(No subject)",
-"Modify" => "Modify",
-"No events on this day" => "No events on this day",
-"year view not yet implemented" => "year view not yet implemented",
-"Software Error" => "Software Error",
-"Message:" => "Message:",
-"Backtrace" => "Backtrace",
+"January" => "Януари",
+"February" => "Февруари",
+"March" => "Март",
+"April" => "Април",
+"May_" => "Май",
+"June" => "Юни",
+"July" => "Юли",
+"August" => "Август",
+"September" => "Септември",
+"October" => "Октомври",
+"November" => "Ноември",
+"December" => "Декември",
+ 
+"Jan" => "Яну",
+"Feb" => "Фев",
+"Mar" => "Мар",
+"Apr" => "Апр",
+"May" => "Май",
+"Jun" => "Юни",
+"Jul" => "Юли",
+"Aug" => "Авг",
+"Sep" => "Сеп",
+"Oct" => "Окт",
+"Nov" => "Ное",
+"Dec" => "Дек",
+ 
+"Monday" => "Понеделник",
+"Tuesday" => "Вторник",
+"Wednesday" => "Сряда",
+"Thursday" => "Четвъртък",
+"Friday" => "Петък",
+"Saturday" => "Събота",
+"Sunday" => "Неделя",
+ 
+"Normal" => "Редовен",
+"Monthly" => "Месечен",
+ 
+"Add Event" => "Добави Събитие",
+"Back to Calendar" => "Обратно към Календар",
+"View Date" => "Прегледай Срещите",
+ 
+"next month" => "следващ месец",
+"next year" => "следваща година",
+"last year" => "предишна година",
+"last month" => "предишен месец",
+ 
+"Title" => "Име",
+"Delete Selected" => "Изтрий Избраните",
+"(No subject)" => "(Без тема)",
+"Modify" => "Редактирай",
+"No events on this day" => "Не са въведени събития за този ден",
+"year view not yet implemented" => "годишен преглед все още не е добавен",
+"Software Error" => "Програмна Грешка",
+"Message:" => "Съобщение:",
+"Backtrace" => "Проследяване",
 "AM" => "AM",
 "PM" => "PM",
-"Error in get_events_by_date" => "Error in get_events_by_date",
-"Error in get_event_by_id" => "Error in get_event_by_id",
-"item doesn't exist!" => "item doesn't exist!",
-"Html is not a valid Html class" => "Html is not a valid Html class",
-"Invalid class" => "Invalid class",
-"Error reading options" => "Error reading options",
-"Updated options" => "Updated options",
-
-"Error while removing an event" => "Error while removing an event",
-"Removed item" => "Removed item",
-"Could not remove item" => "Could not remove item",
-"No items selected" => "No items selected",
-
-"Adding event to calendar" => "Adding event to calendar",
-"Date of event" => "Date of event",
-"Date multiple day event ends" => "Date multiple day event ends",
-"Event type" => "Event type",
-"Subject" => "Subject",
-"chars max" => "chars max",
-"Asterisk Call Me" => "Asterisk Call Me",
-"Submit Event" => "Submit Event",
-
-"No day was given" => "No day was given",
-"No month was given" => "No month was given",
-"No year was given" => "No year was given",
-"No hour was given" => "No hour was given",
-"No minute was given" => "No minute was given",
-"No type of event was given" => "No type of event was given",
-"No end day was given" => "No end day was given",
-"No end month was given" => "No end month was given",
-"No end year was given" => "No end year was given",
-"Your subject was too long" => "Your subject was too long",
-"characters max" => "characters max",
-"The start of the event cannot be after the end of the event" => "The start of the event cannot be after the end of the event",
-"Error processing event" => "Error processing event",
-"No changes were made" => "No changes were made",
-"Date updated" => "Date updated",
-"Editing Event" => "Editing Event",
-"yes" => "yes",
-"no" => "no",
-
-"Ascending" => "Ascending",
-"Decending" => "Decending",
-"Invalid sort option" => "Invalid sort option",
-"Invalid order option" => "Invalid order option",
-"Encountered an error while searching" => "Encountered an error while searching",
-"No events matched your search criteria" => "No events matched your search criteria",
-"Search Results" => "Search Results",
-"Date Time" => "Date Time",
-"Phrase" => "Phrase",
-"From" => "From",
-"To" => "To",
-"Sort By" => "Sort By",
-"Order" => "Order",
-"Calendar" => "Calendar",
-"Invalid action" => "Invalid action",
-"That year is too far in the past" => "That year is too far in the past",
-"That year is too far in the future" => "That year is too far in the future",
-
-"To create new recordings click" => "To create new recordings click",
-"Here" => "Here",
-
-"No Recording was given, if no exists you must first create a new recording" => "No Recording was given, if no exists you must first create a new recording",
+"Error in get_events_by_date" => "Грешка в get_events_by_date",
+"Error in get_event_by_id" => "Грешка в get_event_by_id",
+"item doesn't exist!" => "съобщение не съществува!",
+"Html is not a valid Html class" => "Html не е валидна Html категория",
+"Invalid class" => "Неправилна категория",
+"Error reading options" => "Грешка при четене на опциите",
+"Updated options" => "Обновени опции",
+ 
+"Error while removing an event" => "Грешка при премахване на събитие",
+"Removed item" => "Премахнати съобщения",
+"Could not remove item" => "Съобщението не може да бъде премахнато",
+"No items selected" => "Не са избрани съобщения",
+ 
+"Adding event to calendar" => "Добавяне на събитие към календара",
+"Date of event" => "Дата на събитието",
+"Date multiple day event ends" => "Дата на приключване на всекидневно събитие",
+"Event type" => "Вид Събитие",
+"Subject" => "Тема",
+"chars max" => "символа най-много",
+"Asterisk Call Me" => "Астериск да Напомни",
+"Submit Event" => "Приеми Събитие",
+ 
+"No day was given" => "Не е определен ден",
+"No month was given" => "Не е определен месец",
+"No year was given" => "Не е определена година",
+"No hour was given" => "Не е определен час",
+"No minute was given" => "Не са определени минути",
+"No type of event was given" => "Не е определен вид на събитието",
+"No end day was given" => "Не е определен ден на приключване",
+"No end month was given" => "Не е определен месец на приключване",
+"No end year was given" => "Не е определена година на приключване",
+"Your subject was too long" => "Темата ви съдържа повече символи от допустимото",
+"characters max" => "символа най-много",
+"The start of the event cannot be after the end of the event" => "Началната дата на събитието трябва да е по-ранна от датата на приключването му",
+"Error processing event" => "Грешка при обработване на събитието",
+"No changes were made" => "Не са направени промени",
+"Date updated" => "Дата на обновяване",
+"Editing Event" => "Редактиране Събитие",
+"yes" => "да",
+"no" => "не",
+ 
+"Ascending" => "Възходяща",
+"Decending" => "Низходяща",
+"Invalid sort option" => "Неправилен избор на подредба",
+"Invalid order option" => "Неправилен избор на последователност",
+"Encountered an error while searching" => "Грешка при търсенето",
+"No events matched your search criteria" => "Не са намерени събития отговарящи на въведените параметри",
+"Search Results" => "Резултати от Търсенето",
+"Date Time" => "Дата и Час",
+"Phrase" => "Фраза",
+"From" => "От",
+"To" => "До",
+"Sort By" => "Подреди По",
+"Order" => "Последователност",
+"Calendar" => "Календар",
+"Invalid action" => "Неправилно действие",
+"That year is too far in the past" => "Избраната година е прекомерно назад в миналото",
+"That year is too far in the future" => "Избраната година е прекомерно напред в бъдещето",
+ 
+"To create new recordings click" => "За да направите нов запис кликнете",
+"Here" => "Тук",
+ 
+"No Recording was given, if no exists you must first create a new recording" => "Не е определен Запис, ако такива не съществуват Вие първо трябва да направите нов запис",
 /*Calendar*/
-
+ 
 /*Adress Book*/
-"New Contact"	=> "New Contact",
-"Address Book"	=> "Address Book",
-"Are you sure you wish to delete the contact." => "Are you sure you wish to delete the contact.",
-"First Name"	=> "First Name",
-"Last Name"	=> "Last Name",
-"Phone Number"	=> "Phone Number",
-"Extension" => "Extension",
-"The call couldn't be realized" => "The call couldn't be realized",
-"Internal" => "Internal",
-"External" => "External",
-"Call" => "Call",
-"Phone Directory" => "Phone Directory",
+"New Contact"	=> "Нов Контакт",
+"Address Book"	=> "Указател",
+"Are you sure you wish to delete the contact." => "Сигурни ли сте че искате да изтриете контакта.",
+"First Name"	=> "Име",
+"Last Name"	=> "Фамилия",
+"Phone Number"	=> "Телефонен Номер",
+"Extension" => "Вътрешен Номер",
+"The call couldn't be realized" => "Обаждането не може да бъде осъществено",
+"Internal" => "Вътрешни Номера",
+"External" => "Външни Номера",
+"Call" => "Набери",
+"Phone Directory" => "Телефонен Указател",
 "CSV" => "CSV",
-"Download Address Book" => "Download Address Book",
-"Can't exist a Name empty. Line" => "Can't exist a Name empty. Line",
-"Can't exist a Last Name empty. Line" => "Can't exist a Last Name empty. Line",
-"Can't exist a Phone Number empty. Line" => "Can't exist a Phone Number empty. Line",
-"Total contacts created" => "Total contacts created",
-"Contact Data already exists" => "Contact Data already exists",
-"Header File Address Book" => "The header of the file must be in the first line and it must have at minimum three columns: Name, Last Name, Phone Number",
-"About Address Book" => "If you load a file with contacts data already created, this contact data wouldn't be used",
-"There aren't contacts" => "There aren't contacts",
-"Address Book from CSV" => "Address Book from CSV",
+"Download Address Book" => "Изтегли Указател",
+"Can't exist a Name empty. Line" => "Няма въведено Име. Линия",
+"Can't exist a Last Name empty. Line" => "Няма въведена Фамилия. Линия",
+"Can't exist a Phone Number empty. Line" => "Няма въведен Телефонен Номер. Линия",
+"Total contacts created" => "Общо създадени контакти",
+"Contact Data already exists" => "контактът вече съществува",
+"Header File Address Book" => "Заглавната линия на файла трябва да е на първия ред и да съдържа най-малко три колони: Име, Фамилия, Телефонен Номер.",
+"About Address Book" => "Ако заредите файл с контакт който вече съществува , информацията за този контакт няма да бъде въведена.",
+"There aren't contacts" => "Няма въведени контакти",
+"Address Book from CSV" => "Указател от CSV",
 /*Adress Book*/
-
+ 
 /*Dashboard*/
-"You haven't extension" => "You haven't extension.",
-"Imap: Connection error" => "Imap: Conection error.",
-"You don't recibed emails" => "You don't recibed emails.",
-"You don't recibed faxes" => "You don't recibed faxes.",
-"Query error" => "Query error",
-"You don't recibed calls" => "You don't recibed calls.",
-"You don't recibed voicemails" => "You don't recibed voicemails.",
-"Unenabled to open file" => "Unenabled to open file",
-"Dashboard" => "Dashboard",
-"Calls" => "Calls",
-"Em@ils" => "Em@ils",
-"Faxes" => "Faxes",
-"Voicem@ils" => "Voicem@ils",
-"answered" => "<font color='green'><b>Answered</b></font>",
-"missed" => "<font color='red'><b>Losed</b></font>",
-"unknow" => "<b>unknow</b>",
-"call record" => "{status} call on date {date} from number {source}",
-"call duration" => " and {time} segs. of duration.",
-"fax recived" => "Recived fax {file} from {source} on date {date}.",
-"voicemail recived" => "Voicemail from {source} on date {date} and {duration} seconds of duration",
+"You haven't extension" => "Нямате въеден Вътрешен Номер.",
+"Imap: Connection error" => "Imap: Грешка при свързване.",
+"You don't recibed emails" => "Нямате получени писма.",
+"You don't recibed faxes" => "Нямате получени факсове.",
+"Query error" => "Грешка при проверка",
+"You don't recibed calls" => "Нямате получени обаждания.",
+"You don't recibed voicemails" => "Нямате получени гласови съобщения.",
+"Unenabled to open file" => "Файлът не може да бъде отворен",
+"Dashboard" => "Табло",
+"Calls" => "Разговори",
+"Em@ils" => "eMail",
+"Faxes" => "Факсове",
+"Voicem@ils" => "Гласови съобщения",
+"answered" => "<font color='green'><b>Прието</b></font>",
+"missed" => "<font color='red'><b>Пропуснато</b></font>",
+"unknow" => "<b>неразпознат</b>",
+"call record" => "{status} обаждане на дата {date} от номер {source}",
+"call duration" => " и продължило {time} сек.",
+"fax recived" => "Получен факс {file} от {source} на дата {date}.",
+"voicemail recived" => "Гласово съобщение {source} от дата {date} с продължителност {duration} сек.",
 "mail recived" => "{date} {source} '{subject}'",
-"Quota asigned" => "Quota asigned:",
-"Quota Used" => "Quota used:",
-"Quota free space" => "Quota free space:",
-"Error at read yours calls." => "Error at read yours calls.",
-"Error at read yours faxes." => "Error at read yours faxes.",
-"Error at read yours voicemails." => "Error at read yours voicemails.",
-"Error at read yours mails." => "Error at read yours mails.",
-"Error at read status system." => "Error at read status system.",
-"Error at read your calendar." => "Error at read your calendar.",
-"You don't have events" => "You don't have events.",
-"You don't have a webmail account" => "You don't have a webmail account",
+"Quota asigned" => "Въведена Квота:",
+"Quota Used" => "Използвана Квота:",
+"Quota free space" => "Неизползвана Квота:",
+"Error at read yours calls." => "Грешка при четене на обажданията.",
+"Error at read yours faxes." => "Грешка при четене на факсовете.",
+"Error at read yours voicemails." => "Грешка при четене на гласовите съобщения.",
+"Error at read yours mails." => "Грешка при четене на писмата.",
+"Error at read status system." => "Грешка при четене на информацията за системата.",
+"Error at read your calendar." => "Грешка при четене на календара.",
+"You don't have events" => "Нямате въведени събития.",
+"You don't have a webmail account" => "Нямате eMail акаунт",
 /*Dashboard*/
-
+ 
 /*USERLIST*/
 /* Additional strings for webmail auto-login extension */
-"Webmail User" => "Webmail User",
-"Webmail Domain" => "Webmail Domain",
-"Webmail Password" => "Webmail Password",
-"Retype Webmail password" => "Retype Webmail password",
-"Mail Profile" => "Mail Profile",
+"Webmail User" => "eMail Акаунт",
+"Webmail Domain" => "eMail Домейн",
+"Webmail Password" => "eMail Парола",
+"Retype Webmail password" => "Повторете eMail паролата",
+"Mail Profile" => "eMail Профил",
 /*USERLIST*/
-
+ 
 /*PBX Configuration*/
-"Option" => "Option",
-"Unembedded freePBX" => "Unembedded freePBX",
-"Basic" => "Basic",
-"Extensions" => "Extensions",
-"Feature Codes" => "Feature Codes",
-"General Settings" => "General Settings",
-"Outbound Routes" => "Outbound Routes",
-"Trunks" => "Trunks",
-"Inbound Call Control" => "Inbound Call Control",
-"Inbound Routes" => "Inbound Routes",
-"Announcements" => "Announcements",
-"Follow Me" => "Follow Me",
+"Option" => "Опция",
+"Unembedded freePBX" => "Оригинална FreePBX",
+"Basic" => "Основни Настройки",
+"Extensions" => "Вътрешни Линии",
+"Feature Codes" => "Специални Кодове",
+"General Settings" => "Общи Настройки",
+"Outbound Routes" => "Изходящи Маршрути",
+"Trunks" => "Външни Линии",
+"Inbound Call Control" => "Входящи Обаждания",
+"Inbound Routes" => "Входящи Маршрути",
+"Announcements" => "Известия",
+"Follow Me" => "Следвай Ме",
 "IVR" => "IVR",
-"Misc Destinations" => "Misc Destinations",
-"Queues" => "Queues",
-"Ring Groups" => "Ring Groups",
-"Time Conditions" => "Time Conditions",
-"Internal Options & Configuration" => "Internal Options & Configuration",
-"Conferences" => "Conferences",
-"Misc Applications" => "Misc Applications",
-"Music on Hold" => "Music on Hold",
-"PIN Sets" => "PIN Sets",
+"Misc Destinations" => "Смесени Направления",
+"Queues" => "Опашки",
+"Ring Groups" => "Групи на Звънене",
+"Time Conditions" => "Времеви Условия",
+"Internal Options & Configuration" => "Вътрешни Опции и Профили",
+"Conferences" => "Конференции",
+"Misc Applications" => "Смесени Приложения",
+"Music on Hold" => "Музика при Задържане",
+"PIN Sets" => "PIN Въвеждане",
 "Paging and Intercom" => "Paging and Intercom",
-"Parking Lot" => "Parking Lot",
-"System Recordings" => "System Recordings",
-"Remote Access" => "Remote Access",
-"Callback" => "Callback",
+"Parking Lot" => "Група за Паркиране",
+"System Recordings" => "Системни Записи",
+"Remote Access" => "Отдалечен Достъп",
+"Callback" => "Обратно Обаждане",
 "DISA" => "DISA",
 /*PBX Configuration*/
-
+ 
 /*New Module*/
 "Filter Example" => "Filter Example",
 "Example" => "Example",
 /*New Module*/
-
+ 
 /*RECORDINGS*/
-"Record Name" => "Record Name",
-"Record" => "Record",
-"Insert the Recording Name" => "Insert the Recording Name",
-"The recording couldn't be realized" => "The recording couldn't be realized",
-"The recording was saved" => "The recording was saved",
-"To continue: record a message then click on save" => "To continue: record a message then click on save",
-"Recording File" => "Recording File",
-"Destiny directory couldn't be created" => "Destiny directory couldn't be created",
+"Record Name" => "Име на Записа",
+"Record" => "Записване на Съобщение",
+"Insert the Recording Name" => "Въведете Име на Записа",
+"The recording couldn't be realized" => "Записът не може да бъде осъществен",
+"The recording was saved" => "Съобщението е записано",
+"To continue: record a message then click on save" => "За да продължите: запишете съобщение и натиснете Запис",
+"Recording File" => "Файл на Записа",
+"Destiny directory couldn't be created" => "Желаната директория не може да бъде създадена",
 /*RECORDINGS*/
-
+ 
 /*ASTERIX LOG*/
-"offset" => "offset",
-"Asterisk Logs" => "Asterisk Logs",
+"offset" => "начало",
+"Asterisk Logs" => "Астериск Логове",
 /*ASTERIX LOG*/
-
+ 
 /*Calendar*/
-"Call to" => "Call to",
-"To add phone number from address book click" => "To add phone number from address book click",
+"Call to" => "Обаждане към",
+"To add phone number from address book click" => "За да добавите телефонен номер от указателя кликнете",
 /*Calendar*/
 );
 ?>
