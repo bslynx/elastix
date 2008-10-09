@@ -102,7 +102,7 @@ function getDashboard($local_templates_dir,$module_name)
         $arrData     = $objUserInfo->getDataUserLogon($_SESSION["elastix_user"]);
 
         if(is_array($arrData) && count($arrData)>0){
-            $extension = $arrData['extension'];
+            $extension = isset($arrData['extension'])?$arrData['extension']:"";
             $email     = "{$arrData['login']}.{$arrData['domain']}";
             $passw     = isset($arrData['password'])?$arrData['password']:"";
             $numRegs   = 5;
