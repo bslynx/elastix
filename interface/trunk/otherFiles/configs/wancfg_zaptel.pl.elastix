@@ -224,7 +224,7 @@ my $wanrouter_rc_template="$current_dir/templates/wanrouter.rc.template";
 
 my $zaptel_conf_template="$current_dir/templates/zaptel.conf";
 my $zaptel_conf_file="$current_dir/$cfg_dir/zaptel.conf";
-$zaptel_conf_file_t="$etc_dir/zaptel.conf" unless defined($zaptel_conf_file_t);
+$zaptel_conf_file_t="$etc_dir/zaptel.conf.wanpipe" unless defined($zaptel_conf_file_t);
 
 my $zapata_conf_template="$current_dir/templates/zapata.conf";
 my $zapata_conf_file="$current_dir/$cfg_dir/zapata.conf";
