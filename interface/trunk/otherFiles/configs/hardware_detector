@@ -77,49 +77,49 @@ if [ $? = 0 ] && [ `is_module_loaded "wanpipe"` = true ]; then
 	eval "/sbin/service wanrouter stop  $null_redirect_verbose"
 fi
 
+if [ $? = 0 ] && [ $there_is_misdn_card = false ]; then
+        echo -e "Step 3: Unmounting modules mISDN ..."
+        echo -e "         Stoping service mISDN ..."
+        eval "/sbin/service mISDN stop $null_redirect_verbose"
+        eval "/sbin/chkconfig --level 2345 mISDN off $null_redirect_verbose"
+fi
+
 if [ $? = 0 ] && [ $there_is_sangoma_card = true ]; then
-	echo -e "Step 3: Detecting sangoma cards ..."
+	echo -e "Step 4: Detecting sangoma cards ..."
 	eval "/usr/sbin/wancfg_zaptel --silent  $null_redirect_verbose"
 fi
 
 if [ $? = 0 ]; then
-	echo -e "Step 4: Detecting zaptel cards ..." 
+	echo -e "Step 5: Detecting zaptel cards ..." 
 	eval "/usr/sbin/genzaptelconf -d -s -M -F $genzaptelconf_verbose $null_redirect_verbose"
 fi
 
 if [ $? = 0 ]; then
-	echo -e "Step 5: Mounting modules zaptel ..."
+	echo -e "Step 6: Mounting modules zaptel ..."
 	echo -e "        Starting service zaptel ..."
 	eval "/sbin/service zaptel start  $null_redirect_verbose"
 fi
 
 if [ $? = 0 ] && [ $there_is_sangoma_card = true ] && [ `is_module_loaded "wanpipe"` = false ]; then
-	echo -e "Step 6: Mounting modules sangoma ..."
+	echo -e "Step 7: Mounting modules sangoma ..."
 	echo -e "        Restoring service wanrouter ..."
 	eval "/sbin/service wanrouter restart  $null_redirect_verbose"
 fi
 
 if [ $? = 0 ]; then
-	echo -e "Step 7: Generating configs files /etc/zaptel.conf y /etc/asterisk/zapata-channels.conf ..."
+	echo -e "Step 8: Generating configs files /etc/zaptel.conf y /etc/asterisk/zapata-channels.conf ..."
 	/usr/sbin/genzaptelconf -x $genzaptelconf_verbose
 fi
 
 if [ $? = 0 ] && [ $there_is_misdn_card = true ]; then
-        echo -e "Step 8: Detecting mISDN cards ..."
+        echo -e "Step 9: Detecting mISDN cards ..."
         eval "/sbin/service mISDN scan $null_redirect_verbose"
-	echo -e "Step 9: Configuring mISDN cards ..."
+	echo -e "Step 10: Configuring mISDN cards ..."
 	eval "/sbin/service mISDN config $null_redirect_verbose"
-	echo -e "Step 10: Mounting modules mISDN ..."
+	echo -e "Step 11: Mounting modules mISDN ..."
 	echo -e "         Starting service mISDN ..."
 	eval "/sbin/service mISDN start $null_redirect_verbose"
 	eval "/sbin/chkconfig --level 2345 mISDN on $null_redirect_verbose"
-fi
-
-if [ $? = 0 ] && [ $there_is_misdn_card = false ]; then
-        echo -e "Step 11: Unmounting modules mISDN ..."
-        echo -e "         Stoping service mISDN ..."
-        eval "/sbin/service mISDN stop $null_redirect_verbose"
-        eval "/sbin/chkconfig --level 2345 mISDN off $null_redirect_verbose"
 fi
 
 if [ $? = 0 ]; then
