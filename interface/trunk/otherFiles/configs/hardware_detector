@@ -115,8 +115,15 @@ if [ $? = 0 ] && [ $there_is_misdn_card = true ]; then
 	eval "/sbin/chkconfig --level 2345 mISDN on $null_redirect_verbose"
 fi
 
+if [ $? = 0 ] && [ $there_is_misdn_card = false ]; then
+        echo -e "Step 11: Unmounting modules mISDN ..."
+        echo -e "         Stoping service mISDN ..."
+        eval "/sbin/service mISDN stop $null_redirect_verbose"
+        eval "/sbin/chkconfig --level 2345 mISDN off $null_redirect_verbose"
+fi
+
 if [ $? = 0 ]; then
-        echo -e "Step 9: Restoring service asterisk ..."
+        echo -e "Step 12: Restoring service asterisk ..."
         eval "/usr/sbin/amportal restart  $null_redirect_verbose"
 fi
 
