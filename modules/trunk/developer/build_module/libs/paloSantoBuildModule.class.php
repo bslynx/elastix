@@ -146,6 +146,22 @@ class paloSantoBuildModule {
         return $this->Create_File($ruta, $filename, $contenido, $arrLang);
     }
 
+    function Create_File_Help($new_id_module, $your_name, $ruta, $elastix_Version, $arrLang, $this_module_name)
+    {
+        $filename = "$new_id_module.hlp";
+
+        $file = "$ruta/$this_module_name/libs/sources/help.tpl";
+        if (!$gestor = fopen($file, 'r')) {
+            $this->errMsg = $arrLang["It isn't possible to open file for reading"]. ": $file";
+            return false;
+        }
+        $contenido = fread($gestor, filesize($file));
+        fclose($gestor);
+
+        $ruta .= "/$new_id_module/help";
+        return $this->Create_File($ruta, $filename, $contenido, $arrLang);
+    }
+
     function Create_File_Lang($new_module_name, $new_id_module, $your_name, $ruta, $elastix_Version, $arrLang, $this_module_name)
     {
         $filename = 'en.lang';
