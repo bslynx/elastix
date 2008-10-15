@@ -42,7 +42,7 @@ function _moduleContent(&$smarty, $module_name)
     if (file_exists("$script_dir/$lang_file"))
         include_once($lang_file);
     else
-        include_once("modules/$module_name/lang/es.lang");
+        include_once("modules/$module_name/lang/en.lang");
 
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
