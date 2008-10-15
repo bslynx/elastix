@@ -426,20 +426,6 @@ Trebuie sa introduceti unul pe fiecare rand.  Recomandam mentinerea <br> localho
 
 /* Inicio Hardware Detection */
 "Hardware Detection" => "Detectie Hardware",
-"Ports not Founds" => "Nu am gasit porturile",
-"Card" => "PCI Slot",
-"Type port" => "Tip",
-"No. Port" => "Port #",
-"(In Use)" => "Activ",
-"Hardware Detecting" => "Detectez Hardware nou...",
-"Hardware Detect" => "Detectezeaza Hardware nou",
-"Cards undetected on your system, press for detecting hardware detection." => "Nu am gasit carduri noi in sistem. Apasati \"Detecteaza Hardware nou\" .",
-"Information" => "Informatii",
-"Satisfactory Hardware Detection" => "Termitat cu succes",
-"Unknown" => "Necunoscut",
-"Replace file zapata.conf" => "Inlocuiti fisierul zapata.conf",
-"Unable to backup file zapata.conf by zapata.conf.replace_for_elastix" => "Nu s-a reusit salvarea fisierului zapata.conf de catre zapata.conf.replace_for_elastix",
-"Unable to replace file zapata.conf" => "Nu s-a reusit inlocuirea fisierului zapata.conf",
 /* Fin Hardware Detection */
 
 /* Modulo system.updates*/

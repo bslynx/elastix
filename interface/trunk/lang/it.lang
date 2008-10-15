@@ -398,21 +398,11 @@ $arrLang=array(
 "Change Theme" => "Cambia Tema",
 "Themes not Found" => "Tema non trovato",
 "The theme could not be updated" => "Il Tema non può essere aggiornato",
+
+/*Hardware Detection*/
 "Hardware Detection" => "Riconoscimento Hardware",
-"Ports not Founds" => "Porta non trovata",
-"Card" => "PCI Slot",
-"Type port" => "Tipo Porta",
-"No. Port" => "Porta n°",
-"(In Use)" => "(in uso)",
-"Hardware Detecting" => "Rilevamento Hardware",
-"Hardware Detect" => "Hardware trovato",
-"Cards undetected on your system, press for detecting hardware detection." => "Hardware non trovato nel sistema, premi Riconoscimento Hardware per farlo",
-"Information" => "Informazioni",
-"Satisfactory Hardware Detection" => "Ricerca Hardware Completa",
-"Unknown" => "Sconosciuto",
-"Replace file zapata.conf" => "Rimpiazza file zapata.conf",
-"Unable to backup file zapata.conf by zapata.conf.replace_for_elastix" => "Impossibile per Elastix fare il backup su zapata.conf da zapata.conf.replace",
-"Unable to replace file zapata.conf" => "Impossibile rimpiazzare il file zapata.conf",
+/*end Hardware Detection*/
+
 "Updates" => "Aggiornamenti",
 "Repositories" => "Repositorie",
 "Package Name" => "Nome Pacchetto",

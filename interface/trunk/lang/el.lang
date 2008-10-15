@@ -305,21 +305,11 @@ $arrLang=array(
 "Change Theme" => "Αλλαγή θέματος",
 "Themes not Found" => "Τα θέματα δεν βρέθηκαν",
 "The theme could not be updated" => "Το θέμα δεν μπορεί να ενημερωθεί",
+
+/*Hardware detection*/
 "Hardware Detection" => "Ανίχνευση υλικού",
-"Ports not Founds" => "Οι πόρτες δεν βρέθηκαν",
-"Card" => "PCI Slot",
-"Type port" => "Τύπος",
-"No. Port" => "Πόρτα #",
-"(In Use)" => "Ενεργό",
-"Hardware Detecting" => "Ανίχνευση υλικού σε εξέλιξη",
-"Hardware Detect" => "Ανίχνευση υλικού",
-"Cards undetected on your system, press for detecting hardware detection." => "Δεν βρέθηκαν κάρτες στο σύστημα σας. Πατήστε \"Ανίχνευση υλικου\" για να γίνει η διαδικασία ανίχνευσης",
-"Information" => "Πληροφορίες",
-"Satisfactory Hardware Detection" => "Done",
-"Unknown" => "Άγνωστο",
-"Replace file zapata.conf" => "Αντικατάσταση αρχείου zapata.conf",
-"Unable to backup file zapata.conf by zapata.conf.replace_for_elastix" => "Unable to backup file zapata.conf by zapata.conf.replace_for_elastix",
-"Unable to replace file zapata.conf" => "Unable to replace file zapata.conf",
+/*end Hardware detecttion*/
+
 "Updates" => "Updates",
 "Repositories" => "Repositories",
 "Package Name" => "Όνομα πακέτου",

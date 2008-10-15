@@ -427,20 +427,6 @@ f&ouml;r att n&aring;gra processer kan beh&ouml;va dom!",
 
 /* Inicio Hardware Detection */
 "Hardware Detection" => "H&aring;rdvaru detektering",
-"Ports not Founds" => "Inga portar funna",
-"Card" => "PCI Slot",
-"Type port" => "Typ",
-"No. Port" => "Port #",
-"(In Use)" => "Aktiv",
-"Hardware Detecting" => "Detekterar h&aring;rdvara",
-"Hardware Detect" => "Detektera ny h&aring;rdvara",
-"Cards undetected on your system, press for detecting hardware detection." => "Inga kort blev dektekterade i systemet. V&auml;nligen tryck p&aring; \"Detektera ny h&aring;rdvara\" f&ouml;r att uppt&auml;cka ny h&aring;rdvara.",
-"Information" => "Information",
-"Satisfactory Hardware Detection" => "Klar",
-"Unknown" => "Ok&auml;nd",
-"Replace file zapata.conf" => "Ers&auml;tt filen zapata.conf",
-"Unable to backup file zapata.conf by zapata.conf.replace_for_elastix" => "Kunde inte backupa filen zapta.conf av zapta.conf_replace_for_elastix",
-"Unable to replace file zapata.conf" => "Kunde inte ers&auml;tta filen zapata.conf",
 /* Fin Hardware Detection */
 
 /* Modulo system.updates*/

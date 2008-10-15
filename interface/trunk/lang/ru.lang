@@ -378,18 +378,11 @@ $arrLang=array(
 "Change Theme" => "Изменить Тему",
 "Themes not Found" => "Темы не найдены",
 "The theme could not be updated" => "Тема не может быть обновлена",
+
+/*Hardware Detection*/
 "Hardware Detection" => "Обнаружение Оборудования",
-"Ports not Founds" => "Порты не найдены",
-"Card" => "PCI Слот",
-"Type port" => "Тип",
-"No. Port" => "Портt #",
-"(In Use)" => "Активный",
-"Hardware Detecting" => "Сканирование Оборудования",
-"Hardware Detect" => "Сканировать Оборудование",
-"Cards undetected on your system, press for detecting hardware detection." => "Карты не обнаружены в системе, нажмите для сканирования оборудования",
-"Information" => "Информация",
-"Satisfactory Hardware Detection" => "Оборудование успешно обнаружено",
-"Unknown" => "Неизвестное",
+/*end Hardware Detection*/
+
 "Updates" => "Обновления",
 "Repositories" => "Репозитории",
 "Package Name" => "Название Пакета",

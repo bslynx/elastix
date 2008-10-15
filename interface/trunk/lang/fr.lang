@@ -447,23 +447,6 @@ ar certains <br> processus les utilisent.",
  
 /* Inicio Hardware Detection */
 "Hardware Detection" => "D&eacute;tection Mat&eacute;riel",
-"Ports not Founds" => "Ports non trouv&eacute;s",
-"Card" => "Port PCI",
-"Type port" => "Type",
-"No. Port" => "Port No",
-"(In Use)" => "Actif",
-"Hardware Detecting" => "D&eacute;tection Mat&eacute;riel",
-"Hardware Detect" => "D&eacute;tecter Nouveau Mat&eacute;riel",
-"Cards undetected on your system, press for detecting hardware detection." => "Aucune carte n'a &eacute;t&eacute; d&eacute;te
-ct&eacute;e dans votre syst&egrave;me. Veuillez presser le bouton \"D&eacute;tecter Nouveau Mat&eacute;riel\" pour d&eacute;t
-ecter un nouveau mat&eacute;riel.",
-"Information" => "Information",
-"Satisfactory Hardware Detection" => "Détection Effectuée",
-"Unknown" => "Inconnu",
-"Replace file zapata.conf" => "Remplacer fichier zapata.conf",
-"Unable to backup file zapata.conf by zapata.conf.replace_for_elastix" => "Impossible de sauvegarder le fichier  zapata.conf
-vers zapata.conf.replace_for_elastix",
-"Unable to replace file zapata.conf" => "Impossible de remplacer le fichier zapata.conf",
 /* Fin Hardware Detection */
  
 /* Modulo system.updates*/

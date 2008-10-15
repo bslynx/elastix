@@ -435,20 +435,6 @@ FAX送信可能なIPアドレスを１行ずつ入力してください。<br>El
 
 /* Inicio Hardware Detection */
 "Hardware Detection" => "ハードウェア検出",
-"Ports not Founds" => "通信ポートが見つかりません",
-"Card" => "PCIスロット",
-"Type port" => "タイプ",
-"No. Port" => "ポートNo",
-"(In Use)" => "使用中",
-"Hardware Detecting" => "ハードウェアの検出中",
-"Hardware Detect" => "ハードウェアの検出",
-"Cards undetected on your system, press for detecting hardware detection." => "システム上で有効な通信ポートが検出されませんでした。新たなハードウェアを検出するには、\"ハードウェア検出\"ボタンをクリックしてください",
-"Information" => "ハードウェア情報",
-"Satisfactory Hardware Detection" => "検出結果の反映",
-"Unknown" => "不明なハードウェア",
-"Replace file zapata.conf" => "zapata.confを変更する",
-"Unable to backup file zapata.conf by zapata.conf.replace_for_elastix" => "zapata.conf を zapata.conf.replace_for_elastix にバックアップできませんでした",
-"Unable to replace file zapata.conf" => "zapata.conf を変更できませんでした",
 /* Fin Hardware Detection */
 
 /* Modulo system.updates*/

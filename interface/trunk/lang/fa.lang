@@ -436,20 +436,6 @@ $arrLang=array(
 
 /* Inicio Hardware Detection */
 "Hardware Detection" => "یافتن سخت افزار",
-"Ports not Founds" =>  "هیچ پورتی پیدا نشد",
-"Card" => "شکاف PIC",
-"Type port" =>  "نوع پورت",
-"No. Port" => "شماره پورت",
-"(In Use)" => "فعال",
-"Hardware Detecting" => "یافتن سخت افزار",
-"Hardware Detect" => "یافتن سخت افزار جدید",
-"Cards undetected on your system, press for detecting hardware detection." => "دکمه یافتن سخت افزار جدید",
-"Information" => "اطلاعات",
-"Satisfactory Hardware Detection" => "انجام شد",
-"Unknown" => "ناشناخته",
-"Replace file zapata.conf" => "جایگزین کردن فایل zapata.conf",
-"Unable to backup file zapata.conf by zapata.conf.replace_for_elastix" => "شکست در گرفتن پشتیبان از فایل zapata.conf توسط zapata.conf.replace_for_elastix",
-"Unable to replace file zapata.conf" => "شکست در جایگزین کردن فایل zapata.conf",
 /* Fin Hardware Detection */
 
 /* Modulo system.updates*/

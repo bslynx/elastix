@@ -438,20 +438,6 @@ configuraci&oacute;n porque algunos <br> procesos prodr&iacute;an necesitarlos."
 
 /* Inicio Hardware Detection */
 "Hardware Detection" => "Detección de Hardware",
-"Ports not Founds" => "Puertos no Encontrados",
-"Card" => "Slot PCI",
-"Type port" => "Tipo",
-"No. Port" => "Puerto #",
-"(In Use)" => "Activo",
-"Hardware Detecting" => "Detectando Hardware",
-"Hardware Detect" => "Detectar Nuevo Hardware",
-"Cards undetected on your system, press for detecting hardware detection." => "Tarjetas no detectadas en su sistema, presione \"Detectar Nuevo Hardware\" para la detección",
-"Information" => "Informacion",
-"Satisfactory Hardware Detection" => "Hecho",
-"Unknown" => "Desconocido",
-"Replace file zapata.conf" => "Replace file zapata.conf",
-"Unable to backup file zapata.conf by zapata.conf.replace_for_elastix" => "Unable to backup file zapata.conf by zapata.conf.replace_for_elastix",
-"Unable to replace file zapata.conf" => "Unable to replace file zapata.conf",
 /* Fin Hardware Detection */
 
 /* Modulo system.updates*/
