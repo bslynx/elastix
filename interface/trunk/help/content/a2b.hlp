@@ -1,10 +1,10 @@
 <html>
 <header>
-  <link rel="stylesheet" href="/themes/default/styles.css">
-  <link rel="stylesheet" href="/themes/default/help.css">
+  <link rel="stylesheet" href="/themes/{$THEMENAME}/styles.css">
+  <link rel="stylesheet" href="/themes/{$THEMENAME}/help.css">
 </header>
 <body>
-<h1>Calling Card Platform</h1>
+<h1>{$node_name}</h1>
 
 <p>The option “Calling Cards” of the Menu “Extras” in Elastix offers us the possibility of making international calls for a price that is lower than normal, through a number that the telephone company provides for making calls. These companies can be the typical telephone companies of each country or businesses specializing in telephone services.</p>
 

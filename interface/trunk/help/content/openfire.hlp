@@ -1,11 +1,11 @@
 <html>
 <header>
-  <link rel="stylesheet" href="/themes/default/styles.css">
-  <link rel="stylesheet" href="/themes/default/help.css">
+  <link rel="stylesheet" href="/themes/{$THEMENAME}/styles.css">
+  <link rel="stylesheet" href="/themes/{$THEMENAME}/help.css">
 </header>
 <body>
 
-<h1>Openfire</h1>
+<h1>{$node_name}</h1>
 
 <p>Openfire (previously known as Wildfire) is a Jabber/XMPP server written in Java under GNU and commercial licences. Openfire implements most features amongst those measured by jabber.org.</p>
 

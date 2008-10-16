@@ -1,10 +1,10 @@
 <html>
 <header>
-  <link rel="stylesheet" href="/themes/default/styles.css">
-  <link rel="stylesheet" href="/themes/default/help.css">
+  <link rel="stylesheet" href="/themes/{$THEMENAME}/styles.css">
+  <link rel="stylesheet" href="/themes/{$THEMENAME}/help.css">
 </header>
 <body>
-<h1>Instant Messaging</h1>
+<h1>{$node_name}</h1>
 
 <p>La opción “Mensajería Instantánea” nos permite descargar Spark, el cual es una plataforma cliente de mensajería instantánea optimizada para las empresas y organizaciones. Ofrece soporte incorporado para chatear en grupo o la integración de telefonía, y seguridad fuerte. Además cuenta con una gran experiencia del usuario final con características como línea de corrección ortográfica, marcadores para las salas de chat en grupo, conversaciones con pestañas.</p>
 

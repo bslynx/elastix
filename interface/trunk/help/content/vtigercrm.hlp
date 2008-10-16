@@ -1,11 +1,11 @@
 <html>
 <header>
-  <link rel="stylesheet" href="/themes/default/styles.css">
-  <link rel="stylesheet" href="/themes/default/help.css">
+  <link rel="stylesheet" href="/themes/{$THEMENAME}/styles.css">
+  <link rel="stylesheet" href="/themes/{$THEMENAME}/help.css">
 </header>
 <body>
 
-<h1>vTigerCRM</h1>
+<h1>{$node_name}</h1>
 
 <p>vtiger CRM is 100% Open Source Customer Relationship Management solution built over LAMP/WAMP stack and other third-party open source packages.</p>
 

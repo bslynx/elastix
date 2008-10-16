@@ -1,11 +1,11 @@
 <html>
 <header>
-  <link rel="stylesheet" href="/themes/default/styles.css">
-  <link rel="stylesheet" href="/themes/default/help.css">
+  <link rel="stylesheet" href="/themes/{$THEMENAME}/styles.css">
+  <link rel="stylesheet" href="/themes/{$THEMENAME}/help.css">
 </header>
 <body>
 
-<h1>Fax Utilities</h1>
+<h1>{$node_name}</h1>
 
 <p>The option “Fax Utilities” lets us download JHylaFax or Winprint Hylafax, software for sending and receiving faxes in a fast and easy manner.</p>
 

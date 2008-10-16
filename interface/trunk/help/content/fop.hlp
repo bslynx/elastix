@@ -1,10 +1,10 @@
 <html>
 <header>
-  <link rel="stylesheet" href="/themes/default/styles.css">
+  <link rel="stylesheet" href="/themes/{$THEMENAME}/styles.css">
 </header>
 <body>
 
-<h1>Operator Panel</h1>
+<h1>{$node_name}</h1>
 
 <p>The Operator Panel displays the Extensions, Queues and Trunks sections to monitor the usage of phone lines, extensions and queues. Each one of these elements is shown in different colors, each with its own meaning:</p>
 
