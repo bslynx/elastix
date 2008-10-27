@@ -42,6 +42,7 @@ function _moduleContent(&$smarty, $module_name)
     include_once "modules/$module_name/configs/default.conf.php";
     include_once "modules/$module_name/libs/paloSantoBuildModule.class.php";
     global $arrConf;
+    global $arrConfig;
 
     //include lang local module
     global $arrLangModule;
@@ -85,6 +86,8 @@ function _moduleContent(&$smarty, $module_name)
 function new_module($smarty, $module_name, $local_templates_dir, $arrLangModule, $pDB_acl)
 {
     require_once('libs/paloSantoACL.class.php');
+    global  $arrConfig;
+    
 
     $pACL = new paloACL($pDB_acl);
     $groups = $pACL->getGroups();
@@ -109,6 +112,13 @@ function new_module($smarty, $module_name, $local_templates_dir, $arrLangModule,
     $smarty->assign("SAVE", $arrLangModule["Save"]);
     $smarty->assign("TITLE", $arrLangModule["Build Module"]);
     $smarty->assign("REQUIRED_FIELD", $arrLangModule["Required field"]);
+
+    $smarty->assign("general_information", $arrLangModule["General Information"]);
+    $smarty->assign("location", $arrLangModule["Location"]);
+	$smarty->assign("module_description", $arrLangModule["Module Description"]);
+    $smarty->assign("option_type",$arrConfig['arr_type']);
+	$smarty->assign("email", $arrLangModule["Your e-mail"]); 
+
 
     $smarty->assign("module_name_label", $arrLangModule["Module Name"]);
     $smarty->assign("id_module_label", $arrLangModule["Module Id"]);
@@ -138,7 +148,7 @@ function new_module($smarty, $module_name, $local_templates_dir, $arrLangModule,
     return $html;
 }
 
-function save_module($new_module_name, $new_id_module, $selected_gp, $module_type, $your_name, $level, $exists_p1, $exists_p2, $parent_1_name, $parent_1_id, $parent_2_name, $parent_2_id, $selected_parent_1, $selected_parent_2)
+function save_module($new_module_name, $new_id_module, $selected_gp, $module_type, $your_name, $level, $exists_p1, $exists_p2, $parent_1_name, $parent_1_id, $parent_2_name, $parent_2_id, $selected_parent_1, $selected_parent_2, $arr_form, $email_module)
 {
     $ruta = "/var/www/html/modules";
     $this_module_name = "build_module";
@@ -177,6 +187,12 @@ function save_module($new_module_name, $new_id_module, $selected_gp, $module_typ
         $errMsg .= $arrLangModule["Module Name"].", ";
         $error = true;
     }
+    if((count($arr_form) == 0) && (empty($arr_form)))
+    {
+        $errMsg .= $arrLangModule["Module Description is empty"].", ";
+        $error = true;
+    }
+
     if($new_id_module == "" || strrpos($new_id_module, " ")!=false)
     {
         $errMsg .= $arrLangModule["Module Id"].", ";
@@ -185,6 +201,11 @@ function save_module($new_module_name, $new_id_module, $selected_gp, $module_typ
     if($your_name == "")
     {
         $errMsg .= $arrLangModule["Your Name"].", ";
+        $error = true;
+    }
+	if($email_module == "")
+    {
+        $errMsg .= $arrLangModule["Your e-mail"].", ";
         $error = true;
     }
     if($level == 0)
@@ -432,6 +453,8 @@ function save_module($new_module_name, $new_id_module, $selected_gp, $module_typ
             //$type = "report";
             //$type = "grid";
             $type = $module_type;
+            $arrForm = array();//agregado
+            $arrForm = $arr_form;//agregado
 
             //Primero la carpeta principal del modulo
             $folder = "$new_id_module";
@@ -445,7 +468,7 @@ function save_module($new_module_name, $new_id_module, $selected_gp, $module_typ
                 $elastix_Version = $pNewMod_settings->Query_Elastix_Version();
 
                 //Crear index.php
-                if(!$pNewMod_menu->Create_Index_File($new_module_name, $new_id_module, $your_name, $ruta, $elastix_Version, $arrLangModule, $type, $this_module_name))
+                if(!$pNewMod_menu->Create_Index_File($new_module_name, $new_id_module, $your_name, $ruta, $elastix_Version, $arrLangModule, $type, $this_module_name, $arrForm, $email_module))
                 {
                     $error = true;
                     $errMsg = $pNewMod_menu->errMsg;
@@ -466,7 +489,7 @@ function save_module($new_module_name, $new_id_module, $selected_gp, $module_typ
                         $error = true;
                         $errMsg = $arrLangModule["Folders can't be created"]." $folder, ";
                     }else{
-                        if(!$pNewMod_menu->Create_tpl_File($new_id_module, $ruta, $arrLangModule, $type, $this_module_name))
+                        if(!$pNewMod_menu->Create_tpl_File($new_id_module, $ruta, $arrLangModule, $type, $this_module_name, $arrForm))
                         {
                             $error = true;
                             $errMsg = $pNewMod_menu->errMsg;
@@ -481,7 +504,7 @@ function save_module($new_module_name, $new_id_module, $selected_gp, $module_typ
                     $error = true;
                     $errMsg = $arrLangModule["Folders can't be created"]." $folder, ";
                 }else{
-                    if(!$pNewMod_menu->Create_File_Config($new_id_module, $your_name, $ruta, $elastix_Version, $arrLangModule, $this_module_name))
+                    if(!$pNewMod_menu->Create_File_Config($new_id_module, $your_name, $ruta, $elastix_Version, $arrLangModule, $this_module_name, $email_module))
                     {
                         $error = true;
                         $errMsg = $pNewMod_menu->errMsg;
@@ -495,7 +518,7 @@ function save_module($new_module_name, $new_id_module, $selected_gp, $module_typ
                     $error = true;
                     $errMsg = $arrLangModule["Folders can't be created"]." $folder, ";
                 }else{
-                    if(!$pNewMod_menu->Create_File_Lang($new_module_name, $new_id_module, $your_name, $ruta, $elastix_Version, $arrLangModule, $this_module_name))
+                    if(!$pNewMod_menu->Create_File_Lang($new_module_name, $new_id_module, $your_name, $ruta, $elastix_Version, $arrLangModule, $this_module_name, $arrForm, $email_module))
                     {
                         $error = true;
                         $errMsg = $pNewMod_menu->errMsg;
@@ -509,7 +532,7 @@ function save_module($new_module_name, $new_id_module, $selected_gp, $module_typ
                     $error = true;
                     $errMsg = $arrLangModule["Folders can't be created"]." $folder, ";
                 }else{
-                    if(!$pNewMod_menu->Create_Module_Class_File($new_module_name, $new_id_module, $your_name, $ruta, $elastix_Version, $arrLangModule, $this_module_name))
+                    if(!$pNewMod_menu->Create_Module_Class_File($new_module_name, $new_id_module, $your_name, $ruta, $elastix_Version, $arrLangModule, $this_module_name,$email_module))
                     {
                         $error = true;
                         $errMsg = $pNewMod_menu->errMsg;

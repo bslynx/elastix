@@ -24,4 +24,4 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: {FILE_NAME},v 1.1 {DATE} {YOUR_NAME} Exp $ */
+  $Id: {FILE_NAME},v 1.1 {DATE} {YOUR_NAME} {YOUR_EMAIL} Exp $ */

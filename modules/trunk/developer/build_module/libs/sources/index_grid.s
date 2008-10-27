@@ -70,10 +70,7 @@ function report{NAME_CLASS}($smarty, $module_name, $local_templates_dir, &$pDB, 
     $arrResult =$p{NAME_CLASS}->Obtain{NAME_CLASS}($limit, $offset, $field_pattern);
 
     if(is_array($arrResult) && $total>0){
-        foreach($arrResult as $key => $value){
-            $arrTmp[0] = $value['campo1'];
-            $arrTmp[1] = $value['campo2'];
-            $arrTmp[2] = $value['campo3'];
+        foreach($arrResult as $key => $value){ {ARR_DATA_ROWS}
             $arrData[] = $arrTmp;
         }
     }
@@ -86,12 +83,7 @@ function report{NAME_CLASS}($smarty, $module_name, $local_templates_dir, &$pDB, 
                         "end"      => $end,
                         "total"    => $total,
                         "url"      => $url,
-                        "columns"  => array(0 => array("name"      => $arrLang["Field"]." 1",
-                                                    "property1" => ""),
-                                            1 => array("name"      => $arrLang["Field"]." 2",
-                                                    "property1" => ""),
-                                            2 => array("name"      => $arrLang["Field"]." 3",
-                                                    "property1" => "")
+                        "columns"  => array({ARR_NAME_COLUMNS}
                                         )
                     );
 

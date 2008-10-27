@@ -112,7 +112,7 @@ class paloSantoBuildModule {
         return $result[0];
     }
 
-    function Create_File_Config($new_id_module, $your_name, $ruta, $elastix_Version, $arrLang, $this_module_name)
+    function Create_File_Config($new_id_module, $your_name, $ruta, $elastix_Version, $arrLang, $this_module_name, $email_module)
     {
         $filename = 'default.conf.php';
         $date = date('Y-m-d h:m:s');
@@ -127,6 +127,7 @@ class paloSantoBuildModule {
         $content = str_replace("{DATE}", "$date", $content);
         $content = str_replace("{YOUR_NAME}", "$your_name", $content);
         $content = str_replace("{FILE_NAME}", "$filename", $content);
+        $content = str_replace("{YOUR_EMAIL}", "$email_module", $content);
         fclose($gestor);
 
         $contenido = "<?php\n$content";
@@ -162,7 +163,7 @@ class paloSantoBuildModule {
         return $this->Create_File($ruta, $filename, $contenido, $arrLang);
     }
 
-    function Create_File_Lang($new_module_name, $new_id_module, $your_name, $ruta, $elastix_Version, $arrLang, $this_module_name)
+    function Create_File_Lang($new_module_name, $new_id_module, $your_name, $ruta, $elastix_Version, $arrLang, $this_module_name, $arrForm, $email_module)
     {
         $filename = 'en.lang';
         $date = date('Y-m-d h:m:s');
@@ -177,6 +178,7 @@ class paloSantoBuildModule {
         $content = str_replace("{DATE}", "$date", $content);
         $content = str_replace("{YOUR_NAME}", "$your_name", $content);
         $content = str_replace("{FILE_NAME}", "$filename", $content);
+        $content = str_replace("{YOUR_EMAIL}", "$email_module", $content);
         fclose($gestor);
 
         $contenido = "<?php\n$content";
@@ -187,7 +189,15 @@ class paloSantoBuildModule {
             return false;
         }
         $content = fread($gestor, filesize($file));
-        $content = str_replace("{LANG_CONTENT}", "\"$new_module_name\" => \"$new_module_name\",", $content);
+
+        if(is_array($arrForm) && count($arrForm) >0){
+            $tmpLanguage = "\"$new_module_name\" => \"$new_module_name\",";
+            foreach($arrForm as $key => $names){
+                $arrName = split("/",$names);
+                $tmpLanguage .= "\n\"$arrName[0]\" => \"$arrName[0]\",";
+            }
+        }
+        $content = str_replace("{LANG_CONTENT}",$tmpLanguage, $content);
         fclose($gestor);
 
         $contenido .= "$content?>";
@@ -196,7 +206,7 @@ class paloSantoBuildModule {
         return $this->Create_File($ruta, $filename, $contenido, $arrLang);
     }
 
-    function Create_Module_Class_File($new_module_name, $new_id_module, $your_name, $ruta, $elastix_Version, $arrLang, $this_module_name)
+    function Create_Module_Class_File($new_module_name, $new_id_module, $your_name, $ruta, $elastix_Version, $arrLang, $this_module_name, $email_module)
     {
         $name_class = str_replace(" ", "", $new_module_name);
         $filename = "paloSanto$name_class.class.php";
@@ -212,6 +222,7 @@ class paloSantoBuildModule {
         $content = str_replace("{DATE}", "$date", $content);
         $content = str_replace("{YOUR_NAME}", "$your_name", $content);
         $content = str_replace("{FILE_NAME}", "$filename", $content);
+        $content = str_replace("{YOUR_EMAIL}", "$email_module", $content);
         fclose($gestor);
 
         $contenido = "<?php\n$content";
@@ -231,11 +242,14 @@ class paloSantoBuildModule {
         return $this->Create_File($ruta, $filename, $contenido, $arrLang);
     }
 
-    function Create_Index_File($new_module_name, $new_id_module, $your_name, $ruta, $elastix_Version, $arrLang, $type, $this_module_name)
+    function Create_Index_File($new_module_name, $new_id_module, $your_name, $ruta, $elastix_Version, $arrLang, $type, $this_module_name,$arrForm, $email_module)
     {
         $name_class = str_replace(" ", "", $new_module_name);
         $filename = "index.php";
         $date = date('Y-m-d h:m:s');
+        $field = array();
+        $content_form = "";
+        $content_file = "";
 
         $file = "$ruta/$this_module_name/libs/sources/comment.s";
         if (!$gestor = fopen($file, 'r')) {
@@ -247,6 +261,7 @@ class paloSantoBuildModule {
         $content = str_replace("{DATE}", "$date", $content);
         $content = str_replace("{YOUR_NAME}", "$your_name", $content);
         $content = str_replace("{FILE_NAME}", "$filename", $content);
+        $content = str_replace("{YOUR_EMAIL}", "$email_module", $content);
         fclose($gestor);
 
         $contenido = "<?php\n$content";
@@ -257,8 +272,48 @@ class paloSantoBuildModule {
             return false;
         }
         $content = fread($gestor, filesize($file));
+
+        if($type == "grid"){
+            $blockRows    ="";
+            $blockColumns ="";
+            if(is_array($arrForm) && count($arrForm)>0){
+                foreach($arrForm as $key => $column){
+                    //Para crear las lineas de los datos rows en el grid.
+                    $blockRows .= "\n\t    \$arrTmp[$key] = \$value['".str_replace(" ","_",strtolower($column))."'];";
+                    //Para crear las lineas de las columnas en el grid.
+                    $blockColumns .= "\n\t\t\t$key => array(\"name\"      => \$arrLang[\"$column\"],
+                                                    \"property1\" => \"\"),";
+                }
+                $content = str_replace("{ARR_DATA_ROWS}",$blockRows,$content);
+                $content = str_replace("{ARR_NAME_COLUMNS}",$blockColumns,$content);
+            }
+        }else{
+             if(is_array($arrForm) && count($arrForm) >0){
+                    foreach($arrForm as $key => $value){
+                        $field = split("/",$value);
+                        if(file_exists("$ruta/$this_module_name/libs/sources/fields_form/$field[1].s")){
+                            $file_form = "$ruta/$this_module_name/libs/sources/fields_form/$field[1].s";
+                                if (!$gestor_form = fopen($file_form, 'r')) {
+                                    $this->errMsg = $arrLang["It isn't possible to open file FORM for reading"]. ": $file";
+                                    return false;
+                                }
+                                $content_file = fread($gestor_form, filesize($file_form));
+                                $content_file = str_replace("{LABEL_FIELD}", $field[0], $content_file);
+                                $content_file = str_replace("{NAME_FIELD}", str_replace(" ","_",strtolower(trim($field[0]))), $content_file);
+                                $content_form .= $content_file;
+                                
+                                fclose($gestor_form);
+                            }
+                    }
+                    $content = str_replace("{ARR_FIELDS_FORM}", "$content_form", $content);
+              }
+        }
+
+
         $content = str_replace("{NAME_CLASS}", "$name_class", $content);
         $content = str_replace("{NEW_MODULE_NAME}", "$new_module_name", $content);
+        
+
         fclose($gestor);
 
         $contenido .= "$content?>";
@@ -267,23 +322,50 @@ class paloSantoBuildModule {
         return $this->Create_File($ruta, $filename, $contenido, $arrLang);
     }
 
-    function Create_tpl_File($new_id_module, $ruta, $arrLang, $type, $this_module_name)
+    function Create_tpl_File($new_id_module, $ruta, $arrLang, $type, $this_module_name, $arrForm)
     {
-        if($type=="grid")
+        $field = array();
+        $content_form = "";
+		$content_file = "";
+        $filename = "";
+        //primero hay q leer el archivo form.tpl y asignar a alguna variable despues a esta varaible
+       //concatenamos el cuerpo es decir los tr que contienen los elementos form
+        //$content_form .= $content_file;
+        if($type=="grid"){
+            $filename = "filter.tpl";
             $file = "$ruta/$this_module_name/libs/sources/filter.tpl";
-        else $file = "$ruta/$this_module_name/libs/sources/form.tpl";
+        }
+        else /*if($type == "form")*/{
+            $filename = "form.tpl";
+            $file = "$ruta/$this_module_name/libs/sources/form.tpl";
+            if(is_array($arrForm) && count($arrForm) >0){
+			   if(file_exists("$ruta/$this_module_name/libs/sources/fields_form/fields_form.tpl")){
+		               	$file_form = "$ruta/$this_module_name/libs/sources/fields_form/fields_form.tpl";					
 
+                foreach($arrForm as $key => $value){
+                        $field = split("/",$value);
+                        if (!$gestor_form = fopen($file_form, 'r')) {
+                            $this->errMsg = $arrLang["It isn't possible to open file FORM for reading"]. ": $file";
+                            return false;
+                        }
+                        $content_file = fread($gestor_form, filesize($file_form));
+                        $content_file = str_replace("{FIELD_LABEL}", str_replace(" ","_",strtolower(trim($field[0]))), $content_file);
+						$content_form .= $content_file;
+                        fclose($gestor_form);
+                    }
+                }
+            }
+        }
+        $form_tpl_file = "$ruta/$this_module_name/libs/sources/index_$type.tpl";
         if (!$gestor = fopen($file, 'r')) {
             $this->errMsg = $arrLang["It isn't possible to open file for reading"]. ": $file";
             return false;
         }
         $contenido = fread($gestor, filesize($file));
+        $contenido = str_replace("{FIELDS_FORM}",$content_form, $contenido);
         fclose($gestor);
 
         $ruta .= "/$new_id_module/themes/default";
-        if($type=="grid")
-            $filename = "filter.tpl";
-        else $filename = "form.tpl";
         return $this->Create_File($ruta, $filename, $contenido, $arrLang);
     }
 

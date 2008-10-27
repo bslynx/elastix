@@ -27,6 +27,37 @@
   +----------------------------------------------------------------------+
   $Id: default.conf.php,v 1.1 2008/01/04 15:55:57 afigueroa Exp $ */
 
+if (file_exists("modules/build_module/lang/en.lang")) {
+    include_once("modules/build_module/lang/en.lang");
+} else {
+    include_once("modules/build_module/lang/es.lang");
+}
+global $arrLangModule;
+global $arrConfig; 
+
 $arrConfig['module_name'] = 'build_module';
 $arrConfig['templates_dir'] = 'themes';
+$arrConfig['arr_type'] = array(
+        "VALUE" => array (
+                    "text",
+                    "select",
+                    "date",
+                    "textarea",
+                    "checkbox",
+                    "radio",
+                    "password",
+                    "hidden",
+                    "file"),
+        "NAME"  => array (
+                    $arrLangModule["Type Text"],
+                    $arrLangModule["Type Select"],
+                    $arrLangModule["Type Date"],
+                    $arrLangModule["Type Text Area"],
+                    $arrLangModule["Type CheckBox"],
+                    $arrLangModule["Type Radio"],
+                    $arrLangModule["Type Password"],
+                    $arrLangModule["Type Hidden"],
+                    $arrLangModule["Type File"]),
+        "SELECTED" => "Text",     
+        );
 ?>
