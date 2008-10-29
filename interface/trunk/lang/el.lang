@@ -306,9 +306,9 @@ $arrLang=array(
 "Themes not Found" => "Τα θέματα δεν βρέθηκαν",
 "The theme could not be updated" => "Το θέμα δεν μπορεί να ενημερωθεί",
 
-/*Hardware detection*/
+/*Hardware Detection*/
 "Hardware Detection" => "Ανίχνευση υλικού",
-/*end Hardware detecttion*/
+/*end Hardware Detection*/
 
 "Updates" => "Updates",
 "Repositories" => "Repositories",
