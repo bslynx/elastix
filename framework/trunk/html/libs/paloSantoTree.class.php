@@ -263,7 +263,7 @@ class paloTree {
       }
       ///Se construye el link
       $salida .= "<a href='$link' $style target='contenido' class='link_ayuda'".
-                  "onClick=\"parent.navegacion.location='" . $this->URLBase . "&id_nodo=" . $nodo['id_nodo']"&name_nodo='".$nodo['nombre']."'\">".
+                  "onClick=\"parent.navegacion.location='" . $this->URLBase . "&id_nodo=" . $nodo['id_nodo']."&name_nodo='".$nodo['nombre']."'\">".
                      "<font class='letra_11'>" . $nodo['nombre'] . "</font>".
                   "</a><br>\n";
 
