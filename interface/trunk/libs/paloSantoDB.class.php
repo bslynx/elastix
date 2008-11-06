@@ -57,7 +57,7 @@ class paloDB {
             if($dsninfo['dbsyntax']=='sqlite3')
                 $dsn = "sqlite:".$dsninfo['database'];
             else if($dsninfo['dbsyntax']=='mysql')
-                $dsn = "mysql:dbname=".$dsninfo['database'].";host=localhost";
+                $dsn = "mysql:dbname=".$dsninfo['database'].";host=".$dsninfo['hostspec'];
 
             $user       = $dsninfo['username'];
             $password   = $dsninfo['password'];
