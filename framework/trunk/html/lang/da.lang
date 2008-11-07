@@ -33,38 +33,26 @@
 global $arrLang;
 $arrLang=array(
 /*System Info*/
-"Original Text in English"=>"Translated text",
-"System Resources"=>"System ressourcer",
-"CPU Info"=>"CPU information",
-"Uptime"=>"oppetid",
-"CPU usage"=>"CPU forbrug",
-"Memory usage"=>"Hukommelsesbrug",
-"Swap usage"=>"Sidefil",
-"Hard Drives"=>"Hard diske",
-"Partition Name"=>"Partitionsnavn",
-"Capacity"=>"Kapacitet",
-"Usage"=>"Forbrug",
-"Mount point"=>"Tilslutningssted",
 "Disk usage"=>"Diskforbrug",
 "Used space"=>"Pladsforbrug",
 "Free space"=>"Fri plads",
-"No records found"=>"Ingen optegnelse fundet",
 "Simultaneous calls, memory and CPU"=>"Samtidige opkald, hukomelse og CPU",
 "Sim. calls"=>"Simulerede opkald",
 "CPU usage (%)"=>"CPU forbrugs%",
 "Mem. usage (MB)"=>"Hukommelsesforbrug i MB",
-"It was not possible to obtain information about the graph"=>"Det var ikke muligt at samle data til grafen",
+
+"Export"=>"Eksporter",
+"Start"=>"Start",
+"End"=>"Færdig",
+"Next"=>"Næste",
+"Previous"=>"Forrige",
+
 "Validation Error"=>"Valideringsfejl",
 "The following fields contain errors"=>"Følgende felter indeholder fejl",
 "Save"=>"Gem",
 "Required field"=>"Feltet skal udfyldes",
 "Apply changes"=>"Opdater systemet med de tilføjede ændringer",
 "Cancel"=>"Annuller",
-"Export"=>"Eksporter",
-"Start"=>"Start",
-"End"=>"Færdig",
-"Next"=>"Næste",
-"Previous"=>"Forrige",
 
 /*Login to Elastix*/
 "Welcome to Elastix"=>"Velkommen til ELASTIX",
@@ -76,26 +64,16 @@ $arrLang=array(
 /*end Login to Elastix*/
 
 /*start User Management*/
-"Create New User"=>"Opret ny bruger",
-"Login"=>"Log på",
-"Real Name"=>"Fulde navn",
 "Group"=>"Gruppe",
 "User List"=>"Brugerliste",
-"The admin user cannot be deleted because is the default Elastix administrator. You can delete any other user."=>"Bruger Admin kan ikke slettes. Denne bruger anvendes som standard administrator af ELASTIX. De kan slette alle andre brugere",
-"New User"=>"Ny bruger",
-"The passwords are empty or don't match"=>"Kodeordene er ikke ens.",
+"Group List"=>"Group List",
 "The group is wrong"=>"Gruppen er forkert",
-"Edit User"=>"Ret bruger",
-"Name"=>"Navn",
-"Retype password"=>"Genindtast kodeord",
+"Group Permission"=>"Gruppetilladelser",
+
 "Are you sure you wish to continue?"=>"Er De sikker?",
 "Edit"=>"Ret",
 "Delete"=>"Slet",
 "Accept"=>"Accepter",
-"Apply"=>"Opdater",
-"Resource"=>"Ressource",
-"Group Permission"=>"Gruppetilladelser",
-"Show"=>"Vis",
 "Directory couldn't be opened"=>"Directory couldn't be opened",
 
 /*start menu*/
@@ -107,10 +85,7 @@ $arrLang=array(
 
 /*Start Language*/
 "Language"=>"Language",
-"Select language"=>"Select language",
 "Change"=>"Change",
-"Continue"=>"Continue",
-"You can't change language"=>"You can't change language",
 "Logout"=>"Logout",
 /*end Language*/
 
@@ -121,30 +96,16 @@ $arrLang=array(
 "No option was selected"=>"No option was selected",
 "Octets out of range"=>"Octets out of range",
 
-//version 0.8
-//user
-"Extension" => "Extension",
+/*version 0.8*/
+/*start user*/
 "View User" => "View User",
+/*start user*/
 
 /*system - date/time*/
 "Date/Time"  =>  "Date/Time",
-"Date and Time Configuration"  =>  "Date/Time",
-"Current Datetime"  =>  "Current Datetime",
-"New Date"  =>  "New Date",
-"New Time"  =>  "New Time",
-"New Timezone"  =>  "New Timezone",
-"The change of date and time can concern important  system processes."  =>  "The change of date and time can concern important  system processes.",
-"System time changed correctly" => "System time changed correctly",
-"You can not change the system time" => "You can not change the system time",
-"Can not find file" => "Can not find file",
 /*system - date/time*/
 
 //load module
-"File name"  =>  "File name",
-"Load Module"  =>  "Load Module",
-"Refresh"  =>  "Refresh",
-"Menu Location"  =>  "Menu Location",
-"Module File"  =>  "Module File",
 "ID for new module (folder name)"  =>  "ID for new module (folder name)",
 "Module Name"  =>  "Module Name",
 "Choose Menu"  =>  "Choose Menu",
@@ -152,25 +113,16 @@ $arrLang=array(
 "Menu Name"  =>  "Menu Name",
 "Defined Menu"  =>  "Defined Menu",
 "New Menu"  =>  "New Menu",
-"Invalid file extension.- It must be tar.gz / zip / tgz"  =>  "Invalid file extension.- It must be tar.gz / zip / tgz",
 "Module sucessfully loaded"  =>  "Module sucessfully loaded",
 "Folder name doesn't exist in module file"  =>  "Folder name doesn't exist in module file",
 "Folder configs doesn't exist in module file"  =>  "Folder configs doesn't exist in module file",
 "Folder themes doesn't exist in module file"  =>  "Folder themes doesn't exist in module file",
 "File index.php doesn't exist in module file"  =>  "File index.php doesn't exist in module file",
-"File install.php doesn't exist in module file"  =>  "File install.php doesn't exist in module file",
-"Could not uncompress file"  =>  "Could not uncompress file",
-"install.php failed"  =>  "install.php failed",
 //end load module
 
-// Elastix 0.9 
-
-//Inicio SubModule Themes
+//Themes
 "Themes" => "Themes",
 "Change Theme" => "Change Theme",
-"Themes not Found" => "Themes not Found",
-"The theme could not be updated" => "The theme could not be updated",
-//Fin SubModule Themes
 
 /* Preferences*/
 "Preferences" => "Preferences",
@@ -184,27 +136,12 @@ implementations of Voice over IP around the globe.",
 "About Elastix Closed"=>"Close",
 /* End About Elastix */
 
-//Elastix 0.9.1
-/*Start module Group List*/
-"Groups"=>"Groups",
-"Group List"=>"Group List",
-"Description"=>"Description",
-"New Group"=>"New Group",
-"Create New Group"=>"Create New Group",
-"View Group"=>"View Group",
-"Edit Group"=>"Edit Group",
-"The Group have users assigned. You can delete any group that does not have any users assigned in it."=>"The Group have users assigned. You can delete any group that does not have any users assigned in it.",
-"The administrator group cannot be deleted because is the default Elastix Group. You can delete any other group."=>"The administrator group cannot be deleted because is the default Elastix Group. You can delete any other group.",
-/*End module Group List*/
-
 /** Elastix 1.0 **/
 
 /*Grouplist*/
 "administrator" => "Administrator",
 "operator" => "Operator",
 "extension" => "Extension",
-"total access" => "Total Access",
-"extension user" => "Extension User",
 /*Grouplist*/
 "Title" => "Title",
 );

@@ -34,38 +34,29 @@ global $arrLang;
 $arrLang=array(
 /*System Info*/
 "English" => "Hungarian",
-"System Resources" => "Rendszer erőforrások",
-"CPU Info" => "CPU információ",
-"Uptime" => "Futásidő",
-"CPU usage" => "CPU használat",
-"Memory usage" => "Memória használat",
-"Swap usage" => "Swap használat",
-"Hard Drives" => "Merevlemezek",
-"Partition Name" => "Partíció név",
-"Capacity" => "Kapacitás",
-"Usage" => "Használat",
-"Mount point" => "Csatolási pont",
 "Disk usage" => "Lemez használat",
 "Used space" => "Felhasznált terület",
 "Free space" => "Szabad terület",
-"No records found" => "Nem található rekord",
 "Simultaneous calls, memory and CPU" => "Egyidejű hívások, memória és CPU",
 "Sim. calls" => "Párh. Hívások",
 "CPU usage (%)" => "CPU használat (%)",
 "Mem. usage (MB)" => "Mem. használat (MB)",
-"It was not possible to obtain information about the graph" => "Nem lehetséges a grafikonnal kapcsolatos információszerzés",
+/*System Info*/
+
+"Export" => "Export",
+"Start" => "Indít",
+"End" => "Vége",
+"Next" => "Következő",
+"Previous" => "Előző",
+
+
+
 "Validation Error" => "Érvényesítési hiba",
 "The following fields contain errors" => "A következő mezők hibásak",
 "Save" => "Mentés",
 "Required field" => "Szükséges mező",
 "Apply changes" => "Módosítások alkalmazása",
 "Cancel" => "Mégsem",
-"Export" => "Export",
-"Start" => "Indít",
-"End" => "Vége",
-"Next" => "Következő",
-"Previous" => "Előző",
-/*System Info*/
 
 /*Login to Elastix*/
 "Welcome to Elastix" => "Üdvözli az Elastix",
@@ -77,27 +68,15 @@ $arrLang=array(
 /*end Login to Elastix*/
 
 /*start User Management*/
-"Create New User" => "Új felhasználó létrehozása",
-"Login" => "Belépés",
-"Real Name" => "Valódi név",
 "Group" => "Csoport",
 "User List" => "Felhasználói lista",
-"The admin user cannot be deleted because is the default Elastix administrator. You can delete any other user." => "Az admin felhasználó nem törölhető! Másik felhasználót törölhet.",
-"New User" => "Új felhasználó ",
-"The passwords are empty or don't match" => "A jelszó üres, vagy nem megfelelő",
 "The group is wrong" => "Hibás csoport",
-"Edit User" => "Felhasználó szerkesztése",
-"Name" => "Név",
-"Retype password" => "Jelszó ismét",
 "Are you sure you wish to continue?" => "Biztos, hogy folytatja?",
 "Edit" => "Szerkesztés",
 "Delete" => "Törlés",
 "Accept" => "Elfogadás",
-"Apply" => "Alkalmaz",
-"Resource" => "Erőforrás",
 "Group Permission" => "Csoport jogosultság",
 "Users" => "Users",
-"Show" => "Megtekint",
 "Directory couldn't be opened" => "Katalógust nem lehet megnyitni",
 /*end User Management*/
 
@@ -110,10 +89,7 @@ $arrLang=array(
 
 /*Start Language*/
 "Language" => "Nyelv",
-"Select language" => "Nyelv kiválasztása",
 "Change" => "Csere",
-"Continue" => "Folytat",
-"You can't change language" => "Nem tudsz nyelvet változtatni",
 "Logout" => "Kijelentkezés",
 /*end Language*/
 
@@ -129,52 +105,33 @@ $arrLang=array(
 
 /*version 0.8*/
 /*start user*/
-"Extension" => "Kiterjesztés",
 "View User" => "Felhasználót néz",
 /*version 0.8*/
 /*end user*/
 
 /*system - date/time*/
 "Date/Time" => "Dátum/Idő",
-"Date and Time Configuration" => "Dátum/Idő Konfigurációja",
-"Current Datetime" => "Aktuális dátum idő",
-"New Date" => "Új Dátum",
-"New Time" => "Új Idő",
-"New Timezone" => "Új Időzóna",
-"The change of date and time can concern important  system processes." => "A dátum és idő csere fontos kapcsolata a rendszer folyamatokkal.",
-"System time changed correctly" => "System time changed correctly",
-"You can not change the system time" => "You can not change the system time",
-"Can not find file" => "Can not find file",
 /*end system - date/time*/
 
 /*load module*/
 "Load Module" => "Modul betöltés",
-"Refresh" => "Frissít",
-"Menu Location" => "Menü helye",
-"Module File" => "Modul állomány",
 "ID for new module (folder name)" => "Új modul ID (katalógus név)",
-"Module Name" => "Modul név",
 "Choose Menu" => "Válassz Menüt",
 "ID for new menu" => "Új menü ID",
 "Menu Name" => "Menü név",
 "Defined Menu" => "Menüt meghatározták",
 "New Menu" => "Új menü",
-"Invalid file extension.- It must be tar.gz / zip / tgz" => "Érvénytelen file kiterjesztés - csak tar.gz / zip / tgz lehet",
 "Module sucessfully loaded" => "Modul teljesen betöltve",
 "Folder name doesn't exist in module file" => "Katalógus név nem létezik a modul file-ban",
 "Folder configs doesn't exist in module file" => "Katalógus konfiguráció nem létezik a modul file-ban",
 "Folder themes doesn't exist in module file" => "Katalógus téma nem létezik a modul file-ban",
 "File index.php doesn't exist in module file" => "Az index.php nem létezik a modul file-ban",
 "File install.php doesn't exist in module file" => "Az install.php nem létezik a modul file-ban",
-"Could not uncompress file" => "Ez nem tömörített file",
-"install.php failed" => "install.php hiba",
 /*load module*/
 
 /*Start SubModule Themes*/
 "Themes" => "Témák",
 "Change Theme" => "Téma csere",
-"Themes not Found" => "Téma nem található",
-"The theme could not be updated" => "A téma nem fissíthető",
 /*end SubModule Themes*/
 
 /* Preferences*/
@@ -190,13 +147,6 @@ $arrLang=array(
 /*Start module Group List*/
 "Groups" => "Csoportok",
 "Group List" => "Csoport lista",
-"Description" => "Leírás",
-"New Group" => "Új Csoport",
-"Create New Group" => "Új csoport létrehozás",
-"View Group" => "Csoport nézet",
-"Edit Group" => "Csoport szerkesztése",
-"The Group have users assigned. You can delete any group that does not have any users assigned in it." => "A csoporthoz felhasználók vannak rendelve. Másik csoport törölhető, melyhez nincsenek felhasználók rendelve.",
-"The administrator group cannot be deleted because is the default Elastix Group. You can delete any other group." => "Az adminisztrátori csoport nem törölhető, mert alapértelmezett Elastix Csoport. Másik csoport törölhető.",
 /*end module Group List*/
 
 /*Grouplist*/

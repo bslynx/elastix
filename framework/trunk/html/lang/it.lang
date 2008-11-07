@@ -33,38 +33,27 @@
 global $arrLang;
 $arrLang=array(
 /*System Info*/
-"System Resources" => "Risorse di sistema",
-"CPU Info" => "Informazioni CPU",
-"Uptime" => "Tempo di funzionamento",
-"CPU usage" => "Utilizzo CPU",
-"Memory usage" => "Utilizzo Memoria",
-"Swap usage" => "Utilizzo file di Swap",
-"Hard Drives" => "Dischi Rigidi",
-"Partition Name" => "Nome della Partizione",
-"Capacity" => "Capacità",
-"Usage" => "Utilizzo",
-"Mount point" => "Punto di montaggio",
 "Disk usage" => "Utilizzo Disco",
 "Used space" => "Spazio Usato",
 "Free space" => "Spazio Libero",
-"No records found" => "Nessun record trovato",
 "Simultaneous calls, memory and CPU" => "Chiamate simultanee, memoria e CPU",
 "Sim. calls" => "Chiamate sim.",
 "CPU usage (%)" => "Utilizzo CPU (%)",
 "Mem. usage (MB)" => "Utilizzo Mem. (MB)",
-"It was not possible to obtain information about the graph" => "Non è possibile ottenere informazioni sul grafico",
-"Validation Error" => "Errore di Validazione",
-"The following fields contain errors" => "I seguenti campi contengono errori",
-"Save" => "Salva",
-"Required field" => "Campi Obbligatori",
-"Apply changes" => "Applica le modifiche",
-"Cancel" => "Annulla",
+
 "Export" => "Esporta",
 "Start" => "Avvia",
 "End" => "Fine",
 "Next" => "Prossimo",
 "Previous" => "Precedente",
 /*System Info*/
+
+"Validation Error" => "Errore di Validazione",
+"The following fields contain errors" => "I seguenti campi contengono errori",
+"Save" => "Salva",
+"Required field" => "Campi Obbligatori",
+"Apply changes" => "Applica le modifiche",
+"Cancel" => "Annulla",
 
 /*Login to Elastix*/
 "Welcome to Elastix" => "Benvenuto in Elastix",
@@ -76,27 +65,15 @@ $arrLang=array(
 /*end Login to Elastix*/
 
 /*start User Management*/
-"Create New User" => "Crea un nuovo Utente",
-"Login" => "Connessione",
-"Real Name" => "Nome Reale",
 "Group" => "Gruppo",
 "User List" => "Lista Utenti",
-"The admin user cannot be deleted because is the default Elastix administrator. You can delete any other user." => "L\'utente Admin non può essere cancellato perché è l\'amministratore di default di Elastix. Puoi cancellare qualsiasi altro utente.",
-"New User" => "Nuovo Utente",
-"The passwords are empty or don't match" => "La password è nulla o non corrisponde",
 "The group is wrong" => "Il gruppo è errato",
-"Edit User" => "Modifica Utente",
-"Name" => "Nome",
-"Retype password" => "Ripeti la password",
 "Are you sure you wish to continue?" => "Sei sicuro di voler continuare?",
 "Edit" => "Modifica",
 "Delete" => "Elimina",
 "Accept" => "Accetta",
-"Apply" => "Applica",
-"Resource" => "Risorse",
 "Group Permission" => "Permessi dei Gruppi",
 "Users" => "Utenti",
-"Show" => "Visualizza",
 "Directory couldn't be opened" => "La cartella non può essere aperta",
 /*start User Management*/
 
@@ -109,10 +86,7 @@ $arrLang=array(
 
 /*Start Language*/
 "Language" => "Lingua",
-"Select language" => "Scegli la lingua",
 "Change" => "Cambia",
-"Continue" => "Continua",
-"You can't change language" => "Non puoi cambiare lingua",
 "Logout" => "Uscita",
 /*end Language*/
 
@@ -127,51 +101,32 @@ $arrLang=array(
 
 /*version 0.8*/
 /*start user*/
-"Extension" => "Extension",
 "View User" => "Vedi Utente",
 /*end user*/
 
 /*system - date/time*/
 "Date/Time" => "Data/Ora",
-"Date and Time Configuration" => "Configurazione Data/Ora",
-"Current Datetime" => "Data/Ora corrente",
-"New Date" => "Nuova Data",
-"New Time" => "Nuova Ora",
-"New Timezone" => "Nuova Timezone",
-"The change of date and time can concern important  system processes." => "Il cambio di data e ora può influenzare importanti processi di sistema",
-"System time changed correctly" => "System time changed correctly",
-"You can not change the system time" => "You can not change the system time",
-"Can not find file" => "Can not find file",
 /*end system - date/time*/
 
 /*load module*/
 "Load Module" => "Carica Modulo",
-"Refresh" => "Aggiorna",
-"Menu Location" => "Locazione Menù",
-"Module File" => "File del modulo",
 "ID for new module (folder name)" => "Identificativo per il nuovo modulo (nome della cartella)",
-"Module Name" => "Nome del modulo",
 "Choose Menu" => "Scegli il Menù",
 "ID for new menu" => "Identificativo per il nuovo menù",
 "Menu Name" => "Nome del Menù",
 "Defined Menu" => "Menu Definito",
 "New Menu" => "Nuovo Menù",
-"Invalid file extension.- It must be tar.gz / zip / tgz" => "Estensione del file non valida. Deve essere tar.gz /zip /tgz",
 "Module sucessfully loaded" => "Modulo caricato correttamente",
 "Folder name doesn't exist in module file" => "La cartella name non esiste nel file del modulo",
 "Folder configs doesn't exist in module file" => "La cartella configs non esiste nel file del modulo",
 "Folder themes doesn't exist in module file" => "La cartella themes non esiste nel file del modulo",
 "File index.php doesn't exist in module file" => "Il file index.php non esiste nel file del modulo",
 "File install.php doesn't exist in module file" => "Il File install.php non esiste nel file del modulo",
-"Could not uncompress file" => "non posso decomprimere il file",
-"install.php failed" => "install.php fallito",
 /*end load module*/
 
 /*Start SubModule Themes*/
 "Themes" => "Temi",
 "Change Theme" => "Cambia Tema",
-"Themes not Found" => "Tema non trovato",
-"The theme could not be updated" => "Il Tema non può essere aggiornato",
 /*end SubModule Themes*/
 
 /* Preferences*/
@@ -187,13 +142,6 @@ $arrLang=array(
 /*Start module Group List*/
 "Groups" => "Gruppi",
 "Group List" => "Lista Gruppi",
-"Description" => "Descrizione",
-"New Group" => "Nuovo Gruppo",
-"Create New Group" => "Crea Nuovo Gruppo",
-"View Group" => "Vedi Gruppo",
-"Edit Group" => "Modifica Gruppo",
-"The Group have users assigned. You can delete any group that does not have any users assigned in it." => "Il gruppo ha un utente assegnato. Può cancellare gruppi che non hanno utenti assegnati a se..",
-"The administrator group cannot be deleted because is the default Elastix Group. You can delete any other group." => "Il Administrator non può essere cancellato. Puo cancellare tutti gli altri",
 /*end module Group List*/
 
 /*Grouplist*/

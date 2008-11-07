@@ -33,37 +33,28 @@
 global $arrLang;
 $arrLang=array(
 /*System Info*/
-"System Resources" => "منابع سیستم",
-"CPU Info" => "مشخصات پردازنده",
-"Uptime" => "فعال",
-"CPU usage" => "میزان استفاده از پردازنده",
-"Memory usage" => "میزان استفاده از حافظه",
-"Swap usage" => "میزان حافظه مبادله استفاده شده",
-"Hard Drives" => "هارد دیسک ها",
-"Partition Name" => "نام پارتیشن",
-"Capacity" => "ظرفیت",
-"Usage" => "میزان استفاده شده",
-"Mount point" => "میزان قابل استفاده از هارد دیسک",
 "Disk usage" => "میزان استفاده شده از هارد دیسک",
 "Used space" => "فضای استفاده شده",
 "Free space" => "فضاهای خالی",
-"No records found" => "رکوردی پیدا نشد",
 "Simultaneous calls, memory and CPU" => "مکالمات همزمان، حافظه و پردازنده",
 "Sim. calls" => "مکالمات همزمان",
 "CPU usage (%)" => "میزان استفاده از پردازنده (%)",
 "Mem. usage (MB)" => "میزان استفاده از حافظه (%)",
-"It was not possible to obtain information about the graph" => "امکان بدست آوردن اطلاعات در خصوص نمودار نیست",
+
+
+"Export" => "خروجی گرفتن",
+"Start" => "شروع",
+"End" => "پایان",
+"Next" => "بعدی",
+"Previous" => "قبلی",
+
+
 "Validation Error" => "اعتبار تایید نشد",
 "The following fields contain errors" => "فیلد زیر دارای خطا است",
 "Save" => "ذخیره",
 "Required field" => "فیلد مورد نیاز",
 "Apply changes" => "تغییرات را ثبت کن",
 "Cancel" => "انصراف",
-"Export" => "خروجی گرفتن",
-"Start" => "شروع",
-"End" => "پایان",
-"Next" => "بعدی",
-"Previous" => "قبلی",
 
 /*Login to Elastix*/
 "Welcome to Elastix" => "به سیستم تلفنی شرکت سیتکو خوش آمدید ",
@@ -75,27 +66,18 @@ $arrLang=array(
 /*end Login to Elastix*/
 
 /*start User Management*/
-"Create New User" => "ایجاد کاربر جدید",
-"Login" => "ورود",
-"Real Name" => "نام حقیقی",
 "Group" => "گروه",
 "User List" => "لیست کاربران",
-"The admin user cannot be deleted because is the default Elastix administrator. You can delete any other user." => "این کاربر قابل حذف نیست زیرا کاربر پیش فرض سیستم می باشد، هر کاربر دیگری قابل حذف می باشد",
-"New User" => "کاربر جدید",
-"The passwords are empty or don't match" => "رمز عبور یا خالی وارد شده و یا درست نیست",
 "The group is wrong" => "گروه اشتباه است",
-"Edit User" => "ویرایش  کاربر",
-"Name" => "نام",
-"Retype password" => "تایپ دوباره رمز",
+
+
+
 "Are you sure you wish to continue?" => "آیا مطمئن به ادامه هستید؟",
 "Edit" => "ویرایش",
 "Delete" => "حذف",
 "Accept" => "قبول",
-"Apply" => "اجرا کن",
-"Resource" => "منبع",
 "Group Permission" => "مجوزهای گروه",
 "Users" => "کاربران",
-"Show" => "نمایش بده",
 "Directory couldn't be opened" => "دایرکتوری باز نمی شود",
 /*end User Management*/
 
@@ -108,10 +90,7 @@ $arrLang=array(
 
 /*Start Language*/
 "Language" => "زبان",
-"Select language" => "انتخاب زبان",
 "Change" => "تغییر دادن",
-"Continue" => "ادامه ",
-"You can't change language" => "شما نمی توانید زبان را تغییر دهید",
 "Logout" => "خروج",
 /*end  Language*/
 
@@ -126,51 +105,31 @@ $arrLang=array(
 
 /*version 0.8*/
 /*start user*/
-"Extension" => "داخلی",
 "View User" => "مشاهده کاربر",
 /*end  user*/
 
 /*system - date/time*/
 "Date/Time" => "تاریخ/زمان",
-"Date and Time Configuration" => "تاریخ/زمان",
-"Current Datetime" => "تاریخ و زمان جاری",
-"New Date" => "تاریخ جدید",
-"New Time" => "تایم جدید",
-"New Timezone" => "منطقه جدید زمانی",
-"The change of date and time can concern important  system processes." => "تغییر تاریخ و زمان می تواند موجب مشکل در پردازش های سیستمی شود",
-"System time changed correctly" => "System time changed correctly",
-"You can not change the system time" => "You can not change the system time",
-"Can not find file" => "Can not find file",
 /*end system - date/time*/
 
 /*load module*/
 "Load Module" => "بارگزاری ماژول",
-"Refresh" => "دوباره آوردن",
-"Menu Location" => "محل فهرست انتخاب",
-"Module File" => "فایل ماژول",
 "ID for new module (folder name)" => "شناسه کاربری برای ماژول جدید (نام پوشه)",
-"Module Name" => "نام ماژول",
 "Choose Menu" => "منو را انتخاب کنید",
 "ID for new menu" => "شناسه کاربری برای منوی جدید",
 "Menu Name" => "نام منو",
 "Defined Menu" => "منوی تعریف شده",
 "New Menu" => "منوی جدید",
-"Invalid file extension.- It must be tar.gz / zip / tgz" => "پسوند فایل غیر مجاز، باید  tar.gz / zip / tgz  باشد",
 "Module sucessfully loaded" => "ماژول با موفقیت لود شد",
 "Folder name doesn't exist in module file" => "نام پوشه در فایل ماژول وجود ندارد",
 "Folder configs doesn't exist in module file" => "پوشه configs در فایل ماژول وجود ندارد",
 "Folder themes doesn't exist in module file" => "پوشه themes در فایل ماژول وجود ندارد",
 "File index.php doesn't exist in module file" => "فایل index.php در فایل ماژول وجود ندارد",
-"File install.php doesn't exist in module file" => "فایل install.php در فایل ماژول وجود ندارد",
-"Could not uncompress file" => "شکست در درآوردن فایل از حالت فشرده شده",
-"install.php failed" => "خطا در install.php",
 /*end load module*/
 
 /*Start SubModule Themes*/
 "Themes" => "پوسته",
 "Change Theme" => "تغییر پوسته",
-"Themes not Found" => "پوسته پیدا نشد",
-"The theme could not be updated" => "پوسته مورد نظر به روز نمی شود",
 /*end SubModule Themes*/
 
 /* Preferences*/
@@ -186,13 +145,6 @@ $arrLang=array(
 /*Start module Group List*/
 "Groups" => "گروه ها",
 "Group List" => "لیست گروه",
-"Description" => "توصیف",
-"New Group" => "گروه جدید",
-"Create New Group" => "ایجاد یک گروه جدید",
-"View Group" => "نمایش گروه",
-"Edit Group" => "تنظیم گروه",
-"The Group have users assigned. You can delete any group that does not have any users assigned in it." => "این گروه دارای کاربران مرتبط است شما تنها گروهی را می توانید حذف کنید که کاربر مرتبط نداشته باشد",
-"The administrator group cannot be deleted because is the default Elastix Group. You can delete any other group." => "گروه مدیر قابل حذف نیست زیرا گروه پیش فرض سیستم است، شما می توانید هر گروه دیگری را حذف کنید",
 /*end module Group List*/
 
 /** Elastix 1.0 **/
@@ -202,6 +154,7 @@ $arrLang=array(
 "extension" => "داخلی",
 "total access" => "دسترسی کامل",
 "extension user" => "داخلی کاربر",
+"No Extension" => "ﺏﺩﻮﻧ ﺩﺎﺨﻟی",
 /*end UserList*/
 "Title" => "Title",
 );

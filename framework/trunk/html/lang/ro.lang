@@ -33,38 +33,27 @@
 global $arrLang;
 $arrLang=array(
 /*System Info*/
-"System Resources"=>"Resurse Sistem",
-"CPU Info"=>"Informatii CPU",
-"Uptime"=>"Durata Sesiunii",
-"CPU usage"=>"Utilizare CPU",
-"Memory usage"=>"Utilizare memorie fizica",
-"Swap usage"=>"Utilizare memorie Swap",
-"Hard Drives"=>"Discuri dure HDD",
-"Partition Name"=>"Numele partitiei",
-"Capacity"=>"Capacitate",
-"Usage"=>"Utilizare",
-"Mount point"=>"Montat in",
 "Disk usage"=>"Utilizare disc",
 "Used space"=>"Spatiu folosit",
 "Free space"=>"Spatiu liber",
-"No records found"=>"Nici o inregistrare gasita",
 "Simultaneous calls, memory and CPU"=>"Apeluri simultane, memorie si CPU",
 "Sim. calls"=>"Apeluri Simultane.",
 "CPU usage (%)"=>"Utilizare CPU (%)",
 "Mem. usage (MB)"=>"Utilizare Mem. (MB)",
-"It was not possible to obtain information about the graph" =>"Nu este posila obtinerea informatiei din grafic",
+/*System Info*/
+
+"Export"=>"Exporta",
+"Start"=>"Start",
+"End"=>"Sfarsit",
+"Next"=>"Urmator",
+"Previous"=>"Precedent",
+
 "Validation Error"=>"Eroare de validare",
 "The following fields contain errors"=>"Urmatoarele campuri contin erori",
 "Save"=>"Salveaza",
 "Required field"=>"Camp Obligatoriu",
 "Apply changes"=>"Aplica Modificarile",
 "Cancel"=>"Anuleaza",
-"Export"=>"Exporta",
-"Start"=>"Start",
-"End"=>"Sfarsit",
-"Next"=>"Urmator",
-"Previous"=>"Precedent",
-/*System Info*/
 
 /*Login to Elastix*/
 "Welcome to Elastix"=>"Bine ati venit in Elastix",
@@ -76,26 +65,14 @@ $arrLang=array(
 /*Login to Elastix*/
 
 /*start User Management*/
-"Create New User"=>"Creaza Utilizator Nou",
-"Login"=>"Intrare",
-"Real Name"=>"Nume Real",
 "Group"=>"Grup",
-"User List"=>"Lista Utilizatori",
-"The admin user cannot be deleted because is the default Elastix administrator. You can delete any other user."=>"Utilizatorul Admin nu poate fi sters pentru ca este Administratorul Implicit. Puteti sterge oricar alt utilizator.",
-"New User"=>"Utilizator Nou",
 "The passwords are empty or don't match"=>"Password'urile sunt goale sau diferite",
 "The group is wrong"=>"Grupul este gresit",
 "Edit User"=>"Editare Utilizator",
-"Name"=>"Nume",
-"Retype password"=>"Verificare password",
 "Are you sure you wish to continue?"=>"Sigur vreti sa continuati?",
-"Edit"=>"Editare",
 "Delete"=>"Stergere",
 "Accept"=>"Acceptare",
-"Apply"=>"Confirma",
-"Resource"=>"Resurse",
 "Group Permission"=>"Permisiuni Grup",
-"Show"=>"Afiseaza",
 "Users" => "Utilizatori",
 "Directory couldn't be opened"=>"Directorul nu poate fi deschis",
 /*end User Management*/
@@ -108,12 +85,9 @@ $arrLang=array(
 /*end menu*/
 
 /*Start Language*/
-"Language"=>"Language",
-"Select language"=>"Select language",
-"Change"=>"Change",
-"Continue"=>"Continue",
-"You can't change language"=>"You can't change language",
-"Logout"=>"Logout",
+"Language"=>"Limba",
+"Change"=>"Cost",
+"Logout"=>"Inchidere Sesiune",
 /*end Language*/
 
 /*version 0.7*/
@@ -127,85 +101,59 @@ $arrLang=array(
 
 /*version 0.8*/
 /*start user*/
-"Extension" => "Extension",
 "View User" => "View User",
 /*end user*/
 
 /*system - date/time*/
-"Date/Time"  =>  "Date/Time",
-"Date and Time Configuration"  =>  "Date/Time",
-"Current Datetime"  =>  "Current Datetime",
-"New Date"  =>  "New Date",
-"New Time"  =>  "New Time",
-"New Timezone"  =>  "New Timezone",
-"The change of date and time can concern important  system processes."  =>  "The change of date and time can concern important  system processes.",
-"System time changed correctly" => "System time changed correctly",
-"You can not change the system time" => "You can not change the system time",
-"Can not find file" => "Can not find file",
+"Date/Time"  =>  "Data/Ora",
 /*end system - date/time*/
 
 /*load module*/
-"Load Module"  =>  "Load Module",
-"Refresh"  =>  "Refresh",
-"Menu Location"  =>  "Menu Location",
-"Module File"  =>  "Module File",
-"ID for new module (folder name)"  =>  "ID for new module (folder name)",
-"Module Name"  =>  "Module Name",
-"Choose Menu"  =>  "Choose Menu",
-"ID for new menu"  =>  "ID for new menu",
-"Menu Name"  =>  "Menu Name",
-"Defined Menu"  =>  "Defined Menu",
-"New Menu"  =>  "New Menu",
-"Invalid file extension.- It must be tar.gz / zip / tgz"  =>  "Invalid file extension.- It must be tar.gz / zip / tgz",
-"Module sucessfully loaded"  =>  "Module sucessfully loaded",
+"Load Module"  =>  "Incarcare Modul",
+"ID for new module (folder name)"  =>  "ID pentru modul nou (nume folder)",
+"Choose Menu"  =>  "Selectati Meniul",
+"ID for new menu"  =>  "ID pentru meniul nou",
+"Menu Name"  =>  "Nume Meniu",
+"Defined Menu"  =>  "Meniu Definit",
+"New Menu"  =>  "Meniu Nou", 
+"Module sucessfully loaded"  =>  "Modul Incarcat cu Succes",
 "Folder name doesn't exist in module file"  =>  "Folder name doesn't exist in module file",
 "Folder configs doesn't exist in module file"  =>  "Folder configs doesn't exist in module file",
 "Folder themes doesn't exist in module file"  =>  "Folder themes doesn't exist in module file",
 "File index.php doesn't exist in module file"  =>  "File index.php doesn't exist in module file",
 "File install.php doesn't exist in module file"  =>  "File install.php doesn't exist in module file",
-"Could not uncompress file"  =>  "Could not uncompress file",
-"install.php failed"  =>  "install.php failed",
+
 /*end load module*/
 
 // Elastix 0.9 
 /*Start SubModule Themes*/
-"Themes" => "Themes",
-"Change Theme" => "Change Theme",
-"Themes not Found" => "Themes not Found",
-"The theme could not be updated" => "The theme could not be updated",
+"Themes" => "Teme",
+"Change Theme" => "Schimba Tema",
 /*end SubModule Themes*/
 
 /* Preferences*/
-"Preferences" => "Preferences",
+"Preferences" => "Preferinte",
 
 /* Start About Elastix */
-"About Elastix"=>"About Elastix",
-"About Elastix Content"=>"Elastix was created under the premise of becoming a reliable, easy-to-use,web-based system for the management of communications over IP. This open
-source software started in Ecuador has become the solution of choice for
-implementations of Voice over IP around the globe.",
-"About Elastix Closed"=>"Close",
+"About Elastix"=>"Despre Elastix",
+"About Elastix Content"=>"Elastix a fost creat cu premizele de a deveni un sistem stabil, usor de folosit, bazat pe web, pentru managementul comunicatiilor de voce pe suport IP. Aceasta implementare open source inceputa in Ecuador a devenit o solutie aleasa pentru voip in intreaga lume.",
+"About Elastix Closed"=>"Inchide",
 /* End About Elastix */
 
-//Elastix 0.9.1
 /*Start module Group List*/
-"Groups"=>"Groups",
-"Group List"=>"Group List",
-"Description"=>"Description",
-"New Group"=>"New Group",
-"Create New Group"=>"Create New Group",
-"View Group"=>"View Group",
-"Edit Group"=>"Edit Group",
-"The Group have users assigned. You can delete any group that does not have any users assigned in it."=>"The Group have users assigned. You can delete any group that does not have any users assigned in it.",
-"The administrator group cannot be deleted because is the default Elastix Group. You can delete any other group."=>"The administrator group cannot be deleted because is the default Elastix Group. You can delete any other group.",
+"Groups"=>"Grupuri",
+"Group List"=>"Lista Grupuri",
+"Edit"=>"Editare",
 /*End module Group List*/
+
 
 /** Elastix 1.0 **/
 /*Grouplist*/
 "administrator" => "Administrator",
 "operator" => "Operator",
-"extension" => "Extension",
-"total access" => "Total Access",
-"extension user" => "Extension User",
+"extension" => "Extensie",
+"total access" => "Acces Total",
+"extension user" => "Utilizator Extensie",
 /*Grouplist*/
 "Title" => "Title",
 );

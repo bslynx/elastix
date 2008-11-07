@@ -29,38 +29,27 @@
 global $arrLang;
 $arrLang=array(
 /*System Info*/
-"System Resources" => "Системные ресурсы",
-"CPU Info" => "Сведения о процессоре",
-"Uptime" => "Время работы системы",
-"CPU usage" => "Загрузка процессора",
-"Memory usage" => "Использование памяти",
-"Swap usage" => "Использование подкачки",
-"Hard Drives" => "Жеские диски",
-"Partition Name" => "Имя раздела",
-"Capacity" => "Объём",
-"Usage" => "Использование",
-"Mount point" => "Точка монтирования",
 "Disk usage" => "Использование диска",
 "Used space" => "Занято",
 "Free space" => "Свободно",
-"No records found" => "Записи не найдены",
 "Simultaneous calls, memory and CPU" => "Звонки, память и CPU вместе",
 "Sim. calls" => "Одноврем. звонки",
 "CPU usage (%)" => "Загрузка CPU (%)",
 "Mem. usage (MB)" => "Использование памяти (MB)",
-"It was not possible to obtain information about the graph" => "Невозможно получить сведения о графе",
+/*System Info*/
+
+"Export" => "Экспорт",
+"Start" => "Начало",
+"End" => "Конец",
+"Next" => "Следующий",
+"Previous" => "Предыдущий",
+
 "Validation Error" => "Ошибка валидации",
 "The following fields contain errors" => "Следующие поля содержат ошибки",
 "Save" => "Сохранить",
 "Required field" => "Обязательное поле",
 "Apply changes" => "Применить изменения",
 "Cancel" => "Отменить",
-"Export" => "Экспорт",
-"Start" => "Начало",
-"End" => "Конец",
-"Next" => "Следующий",
-"Previous" => "Предыдущий",
-/*System Info*/
 
 /*Login to Elastix*/
 "Welcome to Elastix" => "Добро Пожаловать в Elastix",
@@ -72,27 +61,15 @@ $arrLang=array(
 /*end Login to Elastix*/
 
 /*start User Management*/
-"Create New User" => "Создать нового пользователя",
-"Login" => "Имя пользователя",
-"Real Name" => "Полное имя",
 "Group" => "Группа",
 "User List" => "Список пользователей",
-"The admin user cannot be deleted because is the default Elastix administrator. You can delete any other user." => "Пользователь admin, являющийся администратором Elastix по-умолчанию, не может быть удалён. Вы можете провести удаление любого другого пользователя",
-"New User" => "Новый пользователь",
-"The passwords are empty or don't match" => "Пароли пусты или не совпадают",
 "The group is wrong" => "Неверная группа",
-"Edit User" => "Редактировать пользователя",
-"Name" => "Имя",
-"Retype password" => "Введите пароль повторно",
 "Are you sure you wish to continue?" => "Вы уверены что хотите продолжить?",
 "Edit" => "Редактировать",
 "Delete" => "Удалить",
 "Accept" => "Принять",
-"Apply" => "Применить",
-"Resource" => "Ресурсы",
 "Group Permission" => "Права группы",
 "Users" => "Users",
-"Show" => "Показать",
 "Directory couldn't be opened" => "Директория не может быть открыта",
 /*end User Management*/
 
@@ -105,10 +82,7 @@ $arrLang=array(
 
 /*Start Language*/
 "Language" => "Language",
-"Select language" => "Выберите язык",
 "Change" => "Изменить",
-"Continue" => "Продолжить",
-"You can't change language" => "Вы не можете изменить язык",
 "Logout" => "Выход",
 /*end Language*/
 
@@ -123,52 +97,33 @@ $arrLang=array(
 
 /*version 0.8*/
 /*start user*/
-"Extension" => "Внутренний Номер",
 "View User" => "View User",
 /*end user*/
 
 /*system - date/time*/
 "Date/Time" => "Дата и Время",
-"Date and Time Configuration" => "Дата и Время",
-"Current Datetime" => "Текущее Время",
-"New Date" => "Новая Дата",
-"New Time" => "Новое Время",
-"New Timezone" => "Новая Временная Зона",
-"The change of date and time can concern important  system processes." => "Изменение даты и времени может повлиять на важные системные процессы",
-"System time changed correctly" => "System time changed correctly",
-"You can not change the system time" => "You can not change the system time",
-"Can not find file" => "Can not find file",
 /*end system - date/time*/
 
 /*load module*/
 "Load Module" => "Загрузить Модуль",
-"Refresh" => "Обновить",
-"Menu Location" => "Расположение Меню",
-"Module File" => "Файл Модуля",
 "ID for new module (folder name)" => "ID для нового модуля (имя папки)",
-"Module Name" => "Имя Модуля",
 "Choose Menu" => "Выберите Меню",
 "ID for new menu" => "ID для нового меню",
 "Menu Name" => "Название Меню",
 "Defined Menu" => "Определённое Меню",
 "New Menu" => "Новое Меню",
-"Invalid file extension.- It must be tar.gz / zip / tgz" => "Некорректное расширение файла. Должно быть - tar.gz / zip / tgz",
 "Module sucessfully loaded" => "Модуль успешно загружен",
 "Folder name doesn't exist in module file" => "Имя папки не существует в файле модуля",
 "Folder configs doesn't exist in module file" => "Конфигурационные файлы папки не существуют в файле модуля",
 "Folder themes doesn't exist in module file" => "Темы папки не существуют в файле модуля",
 "File index.php doesn't exist in module file" => "Файл index.php не существует в файле модуля",
 "File install.php doesn't exist in module file" => "Файл install.php не существует в файле модуля",
-"Could not uncompress file" => "Невозможно распаковать файл",
-"install.php failed" => "Ошибка запуска install.php",
 /*end load module*/
 
 // Elastix 0.9 
 /*Start SubModule Themes*/
 "Themes" => "Темы",
 "Change Theme" => "Изменить Тему",
-"Themes not Found" => "Темы не найдены",
-"The theme could not be updated" => "Тема не может быть обновлена",
 /*end SubModule Themes*/
 
 /*Preferences*/
@@ -186,13 +141,6 @@ implementations of Voice over IP around the globe.",
 /*Start module Group List*/
 "Groups"=>"Groups",
 "Group List"=>"Group List",
-"Description"=>"Description",
-"New Group"=>"New Group",
-"Create New Group"=>"Create New Group",
-"View Group"=>"View Group",
-"Edit Group"=>"Edit Group",
-"The Group have users assigned. You can delete any group that does not have any users assigned in it."=>"The Group have users assigned. You can delete any group that does not have any users assigned in it.",
-"The administrator group cannot be deleted because is the default Elastix Group. You can delete any other group."=>"The administrator group cannot be deleted because is the default Elastix Group. You can delete any other group.",
 /*End module Group List*/
 
 /*Grouplist*/

@@ -30,36 +30,27 @@ global $arrLang;
 $arrLang=array(
 /*System Info*/
 "System Resources"=>"Recursos del Sistema",
-"CPU Info"=>"CPU",
-"Uptime"=>"Tiempo de funcionamiento",
-"CPU usage"=>"CPU usado",
-"Memory usage"=>"Memoria Utilizada",
-"Swap usage"=>"Swap Utilizado",
-"Hard Drives"=>"Discos Duros",
-"Partition Name"=>"Nombre de la partici&oacute;n",
-"Capacity"=>"Capacidad",
-"Usage"=>"Usado",
-"Mount point"=>"Punto de montaje",
 "Disk usage"=>"Uso del Disco",
 "Used space"=>"Espacio usado",
 "Free space"=>"Espacio libre",
-"No records found"=>"No se encontraron registros",
 "Simultaneous calls, memory and CPU"=>"Llamadas simultáneas, memoria y CPU",
 "Sim. calls"=>"Llamadas Sim.",
 "CPU usage (%)"=>"Uso de CPU (%)",
 "Mem. usage (MB)"=>"Uso de Mem. (MB)",
-"It was not possible to obtain information about the graph" =>"No fue posible obtener informaci&oacute;n acerca del gr&aacute;fico",
+
+"Export"=>"Exportar",
+"Start"=>"Inicio",
+"End"=>"Fin",
+"Next"=>"Siguiente",
+"Previous"=>"Anterior",
+
+
 "Validation Error"=>"Error de Validaci&oacute;n",
 "The following fields contain errors"=>"Los siguientes campos contienen errores ",
 "Save"=>"Guardar",
 "Required field"=>"Campo requerido",
 "Apply changes"=>"Aplicar cambios",
 "Cancel"=>"Cancelar",
-"Export"=>"Exportar",
-"Start"=>"Inicio",
-"End"=>"Fin",
-"Next"=>"Siguiente",
-"Previous"=>"Anterior",
 
 /*Login to Elastix*/
 "Welcome to Elastix"=>"Bienvenido a Elastix",
@@ -71,27 +62,19 @@ $arrLang=array(
 /*end Login to Elastix*/
 
 /*start User Management*/
-"Create New User"=>"Crear Nuevo Usuario",
-"Login"=>"Login",
-"Real Name"=>"Nombre",
 "Group"=>"Grupo",
+"Group List"=>"Lista de Grupos",
 "User List"=>"Lista de Usuarios",
-"The admin user cannot be deleted because is the default Elastix administrator. You can delete any other user."=>"El usuario admin no puede ser eliminado porque es el administrador de Elastix predeterminado. Puede borrar cualquier otro usuario.",
-"New User"=>"Nuevo Usuario",
-"The passwords are empty or don't match"=>"Las contrase&ntilde;as est&aacute;n vac&iacute;as o no concuerdan",
 "The group is wrong"=>"El grupo es incorrecto",
-"Edit User"=>"Editar Usuario",
-"Name"=>"Nombre",
-"Retype password"=>"Confirmar Contrase&ntilde;a",
+
+
+
 "Are you sure you wish to continue?"=>"¿Est&aacute; seguro que desea continuar?",
 "Edit"=>"Editar",
 "Delete"=>"Eliminar",
 "Accept"=>"Aceptar",
-"Apply"=>"Aplicar",
-"Resource"=>"Recurso",
 "Group Permission"=>"Permisos de Grupo",
 "Users" => "Usuarios",
-"Show"=>"Mostrar",
 "Directory couldn't be opened"=>"No se pudo abrir el directorio",
 /*end User Management*/
 
@@ -104,10 +87,7 @@ $arrLang=array(
 
 /*Start Language*/
 "Language"=>"Idioma",
-"Select language"=>"Seleccionar idioma",
 "Change"=>"Cambiar",
-"Continue"=>"Continuar",
-"You can't change language"=>"You can't change language",
 "Logout"=>"Cerrar Sesi&oacute;n",
 /*end Language*/
 
@@ -122,46 +102,27 @@ $arrLang=array(
 
 /*version 0.8*/
 /*start user*/
-"Extension"=>"Extensi&oacute;n",
 "View User"=>"Ver usuario",
 /*end user*/
 
 
 /*system - date/time*/
 "Date/Time" => "Fecha/Hora",
-"Date and Time Configuration" => "Fecha/Hora",
-"Current Datetime" => "Fecha y Hora actual",
-"New Date" => "Nueva Fecha",
-"New Time" => "Nueva Hora",
-"New Timezone" => "Nueva Zona Horaria",
-"The change of date and time can concern important  system processes." => "El cambio de fecha y hora puede afectar a procesos importantes del sistema.",
-"System time changed correctly" => "System time changed correctly",
-"You can not change the system time" => "You can not change the system time",
-"Can not find file" => "Can not find file",
-
 /*end system - date/time*/
 
 /*load module*/
 "Load Module" => "Cargar Men&uacute;",
-"Refresh"  =>  "Refrescar",
-"Menu Location"  =>  "Ubicaci&oacute;n en Menu",
-"Module File"  =>  "Archivo de Modulo",
 "ID for new module (folder name)"  =>  "ID para nuevo modulo (nombre de carpeta)",
-"Module Name"  =>  "Nombre del M&oacute;dulo",
 "Choose Menu"  =>  "Seleccione Men&uacute;",
 "ID for new menu"  =>  "ID para nuevo men&uacute;",
 "Menu Name"  =>  "Nombre de Men&uacute;",
 "Defined Menu"  =>  "Men&uacute; definido",
 "New Menu"  =>  "Nuevo Men&uacute;",
-"Invalid file extension.- It must be tar.gz / zip / tgz"  =>  "Extensi&oacute;n de archivo inv&aacute;lida.- Debe ser tar.gz / zip / tgz",
 "Module sucessfully loaded"  =>  "Modulo cargado exitosamente",
 "Folder name doesn't exist in module file"  =>  "Nombre de carpeta no exite en archivo de modulo",
 "Folder configs doesn't exist in module file"  =>  "Carpeta configs no existe en archivo de modulo",
 "Folder themes doesn't exist in module file"  => "Carpeta themes no existe en archivo de modulo",
 "File index.php doesn't exist in module file"  =>  "Archivo index.php no existe en archivo de modulo",
-"File install.php doesn't exist in module file"  =>  "Archivo install.php no existe en archivo de modulo",
-"Could not uncompress file"  =>  "No se pudo descomprimir el archivo",
-"install.php failed"  =>  "install.php fall&oacute;",
 /*end load module*/
 
 
@@ -170,8 +131,6 @@ $arrLang=array(
 /*Start SubModule Themes*/
 "Themes" => "Temas",
 "Change Theme" => "Cambiar Tema",
-"Themes not Found" => "Temas no encontrados",
-"The theme could not be updated" => "No se pudo actualizar el tema",
 /*end SubModule Themes*/
 
 
@@ -191,14 +150,6 @@ alrededor del mundo.",
 //Elastix 0.9.1
 /*Start module Group List*/
 "Groups"=>"Grupos",
-"Group List"=>"Lista de Grupos",
-"Description"=>"Descripción",
-"New Group"=>"Nuevo Grupo",
-"Create New Group"=>"Crear Nuevo Grupo",
-"View Group"=>"Ver Grupo",
-"Edit Group"=>"Editar Grupo",
-"The Group have users assigned. You can delete any group that does not have any users assigned in it."=>"El Grupo tiene usuarios asignados. Puede eliminar cualquier grupo que no tenga usuarios asignados.",
-"The administrator group cannot be deleted because is the default Elastix Group. You can delete any other group."=>"El Grupo administrador no puede ser eliminado porque es el Grupo Elastix por defecto. Puede eliminar cualquier otro grupo.",
 /*End module Group List*/
 
 /** Elastix 1.0 **/

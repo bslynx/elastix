@@ -32,17 +32,6 @@
 global $arrLang;
 $arrLang=array(
 /*System Info*/
-"System Resources"=>"Системни Ресурси",
-"CPU Info"=>"Информация Процесор",
-"Uptime"=>"Работи от",
-"CPU usage"=>"Използван Процесор",
-"Memory usage"=>"Използвана Памет",
-"Swap usage"=>"Използван Swap",
-"Hard Drives"=>"Твърди Дискове",
-"Partition Name"=>"Име на Дяла",
-"Capacity"=>"Обем",
-"Usage"=>"Използван",
-"Mount point"=>"Място на монтиране",
 "Disk usage"=>"Disk usage",
 "Used space"=>"Used space",
 "Free space"=>"Free space",
@@ -51,20 +40,48 @@ $arrLang=array(
 "Sim. calls"=>"Sim. calls",
 "CPU usage (%)"=>"CPU usage (%)",
 "Mem. usage (MB)"=>"Mem. usage (MB)",
-"It was not possible to obtain information about the graph" =>"Не беше получена информация за графиката",
-"Validation Error"=>"Грешка при Потвърждаване",
-"The following fields contain errors"=>"Следните полета съдържат грешки",
-"Save"=>"Запис",
-"Required field"=>"Задължителни полета",
-"Apply changes"=>"Приложи Промените",
-"Are you sure you want to edit network parameters?"=>"Сигурни ли сте че искате да промените мрежовите параметри?",
-"Cancel"=>"Отказ",
+/*end System Info*/
+
+/*Navegacion: offset*/
 "Export"=>"Изнеси",
 "Start"=>"Начало",
 "End"=>"Край",
 "Next"=>"Следващ",
 "Previous"=>"Предишен",
-/*end System Info*/
+/*end Navegacion: offset*/
+
+/*Common in modules: Group List - Group Permission - User List*/
+"Group"=>"Група",
+"administrator" => "Администратор",
+"operator" => "Оператор",
+"extension" => "Потребител",
+"total access" => "Пълен Достъп",
+/*end Common in modules: Group List - Group Permission - User List*/
+
+"Group List"=>"Списък на Групите",
+"User List"=>"Списък на Потребителите",
+"Logout"=>"Излез",
+"Change"=>"Промени",
+"Title" => "Име",
+"Load Module" => "Модули",
+"Language"=>"Език",
+"Groups"=>"Групи",
+"Group Permission"=>"Забрани за Групата",
+
+
+
+/*Common in modules: Group List, User List, Load Module*/
+"Required field"=>"Задължителни полета",
+"Cancel"=>"Отказ",
+"Apply changes"=>"Приложи Промените",
+"Save"=>"Запис",
+"Edit"=>"Редактирай",
+"Delete"=>"Изтрий",
+"Are you sure you wish to continue?"=>"Сигурни ли сте че искате да продължите?",
+"The following fields contain errors"=>"Следните полета съдържат грешки",
+"Validation Error"=>"Грешка при Потвърждаване",
+/*end Common in modules: Group List, User List, Load Module*/
+
 
 /*Login to Elastix*/
 "Welcome to Elastix"=>"Добре Дошли в Еластикс",
@@ -76,27 +93,10 @@ $arrLang=array(
 /*end Login to Elastix*/
 
 /*start User Management*/
-"Create New User"=>"Създай Нов Потребител",
-"Login"=>"Потребителско Име",
-"Real Name"=>"Име",
-"Group"=>"Група",
-"User List"=>"Списък на Потребителите",
-"The admin user cannot be deleted because is the default Elastix administrator. You can delete any other user."=>"Потребител admin не може да бъде изтрит защото е администратор на Еластикс по подразбиране. Всеки друг потребител може да бъде изтрит.",
-"New User"=>"Нов Потребител",
-"The passwords are empty or don't match"=>"Липсва парола или не съвпада",
 "The group is wrong"=>"Неправилна група",
-"Edit User"=>"Редактирай Потребител",
-"Name"=>"Име",
-"Retype password"=>"Повторете паролата",
-"Are you sure you wish to continue?"=>"Сигурни ли сте че искате да продължите?",
-"Edit"=>"Редактирай",
-"Delete"=>"Изтрий",
 "Accept"=>"Приемам",
-"Apply"=>"Приложи",
-"Resource"=>"Ресурси",
-"Group Permission"=>"Забрани за Групата",
 "Users" => "Потребители",
-"Show"=>"Покажи",
+
 "Directory couldn't be opened"=>"Директорията не може да бъде отворена",
 /*end User Management*/
 
@@ -107,15 +107,6 @@ $arrLang=array(
 "Menu Administrator"=>"Меню Администратор",
 /*end menu*/
 
-/*Start Language*/
-"Language"=>"Език",
-"Select language"=>"Изберете език",
-"Change"=>"Промени",
-"Continue"=>"Продължи",
-"You can't change language"=>"Не е възможно да промените езика",
-"Logout"=>"Излез",
-/*end Language*/
-
 /*version 0.7*/
 /*start paloSantoValidar.class.php*/
 "Options"=>"Опции",
@@ -125,56 +116,34 @@ $arrLang=array(
 "Octets out of range"=>"Не е в допустимите граници",
 /*end paloSantoValidar.class.php*/
 
-//version 0.8
-//user
-"Extension"=>"Вътрешен Номер",
-"View User"=>"Разгледай Потребител",
 
+/*version 0.8*/
+/*start user*/
+"View User"=>"Разгледай Потребител",
+/*end user*/
 
 /*system - date/time*/
 "Date/Time" => "Дата/Час",
-"Date and Time Configuration" => "Настройване на Дата и Час",
-"Current Datetime" => "Текущи Дата/Час",
-"New Date" => "Нова Дата",
-"New Time" => "Нов Час",
-"New Timezone" => "Часова зона",
-"The change of date and time can concern important  system processes." => "Промяната на часът и датата може да засегне важни системни процеси.",
-"System time changed correctly" => "System time changed correctly",
-"You can not change the system time" => "You can not change the system time",
-"Can not find file" => "Can not find file",
-
+/*end system - date/time*/
 
 //load module
-"Load Module" => "Модули",
-"Refresh" => "Опресни",
-"Menu Location" => "Местоположение в Менюто",
-"Module File" => "Файл с Модула",
 "ID for new module (folder name)" => "ID за новия модул (име на директория)",
-"Module Name" => "Име на Модула",
 "Choose Menu" => "Избери Меню",
 "ID for new menu" => "ID за новото меню",
 "Menu Name" => "Име на Менюто",
 "Defined Menu" => "Описание на Менюто",
 "New Menu" => "Ново Меню",
-"Invalid file extension.- It must be tar.gz / zip / tgz" => "Неправилно файлово разщирение.- Трябва да е tar.gz / zip / tgz",
 "Module sucessfully loaded" => "Модулът е зареден успешно",
 "Folder name doesn't exist in module file" => "Името на директорията не е намерено в архива на модула",
 "Folder configs doesn't exist in module file" => "Настройките на директорията не са намерени в архива на модула",
 "Folder themes doesn't exist in module file" => "Основите на директорията не са намерени в архива на модула",
 "File index.php doesn't exist in module file" => "Файлът index.php не е намерен в архива на модула",
 "File install.php doesn't exist in module file" => "Файлът install.php не е намерен в архива на модула",
-"Could not uncompress file" => "Файлът не може да бъде разархивиран",
-"install.php failed" => "install.php се провали",
 //load module
 
-// Elastix 0.9 
-
-//Inicio SubModule Themes
+//Themes
 "Themes" => "Изглед",
 "Change Theme" => "Промени Изглед",
-"Themes not Found" => "Изгледът не е намерен",
-"The theme could not be updated" => "Изгледът не може да бъде преработен",
-//Fin SubModule Themes
 
 /* Preferences*/
 "Preferences" => "Настройки",
@@ -188,27 +157,5 @@ $arrLang=array(
 "About Elastix Closed"=>"Затвори",
 /* End About Elastix */
 
-//Elastix 0.9.1
-/*Start module Group List*/
-"Groups"=>"Групи",
-"Group List"=>"Списък на Групите",
-"Description"=>"Описание",
-"New Group"=>"Нова Група",
-"Create New Group"=>"Добави Нова Група",
-"View Group"=>"Разгледай Групата",
-"Edit Group"=>"Редактирай Групата",
-"The Group have users assigned. You can delete any group that does not have any users assigned in it."=>"В групата има добавени потребители. Възможно е да изтриете всяка група която няма добавени потребители в нея.",
-"The administrator group cannot be deleted because is the default Elastix Group. You can delete any other group."=>"Група Administrator не може да бъде изтрита защото е група по подразбиране в Еластиск. Възможно е да изтриете всяка друга група.",
-/*End module Group List*/
-
-/** Elastix 1.0 **/
-/*Grouplist*/
-"administrator" => "Администратор",
-"operator" => "Оператор",
-"extension" => "Потребител",
-"total access" => "Пълен Достъп",
-"extension user" => "Потребител",
-/*Grouplist*/
-"Title" => "Title",
 );
 ?>

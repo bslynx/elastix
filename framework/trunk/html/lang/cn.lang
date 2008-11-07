@@ -29,37 +29,26 @@
 global $arrLang;
 $arrLang=array(
 /*System Info*/
-"System Resources"=>"系统资源",
-"CPU Info"=>"CPU信息",
-"Uptime"=>"使用中",
-"CPU usage"=>"CPU使用量",
-"Memory usage"=>"内存使用量",
-"Swap usage"=>"交换分区使用量",
-"Hard Drives"=>"硬盘",
-"Partition Name"=>"分区名称",
-"Capacity"=>"容量",
-"Usage"=>"使用量",
-"Mount point"=>"挂载点",
 "Disk usage"=>"硬盘使用量",
 "Used space"=>"已使用空间",
 "Free space"=>"可使用空间",
-"No records found"=>"记录不存在",
 "Simultaneous calls, memory and CPU"=>"同步通话,内存和CPU",
 "Sim. calls"=>"同步通话",
 "CPU usage (%)"=>"CPU使用量百分比",
 "Mem. usage (MB)"=>"内存使用量百分比",
-"It was not possible to obtain information about the graph "=>"无法获取图表信息",
+
+"Export"=>"导出",
+"Start"=>"首页",
+"End"=>"末页",
+"Next"=>"下一页",
+"Previous"=>"上一页",
+
 "Validation Error"=>"确认出错",
 "The following fields contain errors"=>"以下项目有误",
 "Save"=>"保存",
 "Required field"=>"必填项",
 "Apply changes"=>"改变生效",
 "Cancel"=>"取消",
-"Export"=>"导出",
-"Start"=>"首页",
-"End"=>"末页",
-"Next"=>"下一页",
-"Previous"=>"上一页",
 
 /*Login to Elastix*/
 "Welcome to Elastix"=>"欢迎使用Elastix!",
@@ -71,26 +60,14 @@ $arrLang=array(
 /*end Login to Elastix*/
 
 /*start User Management*/
-"Create New User"=>"新建用户",
-"Login"=>"登入",
-"Real Name"=>"真实姓名",
 "Group"=>"用户组",
 "User List"=>"用户列表",
-"The admin user cannot be deleted because is the default Elastix administrator. You can delete any other user."=>"不能删除Admin用户,因为它是Elastix的默认管理员.你可以删除其他用户",
-"New User"=>"新用户",
-"The passwords are empty or don't match"=>"密码为空或不正确",
 "The group is wrong"=>"用户组不正确",
-"Edit User"=>"编辑用户信息",
-"Name"=>"名称",
-"Retype password"=>"请再次输入密码",
 "Are you sure you wish to continue?"=>"确定要继续吗?",
 "Edit"=>"编辑",
 "Delete"=>"刪除",
 "Accept"=>"接受",
-"Apply"=>"应用",
-"Resource"=>"资源",
 "Group Permission"=>"组权限",
-"Show"=>"显示",
 "Directory couldn't be opened"=>"目录无法打开",
 
 /*start menu*/
@@ -102,10 +79,7 @@ $arrLang=array(
 
 /*Start Language*/
 "Language"=>"语言",
-"Select language"=>"选择语言",
 "Change"=>"改变",
-"Continue"=>"继续",
-"You can't change language"=>"你不能改变语言",
 "Logout"=>"注销",
 /*end Language*/
 
@@ -120,43 +94,26 @@ $arrLang=array(
 
 //version 0.8
 //user
-"Extension" => "Extension",
 "View User" => "View User",
 
 /*system - date/time*/
 "Date/Time"  =>  "Date/Time",
-"Date and Time Configuration"  =>  "Date/Time",
-"Current Datetime"  =>  "Current Datetime",
-"New Date"  =>  "New Date",
-"New Time"  =>  "New Time",
-"New Timezone"  =>  "New Timezone",
-"The change of date and time can concern important  system processes."  =>  "The change of date and time can concern important  system processes.",
-"System time changed correctly" => "System time changed correctly",
-"You can not change the system time" => "You can not change the system time",
-"Can not find file" => "Can not find file",
 
 //load module
-"File name"  =>  "File name",
 "Load Module"  =>  "Load Module",
-"Refresh"  =>  "Refresh",
-"Menu Location"  =>  "Menu Location",
-"Module File"  =>  "Module File",
+"File name"  =>  "File name",
 "ID for new module (folder name)"  =>  "ID for new module (folder name)",
-"Module Name"  =>  "Module Name",
 "Choose Menu"  =>  "Choose Menu",
 "ID for new menu"  =>  "ID for new menu",
 "Menu Name"  =>  "Menu Name",
 "Defined Menu"  =>  "Defined Menu",
 "New Menu"  =>  "New Menu",
-"Invalid file extension.- It must be tar.gz / zip / tgz"  =>  "Invalid file extension.- It must be tar.gz / zip / tgz",
 "Module sucessfully loaded"  =>  "Module sucessfully loaded",
 "Folder name doesn't exist in module file"  =>  "Folder name doesn't exist in module file",
 "Folder configs doesn't exist in module file"  =>  "Folder configs doesn't exist in module file",
 "Folder themes doesn't exist in module file"  =>  "Folder themes doesn't exist in module file",
 "File index.php doesn't exist in module file"  =>  "File index.php doesn't exist in module file",
 "File install.php doesn't exist in module file"  =>  "File install.php doesn't exist in module file",
-"Could not uncompress file"  =>  "Could not uncompress file",
-"install.php failed"  =>  "install.php failed",
 //end load module
 
 // Elastix 0.9 
@@ -164,8 +121,6 @@ $arrLang=array(
 //Inicio SubModule Themes
 "Themes" => "Themes",
 "Change Theme" => "Change Theme",
-"Themes not Found" => "Themes not Found",
-"The theme could not be updated" => "The theme could not be updated",
 //Fin SubModule Themes
 
 /* Preferences*/
@@ -184,13 +139,6 @@ implementations of Voice over IP around the globe.",
 /*Start module Group List*/
 "Groups"=>"Groups",
 "Group List"=>"Group List",
-"Description"=>"Description",
-"New Group"=>"New Group",
-"Create New Group"=>"Create New Group",
-"View Group"=>"View Group",
-"Edit Group"=>"Edit Group",
-"The Group have users assigned. You can delete any group that does not have any users assigned in it."=>"The Group have users assigned. You can delete any group that does not have any users assigned in it.",
-"The administrator group cannot be deleted because is the default Elastix Group. You can delete any other group."=>"The administrator group cannot be deleted because is the default Elastix Group. You can delete any other group.",
 /*End module Group List*/
 
 /** Elastix 1.0 **/

@@ -29,19 +29,30 @@
 
 function _moduleContent(&$smarty, $module_name)
 {
+	//include module files
     include_once "libs/paloSantoDB.class.php";
     include_once "libs/paloSantoForm.class.php";
     include      "configs/languages.conf.php";
-  //  global $languages;
-
-//include module files
     include_once "modules/$module_name/configs/default.conf.php";
+
+    $lang=get_language();
+    $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
+    $lang_file="modules/$module_name/lang/$lang.lang";
+    if (file_exists("$base_dir/$lang_file")) include_once "$lang_file";
+    else include_once "modules/$module_name/lang/en.lang";
+	
+	//global variables
     global $arrConf;
+    global $arrConfModule;
     global $arrLang;
+    global $arrLangModule;
+    $arrConf = array_merge($arrConf,$arrConfModule);
+    $arrLang = array_merge($arrLang,$arrLangModule);
+    
     //folder path for custom templates
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
-    $templates_dir=(isset($arrConfig['templates_dir']))?$arrConfig['templates_dir']:'themes';
-    $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
+    $templates_dir=(isset($arrConfModule['templates_dir']))?$arrConfModule['templates_dir']:'themes';
+    $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConfModule['theme'];
     
     $error_msg='';
     $msgError='';

@@ -29,39 +29,27 @@
 global $arrLang;
 $arrLang=array(
 /*System Info*/
-"English"=>"한글",
-"System Resources"=>"시스템자원",
-"CPU Info"=>"CPU 정보",
-"Uptime"=>"동작시간",
-"CPU usage"=>"CPU 사용",
-"Memory usage"=>"메모리 사용",
-"Swap usage"=>"스왑사용",
-"Hard Drives"=>"하드디스크",
-"Partition Name"=>"파티션 이름",
-"Capacity"=>"용량",
-"Usage"=>"사용",
-"Mount point"=>"Mount point",
 "Disk usage"=>"디스크사용",
 "Used space"=>"사용 용량",
 "Free space"=>"여유 용량",
-"No records found"=>"기록이 없읍니다",
 "Simultaneous calls, memory and CPU"=>"동시콜 개수,메모리 ,CPU",
 "Sim. calls"=>"동시콜 ",
 "CPU usage (%)"=>"CPU 사용 (%)",
 "Mem. usage (MB)"=>"메모리 사용(MB)",
-"It was not possible to obtain information about the graph "=>"그래프를 그리기 위한 정보를 얻기가 불가능 합니다.",
+/*System Info*/
+
+"Export"=>"도입",
+"Start"=>"시작",
+"End"=>"종료",
+"Next"=>"다음 ",
+"Previous"=>"이전",
+
 "Validation Error"=>"유효 에러",
 "The following fields contain errors"=>"다음 필드는 에러을 나타냅니다.",
 "Save"=>"저장",
 "Required field"=>"요구된 필드",
 "Apply changes"=>"수정사항 적용",
 "Cancel"=>"취소",
-"Export"=>"도입",
-"Start"=>"시작",
-"End"=>"종료",
-"Next"=>"다음 ",
-"Previous"=>"이전",
-/*System Info*/
 
 /*Login to Elastix*/
 "Welcome to Elastix"=>"Welcome to Elastix",
@@ -73,27 +61,15 @@ $arrLang=array(
 /*Login to Elastix*/
 
 /*start User Management*/
-"Create New User"=>"새로운 사용자 생성",
-"Login"=>"로그인",
-"Real Name"=>"실제 사용자 이름",
+"The group is wrong"=>"그룹이 다릅니다.",
 "Group"=>"그룹",
 "User List"=>"사용자 리스트",
-"The admin user cannot be deleted because is the default Elastix administrator. You can delete any other user."=>"초기 ?(Elastix) 관리자이므로 관리자는 삭제 될수 없읍니다. 다른 사용자는 삭제 할수 있읍니다.",
-"New User"=>"신규 사용자",
-"The passwords are empty or don't match"=>"암호가 없거나 일치 하지 않습니다.",
-"The group is wrong"=>"그룹이 다릅니다.",
-"Edit User"=>"사용자 편집",
-"Name"=>"이름",
-"Retype password"=>"암호를 다시 입력 하십시요.",
 "Are you sure you wish to continue?"=>"계속 하기를 원하십니까?",
 "Edit"=>"수정",
 "Delete"=>"삭제",
 "Accept"=>"확인",
-"Apply"=>"적용",
-"Resource"=>"자원",
 "Group Permission"=>"그룹허락",
 "Users" => "Users",
-"Show"=>"보기",
 "Directory couldn't be opened"=>"디렉토리를 열 수 없읍니다.",
 /*end User Management*/
 
@@ -106,10 +82,7 @@ $arrLang=array(
 
 /*Start Language*/
 "Language"=>"Language",
-"Select language"=>"Select language",
 "Change"=>"Change",
-"Continue"=>"Continue",
-"You can't change language"=>"You can't change language",
 "Logout"=>"Logout",
 /*end Language*/
 
@@ -124,52 +97,33 @@ $arrLang=array(
 
 /*version 0.8*/
 /*start user*/
-"Extension" => "Extension",
 "View User" => "View User",
 /*end user*/
 
 /*system - date/time*/
 "Date/Time"  =>  "Date/Time",
-"Date and Time Configuration"  =>  "Date/Time",
-"Current Datetime"  =>  "Current Datetime",
-"New Date"  =>  "New Date",
-"New Time"  =>  "New Time",
-"New Timezone"  =>  "New Timezone",
-"The change of date and time can concern important  system processes."  =>  "The change of date and time can concern important  system processes.",
-"System time changed correctly" => "System time changed correctly",
-"You can not change the system time" => "You can not change the system time",
-"Can not find file" => "Can not find file",
 /*end system - date/time*/
 
 /*load module*/
 "Load Module"  =>  "Load Module",
-"Refresh"  =>  "Refresh",
-"Menu Location"  =>  "Menu Location",
-"Module File"  =>  "Module File",
 "ID for new module (folder name)"  =>  "ID for new module (folder name)",
-"Module Name"  =>  "Module Name",
 "Choose Menu"  =>  "Choose Menu",
 "ID for new menu"  =>  "ID for new menu",
 "Menu Name"  =>  "Menu Name",
 "Defined Menu"  =>  "Defined Menu",
 "New Menu"  =>  "New Menu",
-"Invalid file extension.- It must be tar.gz / zip / tgz"  =>  "Invalid file extension.- It must be tar.gz / zip / tgz",
 "Module sucessfully loaded"  =>  "Module sucessfully loaded",
 "Folder name doesn't exist in module file"  =>  "Folder name doesn't exist in module file",
 "Folder configs doesn't exist in module file"  =>  "Folder configs doesn't exist in module file",
 "Folder themes doesn't exist in module file"  =>  "Folder themes doesn't exist in module file",
 "File index.php doesn't exist in module file"  =>  "File index.php doesn't exist in module file",
 "File install.php doesn't exist in module file"  =>  "File install.php doesn't exist in module file",
-"Could not uncompress file"  =>  "Could not uncompress file",
-"install.php failed"  =>  "install.php failed",
 /*end load module*/
 
 // Elastix 0.9 
 /*Start SubModule Themes*/
 "Themes" => "Themes",
 "Change Theme" => "Change Theme",
-"Themes not Found" => "Themes not Found",
-"The theme could not be updated" => "The theme could not be updated",
 /*end SubModule Themes*/
 
 /* Preferences*/
@@ -187,13 +141,6 @@ implementations of Voice over IP around the globe.",
 /*Start module Group List*/
 "Groups"=>"Groups",
 "Group List"=>"Group List",
-"Description"=>"Description",
-"New Group"=>"New Group",
-"Create New Group"=>"Create New Group",
-"View Group"=>"View Group",
-"Edit Group"=>"Edit Group",
-"The Group have users assigned. You can delete any group that does not have any users assigned in it."=>"The Group have users assigned. You can delete any group that does not have any users assigned in it.",
-"The administrator group cannot be deleted because is the default Elastix Group. You can delete any other group."=>"The administrator group cannot be deleted because is the default Elastix Group. You can delete any other group.",
 /*End module Group List*/
 
 /** Elastix 1.0 **/

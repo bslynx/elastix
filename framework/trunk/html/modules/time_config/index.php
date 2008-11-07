@@ -29,19 +29,33 @@
 
 function _moduleContent(&$smarty, $module_name)
 {
+    //include module files
     include_once "libs/paloSantoForm.class.php" ;
-
- //include module files
     include_once "modules/$module_name/configs/default.conf.php";
+
+    //include file language agree to elastix configuration
+    //if file language not exists, then include language by default (en)
+    $lang=get_language();
+    $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
+    $lang_file="modules/$module_name/lang/$lang.lang";
+    if (file_exists("$base_dir/$lang_file")) include_once "$lang_file";
+    else include_once "modules/$module_name/lang/en.lang";
+
+    //global variables
     global $arrConf;
+    global $arrConfModule;
     global $arrLang;
+    global $arrLangModule;
+    $arrConf = array_merge($arrConf,$arrConfModule);
+    $arrLang = array_merge($arrLang,$arrLangModule);
+    
     //folder path for custom templates
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
-    $templates_dir=(isset($arrConfig['templates_dir']))?$arrConfig['templates_dir']:'themes';
-    $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
+    $templates_dir=(isset($arrConfModule['templates_dir']))?$arrConfModule['templates_dir']:'themes';
+    $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConfModule['theme'];
     
-
 	
+
     $smarty->assign("TIME_TITULO",$arrLang["Date and Time Configuration"]);
     $smarty->assign("INDEX_HORA_SERVIDOR",$arrLang["Current Datetime"]);
     $smarty->assign("TIME_NUEVA_FECHA",$arrLang["New Date"]);
@@ -213,9 +227,9 @@ function _moduleContent(&$smarty, $module_name)
             exec($cmd,$output,$ret_val);
 			
 			if ($ret_val == 0) {
-				$smarty->assign('mb_message', 'Hora del sistema cambiada correctamente');
+				$smarty->assign('mb_message', $arrLang["System time changed correctly"]);
 			} else {
-				$smarty->assign('mb_message', 'No se puede cambiar la hora del sistema - '.$output);
+				$smarty->assign('mb_message', $arrLang["You can not change the system time"].' - '.$output);
 			}
 		}
 	}

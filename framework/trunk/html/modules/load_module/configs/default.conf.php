@@ -26,8 +26,8 @@
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
   $Id: default.conf.php,v 1.2 2007/09/05 00:23:44 gcarrillo Exp $ */
-
-$arrConfig['module_name'] = 'load_module';
-$arrConfig['templates_dir'] = 'themes';
+    global $arrConfModule;
+    $arrConfModule['module_name'] = 'load_module';
+    $arrConfModule['templates_dir'] = 'themes';
 
 ?>

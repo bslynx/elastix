@@ -28,39 +28,27 @@
   $Id: sv.lang,v 0.1 2008/03/25 00:36:42 IFIT DATA - http://www.ifit.se Exp $ */
 global $arrLang;
 $arrLang=array(
-/*System Info*/
-"System Resources"=>"System Resurser",
-"CPU Info"=>"CPU Information",
-"Uptime"=>"Drifttid",
-"CPU usage"=>"CPU Anv&auml;ndning",
-"Memory usage"=>"Minnesanv&auml;ndning",
-"Swap usage"=>"Swap Anv&auml;ndning",
-"Hard Drives"=>"H&aring;rddiskar",
-"Partition Name"=>"Partions Namn",
-"Capacity"=>"Kapacitet",
-"Usage"=>"Anv&auml;ndning",
-"Mount point"=>"Monterade Filsystem",
 "Disk usage"=>"Disk anv&auml;ndning",
 "Used space"=>"Anv&auml;ndt utrymme",
 "Free space"=>"Ledigtutrymme",
-"No records found"=>"Inga uppgifter hittade",
 "Simultaneous calls, memory and CPU"=>"Parallella samtal, minne och CPU",
 "Sim. calls"=>"Parallella samtal",
 "CPU usage (%)"=>"CPU anv&auml;ndning (%)",
 "Mem. usage (MB)"=>"Minnes. anv&auml;ndning (MB)",
-"It was not possible to obtain information about the graph" =>"Det var inte m&ouml;jligt att h&auml;mta information om grafen",
+/*System Info*/
+
+"Export"=>"Exportera",
+"Start"=>"Start",
+"End"=>"Slut",
+"Next"=>"N&auml;sta",
+"Previous"=>"F&ouml;reg&aring;ende",
+
 "Validation Error"=>"Fel Uppstod Vid Validering",
 "The following fields contain errors"=>"F&ouml;ljande f&auml;lt inneh&aring;ller fel",
 "Save"=>"Spara",
 "Required field"=>"Obligatoriskt f&auml;lt",
 "Apply changes"=>"Till&auml;mpa &auml;ndringar",
 "Cancel"=>"Avbryt",
-"Export"=>"Exportera",
-"Start"=>"Start",
-"End"=>"Slut",
-"Next"=>"N&auml;sta",
-"Previous"=>"F&ouml;reg&aring;ende",
-/*System Info*/
 
 /*Login to Elastix*/
 "Welcome to Elastix"=>"V&auml;lkommen till Elastix",
@@ -72,27 +60,15 @@ $arrLang=array(
 /*end Login to Elastix*/
 
 /*start User Management*/
-"Create New User"=>"Skapa ny anv&auml;ndare",
-"Login"=>"Loggain",
-"Real Name"=>"Ditt Fullst&auml;ndiga Namn",
 "Group"=>"Grupp",
 "User List"=>"Anv&auml;ndar Lista",
-"The admin user cannot be deleted because is the default Elastix administrator. You can delete any other user."=>"Anv&auml;ndaren admin kan inte tas bort p&aring; grund av att det &auml;r Elastix default administrat&ouml;r. Men du kan ta bort alla andra anv&auml;ndare.",
-"New User"=>"Ny anv&auml;ndare",
-"The passwords are empty or don't match"=>"L&ouml;senorden &auml;r antingen toma eller s&aring; matchar dom inte",
 "The group is wrong"=>"Gruppen &auml;r felaktig",
-"Edit User"=>"Redigera anv&auml;ndare",
-"Name"=>"Namn",
-"Retype password"=>"Upprepa l&ouml;senord",
 "Are you sure you wish to continue?"=>"&Auml;r du s&auml;ker p&aring; att du vill forts&auml;tta?",
 "Edit"=>"Redigera",
 "Delete"=>"Ta bort",
 "Accept"=>"Acceptera",
-"Apply"=>"Till&auml;mpa",
-"Resource"=>"Resurs",
 "Group Permission"=>"Grupp r&auml;ttigheter",
 "Users" => "Users",
-"Show"=>"Visa",
 "Directory couldn't be opened"=>"Katalogen kunde inte &ouml;ppnas",
 /*start User Management*/
 
@@ -105,10 +81,7 @@ $arrLang=array(
 
 /*Start Language*/
 "Language"=>"Spr&aring;k",
-"Select language"=>"V&auml;lj Spr&aring;k",
 "Change"=>"&Auml;ndra",
-"Continue"=>"Forts&auml;tt",
-"You can't change language"=>"Du kan tyv&auml;rr inte byta spr&aring;k",
 "Logout"=>"Loggaut",
 /*end Language*/
 
@@ -123,51 +96,32 @@ $arrLang=array(
 
 /*version 0.8*/
 /*start user*/
-"Extension"=>"Anknytning",
 "View User"=>"F&ouml;rhandsgranska Anv&auml;ndare",
 /*end user*/
 
 /*system - date/time*/
 "Date/Time" => "Datum/Tid",
-"Date and Time Configuration" => "Datum/Tid",
-"Current Datetime" => "Nuvarande Datumtid",
-"New Date" => "Nytt Datum",
-"New Time" => "Ny Tid",
-"New Timezone" => "Ny Tidszon",
-"The change of date and time can concern important  system processes." => "&Auml;ndringar av datum och tid kan p&aring;verkra viktiga system processer!",
-"System time changed correctly" => "System time changed correctly",
-"You can not change the system time" => "You can not change the system time",
-"Can not find file" => "Can not find file",
 /*system - date/time*/
 
 /*load module*/
 "Load Module" => "Ladda Modul",
-"Refresh" => "Uppdatera",
-"Menu Location" => "Meny lokalisering",
-"Module File" => "Modul Fil",
 "ID for new module (folder name)" => "ID f&ouml;r ny modul (katalognamn)",
-"Module Name" => "Modul Namn",
 "Choose Menu" => "V&auml;lj Meny",
 "ID for new menu" => "ID f&ouml;r ny meny",
 "Menu Name" => "Meny Namn",
 "Defined Menu" => "Definerad Meny",
 "New Menu" => "Ny Meny",
-"Invalid file extension.- It must be tar.gz / zip / tgz" => "Ogiltig fil&auml;ndelse.- M&aring;ste vara tar.gz / zip / tgz",
 "Module sucessfully loaded" => "Lyckad inladdning av modul",
 "Folder name doesn't exist in module file" => "Katalogens namn existerar inte i modul filen",
 "Folder configs doesn't exist in module file" => "Katalogens konfiguration existerar inte i modul filen",
 "Folder themes doesn't exist in module file" => "Katalogens tema existerar inte i modul filen",
 "File index.php doesn't exist in module file" => "Filen index.php existerar inte i modul filen",
 "File install.php doesn't exist in module file" => "Filen install.php existerar inte i modul filen",
-"Could not uncompress file" => "Kunde inte extrahera filen",
-"install.php failed" => "install.php misslyckades",
 /*end load module*/
 
 // Elastix 0.9 
 /*Start SubModule Themes*/"Themes" => "Teman",
 "Change Theme" => "Byt Tema",
-"Themes not Found" => "Teman hittades inte",
-"The theme could not be updated" => "Temat kunde inte uppdateras",
 /*end SubModule Themes*/
 
 /* Preferences*/
@@ -183,13 +137,6 @@ $arrLang=array(
 /*Start module Group List*/
 "Groups"=>"Grupper",
 "Group List"=>"Grupp Lista",
-"Description"=>"Beskrivning",
-"New Group"=>"Ny Grupp",
-"Create New Group"=>"Skapa Ny Grupp",
-"View Group"=>"F&ouml;rhandsgranska Grupp",
-"Edit Group"=>"Redigera Grupp",
-"The Group have users assigned. You can delete any group that does not have any users assigned in it."=>"Gruppen har tilldelade anv&auml;ndare. Du kan ta bort alla grupper som saknar tilldelade anv&auml;ndare.",
-"The administrator group cannot be deleted because is the default Elastix Group. You can delete any other group."=>"Administrat&ouml;rs grupen kan inte raderas, f&ouml;r att den &auml;r Standard Elastix Grupp. Du kan ta bort alla andra grupper.",
 /*End module Group List*/
 
 /** Elastix 1.0 **/

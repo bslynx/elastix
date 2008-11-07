@@ -40,10 +40,26 @@ function _moduleContent($smarty, $module_name)
     require_once "libs/paloSantoInstaller.class.php";
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
-    global $arrConf;
-    global $arrLang;
-    //folder path for custom templates
+    
+    $lang=get_language();
+    $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
+    $lang_file="modules/$module_name/lang/$lang.lang";
+    if (file_exists("$base_dir/$lang_file")) include_once "$lang_file";
+    else include_once "modules/$module_name/lang/en.lang";
 
+    //global variables
+    global $arrConf;
+    global $arrConfModule;
+    global $arrLang;
+    global $arrLangModule;
+    $arrConf = array_merge($arrConf,$arrConfModule);
+    $arrLang = array_merge($arrLang,$arrLangModule);
+    
+    //folder path for custom templates
+    $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
+    $templates_dir=(isset($arrConfModule['templates_dir']))?$arrConfModule['templates_dir']:'themes';
+    $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConfModule['theme'];
+        
     $pDB = new paloDB("sqlite3:////var/www/db/menu.db");
     $pDBACL = new paloDB("sqlite3:////var/www/db/acl.db");
     if(!empty($pDB->errMsg)) {
@@ -52,10 +68,6 @@ function _moduleContent($smarty, $module_name)
 
     $oMenu = new paloMenu($pDB);
     $oACL = new paloACL($pDBACL);
-
-    $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
-    $templates_dir=(isset($arrConfig['templates_dir']))?$arrConfig['templates_dir']:'themes';
-    $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
     $sContenido='';
     $strErrorMsg = '';
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);

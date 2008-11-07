@@ -33,38 +33,28 @@
 global $arrLang;
 $arrLang=array(
 /*System Info*/
-"System Resources"=>"Resursi sustava",
-"CPU Info"=>"Info CPU",
-"Uptime"=>"Vrijeme od posljenjeg uključenja",
-"CPU usage"=>"Iskorištenje CPU-a",
-"Memory usage"=>"Iskorištenje memorije",
-"Swap usage"=>"Iskorištenje Swap-a",
-"Hard Drives"=>"Tvrdi diskovi",
-"Partition Name"=>"Naziv particije diska",
-"Capacity"=>"Kapacitet",
-"Usage"=>"Iskorištenje",
-"Mount point"=>"Točka montiranja",
 "Disk usage"=>"Iskorištenje diska",
 "Used space"=>"Iskorištenje prostora",
 "Free space"=>"Slobodan prostor",
-"No records found"=>"Zapisi nisu pronađeni",
 "Simultaneous calls, memory and CPU"=>"Istovremeni pozivi, memorija i CPU",
 "Sim. calls"=>"Istovremeni pozivi",
 "CPU usage (%)"=>"Iskorištenje CPU-a (%)",
 "Mem. usage (MB)"=>"Iskorištenje memorije (MB)",
-"It was not possible to obtain information about the graph" =>"Nije moguće dobiti informaciju o grafu",
+/*System Info*/
+
+"Export"=>"Izvoz",
+"Start"=>"Početak",
+"End"=>"Kraj",
+"Next"=>"Slijedeći",
+"Previous"=>"Prethodni",
+
 "Validation Error"=>"Pogreška provjere",
 "The following fields contain errors"=>"Slijedeće polje sadržava pogreške",
 "Save"=>"Snimi",
 "Required field"=>"Obvezatno polje",
 "Apply changes"=>"Primjeni izmjene",
 "Cancel"=>"Otkaz",
-"Export"=>"Izvoz",
-"Start"=>"Početak",
-"End"=>"Kraj",
-"Next"=>"Slijedeći",
-"Previous"=>"Prethodni",
-/*System Info*/
+
 
 /*Login to Elastix*/
 "Welcome to Elastix"=>"Dobrodošli u Elastix",
@@ -76,27 +66,15 @@ $arrLang=array(
 /*end Login to Elastix*/
 
 /*start User Management*/
-"Create New User"=>"Kreiranje novog korisnika",
-"Login"=>"Prijava",
-"Real Name"=>"Stvarno ime",
 "Group"=>"Grupa",
 "User List"=>"Lista korisnika",
-"The admin user cannot be deleted because is the default Elastix administrator. You can delete any other user."=>"admin korisnik nemože biti obrisan jer je to podrazumjevani Elastix administrator. Možete brisati bilo kojeg drugog korisnika",
-"New User"=>"Novi korisnik",
-"The passwords are empty or don't match"=>"Zaporka nije unesena ili se ne podudara",
 "The group is wrong"=>"Grupa je pogrešna",
-"Edit User"=>"Izmjena korisnika",
-"Name"=>"Ime",
-"Retype password"=>"Ponovno unesite zaporku",
 "Are you sure you wish to continue?"=>"Sigurno želite nastaviti?",
 "Edit"=>"Uređivanje",
 "Delete"=>"Brisanje",
 "Accept"=>"Prihvati",
-"Apply"=>"Primjena",
-"Resource"=>"Resursi",
 "Group Permission"=>"Dozvole za grupu",
 "Users" => "Users",
-"Show"=>"Prikaži",
 "Directory couldn't be opened"=>"Mapa ne može biti otvorena",
 /*end User Management*/
 
@@ -109,10 +87,7 @@ $arrLang=array(
 
 /*Start Language*/
 "Language"=>"Jezik",
-"Select language"=>"Izaberite jezik",
 "Change"=>"Izmjena",
-"Continue"=>"Nastavak",
-"You can't change language"=>"Ne možete izmijeniti jezik",
 "Logout"=>"Odjava",
 /*end Language*/
 
@@ -126,44 +101,27 @@ $arrLang=array(
 
 /*version 0.8*/
 /*start user*/
-"Extension" => "Lokal",
 "View User" => "Pregled korisnika",
 /*end user*/
 
 /*system - date/time*/
 "Date/Time"  =>  "Date/Time",
-"Date and Time Configuration"  =>  "Date and Time Configuration",
-"Current Datetime"  =>  "Current Datetime",
-"New Date"  =>  "New Date",
-"New Time"  =>  "New Time",
-"New Timezone"  =>  "New Timezone",
-"The change of date and time can concern important  system processes."  =>  "The change of date and time can concern important  system processes.",
-"System time changed correctly" => "System time changed correctly",
-"You can not change the system time" => "You can not change the system time",
-"Can not find file" => "Can not find file",
 /*end system - date/time*/
 
 /*load module*/
 "Load Module"  =>  "Load Module",
-"Refresh"  =>  "Refresh",
-"Menu Location"  =>  "Menu Location",
-"Module File"  =>  "Module File",
 "ID for new module (folder name)"  =>  "ID for new module (folder name)",
-"Module Name"  =>  "Module Name",
 "Choose Menu"  =>  "Choose Menu",
 "ID for new menu"  =>  "ID for new menu",
 "Menu Name"  =>  "Menu Name",
 "Defined Menu"  =>  "Defined Menu",
 "New Menu"  =>  "New Menu",
-"Invalid file extension.- It must be tar.gz / zip / tgz"  =>  "Invalid file extension.- It must be tar.gz / zip / tgz",
 "Module sucessfully loaded"  =>  "Module sucessfully loaded",
 "Folder name doesn't exist in module file"  =>  "Folder name doesn't exist in module file",
 "Folder configs doesn't exist in module file"  =>  "Folder configs doesn't exist in module file",
 "Folder themes doesn't exist in module file"  =>  "Folder themes doesn't exist in module file",
 "File index.php doesn't exist in module file"  =>  "File index.php doesn't exist in module file",
 "File install.php doesn't exist in module file"  =>  "File install.php doesn't exist in module file",
-"Could not uncompress file"  =>  "Could not uncompress file",
-"install.php failed"  =>  "install.php failed",
 /*end load module*/
 
 
@@ -172,8 +130,6 @@ $arrLang=array(
 /*Start SubModule Themes*/
 "Themes" => "Teme",
 "Change Theme" => "Promjena teme",
-"Themes not Found" => "Tema nije pronađena",
-"The theme could not be updated" => "Tema ne može biti nadograđena",
 /*end SubModule Themes*/
 
 /* Preferences*/
@@ -189,13 +145,6 @@ $arrLang=array(
 /*Start module Group List*/
 "Groups"=>"Grupe",
 "Group List"=>"Lista grupa",
-"Description"=>"Opis",
-"New Group"=>"Nova grupa",
-"Create New Group"=>"Kreiranje nove grupe",
-"View Group"=>"Pregled grupe",
-"Edit Group"=>"Uredi grupu",
-"The Group have users assigned. You can delete any group that does not have any users assigned in it."=>"Grupi su pridruženi korisnici. Može se obrisati bilo koju grupu koja nema pridruženih korisnika.",
-"The administrator group cannot be deleted because is the default Elastix Group. You can delete any other group."=>"Administratorska grupa nemože biti obrisana jer je to pretpostavljena Elastix grupa. Može se obrisati bilo koja druga.",
 /*End module Group List*/
 
 /** Elastix 1.0 **/

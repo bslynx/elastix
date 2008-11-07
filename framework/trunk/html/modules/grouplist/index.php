@@ -33,17 +33,33 @@ function _moduleContent(&$smarty, $module_name)
     include_once("libs/paloSantoConfig.class.php");
     include_once("libs/paloSantoGrid.class.php");
     include_once("libs/paloSantoACL.class.php");
-    global $arrLang;
+    include_once "modules/$module_name/configs/default.conf.php";
+    
+    //include file language agree to elastix configuration
+    //if file language not exists, then include language by default (en)
+    $lang=get_language();
+    $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
+    $lang_file="modules/$module_name/lang/$lang.lang";
+    if (file_exists("$base_dir/$lang_file")) include_once "$lang_file";
+    else include_once "modules/$module_name/lang/en.lang";
+
+    //global variables
     global $arrConf;
+    global $arrConfModule;
+    global $arrLang;
+    global $arrLangModule;
+    $arrConf = array_merge($arrConf,$arrConfModule);
+    $arrLang = array_merge($arrLang,$arrLangModule);
+
+
+    /////conexion a php
     $pDB = new paloDB($arrConf['elastix_dsn']['acl']);
 
-/////conexion a php
-//include module files
-    include_once "modules/$module_name/configs/default.conf.php";
+        
     //folder path for custom templates
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
-    $templates_dir=(isset($arrConfig['templates_dir']))?$arrConfig['templates_dir']:'themes';
-    $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
+    $templates_dir=(isset($arrConfModule['templates_dir']))?$arrConfModule['templates_dir']:'themes';
+    $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConfModule['theme'];
 
     $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
     $arrConfig = $pConfig->leer_configuracion(false);

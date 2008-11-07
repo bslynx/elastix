@@ -31,39 +31,48 @@
   $Id: en.lang,v 1.7 2008/02/18 09:49:00 bmacias Exp $ */
 global $arrLang;
 $arrLang=array(
-/*System Info*/
-"System Resources"=>"System Resources",
-"CPU Info"=>"CPU Info",
-"Uptime"=>"Uptime",
-"CPU usage"=>"CPU usage",
-"Memory usage"=>"Memory usage",
-"Swap usage"=>"Swap usage",
-"Hard Drives"=>"Hard Drives",
-"Partition Name"=>"Partition Name",
-"Capacity"=>"Capacity",
-"Usage"=>"Usage",
-"Mount point"=>"Mount point",
+/*System Info: Libreria jpgrapha*/
 "Disk usage"=>"Disk usage",
 "Used space"=>"Used space",
 "Free space"=>"Free space",
-"No records found"=>"No records found",
 "Simultaneous calls, memory and CPU"=>"Simultaneous calls, memory and CPU",
 "Sim. calls"=>"Sim. calls",
 "CPU usage (%)"=>"CPU usage (%)",
 "Mem. usage (MB)"=>"Mem. usage (MB)",
-"It was not possible to obtain information about the graph" =>"It was not possible to obtain information about the graph",
-"Validation Error" => "Validation Error",
-"The following fields contain errors" => "The following fields contain errors",
-"Save"=>"Save",
-"Required field" => "Required field",
-"Apply changes"=>"Apply changes",
-"Cancel"=>"Cancel",
-"Export"=>"Export",
+/*end System Info: Libreria jpgraphap*/
+
 "Start"=>"Start",
 "End"=>"End",
 "Next"=>"Next",
 "Previous"=>"Previous",
-/*System Info*/
+"Export"=>"Export",
+
+"Group" => "Group",
+"administrator" => "administrator",
+"operator" => "operator",
+"extension" => "extension",
+
+
+"Group List" => "Group List",
+"User List" => "User List",
+"Logout" => "Logout",
+"Change" => "Change",
+"Title" => "Title",
+"Language"=>"Language",
+"Load Module" => "Load Module",
+
+
+"Required field" => "Required field",
+"Cancel" => "Cancel",
+"Apply changes" => "Apply changes",
+"Save" => "Save",
+"Edit" => "Edit",
+"Delete" => "Delete",
+"Are you sure you wish to continue?" => "Are you sure you wish to continue?",
+"The following fields contain errors" => "The following fields contain errors",
+"Validation Error" => "Validation Error",
+
+
 
 /*Login to Elastix*/
 "Welcome to Elastix"=>"Welcome to Elastix",
@@ -74,30 +83,6 @@ $arrLang=array(
 "Login page"=>"Login page",
 /*end Login to Elastix*/
 
-/*start User Management*/
-"Create New User"=>"Create New User",
-"Login"=>"Login",
-"Real Name"=>"Real Name",
-"Group"=>"Group",
-"User List"=>"User List",
-"The admin user cannot be deleted because is the default Elastix administrator. You can delete any other user."=>"The admin user cannot be deleted because is the default Elastix administrator. You can delete any other user.",
-"New User"=>"New User",
-"The passwords are empty or don't match"=>"The passwords are empty or don't match",
-"The group is wrong"=>"The group is wrong",
-"Edit User"=>"Edit User",
-"Name"=>"Name",
-"Retype password"=>"Retype password",
-"Are you sure you wish to continue?"=>"Are you sure you wish to continue?",
-"Edit"=>"Edit",
-"Delete"=>"Delete",
-"Accept"=>"Accept",
-"Apply"=>"Apply",
-"Resource"=>"Resource",
-"Group Permission"=>"Group Permission",
-"Show"=>"Show",
-"Directory couldn't be opened"=>"Directory couldn't be opened",
-/*end User Management*/
-
 /*start menu*/
 "System"=>"System",
 "System Info"=>"System Info",
@@ -105,14 +90,6 @@ $arrLang=array(
 "Menu Administrator"=>"Menu Administrator",
 /*end menu*/
 
-/*Start Language*/
-"Language"=>"Language",
-"Select language"=>"Select language",
-"Change"=>"Change",
-"Continue"=>"Continue",
-"You can't change language"=>"You can't change language",
-"Logout"=>"Logout",
-/*End Language*/
 
 /*version 0.7*/
 /*start paloSantoValidar.class.php*/
@@ -125,52 +102,31 @@ $arrLang=array(
 
 /*version 0.8*/
 /*start user*/
-"Extension"=>"Extension",
 "View User"=>"View User",
 /*end user*/
 
 /*system - date/time*/
 "Date/Time" => "Date/Time",
-"Date and Time Configuration" => "Date/Time",
-"Current Datetime" => "Current Datetime",
-"New Date" => "New Date",
-"New Time" => "New Time",
-"New Timezone" => "New Timezone",
-"The change of date and time can concern important  system processes." => "The change of date and time can concern important  system processes.",
-"System time changed correctly" => "System time changed correctly",
-"You can not change the system time" => "You can not change the system time",
-"Can not find file" => "Can not find file",
 /*end system - date/time*/
 
 /*load module*/
-"Load Module" => "Load Module",
-"Refresh" => "Refresh",
-"Menu Location" => "Menu Location",
-"Module File" => "Module File",
-"ID for new module (folder name)" => "ID for new module (folder name)",
-"Module Name" => "Module Name",
 "Choose Menu" => "Choose Menu",
 "ID for new menu" => "ID for new menu",
 "Menu Name" => "Menu Name",
 "Defined Menu" => "Defined Menu",
 "New Menu" => "New Menu",
-"Invalid file extension.- It must be tar.gz / zip / tgz" => "Invalid file extension.- It must be tar.gz / zip / tgz",
 "Module sucessfully loaded" => "Module sucessfully loaded",
 "Folder name doesn't exist in module file" => "Folder name doesn't exist in module file",
 "Folder configs doesn't exist in module file" => "Folder configs doesn't exist in module file",
 "Folder themes doesn't exist in module file" => "Folder themes doesn't exist in module file",
 "File index.php doesn't exist in module file" => "File index.php doesn't exist in module file",
 "File install.php doesn't exist in module file" => "File install.php doesn't exist in module file",
-"Could not uncompress file" => "Could not uncompress file",
-"install.php failed" => "install.php failed",
 /*end load module*/
 
 // Elastix 0.9 
 /*Start SubModule Themes*/
 "Themes" => "Themes",
 "Change Theme" => "Change Theme",
-"Themes not Found" => "Themes not Found",
-"The theme could not be updated" => "The theme could not be updated",
 /*end SubModule Themes*/
 
 /* Preferences*/
@@ -183,28 +139,5 @@ source software started in Ecuador has become the solution of choice for
 implementations of Voice over IP around the globe.",
 "About Elastix Closed"=>"Close",
 /* End About Elastix */
-
-//Elastix 0.9.1
-/*Start module Group List*/
-"Groups"=>"Groups",
-"Group List"=>"Group List",
-"Description"=>"Description",
-"New Group"=>"New Group",
-"Create New Group"=>"Create New Group",
-"View Group"=>"View Group",
-"Edit Group"=>"Edit Group",
-"The Group have users assigned. You can delete any group that does not have any users assigned in it."=>"The Group have users assigned. You can delete any group that does not have any users assigned in it.",
-"The administrator group cannot be deleted because is the default Elastix Group. You can delete any other group."=>"The administrator group cannot be deleted because is the default Elastix Group. You can delete any other group.",
-/*end module Group List*/
-
-/** Elastix 1.0 **/
-/*Start UserList*/
-"administrator" => "Administrator",
-"operator" => "Operator",
-"extension" => "Extension",
-"total access" => "Total Access",
-"extension user" => "Extension User",
-/*end UserList*/
-"Title" => "Title",
 );
 ?>

@@ -33,17 +33,6 @@
 global $arrLang;
 $arrLang=array(
 /*System Info*/
-"System Resources"=>"Recursos del sistema",
-"CPU Info"=>"Informació de la CPU",
-"Uptime"=>"Temps de funcionament",
-"CPU usage"=>"Utilització de la CPU",
-"Memory usage"=>"Utilització de la memòria",
-"Swap usage"=>"Utilització de la Swap",
-"Hard Drives"=>"Disc durs",
-"Partition Name"=>"Nom de la Partició",
-"Capacity"=>"Capacitat",
-"Usage"=>"Utilització",
-"Mount point"=>"Punt de muntatge",
 "Disk usage"=>"Utilització del disc",
 "Used space"=>"Espai utilitzat",
 "Free space"=>"Espai lliure",
@@ -52,19 +41,33 @@ $arrLang=array(
 "Sim. calls"=>"Trucades Sim.",
 "CPU usage (%)"=>"Utilització de la CPU (%)",
 "Mem. usage (MB)"=>"Utilització de la mem. (MB)",
-"It was not possible to obtain information about the graph" =>"No ha estat possible obtenir informació del gràfic",
+/*System Info*/
+
+/*Navegacion: offset*/
+"Export"=>"Exportar",
+"Start"=>"Inici",
+"End"=>"Fi",
+"Next"=>"Següent",
+"Previous"=>"Anterior",
+/*end Navegacion: offset*/
+
+"administrator" => "Administrator",
+"operator" => "Operator",
+"extension" => "Extension",
+"total access" => "Total Access",
+"extension user" => "Extension User",
+"Group Permission"=>"Permisos de Grup",
+"Logout"=>"Tancar sessió",
+"Change"=>"Canviar",
+"Language"=>"Idioma",
+
+
 "Validation Error"=>"Error de validació",
 "The following fields contain errors"=>"Els següents camps contenen errors",
 "Save"=>"Guardar",
 "Required field"=>"Camp requerit",
 "Apply changes"=>"Guardar els canvis",
 "Cancel"=>"Cancel·lar",
-"Export"=>"Exportar",
-"Start"=>"Inici",
-"End"=>"Fi",
-"Next"=>"Següent",
-"Previous"=>"Anterior",
-/*System Info*/
 
 /*Login to Elastix*/
 "Welcome to Elastix"=>"Benvingut a Elastix",
@@ -76,25 +79,14 @@ $arrLang=array(
 /*end Login to Elastix*/
 
 /*start User Management*/
-"Create New User"=>"Crear nou usuari",
 "Login"=>"Entrar",
-"Real Name"=>"Nom",
 "Group"=>"Grup",
 "User List"=>"Llista d'usuaris",
-"The admin user cannot be deleted because is the default Elastix administrator. You can delete any other user."=>"L'usuari administrador no es pot borrar perquè és l'usuari administrador per defecte d'Elastix. Pot borrar qualsevol altre usuari",
-"The passwords are empty or don't match"=>"Les claus d'accés estan buides o no concorden",
 "The group is wrong"=>"El grup és incorrecte",
-"Edit User"=>"Editar usuari",
-"Name"=>"Nom",
-"Retype password"=>"Confirmar clau d'accés",
 "Are you sure you wish to continue?"=>"¿Està segur de continuar?",
 "Edit"=>"Editar",
 "Delete"=>"Eliminar",
 "Accept"=>"Acceptar",
-"Apply"=>"Aplicar",
-"Resource"=>"Recurs",
-"Group Permission"=>"Permisos de Grup",
-"Show"=>"Mostrar",
 "Directory couldn't be opened"=>"No s'ha pogut obrir el directori",
 /*end User Management*/
 
@@ -106,14 +98,6 @@ $arrLang=array(
 "Menu Administrator"=>"Administrador del Menú",
 /*end menu*/
 
-/*Start Language*/
-"Language"=>"Idioma",
-"Select language"=>"Seleccionar idioma",
-"Change"=>"Canviar",
-"Continue"=>"Continuar",
-"You can't change language"=>"No pot canviar l'idioma",
-"Logout"=>"Tancar sessió",
-/*end Language*/
 
 /*version 0.7*/
 /*start paloSantoValidar.class.php*/
@@ -124,55 +108,33 @@ $arrLang=array(
 "Octets out of range"=>"Octets fora de rang",
 /*end paloSantoValidar.class.php*/
 
-//version 0.8
-//user
-"Extension"=>"Extensió",
+/*version 0.8*/
+/*start user*/
 "View User"=>"Veure usuari",
+/*start user*/
 
 /*system - date/time*/
 "Date/Time" => "Data/Hora",
-"Date and Time Configuration" => "Configuració de la Data i l'Hora",
-"Current Datetime" => "Data y Hora actual",
-"New Date" => "Nova Data",
-"New Time" => "Nova Hora",
-"New Timezone" => "Nova Zona Horaria",
-"The change of date and time can concern important  system processes." => "El canvi de data i hora pot afectar a processos importants del sistema.",
-"System time changed correctly" => "System time changed correctly",
-"You can not change the system time" => "You can not change the system time",
-"Can not find file" => "Can not find file",
-
-
+/*end system - date/time*/
 
 //load module
 "Load Module" => "Carregar Mòdul;",
-"Refresh"  =>  "Actualitzar",
-"Menu Location"  =>  "Ubicació al Menu",
-"Module File"  =>  "Arxiu de Mòdul",
 "ID for new module (folder name)"  =>  "ID pel nou mòdul (nom de carpeta)",
-"Module Name"  =>  "Nom del Mòdul",
 "Choose Menu"  =>  "Seleccioni Menu",
 "ID for new menu"  =>  "ID pel nou Menu",
 "Menu Name"  =>  "Nom del Menu",
 "Defined Menu"  =>  "Menu definit",
 "New Menu"  =>  "Nou Menu",
-"Invalid file extension.- It must be tar.gz / zip / tgz"  =>  "Extensió d'arxiu invàlida.- Ha de ser tar.gz / zip / tgz",
 "Module sucessfully loaded"  =>  "Mòdul carregat correctament",
 "Folder name doesn't exist in module file"  =>  "El Nom de la carpeta no exiteix a l'arxiu del mòdul",
 "Folder configs doesn't exist in module file"  =>  "La configuració de la carpeta no exiteix a l'arxiu del mòdul",
 "Folder themes doesn't exist in module file"  => "Els temes de la carpeta no exiteix a l'arxiu del mòdul",
 "File index.php doesn't exist in module file"  =>  "L'arxiu index.php no exiteix a l'arxiu del mòdul",
 "File install.php doesn't exist in module file"  =>  "L'arxiu install.php no exiteix a l'arxiu del mòdul",
-"Could not uncompress file"  =>  "No s'ha pogut descomprimir l'arxiu",
-"install.php failed"  =>  "Ha fallat install.php",
 
-// Elastix 0.9 
-
-//Inicio SubModule Themes
+//Themes
 "Themes" => "Temes",
 "Change Theme" => "Canviar Tema",
-"Themes not Found" => "Temes no trobats",
-"The theme could not be updated" => "No s'ha pugut actualizar el tema",
-//Fin SubModule Themes
 
 /* Preferences*/
 "Preferences" => "Preferències",
@@ -190,25 +152,8 @@ a tot el mon.",
 //Elastix 0.9.1
 /*Start module Group List*/
 "Groups"=>"Grups",
-"Group List"=>"Llista de Grups",
-"Description"=>"Descripció",
-"New Group"=>"Nou Grup",
-"Create New Group"=>"Crear Nou Grup",
-"View Group"=>"Veure Grup",
-"Edit Group"=>"Editar Grup",
-"The Group have users assigned. You can delete any group that does not have any users assigned in it."=>"El Grup té usuaris assignats. Pot eliminar qualsevol grup que no tingui usuaris assignats.",
-"The administrator group cannot be deleted because is the default Elastix Group. You can delete any other group."=>"El Grup administrador no pot ser eliminat perque es el Grupo Elastix per defecte. Pot eliminar qualsevol altre grup.",
 /*End module Group List*/
 
-
-/*USERLIST*/
-/* Additional strings for webmail auto-login extension */
-"Webmail User" => "Webmail User",
-"Webmail Domain" => "Webmail Domain",
-"Webmail Password" => "Webmail Password",
-"Retype Webmail password" => "Retype Webmail password",
-"Mail Profile" => "Mail Profile",
-/*USERLIST*/
 "Title" => "Title",
 );
 ?>

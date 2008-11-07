@@ -33,37 +33,26 @@
 global $arrLang;
 $arrLang=array(
 /*System Info*/
-"System Resources"=>"Recursos do Sistema",
-"CPU Info"=>"Informação do Processador",
-"Uptime"=>"Tempo de Funcionamento",
-"CPU usage"=>"Utilisação do Processador",
-"Memory usage"=>"Utilisação da Memória",
-"Swap usage"=>"Utilisação do Swap",
-"Hard Drives"=>"Disco Rigído",
-"Partition Name"=>"Nome da Partição",
-"Capacity"=>"Capacidade",
-"Usage"=>"Utilisação",
-"Mount point"=>"Ponto de Montagem",
 "Disk usage"=>"Utilisação do Disco",
 "Used space"=>"Espaço Utilisado",
 "Free space"=>"Espaço Livre",
-"No records found"=>"Nenhum Relatório Encontrado",
 "Simultaneous calls, memory and CPU"=>"Chamadas Simultâneas, Memória e Processador",
 "Sim. calls"=>"Sim. Chamadas",
 "CPU usage (%)"=>"Utilisação Processador (%)",
 "Mem. usage (MB)"=>"Utilisação Mem. (MB)",
-"It was not possible to obtain information about the graph" =>"Não foi possível obter informações sobre o gráfico",
+
+"Export"=>"Exportar",
+"Start"=>"Inicío",
+"End"=>"Fim",
+"Next"=>"Avançar",
+"Previous"=>"Anterior",
+
 "Validation Error"=>"Erro de Validação",
 "The following fields contain errors"=>"Os Seguintes Campos contém erros",
 "Save"=>"Salvar",
 "Required field"=>"Campo Requerido",
 "Apply changes"=>"Aplicar Modificações",
 "Cancel"=>"Cancelar",
-"Export"=>"Exportar",
-"Start"=>"Inicío",
-"End"=>"Fim",
-"Next"=>"Avançar",
-"Previous"=>"Anterior",
 
 /*Login to Elastix*/
 "Welcome to Elastix"=>"Bem-Vindo ao Elastix",
@@ -75,27 +64,15 @@ $arrLang=array(
 /*end Login to Elastix*/
 
 /*start User Management*/
-"Create New User"=>"Criar Novo Usuário",
-"Login"=>"Login",
-"Real Name"=>"Nome Real",
 "Group"=>"Grupo",
 "User List"=>"Lista de Usuários",
-"The admin user cannot be deleted because is the default Elastix administrator. You can delete any other user."=>"O Usuário admin não pode ser apagador porque é o Administrador padrão do Elastix Server",
-"New User"=>"Novo Usuário",
-"The passwords are empty or don't match"=>"A senha é em branco ou não confere",
 "The group is wrong"=>"O grupo está errado",
-"Edit User"=>"Editar Usuário",
-"Name"=>"Nome",
-"Retype password"=>"Re-digite a senha",
 "Are you sure you wish to continue?"=>"Deseja continuar?",
 "Edit"=>"Editar",
 "Delete"=>"Apagar",
 "Accept"=>"Aceitar",
-"Apply"=>"Aplicar",
-"Resource"=>"Recursos",
 "Group Permission"=>"Permissão de Grupos",
 "Users"=>"Users",
-"Show"=>"Mostrar",
 "Directory couldn't be opened"=>"Diretório não pode ser aberto",
 
 /*start menu*/
@@ -107,10 +84,7 @@ $arrLang=array(
 
 /*Start Language*/
 "Language"=>"Language",
-"Select language"=>"Select language",
 "Change"=>"Change",
-"Continue"=>"Continue",
-"You can't change language"=>"You can't change language",
 "Logout"=>"Logout",
 /*end Language*/
 
@@ -125,27 +99,13 @@ $arrLang=array(
 
 //version 0.8
 //user
-"Extension" => "Extension",
 "View User" => "View User",
 
 /*system - date/time*/
 "Date/Time"  =>  "Date/Time",
-"Date and Time Configuration"  =>  "Date/Time",
-"Current Datetime"  =>  "Current Datetime",
-"New Date"  =>  "New Date",
-"New Time"  =>  "New Time",
-"New Timezone"  =>  "New Timezone",
-"The change of date and time can concern important  system processes."  =>  "The change of date and time can concern important  system processes.",
-"System time changed correctly" => "System time changed correctly",
-"You can not change the system time" => "You can not change the system time",
-"Can not find file" => "Can not find file",
 
 //load module
-"File name"  =>  "File name",
 "Load Module"  =>  "Load Module",
-"Refresh"  =>  "Refresh",
-"Menu Location"  =>  "Menu Location",
-"Module File"  =>  "Module File",
 "ID for new module (folder name)"  =>  "ID for new module (folder name)",
 "Module Name"  =>  "Module Name",
 "Choose Menu"  =>  "Choose Menu",
@@ -153,15 +113,12 @@ $arrLang=array(
 "Menu Name"  =>  "Menu Name",
 "Defined Menu"  =>  "Defined Menu",
 "New Menu"  =>  "New Menu",
-"Invalid file extension.- It must be tar.gz / zip / tgz"  =>  "Invalid file extension.- It must be tar.gz / zip / tgz",
 "Module sucessfully loaded"  =>  "Module sucessfully loaded",
 "Folder name doesn't exist in module file"  =>  "Folder name doesn't exist in module file",
 "Folder configs doesn't exist in module file"  =>  "Folder configs doesn't exist in module file",
 "Folder themes doesn't exist in module file"  =>  "Folder themes doesn't exist in module file",
 "File index.php doesn't exist in module file"  =>  "File index.php doesn't exist in module file",
 "File install.php doesn't exist in module file"  =>  "File install.php doesn't exist in module file",
-"Could not uncompress file"  =>  "Could not uncompress file",
-"install.php failed"  =>  "install.php failed",
 //end load module
 
 // Elastix 0.9 
@@ -169,8 +126,6 @@ $arrLang=array(
 //Inicio SubModule Themes
 "Themes" => "Themes",
 "Change Theme" => "Change Theme",
-"Themes not Found" => "Themes not Found",
-"The theme could not be updated" => "The theme could not be updated",
 //Fin SubModule Themes
 
 /* Preferences*/
@@ -189,13 +144,6 @@ implementations of Voice over IP around the globe.",
 /*Start module Group List*/
 "Groups"=>"Groups",
 "Group List"=>"Group List",
-"Description"=>"Description",
-"New Group"=>"New Group",
-"Create New Group"=>"Create New Group",
-"View Group"=>"View Group",
-"Edit Group"=>"Edit Group",
-"The Group have users assigned. You can delete any group that does not have any users assigned in it."=>"The Group have users assigned. You can delete any group that does not have any users assigned in it.",
-"The administrator group cannot be deleted because is the default Elastix Group. You can delete any other group."=>"The administrator group cannot be deleted because is the default Elastix Group. You can delete any other group.",
 /*End module Group List*/
 
 /** Elastix 1.0 **/
