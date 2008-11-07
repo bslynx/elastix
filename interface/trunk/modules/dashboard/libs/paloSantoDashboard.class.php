@@ -56,7 +56,7 @@ class paloSantoDashboard {
 
     $dbEmails = new paloDB("sqlite3:////var/www/db/email.db");
     if($email!='' && $passw!='')
-        $imap = imap_open("{localhost:143}",$email,$passw);
+        $imap = imap_open("{localhost:143/notls}","$email","$passw");
     else return $arrLang["You don't have a webmail account"];
 
     if (!$imap)
@@ -71,10 +71,10 @@ class paloSantoDashboard {
    function getMails($email,$passw,$numRegs){
         global $arrLang;
         
-        $counter    = 0;
+        $counter = 0;
         
         if($email!='' && $passw!='')
-            $imap = imap_open("{localhost:143}INBOX",$email,$passw);
+            $imap = imap_open("{localhost:143/notls}INBOX",$email,$passw);
         else return $arrLang["You don't have a webmail account"];
         
         if(!$imap)
