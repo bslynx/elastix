@@ -71,7 +71,7 @@ function _moduleContent(&$smarty, $module_name)
                                                      "INPUT_EXTRA_PARAM"      => "",
                                                      "VALIDATION_TYPE"        => "text",
                                                      "VALIDATION_EXTRA_PARAM" => ""),
-                             "rate"         => array("LABEL"                   => $arrLang["Rate"],
+                             "rate"         => array("LABEL"                   => $arrLang["Rate"]." (by min)",
                                                      "REQUIRED"               => "yes",
                                                      "INPUT_TYPE"             => "TEXT",
                                                      "INPUT_EXTRA_PARAM"      => "",
@@ -144,27 +144,27 @@ function _moduleContent(&$smarty, $module_name)
     } else if(isset($_POST['submit_import_changes'])) {
         include_once("libs/paloSantoForm.class.php");
         $oForm = new paloForm($smarty, $arrFormElements);
-	$pRate = new paloRate($pDB);
+    $pRate = new paloRate($pDB);
 
-	if (is_uploaded_file($_FILES['importcsv']['tmp_name'])) {
-		$contenido_archivo=file($_FILES['importcsv']['tmp_name']);
-		$count=0;
-		foreach ($contenido_archivo as $linea)
+    if (is_uploaded_file($_FILES['importcsv']['tmp_name'])) {
+        $contenido_archivo=file($_FILES['importcsv']['tmp_name']);
+        $count=0;
+        foreach ($contenido_archivo as $linea)
                 {
                                 $count++;
-				$rate_val=explode(';',$linea);
-				$record=array('prefix'      => $rate_val[0], 
+                $rate_val=explode(';',$linea);
+                $record=array('prefix'      => $rate_val[0], 
                                               'name'        => $rate_val[1],
                                               'rate'        => $rate_val[2], 
                                               'rate_offset' => ($rate_val[3]==0?'0.0':$rate_val[3]), 
                                               'trunk'       => trim($rate_val[4]));
                              //if no validation error             insert record         or        add error message
-			if($oForm->validateForm($record)) 
+            if($oForm->validateForm($record)) 
                         {
                                    if(!$pRate->createRate($rate_val[0],$rate_val[1],$rate_val[2],$rate_val[3],trim($rate_val[4])))
                                    if(!empty($pRate->errMsg)) $arrErrorMsg['Insert Error'][$count]=$arrLang[$pRate->errMsg];
                         } else $arrErrorMsg[$arrLang["Validation Error"]][$count]=$oForm->arrErroresValidacion;
-		}
+        }
 
                 $strErrorMsg='';
                 foreach ($arrErrorMsg as $Error_type => $on_line)
@@ -179,15 +179,15 @@ function _moduleContent(&$smarty, $module_name)
                                 }
                                      $strErrorMsg.= "Error on line: ". $line."  ".$error_msg."<br>";
                         }
-			$strErrorMsg.='<BR>';
-                }		
+            $strErrorMsg.='<BR>';
+                }       
 
-	} else $strErrorMsg=$arrLang["File doesn't exist"];
+    } else $strErrorMsg=$arrLang["File doesn't exist"];
  
-	if (isset($strErrorMsg)&&$strErrorMsg!="") {
-        	$smarty->assign("mb_message", $strErrorMsg);
-	        $contenidoModulo=$oForm->fetchForm("$local_templates_dir/import_rate.tpl", $arrLang["New Rate"], $_POST);
-	} else header("Location: ?menu=billing_rates");
+    if (isset($strErrorMsg)&&$strErrorMsg!="") {
+            $smarty->assign("mb_message", $strErrorMsg);
+            $contenidoModulo=$oForm->fetchForm("$local_templates_dir/import_rate.tpl", $arrLang["New Rate"], $_POST);
+    } else header("Location: ?menu=billing_rates");
 
     } else if(isset($_POST['submit_save_rate'])) {
         //GUARDAR NUEVA TARIFA

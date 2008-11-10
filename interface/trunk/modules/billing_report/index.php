@@ -51,10 +51,10 @@ function _moduleContent(&$smarty, $module_name)
     $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
     $arrConfig = $pConfig->leer_configuracion(false);
 
-    $dsn     = $arrConfig['AMPDBENGINE']['valor'] . "://" . $arrConfig['AMPDBUSER']['valor'] . ":" . $arrConfig['AMPDBPASS']['valor'] . "@" .
-               $arrConfig['AMPDBHOST']['valor'] . "/asteriskcdrdb";
-    $dsn2     = $arrConfig['AMPDBENGINE']['valor'] . "://" . $arrConfig['AMPDBUSER']['valor'] . ":" . $arrConfig['AMPDBPASS']['valor'] . "@" .
-               $arrConfig['AMPDBHOST']['valor'] . "/asterisk";
+    $dsn  = $arrConfig['AMPDBENGINE']['valor'] . "://" . $arrConfig['AMPDBUSER']['valor'] . ":" .
+            $arrConfig['AMPDBPASS']['valor'] . "@" . $arrConfig['AMPDBHOST']['valor'] . "/asteriskcdrdb";
+    $dsn2 = $arrConfig['AMPDBENGINE']['valor'] . "://" . $arrConfig['AMPDBUSER']['valor'] . ":" .
+            $arrConfig['AMPDBPASS']['valor'] . "@" . $arrConfig['AMPDBHOST']['valor'] . "/asterisk";
     $pDBTrunk = new paloDB("sqlite3:////var/www/db/trunk.db");
     $pDBSet = new paloDB("sqlite3:////var/www/db/settings.db");
     $pDB     = new paloDB($dsn);
@@ -69,15 +69,12 @@ function _moduleContent(&$smarty, $module_name)
         echo "ERROR DE DB: $pDB->errMsg <br>";
     }
 
-
     $pRate = new paloRate($pDBSQLite);
     if(!empty($pRate->errMsg)) {
         echo "ERROR DE RATE: $pRate->errMsg <br>";
     }
 
-
     if(isset($_GET['exportcsv']) && $_GET['exportcsv']=='yes') {
-
         $limit = "";
         $offset = 0;
         if(empty($_GET['date_start'])) {
@@ -98,37 +95,9 @@ function _moduleContent(&$smarty, $module_name)
         header('Content-Type: application/octec-stream');
         header('Content-disposition: inline; filename="billing_report.csv"');
         header('Content-Type: application/force-download');
-
-
-    } else {
-    
-        $arrFormElements = array("date_start"  => array("LABEL"                  => $arrLang["Start Date"],
-                                                        "REQUIRED"               => "yes",
-                                                        "INPUT_TYPE"             => "DATE",
-                                                        "INPUT_EXTRA_PARAM"      => "",
-                                                        "VALIDATION_TYPE"        => "ereg",
-                                                        "VALIDATION_EXTRA_PARAM" => "^[[:digit:]]{1,2}[[:space:]]+[[:alnum:]]{3}[[:space:]]+[[:digit:]]{4}$"),
-                                 "date_end"    => array("LABEL"                  => $arrLang["End Date"],
-                                                        "REQUIRED"               => "yes",
-                                                        "INPUT_TYPE"             => "DATE",
-                                                        "INPUT_EXTRA_PARAM"      => "",
-                                                        "VALIDATION_TYPE"        => "ereg",
-                                                        "VALIDATION_EXTRA_PARAM" => "^[[:digit:]]{1,2}[[:space:]]+[[:alnum:]]{3}[[:space:]]+[[:digit:]]{4}$"),
-                                 "field_name"  => array("LABEL"                  => $arrLang["Field Name"],
-                                                        "REQUIRED"               => "no",
-                                                        "INPUT_TYPE"             => "SELECT",
-                                                        "INPUT_EXTRA_PARAM"      => array( "dst"         => $arrLang["Destination"],
-                                                                                           "src"         => $arrLang["Source"],
-                                                                                           "dstchannel"  => $arrLang["Dst. Channel"]),
-                                                        "VALIDATION_TYPE"        => "ereg",
-                                                        "VALIDATION_EXTRA_PARAM" => "^(dst|src|channel|dstchannel)$"),
-                                 "field_pattern" => array("LABEL"                  => $arrLang["Field"],
-                                                        "REQUIRED"               => "no",
-                                                        "INPUT_TYPE"             => "TEXT",
-                                                        "INPUT_EXTRA_PARAM"      => "",
-                                                        "VALIDATION_TYPE"        => "ereg",
-                                                        "VALIDATION_EXTRA_PARAM" => "^[[:alnum:]@_\.,/\-]+$"),
-                                 );
+    } 
+    else {
+        $arrFormElements = FormElements($arrLang);
 
         $smarty->assign("Filter",$arrLang['Filter']);
         $oFilterForm = new paloForm($smarty, $arrFormElements);
@@ -176,7 +145,6 @@ function _moduleContent(&$smarty, $module_name)
         }
     
         // LISTADO
-    
         $limit = 50;
         $offset = 0;
     
@@ -209,9 +177,7 @@ function _moduleContent(&$smarty, $module_name)
             $url = construirURL(array(), array("nav", "start")); 
         }
         $smarty->assign("url", $url);
-    
     }    
-
 
     // Bloque comun
     //consulto cuales son los trunks de salida
@@ -234,14 +200,14 @@ function _moduleContent(&$smarty, $module_name)
             $arrTmp    = array();
             $arrTmp[0] = $cdr[0];
             if(isset($_GET['exportcsv']) && $_GET['exportcsv']=='yes'){
-                $arrTmp[1] = ($cdr[1]?$cdr[1]:$arrLang["Unknown"]);
-                $arrTmp[3] = $cdr[4];
+                $arrTmp[2] = ($cdr[1]?$cdr[1]:$arrLang["Unknown"]);
+                $arrTmp[4] = $cdr[4];
             } else {
-                $arrTmp[1] = "<div title=\"{$arrLang['Channel']}: $cdr[3]\" align=\"left\">".($cdr[1]?$cdr[1]:$arrLang["Unknown"])."</div>";
-                $arrTmp[3] = "<div title=\"{$arrLang['Trunk']}: $trunk\" align=\"left\">$cdr[4]</div>";
+                $arrTmp[2] = "<div title=\"{$arrLang['Channel']}: $cdr[3]\" align=\"left\">".($cdr[1]?$cdr[1]:$arrLang["Unknown"])."</div>";
+                $arrTmp[4] = "<div title=\"{$arrLang['Trunk']}: $trunk\" align=\"left\">$cdr[4]</div>";
             }
-            $arrTmp[2] = $cdr[2];
-            $arrTmp[4] = $cdr[8];
+            $arrTmp[3] = $cdr[2];
+            $arrTmp[5] = Sec2HHMMSS( $cdr[8] );
             $charge=0;
             $tarifa=array();
             $bExito=$pRate->buscarTarifa($numero,$tarifa,$trunk);
@@ -274,10 +240,10 @@ function _moduleContent(&$smarty, $module_name)
                     $charge=(($cdr[8]/60)*$rate)+$rate_offset;
                 }
             }
-            $arrTmp[5] = number_format($charge,3);
-            $sum_cost  = $sum_cost+$arrTmp[5];
-            $arrTmp[6] = $sum_cost;
-            $arrTmp[7] = $rate_name;
+            $arrTmp[6] = number_format($charge,3);
+            $sum_cost  = $sum_cost+$arrTmp[6];
+            //$arrTmp[7] = $sum_cost;
+            $arrTmp[1] = $rate_name;
             $arrData[] = $arrTmp;
         }
     }
@@ -288,22 +254,22 @@ function _moduleContent(&$smarty, $module_name)
                      "start"    => ($total==0) ? 0 : $offset + 1,
                      "end"      => ($offset+$limit)<=$total ? $offset+$limit : $total,
                      "total"    => $total,
-                     "columns"  => array(0 => array("name"      => $arrLang["Date"],
+                     "columns"  => array(0 => array("name"  => $arrLang["Date"],
                                                     "property1" => ""),
-                                         1 => array("name"      => $arrLang["Source"],
+                                         1 => array("name"  => $arrLang["Rate Applied"],
+                                                    "property"  => ""),
+                                         2 => array("name"  => $arrLang["Source"],
                                                     "property1" => ""),
-                                         2 => array("name"      => $arrLang["Destination"],
+                                         3 => array("name"  => $arrLang["Destination"],
                                                     "property1" => ""),
-                                         3 => array("name"	=> $arrLang["Dst. Channel"],
-                                         			"property"	=> ""),
-                                         4 => array("name"	=> $arrLang["Duration in seconds"],
-                                         			"property"	=> ""),
-                                         5 => array("name"	=> $arrLang["Cost"],
-                                         			"property"	=> ""),
-                                         6 => array("name"      => $arrLang["Summary Cost"],
-                                                                "property"      => ""),
-                                         7 => array("name"	=> $arrLang["Rate Applied"],
-                                         			"property"	=> ""),
+                                         4 => array("name"  => $arrLang["Dst. Channel"],
+                                                    "property"  => ""),
+                                         5 => array("name"  => $arrLang["Duration"]." HH:MM:SS",
+                                                    "property"  => ""),
+                                         6 => array("name"  => $arrLang["Cost"],
+                                                    "property"  => ""),
+                                         //7 => array("name"      => $arrLang["Summary Cost"],
+                                         //           "property"      => ""),
                                         )
                     );
 
@@ -317,5 +283,52 @@ function _moduleContent(&$smarty, $module_name)
         $oGrid->showFilter($htmlFilter);
         return $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
     }
+}
+
+function FormElements($arrLang)
+{
+    return array("date_start"  => array("LABEL"                  => $arrLang["Start Date"],
+                                        "REQUIRED"               => "yes",
+                                        "INPUT_TYPE"             => "DATE",
+                                        "INPUT_EXTRA_PARAM"      => "",
+                                        "VALIDATION_TYPE"        => "ereg",
+                                        "VALIDATION_EXTRA_PARAM" => "^[[:digit:]]{1,2}[[:space:]]+[[:alnum:]]{3}[[:space:]]+[[:digit:]]{4}$"),
+                 "date_end"    => array("LABEL"                  => $arrLang["End Date"],
+                                        "REQUIRED"               => "yes",
+                                        "INPUT_TYPE"             => "DATE",
+                                        "INPUT_EXTRA_PARAM"      => "",
+                                        "VALIDATION_TYPE"        => "ereg",
+                                        "VALIDATION_EXTRA_PARAM" => "^[[:digit:]]{1,2}[[:space:]]+[[:alnum:]]{3}[[:space:]]+[[:digit:]]{4}$"),
+                 "field_name"  => array("LABEL"                  => $arrLang["Field Name"],
+                                        "REQUIRED"               => "no",
+                                        "INPUT_TYPE"             => "SELECT",
+                                        "INPUT_EXTRA_PARAM"      => array( "dst"         => $arrLang["Destination"],
+                                                                           "src"         => $arrLang["Source"],
+                                                                           "dstchannel"  => $arrLang["Dst. Channel"]),
+                                        "VALIDATION_TYPE"        => "ereg",
+                                        "VALIDATION_EXTRA_PARAM" => "^(dst|src|channel|dstchannel)$"),
+                 "field_pattern" => array("LABEL"                  => $arrLang["Field"],
+                                        "REQUIRED"               => "no",
+                                        "INPUT_TYPE"             => "TEXT",
+                                        "INPUT_EXTRA_PARAM"      => "",
+                                        "VALIDATION_TYPE"        => "ereg",
+                                        "VALIDATION_EXTRA_PARAM" => "^[[:alnum:]@_\.,/\-]+$"),
+                    );
+}
+
+function Sec2HHMMSS($sec)
+{
+    $HH = '00'; $MM = '00'; $SS = '00';
+    
+    if($sec >= 3600){ $HH = (int)($sec/3600); $sec = $sec%3600; }
+    if( $HH < 10 ) $HH = "0$HH";
+
+    if( $sec >= 60 ){ $MM = (int)($sec/60); $sec = $sec%60; }
+    if( $MM < 10 ) $MM = "0$MM";
+
+    $SS = $sec;
+    if( $SS < 10 ) $SS = "0$SS";
+
+    return "$HH:$MM:$SS";
 }
 ?>
