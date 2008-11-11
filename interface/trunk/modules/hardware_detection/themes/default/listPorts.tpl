@@ -5,7 +5,7 @@
     <tr class="filterForm">
         <td class="filterForm" valign="middle" width="30%"> 
             <input type='checkbox' name='chk_zapata_replace' id='chk_zapata_replace' />&nbsp; <b>{$ZAPATA_REPLACE}<b> &nbsp;&nbsp;&nbsp;&nbsp;<br />
-            <input type='checkbox' name='chk_there_is_sangoma' id='chk_there_is_sangoma' />&nbsp; <b>{$THERE_IS_SANGOMA}<b> &nbsp;&nbsp;&nbsp;&nbsp;
+            <input type='checkbox' name='chk_there_is_sangoma' id='chk_there_is_sangoma' />&nbsp; <b>{$DETECT_SANGOMA}<b> &nbsp;&nbsp;&nbsp;&nbsp;
         </td>
         <td class="filterForm" valign="middle"  >
             <input type='button' name='submit_harware_detect' value='{$HARDWARE_DETECT}'  onclick="detectar()" class='button' /> 
@@ -21,23 +21,29 @@
         {foreach from=$arrData key=k item=data name=filas}
             {if $data.DESC.TIPO ne $CARD_NO_MOSTRAR}
                 <tr>
-                    <td style='border:1px #CCCCCC solid' align='center' class="moduleTitle">{$CARD} # {$data.DESC.ID}: {$data.DESC.TIPO} {$data.DESC.ADICIONAL}</td>
+                    <td style='border:1px #CCCCCC solid; font-size:12px;' align='center' class="moduleTitle">{$CARD} # {$data.DESC.ID}: {$data.DESC.TIPO} {$data.DESC.ADICIONAL}</td>
                 </tr>
                 <tr> 
                     <td>
                     <table border ='0' align="center" cellspacing="0" cellpadding="0" class="table_title_row" width='100%'>
                         {if $data.PUERTOS}
-                            <tr>
+                            {counter start=0 skip=1 print=false assign=cnt}
                                 {foreach from=$data.PUERTOS key=q item=puerto name=filasPuerto}
-                                    <td>
-                                        <table style='border:1px #CCCCCC solid;padding:1px;background-color:white' border='0' callpadding='0' cellspacing='0' onMouseOver="this.style.backgroundColor='#f2f2f2';" onMouseOut="this.style.backgroundColor='#ffffff';" width='100%'>                              
-                                            <tr><td  align='center'>{$NO_PUERTO}{$puerto.LOCALIDAD}</td></tr>
-                                            <tr><td  align='center'>{$puerto.TIPO}</td></tr>
-                                            <tr><td  align='center' style='background-color:{$puerto.COLOR}'>{$puerto.ESTADO}</td></tr>
-                                        </table>
-                                    </td>
+                                    {if $cnt%12==0}
+                                        <tr>
+                                    {/if}
+                                            <td>
+                                                <table style='border:1px #CCCCCC solid;padding:1px;background-color:white' border='0' callpadding='0' cellspacing='0' onMouseOver="this.style.backgroundColor='#f2f2f2';" onMouseOut="this.style.backgroundColor='#ffffff';" width='100%'>
+                                                    <tr><td  align='center' style='font-size:10px;background-color:{$puerto.COLOR};'>{$puerto.LOCALIDAD} {$puerto.TIPO}</td></tr>                           
+                                                    <tr><td  align='center'></td></tr>
+                                                    <tr><!--<td  align='center' style='background-color:{$puerto.COLOR}'>{$puerto.ESTADO}</td>--></tr>
+                                                </table>
+                                            </td>                       
+                                    {if ($cnt+1)%12==0}
+                                        </tr>
+                                    {/if}
+                                    {counter}
                                 {/foreach}
-                            </tr>
                         {else}
                             <tr>
                                 <td style='border:1px #CCCCCC solid;padding:1px;background-color:white'>{$PORT_NOT_FOUND}</td>
