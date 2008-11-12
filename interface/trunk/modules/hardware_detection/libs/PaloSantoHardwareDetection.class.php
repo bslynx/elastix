@@ -62,7 +62,7 @@ class PaloSantoHardwareDetection
                 else if(ereg("[[:space:]]{0,}([[:digit:]]{1,})[[:space:]]{1}([[:alnum:]]{1,})[[:space:]]{1,}([[:alnum:]]{1,})[[:space:]]{1,}(\(?.+\))",$linea,$regs1)){
                    if($regs1[4] == '(In use)'){
                         $estado = $arrLang['(In Use)'];
-                        $colorEstado = 'green';
+                        $colorEstado = '#00CC00';
                    }
                    if($regs1[3]=='FXSKS')
                         $tipo ='FXO'; 

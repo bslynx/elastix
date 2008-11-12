@@ -163,6 +163,10 @@ function _moduleContent(&$smarty, $module_name)
     $GLOBALS['fpbx_menu'] = isset($fpbx_menu)?$fpbx_menu:'';
     $GLOBALS['recordings_save_path'] = "/tmp/";
 
+    //This _guielement_tabindex and _guielement_formfields fixed bug in extensions freePBX embedded
+    $GLOBALS['_guielement_tabindex'] = 1;
+    $GLOBALS['_guielement_formfields'] = 0;
+
     // handle special requests
     if (isset($_REQUEST['handler'])) {
         switch ($_REQUEST['handler']) {
