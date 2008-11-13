@@ -39,6 +39,7 @@ class paloSantoGrid {
     var $withAjax;
     var $functionNameAjax;
     var $prefixAjax;
+    var $pagingShow;
 
     function paloSantoGrid($smarty)
     {
@@ -51,11 +52,17 @@ class paloSantoGrid {
         $this->withAjax = 0;
         $this->functionNameAjax = "";
         $this->prefixAjax = "xajax_";
+        $this->pagingShow = 1;
     }
 
     function withAjax()
     {
         $this->withAjax = 1;
+    }
+    
+    function pagingShow($show)
+    {
+        $this->pagingShow = (int)$show;
     }
 
     function withoutAjax()
@@ -67,6 +74,15 @@ class paloSantoGrid {
     {
         $this->smarty->assign("withAjax",$this->withAjax);
         $this->smarty->assign("functionName",$this->prefixAjax.$this->functionNameAjax);
+        /*if($this->pagingShow)
+            $this->smarty->assign("pagingShow",1);
+        else{
+            if($this->total > $this->limit)        
+                $this->smarty->assign("pagingShow",1);
+            else            
+                $this->smarty->assign("pagingShow",0);
+            }*/
+        $this->smarty->assign("pagingShow",$this->pagingShow);
 
         $numColumns=count($arrGrid["columns"]);
         $this->smarty->assign("title", $arrGrid['title']);
