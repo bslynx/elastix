@@ -74,7 +74,7 @@ function _moduleContent(&$smarty, $module_name)
         default: // endpoint_show
             if(isset($_SESSION['elastix_endpoints']))//si existe este arreglo lo borro, esto asegura de q cada vez q entre al modulo endpoint configuration vuelva a crear el arreglo de los endpoint en la SESSION
                 unset($_SESSION['elastix_endpoints']);
-            $content = endpointConfiguratedShow($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrLang, $arrConfig);
+            $content = buildReport(array(), $smarty, $module_name, $arrLang, network());
             break;
     }
     return $content;
@@ -151,13 +151,19 @@ function endpointConfiguratedShow($smarty, $module_name, $local_templates_dir, $
 
 function buildReport($arrData, $smarty, $module_name, $arrLang, $endpoint_mask)
 {
+	$ip=$_SERVER['SERVER_ADDR'];
+    $devices = subMask($ip);
     $limit  = 20;
     $total  = count($arrData); 
     $oGrid  = new paloSantoGrid($smarty);
     $offset = $oGrid->getOffSet($limit,$total,(isset($_GET['nav']))?$_GET['nav']:NULL,(isset($_GET['start']))?$_GET['start']:NULL);
     $end    = ($offset+$limit)<=$total ? $offset+$limit : $total;
     $smarty->assign("url","?menu=".$module_name);
-
+	if($devices<=20){
+       $devices = pow(2,(32-$devices));
+       $smarty->assign("mb_title",$arrLang['WARNING'].":");
+       $smarty->assign("mb_message",$arrLang["It can take several minutes, because your ip address has some devices, "].$devices);
+    }
     $arrGrid = array("title"    => $arrLang["Endpoint Configuration"],
         "icon"     => "images/endpoint.png",
         "width"    => "99%",
@@ -333,7 +339,7 @@ function network()
     $ip=$_SERVER['SERVER_ADDR'];
     $total = subMask($ip);
     list($oc1, $oc2, $oc3, $oc4)=explode(".",$ip);
-    return $oc1.".".$oc2.".".$oc3.".0".$total;
+    return $oc1.".".$oc2.".".$oc3.".0"."/".$total;
 }
 
 function subMask($ip)
@@ -342,14 +348,14 @@ function subMask($ip)
     $binario = "";
     $arrIp = array();
     $result = `ifconfig | grep $ip`;
- 
+    /*     inet addr:192.168.1.135  Bcast:192.168.1.255  Mask:255.255.255.0*/ 
     if(ereg("inet[[:space:]][[:alpha:]]{1,}:(([[:digit:]]*\.+[[:digit:]]{1,}){1,})[[:space:]]{1,}[[:alpha:]]{1,}:(([[:digit:]]*\.*[[:digit:]]{1,}){1,})[[:space:]]{1,}[[:alpha:]]{1,}:(([[:digit:]]*\.*[[:digit:]]{1,}){1,})",$result,$regs)){
         $arrIp = explode(".",$regs[5]);
         foreach($arrIp as $key => $valor){
             $binario = decbin($valor);
             $total += substr_count($binario,"1");
         }
-        return "/".$total;
+        return $total;
     }
 }
 ?>

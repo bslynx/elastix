@@ -577,6 +577,8 @@ implementations of Voice over IP around the globe.",
 "No Models" => "No Models",
 "No Extensions" => "No Extensions",
 "Invalid Format in Parameter" => "Invalid Format in Parameter",
+"It can take several minutes, because your ip address has some devices, " => "It can take several minutes, because your ip address has some devices, ",
+"WARNING" => "WARNING",
 /*End module Endpoint Configuration*/
 
 /*Start module Call Center*/

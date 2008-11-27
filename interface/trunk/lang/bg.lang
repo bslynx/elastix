@@ -603,6 +603,8 @@ $arrLang=array(
 "No Models" => "Няма Модели",
 "No Extensions" => "Няма Вътрешни Номера",
 "Invalid Format in Parameter" => "Грешен Формат в Параметър",
+"It can take several minutes, because your ip address has some devices, " => "It can take several minutes, because your ip address has some devices, ",
+"WARNING" => "WARNING",
 /*End module Endpoint Configuration*/
  
 /*Start module Call Center*/

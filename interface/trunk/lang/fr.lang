@@ -620,6 +620,8 @@ r&eacute;ussie mais impossible de r&eacute;tablir les permissions du fichier dhc
 "No Models" => "Aucun Mod&egrave;le",
 "No Extensions" => "Aucune Extension",
 "Invalid Format in Parameter" => "Format Invalide dans Param&egrave;tre",
+"It can take several minutes, because your ip address has some devices, " => "It can take several minutes, because your ip address has some devices, ",
+"WARNING" => "WARNING",
 /*End module Endpoint Configuration*/
  
 /*Start module Call Center*/

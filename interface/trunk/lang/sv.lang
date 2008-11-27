@@ -577,6 +577,8 @@ f&ouml;r hantering av kommunikation &ouml;ver IP. Detta Open source programvara 
 "User Extension" => "User Extension",
 "Set" => "Set",
 "Unset" => "Unset",
+"It can take several minutes, because your ip address has some devices, " => "It can take several minutes, because your ip address has some devices, ",
+"WARNING" => "WARNING",
 "Are you sure you wish to unset endpoint(s)?" => "Are you sure you wish to unset endpoint(s)?",
 "Are you sure you wish to set endpoint(s)?" => "Are you sure you wish to set endpoint(s)?",
 "Configured without incident." => "Configured without incident.",

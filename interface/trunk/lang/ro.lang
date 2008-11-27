@@ -591,6 +591,8 @@ inceputa in Ecuador a devenit o solutie aleasa pentru voip in intreaga lume.",
 "No Models" => "Nu exista modele",
 "No Extensions" => "Nu exista extensii",
 "Invalid Format in Parameter" => "Format invalid in parametri",
+"It can take several minutes, because your ip address has some devices, " => "It can take several minutes, because your ip address has some devices, ",
+"WARNING" => "WARNING",
 /*End module Endpoint Configuration*/
 
 /*Start module Call Center*/

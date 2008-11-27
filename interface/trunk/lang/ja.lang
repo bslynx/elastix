@@ -602,6 +602,8 @@ FAX送信可能なIPアドレスを１行ずつ入力してください。<br>El
 "No Models" => "電話機なし",
 "No Extensions" => "内線なし",
 "Invalid Format in Parameter" => "設定内容に間違いがあります",
+"It can take several minutes, because your ip address has some devices, " => "It can take several minutes, because your ip address has some devices, ",
+"WARNING" => "WARNING",
 /*End module Endpoint Configuration*/
 
 /*Start module Call Center*/

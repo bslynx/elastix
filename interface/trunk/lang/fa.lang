@@ -603,6 +603,8 @@ $arrLang=array(
 "No Models" => "بدون مدل",
 "No Extensions" => "بدون داخلی",
 "Invalid Format in Parameter" => "پارامتر با ساختار ناشناخته",
+"It can take several minutes, because your ip address has some devices, " => "It can take several minutes, because your ip address has some devices, ",
+"WARNING" => "WARNING",
 /*End module Endpoint Configuration*/
 
 /*Start module Call Center*/

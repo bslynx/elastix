@@ -605,6 +605,8 @@ alrededor del mundo.",
 "No Models" => "No Modelos",
 "No Extensions" => "No Extensiones",
 "Invalid Format in Parameter" => "Formato Invalido en Parametro",
+"It can take several minutes, because your ip address has some devices, " => "Esto puede tomar algunos minutos, porque tu direccion ip tiene algunos dispositivos, ",
+"WARNING" => "Advertencia",
 /*End module Endpoint Configuration*/
 
 /*Start module Call Center*/
