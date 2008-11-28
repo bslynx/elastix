@@ -27,9 +27,7 @@
   +----------------------------------------------------------------------+
   $Id: paloSantoCDR.class.php,v 1.1.1.1 2008/01/31 21:31:55 afigueroa Exp $ */
 
-//ini_set("display_errors", true);
- require_once "/var/lib/asterisk/agi-bin/phpagi-asmanager.php";
-// require_once('/var/www/html/admin/common/php-asmanager.php');
+require_once "/var/lib/asterisk/agi-bin/phpagi-asmanager.php";
 class paloSantoLoadExtension {
     var $_DB;
     var $errMsg;
@@ -137,17 +135,16 @@ class paloSantoLoadExtension {
             if($result[0]>0)
             {
                 $sql =
-                    "update users set name='$Name', voicemail='$voicemail', directdid='$Direct_DID', outboundcid='$Outbound_CID'
+                    "update users set name='$Name', voicemail='$voicemail', outboundcid='$Outbound_CID'
                      where extension='$Ext';";
             }else{
                 $sql =
                     "insert into users (
                         extension,password,name,voicemail,ringtimer,noanswer,recording,outboundcid,
-                        directdid,didalert,faxexten,faxemail,answer,wait,privacyman,
                         mohclass,sipname) 
                     values (
                         '$Ext','','$Name','$voicemail',0,'','out=Adhoc|in=Adhoc','$Outbound_CID',
-                        '$Direct_DID','','default','',0,0,0,'acc_1','');";
+                        'default','');";
             }
             if(!$this->_DB->genQuery($sql))
             {
@@ -202,7 +199,7 @@ class paloSantoLoadExtension {
         $path = "/etc/asterisk/voicemail.conf";
 
         $sql = "select * from
-                    (select u.extension, u.name, u.directdid, u.outboundcid, d.tech from users u, devices d where u.extension=d.id) as r1,
+                    (select u.extension, u.name, u.outboundcid, d.tech from users u, devices d where u.extension=d.id) as r1,
                     (select data as secret, id from sip where keyword='secret') as r2,
                     (select data as context, id from sip where keyword='context') as r3
                 where r1.extension=r2.id and r1.extension=r3.id;";
@@ -223,7 +220,7 @@ class paloSantoLoadExtension {
             //Extension
             foreach($result as $key => $extension){
                 $extension['callwaiting']=isset($arrCW[$extension['extension']]) ? $arrCW[$extension['extension']] : 'DISABLED';
-
+                $extension['directdid'] = "";
                 $extension['voicemail'] = 'disable';
                 $extension['vm_secret'] = '';
                 $extension['email_address'] = '';
@@ -289,7 +286,7 @@ class paloSantoLoadExtension {
         if (!$astman->connect("127.0.0.1", 'admin' , 'elastix456'))
             $this->errMsg = "Error connect AGI_AsteriskManager";
         else{
-            $salida = $astman->command("database show");
+            $salida = $astman->command("database show CW");
             if (strtoupper($salida["Response"]) != "ERROR") {
                 return split("\n", $salida["data"]);
             }else return false;
@@ -317,55 +314,13 @@ class paloSantoLoadExtension {
     }
 
     function do_reloadAll($data_connection, $arrAST, $arrAMP) {
-        /*require_once('/var/www/html/admin/functions.inc.php');
-        
-
-        // Hack to avoid patching admin/functions.inc.php
-        $GLOBALS['amp_conf_defaults'] = $amp_conf_defaults;
-    
-        // get settings
-        $amp_conf       = parse_amportal_conf("/etc/amportal.conf");
-        $asterisk_conf  = parse_asterisk_conf($amp_conf["ASTETCDIR"]."/asterisk.conf");
-        $astman         = new AGI_AsteriskManager();
-    
-        // attempt to connect to asterisk manager proxy
-        if (!isset($amp_conf["ASTMANAGERPROXYPORT"]) || !$res = $astman->connect("127.0.0.1:".$amp_conf["ASTMANAGERPROXYPORT"], $amp_conf["AMPMGRUSER"] , $amp_conf["AMPMGRPASS"])) {
-                // attempt to connect directly to asterisk, if no proxy or if proxy failed
-                if (!$res = $astman->connect("127.0.0.1:".$amp_conf["ASTMANAGERPORT"], $amp_conf["AMPMGRUSER"] , $amp_conf["AMPMGRPASS"])) {
-                        // couldn't connect at all
-                        unset( $astman );
-                }
-        }
-    
-        $GLOBALS['amp_conf'] = $amp_conf;
-        $GLOBALS['asterisk_conf']  = $asterisk_conf;
-        $GLOBALS['astman'] = $astman;
-    
-        // Hack to avoid patching common/db_connect.php
-        // I suppose the used database is mysql
-        require_once('DB.php'); //PEAR must be installed
-        $db_user = $amp_conf["AMPDBUSER"];
-        $db_pass = $amp_conf["AMPDBPASS"];
-        $db_host = $amp_conf["AMPDBHOST"];
-        $db_name = $amp_conf["AMPDBNAME"];
-    
-        $datasource = 'mysql://'.$db_user.':'.$db_pass.'@'.$db_host.'/'.$db_name;
-        $db = DB::connect($datasource); // attempt connection
-    
-        $GLOBALS['db'] = $db;
-    
-        if (!isset($_SESSION['AMP_user'])) {
-            $_SESSION['AMP_user'] = new ampuser($amp_conf['AMPDBUSER']);
-            $_SESSION['AMP_user']->setAdmin();
-        }
-
-        do_reload();*/
         $bandera = true;
 
         if (isset($arrAMP["PRE_RELOAD"]['valor']) && !empty($arrAMP['PRE_RELOAD']['valor'])){
             exec( $arrAMP["PRE_RELOAD"]['valor']);
         }
 
+        //para crear los archivos de configuracion en /etc/asterisk
         $retrieve = $arrAMP['AMPBIN']['valor'].'/retrieve_conf';
         exec($retrieve);
 
@@ -411,6 +366,35 @@ class paloSantoLoadExtension {
             }else return false;
         }
         return false;
+    }
+
+    function putDataBaseFamily($data_connection, $Ext, $tech, $Name)
+    {
+        $tech = strtolower($tech);
+        if($tech=='sip')
+            $dial = "SIP/$Ext";
+        else if($tech=='iax2')
+            $dial = "IAX2/$Ext";
+
+        $arrFamily=array(
+                "database put AMPUSER $Ext/cidname $Name",
+                "database put AMPUSER $Ext/cidnum  $Ext",
+                "database put AMPUSER $Ext/device  $Ext",
+                "database put AMPUSER $Ext/noanswer",
+                "database put AMPUSER $Ext/outboundcid",
+                "database put AMPUSER $Ext/password",
+                "database put AMPUSER $Ext/recording  out=Adhoc|in=Adhoc",
+                "database put AMPUSER $Ext/ringtimer 0",
+                "database put AMPUSER $Ext/voicemail novm",
+                "database put DEVICE $Ext/default_user $Ext",
+                "database put DEVICE $Ext/dial $dial",
+                "database put DEVICE $Ext/type fixed",
+                "database put DEVICE $Ext/user $Ext");
+
+        return $this->AsteriskManager_Command($data_connection['host'],
+                                              $data_connection['user'],
+                                              $data_connection['password'],
+                                              $arrFamily);
     }
 }
 ?>

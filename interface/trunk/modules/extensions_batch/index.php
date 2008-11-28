@@ -127,6 +127,7 @@ function load_extension($smarty, $module_name, $local_templates_dir, $arrLang, $
 function load_extension_from_csv($smarty, $arrLang, $ruta_archivo, $base_dir, $pDB, $arrAST, $arrAMP){
     $Messages = "";
     $arrayColumnas = array();
+    $data_connection = array('host' => "127.0.0.1", 'user' => "admin", 'password' => "elastix456");
 
     $result = isValidCSV($arrLang, $ruta_archivo, $arrayColumnas);
     if($result != true){
@@ -187,12 +188,14 @@ function load_extension_from_csv($smarty, $arrLang, $ruta_archivo, $base_dir, $p
                     //Paso 5: Configurando el call waiting
                     if(!$pLoadExtension->processCallWaiting($Call_Waiting,$Ext))
                         $Messages .= "Ext: $Ext - ". $arrLang["Error processing CallWaiting"]."<br />";
+
+                    if(!$pLoadExtension->putDataBaseFamily($data_connection, $Ext, "sip", $Name))
+                        $Messages .= "Ext: $Ext - ". $arrLang["Error processing Database Family"]."<br />";
                     $cont++;
                 }
             }
         }
         //Paso 6: Realizo reload
-        $data_connection = array('host' => "127.0.0.1", 'user' => "admin", 'password' => "elastix456");
         if(!$pLoadExtension->do_reloadAll($data_connection, $arrAST, $arrAMP))
             $Messages .= $pLoadExtension->errMsg;
 
