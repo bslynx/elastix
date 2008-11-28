@@ -174,7 +174,7 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
 
             $arrTmp[0]  = ($directory_type=='external')?"{$adress_book['last_name']} {$adress_book['name']}":$adress_book['description'];
             $number = ($directory_type=='external')?$adress_book['telefono']:$adress_book['id'];
-            $arrTmp[1]  = "<a href='javascript:return_phone_number($number, \"$directory_type\", \"{$adress_book['id']}\")'>$number</a>";
+            $arrTmp[1]  = "<a href='javascript:return_phone_number(\"$number\", \"$directory_type\", \"{$adress_book['id']}\")'>$number</a>";
             $arrTmp[2]  = $email;
             $arrData[]  = $arrTmp;
         }
