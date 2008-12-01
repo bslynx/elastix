@@ -377,7 +377,7 @@ class paloSantoLoadExtension {
             $dial = "IAX2/$Ext";
 
         $arrFamily=array(
-                "database put AMPUSER $Ext/cidname $Name",
+                "database put AMPUSER $Ext/cidname \"$Name\"",
                 "database put AMPUSER $Ext/cidnum  $Ext",
                 "database put AMPUSER $Ext/device  $Ext",
                 "database put AMPUSER $Ext/noanswer",
