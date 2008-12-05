@@ -25,13 +25,14 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: Predictivo.class.php,v 1.3 2008/10/06 19:17:21 alex Exp $ */
+  $Id: Predictivo.class.php,v 1.5 2008/12/04 19:11:21 alex Exp $ */
 
 class Predictivo
 {
     private $_astConn;  // Conexión al Asterisk
 
     private $_estadisticasCola = NULL;
+    private $_conflictReport = array();
     
     function Predictivo(&$astman)
     {
@@ -41,6 +42,15 @@ class Predictivo
         $this->_estadisticasCola = array();
         $this->_astConn = $astman;
     }
+
+	/**
+	 * Procedimiento para reportar el bug de que el estado de 'agent show' difiere de 'queue show'
+	 * y lista los agentes para los cuales se detecta discrepancia.
+	 */
+	function getAgentesConflicto()
+	{
+		return $this->_conflictReport;
+	}	
 
     /**
      * Procedimiento para recuperar las estadísticas y parámetros de predicción
@@ -194,10 +204,12 @@ class Predictivo
     {
     	$iTimestampActual = time();
         $estadoCola = NULL;
+        $this->_conflictReport = NULL;
     
     	// TODO: validar formato de $sNombreCola
         $respuestaCola = NULL;
         $respuestaListaAgentes = NULL;
+        $listaAgentesLibres = array();
                 
         // Leer información inmediata (que no depende de canal)
         $respuestaListaAgentes = $this->_astConn->Command('agent show');
@@ -228,6 +240,8 @@ class Predictivo
                                 $tiempoAgente[$sAgente] = $iTimestampActual - $iTimestampInicio;
                             }
                         }
+                    } elseif (strpos($sLinea, 'is idle')) {
+                        $listaAgentesLibres[] = $sAgente;
                     }
             	}
             }
@@ -235,6 +249,8 @@ class Predictivo
             $estadoCola = array(
                 'members'   =>  array(),
                 'callers'   =>  array(),
+                'agent_show_output' => $respuestaListaAgentes,
+                'show_queue_output' => $respuestaCola,
             );
             
             // Parsear la salida de la lista de colas
@@ -300,11 +316,21 @@ class Predictivo
                                 in_array('Busy', $estadoCola['members'][$sCodigoAgente]['attributes']) ||
                                 in_array('Ring+Inuse', $estadoCola['members'][$sCodigoAgente]['attributes'])) {
                             	
-                                // Agente está ocupado con una llamada
-                                $estadoCola['members'][$sCodigoAgente]['status'] = 'inUse';
-                                if (isset($tiempoAgente[$sCodigoAgente])) {
-                                	$estadoCola['members'][$sCodigoAgente]['talkTime'] = $tiempoAgente[$sCodigoAgente]; 
-                                }
+                            	if (in_array('In use', $estadoCola['members'][$sCodigoAgente]['attributes']) &&
+                            		in_array($sCodigoAgente, $listaAgentesLibres)) {
+                            		// BUG: reporte de 'agent show' difiere de 'queue show'
+                            		$estadoCola['members'][$sCodigoAgente]['status'] = 'canBeCalled';
+                            		$estadoCola['members'][$sCodigoAgente]['conflictBug'] = TRUE;
+                            		
+                            		if (is_null($this->_conflictReport)) $this->_conflictReport = array();
+                            		$this->_conflictReport[] = $sCodigoAgente;
+                            	} else {
+	                                // Agente está ocupado con una llamada
+	                                $estadoCola['members'][$sCodigoAgente]['status'] = 'inUse';
+	                                if (isset($tiempoAgente[$sCodigoAgente])) {
+	                                	$estadoCola['members'][$sCodigoAgente]['talkTime'] = $tiempoAgente[$sCodigoAgente]; 
+	                                }
+                            	}
                             } else {
                             	// Agente no está disponible
                                 $estadoCola['members'][$sCodigoAgente]['status'] = 'unAvailable';

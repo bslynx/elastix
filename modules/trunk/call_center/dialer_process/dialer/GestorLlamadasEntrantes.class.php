@@ -25,7 +25,7 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: GestorLlamadasEntrantes.class.php,v 1.2 2008/09/08 18:29:36 alex Exp $ */
+  $Id: GestorLlamadasEntrantes.class.php,v 1.6 2008/12/05 19:36:35 alex Exp $ */
 
 /**
  * Esta clase es un gestor de llamadas entrantes. Luego de ser instanciada,
@@ -51,6 +51,8 @@ class GestorLlamadasEntrantes
     private $_timestampCache;   // Momento en que se leyó la info del caché
     private $_cacheAgentesCola; // Cache de a qué cola pertenece cada agente
     private $_cacheColasMonitoreadas;   // Cache de las colas monitoreadas
+    
+    private $_tieneCampaignEntry;	// VERDADERO si hay soporte para campañas de llamadas entrantes
 
     var $DEBUG = FALSE;
 
@@ -72,7 +74,21 @@ class GestorLlamadasEntrantes
         $this->_timestampCache = NULL;
         $this->_cacheAgentesCola = NULL;
         $this->_cacheColasMonitoreadas = NULL;
-        
+        $this->_tieneCampaignEntry = FALSE;
+
+		// Verificar si el esquema de base de datos tiene soporte de campaña entrante
+		$recordset =& $dbConn->query('DESCRIBE call_entry');
+		if (DB::isError($recordset)) {
+			$oLog->output("ERR: no se puede consultar soporte de campaña entrante - ".$recordset->getMessage());
+		} else {
+			while ($tuplaCampo = $recordset->fetchRow(DB_FETCHMODE_OBJECT)) {
+				if ($tuplaCampo->Field == 'id_campaign') $this->_tieneCampaignEntry = TRUE;
+			}
+			$oLog->output('INFO: sistema actual '.
+				($this->_tieneCampaignEntry ? 'sí puede' : 'no puede').
+				' registrar ID de campaña entrante.');
+		}
+
         // Llenar el cache de datos de los agentes
         $this->_actualizarCacheAgentes();
         
@@ -161,7 +177,9 @@ class GestorLlamadasEntrantes
                     } elseif (ereg('^[[:space:]]+(Agent/[[:digit:]]+)', $sLinea, $regs)) {
                     	// Se ha encontrado el agente en una cola en particular
                         if (!is_null($sColaActual)) {
-                            $listaAgentes[$regs[1]] = $sColaActual;
+                            if (!isset($listaAgentes[$regs[1]]))
+                            	$listaAgentes[$regs[1]] = array();
+                           	array_push($listaAgentes[$regs[1]], $sColaActual);
                         }
                     }
                 }
@@ -203,14 +221,55 @@ class GestorLlamadasEntrantes
         
         if (in_array($eventParams['Queue'], $this->_cacheColasMonitoreadas)) {
         	// Esta es una llamada entrante que debe de ser registrada
+        	$idCampania = NULL;
+
+			if ($this->_tieneCampaignEntry) {
+	            // Buscar la campaña que está asociada a la cola actual
+	            $iTimestamp = time();
+	            $sFecha = date('Y-m-d', $iTimestamp);
+	            $sHora = date('H:i:s', $iTimestamp);
+	            $sPeticionCampania = 
+	                'SELECT campaign_entry.id '.
+	                'FROM campaign_entry, queue_call_entry '.
+	                'WHERE campaign_entry.id_queue_call_entry = queue_call_entry.id '.
+	                    'AND queue_call_entry.queue = ? '.
+	                    'AND datetime_init <= ? '.
+	                    'AND datetime_end >= ? '.
+	                    'AND campaign_entry.estatus = "A" '.
+	                    'AND queue_call_entry.estatus = "A" '.
+	                    'AND ('.
+	                        '(daytime_init < daytime_end AND daytime_init <= ? AND daytime_end > ?) '.
+	                        'OR (daytime_init > daytime_end AND (? < daytime_init OR daytime_end < ?)))';
+	            $idCampania = $this->_dbConn->getOne($sPeticionCampania, 
+	                array($eventParams['Queue'], $sFecha, $sFecha, $sHora, $sHora, $sHora, $sHora));            
+	            // ATENCION: $idCampania puede ser nulo
+	            if (DB::isError($idCampania)) {
+	                $this->_oMainLog->output("ERR: no se puede consultar posible campaña para llamada entrante - ".
+	                    $idCampania->getMessage());
+	                $this->_oMainLog->output('DEBUG: '.print_r($idCampania, 1));
+	                $idCampania = NULL;
+	            }
+			}
             
             $idCola = array_search($eventParams['Queue'], $this->_cacheColasMonitoreadas);
+            if ($this->_tieneCampaignEntry) {
+            	$sQueryInsert =
+            		'INSERT INTO call_entry (id_agent, id_queue_call_entry, '.
+                    	'id_contact, callerid, datetime_entry_queue, datetime_init, '.
+                    	'datetime_end, duration_wait, duration, status, uniqueid, id_campaign) '.
+                	"VALUES (NULL, ?, NULL, ?, NOW(), NULL, NULL, NULL, NULL, 'en-cola', ?, ?)";
+            	$queryParams = array($idCola, $eventParams['CallerID'], $eventParams['Uniqueid'], $idCampania);
+            } else {
+            	$sQueryInsert =
+            		'INSERT INTO call_entry (id_agent, id_queue_call_entry, '.
+                    	'id_contact, callerid, datetime_entry_queue, datetime_init, '.
+                    	'datetime_end, duration_wait, duration, status, uniqueid) '.
+                	"VALUES (NULL, ?, NULL, ?, NOW(), NULL, NULL, NULL, NULL, 'en-cola', ?)";
+            	$queryParams = array($idCola, $eventParams['CallerID'], $eventParams['Uniqueid']);
+            }
             $resultado =& $this->_dbConn->query(
-                'INSERT INTO call_entry (id_agent, id_queue_call_entry, '.
-                    'id_contact, callerid, datetime_entry_queue, datetime_init, '.
-                    'datetime_end, duration_wait, duration, status, uniqueid) '.
-                "VALUES (NULL, ?, NULL, ?, NOW(), NULL, NULL, NULL, NULL, 'en-cola', ?)", 
-                array($idCola, $eventParams['CallerID'], $eventParams['Uniqueid']));
+                $sQueryInsert, 
+                $queryParams);
             if (DB::isError($resultado)) {
                 $this->_oMainLog->output(
                     'ERR: no se puede insertar registro de llamada (log) - '.
@@ -247,21 +306,21 @@ class GestorLlamadasEntrantes
         // Nótese que para canal 1, se requiere ID y CID 2, y viceversa.
         $sKey_Uniqueid = NULL;
         $sKey_CallerID = NULL;
-        $sColaCandidata = NULL;
+        $listaColasCandidatas = NULL;
         $sNombreAgente = NULL;
         $sRemChannel = NULL;
-        if (isset($eventParams['Channel1']) && 
+        if (isset($eventParams['Channel1']) &&            
             isset($this->_cacheAgentesCola[$eventParams['Channel1']])) {
             $sNombreAgente = $eventParams['Channel1'];
             $sRemChannel = $eventParams['Channel2'];
-            $sColaCandidata = $this->_cacheAgentesCola[$sNombreAgente];
+            $listaColasCandidatas = $this->_cacheAgentesCola[$sNombreAgente];
             $sKey_Uniqueid = 'Uniqueid2';
             $sKey_CallerID = 'CallerID2';
         } elseif (isset($eventParams['Channel2']) && 
             isset($this->_cacheAgentesCola[$eventParams['Channel2']])) {
             $sNombreAgente = $eventParams['Channel2'];
             $sRemChannel = $eventParams['Channel1'];
-            $sColaCandidata = $this->_cacheAgentesCola[$sNombreAgente];
+            $listaColasCandidatas = $this->_cacheAgentesCola[$sNombreAgente];
             $sKey_Uniqueid = 'Uniqueid1';
             $sKey_CallerID = 'CallerID1';
         } elseif ($this->DEBUG) {
@@ -294,12 +353,12 @@ class GestorLlamadasEntrantes
                     "ERR: no se puede actualizar estado de llamada entrante (hold->activa) - ".
                     $result->getMessage());
             }
-            $sColaCandidata = NULL;
+            $listaColasCandidatas = NULL;
         }
 
-        if (!is_null($sColaCandidata)) {
+        if (!is_null($listaColasCandidatas)) {
             // Verificar que la cola se encuentra entre las colas monitoreadas
-            if (in_array($sColaCandidata, $this->_cacheColasMonitoreadas)) {            	
+            if (count(array_intersect($listaColasCandidatas, $this->_cacheColasMonitoreadas)) > 0) {            	
                 // Esta es una llamada entrante que debe de ser registrada
                 
                 // Obtener el ID del agente en la base, dado su identificación
@@ -311,7 +370,20 @@ class GestorLlamadasEntrantes
                     array($sNumeroAgente));
                 if (!DB::isError($idAgente) && is_numeric($idAgente)) {
                     $bLlamadaManejada = TRUE;
-                    $idCola = array_search($sColaCandidata, $this->_cacheColasMonitoreadas);
+                    // Recolectar los índices de las colas monitoreadas que constan en las
+                    // colas a las que pertenece el agente
+                    $listaIdCola = array();
+                    foreach ($this->_cacheColasMonitoreadas as $keyCola => $sColaMonitoreada) {
+                    	if (in_array($sColaMonitoreada, $listaColasCandidatas)) $listaIdCola[] = $keyCola;
+                    }
+                    if (count($listaIdCola) == 0) {
+                    	$this->_oMainLog->output(
+                    		"BUG: se supone que hay al menos una cola candidada, pero no hay índices:\n".
+                    			print_r($this->_cacheColasMonitoreadas, TRUE)."\n".
+                    			print_r($listaColasCandidatas, TRUE));
+                    	die();
+                    }
+                    
                     $tuplaLlamada =& $this->_dbConn->getRow(
                         'SELECT id, id_queue_call_entry, callerid FROM call_entry WHERE uniqueid = ?',
                         array($eventParams[$sKey_Uniqueid]),
@@ -324,6 +396,9 @@ class GestorLlamadasEntrantes
                         $this->_oMainLog->output(
                             "ERR: no se encuentra registro de llamada {$eventParams[$sKey_Uniqueid]} (log)");
                     } else {
+                    	$idCola = NULL;
+                    	if (in_array($tuplaLlamada->id_queue_call_entry, $listaIdCola))
+                    		$idCola = $tuplaLlamada->id_queue_call_entry;
                     	if ($tuplaLlamada->id_queue_call_entry != $idCola) {
                             $this->_oMainLog->output(
                                 "ERR: registro de llamada {$tuplaLlamada->id} ".

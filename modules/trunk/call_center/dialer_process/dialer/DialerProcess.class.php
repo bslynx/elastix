@@ -25,7 +25,7 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: DialerProcess.class.php,v 1.24 2008/10/01 02:10:05 alex Exp $ */
+  $Id: DialerProcess.class.php,v 1.34 2008/12/05 19:42:42 alex Exp $ */
 require_once('AbstractProcess.class.php');
 require_once 'DB.php';
 require_once "phpagi-asmanager-elastix.php";
@@ -51,6 +51,9 @@ class DialerProcess extends AbstractProcess
     private $_sAsteriskUser;
     private $_sAsteriskPass;
     private $_astConn;      // Conexión al Asterisk Manager
+    
+    private $_momentoUltimaConnAsterisk;	// Timestamp de cuando se conectó por última vez al Asterisk
+    private $_intervaloDesconexion;			// Intervalo de desconexión regular, o 0 para persistente (por omisión)
     
     private $_infoLlamadas; // Información sobre las campañas leídas, por iteración
     private $_iUmbralLlamadaCorta; // Umbral por debajo del cual llamada es corta
@@ -162,6 +165,7 @@ class DialerProcess extends AbstractProcess
 				'asthost'	=>	'127.0.0.1',
 				'astuser'	=>	'',
 				'astpass'	=>	'',
+				'duracion_sesion' => 0,
 			),
 			'dialer'	=>	array(
 				'llamada_corta'	=>	10,
@@ -212,6 +216,24 @@ class DialerProcess extends AbstractProcess
         if ($this->_sAsteriskPass != $sNuevoAsteriskPass) $bDesconectarAsterisk = TRUE;
         $this->_sAsteriskUser = $sNuevoAsteriskUser;
         $this->_sAsteriskPass = $sNuevoAsteriskPass;
+
+		// Recoger parámetro de tiempo de desconexión
+		$bSet = isset($this->_intervaloDesconexion);
+		$this->_intervaloDesconexion = 0;
+		if (isset($infoConfig['asterisk']) && isset($infoConfig['asterisk']['duracion_sesion'])) {
+			$regs = NULL;
+			if (ereg('^[[:space:]]*([[:digit:]]+)[[:space:]]*$', $infoConfig['asterisk']['duracion_sesion'], $regs)) {
+				$this->_intervaloDesconexion = $regs[1];
+                if (!$bSet) $this->oMainLog->output("Usando duración de sesión Asterisk de : ".$this->_intervaloDesconexion." segundos.");
+			} else {
+            	if (!$bSet) {
+	            	$this->oMainLog->output("ERR: valor de ".$infoConfig['asterisk']['duracion_sesion']." no es válido para duración de sesión Asterisk.");
+    	            $this->oMainLog->output("Usando duración de sesión Asterisk (por omisión): ".$this->_intervaloDesconexion." segundos.");
+            	}
+			}
+        } else {
+        	if (!$bSet) $this->oMainLog->output("Usando duración de sesión Asterisk (por omision): ".$this->_intervaloDesconexion." segundos.");
+		}
 
 		// Recoger parámetro de tiempo de contestado
 		$bSet = isset($this->_iTiempoContestacion);
@@ -280,6 +302,7 @@ class DialerProcess extends AbstractProcess
             $this->_astConn = NULL;            
         }
         $astman = new AGI_AsteriskManager();
+        $this->_momentoUltimaConnAsterisk = time();
         $astman->setLogger($this->oMainLog);
 
         $this->oMainLog->output('INFO: Iniciando sesión de control de Asterisk...');
@@ -310,7 +333,7 @@ class DialerProcess extends AbstractProcess
     {
     	$sPeticionCampania = 
             'SELECT id, name, trunk, context, queue, max_canales, num_completadas, '.
-                'promedio, desviacion, retries '.
+                'promedio, desviacion, retries, datetime_init, datetime_end, daytime_init, daytime_end '.
             'FROM campaign '.
             'WHERE id = ? ';
         $tupla = $this->_dbConn->getRow($sPeticionCampania, array($idCampania), DB_FETCHMODE_OBJECT);
@@ -327,7 +350,7 @@ class DialerProcess extends AbstractProcess
         $sHora = date('H:i:s', $iTimestamp);
         $sPeticionCampanias = 
             'SELECT id, name, trunk, context, queue, max_canales, num_completadas, '.
-                'promedio, desviacion, retries '.
+                'promedio, desviacion, retries, datetime_init, datetime_end, daytime_init, daytime_end '.
             'FROM campaign '.
             'WHERE datetime_init <= ? '.
                 'AND datetime_end >= ? '.
@@ -349,6 +372,9 @@ class DialerProcess extends AbstractProcess
             }
             
             if (is_null($this->_astConn)) {
+            	$this->iniciarConexionAsterisk();
+            } elseif ($this->_intervaloDesconexion > 0 && time() - $this->_momentoUltimaConnAsterisk >= $this->_intervaloDesconexion) {
+				$this->oMainLog->output("INFO: sesión de Asterisk excede {$this->_intervaloDesconexion} segundos, se desconecta...");
             	$this->iniciarConexionAsterisk();
             }
             if (!$this->_oGestorEntrante->isAstConnValid()) {
@@ -497,12 +523,20 @@ class DialerProcess extends AbstractProcess
         if ($iNumLlamadasColocar > $iMaxPredecidos)
             $iNumLlamadasColocar = $iMaxPredecidos;
 
+		$conflicto = $oPredictor->getAgentesConflicto();
+		if (is_array($conflicto)) {
+			$this->oMainLog->output(
+				"ERR: los siguientes agentes están libres según 'agent show' pero ocupados según 'queue show' : ".
+				join($conflicto, ' '));
+			$this->oMainLog->output("ERR: se considera que los agentes mencionados están libres...");
+		}
+
         if (!isset($this->_numLlamadasOriginadas[$infoCampania->queue])) {
         	$this->_numLlamadasOriginadas[$infoCampania->queue] = 0;
         }
         if ($this->DEBUG) {
             if ($this->_numLlamadasOriginadas[$infoCampania->queue] > 0)
-                $this->oMainLog->output("DEBUG: (cola $infoCampania->queue) todavia quedan ".
+                $this->oMainLog->output("DEBUG: (campania $infoCampania->id cola $infoCampania->queue) todavia quedan ".
                 	$this->_numLlamadasOriginadas[$infoCampania->queue].
 					" llamadas pendientes de OriginateResponse!");
 			foreach ($this->_infoLlamadas['llamadas'] as $k => $tupla) {
@@ -524,14 +558,51 @@ class DialerProcess extends AbstractProcess
 
         if ($iNumLlamadasColocar <= 0) {
             if ($this->DEBUG) {
-            	$this->oMainLog->output("DEBUG: no hay agentes libres ni a punto de desocuparse!");
+            	$this->oMainLog->output("DEBUG: (campania $infoCampania->id cola $infoCampania->queue) no hay agentes libres ni a punto de desocuparse!");
+            	// Se desactiva esto porque emite demasiada información y rellena el log
+            	/*
+            	$this->oMainLog->output("DEBUG: (campania $infoCampania->id cola $infoCampania->queue) estado de cola: ".
+            		print_r($oPredictor->leerEstadoCola($infoCampania->queue), TRUE));
+            	*/
             }
             return FALSE;	
         }
 
         if ($this->DEBUG) {
-            $this->oMainLog->output("DEBUG: se pueden colocar un máximo de $iNumLlamadasColocar llamadas...");	
-        }        
+            $this->oMainLog->output("DEBUG: (campania $infoCampania->id cola $infoCampania->queue) se pueden colocar un máximo de $iNumLlamadasColocar llamadas...");	
+        }
+        
+        // Para compensar por falla de llamadas, se intenta colocar más de la cuenta. El porcentaje
+        // de llamadas a sobre-colocar se determina a partir de la historia pasada de la campaña.
+        $iVentanaHistoria = 60 * 30; // TODO: se puede autocalcular?
+        $sPeticionASR = 
+			'SELECT COUNT(*) AS total, SUM(IF(status = "Failure" OR status = "NoAnswer", 0, 1)) AS exito ' .
+			'FROM calls ' .
+			'WHERE id_campaign = ? AND status IS NOT NULL ' .
+				'AND status <> "Placing" ' .
+				'AND fecha_llamada IS NOT NULL ' .
+				'AND fecha_llamada >= ?';
+		$tupla =& $this->_dbConn->getRow(
+			$sPeticionASR, 
+			array($infoCampania->id, date('Y-m-d H:i:s', time() - $iVentanaHistoria)), 
+			DB_FETCHMODE_OBJECT);
+		if (DB::isError($tupla)) {
+			$this->oMainLog->output("ERR: (campania $infoCampania->id cola $infoCampania->queue) no se puede consultar ASR para campaña - ".$tupla->getMessage());
+		} else {
+			// Sólo considerar para más de 10 llamadas colocadas durante ventana
+			if ($tupla->total >= 10 && $tupla->exito > 0) {
+				$ASR = $tupla->exito / $tupla->total;
+				$ASR_safe = $ASR;
+				if ($ASR_safe < 0.20) $ASR_safe = 0.20;
+				$iNumLlamadasColocar = (int)round($iNumLlamadasColocar / $ASR_safe); 
+				if ($this->DEBUG) {
+					$this->oMainLog->output("DEBUG: (campania $infoCampania->id cola $infoCampania->queue) ".
+							"en los últimos $iVentanaHistoria seg. tuvieron éxito " .
+							"$tupla->exito de $tupla->total llamadas colocadas (ASR=".(sprintf('%.2f', $ASR * 100))."%). Se colocan " .
+							"$iNumLlamadasColocar para compensar.");
+				}
+			}
+		}
         
         // Leer tantas llamadas como fueron elegidas. Sólo se leen números con
         // status == NULL y bandera desactivada
@@ -543,7 +614,7 @@ class DialerProcess extends AbstractProcess
             $sPeticionLlamadas, 
             array($infoCampania->id, $iNumLlamadasColocar));
         if (DB::isError($recordset)) {
-            $this->oMainLog->output("ERR: no se puede leer lista de teléfonos - ".$recordset->getMessage());
+            $this->oMainLog->output("ERR: (campania $infoCampania->id cola $infoCampania->queue) no se puede leer lista de teléfonos - ".$recordset->getMessage());
             return FALSE;
         }
 
@@ -570,7 +641,7 @@ class DialerProcess extends AbstractProcess
                 $sPeticionLlamadas, 
                 array($infoCampania->id, $infoCampania->retries, $iNumLlamadasColocar));
             if (DB::isError($recordset)) {
-                $this->oMainLog->output("ERR: no se puede leer lista de teléfonos - ".$recordset->getMessage());
+                $this->oMainLog->output("ERR: (campania $infoCampania->id cola $infoCampania->queue) no se puede leer lista de teléfonos - ".$recordset->getMessage());
                 return FALSE;
             }
             
@@ -585,7 +656,7 @@ class DialerProcess extends AbstractProcess
 
         if (count($listaLlamadas) > 0) {
             if ($this->DEBUG) {
-                $this->oMainLog->output("DEBUG: total de llamadas a generar: ".count($listaLlamadas));
+                $this->oMainLog->output("DEBUG: (campania $infoCampania->id cola $infoCampania->queue) total de llamadas a generar: ".count($listaLlamadas));
             }
 
             // Colocar todas las llamadas elegidas para ser realizadas por el Asterisk.
@@ -605,7 +676,8 @@ class DialerProcess extends AbstractProcess
                     $sCanalTrunk, $infoCampania->queue, $infoCampania->context, 1,
                     NULL, NULL, NULL, 
                     (isset($datosTrunk['CID']) ? $datosTrunk['CID'] : NULL), 
-                    NULL, NULL, 
+                    "ID_CAMPAIGN={$infoCampania->id}|ID_CALL={$tupla->id}|QUEUE={$infoCampania->queue}|CONTEXT={$infoCampania->context}",
+                    NULL, 
                     TRUE, $sKey);
                 if (!is_array($resultado) || count($resultado) == 0) {
                 	$this->oMainLog->output("ERR: problema al enviar Originate a Asterisk");
@@ -633,7 +705,8 @@ class DialerProcess extends AbstractProcess
                         }                        
                     } while (DB::isError($result) && $bErrorLocked);
                 } else {
-                    $this->oMainLog->output("ERR: no se puede llamar a número - $resultado[Message]");
+                    $this->oMainLog->output("ERR: (campania $infoCampania->id cola $infoCampania->queue) no se puede llamar a número - ".
+                    	print_r($resultado, TRUE));
                 }
             }
             // Agregar todas las llamadas agregadas a la lista de llamadas pendientes
@@ -647,7 +720,7 @@ class DialerProcess extends AbstractProcess
             $result = $this->_dbConn->query('UPDATE campaign SET estatus = "T" WHERE id = ?',
                 array($infoCampania->id));
             if (DB::isError($result)) {
-                $this->oMainLog->output("ERR: no se puede marcar campaña como terminada - ".$result->getMessage());
+                $this->oMainLog->output("ERR: (campania $infoCampania->id cola $infoCampania->queue) no se puede marcar campaña como terminada - ".$result->getMessage());
             }
 
             return FALSE;

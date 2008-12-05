@@ -89,34 +89,6 @@ CREATE TABLE IF NOT EXISTS `call_attribute` (
   CONSTRAINT `call_attribute_ibfk_1` FOREIGN KEY (`id_call`) REFERENCES `calls` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
---
--- Table structure for table `call_entry`
---
-CREATE TABLE IF NOT EXISTS `call_entry` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `id_agent` int(10) unsigned default NULL,
-  `id_queue_call_entry` int(10) unsigned NOT NULL,
-  `id_contact` int(10) unsigned default NULL,
-  `callerid` varchar(15) NOT NULL,
-  `datetime_init` datetime default NULL,
-  `datetime_end` datetime default NULL,
-  `duration` int(10) unsigned default NULL,
-  `status` varchar(32) default NULL,
-  `transfer` varchar(6) default NULL,
-  `datetime_entry_queue` datetime default NULL,
-  `duration_wait` int(11) default NULL,
-  `uniqueid` varchar(32) default NULL,
-  PRIMARY KEY  (`id`),
-  KEY `id_agent` (`id_agent`),
-  KEY `id_queue_call_entry` (`id_queue_call_entry`),
-  KEY `id_contact` (`id_contact`),
-  CONSTRAINT `call_entry_ibfk_1` FOREIGN KEY (`id_agent`) REFERENCES `agent` (`id`),
-  CONSTRAINT `call_entry_ibfk_2` FOREIGN KEY (`id_queue_call_entry`) REFERENCES `queue_call_entry` (`id`),
-  CONSTRAINT `call_entry_ibfk_3` FOREIGN KEY (`id_contact`) REFERENCES `contact` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-
 --
 -- Table structure for table `calls`
 --
@@ -323,7 +295,92 @@ CREATE TABLE IF NOT EXISTS valor_config
     config_blob    BLOB
 ) ENGINE=InnoDB;
 
+/*
+ * Tabla campaign_entry, almacena las campañas entrantes que hayan sido creadas
+ */
+CREATE TABLE IF NOT EXISTS campaign_entry
+(
+    id                  int unsigned NOT NULL   AUTO_INCREMENT  PRIMARY KEY,
+    name                varchar(64)  NOT NULL DEFAULT '',
+    id_queue_call_entry int unsigned NOT NULL,
+    id_form             int unsigned,
+    datetime_init       date    NOT NULL,
+    datetime_end        date    NOT NULL,
+    daytime_init        time    NOT NULL,
+    daytime_end         time    NOT NULL,
+    estatus             varchar(1)  NOT NULL DEFAULT 'A',
+    script              text    NOT NULL,
 
+    FOREIGN KEY (id_queue_call_entry) REFERENCES queue_call_entry(id),
+    FOREIGN KEY (id_form) REFERENCES form(id)
+) ENGINE=InnoDB;
+
+/*
+ * Tabla form_data_recolected_entry, almacena la información recolectada para campañas entrantes
+ */
+CREATE TABLE form_data_recolected_entry
+(
+    id                  int unsigned    NOT NULL    AUTO_INCREMENT  PRIMARY KEY,
+    id_call_entry       int unsigned    NOT NULL,
+    id_form_field       int unsigned    NOT NULL,
+    value               varchar(250)    NOT NULL,
+
+    FOREIGN KEY (id_call_entry) REFERENCES call_entry (id),
+    FOREIGN KEY (id_form_field) REFERENCES form_field (id)
+) ENGINE=InnoDB;
+
+--
+-- Table structure for table `call_entry`
+--
+CREATE TABLE IF NOT EXISTS `call_entry` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `id_agent` int(10) unsigned default NULL,
+  `id_queue_call_entry` int(10) unsigned NOT NULL,
+  `id_contact` int(10) unsigned default NULL,
+  `callerid` varchar(15) NOT NULL,
+  `datetime_init` datetime default NULL,
+  `datetime_end` datetime default NULL,
+  `duration` int(10) unsigned default NULL,
+  `status` varchar(32) default NULL,
+  `transfer` varchar(6) default NULL,
+  `datetime_entry_queue` datetime default NULL,
+  `duration_wait` int(11) default NULL,
+  `uniqueid` varchar(32) default NULL,
+  `id_campaign` int(10) unsigned,
+  PRIMARY KEY  (`id`),
+  KEY `id_agent` (`id_agent`),
+  KEY `id_queue_call_entry` (`id_queue_call_entry`),
+  KEY `id_contact` (`id_contact`),
+  CONSTRAINT `call_entry_ibfk_1` FOREIGN KEY (`id_agent`) REFERENCES `agent` (`id`),
+  CONSTRAINT `call_entry_ibfk_2` FOREIGN KEY (`id_queue_call_entry`) REFERENCES `queue_call_entry` (`id`),
+  CONSTRAINT `call_entry_ibfk_3` FOREIGN KEY (`id_contact`) REFERENCES `contact` (`id`),
+  CONSTRAINT `call_entry_ibfk_4` FOREIGN KEY (`id_campaign`) REFERENCES `campaign_entry` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for table `current_call_entry`
+--
+CREATE TABLE IF NOT EXISTS `current_call_entry` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `id_agent` int(10) unsigned NOT NULL,
+  `id_queue_call_entry` int(10) unsigned NOT NULL,
+  `id_call_entry` int(10) unsigned NOT NULL,
+  `callerid` varchar(15) NOT NULL,
+  `datetime_init` datetime NOT NULL,
+  `uniqueid` varchar(32) default NULL,
+  `ChannelClient` varchar(32) default NULL,
+  `hold` enum('N','S') default 'N',
+  PRIMARY KEY  (`id`),
+  KEY `id_agent` (`id_agent`),
+  KEY `id_queue_call_entry` (`id_queue_call_entry`),
+  KEY `id_call_entry` (`id_call_entry`),
+  CONSTRAINT `current_call_entry_ibfk_1` FOREIGN KEY (`id_agent`) REFERENCES `agent` (`id`),
+  CONSTRAINT `current_call_entry_ibfk_2` FOREIGN KEY (`id_queue_call_entry`) REFERENCES `queue_call_entry` (`id`),
+  CONSTRAINT `current_call_entry_ibfk_3` FOREIGN KEY (`id_call_entry`) REFERENCES `call_entry` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+/* Procedimiento que agrega soporte para DNC (DO NOT CALL) y quita la columna agent.queue */
 DELIMITER ++ ;
 
 DROP PROCEDURE IF EXISTS temp_actualizar_campos_2008_09_09 ++
@@ -362,6 +419,36 @@ DELIMITER ; ++
 
 CALL temp_actualizar_campos_2008_09_09();
 DROP PROCEDURE IF EXISTS temp_actualizar_campos_2008_09_09;
+
+/* Procedimiento para agregar infraestructura de recolección de datos para llamada entrante */
+DELIMITER ++ ;
+
+DROP PROCEDURE IF EXISTS temp_campania_entrante_2008_12_05 ++
+CREATE PROCEDURE temp_campania_entrante_2008_12_05 ()
+    READS SQL DATA
+    MODIFIES SQL DATA
+BEGIN
+	DECLARE l_existe_columna tinyint(1);
+	
+	SET l_existe_columna = 0;
+
+	/* Verificar existencia de columna call_entry.id_campaign que debe agregarse */
+	SELECT COUNT(*) INTO l_existe_columna 
+	FROM INFORMATION_SCHEMA.COLUMNS 
+	WHERE TABLE_SCHEMA = 'call_center' 
+		AND TABLE_NAME = 'call_entry' 
+		AND COLUMN_NAME = 'id_campaign';
+	IF l_existe_columna = 0 THEN
+        ALTER TABLE call_entry
+        ADD COLUMN id_campaign  int unsigned,
+        ADD FOREIGN KEY (id_campaign) REFERENCES campaign_entry (id);
+	END IF;
+END;
+++
+DELIMITER ; ++
+
+CALL temp_campania_entrante_2008_12_05();
+DROP PROCEDURE IF EXISTS temp_campania_entrante_2008_12_05;
 
 /*!40000 ALTER TABLE `queue_call_entry` ENABLE KEYS */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
