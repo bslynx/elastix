@@ -11,7 +11,7 @@ Static GateWay     :
 Default Protocol   :2
 Primary DNS        :
 Alter DNS          :
-DHCP Mode          :1
+DHCP Mode          :0
 DHCP Dns           :1
 Domain Name        :
 Host Name          :VOIP
