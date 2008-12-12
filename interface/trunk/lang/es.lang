@@ -1014,5 +1014,8 @@ alrededor del mundo.",
 "Call to" => "Llamar a",
 "To add phone number from address book click" => "Para añadir un número desde la libreta de direcciones, click",
 /*Calendar*/
+"in" => "Recibido", 
+"out" => "Enviado", 
+"Type Fax" => "Tipo Fax", 
 );
 ?>

@@ -7,15 +7,22 @@
         <td>
             <table width="100%" border="0" cellspacing="0" cellpadding="0" class="tabForm">
                 <tr>
-                    <td>{$name_company.LABEL}:</td>
-                    <td>{$name_company.INPUT}</td>	
-                    <td>{$fax_company.LABEL}:</td>
-                    <td>{$fax_company.INPUT}</td>	
-                    <td>{$date_fax.LABEL}:</td>
-                    <td>{$date_fax.INPUT}</td>	
-                    <td align="center" colspan='2'>
+                    <td width="10%">&nbsp;</td>
+                    <td width="15%" align="right">{$name_company.LABEL}:</td>
+                    <td width="20%">{$name_company.INPUT}</td>	
+                    <td width="15%" align="right">{$fax_company.LABEL}:</td>
+                    <td width="20%">{$fax_company.INPUT}</td>
+                    <td>&nbsp;</td>	
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td align="right">{$date_fax.LABEL}:</td>
+                    <td>{$date_fax.INPUT}</td>
+                    <td align="right">{$filter.LABEL}</td> 
+                    <td>{$filter.INPUT}</td>
+                    <td align="left">
                         <input class="button" type="button" name="buscar" value="{$SEARCH}"  onClick="javascript:buscar_faxes_ajax('search')">
-                    </td>	
+                    </td>
                 </tr>
             </table>
         </td>
@@ -45,15 +52,17 @@ function buscar_faxes_ajax(accion)
         total_registros          = document.getElementById('total_registros_paginacion').value;      
     }
     else{
-            primer_registro_mostrado = 0;
-            ultimo_registro_mostrado = 0;
-            total_registros          = 0;
-   }
-   company_name             = obtener_nodo_por_name('name_company').value;
-   company_fax              = obtener_nodo_por_name('fax_company').value;
-   fecha_fax                = obtener_nodo_por_name('date_fax').value;
+        primer_registro_mostrado = 0;
+        ultimo_registro_mostrado = 0;
+        total_registros          = 0;
+    }
 
-   xajax_faxes(company_name,company_fax,fecha_fax,primer_registro_mostrado,accion);
+    company_name = obtener_nodo_por_name('name_company').value;
+    company_fax  = obtener_nodo_por_name('fax_company').value;
+    fecha_fax    = obtener_nodo_por_name('date_fax').value;
+    type_filter  = obtener_nodo_por_name('filter').value;
+    
+    xajax_faxes(company_name,company_fax,fecha_fax,primer_registro_mostrado,accion,type_filter);
 }
 
 function existen_nodos()
@@ -103,8 +112,9 @@ function elimimar_faxes()
         company_name             = obtener_nodo_por_name('name_company').value;
         company_fax              = obtener_nodo_por_name('fax_company').value;
         fecha_fax                = obtener_nodo_por_name('date_fax').value;
+        type_filter              = obtener_nodo_por_name('filter').value;
 
-        xajax_deleteFaxes(csv_faxes.substring(0,csv_faxes.length - 1),company_name,company_fax,fecha_fax,primer_registro_mostrado);
+        xajax_deleteFaxes(csv_faxes.substring(0,csv_faxes.length - 1),company_name,company_fax,fecha_fax,primer_registro_mostrado,type_filter);
     }
 }
 </script>

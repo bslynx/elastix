@@ -1025,6 +1025,8 @@ $arrLang=array(
 "Do not Call List" => "شماره های خارج شده از لیست تماس",
 "Clients" => "مشتری ها",
 "Form Preview" => "پیش مشاهده فرم",
-
+"in" => "Received", 
+"out" => "Sent", 
+"Type Fax" => "Type Fax", 
 );
 ?>

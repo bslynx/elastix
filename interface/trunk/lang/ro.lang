@@ -1005,5 +1005,8 @@ inceputa in Ecuador a devenit o solutie aleasa pentru voip in intreaga lume.",
 "Call to" => "Call to",
 "To add phone number from address book click" => "To add phone number from address book click",
 /*Calendar*/
+"in" => "Received", 
+"out" => "Sent", 
+"Type Fax" => "Type Fax", 
 );
 ?>

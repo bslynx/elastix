@@ -1012,5 +1012,8 @@ $arrLang=array(
 "Call to" => "Обаждане към",
 "To add phone number from address book click" => "За да добавите телефонен номер от указателя кликнете",
 /*Calendar*/
+"in" => "Received", 
+"out" => "Sent", 
+"Type Fax" => "Type Fax", 
 );
 ?>

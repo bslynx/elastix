@@ -1043,6 +1043,8 @@ es extensions seront mises &agrave; jour.",
 "offset" => "Offset",
 "Asterisk Logs" => "Traces Asterisk",
 /*ASTERIX LOG*/
- 
+"in" => "Received", 
+"out" => "Sent", 
+"Type Fax" => "Type Fax",  
 );
 ?>

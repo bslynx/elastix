@@ -938,5 +938,8 @@ $arrLang=array(
 "Call to" => "Call to",
 "To add phone number from address book click" => "To add phone number from address book click",
 /*Calendar*/
+"in" => "Received", 
+"out" => "Sent", 
+"Type Fax" => "Type Fax", 
 );
 ?>
