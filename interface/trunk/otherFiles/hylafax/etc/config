@@ -1,0 +1,9 @@
+LogFacility:		daemon
+CountryCode:		593
+AreaCode:		4
+LongDistancePrefix:	1
+InternationalPrefix:	011
+DialStringRules:	"etc/dialrules"
+ServerTracing:		1
+NotifyCmd:              bin/faxsent
+
