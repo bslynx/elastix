@@ -2,7 +2,7 @@
 <?php
     require_once "includes/functions.php";
     require_once "includes/config.php";
- 
+    
     /**********************************************
      *         1) OBTENGO INFORMACION             *
      **********************************************/
@@ -39,16 +39,15 @@
     // copy tiff file to new dir
     $name_pdf = str_replace("tif","pdf",obtener_nombre($tiff_file));
     global $faxes_path;
-    $pdffile = $faxes_path."/recvq/".$name_pdf;
+    $pathDB = createFolder($company_number, $commID, "in");
+    $pdffile = "$faxes_path/recvd/$pathDB/fax.pdf";
 
     //El usuario actual es uucp
-    exec("sudo chmod -R 777 $faxes_path"); 
     // create pdf in new dir
     tiff2pdf ($tiff_file, $pdffile);
-    exec("sudo chmod -R 755 $faxes_path");
     // METO EL FAX EN LA BASE DE DATOS?
-    fax_info_insert($name_pdf,$modemdev,$commID,$errormsg,$company_name,$company_number);
-    faxes_log ("faxrcvd> Se copio el $name_pdf en $faxes_path/recvq y se grabo en la BD".$name_pdf);
+    fax_info_insert($name_pdf,$modemdev,$commID,$errormsg,$company_name,$company_number,'in',"recvd/$pathDB");
+    faxes_log ("faxrcvd> Se copio el $name_pdf en la ruta $faxes_path/recvd/$pathDB y se grabo en la BD.");
     /**********************************************
      *         3) ENVIO EMAIL                     *
      **********************************************/
