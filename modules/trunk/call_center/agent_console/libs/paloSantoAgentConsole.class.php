@@ -974,6 +974,20 @@ function wait_login($extn, $num_agent) {
         if($encolado=='se_quito_pause' || $encolado=='sin_pause'){
             $_SESSION['elastix_agent_user'] = $num_agent;
             $_SESSION['elastix_extension'] = $extn;
+
+            if(!yaEstaRegistrado($num_agent,$datetime_init,$msj)) {
+                if($msj=="") {
+                    if( !registrarLogin($num_agent,$datetime_init,$msj) ) {
+                        $respuesta->addAssign("mensaje","innerHTML","$msj");
+                    } else {
+                        //$respuesta->addAlert("registrado");
+                    }
+                } else {
+                    //$respuesta->addAlert("este es el mensaje ".$msj);
+                }
+            } else {
+                //$respuesta->addAlert("ya esta registrado ".$msj); 
+            }
         }
         else{
             $respuesta->addAssign("mensaje","innerHTML","$encolado");
@@ -2246,7 +2260,6 @@ function save_log_prueba($texto){
 
 
 function registrarLogin($agentNum,$datetime_init,&$msj) {
-return true;
     global $arrConf;
     $pDB = new paloDB($arrConf['cadena_dsn']);
 
