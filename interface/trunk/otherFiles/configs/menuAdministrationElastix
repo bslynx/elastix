@@ -203,4 +203,22 @@ if [ $existeColumnCalendarCallTo -ne 0 ]; then
 else
     echo "End step 13, Column call_to in database calendar.db added."
 fi
+
+#paso 14:
+sqlite3  $pathDB/fax.db "alter table fax add column type varchar(3) default 'in';" &>/dev/null  
+existeColumnType=$?
+if [ $existeColumnType -ne 0 ]; then
+    echo "End step 14, Column type in database fax.db exists."
+else
+    echo "End step 14, Column type in database fax.db added."
+fi
+
+#paso 15:
+sqlite3  $pathDB/fax.db "alter table fax add column faxpath varchar(255) default '';" &>/dev/null  
+existeColumnType=$?
+if [ $existeColumnType -ne 0 ]; then
+    echo "End step 15, Column faxpath in database fax.db exists."
+else
+    echo "End step 15, Column faxpath in database fax.db added."
+fi
 ################## End Administration Menus and permission ##########################
