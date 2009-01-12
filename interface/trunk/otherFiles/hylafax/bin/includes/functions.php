@@ -28,7 +28,7 @@
 	function obtener_id_destiny($modemdev)
 	{
 		global $db_object;
-                $id = -1;
+                $id = 1;
                 $dev_id = str_replace("ttyIAX","",$modemdev);
 		$sql= "select id from fax where dev_id=$dev_id";
 		$recordset =& $db_object->query($sql);
@@ -42,11 +42,17 @@
         {
                 global $db_object;
                 $dev_id = 1;
-                $sql= "select dev_id from fax where extension='$extension'";
+                /*$sql= "select dev_id from fax where extension='$extension'";
                 $recordset =& $db_object->query($sql);
         	while($tupla = $recordset->fetch(PDO::FETCH_OBJ)){
                         $dev_id = $tupla->dev_id;
+                }*/
+		$sql="select dev_id from fax where id=1";
+                $recordset =& $db_object->query($sql);
+                while($tupla = $recordset->fetch(PDO::FETCH_OBJ)){
+                        $dev_id = $tupla->dev_id;
                 }
+
                 return "ttyIAX$dev_id";
         }
 
