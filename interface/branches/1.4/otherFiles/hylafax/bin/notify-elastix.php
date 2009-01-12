@@ -30,6 +30,24 @@
 		fax_info_insert (str_replace("ps","pdf",$file),$modemdev,$commID,"",$company_name,$number,'out',"sent/$pathDB");	
                 faxes_log ("notify  > fax .pdf  en la ruta $faxes_path/sent/$pathDB y se grabo en la BD.");
              }
+
+	     /**********************************************
+              *         3) ENVIO EMAIL                     *
+              **********************************************/
+
+            $destinatario = obtener_mail_destiny($modemdev);
+            $arrConfig    = getConfigurationSendingFaxMail(str_replace("ps","pdf",$file),$company_name,$number);
+            $titulo       = $arrConfig['subject'];
+            $contenido    = $arrConfig['content'];
+            $remite       = $arrConfig['remite'];
+            $remitente    = $arrConfig['remitente'];
+            $archivo      = "$faxes_path/sent/$pathDB/fax.pdf";
+            $archivo_name = str_replace("ps","pdf",$file);
+
+            print_r($arrConfig);
+            echo $destinatario;
+            enviar_mail_adjunto($destinatario,$titulo,$contenido,$remite,$remitente,$archivo,$archivo_name);
+
 	}
     }
 
