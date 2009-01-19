@@ -54,6 +54,7 @@ function _moduleContent(&$smarty, $module_name)
                    $arrAMP['AMPDBUSER']['valor']. ":".
                    $arrAMP['AMPDBPASS']['valor']. "@".
                    $arrAMP['AMPDBHOST']['valor']. "/asterisk";
+
     $pDB = new paloDB($dsnAsterisk);
     if(!empty($pDB->errMsg)) {
         $smarty->assign("mb_message", $arrLang["Error when connecting to database"]."<br/>".$pDB->errMsg);
@@ -74,9 +75,14 @@ function _moduleContent(&$smarty, $module_name)
     $smarty->assign("HeaderFile", $arrLang["Header File Extensions Batch"]);
     $smarty->assign("AboutUpdate", $arrLang["About Update Extensions Batch"]);
     $smarty->assign("LINK", "modules/$module_name/libs/download_csv.php");
+    $smarty->assign("DELETE_ALL", $arrLang["Delete all extension"]);
 
     switch($accion)
     {
+        case 'delete_all':
+            delete_all_extention($smarty, $module_name, $local_templates_dir, $arrLang, $arrConfig, $pDB, $arrAST, $arrAMP);
+            $content = report_extension($smarty, $module_name, $local_templates_dir, $arrLang, $arrConfig);
+            break;
         case 'load_extension':
             $content = load_extension($smarty, $module_name, $local_templates_dir, $arrLang, $arrConfig, $base_dir, $pDB, $arrAST, $arrAMP);
             break;
@@ -86,6 +92,38 @@ function _moduleContent(&$smarty, $module_name)
     }
 
     return $content;
+}
+
+function delete_all_extention(&$smarty, $module_name, $local_templates_dir, $arrLang, $arrConfig, $pDB, $arrAST, $arrAMP)
+{
+    $message = "";
+    $oPalo = new paloSantoLoadExtension($pDB);
+    $arrSipExtension = array();
+
+    $data_connection = array('host' => "127.0.0.1", 'user' => "admin", 'password' => "elastix456");
+    $arrData = $oPalo->getExtensionSip();
+    foreach($arrData as $key => $value)
+      $arrSipExtension[] = $value;
+    if($oPalo->deleteTreeSip($data_connection, $arrAST, $arrAMP, $arrSipExtension)){
+		if($oPalo->deleteAllExtension())
+        {
+			if($oPalo->do_reloadAll($data_connection, $arrAST, $arrAMP))
+            {
+            	$smarty->assign("mb_title", $arrLang["Message"]);
+                $smarty->assign("mb_message", $arrLang["All extensions deletes"]);
+            }else{
+                $smarty->assign("mb_title", $arrLang["Error"]);
+                $smarty->assign("mb_message", $arrLang["Unable to reload the changes"]);
+            }
+        }else{
+			$smarty->assign("mb_title", $arrLang["Error"]);
+            $smarty->assign("mb_message", $arrLang["Could not delete the database"]);
+        }
+    }else{
+        $smarty->assign("mb_title", $arrLang["Message"]);
+        $smarty->assign("mb_message", $arrLang["Could not delete the ASTERISK database"]);
+    }
+
 }
 
 function report_extension($smarty, $module_name, $local_templates_dir, $arrLang, $arrConfig){
@@ -189,7 +227,7 @@ function load_extension_from_csv($smarty, $arrLang, $ruta_archivo, $base_dir, $p
                     if(!$pLoadExtension->processCallWaiting($Call_Waiting,$Ext))
                         $Messages .= "Ext: $Ext - ". $arrLang["Error processing CallWaiting"]."<br />";
 
-                    if(!$pLoadExtension->putDataBaseFamily($data_connection, $Ext, "sip", $Name, $VoiceMail))
+                    if(!$pLoadExtension->putDataBaseFamily($data_connection, $Ext, "sip", $Name))
                         $Messages .= "Ext: $Ext - ". $arrLang["Error processing Database Family"]."<br />";
                     $cont++;
                 }
@@ -282,6 +320,8 @@ function getAction()
         return "load_extension";
     else if(isset($_POST["backup"]))
         return "backup_extension";
+    else if(isset($_POST["delete_all"]))
+        return "delete_all";
     else if(isset($_GET["accion"]) && $_GET["accion"]=="backup_extension")
         return "backup_extension";
     else

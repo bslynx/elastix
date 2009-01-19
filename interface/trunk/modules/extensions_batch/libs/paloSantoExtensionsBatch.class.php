@@ -353,7 +353,8 @@ class paloSantoLoadExtension {
     function AsteriskManager_Command($host, $user, $password, $command_data) {
         global $arrLang;
         $astman = new AGI_AsteriskManager();
-
+        //$salida = array();
+        
         if (!$astman->connect("$host", "$user" , "$password")) {
             $this->errMsg = $arrLang["Error when connecting to Asterisk Manager"];
         } else{
@@ -368,12 +369,8 @@ class paloSantoLoadExtension {
         return false;
     }
 
-    function putDataBaseFamily($data_connection, $Ext, $tech, $Name, $VoiceMail)
+    function putDataBaseFamily($data_connection, $Ext, $tech, $Name)
     {
-	if(eregi("^enable",$VoiceMail))
-		$voicemail = "default";
-	else $voicemail = "novm";
-
         $tech = strtolower($tech);
         if($tech=='sip')
             $dial = "SIP/$Ext";
@@ -389,7 +386,7 @@ class paloSantoLoadExtension {
                 "database put AMPUSER $Ext/password",
                 "database put AMPUSER $Ext/recording  out=Adhoc|in=Adhoc",
                 "database put AMPUSER $Ext/ringtimer 0",
-                "database put AMPUSER $Ext/voicemail $voicemail",
+                "database put AMPUSER $Ext/voicemail novm",
                 "database put DEVICE $Ext/default_user $Ext",
                 "database put DEVICE $Ext/dial $dial",
                 "database put DEVICE $Ext/type fixed",
@@ -399,6 +396,105 @@ class paloSantoLoadExtension {
                                               $data_connection['user'],
                                               $data_connection['password'],
                                               $arrFamily);
+    }
+    //Esta funcion obtiene todas las extensiones tipo SIP
+    function getExtensionSip()
+    {
+       $query = "SELECT * FROM devices where tech='sip'";
+       $result=$this->_DB->fetchTable($query, true);
+       if( $result == false ){
+           $this->errMsg = $this->_DB->errMsg;
+           return array();
+       }else
+           return $result;         
+
+    }
+    //PASO 1: 
+    //Elimina el arbol jerarquico de cada extesion de la base de datos de asterisk
+    function deleteTreeSip($data_connection, $arrAST, $arrAMP, $arrSipExt)
+    {
+      global $arrLang;
+	  $arrAMPUSER = array();
+	  $arrDEVICE = array();
+	  $arrCW = array();
+	  $arrCF = array();
+	  $arrCFB = array();
+	  $arrCFU = array();
+
+      foreach($arrSipExt as $ext)
+             $arrAMPUSER[] ="database deltree AMPUSER/{$ext['id']}";
+      foreach($arrSipExt as $ext)
+             $arrDEVICE[] ="database deltree DEVICE/{$ext['id']}";
+      foreach($arrSipExt as $ext)
+             $arrCW[] ="database deltree CW/{$ext['id']}";
+      foreach($arrSipExt as $ext)
+             $arrCF[] ="database deltree CF/{$ext['id']}";
+      foreach($arrSipExt as $ext)
+             $arrCFB[] ="database deltree CFB/{$ext['id']}";
+      foreach($arrSipExt as $ext)
+             $arrCFU[] ="database deltree CFU/{$ext['id']}";                              
+
+      //BLQOUE AMPUSER/extension      
+      $AMPresult = $this->AsteriskManager_Command($data_connection['host'], $data_connection['user'], $data_connection['password'], $arrAMPUSER ); 
+      if($AMPresult == false){
+            $this->errMsg = $arrLang["Unable delete AMPUSER in database astDB"];
+            return false;
+      }
+
+      //BLQOUE DEVICE/extension
+      $DEVICEresult = $this->AsteriskManager_Command($data_connection['host'], $data_connection['user'], $data_connection['password'], $arrDEVICE ); 
+      if($DEVICEresult == false){
+            $this->errMsg = $arrLang["Unable delete DEVICE in database astDB"];
+            return false;
+      }
+
+      //BLQOUE CW/extension
+      $CWresult = $this->AsteriskManager_Command($data_connection['host'], $data_connection['user'], $data_connection['password'], $arrCW ); 
+      if($CWresult == false){
+            $this->errMsg = $arrLang["Unable delete CW in database astDB"];
+            return false;
+      }
+
+      //BLQOUE CF/extension
+      $CFresult = $this->AsteriskManager_Command($data_connection['host'], $data_connection['user'], $data_connection['password'], $arrCF ); 
+      if($CFresult == false){
+            $this->errMsg = $arrLang["Unable delete CF in database astDB"];
+            return false;
+      }
+
+      //BLQOUE CFB/extension
+      $CFBresult = $this->AsteriskManager_Command($data_connection['host'], $data_connection['user'], $data_connection['password'], $arrCFB ); 
+      if($CFBresult == false){
+            $this->errMsg = $arrLang["Unable delete CFB in database astDB"];
+            return false;
+      }
+
+      //BLQOUE CFU/extension
+      $CFUresult = $this->AsteriskManager_Command($data_connection['host'], $data_connection['user'], $data_connection['password'], $arrCFU ); 
+      if($CFBresult == false){
+            $this->errMsg = $arrLang["Unable delete CFU in database astDB"];
+            return false;
+      }
+      return true;
+    }
+
+    //PASO 2: borrar las 2 tablas (sip, devices, users) + IAX
+    //Funcion que borra todas las extenciones
+    function deleteAllExtension()
+    {
+        $querys = array();
+
+        $querys[] = "DELETE FROM sip";
+        $querys[] = "DELETE u FROM users u INNER JOIN devices d ON u.extension=d.id and d.tech='sip'";
+        $querys[] = "DELETE FROM devices WHERE tech='sip'";
+        //$querys[] = "DELETE FROM iax";
+
+        foreach($querys as $key => $query){
+            $result = $this->_DB->genQuery($query, true);
+            if( $result == false )
+                return $this->_DB->errMsg;            
+        }
+        return true;
     }
 }
 ?>

@@ -12,14 +12,14 @@
             </table>
         </td>
     </tr>
-
     <tr>
         <td>
             <table width="100%" border="0" cellspacing="0" cellpadding="0" class="tabForm">
                 <tr>
-                    <td>{$label_file}&nbsp;(file.csv):<span  class="required">*</span></td>
-                    <td><input type='file' id='userfile' name='userfile'></td>
-                    <td><a href="{$LINK}" name="link_download">{$DOWNLOAD}</a></td>
+                    <td width="22%" align="right">{$label_file}&nbsp;(file.csv):<span  class="required">*</span></td>
+                    <td width="30%"><input type='file' id='userfile' name='userfile'></td>
+                    <td width="20%"><a href="{$LINK}" name="link_download">{$DOWNLOAD}</a></td>
+                    <td align="center"><input class="button" type="submit" name="delete_all" value="{$DELETE_ALL}"></td>
                 </tr> 
             </table>
         </td>

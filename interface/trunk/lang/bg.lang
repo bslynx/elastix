@@ -706,6 +706,19 @@ $arrLang=array(
 "About Update Extensions Batch" => "Ако заредите файл със съществуващи вътрешни номера, те ще бъдат обновени.",
 "There aren't extensions" => "Тук няма вътрешни номера",
 "Download Extensions" => "Изтегли Вътрешни",
+"Error processing Database Family" => "Error processing Database Family",
+"Delete all extension" => "Delete all extension",
+"All extensions deletes" => "All extensions deletes",
+"Error to delete extensions" => "Error to delete extensions",
+"Unable to reload the changes" => "Unable to reload the changes",
+"Could not delete the database" => "Could not delete the database",
+"Could not delete the ASTERISK database" => "Could not delete the ASTERISK database",
+"Unable delete AMPUSER in database astDB" => "Unable delete AMPUSER in database astDB",
+"Unable delete DEVICE in database astDB" => "Unable delete DEVICE in database astDB",
+"Unable delete CW in database astDB" => "Unable delete CW in database astDB",
+"Unable delete CF in database astDB" => "Unable delete CF in database astDB",
+"Unable delete CFB in database astDB" => "Unable delete CFB in database astDB",
+"Unable delete CFU in database astDB" => "Unable delete CFU in database astDB",
 /*Extensions Batch*/
  
 /*File Editor*/
