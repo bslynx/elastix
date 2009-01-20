@@ -227,7 +227,7 @@ function load_extension_from_csv($smarty, $arrLang, $ruta_archivo, $base_dir, $p
                     if(!$pLoadExtension->processCallWaiting($Call_Waiting,$Ext))
                         $Messages .= "Ext: $Ext - ". $arrLang["Error processing CallWaiting"]."<br />";
 
-                    if(!$pLoadExtension->putDataBaseFamily($data_connection, $Ext, "sip", $Name))
+                    if(!$pLoadExtension->putDataBaseFamily($data_connection, $Ext, "sip", $Name, $VoiceMail))
                         $Messages .= "Ext: $Ext - ". $arrLang["Error processing Database Family"]."<br />";
                     $cont++;
                 }

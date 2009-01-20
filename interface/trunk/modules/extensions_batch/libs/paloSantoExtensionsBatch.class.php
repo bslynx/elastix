@@ -369,8 +369,12 @@ class paloSantoLoadExtension {
         return false;
     }
 
-    function putDataBaseFamily($data_connection, $Ext, $tech, $Name)
+    function putDataBaseFamily($data_connection, $Ext, $tech, $Name, $VoiceMail)
     {
+	if(eregi("^enable",$VoiceMail)) 	 
+            $voicemail = "default"; 	 
+        else $voicemail = "novm";
+
         $tech = strtolower($tech);
         if($tech=='sip')
             $dial = "SIP/$Ext";
@@ -386,7 +390,7 @@ class paloSantoLoadExtension {
                 "database put AMPUSER $Ext/password",
                 "database put AMPUSER $Ext/recording  out=Adhoc|in=Adhoc",
                 "database put AMPUSER $Ext/ringtimer 0",
-                "database put AMPUSER $Ext/voicemail novm",
+                "database put AMPUSER $Ext/voicemail $voicemail",
                 "database put DEVICE $Ext/default_user $Ext",
                 "database put DEVICE $Ext/dial $dial",
                 "database put DEVICE $Ext/type fixed",
