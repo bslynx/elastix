@@ -27,14 +27,17 @@
   +----------------------------------------------------------------------+
   $Id: index.php,v 1.2 2007/07/07 22:50:39 admin Exp $ */
 
+//LIBRERIA GRAFICA
+include_once "libs/paloSantoGraph.class.php";
+
 function _moduleContent($smarty, $module_name)
 {
-    //include module files
     require_once "libs/misc.lib.php";
 
     //include module files
+    include_once "modules/$module_name/libs/paloSantoSysInfo.class.php";
     include_once "modules/$module_name/configs/default.conf.php";
-    
+
     //include file language agree to elastix configuration
     //if file language not exists, then include language by default (en)
     $lang=get_language();
@@ -43,6 +46,7 @@ function _moduleContent($smarty, $module_name)
     if (file_exists("$base_dir/$lang_file")) include_once "$lang_file";
     else include_once "modules/$module_name/lang/en.lang";
 
+
     //global variables
     global $arrConf;
     global $arrConfModule;
@@ -50,48 +54,44 @@ function _moduleContent($smarty, $module_name)
     global $arrLangModule;
     $arrConf = array_merge($arrConf,$arrConfModule);
     $arrLang = array_merge($arrLang,$arrLangModule);
-    
+
     //folder path for custom templates
-    $templates_dir=(isset($arrConfModule['templates_dir']))?$arrConfModule['templates_dir']:'themes';
-    $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConfModule['theme'];
+    $templates_dir=(isset($arrConf['templates_dir']))?$arrConf['templates_dir']:'themes';
+    $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
 
-    $arrSysInfo = obtener_info_de_sistema();
+    $oPalo = new paloSantoSysInfo();
+    $arrSysInfo = $oPalo->getSysInfo();
 
-    //print_r($arrSysInfo);
 
-    $cpu_usage  = $arrSysInfo['CpuUsage'];
-    $mem_usage  = ($arrSysInfo['MemTotal'] - $arrSysInfo['MemFree'] - $arrSysInfo['Cached'] - $arrSysInfo['MemBuffers'])/$arrSysInfo['MemTotal'];
-    $swap_usage = ($arrSysInfo['SwapTotal'] - $arrSysInfo['SwapFree'])/$arrSysInfo['SwapTotal'];
-
+    //CPU INFO
     $smarty->assign("cpu_info", $arrSysInfo['CpuVendor'] . " " . $arrSysInfo['CpuModel']);
-    $smarty->assign("cpu_usage",  "<img src='images/bar.php?prog=$cpu_usage' border='0'> &nbsp;&nbsp;" . 
-                    number_format($arrSysInfo['CpuUsage']*100, 2) . "% used of " . number_format($arrSysInfo['CpuMHz'], 2) . " MHz");
-    $smarty->assign("mem_usage",  "<img src='images/bar.php?prog=$mem_usage' border='0'> &nbsp;&nbsp;" . 
-                    number_format($mem_usage*100, 2) . "% used of " . number_format($arrSysInfo['MemTotal']/1024, 2) . " Mb");
-    $smarty->assign("swap_usage",  "<img src='images/bar.php?prog=$swap_usage' border='0'> &nbsp;&nbsp;" . 
-                    number_format($swap_usage*100, 2) . "% used of " . number_format($arrSysInfo['SwapTotal']/1024, 2) . " Mb");
+
+    //CPU USAGE
+    $img = getImage_CPU_Usage($module_name);
+    $inf = number_format($arrSysInfo['CpuUsage']*100, 2)."% used of ".number_format($arrSysInfo['CpuMHz'], 2)." MHz";
+    $smarty->assign("cpu_usage", $img."&nbsp;&nbsp;&nbsp;".$inf);
+
+    //MEMORY USAGE
+    $mem_usage  = ($arrSysInfo['MemTotal'] - $arrSysInfo['MemFree'] - $arrSysInfo['Cached'] - $arrSysInfo['MemBuffers'])/$arrSysInfo['MemTotal'];
+    $img = getImage_MEM_Usage($module_name);
+    $inf = number_format($mem_usage*100, 2)."% used of ".number_format($arrSysInfo['MemTotal']/1024, 2)." Mb";
+    $smarty->assign("mem_usage", $img."&nbsp;&nbsp;&nbsp;".$inf);
+
+    //SWAP USAGE
+    $swap_usage = ($arrSysInfo['SwapTotal'] - $arrSysInfo['SwapFree'])/$arrSysInfo['SwapTotal'];
+    $img = getImage_Swap_Usage($module_name);
+    $inf = number_format($swap_usage*100, 2)."% used of ".number_format($arrSysInfo['SwapTotal']/1024, 2)." Mb";
+    $smarty->assign("swap_usage", $img."&nbsp;&nbsp;&nbsp;".$inf );
+
+    //UPTIME
     $smarty->assign("uptime",  $arrSysInfo['SysUptime']);
 
     $arrParticiones = array();
     $i=0;
-    foreach($arrSysInfo['particiones'] as $particion) {
-        if(ereg("^/dev/(.*)$", trim($particion['fichero']), $arrReg)) {
-            $arrParticiones[$i]['fichero'] = strtoupper($arrReg[1]);
-        } else {
-            $arrParticiones[$i]['fichero'] = $particion['fichero'];
-        }
-        $arrParticiones[$i]['total_bloques'] = number_format($particion['num_bloques_total'] / 1024 / 1024, 2);
-        $arrParticiones[$i]['punto_montaje'] = $particion['punto_montaje'];
-        if(ereg("^([[:digit:]]{1,2}(\.[[:digit:]]{1,4})?)%$", trim($particion['uso_porcentaje']), $arrReg)) {
-            $arrParticiones[$i]['uso'] = $arrReg[1];
-        } else {
-            $arrParticiones[$i]['uso'] = NULL;
-        }
-        $i++;
-    }
 
+    $info = buildInfoImage_Discs( $arrSysInfo['particiones'], $module_name);
+    $smarty->assign("info", $info);
 
-    $smarty->assign("arrParticiones",  $arrParticiones);
     //asignar los valores del idioma
     $smarty->assign("SYSTEM_INFO_TITLE1",  $arrLang['System Resources']);
     $smarty->assign("CPU_INFO_TITLE",  $arrLang['CPU Info']);
@@ -100,11 +100,81 @@ function _moduleContent($smarty, $module_name)
     $smarty->assign("MEMORY_USAGE_TITLE",  $arrLang['Memory usage']);
     $smarty->assign("SWAP_USAGE_TITLE",  $arrLang['Swap usage']);
     $smarty->assign("SYSTEM_INFO_TITLE2",  $arrLang['Hard Drives']);
-    $smarty->assign("PARTICION_NAME_TITLE",  $arrLang['Partition Name']);
-    $smarty->assign("CAPACITY_TITLE",  $arrLang['Capacity']);
-    $smarty->assign("USAGE_TITLE",  $arrLang['Usage']);
-    $smarty->assign("MOUNT_POINT_TITLE",  $arrLang['Mount point']);
+
+    $imagen_hist = getImage_Hit($module_name);
+    $smarty->assign("imagen_hist", $imagen_hist);
 
     return $smarty->fetch("file:$local_templates_dir/sysinfo.tpl");
+}
+
+function buildInfoImage_Discs($arrParticiones, $module_name)
+{
+    Global $arrLang;
+    $str = ""; $val = null;
+    foreach( $arrParticiones as $key => $particion )
+    {
+        $val_1 = ( ereg("^([[:digit:]]{1,2}(\.[[:digit:]]{1,4})?)%$", trim($particion['uso_porcentaje']), $arrReg) )
+                 ? $arrReg[1]: NULL;
+        $val_2 = number_format($particion['num_bloques_total'] / 1024 / 1024, 2);
+
+        $str .=
+            "<tr>".
+                "<td width='15%'><img src='images/arrow-8.gif'>&nbsp;<b>".$arrLang['Partition Name'].":</b></td>".
+                "<td width='35%'><b>".$particion['fichero']."</b></td>".
+                "<td width='50%' rowspan='5' align='left'>".getImage_Disc_Usage($module_name, $val_1)."</td>".
+            "</tr>".
+            "<tr>".
+                "<td width='15%'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".$arrLang['Capacity'].":</td>".
+                "<td width='35%'>".$val_2."GB</td>".
+            "</tr>".
+            "<tr>".
+                "<td width='15%'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".$arrLang['Usage'].":</td>".
+                "<td width='35%'>".$val_1."%</td>".
+            "</tr>".
+            "<tr>".
+                "<td width='15%'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".$arrLang['Mount point']."</td>".
+                "<td width='35%'>".$particion['punto_montaje']."</td>".
+            "</tr>".
+            "<tr>".
+                "<td width='15%'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>".
+                "<td width='35%'>&nbsp;</td>".
+            "</tr>";
+    }
+    return $str;
+}
+
+function getImage_Hit($module_name)
+{
+    $arrParameters = array();
+    $oPaloGraph = new paloSantoGraph($module_name,"paloSantoSysInfo","prueba",$arrParameters,"functionCallback");
+    return $oPaloGraph->getGraph();
+}
+
+function getImage_CPU_Usage($module_name)
+{
+    $arrParameters = array();
+    $oPaloGraph = new paloSantoGraph($module_name,"paloSantoSysInfo","ObtenerInfo_CPU_Usage",$arrParameters);
+    return $oPaloGraph->getGraph();
+}
+
+function getImage_MEM_Usage($module_name)
+{
+    $arrParameters = array();
+    $oPaloGraph = new paloSantoGraph($module_name,"paloSantoSysInfo","ObtenerInfo_MemUsage",$arrParameters);
+    return $oPaloGraph->getGraph();
+}
+
+function getImage_Swap_Usage($module_name)
+{
+    $arrParameters = array();
+    $oPaloGraph = new paloSantoGraph($module_name,"paloSantoSysInfo","ObtenerInfo_SwapUsage",$arrParameters);
+    return $oPaloGraph->getGraph();
+}
+
+function getImage_Disc_Usage($module_name, $value)
+{
+    $arrParameters = array($value);
+    $oPaloGraph = new paloSantoGraph($module_name,"paloSantoSysInfo","ObtenerInfo_Particion",$arrParameters);
+    return $oPaloGraph->getGraph();
 }
 ?>
