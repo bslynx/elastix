@@ -110,10 +110,10 @@ class paloMenu {
                 $sPeticionSQL = paloDB::construirInsert(
                     "menu",
                     array(
-                        "id"     =>  paloDB::DBCAMPO($id),
-                        "Name"   =>  paloDB::DBCAMPO($name),
-                        "Type"   =>  paloDB::DBCAMPO($type),
-                        "Link"   =>  paloDB::DBCAMPO($link),
+                        "id"        =>  paloDB::DBCAMPO($id),
+                        "Name"      =>  paloDB::DBCAMPO($name),
+                        "Type"      =>  paloDB::DBCAMPO($type),
+                        "Link"      =>  paloDB::DBCAMPO($link),
                         "IdParent"  =>  paloDB::DBCAMPO($id_parent),
                     )
                 );

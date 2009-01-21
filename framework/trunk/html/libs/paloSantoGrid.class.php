@@ -59,7 +59,7 @@ class paloSantoGrid {
     {
         $this->withAjax = 1;
     }
-    
+ 
     function pagingShow($show)
     {
         $this->pagingShow = (int)$show;
