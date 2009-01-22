@@ -25,7 +25,7 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: DialerProcess.class.php,v 1.34 2008/12/05 19:42:42 alex Exp $ */
+  $Id: DialerProcess.class.php,v 1.35 2008/12/08 19:15:33 alex Exp $ */
 require_once('AbstractProcess.class.php');
 require_once 'DB.php';
 require_once "phpagi-asmanager-elastix.php";
@@ -676,7 +676,7 @@ class DialerProcess extends AbstractProcess
                     $sCanalTrunk, $infoCampania->queue, $infoCampania->context, 1,
                     NULL, NULL, NULL, 
                     (isset($datosTrunk['CID']) ? $datosTrunk['CID'] : NULL), 
-                    "ID_CAMPAIGN={$infoCampania->id}|ID_CALL={$tupla->id}|QUEUE={$infoCampania->queue}|CONTEXT={$infoCampania->context}",
+                    "ID_CAMPAIGN={$infoCampania->id}|ID_CALL={$tupla->id}|NUMBER={$tupla->phone}|QUEUE={$infoCampania->queue}|CONTEXT={$infoCampania->context}",
                     NULL, 
                     TRUE, $sKey);
                 if (!is_array($resultado) || count($resultado) == 0) {

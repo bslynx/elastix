@@ -191,7 +191,7 @@ function listadoLoginLogout($pDB, $smarty, $module_name, $local_templates_dir,&$
                 $fecha_init = $fecha_init_actual;//$_POST['txt_fecha_init'];
                 $arrFecha_init = explode('-',translateDate($fecha_init));
 
-                $fecha_end = $fecha_init_actual;//$_POST['txt_fecha_init'];
+                $fecha_end = $fecha_end_actual;//$_POST['txt_fecha_init'];
                 $arrFecha_end = explode('-',translateDate($fecha_end));
             }else {
                 // si la fecha esta en un formato no valido se envia un mensaje de error
@@ -203,7 +203,7 @@ function listadoLoginLogout($pDB, $smarty, $module_name, $local_templates_dir,&$
 
             $arrFilterExtraVars = array("cbo_tipos" => $_GET['cbo_tipos'],
                                     "txt_fecha_init" => $_GET['txt_fecha_init'],
-                                    "txt_fecha_end" => $_POST['txt_fecha_end'],
+                                    "txt_fecha_end" => $_GET['txt_fecha_end'],
                                      );
 
         }
@@ -272,7 +272,7 @@ function listadoLoginLogout($pDB, $smarty, $module_name, $local_templates_dir,&$
             $arrTmp[0] = $calls['number'];
 	    $arrTmp[1] = $calls['name'];
 	    $arrTmp[2] = $calls['datetime_init'];
-	    $arrTmp[3] = $calls['estado']=='En Linea'?"<b>".$calls['datetime_end']."</b>":$calls['datetime_end'];
+	    $arrTmp[3] = $calls['estado']=='En linea'?"<b>".$calls['datetime_end']."</b>":$calls['datetime_end'];
 	    $arrTmp[4] = $calls['total_sesion'];
 	    $arrTmp[5] = $calls['total_sumas_in_out'];
 	    $arrTmp[6] = number_format($calls['service'],2);

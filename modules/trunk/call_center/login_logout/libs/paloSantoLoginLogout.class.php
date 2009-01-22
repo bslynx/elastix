@@ -119,9 +119,10 @@ class paloSantoLoginLogout
                 FROM 
                     audit a, 
                     agent 
-                WHERE a.datetime_init between '{$fechaInicial}' AND '{$fechaFinal}' 
-                        
-                        and a.id_agent = agent.id" /*and id_break is null*/ ;
+                WHERE a.datetime_init between '{$fechaInicial}' AND '{$fechaFinal}'                
+                        and a.id_agent = agent.id and id_break is null
+		ORDER BY agent.name, a.datetime_init" ;
+
             /*$sPeticionSQL = "SELECT
                                 agent.number as number, 
                                 agent.name as name,
@@ -146,35 +147,90 @@ class paloSantoLoginLogout
  
         }
         else if($tipo=='G'){//hacemos consulta GENERAL
-            $sPeticionSQL =  "SELECT  agent.number as number,
-                             agent.id, 
-                             agent.name, 
-                             min(audit.datetime_init) as datetime_init,   
+            $sPeticionSQL =  "SELECT
+    agent.number as number,
+    agent.id,
+    agent.name,
+    min(audit.datetime_init) as datetime_init,
 
-                            if ( (select count(audit.datetime_end) from audit, agent where audit.datetime_init between audit.datetime_init AND audit.datetime_end and audit. id_agent=agent.id and audit.datetime_end is null group by agent.id) <1 ,max(datetime_end),now() ) as datetime_end, 
-
-                             
-                            TIME_TO_SEC(sec_to_time(if((select sum(duration) from call_entry where datetime_init between '{$fechaInicial}' AND '{$fechaFinal}' and call_entry.id_agent=agent.id) is null,0,(select sum(duration) from call_entry where datetime_init between '{$fechaInicial}' AND '{$fechaFinal}' and call_entry.id_agent=agent.id)) + 
-
-                            if((select sum(duration) from calls where start_time between '{$fechaInicial}' AND '{$fechaFinal}' and calls.id_agent=agent.id)is null,0,(select sum(duration) from calls where start_time between '{$fechaInicial}' AND '{$fechaFinal}' and calls.id_agent=agent.id))))
-                                as  total_sumas_in_out,
-
-
-                            (TIME_TO_SEC(sec_to_time( 
-                                if((select sum(duration) from call_entry where datetime_init between '{$fechaInicial}' AND '{$fechaFinal}' and call_entry.id_agent=agent.id) is null,0,(select sum(duration) from call_entry where datetime_init between '{$fechaInicial}' AND '{$fechaFinal}' and call_entry.id_agent=agent.id)) + 
-
-                                if((select sum(duration) from calls where start_time between '{$fechaInicial}' AND '{$fechaFinal}' and calls.id_agent=agent.id)is null,0,(select sum(duration) from calls where start_time between '{$fechaInicial}' AND '{$fechaFinal}' and calls.id_agent=agent.id))
-                                 )) / TIME_TO_SEC(TIMEDIFF( max(audit.datetime_end),min(audit.datetime_init)) ) ) *100 as service,
-                            TIMEDIFF(max(audit.datetime_end),min(audit.datetime_init))  as total_sesion,
-
-                            if ( (select audit.datetime_end from audit, agent where audit.datetime_init between audit.datetime_init AND audit.datetime_end and audit. id_agent=agent.id and audit.datetime_end is null group by agent.id) is null, 'En Linea', '') as estado
+    if (
+        (select count(au.datetime_end) from audit au, agent ag where au.datetime_init between '{$fechaInicial}' AND '{$fechaFinal}' and au.id_agent=agent.id and au.datetime_end is null group by au.id_agent) is null,
+        max(audit.datetime_end),
+        now()
+    ) as datetime_end,
 
 
+    TIME_TO_SEC(
+        sec_to_time(
+            if(
+                (select sum(duration) from call_entry where datetime_init between '{$fechaInicial}' AND '{$fechaFinal}' and call_entry.id_agent=agent.id) is null,
+                0,
+                (select sum(duration) from call_entry where datetime_init between '{$fechaInicial}' AND '{$fechaFinal}' and call_entry.id_agent=agent.id)
+            ) +
+            if(
+                (select sum(duration) from calls where start_time between '{$fechaInicial}' AND '{$fechaFinal}' and calls.id_agent=agent.id)is null,
+                0,
+                (select sum(duration) from calls where start_time between '{$fechaInicial}' AND '{$fechaFinal}' and calls.id_agent=agent.id)
+            )
+        )
+    ) as  total_sumas_in_out,
 
-                            FROM
-                            audit, agent 
+    (
+        TIME_TO_SEC(
+            sec_to_time(
+                if(
+                    (select sum(duration) from call_entry where datetime_init between '{$fechaInicial}' AND '{$fechaFinal}' and call_entry.id_agent=agent.id) is null,
+                    0,
+                    (select sum(duration) from call_entry where datetime_init between '{$fechaInicial}' AND '{$fechaFinal}' and call_entry.id_agent=agent.id)
+                ) +
+                if(
+                    (select sum(duration) from calls where start_time between '{$fechaInicial}' AND '{$fechaFinal}' and calls.id_agent=agent.id)is null,
+                    0,
+                    (select sum(duration) from calls where start_time between '{$fechaInicial}' AND '{$fechaFinal}' and calls.id_agent=agent.id)
+                )
+            )
+        )
+        /
+        TIME_TO_SEC(
+            TIMEDIFF(
+                if (
+                    (select count(au.datetime_end) from audit au, agent ag where au.datetime_init between '{$fechaInicial}' AND '{$fechaFinal}' and au.id_agent=agent.id and au.datetime_end is null group by au.id_agent) is null,
+                    max(audit.datetime_end),
+                    now()
+                ),
+                min(audit.datetime_init)
+            )
+        )
+    ) * 100 as service,
 
-                            WHERE audit.id_agent=agent.id and audit.datetime_init between '{$fechaInicial}' AND '{$fechaFinal}' group by agent.id"/*and  id_break is null*/;
+    TIMEDIFF(
+        if (
+            (select count(au.datetime_end) from audit au, agent ag where au.datetime_init between '{$fechaInicial}' AND '{$fechaFinal}' and au.id_agent=agent.id and au.datetime_end is null group by au.id_agent) is null,
+            max(audit.datetime_end),
+            now()
+        ),
+        min(audit.datetime_init)
+    )  as total_sesion,
+
+    if (
+        (select count(au.datetime_end) from audit au, agent ag where au.datetime_init between '{$fechaInicial}' AND '{$fechaFinal}' and au.id_agent=agent.id and au.datetime_end is null group by au.id_agent) is null,
+        '',
+        'En linea'
+    ) as estado
+
+FROM
+    audit, agent
+
+WHERE
+    audit.id_agent=agent.id
+    and audit.datetime_init between '{$fechaInicial}' AND '{$fechaFinal}'
+    AND audit.id_break is null
+
+GROUP BY agent.id
+
+ORDER BY agent.name";
+
+//echo $sPeticionSQL."<br>";
 
         }
         if(!empty($limit)) {

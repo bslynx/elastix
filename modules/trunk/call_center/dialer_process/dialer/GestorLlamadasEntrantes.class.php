@@ -25,7 +25,7 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: GestorLlamadasEntrantes.class.php,v 1.6 2008/12/05 19:36:35 alex Exp $ */
+  $Id: GestorLlamadasEntrantes.class.php,v 1.7 2009/01/09 23:03:30 alex Exp $ */
 
 /**
  * Esta clase es un gestor de llamadas entrantes. Luego de ser instanciada,
@@ -441,7 +441,7 @@ class GestorLlamadasEntrantes
                         $idAgente->getMessage());
                 }
             } elseif ($this->DEBUG) {
-                $this->_oMainLog->output("DEBUG: cola candidata $sColaCandidata no se ".
+                $this->_oMainLog->output("DEBUG: cola(s) candidata(s) [".(join($listaColasCandidatas, ' '))."] no se ".
                     "encuentra en cache de colas monitoreadas: ".
                     print_r($this->_cacheColasMonitoreadas, TRUE));
             }
