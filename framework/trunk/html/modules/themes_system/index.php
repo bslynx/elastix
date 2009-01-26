@@ -64,8 +64,8 @@ function _moduleContent(&$smarty, $module_name)
         
     //folder path for custom templates
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
-    $templates_dir=(isset($arrConfModule['templates_dir']))?$arrConfModule['templates_dir']:'themes';
-    $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConfModule['theme'];
+    $templates_dir=(isset($arrConf['templates_dir']))?$arrConf['templates_dir']:'themes';
+    $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
 
     // se conecta a la base
     $pDB = new paloDB($arrConf['elastix_dsn']['settings']);
