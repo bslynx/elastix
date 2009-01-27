@@ -111,23 +111,26 @@
             <select id='module_type' name='module_type' onclick="show_field_to_create()">
                 <option value='form' >{$type_form}</option>
                 <option value='grid' >{$type_grid}</option>
+                <option value='framed' >{$type_framed}</option>
             </select>
         </td>
-        <td width="10%" align="left">Field Name: <span class="required">*</span></td>
-        <td width="5%" align="left"><input name="valor_item" id="valor_item" value="" type="text" size="15"></td>
-        <td width="5%" align="left"><input class="button" name="javascript:agregar_items()" value=">>" onclick="javascript:agregar_item();" type="button"></td>
+        <td width="10%" align="left" id="field_name" >{$Field_Name}: <span class="required">*</span></td>
+        <td width="10%" align="left" id="url" style="display:none;">{$Url}: <span class="required">*</span></td>
+        <td width="5%" align="left" id="v_item" ><input name="valor_item" id="valor_item" value="" type="text" size="15"></td>
+        <td width="50%" align="left" id="v_url" style="display:none;"><b>{$http}{$ip}</b> <input name="valor_url" id="valor_url" value="" type="text" size="50"></td>
+        <td width="5%" align="left"><input class="button" name="add" id ="add" value=">>" onclick="javascript:agregar_item();" type="button"></td>
        <td rowspan="2" width=25%><select name="items" size="4" id="items" style="width: 120px;">
                     </select></td>
       </tr>
       <tr class="letra12">
 	<td width="5%"></td>
 	<td width="5%"></td>
-	<td width="5%" align="left"><span id="label_type">Type Field:</span></td>
+	<td width="5%" align="left"><span id="label_type">{$Type_Field}:</span></td>
 	<td width="5%" align="left">
                    <select name="type" onclick="" id="type_field" style="width: 130px;">
                        {html_options values=$option_type.VALUE output=$option_type.NAME selected=$option_type.SELECTED}
                    </select></td>
-	<td width="5%" align="left"><input class="button" name="sacar_item" value="<<" onclick="javascript:quitar_item();" type="button"></td>
+	<td width="5%" align="left"><input class="button" name="remove" id="remove" value="<<" onclick="javascript:quitar_item();" type="button"></td>
     </tr> 
 
     </table>
@@ -169,6 +172,7 @@
         var val_selected_parent_1 = "", val_selected_parent_2 = "";
         var val_your_name = "";
         var val_your_email = "";
+        var val_url = "";
         
         val_your_email = document.getElementById("email_module").value;
         val_module_name = document.getElementById("module_name").value;
@@ -188,6 +192,10 @@
         for (var i = 0; i < module_type.options.length; i++)
                 if (module_type.options[ i ].selected)
                     val_module_type = module_type.options[ i ].value;
+        if(val_module_type == "framed" )
+           val_url = document.getElementById("valor_url").value;
+        else
+           val_url = "";
 
         val_your_name = document.getElementById("your_name").value;
 
@@ -230,8 +238,7 @@
                 if (parent_module_2.options[ i ].selected)
                     val_selected_parent_2 = parent_module_2.options[ i ].value;
         }
-
-        xajax_save_module(val_module_name, val_id_module, val_selected_gp, val_module_type, val_your_name, val_level, val_exists_p1, val_exists_p2, val_parent_1_name, val_parent_1_id, val_parent_2_name, val_parent_2_id, val_selected_parent_1, val_selected_parent_2, group_form_object, val_your_email);
+        xajax_save_module(val_module_name, val_id_module, val_selected_gp, val_module_type, val_your_name, val_level, val_exists_p1, val_exists_p2, val_parent_1_name, val_parent_1_id, val_parent_2_name, val_parent_2_id, val_selected_parent_1, val_selected_parent_2, group_form_object, val_your_email,val_url);
     }
 
 function agregar_item()
@@ -279,14 +286,35 @@ function show_field_to_create()
 {
     var value_select_type = document.getElementById("module_type").value;
     
+        document.getElementById("add").style.display="";
+        document.getElementById("remove").style.display="";
+        document.getElementById("items").innerHTML = "";
     if(value_select_type=='form'){
         document.getElementById("type_field").style.display="";    
         document.getElementById("label_type").style.display="";
-    }
-    else{
+        document.getElementById("url").style.display="none";        
+        document.getElementById("items").style.display = "";
+        document.getElementById("field_name").style.display="";
+        document.getElementById("v_item").style.display="";
+        document.getElementById("v_url").style.display="none";
+    } else if(value_select_type=='grid'){
         document.getElementById("type_field").style.display="none";
         document.getElementById("label_type").style.display="none";
-        document.getElementById("items").innerHTML = "";
+        document.getElementById("items").style.display = "";
+        document.getElementById("url").style.display="none";        
+        document.getElementById("field_name").style.display="";
+        document.getElementById("v_item").style.display="";
+        document.getElementById("v_url").style.display="none";
+    } else if(value_select_type=='framed'){
+        document.getElementById("type_field").style.display="none";
+        document.getElementById("label_type").style.display="none";
+        document.getElementById("items").style.display = "none";
+        document.getElementById("add").style.display="none";
+        document.getElementById("remove").style.display="none";
+        document.getElementById("field_name").style.display="none";
+        document.getElementById("url").style.display="";        
+        document.getElementById("v_item").style.display="none";
+        document.getElementById("v_url").style.display="";
     }
 }
 

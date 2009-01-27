@@ -59,9 +59,15 @@ class paloSantoBuildModule {
         else return false;
     }
 
-    function Insertar_Menu($id_module, $parent, $module_name)
+    function Insertar_Menu($id_module, $parent, $module_name, $module_type, $url="")
     {
-        $query = "INSERT INTO menu values('$id_module', '$parent', '', '$module_name', 'module')";
+        $type = "";
+        if($module_type == "form" || $module_type == "grid")
+           $type = "module";
+        else
+           $type = "framed";
+                   
+        $query = "INSERT INTO menu values('$id_module', '$parent', '$url', '$module_name', '$type')";
         $result = $this->_DB->genQuery($query);
         if($result)
             return true;

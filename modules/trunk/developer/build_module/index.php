@@ -91,6 +91,7 @@ function new_module($smarty, $module_name, $local_templates_dir, $arrLangModule,
 
     $pACL = new paloACL($pDB_acl);
     $groups = $pACL->getGroups();
+    $ip = $_SERVER["SERVER_ADDR"];
 
     foreach($groups as $value)
         $arrGroups[$value[0]] = $value[1];
@@ -129,6 +130,12 @@ function new_module($smarty, $module_name, $local_templates_dir, $arrLangModule,
     $smarty->assign("module_type", $arrLangModule["Module Type"]);
     $smarty->assign("type_grid", $arrLangModule["Grid"]);
     $smarty->assign("type_form", $arrLangModule["Form"]);
+    $smarty->assign("type_framed", $arrLangModule["Framed"]);
+    $smarty->assign("ip","$ip/");
+    $smarty->assign("http",$arrLangModule["http"]);
+    $smarty->assign("Field_Name",$arrLangModule["Field Name"]);
+    $smarty->assign("Type_Field",$arrLangModule["Type Field"]);
+    $smarty->assign("Url",$arrLangModule["Url"]);
 
     $smarty->assign("level_2", $arrLangModule["Level 2"]);
     $smarty->assign("level_3", $arrLangModule["Level 3"]);
@@ -148,7 +155,7 @@ function new_module($smarty, $module_name, $local_templates_dir, $arrLangModule,
     return $html;
 }
 
-function save_module($new_module_name, $new_id_module, $selected_gp, $module_type, $your_name, $level, $exists_p1, $exists_p2, $parent_1_name, $parent_1_id, $parent_2_name, $parent_2_id, $selected_parent_1, $selected_parent_2, $arr_form, $email_module)
+function save_module($new_module_name, $new_id_module, $selected_gp, $module_type, $your_name, $level, $exists_p1, $exists_p2, $parent_1_name, $parent_1_id, $parent_2_name, $parent_2_id, $selected_parent_1, $selected_parent_2, $arr_form, $email_module,$val_url)
 {
     $ruta = "/var/www/html/modules";
     $this_module_name = "build_module";
@@ -187,10 +194,16 @@ function save_module($new_module_name, $new_id_module, $selected_gp, $module_typ
         $errMsg .= $arrLangModule["Module Name"].", ";
         $error = true;
     }
-    if((count($arr_form) == 0) && (empty($arr_form)))
+    if((count($arr_form) == 0) && (empty($arr_form)) && ($module_type == "form" || $module_type == "grid"))
     {
         $errMsg .= $arrLangModule["Module Description is empty"].", ";
         $error = true;
+    }
+
+    if($val_url == "" && $module_type == "framed")
+    {   
+        $errMsg .= $arrLangModule["URL is empty"].", ";
+        $error = true;   
     }
 
     if($new_id_module == "" || strrpos($new_id_module, " ")!=false)
@@ -424,7 +437,7 @@ function save_module($new_module_name, $new_id_module, $selected_gp, $module_typ
             //Insertar Menu Final que es el modulo en si
             if(!$error)
             {
-                if(!$pNewMod_menu->Insertar_Menu($new_id_module, $parent, $new_module_name))
+                if(!$pNewMod_menu->Insertar_Menu($new_id_module, $parent, $new_module_name, $module_type, $val_url))
                 {
                     $error = true;
                     $errMsg = $pNewMod_menu->errMsg;
@@ -447,7 +460,7 @@ function save_module($new_module_name, $new_id_module, $selected_gp, $module_typ
         }
 
         //Crear estructura de carpetas y archivos
-        if(!$error)
+        if(!$error && ($module_type == "form" || $module_type == "grid"))
         {
             $errTitle = $arrLangModule["ERROR"];
             //$type = "report";

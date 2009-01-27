@@ -27,11 +27,14 @@
   +----------------------------------------------------------------------+
   $Id: default.conf.php,v 1.1 2008/01/04 15:55:57 afigueroa Exp $ */
 
-if (file_exists("modules/build_module/lang/en.lang")) {
-    include_once("modules/build_module/lang/en.lang");
-} else {
-    include_once("modules/build_module/lang/es.lang");
-}
+    $lang=get_language();
+    $script_dir=dirname($_SERVER['SCRIPT_FILENAME']);
+    $lang_file="modules/$module_name/lang/$lang.lang";
+    if (file_exists("$script_dir/$lang_file"))
+        include_once($lang_file);
+    else
+        include_once("modules/$module_name/lang/en.lang");
+
 global $arrLangModule;
 global $arrConfig; 
 

@@ -38,7 +38,7 @@ function _moduleContent(&$smarty, $module_name)
 
     switch($accion){
         default:
-            $content = report{NAME_CLASS}($smarty, $module_name, $local_templates_dir, $pBD, $arrConf, $arrLang);
+            $content = report{NAME_CLASS}($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
             break;
     }
     return $content;
