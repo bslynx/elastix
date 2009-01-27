@@ -348,7 +348,7 @@ function subMask($ip)
     $binario = "";
     $arrIp = array();
     $result = `ifconfig | grep $ip`;
-    /*     inet addr:192.168.1.135  Bcast:192.168.1.255  Mask:255.255.255.0*/ 
+    /*     inet addr:192.168.1.135  Bcast:192.168.1.255  Mask:255.255.255.0*/
     if(ereg("inet[[:space:]][[:alpha:]]{1,}:(([[:digit:]]*\.+[[:digit:]]{1,}){1,})[[:space:]]{1,}[[:alpha:]]{1,}:(([[:digit:]]*\.*[[:digit:]]{1,}){1,})[[:space:]]{1,}[[:alpha:]]{1,}:(([[:digit:]]*\.*[[:digit:]]{1,}){1,})",$result,$regs)){
         $arrIp = explode(".",$regs[5]);
         foreach($arrIp as $key => $valor){

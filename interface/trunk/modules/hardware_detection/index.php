@@ -37,8 +37,19 @@ function _moduleContent(&$smarty, $module_name)
 {
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
+    
+    $lang=get_language();
+    $script_dir=dirname($_SERVER['SCRIPT_FILENAME']);
+    $lang_file="modules/$module_name/lang/$lang.lang";
+    if (file_exists("$script_dir/$lang_file"))
+        include_once($lang_file);
+    else
+        include_once("modules/$module_name/lang/en.lang");
+
     global $arrConf;
     global $arrLang;
+    global $arrLangModule;
+    $arrLang = array_merge($arrLang,$arrLangModule);
 //     print_r($_POST);
     require_once "modules/$module_name/libs/PaloSantoHardwareDetection.class.php";
     //folder path for custom templates
@@ -66,15 +77,20 @@ function listPorts($smarty, $module_name, $local_templates_dir) {
 
     $smarty->assign("HARDWARE_DETECT",$arrLang['Hardware Detect']);
     $smarty->assign("ZAPATA_REPLACE",$arrLang['Replace file zapata.conf']);
-    $smarty->assign("THERE_IS_SANGOMA", "There is Sangoma Card");
+    $smarty->assign("DETECT_SANGOMA", $arrLang['Detect Sangoma hardware']);
+    $smarty->assign("DETECT_mISDN", $arrLang['Detect ISDN hardware']);
     $smarty->assign("MODULE_NAME",$module_name);
     $smarty->assign("detectandoHardware",$arrLang['Hardware Detecting']);
     $smarty->assign("CARD",$arrLang['Card']);
+    $smarty->assign("CARD_MISDN",$arrLang['Misdn Card']);
     $smarty->assign("CARD_NO_MOSTRAR",'ZTDUMMY/1');
     $smarty->assign("PORT_NOT_FOUND",$arrLang['Ports not Founds']);
     //$smarty->assign("NO_PUERTO",$arrLang['No. Port']);
     $smarty->assign("NO_PUERTO",$arrLang["Port"]." ");
     $arrPortsDetails = $oPortsDetails->getPorts();
+    $arrMisdnInfo = $oPortsDetails->getMisdnPortInfo();
+    if(count($arrMisdnInfo)<=0)
+        $arrMisdnInfo = "noMISDN";
 
     if(!(is_array($arrPortsDetails) && count($arrPortsDetails) >0)){
         $smarty->assign("CARDS_NOT_FOUNDS",$oPortsDetails->errMsg);
@@ -83,25 +99,26 @@ function listPorts($smarty, $module_name, $local_templates_dir) {
             "icon"     => "images/pci.png",
             "width"    => "100%"
             );
-    $contenidoModulo .= llenarTpl($local_templates_dir,$smarty,$arrGrid, $arrPortsDetails);    
+    $contenidoModulo .= llenarTpl($local_templates_dir,$smarty,$arrGrid, $arrPortsDetails, $arrMisdnInfo);    
     return $contenidoModulo;
 }
 
-function llenarTpl($local_templates_dir,$smarty,$arrGrid, $arrData)
+function llenarTpl($local_templates_dir,$smarty,$arrGrid, $arrData, $arrMisdn)
 {
     $smarty->assign("title", $arrGrid['title']);
     $smarty->assign("icon",  $arrGrid['icon']);
     $smarty->assign("width", $arrGrid['width']);
     $smarty->assign("arrData", $arrData);
+    $smarty->assign("arrMisdn", $arrMisdn);
     return $smarty->fetch($local_templates_dir."/listPorts.tpl");
 }
 
-function hardwareDetect($chk_zapata_replace,$there_is_sangoma_card)
+function hardwareDetect($chk_zapata_replace,$there_is_sangoma_card, $there_is_misdn_card)
 {
     global $arrLang;
     $respuesta = new xajaxResponse();
     $oHardwareDetect = new PaloSantoHardwareDetection();
-    $resultado = $oHardwareDetect->hardwareDetection($chk_zapata_replace,"/etc/asterisk",$there_is_sangoma_card);
+    $resultado = $oHardwareDetect->hardwareDetection($chk_zapata_replace,"/etc/asterisk",$there_is_sangoma_card, $there_is_misdn_card);
     $respuesta->addAlert($resultado);
     $respuesta->addAssign("relojArena","innerHTML","");
     $respuesta->addAssign("nombre_paquete","value","");

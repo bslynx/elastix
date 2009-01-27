@@ -16,7 +16,7 @@
             <table border="0" cellpadding="0" cellspacing="0" width="100%" class="table_navigation_text">
               <tr>
                 <td align="left">&nbsp;{if $enableExport==true}<a href="{$url}&exportcsv=yes&rawmode=yes"><img src="/images/export.gif" border="0">&nbsp;<font class="letranodec">{$lblExport}</font></a>{/if}</td>
-                <td align="right">
+                <td align="right"> 
                   {if $pagingShow}  
                     {if $start<=1}
                     <img

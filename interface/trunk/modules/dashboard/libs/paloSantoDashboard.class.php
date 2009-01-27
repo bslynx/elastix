@@ -71,7 +71,7 @@ class paloSantoDashboard {
    function getMails($email,$passw,$numRegs){
         global $arrLang;
         
-        $counter = 0;
+        $counter    = 0;
         
         if($email!='' && $passw!='')
             $imap = imap_open("{localhost:143/notls}INBOX",$email,$passw);

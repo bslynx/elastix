@@ -17,7 +17,7 @@
               <tr>
                 <td align="left">&nbsp;{if $enableExport==true}<a href="{$url}&exportcsv=yes&rawmode=yes"><img src="/images/export.gif" border="0">&nbsp;<font class="letranodec">{$lblExport}</font></a>{/if}</td>
                 <td align="right">
-                  {if $pagingShow}
+                  {if $pagingShow}  
                     {if $start<=1}
                     <img
                     src='/images/start_off.gif' alt='{$lblStart}' align='absmiddle'

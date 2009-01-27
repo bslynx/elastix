@@ -51,14 +51,14 @@ if(!empty($_GET['id_nodo'])){
     // Si no existe el archivo de ayuda y se trata de un menu "padre",
     // muestro el menu hijo que encuentre primero
     if(existeArchivoAyuda($idMenuMostrar)==3 || existeArchivoAyuda($idMenuMostrar)==4)
-		$idMenuMostrar = menuHijoPorOmision($idMenuMostrar);
+        $idMenuMostrar = menuHijoPorOmision($idMenuMostrar);
     		
-    if(existeArchivoAyuda($idMenuMostrar)==1) {
-        $smarty->assign("node_id", $idMenuMostrar);     
-        $smarty->display($_SERVER["DOCUMENT_ROOT"]."/modules/$idMenuMostrar/help/$idMenuMostrar.hlp");
-        }else if(existeArchivoAyuda($idMenuMostrar)==2) {
-        $smarty->assign("node_id", $idMenuMostrar);    
-        $smarty->display($_SERVER["DOCUMENT_ROOT"]."/help/content/$idMenuMostrar.hlp");
+	if(existeArchivoAyuda($idMenuMostrar)==1) {
+       $smarty->assign("node_id", $idMenuMostrar);     
+       $smarty->display($_SERVER["DOCUMENT_ROOT"]."/modules/$idMenuMostrar/help/$idMenuMostrar.hlp");
+    }else if(existeArchivoAyuda($idMenuMostrar)==2) {
+       $smarty->assign("node_id", $idMenuMostrar);    
+       $smarty->display($_SERVER["DOCUMENT_ROOT"]."/help/content/$idMenuMostrar.hlp");
     } else    
        echo "The help file for the selected menu does not exists";
 } else {
@@ -98,6 +98,6 @@ function existeArchivoAyuda($idMenu)
     } else if(!file_exists($_SERVER["DOCUMENT_ROOT"]."/help/content/$idMenu.hlp")){
         return 3;
     }else
-        return 4;
+        return 4; 
 }
 ?>

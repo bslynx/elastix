@@ -106,16 +106,27 @@ class PaloSantoHardwareDetection
         return($tarjetas);
     }
 
-    function hardwareDetection($chk_zapata_replace,$path_file_zapata,$there_is_sangoma_card)
+    function getMisdnPortInfo()
+    {   
+
+        exec('/usr/bin/misdnportinfo',$arrConsole,$flagStatus);
+        if($flagStatus == 0)
+            return $arrConsole;
+        else return array();
+    }
+
+    function hardwareDetection($chk_zapata_replace,$path_file_zapata,$there_is_sangoma_card,$there_is_misdn_card)
     {
         global $arrLang;
+        $there_is_other_card= "";
         $message = $arrLang["Satisfactory Hardware Detection"];
 	
         //exec("sudo /usr/sbin/genzaptelconf -d -s -M -F",$respuesta,$retorno);
-	if($there_is_sangoma_card)
-		$there_is_sangoma_card = "-t";
-        else $there_is_sangoma_card = "";
-        exec("sudo /usr/sbin/hardware_detector $there_is_sangoma_card",$respuesta,$retorno);
+	if($there_is_sangoma_card=="true"){
+        $there_is_other_card = "-t";}
+    if($there_is_misdn_card=="true"){
+        $there_is_other_card .= " -m";}
+    exec("sudo /usr/sbin/hardware_detector $there_is_other_card",$respuesta,$retorno);
 	$_SESSION['zaptel'] = $respuesta;
          if(is_array($respuesta)){
             foreach($respuesta as $key => $linea){
