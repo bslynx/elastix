@@ -27,9 +27,11 @@
   +----------------------------------------------------------------------+
   $Id: index.php,v 1.1.1.1 2007/07/06 21:31:21 gcarrillo Exp $ */
 
+include_once "libs/paloSantoGraph.class.php";
+
 function _moduleContent(&$smarty, $module_name)
 {
-	//include module files
+    //include module files
     include_once "modules/$module_name/configs/default.conf.php";
     global $arrConf;
     global $arrLang;
@@ -37,9 +39,30 @@ function _moduleContent(&$smarty, $module_name)
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
     $templates_dir=(isset($arrConfig['templates_dir']))?$arrConfig['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
-    
 
     $smarty->assign("REPORT_TITLE",$arrLang["Channels Usage Report"]);
+
+    $img_1 = getImage_Hit($module_name,2);
+    $img_2 = getImage_Hit($module_name,3);
+    $img_3 = getImage_Hit($module_name,4);
+    $img_4 = getImage_Hit($module_name,5);
+    $img_5 = getImage_Hit($module_name,6);
+    $img_6 = getImage_Hit($module_name,7);
+
+    $smarty->assign("img_1", $img_1);
+    $smarty->assign("img_2", $img_2);
+    $smarty->assign("img_3", $img_3);
+    $smarty->assign("img_4", $img_4);
+    $smarty->assign("img_5", $img_5);
+    $smarty->assign("img_6", $img_6);
+
     return $smarty->fetch("$local_templates_dir/channelusage.tpl");
+}
+
+function getImage_Hit($module_name,$id)
+{
+    $arrParameters = array($id);
+    $oPaloGraph = new paloSantoGraph($module_name,"paloSantoChannelUsage","channelsUsage",$arrParameters,"functionCallback");
+    return $oPaloGraph->getGraph();
 }
 ?>
