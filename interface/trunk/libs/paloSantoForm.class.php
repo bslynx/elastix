@@ -34,7 +34,7 @@
                 "INPUT_TYPE"             => "TEXT",
                 "INPUT_EXTRA_PARAM"      => array("style" => "width:240px"),
                 "VALIDATION_TYPE"        => "text",
-                "EDITABLE"               => "si",
+                "EDITABLE"               => "yes",
                 "VALIDATION_EXTRA_PARAM" => "")
 
 "content" => array(
@@ -43,7 +43,7 @@
                 "INPUT_TYPE"             => "TEXTAREA",
                 "INPUT_EXTRA_PARAM"      => "",
                 "VALIDATION_TYPE"        => "text",
-                "EDITABLE"               => "si",
+                "EDITABLE"               => "yes",
                 "COLS"                   => "50",
                 "ROWS"                   => "4",
                 "VALIDATION_EXTRA_PARAM" => "")
@@ -54,7 +54,7 @@
                 "INPUT_TYPE"             => "DATE",
                 "INPUT_EXTRA_PARAM"      => array("TIME" => true, "FORMAT" => "'%d %b %Y' %H:%M","TIMEFORMAT" => "12"),
                 "VALIDATION_TYPE"        => '',
-                "EDITABLE"               => "si",
+                "EDITABLE"               => "yes",
                 "VALIDATION_EXTRA_PARAM" => '')
 
 'formulario'       => array(
@@ -64,7 +64,7 @@
                 "INPUT_EXTRA_PARAM"      => $arrSelectForm,
                 "VALIDATION_TYPE"        => "text",
                 "VALIDATION_EXTRA_PARAM" => "",
-                "EDITABLE"               => "si",
+                "EDITABLE"               => "yes",
                 "MULTIPLE"               => true,
                 "SIZE"                   => "5")
 
@@ -75,7 +75,7 @@
                 "INPUT_TYPE"             => "CHECKBOX",
                 "INPUT_EXTRA_PARAM"      => "",
                 "VALIDATION_TYPE"        => "",
-                "EDITABLE"               => "si",
+                "EDITABLE"               => "yes",
                 "VALIDATION_EXTRA_PARAM" => "")
 */
 
@@ -329,7 +329,8 @@ class paloForm
             // Valido si la variable colectada esta en $this->arrFormElements
             if(@array_key_exists($varName, $this->arrFormElements)) {
                 if($this->arrFormElements[$varName]['REQUIRED']=='yes' or ($this->arrFormElements[$varName]['REQUIRED']!='yes' AND !empty($varValue))) {
-                    if($this->modo=='input' || ($this->modo=='edit' AND $this->arrFormElements[$varName]['EDITABLE']!='no')) {
+                    $editable = isset($this->arrFormElements[$varName]['EDITABLE'])?$this->arrFormElements[$varName]['EDITABLE']:"yes";
+                    if($this->modo=='input' || ($this->modo=='edit' AND $editable != 'no')) {
                         $oVal->validar($this->arrFormElements[$varName]['LABEL'], $varValue, $this->arrFormElements[$varName]['VALIDATION_TYPE'], 
                                        $this->arrFormElements[$varName]['VALIDATION_EXTRA_PARAM']);
                     }
