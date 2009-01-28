@@ -26,7 +26,8 @@
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
   $Id: index.php,v 1.1 2008/05/12 15:55:57 afigueroa Exp $ */
-
-$arrConfig['module_name'] = 'calendar';
-$arrConfig['templates_dir'] = 'themes';
+	global $arrConfModule;
+$arrConfModule['module_name'] = 'calendar';
+$arrConfModule['templates_dir'] = 'themes';
+$arrConfModule['dsn_conn_database'] = "sqlite3:////var/www/db/calendar.db";
 ?>

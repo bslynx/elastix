@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 1.0                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -24,10 +24,37 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  |                                                                      |
+  | Translate by: Bruno Macias                                           |
+  | Email: bmacias@palosanto.com                                         |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
-	global $arrConfModule;
-$arrConfModule['module_name'] = 'faxlist';
-$arrConfModule['templates_dir'] = 'themes';
-
+  $Id: en.lang,v 1.7 2008/02/18 09:49:00 bmacias Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Accounts"=>"Accounts",
+"Email Account List"=>"Email Account List",
+"Create Account"=>"Create Account",
+"Select a domain"=>"Select a domain",
+"Email Address"=>"Email Address",
+"Account Name"=>"Account Name",
+"Used Space"=>"Used Space",
+"Options"=>"Options",
+"New Email Account"=>"New Email Account",
+"Quota (Kb)"=>"Quota (Kb)",
+"The e-mail address already exists"=>"The e-mail address already exists",
+"View Account"=>"View Account",
+"Edit Account"=>"Edit Account",
+"Retype password" => "Retype password",
+"Domain" => "Domain",
+"Show" => "Show",
+"Error" => "Error",
+"EDITABLE" => "EDITABLE",
+"Error deleting user accounts from system"=>"Error deleting user accounts from system",
+"Error deleting user accounts"=>"Error deleting user accounts",
+"Error deleting record from table domain"=>"Error deleting record from table domain",
+"You must select a domain to create an account" => "You must select a domain to create an account",
+"Could not query used disc space" => "Could not query used disc space",
+"The passwords are empty or don't match" => "The passwords are empty or don't match",
+"The passwords don't match" => "The passwords don't match",
+);
 ?>

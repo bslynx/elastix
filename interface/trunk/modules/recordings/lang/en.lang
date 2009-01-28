@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 1.0                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -24,10 +24,28 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  |                                                                      |
+  | Translate by: Bruno Macias                                           |
+  | Email: bmacias@palosanto.com                                         |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
-	global $arrConfModule;
-$arrConfModule['module_name'] = 'faxlist';
-$arrConfModule['templates_dir'] = 'themes';
-
+  $Id: en.lang,v 1.7 2008/02/18 09:49:00 bmacias Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Recordings" => "Recordings",
+"Record Name" => "Record Name",
+"Record" => "Record",
+"Insert the Recording Name" => "Insert the Recording Name",
+"The recording couldn't be realized" => "The recording couldn't be realized",
+"The recording was saved" => "The recording was saved",
+"To continue: record a message then click on save" => "To continue: record a message then click on save",
+"Recording File" => "Recording File",
+"Destiny directory couldn't be created" => "Destiny directory couldn't be created",
+"File Upload" => "File Upload",
+"ERROR" => "ERROR",
+"You don't have extension number associated with user" => "You don't have extension number associated with user",
+"The call couldn't be realized" => "The call couldn't be realized",
+"Error copying the file" => "Error copying the file",
+"Message" => "Message",
+"Possible file upload attack" => "Possible file upload attack",
+);
 ?>

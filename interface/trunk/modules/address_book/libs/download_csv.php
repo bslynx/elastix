@@ -7,16 +7,17 @@ include_once "paloSantoAdressBook.class.php";
 
 load_language('../../../');
 
+
 download_address_book();
 
 function download_address_book()
 {
-    global $arrLang;
+    global $arrLangModule;
     $smarty = getSmarty();
 
     $pDB = new paloDB("sqlite3:////var/www/db/address_book.db");
     if(!empty($pDB->errMsg)) {
-        $smarty->assign("mb_message", $arrLang["Error when connecting to database"]."<br/>".$pDB->errMsg);
+        $smarty->assign("mb_message", $arrLangModule["Error when connecting to database"]."<br/>".$pDB->errMsg);
     }
 
     header("Cache-Control: private");
@@ -28,6 +29,7 @@ function download_address_book()
 
 function backup_contacts($pDB, $smarty)
 {
+    global $arrLangModule;
     $Messages = "";
     $csv = "";
     $pAdressBook = new paloAdressBook($pDB);
@@ -36,7 +38,7 @@ function backup_contacts($pDB, $smarty)
 
     if(!$arrResult)
     {
-        $Messages .= $arrLang["There aren't contacts"].". ".$pAdressBook->errMsg."<br />";
+        $Messages .= $arrLangModule["There aren't contacts"].". ".$pAdressBook->errMsg."<br />";
     }else{
         //cabecera
         $csv .= "\"Name\",\"Last Name\",\"Phone Number\",\"Email\"\n";

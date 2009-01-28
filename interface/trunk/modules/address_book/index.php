@@ -41,12 +41,25 @@ function _moduleContent(&$smarty, $module_name)
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
     include_once "modules/$module_name/libs/paloSantoAdressBook.class.php";
+    //include file language agree to elastix configuration
+    //if file language not exists, then include language by default (en)
+    $lang=get_language();
+    $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
+    $lang_file="modules/$module_name/lang/$lang.lang";
+    if (file_exists("$base_dir/$lang_file")) include_once "$lang_file";
+    else include_once "modules/$module_name/lang/en.lang";
+
+
+    //global variables
     global $arrConf;
+    global $arrConfModule;
     global $arrLang;
+    global $arrLangModule;
+    $arrConf = array_merge($arrConf,$arrConfModule);
+    $arrLang = array_merge($arrLang,$arrLangModule);
 
     //folder path for custom templates
-    $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
-    $templates_dir=(isset($arrConfig['templates_dir']))?$arrConfig['templates_dir']:'themes';
+    $templates_dir=(isset($arrConf['templates_dir']))?$arrConf['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
 
     $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
@@ -62,7 +75,7 @@ function _moduleContent(&$smarty, $module_name)
                    $arrConfig['AMPDBPASS']['valor']. "@".
                    $arrConfig['AMPDBHOST']['valor']."/asterisk";
 
-    $pDB = new paloDB("sqlite3:////var/www/db/address_book.db");
+    $pDB = new paloDB($arrConf['dsn_conn_database']);
 
     $action = getAction();
 
@@ -132,6 +145,7 @@ function load_address_book_from_csv($smarty, $arrLang, $ruta_archivo, $pDB)
 
     $result = isValidCSV($arrLang, $ruta_archivo, $arrayColumnas);
     if($result != 'true'){
+        $smarty->assign("mb_title",$arrLang["Error"]);
         $smarty->assign("mb_message", $result);
         return;
     }
@@ -369,7 +383,7 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
             $arrTmp[1]  = ($directory_type=='external')?"<a href='?menu=$module_name&action=show&id=".$adress_book['id']."'>{$adress_book['last_name']} {$adress_book['name']}</a>":$adress_book['description'];
             $arrTmp[2]  = ($directory_type=='external')?$adress_book['telefono']:$adress_book['id'];
             $arrTmp[3]  = $email;
-            $arrTmp[4]  = "<a href='?menu=$module_name&action=call2phone&id=".$adress_book['id']."&type=".$directory_type."'><img border=0 src='images/call.png' /></a>";
+            $arrTmp[4]  = "<a href='?menu=$module_name&action=call2phone&id=".$adress_book['id']."&type=".$directory_type."'><img border=0 src='/modules/$module_name/images/call.png' /></a>";
             $arrData[]  = $arrTmp;
         }
     }

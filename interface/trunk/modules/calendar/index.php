@@ -35,11 +35,29 @@ function _moduleContent(&$smarty, $module_name)
     if you move this file to a new location, modify $phpc_root_path to point
     to the location where the support files for the callendar are located.
     */
+    /*ELASTIX*/
+    require_once "modules/$module_name/configs/default.conf.php";
+    //include file language agree to elastix configuration
+    //if file language not exists, then include language by default (en)
+    $lang=get_language();
+    $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
+    $lang_file="modules/$module_name/lang/$lang.lang";
+    if (file_exists("$base_dir/$lang_file")) include_once "$lang_file";
+    else include_once "modules/$module_name/lang/en.lang";
+
+
+    //global variables
+    global $arrConf;
+    global $arrConfModule;
+    global $arrLang;
+    global $arrLangModule;
+    $arrConf = array_merge($arrConf,$arrConfModule);
+    $arrLang = array_merge($arrLang,$arrLangModule);
     $phpc_root_path = "modules/$module_name/";
     $Elastix_Document_Root = "/var/www/html";
 
     require_once('libs/paloSantoDB.class.php');
-    $db = new paloDB("sqlite3:////var/www/db/calendar.db");
+    $db = new paloDB($arrConf['dsn_conn_database']);
     if(!empty($db->errMsg)) {
         echo "ERROR DE DB: $db->errMsg <br>";
     }
@@ -89,13 +107,11 @@ function _moduleContent(&$smarty, $module_name)
 
     $calendar = create_xhtml($output);
 
-    /*ELASTIX*/
-    require_once "modules/$module_name/configs/default.conf.php";
-    global $arrConf, $arrLang;
+    
     //folder path for custom templates
-    $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
-    $templates_dir=(isset($arrConfig['templates_dir']))?$arrConfig['templates_dir']:'themes';
+    $templates_dir=(isset($arrConf['templates_dir']))?$arrConf['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
+    $smarty->assign("IMG", "/modules/$module_name/images/calendar.gif");
 
     require_once("libs/paloSantoForm.class.php");
     $oForm = new paloForm($smarty, "");

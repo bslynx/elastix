@@ -47,13 +47,15 @@ function _moduleContent(&$smarty, $module_name)
         include_once("modules/$module_name/lang/en.lang");
 
     global $arrConf;
-    global $arrConfigModule;
+    global $arrConfModule;
     global $arrLang;
     global $arrLangModule;
+    $arrConf = array_merge($arrConf,$arrConfModule);
+    $arrLang = array_merge($arrLang,$arrLangModule);
 
     //folder path for custom templates
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
-    $templates_dir=(isset($arrConfigModule['templates_dir']))?$arrConfigModule['templates_dir']:'themes';
+    $templates_dir=(isset($arrConfModule['templates_dir']))?$arrConfModule['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
 
     $accion = getAction();
@@ -63,23 +65,23 @@ function _moduleContent(&$smarty, $module_name)
     {
 
         case "update":
-            $content = updateAntispam($smarty, $module_name, $local_templates_dir, $arrLang, $arrLangModule, $arrConf, $arrConfigModule);
+            $content = updateAntispam($smarty, $module_name, $local_templates_dir, $arrLang, $arrLangModule, $arrConf, $arrConfModule);
             break;
 
         default:
-            $content = formAntispam($smarty, $module_name, $local_templates_dir, $arrLang, $arrLangModule, $arrConf, $arrConfigModule);
+            $content = formAntispam($smarty, $module_name, $local_templates_dir, $arrLang, $arrLangModule, $arrConf, $arrConfModule);
             break;
     }
 
     return $content;
 }
 
-function updateAntispam($smarty, $module_name, $local_templates_dir, $arrLang, $arrLangModule, $arrConf, $arrConfigModule)
+function updateAntispam($smarty, $module_name, $local_templates_dir, $arrLang, $arrLangModule, $arrConf, $arrConfModule)
 {
     $status = getParameter("status");
     $level  = getParameter("level");
 
-    $objAntispam = new paloSantoAntispam($arrConfigModule['path_postfix'], $arrConfigModule['path_spamassassin'],$arrConfigModule['file_master_cf'], $arrConfigModule['file_local_cf']);
+    $objAntispam = new paloSantoAntispam($arrConfModule['path_postfix'], $arrConfModule['path_spamassassin'],$arrConfModule['file_master_cf'], $arrConfModule['file_local_cf']);
     $isOk = $objAntispam->changeThoroughnessLevel($level);
     if($isOk === false){
         $smarty->assign("mb_title", $arrLang["Error"]);
@@ -101,10 +103,10 @@ function updateAntispam($smarty, $module_name, $local_templates_dir, $arrLang, $
         }
     }
 
-    return formAntispam($smarty, $module_name, $local_templates_dir, $arrLang, $arrLangModule, $arrConf, $arrConfigModule);
+    return formAntispam($smarty, $module_name, $local_templates_dir, $arrLang, $arrLangModule, $arrConf, $arrConfModule);
 }
 
-function formAntispam($smarty, $module_name, $local_templates_dir, $arrLang, $arrLangModule, $arrConf, $arrConfigModule)
+function formAntispam($smarty, $module_name, $local_templates_dir, $arrLang, $arrLangModule, $arrConf, $arrConfModule)
 {
     $arrFormConference = createFieldForm($arrLang, $arrLangModule);
     $oForm = new paloForm($smarty,$arrFormConference);
@@ -115,7 +117,7 @@ function formAntispam($smarty, $module_name, $local_templates_dir, $arrLang, $ar
     $smarty->assign("IMG", "images/list.png");
 
 
-    $objAntispam = new paloSantoAntispam($arrConfigModule['path_postfix'], $arrConfigModule['path_spamassassin'],$arrConfigModule['file_master_cf'], $arrConfigModule['file_local_cf']);
+    $objAntispam = new paloSantoAntispam($arrConfModule['path_postfix'], $arrConfModule['path_spamassassin'],$arrConfModule['file_master_cf'], $arrConfModule['file_local_cf']);
     $arrSpamFilter = $objAntispam->isActiveSpamFilter();
     if($arrSpamFilter["isOk"])
         $arrData['status'] = "active";

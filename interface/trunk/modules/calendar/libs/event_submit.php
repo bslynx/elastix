@@ -329,7 +329,7 @@ function event_submit()
                 $hArchivo = fopen("$sDirectorioBase/$filename", 'w');
                 if (!$hArchivo) {
                     $bExito = FALSE;
-                    $this->errMsg = "No se puede crear archivo de llamada $filename";
+                    $this->errMsg = $view_events["Can not create called file"]." $filename";
                     break;
                 }
                 else {
@@ -354,7 +354,7 @@ function event_submit()
                 $hArchivo = fopen("$sDirectorioBase/$filename", 'w');
                 if (!$hArchivo) {
                     $bExito = FALSE;
-                    $this->errMsg = "No se puede crear archivo de llamada $filename";
+                    $this->errMsg = $view_events["Can not create called file"]." $filename";
                     break;
                 }
                 else {
@@ -374,7 +374,7 @@ function event_submit()
                 $hArchivo = fopen("$sDirectorioBase/$filename", 'w');
                 if (!$hArchivo) {
                     $bExito = FALSE;
-                    $this->errMsg = "No se puede crear archivo de llamada $filename";
+                    $this->errMsg = $view_events["Can not create called file"]." $filename";
                     break;
                 }
                 else {

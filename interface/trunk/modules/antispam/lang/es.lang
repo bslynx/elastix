@@ -40,6 +40,9 @@ $arrLangModule=array(
 "Commad failed, try change thoroughness level" => "Comando fallo al intentar cambiar el nivel de rigurosidad",
 "Failed change thoroughness level" => "Fallo al cambiar el nivel de rigurosidad",
 "Failed disactivate spam filter" => "Fallo al desactivar el filtro de spam",
-"Commad failed, try disactivate spam filter" => "Comando fallo al intentar desactivar en filtro spam", 
+"Commad failed, try disactivate spam filter" => "Comando fallo al intentar desactivar en filtro spam",
+"Status" => "Estado",
+"Update" => "Actualizar",
+"Error" => "Error",
 );
 ?>

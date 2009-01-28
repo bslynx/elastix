@@ -27,11 +27,11 @@
   +----------------------------------------------------------------------+
   $Id: default.conf.php,v 1.1 2008-09-01 05:09:57 Bruno Macias <bmacias@palosanto.com> Exp $ */
 
-global $arrConfigModule;
-$arrConfigModule['module_name']    = 'antispam';
-$arrConfigModule['templates_dir']  = 'themes';
-$arrConfigModule['path_postfix'] = '/etc/postfix';
-$arrConfigModule['path_spamassassin']  = '/etc/mail/spamassassin';
-$arrConfigModule['file_master_cf'] = '/etc/postfix/master.cf';
-$arrConfigModule['file_local_cf']  = '/etc/mail/spamassassin/local.cf';
+global $arrConfModule;
+$arrConfModule['module_name']    = 'antispam';
+$arrConfModule['templates_dir']  = 'themes';
+$arrConfModule['path_postfix'] = '/etc/postfix';
+$arrConfModule['path_spamassassin']  = '/etc/mail/spamassassin';
+$arrConfModule['file_master_cf'] = '/etc/postfix/master.cf';
+$arrConfModule['file_local_cf']  = '/etc/mail/spamassassin/local.cf';
 ?>
