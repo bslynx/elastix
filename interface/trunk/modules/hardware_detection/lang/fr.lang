@@ -43,11 +43,11 @@ $arrLangModule=array(
 "Information" => "Information",
 "Satisfactory Hardware Detection" => "Détection Effectuée",
 "Unknown" => "Inconnu",
-"Replace file zapata.conf" => "Remplacer fichier zapata.conf",
-"Unable to backup file zapata.conf by zapata.conf.replace_for_elastix" => "Impossible de sauvegarder le fichier  zapata.conf vers zapata.conf.replace_for_elastix",
-"Unable to replace file zapata.conf" => "Impossible de remplacer le fichier zapata.conf",
+"Replace file chan_dahdi.conf" => "Remplacer fichier chan_dahdi.conf",
+"Unable to backup file chan_dahdi.conf by chan_dahdi.conf.replace_for_elastix" => "Impossible de sauvegarder le fichier  chan_dahdi.conf vers chan_dahdi.conf.replace_for_elastix",
+"Unable to replace file chan_dahdi.conf" => "Impossible de remplacer le fichier chan_dahdi.conf",
 "Detect Sangoma hardware" => "Detect Sangoma hardware",
 "Detect ISDN hardware" => "Detect ISDN hardware",
-
+"(Not in Use)" => "Not in Use",
 );
 ?>

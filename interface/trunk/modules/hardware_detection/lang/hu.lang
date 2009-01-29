@@ -43,11 +43,11 @@ $arrLangModule=array(
 "Information" => "Információ",
 "Satisfactory Hardware Detection" => "Megfelelő hardver detektálás",
 "Unknown" => "Ismeretlen",
-"Replace file zapata.conf" => "A zapata.conf file felülírása",
-"Unable to backup file zapata.conf by zapata.conf.replace_for_elastix" => "Nem tud a zapata.conf file-ról mentést készíteni a zapata.conf_replace_for_elastix-ba",
-"Unable to replace file zapata.conf" => "Nem cserélhető a zapata.conf file",
+"Replace file chan_dahdi.conf" => "A chan_dahdi.conf file felülírása",
+"Unable to backup file chan_dahdi.conf by chan_dahdi.conf.replace_for_elastix" => "Nem tud a chan_dahdi.conf file-ról mentést készíteni a chan_dahdi.conf_replace_for_elastix-ba",
+"Unable to replace file chan_dahdi.conf" => "Nem cserélhető a chan_dahdi.conf file",
 "Detect Sangoma hardware" => "Detect Sangoma hardware",
 "Detect ISDN hardware" => "Detect ISDN hardware",
-
+"(Not in Use)" => "Not in Use",
 );
 ?>

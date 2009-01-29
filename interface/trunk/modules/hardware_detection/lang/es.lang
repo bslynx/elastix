@@ -36,7 +36,7 @@ $arrLangModule=array(
 "Card" => "Span",
 "Type port" => "Tipo",
 "No. Port" => "Puerto #",
-"(In Use)" => "Activo",
+"(In Use)" => "En uso",
 "Hardware Detecting" => "Detectando Hardware",
 "Hardware Detect" => "Detectar Nuevo Hardware",
 "Cards undetected on your system, press for detecting hardware detection." => "Tarjetas no detectadas en su sistema, presione \"Detectar Nuevo Hardware\" para la detección",
@@ -48,5 +48,6 @@ $arrLangModule=array(
 "Unable to replace file zapata.conf" => "No se puede reemplazar el archivo zapata.conf",
 "Detect Sangoma hardware" => "Detección de hardware sangoma",
 "Detect ISDN hardware" => "Detección de hardware ISDN",
+"(Not in Use)" => "Sin uso",
 );
 ?>

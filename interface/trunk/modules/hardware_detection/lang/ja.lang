@@ -43,11 +43,11 @@ $arrLangModule=array(
 "Information" => "ハードウェア情報",
 "Satisfactory Hardware Detection" => "検出結果の反映",
 "Unknown" => "不明なハードウェア",
-"Replace file zapata.conf" => "zapata.confを変更する",
-"Unable to backup file zapata.conf by zapata.conf.replace_for_elastix" => "zapata.conf を zapata.conf.replace_for_elastix にバックアップできませんでした",
-"Unable to replace file zapata.conf" => "zapata.conf を変更できませんでした",
+"Replace file chan_dahdi.conf" => "chan_dahdi.confを変更する",
+"Unable to backup file chan_dahdi.conf by chan_dahdi.conf.replace_for_elastix" => "chan_dahdi.conf を chan_dahdi.conf.replace_for_elastix にバックアップできませんでした",
+"Unable to replace file chan_dahdi.conf" => "chan_dahdi.conf を変更できませんでした",
 "Detect Sangoma hardware" => "Detect Sangoma hardware",
 "Detect ISDN hardware" => "Detect ISDN hardware",
-
+"(Not in Use)" => "Not in Use",
 );
 ?>

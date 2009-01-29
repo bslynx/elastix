@@ -76,7 +76,7 @@ function listPorts($smarty, $module_name, $local_templates_dir) {
     $contenidoModulo = "";
 
     $smarty->assign("HARDWARE_DETECT",$arrLang['Hardware Detect']);
-    $smarty->assign("ZAPATA_REPLACE",$arrLang['Replace file zapata.conf']);
+    $smarty->assign("CHAN_DAHDI_REPLACE",$arrLang['Replace file chan_dahdi.conf']);
     $smarty->assign("DETECT_SANGOMA", $arrLang['Detect Sangoma hardware']);
     $smarty->assign("DETECT_mISDN", $arrLang['Detect ISDN hardware']);
     $smarty->assign("MODULE_NAME",$module_name);
@@ -113,12 +113,12 @@ function llenarTpl($local_templates_dir,$smarty,$arrGrid, $arrData, $arrMisdn)
     return $smarty->fetch($local_templates_dir."/listPorts.tpl");
 }
 
-function hardwareDetect($chk_zapata_replace,$there_is_sangoma_card, $there_is_misdn_card)
+function hardwareDetect($chk_dahdi_replace,$there_is_sangoma_card, $there_is_misdn_card)
 {
     global $arrLang;
     $respuesta = new xajaxResponse();
     $oHardwareDetect = new PaloSantoHardwareDetection();
-    $resultado = $oHardwareDetect->hardwareDetection($chk_zapata_replace,"/etc/asterisk",$there_is_sangoma_card, $there_is_misdn_card);
+    $resultado = $oHardwareDetect->hardwareDetection($chk_dahdi_replace,"/etc/asterisk",$there_is_sangoma_card, $there_is_misdn_card);
     $respuesta->addAlert($resultado);
     $respuesta->addAssign("relojArena","innerHTML","");
     $respuesta->addAssign("nombre_paquete","value","");

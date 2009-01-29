@@ -43,11 +43,11 @@ $arrLangModule=array(
 "Information" => "Πληροφορίες",
 "Satisfactory Hardware Detection" => "Done",
 "Unknown" => "Άγνωστο",
-"Replace file zapata.conf" => "Αντικατάσταση αρχείου zapata.conf",
-"Unable to backup file zapata.conf by zapata.conf.replace_for_elastix" => "Unable to backup file zapata.conf by zapata.conf.replace_for_elastix",
-"Unable to replace file zapata.conf" => "Unable to replace file zapata.conf",
+"Replace file chan_dahdi.conf" => "Αντικατάσταση αρχείου chan_dahdi.conf",
+"Unable to backup file chan_dahdi.conf by chan_dahdi.conf.replace_for_elastix" => "Unable to backup file chan_dahdi.conf by chan_dahdi.conf.replace_for_elastix",
+"Unable to replace file chan_dahdi.conf" => "Unable to replace file chan_dahdi.conf",
 "Detect Sangoma hardware" => "Detect Sangoma hardware",
 "Detect ISDN hardware" => "Detect ISDN hardware",
-
+"(Not in Use)" => "Not in Use",
 );
 ?>

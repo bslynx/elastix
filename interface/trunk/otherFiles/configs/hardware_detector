@@ -8,7 +8,6 @@
 there_is_sangoma_card=false
 there_is_misdn_card=false
 null_redirect_verbose="&>/dev/null"
-genzaptelconf_verbose="";
 
 is_module_loaded()
 {
@@ -33,7 +32,6 @@ is_asterisk_loaded()
 
 options_help() {
         echo >&2 "Options:"
-        echo >&2 "  -g: genzaptelconf verbose, this option use join with \"v\" (ex. -gv)"
         echo >&2 "  -h: help"
         echo >&2 "  -m: enable detection cards mISDN"
         echo >&2 "  -t: enable detection cards sangoma"
@@ -41,10 +39,9 @@ options_help() {
 }
 
 
-while getopts 'ghmtv' arg
+while getopts 'hmtv' arg
 do
         case "$arg" in
-                g) genzaptelconf_verbose=" -v ";;
                 h) options_help; exit 0;;
 		m) there_is_misdn_card=true;;
                 t) there_is_sangoma_card=true;;
@@ -90,14 +87,14 @@ if [ $? = 0 ] && [ $there_is_sangoma_card = true ]; then
 fi
 
 if [ $? = 0 ]; then
-	echo -e "Step 5: Detecting zaptel cards ..." 
-	eval "/usr/sbin/genzaptelconf -d -s -M -F $genzaptelconf_verbose $null_redirect_verbose"
+	echo -e "Step 5: Detecting dahdi cards ..." 
+	eval "/usr/sbin/dahdi_genconf $null_redirect_verbose"
 fi
 
 if [ $? = 0 ]; then
-	echo -e "Step 6: Mounting modules zaptel ..."
-	echo -e "        Starting service zaptel ..."
-	eval "/sbin/service zaptel start  $null_redirect_verbose"
+	echo -e "Step 6: Mounting modules dahdi ..."
+	echo -e "        Starting service dahdi ..."
+	eval "/sbin/service dahdi start  $null_redirect_verbose"
 fi
 
 if [ $? = 0 ] && [ $there_is_sangoma_card = true ] && [ `is_module_loaded "wanpipe"` = false ]; then
@@ -106,10 +103,10 @@ if [ $? = 0 ] && [ $there_is_sangoma_card = true ] && [ `is_module_loaded "wanpi
 	eval "/sbin/service wanrouter restart  $null_redirect_verbose"
 fi
 
-if [ $? = 0 ]; then
-	echo -e "Step 8: Generating configs files /etc/zaptel.conf y /etc/asterisk/zapata-channels.conf ..."
-	/usr/sbin/genzaptelconf -x $genzaptelconf_verbose
-fi
+#if [ $? = 0 ]; then
+#	echo -e "Step 8: Generating configs files /etc/zaptel.conf y /etc/asterisk/zapata-channels.conf ..."
+#	/usr/sbin/genzaptelconf -x $genzaptelconf_verbose
+#fi
 
 if [ $? = 0 ] && [ $there_is_misdn_card = true ]; then
         echo -e "Step 9: Detecting mISDN cards ..."

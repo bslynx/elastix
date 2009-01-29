@@ -50,35 +50,42 @@ class PaloSantoHardwareDetection
         $tarjetas = array();
 
         unset($respuesta);
-    exec('lszaptel',$respuesta,$retorno);
+    exec('lsdahdi',$respuesta,$retorno);
         if($retorno==0 && $respuesta!=null && count($respuesta) > 0 && is_array($respuesta)){
             $idTarjeta = 0;
             foreach($respuesta as $key => $linea){
-                if(ereg("^(### Span[[:space:]]{1,}([[:digit:]]{1,}):)[[:space:]]{1}([[:alnum:]| |-]{1,}/[[:alnum:]| |-]{1,})(\"?.+\")",$linea,$regs)){
-                //if(ereg("^(### Span[[:space:]]{1,}([[:digit:]]{1,}):)[[:space:]]{1}([[:alnum:]]{1,}/[[:digit:]]{1,})(\"?.+\")",$linea,$regs)){
+                $estado = $arrLang['Unknown'];
+                $colorEstado = 'gray';
+
+                if(ereg("^(### Span[[:space:]]{1,}([[:digit:]]{1,}):)[[:space:]]{1}([[:alnum:]| |-]{1,}/[[:alnum:]| |-]{1,})[[:space:]]{1,}(.*)",$linea,$regs)){
                    $idTarjeta = $regs[2];
                    $tarjetas["TARJETA$idTarjeta"]['DESC'] = array('ID' => $regs[2], 'SPAM' => $regs[1],'TIPO' => $regs[3], 'ADICIONAL' => $regs[4]);
                 }
-                else if(ereg("[[:space:]]{0,}([[:digit:]]{1,})[[:space:]]{1}([[:alnum:]]{1,})[[:space:]]{1,}([[:alnum:]]{1,})[[:space:]]{1,}(\(?.+\))",$linea,$regs1)){
-                   if($regs1[4] == '(In use)'){
+                else if(ereg("[[:space:]]{0,}([[:digit:]]{1,})[[:space:]]{1}([[:alnum:]]{1,})[[:space:]]{1,}([[:alnum:]]{1,})(.*)",$linea,$regs1)){
+                    //Estados de las lineas
+                   if(eregi("In use.*RED",$regs1[4])){
+                        $estado = $arrLang['(In Use)'];
+                        $colorEstado = '#FF7D7D';
+                   }
+                   else if(eregi("In use",$regs1[4])){
                         $estado = $arrLang['(In Use)'];
                         $colorEstado = '#00CC00';
                    }
+                   else if(eregi("RED",$regs1[4])){
+                        $estado = $arrLang['(Not in Use)'];
+                        $colorEstado = '#FF7D7D';
+                   }
+                   else{
+                        $estado = $arrLang['(Not in Use)'];
+                        $colorEstado = '#00CC00';
+                   }
+
+                    //Tipo de las lineas
                    if($regs1[3]=='FXSKS')
                         $tipo ='FXO'; 
                    else if($regs1[3]=='FXOKS')
                         $tipo ='FXS';
-                   $tarjetas["TARJETA$idTarjeta"]['PUERTOS']["PUERTO$regs1[1]"] = array('LOCALIDAD' =>$regs1[1],'TIPO' => $tipo, 'ADICIONAL' => "$regs1[2] - $regs1[3]", 'ESTADO' => $estado,'COLOR' => $colorEstado);
-                }
-                else if(ereg("[[:space:]]{0,}([[:digit:]]{1,})[[:space:]]{1}([[:alnum:]]{1,})[[:space:]]{1,}([[:alnum:]]{1,})()",$linea,$regs1)){
-                   if($regs1[4] == ''){
-                        $estado = "&nbsp;";
-                        $colorEstado = '';
-                   }
-                   if($regs1[3]=='FXSKS')
-                        $tipo ='FXO';
-                   else if($regs1[3]=='FXOKS')
-                        $tipo ='FXS';
+
                    $tarjetas["TARJETA$idTarjeta"]['PUERTOS']["PUERTO$regs1[1]"] = array('LOCALIDAD' =>$regs1[1],'TIPO' => $tipo, 'ADICIONAL' => "$regs1[2] - $regs1[3]", 'ESTADO' => $estado,'COLOR' => $colorEstado);
                 }
                 else if(ereg("[[:space:]]{0,}([[:digit:]]{1,})[[:space:]]{1}([[:alnum:]]{1,})",$linea,$regs1)){
@@ -97,12 +104,12 @@ class PaloSantoHardwareDetection
         }
         if(count($tarjetas)==1){ //si aparace la tarjeta por default ZTDUMMY
             $valor = $tarjetas["TARJETA1"]['DESC']['TIPO'];
-            if(ereg("^ZTDUMMY/1", $valor))
+            if(eregi("^ZTDUMMY/1", $valor))
             {
                 $this->errMsg = $arrLang["Cards undetected on your system, press for detecting hardware detection."];
                 $tarjetas = array();
             }
-        }//print_r($tarjetas);
+        }
         return($tarjetas);
     }
 
@@ -115,43 +122,43 @@ class PaloSantoHardwareDetection
         else return array();
     }
 
-    function hardwareDetection($chk_zapata_replace,$path_file_zapata,$there_is_sangoma_card,$there_is_misdn_card)
+    function hardwareDetection($chk_dahdi_replace,$path_file_dahdi,$there_is_sangoma_card,$there_is_misdn_card)
     {
         global $arrLang;
         $there_is_other_card= "";
         $message = $arrLang["Satisfactory Hardware Detection"];
 	
-        //exec("sudo /usr/sbin/genzaptelconf -d -s -M -F",$respuesta,$retorno);
-	if($there_is_sangoma_card=="true"){
-        $there_is_other_card = "-t";}
-    if($there_is_misdn_card=="true"){
-        $there_is_other_card .= " -m";}
-    exec("sudo /usr/sbin/hardware_detector $there_is_other_card",$respuesta,$retorno);
-	$_SESSION['zaptel'] = $respuesta;
-         if(is_array($respuesta)){
+
+	if($there_is_sangoma_card=="true")
+            $there_is_other_card = "-t";
+        if($there_is_misdn_card=="true")
+            $there_is_other_card .= " -m";
+
+        exec("sudo /usr/sbin/hardware_detector $there_is_other_card",$respuesta,$retorno);
+        if(is_array($respuesta)){
             foreach($respuesta as $key => $linea){
                 //falta validar algun error
                 //if(ereg("^(\[Errno [[:digit:]]{1,}\])",$linea,$reg))
                 //  return $linea;
             }
 
-            if($retorno==0){// no hubo errores al correr el comando genzaptelconf, nota: aun no se ha confirmado que esta sea la forma correcta de validar errores
-                if($chk_zapata_replace=="true"){
-                    $fileZapata = "$path_file_zapata/zapata.conf";
-                    exec("cp $fileZapata $fileZapata.replaced_for_elastix",$respuesta,$retorno);
+            if($retorno==0){// no hubo errores al correr el comando dahdi_genconf, nota: aun no se ha confirmado que esta sea la forma correcta de validar errores
+                if($chk_dahdi_replace=="true"){
+                    $fileDAHDI = "$path_file_dahdi/chan_dahdi.conf";
+                    exec("cp $fileDAHDI $fileDAHDI.replaced_for_elastix",$respuesta,$retorno);
                     if($retorno==0){//se pudo respaldar zapata.conf
-                        if(!$this->writeZapataConfFile($fileZapata)){
-                            $message = $arrLang["Unable to replace file zapata.conf"];
+                        if(!$this->writeDAHDIConfFile($fileDAHDI)){
+                            $message = $arrLang["Unable to replace file chan_dahdi.conf"];
                         }
                     }
-                    else $message = $arrLang["Unable to backup file zapata.conf by zapata.conf.replace_for_elastix"];
+                    else $message = $arrLang["Unable to backup file chan_dahdi.conf by chan_dahdi.conf.replace_for_elastix"];
                 }
             }
             return $message;
         } 
     }
 
-    function writeZapataConfFile($fileZapata)
+    function writeDAHDIConfFile($fileDAHDI)
     {
         $seRealizo = true;
         $newContentFile="[trunkgroups]
@@ -186,16 +193,16 @@ pickupgroup=1
 
 immediate=no
 
-#include zapata_additional.conf
-#include zapata-channels.conf";
+#include dahdi-channels.conf
+#include chan_dahdi_additional.conf";
 
-        exec("sudo -u root chmod 666 $fileZapata");
-        if($fh = fopen($fileZapata, "w")) {
+        exec("sudo -u root chmod 666 $fileDAHDI");
+        if($fh = fopen($fileDAHDI, "w")) {
             fwrite($fh, $newContentFile);
             fclose($fh);
         } 
         else $seRealizo = false;
-        exec("sudo -u root chmod 664 $fileZapata");
+        exec("sudo -u root chmod 664 $fileDAHDI");
         return $seRealizo;
     }
 }
