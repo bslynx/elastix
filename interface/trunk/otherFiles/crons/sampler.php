@@ -39,15 +39,15 @@ $simCalls = 0;
 $comando = "/usr/sbin/asterisk -r -x \"show channels\"";
 exec($comando, $arrSalida, $varSalida);
 
-$counter_channels_zap = 0;
+$counter_channels_dahdi = 0;
 $counter_channels_sip = 0;
 $counter_channels_iax = 0;
 $counter_channels_h323 = 0;
 $counter_channels_local = 0;
 
 foreach($arrSalida as $linea) {
-    if(eregi("^Zap/", $linea)) {
-        $counter_channels_zap++;
+    if(eregi("^DAHDI/", $linea)) {
+        $counter_channels_dahdi++;
     } else if(eregi("SIP", $linea)) {
         $counter_channels_sip++;
     } else if(eregi("IAX2", $linea)) {
@@ -61,7 +61,7 @@ foreach($arrSalida as $linea) {
     }
 }
 
-$counter_channels_total = $counter_channels_zap + $counter_channels_sip + $counter_channels_iax + $counter_channels_h323 + $counter_channels_local;
+$counter_channels_total = $counter_channels_dahdi + $counter_channels_sip + $counter_channels_iax + $counter_channels_h323 + $counter_channels_local;
 
 $timestamp = time();
 $oSampler->insertSample(1, $timestamp, $simCalls);
@@ -82,9 +82,9 @@ $oSampler->insertSample(3, $timestamp, $memUsage);
 $timestamp = time();
 $oSampler->insertSample(4, $timestamp, $counter_channels_total);
 
-// Zap Channels Usage
+// DAHDI Channels Usage
 $timestamp = time();
-$oSampler->insertSample(5, $timestamp, $counter_channels_zap);
+$oSampler->insertSample(5, $timestamp, $counter_channels_dahdi);
 
 // SIP Channels Usage
 $timestamp = time();
