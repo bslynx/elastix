@@ -724,7 +724,7 @@ f&ouml;r hantering av kommunikation &ouml;ver IP. Detta Open source programvara 
 "All options (Email)" => "All options (Email)",
 "All options (Endpoint)" => "All options (Endpoint)",
 "All options (Asterisk)" => "All options (Asterisk)",
-"Zaptel Configuration" => "Zaptel Configuration",
+"DAHDI Configuration" => "DAHDI Configuration",
 "Others" => "Others",
 "All options (Others)" => "All options (Others)",
 "SugarCRM Database" => "SugarCRM Database",

@@ -146,7 +146,7 @@ class PaloSantoHardwareDetection
                 if($chk_dahdi_replace=="true"){
                     $fileDAHDI = "$path_file_dahdi/chan_dahdi.conf";
                     exec("cp $fileDAHDI $fileDAHDI.replaced_for_elastix",$respuesta,$retorno);
-                    if($retorno==0){//se pudo respaldar zapata.conf
+                    if($retorno==0){//se pudo respaldar chan_dahdi.conf
                         if(!$this->writeDAHDIConfFile($fileDAHDI)){
                             $message = $arrLang["Unable to replace file chan_dahdi.conf"];
                         }

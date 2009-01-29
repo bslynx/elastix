@@ -754,7 +754,7 @@ FAX送信可能なIPアドレスを１行ずつ入力してください。<br>El
 "All options (Email)" => "全オプション(メール)",
 "All options (Endpoint)" => "全オプション(電話機)",
 "All options (Asterisk)" => "全オプション(Asterisk)",
-"Zaptel Configuration" => "Zaptel設定",
+"DAHDI Configuration" => "DAHDI設定",
 "Others" => "その他",
 "All options (Others)" => "全オプション(その他)",
 "SugarCRM Database" => "SugarCRMデータベース",

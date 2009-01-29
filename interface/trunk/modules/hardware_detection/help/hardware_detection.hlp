@@ -14,7 +14,7 @@
 <div>Figure 1</div>
 <br />
 <p>To detect new telephonic hardware, click on the “Detect Hardware” button and it will list all of the available cards including “Recently Installed New Cards”.</p>
-<p>The checkboxes allows us to replace the original file "zapata.conf" of the card by the Elastix's zapata.conf, also allows us to detect the "Sangoma cards".</p>
+<p>The checkboxes allows us to replace the original file "chan_dahdi.conf" of the card by the Elastix's chan_dahdi.conf, also allows us to detect the "Sangoma cards".</p>
 
 </body>
 </html>

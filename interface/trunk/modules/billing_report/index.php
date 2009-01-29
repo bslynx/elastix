@@ -182,7 +182,7 @@ function _moduleContent(&$smarty, $module_name)
     // Bloque comun
     //consulto cuales son los trunks de salida
     $oTrunk    = new paloTrunk($pDBTrunk);
-    $troncales = $oTrunk->getExtendedTrunksBill($grupos, $arrConfig['ASTETCDIR']['valor'].'/zapata.conf');//ej array("ZAP/1","ZAP/2");
+    $troncales = $oTrunk->getExtendedTrunksBill($grupos, $arrConfig['ASTETCDIR']['valor'].'/chan_dahdi.conf');//ej array("DAHDI/1","DAHDI/2");
     $sum_cost = 0;
     //echo "<pre>".print_r($troncales,1)."</pre>";
     //echo "<pre>".print_r($grupos,1)."</pre>";
@@ -193,7 +193,7 @@ function _moduleContent(&$smarty, $module_name)
 
         foreach($arrCDR['Data'] as $cdr) {
         //tengo que buscar la tarifa para el numero de telefono
-            if (ereg("^Zap/([[:digit:]]+)",$cdr[4],$regs3)) $trunk='ZAP/g'.$grupos[$regs3[1]];
+            if (eregi("^DAHDI/([[:digit:]]+)",$cdr[4],$regs3)) $trunk='DAHDI/g'.$grupos[$regs3[1]];
             else $trunk=str_replace(strstr($cdr[4],'-'),'',$cdr[4]);
 
             $numero=$cdr[2];

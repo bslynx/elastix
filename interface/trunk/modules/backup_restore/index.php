@@ -464,7 +464,7 @@ function Array_Options($arrLang, $disabled="")
                                     "as_monitor"        =>  array("desc"=>$arrLang["Monitors"]."  ".$arrLang["(Heavy Content)"],"check"=>"","msg"=>"","disable"=>"$disabled"),
                                     "as_voicemail"      =>  array("desc"=>$arrLang["Voicemails"]."  ".$arrLang["(Heavy Content)"],"check"=>"","msg"=>"","disable"=>"$disabled"),
                                     "as_sounds"         =>  array("desc"=>$arrLang["Sounds"],"check"=>"","msg"=>"","disable"=>"$disabled"),
-                                    "as_zaptel"         =>  array("desc"=>$arrLang["Zaptel Configuration"],"check"=>"","msg"=>"","disable"=>"$disabled"),
+                                    "as_dahdi"         =>  array("desc"=>$arrLang["DAHDI Configuration"],"check"=>"","msg"=>"","disable"=>"$disabled"),
                                 ),
             "fax"           =>  array(
                                     "fx_db"             =>  array("desc"=>$arrLang["Database"],"check"=>"","msg"=>"","disable"=>"$disabled"),
@@ -560,11 +560,8 @@ function process_each_backup($arrSelectedOptions,$ruta_respaldo,&$arrBackupOptio
                 $bExito = false;
             break;
 
-        case "as_zaptel":
-            exec("cp /etc/zaptel.conf $ruta_respaldo", $output, $retval);
-            if ($retval!=0) $bExito = false;
-
-            exec("cp /etc/sysconfig/zaptel $ruta_respaldo", $output, $retval);
+        case "as_dahdi":
+            exec("cp /etc/dahdi/system.conf $ruta_respaldo", $output, $retval);
             if ($retval!=0) $bExito = false;
             break;
 
@@ -973,37 +970,19 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
             }
             break;
 
-        case "as_zaptel":
-            $comando="sudo -u root touch /etc/zaptel.conf";
+        case "as_dahdi":
+            $comando="sudo -u root touch /etc/dahdi/system.conf";
             exec($comando, $output, $retval);
 
-            $comando="sudo -u root chmod 777 /etc/zaptel.conf";
+            $comando="sudo -u root chmod 777 /etc/dahdi/system.conf";
             exec($comando, $output, $retval);
 
-            $comando="cat $ruta_respaldo/zaptel.conf > /etc/zaptel.conf";
-            exec($comando, $output, $retval);
-            //Solo en este verifico si se ejecuto correctamente pues aqui es donde se copia la info
-            if ($retval!=0) $bExito = false;
-
-            $comando="sudo -u root chmod 644 /etc/zaptel.conf";
-            exec($comando, $output, $retval);
-            break;
-
-
-
-            // /etc/sysconfig/zaptel
-            $comando="sudo -u root touch /etc/sysconfig/zaptel";
-            exec($comando, $output, $retval);
-
-            $comando="sudo -u root chmod 777 /etc/sysconfig/zaptel";
-            exec($comando, $output, $retval);
-
-            $comando="cat $ruta_respaldo/zaptel > /etc/sysconfig/zaptel";
+            $comando="cat $ruta_respaldo/system.conf > /etc/dahdi/system.conf";
             exec($comando, $output, $retval);
             //Solo en este verifico si se ejecuto correctamente pues aqui es donde se copia la info
             if ($retval!=0) $bExito = false;
 
-            $comando="sudo -u root chmod 644 /etc/sysconfig/zaptel";
+            $comando="sudo -u root chmod 644 /etc/dahdi/system.conf";
             exec($comando, $output, $retval);
             break;
 

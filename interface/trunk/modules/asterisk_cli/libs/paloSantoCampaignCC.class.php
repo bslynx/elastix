@@ -95,7 +95,7 @@ class paloSantoCampaignCC
      * @param   $sNombre            Nombre de la campaña
      * @param   $iMaxCanales        Número máximo de canales a usar simultáneamente por campaña
      * @param   $iRetries           Número de reintentos de la campaña, por omisión 5
-     * @param   $sTrunk             troncal por donde se van a realizar las llamadas (p.ej. "Zap/g0")
+     * @param   $sTrunk             troncal por donde se van a realizar las llamadas (p.ej. "DAHDI/g0")
      * @param   $sContext           Contexto asociado a la campaña (p.ej. 'from-internal')
      * @param   $sQueue             Número que identifica a la cola a conectar la campaña saliente (p.ej. '402')
      * @param   $sFechaInicio       Fecha YYYY-MM-DD en que inicia la campaña

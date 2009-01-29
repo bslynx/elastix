@@ -119,7 +119,7 @@ function _moduleContent(&$smarty, $module_name)
     //obtener todos los trunks
     $oTrunk     = new paloTrunk($pDBTrunk);
     //obtener todos los trunks que son para billing
-    //$arrTrunksBill=array("ZAP/g0","ZAP/g1");
+    //$arrTrunksBill=array("DAHDI/g0","DAHDI/g1");
     getTrunksBillFiltrado($pDB, $oTrunk, $arrConfig, $arrTrunks, $arrTrunksBill);
     if(isset($_POST['submit_bill_trunks'])) {
         //obtengo las que estan guardadas y las que ahora no estan
@@ -195,13 +195,13 @@ function getTrunksBillFiltrado(&$oDB, &$oTrunk, $arrConfig, &$arrTrunks, &$arrTr
 {
     $arrTrunks = getTrunks($oDB);
     $arrTrunksBill = $oTrunk->getTrunksBill();
-    $oTrunk->getExtendedTrunksBill($grupos, $arrConfig['ASTETCDIR']['valor'].'/zapata.conf');
+    $oTrunk->getExtendedTrunksBill($grupos, $arrConfig['ASTETCDIR']['valor'].'/chan_dahdi.conf');
 
-    // Sólo los puertos no-ZAP y los grupos de puertos ZAP son elegibles para tener un precio
+    // Sólo los puertos no-DAHDI y los grupos de puertos DAHDI son elegibles para tener un precio
     $t = array();
     if (is_array($arrTrunks)) {
         foreach ($arrTrunks as $tupla) {
-            if (substr($tupla[1], 0, 3) != 'ZAP' || $tupla[1]{4} == 'g')
+            if (substr($tupla[1], 0, 3) != 'DAHDI' || $tupla[1]{4} == 'g')
                 $t[] = $tupla;
         }
         $arrTrunks = $t;

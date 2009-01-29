@@ -60,8 +60,7 @@ function _moduleContent(&$smarty, $module_name)
     $xajax = new xajax();
     $xajax->registerFunction("hardwareDetect");
     $xajax->processRequests();
-   
-// 	print_r($_SESSION['zaptel']); 
+
     $contenidoModulo  = $xajax->printJavascript("libs/xajax/");
     $contenidoModulo  .= listPorts($smarty, $module_name, $local_templates_dir);
 

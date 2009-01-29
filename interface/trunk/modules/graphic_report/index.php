@@ -72,14 +72,6 @@ function _moduleContent(&$smarty, $module_name)
                       $arrConfig['AMPDBHOST']['valor']."/asterisk";
 
     $pDB_ext = new paloDB($dsnAsteriskDev);//asterisk -> devices
-/*
-    include_once "libs/paloSantoTrunk.class.php";
-    print_r( getTrunks($pDB_ext) );
-*/
-/*
-    $p = new paloSantoExtention($pDB_cdr);
-    print_r( $p->loadTrunks("ZAP/2","dfh") );
-*/
     $accion = getAction();
 
     $content = "";
@@ -338,10 +330,6 @@ function redondear_dos_decimal($valor)
 
 function loadTrunks($pDB_ext)
 {
-    //Array ( [0] => Array ( [0] => OUT_1 [1] => ZAP/g0 )
-    //        [1] => Array ( [0] => OUT_2 [1] => ZAP/g1 )
-    //        [2] => Array ( [0] => OUT_3 [1] => ZAP/g2 ) 
-
     include_once "libs/paloSantoTrunk.class.php";
 
     $arrTrunksTemp = getTrunks($pDB_ext);
