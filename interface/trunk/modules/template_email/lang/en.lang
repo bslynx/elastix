@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 1.0                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -24,10 +24,19 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  |                                                                      |
+  | Translate by: Andres Flores                                          |
+  | Email: aflores@palosanto.com                                         |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
-	global $arrConfModule;
-$arrConfModule['module_name'] = 'template_email';
-$arrConfModule['templates_dir'] = 'themes';
-
+  $Id: en.lang,v 1.7 2009/01/29 09:49:00 aflores Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Template Email"=>"Template Email",
+"Fax From"=>"Fax From",
+"Fax From Name"=>"Fax From Name",
+"Fax Suject"=>"Fax Subject",
+"Fax Content"=>"Fax Content",
+"Configuration Sending Fax Mail"=>"Configuration Sending Fax Mail",
+"Edit Parameters"=>"Edit Parameters",
+);
 ?>
