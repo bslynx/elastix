@@ -34,14 +34,28 @@ function _moduleContent(&$smarty, $module_name)
     
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
-    global $arrConf;
-    global $arrLang;
-    //folder path for custom templates
+     //include file language agree to elastix configuration
+    //if file language not exists, then include language by default (en)
+    $lang=get_language();
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
-    $templates_dir=(isset($arrConfig['templates_dir']))?$arrConfig['templates_dir']:'themes';
+    $lang_file="modules/$module_name/lang/$lang.lang";
+    if (file_exists("$base_dir/$lang_file")) include_once "$lang_file";
+    else include_once "modules/$module_name/lang/en.lang";
+
+
+    //global variables
+    global $arrConf;
+    global $arrConfModule;
+    global $arrLang;
+    global $arrLangModule;
+    $arrConf = array_merge($arrConf,$arrConfModule);
+    $arrLang = array_merge($arrLang,$arrLangModule);
+
+    //folder path for custom templates
+    $templates_dir=(isset($arrConf['templates_dir']))?$arrConf['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
     
-    
+    $msgErrorVal = "";
     $contenido='';
     $bGuardar=TRUE;
     $conf_hosts = "/var/spool/hylafax/etc/hosts.hfaxd";
@@ -67,12 +81,14 @@ function _moduleContent(&$smarty, $module_name)
                     }
                 }
             } else {
+                $smarty->assign("mb_title",$arrLang["Error"]);
                 $smarty->assign("mb_message", $arrLang["No IP entered, you must keep at least the IP 127.0.0.1"]);
                 $bGuardar=FALSE;
             }
         } else {
             // El textarea esta vacia
             $bGuardar=FALSE;
+            $smarty->assign("mb_title",$arrLang["Error"]);
             $smarty->assign("mb_message", $arrLang["No IP entered, you must keep at least the IP 127.0.0.1"]);
         }
 
@@ -81,6 +97,7 @@ function _moduleContent(&$smarty, $module_name)
                 $msgErrorVal .= "<b>" . $nombreVar . "</b>: " . $arrVar['mensaje'] . "<br>";
 
             }
+            $smarty->assign("mb_title",$arrLang["Error"]);
             $smarty->assign("mb_message", $arrLang["Validation Error"]."<br><br>$msgErrorVal");
             $bGuardar=FALSE;
         } 
@@ -94,13 +111,18 @@ function _moduleContent(&$smarty, $module_name)
                         foreach($arrHostsFinal as $key => $line){
                             fputs($fh,$line."\n");
                         }
+                        $smarty->assign("mb_title",$arrLang["Message"]);
                         $smarty->assign("mb_message", $arrLang["Configuration updated successfully"]);
                     }
-                    else
+                    else{
+                        $smarty->assign("mb_title",$arrLang["Error"]);
                         $smarty->assign("mb_message", $arrLang["Write error when writing the new configuration."]);
+                    }
                 }
-                else
+                else{
+                    $smarty->assign("mb_title",$arrLang["Error"]);
                     $smarty->assign("mb_message", $arrLang["Write error when writing the new configuration."]);
+                }
                 fclose($fh);
                 exec("sudo -u root chown uucp.uucp $conf_hosts");
             }
@@ -117,6 +139,7 @@ function _moduleContent(&$smarty, $module_name)
             fclose($fh);
         } else {
             // Si no se puede abrir el archivo se debe mostrar mensaje de error
+            $smarty->assign("mb_title",$arrLang["Error"]);
             $smarty->assign("mb_message", $arrLang["Could not read the clients configuration."]);
         }
         exec("sudo -u root chown uucp.uucp $conf_hosts");
