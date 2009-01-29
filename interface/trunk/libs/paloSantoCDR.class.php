@@ -80,10 +80,10 @@ class paloSantoCDR {
                 }
                 $strWhere .= " AND ($condicion_troncal)";
             }else{
-                $strWhere .= " AND dstchannel like '%zap%' ";
+                $strWhere .= " AND dstchannel like '%DAHDI%' ";
             }
         }
-        if(!empty($calltype) && $calltype=="incoming") $strWhere .= " AND channel like '%zap%' ";
+        if(!empty($calltype) && $calltype=="incoming") $strWhere .= " AND channel like '%DAHDI%' ";
         if(!empty($extension)) $strWhere .= " AND (src='$extension' OR dst='$extension') ";
 
         $query   = "SELECT calldate, src, dst, channel, dstchannel, disposition, uniqueid, duration, billsec, accountcode FROM cdr ";
@@ -123,10 +123,10 @@ class paloSantoCDR {
                 }
                 $strWhere .= " AND ($condicion_troncal)";
             }else{
-                $strWhere .= " AND dstchannel like '%zap%' ";
+                $strWhere .= " AND dstchannel like '%DAHDI%' ";
             }
         }
-        if(!empty($calltype) && $calltype=="incoming") $strWhere .= " AND channel like '%zap%' ";
+        if(!empty($calltype) && $calltype=="incoming") $strWhere .= " AND channel like '%DAHDI%' ";
 
 
         $query = "DELETE FROM cdr ";

@@ -141,22 +141,22 @@ class paloTrunk {
     }
 
     /**
-     * Method to parse zapata file and resolve his group to trunks
+     * Method to parse chan_dahdi file and resolve his group to trunks
      *
-     * @param    string $zapata_file     zapata configuration file
+     * @param    string $chan_dahdi_file     chan_dahdi configuration file
      * @callback array  $grupos          group list
      *
      * @return   array  $troncales       array with resolved group
      */
 
-    function getExtendedTrunksBill(&$grupos, $zapata_file='/etc/asterisk/zapata.conf')
+    function getExtendedTrunksBill(&$grupos, $chan_dahdi_file='/etc/asterisk/chan_dahdi.conf')
     {
        $troncales=NULL;
-       //leer el archivo /etc/zapata.conf para poder reemplazar para ZAP g#  con los respectivos canales
+       //leer el archivo /etc/chan_dahdi.conf para poder reemplazar para DAHDI g#  con los respectivos canales
        $ultGrupo="";
 
-       if (file_exists($zapata_file)){
-           $contenido_archivo=file($zapata_file);
+       if (file_exists($chan_dahdi_file)){
+           $contenido_archivo=file($chan_dahdi_file);
            foreach ($contenido_archivo as $linea){
                if (ereg("^(group|channel[[:space:]]*)=([[:space:]]*.*)",$linea,$regs)){
                    $regs_key=trim($regs[1]);
@@ -184,15 +184,15 @@ class paloTrunk {
        //reemplazo el id del grupo por el valor
        foreach ($this->getTrunksBill() as $trunkBill)
        {
-           // Sólo los grupos de puertos ZAP pueden tener un precio
-           if (substr($tupla[1], 0, 3) == 'ZAP' && $tupla[1]{4} != 'g') continue;  
+           // Sólo los grupos de puertos DAHDI pueden tener un precio
+           if (substr($tupla[1], 0, 3) == 'DAHDI' && $tupla[1]{4} != 'g') continue;  
 
-           if (ereg("^ZAP/g([[:digit:]]+)",$trunkBill,$regs2))
+           if (ereg("^DAHDI/g([[:digit:]]+)",$trunkBill,$regs2))
            {
                $id_group=$regs2[1];
                if (isset($canales[$id_group])){
                   foreach($canales[$id_group] as $canal)
-                   $troncales[]="ZAP/$canal";
+                   $troncales[]="DAHDI/$canal";
                }
            }else
                $troncales[]=$trunkBill;
