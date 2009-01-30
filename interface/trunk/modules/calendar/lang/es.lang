@@ -26,8 +26,8 @@
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
   $Id: es.lang,v 1.7 2007/09/05 00:36:42 gcarrillo Exp $ */
-global $arrLangModule2;
-$arrLangModule2=array(
+global $arrLangModule;
+$arrLangModule=array(
 "Country Code" => "Código País",
 "Area Code" => "Código Area",
 "January" => "Enero",
