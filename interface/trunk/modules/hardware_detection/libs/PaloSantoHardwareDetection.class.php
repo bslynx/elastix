@@ -57,11 +57,11 @@ class PaloSantoHardwareDetection
                 $estado = $arrLang['Unknown'];
                 $colorEstado = 'gray';
 
-                if(ereg("^(### Span[[:space:]]{1,}([[:digit:]]{1,}):)[[:space:]]{1}([[:alnum:]| |-]{1,}/[[:alnum:]| |-]{1,})[[:space:]]{1,}(.*)",$linea,$regs)){
-                   $idTarjeta = $regs[2];
-                   $tarjetas["TARJETA$idTarjeta"]['DESC'] = array('ID' => $regs[2], 'SPAM' => $regs[1],'TIPO' => $regs[3], 'ADICIONAL' => $regs[4]);
+                if(ereg("^### Span[[:space:]]+([[:digit:]]{1,}): ([[:alnum:]| |-|\/]+)(.*)$",$linea,$regs)){
+                   $idTarjeta = $regs[1];
+                   $tarjetas["TARJETA$idTarjeta"]['DESC'] = array('ID' => $regs[1], 'TIPO' => $regs[2], 'ADICIONAL' => $regs[3]);
                 }
-                else if(ereg("[[:space:]]{0,}([[:digit:]]{1,})[[:space:]]{1}([[:alnum:]]{1,})[[:space:]]{1,}([[:alnum:]]{1,})(.*)",$linea,$regs1)){
+                else if(ereg("[[:space:]]*([[:digit:]]+) ([[:alnum:]]+)[[:space:]]+([[:alnum:]]+)(.*)",$linea,$regs1)){
                     //Estados de las lineas
                    if(eregi("In use.*RED",$regs1[4])){
                         $estado = $arrLang['(In Use)'];
@@ -88,7 +88,7 @@ class PaloSantoHardwareDetection
 
                    $tarjetas["TARJETA$idTarjeta"]['PUERTOS']["PUERTO$regs1[1]"] = array('LOCALIDAD' =>$regs1[1],'TIPO' => $tipo, 'ADICIONAL' => "$regs1[2] - $regs1[3]", 'ESTADO' => $estado,'COLOR' => $colorEstado);
                 }
-                else if(ereg("[[:space:]]{0,}([[:digit:]]{1,})[[:space:]]{1}([[:alnum:]]{1,})",$linea,$regs1)){
+                else if(ereg("[[:space:]]*([[:digit:]]+) ([[:alnum:]]+)",$linea,$regs1)){
                    if($regs1[2] == 'unknown'){
                         $estado = $arrLang['Unknown'];
                         $colorEstado = 'gray';

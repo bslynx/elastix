@@ -157,7 +157,7 @@ class paloTrunk {
 
        if (file_exists($chan_dahdi_file)){
            $contenido_archivo=file($chan_dahdi_file);
-           foreach ($contenido_archivo as $linea){
+           foreach ($contenido_archivo as $linea){;
                if (ereg("^(group|channel[[:space:]]*)=([[:space:]]*.*)",$linea,$regs)){
                    $regs_key=trim($regs[1]);
                    $regs_value=trim($regs[2]);
@@ -183,9 +183,9 @@ class paloTrunk {
 
        //reemplazo el id del grupo por el valor
        foreach ($this->getTrunksBill() as $trunkBill)
-       {
+       { print_r($tupla);
            // Sólo los grupos de puertos DAHDI pueden tener un precio
-           if (substr($tupla[1], 0, 3) == 'DAHDI' && $tupla[1]{4} != 'g') continue;  
+           if (substr($tupla[1], 0, 5) == 'DAHDI' && $tupla[1]{4} != 'g') continue;  
 
            if (ereg("^DAHDI/g([[:digit:]]+)",$trunkBill,$regs2))
            {
@@ -222,8 +222,10 @@ function getTrunks($oDB)
             "ORDER BY RIGHT( variable, LENGTH( variable ) - 4 )+0";
     $arrResult =& $oDB->fetchTable($sPeticionSQL);
     if (is_array($arrResult) && count($arrResult)>0) {
-        foreach($arrResult as $key => $trunk)
-                $arrTrunk[$key] = str_replace("AMP:","",$trunk);
+        foreach($arrResult as $key => $trunk){
+                $tmpTrunk = str_replace("ZAP","DAHDI",$trunk); //para soportar dahdi, freepbx aun conserva el formato ZAP y esto es para entender q se usa dahdi
+                $arrTrunk[$key] = str_replace("AMP:","",$tmpTrunk);
+        }
         return $arrTrunk;
     }
     return false;

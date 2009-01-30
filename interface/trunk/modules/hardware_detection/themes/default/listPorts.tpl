@@ -22,7 +22,7 @@
         {foreach from=$arrData key=k item=data name=filas}
             {if $data.DESC.TIPO ne $CARD_NO_MOSTRAR}
                 <tr>
-                    <td style='border:1px #CCCCCC solid; font-size:12px;' align='center' class="moduleTitle">{$CARD} # {$data.DESC.ID}: {$data.DESC.TIPO} {$data.DESC.ADICIONAL}</td>
+                    <td style='border:1px #CCCCCC solid; font-size:12px;' align='left' class="moduleTitle">{$CARD} # {$data.DESC.ID}: {$data.DESC.TIPO} {$data.DESC.ADICIONAL}</td>
                 </tr>
                 <tr> 
                     <td>
@@ -37,9 +37,8 @@
                                                 <table style='border:1px #CCCCCC solid;padding:1px;background-color:white' border='0' callpadding='0' cellspacing='0' onMouseOver="this.style.backgroundColor='#f2f2f2';" onMouseOut="this.style.backgroundColor='#ffffff';" width='100%'>
                                                     <tr><td  align='center' style='font-size:10px;background-color:{$puerto.COLOR};'>{$puerto.LOCALIDAD} {$puerto.TIPO}</td></tr>                           
                                                     <tr><td  align='center' style='font-size:10px;background-color:{$puerto.COLOR};'>{$puerto.ESTADO}</td></tr>
-                                                    <tr><!--<td  align='center' style='background-color:{$puerto.COLOR}'>{$puerto.ESTADO}</td>--></tr>
                                                 </table>
-                                            </td>                       
+                                            </td>
                                     {if ($cnt+1)%12==0}
                                         </tr>
                                     {/if}
@@ -73,7 +72,7 @@
             <table border ='0' align="center" cellspacing="0" cellpadding="0" class="table_title_row" width='100%'>
             <tr>
                  <td style='border:1px #CCCCCC solid;padding:1px;background-color:white;font-size:10;'>{foreach from=$arrMisdn item=info}{$info}<br/>{/foreach}
-                 </td>          
+                 </td>
             </tr>
             </table>
          </td>

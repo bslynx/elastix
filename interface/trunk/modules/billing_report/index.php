@@ -182,10 +182,14 @@ function _moduleContent(&$smarty, $module_name)
     // Bloque comun
     //consulto cuales son los trunks de salida
     $oTrunk    = new paloTrunk($pDBTrunk);
-    $troncales = $oTrunk->getExtendedTrunksBill($grupos, $arrConfig['ASTETCDIR']['valor'].'/chan_dahdi.conf');//ej array("DAHDI/1","DAHDI/2");
+    $troncales1 = $oTrunk->getExtendedTrunksBill($grupos, $arrConfig['ASTETCDIR']['valor'].'/chan_dahdi.conf');//ej array("DAHDI/1","DAHDI/2");
+    $troncales1 = isset($troncales1)?$troncales1:array();
+
+    $troncales2 = $oTrunk->getExtendedTrunksBill($grupos, $arrConfig['ASTETCDIR']['valor'].'/dahdi-channels.conf');//ej array("DAHDI/1","DAHDI/2");
+    $troncales2 = isset($troncales2)?$troncales2:array();
+    $troncales  = array_merge($troncales1,$troncales2);
     $sum_cost = 0;
-    //echo "<pre>".print_r($troncales,1)."</pre>";
-    //echo "<pre>".print_r($grupos,1)."</pre>";
+
     if (is_array($troncales) && count($troncales)>0){
         $arrCDR  = $oCDR->obtenerCDRs($limit, $offset, $date_start, $date_end, $field_name, $field_pattern,"ANSWERED","outgoing",$troncales);
 
@@ -242,7 +246,7 @@ function _moduleContent(&$smarty, $module_name)
             }
             $arrTmp[6] = number_format($charge,3);
             $sum_cost  = $sum_cost+$arrTmp[6];
-            //$arrTmp[7] = $sum_cost;
+            $arrTmp[7] = $sum_cost;
             $arrTmp[1] = $rate_name;
             $arrData[] = $arrTmp;
         }
@@ -268,9 +272,8 @@ function _moduleContent(&$smarty, $module_name)
                                                     "property"  => ""),
                                          6 => array("name"  => $arrLang["Cost"],
                                                     "property"  => ""),
-                                         //7 => array("name"      => $arrLang["Summary Cost"],
-                                         //           "property"      => ""),
-                                        )
+                                         7 => array("name"      => $arrLang["Summary Cost"],
+                                                    "property"      => ""))
                     );
 
     // Creo objeto de grid
@@ -319,12 +322,18 @@ function FormElements($arrLang)
 function Sec2HHMMSS($sec)
 {
     $HH = '00'; $MM = '00'; $SS = '00';
-    
-    if($sec >= 3600){ $HH = (int)($sec/3600); $sec = $sec%3600; }
-    if( $HH < 10 ) $HH = "0$HH";
 
-    if( $sec >= 60 ){ $MM = (int)($sec/60); $sec = $sec%60; }
-    if( $MM < 10 ) $MM = "0$MM";
+    if($sec >= 3600){ 
+        $HH = (int)($sec/3600);
+        $sec = $sec%3600; 
+        if( $HH < 10 ) $HH = "0$HH";
+    }
+
+    if( $sec >= 60 ){ 
+        $MM = (int)($sec/60);
+        $sec = $sec%60;
+        if( $MM < 10 ) $MM = "0$MM";
+    }
 
     $SS = $sec;
     if( $SS < 10 ) $SS = "0$SS";
