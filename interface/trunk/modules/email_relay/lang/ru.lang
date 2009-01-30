@@ -26,8 +26,8 @@
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
   $Id: ru.lang,v 1.6 2007/09/05 00:36:42 gcarrillo Exp $ */
-global $arrLangModule2;
-$arrLangModule2=array(
+global $arrLangModule;
+$arrLangModule=array(
 "main.cf file was updated successfully but when restarting the mail service failed" => "Файл main.cf было успешно обновлён но после перезагрузки сервис почты не запустился",
 "Relay" => "Relay",
 "message about email relay" => "These networks are allowed to send e-mail to external domains through the Elastix <br> using the SMTP protocol.

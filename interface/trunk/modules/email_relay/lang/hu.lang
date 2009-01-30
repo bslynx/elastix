@@ -30,8 +30,8 @@
   |                                                                      |
   +----------------------------------------------------------------------+
   : hu.lang,v 1.6 2008/01/21 09:51:55 bmacias@palosanto.com Exp $ */
-global $arrLangModule2;
-$arrLangModule2=array(
+global $arrLangModule;
+$arrLangModule=array(
 "main.cf file was updated successfully but when restarting the mail service failed" => "main.cf állomány frissítése sikeres, de hiba az email szerviz újraindulásakor",
 "Relay" => "Továbbítás",
 "message about email relay" => "These networks are allowed to send e-mail to external domains through the Elastix <br> using the SMTP protocol.
