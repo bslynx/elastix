@@ -313,7 +313,7 @@ function save_module($new_module_name, $new_id_module, $selected_gp, $module_typ
                         $errMsg = $arrLangModule['Module Id already exists'].": $parent_1_id";
                     }else{
                         $parent = $parent_1_id;
-                        if(!$pNewMod_menu->Insertar_Menu($parent_1_id, '', $parent_1_name))
+                        if(!$pNewMod_menu->Insertar_Menu($parent_1_id, '', $parent_1_name, $module_type, $val_url))
                         {
                             $error = true;
                             $errMsg = $pNewMod_menu->errMsg;
@@ -350,7 +350,7 @@ function save_module($new_module_name, $new_id_module, $selected_gp, $module_typ
                             $errMsg = $arrLangModule['Module Id already exists'].": $parent_2_id";
                         }else{
                             $parent = $parent_2_id;
-                            if(!$pNewMod_menu->Insertar_Menu($parent_2_id, $selected_parent_1, $parent_2_name))
+                            if(!$pNewMod_menu->Insertar_Menu($parent_2_id, $selected_parent_1, $parent_2_name, $module_type, $val_url))
                             {
                                 $error = true;
                                 $errMsg = $pNewMod_menu->errMsg;
@@ -380,7 +380,7 @@ function save_module($new_module_name, $new_id_module, $selected_gp, $module_typ
                         $errMsg = $arrLangModule['Module Id already exists'].": $parent_1_id";
                     }else{
                         //$parent = $parent_1_id;
-                        if(!$pNewMod_menu->Insertar_Menu($parent_1_id, '', $parent_1_name))
+                        if(!$pNewMod_menu->Insertar_Menu($parent_1_id, '', $parent_1_name, $module_type, $val_url))
                         {
                             $error = true;
                             $errMsg = $pNewMod_menu->errMsg;
@@ -410,7 +410,7 @@ function save_module($new_module_name, $new_id_module, $selected_gp, $module_typ
                             $errMsg = $arrLangModule['Module Id already exists'].": $parent_2_id";
                         }else{
                             $parent = $parent_2_id;
-                            if(!$pNewMod_menu->Insertar_Menu($parent_2_id, $parent_1_id, $parent_2_name))
+                            if(!$pNewMod_menu->Insertar_Menu($parent_2_id, $parent_1_id, $parent_2_name, $module_type, $val_url))
                             {
                                 $error = true;
                                 $errMsg = $pNewMod_menu->errMsg;
