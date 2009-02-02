@@ -65,16 +65,16 @@ class paloSantoDeleteModule {
     function Eliminar_Resource($id_module)
     {
         $query = "SELECT id FROM acl_resource WHERE name='$id_module';";
-        $result = $this->_DB->genQuery($query);
-        if($result)
-        {
-            $result = $this->Eliminar_Group_Permissions($result[0]);
+        $result_select_acl = $this->_DB->getFirstRowQuery($query,true);
+        if($result_select_acl)
+        {   
+            $result = $this->Eliminar_Group_Permissions($result_select_acl['id']);
             if(!$result)
             {
                 $this->errMsg = $this->_DB->errMsg;
                 return false;
             }
-            $query = "DELETE FROM acl_resource WHERE id={$result[0]};";
+            $query = "DELETE FROM acl_resource WHERE id={$result_select_acl['id']};";
             $result = $this->_DB->genQuery($query);
             if(!$result)
             {
