@@ -44,5 +44,6 @@ $arrLangModule=array(
 "in" => "Recibido",
 "out" => "Enviado",
 "ERROR" => "ERROR",
+"Type" => "Tipo",
 );
 ?>
