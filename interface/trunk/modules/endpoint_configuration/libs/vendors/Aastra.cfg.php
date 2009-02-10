@@ -30,11 +30,12 @@ softkey3 type: speeddial
 softkey3 label: \"DND Off\"
 softkey3 value: *79
 
-sip_line1 screen name: $DisplayName
-sip_line1 display name: $DisplayName
-sip_line1 auth_name: $id_device
-sip_line1 user_name: $id_device
-sip_line1 password: $secret
+sip line1 screen name: $DisplayName
+sip line1 screen name 2: $id_device
+sip line1 display name: $id_device
+sip line1 auth name: $id_device
+sip line1 user name: $id_device
+sip line1 password: $secret
 sip line1 vmail: *97
 sip line1 mode: 0 ";
 

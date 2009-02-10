@@ -78,7 +78,7 @@ class PaloSantoFileEndPoint
 
             case 'Aastra':
                 $contentFileAastra =PrincipalFileAastra($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer);
-                if($this->createFileConf($this->directory, $ArrayData['data']['filename'].".cfg", $contentFileAastra))
+                if( $this->createFileConf($this->directory, $ArrayData['data']['filename'].".cfg", $contentFileAastra) )
                     return true;
                 else return false;
 
@@ -128,7 +128,6 @@ class PaloSantoFileEndPoint
     {
         global $arrLang;
 
-        $nameFileConf = strtolower($nameFileConf);
         $fd = fopen ($tftpBootPath.$nameFileConf, "w");
         if ($fd){
             fputs($fd,$contentConf,strlen($contentConf)); // write config file
@@ -187,7 +186,6 @@ class PaloSantoFileEndPoint
     {
         global $arrLang;
 
-        $nameFileConf = strtolower($nameFileConf);
         if (file_exists($tftpBootPath.$nameFileConf)) {
             if(!unlink($tftpBootPath.$nameFileConf)){
                 $this->errMsg = $arrLang['Unable delete the file'].": $nameFileConf";
@@ -228,7 +226,7 @@ class PaloSantoFileEndPoint
             case 'Aastra':
                 //Creando archivos de ejemplo.
                 $contentFileAatra = templatesFileAastra($this->ipAdressServer);
-                $this->createFileConf($this->directory, "aasxxxxxxxxxxxx.template.cfg", $contentFileAatra);
+                $this->createFileConf($this->directory, "aastra.cfg", $contentFileAatra);
                 return true; //no es tan importante la necesidad de estos archivos solo son de ejemplo.
                 break;
 

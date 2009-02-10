@@ -71,7 +71,7 @@ function _moduleContent(&$smarty, $module_name)
         case "endpoint_unset":
             $content = endpointConfiguratedUnset($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrLang, $arrConfig);
             break;
-        default: // endpoint_show
+        default: // endpoint_show            
             if(isset($_SESSION['elastix_endpoints']))//si existe este arreglo lo borro, esto asegura de q cada vez q entre al modulo endpoint configuration vuelva a crear el arreglo de los endpoint en la SESSION
                 unset($_SESSION['elastix_endpoints']);
             $content = buildReport(array(), $smarty, $module_name, $arrLang, network());
@@ -102,7 +102,7 @@ function endpointConfiguratedShow($smarty, $module_name, $local_templates_dir, $
             }
             $smarty->assign("mb_message",$arrLang['Invalid Format in Parameter'].": ".$strErrorMsg);
         }else{
-            $arrEndpointsMap  = $paloEndPoint->endpointMap($endpoint_mask,$arrVendor,$arrEndpointsConf);
+            $arrEndpointsMap  = $paloEndPoint->endpointMap($endpoint_mask,$arrVendor,$arrEndpointsConf);             
 
             if($arrEndpointsMap==false){
                 $smarty->assign("mb_title",$arrLang['ERROR'].":");
@@ -151,7 +151,7 @@ function endpointConfiguratedShow($smarty, $module_name, $local_templates_dir, $
 
 function buildReport($arrData, $smarty, $module_name, $arrLang, $endpoint_mask)
 {
-	$ip=$_SERVER['SERVER_ADDR'];
+    $ip = $_SERVER['SERVER_ADDR'];
     $devices = subMask($ip);
     $limit  = 20;
     $total  = count($arrData); 
@@ -159,7 +159,7 @@ function buildReport($arrData, $smarty, $module_name, $arrLang, $endpoint_mask)
     $offset = $oGrid->getOffSet($limit,$total,(isset($_GET['nav']))?$_GET['nav']:NULL,(isset($_GET['start']))?$_GET['start']:NULL);
     $end    = ($offset+$limit)<=$total ? $offset+$limit : $total;
     $smarty->assign("url","?menu=".$module_name);
-	if($devices<=20){
+    if($devices<=20){
        $devices = pow(2,(32-$devices));
        $smarty->assign("mb_title",$arrLang['WARNING'].":");
        $smarty->assign("mb_message",$arrLang["It can take several minutes, because your ip address has some devices, "].$devices);
@@ -246,8 +246,12 @@ function endpointConfiguratedSet($smarty, $module_name, $local_templates_dir, $d
                 }
                 //escribir archivos
                 $ArrayData['vendor'] = $tmpEndpoint['name_vendor'];
+
+                 if( $ArrayData['vendor'] == "Aastra" )  $file_name = strtoupper(str_replace(":","",$tmpMac));
+                else  $file_name = strtolower(str_replace(":","",$tmpMac));
+
                 $ArrayData['data'] = array(
-                        "filename"     => strtolower(str_replace(":","",$tmpEndpoint['mac_adress'])), 
+                        "filename"     => $file_name,
                         "DisplayName"  => $tmpEndpoint['desc_device'],
                         "id_device"    => $tmpEndpoint['id_device'],
                         "secret"       => $tmpEndpoint['secret'],
@@ -309,8 +313,14 @@ function endpointConfiguratedUnset($smarty, $module_name, $local_templates_dir, 
                     $paloFile = new paloSantoFileEndPoint($arrConfig["tftpboot_path"]);
 
                     $ArrayData['vendor'] = $_POST["name_vendor_device_$tmpMac"];
-                    $ArrayData['data'] = array(
-                            "filename"     => strtolower(str_replace(":","",$tmpMac)));
+                    if( $ArrayData['vendor'] == "Aastra" ){
+                        $ArrayData['data'] = array(
+                                "filename"     => strtoupper(str_replace(":","",$tmpMac)));
+                    }
+                    else{
+                        $ArrayData['data'] = array(
+                                "filename"     => strtolower(str_replace(":","",$tmpMac)));
+                    }
 
                     //Falta si hay error en la eliminacion de un archivo, ya esta para saber q error es, el problema es como manejar un error o los errores dentro del este lazo (foreach).
                     //ejemplo: if($paloFile->deleteFiles($ArrayData)==false){ $paloFile->errMsg  (mostrar error con smarty)}
