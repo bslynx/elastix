@@ -109,6 +109,12 @@ CREATE TABLE IF NOT EXISTS `calls` (
   `datetime_entry_queue` datetime default NULL,
   `duration_wait` int(11) default NULL,
   `dnc` int(1) NOT NULL default '0',
+
+  `date_init`   date,
+  `date_end`    date,
+  `time_init`   time,
+  `time_end`    time,
+
   PRIMARY KEY  (`id`),
   KEY `id_campaign` (`id_campaign`),
   KEY `calls_ibfk_2` (`id_agent`),
@@ -449,6 +455,40 @@ DELIMITER ; ++
 
 CALL temp_campania_entrante_2008_12_05();
 DROP PROCEDURE IF EXISTS temp_campania_entrante_2008_12_05;
+
+
+/* Procedimiento para agregar infraestructura de llamadas agendadas */
+DELIMITER ++ ;
+
+DROP PROCEDURE IF EXISTS temp_llamadas_agendadas_2009_02_20 ++
+CREATE PROCEDURE temp_llamadas_agendadas_2009_02_20 ()
+    READS SQL DATA
+    MODIFIES SQL DATA
+BEGIN
+    DECLARE l_existe_columna tinyint(1);
+    
+    SET l_existe_columna = 0;
+
+    /* Verificar existencia de columna calls.date_init que debe agregarse */
+    SELECT COUNT(*) INTO l_existe_columna 
+    FROM INFORMATION_SCHEMA.COLUMNS 
+    WHERE TABLE_SCHEMA = 'call_center' 
+        AND TABLE_NAME = 'calls' 
+        AND COLUMN_NAME = 'date_init';
+    IF l_existe_columna = 0 THEN
+        ALTER TABLE calls
+        ADD COLUMN date_init  date,
+        ADD COLUMN date_end  date,
+        ADD COLUMN time_init  time,
+        ADD COLUMN time_end  time;
+    END IF;
+END;
+++
+DELIMITER ; ++
+
+CALL temp_llamadas_agendadas_2009_02_20();
+DROP PROCEDURE IF EXISTS temp_llamadas_agendadas_2009_02_20;
+
 
 /*!40000 ALTER TABLE `queue_call_entry` ENABLE KEYS */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

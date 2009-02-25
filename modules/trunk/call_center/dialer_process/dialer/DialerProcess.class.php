@@ -25,7 +25,7 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: DialerProcess.class.php,v 1.35 2008/12/08 19:15:33 alex Exp $ */
+  $Id: DialerProcess.class.php,v 1.45 2009/02/23 03:36:25 alex Exp $ */
 require_once('AbstractProcess.class.php');
 require_once 'DB.php';
 require_once "phpagi-asmanager-elastix.php";
@@ -399,8 +399,7 @@ class DialerProcess extends AbstractProcess
             
                 // Agregar llamadas para todas las campañas activas
                 foreach ($this->_infoLlamadas['campanias'] as $infoCampania) {
-                    $bLlamadasAgregadas = $bLlamadasAgregadas ||
-                        $this->actualizarLlamadasCampania($infoCampania);
+                    $bLlamadasAgregadas = $this->actualizarLlamadasCampania($infoCampania) || $bLlamadasAgregadas;
                 }
                 
                 // Consumir todos los eventos de llamada durante 3 segundos
@@ -424,7 +423,6 @@ class DialerProcess extends AbstractProcess
                 usleep(1000000);
             }
         }
-
 
 		// Remover llamadas viejas luego de 5 * 60 segundos de espera sin respuesta
 		$listaClaves = array_keys($this->_infoLlamadas['llamadas']);
@@ -606,13 +604,58 @@ class DialerProcess extends AbstractProcess
         
         // Leer tantas llamadas como fueron elegidas. Sólo se leen números con
         // status == NULL y bandera desactivada
-        $sPeticionLlamadas = 
-            'SELECT id_campaign, id, phone FROM calls '.
-            'WHERE id_campaign = ? AND status IS NULL AND dnc = 0 LIMIT 0,?';
+        $sFechaSys = date('Y-m-d');
+        $sHoraSys = date('H:i:s');
+        $sPeticionLlamadas = <<<PETICION_LLAMADAS
+(
+SELECT id_campaign, id, phone FROM calls 
+WHERE id_campaign = ? 
+    AND status IS NULL 
+    AND dnc = 0 
+    AND date_init <= ? AND date_end >= ? AND time_init <= ? AND time_end >= ?
+ORDER BY date_end, time_end, date_init, time_init
+)
+UNION
+(
+SELECT id_campaign, id, phone FROM calls 
+WHERE id_campaign = ? 
+    AND status IS NULL 
+    AND dnc = 0
+    AND date_init IS NULL AND date_end IS NULL AND time_init IS NULL AND time_end IS NULL  
+)
+UNION
+(
+SELECT id_campaign, id, phone FROM calls 
+WHERE id_campaign = ? 
+    AND status NOT IN ("Success", "Placing", "Ringing", "OnQueue", "OnHold")
+    AND retries < ?   
+    AND dnc = 0 
+    AND date_init <= ? AND date_end >= ? AND time_init <= ? AND time_end >= ?
+ORDER BY date_end, time_end, date_init, time_init
+)
+UNION
+(
+SELECT id_campaign, id, phone FROM calls 
+WHERE id_campaign = ? 
+    AND status NOT IN ("Success", "Placing", "Ringing", "OnQueue", "OnHold")
+    AND retries < ?   
+    AND dnc = 0 
+    AND date_init IS NULL AND date_end IS NULL AND time_init IS NULL AND time_end IS NULL  
+)
+LIMIT 0,?
+PETICION_LLAMADAS;
 
         $recordset =& $this->_dbConn->query(
             $sPeticionLlamadas, 
-            array($infoCampania->id, $iNumLlamadasColocar));
+            array($infoCampania->id, 
+                $sFechaSys, $sFechaSys, $sHoraSys, $sHoraSys,
+                $infoCampania->id,
+                $infoCampania->id,
+                $infoCampania->retries,
+                $sFechaSys, $sFechaSys, $sHoraSys, $sHoraSys,
+                $infoCampania->id,
+                $infoCampania->retries,
+                $iNumLlamadasColocar));
         if (DB::isError($recordset)) {
             $this->oMainLog->output("ERR: (campania $infoCampania->id cola $infoCampania->queue) no se puede leer lista de teléfonos - ".$recordset->getMessage());
             return FALSE;
@@ -626,34 +669,34 @@ class DialerProcess extends AbstractProcess
             $sKey = sprintf('%d-%d-%d', $pid, $infoCampania->id, $tupla->id);
             $listaLlamadas[$sKey] = $tupla;
         }
-            
+
         if (count($listaLlamadas) == 0) {
-            // Leer los números que no han podido ser contactados antes 
-            $sPeticionLlamadas = 
-                'SELECT id_campaign, id, phone FROM calls '.
+        	/* Debido a que ahora las llamadas pueden agendarse a una hora específica, puede
+             * ocurrir que la lista de llamadas por realizar esté vacía porque hay llamadas
+             * agendadas, pero fuera del horario indicado por la hora del sistema. Si la
+             * cuenta del query de abajo devuelve al menos una llamada, se interrumpe el
+             * procesamiento y se sale 
+             */
+            $sPeticionTotal =
+                'SELECT COUNT(*) AS N FROM calls '.
                 'WHERE id_campaign = ? '.
-                    'AND status NOT IN ("Success", "Placing", "Ringing", "OnQueue", "OnHold") '.
+                    'AND (status IS NULL OR status NOT IN ("Success", "Placing", "Ringing", "OnQueue", "OnHold")) '.
                     'AND retries < ? '.
-                    'AND dnc = 0 '.
-                'ORDER BY fecha_llamada, retries '.
-                'LIMIT 0,?';
-            $recordset =& $this->_dbConn->query(
-                $sPeticionLlamadas, 
-                array($infoCampania->id, $infoCampania->retries, $iNumLlamadasColocar));
-            if (DB::isError($recordset)) {
-                $this->oMainLog->output("ERR: (campania $infoCampania->id cola $infoCampania->queue) no se puede leer lista de teléfonos - ".$recordset->getMessage());
+                    'AND dnc = 0';
+            $iNumTotal =& $this->_dbConn->getOne($sPeticionTotal, 
+                array($infoCampania->id, $infoCampania->retries));
+            if (DB::isError($iNumTotal)) {
+                $this->oMainLog->output("ERR: (campania $infoCampania->id cola $infoCampania->queue) no se puede leer cuenta de teléfonos - ".$iNumTotal->getMessage());
                 return FALSE;
             }
-            
-            // Ingresar las llamada a la lista de llamadas a realizar
-            $listaLlamadas = array();
-            $pid = posix_getpid();
-            while ($tupla = $recordset->fetchRow(DB_FETCHMODE_OBJECT)) {
-                $sKey = sprintf('%d-%d-%d', $pid, $infoCampania->id, $tupla->id);
-                $listaLlamadas[$sKey] = $tupla;
+            if (!is_null($iNumTotal) && $iNumTotal > 0) {
+                if ($this->DEBUG) {
+                    $this->oMainLog->output("DEBUG: (campania $infoCampania->id cola $infoCampania->queue) no hay llamadas a colocar; $iNumTotal llamadas agendadas pero fuera de horario.");
+                }
+            	return FALSE;
             }
         }
-
+        
         if (count($listaLlamadas) > 0) {
             if ($this->DEBUG) {
                 $this->oMainLog->output("DEBUG: (campania $infoCampania->id cola $infoCampania->queue) total de llamadas a generar: ".count($listaLlamadas));
@@ -744,8 +787,10 @@ class DialerProcess extends AbstractProcess
 			// Este es un trunk personalizado que provee $OUTNUM$ ya preparado
 			return array('TRUNK' => $sTrunk);
 		} elseif (ereg('^SIP/', $sTrunk) 
-			|| eregi('^Zap/.+', $sTrunk) 
-			|| ereg('^IAX/', $sTrunk)) {
+			|| eregi('^Zap/.+', $sTrunk)
+            || eregi('^DAHDI/.+', $sTrunk) 
+			|| ereg('^IAX/', $sTrunk)
+            || ereg('^IAX2/', $sTrunk)) {
 			// Este es un trunk Zap o SIP. Se debe concatenar el prefijo de marcado 
 			// (si existe), y a continuación el número a marcar.
 			$infoTrunk = $this->_leerPropiedadesTrunk($sTrunk);
@@ -841,6 +886,10 @@ class DialerProcess extends AbstractProcess
 
 		$infoTrunk = NULL;
 
+        // FreePBX todavía guarda la información sobre troncales DAHDI bajo nombres ZAP.
+        // Para encontrarla, se requiere de transformación antes de la consulta.
+        $sTrunkConsulta = str_replace('DAHDI', 'ZAP', $sTrunk);
+
 		/* Buscar cuál de las opciones describe el trunk indicado. En FreePBX, la información de los
 		 * trunks está guardada en la tabla 'globals', donde globals.value tiene el nombre del
 		 * trunk buscado, y globals.variable es de la forma OUT_NNNNN. El valor de NNN se usa para
@@ -848,13 +897,13 @@ class DialerProcess extends AbstractProcess
 		 */
 		$regs = NULL;		 
 		$sPeticionSQL = "SELECT variable FROM globals WHERE value = ? AND variable LIKE 'OUT_%'";
-		$sVariable = $dbConn->getOne($sPeticionSQL, array($sTrunk));
+		$sVariable = $dbConn->getOne($sPeticionSQL, array($sTrunkConsulta));
 		if (DB::isError($sVariable)) {
-			$this->oMainLog->output("ERR: al consultar información de trunk '$sTrunk' en FreePBX (1) - ".($sVariable->getMessage()));
+			$this->oMainLog->output("ERR: al consultar información de trunk '$sTrunkConsulta' en FreePBX (1) - ".($sVariable->getMessage()));
 		} elseif (is_null($sVariable)) {
-			$this->oMainLog->output("ERR: al consultar información de trunk '$sTrunk' en FreePBX (1) - trunk no se encuentra!");
+			$this->oMainLog->output("ERR: al consultar información de trunk '$sTrunkConsulta' en FreePBX (1) - trunk no se encuentra!");
 		} elseif (!ereg('^OUT_([[:digit:]]+)$', $sVariable, $regs)) {
-			$this->oMainLog->output("ERR: al consultar información de trunk '$sTrunk' en FreePBX (1) - se esperaba OUT_NNN pero se encuentra $sVariable - versión incompatible de FreePBX?");
+			$this->oMainLog->output("ERR: al consultar información de trunk '$sTrunkConsulta' en FreePBX (1) - se esperaba OUT_NNN pero se encuentra $sVariable - versión incompatible de FreePBX?");
 		} else {
 			$iNumTrunk = $regs[1];
 			
@@ -862,7 +911,7 @@ class DialerProcess extends AbstractProcess
 			$sPeticionSQL = 'SELECT variable, value FROM globals WHERE variable LIKE ?';
 			$recordset =& $dbConn->query($sPeticionSQL, array('OUT%_'.$iNumTrunk));
 			if (DB::isError($recordset)) {
-				$this->oMainLog->output("ERR: al consultar información de trunk '$sTrunk' en FreePBX (2) - ".($recordset->getMessage()));
+				$this->oMainLog->output("ERR: al consultar información de trunk '$sTrunkConsulta' en FreePBX (2) - ".($recordset->getMessage()));
 			} else {
 				$infoTrunk = array();
 				$sRegExp = '^OUT(.+)_'.$iNumTrunk.'$';
@@ -918,11 +967,15 @@ class DialerProcess extends AbstractProcess
                 $sStatus = $params['Response'];
                 if ($params['Uniqueid'] == '<null>') $params['Uniqueid'] = NULL;
                 if ($sStatus == 'Success') $sStatus = 'Ringing';
-                $result = $this->_dbConn->query(
-                    'UPDATE calls SET status = ?, Uniqueid = ?, fecha_llamada = ?, start_time = NULL, end_time = NULL '.
-                        'WHERE id_campaign = ? AND id = ?',
-                    array($sStatus, $params['Uniqueid'], date('Y-m-d H:i:s'),
-                        $infoCampania->id, $this->_infoLlamadas['llamadas'][$sKey]->id));
+                
+                $sQuery = 
+                    'UPDATE calls ' .
+                    'SET status = ?, Uniqueid = ?, fecha_llamada = ?, start_time = NULL, end_time = NULL, retries = retries + ? '.
+                    'WHERE id_campaign = ? AND id = ?';
+                $queryParams = array($sStatus, $params['Uniqueid'], date('Y-m-d H:i:s'), (($sStatus == 'Failure') ? 1 : 0),
+                        $infoCampania->id, $this->_infoLlamadas['llamadas'][$sKey]->id);
+                
+                $result = $this->_dbConn->query($sQuery, $queryParams);
                 if (DB::isError($result)) {
                     $bErrorLocked = ereg('database is locked', $result->getMessage());
                     if ($bErrorLocked) {
