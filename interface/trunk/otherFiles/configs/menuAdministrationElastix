@@ -22,7 +22,7 @@ mv $pathDB/*.rpmnew $pathTmpDB/ &>/dev/null
 elastix_version=$1
 echo "pre version elastix $elastix_version" 
 
-if [ "$elastix_version" \< "1.4" ]; then
+if [ "$elastix_version" \< "1.5" ]; then
     #Update only menu.db and acl.db (tables acl_resource, acl_group)
     #paso 1: repaldo de bases
         cp $pathDB/menu.db $pathDB/menu_old.db
@@ -56,6 +56,8 @@ if [ "$elastix_version" \< "1.4" ]; then
             echo "delete old menu backuplist." ;
             sqlite3 $pathDB/menu.db "delete from menu where id='ports_details';"
             echo "delete old menu ports_details." ;
+            sqlite3 $pathDB/menu.db "delete from menu where id='echo_canceller';"
+            echo "delete old menu echo_canceller." ;
             sqlite3 $pathDB/acl.db  "delete from acl_group_permission where id_resource=(select id from acl_resource where name='freepbx');"
             sqlite3 $pathDB/acl.db  "delete from acl_resource where name='freepbx';"
             sqlite3 $pathDB/acl.db  "delete from acl_group_permission where id_resource=(select id from acl_resource where name='backup');"
@@ -66,6 +68,8 @@ if [ "$elastix_version" \< "1.4" ]; then
             sqlite3 $pathDB/acl.db  "delete from acl_resource where name='backuplist';"
             sqlite3 $pathDB/acl.db  "delete from acl_group_permission where id_resource=(select id from acl_resource where name='ports_details');"
             sqlite3 $pathDB/acl.db  "delete from acl_resource where name='ports_details';"
+            sqlite3 $pathDB/acl.db  "delete from acl_group_permission where id_resource=(select id from acl_resource where name='echo_canceller');"
+            sqlite3 $pathDB/acl.db  "delete from acl_resource where name='echo_canceller';"
             echo "End step 2, delete menus olds..."
         
         #paso 3: Insertar menus creados por usuarios, se inserta primero todos los menus nuevos y despues los del usuario.
