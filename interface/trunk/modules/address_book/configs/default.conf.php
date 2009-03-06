@@ -27,6 +27,8 @@
   +----------------------------------------------------------------------+
   $Id: default.conf.php,v 1.1 2008/01/04 15:55:57 bmacias Exp $ */
 
-$arrConfig['module_name'] = 'adress_book';
-$arrConfig['templates_dir'] = 'themes';
+global $arrConfModule;
+$arrConfModule['module_name'] = 'address_book';
+$arrConfModule['templates_dir'] = 'themes';
+$arrConfModule['dsn_conn_database'] = "sqlite3:////var/www/db/address_book.db";
 ?>
