@@ -166,6 +166,8 @@ function _moduleContent(&$smarty, $module_name)
     //This _guielement_tabindex and _guielement_formfields fixed bug in extensions freePBX embedded
     $GLOBALS['_guielement_tabindex'] = 1;
     $GLOBALS['_guielement_formfields'] = 0;
+    //This $fc_save var fixed bug in System Recording en freePBX embedeed 
+    global $fc_save; 
 
     // handle special requests
     if (isset($_REQUEST['handler'])) {
