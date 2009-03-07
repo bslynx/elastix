@@ -49,6 +49,7 @@ $arrLang=array(
 "Simultaneous calls, memory and CPU"=>"Simultaneous calls, memory and CPU",
 "Sim. calls"=>"Sim. calls",
 "CPU usage (%)"=>"CPU usage (%)",
+"% used of" => "% used of",
 "Mem. usage (MB)"=>"Mem. usage (MB)",
 "It was not possible to obtain information about the graph" =>"It was not possible to obtain information about the graph",
 "Network Parameters"=>"Network Parameters",
@@ -77,6 +78,9 @@ $arrLang=array(
 "Required field"=>"Required field",
 "Apply changes"=>"Apply changes",
 "Are you sure you want to edit network parameters?"=>"Are you sure you want to edit network parameters?",
+"(Ex. host.example.com)" => "(Ex. host.example.com)",
+"Static" => "Static",
+"DHCP" => "DHCP",
 "Cancel"=>"Cancel",
 "Export"=>"Export",
 "Start"=>"Start",
@@ -154,6 +158,8 @@ $arrLang=array(
 "Prefix"=>"Prefix",
 "Rate"=>"Rate",
 "Rate Offset"=>"Rate Offset",
+"None" => "None",
+"(by min)" => " (by min)",
 "New Rate"=>"New Rate",
 "Edit Rate"=>"Edit Rate",
 "View Rate"=>"View Rate",
@@ -238,6 +244,11 @@ $arrLang=array(
 "Fax Utilities"=>"Fax Utilities",
 "Instant Messaging" => "Instant Messaging",
 "Menu Administrator"=>"Menu Administrator",
+"ALL" => "ALL",
+"ANSWERED" => "ANSWERED",
+"BUSY" => "BUSY",
+"FAILED" => "FAILED",
+"NO ANSWER" => "NO ANSWER",
 //
 "Channels Usage Report"=>"Channels Usage Report",
 "Default Rate Configuration" => "Default Rate Configuration",
@@ -336,8 +347,25 @@ configuration <br>because some processes need it.",
 "New Date" => "New Date",
 "New Time" => "New Time",
 "New Timezone" => "New Timezone",
-"The change of date and time can concern important  system processes." => "The change of date and time can concern important  system processes.",
+"Date not valid" => "Date not valid",
+"Unable to locate file" => "Unable to locate file",
+"Internal has failed" => "(internal) chown/etc/localtime has failed",
+"Internal reading" => "(internal) reading",
+"Internal aperture" => "(internal) aperture (w) /etc/localtime has failed",
+"Internal chown" => "(internal) chown /var/spool/postfix/etc/localtime has failed",
+"Internal aperture localtime" => "(internal) aperture (w) /var/spool/postfix/etc/localtime has failed",
+"Internal chown clock" => "(internal) chown /etc/sysconfig/clock has failed",
+"Internal aperture clock" => "(internal) aperture (w) /etc/sysconfig/clock has failed",
+"has failed" => "has failed",
+"System time changed successfully" => "System time changed successfully",
+"System time can not be changed" => "System time can not be changed",
 
+"The change of date and time can concern important  system processes." => "The change of date and time can concern important  system processes.",
+"Configuration" => "Configuration",
+"Enable" => "Enable",
+"Disable" => "Disable",
+"Yes" => "Yes",
+"No" => "No",
 //load module
 "Load Module" => "Load Module",
 "Refresh" => "Refresh",
@@ -480,6 +508,7 @@ configuration because some <br> processes could need them.",
 "There are not backup file selected" => "There are not backup file selected",
 "Action" => "Action",
 "Folder backup doesn't exist"=>"Folder backup doesn't exist",
+"Flash Operator Panel Config Files" => "Flash Operator Panel Config Files",
 
 
 /* inicio Cancelador de echo*/
@@ -967,6 +996,7 @@ implementations of Voice over IP around the globe.",
 "Webmail Password" => "Webmail Password",
 "Retype Webmail password" => "Retype Webmail password",
 "Mail Profile" => "Mail Profile",
+"(Ex. John Doe)" => "(Ex. John Doe)",
 /*USERLIST*/
 
 /*PBX Configuration*/
@@ -1027,6 +1057,53 @@ implementations of Voice over IP around the globe.",
 /*Calendar*/
 "in" => "Received", 
 "out" => "Sent", 
-"Type Fax" => "Type Fax", 
+"Type Fax" => "Type Fax",
+
+/*backup_restore*/
+"Flash Operator Panel Config Files" => "Flash Operator Panel Config Files",
+/*end backup_restore*/
+/*billing_rates*/
+"None" => "None",
+"(by min)" => " (by min)",
+/*end billing_rates*/
+/*CDR REPORT*/
+"ALL" => "ALL",
+"ANSWERED" => "ANSWERED",
+"BUSY" => "BUSY",
+"FAILED" => "FAILED",
+"NO ANSWER" => "NO ANSWER",
+/*end CDR REPORT*/
+/*network_parameters*/
+"(Ex. host.example.com)" => "(Ex. host.example.com)",
+"Static" => "Static",
+"DHCP" => "DHCP",
+/*end network_parameters*/
+/*sysinfo*/
+"% used of" => "% used of",
+/*end sysinfo*/
+/*userlist*/
+"(Ex. John Doe)" => "(Ex. John Doe)",
+/*end userlist*/
+/*Voicemail*/
+"Configuration" => "Configuration",
+"Enable" => "Enable",
+"Disable" => "Disable",
+"Yes" => "Yes",
+"No" => "No",
+/*end Voicemail*/
+/*module Time Config*/
+"Date not valid" => "Date not valid",
+"Unable to locate file" => "Unable to locate file",
+"Internal has failed" => "(internal) chown/etc/localtime has failed",
+"Internal reading" => "(internal) reading",
+"Internal aperture" => "(internal) aperture (w) /etc/localtime has failed",
+"Internal chown" => "(internal) chown /var/spool/postfix/etc/localtime has failed",
+"Internal aperture localtime" => "(internal) aperture (w) /var/spool/postfix/etc/localtime has failed",
+"Internal chown clock" => "(internal) chown /etc/sysconfig/clock has failed",
+"Internal aperture clock" => "(internal) aperture (w) /etc/sysconfig/clock has failed",
+"has failed" => "has failed",
+"System time changed successfully" => "System time changed successfully",
+"System time can not be changed" => "System time can not be changed",
+/*module Time Config*/
 );
 ?>

@@ -1021,6 +1021,53 @@ implementations of Voice over IP around the globe.",
 /*Calendar*/
 "in" => "Received", 
 "out" => "Sent", 
-"Type Fax" => "Type Fax", 
+"Type Fax" => "Type Fax",
+
+/*backup_restore*/
+"Flash Operator Panel Config Files" => "Flash Operator Panel Config Files",
+/*end backup_restore*/
+/*billing_rates*/
+"None" => "None",
+"(by min)" => " (by min)",
+/*end billing_rates*/
+/*CDR REPORT*/
+"ALL" => "ALL",
+"ANSWERED" => "ANSWERED",
+"BUSY" => "BUSY",
+"FAILED" => "FAILED",
+"NO ANSWER" => "NO ANSWER",
+/*end CDR REPORT*/
+/*network_parameters*/
+"(Ex. host.example.com)" => "(Ex. host.example.com)",
+"Static" => "Static",
+"DHCP" => "DHCP",
+/*end network_parameters*/
+/*sysinfo*/
+"% used of" => "% used of",
+/*end sysinfo*/
+/*userlist*/
+"(Ex. John Doe)" => "(Ex. John Doe)",
+/*end userlist*/
+/*Voicemail*/
+"Configuration" => "Configuration",
+"Enable" => "Enable",
+"Disable" => "Disable",
+"Yes" => "Yes",
+"No" => "No",
+/*end Voicemail*/
+/*module Time Config*/
+"Date not valid" => "Date not valid",
+"Unable to locate file" => "Unable to locate file",
+"Internal has failed" => "(internal) chown/etc/localtime has failed",
+"Internal reading" => "(internal) reading",
+"Internal aperture" => "(internal) aperture (w) /etc/localtime has failed",
+"Internal chown" => "(internal) chown /var/spool/postfix/etc/localtime has failed",
+"Internal aperture localtime" => "(internal) aperture (w) /var/spool/postfix/etc/localtime has failed",
+"Internal chown clock" => "(internal) chown /etc/sysconfig/clock has failed",
+"Internal aperture clock" => "(internal) aperture (w) /etc/sysconfig/clock has failed",
+"has failed" => "has failed",
+"System time changed successfully" => "System time changed successfully",
+"System time can not be changed" => "System time can not be changed",
+/*module Time Config*/
 );
 ?>
