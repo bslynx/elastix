@@ -131,11 +131,11 @@ function _moduleContent(&$smarty, $module_name)
                                                         "REQUIRED"               => "no",
                                                         "INPUT_TYPE"             => "SELECT",
                                                         "INPUT_EXTRA_PARAM"      => array(
-                                                                                    "ALL"         => "ALL",
-                                                                                    "ANSWERED"         => "ANSWERED",
-                                                                                    "BUSY"         => "BUSY",
-                                                                                    "FAILED"     => "FAILED",
-                                                                                    "NO ANSWER "  => "NO ANSWER"),
+                                                                                    "ALL"         => $arrLang["ALL"],
+                                                                                    "ANSWERED"    => $arrLang["ANSWERED"],
+                                                                                    "BUSY"        => $arrLang["BUSY"],
+                                                                                    "FAILED"      => $arrLang["FAILED"],
+                                                                                    "NO ANSWER "  => $arrLang["NO ANSWER"]),
                                                         "VALIDATION_TYPE"        => "text",
                                                         "VALIDATION_EXTRA_PARAM" => ""),
                                  );

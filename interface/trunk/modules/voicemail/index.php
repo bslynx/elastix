@@ -89,7 +89,7 @@ function _moduleContent(&$smarty, $module_name)
 
     $smarty->assign("menu","voicemail");
     $smarty->assign("Filter",$arrLang['Filter']);
-    $smarty->assign("CONFIG","Configuration");
+    $smarty->assign("CONFIG",$arrLang["Configuration"]);
     //formulario para el filtro
     $arrFormElements = createFieldFormVoiceList($arrLang);
     $oFilterForm = new paloForm($smarty, $arrFormElements);
@@ -314,7 +314,7 @@ function form_config($smarty, $module_name, $local_templates_dir, $arrLang, $ext
         }
     }
     
-    $htmlForm = $oForm->fetchForm("$local_templates_dir/configuration.tpl","Configuration", $_POST);
+    $htmlForm = $oForm->fetchForm("$local_templates_dir/configuration.tpl",$arrLang["Configuration"], $_POST);
 
     $contenidoModulo = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
 
@@ -428,7 +428,7 @@ function createFieldFormConfig($arrLang)
         "status"            => array("LABEL"                  => $arrLang['Status'],
                                      "REQUIRED"               => "no",
                                      "INPUT_TYPE"             => "SELECT",
-                                     "INPUT_EXTRA_PARAM"      => array("Enable"=>"Enable","Disable"=>"Disable"),
+                                     "INPUT_EXTRA_PARAM"      => array("Enable"=>$arrLang["Enable"],"Disable"=>$arrLang["Disable"]),
                                      "VALIDATION_TYPE"        => "text",
                                      "VALIDATION_EXTRA_PARAM" => ""),
         "password"          => array("LABEL"                  => $arrLang['Password'],
@@ -446,25 +446,25 @@ function createFieldFormConfig($arrLang)
         "email_attach"      => array("LABEL"                  => $arrLang["Email Attachment"],
                                      "REQUIRED"               => "yes",
                                      "INPUT_TYPE"             => "RADIO",
-                                     "INPUT_EXTRA_PARAM"      => array("Yes"=>"Yes","No"=>"No"),
+                                     "INPUT_EXTRA_PARAM"      => array("Yes"=>$arrLang["Yes"],"No"=>$arrLang["No"]),
                                      "VALIDATION_TYPE"        => "text",
                                      "VALIDATION_EXTRA_PARAM" => ""),
         "play_cid"          => array("LABEL"                  => $arrLang["Play CID"],
                                      "REQUIRED"               => "yes",
                                      "INPUT_TYPE"             => "RADIO",
-                                     "INPUT_EXTRA_PARAM"      => array("Yes"=>"Yes","No"=>"No"),
+                                     "INPUT_EXTRA_PARAM"      => array("Yes"=>$arrLang["Yes"],"No"=>$arrLang["No"]),
                                      "VALIDATION_TYPE"        => "text",
                                      "VALIDATION_EXTRA_PARAM" => ""),
         "play_envelope"     => array("LABEL"                  => $arrLang["Play Envelope"],
                                      "REQUIRED"               => "yes",
                                      "INPUT_TYPE"             => "RADIO",
-                                     "INPUT_EXTRA_PARAM"      => array("Yes"=>"Yes","No"=>"No"),
+                                     "INPUT_EXTRA_PARAM"      => array("Yes"=>$arrLang["Yes"],"No"=>$arrLang["No"]),
                                      "VALIDATION_TYPE"        => "text",
                                      "VALIDATION_EXTRA_PARAM" => ""),
         "delete_vmail"     => array("LABEL"                  => $arrLang["Delete Vmail"],
                                      "REQUIRED"               => "yes",
                                      "INPUT_TYPE"             => "RADIO",
-                                     "INPUT_EXTRA_PARAM"      => array("Yes"=>"Yes","No"=>"No"),
+                                     "INPUT_EXTRA_PARAM"      => array("Yes"=>$arrLang["Yes"],"No"=>$arrLang["No"]),
                                      "VALIDATION_TYPE"        => "text",
                                      "VALIDATION_EXTRA_PARAM" => ""),
     );

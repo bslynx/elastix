@@ -45,7 +45,7 @@ function _moduleContent(&$smarty, $module_name)
     $pDB = new paloDB("sqlite3:////var/www/db/rate.db");
     $pDBTrunk = new paloDB("sqlite3:////var/www/db/trunk.db");
     $oTrunk   = new paloTrunk($pDBTrunk);
-    $arrTrunksBill['None']='None';
+    $arrTrunksBill['None']=$arrLang['None'];
     foreach ($oTrunk->getTrunksBill() as $trunk) $arrTrunksBill[$trunk]=$trunk;
     if(!empty($pDB->errMsg)) {
         echo "ERROR DE DB: $pDB->errMsg <br>";
@@ -71,7 +71,7 @@ function _moduleContent(&$smarty, $module_name)
                                                      "INPUT_EXTRA_PARAM"      => "",
                                                      "VALIDATION_TYPE"        => "text",
                                                      "VALIDATION_EXTRA_PARAM" => ""),
-                             "rate"         => array("LABEL"                   => $arrLang["Rate"]." (by min)",
+                             "rate"         => array("LABEL"                   => $arrLang["Rate"].$arrLang['(by min)'],
                                                      "REQUIRED"               => "yes",
                                                      "INPUT_TYPE"             => "TEXT",
                                                      "INPUT_EXTRA_PARAM"      => "",

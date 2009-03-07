@@ -95,7 +95,7 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
     if($directory_type=='external')
         $arrComboElements["last_name"] = $arrLang["Last Name"];
 
-    $arrFormElements = array(   "field" => array(   "LABEL"                  => "filtro",//$arrLang["Filter"],
+    $arrFormElements = array(   "field" => array(   "LABEL"                  => $arrLang["Filter"],
                                                     "REQUIRED"               => "no",
                                                     "INPUT_TYPE"             => "SELECT",
                                                     "INPUT_EXTRA_PARAM"      => $arrComboElements,

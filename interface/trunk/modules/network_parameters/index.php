@@ -42,7 +42,7 @@ function _moduleContent(&$smarty, $module_name)
     $templates_dir=(isset($arrConfig['templates_dir']))?$arrConfig['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
 
-    $arrFormNetwork  = array("host"         => array("LABEL"                  => "{$arrLang['Host']} (Ex. host.example.com)",
+    $arrFormNetwork  = array("host"         => array("LABEL"                  => "{$arrLang['Host']} {$arrLang['(Ex. host.example.com)']}",
                                                      "REQUIRED"               => "yes",
                                                      "INPUT_TYPE"             => "TEXT",
                                                      "INPUT_EXTRA_PARAM"      => "",
@@ -82,7 +82,7 @@ function _moduleContent(&$smarty, $module_name)
                              "type"         => array("LABEL"                  => $arrLang["Interface Type"],
                                                      "REQUIRED"               => "yes",
                                                      "INPUT_TYPE"             => "RADIO",
-                                                     "INPUT_EXTRA_PARAM"      => array("static" => "Static", "dhcp" => "DHCP"),
+                                                     "INPUT_EXTRA_PARAM"      => array("static" => $arrLang["Static"], "dhcp" => $arrLang["DHCP"]),
                                                      "VALIDATION_TYPE"        => "text",
                                                      "VALIDATION_EXTRA_PARAM" => ""),
                              "dev_id"       => array("LABEL"                  => $arrLang["Device"],
