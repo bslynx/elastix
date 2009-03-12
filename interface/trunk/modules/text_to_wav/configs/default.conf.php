@@ -26,7 +26,7 @@
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
   $Id: default.conf.php,v 1.1 2008-09-23 11:09:23 aflores@palosanto.com Exp $ */
-
-        $arrConfig['module_name'] = 'text_to_wav';
-        $arrConfig['templates_dir'] = 'themes';
+	global $arrConfModule;
+        $arrConfModule['module_name'] = 'text_to_wav';
+        $arrConfModule['templates_dir'] = 'themes';
 ?>

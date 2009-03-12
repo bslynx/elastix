@@ -40,5 +40,7 @@ $arrLangModule=array(
 "Unabled create file wav" => "Unabled create file wav",
 "Unabled create file gsm" => "Unabled create file gsm",
 "Not exists file" => "Not exists file",
+"Message" => "Message",
+"Back" => "Back",
 );
 ?>
