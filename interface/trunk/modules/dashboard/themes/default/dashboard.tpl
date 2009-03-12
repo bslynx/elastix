@@ -1,5 +1,5 @@
 <table width="100%" border="0" align="center">
-    <th align="left" valign="center" class="moduleTitle" colspan=3><img src="images/user_info.png" />&nbsp;{$userInf}</th>
+    <th align="left" valign="center" class="moduleTitle" colspan=3><img src="modules/dashboard/images/user_info.png" />&nbsp;{$userInf}</th>
     <tr>
         <td width='30%' height="300px" style="padding:3px 0px 0px 4px" valign="top">
             <table width="100%" height='100%' cellspacing="0" border="0"  align="center" style='border:1px solid #000000'>
