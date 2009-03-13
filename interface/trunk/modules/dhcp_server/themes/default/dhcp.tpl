@@ -1,7 +1,7 @@
 <form method="post">
     <table width="99%" border="0" cellspacing="0" cellpadding="0" align="center">
         <tr class="moduleTitle">
-            <td class="moduleTitle" valign="middle">&nbsp;&nbsp;<img src="images/network.png" border="0" align="absmiddle">&nbsp;&nbsp;{$title}</td>
+            <td class="moduleTitle" valign="middle">&nbsp;&nbsp;<img src="modules/dhcp_server/images/network.png" border="0" align="absmiddle">&nbsp;&nbsp;{$title}</td>
         </tr>
         <tr>
             <td>

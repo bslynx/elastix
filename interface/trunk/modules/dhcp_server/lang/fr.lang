@@ -1,0 +1,72 @@
+<?php
+/* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
+  Codificación: UTF-8
+  +----------------------------------------------------------------------+
+  | Elastix version 1.0                                                  |
+  | http://www.elastix.org                                               |
+  +----------------------------------------------------------------------+
+  | Copyright (c) 2008 Palosanto Solutions S. A.                         |
+  +----------------------------------------------------------------------+
+  | Cdla. Nueva Kennedy Calle E 222 y 9na. Este                          |
+  | Telfs. 2283-268, 2294-440, 2284-356                                  |
+  | Guayaquil - Ecuador                                                  |
+  | http://www.palosanto.com 						                     |
+  |                                                                      |
+  | Translated by: Erwan DESVERGNES - SDCI                               |
+  | erwan.desvergnes@SDCI.fr                                             |
+  |   Revision 1.0-17 by Gregory BOUZINAC - GMixon                       | 
+  | greg@gmixon.com                                                      |
+  +----------------------------------------------------------------------+
+  | The contents of this file are subject to the General Public License  |
+  | (GPL) Version 2 (the "License"); you may not use this file except in |
+  | compliance with the License. You may obtain a copy of the License at |
+  | http://www.opensource.org/licenses/gpl-license.php                   |
+  |                                                                      |
+  | Software distributed under the License is distributed on an "AS IS"  |
+  | basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See  |
+  | the License for the specific language governing rights and           |
+  | limitations under the License.                                       |
+  +----------------------------------------------------------------------+
+  | The Original Code is: Elastix Open Source.                           |
+  | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  +----------------------------------------------------------------------+
+  $Id: fr.lang,v 1.8 2008/05/20 00:36:42 bmacias Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"DHCP Server" => "Serveur DHCP",
+"Update" => "Mettre &agrave; jour",
+"Service Start" => "D&eacute;marrage Service",
+"Service Stop" => "Arr&ecirc;t Service",
+"Start range of IPs" => "D&eacute;but de l'intervalle IP",
+"End range of IPs" => "Fin de l'intervalle IP",
+"DNS 1" => "DNS 1",
+"DNS 2" => "DNS 2",
+"WINS" => "WINS",
+"Gateway" => "Passerelle",
+"Optional" => "Optionnel",
+"Of 1 to 50000 Seconds" => "De 1 &agrave; 50000 Secondes",
+"Time of client refreshment" => "Dur&eacute;e du bail",
+"DHCP Configuration" => "Configuration DHCP",
+"Could not find IP range" => "Impossible de trouver l'intervalle IP",
+"DHCP configuration reading error: Verify that the DHCP service is installed and try again." => "Erreur de lecture de configu
+ration DHCP: V&eacute;rifiez que le service DHCP est install&eacute; et essayez de nouveau.",
+"Information DHCP" => "Information DHCP",
+"The Service dhcpd can't stop" => "Impossible d'arr&ecirc;ter le service dhcpd",
+"The Service dhcpd can't start" => "Impossible de d&eacute;marrer le service dhcpd",
+"The start IP is outside the LAN network" => "L'adresse IP de d&eacute;part est en dehors du r&eacute;seau local",
+"The final IP is outside the LAN network" => "L'adresse IP de fin est en dehors du r&eacute;seau local",
+"IP Range is invalid for available devices" => "L'intervalle IP est invalide pour les p&eacute;riph&eacute;riques disponibles
+",
+"Gateway is outside the LAN network" => "La passerelle est en dehors du r&eacute;seau local",
+"You can only choose between Enabled and Disabled" => "Vous pouvez choisir uniquement Activ&eacute; ou D&eacute;sactiv&eacute
+;",
+"Value outside the range (1-50000)" => "Valeur en dehors de l'intervalle (1-50000)",
+"Failed to update the file configuration" => "Echec de mise &agrave; jour du fichier de configuration",
+"The update was successful, but was unable to reestablish the permissions of the file dhcp.conf" => "La mise &agrave; jour a
+r&eacute;ussie mais impossible de r&eacute;tablir les permissions du fichier dhcp.conf",
+"Update Error" => "Erreur de Mise &agrave; jour",
+"Status" => "Statut",
+"Inactive" => "Inactif",
+"Information" => "Information",
+);
+?>

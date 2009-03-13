@@ -26,7 +26,8 @@
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
   $Id: default.conf.php,v 1.1 2008/01/04 10:39:57 bmacias Exp $ */
-
-$arrConfig['module_name'] = 'dhcp_server';
-$arrConfig['templates_dir'] = 'themes';
+global $arrConfModule;
+$arrConfModule['module_name'] = 'dhcp_server';
+$arrConfModule['templates_dir'] = 'themes';
+$arrConfModule['dsn_conn_database'] = "sqlite3:////var/www/db/settings.db";
 ?>
