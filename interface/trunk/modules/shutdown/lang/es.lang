@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 0.5                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,9 +25,14 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
-global $arrConfModule;
-$arrConfModule['module_name'] = 'shutdown';
-$arrConfModule['templates_dir'] = 'themes';
-
+  $Id: es.lang,v 1.7 2007/09/05 00:36:42 gcarrillo Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Shutdown" => "Apagar",
+"Accept" => "Aceptar",
+"Halt" => "Apagar",
+"Reboot" => "Reiniciar",
+"Shutdown in progress" => "Apagado en proceso",
+"Your system in shutting down now. Please, try again later." => "El sistema se est&aacute; cerrando en este momento.  Por favor, intente nuevamente más tarde",
+);
 ?>

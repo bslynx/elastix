@@ -1,7 +1,7 @@
 <form method="POST">
 <table width="99%" border="0" cellspacing="0" cellpadding="0" align="center">
 <tr class="moduleTitle">
-  <td class="moduleTitle" valign="middle">&nbsp;&nbsp;<img src="images/shutdown.png" border="0" align="absmiddle">&nbsp;&nbsp;{$SHUTDOWN_PROGRESS}</td>
+  <td class="moduleTitle" valign="middle">&nbsp;&nbsp;<img src="modules/shutdown/images/shutdown.png" border="0" align="absmiddle">&nbsp;&nbsp;{$SHUTDOWN_PROGRESS}</td>
 </tr>
 <tr>
   <td>
