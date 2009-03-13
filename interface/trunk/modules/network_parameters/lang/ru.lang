@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 0.5                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,9 +25,34 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
-global $arrConfModule;
-$arrConfModule['module_name'] = 'network';
-$arrConfModule['templates_dir'] = 'themes';
-
+  $Id: ru.lang,v 1.6 2009/03/05 00:36:42 aflores Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Network Parameters" => "Сетевые настройки",
+"Device" => "Устройство",
+"Type" => "Тип",
+"IP" => "IP",
+"Mask" => "Маска",
+"MAC Address" => "MAC-адрес",
+"HW Info" => "Сведения об аппаратном обеспечении",
+"Status" => "Статус",
+"Ethernet Interfaces List" => "Список интерфейсов Ethernet",
+"Connected" => "Подключен",
+"Not Connected" => "Не подключен",
+"Edit Interface" => "Редактирование интерфейса",
+"Validation Error" => "Ошибка валидации",
+"The following fields contain errors" => "Следующие поля содержат ошибки",
+"Host" => "Хост",
+"Primary DNS" => "Первичный DNS",
+"Secondary DNS" => "Вторичный DNS",
+"Default Gateway" => "Шлюз по yмолчанию",
+"IP Address" => "IP-Адрес",
+"Network Mask" => "Маска подсети",
+"Interface Type" => "Тип Интерфейса",
+"Save" => "Сохранить",
+"Edit Network Parameters" => "Изменить сетевые настройки",
+"Required field" => "Обязательное поле",
+"Apply changes" => "Применить изменения",
+"Are you sure you want to edit network parameters?" => "Вы уверены что хотите изменить сетевые настройки?",
+);
 ?>

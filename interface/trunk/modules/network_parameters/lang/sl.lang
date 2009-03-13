@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 0.5                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,9 +25,34 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
-global $arrConfModule;
-$arrConfModule['module_name'] = 'network';
-$arrConfModule['templates_dir'] = 'themes';
-
+  $Id: sl.lang,v 1.6 2007/09/05 00:36:42 gcarrillo Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Network Parameters" => "Omrežni parametri",
+"Device" => "Naprava",
+"Type" => "Tip",
+"IP" => "IP naslov",
+"Mask" => "Omrežna maska",
+"MAC Address" => "MAC naslov",
+"HW Info" => "Strojene informacije",
+"Status" => "Status",
+"Ethernet Interfaces List" => "Seznam lokalnih vmesnikov",
+"Connected" => "Povezan",
+"Not Connected" => "Ni povezave",
+"Edit Interface" => "Uredi vmesnik",
+"Validation Error" => "Napaka v potrditvi veljavnosti",
+"The following fields contain errors" => "Ta polja vsebujejo napako",
+"Host" => "Strežnik",
+"Primary DNS" => "Primarni DNS steržnik",
+"Secondary DNS" => "Sekundarni DNS strežnik",
+"Default Gateway" => "Privzeti prehod",
+"IP Address" => "IP naslov",
+"Network Mask" => "Omrežna maska",
+"Interface Type" => "Tip vmesnika",
+"Save" => "Shrani",
+"Edit Network Parameters" => "Uredi omrežne parametre",
+"Required field" => "Potrebno polje",
+"Apply changes" => "Uveljavi spremembe",
+"Are you sure you want to edit network parameters?" => "Ali ste prepričani, da hočete spremeniti/urediti omrežne nastavitve?",
+);
 ?>

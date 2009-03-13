@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 0.5                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,9 +25,34 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
-global $arrConfModule;
-$arrConfModule['module_name'] = 'network';
-$arrConfModule['templates_dir'] = 'themes';
-
+  $Id: cn.lang,v 1.6 2007/09/05 00:36:42 gcarrillo Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Network Parameters" => "网络参数",
+"Device" => "设备",
+"Type" => "类型",
+"IP" => "IP地址",
+"Mask" => "子网掩码",
+"MAC Address" => "MAC地址",
+"HW Info" => "硬件信息",
+"Status" => "Status",
+"Ethernet Interfaces List" => "以太网接口列表",
+"Connected" => "已连接",
+"Not Connected" => "未连接",
+"Edit Interface" => "编辑界面",
+"Validation Error" => "确认出错",
+"The following fields contain errors" => "以下项目有误",
+"Host" => "主机",
+"Primary DNS" => "主要DNS地址",
+"Secondary DNS" => "次要DNS地址",
+"Default Gateway" => "默认网关",
+"IP Address" => "IP地址",
+"Network Mask" => "子网掩码",
+"Interface Type" => "接口类型",
+"Save" => "保存",
+"Edit Network Parameters" => "编辑网络参数",
+"Required field" => "必填项",
+"Apply changes" => "改变生效",
+"Are you sure you want to edit network parameters?" => "你确定要修改网络参数吗?",
+);
 ?>

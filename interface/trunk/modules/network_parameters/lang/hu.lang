@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 1.0                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -24,10 +24,39 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  |                                                                      |
+  | Translate by: Lakatos Tamás                                          |
+  | Email: lakatost@gmail.com                                            |
+  |                                                                      |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
-global $arrConfModule;
-$arrConfModule['module_name'] = 'network';
-$arrConfModule['templates_dir'] = 'themes';
-
+  : hu.lang,v 1.6 2008/01/21 09:51:55 bmacias@palosanto.com Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Network Parameters" => "Hálózati paraméterek",
+"Device" => "Eszköz",
+"Type" => "Típus",
+"IP" => "IP",
+"Mask" => "Maszk",
+"MAC Address" => "MAC Cím",
+"HW Info" => "HW Info",
+"Status" => "Állapot",
+"Ethernet Interfaces List" => "Ethernet Interfész Lista",
+"Connected" => "Csatlakozva",
+"Not Connected" => "Nincs Csatlakozva",
+"Edit Interface" => "Interfész szerkesztése",
+"Validation Error" => "Érvényesítési hiba",
+"The following fields contain errors" => "A következő mezők hibásak",
+"Host" => "Host",
+"Primary DNS" => "Elsődleges DNS",
+"Secondary DNS" => "Másodlagos DNS",
+"Default Gateway" => "Alapértelmezett átjáró",
+"IP Address" => "IP Cím",
+"Network Mask" => "Hálózati maszk",
+"Interface Type" => "Interfész típus",
+"Save" => "Mentés",
+"Edit Network Parameters" => "Hálózati par. szerkesztése",
+"Required field" => "Szükséges mező",
+"Apply changes" => "Módosítások alkalmazása",
+"Are you sure you want to edit network parameters?" => "Biztos, hogy módosítja a hálózati paramétereket?",
+);
 ?>

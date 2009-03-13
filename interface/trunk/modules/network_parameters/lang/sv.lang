@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 1.0                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,9 +25,34 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
-global $arrConfModule;
-$arrConfModule['module_name'] = 'network';
-$arrConfModule['templates_dir'] = 'themes';
-
+  $Id: sv.lang,v 0.1 2008/03/25 00:36:42 IFIT DATA - http://www.ifit.se Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Network Parameters" => "N&auml;tverks paramentrar",
+"Device" => "Enheter",
+"Type" => "Typ",
+"IP" => "IP",
+"Mask" => "Mask",
+"MAC Address" => "MAC Adress",
+"HW Info" => "HW Information",
+"Status" => "Status",
+"Ethernet Interfaces List" => "Lista &ouml;ver N&auml;tverksgr&auml;nssnitt",
+"Connected" => "Ansluten",
+"Not Connected" => "Ej Ansluten",
+"Edit Interface" => "Redigera Gr&auml;nssnitt",
+"Validation Error" => "Fel Uppstod Vid Validering",
+"The following fields contain errors" => "F&ouml;ljande f&auml;lt inneh&aring;ller fel",
+"Host" => "Host",
+"Primary DNS" => "Prim&auml;r DNS",
+"Secondary DNS" => "Sekund&auml;r DNS",
+"Default Gateway" => "Standard-Gateway",
+"IP Address" => "IP Adress",
+"Network Mask" => "N&auml;tmask",
+"Interface Type" => "Gr&auml;nssnitts Typ",
+"Save" => "Spara",
+"Edit Network Parameters" => "Redigera N&auml;tverks Parametrar",
+"Required field" => "Obligatoriskt f&auml;lt",
+"Apply changes" => "Till&auml;mpa &auml;ndringar",
+"Are you sure you want to edit network parameters?" => "&Auml;r du s&auml;ker p&aring; att du vill &auml;ndra n&auml;tverkets parametrar?",
+);
 ?>

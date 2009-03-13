@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 1.0                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -24,10 +24,39 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  |                                                                      |
+  | Translate by: Davide Lo Leggio                                       |
+  | Email: cerino@smat.it                                                |
+  |                                                                      |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
-global $arrConfModule;
-$arrConfModule['module_name'] = 'network';
-$arrConfModule['templates_dir'] = 'themes';
-
+  $Id: it.lang,v 1.7 2008/02/18 10:07:17 bmacias@palosanto.com Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Network Parameters" => "Parametri di Rete",
+"Device" => "Periferiche",
+"Type" => "Tipo",
+"IP" => "IP",
+"Mask" => "Mask",
+"MAC Address" => "Indirizzo MAC",
+"HW Info" => "Info HW",
+"Status" => "Status",
+"Ethernet Interfaces List" => "Elenco Interfacce di Rete",
+"Connected" => "Connesso",
+"Not Connected" => "Non Connesso",
+"Edit Interface" => "Modifica Interfaccia",
+"Validation Error" => "Errore di Validazione",
+"The following fields contain errors" => "I seguenti campi contengono errori",
+"Host" => "Host",
+"Primary DNS" => "DNS primario",
+"Secondary DNS" => "DNS secondario",
+"Default Gateway" => "Default Gateway",
+"IP Address" => "Indirizzo IP",
+"Network Mask" => "Maschera di Rete",
+"Interface Type" => "Tipo Interfaccia",
+"Save" => "Salva",
+"Edit Network Parameters" => "Modifica Parametri di Rete",
+"Required field" => "Campi Obbligatori",
+"Apply changes" => "Applica le modifiche",
+"Are you sure you want to edit network parameters?" => "Sei sicuro di voler modificare i parametri di rete?",
+);
 ?>

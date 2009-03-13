@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 1.0                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -24,10 +24,38 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  |                                                                      |
+  | Translate by: Haamed Kouhfallah                                      |
+  | Email: haamed@cytco.net                                              |                                                                    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
-global $arrConfModule;
-$arrConfModule['module_name'] = 'network';
-$arrConfModule['templates_dir'] = 'themes';
-
+   $Id: fa.lang,v 1.2 2008/04/21 10:11:44 bmacias@palosanto.com Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Network Parameters" => "پارامتر های شبکه",
+"Device" => "رابط",
+"Type" => "نوع",
+"IP" => "آی پی",
+"Mask" => "ماسک",
+"MAC Address" => "آدرس مک کارت شبکه",
+"HW Info" => "اطلاعات سخت افزاری",
+"Status" => "وضعیت",
+"Ethernet Interfaces List" => "لیست رابط های شبکه",
+"Connected" => "متصل",
+"Not Connected" => "منفصل",
+"Edit Interface" => "ویرایش رابط شبکه",
+"Validation Error" => "اعتبار تایید نشد",
+"The following fields contain errors" => "فیلدهای زیر دارای خطا هستند",
+"Host" => "میزبان",
+"Primary DNS" => "اولین دی ان اس",
+"Secondary DNS" => "دومین دی ان اس",
+"Default Gateway" => "دروازه پیش فرض",
+"IP Address" => "آی پی آدرس",
+"Network Mask" => "ماسک شبکه",
+"Interface Type" => "نوع رابط",
+"Save" => "ذخیره",
+"Edit Network Parameters" => "ویرایش تنظیمات شبکه",
+"Required field" => "فیلد مورد نیاز",
+"Apply changes" => "ثبت تغییرات",
+"Are you sure you want to edit network parameters?" => "آیا مطمئنید که می خواهید تنظیمات شبکه را تغییر دهید؟",
+);
 ?>

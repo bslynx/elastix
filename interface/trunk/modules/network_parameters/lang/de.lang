@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 0.5                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,9 +25,34 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
-global $arrConfModule;
-$arrConfModule['module_name'] = 'network';
-$arrConfModule['templates_dir'] = 'themes';
-
+  $Id: de.lang,v 1.6 2007/09/05 00:36:42 gcarrillo Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Network Parameters" => "Netzwerkparameter",
+"Device" => "Karte",
+"Type" => "Typ",
+"IP" => "IP",
+"Mask" => "Netmask",
+"MAC Address" => "MAC-Adresse",
+"HW Info" => "HW-Info",
+"Status" => "Status",
+"Ethernet Interfaces List" => "Ethernetadapter",
+"Connected" => "verbunden",
+"Not Connected" => "nicht verbunden",
+"Edit Interface" => "Interface konfigurieren",
+"Validation Error" => "Gültigkeitssfehler",
+"The following fields contain errors" => "folgende Felder enthalten Fehler",
+"Host" => "Host",
+"Primary DNS" => "1, DNS",
+"Secondary DNS" => "2, DNS",
+"Default Gateway" => "Gateway",
+"IP Address" => "IP-Adresse",
+"Network Mask" => "Netzwerkmaske",
+"Interface Type" => "Interfacetyp",
+"Save" => "Speichern",
+"Edit Network Parameters" => "Netzwerkparameter konfigurieren",
+"Required field" => "erforderliche Felder",
+"Apply changes" => "Anwenden",
+"Are you sure you want to edit network parameters?" => "Sind Sie sicher, die Netzwerkparameter zu ändern?",
+);
 ?>

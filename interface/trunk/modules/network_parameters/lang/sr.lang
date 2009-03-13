@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 0.5                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,9 +25,34 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
-global $arrConfModule;
-$arrConfModule['module_name'] = 'network';
-$arrConfModule['templates_dir'] = 'themes';
-
+  $Id: sr.lang,v 1.6 2007/10/23 00:36:42 bmacias Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Network Parameters" => "Parametri mreze",
+"Device" => "Uredjaj",
+"Type" => "Tip",
+"IP" => "IP",
+"Mask" => "Maska",
+"MAC Address" => "MAC adresa",
+"HW Info" => "HW Info",
+"Status" => "Status",
+"Ethernet Interfaces List" => "Lista mreznih interfejsa",
+"Connected" => "Povezan",
+"Not Connected" => "Nije povezan",
+"Edit Interface" => "Modifikuj interfejs",
+"Validation Error" => "Validacijona greska",
+"The following fields contain errors" => "Sledeca polja sadrze greske",
+"Host" => "Host",
+"Primary DNS" => "Primarni DNS",
+"Secondary DNS" => "Secondary DNS",
+"Default Gateway" => "Standardni Gateway",
+"IP Address" => "IP adresa",
+"Network Mask" => "Mrezna maska",
+"Interface Type" => "Tip interfejsa",
+"Save" => "Sacuvaj",
+"Edit Network Parameters" => "Promeni mrezne parametre",
+"Required field" => "Obavezno polje",
+"Apply changes" => "Dodaj izmene",
+"Are you sure you want to edit network parameters?" => "Jeste li sigurni da zelite da izmenite mrezne parametre?",
+);
 ?>

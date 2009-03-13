@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 0.5                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,9 +25,35 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
-global $arrConfModule;
-$arrConfModule['module_name'] = 'network';
-$arrConfModule['templates_dir'] = 'themes';
-
+  $Id: es.lang,v 1.7 2009/03/13 00:36:42 aflores Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Network Parameters" => "Par&aacute;metros de Red",
+"Network" => "Red de Trabajo",
+"Device" => "Dispositivo",
+"Type" => "Tipo",
+"IP" => "IP",
+"Mask" => "M&aacute;scara",
+"MAC Address" => "Direcci&oacute;n MAC",
+"HW Info" => "HW Info",
+"Status" => "Estado",
+"Ethernet Interfaces List" => "Lista de Interfases Ethernet",
+"Connected" => "Conectado",
+"Not Connected" => "No Conectado",
+"Edit Interface" => "Editar Interfase",
+"Validation Error" => "Error de Validaci&oacute;n",
+"The following fields contain errors" => "Los siguientes campos contienen errores ",
+"Host" => "Host",
+"Primary DNS" => "DNS Primario",
+"Secondary DNS" => "DNS Secundario",
+"Default Gateway" => "Puerta de Enlace",
+"IP Address" => "Direcci&oacute;n IP",
+"Network Mask" => "M&aacute;scara de Red",
+"Interface Type" => "Tipo de Interfase",
+"Save" => "Guardar",
+"Edit Network Parameters" => "Editar Par&aacute;metros de Red",
+"Required field" => "Campo requerido",
+"Apply changes" => "Aplicar cambios",
+"Are you sure you want to edit network parameters?" => "¿Est&aacute; seguro que desea editar los par&aacute;metros de red?",
+);
 ?>

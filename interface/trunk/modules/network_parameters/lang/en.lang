@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 1.0                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -24,10 +24,38 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  |                                                                      |
+  | Translate by: Bruno Macias                                           |
+  | Email: bmacias@palosanto.com                                         |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
-global $arrConfModule;
-$arrConfModule['module_name'] = 'network';
-$arrConfModule['templates_dir'] = 'themes';
-
+  $Id: en.lang,v 1.7 2008/02/18 09:49:00 bmacias Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Network Parameters"=>"Network Parameters",
+"Device"=>"Device",
+"Type"=>"Type",
+"IP"=>"IP",
+"Mask"=>"Mask",
+"MAC Address"=>"MAC Address",
+"HW Info"=>"HW Info",
+"Status"=>"Status",
+"Ethernet Interfaces List"=>"Ethernet Interfaces List",
+"Connected"=>"Connected",
+"Not Connected"=>"Not Connected",
+"Edit Interface"=>"Edit Interface",
+"Validation Error"=>"Validation Error",
+"The following fields contain errors"=>"The following fields contain errors",
+"Host"=>"Host",
+"Primary DNS"=>"Primary DNS",
+"Secondary DNS"=>"Secondary DNS",
+"Default Gateway"=>"Default Gateway",
+"IP Address"=>"IP Address",
+"Network Mask"=>"Network Mask",
+"Interface Type"=>"Interface Type",
+"Save"=>"Save",
+"Edit Network Parameters"=>"Edit Network Parameters",
+"Required field"=>"Required field",
+"Apply changes"=>"Apply changes",
+"Are you sure you want to edit network parameters?"=>"Are you sure you want to edit network parameters?",
+);
 ?>
