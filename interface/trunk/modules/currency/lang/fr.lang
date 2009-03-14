@@ -28,7 +28,7 @@
   $Id: en.lang,v 1.1 2008-08-25 05:08:01 jvega jvega@palosanto.com Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Currency" => "Currency",
+"Currency" => "Monnaie",
 "Austral argentino" => "Austral argentino",
 "Baht tailandés / balboa panameño" => "Baht tailandés / balboa panameño",
 "Bolívar venezolano" => "Bolívar venezolano",

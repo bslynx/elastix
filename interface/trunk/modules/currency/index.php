@@ -175,7 +175,6 @@ function getCurrencys($arrLang)
             "C$"    => "C$ - ".$arrLang["Córdoba nicaragüense/dólar canadiense"],
             "₫"     => "₫ - ".$arrLang["Dong vietnamita"],
             "EC$"   => "EC$ - ".$arrLang["Dólar del Caribe Oriental"],
-            "₣"     => "₣ - ".$arrLang["Franco francés y belga"],
             "Kr"    => "Kr - ".$arrLang["Corona danesa, corona sueca"],
             "£"     => "£ - ".$arrLang["Libra/Lira"],
             "L$"    => "L$ - ".$arrLang["Lempira hondureño"],

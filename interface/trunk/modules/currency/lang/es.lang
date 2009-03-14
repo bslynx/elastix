@@ -29,7 +29,6 @@
 global $arrLangModule;
 $arrLangModule=array(
 "Currency" => "Moneda",
-
 "Austral argentino" => "Austral argentino",
 "Baht tailandés / balboa panameño" => "Baht tailandés / balboa panameño",
 "Bolívar venezolano" => "Bolívar venezolano",
@@ -37,7 +36,6 @@ $arrLangModule=array(
 "Córdoba nicaragüense/dólar canadiense" => "Córdoba nicaragüense/dólar canadiense",
 "Dong vietnamita" => "Dong vietnamita",
 "Dólar del Caribe Oriental" => "Dólar del Caribe Oriental",
-"Franco francés y belga" => "Franco francés y belga",
 "Corona danesa, corona sueca" => "Corona danesa, corona sueca",
 "Libra/Lira" => "Libra/Lira",
 "Lempira hondureño" => "Lempira hondureño",
