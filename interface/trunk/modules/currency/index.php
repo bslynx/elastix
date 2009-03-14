@@ -180,7 +180,7 @@ function getCurrencys($arrLang)
             "£"     => "£ - ".$arrLang["Libra/Lira"],
             "L$"    => "L$ - ".$arrLang["Lempira hondureño"],
             "Q"     => "Q - ".$arrLang["Quetzal guatemalteco"],
-            "₧"    => "₧ - ".$arrLang["Peseta española"],
+            "€"     => "€ - ".$arrLang["Euro"],
             "R"     => "R - ".$arrLang["Rand sudafricano"],
             "Rp"    => "Rp - ".$arrLang["Rupia indonesia"],
             "Rs"    => "Rs - ".$arrLang["Rupia"],

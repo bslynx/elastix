@@ -239,7 +239,7 @@ function _moduleContent(&$smarty, $module_name)
     // get all enabled modules
     // active_modules array used below and in drawselects function and genConf function
     // $active_modules = module_getinfo(false, MODULE_STATUS_ENABLED);
-    $active_modules = module_getinfo(false);
+    $active_modules = module_getinfo(false, MODULE_STATUS_ENABLED);
 
     $GLOBALS['active_modules'] = $active_modules;
 
