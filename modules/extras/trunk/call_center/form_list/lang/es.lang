@@ -1,0 +1,24 @@
+<?php
+
+$arrLan=array(
+"Form List"=>"Lista de Formularios",
+"Form Name" => "Nombre",
+"Form Description" => "Descripci&oacute;n",
+"Status"=>"Estado",
+"Options"=>"Opciones",
+"List Item"=>"List Item",
+"Type"=>"Tipo",
+"Preview"=>"Vista Previa",
+"All"=>"Todos",
+"Active"=>"Activos",
+"Inactive"=>"Inactivos",
+"Type Label"=>"Type Label",
+"Type Text"=>"Type Text",
+"Type List"=>"Type List",
+"Type Date"=>"Type Date",
+"Type Text Area"=>"Type Text Area",
+"Form"=>"Formulario",
+);
+
+
+?>

@@ -1,0 +1,26 @@
+<?php
+
+$arrLan=array(
+"Form List"=>"Liste Formulaires",
+"Form Name" => "Nom",
+"Form Description" => "Description",
+"Status"=>"Statut",
+"Options"=>"Options",
+"List Item"=>"Liste Objets",
+"Type"=>"Type",
+"Preview"=>"Pr&eacute;voir",
+"All"=>"Tous",
+"Active"=>"Actifs",
+"Inactive"=>"Inactifs",
+"Type Label"=>"Type Label",
+"Type Text"=>"Type Texte",
+"Type List"=>"Type Liste",
+"Type Date"=>"Type Date",
+"Type Text Area"=>"Type Zone Texte",
+"View Form"=>"Voir Formulaire",
+"Cancel"=>"Annuler",
+"Form"=>"Formulaire",
+);
+
+
+?>
