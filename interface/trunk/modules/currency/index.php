@@ -168,7 +168,7 @@ function loadCurrentCurrency($pDB)
 function getCurrencys($arrLang)
 {
     return array(
-            "=A="   => "=A= - ".$arrLang["Austral argentino"],
+            "AR$"   => "AR$ - ".$arrLang["Argentinian peso"],
             "฿"     => "฿ - ".$arrLang["Baht tailandés / balboa panameño"],
             "Bs"    => "Bs - ".$arrLang["Bolívar venezolano"],
             "Bs.F." => "Bs.F. - ".$arrLang["Bolívar fuerte venezolana"],

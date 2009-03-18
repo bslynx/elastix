@@ -29,7 +29,7 @@
 global $arrLangModule;
 $arrLangModule=array(
 "Currency" => "Moneda",
-"Austral argentino" => "Austral argentino",
+"Argentinian peso" => "Peso Argentino",
 "Baht tailandés / balboa panameño" => "Baht tailandés / balboa panameño",
 "Bolívar venezolano" => "Bolívar venezolano",
 "Bolívar fuerte venezolana" => "Bolívar fuerte venezolana",
