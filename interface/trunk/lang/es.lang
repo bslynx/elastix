@@ -1030,7 +1030,6 @@ alrededor del mundo.",
 "in" => "Recibido", 
 "out" => "Enviado", 
 "Type Fax" => "Tipo Fax", 
-);
 
 /*backup_restore*/
 "Flash Operator Panel Config Files" => "Archivos de configuración del panel de operaciones",
@@ -1078,4 +1077,5 @@ alrededor del mundo.",
 "System time changed successfully" => "Fecha y hora cambiadas satisfactoriamente",
 "System time can not be changed" => "Fecha y hora no pudieron ser cambiadas",
 /*module Time Config*/
+);
 ?>
