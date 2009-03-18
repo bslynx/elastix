@@ -25,7 +25,7 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: AppLogger.class.php,v 1.2 2008/09/08 18:29:36 alex Exp $ */
+  $Id: AppLogger.class.php,v 1.3 2009/03/06 16:06:22 alex Exp $ */
 
 class AppLogger
 {
@@ -65,7 +65,7 @@ class AppLogger
     // formato YYYY-MM-DD hh:mm
     function output($sCadena)
     {
-        fwrite($this->LOGHANDLE, date('Y/m/d H:i')." : ".(is_null($this->PREFIJO) ? '' : "($this->PREFIJO) ").$sCadena."\n");
+        fwrite($this->LOGHANDLE, date('Y-m-d H:i:s')." : ".(is_null($this->PREFIJO) ? '' : "($this->PREFIJO) ").$sCadena."\n");
     }
 
     // Cerrar la bitácora del programa

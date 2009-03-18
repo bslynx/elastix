@@ -25,7 +25,7 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: DialerProcess.class.php,v 1.45 2009/02/23 03:36:25 alex Exp $ */
+  $Id: DialerProcess.class.php,v 1.48 2009/03/26 13:46:58 alex Exp $ */
 require_once('AbstractProcess.class.php');
 require_once 'DB.php';
 require_once "phpagi-asmanager-elastix.php";
@@ -384,6 +384,8 @@ class DialerProcess extends AbstractProcess
             }
 
             if (!is_null($this->_astConn)) {
+                $this->_oGestorEntrante->actualizarCacheAgentes();
+                
                 $listaCampanias = array();
                 while ($infoCampania = $recordset->fetchRow(DB_FETCHMODE_OBJECT)) {
                     $infoCampania->variancia = NULL;
@@ -405,7 +407,7 @@ class DialerProcess extends AbstractProcess
                 // Consumir todos los eventos de llamada durante 3 segundos
                 $iTimestampInicioEspera = time();
                 while (time() - $iTimestampInicioEspera <= 3) {
-                     $this->_astConn->SetTimeout(4);
+                     $this->_astConn->SetTimeout(1);
                      $r = $this->_astConn->wait_response(TRUE);
                      if (is_null($r)) {
                         // Lo siguiente debería estar interno en AG_AsteriskManager
@@ -710,7 +712,7 @@ PETICION_LLAMADAS;
 						"\tDestino..... $tupla->phone\n" .
 						"\tCola........ $infoCampania->queue\n" .
 						"\tContexto.... $infoCampania->context\n" .
-						"\tTrunk....... $infoCampania->trunk\n" .
+						"\tTrunk....... ".(is_null($infoCampania->trunk) ? '(by dialplan)' : $infoCampania->trunk)."\n" .
 						"\tPlantilla... ".$datosTrunk['TRUNK']."\n" .
 						"\tCaller ID... ".(isset($datosTrunk['CID']) ? $datosTrunk['CID'] : "(no definido)")."\n".
 						"\tCadena de marcado $sCanalTrunk");
@@ -783,7 +785,9 @@ PETICION_LLAMADAS;
 	 */
 	private function _construirPlantillaMarcado($sTrunk)
 	{
-		if (stripos($sTrunk, '$OUTNUM$') !== FALSE) {
+		if (is_null($sTrunk)) {
+			return array('TRUNK' => 'Local/$OUTNUM$@from-internal');
+		} elseif (stripos($sTrunk, '$OUTNUM$') !== FALSE) {
 			// Este es un trunk personalizado que provee $OUTNUM$ ya preparado
 			return array('TRUNK' => $sTrunk);
 		} elseif (ereg('^SIP/', $sTrunk) 

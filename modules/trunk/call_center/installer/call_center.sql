@@ -133,7 +133,7 @@ CREATE TABLE IF NOT EXISTS `campaign` (
   `daytime_init` time NOT NULL,
   `daytime_end` time NOT NULL,
   `retries` int(10) unsigned NOT NULL default '1',
-  `trunk` varchar(255) NOT NULL,
+  `trunk` varchar(255),
   `context` varchar(32) NOT NULL,
   `queue` varchar(16) NOT NULL,
   `max_canales` int(10) unsigned NOT NULL default '0',
@@ -148,7 +148,7 @@ CREATE TABLE IF NOT EXISTS `campaign` (
 /* Upgrade from old length, if it applies */
 ALTER TABLE campaign 
 CHANGE COLUMN trunk
-trunk varchar(255) NOT NULL;
+trunk varchar(255);
 
 --
 -- Table structure for table `campaign_form`

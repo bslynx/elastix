@@ -25,7 +25,7 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: GestorLlamadasEntrantes.class.php,v 1.7 2009/01/09 23:03:30 alex Exp $ */
+  $Id: GestorLlamadasEntrantes.class.php,v 1.8 2009/03/06 15:10:53 alex Exp $ */
 
 /**
  * Esta clase es un gestor de llamadas entrantes. Luego de ser instanciada,
@@ -90,7 +90,7 @@ class GestorLlamadasEntrantes
 		}
 
         // Llenar el cache de datos de los agentes
-        $this->_actualizarCacheAgentes();
+        $this->actualizarCacheAgentes();
         
         // Limpiar los datos de las llamadas que no se alcanzaron a marcar término
         $this->finalizarLlamadasEnCurso();
@@ -131,11 +131,13 @@ class GestorLlamadasEntrantes
      * miembros que tienen la forma "Agent/DDDDDD". También se actualiza
      * la información de las colas monitoreadas.
      */
-    private function _actualizarCacheAgentes()
+    function actualizarCacheAgentes()
     {
-        $this->_leerColasMonitoreadas();
-        $this->_leerListaAgentes();
-        $this->_timestampCache = time();
+        if (is_null($this->_timestampCache) || time() - $this->_timestampCache >= MAX_TTL_CACHE_AGENTE) {
+            $this->_leerColasMonitoreadas();
+            $this->_leerListaAgentes();
+            $this->_timestampCache = time();
+        }
     }
     
     /**
@@ -215,9 +217,7 @@ class GestorLlamadasEntrantes
         $bLlamadaManejada = FALSE;
 
         // Asegurarse de que el caché está fresco
-        if (time() - $this->_timestampCache >= MAX_TTL_CACHE_AGENTE) {
-            $this->_actualizarCacheAgentes();
-        }
+        $this->actualizarCacheAgentes();
         
         if (in_array($eventParams['Queue'], $this->_cacheColasMonitoreadas)) {
         	// Esta es una llamada entrante que debe de ser registrada
@@ -299,9 +299,7 @@ class GestorLlamadasEntrantes
         $bLlamadaManejada = FALSE;
 
         // Asegurarse de que el caché está fresco
-        if (time() - $this->_timestampCache >= MAX_TTL_CACHE_AGENTE) {
-        	$this->_actualizarCacheAgentes();
-        }
+        $this->actualizarCacheAgentes();
 
         // Nótese que para canal 1, se requiere ID y CID 2, y viceversa.
         $sKey_Uniqueid = NULL;
