@@ -36,11 +36,25 @@ function _moduleContent(&$smarty, $module_name)
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
     require_once "modules/$module_name/libs/PaloSantoPackages.class.php";
+
+    $lang=get_language();
+    $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
+    $lang_file="modules/$module_name/lang/$lang.lang";
+    if (file_exists("$base_dir/$lang_file")) include_once "$lang_file";
+    else include_once "modules/$module_name/lang/en.lang";
+
+
+    //global variables
     global $arrConf;
+    global $arrConfModule;
     global $arrLang;
+    global $arrLangModule;
+    $arrConf = array_merge($arrConf,$arrConfModule);
+    $arrLang = array_merge($arrLang,$arrLangModule);
+
     //folder path for custom templates
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
-    $templates_dir=(isset($arrConfig['templates_dir']))?$arrConfig['templates_dir']:'themes';
+    $templates_dir=(isset($arrConf['templates_dir']))?$arrConf['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
 
     $xajax = new xajax();
@@ -48,12 +62,12 @@ function _moduleContent(&$smarty, $module_name)
     $xajax->registerFunction("installPaquete");
     $xajax->processRequests();
     $contenidoModulo  = $xajax->printJavascript("libs/xajax/");
-    $contenidoModulo .= listPackages($smarty, $module_name, $local_templates_dir,$arrConfig);
+    $contenidoModulo .= listPackages($smarty, $module_name, $local_templates_dir,$arrConf);
 
     return $contenidoModulo;
 }
 
-function listPackages($smarty, $module_name, $local_templates_dir,$arrConfig) {
+function listPackages($smarty, $module_name, $local_templates_dir,$arrConf) {
 
     global $arrLang;
     $oPackages = new PaloSantoPackages();
@@ -61,7 +75,7 @@ function listPackages($smarty, $module_name, $local_templates_dir,$arrConfig) {
     $submitInstalado = getParametro('submitInstalado');
     $nombre_paquete = getParametro('nombre_paquete');
 
-    $total_paquetes = $oPackages->ObtenerTotalPaquetes($submitInstalado, $arrConfig['ruta_yum']);
+    $total_paquetes = $oPackages->ObtenerTotalPaquetes($submitInstalado, $arrConf['ruta_yum']);
 
     $limit = 50;
     $total = $total_paquetes;
@@ -71,10 +85,10 @@ function listPackages($smarty, $module_name, $local_templates_dir,$arrConfig) {
 
 
     if($submitInstalado =='all'){
-        $arrPaquetes = $oPackages->getAllPackages($arrConfig['ruta_yum'],$nombre_paquete, $offset, $limit);
+        $arrPaquetes = $oPackages->getAllPackages($arrConf['ruta_yum'],$nombre_paquete, $offset, $limit);
     }
     else{  //si no hay post por default los instalados
-        $arrPaquetes = $oPackages->getPackagesInstalados($arrConfig['ruta_yum'],$nombre_paquete, $offset, $limit, $total);
+        $arrPaquetes = $oPackages->getPackagesInstalados($arrConf['ruta_yum'],$nombre_paquete, $offset, $limit, $total);
     }
 
 

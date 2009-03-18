@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 1.0                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -24,10 +24,47 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  |                                                                      |
+  | Translate by: Bruno Macias                                           |
+  | Email: bmacias@palosanto.com                                         |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/03/23 00:13:58 elandivar Exp $ */
-global $arrConfModule;
-$arrConfModule['module_name'] = 'packages';
-$arrConfModule['templates_dir'] = 'themes';
-$arrConfModule['ruta_yum'] = '/var/cache/yum/';
+  $Id: en.lang,v 1.7 2008/02/18 09:49:00 bmacias Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Updates" => "Updates",
+"Repositories" =>"Repositories",
+"Package Name" => "Package Name",
+"Package Info" => "Package Info",
+"Package Version" => "Version",
+"Package Installed" => "Installed",
+"Package Upgrade" => "Upgrade",
+"Package Delete" => "Delete",
+"Package Release" => "Release",
+"Packages not Founds" => "Packages not Founds",
+"All Package" => "All",
+"Packages" => "Packages",
+"Package Noninstalled" => "Noninstalled",
+"Repositor not Found" => "Repositor not Found",
+"Package Search" => "Search",
+"Repositor Place" => "Repositor",
+"Repositor Place" => "Repositor",
+"Package Update" => "Packages Update",
+"Updating Packages" => "Updating Packages",
+"Satisfactory Update" => "Satisfactory Update",
+"Choice" => "Choice",
+"Updated" => "Updated",
+"Install" => "Install",
+"Repositories Update" => "Repositories Update",
+"Updating Repositories" => "Updating Repositories",
+"Satisfactory Install" => "Satisfactory Install",
+"Installing Package" => "Installing Package",
+"Updating for dependencies" => "Updating for dependencies",
+"Installing for dependencies" => "Installing for dependencies",
+"Installing" => "Installing",
+"Total Packages" => "Total Packages",
+"There is an action in process" => "There is an action in process",
+"Search"    => "Search",
+"Name" => "Name",
+"Status"=>"Status",
+);
 ?>

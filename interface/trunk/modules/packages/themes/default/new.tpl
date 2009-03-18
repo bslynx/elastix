@@ -28,7 +28,7 @@
         var estatus   = document.getElementById('estaus_reloj');
         if(estatus.value=='apagado'){
             estatus.value='prendido';
-            nodoReloj.innerHTML = "<img src='images/hourglass.gif' align='absmiddle' /> <br /> <font style='font-size:12px; color:red'>{/literal}{$UpdatingRepositories}{literal}...</font>";
+            nodoReloj.innerHTML = "<img src='modules/packages/images/hourglass.gif' align='absmiddle' /> <br /> <font style='font-size:12px; color:red'>{/literal}{$UpdatingRepositories}{literal}...</font>";
             xajax_actualizarRepositorios();
         }
         else alert("{/literal}{$accionEnProceso}{literal}");

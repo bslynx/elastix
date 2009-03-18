@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 1.0                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,9 +25,42 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/03/23 00:13:58 elandivar Exp $ */
-global $arrConfModule;
-$arrConfModule['module_name'] = 'packages';
-$arrConfModule['templates_dir'] = 'themes';
-$arrConfModule['ruta_yum'] = '/var/cache/yum/';
+  $Id: sv.lang,v 0.1 2008/03/25 00:36:42 IFIT DATA - http://www.ifit.se Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Updates" => "Uppdateringar",
+"Repositories" => "Repositories",
+"Package Name" => "Paketets Namn",
+"Package Info" => "Paketets Information",
+"Package Version" => "Version",
+"Package Installed" => "Installerad",
+"Package Upgrade" => "Upgradera",
+"Package Delete" => "Ta bort",
+"Package Release" => "Sl&auml;ppt",
+"Packages not Founds" => "Inga paket hittade",
+"All Package" => "Alla",
+"Packages" => "Paket",
+"Package Noninstalled" => "Ej installerad",
+"Repositor not Found" => "Repositor kunde inte hittas",
+"Package Search" => "S&ouml;k",
+"Repositor Place" => "Repositor",
+"Package Update" => "Paket Uppdatering",
+"Updating Packages" => "Uppdaterar Paketen",
+"Satisfactory Update" => "Fullv&auml;rdig Uppdatering",
+"Choice" => "Val",
+"Updated" => "Uppdaterad",
+"Install" => "Installera",
+"Repositories Update" => "Repositories uppdatering",
+"Updating Repositories" => "Uppdatera Repositories",
+"Satisfactory Install" => "Satisfactory Install",
+"Installing Package" => "Installerar Paket",
+"Updating for dependencies" => "Uppdaterar f&ouml;r beroenden",
+"Installing for dependencies" => "Installerar f&ouml;r beroenden",
+"Installing" => "Installerar",
+"Total Packages" => "Totala Paket",
+"There is an action in process" => "En process p&aring;g&aring;r",
+"Search" => "S&ouml;k",
+"Name" => "Namn",
+"Status" => "Status",
+);
 ?>

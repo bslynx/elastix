@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 0.5                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,9 +25,42 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/03/23 00:13:58 elandivar Exp $ */
-global $arrConfModule;
-$arrConfModule['module_name'] = 'packages';
-$arrConfModule['templates_dir'] = 'themes';
-$arrConfModule['ruta_yum'] = '/var/cache/yum/';
+  $Id: es.lang,v 1.7 2007/09/05 00:36:42 gcarrillo Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Updates" => "Actualizaciones",
+"Repositories" => "Repositorios",
+"Package Name" => "Nombre Paquete",
+"Package Info" => "Informacion Paquete",
+"Package Version" => "Version",
+"Package Installed" => "Instalado",
+"Package Upgrade" => "Actualizado",
+"Package Delete" => "Eliminar",
+"Package Release" => "Release",
+"Packages not Founds" => "Paquetes no encontrados",
+"All Package" => "Todos",
+"Packages" => "Paquetes",
+"Package Noninstalled" => "No instalado",
+"Repositor not Found" => "Repositorios no encontrados",
+"Package Search" => "Buscar",
+"Repositor Place" => "Repositorio",
+"Package Update" => "Actualizar Paquetes",
+"Updating Packages" => "Actualizando Paquetes",
+"Satisfactory Update" => "Actualizacion Satisfactoria",
+"Choice" => "Elegir",
+"Updated" => "Actualizado",
+"Install" => "Instalar",
+"Repositories Update" => "Actualizar Repositorios",
+"Updating Repositories" => "Actualizando Repositorios",
+"Satisfactory Install" => "Instalacion Exitosa",
+"Installing Package" => "Instalando Paquete",
+"Updating for dependencies" => "Actualizados por Dependencias",
+"Installing for dependencies" => "Instalados por Dependencias",
+"Installing" => "Instalados",
+"Total Packages" => "Total Paquetes",
+"There is an action in process" => "Hay una accion en proceso",
+"Search" => "Buscar",
+"Name" => "Nombre",
+"Status" => "Estado",
+);
 ?>
