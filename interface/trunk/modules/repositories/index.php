@@ -36,19 +36,33 @@ function _moduleContent(&$smarty, $module_name)
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
     require_once "modules/$module_name/libs/PaloSantoRepositories.class.php";
+    
+    $lang=get_language();
+    $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
+    $lang_file="modules/$module_name/lang/$lang.lang";
+    if (file_exists("$base_dir/$lang_file")) include_once "$lang_file";
+    else include_once "modules/$module_name/lang/en.lang";
+
+
+    //global variables
     global $arrConf;
+    global $arrConfModule;
     global $arrLang;
+    global $arrLangModule;
+    $arrConf = array_merge($arrConf,$arrConfModule);
+    $arrLang = array_merge($arrLang,$arrLangModule);
+
     //folder path for custom templates
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
-    $templates_dir=(isset($arrConfig['templates_dir']))?$arrConfig['templates_dir']:'themes';
+    $templates_dir=(isset($arrConf['templates_dir']))?$arrConf['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
 
-    $contenidoModulo = listRepositories($smarty, $module_name, $local_templates_dir,$arrConfig);
+    $contenidoModulo = listRepositories($smarty, $module_name, $local_templates_dir,$arrConf);
 
     return $contenidoModulo;
 }
 
-function listRepositories($smarty, $module_name, $local_templates_dir,$arrConfig) {
+function listRepositories($smarty, $module_name, $local_templates_dir,$arrConf) {
 
     global $arrLang;
     $oRepositories = new PaloSantoRepositories();
@@ -58,10 +72,10 @@ function listRepositories($smarty, $module_name, $local_templates_dir,$arrConfig
             if(substr($key,0,5)=='repo-')
                 $arrReposActivos[]=substr($key,5);
         }
-        $oRepositories->setRepositorios($arrConfig['ruta_repos'],$arrReposActivos);
+        $oRepositories->setRepositorios($arrConf['ruta_repos'],$arrReposActivos);
     }
 
-    $arrRepositorios = $oRepositories->getRepositorios($arrConfig['ruta_repos']);
+    $arrRepositorios = $oRepositories->getRepositorios($arrConf['ruta_repos']);
     $limit  = 50;
     $total  = count($arrRepositorios); 
     $oGrid  = new paloSantoGrid($smarty);
@@ -82,7 +96,7 @@ function listRepositories($smarty, $module_name, $local_templates_dir,$arrConfig
     }
 
     $arrGrid = array("title"    => $arrLang["Repositories"],
-        "icon"     => "images/list.png",
+        "icon"     => "modules/repositories/images/list.png",
         "width"    => "99%",
         "start"    => ($total==0) ? 0 : $offset + 1,
         "end"      => $end,
