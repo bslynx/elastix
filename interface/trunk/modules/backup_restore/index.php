@@ -46,12 +46,26 @@ function _moduleContent(&$smarty, $module_name)
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
     //include_once "modules/$module_name/libs/paloSantoConference.php";
+
+    $lang=get_language();
+    $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
+    $lang_file="modules/$module_name/lang/$lang.lang";
+    if (file_exists("$base_dir/$lang_file")) include_once "$lang_file";
+    else include_once "modules/$module_name/lang/en.lang";
+
+
+    //global variables
     global $arrConf;
+    global $arrConfModule;
     global $arrLang;
+    global $arrLangModule;
+    $arrConf = array_merge($arrConf,$arrConfModule);
+    $arrLang = array_merge($arrLang,$arrLangModule);
+
 
     //folder path for custom templates
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
-    $templates_dir=(isset($arrConfig['templates_dir']))?$arrConfig['templates_dir']:'themes';
+    $templates_dir=(isset($arrConf['templates_dir']))?$arrConf['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
 
     $dir_backup = $arrConf["dir_backup"];
@@ -464,7 +478,7 @@ function Array_Options($arrLang, $disabled="")
                                     "as_monitor"        =>  array("desc"=>$arrLang["Monitors"]."  ".$arrLang["(Heavy Content)"],"check"=>"","msg"=>"","disable"=>"$disabled"),
                                     "as_voicemail"      =>  array("desc"=>$arrLang["Voicemails"]."  ".$arrLang["(Heavy Content)"],"check"=>"","msg"=>"","disable"=>"$disabled"),
                                     "as_sounds"         =>  array("desc"=>$arrLang["Sounds"],"check"=>"","msg"=>"","disable"=>"$disabled"),
-                                    "as_dahdi"         =>  array("desc"=>$arrLang["DAHDI Configuration"],"check"=>"","msg"=>"","disable"=>"$disabled"),
+                                    "as_zaptel"         =>  array("desc"=>$arrLang["Zaptel Configuration"],"check"=>"","msg"=>"","disable"=>"$disabled"),
                                 ),
             "fax"           =>  array(
                                     "fx_db"             =>  array("desc"=>$arrLang["Database"],"check"=>"","msg"=>"","disable"=>"$disabled"),
@@ -484,7 +498,7 @@ function Array_Options($arrLang, $disabled="")
                                     "a2billing_db"      =>  array("desc"=>$arrLang["A2billing Database"],"check"=>"","msg"=>"","disable"=>"$disabled"),
                                     "mysql_db"          =>  array("desc"=>$arrLang["Mysql Database"],"check"=>"","msg"=>"","disable"=>"$disabled"),
                                     "menus_permissions" =>  array("desc"=>$arrLang["Menus and Permissions"],"check"=>"","msg"=>"","disable"=>"$disabled"),
-                                    "fop_config"        =>  array("desc"=>$arrLang["Flash Operator Panel Config Files"],"check"=>"","msg"=>"","disable"=>"$disabled"),
+                                    "fop_config"        =>  array("desc"=>"Flash Operator Panel Config Files","check"=>"","msg"=>"","disable"=>"$disabled"),
                                 ),
     );
     return $arrBackupOptions;
@@ -560,8 +574,11 @@ function process_each_backup($arrSelectedOptions,$ruta_respaldo,&$arrBackupOptio
                 $bExito = false;
             break;
 
-        case "as_dahdi":
-            exec("cp /etc/dahdi/system.conf $ruta_respaldo", $output, $retval);
+        case "as_zaptel":
+            exec("cp /etc/zaptel.conf $ruta_respaldo", $output, $retval);
+            if ($retval!=0) $bExito = false;
+
+            exec("cp /etc/sysconfig/zaptel $ruta_respaldo", $output, $retval);
             if ($retval!=0) $bExito = false;
             break;
 
@@ -970,19 +987,37 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
             }
             break;
 
-        case "as_dahdi":
-            $comando="sudo -u root touch /etc/dahdi/system.conf";
+        case "as_zaptel":
+            $comando="sudo -u root touch /etc/zaptel.conf";
             exec($comando, $output, $retval);
 
-            $comando="sudo -u root chmod 777 /etc/dahdi/system.conf";
+            $comando="sudo -u root chmod 777 /etc/zaptel.conf";
             exec($comando, $output, $retval);
 
-            $comando="cat $ruta_respaldo/system.conf > /etc/dahdi/system.conf";
+            $comando="cat $ruta_respaldo/zaptel.conf > /etc/zaptel.conf";
             exec($comando, $output, $retval);
             //Solo en este verifico si se ejecuto correctamente pues aqui es donde se copia la info
             if ($retval!=0) $bExito = false;
 
-            $comando="sudo -u root chmod 644 /etc/dahdi/system.conf";
+            $comando="sudo -u root chmod 644 /etc/zaptel.conf";
+            exec($comando, $output, $retval);
+            break;
+
+
+
+            // /etc/sysconfig/zaptel
+            $comando="sudo -u root touch /etc/sysconfig/zaptel";
+            exec($comando, $output, $retval);
+
+            $comando="sudo -u root chmod 777 /etc/sysconfig/zaptel";
+            exec($comando, $output, $retval);
+
+            $comando="cat $ruta_respaldo/zaptel > /etc/sysconfig/zaptel";
+            exec($comando, $output, $retval);
+            //Solo en este verifico si se ejecuto correctamente pues aqui es donde se copia la info
+            if ($retval!=0) $bExito = false;
+
+            $comando="sudo -u root chmod 644 /etc/sysconfig/zaptel";
             exec($comando, $output, $retval);
             break;
 
