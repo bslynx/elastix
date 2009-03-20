@@ -28,14 +28,27 @@
   $Id: sv.lang,v 0.1 2008/03/25 00:36:42 IFIT DATA - http://www.ifit.se Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
+"Load Module" => "Ladda Modul",
 "Refresh" => "Uppdatera",
 "Menu Location" => "Meny lokalisering",
 "Module File" => "Modul Fil",
+"ID for new module (folder name)" => "ID f&ouml;r ny modul (katalognamn)",
 "Module Name" => "Modul Namn",
+"Choose Menu" => "V&auml;lj Meny",
+"ID for new menu" => "ID f&ouml;r ny meny",
+"Menu Name" => "Meny Namn",
+"Defined Menu" => "Definerad Meny",
+"New Menu" => "Ny Meny",
 "Invalid file extension.- It must be tar.gz / zip / tgz" => "Ogiltig fil&auml;ndelse.- M&aring;ste vara tar.gz / zip / tgz",
+"Module sucessfully loaded" => "Lyckad inladdning av modul",
+"Folder name doesn't exist in module file" => "Katalogens namn existerar inte i modul filen",
+"Folder configs doesn't exist in module file" => "Katalogens konfiguration existerar inte i modul filen",
+"Folder themes doesn't exist in module file" => "Katalogens tema existerar inte i modul filen",
+"File index.php doesn't exist in module file" => "Filen index.php existerar inte i modul filen",
+"File install.php doesn't exist in module file" => "Filen install.php existerar inte i modul filen",
 "Could not uncompress file" => "Kunde inte extrahera filen",
 "install.php failed" => "install.php misslyckades",
-"File installer.php doesn't exist in package" =>"Filen installer.php existerar inte i paketet",
-"File module.xml doesn't exist in package"=>"Filen module.xml existerar inte i paketet",
+"File installer.php doesn't exist in package" => "Filen installer.php existerar inte i paketet",
+"File module.xml doesn't exist in package" => "Filen module.xml existerar inte i paketet",
 );
 ?>

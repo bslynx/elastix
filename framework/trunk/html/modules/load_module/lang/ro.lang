@@ -1,19 +1,19 @@
 <?php
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
-  CodificaciÃ³n: UTF-8
+  Codificacion: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.5                                                  |
+  | Elastix version 1.1                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
   +----------------------------------------------------------------------+
   | Cdla. Nueva Kennedy Calle E 222 y 9na. Este                          |
-  | Telfs. 2283-268, 2294-440, 2284-356                                  |
+  | Telfs. 2283-268, 2294-440, 22OC84-356                                |
   | Guayaquil - Ecuador                                                  |
-  | http://www.palosanto.com 							 |
+  | http://www.palosanto.com                                             |
   |                                                                      |
-  | Translate bye: Narcis Magardician                                    |
-  | narcis@posdirect.eu                                                  |
+  | Romanian Translation by: Narcis Magardician   LAST UPDATE 04/06/2008 |
+  | narcis@artelcom.ro                                                   |
   |                                                                      |
   +----------------------------------------------------------------------+
   | The contents of this file are subject to the General Public License  |
@@ -29,17 +29,29 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: ro.lang,v 1.6 2007/09/05 00:36:42 gcarrillo Exp $ */
+  $Id: ro.lang,v 1.6 2007/09/05 00:36:42 afigueroa Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"File name"  =>  "Fisier",
-"Refresh"  =>  "Reincarcare",
-"Menu Location"  =>  "Locatie Meniu",
-"Module File"  =>  "Fisier Modul",
-"Module Name"  =>  "Nume Modul",
-"Invalid file extension.- It must be tar.gz / zip / tgz"  =>  "Extensie fisier invalida.- Trebuie sa fie tar.gz / zip / tgz",
-"Could not uncompress file"  =>  "Could not uncompress file",
-"install.php failed"  =>  "install.php failed",
+"Load Module" => "Incarcare Modul",
+"Refresh" => "Reincarcare",
+"Menu Location" => "Locatie Meniu",
+"Module File" => "Fisier Modul",
+"ID for new module (folder name)" => "ID pentru modul nou (nume folder)",
+"Module Name" => "Nume Modul",
+"Choose Menu" => "Selectati Meniul",
+"ID for new menu" => "ID pentru meniul nou",
+"Menu Name" => "Nume Meniu",
+"Defined Menu" => "Meniu Definit",
+"New Menu" => "Meniu Nou",
+"Invalid file extension.- It must be tar.gz / zip / tgz" => "Extensie fisier invalida.- Trebuie sa fie tar.gz / zip / tgz",
+"Module sucessfully loaded" => "Modul Incarcat cu Succes",
+"Folder name doesn't exist in module file" => "Folder name doesn't exist in module file",
+"Folder configs doesn't exist in module file" => "Folder configs doesn't exist in module file",
+"Folder themes doesn't exist in module file" => "Folder themes doesn't exist in module file",
+"File index.php doesn't exist in module file" => "File index.php doesn't exist in module file",
+"File install.php doesn't exist in module file" => "File install.php doesn't exist in module file",
+"Could not uncompress file" => "Could not uncompress file",
+"install.php failed" => "install.php failed",
 "File installer.php doesn't exist in package" => "Fisierul installer.php nu exita in pachet",
 "File module.xml doesn't exist in package" => "Fisierul module.xml nu exista in pachet",
 );

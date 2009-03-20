@@ -26,21 +26,32 @@
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   |                                                                      |
   | Translate by: Haamed Kouhfallah                                      |
-  | Email: haamed@cytco.net                                              |
-  |                                                                      |
+  | Email: haamed@cytco.net                                              |                                                                    |
   +----------------------------------------------------------------------+
-  $Id: fa.lang,v 1.2 2008/04/21 10:11:44 bmacias@palosanto.com Exp $ */
+   $Id: fa.lang,v 1.2 2008/04/21 10:11:44 bmacias@palosanto.com Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Refresh" => "دوباره آوردن",
-"Menu Location" => "محل فهرست انتخاب",
+"Load Module" => "نصب ماژول",
+"Refresh" => "بازآوری",
+"Menu Location" => "محل منو",
 "Module File" => "فایل ماژول",
+"ID for new module (folder name)" => "شناسه کاربری برای ماژول جدید (نام پوشه)",
 "Module Name" => "نام ماژول",
+"Choose Menu" => "منو را انتخاب کنید",
+"ID for new menu" => "شناسه برای منوی جدید",
+"Menu Name" => "نام منو",
+"Defined Menu" => "منوی تعریف شده",
+"New Menu" => "منوی جدید",
 "Invalid file extension.- It must be tar.gz / zip / tgz" => "پسوند فایل غیر مجاز، باید  tar.gz / zip / tgz  باشد",
+"Module sucessfully loaded" => "ماژول با موفقیت لود شد",
+"Folder name doesn't exist in module file" => "نام پوشه در فایل ماژول وجود ندارد",
+"Folder configs doesn't exist in module file" => "پوشه configs در فایل ماژول وجود ندارد",
+"Folder themes doesn't exist in module file" => "پوشه themes در فایل ماژول وجود ندارد",
+"File index.php doesn't exist in module file" => "فایل index.php در فایل ماژول وجود ندارد",
 "File install.php doesn't exist in module file" => "فایل install.php در فایل ماژول وجود ندارد",
-"Could not uncompress file" => "شکست در درآوردن فایل از حالت فشرده شده",
+"Could not uncompress file" => "شکست در تغییر فایل از حالت فشرده شده",
 "install.php failed" => "خطا در install.php",
-"File installer.php doesn't exist in package" => "ﻑﺍیﻝ installer.php ﺩﺭ ﺐﺴﺘﻫ ﻮﺟﻭﺩ ﻥﺩﺍﺭﺩ",
-"File module.xml doesn't exist in package" => "ﻑﺍیﻝ module.xml ﺩﺭ ﺐﺴﺘﻫ ﻮﺟﻭﺩ ﻥﺩﺍﺭﺩ",
+"File installer.php doesn't exist in package" => "فایل installer.php در بسته وجود ندارد",
+"File module.xml doesn't exist in package" => "فایل module.xml در بسته وجود ندارد",
 );
 ?>

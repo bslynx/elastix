@@ -31,14 +31,27 @@
  $Id: ja.lang,v 1.6 2008/05/18 20:00:00 ganymean Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
+"Load Module" => "モジュールのロード",
 "Refresh" => "リフレッシュ",
 "Menu Location" => "メニュー配置",
 "Module File" => "モジュールファイル",
+"ID for new module (folder name)" => "新モジュールID（フォルダ名）",
 "Module Name" => "モジュール名",
+"Choose Menu" => "モジュールの選択",
+"ID for new menu" => "新規モジュールID",
+"Menu Name" => "メニュー名",
+"Defined Menu" => "定義済メニュー",
+"New Menu" => "新規メニュー",
+"Invalid file extension.- It must be tar.gz / zip / tgz" => "ファイルの拡張子は適切ではありません（tar.gz / zip / tgz のいずれか！）。",
+"Module sucessfully loaded" => "モジュールを正常にロードしました",
+"Folder name doesn't exist in module file" => "モジュールファイルに、フォルダ名がありません",
+"Folder configs doesn't exist in module file" => "モジュールファイルに、フォルダ設定情報がありません",
+"Folder themes doesn't exist in module file" => "モジュールファイルに、フォルダーテーマがありません",
+"File index.php doesn't exist in module file" => "モジュールファイルに、index.phpがありません",
+"File install.php doesn't exist in module file" => "モジュールファイルに、install.phpがありません",
 "Could not uncompress file" => "ファイルを解凍できません",
 "install.php failed" => "install.phpの実行が失敗しました",
-"Invalid file extension.- It must be tar.gz / zip / tgz" => "ファイルの拡張子は適切ではありません（tar.gz / zip / tgz のいずれか！）。",
-"File installer.php doesn't exist in package" =>"installer.php がパッケージ内に存在しません",
-"File module.xml doesn't exist in package"=>"module.xml がパッケージ内に存在しません",
+"File installer.php doesn't exist in package" => "installer.php がパッケージ内に存在しません",
+"File module.xml doesn't exist in package" => "module.xml がパッケージ内に存在しません",
 );
 ?>

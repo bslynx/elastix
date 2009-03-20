@@ -33,15 +33,28 @@
   $Id: fr.lang,v 1.8 2008/05/20 00:36:42 bmacias Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Refresh"  =>  "Rafraichir",
-"Menu Location"  =>  "Emplacement Menu",
-"Module File"  =>  "Fichier du Module",
-"Module Name"  =>  "Nom Module",
-"Invalid file extension.- It must be tar.gz / zip / tgz"  =>  "Extension fichier invalide.- Elle doit &ecirc;tre en tar.gz / zip / tgz",
-"File install.php doesn't exist in module file"  =>  "Fichier install.php inexistant dans le fichier de module",
-"Could not uncompress file"  =>  "Impossible de d&eacute;compresser le fichier",
-"install.php failed"  =>  "Echec install.php",
-"File installer.php doesn't exist in package" =>"Fichier installer.php inexistant dans le paquet",
-"File module.xml doesn't exist in package"=>"Fichier module.xml inexistant dans le paquet",
+"Load Module" => "Chargement Module",
+"Refresh" => "Rafraichir",
+"Menu Location" => "Emplacement Menu",
+"Module File" => "Fichier du Module",
+"ID for new module (folder name)" => "ID pour nouveau module (nom dossier)",
+"Module Name" => "Nom Module",
+"Choose Menu" => "Choisir Menu",
+"ID for new menu" => "ID pour nouveau menu",
+"Menu Name" => "Nom Menu",
+"Defined Menu" => "Menu D&eacute;fini",
+"New Menu" => "Nouveau Menu",
+"Invalid file extension.- It must be tar.gz / zip / tgz" => "Extension fichier invalide.- Elle doit &ecirc;tre en tar.gz /
+zip / tgz",
+"Module sucessfully loaded" => "Module correctement charg&eacute;",
+"Folder name doesn't exist in module file" => "Dossier Nom inexistant dans le fichier de module",
+"Folder configs doesn't exist in module file" => "Dossier configs inexistant dans le fichier de module",
+"Folder themes doesn't exist in module file" => "Dossier th&egrave;mes inexistant dans le fichier de module",
+"File index.php doesn't exist in module file" => "Fichier index.php inexistant dans le fichier de module",
+"File install.php doesn't exist in module file" => "Fichier install.php inexistant dans le fichier de module",
+"Could not uncompress file" => "Impossible de d&eacute;compresser le fichier",
+"install.php failed" => "Echec install.php",
+"File installer.php doesn't exist in package" => "Fichier installer.php inexistant dans le paquet",
+"File module.xml doesn't exist in package" => "Fichier module.xml inexistant dans le paquet",
 );
 ?>

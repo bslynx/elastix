@@ -14,7 +14,7 @@
   |                                                                      |
   | Translate bye: Erwan DESVERGNES - SDCI                               |
   | erwan.desvergnes@SDCI.fr                                             |
-  |                                                                               |                                               |
+  |                                                                      |                                               |
   +----------------------------------------------------------------------+
   | The contents of this file are subject to the General Public License  |
   | (GPL) Version 2 (the "License"); you may not use this file except in |
@@ -32,14 +32,27 @@
   $Id: br.lang,v 1.6 2007/09/05 00:36:42 gcarrillo Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Module File"  =>  "Module File",
-"File name"  =>  "File name",
-"Refresh"  =>  "Refresh",
-"Menu Location"  =>  "Menu Location",
-"Invalid file extension.- It must be tar.gz / zip / tgz"  =>  "Invalid file extension.- It must be tar.gz / zip / tgz",
-"Could not uncompress file"  =>  "Could not uncompress file",
-"install.php failed"  =>  "install.php failed",
-"File installer.php doesn't exist in package" =>"File installer.php doesn't exist in package",
-"File module.xml doesn't exist in package"=>"File module.xml doesn't exist in package",
+"Load Module" => "Carregar módulo",
+"Refresh" => "Atualizar",
+"Menu Location" => "Localização do Menu",
+"Module File" => "Arquivo do Módulo",
+"ID for new module (folder name)" => "ID for new module (folder name)",
+"Module Name" => "Nome do Módulo",
+"Choose Menu" => "Selecione o Menu",
+"ID for new menu" => "ID para o novo menu",
+"Menu Name" => "Nome do Menu",
+"Defined Menu" => "Menu Definedo",
+"New Menu" => "Novo Menu",
+"Invalid file extension.- It must be tar.gz / zip / tgz" => "Extensão de arquivo inválida.- Deve ser tar.gz / zip / tgz",
+"Module sucessfully loaded" => "Módulo carregado",
+"Folder name doesn't exist in module file" => "Nome do diretório não existe no arquivo do módulo",
+"Folder configs doesn't exist in module file" => "Diretório de configurações não existe no arquivo do módulo",
+"Folder themes doesn't exist in module file" => "Diretório de temas não existe no arquivo do módulo",
+"File index.php doesn't exist in module file" => "O arquivo index.php não existe no arquivo do módulo",
+"File install.php doesn't exist in module file" => "O arquivo install.php não existe no arquivo do módulo",
+"Could not uncompress file" => "Não foi possível descomprimir o arquivo",
+"install.php failed" => "install.php falhou",
+"File installer.php doesn't exist in package" => "O arquivo installer.php não existe no pacote",
+"File module.xml doesn't exist in package" => "O arquivo module.xml não existe no pacote",
 );
 ?>
