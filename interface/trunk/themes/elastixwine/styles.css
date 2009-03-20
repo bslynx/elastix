@@ -150,7 +150,7 @@ TR.table_title_row {
     text-align: left;
     background-color: #f8f7f7;
     /* background-image: url(/images/primerafilabg.gif); */
-    background-image: url(/crm/themes/Sugar/images/bgGray.gif); 
+    background-image: url(/images/bgGray.gif); 
     background-repeat: repeat-x;
     background-position: bottom;
     border-bottom: 1px #aaaaaa solid;
@@ -720,7 +720,7 @@ td.botonoff a {
     color: #444;
     background-color: #ffffff;
     border-color: #999999;
-    background-image: url(/crm/themes/Sugar/images/bgGray.gif); 
+    background-image: url(/images/bgGray.gif); 
     color: #990033;
     FONT-FAMILY: verdana, arial, helvetica, sans-serif;
     FONT-SIZE: 14px;
@@ -770,7 +770,7 @@ td.botonoff a {
     border-color: #999999;
     background-color: #eee;
     color: #444;
-    background-image: url(/crm/themes/Sugar/images/bgGray.gif);
+    background-image: url(/images/bgGray.gif);
 }
 .required {
     color: #ff0000;
