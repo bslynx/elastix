@@ -33,6 +33,7 @@ class paloDB {
     var $conn;          // Referencia a la conexion activa a la DB
     var $connStatus;    // Se asigna a VERDADERO si ocurrió error de DB
     var $errMsg;        // Texto del mensaje de error
+    var $engine;        // Base de datos
 
     /**
      * Constructor de la clase, recibe como parámetro el DSN de PEAR a usar
@@ -54,10 +55,14 @@ class paloDB {
             $this->connStatus = FALSE;
         } else {
             $dsninfo = $this->parseDSN($dsn);
-            if($dsninfo['dbsyntax']=='sqlite3')
+            if($dsninfo['dbsyntax']=='sqlite3'){
                 $dsn = "sqlite:".$dsninfo['database'];
-            else if($dsninfo['dbsyntax']=='mysql')
+                $this->engine = "sqlite3";
+            }
+            else if($dsninfo['dbsyntax']=='mysql'){
                 $dsn = "mysql:dbname=".$dsninfo['database'].";host=".$dsninfo['hostspec'];
+                $this->engine = "mysql";
+            }
 
             $user       = $dsninfo['username'];
             $password   = $dsninfo['password'];
@@ -252,6 +257,61 @@ class paloDB {
                 }
             }
         }
+    }
+
+    /**
+     * Procedimiento para obtener el ultimo id en AUTO_INCREMENT
+     * en un insert
+     *
+     * @param niguno
+     *
+     * @return int Valor del id ultimo generado
+     */
+    function getLastInsertId()
+    {
+        if($this->engine == "mysql"){
+            $id = $this->getFirstRowQuery("select last_insert_id();");
+            if(is_array($id) & count($id)>0) return $id[0];
+            else false;
+        }
+        else if($this->engine == "sqlite3"){
+            $id = $this->getFirstRowQuery("select last_insert_rowid();");
+            if(is_array($id) & count($id)>0) return $id[0];
+            else false;
+        }
+    }
+
+    /**
+     * Procedimiento para iniciar una Transaccción
+     * @param niguno
+     *
+     * @return nada
+     */
+    function beginTransaction()
+    {
+        $this->conn->beginTransaction();
+    }
+
+     /**
+     * Procedimiento de rollBack para Transaccción
+     * @param niguno
+     *
+     * @return nada
+     */
+    function rollBack()
+    {
+        $this->conn->rollBack();
+    }
+
+    /**
+     * Procedimiento de commit para Transaccción
+     * @param niguno
+     *
+     * @return nada
+     */
+    function commit()
+    {
+        $this->conn->commit();
     }
 
     /**
