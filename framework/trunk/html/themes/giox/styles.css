@@ -149,8 +149,7 @@ TR.table_title_row {
     font-weight: bold;
     text-align: left;
     background-color: #f8f7f7;
-    /* background-image: url(/images/primerafilabg.gif); */
-    background-image: url(/images/bgGray.gif); 
+    background-image: url(images/primerafilabg.gif); 
     background-repeat: repeat-x;
     background-position: bottom;
     border-bottom: 1px #aaaaaa solid;
@@ -294,7 +293,7 @@ TD.menutabletabon_right {
     COLOR: #ffffff; 
     PADDING-LEFT: 0px;
     PADDING-RIGHT: 4px;
-    BACKGROUND-IMAGE: url(/themes/giox/images/bg_boton_right_giox.gif);
+    BACKGROUND-IMAGE: url(images/bg_boton_right_giox.gif);
     background-position: top right;
 /*    BACKGROUND-COLOR: #e6a1a1; */
     TEXT-ALIGN: center;
@@ -306,7 +305,7 @@ TD.menutabletabon_left {
     COLOR: #ffffff; 
     PADDING-LEFT: 0px;
     PADDING-RIGHT: 2px;
-    BACKGROUND-IMAGE: url(/themes/giox/images/bg_boton_left_giox.gif);
+    BACKGROUND-IMAGE: url(images/bg_boton_left_giox.gif);
     background-position: top left;
 /*     BACKGROUND-COLOR: #e6a1a1; */
     TEXT-ALIGN: center;
@@ -331,7 +330,7 @@ TD.menutabletabon {
     PADDING-LEFT: 7px;
     PADDING-RIGHT: 7px;
 /*    BACKGROUND-COLOR: #bb0000; */
-    BACKGROUND-IMAGE: url(/themes/giox/images/bg_giox_top.gif);
+    BACKGROUND-IMAGE: url(images/bg_giox_top.gif);
     background-position: top;
     BACKGROUND-COLOR: #186fc0;
     TEXT-ALIGN: center;
@@ -355,7 +354,7 @@ TD.menudescription {
     VERTICAL-ALIGN: middle;
     COLOR: #FFFFFF;
     BACKGROUND: #00579b;
-    background-image: url(/themes/giox/images/bg_giox.gif);
+    background-image: url(images/bg_giox.gif);
     background-position: bottom;
     BORDER-BOTTOM: #444444 1px solid;
 }
@@ -487,7 +486,7 @@ tr.primera_fila {
     font-weight: bold;
     text-align: left;
     background-color: #f8f7f7;
-    background-image: url(/images/primerafilabg.gif); 
+    background-image: url(images/primerafilabg.gif); 
     background-repeat: repeat-x;
     background-position: bottom;
     padding: 3px 5px 3px 5px;
@@ -803,7 +802,7 @@ a.letranodec:link, a.letranodec:visited {
     color: #444444;
 }
 .vertical_menu_visible {
-    visibility: show;
+    visibility: visible;
     position: absolute;
     z-index: 200;
     top: 77px;

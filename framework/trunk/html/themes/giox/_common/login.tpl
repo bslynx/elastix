@@ -64,7 +64,7 @@
           </td>
         </tr>
         <tr>
-            <td colspan="2"><img src="{$RUTA_IMG}/0.gif" width="1" height="5"></td>
+            <td colspan="2"><img src="themes/giox/images/0.gif" width="1" height="5"></td>
         </tr>
       </table>
     </td>
