@@ -54,7 +54,7 @@ INPUT {
 }
 input:focus,textarea:focus, select:focus {
         background-color: #fff;
-        border-color: #1d8df6;
+        border-color: #00b1b3;
 }
 SELECT {
     border: 1px solid #444444;
@@ -294,7 +294,7 @@ TD.menutabletabon_right {
     COLOR: #ffffff; 
     PADDING-LEFT: 0px;
     PADDING-RIGHT: 4px;
-    BACKGROUND-IMAGE: url(/themes/giox/images/bg_boton_right_giox.gif);
+    BACKGROUND-IMAGE: url(images/bg_boton_right_slashdot.gif);
     background-position: top right;
 /*    BACKGROUND-COLOR: #e6a1a1; */
     TEXT-ALIGN: center;
@@ -306,7 +306,7 @@ TD.menutabletabon_left {
     COLOR: #ffffff; 
     PADDING-LEFT: 0px;
     PADDING-RIGHT: 2px;
-    BACKGROUND-IMAGE: url(/themes/giox/images/bg_boton_left_giox.gif);
+    BACKGROUND-IMAGE: url(images/bg_boton_left_slashdot.gif);
     background-position: top left;
 /*     BACKGROUND-COLOR: #e6a1a1; */
     TEXT-ALIGN: center;
@@ -331,9 +331,9 @@ TD.menutabletabon {
     PADDING-LEFT: 7px;
     PADDING-RIGHT: 7px;
 /*    BACKGROUND-COLOR: #bb0000; */
-    BACKGROUND-IMAGE: url(/themes/giox/images/bg_giox_top.gif);
+    BACKGROUND-IMAGE: url(images/bg_slashdot_top.gif);
     background-position: top;
-    BACKGROUND-COLOR: #186fc0;
+    BACKGROUND-COLOR: #00b1b3;
     TEXT-ALIGN: center;
 }
 TD.menuaftertab {
@@ -354,8 +354,9 @@ TD.menudescription {
     FONT-WEIGHT: bold;
     VERTICAL-ALIGN: middle;
     COLOR: #FFFFFF;
-    BACKGROUND: #00579b;
-    background-image: url(/themes/giox/images/bg_giox.gif);
+    BACKGROUND: #007c7e;
+/* background-image: url(/images/bgrojo.gif); */
+    background-image: url(images/bg_slashdot.gif);
     background-position: bottom;
     BORDER-BOTTOM: #444444 1px solid;
 }
@@ -597,7 +598,7 @@ td.botonon {
 /*    border-top: 1px solid #330000; */
     border-right: 1px solid #cc9999;
 /*    border-bottom: 1px solid #cc9999; */
-    background: #186fc0;
+    background: #00b1b3;
 }
 td.botonon a {
     COLOR: #ffffff;
@@ -617,7 +618,7 @@ td.menuiz_botonoff {
     background: #f1f1f1;
 }
 td.menuiz_botonoff a {
-    color: #082847;
+    color: #004d4e;
     text-decoration: none;
     font-size: 12px;
 }
@@ -633,7 +634,7 @@ td.menuiz_botonon {
     background: #ffffff;
 }
 td.menuiz_botonon a {
-    color: #082847;
+    color: #004d4e;
     text-decoration: none;
     font-size: 12px;
 }
@@ -720,7 +721,7 @@ td.botonoff a {
     background-color: #ffffff;
     border-color: #999999;
     background-image: url(/images/bgGray.gif); 
-    color: #082847;
+    color: #004d4e;
     FONT-FAMILY: verdana, arial, helvetica, sans-serif;
     FONT-SIZE: 14px;
     FONT-WEIGHT: bold;
