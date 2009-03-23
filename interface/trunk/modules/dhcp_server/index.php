@@ -342,8 +342,10 @@ function serviceShowDHCP($smarty, $module_name, $local_templates_dir, $pDB, &$oF
     }
 
     $arrTmp = array();
-    foreach($arrConfiguration as $key => $arrValues){
-        $arrTmp = array_merge($arrTmp,$arrValues);
+    if (is_array($arrConfiguration)) {
+        foreach($arrConfiguration as $key => $arrValues){
+            $arrTmp = array_merge($arrTmp,$arrValues);
+        }
     }
     return $oForm->fetchForm("$local_templates_dir/dhcp.tpl", $arrLang["DHCP Configuration"], $arrTmp);
 }

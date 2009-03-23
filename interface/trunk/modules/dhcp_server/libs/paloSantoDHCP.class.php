@@ -60,6 +60,7 @@ class PaloSantoDHCP
         global $arrLang;
 
         // Trato de abrir el archivo de configuracion de dhcp
+        $arrConfigurationDHCP = NULL;
         if($fh = @fopen("/etc/dhcpd.conf", "r")) {
             $arrDirectivasEncontradas = array();
             $arrConfigurationDHCP = array();
