@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 1.0                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -24,10 +24,33 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  |                                                                      |
+  | Translate by: Davide Lo Leggio                                       |
+  | Email: cerino@smat.it                                                |
+  |                                                                      |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
-global $arrConfModule;
-$arrConfModule['module_name'] = 'cdrreport';
-$arrConfModule['templates_dir'] = 'themes';
-
+  $Id: it.lang,v 1.7 2008/02/18 10:07:17 bmacias@palosanto.com Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Start Date" => "Data Avvio",
+"End Date" => "Data Fine",
+"Field Name" => "Nome Campo",
+"Field" => "Campo",
+"CDR Report List" => "Lista delle Chiamate",
+"Account Code" => "Account Code",
+"Date" => "Data",
+"Source" => "Sorgente",
+"Destination" => "Destinazione",
+"Src. Channel" => "Canale Src.",
+"Dst. Channel" => "Canale Dst.",
+"Duration" => "Dutata",
+"Filter" => "Filtro",
+"Are you sure you wish to delete CDR(s) Report(s)?" => "Are you sure you wish to delete CDR(s) Report(s)?",
+"Status" => "Status",
+"ALL" => "ALL",
+"ANSWERED" => "ANSWERED",
+"BUSY" => "BUSY",
+"FAILED" => "FAILED",
+"NO ANSWER" => "NO ANSWER",
+);
 ?>

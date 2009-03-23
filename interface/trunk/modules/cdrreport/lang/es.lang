@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 0.5                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,9 +25,28 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
-global $arrConfModule;
-$arrConfModule['module_name'] = 'cdrreport';
-$arrConfModule['templates_dir'] = 'themes';
-
+  $Id: es.lang,v 1.7 2007/09/05 00:36:42 gcarrillo Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Start Date" => "Fecha Inicio",
+"End Date" => "Fecha Fin",
+"Field Name" => "Nombre del Campo",
+"Field" => "Campo",
+"CDR Report List" => "Reporte CDR",
+"Account Code" => "Account Code",
+"Date" => "Fecha",
+"Source" => "Fuente",
+"Destination" => "Destino",
+"Src. Channel" => "Canal origen",
+"Dst. Channel" => "Canal destino",
+"Duration" => "Duraci&oacute;n",
+"Filter" => "Filtrar",
+"Are you sure you wish to delete CDR(s) Report(s)?" => "¿Está seguro que desea eliminar el(los) Reporte(s) CDR(s)?",
+"Status" => "Estado",
+"ALL" => "TODOS",
+"ANSWERED" => "CONTESTADO",
+"BUSY" => "OCUPADO",
+"FAILED" => "FALLIDO",
+"NO ANSWER" => "NO CONTESTADO",
+);
 ?>

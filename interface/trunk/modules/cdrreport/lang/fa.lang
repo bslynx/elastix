@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 1.0                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -24,10 +24,32 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  |                                                                      |
+  | Translate by: Haamed Kouhfallah                                      |
+  | Email: haamed@cytco.net                                              |                                                                    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
-global $arrConfModule;
-$arrConfModule['module_name'] = 'cdrreport';
-$arrConfModule['templates_dir'] = 'themes';
-
+   $Id: fa.lang,v 1.2 2008/04/21 10:11:44 bmacias@palosanto.com Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Start Date" => "تاریخ شروع",
+"End Date" => "تاریخ پایان",
+"Field Name" => "نام فیلد",
+"Field" => "فیلد ",
+"CDR Report List" => "گزارش ریز مکالمات",
+"Account Code" => "کد حساب",
+"Date" => "تاریخ",
+"Source" => "منبع ",
+"Destination" => "مقصد",
+"Src. Channel" => "کانال منبع",
+"Dst. Channel" => "کانال مقصد",
+"Duration" => "مدت",
+"Filter" => "فیلتر",
+"Are you sure you wish to delete CDR(s) Report(s)?" => "آیا مطمئن به حذف ریز مکالمات هستید؟",
+"Status" => "وضعیت",
+"ALL" => "ALL",
+"ANSWERED" => "ANSWERED",
+"BUSY" => "BUSY",
+"FAILED" => "FAILED",
+"NO ANSWER" => "NO ANSWER",
+);
 ?>
