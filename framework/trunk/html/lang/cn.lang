@@ -151,5 +151,7 @@ implementations of Voice over IP around the globe.",
 "extension user" => "Extension User",
 /*Grouplist*/
 "Title" => "Title",
+"Search" => "Search",
+"Show"   => "Show",
 );
 ?>

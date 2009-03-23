@@ -139,5 +139,8 @@ source software started in Ecuador has become the solution of choice for
 implementations of Voice over IP around the globe.",
 "About Elastix Closed"=>"Close",
 /* End About Elastix */
+
+"Search" => "Search",
+"Show"   => "Show",
 );
 ?>

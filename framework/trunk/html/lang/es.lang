@@ -161,5 +161,7 @@ alrededor del mundo.",
 "extension user" => "Usuario de Extensión",
 /*end UserList*/
 "Title" => "Título",
+"Search" => "Buscar",
+"Show"   => "Mostrar",
 );
 ?>

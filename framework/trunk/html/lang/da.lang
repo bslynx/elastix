@@ -144,5 +144,7 @@ implementations of Voice over IP around the globe.",
 "extension" => "Extension",
 /*Grouplist*/
 "Title" => "Title",
+"Search" => "Search",
+"Show"   => "Show",
 );
 ?>

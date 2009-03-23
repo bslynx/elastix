@@ -155,5 +155,7 @@ a tot el mon.",
 /*End module Group List*/
 
 "Title" => "Title",
+"Search" => "Search",
+"Show"   => "Show",
 );
 ?>

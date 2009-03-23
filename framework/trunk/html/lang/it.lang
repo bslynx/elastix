@@ -152,5 +152,7 @@ $arrLang=array(
 "extension user" => "Extension User",
 /*Grouplist*/
 "Title" => "Title",
+"Search" => "Search",
+"Show"   => "Show",
 );
 ?>

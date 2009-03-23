@@ -150,5 +150,7 @@ $arrLang=array(
 "extension user" => "内線登録ユーザ",
 /*Grouplist*/
 "Title" => "Title",
+"Search" => "Search",
+"Show"   => "Show",
 );
 ?>

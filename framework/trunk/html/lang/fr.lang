@@ -161,5 +161,7 @@ de Voix sur IP tout autour du globe.",
 "extension user" => "Utilisateur Extension",
 /*Grouplist*/
 "Title" => "Title",
+"Search" => "Search",
+"Show"   => "Show",
 );
 ?>

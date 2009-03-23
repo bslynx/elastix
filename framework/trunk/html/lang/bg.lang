@@ -157,5 +157,7 @@ $arrLang=array(
 "About Elastix Closed"=>"Затвори",
 /* End About Elastix */
 
+"Search" => "Search",
+"Show"   => "Show",
 );
 ?>

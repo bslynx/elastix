@@ -157,5 +157,7 @@ $arrLang=array(
 "No Extension" => "ﺏﺩﻮﻧ ﺩﺎﺨﻟی",
 /*end UserList*/
 "Title" => "Title",
+"Search" => "Search",
+"Show"   => "Show",
 );
 ?>

@@ -153,5 +153,7 @@ implementations of Voice over IP around the globe.",
 "total access" => "Acesso Total",
 "extension user" => "Usuário do Ramal",
 /*Grouplist*/
+"Search" => "Search",
+"Show"   => "Show",
 );
 ?>
