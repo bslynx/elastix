@@ -106,15 +106,17 @@ function report{NAME_CLASS}($smarty, $module_name, $local_templates_dir, &$pDB, 
 
 
 function createFieldFilter($arrLang){
-    $arrFilter = array();
+    $arrFilter = array({ARR_FILTERS}
+                    );
+
     $arrFormElements = array(
-            "filter_field" => array(   "LABEL"                  => $arrLang["Filter"],
+            "filter_field" => array("LABEL"                  => $arrLang["Search"],
                                     "REQUIRED"               => "no",
                                     "INPUT_TYPE"             => "SELECT",
                                     "INPUT_EXTRA_PARAM"      => $arrFilter,
                                     "VALIDATION_TYPE"        => "text",
                                     "VALIDATION_EXTRA_PARAM" => ""),
-            "filter_value" => array(   "LABEL"                  => "",
+            "filter_value" => array("LABEL"                  => "",
                                     "REQUIRED"               => "no",
                                     "INPUT_TYPE"             => "TEXT",
                                     "INPUT_EXTRA_PARAM"      => "",

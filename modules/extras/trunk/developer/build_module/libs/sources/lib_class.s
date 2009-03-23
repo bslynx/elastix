@@ -26,7 +26,11 @@ class paloSanto{NAME_CLASS} {
     function ObtainNum{NAME_CLASS}($filter_field, $filter_value)
     {
         //Here your implementation
-        $query   = "SELECT COUNT(*) FROM table WHERE $filter_field like '$filter_value%'";
+        $where = "";
+        if(isset($filter_field) & $filter_field !="")
+            $where = "where $filter_field like '$filter_value%'";
+
+        $query   = "SELECT COUNT(*) FROM table $where";
 
         $result=$this->_DB->getFirstRowQuery($query);
 
@@ -40,7 +44,11 @@ class paloSanto{NAME_CLASS} {
     function Obtain{NAME_CLASS}($limit, $offset, $filter_field, $filter_value)
     {
         //Here your implementation
-        $query   = "SELECT * FROM table WHERE $filter_field like '$filter_value%' LIMIT $limit OFFSET $offset";
+        $where = "";
+        if(isset($filter_field) & $filter_field !="")
+            $where = "where $filter_field like '$filter_value%'";
+
+        $query   = "SELECT * FROM table $where LIMIT $limit OFFSET $offset";
 
         $result=$this->_DB->fetchTable($query, true);
 
