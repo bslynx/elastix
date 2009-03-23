@@ -29,6 +29,7 @@ function _moduleContent(&$smarty, $module_name)
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
 
     //conexion resource
+    //$pDB = new paloDB($arrConf['dsn_conn_database']);
     $pDB = "";
 
 
@@ -47,14 +48,14 @@ function _moduleContent(&$smarty, $module_name)
 function report{NAME_CLASS}($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
 {
     $p{NAME_CLASS} = new paloSanto{NAME_CLASS}($pDB);
-    $field_pattern = getParameter("filter");
+    $filter_field = getParameter("filter_field");
+    $filter_value = getParameter("filter_value");
     $action = getParameter("nav");
     $start  = getParameter("start");
-
-
+    
     //begin grid parameters
     $oGrid  = new paloSantoGrid($smarty);
-    $total{NAME_CLASS} = $p{NAME_CLASS}->ObtainNum{NAME_CLASS}();
+    $total{NAME_CLASS} = $p{NAME_CLASS}->ObtainNum{NAME_CLASS}($filter_field, $filter_value);
 
     $limit  = 20;
     $total  = $total{NAME_CLASS};
@@ -64,10 +65,10 @@ function report{NAME_CLASS}($smarty, $module_name, $local_templates_dir, &$pDB, 
     $oGrid->calculatePagination($action,$start);
     $offset = $oGrid->getOffsetValue();
     $end    = $oGrid->getEnd();
-    $url    = "?menu=$module_name&filter=$field_pattern";
+    $url    = "?menu=$module_name&filter_field=$filter_field&filter_value=$filter_value";
 
     $arrData = null;
-    $arrResult =$p{NAME_CLASS}->Obtain{NAME_CLASS}($limit, $offset, $field_pattern);
+    $arrResult =$p{NAME_CLASS}->Obtain{NAME_CLASS}($limit, $offset, $filter_field, $filter_value);
 
     if(is_array($arrResult) && $total>0){
         foreach($arrResult as $key => $value){ {ARR_DATA_ROWS}
@@ -89,7 +90,7 @@ function report{NAME_CLASS}($smarty, $module_name, $local_templates_dir, &$pDB, 
 
 
     //begin section filter
-    $arrFormFilter{NAME_CLASS} = createFieldForm($arrLang);
+    $arrFormFilter{NAME_CLASS} = createFieldFilter($arrLang);
     $oFilterForm = new paloForm($smarty, $arrFormFilter{NAME_CLASS});
     $smarty->assign("SHOW", $arrLang["Show"]);
 
@@ -104,9 +105,16 @@ function report{NAME_CLASS}($smarty, $module_name, $local_templates_dir, &$pDB, 
 }
 
 
-function createFieldForm($arrLang){
+function createFieldFilter($arrLang){
+    $arrFilter = array();
     $arrFormElements = array(
-            "filter"    => array(   "LABEL"                  => $arrLang["Filter Example"],
+            "filter_field" => array(   "LABEL"                  => $arrLang["Filter"],
+                                    "REQUIRED"               => "no",
+                                    "INPUT_TYPE"             => "SELECT",
+                                    "INPUT_EXTRA_PARAM"      => $arrFilter,
+                                    "VALIDATION_TYPE"        => "text",
+                                    "VALIDATION_EXTRA_PARAM" => ""),
+            "filter_value" => array(   "LABEL"                  => "",
                                     "REQUIRED"               => "no",
                                     "INPUT_TYPE"             => "TEXT",
                                     "INPUT_EXTRA_PARAM"      => "",

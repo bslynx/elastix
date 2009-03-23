@@ -23,37 +23,31 @@ class paloSanto{NAME_CLASS} {
 
     /*HERE YOUR FUNCTIONS*/
 
-    function ObtainNum{NAME_CLASS}()
+    function ObtainNum{NAME_CLASS}($filter_field, $filter_value)
     {
         //Here your implementation
-        $query   = "SELECT COUNT(*) FROM ";
-        /*
+        $query   = "SELECT COUNT(*) FROM table WHERE $filter_field like '$filter_value%'";
+
         $result=$this->_DB->getFirstRowQuery($query);
-        if($result==FALSE)
-        {
+
+        if($result==FALSE){
             $this->errMsg = $this->_DB->errMsg;
             return 0;
         }
         return $result[0];
-        */
-
-        /*THIS LINE SHOULD BE ERASE*/ return 0; /*THIS LINE SHOULD BE ERASE*/
     }
 
-    function Obtain{NAME_CLASS}($limit, $offset, $field_pattern)
+    function Obtain{NAME_CLASS}($limit, $offset, $filter_field, $filter_value)
     {
         //Here your implementation
-        $query   = "SELECT * FROM ";
-        /*
+        $query   = "SELECT * FROM table WHERE $filter_field like '$filter_value%' LIMIT $limit OFFSET $offset";
+
         $result=$this->_DB->fetchTable($query, true);
-        if($result==FALSE)
-        {
+
+        if($result==FALSE){
             $this->errMsg = $this->_DB->errMsg;
             return array();
         }
         return $result;
-        */
-
-        /*THIS LINE SHOULD BE ERASE*/ return array(); /*THIS LINE SHOULD BE ERASE*/
     }
 }
