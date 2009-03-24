@@ -47,24 +47,39 @@ function _moduleContent(&$smarty, $module_name)
     $templates_dir=(isset($arrConfig['templates_dir']))?$arrConfig['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
     
+    $pDBSet = new paloDB($arrConf['elastix_dsn']['settings'] /*"sqlite3:////var/www/db/settings.db" */);
 
     $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
     $arrConfig = $pConfig->leer_configuracion(false);
 
     $dsn  = $arrConfig['AMPDBENGINE']['valor'] . "://" . $arrConfig['AMPDBUSER']['valor'] . ":" .
             $arrConfig['AMPDBPASS']['valor'] . "@" . $arrConfig['AMPDBHOST']['valor'] . "/asteriskcdrdb";
+    $pDB     = new paloDB($dsn);
+    $oCDR    = new paloSantoCDR($pDB);
+
     $dsn2 = $arrConfig['AMPDBENGINE']['valor'] . "://" . $arrConfig['AMPDBUSER']['valor'] . ":" .
             $arrConfig['AMPDBPASS']['valor'] . "@" . $arrConfig['AMPDBHOST']['valor'] . "/asterisk";
-    $pDBTrunk = new paloDB("sqlite3:////var/www/db/trunk.db");
-    $pDBSet = new paloDB("sqlite3:////var/www/db/settings.db");
-    $pDB     = new paloDB($dsn);
-    $arrData = array();
-    $total = 0;
-    $oCDR    = new paloSantoCDR($pDB);
-    $smarty->assign("menu","billing_report");
     $pDB2     = new paloDB($dsn2);
 
-    $pDBSQLite = new paloDB("sqlite3:////var/www/db/rate.db");
+    // TODO: implementar una configuración que ubique todos los archivos sqlite a la vez
+    $acldb = $arrConf['elastix_dsn']['acl'];
+    $acldb = str_replace('sqlite3:///', '', $acldb);
+    
+    $ratedb = '/var/www/db/rate.db';
+    $trunkdb = '/var/www/db/trunk.db';
+    if (!file_exists($ratedb)) {
+        $ratedb = dirname($acldb).'/rate.db';
+    }
+    if (!file_exists($trunkdb)) {
+        $trunkdb = dirname($acldb).'/trunk.db';
+    }
+
+    $pDBTrunk = new paloDB("sqlite3:///$trunkdb");
+    $arrData = array();
+    $total = 0;
+    $smarty->assign("menu","billing_report");
+
+    $pDBSQLite = new paloDB("sqlite3:///$ratedb");
     if(!empty($pDBSQLite->errMsg)) {
         echo "ERROR DE DB: $pDB->errMsg <br>";
     }
