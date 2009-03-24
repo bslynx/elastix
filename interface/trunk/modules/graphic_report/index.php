@@ -334,6 +334,7 @@ function loadTrunks($pDB_ext)
 
     $arrTrunksTemp = getTrunks($pDB_ext);
     $arrTrunk = array();
+    if (is_array($arrTrunksTemp))
     foreach($arrTrunksTemp as $key => $arr){
         $arrTrunk[ $arr[1] ] = $arr[1]; 
     }
