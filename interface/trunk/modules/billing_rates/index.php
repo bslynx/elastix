@@ -41,9 +41,22 @@ function _moduleContent(&$smarty, $module_name)
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
     $templates_dir=(isset($arrConfig['templates_dir']))?$arrConfig['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
+
+    // TODO: implementar una configuración que ubique todos los archivos sqlite a la vez
+    $acldb = $arrConf['elastix_dsn']['acl'];
+    $acldb = str_replace('sqlite3:///', '', $acldb);
     
-    $pDB = new paloDB("sqlite3:////var/www/db/rate.db");
-    $pDBTrunk = new paloDB("sqlite3:////var/www/db/trunk.db");
+    $ratedb = '/var/www/db/rate.db';
+    $trunkdb = '/var/www/db/trunk.db';
+    if (!file_exists($ratedb)) {
+    	$ratedb = dirname($acldb).'/rate.db';
+    }
+    if (!file_exists($trunkdb)) {
+        $trunkdb = dirname($acldb).'/trunk.db';
+    }
+    
+    $pDB = new paloDB("sqlite3:///$ratedb");
+    $pDBTrunk = new paloDB("sqlite3:///$trunkdb");
     $oTrunk   = new paloTrunk($pDBTrunk);
     $arrTrunksBill['None']=$arrLang['None'];
     foreach ($oTrunk->getTrunksBill() as $trunk) $arrTrunksBill[$trunk]=$trunk;
