@@ -180,7 +180,7 @@ function create_xhtml($rest)
 // returns all the events for a particular day
 function get_events_by_date($day, $month, $year)
 {
-    global $calendar_name, $db, $general, $Elastix_Document_Root;
+    global $calendar_name, $db, $general;
 
 /* event types:
 1 - Normal event

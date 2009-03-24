@@ -29,7 +29,7 @@
 
 function _moduleContent(&$smarty, $module_name)
 {
-    global $db, $phpc_root_path, $Elastix_Document_Root, $action;
+    global $db, $phpc_root_path, $action;
     /*
     $phpc_root_path gives the location of the base calendar install.
     if you move this file to a new location, modify $phpc_root_path to point
@@ -54,7 +54,6 @@ function _moduleContent(&$smarty, $module_name)
     $arrConf = array_merge($arrConf,$arrConfModule);
     $arrLang = array_merge($arrLang,$arrLangModule);
     $phpc_root_path = "modules/$module_name/";
-    $Elastix_Document_Root = "/var/www/html";
 
     require_once('libs/paloSantoDB.class.php');
     $db = new paloDB($arrConf['dsn_conn_database']);
