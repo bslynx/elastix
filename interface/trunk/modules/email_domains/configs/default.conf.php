@@ -29,7 +29,15 @@
 	global $arrConfModule;
 $arrConfModule['module_name'] = 'email_domains';
 $arrConfModule['templates_dir'] = 'themes'; 
-$arrConfModule['dsn_conn_database'] = "sqlite3:////var/www/db/email.db";
 
+$dbPath = '/var/www/db/email.db'; 
+// TODO: implementar una configuración que ubique todos los archivos sqlite a la vez
+if (!file_exists($dbPath)) {
+    $acldb = $arrConf['elastix_dsn']['acl'];
+    $acldb = str_replace('sqlite3:///', '', $acldb);
+    $dbPath = dirname($acldb).'/email.db';
+}
+$arrConfModule['dsn_conn_database'] = "sqlite3:///$dbPath";
+ 
 
 ?>
