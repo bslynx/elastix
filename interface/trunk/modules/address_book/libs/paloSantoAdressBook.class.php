@@ -30,7 +30,9 @@
  */
 
 //ini_set("display_errors", true);
+if (file_exists("/var/lib/asterisk/agi-bin/phpagi-asmanager.php")) {
 require_once "/var/lib/asterisk/agi-bin/phpagi-asmanager.php";
+}
 
 class paloAdressBook {
     var $_DB;
