@@ -59,9 +59,18 @@ class paloFaxVisor {
 
     function paloFaxVisor()
     {
+        global $arrConf;
+        
+        $faxdb = "/var/www/db/fax.db";
+        if (!file_exists($faxdb)) {
+            $acldb = $arrConf['elastix_dsn']['acl'];
+            $acldb = str_replace('sqlite3:///', '', $acldb);
+            $faxdb = dirname($acldb).'/fax.db';
+        }
+
         $this->dirIaxmodemConf = "/etc/iaxmodem";
         $this->dirHylafaxConf  = "/var/spool/hylafax/etc";
-        $this->rutaDB="/var/www/db/fax.db";
+        $this->rutaDB = $faxdb;
         $this->firstPort=40000;
         $this->rutaFaxDispatch = "/var/spool/hylafax/etc/FaxDispatch";
         $this->rutaInittab = "/etc/inittab";
