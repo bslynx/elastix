@@ -519,8 +519,10 @@ function redirect($page) {
 
 function Obtain_UID_From_User($user)
 {
-    require_once '/var/www/html/'."libs/paloSantoACL.class.php";
-    $pdbACL = new paloDB("sqlite3:////var/www/db/acl.db");
+    global $arrConf;
+
+    require_once $arrConf['basePath']."/libs/paloSantoACL.class.php";
+    $pdbACL = new paloDB($arrConf['elastix_dsn']['acl'] /* "sqlite3:////var/www/db/acl.db" */);
     $pACL = new paloACL($pdbACL);
     $uid = $pACL->getIdUser($user);
     if($uid!=FALSE)
