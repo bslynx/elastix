@@ -59,17 +59,17 @@ function _moduleContent(&$smarty, $module_name)
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
 
     $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
-    $arrConf = $pConfig->leer_configuracion(false);
+    $arrConfAM = $pConfig->leer_configuracion(false);
 
-    $dsn     = $arrConf['AMPDBENGINE']['valor'] . "://" . $arrConf['AMPDBUSER']['valor'] . ":" . $arrConf['AMPDBPASS']['valor'] . "@" .
-               $arrConf['AMPDBHOST']['valor'] . "/asteriskcdrdb";
+    $dsn     = $arrConfAM['AMPDBENGINE']['valor'] . "://" . $arrConfAM['AMPDBUSER']['valor'] . ":" . $arrConfAM['AMPDBPASS']['valor'] . "@" .
+               $arrConfAM['AMPDBHOST']['valor'] . "/asteriskcdrdb";
 
+    // TODO: validar que conexión se realiza correctamente
     $pDB     = new paloDB($dsn);
     $arrData = array();
     $oCDR    = new paloSantoCDR($pDB);
 
-
-    $pDBACL = new paloDB("sqlite3:////var/www/db/acl.db");
+    $pDBACL = new paloDB($arrConf['elastix_dsn']['acl'] /* "sqlite3:////var/www/db/acl.db"*/);
     if (!empty($pDBACL->errMsg)) {
         echo "ERROR DE DB: $pDBACL->errMsg <br>";
     }
