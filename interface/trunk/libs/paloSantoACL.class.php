@@ -878,7 +878,7 @@ class paloACL {
             $result = $this->_DB->getFirstRowQuery($sPeticionSQL, FALSE);
             if ($result && is_array($result) && count($result)>0) {
                 $extension = $result[0];
-            }else $this->errMsg = $this->_DB->errMs;
+            }else $this->errMsg = $this->_DB->errMsg;
         }
         return $extension;
     }
@@ -901,7 +901,7 @@ class paloACL {
             $result = $this->_DB->getFirstRowQuery($sPeticionSQL, FALSE);
             if ($result && is_array($result) && count($result)>0) {
                 $id_resource = $result[0];
-            }else $this->errMsg = $this->_DB->errMs;
+            }else $this->errMsg = $this->_DB->errMsg;
         }
         return $id_resource;
     }
