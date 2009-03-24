@@ -32,7 +32,7 @@ $max_year = 2020;
 
 // Modify these if you need to
 $phpc_script = $_SERVER['PHP_SELF'];
-if($_SERVER["HTTPS"] == "on") $phpc_protocol = "https";
+if(isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on") $phpc_protocol = "https";
 else $phpc_protocol = "http";
 $phpc_server = $_SERVER['SERVER_NAME'];
 $phpc_url = "$phpc_protocol://$phpc_server$phpc_script?"
