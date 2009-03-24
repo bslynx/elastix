@@ -49,7 +49,7 @@ class paloSantoAntispam {
         // Trato de abrir el archivo de configuracion 
         $step_one_config = false;
         $step_two_config = false;
-        if($fh = fopen($this->fileMaster, "r")) {
+        if($fh = @fopen($this->fileMaster, "r")) {
             while($line_file = fgets($fh, 4096)) {
                 //line to valid:smtp      inet  n       -       n       -       -       smtpd
                 if(ereg("(smtp[[:space:]]{1,}inet[[:space:]]{1,}n[[:space:]]{1,}-[[:space:]]{1,}n[[:space:]]{1,}-[[:space:]]{1,}-[[:space:]]{1,}smtpd)",$line_file,$arrReg)){
@@ -76,7 +76,7 @@ class paloSantoAntispam {
     {
         // Trato de abrir el archivo de configuracion 
         $value_required_hits = false;
-        if($fh = fopen($this->fileLocal, "r")) {
+        if($fh = @fopen($this->fileLocal, "r")) {
             while($line_file = fgets($fh, 4096)) {
                 //line to valid:required_hits 5
                 if(ereg("[[:space:]]*required_hits[[:space:]]+([[:digit:]]{0,2})",$line_file,$arrReg)){
