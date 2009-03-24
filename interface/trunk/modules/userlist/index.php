@@ -34,7 +34,8 @@ function _moduleContent(&$smarty, $module_name)
     include_once("libs/paloSantoGrid.class.php");
     include_once("libs/paloSantoACL.class.php");
     global $arrLang;
-    $pDB = new paloDB("sqlite3:////var/www/db/acl.db");
+    global $arrConf;
+    $pDB = new paloDB($arrConf['elastix_dsn']['acl']  /* "sqlite3:////var/www/db/acl.db" */ );
 
 /////conexion a php
 //include module files
