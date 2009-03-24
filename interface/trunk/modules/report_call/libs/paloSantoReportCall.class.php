@@ -71,13 +71,15 @@ class paloSantoReportCall {
 
     function CargarIdiomas()
     {
-        include_once "/var/www/html/libs/misc.lib.php";
-        $lang = get_language("/var/www/html/");
+        global $arrConf;
 
-        if( file_exists("/var/www/html/modules/report_call/lang/$lang.lang") )
-            include_once "/var/www/html/modules/report_call/lang/$lang.lang";
+        include_once $arrConf['basePath']."/libs/misc.lib.php";
+        $lang = get_language($arrConf['basePath'].'/');
+
+        if( file_exists($arrConf['basePath']."/modules/report_call/lang/$lang.lang") )
+            include_once $arrConf['basePath']."/modules/report_call/lang/$lang.lang";
         else
-            include_once "/var/www/html/modules/report_call/lang/en.lang";
+            include_once $arrConf['basePath']."/modules/report_call/lang/en.lang";
 
         global $arrLangModule;
         $this->arrLang = $arrLangModule;
