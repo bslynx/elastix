@@ -72,9 +72,18 @@ class paloFax {
 
     function paloFax()
     {
+        global $arrConf;
+        
+        $faxdb = "/var/www/db/fax.db";
+        if (!file_exists($faxdb)) {
+        	$acldb = $arrConf['elastix_dsn']['acl'];
+            $acldb = str_replace('sqlite3:///', '', $acldb);
+            $faxdb = dirname($acldb).'/fax.db';
+        }
+
         $this->dirIaxmodemConf = "/etc/iaxmodem";
         $this->dirHylafaxConf  = "/var/spool/hylafax/etc";
-        $this->rutaDB="/var/www/db/fax.db";
+        $this->rutaDB = $faxdb;
         $this->firstPort=40000;
         $this->rutaFaxDispatch = "/var/spool/hylafax/etc/FaxDispatch";
         $this->rutaInittab = "/etc/inittab";
@@ -82,11 +91,11 @@ class paloFax {
         $this->grupoWeb   = "asterisk";
         //instanciar clase paloDB
         $pDB = new paloDB("sqlite3:///".$this->rutaDB);
-    if(!empty($pDB->errMsg)) {
-            echo "$pDB->errMsg <br>";
-    }else{
-       $this->_db = $pDB;
-    }
+        if(!empty($pDB->errMsg)) {
+                echo "$this->rutaDB: $pDB->errMsg <br>";
+        } else{
+           $this->_db = $pDB;
+        }
     }
 
     function createFaxExtension($virtualFaxName, $extNumber, $extSecret, $destinationEmail, $CIDName="", $CIDNumber="",$countryCode, $areaCode)
