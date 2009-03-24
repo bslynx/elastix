@@ -312,7 +312,7 @@ class paloConfig
 	{
         $bEsClave = false;
 	    $lista_claves = null;
-	    $archivo = fopen($ruta, "r");
+	    $archivo = @fopen($ruta, "r");
 	    if ($archivo) {
 		    // Cargar todo el archivo en memoria
 		    $lista_claves = array();
