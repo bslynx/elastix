@@ -131,8 +131,11 @@ function report_AsteriskLogs($smarty, $module_name, $local_templates_dir, $arrLa
 
     $listaFechas = $pAsteriskLogs->astLog->listarFechas();
 
-    if (!ereg($arrFormElements['filter']['VALIDATION_EXTRA_PARAM'], $field_pattern))
-        $field_pattern = $listaFechas[count($listaFechas) - 1];
+    if (!ereg($arrFormElements['filter']['VALIDATION_EXTRA_PARAM'], $field_pattern)) {
+        $field_pattern = NULL;
+        if (count($listaFechas) > 0)
+            $field_pattern = $listaFechas[count($listaFechas) - 1];
+    }
     $_POST['filter'] = $field_pattern;
     $total_datos = $pAsteriskLogs->ObtainNumAsteriskLogs($field_pattern);
     $comboFechas = array();
