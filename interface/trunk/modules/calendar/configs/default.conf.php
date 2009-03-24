@@ -26,8 +26,20 @@
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
   $Id: index.php,v 1.1 2008/05/12 15:55:57 afigueroa Exp $ */
-	global $arrConfModule;
+
+global $arrConf;
+global $arrConfModule;
 $arrConfModule['module_name'] = 'calendar';
 $arrConfModule['templates_dir'] = 'themes';
-$arrConfModule['dsn_conn_database'] = "sqlite3:////var/www/db/calendar.db";
+
+$calendardb = '/var/www/db/calendar.db';
+
+// TODO: implementar una configuración que ubique todos los archivos sqlite a la vez
+$acldb = $arrConf['elastix_dsn']['acl'];
+$acldb = str_replace('sqlite3:///', '', $acldb);
+
+if (!file_exists($calendardb)) {
+    $calendardb = dirname($acldb).'/calendar.db';
+}
+$arrConfModule['dsn_conn_database'] = "sqlite3:///$calendardb";
 ?>
