@@ -27,7 +27,9 @@
   +----------------------------------------------------------------------+
   $Id: default.conf.php,v 1.1 2008-06-12 09:06:35 afigueroa Exp $ */
 
+if (file_exists("/var/lib/asterisk/agi-bin/phpagi-asmanager.php")) {
 require_once "/var/lib/asterisk/agi-bin/phpagi-asmanager.php";
+}
 
 class paloSantoRecordings {
     var $_DB;
