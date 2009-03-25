@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 0.5                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -11,6 +11,9 @@
   | Telfs. 2283-268, 2294-440, 2284-356                                  |
   | Guayaquil - Ecuador                                                  |
   | http://www.palosanto.com                                             |
+  |                                                                      |
+  | Translate bye: Aneta and Tomasz Stachowicz by TIMI                   |
+  | timi_pl@tlen.pl                                                      |
   +----------------------------------------------------------------------+
   | The contents of this file are subject to the General Public License  |
   | (GPL) Version 2 (the "License"); you may not use this file except in |
@@ -25,10 +28,23 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
-global $arrConfModule;
-$arrConfModule['module_name'] = 'billing_rates';
-$arrConfModule['templates_dir'] = 'themes';
-$arrConfModule['dsn_conn_database'] = "sqlite3:////var/www/db/rate.db";
-
+  $Id: pl.lang,v 1.6 2007/09/05 00:36:42 gcarrillo Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Prefix" => "Prefiks",
+"Rate" => "Stawka za minutę",
+"Rate Offset" => "Opłata za rozpoczęcie rozmowy",
+"None" => "None",
+"(by min)" => " (by min)",
+"New Rate" => "Nowa stawka",
+"Edit Rate" => "Modyfikuj stawkę",
+"View Rate" => "Zobacz stawkę",
+"View" => "Widok",
+"Rates List" => "Lista stawek",
+"Create New Rate" => "Utwórz nową stawkę",
+"Import File" => "Import File",
+"Trunk" => "Trakt",
+"Name" => "Nazwa",
+"Are you sure you wish to continue?" => "Czy napewno kontynuować?",
+);
 ?>

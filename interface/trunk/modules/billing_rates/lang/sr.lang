@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 0.5                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,10 +25,23 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
-global $arrConfModule;
-$arrConfModule['module_name'] = 'billing_rates';
-$arrConfModule['templates_dir'] = 'themes';
-$arrConfModule['dsn_conn_database'] = "sqlite3:////var/www/db/rate.db";
-
+  $Id: sr.lang,v 1.6 2007/10/23 00:36:42 bmacias Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Prefix" => "Prefiks",
+"Rate" => "Tarifa",
+"Rate Offset" => "Offset tarifa",
+"None" => "None",
+"(by min)" => " (by min)",
+"New Rate" => "Nova tarifa",
+"Edit Rate" => "Izmeni tarifu",
+"View Rate" => "Vidi tarifu",
+"View" => "Pregled",
+"Rates List" => "Lista tarifa",
+"Create New Rate" => "Kreiraj novu tarifu",
+"Import File" => "Import File",
+"Trunk" => "Linija",
+"Name" => "Ime",
+"Are you sure you wish to continue?" => "Da li ste sigurni da zelite da nastavite?",
+);
 ?>

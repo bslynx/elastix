@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 1.0                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -24,11 +24,28 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  |                                                                      |
+  | Translate by: Lakatos Tamás                                          |
+  | Email: lakatost@gmail.com                                            |
+  |                                                                      |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
-global $arrConfModule;
-$arrConfModule['module_name'] = 'billing_rates';
-$arrConfModule['templates_dir'] = 'themes';
-$arrConfModule['dsn_conn_database'] = "sqlite3:////var/www/db/rate.db";
-
+  : hu.lang,v 1.6 2008/01/21 09:51:55 bmacias@palosanto.com Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Prefix" => "Előválasztó",
+"Rate" => "Tarifa",
+"Rate Offset" => "Tarifa Eltérés",
+"None" => "None",
+"(by min)" => " (by min)",
+"New Rate" => "Új Tarifa",
+"Edit Rate" => "Tarifa szerkesztés",
+"View Rate" => "Tarifa megtekintés",
+"View" => "Nézet",
+"Rates List" => "Tarifa Lista",
+"Create New Rate" => "Új Tarifa létrehozás",
+"Import File" => "Import File",
+"Trunk" => "Trönk  ",
+"Name" => "Név",
+"Are you sure you wish to continue?" => "Biztos, hogy folytatja?",
+);
 ?>

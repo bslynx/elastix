@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 0.5                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,10 +25,23 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
-global $arrConfModule;
-$arrConfModule['module_name'] = 'billing_rates';
-$arrConfModule['templates_dir'] = 'themes';
-$arrConfModule['dsn_conn_database'] = "sqlite3:////var/www/db/rate.db";
-
+  $Id: es.lang,v 1.7 2007/09/05 00:36:42 gcarrillo Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Prefix" => "Prefijo",
+"Rate" => "Tarifa",
+"Rate Offset" => "Tarifa de Conexi&oacute;n",
+"None" => "Nadie",
+"(by min)" => " (por min.)",
+"New Rate" => "Nueva Tarifa",
+"Edit Rate" => "Editar Tarifa",
+"View Rate" => "Ver Tarifa",
+"View" => "Ver",
+"Rates List" => "Listado de Tarifas",
+"Create New Rate" => "Crear Nueva Tarifa",
+"Import File" => "Importar Archivo",
+"Trunk" => "Troncal",
+"Name" => "Nombre",
+"Are you sure you wish to continue?" => "¿Est&aacute; seguro que desea continuar?",
+);
 ?>

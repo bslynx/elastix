@@ -35,28 +35,29 @@ function _moduleContent(&$smarty, $module_name)
     
    //include module files
     include_once "modules/$module_name/configs/default.conf.php";
+    
+    $lang=get_language();
+    $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
+    $lang_file="modules/$module_name/lang/$lang.lang";
+    if (file_exists("$base_dir/$lang_file")) include_once "$lang_file";
+    else include_once "modules/$module_name/lang/en.lang";
+
+    //global variables
     global $arrConf;
+    global $arrConfModule;
     global $arrLang;
+    global $arrLangModule;
+    $arrConf = array_merge($arrConf,$arrConfModule);
+    $arrLang = array_merge($arrLang,$arrLangModule);
+
+
     //folder path for custom templates
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
-    $templates_dir=(isset($arrConfig['templates_dir']))?$arrConfig['templates_dir']:'themes';
+    $templates_dir=(isset($arrConf['templates_dir']))?$arrConf['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
-
-    // TODO: implementar una configuración que ubique todos los archivos sqlite a la vez
-    $acldb = $arrConf['elastix_dsn']['acl'];
-    $acldb = str_replace('sqlite3:///', '', $acldb);
     
-    $ratedb = '/var/www/db/rate.db';
-    $trunkdb = '/var/www/db/trunk.db';
-    if (!file_exists($ratedb)) {
-    	$ratedb = dirname($acldb).'/rate.db';
-    }
-    if (!file_exists($trunkdb)) {
-        $trunkdb = dirname($acldb).'/trunk.db';
-    }
-    
-    $pDB = new paloDB("sqlite3:///$ratedb");
-    $pDBTrunk = new paloDB("sqlite3:///$trunkdb");
+    $pDB = new paloDB($arrConf['dsn_conn_database']);
+    $pDBTrunk = new paloDB("sqlite3:////var/www/db/trunk.db");
     $oTrunk   = new paloTrunk($pDBTrunk);
     $arrTrunksBill['None']=$arrLang['None'];
     foreach ($oTrunk->getTrunksBill() as $trunk) $arrTrunksBill[$trunk]=$trunk;

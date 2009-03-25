@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 1.0                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -24,11 +24,28 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  |                                                                      |
+  | Translate by: Davide Lo Leggio                                       |
+  | Email: cerino@smat.it                                                |
+  |                                                                      |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
-global $arrConfModule;
-$arrConfModule['module_name'] = 'billing_rates';
-$arrConfModule['templates_dir'] = 'themes';
-$arrConfModule['dsn_conn_database'] = "sqlite3:////var/www/db/rate.db";
-
+  $Id: it.lang,v 1.7 2008/02/18 10:07:17 bmacias@palosanto.com Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Prefix" => "Prefisso",
+"Rate" => "Tariffa",
+"Rate Offset" => "Tariffa Offset",
+"None" => "None",
+"(by min)" => " (by min)",
+"New Rate" => "Nuova Tariffa",
+"Edit Rate" => "Modifica Tariffa",
+"View Rate" => "Visualizza Tariffa",
+"View" => "Visualizza",
+"Rates List" => "Lista Tariffe",
+"Create New Rate" => "Crea una nuova Tariffa",
+"Import File" => "Import File",
+"Trunk" => "Trunk",
+"Name" => "Nome",
+"Are you sure you wish to continue?" => "Sei sicuro di voler continuare?",
+);
 ?>

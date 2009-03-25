@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 1.0                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -24,11 +24,27 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  |                                                                      |
+  | Translate by: Haamed Kouhfallah                                      |
+  | Email: haamed@cytco.net                                              |                                                                    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
-global $arrConfModule;
-$arrConfModule['module_name'] = 'billing_rates';
-$arrConfModule['templates_dir'] = 'themes';
-$arrConfModule['dsn_conn_database'] = "sqlite3:////var/www/db/rate.db";
-
+   $Id: fa.lang,v 1.2 2008/04/21 10:11:44 bmacias@palosanto.com Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Prefix" => "پیش شماره ",
+"Rate" => "نرخ",
+"Rate Offset" => "نرخ تراز",
+"None" => "None",
+"(by min)" => " (by min)",
+"New Rate" => "نرخ جدید",
+"Edit Rate" => "تنظیم نرخ",
+"View Rate" => "مشاهده نرخ",
+"View" => "مشاهده",
+"Rates List" => "لیست نرخ ها",
+"Create New Rate" => "ایجاد نرخ جدید",
+"Import File" => "وارد کردن فایل",
+"Trunk" => "ترانک",
+"Name" => "نام",
+"Are you sure you wish to continue?" => "آیا مطمئن به ادامه هستید؟",
+);
 ?>
