@@ -294,7 +294,7 @@ TD.menutabletabon_right {
     COLOR: #ffffff; 
     PADDING-LEFT: 0px;
     PADDING-RIGHT: 4px;
-    BACKGROUND-IMAGE: url(/themes/al/images/bg_boton_right_al.gif);
+    BACKGROUND-IMAGE: url(images/bg_boton_right_al.gif);
     background-position: top right;
 /*    BACKGROUND-COLOR: #e6a1a1; */
     TEXT-ALIGN: center;
@@ -306,7 +306,7 @@ TD.menutabletabon_left {
     COLOR: #ffffff; 
     PADDING-LEFT: 0px;
     PADDING-RIGHT: 2px;
-    BACKGROUND-IMAGE: url(/themes/al/images/bg_boton_left_al.gif);
+    BACKGROUND-IMAGE: url(images/bg_boton_left_al.gif);
     background-position: top left;
 /*     BACKGROUND-COLOR: #e6a1a1; */
     TEXT-ALIGN: center;
@@ -331,7 +331,7 @@ TD.menutabletabon {
     PADDING-LEFT: 7px;
     PADDING-RIGHT: 7px;
 /*    BACKGROUND-COLOR: #bb0000; */
-    BACKGROUND-IMAGE: url(/themes/al/images/bg_al_top.gif);
+    BACKGROUND-IMAGE: url(images/bg_al_top.gif);
     background-position: top;
     BACKGROUND-COLOR: #fe812c;
     TEXT-ALIGN: center;
@@ -356,7 +356,7 @@ TD.menudescription {
     COLOR: #FFFFFF;
     BACKGROUND: #779e02;
 /* background-image: url(/images/bgrojo.gif); */
-    background-image: url(/themes/al/images/bg_al.gif);
+    background-image: url(images/bg_al.gif);
     background-position: bottom;
     BORDER-BOTTOM: #444444 1px solid;
 }
@@ -464,13 +464,13 @@ table.tabla_cabecera {
     BORDER-TOP: #444444 1px solid;
     BORDER-RIGHT: #444444 1px solid;
     BORDER-BOTTOM: #444444 1px solid;
-                border: 1px #9E9E9E solid;
-                padding: 10px 8px 8px 8px;
-                background-image : url(/images/searchFormBg.gif);
-                background-repeat: repeat-x;
-                background-position: top;
-                background-color: #eef3f8;
-                font-size: 11px;
+    border: 1px #9E9E9E solid;
+    padding: 10px 8px 8px 8px;
+    background-image : url(/images/searchFormBg.gif);
+    background-repeat: repeat-x;
+    background-position: top;
+    background-color: #eef3f8;
+    font-size: 11px;
 }
 table.tabla_listado {
     BORDER: 1px #9E9E9E solid;
@@ -804,7 +804,7 @@ a.letranodec:link, a.letranodec:visited {
     color: #444444;
 }
 .vertical_menu_visible {
-    visibility: show;
+    visibility: visible;
     position: absolute;
     z-index: 200;
     top: 77px;

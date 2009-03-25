@@ -2,7 +2,7 @@
 <head>
 <title>Elastix - {$PAGE_NAME}</title>
 <!--<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">-->
-<link rel="stylesheet" href="themes/giox/styles.css">
+<link rel="stylesheet" href="themes/{$THEMENAME}/styles.css">
 </head>
 
 <body bgcolor="#ffffff" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
@@ -22,7 +22,7 @@
 <p>&nbsp;</p>
 <table width="400" border="0" cellspacing="0" cellpadding="0" align="center">
   <tr>
-    <td width="498"  class="menudescription">
+    <td width="498" class="menudescription">
       <table width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
         <tr>
           <td>
@@ -64,7 +64,7 @@
           </td>
         </tr>
         <tr>
-            <td colspan="2"><img src="{$RUTA_IMG}/0.gif" width="1" height="5"></td>
+            <td colspan="2"><img src="themes/{$THEMENAME}/images/0.gif" width="1" height="5"></td>
         </tr>
       </table>
     </td>

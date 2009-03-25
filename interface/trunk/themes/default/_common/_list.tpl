@@ -24,20 +24,9 @@
                     border='0' width='13' height='11'>&nbsp;{$lblStart}&nbsp;&nbsp;<img 
                     src='/images/previous_off.gif' alt='{$lblPrevious}' align='absmiddle' border='0' width='8' height='11'>
                     {else}
-                        {if $withAjax eq 1}
-                            <a href="javascript:void(0);" onclick="javascript:{$functionName}('start',{$start})"
-                        {else}
-                            <a href="{$url}&nav=start&start={$start}">
-                        {/if}
-                    <img
+                    <a href="{$url}&nav=start&start={$start}"><img
                     src='/images/start.gif' alt='{$lblStart}' align='absmiddle'
-                    border='0' width='13' height='11'></a>&nbsp;{$lblStart}&nbsp;&nbsp;
-                        {if $withAjax eq 1}
-                            <a href="javascript:void(0);" onclick="javascript:{$functionName}('previous',{$start})"
-                        {else}
-                            <a href="{$url}&nav=previous&start={$start}">
-                        {/if}
-                    <img 
+                    border='0' width='13' height='11'></a>&nbsp;{$lblStart}&nbsp;&nbsp;<a href="{$url}&nav=previous&start={$start}"><img 
                     src='/images/previous.gif' alt='{$lblPrevious}' align='absmiddle' border='0' width='8' height='11'></a>
                     {/if}
                     &nbsp;{$lblPrevious}&nbsp;<span 
@@ -48,20 +37,10 @@
                     alt='{$lblNext}' align='absmiddle' border='0' width='8' height='11'>&nbsp;{$lblEnd}&nbsp;<img 
                     src='/images/end_off.gif' alt='{$lblEnd}' align='absmiddle' border='0' width='13' height='11'>
                     {else}
-                        {if $withAjax eq 1}
-                            <a href="javascript:void(0);" onclick="javascript:{$functionName}('next','{$start}')"
-                        {else}
-                            <a href="{$url}&nav=next&start={$start}">
-                        {/if}
-                    <img
+                    <a href="{$url}&nav=next&start={$start}"><img
                     src='/images/next.gif' 
-                    alt='{$lblNext}' align='absmiddle' border='0' width='8' height='11'></a>&nbsp;{$lblEnd}&nbsp;
-                        {if $withAjax eq 1}
-                            <a href="javascript:void(0);" onclick="javascript:{$functionName}('end',{$start})"
-                        {else}
-                            <a href="{$url}&nav=end&start={$start}">
-                        {/if}
-                    <img 
+                    alt='{$lblNext}' align='absmiddle' border='0' width='8' height='11'></a>&nbsp;{$lblEnd}&nbsp;<a 
+                    href="{$url}&nav=end&start={$start}"><img 
                     src='/images/end.gif' alt='{$lblEnd}' align='absmiddle' border='0' width='13' height='11'></a>
                     {/if}
                   {/if}
@@ -101,20 +80,9 @@
                     border='0' width='13' height='11'>&nbsp;{$lblStart}&nbsp;&nbsp;<img
                     src='/images/previous_off.gif' alt='{$lblPrevious}' align='absmiddle' border='0' width='8' height='11'>
                     {else}
-                    {if $withAjax eq 1}
-                            <a href="javascript:void(0);" onclick="javascript:{$functionName}('start',{$start})"
-                        {else}
-                            <a href="{$url}&nav=start&start={$start}">
-                        {/if}
-                    <img
+                    <a href="{$url}&nav=start&start={$start}"><img
                     src='/images/start.gif' alt='{$lblStart}' align='absmiddle'
-                    border='0' width='13' height='11'></a>&nbsp;{$lblStart}&nbsp;&nbsp;
-                        {if $withAjax eq 1}
-                            <a href="javascript:void(0);" onclick="javascript:{$functionName}('previous',{$start})"
-                        {else}
-                            <a href="{$url}&nav=previous&start={$start}">
-                        {/if}
-                    <img
+                    border='0' width='13' height='11'></a>&nbsp;{$lblStart}&nbsp;&nbsp;<a href="{$url}&nav=previous&start={$start}"><img
                     src='/images/previous.gif' alt='{$lblPrevious}' align='absmiddle' border='0' width='8' height='11'></a>
                     {/if}
                     &nbsp;{$lblPrevious}&nbsp;<span
@@ -125,20 +93,10 @@
                     alt='{$lblNext}' align='absmiddle' border='0' width='8' height='11'>&nbsp;{$lblEnd}&nbsp;<img
                     src='/images/end_off.gif' alt='{$lblEnd}' align='absmiddle' border='0' width='13' height='11'>
                     {else}
-                    {if $withAjax eq 1}
-                            <a href="javascript:void(0);" onclick="javascript:{$functionName}('next','{$start}')"
-                        {else}
-                            <a href="{$url}&nav=next&start={$start}">
-                        {/if}
-                    <img
+                    <a href="{$url}&nav=next&start={$start}"><img
                     src='/images/next.gif'
-                    alt='{$lblNext}' align='absmiddle' border='0' width='8' height='11'></a>&nbsp;{$lblEnd}&nbsp;
-                        {if $withAjax eq 1}
-                            <a href="javascript:void(0);" onclick="javascript:{$functionName}('end',{$start})"
-                        {else}
-                            <a href="{$url}&nav=end&start={$start}">
-                        {/if}
-                    <img
+                    alt='{$lblNext}' align='absmiddle' border='0' width='8' height='11'></a>&nbsp;{$lblEnd}&nbsp;<a
+                    href="{$url}&nav=end&start={$start}"><img
                     src='/images/end.gif' alt='{$lblEnd}' align='absmiddle' border='0' width='13' height='11'></a>
                     {/if}
                   {/if}

@@ -9,14 +9,14 @@
             {if $idMenu eq $idMainMenuSelected}
             <td class="headlinkon" valign="bottom">
               <table cellSpacing="0" cellPadding="2" height="30" border="0">
-                <tr><td class="menutabletabon_left" nowrap valign="top"><IMG src="/images/1x1.gif"></td><td class="menutabletabon" title="" nowrap><a
-                        class="menutableon" href="/?menu={$idMenu}">{$menu.Name}</a></td><td class="menutabletabon_right" nowrap valign="top"><IMG src="/images/1x1.gif"></td>
+                <tr><td class="menutabletabon_left" nowrap valign="top"><IMG src="themes/{$THEMENAME}/images/1x1.gif"></td><td class="menutabletabon" title="" nowrap><a
+                        class="menutableon" href="/?menu={$idMenu}">{$menu.Name}</a></td><td class="menutabletabon_right" nowrap valign="top"><IMG src="themes/{$THEMENAME}/images/1x1.gif"></td>
                 </tr>
               </table>
             </td>
             {else}
             <td class="headlink" valign="bottom">
-              <div style="position:absolute; z-index:200; top:65px;"><a href="javascript:mostrar_Menu('{$idMenu}')"><img src="themes/al/images/corner.gif" border="0"></a></div>
+              <div style="position:absolute; z-index:200; top:65px;"><a href="javascript:mostrar_Menu('{$idMenu}')"><img src="themes/{$THEMENAME}/images/corner.gif" border="0"></a></div>
               <input type="hidden" id="idMenu" value=""></input>
               <div class="vertical_menu_oculto" id="{$idMenu}">
                 <table cellpadding=0 cellspacing=0>
@@ -24,8 +24,8 @@
                 </table>
               </div>
               <table cellSpacing="0" cellPadding="2" height="29" border="0">
-                <tr><td class="menutabletaboff_left" nowrap valign="top"><IMG src="/images/1x1.gif"></td><td class="menutabletaboff" title="" nowrap><a
-                        class="menutable" href="/?menu={$idMenu}">{$menu.Name}</a></td><td class="menutabletaboff_right" nowrap valign="top"><IMG src="/images/1x1.gif"></td>
+                <tr><td class="menutabletaboff_left" nowrap valign="top"><IMG src="themes/{$THEMENAME}/images/1x1.gif"></td><td class="menutabletaboff" title="" nowrap><a
+                        class="menutable" href="/?menu={$idMenu}">{$menu.Name}</a></td><td class="menutabletaboff_right" nowrap valign="top"><IMG src="themes/{$THEMENAME}/images/1x1.gif"></td>
                 </tr>
               </table> 
             </td>
@@ -39,14 +39,6 @@
                                 {$ABOUT_ELASTIX}
                             </td>
                         </tr>
-                        <!--<tr class="tabForm">
-                            <td class="tabForm" >
-                                <img src="images/logo_elastix_about.gif" />
-                            </td>
-                            <td class="tabForm" >
-                                <img src="images/logo_palosanto_about.gif" />
-                            </td>
-                        </tr>-->
                         <tr class="tabForm" >
                             <td class="tabForm"  height='138' colspan='2' align='center'>
                                 {$ABOUT_ELASTIX_CONTENT}<br />
@@ -85,13 +77,13 @@
               </table>
             </td>
             <td align="right" valign="middle"><a href="javascript:openWindow('/help/?id_nodo={$idSubMenuSelected}&name_nodo={$nameSubMenuSelected}')"><img
-                src="themes/al/images/help_top.gif" border="0"></a>&nbsp;&nbsp;<a href="javascript:changeMenu()"><img
-                src="themes/al/images/arrow_top.gif" border="0"></a>&nbsp;&nbsp;</td>
+                src="themes/{$THEMENAME}/images/help_top.gif" border="0"></a>&nbsp;&nbsp;<a href="javascript:changeMenu()"><img
+                src="themes/{$THEMENAME}/images/arrow_top.gif" border="0"></a>&nbsp;&nbsp;</td>
           </tr>
         </table>
       </td>
     </tr>
-    <tr class="downshadow"><td><img src="images/1x1.gif" height="5"></td></tr>
+    <tr class="downshadow"><td><img src="themes/{$THEMENAME}/images/1x1.gif" height="5"></td></tr>
   </table>
 </div>
 <div id="miniMenu" style="display: none;">
@@ -99,9 +91,9 @@
     <tr>
       <td><img src="images/logo_elastix_mini.jpg" border="0"></td>
       <td align="right" class="letra_gris" valign="middle">{$nameMainMenuSelected} &rarr; {$nameSubMenuSelected} {if !empty($idSubMenu2Selected)} &rarr; {$nameSubMenu2Selected} {/if}
-          &nbsp;&nbsp;<a href="javascript:openWindow('/help/?id_nodo={$idSubMenuSelected}&name_nodo={$nameSubMenuSelected}')"><img src="images/help_bottom.gif" border="0" 
+          &nbsp;&nbsp;<a href="javascript:openWindow('/help/?id_nodo={$idSubMenuSelected}&name_nodo={$nameSubMenuSelected}')"><img src="themes/{$THEMENAME}/images/help_bottom.gif" border="0" 
           align="absmiddle"></a>
-          &nbsp;&nbsp;<a href="javascript:changeMenu()"><img src="images/arrow_bottom.gif" border="0" align="absmiddle"></a>&nbsp;&nbsp;
+          &nbsp;&nbsp;<a href="javascript:changeMenu()"><img src="themes/{$THEMENAME}/images/arrow_bottom.gif" border="0" align="absmiddle"></a>&nbsp;&nbsp;
       </td>
     </tr>
   </table>
@@ -121,6 +113,8 @@
       </table>
     </td>
     {/if}
+<!-- Va al tpl index.tlp-->
+
 {literal}
 <style type='text/css'>
 #acerca_de{

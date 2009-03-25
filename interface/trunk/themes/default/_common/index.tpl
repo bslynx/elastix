@@ -8,7 +8,7 @@
   <script src="libs/js/iframe.js"></script>
   {$HEADER}
 </head>
-<body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" {$BODYPARAMS}>
+<body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" {$BODYPARAMS}  onbeforeunload="ConfirmarCierre()" onunload="ManejadorCierre()">
 {$MENU}
 <td align="left" valign="top">{if !empty($mb_message)}
 <!-- Message board -->
