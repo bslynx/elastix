@@ -28,7 +28,9 @@
   $Id: paloSantoCDR.class.php,v 1.1.1.1 2008/10/09 12:48:09 jjvega Exp $ */
 
 //ini_set("display_errors", true);
- require_once "/var/lib/asterisk/agi-bin/phpagi-asmanager.php";
+if (file_exists("/var/lib/asterisk/agi-bin/phpagi-asmanager.php")) { 
+require_once "/var/lib/asterisk/agi-bin/phpagi-asmanager.php";
+}
 // require_once('/var/www/html/admin/common/php-asmanager.php');
 class paloSantoVoiceMail {
     var $_DB;
