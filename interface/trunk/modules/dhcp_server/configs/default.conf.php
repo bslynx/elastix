@@ -30,5 +30,5 @@ global $arrConf;
 global $arrConfModule;
 $arrConfModule['module_name'] = 'dhcp_server';
 $arrConfModule['templates_dir'] = 'themes';
-$arrConfModule['dsn_conn_database'] = $arrConf['elastix_dsn']['settings']; // "sqlite3:////var/www/db/settings.db";
+$arrConfModule['dsn_conn_database'] = $arrConf['elastix_dsn']['settings'];
 ?>

@@ -51,7 +51,7 @@ function _moduleContent(&$smarty, $module_name)
     $MAX_SLICES=10;
     $MAX_DAYS=60;
 
-    $pDBSet = new paloDB($arrConf['elastix_dsn']['settings'] /*"sqlite3:////var/www/db/settings.db" */);
+    $pDBSet = new paloDB($arrConf['elastix_dsn']['settings']);
 
     $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
     $arrConfig = $pConfig->leer_configuracion(false);
@@ -65,24 +65,11 @@ function _moduleContent(&$smarty, $module_name)
                $arrConfig['AMPDBHOST']['valor'] . "/asterisk";
     $pDB2     = new paloDB($dsn2);
 
-    // TODO: implementar una configuración que ubique todos los archivos sqlite a la vez
-    $acldb = $arrConf['elastix_dsn']['acl'];
-    $acldb = str_replace('sqlite3:///', '', $acldb);
-    
-    $ratedb = '/var/www/db/rate.db';
-    $trunkdb = '/var/www/db/trunk.db';
-    if (!file_exists($ratedb)) {
-        $ratedb = dirname($acldb).'/rate.db';
-    }
-    if (!file_exists($trunkdb)) {
-        $trunkdb = dirname($acldb).'/trunk.db';
-    }
-
-    $pDBTrunk = new paloDB("sqlite3:///$trunkdb");
+    $pDBTrunk = new paloDB("sqlite3:///$arrConf[elastix_dbdir]/trunk.db");
     $arrData = array();
     $smarty->assign("menu","dest_distribution");
 
-    $pDBSQLite = new paloDB("sqlite3:///$ratedb");
+    $pDBSQLite = new paloDB("sqlite3:///$arrConf[elastix_dbdir]/rate.db");
     if(!empty($pDBSQLite->errMsg)) {
         echo "{$arrLang['ERROR']}: $pDB->errMsg <br>";
     }

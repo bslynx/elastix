@@ -54,7 +54,7 @@ class paloSantoDashboard {
     global $arrLang;
         global $arrConf;
 
-    $dbEmails = new paloDB("sqlite3:////var/www/db/email.db");
+    $dbEmails = new paloDB("sqlite3:///$arrConf[elastix_dbdir]/email.db");
     if($email!='' && $passw!='')
         $imap = imap_open("{localhost:143/notls}","$email","$passw");
     else return $arrLang["You don't have a webmail account"];
@@ -183,9 +183,10 @@ class paloSantoDashboard {
    }
 
    function getLastFaxes($extension,$numRegs){
+    global $arrConf;
     global $arrLang;
 
-    $dbFax = new paloDB("sqlite3:////var/www/db/fax.db");
+    $dbFax = new paloDB("sqlite3:///$arrConf[elastix_dbdir]/fax.db");
 
     if(is_null($extension))
                 return $arrLang["You haven't extension"];
@@ -288,8 +289,9 @@ class paloSantoDashboard {
 
    function getEventsCalendar($idUser, $numRegs)
    {
+        global $arrConf;
         global $arrLang;
-        $db = new paloDB("sqlite3:////var/www/db/calendar.db");
+        $db = new paloDB("sqlite3:///$arrConf[elastix_dbdir]/calendar.db");
 
         $actual_date = date("Y-m-d");
         $actual_date_hour = date("Y-m-d H:i:s");

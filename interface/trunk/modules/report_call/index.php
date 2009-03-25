@@ -68,7 +68,7 @@ function _moduleContent(&$smarty, $module_name)
                       $arrConfig['AMPDBHOST']['valor']."/asteriskcdrdb";
 
     $pDB_cdr = new paloDB($dsnAsteriskCdr);//asteriskcdrdb -> CDR
-    $pDB_billing = new paloDB("sqlite3:////var/www/db/rate.db"); //sqlite3 -> rate.db
+    $pDB_billing = new paloDB("sqlite3:///$arrConf[elastix_dbdir]/rate.db"); //sqlite3 -> rate.db
 
     //actions
     $accion = getAction();

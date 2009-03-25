@@ -26,8 +26,9 @@
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
   $Id: default.conf.php,v 1.1 2008-06-12 09:06:35 afigueroa Exp $ */
-	global $arrConfModule;
+	global $arrConf;
+    global $arrConfModule;
     $arrConfModule['module_name'] = 'recordings';
     $arrConfModule['templates_dir'] = 'themes';
-	$arrConfModule['dsn_conn_database'] = "sqlite3:////var/www/db/address_book.db";
+	$arrConfModule['dsn_conn_database'] = "sqlite3:///$arrConf[elastix_dbdir]/address_book.db";
 ?>

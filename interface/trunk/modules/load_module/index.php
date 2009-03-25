@@ -44,8 +44,8 @@ function _moduleContent($smarty, $module_name)
     global $arrLang;
     //folder path for custom templates
 
-    $pDB = new paloDB($arrConf['elastix_dsn']['menu'] /* "sqlite3:////var/www/db/menu.db" */);
-    $pDBACL = new paloDB($arrConf['elastix_dsn']['acl'] /* "sqlite3:////var/www/db/acl.db" */);
+    $pDB = new paloDB($arrConf['elastix_dsn']['menu']);
+    $pDBACL = new paloDB($arrConf['elastix_dsn']['acl']);
     if(!empty($pDB->errMsg)) {
         echo "ERROR DE DB: $pDB->errMsg <br>";
     }

@@ -35,7 +35,7 @@ function _moduleContent(&$smarty, $module_name)
     include_once("libs/paloSantoACL.class.php");
     global $arrLang;
     global $arrConf;
-    $pDB = new paloDB($arrConf['elastix_dsn']['acl']  /* "sqlite3:////var/www/db/acl.db" */ );
+    $pDB = new paloDB($arrConf['elastix_dsn']['acl']);
 
 /////conexion a php
 //include module files

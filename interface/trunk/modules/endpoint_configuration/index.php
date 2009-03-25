@@ -54,7 +54,7 @@ function _moduleContent(&$smarty, $module_name)
                    $arrAMP['AMPDBUSER']['valor']. ":". 
                    $arrAMP['AMPDBPASS']['valor']. "@".
                    $arrAMP['AMPDBHOST']['valor'];
-    $dsnSqlite   = "sqlite3:////var/www/db";
+    $dsnSqlite   = "sqlite3:///$arrConf[elastix_dbdir]";
 
     if(isset($_POST["endpoint_scan"])) $accion ="endpoint_scan";
     else if(isset($_POST["endpoint_set"])) $accion ="endpoint_set";

@@ -57,7 +57,7 @@ function _moduleContent(&$smarty, $module_name)
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
     
     $pDB = new paloDB($arrConf['dsn_conn_database']);
-    $pDBTrunk = new paloDB("sqlite3:////var/www/db/trunk.db");
+    $pDBTrunk = new paloDB("sqlite3:///$arrConf[elastix_dbdir]/trunk.db");
     $oTrunk   = new paloTrunk($pDBTrunk);
     $arrTrunksBill['None']=$arrLang['None'];
     foreach ($oTrunk->getTrunksBill() as $trunk) $arrTrunksBill[$trunk]=$trunk;

@@ -62,7 +62,7 @@ function _moduleContent(&$smarty, $module_name)
                    $arrConfig['AMPDBPASS']['valor']. "@".
                    $arrConfig['AMPDBHOST']['valor']."/asterisk";
 
-	$pDB = new paloDB("sqlite3:////var/www/db/address_book.db");
+	$pDB = new paloDB("sqlite3:///$arrConf[elastix_dbdir]/address_book.db");
 
     $action = getAction();
 	

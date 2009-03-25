@@ -69,7 +69,7 @@ function _moduleContent(&$smarty, $module_name)
     $arrData = array();
     $oCDR    = new paloSantoCDR($pDB);
 
-    $pDBACL = new paloDB($arrConf['elastix_dsn']['acl'] /* "sqlite3:////var/www/db/acl.db"*/);
+    $pDBACL = new paloDB($arrConf['elastix_dsn']['acl']);
     if (!empty($pDBACL->errMsg)) {
         echo "ERROR DE DB: $pDBACL->errMsg <br>";
     }

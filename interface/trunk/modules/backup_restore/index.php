@@ -510,6 +510,8 @@ function Array_Options($arrLang, $disabled="")
 
 function process_each_backup($arrSelectedOptions,$ruta_respaldo,&$arrBackupOptions)
 {
+    global $arrConf;
+
     foreach ($arrSelectedOptions as $option)
     {
         $bExito=true;
@@ -583,7 +585,7 @@ function process_each_backup($arrSelectedOptions,$ruta_respaldo,&$arrBackupOptio
             break;
 
         case "fx_db":
-            exec("cp /var/www/db/fax.db $ruta_respaldo", $output, $retval);
+            exec("cp $arrConf[elastix_dbdir]/fax.db $ruta_respaldo", $output, $retval);
             if ($retval!=0) $bExito = false;
             break;
 
@@ -615,7 +617,7 @@ function process_each_backup($arrSelectedOptions,$ruta_respaldo,&$arrBackupOptio
                 exec($comando,$output,$retval);
             }else $bExito = false;
 
-            $comando="cp /var/www/db/email.db $ruta_respaldo";
+            $comando="cp $arrConf[elastix_dbdir]/email.db $ruta_respaldo";
             exec($comando,$output,$retval);
             if ($retval!=0) $bExito = false;
             break;
@@ -640,7 +642,7 @@ function process_each_backup($arrSelectedOptions,$ruta_respaldo,&$arrBackupOptio
             break;
 
         case "ep_db":
-            exec("cp /var/www/db/endpoint.db $ruta_respaldo", $output, $retval);
+            exec("cp $arrConf[elastix_dbdir]/endpoint.db $ruta_respaldo", $output, $retval);
             if ($retval!=0) $bExito = false;
             break;
 
@@ -738,9 +740,9 @@ function process_each_backup($arrSelectedOptions,$ruta_respaldo,&$arrBackupOptio
             break;
 
         case "menus_permissions":
-            exec("cp /var/www/db/menu.db $ruta_respaldo", $output, $retval);
+            exec("cp $arrConf[elastix_dbdir]/menu.db $ruta_respaldo", $output, $retval);
             if ($retval!=0) $bExito = false;
-            exec("cp /var/www/db/acl.db $ruta_respaldo", $output, $retval);
+            exec("cp $arrConf[elastix_dbdir]/acl.db $ruta_respaldo", $output, $retval);
             if ($retval!=0) $bExito = false;
             break;
 
@@ -862,6 +864,7 @@ function respaldar_base_mysql($dir_resp_db,$base)
 /* ------------------------------------------------------------------------------- */
 function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar,&$arrRestoreOptions)
 {
+    global $arrConf;
     $error="";
     foreach ($arrSelectedOptions as $option)
     {
@@ -1025,7 +1028,7 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
             if (file_exists("$ruta_respaldo/fax.db"))
             {
                 $base_fax_respaldo = "$ruta_respaldo/fax.db";
-                $base_fax= "/var/www/db/fax.db";
+                $base_fax= "$arrConf[elastix_dbdir]/fax.db";
 
                 //consultar en la base para crear en el sistema
                 crear_cuentas_fax($base_fax_respaldo,$base_fax);
@@ -1066,7 +1069,7 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
 
         case "em_db":
             //Primero eliminar todos los dominios existentes
-            $pDB = new paloDB("sqlite3:////var/www/db/email.db");
+            $pDB = new paloDB("sqlite3:///$arrConf[elastix_dbdir]/email.db");
             if(!empty($pDB->errMsg)) {
                 echo "ERROR DE DB: $pDB->errMsg <br>";
             }
@@ -1095,7 +1098,7 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
             if (file_exists("$ruta_respaldo/email.db"))
             {
                 $base_email_respaldo = "$ruta_respaldo/email.db";
-                $base_email = "/var/www/db/email.db";
+                $base_email = "$arrConf[elastix_dbdir]/email.db";
 
                 //consultar en la base para crear en el sistema
                 if(!crear_cuentas_email($base_email_respaldo, $base_email))
@@ -1144,7 +1147,7 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
             break;
 
         case "ep_db":
-            $comando="cp $ruta_respaldo/endpoint.db /var/www/db/";
+            $comando="cp $ruta_respaldo/endpoint.db $arrConf[elastix_dbdir]/";
             exec($comando, $output, $retval);
             if ($retval!=0) $bExito = false;
             break;
@@ -1244,7 +1247,7 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
             break;
 
         case "menus_permissions":
-            $comando="cp $ruta_respaldo/menu.db $ruta_respaldo/acl.db /var/www/db/";
+            $comando="cp $ruta_respaldo/menu.db $ruta_respaldo/acl.db $arrConf[elastix_dbdir]/";
             exec($comando, $output, $retval);
             if ($retval!=0) $bExito = false;
             break;
@@ -1290,7 +1293,7 @@ function crear_cuentas_fax($ruta_base_fax_respaldo,$base_fax)
     $result=array();
     $oFax = new paloFax();
 
-    #borrar las cuentas de fax de /var/www/db
+    #borrar las cuentas de fax de $arrConf[elastix_dbdir]
     $pDBorig = new paloDB("sqlite3:///$base_fax");
     if (!empty($pDBorig->errMsg)) {
         echo "DB ERROR: $pDBorig->errMsg \n";
@@ -1333,7 +1336,7 @@ function crear_cuentas_email($ruta_base_email_respaldo,$base_email)
         echo "DB ERROR: $pDB->errMsg \n";
     }
     else{
-        #borrar las cuentas de dominos y el domino /var/www/db
+        #borrar las cuentas de dominos y el domino $arrConf[elastix_dbdir]
         $pDBorig = new paloDB("sqlite3:///$base_email");
         if (!empty($pDBorig->errMsg)) {
             echo "DB ERROR: $pDBorig->errMsg \n";

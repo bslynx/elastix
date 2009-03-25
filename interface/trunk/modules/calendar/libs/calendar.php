@@ -522,7 +522,7 @@ function Obtain_UID_From_User($user)
     global $arrConf;
 
     require_once $arrConf['basePath']."/libs/paloSantoACL.class.php";
-    $pdbACL = new paloDB($arrConf['elastix_dsn']['acl'] /* "sqlite3:////var/www/db/acl.db" */);
+    $pdbACL = new paloDB($arrConf['elastix_dsn']['acl']);
     $pACL = new paloACL($pdbACL);
     $uid = $pACL->getIdUser($user);
     if($uid!=FALSE)

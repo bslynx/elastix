@@ -26,9 +26,10 @@
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
   $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
-	global $arrConfModule;
+global $arrConf;
+global $arrConfModule;
 $arrConfModule['module_name'] = 'faxmaster';
 $arrConfModule['templates_dir'] = 'themes';
-$arrConfModule['dsn_conn_database'] = "sqlite3:////var/www/db/settings.db";
+$arrConfModule['dsn_conn_database'] = $arrConf['elastix_dsn']['settings'];
 
 ?>

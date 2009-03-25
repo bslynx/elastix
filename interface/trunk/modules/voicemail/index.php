@@ -59,7 +59,7 @@ function _moduleContent(&$smarty, $module_name)
     $arrLang = array_merge($arrLang,$arrLangModule);
 
     //segun el usuario que esta logoneado consulto si tiene asignada extension para buscar los voicemails
-    $pDB = new paloDB("sqlite3:////var/www/db/acl.db");
+    $pDB = new paloDB($arrConf['elastix_dsn']['acl']);
 
     $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
     $arrAMP  = $pConfig->leer_configuracion(false);
@@ -153,9 +153,10 @@ function _moduleContent(&$smarty, $module_name)
         $path = "/var/spool/asterisk/voicemail/default";
         $folder = "INBOX";
 
+        $directorios = array();
         if($esAdministrador)
         {
-            if ($handle = opendir($path)) {
+            if ($handle = @opendir($path)) {
                 while (false !== ($dir = readdir($handle))) {
                     if ($dir != "." && $dir != ".." && ereg($extension, $dir, $regs) && is_dir($path."/".$dir)) {
                         $directorios[] = $dir;

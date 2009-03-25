@@ -1,5 +1,6 @@
 <?php
 include_once("../../../libs/misc.lib.php");
+include_once("../../../configs/default.conf.php");
 include_once("../../../libs/paloSantoDB.class.php");
 require_once("../../../libs/smarty/libs/Smarty.class.php");
 include_once("../../../libs/paloSantoConfig.class.php");
@@ -12,10 +13,11 @@ download_address_book();
 
 function download_address_book()
 {
+    global $arrConf;
     global $arrLangModule;
     $smarty = getSmarty();
 
-    $pDB = new paloDB("sqlite3:////var/www/db/address_book.db");
+    $pDB = new paloDB("sqlite3:///$arrConf[elastix_dbdir]/address_book.db");
     if(!empty($pDB->errMsg)) {
         $smarty->assign("mb_message", $arrLangModule["Error when connecting to database"]."<br/>".$pDB->errMsg);
     }

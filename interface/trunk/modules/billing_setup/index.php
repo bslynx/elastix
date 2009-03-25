@@ -54,8 +54,8 @@ function _moduleContent(&$smarty, $module_name)
     $dsn     = $arrConfig['AMPDBENGINE']['valor'] . "://" . $arrConfig['AMPDBUSER']['valor'] . ":" . $arrConfig['AMPDBPASS']['valor'] . "@" .
                $arrConfig['AMPDBHOST']['valor'] . "/asterisk";
     $pDB     = new paloDB($dsn);
-    $pDBSetting = new paloDB("sqlite3:////var/www/db/settings.db");
-    $pDBTrunk = new paloDB("sqlite3:////var/www/db/trunk.db");
+    $pDBSetting = new paloDB($arrConf['elastix_dsn']['settings']);
+    $pDBTrunk = new paloDB("sqlite3:///$arrConf[elastix_dbdir]/trunk.db");
     $arrForm  = array("default_rate"       => array("LABEL"                   => $arrLang["Default Rate"],
                                                     "REQUIRED"               => "yes",
                                                     "INPUT_TYPE"             => "TEXT",

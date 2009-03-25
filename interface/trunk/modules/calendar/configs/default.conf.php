@@ -31,15 +31,5 @@ global $arrConf;
 global $arrConfModule;
 $arrConfModule['module_name'] = 'calendar';
 $arrConfModule['templates_dir'] = 'themes';
-
-$calendardb = '/var/www/db/calendar.db';
-
-// TODO: implementar una configuración que ubique todos los archivos sqlite a la vez
-$acldb = $arrConf['elastix_dsn']['acl'];
-$acldb = str_replace('sqlite3:///', '', $acldb);
-
-if (!file_exists($calendardb)) {
-    $calendardb = dirname($acldb).'/calendar.db';
-}
-$arrConfModule['dsn_conn_database'] = "sqlite3:///$calendardb";
+$arrConfModule['dsn_conn_database'] = "sqlite3:///$arrConf[elastix_dbdir]/calendar.db";
 ?>

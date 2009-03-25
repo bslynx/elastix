@@ -53,7 +53,7 @@ function _moduleContent(&$smarty, $module_name)
 
     $pDBCDR     = new paloDB($dsn);
     //segun el usuario que esta logoneado consulto si tiene asignada extension para buscar los voicemails
-    $pDB = new paloDB("sqlite3:////var/www/db/acl.db");
+    $pDB = new paloDB($arrConf['elastix_dsn']['acl']);
 
     if (!empty($pDB->errMsg)) {
         echo "ERROR DE DB: $pDB->errMsg <br>";

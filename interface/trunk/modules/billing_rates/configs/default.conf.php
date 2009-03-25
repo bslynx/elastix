@@ -29,6 +29,6 @@
 global $arrConfModule;
 $arrConfModule['module_name'] = 'billing_rates';
 $arrConfModule['templates_dir'] = 'themes';
-$arrConfModule['dsn_conn_database'] = "sqlite3:////var/www/db/rate.db";
+$arrConfModule['dsn_conn_database'] = "sqlite3:///$arrConf[elastix_dbdir]/rate.db";
 
 ?>
