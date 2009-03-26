@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 1.0                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -24,13 +24,28 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  |                                                                      |
+  | Translate by: Chavdar Iliev                                          |
+  | Email: chavdar_75@yahoo.com                                          |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
-global $arrConfModule;
-global $arrConf;
-$arrConfModule['module_name'] = 'billing_report';
-$arrConfModule['templates_dir'] = 'themes';
-$arrConfModule['dsn_conn_database_1'] = "sqlite3:///$arrConf[elastix_dbdir]/trunk.db";
-$arrConfModule['dsn_conn_database_2'] = "sqlite3:///$arrConf[elastix_dbdir]/rate.db";
-
+  $Id: en.lang,v 1.7 2008/02/18 09:48:00 bmacias Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Start Date" => "Начална Дата",
+"End Date" => "Крайна Дата",
+"Field Name" => "Име на Полето",
+"Channel" => "Линия",
+"Billing Report" => "Сведение за Сметка",
+"Duration in seconds" => "Продължителност в Секунди",
+"Cost" => "Стойност",
+"Summary Cost" => "Общо Стойност",
+"Rate Applied" => "Приложена Тарифа",
+"Date" => "Дата",
+"Source" => "Източник",
+"Destination" => "Направление",
+"Dst. Channel" => "Към Линия",
+"Duration" => "Продължителност",
+"Filter" => "Филтър",
+"Field" => "По",
+);
 ?>

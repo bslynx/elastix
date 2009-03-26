@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 0.5                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,12 +25,24 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
-global $arrConfModule;
-global $arrConf;
-$arrConfModule['module_name'] = 'billing_report';
-$arrConfModule['templates_dir'] = 'themes';
-$arrConfModule['dsn_conn_database_1'] = "sqlite3:///$arrConf[elastix_dbdir]/trunk.db";
-$arrConfModule['dsn_conn_database_2'] = "sqlite3:///$arrConf[elastix_dbdir]/rate.db";
-
+  $Id: cn.lang,v 1.6 2007/09/05 00:36:42 gcarrillo Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Start Date" => "开始日期",
+"End Date" => "结束日期",
+"Field Name" => "项目名称",
+"Channel" => "頻道",
+"Billing Report" => "帐单报告",
+"Duration in seconds" => "持续时间(秒)",
+"Cost" => "花费金额",
+"Summary Cost" => "Summary Cost",
+"Rate Applied" => "已应用的费率",
+"Date" => "日期",
+"Source" => "来源",
+"Destination" => "目的地",
+"Dst. Channel" => "目的频道",
+"Duration" => "有效期限",
+"Filter" => "过滤器",
+"Field" => "项目",
+);
 ?>

@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 1.0                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -24,13 +24,29 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  |                                                                      |
+  | Translate by: Jason Papanayotou                                      |
+  | Email: jasonpap@gmail.com                                            |
+  |                                                                      |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
-global $arrConfModule;
-global $arrConf;
-$arrConfModule['module_name'] = 'billing_report';
-$arrConfModule['templates_dir'] = 'themes';
-$arrConfModule['dsn_conn_database_1'] = "sqlite3:///$arrConf[elastix_dbdir]/trunk.db";
-$arrConfModule['dsn_conn_database_2'] = "sqlite3:///$arrConf[elastix_dbdir]/rate.db";
-
+  $Id: el.lang,v 1.6 2008/02/11 11:07:22 bmacias@palosanto.com Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Start Date" => "Ημερομηνία Εκκίνησης",
+"End Date" => "Ημερομηνία Τερματισμού",
+"Field Name" => "Όνομα Πεδίου",
+"Channel" => "Κανάλι",
+"Billing Report" => "Αναφορά Χρέωσης",
+"Duration in seconds" => "Διάρκεια Σε Δευτερόλεπτα",
+"Cost" => "Κόστος",
+"Summary Cost" => "Summary Cost",
+"Rate Applied" => "Εφαρμοσμένο Ποσοστό",
+"Date" => "Ημερομηνία",
+"Source" => "Πηγή",
+"Destination" => "Προορισμός",
+"Dst. Channel" => "Κανάλι Προορισμού",
+"Duration" => "Διάρκεια",
+"Filter" => "Φίλτρο",
+"Field" => "Πεδίο",
+);
 ?>

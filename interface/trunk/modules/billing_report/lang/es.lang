@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 0.5                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,12 +25,24 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
-global $arrConfModule;
-global $arrConf;
-$arrConfModule['module_name'] = 'billing_report';
-$arrConfModule['templates_dir'] = 'themes';
-$arrConfModule['dsn_conn_database_1'] = "sqlite3:///$arrConf[elastix_dbdir]/trunk.db";
-$arrConfModule['dsn_conn_database_2'] = "sqlite3:///$arrConf[elastix_dbdir]/rate.db";
-
+  $Id: es.lang,v 1.7 2007/09/05 00:36:42 gcarrillo Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Start Date" => "Fecha Inicio",
+"End Date" => "Fecha Fin",
+"Field Name" => "Nombre del Campo",
+"Channel" => "Canal",
+"Billing Report" => "Reporte de Facturaci&oacute;n",
+"Duration in seconds" => "Duraci&oacute;n en segundos",
+"Cost" => "Costo",
+"Summary Cost" => "Resumen de gastos",
+"Rate Applied" => "Tarifa Aplicada",
+"Date" => "Fecha",
+"Source" => "Fuente",
+"Destination" => "Destino",
+"Dst. Channel" => "Canal destino",
+"Duration" => "Duraci&oacute;n",
+"Filter" => "Filtrar",
+"Field" => "Campo",
+);
 ?>
