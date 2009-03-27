@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 0.5                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,10 +25,14 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
-global $arrConfModule;
-global $arrConf;
-$arrConfModule['module_name'] = 'billing_setup';
-$arrConfModule['templates_dir'] = 'themes';
-$arrConfModule['dsn_conn_database_1'] = "sqlite3:///$arrConf[elastix_dbdir]/trunk.db";
+  $Id: ru.lang,v 1.6 2007/09/05 00:36:42 gcarrillo Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Billing Capable" => "Возможность выписок по счёту",
+"Default Rate Configuration" => "Настройки Тарифов по Умолчанию",
+"Default Rate" => "Тариф по Умолчанию",
+"Default Rate Offset" => "Надбавка Тарифа по Умолчанию",
+"Trunk Bill Configuration" => "Биллинговые настройки по транкам",
+"Trunk" => "Транк",
+);
 ?>
