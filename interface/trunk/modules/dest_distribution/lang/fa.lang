@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 1.0                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -24,12 +24,29 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  |                                                                      |
+  | Translate by: Haamed Kouhfallah                                      |
+  | Email: haamed@cytco.net                                              |                                                                    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
-global $arrConfModule;
-global $arrConf;
-$arrConfModule['module_name'] = 'dest_distribution';
-$arrConfModule['templates_dir'] = 'themes';
-$arrConfModule['dsn_conn_database_1'] = "sqlite3:///$arrConf[elastix_dbdir]/trunk.db";
-$arrConfModule['dsn_conn_database_2'] = "sqlite3:///$arrConf[elastix_dbdir]/rate.db";
+   $Id: fa.lang,v 1.2 2008/04/21 10:11:44 bmacias@palosanto.com Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Filter" => "فیلتر",
+"Start Date" => "تاریخ شروع",
+"End Date" => "تاریخ پایان",
+"Destination Distribution" => "توزیع مقصد",
+"Criteria" => "معیار",
+"Distribution by Time" => "توزیع با زمان",
+"Distribution by Number of Calls" => "توزیع با تعداد مکالمات",
+"Distribution by Cost" => "توزیع با هزینه",
+"Date Range spans maximum number of days" => "محدوده زمانی از بالاترین تعداد روزهای ممکن تعیین شده است",
+"ERROR" => "خطا",
+"Minutes" => "دقیقه ها",
+"Number of Calls" => "تعداد تماس ها",
+"others" => "موارد دیگر",
+"Rate Name" => "نام نرخ",
+"default" => "پیش فرض",
+"Duration in seconds" => "مدت زمان به ثانیه",
+"Cost" => "هزینه",
+);
 ?>

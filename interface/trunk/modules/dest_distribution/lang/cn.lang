@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 0.5                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,11 +25,25 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
-global $arrConfModule;
-global $arrConf;
-$arrConfModule['module_name'] = 'dest_distribution';
-$arrConfModule['templates_dir'] = 'themes';
-$arrConfModule['dsn_conn_database_1'] = "sqlite3:///$arrConf[elastix_dbdir]/trunk.db";
-$arrConfModule['dsn_conn_database_2'] = "sqlite3:///$arrConf[elastix_dbdir]/rate.db";
+  $Id: cn.lang,v 1.6 2007/09/05 00:36:42 gcarrillo Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Filter" => "过滤器",
+"Start Date" => "开始日期",
+"End Date" => "结束日期",
+"Destination Distribution" => "目的分发",
+"Criteria" => "标准",
+"Distribution by Time" => "以时间分配",
+"Distribution by Number of Calls" => "以通話次数分配",
+"Distribution by Cost" => "以花费金额分配",
+"Date Range spans maximum number of days" => "日期超过了最大时间限制",
+"ERROR" => "错误",
+"Minutes" => "分钟",
+"Number of Calls" => "通话次数",
+"others" => "其他",
+"Rate Name" => "Rate名称",
+"default" => "默认设置",
+"Duration in seconds" => "持续时间(秒)",
+"Cost" => "花费金额",
+);
 ?>

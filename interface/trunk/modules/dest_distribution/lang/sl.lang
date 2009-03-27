@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 0.5                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,11 +25,25 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
-global $arrConfModule;
-global $arrConf;
-$arrConfModule['module_name'] = 'dest_distribution';
-$arrConfModule['templates_dir'] = 'themes';
-$arrConfModule['dsn_conn_database_1'] = "sqlite3:///$arrConf[elastix_dbdir]/trunk.db";
-$arrConfModule['dsn_conn_database_2'] = "sqlite3:///$arrConf[elastix_dbdir]/rate.db";
+  $Id: sl.lang,v 1.6 2007/09/05 00:36:42 gcarrillo Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Filter" => "Filter",
+"Start Date" => "Začetni datum",
+"End Date" => "Končni datum",
+"Destination Distribution" => "Destination Distribution",
+"Criteria" => "kriterij",
+"Distribution by Time" => "distribucija po času",
+"Distribution by Number of Calls" => "distribucija po številu klicev",
+"Distribution by Cost" => "distribucija po ceni",
+"Date Range spans maximum number of days" => "časovni razpon traja maksimalno število dni",
+"ERROR" => "napaka",
+"Minutes" => "minut",
+"Number of Calls" => "število klicev",
+"others" => "ostalo",
+"Rate Name" => "ime tarife",
+"default" => "osnovna",
+"Duration in seconds" => "trajanje v sekundah",
+"Cost" => "cena",
+);
 ?>

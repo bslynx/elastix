@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 1.0                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,11 +25,25 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
-global $arrConfModule;
-global $arrConf;
-$arrConfModule['module_name'] = 'dest_distribution';
-$arrConfModule['templates_dir'] = 'themes';
-$arrConfModule['dsn_conn_database_1'] = "sqlite3:///$arrConf[elastix_dbdir]/trunk.db";
-$arrConfModule['dsn_conn_database_2'] = "sqlite3:///$arrConf[elastix_dbdir]/rate.db";
+  $Id: sv.lang,v 0.1 2008/03/25 00:36:42 IFIT DATA - http://www.ifit.se Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Filter" => "Filter",
+"Start Date" => "Start Datum",
+"End Date" => "Slut Datum",
+"Destination Distribution" => "M&aring;l Distribution",
+"Criteria" => "Kriteria",
+"Distribution by Time" => "Distribution i Tid",
+"Distribution by Number of Calls" => "Distribution i Antal Samtal",
+"Distribution by Cost" => "Distribution i Kostnad",
+"Date Range spans maximum number of days" => "Datum period visar maximalt antal dagar",
+"ERROR" => "Fel",
+"Minutes" => "Minuter",
+"Number of Calls" => "Antal samtal",
+"others" => "Andra",
+"Rate Name" => "Taxa Namn",
+"default" => "Standard",
+"Duration in seconds" => "L&auml;ngd i sekunder",
+"Cost" => "Kostnad",
+);
 ?>
