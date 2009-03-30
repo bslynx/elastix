@@ -39,24 +39,25 @@ function _moduleContent(&$smarty, $module_name)
 
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
+    
+    $lang=get_language();
+    $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
+    $lang_file="modules/$module_name/lang/$lang.lang";
+    if (file_exists("$base_dir/$lang_file")) include_once "$lang_file";
+    else include_once "modules/$module_name/lang/en.lang";
+
+    //global variables
     global $arrConf;
+    global $arrConfModule;
     global $arrLang;
+    global $arrLangModule;
+    $arrConf = array_merge($arrConf,$arrConfModule);
+    $arrLang = array_merge($arrLang,$arrLangModule);
+
     //folder path for custom templates
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
-    $templates_dir=(isset($arrConfig['templates_dir']))?$arrConfig['templates_dir']:'themes';
+    $templates_dir=(isset($arrConf['templates_dir']))?$arrConf['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
-
-    //include lang local module
-    $lang=get_language();
-    $lang_file="modules/$module_name/lang/$lang.lang";
-    $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
-    if (file_exists("$base_dir/$lang_file"))
-        include_once($lang_file);
-    else
-        include_once("modules/$module_name/lang/en.lang");
-    global $arrLangModule;
-
-    $arrLang = array_merge($arrLang,$arrLangModule);
 
     //segun el usuario que esta logoneado consulto si tiene asignada extension para buscar los voicemails
     $pDB = new paloDB($arrConf['elastix_dsn']['acl']);
@@ -153,10 +154,9 @@ function _moduleContent(&$smarty, $module_name)
         $path = "/var/spool/asterisk/voicemail/default";
         $folder = "INBOX";
 
-        $directorios = array();
         if($esAdministrador)
         {
-            if ($handle = @opendir($path)) {
+            if ($handle = opendir($path)) {
                 while (false !== ($dir = readdir($handle))) {
                     if ($dir != "." && $dir != ".." && ereg($extension, $dir, $regs) && is_dir($path."/".$dir)) {
                         $directorios[] = $dir;
