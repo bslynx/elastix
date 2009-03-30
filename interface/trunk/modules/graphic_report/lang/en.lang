@@ -48,5 +48,7 @@ $arrLangModule=array(
 "Number of calls from" => "Number of calls from",
 "Here" => "Here",
 "Graphic Report" => "Graphic Report",
+"All" => "All",
+"Show"=>"Show",
 );
 ?>

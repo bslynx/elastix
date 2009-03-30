@@ -37,24 +37,27 @@ function _moduleContent(&$smarty, $module_name)
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
     include_once "modules/$module_name/libs/paloSantoExtention.class.php";
-    global $arrConf;
-    global $arrLang;
+    
 
+    $lang=get_language();
+    $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
+    $lang_file="modules/$module_name/lang/$lang.lang";
+    if (file_exists("$base_dir/$lang_file")) include_once "$lang_file";
+    else include_once "modules/$module_name/lang/en.lang";
+
+    //global variables
+    global $arrConf;
+    global $arrConfModule;
+    global $arrLang;
+    global $arrLangModule;
+    $arrConf = array_merge($arrConf,$arrConfModule);
+    $arrLang = array_merge($arrLang,$arrLangModule);
     //folder path for custom templates
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
     $templates_dir=(isset($arrConfig['templates_dir']))?$arrConfig['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
 
-    $lang = get_language();
-    $script_dir=dirname($_SERVER['SCRIPT_FILENAME']);
-    $lang_file="modules/$module_name/lang/$lang.lang";
-
-    if (file_exists("$script_dir/$lang_file"))
-        include_once($lang_file);
-    else
-        include_once("modules/$module_name/lang/en.lang");
-    global $arrLangModule;
-
+    
     $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
     $arrConfig = $pConfig->leer_configuracion(false);
 
@@ -334,7 +337,6 @@ function loadTrunks($pDB_ext)
 
     $arrTrunksTemp = getTrunks($pDB_ext);
     $arrTrunk = array();
-    if (is_array($arrTrunksTemp))
     foreach($arrTrunksTemp as $key => $arr){
         $arrTrunk[ $arr[1] ] = $arr[1]; 
     }
