@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 0.5                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,9 +25,23 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
-global $arrConfModule;
-$arrConfModule['module_name'] = 'monitoring';
-$arrConfModule['templates_dir'] = 'themes';
+  $Id: cn.lang,v 1.6 2007/09/05 00:36:42 gcarrillo Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Filter" => "过滤器",
+"Start Date" => "开始日期",
+"End Date" => "结束日期",
+"You don't have extension number associated with user" => "You don't have extension number associated with user",
+"Are you sure you wish to delete recordings?" => "Are you sure you wish to delete recordings?",
+"Monitoring" => "Monitoring",
+"Monitorig List" => "Monitoring List",
+"Date" => "日期",
+"Time" => "Time",
+"Source" => "来源",
+"Destination" => "目的地",
+"Duration" => "有效期限",
+"Type" => "类型",
+"Message" => "Message",
 
+);
 ?>

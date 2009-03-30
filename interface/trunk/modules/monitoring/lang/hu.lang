@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 1.0                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -24,10 +24,27 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  |                                                                      |
+  | Translate by: Lakatos Tamás                                          |
+  | Email: lakatost@gmail.com                                            |
+  |                                                                      |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
-global $arrConfModule;
-$arrConfModule['module_name'] = 'monitoring';
-$arrConfModule['templates_dir'] = 'themes';
-
+  : hu.lang,v 1.6 2008/01/21 09:51:55 bmacias@palosanto.com Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Filter" => "Szűrő",
+"Start Date" => "Kezdő Dátum",
+"End Date" => "Vég Dátum",
+"You don't have extension number associated with user" => "Nincs a felhasználóhoz társított mellék",
+"Are you sure you wish to delete recordings?" => "Biztosan törlöd a hangfelvételt?",
+"Monitoring" => "Felügyelet",
+"Monitorig List" => "Felügyelet lista",
+"Date" => "Dátum",
+"Time" => "Idő",
+"Source" => "Forrás",
+"Destination" => "Cél",
+"Duration" => "Időtartam",
+"Type" => "Típus",
+"Message" => "Üzenet",
+);
 ?>

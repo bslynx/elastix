@@ -1,16 +1,20 @@
 <?php
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
-  Codificación: UTF-8
+  Codificacion: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 1.1                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
   +----------------------------------------------------------------------+
   | Cdla. Nueva Kennedy Calle E 222 y 9na. Este                          |
-  | Telfs. 2283-268, 2294-440, 2284-356                                  |
+  | Telfs. 2283-268, 2294-440, 22OC84-356                                |
   | Guayaquil - Ecuador                                                  |
   | http://www.palosanto.com                                             |
+  |                                                                      |
+  | Romanian Translation by: Narcis Magardician   LAST UPDATE 04/06/2008 |
+  | narcis@artelcom.ro                                                   |
+  |                                                                      |
   +----------------------------------------------------------------------+
   | The contents of this file are subject to the General Public License  |
   | (GPL) Version 2 (the "License"); you may not use this file except in |
@@ -25,9 +29,22 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
-global $arrConfModule;
-$arrConfModule['module_name'] = 'monitoring';
-$arrConfModule['templates_dir'] = 'themes';
-
+  $Id: ro.lang,v 1.6 2007/09/05 00:36:42 afigueroa Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Filter" => "Filtru",
+"Start Date" => "Data de pornire",
+"End Date" => "Data de oprire",
+"You don't have extension number associated with user" => "Nu aveti extensia asociata cu utilizatorul",
+"Are you sure you wish to delete recordings?" => "Sunteti sigur ca doriti stergerea inregistrarilor ?",
+"Monitoring" => "Monitorizare",
+"Monitorig List" => "Lista Monitorizare",
+"Date" => "Data",
+"Time" => "Ora",
+"Source" => "Sursa",
+"Destination" => "Destinatie",
+"Duration" => "Durata",
+"Type" => "Tip",
+"Message" => "Mesaje",
+);
 ?>
