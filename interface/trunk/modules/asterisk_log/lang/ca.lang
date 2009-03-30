@@ -1,8 +1,8 @@
 <?php
-  /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
+/* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.1-4                                               |
+  | Elastix version 1.0                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -11,6 +11,10 @@
   | Telfs. 2283-268, 2294-440, 2284-356                                  |
   | Guayaquil - Ecuador                                                  |
   | http://www.palosanto.com                                             |
+  |                                                                      |
+  | Translate bye:  Jaume Ponsa - Sistemes i Xarxes Informatiques Calidae|
+  |        (Caldes de Montbui, Barcelona)                                |
+  |                                                                      |
   +----------------------------------------------------------------------+
   | The contents of this file are subject to the General Public License  |
   | (GPL) Version 2 (the "License"); you may not use this file except in |
@@ -25,8 +29,18 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1 2008-06-13 04:06:20 Alex Villacís Lasso Exp $ */
-global $arrConfModule;
-        $arrConfModule['module_name'] = 'asterisk_log';
-        $arrConfModule['templates_dir'] = 'themes';
+  $Id: ca.lang,v 1.5 2008/02/17 11:45:00 bmacias Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Search string" => "Search string",
+"Search" => "Cercar",
+"Search next" => "Search next",
+"offset" => "offset",
+"Asterisk Logs" => "Asterisk Logs",
+"Date" => "Data",
+"Show" => "Mostrar",
+"Message" => "Missatge",
+"Type" => "Tipus",
+"Source" => "Font",
+);
 ?>

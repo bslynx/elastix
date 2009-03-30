@@ -34,5 +34,12 @@ $arrLangModule=array(
 'Search string' =>  'Search string',
 'Search' => 'Search',
 'Search next' => 'Search next',
+"offset" => "offset",
+"Asterisk Logs" => "Asterisk Logs",
+"Date"=>"Date",
+"Show"=>"Show",
+"Message"=>"Message",
+"Type"=>"Type",
+"Source"=>"Source",
 );
 ?>

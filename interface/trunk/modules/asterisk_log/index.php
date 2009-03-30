@@ -39,23 +39,25 @@ function _moduleContent(&$smarty, $module_name)
 
     // incluir el archivo de idioma de acuerdo al que este seleccionado
     // si el archivo de idioma no existe incluir el idioma por defecto
+    
+
     $lang=get_language();
-    $script_dir=dirname($_SERVER['SCRIPT_FILENAME']);
+    $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
     $lang_file="modules/$module_name/lang/$lang.lang";
+    if (file_exists("$base_dir/$lang_file")) include_once "$lang_file";
+    else include_once "modules/$module_name/lang/en.lang";
 
-    if (file_exists("$script_dir/$lang_file"))
-        include_once($lang_file);
-    else
-        include_once("modules/$module_name/lang/en.lang");
-
-
+    //global variables
     global $arrConf;
+    global $arrConfModule;
     global $arrLang;
     global $arrLangModule;
+    $arrConf = array_merge($arrConf,$arrConfModule);
+    $arrLang = array_merge($arrLang,$arrLangModule);
 
     //folder path for custom templates
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
-    $templates_dir=(isset($arrConfig['templates_dir']))?$arrConfig['templates_dir']:'themes';
+    $templates_dir=(isset($arrConf['templates_dir']))?$arrConf['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
 
     $accion = getAction();
@@ -131,11 +133,8 @@ function report_AsteriskLogs($smarty, $module_name, $local_templates_dir, $arrLa
 
     $listaFechas = $pAsteriskLogs->astLog->listarFechas();
 
-    if (!ereg($arrFormElements['filter']['VALIDATION_EXTRA_PARAM'], $field_pattern)) {
-        $field_pattern = NULL;
-        if (count($listaFechas) > 0)
-            $field_pattern = $listaFechas[count($listaFechas) - 1];
-    }
+    if (!ereg($arrFormElements['filter']['VALIDATION_EXTRA_PARAM'], $field_pattern))
+        $field_pattern = $listaFechas[count($listaFechas) - 1];
     $_POST['filter'] = $field_pattern;
     $total_datos = $pAsteriskLogs->ObtainNumAsteriskLogs($field_pattern);
     $comboFechas = array();
@@ -250,20 +249,20 @@ function report_AsteriskLogs($smarty, $module_name, $local_templates_dir, $arrLa
         }
     }
 
-    $arrGrid = array("title"    => "Asterisk Logs",
+    $arrGrid = array("title"    => $arrLang["Asterisk Logs"],
                         "icon"     => "images/list.png",
                         "width"    => "99%",
                         "start"    => ($totalBytes==0) ? 0 : 1 + (int)($offset / 128),
                         "end"      => (int)($offset / 128) + $iNumLineasPorPagina,
                         "total"    => (int)($totalBytes / 128),
-                        "columns"  => array(0 => array("name"      => 'Date',
+                        "columns"  => array(0 => array("name"      => $arrLang['Date'],
                                                     "property1" => ""),
 
-                                            1 => array("name"      => 'Type',
+                                            1 => array("name"      => $arrLang['Type'],
                                                     "property1" => ""),
-                                            2 => array("name"      => 'Source',
+                                            2 => array("name"      => $arrLang['Source'],
                                                     "property1" => ""),
-                                            3 => array("name"      => 'Message',
+                                            3 => array("name"      => $arrLang['Message'],
                                                     "property1" => "")
                                         )
                     );

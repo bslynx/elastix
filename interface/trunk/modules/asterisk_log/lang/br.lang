@@ -1,8 +1,8 @@
 <?php
-  /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
+/* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.1-4                                               |
+  | Elastix version 0.5                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -10,7 +10,11 @@
   | Cdla. Nueva Kennedy Calle E 222 y 9na. Este                          |
   | Telfs. 2283-268, 2294-440, 2284-356                                  |
   | Guayaquil - Ecuador                                                  |
-  | http://www.palosanto.com                                             |
+  | http://www.palosanto.com 											 |
+  |                                                                      |
+  | Translate bye: Erwan DESVERGNES - SDCI                               |
+  | erwan.desvergnes@SDCI.fr                                             |
+  |                                                                      |                                               |
   +----------------------------------------------------------------------+
   | The contents of this file are subject to the General Public License  |
   | (GPL) Version 2 (the "License"); you may not use this file except in |
@@ -25,8 +29,18 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1 2008-06-13 04:06:20 Alex Villacís Lasso Exp $ */
-global $arrConfModule;
-        $arrConfModule['module_name'] = 'asterisk_log';
-        $arrConfModule['templates_dir'] = 'themes';
+  $Id: br.lang,v 1.6 2007/09/05 00:36:42 gcarrillo Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Search string" => "Search string",
+"Search" => "Search",
+"Search next" => "Search next",
+"offset" => "offset",
+"Asterisk Logs" => "Asterisk Logs",
+"Date" => "Data",
+"Show" => "Mostrar",
+"Message" => "Message",
+"Type" => "Tipos",
+"Source" => "Origem",
+);
 ?>

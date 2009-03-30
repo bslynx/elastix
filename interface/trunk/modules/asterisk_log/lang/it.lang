@@ -1,8 +1,8 @@
 <?php
-  /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
+/* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.1-4                                               |
+  | Elastix version 1.0                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -24,9 +24,23 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  |                                                                      |
+  | Translate by: Davide Lo Leggio                                       |
+  | Email: cerino@smat.it                                                |
+  |                                                                      |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1 2008-06-13 04:06:20 Alex Villacís Lasso Exp $ */
-global $arrConfModule;
-        $arrConfModule['module_name'] = 'asterisk_log';
-        $arrConfModule['templates_dir'] = 'themes';
+  $Id: it.lang,v 1.7 2008/02/18 10:07:17 bmacias@palosanto.com Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Search string" => "Search string",
+"Search" => "Cerca",
+"Search next" => "Search next",
+"offset" => "offset",
+"Asterisk Logs" => "Asterisk Logs",
+"Date" => "Data",
+"Show" => "Visualizza",
+"Message" => "Messaggio",
+"Type" => "Tipo",
+"Source" => "Sorgente",
+);
 ?>

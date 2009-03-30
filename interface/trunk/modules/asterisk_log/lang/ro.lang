@@ -1,16 +1,20 @@
 <?php
-  /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
-  Codificación: UTF-8
+/* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
+  Codificacion: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.1-4                                               |
+  | Elastix version 1.1                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
   +----------------------------------------------------------------------+
   | Cdla. Nueva Kennedy Calle E 222 y 9na. Este                          |
-  | Telfs. 2283-268, 2294-440, 2284-356                                  |
+  | Telfs. 2283-268, 2294-440, 22OC84-356                                |
   | Guayaquil - Ecuador                                                  |
   | http://www.palosanto.com                                             |
+  |                                                                      |
+  | Romanian Translation by: Narcis Magardician   LAST UPDATE 04/06/2008 |
+  | narcis@artelcom.ro                                                   |
+  |                                                                      |
   +----------------------------------------------------------------------+
   | The contents of this file are subject to the General Public License  |
   | (GPL) Version 2 (the "License"); you may not use this file except in |
@@ -25,8 +29,18 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1 2008-06-13 04:06:20 Alex Villacís Lasso Exp $ */
-global $arrConfModule;
-        $arrConfModule['module_name'] = 'asterisk_log';
-        $arrConfModule['templates_dir'] = 'themes';
+  $Id: ro.lang,v 1.6 2007/09/05 00:36:42 afigueroa Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Search string" => "Search string",
+"Search" => "Cautare",
+"Search next" => "Search next",
+"offset" => "offset",
+"Asterisk Logs" => "Asterisk Logs",
+"Date" => "Data",
+"Show" => "Afiseaza",
+"Message" => "Mesaje",
+"Type" => "Tip",
+"Source" => "Sursa",
+);
 ?>
