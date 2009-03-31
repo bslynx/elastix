@@ -5,7 +5,7 @@
     <tr class="filterForm">
         <td class="filterForm" valign="middle" width="30%"> 
             <input type='checkbox' name='chk_dahdi_replace' id='chk_dahdi_replace' />&nbsp; <b>{$CHAN_DAHDI_REPLACE}<b> &nbsp;&nbsp;&nbsp;&nbsp;<br />
-            <input type='checkbox' name='chk_there_is_sangoma' id='chk_there_is_sangoma' disabled="disabled" />&nbsp; <b>{$DETECT_SANGOMA}<b> &nbsp;&nbsp;&nbsp;&nbsp;<br/>
+            <input type='checkbox' name='chk_there_is_sangoma' id='chk_there_is_sangoma' />&nbsp; <b>{$DETECT_SANGOMA}<b> &nbsp;&nbsp;&nbsp;&nbsp;<br/>
             <input type='checkbox' name='chk_misdn_hardware' id='chk_misdn_hardware' />&nbsp; <b>{$DETECT_mISDN}<b>
         </td>
         <td class="filterForm" valign="middle"  >

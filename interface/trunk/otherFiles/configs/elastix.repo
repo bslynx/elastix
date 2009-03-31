@@ -1,27 +1,27 @@
 [elastix-base]
 name=Base RPM Repository for Elastix 
-baseurl=http://repo.elastix.org/elastix/latest/base/$basearch/
+baseurl=http://repo.elastix.org/elastix/1/base/$basearch/
 gpgcheck=0
 enabled=1
 exclude=elastix-mysqldbdata
 
 [elastix-updates]
 name=Updates RPM Repository for Elastix 
-baseurl=http://repo.elastix.org/elastix/latest/updates/$basearch/
+baseurl=http://repo.elastix.org/elastix/1/updates/$basearch/
 gpgcheck=0
 enabled=1
 exclude=elastix-mysqldbdata
 
 [elastix-beta]
 name=Beta RPM Repository for Elastix 
-baseurl=http://repo.elastix.org/elastix/latest/beta/$basearch/
+baseurl=http://repo.elastix.org/elastix/1/beta/$basearch/
 gpgcheck=0
 enabled=0
 exclude=elastix-mysqldbdata
 
 [elastix-extras]
 name=Extras RPM Repository for Elastix 
-baseurl=http://repo.elastix.org/elastix/latest/extras/$basearch/
+baseurl=http://repo.elastix.org/elastix/1/extras/$basearch/
 gpgcheck=0
 enabled=0
 exclude=elastix-mysqldbdata
