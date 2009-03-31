@@ -40,11 +40,24 @@ function _moduleContent(&$smarty, $module_name)
     include_once "modules/$module_name/libs/paloSantoEndPoint.class.php";
     include_once "modules/$module_name/libs/paloSantoFileEndPoint.class.php";
 
+    $lang=get_language();
+    $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
+    $lang_file="modules/$module_name/lang/$lang.lang";
+    if (file_exists("$base_dir/$lang_file")) include_once "$lang_file";
+    else include_once "modules/$module_name/lang/en.lang";
+
+    //global variables
     global $arrConf;
+    global $arrConfModule;
     global $arrLang;
+    global $arrLangModule;
+    $arrConf = array_merge($arrConf,$arrConfModule);
+    $arrLang = array_merge($arrLang,$arrLangModule);    
+
+
     //folder path for custom templates
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
-    $templates_dir=(isset($arrConfig['templates_dir']))?$arrConfig['templates_dir']:'themes';
+    $templates_dir=(isset($arrConf['templates_dir']))?$arrConf['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
 //      print_r($_SESSION['elastix_endpoints']);
  
@@ -54,7 +67,7 @@ function _moduleContent(&$smarty, $module_name)
                    $arrAMP['AMPDBUSER']['valor']. ":". 
                    $arrAMP['AMPDBPASS']['valor']. "@".
                    $arrAMP['AMPDBHOST']['valor'];
-    $dsnSqlite   = "sqlite3:///$arrConf[elastix_dbdir]";
+    $dsnSqlite   = $arrConfModule['dsn_conn_database_1'];
 
     if(isset($_POST["endpoint_scan"])) $accion ="endpoint_scan";
     else if(isset($_POST["endpoint_set"])) $accion ="endpoint_set";
@@ -63,13 +76,13 @@ function _moduleContent(&$smarty, $module_name)
     $content = "";
     switch($accion){ 
         case "endpoint_scan":
-            $content = endpointScan($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrLang, $arrConfig);
+            $content = endpointScan($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrLang, $arrConf);
             break;
         case "endpoint_set":
-            $content = endpointConfiguratedSet($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrLang, $arrConfig);
+            $content = endpointConfiguratedSet($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrLang, $arrConf);
             break;
         case "endpoint_unset":
-            $content = endpointConfiguratedUnset($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrLang, $arrConfig);
+            $content = endpointConfiguratedUnset($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrLang, $arrConf);
             break;
         default: // endpoint_show            
             if(isset($_SESSION['elastix_endpoints']))//si existe este arreglo lo borro, esto asegura de q cada vez q entre al modulo endpoint configuration vuelva a crear el arreglo de los endpoint en la SESSION
@@ -80,7 +93,7 @@ function _moduleContent(&$smarty, $module_name)
     return $content;
 }
 
-function endpointConfiguratedShow($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrLang, $arrConfig)
+function endpointConfiguratedShow($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrLang, $arrConf)
 {
     $arrData = array();
     if(!isset($_SESSION['elastix_endpoints']) || !is_array($_SESSION['elastix_endpoints']) || empty($_SESSION['elastix_endpoints'])){
@@ -195,17 +208,17 @@ function buildReport($arrData, $smarty, $module_name, $arrLang, $endpoint_mask)
     return $contenidoModulo;
 }
 
-function endpointScan($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrLang, $arrConfig)
+function endpointScan($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrLang, $arrConf)
 {
     unset($_SESSION['elastix_endpoints']);
-    return endpointConfiguratedShow($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrLang, $arrConfig);
+    return endpointConfiguratedShow($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrLang, $arrConf);
     //header("Location: /?menu=$module_name");
 }
 
-function endpointConfiguratedSet($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrLang, $arrConfig)
+function endpointConfiguratedSet($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrLang, $arrConf)
 {
     $paloEndPoint     = new paloSantoEndPoint($dsnAsterisk,$dsnSqlite);
-    $paloFileEndPoint = new PaloSantoFileEndPoint($arrConfig["tftpboot_path"]);
+    $paloFileEndPoint = new PaloSantoFileEndPoint($arrConf["tftpboot_path"]);
     $arrFindVendor    = array(); //variable de ayuda, para llamar solo una vez la funcion createFilesGlobal de cada vendor
 
     $valid = validateParameterEndpoint($_POST,$dsnAsterisk,$dsnSqlite);
@@ -267,7 +280,7 @@ function endpointConfiguratedSet($smarty, $module_name, $local_templates_dir, $d
         }
     }
     unset($_SESSION['elastix_endpoints']);
-    return endpointConfiguratedShow($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrLang, $arrConfig);
+    return endpointConfiguratedShow($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrLang, $arrConf);
     //header("Location: /?menu=$module_name");
 }
 
@@ -300,7 +313,7 @@ function validateParameterEndpoint($arrParameters, $dsnAsterisk, $dsnSqlite)
     return $error;
 }
 
-function endpointConfiguratedUnset($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrLang, $arrConfig)
+function endpointConfiguratedUnset($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrLang, $arrConf)
 {
     $paloEndPoint = new paloSantoEndPoint($dsnAsterisk,$dsnSqlite);
     $arrEndpoint = array();
@@ -310,7 +323,7 @@ function endpointConfiguratedUnset($smarty, $module_name, $local_templates_dir, 
             if(substr($key,0,6)=="epmac_"){
                 $tmpMac = substr($key,6);
                 if($paloEndPoint->deleteEndpointsConf($tmpMac)){
-                    $paloFile = new paloSantoFileEndPoint($arrConfig["tftpboot_path"]);
+                    $paloFile = new paloSantoFileEndPoint($arrConf["tftpboot_path"]);
 
                     $ArrayData['vendor'] = $_POST["name_vendor_device_$tmpMac"];
                     if( $ArrayData['vendor'] == "Aastra" ){
@@ -330,7 +343,7 @@ function endpointConfiguratedUnset($smarty, $module_name, $local_templates_dir, 
         }
     }
     unset($_SESSION['elastix_endpoints']);
-    return endpointConfiguratedShow($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrLang, $arrConfig);
+    return endpointConfiguratedShow($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrLang, $arrConf);
     //header("Location: /?menu=$module_name");
 }
 

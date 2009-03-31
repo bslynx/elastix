@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.0                                                  |
+  | Elastix version 0.5                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,11 +25,38 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1 2008/01/04 10:39:57 bmacias Exp $ */
-global $arrConfModule;
-global $arrConf;
-$arrConfModule['module_name'] = 'endpoint_configuration';
-$arrConfModule['templates_dir'] = 'themes';
-$arrConfModule['tftpboot_path'] = '/tftpboot/';
-$arrConfModule['dsn_conn_database_1'] = "sqlite3:///$arrConf[elastix_dbdir]";
+  $Id: es.lang,v 1.7 2007/09/05 00:36:42 gcarrillo Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Endpoint Configuration" => "Configuracion de Endpoint",
+"Endpoint Scan" => "Mapear Endpoint",
+"Display Name" => "Ver Nombre",
+"MAC Adress" => "Direccion MAC",
+"Phone Type" => "Modelo Telefono",
+"IP Adress" => "Direccion IP",
+"Vendor" => "Fabricante",
+"User Extension" => "Extension de Usuario",
+"Set" => "Configurar",
+"Unset" => "Desconfigurar",
+"Are you sure you wish to unset endpoint(s)?" => "¿Estas seguro de desconfigurar el/los endpoint(s)?",
+"Are you sure you wish to set endpoint(s)?" => "¿Estas segiro de configurar el/los endpoint(s)?",
+"Configured without incident." => "Configured without incident.",
+"Not Set" => "No Configurado",
+"Unable write the file" => "No se pudo escribor el archivo",
+"Users" => "Usuarios",
+"User Name in Endpoint is" => "Nombre de Usuario en Endpoint es",
+"And secrets no equals in FreePBX and Endpoint" => "Y la clave no es igual tanto en FreePBX y Endpoint",
+"Don't exist in FreePBX extension" => "No existe la extension en FreePBX",
+"Don't exist in Endpoint extension" => "No existe la extension en el Endpoint",
+"UPDATE" => "ACTUALIZAR",
+"Unable delete the file" => "No se puede borra el archivo",
+"Unselected" => "No Seleccionado",
+"No Models" => "No Modelos",
+"No Extensions" => "No Extensiones",
+"Invalid Format in Parameter" => "Formato Invalido en Parametro",
+"It can take several minutes, because your ip address has some devices, " => "Esto puede tomar algunos minutos, porque tu direccion ip tiene algunos dispositivos, ",
+"WARNING" => "Advertencia",
+"Status" => "Estado",
+"ERROR" => "ERROR",
+);
 ?>
