@@ -26,7 +26,7 @@
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
   $Id: default.conf.php,v 1.1 2008/01/04 15:55:57 afigueroa Exp $ */
-
-$arrConfig['module_name'] = 'webmeetme';
-$arrConfig['templates_dir'] = 'themes';
+global $arrConfModule;
+$arrConfModule['module_name'] = 'webmeetme';
+$arrConfModule['templates_dir'] = 'themes';
 ?>
