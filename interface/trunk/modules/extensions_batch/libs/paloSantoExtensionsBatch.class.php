@@ -352,6 +352,7 @@ class paloSantoLoadExtension {
 
     function AsteriskManager_Command($host, $user, $password, $command_data) {
         global $arrLang;
+        $salida = array();
         $astman = new AGI_AsteriskManager();
         //$salida = array();
         
@@ -362,6 +363,7 @@ class paloSantoLoadExtension {
                 $salida = $astman->send_request('Command', array('Command'=>"$valor"));
 
             $astman->disconnect();
+            $salida["Response"] = isset($salida["Response"])?$salida["Response"]:"";
             if (strtoupper($salida["Response"]) != "ERROR") {
                 return split("\n", $salida["Response"]);
             }else return false;

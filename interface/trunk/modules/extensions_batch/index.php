@@ -39,12 +39,24 @@ function _moduleContent(&$smarty, $module_name)
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
     include_once "modules/$module_name/libs/paloSantoExtensionsBatch.class.php";
+    
+    $lang=get_language();
+    $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
+    $lang_file="modules/$module_name/lang/$lang.lang";
+    if (file_exists("$base_dir/$lang_file")) include_once "$lang_file";
+    else include_once "modules/$module_name/lang/en.lang";
+
+    //global variables
     global $arrConf;
+    global $arrConfModule;
     global $arrLang;
+    global $arrLangModule;
+    $arrConf = array_merge($arrConf,$arrConfModule);
+    $arrLang = array_merge($arrLang,$arrLangModule);
 
     //folder path for custom templates
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
-    $templates_dir=(isset($arrConfig['templates_dir']))?$arrConfig['templates_dir']:'themes';
+    $templates_dir=(isset($arrConf['templates_dir']))?$arrConf['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
 
     $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
@@ -80,21 +92,21 @@ function _moduleContent(&$smarty, $module_name)
     switch($accion)
     {
         case 'delete_all':
-            delete_all_extention($smarty, $module_name, $local_templates_dir, $arrLang, $arrConfig, $pDB, $arrAST, $arrAMP);
-            $content = report_extension($smarty, $module_name, $local_templates_dir, $arrLang, $arrConfig);
+            delete_all_extention($smarty, $module_name, $local_templates_dir, $arrLang, $arrConf, $pDB, $arrAST, $arrAMP);
+            $content = report_extension($smarty, $module_name, $local_templates_dir, $arrLang, $arrConf);
             break;
         case 'load_extension':
-            $content = load_extension($smarty, $module_name, $local_templates_dir, $arrLang, $arrConfig, $base_dir, $pDB, $arrAST, $arrAMP);
+            $content = load_extension($smarty, $module_name, $local_templates_dir, $arrLang, $arrConf, $base_dir, $pDB, $arrAST, $arrAMP);
             break;
         default:
-            $content = report_extension($smarty, $module_name, $local_templates_dir, $arrLang, $arrConfig);
+            $content = report_extension($smarty, $module_name, $local_templates_dir, $arrLang, $arrConf);
             break;
     }
 
     return $content;
 }
 
-function delete_all_extention(&$smarty, $module_name, $local_templates_dir, $arrLang, $arrConfig, $pDB, $arrAST, $arrAMP)
+function delete_all_extention(&$smarty, $module_name, $local_templates_dir, $arrLang, $arrConf, $pDB, $arrAST, $arrAMP)
 {
     $message = "";
     $oPalo = new paloSantoLoadExtension($pDB);
@@ -126,7 +138,7 @@ function delete_all_extention(&$smarty, $module_name, $local_templates_dir, $arr
 
 }
 
-function report_extension($smarty, $module_name, $local_templates_dir, $arrLang, $arrConfig){
+function report_extension($smarty, $module_name, $local_templates_dir, $arrLang, $arrConf){
 
     $oForm = new paloForm($smarty, array());
     $html = $oForm->fetchForm("$local_templates_dir/extension.tpl", $arrLang["Extensions Batch"], $_POST);
@@ -135,7 +147,7 @@ function report_extension($smarty, $module_name, $local_templates_dir, $arrLang,
     return $contenidoModulo;
 }
 
-function load_extension($smarty, $module_name, $local_templates_dir, $arrLang, $arrConfig, $base_dir, $pDB, $arrAST, $arrAMP)
+function load_extension($smarty, $module_name, $local_templates_dir, $arrLang, $arrConf, $base_dir, $pDB, $arrAST, $arrAMP)
 {
     $oForm = new paloForm($smarty, array());
     $html = $oForm->fetchForm("$local_templates_dir/extension.tpl", $arrLang["Extensions Batch"], $_POST);
@@ -158,7 +170,7 @@ function load_extension($smarty, $module_name, $local_templates_dir, $arrLang, $
             $smarty->assign("mb_message", $arrLang["Possible file upload attack. Filename"] ." :". $_FILES['userfile']['name']);
         }
     }
-    $content = report_extension($smarty, $module_name, $local_templates_dir, $arrLang, $arrConfig);
+    $content = report_extension($smarty, $module_name, $local_templates_dir, $arrLang, $arrConf);
     return $content;
 }
 

@@ -10,8 +10,10 @@ download_extensions();
 
 function download_extensions()
 {
+    
     global $arrLang;
     global $arrConf;
+    
 
     $pDB = new paloDB($arrConf["cadena_dsn"]);
     $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
