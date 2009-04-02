@@ -2,15 +2,20 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 1.0                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
-  | Copyright (c) 2006 Palosanto Solutions S. A.                         |
+  | Copyright (c) 2008 Palosanto Solutions S. A.                         |
   +----------------------------------------------------------------------+
   | Cdla. Nueva Kennedy Calle E 222 y 9na. Este                          |
   | Telfs. 2283-268, 2294-440, 2284-356                                  |
   | Guayaquil - Ecuador                                                  |
-  | http://www.palosanto.com                                             |
+  | http://www.palosanto.com 						                     |
+  |                                                                      |
+  | Translated by: Erwan DESVERGNES - SDCI                               |
+  | erwan.desvergnes@SDCI.fr                                             |
+  |   Revision 1.0-17 by Gregory BOUZINAC - GMixon                       | 
+  | greg@gmixon.com                                                      |
   +----------------------------------------------------------------------+
   | The contents of this file are subject to the General Public License  |
   | (GPL) Version 2 (the "License"); you may not use this file except in |
@@ -25,9 +30,24 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1 2007/08/20 22:18:42 avivar Exp $ */
-global $arrConfModule;
-$arrConfModule['module_name'] = 'file_editor';
-$arrConfModule['templates_dir'] = 'themes';
-$arrOtro['etc_asterisk'] = '/etc/asterisk/';
+  $Id: fr.lang,v 1.8 2008/05/20 00:36:42 bmacias Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Command" => "Commande",
+"Execute" => "Ex&eacute;cuter",
+"Result" => "R&eacute;sultat",
+"File Editor" => "Editeur Fichiers",
+"File List" => "Liste Fichiers",
+"Back" => "Retour",
+"This file doesn't have permisses to read" => "Ce fichier n'a pas les permissions de lecture",
+"This file doesn't have permisses to write" => "Ce fichier n'a pas les permissions d'&eacute;criture",
+"The changes was saved in the file" => "Les changements ont &eacute;t&eacute; enregistr&eacute;s dans le fichier",
+"Doesn't have permisses to read" => "n'a pas les permissions de lecture",
+"This is not a valid directory" => "Ce n'est pas un r&eacute;pertoire valide",
+"Please write the file name" => "Veuillez &eacute;crire le nom du fichier",
+"New File" => "Nouveau Fichier",
+"File already exist" => "Le fichier existe d&eacute;j&agrave;",
+"File" => "Fichier",
+"Filter" => "Filtre",
+);
 ?>

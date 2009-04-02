@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 1.0                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -24,10 +24,29 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  |                                                                      |
+  | Translate by: Jason Papanayotou                                      |
+  | Email: jasonpap@gmail.com                                            |
+  |                                                                      |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1 2007/08/20 22:18:42 avivar Exp $ */
-global $arrConfModule;
-$arrConfModule['module_name'] = 'file_editor';
-$arrConfModule['templates_dir'] = 'themes';
-$arrOtro['etc_asterisk'] = '/etc/asterisk/';
+  $Id: el.lang,v 1.6 2008/02/11 11:07:22 bmacias@palosanto.com Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Command" => "Εντολές",
+"Execute" => "Εκτέλεση",
+"Result" => "Αποτέλεσμα",
+"File Editor" => "Επεξεργαστής Αρχείων",
+"File List" => "Λίστα αρχείων",
+"Back" => "Πίσω",
+"This file doesn't have permisses to read" => "Αυτό το αρχείο δεν έχει δικαιώματα ανάγνωσης",
+"This file doesn't have permisses to write" => "Αυτό το αρχείο δεν έχει δικαιώματα εγγραφής",
+"The changes was saved in the file" => "Οι αλλαγές αποθηκεύτηκαν στο αρχείο",
+"Doesn't have permisses to read" => "δεν έχει δικαίωμα ανάγνωσης",
+"This is not a valid directory" => "Αυτός ο φάκελος δεν είναι έγκυρος",
+"Please write the file name" => "Παρακαλώ εισάγετε το όνομα του αρχείου",
+"New File" => "Νέο αρχείο",
+"File already exist" => "Το αρχείο υπάρχει ήδη",
+"File" => "Αρχείο",
+"Filter" => "Φίλτρο",
+);
 ?>

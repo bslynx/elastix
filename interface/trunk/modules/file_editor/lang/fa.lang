@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 1.0                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -24,10 +24,28 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  |                                                                      |
+  | Translate by: Haamed Kouhfallah                                      |
+  | Email: haamed@cytco.net                                              |                                                                    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1 2007/08/20 22:18:42 avivar Exp $ */
-global $arrConfModule;
-$arrConfModule['module_name'] = 'file_editor';
-$arrConfModule['templates_dir'] = 'themes';
-$arrOtro['etc_asterisk'] = '/etc/asterisk/';
+   $Id: fa.lang,v 1.2 2008/04/21 10:11:44 bmacias@palosanto.com Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Command" => "فرمان",
+"Execute" => "اجرا",
+"Result" => "نتیجه",
+"File Editor" => "ویرایشگر فایل",
+"File List" => "لیست فایل",
+"Back" => "بازگشت",
+"This file doesn't have permisses to read" => "این فایل مجوز مشاهده ندارد",
+"This file doesn't have permisses to write" => "این فایل مجوز تغییر ندارد",
+"The changes was saved in the file" => "تغییرات در فایل ذخیره شد",
+"Doesn't have permisses to read" => "مجوز مشاهده وجود ندارد",
+"This is not a valid directory" => "این یک دایرکتوری معتبر نیست",
+"Please write the file name" => "لطفا نام فایل را وارد کنید",
+"New File" => "فایل جدید",
+"File already exist" => "فایل در حال حاضر وجود دارد",
+"File" => "فایل",
+"Filter" => "فیلتر",
+);
 ?>

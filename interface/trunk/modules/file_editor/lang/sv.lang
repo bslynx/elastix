@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 1.0                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,9 +25,24 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1 2007/08/20 22:18:42 avivar Exp $ */
-global $arrConfModule;
-$arrConfModule['module_name'] = 'file_editor';
-$arrConfModule['templates_dir'] = 'themes';
-$arrOtro['etc_asterisk'] = '/etc/asterisk/';
+  $Id: sv.lang,v 0.1 2008/03/25 00:36:42 IFIT DATA - http://www.ifit.se Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Command" => "Kommando",
+"Execute" => "Exekvera",
+"Result" => "Resultat",
+"File Editor" => "Fil Redigerare",
+"File List" => "Fil Lista",
+"Back" => "Tillbaka",
+"This file doesn't have permisses to read" => "Denna fil har inte r&auml;ttigheter att l&auml;sa",
+"This file doesn't have permisses to write" => "Denna fil har inte r&auml;ttigheter att skriva",
+"The changes was saved in the file" => "&Auml;ndringarna &auml;r nu sparade i filen",
+"Doesn't have permisses to read" => "Har inte r&auml;ttigheter f&ouml;r att l&auml;sa",
+"This is not a valid directory" => "Detta &auml;r inte en giltig katalog",
+"Please write the file name" => "Please write the file name",
+"New File" => "New File",
+"File already exist" => "File already exist",
+"File" => "Fil",
+"Filter" => "Filter",
+);
 ?>

@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 1.0                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -11,6 +11,10 @@
   | Telfs. 2283-268, 2294-440, 2284-356                                  |
   | Guayaquil - Ecuador                                                  |
   | http://www.palosanto.com                                             |
+  |                                                                      |
+  | Translate bye:  Jaume Ponsa - Sistemes i Xarxes Informatiques Calidae|
+  |        (Caldes de Montbui, Barcelona)                                |
+  |                                                                      |
   +----------------------------------------------------------------------+
   | The contents of this file are subject to the General Public License  |
   | (GPL) Version 2 (the "License"); you may not use this file except in |
@@ -25,9 +29,24 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1 2007/08/20 22:18:42 avivar Exp $ */
-global $arrConfModule;
-$arrConfModule['module_name'] = 'file_editor';
-$arrConfModule['templates_dir'] = 'themes';
-$arrOtro['etc_asterisk'] = '/etc/asterisk/';
+  $Id: ca.lang,v 1.5 2008/02/17 11:45:00 bmacias Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Command" => "Comanda",
+"Execute" => "Executar",
+"Result" => "Resultat",
+"File Editor" => "Editor d'Arxius",
+"File List" => "Llista d'Arxius",
+"Back" => "Enrere",
+"This file doesn't have permisses to read" => "Aquest arxiu no té permisos de lectura",
+"This file doesn't have permisses to write" => "Aquest arxiu no té permisos d'escritura",
+"The changes was saved in the file" => "Els canvis s'han guardat a l'arxiu.",
+"Doesn't have permisses to read" => "No té permisos de lectura",
+"This is not a valid directory" => "No es un directori vàlid",
+"Please write the file name" => "Please write the file name",
+"New File" => "New File",
+"File already exist" => "File already exist",
+"File" => "Arxiu",
+"Filter" => "Filtrar",
+);
 ?>

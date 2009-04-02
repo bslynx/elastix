@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 0.5                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,9 +25,24 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1 2007/08/20 22:18:42 avivar Exp $ */
-global $arrConfModule;
-$arrConfModule['module_name'] = 'file_editor';
-$arrConfModule['templates_dir'] = 'themes';
-$arrOtro['etc_asterisk'] = '/etc/asterisk/';
+  $Id: es.lang,v 1.7 2007/09/05 00:36:42 gcarrillo Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Command" => "Comando",
+"Execute" => "Ejecutar",
+"Result" => "Resultado",
+"File Editor" => "Editor de Archivo",
+"File List" => "Lista de Archivos",
+"Back" => "Regresar",
+"This file doesn't have permisses to read" => "Este archivo no tiene permisos de lectura",
+"This file doesn't have permisses to write" => "Este archivo no tiene permisos de escritura",
+"The changes was saved in the file" => "Los cambios han sido guardados en el archivo.",
+"Doesn't have permisses to read" => "no tiene permisos de lectura",
+"This is not a valid directory" => "No es un directorio válido",
+"Please write the file name" => "Por favor escriba el nombre del archivo",
+"New File" => "Nuevo Archivo",
+"File already exist" => "El archivo ya existe",
+"File" => "Archivo",
+"Filter" => "Filtrar",
+);
 ?>
