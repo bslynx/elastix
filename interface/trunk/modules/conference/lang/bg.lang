@@ -83,5 +83,6 @@ $arrLangModule=array(
 "The device couldn't be added to the conference" => "Телефонът не може да бъде добавен към конференцията",
 "Filter" => "Филтър",
 "Show" => "Покажи",
+"click here" => "кликнете тук",
 );
 ?>

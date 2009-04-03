@@ -83,5 +83,6 @@ $arrLangModule=array(
 "The device couldn't be added to the conference" => "The device couldn't be added to the conference",
 "Filter"=>"Filter",
 "Show"=>"Show",
+"click here" => "click here",
 );
 ?>

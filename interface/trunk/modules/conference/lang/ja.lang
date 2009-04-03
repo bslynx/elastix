@@ -83,5 +83,6 @@ $arrLangModule=array(
 "The device couldn't be added to the conference" => "デバイスを会議に追加できませんでした",
 "Filter" => "抽出条件",
 "Show" => "表示",
+"click here" => "クリックしてください",
 );
 ?>
