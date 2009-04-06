@@ -203,10 +203,6 @@ function generarReporte($smarty,$fecha_init,$fecha_end,$oReportsBreak,$lang,&$ar
     $fecha_init = translateDate($fecha_init)." 00:00:00";
     $fecha_end  = translateDate($fecha_end)." 23:59:59";
 
-    $year  = $fecha[0];     // anio , sea el actual o el seleccionado 
-    $month = $fecha[1];     // mes , sea el actual o el seleccionado
-    $day   = $fecha[2];     // dia , sea el actual o el seleccionado
-
     $limit = 50;
     $offset = 0;
 
