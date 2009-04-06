@@ -29,6 +29,7 @@
 
 $arrConfig['module_name'] = 'agent_console';
 $arrConfig['templates_dir'] = 'themes';
+$arrConfig['astman_dir'] = '/var/lib/asterisk/agi-bin';
 $tipo_equipos = 'SIP|IAX|ZAP|H323|OH323';
 $prefijo_objeto["prefijo"] = "form_agent_console_";
 $cadena_dsn = "mysql://asterisk:asterisk@localhost/call_center";

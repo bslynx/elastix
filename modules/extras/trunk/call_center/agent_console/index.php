@@ -33,6 +33,9 @@ include_once "libs/paloSantoConfig.class.php";
 
 function _moduleContent(&$smarty, $module_name)
 {
+    global $arrConf;
+    global $arrLang;
+    global $arrConfig;
   
     // incluir el archivo de idioma de acuerdo al que este seleccionado
     // si el archivo de idioma no existe incluir el idioma por defecto
@@ -48,8 +51,6 @@ function _moduleContent(&$smarty, $module_name)
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
     include_once "libs/xajax/xajax.inc.php";
-    global $arrConf;
-    global $arrLang;
 
     $_SESSION['ip_asterisk'] = $acceso_asterisk["ip"];
     $_SESSION['user_asterisk'] = $acceso_asterisk["user"];

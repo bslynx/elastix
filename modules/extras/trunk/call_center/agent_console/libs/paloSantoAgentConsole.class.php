@@ -27,9 +27,12 @@
   +----------------------------------------------------------------------+
   $Id: new_campaign.php $ */
 
+// Included from configs/default.conf.php
+global $arrConfig;
+
 include_once("libs/paloSantoDB.class.php");
 require_once("libs/smarty/libs/Smarty.class.php");
-require_once "/var/lib/asterisk/agi-bin/phpagi-asmanager.php";
+require_once "$arrConfig[astman_dir]/phpagi-asmanager.php";
 require_once("libs/js/jscalendar/calendar.php"); 
 require_once("modules/break_administrator/libs/PaloSantoBreaks.class.php");
 
