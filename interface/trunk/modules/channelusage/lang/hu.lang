@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 1.0                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -24,10 +24,26 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  |                                                                      |
+  | Translate by: Lakatos Tamás                                          |
+  | Email: lakatost@gmail.com                                            |
+  |                                                                      |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:21 gcarrillo Exp $ */
-global $arrConfModule;
-$arrConfModule['module_name'] = 'channelusage';
-$arrConfModule['templates_dir'] = 'themes';
-
+  : hu.lang,v 1.6 2008/01/21 09:51:55 bmacias@palosanto.com Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Channels Usage Report" => "Csatorna Használat Jelentés",
+"Simultaneous Channels (Total)" => "Szimultán csatorna (Teljes)",
+"Simultaneous Zap Channels" => "Szimultán Zap csatorna",
+"Simultaneous SIP Channels" => "Szimultán SIP csatorna",
+"Simultaneous IAX Channels" => "Szimultán IAX csatorna",
+"Simultaneous H323 Channels" => "Szimultán H323 csatorna",
+"Simultaneous Local Channels" => "Szimultán lokális csatorna",
+"Total Channels" => "Összes csatorna",
+"Zap Channels" => "ZAP csatorna",
+"SIP Channels" => "SIP csatorna",
+"IAX Channels" => "IAX csatorna",
+"H323 Channels" => "H323 csatorna",
+"Local Channels" => "Lokális Csatorna",
+);
 ?>

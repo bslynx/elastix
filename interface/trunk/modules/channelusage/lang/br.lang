@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 0.5                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -10,7 +10,11 @@
   | Cdla. Nueva Kennedy Calle E 222 y 9na. Este                          |
   | Telfs. 2283-268, 2294-440, 2284-356                                  |
   | Guayaquil - Ecuador                                                  |
-  | http://www.palosanto.com                                             |
+  | http://www.palosanto.com 											 |
+  |                                                                      |
+  | Translate bye: Erwan DESVERGNES - SDCI                               |
+  | erwan.desvergnes@SDCI.fr                                             |
+  |                                                                      |                                               |
   +----------------------------------------------------------------------+
   | The contents of this file are subject to the General Public License  |
   | (GPL) Version 2 (the "License"); you may not use this file except in |
@@ -25,9 +29,21 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:21 gcarrillo Exp $ */
-global $arrConfModule;
-$arrConfModule['module_name'] = 'channelusage';
-$arrConfModule['templates_dir'] = 'themes';
-
+  $Id: br.lang,v 1.6 2007/09/05 00:36:42 gcarrillo Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Channels Usage Report" => "Channels Usage Report",
+"Simultaneous Channels (Total)" => "Canais Simultâneos (Total)",
+"Simultaneous Zap Channels" => "Canais Zap Simultâneos",
+"Simultaneous SIP Channels" => "Canais SIP Simultâneos",
+"Simultaneous IAX Channels" => "Canais IAX Simultâneos",
+"Simultaneous H323 Channels" => "Canais H323 Simultâneos",
+"Simultaneous Local Channels" => "Canais Local Simultâneos",
+"Total Channels" => "Total de Canais",
+"Zap Channels" => "Canais Zap",
+"SIP Channels" => "Canais SIP",
+"IAX Channels" => "Canais IAX",
+"H323 Channels" => "Canais H323",
+"Local Channels" => "Canais Local",
+);
 ?>

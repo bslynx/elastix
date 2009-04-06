@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 0.5                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,9 +25,21 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:21 gcarrillo Exp $ */
-global $arrConfModule;
-$arrConfModule['module_name'] = 'channelusage';
-$arrConfModule['templates_dir'] = 'themes';
-
+  $Id: de.lang,v 1.6 2007/09/05 00:36:42 gcarrillo Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Channels Usage Report" => "Channels Usage Report",
+"Simultaneous Channels (Total)" => "simultane Kanäle (Total)",
+"Simultaneous Zap Channels" => "simultane Zap Kanäle",
+"Simultaneous SIP Channels" => "simultane SIP Kanäle",
+"Simultaneous IAX Channels" => "simultane IAX Kanäle",
+"Simultaneous H323 Channels" => "simultane H323 Kanäle",
+"Simultaneous Local Channels" => "simultane lokale Kanäle",
+"Total Channels" => "Total Kanäle",
+"Zap Channels" => "Zap Kanäle",
+"SIP Channels" => "SIP Kanäle",
+"IAX Channels" => "IAX Kanäle",
+"H323 Channels" => "H323 Kanäle",
+"Local Channels" => "lokale Kanäle",
+);
 ?>

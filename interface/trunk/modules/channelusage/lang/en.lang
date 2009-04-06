@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 1.0                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -24,10 +24,25 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  |                                                                      |
+  | Translate by: Bruno Macias                                           |
+  | Email: bmacias@palosanto.com                                         |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:21 gcarrillo Exp $ */
-global $arrConfModule;
-$arrConfModule['module_name'] = 'channelusage';
-$arrConfModule['templates_dir'] = 'themes';
-
+  $Id: en.lang,v 1.7 2008/02/18 09:49:00 bmacias Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Channels Usage Report"=>"Channels Usage Report",
+"Simultaneous Channels (Total)"=>"Simultaneous Channels (Total)",
+"Simultaneous Zap Channels"=>"Simultaneous Zap Channels",
+"Simultaneous SIP Channels"=>"Simultaneous SIP Channels",
+"Simultaneous IAX Channels"=>"Simultaneous IAX Channels",
+"Simultaneous H323 Channels"=>"Simultaneous H323 Channels",
+"Simultaneous Local Channels"=>"Simultaneous Local Channels",
+"Total Channels"=>"Total Channels",
+"Zap Channels"=>"Zap Channels",
+"SIP Channels"=>"SIP Channels",
+"IAX Channels"=>"IAX Channels",
+"H323 Channels"=>"H323 Channels",
+"Local Channels"=>"Local Channels",
+);
 ?>
