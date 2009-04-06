@@ -50,12 +50,12 @@
                         <td>{$in_lease_time.INPUT}&nbsp;&nbsp;({$OF_1_TO_50000_SECONDS})</td>
                     </tr>
                     <tr> 
-                        <td width="26%"><b>{$DNS_1}: <span  class="required">*</span></b></td>
+                        <td width="26%"><b>{$DNS_1}: </td>
                         <td> 
                             {$in_dns1_1.LABEL}{$in_dns1_1.INPUT}
                             {$in_dns1_2.LABEL}{$in_dns1_2.INPUT}
                             {$in_dns1_3.LABEL}{$in_dns1_3.INPUT}
-                            {$in_dns1_4.LABEL}{$in_dns1_4.INPUT}
+                            {$in_dns1_4.LABEL}{$in_dns1_4.INPUT}&nbsp;&nbsp;({$OPTIONAL})
                         </td>
                     </tr>
                     <tr> 
@@ -77,12 +77,12 @@
                         </td> 
                     </tr>
                     <tr> 
-                        <td width="26%"><b>{$GATEWAY}: <span  class="required">*</span></b></td>
+                        <td width="26%"><b>{$GATEWAY}: </b></td>
                         <td> 
                             {$in_gw_1.LABEL}{$in_gw_1.INPUT}
                             {$in_gw_2.LABEL}{$in_gw_2.INPUT}
                             {$in_gw_3.LABEL}{$in_gw_3.INPUT}
-                            {$in_gw_4.LABEL}{$in_gw_4.INPUT}
+                            {$in_gw_4.LABEL}{$in_gw_4.INPUT}&nbsp;&nbsp;({$OPTIONAL})
                         </td>
                     </tr>
                    <!-- <tr> 

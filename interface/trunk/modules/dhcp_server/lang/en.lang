@@ -61,6 +61,7 @@ $arrLangModule=array(
 "Update Error" => "Update Error",
 "Status"=>"Status",
 "Inactive"=>"Inactive",
-"Information" => "Information", 
+"Information" => "Information",
+"Active"=>"Active",
 );
 ?>

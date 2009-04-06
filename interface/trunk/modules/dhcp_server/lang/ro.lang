@@ -63,5 +63,6 @@ $arrLangModule=array(
 "Status" => "Stare",
 "Inactive" => "Dezactivat",
 "Information" => "Information",
+"Active"=>"Activ",
 );
 ?>

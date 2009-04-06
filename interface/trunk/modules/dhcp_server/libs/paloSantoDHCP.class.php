@@ -284,8 +284,9 @@ class PaloSantoDHCP
     function createContentConfDHCP($arrAttributes)
     {
         $tpl = $this->getTemplateFileConfDHCP();
-        $tpl = str_replace("{CONF_GATEWAY}",        $arrAttributes['ip_gw'],   $tpl);
-        $tpl = str_replace("{CONF_GATEWAY_NETMASK}",$arrAttributes['ip_gw_nm'],$tpl);
+        if($arrAttributes['ip_gw'] != "...")$lineas_gw  = "\toption routers\t\t\t{$arrAttributes['ip_gw']};\n";		
+	$tpl = str_replace("{CONF_GATEWAY}",        $lineas_gw,   $tpl);
+        $tpl = str_replace("{CONF_GATEWAY_NETMASK}",$arrAttributes['ip_gw_nm'],$tpl); 
 
         if($arrAttributes['ip_wins']!="...") $tpl = str_replace("{CONF_WINS}","\toption netbios-name-servers\t{$arrAttributes['ip_wins']};\n",$tpl);
         else $tpl = str_replace("{CONF_WINS}","",$tpl);
@@ -294,7 +295,7 @@ class PaloSantoDHCP
         $tpl = str_replace("{MASK_SUBNET_LAN}", $arrAttributes['lan_mask'],$tpl);
         // Fin del calculo de la subnet lan
 
-        $lineas_dns  = "\toption domain-name-servers\t{$arrAttributes['ip_dns1']};\n";
+        if($arrAttributes['ip_dns1']!="...") $lineas_dns  = "\toption domain-name-servers\t{$arrAttributes['ip_dns1']};\n";        
         if($arrAttributes['ip_dns2']!="...") $lineas_dns .= "\toption domain-name-servers\t{$arrAttributes['ip_dns2']};\n";
 
         $tpl = str_replace("{CONF_DOMAIN_NAME_SERVER}",$lineas_dns,                    $tpl);
@@ -313,7 +314,7 @@ class PaloSantoDHCP
 
                     "subnet {IP_SUBNET_LAN} netmask {MASK_SUBNET_LAN} {\n".
 
-	            "\toption routers\t\t\t{CONF_GATEWAY};\n\n".
+	            "{CONF_GATEWAY}\n\n".
                     "\toption subnet-mask\t\t{MASK_SUBNET_LAN};\n".
                     "\toption nis-domain\t\t\"asterisk.local\";\n".
                     "\toption domain-name\t\t\"asterisk.local\";\n".

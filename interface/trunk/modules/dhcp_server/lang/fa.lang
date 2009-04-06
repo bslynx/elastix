@@ -62,5 +62,6 @@ $arrLangModule=array(
 "Status" => "وضعیت",
 "Inactive" => "غیر فعال",
 "Information" => "Information",
+"Active" => "فعال",
 );
 ?>

@@ -68,5 +68,6 @@ r&eacute;ussie mais impossible de r&eacute;tablir les permissions du fichier dhc
 "Status" => "Statut",
 "Inactive" => "Inactif",
 "Information" => "Information",
+"Active"=>"Actif",
 );
 ?>
