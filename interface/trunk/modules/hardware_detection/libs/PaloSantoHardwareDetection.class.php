@@ -104,7 +104,7 @@ class PaloSantoHardwareDetection
         }
         if(count($tarjetas)==1){ //si aparace la tarjeta por default ZTDUMMY
             $valor = $tarjetas["TARJETA1"]['DESC']['TIPO'];
-            if(eregi("^ZTDUMMY/1", $valor))
+            if(eregi("^DAHDI_DUMMY/1", $valor))
             {
                 $this->errMsg = $arrLang["Cards undetected on your system, press for detecting hardware detection."];
                 $tarjetas = array();
