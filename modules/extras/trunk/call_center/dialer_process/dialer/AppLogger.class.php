@@ -46,7 +46,9 @@ class AppLogger
         if (is_null($this->LOGHANDLE)) {
             $hLogHandle = fopen($sNombreArchivo, 'at');
             if (!$hLogHandle) {
-                $e = error_get_last();
+                if (function_exists('error_get_last')) 
+                    $e = error_get_last();
+                else $e = array('message' => 'Failed to open file, error_get_last() not available.');
                 throw new Exception("AppLogger::open() - No se puede abrir archivo de log '$sNombreArchivo' - $e[message]");
             }
             stream_set_write_buffer($hLogHandle, 0);
