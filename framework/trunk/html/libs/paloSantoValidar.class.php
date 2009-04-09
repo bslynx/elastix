@@ -322,8 +322,7 @@ class PaloValidar
 
     function estaVacio($variable)
     {
-        if(empty($variable)) return true;
-        return false;    
+        return (trim("$variable") == '');
     }
 }
 ?>
