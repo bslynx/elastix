@@ -1119,7 +1119,7 @@ PETICION_LLAMADAS;
                     ($this->_infoLlamadas['llamadas'][$sKey]->Uniqueid).
                     " regresa de HOLD, se omite procesamiento futuro.");
                 $result =& $this->_dbConn->query(
-                    "UPDATE calls SET status = 'Success' WHERE id = ? and status = 'OnHold'",
+                    "UPDATE calls SET status = 'Success' WHERE id = ? AND status = 'OnHold'",
                     array($this->_infoLlamadas['llamadas'][$sKey]->id));
                 if (DB::isError($result)) {
                     $this->oMainLog->output("ERR: $sEvent: no se puede actualizar estado de llamada actual a HOLD - ".$result->getMessage());
