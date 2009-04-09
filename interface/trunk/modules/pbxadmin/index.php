@@ -29,7 +29,18 @@
 
 function _moduleContent(&$smarty, $module_name)
 {
-    global $arrConf, $arrLang;
+    require_once "libs/misc.lib.php";
+    $lang=get_language();
+    $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
+    $lang_file="modules/$module_name/lang/$lang.lang";
+    if (file_exists("$base_dir/$lang_file")) include_once "$lang_file";
+    else include_once "modules/$module_name/lang/en.lang";
+
+    //global variables
+    global $arrConf;
+    global $arrLang;
+    global $arrLangModule;
+    $arrLang = array_merge($arrLang,$arrLangModule);
 
     $salida="";
     $fromElastixAdminPBX=1;
