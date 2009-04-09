@@ -55,8 +55,10 @@ class DialerProcess extends AbstractProcess
     private $_momentoUltimaConnAsterisk;	// Timestamp de cuando se conectó por última vez al Asterisk
     private $_intervaloDesconexion;			// Intervalo de desconexión regular, o 0 para persistente (por omisión)
     
-    private $_infoLlamadas; // Información sobre las campañas leídas, por iteración
-    private $_iUmbralLlamadaCorta; // Umbral por debajo del cual llamada es corta
+    private $_infoLlamadas;                 // Información sobre las campañas leídas, por iteración
+    private $_iUmbralLlamadaCorta;          // Umbral por debajo del cual llamada es corta
+    private $_bSobrecolocarLlamadas = FALSE;// VERDADERO si se intenta compensar por baja contestación mediante
+                                            // colocar más llamadas de las predichas por estado de cola. 
 
     private $_numLlamadasOriginadas;    // Llamadas originadas sin OriginateResponse, por cola
 
@@ -172,6 +174,7 @@ class DialerProcess extends AbstractProcess
 				'tiempo_contestar' => 8,	// TODO: debería ser recalculado por campaña
 				'debug'			=>	0,
 				'allevents'		=>	0,
+                'overcommit'    =>  0,
 			),
 		);
 		foreach ($infoConfig as $seccion => $infoSeccion) {
@@ -269,6 +272,17 @@ class DialerProcess extends AbstractProcess
             }
         } else {
         	if (!$bUmbralSet) $this->oMainLog->output("Usando umbral de llamada corta (por omisión): ".$this->_iUmbralLlamadaCorta." segundos.");
+        }
+        
+        // Recoger estado de sobrecolocar llamadas
+        $bSobreColocar = $this->_bSobrecolocarLlamadas;
+        $this->_bSobrecolocarLlamadas = FALSE;
+        if (isset($infoConfig['dialer']) && isset($infoConfig['dialer']['overcommit'])) {
+            $this->_bSobrecolocarLlamadas = $infoConfig['dialer']['overcommit'] ? TRUE : FALSE;
+            if (!$bSobreColocar && $this->_bSobrecolocarLlamadas) 
+                $this->oMainLog->output("Sobre-colocación de llamadas está ACTIVADA.");
+            if ($bSobreColocar && !$this->_bSobrecolocarLlamadas) 
+                $this->oMainLog->output("Sobre-colocación de llamadas está DESACTIVADA.");
         }
         
         // Recoger nivel de depuración
@@ -572,37 +586,39 @@ class DialerProcess extends AbstractProcess
             $this->oMainLog->output("DEBUG: (campania $infoCampania->id cola $infoCampania->queue) se pueden colocar un máximo de $iNumLlamadasColocar llamadas...");	
         }
         
-        // Para compensar por falla de llamadas, se intenta colocar más de la cuenta. El porcentaje
-        // de llamadas a sobre-colocar se determina a partir de la historia pasada de la campaña.
-        $iVentanaHistoria = 60 * 30; // TODO: se puede autocalcular?
-        $sPeticionASR = 
-			'SELECT COUNT(*) AS total, SUM(IF(status = "Failure" OR status = "NoAnswer", 0, 1)) AS exito ' .
-			'FROM calls ' .
-			'WHERE id_campaign = ? AND status IS NOT NULL ' .
-				'AND status <> "Placing" ' .
-				'AND fecha_llamada IS NOT NULL ' .
-				'AND fecha_llamada >= ?';
-		$tupla =& $this->_dbConn->getRow(
-			$sPeticionASR, 
-			array($infoCampania->id, date('Y-m-d H:i:s', time() - $iVentanaHistoria)), 
-			DB_FETCHMODE_OBJECT);
-		if (DB::isError($tupla)) {
-			$this->oMainLog->output("ERR: (campania $infoCampania->id cola $infoCampania->queue) no se puede consultar ASR para campaña - ".$tupla->getMessage());
-		} else {
-			// Sólo considerar para más de 10 llamadas colocadas durante ventana
-			if ($tupla->total >= 10 && $tupla->exito > 0) {
-				$ASR = $tupla->exito / $tupla->total;
-				$ASR_safe = $ASR;
-				if ($ASR_safe < 0.20) $ASR_safe = 0.20;
-				$iNumLlamadasColocar = (int)round($iNumLlamadasColocar / $ASR_safe); 
-				if ($this->DEBUG) {
-					$this->oMainLog->output("DEBUG: (campania $infoCampania->id cola $infoCampania->queue) ".
-							"en los últimos $iVentanaHistoria seg. tuvieron éxito " .
-							"$tupla->exito de $tupla->total llamadas colocadas (ASR=".(sprintf('%.2f', $ASR * 100))."%). Se colocan " .
-							"$iNumLlamadasColocar para compensar.");
-				}
-			}
-		}
+        if ($this->_bSobrecolocarLlamadas) {
+            // Para compensar por falla de llamadas, se intenta colocar más de la cuenta. El porcentaje
+            // de llamadas a sobre-colocar se determina a partir de la historia pasada de la campaña.
+            $iVentanaHistoria = 60 * 30; // TODO: se puede autocalcular?
+            $sPeticionASR = 
+    			'SELECT COUNT(*) AS total, SUM(IF(status = "Failure" OR status = "NoAnswer", 0, 1)) AS exito ' .
+    			'FROM calls ' .
+    			'WHERE id_campaign = ? AND status IS NOT NULL ' .
+    				'AND status <> "Placing" ' .
+    				'AND fecha_llamada IS NOT NULL ' .
+    				'AND fecha_llamada >= ?';
+    		$tupla =& $this->_dbConn->getRow(
+    			$sPeticionASR, 
+    			array($infoCampania->id, date('Y-m-d H:i:s', time() - $iVentanaHistoria)), 
+    			DB_FETCHMODE_OBJECT);
+    		if (DB::isError($tupla)) {
+    			$this->oMainLog->output("ERR: (campania $infoCampania->id cola $infoCampania->queue) no se puede consultar ASR para campaña - ".$tupla->getMessage());
+    		} else {
+    			// Sólo considerar para más de 10 llamadas colocadas durante ventana
+    			if ($tupla->total >= 10 && $tupla->exito > 0) {
+    				$ASR = $tupla->exito / $tupla->total;
+    				$ASR_safe = $ASR;
+    				if ($ASR_safe < 0.20) $ASR_safe = 0.20;
+    				$iNumLlamadasColocar = (int)round($iNumLlamadasColocar / $ASR_safe); 
+    				if ($this->DEBUG) {
+    					$this->oMainLog->output("DEBUG: (campania $infoCampania->id cola $infoCampania->queue) ".
+    							"en los últimos $iVentanaHistoria seg. tuvieron éxito " .
+    							"$tupla->exito de $tupla->total llamadas colocadas (ASR=".(sprintf('%.2f', $ASR * 100))."%). Se colocan " .
+    							"$iNumLlamadasColocar para compensar.");
+    				}
+    			}
+    		}
+        }
         
         // Leer tantas llamadas como fueron elegidas. Sólo se leen números con
         // status == NULL y bandera desactivada
