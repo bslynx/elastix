@@ -1105,7 +1105,10 @@ PETICION_LLAMADAS;
         	/* Si una llamada regresa de HOLD a activa, se recibe un evento Link,
              * pero la llamada ya se encuentra en current_calls. */
             $iCuenta = $this->_dbConn->getOne(
-                'SELECT COUNT(*) FROM current_calls WHERE Uniqueid = ?',
+                "SELECT COUNT(*) FROM current_calls, calls " .
+                "WHERE current_calls.Uniqueid = ? " .
+                    "AND current_calls.id_call = calls.id " .
+                    "AND calls.status = 'OnHold'",
                 array($this->_infoLlamadas['llamadas'][$sKey]->Uniqueid));
             if (DB::isError($iCuenta)) {
             	$this->oMainLog->output("ERR: $sEvent: no se puede consultar si llamada está activa - ".$iCuenta->getMessage());
@@ -1116,12 +1119,13 @@ PETICION_LLAMADAS;
                     ($this->_infoLlamadas['llamadas'][$sKey]->Uniqueid).
                     " regresa de HOLD, se omite procesamiento futuro.");
                 $result =& $this->_dbConn->query(
-                    "UPDATE calls SET status = 'Success' WHERE id = ?",
+                    "UPDATE calls SET status = 'Success' WHERE id = ? and status = 'OnHold'",
                     array($this->_infoLlamadas['llamadas'][$sKey]->id));
                 if (DB::isError($result)) {
                     $this->oMainLog->output("ERR: $sEvent: no se puede actualizar estado de llamada actual a HOLD - ".$result->getMessage());
                 }
                 $sKey = NULL;
+                return FALSE;
             }
         }
         if (!is_null($sKey) && is_null($this->_infoLlamadas['llamadas'][$sKey]->start_timestamp)) {
