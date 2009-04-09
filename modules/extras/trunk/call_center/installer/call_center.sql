@@ -324,7 +324,7 @@ CREATE TABLE IF NOT EXISTS campaign_entry
 /*
  * Tabla form_data_recolected_entry, almacena la información recolectada para campañas entrantes
  */
-CREATE TABLE form_data_recolected_entry
+CREATE TABLE IF NOT EXISTS form_data_recolected_entry
 (
     id                  int unsigned    NOT NULL    AUTO_INCREMENT  PRIMARY KEY,
     id_call_entry       int unsigned    NOT NULL,
