@@ -167,25 +167,27 @@ class GestorLlamadasEntrantes
         } else {
         	// Leer la información de todas las colas...
             $respuestaCola = $this->_astConn->Command('queue show');
-            if (is_array($respuestaCola) && isset($respuestaCola['data'])) {
-                $listaAgentes = array();
-                $lineasRespuesta = split("\n", $respuestaCola['data']);
-                $sColaActual = NULL;
-                foreach ($lineasRespuesta as $sLinea) {
-                	$regs = NULL;
-                    if (ereg('^([[:digit:]]+)[[:space:]]+has[[:space:]]+[[:digit:]]+[[:space:]]+calls', $sLinea, $regs)) {
-                	   // Se ha encontrado el inicio de una descripción de cola
-                        $sColaActual = $regs[1];
-                    } elseif (ereg('^[[:space:]]+(Agent/[[:digit:]]+)', $sLinea, $regs)) {
-                    	// Se ha encontrado el agente en una cola en particular
-                        if (!is_null($sColaActual)) {
-                            if (!isset($listaAgentes[$regs[1]]))
-                            	$listaAgentes[$regs[1]] = array();
-                           	array_push($listaAgentes[$regs[1]], $sColaActual);
+            if (is_array($respuestaCola)) {
+                if (isset($respuestaCola['data'])) {
+                    $listaAgentes = array();
+                    $lineasRespuesta = split("\n", $respuestaCola['data']);
+                    $sColaActual = NULL;
+                    foreach ($lineasRespuesta as $sLinea) {
+                    	$regs = NULL;
+                        if (ereg('^([[:digit:]]+)[[:space:]]+has[[:space:]]+[[:digit:]]+[[:space:]]+calls', $sLinea, $regs)) {
+                    	   // Se ha encontrado el inicio de una descripción de cola
+                            $sColaActual = $regs[1];
+                        } elseif (ereg('^[[:space:]]+(Agent/[[:digit:]]+)', $sLinea, $regs)) {
+                        	// Se ha encontrado el agente en una cola en particular
+                            if (!is_null($sColaActual)) {
+                                if (!isset($listaAgentes[$regs[1]]))
+                                	$listaAgentes[$regs[1]] = array();
+                               	array_push($listaAgentes[$regs[1]], $sColaActual);
+                            }
                         }
                     }
+                    $this->_cacheAgentesCola = $listaAgentes;
                 }
-                $this->_cacheAgentesCola = $listaAgentes;
             } else {
                 /* Al gestor de llamadas entrantes no le compete reiniciar la 
                  * conexión al Asterisk. Lo que se puede hacer es olvidar la
