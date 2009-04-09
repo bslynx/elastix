@@ -31,6 +31,10 @@
 				<td align="right">{$asterisk_astpass_2.LABEL}:</td><td align="left">{$asterisk_astpass_2.INPUT}</td>
 				<td align="right">{$dialer_allevents.LABEL}:</td><td align="left">{$dialer_allevents.INPUT}</td>				
 			</tr>
+            <tr class="letra12">
+                <td align="right">{$asterisk_duracion_sesion.LABEL}:</td><td align="left">{$asterisk_duracion_sesion.INPUT}</td>
+                <td align="right">{$dialer_overcommit.LABEL}:</td><td align="left">{$dialer_overcommit.INPUT}</td>                
+            </tr>
         </table>
     </td></tr>
     <tr><td align="center">

@@ -58,10 +58,12 @@ class paloSantoConfiguration {
                 'asterisk.asthost' => '127.0.0.1',
                 'asterisk.astuser' => '',
                 'asterisk.astpass' => '',
+                'asterisk.duracion_sesion' => '0',
                 'dialer.llamada_corta' => '10',
                 'dialer.tiempo_contestar' => '8',
                 'dialer.debug' => '0',
                 'dialer.allevents' => '0',
+                'dialer.overcommit' => '0',
             );
             foreach ($listaConf as $tupla) $t[$tupla[0]] = $tupla[1];
             $listaConf = $t;

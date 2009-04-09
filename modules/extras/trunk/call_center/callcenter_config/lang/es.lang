@@ -50,5 +50,7 @@ $arrLangModule=array(
 'Internal DB error' => 'Error interno de DB',
 'Dialer Status' => 'Estado del Dialer',
 'Current Status' => 'Estado actual',
+'Enable overcommit of outgoing calls' => 'Permitir sobre-colocar llamadas salientes',
+'AMI Session Duration' => 'Duración de sesión de AMI (0 para persistente)',
 );
 ?>

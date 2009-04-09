@@ -90,24 +90,28 @@ function form_Configuration(&$oDB, $smarty, $module_name, $local_templates_dir, 
         'asterisk.asthost' => 'asterisk_asthost',
         'asterisk.astuser' => 'asterisk_astuser',
         'asterisk.astpass' => 'asterisk_astpass_1',
+        'asterisk.duracion_sesion' => 'asterisk_duracion_sesion',
         'dialer.llamada_corta' => 'dialer_llamada_corta',
         'dialer.tiempo_contestar' => 'dialer_tiempo_contestar',
         'dialer.debug' => 'dialer_debug',
         'dialer.allevents' => 'dialer_allevents',
+        'dialer.overcommit' => 'dialer_overcommit',
     );
     $valoresForm = array(
         'asterisk_asthost' => '127.0.0.1',
         'asterisk_astuser' => '',
         'asterisk_astpass_1' => '',
         'asterisk_astpass_2' => '',
+        'asterisk_duracion_sesion' => '0',
         'dialer_llamada_corta' => '10',
         'dialer_tiempo_contestar' => '8',
         'dialer_debug' => 'off',
         'dialer_allevents' => 'off',
+        'dialer_overcommit' => 'off',
     );
     foreach ($camposConocidos as $dbfield => $formfield) {
         if (isset($listaConf[$dbfield])) {
-            if ($dbfield == 'dialer.debug' || $dbfield == 'dialer.allevents')
+            if ($dbfield == 'dialer.debug' || $dbfield == 'dialer.allevents' || $dbfield == 'dialer.overcommit')
             {
                 $valoresForm[$formfield] = $listaConf[$dbfield] ? 'on' : 'off';
             } else $valoresForm[$formfield] = $listaConf[$dbfield];
@@ -116,7 +120,7 @@ function form_Configuration(&$oDB, $smarty, $module_name, $local_templates_dir, 
     }
     if (count($_POST) > 0) {
         foreach ($camposConocidos as $dbfield => $formfield) if (isset($_POST[$formfield])) {
-            if ($dbfield == 'dialer.debug' || $dbfield == 'dialer.allevents')
+            if ($dbfield == 'dialer.debug' || $dbfield == 'dialer.allevents' || $dbfield == 'dialer.overcommit')
             {
                $valoresForm[$formfield] = ($_POST[$formfield] == 'on') ? 'on' : 'off';
             } else $valoresForm[$formfield] = $_POST[$formfield];
@@ -148,29 +152,7 @@ function form_Configuration(&$oDB, $smarty, $module_name, $local_templates_dir, 
                 foreach ($camposConocidos as $dbfield => $formfield) {
                     if ($dbfield == 'asterisk.astpass' && $_POST[$formfield] == '') continue;
                     
-/*
-                    $bContinuar = $oDB->genQuery('DELETE FROM valor_config WHERE config_key = ?', array($dbfield));
-                    if (!$bContinuar) {
-                        $strErrorMsg = $oDB->errMsg;
-                        break;
-                    }
-                    if ($dbfield == 'dialer.debug' || $dbfield == 'dialer.allevents') {
-                        if ($_POST[$formfield] == 'on') {
-                            $bContinuar = $oDB->genQuery(
-                                'INSERT INTO valor_config (config_key, config_value) VALUES (?, ?)', 
-                                array($dbfield, 1));
-                        }
-                    } else {
-                        $bContinuar = $oDB->genQuery(
-                            'INSERT INTO valor_config (config_key, config_value) VALUES (?, ?)', 
-                            array($dbfield, $_POST[$formfield]));
-                    }
-                    if (!$bContinuar) {
-                        $strErrorMsg = $oDB->errMsg;
-                        break;
-                    }
-*/
-                    if ($dbfield == 'dialer.debug' || $dbfield == 'dialer.allevents') {
+                    if ($dbfield == 'dialer.debug' || $dbfield == 'dialer.allevents' || $dbfield == 'dialer.overcommit') {
                         $config[$dbfield] = ($_POST[$formfield] == 'on') ? 1 : 0;
                     } else {
                         $config[$dbfield] = $_POST[$formfield];
@@ -260,6 +242,15 @@ function createFieldForm($arrLang)
             'INPUT_EXTRA_PARAM'         =>  '',
             'VALIDATION_EXTRA_PARAM'    =>  '',
         ),
+        'asterisk_duracion_sesion'  =>  array(
+            'LABEL'                     =>  $arrLang['AMI Session Duration'],
+            'REQUIRED'                  =>  'yes',
+            'INPUT_TYPE'                =>  'TEXT',
+            'VALIDATION_TYPE'           =>  'numeric',
+            'INPUT_EXTRA_PARAM'         =>  '',
+            //'VALIDATION_EXTRA_PARAM'    =>  '^[[:digit:]]+$',
+            'VALIDATION_EXTRA_PARAM'    =>  '',            
+        ),
         'dialer_llamada_corta'  =>  array(
             'LABEL'                     =>  $arrLang['Short Call Threshold'],
             'REQUIRED'                  =>  'yes',
@@ -286,6 +277,14 @@ function createFieldForm($arrLang)
         ),
         'dialer_allevents'  =>      array(
             'LABEL'                     =>  $arrLang['Dump all received Asterisk events'],
+            'REQUIRED'                  =>  'yes',
+            'INPUT_TYPE'                =>  'CHECKBOX',
+            'VALIDATION_TYPE'           =>  'text',
+            'INPUT_EXTRA_PARAM'         =>  '',
+            'VALIDATION_EXTRA_PARAM'    =>  '',
+        ),
+        'dialer_overcommit'  =>      array(
+            'LABEL'                     =>  $arrLang['Enable overcommit of outgoing calls'],
             'REQUIRED'                  =>  'yes',
             'INPUT_TYPE'                =>  'CHECKBOX',
             'VALIDATION_TYPE'           =>  'text',
