@@ -187,6 +187,8 @@ class GestorLlamadasEntrantes
                         }
                     }
                     $this->_cacheAgentesCola = $listaAgentes;
+                } else {
+                	$this->_oMainLog->output('ERR: lost synch with Asterisk AMI ("queue show" response lacks "data").');
                 }
             } else {
                 /* Al gestor de llamadas entrantes no le compete reiniciar la 
