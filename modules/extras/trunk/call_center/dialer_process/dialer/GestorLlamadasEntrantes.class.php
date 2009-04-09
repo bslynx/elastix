@@ -167,7 +167,7 @@ class GestorLlamadasEntrantes
         } else {
         	// Leer la información de todas las colas...
             $respuestaCola = $this->_astConn->Command('queue show');
-            if (is_array($respuestaCola)) {
+            if (is_array($respuestaCola) && isset($respuestaCola['data'])) {
                 $listaAgentes = array();
                 $lineasRespuesta = split("\n", $respuestaCola['data']);
                 $sColaActual = NULL;
