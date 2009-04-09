@@ -728,6 +728,7 @@ PETICION_LLAMADAS;
                 	$this->oMainLog->output("ERR: problema al enviar Originate a Asterisk");
                     $this->iniciarConexionAsterisk();
                 }
+                // TODO: aparece ActionID en la respuesta con Success si es Async?
                 if ($resultado['Response'] == 'Success') {
                     // Guardar el momento en que se originó la llamada
                     $listaLlamadas[$sKey]->OriginateStart = time();
@@ -1107,7 +1108,7 @@ PETICION_LLAMADAS;
                 $sKey = NULL;
             }
         }
-        if (!is_null($sKey)) {
+        if (!is_null($sKey) && is_null($this->_infoLlamadas['llamadas'][$sKey]->start_timestamp)) {
             $this->_infoLlamadas['llamadas'][$sKey]->start_timestamp = time();
             
             if ($this->DEBUG) {
@@ -1235,6 +1236,12 @@ PETICION_LLAMADAS;
             } else {
             	$this->oMainLog->output("ERR: no se puede identificar agente asignado a llamada $sKey!");
             }
+        } elseif (!is_null($sKey)) {
+            // Llamada ya estaba siendo monitoreada anteriormente.
+            if ($this->DEBUG) {
+                $this->oMainLog->output("DEBUG: $sEvent: (re-link) llamada $sKey => ".
+                    print_r($this->_infoLlamadas['llamadas'][$sKey], TRUE));
+            }
         } else {
             if ($this->DEBUG) {
                 // Ocurre un evento Link que no corresponde a las llamadas en curso
@@ -1250,10 +1257,6 @@ PETICION_LLAMADAS;
         if ($this->DEBUG) {
             $this->oMainLog->output("DEBUG: $sEvent:\nparams => ".print_r($params, TRUE));
         }
-
-        // Verificar si es una llamada entrante monitoreada. Si lo es, 
-        // se termina el procesamiento sin hacer otra cosa
-        if ($this->_oGestorEntrante->notificarUnlink($params)) return FALSE;
 
         $sKey = NULL;
         foreach ($this->_infoLlamadas['llamadas'] as $key => $tupla) {
@@ -1288,6 +1291,29 @@ PETICION_LLAMADAS;
                 $sKey = NULL;
             }
         }
+        return FALSE;
+    }
+
+    // Callback invocado al llegar el evento Hangup
+    function OnHangup($sEvent, $params, $sServer, $iPort)
+    {    
+        if ($this->DEBUG) {
+            $this->oMainLog->output("DEBUG: $sEvent:\nparams => ".print_r($params, TRUE));
+        }
+
+        // Verificar si es una llamada entrante monitoreada. Si lo es, 
+        // se termina el procesamiento sin hacer otra cosa
+        if ($this->_oGestorEntrante->notificarUnlink($params)) return FALSE;
+
+        $sKey = NULL;
+        foreach ($this->_infoLlamadas['llamadas'] as $key => $tupla) {
+            if (isset($tupla->Uniqueid)) {
+                if (isset($params['Uniqueid']) && $tupla->Uniqueid == $params['Uniqueid']) $sKey = $key;
+                if (isset($params['Uniqueid1']) && $tupla->Uniqueid == $params['Uniqueid1']) $sKey = $key;
+                if (isset($params['Uniqueid2']) && $tupla->Uniqueid == $params['Uniqueid2']) $sKey = $key;
+            }
+        }
+
         if (!is_null($sKey)) {
             $this->_infoLlamadas['llamadas'][$sKey]->end_timestamp = time();
             
@@ -1315,7 +1341,7 @@ PETICION_LLAMADAS;
 
             // Se ha observado que ocasionalmente se pierde el evento Link
             if (is_null($this->_infoLlamadas['llamadas'][$sKey]->start_timestamp)) {
-                $this->oMainLog->output("ERR: $sEvent: se perdió evento Link para llamada $sKey => ".
+                $this->oMainLog->output("ERR: $sEvent: Hangup sin Link para llamada $sKey => ".
                     print_r($this->_infoLlamadas['llamadas'][$sKey], TRUE));
                 
                 // Resetear estado de llamada, para volver a intentarla
@@ -1333,7 +1359,7 @@ PETICION_LLAMADAS;
                         'NoAnswer', 
                         $this->_infoLlamadas['llamadas'][$sKey]->id);
                 } else {
-                	// Escenario en que llamada fue respondida y entró a cola, pero
+                    // Escenario en que llamada fue respondida y entró a cola, pero
                     // ningún agente se desocupó a tiempo para atenderla.
                     $updateParams = array(
                         date('Y-m-d H:i:s', $this->_infoLlamadas['llamadas'][$sKey]->enterqueue_timestamp), 
@@ -1352,15 +1378,15 @@ PETICION_LLAMADAS;
                 $iDuracionLlamada = $this->_infoLlamadas['llamadas'][$sKey]->end_timestamp -
                     $this->_infoLlamadas['llamadas'][$sKey]->start_timestamp;
                 if ($this->DEBUG) {
-                	$this->oMainLog->output("DEBUG: duración de la llamada fue de $iDuracionLlamada s.");
+                    $this->oMainLog->output("DEBUG: duración de la llamada fue de $iDuracionLlamada s.");
                 }
 
                 $bLlamadaCorta = ($iDuracionLlamada <= $this->_iUmbralLlamadaCorta);                
                 if ($bLlamadaCorta) {
-                	// Llamada corta que no se ha podido empezar a hablar
+                    // Llamada corta que no se ha podido empezar a hablar
                     if ($this->DEBUG) {
-                		$this->oMainLog->output("DEBUG: llamada fue identificada como llamada corta!");
-                	}
+                        $this->oMainLog->output("DEBUG: llamada fue identificada como llamada corta!");
+                    }
                     $sActualizarLlamada = 'UPDATE calls SET end_time = ?, duration = ?, status = "ShortCall" WHERE id = ?';
                     $result =& $this->_dbConn->query($sActualizarLlamada, 
                         array(date('Y-m-d H:i:s', $this->_infoLlamadas['llamadas'][$sKey]->end_timestamp), 
@@ -1385,7 +1411,7 @@ PETICION_LLAMADAS;
                     // estén rezagadas.
                     $idCampaign = $this->_infoLlamadas['llamadas'][$sKey]->id_campaign; 
                     if (!isset($this->_infoLlamadas['campanias'][$idCampaign])) {
-                    	$tuplaCampaign = $this->_leerCampania($idCampaign);
+                        $tuplaCampaign = $this->_leerCampania($idCampaign);
                         if (!is_null($tuplaCampaign)) $this->_infoLlamadas['campanias'][$idCampaign] = $tuplaCampaign;
                     }
                     
@@ -1395,29 +1421,29 @@ PETICION_LLAMADAS;
 
                     // Calcular nuevo promedio
                     if ($this->_infoLlamadas['campanias'][$idCampaign]->num_completadas > 0) {
-                    	$iNuevoPromedio = $this->_nuevoPromedio(
+                        $iNuevoPromedio = $this->_nuevoPromedio(
                             $this->_infoLlamadas['campanias'][$idCampaign]->promedio, 
                             $this->_infoLlamadas['campanias'][$idCampaign]->num_completadas, 
                             $iDuracionLlamada);
                     } else {
-                    	$iNuevoPromedio = $iDuracionLlamada;
+                        $iNuevoPromedio = $iDuracionLlamada;
                     }
 
                     // Calcular nueva desviación estándar
                     if ($this->_infoLlamadas['campanias'][$idCampaign]->num_completadas > 1) {
-                    	$iNuevaVariancia = $this->_nuevaVarianciaMuestra(
+                        $iNuevaVariancia = $this->_nuevaVarianciaMuestra(
                             $this->_infoLlamadas['campanias'][$idCampaign]->promedio,
                             $iNuevoPromedio,
                             $this->_infoLlamadas['campanias'][$idCampaign]->num_completadas, 
                             $this->_infoLlamadas['campanias'][$idCampaign]->variancia,
                             $iDuracionLlamada);
                     } else if ($this->_infoLlamadas['campanias'][$idCampaign]->num_completadas == 1) {
-                    	$iViejoPromedio = $this->_infoLlamadas['campanias'][$idCampaign]->promedio;
+                        $iViejoPromedio = $this->_infoLlamadas['campanias'][$idCampaign]->promedio;
                         $iNuevaVariancia = 
                             ($iViejoPromedio - $iNuevoPromedio) * ($iViejoPromedio - $iNuevoPromedio) + 
                             ($iDuracionLlamada - $iNuevoPromedio) * ($iDuracionLlamada - $iNuevoPromedio);
                     } else {
-                    	$iNuevaVariancia = NULL;                
+                        $iNuevaVariancia = NULL;                
                     }            
                     $this->_infoLlamadas['campanias'][$idCampaign]->num_completadas++;
                     $this->_infoLlamadas['campanias'][$idCampaign]->promedio = $iNuevoPromedio;
@@ -1425,7 +1451,7 @@ PETICION_LLAMADAS;
                     $this->_infoLlamadas['campanias'][$idCampaign]->desviacion = sqrt($iNuevaVariancia);
 
                     if ($this->DEBUG) {
-                    	$this->oMainLog->output("DEBUG: luego de ".($this->_infoLlamadas['campanias'][$idCampaign]->num_completadas)." llamadas: ".
+                        $this->oMainLog->output("DEBUG: luego de ".($this->_infoLlamadas['campanias'][$idCampaign]->num_completadas)." llamadas: ".
                             sprintf('prom: %.2f var: %.2f std.dev: %.2f', 
                                 $this->_infoLlamadas['campanias'][$idCampaign]->promedio,
                                 $this->_infoLlamadas['campanias'][$idCampaign]->variancia,
@@ -1478,13 +1504,6 @@ PETICION_LLAMADAS;
     function _nuevaVarianciaMuestra($iViejoProm, $iNuevoProm, $n, $iViejaVar, $x) 
     {
         return ($n * $iViejaVar + ($x - $iNuevoProm) * ($x - $iViejoProm)) / ($n + 1);
-    }
-
-    // Callback invocado al llegar el evento Hangup
-    function OnHangup($sEvent, $params, $sServer, $iPort)
-    {    
-        // Lo siguiente sirve porque tanto Unlink como Hangup comparten un Uniqueid
-        return $this->OnUnlink($sEvent, $params, $sServer, $iPort);
     }
 
     // Al terminar el demonio, se desconecta Asterisk y base de datos
