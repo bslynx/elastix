@@ -185,8 +185,48 @@ class DialerProcess extends AbstractProcess
 				}
 			}
 		}
+        
+        if (($infoConfig['asterisk']['asthost'] == '127.0.0.1' || $infoConfig['asterisk']['asthost'] == 'localhost') &&
+            $infoConfig['asterisk']['astuser'] == '' && $infoConfig['asterisk']['astpass'] == '') {
+            // Base de datos no tiene usuario explícito, se lee de manager.conf
+            $this->oMainLog->output("INFO: AMI login no se ha configurado, se busca en configuración de Asterisk...");
+            $amiConfig = $this->leerConfigManager();
+            if (is_array($amiConfig)) {
+            	$this->oMainLog->output("INFO: usando configuración de Asterisk para AMI login.");
+                $infoConfig['asterisk']['astuser'] = $amiConfig[0];
+                $infoConfig['asterisk']['astpass'] = $amiConfig[1];
+            }
+        }
 		return $infoConfig;
 	}
+    
+    // Leer el estado de /etc/asterisk/manager.conf y obtener el primer usuario que puede usar el dialer.
+    // Devuelve NULL en caso de error, o tupla user,password para conexión en localhost.
+    private function leerConfigManager()
+    {
+    	$sNombreArchivo = '/etc/asterisk/manager.conf';
+        if (!file_exists($sNombreArchivo)) {
+        	$this->oMainLog->output("WARN: $sNombreArchivo no se encuentra.");
+            return NULL;
+        }
+        if (!is_readable($sNombreArchivo)) {
+            $this->oMainLog->output("WARN: $sNombreArchivo no puede leerse por usuario de marcador.");
+            return NULL;        	
+        }
+        $infoConfig = parse_ini_file($sNombreArchivo, TRUE);
+        if (is_array($infoConfig)) {
+            foreach ($infoConfig as $login => $infoLogin) {
+            	if ($login != 'general') {
+            		if (isset($infoLogin['secret']) && isset($infoLogin['read']) && isset($infoLogin['write'])) {
+            			return array($login, $infoLogin['secret']);
+            		}
+            	}
+            }
+        } else {
+            $this->oMainLog->output("ERR: $sNombreArchivo no puede parsearse correctamente.");        	
+        }
+        return NULL;
+    }
 
 	// Aplicar la configuración leída desde la base de datos
 	private function aplicarConfiguracionDB(&$infoConfig)
