@@ -1,0 +1,62 @@
+<?php
+/* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
+  Codificación: UTF-8
+  +----------------------------------------------------------------------+
+  | Elastix version 0.5                                                  |
+  | http://www.elastix.org                                               |
+  +----------------------------------------------------------------------+
+  | Copyright (c) 2006 Palosanto Solutions S. A.                         |
+  +----------------------------------------------------------------------+
+  | Cdla. Nueva Kennedy Calle E 222 y 9na. Este                          |
+  | Telfs. 2283-268, 2294-440, 2284-356                                  |
+  | Guayaquil - Ecuador                                                  |
+  | http://www.palosanto.com                                             |
+  +----------------------------------------------------------------------+
+  | The contents of this file are subject to the General Public License  |
+  | (GPL) Version 2 (the "License"); you may not use this file except in |
+  | compliance with the License. You may obtain a copy of the License at |
+  | http://www.opensource.org/licenses/gpl-license.php                   |
+  |                                                                      |
+  | Software distributed under the License is distributed on an "AS IS"  |
+  | basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See  |
+  | the License for the specific language governing rights and           |
+  | limitations under the License.                                       |
+  +----------------------------------------------------------------------+
+  | The Original Code is: Elastix Open Source.                           |
+  | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  +----------------------------------------------------------------------+
+  $Id: es.lang,v 1.7 2007/09/05 00:36:42 gcarrillo Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Endpoint Configuration" => "Configuracion de Endpoint",
+"Endpoint Scan" => "Mapear Endpoint",
+"Display Name" => "Ver Nombre",
+"MAC Adress" => "Direccion MAC",
+"Phone Type" => "Modelo Telefono",
+"IP Adress" => "Direccion IP",
+"Vendor" => "Fabricante",
+"User Extension" => "Extension de Usuario",
+"Set" => "Configurar",
+"Unset" => "Desconfigurar",
+"Are you sure you wish to unset endpoint(s)?" => "¿Estas seguro de desconfigurar el/los endpoint(s)?",
+"Are you sure you wish to set endpoint(s)?" => "¿Estas segiro de configurar el/los endpoint(s)?",
+"Configured without incident." => "Configured without incident.",
+"Not Set" => "No Configurado",
+"Unable write the file" => "No se pudo escribor el archivo",
+"Users" => "Usuarios",
+"User Name in Endpoint is" => "Nombre de Usuario en Endpoint es",
+"And secrets no equals in FreePBX and Endpoint" => "Y la clave no es igual tanto en FreePBX y Endpoint",
+"Don't exist in FreePBX extension" => "No existe la extension en FreePBX",
+"Don't exist in Endpoint extension" => "No existe la extension en el Endpoint",
+"UPDATE" => "ACTUALIZAR",
+"Unable delete the file" => "No se puede borra el archivo",
+"Unselected" => "No Seleccionado",
+"No Models" => "No Modelos",
+"No Extensions" => "No Extensiones",
+"Invalid Format in Parameter" => "Formato Invalido en Parametro",
+"It can take several minutes, because your ip address has some devices, " => "Esto puede tomar algunos minutos, porque tu direccion ip tiene algunos dispositivos, ",
+"WARNING" => "Advertencia",
+"Status" => "Estado",
+"ERROR" => "ERROR",
+);
+?>
