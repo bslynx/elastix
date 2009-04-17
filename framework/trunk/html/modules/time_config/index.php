@@ -140,13 +140,13 @@ function _moduleContent(&$smarty, $module_name)
 		
 		if (!$bValido) {
 			// TODO: internacionalizar
-			$smarty->assign("mb_message", 'Fecha u hora no es válida');
+			$smarty->assign("mb_message", $arrLang['Date not valid']);
 		} else {
 			if ($sZonaNueva != $sZonaActual) {
 				// Construir la ruta del archivo que hay que copiar a /etc/localtime
 				$sRutaArchivoFuente = '/usr/share/zoneinfo/'.$sZonaNueva;
 				if (!file_exists($sRutaArchivoFuente)) {
-					$smarty->assign('mb_message', "No se puede localizar archivo $sRutaArchivoFuente");
+					$smarty->assign('mb_message', "{$arrLang['Unable to locate file']} $sRutaArchivoFuente");
 				} else {
 					$bExitoEscritura = FALSE;
 					$sContenido = NULL;
@@ -154,11 +154,11 @@ function _moduleContent(&$smarty, $module_name)
 					$sOutput = NULL;					
 					exec("/usr/bin/sudo -u root chown asterisk /etc/localtime", $sOutput, $iRetVal);
 					if ($iRetVal != 0) {
-						$smarty->assign('mb_message', "(interno) chown /etc/localtime ha fallado");
+						$smarty->assign('mb_message', $arrLang['Internal has failed']);
 					} else {
 						$sContenido = file_get_contents($sRutaArchivoFuente);
 						if ($sContenido === FALSE) {
-							$smarty->assign('mb_message', "(interno) lectura de $sRutaArchivoFuente ha fallado");
+							$smarty->assign('mb_message', "{$arrLang['Internal reading']} $sRutaArchivoFuente {$arrLang['has failed']}");
 						} else {
 							$hArchivo = fopen('/etc/localtime', 'w');
 							if ($hArchivo) {
@@ -167,7 +167,7 @@ function _moduleContent(&$smarty, $module_name)
 								exec("/usr/bin/sudo -u root chown root.root /etc/localtime", $sOutput, $iRetVal);
 								$bExitoEscritura = TRUE;
 							} else {
-								$smarty->assign('mb_message', "(interno) apertura (w) de /etc/localtime ha fallado");
+								$smarty->assign('mb_message', $arrLang['Internal aperture']);
 								$bExitoEscritura = FALSE;
 							}
 						}
@@ -177,7 +177,7 @@ function _moduleContent(&$smarty, $module_name)
 					if ($bExitoEscritura && file_exists('/var/spool/postfix/etc/localtime')) {
 						exec("/usr/bin/sudo -u root chown asterisk /var/spool/postfix/etc/localtime", $sOutput, $iRetVal);
     					if ($iRetVal != 0) {
-    						$smarty->assign('mb_message', "(interno) chown /var/spool/postfix/etc/localtime ha fallado");
+    						$smarty->assign('mb_message', $arrLang['Internal chown']));
     					} else {
 							$hArchivo = fopen('/var/spool/postfix/etc/localtime', 'w');
 							if ($hArchivo) {
@@ -186,7 +186,7 @@ function _moduleContent(&$smarty, $module_name)
 								exec("/usr/bin/sudo -u root chown root.root /var/spool/postfix/etc/localtime", $sOutput, $iRetVal);
 								$bExitoEscritura = TRUE;
 							} else {
-								$smarty->assign('mb_message', "(interno) apertura (w) de /var/spool/postfix/etc/localtime ha fallado");
+								$smarty->assign('mb_message', $arrLang['Internal aperture localtime']);
 								$bExitoEscritura = FALSE;
 							}
 						}
@@ -196,7 +196,7 @@ function _moduleContent(&$smarty, $module_name)
 					if ($bExitoEscritura) {
 						exec("/usr/bin/sudo -u root chown asterisk /etc/sysconfig/clock", $sOutput, $iRetVal);
     					if ($iRetVal != 0) {
-    						$smarty->assign('mb_message', "(interno) chown /etc/sysconfig/clock ha fallado");
+    						$smarty->assign('mb_message', $arrLang['Internal chown clock']);
     					} else {
 							$hArchivo = fopen('/etc/sysconfig/clock', 'w');
 							if ($hArchivo) {
@@ -209,7 +209,7 @@ function _moduleContent(&$smarty, $module_name)
 								$sZonaActual = $sZonaNueva;
 								$bExitoEscritura = TRUE;
 							} else {
-								$smarty->assign('mb_message', "(interno) apertura (w) de /etc/sysconfig/clock ha fallado");
+								$smarty->assign('mb_message', $arrLang['Internal aperture clock']);
 								$bExitoEscritura = FALSE;
 							}
     					}
@@ -227,9 +227,9 @@ function _moduleContent(&$smarty, $module_name)
             exec($cmd,$output,$ret_val);
 			
 			if ($ret_val == 0) {
-				$smarty->assign('mb_message', $arrLang["System time changed correctly"]);
+				$smarty->assign('mb_message', $arrLang['System time changed successfully']);
 			} else {
-				$smarty->assign('mb_message', $arrLang["You can not change the system time"].' - '.$output);
+				$smarty->assign('mb_message', "{$arrLang['System time can not be changed']} - ".$output);
 			}
 		}
 	}

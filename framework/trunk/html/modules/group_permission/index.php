@@ -170,7 +170,7 @@ function _moduleContent(&$smarty, $module_name)
 
             $arrTmp[0] = "<input type='checkbox' $disabled name='groupPermission[".$resource[1]."][".$resource[0]."]' $checked>";
 
-            $arrTmp[1] = isset($arrLang[$resource[2]])?$arrLang[$resource[2]]:'';
+            $arrTmp[1] = isset($arrLang[$resource[2]])?$arrLang[$resource[2]]:$resource[2];
 
             $arrData[] = $arrTmp;
         }

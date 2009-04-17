@@ -107,7 +107,7 @@ function _moduleContent(&$smarty, $module_name)
         $arrGrupos[$arrGruposACL[$i][0]] = $arrGruposACL[$i][1];
     }
 
-    $arrFormElements = array("description" => array("LABEL"                  => "{$arrLang['Name']} (Ex. John Doe)",
+    $arrFormElements = array("description" => array("LABEL"                  => "{$arrLang['Name']} {$arrLang['(Ex. John Doe)']}",
                                                     "REQUIRED"               => "yes",
                                                     "INPUT_TYPE"             => "TEXT",
                                                     "INPUT_EXTRA_PARAM"      => "",

@@ -68,19 +68,19 @@ function _moduleContent($smarty, $module_name)
 
     //CPU USAGE
     $img = getImage_CPU_Usage($module_name);
-    $inf = number_format($arrSysInfo['CpuUsage']*100, 2)."% used of ".number_format($arrSysInfo['CpuMHz'], 2)." MHz";
+    $inf = number_format($arrSysInfo['CpuUsage']*100, 2)."{$arrLang['% used of']} ".number_format($arrSysInfo['CpuMHz'], 2)." MHz";
     $smarty->assign("cpu_usage", $img."&nbsp;&nbsp;&nbsp;".$inf);
 
     //MEMORY USAGE
     $mem_usage  = ($arrSysInfo['MemTotal'] - $arrSysInfo['MemFree'] - $arrSysInfo['Cached'] - $arrSysInfo['MemBuffers'])/$arrSysInfo['MemTotal'];
     $img = getImage_MEM_Usage($module_name);
-    $inf = number_format($mem_usage*100, 2)."% used of ".number_format($arrSysInfo['MemTotal']/1024, 2)." Mb";
+    $inf = number_format($mem_usage*100, 2)."{$arrLang['% used of']} ".number_format($arrSysInfo['MemTotal']/1024, 2)." Mb";
     $smarty->assign("mem_usage", $img."&nbsp;&nbsp;&nbsp;".$inf);
 
     //SWAP USAGE
     $swap_usage = ($arrSysInfo['SwapTotal'] - $arrSysInfo['SwapFree'])/$arrSysInfo['SwapTotal'];
     $img = getImage_Swap_Usage($module_name);
-    $inf = number_format($swap_usage*100, 2)."% used of ".number_format($arrSysInfo['SwapTotal']/1024, 2)." Mb";
+    $inf = number_format($swap_usage*100, 2)."{$arrLang['% used of']} ".number_format($arrSysInfo['SwapTotal']/1024, 2)." Mb";
     $smarty->assign("swap_usage", $img."&nbsp;&nbsp;&nbsp;".$inf );
 
     //UPTIME
@@ -146,7 +146,8 @@ function buildInfoImage_Discs($arrParticiones, $module_name)
 function getImage_Hit($module_name)
 {
     $arrParameters = array();
-    $oPaloGraph = new paloSantoGraph($module_name,"paloSantoSysInfo","prueba",$arrParameters,"functionCallback");
+    //$oPaloGraph = new paloSantoGraph($module_name,"paloSantoSysInfo","prueba",$arrParameters,"functionCallback");
+    $oPaloGraph = new paloSantoGraph($module_name,"paloSantoSysInfo","CallsMemoryCPU",$arrParameters,"functionCallback");
     return $oPaloGraph->getGraph();
 }
 
