@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 0.5                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -11,6 +11,10 @@
   | Telfs. 2283-268, 2294-440, 2284-356                                  |
   | Guayaquil - Ecuador                                                  |
   | http://www.palosanto.com                                             |
+  |                                                                      |
+  | Translate bye: Erwan DESVERGNES - SDCI                               |
+  | erwan.desvergnes@SDCI.fr                                             |
+  |                                                                      |                                               |
   +----------------------------------------------------------------------+
   | The contents of this file are subject to the General Public License  |
   | (GPL) Version 2 (the "License"); you may not use this file except in |
@@ -25,9 +29,18 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
-global $arrConfModule;
-$arrConfModule['module_name'] = 'userlist';
-$arrConfModule['templates_dir'] = 'themes';
-
+  $Id: br.lang,v 1.6 2007/09/05 00:36:42 afigueroa Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Create New User"=>"Criar Novo Usuário",
+"Name"=>"Nome",
+"Login"=>"Login",
+"Retype password"=>"Re-digite a senha",
+"The admin user cannot be deleted because is the default Elastix administrator. You can delete any other user."=>"O Usuário admin não pode ser apagado porque é o Administrador padrão do Elastix Server",
+"New User"=>"Novo Usuário",
+"Edit User"=>"Editar Usuário",
+"The passwords are empty or don't match"=>"A senha é em branco ou não confere",
+"Real Name"=>"Nome Real",
+"Extension" => "Ramal",
+);
 ?>

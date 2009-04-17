@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 1.0                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,9 +25,18 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
-global $arrConfModule;
-$arrConfModule['module_name'] = 'userlist';
-$arrConfModule['templates_dir'] = 'themes';
-
+  $Id: sv.lang,v 0.1 2008/03/25 00:36:42 IFIT DATA - http://www.ifit.se Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Create New User"=>"Skapa ny anv&auml;ndare",
+"Login"=>"Loggain",
+"Real Name"=>"Ditt Fullst&auml;ndiga Namn",
+"The admin user cannot be deleted because is the default Elastix administrator. You can delete any other user."=>"Anv&auml;ndaren admin kan inte tas bort p&aring; grund av att det &auml;r Elastix default administrat&ouml;r. Men du kan ta bort alla andra anv&auml;ndare.",
+"New User"=>"Ny anv&auml;ndare",
+"The passwords are empty or don't match"=>"L&ouml;senorden &auml;r antingen toma eller s&aring; matchar dom inte",
+"Edit User"=>"Redigera anv&auml;ndare",
+"Name"=>"Namn",
+"Retype password"=>"Upprepa l&ouml;senord",
+"Extension"=>"Anknytning",
+);
 ?>

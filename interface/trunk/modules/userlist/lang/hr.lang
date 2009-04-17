@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 0.5                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -10,7 +10,11 @@
   | Cdla. Nueva Kennedy Calle E 222 y 9na. Este                          |
   | Telfs. 2283-268, 2294-440, 2284-356                                  |
   | Guayaquil - Ecuador                                                  |
-  | http://www.palosanto.com                                             |
+  | http://www.palosanto.com 											 |
+  |                                                                      |
+  | Translate bye: Erwan DESVERGNES - SDCI                               |
+  | erwan.desvergnes@SDCI.fr                                             |
+  |                                                                      |
   +----------------------------------------------------------------------+
   | The contents of this file are subject to the General Public License  |
   | (GPL) Version 2 (the "License"); you may not use this file except in |
@@ -25,9 +29,18 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
-global $arrConfModule;
-$arrConfModule['module_name'] = 'userlist';
-$arrConfModule['templates_dir'] = 'themes';
-
+*/
+global $arrLangModule;
+$arrLangModule=array(
+"Create New User"=>"Kreiranje novog korisnika",
+"Name"=>"Ime",
+"Login"=>"Prijava",
+"Retype password"=>"Ponovno unesite zaporku",
+"New User"=>"Novi korisnik",
+"Edit User"=>"Izmjena korisnika",
+"Real Name"=>"Stvarno ime",
+"The admin user cannot be deleted because is the default Elastix administrator. You can delete any other user."=>"admin korisnik nemože biti obrisan jer je to podrazumjevani Elastix administrator. Možete brisati bilo kojeg drugog korisnika",
+"The passwords are empty or don't match"=>"Zaporka nije unesena ili se ne podudara",
+"Extension" => "Lokal",
+);
 ?>

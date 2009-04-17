@@ -2,15 +2,20 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 1.0                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
-  | Copyright (c) 2006 Palosanto Solutions S. A.                         |
+  | Copyright (c) 2008 Palosanto Solutions S. A.                         |
   +----------------------------------------------------------------------+
   | Cdla. Nueva Kennedy Calle E 222 y 9na. Este                          |
   | Telfs. 2283-268, 2294-440, 2284-356                                  |
   | Guayaquil - Ecuador                                                  |
-  | http://www.palosanto.com                                             |
+  | http://www.palosanto.com 						                     |
+  |                                                                      |
+  | Translated by: Erwan DESVERGNES - SDCI                               |
+  | erwan.desvergnes@SDCI.fr                                             |
+  |   Revision 1.0-17 by Gregory BOUZINAC - GMixon                       | 
+  | greg@gmixon.com                                                      |
   +----------------------------------------------------------------------+
   | The contents of this file are subject to the General Public License  |
   | (GPL) Version 2 (the "License"); you may not use this file except in |
@@ -25,9 +30,17 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
-global $arrConfModule;
-$arrConfModule['module_name'] = 'userlist';
-$arrConfModule['templates_dir'] = 'themes';
-
+  $Id: fr.lang,v 1.8 2008/05/20 00:36:42 bmacias Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Name"=>"Nom",
+"Login"=>"Connexion",
+"Retype password"=>"Re-saisissez le mot de passe",
+"New User"=>"Nouvel utilisateur",
+"Edit User"=>"Editer utilisateur",
+"The admin user cannot be deleted because is the default Elastix administrator. You can delete any other user."=>"L'utilisateur Admin ne peut pas &ecirc;tre supprim&eacute; car c'est l'administrateur par d&eacute;faut de Elastix. Vous pouvez supprimer les autres",
+"Real Name"=>"Nom",
+"Extension" => "Extension",
+"Create New User"=>"Cr&eacute;er un nouvel utilisateur",
+);
 ?>

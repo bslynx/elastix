@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 0.5                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,9 +25,18 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
-global $arrConfModule;
-$arrConfModule['module_name'] = 'userlist';
-$arrConfModule['templates_dir'] = 'themes';
-
+  $Id: es.lang,v 1.7 2007/09/05 00:36:42 gcarrillo Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Name"=>"Nombre",
+"Login"=>"Login",
+"Retype password"=>"Confirmar Contrase&ntilde;a",
+"New User"=>"Nuevo Usuario",
+"Edit User"=>"Editar Usuario",
+"The admin user cannot be deleted because is the default Elastix administrator. You can delete any other user."=>"El usuario admin no puede ser eliminado porque es el administrador de Elastix predeterminado. Puede borrar cualquier otro usuario.",
+"The passwords are empty or don't match"=>"Las contrase&ntilde;as est&aacute;n vac&iacute;as o no concuerdan",
+"Real Name"=>"Nombre",
+"Extension"=>"Extensi&oacute;n",
+"Create New User"=>"Crear Nuevo Usuario",
+);
 ?>
