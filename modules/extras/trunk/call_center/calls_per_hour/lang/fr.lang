@@ -50,7 +50,10 @@ $arrLan=array(
 "Not Realiced"                      => "Non R&eacute;alis&eacute;s",
 "Left"                              => "Perdus",
 
-"Total Calls"           => "Total Calls",
-"Total"                 => "Total",
+"Total Calls" => "Total des Appels",
+"Total" => "Total",
+"Todas" => "Tout",
+"Exitosas" => "Répondu",
+"Abandonadas" => "Abandonné",
 );
 ?>

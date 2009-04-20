@@ -349,10 +349,10 @@ function listadoHoldTime($pDB, $smarty, $module_name, $local_templates_dir,&$oGr
                                        "property1" => ""),
                             7 => array("name"      => "61 >", 
                                        "property1" => ""),
-                            8 => array("name"      => "Tiempo Promedio Espera(Seg)", 
+                            8 => array("name"      => $arrLan["Tiempo Promedio Espera(Seg)"], 
                                        "property1" => ""),
 
-                            9 => array("name"      => "Espera Mayor(seg)", 
+                            9 => array("name"      => $arrLan["Espera Mayor(seg)"], 
                                        "property1" => ""),
                             10 => array("name"      => $arrLan["Total Calls"], 
                                        "property1" => ""),

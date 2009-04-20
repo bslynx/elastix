@@ -51,7 +51,7 @@ $arrLan=array(
 "Left"                              => "Perdus",
 
 "Graphic Calls per hour" => "Graphic Calls per hour",
-"Total Calls" => "Total Calls",
+"Total Calls" => "Total des Appels",
 "Total" => "Total",
 );
 ?>

@@ -47,5 +47,7 @@ $arrLan=array(
 
 "Date End"                          => "Date End",
 "Total"                             => "Total",
+"Detallado" => "Détaillé",
+"General" => "Général",
 );
 ?>

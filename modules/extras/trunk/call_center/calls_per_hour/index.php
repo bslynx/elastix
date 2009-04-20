@@ -415,7 +415,7 @@ function listadoCalls($pDB, $smarty, $module_name, $local_templates_dir,&$oGrid,
     if(isset($_POST['cbo_estado_entrantes'])) $cbo_estado_entrates = $_POST['cbo_estado_entrantes'];
     elseif(isset($_GET['cbo_estado_entrantes'])) $cbo_estado_entrates = $_GET['cbo_estado_entrantes'];
     else $cbo_estado_entrates = 'T';
-    $estados_entrantes = array("T"=>"Todas", "E"=>"Exitosas",  "A"=>"Abandonadas");
+    $estados_entrantes = array("T"=>$arrLan["Todas"], "E"=>$arrLan["Exitosas"], "A"=>$arrLan["Abandonadas"]);
     $combo_estados_entrantes = "<select name='cbo_estado_entrantes' id='cbo_estado_entrantes' >".combo($estados_entrantes,$cbo_estado_entrates)."</select>";
 
     //para el combo de salientes

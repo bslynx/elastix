@@ -12,7 +12,7 @@ $lang = array(
 "Error when connecting to database"          => "Erreur de connexion &agrave; la base de donn&eacute;es",
 "Error when creating object paloSantoReportsCalls" => "Erreur en cr&eacute;ant l'objet paloSantoReportsCalls",
 
-"Total Calls"    => "Total Calls",
-"Total"          => "Total",
+"Total Calls" => "Total des Appels",
+"Total" => "Total",
 );
 ?>

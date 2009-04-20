@@ -26,8 +26,8 @@
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
   $Id: fr.lang,v 1.3 2008/05/20 00:31:28 jmartinez Exp $ */
-global $arrLan2;
-$arrLan2=array(
+global $arrLan;
+$arrLan=array(
 "Hold Time"             => "Temps de prise",
 "Cola"                  => "File",
 "date"                  => "Date",
@@ -47,7 +47,9 @@ $arrLan2=array(
 "Abandonadas"                       => "Perdus",
 "No Realizadas"                     => "Non R&eacute;alis&eacute;s",
 
-"Total Calls"           => "Total Calls",
-"Total"                 => "Total",
+"Total Calls" => "Total des Appels",
+"Total" => "Total",
+"Tiempo Promedio Espera(Seg)" => "Temps d'Attente Moyen (Seg)",
+"Espera Mayor(seg)" => "Meilleure Attente",
 );
 ?>

@@ -325,7 +325,7 @@ function listadoLoginLogout($pDB, $smarty, $module_name, $local_templates_dir,&$
                         ));
 
     //Para el combo de tipos
-    $tipos = array("D"=>"Detallado", "G"=>"General");
+    $tipos = array("D"=>$arrLan["Detallado"], "G"=>$arrLan["General"]);
     $combo_tipos = "<select name='cbo_tipos' id='cbo_tipos' onChange='submit();'>".combo($tipos,$_POST['cbo_tipos'])."</select>";
 
      $oGrid->showFilter( insertarCabeceraCalendario()."
