@@ -27,11 +27,12 @@
   +----------------------------------------------------------------------+
   $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
 
+$arrConf['elastix_dbdir'] = '/var/www/db';
 $arrConf['elastix_dsn'] = array(
-                                "acl"       =>  "sqlite3:////var/www/db/acl.db",
-                                "settings"  =>  "sqlite3:////var/www/db/settings.db",
-                                "menu"      =>  "sqlite3:////var/www/db/menu.db",
-                                "samples"   =>  "sqlite3:////var/www/db/samples.db",
+                                "acl"       =>  "sqlite3:///$arrConf[elastix_dbdir]/acl.db",
+                                "settings"  =>  "sqlite3:///$arrConf[elastix_dbdir]/settings.db",
+                                "menu"      =>  "sqlite3:///$arrConf[elastix_dbdir]/menu.db",
+                                "samples"   =>  "sqlite3:///$arrConf[elastix_dbdir]/samples.db",
                             );
 $arrConf['basePath'] = '/var/www/html';
 $arrConf['theme'] = 'default'; //theme personal para los modulos esencialmente
@@ -40,3 +41,4 @@ $arrConf['elastix_version'] = load_version_elastix($arrConf['basePath']."/"); //
 $arrConf['defaultMenu'] = 'config';
 $arrConf['language'] = 'en';
 $arrConf['dir_backup'] = "backup";
+$arrConf['cadena_dsn'] = "mysql://asterisk:asterisk@localhost/call_center";
