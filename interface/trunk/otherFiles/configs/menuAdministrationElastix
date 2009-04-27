@@ -225,4 +225,13 @@ if [ $existeColumnType -ne 0 ]; then
 else
     echo "End step 15, Column faxpath in database fax.db added."
 fi
+
+#paso 16:
+sqlite3  $pathDB/menu.db "select count(*) from menu where id='email'" &>/dev/null
+existeMenuEmail=$?
+if [ $existeMenuEmail -eq 1 ]; then
+    sqlite3  $pathDB/menu.db "update menu set id='email_admin' where id='email';"
+    sqlite3  $pathDB/menu.db "update menu set idParent='email_admin' where idParent='email';"
+    echo "End step 16, Menu email was changed to email_admin."
+fi
 ################## End Administration Menus and permission ##########################
