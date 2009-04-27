@@ -86,6 +86,6 @@ $arrLangModule=array(
 "Voicemails" => "پیام های صوتی",
 "Fax" => "فکس",
 "Email" => "ایمیل",
-"Zaptel Configuration" => "Zaptel Configuration",
+"Dahdi Configuration" => "Dahdi Configuration",
 );
 ?>

@@ -83,6 +83,6 @@ $arrLangModule=array(
 "Voicemails" => "Голосовая почта",
 "Fax" => "Факс",
 "Email" => "Email",
-"Zaptel Configuration" => "Zaptel Configuration",
+"Dahdi Configuration" => "Dahdi Configuration",
 );
 ?>
