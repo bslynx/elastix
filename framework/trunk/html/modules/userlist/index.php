@@ -51,8 +51,7 @@ function _moduleContent(&$smarty, $module_name)
     $arrConf = array_merge($arrConf,$arrConfModule);
     $arrLang = array_merge($arrLang,$arrLangModule);
     
-
-    /////conexion a php
+    //conexion acl.db
     $pDB = new paloDB($arrConf['elastix_dsn']['acl']);
     
     //folder path for custom templates
@@ -94,7 +93,6 @@ function _moduleContent(&$smarty, $module_name)
     }
 
     $arrGruposACL=$pACL->getGroups();
-
     for($i=0; $i<count($arrGruposACL); $i++)
     {
         if($arrGruposACL[$i][1]=='administrator')
