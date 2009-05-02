@@ -34,6 +34,9 @@ function _moduleContent(&$smarty, $module_name)
     include_once("libs/paloSantoGrid.class.php");
     include_once("libs/paloSantoACL.class.php");
     include_once "modules/$module_name/configs/default.conf.php";
+
+    //include file language agree to elastix configuration
+    //if file language not exists, then include language by default (en)
     $lang=get_language();
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
     $lang_file="modules/$module_name/lang/$lang.lang";
@@ -47,10 +50,9 @@ function _moduleContent(&$smarty, $module_name)
     global $arrLangModule;
     $arrConf = array_merge($arrConf,$arrConfModule);
     $arrLang = array_merge($arrLang,$arrLangModule);
-    $pDB = new paloDB($arrConf['elastix_dsn']['acl']);
 
-    /////conexion a php
-    //include module files
+    //conexion acl.db
+    $pDB = new paloDB($arrConf['elastix_dsn']['acl']);
 
     //folder path for custom templates
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
@@ -77,16 +79,17 @@ function _moduleContent(&$smarty, $module_name)
 
 
 
-    $sQuery="select extension from users order by extension";
-    if (!$arrayResult = $pDBa->fetchTable($sQuery,true)){
+    $sQuery="select extension from users order by extension;";
+    $arrayResult = $pDBa->fetchTable($sQuery,true);
+    if (!$arrayResult){
         $error = $pDBa->errMsg;
     }else{  
-    if (is_array($arrayResult) && count($arrayResult)>0) {
-        //$arrData[$item["null"]] = "No extension";
-        foreach($arrayResult as $item) {
+        if (is_array($arrayResult) && count($arrayResult)>0) {
+            //$arrData[$item["null"]] = "No extension";
+            foreach($arrayResult as $item) {
                 $arrData[$item["extension"]] = $item["extension"];  
             }
-    }
+        }
     }
 
     $arrGruposACL=$pACL->getGroups();
