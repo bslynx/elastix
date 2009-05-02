@@ -34,7 +34,7 @@ function _moduleContent(&$smarty, $module_name)
     include_once("libs/paloSantoGrid.class.php");
     include_once("libs/paloSantoACL.class.php");
     include_once "modules/$module_name/configs/default.conf.php";
-
+    
     //include file language agree to elastix configuration
     //if file language not exists, then include language by default (en)
     $lang=get_language();
@@ -50,7 +50,7 @@ function _moduleContent(&$smarty, $module_name)
     global $arrLangModule;
     $arrConf = array_merge($arrConf,$arrConfModule);
     $arrLang = array_merge($arrLang,$arrLangModule);
-
+    
     //conexion acl.db
     $pDB = new paloDB($arrConf['elastix_dsn']['acl']);
 
@@ -83,7 +83,7 @@ function _moduleContent(&$smarty, $module_name)
     $arrayResult = $pDBa->fetchTable($sQuery,true);
     if (!$arrayResult){
         $error = $pDBa->errMsg;
-    }else{  
+    }else{
         if (is_array($arrayResult) && count($arrayResult)>0) {
             //$arrData[$item["null"]] = "No extension";
             foreach($arrayResult as $item) {
