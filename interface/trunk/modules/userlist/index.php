@@ -87,7 +87,7 @@ function _moduleContent(&$smarty, $module_name)
         if (is_array($arrayResult) && count($arrayResult)>0) {
             //$arrData[$item["null"]] = "No extension";
             foreach($arrayResult as $item) {
-                $arrData[$item["extension"]] = $item["extension"];  
+i                $arrData[$item["extension"]] = $item["extension"];
             }
         }
     }
