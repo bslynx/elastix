@@ -28,6 +28,15 @@ function PrincipalFileLinksys($DisplayName, $id_device, $secret, $ipAdressServer
     <Speed_Dial_7 ua=\"rw\"/>
     <Speed_Dial_8 ua=\"rw\"/>
     <Speed_Dial_9 ua=\"rw\"/>
+
+ <!-- Neurotech Additional -->
+   <Time_Zone  ua=\"na\">GMT-06:00</Time_Zone>
+   <Voice_Mail_Number  ua=\"na\">*97</Voice_Mail_Number>
+   <Paging_Code ua=\"na\">*80</Paging_Code>
+   <Select_Logo ua=\"ua\">BMP Picture</Select_Logo>
+   <Text_Logo ua=\"na\">Neurotech</Text_Logo>
+   <Select_Background_Picture ua=\"ua\">BMP Picture</Select_Background_Picture>
+   <BMP_Picture_Download_URL ua=\"ua\">tftp://192.168.1.56/NeuroTech.bmp</BMP_Picture_Download_URL>
 </flat-profile>";
 
     return $content;
@@ -45,7 +54,7 @@ function templatesFileLinksys($ipAdressServer)
   <Voice_Mail_Number  ua="na">*97</Voice_Mail_Number>
   <Display_Name_1_ ua="na">\$USER</Display_Name_1_>
   <Dial_Plan_1_ ua="na">(**xxx|**xxxx|*xx|xxx*|xxx**|xxxx*|xxxx**[3469]11|0|00|[2-9]xxxxxx|1xxx[2-9]xxxxxxS0|xxxxxxxxxxxx.)</Dial_Plan_1_>
-  <Time_Zone  ua="na">GMT-07:00</Time_Zone>
+  <Time_Zone  ua="na">GMT-08:00</Time_Zone>
   <Text_Logo group="Phone/General">trixbox CE</Text_Logo> 
   <BMP_Picture_Download_URL group="Phone/General" /> 
   <Select_Logo group="Phone/General">Text Logo</Select_Logo> 
