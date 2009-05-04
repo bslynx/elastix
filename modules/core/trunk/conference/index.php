@@ -758,7 +758,7 @@ function isModuleTotalInstalled($module_name, $accion, $arrLang, &$msmError)
     if(is_array($result) && count($result) > 0){
         if($result['existe']==0 && $accion=='crear'){ // no existe la base completamente 
             // ejecutar comanado para crear la base de datos.
-            exec("/usr/bin/mysql --user=$usuario --password=$clave < /var/www/html/schema.meetme", $arrConsole,$flagStatus); 
+            exec("/usr/bin/mysql --user=$usuario --password=$clave < /var/www/html/$module_name/libs/schema.meetme", $arrConsole,$flagStatus); 
             if($flagStatus==0){
                 sleep(5);
                 return "now_installed";
