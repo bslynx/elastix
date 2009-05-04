@@ -45,5 +45,6 @@ $arrLangModule=array(
 "Mount point"=>"Punkt montowania",
 "No records found"=>"Brak rekordów",
 "It was not possible to obtain information about the graph" =>"Nie jest możliwe uzuskanie informacji o wykresie",
+"% used of"=>"% used of",
 );
 ?>

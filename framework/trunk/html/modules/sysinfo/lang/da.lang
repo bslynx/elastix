@@ -47,5 +47,6 @@ $arrLangModule=array(
 "Mount point"=>"Tilslutningssted",
 "No records found"=>"Ingen optegnelse fundet",
 "It was not possible to obtain information about the graph"=>"Det var ikke muligt at samle data til grafen",
+"% used of"=>"% used of",
 );
 ?>

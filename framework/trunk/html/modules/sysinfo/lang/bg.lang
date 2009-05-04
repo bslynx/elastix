@@ -44,5 +44,6 @@ $arrLangModule=array(
 "Usage"=>"Използван",
 "Mount point"=>"Място на монтиране",
 "It was not possible to obtain information about the graph" =>"Не беше получена информация за графиката",
+"% used of"=>"% used of",
 );
 ?>

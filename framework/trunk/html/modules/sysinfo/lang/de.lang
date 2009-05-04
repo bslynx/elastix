@@ -42,5 +42,6 @@ $arrLangModule=array(
 "Mount point"=>"Einhängepunkt",
 "No records found"=>"keine Daten gefunden",
 "It was not possible to obtain information about the graph"=>"Es ist nicht möglich, diese Informationen auf dem Diagramm anzuzeigen",
+"% used of"=>"% used of",
 );
 ?>

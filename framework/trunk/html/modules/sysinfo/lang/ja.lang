@@ -44,5 +44,6 @@ $arrLangModule=array(
 "Mount point"=>"マウントポイント",
 "No records found"=>"レコードが見つかりません",
 "It was not possible to obtain information about the graph" =>"グラフ表示用データが取得できません",
+"% used of"=>"% used of",
 );
 ?>

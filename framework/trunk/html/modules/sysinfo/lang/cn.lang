@@ -42,5 +42,6 @@ $arrLangModule=array(
 "Mount point"=>"挂载点",
 "No records found"=>"记录不存在",
 "It was not possible to obtain information about the graph "=>"无法获取图表信息",
+"% used of"=>"% used of",
 );
 ?>

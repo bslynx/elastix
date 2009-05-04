@@ -46,5 +46,6 @@ $arrLangModule=array(
 "Mount point" => "میزان قابل استفاده از هارد دیسک",
 "No records found" => "رکوردی پیدا نشد",
 "It was not possible to obtain information about the graph" => "امکان بدست آوردن اطلاعات در خصوص نمودار نیست",
+"% used of"=>"% used of",
 );
 ?>

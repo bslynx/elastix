@@ -42,5 +42,6 @@ $arrLangModule=array(
 "Mount point"=>"Mount point",
 "No records found"=>"No records found",
 "It was not possible to obtain information about the graph" =>"It was not possible to obtain information about the graph",
+"% used of"=>"% used of",
 );
 ?>

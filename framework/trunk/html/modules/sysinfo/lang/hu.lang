@@ -47,5 +47,6 @@ $arrLangModule=array(
 "Mount point" => "Csatolási pont",
 "No records found" => "Nem található rekord",
 "It was not possible to obtain information about the graph" => "Nem lehetséges a grafikonnal kapcsolatos információszerzés",
+"% used of"=>"% used of",
 );
 ?>

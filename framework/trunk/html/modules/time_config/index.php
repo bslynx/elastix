@@ -177,7 +177,7 @@ function _moduleContent(&$smarty, $module_name)
 					if ($bExitoEscritura && file_exists('/var/spool/postfix/etc/localtime')) {
 						exec("/usr/bin/sudo -u root chown asterisk /var/spool/postfix/etc/localtime", $sOutput, $iRetVal);
     					if ($iRetVal != 0) {
-    						$smarty->assign('mb_message', $arrLang['Internal chown']));
+    						$smarty->assign('mb_message', $arrLang['Internal chown']);
     					} else {
 							$hArchivo = fopen('/var/spool/postfix/etc/localtime', 'w');
 							if ($hArchivo) {

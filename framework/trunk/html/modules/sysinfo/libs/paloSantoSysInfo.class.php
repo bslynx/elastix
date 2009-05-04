@@ -1,8 +1,8 @@
 <?php
-global $arrConf;
-require_once "{$arrConf['basePath']}/libs/misc.lib.php";
-require_once "{$arrConf['basePath']}/libs/paloSantoDB.class.php";
-require_once "{$arrConf['basePath']}/libs/paloSantoSampler.class.php";
+require_once "/var/www/html/libs/misc.lib.php";
+
+require_once "/var/www/html/libs/paloSantoDB.class.php";
+require_once "/var/www/html/libs/paloSantoSampler.class.php";
 
 class paloSantoSysInfo
 {
@@ -22,7 +22,7 @@ class paloSantoSysInfo
     {
         $result = array();
 
-        $result['ATTRIBUTES'] = array('TITLE'=>'Disk Usage','TYPE'=>'plot3d','SIZE'=>"630,170");
+        $result['ATTRIBUTES'] = array('TITLE'=>'Disk Usage','TYPE'=>'plot3d','SIZE'=>"630,170",'POS_LEYEND' => "0.12,0.5",);
         $result['MESSAGES'] = array('ERROR'=>'Error','NOTHING_SHOW'=>'Nada que mostrar');
 
         $arrTemp = array();
@@ -84,7 +84,7 @@ class paloSantoSysInfo
         return $result;
     }
 
-    function prueba()
+    function CallsMemoryCPU()
     {
         $arrayResult = array();
 
@@ -102,9 +102,9 @@ class paloSantoSysInfo
         $starttime = $endtime - 26*60*60;
         $oSampler->deleteDataBeforeThisTimestamp($starttime);
 
-        $arrayResult['ATTRIBUTES'] = array('TITLE' => 'Simultaneous calls, memory and CPU','TYPE'=>'lineplot_multiaxis',
-            'LABEL_X'=>"Etiqueta X",'LABEL_Y' =>'Etiqueta Y','SHADOW'=>false,'SIZE'=>"630,170",'MARGIN'=>"50,230,30,50",
-            'COLOR' => "#fafafa");
+        $arrayResult['ATTRIBUTES'] = array('TITLE' => $arrGraph['name'],'TYPE'=>'lineplot_multiaxis',
+            'LABEL_X'=>"Etiqueta X",'LABEL_Y'=>'Etiqueta Y','SHADOW'=>false,'SIZE'=>"630,170",'MARGIN'=>"50,230,30,50",
+            'COLOR' => "#fafafa",'POS_LEYEND'=> "0.02,0.5");
 
         $arrayResult['MESSAGES'] = array('ERROR' => 'Error', 'NOTHING_SHOW' => 'Nada que mostrar');
 

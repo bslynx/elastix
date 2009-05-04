@@ -42,5 +42,6 @@ $arrLangModule=array(
 "Mount point"=>"točka priklopa",
 "No records found"=>"ne najdem zapisa",
 "It was not possible to obtain information about the graph"=>"Ni bilo mogoče dobiti informacije o grafu.",
+"% used of"=>"% used of",
 );
 ?>
