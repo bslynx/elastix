@@ -168,7 +168,7 @@ function _moduleContent(&$smarty, $module_name)
                                                     "VALIDATION_EXTRA_PARAM" => ""),
     );
 
-
+    $contenidoModulo="";
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
     $smarty->assign("CANCEL", $arrLang["Cancel"]);
     $smarty->assign("APPLY_CHANGES", $arrLang["Apply changes"]);
@@ -341,6 +341,7 @@ function _moduleContent(&$smarty, $module_name)
 
                 //- La updateUser no es la adecuada porque pide el username. Deberia
                 //- hacer una que no pida username en la proxima version
+                $_POST['extension'] = isset($_POST['extension'])?$_POST['extension']:"";
                 $pACL->updateUser($_POST['id_user'], $username, $_POST['description'],$_POST['extension']);
                 //si se ha puesto algo en passwor se actualiza el password
                 if (!empty($_POST['password1']))
