@@ -95,6 +95,7 @@ function _moduleContent(&$smarty, $module_name)
 
 //description  id  name
 
+    $contenidoModulo="";
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
     $smarty->assign("CANCEL", $arrLang["Cancel"]);
     $smarty->assign("APPLY_CHANGES", $arrLang["Apply changes"]);
