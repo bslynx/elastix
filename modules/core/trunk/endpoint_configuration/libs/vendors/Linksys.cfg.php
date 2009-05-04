@@ -5,7 +5,8 @@
 */
 function PrincipalFileLinksys($DisplayName, $id_device, $secret, $ipAdressServer)
 {
-    $content="<flat-profile>
+    $content="
+<flat-profile>
     <Resync_Periodic ua=\"na\">86400</Resync_Periodic>
     <Proxy_1_ ua=\"na\">$ipAdressServer</Proxy_1_>
     <Outbound_Proxy_1_ ua=\"na\">$ipAdressServer</Outbound_Proxy_1_>
@@ -29,14 +30,14 @@ function PrincipalFileLinksys($DisplayName, $id_device, $secret, $ipAdressServer
     <Speed_Dial_8 ua=\"rw\"/>
     <Speed_Dial_9 ua=\"rw\"/>
 
- <!-- Neurotech Additional -->
-   <Time_Zone  ua=\"na\">GMT-06:00</Time_Zone>
+ <!-- Additional -->
+ <!-- <Time_Zone  ua=\"na\">GMT-06:00</Time_Zone> -->
    <Voice_Mail_Number  ua=\"na\">*97</Voice_Mail_Number>
    <Paging_Code ua=\"na\">*80</Paging_Code>
    <Select_Logo ua=\"ua\">BMP Picture</Select_Logo>
-   <Text_Logo ua=\"na\">Neurotech</Text_Logo>
+   <Text_Logo ua=\"na\">Linksys</Text_Logo>
    <Select_Background_Picture ua=\"ua\">BMP Picture</Select_Background_Picture>
-   <BMP_Picture_Download_URL ua=\"ua\">tftp://192.168.1.56/NeuroTech.bmp</BMP_Picture_Download_URL>
+ <!-- <BMP_Picture_Download_URL ua=\"ua\">tftp://$ipAdressServer/Linksys.bmp</BMP_Picture_Download_URL> -->
 </flat-profile>";
 
     return $content;
@@ -55,7 +56,7 @@ function templatesFileLinksys($ipAdressServer)
   <Display_Name_1_ ua="na">\$USER</Display_Name_1_>
   <Dial_Plan_1_ ua="na">(**xxx|**xxxx|*xx|xxx*|xxx**|xxxx*|xxxx**[3469]11|0|00|[2-9]xxxxxx|1xxx[2-9]xxxxxxS0|xxxxxxxxxxxx.)</Dial_Plan_1_>
   <Time_Zone  ua="na">GMT-08:00</Time_Zone>
-  <Text_Logo group="Phone/General">trixbox CE</Text_Logo> 
+  <Text_Logo group="Phone/General">Elastix</Text_Logo> 
   <BMP_Picture_Download_URL group="Phone/General" /> 
   <Select_Logo group="Phone/General">Text Logo</Select_Logo> 
   <Select_Background_Picture group="Phone/General">Text Logo</Select_Background_Picture> 
@@ -93,8 +94,7 @@ function templatesFileLinksys($ipAdressServer)
   <Call_UnPark_Code group="Regional/Vertical_Service_Activation_Codes" /> 
   <Group_Call_Pickup_Code group="Regional/Vertical_Service_Activation_Codes" /> 
   <Media_Loopback_Code group="Regional/Vertical_Service_Activation_Codes" /> 
-  <Referral_Services_Codes group="Regional/Vertical_Service_Activation_Codes" /> 
-
+  <Referral_Services_Codes group="Regional/Vertical_Service_Activation_Codes" />
 </flat-profile>
 TEMP;
 
