@@ -60,8 +60,8 @@ function _moduleContent($smarty, $module_name)
     $templates_dir=(isset($arrConf['templates_dir']))?$arrConf['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
         
-    $pDB = new paloDB("sqlite3:////var/www/db/menu.db");
-    $pDBACL = new paloDB("sqlite3:////var/www/db/acl.db");
+    $pDB = new paloDB("sqlite3:///{$arrConf['elastix_dbdir']}/menu.db");
+    $pDBACL = new paloDB("sqlite3:///{$arrConf['elastix_dbdir']}/acl.db");
     if(!empty($pDB->errMsg)) {
         echo "ERROR DE DB: $pDB->errMsg <br>";
     }

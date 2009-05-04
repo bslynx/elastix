@@ -6,28 +6,27 @@
   <td>
     <table width="100%" border="0" cellspacing="0" cellpadding="0" class="tabForm">
     <tr>
-	    <td width="15%">{$CPU_INFO_TITLE}: </td>
-	    <td width="35%">{$cpu_info}</td>
-<!-- 	    <td colspan="2" rowspan="5" width="50%" align="left"><img src="images/plot.php?id_graph=1" border="0"></td> -->
+        <td width="15%">{$CPU_INFO_TITLE}: </td>
+        <td width="35%">{$cpu_info}</td>
         <td colspan="2" rowspan="5" width="50%" align="left">
             {$imagen_hist}
         </td>
     </tr>
     <tr>
-	    <td>{$UPTIME_TITLE}:</td>
-	    <td>{$uptime}</td>
+        <td>{$UPTIME_TITLE}:</td>
+        <td>{$uptime}</td>
     </tr>
     <tr>
-	    <td>{$CPU_USAGE_TITLE}:</td>
+        <td>{$CPU_USAGE_TITLE}:</td>
         <td>{$cpu_usage}</td>
     </tr>
     <tr>
-	    <td>{$MEMORY_USAGE_TITLE}:</td>
-    	<td>{$mem_usage}</td>
+        <td>{$MEMORY_USAGE_TITLE}:</td>
+        <td>{$mem_usage}</td>
     </tr>
     <tr>
-	    <td>{$SWAP_USAGE_TITLE}:</td>
-	    <td>{$swap_usage}</td>
+        <td>{$SWAP_USAGE_TITLE}:</td>
+        <td>{$swap_usage}</td>
     </tr>
     </table>
   </td>
