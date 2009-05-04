@@ -27,8 +27,9 @@
   +----------------------------------------------------------------------+
   $Id: new_themes.php $ */
 
-include_once("libs/paloSantoDB.class.php");
-include_once("libs/paloSantoInstaller.class.php");
+global $arrConf;
+require_once "{$arrConf['basePath']}/libs/paloSantoDB.class.php";
+require_once "{$arrConf['basePath']}/libs/paloSantoInstaller.class.php";
 
 /* Clase que implementa themes */
 class PaloSantoThemes
@@ -60,10 +61,14 @@ class PaloSantoThemes
      *
      * @return array    Listado de los temas 
      */
-    function getThemes($dir='/var/www/html/themes/')
+    function getThemes($dir='')
     {
         global $arrLang;
-        
+
+        if($dir == ''){
+            global $arrConf;
+            $dir = $arrConf['basePath'];
+        }
         $arr_themes  = scandir($dir);
         $arr_respuesta = array();
 
@@ -115,8 +120,13 @@ class PaloSantoThemes
      * 
      * @return  bool    true or false si refresco o no
      */
-    function smartyRefresh($documentRoot='/var/www/html')
+    function smartyRefresh($documentRoot='')
     {
+        if($documentRoot == ''){
+            global $arrConf;
+            $documentRoot = $arrConf['basePath'];
+        }
+
         $paloInstaller = new Installer();
         if($paloInstaller->refresh($documentRoot)==1){ //hubo un error, se valida si es igual a 1. 
             return false;

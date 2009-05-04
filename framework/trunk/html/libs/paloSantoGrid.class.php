@@ -27,7 +27,8 @@
   +----------------------------------------------------------------------+
   $Id: paloSantoGrid.class.php,v 1.1.1.1 2007/07/06 21:31:55 gcarrillo Exp $ */
 global $arrConf;
-require_once $arrConf['basePath']."/libs/xajax/xajax.inc.php";
+require_once "{$arrConf['basePath']}/libs/xajax/xajax.inc.php";
+
 class paloSantoGrid {
 
     var $enableExport;

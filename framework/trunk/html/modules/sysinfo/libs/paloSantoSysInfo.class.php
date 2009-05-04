@@ -1,8 +1,8 @@
 <?php
-require_once "/var/www/html/libs/misc.lib.php";
-
-require_once "/var/www/html/libs/paloSantoDB.class.php";
-require_once "/var/www/html/libs/paloSantoSampler.class.php";
+global $arrConf;
+require_once "{$arrConf['basePath']}/libs/misc.lib.php";
+require_once "{$arrConf['basePath']}/libs/paloSantoDB.class.php";
+require_once "{$arrConf['basePath']}/libs/paloSantoSampler.class.php";
 
 class paloSantoSysInfo
 {

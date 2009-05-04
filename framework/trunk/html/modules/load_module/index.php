@@ -131,6 +131,7 @@ function _moduleContent($smarty, $module_name)
 
 function verifyFileContent($pDB, &$errorMsg, $arrLang,$oMenu,$oACL)
 {
+    global $arrConf;
     $arrArchivos = array();
     $output = '';
     $retVal = 1;
@@ -139,7 +140,7 @@ function verifyFileContent($pDB, &$errorMsg, $arrLang,$oMenu,$oACL)
     #crear un directorio para descomprimir
     mkdir($tmpDir);
     $tmpFile = $_FILES['module_file']['tmp_name'];
-    $dirModules = '/var/www/html/modules';
+    $dirModules = "{$arrConf['basePath']}/modules";
     //descomprimir archivo en carpeta temporal
     //archivo zip
     if (eregi('.zip$', $_FILES['module_file']['name'])){

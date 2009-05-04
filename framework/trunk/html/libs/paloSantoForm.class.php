@@ -80,6 +80,7 @@
 */
 
 require_once("misc.lib.php");
+global $arrConf;
 
 class paloForm
 {
@@ -165,7 +166,7 @@ class paloForm
                             //         Qué pasa si el formulario paso las validaciones correctamente y por lo tanto no se pasa por
                             //         este bloque de codigo?
                             // O qué pasa si la copia da error, cómo notifico esto al programa?
-                            copy($arrPreFilledValues[$varName]['tmp_name'], "/var/www/html/var/tmp/$tmpFilename");
+                            copy($arrPreFilledValues[$varName]['tmp_name'], "{$arrConf['basePath']}/var/tmp/$tmpFilename");
 
                             $strInput = "<div id=\"showFile\"><i>File: " . $arrPreFilledValues[$varName]['name'] . 
                                         //"</i>&nbsp;&nbsp;<input type='button' name='' value='Change file' class=button onClick=''>" . 

@@ -23,10 +23,10 @@
   $Id: paloSantoInstaller.class.php,v 1.1 2007/09/05 00:25:25 gcarrillo Exp $
 */
 define("MYSQL_ROOT_PASSWORD","eLaStIx.2oo7");
-//define("DIRECTORIO","/var/www/html/lang/")
 
-include_once("libs/paloSantoDB.class.php");
-require_once "paloSantoModuloXML.class.php";
+global $arrConf;
+require_once "{$arrConf['basePath']}/libs/paloSantoDB.class.php";
+require_once "{$arrConf['basePath']}/libs/paloSantoModuloXML.class.php";
 
 class Installer
 {
@@ -138,8 +138,13 @@ class Installer
         }
     }
 
-    function refresh($documentRoot='/var/www/html')
+    function refresh($documentRoot='')
     {
+        if($documentRoot == ''){
+            global $arrConf;
+            $documentRoot = $arrConf['basePath'];
+        }
+
         //STEP 1: Delete tmp templates of smarty.
         exec("rm -rf $documentRoot/var/templates_c/*",$arrConsole,$flagStatus); 
 
