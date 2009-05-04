@@ -42,5 +42,6 @@ $arrLangModule=array(
 "Mount point"=>"Monterade Filsystem",
 "No records found"=>"Inga uppgifter hittade",
 "It was not possible to obtain information about the graph" =>"Det var inte m&ouml;jligt att h&auml;mta information om grafen",
+"% used of"=>"% used of",
 );
 ?>
