@@ -1,7 +1,5 @@
 <?
 require_once "libs/paloSantoForm.class.php";
-require_once "libs/paloSantoTrunk.class.php";
-include_once "libs/paloSantoConfig.class.php";
 
 function _moduleContent(&$smarty, $module_name)
 {
@@ -28,12 +26,7 @@ function _moduleContent(&$smarty, $module_name)
     $templates_dir=(isset($arrConf['templates_dir']))?$arrConf['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
 
-    $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
-    $arrConfig = $pConfig->leer_configuracion(false);
-
-
     $formCampos= array();
-
     $txtCommand = isset($_POST['txtCommand'])?$_POST['txtCommand']:'';
 
     $oForm = new paloForm($smarty, $formCampos);

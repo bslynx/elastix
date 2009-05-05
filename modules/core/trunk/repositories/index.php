@@ -27,8 +27,6 @@
   +----------------------------------------------------------------------+
   $Id: repositories.php $ */
 
-require_once "libs/paloSantoTrunk.class.php";
-include_once "libs/paloSantoConfig.class.php";
 include_once "libs/paloSantoGrid.class.php";
 
 function _moduleContent(&$smarty, $module_name)

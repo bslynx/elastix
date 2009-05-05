@@ -1,6 +1,6 @@
 <form id='form_packages' style='margin-botom:0px;padding:0px' method='POST' action='?menu={$module_name}'>
     <table border='0' cellpadding='0' callspacing='0' width='100%' height='44'>
-        <tr>
+        <tr class="letra12">
             <td width='70%'>{$Name} &nbsp;
                 <input type='text' size='50' id='nombre_paquete' name='nombre_paquete' value='{$nombre_paquete}' /> &nbsp;
                 <input type='submit' class='button' name='submit_nombre' value='{$Search}' />                
@@ -8,7 +8,7 @@
             <td rowspan='2' id='relojArena'> 
             </td>
         </tr>
-        <tr>
+        <tr class="letra12">
             <td width='200'>{$Status} &nbsp;
                 <select name='submitInstalado' onchange='javascript:submit();'> 
                     <option value='installed' {$opcion2}>{$PackageInstalled}</option>

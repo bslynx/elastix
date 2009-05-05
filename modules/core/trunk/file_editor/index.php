@@ -1,7 +1,5 @@
 <?
 require_once "libs/paloSantoForm.class.php";
-require_once "libs/paloSantoTrunk.class.php";
-include_once "libs/paloSantoConfig.class.php";
 
 function _moduleContent(&$smarty, $module_name)
 {
@@ -24,9 +22,7 @@ function _moduleContent(&$smarty, $module_name)
     $arrConf = array_merge($arrConf,$arrConfModule);
     $arrLang = array_merge($arrLang,$arrLangModule);
 
-    global $arrConfig;
     $sAccion='';
-    
     //folder path for custom templates
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
     $templates_dir=(isset($arrConf['templates_dir']))?$arrConf['templates_dir']:'themes';

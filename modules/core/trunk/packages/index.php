@@ -27,7 +27,6 @@
   +----------------------------------------------------------------------+
   $Id: packages.php $ */
 
-require_once "libs/paloSantoTrunk.class.php";
 include_once "libs/paloSantoGrid.class.php";
 include_once "libs/xajax/xajax.inc.php";
 
