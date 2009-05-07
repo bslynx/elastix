@@ -115,6 +115,12 @@ CREATE TABLE IF NOT EXISTS `calls` (
   `time_init`   time,
   `time_end`    time,
 
+  /* 2009-05-07: If not NULL, this is a record of a call to be handled later 
+     by a specific agent. This indicates the agent that should handle the call. 
+     Format Agent/XXXX 
+   */
+  `agent`       varchar(32),
+
   PRIMARY KEY  (`id`),
   KEY `id_campaign` (`id_campaign`),
   KEY `calls_ibfk_2` (`id_agent`),
@@ -488,6 +494,35 @@ DELIMITER ; ++
 
 CALL temp_llamadas_agendadas_2009_02_20();
 DROP PROCEDURE IF EXISTS temp_llamadas_agendadas_2009_02_20;
+
+/* Procedimiento que agrega soporte para calls.agent para llamadas atendidas por agente */
+DELIMITER ++ ;
+
+DROP PROCEDURE IF EXISTS temp_calls_agent_2009_05_07 ++
+CREATE PROCEDURE temp_calls_agent_2009_05_07 ()
+    READS SQL DATA
+    MODIFIES SQL DATA
+BEGIN
+    DECLARE l_existe_columna tinyint(1);
+    
+    SET l_existe_columna = 0;
+
+    SELECT COUNT(*) INTO l_existe_columna 
+    FROM INFORMATION_SCHEMA.COLUMNS 
+    WHERE TABLE_SCHEMA = 'call_center' 
+        AND TABLE_NAME = 'calls' 
+        AND COLUMN_NAME = 'agent';
+    IF l_existe_columna = 0 THEN
+        ALTER TABLE calls
+        ADD COLUMN agent varchar(32);
+    END IF;
+END;
+++
+DELIMITER ; ++
+
+CALL temp_calls_agent_2009_05_07();
+DROP PROCEDURE IF EXISTS temp_calls_agent_2009_05_07;
+
 
 
 /*!40000 ALTER TABLE `queue_call_entry` ENABLE KEYS */;
