@@ -1,7 +1,7 @@
 <script src="modules/{$MODULE_NAME}/libs/js/base.js">
 </script>
 {$SCRIPT_AJAX}
-<form method="POST" name="frm_login_agent">
+<form method="POST" name="frm_login_agent" action="/?menu={$MODULE_NAME}">
 <p>&nbsp;</p>
 <p>&nbsp;</p>
 <table width="400" border="0" cellspacing="0" cellpadding="0" align="center">
