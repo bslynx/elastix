@@ -46,8 +46,7 @@ class PaloSantoFileEndPoint
     function createFiles($ArrayData)
     {
         include_once "vendors/{$ArrayData['vendor']}.cfg.php";
-        switch($ArrayData['vendor'])
-        {
+        switch($ArrayData['vendor']){
             case 'Polycom':
                 //Header Polycom
                 $contentHeader = HeaderFilePolycom($ArrayData['data']['filename']);
@@ -78,15 +77,15 @@ class PaloSantoFileEndPoint
 
             case 'Aastra':
                 $contentFileAastra =PrincipalFileAastra($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer);
-                if( $this->createFileConf($this->directory, $ArrayData['data']['filename'].".cfg", $contentFileAastra) )
+                if( $this->createFileConf($this->directory, strtoupper($ArrayData['data']['filename']).".cfg", $contentFileAastra) )
                     return true;
                 else return false;
 
                 break;
 
             case 'Cisco':
-                $contentFileCisco =PrincipalFileCisco($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer);
-                if($this->createFileConf($this->directory, $ArrayData['data']['filename'].".cnf", $contentFileCisco))
+                 $contentFileCisco =PrincipalFileCisco($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer, $this->find_version() );
+                if($this->createFileConf($this->directory, strtoupper("SIP".$ArrayData['data']['filename']).".cnf", $contentFileCisco))
                     return true;
                 else return false;
 
@@ -113,9 +112,24 @@ class PaloSantoFileEndPoint
                 break;
 
             case 'Snom':
+                $contentFileSnom =PrincipalFileSnom($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer);
+                if($this->createFileConf($this->directory, "snom".$ArrayData['data']['model']."-".strtoupper($ArrayData['data']['filename']).".htm", $contentFileSnom))
+                    return true;
+                else return false;
+
                 break;
 
             case 'Grandstream':
+        	$contentFileGrandstream = PrincipalFileGrandstream($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer);
+                if( $this->createFileConf($this->directory, "gxp".$ArrayData['data']['filename'].".cfg", $contentFileGrandstream)) {
+		    exec("sudo -u root chmod o+rx /opt/openfire");
+                    //ex: . /tftpboot/GS_CFG_GEN/bin/encode.sh 000945531b3b /tftpboot/gxp_config_1.1.6.46.template.cfg /tftpboot/cfg000945531b3b
+		    exec(". /tftpboot/GS_CFG_GEN/bin/encode.sh {$ArrayData['data']['filename']} /tftpboot/gxp{$ArrayData['data']['filename']}.cfg /tftpboot/cfg{$ArrayData['data']['filename']}.cfg",$arrConsole,$flagStatus);
+		    exec("sudo -u root chmod o-rx /opt/openfire");
+                    if($flagStatus == 0)
+			return true;
+		}
+                else return false;
                 break;
         }
     }
@@ -146,12 +160,11 @@ class PaloSantoFileEndPoint
      */
     function deleteFiles($ArrayData)
     {
-        switch($ArrayData['vendor'])
-        {
+        switch($ArrayData['vendor']){
             case 'Polycom':
                 if($this->deleteFileConf($this->directory, $ArrayData['data']['filename']."reg.cfg")){
                     return $this->deleteFileConf($this->directory, $ArrayData['data']['filename'].".cfg");
-                } else false;
+                } else return false;
                 break;
 
             case 'Linksys':
@@ -159,11 +172,11 @@ class PaloSantoFileEndPoint
                 break;
 
             case 'Aastra':
-                return $this->deleteFileConf($this->directory, $ArrayData['data']['filename'].".cfg");
+                return $this->deleteFileConf($this->directory, strtoupper($ArrayData['data']['filename']).".cfg");
                 break;
 
             case 'Cisco':
-                return $this->deleteFileConf($this->directory, $ArrayData['data']['filename'].".cnf");
+                return $this->deleteFileConf($this->directory, strtoupper("SIP".$ArrayData['data']['filename']).".cnf");
                 break;
 
             case 'Atcom':
@@ -171,9 +184,13 @@ class PaloSantoFileEndPoint
                 break;
 
             case 'Snom':
+                return $this->deleteFileConf($this->directory, "snom".$ArrayData['data']['model']."-".strtoupper($ArrayData['data']['filename']).".htm");
                 break;
 
             case 'Grandstream':
+		if($this->deleteFileConf($this->directory, "cfg".$ArrayData['data']['filename'].".cfg")){
+                    return $this->deleteFileConf($this->directory, "gxp".$ArrayData['data']['filename'].".cfg");
+                } else return false;
                 break;
         }
     }
@@ -231,6 +248,10 @@ class PaloSantoFileEndPoint
                 break;
 
             case 'Cisco':
+                //Creando archivos de ejemplo.
+                $contentFileCisco = defaultFileCisco($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer, $this->find_version());
+                $this->createFileConf($this->directory, "SIPDefault.cnf", $contentFileCisco);
+                return true; //no es tan importante la necesidad de estos archivos solo son de ejemplo.
                 break;
 
             case 'Atcom':
@@ -241,9 +262,21 @@ class PaloSantoFileEndPoint
                 break;
 
             case 'Snom':
+                //Creando archivos de ejemplo.
+                //SNOM reguires a separate file for each model. The file contents of each file
+                //is the same.
+                $contentFileSnom = generalSettingsFileSnom($this->ipAdressServer);
+                $this->createFileConf($this->directory, "snom300.htm", $contentFileSnom);
+                $this->createFileConf($this->directory, "snom320.htm", $contentFileSnom);
+                $this->createFileConf($this->directory, "snom360.htm", $contentFileSnom);
+                return true; //no es tan importante la necesidad de estos archivos solo son de ejemplo.
                 break;
 
             case 'Grandstream':
+                //Creando archivos de ejemplo.
+                $contentFileAatra = templatesFileGrandstream($this->ipAdressServer);
+                $this->createFileConf($this->directory, "gxp_config_1.1.6.46.template.cfg", $contentFileAatra);
+                return true; //no es tan importante la necesidad de estos archivos solo son de ejemplo.
                 break;
         }
     }
@@ -278,8 +311,7 @@ class PaloSantoFileEndPoint
 
     function updateArrParameters($vendor, $model, $arrParametersOld)
     {
-        switch($vendor)
-        {
+        switch($vendor){
             case 'Polycom':
                 break;
 
@@ -293,8 +325,7 @@ class PaloSantoFileEndPoint
                 break;
 
             case 'Atcom':
-                if($model == 'AT 530')
-                {
+                if($model == 'AT 530'){
                     if(isset($arrParametersOld['versionCfg']))
                         $arrParametersOld['versionCfg'] = $arrParametersOld['versionCfg'] + 0.0001;
                     else
@@ -311,5 +342,23 @@ class PaloSantoFileEndPoint
 
         return $arrParametersOld;
     }
+
+        /*  The function find_version() find the files included P0S as, P0S3-xx-x-xx.sb2 or other.
+	    This function return only the file name and not the extension.
+	    Add by Franck danard.
+	    Maybe there's several solution to do it!
+	*/
+	function find_version()
+	{
+            // Replace this code by the good directory tftp.
+            $monrep = opendir($this->directory);
+            while ($entryname = readdir($monrep)){
+                // Finding begin file P0S
+                $pos = strripos($entryname,"P0S");
+                if ($pos === 0) // Cut the file extension .sb2
+                    $image_version=strtok($entryname,".sb2");
+            }
+            return $image_version;
+	}
 }
 ?>

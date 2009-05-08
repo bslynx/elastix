@@ -5,15 +5,15 @@
 function PrincipalFileSnom($DisplayName, $id_device, $secret, $ipAdressServer)
 {
     $content="
-		<html>
-			<pre>
-				user_realname1: $DisplayName
-				user_name1: $id_device
-				user_pass1: $secret
-				user_pname1: $id_device
-				user_mailbox1: $id_device
-			</pre>
-		</html>";
+            <html>
+                <pre>
+                    user_realname1: $DisplayName
+                    user_name1: $id_device
+                    user_pass1: $secret
+                    user_pname1: $id_device
+                    user_mailbox1: $id_device
+                </pre>
+            </html>";
 
     return $content;
 }
@@ -24,18 +24,17 @@ function PrincipalFileSnom($DisplayName, $id_device, $secret, $ipAdressServer)
 function generalSettingsFileSnom($ipAdressServer)
 {
     $content="
-		<html>
-			<pre>
-				challenge_response!: off
-				user_phone!: false
-				filter_registrar!: off
-				user_srtp1!: off
-				user_host1: $ipAdressServer
-				timezone!: GBR-0
-				tone_scheme!: USA
-			
-			</pre>
-		</html>";
+            <html>
+                <pre>
+                    challenge_response!: off
+                    user_phone!: false
+                    filter_registrar!: off
+                    user_srtp1!: off
+                    user_host1: $ipAdressServer
+                    timezone!: GBR-0
+                    tone_scheme!: USA			
+                </pre>
+            </html>";
 
     return $content;
 }

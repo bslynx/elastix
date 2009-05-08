@@ -54,13 +54,11 @@ function _moduleContent(&$smarty, $module_name)
     $arrConf = array_merge($arrConf,$arrConfModule);
     $arrLang = array_merge($arrLang,$arrLangModule);    
 
-
     //folder path for custom templates
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
     $templates_dir=(isset($arrConf['templates_dir']))?$arrConf['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
-//      print_r($_SESSION['elastix_endpoints']);
- 
+
     $pConfig     = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
     $arrAMP      = $pConfig->leer_configuracion(false);
     $dsnAsterisk = $arrAMP['AMPDBENGINE']['valor']."://". 
@@ -97,15 +95,14 @@ function endpointConfiguratedShow($smarty, $module_name, $local_templates_dir, $
 {
     $arrData = array();
     if(!isset($_SESSION['elastix_endpoints']) || !is_array($_SESSION['elastix_endpoints']) || empty($_SESSION['elastix_endpoints'])){
-        $paloEndPoint = new paloSantoEndPoint($dsnAsterisk,$dsnSqlite);
+        $paloEndPoint     = new paloSantoEndPoint($dsnAsterisk,$dsnSqlite);
         $arrEndpointsConf = $paloEndPoint->listEndpointConf();
         $arrVendor        = $paloEndPoint->listVendor();
         $arrDeviceFreePBX = $paloEndPoint->getDeviceFreePBX();
-        //$endpoint_mask = isset($_POST['endpoint_mask'])?$_POST['endpoint_mask']:"192.168.1.0/24";
-        $endpoint_mask = isset($_POST['endpoint_mask'])?$_POST['endpoint_mask']:network();
-        $pValidator = new PaloValidar();
-        if(!$pValidator->validar('endpoint_mask', $endpoint_mask, 'ip/mask'))
-        {
+        $endpoint_mask    = isset($_POST['endpoint_mask'])?$_POST['endpoint_mask']:network();
+        $pValidator       = new PaloValidar();
+
+        if(!$pValidator->validar('endpoint_mask', $endpoint_mask, 'ip/mask')){
             $smarty->assign("mb_title",$arrLang['ERROR'].":");
             $strErrorMsg = "";
             if(is_array($pValidator->arrErrores) && count($pValidator->arrErrores) > 0){
@@ -115,7 +112,7 @@ function endpointConfiguratedShow($smarty, $module_name, $local_templates_dir, $
             }
             $smarty->assign("mb_message",$arrLang['Invalid Format in Parameter'].": ".$strErrorMsg);
         }else{
-            $arrEndpointsMap  = $paloEndPoint->endpointMap($endpoint_mask,$arrVendor,$arrEndpointsConf);             
+            $arrEndpointsMap  = $paloEndPoint->endpointMap($endpoint_mask,$arrVendor,$arrEndpointsConf);
 
             if($arrEndpointsMap==false){
                 $smarty->assign("mb_title",$arrLang['ERROR'].":");
@@ -135,7 +132,7 @@ function endpointConfiguratedShow($smarty, $module_name, $local_templates_dir, $
                         $unset  = "";
                         $status = createStatus(2,$arrLang['Not Set']);
                     }
-        
+
                     $arrTmp[0] = "<input type='checkbox' name='epmac_{$endspoint['mac_adress']}'  />";
                     $arrTmp[1] = $unset;
                     $arrTmp[2] = $endspoint['mac_adress'];
@@ -143,7 +140,6 @@ function endpointConfiguratedShow($smarty, $module_name, $local_templates_dir, $
                     $arrTmp[4] = $endspoint['name_vendor']." / ".$endspoint['desc_vendor']."&nbsp;<input type='hidden' name='id_vendor_device_{$endspoint['mac_adress']}' value='{$endspoint['id_vendor']}' />&nbsp;<input type='hidden' name='name_vendor_device_{$endspoint['mac_adress']}' value='{$endspoint['name_vendor']}' />";
                     $arrTmp[5] = "<select name='id_model_device_{$endspoint['mac_adress']}' >".combo($paloEndPoint->getAllModelsVendor($endspoint['name_vendor']),$endspoint['model_no'])."</select>";
                     $arrTmp[6] = "<select name='id_device_{$endspoint['mac_adress']}'    >".combo($arrDeviceFreePBX,$endspoint['account'])                                               ."</select>";
-        //             $arrTmp[7] = $endspoint['desc_device'];
                     $arrTmp[7] = $status;
                     $arrData[] = $arrTmp;
                 }
@@ -212,7 +208,6 @@ function endpointScan($smarty, $module_name, $local_templates_dir, $dsnAsterisk,
 {
     unset($_SESSION['elastix_endpoints']);
     return endpointConfiguratedShow($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrLang, $arrConf);
-    //header("Location: /?menu=$module_name");
 }
 
 function endpointConfiguratedSet($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrLang, $arrConf)
@@ -226,7 +221,7 @@ function endpointConfiguratedSet($smarty, $module_name, $local_templates_dir, $d
         $smarty->assign("mb_title",$arrLang['ERROR'].":");
         $smarty->assign("mb_message",$valid);
         $endpoint_mask = isset($_POST['endpoint_mask'])?$_POST['endpoint_mask']:network();
-        //$endpoint_mask = isset($_POST['endpoint_mask'])?$_POST['endpoint_mask']:'192.168.1.0/24';
+
         return buildReport($_SESSION['elastix_endpoints'],$smarty,$module_name,$arrLang, $endpoint_mask);
     }
     foreach($_POST as $key => $values){
@@ -259,12 +254,8 @@ function endpointConfiguratedSet($smarty, $module_name, $local_templates_dir, $d
                 }
                 //escribir archivos
                 $ArrayData['vendor'] = $tmpEndpoint['name_vendor'];
-
-                 if( $ArrayData['vendor'] == "Aastra" )  $file_name = strtoupper(str_replace(":","",$tmpMac));
-                else  $file_name = strtolower(str_replace(":","",$tmpMac));
-
                 $ArrayData['data'] = array(
-                        "filename"     => $file_name,
+                        "filename"     => strtolower(str_replace(":","",$tmpMac)),
                         "DisplayName"  => $tmpEndpoint['desc_device'],
                         "id_device"    => $tmpEndpoint['id_device'],
                         "secret"       => $tmpEndpoint['secret'],
@@ -274,14 +265,13 @@ function endpointConfiguratedSet($smarty, $module_name, $local_templates_dir, $d
                         );
 
                 //Falta si hay error en la creacion de un archivo, ya esta para saber q error es, el problema es como manejar un error o los errores dentro del este lazo (foreach).
-                    //ejemplo: if($paloFile->createFiles($ArrayData)==false){ $paloFile->errMsg  (mostrar error con smarty)}
+                //ejemplo: if($paloFile->createFiles($ArrayData)==false){ $paloFile->errMsg  (mostrar error con smarty)}
                 $paloFileEndPoint->createFiles($ArrayData);
             }
         }
     }
     unset($_SESSION['elastix_endpoints']);
     return endpointConfiguratedShow($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrLang, $arrConf);
-    //header("Location: /?menu=$module_name");
 }
 
 function validateParameterEndpoint($arrParameters, $dsnAsterisk, $dsnSqlite)
@@ -322,18 +312,15 @@ function endpointConfiguratedUnset($smarty, $module_name, $local_templates_dir, 
         foreach($_POST as $key => $value){
             if(substr($key,0,6)=="epmac_"){
                 $tmpMac = substr($key,6);
+                $tmpEndpoint['id_model']    = $_POST["id_model_device_$tmpMac"];
                 if($paloEndPoint->deleteEndpointsConf($tmpMac)){
                     $paloFile = new paloSantoFileEndPoint($arrConf["tftpboot_path"]);
+                    $name_model = $paloEndPoint->getModelById($tmpEndpoint['id_model']);
 
                     $ArrayData['vendor'] = $_POST["name_vendor_device_$tmpMac"];
-                    if( $ArrayData['vendor'] == "Aastra" ){
-                        $ArrayData['data'] = array(
-                                "filename"     => strtoupper(str_replace(":","",$tmpMac)));
-                    }
-                    else{
-                        $ArrayData['data'] = array(
-                                "filename"     => strtolower(str_replace(":","",$tmpMac)));
-                    }
+                    $ArrayData['data'] = array(
+                                "filename"     => strtolower(str_replace(":","",$tmpMac)),
+                                "model"        => $name_model);
 
                     //Falta si hay error en la eliminacion de un archivo, ya esta para saber q error es, el problema es como manejar un error o los errores dentro del este lazo (foreach).
                     //ejemplo: if($paloFile->deleteFiles($ArrayData)==false){ $paloFile->errMsg  (mostrar error con smarty)}
