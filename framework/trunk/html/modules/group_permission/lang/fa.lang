@@ -35,5 +35,11 @@ $arrLangModule=array(
 "Show" => "نمایش بده",
 "Apply" => "اجرا کن",
 "Resource" => "منبع",
+"Group" => "گروه",
+"Group Permission" => "مجوزهای گروه",
+"View" => "View",
+"Create" => "Create",
+"Delete" => "Delete",
+"Update" => "Update",
 );
 ?>

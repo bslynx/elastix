@@ -36,5 +36,10 @@ $arrLangModule=array(
 "Apply"=>"Opdater",
 "Resource"=>"Ressource",
 "Show"=>"Vis",
+"Group" => "Group",
+"View" => "View",
+"Create" => "Create",
+"Delete" => "Delete",
+"Update" => "Update",
 );
 ?>

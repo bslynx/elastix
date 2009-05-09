@@ -1,8 +1,8 @@
 <?php
-  /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
+/* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.0-16                                               |
+  | Elastix version 1.5.2                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,12 +25,17 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: en.lang,v 1.1 2008-10-30 09:10:15 Bruno Macias bmacias@elastix.org Exp $ */
+  $Id: es.lang,v 1.7 2007/09/05 00:36:42 gcarrillo Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Group Permission" => "Group Permission",
 "Show" => "Show",
 "Apply" => "Apply",
 "Resource" => "Resource",
+"Group Permission" => "Group Permission",
+"Group" => "Group",
+"View" => "View",
+"Create" => "Create",
+"Delete" => "Delete",
+"Update" => "Update",
 );
 ?>

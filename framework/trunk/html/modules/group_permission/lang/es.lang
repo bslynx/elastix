@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.5                                                  |
+  | Elastix version 1.5.2                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -28,8 +28,14 @@
   $Id: es.lang,v 1.7 2007/09/05 00:36:42 gcarrillo Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Show"=>"Mostrar",
-"Apply"=>"Aplicar",
-"Resource"=>"Recurso",
+"Group" => "Grupo",
+"Show" => "Mostrar",
+"Apply" => "Aplicar",
+"Resource" => "Recurso",
+"View" => "Ver",
+"Create" => "Crear",
+"Delete" => "Eliminar",
+"Update" => "Actualizar",
+"Group Permission" => "Permisos de Grupo",
 );
 ?>

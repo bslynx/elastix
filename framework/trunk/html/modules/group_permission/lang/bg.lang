@@ -35,5 +35,10 @@ $arrLangModule=array(
 "Show"=>"Покажи",
 "Apply"=>"Приложи",
 "Resource"=>"Ресурси",
+"Group" => "Group",
+"View" => "View",
+"Create" => "Create",
+"Delete" => "Delete",
+"Update" => "Update",
 );
 ?>

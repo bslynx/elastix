@@ -36,5 +36,11 @@ $arrLangModule=array(
 "Show"=>"Afficher",
 "Apply"=>"Appliquer",
 "Resource"=>"Ressource",
+"Group" => "Group",
+"Group Permission" => "Group Permission",
+"View" => "View",
+"Create" => "Create",
+"Delete" => "Delete",
+"Update" => "Update",
 );
 ?>

@@ -816,7 +816,7 @@ class paloACL {
         }
     }
 
-    function saveGroupPermission($idGroup,$resources)
+    function saveGroupPermission($idGroup, $resources)
     {
         $bExito=FALSE;
         if (!ereg('^[[:digit:]]+$', "$idGroup")) {
@@ -825,8 +825,8 @@ class paloACL {
             foreach ($resources as $resource){
                 $sPeticionSQL=
                     "INSERT INTO acl_group_permission (id_action, id_group, id_resource) ".
-                    "VALUES (1,$idGroup,$resource)";
-                
+                    "VALUES (1, $idGroup, $resource)";
+
                 if ($this->_DB->genQuery($sPeticionSQL)) {
                     $bExito = TRUE;
                 } else {
@@ -878,7 +878,7 @@ class paloACL {
             $result = $this->_DB->getFirstRowQuery($sPeticionSQL, FALSE);
             if ($result && is_array($result) && count($result)>0) {
                 $extension = $result[0];
-            }else $this->errMsg = $this->_DB->errMsg;
+            }else $this->errMsg = $this->_DB->errMs;
         }
         return $extension;
     }
@@ -901,7 +901,7 @@ class paloACL {
             $result = $this->_DB->getFirstRowQuery($sPeticionSQL, FALSE);
             if ($result && is_array($result) && count($result)>0) {
                 $id_resource = $result[0];
-            }else $this->errMsg = $this->_DB->errMsg;
+            }else $this->errMsg = $this->_DB->errMs;
         }
         return $id_resource;
     }
@@ -1072,6 +1072,130 @@ class paloACL {
             }else $this->errMsg = $this->_DB->errMsg;
         }
         return $Haveusers;
+    }
+
+    //************************************************************************************************************************
+    //************************************************************************************************************************
+
+    function getNumResources($filter_resource)
+    {
+        $query = "SELECT count(id) ".
+                 "FROM acl_resource ".
+                 "WHERE description LIKE '$filter_resource%' ";
+
+        $result = $this->_DB->getFirstRowQuery($query, FALSE);
+
+        if( $result == false )
+        {
+            $this->errMsg = $this->_DB->errMsg;
+            return 0;
+        }
+
+        return $result[0];
+    }
+
+    function getListResources($limit, $offset, $filter_resource)
+    {
+        $query = "SELECT id, name, description ".
+                 "FROM acl_resource ".
+                 "WHERE description LIKE '$filter_resource%' ".
+                 "LIMIT $limit OFFSET $offset ";
+
+        $result = $this->_DB->fetchTable($query, true);
+
+        if( $result == false )
+        {
+            $this->errMsg = $this->_DB->errMsg;
+            return array();
+        }
+
+        return $result;
+    }
+
+    function loadGroupPermissions($id_group)
+    {
+        $query = "SELECT ar.id resource_id, ar.name resource_name, gp.action_name action_name ".
+                 "FROM acl_resource ar, (SELECT aa.name action_name, agp.id_resource resource_id ".
+                                        "FROM acl_group_permission agp ".
+                                        "INNER JOIN acl_action aa on agp.id_action = aa.id ".
+                                        "WHERE agp.id_group = $id_group ) AS gp ".
+                 "WHERE gp.resource_id = ar.id ".
+                 "ORDER BY 1 asc ";
+
+        $result = $this->_DB->fetchTable($query, true);
+        if( $result == false ) {
+            $this->errMsg = $this->_DB->errMsg;
+            print_r($this->errMsg);
+            return array();
+        }
+
+        return $result;
+    }
+
+    function loadResourceGroupPermissions($action, $id_group)
+    {
+        $query = "SELECT acl_resource.name AS resource_name  ".
+                 "FROM acl_resource, (SELECT acl_group_permission.id_resource  AS resource_id ".
+                                     "FROM acl_group_permission, acl_action ".
+                                     "WHERE acl_group_permission.id_action = acl_action.id AND ".
+                                           "acl_group_permission.id_group = $id_group AND ".
+                                           "acl_action.name = '$action' ) AS gp ".
+                 "WHERE gp.resource_id = acl_resource.id ";
+
+        $result = $this->_DB->fetchTable($query, true);
+        if( $result == false ) {
+            $this->errMsg = $this->_DB->errMsg;
+            return array();
+        }
+
+        return $result;
+    }
+
+    function saveGroupPermissions($action, $idGroup, $resources)
+    {
+        $bExito = FALSE;
+        if (!ereg('^[[:digit:]]+$', "$idGroup"))
+            $this->errMsg = "Group ID is not valid";
+        else
+        {
+            foreach ($resources as $resource)
+            {
+                $sPeticionSQL = "INSERT INTO acl_group_permission (id_action, id_group, id_resource) ".
+                                "VALUES( (SELECT id FROM acl_action WHERE name = '$action') , $idGroup, $resource)";
+
+                if ($this->_DB->genQuery($sPeticionSQL))
+                    $bExito = TRUE;
+                else {
+                    $this->errMsg = $this->_DB->errMsg;
+                    break;
+                }
+            }
+        }
+        return $bExito;
+    }
+
+    function deleteGroupPermissions($action, $idGroup, $resources)
+    {
+        $bExito = FALSE;
+        if (!ereg('^[[:digit:]]+$', "$idGroup"))
+            $this->errMsg = "Group ID is not valid";
+        else
+        {
+            foreach ($resources as $resource){
+                $sPeticionSQL = "DELETE FROM acl_group_permission ".
+                                "WHERE id_group = $idGroup AND id_resource = $resource AND ".
+                                      "id_action = (SELECT id FROM acl_action WHERE name = '$action') ";
+                
+                if ($this->_DB->genQuery($sPeticionSQL))
+                    $bExito = TRUE;
+                else
+                {
+                    $this->errMsg = $this->_DB->errMsg;
+                    break;
+                }
+            }
+        }
+        return $bExito;
     }
 }
 ?>
