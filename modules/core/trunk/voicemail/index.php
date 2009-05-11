@@ -196,8 +196,8 @@ function _moduleContent(&$smarty, $module_name)
                                     $arrTmp[4] = $arrVoiceMailDes['origmailbox']['valor'];
                                     $arrTmp[5] = $arrVoiceMailDes['duration']['valor'].' sec.';
                                     $pathRecordFile="$voicemailPath/".$regs[1].'.wav';
-                                    $recordingLink = "<a href='#' onClick=\"javascript:popUp('includes/popup.php?action=display_record&record_file=" . base64_encode($pathRecordFile) ."',350,100); return false;\">Listen</a>&nbsp;";
-                                    $recordingLink .= "<a href='includes/audio.php?recording=".base64_encode($pathRecordFile)."'>Download</a>";
+                                    $recordingLink = "<a href='#' onClick=\"javascript:popUp('libs/popup.php?action=display_record&record_file=" . base64_encode($pathRecordFile) ."',350,100); return false;\">Listen</a>&nbsp;";
+                                    $recordingLink .= "<a href='libs/audio.php?recording=".base64_encode($pathRecordFile)."'>Download</a>";
                                     $arrTmp[6] = $recordingLink;
                                     $arrData[] = $arrTmp;
                                 }

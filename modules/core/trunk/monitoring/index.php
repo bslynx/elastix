@@ -388,8 +388,8 @@ function _moduleContent(&$smarty, $module_name)
             $arrTmp[4] = $llamada['dst'];
             $arrTmp[5] = "<label title='".$llamada['duration']." seconds' style='color:green'><u>".SecToHHMMSS( $llamada['duration'] )."</u></label>";
             $arrTmp[6] = $llamada['type'];
-            $recordingLink = "<a href='#' onClick=\"javascript:popUp('includes/popup.php?action=display_record&record_file=" . base64_encode($pathRecordFile) ."',350,100); return false;\">{$arrLang['Listen']}</a>&nbsp;";
-            $recordingLink .= "<a href='includes/audio.php?recording=".base64_encode($pathRecordFile)."'>{$arrLang['Download']}</a>";
+            $recordingLink = "<a href='#' onClick=\"javascript:popUp('libs/popup.php?action=display_record&record_file=" . base64_encode($pathRecordFile) ."',350,100); return false;\">{$arrLang['Listen']}</a>&nbsp;";
+            $recordingLink .= "<a href='libs/audio.php?recording=".base64_encode($pathRecordFile)."'>{$arrLang['Download']}</a>";
             $arrTmp[7] = $recordingLink;
             $arrData[] = $arrTmp;
         }
