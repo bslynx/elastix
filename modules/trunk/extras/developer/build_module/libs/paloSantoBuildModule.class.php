@@ -83,9 +83,8 @@ class paloSantoBuildModule {
         $result = $this->_DB->genQuery($query);
         if($result)
         {
-            $query = "SELECT last_Insert_rowid();";
-            $result = $this->_DB->getFirstRowQuery($query);
-            return $result[0];
+            $result = $this->_DB->getLastInsertId();
+            return $result;
         }
         else{
             $this->errMsg = $this->_DB->errMsg;
