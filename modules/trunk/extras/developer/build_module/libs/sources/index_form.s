@@ -38,11 +38,9 @@ function _moduleContent(&$smarty, $module_name)
     $content = "";
 
     switch($accion){
-        /*
         case "save":
             $content = save{NAME_CLASS}($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
             break;
-        */
         default:
             $content = form{NAME_CLASS}($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
             break;
@@ -61,9 +59,33 @@ function form{NAME_CLASS}($smarty, $module_name, $local_templates_dir, &$pDB, $a
     $smarty->assign("IMG", "images/list.png");
 
     $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",$arrLang["{NEW_MODULE_NAME}"], $_POST);
-    $contenidoModulo = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
+    $content = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
 
-    return $contenidoModulo;
+    return $content;
+}
+
+function save{NAME_CLASS}($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
+{
+    $p{NAME_CLASS} = new paloSanto{NAME_CLASS}($pDB);
+    $arrForm{NAME_CLASS} = createFieldForm($arrLang);
+    $oForm = new paloForm($smarty,$arrForm{NAME_CLASS});
+
+    if(!$oForm->validateForm($_POST)){
+        // Validation basic, not empty and VALIDATION_TYPE 
+        $smarty->assign("mb_title", $arrLang["Validation Error"]);
+        $arrErrores = $oForm->arrErroresValidacion;
+        $strErrorMsg = "<b>{$arrLang['The following fields contain errors']}:</b><br/>";
+        if(is_array($arrErrores) && count($arrErrores) > 0){
+            foreach($arrErrores as $k=>$v)
+                $strErrorMsg .= "$k, ";
+        }
+        $smarty->assign("mb_message", $strErrorMsg);
+        $content = form{NAME_CLASS}($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+    }
+    else{
+        //NO ERROR, HERE IMPLEMENTATION OF SAVE
+    }
+    return $content;
 }
 
 function createFieldForm($arrLang)

@@ -52,7 +52,7 @@ function report{NAME_CLASS}($smarty, $module_name, $local_templates_dir, &$pDB, 
     $filter_value = getParameter("filter_value");
     $action = getParameter("nav");
     $start  = getParameter("start");
-    
+
     //begin grid parameters
     $oGrid  = new paloSantoGrid($smarty);
     $total{NAME_CLASS} = $p{NAME_CLASS}->ObtainNum{NAME_CLASS}($filter_field, $filter_value);
@@ -98,10 +98,10 @@ function report{NAME_CLASS}($smarty, $module_name, $local_templates_dir, &$pDB, 
     //end section filter
 
     $oGrid->showFilter(trim($htmlFilter));
-    $contenidoModulo = "<form  method='POST' style='margin-bottom:0;' action=$url>".$oGrid->fetchGrid($arrGrid, $arrData,$arrLang)."</form>";
+    $content = "<form  method='POST' style='margin-bottom:0;' action=$url>".$oGrid->fetchGrid($arrGrid, $arrData,$arrLang)."</form>";
     //end grid parameters
 
-    return $contenidoModulo;
+    return $content;
 }
 
 
