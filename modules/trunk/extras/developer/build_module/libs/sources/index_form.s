@@ -84,6 +84,7 @@ function save{NAME_CLASS}($smarty, $module_name, $local_templates_dir, &$pDB, $a
     }
     else{
         //NO ERROR, HERE IMPLEMENTATION OF SAVE
+        $content = "Code to save yet undefined.";
     }
     return $content;
 }
