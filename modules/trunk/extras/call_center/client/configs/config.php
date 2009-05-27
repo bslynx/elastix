@@ -8,9 +8,4 @@ $arrConfig['defaultMenu'] = 'config';
 $arrConfig['language'] = 'en';
 $arrConfig['cadena_dsn'] = "mysql://asterisk:asterisk@localhost/call_center";
 
-$arrConfig['dir_backup'] = "backup";
-
-
-
-
 ?>

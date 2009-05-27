@@ -32,7 +32,6 @@ $config['basePath'] = '/var/www/html';
 $config['theme'] = 'default'; //theme personal para los modulos esencialmente
 $config['defaultMenu'] = 'config';
 $config['language'] = 'en';
-$config['dir_backup'] = "backup";
 $config['module_name'] = 'dont_call_list';
 $config['templates_dir'] = 'themes';
 $config['cadena_dsn'] = "mysql://asterisk:asterisk@localhost/call_center";
