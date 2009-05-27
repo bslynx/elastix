@@ -40,5 +40,4 @@ $arrConf['mainTheme'] = load_theme($arrConf['basePath']."/"); //theme para la pa
 $arrConf['elastix_version'] = load_version_elastix($arrConf['basePath']."/"); //la version y le release  del sistema elastix
 $arrConf['defaultMenu'] = 'config';
 $arrConf['language'] = 'en';
-$arrConf['dir_backup'] = "backup";
 $arrConf['cadena_dsn'] = "mysql://asterisk:asterisk@localhost/call_center";
