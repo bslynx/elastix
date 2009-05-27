@@ -60,6 +60,7 @@
     function obtener_mail_destiny($modemdev)
 	{
 		global $db_object;
+                $id = "";
                 $dev_id = str_replace("ttyIAX","",$modemdev);
 		$sql= "select email from fax where dev_id=$dev_id";
 		$recordset = $db_object->query($sql);
@@ -161,41 +162,6 @@
             faxes_log ("enviar_mail_adjunto> Error al enviar el mail ".$titulo);
     }
 
-	// -- convert tiff to pdf and check for corruption
-       function tiff2pdf ($tiff_file, $pdf)
-       {
-		global $CONVERT, $TIFFPS, $GSR;
-
-		// start timing how long it takes to convert faxes
-		$time_start = microtime(true);
-
-		chmod ($tiff_file, 0666);
-		
-		// run tiff file through convert in order to remove any weird stuff
-		//print "Convert is rotating file $tiff_file to $tiff_file.tif\n";
-		system ("$CONVERT -rotate 0 $tiff_file $tiff_file.tif");
-		//print "Renaming $tiff_file.tif to $tiff_file\n";
-		rename ("$tiff_file.tif", $tiff_file);
-                faxes_log ("tiff2pdf> rename $tiff_file.tif to $tiff_file");
-
-		// check for corruption
-		if (!faxinfo ($tiff_file, $sender, $pages, $date, $format)) {
-			echo "tiff2pdf:  Found corrupted fax\n";
-			faxes_log ("tiff2pdf> failed: $tiff_file corrupted");
-			exit;
-		}
-		
-		system ("$TIFFPS $tiff_file | $GSR -sOutputFile=$pdf - -c quit 2>/dev/null");
-
-		$time_end = microtime(true);
-		chmod ($pdf, 0666);
-		
-		if (!is_file ($pdf)) { faxes_log ("tiff2pdf> failed to create $pdf"); }
-		
-		$time = $time_end - $time_start;
-		return $time;
-	}
-
       function createFolder($number, $commID, $type)
       {
          $arrDate = getdate();
@@ -220,25 +186,92 @@
            }else
              return "Error MKDIR";
          }else
-           return "Error CMODD";
+           return "Error CHMOD";
       }
-
-     function ps2pdf($fileps, $pathDB)
+     //convierte de  ps a ps2  y de ps2 a pdf
+     function ps2pdf($fileps, $pathDB, $i)
      {
         global $faxes_path;
+        $list_pdf = "";
         $path = "/var/spool/hylafax/docq";
-        $tmp_file=basename($fileps,".ps");
+        $tmp_file = basename($fileps, ".ps");
         exec("eps2eps $path/$fileps $path/$tmp_file.ps2",$arrConsole,$flagStatus);
-        exec("ps2pdfwr $path/$tmp_file.ps2 $faxes_path/sent/$pathDB/fax.pdf",$arrConsole,$flagStatus2);
-        chmod("$faxes_path/sent/$pathDB/fax.pdf",0666);
-        faxes_log("ps2pdfwr > Tranformando $path/$tmp_file.ps2 a fax.pdf en la ruta $faxes_path/sent/$pathDB");
-        return  $tmp_file;
+        faxes_log( "eps2eps > Transformando de .ps a .ps2 : $path/$fileps $path/$tmp_file.ps2");        
+        exec("ps2pdfwr $path/$tmp_file.ps2 $faxes_path/sent/$pathDB/fax$i.pdf",$arrConsole,$flagStatus2);
+        faxes_log("ps2pdfwr > Transformando de .ps2 a .pdf : $path/$tmp_file.ps2 $faxes_path/sent/$pathDB/fax$i.pdf");
+        chmod("$faxes_path/sent/$pathDB/fax$i.pdf",0666);
+        faxes_log("chmod > $faxes_path/sent/$pathDB/fax$i.pdf , 0666");
+        $list_pdf .= "$faxes_path/sent/$pathDB/fax$i.pdf"." ";
+        faxes_log ("list_pdf > Lista de archivo(s) .pdf de origen (.ps) que van a ser combinados: $list_pdf");
+        if(deletePS2FileFromDocq($tmp_file))
+            faxes_log("deletePS2FileFromDocq > Eliminando archivos temporales .ps2 desde docq/");
+        return $list_pdf;
     }
-
+    //convierte de tif a pdf
+    function tiff2pdf($tiff_file, $pathDB, $i)
+    {
+        global $faxes_path;
+        $list_pdf = "";
+        $path = "/var/spool/hylafax/docq";
+        $tmp_file=basename($tiff_file,".tif");        
+        //tiff2pdf -o docq/fax3.pdf docq/doc29.tif        
+        exec("tiff2pdf -o $faxes_path/sent/$pathDB/fax$i.pdf $path/$tmp_file.tif",$arrConsole,$flagStatus2);
+        faxes_log("tiff2pdf -o > Tranformando a fax$i.pdf desde $path/$tmp_file.tif  en la ruta $faxes_path/sent/$pathDB");        
+        chmod("$faxes_path/sent/$pathDB/fax$i.pdf",0666);
+        faxes_log("chmod > $faxes_path/sent/$pathDB/fax$i.pdf,0666");
+        $list_pdf .= "$faxes_path/sent/$pathDB/fax$i.pdf"." ";
+        faxes_log ("list_pdf > Lista de archivo(s) .pdf de origen (.tif) que van a ser combinados: $list_pdf");        
+        return  $list_pdf;
+    }
+    //elimana archivos tmp .ps2
     function deletePS2FileFromDocq($ps2file)
     {
 	$path = "/var/spool/hylafax/docq";
-	$file = "$path/$ps2file.ps2";
-	return unlink($file);
+        $file = "$path/$ps2file.ps2";
+	if(unlink($file))
+              return true;
+    }
+   //copia archivos pdf desde docq/ hacia faxes/2009/xxx/xxx/xxx/9999999/
+   function pdf2pdf($pdf_file, $pathDB, $i)//puede cambiar de nombre ya que esta funcion solo copia los pdf adjuntos en la ruta correcta
+   {   
+        global $faxes_path;
+        $list_pdf = "";
+        $path = "/var/spool/hylafax/docq";        
+        copy("$path/$pdf_file", "$faxes_path/sent/$pathDB/fax$i.pdf");
+        faxes_log("copiando $path/$pdf_file");
+        chmod("$faxes_path/sent/$pathDB/fax$i.pdf",0666);
+        $list_pdf .= "$faxes_path/sent/$pathDB/fax$i.pdf"." ";
+        faxes_log ("list_pdf > Lista de archivo(s) .pdf de origen (.pdf) que van a ser combinados: $list_pdf");
+        exec("rm -rf $path/$pdf_file");
+        faxes_log("rm -rf > Una vez copiado se remueven los archivos pdf de la ruta $path");
+        return  $list_pdf;   
+   }
+    //combina los archivos en un solo pdf llamado fax.pdf
+    function finalPdf($files_attach, $path)
+    {
+        global $GSCMD, $GS, $faxes_path;
+        // create the final PDF
+	if (isset($files_attach)) {
+		$files_attach = trim($files_attach);
+		$cnt = split(" ", $files_attach);
+		
+		if (count($cnt) > 1) {		// if multiple PDFs, combine them
+			faxes_log("convert final > convirtiendo....");
+			$cmd = sprintf($GSCMD, "$faxes_path/sent/$path/fax.pdf", $files_attach);
+                        faxes_log("command > $cmd");
+		        system($cmd, $retval);
+                        exec("rm -rf $faxes_path/sent/$path/fax[0-9]*.pdf");
+                        faxes_log("rm -rf > Eliminando archivos tmp fax[0-9]*.pdf");
+		        return 0;
+			
+		}else {			
+			copy($files_attach, "$faxes_path/sent/$path/fax.pdf");
+                        faxes_log("copy >  en el caso que sea un solo archivo .pdf el adjunto");
+                        exec("rm -rf $files_attach");
+                        faxes_log("rm -rf > Eliminando archivo:  $files_attach");
+		}
+	}
+        return 1;
+
     }
 ?>
