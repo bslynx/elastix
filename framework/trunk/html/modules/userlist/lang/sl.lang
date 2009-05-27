@@ -28,15 +28,23 @@
   $Id: sl.lang,v 1.6 2007/09/05 00:36:42 gcarrillo Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Create New User"=>"ustvarite nov uporabniški račun",
-"Login"=>"Vpis",
-"The admin user cannot be deleted because is the default Elastix administrator. You can delete any other user."=>"Administrator ne more biti izbrisan, ker je to prevzeti Elastix-ov administrator. Izbrišete lahko katerega koli drugega uporabnika.",
-"New User"=>"Nov uporabnik",
-"The passwords are empty or don't match"=>"Gesla se ne ujemata ali pa je geslo prazno.",
-"Edit User"=>"Uredi uporabnika",
-"Name"=>"Ime",
-"Retype password"=>"Ponovi geslo",
-"Real Name"=>"Pravo ime",
+"Create New User" => "ustvarite nov uporabniški račun",
+"Name" => "Ime",
+"Login" => "Vpis",
+"Password" => "geslo",
+"Retype password" => "Ponovi geslo",
+"New User" => "Nov uporabnik",
+"Edit User" => "Uredi uporabnika",
+"The passwords are empty or don't match" => "Gesla se ne ujemata ali pa je geslo prazno.",
+"The admin user cannot be deleted because is the default Elastix administrator. You can delete any other user." => "Administrator ne more biti izbrisan, ker je to prevzeti Elastix-ov administrator. Izbrišete lahko katerega koli drugega uporabnika.",
+"User List" => "Seznam uporabnikov",
+"Real Name" => "Pravo ime",
 "Extension" => "Extension",
+"(Ex. John Doe)" => "(Ex. John Doe)",
+"Webmail User" => "Webmail User",
+"Webmail Domain" => "Webmail Domain",
+"Webmail Password" => "Webmail Password",
+"Retype Webmail password" => "Retype Webmail password",
+"Mail Profile" => "Mail Profile",
 );
 ?>

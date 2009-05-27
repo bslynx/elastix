@@ -32,16 +32,23 @@
   $Id: da.lang,v 1.6 2007/09/05 00:36:42 gcarrillo Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Name"=>"Navn",
-"Retype password"=>"Genindtast kodeord",
-"Login"=>"Log på",
-"Password"=>"Adgangskode",
-"Real Name"=>"Fulde navn",
+"Create New User" => "Opret ny bruger",
+"Name" => "Navn",
+"Login" => "Log på",
+"Password" => "Adgangskode",
+"Retype password" => "Genindtast kodeord",
+"New User" => "Ny bruger",
+"Edit User" => "Ret bruger",
+"The passwords are empty or don't match" => "Kodeordene er ikke ens.",
+"The admin user cannot be deleted because is the default Elastix administrator. You can delete any other user." => "Bruger Admin kan ikke slettes. Denne bruger anvendes som standard administrator af ELASTIX. De kan slette alle andre brugere",
+"User List" => "Brugerliste",
+"Real Name" => "Fulde navn",
 "Extension" => "Extension",
-"Create New User"=>"Opret ny bruger",
-"New User"=>"Ny bruger",
-"Edit User"=>"Ret bruger",
-"The admin user cannot be deleted because is the default Elastix administrator. You can delete any other user."=>"Bruger Admin kan ikke slettes. Denne bruger anvendes som standard administrator af ELASTIX. De kan slette alle andre brugere",
-"The passwords are empty or don't match"=>"Kodeordene er ikke ens.",
+"(Ex. John Doe)" => "(Ex. John Doe)",
+"Webmail User" => "Webmail User",
+"Webmail Domain" => "Webmail Domain",
+"Webmail Password" => "Webmail Password",
+"Retype Webmail password" => "Retype Webmail password",
+"Mail Profile" => "Mail Profile",
 );
 ?>

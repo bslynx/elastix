@@ -26,21 +26,28 @@
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   |                                                                      |
   | Translate by: Haamed Kouhfallah                                      |
-  | Email: haamed@cytco.net                                              |
-  |                                                                      |
+  | Email: haamed@cytco.net                                              |                                                                    |
   +----------------------------------------------------------------------+
-  $Id: fa.lang,v 1.2 2008/04/21 10:11:44 bmacias@palosanto.com Exp $ */
+   $Id: fa.lang,v 1.2 2008/04/21 10:11:44 bmacias@palosanto.com Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
+"Create New User" => "ایجاد کاربر جدید",
 "Name" => "نام",
 "Login" => "ورود",
+"Password" => "رمز عبور",
 "Retype password" => "تایپ دوباره رمز",
 "New User" => "کاربر جدید",
 "Edit User" => "ویرایش  کاربر",
+"The passwords are empty or don't match" => "رمز عبور وارد شده یا خالی است و یا با تاییدیه یکسان نیست",
 "The admin user cannot be deleted because is the default Elastix administrator. You can delete any other user." => "این کاربر قابل حذف نیست زیرا کاربر پیش فرض سیستم می باشد، هر کاربر دیگری قابل حذف می باشد",
-"The passwords are empty or don't match" => "رمز عبور یا خالی وارد شده و یا درست نیست",
+"User List" => "لیست کاربران",
 "Real Name" => "نام حقیقی",
 "Extension" => "داخلی",
-"Create New User" => "ایجاد کاربر جدید",
+"(Ex. John Doe)" => "(Ex. John Doe)",
+"Webmail User" => "کاربر ایمیل تحت وب",
+"Webmail Domain" => "دامنه ایمیل تحت وب",
+"Webmail Password" => "رمز ایمیل ",
+"Retype Webmail password" => "رمز ایمیل تحت وب را دوباره وارد کنید",
+"Mail Profile" => "پروفایل ایمیل",
 );
 ?>

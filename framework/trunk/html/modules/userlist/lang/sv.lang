@@ -28,15 +28,23 @@
   $Id: sv.lang,v 0.1 2008/03/25 00:36:42 IFIT DATA - http://www.ifit.se Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Create New User"=>"Skapa ny anv&auml;ndare",
-"Login"=>"Loggain",
-"Real Name"=>"Ditt Fullst&auml;ndiga Namn",
-"The admin user cannot be deleted because is the default Elastix administrator. You can delete any other user."=>"Anv&auml;ndaren admin kan inte tas bort p&aring; grund av att det &auml;r Elastix default administrat&ouml;r. Men du kan ta bort alla andra anv&auml;ndare.",
-"New User"=>"Ny anv&auml;ndare",
-"The passwords are empty or don't match"=>"L&ouml;senorden &auml;r antingen toma eller s&aring; matchar dom inte",
-"Edit User"=>"Redigera anv&auml;ndare",
-"Name"=>"Namn",
-"Retype password"=>"Upprepa l&ouml;senord",
-"Extension"=>"Anknytning",
+"Create New User" => "Skapa ny anv&auml;ndare",
+"Name" => "Namn",
+"Login" => "Loggain",
+"Password" => "L&ouml;senord",
+"Retype password" => "Upprepa l&ouml;senord",
+"New User" => "Ny anv&auml;ndare",
+"Edit User" => "Redigera anv&auml;ndare",
+"The passwords are empty or don't match" => "L&ouml;senorden &auml;r antingen toma eller s&aring; matchar dom inte",
+"The admin user cannot be deleted because is the default Elastix administrator. You can delete any other user." => "Anv&auml;ndaren admin kan inte tas bort p&aring; grund av att det &auml;r Elastix default administrat&ouml;r. Men du kan ta bort alla andra anv&auml;ndare.",
+"User List" => "Anv&auml;ndar Lista",
+"Real Name" => "Ditt Fullst&auml;ndiga Namn",
+"Extension" => "Extension",
+"(Ex. John Doe)" => "(Ex. John Doe)",
+"Webmail User" => "Webmail User",
+"Webmail Domain" => "Webmail Domain",
+"Webmail Password" => "Webmail Password",
+"Retype Webmail password" => "Retype Webmail password",
+"Mail Profile" => "Mail Profile",
 );
 ?>

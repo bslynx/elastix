@@ -28,15 +28,23 @@
   $Id: es.lang,v 1.7 2007/09/05 00:36:42 gcarrillo Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Name"=>"Nombre",
-"Login"=>"Login",
-"Retype password"=>"Confirmar Contrase&ntilde;a",
-"New User"=>"Nuevo Usuario",
-"Edit User"=>"Editar Usuario",
-"The admin user cannot be deleted because is the default Elastix administrator. You can delete any other user."=>"El usuario admin no puede ser eliminado porque es el administrador de Elastix predeterminado. Puede borrar cualquier otro usuario.",
-"The passwords are empty or don't match"=>"Las contrase&ntilde;as est&aacute;n vac&iacute;as o no concuerdan",
-"Real Name"=>"Nombre",
-"Extension"=>"Extensi&oacute;n",
-"Create New User"=>"Crear Nuevo Usuario",
+"Create New User" => "Crear Nuevo Usuario",
+"Name" => "Nombre",
+"Login" => "Login",
+"Password" => "Contrase&ntilde;a",
+"Retype password" => "Confirmar Contrase&ntilde;a",
+"New User" => "Nuevo Usuario",
+"Edit User" => "Editar Usuario",
+"The passwords are empty or don't match" => "Las contrase&ntilde;as est&aacute;n vac&iacute;as o no concuerdan",
+"The admin user cannot be deleted because is the default Elastix administrator. You can delete any other user." => "El usuario admin no puede ser eliminado porque es el administrador de Elastix predeterminado. Puede borrar cualquier otro usuario.",
+"User List" => "Lista de Usuarios",
+"Real Name" => "Nombre",
+"Extension" => "Extensión",
+"(Ex. John Doe)" => "(Ex. John Doe)",
+"Webmail User" => "Usuario de Webmail",
+"Webmail Domain" => "Dominio de Webmail",
+"Webmail Password" => "Contraseña de Webmail",
+"Retype Webmail password" => "Reingrese contraseña de Webmail",
+"Mail Profile" => "Perfil de Mail",
 );
 ?>

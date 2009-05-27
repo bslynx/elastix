@@ -33,14 +33,22 @@
 global $arrLangModule;
 $arrLangModule=array(
 "Create New User" => "Crea un nuovo Utente",
-"Login" => "Connessione",
-"Real Name" => "Nome Reale",
-"The admin user cannot be deleted because is the default Elastix administrator. You can delete any other user." => "L\'utente Admin non può essere cancellato perché è l\'amministratore di default di Elastix. Puoi cancellare qualsiasi altro utente.",
-"New User" => "Nuovo Utente",
-"The passwords are empty or don't match" => "La password è nulla o non corrisponde",
-"Edit User" => "Modifica Utente",
 "Name" => "Nome",
+"Login" => "Connessione",
+"Password" => "Password",
 "Retype password" => "Ripeti la password",
+"New User" => "Nuovo Utente",
+"Edit User" => "Modifica Utente",
+"The passwords are empty or don't match" => "La password è nulla o non corrisponde",
+"The admin user cannot be deleted because is the default Elastix administrator. You can delete any other user." => "L\'utente Admin non può essere cancellato perché è l\'amministratore di default di Elastix. Puoi cancellare qualsiasi altro utente.",
+"User List" => "Lista Utenti",
+"Real Name" => "Nome Reale",
 "Extension" => "Extension",
+"(Ex. John Doe)" => "(Ex. John Doe)",
+"Webmail User" => "Webmail User",
+"Webmail Domain" => "Webmail Domain",
+"Webmail Password" => "Webmail Password",
+"Retype Webmail password" => "Retype Webmail password",
+"Mail Profile" => "Mail Profile",
 );
 ?>

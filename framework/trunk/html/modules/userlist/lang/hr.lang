@@ -32,15 +32,23 @@
 */
 global $arrLangModule;
 $arrLangModule=array(
-"Create New User"=>"Kreiranje novog korisnika",
-"Name"=>"Ime",
-"Login"=>"Prijava",
-"Retype password"=>"Ponovno unesite zaporku",
-"New User"=>"Novi korisnik",
-"Edit User"=>"Izmjena korisnika",
-"Real Name"=>"Stvarno ime",
-"The admin user cannot be deleted because is the default Elastix administrator. You can delete any other user."=>"admin korisnik nemože biti obrisan jer je to podrazumjevani Elastix administrator. Možete brisati bilo kojeg drugog korisnika",
-"The passwords are empty or don't match"=>"Zaporka nije unesena ili se ne podudara",
-"Extension" => "Lokal",
+"Create New User" => "Kreiranje novog korisnika",
+"Name" => "Ime",
+"Login" => "Prijava",
+"Password" => "Zaporka",
+"Retype password" => "Ponovno unesite zaporku",
+"New User" => "Novi korisnik",
+"Edit User" => "Izmjena korisnika",
+"The passwords are empty or don't match" => "Zaporka nije unesena ili se ne podudara",
+"The admin user cannot be deleted because is the default Elastix administrator. You can delete any other user." => "admin korisnik nemože biti obrisan jer je to podrazumjevani Elastix administrator. Možete brisati bilo kojeg drugog korisnika",
+"User List" => "Lista korisnika",
+"Real Name" => "Stvarno ime",
+"Extension" => "Extension",
+"(Ex. John Doe)" => "(Ex. John Doe)",
+"Webmail User" => "Webmail User",
+"Webmail Domain" => "Webmail Domain",
+"Webmail Password" => "Webmail Password",
+"Retype Webmail password" => "Retype Webmail password",
+"Mail Profile" => "Mail Profile",
 );
 ?>
