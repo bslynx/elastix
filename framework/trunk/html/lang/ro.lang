@@ -131,6 +131,20 @@ $arrLang=array(
 "Change Theme" => "Schimba Tema",
 /*end SubModule Themes*/
 
+/*Module IM*/
+"IM" => "IM",
+"OpenFire" => "OpenFire",
+"The service Openfire No running" => "Serviciul Openfire nu este activ. Pentru activare va rog ",
+
+/*vTigerCRM*/
+"vTigerCRM" => "vTigerCRM",
+"The vTiger installation is almost done. To complete it please" => "Instalarea aplicatiei vTiger este aproape gata. Pentru completare va rog ",
+"click here" => "click aici",
+
+/*Sugarcrm*/
+"SugarCRM" => "SugarCRM",
+"The SugarCRM installation is almost done. To complete it please" => "Instalarea SugarCRM este aproape gata. Pentru a completa procesul va rugam",
+
 /* Preferences*/
 "Preferences" => "Preferinte",
 

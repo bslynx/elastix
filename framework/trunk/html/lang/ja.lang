@@ -124,6 +124,20 @@ $arrLang=array(
 "Change Theme" => "テーマの変更",
 //Fin SubModule Themes
 
+/*Module IM*/
+"IM" => "インスタントメッセージ",
+"OpenFire" => "OpenFire",
+"The service Openfire No running" => "現在、Openfireは動作していません。",
+
+/*vTigerCRM*/
+"vTigerCRM" => "vTigerCRM",
+"The vTiger installation is almost done. To complete it please" => "vTiger のインストールが概ね終了しました。完了するには、",
+"click here" => "クリックしてください",
+
+/*Sugarcrm*/
+"SugarCRM" => "SugarCRM",
+"The SugarCRM installation is almost done. To complete it please" => "SugarCRMのインストールが概ね終了しました。完了するには、",
+
 /* Preferences*/
 "Preferences" => "プリファレンス",
 

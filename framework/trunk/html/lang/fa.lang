@@ -132,6 +132,20 @@ $arrLang=array(
 "Change Theme" => "تغییر پوسته",
 /*end SubModule Themes*/
 
+/*Module IM*/
+"IM" => "پیام فوری",
+"OpenFire" => "سرور پیام فوری",
+"The service Openfire No running" => "در حال حاضر سرویس Openfire فعال نیست در صورت تمایل برای فعال سازی لطفا",
+
+/*vTigerCRM*/
+"vTigerCRM" => "برنامه ارتباط با مشتری",
+"The vTiger installation is almost done. To complete it please" => "نصب برنامه ارتباط با مشتری در حال اتمام است لطفا برای اتمام",
+"click here" => "اینجا را کلیک کنید",
+
+/*Sugarcrm*/
+"SugarCRM" => "ارتباط با مشتری شوگر",
+"The SugarCRM installation is almost done. To complete it please" => "نصب نرم افزار ارتباط با مشتری به اتمام رسید، برای تکمیل آن لطفا",
+
 /* Preferences*/
 "Preferences" => "تنظیمات",
 

@@ -124,6 +124,20 @@ $arrLang=array(
 "Change Theme" => "Byt Tema",
 /*end SubModule Themes*/
 
+/*Module IM*/
+"IM" => "IM",
+"OpenFire" => "OpenFire",
+"The service Openfire No running" => "Openfire tj&auml;nsten aktiv f&ouml;r tillf&auml;llet. Om du vill aktivera det v&auml;nligen ",
+
+/*vTigerCRM*/
+"vTigerCRM" => "vTigerCRM",
+"The vTiger installation is almost done. To complete it please" => "vTiger installationen &auml;r snart klar. F&ouml;r att komplettera ",
+"click here" => "Klicka h&auml;r",
+
+/*Sugarcrm*/
+"SugarCRM" => "SugarCRM",
+"The SugarCRM installation is almost done. To complete it please" => "The SugarCRM installation is almost done. To complete it please",
+
 /* Preferences*/
 "Preferences" => "Preferenser",
 

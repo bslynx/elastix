@@ -134,6 +134,20 @@ $arrLang=array(
 "Change Theme" => "Téma csere",
 /*end SubModule Themes*/
 
+/*Module IM*/
+"IM" => "IM",
+"OpenFire" => "OpenFire",
+"The service Openfire No running" => "Az OpenFire szervíz nem fut",
+
+/*vTigerCRM*/
+"vTigerCRM" => "vTigerCRM",
+"The vTiger installation is almost done. To complete it please" => "A vTiger installálás majdnem rendben. A befejezéshez kérem",
+"click here" => "Kattincs ide",
+
+/*Sugarcrm*/
+"SugarCRM" => "SugarCRM",
+"The SugarCRM installation is almost done. To complete it please" => "The SugarCRM installation is almost done. To complete it please",
+
 /* Preferences*/
 "Preferences" => "Kedvezmények",
 
