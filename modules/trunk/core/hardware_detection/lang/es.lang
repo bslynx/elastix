@@ -49,6 +49,7 @@ $arrLangModule=array(
 "Detect Sangoma hardware" => "Detección de hardware sangoma",
 "Detect ISDN hardware" => "Detección de hardware ISDN",
 "(Not in Use)" => "Sin uso",
+"Misdn Card" => "Tarjeta Misdn",
 "Port" => "Puerto",
 );
 ?>

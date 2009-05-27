@@ -48,6 +48,8 @@ $arrLangModule=array(
 "Unable to replace file chan_dahdi.conf" => "Не е възможно да се замени файла chan_dahdi.conf",
 "Detect Sangoma hardware" => "Detect Sangoma hardware",
 "Detect ISDN hardware" => "Detect ISDN hardware",
+"Misdn Card" => "Misdn Card",
 "(Not in Use)" => "Not in Use",
+"Port" => "Порт",
 );
 ?>

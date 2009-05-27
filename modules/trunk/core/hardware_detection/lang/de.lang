@@ -50,5 +50,6 @@ $arrLangModule=array(
 "Detect ISDN hardware" => "Detect ISDN hardware",
 "Misdn Card" => "Misdn Card",
 "(Not in Use)" => "Not in Use",
+"Port" => "Port",
 );
 ?>
