@@ -32,15 +32,23 @@
   $Id: el.lang,v 1.6 2008/02/11 11:07:22 bmacias@palosanto.com Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
+"Create New User" => "Δημιουργία Νέου Χρήστη",
 "Name" => "Όνομα",
 "Login" => "Σύνδεση",
+"Password" => "Κωδικός",
 "Retype password" => "Ξαναπληκτρολογήστε τον κωδικό πρόσβασης",
 "New User" => "Νέος Χρήστης",
 "Edit User" => "Ρύθμιση Χρήστη",
 "The passwords are empty or don't match" => "Τα πεδία των κωδικών πρόσβασης είναι κενά ή ανόμοια",
 "The admin user cannot be deleted because is the default Elastix administrator. You can delete any other user." => "Δεν είναι δυνατή η διαγραφή του χρήστη admin διότι είναι ο εξορισμού διαχειριστής του Elastix. Μπορείτε να διαγράψετε οποιονδήποτε άλλο χρήστη.",
+"User List" => "Λίστα Χρηστών",
 "Real Name" => "Πραγματικό Όνομα",
 "Extension" => "Extension",
-"Create New User" => "Δημιουργία Νέου Χρήστη",
+"(Ex. John Doe)" => "(Ex. John Doe)",
+"Webmail User" => "Webmail User",
+"Webmail Domain" => "Webmail Domain",
+"Webmail Password" => "Webmail Password",
+"Retype Webmail password" => "Retype Webmail password",
+"Mail Profile" => "Mail Profile",
 );
 ?>
