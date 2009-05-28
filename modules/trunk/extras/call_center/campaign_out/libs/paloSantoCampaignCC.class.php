@@ -169,10 +169,10 @@ class paloSantoCampaignCC
         $sHoraFinal = trim($sHoraFinal);
         $script = trim($script);
 
+        if ($sTrunk == '') $sTrunk = NULL;
+
         if ($sNombre == '') {
             $this->errMsg = $arrLan["Name Campaign can't be empty"];//'Nombre de campaña no puede estar vacío';
-        } elseif ($sTrunk == '') {
-            $this->errMsg = $arrLan["Trunk can't be empty"];//'Troncal no puede estar vacío';
         } elseif ($sContext == '') {
             $this->errMsg = $arrLan["Context can't be empty"];//'Contexto no puede estar vacío';
         } elseif (!ereg('^[[:digit:]]+$', $iRetries)) {
@@ -210,7 +210,7 @@ class paloSantoCampaignCC
                             "name"          =>  paloDB::DBCAMPO($sNombre),
                             "max_canales"   =>  paloDB::DBCAMPO($iMaxCanales),
                             "retries"       =>  paloDB::DBCAMPO($iRetries),
-                            "trunk"       =>  paloDB::DBCAMPO($sTrunk),
+                            "trunk"       =>  (is_null($sTrunk) ? NULL : paloDB::DBCAMPO($sTrunk)),
                             "context"     =>  paloDB::DBCAMPO($sContext),
                             "queue"       =>  paloDB::DBCAMPO($sQueue),
                             "datetime_init" =>  paloDB::DBCAMPO($sFechaInicial),
@@ -627,10 +627,10 @@ class paloSantoCampaignCC
         $sHoraFinal = trim($sHoraFinal);
         $script = trim($script);
 
+        if ($sTrunk == '') $sTrunk = NULL;
+
         if ($sNombre == '') {
             $this->errMsg = $arrLan["Name Campaign can't be empty"];//'Nombre de campaña no puede estar vacío';
-        } elseif ($sTrunk == '') {
-            $this->errMsg = $arrLan["Trunk can't be empty"];//'Troncal no puede estar vacío';
         } elseif ($sContext == '') {
             $this->errMsg = $arrLan["Context can't be empty"];//'Contexto no puede estar vacío';
         } elseif (!ereg('^[[:digit:]]+$', $iRetries)) {
@@ -658,7 +658,7 @@ class paloSantoCampaignCC
                     "name"          =>  paloDB::DBCAMPO($sNombre),
                     "max_canales"   =>  paloDB::DBCAMPO($iMaxCanales),
                     "retries"       =>  paloDB::DBCAMPO($iRetries),
-                    "trunk"         =>  paloDB::DBCAMPO($sTrunk),
+                    "trunk"         =>  (is_null($sTrunk) ? NULL : paloDB::DBCAMPO($sTrunk)),
                     "context"       =>  paloDB::DBCAMPO($sContext),
                     "queue"         =>  paloDB::DBCAMPO($sQueue),
                     "datetime_init" =>  paloDB::DBCAMPO($sFechaInicial),
