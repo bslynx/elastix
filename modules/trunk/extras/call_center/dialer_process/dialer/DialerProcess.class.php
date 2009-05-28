@@ -66,6 +66,8 @@ class DialerProcess extends AbstractProcess
     
     private $_plantillasMarcado;
     
+    private $_tieneCallsAgent = FALSE;  // VERDADERO si tiene campo calls.agent para llamadas agendadas
+    
     var $DEBUG = FALSE;
     var $REPORTAR_TODO = FALSE;
     var $_iUltimoDebug = NULL;
@@ -98,6 +100,21 @@ class DialerProcess extends AbstractProcess
         	// Recuperarse de cualquier fin anormal anterior
             $this->_dbConn->query('DELETE FROM current_calls WHERE 1');
             $this->_dbConn->query('DELETE FROM current_call_entry WHERE 1');
+
+            // Verificar si la DB puede registrar agente para llamada agendada
+            $recordset =& $this->_dbConn->query('DESCRIBE calls');
+            if (DB::isError($recordset)) {
+                $oLog->output("ERR: no se puede consultar soporte de agente para llamada agendada - ".$recordset->getMessage());
+            } else {
+                while ($tuplaCampo = $recordset->fetchRow(DB_FETCHMODE_OBJECT)) {
+                    if ($tuplaCampo->Field == 'id_campaign') $this->_tieneCallsAgent = TRUE;
+                }
+                $this->oMainLog->output('INFO: sistema actual '.
+                    ($this->_tieneCallsAgent ? 'sí puede' : 'no puede').
+                    ' registrar agente para campaña agendada.');
+            }
+    
+            
         }
 
         // Iniciar gestor de llamadas entrantes
@@ -534,6 +551,171 @@ class DialerProcess extends AbstractProcess
         return TRUE;
     }
 
+
+/*
+- sea RESERVA segundos en el futuro
+
+en actualización de llamadas
+- listar todos los agentes de troncal, que tienen llamadas agendadas ahora, o hasta RESERVA segundos en el futuro, que no se estén ya procesando
+- quitar agentes que estén esperando respuesta una llamada agendada
+- para cada agente, si no está en pausa, ponerlo en pausa.
+(meta: todos los agentes que tengan llamadas agendadas en RESERVA segundos, y no están esperando ya llamada, se reservan)
+- para cada agente, 
+- - listar sus llamadas agendadas AHORA, que no se estén ya procesando, en orden de número de reintentos y luego cronológico.
+- - si hay alguna llamada, generarla.
+- - si falla generación, y era la única llamada generable AHORA, y no hay ninguna llamada generable en RESERVA, se quita al agente de pausa.
+
+en OnOriginateResponse, si llamada era agendada
+- ejecutar la redirección.
+- si no hay más llamadas generables AHORA, y no hay ninguna llamada generable en RESERVA, se quita al agente de pausa.
+
+en OnLink
+
+
+*/
+
+    /**
+     * Procedimiento para obtener el número de segundos de reserva de una campaña
+     */
+    private function getSegundosReserva($idCampaign)
+    {
+        return 30;	// TODO: volver configurable en DB o por campaña
+    }
+
+    /**
+     * Función para listar todos los agentes que tengan al menos una llamada agendada, ahora, o
+     * en los siguientes RESERVA segundos, donde RESERVA se reporta por getSegundosReserva().
+     *
+     * @return array	Lista de agentes (sin la cadena "Agent/")
+     */
+    private function listarAgentesAgendadosReserva(&$infoCampania)
+    {
+        $listaAgentes = array();
+        $iSegReserva = $this->getSegundosReserva($infoCampania->id);
+        $sFechaSys = date('Y-m-d');
+        $iTimestamp = time();
+        $sHoraInicio = date('H:i:s', $iTimestamp);
+        $sHoraFinal = date('H:i:s', $iTimestamp + $iSegReserva);
+
+        // Listar todos los agentes que tienen alguna llamada agendada dentro del horario
+        $sPeticionAgentesAgendados = <<<PETICION_AGENTES_AGENDADOS
+SELECT DISTINCT agent FROM calls
+WHERE id_campaign = ?
+    AND (status IS NULL OR status NOT IN ("Success", "Placing", "Ringing", "OnQueue", "OnHold"))
+    AND dnc = 0
+    AND date_init <= ? AND date_end >= ? AND time_init <= ? AND time_end >= ?
+    AND retries < ?
+    AND agent IS NOT NULL
+PETICION_AGENTES_AGENDADOS;
+        $recordset =& $this->_dbConn->query($sPeticionAgentesAgendados,
+            array($infoCampania->id,
+                $sFechaSys,
+                $sFechaSys,
+                $sHoraFinal,
+                $sHoraInicio,
+                $infoCampania->retries));
+        if (DB::isError($recordset)) {
+            $this->oMainLog->output("ERR: (campania $infoCampania->id cola $infoCampania->queue)  no se puede leer lista de teléfonos agendados - ".$recordset->getMessage());
+        } else {
+            $listaAgentes = array();
+            while ($tupla = $recordset->fetchRow()) {
+                $regs = NULL;
+                if (eregi('^Agent/([[:digit:]]+)$', $tupla[0], $regs)) {
+                    $listaAgentes[] = $regs[1];
+                }
+            }
+        }
+        return $listaAgentes;
+    }
+
+    /**
+     * Función para contar todas las llamadas agendadas para el agente indicado,
+     * clasificadas en llamadas agendables AHORA, y llamadas que caen en RESERVA.
+     *
+     * @return array Tupla de la forma array(AHORA => x, RESERVA => y)
+     */
+    private function contarLlamadasAgendablesReserva(&$infoCampania, $sAgent)
+    {
+        $cuentaLlamadas = array('AHORA' => 0, 'RESERVA' => 0);
+        $iSegReserva = $this->getSegundosReserva($infoCampania->id);
+        $sFechaSys = date('Y-m-d');
+        $iTimestamp = time();
+        $sHoraInicio = date('H:i:s', $iTimestamp);
+        $sHoraFinal = date('H:i:s', $iTimestamp + $iSegReserva);
+        
+	$sPeticionLlamadasAgente = <<<PETICION_LLAMADAS_AGENTE
+SELECT SUM(*) AS TOTAL, SUM(IF(time_init > ?, 1, 0)) AS RESERVA 
+FROM calls
+WHERE id_campaign = ?
+    AND agent = ?
+    AND (status IS NULL OR status NOT IN ("Success", "Placing", "Ringing", "OnQueue", "OnHold"))
+    AND dnc = 0
+    AND date_init <= ? AND date_end >= ? AND time_init <= ? AND time_end >= ?
+    AND retries < ?
+PETICION_LLAMADAS_AGENTE;
+        $recordset =& $this->_dbConn->query($sPeticionLlamadasAgente,
+            array(
+                $sHoraInicio,
+                $infoCampania->id,
+                "Agent/$sAgente",
+                $sFechaSys,
+                $sFechaSys,
+                $sHoraFinal,
+                $sHoraInicio,
+                $infoCampania->retries));
+        if (DB::isError($recordset)) {
+            $this->oMainLog->output("ERR: (campania $infoCampania->id cola $infoCampania->queue)  no se puede leer lista de teléfonos agendados - ".$recordset->getMessage());
+        } else {
+            $listaAgentes = array();
+            while ($tupla = $recordset->fetchRow()) {
+                $cuentaLlamadas['RESERVA'] = $tupla[1];
+                $cuentaLlamadas['AHORA'] = $tupla[0] - $cuentaLlamadas['RESERVA'];
+            }
+        }
+        return $cuentaLlamadas;
+    }
+
+    /**
+     * Procedimiento para listar la primera llamada agendable para la campaña y el
+     * agente indicados. 
+     */
+    private function listarLlamadasAgendables(&$infoCampania, $sAgent)
+    {
+        $sFechaSys = date('Y-m-d');
+        $sHoraSys = date('H:i:s');
+
+        $sPeticionLlamadasAgente = <<<PETICION_LLAMADAS_AGENTE
+SELECT id_campaign, id, phone, agent  
+FROM calls
+WHERE id_campaign = ?
+    AND agent = ?
+    AND (status IS NULL OR status NOT IN ("Success", "Placing", "Ringing", "OnQueue", "OnHold"))
+    AND dnc = 0
+    AND date_init <= ? AND date_end >= ? AND time_init <= ? AND time_end >= ?
+    AND retries < ?
+ORDER BY retries, date_end, time_end, date_init, time_init
+PETICION_LLAMADAS_AGENTE;
+        $recordset =& $this->_dbConn->query($sPeticionLlamadasAgente,
+            array(
+                $sHoraInicio,
+                $infoCampania->id,
+                "Agent/$sAgente",
+                $sFechaSys,
+                $sFechaSys,
+                $sHoraFinal,
+                $sHoraInicio,
+                $infoCampania->retries));
+        if (DB::isError($recordset)) {
+            $this->oMainLog->output("ERR: (campania $infoCampania->id cola $infoCampania->queue)  no se puede leer lista de teléfonos agendados - ".$recordset->getMessage());
+            return NULL;
+        } else {
+            $tupla = $recordset->fetchRow(DB_FETCHMODE_OBJECT);
+            return $tupla;
+        }
+
+    }
+
+
     /**
      * Procedimiento que actualiza el número de llamadas que están siendo manejadas
      * por los agentes. A partir de MIN_MUESTRAS, se actualizan los valores de 
@@ -571,6 +753,187 @@ class DialerProcess extends AbstractProcess
             // TODO: calcular sobre la marcha en base a respuestas sucesivas
             $oPredictor->setTiempoContestar($infoCampania->queue, $this->_iTiempoContestacion);
         }
+        
+        // Intentar manejar primero las llamadas agendadas a agentes específicos.
+        if ($this->_tieneCallsAgent) {
+            $sFechaSys = date('Y-m-d');
+            $sHoraSys = date('H:i:s');
+
+        	// TODO: el siguiente query asume que si tiene agente asignado, también tiene
+            // horario. Si esta suposición cambia, se debe de cambiar abajo.
+            
+            // Listar todos los agentes que tienen alguna llamada agendada dentro del horario
+            $sPeticionAgentesAgendados = <<<PETICION_AGENTES_AGENDADOS
+SELECT DISTINCT agent FROM calls
+WHERE id_campaign = ?
+    AND (status IS NULL OR status NOT IN ("Success", "Placing", "Ringing", "OnQueue", "OnHold"))
+    AND dnc = 0
+    AND date_init <= ? AND date_end >= ? AND time_init <= ? AND time_end >= ?
+    AND agent IS NOT NULL
+PETICION_AGENTES_AGENDADOS;
+            $recordset =& $this->_dbConn->query($sPeticionAgentesAgendados, 
+                array($infoCampania->id, 
+                    $sFechaSys, 
+                    $sFechaSys, 
+                    $sHoraSys, 
+                    $sHoraSys));
+            if (DB::isError($recordset)) {
+                $this->oMainLog->output("ERR: (campania $infoCampania->id cola $infoCampania->queue) no se puede leer lista de teléfonos agendados - ".$recordset->getMessage());
+            } else {
+                $listaAgentes = array();
+                while ($tupla = $recordset->fetchRow()) {
+                	$regs = NULL;
+                    if (eregi('^Agent/([[:digit:]]+)$', $tupla[0], $regs)) {
+                        $listaAgentes[] = $regs[1];
+                    }
+                }
+
+                if ($this->DEBUG) {
+                	$this->oMainLog->output("DEBUG: los siguientes agentes tienen llamadas agendadas: ".
+                        join($listaAgentes, ' '));
+                }
+
+                // Para cada agente listado, se verifica si está presente, logoneado y ocioso
+                $estadoCola = $oPredictor->leerEstadoCola($infoCampania->queue);
+                $listaAgentesDisponibles = array();
+                if (is_array($estadoCola)) foreach ($listaAgentes as $sAgente) {
+                	if (!isset($estadoCola['members'][$sAgente])) {
+                		if ($this->DEBUG) $this->oMainLog->output("DEBUG: Agent/$sAgente agendado, pero no consta en cola $infoCampania->queue");
+                	} elseif ($estadoCola['members'][$sAgente]['status'] == 'canBeCalled') {
+                        $listaAgentesDisponibles[] = $sAgente;
+                		if ($this->DEBUG) $this->oMainLog->output("DEBUG: Agent/$sAgente agendado, SÍ puede llamarse.");
+                	} else {
+                        if ($this->DEBUG) $this->oMainLog->output("DEBUG: Agent/$sAgente agendado, NO puede llamarse.");
+                	} 
+                }
+            
+                // Para cada agente filtrado, se lista una llamada agendada, la más antigua
+                $listaLlamadas = array();
+                foreach ($listaAgentesDisponibles as $sAgente) {
+                	$sPeticionLlamadas = <<<PETICION_LLAMADAS
+(
+SELECT id_campaign, id, phone, agent FROM calls 
+WHERE id_campaign = ? 
+    AND status IS NULL 
+    AND dnc = 0 
+    AND date_init <= ? AND date_end >= ? AND time_init <= ? AND time_end >= ?
+    AND agent = ?
+ORDER BY date_end, time_end, date_init, time_init
+)
+UNION
+(
+SELECT id_campaign, id, phone, agent FROM calls 
+WHERE id_campaign = ? 
+    AND status NOT IN ("Success", "Placing", "Ringing", "OnQueue", "OnHold")
+    AND retries < ?   
+    AND dnc = 0 
+    AND date_init <= ? AND date_end >= ? AND time_init <= ? AND time_end >= ?
+    AND agent = ?
+ORDER BY date_end, time_end, date_init, time_init
+)
+LIMIT 0,1
+PETICION_LLAMADAS;
+                    $recordset =& $this->_dbConn->query(
+                        $sPeticionLlamadas, 
+                        array($infoCampania->id, 
+                            $sFechaSys, $sFechaSys, $sHoraSys, $sHoraSys,
+                            "Agent/$sAgente",
+                            $infoCampania->id,
+                            $infoCampania->retries,
+                            $sFechaSys, $sFechaSys, $sHoraSys, $sHoraSys,
+                            "Agent/$sAgente"));
+                    if (DB::isError($recordset)) {
+                        $this->oMainLog->output("ERR: (campania $infoCampania->id cola $infoCampania->queue) no se puede leer lista de teléfonos - ".$recordset->getMessage());
+                    } else {
+                        // Para cada llamada, su ID de ActionID es la combinación del PID del 
+                        // proceso, el ID de campaña y el ID de la llamada
+                        $listaLlamadas = array();
+                        $pid = posix_getpid();
+                        while ($tupla = $recordset->fetchRow(DB_FETCHMODE_OBJECT)) {
+                            $sKey = sprintf('%d-%d-%d', $pid, $infoCampania->id, $tupla->id);
+                            $listaLlamadas[$sKey] = $tupla;
+                        }
+                    }
+        
+                }
+            
+                /* Para la información de la llamada, se coloca al agente en pausa antes de ejecutar
+                 * el Originate. Esto garantiza que no recibirá llamadas del algoritmo normal de
+                 * generación de llamadas. Se supone que al recibir el OriginateResponse se 
+                 * lo saca de pausa al agente luego de redirigir la llamada. */
+                $listaLlamadasOriginadas = array();
+                foreach ($listaLlamadas as $sKey => $tupla) {
+                    // Pausar al agente antes de marcar. Por código anterior, el agente NO está en pausa. 
+                    $resultado = $this->_astConn->QueuePause($infoCampania->queue, $tupla->agent, 'true');
+                    if ($this->DEBUG) {
+                    	$this->oMainLog->output("DEBUG: resultado de QueuePause($infoCampania->queue, $tupla->agent, 'true') : ".
+                            print_r($resultado, TRUE));
+                    }                    
+                    
+                    $sCanalTrunk = str_replace('$OUTNUM$', $tupla->phone, $datosTrunk['TRUNK']);
+                    if ($this->DEBUG) {
+                        $this->oMainLog->output("DEBUG: generando llamada agendada\n".
+                            "\tAgente...... $tupla->agent\n" .
+                            "\tDestino..... $tupla->phone\n" .
+                            "\tCola (N/A).. $infoCampania->queue\n" .
+                            "\tContexto (N/A) $infoCampania->context\n" .
+                            "\tTrunk....... ".(is_null($infoCampania->trunk) ? '(by dialplan)' : $infoCampania->trunk)."\n" .
+                            "\tPlantilla... ".$datosTrunk['TRUNK']."\n" .
+                            "\tCaller ID... ".(isset($datosTrunk['CID']) ? $datosTrunk['CID'] : "(no definido)")."\n".
+                            "\tCadena de marcado $sCanalTrunk");
+                    }
+                    $resultado = $this->_astConn->Originate(
+                        $sCanalTrunk, 
+                        NULL, NULL, NULL,
+                        "Wait" /* aplicación */,  "5" /* datos-aplicación */, NULL, 
+                        (isset($datosTrunk['CID']) ? $datosTrunk['CID'] : NULL), 
+                        "ID_CAMPAIGN={$infoCampania->id}|ID_CALL={$tupla->id}|NUMBER={$tupla->phone}|QUEUE={$infoCampania->queue}|CONTEXT={$infoCampania->context}",
+                        NULL, 
+                        TRUE, $sKey);
+                    if (!is_array($resultado) || count($resultado) == 0) {
+                        $this->oMainLog->output("ERR: problema al enviar Originate a Asterisk");
+                        $this->iniciarConexionAsterisk();
+                    }
+                    if ($resultado['Response'] == 'Success') {
+                        // Guardar el momento en que se originó la llamada
+                        $listaLlamadas[$sKey]->OriginateStart = time();
+                        $listaLlamadas[$sKey]->OriginateEnd = NULL;
+                        $listaLlamadas[$sKey]->Channel = NULL;
+
+                        $this->_numLlamadasOriginadas[$infoCampania->queue]++;
+                        $bErrorLocked = FALSE;
+                        do {
+                            $bErrorLocked = FALSE;
+                            $result = $this->_dbConn->query(
+                                'UPDATE calls SET status = ? WHERE id_campaign = ? AND id = ?',
+                                array('Placing', $infoCampania->id, $tupla->id));
+                            if (DB::isError($result)) {
+                                $bErrorLocked = ereg('database is locked', $result->getMessage());
+                                if ($bErrorLocked) {
+                                    usleep(125000);
+                                } else {
+                                    $this->oMainLog->output("ERR: no se puede actualizar llamada [id_campaign=$infoCampania->id, id=$tupla->id]".$result->getMessage());
+                                }
+                            }                        
+                        } while (DB::isError($result) && $bErrorLocked);
+                        $listaLlamadasOriginadas[$sKey] = $listaLlamadas[$sKey];
+                    } else {
+                        $this->oMainLog->output("ERR: (campania $infoCampania->id cola $infoCampania->queue) no se puede llamar a número agendado - ".
+                            print_r($resultado, TRUE));
+                        $resultado = $this->_astConn->QueuePause($infoCampania->queue, $tupla->agent, 'false');
+                        if ($this->DEBUG) {
+                            $this->oMainLog->output("DEBUG: resultado de QueuePause($infoCampania->queue, $tupla->agent, 'false') : ".
+                                print_r($resultado, TRUE));
+                        }                    
+                    }
+                }
+                // Agregar todas las llamadas agregadas a la lista de llamadas pendientes
+                // por timbrar, para filtrar según el evento Link y guardar en la 
+                // base de datos.
+                $this->_infoLlamadas['llamadas'] = array_merge($this->_infoLlamadas['llamadas'], $listaLlamadasOriginadas);
+            }
+        } // Fin de procesamiento de llamadas agendadas a agente
+        
         $iMaxPredecidos = $oPredictor->predecirNumeroLlamadas(
             $infoCampania->queue, 
             ($infoCampania->num_completadas >= MIN_MUESTRAS));
@@ -671,6 +1034,7 @@ WHERE id_campaign = ?
     AND status IS NULL 
     AND dnc = 0 
     AND date_init <= ? AND date_end >= ? AND time_init <= ? AND time_end >= ?
+    AND agent IS NULL
 ORDER BY date_end, time_end, date_init, time_init
 )
 UNION
@@ -680,6 +1044,7 @@ WHERE id_campaign = ?
     AND status IS NULL 
     AND dnc = 0
     AND date_init IS NULL AND date_end IS NULL AND time_init IS NULL AND time_end IS NULL  
+    AND agent IS NULL
 )
 UNION
 (
@@ -689,6 +1054,7 @@ WHERE id_campaign = ?
     AND retries < ?   
     AND dnc = 0 
     AND date_init <= ? AND date_end >= ? AND time_init <= ? AND time_end >= ?
+    AND agent IS NULL
 ORDER BY date_end, time_end, date_init, time_init
 )
 UNION
@@ -699,9 +1065,15 @@ WHERE id_campaign = ?
     AND retries < ?   
     AND dnc = 0 
     AND date_init IS NULL AND date_end IS NULL AND time_init IS NULL AND time_end IS NULL  
+    AND agent IS NULL
 )
 LIMIT 0,?
 PETICION_LLAMADAS;
+
+        // Si no hay soporte para agente agendado, entonces se quita la cadena "AND agent IS NULL"
+        if (!$this->_tieneCallsAgent) {
+        	$sPeticionLlamadas = str_replace('AND agent IS NULL', '', $sPeticionLlamadas);
+        }
 
         $recordset =& $this->_dbConn->query(
             $sPeticionLlamadas, 
@@ -761,6 +1133,7 @@ PETICION_LLAMADAS;
             }
 
             // Colocar todas las llamadas elegidas para ser realizadas por el Asterisk.
+            $listaLlamadasOriginadas = array();
             foreach ($listaLlamadas as $sKey => $tupla) {
                 $sCanalTrunk = str_replace('$OUTNUM$', $tupla->phone, $datosTrunk['TRUNK']);
                 if ($this->DEBUG) {
@@ -789,6 +1162,8 @@ PETICION_LLAMADAS;
                     // Guardar el momento en que se originó la llamada
                     $listaLlamadas[$sKey]->OriginateStart = time();
                     $listaLlamadas[$sKey]->OriginateEnd = NULL;
+                    $listaLlamadas[$sKey]->agent = NULL;    // Por esta ruta de código, la llamada no es agendada a agente.
+                    $listaLlamadas[$sKey]->Channel = NULL;
                     
                     $this->_numLlamadasOriginadas[$infoCampania->queue]++;
                     $bErrorLocked = FALSE;
@@ -806,6 +1181,7 @@ PETICION_LLAMADAS;
                             }
                         }                        
                     } while (DB::isError($result) && $bErrorLocked);
+                    $listaLlamadasOriginadas[$sKey] = $listaLlamadas[$sKey];
                 } else {
                     $this->oMainLog->output("ERR: (campania $infoCampania->id cola $infoCampania->queue) no se puede llamar a número - ".
                     	print_r($resultado, TRUE));
@@ -814,7 +1190,7 @@ PETICION_LLAMADAS;
             // Agregar todas las llamadas agregadas a la lista de llamadas pendientes
             // por timbrar, para filtrar según el evento Link y guardar en la 
             // base de datos.
-            $this->_infoLlamadas['llamadas'] = array_merge($this->_infoLlamadas['llamadas'], $listaLlamadas);
+            $this->_infoLlamadas['llamadas'] = array_merge($this->_infoLlamadas['llamadas'], $listaLlamadasOriginadas);
             return (count($listaLlamadas) > 0);            
         } else {
             /* Si se llega a este punto, se presume que, con agentes disponibles, y campaña
@@ -1064,7 +1440,25 @@ PETICION_LLAMADAS;
                 		$this->_infoLlamadas['llamadas'][$sKey]->OriginateEnd - 
                 		$this->_infoLlamadas['llamadas'][$sKey]->OriginateStart;
                 	$this->oMainLog->output("DEBUG: llamada colocada luego de $iSegundosEspera s. de espera."); 
-                }                    
+                }
+                
+                if (!is_null($this->_infoLlamadas['llamadas'][$sKey]->agent)) {
+                    $sAgent = $this->_infoLlamadas['llamadas'][$sKey]->agent;
+                    $this->_infoLlamadas['llamadas'][$sKey]->Channel = $params["Channel"];
+                    if ($this->DEBUG) {
+                    	$this->oMainLog->output("DEBUG: llamada agendada a $sAgent, redirigiendo a $params[Channel] ...");
+                    }
+                    $resultado = $this->_astConn->Redirect($params['Channel'], '',substr($sAgent,6), 'llamada_agendada', 1);
+                    if ($this->DEBUG) {
+                        $this->oMainLog->output("DEBUG: resultado de Redirect($params[Channel], '', $sAgent, 'from-internal', 1) : ".
+                            print_r($resultado, TRUE));
+                    }                    
+                    $resultado = $this->_astConn->QueuePause($infoCampania->queue, $sAgent, 'false');
+                    if ($this->DEBUG) {
+                        $this->oMainLog->output("DEBUG: resultado de QueuePause($infoCampania->queue, $sAgent, 'false') : ".
+                            print_r($resultado, TRUE));
+                    }                    
+                }
             } else {
 				// Reportar tiempo transcurrido hasta fallo
                 if ($this->DEBUG) {
@@ -1073,6 +1467,14 @@ PETICION_LLAMADAS;
                 		$this->_infoLlamadas['llamadas'][$sKey]->OriginateStart;
                 	$this->oMainLog->output("DEBUG: llamada falla en ser colocada luego de $iSegundosEspera s. de espera."); 
                 }                    
+
+                // Sacar de pausa al agente cuya llamada no ha sido contestada.
+                $sAgent = $this->_infoLlamadas['llamadas'][$sKey]->agent;
+                $resultado = $this->_astConn->QueuePause($infoCampania->queue, $sAgent, 'false');
+                if ($this->DEBUG) {
+                    $this->oMainLog->output("DEBUG: resultado de QueuePause($infoCampania->queue, $sAgent, 'false') : ".
+                        print_r($resultado, TRUE));
+                }
 
                 // Remover llamada que no se pudo colocar
                 unset($this->_infoLlamadas['llamadas'][$sKey]);
@@ -1139,6 +1541,28 @@ PETICION_LLAMADAS;
             if (isset($tupla->Uniqueid)) {
                 if ($tupla->Uniqueid == $params['Uniqueid1']) $sKey = $key;
                 if ($tupla->Uniqueid == $params['Uniqueid2']) $sKey = $key;
+            }
+            if (!is_null($sKey)) break;
+        }
+
+        if (is_null($sKey)) {
+            // Si no se tiene clave, todavía puede ser llamada agendada
+            // que debe buscarse por nombre de canal.
+            foreach ($this->_infoLlamadas['llamadas'] as $key => $tupla) {
+                if (!is_null($tupla->Channel)) {
+                    if ($tupla->Channel == $params["Channel1"]) {
+                        $sKey = $key;
+                        $tupla->Uniqueid = $params["Uniqueid1"];
+                    }
+                    if ($tupla->Channel == $params["Channel2"]) {
+                        $sKey = $key;
+                        $tupla->Uniqueid = $params["Uniqueid2"];
+                    }
+                    if ($this->DEBUG) {
+                        $this->oMainLog->output("DEBUG: identificada llamada agendada $tupla->Channel, cambiado Uniqueid a $tupla->Uniqueid ");
+                    }
+                }
+                if (!is_null($sKey)) break;
             }
         }
         if (!is_null($sKey)) {
@@ -1401,6 +1825,14 @@ PETICION_LLAMADAS;
 
             // Se ha observado que ocasionalmente se pierde el evento Link
             if (is_null($this->_infoLlamadas['llamadas'][$sKey]->start_timestamp)) {
+                if (!is_null($this->_infoLlamadas['llamadas'][$sKey]->Channel) &&
+                    strpos($params["Channel"], $this->_infoLlamadas['llamadas'][$sKey]->Channel) !== false) {
+                    if ($this->DEBUG) {
+                        $this->oMainLog->output("DEBUG: detectada Hangup intermedio de llamada agendada.");
+                    }
+                    return false;
+                }
+
                 $this->oMainLog->output("ERR: $sEvent: Hangup sin Link para llamada $sKey => ".
                     print_r($this->_infoLlamadas['llamadas'][$sKey], TRUE));
                 
