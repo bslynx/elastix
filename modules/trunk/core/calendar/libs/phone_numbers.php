@@ -39,12 +39,23 @@ function _moduleContent(&$smarty, $module_name)
     include_once "$path/modules/$module_name/libs/paloSantoAdressBook.class.php";
     global $arrConf;
     load_language("../../../");
+
+    //include file language agree to elastix configuration
+    //if file language not exists, then include language by default (en)
+    $lang=get_language("../../../");
+    $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
+    $lang_file="modules/$module_name/lang/$lang.lang";
+    if (file_exists("$path/$lang_file")) include_once "$path/$lang_file";
+    else include_once "$path/modules/$module_name/lang/en.lang";
     global $arrLang;
+    global $arrLangModule;
+    $arrConf = array_merge($arrConf,$arrConfModule);
+    $arrLang = array_merge($arrLang,$arrLangModule);
 	
 	//folder path for custom templates
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
     
-    $templates_dir=(isset($arrConfig['templates_dir']))?$arrConfig['templates_dir']:'themes';
+    $templates_dir=(isset($arrConf['templates_dir']))?$arrConf['templates_dir']:'themes';
     $local_templates_dir="$path/modules/$module_calendar/".$templates_dir.'/'.$arrConf['theme'];
 
     $template_module = $templates_dir.'/'.$arrConf['theme'];
