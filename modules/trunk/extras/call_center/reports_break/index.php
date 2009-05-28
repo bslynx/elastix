@@ -237,6 +237,15 @@ function generarReporte($smarty,$fecha_init,$fecha_end,$oReportsBreak,$lang,&$ar
     $rptBreaks  = $oReportsBreak->getReportesBreak($fecha_init,$fecha_end);
     // listado de tipos de break
     $arrBreaks  = $oReportsBreak->getTiposBreak();
+    if (!is_array($arrBreaks)) {
+        $smarty->assign("mb_title", $lang["Error"]);
+        $smarty->assign("mb_message", 'Al leer tipos de break: '.$oReportsBreak->msgError);
+        $arrBreaks = array();
+    }elseif(!$arrBreaks) {
+        $smarty->assign("mb_title", $lang["Warning"]);
+        $smarty->assign("mb_message", $lang["No register break in database"]);
+        $arrBreaks = array();
+    }
     // listado de agentes 
     $arrAgentes = $oReportsBreak->getAgents($limit,$offset);
     // obtengo el numero de agentes que se presentaran por pagina
@@ -245,11 +254,7 @@ function generarReporte($smarty,$fecha_init,$fecha_end,$oReportsBreak,$lang,&$ar
     $arrColumnas[0] = array('name'=> $lang['Agent Number'],'property1'  => '' );
     $arrColumnas[1] = array('name'=> $lang['Agent Name'],'property1'  => '' );
 
-    if(!$arrBreaks) {
-        $smarty->assign("mb_title", $lang["Warning"]);
-        $smarty->assign("mb_message", $lang["No register break in database"]);
-        $arrBreaks = array();
-    }elseif(!$arrAgentes) {
+    if(!$arrAgentes) {
         $smarty->assign("mb_title", $lang["Error"]);
         $smarty->assign("mb_message", $lang["Error cargando listado de agentes"]);
         $arrBreaks = array();
