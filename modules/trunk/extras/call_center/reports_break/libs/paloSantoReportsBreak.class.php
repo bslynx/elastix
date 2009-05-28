@@ -27,6 +27,7 @@ class paloSantoReportsBreak {
     /*
         Esta funcion retorna un reporte detallado de los break tomados por los agentes.
     */
+/*
     function getReporteDetalladoBreak() {
 
         $SQLConsulta = "select agent.name as Agente,break.name as Break,audit.datetime_init as Inicio,datetime_end as Fin,audit.duration as Duracion from audit,agent,break where agent.id=audit.id_agent and audit.id_break=break.id order by (datetime_init)";
@@ -55,12 +56,13 @@ class paloSantoReportsBreak {
 
         return $sResultado;
     }
-    
+*/    
     /*
         Esta funcion retorna un la informacion de un reporte detallado de los break tomados
         por los agentes. La cadena devuelta esta en codgo html, lista para ser incrustada entre
         los tag de inicio y cierre de una tabla.
     */
+/*
     function procesarResultado($arrRes) {
  
         $sColumnas = ""; 
@@ -77,10 +79,11 @@ class paloSantoReportsBreak {
         return $sFilas;
 
     }
-    
+*/    
     /*
         Esta funcion retorna una cadena que representa las columnas de una tabla en codigo html. Estas columnascontienen informacion del break de los agentes.
     */
+/*
     function crearColumna($valor) {
         if( $valor!="" && !is_null($valor) ) {
             $cadena = "<td>$valor</td>";
@@ -90,11 +93,12 @@ class paloSantoReportsBreak {
             return false;
         }
     }
-    
+*/    
     /*
         Esta funcion retorna una cadena que representa las filas de una tabla en codigo html. Estas filas
         contienen informacion del break de los agentes.
     */
+/*
     function crearFilas($valor) {
         if( $valor!="" && !is_null($valor) ) {
             $cadena = "<tr>$valor</tr>";
@@ -104,7 +108,7 @@ class paloSantoReportsBreak {
             return false;
         }
     }
-
+*/
     /**
      *  Esta funcion retorna un listado de los tipos de break en el sistema.
      *
@@ -175,15 +179,15 @@ class paloSantoReportsBreak {
     /*
         Esta funcion retorna los tiempos que un agente ha tomado un break en una fecha indicada.
     */
-    function getSumaTiempos($id_agent,$id_break,$fecha_init,$fecha_end) {
+    private function getSumaTiempos($id_agent,$id_break,$fecha_init,$fecha_end) {
         $sResultado="";
        // $SQLConsulta = "select duration from audit where id_agent=".paloDB::DBCAMPO($id_agent)." and id_break=".paloDB::DBCAMPO($id_break)." and day(datetime_init) =".paloDB::DBCAMPO($day)." and month(datetime_init) =".paloDB::DBCAMPO($month)." and year(datetime_init) =".paloDB::DBCAMPO($year);
 
        $SQLConsulta = "select duration from audit where id_agent=".paloDB::DBCAMPO($id_agent)." and id_break=".paloDB::DBCAMPO($id_break)." and datetime_init between '$fecha_init' and  '$fecha_end'";
 
-        //echo $SQLConsulta."<br>";
+//echo $SQLConsulta."<br>";
         $resConsulta = $this->pDB->fetchTable($SQLConsulta,true);
-
+//print_r($resConsulta);
         if(!$resConsulta || !is_array($resConsulta)) {
                     $this->msgError = "Error en la consulta";
                 }elseif(count($resConsulta)>0) {
@@ -270,6 +274,10 @@ class paloSantoReportsBreak {
      */
     function getReportesBreak($fecha_init,$fecha_end)
     {
+/*
+SELECT agent.id AS id_agent, break.id AS id_break, SUM(TIME_TO_SEC(duration)) AS sum_duration, SEC_TO_TIME(SUM(TIME_TO_SEC(duration))) AS format_sum_duration FROM (agent, break) LEFT JOIN audit ON agent.id = audit.id_agent AND break.id = audit.id_break  AND datetime_init BETWEEN '2009-04-06 00:00:00' AND '2009-04-06 23:59:59' GROUP BY agent.id, break.id; 
+*/
+
         $sConvert="";
         $arrAgentes = $this->getAgents();
         $arrTiposBreak = $this->getTiposBreak();
@@ -286,7 +294,7 @@ class paloSantoReportsBreak {
         }
         return $result;
     }
-
+/*
     function generarCSVReporte($arrData,$module_name,$fecha) {
         $name_file = $fecha.".csv";
         $cadena="";
@@ -318,7 +326,7 @@ class paloSantoReportsBreak {
         }
 
     }
-
+*/
 }
 
 
