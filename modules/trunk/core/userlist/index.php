@@ -310,7 +310,7 @@ function _moduleContent(&$smarty, $module_name)
                 $arrFillUser['description'] = $_POST['description'];
                 $arrFillUser['name']        = $username;
                 $arrFillUser['group']       = $_POST['group'];
-                $arrFillUser['extension']   = $_POST['extension'];
+                $arrFillUser['extension']   = isset($_POST['extension'])?$_POST['extension']:"";
 
                 if (isset($listaPropiedades['login'])) $arrFillUser['webmailuser'] = $listaPropiedades['login'];
                 if (isset($listaPropiedades['domain'])) $arrFillUser['webmaildomain'] = $listaPropiedades['domain'];
