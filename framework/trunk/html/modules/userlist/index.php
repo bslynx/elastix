@@ -264,7 +264,7 @@ function _moduleContent(&$smarty, $module_name)
                 $arrFillUser['description'] = $_POST['description'];
                 $arrFillUser['name']        = $username;
                 $arrFillUser['group']       = $_POST['group'];
-                $arrFillUser['extension']   = $_POST['extension'];
+                $arrFillUser['extension']   = isset($_POST['extension'])?$_POST['extension']:"";
         
                 $contenidoModulo=$oForm->fetchForm("$local_templates_dir/new.tpl", $arrLang["Edit User"], $arrFillUser);
             } else {
