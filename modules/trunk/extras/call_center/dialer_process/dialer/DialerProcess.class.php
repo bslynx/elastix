@@ -415,6 +415,20 @@ class DialerProcess extends AbstractProcess
     // Ejecutar la revisión periódica de las llamadas pendientes por timbrar
     function procedimientoDemonio()
     {
+        // Si no se tiene una conexión a la base de datos, se intenta reabrir DB
+        if (is_null($this->_dbConn)) {
+        	$bContinuar = $this->iniciarConexionBaseDatos();
+            if (!$bContinuar) {
+            	// Todavía no se recupera la base de datos, se espera...
+                $this->oMainLog->output("ERR: no se puede restaurar conexión a DB, se espera...");
+                usleep(5000000);
+                return TRUE;
+            } else {
+            	$this->_oGestorEntrante->setDBConn($this->_dbConn);
+                $this->oMainLog->output("INFO: conexión a DB restaurada, se reinicia operación normal.");
+            }
+        }
+
         $bLlamadasAgregadas = FALSE;
         $iTimestamp = time();
         $sFecha = date('Y-m-d', $iTimestamp);
@@ -433,8 +447,18 @@ class DialerProcess extends AbstractProcess
             $sPeticionCampanias, 
             array($sFecha, $sFecha, $sHora, $sHora, $sHora, $sHora));
         if (DB::isError($recordset)) {
-            $this->oMainLog->output("ERR: no se puede leer lista de campañas - ".$recordset->getMessage());
+            $sMensajeDB = $recordset->getMessage();
+            $this->oMainLog->output("ERR: no se puede leer lista de campañas - $sMensajeDB");
+            if (strstr($sMensajeDB, 'no database selected')) {
+            	// Este es el error genérico que ocurre cuando se invalida la conexión a DB
+                $this->oMainLog->output("WARN: conexión a DB parece ser inválida, se cierra...");
+                if (!is_null($this->_dbConn)) {
+                    $this->_dbConn->disconnect();
+                    $this->_dbConn = NULL;
+                }
+            }
             usleep(1000000);
+            return TRUE;                
         } else {
             // Verificar si se tiene que actualizar la configuración
             $infoConfigDB = $this->leerConfiguracionDesdeDB();

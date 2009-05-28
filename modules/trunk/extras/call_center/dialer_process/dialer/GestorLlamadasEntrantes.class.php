@@ -124,6 +124,14 @@ class GestorLlamadasEntrantes
         $this->_astConn = $astman;
     }
 
+    function setDBConn(&$dbConn)
+    {
+    	if (!DB::isConnection($dbConn)) {
+    		throw new Exception('Not a valid PEAR DB connection!');
+    	}
+        $this->_dbConn = $dbConn;
+    }
+
     /**
      * Procedimiento que lee la lista de agentes que pertenecen a cada cola, 
      * parsea la información disponible, y construye la lista de cola a la 
