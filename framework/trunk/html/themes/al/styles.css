@@ -85,7 +85,7 @@ INPUT.submit {
         font-size: 11px;
         color: #444444;
         font-weight: normal;
-        background-image: url(/images/formButtonBg.gif);
+        background-image: url(images/formButtonBg.gif);
         background-repeat: repeat-x;
         background-position: top;
 }
@@ -100,7 +100,7 @@ tr.primera_fila {
     font-weight: bold;
     text-align: left;
     background-color: #f8f7f7;
-    background-image: url(/images/primerafilabg.gif); 
+    background-image: url(images/primerafilabg.gif); 
     background-repeat: repeat-x;
     background-position: bottom;
     padding: 3px 5px 3px 5px;
@@ -125,7 +125,7 @@ TABLE.table_data_login{
 }
 table.menumini {
     border-bottom: 1px solid #aaaaaa;
-    background-image: url(/images/background_mini.jpg); 
+    background-image: url(../../images/background_mini.jpg); 
 }
 TD.table_data {
 /*    BACKGROUND: #FFFFFF; */
@@ -149,8 +149,8 @@ TR.table_title_row {
     font-weight: bold;
     text-align: left;
     background-color: #f8f7f7;
-    /* background-image: url(/images/primerafilabg.gif); */
-    background-image: url(/images/bgGray.gif); 
+    /* background-image: url(images/primerafilabg.gif); */
+    background-image: url(../../images/bgGray.gif); 
     background-repeat: repeat-x;
     background-position: bottom;
     border-bottom: 1px #aaaaaa solid;
@@ -205,7 +205,7 @@ TD.menulogo {
     FONT-FAMILY: verdana, arial, helvetica, sans-serif;
     FONT-SIZE: 9pt;
     BACKGROUND: #ffffff;
-    BACKGROUND-IMAGE: url(/images/bgblue.gif); 
+    BACKGROUND-IMAGE: url(../../images/bgblue.gif); 
     PADDING-RIGHT: 30px;
     PADDING-LEFT: 15px;
     PADDING-BOTTOM: 0px;
@@ -215,7 +215,7 @@ TD.menulogo {
 TD.logologin {
     FONT-FAMILY: verdana, arial, helvetica, sans-serif;
     FONT-SIZE: 9pt;
-    BACKGROUND-IMAGE: url(/images/bgblue.gif); 
+    BACKGROUND-IMAGE: url(../../images/bgblue.gif); 
     PADDING-RIGHT: 0px;
     PADDING-LEFT: 0px;
     PADDING-BOTTOM: 0px;
@@ -224,20 +224,20 @@ TD.logologin {
 TD.headlink {
     /* BACKGROUND: #3964ad; */
     BACKGROUND: #ffffff;
-    BACKGROUND-IMAGE: url(/images/bgblue.gif); 
+    BACKGROUND-IMAGE: url(../../images/bgblue.gif); 
     PADDING-LEFT: 1px;
     PADDING-RIGHT: 1px;
     BORDER-BOTTOM: #333333 1px solid;
 }
 TD.headlinkon {
     BACKGROUND: #ffffff;
-    BACKGROUND-IMAGE: url(/images/bgblue.gif); 
+    BACKGROUND-IMAGE: url(../../images/bgblue.gif); 
     PADDING-LEFT: 0px;
     PADDING-RIGHT: 0px;
 }
 TD.headlinkspacer {
     BACKGROUND: #ffffff;
-    BACKGROUND-IMAGE: url(/images/bgblue.gif);
+    BACKGROUND-IMAGE: url(../../images/bgblue.gif);
     PADDING-LEFT: 1px;
     PADDING-RIGHT: 0px;
     BORDER-BOTTOM: #333333 1px solid;
@@ -257,8 +257,8 @@ TD.menutabletaboff {
     BACKGROUND-COLOR: #eeeeee;
     PADDING-LEFT: 7px;
     PADDING-RIGHT: 7px;
-/*    BACKGROUND-IMAGE: url(/images/bggris.gif);  */
-    BACKGROUND-IMAGE: url(/images/bg_boton.jpg); 
+/*    BACKGROUND-IMAGE: url(../../images/bggris.gif);  */
+    BACKGROUND-IMAGE: url(../../images/bg_boton.jpg); 
     TEXT-ALIGN: center;
 }
 TD.menutabletaboff_left {
@@ -269,7 +269,7 @@ TD.menutabletaboff_left {
     BACKGROUND-COLOR: #eeeeee;
     PADDING-LEFT: 0px;
     PADDING-RIGHT: 2px;
-    BACKGROUND-IMAGE: url(/images/bg_boton_left.jpg);
+    BACKGROUND-IMAGE: url(../../images/bg_boton_left.jpg);
     background-repeat: no-repeat;
     background-position: left top; 
     TEXT-ALIGN: center;
@@ -282,7 +282,7 @@ TD.menutabletaboff_right {
     BACKGROUND-COLOR: #eeeeee;
     PADDING-LEFT: 0px;
     PADDING-RIGHT: 5px;
-    BACKGROUND-IMAGE: url(/images/bg_boton_right.gif);
+    BACKGROUND-IMAGE: url(../../images/bg_boton_right.gif);
     background-repeat: no-repeat;
     background-position: left top; 
     TEXT-ALIGN: center;
@@ -313,7 +313,7 @@ TD.menutabletabon_left {
 }
 TR.downshadow {
     PADDING-BOTTOM: 5px;
-    BACKGROUND-IMAGE: url(/images/downshadow.gif);
+    BACKGROUND-IMAGE: url(../../images/downshadow.gif);
     background-repeat: repeat-x;
     background-position: top;
 
@@ -340,7 +340,7 @@ TD.menuaftertab {
     FONT-FAMILY: verdana, arial, helvetica, sans-serif;
     FONT-SIZE: 9pt;
     BACKGROUND: #ffffff;
-    BACKGROUND-IMAGE: url(/images/bgblue.gif); 
+    BACKGROUND-IMAGE: url(../../images/bgblue.gif); 
     PADDING-RIGHT: 20px;
     PADDING-LEFT: 10px;
     PADDING-BOTTOM: 0px;
@@ -355,7 +355,7 @@ TD.menudescription {
     VERTICAL-ALIGN: middle;
     COLOR: #FFFFFF;
     BACKGROUND: #779e02;
-/* background-image: url(/images/bgrojo.gif); */
+/* background-image: url(../../images/bgrojo.gif); */
     background-image: url(images/bg_al.gif);
     background-position: bottom;
     BORDER-BOTTOM: #444444 1px solid;
@@ -466,7 +466,7 @@ table.tabla_cabecera {
     BORDER-BOTTOM: #444444 1px solid;
     border: 1px #9E9E9E solid;
     padding: 10px 8px 8px 8px;
-    background-image : url(/images/searchFormBg.gif);
+    background-image : url(images/searchFormBg.gif);
     background-repeat: repeat-x;
     background-position: top;
     background-color: #eef3f8;
@@ -488,7 +488,7 @@ tr.primera_fila {
     font-weight: bold;
     text-align: left;
     background-color: #f8f7f7;
-    background-image: url(/images/primerafilabg.gif); 
+    background-image: url(images/primerafilabg.gif); 
     background-repeat: repeat-x;
     background-position: bottom;
     padding: 3px 5px 3px 5px;
@@ -656,7 +656,7 @@ td.botonoff {
 /*    border-right: 1px solid #330000; */
 /*    border-bottom: 1px solid #330000; */
 /*    background: #cc0000; */
-/*    background-image: url(/images/bgrojo.gif);  */
+/*    background-image: url(../../images/bgrojo.gif);  */
 }
 td.botonoff a {
     COLOR: #ffffff;
@@ -681,7 +681,7 @@ td.botonoff a {
         font-size: 11px;
         color: #444444;
         font-weight: normal;
-        background-image: url(/images/formButtonBg.gif);
+        background-image: url(images/formButtonBg.gif);
         background-repeat: repeat-x;
         background-position: top;
 }
@@ -720,7 +720,7 @@ td.botonoff a {
     color: #444;
     background-color: #ffffff;
     border-color: #999999;
-    background-image: url(/images/bgGray.gif); 
+    background-image: url(../../images/bgGray.gif); 
     color: #688a02;
     FONT-FAMILY: verdana, arial, helvetica, sans-serif;
     FONT-SIZE: 14px;
@@ -730,7 +730,7 @@ td.botonoff a {
     border-color: #999;
     color: #aaaaaa;
     background-color: #fafafa;
-    background-image: url(/images/bggrisForm.gif);
+    background-image: url(../../images/bggrisForm.gif);
     border-top: 1px solid #aaaaaa;
     border-bottom: 1px solid #aaaaaa;
     padding: 10px 6px 12px 10px;
@@ -747,7 +747,7 @@ td.botonoff a {
     border-color: #999;
     color: #aaaaaa;
     background-color: #fafafa;
-    background-image: url(/images/bggrisForm.gif);
+    background-image: url(../../images/bggrisForm.gif);
     border-top: 1px solid #aaaaaa;
     /* border-bottom: 1px solid #aaaaaa; */
     padding: 10px 6px 12px 10px;
@@ -770,7 +770,7 @@ td.botonoff a {
     border-color: #999999;
     background-color: #eee;
     color: #444;
-    background-image: url(/images/bgGray.gif);
+    background-image: url(../../images/bgGray.gif);
 }
 .required {
     color: #ff0000;
