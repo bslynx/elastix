@@ -46,29 +46,15 @@ function _moduleContent(&$smarty, $module_name)
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
     //include_once "modules/$module_name/libs/paloSantoConference.php";
-
-    $lang=get_language();
-    $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
-    $lang_file="modules/$module_name/lang/$lang.lang";
-    if (file_exists("$base_dir/$lang_file")) include_once "$lang_file";
-    else include_once "modules/$module_name/lang/en.lang";
-
-
-    //global variables
     global $arrConf;
-    global $arrConfModule;
     global $arrLang;
-    global $arrLangModule;
-    $arrConf = array_merge($arrConf,$arrConfModule);
-    $arrLang = array_merge($arrLang,$arrLangModule);
-
 
     //folder path for custom templates
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
-    $templates_dir=(isset($arrConf['templates_dir']))?$arrConf['templates_dir']:'themes';
+    $templates_dir=(isset($arrConfig['templates_dir']))?$arrConfig['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
 
-    $dir_backup = $arrConf["dir_backup"];
+    $dir_backup = "/var/www/backup";
 
     if      (isset($_POST["delete_backup"])) $accion = "delete_backup";
     else if (isset($_POST["backup"])) $accion = "backup";
@@ -76,6 +62,7 @@ function _moduleContent(&$smarty, $module_name)
     else if (isset($_POST["process"]) && $_POST["option_url"]=="backup")  $accion = "process_backup";
     else if (isset($_POST["process"]) && $_POST["option_url"]=="restore") $accion = "process_restore";
     else if (isset($_POST["upload"])) $accion = "upload";
+    else if (getParameter("action")=="download_file") $accion = "download_file";
     else $accion ="report_backup_restore";
     $content = "";
     switch($accion)
@@ -97,6 +84,9 @@ function _moduleContent(&$smarty, $module_name)
             break;
         case 'upload':
             $content = file_upload($smarty, $module_name, $local_templates_dir, $arrLang, $dir_backup);
+            break;
+        case 'download_file':
+            $content = downloadBackup($smarty, $module_name, $local_templates_dir, $arrLang, $dir_backup);
             break;
         default:
             $content = report_backup_restore($smarty, $module_name, $local_templates_dir, $arrLang, $dir_backup);
@@ -152,7 +142,8 @@ function report_backup_restore($smarty, $module_name, $local_templates_dir, $arr
     if(is_array($nombre_archivos) && $total>0){
         foreach($nombre_archivos as $key => $nombre_archivo){
             $arrTmp[0] = "<input type='checkbox' name='chk[".$nombre_archivo."]' id='chk[".$nombre_archivo."]'>";
-            $arrTmp[1] = "<a href='backup/$nombre_archivo'>$nombre_archivo</a>";
+            //$arrTmp[1] = "<a href='backup/$nombre_archivo'>$nombre_archivo</a>";
+            $arrTmp[1] = "<a href='?menu=$module_name&action=download_file&file_name=$nombre_archivo'>$nombre_archivo</a>";
             $fecha="";
             // se parsea el archivo para obtener la fecha
             if(ereg("[[:alnum:]]-([[:digit:]]{4})([[:digit:]]{2})([[:digit:]]{2})([[:digit:]]{2})([[:digit:]]{2})([[:digit:]]{2})-([[:alnum:]]{2}).[[:alnum:]]", $nombre_archivo, $data)) {
@@ -193,10 +184,23 @@ function report_backup_restore($smarty, $module_name, $local_templates_dir, $arr
     return $contenidoModulo;
 }
 
+function downloadBackup($smarty, $module_name, $local_templates_dir, $arrLang, $dir_backup){
+    $file_name = getParameter("file_name");
+
+    header("Cache-Control: private");
+    header("Pragma: cache");
+    header('Content-Type: application/octec-stream');
+    header("Content-Length: ".filesize("$dir_backup/$file_name"));  
+    header("Content-Disposition: attachment; filename=$file_name");
+
+    readfile("$dir_backup/$file_name");
+    return report_backup_restore($smarty, $module_name, $local_templates_dir, $arrLang, $dir_backup);
+}
+
+
 function Obtener_Total_Backups($dir_backup)
 {
-    $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
-    $comando="ls $base_dir/$dir_backup/*.tar | grep -c .";
+    $comando="ls $dir_backup/*.tar | grep -c .";
     exec($comando,$output,$retval);
     if ($retval!=0) return 0;
     return $output[0];
@@ -204,8 +208,8 @@ function Obtener_Total_Backups($dir_backup)
 
 function Obtener_Backups($dir_backup, $offset_inv, $limit)
 {
-    $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
-    $comando="ls $base_dir/$dir_backup/*.tar -t | tail -n $offset_inv | head -n $limit | xargs -n 1 basename";
+    //$base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
+    $comando="ls $dir_backup/*.tar -t | tail -n $offset_inv | head -n $limit | xargs -n 1 basename";
     exec($comando,$output,$retval);
     if ($retval!=0) return array();
     return $output;
@@ -300,13 +304,13 @@ function restore_form($smarty, $local_templates_dir, $arrLang, $path_backup)
         $archivo_post = $arr[0];
     }else $archivo_post = isset($_POST["backup_file"])?$_POST["backup_file"]:"";
 
-    $dir_respaldo = "/var/www/html/$path_backup";
-    $comando="tar xvf $dir_respaldo/$archivo_post backup/a_options.xml";
+    $dir_respaldo = "$path_backup";
+    $comando="cd $dir_respaldo; tar xvf $dir_respaldo/$archivo_post backup/a_options.xml";
     exec($comando,$output,$retval);
     if ($retval==0)
     {
         $xmlDoc = new DOMDocument();
-        $xmlDoc->load("$dir_respaldo/a_options.xml");
+        $xmlDoc->load("$dir_respaldo/backup/a_options.xml");
 
         //copio el archivo en memoria
         $root = $xmlDoc->documentElement;//apunto a el tag raiz
@@ -363,7 +367,7 @@ function process_backup($smarty, $local_templates_dir, $arrLang)
     else
     {
         //crear la carpeta donde se va a copiar el respaldo que se realice
-        $dir_respaldo = "backup";
+        $dir_respaldo = "/var/www/backup";
         $valor_unico = "-".date("YmdHis")."-".substr(session_id(), 0, 1).substr(session_id(), -1, 1);
         $carpeta_respaldo = "backup";
         $timestamp= $carpeta_respaldo.$valor_unico;
@@ -376,6 +380,7 @@ function process_backup($smarty, $local_templates_dir, $arrLang)
         if (file_exists($ruta_respaldo_sin_valor_unico)){
             exec("rm -rf $ruta_respaldo_sin_valor_unico",$output,$retval);
         }
+
         mkdir($ruta_respaldo_sin_valor_unico); // ??
 
         //Guardar xml para saber que opciones fueron respaldadas y obviar las que no en el momento de hacer el restore
@@ -394,7 +399,7 @@ function process_backup($smarty, $local_templates_dir, $arrLang)
             $errMsg= $arrLang["Could not generate backup file"]." : $dir_respaldo/elastix$timestamp.tar\n";
         else{
             //mensaje que se ha completado el backup
-            $smarty->assign("ERROR_MSG", $arrLang["Backup Complete!"]." : $dir_respaldo/elastix$timestamp.tar");
+            $smarty->assign("ERROR_MSG", $arrLang["Backup Complete!"].": elastix$timestamp.tar");
             #print "Backup file location: $dir_respaldo/elastixBackup.tgz\n";
         }
         //borro la carpeta de backup
@@ -438,7 +443,7 @@ function process_restore($smarty, $local_templates_dir, $arrLang, $path_backup)
             $smarty->assign("ERROR_MSG", $arrLang["Backup file path can't be empty"]);
         else
         {
-            $path_file_backup = "/var/www/html/$path_backup/$backup_file";
+            $path_file_backup = "$path_backup/$backup_file";
             //verificar que el archivo existe
             if (!file_exists($path_file_backup))
             {
@@ -446,9 +451,9 @@ function process_restore($smarty, $local_templates_dir, $arrLang, $path_backup)
             }else
             {
                 //crear la carpeta donde se va a descomprimir el archivo de respaldo
-                $dir_respaldo = "/var/www/html/$path_backup";
+                $dir_respaldo = "$path_backup";
                 $timestamp=time();
-                $ruta_restaurar="/var/www/html/$path_backup/restore";
+                $ruta_restaurar="$path_backup/restore";
                 $ruta_respaldo="$ruta_restaurar/backup";
                 if (!file_exists($ruta_restaurar)) mkdir($ruta_restaurar);
                 //descomprimir el archivo
@@ -478,7 +483,7 @@ function Array_Options($arrLang, $disabled="")
                                     "as_monitor"        =>  array("desc"=>$arrLang["Monitors"]."  ".$arrLang["(Heavy Content)"],"check"=>"","msg"=>"","disable"=>"$disabled"),
                                     "as_voicemail"      =>  array("desc"=>$arrLang["Voicemails"]."  ".$arrLang["(Heavy Content)"],"check"=>"","msg"=>"","disable"=>"$disabled"),
                                     "as_sounds"         =>  array("desc"=>$arrLang["Sounds"],"check"=>"","msg"=>"","disable"=>"$disabled"),
-                                    "as_dahdi"         =>  array("desc"=>$arrLang["Dahdi Configuration"],"check"=>"","msg"=>"","disable"=>"$disabled"),
+                                    "as_dahdi"         =>  array("desc"=>$arrLang["DAHDI Configuration"],"check"=>"","msg"=>"","disable"=>"$disabled"),
                                 ),
             "fax"           =>  array(
                                     "fx_db"             =>  array("desc"=>$arrLang["Database"],"check"=>"","msg"=>"","disable"=>"$disabled"),
@@ -498,7 +503,7 @@ function Array_Options($arrLang, $disabled="")
                                     "a2billing_db"      =>  array("desc"=>$arrLang["A2billing Database"],"check"=>"","msg"=>"","disable"=>"$disabled"),
                                     "mysql_db"          =>  array("desc"=>$arrLang["Mysql Database"],"check"=>"","msg"=>"","disable"=>"$disabled"),
                                     "menus_permissions" =>  array("desc"=>$arrLang["Menus and Permissions"],"check"=>"","msg"=>"","disable"=>"$disabled"),
-                                    "fop_config"        =>  array("desc"=>"Flash Operator Panel Config Files","check"=>"","msg"=>"","disable"=>"$disabled"),
+                                    "fop_config"        =>  array("desc"=>$arrLang["Flash Operator Panel Config Files"],"check"=>"","msg"=>"","disable"=>"$disabled"),
                                 ),
     );
     return $arrBackupOptions;
@@ -510,8 +515,6 @@ function Array_Options($arrLang, $disabled="")
 
 function process_each_backup($arrSelectedOptions,$ruta_respaldo,&$arrBackupOptions)
 {
-    global $arrConf;
-
     foreach ($arrSelectedOptions as $option)
     {
         $bExito=true;
@@ -577,16 +580,12 @@ function process_each_backup($arrSelectedOptions,$ruta_respaldo,&$arrBackupOptio
             break;
 
         case "as_dahdi":
-	    $arrInfoRespaldo = array(   'folder_path'               =>  "/etc",
-                                        'folder_name'               =>  "dahdi",
-                                        'nombre_archivo_respaldo'   =>  "etc.dahdi.tgz"
-                                );
-            if(!respaldar_carpeta($arrInfoRespaldo,$ruta_respaldo,$error))
-                $bExito = false;
+            exec("cp /etc/dahdi/system.conf $ruta_respaldo", $output, $retval);
+            if ($retval!=0) $bExito = false;
             break;
 
         case "fx_db":
-            exec("cp $arrConf[elastix_dbdir]/fax.db $ruta_respaldo", $output, $retval);
+            exec("cp /var/www/db/fax.db $ruta_respaldo", $output, $retval);
             if ($retval!=0) $bExito = false;
             break;
 
@@ -618,7 +617,7 @@ function process_each_backup($arrSelectedOptions,$ruta_respaldo,&$arrBackupOptio
                 exec($comando,$output,$retval);
             }else $bExito = false;
 
-            $comando="cp $arrConf[elastix_dbdir]/email.db $ruta_respaldo";
+            $comando="cp /var/www/db/email.db $ruta_respaldo";
             exec($comando,$output,$retval);
             if ($retval!=0) $bExito = false;
             break;
@@ -643,7 +642,7 @@ function process_each_backup($arrSelectedOptions,$ruta_respaldo,&$arrBackupOptio
             break;
 
         case "ep_db":
-            exec("cp $arrConf[elastix_dbdir]/endpoint.db $ruta_respaldo", $output, $retval);
+            exec("cp /var/www/db/endpoint.db $ruta_respaldo", $output, $retval);
             if ($retval!=0) $bExito = false;
             break;
 
@@ -741,9 +740,9 @@ function process_each_backup($arrSelectedOptions,$ruta_respaldo,&$arrBackupOptio
             break;
 
         case "menus_permissions":
-            exec("cp $arrConf[elastix_dbdir]/menu.db $ruta_respaldo", $output, $retval);
+            exec("cp /var/www/db/menu.db $ruta_respaldo", $output, $retval);
             if ($retval!=0) $bExito = false;
-            exec("cp $arrConf[elastix_dbdir]/acl.db $ruta_respaldo", $output, $retval);
+            exec("cp /var/www/db/acl.db $ruta_respaldo", $output, $retval);
             if ($retval!=0) $bExito = false;
             break;
 
@@ -865,7 +864,6 @@ function respaldar_base_mysql($dir_resp_db,$base)
 /* ------------------------------------------------------------------------------- */
 function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar,&$arrRestoreOptions)
 {
-    global $arrConf;
     $error="";
     foreach ($arrSelectedOptions as $option)
     {
@@ -992,42 +990,26 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
             break;
 
         case "as_dahdi":
-
-	    //Respaldo carpeta /etc/dahdi en un tgz
-            $comando="sudo -u root touch /etc/dahdi.tgz";
+            $comando="sudo -u root touch /etc/dahdi/system.conf";
             exec($comando, $output, $retval);
 
-            $comando="sudo -u root chmod 777 /etc/dahdi.tgz";
+            $comando="sudo -u root chmod 777 /etc/dahdi/system.conf";
             exec($comando, $output, $retval);
 
-            $comando="tar cvfz /etc/dahdi.tgz /etc/dahdi/";
+            $comando="cat $ruta_respaldo/system.conf > /etc/dahdi/system.conf";
             exec($comando, $output, $retval);
+            //Solo en este verifico si se ejecuto correctamente pues aqui es donde se copia la info
             if ($retval!=0) $bExito = false;
-            else{
-		$comando="sudo -u root chown -R asterisk.asterisk /etc/dahdi";
-		exec($comando, $output, $retval);
-                $comando="rm -rf /etc/dahdi/*";
-                exec($comando, $output, $retval);
 
-                $arrInfoRestaurar = array(  'folder_path'               =>  "/etc",
-                                            'folder_name'               =>  "dahdi",
-                                            'nombre_archivo_respaldo'   =>  "etc.dahdi.tgz"
-                                    );
-                if(!restaurar_carpeta($arrInfoRestaurar,$ruta_respaldo,$error))
-                    $bExito = false;
-                else{
-			$comando="sudo -u root chown -R root.root /etc/dahdi";
-			exec($comando, $output, $retval);
-			$bExito = true;
-		}
-            }
+            $comando="sudo -u root chmod 644 /etc/dahdi/system.conf";
+            exec($comando, $output, $retval);
             break;
 
         case "fx_db":
             if (file_exists("$ruta_respaldo/fax.db"))
             {
                 $base_fax_respaldo = "$ruta_respaldo/fax.db";
-                $base_fax= "$arrConf[elastix_dbdir]/fax.db";
+                $base_fax= "/var/www/db/fax.db";
 
                 //consultar en la base para crear en el sistema
                 crear_cuentas_fax($base_fax_respaldo,$base_fax);
@@ -1049,7 +1031,6 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
             $comando="sudo -u root chmod 777 /var/www/html/faxes.tgz";
             exec($comando, $output, $retval);
 
-            //Respaldo carpeta /var/spool/asterisk/sounds en un tgz
             $comando="tar cvfz /var/www/html/faxes.tgz /var/www/html/faxes/";
             exec($comando, $output, $retval);
             if ($retval!=0) $bExito = false;
@@ -1068,7 +1049,7 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
 
         case "em_db":
             //Primero eliminar todos los dominios existentes
-            $pDB = new paloDB("sqlite3:///$arrConf[elastix_dbdir]/email.db");
+            $pDB = new paloDB("sqlite3:////var/www/db/email.db");
             if(!empty($pDB->errMsg)) {
                 echo "ERROR DE DB: $pDB->errMsg <br>";
             }
@@ -1097,7 +1078,7 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
             if (file_exists("$ruta_respaldo/email.db"))
             {
                 $base_email_respaldo = "$ruta_respaldo/email.db";
-                $base_email = "$arrConf[elastix_dbdir]/email.db";
+                $base_email = "/var/www/db/email.db";
 
                 //consultar en la base para crear en el sistema
                 if(!crear_cuentas_email($base_email_respaldo, $base_email))
@@ -1146,8 +1127,8 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
             break;
 
         case "ep_db":
-            $comando="cp $ruta_respaldo/endpoint.db $arrConf[elastix_dbdir]/";
-            exec($comando, $output, $retval);
+            $comando="cp -f $ruta_respaldo/endpoint.db /var/www/db/";
+            exec($comando, $output, $retval); echo $retval;
             if ($retval!=0) $bExito = false;
             break;
 
@@ -1246,7 +1227,7 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
             break;
 
         case "menus_permissions":
-            $comando="cp $ruta_respaldo/menu.db $ruta_respaldo/acl.db $arrConf[elastix_dbdir]/";
+            $comando="cp -f $ruta_respaldo/menu.db $ruta_respaldo/acl.db /var/www/db/";
             exec($comando, $output, $retval);
             if ($retval!=0) $bExito = false;
             break;
@@ -1262,9 +1243,9 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
                 $bExito = false;
             
             //RETRIEVE FLASH
-            $comando="cp $ruta_respaldo/retrieve_op_conf_from_mysql.pl /var/lib/asterisk/bin/";
+            $comando="cp -f $ruta_respaldo/retrieve_op_conf_from_mysql.pl /var/lib/asterisk/bin/";
             exec($comando, $output, $retval);
-            if ($retval!=0) $bExito = false;            
+            if ($retval!=0) $bExito = false;
 
             break;
         }
@@ -1292,7 +1273,7 @@ function crear_cuentas_fax($ruta_base_fax_respaldo,$base_fax)
     $result=array();
     $oFax = new paloFax();
 
-    #borrar las cuentas de fax de $arrConf[elastix_dbdir]
+    #borrar las cuentas de fax de /var/www/db
     $pDBorig = new paloDB("sqlite3:///$base_fax");
     if (!empty($pDBorig->errMsg)) {
         echo "DB ERROR: $pDBorig->errMsg \n";
@@ -1335,7 +1316,7 @@ function crear_cuentas_email($ruta_base_email_respaldo,$base_email)
         echo "DB ERROR: $pDB->errMsg \n";
     }
     else{
-        #borrar las cuentas de dominos y el domino $arrConf[elastix_dbdir]
+        #borrar las cuentas de dominos y el domino /var/www/db
         $pDBorig = new paloDB("sqlite3:///$base_email");
         if (!empty($pDBorig->errMsg)) {
             echo "DB ERROR: $pDBorig->errMsg \n";
@@ -1423,4 +1404,15 @@ function crear_mailbox_usuario($email,$username,$quota,&$error_msg){
 
     return TRUE;
 }
+
+function getParameter($parameter)
+{
+    if(isset($_POST[$parameter]))
+        return $_POST[$parameter];
+    else if(isset($_GET[$parameter]))
+        return $_GET[$parameter];
+    else
+        return null;
+}
+
 ?>
