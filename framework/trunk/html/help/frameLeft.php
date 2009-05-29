@@ -114,11 +114,11 @@ $oPt->tocarNodo($idParent, 1);
 
 $nodeserial=urlencode(serialize($oPt->obtenerNodosAbiertos()));
 $oPt->setURLBase("frameLeft.php?nodeserial=$nodeserial");
-$oPt->setRutaImage("/images");
+$oPt->setRutaImage("../images");
 
 echo "<html><head>";
 echo "<link rel='stylesheet' href='../themes/default/styles.css'>";
-echo "</head><body style=\"background-image: url(/images/bgGrayHoriz.gif); background-color: #f6f6f6; background-repeat: repeat-y;\">";
+echo "</head><body style=\"background-image: url(../images/bgGrayHoriz.gif); background-color: #f6f6f6; background-repeat: repeat-y;\">";
 echo $oPt->dibujaArbol("root");
 echo "</body></html>";
 
