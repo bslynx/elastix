@@ -260,7 +260,7 @@ Memory Key 10      :
 Download Username  :user
 Download password  :pass
 Download Server IP :$ipAdressServer
-Config File Name   :atc\$MAC.cfg
+Config File Name   :atc\$macAdress.cfg
 Config File Key    :
 Download Protocol  :2
 Download Mode      :1
@@ -444,7 +444,7 @@ SIP1 Mixer Uri     :
 Download Username  :user
 Download password  :pass
 Download Server IP :$ipAdressServer
-Config File Name   :atc\$MAC.cfg
+Config File Name   :atc$macAdress.cfg
 Config File Key    :
 Download Protocol  :2
 Download Mode      :1
