@@ -1,7 +1,7 @@
 <html>
 <header>
-  <link rel="stylesheet" href="/themes/{$THEMENAME}/styles.css">
-  <link rel="stylesheet" href="/themes/{$THEMENAME}/help.css">
+  <link rel="stylesheet" href="../themes/{$THEMENAME}/styles.css">
+  <link rel="stylesheet" href="../themes/{$THEMENAME}/help.css">
 </header>
 <body>
 
@@ -9,7 +9,7 @@
 
 <p>The option “Webmail” of the Menu “Email” in Elastix lets us review the email of the domains configured.</p>
 
-<div><img src="/images/help/email/email_webmail.jpg" border="0"></div>
+<div><img src="../images/help/email/email_webmail.jpg" border="0"></div>
 <div>Figure 1</div>
 <br />
 

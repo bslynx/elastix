@@ -1,7 +1,7 @@
 <html>
 <header>
-  <link rel="stylesheet" href="/themes/{$THEMENAME}/styles.css">
-  <link rel="stylesheet" href="/themes/{$THEMENAME}/help.css">
+  <link rel="stylesheet" href="../themes/{$THEMENAME}/styles.css">
+  <link rel="stylesheet" href="../themes/{$THEMENAME}/help.css">
 </header>
 <body>
 
@@ -9,7 +9,7 @@
 
 <p>vtiger CRM is 100% Open Source Customer Relationship Management solution built over LAMP/WAMP stack and other third-party open source packages.</p>
 
-<div><img src="/images/help/extras/vtigercrm.jpg" border="0"></div>
+<div><img src="../images/help/extras/vtigercrm.jpg" border="0"></div>
 <div>Figure 1</div>
 <br />
 

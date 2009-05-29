@@ -1,6 +1,6 @@
 <html>
 <header>
-  <link rel="stylesheet" href="/themes/{$THEMENAME}/styles.css">
+  <link rel="stylesheet" href="../themes/{$THEMENAME}/styles.css">
 </header>
 <body>
 
