@@ -50,17 +50,33 @@ if(!empty($_GET['id_nodo'])){
                 
     // Si no existe el archivo de ayuda y se trata de un menu "padre",
     // muestro el menu hijo que encuentre primero
-    if(existeArchivoAyuda($idMenuMostrar)==3 || existeArchivoAyuda($idMenuMostrar)==4)
+/*
+    $resArchivoExiste = existeArchivoAyuda($idMenuMostrar); 
+    if($resArchivoExiste == 3 || $resArchivoExiste == 4) {
 		$idMenuMostrar = menuHijoPorOmision($idMenuMostrar);
+        $resArchivoExiste = existeArchivoAyuda($idMenuMostrar);
+    }
     		
-    if(existeArchivoAyuda($idMenuMostrar)==1) {
+    if($resArchivoExiste == 1) {
        $smarty->assign("node_id", $idMenuMostrar);     
        $smarty->display($_SERVER["DOCUMENT_ROOT"]."/modules/$idMenuMostrar/help/$idMenuMostrar.hlp");
-    }else if(existeArchivoAyuda($idMenuMostrar)==2) {
+    }else if($resArchivoExiste == 2) {
        $smarty->assign("node_id", $idMenuMostrar);    
        $smarty->display($_SERVER["DOCUMENT_ROOT"]."/help/content/$idMenuMostrar.hlp");
     } else      
        echo "The help file for the selected menu does not exists";
+*/
+    $sRuta = rutaArchivoAyuda($idMenuMostrar);
+    if (is_null($sRuta)) {
+    	$idMenuMostrar = menuHijoPorOmision($idMenuMostrar);
+        $sRuta = rutaArchivoAyuda($idMenuMostrar);
+    }
+    if (is_null($sRuta)) {
+    	echo '<html><body>The help file for selected menu does not exist.</body></html>';
+    } else {
+       $smarty->assign("node_id", $idMenuMostrar);    
+       $smarty->display($sRuta);
+    }
 } else {
     echo "The selected menu is not valid.";
 }
@@ -88,7 +104,7 @@ function obtenerMenuPadre($idMenu)
     $arrMenu = $_SESSION['elastix_user_permission'];
     return $arrMenu[$idMenu]['IdParent'];
 }
-
+/*
 function existeArchivoAyuda($idMenu)
 {
     if(file_exists($_SERVER["DOCUMENT_ROOT"]."/modules/$idMenu/help/$idMenu.hlp")) {
@@ -100,4 +116,19 @@ function existeArchivoAyuda($idMenu)
     }else
         return 4;
 }
+*/
+
+function rutaArchivoAyuda($idMenu)
+{
+    $serverDir = dirname($_SERVER['SCRIPT_FILENAME']).'/..';
+    $listaRutas = array(
+        "$serverDir/modules/$idMenu/help/$idMenu.hlp",
+        "$serverDir/help/content/$idMenu.hlp",
+    );
+    foreach ($listaRutas as $sRuta) {
+    	if (file_exists($sRuta)) return $sRuta;
+    }
+    return NULL;
+}
+
 ?>
