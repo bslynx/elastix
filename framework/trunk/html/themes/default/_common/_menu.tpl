@@ -11,7 +11,7 @@
             <td class="headlinkon" valign="bottom">
               <table cellSpacing="0" cellPadding="2" height="30" border="0">
                 <tr><td class="menutabletabon" title="" nowrap><a
-                        class="menutableon" href="/?menu={$idMenu}">{$menu.Name}</a></td>
+                        class="menutableon" href="?menu={$idMenu}">{$menu.Name}</a></td>
                 </tr>
               </table>
             </td>
@@ -20,7 +20,7 @@
             <td class="headlink" valign="bottom">
               <table cellSpacing="0" cellPadding="2" height="29" border="0">
                 <tr><td class="menutabletaboff" title="" nowrap><a
-                        class="menutable" href="/?menu={$idMenu}">{$menu.Name}</a></td>
+                        class="menutable" href="?menu={$idMenu}">{$menu.Name}</a></td>
                 </tr>
               </table>
             </td>
@@ -57,7 +57,7 @@
                 </div>
             </td>
             <td class="menuaftertab" width="40%" align="right">&nbsp;<a href="javascript:mostrar();">{$ABOUT_ELASTIX}</a></td>
-            <td class="menuaftertab" width="20%" align="right">&nbsp;<a href="/?logout=yes">{$LOGOUT}</a></td>
+            <td class="menuaftertab" width="20%" align="right">&nbsp;<a href="?logout=yes">{$LOGOUT}</a></td>
           </tr>
         </table>
       </td>
@@ -71,15 +71,15 @@
                 <tr>
                   {foreach from=$arrSubMenu key=idSubMenu item=subMenu}
                   {if $idSubMenu eq $idSubMenuSelected}
-                  <td title="" class="botonon"><a href="/?menu={$idSubMenu}" class="submenu_on">{$subMenu.Name}</td>
+                  <td title="" class="botonon"><a href="?menu={$idSubMenu}" class="submenu_on">{$subMenu.Name}</td>
                   {else}
-                  <td title="" class="botonoff"><a href="/?menu={$idSubMenu}">{$subMenu.Name}</a></td>
+                  <td title="" class="botonoff"><a href="?menu={$idSubMenu}">{$subMenu.Name}</a></td>
                   {/if}
                   {/foreach}
                 </tr>
               </table>
             </td>
-            <td align="right" valign="middle"><a href="javascript:openWindow('/help/?id_nodo={$idSubMenuSelected}&name_nodo={$nameSubMenuSelected}')"><img
+            <td align="right" valign="middle"><a href="javascript:openWindow('help/?id_nodo={$idSubMenuSelected}&name_nodo={$nameSubMenuSelected}')"><img
                 src="images/help_top.gif" border="0"></a>&nbsp;&nbsp;<a href="javascript:changeMenu()"><img
                 src="images/arrow_top.gif" border="0"></a>&nbsp;&nbsp;</td>
           </tr>
@@ -93,7 +93,7 @@
     <tr>
       <td><img src="images/logo_elastix_mini.jpg" border="0"></td>
       <td align="right" class="letra_gris" valign="middle">{$nameMainMenuSelected} &rarr; {$nameSubMenuSelected} {if !empty($idSubMenu2Selected)} &rarr; {$nameSubMenu2Selected} {/if}
-          &nbsp;&nbsp;<a href="javascript:openWindow('/help/?id_nodo={$idSubMenuSelected}&name_nodo={$nameSubMenuSelected}')"><img src="images/help_bottom.gif" border="0" 
+          &nbsp;&nbsp;<a href="javascript:openWindow('help/?id_nodo={$idSubMenuSelected}&name_nodo={$nameSubMenuSelected}')"><img src="images/help_bottom.gif" border="0" 
           align="absmiddle"></a>
           &nbsp;&nbsp;<a href="javascript:changeMenu()"><img src="images/arrow_bottom.gif" border="0" align="absmiddle"></a>&nbsp;&nbsp;
       </td>
@@ -107,9 +107,9 @@
       <table cellspacing="0" cellpadding="0" width="100%" class="" align="left">
         {foreach from=$arrSubMenu2 key=idSubMenu2 item=subMenu2}
           {if $idSubMenu2 eq $idSubMenu2Selected}
-          <tr><td title="" class="menuiz_botonon"><a href="/?menu={$idSubMenu2}">{$subMenu2.Name}</td></tr>
+          <tr><td title="" class="menuiz_botonon"><a href="?menu={$idSubMenu2}">{$subMenu2.Name}</td></tr>
           {else}
-          <tr><td title="" class="menuiz_botonoff"><a href="/?menu={$idSubMenu2}">{$subMenu2.Name}</a></td></tr>
+          <tr><td title="" class="menuiz_botonoff"><a href="?menu={$idSubMenu2}">{$subMenu2.Name}</a></td></tr>
           {/if}
         {/foreach}
       </table>
