@@ -34,37 +34,61 @@ function _moduleContent(&$smarty, $module_name)
 
 
     //actions
-    $accion = getAction();
+    $action = getAction();
     $content = "";
 
-    switch($accion){
-        case "save":
-            $content = save{NAME_CLASS}($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+    switch($action){
+        case "save_new":
+            $content = saveNew{NAME_CLASS}($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
             break;
-        default:
-            $content = form{NAME_CLASS}($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+        default: // view_form
+            $content = viewForm{NAME_CLASS}($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
             break;
     }
     return $content;
 }
 
-function form{NAME_CLASS}($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
+function viewForm{NAME_CLASS}($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
 {
     $p{NAME_CLASS} = new paloSanto{NAME_CLASS}($pDB);
     $arrForm{NAME_CLASS} = createFieldForm($arrLang);
     $oForm = new paloForm($smarty,$arrForm{NAME_CLASS});
 
+    //begin, Form data persistence to errors and other events.
+    $_DATA  = $_POST;
+    $action = getParameter("action");
+    $id     = getParameter("id");
+    $smarty->assign("ID", $id); //persistence id with input hidden in tpl
+
+    if($action=="view")
+        $oForm->setViewMode();
+    else if($action=="view_edit" || getParameter("save_edit"))
+        $oForm->setEditMode();
+    //end, Form data persistence to errors and other events.
+
+    if($action=="view" || $action=="view_edit"){ // the action is to view or view_edit.
+        $data{NAME_CLASS} = $p{NAME_CLASS}->get{NAME_CLASS}ById($id);
+        if(is_array($data{NAME_CLASS}) & count($data{NAME_CLASS})>0)
+            $_DATA = $data{NAME_CLASS};
+        else{
+            $smarty->assign("mb_title", $arrLang["Error get Data"]);
+            $smarty->assign("mb_message", $p{NAME_CLASS}->errMsg);
+        }
+    }
+
     $smarty->assign("SAVE", $arrLang["Save"]);
+    $smarty->assign("EDIT", $arrLang["Edit"]);
+    $smarty->assign("CANCEL", $arrLang["Cancel"]);
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
     $smarty->assign("IMG", "images/list.png");
 
-    $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",$arrLang["{NEW_MODULE_NAME}"], $_POST);
+    $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",$arrLang["{NEW_MODULE_NAME}"], $_DATA);
     $content = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
 
     return $content;
 }
 
-function save{NAME_CLASS}($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
+function saveNew{NAME_CLASS}($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
 {
     $p{NAME_CLASS} = new paloSanto{NAME_CLASS}($pDB);
     $arrForm{NAME_CLASS} = createFieldForm($arrLang);
@@ -80,7 +104,7 @@ function save{NAME_CLASS}($smarty, $module_name, $local_templates_dir, &$pDB, $a
                 $strErrorMsg .= "$k, ";
         }
         $smarty->assign("mb_message", $strErrorMsg);
-        $content = form{NAME_CLASS}($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+        $content = viewForm{NAME_CLASS}($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
     }
     else{
         //NO ERROR, HERE IMPLEMENTATION OF SAVE
@@ -111,14 +135,18 @@ function getParameter($parameter)
 
 function getAction()
 {
-    if(getParameter("show")) //Get parameter by POST (submit)
-        return "show";
-    if(getParameter("save"))
-        return "save";
-    else if(getParameter("new"))
-        return "new";
-    else if(getParameter("action")=="show") //Get parameter by GET (command pattern, links)
-        return "show";
+    if(getParameter("save_new")) //Get parameter by POST (submit)
+        return "save_new";
+    else if(getParameter("save_edit"))
+        return "save_edit";
+    else if(getParameter("delete")) 
+        return "delete";
+    else if(getParameter("new_open")) 
+        return "view_form";
+    else if(getParameter("action")=="view")      //Get parameter by GET (command pattern, links)
+        return "view_form";
+    else if(getParameter("action")=="view_edit")
+        return "view_form";
     else
-        return "report";
+        return "report"; //cancel
 }

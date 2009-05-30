@@ -34,10 +34,10 @@ function _moduleContent(&$smarty, $module_name)
 
 
     //actions
-    $accion = getAction();
+    $action = getAction();
     $content = "";
 
-    switch($accion){
+    switch($action){
         default:
             $content = report{NAME_CLASS}($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
             break;
@@ -52,15 +52,18 @@ function report{NAME_CLASS}($smarty, $module_name, $local_templates_dir, &$pDB, 
     $filter_value = getParameter("filter_value");
     $action = getParameter("nav");
     $start  = getParameter("start");
+    $as_csv = getParameter("exportcsv");
 
     //begin grid parameters
     $oGrid  = new paloSantoGrid($smarty);
-    $total{NAME_CLASS} = $p{NAME_CLASS}->ObtainNum{NAME_CLASS}($filter_field, $filter_value);
+    $total{NAME_CLASS} = $p{NAME_CLASS}->getNum{NAME_CLASS}($filter_field, $filter_value);
 
     $limit  = 20;
     $total  = $total{NAME_CLASS};
     $oGrid->setLimit($limit);
     $oGrid->setTotal($total);
+    $oGrid->enableExport();   // enable csv export.
+    $oGrid->pagingShow(true); // show paging section.
 
     $oGrid->calculatePagination($action,$start);
     $offset = $oGrid->getOffsetValue();
@@ -68,7 +71,7 @@ function report{NAME_CLASS}($smarty, $module_name, $local_templates_dir, &$pDB, 
     $url    = "?menu=$module_name&filter_field=$filter_field&filter_value=$filter_value";
 
     $arrData = null;
-    $arrResult =$p{NAME_CLASS}->Obtain{NAME_CLASS}($limit, $offset, $filter_field, $filter_value);
+    $arrResult =$p{NAME_CLASS}->get{NAME_CLASS}($limit, $offset, $filter_field, $filter_value);
 
     if(is_array($arrResult) && $total>0){
         foreach($arrResult as $key => $value){ {ARR_DATA_ROWS}
@@ -97,8 +100,19 @@ function report{NAME_CLASS}($smarty, $module_name, $local_templates_dir, &$pDB, 
     $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl","",$_POST);
     //end section filter
 
-    $oGrid->showFilter(trim($htmlFilter));
-    $content = "<form  method='POST' style='margin-bottom:0;' action=$url>".$oGrid->fetchGrid($arrGrid, $arrData,$arrLang)."</form>";
+    if($as_csv == 'yes'){
+        $name_csv = "{NAME_CLASS}_".date("d-M-Y").".csv";
+        header("Cache-Control: private");
+        header("Pragma: cache");
+        header("Content-Type: application/octec-stream");
+        header("Content-disposition: inline; filename={$name_csv}");
+        header("Content-Type: application/force-download");
+        $content = $oGrid->fetchGridCSV($arrGrid, $arrData);
+    }
+    else{
+        $oGrid->showFilter(trim($htmlFilter));
+        $content = "<form  method='POST' style='margin-bottom:0;' action=$url>".$oGrid->fetchGrid($arrGrid, $arrData,$arrLang)."</form>";
+    }
     //end grid parameters
 
     return $content;
@@ -138,12 +152,18 @@ function getParameter($parameter)
 
 function getAction()
 {
-    if(getParameter("show")) //Get parameter by POST (submit)
-        return "show";
-    else if(getParameter("new"))
-        return "new";
-    else if(getParameter("action")=="show") //Get parameter by GET (command pattern, links)
-        return "show";
+    if(getParameter("save_new")) //Get parameter by POST (submit)
+        return "save_new";
+    else if(getParameter("save_edit"))
+        return "save_edit";
+    else if(getParameter("delete")) 
+        return "delete";
+    else if(getParameter("new_open")) 
+        return "view_form";
+    else if(getParameter("action")=="view")      //Get parameter by GET (command pattern, links)
+        return "view_form";
+    else if(getParameter("action")=="view_edit")
+        return "view_form";
     else
-        return "report";
+        return "report"; //cancel
 }

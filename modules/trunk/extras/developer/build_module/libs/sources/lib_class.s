@@ -23,9 +23,8 @@ class paloSanto{NAME_CLASS} {
 
     /*HERE YOUR FUNCTIONS*/
 
-    function ObtainNum{NAME_CLASS}($filter_field, $filter_value)
+    function getNum{NAME_CLASS}($filter_field, $filter_value)
     {
-        //Here your implementation
         $where = "";
         if(isset($filter_field) & $filter_field !="")
             $where = "where $filter_field like '$filter_value%'";
@@ -41,9 +40,8 @@ class paloSanto{NAME_CLASS} {
         return $result[0];
     }
 
-    function Obtain{NAME_CLASS}($limit, $offset, $filter_field, $filter_value)
+    function get{NAME_CLASS}($limit, $offset, $filter_field, $filter_value)
     {
-        //Here your implementation
         $where = "";
         if(isset($filter_field) & $filter_field !="")
             $where = "where $filter_field like '$filter_value%'";
@@ -55,6 +53,19 @@ class paloSanto{NAME_CLASS} {
         if($result==FALSE){
             $this->errMsg = $this->_DB->errMsg;
             return array();
+        }
+        return $result;
+    }
+
+    function get{NAME_CLASS}ById($id)
+    {
+        $query = "SELECT * FROM table WHERE id=$id";
+
+        $result=$this->_DB->getFirstRowQuery($query,true);
+
+        if($result==FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return null;
         }
         return $result;
     }

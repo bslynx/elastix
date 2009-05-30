@@ -311,7 +311,7 @@ class paloSantoBuildModule {
                                 $content_file = str_replace("{LABEL_FIELD}", $field[0], $content_file);
                                 $content_file = str_replace("{NAME_FIELD}", str_replace(" ","_",strtolower(trim($field[0]))), $content_file);
                                 $content_form .= $content_file;
-                                
+
                                 fclose($gestor_form);
                             }
                     }
@@ -322,7 +322,6 @@ class paloSantoBuildModule {
 
         $content = str_replace("{NAME_CLASS}", "$name_class", $content);
         $content = str_replace("{NEW_MODULE_NAME}", "$new_module_name", $content);
-        
 
         fclose($gestor);
 
