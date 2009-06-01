@@ -21,7 +21,7 @@ $smarty->cache_dir =    "$path/var/cache/";
 $html = _moduleContent($smarty, $module_name);
 $smarty->assign("CONTENT", $html);
 $smarty->assign("THEMENAME", $arrConf['mainTheme']);
-$smarty->assign("path", "../../../");
+$smarty->assign("path", "../../");
 $smarty->display("$path/modules/$module_calendar/$template_module/address_book_list.tpl");
 	
 function _moduleContent(&$smarty, $module_name)
@@ -38,11 +38,11 @@ function _moduleContent(&$smarty, $module_name)
     include_once "$path/modules/$module_name/configs/default.conf.php";
     include_once "$path/modules/$module_name/libs/paloSantoAdressBook.class.php";
     global $arrConf;
-    load_language("../../../");
+    load_language("../../");
 
     //include file language agree to elastix configuration
     //if file language not exists, then include language by default (en)
-    $lang=get_language("../../../");
+    $lang=get_language("../../");
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
     $lang_file="modules/$module_name/lang/$lang.lang";
     if (file_exists("$path/$lang_file")) include_once "$path/$lang_file";
@@ -195,7 +195,7 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
     else $name = "";
 
     $arrGrid = array(   "title"    => $arrLang["Address Book"],
-                        "icon"     => "../../../images/list.png",
+                        "icon"     => "../../images/list.png",
                         "width"    => "99%",
                         "start"    => ($total==0) ? 0 : $offset + 1,
                         "end"      => $end,

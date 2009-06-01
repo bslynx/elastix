@@ -137,7 +137,7 @@ function event_form()
 
     $day_of_month_sequence = get_day_of_month_sequence($month, $year);
 
-    $url_popup = $phpc_root_path."libs/phone_numbers.php";
+    $url_popup = $phpc_root_path."phone_numbers.php";
 
     return tag('form', attributes("action=\"$phpc_script\""),
             tag('table', $attributes,
