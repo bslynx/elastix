@@ -7,7 +7,9 @@ echo ""
 echo "Welcome to Elastix "
 echo "----------------------------------------------------"
 echo ""
-echo "For access to the Elastix web GUI use this URL"
+#echo "For access to the Elastix web GUI use this URL"
+echo "To access your Elastix System, using a separate workstation (PC/MAC/Linux)"
+echo "Open the Internet Browser using the following URL:"
 
 if [ "$IPADDR" = "" ]; then
    echo "http://<YOUR-IP-HERE>"
