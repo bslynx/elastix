@@ -797,7 +797,7 @@ class paloACL {
             if($user == "" or $pass == "") {
                 $this->errMsg = PALOACL_MSG_ERROR_1;
                 return FALSE;
-            } else if (!ereg("^[[:alnum:]\\-_]+$", $user)) {
+            } else if (!ereg("^[[:alnum:]\.\\-_]+$", $user)) {
                 $this->errMsg = PALOACL_MSG_ERROR_2;
                 return FALSE;
             } else if (!ereg("^[[:alnum:]]{32}$", $pass)) {
