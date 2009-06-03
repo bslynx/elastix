@@ -386,7 +386,9 @@ class paloFax {
                         "#CallIDAnswerLength:    4\n" .
                         "# Uncomment these if you really want them, but you probably don't.\n" .
                         "#CallIDPattern:          \"DATE=\"\n" .
-                        "#CallIDPattern:          \"TIME=\"\n";
+                        "#CallIDPattern:          \"TIME=\"\n" .
+                        "FaxRcvdCmd:              bin/faxrcvd.php\n" .
+                        "UseJobTSI:               true\n";
 
         return $strContents;
     }
