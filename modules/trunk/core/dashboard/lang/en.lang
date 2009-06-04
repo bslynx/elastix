@@ -31,13 +31,13 @@
   $Id: en.lang,v 1.7 2008/02/18 09:49:00 bmacias Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"You haven't extension" => "You haven't a extension assigned.",
+"You haven't extension" => "Extension has not been assigned.",
 "Imap: Connection error" => "Imap: Connection error.",
-"You don't recibed emails" => "You have not received any email.",
-"You don't recibed faxes" => "You have not received any fax.",
+"You don't recibed emails" => "No emails received.",
+"You don't recibed faxes" => "No faxes received.",
 "Query error" => "Query error",
-"You don't recibed calls" => "You have not received any call.",
-"You don't recibed voicemails" => "You have not received any voicemail.",
+"You don't recibed calls" => "No calls received.",
+"You don't recibed voicemails" => "No voicemails received.",
 "Unenabled to open file" => "Unabled to open file",
 "Dashboard" => "Dashboard",
 "Calls" => "Calls",
@@ -45,7 +45,7 @@ $arrLangModule=array(
 "Faxes" => "Faxes",
 "Voicem@ils" => "Voicem@ils",
 "answered" => "<font color='green'><b>Answered</b></font>",
-"missed" => "<font color='red'><b>Lost</b></font>",
+"missed" => "<font color='red'><b>Missed</b></font>",
 "unknow" => "<b>unknow</b>",
 "call record" => "{status} call on date {date} from number {source}",
 "call duration" => " and {time} secs. of duration.",
@@ -61,8 +61,8 @@ $arrLangModule=array(
 "Error at read yours mails." => "Failed to access voicemails list.",
 "Error at read status system." => "Failed to access status system.",
 "Error at read your calendar." => "Failed to access calendar list.",
-"You don't have events" => "You have not received any event.",
-"You don't have a webmail account" => "You don't have a webmail account",
+"You don't have events" => "No events received.",
+"You don't have a webmail account" => "Webmail account has not been assigned",
 "Calendar" => "Calendar",
 );
 ?>
