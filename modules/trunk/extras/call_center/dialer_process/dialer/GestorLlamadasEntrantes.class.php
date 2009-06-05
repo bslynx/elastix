@@ -53,6 +53,7 @@ class GestorLlamadasEntrantes
     private $_cacheColasMonitoreadas;   // Cache de las colas monitoreadas
     
     private $_tieneCampaignEntry;	// VERDADERO si hay soporte para campañas de llamadas entrantes
+    private $_tieneTrunk;           // VERDADERO si hay soporte para registrar trunk de llamadas entrantes
 
     var $DEBUG = FALSE;
 
@@ -75,6 +76,7 @@ class GestorLlamadasEntrantes
         $this->_cacheAgentesCola = NULL;
         $this->_cacheColasMonitoreadas = NULL;
         $this->_tieneCampaignEntry = FALSE;
+        $this->_tieneTrunk = FALSE;
 
 		// Verificar si el esquema de base de datos tiene soporte de campaña entrante
 		$recordset =& $dbConn->query('DESCRIBE call_entry');
@@ -83,10 +85,14 @@ class GestorLlamadasEntrantes
 		} else {
 			while ($tuplaCampo = $recordset->fetchRow(DB_FETCHMODE_OBJECT)) {
 				if ($tuplaCampo->Field == 'id_campaign') $this->_tieneCampaignEntry = TRUE;
+                if ($tuplaCampo->Field == 'trunk') $this->_tieneTrunk = TRUE;
 			}
 			$oLog->output('INFO: sistema actual '.
 				($this->_tieneCampaignEntry ? 'sí puede' : 'no puede').
 				' registrar ID de campaña entrante.');
+            $oLog->output('INFO: sistema actual '.
+                ($this->_tieneTrunk ? 'sí puede' : 'no puede').
+                ' registrar troncal de campaña entrante.');
 		}
 
         // Llenar el cache de datos de los agentes
@@ -263,22 +269,56 @@ class GestorLlamadasEntrantes
 	            }
 			}
             
-            $idCola = array_search($eventParams['Queue'], $this->_cacheColasMonitoreadas);
-            if ($this->_tieneCampaignEntry) {
-            	$sQueryInsert =
-            		'INSERT INTO call_entry (id_agent, id_queue_call_entry, '.
-                    	'id_contact, callerid, datetime_entry_queue, datetime_init, '.
-                    	'datetime_end, duration_wait, duration, status, uniqueid, id_campaign) '.
-                	"VALUES (NULL, ?, NULL, ?, NOW(), NULL, NULL, NULL, NULL, 'en-cola', ?, ?)";
-            	$queryParams = array($idCola, $eventParams['CallerID'], $eventParams['Uniqueid'], $idCampania);
-            } else {
-            	$sQueryInsert =
-            		'INSERT INTO call_entry (id_agent, id_queue_call_entry, '.
-                    	'id_contact, callerid, datetime_entry_queue, datetime_init, '.
-                    	'datetime_end, duration_wait, duration, status, uniqueid) '.
-                	"VALUES (NULL, ?, NULL, ?, NOW(), NULL, NULL, NULL, NULL, 'en-cola', ?)";
-            	$queryParams = array($idCola, $eventParams['CallerID'], $eventParams['Uniqueid']);
+            $sTrunkLlamada = '';
+            if ($this->_tieneTrunk) {
+                if ($this->DEBUG) {
+                    $this->_oMainLog->output('DEBUG: OnJoin: se tiene Channel='.$eventParams['Channel']);
+                }
+                $regs = NULL;
+                if (!ereg('^(.+)-[0-9a-fA-F]+$', $eventParams['Channel'], $regs)) {
+                	$this->_oMainLog->output('ERR: no se puede extraer trunk a partir de Channel='.$eventParams['Channel']);
+                } else {
+                	$sTrunkLlamada = $regs[1];
+                    if ($this->DEBUG) {
+                        $this->_oMainLog->output('DEBUG: OnJoin: se tiene trunk='.$sTrunkLlamada);
+                    }
+                }
             }
+            
+            $idCola = array_search($eventParams['Queue'], $this->_cacheColasMonitoreadas);
+            $camposSQL = array(
+                array('id_agent',               'NULL',         null),
+                array('id_queue_call_entry',    '?',            $idCola),
+                array('id_contact',             'NULL',         null),
+                array('callerid',               '?',            $eventParams['CallerID']),
+                array('datetime_entry_queue',   'NOW()',        null),
+                array('datetime_init',          'NULL',         null),
+                array('datetime_end',           'NULL',         null),
+                array('duration_wait',          'NULL',         null),
+                array('duration',               'NULL',         null),
+                array('status',                 "'en-cola'",    null),
+                array('uniqueid',               '?',            $eventParams['Uniqueid']),
+            );
+            if ($this->_tieneCampaignEntry)
+                $camposSQL[] = array('id_campaign', '?', $idCampania);
+            if ($this->_tieneTrunk)
+                $camposSQL[] = array('trunk', '?', $sTrunkLlamada);
+            
+            $sListaCampos = $sListaValores = '';
+            $queryParams = array();
+            foreach ($camposSQL as $tuplaCampo) {
+            	if (strlen($sListaCampos) > 0) $sListaCampos .= ', ';
+                if (strlen($sListaValores) > 0) $sListaValores .= ', ';
+                $sListaCampos .= $tuplaCampo[0];
+                $sListaValores .= $tuplaCampo[1];
+                if (!is_null($tuplaCampo[2])) $queryParams[] = $tuplaCampo[2];
+            }
+            $sQueryInsert = sprintf('INSERT INTO call_entry (%s) VALUES (%s)', $sListaCampos, $sListaValores);
+            if ($this->DEBUG) {
+            	$this->_oMainLog->output('DEBUG: OnJoin: a punto de ejecutar ['.
+                    $sQueryInsert.'] con valores ['.join($queryParams, ',').']...');
+            }
+            
             $resultado =& $this->_dbConn->query(
                 $sQueryInsert, 
                 $queryParams);

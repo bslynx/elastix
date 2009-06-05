@@ -359,6 +359,7 @@ CREATE TABLE IF NOT EXISTS `call_entry` (
   `duration_wait` int(11) default NULL,
   `uniqueid` varchar(32) default NULL,
   `id_campaign` int(10) unsigned,
+  `trunk` varchar(20) NOT NULL,
   PRIMARY KEY  (`id`),
   KEY `id_agent` (`id_agent`),
   KEY `id_queue_call_entry` (`id_queue_call_entry`),
@@ -523,6 +524,35 @@ DELIMITER ; ++
 CALL temp_calls_agent_2009_05_07();
 DROP PROCEDURE IF EXISTS temp_calls_agent_2009_05_07;
 
+
+/* Procedimiento para agregar recolección de trunk de llamada entrante */
+DELIMITER ++ ;
+
+DROP PROCEDURE IF EXISTS temp_campania_entrante_trunk_2009_06_04 ++
+CREATE PROCEDURE temp_campania_entrante_trunk_2009_06_04 ()
+    READS SQL DATA
+    MODIFIES SQL DATA
+BEGIN
+    DECLARE l_existe_columna tinyint(1);
+    
+    SET l_existe_columna = 0;
+
+    /* Verificar existencia de columna call_entry.trunk que debe agregarse */
+    SELECT COUNT(*) INTO l_existe_columna 
+    FROM INFORMATION_SCHEMA.COLUMNS 
+    WHERE TABLE_SCHEMA = 'call_center' 
+        AND TABLE_NAME = 'call_entry' 
+        AND COLUMN_NAME = 'trunk';
+    IF l_existe_columna = 0 THEN
+        ALTER TABLE call_entry
+        ADD COLUMN trunk varchar(20) NOT NULL;
+    END IF;
+END;
+++
+DELIMITER ; ++
+
+CALL temp_campania_entrante_trunk_2009_06_04();
+DROP PROCEDURE IF EXISTS temp_campania_entrante_trunk_2009_06_04;
 
 
 /*!40000 ALTER TABLE `queue_call_entry` ENABLE KEYS */;
