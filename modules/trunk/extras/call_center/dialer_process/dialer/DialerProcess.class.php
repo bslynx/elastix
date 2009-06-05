@@ -36,7 +36,8 @@ require_once('GestorLlamadasEntrantes.class.php');
 // Número mínimo de muestras para poder confiar en predicciones de marcador
 define('MIN_MUESTRAS', 10);
 
-//dl('sqlite3.so');
+// Número de llamadas por campaña para las que se lleva la cuenta de cuánto tardó en ser contestada
+define('NUM_LLAMADAS_HISTORIAL_CONTESTADA', 20);
 
 class DialerProcess extends AbstractProcess
 {
@@ -188,7 +189,7 @@ class DialerProcess extends AbstractProcess
 			),
 			'dialer'	=>	array(
 				'llamada_corta'	=>	10,
-				'tiempo_contestar' => 8,	// TODO: debería ser recalculado por campaña
+				'tiempo_contestar' => 8,
 				'debug'			=>	0,
 				'allevents'		=>	0,
                 'overcommit'    =>  0,
@@ -488,9 +489,11 @@ class DialerProcess extends AbstractProcess
                         $infoCampania->variancia = $infoCampania->desviacion * $infoCampania->desviacion;
                     $listaCampanias[$infoCampania->id] = $infoCampania;
                 }
-            
+
                 // Preparar la información a asignar a datos de app en astman
-                if (!is_array($this->_infoLlamadas)) $this->_infoLlamadas = array();        
+                if (!is_array($this->_infoLlamadas)) $this->_infoLlamadas = array();
+                if (!is_array($this->_infoLlamadas['historial_contestada'])) 
+                    $this->_infoLlamadas['historial_contestada'] = array();
                 $this->_infoLlamadas['campanias'] = $listaCampanias;
                 if (!isset($this->_infoLlamadas['llamadas'])) $this->_infoLlamadas['llamadas'] = array();
             
@@ -499,6 +502,15 @@ class DialerProcess extends AbstractProcess
                     $bLlamadasAgregadas = $this->actualizarLlamadasCampania($infoCampania) || $bLlamadasAgregadas;
                 }
                 
+                // Remover del historial de tiempo de contestado, las campañas que ya no
+                // se están monitoreando
+                $listaCampaniasAusentes = array_diff(
+                    array_keys($this->_infoLlamadas['historial_contestada']), 
+                    array_keys($listaCampanias));
+                foreach ($listaCampaniasAusentes as $key) {
+                	unset($this->_infoLlamadas['historial_contestada'][$key]);
+                }
+
                 // Consumir todos los eventos de llamada durante 3 segundos
                 $iTimestampInicioEspera = time();
                 while (time() - $iTimestampInicioEspera <= 3) {
@@ -774,8 +786,8 @@ PETICION_LLAMADAS_AGENTE;
             $oPredictor->setDesviacionDuracion($infoCampania->queue, $infoCampania->desviacion);
             $oPredictor->setProbabilidadAtencion($infoCampania->queue, 0.97);
             
-            // TODO: calcular sobre la marcha en base a respuestas sucesivas
-            $oPredictor->setTiempoContestar($infoCampania->queue, $this->_iTiempoContestacion);
+            // Calcular el tiempo que se tarda desde Originate hasta Link con agente.
+            $oPredictor->setTiempoContestar($infoCampania->queue, $this->_leerTiempoContestar($infoCampania->id));
         }
         
         // Intentar manejar primero las llamadas agendadas a agentes específicos.
@@ -1181,7 +1193,7 @@ PETICION_LLAMADAS;
                 	$this->oMainLog->output("ERR: problema al enviar Originate a Asterisk");
                     $this->iniciarConexionAsterisk();
                 }
-                // TODO: aparece ActionID en la respuesta con Success si es Async?
+
                 if ($resultado['Response'] == 'Success') {
                     // Guardar el momento en que se originó la llamada
                     $listaLlamadas[$sKey]->OriginateStart = time();
@@ -1394,6 +1406,40 @@ PETICION_LLAMADAS;
 		return $infoTrunk;
 	}
 
+    // Procedimiento que actualiza la lista de las últimas llamadas que fueron
+    // contestadas o perdidas.
+    private function _agregarTiempoContestar($idCampaign, $iMuestra)
+    {
+        if (!is_array($this->_infoLlamadas['historial_contestada'])) 
+            $this->_infoLlamadas['historial_contestada'] = array();
+    	if (!is_array($this->_infoLlamadas['historial_contestada'][$idCampaign]))
+            $this->_infoLlamadas['historial_contestada'][$idCampaign] = array();
+        array_push($this->_infoLlamadas['historial_contestada'][$idCampaign], $iMuestra);
+        while (count($this->_infoLlamadas['historial_contestada'][$idCampaign]) > NUM_LLAMADAS_HISTORIAL_CONTESTADA)
+            array_shift($this->_infoLlamadas['historial_contestada'][$idCampaign]);
+    }
+
+    private function _leerTiempoContestar($idCampaign)
+    {
+        if (!is_array($this->_infoLlamadas['historial_contestada'])) 
+            $this->_infoLlamadas['historial_contestada'] = array();
+        if (!is_array($this->_infoLlamadas['historial_contestada'][$idCampaign]))
+            $this->_infoLlamadas['historial_contestada'][$idCampaign] = array();
+    	$iNumElems = count($this->_infoLlamadas['historial_contestada'][$idCampaign]);
+        $iSuma = array_sum($this->_infoLlamadas['historial_contestada'][$idCampaign]);
+        if ($iNumElems < NUM_LLAMADAS_HISTORIAL_CONTESTADA) {
+        	$iSuma += $this->_iTiempoContestacion * (NUM_LLAMADAS_HISTORIAL_CONTESTADA - $iNumElems);
+            $iNumElems = NUM_LLAMADAS_HISTORIAL_CONTESTADA;
+        }
+        $iTiempoContestar = $iSuma / $iNumElems;
+        if ($this->DEBUG) {
+        	$this->oMainLog->output("DEBUG: con ".count($this->_infoLlamadas['historial_contestada'][$idCampaign]).
+                " de ".NUM_LLAMADAS_HISTORIAL_CONTESTADA." muestras y {$this->_iTiempoContestacion} por omisión, ".
+                "campaña $idCampaign tiene ".sprintf('%.2f', $iTiempoContestar)." segundos de marcado.");
+        }
+        return $iTiempoContestar;
+    }
+
     // Callback invocado al recibir el evento OriginateResponse
     function OnOriginateResponse($sEvent, $params, $sServer, $iPort)
     {
@@ -1484,6 +1530,10 @@ PETICION_LLAMADAS;
                     }                    
                 }
             } else {
+                $this->_agregarTiempoContestar(
+                    $this->_infoLlamadas['llamadas'][$sKey]->id_campaign, 
+                    $this->_infoLlamadas['llamadas'][$sKey]->OriginateEnd - $this->_infoLlamadas['llamadas'][$sKey]->OriginateStart);
+
 				// Reportar tiempo transcurrido hasta fallo
                 if ($this->DEBUG) {
                 	$iSegundosEspera = 
@@ -1623,6 +1673,10 @@ PETICION_LLAMADAS;
             	$this->oMainLog->output("DEBUG: $sEvent: llamada $sKey => ".
                     print_r($this->_infoLlamadas['llamadas'][$sKey], TRUE));
             }
+
+            $this->_agregarTiempoContestar(
+                $this->_infoLlamadas['llamadas'][$sKey]->id_campaign, 
+                $this->_infoLlamadas['llamadas'][$sKey]->start_timestamp - $this->_infoLlamadas['llamadas'][$sKey]->OriginateStart);
 
             $regs = NULL;
             $sAgentNum = NULL;
@@ -1860,6 +1914,10 @@ PETICION_LLAMADAS;
                 $this->oMainLog->output("ERR: $sEvent: Hangup sin Link para llamada $sKey => ".
                     print_r($this->_infoLlamadas['llamadas'][$sKey], TRUE));
                 
+                $this->_agregarTiempoContestar(
+                    $this->_infoLlamadas['llamadas'][$sKey]->id_campaign, 
+                    $this->_infoLlamadas['llamadas'][$sKey]->end_timestamp - $this->_infoLlamadas['llamadas'][$sKey]->OriginateStart);
+
                 // Resetear estado de llamada, para volver a intentarla
                 $sActualizarLlamada = 
                     'UPDATE calls SET datetime_entry_queue = ?, duration_wait = ?, '.
