@@ -193,6 +193,7 @@ class DialerProcess extends AbstractProcess
 				'debug'			=>	0,
 				'allevents'		=>	0,
                 'overcommit'    =>  0,
+                'qos'           =>  0.97,
 			),
 		);
 		foreach ($infoConfig as $seccion => $infoSeccion) {
@@ -330,6 +331,24 @@ class DialerProcess extends AbstractProcess
             }
         } else {
         	if (!$bUmbralSet) $this->oMainLog->output("Usando umbral de llamada corta (por omisión): ".$this->_iUmbralLlamadaCorta." segundos.");
+        }
+        
+        // Recoger parámetro de porcentaje de llamadas atendidas con predicción.
+        $bUmbralSet = isset($this->_iPorcentajeAtencion);
+        $this->_iPorcentajeAtencion = 0.97;
+        if (isset($infoConfig['dialer']) && isset($infoConfig['dialer']['qos'])) {
+            $regs = NULL;
+            if (is_numeric($infoConfig['dialer']['qos']) && $infoConfig['dialer']['qos'] > 0 && $infoConfig['dialer']['qos'] < 1) {
+                $this->_iPorcentajeAtencion = (float)$infoConfig['dialer']['qos'];
+                if (!$bUmbralSet) $this->oMainLog->output("Usando porcentaje de atención: ".sprintf('%.1f %%', $this->_iPorcentajeAtencion * 100.0));
+            } else {
+                if (!$bUmbralSet) {
+                    $this->oMainLog->output("ERR: valor de ".$infoConfig['dialer']['qos']." no es válido para porcentaje de atención.");
+                    $this->oMainLog->output("Usando porcentaje de atención (por omisión): ".sprintf('%.1f %%', $this->_iPorcentajeAtencion * 100.0));
+                }
+            }
+        } else {
+            if (!$bUmbralSet) $this->oMainLog->output("Usando porcentaje de atención (por omisión): ".sprintf('%.1f %%', $this->_iPorcentajeAtencion * 100.0));
         }
         
         // Recoger estado de sobrecolocar llamadas
@@ -784,7 +803,7 @@ PETICION_LLAMADAS_AGENTE;
         if (method_exists($oPredictor, 'setPromedioDuracion')) {
         	$oPredictor->setPromedioDuracion($infoCampania->queue, $infoCampania->promedio);
             $oPredictor->setDesviacionDuracion($infoCampania->queue, $infoCampania->desviacion);
-            $oPredictor->setProbabilidadAtencion($infoCampania->queue, 0.97);
+            $oPredictor->setProbabilidadAtencion($infoCampania->queue, $this->_iPorcentajeAtencion);
             
             // Calcular el tiempo que se tarda desde Originate hasta Link con agente.
             $oPredictor->setTiempoContestar($infoCampania->queue, $this->_leerTiempoContestar($infoCampania->id));
