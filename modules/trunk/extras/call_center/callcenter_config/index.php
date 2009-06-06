@@ -96,6 +96,7 @@ function form_Configuration(&$oDB, $smarty, $module_name, $local_templates_dir, 
         'dialer.debug' => 'dialer_debug',
         'dialer.allevents' => 'dialer_allevents',
         'dialer.overcommit' => 'dialer_overcommit',
+        'dialer.qos' => 'dialer_qos',
     );
     $valoresForm = array(
         'asterisk_asthost' => '127.0.0.1',
@@ -108,6 +109,7 @@ function form_Configuration(&$oDB, $smarty, $module_name, $local_templates_dir, 
         'dialer_debug' => 'off',
         'dialer_allevents' => 'off',
         'dialer_overcommit' => 'off',
+        'dialer_qos' => '0.97',
     );
     foreach ($camposConocidos as $dbfield => $formfield) {
         if (isset($listaConf[$dbfield])) {
@@ -131,6 +133,16 @@ function form_Configuration(&$oDB, $smarty, $module_name, $local_templates_dir, 
             if (!$oForm->validateForm($_POST)) {
                 $smarty->assign("mb_title", $arrLang["Validation Error"]);
                 $arrErrores=$oForm->arrErroresValidacion;
+                $strErrorMsg = "<b>{$arrLang['The following fields contain errors']}:</b><br/>";
+                if(is_array($arrErrores) && count($arrErrores) > 0){
+                    foreach($arrErrores as $k=>$v) {
+                        $strErrorMsg .= "$k, ";
+                    }
+                }
+                $smarty->assign("mb_message", $strErrorMsg);
+            } elseif ($_POST['dialer_qos'] < 0 || $_POST['dialer_qos'] >= 100) {
+                $smarty->assign("mb_title", $arrLang["Validation Error"]);
+                $arrErrores=array('Service Percent' => 'Not in range 1..99');
                 $strErrorMsg = "<b>{$arrLang['The following fields contain errors']}:</b><br/>";
                 if(is_array($arrErrores) && count($arrErrores) > 0){
                     foreach($arrErrores as $k=>$v) {
@@ -290,6 +302,14 @@ function createFieldForm($arrLang)
             'VALIDATION_TYPE'           =>  'text',
             'INPUT_EXTRA_PARAM'         =>  '',
             'VALIDATION_EXTRA_PARAM'    =>  '',
+        ),
+        'dialer_qos'=> array(
+            'LABEL'                     =>  $arrLang['Service percent'],
+            'REQUIRED'                  =>  'yes',
+            'INPUT_TYPE'                =>  'TEXT',
+            'VALIDATION_TYPE'           =>  'float',
+            'INPUT_EXTRA_PARAM'         =>  '',
+            'VALIDATION_EXTRA_PARAM'    =>  '^[[:digit:]]+$',
         ),
     );
 }

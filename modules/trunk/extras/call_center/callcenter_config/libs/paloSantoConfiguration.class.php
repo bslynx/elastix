@@ -64,6 +64,7 @@ class paloSantoConfiguration {
                 'dialer.debug' => '0',
                 'dialer.allevents' => '0',
                 'dialer.overcommit' => '0',
+                'dialer.qos' => '0.97',
             );
             foreach ($listaConf as $tupla) $t[$tupla[0]] = $tupla[1];
             $listaConf = $t;
@@ -71,6 +72,7 @@ class paloSantoConfiguration {
             // TODO: qué debe mostrarse si falla query?
             $listaConf = array();
         }
+        $listaConf['dialer.qos'] *= 100.0;
         return $listaConf;
     }
 
@@ -78,6 +80,7 @@ class paloSantoConfiguration {
     {
         $bContinuar = TRUE;
         foreach ($config as $dbfield => $valor) {
+            if ($dbfield == 'dialer.qos') $valor /= 100.0;
             $bContinuar = $this->_DB->genQuery('DELETE FROM valor_config WHERE config_key = ?', array($dbfield));
             if (!$bContinuar) {
                 $this->errMsg = $this->_DB->errMsg;

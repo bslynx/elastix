@@ -35,6 +35,10 @@
                 <td align="right">{$asterisk_duracion_sesion.LABEL}:</td><td align="left">{$asterisk_duracion_sesion.INPUT}</td>
                 <td align="right">{$dialer_overcommit.LABEL}:</td><td align="left">{$dialer_overcommit.INPUT}</td>                
             </tr>
+            <tr class="letra12">
+                <td colspan="2">&nbsp;</td>
+                <td align="right">{$dialer_qos.LABEL}:</td><td align="left">{$dialer_qos.INPUT}</td>
+            </tr>
         </table>
     </td></tr>
     <tr><td align="center">

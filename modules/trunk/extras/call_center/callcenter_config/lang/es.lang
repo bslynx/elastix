@@ -52,5 +52,6 @@ $arrLangModule=array(
 'Current Status' => 'Estado actual',
 'Enable overcommit of outgoing calls' => 'Permitir sobre-colocar llamadas salientes',
 'AMI Session Duration' => 'Duración de sesión de AMI (0 para persistente)',
+'Service percent' => 'Porcentaje servicio',
 );
 ?>
