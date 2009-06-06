@@ -435,7 +435,7 @@ function createFieldForm($arrLang)
                                             "INPUT_TYPE"            => "TEXT",
                                             "INPUT_EXTRA_PARAM"     => "",
                                             "VALIDATION_TYPE"       => "ereg",
-                                            "VALIDATION_EXTRA_PARAM"=> "^[[:digit:]]*$"),
+                                            "VALIDATION_EXTRA_PARAM"=> "^[\*|#]*[[:digit:]]*$"),
                 "email"         => array(   "LABEL"                 => $arrLang["Email"],
                                             "REQUIRED"              => "no",
                                             "INPUT_TYPE"            => "TEXT",
