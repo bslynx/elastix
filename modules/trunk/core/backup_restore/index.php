@@ -46,12 +46,24 @@ function _moduleContent(&$smarty, $module_name)
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
     //include_once "modules/$module_name/libs/paloSantoConference.php";
+
+    $lang=get_language();
+    $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
+    $lang_file="modules/$module_name/lang/$lang.lang";
+    if (file_exists("$base_dir/$lang_file")) include_once "$lang_file";
+    else include_once "modules/$module_name/lang/en.lang";
+
+    //global variables
     global $arrConf;
+    global $arrConfModule;
     global $arrLang;
+    global $arrLangModule;
+    $arrConf = array_merge($arrConf,$arrConfModule);
+    $arrLang = array_merge($arrLang,$arrLangModule);
 
     //folder path for custom templates
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
-    $templates_dir=(isset($arrConfig['templates_dir']))?$arrConfig['templates_dir']:'themes';
+    $templates_dir=(isset($arrConf['templates_dir']))?$arrConf['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
 
     $dir_backup = "/var/www/backup";
@@ -142,7 +154,6 @@ function report_backup_restore($smarty, $module_name, $local_templates_dir, $arr
     if(is_array($nombre_archivos) && $total>0){
         foreach($nombre_archivos as $key => $nombre_archivo){
             $arrTmp[0] = "<input type='checkbox' name='chk[".$nombre_archivo."]' id='chk[".$nombre_archivo."]'>";
-            //$arrTmp[1] = "<a href='backup/$nombre_archivo'>$nombre_archivo</a>";
             $arrTmp[1] = "<a href='?menu=$module_name&action=download_file&file_name=$nombre_archivo'>$nombre_archivo</a>";
             $fecha="";
             // se parsea el archivo para obtener la fecha
@@ -208,7 +219,6 @@ function Obtener_Total_Backups($dir_backup)
 
 function Obtener_Backups($dir_backup, $offset_inv, $limit)
 {
-    //$base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
     $comando="ls $dir_backup/*.tar -t | tail -n $offset_inv | head -n $limit | xargs -n 1 basename";
     exec($comando,$output,$retval);
     if ($retval!=0) return array();
@@ -515,6 +525,8 @@ function Array_Options($arrLang, $disabled="")
 
 function process_each_backup($arrSelectedOptions,$ruta_respaldo,&$arrBackupOptions)
 {
+    global $arrConf;
+
     foreach ($arrSelectedOptions as $option)
     {
         $bExito=true;
@@ -580,12 +592,16 @@ function process_each_backup($arrSelectedOptions,$ruta_respaldo,&$arrBackupOptio
             break;
 
         case "as_dahdi":
-            exec("cp /etc/dahdi/system.conf $ruta_respaldo", $output, $retval);
-            if ($retval!=0) $bExito = false;
+            $arrInfoRespaldo = array(   'folder_path'               =>  "/etc",
+                                        'folder_name'               =>  "dahdi",
+                                        'nombre_archivo_respaldo'   =>  "etc.dahdi.tgz"
+                                    );
+            if(!respaldar_carpeta($arrInfoRespaldo,$ruta_respaldo,$error))
+                $bExito = false;
             break;
 
         case "fx_db":
-            exec("cp /var/www/db/fax.db $ruta_respaldo", $output, $retval);
+            exec("cp $arrConf[elastix_dbdir]/fax.db $ruta_respaldo", $output, $retval);
             if ($retval!=0) $bExito = false;
             break;
 
@@ -617,7 +633,7 @@ function process_each_backup($arrSelectedOptions,$ruta_respaldo,&$arrBackupOptio
                 exec($comando,$output,$retval);
             }else $bExito = false;
 
-            $comando="cp /var/www/db/email.db $ruta_respaldo";
+            $comando="cp $arrConf[elastix_dbdir]/email.db $ruta_respaldo";
             exec($comando,$output,$retval);
             if ($retval!=0) $bExito = false;
             break;
@@ -642,7 +658,7 @@ function process_each_backup($arrSelectedOptions,$ruta_respaldo,&$arrBackupOptio
             break;
 
         case "ep_db":
-            exec("cp /var/www/db/endpoint.db $ruta_respaldo", $output, $retval);
+            exec("cp $arrConf[elastix_dbdir]/endpoint.db $ruta_respaldo", $output, $retval);
             if ($retval!=0) $bExito = false;
             break;
 
@@ -740,9 +756,9 @@ function process_each_backup($arrSelectedOptions,$ruta_respaldo,&$arrBackupOptio
             break;
 
         case "menus_permissions":
-            exec("cp /var/www/db/menu.db $ruta_respaldo", $output, $retval);
+            exec("cp $arrConf[elastix_dbdir]/menu.db $ruta_respaldo", $output, $retval);
             if ($retval!=0) $bExito = false;
-            exec("cp /var/www/db/acl.db $ruta_respaldo", $output, $retval);
+            exec("cp $arrConf[elastix_dbdir]/acl.db $ruta_respaldo", $output, $retval);
             if ($retval!=0) $bExito = false;
             break;
 
@@ -864,6 +880,7 @@ function respaldar_base_mysql($dir_resp_db,$base)
 /* ------------------------------------------------------------------------------- */
 function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar,&$arrRestoreOptions)
 {
+    global $arrConf;
     $error="";
     foreach ($arrSelectedOptions as $option)
     {
@@ -990,26 +1007,41 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
             break;
 
         case "as_dahdi":
-            $comando="sudo -u root touch /etc/dahdi/system.conf";
+            //Respaldo carpeta /etc/dahdi en un tgz
+            $comando="sudo -u root touch /etc/dahdi.tgz";
             exec($comando, $output, $retval);
 
-            $comando="sudo -u root chmod 777 /etc/dahdi/system.conf";
+            $comando="sudo -u root chmod 777 /etc/dahdi.tgz";
             exec($comando, $output, $retval);
 
-            $comando="cat $ruta_respaldo/system.conf > /etc/dahdi/system.conf";
+            $comando="tar cvfz /etc/dahdi.tgz /etc/dahdi/";
             exec($comando, $output, $retval);
-            //Solo en este verifico si se ejecuto correctamente pues aqui es donde se copia la info
             if ($retval!=0) $bExito = false;
+            else{
+                $comando="sudo -u root chown -R asterisk.asterisk /etc/dahdi";
+                exec($comando, $output, $retval);
+                    $comando="rm -rf /etc/dahdi/*";
+                    exec($comando, $output, $retval);
 
-            $comando="sudo -u root chmod 644 /etc/dahdi/system.conf";
-            exec($comando, $output, $retval);
+                    $arrInfoRestaurar = array(  'folder_path'               =>  "/etc",
+                                                'folder_name'               =>  "dahdi",
+                                                'nombre_archivo_respaldo'   =>  "etc.dahdi.tgz"
+                                        );
+                    if(!restaurar_carpeta($arrInfoRestaurar,$ruta_respaldo,$error))
+                        $bExito = false;
+                    else{
+                        $comando="sudo -u root chown -R root.root /etc/dahdi";
+                        exec($comando, $output, $retval);
+                        $bExito = true;
+                }
+            }
             break;
 
         case "fx_db":
             if (file_exists("$ruta_respaldo/fax.db"))
             {
                 $base_fax_respaldo = "$ruta_respaldo/fax.db";
-                $base_fax= "/var/www/db/fax.db";
+                $base_fax= "$arrConf[elastix_dbdir]/fax.db";
 
                 //consultar en la base para crear en el sistema
                 crear_cuentas_fax($base_fax_respaldo,$base_fax);
@@ -1049,7 +1081,7 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
 
         case "em_db":
             //Primero eliminar todos los dominios existentes
-            $pDB = new paloDB("sqlite3:////var/www/db/email.db");
+            $pDB = new paloDB("sqlite3:///$arrConf[elastix_dbdir]/email.db");
             if(!empty($pDB->errMsg)) {
                 echo "ERROR DE DB: $pDB->errMsg <br>";
             }
@@ -1078,7 +1110,7 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
             if (file_exists("$ruta_respaldo/email.db"))
             {
                 $base_email_respaldo = "$ruta_respaldo/email.db";
-                $base_email = "/var/www/db/email.db";
+                $base_email = "$arrConf[elastix_dbdir]/email.db";
 
                 //consultar en la base para crear en el sistema
                 if(!crear_cuentas_email($base_email_respaldo, $base_email))
@@ -1127,8 +1159,8 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
             break;
 
         case "ep_db":
-            $comando="cp -f $ruta_respaldo/endpoint.db /var/www/db/";
-            exec($comando, $output, $retval); echo $retval;
+            $comando="cp -f $ruta_respaldo/endpoint.db $arrConf[elastix_dbdir]/";
+            exec($comando, $output, $retval);
             if ($retval!=0) $bExito = false;
             break;
 
@@ -1227,7 +1259,7 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
             break;
 
         case "menus_permissions":
-            $comando="cp -f $ruta_respaldo/menu.db $ruta_respaldo/acl.db /var/www/db/";
+            $comando="cp -f $ruta_respaldo/menu.db $ruta_respaldo/acl.db $arrConf[elastix_dbdir]/";
             exec($comando, $output, $retval);
             if ($retval!=0) $bExito = false;
             break;
@@ -1273,7 +1305,7 @@ function crear_cuentas_fax($ruta_base_fax_respaldo,$base_fax)
     $result=array();
     $oFax = new paloFax();
 
-    #borrar las cuentas de fax de /var/www/db
+    #borrar las cuentas de fax de $arrConf[elastix_dbdir]
     $pDBorig = new paloDB("sqlite3:///$base_fax");
     if (!empty($pDBorig->errMsg)) {
         echo "DB ERROR: $pDBorig->errMsg \n";
@@ -1316,7 +1348,7 @@ function crear_cuentas_email($ruta_base_email_respaldo,$base_email)
         echo "DB ERROR: $pDB->errMsg \n";
     }
     else{
-        #borrar las cuentas de dominos y el domino /var/www/db
+        #borrar las cuentas de dominos y el domino $arrConf[elastix_dbdir]
         $pDBorig = new paloDB("sqlite3:///$base_email");
         if (!empty($pDBorig->errMsg)) {
             echo "DB ERROR: $pDBorig->errMsg \n";
