@@ -54,5 +54,6 @@ $arrLangModule=array(
 "install.php failed" => "install.php nije uspio",
 "File installer.php doesn't exist in package" => "Datoteka installer.php ne postoji u paketu",
 "File module.xml doesn't exist in package" => "Datoteka module.xml ne postoji u paketu",
+"installer.php failed" => "installer.php failed",
 );
 ?>

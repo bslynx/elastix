@@ -54,5 +54,6 @@ $arrLangModule=array(
 "install.php failed" => "Ha fallat install.php",
 "File installer.php doesn't exist in package" => "L'arxiu installer.php no existeix en el paquet",
 "File module.xml doesn't exist in package" => "L'arxiu module.xml no existeix en el paquet",
+"installer.php failed" => "installer.php failed",
 );
 ?>

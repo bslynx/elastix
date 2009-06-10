@@ -56,5 +56,6 @@ zip / tgz",
 "install.php failed" => "Echec install.php",
 "File installer.php doesn't exist in package" => "Fichier installer.php inexistant dans le paquet",
 "File module.xml doesn't exist in package" => "Fichier module.xml inexistant dans le paquet",
+"installer.php failed" => "installer.php failed",
 );
 ?>

@@ -1069,5 +1069,6 @@ implementations of Voice over IP around the globe.",
 "System time changed successfully" => "System time changed successfully",
 "System time can not be changed" => "System time can not be changed",
 /*module Time Config*/ 
+"installer.php failed" => "installer.php failed",
 );
 ?>

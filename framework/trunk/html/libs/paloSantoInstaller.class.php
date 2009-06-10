@@ -24,9 +24,8 @@
 */
 define("MYSQL_ROOT_PASSWORD","eLaStIx.2oo7");
 
-global $arrConf;
-require_once "{$arrConf['basePath']}/libs/paloSantoDB.class.php";
-require_once "{$arrConf['basePath']}/libs/paloSantoModuloXML.class.php";
+require_once "paloSantoDB.class.php";
+require_once "paloSantoModuloXML.class.php";
 
 class Installer
 {

@@ -356,6 +356,7 @@ configuration <br>because some processes need it.",
 "File install.php doesn't exist in module file"  =>  "File install.php doesn't exist in module file",
 "Could not uncompress file"  =>  "Could not uncompress file",
 "install.php failed"  =>  "install.php failed",
+"installer.php failed" => "installer.php failed",
 
 "Fax Clients"=>"Fax Clients",
 "Clients allowed to send faxes"=>"Clients allowed to send faxes",
