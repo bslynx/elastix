@@ -57,5 +57,7 @@ $arrLan=array(
 "Repair"=>"Por reparar",
 "All"=>"Todos",
 "No call"=>"No hay llamada",
+"Name" => "Nombre",
+"Retype password" => "Repita contraseña",
 );
 ?>

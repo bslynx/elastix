@@ -55,5 +55,7 @@ $arrLan=array(
 "Repair"=>"By repair",
 "All"=>"All",
 "No call"=>"No call",
+"Name" => "Name",
+"Retype password" => "Retype password",
 );
 ?>
