@@ -232,6 +232,8 @@ class GestorLlamadasEntrantes
      */
     function notificarJoin($eventParams)
     {
+        if ($this->DEBUG) $this->_oMainLog->output("DEBUG: ENTER notificarJoin");
+        
         $bLlamadaManejada = FALSE;
 
         // Asegurarse de que el caché está fresco
@@ -330,6 +332,7 @@ class GestorLlamadasEntrantes
                     
         }
 
+        if ($this->DEBUG) $this->_oMainLog->output("DEBUG: EXIT notificarJoin");
         return $bLlamadaManejada;    	
     }
     
@@ -348,6 +351,7 @@ class GestorLlamadasEntrantes
      */
     function notificarLink($eventParams)
     {
+        if ($this->DEBUG) $this->_oMainLog->output("DEBUG: ENTER notificarLink");
         $bLlamadaManejada = FALSE;
 
         // Asegurarse de que el caché está fresco
@@ -497,6 +501,7 @@ class GestorLlamadasEntrantes
             }
         }
         
+        if ($this->DEBUG) $this->_oMainLog->output("DEBUG: EXIT notificarLink");
         return $bLlamadaManejada;
     }
     
@@ -512,6 +517,7 @@ class GestorLlamadasEntrantes
      */    
     function notificarUnlink($eventParams)
     {
+        if ($this->DEBUG) $this->_oMainLog->output("DEBUG: ENTER notificarUnink");
         $bLlamadaManejada = FALSE;
         $tuplaLlamada = NULL;
 
@@ -601,6 +607,7 @@ class GestorLlamadasEntrantes
             }                   
         }
         
+        if ($this->DEBUG) $this->_oMainLog->output("DEBUG: EXIT notificarUnlink");
         return $bLlamadaManejada;
     }
     
