@@ -237,6 +237,7 @@ class GestorLlamadasEntrantes
         $bLlamadaManejada = FALSE;
 
         // Asegurarse de que el caché está fresco
+        // TODO: POSIBLE PUNTO DE REENTRANCIA
         $this->actualizarCacheAgentes();
         
         if (in_array($eventParams['Queue'], $this->_cacheColasMonitoreadas)) {
@@ -355,6 +356,7 @@ class GestorLlamadasEntrantes
         $bLlamadaManejada = FALSE;
 
         // Asegurarse de que el caché está fresco
+        // TODO: POSIBLE PUNTO DE REENTRANCIA
         $this->actualizarCacheAgentes();
 
         // Nótese que para canal 1, se requiere ID y CID 2, y viceversa.

@@ -1535,7 +1535,10 @@ PETICION_LLAMADAS;
                     if ($this->DEBUG) {
                     	$this->oMainLog->output("DEBUG: llamada agendada a $sAgent, redirigiendo a $params[Channel] ...");
                     }
+                    
+                    // TODO: POSIBLE PUNTO DE REENTRANCIA
                     $resultado = $this->_astConn->Redirect($params['Channel'], '',substr($sAgent,6), $this->_agentContext, 1);
+
                     if ($this->DEBUG) {
                         $this->oMainLog->output("DEBUG: resultado de Redirect($params[Channel], '', $sAgent, 'from-internal', 1) : ".
                             print_r($resultado, TRUE));
@@ -1566,7 +1569,10 @@ PETICION_LLAMADAS;
                         // El agente debe ser sacado de pausa sólo si no hay más llamadas en reserva
                         $l = $this->_contarLlamadasAgendablesReserva($infoCampania, $idAgente);
                         if ($l['AHORA'] == 0 && $l['RESERVA'] == 0) {
+                            
+                            // TODO: POSIBLE PUNTO DE REENTRANCIA
                             $resultado = $this->_astConn->QueuePause($infoCampania->queue, $sAgent, 'false');
+
                             if ($this->DEBUG) {
                                 $this->oMainLog->output("DEBUG: OnOriginateResponse: $sAgent no tiene más llamadas agendadas, se quita pausa...");
                                 $this->oMainLog->output("DEBUG: resultado de QueuePause($infoCampania->queue, $sAgent, 'false') : ".
@@ -2138,7 +2144,10 @@ PETICION_LLAMADAS;
                     // El agente debe ser sacado de pausa sólo si no hay más llamadas en reserva
                     $l = $this->_contarLlamadasAgendablesReserva($infoCampania, $idAgente);
                     if ($l['AHORA'] == 0 && $l['RESERVA'] == 0) {
+                        
+                        // TODO: POSIBLE PUNTO DE REENTRANCIA
                         $resultado = $this->_astConn->QueuePause($infoCampania->queue, $sAgent, 'false');
+
                         if ($this->DEBUG) {
                             $this->oMainLog->output("DEBUG: OnHangup: $sAgent no tiene más llamadas agendadas, se quita pausa...");
                             $this->oMainLog->output("DEBUG: resultado de QueuePause($infoCampania->queue, $sAgent, 'false') : ".
