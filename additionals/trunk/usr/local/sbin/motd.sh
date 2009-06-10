@@ -1,6 +1,6 @@
 #!/bin/sh
 IFCONFIG=`which ifconfig 2>/dev/null||echo /sbin/ifconfig`
-IPADDR=`$IFCONFIG eth0|gawk '/inet addr/{print $2}'|gawk -F: '{print $2}'`
+IPADDR=`LANG=en_US.UTF-8 $IFCONFIG eth0|gawk '/inet addr/{print $2}'|gawk -F: '{print $2}'`
 MSJ_NO_IP_DHCP="If you could not get a DHCP IP address please type setup and select \"Network configuration\" to set up a static IP."
 
 echo ""
