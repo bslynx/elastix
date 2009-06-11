@@ -2138,6 +2138,7 @@ PETICION_LLAMADAS;
             } /* is_null(start_timestamp) */
 
             // Sacar de pausa al agente cuya llamada ha terminado
+            $infoCampania = $this->_infoLlamadas['campanias'][$idCampaign];
             if (!is_null($idAgente)) {
                 $sAgent = "Agent/$idAgente";
                 if (isset($this->_infoLlamadas['agentes_reservados'][$idAgente])) {
