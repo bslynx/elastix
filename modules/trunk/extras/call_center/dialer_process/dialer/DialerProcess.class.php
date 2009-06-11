@@ -705,7 +705,7 @@ PETICION_AGENTES_AGENDADOS;
         $sHoraFinal = date('H:i:s', $iTimestamp + $iSegReserva);
         
 	$sPeticionLlamadasAgente = <<<PETICION_LLAMADAS_AGENTE
-SELECT SUM(*) AS TOTAL, SUM(IF(time_init > ?, 1, 0)) AS RESERVA 
+SELECT COUNT(*) AS TOTAL, SUM(IF(time_init > ?, 1, 0)) AS RESERVA 
 FROM calls
 WHERE id_campaign = ?
     AND agent = ?
@@ -1960,6 +1960,11 @@ PETICION_LLAMADAS;
                     print_r($this->_infoLlamadas['llamadas'][$sKey], TRUE));
             }
 
+            // Leer el agente que fue asignado a esta llamada
+            $sLeerAgenteLlamada = "SELECT agentnum FROM current_calls WHERE Uniqueid = ?";
+            $idAgente =& $this->_dbConn->getOne($sLeerAgenteLlamada, array($this->_infoLlamadas['llamadas'][$sKey]->Uniqueid));
+            if (DB::isError($idAgente)) $idAgente = NULL;
+
             // Borrado de la llamada objetivo
             $sBorradoLlamada = 'DELETE FROM current_calls WHERE Uniqueid = ?';
             
@@ -2133,12 +2138,8 @@ PETICION_LLAMADAS;
             } /* is_null(start_timestamp) */
 
             // Sacar de pausa al agente cuya llamada ha terminado
-            $infoCampania = $this->_infoLlamadas['campanias'][$idCampaign];
-            $sAgent = $this->_infoLlamadas['llamadas'][$sKey]->agent;
-            if (!is_null($sAgent)) {
-                $regs = NULL;
-                ereg('^Agent/([[:digit:]]+)$', $sAgent, $regs);
-                $idAgente = $regs[1];
+            if (!is_null($idAgente)) {
+                $sAgent = "Agent/$idAgente";
                 if (isset($this->_infoLlamadas['agentes_reservados'][$idAgente])) {
                     $this->_infoLlamadas['agentes_reservados'][$idAgente] = 1;
 
@@ -2156,8 +2157,6 @@ PETICION_LLAMADAS;
                         }
                         unset($this->_infoLlamadas['agentes_reservados'][$idAgente]);
                     }
-                } else {
-                    $this->oMainLog->output("ERR: OnHangup: no se encuentra agente $sAgent en lista de reservas de agentes");
                 }
             }
 
