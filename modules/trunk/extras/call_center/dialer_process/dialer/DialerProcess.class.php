@@ -397,6 +397,7 @@ class DialerProcess extends AbstractProcess
         $astman = new AGI_AsteriskManager();
         $this->_momentoUltimaConnAsterisk = time();
         $astman->setLogger($this->oMainLog);
+        $astman->avoid_reentrancy = TRUE;
 
         $this->oMainLog->output('INFO: Iniciando sesión de control de Asterisk...');
         if (!$astman->connect(
@@ -675,7 +676,7 @@ PETICION_AGENTES_AGENDADOS;
                 $sHoraInicio,
                 $infoCampania->retries));
         if (DB::isError($recordset)) {
-            $this->oMainLog->output("ERR: (campania $infoCampania->id cola $infoCampania->queue)  no se puede leer lista de teléfonos agendados - ".$recordset->getMessage());
+            $this->oMainLog->output("ERR: (campania $infoCampania->id cola $infoCampania->queue)  no se puede leer lista de agentes agendados - ".$recordset->getMessage());
         } else {
             $listaAgentes = array();
             while ($tupla = $recordset->fetchRow()) {
@@ -724,7 +725,7 @@ PETICION_LLAMADAS_AGENTE;
                 $sHoraInicio,
                 $infoCampania->retries));
         if (DB::isError($recordset)) {
-            $this->oMainLog->output("ERR: (campania $infoCampania->id cola $infoCampania->queue)  no se puede leer lista de teléfonos agendados - ".$recordset->getMessage());
+            $this->oMainLog->output("ERR: (campania $infoCampania->id cola $infoCampania->queue)  no se puede leer cuenta de teléfonos agendados y en reserva - ".$recordset->getMessage());
         } else {
             $listaAgentes = array();
             while ($tupla = $recordset->fetchRow()) {
@@ -1460,7 +1461,7 @@ PETICION_LLAMADAS;
         if (!isset($params['ActionID'])) {
             if ($this->DEBUG) {
                 $this->oMainLog->output("DEBUG: No hay ActionID, no es llamada monitoreada.");
-            	$this->oMainLog->output("DEBUG: EXIT OnOriginateResponse");
+                $this->oMainLog->output("DEBUG: EXIT OnOriginateResponse");
             }
             return FALSE;
         }
@@ -1653,7 +1654,7 @@ PETICION_LLAMADAS;
     {    
         if ($this->DEBUG) {
             $this->oMainLog->output("DEBUG: ENTER OnLink");
-        	$this->oMainLog->output("DEBUG: $sEvent:\nparams => ".print_r($params, TRUE));
+            $this->oMainLog->output("DEBUG: $sEvent:\nparams => ".print_r($params, TRUE));
         }
         
         // Verificar si es una llamada entrante monitoreada. Si lo es, 

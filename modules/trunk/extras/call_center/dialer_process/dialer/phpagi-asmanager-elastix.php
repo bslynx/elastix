@@ -92,6 +92,10 @@
 
     var $request_err = FALSE;
 
+    var $avoid_reentrancy = FALSE;
+    var $queued_events;
+    var $reentrant_count;
+
    /**
     * Constructor
     *
@@ -115,6 +119,11 @@
       if(!isset($this->config['asmanager']['port'])) $this->config['asmanager']['port'] = 5038;
       if(!isset($this->config['asmanager']['username'])) $this->config['asmanager']['username'] = 'phpagi';
       if(!isset($this->config['asmanager']['secret'])) $this->config['asmanager']['secret'] = 'phpagi';
+
+      // start with reentrancy allowed by default
+      $this->avoid_reentrancy = FALSE;
+      $this->queued_events = array();
+      $this->reentrant_count = 0;
     }
 
    /**
@@ -197,7 +206,12 @@
             $timeout = $allow_timeout;
             break;
           case 'event':
-            $handler_ret = $this->process_event($parameters);
+            $this->reentrant_count++;
+            if ($this->avoid_reentrancy && $this->reentrant_count > 1)
+                array_push($this->queued_events, $parameters);
+            else
+                $handler_ret = $this->process_event($parameters);
+            $this->reentrant_count--;
             if ($allow_handler_terminate && $handler_ret === true) $timeout = true;
             break;
           case 'response':
@@ -207,6 +221,17 @@
             break;
         }
       } while(!is_null($type) && $type != 'response' && !$timeout);
+      
+      // dispatch queued events
+      if ($this->reentrant_count == 0) {
+      	while (count($this->queued_events) > 0) {
+      	  $event_parameters = array_shift($this->queued_events);
+          $this->reentrant_count++;
+          $this->process_event($event_parameters);
+          $this->reentrant_count--;
+      	}
+      }
+      
       return $parameters;
     }
 
