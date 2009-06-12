@@ -302,7 +302,7 @@ class GestorLlamadasEntrantes
                 array('status',                 "'en-cola'",    null),
                 array('uniqueid',               '?',            $eventParams['Uniqueid']),
             );
-            if ($this->_tieneCampaignEntry)
+            if ($this->_tieneCampaignEntry && !is_null($idCampania))
                 $camposSQL[] = array('id_campaign', '?', $idCampania);
             if ($this->_tieneTrunk)
                 $camposSQL[] = array('trunk', '?', $sTrunkLlamada);
