@@ -320,7 +320,7 @@ function _moduleContent(&$smarty, $module_name)
                                                     "property" => ""),
                                          4 => array("name"              => $arrLan["End Date"],
                                                      "property" => ""),
-                                         5 => array("name"              => "End Time",
+                                         5 => array("name"              => $arrLan["End Time"],
                                                      "property" => ""),
                                          6 => array("name"              => $arrLan["Duration"],
                                                      "property" => ""),
