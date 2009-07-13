@@ -182,7 +182,7 @@ class paloSantoNavigation {
                 $arrTmp2 =$this->getArrSubMenu($idSub);
                 if($arrTmp2)$valorSub['Name'] = $valorSub['Name'].'...'; 
                 $arrMenuTotal[$idMenu] .= "<tr><td>";
-                $arrMenuTotal[$idMenu] .= "<a href=\"/?menu={$valorSub['id']}\">{$valorSub['Name']}</a>";
+                $arrMenuTotal[$idMenu] .= "<a href=\"index.php?menu={$valorSub['id']}\">{$valorSub['Name']}</a>";
                 $arrMenuTotal[$idMenu] .= "</td></tr>";
             }
             $this->smarty->assign("arrMenuTotal", $arrMenuTotal);

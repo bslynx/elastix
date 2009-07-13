@@ -10,7 +10,7 @@
             <td class="headlinkon" valign="bottom">
               <table cellSpacing="0" cellPadding="2" height="30" border="0">
                 <tr><td class="menutabletabon_left" nowrap valign="top"><IMG src="themes/{$THEMENAME}/images/1x1.gif"></td><td class="menutabletabon" title="" nowrap><a
-                        class="menutableon" href="?menu={$idMenu}">{$menu.Name}</a></td><td class="menutabletabon_right" nowrap valign="top"><IMG src="themes/{$THEMENAME}/images/1x1.gif"></td>
+                        class="menutableon" href="index.php?menu={$idMenu}">{$menu.Name}</a></td><td class="menutabletabon_right" nowrap valign="top"><IMG src="themes/{$THEMENAME}/images/1x1.gif"></td>
                 </tr>
               </table>
             </td>
@@ -25,7 +25,7 @@
               </div>
               <table cellSpacing="0" cellPadding="2" height="29" border="0">
                 <tr><td class="menutabletaboff_left" nowrap valign="top"><IMG src="themes/{$THEMENAME}/images/1x1.gif"></td><td class="menutabletaboff" title="" nowrap><a
-                        class="menutable" href="?menu={$idMenu}">{$menu.Name}</a></td><td class="menutabletaboff_right" nowrap valign="top"><IMG src="themes/{$THEMENAME}/images/1x1.gif"></td>
+                        class="menutable" href="index.php?menu={$idMenu}">{$menu.Name}</a></td><td class="menutabletaboff_right" nowrap valign="top"><IMG src="themes/{$THEMENAME}/images/1x1.gif"></td>
                 </tr>
               </table> 
             </td>
@@ -54,7 +54,7 @@
                 </div>
             </td>
             <td class="menuaftertab" width="40%" align="right">&nbsp;<a href="javascript:mostrar();">{$ABOUT_ELASTIX}</a></td>
-            <td class="menuaftertab" width="20%" align="right">&nbsp;<a href="?logout=yes">{$LOGOUT}</a></td>
+            <td class="menuaftertab" width="20%" align="right">&nbsp;<a href="index.php?logout=yes">{$LOGOUT}</a></td>
           </tr>
         </table>
       </td>
@@ -68,9 +68,9 @@
                 <tr>
                   {foreach from=$arrSubMenu key=idSubMenu item=subMenu}
                   {if $idSubMenu eq $idSubMenuSelected}
-                  <td title="" class="botonon"><a href="?menu={$idSubMenu}" class="submenu_on">{$subMenu.Name}</td>
+                  <td title="" class="botonon"><a href="index.php?menu={$idSubMenu}" class="submenu_on">{$subMenu.Name}</td>
                   {else}
-                  <td title="" class="botonoff"><a href="?menu={$idSubMenu}">{$subMenu.Name}</a></td>
+                  <td title="" class="botonoff"><a href="index.php?menu={$idSubMenu}">{$subMenu.Name}</a></td>
                   {/if}
                   {/foreach}
                 </tr>
@@ -105,9 +105,9 @@
       <table cellspacing="0" cellpadding="0" width="100%" class="" align="left">
         {foreach from=$arrSubMenu2 key=idSubMenu2 item=subMenu2}
           {if $idSubMenu2 eq $idSubMenu2Selected}
-          <tr><td title="" class="menuiz_botonon"><a href="?menu={$idSubMenu2}">{$subMenu2.Name}</td></tr>
+          <tr><td title="" class="menuiz_botonon"><a href="index.php?menu={$idSubMenu2}">{$subMenu2.Name}</td></tr>
           {else}
-          <tr><td title="" class="menuiz_botonoff"><a href="?menu={$idSubMenu2}">{$subMenu2.Name}</a></td></tr>
+          <tr><td title="" class="menuiz_botonoff"><a href="index.php?menu={$idSubMenu2}">{$subMenu2.Name}</a></td></tr>
           {/if}
         {/foreach}
       </table>
