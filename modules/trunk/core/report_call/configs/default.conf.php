@@ -28,7 +28,7 @@
   $Id: default.conf.php,v 1.1 2009-01-06 09:01:38 jvega jvega@palosanto.com Exp $ */
     global $arrConfModule;
 
-    $arrConfModule['module_name']   = 'report_call';
+    $arrConfModule['module_name']   = 'summary_by_extension';
     $arrConfModule['templates_dir'] = 'themes';
     $arrConfModule['dsn_conn_database'] = 'mysql://asteriskuser:eLaStIx.asteriskuser.2oo7@localhost/asteriskcdrdb';
 ?>
