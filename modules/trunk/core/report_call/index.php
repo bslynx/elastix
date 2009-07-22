@@ -92,11 +92,13 @@ function reportReportCall($smarty, $module_name, $local_templates_dir, &$pDB_cdr
     $date_ini_tmp  = getParameter("date_from");
     $date_end_tmp  = getParameter("date_to");
     $order_by_tmp  = getParameter("order_by");
+    $order_type_tmp= getParameter("order_type");
     $action = getParameter("nav");
     $start  = getParameter("start");
 
     $value     = isset($value_tmp)   ?$value_tmp:"";
     $order_by  = isset($order_by_tmp)?$order_by_tmp:1;
+    $order_type= isset($order_type_tmp)?$order_type_tmp:"asc";
     $date_from = isset($date_ini_tmp)?$date_ini_tmp:date("d M Y");
     $date_to   = isset($date_end_tmp)?$date_end_tmp:date("d M Y");
 
@@ -108,7 +110,7 @@ function reportReportCall($smarty, $module_name, $local_templates_dir, &$pDB_cdr
     //begin grid parameters
     $oGrid  = new paloSantoGrid($smarty);
 
-    $limit  = 30;
+    $limit  = 20;
     $total  = $pReportCall->ObtainNumberDevices($type,$value);
     $oGrid->setLimit($limit);
     $oGrid->setTotal($total);
@@ -117,12 +119,16 @@ function reportReportCall($smarty, $module_name, $local_templates_dir, &$pDB_cdr
     $offset = $oGrid->getOffsetValue();
     $end    = $oGrid->getEnd();
     $url    = "?menu=$module_name&option_fil=$type&value_fil=$value&date_from=$date_from&date_to=$date_to";
+    $ulr_paging = $url."&order_by=$order_by&order_type=$order_type";
+
     $smarty->assign("order_by", $order_by);
+    $smarty->assign("order_type", $order_type);
 
     $arrData = null;
-    $arrResult = $pReportCall->ObtainReportCall($limit,$offset,$date_ini,$date_end,$type,$value,$order_by);//--------------------------------
+    $arrResult = $pReportCall->ObtainReportCall($limit,$offset,$date_ini,$date_end,$type,$value,$order_by,$order_type);
 
-    $rut_img = "\"modules/report_call/images/graphReport.php";
+    $order_type = ($order_type == "desc")?"asc":"desc";
+    $rut_img = "\"modules/$module_name/images/graphReport.php";
 
     if(is_array($arrResult) && $total>0){
         foreach($arrResult as $key => $val){
@@ -132,43 +138,54 @@ function reportReportCall($smarty, $module_name, $local_templates_dir, &$pDB_cdr
             $arrTmp[1] = $val['user_name'];
             $arrTmp[2] = $val['num_incoming_call'];
             $arrTmp[3] = $val['num_outgoing_call'];
-            $arrTmp[4] = $val['duration_incoming_call'];
-            $arrTmp[5] = $val['duration_outgoing_call'];
-            $arrTmp[6] = "<a href='javascript: popup_ventana($rut_img?ext=$ext&dini=$date_ini&dfin=$date_end\");'>".
-                    "".$arrLang['More Details']."</a>";
+            $arrTmp[4] = "<label style='color: green;' title='{$val['duration_incoming_call']} {$arrLang['seconds']}'>".$pReportCall->Sec2HHMMSS($val['duration_incoming_call'])."</label>";
+            $arrTmp[5] = "<label style='color: green;' title='{$val['duration_outgoing_call']} {$arrLang['seconds']}'>".$pReportCall->Sec2HHMMSS($val['duration_outgoing_call'])."</label>";
+            $arrTmp[6] = "<a href='javascript: popup_ventana($rut_img?ext=$ext&dini=$date_ini&dfin=$date_end&num_in=$val[num_incoming_call]&num_out=$val[num_outgoing_call]\");'>".
+                    "".$arrLang['Call Details']."</a>";
 
             $arrData[] = $arrTmp;
         }
     }
 
-    $img = "<img src='images/flecha.png' border='0' align='absmiddle'>";
-    $leyend_1 = ($order_by == 1) ?"<font color=\"blue\">".$arrLang["Extension"]."</font>": $arrLang["Extension"];
-    $leyend_2 = ($order_by == 2) ?"<font color=\"blue\">".$arrLang["User name"]."</font>":$arrLang["User name"];
-    $leyend_3 = ($order_by == 3) ?"<font color=\"blue\">".$arrLang["Num. Incoming Call"]."</font>":$arrLang["Num. Incoming Call"];
-    $leyend_4 = ($order_by == 4) ?"<font color=\"blue\">".$arrLang["Num. Outgoing Call"]."</font>":$arrLang["Num. Outgoing Call"];
-    $leyend_5 = ($order_by == 5) ?"<font color=\"blue\">".$arrLang["Sec. Incoming Call"]."</font>":$arrLang["Sec. Incoming Call"];
-    $leyend_6 = ($order_by == 6) ?"<font color=\"blue\">".$arrLang["Sec. Outgoing Call"]."</font>":$arrLang["Sec. Outgoing Call"];
+    $img = "<img src='images/flecha_$order_type.png' border='0' align='absmiddle'>";
+    $style_link_off = "style='text-decoration: none;color:black'";
+    $style_link_on  = "style='text-decoration: none;color:blue'";
 
+    $leyend_1 = "<a $style_link_off href='$url&order_by=1&order_type=asc'>{$arrLang["Extension"]}</a>";
+    $leyend_2 = "<a $style_link_off href='$url&order_by=2&order_type=asc'>{$arrLang["User name"]}</a>";
+    $leyend_3 = "<a $style_link_off href='$url&order_by=3&order_type=asc'>{$arrLang["Num. Incoming Calls"]}</a>";
+    $leyend_4 = "<a $style_link_off href='$url&order_by=4&order_type=asc'>{$arrLang["Num. Outgoing Calls"]}</a>";
+    $leyend_5 = "<a $style_link_off href='$url&order_by=5&order_type=asc'>{$arrLang["Sec. Incoming Calls"]}</a>";
+    $leyend_6 = "<a $style_link_off href='$url&order_by=6&order_type=asc'>{$arrLang["Sec. Outgoing Calls"]}</a>";
+
+
+    if($order_by == 1)      $leyend_1 = "<a $style_link_on href='$url&order_by=1&order_type=$order_type'>{$arrLang["Extension"]}&nbsp;$img</a>";  
+    else if($order_by == 2) $leyend_2 = "<a $style_link_on href='$url&order_by=2&order_type=$order_type'>{$arrLang["User name"]}&nbsp;$img</a>";
+    else if($order_by == 3) $leyend_3 = "<a $style_link_on href='$url&order_by=3&order_type=$order_type'>{$arrLang["Num. Incoming Calls"]}&nbsp;$img</a>";  
+    else if($order_by == 4) $leyend_4 = "<a $style_link_on href='$url&order_by=4&order_type=$order_type'>{$arrLang["Num. Outgoing Calls"]}&nbsp;$img</a>";  
+    else if($order_by == 5) $leyend_5 = "<a $style_link_on href='$url&order_by=5&order_type=$order_type'>{$arrLang["Sec. Incoming Calls"]}&nbsp;$img</a>";  
+    else if($order_by == 6) $leyend_6 = "<a $style_link_on href='$url&order_by=6&order_type=$order_type'>{$arrLang["Sec. Outgoing Calls"]}&nbsp;$img</a>";  
+    
     $arrGrid = 
-        array("title"    => $arrLang["Report Call"],
+        array("title"    => $arrLang["Summary by Extension"],
               "icon"     => "images/list.png",
               "width"    => "100%",
               "start"    => ($total==0) ? 0 : $offset + 1,
               "end"      => $end,
               "total"    => $total,
-              "url"      => $url."&order_by=$order_by",
+              "url"      => $ulr_paging,
               "columns"  => array(
-		            0 => array("name"      => $leyend_1."&nbsp;<a href='$url&order_by=1' >".$img."</a>",
+		            0 => array("name"      => $leyend_1,
                                "property1" => ""),
-		            1 => array("name"      => $leyend_2."&nbsp;<a href='$url&order_by=2' >".$img."</a>",
+		            1 => array("name"      => $leyend_2,
                                "property1" => ""),
-		            2 => array("name"      => $leyend_3."&nbsp;<a href='$url&order_by=3'>".$img."</a>",
+		            2 => array("name"      => $leyend_3,
                                "property1" => ""),
-                    3 => array("name"      => $leyend_4."&nbsp;<a href='$url&order_by=4' >".$img."</a>",
+                    3 => array("name"      => $leyend_4,
                                "property1" => ""),
-                    4 => array("name"      => $leyend_5."&nbsp;<a href='$url&order_by=5' >".$img."</a>",
+                    4 => array("name"      => $leyend_5,
                                "property1" => ""),
-                    5 => array("name"      => $leyend_6."&nbsp;<a href='$url&order_by=6' >".$img."</a>",
+                    5 => array("name"      => $leyend_6,
                                "property1" => ""),
                     6 => array("name"      => "Option",
                                "property1" => ""),
@@ -197,7 +214,7 @@ function createFieldForm($arrLang){
             "option_fil"=> array( "LABEL"                  => $arrLang["Filter by"],
                                   "REQUIRED"               => "no",
                                   "INPUT_TYPE"             => "SELECT",
-                                  "INPUT_EXTRA_PARAM"      => array("Extention"=>$arrLang["Extention"],"User"=>$arrLang["User"]),
+                                  "INPUT_EXTRA_PARAM"      => array("Ext"=>$arrLang["Extension"],"User"=>$arrLang["User"]),
                                   "VALIDATION_TYPE"        => "text",
                                   "EDITABLE"               => "yes",
                                   "VALIDATION_EXTRA_PARAM" => ""),

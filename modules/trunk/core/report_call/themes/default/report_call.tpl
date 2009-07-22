@@ -17,3 +17,4 @@
     </tr>
 </table>
 <input type='hidden' name='order_by' value='{$order_by}' />
+<input type='hidden' name='order_type' value='{$order_type}' />

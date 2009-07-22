@@ -22,7 +22,7 @@
 
 function popup_ventana(url_popup)
 {
-    var ancho = 550;
+    var ancho = 600;
     var alto = 530;
     my_window = window.open(url_popup,"my_window","width="+ancho+",height="+alto+",location=yes,status=yes,resizable=yes,scrollbars=yes,fullscreen=no,toolbar=yes");
     my_window.moveTo((screen.width-ancho)/2,(screen.height-alto)/2);

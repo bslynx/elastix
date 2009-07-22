@@ -72,14 +72,15 @@ class paloSantoReportCall {
     function CargarIdiomas()
     {
         global $arrConf;
+        $module_name = "summary_by_extension";
 
         include_once $arrConf['basePath']."/libs/misc.lib.php";
         $lang = get_language($arrConf['basePath'].'/');
 
-        if( file_exists($arrConf['basePath']."/modules/report_call/lang/$lang.lang") )
-            include_once $arrConf['basePath']."/modules/report_call/lang/$lang.lang";
+        if( file_exists($arrConf['basePath']."/modules/$module_name/lang/$lang.lang") )
+            include_once $arrConf['basePath']."/modules/$module_name/lang/$lang.lang";
         else
-            include_once $arrConf['basePath']."/modules/report_call/lang/en.lang";
+            include_once $arrConf['basePath']."/modules/$module_name/lang/en.lang";
 
         global $arrLangModule;
         $this->arrLang = $arrLangModule;
@@ -103,7 +104,7 @@ class paloSantoReportCall {
     {
         $extension   = "";
         $description = "";
-        if( $type == 'Extention' ) $extension=$value;
+        if( $type == 'Ext' ) $extension=$value;
         else if( $type == 'User' ) $description=$value;
 
         $query= "select count(*) from asterisk.devices d where d.id like '$extension%' AND d.description like '$description%'";
@@ -116,19 +117,19 @@ class paloSantoReportCall {
         return $result[0];
     }
 
-    function ObtainReportCall($limit, $offset, $date_ini, $date_end, $type, $value, $order_by)
+    function ObtainReportCall($limit, $offset, $date_ini, $date_end, $type, $value, $order_by, $order_type="desc")
     {
         $extension   = "";
         $description = "";
 
-        if( $type == 'Extention' ) $extension   = $value;
-        else if( $type == 'User' ) $description = $value;
+        if($type=='Ext') $extension = $value;
+        else if($type=='User') $description = $value;
 
         //PASO 1: Obtengo datos salientes de todas las extensiones que estan en la tabla devices, por ello uso
         //        el RIGHT JOIN
         $query_outgoing_call="
             SELECT
-                t_devices.id source,
+                cast(t_devices.id as unsigned) source,
                 t_devices.description name,
                 ifnull(t_cdr.num_outgoing_call,0) num_outgoing_call,
                 ifnull(t_cdr.duration_outgoing_call,0) duration_outgoing_call
@@ -153,14 +154,14 @@ class paloSantoReportCall {
                  WHERE
                     d.id like '$extension%' AND
                     d.description like '$description%') t_devices
-            ON t_devices.id=t_cdr.source 
-            LIMIT $limit OFFSET $offset";
+            ON t_devices.id=t_cdr.source
+            ORDER BY 1 $order_type";
 
         //PASO 2: Obtengo datos entrantes de todas las extensiones que estan en la tabla devices, por ello uso
         //        el RIGHT JOIN, el numero de registros son iguales tanto en el paso 1 y paso2.
         $query_incoming_call="
             SELECT 
-                t_devices.id destiny,
+                cast(t_devices.id as unsigned) destiny,
                 t_devices.description name,
                 ifnull(t_cdr.num_incoming_call,0) num_incoming_call, 
                 ifnull(t_cdr.duration_incoming_call,0) duration_incoming_call 
@@ -186,7 +187,7 @@ class paloSantoReportCall {
                     d.id like '$extension%' AND
                     d.description like '$description%') t_devices
             ON t_devices.id=t_cdr.destiny
-            LIMIT $limit OFFSET $offset";
+            ORDER BY 1 $order_type";
 
         //PASO 3: Uno ambos resultados.
         $query_extension_call="
@@ -203,7 +204,8 @@ class paloSantoReportCall {
                 ($query_incoming_call) t_incoming_call
             ON
                 t_outgoing_call.source=t_incoming_call.destiny
-            ORDER BY $order_by desc;";
+            ORDER BY $order_by $order_type
+            LIMIT $limit OFFSET $offset;";
 
         $result = $this->_DB_cdr->fetchTable($query_extension_call, true);
 
@@ -215,26 +217,53 @@ class paloSantoReportCall {
     }
 
     //PARA PLOT3D
-    function callbackTopMoreCalls($date_ini, $date_end, $ext)
+    function callbackTop10Salientes($date_ini, $date_end, $ext, $num_out)
     {
-        $result = $this->obtainTop10Salientes( $date_ini, $date_end, $ext );
-
-        $arrColor = array('blue','red','yellow','brown','green','orange','pink','purple','gray','white');
+        $arrData = $this->obtainTop10Salientes( $date_ini, $date_end, $ext );
+        $result = $arrData['data'];
+        $numTopCalls = $arrData['total'];
+        //$num_out = $this->obtainAllSalientes($date_ini, $date_end, $ext);
+        
+        if($num_out > 0)
+            $numCallNoTop = $num_out - $numTopCalls;
+        
+        $arrColor = array('blue','red','yellow','brown','green','orange','pink','purple','gray','white','violet');
 
         $arrT = array();
         $i = 0;
         foreach( $result as $num => $arrR ){
-            $arrT["DAT_$i"] = array('VALUES' => array('VALUE'=>$arrR[0]),
-                                    'STYLE'  => array('COLOR'=>$arrColor[$i], 'LEYEND'=>$arrR[1]." (".$arrR[0].")"));
+            if($num_out <= 0){
+                $arrT["DAT_$i"] = array('VALUES' => array('VALUE'=>0),
+                                        'STYLE'  => array('COLOR'=>$arrColor[$i], 'LEYEND'=>" (0 ".$this->arrLang['calls'].")"));
+                break;
+            }else{
+                if($arrR[0]==1){
+                    $arrT["DAT_$i"] = array('VALUES' => array('VALUE'=>$arrR[0]),
+                                            'STYLE'  => array('COLOR'=>$arrColor[$i], 'LEYEND'=>"$arrR[1] ($arrR[0] ".$this->arrLang['call'].")"));
+                }else{
+                    $arrT["DAT_$i"] = array('VALUES' => array('VALUE'=>$arrR[0]),
+                                            'STYLE'  => array('COLOR'=>$arrColor[$i], 'LEYEND'=>"$arrR[1] ($arrR[0] ".$this->arrLang['calls'].")"));
+                }
+            }
             $i++;
         }
 
+       if($num_out > 0){
+            if($numCallNoTop == 1){
+                $arrT["DAT_$i"] = array('VALUES' => array('VALUE'=>$numCallNoTop),
+                                    'STYLE'  => array('COLOR'=>$arrColor[10], 'LEYEND'=>$this->arrLang['Other calls']." (".$numCallNoTop." ".$this->arrLang['call'].")"));
+            }else{
+                    $arrT["DAT_$i"] = array('VALUES' => array('VALUE'=>$numCallNoTop),
+                                            'STYLE'  => array('COLOR'=>$arrColor[10], 'LEYEND'=>$this->arrLang['Other calls']." (".$numCallNoTop." ".$this->arrLang['calls'].")"));
+            }
+        }
+        
         return array( 
             'ATTRIBUTES' => array(
                 //NECESARIOS
                 'TITLE'   => $this->arrLang['Top 10 (Outgoing) ext']." ".$ext,
                 'TYPE'    => 'plot3d',
-                'SIZE'    => "500,250", 
+                'SIZE'    => "550,250", 
                 'MARGIN'  => "5,70,15,20",
             ),
 
@@ -265,29 +294,101 @@ class paloSantoReportCall {
             print_r($this->errMsg);
             return array();
         }
-        return $result;
+
+         $sum = 0;
+        if(is_array($result) & count($result)>0){
+          foreach($result as $key => $value)
+            $sum+= $value[0];
+        }
+
+        $arrData['data']=$result;
+        $arrData['total']=$sum;
+        return $arrData;
     }
-
-    function callbackBillingsByTrunks($date_ini, $date_end, $ext)
+    
+    function obtainAllSalientes($date_ini, $date_end, $ext)
     {
-        $result = $this->obtainTop10Entrantes( $date_ini, $date_end, $ext );
+        $query = " SELECT
+                         count(dst) 
+                   FROM
+                         cdr 
+                   WHERE calldate >= '$date_ini' AND 
+                         calldate <= '$date_end' AND
+                         src = $ext";
+        $result = $this->_DB_cdr->fetchTable($query, false);
 
-        $arrColor = array('blue','red','yellow','brown','green','orange','pink','purple','gray','white');
+        if($result == FALSE){
+            $this->errMsg = $this->_DB_cdr->errMsg;
+        }
+        return $result[0];
+    }
+    
+    function obtainAllEntrantes($date_ini, $date_end, $ext)
+    {
+        $query = " SELECT
+                         count(src) 
+                   FROM
+                         cdr 
+                   WHERE calldate >= '$date_ini' AND 
+                         calldate <= '$date_end' AND
+                         dst = $ext";
+        $result = $this->_DB_cdr->fetchTable($query, false);
+
+        if($result == FALSE){
+            $this->errMsg = $this->_DB_cdr->errMsg;
+        }
+        return $result[0];
+    }
+////////
+    function callbackTop10Entrantes($date_ini, $date_end, $ext, $num_in)
+    {
+        $arrData = $this->obtainTop10Entrantes( $date_ini, $date_end, $ext );
+        $result = $arrData['data'];
+        $numTopCalls = $arrData['total'];
+        //$num_in = $this->obtainAllEntrantes($date_ini, $date_end, $ext);
+        
+        if($num_in > 0)
+            $numCallNoTop = $num_in - $numTopCalls;
+        $arrColor = array('blue','red','yellow','brown','green','orange','pink','purple','gray','white','violet');
 
         $arrT = array();
         $i = 0;
+        $externalCalls = $this->arrLang['External #'];
         foreach( $result as $num => $arrR ){
-            $arrT["DAT_$i"] = array('VALUES' => array('VALUE'=>$arrR[0]),
-                                    'STYLE'  => array('COLOR'=>$arrColor[$i], 'LEYEND'=>$arrR[1]." (".$arrR[0].")"));
+            if($num_in <= 0){
+                $arrT["DAT_$i"] = array('VALUES' => array('VALUE'=>0),
+                                        'STYLE'  => array('COLOR'=>$arrColor[$i], 'LEYEND'=>" (0 ".$this->arrLang['calls'].")"));
+                break;
+            }else{
+                if($arrR[1] == "") $arrR[1] = $externalCalls;
+                if($arrR[0]==1){
+                    $arrT["DAT_$i"] = array('VALUES' => array('VALUE'=>$arrR[0]),
+                                            'STYLE'  => array('COLOR'=>$arrColor[$i], 'LEYEND'=>"$arrR[1] ($arrR[0] ".$this->arrLang['call'].")"));
+                }else{
+                    $arrT["DAT_$i"] = array('VALUES' => array('VALUE'=>$arrR[0]),
+                                            'STYLE'  => array('COLOR'=>$arrColor[$i], 'LEYEND'=>"$arrR[1] ($arrR[0] ".$this->arrLang['calls'].")"));
+                }
+            }
             $i++;
         }
+        
+        if($num_in > 0){
+            if($numCallNoTop==1){
+                $arrT["DAT_$i"] = array('VALUES' => array('VALUE'=>$numCallNoTop),
+                                        'STYLE'  => array('COLOR'=>$arrColor[10], 'LEYEND'=>$this->arrLang['Other calls']." (".$numCallNoTop." ".$this->arrLang['call'].")"));
+            }else{
+                $arrT["DAT_$i"] = array('VALUES' => array('VALUE'=>$numCallNoTop),
+                                        'STYLE'  => array('COLOR'=>$arrColor[10], 'LEYEND'=>$this->arrLang['Other calls']." (".$numCallNoTop." ".$this->arrLang['calls'].")"));
+            }
+        }
+        
 
         return array( 
             'ATTRIBUTES' => array(
                 //NECESARIOS
                 'TITLE'   => $this->arrLang['Top 10 (Incoming) ext']." ".$ext,
                 'TYPE'    => 'plot3d',
-                'SIZE'    => "500,250", 
+                'SIZE'    => "550,250", 
                 'MARGIN'  => "5,70,15,20",
             ),
 
@@ -318,7 +419,38 @@ class paloSantoReportCall {
             print_r($this->errMsg);
             return array();
         }
-        return $result;
+
+        $sum = 0;
+        if(is_array($result) & count($result)>0){
+          foreach($result as $key => $value)
+            $sum+= $value[0];
+        }
+
+        $arrData['data']=$result;
+        $arrData['total']=$sum;
+        return $arrData;
+    }
+
+    function Sec2HHMMSS($sec)
+    {
+        $HH = '00'; $MM = '00'; $SS = '00';
+
+        if($sec >= 3600){ 
+            $HH = (int)($sec/3600);
+            $sec = $sec%3600; 
+            if( $HH < 10 ) $HH = "0$HH";
+        }
+
+        if( $sec >= 60 ){ 
+            $MM = (int)($sec/60);
+            $sec = $sec%60;
+            if( $MM < 10 ) $MM = "0$MM";
+        }
+
+        $SS = $sec;
+        if( $SS < 10 ) $SS = "0$SS";
+
+        return "{$HH}h. {$MM}m. {$SS}s";
     }
 }
 ?>
