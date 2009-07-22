@@ -28,20 +28,25 @@
   $Id: en.lang,v 1.1 2009-01-06 09:01:38 jvega jvega@palosanto.com Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Report Call" => "Report Call",
+"Summary by Extension" => "Summary by Extension",
 "Start date" => "Start date",
 "End date" => "End date",
 "Extension"=>"Ext",
 "User name"=>"User",
-"Sec. Outgoing Call"=>"Sec. Outgoing Call",
-"Sec. Incoming Call"=>"Sec. Incoming Call",
-"Num. Outgoing Call"=>"# Outgoing Call",
-"Num. Incoming Call"=>"# Incoming Call",
-"More Details" => "More Details",
+"Sec. Outgoing Calls"=>"Sec. Outgoing Calls",
+"Sec. Incoming Calls"=>"Sec. Incoming Calls",
+"Num. Outgoing Calls"=>"# Outgoing Calls",
+"Num. Incoming Calls"=>"# Incoming Calls",
+"Call Details" => "Call Details",
 "Top 10 (Outgoing) ext" => "Top 10 (Outgoing) ext",
 "Top 10 (Incoming) ext" => "Top 10 (Incoming) ext",
 "Filter by" => "Filter by",
-"Extention" => "Extention",
 "User" => "User",
+"seconds" => "seconds",
+"Other calls" => "Other calls",
+"External #" => "External #",
+"calls" => "calls",
+"call" => "call"
+
 );
 ?>
