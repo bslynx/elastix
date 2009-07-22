@@ -46,7 +46,8 @@ $arrLangModule=array(
 "Other calls" => "Other calls",
 "External #" => "External #",
 "calls" => "calls",
-"call" => "call"
+"call" => "call",
+"No data to display" => "No data to display",
 
 );
 ?>

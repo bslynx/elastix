@@ -269,7 +269,7 @@ class paloSantoReportCall {
 
             'MESSAGES'  => array(
                 'ERROR' => 'Error', 
-                'NOTHING_SHOW' => 'Nada que mostrar'
+                'NOTHING_SHOW' => $this->arrLang['No data to display']
             ),
             //DATOS A DIBUJAR
             'DATA' => $arrT );
@@ -394,7 +394,7 @@ class paloSantoReportCall {
 
             'MESSAGES'  => array(
                 'ERROR' => 'Error', 
-                'NOTHING_SHOW' => 'Nada que mostrar'
+                'NOTHING_SHOW' => $this->arrLang['No data to display']
             ),
             //DATOS A DIBUJAR
             'DATA' => $arrT );

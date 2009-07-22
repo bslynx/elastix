@@ -46,6 +46,7 @@ $arrLangModule=array(
 "Other calls" => "Otras llamadas", 
 "External #" => "# Externos",
 "calls" => "llamadas",
-"call" => "llamada"
+"call" => "llamada",
+"No data to display" => "No hay datos para mostrar",
 );
 ?>

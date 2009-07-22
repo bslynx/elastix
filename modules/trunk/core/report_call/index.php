@@ -110,7 +110,7 @@ function reportReportCall($smarty, $module_name, $local_templates_dir, &$pDB_cdr
     //begin grid parameters
     $oGrid  = new paloSantoGrid($smarty);
 
-    $limit  = 20;
+    $limit  = 40;
     $total  = $pReportCall->ObtainNumberDevices($type,$value);
     $oGrid->setLimit($limit);
     $oGrid->setTotal($total);
