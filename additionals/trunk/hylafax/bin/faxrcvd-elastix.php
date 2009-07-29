@@ -2,7 +2,8 @@
 <?php
     require_once "includes/functions.php";
     require_once "includes/config.php";
-    
+
+exec("echo '5: ok' >> /tmp/logfax");    
     /**********************************************
      *         1) OBTENGO INFORMACION             *
      **********************************************/
@@ -40,11 +41,11 @@
     $name_pdf = str_replace("tif","pdf",obtener_nombre($tiff_file));
     global $faxes_path;
     $pathDB = createFolder($company_number, $commID, "in");
-    $pdffile = "$faxes_path/recvd/$pathDB/fax.pdf";
+    $pdffile= "$faxes_path/recvd/$pathDB/fax.pdf";
 
     //El usuario actual es uucp
     // create pdf in new dir
-    tiff2pdf ($tiff_file, $pdffile);
+    tiff2pdf_RCVD($tiff_file, $pathDB);
     // METO EL FAX EN LA BASE DE DATOS?
     fax_info_insert($name_pdf,$modemdev,$commID,$errormsg,$company_name,$company_number,'in',"recvd/$pathDB");
     faxes_log ("faxrcvd> Se copio el $name_pdf en la ruta $faxes_path/recvd/$pathDB y se grabo en la BD.");

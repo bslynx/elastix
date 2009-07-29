@@ -223,6 +223,24 @@
         faxes_log ("list_pdf > Lista de archivo(s) .pdf de origen (.tif) que van a ser combinados: $list_pdf");        
         return  $list_pdf;
     }
+    
+    function tiff2pdf_RCVD($tiff_file, $pathDB)
+    {
+        global $faxes_path;
+        $list_pdf = "";
+        $path = "/var/spool/hylafax/recvq";
+        $tmp_file=basename($tiff_file,".tif");
+        //tiff2pdf -o docq/fax3.pdf docq/doc29.tif        
+        exec("tiff2pdf -o $faxes_path/recvd/$pathDB/fax.pdf $path/$tmp_file.tif",$arrConsole,$flagStatus2);
+        faxes_log("tiff2pdf -o > Tranformando a fax.pdf desde $path/$tmp_file.tif  en la ruta $faxes_path/recvd/$pathDB");
+        chmod("$faxes_path/recvd/$pathDB/fax.pdf",0666);
+        faxes_log("chmod > $faxes_path/recvd/$pathDB/fax.pdf,0666");
+        $list_pdf .= "$faxes_path/recvd/$pathDB/fax.pdf"." ";
+        faxes_log ("list_pdf > Lista de archivo(s) .pdf de origen (.tif) que van a ser combinados: $list_pdf");
+        return  $list_pdf;
+    }
+    
+
     //elimana archivos tmp .ps2
     function deletePS2FileFromDocq($ps2file)
     {
