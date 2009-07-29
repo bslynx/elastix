@@ -3,7 +3,6 @@
     require_once "includes/functions.php";
     require_once "includes/config.php";
 
-exec("echo '5: ok' >> /tmp/logfax");    
     /**********************************************
      *         1) OBTENGO INFORMACION             *
      **********************************************/

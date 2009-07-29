@@ -4,8 +4,6 @@ $cmdLine = "";
 for($i=1; $i<$_SERVER['argc']; $i++)
 	$cmdLine .= "\"{$_SERVER['argv'][$i]}\" ";
 
-exec("echo '2: $cmdLine' >> /tmp/logfax");
-
 if(file_exists("bin/faxrcvd-avantfax.php"))
 	echo `bin/faxrcvd-avantfax.php $cmdLine`;
 
