@@ -80,11 +80,14 @@ class PaloSantoHardwareDetection
                         $colorEstado = '#00CC00';
                    }
 
+                   $tipo = $regs1[2];
                     //Tipo de las lineas
-                   if($regs1[3]=='FXSKS')
+                   /*if($regs1[3]=='FXSKS')
                         $tipo ='FXO'; 
                    else if($regs1[3]=='FXOKS')
                         $tipo ='FXS';
+                   else
+                        $tipo = "PRI/BRI";*/
 
                    $tarjetas["TARJETA$idTarjeta"]['PUERTOS']["PUERTO$regs1[1]"] = array('LOCALIDAD' =>$regs1[1],'TIPO' => $tipo, 'ADICIONAL' => "$regs1[2] - $regs1[3]", 'ESTADO' => $estado,'COLOR' => $colorEstado);
                 }
