@@ -869,10 +869,43 @@ PETICION_LLAMADAS_AGENTE;
             $listaLlamadasOriginadas = array();
             $pid = posix_getpid();
             foreach ($listaAgentesAgendados as $idAgente) {
+                $bEnBreak = FALSE;
+
+                /* Puede ocurrir que el agente esté en pausa propia al momento de verificar 
+                 * si debe o no agendarse. Si está en pausa propia, entonces NO DEBE RECIBIR
+                 * llamadas, incluso si está agendado. Se verifica en la tabla audit. */
+                $sPeticionBreak = 
+                    'SELECT COUNT(*) FROM agent, audit ' .
+                    'WHERE agent.number = ? ' .
+                        'AND agent.id = audit.id_agent ' .
+                        'AND audit.id_break IS NOT NULL ' .
+                        'AND datetime_init <= ? ' .
+                        'AND datetime_end IS NULL';
+                $tupla =& $this->_dbConn->getRow(
+                    $sPeticionBreak, 
+                    array($idAgente, date('Y-m-d H:i:s')));
+                if (DB::isError($tupla)) {
+                    $this->oMainLog->output("ERR: (campania $infoCampania->id cola $infoCampania->queue) no se puede consultar estado de break para campaña - ".$tupla->getMessage());
+                } else {
+                    $bEnBreak = ($tupla[0] > 0);
+                }                
+
+                if ($bEnBreak) {
+                    if ($this->DEBUG) {
+                        $this->oMainLog->output("DEBUG: (campania $infoCampania->id cola $infoCampania->queue) ".
+                            "Agent/$idAgente está en BREAK, se ignora para agendamiento.");
+                    }
+                    unset($this->_infoLlamadas['agentes_reservados'][$idAgente]);
+                    continue; // Analizar el siguiente agente
+                }
+                
+                // Lo siguiente sólo se hace para agentes que NO están en BREAK
                 if (!isset($this->_infoLlamadas['agentes_reservados'][$idAgente])) {
                     if (!in_array('paused', $estadoCola['members'][$idAgente]['attributes'])) {
-                        $this->oMainLog->output("DEBUG: (campania $infoCampania->id cola $infoCampania->queue) ".
-                            "Agent/$idAgente debe de ser reservado...");
+                        if ($this->DEBUG) {
+                            $this->oMainLog->output("DEBUG: (campania $infoCampania->id cola $infoCampania->queue) ".
+                                "Agent/$idAgente debe de ser reservado...");
+                        }
                         $resultado = $this->_astConn->QueuePause($infoCampania->queue, "Agent/$idAgente", 'true');
                         if ($this->DEBUG) {
                             $this->oMainLog->output("DEBUG: (campania $infoCampania->id cola $infoCampania->queue) " .
