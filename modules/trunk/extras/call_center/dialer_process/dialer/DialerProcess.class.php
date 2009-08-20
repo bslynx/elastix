@@ -1022,9 +1022,24 @@ PETICION_LLAMADAS_AGENTE;
 		$conflicto = $oPredictor->getAgentesConflicto();
 		if (is_array($conflicto)) {
 			$this->oMainLog->output(
-				"ERR: los siguientes agentes están libres según 'agent show' pero ocupados según 'queue show' : ".
+				"WARN: los siguientes agentes están libres según 'agent show' pero ocupados según 'queue show' : ".
 				join($conflicto, ' '));
-			$this->oMainLog->output("ERR: se considera que los agentes mencionados están libres...");
+            $this->oMainLog->output("WARN: se intenta resolver conflicto de agentes...");
+            $this->_resolverConflictoAgentes($infoCampania->queue, $conflicto);
+
+            // Intentar de nuevo calcular agentes libres
+            $iMaxPredecidos = $oPredictor->predecirNumeroLlamadas(
+                $infoCampania->queue, 
+                ($infoCampania->num_completadas >= MIN_MUESTRAS));
+            if ($iNumLlamadasColocar > $iMaxPredecidos)
+                $iNumLlamadasColocar = $iMaxPredecidos;
+
+            $conflicto = $oPredictor->getAgentesConflicto();
+            if (is_array($conflicto)) {
+                $this->oMainLog->output(
+                    "WARN: a pesar de intento, los siguientes agentes están libres según 'agent show' pero ocupados según 'queue show' : ".
+                    join($conflicto, ' '));
+            }
 		}
 
         if (!isset($this->_numLlamadasOriginadas[$infoCampania->queue])) {
@@ -1329,6 +1344,60 @@ PETICION_LLAMADAS;
 		}
 	}
 
+    private function _abrirConexionFreePBX()
+    {
+        $sNombreConfig = '/etc/amportal.conf';  // TODO: vale la pena poner esto en config?
+
+        // De algunas pruebas se desprende que parse_ini_file no puede parsear 
+        // /etc/amportal.conf, de forma que se debe abrir directamente.
+        $dbParams = array();
+        $hConfig = fopen($sNombreConfig, 'r');
+        if (!$hConfig) {
+            $this->oMainLog->output('ERR: no se puede abrir archivo '.$sNombreConfig.' para lectura de parámetros FreePBX.');
+            return NULL;
+        }
+        while (!feof($hConfig)) {
+            $sLinea = fgets($hConfig);
+            if ($sLinea === FALSE) break;
+            $sLinea = trim($sLinea);
+            if ($sLinea == '') continue;
+            if ($sLinea{0} == '#') continue;
+            
+            $regs = NULL;
+            if (ereg('^([[:alpha:]]+)[[:space:]]*=[[:space:]]*(.*)$', $sLinea, $regs)) switch ($regs[1]) {
+            case 'AMPDBHOST':
+            case 'AMPDBUSER':
+            case 'AMPDBENGINE':
+            case 'AMPDBPASS':
+                $dbParams[$regs[1]] = $regs[2];
+                break;
+            }
+        }
+        fclose($hConfig); unset($hConfig);
+        
+        // Abrir la conexión a la base de datos, si se tienen todos los parámetros
+        if (count($dbParams) < 4) {
+            $this->oMainLog->output('ERR: archivo '.$sNombreConfig.
+                ' de parámetros FreePBX no tiene todos los parámetros requeridos para conexión.');
+            return NULL;
+        }
+        if ($dbParams['AMPDBENGINE'] != 'mysql' && $dbParams['AMPDBENGINE'] != 'mysqli') {
+            $this->oMainLog->output('ERR: archivo '.$sNombreConfig.
+                ' de parámetros FreePBX especifica AMPDBENGINE='.$dbParams['AMPDBENGINE'].
+                ' que no ha sido probado.');
+            return NULL;
+        }
+        $sConnStr = 'mysql://'.$dbParams['AMPDBUSER'].':'.$dbParams['AMPDBPASS'].'@'.$dbParams['AMPDBHOST'].'/asterisk';
+        $dbConn =  DB::connect($sConnStr);
+        if (DB::isError($dbConn)) {
+            $this->oMainLog->output("ERR: no se puede conectar a DB de FreePBX - ".($dbConn->getMessage()));
+            return NULL;
+        }
+        $dbConn->setOption('autofree', TRUE);
+    	
+        return $dbConn;
+    }
+
 	/**
 	 * Procedimiento que lee las propiedades del trunk indicado a partir de la
 	 * base de datos de FreePBX. Este procedimiento puede tomar algo de tiempo,
@@ -1341,8 +1410,6 @@ PETICION_LLAMADAS;
 	 */
 	private function _leerPropiedadesTrunk($sTrunk)
 	{
-		$sNombreConfig = '/etc/amportal.conf';	// TODO: vale la pena poner esto en config?
-
 		/* Para evitar excesivas conexiones, se mantiene un cache de la información leída
 		 * acerca de un trunk durante los últimos 30 segundos. 
 		 */
@@ -1354,52 +1421,8 @@ PETICION_LLAMADAS;
 			return $this->_plantillasMarcado[$sTrunk]['PROPIEDADES'];
 		}
 		
-		// De algunas pruebas se desprende que parse_ini_file no puede parsear 
-		// /etc/amportal.conf, de forma que se debe abrir directamente.
-		$dbParams = array();
-		$hConfig = fopen($sNombreConfig, 'r');
-		if (!$hConfig) {
-			$this->oMainLog->output('ERR: no se puede abrir archivo '.$sNombreConfig.' para lectura de parámetros FreePBX.');
-			return NULL;
-		}
-		while (!feof($hConfig)) {
-			$sLinea = fgets($hConfig);
-			if ($sLinea === FALSE) break;
-			$sLinea = trim($sLinea);
-			if ($sLinea == '') continue;
-			if ($sLinea{0} == '#') continue;
-			
-			$regs = NULL;
-			if (ereg('^([[:alpha:]]+)[[:space:]]*=[[:space:]]*(.*)$', $sLinea, $regs)) switch ($regs[1]) {
-			case 'AMPDBHOST':
-			case 'AMPDBUSER':
-			case 'AMPDBENGINE':
-			case 'AMPDBPASS':
-				$dbParams[$regs[1]] = $regs[2];
-				break;
-			}
-		}
-		fclose($hConfig); unset($hConfig);
-		
-		// Abrir la conexión a la base de datos, si se tienen todos los parámetros
-		if (count($dbParams) < 4) {
-			$this->oMainLog->output('ERR: archivo '.$sNombreConfig.
-				' de parámetros FreePBX no tiene todos los parámetros requeridos para conexión.');
-			return NULL;
-		}
-		if ($dbParams['AMPDBENGINE'] != 'mysql' && $dbParams['AMPDBENGINE'] != 'mysqli') {
-			$this->oMainLog->output('ERR: archivo '.$sNombreConfig.
-				' de parámetros FreePBX especifica AMPDBENGINE='.$dbParams['AMPDBENGINE'].
-				' que no ha sido probado.');
-			return NULL;
-		}
-        $sConnStr = 'mysql://'.$dbParams['AMPDBUSER'].':'.$dbParams['AMPDBPASS'].'@'.$dbParams['AMPDBHOST'].'/asterisk';
-        $dbConn =  DB::connect($sConnStr);
-        if (DB::isError($dbConn)) {
-            $this->oMainLog->output("ERR: no se puede conectar a DB de FreePBX - ".($dbConn->getMessage()));
-            return NULL;
-        }
-        $dbConn->setOption('autofree', TRUE);
+        $dbConn = $this->_abrirConexionFreePBX();
+        if (is_null($dbConn)) return;
 
 		$infoTrunk = NULL;
 
@@ -1482,6 +1505,82 @@ PETICION_LLAMADAS;
                 "campaña $idCampaign tiene ".sprintf('%.2f', $iTiempoContestar)." segundos de marcado.");
         }
         return $iTiempoContestar;
+    }
+
+    private function _resolverConflictoAgentes($sNombreCola, $listaConflicto)
+    {
+    	$infoAgente = array();
+        
+        $dbConn = $this->_abrirConexionFreePBX();
+        if (is_null($dbConn)) return NULL;
+
+        // Averiguar qué tabla debe de usarse para consultar
+        $tuplaTabla = $dbConn->getRow('SHOW TABLES LIKE "queues_details"');
+        if (DB::isError($tuplaTabla)) {
+        	$this->oMainLog->output("ERR: al verificar existencia de queues_details - ".$tuplaTabla->getMessage());
+            $dbConn->disconnect();
+            return FALSE;
+        }
+        if (is_array($tuplaTabla) && count($tuplaTabla) > 0 && $tuplaTabla[0] == 'queues_details') {
+            $sTablaQueues = 'queues_details';
+        } else {
+            $sTablaQueues = 'queues';
+        }
+
+        // Guardar los datos del agente para restaurar luego de recargar.
+        $sPeticionSQL = "SELECT data, flags FROM $sTablaQueues WHERE id = ? AND keyword = ? AND data LIKE ?";
+        foreach ($listaConflicto as $idAgente) {
+            $tupla = $dbConn->getRow($sPeticionSQL, 
+                array($sNombreCola, 'member', "Agent/$idAgente,%"), 
+                DB_FETCHMODE_ASSOC);
+            if (DB::isError($tupla)) {
+            	$this->oMainLog->output("ERR: al recordar valores de cola para Agent - ".$tupla->getMessage());
+                $dbConn->disconnect();
+                return FALSE;
+            }
+            $infoAgente[$idAgente] = $tupla;
+        }
+        
+        // Borrar los datos del agente del conflicto
+        $sPeticionSQL = "DELETE FROM $sTablaQueues WHERE id = ? AND keyword = ? AND data LIKE ?";
+        foreach ($listaConflicto as $idAgente) {
+            $result = $dbConn->query($sPeticionSQL, 
+                array($sNombreCola, 'member', "Agent/$idAgente,%"));
+            if (DB::isError($tupla)) {
+                $this->oMainLog->output("ERR: al eliminar valores de cola para Agent - ".$tupla->getMessage());
+                $dbConn->disconnect();
+                return FALSE;
+            }
+        }
+
+        system('/var/lib/asterisk/bin/retrieve_conf');
+        
+        $result = $this->_astConn->Command('reload');
+        if ($this->DEBUG) {
+        	$this->oMainLog->output("DEBUG: resultado de reload(1) es: ".print_r($result, TRUE));
+        }
+        
+        // Volver a insertar los datos del agente eliminado
+        $sPeticionSQL = "INSERT INTO $sTablaQueues (id, keyword, data, flags) VALUES (?, ?, ?, ?)";
+        foreach ($infoAgente as $idAgente => $datosAgente) {
+            $result = $dbConn->query($sPeticionSQL, 
+                array($sNombreCola, 'member', $datosAgente['data'], $datosAgente['flags']));
+            if (DB::isError($tupla)) {
+                $this->oMainLog->output("ERR: al insertar valores de cola para Agent - ".$tupla->getMessage());
+                $dbConn->disconnect();
+                return FALSE;
+            }
+        }
+        
+        system('/var/lib/asterisk/bin/retrieve_conf');
+        
+        $result = $this->_astConn->Command('reload');
+        if ($this->DEBUG) {
+            $this->oMainLog->output("DEBUG: resultado de reload(2) es: ".print_r($result, TRUE));
+        }
+        
+        $dbConn->disconnect();
+        return TRUE;
     }
 
     // Callback invocado al recibir el evento OriginateResponse
