@@ -89,50 +89,48 @@ function _moduleContent($smarty, $module_name)
     }
     if (isset($_POST['save']))
     {
-        $arrTmp=array();
-        $bMostrarError = false;
-        if($oForm->validateForm($arrTmp)) {
-            //valido el tipo de archivo
-            if (!eregi('.tar.gz$', $_FILES['module_file']['name']) && !eregi('.zip$', $_FILES['module_file']['name']) && !eregi('.tgz$', $_FILES['module_file']['name'])) {
-                $bContinuar = false;
-                $bMostrarError = true;
-                $smarty->assign("mb_title", $arrLang["Validation Error"]);
-                $strErrorMsg .= $arrLang["Invalid file extension.- It must be tar.gz / zip / tgz"];
-            }else {
-                if(eregi("^([[:alnum:]|\-]+)_",$_FILES['module_file']['name'])){
-                  //verificar el contenido del archivo
-                  $bExito = verifyFileContent($pDB, $strErrorMsg, $arrLang,$oMenu,$oACL);
-                  if (!$bExito) $bMostrarError = true;
-                  else{
-                  //complete, entonces muestro mensaje con boton Refrescar
-                      $smarty->assign("refresh", 1);
-                      $bMostrarError = true;
-                      $strErrorMsg = $arrLang["Module sucessfully loaded"];
-                  }
+          $arrTmp=array();
+          $bMostrarError = false;
+          if($oForm->validateForm($arrTmp)){
+              //valido el tipo de archivo
+              if (!eregi('.tar.gz$', $_FILES['module_file']['name']) && !eregi('.zip$', $_FILES['module_file']['name']) && !eregi('.tgz$', $_FILES['module_file']['name'])) {
+                  $bContinuar = false;
+                  $bMostrarError = true;
+                  $smarty->assign("mb_title", $arrLang["Validation Error"]);
+                  $strErrorMsg .= $arrLang["Invalid file extension.- It must be tar.gz / zip / tgz"];
+              }else{
+                  if(eregi("^([[:alnum:]|\-]+)_",$_FILES['module_file']['name'])){
+                    //verificar el contenido del archivo
+                    $bExito = verifyFileContent($pDB, $strErrorMsg, $arrLang,$oMenu,$oACL);
+                    if (!$bExito) $bMostrarError = true;
+                    else{
+                    //complete, entonces muestro mensaje con boton Refrescar
+                        $smarty->assign("refresh", 1);
+                        $bMostrarError = true;
+                        $strErrorMsg = $arrLang["Module sucessfully loaded"];
+                    }
+                 }
+                 else{
+                  // Error
+                  $bMostrarError = true;
+                  $smarty->assign("mb_title", $arrLang["Validation Error"]);
+                  $strErrorMsg = $arrLang["Name incorrect, the format is name-module_version-release.(tar|tar.gz|zip)"];
+                }
               }
-              else{
-                // Error
-                $bMostrarError = true;
-                $smarty->assign("mb_title", $arrLang["Validation Error"]);
-                $strErrorMsg = $arrLang["Name incorrect, the format is name-module_version-release.(tar|tar.gz|zip)"];
+          }else {
+              // Error
+              $bMostrarError = true;
+              $smarty->assign("mb_title", $arrLang["Validation Error"]);
+              $arrErrores=$oForm->arrErroresValidacion;
+              $strErrorMsg = "<b>{$arrLang['The following fields contain errors']}:</b><br>";
+              foreach($arrErrores as $k=>$v) {
+                  $strErrorMsg .= "$k, ";
               }
-            }
-        }else {
-            // Error
-            $bMostrarError = true;
-            $smarty->assign("mb_title", $arrLang["Validation Error"]);
-            $arrErrores=$oForm->arrErroresValidacion;
-            $strErrorMsg = "<b>{$arrLang['The following fields contain errors']}:</b><br>";
-            foreach($arrErrores as $k=>$v) {
-                $strErrorMsg .= "$k, ";
-            }
-            $strErrorMsg .= "";
-        }
-        if ($bMostrarError){
-            $smarty->assign("mb_message", $strErrorMsg);
-        }
-
+              $strErrorMsg .= "";
+          }
+          if ($bMostrarError) $smarty->assign("mb_message", $strErrorMsg);
     }
+
     $sContenido .= $oForm->fetchForm("$local_templates_dir/load_module.tpl", $arrLang["Load Module"],$_POST);
     return $sContenido;
 }
