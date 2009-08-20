@@ -138,9 +138,8 @@ function verifyFileContent($pDB, &$errorMsg, $arrLang,$oMenu,$oACL)
     //$tmpDir = '/var/www/tmp';
     $tmpDir = '/tmp/new_module';
     #crear un directorio para descomprimir
-//     mkdir($tmpDir);
+    mkdir($tmpDir);
     $tmpFile = $_FILES['module_file']['tmp_name'];
-    echo $tmpFile;
     $dirModules = "{$arrConf['basePath']}/modules";
     //descomprimir archivo en carpeta temporal
     //archivo zip
@@ -254,7 +253,7 @@ function verifyFileContent($pDB, &$errorMsg, $arrLang,$oMenu,$oACL)
                 deleteTmpFolder($tmpDir);
                 return false;
             }
-//             deleteTmpFolder($tmpDir);
+            deleteTmpFolder($tmpDir);
         }
     }else
     {
