@@ -45,7 +45,6 @@ if (file_exists($path_script_db))
     //STEP 1: Create database call_center
     $return=0;
     $return=$oInstaller->createNewDatabaseMySQL($path_script_db,"call_center",$datos_conexion);
-    $return=($flagStatus)?1:0;
 
     //STEP 2: Dialer process
     exec("sudo -u root chmod 777 /opt/",$arrConsole,$flagStatus);
