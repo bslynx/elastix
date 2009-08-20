@@ -51,5 +51,6 @@ $arrLangModule=array(
 "File installer.php doesn't exist in package" => "Файл installer.php отсутствует в пакете",
 "File module.xml doesn't exist in package" => "Файл module.xml отсутствует в пакете",
 "installer.php failed" => "installer.php failed",
+"Name incorrect, the format is name-module_version-release.(tar|tar.gz|zip)" => "Name incorrect, the format is name-module_version-release.(tar|tar.gz|zip)",
 );
 ?>

@@ -99,15 +99,23 @@ function _moduleContent($smarty, $module_name)
                 $smarty->assign("mb_title", $arrLang["Validation Error"]);
                 $strErrorMsg .= $arrLang["Invalid file extension.- It must be tar.gz / zip / tgz"];
             }else {
-                //verificar el contenido del archivo
-                $bExito = verifyFileContent($pDB, $strErrorMsg, $arrLang,$oMenu,$oACL);
-                if (!$bExito) $bMostrarError = true;
-                else{
-                //complete, entonces muestro mensaje con boton Refrescar
-                    $smarty->assign("refresh", 1);
-                    $bMostrarError = true;
-                    $strErrorMsg = $arrLang["Module sucessfully loaded"];
-                }
+                if(eregi("^([[:alnum:]|\-]+)_",$_FILES['module_file']['name'])){
+                  //verificar el contenido del archivo
+                  $bExito = verifyFileContent($pDB, $strErrorMsg, $arrLang,$oMenu,$oACL);
+                  if (!$bExito) $bMostrarError = true;
+                  else{
+                  //complete, entonces muestro mensaje con boton Refrescar
+                      $smarty->assign("refresh", 1);
+                      $bMostrarError = true;
+                      $strErrorMsg = $arrLang["Module sucessfully loaded"];
+                  }
+              }
+              else{
+                // Error
+                $bMostrarError = true;
+                $smarty->assign("mb_title", $arrLang["Validation Error"]);
+                $strErrorMsg = $arrLang["Name incorrect, the format is name-module_version-release.(tar|tar.gz|zip)"];
+              }
             }
         }else {
             // Error
@@ -152,23 +160,26 @@ function verifyFileContent($pDB, &$errorMsg, $arrLang,$oMenu,$oACL)
         $cmd_unzip = escapeshellcmd("tar xfz $tmpFile -C $tmpDir");
         exec($cmd_unzip,$output,$retVal);
     }
-    //luego de descomprimir verificar que existe el archivo module.xml
+    //luego de descomprimir verificar que existe el archivo menu.xml and install.php
     if ($retVal == 0){
+        eregi("^([[:alnum:]|\-]+)_",$_FILES['module_file']['name'],$arrReg); //name module 
+        $nameModule=$arrReg[1];
+        
         #verificar que existe el archivo installer.php
-        if(!file_exists("$tmpDir/installer/installer.php")) {
+        if(!file_exists("$tmpDir/$nameModule/setup/installer.php")) {
             $errorMsg = $arrLang["File installer.php doesn't exist in package"];
             deleteTmpFolder($tmpDir);
         return false;
         }
         #verificar que existe module xml
-        if(!file_exists("$tmpDir/module.xml")) {
-            $errorMsg = $arrLang["File module.xml doesn't exist in package"];
+        if(!file_exists("$tmpDir/$nameModule/menu.xml")) {
+            $errorMsg = $arrLang["File menu.xml doesn't exist in package"];
             deleteTmpFolder($tmpDir);
         return false;
         }else{
             #existe, leer el archivo para sacar los nombres del nuevo menu y los modulos
             #el archivo tiene que traer el id del menu sobre el cual se va a agregar el o los modulos.
-            $oModuloXML= new ModuloXML("$tmpDir/module.xml");
+            $oModuloXML= new ModuloXML("$tmpDir/$nameModule/menu.xml");
             #el consutructor parsea el archivo y ya debo tener el arbol de menu
             //  print "<pre>";print_r($oModuloXML->_arbolMenu);print "</pre>";
             if (count($oModuloXML->_arbolMenu)>0)
@@ -190,7 +201,7 @@ function verifyFileContent($pDB, &$errorMsg, $arrLang,$oMenu,$oACL)
                             if($esModulo == "yes")
                             {
                                 //verificar que exista una carpeta con ese nombre de menu
-                                if (!file_exists("$tmpDir/$menuid"))
+                                if (!file_exists("$tmpDir/$nameModule/modules/$menuid"))
                                 {
                                     $errorMsg = "No module defined $menuid";
                                     deleteTmpFolder($tmpDir);
@@ -229,13 +240,13 @@ function verifyFileContent($pDB, &$errorMsg, $arrLang,$oMenu,$oACL)
                     if ($menuModule['module']=="yes")
                     {
                         //copio la carpeta con el contenido del modulo
-                        $cmd_cp = escapeshellcmd("cp -r $tmpDir/$menuModule[menuid]  $dirModules");
+                        $cmd_cp = escapeshellcmd("cp -r $tmpDir/$nameModule/modules/$menuModule[menuid]  $dirModules");
                         exec($cmd_cp,$output,$retVal);
                     }
                 }
 
                 //ejecuto el installer.php
-                $cmd_install = escapeshellcmd("php $tmpDir/installer/installer.php");
+                $cmd_install = escapeshellcmd("php $tmpDir/$nameModule/setup/installer.php");
                 exec($cmd_install,$output,$retVal);
                 if ($retVal!=0){
                             $errorMsg = $arrLang["installer.php failed"];

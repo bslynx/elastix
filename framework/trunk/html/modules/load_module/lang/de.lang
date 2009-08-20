@@ -1070,5 +1070,6 @@ implementations of Voice over IP around the globe.",
 "System time can not be changed" => "System time can not be changed",
 /*module Time Config*/ 
 "installer.php failed" => "installer.php failed",
+"Name incorrect, the format is name-module_version-release.(tar|tar.gz|zip)" => "Name incorrect, the format is name-module_version-release.(tar|tar.gz|zip)",
 );
 ?>
