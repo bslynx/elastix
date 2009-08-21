@@ -99,23 +99,15 @@ function _moduleContent($smarty, $module_name)
                   $smarty->assign("mb_title", $arrLang["Validation Error"]);
                   $strErrorMsg .= $arrLang["Invalid file extension.- It must be tar.gz / zip / tgz"];
               }else{
-                  if(eregi("^([[:alnum:]|\-]+)_",$_FILES['module_file']['name'])){
-                    //verificar el contenido del archivo
-                    $bExito = verifyFileContent($pDB, $strErrorMsg, $arrLang,$oMenu,$oACL);
-                    if (!$bExito) $bMostrarError = true;
-                    else{
-                    //complete, entonces muestro mensaje con boton Refrescar
+                  //verificar el contenido del archivo
+                  $bExito = verifyFileContent($pDB, $strErrorMsg, $arrLang,$oMenu,$oACL);
+                  if (!$bExito) $bMostrarError = true;
+                  else{
+                  //complete, entonces muestro mensaje con boton Refrescar
                         $smarty->assign("refresh", 1);
                         $bMostrarError = true;
                         $strErrorMsg = $arrLang["Module sucessfully loaded"];
-                    }
-                 }
-                 else{
-                  // Error
-                  $bMostrarError = true;
-                  $smarty->assign("mb_title", $arrLang["Validation Error"]);
-                  $strErrorMsg = $arrLang["Name incorrect, the format is name-module_version-release.(tar|tar.gz|zip)"];
-                }
+                   }
               }
           }else {
               // Error
@@ -135,13 +127,59 @@ function _moduleContent($smarty, $module_name)
     return $sContenido;
 }
 
+function obteinName($file_name){
+    $pos = 0;
+    $file_name = "elastix-callcenter_1.5-1.zip";
+    $file_name = trim($file_name);
+
+    if (eregi(' ', $file_name)) 
+        return false;
+    //archivo zip
+    if (eregi('.zip$', $file_name))
+        $pos=strpos($file_name,".zip");
+
+    //archivo tar.gz
+    if (eregi('.tar.gz$', $file_name)) 
+        $pos=strpos($file_name,".tar.gz");
+
+    //archivo tgz
+    if(eregi('.tgz$', $file_name))
+        $pos=strpos($file_name,".tgz");
+
+    $name = substr($file_name,0,$pos);
+    $arr = obtainTokens($name);
+    $size = count($arr);
+    $posName = $size - 2;
+    if($posName == 0)
+        return false;
+    $nPos = $arr[$posName];
+    $newName = substr($file_name,0,$nPos);
+    return $newName;
+}
+
+function obtainTokens($name){
+    $array_tokens = "";
+    $j=0;
+    for($i=0; $i <strlen($name) ; $i++){
+        if($name[$i] == '-' || $name[$i] == '_')
+        {
+            $array_tokens[$j] = $i;
+            $j++;
+        }
+    }
+    return $array_tokens;
+}
+
 function verifyFileContent($pDB, &$errorMsg, $arrLang,$oMenu,$oACL)
 {
     global $arrConf;
     $arrArchivos = array();
     $output = '';
     $retVal = 1;
-    //$tmpDir = '/var/www/tmp';
+    
+    
+      
+    
     $tmpDir = '/tmp/new_module';
     #crear un directorio para descomprimir
     mkdir($tmpDir);
@@ -158,26 +196,39 @@ function verifyFileContent($pDB, &$errorMsg, $arrLang,$oMenu,$oACL)
         $cmd_unzip = escapeshellcmd("tar xfz $tmpFile -C $tmpDir");
         exec($cmd_unzip,$output,$retVal);
     }
+    
     //luego de descomprimir verificar que existe el archivo menu.xml and install.php
     if ($retVal == 0){
-        eregi("^([[:alnum:]|\-]+)_",$_FILES['module_file']['name'],$arrReg); //name module 
-        $nameModule=$arrReg[1];
+        //Start: Validation for modules old and new format or structure folders.
+        if(file_exists("$tmpDir/module.xml")){
+          $file_xml       = "$tmpDir/module.xml";
+          $file_installer = "$tmpDir/installer/installer.php";
+          $path_modules   = "$tmpDir";   
+        }
+        else{
+
+            $arrReg = $this->obteinName($_FILES['module_file']['name']);
+            $file_xml       = "$tmpDir/$arrReg/menu.xml";
+            $file_installer = "$tmpDir/$arrReg/setup/installer.php";
+            $path_modules   = "$tmpDir/$arrReg/modules";
+        }
+        //End: Validation for modules old and new format or structure folders.
         
         #verificar que existe el archivo installer.php
-        if(!file_exists("$tmpDir/$nameModule/setup/installer.php")) {
+        if(!file_exists($file_installer)) {
             $errorMsg = $arrLang["File installer.php doesn't exist in package"];
             deleteTmpFolder($tmpDir);
         return false;
         }
         #verificar que existe module xml
-        if(!file_exists("$tmpDir/$nameModule/menu.xml")) {
-            $errorMsg = $arrLang["File menu.xml doesn't exist in package"];
+        if(!file_exists($file_xml)) {
+            $errorMsg = $arrLang["File xml doesn't exist in package"];
             deleteTmpFolder($tmpDir);
         return false;
         }else{
             #existe, leer el archivo para sacar los nombres del nuevo menu y los modulos
             #el archivo tiene que traer el id del menu sobre el cual se va a agregar el o los modulos.
-            $oModuloXML= new ModuloXML("$tmpDir/$nameModule/menu.xml");
+            $oModuloXML= new ModuloXML($file_xml);
             #el consutructor parsea el archivo y ya debo tener el arbol de menu
             //  print "<pre>";print_r($oModuloXML->_arbolMenu);print "</pre>";
             if (count($oModuloXML->_arbolMenu)>0)
@@ -199,7 +250,7 @@ function verifyFileContent($pDB, &$errorMsg, $arrLang,$oMenu,$oACL)
                             if($esModulo == "yes")
                             {
                                 //verificar que exista una carpeta con ese nombre de menu
-                                if (!file_exists("$tmpDir/$nameModule/modules/$menuid"))
+                                if (!file_exists("$path_modules/$menuid"))
                                 {
                                     $errorMsg = "No module defined $menuid";
                                     deleteTmpFolder($tmpDir);
@@ -238,13 +289,13 @@ function verifyFileContent($pDB, &$errorMsg, $arrLang,$oMenu,$oACL)
                     if ($menuModule['module']=="yes")
                     {
                         //copio la carpeta con el contenido del modulo
-                        $cmd_cp = escapeshellcmd("cp -r $tmpDir/$nameModule/modules/$menuModule[menuid]  $dirModules");
+                        $cmd_cp = escapeshellcmd("cp -r $path_modules/$menuModule[menuid]  $dirModules");
                         exec($cmd_cp,$output,$retVal);
                     }
                 }
 
                 //ejecuto el installer.php
-                $cmd_install = escapeshellcmd("php $tmpDir/$nameModule/setup/installer.php");
+                $cmd_install = escapeshellcmd("php $file_installer");
                 exec($cmd_install,$output,$retVal);
                 if ($retVal!=0){
                             $errorMsg = $arrLang["installer.php failed"];
