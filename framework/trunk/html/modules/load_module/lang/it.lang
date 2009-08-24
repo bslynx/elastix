@@ -53,8 +53,6 @@ $arrLangModule=array(
 "Could not uncompress file" => "non posso decomprimere il file",
 "install.php failed" => "install.php fallito",
 "File installer.php doesn't exist in package" => "Il File installer.php non esiste nel pacchetto",
-"File module.xml doesn't exist in package" => "Il File module.xml non esiste nel pacchetto",
-"installer.php failed" => "installer.php failed",
-"Name incorrect, the format is name-module_version-release.(tar|tar.gz|zip)" => "Name incorrect, the format is name-module_version-release.(tar|tar.gz|zip)",
+"File xml doesn't exist in package" => "Il File xml non esiste nel pacchetto",
 );
 ?>

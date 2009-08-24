@@ -207,7 +207,7 @@ function verifyFileContent($pDB, &$errorMsg, $arrLang,$oMenu,$oACL)
         }
         else{
 
-            $arrReg = $this->obteinName($_FILES['module_file']['name']);
+            $arrReg = obteinName($_FILES['module_file']['name']);
             $file_xml       = "$tmpDir/$arrReg/menu.xml";
             $file_installer = "$tmpDir/$arrReg/setup/installer.php";
             $path_modules   = "$tmpDir/$arrReg/modules";

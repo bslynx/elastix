@@ -1068,8 +1068,7 @@ implementations of Voice over IP around the globe.",
 "has failed" => "has failed",
 "System time changed successfully" => "System time changed successfully",
 "System time can not be changed" => "System time can not be changed",
+"File xml doesn't exist in package"=>"File xml doesn't exist in package",
 /*module Time Config*/ 
-"installer.php failed" => "installer.php failed",
-"Name incorrect, the format is name-module_version-release.(tar|tar.gz|zip)" => "Name incorrect, the format is name-module_version-release.(tar|tar.gz|zip)",
 );
 ?>
