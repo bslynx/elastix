@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module>
+  <menulist>
+    <menuitem menuid="email_admin"    desc="Email"     parent=""            module="no"></menuitem>
+    <menuitem menuid="email_domains"  desc="Domains"   parent="email_admin" module="yes"></menuitem>
+    <menuitem menuid="email_accounts" desc="Accounts"  parent="email_admin" module="yes"></menuitem>
+    <menuitem menuid="email_relay"    desc="Relay"     parent="email_admin" module="yes"></menuitem>
+    <menuitem menuid="antispam"       desc="Antispam"  parent="email_admin" module="yes"></menuitem>
+  </menulist>
+</module>
