@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module>
+  <menulist>
+    <menuitem menuid="fax"            desc="Fax"               parent=""       module="no"></menuitem>
+    <menuitem menuid="faxlist"        desc="Virtual Fax List"  parent="fax" module="yes"></menuitem>
+    <menuitem menuid="faxnew"         desc="New Virtual Fax"   parent="fax" module="yes"></menuitem>
+    <menuitem menuid="faxmaster"      desc="Fax Master"        parent="fax" module="yes"></menuitem>
+    <menuitem menuid="faxclients"     desc="Fax Clients"       parent="fax" module="yes"></menuitem>
+    <menuitem menuid="faxvisor"       desc="Fax Visor"         parent="fax" module="yes"></menuitem>
+    <menuitem menuid="template_email" desc="Template Email"    parent="fax" module="yes"></menuitem>
+  </menulist>
+</module>
