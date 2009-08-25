@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module>
+  <menulist>
+    <menuitem menuid="agenda"       desc="Agenda"       parent=""       module="no"></menuitem>
+    <menuitem menuid="calendar"     desc="Calendar"     parent="agenda" module="yes"></menuitem>
+    <menuitem menuid="address_book" desc="Address Book" parent="agenda" module="yes"></menuitem>
+    <menuitem menuid="recordings"   desc="Recordings"   parent="agenda" module="yes"></menuitem>
+  </menulist>
+</module>
