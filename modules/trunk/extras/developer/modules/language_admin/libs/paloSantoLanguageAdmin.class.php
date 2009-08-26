@@ -358,6 +358,75 @@ class paloSantoLanguageAdmin {
         return true;
     }
 
+    function upload($arrayLangTrasl, $module, $language)
+    {
+        $folder = '';
+        $file = "";
+        $list = '';
+        $i = 0;
+        if( count($arrayLangTrasl) < 6 ){ 
+            return false;
+        }
+        if( strcmp($module,'FRAMEWORK') == 0 ){
+            $file = "/var/www/html/lang/$language";
+
+            include_once $file;
+            global $arrLang;
+ 
+            foreach($arrayLangTrasl as $key => $value)
+            {
+                if($i > 4)
+                {
+                    if( strlen($arrayLangTrasl[$key] ) == 0 ){
+                        $tmpError['head'] = 'ERROR';
+                        $tmpError['body'] = "Existent values empty";
+                        $this->errMsg = $tmpError;
+                        return false;
+                    }
+                    $arrLang[$key] = $value;
+                }
+                $i++;
+            }
+
+            foreach($arrLang as $key => $value )
+                $list = $list.'"'.str_replace('"','\\"',$key).'"'." => ".'"'.str_replace('"','\\"',$value).'"'.",\n";
+
+            $file_FRAM = fopen($file,"w");
+            fwrite($file_FRAM, $this->load_Template($list, 0));
+            fclose($file_FRAM);
+        }
+        else{
+            $file = "/var/www/html/modules/$module/lang/$language";
+
+            include_once $file;
+            global $arrLangModule;
+
+            foreach($arrayLangTrasl as $key => $value)
+            {
+                if($i > 4)
+                {
+                    if( strlen($arrayLangTrasl[$key] ) == 0 ){
+                        $tmpError['head'] = 'ERROR';
+                        $tmpError['body'] = "Existent values empty";
+                        $this->errMsg = $tmpError;
+                        return false;
+                    }
+                    $arrLangModule[$key] = $value;
+                }
+                $i++;
+            }
+
+            foreach($arrLangModule as $key => $value )
+                $list = $list.'"'.str_replace('"','\\"',$key).'"'." => ".'"'.str_replace('"','\\"',$value).'"'.",\n";
+
+            $file_MOD = fopen($file,"w");
+            fwrite($file_MOD, $this->load_Template($list, 1));
+            fclose($file_MOD);
+        }
+
+        return true;
+    }
+
     function load_Template($content, $modo)
     {
         //$modo == 0 => FRAMEWORK
