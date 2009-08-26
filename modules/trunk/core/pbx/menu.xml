@@ -11,6 +11,7 @@
     <menuitem menuid="tools"                  desc="Tools"                   parent="pbxconfig" module="no"></menuitem>
     <menuitem menuid="asterisk_cli"           desc="Asterisk-Cli"            parent="tools"     module="yes"></menuitem>
     <menuitem menuid="file_editor"            desc="File Editor"             parent="tools"     module="yes"></menuitem>
+    <menuitem menuid="text_to_wav"            desc="Text to Wav"             parent="tools"     module="yes"></menuitem>
     <menuitem menuid="control_panel"          desc="EOP"                     parent="pbxconfig" module="yes"></menuitem>
   </menulist>
 </module>
