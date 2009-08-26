@@ -29,7 +29,7 @@
 
 $DocumentRoot = (isset($_SERVER['argv'][1]))?$_SERVER['argv'][1]:"/var/www/html";
 $DataBaseRoot = "/var/www/db";
-$tmpDir = '/tmp/new_module/pbxconfig';  # in this folder the load module extract the package content
+$tmpDir = '/tmp/new_module/pbx';  # in this folder the load module extract the package content
 
 if(!file_exists("$DataBaseRoot/endpoint.db")){
     $cmd_mv    = "mv $tmpDir/setup/endpoint.db $DataBaseRoot/";
