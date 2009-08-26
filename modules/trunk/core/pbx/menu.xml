@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module>
+  <menulist>
+    <menuitem menuid="pbxconfig"              desc="PBX"                     parent=""          module="no"></menuitem>
+    <menuitem menuid="pbxadmin"               desc="PBX Configuration"       parent="pbxconfig" module="yes"></menuitem>
+    <menuitem menuid="voicemail"              desc="Voicemail     "          parent="pbxconfig" module="yes"></menuitem>
+    <menuitem menuid="monitoring"             desc="Monitoring"              parent="pbxconfig" module="yes"></menuitem>
+    <menuitem menuid="endpoint_configuration" desc="Endpoint Configuration"  parent="pbxconfig" module="yes"></menuitem>
+    <menuitem menuid="conference"             desc="Conference"              parent="pbxconfig" module="yes"></menuitem>
+    <menuitem menuid="extensions_batch"       desc="Extensions Batch"        parent="pbxconfig" module="yes"></menuitem>
+    <menuitem menuid="tools"                  desc="Tools"                   parent="pbxconfig" module="no"></menuitem>
+    <menuitem menuid="asterisk_cli"           desc="Asterisk-Cli"            parent="tools"     module="yes"></menuitem>
+    <menuitem menuid="file_editor"            desc="File Editor"             parent="tools"     module="yes"></menuitem>
+    <menuitem menuid="control_panel"          desc="EOP"                     parent="pbxconfig" module="yes"></menuitem>
+  </menulist>
+</module>
