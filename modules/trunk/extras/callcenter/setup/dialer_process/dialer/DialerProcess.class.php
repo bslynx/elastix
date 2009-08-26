@@ -1490,7 +1490,8 @@ PETICION_LLAMADAS;
     {
         if (!is_array($this->_infoLlamadas['historial_contestada'])) 
             $this->_infoLlamadas['historial_contestada'] = array();
-        if (!is_array($this->_infoLlamadas['historial_contestada'][$idCampaign]))
+        if (!isset($this->_infoLlamadas['historial_contestada'][$idCampaign]) ||
+            !is_array($this->_infoLlamadas['historial_contestada'][$idCampaign]))
             $this->_infoLlamadas['historial_contestada'][$idCampaign] = array();
     	$iNumElems = count($this->_infoLlamadas['historial_contestada'][$idCampaign]);
         $iSuma = array_sum($this->_infoLlamadas['historial_contestada'][$idCampaign]);
@@ -2115,6 +2116,7 @@ PETICION_LLAMADAS;
             } while (DB::isError($result) && $bErrorLocked);
 
             // Se ha observado que ocasionalmente se pierde el evento Link
+            $idCampaign = $this->_infoLlamadas['llamadas'][$sKey]->id_campaign;
             if (is_null($this->_infoLlamadas['llamadas'][$sKey]->start_timestamp)) {
                 if (!is_null($this->_infoLlamadas['llamadas'][$sKey]->Channel) &&
                     strpos($params["Channel"], $this->_infoLlamadas['llamadas'][$sKey]->Channel) !== false) {
@@ -2197,7 +2199,6 @@ PETICION_LLAMADAS;
                     // Puede ocurrir que se haya parado la campaña, y ya no esté en el
                     // arreglo, pero las llamadas generadas bajo esta campaña todavía 
                     // estén rezagadas.
-                    $idCampaign = $this->_infoLlamadas['llamadas'][$sKey]->id_campaign; 
                     if (!isset($this->_infoLlamadas['campanias'][$idCampaign])) {
                         $tuplaCampaign = $this->_leerCampania($idCampaign);
                         if (!is_null($tuplaCampaign)) $this->_infoLlamadas['campanias'][$idCampaign] = $tuplaCampaign;
