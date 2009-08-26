@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module>
+  <menulist>
+    <menuitem menuid="reports"              desc="Reports"                   parent=""        module="no"></menuitem>
+    <menuitem menuid="cdrreport"            desc="CDR Report"                parent="reports" module="yes"></menuitem>
+    <menuitem menuid="channelusage"         desc="Channels Usage"            parent="reports" module="yes"></menuitem>
+    <menuitem menuid="billing"              desc="Billing"                   parent="reports" module="no"></menuitem>
+    <menuitem menuid="billing_rates"        desc="Rates"                     parent="billing" module="yes"></menuitem>
+    <menuitem menuid="billing_report"       desc="Billing Report"            parent="billing" module="yes"></menuitem>
+    <menuitem menuid="dest_distribution"    desc="Destination Distribution"  parent="billing" module="yes"></menuitem>
+    <menuitem menuid="billing_setup"        desc="Billing Setup"             parent="billing" module="yes"></menuitem>
+    <menuitem menuid="asterisk_log"         desc="Asterisk Logs"             parent="reports" module="yes"></menuitem>
+    <menuitem menuid="graphic_report"       desc="Graphic Report"            parent="reports" module="yes"></menuitem>
+    <menuitem menuid="summary_by_extension" desc="Summary by Extension"      parent="reports" module="yes"></menuitem>
+  </menulist>
+</module>
