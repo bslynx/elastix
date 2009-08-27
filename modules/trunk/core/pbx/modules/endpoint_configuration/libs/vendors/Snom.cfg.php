@@ -32,7 +32,8 @@ function generalSettingsFileSnom($ipAdressServer)
                     user_srtp1!: off
                     user_host1: $ipAdressServer
                     timezone!: GBR-0
-                    tone_scheme!: USA			
+                    tone_scheme!: USA		
+                    ignore_security_warning!: on
                 </pre>
             </html>";
 
