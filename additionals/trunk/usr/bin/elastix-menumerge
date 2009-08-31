@@ -67,7 +67,7 @@ if(isset($_SERVER['argv'][1])){
     if(count($oModuloXML->_arbolMenu)>0){
         foreach ($oModuloXML->_arbolMenu as $menuitem){
             $idmenu=$menuitem['menuid'];
-            echo "Menu: $idmenu\n";
+            echo "Menu: $idmenu found\n";
             if(!empty($idmenu)){
                 //buscar si ya existe ese menu
                 if(!$oMenu->existeMenu($idmenu)){
@@ -75,7 +75,9 @@ if(isset($_SERVER['argv'][1])){
                     $newMenu["module"]=$menuitem['module'];
                     $newMenu["parent"]=$menuitem['parent'];
                     $newMenu["tag"]=$menuitem['desc'];
-
+                    $newMenu["link"]=$menuitem['link'];
+                    $newMenu["order"]=$menuitem['order'];
+                    
                     $oInstaller->addMenu($oMenu,$newMenu);
                     if($newMenu['parent']!="") //agregar los permisos
                         $oInstaller->addResourceMembership($oACL,$newMenu);
