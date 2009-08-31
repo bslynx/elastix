@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module>
   <menulist>
-    <menuitem menuid="fax"            desc="Fax"               parent=""       module="no"></menuitem>
-    <menuitem menuid="faxlist"        desc="Virtual Fax List"  parent="fax" module="yes"></menuitem>
-    <menuitem menuid="faxnew"         desc="New Virtual Fax"   parent="fax" module="yes"></menuitem>
-    <menuitem menuid="faxmaster"      desc="Fax Master"        parent="fax" module="yes"></menuitem>
-    <menuitem menuid="faxclients"     desc="Fax Clients"       parent="fax" module="yes"></menuitem>
-    <menuitem menuid="faxvisor"       desc="Fax Visor"         parent="fax" module="yes"></menuitem>
-    <menuitem menuid="template_email" desc="Template Email"    parent="fax" module="yes"></menuitem>
+    <menuitem menuid="fax"            desc="Fax"               parent=""    module="no"  link="" order="0"></menuitem>
+    <menuitem menuid="faxlist"        desc="Virtual Fax List"  parent="fax" module="yes" link="" order="1"></menuitem>
+    <menuitem menuid="faxnew"         desc="New Virtual Fax"   parent="fax" module="yes" link="" order="2"></menuitem>
+    <menuitem menuid="faxmaster"      desc="Fax Master"        parent="fax" module="yes" link="" order="3"></menuitem>
+    <menuitem menuid="faxclients"     desc="Fax Clients"       parent="fax" module="yes" link="" order="4"></menuitem>
+    <menuitem menuid="faxvisor"       desc="Fax Visor"         parent="fax" module="yes" link="" order="5"></menuitem>
+    <menuitem menuid="template_email" desc="Template Email"    parent="fax" module="yes" link="" order="6"></menuitem>
   </menulist>
 </module>

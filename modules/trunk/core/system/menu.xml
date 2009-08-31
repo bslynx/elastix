@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module>
   <menulist>
-    <menuitem menuid="system"             desc="System"             parent=""            module="no"></menuitem>
-    <menuitem menuid="dashboard"          desc="Dashboard"          parent="system"      module="yes"></menuitem>
-    <menuitem menuid="network"            desc="Network"            parent="system"      module="no"></menuitem>
-    <menuitem menuid="network_parameters" desc="Network Parameters" parent="network"     module="yes"></menuitem>
-    <menuitem menuid="dhcp_server"        desc="DHCP Server"        parent="network"     module="yes"></menuitem>
-    <menuitem menuid="usermgr"            desc="User Management"    parent="system"      module="no"></menuitem>
-    <menuitem menuid="userlist"           desc="Users"              parent="usermgr"     module="yes"></menuitem>
-    <menuitem menuid="shutdown"           desc="Shutdown"           parent="system"      module="yes"></menuitem>
-    <menuitem menuid="hardware_detection" desc="Hardware Detection" parent="system"      module="yes"></menuitem>
-    <menuitem menuid="updates"            desc="Updates"            parent="system"      module="no"></menuitem>
-    <menuitem menuid="packages"           desc="Packages"           parent="updates"     module="yes"></menuitem>
-    <menuitem menuid="repositories"       desc="Repositories"       parent="updates"     module="yes"></menuitem>
-    <menuitem menuid="backup_restore"     desc="Backup/Restore"     parent="system"      module="yes"></menuitem>
-    <menuitem menuid="preferences"        desc="Preferences"        parent="system"      module="no"></menuitem>
-    <menuitem menuid="currency"           desc="Currency"           parent="preferences" module="yes"></menuitem>
+    <menuitem menuid="system"             desc="System"             parent=""            module="no"  link="" order="0"></menuitem>
+    <menuitem menuid="dashboard"          desc="Dashboard"          parent="system"      module="yes" link="" order="1"></menuitem>
+    <menuitem menuid="network"            desc="Network"            parent="system"      module="no"  link="" order="3"></menuitem>
+    <menuitem menuid="network_parameters" desc="Network Parameters" parent="network"     module="yes" link="" order="31"></menuitem>
+    <menuitem menuid="dhcp_server"        desc="DHCP Server"        parent="network"     module="yes" link="" order="32"></menuitem>
+    <menuitem menuid="usermgr"            desc="User Management"    parent="system"      module="no"  link="" order="4"></menuitem>
+    <menuitem menuid="userlist"           desc="Users"              parent="usermgr"     module="yes" link="" order="42"></menuitem>
+    <menuitem menuid="shutdown"           desc="Shutdown"           parent="system"      module="yes" link="" order="6"></menuitem>
+    <menuitem menuid="hardware_detection" desc="Hardware Detection" parent="system"      module="yes" link="" order="7"></menuitem>
+    <menuitem menuid="updates"            desc="Updates"            parent="system"      module="no"  link="" order="8"></menuitem>
+    <menuitem menuid="packages"           desc="Packages"           parent="updates"     module="yes" link="" order="81"></menuitem>
+    <menuitem menuid="repositories"       desc="Repositories"       parent="updates"     module="yes" link="" order="82"></menuitem>
+    <menuitem menuid="backup_restore"     desc="Backup/Restore"     parent="system"      module="yes" link="" order="9"></menuitem>
+    <menuitem menuid="preferences"        desc="Preferences"        parent="system"      module="no"  link="" order="10"></menuitem>
+    <menuitem menuid="currency"           desc="Currency"           parent="preferences" module="yes" link="" order="101"></menuitem>
   </menulist>
 </module>
