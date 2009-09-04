@@ -1547,8 +1547,8 @@ PETICION_LLAMADAS;
         foreach ($listaConflicto as $idAgente) {
             $result = $dbConn->query($sPeticionSQL, 
                 array($sNombreCola, 'member', "Agent/$idAgente,%"));
-            if (DB::isError($tupla)) {
-                $this->oMainLog->output("ERR: al eliminar valores de cola para Agent - ".$tupla->getMessage());
+            if (DB::isError($result)) {
+                $this->oMainLog->output("ERR: al eliminar valores de cola para Agent - ".$result->getMessage());
                 $dbConn->disconnect();
                 return FALSE;
             }
@@ -1566,8 +1566,8 @@ PETICION_LLAMADAS;
         foreach ($infoAgente as $idAgente => $datosAgente) {
             $result = $dbConn->query($sPeticionSQL, 
                 array($sNombreCola, 'member', $datosAgente['data'], $datosAgente['flags']));
-            if (DB::isError($tupla)) {
-                $this->oMainLog->output("ERR: al insertar valores de cola para Agent - ".$tupla->getMessage());
+            if (DB::isError($result)) {
+                $this->oMainLog->output("ERR: al insertar valores de cola para Agent - ".$result->getMessage());
                 $dbConn->disconnect();
                 return FALSE;
             }
