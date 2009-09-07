@@ -318,12 +318,12 @@ function _moduleContent(&$smarty, $module_name)
  //username, password, id_domain, quota
 
             $end = count($arrAccounts);
-           // $arrAccounts[]=array("gladys.gelicar.com","gladys",1,20000);
+          
             foreach($arrAccounts as $account) {
                 $arrTmp    = array();
                 $username=$account[0];
-                $arrAlias=$pEmail->getAliasAccount($username);
-                $direcciones=''; 
+                /*$arrAlias=$pEmail->getAliasAccount($username);
+                $direcciones='';
                 if(is_array($arrAlias) && count($arrAlias)>0){
                    foreach($arrAlias as $fila){
                         $direcciones.=(empty($direcciones))?'':'<br>';
@@ -331,12 +331,12 @@ function _moduleContent(&$smarty, $module_name)
                    }
                 }
                 $id_domain=$account[2];
-                $arrTmp[0]=$direcciones;
-                $arrTmp[1] = "&nbsp;<a href='?menu=email_accounts&action=view&username=".$username."'>$username</a>";
+                $arrTmp[0]=$direcciones;*/
+                $arrTmp[0] = "&nbsp;<a href='?menu=email_accounts&action=view&username=$username'>$username</a>";
 
-                $arrTmp[2]=obtener_quota_usuario($username);
-                $link_agregar_direccion="<a href=\"?action=add_address&id_domain=$id_domain&username=$username\">"."Add Address"."</a>";
-                $link_modificar_direccion="<a href=\"?action=edit_addresses&id_domain=$id_domain&username=$username\">"."Addresses"."</a>";   
+                $arrTmp[1]=obtener_quota_usuario($username);
+                $link_agregar_direccion="<a href='?action=add_address&id_domain=$id_domain&username=$username'>Add Address</a>";
+                $link_modificar_direccion="<a href='?action=edit_addresses&id_domain=$id_domain&username=$username'>Addresses</a>";   
              //   $arrTmp[3]=$link_agregar_direccion."&nbsp;&nbsp; ".$link_modificar_direccion;;
                 $arrData[] = $arrTmp;
             }
@@ -347,11 +347,11 @@ function _moduleContent(&$smarty, $module_name)
                          "start"    => ($end==0) ? 0 : 1,
                          "end"      => $end,
                          "total"    => $end,
-                         "columns"  => array(0 => array("name"      => $arrLang["Email Address"],
+                         "columns"  => array(/*0 => array("name"      => $arrLang["Email Address"],
+                                                        "property1" => ""),*/
+                                             0 => array("name"      => $arrLang["Account Name"], 
                                                         "property1" => ""),
-                                             1 => array("name"      => $arrLang["Account Name"], 
-                                                        "property1" => ""),
-                                             2 => array("name"      => $arrLang["Used Space"], 
+                                             1 => array("name"      => $arrLang["Used Space"], 
                                                         "property1" => ""),
                                         //     3 => array("name"      => $arrLang["Options"], 
                                            //             "property1" => ""),
@@ -382,7 +382,7 @@ function create_email_account($pDB,$domain_name,&$errMsg)
     // -- si hay error al insertarlo en la bd lo elimino del sistema
     // -- creo el mailbox para la cuenta (si hay error deshacer lo realizado)
 
-    $username=$_POST['address'].'.'.$domain_name;
+    $username=$_POST['address'].'@'.$domain_name;
     $arrAccount=$pEmail->getAccount($username);
     
     if (is_array($arrAccount) && count($arrAccount)>0 ){
@@ -541,5 +541,4 @@ function edit_email_account($pDB,$error)
 
     return $bExito;
 }
-
 ?>
