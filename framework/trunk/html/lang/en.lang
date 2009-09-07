@@ -158,5 +158,7 @@ implementations of Voice over IP around the globe.",
 "Show"   => "Show",
 'View' => 'View',
 'Status' => 'Status',
+'Type' => 'Type',
+'Active' => 'Active',
 );
 ?>
