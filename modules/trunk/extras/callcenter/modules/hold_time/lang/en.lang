@@ -48,5 +48,7 @@ $arrLan=array(
 "Exitosas"                          => "Succesful",
 "Abandonadas"                       => "Abandonated",
 "No Realizadas"                     => "Not Realiced",
+"Tiempo Promedio Espera(Seg)"       => "Average Waiting Time (sec.)",
+"Espera Mayor(seg)"                 => "Longest Wait (sec.)",
 );
 ?>
