@@ -283,7 +283,14 @@ function load_language($ruta_base='')
     //verificar que exista en el arreglo de idiomas, sino por defecto en
     if (!array_key_exists($lang,$languages)) $lang="en";
 
-    include_once $ruta_base."lang/".$lang.".lang";
+    $sFallbackEN = $ruta_base."lang/en.lang";
+    include_once $sFallbackEN;
+
+    if ($lang != 'en') {
+        $arrLangEN = $arrLang;
+        include_once $ruta_base."lang/".$lang.".lang";
+        $arrLang = array_merge($arrLangEN, $arrLang);
+    }
 }
 
 function cargar_menu($db)
