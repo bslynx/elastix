@@ -123,7 +123,7 @@ class paloDB {
                     if($this->conn->query($query))
                         return TRUE;
                     else{
-                        $this->errMsg = "Query Error: $query";
+                        $this->errMsg = "Query Error: $query - ".print_r($this->conn->errorInfo(), 1);
                         return FALSE;
                     }
                 }catch(PDOException $e){
