@@ -45,6 +45,8 @@ $arrLan=array(
 "Agent number already exists"=>"Agent number already exists.",
 "Agent doesn't exist in configuration file"=>"Agent doesn't exist in configuration file",
 "Agent doesn't exist in database"=>"Agent doesn't exist in database",
+"To rapair is necesary delete agent from configuration file. Do you want to continue?"=>"To repair, it is necessary to delete the agent from the configuration file. Continue?",
+"To rapair is necesary add an agent in configuration file. Do you want to continue?"=>"To repair, it is necessary to add the agent to the configuration file. Continue?",
 // desconectar agentes
 "Number"=>"Number",
 "Disconect"=>"Disconect",
@@ -57,5 +59,7 @@ $arrLan=array(
 "No call"=>"No call",
 "Name" => "Name",
 "Retype password" => "Retype password",
+'View' => 'View',
+'Status' => 'Status',
 );
 ?>
