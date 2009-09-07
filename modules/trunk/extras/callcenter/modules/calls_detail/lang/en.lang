@@ -34,6 +34,7 @@ $arrLan = array(
     "Error when connecting to database"    => "Error when connecting to database",
     "Debe ingresar una fecha"   => "You should to enter any date",
     "Debe ingresar una fecha valida"    => "You should to enter a valued date",
+    'Total'         => 'Total',
 );
 
 ?>
