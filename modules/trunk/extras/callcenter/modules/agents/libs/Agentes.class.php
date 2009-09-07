@@ -27,7 +27,13 @@
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
   $Id: Agentes.class.php,v  $ */
-require_once "/var/lib/asterisk/agi-bin/phpagi-asmanager.php";
+if (file_exists("/var/lib/asterisk/agi-bin/phpagi-asmanager.php")) {
+    include_once "/var/lib/asterisk/agi-bin/phpagi-asmanager.php";
+} elseif (file_exists('libs/phpagi-asmanager.php')) {
+	include_once 'libs/phpagi-asmanager.php';
+} else {
+	die('Unable to find phpagi-asmanager.php');
+}
 include_once("libs/paloSantoDB.class.php");
 //JK
 //require_once 'DB.php';
