@@ -356,7 +356,7 @@ echo "sql = ".$sPeticionSQL;
 	{ 
 		$file = $this->AGENT_FILE;
             // [JMA]: 
-        if($report_handle = fopen($file, "r"))
+        if($report_handle = @fopen($file, "r"))
         {
             $found=0;
             while(!feof($report_handle))
@@ -368,9 +368,8 @@ echo "sql = ".$sPeticionSQL;
                     $this->arrAgents[$agent[0]]=$agent;
                 }
             }            
+            fclose($report_handle);
         }
-        fclose($report_handle);
-
     }
 
 	function _scan_for_tag(&$agent,$line)
