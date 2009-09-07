@@ -62,11 +62,15 @@ class ModuloXML
             $attDesc    = $menuitem->getAttribute("desc");
             $attParent  = $menuitem->getAttribute("parent");
             $attModule  = $menuitem->getAttribute("module");
+            $attLink    = $menuitem->getAttribute("link");
+            $attOrder   = $menuitem->getAttribute("order");
             $menu[] = array(
                             'menuid'    => $attID,
                             'desc'      => $attDesc,
                             'parent'    => $attParent,
                             'module'    => $attModule,
+                            'link'      => $attLink,
+                            'order'     => $attOrder,
                         );
         }
 
