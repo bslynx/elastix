@@ -28,12 +28,11 @@
   $Id: email.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
 
 $GLOBALS['CYRUS'] = array(
-              'HOST'	=> 'localhost',
+              'HOST'	=> obtenerIpServer('eth0'),
               'PORT'	=> 143,
               'ADMIN'	=> 'cyrus',
               'PASS'	=> 'palosanto'
               );
-define("SASL_DOMAIN","example.com");
 
 $script="require [\"fileinto\",\"vacation\"];\n";
 $script.="if header :contains \"X-Spam-Status\" \"Yes,\" {\n".
@@ -42,4 +41,17 @@ $script.="if header :contains \"X-Spam-Status\" \"Yes,\" {\n".
          "\r\n";
 
 define("DEFAULT_SCRIPT",$script);
+
+function obtenerIpServer($eth)
+{
+    exec("which ifconfig 2>/dev/null||echo /sbin/ifconfig",$arrSalidaIfConfig,$flagSalidaIfConfig);
+    if($flagSalidaIfConfig==0 && is_array($arrSalidaIfConfig)  && count($arrSalidaIfConfig)>0){
+        exec("$arrSalidaIfConfig[0] $eth|gawk '/inet addr/{print $2}'|gawk -F: '{print $2}'",$arrSalidaIpServer,$flagSalidaIpServer);
+        if($flagSalidaIpServer==0 && is_array($arrSalidaIpServer)  && count($arrSalidaIpServer)>0){
+            return $arrSalidaIpServer[0];
+        }
+        return false;
+    }
+    return false;
+}
 ?>

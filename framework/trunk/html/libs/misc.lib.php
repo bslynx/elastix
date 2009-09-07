@@ -326,12 +326,12 @@ function guardar_dominio_sistema($domain_name,&$errMsg)
     $continuar=FALSE;
     global $arrLang;
      //Se debe modificar el archivo /etc/postfix/main.cf para agregar el dominio a la variable
-     //mydomain2
+     //virtual_mailbox_maps
     $conf_file=new paloConfig("/etc/postfix","main.cf"," = ","[[:space:]]*=[[:space:]]*");
     $contenido=$conf_file->leer_configuracion();
-    $valor_anterior=$conf_file->privado_get_valor($contenido,"mydomain2");
+    $valor_anterior=$conf_file->privado_get_valor($contenido,"virtual_mailbox_maps");
     $valor_nuevo=construir_valor_nuevo_postfix($valor_anterior,$domain_name);
-    $arr_reemplazos=array('mydomain2'=>$valor_nuevo);
+    $arr_reemplazos=array('virtual_mailbox_maps'=>$valor_nuevo);
     $bValido=$conf_file->escribir_configuracion($arr_reemplazos);
     if($bValido){
         //Se deben recargar la configuracion de postfix
@@ -397,15 +397,6 @@ function eliminar_dominio($db,$arrDominio,&$errMsg)
                 $bExito=eliminar_cuenta($db,$username,$errMsg);
 
                 if (!$bExito) $output = $errMsg;
-                /*$cyr_conn->deletemb("user/".$username)."<br>";
-                exec("sudo -u root saslpasswd2 -d $username@".SASL_DOMAIN);
-
-                if($cyr_conn->error_msg!="" && (strpos($cyr_conn->error_msg, "Mailbox does not exist")===false))
-                    $output.=$cyr_conn->error_msg;
-
-                $bValido5=$pEmail->deleteAliasesFromAccount($username);
-                //borrar de virtual
-                $bool=eliminar_virtual_sistema($email,$error);*/
             }
         }
 
@@ -432,12 +423,12 @@ function eliminar_dominio($db,$arrDominio,&$errMsg)
 //Se elimina el dominio del archivo main.cf y se recarga la configuracion
         $continuar=FALSE;
        //Se debe modificar el archivo /etc/postfix/main.cf para borrar el dominio a la variable
-       //mydomain2
+       //virtual_mailbox_maps
         $conf_file=new paloConfig("/etc/postfix","main.cf"," = ","[[:space:]]*=[[:space:]]*");
         $contenido=$conf_file->leer_configuracion();
-        $valor_anterior=$conf_file->privado_get_valor($contenido,"mydomain2");
+        $valor_anterior=$conf_file->privado_get_valor($contenido,"virtual_mailbox_maps");
         $valor_nuevo=construir_valor_nuevo_postfix($valor_anterior,$arrDominio['domain_name'],TRUE);
-        $arr_reemplazos=array('mydomain2'=>$valor_nuevo);
+        $arr_reemplazos=array('virtual_mailbox_maps'=>$valor_nuevo);
         $bValido=$conf_file->escribir_configuracion($arr_reemplazos);
 
         if($bValido){
@@ -457,7 +448,7 @@ function eliminar_dominio($db,$arrDominio,&$errMsg)
 }
 function eliminar_usuario_correo_sistema($username,$email,&$error){
     $output=array();
-    exec("sudo -u root /usr/sbin/saslpasswd2 -d $username@".SASL_DOMAIN,$output);
+    exec("sudo -u root /usr/sbin/saslpasswd2 -d $email",$output);
     if(is_array($output) && count($output)>0){
         foreach($output as $linea)
             $error.=$linea."<br>";
@@ -465,54 +456,14 @@ function eliminar_usuario_correo_sistema($username,$email,&$error){
 
     if($error!="")
         return FALSE;
-
-    $bool=eliminar_virtual_sistema($email,$error);
-
-    return $bool;
+    else
+        return TRUE;
 }
-
-function eliminar_virtual_sistema($email,&$error){
-    $config=new paloConfig("/etc/postfix","virtual","\t","[[:space:]?\t[:space:]?]");     
-    $arr_direcciones=$config->leer_configuracion();
-
-
-    $eliminado=FALSE;
-    foreach($arr_direcciones as $key=>$fila){
-        if(isset($fila['clave']) && $fila['clave']==$email){
-             unset($arr_direcciones[$key]);
-             $eliminado=TRUE;
-        }
-        elseif(ereg("^$email",$fila)){
-             unset($arr_direcciones[$key]);
-             $eliminado=TRUE;
-        }
-    }
-    if($eliminado){
-        $bool=$config->escribir_configuracion($arr_direcciones,true);
-        if($bool){
-            exec("sudo -u root postmap /etc/postfix/virtual",$output);
-            if(is_array($output) && count($output)>0)
-                foreach($output as $linea)
-                    $error.=$linea."<br>";
-        }
-        else{
-            $error.=$config->getMessage();
-            return FALSE;
-        }
-    }
-
-    return TRUE;
-}
-
-
-
-
-
 
 function crear_usuario_correo_sistema($email,$username,$clave,&$error,$virtual=TRUE){
     $output=array();
 
-    exec("echo \"$clave\" | sudo -u root /usr/sbin/saslpasswd2 -c $username -u ".SASL_DOMAIN,$output);
+    exec("echo \"$clave\" | sudo -u root /usr/sbin/saslpasswd2 -c $email",$output);
 
 
     if(is_array($output) && count($output)>0){
@@ -520,43 +471,11 @@ function crear_usuario_correo_sistema($email,$username,$clave,&$error,$virtual=T
             $error.=$linea_salida."<br>";
     }
     if($error!="") 
-        return FALSE;
-    elseif($virtual){
-        $bool=crear_virtual_sistema($email,$username,$error);
-        if(!$bool)
-            return FALSE;
-        else
-            return TRUE;
-    }
+      return FALSE;
     else
-        return TRUE;
-
+      return TRUE;
 }
 
-
-function crear_virtual_sistema($email,$username,&$error){
-    $output=array();
-
-    exec("sudo -u root chown asterisk /etc/postfix/virtual");
-    $username.='@'.SASL_DOMAIN;
-    exec("echo \"$email \t $username\" >> /etc/postfix/virtual",$output);
-
-    if(is_array($output) && count($output)>0){
-        foreach($output as $linea)
-            $error.=$linea."<br>";
-    }   
-    exec("sudo -u root chown root /etc/postfix/virtual");
-
-    exec("sudo -u root postmap /etc/postfix/virtual",$output);
-    if(is_array($output) && count($output)>0){
-         foreach($output as $linea)
-            $error.=$linea."<br>";
-    }
-    if($error!="")
-        return FALSE;
-    else
-        return TRUE;
-}
 function eliminar_cuenta($db,$username,$errMsg){
     global $CYRUS;
     $arr_alias=array();
