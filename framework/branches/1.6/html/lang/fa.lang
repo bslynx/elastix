@@ -1,0 +1,177 @@
+<?php
+/* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
+  Codificación: UTF-8
+  +----------------------------------------------------------------------+
+  | Elastix version 1.0                                                  |
+  | http://www.elastix.org                                               |
+  +----------------------------------------------------------------------+
+  | Copyright (c) 2006 Palosanto Solutions S. A.                         |
+  +----------------------------------------------------------------------+
+  | Cdla. Nueva Kennedy Calle E 222 y 9na. Este                          |
+  | Telfs. 2283-268, 2294-440, 2284-356                                  |
+  | Guayaquil - Ecuador                                                  |
+  | http://www.palosanto.com                                             |
+  +----------------------------------------------------------------------+
+  | The contents of this file are subject to the General Public License  |
+  | (GPL) Version 2 (the "License"); you may not use this file except in |
+  | compliance with the License. You may obtain a copy of the License at |
+  | http://www.opensource.org/licenses/gpl-license.php                   |
+  |                                                                      |
+  | Software distributed under the License is distributed on an "AS IS"  |
+  | basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See  |
+  | the License for the specific language governing rights and           |
+  | limitations under the License.                                       |
+  +----------------------------------------------------------------------+
+  | The Original Code is: Elastix Open Source.                           |
+  | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  |                                                                      |
+  | Translate by: Haamed Kouhfallah                                      |
+  | Email: haamed@cytco.net                                              |
+  |                                                                      |
+  +----------------------------------------------------------------------+
+  $Id: fa.lang,v 1.2 2008/04/21 10:11:44 bmacias@palosanto.com Exp $ */
+global $arrLang;
+$arrLang=array(
+/*System Info*/
+"Disk usage" => "میزان استفاده شده از هارد دیسک",
+"Used space" => "فضای استفاده شده",
+"Free space" => "فضاهای خالی",
+"Simultaneous calls, memory and CPU" => "مکالمات همزمان، حافظه و پردازنده",
+"Sim. calls" => "مکالمات همزمان",
+"CPU usage (%)" => "میزان استفاده از پردازنده (%)",
+"Mem. usage (MB)" => "میزان استفاده از حافظه (%)",
+
+
+"Export" => "خروجی گرفتن",
+"Start" => "شروع",
+"End" => "پایان",
+"Next" => "بعدی",
+"Previous" => "قبلی",
+
+
+"Validation Error" => "اعتبار تایید نشد",
+"The following fields contain errors" => "فیلد زیر دارای خطا است",
+"Save" => "ذخیره",
+"Required field" => "فیلد مورد نیاز",
+"Apply changes" => "تغییرات را ثبت کن",
+"Cancel" => "انصراف",
+
+/*Login to Elastix*/
+"Welcome to Elastix" => "به سیستم تلفنی شرکت سیتکو خوش آمدید ",
+"Please enter your username and password" => "شناسه کاربری و رمز عبور خود را وارد کنید",
+"Username" => "شناسه کاربری",
+"Password" => "رمز عبور",
+"Submit" => "ثبت کردن",
+"Login page" => "صفحه ورودی",
+/*end Login to Elastix*/
+
+/*start User Management*/
+"Group" => "گروه",
+"User List" => "لیست کاربران",
+"The group is wrong" => "گروه اشتباه است",
+
+
+
+"Are you sure you wish to continue?" => "آیا مطمئن به ادامه هستید؟",
+"Edit" => "ویرایش",
+"Delete" => "حذف",
+"Accept" => "قبول",
+"Group Permission" => "مجوزهای گروه",
+"Users" => "کاربران",
+"Directory couldn't be opened" => "دایرکتوری باز نمی شود",
+/*end User Management*/
+
+/*start menu*/
+"System" => "سیستم",
+"System Info" => "مشخصات سیستم",
+"User Management" => "مدیریت کاربران",
+"Menu Administrator" => "منوی مدیر",
+/*end menu*/
+
+/*Start Language*/
+"Language" => "زبان",
+"Change" => "تغییر دادن",
+"Logout" => "خروج",
+/*end  Language*/
+
+/*version 0.7*/
+/*start paloSantoValidar.class.php*/
+"Options" => "گزینه ها",
+"Empty field" => "فیلد خالی",
+"Bad Format" => "قالب اشتباه",
+"No option was selected" => "گزینه ای انتخاب نشد",
+"Octets out of range" => "هشتایی خارج از محدوده",
+/*end paloSantoValidar.class.php*/
+
+/*version 0.8*/
+/*start user*/
+"View User" => "مشاهده کاربر",
+/*end  user*/
+
+/*system - date/time*/
+"Date/Time" => "تاریخ/زمان",
+/*end system - date/time*/
+
+/*load module*/
+"Load Module" => "بارگزاری ماژول",
+"ID for new module (folder name)" => "شناسه کاربری برای ماژول جدید (نام پوشه)",
+"Choose Menu" => "منو را انتخاب کنید",
+"ID for new menu" => "شناسه کاربری برای منوی جدید",
+"Menu Name" => "نام منو",
+"Defined Menu" => "منوی تعریف شده",
+"New Menu" => "منوی جدید",
+"Module sucessfully loaded" => "ماژول با موفقیت لود شد",
+"Folder name doesn't exist in module file" => "نام پوشه در فایل ماژول وجود ندارد",
+"Folder configs doesn't exist in module file" => "پوشه configs در فایل ماژول وجود ندارد",
+"Folder themes doesn't exist in module file" => "پوشه themes در فایل ماژول وجود ندارد",
+"File index.php doesn't exist in module file" => "فایل index.php در فایل ماژول وجود ندارد",
+/*end load module*/
+
+/*Start SubModule Themes*/
+"Themes" => "پوسته",
+"Change Theme" => "تغییر پوسته",
+/*end SubModule Themes*/
+
+/*Module IM*/
+"IM" => "پیام فوری",
+"OpenFire" => "سرور پیام فوری",
+"The service Openfire No running" => "در حال حاضر سرویس Openfire فعال نیست در صورت تمایل برای فعال سازی لطفا",
+
+/*vTigerCRM*/
+"vTigerCRM" => "برنامه ارتباط با مشتری",
+"The vTiger installation is almost done. To complete it please" => "نصب برنامه ارتباط با مشتری در حال اتمام است لطفا برای اتمام",
+"click here" => "اینجا را کلیک کنید",
+
+/*Sugarcrm*/
+"SugarCRM" => "ارتباط با مشتری شوگر",
+"The SugarCRM installation is almost done. To complete it please" => "نصب نرم افزار ارتباط با مشتری به اتمام رسید، برای تکمیل آن لطفا",
+
+/* Preferences*/
+"Preferences" => "تنظیمات",
+
+/* Start About Elastix */
+"About Elastix" => "درباره شرکت سیتکو",
+"About Elastix Content" => "این نرم افزار براساس قابلیت اطمینان بالا، کاربری آسان و سیستم مدیریت تحت وب، ایجاد شده است و با زبان فارسی و پشتیبانی کامل توسط شرکت سیتکو (ارتباط تلفن کوروش) در ایران وخاورمیانه ارائه می گردد.",
+"About Elastix Closed" => "پنجره را ببند",
+/* end  About Elastix */
+
+//Elastix 0.9.1
+/*Start module Group List*/
+"Groups" => "گروه ها",
+"Group List" => "لیست گروه",
+/*end module Group List*/
+
+/** Elastix 1.0 **/
+/*Start UserList*/
+"administrator" => "مدیر",
+"operator" => "اپراتور",
+"extension" => "داخلی",
+"total access" => "دسترسی کامل",
+"extension user" => "داخلی کاربر",
+"No Extension" => "ﺏﺩﻮﻧ ﺩﺎﺨﻟی",
+/*end UserList*/
+"Title" => "Title",
+"Search" => "Search",
+"Show"   => "Show",
+);
+?>

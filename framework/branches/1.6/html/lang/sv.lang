@@ -1,0 +1,168 @@
+<?php
+/* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
+  Codificación: UTF-8
+  +----------------------------------------------------------------------+
+  | Elastix version 1.0                                                  |
+  | http://www.elastix.org                                               |
+  +----------------------------------------------------------------------+
+  | Copyright (c) 2006 Palosanto Solutions S. A.                         |
+  +----------------------------------------------------------------------+
+  | Cdla. Nueva Kennedy Calle E 222 y 9na. Este                          |
+  | Telfs. 2283-268, 2294-440, 2284-356                                  |
+  | Guayaquil - Ecuador                                                  |
+  | http://www.palosanto.com                                             |
+  +----------------------------------------------------------------------+
+  | The contents of this file are subject to the General Public License  |
+  | (GPL) Version 2 (the "License"); you may not use this file except in |
+  | compliance with the License. You may obtain a copy of the License at |
+  | http://www.opensource.org/licenses/gpl-license.php                   |
+  |                                                                      |
+  | Software distributed under the License is distributed on an "AS IS"  |
+  | basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See  |
+  | the License for the specific language governing rights and           |
+  | limitations under the License.                                       |
+  +----------------------------------------------------------------------+
+  | The Original Code is: Elastix Open Source.                           |
+  | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  +----------------------------------------------------------------------+
+  $Id: sv.lang,v 0.1 2008/03/25 00:36:42 IFIT DATA - http://www.ifit.se Exp $ */
+global $arrLang;
+$arrLang=array(
+"Disk usage"=>"Disk anv&auml;ndning",
+"Used space"=>"Anv&auml;ndt utrymme",
+"Free space"=>"Ledigtutrymme",
+"Simultaneous calls, memory and CPU"=>"Parallella samtal, minne och CPU",
+"Sim. calls"=>"Parallella samtal",
+"CPU usage (%)"=>"CPU anv&auml;ndning (%)",
+"Mem. usage (MB)"=>"Minnes. anv&auml;ndning (MB)",
+/*System Info*/
+
+"Export"=>"Exportera",
+"Start"=>"Start",
+"End"=>"Slut",
+"Next"=>"N&auml;sta",
+"Previous"=>"F&ouml;reg&aring;ende",
+
+"Validation Error"=>"Fel Uppstod Vid Validering",
+"The following fields contain errors"=>"F&ouml;ljande f&auml;lt inneh&aring;ller fel",
+"Save"=>"Spara",
+"Required field"=>"Obligatoriskt f&auml;lt",
+"Apply changes"=>"Till&auml;mpa &auml;ndringar",
+"Cancel"=>"Avbryt",
+
+/*Login to Elastix*/
+"Welcome to Elastix"=>"V&auml;lkommen till Elastix",
+"Please enter your username and password"=>"V&auml;nligen skriv in ditt anv&auml;ndarnamn och l&ouml;senord",
+"Username"=>"Anv&auml;ndarnamn",
+"Password"=>"L&ouml;senord",
+"Submit"=>"Till&auml;mpa",
+"Login page"=>"Inloggningssidan",
+/*end Login to Elastix*/
+
+/*start User Management*/
+"Group"=>"Grupp",
+"User List"=>"Anv&auml;ndar Lista",
+"The group is wrong"=>"Gruppen &auml;r felaktig",
+"Are you sure you wish to continue?"=>"&Auml;r du s&auml;ker p&aring; att du vill forts&auml;tta?",
+"Edit"=>"Redigera",
+"Delete"=>"Ta bort",
+"Accept"=>"Acceptera",
+"Group Permission"=>"Grupp r&auml;ttigheter",
+"Users" => "Users",
+"Directory couldn't be opened"=>"Katalogen kunde inte &ouml;ppnas",
+/*start User Management*/
+
+/*start menu*/
+"System"=>"System",
+"System Info"=>"System Information",
+"User Management"=>"Anv&auml;ndarhantering",
+"Menu Administrator"=>"Meny Administrat&ouml;r",
+/*end menu*/
+
+/*Start Language*/
+"Language"=>"Spr&aring;k",
+"Change"=>"&Auml;ndra",
+"Logout"=>"Loggaut",
+/*end Language*/
+
+/*version 0.7*/
+/*start paloSantoValidar.class.php*/
+"Options"=>"Inst&auml;llningar",
+"Empty field"=>"Tomt f&auml;lt",
+"Bad Format"=>"D&aring;ligt format",
+"No option was selected"=>"Du har inte valt n&aring;got val",
+"Octets out of range"=>"Okteter utom r&auml;ckvidd",
+/*end paloSantoValidar.class.php*/
+
+/*version 0.8*/
+/*start user*/
+"View User"=>"F&ouml;rhandsgranska Anv&auml;ndare",
+/*end user*/
+
+/*system - date/time*/
+"Date/Time" => "Datum/Tid",
+/*system - date/time*/
+
+/*load module*/
+"Load Module" => "Ladda Modul",
+"ID for new module (folder name)" => "ID f&ouml;r ny modul (katalognamn)",
+"Choose Menu" => "V&auml;lj Meny",
+"ID for new menu" => "ID f&ouml;r ny meny",
+"Menu Name" => "Meny Namn",
+"Defined Menu" => "Definerad Meny",
+"New Menu" => "Ny Meny",
+"Module sucessfully loaded" => "Lyckad inladdning av modul",
+"Folder name doesn't exist in module file" => "Katalogens namn existerar inte i modul filen",
+"Folder configs doesn't exist in module file" => "Katalogens konfiguration existerar inte i modul filen",
+"Folder themes doesn't exist in module file" => "Katalogens tema existerar inte i modul filen",
+"File index.php doesn't exist in module file" => "Filen index.php existerar inte i modul filen",
+"File install.php doesn't exist in module file" => "Filen install.php existerar inte i modul filen",
+/*end load module*/
+
+// Elastix 0.9 
+/*Start SubModule Themes*/"Themes" => "Teman",
+"Change Theme" => "Byt Tema",
+/*end SubModule Themes*/
+
+/*Module IM*/
+"IM" => "IM",
+"OpenFire" => "OpenFire",
+"The service Openfire No running" => "Openfire tj&auml;nsten aktiv f&ouml;r tillf&auml;llet. Om du vill aktivera det v&auml;nligen ",
+
+/*vTigerCRM*/
+"vTigerCRM" => "vTigerCRM",
+"The vTiger installation is almost done. To complete it please" => "vTiger installationen &auml;r snart klar. F&ouml;r att komplettera ",
+"click here" => "Klicka h&auml;r",
+
+/*Sugarcrm*/
+"SugarCRM" => "SugarCRM",
+"The SugarCRM installation is almost done. To complete it please" => "The SugarCRM installation is almost done. To complete it please",
+
+/* Preferences*/
+"Preferences" => "Preferenser",
+
+/* Start About Elastix */
+"About Elastix"=>"Om Elastix",
+"About Elastix Content"=>"Elastix skapades under premisserna f&ouml;r att bli ett p&aring;litligt, enkelt att anv&auml;nda web-baserat system,f&ouml;r hantering av kommunikation &ouml;ver IP. Detta Open source programvara startades i Ekuador, och har blivit en l&ouml;sning f&ouml;r implentering av R&ouml;st &ouml;ver IP(VoIP) runt v&auml;rlden.",
+"About Elastix Closed"=>"Avsluta",
+/* End About Elastix */
+
+//Elastix 0.9.1
+/*Start module Group List*/
+"Groups"=>"Grupper",
+"Group List"=>"Grupp Lista",
+/*End module Group List*/
+
+/** Elastix 1.0 **/
+/*Start UserList*/
+"administrator" => "Administrator",
+"operator" => "Operator",
+"extension" => "Extension",
+"total access" => "Total Access",
+"extension user" => "Extension User",
+/*end UserList*/
+"Title" => "Title",
+"Search" => "Search",
+"Show"   => "Show",
+);
+?>

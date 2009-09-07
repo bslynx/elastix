@@ -1,0 +1,177 @@
+<?php
+/* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
+  Codificación: UTF-8
+  +----------------------------------------------------------------------+
+  | Elastix version 1.0                                                  |
+  | http://www.elastix.org                                               |
+  +----------------------------------------------------------------------+
+  | Copyright (c) 2006 Palosanto Solutions S. A.                         |
+  +----------------------------------------------------------------------+
+  | Cdla. Nueva Kennedy Calle E 222 y 9na. Este                          |
+  | Telfs. 2283-268, 2294-440, 2284-356                                  |
+  | Guayaquil - Ecuador                                                  |
+  | http://www.palosanto.com                                             |
+  +----------------------------------------------------------------------+
+  | The contents of this file are subject to the General Public License  |
+  | (GPL) Version 2 (the "License"); you may not use this file except in |
+  | compliance with the License. You may obtain a copy of the License at |
+  | http://www.opensource.org/licenses/gpl-license.php                   |
+  |                                                                      |
+  | Software distributed under the License is distributed on an "AS IS"  |
+  | basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See  |
+  | the License for the specific language governing rights and           |
+  | limitations under the License.                                       |
+  +----------------------------------------------------------------------+
+  | The Original Code is: Elastix Open Source.                           |
+  | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  |                                                                      |
+  | Translate by: Chavdar Iliev                                          |
+  | Email: chavdar_75@yahoo.com                                          |
+  +----------------------------------------------------------------------+
+  $Id: en.lang,v 1.7 2008/02/18 09:48:00 bmacias Exp $ */
+global $arrLang;
+$arrLang=array(
+/*System Info*/
+"Disk usage"=>"Disk usage",
+"Used space"=>"Used space",
+"Free space"=>"Free space",
+"No records found"=>"Не са намерени записи",
+"Simultaneous calls, memory and CPU"=>"Simultaneous calls, memory and CPU",
+"Sim. calls"=>"Sim. calls",
+"CPU usage (%)"=>"CPU usage (%)",
+"Mem. usage (MB)"=>"Mem. usage (MB)",
+/*end System Info*/
+
+/*Navegacion: offset*/
+"Export"=>"Изнеси",
+"Start"=>"Начало",
+"End"=>"Край",
+"Next"=>"Следващ",
+"Previous"=>"Предишен",
+/*end Navegacion: offset*/
+
+/*Common in modules: Group List - Group Permission - User List*/
+"Group"=>"Група",
+"administrator" => "Администратор",
+"operator" => "Оператор",
+"extension" => "Потребител",
+"total access" => "Пълен Достъп",
+/*end Common in modules: Group List - Group Permission - User List*/
+
+"Group List"=>"Списък на Групите",
+"User List"=>"Списък на Потребителите",
+"Logout"=>"Излез",
+"Change"=>"Промени",
+"Title" => "Име",
+"Load Module" => "Модули",
+"Language"=>"Език",
+"Groups"=>"Групи",
+"Group Permission"=>"Забрани за Групата",
+
+
+
+/*Common in modules: Group List, User List, Load Module*/
+"Required field"=>"Задължителни полета",
+"Cancel"=>"Отказ",
+"Apply changes"=>"Приложи Промените",
+"Save"=>"Запис",
+"Edit"=>"Редактирай",
+"Delete"=>"Изтрий",
+"Are you sure you wish to continue?"=>"Сигурни ли сте че искате да продължите?",
+"The following fields contain errors"=>"Следните полета съдържат грешки",
+"Validation Error"=>"Грешка при Потвърждаване",
+/*end Common in modules: Group List, User List, Load Module*/
+
+
+/*Login to Elastix*/
+"Welcome to Elastix"=>"Добре Дошли в Еластикс",
+"Please enter your username and password"=>"Моля въведете потребителско име и парола",
+"Username"=>"Потребителско Име",
+"Password"=>"Парола",
+"Submit"=>"Приеми",
+"Login page"=>"Потребители",
+/*end Login to Elastix*/
+
+/*start User Management*/
+"The group is wrong"=>"Неправилна група",
+"Accept"=>"Приемам",
+"Users" => "Потребители",
+
+"Directory couldn't be opened"=>"Директорията не може да бъде отворена",
+/*end User Management*/
+
+/*start menu*/
+"System"=>"Система",
+"System Info"=>"Инфо за Системата",
+"User Management"=>"Потребители",
+"Menu Administrator"=>"Меню Администратор",
+/*end menu*/
+
+/*version 0.7*/
+/*start paloSantoValidar.class.php*/
+"Options"=>"Опции",
+"Empty field"=>"Празно поле",
+"Bad Format"=>"Неправилен Формат",
+"No option was selected"=>"Не е избрана опция",
+"Octets out of range"=>"Не е в допустимите граници",
+/*end paloSantoValidar.class.php*/
+
+
+/*version 0.8*/
+/*start user*/
+"View User"=>"Разгледай Потребител",
+/*end user*/
+
+/*system - date/time*/
+"Date/Time" => "Дата/Час",
+/*end system - date/time*/
+
+//load module
+"ID for new module (folder name)" => "ID за новия модул (име на директория)",
+"Choose Menu" => "Избери Меню",
+"ID for new menu" => "ID за новото меню",
+"Menu Name" => "Име на Менюто",
+"Defined Menu" => "Описание на Менюто",
+"New Menu" => "Ново Меню",
+"Module sucessfully loaded" => "Модулът е зареден успешно",
+"Folder name doesn't exist in module file" => "Името на директорията не е намерено в архива на модула",
+"Folder configs doesn't exist in module file" => "Настройките на директорията не са намерени в архива на модула",
+"Folder themes doesn't exist in module file" => "Основите на директорията не са намерени в архива на модула",
+"File index.php doesn't exist in module file" => "Файлът index.php не е намерен в архива на модула",
+"File install.php doesn't exist in module file" => "Файлът install.php не е намерен в архива на модула",
+//load module
+
+//Themes
+"Themes" => "Изглед",
+"Change Theme" => "Промени Изглед",
+
+/*Module IM*/
+"IM" => "IM",
+"OpenFire" => "OpenFire",
+"The service Openfire No running" => "Услугата Openfire в момента не е активна. Ако желаете да я активирате моля ",
+
+/*vTigerCRM*/
+"vTigerCRM" => "vTigerCRM",
+"The vTiger installation is almost done. To complete it please" => "Инсталацията на vTiger е почти приключена. За да я завършите моля ",
+"click here" => "кликнете тук",
+
+/*Sugarcrm*/
+"SugarCRM" => "SugarCRM",
+"The SugarCRM installation is almost done. To complete it please" => "Инсталацията на SugarCRM е почти приключена. За да я завършите моля ",
+
+/* Preferences*/
+"Preferences" => "Настройки",
+
+/* Start About Elastix */
+"About Elastix"=>"За Еластикс",
+"About Elastix Content"=>"Еластикс бе създаден под нуждата от подходяща и надеждна, лесна за използуване,
+уеб-базирана система за управление <br> на комуникациите върху IP. Този софтуер с отворен код
+<br> създаден в Еквадор се превърна в предпочитано решение <br>
+за осъществяване на Глас върху IP разговори в целия свят.",
+"About Elastix Closed"=>"Затвори",
+/* End About Elastix */
+
+"Search" => "Search",
+"Show"   => "Show",
+);
+?>
