@@ -42,15 +42,16 @@ class Installer
 
     $parentId = $arrTmp['parent'];
     if ($parentId=="")
-    {
         $type="";
-    }
-    else {
-        $type="module";
+    else{
+        if($arrTmp['link']=="")
+          $type="module";
+        else
+          $type="framed";
     }
     //creo el menu
-
-    $bExito = $oMenu->createMenu($arrTmp['menuid'],$arrTmp['tag'],$parentId,$type);
+    $order = isset($arrTmp['order'])?$arrTmp['order']:"-1";
+    $bExito = $oMenu->createMenu($arrTmp['menuid'],$arrTmp['tag'],$parentId,$type,$arrTmp['link'],$order);
     if (!$bExito){
             $this->_errMsg = $oMenu->errMsg;
             return false;
