@@ -1,0 +1,64 @@
+<?php
+  /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
+  Codificación: UTF-8
+  +----------------------------------------------------------------------+
+  | Elastix version 1.6-6                                               |
+  | http://www.elastix.org                                               |
+  +----------------------------------------------------------------------+
+  | Copyright (c) 2006 Palosanto Solutions S. A.                         |
+  +----------------------------------------------------------------------+
+  | Cdla. Nueva Kennedy Calle E 222 y 9na. Este                          |
+  | Telfs. 2283-268, 2294-440, 2284-356                                  |
+  | Guayaquil - Ecuador                                                  |
+  | http://www.palosanto.com                                             |
+  +----------------------------------------------------------------------+
+  | The contents of this file are subject to the General Public License  |
+  | (GPL) Version 2 (the "License"); you may not use this file except in |
+  | compliance with the License. You may obtain a copy of the License at |
+  | http://www.opensource.org/licenses/gpl-license.php                   |
+  |                                                                      |
+  | Software distributed under the License is distributed on an "AS IS"  |
+  | basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See  |
+  | the License for the specific language governing rights and           |
+  | limitations under the License.                                       |
+  +----------------------------------------------------------------------+
+  | The Original Code is: Elastix Open Source.                           |
+  | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  +----------------------------------------------------------------------+
+  $Id: en.lang,v 1.1 2009-08-07 01:08:56 Oscar Navarrete onavarrete@palosanto.com Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Smart Host" => "Smart Host",
+"Relay host" => "Relay host",
+"Port" => "Port",
+"Require authenticate" => "Require authenticate",
+"File Name SASL" => "File Name SASL",
+"User (Email Account)" => "User (Email Account)",
+"Password (Email Account)" => "Password (Email Account)",
+"Smtp sasl auth enable" => "Smtp sasl auth enable",
+"Smtp sasl password maps" => "Smtp sasl password maps",
+"Smtp sasl security options" => "Smtp sasl security options",
+"Smtpd tls auth only" => "Smtpd tls auth only",
+"Smtp use tls" => "Smtp use tls",
+"Smtpd use tls" => "Smtpd use tls",
+"Smtp tls note starttls offer" => "Smtp tls note starttls offer",
+"Smtpd tls key file" => "Smtpd tls key file",
+"Smtpd tls cert file" => "Smtpd tls cert file",
+"Smtp tls CAfile" => "Smtp tls CAfile",
+"Smtpd tls loglevel" => "Smtpd tls loglevel",
+"Smtpd tls received header" => "Smtpd tls received header",
+"Smtpd tls session cache timeout" => "Smtpd tls session cache timeout",
+"Tls random source" => "Tls random source",
+"Tls daemon random source" => "Tls daemon random source",
+
+"Result transaction" => "Result transaction",
+"Configured successful" => "Configured successful",
+"Pass phrase for smtpd" => "Pass phrase for smtpd",
+"Country Name (2 letter code)" => "Country Name (2 letter code)",
+"State or Province Name" => "State or Province Name",
+"Locality Name" => "Locality Name",
+"Organization Name" => "Organization Name",
+"Organizational Unit Name" => "Organizational Unit Name",
+"Common Name" => "Common Name",
+);
+?>

@@ -7,5 +7,6 @@
     <menuitem menuid="email_relay"    desc="Relay"     parent="email_admin" module="yes" link="" order="3"></menuitem>
     <menuitem menuid="webmail"        desc="Webmail"   parent="email_admin" module="no"  link="mail" order="4"></menuitem>
     <menuitem menuid="antispam"       desc="Antispam"  parent="email_admin" module="yes" link="" order="5"></menuitem>
+    <menuitem menuid="smarthost"      desc="SmartHost" parent="email_admin" module="yes" link="" order="6"></menuitem>
   </menulist>
 </module>
