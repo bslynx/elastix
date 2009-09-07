@@ -43,11 +43,15 @@ function _moduleContent(&$smarty, $module_name)
     #si el archivo de idioma no existe incluir el idioma por defecto
     $lang=get_language();
     $script_dir=dirname($_SERVER['SCRIPT_FILENAME']);
+
+    include_once("modules/$module_name/lang/en.lang");
     $lang_file="modules/$module_name/lang/$lang.lang";
-    if (file_exists("$script_dir/$lang_file"))
+    if (file_exists("$script_dir/$lang_file")) {
+        $arrLanEN = $arrLan;
         include_once($lang_file);
-    else
-        include_once("modules/$module_name/lang/en.lang");
+        $arrLan = array_merge($arrLanEN, $arrLan);
+    }
+
 
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
@@ -415,7 +419,7 @@ function listadoCalls($pDB, $smarty, $module_name, $local_templates_dir,&$oGrid,
     if(isset($_POST['cbo_estado_entrantes'])) $cbo_estado_entrates = $_POST['cbo_estado_entrantes'];
     elseif(isset($_GET['cbo_estado_entrantes'])) $cbo_estado_entrates = $_GET['cbo_estado_entrantes'];
     else $cbo_estado_entrates = 'T';
-    $estados_entrantes = array("T"=>$arrLan["Todas"], "E"=>$arrLan["Exitosas"], "A"=>$arrLan["Abandonadas"]);
+    $estados_entrantes = array("T"=>$arrLan["All"], "E"=>$arrLan["Successful"], "A"=>$arrLan["Left"]);
     $combo_estados_entrantes = "<select name='cbo_estado_entrantes' id='cbo_estado_entrantes' >".combo($estados_entrantes,$cbo_estado_entrates)."</select>";
 
     //para el combo de salientes
