@@ -156,5 +156,7 @@ implementations of Voice over IP around the globe.",
 
 "Search" => "Search",
 "Show"   => "Show",
+'View' => 'View',
+'Status' => 'Status',
 );
 ?>
