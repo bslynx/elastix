@@ -2,7 +2,7 @@ configdirectory: /var/lib/imap
 partition-default: /var/spool/imap
 admins: cyrus
 autocreatequota: 10000
-createonpost: yes
+createonpost: no
 allowplaintext: yes
 sievedir: /var/lib/imap/sieve
 sendmail: /usr/sbin/sendmail
@@ -20,3 +20,4 @@ anysievefolder: yes
 altnamespace: 1
 defaultdomain: example.com
 servername: example.com
+virtdomains: yes
