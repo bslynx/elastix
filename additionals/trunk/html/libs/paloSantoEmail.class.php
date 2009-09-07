@@ -215,7 +215,7 @@ class paloEmail {
     function deleteAliasesFromAccount($username)
     {
         $bExito = TRUE;
-        if (!ereg('^([a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*)$', "$username")) {
+        if (!ereg('^[a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*@[a-z0-9]+([\._\-]?[a-z0-9]+)*(\.[a-z0-9]{2,4})+$', "$username")) {
             $this->errMsg = "Username is not valid";
         }
         else {
@@ -235,7 +235,7 @@ class paloEmail {
     function getAccount($username)
     {
         $arr_result = FALSE;
-        if (!is_null($username) && !ereg('^([a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*)$', "$username")) {
+        if (!is_null($username) && !ereg('^[a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*@[a-z0-9]+([\._\-]?[a-z0-9]+)*(\.[a-z0-9]{2,4})+$', "$username")) {
             $this->errMsg = "Username is not valid";
         } 
         else {
@@ -309,7 +309,7 @@ class paloEmail {
     function deleteAccount($username)
     {
         $bExito = TRUE;
-        if (!ereg('^([a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*)$', "$username")) {
+        if (!ereg('^[a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*@[a-z0-9]+([\._\-]?[a-z0-9]+)*(\.[a-z0-9]{2,4})+$', "$username")) {
             $this->errMsg = "Username is not valid";
         }
         else {
@@ -350,7 +350,7 @@ class paloEmail {
     function getAliasAccount($username)
     {
         $arr_result = FALSE;
-        if (!is_null($username) && !ereg('^([a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*)$', "$username")) {
+        if (!is_null($username) && !ereg('^[a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*@[a-z0-9]+([\._\-]?[a-z0-9]+)*(\.[a-z0-9]{2,4})+$', "$username")) {
             $this->errMsg = "Username is not valid";
         } 
         else {
@@ -371,14 +371,14 @@ class paloEmail {
     function updateAccount($username, $quota)
     {
         $bExito = FALSE;
-        if (!is_null($username) && !ereg('^([a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*)$', "$username")) {
+        if (!is_null($username) && !ereg('^[a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*@[a-z0-9]+([\._\-]?[a-z0-9]+)*(\.[a-z0-9]{2,4})+$', "$username")) {
             $this->errMsg = "Username is not valid";
         }  else {
             //modificar cuenta
             $sPeticionSQL = paloDB::construirUpdate(
                         "accountuser",
                         array(
-                            "quota"          =>  paloDB::DBCAMPO($quota)
+                            "quota"     => paloDB::DBCAMPO($quota)
 
                          ),
                         array(

@@ -1,13 +1,14 @@
 # Global Postfix configuration file. This file lists only a subset
-# of all 300+ parameters. See the postconf(5) manual page for a
-# complete list.
+# of all parameters. For the syntax, and for a complete parameter
+# list, see the postconf(5) manual page (command: "man 5 postconf").
 #
-# The general format of each line is: parameter = value. Lines
-# that begin with whitespace continue the previous line. A value can
-# contain references to other $names or ${name}s.
+# For common configuration examples, see BASIC_CONFIGURATION_README
+# and STANDARD_CONFIGURATION_README. To find these documents, use
+# the command "postconf html_directory readme_directory", or go to
+# http://www.postfix.org/.
 #
-# NOTE - CHANGE NO MORE THAN 2-3 PARAMETERS AT A TIME, AND TEST IF
-# POSTFIX STILL WORKS AFTER EVERY CHANGE.
+# For best results, change no more than 2-3 parameters at a time,
+# and test if Postfix still works after every change.
 
 # SOFT BOUNCE
 #
@@ -39,6 +40,12 @@ command_directory = /usr/sbin
 # directory must be owned by root.
 #
 daemon_directory = /usr/libexec/postfix
+
+# The data_directory parameter specifies the location of Postfix-writable
+# data files (caches, random numbers). This directory must be owned
+# by the mail_owner account (see below).
+#
+data_directory = /var/lib/postfix
 
 # QUEUE AND PROCESS OWNERSHIP
 #
@@ -89,7 +96,7 @@ mail_owner = postfix
 # to recipient addresses that have no @domain part.
 #
 #myorigin = $myhostname
-myorigin = $mydomain
+#myorigin = $mydomain
 
 # RECEIVING MAIL
 
@@ -103,10 +110,10 @@ myorigin = $mydomain
 #
 # Note: you need to stop/start Postfix when this parameter changes.
 #
-#inet_interfaces = all
+inet_interfaces = all
 #inet_interfaces = $myhostname
 #inet_interfaces = $myhostname, localhost
-inet_interfaces = all
+#inet_interfaces = localhost
 
 # The proxy_interfaces parameter specifies the network interface
 # addresses that this mail system receives mail on by way of a
@@ -151,8 +158,7 @@ inet_interfaces = all
 #
 # See also below, section "REJECTING MAIL FOR UNKNOWN LOCAL USERS".
 #
-mydestination = example.com, $mydomain2
-#mydestination = $myhostname, localhost.$mydomain, localhost, $mydomain, $mydomain2
+mydestination = $myhostname, localhost.$mydomain, localhost
 #mydestination = $myhostname, localhost.$mydomain, localhost, $mydomain
 #mydestination = $myhostname, localhost.$mydomain, localhost, $mydomain,
 #	mail.$mydomain, www.$mydomain, ftp.$mydomain
@@ -453,8 +459,30 @@ alias_database = hash:/etc/aliases
 # the main.cf file, otherwise the SMTP server will reject mail for
 # non-UNIX accounts with "User unknown in local recipient table".
 #
-#mailbox_transport = lmtp:unix:/file/name
-mailbox_transport = cyrus
+#mailbox_transport = lmtp:unix:/var/lib/imap/socket/lmtp
+
+# If using the cyrus-imapd IMAP server deliver local mail to the IMAP
+# server using LMTP (Local Mail Transport Protocol), this is prefered
+# over the older cyrus deliver program by setting the
+# mailbox_transport as below:
+#
+# mailbox_transport = lmtp:unix:/var/lib/imap/socket/lmtp
+#
+# The efficiency of LMTP delivery for cyrus-imapd can be enhanced via
+# these settings.
+#
+# local_destination_recipient_limit = 300
+# local_destination_concurrency_limit = 5
+#
+# Of course you should adjust these settings as appropriate for the
+# capacity of the hardware you are using. The recipient limit setting
+# can be used to take advantage of the single instance message store
+# capability of Cyrus. The concurrency limit can be used to control
+# how many simultaneous LMTP sessions will be permitted to the Cyrus
+# message store.
+#
+# To use the old cyrus deliver program you have to set:
+#mailbox_transport = cyrus
 
 # The fallback_transport specifies the optional transport in master.cf
 # to use for recipients that are not found in the UNIX passwd database.
@@ -470,8 +498,7 @@ mailbox_transport = cyrus
 # the main.cf file, otherwise the SMTP server will reject mail for
 # non-UNIX accounts with "User unknown in local recipient table".
 #
-#fallback_transport = lmtp:unix:/file/name
-#fallback_transport = cyrus
+#fallback_transport = lmtp:unix:/var/lib/imap/socket/lmtp
 #fallback_transport =
 
 # The luser_relay parameter specifies an optional destination address
@@ -572,7 +599,6 @@ debug_peer_level = 2
 #
 #debug_peer_list = 127.0.0.1
 #debug_peer_list = some.domain
-#debug_per_list = 192.168.1.101
 
 # The debugger_command specifies the external command that is executed
 # when a Postfix daemon program is run with the -D option.
@@ -583,7 +609,7 @@ debug_peer_level = 2
 #
 debugger_command =
 	 PATH=/bin:/usr/bin:/usr/local/bin:/usr/X11R6/bin
-	 xxgdb $daemon_directory/$process_name $process_id & sleep 5
+	 ddd $daemon_directory/$process_name $process_id & sleep 5
 
 # If you can't use X, use this to capture the call stack when a
 # daemon crashes. The result is in a file in the configuration
@@ -640,17 +666,12 @@ manpage_directory = /usr/share/man
 # sample_directory: The location of the Postfix sample configuration files.
 # This parameter is obsolete as of Postfix 2.1.
 #
-sample_directory = /usr/share/doc/postfix-2.2.2/samples
+sample_directory = /usr/share/doc/postfix-2.5.6/samples
 
 # readme_directory: The location of the Postfix README files.
 #
-readme_directory = /usr/share/doc/postfix-2.2.2/README_FILES
+readme_directory = /usr/share/doc/postfix-2.5.6/README_FILES
+# Enable IPv4, and IPv6 if supported
+inet_protocols = all
 
-virtual_alias_maps = hash:/etc/postfix/virtual
-
-################################
-#Ingresado por yb-webadmin
-mydomain = example.com
-myhostname = yb-server.example.com
-
-
+virtual_transport = lmtp:unix:/var/lib/imap/socket/lmtp
