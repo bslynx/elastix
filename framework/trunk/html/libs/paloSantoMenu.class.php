@@ -108,21 +108,31 @@ class paloMenu {
                 $bExito = FALSE;
                 $this->errMsg = "Menu already exists";
             }else{
-                if($order!=-1)
-                  $order = "\"order_no\"  =>  ".paloDB::DBCAMPO($order);
-                else $order="";
-
-                $sPeticionSQL = paloDB::construirInsert(
-                    "menu",
+		if($order!=-1){
+                  $sPeticionSQL = paloDB::construirInsert("menu",
                     array(
                         "id"        =>  paloDB::DBCAMPO($id),
                         "Name"      =>  paloDB::DBCAMPO($name),
                         "Type"      =>  paloDB::DBCAMPO($type),
                         "Link"      =>  paloDB::DBCAMPO($link),
                         "IdParent"  =>  paloDB::DBCAMPO($id_parent),
-                        $order
-                    )
-                );
+                        "order_no"  =>  paloDB::DBCAMPO($order),
+                      )
+                    );
+
+                }
+                else{
+                  $sPeticionSQL = paloDB::construirInsert("menu",
+                    array(
+                        "id"        =>  paloDB::DBCAMPO($id),
+                        "Name"      =>  paloDB::DBCAMPO($name),
+                        "Type"      =>  paloDB::DBCAMPO($type),
+                        "Link"      =>  paloDB::DBCAMPO($link),
+                        "IdParent"  =>  paloDB::DBCAMPO($id_parent),
+                      )
+                    );
+                }
+
                 if ($this->_DB->genQuery($sPeticionSQL)) {
                     $bExito = TRUE;
                 } else {
