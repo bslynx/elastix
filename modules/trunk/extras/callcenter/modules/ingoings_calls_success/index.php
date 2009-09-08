@@ -45,13 +45,15 @@ function _moduleContent(&$smarty,$module_name) {
     // obtengo el idioma actual utilizado en la aplicacion.
     $language=get_language();
     $script_dir=dirname($_SERVER['SCRIPT_FILENAME']);
+
+    include_once("modules/$module_name/lang/en.lang");
     $lang_file="modules/$module_name/lang/$language.lang";
-    // consulto si existe el archivo de idiomas elegido y por default se toma el español
     if (file_exists("$script_dir/$lang_file")) {
+        $arrLanEN = $lang;
         include_once($lang_file);
-    } else {
-        include_once("modules/$module_name/lang/en.lang");
+        $lang = array_merge($arrLanEN, $lang);
     }
+
     // se crea el objeto conexion a la base de datos
     $pDB = new paloDB($cadena_dsn);
     // valido lacreacion del objeto conexion, presentando un mensaje deerror si es invalido.
