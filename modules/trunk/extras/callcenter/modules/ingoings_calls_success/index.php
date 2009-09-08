@@ -288,6 +288,7 @@ function generarReporte($smarty,$fecha_actual_init,$fecha_actual_end,$oReportsCa
 
     $indice = 0;
     // comienzo a llenar el arreglo $arrTmp con los datos que se mostraran en el reporte
+    $arrData = array();
     foreach($arrQueues as $queue) {
         //
         $arrTmp[0] = $queue['queue'];
