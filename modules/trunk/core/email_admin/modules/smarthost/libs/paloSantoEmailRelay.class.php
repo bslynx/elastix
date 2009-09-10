@@ -51,60 +51,14 @@ class paloSantoEmailRelay {
 
     /*HERE YOUR FUNCTIONS*/
 
-    function getNumEmailRelay($filter_field, $filter_value)
-    {
-        $where = "";
-        if(isset($filter_field) & $filter_field !="")
-            $where = "where $filter_field like '$filter_value%'";
-
-        $query   = "SELECT COUNT(*) FROM email_relay $where";
-
-        $result=$this->_DB->getFirstRowQuery($query);
-
-        if($result==FALSE){
-            $this->errMsg = $this->_DB->errMsg;
-            return 0;
-        }
-        return $result[0];
-    }
-
-    function getEmailRelay($limit, $offset, $filter_field, $filter_value)
-    {
-        $where = "";
-        if(isset($filter_field) & $filter_field !="")
-            $where = "where $filter_field like '$filter_value%'";
-
-        $query   = "SELECT * FROM email_relay $where LIMIT $limit OFFSET $offset";
-
-        $result=$this->_DB->fetchTable($query, true);
-
-        if($result==FALSE){
-            $this->errMsg = $this->_DB->errMsg;
-            return array();
-        }
-        return $result;
-    }
-
-    function getEmailRelayById($id)
-    {
-        $query = "SELECT * FROM email_relay WHERE id=$id";
-
-        $result=$this->_DB->getFirstRowQuery($query,true);
-
-        if($result==FALSE){
-            $this->errMsg = $this->_DB->errMsg;
-            return null;
-        }
-        return $result;
-    }
-
-
-    ///////////////////////////////////////////////////////////////////
-    ///////////////////////NEW FUNCTIONS///////////////////////////////
-
     function init(){
-        exec("chown asterisk.asterisk /etc/postfix");
-        exec("chown asterisk.asterisk /etc/postfix/main.cf");
+        exec("sudo -u root chown -R asterisk.asterisk /etc/postfix/");
+        exec("mkdir /etc/postfix/sasl");
+        exec("touch /etc/postfix/sasl/passwd");
+        exec("chmod 600 /etc/postfix/sasl/passwd");
+
+        exec("mkdir /etc/postfix/tls");
+        exec("sudo -u root chown -R root.root /etc/postfix/");
     }
 
 
@@ -116,31 +70,34 @@ class paloSantoEmailRelay {
     }
 
     function saveChangeFileMainCF($text){
+        exec("sudo -u root chown -R asterisk.asterisk /etc/postfix/");
         $archivo = file('/etc/postfix/main.cf');
          
         $fp = fopen('/etc/postfix/main.cf', 'w');
         fwrite($fp, $text);   
-
+        exec("sudo -u root chown -R root.root /etc/postfix/");
         fclose($fp);
     }
 
     /*Cuando el archivo main.cf es original sin modificaciones*/
     function execConfigPosfix_1($host, $port, $user, $password){
-        //exec("chown asterisk.asterisk /etc/postfix");
-        exec("mkdir /etc/postfix/sasl");
-        exec("touch /etc/postfix/sasl/passwd");
-        exec("chmod 600 /etc/postfix/sasl/passwd");
+        exec("sudo -u root chown -R asterisk.asterisk /etc/postfix/");
+        //exec("mkdir /etc/postfix/sasl");
+        //exec("touch /etc/postfix/sasl/passwd");
+        //exec("chmod 600 /etc/postfix/sasl/passwd");
+        //exec("sudo -u root chown -R asterisk.asterisk /etc/postfix/sasl/");
+        //exec("sudo -u root chown asterisk.asterisk /etc/postfix/sasl/passwd.db");
         exec("echo '[smtp.$host.com]:$port    $user@$host.com:$password' > /etc/postfix/sasl/passwd");
         exec("postmap /etc/postfix/sasl/passwd");
-        exec("chown asterisk.asterisk /etc/postfix/sasl/passwd");
-        exec("chown asterisk.asterisk /etc/postfix/sasl/passwd.db");
+        exec("sudo -u root chown -R root.root /etc/postfix/");
     }
 
     /*Cuando el archivo main.cf es original ya ha sido modificado*/
     function execConfigPosfix_1Mod($host, $port, $user, $password){
+        exec("sudo -u root chown -R asterisk.asterisk /etc/postfix/");
         exec("echo '[smtp.$host.com]:$port    $user@$host.com:$password' > /etc/postfix/sasl/passwd");
         exec("postmap /etc/postfix/sasl/passwd");
-
+        exec("sudo -u root chown -R root.root /etc/postfix/");
     }
 
 
@@ -192,8 +149,8 @@ class paloSantoEmailRelay {
 
     function execConfigPosfix_2($password, $countryName, $ProvinceName, $localityName, $organizationName, $organizationalUnitName, $commonName){      
         exec("postfix reload");
-        exec("mkdir /etc/postfix/tls");
-
+        //exec("mkdir /etc/postfix/tls");
+        exec("sudo -u root chown -R asterisk.asterisk /etc/postfix/");
         //exec("echo "$contrasenia" | openssl genrsa -des3 -rand /etc/hosts -passout stdin -out smtpd.key 1024");
         exec("openssl genrsa -des3 -rand /etc/hosts -passout pass:$password -out /etc/postfix/tls/smtpd.key 1024");
         //exec("openssl genrsa -des3 -rand /etc/hosts -passout pass:Hola -out /etc/postfix/tls2/smtpd.key 1024");
@@ -211,17 +168,19 @@ class paloSantoEmailRelay {
 
         //exec("openssl req -new -x509 -extensions v3_ca -keyout /etc/postfix/tls2/cakey.pem -passout pass:12345 -out /etc/postfix/tls2/cacert.pem -days 3650 -subj '/C=EC/ST=Guayas/L=Guayaquil/O=Megatelcon/OU=Desarrollo/CN=elastix.palosanto.com'");
         exec("openssl req -new -x509 -extensions v3_ca -keyout /etc/postfix/tls/cakey.pem -passout pass:$password -out /etc/postfix/tls/cacert.pem -days 3650 -subj '/C=$countryName/ST=$ProvinceName/L=$localityName/O=$organizationName/OU=$organizationalUnitName/CN=$commonName'");
+        exec("sudo -u root chown -R root.root /etc/postfix/");
     }
 
     function execConfigPosfix_2Mod($password, $countryName, $ProvinceName, $localityName, $organizationName, $organizationalUnitName, $commonName){
         exec("postfix reload");
-
+        exec("sudo -u root chown -R asterisk.asterisk /etc/postfix/");
         exec("openssl genrsa -des3 -rand /etc/hosts -passout pass:$password -out /etc/postfix/tls/smtpd.key 1024");
         exec("openssl req -new -key /etc/postfix/tls/smtpd.key -passin pass:$password -out /etc/postfix/tls/smtpd.csr -subj '/C=$countryName/ST=$ProvinceName/L=$localityName/O=$organizationName/OU=$organizationalUnitName/CN=$commonName'");
         exec("openssl x509 -req -days 3650 -in /etc/postfix/tls/smtpd.csr -signkey /etc/postfix/tls/smtpd.key -passin pass:$password -out /etc/postfix/tls/smtpd.crt");
         exec("openssl rsa -in /etc/postfix/tls/smtpd.key -passin pass:$password /etc/postfix/tls/smtpd.key.unencrypted");
         exec("mv -f /etc/postfix/tls/smtpd.key.unencrypted /etc/postfix/tls/smtpd.key");
         exec("openssl req -new -x509 -extensions v3_ca -keyout /etc/postfix/tls/cakey.pem -passout pass:$password -out /etc/postfix/tls/cacert.pem -days 3650 -subj '/C=$countryName/ST=$ProvinceName/L=$localityName/O=$organizationName/OU=$organizationalUnitName/CN=$commonName'");
+        exec("sudo -u root chown -R root.root /etc/postfix/");
     }
 
     function replaceFileMainCF_2($data_step2, $arr_MainCF){
@@ -307,8 +266,9 @@ class paloSantoEmailRelay {
 
 
     function execConfigPosfix_3(){
-        exec("service saslauthd restart");
-        exec("service postfix restart");
+        //se ejecuta de esa forma porque es usuario asterisk el que corre el programa de elastix
+        exec("sudo /sbin/service saslauthd restart");
+        exec("sudo /sbin/service postfix restart");
     }
 
 
@@ -486,8 +446,10 @@ class paloSantoEmailRelay {
 
     function readFileSSL()
     {
+        exec("sudo -u root chown -R asterisk.asterisk /etc/postfix/");
         $myFile='/etc/postfix/sasl/passwd';
         $fh = fopen($myFile, 'r');
+        exec("sudo -u root chown -R root.root /etc/postfix/");
         return $fh;
     }
 
@@ -526,7 +488,6 @@ class paloSantoEmailRelay {
     function addEmailRelayAuthenticate($data)
     {
         $queryInsert = $this->_DB->construirInsert('email_authenticate', $data);
-
         echo $queryInsert;
         $result = $this->_DB->genQuery($queryInsert);
 

@@ -123,7 +123,7 @@ $(document).ready(function(){
     });
 
     $(".areaDrop").droppable({
-        accept: ".item_box",
+        accept: "#lista_local",
         drop: function(event, ui) {
             var idStart = ($(ui.draggable).attr("id")).split("_");
             var idFinish = ($(this).attr("id")).split("_");

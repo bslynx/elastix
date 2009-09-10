@@ -111,100 +111,87 @@ function viewFormEmailRelay($smarty, $module_name, $local_templates_dir, &$pDB, 
             }
 
             if($value['name']=="smtp_sasl_auth_enable"){
-                //$arrData['smtp_sasl_auth_enable'] = isset($_POST['smtp_sasl_auth_enable'])?$_POST['smtp_sasl_auth_enable']:$value['value'];
                 $smtp_sasl_auth_enable = $value['value'];
                 $smarty->assign("Smtp_sasl_auth_enable", 1);
                 $smarty->assign("SMTP_SASL_AUTH_ENABLE", $value['value']);
             }
             if($value['name']=="smtp_sasl_password_maps"){
-                //$arrData['smtp_sasl_password_maps'] = isset($_POST['smtp_sasl_password_maps'])?getParameter('smtp_sasl_password_maps'):$value['value'];
                 $smtp_sasl_password_maps = $value['value'];
                 $smarty->assign("Smtp_sasl_password_maps", 1);
                 $smarty->assign("SMTP_SASL_PASSWORD_MAPS", $value['value']);
             }
             if($value['name']=="smtp_sasl_security_options"){
-                //$arrData['smtp_sasl_security_options'] = isset($_POST['smtp_sasl_security_options'])?$_POST['smtp_sasl_security_options']:$value['value'];
                 $smtp_sasl_security_options = $value['value'];
                 $smarty->assign("Smtp_sasl_security_options", 1);
                 $smarty->assign("SMTP_SASL_SECURITY_OPTIONS", $value['value']);
             }
-            if($value['name']=="smtpd_tls_auth_only"){
-                //$arrData['smtpd_tls_auth_only'] = isset($_POST['smtpd_tls_auth_only'])?getParameter('smtpd_tls_auth_only'):$value['value'];
+            if($value['name']=="smtpd_tls_auth_only"){               
                 $smtpd_tls_auth_only = $value['value'];
                 $smarty->assign("Smtpd_tls_auth_only", 1);
                 $smarty->assign("SMTPD_TLS_AUTH_ONLY", $value['value']);
             }
-            if($value['name']=="smtp_use_tls"){
-                //$arrData['smtp_use_tls'] = isset($_POST['smtp_use_tls'])?getParameter('smtp_use_tls'):$value['value'];
+            if($value['name']=="smtp_use_tls"){                
                 $smtp_use_tls = $value['value'];
                 $smarty->assign("Smtp_use_tls", 1);
                 $smarty->assign("SMTP_USE_TLS", $value['value']);
             }
             if($value['name']=="smtpd_use_tls"){
-                //$arrData['smtpd_use_tls'] = isset($_POST['smtp_use_tls'])?getParameter('smtp_use_tls'):$value['value'];
                 $smtpd_use_tls = $value['value'];
                 $smarty->assign("Smtpd_use_tls", 1);
                 $smarty->assign("SMTPD_USE_TLS", $value['value']);
             }
             if($value['name']=="smtp_tls_note_starttls_offer"){
-                //$arrData['smtp_tls_note_starttls_offer'] = isset($_POST['smtp_tls_note_starttls_offer'])?getParameter('smtp_tls_note_starttls_offer'):$value['value'];
                 $smtp_tls_note_starttls_offer = $value['value'];
                 $smarty->assign("Smtp_tls_note_starttls_offer", 1);
                 $smarty->assign("SMTPD_TLS_NOTE_STARTTLS_OFFER", $value['value']);
             }
             if($value['name']=="smtpd_tls_key_file"){
-                //$arrData['smtpd_tls_key_file'] = isset($_POST['smtpd_tls_key_file'])?getParameter('smtpd_tls_key_file'):$value['value'];
                 $smtpd_tls_key_file = $value['value'];
                 $smarty->assign("Smtpd_tls_key_file", 1);
                 $smarty->assign("SMTPD_TLS_KEY_FILE", $value['value']);
             }
-            if($value['name']=="smtpd_tls_cert_file"){
-                //$arrData['smtpd_tls_cert_file'] = isset($_POST['smtpd_tls_cert_file'])?getParameter('smtpd_tls_cert_file'):$value['value'];
+            if($value['name']=="smtpd_tls_cert_file"){                
                 $smtpd_tls_cert_file = $value['value'];
                 $smarty->assign("Smtpd_tls_cert_file", 1);
                 $smarty->assign("SMTPD_TLS_CERT_FILE", $value['value']);
             }
             if($value['name']=="smtp_tls_CAfile"){
-                //$arrData['smtp_tls_CAfile'] = isset($_POST['smtp_tls_CAfile'])?getParameter('smtp_tls_CAfile'):$value['value'];
                 $smtp_tls_CAfile = $value['value'];
                 $smarty->assign("Smtp_tls_CAfile", 1);
                 $smarty->assign("SMTPD_TLS_CAfile", $value['value']);
             }
             if($value['name']=="smtpd_tls_loglevel"){
-                //$arrData['smtpd_tls_loglevel'] = isset($_POST['smtpd_tls_loglevel'])?getParameter('smtpd_tls_loglevel'):$value['value'];
                 $smtpd_tls_loglevel = $value['value'];
                 $smarty->assign("Smtpd_tls_loglevel", 1);
                 $smarty->assign("SMTPD_TLS_LOGLEVEL", $value['value']);
             }
-            if($value['name']=="smtpd_tls_received_header"){
-                //$arrData['smtpd_tls_received_header'] = isset($_POST['smtpd_tls_received_header'])?getParameter('smtpd_tls_received_header'):$value['value'];
+            if($value['name']=="smtpd_tls_received_header"){                
                 $smtpd_tls_received_header = $value['value'];
                 $smarty->assign("Smtpd_tls_received_header", 1);
                 $smarty->assign("SMTPD_TLS_RECEIVED_HEADER", $value['value']);
             }
             if($value['name']=="smtpd_tls_session_cache_timeout"){
-                //$arrData['smtpd_tls_session_cache_timeout'] = isset($_POST['smtpd_tls_session_cache_timeout'])?getParameter('smtpd_tls_session_cache_timeout'):$value['value'];
                 $smtpd_tls_session_cache_timeout = $value['value'];
                 $smarty->assign("Smtpd_tls_session_cache_timeout", 1);
                 $smarty->assign("SMTPD_TLS_SESSION_CACHE_TIMEOUT", $value['value']);
             }
             if($value['name']=="tls_random_source"){
-                //$arrData['tls_random_source'] = isset($_POST['tls_random_source'])?getParameter('tls_random_source'):$value['value'];
-                $tls_random_source = $value['name'];
+                $tls_random_source = $value['value'];
                 $smarty->assign("Tls_random_source", 1);
                 $smarty->assign("TLS_RANDOM_SOURCE", $value['value']);
             }
             if($value['name']=="tls_daemon_random_source"){
-                //$arrData['tls_daemon_random_source'] = isset($_POST['tls_daemon_random_source'])?getParameter('tls_daemon_random_source'):$value['value'];
-                $tls_daemon_random_source = $value['name'];
+                $tls_daemon_random_source = $value['value'];
                 $smarty->assign("Tls_daemon_random_source", 1);
                 $smarty->assign("TLS_DAEMON_RANDON_SOURCE", $value['value']);
             }
         }
-
+        //si existe mas de cuatro registros entonces el archivo main.cf ya ha sido configurado
+        //caso contrario es nuevo sin modificacion
         if( count($arr_MainCf) > 4){
             $smarty->assign("Modified", 1);
             $fhssl = $pEmailRelay->readFileSSL();
+            
         }else{
             $pEmailRelay->init();
             $smarty->assign("NewMaincf", 0);
@@ -262,20 +249,22 @@ function viewFormEmailRelay($smarty, $module_name, $local_templates_dir, &$pDB, 
     }else{
         $oForm->setViewMode();
         $smarty->assign("Edit", 1); 
-        $arrData['smtp_sasl_auth_enable'] = $smtp_sasl_auth_enable;
-        $arrData['smtp_sasl_password_maps'] = $smtp_sasl_password_maps;
-        $arrData['smtp_sasl_security_options'] = $smtp_sasl_security_options;
-        $arrData['smtpd_tls_auth_only'] = $smtpd_tls_auth_only;
-        $arrData['smtp_use_tls'] = $smtp_use_tls;
-        $arrData['smtp_tls_note_starttls_offer'] = $smtp_tls_note_starttls_offer;
-        $arrData['smtpd_tls_key_file'] = $smtpd_tls_key_file;
-        $arrData['smtpd_tls_cert_file'] = $smtpd_tls_cert_file;
-        $arrData['smtp_tls_CAfile'] = $smtp_tls_CAfile;
-        $arrData['smtpd_tls_loglevel'] = $smtpd_tls_loglevel;
-        $arrData['smtpd_tls_received_header'] = $smtpd_tls_received_header;
-        $arrData['smtpd_tls_session_cache_timeout'] = $smtpd_tls_session_cache_timeout;
-        $arrData['tls_random_source'] = $tls_random_source;
-        $arrData['tls_daemon_random_source'] = $tls_daemon_random_source;
+        if(!empty($smtp_sasl_auth_enable)){
+            $arrData['smtp_sasl_auth_enable'] = $smtp_sasl_auth_enable;
+            $arrData['smtp_sasl_password_maps'] = $smtp_sasl_password_maps;
+            $arrData['smtp_sasl_security_options'] = $smtp_sasl_security_options;
+            $arrData['smtpd_tls_auth_only'] = $smtpd_tls_auth_only;
+            $arrData['smtp_use_tls'] = $smtp_use_tls;
+            $arrData['smtp_tls_note_starttls_offer'] = $smtp_tls_note_starttls_offer;
+            $arrData['smtpd_tls_key_file'] = $smtpd_tls_key_file;
+            $arrData['smtpd_tls_cert_file'] = $smtpd_tls_cert_file;
+            $arrData['smtp_tls_CAfile'] = $smtp_tls_CAfile;
+            $arrData['smtpd_tls_loglevel'] = $smtpd_tls_loglevel;
+            $arrData['smtpd_tls_received_header'] = $smtpd_tls_received_header;
+            $arrData['smtpd_tls_session_cache_timeout'] = $smtpd_tls_session_cache_timeout;
+            $arrData['tls_random_source'] = $tls_random_source;
+            $arrData['tls_daemon_random_source'] = $tls_daemon_random_source;
+        }
 
         if(!empty($fhssl)){
             $arr_account = $pEmailRelay->getDataSsl($fhssl); 
@@ -365,10 +354,8 @@ function saveNewEmailRelay($smarty, $module_name, $local_templates_dir, &$pDB, $
         else $data_step1['smtp_sasl_security_options'] = "";
 
         if(getParameter("control")=='1'){
-            exec("echo 'Modificado Posfix_1Mod' > /tmp/oscar");
             $pEmailRelay->execConfigPosfix_1Mod($host, $port, $user, $password);
         }else{
-            exec("echo 'Nuevo Posfix_1' > /tmp/oscar");
             $pEmailRelay->execConfigPosfix_1($host, $port, $user, $password);  
         }
 
@@ -637,20 +624,6 @@ function createFieldForm($arrLang)
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-//            "require"   => array(      "LABEL"                  => $arrLang["Require authenticate"],
-//                                             "REQUIRED"               => "no",
-//                                             "INPUT_TYPE"             => "TEXT",
-//                                             "INPUT_EXTRA_PARAM"      => "",
-//                                             "VALIDATION_TYPE"        => "text",
-//                                             "VALIDATION_EXTRA_PARAM" => ""
-//                                             ),
-//             "file"   => array(      "LABEL"                  => $arrLang["File Name SASL"],
-//                                             "REQUIRED"               => "no",
-//                                             "INPUT_TYPE"             => "TEXT",
-//                                             "INPUT_EXTRA_PARAM"      => "",
-//                                             "VALIDATION_TYPE"        => "text",
-//                                             "VALIDATION_EXTRA_PARAM" => ""
-//                                             ),
             );
     return $arrFields;
 }
