@@ -79,7 +79,7 @@ function _moduleContent(&$smarty, $module_name)
                                                     "REQUIRED"               => "yes",
                                                     "INPUT_TYPE"             => "TEXT",
                                                     "INPUT_EXTRA_PARAM"      => "",
-                                                    "VALIDATION_TYPE"        => "numeric",
+                                                    "VALIDATION_TYPE"        => "text",
                                                     "VALIDATION_EXTRA_PARAM" => ""),
                              "clid_name"   => array("LABEL"                  => $arrLang["Caller ID Name"],
                                                     "REQUIRED"               => "no",
