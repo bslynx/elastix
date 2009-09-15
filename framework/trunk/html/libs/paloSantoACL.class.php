@@ -1197,5 +1197,66 @@ class paloACL {
         }
         return $bExito;
     }
+ /**
+     * Procedimiento para obtener el id del recurso mediante su nameid. 
+     *
+     * @param string   $username  
+     *
+     * @return integer    id 
+     *******************************************************************/
+    function getIdResource($resource_name)
+    {
+        $id_resource = null;
+        if (!ereg('^([-_[:alnum:]]+[[a-z0-9\-_]+]*)$', "$resource_name")) {
+            $this->errMsg = "Resource Name is not valid";
+        } else {
+            $this->errMsg = "";
+            $sPeticionSQL = "SELECT id FROM acl_resource WHERE name = '$resource_name'";
+            $result = $this->_DB->getFirstRowQuery($sPeticionSQL, FALSE);
+            if ($result && is_array($result) && count($result)>0) {
+                $id_resource = $result[0];
+                return $id_resource;
+            }else $this->errMsg = $this->_DB->errMs;
+        }
+        return 0;
+    }
+
+    /**
+     * Procedimiento para eliminar el recurso dado su id. 
+     *
+     * @param integer   $idresource
+     *
+     * @return bool     si es verdadero entonces se elimino bien
+     ******************************************************************/
+    function deleteIdResource($idresource)
+    {
+        $this->errMsg = "";
+        $sPeticionSQL = "DELETE FROM acl_resource WHERE id = $idresource";
+        $result = $this->_DB->genQuery($sPeticionSQL);
+        if($result==FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Procedimiento para eliminar los permisos de un grupo
+     *
+     * @param integer    $idresource  es el id del recurso
+     *
+     * @return bool    si es verdadero entonces se elimino bien
+     **************************************************************/
+    function deleteIdGroupPermission($idresource)
+    {
+        $id_resource = null;
+        $sPeticionSQL = "DELETE FROM acl_group_permission WHERE id_resource = $idresource";
+        $result = $this->_DB->genQuery($sPeticionSQL);
+        if($result==FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return false;
+        }
+        return true;
+    }
 }
 ?>
