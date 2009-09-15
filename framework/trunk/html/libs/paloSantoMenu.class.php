@@ -160,7 +160,7 @@ class paloMenu {
      *
      * @param string    $menu_name   The name of the main menu or menu father       
      *
-     * @return array    $result      An array of childs or submenu where the father or main menu is $menu_name
+     * @return array    $result      An array of children or submenu where the father or main menu is $menu_name
      */
    function getChilds($menu_name){
         $query   = "SELECT * FROM menu where IdParent='$menu_name'";
@@ -191,20 +191,24 @@ class paloMenu {
     }
 
 /**
-     * This function is a recursive function. The input is the name of main menu or father menu which will be removed from database with all childs and the childs of their childs 
+     * This function is a recursive function. The input is the name of main menu or father menu which will be removed from database with all children and the children of its children 
      *
      * @param string    $menu_name   The name of the main menu or menu father       
+     * @param object    $acl   		 The class object ACL
      *  
      * @return $menu_name   The menu which will be removed
      */
 
-    function deleteFather($menu_name){
+    function deleteFather($menu_name,&$acl){
         $childs = $this->getChilds($menu_name);
         if(!$childs)   return $menu_name;
         else{
             foreach($childs as $key => $value){
-                $this->deleteFather($value['id']);
-                $this->deleteChilds($value['id']);
+				$this->deleteFather($value['id'],$acl); 
+                $id_resource = $acl->getIdResource($value['id']); // get id Resource
+                $acl->deleteIdGroupPermission($id_resource); // remove group permission
+                $acl->deleteIdResource($id_resource); // remove resource
+                $this->deleteChilds($value['id']); // remove child
             }
             return $menu_name;
         }
