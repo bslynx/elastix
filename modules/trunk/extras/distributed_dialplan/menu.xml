@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module>
+  <menulist>
+    <menuitem menuid="distributed_dialplan" desc="Distributed DialPlan" parent="pbxconfig"            module="no"  link="" order="10"></menuitem>
+    <menuitem menuid="general_information"  desc="General Information"  parent="distributed_dialplan" module="yes" link="" order="101"></menuitem>
+    <menuitem menuid="peers_information"    desc="Peers Information"    parent="distributed_dialplan" module="yes" link="" order="102"></menuitem>
+  </menulist>
+</module>
