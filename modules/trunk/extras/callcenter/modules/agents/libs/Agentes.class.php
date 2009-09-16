@@ -385,22 +385,32 @@ echo "sql = ".$sPeticionSQL;
 	    else return false;
 	}
 
-        function _reloadAsterisk()
-        {
-            // incluyendo archivo donde están los datos de acceso del asterisk
-            include_once "modules/agent_console/configs/default.conf.php";
-            $ip_asterisk = $acceso_asterisk["ip"];
-            $user_asterisk = $acceso_asterisk["user"];
-            $pass_asterisk = $acceso_asterisk["pass"];
-
-            $astman = new AGI_AsteriskManager();
-            if (!$astman->connect($ip_asterisk, $user_asterisk , $pass_asterisk)) {
-                $resultado = "Error when connecting to Asterisk Manager";
-            } else {
-                $strReload = $astman->Command(" reload");
-                $astman->disconnect();
-            }
+    function _reloadAsterisk()
+    {
+        $sRutaConfig = "modules/agent_console/configs/default.conf.php";
+        if (!file_exists($sRutaConfig)) {
+            //$this->errMsg = 'While connecting to Asterisk - configuration not found';
+            return FALSE;
         }
+        include_once $sRutaConfig;
+        if (!isset($acceso_asterisk) || !is_array($acceso_asterisk)) {
+            //$this->errMsg = 'While connecting to Asterisk - invalid configuration, does not define "acceso_asterisk"';
+        	return FALSE;
+        }
+        $ip_asterisk = $acceso_asterisk["ip"];
+        $user_asterisk = $acceso_asterisk["user"];
+        $pass_asterisk = $acceso_asterisk["pass"];
+        $astman = new AGI_AsteriskManager();
+        if (!$astman->connect($ip_asterisk, $user_asterisk , $pass_asterisk)) {
+            //$this->errMsg = "Error when connecting to Asterisk Manager";
+            return FALSE;
+        } else {
+            // TODO: verify whether reload actually succeeded
+            $strReload = $astman->Command(" reload");
+            $astman->disconnect();
+            return TRUE;
+        }
+    }
 
         function isAgentOnline($agentNum) {
             // incluyendo archivo donde están los datos de acceso del asterisk
