@@ -274,7 +274,7 @@ function createFile($smarty, $arrLang, $pDB)
    $pPeersInformation = new paloSantoPeersInformation($pDB);
    $arrDBPeers = $pPeersInformation->ObtainPeersInformation();//aqui barro la Tabla peer
    foreach($arrDBPeers as $infoPeers){
-     if($infoPeers['status'] == "connect"){
+     if($infoPeers['status'] == "connected"){
         foreach($infoPeers as $key => $value){
            if($key == "mac")
               $peers.= "[$value]\n";
