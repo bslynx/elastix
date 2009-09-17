@@ -265,7 +265,9 @@ if( sizeof($G_YDATAS) >= 1 )
         $graph->img->SetMargin($G_MARGIN[0],$G_MARGIN[1],$G_MARGIN[2],$G_MARGIN[3]);
         $graph->title->Set($G_TITLE);
         $graph->xaxis->title->Set($G_LABEL[0]);
-        $graph->xaxis->SetTickLabels($xData);
+        $graph->xaxis->SetLabelFormatCallback("CallBack");
+        $graph->xaxis->SetLabelAngle(90);
+        //$graph->xaxis->SetTickLabels($xData);
         $graph->yaxis->title->Set($G_LABEL[1]);
         $graph->legend->SetFillColor("#fafafa");
         $graph->legend->Pos($G_LEYEND_POS[0], $G_LEYEND_POS[1], "right","center");
