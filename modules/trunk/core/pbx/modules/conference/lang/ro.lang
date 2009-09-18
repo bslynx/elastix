@@ -85,5 +85,9 @@ $arrLangModule=array(
 "Filter" => "Filtru",
 "Show" => "Afiseaza",
 "click here" => "click aici",
+'Duration'=>'Duration',
+'Status'=>'Status',
+'Update'=>'Update',
+'No Extensions'=>'No Extensions',
 );
 ?>

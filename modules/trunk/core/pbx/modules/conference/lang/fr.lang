@@ -89,5 +89,9 @@ e; la conf&eacute;rence",
 "Filter" => "Filtre",
 "Show" => "Afficher",
 "click here" => "cliquer ici",
+'Duration'=>'Duration',
+'Status'=>'Status',
+'Update'=>'Update',
+'No Extensions'=>'No Extensions',
 );
 ?>

@@ -84,5 +84,9 @@ $arrLangModule=array(
 "Filter" => "فیلتر",
 "Show" => "نمایش",
 "click here" => "اینجا را کلیک کنید",
+'Duration'=>'Duration',
+'Status'=>'Status',
+'Update'=>'Update',
+'No Extensions'=>'No Extensions',
 );
 ?>
