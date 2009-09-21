@@ -1,3 +1,5 @@
+<link   rel ="stylesheet"      href="modules/hardware_detection/themes/style.css" />
+
 <table width="{$width}" align="center" border="0" cellpadding="0" cellspacing="0">
     <tr class="moduleTitle">
         <td class="moduleTitle" colspan="2" valign="middle">&nbsp;&nbsp;<img src="{$icon}" border="0" align="absmiddle">&nbsp;&nbsp;{$title}</td>
@@ -22,10 +24,13 @@
         {foreach from=$arrData key=k item=data name=filas}
             {if $data.DESC.TIPO ne $CARD_NO_MOSTRAR}
                 <tr>
-                    <td style='border:1px #CCCCCC solid; font-size:12px;' align='left' class="moduleTitle">{$CARD} # {$data.DESC.ID}: {$data.DESC.TIPO} {$data.DESC.ADICIONAL}</td>
+                    <td style='border: 1px #CCCCCC solid; font-size:12px;' align='left' class="moduleTitle">{$CARD} # {$data.DESC.ID}: {$data.DESC.TIPO} {$data.DESC.ADICIONAL}</td>
+                    <td style='border: 1px #CCCCCC solid; width:30px;'>  <img class="icon" src="modules/hardware_detection/images/call2.png" /> </td>
+                    <td style='border: 1px #CCCCCC solid; width:30px;'>  <img class="icon" src="modules/hardware_detection/images/call2.png" /> </td>
+                    <td style='border: 1px #CCCCCC solid; width:30px;'><a href='?menu=hardware_detection&action=config_echo&cardId={$data.DESC.ID}'><img class="icon" src="modules/hardware_detection/images/icon_trunk3.png" title="Config echo Canceller"/></a></td>
                 </tr>
                 <tr> 
-                    <td>
+                    <td colspan="4">
                     <table border ='0' align="center" cellspacing="0" cellpadding="0" class="table_title_row" width='100%'>
                         {if $data.PUERTOS}
                             {counter start=0 skip=1 print=false assign=cnt}
@@ -93,7 +98,7 @@
         var nodoReloj = document.getElementById('relojArena');
         var estatus   = document.getElementById('estaus_reloj');
         var chk_dahdi_replace   = document.getElementById('chk_dahdi_replace');
-	    var chk_there_is_sangoma = document.getElementById('chk_there_is_sangoma');
+        var chk_there_is_sangoma = document.getElementById('chk_there_is_sangoma');
         var chk_misdn_hardware = document.getElementById('chk_misdn_hardware');
 
         if(estatus.value=='apagado'){

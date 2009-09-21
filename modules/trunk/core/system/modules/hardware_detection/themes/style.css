@@ -1,0 +1,19 @@
+.icon {
+    width: 17px;
+    height: 17px;
+    padding: 3px 0 0px 3px;
+    border: 0;
+    cursor:pointer;
+}
+
+#port_desc {
+    margin-left:180px;
+    width:260px;
+    font-size:14px;
+    text-align:center;
+    color:blue;
+}
+
+#action1 {
+    
+}

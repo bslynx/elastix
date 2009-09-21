@@ -35,7 +35,8 @@ function _moduleContent(&$smarty, $module_name)
 {
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
-    
+    include_once "modules/$module_name/libs/paloSantoConfEcho.class.php";
+
     $lang=get_language();
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
     $lang_file="modules/$module_name/lang/$lang.lang";
@@ -51,6 +52,7 @@ function _moduleContent(&$smarty, $module_name)
     $arrLang = array_merge($arrLang,$arrLangModule);
 //     print_r($_POST);
     require_once "modules/$module_name/libs/PaloSantoHardwareDetection.class.php";
+    
     //folder path for custom templates
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
     $templates_dir=(isset($arrConf['templates_dir']))?$arrConf['templates_dir']:'themes';
@@ -60,13 +62,29 @@ function _moduleContent(&$smarty, $module_name)
     $xajax->registerFunction("hardwareDetect");
     $xajax->processRequests();
 
-    $contenidoModulo  = $xajax->printJavascript("libs/xajax/");
-    $contenidoModulo  .= listPorts($smarty, $module_name, $local_templates_dir);
+    //conexion resource
+    $pDB = new paloDB($arrConf['dsn_conn_database']);
 
-    return $contenidoModulo;
+    $action = getAction();
+    $content = "";    
+
+    switch($action){
+
+        case "config_echo":
+            $content = viewFormConfEcho($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+            break;
+        case "save_new":
+            $content = saveNewConfEcho($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+            break;
+        default:
+            $content  = $xajax->printJavascript("libs/xajax/");
+            $content .= listPorts($smarty, $module_name, $local_templates_dir, $pDB);
+            break;
+    }
+    return $content;
 }
 
-function listPorts($smarty, $module_name, $local_templates_dir) {
+function listPorts($smarty, $module_name, $local_templates_dir, $pDB) {
 
     global $arrLang;
     $oPortsDetails = new PaloSantoHardwareDetection();
@@ -85,7 +103,7 @@ function listPorts($smarty, $module_name, $local_templates_dir) {
     $smarty->assign("PORT_NOT_FOUND",$arrLang['Ports not Founds']);
     //$smarty->assign("NO_PUERTO",$arrLang['No. Port']);
     $smarty->assign("NO_PUERTO",$arrLang["Port"]." ");
-    $arrPortsDetails = $oPortsDetails->getPorts();
+    $arrPortsDetails = $oPortsDetails->getPorts($pDB);
     $arrMisdnInfo = $oPortsDetails->getMisdnPortInfo();
     if(count($arrMisdnInfo)<=0)
         $arrMisdnInfo = "noMISDN";
@@ -124,4 +142,196 @@ function hardwareDetect($chk_dahdi_replace,$there_is_sangoma_card, $there_is_mis
     $respuesta->addScript("document.getElementById('form_dectect').submit();\n");
     return $respuesta;
 }
+
+////////////NEW IMPLEMENTATION CODE////////////////////////////
+
+function viewFormConfEcho($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
+{
+    $oPortsDetails = new PaloSantoHardwareDetection();
+    $pconfEcho = new paloSantoConfEcho($pDB);
+    $card_id     = getParameter("cardId");
+    $arrPortsEcho = $pconfEcho->getEchoCancellerByIdCard($card_id);
+
+    //$arrFormprueba = createFieldForm($arrLang, $arrPortsEcho);
+    $arrFormprueba = createFieldForm($arrLang);
+    $oForm = new paloForm($smarty,$arrFormprueba);
+
+    //begin, Form data persistence to errors and other events.
+    $_DATA  = $_POST;
+    $action = getParameter("action");
+    $id     = getParameter("id");
+    $smarty->assign("ID", $id); //persistence id with input hidden in tpl
+
+    if($action=="view")
+        $oForm->setViewMode();
+    else if($action=="view_edit" || getParameter("save_edit"))
+        $oForm->setEditMode();
+    //end, Form data persistence to errors and other events.
+
+    if($action=="view" || $action=="view_edit"){ // the action is to view or view_edit.
+//         $dataprueba = $pconfEcho->getpruebaById($id);
+// 
+//         if(is_array($dataprueba) & count($dataprueba)>0)
+//             $_DATA = $dataprueba;
+//         else{
+//             $smarty->assign("mb_title", $arrLang["Error get Data"]);
+//             $smarty->assign("mb_message", $pconfEcho->errMsg);
+//         }
+    }
+    
+    $smarty->assign("DESC_ID", $card_id);
+//     $arrPortsDetails = $oPortsDetails->getPorts($pDB);
+//     $smarty->assign("arrData", $arrPortsDetails);
+    
+    if(is_array($arrPortsEcho) && count($arrPortsEcho)>1){
+        $smarty->assign("arrPortsEcho", $arrPortsEcho);
+        $i=1;
+//         foreach($arrPortsEcho as $key => $value){
+//             $smarty->assign("typeecho$i",$value['echocanceller']);
+//             $arrData[''.$i] = $value['echocanceller'];
+//             $i++;
+//         }
+        //exec("echo '".print_r($arrData,true)."' > /tmp/oscar");
+    }
+
+    $smarty->assign("SAVE", $arrLang["Save"]);
+    $smarty->assign("EDIT", $arrLang["Edit"]);
+    $smarty->assign("CANCEL", $arrLang["Cancel"]);
+    $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
+    $smarty->assign("IMG", "images/list.png");
+
+    $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",$arrLang["Configure Echo Cancellers"], $_DATA);
+    $content = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
+
+    return $content;
+}
+
+function saveNewConfEcho($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
+{
+    $pconfEcho = new paloSantoConfEcho($pDB);
+    $arrFormprueba = createFieldForm($arrLang);
+    $oForm = new paloForm($smarty,$arrFormprueba);
+
+    if(!$oForm->validateForm($_POST)){
+        // Validation basic, not empty and VALIDATION_TYPE 
+        $smarty->assign("mb_title", $arrLang["Validation Error"]);
+        $arrErrores = $oForm->arrErroresValidacion;
+        $strErrorMsg = "<b>{$arrLang['The following fields contain errors']}:</b><br/>";
+        if(is_array($arrErrores) && count($arrErrores) > 0){
+            foreach($arrErrores as $k=>$v)
+                $strErrorMsg .= "$k, ";
+        }
+        $smarty->assign("mb_message", $strErrorMsg);
+        $content = viewFormConfEcho($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+        return $content;
+    }
+    else{
+        $id_card = getParameter("idCard");
+
+        $arrPortsEcho = $pconfEcho->getEchoCancellerByIdCard2($id_card);
+
+        foreach($arrPortsEcho as $key => $value){
+            $num = $value['num_port'];
+            $type_echo_pas = getParameter("tmpTypeEcho".$num);//para reemplazar
+            $type_echo_selected = getParameter("typeecho_".$num);
+            
+            $data = array(); 
+            $data['echocanceller'] = $pDB->DBCAMPO($type_echo_selected);
+            
+            //$pconfEcho->updateEchoCanceller($data,"num_port='$num'");
+            //$pconfEcho->updateEchoCanceller2($type_echo_selected, $num);
+            $pconfEcho->replaceEchoSystemConf($type_echo_pas, $type_echo_selected, $num);
+
+            header("Location: ?menu=$module_name&action=report");
+        }
+        
+    }
+    
+}
+
+function createFieldForm($arrLang)
+{
+    $arrTypeEcho = array('none' => 'none', 'OSLEC' => 'OSLEC', 'MG2' => 'MG2', 'KBL' => 'KBL', 'SEC2' => 'SEC2', 'SEC' => 'SEC');
+
+    $arrFields = array(
+        "0"   => array(         "LABEL"                  => "",
+                                "REQUIRED"               => "no",
+                                "INPUT_TYPE"             => "SELECT",
+                                "INPUT_EXTRA_PARAM"      => $arrTypeEcho,
+                                "VALIDATION_TYPE"        => "text",
+                                "VALIDATION_EXTRA_PARAM" => "",
+                                "EDITABLE"               => "si"
+                        ),
+    );
+
+    return $arrFields;
+}
+
+function getParameter($parameter)
+{
+    if(isset($_POST[$parameter]))
+        return $_POST[$parameter];
+    else if(isset($_GET[$parameter]))
+        return $_GET[$parameter];
+    else
+        return null;
+}
+
+function getAction()
+{
+    if(getParameter("save_new")) //Get parameter by POST (submit)
+        return "save_new";
+    else if(getParameter("save_edit"))
+        return "save_edit";
+    else if(getParameter("delete")) 
+        return "delete";
+    else if(getParameter("new_open")) 
+        return "view_form";
+    else if(getParameter("action")=="view")      //Get parameter by GET (command pattern, links)
+        return "view_form";
+    else if(getParameter("action")=="view_edit")
+        return "view_form";
+    else if(getParameter("action")=="config_echo")
+        return "config_echo";
+    else
+        return "report"; //cancel
+}
+
+function createFieldFormMod($arrLang, $arrPortsEcho)
+{
+    $i=125;
+    $arrTypeEcho = array('none' => 'none', 'OSLEC' => 'OSLEC', 'MG2' => 'MG2', 'KBL' => 'KBL', 'SEC2' => 'SEC2', 'SEC' => 'SEC');
+
+    $arrFields2 = array(
+            "0"   => array(         "LABEL"                  => "",
+                                    "REQUIRED"               => "no",
+                                    "INPUT_TYPE"             => "SELECT",
+                                    "INPUT_EXTRA_PARAM"      => $arrTypeEcho,
+                                    "VALIDATION_TYPE"        => "text",
+                                    "VALIDATION_EXTRA_PARAM" => "",
+                                    "EDITABLE"               => "si"
+                                ),
+        );
+    
+        foreach($arrPortsEcho as $key => $value){
+        $arrFields = array(
+        
+            "$i"   => array(        "LABEL"                  => "",
+                                    "REQUIRED"               => "no",
+                                    "INPUT_TYPE"             => "SELECT",
+                                    "INPUT_EXTRA_PARAM"      => $arrTypeEcho,
+                                    "VALIDATION_TYPE"        => "text",
+                                    "VALIDATION_EXTRA_PARAM" => "",
+                                    "EDITABLE"               => "si"
+                                )
+             
+            );
+        $i++;
+        $arrFields2 =$arrFields2 + $arrFields;
+        }
+        //exec("echo '".print_r($arrFields2,true)."' > /tmp/oscar");
+
+    return $arrFields2;
+}
+
 ?>

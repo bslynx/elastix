@@ -28,6 +28,7 @@
   $Id: puetos  */
 
 include_once("libs/paloSantoDB.class.php");
+include_once("modules/hardware_detection/libs/paloSantoConfEcho.class.php");
 
 class PaloSantoHardwareDetection
 {
@@ -44,22 +45,27 @@ class PaloSantoHardwareDetection
      *
      * @return array    Listado de los puertos
      */
-    function getPorts()
+    function getPorts($pDB)
     {
+        $pconfEcho = new paloSantoConfEcho($pDB);
+        $pconfEcho->deleteEchoCanceller();
+    
         global $arrLang;
-        $tarjetas = array();
+        $tarjetas = array(); 
 
         unset($respuesta);
     exec('lsdahdi',$respuesta,$retorno);
         if($retorno==0 && $respuesta!=null && count($respuesta) > 0 && is_array($respuesta)){
             $idTarjeta = 0;
+            $count = 0; 
             foreach($respuesta as $key => $linea){
                 $estado = $arrLang['Unknown'];
-                $colorEstado = 'gray';
+                $colorEstado = 'gray';               
 
                 if(ereg("^### Span[[:space:]]+([[:digit:]]{1,}): ([[:alnum:]| |-|\/]+)(.*)$",$linea,$regs)){
                    $idTarjeta = $regs[1];
                    $tarjetas["TARJETA$idTarjeta"]['DESC'] = array('ID' => $regs[1], 'TIPO' => $regs[2], 'ADICIONAL' => $regs[3]);
+                   $count++;
                 }
                 else if(ereg("[[:space:]]*([[:digit:]]+) ([[:alnum:]]+)[[:space:]]+([[:alnum:]]+)(.*)",$linea,$regs1)){
                     //Estados de las lineas
@@ -88,7 +94,17 @@ class PaloSantoHardwareDetection
                         $tipo ='FXS';
                    else
                         $tipo = "PRI/BRI";*/
-
+                    $dataType=split('[:]',$regs1[4],2);
+                    if(count($dataType)>1){
+                        
+                        $arrEcho=split('[)]',$dataType[1],2);
+                        $data['num_port']       = $pDB->DBCAMPO($regs1[1]);
+                        $data['name_port']       = $pDB->DBCAMPO($regs1[2]);
+                        $data['echocanceller']   = $pDB->DBCAMPO(trim($arrEcho[0]));
+                        $data['id_card']   = $pDB->DBCAMPO($count);
+                        $pconfEcho->addEchoCanceller($data);
+                       
+                    }
                    $tarjetas["TARJETA$idTarjeta"]['PUERTOS']["PUERTO$regs1[1]"] = array('LOCALIDAD' =>$regs1[1],'TIPO' => $tipo, 'ADICIONAL' => "$regs1[2] - $regs1[3]", 'ESTADO' => $estado,'COLOR' => $colorEstado);
                 }
                 else if(ereg("[[:space:]]*([[:digit:]]+) ([[:alnum:]]+)",$linea,$regs1)){
@@ -130,9 +146,9 @@ class PaloSantoHardwareDetection
         global $arrLang;
         $there_is_other_card= "";
         $message = $arrLang["Satisfactory Hardware Detection"];
-	
+    
 
-	if($there_is_sangoma_card=="true")
+    if($there_is_sangoma_card=="true")
             $there_is_other_card = "-t";
         if($there_is_misdn_card=="true")
             $there_is_other_card .= " -m";
