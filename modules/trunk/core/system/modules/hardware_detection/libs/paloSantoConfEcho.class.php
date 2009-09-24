@@ -59,8 +59,21 @@ class paloSantoConfEcho {
         return $result;
     }
 
+    function addCardParameter($data)
+    {
+        $queryInsert = $this->_DB->construirInsert('card', $data);
+        $result = $this->_DB->genQuery($queryInsert);
+
+        return $result;
+    }
+
     function deleteEchoCanceller(){
         $query = "DELETE FROM echo_canceller";
+        $result = $this->_DB->genQuery($query);
+    }
+    
+    function deleteCardParameter(){
+        $query = "DELETE FROM card";
         $result = $this->_DB->genQuery($query);
     }
 
@@ -98,26 +111,18 @@ class paloSantoConfEcho {
         return $result;
     }
 
-//     function updateEchoCanceller($data,$where)
-//     {
-//         exec("echo 'Entro' > /tmp/oscar");
-//         $queryUpdate = $this->_DB->construirUpdate('echo_canceller', $data, $where);
-//         $result = $this->_DB->genQuery($queryUpdate);
-// 
-//         return $result;
-//     }
-// 
-//     function updateEchoCanceller2($type, $num)
-//     {
-//         $query = "update echo_canceller set echocanceller='$type' where num_port='$num'";
-//         exec("echo '$query' > /tmp/oscar");
-//         $result=$this->_DB->genQuery($query);
-//         if($result==FALSE){
-//             $this->errMsg = $this->_DB2->errMsg;
-//             return $message = "There are someone error, Please try again or report at the root";
-//         }
-//         return $message= "Saved Successful!";
-//     }
+    function getCardParameterById($id_card){
+        $query = "SELECT * FROM card WHERE id_card=$id_card";
+
+        $result=$this->_DB->getFirstRowQuery($query,true);
+
+        if($result==FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return null;
+        }
+        return $result;
+        
+    }
 
     function readFileSystemConfig()
     {
@@ -136,47 +141,114 @@ class paloSantoConfEcho {
     }
 
 
-    function replaceEchoSystemConf($typePass, $typeNew, $numport){
+    function replaceEchoSystemConf($typePass, $typeNew, $numport, $typeCard){
         $FILE='/etc/dahdi/system.conf';
         exec("sudo -u root chown -R asterisk.asterisk /etc/dahdi/system.conf");
         $text = "";
         $fp = fopen($FILE,'r');
-        $i=0;
-        while ($line = fgets($fp, filesize($FILE)))
+        $j=0;
+        $line_concat="";
+        
+        $find="false";
+        while($line = fgets($fp, filesize($FILE)))
         {
+            $getin="false";
+            $find="false";
             if(eregi("echocanceller", $line)){
                 $arrLine = split('[,]',$line);
                 if(count($arrLine)>2){
-                    $arrRang1 = split('[-]',trim($arrLine[1]));
-                    $arrRang2 = split('[-]',trim($arrLine[2]));
-                    //exec("echo 'Dato: ".trim($arrRang1[1])."' > /tmp/oscar");
-                    if(($numport > $arrRang1[0] && $numport < $arrRang1[1]) || ($numport > $arrRang2[0] && $numport < $arrRang2[1])){
-                        //exec("echo '$arrRang1[0]' > /tmp/oscar");
-                        if(eregi($typeNew, $line))
-                            $text .= $line;//si es el mismo al anterior que igual
-                        else{
-                            $nmaxnew = $numport-1;
-                            $nminnew = $numport+1;
-//                             if($numport==$arrang1[0])
-//                             if($numport==$arrRang1[1])
-//                             if($numport==$arrRang2[0])
-//                             if($numport==$arrRang2[1])
-                            if($numport >= $arrRang1[0] && $numport <= $arrRang1[1]){
-                                exec("echo 'Rango1 $numport' > /tmp/oscar");
-                                $linechange1 = "echocanceller=".$typePass.",".$arrRang1[0]."-".$nmaxnew.",".$nminnew."-".$arrRang1[1].",".$arrRang2[0]."-".$arrRang2[1]."\n";
-                            }if($numport >= $arrRang2[0] && $numport <= $arrRang2[1]){
-                                exec("echo 'Rango2 $numport' > /tmp/oscar");
-                                $linechange2 = "echocanceller=".$typePass.",".$arrRang1[0]."-".$arrRang1[1].",".$arrRang2[0]."-".$nmaxnew.",".$nminnew."-".$arrRang2[1]."\n";
+                    $arrRang=array();
+                    for($i=0 ; $i< count($arrLine); $i++){
+                        $arrRang[$i] = split('[-]',trim($arrLine[$i]));
+                    }
+                    $lineConf =  split('[=]',$arrRang['0'][0]);
+
+                    if($typePass=="none" && $typeNew!="none"){
+                        $min = $numport-1;
+                        $max = $numport+1;
+                        if($lineConf[1]==strtolower($typeNew)){                
+                            $line_concat="".$arrRang['0'][0];
+                            
+                            for($i=1; $i<count($arrRang); $i++){
+                                if($min==$arrRang[$i][1] || $max==$arrRang[$i][0]){
+                                    if($min==$arrRang[$i][1]){
+                                        $line_concat .= ",".$arrRang[$i][0]."-".$numport; 
+                                    }else if($max==$arrRang[$i][0]){
+                                        $line_concat .= ",".$numport."-".$arrRang[$i][1];
+                                    }
+                                }else{
+                                    $line_concat .= ",".$arrRang[$i][0]."-".$arrRang[$i][1];
+                                }
                             }
-                            $line = $linechange1."echocanceller=".$typeNew.",".$numport;
+                            $line = $line_concat."\n";
+                        }else{ 
+                            for($i=1; $i<count($arrRang); $i++){
+                                if($min==$arrRang[$i][1] || $max==$arrRang[$i][0]){
+                                    $find="true";
+                                }
+                            }
+                            if($find=="true"){
+                                $line_concat = "echocanceller=".strtolower($typeNew).",".$numport."\n";
+                                $line = $line."".$line_concat;
+                            }
+                        }
+                       
+                        $text .= $line;
+                    }else{ 
+                        if((strtolower($typePass) == strtolower($typeNew))){
+                            $text .= $line;//si es el mismo al anterior queda igual
+                        }
+                        else{
+                            $line_concat="".$arrRang['0'][0];//=>echocanceller=oslec
+                            for($i=1; $i<count($arrRang); $i++){
+                                if($numport > $arrRang[$i][0] && $numport < $arrRang[$i][1]){//Rangos
+                                    $nmaxnew = $numport-1;
+                                    $nminnew = $numport+1;
+                                    if($nmaxnew == $arrRang[$i][0]){
+                                        $line_alone = "\n".$arrRang['0'][0].",".$arrRang[$i][0];
+                                        $line_concat .= ",".$nminnew."-".$arrRang[$i][1].$line_alone;
+                                    }else if($nminnew == $arrRang[$i][1]){
+                                        $line_alone = "\n".$arrRang['0'][0].",".$arrRang[$i][1];
+                                        $line_concat .= ",".$arrRang[$i][0]."-".$nmaxnew.$line_alone;
+                                    }else{
+                                        $line_concat .= ",".$arrRang[$i][0]."-".$nmaxnew.",".$nminnew."-".$arrRang[$i][1];
+                                    }
+                                    $getin="true";
+                                }else if(($numport==$arrRang[$i][0]) || ($numport==$arrRang[$i][1])){//Extremo
+                                    if($numport==$arrRang[$i][0]){
+                                        $nminnew = $numport+1;
+                                        $line_concat .= ",".$nminnew."-".$arrRang[$i][1];       
+                                        $getin="true";
+                                    }else if($numport==$arrRang[$i][1]){
+                                        $nmaxnew = $numport-1;
+                                        $line_concat .= ",".$arrRang[$i][0]."-".$nmaxnew;
+                                        $getin="true";
+                                    }
+                                }else{
+                                    $line_concat .= ",".$arrRang[$i][0]."-".$arrRang[$i][1];
+                                }
+                            }
+                            if($getin=="true"){
+                                if($typeNew!="none")
+                                    $line = $line_concat."\n"."echocanceller=".strtolower($typeNew).",".$numport."\n";
+                                else
+                                    $line = $line_concat."\n";
+                            }else{ $line = $line_concat."\n"; }
+                            $getin="false";
                             $text .= $line;
                         }
-                    }else{
-                        $text .= $line;
+                    //fin
                     }
                 }else{
-                    if(eregi($numport, $line)){
-                        $line = str_ireplace(strtolower($typePass), strtolower($typeNew), $line);
+                    $num_neigh = $numport+1;
+                    if(eregi($numport, $line) && eregi("echocanceller", $line)){
+                        if($typeNew!="none"){
+                            $line = str_ireplace(strtolower($typePass), strtolower($typeNew), $line);
+                            $text .= $line;
+                        }
+                    }else if(($typePass=="none" && $typeNew!="none") && (eregi($num_neigh, $line) && eregi("echocanceller", $line))){
+                        $line_concat = "echocanceller=".strtolower($typeNew).",".$numport."\n";
+                        $line = $line_concat."".$line;
                         $text .= $line;
                     }else{
                         $text .= $line;
@@ -186,11 +258,13 @@ class paloSantoConfEcho {
             }else{
                 $text .= $line;
             }
+            $line_concat="";
         }
-        //$this->saveChangeFileSystemConfig($text);
+        
+        $this->saveChangeFileSystemConfig($text);
         fclose($fp);
         exec("sudo -u root chown -R root.root /etc/dahdi/system.conf");
-        //exec("sudo -u root service dahdi restart");
+        exec("sudo -u root service dahdi restart");
     }
 
 }

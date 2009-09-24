@@ -26,12 +26,18 @@
 <table class="tabForm" style="font-size: 16px;" width="100%" >
     <input type="hidden" name="idCard" value="{$DESC_ID}" />
 
+    <label id="port_desc">{$CARD} # {$ID}: {$TIPO} {$ADICIONAL}</label>
+    <div id="form">
+    <!--<table border="0" width="40%" cellspacing="0" style="border:1px solid black">-->
         {foreach key=key item=echocancel name=arrPortsEchoInfo from=$arrPortsEcho}
         <tr class="letra12">
-            <td align="left">{$key} {$echocancel.name_port}: </td>
+            <td> </td>
+            <td> </td>
+            <td align="left"><b>{$key}</b>  {$echocancel.name_port}: </td>
             <td width="15%" align="left">
                 <select id='typeecho_{$key}' name='typeecho_{$key}'>
                     <option value='{$echocancel.type_echo}'>{$echocancel.type_echo}</option>
+                    <option value='none'>none</option>
                     <option value='OSLEC'>OSLEC</option>
                     <option value='MG2'>MG2</option>
                     <option value='KBL'>KBL</option>
@@ -40,8 +46,15 @@
                 </select>
             </td>
             <input type="hidden" value="{$echocancel.type_echo}" name="tmpTypeEcho{$key}" />
+            <td> </td>
+            <td> </td>
+            <td> </td>
+            <td> </td>
+            <td> </td>
+            <td> </td>
         </tr>
         {/foreach}
-
+    <!--</table>-->
+    </div>
 </table>
 <input class="button" type="hidden" name="id" value="{$ID}" />

@@ -51,5 +51,8 @@ $arrLangModule=array(
 "Misdn Card" => "Misdn Card",
 "(Not in Use)" => "Not in Use",
 "Port" => "Port",
+
+"Configure Echo Cancellers" => "Configure Echo Cancellers",
+
 );
 ?>

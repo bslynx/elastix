@@ -49,10 +49,12 @@ class PaloSantoHardwareDetection
     {
         $pconfEcho = new paloSantoConfEcho($pDB);
         $pconfEcho->deleteEchoCanceller();
-    
+        $pconfEcho->deleteCardParameter();
+        //$data = array();
         global $arrLang;
         $tarjetas = array(); 
-
+        $data = array();
+        $data2 = array();
         unset($respuesta);
     exec('lsdahdi',$respuesta,$retorno);
         if($retorno==0 && $respuesta!=null && count($respuesta) > 0 && is_array($respuesta)){
@@ -66,6 +68,10 @@ class PaloSantoHardwareDetection
                    $idTarjeta = $regs[1];
                    $tarjetas["TARJETA$idTarjeta"]['DESC'] = array('ID' => $regs[1], 'TIPO' => $regs[2], 'ADICIONAL' => $regs[3]);
                    $count++;
+                    $data2['id_card']    = $pDB->DBCAMPO($regs[1]);
+                    $data2['type']       = $pDB->DBCAMPO($regs[2]);
+                    $data2['additonal']  = $pDB->DBCAMPO($regs[3]);
+                    $pconfEcho->addCardParameter($data2);
                 }
                 else if(ereg("[[:space:]]*([[:digit:]]+) ([[:alnum:]]+)[[:space:]]+([[:alnum:]]+)(.*)",$linea,$regs1)){
                     //Estados de las lineas
@@ -96,7 +102,6 @@ class PaloSantoHardwareDetection
                         $tipo = "PRI/BRI";*/
                     $dataType=split('[:]',$regs1[4],2);
                     if(count($dataType)>1){
-                        
                         $arrEcho=split('[)]',$dataType[1],2);
                         $data['num_port']       = $pDB->DBCAMPO($regs1[1]);
                         $data['name_port']       = $pDB->DBCAMPO($regs1[2]);
@@ -104,8 +109,15 @@ class PaloSantoHardwareDetection
                         $data['id_card']   = $pDB->DBCAMPO($count);
                         $pconfEcho->addEchoCanceller($data);
                        
+                    }else if($regs1[3]!="HDLCFCS"){
+                        $data['num_port']       = $pDB->DBCAMPO($regs1[1]);
+                        $data['name_port']       = $pDB->DBCAMPO($regs1[2]);
+                        $data['echocanceller']   = $pDB->DBCAMPO("none");
+                        $data['id_card']   = $pDB->DBCAMPO($count);
+                        $pconfEcho->addEchoCanceller($data);
                     }
                    $tarjetas["TARJETA$idTarjeta"]['PUERTOS']["PUERTO$regs1[1]"] = array('LOCALIDAD' =>$regs1[1],'TIPO' => $tipo, 'ADICIONAL' => "$regs1[2] - $regs1[3]", 'ESTADO' => $estado,'COLOR' => $colorEstado);
+
                 }
                 else if(ereg("[[:space:]]*([[:digit:]]+) ([[:alnum:]]+)",$linea,$regs1)){
                    if($regs1[2] == 'unknown'){
