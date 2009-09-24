@@ -36,7 +36,6 @@ else if ($action == "hangup" & !is_null($number_org)){
     $pDB1 = new paloDB($arrConfModule['dsn_conn_database1']);
     $pDB2 = new paloDB($arrConfModule['dsn_conn_database2']);
     $pControlPanel = new paloSantoControlPanel($pDB1,$pDB2);
-    //exec("echo '$number_org entro' > /tmp/oscar");
     $pControlPanel->hangupCalled($number_org);
 
 }
@@ -89,7 +88,6 @@ else if ($action == "saveEdit"){
     $pDB2 = new paloDB($arrConfModule['dsn_conn_database2']);
     $pControlPanel = new paloSantoControlPanel($pDB1,$pDB2);
     echo $pControlPanel->updateDescriptionArea($description,$id_area);
-    //exec("echo '$description - $id_area' > /tmp/oscar");
 }
 else if ($action == "addExttoQueue"){
     $pDB1 = new paloDB($arrConfModule['dsn_conn_database1']);
@@ -97,7 +95,6 @@ else if ($action == "addExttoQueue"){
     $pControlPanel = new paloSantoControlPanel($pDB1,$pDB2);
     
     $pControlPanel->queueAddMember($queue, $number_org);
-    exec("echo '$queue - $number_org' > /tmp/oscar");
 }
 
 function getParameter($parameter)

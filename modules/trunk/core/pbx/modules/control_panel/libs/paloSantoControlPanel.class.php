@@ -151,7 +151,6 @@ class paloSantoControlPanel {
                     );
             }
         }
-        //exec ("echo '".print_r($arrData['500'],true)." Core' > /tmp/oscar");
         return $arrData;
     }
 
@@ -207,7 +206,6 @@ class paloSantoControlPanel {
             }
             $xmlRecords .= "</items>\n";
         }
-        exec ("echo '$xmlRecords Channels' > /tmp/oscar");
         return $xmlRecords;
     }
 
@@ -352,7 +350,6 @@ class paloSantoControlPanel {
                 }
             }
         }
-        //exec ("echo '".print_r($arrQueue,true)." Queues' > /tmp/oscar");
         return $arrQueue;
     }
 
@@ -377,7 +374,6 @@ class paloSantoControlPanel {
         $arrTrunk = array();
         foreach($result as $key => $value)
             $arrTrunk[$value[0]] = $value[1];
-        //exec ("echo '".print_r($arrTrunk,true)." Nuevo' > /tmp/oscar");
         return $arrTrunk;
     }
 
