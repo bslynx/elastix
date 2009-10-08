@@ -82,9 +82,14 @@
                 "WHERE id=1";
         $recordset = $db_object->query($sql);
         while($tupla = $recordset->fetch(PDO::FETCH_OBJ)){
-            $arrData['remite'] = utf8_decode($tupla->remite);
+            $arrData['remite']    = utf8_decode($tupla->remite);
             $arrData['remitente'] = utf8_decode($tupla->remitente);
-            $arrData['subject'] = utf8_decode(str_replace("{NAME_PDF}",$namePDF,$tupla->subject));
+
+            $arrData['subject'] = $tupla->subject;
+            $arrData['subject'] = str_replace("{NAME_PDF}",$namePDF,$arrData['subject']);
+            $arrData['subject'] = str_replace("{COMPANY_NAME_FROM}",$companyNameFrom,$arrData['subject']);
+            $arrData['subject'] = utf8_decode(str_replace("{COMPANY_NUMBER_FROM}",$companyNumberFrom,$arrData['subject']));
+
             $arrData['content'] = $tupla->content;
             $arrData['content'] = str_replace("{NAME_PDF}",$namePDF,$arrData['content']);
             $arrData['content'] = str_replace("{COMPANY_NAME_FROM}",$companyNameFrom,$arrData['content']);
