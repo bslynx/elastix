@@ -32,9 +32,9 @@
 global $arrLangModule;
 $arrLangModule=array(
 "DHCP Server" => "DHCP Server",
-"Update" => "Update",
-"Service Start" => "Service Start",
-"Service Stop" => "Service Stop",
+"Update" => "Save/Update",
+"Service Start" => "Enable DHCP",
+"Service Stop" => "Disable DHCP",
 "Start range of IPs" => "Start range of IPs",
 "End range of IPs" => "End range of IPs",
 "DNS 1" => "DNS 1",
@@ -43,8 +43,8 @@ $arrLangModule=array(
 "Gateway" => "Gateway",
 "Optional" => "Optional",
 "Of 1 to 50000 Seconds" => "Of 1 to 50000 Seconds",
-"Time of client refreshment" => "Time of client refreshment",
-"DHCP Configuration" => "DHCP Configuration",
+"Time of client refreshment" => "IP Address Lease Time",
+"DHCP Configuration" => "DHCP Server Configuration",
 "Could not find IP range" => "Could not find IP range",
 "DHCP configuration reading error: Verify that the DHCP service is installed and try again." => "DHCP configuration reading error: Verify that the DHCP service is installed and try again.",
 "Information DHCP" => "Information",

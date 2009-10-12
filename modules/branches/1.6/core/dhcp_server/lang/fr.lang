@@ -46,7 +46,7 @@ $arrLangModule=array(
 "Optional" => "Optionnel",
 "Of 1 to 50000 Seconds" => "De 1 &agrave; 50000 Secondes",
 "Time of client refreshment" => "Dur&eacute;e du bail",
-"DHCP Configuration" => "Configuration DHCP",
+"DHCP Configuration" => "Configuration Server DHCP",
 "Could not find IP range" => "Impossible de trouver l'intervalle IP",
 "DHCP configuration reading error: Verify that the DHCP service is installed and try again." => "Erreur de lecture de configu
 ration DHCP: V&eacute;rifiez que le service DHCP est install&eacute; et essayez de nouveau.",
