@@ -29,9 +29,9 @@
 global $arrLangModule;
 $arrLangModule=array(
 "DHCP Server" => "Servidor DHCP",
-"Update" => "Actualizar",
-"Service Start" => "Iniciar Servicio",
-"Service Stop" => "Parar Servicio",
+"Update" => "Guardar/Actualizar",
+"Service Start" => "Activar DHCP",
+"Service Stop" => "Desactivar DHCP",
 "Start range of IPs" => "Inicio del rango de IPs",
 "End range of IPs" => "Fin del rango de IPs",
 "DNS 1" => "DNS 1",
@@ -40,8 +40,8 @@ $arrLangModule=array(
 "Gateway" => "Gateway",
 "Optional" => "Opcional",
 "Of 1 to 50000 Seconds" => "de 1 a 50000 Segundos",
-"Time of client refreshment" => "Tiempo de refrescamiento del cliente",
-"DHCP Configuration" => "Configuración DHCP",
+"Time of client refreshment" => "Tiempo de concesión dirección IP",
+"DHCP Configuration" => "Configuración Servidor DHCP",
 "Could not find IP range" => "No se puedo encontrar el rango de IP",
 "DHCP configuration reading error: Verify that the DHCP service is installed and try again." => "Error al leer la configuración DHCP: Verifique que el servicio DHCP este instalado e intente de nuevo.",
 "Information DHCP" => "Información",

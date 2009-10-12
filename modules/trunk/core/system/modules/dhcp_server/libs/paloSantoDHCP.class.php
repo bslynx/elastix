@@ -159,6 +159,9 @@ class PaloSantoDHCP
                 $arrConfigurationDHCP["GATEWAY_NETMASK"]["in_gwm_3"] = ""; 
                 $arrConfigurationDHCP["GATEWAY_NETMASK"]["in_gwm_4"] = ""; 
             }
+            if(!isset($arrConfigurationDHCP["LEASE_TIME"])){
+                $arrConfigurationDHCP["LEASE_TIME"]["in_lease_time"] = "7200";
+            }
         }
         else{
             // Error al abrir el archivo
