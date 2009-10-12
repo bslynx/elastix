@@ -32,7 +32,7 @@
 global $arrLangModule;
 $arrLangModule=array(
 "Shutdown"=>"Shutdown",
-"Accept"=>"Accept",
+"Accept"=>"Proceed...",
 "Halt"=>"Halt", //shutdown mode
 "Reboot"=>"Reboot", //shutdown mode
 "Shutdown in progress"=>"Shutdown in progress",
