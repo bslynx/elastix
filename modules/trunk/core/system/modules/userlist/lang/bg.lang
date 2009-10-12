@@ -49,5 +49,6 @@ $arrLangModule=array(
 "Webmail Password" => "eMail Парола",
 "Retype Webmail password" => "Повторете eMail паролата",
 "Mail Profile" => "eMail Профил",
+"No extension associated" => "No extension associated",
 );
 ?>
