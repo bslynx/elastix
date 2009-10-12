@@ -49,5 +49,6 @@ $arrLangModule=array(
 "Webmail Password" => "رمز ایمیل ",
 "Retype Webmail password" => "رمز ایمیل تحت وب را دوباره وارد کنید",
 "Mail Profile" => "پروفایل ایمیل",
+"No extension associated" => "No extension associated",
 );
 ?>

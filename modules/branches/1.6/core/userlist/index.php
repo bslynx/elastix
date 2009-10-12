@@ -458,7 +458,7 @@ function _moduleContent(&$smarty, $module_name)
             $arrTmp[0] = "&nbsp;<a href='?menu=userlist&action=view&id=" . $user[0] . "'>" . $user[1] . "</a>";
             $arrTmp[1] = $user[2];
             $arrTmp[2] = $group;
-            $arrTmp[3] = is_null($user[3])?"No Extension":$user[3];
+            $arrTmp[3] = is_null($user[3])?$arrLang["No extension associated"]:$user[3];
             $arrData[] = $arrTmp;
 
         }

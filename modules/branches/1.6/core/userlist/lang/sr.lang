@@ -46,5 +46,6 @@ $arrLangModule=array(
 "Webmail Password" => "Webmail Password",
 "Retype Webmail password" => "Retype Webmail password",
 "Mail Profile" => "Mail Profile",
+"No extension associated" => "No extension associated",
 );
 ?>
