@@ -29,7 +29,7 @@
 global $arrLangModule;
 $arrLangModule=array(
 "Shutdown" => "Apagar",
-"Accept" => "Aceptar",
+"Accept" => "Proceder...",
 "Halt" => "Apagar",
 "Reboot" => "Reiniciar",
 "Shutdown in progress" => "Apagado en proceso",
