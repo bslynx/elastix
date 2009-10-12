@@ -61,8 +61,8 @@ $arrLangModule=array(
 "Error at read yours mails." => "Failed to access voicemails list.",
 "Error at read status system." => "Failed to access status system.",
 "Error at read your calendar." => "Failed to access calendar list.",
-"You don't have events" => "No events received.",
-"You don't have a webmail account" => "Webmail account has not been assigned",
+"You don't have events" => "There are no future events scheduled in the calendar",
+"You don't have a webmail account" => "An email account has not been associated with this user.",
 "Calendar" => "Calendar",
 );
 ?>
