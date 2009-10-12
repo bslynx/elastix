@@ -30,7 +30,7 @@ global $arrLangModule;
 $arrLangModule=array(
 "Group" => "Grupo",
 "Show" => "Mostrar",
-"Apply" => "Aplicar",
+"Apply" => "Guardar selección como accesible",
 "Resource" => "Recurso",
 "View" => "Ver",
 "Create" => "Crear",

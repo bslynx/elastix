@@ -88,6 +88,7 @@ $arrLang=array(
 "System Info"=>"System Info",
 "User Management"=>"User Management",
 "Menu Administrator"=>"Menu Administrator",
+"Group Permission" => "Group Permissions",
 /*end menu*/
 
 
