@@ -29,9 +29,9 @@
 global $arrLangModule;
 $arrLangModule=array(
 "Show" => "Show",
-"Apply" => "Apply",
+"Apply" => "Save Selected as Accessible"
 "Resource" => "Resource",
-"Group Permission" => "Group Permission",
+"Group Permission" => "Group Permissions",
 "Group" => "Group",
 "View" => "View",
 "Create" => "Create",
