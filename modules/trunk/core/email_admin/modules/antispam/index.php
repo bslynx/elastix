@@ -111,6 +111,7 @@ function formAntispam($smarty, $module_name, $local_templates_dir, $arrLang, $ar
     $arrFormConference = createFieldForm($arrLang, $arrLangModule);
     $oForm = new paloForm($smarty,$arrFormConference);
 
+    $smarty->assign("LEGEND", $arrLang["Legend"]);
     $smarty->assign("UPDATE", $arrLang["Update"]);
     $smarty->assign("TITLE", $arrLangModule["Antispam"]);
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
@@ -128,7 +129,6 @@ function formAntispam($smarty, $module_name, $local_templates_dir, $arrLang, $ar
     $arrData['level'] = $valueRequiredHits;
 
     $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl", "", $arrData);
-
     $contenidoModulo = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
 
     return $contenidoModulo;
@@ -139,7 +139,7 @@ function createFieldForm($arrLang, $arrLangModule)
     $arrLevel  = array();
     for($i=1;$i<=10;$i++)
         $arrLevel[$i]=$i;
-    $arrStatus = array('active' => $arrLangModule['Active'], 'disactive' => $arrLangModule['Disactive']);
+    $arrStatus = array('active' => $arrLangModule['Enabled'], 'disactive' => $arrLangModule['Disabled']);
 
     $arrFields = array(
             "status"            => array(   "LABEL"                  => $arrLang["Status"],
@@ -149,7 +149,7 @@ function createFieldForm($arrLang, $arrLangModule)
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => "",
                                 ),
-            "level"             => array(   "LABEL"                  => $arrLangModule["Thoroughness Level"],
+            "level"             => array(   "LABEL"                  => $arrLangModule["Spam Level"],
                                             "REQUIRED"               => "no",
                                             "INPUT_TYPE"             => "SELECT",
                                             "INPUT_EXTRA_PARAM"      => $arrLevel,
