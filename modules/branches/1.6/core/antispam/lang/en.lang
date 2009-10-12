@@ -32,9 +32,9 @@
 global $arrLangModule;
 $arrLangModule=array(
 "Antispam" => "Antispam",
-"Thoroughness Level" => "Thoroughness Level",
-"Active" => "Active",
-"Disactive" => "Disactive",
+"Spam Level" => "Spam Level",
+"Enabled" => "Enabled",
+"Disabled" => "Disabled",
 "Commad failed, try activate spam filter" => "Commad failed, try activate spam filter",
 "Failed activate spam filter" => "Failed activate spam filter",
 "Commad failed, try change thoroughness level" => "Commad failed, try change thoroughness level",
@@ -44,5 +44,6 @@ $arrLangModule=array(
 "Status" => "Status",
 "Update" => "Update",
 "Error" => "Error",
+"Legend" => "<i>A level of 1 will catch more spam, but also increase the probability of false positives.<br>A level of 10 will catch less spam, but decrease the probability of false positives.</i>",
 );
 ?>

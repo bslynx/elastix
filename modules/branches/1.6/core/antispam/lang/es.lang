@@ -32,9 +32,9 @@
 global $arrLangModule;
 $arrLangModule=array(
 "Antispam" => "Antispam",
-"Thoroughness Level" => "Nivel de Rigurosidad",
-"Active" => "Activo",
-"Disactive" => "Desactivo",
+"Spam Level" => "Nivel de Spam",
+"Enabled" => "Habilitado",
+"Disabled" => "Desabilitado",
 "Commad failed, try activate spam filter" => "Comando fallo al intentar activar el fitro de spam",
 "Failed activate spam filter" => "Fallo de activación del filtro de spam",
 "Commad failed, try change thoroughness level" => "Comando fallo al intentar cambiar el nivel de rigurosidad",
@@ -44,5 +44,6 @@ $arrLangModule=array(
 "Status" => "Estado",
 "Update" => "Actualizar",
 "Error" => "Error",
+"Legend" => "<i>En nivel 1 atrapar&aacute; mas spam, pero tambien se incrementar&aacute; la probabilidad de falsos posibles.<br>Un nivel de 10 atrapar&aacute; menos spam, pero decrecer&aacute; la probabilidad de falsos posibles.</i>",
 );
 ?>
