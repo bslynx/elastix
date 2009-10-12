@@ -206,13 +206,26 @@ class paloSantoNavigation {
 
     function getArrSubMenu($idParent)
     {
+        global $pACL;
         $arrSubMenu = array();
+        $is_admin   = $pACL->isUserAdministratorGroup($_SESSION['elastix_user']);
+        $sysinfo    = array();
+
         foreach($this->arrMenu as $id => $element) {
             if($element['IdParent']==$idParent) {
-                $arrSubMenu[$id] = $element;
+                if(!$is_admin || $id != "sysinfo"){
+                  $arrSubMenu[$id] = $element;
+                }
+                else $sysinfo[$id]=$element; // lo encontro a sysinfo, esto se hace para en el caso del grupo admin
+                                             // salga primero para este user el menu sysinfo.
             }
         }
         if(count($arrSubMenu)<=0) return false;
+
+        // lo encontro a sysinfo, esto se hace para en el caso del grupo admin
+        // salga primero para este user el menu sysinfo.
+        $arrSubMenu = array_merge($sysinfo,$arrSubMenu);
+          
         return $arrSubMenu;
     }
 
