@@ -31,7 +31,7 @@
   $Id: en.lang,v 1.7 2008/02/18 09:49:00 jvega Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Hardware Detection" => "H&aring;rdvaru detektering",
+"Hardware Detector" => "H&aring;rdvaru detektering",
 "Ports not Founds" => "Inga portar funna",
 "Card" => "Span",
 "Type port" => "Typ",

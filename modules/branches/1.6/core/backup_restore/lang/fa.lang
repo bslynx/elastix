@@ -56,7 +56,7 @@ $arrLangModule=array(
 "The backup file would have a tar extension" => "فایل پشتیبان باید دارای پسوند tar باشد",
 "Error copying the file" => "خطا در کپی فایل",
 "The file was copied correctly" => "فایل به درستی کپی شد",
-"Backup" => "پشتیبان",
+"Backup" => "Perform a Backup...",
 "Process" => "پردازش",
 "Restore" => "بازیابی",
 "Elastix Database" => "پایگاه داده ",
@@ -73,7 +73,7 @@ $arrLangModule=array(
 "File doesn't exist" => "این فایل وجود ندارد",
 "Restore Complete!" => "بازیابی انجام شد!",
 "Backup File Location" => "محل فایل پشتیبان",
-"All options" => "تمامی گزینه ها",
+"Select All options" => "Select All options",
 "Backup/Restore" => "پشتیبان گیری/ بازیابی",
 "Backup List" => "لیست پشتیبان",
 "Name Backup" => "نام پشتیبان",
@@ -87,5 +87,7 @@ $arrLangModule=array(
 "Fax" => "فکس",
 "Email" => "ایمیل",
 "Dahdi Configuration" => "Dahdi Configuration",
+"Cancel" => "Cancel",
+"Select all in this section" => "Select all in this section",
 );
 ?>

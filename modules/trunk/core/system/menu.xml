@@ -9,7 +9,7 @@
     <menuitem menuid="usermgr"            desc="User Management"    parent="system"      module="no"  link="" order="4"></menuitem>
     <menuitem menuid="userlist"           desc="Users"              parent="usermgr"     module="yes" link="" order="42"></menuitem>
     <menuitem menuid="shutdown"           desc="Shutdown"           parent="system"      module="yes" link="" order="6"></menuitem>
-    <menuitem menuid="hardware_detection" desc="Hardware Detection" parent="system"      module="yes" link="" order="7"></menuitem>
+    <menuitem menuid="hardware_detector" desc="Hardware Detector"   parent="system"      module="yes" link="" order="7"></menuitem>
     <menuitem menuid="updates"            desc="Updates"            parent="system"      module="no"  link="" order="8"></menuitem>
     <menuitem menuid="packages"           desc="Packages"           parent="updates"     module="yes" link="" order="81"></menuitem>
     <menuitem menuid="repositories"       desc="Repositories"       parent="updates"     module="yes" link="" order="82"></menuitem>

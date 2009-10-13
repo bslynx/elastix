@@ -111,7 +111,7 @@ function listPorts($smarty, $module_name, $local_templates_dir, $pDB) {
     if(!(is_array($arrPortsDetails) && count($arrPortsDetails) >0)){
         $smarty->assign("CARDS_NOT_FOUNDS",$oPortsDetails->errMsg);
     }
-    $arrGrid = array("title"    => $arrLang['Hardware Detection'],
+    $arrGrid = array("title"    => $arrLang['Hardware Detector'],
             "icon"     => "images/pci.png",
             "width"    => "100%"
             );

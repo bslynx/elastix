@@ -49,8 +49,10 @@ function VerificarCheck(chkbox, id)
                         <td align="left">{$ERROR_MSG}</td>
                     </tr>
                     <tr>
-                        <td align="left"><input class="button" type="submit" name="back" value="{$BACK}">
-                                         <input class="button" type="submit" name="process" value="{$PROCESS}"></td>
+                        <td align="left">
+                            <input class="button" type="submit" name="process" value="{$PROCESS}">
+                            <input class="button" type="submit" name="back" value="{$BACK}">
+                        </td>
                     </tr>
                     <tr>
                         <td>{$WARNING}</td>
