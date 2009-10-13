@@ -57,7 +57,7 @@ $arrLangModule=array(
 "The backup file would have a tar extension" => "The backup file would have a tar extension",
 "Error copying the file" => "Error copying the file",
 "The file was copied correctly" => "The file was copied correctly",
-"Backup" => "Pričuva",
+"Backup" => "Perform a Backup...",
 "Process" => "Procesi",
 "Restore" => "Restore",
 "Elastix Database" => "Elastix baza",
@@ -74,7 +74,7 @@ $arrLangModule=array(
 "File doesn't exist" => "Datoteka ne postoji",
 "Restore Complete!" => "Vraćanje u prijačnje stanje završeno!",
 "Backup File Location" => "Položaj datoteke sigurnosne kopije",
-"All options" => "Sve opcije",
+"Select All options" => "Select All options",
 "Backup/Restore" => "Sigurnosna kopija/Prethodno stanje",
 "Backup List" => "Lista sigurnosnih kopija",
 "Name Backup" => "Naziv sigurnosne kopije",
@@ -88,5 +88,7 @@ $arrLangModule=array(
 "Fax" => "Fax",
 "Email" => "E-pošta",
 "Dahdi Configuration" => "Dahdi Configuration",
+"Cancel" => "Cancel",
+"Select all in this section" => "Select all in this section",
 );
 ?>

@@ -57,7 +57,7 @@ $arrLangModule=array(
 "The backup file would have a tar extension" => "The backup file would have a tar extension",
 "Error copying the file" => "Error copying the file",
 "The file was copied correctly" => "The file was copied correctly",
-"Backup" => "Biztonsági mentés",
+"Backup" => "Perform a Backup...",
 "Process" => "Folyamat",
 "Restore" => "Visszaállít",
 "Elastix Database" => "Elastix adatbázis",
@@ -74,7 +74,7 @@ $arrLangModule=array(
 "File doesn't exist" => "File nem létezik",
 "Restore Complete!" => "Visszaállítás Kész!",
 "Backup File Location" => "Arhiválási file helye",
-"All options" => "Összes opció",
+"Select All options" => "Select All options",
 "Backup/Restore" => "Arhiválás/Visszaállítás",
 "Backup List" => "Arhiválás Lista",
 "Name Backup" => "Arhiválás név",
@@ -88,5 +88,7 @@ $arrLangModule=array(
 "Fax" => "Fax",
 "Email" => "Email",
 "Dahdi Configuration" => "Dahdi Configuration",
+"Cancel" => "Cancel",
+"Select all in this section" => "Select all in this section",
 );
 ?>

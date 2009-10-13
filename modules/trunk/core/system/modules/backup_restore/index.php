@@ -267,13 +267,13 @@ function delete_backup($smarty, $module_name, $local_templates_dir, $arrLang, $d
 function form_general($smarty, $local_templates_dir, $arrLang, $arrBackupOptions)
 {
     $smarty->assign("PROCESS",$arrLang["Process"]);
-    $smarty->assign("LBL_TODOS", $arrLang["All options"]);
-    $smarty->assign("TODO_FAX", $arrLang["All options (Fax)"]);
-    $smarty->assign("TODO_EMAIL", $arrLang["All options (Email)"]);
-    $smarty->assign("TODO_ENDPOINT", $arrLang["All options (Endpoint)"]);
-    $smarty->assign("TODO_ASTERISK", $arrLang["All options (Asterisk)"]);
-    $smarty->assign("TODO_OTROS", $arrLang["All options (Others)"]);
-    $smarty->assign("BACK", "<< ".$arrLang["Backup List"]);
+    $smarty->assign("LBL_TODOS", $arrLang["Select All options"]);
+    $smarty->assign("TODO_FAX", $arrLang["Select all in this section"]);
+    $smarty->assign("TODO_EMAIL", $arrLang["Select all in this section"]);
+    $smarty->assign("TODO_ENDPOINT", $arrLang["Select all in this section"]);
+    $smarty->assign("TODO_ASTERISK", $arrLang["Select all in this section"]);
+    $smarty->assign("TODO_OTROS", $arrLang["Select all in this section"]);
+    $smarty->assign("BACK", $arrLang["Cancel"]);
     $smarty->assign("WARNING", $arrLang["This process could take several minutes"]);
 
     /*****************/
@@ -949,43 +949,6 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
                                     );
                 if(!restaurar_carpeta($arrInfoRestaurar,$ruta_respaldo,$error))
                     $bExito = false;
-                else {
-                    /* Elastix bug 164: se requiere revisar la ruta correcta a los módulos
-                       de Asterisk, para lidiar con el caso de respaldo de 32 bits restaurado
-                       en 64 bits o viceversa */
-                    
-                    // Determinar si existe la ruta de 64 bits
-                    $sRutaModulos = '/usr/lib/asterisk/modules';
-                    if (is_dir('/usr/lib64/asterisk/modules')) {
-                    	$sRutaModulos = '/usr/lib64/asterisk/modules';
-                    }
-                    foreach (array(
-                        '/etc/asterisk/asterisk.conf',
-                        '/etc/asterisk/extensions_additional.conf') as $sArchivo) {
-                        
-                        // Dar permiso de lectura y escritura total para proceso
-                        exec("sudo -u root chmod 666 $sArchivo ", $output, $retval);    	
-
-                        // Leer archivo entero para procesar
-                        $contenido = file($sArchivo);
-                        for ($i = 0; $i < count($contenido); i++) {                        	
-                            $contenido[$i] = ereg_replace(
-                                "^(.*)(/usr/lib(64)?/asterisk/modules)(.*)", 
-                                "\\1$sRutaModulos\\4", 
-                                $contenido[$i]);
-                        }
-
-                        // Escribir contenido resultante
-                        $hArchivo = fopen($sArchivo, 'w');
-                        for ($i = 0; $i < count($contenido); i++) {
-                            fputs($hArchivo, $contenido[$i]);
-                        }
-                        fclose($hArchivo);
-
-                        // Restaurar permisos del archivo
-                        exec("sudo -u root chmod 664 $sArchivo ", $output, $retval);
-                    }
-                }
             }
             break;
 

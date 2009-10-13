@@ -56,7 +56,7 @@ $arrLangModule=array(
 "The backup file would have a tar extension" => "Файлът с архивите нямаше разширение .tar",
 "Error copying the file" => "Грешка при копиране на файл",
 "The file was copied correctly" => "Копирането завърши нормално",
-"Backup" => "Архивирай",
+"Backup" => "Perform a Backup...",
 "Process" => "Напред",
 "Restore" => "Възстанови",
 "Elastix Database" => "Еластикс База Данни",
@@ -73,7 +73,7 @@ $arrLangModule=array(
 "File doesn't exist" => "Файлът не съществува",
 "Restore Complete!" => "Възстановяването Завърши!",
 "Backup File Location" => "Местоположение на Архива",
-"All options" => "Всички опции",
+"Select All options" => "Select All options",
 "Backup/Restore" => "Архивиране",
 "Backup List" => "Списък с Архиви",
 "Name Backup" => "Име на Архив",
@@ -87,5 +87,7 @@ $arrLangModule=array(
 "Fax" => "Факс",
 "Email" => "eMail",
 "Dahdi Configuration" => "Dahdi Configuration",
+"Cancel" => "Cancel",
+"Select all in this section" => "Select all in this section",
 );
 ?>

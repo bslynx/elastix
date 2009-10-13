@@ -57,7 +57,7 @@ $arrLangModule=array(
 "The backup file would have a tar extension" => "The backup file would have a tar extension",
 "Error copying the file" => "Error copying the file",
 "The file was copied correctly" => "The file was copied correctly",
-"Backup" => "Backup",
+"Backup" => "Perform a Backup...",
 "Process" => "Procedi",
 "Restore" => "Ripristina",
 "Elastix Database" => "Elastix Database",
@@ -74,7 +74,7 @@ $arrLangModule=array(
 "File doesn't exist" => "Il File non esiste",
 "Restore Complete!" => "Ripristino Completato!",
 "Backup File Location" => "Origine del file di Backup",
-"All options" => "Tutte le opzioni",
+"Select All options" => "Select All options",
 "Backup/Restore" => "Backup/Ripristino",
 "Backup List" => "Lista Backup",
 "Name Backup" => "Nome Backup",
@@ -88,5 +88,7 @@ $arrLangModule=array(
 "Fax" => "Fax",
 "Email" => "Email",
 "Dahdi Configuration" => "Dahdi Configuration",
+"Cancel" => "Cancel",
+"Select all in this section" => "Select all in this section",
 );
 ?>
