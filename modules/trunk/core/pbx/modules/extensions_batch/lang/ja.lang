@@ -32,6 +32,7 @@
 global $arrLangModule;
 $arrLangModule=array(
 "Extensions Batch" => "内線一括設定",
+"Are you sure you wish to delete all extesions?" => "Are you sure you wish to delete all extesions?",
 "Invalid file extension.- It must be csv" => "内線用インポートファイルの形式が正しくありません。CSV形式にしてください。",
 "Possible file upload attack. Filename" => "ファイルのアップロードを開始します。ファイル名：",
 "Error" => "エラー",

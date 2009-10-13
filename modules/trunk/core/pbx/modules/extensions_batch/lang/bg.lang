@@ -32,6 +32,7 @@
 global $arrLangModule;
 $arrLangModule=array(
 "Extensions Batch" => "Групиране Вътрешни",
+"Are you sure you wish to delete all extesions?" => "Are you sure you wish to delete all extesions?",
 "Invalid file extension.- It must be csv" => "Грешно файлово разширение, трябва да бъде (.csv)",
 "Possible file upload attack. Filename" => "Възможна атака с качване на файлове. Файл с име",
 "Error" => "Грешка",

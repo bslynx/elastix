@@ -33,6 +33,7 @@
 global $arrLangModule;
 $arrLangModule=array(
 "Extensions Batch" => "Batch de Extensii",
+"Are you sure you wish to delete all extesions?" => "Are you sure you wish to delete all extesions?",
 "Invalid file extension.- It must be csv" => "Extensie Invalida - Trebuie sa fie csv",
 "Possible file upload attack. Filename" => "Posibil atac de upload . Fisier",
 "Error" => "Eroare",

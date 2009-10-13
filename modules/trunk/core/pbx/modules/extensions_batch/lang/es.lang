@@ -29,6 +29,7 @@
 global $arrLangModule;
 $arrLangModule=array(
 "System Resources"=>"Recursos del Sistema",
+"Are you sure you wish to delete all extesions?" => "Are you sure you wish to delete all extesions?",
 "CPU Info"=>"CPU",
 "Uptime"=>"Tiempo de funcionamiento",
 "CPU usage"=>"CPU usado",
