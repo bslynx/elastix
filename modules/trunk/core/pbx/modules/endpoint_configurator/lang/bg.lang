@@ -31,8 +31,8 @@
   $Id: en.lang,v 1.7 2008/02/18 09:48:00 bmacias Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Endpoint Configuration" => "Конфигуриране Телефонни Апарати",
-"Endpoint Scan" => "Откриване Телефонни Апарати",
+"Endpoint Configurator" => "Конфигуриране Телефонни Апарати",
+"Discover Endpoints in this Network" => "Откриване Телефонни Апарати",
 "Display Name" => "Дисплей Име",
 "MAC Adress" => "MAC Адрес",
 "Phone Type" => "Модел Телефон",

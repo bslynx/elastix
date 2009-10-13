@@ -33,8 +33,8 @@
   $Id: fr.lang,v 1.8 2008/05/20 00:36:42 bmacias Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Endpoint Configuration" => "Configuration Terminal",
-"Endpoint Scan" => "Scanner Terminal",
+"Endpoint Configurator" => "Configuration Terminal",
+"Discover Endpoints in this Network" => "Scanner Terminal",
 "Display Name" => "Afficher Nom",
 "MAC Adress" => "Adresse MAC",
 "Phone Type" => "Type T&eacute;l&eacute;phone",

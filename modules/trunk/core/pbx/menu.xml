@@ -6,7 +6,7 @@
     <menuitem menuid="control_panel"          desc="Control Panel"           parent="pbxconfig" module="yes" link=""      order="2"></menuitem>
     <menuitem menuid="voicemail"              desc="Voicemail"               parent="pbxconfig" module="yes" link=""      order="3"></menuitem>
     <menuitem menuid="monitoring"             desc="Monitoring"              parent="pbxconfig" module="yes" link=""      order="4"></menuitem>
-    <menuitem menuid="endpoint_configuration" desc="Endpoint Configuration"  parent="pbxconfig" module="yes" link=""      order="5"></menuitem>
+    <menuitem menuid="endpoint_configurator"  desc="Endpoint Configurator"   parent="pbxconfig" module="yes" link=""      order="5"></menuitem>
     <menuitem menuid="conference"             desc="Conference"              parent="pbxconfig" module="yes" link=""      order="6"></menuitem>
     <menuitem menuid="extensions_batch"       desc="Extensions Batch"        parent="pbxconfig" module="yes" link=""      order="7"></menuitem>
     <menuitem menuid="tools"                  desc="Tools"                   parent="pbxconfig" module="no"  link=""      order="8"></menuitem>

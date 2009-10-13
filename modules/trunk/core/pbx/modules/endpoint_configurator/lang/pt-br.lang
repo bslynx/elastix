@@ -32,8 +32,8 @@
   $Id: br.lang,v 1.6 2007/09/05 00:36:42 afigueroa Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Endpoint Configuration" => "Configuração de Endpoint",
-"Endpoint Scan" => "Endpoint Scan",
+"Endpoint Configurator" => "Configuração de Endpoint",
+"Discover Endpoints in this Network" => "Discover Endpoints in this Network",
 "Display Name" => "Nome de Exibição",
 "MAC Adress" => "Endereço MAC",
 "Phone Type" => "Tipo de Telefone",

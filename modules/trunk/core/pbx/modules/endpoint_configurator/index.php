@@ -83,7 +83,7 @@ function _moduleContent(&$smarty, $module_name)
             $content = endpointConfiguratedUnset($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrLang, $arrConf);
             break;
         default: // endpoint_show            
-            if(isset($_SESSION['elastix_endpoints']))//si existe este arreglo lo borro, esto asegura de q cada vez q entre al modulo endpoint configuration vuelva a crear el arreglo de los endpoint en la SESSION
+            if(isset($_SESSION['elastix_endpoints']))//si existe este arreglo lo borro, esto asegura de q cada vez q entre al modulo endpoint configurator vuelva a crear el arreglo de los endpoint en la SESSION
                 unset($_SESSION['elastix_endpoints']);
             $content = buildReport(array(), $smarty, $module_name, $arrLang, network());
             break;
@@ -147,7 +147,7 @@ function endpointConfiguratedShow($smarty, $module_name, $local_templates_dir, $
                 //Lo guardo en la session para hacer mucho mas rapido el proceso 
                 //de configuracion de los endpoint. Solo la primera vez corre el 
                 //comado nmap y cuando quiera el usuario correrlo de nuevo lo debe 
-                //hacer por medio del boton Endpoint Scan, ahi de nuevo vuelve a 
+                //hacer por medio del boton Discover Endpoints in this Network, ahi de nuevo vuelve a 
                 //construir el arreglo $arrData.
             }
         }
@@ -173,7 +173,7 @@ function buildReport($arrData, $smarty, $module_name, $arrLang, $endpoint_mask)
        $smarty->assign("mb_title",$arrLang['WARNING'].":");
        $smarty->assign("mb_message",$arrLang["It can take several minutes, because your ip address has some devices, "].$devices);
     }
-    $arrGrid = array("title"    => $arrLang["Endpoint Configuration"],
+    $arrGrid = array("title"    => $arrLang["Endpoint Configurator"],
         "icon"     => "images/endpoint.png",
         "width"    => "99%",
         "start"    => ($total==0) ? 0 : $offset + 1,
@@ -195,7 +195,7 @@ function buildReport($arrData, $smarty, $module_name, $arrLang, $endpoint_mask)
                                        "property1" => ""),
                             7 => array("name"      => $arrLang["Status"],
                                        "property1" => "")));
-    $html_filter = "<input type='submit' name='endpoint_scan' value='{$arrLang['Endpoint Scan']}' class='button' />";
+    $html_filter = "<input type='submit' name='endpoint_scan' value='{$arrLang['Discover Endpoints in this Network']}' class='button' />";
     $html_filter.= "&nbsp;&nbsp;<input type='text' name='endpoint_mask' value='$endpoint_mask' style='text-align:right; width:90px;' />";
     $oGrid->showFilter($html_filter);
     $contenidoModulo  = "<form style='margin-bottom:0;' method='POST' action='?menu=$module_name'>";

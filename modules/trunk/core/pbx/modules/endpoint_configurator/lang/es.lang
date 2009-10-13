@@ -28,8 +28,8 @@
   $Id: es.lang,v 1.7 2007/09/05 00:36:42 gcarrillo Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Endpoint Configuration" => "Configuracion de Endpoint",
-"Endpoint Scan" => "Mapear Endpoint",
+"Endpoint Configurator" => "Configurador de Endpoint",
+"Discover Endpoints in this Network" => "Descubrir Endpoints en esta Network",
 "Display Name" => "Ver Nombre",
 "MAC Adress" => "Direccion MAC",
 "Phone Type" => "Modelo Telefono",

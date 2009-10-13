@@ -32,8 +32,8 @@
   $Id: it.lang,v 1.7 2008/02/18 10:07:17 bmacias@palosanto.com Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Endpoint Configuration" => "Configurazione EndPoint",
-"Endpoint Scan" => "Scansione EndPoint",
+"Endpoint Configurator" => "Configurazione EndPoint",
+"Discover Endpoints in this Network" => "Scansione EndPoint",
 "Display Name" => "Nome Visualizzato",
 "MAC Adress" => "MAC Adress",
 "Phone Type" => "Tipo di Telefono",
