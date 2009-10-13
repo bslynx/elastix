@@ -29,8 +29,8 @@
 global $arrLangModule;
 $arrLangModule=array(
 "Repositories" => "Repositories",
-"Choice" => "Choice",
+"Active" => "Active",
 "Name" => "이름",
-"Accept" => "확인",
+"Save/Update" => "Save/Update",
 );
 ?>
