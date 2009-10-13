@@ -31,7 +31,7 @@
   $Id: en.lang,v 1.7 2008/02/18 09:48:00 bmacias Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Fax Visor" => "Получени Факсове",
+"Fax Viewer" => "Получени Факсове",
 "Search" => "Търси",
 "Company Name" => "Име на Фирма",
 "Company Fax" => "Факс Номер на Фирма",

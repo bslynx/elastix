@@ -28,7 +28,7 @@
   $Id: es.lang,v 1.7 2007/09/05 00:36:42 gcarrillo Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Fax Visor" => "Visor de Fax",
+"Fax Viewer" => "Visor de Fax",
 "Search" => "Buscar",
 "Company Name" => "Nombre de Compañia",
 "Company Fax" => "Fax de Compañia",

@@ -80,7 +80,7 @@ function _moduleContent(&$smarty, $module_name)
             header("Location: ?menu=$module_name");
             break;
         default:
-            $contenidoModulo=$oForm->fetchForm("$local_templates_dir/visor.tpl", $arrLang["Fax Visor"],$_POST);
+            $contenidoModulo=$oForm->fetchForm("$local_templates_dir/visor.tpl", $arrLang["Fax Viewer"],$_POST);
             break;
     }
     return $contenidoModulo;
@@ -253,6 +253,7 @@ function faxes($company_name,$company_fax,$fecha_fax,$inicio_paginacion,$accion,
     $respuesta = new xajaxResponse();
     $respuesta->addAssign("td_paginacion","innerHTML",$html_paginacion);
     $respuesta->addAssign("td_contenido","innerHTML",$html_faxes);
+    $respuesta->addAssign("td_paginacion1","innerHTML",$html_paginacion);
 
    //tenemos que devolver la instanciación del objeto xajaxResponse
     return $respuesta;
@@ -347,7 +348,7 @@ function html_paginacion_faxes($regPrimeroMostrado,$regTotal,$tamanio_busqueda,$
         $parteIzquierda .= "<img src='$ruta_image/previous_off.gif' width='8' height='11' alt='' align='absmiddle' />&nbsp;".$arrLang['Previous'];
     }
 
-    $search_title = "(".($regPrimeroMostrado + 1)." - ".$regUltimoMostrado." of ".$regTotal.")";
+    $search_title = "(".($regPrimeroMostrado)." - ".$regUltimoMostrado." of ".$regTotal.")";
     $parteCentro  = "&nbsp;<span class='pageNumbers'>".$search_title."</span> 
      <input type='hidden' name='primer_registro_mostrado_paginacion' id='primer_registro_mostrado_paginacion' value='".$regPrimeroMostrado."' />
      <input type='hidden' name='ultimo_registro_mostrado_paginacion' id='ultimo_registro_mostrado_paginacion' value='".$regUltimoMostrado."' />

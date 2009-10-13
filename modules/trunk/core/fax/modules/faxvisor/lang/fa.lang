@@ -31,7 +31,7 @@
    $Id: fa.lang,v 1.2 2008/04/21 10:11:44 bmacias@palosanto.com Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Fax Visor" => "مشاهده فکس",
+"Fax Viewer" => "مشاهده فکس",
 "Search" => "جستجو",
 "Company Name" => "نام شرکت فرستنده",
 "Company Fax" => "شماره فکس فرستنده",

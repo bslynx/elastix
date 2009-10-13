@@ -32,7 +32,7 @@
   $Id: ca.lang,v 1.5 2008/02/17 11:45:00 bmacias Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Fax Visor" => "Visor de Fax",
+"Fax Viewer" => "Visor de Fax",
 "Search" => "Cercar",
 "Company Name" => "Nom de Companyia",
 "Company Fax" => "Fax de Companyia",

@@ -32,7 +32,7 @@
 */
 global $arrLangModule;
 $arrLangModule=array(
-"Fax Visor" => "Fax Visor",
+"Fax Viewer" => "Fax Viewer",
 "Search" => "Pretraga",
 "Company Name" => "Naziv tvrtke",
 "Company Fax" => "Fax tvrtke",

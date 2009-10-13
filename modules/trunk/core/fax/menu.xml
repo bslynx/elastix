@@ -7,7 +7,7 @@
     <menuitem menuid="faxnew"         desc="New Virtual Fax"   parent="virtual_fax" module="yes" link="" order="12"></menuitem>
     <menuitem menuid="faxmaster"      desc="Fax Master"        parent="fax"         module="yes" link="" order="2"></menuitem>
     <menuitem menuid="faxclients"     desc="Fax Clients"       parent="fax"         module="yes" link="" order="3"></menuitem>
-    <menuitem menuid="faxvisor"       desc="Fax Visor"         parent="fax"         module="yes" link="" order="4"></menuitem>
-    <menuitem menuid="template_email" desc="Template Email"    parent="fax"         module="yes" link="" order="5"></menuitem>
+    <menuitem menuid="faxviewer"      desc="Fax Viewer"        parent="fax"         module="yes" link="" order="4"></menuitem>
+    <menuitem menuid="email_template" desc="Email Template"    parent="fax"         module="yes" link="" order="5"></menuitem>
   </menulist>
 </module>

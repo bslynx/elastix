@@ -31,7 +31,7 @@
  $Id: ja.lang,v 1.6 2008/05/18 20:00:00 ganymean Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Fax Visor" => "FAX受信履歴",
+"Fax Viewer" => "FAX受信履歴",
 "Search" => "検索",
 "Company Name" => "会社名",
 "Company Fax" => "会社FAX",

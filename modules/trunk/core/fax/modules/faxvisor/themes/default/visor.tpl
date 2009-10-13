@@ -29,12 +29,15 @@
     </tr>
     <tr>        
         <td>
-            <table width="100%" border="0" cellspacing="0" cellpadding="0"  align="center" height="350">
+            <table width="100%" border="0" cellspacing="0" cellpadding="0"  align="center">
                 <tr class="table_navigation_row">
-                    <td id="td_paginacion" class="table_navigation_row" height='28'></td>
+                    <td id="td_paginacion" class="table_navigation_row"></td>
                 </tr>
                 <tr>
                     <td id='td_contenido' vAlign='top'></td>
+                </tr>
+                <tr class="table_navigation_row">
+                    <td id="td_paginacion1" class="table_navigation_row"></td>
                 </tr>
             </table>
         </td>

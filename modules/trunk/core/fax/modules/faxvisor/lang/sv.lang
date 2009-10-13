@@ -28,7 +28,7 @@
   $Id: sv.lang,v 0.1 2008/03/25 00:36:42 IFIT DATA - http://www.ifit.se Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Fax Visor" => "Fax Visor",
+"Fax Viewer" => "Fax Viewer",
 "Search" => "S&ouml;k",
 "Company Name" => "F&ouml;retags Namn",
 "Company Fax" => "F&ouml;retags Fax",

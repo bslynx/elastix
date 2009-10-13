@@ -32,7 +32,7 @@
   $Id: el.lang,v 1.6 2008/02/11 11:07:22 bmacias@palosanto.com Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Fax Visor" => "Λίστα Fax",
+"Fax Viewer" => "Λίστα Fax",
 "Search" => "Αναζήτηση",
 "Company Name" => "Όνομα εταιρείας",
 "Company Fax" => "Fax εταιρείας",
