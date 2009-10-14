@@ -30,6 +30,7 @@ global $arrLangModule;
 $arrLangModule=array(
 "System Resources"=>"Recursos del Sistema",
 "Batch of Extensions" => "Batch of Extensions",
+"Delete all extension" => "Delete All Extensions",
 "File" => "File to Upload (*.csv)",
 "Save" => "Upload CVS File",
 "Download Extensions" => "Download the current extensions in CSV format",
