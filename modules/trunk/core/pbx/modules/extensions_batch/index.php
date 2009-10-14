@@ -83,7 +83,8 @@ function _moduleContent(&$smarty, $module_name)
     $smarty->assign("SAVE", $arrLang["Save"]);
     $smarty->assign("DOWNLOAD", $arrLang["Download Extensions"]);
     $smarty->assign("label_file", $arrLang["File"]);
-    $smarty->assign("title_module", $arrLang["Extensions Batch"]);
+    $smarty->assign("title", $arrLang["Extensions Batch"]);
+    $smarty->assign("title_module", $arrLang["Batch of Extensions"]);
     $smarty->assign("HeaderFile", $arrLang["Header File Extensions Batch"]);
     $smarty->assign("AboutUpdate", $arrLang["About Update Extensions Batch"]);
     $smarty->assign("LINK", "modules/$module_name/libs/download_csv.php");

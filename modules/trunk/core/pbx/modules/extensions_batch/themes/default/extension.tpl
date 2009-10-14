@@ -1,6 +1,6 @@
 <table width="99%" border="0" cellspacing="0" cellpadding="0" align="center">
     <tr class="moduleTitle">
-        <td class="moduleTitle" valign="middle">&nbsp;&nbsp;<img src="images/1x1.gif" border="0" align="absmiddle">&nbsp;&nbsp;{$title}</td>
+        <td class="moduleTitle" valign="middle">&nbsp;&nbsp;<img src="images/1x1.gif" border="0" align="absmiddle">&nbsp;&nbsp;{$title_module}</td>
     </tr>
     <tr>
         <td>
@@ -16,9 +16,9 @@
         <td>
             <table width="100%" border="0" cellspacing="0" cellpadding="0" class="tabForm">
                 <tr>
-                    <td width="22%" align="right">{$label_file}&nbsp;(file.csv):<span  class="required">*</span></td>
+                    <td width="22%" align="right">{$label_file}:<span  class="required">*</span></td>
                     <td width="30%"><input type='file' id='userfile' name='userfile'></td>
-                    <td width="20%"><a href="{$LINK}" name="link_download">{$DOWNLOAD}</a></td>
+                    <td width="30%"><a href="{$LINK}" name="link_download">{$DOWNLOAD}</a></td>
                     <td align="center">{$DELETE_ALL}"</td>
                 </tr> 
             </table>

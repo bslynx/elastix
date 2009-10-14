@@ -32,6 +32,7 @@
 global $arrLangModule;
 $arrLangModule=array(
 "Extensions Batch" => "Extensions Batch",
+"Batch of Extensions" => "Batch of Extensions",
 "Are you sure you wish to delete all extesions?" => "Are you sure you wish to delete all extesions?",
 "Invalid file extension.- It must be csv" => "Invalid file extension.- It must be csv",
 "Possible file upload attack. Filename" => "Possible file upload attack. Filename",
@@ -53,10 +54,10 @@ $arrLangModule=array(
 "Can't exist a secret empty. Line" => "Can't exist a secret empty. Line",
 "Can't exist a display name empty. Line" => "Can't exist a display name empty. Line",
 "Please read the lines in the footer"=>"Please read the lines in the footer",
-"Header File Extensions Batch" => "The header of the file must be in the first line and it must have at minimum three columns: Display Name, User Extension, Secret",
+"Header File Extensions Batch" => "The first line must contains the name (or title) of the columns, and the file must have at minimum three columns: Display Name, User Extension, Secret. For more information about all the parameters supported, please read the online embedded help.",
 "About Update Extensions Batch" => "If you load a file with extensions already created, these extensions will be updated",
 "There aren't extensions" => "There aren't extensions",
-"Download Extensions" => "Download Extensions",
+"Download Extensions" => "Download the current extensions in CSV format",
 "Error processing Database Family" => "Error processing Database Family",
 "Delete all extension" => "Delete all extension",
 "All extensions deletes" => "All extensions deletes",
@@ -70,8 +71,9 @@ $arrLangModule=array(
 "Unable delete CF in database astDB" => "Unable delete CF in database astDB",
 "Unable delete CFB in database astDB" => "Unable delete CFB in database astDB",
 "Unable delete CFU in database astDB" => "Unable delete CFU in database astDB",
-"File"=> "File",
+"File" => "File to Upload (*.csv)",
 "Message"=>"Message",
 "There aren't extensions" => "There aren't extensions",
+"Save" => "Upload CVS File",
 );
 ?>

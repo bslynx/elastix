@@ -32,6 +32,7 @@
 global $arrLangModule;
 $arrLangModule=array(
 "Extensions Batch" => "فایل دسته ای داخلی ها",
+"Batch of Extensions" => "Batch of Extensions",
 "Are you sure you wish to delete all extesions?" => "Are you sure you wish to delete all extesions?",
 "Invalid file extension.- It must be csv" => "خطا در قالب فایل، فایل باید با قالب csv باشد",
 "Possible file upload attack. Filename" => "احتمال خطا در ارسال . نام فایل",
@@ -53,10 +54,10 @@ $arrLangModule=array(
 "Can't exist a secret empty. Line" => "رمز نمی تواند خالی باشد، خط",
 "Can't exist a display name empty. Line" => "نام داخلی نمی تواند خالی باشد، خط",
 "Please read the lines in the footer" => "لطفا خطوط پایین صفحه را بررسی کنید",
-"Header File Extensions Batch" => "سرستون فایل باید حداقل سه ستون داشته باشد، نام، شماره داخلی و رمز",
+"Header File Extensions Batch" =>"The first line must contains the name (or title) of the columns, and the file must have at minimum three columns: Display Name, User Extension, Secret. For more information about all the parameters supported, please read the online embedded help.",
 "About Update Extensions Batch" => "اگر فایل حاوی داخلی هایی باشد که قبلا ایجاد شده اند، آنها به روز خواهند شد",
 "There aren't extensions" => "داخلی ها وجود ندارند",
-"Download Extensions" => "بارگذاری داخلی ها",
+"Download Extensions" => "Download the current extensions in CSV format",
 "Error processing Database Family" => "Error processing Database Family",
 "Delete all extension" => "Delete all extension",
 "All extensions deletes" => "All extensions deletes",
@@ -70,7 +71,8 @@ $arrLangModule=array(
 "Unable delete CF in database astDB" => "Unable delete CF in database astDB",
 "Unable delete CFB in database astDB" => "Unable delete CFB in database astDB",
 "Unable delete CFU in database astDB" => "Unable delete CFU in database astDB",
-"File" => "فایل",
+"File" => "File to Upload (*.csv)",
 "Message" => "پیام ",
+"Save" => "Upload CVS File",
 );
 ?>

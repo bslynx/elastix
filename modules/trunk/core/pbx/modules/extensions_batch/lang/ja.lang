@@ -32,6 +32,7 @@
 global $arrLangModule;
 $arrLangModule=array(
 "Extensions Batch" => "内線一括設定",
+"Batch of Extensions" => "Batch of Extensions",
 "Are you sure you wish to delete all extesions?" => "Are you sure you wish to delete all extesions?",
 "Invalid file extension.- It must be csv" => "内線用インポートファイルの形式が正しくありません。CSV形式にしてください。",
 "Possible file upload attack. Filename" => "ファイルのアップロードを開始します。ファイル名：",
@@ -53,10 +54,10 @@ $arrLangModule=array(
 "Can't exist a secret empty. Line" => "Can't exist a secret empty. Line",
 "Can't exist a display name empty. Line" => "表示名が空欄です。行：",
 "Please read the lines in the footer" => "フッター内の行内容を確認してください",
-"Header File Extensions Batch" => "ファイルのヘッダーは、１行目に最低３つのカラムで構成されている必要があります：Display Name, User Extension, Secret",
+"Header File Extensions Batch" => "The first line must contains the name (or title) of the columns, and the file must have at minimum three columns: Display Name, User Extension, Secret. For more information about all the parameters supported, please read the online embedded help.",
 "About Update Extensions Batch" => "すでに作成済の内線番号がロードしあ場合、新しいデータで上書きします",
 "There aren't extensions" => "内線がありません",
-"Download Extensions" => "内線データのダウンロード",
+"Download Extensions" => "Download the current extensions in CSV format",
 "Error processing Database Family" => "Error processing Database Family",
 "Delete all extension" => "Delete all extension",
 "All extensions deletes" => "All extensions deletes",
@@ -70,7 +71,8 @@ $arrLangModule=array(
 "Unable delete CF in database astDB" => "Unable delete CF in database astDB",
 "Unable delete CFB in database astDB" => "Unable delete CFB in database astDB",
 "Unable delete CFU in database astDB" => "Unable delete CFU in database astDB",
-"File" => "ファイル",
+"File" => "File to Upload (*.csv)",
 "Message" => "メッセージ",
+"Save" => "Upload CVS File",
 );
 ?>
