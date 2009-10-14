@@ -19,7 +19,7 @@
                     <td width="22%" align="right">{$label_file}:<span  class="required">*</span></td>
                     <td width="30%"><input type='file' id='userfile' name='userfile'></td>
                     <td width="30%"><a href="{$LINK}" name="link_download">{$DOWNLOAD}</a></td>
-                    <td align="center">{$DELETE_ALL}"</td>
+                    <td align="center">{$DELETE_ALL}</td>
                 </tr> 
             </table>
         </td>

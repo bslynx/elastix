@@ -33,7 +33,7 @@ global $arrLangModule;
 $arrLangModule=array(
 "Extensions Batch" => "Extensions Batch",
 "Batch of Extensions" => "Batch of Extensions",
-"Are you sure you wish to delete all extesions?" => "Are you sure you wish to delete all extesions?",
+"Are you really sure you want to delete all the extensions in this server?" => "Are you really sure you want to delete all the extensions in this server?",
 "Invalid file extension.- It must be csv" => "Invalid file extension.- It must be csv",
 "Possible file upload attack. Filename" => "Possible file upload attack. Filename",
 "Error" => "Error",
@@ -59,7 +59,7 @@ $arrLangModule=array(
 "There aren't extensions" => "There aren't extensions",
 "Download Extensions" => "Download the current extensions in CSV format",
 "Error processing Database Family" => "Error processing Database Family",
-"Delete all extension" => "Delete All Extensions",
+"Delete All Extensions" => "Delete All Extensions",
 "All extensions deletes" => "All extensions deletes",
 "Error to delete extensions" => "Error to delete extensions",
 "Unable to reload the changes" => "Unable to reload the changes",

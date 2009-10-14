@@ -33,7 +33,7 @@ global $arrLangModule;
 $arrLangModule=array(
 "Extensions Batch" => "内線一括設定",
 "Batch of Extensions" => "Batch of Extensions",
-"Are you sure you wish to delete all extesions?" => "Are you sure you wish to delete all extesions?",
+"Are you really sure you want to delete all the extensions in this server?" => "Are you really sure you want to delete all the extensions in this server?",
 "Invalid file extension.- It must be csv" => "内線用インポートファイルの形式が正しくありません。CSV形式にしてください。",
 "Possible file upload attack. Filename" => "ファイルのアップロードを開始します。ファイル名：",
 "Error" => "エラー",
@@ -59,7 +59,7 @@ $arrLangModule=array(
 "There aren't extensions" => "内線がありません",
 "Download Extensions" => "Download the current extensions in CSV format",
 "Error processing Database Family" => "Error processing Database Family",
-"Delete all extension" => "Delete All Extensions",
+"Delete All Extensions" => "Delete All Extensions",
 "All extensions deletes" => "All extensions deletes",
 "Error to delete extensions" => "Error to delete extensions",
 "Unable to reload the changes" => "Unable to reload the changes",
