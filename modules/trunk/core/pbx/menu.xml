@@ -11,7 +11,7 @@
     <menuitem menuid="extensions_batch"       desc="Batch of Extensions"        parent="pbxconfig" module="yes" link=""      order="7"></menuitem>
     <menuitem menuid="tools"                  desc="Tools"                   parent="pbxconfig" module="no"  link=""      order="8"></menuitem>
     <menuitem menuid="asterisk_cli"           desc="Asterisk-Cli"            parent="tools"     module="yes" link=""      order="81"></menuitem>
-    <menuitem menuid="file_editor"            desc="File Editor"             parent="tools"     module="yes" link=""      order="82"></menuitem>
+    <menuitem menuid="file_editor"            desc="Asterisk File Editor"             parent="tools"     module="yes" link=""      order="82"></menuitem>
     <menuitem menuid="text_to_wav"            desc="Text to Wav"             parent="tools"     module="yes" link=""      order="83"></menuitem>
     <menuitem menuid="fop"                    desc="Flash Operator Panel"    parent="pbxconfig" module="no"  link="panel" order="9"></menuitem>
   </menulist>

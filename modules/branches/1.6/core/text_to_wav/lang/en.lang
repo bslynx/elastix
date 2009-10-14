@@ -31,7 +31,7 @@
   $Id: en.lang,v 1.7 2008/02/18 09:49:00 jvega Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Generate" => "Generate",
+"Generate" => "Generate Audio File",
 "Format" => "Format",
 "Download File" => "Download File",
 "Text to Wav" => "Text to Wav",
@@ -40,7 +40,7 @@ $arrLangModule=array(
 "Unabled create file wav" => "Unabled create file wav",
 "Unabled create file gsm" => "Unabled create file gsm",
 "Not exists file" => "Not exists file",
-"Message" => "Message",
+"Message" => "Text to Convert",
 "Back" => "Back",
 );
 ?>
