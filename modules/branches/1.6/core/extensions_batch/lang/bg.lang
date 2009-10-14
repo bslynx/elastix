@@ -32,6 +32,8 @@
 global $arrLangModule;
 $arrLangModule=array(
 "Extensions Batch" => "Групиране Вътрешни",
+"Batch of Extensions" => "Batch of Extensions",
+"Are you sure you wish to delete all extesions?" => "Are you sure you wish to delete all extesions?",
 "Invalid file extension.- It must be csv" => "Грешно файлово разширение, трябва да бъде (.csv)",
 "Possible file upload attack. Filename" => "Възможна атака с качване на файлове. Файл с име",
 "Error" => "Грешка",
@@ -52,10 +54,10 @@ $arrLangModule=array(
 "Can't exist a secret empty. Line" => "Не е въведена парола. Ред",
 "Can't exist a display name empty. Line" => "Не е въведено име на вътрешен номер. Ред",
 "Please read the lines in the footer" => "Моля прочетете текста в долната част на страницата",
-"Header File Extensions Batch" => "Заглавната част на файла трябва да бъде на първи ред и да съдържа минимум три колони: Display Name, User Extension, Secret",
+"Header File Extensions Batch" => "The first line must contains the name (or title) of the columns, and the file must have at minimum three columns: Display Name, User Extension, Secret. For more information about all the parameters supported, please read the online embedded help.",
 "About Update Extensions Batch" => "Ако заредите файл със съществуващи вътрешни номера, те ще бъдат обновени.",
 "There aren't extensions" => "Тук няма вътрешни номера",
-"Download Extensions" => "Изтегли Вътрешни",
+"Download Extensions" => "Download the current extensions in CSV format",
 "Error processing Database Family" => "Error processing Database Family",
 "Delete all extension" => "Delete all extension",
 "All extensions deletes" => "All extensions deletes",
@@ -69,7 +71,8 @@ $arrLangModule=array(
 "Unable delete CF in database astDB" => "Unable delete CF in database astDB",
 "Unable delete CFB in database astDB" => "Unable delete CFB in database astDB",
 "Unable delete CFU in database astDB" => "Unable delete CFU in database astDB",
-"File" => "Файл",
+"File" => "File to Upload (*.csv)",
 "Message" => "Съобщение",
+"Save" => "Upload CVS File",
 );
 ?>

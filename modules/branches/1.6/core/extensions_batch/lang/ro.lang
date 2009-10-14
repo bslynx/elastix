@@ -33,6 +33,8 @@
 global $arrLangModule;
 $arrLangModule=array(
 "Extensions Batch" => "Batch de Extensii",
+"Batch of Extensions" => "Batch of Extensions",
+"Are you sure you wish to delete all extesions?" => "Are you sure you wish to delete all extesions?",
 "Invalid file extension.- It must be csv" => "Extensie Invalida - Trebuie sa fie csv",
 "Possible file upload attack. Filename" => "Posibil atac de upload . Fisier",
 "Error" => "Eroare",
@@ -53,10 +55,10 @@ $arrLangModule=array(
 "Can't exist a secret empty. Line" => "Nu poate exista un secret gol. Linia",
 "Can't exist a display name empty. Line" => "Nu poate exista un nume display gol. Linia",
 "Please read the lines in the footer" => "Va rog cititi liniile din subsol.",
-"Header File Extensions Batch" => "Headerul fisierului trebuie sa fie in prima linie si trebuie sa aiba minim 3 coloane:  Nume Afisat, Extensie Utilizator, Secret",
+"Header File Extensions Batch" => "The first line must contains the name (or title) of the columns, and the file must have at minimum three columns: Display Name, User Extension, Secret. For more information about all the parameters supported, please read the online embedded help.",
 "About Update Extensions Batch" => "Daca incarcati un fisier cu extensii deja create aceste extensii vor fi actualizate",
 "There aren't extensions" => "Nu sunt extensii",
-"Download Extensions" => "Descarcare Extensii",
+"Download Extensions" => "Download the current extensions in CSV format",
 "Error processing Database Family" => "Error processing Database Family",
 "Delete all extension" => "Delete all extension",
 "All extensions deletes" => "All extensions deletes",
@@ -70,7 +72,8 @@ $arrLangModule=array(
 "Unable delete CF in database astDB" => "Unable delete CF in database astDB",
 "Unable delete CFB in database astDB" => "Unable delete CFB in database astDB",
 "Unable delete CFU in database astDB" => "Unable delete CFU in database astDB",
-"File" => "Fisier",
+"File" => "File to Upload (*.csv)",
 "Message" => "Mesaje",
+"Save" => "Upload CVS File",
 );
 ?>

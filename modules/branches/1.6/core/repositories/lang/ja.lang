@@ -32,8 +32,8 @@
 global $arrLangModule;
 $arrLangModule=array(
 "Repositories" => "リポジトリ",
-"Choice" => "選択",
+"Active" => "Active",
 "Name" => "名称",
-"Accept" => "承認",
+"Save/Update" => "Save/Update",
 );
 ?>

@@ -33,8 +33,8 @@
 global $arrLangModule;
 $arrLangModule=array(
 "Repositories" => "Repositories",
-"Choice" => "Choice",
+"Active" => "Active",
 "Name" => "Navn",
-"Accept" => "Accepter",
+"Save/Update" => "Save/Update",
 );
 ?>

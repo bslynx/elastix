@@ -29,6 +29,12 @@
 global $arrLangModule;
 $arrLangModule=array(
 "System Resources"=>"Recursos del Sistema",
+"Batch of Extensions" => "Batch of Extensions",
+"File" => "File to Upload (*.csv)",
+"Save" => "Upload CVS File",
+"Download Extensions" => "Download the current extensions in CSV format",
+"Header File Extensions Batch" => "The first line must contains the name (or title) of the columns, and the file must have at minimum three columns: Display Name, User Extension, Secret. For more information about all the parameters supported, please read the online embedded help.",
+"Are you sure you wish to delete all extesions?" => "Are you sure you wish to delete all extesions?",
 "CPU Info"=>"CPU",
 "Uptime"=>"Tiempo de funcionamiento",
 "CPU usage"=>"CPU usado",

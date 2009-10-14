@@ -34,6 +34,8 @@
 global $arrLangModule;
 $arrLangModule=array(
 "Extensions Batch" => "Batch Extensions",
+"Batch of Extensions" => "Batch of Extensions",
+"Are you sure you wish to delete all extesions?" => "Are you sure you wish to delete all extesions?",
 "Invalid file extension.- It must be csv" => "Extension fichier invalide.- Elle doit &ecirc;tre en csv",
 "Possible file upload attack. Filename" => "Attaque upload fichier possible. Nom de fichier",
 "Error" => "Erreur",
@@ -54,12 +56,11 @@ $arrLangModule=array(
 "Can't exist a secret empty. Line" => "Ne peut exister un mot de passe vide. Ligne",
 "Can't exist a display name empty. Line" => "Ne peut exister un nom vide. Ligne",
 "Please read the lines in the footer" => "Veuillez lire les lignes dans le bas de page",
-"Header File Extensions Batch" => "L'ent&ecirc;te du fichier doit &ecirc;tre sur la premi&egrave;re ligne et il doit avoir au
- minimum 3 colonnes: Nom Affich&eacute;, Extension Utilisateur, Mot de passe.",
+"Header File Extensions Batch" => "The first line must contains the name (or title) of the columns, and the file must have at minimum three columns: Display Name, User Extension, Secret. For more information about all the parameters supported, please read the online embedded help.",
 "About Update Extensions Batch" => "Si vous chargez un fichier avec des extensions d&eacute;j&agrave; cr&eacute;&eacute;es, c
 es extensions seront mises &agrave; jour.",
 "There aren't extensions" => "Il n'y a pas d'extension",
-"Download Extensions" => "T&eacute;l&eacute;charger Extensions",
+"Download Extensions" => "Download the current extensions in CSV format",
 "Error processing Database Family" => "Error processing Database Family",
 "Delete all extension" => "Delete all extension",
 "All extensions deletes" => "All extensions deletes",
@@ -73,7 +74,8 @@ es extensions seront mises &agrave; jour.",
 "Unable delete CF in database astDB" => "Unable delete CF in database astDB",
 "Unable delete CFB in database astDB" => "Unable delete CFB in database astDB",
 "Unable delete CFU in database astDB" => "Unable delete CFU in database astDB",
-"File" => "Fichier",
+"File" => "File to Upload (*.csv)",
 "Message" => "Message",
+"Save" => "Upload CVS File",
 );
 ?>

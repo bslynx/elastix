@@ -99,12 +99,12 @@ function listRepositories($smarty, $module_name, $local_templates_dir,$arrConf) 
         "start"    => ($total==0) ? 0 : $offset + 1,
         "end"      => $end,
         "total"    => $total,
-        "columns"  => array(0 => array("name"      => $arrLang["Choice"],
+        "columns"  => array(0 => array("name"      => $arrLang["Active"],
                                        "property1" => ""),
                             1 => array("name"      => $arrLang["Name"], 
                                        "property1" => "")));
 
-    $oGrid->showFilter( "<input type='submit' name='submit_aceptar' value='{$arrLang['Accept']}' class='button' />");
+    $oGrid->showFilter( "<input type='submit' name='submit_aceptar' value='{$arrLang['Save/Update']}' class='button' />");
     $contenidoModulo  = "<form style='margin-bottom:0;' method='POST' action='?menu=$module_name'>";
     $contenidoModulo .= $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
     $contenidoModulo .= "</form>";

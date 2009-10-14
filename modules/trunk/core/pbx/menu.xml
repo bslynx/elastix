@@ -8,7 +8,7 @@
     <menuitem menuid="monitoring"             desc="Monitoring"              parent="pbxconfig" module="yes" link=""      order="4"></menuitem>
     <menuitem menuid="endpoint_configurator"  desc="Endpoint Configurator"   parent="pbxconfig" module="yes" link=""      order="5"></menuitem>
     <menuitem menuid="conference"             desc="Conference"              parent="pbxconfig" module="yes" link=""      order="6"></menuitem>
-    <menuitem menuid="extensions_batch"       desc="Extensions Batch"        parent="pbxconfig" module="yes" link=""      order="7"></menuitem>
+    <menuitem menuid="extensions_batch"       desc="Batch of Extensions"        parent="pbxconfig" module="yes" link=""      order="7"></menuitem>
     <menuitem menuid="tools"                  desc="Tools"                   parent="pbxconfig" module="no"  link=""      order="8"></menuitem>
     <menuitem menuid="asterisk_cli"           desc="Asterisk-Cli"            parent="tools"     module="yes" link=""      order="81"></menuitem>
     <menuitem menuid="file_editor"            desc="File Editor"             parent="tools"     module="yes" link=""      order="82"></menuitem>

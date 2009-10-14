@@ -160,11 +160,11 @@ class PaloSantoPackages
                     return $repositorio;
                 }
             }
-            return "-- * --";
+            return "No info yet";
         }
         else{ 
             $this->errMsg = $arrLang["Repositor not Found"];
-            return "-- * --";
+            return "No info yet";
         }
     } 
 
