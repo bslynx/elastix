@@ -142,6 +142,8 @@ function _moduleContent(&$smarty, $module_name)
                 {
                     $arrTmp    = array();
                     $arrTmp[0] = "&nbsp;<a href='?menu=$module_name&action=EditarArchivo&archivo=$item'>".$item."</a>" ;
+                    $sizeFile = $path.$item;
+                    $arrTmp[1] = filesize($sizeFile).' bytes';
                     $arrData[] = $arrTmp;
                 }
             }
@@ -207,6 +209,8 @@ function _moduleContent(&$smarty, $module_name)
                             "end"      => $fin,
                             "total"    => $total,
                             "columns"  => array(0 => array("name"      => $arrLang["File List"],
+                                                            "property1" => ""),
+                                                1 => array("name"      => $arrLang["File Size"],
                                                             "property1" => ""),
                                                 )
                         );
