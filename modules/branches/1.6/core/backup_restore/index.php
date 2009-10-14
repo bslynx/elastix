@@ -968,7 +968,7 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
             
                             // Leer archivo entero para procesar	 
                             $contenido = file($sArchivo);	 
-                            for ($i = 0; $i < count($contenido); i++) {	 
+                            for ($i = 0; $i < count($contenido); $i++) {	 
                                 $contenido[$i] = ereg_replace(	 
                                     "^(.*)(/usr/lib(64)?/asterisk/modules)(.*)",	 
                                     "\\1$sRutaModulos\\4",	 
@@ -977,7 +977,7 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
             
                             // Escribir contenido resultante	 
                             $hArchivo = fopen($sArchivo, 'w');	 
-                            for ($i = 0; $i < count($contenido); i++) {	 
+                            for ($i = 0; $i < count($contenido); $i++) {	 
                                 fputs($hArchivo, $contenido[$i]);	 
                             }	 
                             fclose($hArchivo);	 
