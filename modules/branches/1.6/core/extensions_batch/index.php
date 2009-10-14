@@ -88,7 +88,7 @@ function _moduleContent(&$smarty, $module_name)
     $smarty->assign("HeaderFile", $arrLang["Header File Extensions Batch"]);
     $smarty->assign("AboutUpdate", $arrLang["About Update Extensions Batch"]);
     $smarty->assign("LINK", "modules/$module_name/libs/download_csv.php");
-    $html_input = "<input class='button' type='submit' name='delete_all' value='{$arrLang["Delete all extension"]}' onClick=\"return confirmSubmit('{$arrLang["Are you sure you wish to delete all extesions?"]}');\">";
+    $html_input = "<input class='button' type='submit' name='delete_all' value='{$arrLang["Delete All Extensions"]}' onClick=\"return confirmSubmit('{$arrLang["Are you really sure you want to delete all the extensions in this server?"]}');\">";
     $smarty->assign("DELETE_ALL", $html_input);
 
     switch($accion)
