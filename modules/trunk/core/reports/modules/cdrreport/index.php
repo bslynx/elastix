@@ -259,7 +259,7 @@ function _moduleContent(&$smarty, $module_name)
 	       $time = $cdr[8].'s';
 	    else{
 	       $timeToSecond = secondsToTime($cdr[8]);
-	       $time = $cdr[8].' '.$timeToSecond;
+	       $time = $cdr[8].'s '.$timeToSecond;
 	    }
             $arrTmp[7] = $cdr[8];
 
