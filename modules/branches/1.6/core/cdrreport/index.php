@@ -245,6 +245,7 @@ function _moduleContent(&$smarty, $module_name)
     if(isset($arrCDR['Data']) && is_array($arrCDR['Data']))
     {
         foreach($arrCDR['Data'] as $cdr) {
+            $time = "";
             $arrTmp    = array();
             $arrTmp[0] = $cdr[0];
             $arrTmp[1] = $cdr[1];
@@ -254,6 +255,12 @@ function _moduleContent(&$smarty, $module_name)
             $arrTmp[5] = $cdr[4];
             $arrTmp[6] = $cdr[5];
     //        $arrTmp[6] = $cdr[7];
+	    if($cdr[8] <= 60)
+	       $time = $cdr[8].'s';
+	    else{
+	       $timeToSecond = secondsToTime($cdr[8]);
+	       $time = $cdr[8].' '.$timeToSecond;
+	    }
             $arrTmp[7] = $cdr[8];
 
             $arrData[] = $arrTmp;
@@ -297,4 +304,28 @@ function _moduleContent(&$smarty, $module_name)
         return $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
     }
 }
+
+function secondsToTime($time){
+        if($time >= 3600){
+            $decimalHours = $time/3600;
+            $hours = floor($decimalHours);
+
+            $decimalMinutes = $decimalHours - $hours;
+            $minutesTotal = $decimalMinutes*60;
+            $minutes = floor($minutesTotal);
+
+            $decimalSeconds = $decimalTotal - $minutes;
+            $seconds = $decimalSeconds*60;
+            return "( ".$hours."h ".$minutes."m ".$seconds."s )";
+        }
+        else{
+            $decimalMinutes = $time/60;
+            $minutes = floor($decimalMinutes);
+
+            $decimalSeconds = $decimalMinutes - $minutes;
+            $seconds = $decimalSeconds*60;
+            return "( ".$minutes."m ".$seconds."s )";
+        }
+}
+
 ?>

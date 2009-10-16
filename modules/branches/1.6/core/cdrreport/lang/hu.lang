@@ -36,7 +36,7 @@ $arrLangModule=array(
 "End Date" => "Vég Dátum",
 "Field Name" => "Mező név",
 "Field" => "Mező  ",
-"CDR Report List" => "CDR jelentés lista",
+"CDR Report List" => "CDR Report",
 "Account Code" => "Account Code",
 "Date" => "Dátum",
 "Source" => "Forrás",
@@ -52,5 +52,6 @@ $arrLangModule=array(
 "BUSY" => "BUSY",
 "FAILED" => "FAILED",
 "NO ANSWER" => "NO ANSWER",
+"Delete" => "Delete the CDRs in this Report",
 );
 ?>
