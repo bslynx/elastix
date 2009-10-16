@@ -35,7 +35,7 @@ $arrLangModule=array(
 "End Date" => "終了日",
 "Field Name" => "フィールド名",
 "Field" => "フィールド",
-"CDR Report List" => "CDRリポート一覧",
+"CDR Report List" => "CDR Report",
 "Account Code" => "アカウントCD",
 "Date" => "年月日",
 "Source" => "発信元",
@@ -50,6 +50,7 @@ $arrLangModule=array(
 "ANSWERED" => "ANSWERED",
 "BUSY" => "BUSY",
 "FAILED" => "FAILED",
-"NO ANSWER" => "NO ANSWER", 
+"NO ANSWER" => "NO ANSWER",
+"Delete" => "Delete the CDRs in this Report", 
 );
 ?>

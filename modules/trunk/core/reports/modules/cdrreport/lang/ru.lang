@@ -32,7 +32,7 @@ $arrLangModule=array(
 "End Date" => "Конечная дата",
 "Field Name" => "Название поля",
 "Field" => "Поле",
-"CDR Report List" => "Список записей CDR",
+"CDR Report List" => "CDR Report",
 "Account Code" => "Account Code",
 "Date" => "Дата",
 "Source" => "От кого",
@@ -48,5 +48,6 @@ $arrLangModule=array(
 "BUSY" => "BUSY",
 "FAILED" => "FAILED",
 "NO ANSWER" => "NO ANSWER",
+"Delete" => "Delete the CDRs in this Report",
 );
 ?>

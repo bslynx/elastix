@@ -36,7 +36,7 @@ $arrLangModule=array(
 "End Date" => "Krajnji datum",
 "Field Name" => "Naziv polja",
 "Field" => "Polje",
-"CDR Report List" => "CDR izvještaj",
+"CDR Report List" => "CDR Report",
 "Account Code" => "Account Code",
 "Date" => "Datum",
 "Source" => "Izvorište",
@@ -52,5 +52,6 @@ $arrLangModule=array(
 "BUSY" => "BUSY",
 "FAILED" => "FAILED",
 "NO ANSWER" => "NO ANSWER",
+"Delete" => "Delete the CDRs in this Report",
 );
 ?>
