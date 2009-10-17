@@ -2,7 +2,7 @@
 <module>
   <menulist>
     <menuitem menuid="fax"            desc="Fax"               parent=""            module="no"  link="" order="0"></menuitem>
-    <menuitem menuid="virtual_fax"    desc="Virtual Fax"       parent=""            module="no"  link="" order="1"></menuitem>
+    <menuitem menuid="virtual_fax"    desc="Virtual Fax"       parent="fax"         module="no"  link="" order="1"></menuitem>
     <menuitem menuid="faxlist"        desc="Virtual Fax List"  parent="virtual_fax" module="yes" link="" order="11"></menuitem>
     <menuitem menuid="faxnew"         desc="New Virtual Fax"   parent="virtual_fax" module="yes" link="" order="12"></menuitem>
     <menuitem menuid="faxmaster"      desc="Fax Master"        parent="fax"         module="yes" link="" order="2"></menuitem>
