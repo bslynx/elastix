@@ -844,7 +844,7 @@ class paloSantoVoIPProvider {
         $text .="CALLINGPRES_67 = unavailable\n";
         $text .="PREFIX_TRUNK_2 = 1\n";
         $text .="#include globals_custom.conf\n";
-        $text .="\n"
+        $text .="\n";
         $text .=";end of [globals]\n";
         $text .="\n";
         $text .="[app-pbdirectory]\n";
@@ -864,9 +864,9 @@ class paloSantoVoIPProvider {
         $text .="\n";
         $text .="[macro-autoanswer]\n";
         $text .="include => macro-autoanswer-custom\n";
-        $text .="exten => s,1,Set(DIAL=${DB(DEVICE/\${ARG1}/dial)})\n";
+        $text .="exten => s,1,Set(DIAL=\${DB(DEVICE/\${ARG1}/dial)})\n";
         $text .="exten => s,n,GotoIf($[\"\${DB(DEVICE/\${ARG1}/autoanswer/macro)}\" != \"\" ]?macro)\n";
-        $text .="exten => s,n,Set(phone=${SIPPEER(${CUT(DIAL,/,2)}:useragent)})\n";
+        $text .="exten => s,n,Set(phone=\${SIPPEER(\${CUT(DIAL,/,2)}:useragent)})\n";
         $text .="exten => s,n,Set(SIPURI=)\n";
         $text .="exten => s,n,Set(ALERTINFO=Alert-Info: Ring Answer)\n";
         $text .="exten => s,n,Set(CALLINFO=Call-Info: <uri>\;answer-after=0)\n";
@@ -879,7 +879,7 @@ class paloSantoVoIPProvider {
         $text .="exten => s,n,ExecIf($[\"\${ALERTINFO}\" != \"\"],SipAddHeader,\${ALERTINFO})\n";
         $text .="exten => s,n,ExecIf($[\"\${CALLINFO}\" != \"\"],SipAddHeader,\${CALLINFO})\n";
         $text .="exten => s,n,ExecIf($[\"\${SIPURI}\" != \"\"],Set,__SIP_URI_OPTIONS=\${SIPURI})\n";
-        $text .="exten => s,n+2(macro),Macro(${DB(DEVICE/\${ARG1}/autoanswer/macro)},\${ARG1})\n";
+        $text .="exten => s,n+2(macro),Macro(\${DB(DEVICE/\${ARG1}/autoanswer/macro)},\${ARG1})\n";
         $text .="exten => s,n+2(macro2),Macro(\${ANSWERMACRO},\${ARG1})\n";
         $text .="\n";
         $text .="; end of [macro-autoanswer]\n";
@@ -887,13 +887,13 @@ class paloSantoVoIPProvider {
         $text .="\n";
         $text .="[ext-paging]\n";
         $text .="include => ext-paging-custom\n";
-        $text .="exten => _PAGE.,1,GotoIf($[ \${AMPUSER} = ${EXTEN:4} ]?skipself)\n";
-        $text .="exten => _PAGE.,n,GotoIf($[ \${FORCE_PAGE} != 1 ]?AVAIL)\n";
+        $text .="exten => _PAGE.,1,GotoIf(\$[ \${AMPUSER} = \${EXTEN:4} ]?skipself)\n";
+        $text .="exten => _PAGE.,n,GotoIf(\$[ \${FORCE_PAGE} != 1 ]?AVAIL)\n";
         $text .="exten => _PAGE.,n,Set(AVAILSTATUS=not checked)\n";
         $text .="exten => _PAGE.,n,Goto(SKIPCHECK)\n";
-        $text .="exten => _PAGE.,n(AVAIL),ChanIsAvail(${DB(DEVICE/${EXTEN:4}/dial)},js)\n";
+        $text .="exten => _PAGE.,n(AVAIL),ChanIsAvail(\${DB(DEVICE/\${EXTEN:4}/dial)},js)\n";
         $text .="exten => _PAGE.,n(SKIPCHECK),Noop(Seems to be available (state = \${AVAILSTATUS})\n";
-        $text .="exten => _PAGE.,n,Macro(autoanswer,${EXTEN:4})\n";
+        $text .="exten => _PAGE.,n,Macro(autoanswer,\${EXTEN:4})\n";
         $text .="exten => _PAGE.,n,Dial(\${DIAL},\${DTIME},\${DOPTIONS})\n";
         $text .="exten => _PAGE.,n(skipself),Noop(Not paging originator)\n";
         $text .="exten => _PAGE.,n,Hangup\n";
@@ -945,7 +945,7 @@ class paloSantoVoIPProvider {
         $text .="\n";
         $text .="; end of [app-blacklist-add]";
 
-
+/*
 [app-blacklist-last]
 include => app-blacklist-last-custom
 exten => s,1,Answer
@@ -1719,7 +1719,7 @@ exten => h,1,Hangup
 
 ; end of [ext-did-catchall]
 
-
+*/
     }
 
 }
