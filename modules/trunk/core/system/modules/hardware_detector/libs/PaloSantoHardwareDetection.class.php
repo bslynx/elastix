@@ -28,7 +28,7 @@
   $Id: puetos  */
 
 include_once("libs/paloSantoDB.class.php");
-include_once("modules/hardware_detection/libs/paloSantoConfEcho.class.php");
+include_once("modules/hardware_detector/libs/paloSantoConfEcho.class.php");
 
 class PaloSantoHardwareDetection
 {
