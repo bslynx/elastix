@@ -90,5 +90,6 @@ $arrLangModule=array(
 "Dahdi Configuration" => "Dahdi Configuration",
 "Cancel" => "Cancel",
 "Select all in this section" => "Select all in this section",
+"MOH" => "Music on Hold",
 );
 ?>
