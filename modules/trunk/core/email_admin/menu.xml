@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module>
   <menulist>
-    <menuitem menuid="email_admin"    desc="Email"      parent=""            module="no"  link="" order="0"></menuitem>
-    <menuitem menuid="email_domains"  desc="Domains"    parent="email_admin" module="yes" link="" order="1"></menuitem>
-    <menuitem menuid="email_accounts" desc="Accounts"   parent="email_admin" module="yes" link="" order="2"></menuitem>
-    <menuitem menuid="email_relay"    desc="Relay"      parent="email_admin" module="yes" link="" order="3"></menuitem>
-    <menuitem menuid="webmail"        desc="Webmail"    parent="email_admin" module="no"  link="mail" order="4"></menuitem>
-    <menuitem menuid="antispam"       desc="Antispam"   parent="email_admin" module="yes" link="" order="5"></menuitem>
-    <menuitem menuid="smarthost"      desc="SmartHost"  parent="email_admin" module="yes" link="" order="6"></menuitem>
-    <menuitem menuid="email_list"     desc="Email list" parent="email_admin" module="yes" link="" order="7"></menuitem>
+    <menuitem menuid="email_admin"    desc="Email"       parent=""            module="no"  link="" order="0"></menuitem>
+    <menuitem menuid="email_domains"  desc="Domains"     parent="email_admin" module="yes" link="" order="1"></menuitem>
+    <menuitem menuid="email_accounts" desc="Accounts"    parent="email_admin" module="yes" link="" order="2"></menuitem>
+    <menuitem menuid="email_relay"    desc="Relay"       parent="email_admin" module="yes" link="" order="3"></menuitem>
+    <menuitem menuid="webmail"        desc="Webmail"     parent="email_admin" module="no"  link="mail" order="4"></menuitem>
+    <menuitem menuid="antispam"       desc="Antispam"    parent="email_admin" module="yes" link="" order="5"></menuitem>
+    <menuitem menuid="remote_smpt"    desc="Remote SMPT" parent="email_admin" module="yes" link="" order="6"></menuitem>
+    <menuitem menuid="email_list"     desc="Email list"  parent="email_admin" module="yes" link="" order="7"></menuitem>
   </menulist>
 </module>
