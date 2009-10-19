@@ -1,4 +1,44 @@
-<table width="99%" border="0" cellspacing="0" cellpadding="0" align="center">
+{literal}
+<script type="text/javascript">
+<!-- Original:  Gregor (legreg@legreg.de) -->
+
+<!-- This script and many more are available free online at -->
+<!-- The JavaScript Source!! http://javascript.internet.com -->
+
+<!-- Begin
+var ie4 = (document.all) ? true : false;
+var ns4 = (document.layers) ? true : false;
+var ns6 = (document.getElementById && !document.all) ? true : false;
+function hidelayer(lay) {
+if (ie4) {
+    document.all[lay].style.visibility = "hidden";
+    document.all[lay].style.position = "absolute";
+}
+if (ns4) {
+    document.layers[lay].visibility = "hide";
+}
+if (ns6) {
+    document.getElementById([lay]).style.display = "none";
+    document.getElementById([lay]).style.position = "absolute";
+}
+}
+function showlayer(lay) {
+if (ie4) {
+    document.all[lay].style.visibility = "visible";
+    document.all[lay].style.position = "";
+}
+if (ns4) {
+    document.layers[lay].visibility = "show";
+}
+if (ns6) {
+    document.getElementById([lay]).style.display = "";
+    document.getElementById([lay]).style.position = "";
+}
+}
+//  End -->
+</script>
+{/literal}
+<table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
     <tr class="moduleTitle">
         <td class="moduleTitle" valign="middle">&nbsp;&nbsp;<img src="images/conference.png" border="0" align="absmiddle">&nbsp;&nbsp;{$TITLE}</td>
     </tr>
@@ -13,25 +53,17 @@
     <tr>
         <td align="right" nowrap><span class="letra12"><span  class="required">*</span> {$REQUIRED_FIELD}</span></td>
     </tr>
-    <tr>
+    <tr><td>
         <table width="100%" cellpadding="4" cellspacing="0" border="0" class="tabForm">
             <tr>
                 <td align="left" width="20%"><b>{$conference_name.LABEL}: <span  class="required">*</span></b></td>
                 <td class="required" align="left">{$conference_name.INPUT}</td>
-            </tr>
-            <tr>
                 <td align="left"><b>{$conference_owner.LABEL}: </b></td>
                 <td align="left">{$conference_owner.INPUT}</td>
             </tr>
             <tr>
-                <td align="left"><b>{$conference_number.LABEL}: <span  class="required">*</span></b></td>
-                <td align="left">{$conference_number.INPUT}</td>
-            </tr>
-            <tr>
                 <td align="left"><b>{$moderator_pin.LABEL}: </b></td>
                 <td align="left">{$moderator_pin.INPUT}</td>
-            </tr>
-            <tr>
                 <td align="left"><b>{$moderator_options_1.LABEL}</b></td>
                 <td align="left">
                     {$moderator_options_1.INPUT}{$announce}&nbsp;&nbsp;&nbsp;
@@ -41,8 +73,6 @@
             <tr>
                 <td align="left"><b>{$user_pin.LABEL}: </b></td>
                 <td align="left">{$user_pin.INPUT}</td>
-            </tr>
-            <tr>
                 <td align="left"><b>{$user_options_1.LABEL}: </b></td>
                 <td align="left">
                     {$user_options_1.INPUT}{$announce}&nbsp;&nbsp;&nbsp;
@@ -53,30 +83,35 @@
             <tr>
                 <td align="left"><b>{$start_time.LABEL}: <span  class="required">*</span></b></td>
                 <td align="left">{$start_time.INPUT}</td>
-            </tr>
-            <tr>
                 <td align="left"><b>{$duration.LABEL}: </b></td>
                 <td align="left">
                     {$duration.INPUT}&nbsp;:
                     {$duration_min.INPUT}
                 </td>
             </tr>
-<!--
             <tr>
-                <td align="left"><b>{$recurs.LABEL}: </b></td>
-                <td align="left">
-                    {$recurs.INPUT}&nbsp;&nbsp;&nbsp;
-                    {$reoccurs_period.LABEL}:
-                    {$reoccurs_period.INPUT}
-                    {$reoccurs_days.LABEL}
-                    {$reoccurs_days.INPUT}
-                </td>
-            </tr>
--->
-            <tr>
+                <td align="left"><b>{$conference_number.LABEL}: <span  class="required">*</span></b></td>
+                <td align="left">{$conference_number.INPUT}</td>
                 <td align="left"><b>{$max_participants.LABEL}: <span  class="required">*</span></b></td>
                 <td align="left">{$max_participants.INPUT}</td>
             </tr>
+{if $WEBCONF_CONTENT}
+            <tr><td><input type="checkbox" name="enable_webconf" id="enable_webconf" {$WEBCONF_SELECTED} {literal} onclick="if (this.checked) { showlayer('webconf_options'); } else { hidelayer('webconf_options'); } " {/literal} /><b>Enable Web Conference</b></td><td colspan="3">&nbsp;</td></tr>
+            <tr><td colspan="4"><div id="webconf_options"><hr/>{$WEBCONF_CONTENT}</div></td></tr>
+{literal}
+<script type="text/javascript">
+<!-- 
+
+if (document.getElementById('enable_webconf').checked) {
+    showlayer('webconf_options');
+} else {
+    hidelayer('webconf_options');
+}
+
+//  End -->
+</script>
+{/literal}
+{/if}
         </table>
-    </tr>
+    </td></tr>
 </table>
