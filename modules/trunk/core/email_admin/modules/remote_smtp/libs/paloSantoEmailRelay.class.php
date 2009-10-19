@@ -119,6 +119,7 @@ class paloSantoEmailRelay {
                 $line = str_ireplace("inet_interfaces = all", "inet_interfaces = localhost", $line);
                 $text .= $line; 
             }else if(eregi("mynetworks = /etc/postfix/network_table", $line)){
+                if(!eregi("#mynetworks = /etc/postfix/network_table", $line))
                 $line = str_ireplace("mynetworks = /etc/postfix/network_table", "#mynetworks = /etc/postfix/network_table", $line);
                 $text .= $line; 
             }else if(eregi($filter, $line)) {
