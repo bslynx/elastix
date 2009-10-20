@@ -261,7 +261,90 @@ function createFieldForm($arrLang)
                                             "VALIDATION_TYPE"        => "",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-
+            "qualify"   => array(      "LABEL"                  => $arrLang["Qualify"],
+                                            "REQUIRED"               => "",
+                                            "INPUT_TYPE"             => "",
+                                            "INPUT_EXTRA_PARAM"      => "",
+                                            "VALIDATION_TYPE"        => "",
+                                            "VALIDATION_EXTRA_PARAM" => ""
+                                            ),
+            "insecure"   => array(      "LABEL"                  => $arrLang["Insecure"],
+                                            "REQUIRED"               => "",
+                                            "INPUT_TYPE"             => "",
+                                            "INPUT_EXTRA_PARAM"      => "",
+                                            "VALIDATION_TYPE"        => "",
+                                            "VALIDATION_EXTRA_PARAM" => ""
+                                            ),
+            "host"   => array(      "LABEL"                  => $arrLang["Host"],
+                                            "REQUIRED"               => "",
+                                            "INPUT_TYPE"             => "",
+                                            "INPUT_EXTRA_PARAM"      => "",
+                                            "VALIDATION_TYPE"        => "",
+                                            "VALIDATION_EXTRA_PARAM" => ""
+                                            ),
+            "fromuser"   => array(      "LABEL"                  => $arrLang["Fromuser"],
+                                            "REQUIRED"               => "",
+                                            "INPUT_TYPE"             => "",
+                                            "INPUT_EXTRA_PARAM"      => "",
+                                            "VALIDATION_TYPE"        => "",
+                                            "VALIDATION_EXTRA_PARAM" => ""
+                                            ),
+            "fromdomain"   => array(      "LABEL"                  => $arrLang["Fromdomain"],
+                                            "REQUIRED"               => "",
+                                            "INPUT_TYPE"             => "",
+                                            "INPUT_EXTRA_PARAM"      => "",
+                                            "VALIDATION_TYPE"        => "",
+                                            "VALIDATION_EXTRA_PARAM" => ""
+                                            ),
+            "dtmfmode"   => array(      "LABEL"                  => $arrLang["Dtmfmode"],
+                                            "REQUIRED"               => "",
+                                            "INPUT_TYPE"             => "",
+                                            "INPUT_EXTRA_PARAM"      => "",
+                                            "VALIDATION_TYPE"        => "",
+                                            "VALIDATION_EXTRA_PARAM" => ""
+                                            ),
+            "disallow"   => array(      "LABEL"                  => $arrLang["Disallow"],
+                                            "REQUIRED"               => "",
+                                            "INPUT_TYPE"             => "",
+                                            "INPUT_EXTRA_PARAM"      => "",
+                                            "VALIDATION_TYPE"        => "",
+                                            "VALIDATION_EXTRA_PARAM" => ""
+                                            ),
+            "context"   => array(      "LABEL"                  => $arrLang["Context"],
+                                            "REQUIRED"               => "",
+                                            "INPUT_TYPE"             => "",
+                                            "INPUT_EXTRA_PARAM"      => "",
+                                            "VALIDATION_TYPE"        => "",
+                                            "VALIDATION_EXTRA_PARAM" => ""
+                                            ),
+            "allow"   => array(      "LABEL"                  => $arrLang["Allow"],
+                                            "REQUIRED"               => "",
+                                            "INPUT_TYPE"             => "",
+                                            "INPUT_EXTRA_PARAM"      => "",
+                                            "VALIDATION_TYPE"        => "",
+                                            "VALIDATION_EXTRA_PARAM" => ""
+                                            ),
+            "trustrpid"   => array(      "LABEL"                  => $arrLang["Trustrpid"],
+                                            "REQUIRED"               => "",
+                                            "INPUT_TYPE"             => "",
+                                            "INPUT_EXTRA_PARAM"      => "",
+                                            "VALIDATION_TYPE"        => "",
+                                            "VALIDATION_EXTRA_PARAM" => ""
+                                            ),
+            "sendrpid"   => array(      "LABEL"                  => $arrLang["Sendrpid"],
+                                            "REQUIRED"               => "",
+                                            "INPUT_TYPE"             => "",
+                                            "INPUT_EXTRA_PARAM"      => "",
+                                            "VALIDATION_TYPE"        => "",
+                                            "VALIDATION_EXTRA_PARAM" => ""
+                                            ),
+            "canreinvite"   => array(      "LABEL"                  => $arrLang["Canreinvite"],
+                                            "REQUIRED"               => "",
+                                            "INPUT_TYPE"             => "",
+                                            "INPUT_EXTRA_PARAM"      => "",
+                                            "VALIDATION_TYPE"        => "",
+                                            "VALIDATION_EXTRA_PARAM" => ""
+                                            ),
             );
     return $arrFields;
 }

@@ -65,62 +65,62 @@
     </tr></div>
 
     <div id="text_qualify" style="display:none"><tr class="letra12">
-        <td align="left"><b><label> Qualify:</label></b></td>
+        <td align="left"><b><label> {$qualify.LABEL}:</label></b></td>
         <td ><input type="text" id="qualify" value="" size="40" name="qualify"/></td>
     </tr></div>
 
     <div id="text_insecure" style="display:none"><tr class="letra12" >
-        <td align="left"><b><label> Insecure:</label></b></td>
+        <td align="left"><b><label> {$insecure.LABEL}:</label></b></td>
         <td ><input type="text" id="insecure" value="" size="40" name="insecure"/></td>
     </tr></div>
 
     <div id="text_host" style="display:none"><tr class="letra12" >
-        <td align="left"><b><label> Host:</label></b></td>
+        <td align="left"><b><label> {$host.LABEL}:</label></b></td>
         <td ><input type="text" id="host" value="" size="40" name="host"/></td>
     </tr></div>
 
     <div id="text_fromuser" style="display:none"><tr class="letra12" >
-        <td align="left"><b><label> Fromuser:</label></b></td>
+        <td align="left"><b><label> {$fromuser.LABEL}:</label></b></td>
         <td ><input type="text" id="fromuser" value="" size="40" name="fromuser"/></td>
     </tr></div>
 
     <div id="text_fromdomain" style="display:none"><tr class="letra12" >
-        <td align="left"><b><label> Fromdomain:</label></b></td>
+        <td align="left"><b><label> {$fromdomain.LABEL}:</label></b></td>
         <td ><input type="text" id="fromdomain" value="" size="40" name="fromdomain"/></td>
     </tr></div>
 
     <div id="text_dtmfmode" style="display:none"><tr class="letra12" >
-        <td align="left"><b><label> Dtmfmode:</label></b></td>
+        <td align="left"><b><label> {$dtmfmode.LABEL}:</label></b></td>
         <td ><input type="text" id="dtmfmode" value="" size="40" name="dtmfmode"/></td>
     </tr></div>
 
     <div id="text_disallow" style="display:none"><tr class="letra12" >
-        <td align="left"><b><label> Disallow:</label></b></td>
+        <td align="left"><b><label> {$disallow.LABEL}:</label></b></td>
         <td ><input type="text" id="disallow" value="" size="40" name="disallow"/></td>
     </tr></div>
 
     <div id="text_context" style="display:none"><tr class="letra12" >
-        <td align="left"><b><label> Context:</label></b></td>
+        <td align="left"><b><label> {$context.LABEL}:</label></b></td>
         <td ><input type="text" id="context" value="" size="40" name="context"/></td>
     </tr></div>
 
     <div id="text_allow" style="display:none"><tr class="letra12" >
-        <td align="left"><b><label> Allow:</label></b></td>
+        <td align="left"><b><label> {$allow.LABEL}:</label></b></td>
         <td ><input type="text" id="allow" value="" size="40" name="allow"/></td>
     </tr></div>
 
     <div id="text_trustrpid" style="display:none"><tr class="letra12" >
-        <td align="left"><b><label> Trustrpid:</label></b></td>
+        <td align="left"><b><label> {$trustrpid.LABEL}:</label></b></td>
         <td ><input type="text" id="trustrpid" value="" size="40" name="trustrpid"/></td>
     </tr></div>
     
     <div id="text_sendrpid" style="display:none"><tr class="letra12" >
-        <td align="left"><b><label> Sendrpid:</label></b></td>
+        <td align="left"><b><label> {$sendrpid.LABEL}:</label></b></td>
         <td ><input type="text" id="sendrpid" value="" size="40" name="sendrpid"/></td>
     </tr></div>
 
     <div id="text_canreinvite" style="display:none"><tr class="letra12" >
-        <td align="left"><b><label> Canreinvite:</label></b></td>
+        <td align="left"><b><label> {$canreinvite.LABEL}:</label></b></td>
         <td ><input type="text" id="canreinvite" value="" size="40" name="canreinvite"/></td>
     </tr></div>
 

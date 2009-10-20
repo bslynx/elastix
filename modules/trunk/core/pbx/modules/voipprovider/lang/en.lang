@@ -34,5 +34,17 @@ $arrLangModule=array(
 "Secret" => "Secret",
 "Configuration" => "Configuration",
 "Type" => "Type",
+"Qualify" => "Qualify",
+"Insecure" => "Insecure",
+"Host" => "Host",
+"Fromuser" => "Fromuser",
+"Fromdomain" => "Fromdomain",
+"Dtmfmode" => "Dtmfmode",
+"Disallow" => "Disallow",
+"Context" => "Context",
+"Allow" => "Allow",
+"Trustrpid" => "Trustrpid",
+"Sendrpid" => "Sendrpid",
+"Canreinvite" => "Canreinvite",
 );
 ?>
