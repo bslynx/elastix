@@ -117,7 +117,7 @@ class PaloSantoHardwareDetection
     }
 
     function getMisdnPortInfo()
-    {   
+    {
 
         exec('/usr/bin/misdnportinfo',$arrConsole,$flagStatus);
         if($flagStatus == 0)
@@ -130,83 +130,25 @@ class PaloSantoHardwareDetection
         global $arrLang;
         $there_is_other_card= "";
         $message = $arrLang["Satisfactory Hardware Detection"];
-	
+        $there_is_other_card  ="";
+        $overwrite_chan_dahdi ="";
 
-	if($there_is_sangoma_card=="true")
+        if($there_is_sangoma_card=="true")
             $there_is_other_card = "-t";
         if($there_is_misdn_card=="true")
             $there_is_other_card .= " -m";
+        if($chk_dahdi_replace=="true")
+            $overwrite_chan_dahdi = " -o";
 
-        exec("sudo /usr/sbin/hardware_detector $there_is_other_card",$respuesta,$retorno);
+        exec("sudo /usr/sbin/hardware_detector $there_is_other_card $overwrite_chan_dahdi",$respuesta,$retorno);
         if(is_array($respuesta)){
             foreach($respuesta as $key => $linea){
                 //falta validar algun error
                 //if(ereg("^(\[Errno [[:digit:]]{1,}\])",$linea,$reg))
                 //  return $linea;
             }
-
-            if($retorno==0){// no hubo errores al correr el comando dahdi_genconf, nota: aun no se ha confirmado que esta sea la forma correcta de validar errores
-                if($chk_dahdi_replace=="true"){
-                    $fileDAHDI = "$path_file_dahdi/chan_dahdi.conf";
-                    exec("cp $fileDAHDI $fileDAHDI.replaced_for_elastix",$respuesta,$retorno);
-                    if($retorno==0){//se pudo respaldar chan_dahdi.conf
-                        if(!$this->writeDAHDIConfFile($fileDAHDI)){
-                            $message = $arrLang["Unable to replace file chan_dahdi.conf"];
-                        }
-                    }
-                    else $message = $arrLang["Unable to backup file chan_dahdi.conf by chan_dahdi.conf.replace_for_elastix"];
-                }
-            }
             return $message;
-        } 
-    }
-
-    function writeDAHDIConfFile($fileDAHDI)
-    {
-        $seRealizo = true;
-        $newContentFile="[trunkgroups]
-
-[channels]
-context=from-pstn
-signalling=fxs_ks
-rxwink=300              ; Atlas seems to use long (250ms) winks
-usecallerid=yes
-hidecallerid=no
-callwaiting=yes
-usecallingpres=yes
-callwaitingcallerid=yes
-threewaycalling=yes
-transfer=yes
-canpark=yes
-cancallforward=yes
-callreturn=yes
-echocancel=yes
-echocancelwhenbridged=no
-faxdetect=incoming
-echotraining=800
-rxgain=0.0
-txgain=0.0
-callgroup=1
-pickupgroup=1
-
-;Uncomment these lines if you have problems with the disconection of your analog lines
-;busydetect=yes
-;busycount=3
-
-
-immediate=no
-
-#include dahdi-channels.conf
-#include chan_dahdi_additional.conf";
-
-        exec("sudo -u root chmod 666 $fileDAHDI");
-        if($fh = fopen($fileDAHDI, "w")) {
-            fwrite($fh, $newContentFile);
-            fclose($fh);
-        } 
-        else $seRealizo = false;
-        exec("sudo -u root chmod 664 $fileDAHDI");
-        return $seRealizo;
-    }
+        }
+    }    
 }
 ?>
