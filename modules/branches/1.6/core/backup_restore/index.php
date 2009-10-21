@@ -273,6 +273,7 @@ function form_general($smarty, $local_templates_dir, $arrLang, $arrBackupOptions
     $smarty->assign("TODO_ENDPOINT", $arrLang["Select all in this section"]);
     $smarty->assign("TODO_ASTERISK", $arrLang["Select all in this section"]);
     $smarty->assign("TODO_OTROS", $arrLang["Select all in this section"]);
+    $smarty->assign("TODO_OTROS_NEW", $arrLang["Select all in this section"]);
     $smarty->assign("BACK", $arrLang["Cancel"]);
     $smarty->assign("WARNING", $arrLang["This process could take several minutes"]);
 
@@ -282,6 +283,7 @@ function form_general($smarty, $local_templates_dir, $arrLang, $arrBackupOptions
     $smarty->assign("ENDPOINT", $arrLang["Endpoint"]);
     $smarty->assign("ASTERISK", $arrLang["Asterisk"]);
     $smarty->assign("OTROS", $arrLang["Others"]);
+    $smarty->assign("OTROS_NEW", $arrLang["Others new"]);
     /*****************/
 
     $smarty->assign("backup_fax", $arrBackupOptions['fax']);
@@ -289,6 +291,7 @@ function form_general($smarty, $local_templates_dir, $arrLang, $arrBackupOptions
     $smarty->assign("backup_endpoint", $arrBackupOptions['endpoint']);
     $smarty->assign("backup_asterisk", $arrBackupOptions['asterisk']);
     $smarty->assign("backup_otros", $arrBackupOptions['otros']);
+    $smarty->assign("backup_otros_new", $arrBackupOptions['otros_new']);
     //$smarty->assign("backup_otros_next", $arrBackupOptions['otros_next']);//************************
 
     return $smarty->fetch("$local_templates_dir/backup.tpl");
@@ -516,6 +519,11 @@ function Array_Options($arrLang, $disabled="")
                                     "menus_permissions" =>  array("desc"=>$arrLang["Menus and Permissions"],"check"=>"","msg"=>"","disable"=>"$disabled"),
                                     "fop_config"        =>  array("desc"=>$arrLang["Flash Operator Panel Config Files"],"check"=>"","msg"=>"","disable"=>"$disabled"),
                                 ),
+            "otros_new"      =>  array(
+                                    "calendar_db"          =>  array("desc"=>$arrLang["Calendar  Database"],"check"=>"","msg"=>"","disable"=>"$disabled"),
+                                    "address_db"          =>  array("desc"=>$arrLang["Address Book Database"],"check"=>"","msg"=>"","disable"=>"$disabled"),
+                                    "conference_db"          =>  array("desc"=>$arrLang["Conference  Database"],"check"=>"","msg"=>"","disable"=>"$disabled"),
+                                 ),
     );
     return $arrBackupOptions;
 }
@@ -793,6 +801,38 @@ function process_each_backup($arrSelectedOptions,$ruta_respaldo,&$arrBackupOptio
             exec("cp /var/lib/asterisk/bin/retrieve_op_conf_from_mysql.pl $ruta_respaldo", $output, $retval);
             if ($retval!=0) $bExito = false;
 
+            break;
+
+        case "calendar_db":
+            $comando="cp $arrConf[elastix_dbdir]/calendar.db $ruta_respaldo";
+            exec($comando,$output,$retval);
+            if ($retval!=0) $bExito = false;
+            break;
+
+        case "address_db":
+            $comando="cp $arrConf[elastix_dbdir]/address_book.db $ruta_respaldo";
+            exec($comando,$output,$retval);
+            if ($retval!=0) $bExito = false;
+            break;
+
+        case "conference_db":
+            if(respaldar_base_mysql($ruta_respaldo, "meetme")!=0)
+                $bExito = false;
+
+            if (file_exists("$ruta_respaldo/meetme.sql"))
+            {
+                $comando="tar -C $ruta_respaldo -cvzf $ruta_respaldo/meetme_mysql.tgz meetme.sql";
+                exec($comando,$output,$retval);
+                if ($retval!=0) $bExito = false;
+
+                $comando="rm -f $ruta_respaldo/meetme.sql";
+                exec($comando,$output,$retval);
+            }else if (file_exists("$ruta_respaldo/meetme.sql"))
+            {
+                //Si existe este archivo es porq la base esta vacia o no existe
+                $comando="rm -f $ruta_respaldo/meetme.sql";
+                exec($comando,$output,$retval);
+            }else $bExito = false;
             break;
         }
 
@@ -1359,7 +1399,52 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
             $comando="cp -f $ruta_respaldo/retrieve_op_conf_from_mysql.pl /var/lib/asterisk/bin/";
             exec($comando, $output, $retval);
             if ($retval!=0) $bExito = false;
+            break;
 
+        case "calendar_db":
+
+            if (file_exists("$ruta_respaldo/calendar.db"))
+            {
+                $base_calendar_respaldo = "$ruta_respaldo/calendar.db";
+                $base_calendar = "$arrConf[elastix_dbdir]/calendar.db";
+
+                $comando="mv -f $base_calendar_respaldo $base_calendar";
+                exec($comando,$output,$retval);
+                if ($retval!=0) $bExito = false;
+
+                $comando="sudo -u root /bin/chmod 777 $base_calendar";
+                exec($comando,$output,$retval);
+            }else $bExito = false;
+            break;
+
+        case "address_db":
+
+            if (file_exists("$ruta_respaldo/address_book.db"))
+            {
+                $base_address_respaldo = "$ruta_respaldo/address_book.db";
+                $base_address = "$arrConf[elastix_dbdir]/address_book.db";
+
+                $comando="mv -f $base_address_respaldo $base_address";
+                exec($comando,$output,$retval);
+                if ($retval!=0) $bExito = false;
+
+                $comando="sudo -u root /bin/chmod 777 $base_address";
+                exec($comando,$output,$retval);
+            }else $bExito = false;
+            break;
+
+        case "conference_db":
+            $archivo = "meetme";
+            if (file_exists("$ruta_respaldo/{$archivo}_mysql.tgz"))
+            {
+                $comando="tar -C $ruta_respaldo -xvzf $ruta_respaldo/{$archivo}_mysql.tgz";
+                exec($comando,$output,$retval);
+
+                $base = $archivo;
+                $comando="mysql --password=".MYSQL_ROOT_PASSWORD." --user=root $base < $ruta_respaldo/$archivo.sql";
+                exec($comando,$output,$retval);
+                if ($retval!=0) $bExito = false;
+            }
             break;
         }
 
