@@ -92,5 +92,9 @@ $arrLangModule=array(
 "Cancel" => "Cancel",
 "Select all in this section" => "Select all in this section",
 "MOH" => "Music on Hold",
+"Others new" => "Others",
+"Calendar  Database" => "Calendar  Database",
+"Address Book Database" => "Address Book Database",
+"Conference  Database" => "Conference  Database",
 );
 ?>

@@ -148,6 +148,36 @@ function VerificarCheck(chkbox, id)
                     </table></td>
                 </tr>
             </table></td>
+                   <!-- ********** N E W   O T H E R S ************ -->
+                    <td width="25%">
+                        <table id="table_others_new" width="100%" height="270px" border="0" cellspacing="0" cellpadding="0" class="tabForm">
+                            <th>
+                                <tr>
+                                    <td height="10px">
+                                        <b>{$OTROS_NEW}</b>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td height="10px">
+                                        <INPUT type="checkbox" name="backup_others_new" id="backup_others_new" onClick="ChequearTabla(this, 'table_others_new');">      
+                                        <b>{$TODO_OTROS_NEW}</b>
+                                    </td>
+                                </tr>
+                            </th>
+                            <tbody>
+                                {foreach key=key item=item from=$backup_otros_new}
+                                <tr>
+                                    <td><INPUT type="checkbox" {$item.disable} name="{$key}" id="{$key}" value="{$key}" onClick="VerificarCheck(this, 'backup_others_new');" {$item.check}>{$item.desc}&nbsp;{$item.msg}</td>
+                                </tr>
+                                {/foreach}
+                            </tbody>
+                            <tbody>
+                                <tr><td height="110px"></td></tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </table></td>
         </tr>
     </table>
     <INPUT type="hidden" name="option_url" id="option_url" value="{$OPTION_URL}">
