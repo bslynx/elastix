@@ -46,5 +46,7 @@ $arrLangModule=array(
 "Duration" => "Dutata",
 "Type" => "Tipo",
 "Message" => "Messaggio",
+"Listen" => "Listen",
+"Download" => "Download",
 );
 ?>

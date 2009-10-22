@@ -46,5 +46,7 @@ $arrLangModule=array(
 "Duration" => "Időtartam",
 "Type" => "Típus",
 "Message" => "Üzenet",
+"Listen" => "Listen",
+"Download" => "Download",
 );
 ?>

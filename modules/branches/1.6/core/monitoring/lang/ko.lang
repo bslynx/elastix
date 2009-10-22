@@ -42,5 +42,9 @@ $arrLangModule=array(
 "Duration" => "기간",
 "Type" => "타입",
 "Message" => "Message",
+"Listen" => "Listen",
+"Download" => "Download"
+"Listen" => "Listen",
+"Download" => "Download",
 );
 ?>

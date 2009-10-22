@@ -46,5 +46,7 @@ $arrLangModule=array(
 "Duration" => "Tid",
 "Type" => "Type",
 "Message" => "Message",
+"Listen" => "Listen",
+"Download" => "Download",
 );
 ?>

@@ -45,5 +45,7 @@ $arrLangModule=array(
 "Duration" => "通話時間",
 "Type" => "タイプ",
 "Message" => "メッセージ",
+"Listen" => "Listen",
+"Download" => "Download",
 );
 ?>
