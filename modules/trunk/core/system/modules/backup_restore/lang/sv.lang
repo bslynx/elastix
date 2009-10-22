@@ -91,5 +91,16 @@ $arrLangModule=array(
 "Calendar  Database" => "Calendar  Database",
 "Address Book Database" => "Address Book Database",
 "Conference  Database" => "Conference  Database",
+"FTP Backup" => "FTP Backup",
+"FTP Backup" => "FTP Backup",
+"Server FTP" => "Server FTP",
+"Port" => "Port",
+"User" => "User",
+"Password" => "Password",
+"Local" => "Local",
+"Server FTP" => "Server FTP",
+"Upload" => "Upload",
+"Download" => "Download",
+"Path Server FTP" => "Path Server FTP",
 );
 ?>

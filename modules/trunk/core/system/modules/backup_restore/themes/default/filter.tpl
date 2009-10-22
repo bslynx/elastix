@@ -3,6 +3,9 @@
   <td>
     <input class="button" type="submit" name="backup" value="{$BACKUP}">
   </td>
+  <td align="right">
+    <input class="button" type="submit" name="view_form_FTP" value="{$FTP_BACKUP}">
+  </td>
 <!--
   <td>
     {$FILE_UPLOAD}: <input type="file" name="file_upload">

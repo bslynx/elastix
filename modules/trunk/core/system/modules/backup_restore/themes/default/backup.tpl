@@ -146,9 +146,7 @@ function VerificarCheck(chkbox, id)
                             {/foreach}
                         </tbody>
                     </table></td>
-                </tr>
-            </table></td>
-                   <!-- ********** N E W   O T H E R S ************ -->
+                    <!-- ********** N E W   O T H E R S ************ -->
                     <td width="25%">
                         <table id="table_others_new" width="100%" height="270px" border="0" cellspacing="0" cellpadding="0" class="tabForm">
                             <th>
