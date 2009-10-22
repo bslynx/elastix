@@ -1,4 +1,4 @@
-<link   rel ="stylesheet"      href="modules/hardware_detection/themes/style.css" />
+<link   rel ="stylesheet"      href="modules/hardware_detector/themes/style.css" />
 
 <table width="{$width}" align="center" border="0" cellpadding="0" cellspacing="0">
     <tr class="moduleTitle">
@@ -10,7 +10,7 @@
             <input type='checkbox' name='chk_there_is_sangoma' id='chk_there_is_sangoma' />&nbsp; <b>{$DETECT_SANGOMA}<b> &nbsp;&nbsp;&nbsp;&nbsp;<br/>
             <input type='checkbox' name='chk_misdn_hardware' id='chk_misdn_hardware' />&nbsp; <b>{$DETECT_mISDN}<b>
         </td>
-        <td class="filterForm" valign="middle"  >
+        <td class="filterForm" valign="middle">
             <input type='button' name='submit_harware_detect' value='{$HARDWARE_DETECT}'  onclick="detectar()" class='button' /> 
         </td>
     </tr>
@@ -25,9 +25,9 @@
             {if $data.DESC.TIPO ne $CARD_NO_MOSTRAR}
                 <tr>
                     <td style='border: 1px #CCCCCC solid; font-size:12px;' align='left' class="moduleTitle">{$CARD} # {$data.DESC.ID}: {$data.DESC.TIPO} {$data.DESC.ADICIONAL}</td>
-                    <td style='border: 1px #CCCCCC solid; width:30px;'>  <img class="icon" src="modules/hardware_detection/images/icon1.png" /> </td>
-                    <td style='border: 1px #CCCCCC solid; width:30px;'>  <img class="icon" src="modules/hardware_detection/images/call2.png" /> </td>
-                    <td style='border: 1px #CCCCCC solid; width:30px;'><a href='?menu=hardware_detection&action=config_echo&cardId={$data.DESC.ID}'><img class="icon" src="modules/hardware_detection/images/icon_configecho.png" title="Config echo Canceller"/></a></td>
+                    <td style='border: 1px #CCCCCC solid; width:30px;'>  <img class="icon" src="modules/hardware_detector/images/icon1.png" /> </td>
+                    <td style='border: 1px #CCCCCC solid; width:30px;'>  <img class="icon" src="modules/hardware_detector/images/call2.png" /> </td>
+                    <td style='border: 1px #CCCCCC solid; width:30px;'><a href='?menu=hardware_detector&action=config_echo&cardId={$data.DESC.ID}'><img class="icon" src="modules/hardware_detector/images/icon_configecho.png" title="Config echo Canceller"/></a></td>
                 </tr>
                 <tr> 
                     <td colspan="4">

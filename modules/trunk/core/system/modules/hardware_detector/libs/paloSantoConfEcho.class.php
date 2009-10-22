@@ -148,7 +148,7 @@ class paloSantoConfEcho {
         $fp = fopen($FILE,'r');
         $j=0;
         $line_concat="";
-        
+        $enc="false";
         $find="false";
         while($line = fgets($fp, filesize($FILE)))
         {
@@ -156,6 +156,8 @@ class paloSantoConfEcho {
             $find="false";
             if(eregi("echocanceller", $line)){
                 $arrLine = split('[,]',$line);
+                $arrRang = split('[-]',trim($arrLine[1]));//new
+
                 if(count($arrLine)>2){
                     $arrRang=array();
                     for($i=0 ; $i< count($arrLine); $i++){
@@ -239,6 +241,93 @@ class paloSantoConfEcho {
                         }
                     //fin
                     }
+                }else if(!eregi($numport, $line) && ($typePass=="none" && $typeNew!="none")){
+                    $enc="true";
+                    $text .= $line;
+                }else if(count($arrRang)==2){//nuevo
+                    $arrRang=array();
+                    for($i=0 ; $i< count($arrLine); $i++){
+                        $arrRang[$i] = split('[-]',trim($arrLine[$i]));
+                    }
+                    $lineConf =  split('[=]',$arrRang['0'][0]);
+
+                    if($typePass=="none" && $typeNew!="none"){
+                        $min = $numport-1;
+                        $max = $numport+1;
+                        if($lineConf[1]==strtolower($typeNew)){              
+                            $line_concat="".$arrRang['0'][0];
+                            
+                            for($i=1; $i<count($arrRang); $i++){
+                                if($min==$arrRang[$i][1] || $max==$arrRang[$i][0]){
+                                    if($min==$arrRang[$i][1]){
+                                        $line_concat .= ",".$arrRang[$i][0]."-".$numport; 
+                                    }else if($max==$arrRang[$i][0]){
+                                        $line_concat .= ",".$numport."-".$arrRang[$i][1];
+                                    }
+                                }else{
+                                    $line_concat .= ",".$arrRang[$i][0]."-".$arrRang[$i][1];
+                                }
+                            }
+                            $line = $line_concat."\n";
+                        }else{ 
+                            for($i=1; $i<count($arrRang); $i++){
+                                if($min==$arrRang[$i][1] || $max==$arrRang[$i][0]){
+                                    $find="true";
+                                }
+                            }
+                            if($find=="true"){
+                                $line_concat = "echocanceller=".strtolower($typeNew).",".$numport."\n";
+                                $line = $line."".$line_concat;
+                            }
+                        }
+                       
+                        $text .= $line;
+                    }else{ 
+                        if((strtolower($typePass) == strtolower($typeNew))){
+                            $text .= $line;//si es el mismo al anterior queda igual
+                        }
+                        else{
+                            $line_concat="".$arrRang['0'][0];//=>echocanceller=oslec
+                            for($i=1; $i<count($arrRang); $i++){
+                                if($numport > $arrRang[$i][0] && $numport < $arrRang[$i][1]){//Rangos
+                                    $nmaxnew = $numport-1;
+                                    $nminnew = $numport+1;
+                                    if($nmaxnew == $arrRang[$i][0]){
+                                        $line_alone = "\n".$arrRang['0'][0].",".$arrRang[$i][0];
+                                        $line_concat .= ",".$nminnew."-".$arrRang[$i][1].$line_alone;
+                                    }else if($nminnew == $arrRang[$i][1]){
+                                        $line_alone = "\n".$arrRang['0'][0].",".$arrRang[$i][1];
+                                        $line_concat .= ",".$arrRang[$i][0]."-".$nmaxnew.$line_alone;
+                                    }else{
+                                        $line_concat .= ",".$arrRang[$i][0]."-".$nmaxnew.",".$nminnew."-".$arrRang[$i][1];
+                                    }
+                                    $getin="true";
+                                }else if(($numport==$arrRang[$i][0]) || ($numport==$arrRang[$i][1])){//Extremo
+                                    if($numport==$arrRang[$i][0]){
+                                        $nminnew = $numport+1;
+                                        $line_concat .= ",".$nminnew."-".$arrRang[$i][1];       
+                                        $getin="true";
+                                    }else if($numport==$arrRang[$i][1]){
+                                        $nmaxnew = $numport-1;
+                                        $line_concat .= ",".$arrRang[$i][0]."-".$nmaxnew;
+                                        $getin="true";
+                                    }
+                                }else{
+                                    $line_concat .= ",".$arrRang[$i][0]."-".$arrRang[$i][1];
+                                }
+                            }
+                            if($getin=="true"){
+                                if($typeNew!="none")
+                                    $line = $line_concat."\n"."echocanceller=".strtolower($typeNew).",".$numport."\n";
+                                else
+                                    $line = $line_concat."\n";
+                            }else{ $line = $line_concat."\n"; }
+                            $getin="false";
+                            $text .= $line;
+                        }
+                    //fin
+                    }
+                   
                 }else{
                     $num_neigh = $numport+1;
                     if(eregi($numport, $line) && eregi("echocanceller", $line)){
@@ -259,6 +348,11 @@ class paloSantoConfEcho {
                 $text .= $line;
             }
             $line_concat="";
+        }
+        if($enc="false" && ($typePass=="none" && $typeNew!="none")){
+            $line_concat = "\nechocanceller=".strtolower($typeNew).",".$numport."\n";
+            //$line = $line_concat."".$line;
+            $text .= $line_concat;
         }
         
         $this->saveChangeFileSystemConfig($text);

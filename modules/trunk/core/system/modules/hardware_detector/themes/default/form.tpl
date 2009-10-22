@@ -1,4 +1,4 @@
-<link   rel ="stylesheet"      href="modules/hardware_detection/themes/style.css" />
+<link   rel ="stylesheet"      href="modules/hardware_detector/themes/style.css" />
 
 <table width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
     <tr class="moduleTitle">
@@ -35,14 +35,8 @@
             <td> </td>
             <td align="left"><b>{$key}</b>  {$echocancel.name_port}: </td>
             <td width="15%" align="left">
-                <select id='typeecho_{$key}' name='typeecho_{$key}'>
-                    <option value='{$echocancel.type_echo}'>{$echocancel.type_echo}</option>
-                    <option value='none'>none</option>
-                    <option value='OSLEC'>OSLEC</option>
-                    <option value='MG2'>MG2</option>
-                    <option value='KBL'>KBL</option>
-                    <option value='SEC2'>SEC2</option>
-                    <option value='SEC'>SEC</option>
+                <select name=customer_id>
+                    {html_options options=$type_echo_names selected=$echocancel.type_echo}
                 </select>
             </td>
             <input type="hidden" value="{$echocancel.type_echo}" name="tmpTypeEcho{$key}" />

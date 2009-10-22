@@ -186,8 +186,16 @@ function viewFormConfEcho($smarty, $module_name, $local_templates_dir, &$pDB, $a
     if(is_array($arrPortsEcho) && count($arrPortsEcho)>1){
         $smarty->assign("arrPortsEcho", $arrPortsEcho);
         $i=1;
-
     }
+
+    $smarty->assign('type_echo_names', array(
+                              'none' => 'none',
+                              'OSLEC' => 'OSLEC',
+                              'MG2' => 'MG2',
+                              'KBL' => 'KBL',
+                              'SEC2' => 'SEC2',
+                              'SEC' => 'SEC'));
+    //$smarty->assign('typeecho_id', 1001);
 
     $smarty->assign("SAVE", $arrLang["Save"]);
     $smarty->assign("EDIT", $arrLang["Edit"]);

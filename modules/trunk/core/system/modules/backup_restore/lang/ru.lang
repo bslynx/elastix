@@ -102,5 +102,6 @@ $arrLangModule=array(
 "Upload" => "Upload",
 "Download" => "Download",
 "Path Server FTP" => "Path Server FTP",
+"Error to connect" => "Please fill all fields to connect server",
 );
 ?>

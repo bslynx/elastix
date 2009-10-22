@@ -1677,7 +1677,7 @@ function viewFormFTPBackup($smarty, $module_name, $local_templates_dir, &$pDB, $
          $content_local .= "<li class='ui-state-default' id="."'inn_"."$array_new[$i]'><b class='item'>{$array_new[$i]}</b></li>";
 
     $files_names = $pFTPBackup->getExternalNames($_DATA['user'], $_DATA['password'], $_DATA['server'], $_DATA['port'], $_DATA['pathServer']);
-    if(!$files_names)   echo 'error de coneccion';
+    if(!$files_names)   echo $arrLang["Error to connect"];
     else if($files_names == 'empty')  $content_remote = "";
     else
         for($i=0; $i<count($files_names); $i++)

@@ -30,4 +30,10 @@
 $DocumentRoot = (isset($_SERVER['argv'][1]))?$_SERVER['argv'][1]:"/var/www/html";
 $DataBaseRoot = "/var/www/db";
 $tmpDir = '/tmp/new_module/system';  # in this folder the load module extract the package content
+if(!file_exists("$DataBaseRoot/FTP.db")){
+    $cmd_mv    = "mv $tmpDir/setup/FTP.db $DataBaseRoot/";
+    $cmd_chown = "chown asterisk.asterisk $DataBaseRoot/FTP.db";
+    exec($cmd_mv);
+    exec($cmd_chown);
+}
 ?>
