@@ -106,5 +106,14 @@ $arrLangModule=array(
 "Download" => "Download",
 "Path Server FTP" => "Path Server FTP",
 "Error to connect" => "Please fill all fields to connect server",
+"Error Connection" => "Couldn't connect to server",
+"Error user_password" => "Couldn't connect with your user and password",
+"Error to save" => "Please fill all fields to save",
+"Error Drag Drop" => "Please Drag and Drop a file between lists",
+"Error to request" => "There was a problem with the connection",
+"Successfully uploaded" => "Successfully uploaded",
+"Problem uploading" => "There was a problem uploading",
+"Successfully written" => "Successfully written",
+"Problem downloading" => "There was a problem downloading",
 );
 ?>

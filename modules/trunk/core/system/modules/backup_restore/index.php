@@ -82,8 +82,6 @@ function _moduleContent(&$smarty, $module_name)
     else if (getParameter("action")=="download_file") $accion = "download_file";
     else if (isset($_POST["ftp_backup"])) $accion = "ftp_backup";
     else if (isset($_POST["save_new_FTP"])) $accion = "save_new_FTP";
-    else if (isset($_POST["upload_FTP"])) $accion = "upload_FTP";
-    else if (isset($_POST["download_FTP"])) $accion = "download_FTP";
     else if (isset($_POST["view_form_FTP"])) $accion = "view_form_FTP";
 /**************************************************************************************/
     else $accion ="report_backup_restore";
@@ -118,12 +116,6 @@ function _moduleContent(&$smarty, $module_name)
             break;
         case "save_new_FTP":
             $content = saveNewFTPBackup($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
-            break;
-        case "upload_FTP":
-            $content = upload($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
-            break;
-        case "download_FTP":
-            $content = download($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
             break;
         case "view_form_FTP":
             $content = viewFormFTPBackup($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
@@ -1676,9 +1668,13 @@ function viewFormFTPBackup($smarty, $module_name, $local_templates_dir, &$pDB, $
     for($i=0; $i<count($array_new); $i++)
          $content_local .= "<li class='ui-state-default' id="."'inn_"."$array_new[$i]'><b class='item'>{$array_new[$i]}</b></li>";
 
-    $files_names = $pFTPBackup->getExternalNames($_DATA['user'], $_DATA['password'], $_DATA['server'], $_DATA['port'], $_DATA['pathServer']);
-    if(!$files_names)   echo $arrLang["Error to connect"];
-    else if($files_names == 'empty')  $content_remote = "";
+    $files_names = $pFTPBackup->getExternalNames($_DATA['user'], $_DATA['password'], $_DATA['server'], $_DATA['port'], $_DATA['pathServer'], $smarty);
+    if($files_names == 1)   //echo $arrLang["Error to connect"];
+        $smarty->assign("mb_message", $arrLang["Error Connection"]);
+    else if($files_names == 2)
+        $smarty->assign("mb_message", $arrLang["Error user_password"]);
+    else if($files_names == 'empty')
+        $content_remote = "";
     else
         for($i=0; $i<count($files_names); $i++)
             $content_remote .= "<li class='ui-state-highlight' id="."'out_"."$files_names[$i]'><b class='item'>{$files_names[$i]}</b></li>";
@@ -1715,37 +1711,16 @@ function saveNewFTPBackup($smarty, $module_name, $local_templates_dir, &$pDB, $a
         $smarty->assign("mb_message", $strErrorMsg);
     }
     else{
-        $result = $pFTPBackup->getFTPBackupById(1);
-        if($result)
-            $pFTPBackup->updateData($server, $port, $user, $password, $path);
-        else
-            $pFTPBackup->insertData($server, $port, $user, $password, $path);
+        if($server &&  $port &&  $user  &&  $password &&  $path){ //deben estar llenos todos los campos
+            $result = $pFTPBackup->getFTPBackupById(1);
+            if($result)
+                $pFTPBackup->updateData($server, $port, $user, $password, $path);
+            else
+                $pFTPBackup->insertData($server, $port, $user, $password, $path);
+        }else
+            $smarty->assign("mb_message", $arrLang["Error to save"]);
         $content = viewFormFTPBackup($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
     }
-    return $content;
-}
-
-function upload($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
-{
-    $pFTPBackup = new paloSantoFTPBackup($pDB);
-    $arrFormFTPBackup = createFieldForm($arrLang);
-    $oForm = new paloForm($smarty,$arrFormFTPBackup);
-    $_DATA  = $_POST;
-    
-        $content = viewFormFTPBackup($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
-
-    return $content;
-}
-
-function download($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
-{
-    $pFTPBackup = new paloSantoFTPBackup($pDB);
-    $arrFormFTPBackup = createFieldForm($arrLang);
-    $oForm = new paloForm($smarty,$arrFormFTPBackup);
-    $_DATA  = $_POST;
-    
-        $content = viewFormFTPBackup($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
-
     return $content;
 }
 

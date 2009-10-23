@@ -4,10 +4,25 @@ require_once("/var/www/html/configs/default.conf.php");
 require_once($arrConf['basePath']."/libs/paloSantoDB.class.php");
 require_once($arrConf['basePath']."/modules/backup_restore/configs/default.conf.php");
 require_once($arrConf['basePath']."/modules/backup_restore/libs/paloSantoFTPBackup.class.php");
-require_once( "/var/www/html/libs/paloSantoForm.class.php");
+require_once($arrConf['basePath']."/libs/paloSantoForm.class.php");
+
+load_language($arrConf['basePath']."/");
+
+//include lang file
+$module_name = "backup_restore";
+$lang=get_language($arrConf['basePath']."/");
+$base_dir=$arrConf['basePath'];
+$lang_file="modules/$module_name/lang/$lang.lang";
+if (file_exists("$base_dir/$lang_file")) include_once "$base_dir/$lang_file";
+else include_once "$base_dir/modules/$module_name/lang/en.lang";
 
 global $arrConf;
 global $arrConfModule;
+global $arrLang;
+global $arrLangModule;
+
+$arrLang = array_merge($arrLang,$arrLangModule);
+$arrConf = array_merge($arrConf,$arrConfModule);
 
 $dir = $arrConfModule['dir'];
 
@@ -17,7 +32,7 @@ $lista   = getParameter('lista'); //identifica en que lista se hace el drop
 
 if ($action == "upload"){
     $array = obtainList($file);
-    $pDB1 = new paloDB($arrConfModule['dsn_conn_database']);
+    $pDB1 = new paloDB($arrConf['dsn_conn_database']);
     $pFTPBackup = new paloSantoFTPBackup($pDB1);
     $info = $pFTPBackup->getFTPBackupById(1);
     $user = $info['user'];
@@ -28,19 +43,19 @@ if ($action == "upload"){
 
     $files_names = $pFTPBackup->getExternalNames($user, $password, $host, $port, $path);
      if($lista == 'droptrue2' & $array[0] == 'out')
-            echo "Please Drag and Drop a file between lists";
+            echo $arrLang["Error Drag Drop"];
         else{
-            if(!$files_names)   echo 'There was a problem with the connection';
-            else{   if(!$array[1]) echo "Please Drag and Drop a file between lists";
+            if(!$files_names)   echo $arrLang["Error to request"];
+            else{   if(!$array[1]) echo $arrLang["Error Drag Drop"];
                     else{
                         if($files_names == 'empty'){
                             $local_file = $array[1];
                             $remote_file = $array[1];
                             $val = $pFTPBackup->uploadFile($local_file,$remote_file,$user, $password, $host, $port, $path);
                             if ($val) {
-                                echo "Successfully uploaded $local_file\n";
+                                echo $arrLang["Successfully uploaded"]." $local_file\n";
                             } else {
-                                echo "There was a problem uploading $local_file\n";
+                                echo $arrLang["Problem uploading"]." $local_file\n";
                             }
                         }
                         else{
@@ -48,9 +63,9 @@ if ($action == "upload"){
                             $remote_file = $array[1];
                             $val = $pFTPBackup->uploadFile($local_file,$remote_file,$user, $password, $host, $port, $path);
                             if ($val) {
-                                echo "Successfully uploaded $local_file\n";
+                                echo $arrLang["Successfully uploaded"]." $local_file\n";
                             } else {
-                                echo "There was a problem uploading $local_file\n";
+                                echo $arrLang["Problem uploading"]." $local_file\n";
                             }
                         }
                     }
@@ -59,7 +74,7 @@ if ($action == "upload"){
 }
 else if ($action == "download" ){
         $array = obtainList($file);
-        $pDB1 = new paloDB($arrConfModule['dsn_conn_database']);
+        $pDB1 = new paloDB($arrConf['dsn_conn_database']);
         $pFTPBackup = new paloSantoFTPBackup($pDB1);
         $info = $pFTPBackup->getFTPBackupById(1);
         $user = $info['user'];
@@ -71,19 +86,19 @@ else if ($action == "download" ){
         $local_files = $pFTPBackup->obtainFiles($dir);
 
         if($lista == 'droptrue' & $array[0] == 'inn')
-            echo "Please Drag and Drop a file between lists";
+            echo $arrLang["Error Drag Drop"];
         else{
-            if(!$local_files)   echo 'There was a problem with the local connection';
-            else{   if(!$array[1]) echo "Please Drag and Drop a file between lists";
+            if(!$local_files)   echo $arrLang["Error to request"];
+            else{   if(!$array[1]) echo $arrLang["Error Drag Drop"];
                     else{
                         if($local_files == 'empty'){
                             $local_file = $array[1];
                             $remote_file = $array[1];
                             $val = $pFTPBackup->downloadFile($local_file,$remote_file,$user, $password, $host, $port, $path);
                             if ($val) {
-                                echo "Successfully written to $local_file\n";
+                                echo $arrLang["Successfully written"]." to $local_file\n";
                             } else {
-                                echo "There was a problem downloading $local_file\n";
+                                echo $arrLang["Problem downloading"]." $local_file\n";
                             }
                         }
                         else{
@@ -91,9 +106,9 @@ else if ($action == "download" ){
                             $remote_file = $array[1];
                             $val = $pFTPBackup->downloadFile($local_file,$remote_file,$user, $password, $host, $port, $path);
                             if ($val) {
-                                echo "Successfully written to $local_file\n";
+                                echo $arrLang["Successfully written"]." to $local_file\n";
                             } else {
-                                echo "There was a problem downloading $remote_file\n";
+                                echo $arrLang["Problem downloading"]." $remote_file\n";
                             }
                         }
                     }

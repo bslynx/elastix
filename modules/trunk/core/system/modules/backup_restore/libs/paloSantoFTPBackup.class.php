@@ -55,22 +55,21 @@ class paloSantoFTPBackup {
     //Permite conectarse al Servidor FTP
         $id_ftp=ftp_connect($host,$port); //Obtiene un manejador del Servidor FTP
         if (!$id_ftp) {
-            echo "Couldn't connect to $host\n";
-            return false;
+            return 1;
+        }else{
+            $login = ftp_login($id_ftp,$user,$password); //Se loguea al Servidor FTP
+            if (!$login) {
+                return 2;
+            }else
+                ftp_pasv($id_ftp,true); //Establece el modo de conexión true modo pasivo
         }
-        $login = ftp_login($id_ftp,$user,$password); //Se loguea al Servidor FTP
-        if (!$login) {
-            echo "Couldn't connect as $user\n";
-            return false;
-        }
-        ftp_pasv($id_ftp,true); //Establece el modo de conexión true modo pasivo
         return $id_ftp; //Devuelve el manejador a la función
     }
 
     function uploadFile($local_file,$remote_file,$user, $password, $host, $port, $path){
         //Sube archivo de la maquina Cliente al Servidor (Comando PUT)
         $id_ftp=$this->connectFTP($user, $password, $host, $port); //Obtiene un manejador y se conecta al Servidor FTP 
-        if(!$id_ftp)    return false;
+        if($id_ftp == 1 || $id_ftp == 2)    return $id_ftp;
         $local_file = '/var/www/backup/'.$remote_file;
         ftp_chdir($id_ftp, $path);  // se cambia de directorio
         $val = ftp_put($id_ftp,$remote_file,$local_file,FTP_BINARY);
@@ -81,7 +80,7 @@ class paloSantoFTPBackup {
 
     function downloadFile($local_file,$remote_file,$user, $password, $host, $port, $path){
         $id_ftp=$this->connectFTP($user, $password, $host, $port);
-        if(!$id_ftp)    return false;
+        if($id_ftp == 1 || $id_ftp == 2)    return $id_ftp;
         $local_file = '/var/www/backup/'.$local_file;
         $handle = fopen($local_file, 'w');
         ftp_chdir($id_ftp, $path);
@@ -95,7 +94,7 @@ class paloSantoFTPBackup {
         // permite conectarse y obtener los nombres de los archivos externos
         // get contents of the current directory
         $id_ftp=$this->connectFTP($user, $password, $host, $port);
-        if(!$id_ftp)    return false;
+        if($id_ftp == 1 || $id_ftp == 2)    return $id_ftp;
         ftp_chdir($id_ftp, $path);
         $contents = ftp_nlist($id_ftp, ".");
         ftp_quit($id_ftp);
@@ -120,7 +119,7 @@ class paloSantoFTPBackup {
     function ObtainLink($user, $password, $host, $port){
         //Obriene ruta del directorio del Servidor FTP (Comando PWD)
         $id_ftp=$this->connectFTP($user, $password, $host, $port); //Obtiene un manejador y se conecta al Servidor FTP 
-        if(!$id_ftp)    return false;
+        if($id_ftp == 1 || $id_ftp == 2)    return $id_ftp;
         $Directorio=ftp_pwd($id_ftp); //Devuelve ruta actual p.e. "/home/willy"
         ftp_quit($id_ftp); //Cierra la conexion FTP
         return $Directorio; //Devuelve la ruta a la función
