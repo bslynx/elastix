@@ -43,11 +43,14 @@ function _moduleContent(&$smarty, $module_name)
     #si el archivo de idioma no existe incluir el idioma por defecto
     $lang=get_language();
     $script_dir=dirname($_SERVER['SCRIPT_FILENAME']);
+
+    include_once("modules/$module_name/lang/en.lang");
     $lang_file="modules/$module_name/lang/$lang.lang";
-    if (file_exists("$script_dir/$lang_file"))
+    if (file_exists("$script_dir/$lang_file")) {
+        $arrLanEN = $arrLan;
         include_once($lang_file);
-    else
-        include_once("modules/$module_name/lang/en.lang");
+        $arrLan = array_merge($arrLanEN, $arrLan);
+    }
 
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";

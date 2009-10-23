@@ -50,6 +50,6 @@ $arrLan=array(
 "All"                               => "All",
 "Successful"                        => "Successful",
 "Not Realiced"                      => "Not Realiced",
-"Left"                              => "Left",
+"Left"                              => "Abandoned",
 );
 ?>

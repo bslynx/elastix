@@ -36,13 +36,16 @@ function _moduleContent(&$smarty, $module_name)
     require_once "libs/misc.lib.php";
 
     //Incluir librería de lenguaje
-    $arrLang=get_language();
+    $lang=get_language();
     $script_dir=dirname($_SERVER['SCRIPT_FILENAME']);
-    $arrLan_file="modules/$module_name/lang/$arrLang.lang";
-    if (file_exists("$script_dir/$arrLan_file"))
-        include_once($arrLan_file);
-    else
-        include_once("modules/$module_name/lang/en.lang");
+
+    include_once("modules/$module_name/lang/en.lang");
+    $lang_file="modules/$module_name/lang/$lang.lang";
+    if (file_exists("$script_dir/$lang_file")) {
+        $arrLanEN = $arrLan;
+        include_once($lang_file);
+        $arrLan = array_merge($arrLanEN, $arrLan);
+    }
 
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
@@ -216,6 +219,7 @@ function _moduleContent(&$smarty, $module_name)
         }
     
         // LISTADO
+        $offset = 0;
         $arrCallsDetailTmp  = $oCallsDetail->obtenerCallsDetails(null,$offset, $date_start, $date_end, $field_name, $field_pattern/*,$status*/);
     
         $limit = 50;

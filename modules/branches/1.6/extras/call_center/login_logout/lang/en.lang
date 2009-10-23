@@ -46,5 +46,7 @@ $arrLan=array(
 "Find"                              => "Find",
 "Estado"                            => "Status",
 "Total"                             => "Total",
+"Detallado"                         => "Detailed",
+"General"                           => "General",
 );
 ?>

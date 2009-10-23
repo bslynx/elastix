@@ -34,12 +34,11 @@ class paloSantoReportsCalls {
 
         $SQLConsulta = "select id,queue from queue_call_entry where estatus='A' ".$limite;
         $resConsulta = $this->pDB->fetchTable($SQLConsulta,true);
-
-        if(is_array($resConsulta) && count($resConsulta)>0) {
-            return $resConsulta;
-        } else {
+        if (!is_array($resConsulta)) {
             $this->msgError .= $this->pDB->errMsg;
             return false;
+        } else {
+        	return $resConsulta;
         }
     }
     
@@ -79,6 +78,8 @@ class paloSantoReportsCalls {
         $indice = 0;
         // aqui voy recorriendo el arreglo que contiene las colas en el sistema para consultar iterativamente
         // por cada cola e ir generando el reporte por cola
+        $arrData = array();
+        $arrTime = array();
         foreach($arrQueues as $queue) {
             // consulto la cantidad de llamadas entre las fechas $fecha_init y $fecha_end y en la cola $queue['id'].
             $SQLConsulta = 
@@ -159,6 +160,8 @@ class paloSantoReportsCalls {
         $indice = 0;
         // aqui voy recorriendo el arreglo que contiene las colas en el sistema para consultar iterativamente
         // por cada cola e ir generando el reporte por cola
+        $arrData = array();
+        $arrTime = array();
         foreach($arrQueues as $queue) {
             // consulto la cantidad de llamadas entre las fechas $fecha_init y $fecha_end y en la cola $queue['id'].
             $SQLConsulta = 

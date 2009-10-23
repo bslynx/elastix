@@ -449,8 +449,11 @@ class GestorLlamadasEntrantes
                             'ERR: no se puede leer registro de llamada (log) - '.
                             $tuplaLlamada->getMessage());
                     } elseif (is_null($tuplaLlamada)) {
-                        $this->_oMainLog->output(
-                            "ERR: no se encuentra registro de llamada {$eventParams[$sKey_Uniqueid]} (log)");
+                        if ($this->DEBUG) {
+                            $this->_oMainLog->output(
+                                "WARN: no se encuentra registro de llamada {$eventParams[$sKey_Uniqueid]} (log) - se asume agente pertenece a más de una cola.");
+                        }
+                        $bLlamadaManejada = FALSE;
                     } else {
                     	$idCola = NULL;
                     	if (in_array($tuplaLlamada->id_queue_call_entry, $listaIdCola))
