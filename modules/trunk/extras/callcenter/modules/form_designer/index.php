@@ -154,7 +154,7 @@ function _moduleContent(&$smarty, $module_name)
             "VALIDATION_EXTRA_PARAM" => ""
         ), 
     );
-    $smarty->assign("type",$arrLang['Type']);    
+    $smarty->assign("type",$arrLan['Type']);    
     $smarty->assign("select_type","type"); 
     $smarty->assign("option_type",$arrConfig['arr_type']); 
     $smarty->assign("item_list",$arrLan['List Item']);    
@@ -297,7 +297,7 @@ function listadoForm($pDB, $smarty, $module_name, $local_templates_dir) {
                                        "property1" => ""),
                             1 => array("name"      => $arrLan["Form Description"], 
                                        "property1" => ""),
-                            2 => array("name"      => $arrLang["Status"], 
+                            2 => array("name"      => $arrLan["Status"], 
                                        "property1" => ""),
                             3 => array("name"      => $arrLang["Options"], 
                                        "property1" => "")));

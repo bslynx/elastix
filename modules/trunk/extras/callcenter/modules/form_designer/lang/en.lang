@@ -85,5 +85,7 @@ $arrLan=array(
 "Type List"=>"Type List",
 "Type Date"=>"Type Date",
 "Type Text Area"=>"Type Text Area",
+'Type' => 'Type',
+'Status' => 'Status',
 );
 ?>
