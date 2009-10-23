@@ -69,7 +69,7 @@ function _moduleContent(&$smarty, $module_name)
     $oCallsDetail = new paloSantoCallsDetail($pDB);
 
     $smarty->assign("menu","calls_detail");
-    $smarty->assign("Filter",$arrLang['Filter']);
+    $smarty->assign("Filter",$arrLan['Filter']);
     if(isset($_GET['exportcsv']) && $_GET['exportcsv']=='yes') {
 
         $limit = "";

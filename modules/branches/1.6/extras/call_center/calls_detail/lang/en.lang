@@ -35,6 +35,7 @@ $arrLan = array(
     "Debe ingresar una fecha"   => "You should to enter any date",
     "Debe ingresar una fecha valida"    => "You should to enter a valued date",
     'Total'         => 'Total',
+    'Filter'        => 'Filter',
 );
 
 ?>
