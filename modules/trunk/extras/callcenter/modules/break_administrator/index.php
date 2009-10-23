@@ -49,11 +49,17 @@ function _moduleContent(&$smarty, $module_name)
     #si el archivo de idioma no existe incluir el idioma por defecto
     $lang=get_language();
     $script_dir=dirname($_SERVER['SCRIPT_FILENAME']);
+
+    // Include language file for EN, then for local, and merge the two.
+    $arrLan = NULL;
+    include_once("modules/$module_name/lang/en.lang");
     $lang_file="modules/$module_name/lang/$lang.lang";
-    if (file_exists("$script_dir/$lang_file"))
+    if (file_exists("$script_dir/$lang_file")) {
+        $arrLanEN = $arrLan;
         include_once($lang_file);
-    else
-        include_once("modules/$module_name/lang/en.lang");
+        $arrLan = array_merge($arrLanEN, $arrLan);
+    }
+
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
 
@@ -291,7 +297,7 @@ function listBreaks($pDB, $smarty, $module_name, $local_templates_dir) {
                                        "property1" => ""),
                             1 => array("name"      => $arrLan["Description Break"], 
                                        "property1" => ""),
-                            2 => array("name"      => $arrLang["Status"], 
+                            2 => array("name"      => $arrLan["Status"], 
                                        "property1" => ""),
                             3 => array("name"     => $arrLang["Options"], 
                                        "property1" => "")));

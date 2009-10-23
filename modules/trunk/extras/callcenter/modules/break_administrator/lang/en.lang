@@ -49,6 +49,7 @@ $arrLan=array(
 "Error when desactivating the Break" => "Error when desactivating the Break",
 "Desactivate"=>"Desactivate",
 "Activate"=>"Activate",
+"Status"=>"Status",
 );
 
 
