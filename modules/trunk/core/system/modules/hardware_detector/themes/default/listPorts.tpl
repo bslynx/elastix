@@ -25,8 +25,8 @@
             {if $data.DESC.TIPO ne $CARD_NO_MOSTRAR}
                 <tr>
                     <td style='border: 1px #CCCCCC solid; font-size:12px;' align='left' class="moduleTitle">{$CARD} # {$data.DESC.ID}: {$data.DESC.TIPO} {$data.DESC.ADICIONAL}</td>
-                    <td style='border: 1px #CCCCCC solid; width:30px;'>  <img class="icon" src="modules/hardware_detector/images/icon1.png" /> </td>
-                    <td style='border: 1px #CCCCCC solid; width:30px;'>  <img class="icon" src="modules/hardware_detector/images/call2.png" /> </td>
+<!--                    <td style='border: 1px #CCCCCC solid; width:30px;'>  <img class="icon" src="modules/hardware_detector/images/icon1.png" /> </td>
+                    <td style='border: 1px #CCCCCC solid; width:30px;'>  <img class="icon" src="modules/hardware_detector/images/call2.png" /> </td>-->
                     <td style='border: 1px #CCCCCC solid; width:30px;'><a href='?menu=hardware_detector&action=config_echo&cardId={$data.DESC.ID}'><img class="icon" src="modules/hardware_detector/images/icon_configecho.png" title="Config echo Canceller"/></a></td>
                 </tr>
                 <tr> 

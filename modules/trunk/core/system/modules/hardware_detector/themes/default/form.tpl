@@ -35,7 +35,7 @@
             <td> </td>
             <td align="left"><b>{$key}</b>  {$echocancel.name_port}: </td>
             <td width="15%" align="left">
-                <select name=customer_id>
+                <select id='typeecho_{$key}' name='typeecho_{$key}'>
                     {html_options options=$type_echo_names selected=$echocancel.type_echo}
                 </select>
             </td>

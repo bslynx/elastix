@@ -148,8 +148,10 @@ class paloSantoConfEcho {
         $fp = fopen($FILE,'r');
         $j=0;
         $line_concat="";
+        $already="false";
         $enc="false";
         $find="false";
+        $filled="false";
         while($line = fgets($fp, filesize($FILE)))
         {
             $getin="false";
@@ -241,9 +243,6 @@ class paloSantoConfEcho {
                         }
                     //fin
                     }
-                }else if(!eregi($numport, $line) && ($typePass=="none" && $typeNew!="none")){
-                    $enc="true";
-                    $text .= $line;
                 }else if(count($arrRang)==2){//nuevo
                     $arrRang=array();
                     for($i=0 ; $i< count($arrLine); $i++){
@@ -328,16 +327,25 @@ class paloSantoConfEcho {
                     //fin
                     }
                    
-                }else{
+                }/*else if(!eregi($numport, $line) && ($typePass=="none" && $typeNew!="none")){
+                    $enc="true";
+                    $text .= $line;
+                }*/else{
                     $num_neigh = $numport+1;
-                    if(eregi($numport, $line) && eregi("echocanceller", $line)){
-                        if($typeNew!="none"){
+                    $num_neigh2 = $numport-1;//NEW
+                    if(eregi($numport, $line) && $already=="false"){
+                        $already="true";
+                        if($typePass=="none" && $typeNew!="none"){ //para no repetir el 2 con 25
+                            $text .= $line;
+                        }else if($typeNew!="none"){
                             $line = str_ireplace(strtolower($typePass), strtolower($typeNew), $line);
                             $text .= $line;
-                        }
-                    }else if(($typePass=="none" && $typeNew!="none") && (eregi($num_neigh, $line) && eregi("echocanceller", $line))){
+                        }//caso contrario no pone el ($text .= $line;) xq se omite
+                    }else if(($typePass=="none" && $typeNew!="none") && (eregi($num_neigh1, $line) || eregi($num_neigh2, $line)) && $filled=="false"){
+                        $filled="true";
                         $line_concat = "echocanceller=".strtolower($typeNew).",".$numport."\n";
-                        $line = $line_concat."".$line;
+                        if(eregi($num_neigh1, $line)) $line = $line_concat."".$line;
+                        else $line = $line."".$line_concat;
                         $text .= $line;
                     }else{
                         $text .= $line;
@@ -351,7 +359,6 @@ class paloSantoConfEcho {
         }
         if($enc="false" && ($typePass=="none" && $typeNew!="none")){
             $line_concat = "\nechocanceller=".strtolower($typeNew).",".$numport."\n";
-            //$line = $line_concat."".$line;
             $text .= $line_concat;
         }
         
