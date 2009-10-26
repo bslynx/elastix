@@ -11,6 +11,9 @@
 </table>
 
 <div id="table_center" class="tabForm2">
+    <div class="letra12">
+        <b><br/>{$TITLE}</b>
+    </div>
     <div id="content">
         <table style="font-size: 26px;" width="75%" >
             <tr class="letra12">

@@ -1658,6 +1658,7 @@ function viewFormFTPBackup($smarty, $module_name, $local_templates_dir, &$pDB, $
     $smarty->assign("CANCEL", $arrLang["Cancel"]);
     $smarty->assign("UPLOAD", $arrLang["Upload"]);
     $smarty->assign("DOWNLOAD", $arrLang["Download"]);
+    $smarty->assign("TITLE", $arrLang["TITLE"]);
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
     $smarty->assign("IMG", "images/list.png");
     

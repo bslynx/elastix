@@ -115,5 +115,6 @@ $arrLangModule=array(
 "Problem uploading" => "There was a problem uploading",
 "Successfully written" => "Successfully written",
 "Problem downloading" => "There was a problem downloading",
+"TITLE" => "Please Drag and Drop a tar file between lists for uploading or downloading by FTP",
 );
 ?>
