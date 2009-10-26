@@ -276,12 +276,12 @@ function listadoForm($pDB, $smarty, $module_name, $local_templates_dir) {
                 $DataForm['descripcion']="&nbsp;";
             $arrTmp[1] = $DataForm['descripcion'];
             if($DataForm['estatus']=='I'){
-                $arrTmp[2] = $arrLang['Inactive'];
+                $arrTmp[2] = $arrLan['Inactive'];
                 $arrTmp[3] = "&nbsp;<a href='?menu=$module_name&action=activar&id=".$DataForm['id']."'>{$arrLan['Activate']}</a>";
             }
             else{
-                $arrTmp[2] = $arrLang['Active'];
-                $arrTmp[3] = "&nbsp;<a href='?menu=$module_name&action=view&id=".$DataForm['id']."'>{$arrLang['View']}</a>";
+                $arrTmp[2] = $arrLan['Active'];
+                $arrTmp[3] = "&nbsp;<a href='?menu=$module_name&action=view&id=".$DataForm['id']."'>{$arrLan['View']}</a>";
             }
             $arrData[] = $arrTmp;
         }

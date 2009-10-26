@@ -425,7 +425,7 @@ function html_campos_formulario($arr_campos,$edit=true)
         $nodoTablaInicio .= "   <td class='table_title_row' width='40'><input type='button' name='delete_field' id='delete_field' onclick='"."if(confirmSubmit(\"$msm_confimacion\"))eliminar_campo();"."' value='".$arrLang['Delete']."' /></td> ";
     $nodoTablaInicio .= "       <td class='table_title_row' width='50'>".$arrLan['Order']."</td>
                                 <td class='table_title_row'>".$arrLan['Field Name']."</td>
-                                <td class='table_title_row'>".$arrLang['Type']."</td>
+                                <td class='table_title_row'>".$arrLan['Type']."</td>
                                 <td class='table_title_row'>".$arrLan['Values Field']."</td>";
     if($edit)
         $nodoTablaInicio .= "       <td class='table_title_row'>".$arrLang['Options']."</td> 
