@@ -51,11 +51,11 @@ class paloSantoEmaillist {
 
     /*HERE YOUR FUNCTIONS*/
 
-    function getNumEmaillist($filter_field, $filter_value)
+    function getNumEmaillist($id_domain)
     {
         $where = "";
-        if(isset($filter_field) & $filter_field !="")
-            $where = "where $filter_field like '$filter_value%'";
+        if(isset($id_domain))
+            $where = "where id=$id_domain";
 
         $query   = "SELECT COUNT(*) FROM email_list $where";
 
@@ -68,23 +68,7 @@ class paloSantoEmaillist {
         return $result[0];
     }
 
-    function getEmaillist($limit, $offset, $filter_field, $filter_value)
-    {
-        $where = "";
-        if(isset($filter_field) & $filter_field !="")
-            $where = "where $filter_field like '$filter_value%'";
-
-        $query   = "SELECT * FROM email_list $where LIMIT $limit OFFSET $offset";
-
-        $result=$this->_DB->fetchTable($query, true);
-
-        if($result==FALSE){
-            $this->errMsg = $this->_DB->errMsg;
-            return array();
-        }
-        return $result;
-    }
-
+    
     function getEmaillistById($id)
     {
         $query = "SELECT * FROM email_list WHERE id=$id";
@@ -109,9 +93,10 @@ class paloSantoEmaillist {
     }
 
     function saveChangeFileMm_cfg($text){
-        $fp = fopen('/etc/mailman/mm_cfg.py', 'w');
+        exec("sudo -u root chown -R asterisk.asterisk /usr/lib/mailman/Mailman/mm_cfg.py");
+        $fp = fopen('/usr/lib/mailman/Mailman/mm_cfg.py', 'w');
         fwrite($fp, $text);   
-
+        exec("sudo -u root chown -R root.mailman /usr/lib/mailman/Mailman/mm_cfg.py");
         fclose($fp);
     }
 
@@ -124,6 +109,13 @@ class paloSantoEmaillist {
 
     function saveChangeFileAliases($text){
         $fp = fopen('/etc/aliases', 'a');
+        fwrite($fp, $text);   
+
+        fclose($fp);
+    }
+
+    function saveChangeFileAliases2($text){
+        $fp = fopen('/etc/aliases', 'w');
         fwrite($fp, $text);   
 
         fclose($fp);
@@ -143,112 +135,117 @@ class paloSantoEmaillist {
         return $status;
     }
 
-
-    function execConfigMailMan_1($passRootSite, $emailRootList, $passRootList){
-        $FILE='/etc/mailman/mm_cfg.py';
+    function execConfigMailMan_1($passRootSite, $emailRootList, $passRootList, $domainName){
+        //$FILE='/etc/mailman/mm_cfg.py';
+//         $text1 = "";
         //Cambio de usuario a archivos
         exec("sudo -u root chown -R asterisk.asterisk /etc/postfix/main.cf");
-        exec("sudo -u root chown -R asterisk.asterisk /etc/mailman/mm_cfg.py");
         exec("sudo -u root chown -R asterisk.asterisk /etc/aliases");
         exec("sudo -u root chown -R asterisk.asterisk /etc/aliases.db");
         //Cambio de usuarios a mailman
-        exec("sudo -u root chown -R asterisk.asterisk /usr/lib/mailman/bin/");
+        exec("sudo -u root chown -R asterisk.asterisk /etc/mailman/");
+        exec("sudo -u root chown -R asterisk.asterisk /usr/lib/mailman/");
+        exec("sudo -u root chown -R asterisk.asterisk /var/run/mailman/");
         exec("sudo -u root chown -R asterisk.asterisk /var/lib/mailman/");
         exec("sudo -u root chown -R asterisk.asterisk /var/spool/mailman/");
         exec("sudo -u root chown -R asterisk.asterisk /var/log/mailman/");
         exec("sudo -u root chown -R asterisk.asterisk /var/lock/mailman/");
+        
+        $this->replaceFileMM_cfg($domainName);
 
         exec("touch /usr/lib/mailman/bin/lista_member.tmp");
 
         exec("echo $passRootSite | /usr/lib/mailman/bin/mmsitepass passwd");
-        $fp = fopen($FILE,'r');
-        $text = "";
-        //Proceso numero 1 al archivo mm_cfg.py
-        while($line = fgets($fp, filesize($FILE)))
-        {
-            if(eregi("socket",$line)){
-                $line = str_ireplace("from socket import *","#from socket import *",$line);
-                $text .= $line;
-                
-            }elseif(eregi("try",$line)){
-                $line = str_ireplace("try:","#try:",$line);
-                $text .= $line;
-
-            }elseif(eregi("getfqdn()",$line)){
-                $line = str_ireplace("fqdn = getfqdn()","#fqdn = getfqdn():",$line);
-                $text .= $line;
-
-            }elseif(eregi("except",$line)){
-                $line = str_ireplace("except:","#except:",$line);
-                $text .= $line;
-
-            }elseif(eregi("mm_cfg_has_unknown_host_domains",$line)){
-                $line = str_ireplace("fqdn = 'mm_cfg_has_unknown_host_domains'", "#fqdn = 'mm_cfg_has_unknown_host_domains'",$line);
-                $text .= $line;
-
-            }elseif(eregi("DEFAULT_URL_HOST",$line)){
-                $line = str_ireplace("fqdn", "www.midominio.net", $line);
-                $text .= $line;
-
-            }elseif(eregi("DEFAULT_EMAIL_HOST",$line)){
-                $line = str_ireplace("fqdn", "midominio.net", $line);
-                $text .= $line;
-
-            }else{
-                $text .= $line;
-            }
-        }
-        $this->saveChangeFileMm_cfg($text);
-        fclose($fp);
-        
-        $text="";
         exec("echo $passRootList | /usr/lib/mailman/bin/newlist mailman $emailRootList passwd --stdin");
         //Proceso numero 2 al archivo aliases
-        $text .="\n";
-        $text .="## lista de distribuci�n mailman\n";
-        $text .="mailman:              \"|/usr/lib/mailman/mail/mailman post mailman\"\n";
-        $text .="mailman-admin:        \"|/usr/lib/mailman/mail/mailman admin mailman\"\n";
-        $text .="mailman-bounces:      \"|/usr/lib/mailman/mail/mailman bounces mailman\"\n";
-        $text .="mailman-confirm:      \"|/usr/lib/mailman/mail/mailman confirm mailman\"\n";
-        $text .="mailman-join:         \"|/usr/lib/mailman/mail/mailman join mailman\"\n";
-        $text .="mailman-leave:        \"|/usr/lib/mailman/mail/mailman leave mailman\"\n";
-        $text .="mailman-owner:        \"|/usr/lib/mailman/mail/mailman owner mailman\"\n";
-        $text .="mailman-request:      \"|/usr/lib/mailman/mail/mailman request mailman\"\n";
-        $text .="mailman-subscribe:    \"|/usr/lib/mailman/mail/mailman subscribe mailman\"\n";
-        $text .="mailman-unsubscribe:  \"|/usr/lib/mailman/mail/mailman unsubscribe mailman\"\n";
+        $text1 .="\n";
+        $text1 .="## lista de distribuci�n mailman\n";
+        $text1 .="mailman:              \"|/usr/lib/mailman/mail/mailman post mailman\"\n";
+        $text1 .="mailman-admin:        \"|/usr/lib/mailman/mail/mailman admin mailman\"\n";
+        $text1 .="mailman-bounces:      \"|/usr/lib/mailman/mail/mailman bounces mailman\"\n";
+        $text1 .="mailman-confirm:      \"|/usr/lib/mailman/mail/mailman confirm mailman\"\n";
+        $text1 .="mailman-join:         \"|/usr/lib/mailman/mail/mailman join mailman\"\n";
+        $text1 .="mailman-leave:        \"|/usr/lib/mailman/mail/mailman leave mailman\"\n";
+        $text1 .="mailman-owner:        \"|/usr/lib/mailman/mail/mailman owner mailman\"\n";
+        $text1 .="mailman-request:      \"|/usr/lib/mailman/mail/mailman request mailman\"\n";
+        $text1 .="mailman-subscribe:    \"|/usr/lib/mailman/mail/mailman subscribe mailman\"\n";
+        $text1 .="mailman-unsubscribe:  \"|/usr/lib/mailman/mail/mailman unsubscribe mailman\"\n";
         
-        $this->saveChangeFileAliases($text);
+        $this->saveChangeFileAliases($text1);
 
         //Cambio de usuario a archivos
         exec("sudo -u root chown -R root.root /etc/postfix/main.cf");
-        exec("sudo -u root chown -R root.root /etc/mailman/mm_cfg.py");
         exec("sudo -u root chown -R root.root /etc/aliases");
         exec("sudo -u root chown -R root.root /etc/aliases.db");
 
-        exec("sudo -u root chown -R root.mailman /usr/lib/mailman/bin/");
+        exec("sudo -u root chown -R root.root /etc/mailman/");
+        exec("sudo -u root chown -R root.mailman /usr/lib/mailman/");
+        exec("sudo -u root chown -R root.mailman /var/run/mailman/");
         exec("sudo -u root chown -R root.mailman /var/lib/mailman/");
         exec("sudo -u root chown -R root.mailman /var/spool/mailman/");
         exec("sudo -u root chown -R root.mailman /var/log/mailman/");
         exec("sudo -u root chown -R root.mailman /var/lock/mailman/");
-        exec("newaliases");
-        exec("service mailman restart");
+        exec("sudo -u root newaliases");
+        exec("sudo -u root service mailman restart");
         exec("chkconfig --level 3 mailman on");
+        //fclose($fp);
     }
 
+
+    function replaceFileMM_cfg($domainName){
+        $FILE='/usr/lib/mailman/Mailman/mm_cfg.py';
+        $text = "";
+        $fp = fopen($FILE,'r');
+
+        while($line = fgets($fp, filesize($FILE)))
+        {
+            if(eregi("socket", $line)) {
+                $line = str_ireplace("from socket import *","# from socket import *", $line);
+                $text .= $line; 
+            }else if(eregi("try:", $line)) {
+                if(!eregi("# try:", $line))
+                $line = str_ireplace("try:", "# try:", $line);
+                $text .= $line; 
+            }else if(eregi("getfqdn()", $line)) {
+                if(!eregi("# fqdn = getfqdn():", $line))
+                $line = str_ireplace("fqdn = getfqdn()", "# fqdn = getfqdn()", $line);
+                $text .= $line; 
+            }else if(eregi("except:", $line)) {
+                if(!eregi("# except:", $line))
+                $line = str_ireplace("except:", "# except:", $line);
+                $text .= $line;
+            }elseif(eregi("mm_cfg_has_unknown_host_domains", $line)) {
+                if(!eregi("# fqdn = 'mm_cfg_has_unknown_host_domains'", $line))
+                $line = str_ireplace("fqdn = 'mm_cfg_has_unknown_host_domains'", "# fqdn = 'mm_cfg_has_unknown_host_domains'", $line);
+                $text .= $line;
+            }elseif(eregi("DEFAULT_URL_HOST   = fqdn", $line)) {
+                $line = str_ireplace("fqdn", "\"www.$domainName\"", $line);
+                $text .= $line;
+            }elseif(eregi("DEFAULT_EMAIL_HOST = fqdn", $line)) {
+                $line = str_ireplace("fqdn", "\"$domainName\"", $line);
+                $text .= $line;
+            }else {
+                $text .= $line;
+            }
+        }
+        return $text;
+        $this->saveChangeFileMm_cfg($text);
+        fclose($fp);
+    }
 
     function addNewMailList($emailRootList, $passRootList, $nameList){
         $text="";
         exec("sudo -u root chown -R asterisk.asterisk /etc/aliases");
         exec("sudo -u root chown -R asterisk.asterisk /etc/aliases.db");
 
-        exec("sudo -u root chown -R asterisk.asterisk /usr/lib/mailman/bin/");
+        exec("sudo -u root chown -R asterisk.asterisk /usr/lib/mailman/");
+        exec("sudo -u root chown -R asterisk.asterisk /var/run/mailman/");
         exec("sudo -u root chown -R asterisk.asterisk /var/lib/mailman/");
         exec("sudo -u root chown -R asterisk.asterisk /var/spool/mailman/");
         exec("sudo -u root chown -R asterisk.asterisk /var/log/mailman/");
         exec("sudo -u root chown -R asterisk.asterisk /var/lock/mailman/");
         //exec("/usr/lib/mailman/bin/newlist $nameList $emailRootList passwd $passRootList --stdin");
         exec("echo $passRootList | /usr/lib/mailman/bin/newlist $nameList $emailRootList passwd --stdin");
-        exec("echo 'echo $passRootList | /usr/lib/mailman/bin/newlist $nameList $emailRootList passwd --stdin' > /tmp/oscar");
         //*/usr/lib/mailman/bin/newlist list_miami themao@palosanto.com  passwd oscar --stdin
         $text .="\n";
         $text .="## lista de distribuci�n $nameList\n";
@@ -265,21 +262,25 @@ class paloSantoEmaillist {
 
         $this->saveChangeFileAliases($text);
 
+        exec("sudo -u root newaliases");
+        exec("sudo -u root service mailman restart");
+
         exec("sudo -u root chown -R root.root /etc/aliases");
         exec("sudo -u root chown -R root.root /etc/aliases.db");
         
-        exec("sudo -u root chown -R root.mailman /usr/lib/mailman/bin/");
+        exec("sudo -u root chown -R root.mailman /usr/lib/mailman/");
+        exec("sudo -u root chown -R root.mailman /var/run/mailman/");
         exec("sudo -u root chown -R root.mailman /var/lib/mailman/");
         exec("sudo -u root chown -R root.mailman /var/spool/mailman/");
         exec("sudo -u root chown -R root.mailman /var/log/mailman/");
         exec("sudo -u root chown -R root.mailman /var/lock/mailman/");
-        exec("newaliases");
-        exec("service mailman restart");
+        
     }
 
 
     function addNewMember($nameList, $emailMember){
-        exec("sudo -u root chown -R asterisk.asterisk /usr/lib/mailman/bin/");
+        exec("sudo -u root chown -R asterisk.asterisk /usr/lib/mailman/");
+        exec("sudo -u root chown -R asterisk.asterisk /var/run/mailman/");
         exec("sudo -u root chown -R asterisk.asterisk /var/lib/mailman/");
         exec("sudo -u root chown -R asterisk.asterisk /var/spool/mailman/");
         exec("sudo -u root chown -R asterisk.asterisk /var/log/mailman/");
@@ -288,19 +289,19 @@ class paloSantoEmaillist {
 
         exec("echo '$emailMember' > /usr/lib/mailman/bin/lista_member.tmp");
         exec("/usr/lib/mailman/bin/add_members -r /usr/lib/mailman/bin/lista_member.tmp $nameList");
-  
+
+        exec("sudo -u root service mailman restart");
         //cambio de usuario a como estaba inicialmente
-        exec("sudo -u root chown -R root.mailman /usr/lib/mailman/bin/");
+        exec("sudo -u root chown -R root.mailman /usr/lib/mailman/");
+        exec("sudo -u root chown -R root.mailman /var/run/mailman/");
         exec("sudo -u root chown -R root.mailman /var/lib/mailman/");
         exec("sudo -u root chown -R root.mailman /var/spool/mailman/");
         exec("sudo -u root chown -R root.mailman /var/log/mailman/");
         exec("sudo -u root chown -R root.mailman /var/lock/mailman/");
-
-        exec("service mailman restart");
     }
 
 
-    //Funcion opcional
+    //Funcion opcional /etc/aliases esta por default
     function replaceFileMainCF(){
         $FILE='/etc/postfix/main.cf';
         $fp = fopen($FILE,'r');
@@ -308,8 +309,8 @@ class paloSantoEmaillist {
         
         while($line = fgets($fp, filesize($FILE)))
         {
-            if(eregi("/etc/postfix/main.cf", $line)){
-                $line = str_ireplace("/etc/postfix/main.cf", "hash:/etc/postfix/aliases", $line);
+            if(eregi("alias_database = hash:/etc/aliases", $line)){
+                $line = str_ireplace("alias_database = hash:/etc/aliases", "alias_database = hash:/etc/postfix/aliases", $line);
                 $text .= $line;
             }else{
                 $text .= $line;
@@ -369,6 +370,46 @@ class paloSantoEmaillist {
         else return false;
     }
 
+    function deleteEmailListMM($nameList)
+    {
+        $FILE='/etc/aliases';
+        exec("sudo -u root chown -R asterisk.asterisk /etc/aliases");
+        exec("sudo -u root chown -R asterisk.asterisk /etc/aliases.db");
+
+        exec("sudo -u root chown -R asterisk.asterisk /usr/lib/mailman/");
+        exec("sudo -u root chown -R asterisk.asterisk /var/run/mailman/");
+        exec("sudo -u root chown -R asterisk.asterisk /var/lib/mailman/");
+        exec("sudo -u root chown -R asterisk.asterisk /var/spool/mailman/");
+        exec("sudo -u root chown -R asterisk.asterisk /var/log/mailman/");
+        exec("sudo -u root chown -R asterisk.asterisk /var/lock/mailman/");
+
+        exec("/usr/lib/mailman/bin/rmlist -a $nameList");
+
+        $fp = fopen($FILE,'r');
+        $text = "";
+
+        while($line = fgets($fp, filesize($FILE)))
+        {
+            if(eregi($nameList, $line)){
+                //no muestro las lineas o paso por alto las lineas con ese nombre de lista
+            }else{
+                $text .= $line;
+            }
+        }
+        $this->saveChangeFileAliases2($text);
+        fclose($fp);
+        exec("sudo -u root chown -R root.root /etc/aliases");
+        exec("sudo -u root chown -R root.root /etc/aliases.db");
+
+        exec("sudo -u root chown -R root.mailman /usr/lib/mailman/");
+        exec("sudo -u root chown -R root.mailman /var/run/mailman/");
+        exec("sudo -u root chown -R root.mailman /var/lib/mailman/");
+        exec("sudo -u root chown -R root.mailman /var/spool/mailman/");
+        exec("sudo -u root chown -R root.mailman /var/log/mailman/");
+        exec("sudo -u root chown -R root.mailman /var/lock/mailman/");
+        exec("sudo -u root newaliases");
+        //exec("sudo -u root service mailman restart");
+    }
 
     function getEmailListByDomainDB($id)
     {
@@ -409,6 +450,18 @@ class paloSantoEmaillist {
         return $result;
     }
     
+    function getMemberlistByIdDB($id)
+    {
+        $query = "SELECT mailmember FROM member_list WHERE id=$id";
+        $result=$this->_DB->getFirstRowQuery($query,true);
+
+        if($result==FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return null;
+        }
+        return $result;
+    }
+
     function deleteEmailMemberDB($id)
     {
         $query = "DELETE FROM member_list WHERE id=$id";
@@ -416,6 +469,28 @@ class paloSantoEmaillist {
         if($result[0] > 0)
             return true;
         else return false;
+    }
+
+    function deleteEmailMemberMM($nameList, $emailMember)
+    {
+        exec("sudo -u root chown -R asterisk.asterisk /usr/lib/mailman/");
+        exec("sudo -u root chown -R asterisk.asterisk /var/run/mailman/");
+        exec("sudo -u root chown -R asterisk.asterisk /var/lib/mailman/");
+        exec("sudo -u root chown -R asterisk.asterisk /var/spool/mailman/");
+        exec("sudo -u root chown -R asterisk.asterisk /var/log/mailman/");
+        exec("sudo -u root chown -R asterisk.asterisk /var/lock/mailman/");
+        
+        exec("/usr/lib/mailman/bin/remove_members $nameList $emailMember");
+        exec("sudo -u root service mailman restart");
+        //exec("sudo /sbin/service mailman restart");
+        //cambio de usuario a como estaba inicialmente
+        exec("sudo -u root chown -R root.mailman /usr/lib/mailman/");
+        exec("sudo -u root chown -R root.mailman /var/run/mailman/");
+        exec("sudo -u root chown -R root.mailman /var/lib/mailman/");
+        exec("sudo -u root chown -R root.mailman /var/spool/mailman/");
+        exec("sudo -u root chown -R root.mailman /var/log/mailman/");
+        exec("sudo -u root chown -R root.mailman /var/lock/mailman/");
+        
     }
 }
 ?>

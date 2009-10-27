@@ -317,7 +317,7 @@ function modificar_archivo_hosts(){
     $bValido=TRUE;
 
 //Luego se modifica el archivo main.cf
-    $conf_file=new paloConfig("/etc","hosts"," = ","[[:space:]]*\t\t[[:space:]]*");
+    $conf_file=new paloConfig("/etc","hosts","\t\t","[[:space:]]*\t\t[[:space:]]*");
     $contenido=$conf_file->leer_configuracion();
     $arr_reemplazos=array('127.0.0.1'=>$_POST['host']);
     $bValido=$conf_file->escribir_configuracion($arr_reemplazos);

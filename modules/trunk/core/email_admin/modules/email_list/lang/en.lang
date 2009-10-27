@@ -36,10 +36,10 @@ $arrLangModule=array(
 
 "Domain Name" => "Domain Name",
 "Select a domain" => "Select a domain",
-"Email List Name" => "Email List Name",
+"Name" => "Name",
 "Password" => "Password",
 "Password Confirm" => "Password Confirm",
-"Email Root" => "Email Root",
+"Email Admin" => "Email Admin",
 "Domain" => "Domain",
 "Action" => "Action",
 "Email Mailmam" => "Email Mailmam",
@@ -49,5 +49,7 @@ $arrLangModule=array(
 "Email List Members" => "Email List Members",
 
 "Are you sure you wish to delete the Member." => "Are you sure you wish to delete the Member.",
+"Number of Accounts" => "Number of Accounts",
+"The Input Password and Password Confirm aren't equals.. Please Try Again" => "The Input Password and Password Confirm aren't equals.. Please Try Again",
 );
 ?>
