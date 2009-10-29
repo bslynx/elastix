@@ -46,5 +46,6 @@ $arrLangModule=array(
 "Trustrpid" => "Trustrpid",
 "Sendrpid" => "Sendrpid",
 "Canreinvite" => "Canreinvite",
+"none" => "none",
 );
 ?>

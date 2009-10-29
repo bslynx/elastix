@@ -52,6 +52,6 @@ $arrLangModule=array(
 "Colón salvadoreño" => "Salvadorean Colón",
 "Yuan chino" => "Chinese Yuan",
 "Rupia bengalí" => "Bangladeshi Rupee",
-'Dólar de Singapur' => 'Singapore Dollar',
+"Dólar de Singapur" => "Singapore Dollar",
 );
 ?>

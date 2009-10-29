@@ -30,12 +30,9 @@
     <tr class="letra12">
         <td align="left"><b>{$type_provider_voip.LABEL}: <span  class="required">*</span></b></td>
         <td><select name="type_provider" onchange="displayConfig()" id="type_provider">
-            <option value="none">[None]</option>
-            <option value="net2phone">net2phone</option>
-            <option value="to_camundanet">to_camundanet</option> 
-            <option value="vitelity">vitelity</option> 
-            <option value="NuFoneIAX">NuFoneIAX</option>
+            {html_options options=$arrProviders}
         </select></td>
+    
     </tr>
     <tr class="letra12">
         <td align="left"><b>{$username.LABEL}: <span  class="required">*</span></b></td>

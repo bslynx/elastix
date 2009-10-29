@@ -101,7 +101,14 @@ function viewFormVoIPProvider($smarty, $module_name, $local_templates_dir, &$pDB
             $smarty->assign("mb_message", $pVoIPProvider->errMsg);
         }
     }
-
+    $arrProviders = array("none" => $arrLang["none"]);
+    $result = $pVoIPProvider->getVoIPProviders();
+    foreach($result as $values){
+        $arrProviders[$values['name']] = $values['name'];
+    }
+    $smarty->assign("arrProviders", $arrProviders);//for the combobox
+//     $prueba = $pVoIPProvider->getIndexTrunk();
+//     exec("echo '".print_r($prueba, true)."' > /tmp/oscar");
     $smarty->assign("SAVE", $arrLang["Save"]);
     $smarty->assign("EDIT", $arrLang["Edit"]);
     $smarty->assign("CANCEL", $arrLang["Cancel"]);
@@ -186,10 +193,11 @@ function saveNewVoIPProvider($smarty, $module_name, $local_templates_dir, &$pDB,
         }
 
         $find1 = $pVoIPProvider->findTrunkInExtensionAdditional($type_provider);
-        $find2 = $pVoIPProvider->findTrunkInLocalPrefixes();
+        $find2 = $pVoIPProvider->findTrunkInLocalPrefixes($type_provider);
         if($type_trunk=="sip"){
             $find3 = $pVoIPProvider->findTrunkInSipAdditional($type_provider);
             $find4 = $pVoIPProvider->findTrunkInSipRegistrations($host);
+            exec("echo '$find3' > /tmp/oscar");
         }else{
             $find3 = $pVoIPProvider->findTrunkInIaxAdditional($type_provider);
             $find4 = $pVoIPProvider->findTrunkInIaxRegistrations($host);
@@ -200,7 +208,7 @@ function saveNewVoIPProvider($smarty, $module_name, $local_templates_dir, &$pDB,
         }
         if($find2=="false"){
             $pVoIPProvider->addConfFileLocalPrefixes();
-        }
+        }//Falta haver el update de los reglas (No considerar)
         
         if($find3=="false"){
             if($type_trunk=="sip") $pVoIPProvider->addConfFileSipAdditional($type_provider);

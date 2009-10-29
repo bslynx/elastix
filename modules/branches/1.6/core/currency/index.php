@@ -190,7 +190,7 @@ function getCurrencys($arrLang)
             "#"     => "# - ".$arrLang["Colón salvadoreño"],
             "元"    => "元 - ".$arrLang["Yuan chino"],
             "৳"    => "৳ - ".$arrLang["Rupia bengalí"],
-            'S$'    => 'S$ - '.$arrLang['Dólar de Singapur'],
+            "S$"    => "S$ - ".$arrLang["Dólar de Singapur"],
     );
 }
 ?>
