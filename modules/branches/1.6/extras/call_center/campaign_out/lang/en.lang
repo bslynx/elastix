@@ -91,9 +91,9 @@ $arrLan=array(
 "To rapair is necesary delete agent from configuration file. Do you want to continue?"=>"To rapair is necesary delete agent from configuration file. Do you want to continue?",
 "To rapair is necesary add an agent in configuration file. Do you want to continue?"=>"To rapair is necesary add an agent in configuration file. Do you want to continue?",
 "Error when desactivating the Campaign" => "Error when desactivating the Campaign",
-"Desactivate" => "Desactivate", //Bruno agrego
+"Desactivate" => "Deactivate", //Bruno agrego
 "Activate Error" => "Activate Error", //Bruno agrego
-"Desactivate Error" => "Desactivate Error", //Bruno agrego
+"Desactivate Error" => "Deactivate Error", //Bruno agrego
 "Campaign ID is not valid" => "Campaign ID is not valid",
 "Queue must be numeric"=> "Queue must be numeric",
 "Queue is being used, choose other one"=>"Queue is being used, choose other one",
@@ -112,5 +112,14 @@ $arrLan=array(
 "Start time" => "Start time",
 "End time" => "End time",
 'Max. used channels' => 'Max. used channels',
+'View'=>'View',
+'Activate' => 'Activate',
+'Campaign state'  => 'Campaign state',
+'With selection' => 'With selection',
+'Call File' => 'Call File',
+'By Dialplan' => 'By Dialplan',
+'Manage Trunks'=>'Manage Trunks',
+'Manage Queues'=>'Manage Queues',
+'Manage Forms'=>'Manage Forms',
 );
 ?>

@@ -1,3 +1,13 @@
+{if $no_queues}
+<p><b>No queues have been defined</b></p>
+<p>For an outgoing campaign to be created, it is necessary to configure at least one queue. You can add queues <a href="?menu=pbxconfig&amp;display=queues">here</a>.</p>
+{elseif $no_outgoing_queues }
+<p><b>No remaining queues for outgoing campaings</b></p>
+<p>All queues are currently reserved for incoming campaigns. For an outgoing campaign to be created, it is necessary to have at least one free queue. You can add queues <a href="?menu=pbxconfig&amp;display=queues">here</a>.</p>
+{elseif $no_forms }
+<p><b>No active forms available</b></p>
+<p>For an outgoing campaign to be created, it is necessary to have at least one active form. You can add forms <a href="?menu=form_designer">here</a>.</p>
+{else}
 <script language="JavaScript" type="text/javascript" src="{$relative_dir_rich_text}/richtext/html2xhtml.js"></script>
 <script language="JavaScript" type="text/javascript" src="{$relative_dir_rich_text}/richtext/richtext_compressed.js"></script>
 <script language="JavaScript" type="text/javascript">
@@ -6,7 +16,7 @@ initRTE("./{$relative_dir_rich_text}/richtext/images/", "./{$relative_dir_rich_t
 var rte_script = new richTextEditor('rte_script');
 </script>
 
-<form method="POST" enctype="multipart/form-data">
+<form method="post" enctype="multipart/form-data">
 <table width="99%" border="0" cellspacing="0" cellpadding="0" align="center">
 <tr class="moduleTitle">
   <td class="moduleTitle" valign="middle">&nbsp;&nbsp;<img src="images/kfaxview.png" border="0" align="absmiddle" />&nbsp;&nbsp;{$title}</td>
@@ -15,21 +25,24 @@ var rte_script = new richTextEditor('rte_script');
   <td>
     <table width="100%" cellpadding="4" cellspacing="0" border="0">
       <tr>
-        <td align="left">
           {if $mode eq 'input'}
-          <input class="button" type="submit" name="save" value="{$SAVE}" onclick="return enviar_datos();">
-          <input class="button" type="submit" name="cancel" value="{$CANCEL}"></td>
+        <td align="left">
+          <input class="button" type="submit" name="save" value="{$SAVE}" onclick="return enviar_datos();" />
+          <input class="button" type="submit" name="cancel" value="{$CANCEL}" />
+        </td>
         <td align="right" nowrap><span class="letra12"><span  class="required">*</span> {$REQUIRED_FIELD}</span></td>
           {elseif $mode eq 'edit'}
-          <input class="button" type="submit" name="apply_changes" value="{$APPLY_CHANGES}" onclick="return enviar_datos();">
-          <input class="button" type="submit" name="cancel" value="{$CANCEL}"></td>
+        <td align="left">
+          <input class="button" type="submit" name="apply_changes" value="{$APPLY_CHANGES}" onclick="return enviar_datos();" />
+          <input class="button" type="submit" name="cancel" value="{$CANCEL}" />
+        </td>
           {else}
-          <input class="button" type="submit" name="edit" value="{$EDIT}">
-          <input class="button" type="button" name="desactivar" value="{$DESCATIVATE}"  onClick="if(confirmSubmit('{$CONFIRM_CONTINUE}'))desactivar_campania();">
-
-          <input class="button" type="submit" name="delete" value="{$DELETE}"  onClick="return confirmSubmit('{$CONFIRM_DELETE}');">
-
-          <input class="button" type="button" name="cancel_view" value="{$CANCEL}" onclick="window.open('?menu=campaign_out','_parent');"></td>
+        <td align="left">
+          <input class="button" type="submit" name="edit" value="{$EDIT}" />
+          <input class="button" type="button" name="desactivar" value="{$DESCATIVATE}"  onClick="if(confirmSubmit('{$CONFIRM_CONTINUE}'))desactivar_campania();" />
+          <input class="button" type="submit" name="delete" value="{$DELETE}"  onClick="return confirmSubmit('{$CONFIRM_DELETE}');" />
+          <input class="button" type="button" name="cancel_view" value="{$CANCEL}" onclick="window.open('?menu=campaign_out','_parent');" />
+        </td>
           {/if}          
      </tr>
    </table>
@@ -67,22 +80,25 @@ var rte_script = new richTextEditor('rte_script');
            {if $mode eq 'edit' or $mode eq 'input'}
                 <table border='0' cellpadding='0' cellspacing='0'>
                     <tr>
-                        <td rowspan='3'>{$formulario.INPUT}</td>
+                        <td rowspan='2'>{$formulario.INPUT}</td>
                         <td><input type='button' name='agregar_formulario' value="&gt;&gt;" onclick='add_form()'/></td>
-                        <td rowspan='3'>{$formularios_elegidos.INPUT}</td>
+                        <td rowspan='2'>{$formularios_elegidos.INPUT}</td>
+                        {if $label_manage_forms }
+                        <td rowspan='2'><a href="?menu=form_designer">{$label_manage_forms}&nbsp;&raquo;</a></td>
+                        {/if}
                     </tr>
                     <tr>
                         <td><input type='button' name='quitar_formulario' value="&lt;&lt;" onclick='drop_form()'/></td>
                     </tr>
-                </table>  
+                </table>                
            {else}
                {$formulario.INPUT}
-            {/if}         
+            {/if}
             </td>
 	  </tr>
       <tr  height='30'>
 		<td>{$trunk.LABEL}: <span  class="required">*</span></td>
-		<td colspan='2'>{$trunk.INPUT}</td>
+		<td colspan='2'>{$trunk.INPUT}{if $label_manage_trunks}&nbsp;<a href="?menu=pbxconfig&amp;display=trunks">{$label_manage_trunks}&nbsp;&raquo;</a>{/if}</td>
       </tr>
       <tr  height='30'>
 		<td>{$max_canales.LABEL}: <span  class="required">*</span></td>
@@ -94,7 +110,7 @@ var rte_script = new richTextEditor('rte_script');
       </tr>
       <tr height='30'>
 		<td>{$queue.LABEL}: <span  class="required">*</span></td>
-		<td colspan='2'>{$queue.INPUT}</td>
+		<td colspan='2'>{$queue.INPUT}{if $label_manage_queues}&nbsp;<a href="?menu=pbxconfig&amp;display=queues">{$label_manage_queues}&nbsp;&raquo;</a>{/if}</td>
       </tr>
       <tr height='30'>
 	    <td>{$reintentos.LABEL}: <span  class="required">*</span></td>
@@ -102,8 +118,8 @@ var rte_script = new richTextEditor('rte_script');
       </tr>
       {if $mode eq 'input'}
       <tr>
-    	<td>Archivo de Llamadas: <span  class="required">*</span></td>
-    	<td  colspan='4'><input type='file' name='phonefile'></td>
+    	<td>{$LABEL_CALL_FILE}: <span  class="required">*</span></td>
+    	<td  colspan='4'><input type='file' name='phonefile' /></td>
       </tr>
       {/if}
       <tr>
@@ -207,3 +223,4 @@ function drop_form()
 </script>
 {/literal}
 {$xajax_javascript}
+{/if} {* $no_queues *}

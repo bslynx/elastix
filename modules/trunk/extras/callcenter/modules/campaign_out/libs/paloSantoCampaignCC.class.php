@@ -799,6 +799,175 @@ class paloSantoCampaignCC
 ///// Fin codigo agregado por Carlos Barcos
 *********************************************/
 
+
+    /**
+     * Procedimiento para leer la totalidad de los datos de una campaña terminada, 
+     * incluyendo todos los datos recogidos en los diversos formularios asociados.
+     *
+     * @param   object  $pDB            Conexión paloDB a la base de datos call_center
+     * @param   int     $id_campaign    ID de la campaña a recuperar
+     * @param(out) string $errMsg       Mensaje de error
+     *
+     * @return  NULL en caso de error, o una estructura de la siguiente forma:
+    array(
+        BASE => array(
+            LABEL   =>  array(
+                "id_call",
+                "Phone Customer"
+                ...
+            ),
+            DATA    =>  array(
+                array(...),
+                array(...),
+                ...
+            ),
+        ),
+        FORMS => array(
+            {id_form} => array(
+                NAME    =>  'TestForm',
+                LABEL   =>  array(
+                    "Label A",
+                    "Label B"
+                    ...
+                ),
+                DATA    =>  array(
+                    {id_call} => array(...),
+                    {id_call} => array(...),
+                    ...
+                ),
+            ),
+            ...
+        ),
+    )
+     */
+    function & getCompletedCampaignData($id_campaign)
+    {
+        global $arrLan;
+        global $arrLang;
+
+        $this->errMsg = NULL;
+
+        $sqlLlamadas = <<<SQL_LLAMADAS
+SELECT
+    c.id                AS id,
+    c.phone             AS telefono,
+    ca_nombre.value     AS nombre_valor,
+    ca_direccion.value  AS direccion_valor,
+    c.status            AS estado,
+    a.number            AS number,
+    c.start_time        AS fecha_hora,
+    c.duration          AS duracion
+FROM calls c
+LEFT JOIN call_attribute ca_nombre 
+    ON c.id = ca_nombre.id_call AND ca_nombre.column_number = 1
+LEFT JOIN call_attribute ca_direccion 
+    ON c.id = ca_direccion.id_call AND ca_direccion.column_number = 3
+LEFT JOIN agent a 
+    ON c.id_agent = a.id
+WHERE
+    c.id_campaign = ? AND
+    (c.status='Success' OR c.status='Failure' OR c.status='ShortCall')
+ORDER BY
+    telefono ASC
+SQL_LLAMADAS;
+
+        $datosCampania = NULL;
+        $datosTelefonos = $this->_DB->fetchTable($sqlLlamadas, FALSE, array($id_campaign));
+        if (!is_array($datosTelefonos)) {
+            $this->errMsg = 'Unable to read campaign phone data - '.$this->_DB->errMsg;
+            return $datosCampania;
+        }
+        $datosCampania = array(
+            'BASE'  =>  array(
+                'LABEL' =>  array(
+                    'id_call',
+                    $arrLan['Phone Customer'],
+                    $arrLan['Name Customer'],
+                    $arrLan['Address'],
+                    $arrLan['Status Call'],
+                    "Agente",
+                    $arrLan['Date & Time'],
+                    $arrLan['Duration'],
+                ),
+                'DATA'  =>  array(),
+            ),
+            'FORMS' =>  array(),
+        );
+        foreach ($datosTelefonos as $tuplaTelefono) {
+            $datosCampania['BASE']['DATA'][] = $tuplaTelefono;        
+        }
+
+        // Construir índice para obtener la posición de la llamada, dado su ID
+        $indexCall = array();
+        foreach ($datosCampania['BASE']['DATA'] as $pos => $tuplaTelefono) {
+            $indexCall[$tuplaTelefono[0]] = $pos;
+        }
+        $datosCampania['BASE']['ID2POS'] = $indexCall;
+
+        // Leer los datos de los formularios asociados a esta campaña
+        $sqlFormularios = <<<SQL_FORMULARIOS
+SELECT 
+    f.id        AS id_form,
+    ff.id       AS id_form_field,
+    ff.etiqueta AS campo_nombre,
+    f.nombre    AS formulario_nombre
+FROM campaign_form cf, form f, form_field ff
+WHERE cf.id_form = f.id AND f.id = ff.id_form AND ff.tipo <> 'LABEL' AND cf.id_campaign = ?
+ORDER BY f.id, ff.orden ASC;
+SQL_FORMULARIOS;
+        $datosFormularios = $this->_DB->fetchTable($sqlFormularios, FALSE, array($id_campaign));
+        if (!is_array($datosFormularios)) {
+            $this->errMsg = 'Unable to read form data - '.$this->_DB->errMsg;
+            $datosCampania = NULL;
+            return $datosCampania;
+        }
+        foreach ($datosFormularios as $tuplaFormulario) {
+            if (!isset($datosCampania['FORMS'][$tuplaFormulario[0]])) {
+                $datosCampania['FORMS'][$tuplaFormulario[0]] = array(
+                    'NAME'  =>  $tuplaFormulario[3],
+                    'LABEL' =>  array(),
+                    'DATA'  =>  array(),
+                    'FF2POS'=>  array(),
+                );
+            }
+            $datosCampania['FORMS'][$tuplaFormulario[0]]['LABEL'][] = $tuplaFormulario[2];
+
+            // Construir índice para obtener posición/orden del campo de formulario, dado su ID.
+            $datosCampania['FORMS'][$tuplaFormulario[0]]['FF2POS'][$tuplaFormulario[1]] = count($datosCampania['FORMS'][$tuplaFormulario[0]]['LABEL']) - 1;
+        }
+
+        // Leer los datos recolectados de los formularios
+        $sqlDatosForm = <<<SQL_DATOS_FORM
+SELECT
+    c.id AS id_call,
+    ff.id_form AS id_form,
+    ff.id AS id_form_field,
+    fdr.value AS campo_valor
+FROM calls c, form_data_recolected fdr, form_field ff
+WHERE fdr.id_calls = c.id AND fdr.id_form_field = ff.id AND c.id_campaign = ?
+    AND ff.tipo <> 'LABEL'
+    AND (c.status='Success' OR c.status='Failure' OR c.status='ShortCall')
+ORDER BY id_call, id_form, id_form_field
+SQL_DATOS_FORM;
+        $datosRecolectados = $this->_DB->fetchTable($sqlDatosForm, TRUE, array($id_campaign));
+        if (!is_array($datosRecolectados)) {
+            $this->errMsg = 'Unable to read form fill-out data - '.$this->_DB->errMsg;
+            $datosCampania = NULL;
+            return $datosCampania;
+        }
+        foreach ($datosRecolectados as $vr) {
+            if (!isset($datosCampania['FORMS'][$vr['id_form']]['DATA'][$vr['id_call']])) {
+                // No está asignada la tupla de valores para esta llamada. Se construye
+                // una tupla de valores NULL que será llenada progresivamente.
+                $tuplaVacia = array_fill(0, count($datosCampania['FORMS'][$vr['id_form']]['LABEL']), NULL);
+                $datosCampania['FORMS'][$vr['id_form']]['DATA'][$vr['id_call']] = $tuplaVacia;
+            }
+            $iPos = $datosCampania['FORMS'][$vr['id_form']]['FF2POS'][$vr['id_form_field']];
+            $datosCampania['FORMS'][$vr['id_form']]['DATA'][$vr['id_call']][$iPos] = $vr['campo_valor'];
+        }
+
+        return $datosCampania;
+    }
 }
 
 //FUNCIONES AJAX
