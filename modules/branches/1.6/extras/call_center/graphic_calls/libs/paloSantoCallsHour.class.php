@@ -54,340 +54,126 @@ class paloSantoCallsHour
         }
     }
 
-
     /**
-     * Procedimiento para obtener el número de llamadas entrantes agrupadas por colas
-     * @param   string      $tipo       xxx
-     * @param   string      $entrantes  xxx
-     * @param   string      $salientes  xxx
-     * @param   string      $fecha_init Fecha de inicio del rango por el cual agrupar las
-     *                                  llamadas recuperadas, en formato yyyy-mm-dd
-     * @param   string      $fecha_end  Fecha del final del rango por el cual agrupar las
-     *                                  llamadas recuperadas, en formato yyyy-mm-dd
+     * Procedimiento para obtener el número de llamadas por hora y por cola.
+     * El tiempo se cuenta desde que la llamada fue contestada por un agente, a
+     * excepción de las llamadas abandonadas entrantes, para las cuales se toma
+     * el tiempo en que la llamada entró a la cola.
+     *
+     * @param   enum    $sTipo  'E' para entrantes, 'S' para salientes
+     * @param   enum    $sTipo  'T' para todas, 'E' para terminada, 'N' para no respuesta o llamada corta, 'A' para abandonada
+     * @param   string  $sFechaInicio   Fecha de inicio para agrupación de llamadas
+     * @param   string  $sFechaInicio   Fecha de fin para agrupación de llamadas
+     *
+     * @return  NULL en caso de error, o una estructura de la siguiente forma:
+     * array(
+     *     {cola} => array(0 => 1, 1 => 4, ..., 23 => 9), // <-- horas enumeradas
+     *     ...
+     * )
      */
-    function getCalls($tipo='all',$entrantes='all', $salientes='all',$fecha_init, $fecha_end, $limit, $offset)
+    function getCalls($sTipo, $sEstado, $sFechaInicio, $sFechaFin)
     {
-        global $arrLang;
-        global $arrLan;
-
-        //validamos la fecha
-        if($fecha_init!="" && $fecha_end!="" ) {
-            $fecha_init = explode('-',$fecha_init);
-            $fecha_end  = explode('-',$fecha_end);
-        }else {
-            $this->msgError .= "Debe ingresarse una fecha inicio y una fecha fin";
-            return false;
+        if (!in_array($sTipo, array('E', 'S'))) {
+            $this->errMsg = '(internal) Invalid call type, must be E or S';
+            return NULL;
         }
-        // pregunto si la fecha inicial existe
-        if( is_array( $fecha_init ) && count( $fecha_init )==3 && is_array( $fecha_end ) && count( $fecha_end )==3 ) {
-            $year_init  = $fecha_init[0];
-            $month_init = $fecha_init[1];
-            $day_init   = $fecha_init[2];
-            $year_end   = $fecha_end[0];
-            $month_end  = $fecha_end[1];
-            $day_end    = $fecha_end[2];
-            $fechaInicial = $fecha_init[0]."-".$fecha_init[1]."-".$fecha_init[2]." "."00:00:00";
-            $fechaFinal = $fecha_end[0]."-".$fecha_end[1]."-".$fecha_end[2]." "."23:59:59";
-        //si fecha_init y fecha_end no existen envio un mensaje de error
-        }else {
-            $this->msgError .= "Fecha Inicio y/o Fecha Fin no valida";
-            return false;
+        if (!in_array($sEstado, array('T', 'E', 'N', 'A'))) {
+            $this->errMsg = '(internal) Invalid call status, must be one of A,E,N,T';
+            return NULL;
         }
-
-        $arreglo = array();
-        $where = "";
-        if($tipo=='E'){//hacemos consulta en tabla call_entry
-        //validamos las opciones del combo de ENTRANTES
-            
-            if($entrantes=='T') {
-                $parametro = "TIME(call_e.datetime_init) as hora";
-                 $where .= "WHERE  (
-                                    datetime_init>='{$fechaInicial}'
-
-                                           AND
-
-                                    datetime_end<='{$fechaFinal}'
-                                ) and status='terminada'";
-            }elseif($entrantes=='E'){
-                 $parametro = "TIME(call_e.datetime_init) as hora";
-                 $where .= "WHERE  (
-                                    datetime_init>='{$fechaInicial}'
-
-                                           AND
-
-                                    datetime_end<='{$fechaFinal}'
-                                ) and status='terminada'";
-            }elseif($entrantes=='A'){
-                 $parametro = "TIME(call_e.datetime_entry_queue) as hora";
-                 $where .= "WHERE  (
-                                    datetime_entry_queue >='{$fechaInicial}'
-
-                                           AND
-
-                                    datetime_end<='{$fechaFinal}'
-                                ) and status='abandonada'";
+        if ($sTipo == 'E' && $sEstado == 'N') {
+            $this->errMsg = '(internal) Invalid call status N for incoming calls';
+            return NULL;
+        }
+        if (!ereg('^[[:digit:]]{4}-[[:digit:]]{2}-[[:digit:]]{2}$', $sFechaInicio) ||
+            !ereg('^[[:digit:]]{4}-[[:digit:]]{2}-[[:digit:]]{2}$', $sFechaFin)) {
+            $this->errMsg = '(internal) Invalid date format, must be YYYY-MM-DD';
+            return NULL;
+        }
+        
+        // Elegir sentencia SQL adecuada para la selección
+        switch ($sTipo) {
+        case 'S':   // Llamadas salientes
+            $sqlParams = array($sFechaInicio.' 00:00:00', $sFechaFin.' 23:59:59');
+            switch ($sEstado) {
+            case 'T':   // Todas
+                $sEstadoSQL = ' ';
+                break;
+            case 'E':   // Terminadas
+                $sEstadoSQL = " AND status = 'Success' ";
+                break;
+            case 'N':   // No contestadas
+                $sEstadoSQL = " AND (status = 'NoAnswer' OR status = 'ShortCall') ";
+                break;
+            case 'A':   // Abandonadas
+                $sEstadoSQL = " AND status = 'Abandoned' ";
+                break;
             }
-            
-            /*if($entrantes=='T')
-                 $where .= " ";
-            elseif($entrantes=='E')
-                 $where .= " and status='terminada'";
-            elseif($entrantes=='A')
-                 $where .= " and status='abandonada'";
-            */
-            $arr_result = FALSE;
-            $this->errMsg = "";
-
-            $sPeticionSQL = "SELECT  queue_ce.queue as queue,".$parametro."
-                             FROM call_entry call_e, queue_call_entry queue_ce 
-                             ".$where."
-                                AND call_e.id_queue_call_entry=queue_ce.id"; /*AND call_e.status is not null*/ 
-            $sPeticionSQL_2 = "SELECT  queue_ce.queue as queue, TIME(call_e.datetime_entry_queue) as                   hora
-                             FROM call_entry call_e, queue_call_entry queue_ce 
-                             WHERE  (
-                                    datetime_entry_queue >='{$fechaInicial}'
-
-                                           AND
-
-                                    datetime_end<='{$fechaFinal}'
-                                ) and status='abandonada' 
-                                AND call_e.id_queue_call_entry=queue_ce.id";
-        }
-        else if($tipo=='S'){//hacemos consulta en tabla calls
-        //validamos las opciones del combo de SALIENTES
-            if($salientes=='T')
-                 $where .= " ";
-            elseif($salientes=='E')
-                 $where .= " and status='Success'";
-            elseif($salientes=='N')
-                 $where .= " and (status='NoAnswer' OR status='ShortCall')";
-            elseif($salientes=='A')
-                 $where .= " and status='Abandoned'";
-
-            $sPeticionSQL = "SELECT camp.queue as queue,  TIME(c.start_time) as hora 
-                            FROM calls c , campaign camp
-                             WHERE   (
-                                    start_time>='{$fechaInicial}'
-
-                                           AND
-                                    end_time<='{$fechaFinal}'
-                                )
-                                AND c.id_campaign=camp.id AND c.status is not null  ".$where;
-        }
-
-
-//     echo $sPeticionSQL."<br><br>";
-//     echo $sPeticionSQL_2."<br><br>";
-    $arr_result =& $this->_DB->fetchTable($sPeticionSQL, true);
-    if($entrantes=='T') {
-            $arr_result_1 =& $this->_DB->fetchTable($sPeticionSQL, true);
-            if (isset($sPeticionSQL_2)) {
-                $arr_result_2 =& $this->_DB->fetchTable($sPeticionSQL_2, true);
-                $arr_result = array_merge($arr_result_1, $arr_result_2);
-            } else {
-                $arr_result = $arr_result_1;
+            $sqlLlamadas = 
+                'SELECT camp.queue AS queue, HOUR(c.start_time) AS hora, COUNT(*) AS N '.
+                'FROM calls c, campaign camp '.
+                'WHERE start_time >= ? AND end_time <= ? AND c.id_campaign = camp.id AND c.status IS NOT NULL'.
+                $sEstadoSQL.
+                'GROUP BY queue, hora ORDER BY queue, hora';
+            break;
+        case 'E':   // Llamadas entrantes
+            $sqlParams = array($sFechaInicio.' 00:00:00', $sFechaInicio.' 00:00:00', $sFechaFin.' 23:59:59');
+            switch ($sEstado) {
+            case 'T':
+                $sEstadoSQL = ' ';
+                break;
+            case 'E':
+                $sEstadoSQL = " AND status = 'terminada' ";
+                break;
+            case 'A':
+                $sEstadoSQL = " AND status = 'abandonada' ";
+                break;
             }
+            $sqlLlamadas = 
+                "SELECT queue_ce.queue AS queue, ".
+                    "HOUR(IF(status = 'abandonada', datetime_entry_queue, datetime_init)) AS hora, ".
+                    "COUNT(*) AS N ".
+                "FROM call_entry call_e, queue_call_entry queue_ce ".
+                "WHERE call_e.id_queue_call_entry = queue_ce.id ".
+                    "AND ((status = 'abandonada' AND datetime_entry_queue >= ?) OR (status <> 'abandonada' AND datetime_init >= ?) ) ".
+                    "AND datetime_end <= ? ".
+                $sEstadoSQL.
+                "GROUP BY queue, hora ORDER BY queue, hora";
+            break;
+        }
+        /* La salida esperada del recordset:
+        +-------+------+----+
+        | queue | hora | N  |
+        +-------+------+----+
+        | 900   |    7 |  1 | 
+        | 900   |    9 |  2 | 
+        | 900   |   10 |  5 | 
+        | 900   |   11 |  5 | 
+        | 900   |   12 |  3 | 
+        | 900   |   13 |  5 | 
+        | 900   |   14 |  3 | 
+        | 900   |   15 | 15 | 
+        | 900   |   16 |  1 | 
+        | 900   |   17 |  2 | 
+        +-------+------+----+
+        10 rows in set (0.00 sec)
+        */
+        $recordset =& $this->_DB->fetchTable($sqlLlamadas, TRUE, $sqlParams);
+        if (!is_array($recordset)) {
+            $this->errMsg = 'Unable to read call information - '.$this->_DB->errMsg;
+            return NULL;
+        }
+        
+        // Construir el arreglo requerido
+        $histograma = array();
+        foreach ($recordset as $tupla) {
+            $sCola = $tupla['queue'];
+            if (!isset($histograma[$sCola]))
+                $histograma[$sCola] = array_fill(0, 24, 0);
+            $histograma[$sCola][$tupla['hora']] = $tupla['N'];
+        }
+        return $histograma;
     }
-
-    if (!is_array($arr_result)) {
-        $arr_result = FALSE;
-        $this->errMsg = $this->_DB->errMsg;
-    }
-    $resultado = array();
-        //armamos el arreglo de todos los datos a presentar clasificandolos por cola y hora
-    if(is_array($arr_result)){
-        foreach($arr_result as $hora){
-            if(!isset($resultado[$hora['queue']]['cola']))
-                $resultado[$hora['queue']]['cola']="";
-            if(!isset($hora['queue']))
-                $hora['queue'] = "";
-
-            if($hora['hora']>="00:00:00" && $hora['hora']<"01:00:00"){
-                if(!isset($resultado[$hora['queue']][0]))
-                    $resultado[$hora['queue']][0] =1;
-                else $resultado[$hora['queue']][0] += 1;
-                $resultado[$hora['queue']]['cola'] = $hora['queue'];
-            }
-            if($hora['hora']>="01:00:00" && $hora['hora']<"02:00:00"){
-                if(!isset($resultado[$hora['queue']][1]))
-                    $resultado[$hora['queue']][1] =1;
-                else $resultado[$hora['queue']][1] += 1;
-                $resultado[$hora['queue']]['cola'] = $hora['queue'];
-
-            }
-            if($hora['hora']>="02:00:00" && $hora['hora']<"03:00:00") {
-                if(!isset($resultado[$hora['queue']][2]))
-                    $resultado[$hora['queue']][2] =1;
-                else $resultado[$hora['queue']][2] += 1;
-                $resultado[$hora['queue']]['cola'] = $hora['queue'];
-
-            }
-            if($hora['hora']>="03:00:00" && $hora['hora']<"04:00:00"){
-                if(!isset($resultado[$hora['queue']][3]))
-                    $resultado[$hora['queue']][3] =1;
-                else $resultado[$hora['queue']][3] += 1;
-                $resultado[$hora['queue']]['cola'] = $hora['queue'];
-
-            }
-            if($hora['hora']>="04:00:00" && $hora['hora']<"05:00:00"){
-                if(!isset($resultado[$hora['queue']][4]))
-                    $resultado[$hora['queue']][4] =1;
-                else $resultado[$hora['queue']][4] += 1;
-                $resultado[$hora['queue']]['cola'] = $hora['queue'];
-
-            }
-            if($hora['hora']>="05:00:00" && $hora['hora']<"06:00:00"){
-                if(!isset($resultado[$hora['queue']][5]))
-                    $resultado[$hora['queue']][5] =1;
-                else $resultado[$hora['queue']][5] += 1;
-                $resultado[$hora['queue']]['cola'] = $hora['queue'];
-
-            }
-            if($hora['hora']>="06:00:00" && $hora['hora']<"07:00:00"){
-                if(!isset($resultado[$hora['queue']][6]))
-                    $resultado[$hora['queue']][6] =1;
-                else $resultado[$hora['queue']][6] += 1;
-                $resultado[$hora['queue']]['cola'] = $hora['queue'];
-
-            }
-            if($hora['hora']>="07:00:00" && $hora['hora']<"08:00:00"){
-                if(!isset($resultado[$hora['queue']][7]))
-                    $resultado[$hora['queue']][7] =1;
-                else $resultado[$hora['queue']][7] += 1;
-                $resultado[$hora['queue']]['cola'] = $hora['queue'];
-
-            }
-            if($hora['hora']>="08:00:00" && $hora['hora']<"09:00:00"){
-                if(!isset($resultado[$hora['queue']][8]))
-                    $resultado[$hora['queue']][8] =1;
-                else $resultado[$hora['queue']][8] += 1;
-                $resultado[$hora['queue']]['cola'] = $hora['queue'];
-
-            }
-            if($hora['hora']>="09:00:00" && $hora['hora']<"10:00:00"){
-                if(!isset($resultado[$hora['queue']][9]))
-                    $resultado[$hora['queue']][9] =1;
-                else $resultado[$hora['queue']][9] += 1;
-                $resultado[$hora['queue']]['cola'] = $hora['queue'];
-
-            }
-            if($hora['hora']>="10:00:00" && $hora['hora']<"11:00:00"){
-                if(!isset($resultado[$hora['queue']][10]))
-                    $resultado[$hora['queue']][10] =1;
-                else $resultado[$hora['queue']][10] += 1;
-                $resultado[$hora['queue']]['cola'] = $hora['queue'];
-
-            }
-            if($hora['hora']>="11:00:00" && $hora['hora']<"12:00:00"){
-                if(!isset($resultado[$hora['queue']][11]))
-                    $resultado[$hora['queue']][11] =1;
-                else $resultado[$hora['queue']][11] += 1;
-                $resultado[$hora['queue']]['cola'] = $hora['queue'];
-
-            }
-            if($hora['hora']>="12:00:00" && $hora['hora']<"13:00:00"){
-                if(!isset($resultado[$hora['queue']][12]))
-                    $resultado[$hora['queue']][12] =1;
-                else $resultado[$hora['queue']][12] += 1;
-                $resultado[$hora['queue']]['cola'] = $hora['queue'];
-
-            }
-            if($hora['hora']>="13:00:00" && $hora['hora']<"14:00:00"){
-                if(!isset($resultado[$hora['queue']][13]))
-                    $resultado[$hora['queue']][13] =1;
-                else  $resultado[$hora['queue']][13] += 1;
-                $resultado[$hora['queue']]['cola'] = $hora['queue'];
-
-            }
-            if($hora['hora']>="14:00:00" && $hora['hora']<"15:00:00"){
-                if(!isset($resultado[$hora['queue']][14]))
-                    $resultado[$hora['queue']][14] =1;
-                else $resultado[$hora['queue']][14] += 1;
-                $resultado[$hora['queue']]['cola'] = $hora['queue'];
-
-            }
-            if($hora['hora']>="15:00:00" && $hora['hora']<"16:00:00"){
-                if(!isset($resultado[$hora['queue']][15]))
-                    $resultado[$hora['queue']][15] =1;
-                else $resultado[$hora['queue']][15] += 1;
-                $resultado[$hora['queue']]['cola'] = $hora['queue'];
-
-            }
-            if($hora['hora']>="16:00:00" && $hora['hora']<"17:00:00"){
-                if(!isset($resultado[$hora['queue']][16]))
-                    $resultado[$hora['queue']][16] =1;
-                else $resultado[$hora['queue']][16] += 1;
-                $resultado[$hora['queue']]['cola'] = $hora['queue'];
-
-            }
-            if($hora['hora']>="17:00:00" && $hora['hora']<"18:00:00"){
-                if(!isset($resultado[$hora['queue']][17]))
-                    $resultado[$hora['queue']][17] =1;
-                else $resultado[$hora['queue']][17] += 1;
-                $resultado[$hora['queue']]['cola'] = $hora['queue'];
-
-            }
-            if($hora['hora']>="18:00:00" && $hora['hora']<"19:00:00"){
-                if(!isset($resultado[$hora['queue']][18]))
-                    $resultado[$hora['queue']][18] =1;
-                else $resultado[$hora['queue']][18] += 1;
-                $resultado[$hora['queue']]['cola'] = $hora['queue'];
-
-            }
-            if($hora['hora']>="19:00:00" && $hora['hora']<"20:00:00"){
-                if(!isset($resultado[$hora['queue']][19]))
-                    $resultado[$hora['queue']][19] =1;
-                else $resultado[$hora['queue']][19] += 1;
-                $resultado[$hora['queue']]['cola'] = $hora['queue'];
-
-            }
-            if($hora['hora']>="20:00:00" && $hora['hora']<"21:00:00"){
-                if(!isset($resultado[$hora['queue']][20]))
-                    $resultado[$hora['queue']][20] =1;
-                else  $resultado[$hora['queue']][20] += 1;
-                $resultado[$hora['queue']]['cola'] = $hora['queue'];
-
-            }
-            if($hora['hora']>="21:00:00" && $hora['hora']<"22:00:00"){
-                if(!isset($resultado[$hora['queue']][21]))
-                    $resultado[$hora['queue']][21] =1;
-                else $resultado[$hora['queue']][21] += 1;
-                $resultado[$hora['queue']]['cola'] = $hora['queue'];
-
-            }
-            if($hora['hora']>="22:00:00" && $hora['hora']<"23:00:00"){
-                if(!isset($resultado[$hora['queue']][22]))
-                    $resultado[$hora['queue']][22] =1;
-                else $resultado[$hora['queue']][22] += 1;
-                $resultado[$hora['queue']]['cola'] = $hora['queue'];
-
-            }
-            if($hora['hora']>="23:00:00" && $hora['hora']<"24:00:00"){
-                if(!isset($resultado[$hora['queue']][23]))
-                    $resultado[$hora['queue']][23] =1;
-                else $resultado[$hora['queue']][23] += 1;
-                $resultado[$hora['queue']]['cola'] = $hora['queue'];
-
-            }
-
-        }
-    }//fin de si existe al arreglo
-
-    //convertimos los indices desde "0" ordenados
-    sort($resultado);
-    reset($resultado);
-    
-    $arrResult['NumCalls'] = count($arr_result);
-    $arrResult['Data'] = $resultado;//toda la data
-    $arrResult['NumRecords'] = count($arrResult['Data']); //contabilizamos la cantidad de datos
-    $arrResult['Data'] = array_slice($arrResult['Data'], $offset, $limit);//para presentar segun el limit y offset enviado
-
-    return $arrResult;//retorno el arreglo
-
-    }
-
-
-
 }
 
 ?>

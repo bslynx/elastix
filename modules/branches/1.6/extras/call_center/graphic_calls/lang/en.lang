@@ -41,8 +41,8 @@ $arrLan=array(
 "Debe ingresar una fecha inicio/fin"           => "You must enter a date",
 "Error"                             => "Error",
 "Find"                              => "Find",
-"Date Init"                         => "Fecha de Inicio",
-"Date End"                          => "Fecha Fin",
+"Date Init"                         => "Start Date",
+"Date End"                          => "End Date",
 "Tipo"                              => "Type",
 "Estado"                            => "Status",
 "Ingoing"                           => "Ingoing",
@@ -51,5 +51,9 @@ $arrLan=array(
 "Successful"                        => "Successful",
 "Not Realiced"                      => "Not Realiced",
 "Left"                              => "Left",
+'Completed'                         => 'Completed',
+'Abandoned'                         => 'Abandoned',
+'No answer/Short call'              => 'No answer/Short call',
+'Calls'                             => 'Calls',
 );
 ?>
