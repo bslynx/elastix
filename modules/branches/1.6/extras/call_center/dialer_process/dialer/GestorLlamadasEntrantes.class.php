@@ -477,16 +477,33 @@ class GestorLlamadasEntrantes
                             'WHERE id = ?',
                             array($idAgente, $tuplaLlamada->id));
                         if (!DB::isError($resultado)) {
-                            $resultado =& $this->_dbConn->query(
-                                'INSERT INTO current_call_entry (id_agent, id_queue_call_entry, '.
-                                    'id_call_entry, callerid, datetime_init, uniqueid, ChannelClient) '.
-                                'VALUES (?, ?, ?, ?, NOW(), ?, ?)',
-                                array($idAgente, $idCola, $tuplaLlamada->id, $eventParams[$sKey_CallerID], 
-                                    $eventParams[$sKey_Uniqueid], $sRemChannel));
-                            if (DB::isError($resultado)) {
-                                $this->_oMainLog->output(
-                                    'ERR: no se puede insertar registro de llamada (actual) - '.
-                                    $resultado->getMessage());
+                            /* En el transcurso de una llamada, pueden haber múltiples eventos Link.
+                             * Si este no es el primer event Link para la llamada entrante, puede 
+                             * que haya ya en current_call_entry un registro para la llamada de
+                             * interés. Sólo debe de insertarse si no existe un registro previo. */
+                            $cuentaLlamada =& $this->_dbConn->getOne(
+                                'SELECT COUNT(*) FROM current_call_entry WHERE uniqueid = ?',
+                                array($eventParams[$sKey_Uniqueid]));
+                            if (DB::isError($cuentaLlamada)) {
+                            	$this->_oMainLog->output(
+                                    'ERR: no se puede verificar duplicidad de registro de llamada (actual) - '.
+                                    $cuentaLlamada->getMessage());
+                                $cuentaLlamada = 0;
+                            }
+                            if ($cuentaLlamada <= 0) {
+                                $resultado =& $this->_dbConn->query(
+                                    'INSERT INTO current_call_entry (id_agent, id_queue_call_entry, '.
+                                        'id_call_entry, callerid, datetime_init, uniqueid, ChannelClient) '.
+                                    'VALUES (?, ?, ?, ?, NOW(), ?, ?)',
+                                    array($idAgente, $idCola, $tuplaLlamada->id, $eventParams[$sKey_CallerID], 
+                                        $eventParams[$sKey_Uniqueid], $sRemChannel));
+                                if (DB::isError($resultado)) {
+                                    $this->_oMainLog->output(
+                                        'ERR: no se puede insertar registro de llamada (actual) - '.
+                                        $resultado->getMessage());
+                                }
+                            } else {
+                            	if ($this->DEBUG) $this->_oMainLog->output('DEBUG: llamada entrante ya consta en registro de llamadas en curso.');
                             }
                         } else {
                             $this->_oMainLog->output(
