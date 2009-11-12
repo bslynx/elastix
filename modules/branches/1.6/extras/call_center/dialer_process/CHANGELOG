@@ -61,6 +61,7 @@
   incoming calls that lead to temporary incoming call information not being 
   removed from the database
 * At long last, actually include a CHANGELOG in the tarball ;-)
+* Ingoing Calls Success - remove vim swapfile unwittingly committed into repository
 
 1.5-svn-branch-1.6
 * Agent Console: Fix up conformance to XHTML in several templates.
