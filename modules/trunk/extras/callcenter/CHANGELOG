@@ -1,0 +1,105 @@
+1.5-2
+* Agents, Calls Detail, Calls per Agent, Calls per Hour, Campaign Out, 
+  Form Designer, Hold Time, Incoming Calls Success, Login/Logout, Reports Break,
+  : Tweak loading of language files to have English strings as fallback if no 
+  localized string is available
+* Agents: Add missing English language strings
+* Agents: Look for phpagi-asmanager.php in libs/ in addition to /var/lib/asterisk/agi-bin
+* Agents: Make re-loading of Asterisk more robust in case of failure
+* Report - Calls Detail: Initialize a variable
+* Report - Calls Detail: Add missing language string
+* Report - Calls per Agent: Add missing language string
+* Report - Calls per Hour: Fix incorrect index for internationalized strings
+* Report - Hold Time: Actually define internationalized strings that are being 
+  used.
+* Report - Incoming Calls Success: Fix use of undefined variables when no calls
+  are present
+* Report - Login/Logout: Actually define internationalized strings that are 
+  being used.
+* Break Administrator: Actually define internationalized strings that are being 
+  used.
+* Form Designer: Actually define internationalized strings that are being used.
+* Report - Calls Details: Actually define internationalized strings that are 
+  being used.
+* Dialer - Fix bug in which a scheduled agent in pause would receive calls even 
+  when paused.
+* Dialer - Try harder to work around a bug in some Asterisk versions where 
+  agents are reported as busy when they are really free, by manually modifying 
+  the Asterisk database and restarting Asterisk.
+* Dialer - Fix use of undefined variable in some code paths.
+* Dialer - Fix bug in which an agent that belongs to both an incoming and 
+  outgoing campaign will cause outgoing calls to be handled as incoming.
+* Outgoing Campaigns: Major rewrite:
+ - Code cleanup/refactoring to remove duplicated functionality between creation 
+   and modification of a campaign.
+ - Use rawmode for display of CSV data instead of a separate callable PHP script.
+ - Improve usability of New Campaign/Edit Campaign with links to relevant 
+   resource managers.
+ - Display error message instead of form when trying to create an outgoing 
+   campaign without   defining forms or queues, or when all available queues are
+   used by incoming campaigns.
+ - Move out embedded HTML markup for report filter into a separate Smarty 
+   template.
+ - Rework query for campaign CSV data to be more readable.
+ - Rework campaign report to make accessible more of the available 
+   functionality. Now the operations for Deactivate/Delete campaign are show in
+   the report instead of having to use the View link.
+ - Fixed use of undefined localized strings.
+* Graphic calls: Major rewrite:
+ - Remove vim swapfile unwittingly committed into repository
+ - Remove unused template new.tpl and unused richedit library
+ - Remove copy of jpgraph library and redirect references to Elastix embedded
+   jpgraph instead
+ - Rewrite code to remove write of query data to a temporary PHP file, replaced
+   by rawmode and proper query
+ - Refactor code to eliminate repeating code for hour processing
+ - Use SQL with GROUP BY and IF conditionals to replace PHP code that built 
+   histogram from a direct query of calls
+ - Move out HTML code for report filter into a proper template
+ - Fix use of undefined localization strings
+* Dialer - Fixed improper handling of multiple Link events for monitored 
+  incoming calls that lead to temporary incoming call information not being 
+  removed from the database
+* At long last, actually include a CHANGELOG in the tarball ;-)
+
+1.5-svn-branch-1.6
+* Agent Console: Fix up conformance to XHTML in several templates.
+* Add missing translations for strings "Name" and "Retype Password" (Elastix bug
+  #167)
+* Dialer Configuration: Add support for setting Service Percent (97 percent by 
+  default)
+* Report - Calls Detail: Actually use internationalized string for "End Time"
+* Report - Calls per Hour: Actually use internationalized strings for call 
+  states
+* Report - Calls per Hour: Expand French localization strings
+* Outgoing Campaigns: Add library support (not yet exposed in interface) to 
+  leave trunk blank in order to use default Asterisk dialplan through 
+  Local/$OUTNUM$@from-internal
+* Report - Graphic Calls per hour: fix French localization for "Total Calls"
+* Report - Hold Time: Internationalize strings for average wait time
+* Report - Hold Time: Add French localization strings
+* Report - Ingoing Calls Success: Fix French localization strings
+* Report - Login/Logout: Use internationalized strings for report type
+* Report - Login/Logout: Add French localization strings
+* Report - Reports Break: Make code more robust when no break types are defined
+* Report - Reports Break: comment out unused code in library files
+* Dialer - Add support for scheduled calls to specific agents. This code also
+  automatically detects whether the database tables support the functionality.
+* Dialer - Add support for setting the probability used when calculating the
+  odds that a currently-active call will hang up after a certain set time.
+  Previously this value was hardcoded to 97 percent. This parameter is exposed
+  on the web configuration as Service Percent.
+* Dialer - Add code to verify whether the database connection was lost and 
+  attempt to reconnect to the database periodically.
+* Dialer - Add code to figure out the time between originating a call and 
+  linking the call to an agent, and use it for predictive calculations. 
+  Previously this value was hardcoded to 8 seconds.
+* Dialer - Add enter/exit trace code for debugging events
+* Dialer - Record incoming trunk for incoming calls, if database column is 
+  available
+* Dialer - Add code to attempt to eliminate reentrancy on handling of Asterisk 
+  events.
+* Dialer - Remove dead code for normal distribution for call prediction.
+
+1.5-1
+* Callcenter for Elastix 1.5.x released.
