@@ -358,15 +358,15 @@ function formEditCampaign($pDB, $smarty, $module_name, $local_templates_dir, $id
     // Impedir mostrar el formulario si no se han definido colas o no
     // quedan colas libres para usar en campañas salientes.
     if (count($arrQueues) <= 0) {
-        $formCampos = getFormCampaign($arrDataTrunks, $arrDataQueues, $arrSelectForm, NULL);
+        $formCampos = getFormCampaign($arrDataTrunks, $arrDataQueues, NULL, NULL);
         $oForm = new paloForm($smarty, $formCampos);
         $smarty->assign('no_queues', 1);
     } elseif (count($arrDataQueues) <= 0) {
-        $formCampos = getFormCampaign($arrDataTrunks, $arrDataQueues, $arrSelectForm, NULL);
+        $formCampos = getFormCampaign($arrDataTrunks, $arrDataQueues, NULL, NULL);
         $oForm = new paloForm($smarty, $formCampos);
         $smarty->assign('no_outgoing_queues', 1);
     } elseif (count($arrDataForm) <= 0) {
-        $formCampos = getFormCampaign($arrDataTrunks, $arrDataQueues, $arrSelectForm, NULL);
+        $formCampos = getFormCampaign($arrDataTrunks, $arrDataQueues, NULL, NULL);
         $oForm = new paloForm($smarty, $formCampos);
         $smarty->assign('no_forms', 1);
     } else {
