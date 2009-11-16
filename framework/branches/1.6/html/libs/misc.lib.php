@@ -266,24 +266,29 @@ function load_theme($ruta_base='')
 
 function load_language($ruta_base='')
 {
-    require_once $ruta_base."configs/default.conf.php";
-    global $arrConf;
-    include_once $ruta_base."libs/paloSantoDB.class.php";
-    include $ruta_base."configs/default.conf.php";
-    include_once $ruta_base."configs/languages.conf.php";
-    $lang="";
-    //conectarse a la base de settings para obtener el idioma actual
-    $pDB = new paloDB($arrConf['elastix_dsn']['settings']);
-    if(empty($pDB->errMsg)) {
-        $lang=get_key_settings($pDB,'language');
+    $lang = get_language($ruta_base);
+
+    $sFallbackEN = $ruta_base."lang/en.lang";
+    include_once $sFallbackEN;
+
+    if ($lang != 'en') {
+        $arrLangEN = $arrLang;
+        include_once $ruta_base."lang/".$lang.".lang";
+        $arrLang = array_merge($arrLangEN, $arrLang);
     }
-    //si no se encuentra tomar del archivo de configuracion
-    if (empty($lang)) $lang=isset($arrConf['language'])?$arrConf['language']:"en";
 
-    //verificar que exista en el arreglo de idiomas, sino por defecto en
-    if (!array_key_exists($lang,$languages)) $lang="en";
+}
 
-    include_once $ruta_base."lang/".$lang.".lang";
+function load_language_module($module_id, $ruta_base='')
+{
+    $lang = get_language($ruta_base);
+    $lang_file_module = $ruta_base."modules/$module_id/lang/$lang.lang";
+    if (file_exists("$lang_file_module")) include_once "$lang_file_module";
+    else include_once $ruta_base."modules/$module_id/lang/en.lang";
+
+    global $arrLang;
+    global $arrLangModule;
+    $arrLang = array_merge($arrLang,$arrLangModule);
 }
 
 function cargar_menu($db)
@@ -307,17 +312,23 @@ function cargar_menu($db)
 function get_language($ruta_base='')
 {
     require_once $ruta_base."configs/default.conf.php";
+    include $ruta_base."configs/languages.conf.php";
+
     global $arrConf;
     $lang="";
+
     //conectarse a la base de settings para obtener el idioma actual
     $pDB = new paloDB($arrConf['elastix_dsn']['settings']);
     if(empty($pDB->errMsg)) {
         $lang=get_key_settings($pDB,'language');
     }
+    //si no se encuentra tomar del archivo de configuracion
+    if (empty($lang)) $lang=isset($arrConf['language'])?$arrConf['language']:"en";
+
+    //verificar que exista en el arreglo de idiomas, sino por defecto en
+    if (!array_key_exists($lang,$languages)) $lang="en";
     return $lang;
 }
-
-
 
 #funciones para menu
 
