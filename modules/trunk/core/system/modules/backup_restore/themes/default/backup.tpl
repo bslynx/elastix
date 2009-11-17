@@ -115,7 +115,7 @@ function VerificarCheck(chkbox, id)
                     </table></td>
                 </tr>
                 <tr><!-- ********** A S T E R I X ************ -->
-                    <td width="25%"><table id="table_asterisk" width="100%" height="250px" border="0" cellspacing="0" cellpadding="0" class="tabForm">
+                    <td width="25%"><table id="table_asterisk" width="100%" height="270px" border="0" cellspacing="0" cellpadding="0" class="tabForm">
                         <th><tr>
                             <td height="10px"><b>{$ASTERISK}</b></td>
                         </tr>
