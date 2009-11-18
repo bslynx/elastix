@@ -560,6 +560,13 @@ function process_each_backup($arrSelectedOptions,$ruta_respaldo,&$arrBackupOptio
                                 );
             if(!respaldar_carpeta($arrInfoRespaldo,$ruta_respaldo,$error))
                 $bExito = false;
+
+            //Se respalda la base asterisk en /var/lib/asterisk/astdb
+
+            $comando="cp /var/lib/asterisk/astdb $ruta_respaldo";
+            exec($comando,$output,$retval);
+            if ($retval!=0) $bExito = false;
+
             //borrar la carpeta de respaldo mysqldb
             exec("rm $ruta_respaldo/mysqldb_asterisk -rf");
             break;
@@ -984,6 +991,20 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
                     $pEX->do_reloadAll($data_connection, $arrAST, $arrAMP);
                 }
             }
+
+            if (file_exists("$ruta_respaldo/astdb"))
+            {
+                $base_address_respaldo = "$ruta_respaldo/astdb";
+                $base_address = "/var/lib/asterisk/astdb";
+
+                $comando="mv -f $base_address_respaldo $base_address";
+                exec($comando,$output,$retval);
+                if ($retval!=0) $bExito = false;
+
+                $comando="sudo -u root /bin/chmod 777 $base_address";
+                exec($comando,$output,$retval);
+            }else $bExito = false;
+
             break;
 
         case "as_config_files":
