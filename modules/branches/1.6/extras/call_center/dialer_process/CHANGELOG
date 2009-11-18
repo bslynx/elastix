@@ -1,3 +1,7 @@
+* Agents: Merge changes from http://elajonjoli.org/node/25 to provide defined
+  ordering of agent report and reloading just chan_agent, not entire Asterisk,
+  when agent configuration changes. Tracked at Elastix bug #191. 
+
 * Dialer - fix check for wrong column name that led to assuming nonexistent
   support for scheduled agents on systems that lack the required column 
   'calls.agent'.

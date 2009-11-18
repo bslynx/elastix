@@ -68,13 +68,15 @@ class Agentes
     function getAgents($id=null)
     {
         // CONSULTA DE LA BASE DE DATOS LA INFORMACIÓN DE LOS AGENTES
+        $qorder = '';
         if (is_null($id)) {
-            $where = "";
+            $where = "";            
+            $qorder = "ORDER BY `agent`.`number` ASC";
         } else {
             $where = " and number=$id";
         }
 
-        $sQuery = "SELECT * FROM agent WHERE estatus='A' ".$where;
+        $sQuery = "SELECT * FROM agent WHERE estatus='A' $where $qorder";
 
         $arr_result = array();
         $arr_result =& $this->_DB->fetchTable($sQuery, true);
@@ -366,7 +368,7 @@ class Agentes
             return FALSE;
         } else {
             // TODO: verify whether reload actually succeeded
-            $strReload = $astman->Command("reload");
+            $strReload = $astman->Command("module reload chan_agent.so");
             $astman->disconnect();
             return TRUE;
         }
