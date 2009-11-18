@@ -40,18 +40,23 @@ class Installer
     function addMenu($oMenu,$arrTmp){
     //verificar si tiene que crear un nuevo menu raiz
 
-    $parentId = $arrTmp['parent'];
+    $parentId = isset($arrTmp['parent'])?$arrTmp['parent']:"";
+    $link     = isset($arrTmp['link'])?$arrTmp['link']:"";
+    $order    = isset($arrTmp['order'])?$arrTmp['order']:"-1";
+    $tag      = isset($arrTmp['tag'])?$arrTmp['tag']:"";
+    $menuid   = isset($arrTmp['menuid'])?$arrTmp['menuid']:"";
+
     if ($parentId=="")
         $type="";
     else{
-        if($arrTmp['link']=="")
+        if($link=="")
           $type="module";
         else
           $type="framed";
     }
+
     //creo el menu
-    $order = isset($arrTmp['order'])?$arrTmp['order']:"-1";
-    $bExito = $oMenu->createMenu($arrTmp['menuid'],$arrTmp['tag'],$parentId,$type,$arrTmp['link'],$order);
+    $bExito = $oMenu->createMenu($menuid,$tag,$parentId,$type,$link,$order);
     if (!$bExito){
             $this->_errMsg = $oMenu->errMsg;
             return false;
