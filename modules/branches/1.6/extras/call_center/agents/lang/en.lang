@@ -61,5 +61,9 @@ $arrLan=array(
 "Retype password" => "Retype password",
 'View' => 'View',
 'Status' => 'Status',
+'With selection' => 'With selection',
+'Disconnect' => 'Disconnect',
+"The passwords aren't numeric values" => "The passwords aren't numeric values",
+"The passwords are empty or don't match" => "The passwords are empty or don't match",
 );
 ?>

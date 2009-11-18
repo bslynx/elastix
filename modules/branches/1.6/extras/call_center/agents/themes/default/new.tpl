@@ -1,8 +1,7 @@
-
-<form method="POST" action="?menu=agents">
+<form method="post">
 <table width="99%" border="0" cellspacing="0" cellpadding="0" align="center">
 <tr class="moduleTitle">
-  <td class="moduleTitle" valign="middle">&nbsp;&nbsp;<img src="images/user.png" border="0" align="absmiddle">&nbsp;&nbsp;{$title}</td>
+  <td class="moduleTitle" valign="middle">&nbsp;&nbsp;<img src="images/user.png" border="0" align="absmiddle" />&nbsp;&nbsp;{$title}</td>
 </tr>
 <tr>
   <td>
@@ -10,17 +9,18 @@
       <tr>
         <td align="left">
           {if $mode eq 'input'}
-          <input class="button" type="submit" name="submit_save_agent" value="{$SAVE}" >
-          <input class="button" type="submit" name="cancel" value="{$CANCEL}"></td>
+          <input class="button" type="submit" name="submit_save_agent" value="{$SAVE}" />
+          <input class="button" type="submit" name="cancel" value="{$CANCEL}"/>
           {elseif $mode eq 'edit'}
-          <input class="button" type="submit" name="submit_apply_changes" value="{$APPLY_CHANGES}" >
-          <input class="button" type="submit" name="cancel" value="{$CANCEL}"></td>
+          <input class="button" type="submit" name="submit_apply_changes" value="{$APPLY_CHANGES}" />
+          <input class="button" type="submit" name="cancel" value="{$CANCEL}"/>
           {else}
-          <input class="button" type="submit" name="edit" value="{$EDIT}">
-          <input class="button" type="submit" name="delete" value="{$DELETE}"  onClick="return confirmSubmit('{$CONFIRM_CONTINUE}')">
-          <input class="button" type="submit" name="cancel" value="{$CANCEL}"></td>
+          <input class="button" type="submit" name="edit" value="{$EDIT}"/>
+          <input class="button" type="submit" name="delete" value="{$DELETE}"  onClick="return confirmSubmit('{$CONFIRM_CONTINUE}')" />
+          <input class="button" type="submit" name="cancel" value="{$CANCEL}"/>
           {/if}
-        <td align="right" nowrap><span class="letra12"><span  class="required">*</span> {$REQUIRED_FIELD}</span></td>
+        </td>
+        <td align="right" nowrap><span  class="required">*</span> <span class="letra12">{$REQUIRED_FIELD}</span></td>
      </tr>
    </table>
   </td>
@@ -34,27 +34,19 @@
 	<td width="15%">{$description.LABEL}: <span  class="required">*</span></td>
 	<td width="35%">{$description.INPUT}</td>
       </tr>
-<!--      <tr>
-        <td width="20%">{$queue.LABEL}: <span class="required">*</span></td>
-        <td width="30%" colspan='3'>{$queue.INPUT}</td>
-      </tr> -->
-      <tr>
 {if $mode ne 'view'}
+      <tr>
 	<td width="20%">{$password1.LABEL}: <span  class="required">*</span></td>
 	<td width="30%">{$password1.INPUT}</td>
 	<td width="20%">{$password2.LABEL}: <span class="required">*</span></td>
 	<td width="30%">{$password2.INPUT}</td>
-{/if}
       </tr>
-<!--      <tr>
-        <td width="20%">{$queue.LABEL}: <span  class="required">*</span></td>
-	<td width="30%">{$queue.INPUT}</td>	
-      </tr> -->
+{/if}
     </table>
   </td>
 </tr>
 </table>
-<input type="hidden" name="id_agent" value="{$id_agent}">
+<input type="hidden" name="id_agent" value="{$id_agent}" />
 </form>
 
 

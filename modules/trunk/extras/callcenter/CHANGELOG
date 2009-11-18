@@ -1,3 +1,21 @@
+* Agents: Major rewrite:
+ - Remove empty directory libs/js
+ - Add missing language strings
+ - Translate Spanish language strings correctly
+ - Rework interface code into separate procedures for each screen
+ - Merge form preparation for new agent and agent modification
+ - Remove dead code from interface and module library
+ - Store database connection in library object as done in other modules
+ - Store message string in library object as done in other modules
+ - Fix use of a session variable instead of input data for agent logoff
+ - Centralize logging into Asterisk AMI into a single procedure
+ - Rework library code to merge parameter validation and actual work code
+   into single procedures.
+ - Replace pattern of copying configuration file into temporary file
+ - Improve interface to place agent removal functionality in main screen
+ - Simplify loading and parsing of agent configuration file
+ - Move filter HTML into separate template 
+
 1.5-2
 * Agents, Calls Detail, Calls per Agent, Calls per Hour, Campaign Out, 
   Form Designer, Hold Time, Incoming Calls Success, Login/Logout, Reports Break,
