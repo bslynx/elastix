@@ -39,6 +39,11 @@ define('MIN_MUESTRAS', 10);
 // Número de llamadas por campaña para las que se lleva la cuenta de cuánto tardó en ser contestada
 define('NUM_LLAMADAS_HISTORIAL_CONTESTADA', 20);
 
+// Enumeración para informar fuente de conexión Asterisk
+define('ASTCONN_CRED_DESCONOCIDO', 0);  // No se ha seteado todavía
+define('ASTCONN_CRED_CONF', 1);         // Credenciales provienen de manager.conf
+define('ASTCONN_CRED_DB', 2);           // Credenciales provienen de DB
+
 class DialerProcess extends AbstractProcess
 {
     private $oMainLog;      // Log abierto por framework de demonio
@@ -68,6 +73,8 @@ class DialerProcess extends AbstractProcess
     private $_plantillasMarcado;
     
     private $_tieneCallsAgent = FALSE;  // VERDADERO si tiene campo calls.agent para llamadas agendadas
+    
+    private $_fuenteCredAst = ASTCONN_CRED_DESCONOCIDO;
     
     var $DEBUG = FALSE;
     var $REPORTAR_TODO = FALSE;
@@ -210,13 +217,20 @@ class DialerProcess extends AbstractProcess
         if (($infoConfig['asterisk']['asthost'] == '127.0.0.1' || $infoConfig['asterisk']['asthost'] == 'localhost') &&
             $infoConfig['asterisk']['astuser'] == '' && $infoConfig['asterisk']['astpass'] == '') {
             // Base de datos no tiene usuario explícito, se lee de manager.conf
-            $this->oMainLog->output("INFO: AMI login no se ha configurado, se busca en configuración de Asterisk...");
+            if ($this->_fuenteCredAst != ASTCONN_CRED_CONF)
+                $this->oMainLog->output("INFO: AMI login no se ha configurado, se busca en configuración de Asterisk...");
             $amiConfig = $this->leerConfigManager();
             if (is_array($amiConfig)) {
-            	$this->oMainLog->output("INFO: usando configuración de Asterisk para AMI login.");
+                if ($this->_fuenteCredAst != ASTCONN_CRED_CONF)
+                    $this->oMainLog->output("INFO: usando configuración de Asterisk para AMI login.");
                 $infoConfig['asterisk']['astuser'] = $amiConfig[0];
                 $infoConfig['asterisk']['astpass'] = $amiConfig[1];
+                $this->_fuenteCredAst = ASTCONN_CRED_CONF;
             }
+        } else {
+            if ($this->_fuenteCredAst != ASTCONN_CRED_DB)
+                $this->oMainLog->output("INFO: AMI login configurado en DB...");
+            $this->_fuenteCredAst = ASTCONN_CRED_DB;
         }
 		return $infoConfig;
 	}

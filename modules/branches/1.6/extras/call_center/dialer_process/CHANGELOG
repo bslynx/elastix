@@ -1,3 +1,5 @@
+* Dialer - do not fill log with notifications about origin of AMI credentials
+
 * Agents: Merge changes from http://elajonjoli.org/node/25 to provide defined
   ordering of agent report and reloading just chan_agent, not entire Asterisk,
   when agent configuration changes. Tracked at Elastix bug #191. 
