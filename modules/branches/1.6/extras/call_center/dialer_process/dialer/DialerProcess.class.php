@@ -110,7 +110,7 @@ class DialerProcess extends AbstractProcess
                 $oLog->output("ERR: no se puede consultar soporte de agente para llamada agendada - ".$recordset->getMessage());
             } else {
                 while ($tuplaCampo = $recordset->fetchRow(DB_FETCHMODE_OBJECT)) {
-                    if ($tuplaCampo->Field == 'id_campaign') $this->_tieneCallsAgent = TRUE;
+                    if ($tuplaCampo->Field == 'agent') $this->_tieneCallsAgent = TRUE;
                 }
                 $this->oMainLog->output('INFO: sistema actual '.
                     ($this->_tieneCallsAgent ? 'sí puede' : 'no puede').

@@ -1,3 +1,7 @@
+* Dialer - fix check for wrong column name that led to assuming nonexistent
+  support for scheduled agents on systems that lack the required column 
+  'calls.agent'.
+
 * Agents: Major rewrite:
  - Remove empty directory libs/js
  - Add missing language strings
