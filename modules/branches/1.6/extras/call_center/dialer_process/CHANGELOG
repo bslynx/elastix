@@ -1,3 +1,5 @@
+* Check that session variable is set before testing if not null.
+
 1.5-2.1
 * Dialer - do not fill log with notifications about origin of AMI credentials
 
