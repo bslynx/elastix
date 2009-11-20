@@ -183,12 +183,12 @@ function _moduleContent(&$smarty, $module_name)
 
 
         // PARA IMPLEMENTACIÓN A LA FUNCIÓN HOLD. AÚN NO ESTÁ IMPLEMENTADA POR FALLO
-        if (is_null($_SESSION['channel_active'])) {
-            $etiqueta_hold = $arrLan["Hold"];
-            $estilo_hold = 'boton_break';
-        } else {
+        if (isset($_SESSION['channel_active']) && !is_null($_SESSION['channel_active'])) {
             $etiqueta_hold = $arrLan["UnHold"];
             $estilo_hold = 'boton_unbreak';
+        } else {
+            $etiqueta_hold = $arrLan["Hold"];
+            $estilo_hold = 'boton_break';
         }
         $smarty->assign("LABEL_HOLD",$etiqueta_hold);
         $smarty->assign("STYLE_HOLD",$estilo_hold);
