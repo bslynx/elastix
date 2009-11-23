@@ -84,5 +84,11 @@ $arrLan=array(
 "Type Date" => "日期类型",
 "Type Text Area" => "内容区类型",
 "Form Designer" => "Form Designer",
+"Type" => "Type",
+"Status" => "Status",
+"Active" => "Active",
+"Inactive" => "Inactive",
+"View" => "View",
+"All" => "All",
 );
 ?>

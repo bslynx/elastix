@@ -194,8 +194,8 @@ function listadoForm($pDB, $smarty, $module_name, $local_templates_dir,$arrLan) 
     $oGrid->showFilter(
               "<form style='margin-bottom:0;' method='POST' action='?menu=$module_name'>" .
               "<table width='100%' border='0'><tr>".
-              "<td>Formularios</td>".
-              "<td class='letra12' align='right'>Estado&nbsp;$combo_estados</td>".
+              "<td>".$arrLan["Forms"]."</td>".
+              "<td class='letra12' align='right'>".$arrLan["Status"]."$combo_estados</td>".
               "</tr></table>".
               "</form>");
 //print_r($arrData);

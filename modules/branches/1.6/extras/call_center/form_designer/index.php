@@ -302,14 +302,14 @@ function listadoForm($pDB, $smarty, $module_name, $local_templates_dir) {
                             3 => array("name"      => $arrLang["Options"], 
                                        "property1" => "")));
 
-    $estados = array("all"=>"Todos", "A"=>"Activo", "I"=>"Inactivo");
+    $estados = array("all"=>$arrLan["All"], "A"=>$arrLan["Active"], "I"=>$arrLan["Inactive"]);
     $combo_estados = "<select name='cbo_estado' id='cbo_estado' onChange='submit();'>".combo($estados,$_POST['cbo_estado'])."</select>";
     $oGrid = new paloSantoGrid($smarty);
     $oGrid->showFilter(
               "<form style='margin-bottom:0;' method='POST' action='?menu=$module_name'>" .
               "<table width='100%' border='0'><tr>".
               "<td><input type='submit' name='submit_create_form' value='{$arrLan['Create New Form']}' class='button'></td>".
-              "<td class='letra12' align='right'>Estado&nbsp;$combo_estados</td>".
+              "<td class='letra12' align='right'>".$arrLan["Status"]."$combo_estados</td>".
               "</tr></table>".
               "</form>");
 //print_r($arrData);

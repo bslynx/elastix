@@ -20,6 +20,7 @@ $arrLan=array(
 "View Form" => "查看表格",
 "Cancel" => "取消",
 "Form" => "表格 ",
+"Forms"=>"Forms",
 );
 
 

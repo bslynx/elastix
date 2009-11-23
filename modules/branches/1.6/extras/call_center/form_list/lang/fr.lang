@@ -20,6 +20,7 @@ $arrLan=array(
 "View Form"=>"Voir Formulaire",
 "Cancel"=>"Annuler",
 "Form"=>"Formulaire",
+"Forms" => "Forms",
 );
 
 
