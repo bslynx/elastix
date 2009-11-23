@@ -35,10 +35,10 @@ global $arrLangModule;
 $arrLangModule=array(
 "Template Email" => "Gabarit Email",
 "Fax From" => "Fax de",
-"Fax From Name" => "Fax de (Nom)",
-"Fax Suject" => "Sujet Fax",
-"Fax Content" => "Contenu Fax",
-"Configuration Sending Fax Mail" => "Configuration Email d'envoi de Fax",
-"Edit Parameters" => "Editer Param&egrave;tres",
+"Fax From Name" => "Nom du Fax",
+"Fax Suject" => "Sujet du Fax",
+"Fax Content" => "Contenu du Fax",
+"Configuration Sending Fax Mail" => "Configuration du Mail pour l'envoi de Fax",
+"Edit Parameters" => "Edition des Param&egrave;tres",
 );
 ?>

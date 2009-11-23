@@ -34,8 +34,8 @@
 global $arrLangModule;
 $arrLangModule=array(
 "Filter" => "Filtre",
-"Start Date" => "Date de d&eacute;but",
-"End Date" => "Date de fin",
+"Start Date" => "P&eacute;riode du",
+"End Date" => "Au",
 "Destination Distribution" => "R&eacute;partition par destination",
 "Criteria" => "Crit&egrave;re",
 "Distribution by Time" => "Distribution par temps",

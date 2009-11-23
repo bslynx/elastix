@@ -33,15 +33,15 @@
   $Id: fr.lang,v 1.8 2008/05/20 00:36:42 bmacias Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Virtual Fax Name" => "Nom du fax virtuel",
-"New Virtual Fax" => "Nouveau fax virtuel",
-"Edit Virtual Fax" => "Editer fax virtuel",
-"View Virtual Fax" => "Voir fax virtuel",
+"Virtual Fax Name" => "Nom du Fax virtuel",
+"New Virtual Fax" => "Nouveau Fax virtuel",
+"Edit Virtual Fax" => "Editition du Fax virtuel",
+"View Virtual Fax" => "Visualisation du Fax virtuel",
 "Destination Email" => "Email de destination",
-"Fax Extension" => "Extension de Fax",
+"Fax Extension" => "Extension du Fax",
 "Secret" => "Mot de Passe",
-"Caller ID Name" => "Nom d'identification de l'appelant",
-"Caller ID Number" => "Num&eacute;ro d'identification de l'appelant",
+"Caller ID Name" => "Nom de l'appelant",
+"Caller ID Number" => "N&deg; de l'appelant",
 "Country Code" => "Code Pays",
 "Area Code" => "Code R&eacute;gion",
 );

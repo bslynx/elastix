@@ -37,7 +37,7 @@ $arrLangModule=array(
 "Accept" => "Accepter",
 "Halt" => "Eteindre",
 "Reboot" => "Red&eacute;marrer",
-"Shutdown in progress" => "Arr&ecirc;t en cours",
-"Your system in shutting down now. Please, try again later." => "Op&eacute;ration en cours. Veuillez patienter.",
+"Shutdown in progress" => "Arr&ecirc;t en progression.",
+"Your system in shutting down now. Please, try again later." => "Votre syst&egrave;me est entrain de red&eacute;marrer. Veuillez essayez plus tard...",
 );
 ?>

@@ -33,22 +33,22 @@
   $Id: fr.lang,v 1.8 2008/05/20 00:36:42 bmacias Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Fax Visor" => "Visualisation Fax",
+"Fax Visor" => "Visualiseur de Fax",
 "Search" => "Chercher",
-"Company Name" => "Nom Soci&eacute;t&eacute;",
-"Company Fax" => "Fax Soci&eacute;t&eacute;",
-"Fax Date" => "Date Fax",
+"Company Name" => "Par Nom de Soci&eacute;t&eacute;",
+"Company Fax" => "Fax par Soci&eacute;t&eacute;",
+"Fax Date" => "Fax par Date",
 "File" => "Fichier",
-"Fax Destiny" => "Destination Fax",
+"Fax Destiny" => "Fax par destination",
 "No Data Found" => "Aucune donn&eacute;e trouv&eacute;e",
 "Are you sure you wish to delete fax (es)?" => "Etes vous s&ucirc;r de vouloir effacer le(s) fax ?",
 "Unable to eliminate pdf file from the path." => "Impossible de supprimer le fichier pdf du dossier.",
 "Unable to eliminate pdf file from the database." => "Impossible de supprimer le fichier pdf de la base de donn&eacute;es.",
-"Type Fax" => "Type Fax",
+"Type Fax" => "Type de Fax",
 "All" => "Tous",
-"in" => "Received",
-"out" => "Sent",
-"ERROR" => "ERREUR",
+"in" => "Re&ccedil;us",
+"out" => "Emis",
+"ERROR" => "Erreur",
 "Type" => "Type",
 );
 ?>

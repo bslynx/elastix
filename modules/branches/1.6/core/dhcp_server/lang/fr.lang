@@ -37,8 +37,8 @@ $arrLangModule=array(
 "Update" => "Mettre &agrave; jour",
 "Service Start" => "D&eacute;marrage Service",
 "Service Stop" => "Arr&ecirc;t Service",
-"Start range of IPs" => "D&eacute;but de l'intervalle IP",
-"End range of IPs" => "Fin de l'intervalle IP",
+"Start range of IPs" => "D&eacute;but de plage IP",
+"End range of IPs" => "Fin de plage IP",
 "DNS 1" => "DNS 1",
 "DNS 2" => "DNS 2",
 "WINS" => "WINS",
@@ -46,8 +46,8 @@ $arrLangModule=array(
 "Optional" => "Optionnel",
 "Of 1 to 50000 Seconds" => "De 1 &agrave; 50000 Secondes",
 "Time of client refreshment" => "Dur&eacute;e du bail",
-"DHCP Configuration" => "Configuration Server DHCP",
-"Could not find IP range" => "Impossible de trouver l'intervalle IP",
+"DHCP Configuration" => "Configuration DHCP",
+"Could not find IP range" => "Impossible de trouver la plage IP",
 "DHCP configuration reading error: Verify that the DHCP service is installed and try again." => "Erreur de lecture de configu
 ration DHCP: V&eacute;rifiez que le service DHCP est install&eacute; et essayez de nouveau.",
 "Information DHCP" => "Information DHCP",
@@ -55,17 +55,17 @@ ration DHCP: V&eacute;rifiez que le service DHCP est install&eacute; et essayez 
 "The Service dhcpd can't start" => "Impossible de d&eacute;marrer le service dhcpd",
 "The start IP is outside the LAN network" => "L'adresse IP de d&eacute;part est en dehors du r&eacute;seau local",
 "The final IP is outside the LAN network" => "L'adresse IP de fin est en dehors du r&eacute;seau local",
-"IP Range is invalid for available devices" => "L'intervalle IP est invalide pour les p&eacute;riph&eacute;riques disponibles
+"IP Range is invalid for available devices" => "La plage IP est invalide pour les p&eacute;riph&eacute;riques disponibles
 ",
 "Gateway is outside the LAN network" => "La passerelle est en dehors du r&eacute;seau local",
 "You can only choose between Enabled and Disabled" => "Vous pouvez choisir uniquement Activ&eacute; ou D&eacute;sactiv&eacute
 ;",
-"Value outside the range (1-50000)" => "Valeur en dehors de l'intervalle (1-50000)",
+"Value outside the range (1-50000)" => "Valeur en dehors de la plage (1-50000)",
 "Failed to update the file configuration" => "Echec de mise &agrave; jour du fichier de configuration",
 "The update was successful, but was unable to reestablish the permissions of the file dhcp.conf" => "La mise &agrave; jour a
 r&eacute;ussie mais impossible de r&eacute;tablir les permissions du fichier dhcp.conf",
 "Update Error" => "Erreur de Mise &agrave; jour",
-"Status" => "Statut",
+"Status" => "Etat",
 "Inactive" => "Inactif",
 "Information" => "Information",
 "Active"=>"Actif",

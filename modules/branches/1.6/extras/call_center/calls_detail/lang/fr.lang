@@ -22,17 +22,17 @@ $arrLan = array(
     "Debe ingresar una fecha valida"    => "Vous devez entrer une date valide",
 /**/
     "Total" => "Total",
-    "Status" => "Status",
-    "Success" => "Success",
-    "Abandoned" => "Abandoned",
+    "Status" => "Statut",
+    "Success" => "Succ&egrave;",
+    "Abandoned" => "Abandonn&eacute;",
     "End Monitor" => "End Monitor",
     "Failure" => "Failure",
-    "NoAnswer" => "NoAnswer",
-    "OnQueue" => "OnQueue",
-    "Placing" => "Placing",
-    "Ringing" => "Ringing",
-    "ShortCall" => "ShortCall",
-    "Duration Wait" => "Duration Wait",
+    "NoAnswer" => "Sans r&eacuteponse",
+    "OnQueue" => "Dans la file",
+    "Placing" => "Plac�",
+    "Ringing" => "En sonnerie",
+    "ShortCall" => "Appel court",
+    "Duration Wait" => "Dur&eacute;e d'attente",
 /**/
 
 );

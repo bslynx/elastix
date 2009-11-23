@@ -38,9 +38,9 @@ $arrLangModule=array(
 "Fax Extension" => "Extension de Fax",
 "Secret" => "Mot de Passe",
 "Destination Email" => "Email de destination",
-"Caller ID Name" => "Nom d'identification de l'appelant",
-"Caller ID Number" => "Num&eacute;ro d'identification de l'appelant",
-"View Virtual Fax" => "Voir fax virtuel",
-"Status" => "Statut",
+"Caller ID Name" => "Nom de l'appelant",
+"Caller ID Number" => "N&deg; de l'appelant",
+"View Virtual Fax" => "Visualisation de fax virtuel",
+"Status" => "Etat",
 );
 ?>

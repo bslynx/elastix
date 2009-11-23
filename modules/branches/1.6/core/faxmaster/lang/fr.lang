@@ -33,12 +33,11 @@
   $Id: fr.lang,v 1.8 2008/05/20 00:36:42 bmacias Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Fax Master" => "Fax Ma&icirc;tre",
-"Fax Master Configuration" => "Configuration Fax Ma&icirc;tre",
-"Value for Fax Master is not valid" => "La valeur pour le Fax Maitre n'est pas valide",
-"Fax Master Email" => "Email Fax Maitre",
-"Write the email address which will receive the notifications of received messages, errors and activity summary of the Fax Server" => "Renseignez l'adresse email qui recevra les notifications des fax re&ccedil;us, des erreurs et le sommaire de l'activi
-t&eacute; du serveur de Fax",
-"Error when saving Fax Master" => "Error when saving Fax Master",
+"Fax Master" => "Gestionnaire de Fax",
+"Fax Master Configuration" => "Configuration du gestionnaire des Fax",
+"Value for Fax Master is not valid" => "La valeur pour le gestionnaire des fax n'est pas valide",
+"Fax Master Email" => "Email du gestionnaire des Fax",
+"Write the email address which will receive the notifications of received messages, errors and activity summary of the Fax Server" => "Renseignez l'adresse email qui recevra les notifications des fax re&ccedil;us, des erreurs et le sommaire de l'activit&eacute; du serveur de Fax",
+"Error when saving Fax Master" => "Erreur lors de la sauvegarde du gestionnaire des Fax",
 );
 ?>

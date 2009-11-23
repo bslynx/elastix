@@ -34,8 +34,8 @@
 global $arrLangModule;
 $arrLangModule=array(
 "Filter" => "Filtre",
-"Start Date" => "Date de d&eacute;but",
-"End Date" => "Date de fin",
+"Start Date" => "P&eacute;riode du",
+"End Date" => "Au",
 "You don't have extension number associated with user" => "Vous n'avez aucun num&eacute;ro d'extension associ&eacute; &agrave
 ; l'utilisateur",
 "Are you sure you wish to delete recordings?" => "Etes vous s&ucirc;r de vouloir effacer les enregistrements ?",

@@ -34,21 +34,20 @@
 global $arrLangModule;
 $arrLangModule=array(
 "Recordings" => "Enregistrements",
-"Record Name" => "Nom d'enregistrement",
+"Record Name" => "Nom de l'enregistrement",
 "Record" => "Enregistrement",
-"Insert the Recording Name" => "Ins&eacute;rez le nom d'enregistrement",
+"Insert the Recording Name" => "Ins&eacute;rez le nom de l'enregistrement",
 "The recording couldn't be realized" => "L'enregistrement n'a pas pu &ecirc;tre effectu&eacute;",
 "The recording was saved" => "L'enregistement a &eacute;t&eacute; sauvegard&eacute;",
-"To continue: record a message then click on save" => "Pour continuer: enregistrer un message puis cliquez sur Sauvegarder",
+"To continue: record a message then click on save" => "Pour continuer, enregistrer un message puis cliquez sur Sauvegarder",
 "Recording File" => "Enregistrement du fichier",
 "Destiny directory couldn't be created" => "Le r&eacute;pertoire de destination n'a pas pu &ecirc;tre cr&eacute;&eacute;",
 "File Upload" => "Fichier &agrave; envoyer",
-"ERROR" => "ERREUR",
-"You don't have extension number associated with user" => "Vous n'avez aucun num&eacute;ro d'extension associ&eacute; &agrave
-; l'utilisateur",
-"The call couldn't be realized" => "L'appel ne peut être r&eacute;alis&eacute;.",
-"Error copying the file" => "Erreur de copie de fichier",
+"ERROR" => "Erreur",
+"You don't have extension number associated with user" => "Vous n'avez aucun n&deg; d'extension associ&eacute; &agrave; l'utilisateur",
+"The call couldn't be realized" => "L'appel ne peut &ecric;tre r&eacute;alis&eacute;.",
+"Error copying the file" => "Erreur lors de la copie de fichier",
 "Message" => "Message",
-"Possible file upload attack" => "Possible file upload attack",
+"Possible file upload attack" => "Attaque du fichier transmis possible",
 );
 ?>

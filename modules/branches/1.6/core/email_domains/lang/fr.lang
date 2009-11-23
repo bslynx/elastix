@@ -41,7 +41,7 @@ $arrLangModule=array(
 "Number of Accounts"=>"Nombre de comptes",
 "Create Domain"=>"Cr&eacute;er un domaine",
 "New Domain"=>"Nouveau Domaine",
-"View Domain"=>"Voir Domaine",
-"Edit Domain"=>"Editer Domaine",
+"View Domain"=>"Visualisation de Domaine",
+"Edit Domain"=>"Edition de Domaine",
 );
 ?>

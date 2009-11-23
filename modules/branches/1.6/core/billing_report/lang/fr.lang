@@ -33,8 +33,8 @@
   $Id: fr.lang,v 1.8 2008/05/20 00:36:42 bmacias Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Start Date" => "Date de d&eacute;but",
-"End Date" => "Date de fin",
+"Start Date" => "P&eacute;riode du",
+"End Date" => "Au",
 "Field Name" => "Nom du champ",
 "Channel" => "Canal",
 "Billing Report" => "Rapport de facturation",

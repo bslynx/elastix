@@ -34,7 +34,7 @@
 global $arrLangModule;
 $arrLangModule=array(
 "Endpoint Configuration" => "Configuration Terminal",
-"Endpoint Scan" => "Scanner Terminal",
+"Endpoint Scan" => "Scanner",
 "Display Name" => "Afficher Nom",
 "MAC Adress" => "Adresse MAC",
 "Phone Type" => "Type T&eacute;l&eacute;phone",
@@ -60,7 +60,7 @@ $arrLangModule=array(
 "No Extensions" => "Aucune Extension",
 "Invalid Format in Parameter" => "Format Invalide dans Param&egrave;tre",
 "It can take several minutes, because your ip address has some devices, " => "It can take several minutes, because your ip address has some devices, ",
-"WARNING" => "WARNING",
+"WARNING" => "ATTENTION",
 "Status" => "Statut",
 "ERROR" => "ERREUR",
 );

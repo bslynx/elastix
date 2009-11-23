@@ -21,6 +21,8 @@ $arrLan=array(
 "Cancel"=>"Annuler",
 "Form"=>"Formulaire",
 "Forms" => "Forms",
+"Formularios" => "Formulaires",
+"Estado" => "Etat",
 );
 
 

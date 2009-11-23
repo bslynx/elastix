@@ -85,11 +85,11 @@ $arrLan=array(
 "Type Date" => "Type Date",
 "Type Text Area" => "Type Zone Texte",
 "Type" => "Type",
-"Status" => "Status",
+"Status" => "Etat",
 "Active" => "Active",
 "Inactive" => "Inactive",
 "View" => "View",
-"All" => "All",
+"All" => "Tout",
 "Form Designer" => "Form Designer",
 );
 ?>
