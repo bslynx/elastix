@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.5                                                  |f
+  | Elastix version 0.5                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,245 +25,477 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: new_campaign.php $ */
-require_once "libs/paloSantoForm.class.php";
-require_once "libs/paloSantoTrunk.class.php";
-include_once "libs/paloSantoConfig.class.php";
+  $Id: index.php,v 1.2 2008/06/07 06:28:13 cbarcos Exp $ */
 
+require_once("libs/paloSantoGrid.class.php");
+require_once("libs/Agentes.class.php");
 
 function _moduleContent(&$smarty, $module_name)
 {
+    #incluir el archivo de idioma de acuerdo al que este seleccionado
+    #si el archivo de idioma no existe incluir el idioma por defecto
+    $lang=get_language();
+    $script_dir=dirname($_SERVER['SCRIPT_FILENAME']);
+
+    // Include language file for EN, then for local, and merge the two.
+    $arrLan = NULL;
+    include_once("modules/$module_name/lang/en.lang");
+    $lang_file="modules/$module_name/lang/$lang.lang";
+    if (file_exists("$script_dir/$lang_file")) {
+        $arrLanEN = $arrLan;
+        include_once($lang_file);
+        $arrLan = array_merge($arrLanEN, $arrLan);
+    }
+    
+    //include module files
+    include_once "modules/$module_name/configs/default.conf.php";
+    include_once "modules/agent_console/configs/default.conf.php"; // For asterisk AMI credentials
+
     global $arrConf;
     global $arrLang;
     global $arrConfig;
-  
-    // incluir el archivo de idioma de acuerdo al que este seleccionado
-    // si el archivo de idioma no existe incluir el idioma por defecto
-    $lang=get_language();
-    $script_dir=dirname($_SERVER['SCRIPT_FILENAME']);
-    $lang_file="modules/$module_name/lang/$lang.lang";
+    $arrLang = array_merge($arrLang, $arrLan);
 
-    if (file_exists("$script_dir/$lang_file"))
-        include_once($lang_file);
-    else
-        include_once("modules/$module_name/lang/en.lang");
-
-    //include module files
-    include_once "modules/$module_name/configs/default.conf.php";
-    include_once "libs/xajax/xajax.inc.php";
-
-    $_SESSION['ip_asterisk'] = $acceso_asterisk["ip"];
-    $_SESSION['user_asterisk'] = $acceso_asterisk["user"];
-    $_SESSION['pass_asterisk'] = $acceso_asterisk["pass"];
-    $_SESSION['ext_parqueo'] = $acceso_asterisk["ext_parqueo"];
-    $_SESSION["hardware"] = $acceso_asterisk["hardware"];
-
-//global $acceso_asterisk;
-//echo "** "; print_r($acceso_asterisk);
-
-    session_name("elastixSessionAgent");
-
-    require_once "modules/$module_name/libs/paloSantoAgentConsole.class.php";
-  
     //folder path for custom templates
-    $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
-    $templates_dir=(isset($arrConfig['templates_dir']))?$arrConfig['templates_dir']:'themes';
-    $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
+    $base_dir = dirname($_SERVER['SCRIPT_FILENAME']);
+    $templates_dir = (isset($arrConfig['templates_dir']))?$arrConfig['templates_dir']:'themes';
+    $local_templates_dir = "$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
+    $relative_dir_rich_text = "modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
+    $smarty->assign("relative_dir_rich_text", $relative_dir_rich_text);
 
-    $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
-    $arrConfig = $pConfig->leer_configuracion(false);
+    // Conexión a la base de datos CallCenter
+    $pDB = new paloDB($arrConf['cadena_dsn']);
 
-    // si el usuario se ha deslogoneado ya sea de la aplicación o desde el telefono
-    if(isset($_POST['logout_agent'])) {
-        disconnet_agent();
-        $_SESSION['elastix_agent_user']=null;
-        $_SESSION['elastix_extension']=null;
-    }
-    //instanciamos el objeto de la clase xajax
-    $xajax = new xajax();
-    $smarty->assign("MODULE_NAME", $module_name);
-    $xajax->registerFunction("colgarLlamada");
-    $xajax->registerFunction("colgarLlamadaEntrante");
-    $xajax->registerFunction("wait_login");
-    $xajax->registerFunction("evento_cerrar_navegador");
-
-    // se consultan las extensiones de la base del asterisk para mostrarlas en el combo
-    $extensions = getExtensions($arrConfig);
-    $extensions = convertir_extensiones_validas($extensions);
-
-    // si esta logoneado el agente
-    if(isset($_SESSION['elastix_agent_user']) && isset($_SESSION['elastix_extension'])) {
-        //asociamos la función creada anteriormente al objeto xajax
-        $xajax->registerFunction("notificaLlamada");
-        $xajax->registerFunction("pausar_llamadas");
-        $xajax->registerFunction("guardar_informacion_cliente");
-        $xajax->registerFunction("getDataContacto");
-        $xajax->registerFunction("confirmar_cedula_contacto");
-        $xajax->registerFunction("transferirLlamadaCiega");
-        $xajax->registerFunction("hold");
-        $xajax->registerFunction("marcarLlamada");
-        $xajax->registerFunction("sacar_hold");
-
-        $smarty->assign('BODYPARAMS', 'onbeforeunload="ConfirmarCierre()" onunload="ManejadorCierre()"');
-
-        //El objeto xajax tiene que procesar cualquier petición
-        $xajax->processRequests();
-        $smarty->assign("SCRIPT_AJAX", $xajax->printJavascript("libs/xajax/"));
-
-        // Texto de los botones
-        $smarty->assign("HANGUP", $arrLan["Hangup"]);
-        $smarty->assign("TRANFER", $arrLan["Tranfer"]);
-
-        $smarty->assign("llamada", $arrLan["Call"]);
-        $smarty->assign("script", $arrLan["Script"]);
-        $smarty->assign("formulario", $arrLan["Form"]);
-        $smarty->assign("title", $arrLan["Agent Console"]);
-
-        // Conexión a la base de datos
-        $pDB = getDB();
-        if (!is_object($pDB->conn) || $pDB->errMsg!="") {
-            $smarty->assign("mb_message", $pDB->errMsg);
-        }
-
-        //Consulta a la base para obtener los datos del agente.
-        $nombre_agent = "";
-        $informacion_agente = obtener_informacion_agente($pDB,$_SESSION['elastix_agent_user']);
-        if($informacion_agente != null && is_array($informacion_agente) && count($informacion_agente) >0)
-            $nombre_agent = $informacion_agente['name'];
-        //fin de los datos del agente
-        $smarty->assign("name_agent", $arrLan["Agent"].": ".$nombre_agent);
-        $smarty->assign("number_agent", $arrLan["Agent Number"].": ".$_SESSION['elastix_agent_user']);
-        $smarty->assign("logout", $arrLang["Logout"]);
-        $smarty->assign("link_logout", "?menu=$module_name&logout_agent=yes");
-        $smarty->assign("prefijo_objeto", $prefijo_objeto["prefijo"]);
-        $smarty->assign("TOMAR_BREAK", $arrLan["Take Break"]);
-        $smarty->assign("CANCEL", $arrLang["Cancel"]);
-        $smarty->assign("ALL_BREAK", obtener_break());
-
-
-        // codigo agregado para la transferencia y el marcado de llamadas
-
-        $arrTipo = getTipoLlamada($pDB,$msj);
-
-        //$extensions = getExtensions($arrConfig);
-
-        $opcion_select_extension = crearSelect($extensions);
-        $smarty->assign("LLAMAR", $arrLan["Accept"]);
-        $smarty->assign("CONSULTAR_LLAMADA",$arrLan["consultar_llamada"]);
-        $smarty->assign("opcion_select_extension", $opcion_select_extension);
-
-        /*if( $arrTipo['tipo']== "ENTRANTE" || $arrTipo['tipo']== "SALIENTE" ) {
-            $estilo_transfer ="boton_tranfer_activo";
-            $smarty->assign("DESHABILITAR_TRANSFER","");
-        } else {
-            $estilo_transfer ="boton_tranfer_inactivo";
-            $smarty->assign("DESHABILITAR_TRANSFER","disabled");
-        }*/
-        //$smarty->assign("ESTILO_TRANSFER",$estilo_transfer);
-        /*
-        if( $arrTipo['tipo']== "SALIENTE" ) {
-            $estilo_marcado ="boton_marcar_activo";
-            $smarty->assign("DESHABILITAR_MARCADO","");
-        } else {
-            $estilo_marcado ="boton_marcar_inactivo";
-            $smarty->assign("DESHABILITAR_MARCADO","disabled=true");
-        }*/
-
-        //$estilo_marcado ="boton_marcar_activo";
-        $smarty->assign("DESHABILITAR_MARCADO","");
-
-        //$respuesta->addAssign( "document.getElementById('marcar').disabled  " );
-        //$smarty->assign("ESTILO_MARCADO",$estilo_marcado);
-
-        $smarty->assign("MARCAR",$arrLan['Marcar']);
-        $smarty->assign("BTN_MARCAR",$arrLan['Marcar']);
-        $smarty->assign("BTN_CANCELAR",$arrLan['Cancel']);
-
-// fin de codigo agregado para la transferencia y el marcado de llamadas
-
-
-        // PARA IMPLEMENTACIÓN A LA FUNCIÓN HOLD. AÚN NO ESTÁ IMPLEMENTADA POR FALLO
-        if (isset($_SESSION['channel_active']) && !is_null($_SESSION['channel_active'])) {
-            $etiqueta_hold = $arrLan["UnHold"];
-            $estilo_hold = 'boton_unbreak';
-        } else {
-            $etiqueta_hold = $arrLan["Hold"];
-            $estilo_hold = 'boton_break';
-        }
-        $smarty->assign("LABEL_HOLD",$etiqueta_hold);
-        $smarty->assign("STYLE_HOLD",$estilo_hold);
-        // FIN PARA IMPLEMENTACIÓN A LA FUNCIÓN HOLD.
-
-        // para el script
-        $script = "";
-        $smarty->assign("DATOS_SCRIPT", $script);
-
-        // para el formulario
-        $smarty->assign("formularios", $arrLan["Form"]);
-        $smarty->assign("fill_fields", $arrLan["Fill the fields"]);
-        $smarty->assign("SAVE", $arrLang["Save"]);
-        $smarty->assign("option_form", "combo");
-
-        $arr_objetos = "";
-        $smarty->assign("DATOS_FORMULARIO", $arr_objetos);
-
-        //Se hace esto para cuando el usuario haga un page reload en la consola, 
-        //esto controla que el boton break se matenga con su estilo y accion correcta.
-        $agentnum = $_SESSION['elastix_agent_user'];
-
-        if (!estaAgenteEnPausa(null,$agentnum)) {
-            $name_pausa = $arrLan["Break"];
-            $style_pause = 'boton_break';
-         }
-        else {
-            $name_pausa = $arrLan["UnBreak"];
-            $style_pause = 'boton_unbreak';
-        }
-        //PARA EL CRONOMETRO //HAY QUE VER COMO SOLUCIONAR PORQUE ESTA FUNCION SE LLAMA CADA 4 SEGUNDOS (SOLUCIONADO CON $soloUnaVez)
-        //VARIABLE GLOBLA PARA CONTROLAR EL LAMADO INNECESARIO DE LA FUNCION obtener_tiempo_acumulado_break
-        //AL REFRESCAR DE NUEVO CONSULTA Y ESO TRAIA PROBLEMAS DE MULTIPLES LLAMADO A LAFUNCION POR MOTIVOS DE
-        //LA PERSISTENCIA DEL CRONOMETRO 
-        $_SESSION['elastix_agent_soloUnaVez'] = null;
-        $smarty->assign("PAUSE",$name_pausa);
-        $smarty->assign("STYLE_PAUSE", $style_pause);
-
-        $contenidoModulo=$smarty->fetch("file:$local_templates_dir/new.tpl");
-
-    // este caso contrario es para cuando el agente aún no ha iniciado sesión en la consola del agente
-    } else {
-
-        //asociamos la función creada anteriormente al objeto xajax
-        $xajax->registerFunction("loginAgente");
-        $xajax->processRequests();
-        $smarty->assign("SCRIPT_AJAX", $xajax->printJavascript("libs/xajax/"));
-
-        $smarty->assign("WELCOME_AGENT", $arrLan["Welcome to Console Agent"]);
-        $smarty->assign("ENTER_USER_PASSWORD", $arrLan["Please enter your number agent"]);
-        $smarty->assign("USERNAME", $arrLan["Number Agent"]);
-        $smarty->assign("SUBMIT", $arrLan["Enter Agent"]);
-
-        $id_extension_channel="";
-        $extensions_name = array_keys($extensions);
-
-        // se lo usaba para obtener la extension según la que le pertenece al usuario del Elastix, pero está dando problemas
-        //$id_extension = getExtensionActual($_SESSION['elastix_user']);
-
-        $id_extension_channel = isset($_POST['input_extension'])?$_POST['input_extension']:"";
-
-        $smarty->assign("EXT_VALUE", $extensions);
-        $smarty->assign("EXT_NAME", $extensions_name);
-        $smarty->assign("agent_user_aux", isset($_POST['input_agent_user'])?$_POST['input_agent_user']:"");
-        $smarty->assign("ID_EXTENSION", $id_extension_channel);
-        $smarty->assign("EXTENSION", $arrLan["Extension"]);
-
-        if(isset($_POST['submit_agent_login']))
-            $smarty->assign("llamar_conectar_extension", true); 
-        else   
-            $smarty->assign("llamar_conectar_extension", false); 
-
-        $contenidoModulo=$smarty->fetch("file:$local_templates_dir/login_agent.tpl");
+    // Mostrar pantalla correspondiente
+    $contenidoModulo = '';
+    $sAction = 'list_agents';
+    if (isset($_GET['action'])) $sAction = $_GET['action'];
+    switch ($sAction) {
+    case 'new_agent':
+        $contenidoModulo = newAgent($pDB, $smarty, $module_name, $local_templates_dir);
+        break;
+    case 'edit_agent':
+        $contenidoModulo = editAgent($pDB, $smarty, $module_name, $local_templates_dir);
+        break;
+    case 'list_agents':
+    default:
+        $contenidoModulo = listAgent($pDB, $smarty, $module_name, $local_templates_dir);
+        break;
     }
 
     return $contenidoModulo;
+}
+
+function listAgent($pDB, $smarty, $module_name, $local_templates_dir)
+{
+    global $arrLan;
+    global $arrLang;
+    
+    $oAgentes = new Agentes($pDB);
+
+    // Operaciones de manipulación de agentes
+    if (isset($_POST['reparar_db']) && ereg('^[[:digit:]]+$', $_POST['reparar_db'])) {
+        // Hay que agregar el agente al archivo de configuración de Asterisk
+        $infoAgente = $oAgentes->getAgents($_POST['reparar_db']);
+        if (!is_array($infoAgente)) {
+            $smarty->assign(array(
+                'mb_title'      =>  'DB Error',
+                'mb_message'    =>  $oAgentes->errMsg,
+            ));
+        } elseif (!$oAgentes->addAgentFile(array(
+            $infoAgente['number'],
+            $infoAgente['password'],
+            $infoAgente['name'],
+            ))) {
+            $smarty->assign(array(
+                'mb_title'      =>  $arrLan["Error saving agent in file"],
+                'mb_message'    =>  $oAgentes->errMsg,
+            ));
+        }
+    } elseif (isset($_POST['reparar_file']) && ereg('^[[:digit:]]+$', $_POST['reparar_file'])) {
+        // Hay que remover el agente del archivo de configuración de Asterisk
+        if (!$oAgentes->deleteAgentFile($_POST['reparar_file'])) {
+            $smarty->assign(array(
+                'mb_title'      =>  $arrLan["Error when deleting agent in file"],
+                'mb_message'    =>  $oAgentes->errMsg,
+            ));
+        }
+    } elseif (isset($_POST['delete']) && isset($_POST['agent_number']) && ereg('^[[:digit:]]+$', $_POST['agent_number'])) {
+        // Borrar el agente indicado de la base de datos, y del archivo
+        if (!$oAgentes->deleteAgent($_POST['agent_number'])) {
+            $smarty->assign(array(
+                'mb_title'      =>  $arrLan["Error Delete Agent"],
+                'mb_message'    =>  $oAgentes->errMsg,
+            ));
+        }
+    } elseif (isset($_POST['disconnect']) && isset($_POST['agent_number']) && ereg('^[[:digit:]]+$', $_POST['agent_number'])) {
+        // Desconectar agentes. El código en Agentes.class.php puede desconectar
+        // varios agentes a la vez, pero aquí sólo se desconecta uno.
+        $arrAgentes = array($_POST['agent_number']);
+        if (!$oAgentes->desconectarAgentes($arrAgentes)) {
+            $smarty->assign(array(
+                'mb_title'      =>  'Unable to disconnect agent',
+                'mb_message'    =>  $oAgentes->errMsg,
+            ));
+        }
+    }
+
+    // Estados posibles del agente
+    $sEstadoAgente = 'All';
+    $listaEstados = array(
+        "All"       =>  $arrLan["All"],
+        "Online"    =>  $arrLan["Online"],
+        "Offline"   =>  $arrLan["Offline"],
+        "Repair"    =>  $arrLan["Repair"],
+    );
+    if (isset($_GET['cbo_estado'])) $sEstadoAgente = $_GET['cbo_estado'];
+    if (isset($_POST['cbo_estado'])) $sEstadoAgente = $_POST['cbo_estado'];
+    if (!in_array($sEstadoAgente, array_keys($listaEstados))) $sEstadoAgente = 'All';
+
+    // Leer los agentes activos y comparar contra la lista de Asterisk
+    $listaAgentesCallCenter = $oAgentes->getAgents();
+    function get_agente_num($t) { return $t['number']; }
+    $listaNumAgentesCallCenter = array_map('get_agente_num', $listaAgentesCallCenter);
+    $listaNumAgentesAsterisk = $oAgentes->getAgentsFile();
+    $listaNumSobrantes = array_diff($listaNumAgentesAsterisk, $listaNumAgentesCallCenter);
+    $listaNumFaltantes = array_diff($listaNumAgentesCallCenter, $listaNumAgentesAsterisk);
+    
+    /* La variable $listaNumSobrantes tiene ahora todos los IDs de agente que 
+       constan en Asterisk y no en la tabla call_center.agent como activos.
+       La variable $listaNumFaltantes tiene los agentes que constan en 
+       call_center.agent y no en Asterisk. El código posterior asume que el 
+       archivo de agentes de Asterisk debería cambiarse para que refleje la
+       tabla call_center.agent .
+    */
+    // Campo sync debe ser OK, o ASTERISK si consta en Asterisk pero no en 
+    // CallCenter, o CC si consta en CallCenter pero no en Asterisk.
+    foreach (array_keys($listaAgentesCallCenter) as $k) {
+        $listaAgentesCallCenter[$k]['sync'] =
+            in_array($listaAgentesCallCenter[$k]['number'], $listaNumFaltantes) 
+                ? 'CC' : 'OK';
+    }
+    
+    // Lista de todos los agentes conocidos, incluyendo los sobrantes.
+    $listaAgentes = $listaAgentesCallCenter;
+    foreach ($listaNumSobrantes as $idSobrante) {
+        $listaAgentes[] = array(
+            'id'        =>  NULL,
+            'number'    =>  $oAgentes->arrAgents[$idSobrante][0],
+            'name'      =>  $oAgentes->arrAgents[$idSobrante][2],
+            'password'  =>  $oAgentes->arrAgents[$idSobrante][1],
+            'estatus'   =>  NULL,
+            'sync'      =>  'ASTERISK',
+        );
+    }
+
+    // Listar todos los agentes que están conectados
+    $listaOnline = $oAgentes->getOnlineAgents();
+    if (is_array($listaOnline)) {
+        foreach (array_keys($listaAgentes) as $k) {
+            $listaAgentes[$k]['online'] = in_array($listaAgentes[$k]['number'], $listaOnline);
+        }
+    } else {
+        $smarty->assign("mb_title", 'Unable to read agent');
+        $smarty->assign("mb_message", 'Cannot read agent - '.$oAgentes->errMsg);
+        foreach (array_keys($listaAgentes) as $k) 
+            $listaAgentes[$k]['online'] = NULL;
+    }
+    
+    // Filtrar los agentes conocidos según el estado que se requiera
+    function estado_Online($t)  { return ($t['sync'] == 'OK' && $t['online']); }
+    function estado_Offline($t) { return ($t['sync'] == 'OK' && !$t['online']); }
+    function estado_Repair($t)  { return ($t['sync'] != 'OK'); }
+    if ($sEstadoAgente != 'All') $listaAgentes = array_filter($listaAgentes, "estado_$sEstadoAgente");
+    
+    $arrData = array();
+    $sImgVisto = "<img src='modules/$module_name/themes/images/visto.gif' border='0' />";
+    $sImgErrorCC = "<img src='modules/$module_name/themes/images/error_small.png' border='0' title=\"".$arrLan["Agent doesn't exist in configuration file"]."\" />";
+    $sImgErrorAst = "<img src='modules/$module_name/themes/images/error_small.png' border='0' title=\"".$arrLan["Agent doesn't exist in database"]."\" />";
+    $smarty->assign(array(
+        'PREGUNTA_BORRAR_AGENTE_CONF'   =>  $arrLan["To rapair is necesary delete agent from configuration file. Do you want to continue?"],
+        'PREGUNTA_AGREGAR_AGENTE_CONF'  =>  $arrLan["To rapair is necesary add an agent in configuration file. Do you want to continue?"],
+    ));
+    foreach ($listaAgentes as $tuplaAgente) {
+        $tuplaData = array(
+            "<input class=\"button\" type=\"radio\" name=\"agent_number\" value=\"{$tuplaAgente["number"]}\" />",
+            NULL,
+            $tuplaAgente['number'],
+            $tuplaAgente['name'],
+            (($tuplaAgente['sync'] != 'CC') ? ($tuplaAgente['online'] ? $arrLan["Online"] : $arrLan["Offline"]) : '&nbsp;'),
+            "<a href='?menu=agents&amp;action=edit_agent&amp;id_agent=" . $tuplaAgente["number"] . "'>[".$arrLang["Edit"]."]</a>",
+        );
+        switch ($tuplaAgente['sync']) {
+        case 'OK':
+            $tuplaData[1] = $sImgVisto;
+            break;
+        case 'ASTERISK':
+            $tuplaData[1] = $sImgErrorAst.
+                "&nbsp;<a href='javascript:preguntar_por_reparacion(\"".
+                $tuplaAgente['number'].
+                "\",\"reparar_file\", pregunta_borrar_agente_conf)'>{$arrLan['Repair']}</a>";
+            $tuplaData[5] = '&nbsp;';   // No mostrar opción de editar agente que no está en DB
+            break;
+        case 'CC':
+            $tuplaData[1] = $sImgErrorCC.
+                "&nbsp;<a href='javascript:preguntar_por_reparacion(\"".
+                $tuplaAgente['number'].
+                "\",\"reparar_db\", pregunta_agregar_agente_conf)'>{$arrLan['Repair']}</a>";
+            break;
+        }
+        $arrData[] = $tuplaData;
+    }
+
+    $limit = 50;
+    $offset = 0;
+    $url = construirURL()."&amp;cbo_estado=$sEstadoAgente";
+    $smarty->assign("url", $url);
+
+    if( is_array($arrData) ) {
+        $arrData = array_slice($arrData,$offset);
+    }
+    $total = count($arrData);
+
+    // Si se quiere avanzar a la sgte. pagina
+    if(isset($_GET['nav']) && $_GET['nav']=="end") {
+        $totalCalls  = count($arrData);
+        // Mejorar el sgte. bloque.
+        if(($totalCalls%$limit)==0) {
+            $offset = $totalCalls - $limit;
+        } else {
+            $offset = $totalCalls - $totalCalls%$limit;
+        }
+    }
+
+    // Si se quiere avanzar a la sgte. pagina
+    if(isset($_GET['nav']) && $_GET['nav']=="next") {
+        //if (isset(estado']))
+        $offset = $_GET['start'] + $limit - 1;
+    }
+
+    // Si se quiere retroceder
+    if(isset($_GET['nav']) && $_GET['nav']=="previous") {
+        $offset = $_GET['start'] - $limit - 1;
+    }
+
+    if( is_array($arrData) ) {
+        $arrData = array_slice($arrData,$offset,$limit);
+    }
+    $end = count($arrData);
+
+    // Construir el reporte de los agentes activos
+    $arrGrid = array("title"    => $arrLan["Agent List"],
+                     "icon"     => "images/user.png",
+                     "width"    => "99%",
+                     "start"    => ($total==0) ? 0 : $offset + 1,
+                     "end"      => ($offset+$limit)<=$total ? $offset+$limit : $total,
+                     "total"    => $total,
+                     "columns"  => array(
+                                        0 => array("name"       => '&nbsp;',
+                                                    "property1" => ""),
+                                        1 => array("name"       => $arrLan["Configure"],
+                                                    "property1" => ""),
+                                        2 => array("name"       => $arrLan["Number"],
+                                                    "property1" => ""),
+                                        3 => array("name"       => $arrLang["Name"],
+                                                    "property1" => ""),
+                                        4 => array("name"       => $arrLang["Status"],
+                                                    "property1" => ""),
+                                        5 => array("name"       => $arrLang["Options"],
+                                                    "property1" => ""),
+                                        )
+                    );
+    $oGrid = new paloSantoGrid($smarty);
+    $smarty->assign(array(
+        'LABEL_STATE'           =>  $arrLang['Status'],
+        'LABEL_CREATE_AGENT'    =>  $arrLan["New agent"],
+        'estados'               =>  $listaEstados,
+        'estado_sel'            =>  $sEstadoAgente,
+        'MODULE_NAME'           =>  $module_name,
+        'LABEL_WITH_SELECTION'  =>  $arrLan['With selection'],
+        'LABEL_DISCONNECT'      =>  $arrLan['Disconnect'],
+        'LABEL_DELETE'          =>  $arrLang['Delete'],
+        'MESSAGE_CONTINUE_DELETE' => $arrLang["Are you sure you wish to continue?"],
+    ));
+    $oGrid->showFilter($smarty->fetch("$local_templates_dir/filter-list-agents.tpl"));
+    return 
+        "<form id='form_agents'style='margin-bottom:0;' method='POST' action='?menu=agents'>".
+        $oGrid->fetchGrid($arrGrid, $arrData,$arrLang).
+        "</form>";
+}
+
+function newAgent($pDB, $smarty, $module_name, $local_templates_dir)
+{
+    return formEditAgent($pDB, $smarty, $module_name, $local_templates_dir, NULL);
+}
+
+function editAgent($pDB, $smarty, $module_name, $local_templates_dir)
+{
+    $id_agent = NULL;
+    if (isset($_GET['id_agent']) && ereg('^[[:digit:]]+$', $_GET['id_agent']))
+        $id_agent = $_GET['id_agent'];
+    if (isset($_POST['id_campaign']) && ereg('^[[:digit:]]+$', $_POST['id_agent']))
+        $id_agent = $_POST['id_agent'];
+    if (is_null($id_agent)) {
+        Header("Location: ?menu=$module_name");
+        return '';
+    } else {
+        return formEditAgent($pDB, $smarty, $module_name, $local_templates_dir, $id_agent);
+    }
+}
+
+function formEditAgent($pDB, $smarty, $module_name, $local_templates_dir, $id_agent)
+{
+    global $arrLang;
+    global $arrLan;
+    
+    // Si se ha indicado cancelar, volver a listado sin hacer nada más
+    if (isset($_POST['cancel'])) {
+        Header("Location: ?menu=$module_name");
+        return '';
+    }
+
+    // Leer los datos de la campaña, si es necesario
+    $arrAgente = NULL;
+    $oAgentes = new Agentes($pDB);
+    if (!is_null($id_agent)) {
+        $arrAgente = $oAgentes->getAgents($id_agent);
+        if (!is_array($arrAgente) || count($arrAgente) == 0) {
+            $smarty->assign("mb_title", 'Unable to read agent');
+            $smarty->assign("mb_message", 'Cannot read agent - '.$oAgentes->errMsg);
+            return '';
+        }
+    }
+
+    require_once("libs/paloSantoForm.class.php");
+    $arrFormElements = getFormAgent($smarty);
+
+    // Valores por omisión para primera carga
+    if (is_null($id_agent)) {
+        // Creación de nuevo agente
+        if (!isset($_POST['extension']))    $_POST['extension'] = '';
+        if (!isset($_POST['description']))  $_POST['description'] = '';
+        if (!isset($_POST['password1']))    $_POST['password1'] = '';
+        if (!isset($_POST['password2']))    $_POST['password2'] = '';
+    } else {
+        // Modificación de agente existente
+        if (!isset($_POST['extension']))    $_POST['extension'] = $arrAgente['number'];
+        if (!isset($_POST['description']))  $_POST['description'] = $arrAgente['name'];
+        if (!isset($_POST['password1']))    $_POST['password1'] = $arrAgente['password'];
+        if (!isset($_POST['password2']))    $_POST['password2'] = $arrAgente['password'];
+        
+        // Volver opcional el cambio de clave de acceso
+        $arrFormElements['password1']['REQUIRED'] = 'no';
+        $arrFormElements['password2']['REQUIRED'] = 'no';
+    }
+    $oForm = new paloForm($smarty, $arrFormElements);
+    if (!is_null($id_agent)) {
+        $oForm->setEditMode();
+        $smarty->assign("id_agent", $id_agent);
+    }
+
+    $bDoCreate = isset($_POST['submit_save_agent']);
+    $bDoUpdate = isset($_POST['submit_apply_changes']);
+    if ($bDoCreate || $bDoUpdate) {
+        if(!$oForm->validateForm($_POST)) {
+            // Falla la validación básica del formulario
+            $smarty->assign("mb_title", $arrLang["Validation Error"]);
+            $arrErrores = $oForm->arrErroresValidacion;
+            $strErrorMsg = "<b>{$arrLang['The following fields contain errors']}:</b><br>";
+            foreach($arrErrores as $k=>$v) {
+                $strErrorMsg .= "$k, ";
+            }
+            $strErrorMsg .= "";
+            $smarty->assign("mb_message", $strErrorMsg);
+        } else {
+            foreach (array('extension', 'password1', 'password2', 'description') as $k)
+                $_POST[$k] = trim($_POST[$k]);
+            if ($_POST['password1'] != $_POST['password2'] || ($bDoCreate && $_POST['password1'] == '')) {
+                $smarty->assign("mb_title", $arrLang["Validation Error"]);
+                $smarty->assign("mb_message", $arrLang["The passwords are empty or don't match"]);
+            } elseif (!ereg('^[[:digit:]]+$', $_POST['password1'])) {
+                $smarty->assign("mb_title", $arrLang["Validation Error"]);
+                $smarty->assign("mb_message", $arrLan["The passwords aren't numeric values"]);
+            } elseif (!ereg('^[[:digit:]]+$', $_POST['extension'])) {
+                $smarty->assign("mb_title", $arrLang["Validation Error"]);
+                $smarty->assign("mb_message", $arrLan["Error Agent Number"]);
+            } else {
+                $bExito = TRUE;
+                
+                if ($bDoUpdate && $_POST['password1'] == '')
+                    $_POST['password1'] = $arrAgente['password'];
+                $agente = array(
+                    0 => $_POST['extension'],
+                    1 => $_POST['password1'],
+                    2 => $_POST['description'],
+                );
+                if ($bDoCreate) {
+                    $bExito = $oAgentes->addAgent($agente,$message);
+                    if (!$bExito) $smarty->assign("mb_message",
+                        "{$arrLan["Error Insert Agent"]} ".$oAgentes->errMsg);
+                } elseif ($bDoUpdate) {
+                    $bExito = $oAgentes->editAgent($agente,$message);
+                    if (!$bExito) $smarty->assign("mb_message",
+                        "{$arrLan["Error Update Agent"]} ".$oAgentes->errMsg);
+                }
+                if ($bExito) header("Location: ?menu=$module_name");
+            }
+        }
+    }
+
+    $contenidoModulo = $oForm->fetchForm(
+        "$local_templates_dir/new.tpl", 
+        is_null($id_agent) ? $arrLan["New agent"] : $arrLan['Edit agent'].' "'.$_POST['description'].'"',
+        $_POST);
+    return $contenidoModulo;
+}
+
+function getFormAgent(&$smarty)
+{
+    global $arrLan;
+    global $arrLang;
+
+    $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
+    $smarty->assign("CANCEL", $arrLang["Cancel"]);
+    $smarty->assign("APPLY_CHANGES", $arrLang["Apply changes"]);
+    $smarty->assign("SAVE", $arrLang["Save"]);
+    $smarty->assign("EDIT", $arrLang["Edit"]);
+    $smarty->assign("DELETE", $arrLang["Delete"]);
+    $smarty->assign("CONFIRM_CONTINUE", $arrLang["Are you sure you wish to continue?"]);
+
+    $arrFormElements = array(
+        "description" => array(
+            "LABEL"                  => "{$arrLang['Name']}",
+            "EDITABLE"               => "yes",
+            "REQUIRED"               => "yes",
+            "INPUT_TYPE"             => "TEXT",
+            "INPUT_EXTRA_PARAM"      => "",
+            "VALIDATION_TYPE"        => "text",
+            "VALIDATION_EXTRA_PARAM" => ""),
+        "extension"   => array(
+            "LABEL"                  => "{$arrLan["Agent Number"]}",
+            "EDITABLE"               => "yes",
+            "REQUIRED"               => "yes",
+            "INPUT_TYPE"             => "TEXT",
+            "INPUT_EXTRA_PARAM"      => "",
+            "VALIDATION_TYPE"        => "numeric",
+            "VALIDATION_EXTRA_PARAM" => ""),
+        "password1"   => array(
+            "LABEL"                  => $arrLang["Password"],
+            "EDITABLE"               => "yes",
+            "REQUIRED"               => "yes",
+            "INPUT_TYPE"             => "PASSWORD",
+            "INPUT_EXTRA_PARAM"      => "",
+            "VALIDATION_TYPE"        => "text",
+            "VALIDATION_EXTRA_PARAM" => ""),
+        "password2"   => array(
+            "LABEL"                  => $arrLang["Retype password"],
+            "EDITABLE"               => "yes",
+            "REQUIRED"               => "yes",
+            "INPUT_TYPE"             => "PASSWORD",
+            "INPUT_EXTRA_PARAM"      => "",
+            "VALIDATION_TYPE"        => "text",
+            "VALIDATION_EXTRA_PARAM" => ""),
+    );
+    return $arrFormElements;
 }
 ?>
