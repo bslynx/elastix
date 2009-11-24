@@ -28,7 +28,7 @@
   $Id: fr.lang,v 1.3 2008/05/20 00:31:28 jmartinez Exp $ */
 global $arrLan;
 $arrLan=array(
-"Agent Console"=>"Console Agent",
+"Agent Console"=>"Console d'Agent",
 "Hangup"=>"Raccrocher",
 "Tranfer"=>"Transferer",
 "Call"=>"Appeler",
@@ -41,7 +41,7 @@ $arrLan=array(
 "Break"=>"Pause",
 "UnBreak"=>"Reprendre",
 "In Break"=>"En Pause",
-"Welcome to Console Agent"=>"Bienvenue dans la Console Agent",
+"Welcome to Console Agent"=>"Bienvenue dans la Console d'Agent",
 "Please enter your number agent"=>"Veuillez entrer votre num&eacute;ro d'agent et votre extension",
 "Number Agent"=>"Agent Num&eacute;ro",
 "Enter Agent" => "Entrer",
