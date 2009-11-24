@@ -95,6 +95,17 @@ if [ $# != 0 ]; then
         exit 1
 fi
 
+# Check for existence of /etc/init.d/wanrouter
+if [ ! -e /etc/init.d/wanrouter ] ; then
+	if [ -e /usr/sbin/wanrouter ] ; then
+		echo >&2 "$0: restoring missing link /etc/init.d/wanrouter"
+		ln -s /usr/sbin/wanrouter /etc/init.d/wanrouter
+	else
+		echo >&2 "$0: could not find /usr/sbin/wanrouter - disabling SANGOMA detection!"
+		there_is_sangoma_card=false
+	fi
+fi
+
 echo -e "HWDETECT: Starting card detection..."
 
 if is_asterisk_loaded ; then
@@ -143,7 +154,7 @@ if [ $? = 0 ] ; then
     if [ $there_is_sangoma_card = true ]; then
         # This step is supposed to create /etc/dahdi/system.conf, see next comment.
     	echo -e "HWDETECT: Detecting Sangoma cards ..."
-    	eval "/usr/sbin/wancfg_dahdi --silent --zapata_auto_conf_file=/etc/asterisk/chan_dahdi.conf.wanpipe $null_redirect_verbose"
+    	eval "/usr/sbin/wancfg_dahdi --smg --silent --zapata_auto_conf_file=/etc/asterisk/chan_dahdi.conf.wanpipe $null_redirect_verbose"
     fi
 fi
 
