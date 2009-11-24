@@ -18,9 +18,9 @@ $arrLan=array(
 "Type Date"=>"Type Date",
 "Type Text Area"=>"Type Text Area",
 "View Form"=>"View Form",
-"Cancel"=>"Cancel",
+"Cancel"=>"Cancelar",
 "Form"=>"Formulario",
-"Forms" => "Forms",
+"Forms" => "Formularios",
 );
 
 
