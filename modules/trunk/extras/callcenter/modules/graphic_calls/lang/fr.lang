@@ -49,7 +49,6 @@ $arrLan=array(
 "Successful"                        => "R&eacute;ussis",
 "Not Realiced"                      => "Non R&eacute;alis&eacute;s",
 "Left"                              => "Perdus",
-
 "Graphic Calls per hour" => "Graphic Calls per hour",
 "Total Calls" => "Total des Appels",
 "Total" => "Total",
