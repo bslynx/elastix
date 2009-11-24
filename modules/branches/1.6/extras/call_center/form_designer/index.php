@@ -156,7 +156,25 @@ function _moduleContent(&$smarty, $module_name)
     );
     $smarty->assign("type",$arrLan['Type']);    
     $smarty->assign("select_type","type"); 
-    $smarty->assign("option_type",$arrConfig['arr_type']); 
+
+    $arr_type = array(
+        "VALUE" => array (
+                    "LABEL",
+                    "TEXT",
+                    "LIST",
+                    "DATE",
+                    "TEXTAREA"),
+        "NAME"  => array (
+                    $arrLan["Type Label"],
+                    $arrLan["Type Text"],
+                    $arrLan["Type List"],
+                    $arrLan["Type Date"],
+                    $arrLan["Type Text Area"]),
+        "SELECTED" => "Text",     
+        );
+
+
+    $smarty->assign("option_type", $arr_type); 
     $smarty->assign("item_list",$arrLan['List Item']);    
     $smarty->assign("agregar",$arrLan["Add Item"]); 
     $smarty->assign("quitar",$arrLan['Remove Item']); 
@@ -309,7 +327,7 @@ function listadoForm($pDB, $smarty, $module_name, $local_templates_dir) {
               "<form style='margin-bottom:0;' method='POST' action='?menu=$module_name'>" .
               "<table width='100%' border='0'><tr>".
               "<td><input type='submit' name='submit_create_form' value='{$arrLan['Create New Form']}' class='button'></td>".
-              "<td class='letra12' align='right'>".$arrLan["Status"]."$combo_estados</td>".
+              "<td class='letra12' align='right'><b>".$arrLan["Status"].":</b>&nbsp;$combo_estados</td>".
               "</tr></table>".
               "</form>");
 //print_r($arrData);

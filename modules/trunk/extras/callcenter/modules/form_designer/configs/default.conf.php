@@ -27,29 +27,8 @@
   +----------------------------------------------------------------------+
   $Id: default.conf.php,v 1.1.1.1 2007/03/23 00:13:58 elandivar Exp $ */
 
-if (file_exists("modules/form_designer/lang/en.lang")) {
-    include_once("modules/form_designer/lang/en.lang");
-} else {
-    include_once("modules/form_designer/lang/es.lang");
-}
-
 $arrConfig['module_name'] = 'form_designer';
 $arrConfig['templates_dir'] = 'themes';
-$arrConfig['arr_type'] = array(
-        "VALUE" => array (
-                    "LABEL",
-                    "TEXT",
-                    "LIST",
-                    "DATE",
-                    "TEXTAREA"),
-        "NAME"  => array (
-                    $arrLan["Type Label"],
-                    $arrLan["Type Text"],
-                    $arrLan["Type List"],
-                    $arrLan["Type Date"],
-                    $arrLan["Type Text Area"]),
-        "SELECTED" => "Text",     
-        );
 // $arrConfig['arrValidation'] = array(
 //         "VALUE" => array (
 //                     "LETTER",
