@@ -9,6 +9,7 @@ require_once("jpgraph/jpgraph_canvas.php");
 require_once("jpgraph/jpgraph_canvtools.php");
 
 require_once("misc.lib.php");
+require_once("../configs/default.conf.php");
 
 load_language("../");
 Global $arrLang;
