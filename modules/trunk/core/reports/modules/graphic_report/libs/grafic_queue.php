@@ -35,6 +35,7 @@ require_once "../../../libs/paloSantoSampler.class.php";
 
 //cargar el idioma
 include_once "../../../libs/misc.lib.php";
+include_once "../../../configs/default.conf.php";
 load_language("../../../");
 
 //language
@@ -163,7 +164,7 @@ else{
     $text_color = imagecolorallocate($im, 0, 0, 0);
     imagestring($im, 5, 50, 0, "$titulo",$text_color);
     $text_color = imagecolorallocate($im, 233, 14, 91);
-    imagestring($im, 2, 130, 20, $arrLang["No records found"], $text_color);
+    imagestring($im, 2, 130, 20, $arrLangModule["No records found"], $text_color);
     if( !empty($msgError) ){
         $msgError="Error data base...";
         imagestring($im, 2, 10, 40, $msgError, $text_color);

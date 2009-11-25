@@ -50,5 +50,6 @@ $arrLangModule=array(
 "Graphic Report" => "Reporte Grafico",
 "All" => "Todos",
 "Show" => "Mostrar",
+"No records found"=>"No se encontraron registros",
 );
 ?>
