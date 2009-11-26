@@ -1,5 +1,4 @@
 <?php
-
 $lang = array(
 "Ingoing Calls"   => "Appels Entrants",
 "guardar"         => "Sauver",

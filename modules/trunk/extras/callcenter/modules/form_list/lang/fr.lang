@@ -8,7 +8,7 @@ $arrLan=array(
 "Options"=>"Options",
 "List Item"=>"Liste Objets",
 "Type"=>"Type",
-"Preview"=>"Pr&eacute;voir",
+"Preview"=>"Pr&eacute;visualiser",
 "All"=>"Tous",
 "Active"=>"Actifs",
 "Inactive"=>"Inactifs",
@@ -20,7 +20,7 @@ $arrLan=array(
 "View Form"=>"Voir Formulaire",
 "Cancel"=>"Annuler",
 "Form"=>"Formulaire",
-"Forms" => "Forms",
+"Forms" => "Formulaires",
 "Formularios" => "Formulaires",
 "Estado" => "Etat",
 );

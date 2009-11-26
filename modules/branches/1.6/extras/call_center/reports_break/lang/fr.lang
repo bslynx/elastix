@@ -27,8 +27,8 @@ $lang = array(
 "The following fields contain errors"        => "Les champs suivants contiennent des erreurs",
 "No register break in database"              => "Aucune pause enregistr&eacute;e dans la base de donn&eacute;es",
 
-"Start Date"    => "Start Date",
-"End Date"      => "End Date",
+"Start Date"    => "D&eacute;but",
+"End Date"      => "Fin",
 'Total'          => "Total",
 );
 ?>
