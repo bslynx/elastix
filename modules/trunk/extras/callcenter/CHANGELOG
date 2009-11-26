@@ -1,3 +1,4 @@
+* Display callerid as incoming number for incoming calls
 * Add more missing strings and synchronize French translations
 * Check that session variable is set before testing if not null.
 
