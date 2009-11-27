@@ -258,23 +258,23 @@ class paloSantoFTPBackup {
     {
  		global $arrConf;
  		global $arrLang;
-		$file = "/automatic_backup";
-// 		$handle = fopen($file, "w+");
-// 		$contents = fread($handle, filesize($file));
-// 		fclose($handle);
+		$file = "/etc/cron.d/automatic_backup";
 		if($time == "DAILY"){
-			$new_contents = "59 23 * * * /usr/bin/php -q /var/www/html/modules/backup_restore/libs/automatic_backup.php daily\n";
+			$new_contents = "59 23 * * * root /usr/bin/php -q /var/www/html/modules/backup_restore/libs/automatic_backup.php daily\n";
 		}
 		elseif($time == "MONTHLY"){
-			$new_contents = "59 23 30 * * /usr/bin/php -q /var/www/html/modules/backup_restore/libs/automatic_backup.php monthly\n";
+			$new_contents = "59 23 30 * * root /usr/bin/php -q /var/www/html/modules/backup_restore/libs/automatic_backup.php monthly\n";
 		}
 		elseif($time == "WEEKLY"){
-			$new_contents = "59 23 * * 7 /usr/bin/php -q /var/www/html/modules/backup_restore/libs/automatic_backup.php weekly\n";
+			$new_contents = "59 23 * * 7 root /usr/bin/php -q /var/www/html/modules/backup_restore/libs/automatic_backup.php weekly\n";
 		}
 		else{
 			$new_contents = "";
 		}
-		
+		exec("sudo -u root chown asterisk.asterisk /etc/cron.d/;");
+	    if(is_file($file)){
+			exec("sudo -u root chown -R asterisk.asterisk /etc/cron.d/automatic_backup;");
+		}
 		$fh = fopen($file, "w+");
 		if($fh){
 			if(fwrite($fh, $new_contents) == false){
@@ -286,8 +286,8 @@ class paloSantoFTPBackup {
 			$this->errMsg = $arrLang["Unabled open file"];
 			return false;
 		}
-		
-		exec("su -;cd /; chown root.root automatic_backup; mv automatic_backup /etc/cron.d/automatic_backup;");
+		exec("sudo -u root chown -R root.root /etc/cron.d/;");
+		//exec("sudo -u root service crond restart;");
 		return true;
     }
 }
