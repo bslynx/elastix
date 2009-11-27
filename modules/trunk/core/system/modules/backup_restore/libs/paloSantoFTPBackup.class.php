@@ -214,5 +214,81 @@ class paloSantoFTPBackup {
         }
         return $result;
     }
+
+    function getStatusAutomaticBackupById($id)
+    {
+        $query = "SELECT * FROM automatic_backup WHERE id=$id";
+
+        $result=$this->_DB->getFirstRowQuery($query,true);
+
+        if($result==FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return null;
+        }
+        return $result;
+    }
+
+    function updateStatus($status)
+    {
+        $query = "UPDATE automatic_backup 
+                  SET status='$status'
+                  WHERE id = 1";
+        $result=$this->_DB->genQuery($query);
+
+        if($result==FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return false;
+        }
+        return true;
+    }
+
+    function insertStatus($status)
+    {
+        $query = "INSERT INTO automatic_backup() VALUES('$status');";
+        $result=$this->_DB->genQuery($query);
+
+        if($result==FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return false;
+        }
+        return true;
+    }
+    
+    function createCronFile($time)
+    {
+ 		global $arrConf;
+ 		global $arrLang;
+		$file = "/automatic_backup";
+// 		$handle = fopen($file, "w+");
+// 		$contents = fread($handle, filesize($file));
+// 		fclose($handle);
+		if($time == "DAILY"){
+			$new_contents = "59 23 * * * /usr/bin/php -q /var/www/html/modules/backup_restore/libs/automatic_backup.php daily\n";
+		}
+		elseif($time == "MONTHLY"){
+			$new_contents = "59 23 30 * * /usr/bin/php -q /var/www/html/modules/backup_restore/libs/automatic_backup.php monthly\n";
+		}
+		elseif($time == "WEEKLY"){
+			$new_contents = "59 23 * * 7 /usr/bin/php -q /var/www/html/modules/backup_restore/libs/automatic_backup.php weekly\n";
+		}
+		else{
+			$new_contents = "";
+		}
+		
+		$fh = fopen($file, "w+");
+		if($fh){
+			if(fwrite($fh, $new_contents) == false){
+				$this->errMsg = $arrLang["Unabled write file"];
+			fclose($fh);
+			return false;
+			}
+		}else{
+			$this->errMsg = $arrLang["Unabled open file"];
+			return false;
+		}
+		
+		exec("su -;cd /; chown root.root automatic_backup; mv automatic_backup /etc/cron.d/automatic_backup;");
+		return true;
+    }
 }
 ?>

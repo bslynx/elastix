@@ -77,12 +77,17 @@ function _moduleContent(&$smarty, $module_name)
     else if (isset($_POST["submit_restore"])) $accion = "submit_restore";
     else if (isset($_POST["process"]) && $_POST["option_url"]=="backup")  $accion = "process_backup";
     else if (isset($_POST["process"]) && $_POST["option_url"]=="restore") $accion = "process_restore";
+
 /******************************* PARA FTP BACKUP *************************************/
     else if (isset($_POST["upload"])) $accion = "upload";
     else if (getParameter("action")=="download_file") $accion = "download_file";
     else if (isset($_POST["ftp_backup"])) $accion = "ftp_backup";
     else if (isset($_POST["save_new_FTP"])) $accion = "save_new_FTP";
     else if (isset($_POST["view_form_FTP"])) $accion = "view_form_FTP";
+/**************************************************************************************/
+
+/****************************** PARA BACKUP AUTOMATICO ********************************/
+    else if (isset($_POST["automatic"])) $accion = "automatic";
 /**************************************************************************************/
     else $accion ="report_backup_restore";
     $content = "";
@@ -111,9 +116,9 @@ function _moduleContent(&$smarty, $module_name)
             break;
 
 /******************************* PARA FTP BACKUP ***************************************/
-        case 'ftp_backup':
+        /*case 'ftp_backup':
             $content = process_backup($smarty, $local_templates_dir, $arrLang);
-            break;
+            break;*/
         case "save_new_FTP":
             $content = saveNewFTPBackup($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
             break;
@@ -122,8 +127,13 @@ function _moduleContent(&$smarty, $module_name)
             break;
 /***************************************************************************************/
 
+/******************************* PARA BACKUP AUTOMATICO ********************************/
+        case "automatic":
+            $content = automatic_backup($smarty, $module_name, $local_templates_dir, $arrLang, $dir_backup,$pDB);
+            break;
+/***************************************************************************************/
         default:
-            $content = report_backup_restore($smarty, $module_name, $local_templates_dir, $arrLang, $dir_backup);
+            $content = report_backup_restore($smarty, $module_name, $local_templates_dir, $arrLang, $dir_backup, $pDB);
             break;
     }
 
@@ -152,14 +162,102 @@ function file_upload($smarty, $module_name, $local_templates_dir, $arrLang, $dir
     return report_backup_restore($smarty, $module_name, $local_templates_dir, $arrLang, $dir_backup);
 }
 
-function report_backup_restore($smarty, $module_name, $local_templates_dir, $arrLang, $dir_backup)
+function report_backup_restore($smarty, $module_name, $local_templates_dir, $arrLang, $dir_backup, $pDB)
 {
     $nombre_archivos = array();
     $num_backups = Obtener_Total_Backups($dir_backup);
-
+    $pFTPBackup = new paloSantoFTPBackup($pDB);
     //Paginacion
     $limit  = 5;
     $total  = $num_backups;
+
+// obtencion de parametros desde la base 
+        $_DATA = $pFTPBackup->getStatusAutomaticBackupById(1);
+        if(!(is_array($_DATA) & count($_DATA)>0)){
+            $_DATA['status'] = "DISABLED";
+        }
+
+    $oGrid  = new paloSantoGrid($smarty);
+    $offset = $oGrid->getOffSet($limit,$total,(isset($_GET['nav']))?$_GET['nav']:NULL,(isset($_GET['start']))?$_GET['start']:NULL);
+
+    $end    = ($offset+$limit)<=$total ? $offset+$limit : $total;
+
+    $nombre_archivos = Obtener_Backups($dir_backup, $total-$offset, $limit);
+
+    $url = "?menu=$module_name";
+    $smarty->assign("url", $url);
+    //Fin Paginacion
+
+    $arrData = null;
+    if(is_array($nombre_archivos) && $total>0){
+        foreach($nombre_archivos as $key => $nombre_archivo){
+            $arrTmp[0] = "<input type='checkbox' name='chk[".$nombre_archivo."]' id='chk[".$nombre_archivo."]'>";
+            $arrTmp[1] = "<a href='?menu=$module_name&action=download_file&file_name=$nombre_archivo'>$nombre_archivo</a>";
+            $fecha="";
+            // se parsea el archivo para obtener la fecha
+            if(ereg("[[:alnum:]]-([[:digit:]]{4})([[:digit:]]{2})([[:digit:]]{2})([[:digit:]]{2})([[:digit:]]{2})([[:digit:]]{2})-([[:alnum:]]{2}).[[:alnum:]]", $nombre_archivo, $data)) {
+                $fecha = "$data[3]/$data[2]/$data[1] $data[4]:$data[5]:$data[6]";
+                $id= "$data[1]$data[2]$data[3]$data[4]$data[5]$data[6]-$data[7]";
+            }
+            $arrTmp[2] = $fecha;
+            $arrTmp[3] = "<input type='submit' name='submit_restore[".$nombre_archivo."]' value='{$arrLang['Restore']}' class='button'>";
+            $arrData[] = $arrTmp;
+        }
+    }
+
+    $arrGrid = array("title"    => $arrLang["Backup List"],
+                     "icon"     => "images/list.png",
+                     "width"    => "99%",
+                     "start"    => ($total==0) ? 0 : $offset + 1,
+                     "end"      => $end,
+                     "total"    => $total,
+                     "columns"  => array(0 => array("name"      => "<input type='submit' name='delete_backup' value='{$arrLang["Delete"]}' class='button' onclick=\" return confirmSubmit('{$arrLang["Are you sure you wish to delete backup (s)?"]}');\" />",
+                                                    "property1" => ""),
+                                         1 => array("name"      => $arrLang["Name Backup"],
+                                                    "property1" => ""),
+                                         2 => array("name"      => $arrLang["Date"],
+                                                    "property1" => ""),
+                                         3 => array("name"      => $arrLang["Action"],
+                                                    "property1" => ""),
+                                    )
+                    );
+    $time = $_DATA['status'];
+    if($time=="DISABLED")
+        $smarty->assign("SEL_DISABLED", "SELECTED='SELECTED'");
+    if($time=="DAILY")
+        $smarty->assign("SEL_DAILY", "SELECTED='SELECTED'");
+    if($time=="MONTHLY")
+        $smarty->assign("SEL_MONTHLY", "SELECTED='SELECTED'");
+    if($time=="WEEKLY")
+        $smarty->assign("SEL_WEEKLY", "SELECTED='SELECTED'");
+
+    $smarty->assign("FILE_UPLOAD", $arrLang["File Upload"]);
+    $smarty->assign("AUTOMATIC", $arrLang["AUTOMATIC"]);
+    $smarty->assign("DAILY", $arrLang["DAILY"]);
+    $smarty->assign("MONTHLY", $arrLang["MONTHLY"]);
+    $smarty->assign("WEEKLY", $arrLang["WEEKLY"]);
+    $smarty->assign("DISABLED",$arrLang["DISABLED"]);
+    $smarty->assign("BACKUP", $arrLang["Backup"]);
+    $smarty->assign("UPLOAD", $arrLang["Upload"]);
+    $smarty->assign("FTP_BACKUP", $arrLang["FTP Backup"]);
+    $htmlFilter = $smarty->fetch("$local_templates_dir/filter.tpl");
+
+    $oGrid->showFilter(trim($htmlFilter));
+    $contenidoModulo = "<form  method='POST' enctype='multipart/form-data' style='margin-bottom:0;' action='?menu=$module_name'>".$oGrid->fetchGrid($arrGrid, $arrData,$arrLang)."</form>";
+
+    return $contenidoModulo;
+}
+
+function automatic_backup($smarty, $module_name, $local_templates_dir, $arrLang, $dir_backup, $pDB)
+{
+    $nombre_archivos = array();
+    $num_backups = Obtener_Total_Backups($dir_backup);
+    $pFTPBackup = new paloSantoFTPBackup($pDB);
+    //Paginacion
+    $limit  = 5;
+    $total  = $num_backups;
+    
+    $time = getParameter("time");
 
     $oGrid  = new paloSantoGrid($smarty);
     $offset = $oGrid->getOffSet($limit,$total,(isset($_GET['nav']))?$_GET['nav']:NULL,(isset($_GET['start']))?$_GET['start']:NULL);
@@ -206,17 +304,40 @@ function report_backup_restore($smarty, $module_name, $local_templates_dir, $arr
                                     )
                     );
 
+    if($time=="DISABLED")
+        $smarty->assign("SEL_DISABLED", "SELECTED");
+    if($time=="DAILY")
+        $smarty->assign("SEL_DAILY", "SELECTED");
+    if($time=="MONTHLY")
+        $smarty->assign("SEL_MONTHLY", "SELECTED");
+    if($time=="WEEKLY")
+        $smarty->assign("SEL_WEEKLY", "SELECTED");
+
     $smarty->assign("FILE_UPLOAD", $arrLang["File Upload"]);
+    $smarty->assign("AUTOMATIC", $arrLang["AUTOMATIC"]);
+    $smarty->assign("DAILY", $arrLang["DAILY"]);
+    $smarty->assign("MONTHLY", $arrLang["MONTHLY"]);
+    $smarty->assign("WEEKLY", $arrLang["WEEKLY"]);
+    $smarty->assign("DISABLED",$arrLang["DISABLED"]);
     $smarty->assign("BACKUP", $arrLang["Backup"]);
     $smarty->assign("UPLOAD", $arrLang["Upload"]);
     $smarty->assign("FTP_BACKUP", $arrLang["FTP Backup"]);
     $htmlFilter = $smarty->fetch("$local_templates_dir/filter.tpl");
 
     $oGrid->showFilter(trim($htmlFilter));
+	    //if there is data in database
+            $result = $pFTPBackup->getStatusAutomaticBackupById(1);
+            if($result)
+                $pFTPBackup->updateStatus($time);
+            else
+                $pFTPBackup->insertStatus($time);
+            $smarty->assign("mb_message", $arrLang["SUCCESSFUL"]);
+		$pFTPBackup->createCronFile($time);
     $contenidoModulo = "<form  method='POST' enctype='multipart/form-data' style='margin-bottom:0;' action='?menu=$module_name'>".$oGrid->fetchGrid($arrGrid, $arrData,$arrLang)."</form>";
 
     return $contenidoModulo;
 }
+
 
 function downloadBackup($smarty, $module_name, $local_templates_dir, $arrLang, $dir_backup){
     $file_name = getParameter("file_name");
@@ -360,7 +481,6 @@ function restore_form($smarty, $local_templates_dir, $arrLang, $path_backup)
             }
         }
     }
-        //exec("echo 'entro' > /tmp/eduardo");
     //$_ruta_archivo_ = $archivo_post;
     $smarty->assign("BACKUP_FILE", $archivo_post);
     $smarty->assign("title", $arrLang["Restore"]. ": $archivo_post");
@@ -584,6 +704,13 @@ function process_each_backup($arrSelectedOptions,$ruta_respaldo,&$arrBackupOptio
                                 );
             if(!respaldar_carpeta($arrInfoRespaldo,$ruta_respaldo,$error))
                 $bExito = false;
+
+            //Se respalda la base asterisk en /var/lib/asterisk/astdb
+
+            $comando="cp /var/lib/asterisk/astdb $ruta_respaldo";
+            exec($comando,$output,$retval);
+            if ($retval!=0) $bExito = false;
+
             //borrar la carpeta de respaldo mysqldb
             exec("rm $ruta_respaldo/mysqldb_asterisk -rf");
             break;
@@ -1009,6 +1136,20 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
                     $pEX->do_reloadAll($data_connection, $arrAST, $arrAMP);
                 }
             }
+
+            if (file_exists("$ruta_respaldo/astdb"))
+            {
+                $base_address_respaldo = "$ruta_respaldo/astdb";
+                $base_address = "/var/lib/asterisk/astdb";
+
+                $comando="mv -f $base_address_respaldo $base_address";
+                exec($comando,$output,$retval);
+                if ($retval!=0) $bExito = false;
+
+                $comando="sudo -u root /bin/chmod 777 $base_address";
+                exec($comando,$output,$retval);
+            }else $bExito = false;
+
             break;
 
         case "as_config_files":
