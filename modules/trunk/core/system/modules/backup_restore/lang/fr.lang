@@ -118,5 +118,13 @@ $arrLangModule=array(
 "Successfully written" => "Successfully written",
 "Problem downloading" => "There was a problem downloading",
 "TITLE" => "Please Drag and Drop a tar file between lists for uploading or downloading by FTP",
+"AUTOMATIC" => "Automatic Backup",
+"DAILY" => "Daily",
+"MONTHLY" => "Monthly",
+"WEEKLY" => "Weekly",
+"DISABLED" => "Disabled",
+"SUCCESSFUL" => "Successful Process",
+"Unabled write file" => "Unabled write file",
+"Unabled open file" => "Unabled open file",
 );
 ?>

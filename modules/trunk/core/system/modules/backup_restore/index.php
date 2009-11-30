@@ -566,7 +566,6 @@ function process_backup($smarty, $local_templates_dir, $arrLang)
 
 function process_restore($smarty, $local_templates_dir, $arrLang, $path_backup)
 {
-    exec("echo 'entro process restore' > /tmp/eduardo");
     $arrRestoreOptions = Array_Options($arrLang);
     $arrSelectedOptions=array();
 
