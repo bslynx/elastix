@@ -306,6 +306,8 @@ function _moduleContent(&$smarty, $module_name)
             $arrTmp[1] = $rate[2];
             $arrTmp[2] = number_format($rate[3],3);
             $arrTmp[3] = number_format($rate[4],3);
+			if($rate[5]=="None")
+           		$rate[5]=$arrLang["None"];
             $arrTmp[4] = $rate[5];
             $arrTmp[5] = "&nbsp;<a href='?menu=billing_rates&action=view&id=".$rate[0]."'>{$arrLang['View']}</a>";
             $arrData[] = $arrTmp;
