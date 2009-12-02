@@ -320,7 +320,6 @@ function reportGroupPermission($smarty, $module_name, $local_templates_dir, &$pD
 	foreach($arrLang as $key=>$value){
 		if(strtolower(trim($value))==strtolower(trim($filter_resource))){
 			$parameter_to_find = $key;
-			echo $parameter_to_find;
 		}	
 	}
     
