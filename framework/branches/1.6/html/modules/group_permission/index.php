@@ -316,7 +316,15 @@ function reportGroupPermission($smarty, $module_name, $local_templates_dir, &$pD
 
     //begin grid parameters
     $oGrid  = new paloSantoGrid($smarty);
-    $totalGroupPermission = $pGroupPermission->ObtainNumResouces($filter_resource);
+	$parameter_to_find = "";
+	foreach($arrLang as $key=>$value){
+		if(strtolower(trim($value))==strtolower(trim($filter_resource))){
+			$parameter_to_find = $key;
+			echo $parameter_to_find;
+		}	
+	}
+    
+    $totalGroupPermission = $pGroupPermission->ObtainNumResouces($parameter_to_find);
 
     $limit  = 25;
     $total  = $totalGroupPermission;
@@ -326,10 +334,13 @@ function reportGroupPermission($smarty, $module_name, $local_templates_dir, &$pD
     $oGrid->calculatePagination($action,$start);
     $offset = $oGrid->getOffsetValue();
     $end    = $oGrid->getEnd();
-    $url    = "?menu=$module_name&filter_group=$filter_group&filter_resource=$filter_resource";
+    $url    = "?menu=$module_name&filter_group=$filter_group&filter_resource=$parameter_to_find";
 
     $arrData = null;
-    $arrResult = $pGroupPermission->ObtainResources($limit, $offset, $filter_resource);
+    if($parameter_to_find == "")
+		$arrResult = $pGroupPermission->ObtainResources($limit, $offset, $filter_resource);
+	else
+    	$arrResult = $pGroupPermission->ObtainResources($limit, $offset, $parameter_to_find);
 
     $idGroup = $filter_group;
     $arrPermisos = $pGroupPermission->loadGroupPermissionsACL($idGroup);
