@@ -107,8 +107,8 @@ function viewFormVoIPProvider($smarty, $module_name, $local_templates_dir, &$pDB
         $arrProviders[$values['name']] = $values['name'];
     }
     $smarty->assign("arrProviders", $arrProviders);//for the combobox
-//     $prueba = $pVoIPProvider->getIndexTrunk();
-//     exec("echo '".print_r($prueba, true)."' > /tmp/oscar");
+    $prueba = $pVoIPProvider->getIndexSipCustom();
+    exec("echo '".print_r($prueba, true)."' > /tmp/oscar");
     $smarty->assign("SAVE", $arrLang["Save"]);
     $smarty->assign("EDIT", $arrLang["Edit"]);
     $smarty->assign("CANCEL", $arrLang["Cancel"]);
@@ -127,103 +127,145 @@ function saveNewVoIPProvider($smarty, $module_name, $local_templates_dir, &$pDB,
     $arrFormVoIPProvider = createFieldForm($arrLang);
     $oForm = new paloForm($smarty,$arrFormVoIPProvider);
 
-    if(!$oForm->validateForm($_POST)){
+    if($_POST['type_provider']=="none") {
         // Validation basic, not empty and VALIDATION_TYPE 
         $smarty->assign("mb_title", $arrLang["Validation Error"]);
-        $arrErrores = $oForm->arrErroresValidacion;
-        $strErrorMsg = "<b>{$arrLang['The following fields contain errors']}:</b><br/>";
-        if(is_array($arrErrores) && count($arrErrores) > 0){
-            foreach($arrErrores as $k=>$v)
-                $strErrorMsg .= "$k, ";
-        }
+        $strErrorMsg = "<b>{$arrLang['Please select a type of VoIp Provider']}</b><br/>";
         $smarty->assign("mb_message", $strErrorMsg);
         return $content = viewFormVoIPProvider($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
-    }
-    else{
+
+    }else if($pVoIPProvider->validateFormEmpty($_POST)) {
+        $smarty->assign("mb_title", $arrLang["Validation Error"]);
+        $strErrorMsg = "<b>{$arrLang['Some or someone necesary fields are empty please check and complete']}</b><br/>";
+        $smarty->assign("mb_message", $strErrorMsg);
+
+        $arrProviders = array("none" => $arrLang["none"]);
+        $result = $pVoIPProvider->getVoIPProviders();//Obtiene la lista para ser seteado en el listbox
+        foreach($result as $values){
+            $arrProviders[$values['name']] = $values['name'];
+        }
+        $smarty->assign("arrProviders", $arrProviders);
+        $smarty->assign("type_provider_tmp", $_POST['type_provider']);
+        $smarty->assign("username_post", $_POST['username']);
+        $smarty->assign("secret_post", $_POST['secret']);
+
+        $smarty->assign("type_post", $_POST['type']);
+        $smarty->assign("qualify_post", $_POST['qualify']);
+        $smarty->assign("insecure_post", $_POST['insecure']);
+        $smarty->assign("host_post", $_POST['host']);
+        $smarty->assign("fromuser_post", $_POST['fromuser']);
+        $smarty->assign("fromdomain_post", $_POST['fromdomain']);
+        $smarty->assign("dtmfmode_post", $_POST['dtmfmode']);
+        $smarty->assign("disallow_post", $_POST['disallow']);
+        $smarty->assign("context_post", $_POST['context']);
+        $smarty->assign("allow_post", $_POST['allow']);
+        $smarty->assign("trustrpid_post", $_POST['trustrpid']);
+        $smarty->assign("sendrpid_post", $_POST['sendrpid']);
+        $smarty->assign("canreinvite_post", $_POST['canreinvite']);
+
+        $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
+        $smarty->assign("SAVE", $arrLang["Save"]);
+        $smarty->assign("CANCEL", $arrLang["Cancel"]);
+        $smarty->assign("IMG", "images/list.png"); 
+
+        $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl", $arrLang["VoIP Provider"], $_POST);
+        $contenidoModulo = "<form  method='POST' enctype='multipart/form-data' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
+        return $contenidoModulo;
+
+    }else {
         $data_trunk = array();
         $data_attribute = array();
         $type_provider = getParameter("type_provider");
 
-        if(!empty($_POST["username"])){ 
+        if(!empty($_POST["username"])) { 
             $data_trunk['username'] = $pDB->DBCAMPO(getParameter("username"));
             $username = getParameter("username");
         }else $data_trunk['username'] = $pDB->DBCAMPO("");
-        if(!empty($_POST["secret"])){ 
+        if(!empty($_POST["secret"])) { 
             $data_trunk['password'] = $pDB->DBCAMPO(getParameter("secret"));
             $secret = getParameter("secret");
         }else $data_trunk['password'] = $pDB->DBCAMPO("");
 
-        if(!empty($_POST["type"])) $data_attribute['type'] = $pDB->DBCAMPO(getParameter("type")); else $data_attribute['type'] = $pDB->DBCAMPO("");
-        if(!empty($_POST["qualify"])) $data_attribute['qualify'] = $pDB->DBCAMPO(getParameter("qualify")); else $data_attribute['qualify'] = $pDB->DBCAMPO("");
-        if(!empty($_POST["insecure"])) $data_attribute['insecure'] = $pDB->DBCAMPO(getParameter("insecure")); else $data_attribute['insecure'] = $pDB->DBCAMPO("");
-        if(!empty($_POST["host"])){ 
+        if($_POST["type"]!=" ") $data_attribute['type'] = $pDB->DBCAMPO(getParameter("type")); else $data_attribute['type'] = null;
+        if($_POST["qualify"]!=" ") $data_attribute['qualify'] = $pDB->DBCAMPO(getParameter("qualify")); else $data_attribute['qualify'] = null;
+        if($_POST["insecure"]!=" ") $data_attribute['insecure'] = $pDB->DBCAMPO(getParameter("insecure")); else $data_attribute['insecure'] = null;
+        if($_POST["host"]!=" "){ 
             $data_attribute['host'] = $pDB->DBCAMPO(getParameter("host"));
             $host = getParameter("host");
-        }else $data_attribute['host'] = $pDB->DBCAMPO("");
-        if(!empty($_POST["fromuser"])) $data_attribute['fromuser'] = $pDB->DBCAMPO(getParameter("fromuser")); else $data_attribute['fromuser'] = $pDB->DBCAMPO("");
-        if(!empty($_POST["fromdomain"])) $data_attribute['fromdomain'] = $pDB->DBCAMPO(getParameter("fromdomain")); else $data_attribute['fromdomain'] = $pDB->DBCAMPO("");
-        if(!empty($_POST["dtmfmode"])) $data_attribute['dtmfmode'] = $pDB->DBCAMPO(getParameter("dtmfmode")); else $data_attribute['dtmfmode'] = $pDB->DBCAMPO("");
-        if(!empty($_POST["disallow"])) $data_attribute['disallow'] = $pDB->DBCAMPO(getParameter("disallow")); else $data_attribute['disallow'] = $pDB->DBCAMPO("");
-        if(!empty($_POST["context"])) $data_attribute['context'] = $pDB->DBCAMPO(getParameter("context")); else $data_attribute['context'] = $pDB->DBCAMPO("");
-        if(!empty($_POST["allow"])) $data_attribute['allow'] = $pDB->DBCAMPO(getParameter("allow")); else $data_attribute['allow'] = $pDB->DBCAMPO("");
-        if(!empty($_POST["trustrpid"])) $data_attribute['trustrpid'] = $pDB->DBCAMPO(getParameter("trustrpid")); else $data_attribute['trustrpid'] = $pDB->DBCAMPO("");
-        if(!empty($_POST["sendrpid"])) $data_attribute['sendrpid'] = $pDB->DBCAMPO(getParameter("sendrpid")); else $data_attribute['sendrpid']= $pDB->DBCAMPO("");
-        if(!empty($_POST["canreinvite"])) $data_attribute['canreinvite'] = $pDB->DBCAMPO(getParameter("canreinvite")); else $data_attribute['canreinvite'] = $pDB->DBCAMPO("");
+        }else $data_attribute['host'] = null;
+        if($_POST["fromuser"]!=" ") $data_attribute['fromuser'] = $pDB->DBCAMPO(getParameter("fromuser")); else $data_attribute['fromuser'] = null;
+        if($_POST["fromdomain"]!=" ") $data_attribute['fromdomain'] = $pDB->DBCAMPO(getParameter("fromdomain")); else $data_attribute['fromdomain'] = null;
+        if($_POST["dtmfmode"]!=" ") $data_attribute['dtmfmode'] = $pDB->DBCAMPO(getParameter("dtmfmode")); else $data_attribute['dtmfmode'] = null;
+        if($_POST["disallow"]!=" ") $data_attribute['disallow'] = $pDB->DBCAMPO(getParameter("disallow")); else $data_attribute['disallow'] = null;
+        if($_POST["context"]!=" ") $data_attribute['context'] = $pDB->DBCAMPO(getParameter("context")); else $data_attribute['context'] = null;
+        if($_POST["allow"]!=" ") $data_attribute['allow'] = $pDB->DBCAMPO(getParameter("allow")); else $data_attribute['allow'] = null;
+        if($_POST["trustrpid"]!=" ") $data_attribute['trustrpid'] = $pDB->DBCAMPO(getParameter("trustrpid")); else $data_attribute['trustrpid'] = null;
+        if($_POST["sendrpid"]!=" ") $data_attribute['sendrpid'] = $pDB->DBCAMPO(getParameter("sendrpid")); else $data_attribute['sendrpid'] = null;
+        if($_POST["canreinvite"]!=" ") $data_attribute['canreinvite'] = $pDB->DBCAMPO(getParameter("canreinvite")); else $data_attribute['canreinvite'] = null;
         
         if($type_provider=="net2phone"){
             $type_trunk = "sip";
             $data_provider['id_trunk'] = 1;
             $pVoIPProvider->updateTrunkParameter($data_trunk, array("id"=>1));
             $pVoIPProvider->updateTrunkAttribute($data_attribute, array("id"=>1));
+
         }else if($type_provider=="to_camundanet"){
             $type_trunk = "sip";
             $data_provider['id_trunk'] = 2;
             $pVoIPProvider->updateTrunkParameter($data_trunk, array("id"=>2));
             $pVoIPProvider->updateTrunkAttribute($data_attribute, array("id"=>2));
+
         }else if($type_provider=="vitelity"){
             $type_trunk = "sip";
             $data_provider['id_trunk'] = 3;
             $pVoIPProvider->updateTrunkParameter($data_trunk, array("id"=>3));
             $pVoIPProvider->updateTrunkAttribute($data_attribute, array("id"=>3));
+
         }else if($type_provider=="NuFoneIAX"){
             $type_trunk = "iax2";
             $data_provider['id_trunk'] = 4;
             $pVoIPProvider->updateTrunkParameter($data_trunk, "name='NuFoneIAX'");
             $pVoIPProvider->updateTrunkAttribute($data_attribute, array("id"=>4));
+
+        }else if($type_provider=="to_starvox"){
+            $type_trunk = "sip";
+            $data_provider['id_trunk'] = 5;
+            $pVoIPProvider->updateTrunkParameter($data_trunk, "name='to_starvox'");
+            $pVoIPProvider->updateTrunkAttribute($data_attribute, array("id"=>5));
         }
 
-        $find1 = $pVoIPProvider->findTrunkInExtensionAdditional($type_provider);
-        $find2 = $pVoIPProvider->findTrunkInLocalPrefixes($type_provider);
-        if($type_trunk=="sip"){
-            $find3 = $pVoIPProvider->findTrunkInSipAdditional($type_provider);
+        $find1 = $pVoIPProvider->findTrunkInExtensionCustom($type_provider);
+        $find2 = $pVoIPProvider->findTrunkInLocalPrefixes($type_provider);//Nuevo Entrada de parametro
+        if($type_trunk=="sip") {
+            $find3 = $pVoIPProvider->findTrunkInSipCustom($type_provider);
             $find4 = $pVoIPProvider->findTrunkInSipRegistrations($host);
-            exec("echo '$find3' > /tmp/oscar");
         }else{
-            $find3 = $pVoIPProvider->findTrunkInIaxAdditional($type_provider);
+            $find3 = $pVoIPProvider->findTrunkInIaxCustom($type_provider);
             $find4 = $pVoIPProvider->findTrunkInIaxRegistrations($host);
         }
-
-        if($find1=="false"){
-            $pVoIPProvider->addConfFileExtensionAdditional($type_provider, $type_trunk);
+        //exec("echo '$find1' > /tmp/oscar");
+        if($find1=="false") {
+            $pVoIPProvider->AddConfFileExtensionCustom($type_provider, $type_trunk);
         }
-        if($find2=="false"){
-            $pVoIPProvider->addConfFileLocalPrefixes();
-        }//Falta haver el update de los reglas (No considerar)
+        if($find2=="false") {
+            $pVoIPProvider->addConfFileLocalPrefixes($type_provider);//Nuevo Entrada de parametro
+        }//Falta hacer el update de las reglas (No considerar)
         
-        if($find3=="false"){
-            if($type_trunk=="sip") $pVoIPProvider->addConfFileSipAdditional($type_provider);
-            else $pVoIPProvider->addConfFileIaxAdditional($type_provider);
-        }else{
-            if($type_trunk=="sip") $pVoIPProvider->updateFileSipAdditional($type_provider);//funcion por revisar AUN
-            else $pVoIPProvider->updateFileIaxAdditional($type_provider);
-        }
-        if($find4=="false"){
+        if($find4=="false") {
             if($type_trunk=="sip") $pVoIPProvider->addConfFileSipRegistrations($username, $secret, $host);//duda
             else $pVoIPProvider->addConfFileIaxRegistrations($username, $secret, $host);
         }else{
             if($type_trunk=="sip") $pVoIPProvider->updateFileSipRegistrations($username, $secret, $host);
             else $pVoIPProvider->updateFileIaxRegistrations($username, $secret, $host);
         }
+        if($find3=="false"){
+            if($type_trunk=="sip") $pVoIPProvider->addConfFileSipCustom($type_provider);
+            else $pVoIPProvider->addConfFileIaxCustom($type_provider);
+        }else{
+            if($type_trunk=="sip") $pVoIPProvider->updateFileSipCustom($type_provider);//funcion por revisar AUN
+            else $pVoIPProvider->updateFileIaxCustom($type_provider);
+        }
+        
         header("Location: ?menu=$module_name&action=view_form");
     }
 
@@ -231,9 +273,8 @@ function saveNewVoIPProvider($smarty, $module_name, $local_templates_dir, &$pDB,
 
 function createFieldForm($arrLang)
 {
-
     $arrFields = array(
-            "type_provider_voip"   => array(      "LABEL"                  => $arrLang["Type Provider VoIP"],
+            "type_provider_voip"   => array(      "LABEL"           => $arrLang["Type VoIP Provider"],
                                             "REQUIRED"               => "no",
                                             "INPUT_TYPE"             => "",
                                             "INPUT_EXTRA_PARAM"      => "",

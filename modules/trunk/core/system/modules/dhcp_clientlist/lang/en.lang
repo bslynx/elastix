@@ -2,7 +2,7 @@
   /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.5.2-2                                               |
+  | Elastix version 1.6-6                                               |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,30 +25,29 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: en.lang,v 1.1 2009-09-29 05:09:50 Oscar Navarrete onavarrete@palosanto.com Exp $ */
+  $Id: en.lang,v 1.1 2009-11-09 09:08:29 Oscar Navarrete onavarrete@palosanto.com Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"VoIP Provider" => "VoIP Provider",
-"Type VoIP Provider" => "Type VoIP Provider",
-"Username" => "Username",
-"Secret" => "Secret",
-"Configuration" => "Configuration",
-"Type" => "Type",
-"Qualify" => "Qualify",
-"Insecure" => "Insecure",
-"Host" => "Host",
-"Fromuser" => "Fromuser",
-"Fromdomain" => "Fromdomain",
-"Dtmfmode" => "Dtmfmode",
-"Disallow" => "Disallow",
-"Context" => "Context",
-"Allow" => "Allow",
-"Trustrpid" => "Trustrpid",
-"Sendrpid" => "Sendrpid",
-"Canreinvite" => "Canreinvite",
-"none" => "none",
 
-"Please select a type of VoIp Provider" => "Please select a type of VoIp Provider",
-"Some or someone necesary fields are empty please check and complete" => "Some or someone necesary fields are empty please check and complete",
+"New Email list" => "New Email list",
+"Are you sure you wish to delete the email list." => "Are you sure you wish to delete the email list.",
+"Email List Name" => "Email List Name",
+
+"Email Member" => "Email Member",
+"Email List Members" => "Email List Members",
+
+"Number of Accounts" => "Number of Accounts",
+//nuevos
+"Dhcp list" => "Dhcp list",
+"New Dhcp client" => "New Dhcp client",
+"Are you sure you wish to delete the Ip." => "Are you sure you wish to delete the Ip.",
+"Ip Host" => "Ip Host",
+"Action" => "Action",
+"See All Dhcp Info" => "See All Dhcp Info",
+
+"Lease Ip" => "Lease Ip",
+"Date Starts" => "Date Starts",
+"Date Ends" => "Date Ends",
+"Mac Address" => "Mac Address",
 );
 ?>

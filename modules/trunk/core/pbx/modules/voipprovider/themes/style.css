@@ -1,0 +1,39 @@
+#header_detail {
+    float: left;
+    width:45%;
+    height:200px;
+}
+
+#detail {
+    float: left;
+    width:40%;
+    background-color:#DEE4FA;
+    height:400px;
+   /* margin: 3px 3px 3px 3px;*/
+}
+
+#title {
+    color: black;
+    font-size: 14px;
+}
+
+/*.icon {
+    width: 17px;
+    height: 17px;
+    padding: 3px 0 0px 3px;
+    border: 0;
+    cursor:pointer;
+}
+
+#port_desc {
+    margin-left:180px;
+    width:260px;
+    font-size:14px;
+    text-align:center;
+    color:blue;
+}
+
+#form {
+    margin-left:80px;
+    width:"40%";
+}*/

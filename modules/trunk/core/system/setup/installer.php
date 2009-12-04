@@ -44,4 +44,11 @@ if(!file_exists("$DataBaseRoot/hardware_detector.db")){
     exec($cmd_mv);
     exec($cmd_chown);
 }
+
+if(!file_exists("$DataBaseRoot/network.db")){
+    $cmd_mv    = "mv $tmpDir/setup/network.db $DataBaseRoot/";
+    $cmd_chown = "chown asterisk.asterisk $DataBaseRoot/network.db";
+    exec($cmd_mv);
+    exec($cmd_chown);
+}
 ?>

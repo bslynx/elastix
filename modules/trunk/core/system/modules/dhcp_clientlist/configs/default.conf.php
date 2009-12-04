@@ -2,10 +2,10 @@
   /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.5.2-2                                               |
+  | Elastix version 2.0.0                                               |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
-  | Copyright (c) 2006 Palosanto Solutions S. A.                         |
+  | Copyright (c) 2009 Palosanto Solutions S. A.                         |
   +----------------------------------------------------------------------+
   | Cdla. Nueva Kennedy Calle E 222 y 9na. Este                          |
   | Telfs. 2283-268, 2294-440, 2284-356                                  |
@@ -25,30 +25,11 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: en.lang,v 1.1 2009-09-29 05:09:50 Oscar Navarrete onavarrete@palosanto.com Exp $ */
-global $arrLangModule;
-$arrLangModule=array(
-"VoIP Provider" => "VoIP Provider",
-"Type VoIP Provider" => "Type VoIP Provider",
-"Username" => "Username",
-"Secret" => "Secret",
-"Configuration" => "Configuration",
-"Type" => "Type",
-"Qualify" => "Qualify",
-"Insecure" => "Insecure",
-"Host" => "Host",
-"Fromuser" => "Fromuser",
-"Fromdomain" => "Fromdomain",
-"Dtmfmode" => "Dtmfmode",
-"Disallow" => "Disallow",
-"Context" => "Context",
-"Allow" => "Allow",
-"Trustrpid" => "Trustrpid",
-"Sendrpid" => "Sendrpid",
-"Canreinvite" => "Canreinvite",
-"none" => "none",
+  $Id: default.conf.php,v 1.1 2009-05-13 10:05:04 Oscar Navarrete onavarrete@palosanto.com Exp $ */
+    global $arrConfModule;
 
-"Please select a type of VoIp Provider" => "Please select a type of VoIp Provider",
-"Some or someone necesary fields are empty please check and complete" => "Some or someone necesary fields are empty please check and complete",
-);
+    $arrConfModule['module_name']       = 'dhcp_clientlist';
+    $arrConfModule['templates_dir']     = 'themes';
+    $arrConfModule['dsn_conn_database'] = 'sqlite3:////var/www/db/dhcp_client.db';
+
 ?>

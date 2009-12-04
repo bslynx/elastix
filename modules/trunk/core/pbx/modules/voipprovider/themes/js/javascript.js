@@ -9,8 +9,7 @@ function displayConfig(){
     var escogida=selec.options[selec.selectedIndex].text;
     
     if(selec.value!="none"){
-        xhr.open("GET","modules/voipprovider/libs/controller.php?action=setConfig&type="+escogida,true);
-        
+        xhr.open("GET","modules/voipprovidercust/libs/controller.php?action=setConfig&type="+escogida,true);
         xhr.onreadystatechange = function()
         {
             controllerDisplayConfig(xhr);
@@ -18,7 +17,7 @@ function displayConfig(){
         xhr.send(null);  
     }else{
         //document.getElementById("configuration").innerHTML = "";
-        document.getElementById("detail").style.display = "none";
+        //document.getElementById("detail").style.display = "none";
         document.getElementById("username").value = "";
         document.getElementById("type").value= "";
         document.getElementById("secret").value = "";
@@ -34,6 +33,8 @@ function displayConfig(){
         document.getElementById("trustrpid").value = "";
         document.getElementById("sendrpid").value = "";
         document.getElementById("canreinvite").value = "";
+//         document.getElementById("username").disabled = true;
+//         document.getElementById("secret").disabled = true;
     }
 }
 
@@ -46,11 +47,11 @@ function controllerDisplayConfig(xhr)
             var val = xhr.responseText;
             var parser=new DOMParser();
             xmlDoc=parser.parseFromString(val,"text/xml");
-            document.getElementById("detail").style.display = "block";
-
+            //document.getElementById("detail").style.display = "block";
+            
             var db=xmlDoc.getElementsByTagName("configs");
             var attribute=db[0].getElementsByTagName("attribute");
-            for(var i=0;i<attribute.length;i++)
+            for(var i=0; i<attribute.length; i++)
             {
                 var username=attribute[i].getElementsByTagName("username")[0];
                 var type_=attribute[i].getElementsByTagName("type")[0];
@@ -68,94 +69,97 @@ function controllerDisplayConfig(xhr)
                 var sendrpid=attribute[i].getElementsByTagName("sendrpid")[0];
                 var canreinvite=attribute[i].getElementsByTagName("canreinvite")[0];
             }
-            if(username != null){
+            if(username.firstChild.nodeValue != ""){
                 document.getElementById("username").value = username.firstChild.nodeValue;
             }else document.getElementById("username").value = "";
-            if(type_ != null){ 
+            if(type_.firstChild.nodeValue != ""){ 
                 document.getElementById("type").value = type_.firstChild.nodeValue;
                 document.getElementById("text_type").style.display = "block";
             }else{ 
                 document.getElementById("type").value= "";
                 document.getElementById("text_type").style.display = "none";
             }
-            if(secret != null){ 
+            if(secret.firstChild.nodeValue != ""){ 
                 document.getElementById("secret").value = secret.firstChild.nodeValue;
             }else document.getElementById("secret").value = "";
-            if(qualify != null){ 
+            if(qualify.firstChild.nodeValue != ""){ 
                 document.getElementById("qualify").value = qualify.firstChild.nodeValue;
                 document.getElementById("text_qualify").style.display = "block"; 
             }else{ 
                 document.getElementById("qualify").value = "";
                 document.getElementById("text_qualify").style.display = "none";
             }
-            if(insecure != null){ 
+            if(insecure.firstChild.nodeValue != ""){ 
                 document.getElementById("insecure").value = insecure.firstChild.nodeValue;
                 document.getElementById("text_insecure").style.display = "block"; 
             }else{ 
                 document.getElementById("insecure").value = "";
                 document.getElementById("text_insecure").style.display = "none";
             }
-            if(host_ != null){ 
+            if(host_.firstChild.nodeValue != ""){ 
                 document.getElementById("host").value = host_.firstChild.nodeValue;
                 document.getElementById("text_host").style.display = "block";
             }else{ 
                 document.getElementById("host").value = "";
                 document.getElementById("text_host").style.display = "none";
-            }if(fromuser != null){ 
+            }
+            if(fromuser.firstChild.nodeValue != ""){ 
                 document.getElementById("fromuser").value = fromuser.firstChild.nodeValue;
                 document.getElementById("text_fromuser").style.display = "block";
             }else{ 
                 document.getElementById("fromuser").value = "";
                 document.getElementById("text_fromuser").style.display = "none";
-            }if(fromdomain != null){ 
+            }
+            if(fromdomain.firstChild.nodeValue != ""){ 
                 document.getElementById("fromdomain").value = fromdomain.firstChild.nodeValue;
                 document.getElementById("text_fromdomain").style.display = "block";
             }else{ 
                 document.getElementById("fromdomain").value = "";
                 document.getElementById("text_fromdomain").style.display = "none";
-            }if(dtmfmode != null){ 
+            }
+            if(dtmfmode.firstChild.nodeValue != ""){ 
                 document.getElementById("dtmfmode").value = dtmfmode.firstChild.nodeValue;
                 document.getElementById("text_dtmfmode").style.display = "block";
             }else{ 
                 document.getElementById("dtmfmode").value = "";
                 document.getElementById("text_dtmfmode").style.display = "none";
             }
-            if(disallow != null){ 
+            if(disallow.firstChild.nodeValue != ""){ 
                 document.getElementById("disallow").value = disallow.firstChild.nodeValue;
                 document.getElementById("text_disallow").style.display = "block";
             }else{ 
                 document.getElementById("disallow").value = "";
                 document.getElementById("text_disallow").style.display = "none";
             }
-            if(context != null){ 
+            if(context.firstChild.nodeValue != ""){ 
                 document.getElementById("context").value = context.firstChild.nodeValue;
                 document.getElementById("text_context").style.display = "block";
             }else{ 
                 document.getElementById("context").value = "";
                 document.getElementById("text_context").style.display = "none";
             }
-            if(allow != null){ 
+            if(allow.firstChild.nodeValue != ""){ 
                 document.getElementById("allow").value = allow.firstChild.nodeValue;
                 document.getElementById("text_allow").style.display = "block";
             }else{ 
                 document.getElementById("allow").value = "";
                 document.getElementById("text_allow").style.display = "none";
             }
-            if(trustrpid != null){ 
+            if(trustrpid.firstChild.nodeValue != ""){ 
                 document.getElementById("trustrpid").value = trustrpid.firstChild.nodeValue;
                 document.getElementById("text_trustrpid").style.display = "block";
             }else{ 
                 document.getElementById("trustrpid").value = "";
                 document.getElementById("text_trustrpid").style.display = "none";
             }
-            if(sendrpid != null){
+            if(sendrpid.firstChild.nodeValue != ""){
                 document.getElementById("sendrpid").value = sendrpid.firstChild.nodeValue;
                 document.getElementById("text_sendrpid").style.display = "block";
             }else{ 
                 document.getElementById("sendrpid").value = "";
                 document.getElementById("text_sendrpid").style.display = "none";
             }
-            if(canreinvite != null){
+            if(canreinvite.firstChild.nodeValue != ""){
                 document.getElementById("canreinvite").value = canreinvite.firstChild.nodeValue;
                 document.getElementById("text_canreinvite").style.display = "block";
             }else{ 
@@ -164,6 +168,8 @@ function controllerDisplayConfig(xhr)
             }
             //var db = xhr.responseText;
             //document.getElementById("configuration").innerHTML = db;
+//             document.getElementById("username").disabled = false;
+//             document.getElementById("secret").disabled = false;
         }
     }
 }
