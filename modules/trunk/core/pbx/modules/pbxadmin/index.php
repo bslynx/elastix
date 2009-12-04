@@ -36,6 +36,25 @@ function _moduleContent(&$smarty, $module_name)
     if (file_exists("$base_dir/$lang_file")) include_once "$lang_file";
     else include_once "modules/$module_name/lang/en.lang";
 
+    /*interprete language to freepbx, todavia no funciona de todo bien :)
+      en_US - English
+      bg_BG - Bulgarian
+      de_DE - Deutsch
+      es_ES - Español
+      fr_FR - Francais
+      he_IL - Hebrew
+      hu_HU - Hungarian
+      it_IT - Italiano
+      pt_PT - Portuguese
+      ru_RU - Russki
+      sv_SE - Svenska
+    */
+    $arrLangFreePBX = array("en" => "en_US", "bg" => "bg_BG", "de" => "de_DE", "es" => "es_ES",
+                            "fr" => "fr_FR", "he" => "he_IL", "hu" => "hu_HU", "it" => "it_IT",
+                            "pt" => "pt_PT", "ru" => "ru_RU", "sv" => "sv_SE");
+    $langFreePBX = isset($arrLangFreePBX[$lang])?$arrLangFreePBX[$lang]:"en_US";
+    if(!isset($_COOKIE['lang'])) $_COOKIE['lang'] = $langFreePBX;
+
     //global variables
     global $arrConf;
     global $arrLang;
