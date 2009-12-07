@@ -6,7 +6,7 @@
     <menuitem menuid="network"              desc="Network"            parent="system"      module="no"  link="" order="3"></menuitem>
     <menuitem menuid="network_parameters"   desc="Network Parameters" parent="network"     module="yes" link="" order="31"></menuitem>
     <menuitem menuid="dhcp_server"          desc="DHCP Server"        parent="network"     module="yes" link="" order="32"></menuitem>
-    <menuitem menuid="dhcp_dhcp_clientlist" desc="DHCP Client List"   parent="network"     module="yes" link="" order="33"></menuitem>
+    <menuitem menuid="dhcp_clientlist"      desc="DHCP Client List"   parent="network"     module="yes" link="" order="33"></menuitem>
     <menuitem menuid="dhcp_by_mac"          desc="DHCP By MAC"        parent="network"     module="yes" link="" order="34"></menuitem>
     <menuitem menuid="usermgr"              desc="User Management"    parent="system"      module="no"  link="" order="4"></menuitem>
     <menuitem menuid="userlist"             desc="Users"              parent="usermgr"     module="yes" link="" order="42"></menuitem>
