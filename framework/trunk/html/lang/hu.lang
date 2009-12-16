@@ -153,6 +153,8 @@ $arrLang=array(
 
 /* Start About Elastix */
 "About Elastix" => "Elastix Névjegye",
+"About Elastix2"=>"About us",
+"HELP"=>"Help",
 "About Elastix Content" => "Elastix was created under the premise of becoming a reliable, easy-to-use, web-based system for the management of communications over IP. This open source software started in Ecuador has become the solution of choice for implementations of Voice over IP around the globe.",
 "About Elastix Closed" => "Elastix Névjegye bezárva",
 /* end About Elastix */

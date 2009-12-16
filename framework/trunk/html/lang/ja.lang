@@ -143,6 +143,8 @@ $arrLang=array(
 
 /* Start About Elastix */
 "About Elastix" => "Elastixについて",
+"About Elastix2"=>"About us",
+"HELP"=>"Help",
 "About Elastix Content" => "Elastixは、IPコミュニケーション管理のための信頼でき、使いやすい、
 ウェブベースシステムを目指して開発されました。エクアドルで始まったこのオープンソース
 ソフトウェアは、世界中におけるVoIP実装ソリューションに選択されつつあります。",

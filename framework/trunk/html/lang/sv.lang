@@ -143,6 +143,8 @@ $arrLang=array(
 
 /* Start About Elastix */
 "About Elastix"=>"Om Elastix",
+"About Elastix2"=>"About us",
+"HELP"=>"Help",
 "About Elastix Content"=>"Elastix skapades under premisserna f&ouml;r att bli ett p&aring;litligt, enkelt att anv&auml;nda web-baserat system,f&ouml;r hantering av kommunikation &ouml;ver IP. Detta Open source programvara startades i Ekuador, och har blivit en l&ouml;sning f&ouml;r implentering av R&ouml;st &ouml;ver IP(VoIP) runt v&auml;rlden.",
 "About Elastix Closed"=>"Avsluta",
 /* End About Elastix */

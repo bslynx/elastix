@@ -148,6 +148,8 @@ $arrLang=array(
 
 /* Start About Elastix */
 "About Elastix" => "Riguardo Elastix",
+"About Elastix2"=>"About us",
+"HELP"=>"Help",
 "About Elastix Content" => "Elastix è stato creato sotto la premessa di essere un Sistema di comunicazione Voice over IP basato su Web stabile e semplice da usare. Questo software open source è nato in Equador ed è diventato la soluzione di scelta per implementazioni di Voice over IP in tutto il mondo.",
 "About Elastix Closed" => "Chiuso",
 /* end About Elastix */

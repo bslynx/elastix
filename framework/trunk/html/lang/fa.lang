@@ -151,6 +151,8 @@ $arrLang=array(
 
 /* Start About Elastix */
 "About Elastix" => "درباره شرکت سیتکو",
+"About Elastix2"=>"About us",
+"HELP"=>"Help",
 "About Elastix Content" => "این نرم افزار براساس قابلیت اطمینان بالا، کاربری آسان و سیستم مدیریت تحت وب، ایجاد شده است و با زبان فارسی و پشتیبانی کامل توسط شرکت سیتکو (ارتباط تلفن کوروش) در ایران وخاورمیانه ارائه می گردد.",
 "About Elastix Closed" => "پنجره را ببند",
 /* end  About Elastix */

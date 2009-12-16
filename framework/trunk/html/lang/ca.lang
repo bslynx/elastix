@@ -155,6 +155,8 @@ $arrLang=array(
 
 /* Start About Elastix */
 "About Elastix"=>"Sobre Elastix",
+"About Elastix2"=>"About us",
+"HELP"=>"Help",
 "About Elastix Content"=>"Elastix va ser creat sota la premisa de ser un sistema d'us per
 comunicacions basades en IP que sigui accesible des del Web, confiable y
 fàcil d'usar. Aquest software de còdi obert iniciat a l'Ecuador s'ha

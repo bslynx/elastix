@@ -156,6 +156,8 @@ r la finir veuillez ",
 
 /* Start About Elastix */
 "About Elastix"=>"A propos d'Elastix",
+"About Elastix2"=>"About us",
+"HELP"=>"Help",
 "About Elastix Content"=>"Elastix a &eacute;t&eacute; cr&eacute;&eacute; dans le but de devenir un syst&egrave;me bas&eacute; web fiable, facile &agrave; utiliser pour la gestion des communications VOIP. Ce logiciel open
 source qui a d&eacute;marr&eacute; en Equateur est devenu la solution de choix pour l'impl&eacute;mentation
 de Voix sur IP tout autour du globe.",

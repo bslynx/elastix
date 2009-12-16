@@ -152,6 +152,8 @@ $arrLang=array(
 
 /* Start About Elastix */
 "About Elastix"=>"Acerca de Elastix",
+"About Elastix2"=>"About us",
+"HELP"=>"Help",
 "About Elastix Content"=>"Elastix fue creado bajo la premisa de ser un sistema de manejo para
 comunicaciones basadas en IP que sea accesible desde el Web, confiable y
 fácil de usar. Este software de código abierto iniciado en Ecuador se ha

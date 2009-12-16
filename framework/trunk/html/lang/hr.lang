@@ -151,6 +151,8 @@ $arrLang=array(
 
 /* Start About Elastix */
 "About Elastix"=>"O Elastix-u",
+"About Elastix2"=>"About us",
+"HELP"=>"Help",
 "About Elastix Content"=>"Elastix je kreiran pod pretpostavkom postajanja  pouzdanim, jednostavnim za uporabu, web-zasnovanim sustavom za upravljanje komunikacijom preko IP. Ovaj softver otvorenog koda je nastao u Ekvadoru i postao je izabrano rješenje za primjenu VoIP-a na cijeloj zemaljskoj kugli.",
 "About Elastix Closed"=>"Zatvori",
 /* End About Elastix */
