@@ -186,7 +186,7 @@ TD.headlinkspacer {
 A.logout
 {
     FONT-FAMILY: verdana, arial, helvetica, sans-serif;
-    FONT-SIZE: 100%;
+    FONT-SIZE: 15px;
     COLOR: #FFFFFF;
 }
 TD.menuspacer {
@@ -209,8 +209,8 @@ TD.menutabletaboff {
     FONT-SIZE: 11pt;
     FONT-WEIGHT: bold;
     COLOR: #DDDDDD;
-    PADDING-LEFT: 7px;
-    PADDING-RIGHT: 7px;
+    /*PADDING-LEFT: 7px;
+    PADDING-RIGHT: 7px;*/
     TEXT-ALIGN: center;
     height: 37px;
 }
@@ -288,12 +288,8 @@ TD.menutabletabon {
 }
 TD.menuaftertab {
     FONT-FAMILY: verdana, arial, helvetica, sans-serif;
-    FONT-SIZE: 9pt;
-    PADDING-RIGHT: 20px;
-    PADDING-LEFT: 10px;
-    PADDING-BOTTOM: 0px;
-    PADDING-TOP: 0px;
-    COLOR: #FFFFFF;
+    /*FONT-SIZE: 9pt;*/
+    COLOR: #FFA590;
 }
 TD.menudescription {    
     FONT-FAMILY: verdana, arial, helvetica, sans-serif;
@@ -324,10 +320,9 @@ A.menutableon {
 }
 A.logout{
     FONT-FAMILY: verdana, arial, helvetica, sans-serif;
-    FONT-SIZE: 9pt;
-    FONT-WEIGHT: bold;
+    FONT-SIZE: 13px;
     TEXT-DECORATION: none;
-    COLOR: #FFFFFF;
+    COLOR: #FFA590;
 }
 TD.submenufondo {
     BACKGROUND: #FFFFFF;
@@ -636,13 +631,15 @@ td.botonoff a {
     FONT-WEIGHT: bold;
 }
 .tabForm {
-    border-color: #999;
+    /*border-color: #999;*/
+    border-color: #F5F5F5;
     color: #aaaaaa;
     background-color: #fafafa;
     background-image: url(images/bggrisForm.gif);
     border-top: 1px solid #aaaaaa;
     border-bottom: 1px solid #aaaaaa;
-    padding: 10px 6px 12px 10px;
+    /*padding: 10px 6px 12px 10px;*/
+    padding: 1px 3px 3px 1px;
     font-size: 12px;
     background-repeat: repeat-x;
     background-position: top;
@@ -801,4 +798,15 @@ td.botonon {
     padding: 0px;
     border: 0px;
     height: 21px;
+}
+.background {
+	BACKGROUND-IMAGE: url(images/borde_redondeado.gif);
+	background-repeat: no-repeat;
+	FONT-FAMILY: verdana, arial, helvetica, sans-serif;
+    /*FONT-SIZE: 9pt;*/
+}
+.tabForm2 {
+    color: #aaaaaa;
+    padding: 1px 3px 3px 1px;
+    font-size: 12px;
 }

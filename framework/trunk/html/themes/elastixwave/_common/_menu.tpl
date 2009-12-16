@@ -2,7 +2,7 @@
     <div id="">
         <table cellspacing="0" cellpadding="0" width="100%" border="0" class="fondomenu_headertop">
             <tr >
-                <td width="20%">
+                <td width="24%">
                     <table cellSpacing="0" cellPadding="0" border="0" height="65px">
                         <tr>
                             <td class="menulogo"  valign="top">
@@ -13,71 +13,83 @@
                         </tr>
                     </table>
                 </td>
-                <td width="60%" rowspan="2" valign="bottom">
+                <td width="52%" rowspan="2" valign="bottom">
                     <table cellSpacing="0" cellPadding="0" border="0" align="center" width="100%">
                         <tr>
                             {foreach from=$arrMainMenu key=idMenu item=menu name=menuMain}
                                 {if $idMenu eq $idMainMenuSelected}
-				    {if $smarty.foreach.menuMain.first}
-                    <td valign="bottom">
-                                        <table cellSpacing="0" cellPadding="0" border="0" width="69px">
-                                            <tr>
-                                              <td class="menutabletabon">
-                                                <img src="themes/{$THEMENAME}/images/{$idMenu}_icon.gif" border="0" alt="" />
-                                                <a class="menutableon" href="?menu={$idMenu}">{$menu.Name}</a>
-                                              </td>
-                                            </tr>
-                                        </table>
-                                    </td>
-				    {else}
-				    <td valign="bottom">
-                                        <table cellSpacing="0" cellPadding="0" border="0" width="87px">
-                                            <tr>
-                                                <td>&nbsp;<td>
-                                                <td class="menutabletabon" rowspan="2">
-                                                    <img src="themes/{$THEMENAME}/images/{$idMenu}_icon.gif" border="0" alt="" />
-                                                    <a class="menutableon" href="?menu={$idMenu}">{$menu.Name}</a>
-                                              </td>
-                                            </tr>
-                                            <tr>
-					                          <td class="menutabletaboff2" valign="top"> . </td>
-                                            </tr>
-                                        </table>
-                                    </td>
-				    {/if}
+									{if $smarty.foreach.menuMain.first}
+									<td valign="bottom" align="center">
+										<table cellSpacing="0" cellPadding="0" border="0" width="69px">
+											<tr>
+											<td class="menutabletabon">
+												<img src="themes/{$THEMENAME}/images/{$idMenu}_icon.gif" border="0" alt="" />
+												<a class="menutableon" href="?menu={$idMenu}">{$menu.Name}</a>
+											</td>
+											</tr>
+										</table>
+									</td>
+									{else}
+									<td valign="bottom">
+										<table cellSpacing="0" cellPadding="0" border="0" width="100%">
+											<tr>
+												<td class="menutabletaboff2" valign="top"> . </td>
+											</tr>
+										</table> 
+									</td>
+									<td valign="bottom" align="center">
+										<table cellSpacing="0" cellPadding="0" border="0" width="69px">
+											<tr>
+												<td class="menutabletabon" rowspan="2">
+													<img src="themes/{$THEMENAME}/images/{$idMenu}_icon.gif" border="0" alt="" />
+													<a class="menutableon" href="?menu={$idMenu}">{$menu.Name}</a>
+												</td>
+											</tr>
+										</table>
+									</td>
+									{/if}
                                 {else}
-				    {if $smarty.foreach.menuMain.first}
-                    <td valign="bottom">
-                                        <table cellSpacing="0" cellPadding="0" border="0" >
-                                            <tr>
-                                              <td class="menutabletaboff" nowrap="">
-                                                <a class="menutable" href="?menu={$idMenu}">{$menu.Name}</a>
-                                              </td>
-                                            </tr>
-                                        </table> 
-                                    </td>
-				    {else}
-				    <td valign="bottom">
-                                        <table cellSpacing="0" cellPadding="0" border="0">
-                                            <tr>
-                                              <td class="menutabletaboff2" valign="top"> . </td>
-                                              <td class="menutabletaboff" nowrap="">
-                                                <a class="menutable" href="?menu={$idMenu}">{$menu.Name}</a>
-                                              </td>
-                                            </tr>
-                                        </table> 
-                                    </td>
-				    {/if}
+									{if $smarty.foreach.menuMain.first}
+									<td valign="bottom">
+										<table cellSpacing="0" cellPadding="0" border="0" width="100%">
+											<tr>
+												<td class="menutabletaboff" nowrap="">
+												<a class="menutable" href="?menu={$idMenu}">{$menu.Name}</a>
+												</td>
+											</tr>
+										</table> 
+									</td>
+									{else}
+									<td valign="bottom">
+										<table cellSpacing="0" cellPadding="0" border="0" width="100%">
+											<tr>
+												<td class="menutabletaboff2" valign="top"> . </td>
+											</tr>
+										</table> 
+									</td>
+									<td valign="bottom">
+										<table cellSpacing="0" cellPadding="0" border="0" width="100%">
+											<tr>
+												<td class="menutabletaboff" nowrap="">
+													<a class="menutable" href="?menu={$idMenu}">{$menu.Name}</a>
+												</td>
+											</tr>
+										</table> 
+									</td>
+									{/if}
                                  {/if}
                             {/foreach}
                         </tr>
                     </table>
                 </td>
-                <td width="20%">
-                     <table cellSpacing="0" cellPadding="0" border="0" height="65">
-                        <tr>
-                            <td class="menuaftertab" width="40%" align="right">&nbsp;<a class="logout" href="javascript:mostrar();">{$ABOUT_ELASTIX}</a></td>
-                            <td class="menuaftertab" width="20%" align="right">&nbsp;<a class="logout" href="?logout=yes">{$LOGOUT}</a></td>
+                <td width="24%">
+                     <table cellSpacing="0" cellPadding="0" border="0" height="25">
+                        <tr class="background">
+							<td class="menuaftertab" width="19%" align="center">&nbsp;<a class="logout" href="javascript:openWindow('help/?id_nodo={$idSubMenuSelected}&name_nodo={$nameSubMenuSelected}')">{$HELP}</a></td>
+							<td class="menuaftertab">-</td>
+                            <td class="menuaftertab" width="32%" align="center">&nbsp;<a class="logout" href="javascript:mostrar();">{$ABOUT_ELASTIX2}</a></td>
+							<td class="menuaftertab">-</td>
+                            <td class="menuaftertab" width="55%" align="center">&nbsp;<a class="logout" href="?logout=yes">{$LOGOUT} (<font color='white'>{$USER_LOGIN}</font>)</a></td>
                         </tr>
                     </table>
                 </td>
@@ -106,7 +118,7 @@
                             </table>
                         </td>
                         <td align="right" valign="middle"><a href="javascript:openWindow('help/?id_nodo={$idSubMenuSelected}&name_nodo={$nameSubMenuSelected}')"><img
-                            src="themes/{$THEMENAME}/images/help_top.gif" border="0"></a>&nbsp;&nbsp;<a href="javascript:changeMenu()"><img
+                            src="themes/{$THEMENAME}/images/help_bottom.gif" border="0"></a>&nbsp;&nbsp;<a href="javascript:changeMenu()"><img
                             src="themes/{$THEMENAME}/images/arrow_top.gif" border="0"></a>&nbsp;&nbsp;</td>
                     </tr>
                   </table>
