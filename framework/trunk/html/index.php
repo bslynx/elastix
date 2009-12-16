@@ -133,10 +133,17 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
     $oPn = new paloSantoNavigation($arrConf, $arrMenuFiltered, $smarty);
 
     $smarty->assign("THEMENAME", $arrConf['mainTheme']);
-    $smarty->assign("ABOUT_ELASTIX",$arrLang['About Elastix']." ".$arrConf['elastix_version']);
+	if($arrConf['mainTheme']=="elastixwave"){
+		$smarty->assign("ABOUT_ELASTIX2",$arrLang['About Elastix2']);
+    	$smarty->assign("HELP",$arrLang['HELP']);
+        $smarty->assign("USER_LOGIN",$_SESSION['elastix_user']);
+	}
+	else{
+		$smarty->assign("ABOUT_ELASTIX",$arrLang['About Elastix']." ".$arrConf['elastix_version']);
+	}
     $smarty->assign("ABOUT_ELASTIX_CONTENT",$arrLang['About Elastix Content']);
     $smarty->assign("ABOUT_CLOSED",$arrLang['About Elastix Closed']);
-    $smarty->assign("LOGOUT",    $arrLang['Logout']);
+    $smarty->assign("LOGOUT",$arrLang['Logout']);
 
     //$menu= (isset($_GET['menu']))?$_GET['menu']:'';
     if(isset($_GET['menu'])) $menu=$_GET['menu'];
