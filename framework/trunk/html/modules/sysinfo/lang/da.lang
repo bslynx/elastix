@@ -48,5 +48,11 @@ $arrLangModule=array(
 "No records found"=>"Ingen optegnelse fundet",
 "It was not possible to obtain information about the graph"=>"Det var ikke muligt at samle data til grafen",
 "% used of"=>"% used of",
+"News"=>"News",
+"prev"=>"prev",
+"next"=>"next",
+"show_vertical"=>"show vertical scroller",
+"show_horizontal"=>"show horizontal scroller",
+"NoConnection"=>"No Connection",
 );
 ?>

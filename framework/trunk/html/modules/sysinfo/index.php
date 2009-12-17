@@ -29,6 +29,7 @@
 
 //LIBRERIA GRAFICA
 include_once "libs/paloSantoGraph.class.php";
+require_once "libs/magpierss/rss_fetch.inc"; 
 
 function _moduleContent($smarty, $module_name)
 {
@@ -86,6 +87,37 @@ function _moduleContent($smarty, $module_name)
     //UPTIME
     $smarty->assign("uptime",  $arrSysInfo['SysUptime']);
 
+	//News_RSS
+	$url = "http://sourceforge.net/export/rss2_projnews.php?group_id=161807";
+	$rss = fetch_rss($url);
+
+	$str  = "";
+	$str2 = "";
+	if(!empty($rss)){
+		$str  = "Channel Title: " . $rss->channel['title'] . "<p>";
+		//$str .= "<div id='sidebar'><ul id='menu'>";
+		$str .= "<div id='myScroll'>";
+		$str2 = "Channel Title: " . $rss->channel['title'] . "<p>";
+		$str2 .= "<div id='myScroll1'>";
+		if(is_array($rss->items) & count($rss->items)>0){
+			foreach ($rss->items as $item) {
+					$href = $item['link'];
+					$title = $item['title'];
+					$str .= "<div class='scrollEl' style='background-color:#cc9900'><a href=$href><span>$title</span></a></div>";
+					$str2 .= "<div class='scrollEl' style='background-color:#cc9900'><a href=$href><span>$title</span></a></div>";
+			}
+			$str .= "</div>";
+			$str2 .= "</div>";
+		}
+	}
+	else{
+		$str = "<span>".$arrLang['NoConnection']."</span>";
+		$str2 = "<span>".$arrLang['NoConnection']."</span>";
+	}
+	// asignar los links para publicar
+	$smarty->assign("rss", $str);
+	$smarty->assign("rss2", $str2);
+
     $arrParticiones = array();
     $i=0;
 
@@ -100,7 +132,15 @@ function _moduleContent($smarty, $module_name)
     $smarty->assign("MEMORY_USAGE_TITLE",  $arrLang['Memory usage']);
     $smarty->assign("SWAP_USAGE_TITLE",  $arrLang['Swap usage']);
     $smarty->assign("SYSTEM_INFO_TITLE2",  $arrLang['Hard Drives']);
+	//new
+    $smarty->assign("News",  $arrLang['News']);
+	$smarty->assign("prev",  $arrLang['prev']);
+	$smarty->assign("next",  $arrLang['next']);
+	$smarty->assign("show_vertical",  $arrLang['show_vertical']);
+	$smarty->assign("show_horizontal",  $arrLang['show_horizontal']);
+	$smarty->assign("NoConnection",  $arrLang['NoConnection']);
 
+    $smarty->assign("module_name",  $module_name);
     $imagen_hist = getImage_Hit($module_name);
     $smarty->assign("imagen_hist", $imagen_hist);
 
@@ -121,7 +161,7 @@ function buildInfoImage_Discs($arrParticiones, $module_name)
             "<tr>".
                 "<td width='15%'><img src='images/arrow-8.gif'>&nbsp;<b>".$arrLang['Partition Name'].":</b></td>".
                 "<td width='35%'><b>".$particion['fichero']."</b></td>".
-                "<td width='50%' rowspan='5' align='left'>".getImage_Disc_Usage($module_name, $val_1)."</td>".
+                "<td width='50%' rowspan='5' align='left'>".getImage_Hit($module_name)."</td>".
             "</tr>".
             "<tr>".
                 "<td width='15%'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".$arrLang['Capacity'].":</td>".

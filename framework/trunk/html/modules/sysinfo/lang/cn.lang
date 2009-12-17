@@ -43,5 +43,11 @@ $arrLangModule=array(
 "No records found"=>"记录不存在",
 "It was not possible to obtain information about the graph "=>"无法获取图表信息",
 "% used of"=>"% used of",
+"News"=>"News",
+"prev"=>"prev",
+"next"=>"next",
+"show_vertical"=>"show vertical scroller",
+"show_horizontal"=>"show horizontal scroller",
+"NoConnection"=>"No Connection",
 );
 ?>

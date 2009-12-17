@@ -47,6 +47,12 @@ $arrLangModule=array(
 "No records found"=>"No s'ha trobat resultats",
 "It was not possible to obtain information about the graph" =>"No ha estat possible obtenir informació del gràfic",
 "% used of"=>"% used of",
+"News"=>"News",
+"prev"=>"prev",
+"next"=>"next",
+"show_vertical"=>"show vertical scroller",
+"show_horizontal"=>"show horizontal scroller",
+"NoConnection"=>"No Connection",
 /*System Info*/
 );
 ?>

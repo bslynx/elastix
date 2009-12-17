@@ -46,5 +46,12 @@ $arrLangModule=array(
 "Mount point" => "Σημείο Τοποθέτησης",
 "No records found" => "Δεν Βρέθηκαν Εγγραφές",
 "It was not possible to obtain information about the graph" => "Δεν ήταν δυνατή η εύρεση πληροφοριών για το γράφημα",
-"% used of"=>"% used of",);
+"% used of"=>"% used of",
+"News"=>"News",
+"prev"=>"prev",
+"next"=>"next",
+"show_vertical"=>"show vertical scroller",
+"show_horizontal"=>"show horizontal scroller",
+"NoConnection"=>"No Connection",
+);
 ?>

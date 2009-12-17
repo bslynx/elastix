@@ -43,5 +43,11 @@ $arrLangModule=array(
 "No records found"=>"ne najdem zapisa",
 "It was not possible to obtain information about the graph"=>"Ni bilo mogoče dobiti informacije o grafu.",
 "% used of"=>"% used of",
+"News"=>"News",
+"prev"=>"prev",
+"next"=>"next",
+"show_vertical"=>"show vertical scroller",
+"show_horizontal"=>"show horizontal scroller",
+"NoConnection"=>"No Connection",
 );
 ?>
