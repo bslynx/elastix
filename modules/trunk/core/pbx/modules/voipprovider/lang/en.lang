@@ -29,7 +29,6 @@
 global $arrLangModule;
 $arrLangModule=array(
 "VoIP Provider" => "VoIP Provider",
-"Type VoIP Provider" => "Type VoIP Provider",
 "Username" => "Username",
 "Secret" => "Secret",
 "Configuration" => "Configuration",

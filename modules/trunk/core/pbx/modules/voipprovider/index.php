@@ -272,7 +272,7 @@ function saveNewVoIPProvider($smarty, $module_name, $local_templates_dir, &$pDB,
 function createFieldForm($arrLang)
 {
     $arrFields = array(
-            "type_provider_voip"   => array(      "LABEL"           => $arrLang["Type VoIP Provider"],
+            "type_provider_voip"   => array(      "LABEL"           => $arrLang["VoIP Provider"],
                                             "REQUIRED"               => "no",
                                             "INPUT_TYPE"             => "",
                                             "INPUT_EXTRA_PARAM"      => "",
