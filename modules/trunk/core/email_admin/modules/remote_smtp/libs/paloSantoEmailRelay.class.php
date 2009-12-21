@@ -531,7 +531,8 @@ class paloSantoEmailRelay {
             $linea = fgets($fhssl);
             $part1=split(':',$linea);
             if(count($part1)>1){
-                if(ereg("([[:alpha:]]+)[[:space:]]([[:alpha:]]+_[a-zA-Z.]+)",$part1[0], $arrReg)){
+                //if(ereg("([[:alpha:]]+)[[:space:]]([[:alpha:]]+_[a-zA-Z.]+)",$part1[0], $arrReg)){
+                if(ereg("([a-zA-Z.@0-9_]+)[[:space:]]([a-zA-Z.@0-9_]+)",$part1[0], $arrReg)){
                     $data['user'] =  trim($arrReg[2]);
                 }
                 $data['password'] = trim($part1[1]);

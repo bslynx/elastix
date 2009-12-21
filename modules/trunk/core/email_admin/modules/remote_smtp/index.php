@@ -503,8 +503,8 @@ function createFieldForm($arrLang)
                                             "REQUIRED"               => "yes",
                                             "INPUT_TYPE"             => "TEXT",
                                             "INPUT_EXTRA_PARAM"      => "",
-                                            "VALIDATION_TYPE"        => "text",
-                                            "VALIDATION_EXTRA_PARAM" => ""
+                                            "VALIDATION_TYPE"        => "ereg",
+                                            "VALIDATION_EXTRA_PARAM" => "([a-z0-9_]).([a-z]).com"
                                             ),
             "password"   => array(      "LABEL"                  => $arrLang["Password (Email Account)"],
                                             "REQUIRED"               => "yes",
