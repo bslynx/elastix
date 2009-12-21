@@ -67,7 +67,7 @@ class paloSantoBuildModule {
         else
            $type = "framed";
                    
-        $query = "INSERT INTO menu values('$id_module', '$parent', '$url', '$module_name', '$type')";
+        $query = "INSERT INTO menu values('$id_module', '$parent', '$url', '$module_name', '$type','')";
         $result = $this->_DB->genQuery($query);
         if($result)
             return true;
