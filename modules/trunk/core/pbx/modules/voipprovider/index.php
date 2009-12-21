@@ -107,8 +107,6 @@ function viewFormVoIPProvider($smarty, $module_name, $local_templates_dir, &$pDB
         $arrProviders[$values['name']] = $values['name'];
     }
     $smarty->assign("arrProviders", $arrProviders);//for the combobox
-    $prueba = $pVoIPProvider->getIndexSipCustom();
-    exec("echo '".print_r($prueba, true)."' > /tmp/oscar");
     $smarty->assign("SAVE", $arrLang["Save"]);
     $smarty->assign("EDIT", $arrLang["Edit"]);
     $smarty->assign("CANCEL", $arrLang["Cancel"]);

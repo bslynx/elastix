@@ -427,54 +427,24 @@ class paloSantoVoIPProvider {
     //function updateFileSipAdditional($type)
     function updateFileSipCustom($type)
     {
-        //$FILE='/etc/asterisk/sip_additional.conf';
         $FILE='/etc/asterisk/sip_custom.conf';
         $text_sipadd = "";
         $find="false";
         $fp = fopen($FILE,'r');
-        $link1="none";
-        $link2="none";
-        $link3="none";
-//         $setTrunk1 = "false";
-//         $setTrunk2 = "false";
-//         $setTrunk3 = "false";
-//         $setTrunk4 = "false";
-        $i=0;
-        $num_lines = count(file("/etc/asterisk/sip_custom.conf"));
+
         $arrTrunks = $this->getIndexSipCustom();
-        //$lenghtTrunks = count($arrTrunks);
-        //$count=1;
-        $c=0;
+
         while($line = fgets($fp, filesize($FILE)))
         {
-        //for($count=1 ; $count <= count($arrTrunks) ; $count++){
-        //while($count==count($arrTrunks)){
-                if(eregi($type, $line) && $find=="false"){
-                    if($type=="net2phone" /*&& $setTrunk1=="false"*/){
-                        $data = $this->getVoIPProviderByProvider(1);
-                        $link1 = "to_camundanet";
-                        $link2 = "vitelity";
-                        $link3 = "to_starvox";
-                        //$setTrunk1 = "true";
-                    }else if($type=="to_camundanet" /*&& $setTrunk2=="false"*/){
-                        $data = $this->getVoIPProviderByProvider(2);
-                        $link1 = "vitelity";
-                        $link2 = "net2phone";
-                        $link3 = "to_starvox";
-                        //$setTrunk2 = "true";
-                    }else if($type=="vitelity" /*&& $setTrunk3=="false"*/){
-                        $data = $this->getVoIPProviderByProvider(3);
-                        $link1 = "to_camundanet";
-                        $link2 = "net2phone";
-                        $link3 = "to_starvox";
-                        //$setTrunk3 = "true";
-                    }else if($type=="to_starvox" /*&& $setTrunk4=="false"*/){
-                        $data = $this->getVoIPProviderByProvider(5);
-                        $link1 = "vitelity";
-                        $link2 = "net2phone";
-                        $link3 = "to_camundanet";
-                        //$setTrunk4 = "true";
-                    }
+        $count=1;
+        $i=0;
+            while($count <= count($arrTrunks)) {
+                if(eregi($type, $line) && $find=="false") {
+                    if($type=="net2phone") $data = $this->getVoIPProviderByProvider(1);
+                    else if($type=="to_camundanet") $data = $this->getVoIPProviderByProvider(2);
+                    else if($type=="vitelity") $data = $this->getVoIPProviderByProvider(3);
+                    else if($type=="to_starvox") $data = $this->getVoIPProviderByProvider(5);
+                    
                     $text = "\n";
                     $text = $line;
                     if($data['username']!=null) $text .= "username={$data['username']}\n";
@@ -491,26 +461,24 @@ class paloSantoVoIPProvider {
                     if($data['allow']!=null) $text .= "allow={$data['allow']}\n";
                     if($data['trustrpid']!=null) $text .= "trustrpid={$data['trustrpid']}\n";
                     if($data['sendrpid']!=null) $text .= "sendrpid={$data['sendrpid']}\n";
-                    if($data['canreinvite']!=null) $text .= "canreinvite={$data['canreinvite']}\n\n";
+                    if($data['canreinvite']!=null) $text .= "canreinvite={$data['canreinvite']}\n";
+                    $text .= "\n\n";
                     $text_sipadd .=$text;
-
-                    $find = "true";
-                    $c++;
-                //}else if((!eregi($link1, $line) && !eregi($link2, $line) && !eregi($link3, $line)) && $find=="true" && $c!=$num_lines){
-                }else if(!eregi($arrTrunks[$count], $line) && $find=="true"){
-                    //PUEDA QUE LO COMPARE CON UN CORCHETE CON TEXTO POR DENTRO// UgetIndexTrunk()
-                    //no guarda la configuracion anterior
                     $i++;
-                    $c++;
-                }else{
-                    $text_sipadd .= $line;
-                    $find = "false";
-                    $c++;
-                    //break;
+                    $find = "true";
+                    
+                }else if(!eregi($arrTrunks[$count], $line) && $find=="true") {
+                    $count++;
+                }else {
+                    if($i<1) {
+                        $text_sipadd .= $line;
+                        $find = "false";
+                        $i++;
+                    }
+                    $count++;
                 }
-            //}
+            }
         }
-        
         $this->updateChangeFileSipCustom($text_sipadd);
         exec("sudo /etc/rc.d/init.d/asterisk reload");
         fclose($fp);
@@ -546,22 +514,27 @@ class paloSantoVoIPProvider {
 
     function updateFileIaxCustom($type)
     {
-        //$FILE='/etc/asterisk/iax_additional.conf';
         $FILE='/etc/asterisk/iax_custom.conf';
-        $text_sipadd = "";
+        $text_iaxadd = "";
         $fp = fopen($FILE,'r');
-        $link="none";
+        //$link="none";
         $find="false";
-        $i=0;
+        $arrTrunks = $this->getIndexIaxCustom();
+    
         while($line = fgets($fp, filesize($FILE)))
         {
-            if(eregi($type, $line) && $find=="false"){
-                if("NuFoneIAX"){
-                    $data = $this->getVoIPProviderByProvider(4);
+        $count=1;
+        $i=0;
+            while($count <= count($arrTrunks)) {
+                if(eregi($type, $line) && $find=="false"){
+                    if("NuFoneIAX") $data = $this->getVoIPProviderByProvider(4);
+                    $text = "\n";
                     $text = $line;
                     if($data['username']!=null) $text .= "username={$data['username']}\n";
                     if($data['type']!=null) $text .= "type={$data['type']}\n";
                     if($data['password']!=null) $text .= "secret={$data['password']}\n";
+                    if($data['qualify']!=null) $text .= "qualify={$data['qualify']}\n";
+                    if($data['insecure']!=null) $text .= "insecure=port,invite\n";//very
                     if($data['host']!=null) $text .= "host={$data['host']}\n";
                     if($data['fromuser']!=null) $text .= "fromuser={$data['fromuser']}\n";
                     if($data['fromdomain']!=null) $text .= "fromdomain={$data['fromdomain']}\n";
@@ -573,23 +546,27 @@ class paloSantoVoIPProvider {
                     if($data['sendrpid']!=null) $text .= "sendrpid={$data['sendrpid']}\n";
                     if($data['canreinvite']!=null) $text .= "canreinvite={$arr_data['canreinvite']}\n";
                     $text .= "\n";
-                    $text_sipadd .=$text;
-                    $link = "none";
+                    $text_iaxadd .=$text;
+                    $i++;
+                    $find = "true";
+                }else if(!eregi($arrTrunks[$count], $line) && $find=="true") {
+                    $count++;
+                }else{
+                    if($i<1) {
+                        $text_iaxadd .= $line;
+                        $find = "false";
+                        $i++;
+                    }
+                    $count++;
                 }
-                $find = "true";
-            }else if(!eregi($link, $line) && $find=="true"){
-                //no guarda la configuracion anterior
-                $i++;
-            }else{
-                $text_sipadd .= $line;
-                $find = "false";
             }
         }
-        $this->updateChangeFileIaxCustom($text_sipadd);
+        $this->updateChangeFileIaxCustom($text_iaxadd);
         exec("sudo /etc/rc.d/init.d/asterisk reload");
         fclose($fp);
     }
     
+
     function addConfFileSipRegistrations($username, $secret, $host)
     {
         //$FILE='/etc/asterisk/sip_registrations.conf';
@@ -707,7 +684,27 @@ class paloSantoVoIPProvider {
         {
             if(ereg("([[a-zA-Z_0-9]+])", $line, $arrReg)){//obtengo datos solo dentro de corchetes
                 $count++;
-                $dataTrunk[$count] = $arrReg[1];
+                if(ereg("([a-zA-Z_0-9]+)", $arrReg[1], $arrSubReg))
+                    $dataTrunk[$count] = $arrSubReg[1];
+            }
+        }
+        fclose($fp);
+        return $dataTrunk;
+    }
+
+    function getIndexIaxCustom()
+    {
+        $dataTrunk = array();
+        $count = 0;
+
+        $FILE='/etc/asterisk/iax_custom.conf';
+        $fp = fopen($FILE, 'r');
+        while($line = fgets($fp, filesize($FILE)))
+        {
+            if(ereg("([[a-zA-Z_0-9]+])", $line, $arrReg)){//obtengo datos solo dentro de corchetes
+                $count++;
+                if(ereg("([a-zA-Z_0-9]+)", $arrReg[1], $arrSubReg))
+                    $dataTrunk[$count] = $arrSubReg[1];
             }
         }
         fclose($fp);
@@ -853,43 +850,13 @@ class paloSantoVoIPProvider {
         }else if($arrConfigTrunk['type']==" " || $arrConfigTrunk['type']==null){
             $anyone_empty=true;
             return $anyone_empty;
-        }/*else if($arrConfigTrunk['qualify']==""){
+        }else if($arrConfigTrunk['host']==" " || $arrConfigTrunk['host']==null){
             $anyone_empty=true;
             return $anyone_empty;
-        }else if($arrConfigTrunk['insecure']==""){
+        }else if($arrConfigTrunk['context']==" " || $arrConfigTrunk['context']==null){
             $anyone_empty=true;
             return $anyone_empty;
-        }*/else if($arrConfigTrunk['host']==" " || $arrConfigTrunk['host']==null){
-            $anyone_empty=true;
-            return $anyone_empty;
-        }/*else if($arrConfigTrunk['fromuser']==""){
-            $anyone_empty=true;
-            return $anyone_empty;
-        }else if($arrConfigTrunk['fromdomain']==""){
-            $anyone_empty=true;
-            return $anyone_empty;
-        }else if($arrConfigTrunk['dtmfmode']==""){
-            $anyone_empty=true;
-            return $anyone_empty;
-        }else if($arrConfigTrunk['disallow']==""){
-            $anyone_empty=true;
-            return $anyone_empty;
-        }*/else if($arrConfigTrunk['context']==" " || $arrConfigTrunk['context']==null){
-            $anyone_empty=true;
-            return $anyone_empty;
-        }/*else if($arrConfigTrunk['allow']==""){
-            $anyone_empty=true;
-            return $anyone_empty;
-        }else if($arrConfigTrunk['trustrpid']==""){
-            $anyone_empty=true;
-            return $anyone_empty;
-        }else if($arrConfigTrunk['sendrpid']==""){
-            $anyone_empty=true;
-            return $anyone_empty;
-        }else if($arrConfigTrunk['canreinvite']==""){
-            $anyone_empty=true;
-            return $anyone_empty;
-        }*/
+        }
         return $anyone_empty;
     }
 }
