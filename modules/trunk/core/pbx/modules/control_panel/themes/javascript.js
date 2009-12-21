@@ -115,7 +115,7 @@ $(document).ready(function(){
         }
     });
 
-    $(".item_box").droppable({
+    $(".areaDrop").droppable({
         accept: ".item_box",
         drop: function(event, ui) {
             $(this).append($(ui.draggable));
