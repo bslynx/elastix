@@ -30,6 +30,6 @@ name=Extras RPM Repository for Elastix
 mirrorlist=http://mirror.elastix.org/?release=1&arch=$basearch&repo=extras
 #baseurl=http://repo.elastix.org/elastix/1/extras/$basearch/
 gpgcheck=1
-enabled=0
+enabled=1
 exclude=elastix-mysqldbdata
 gpgkey=http://repo.elastix.org/elastix/RPM-GPG-KEY-Elastix
