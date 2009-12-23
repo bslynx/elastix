@@ -229,11 +229,14 @@ if( sizeof($G_YDATAS) >= 1 )
     else if( $G_TYPE == 'plot3d' )
     {
         $graph = new PieGraph($G_SIZE[0], $G_SIZE[1],"auto");
-        
+
         if( $G_SHADOW ) $graph->SetShadow();
 
+        $dataMarginColor = isset($result["ATTRIBUTES"]["MARGIN_COLOR"])?$result["ATTRIBUTES"]["MARGIN_COLOR"]:"·999999";
+        $dataSizePie     = isset($result["ATTRIBUTES"]["SIZE_PIE"])?$result["ATTRIBUTES"]["SIZE_PIE"]:"80";
+
         $graph->SetMarginColor($G_COLOR);
-        $graph->SetFrame(true, '#999999');
+        $graph->SetFrame(true, $dataMarginColor);
         $graph->legend->Pos($G_LEYEND_POS[0], $G_LEYEND_POS[1], "right","center");
         $graph->legend->SetFillColor("#fafafa");
         $graph->legend->SetColor("#444444", "#999999");
@@ -244,7 +247,7 @@ if( sizeof($G_YDATAS) >= 1 )
         $pieplot3d = new PiePlot3d( $G_YDATAS[0] );
         $pieplot3d->SetSliceColors( $G_ARR_COLOR );
         $pieplot3d->SetCenter(0.4);
-        $pieplot3d->SetSize(80);
+        $pieplot3d->SetSize($dataSizePie);
         $pieplot3d->SetAngle(45);
         $pieplot3d->SetStartAngle(45);
         $pieplot3d->value->SetColor('black');//color a los porcentages
