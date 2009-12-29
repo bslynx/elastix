@@ -126,8 +126,8 @@ class paloSantoDashboard {
         foreach($mails as $index => $value){
             $b = ($value["seen"] or $value["answered"])?false:true;
             if($b){
-                $temp .= "<font color='#000080' size='1'>".$value['date']."</font><br>";
-                $temp .= "<font  size='1'>"."From: ".substr($value['from'],0,50)."</font><br>";
+                $temp .= "<font color='#000080' size='1'>".$value['date']."</font>&nbsp;&nbsp;&nbsp;";
+                $temp .= "<font  size='1'>"."From: ".substr($value['from'],0,50)."</font>&nbsp;&nbsp;&nbsp;";
                 $temp .= "<font  size='1'>"."Subject: ".substr($value['subject'],0,30)."</font><br>";
             }
         }
@@ -375,7 +375,7 @@ class paloSantoDashboard {
         while($i<count($arrEventos) && $i<$numRegs)
         {
             $temp  = "<a href='?menu=calendar&action=display&id=".$arrEventos[$i]["id"]."'>".$arrEventos[$i]["subject"]."</a>";
-            $temp .= "<br />";
+            $temp .= "&nbsp;&nbsp;&nbsp;";
             $temp .= "Date: ";
             $temp .= $arrEventos[$i]['date'];
             $temp .= " - Call: ";

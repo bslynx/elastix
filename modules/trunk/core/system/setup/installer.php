@@ -51,4 +51,11 @@ if(!file_exists("$DataBaseRoot/network.db")){
     exec($cmd_mv);
     exec($cmd_chown);
 }
+
+if(!file_exists("$DataBaseRoot/dashboard.db")){
+    $cmd_mv    = "mv $tmpDir/setup/dashboard.db $DataBaseRoot/";
+    $cmd_chown = "chown asterisk.asterisk $DataBaseRoot/dashboard.db";
+    exec($cmd_mv);
+    exec($cmd_chown);
+}
 ?>
