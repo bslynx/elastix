@@ -359,7 +359,7 @@ if( sizeof($G_YDATAS) >= 1 )
         $scale->Set(0,$G_SIZE[0],0,$G_SIZE[1]);
 
         //DUBUJA LA BARRA
-        $alto = 20; $ancho = 90;
+	$alto = $G_SIZE[1]; $ancho = $G_SIZE[0];
         $coor_x = 0;
         $coor_y = 0;
         $porcentage = $G_YDATAS[0];
