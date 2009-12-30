@@ -313,68 +313,71 @@ class paloSantoSysInfo
 
         //2.- get sip peers.
         $arrSIPs = $this->AsteriskManager_Command("sip show peers");
-
-        foreach($arrSIPs as $key => $line){
-            //ex: Name/username              Host            Dyn Nat ACL Port     Status
-            //    412/412                    192.168.1.82     D   N   A  5060     OK (17 ms)
-            if(eregi("^(([[:alnum:]\-_\.]*)[[:alnum:]/\-_\.]*)[[:space:]]*([[:alnum:]\.\(\)]+)[[:space:]]*([a-zA-Z]*)[[:space:]]*([a-zA-Z]*)[[:space:]]*([a-zA-Z]*)[[:space:]]*([0-9]+)[[:space:]]*([[:alnum:]\ \(\)]+)$",$line,$arrToken)){
-                if(eregi("OK",$arrToken[8])){ // estado OK
-                    if(in_array($arrToken[2],$arrTrunks)) // es una troncal?, registrada
-                        $arrActivity["sip"]["trunk"]["ok"]++;
-                    else
-                        $arrActivity["sip"]["ext"]["ok"]++;
-                }
-                else{
-                    if(in_array($arrToken[2],$arrTrunks)) // es una troncal?, no registrada
-                        $arrActivity["sip"]["trunk"]["no_ok"]++;
-                    else
-                        $arrActivity["sip"]["ext"]["no_ok"]++;
+        if(is_array($arrSIPs) & count($arrSIPs)>0){
+            foreach($arrSIPs as $key => $line){
+                //ex: Name/username              Host            Dyn Nat ACL Port     Status
+                //    412/412                    192.168.1.82     D   N   A  5060     OK (17 ms)
+                if(eregi("^(([[:alnum:]\-_\.]*)[[:alnum:]/\-_\.]*)[[:space:]]*([[:alnum:]\.\(\)]+)[[:space:]]*([a-zA-Z]*)[[:space:]]*([a-zA-Z]*)[[:space:]]*([a-zA-Z]*)[[:space:]]*([0-9]+)[[:space:]]*([[:alnum:]\ \(\)]+)$",$line,$arrToken)){
+                    if(eregi("OK",$arrToken[8])){ // estado OK
+                        if(in_array($arrToken[2],$arrTrunks)) // es una troncal?, registrada
+                            $arrActivity["sip"]["trunk"]["ok"]++;
+                        else
+                            $arrActivity["sip"]["ext"]["ok"]++;
+                    }
+                    else{
+                        if(in_array($arrToken[2],$arrTrunks)) // es una troncal?, no registrada
+                            $arrActivity["sip"]["trunk"]["no_ok"]++;
+                        else
+                            $arrActivity["sip"]["ext"]["no_ok"]++;
+                    }
                 }
             }
         }
 
         //3.- get iax peers
         $arrIAXs = $this->AsteriskManager_Command("iax2 show peers");
-
-        foreach($arrIAXs as $key => $line){
-            //ex: Name/Username    Host                 Mask             Port          Status
-            //    512              127.0.0.1       (D)  255.255.255.255  40002         OK (3 ms)
-            if(eregi("^(([[:alnum:]\-_\.]*)[[:alnum:]/\-_\.]*)[[:space:]]*([[:alnum:]\.\(\)]+)[[:space:]]*([a-zA-Z\(\)]*)[[:space:]]*([[:alnum:]\.\(\)]+)[[:space:]]*([0-9]+)[[:space:]]*([[:alnum:]\ \(\)]+)$",$line,$arrToken)){
-                if(eregi("OK",$arrToken[7])){ // estado OK
-                    if(in_array($arrToken[2],$arrTrunks)) // es una troncal?, registrada
-                        $arrActivity["iax"]["trunk"]["ok"]++;
-                    else
-                        $arrActivity["iax"]["ext"]["ok"]++;
-                }
-                else{
-                    if(in_array($arrToken[2],$arrTrunks)) // es una troncal?, no registrada
-                        $arrActivity["iax"]["trunk"]["no_ok"]++;
-                    else
-                        $arrActivity["iax"]["ext"]["no_ok"]++;
+        if(is_array($arrIAXs) & count($arrIAXs)>0){
+            foreach($arrIAXs as $key => $line){
+                //ex: Name/Username    Host                 Mask             Port          Status
+                //    512              127.0.0.1       (D)  255.255.255.255  40002         OK (3 ms)
+                if(eregi("^(([[:alnum:]\-_\.]*)[[:alnum:]/\-_\.]*)[[:space:]]*([[:alnum:]\.\(\)]+)[[:space:]]*([a-zA-Z\(\)]*)[[:space:]]*([[:alnum:]\.\(\)]+)[[:space:]]*([0-9]+)[[:space:]]*([[:alnum:]\ \(\)]+)$",$line,$arrToken)){
+                    if(eregi("OK",$arrToken[7])){ // estado OK
+                        if(in_array($arrToken[2],$arrTrunks)) // es una troncal?, registrada
+                            $arrActivity["iax"]["trunk"]["ok"]++;
+                        else
+                            $arrActivity["iax"]["ext"]["ok"]++;
+                    }
+                    else{
+                        if(in_array($arrToken[2],$arrTrunks)) // es una troncal?, no registrada
+                            $arrActivity["iax"]["trunk"]["no_ok"]++;
+                        else
+                            $arrActivity["iax"]["ext"]["no_ok"]++;
+                    }
                 }
             }
         }
 
         //4.- get sip registry
         $arrSIPsRegistry = $this->AsteriskManager_Command("sip show registry");
-
-        foreach($arrSIPsRegistry as $key => $line){
-            if(ereg("^([[:digit:]\:\.]+).*(Registered*)",$line,$arrToken))
-                $arrActivity["sip"]["trunk_registry"]["ok"]++;
-            else if(ereg("^([[:digit:]\:\.]+)",$line))
-                $arrActivity["sip"]["trunk_registry"]["no_ok"]++;
+        if(is_array($arrSIPsRegistry) & count($arrSIPsRegistry)>0){
+            foreach($arrSIPsRegistry as $key => $line){
+                if(ereg("^([[:digit:]\:\.]+).*(Registered*)",$line,$arrToken))
+                    $arrActivity["sip"]["trunk_registry"]["ok"]++;
+                else if(ereg("^([[:digit:]\:\.]+)",$line))
+                    $arrActivity["sip"]["trunk_registry"]["no_ok"]++;
+            }
         }
 
         //5.- get sip registry
         $arrIAXsRegistry = $this->AsteriskManager_Command("iax2 show registry");
-
-        foreach($arrIAXsRegistry as $key => $line){
-            if(ereg("^([[:digit:]\:\.]+).*(Registered*)",$line,$arrToken))
-                $arrActivity["iax"]["trunk_registry"]["ok"]++;
-            else if(ereg("^([[:digit:]\:\.]+)",$line))
-                $arrActivity["iax"]["trunk_registry"]["no_ok"]++;
+        if(is_array($arrIAXsRegistry) & count($arrIAXsRegistry)>0){
+            foreach($arrIAXsRegistry as $key => $line){
+                if(ereg("^([[:digit:]\:\.]+).*(Registered*)",$line,$arrToken))
+                    $arrActivity["iax"]["trunk_registry"]["ok"]++;
+                else if(ereg("^([[:digit:]\:\.]+)",$line))
+                    $arrActivity["iax"]["trunk_registry"]["no_ok"]++;
+            }
         }
-
         return $arrActivity;
     }
 
@@ -385,16 +388,17 @@ class paloSantoSysInfo
         $arrChann["total_channels"]=0;
 
         $arrChannels = $this->AsteriskManager_Command("core show channels");
-
-        foreach($arrChannels as $line){
-            if(ereg("s@macro-dialout",$line))
-                $arrChann["external_calls"]++;
-            else if(ereg("s@macro-dial:",$line))
-                $arrChann["internal_calls"]++;
-            else if(ereg("^([0-9]+) active call",$line,$arrToken))
-                $arrChann["total_calls"] = $arrToken[1];
-            else if(ereg("^([0-9]+) active channel",$line,$arrToken))
-                $arrChann["total_channels"] = $arrToken[1];
+        if(is_array($arrChannels) & count($arrChannels)>0){
+            foreach($arrChannels as $line){
+                if(ereg("s@macro-dialout",$line))
+                    $arrChann["external_calls"]++;
+                else if(ereg("s@macro-dial:",$line))
+                    $arrChann["internal_calls"]++;
+                else if(ereg("^([0-9]+) active call",$line,$arrToken))
+                    $arrChann["total_calls"] = $arrToken[1];
+                else if(ereg("^([0-9]+) active channel",$line,$arrToken))
+                    $arrChann["total_channels"] = $arrToken[1];
+            }
         }
         return $arrChann;
     }
@@ -403,9 +407,11 @@ class paloSantoSysInfo
         $arrQueues = $this->AsteriskManager_Command("queue show");
         $arrQue = array();
 
-        foreach($arrQueues as $line){
-            if(ereg("^([0-9]+)[[:space:]]*has ([0-9]+)",$line,$arrToken))
-                $arrQue[$arrToken[1]] = $arrToken[2];
+        if(is_array($arrQueues) & count($arrQueues)>0){
+            foreach($arrQueues as $line){
+                if(ereg("^([0-9]+)[[:space:]]*has ([0-9]+)",$line,$arrToken))
+                    $arrQue[$arrToken[1]] = $arrToken[2];
+            }
         }
         return $arrQue;
     }
@@ -452,9 +458,11 @@ class paloSantoSysInfo
         $arrTrunks = getTrunks($pDBTrunk);
         $trunks = array();
 
-        foreach($arrTrunks as $key => $trunk){
-            $tmp = split("/",$trunk[1]);
-            $trunks[] = $tmp[1];
+        if(is_array($arrTrunks) & count($arrTrunks)>0){
+            foreach($arrTrunks as $key => $trunk){
+                $tmp = split("/",$trunk[1]);
+                $trunks[] = $tmp[1];
+            }
         }
         return $trunks;
     }
