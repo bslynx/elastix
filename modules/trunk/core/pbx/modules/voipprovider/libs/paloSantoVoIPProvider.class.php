@@ -100,11 +100,11 @@ class paloSantoVoIPProvider {
         $textXMLConfig .= "<?xml version=\"1.0\"?>\n";
         $textXMLConfig .= "<configs>\n";
         $textXMLConfig .= "<attribute>\n";
-        if($type=="net2phone") $data = $this->getVoIPProviderByProvider(1);
-        else if($type=="to_camundanet") $data = $this->getVoIPProviderByProvider(2);
-        else if($type=="vitelity") $data = $this->getVoIPProviderByProvider(3);
+        if($type=="Net2Phone") $data = $this->getVoIPProviderByProvider(1);
+        else if($type=="camundaNET") $data = $this->getVoIPProviderByProvider(2);
+        else if($type=="Vitelity") $data = $this->getVoIPProviderByProvider(3);
         else if($type=="NuFoneIAX") $data = $this->getVoIPProviderByProvider(4);
-        else if($type=="to_starvox") $data = $this->getVoIPProviderByProvider(5);
+        else if($type=="StarVox") $data = $this->getVoIPProviderByProvider(5);
 
         if(is_array($data) && count($data)>1){
             if($data['username']!=null) $textXMLConfig .= "<username>{$data['username']}</username>\n";
@@ -339,7 +339,7 @@ class paloSantoVoIPProvider {
             }else if(($c==$num_lines-1) && $is_empty) {
                 $line_conf2 .= "\n\n";
                 $line_conf2 .= "[from-trunk-$typeTrunk-$nameTrunk]\n";
-                $line_conf2 .= "include => from-trunk-$typeTrunk-$nameTrunk-custom]\n";
+                $line_conf2 .= "include => from-trunk-$typeTrunk-$nameTrunk-custom\n";
                 $line_conf2 .= "exten => _.,1,Set(GROUP()=OUT_$num_nextTrunk)\n";
                 $line_conf2 .= "exten => _.,n,Goto(from-trunk,\${EXTEN},1)\n";
                 $line_conf2 .= "\n";
@@ -351,7 +351,7 @@ class paloSantoVoIPProvider {
                 if($i==3){
                     $line_conf2 .= "\n\n";
                     $line_conf2 .= "[from-trunk-$typeTrunk-$nameTrunk]\n";
-                    $line_conf2 .= "include => from-trunk-$typeTrunk-$nameTrunk-custom]\n";
+                    $line_conf2 .= "include => from-trunk-$typeTrunk-$nameTrunk-custom\n";
                     $line_conf2 .= "exten => _.,1,Set(GROUP()=OUT_$num_nextTrunk)\n";
                     $line_conf2 .= "exten => _.,n,Goto(from-trunk,\${EXTEN},1)\n";
                     $line_conf2 .= "\n";
@@ -399,10 +399,10 @@ class paloSantoVoIPProvider {
         $text = "\n";
         $text .="[$type]\n";
         //Peer Detail 
-        if($type=="net2phone") $data = $this->getVoIPProviderByProvider(1);
-        else if($type=="to_camundanet") $data = $this->getVoIPProviderByProvider(2);
-        else if($type=="vitelity") $data = $this->getVoIPProviderByProvider(3);
-        else if($type=="to_starvox") $data = $this->getVoIPProviderByProvider(5);
+        if($type=="Net2Phone") $data = $this->getVoIPProviderByProvider(1);
+        else if($type=="camundaNET") $data = $this->getVoIPProviderByProvider(2);
+        else if($type=="Vitelity") $data = $this->getVoIPProviderByProvider(3);
+        else if($type=="StarVox") $data = $this->getVoIPProviderByProvider(5);
 
         if($data['username']!=null) $text .= "username={$data['username']}\n";
         if($data['type']!=null) $text .= "type={$data['type']}\n";
@@ -440,10 +440,10 @@ class paloSantoVoIPProvider {
         $i=0;
             while($count <= count($arrTrunks)) {
                 if(eregi($type, $line) && $find=="false") {
-                    if($type=="net2phone") $data = $this->getVoIPProviderByProvider(1);
-                    else if($type=="to_camundanet") $data = $this->getVoIPProviderByProvider(2);
-                    else if($type=="vitelity") $data = $this->getVoIPProviderByProvider(3);
-                    else if($type=="to_starvox") $data = $this->getVoIPProviderByProvider(5);
+                    if($type=="Net2Phone") $data = $this->getVoIPProviderByProvider(1);
+                    else if($type=="camundaNET") $data = $this->getVoIPProviderByProvider(2);
+                    else if($type=="Vitelity") $data = $this->getVoIPProviderByProvider(3);
+                    else if($type=="StarVox") $data = $this->getVoIPProviderByProvider(5);
                     
                     $text = "\n";
                     $text = $line;

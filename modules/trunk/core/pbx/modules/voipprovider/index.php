@@ -201,19 +201,19 @@ function saveNewVoIPProvider($smarty, $module_name, $local_templates_dir, &$pDB,
         if($_POST["sendrpid"]!=" ") $data_attribute['sendrpid'] = $pDB->DBCAMPO(getParameter("sendrpid")); else $data_attribute['sendrpid'] = null;
         if($_POST["canreinvite"]!=" ") $data_attribute['canreinvite'] = $pDB->DBCAMPO(getParameter("canreinvite")); else $data_attribute['canreinvite'] = null;
         
-        if($type_provider=="net2phone"){
+        if($type_provider=="Net2Phone"){
             $type_trunk = "sip";
             $data_provider['id_trunk'] = 1;
             $pVoIPProvider->updateTrunkParameter($data_trunk, array("id"=>1));
             $pVoIPProvider->updateTrunkAttribute($data_attribute, array("id"=>1));
 
-        }else if($type_provider=="to_camundanet"){
+        }else if($type_provider=="camundaNET"){
             $type_trunk = "sip";
             $data_provider['id_trunk'] = 2;
             $pVoIPProvider->updateTrunkParameter($data_trunk, array("id"=>2));
             $pVoIPProvider->updateTrunkAttribute($data_attribute, array("id"=>2));
 
-        }else if($type_provider=="vitelity"){
+        }else if($type_provider=="Vitelity"){
             $type_trunk = "sip";
             $data_provider['id_trunk'] = 3;
             $pVoIPProvider->updateTrunkParameter($data_trunk, array("id"=>3));
@@ -222,13 +222,13 @@ function saveNewVoIPProvider($smarty, $module_name, $local_templates_dir, &$pDB,
         }else if($type_provider=="NuFoneIAX"){
             $type_trunk = "iax2";
             $data_provider['id_trunk'] = 4;
-            $pVoIPProvider->updateTrunkParameter($data_trunk, "name='NuFoneIAX'");
+            $pVoIPProvider->updateTrunkParameter($data_trunk, array("id"=>4));
             $pVoIPProvider->updateTrunkAttribute($data_attribute, array("id"=>4));
 
-        }else if($type_provider=="to_starvox"){
+        }else if($type_provider=="StarVox"){
             $type_trunk = "sip";
             $data_provider['id_trunk'] = 5;
-            $pVoIPProvider->updateTrunkParameter($data_trunk, "name='to_starvox'");
+            $pVoIPProvider->updateTrunkParameter($data_trunk, array("id"=>5));
             $pVoIPProvider->updateTrunkAttribute($data_attribute, array("id"=>5));
         }
 
