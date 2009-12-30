@@ -1,6 +1,6 @@
-<link   rel ="stylesheet"      href="/modules/voipprovidercust/themes/style.css" />
-<script type="text/javascript" src="/modules/voipprovidercust/themes/js/javascript.js"></script>
-<script type="text/javascript" src="/modules/voipprovidercust/themes/js/validaciones.js"></script>
+<link   rel ="stylesheet"      href="/modules/voipprovider/themes/style.css" />
+<script type="text/javascript" src="/modules/voipprovider/themes/js/javascript.js"></script>
+<script type="text/javascript" src="/modules/voipprovider/themes/js/validaciones.js"></script>
 
 <table width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
     <tr class="moduleTitle">

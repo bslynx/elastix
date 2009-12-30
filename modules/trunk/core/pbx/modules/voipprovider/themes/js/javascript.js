@@ -9,7 +9,7 @@ function displayConfig(){
     var escogida=selec.options[selec.selectedIndex].text;
     
     if(selec.value!="none"){
-        xhr.open("GET","modules/voipprovidercust/libs/controller.php?action=setConfig&type="+escogida,true);
+        xhr.open("GET","modules/voipprovider/libs/controller.php?action=setConfig&type="+escogida,true);
         xhr.onreadystatechange = function()
         {
             controllerDisplayConfig(xhr);

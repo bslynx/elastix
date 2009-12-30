@@ -2,8 +2,8 @@
 require_once("/var/www/html/libs/misc.lib.php");
 require_once("/var/www/html/configs/default.conf.php");
 require_once($arrConf['basePath']."/libs/paloSantoDB.class.php");
-require_once($arrConf['basePath']."/modules/voipprovidercust/configs/default.conf.php");
-require_once($arrConf['basePath']."/modules/voipprovidercust/libs/paloSantoVoIPProvider.class.php");
+require_once($arrConf['basePath']."/modules/voipprovider/configs/default.conf.php");
+require_once($arrConf['basePath']."/modules/voipprovider/libs/paloSantoVoIPProvider.class.php");
 require_once( "/var/www/html/libs/paloSantoForm.class.php");
 
 global $arrConf;
