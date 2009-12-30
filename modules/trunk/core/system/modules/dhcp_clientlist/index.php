@@ -121,7 +121,7 @@ function reportDhcpClientlist($smarty, $module_name, $local_templates_dir, &$pDB
 
     $buttonDelete = "<input type='submit' name='delete_dhcpclient' value='{$arrLang["Delete"]}' class='button' onclick=\" return confirmSubmit('{$arrLang["Are you sure you wish to delete the Ip."]}');\" />";
 
-    $arrGrid = array("title"    => $arrLang["Dhcp list"],
+    $arrGrid = array("title"    => $arrLang["Dhcp Client List"],
                         "icon"     => "images/list.png",
                         "width"    => "99%",
                         "start"    => ($total==0) ? 0 : $offset + 1,
@@ -257,14 +257,14 @@ function createFieldForm($arrLang)
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-            "date_starts"   => array(      "LABEL"                  => $arrLang["Date Starts"],
+            "date_starts"   => array(      "LABEL"                  => $arrLang["Starts Date"],
                                             "REQUIRED"               => "no",
                                             "INPUT_TYPE"             => "TEXT",
                                             "INPUT_EXTRA_PARAM"      => array("style" => "width:200px","maxlength" =>"200"),
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-            "date_ends"   => array(      "LABEL"                  => $arrLang["Date Ends"],
+            "date_ends"   => array(      "LABEL"                  => $arrLang["Ends Date"],
                                             "REQUIRED"               => "no",
                                             "INPUT_TYPE"             => "TEXT",
                                             "INPUT_EXTRA_PARAM"      => array("style" => "width:200px","maxlength" =>"200"),
