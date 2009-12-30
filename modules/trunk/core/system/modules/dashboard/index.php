@@ -628,8 +628,8 @@ function communicationActivity($module_name)
 								<div class='detailText'>".$arrLang['iax_extensions']." <b>($total_iax_Ext) </b>: <font color='green'>($iax_Ext_ok ".$arrLang['OK'].")</font> <font color='red'>($iax_Ext_nok ".$arrLang['NO_OK'].")</font></div>
 								<div class='typeActivity'><b>".$arrLang['Trunks'].": </b></div>
 								<div class='detailText'>".$arrLang['Trunks']." <b>($total_trunks) </b>: <font color='green'>($total_trunks_ok ".$arrLang['OK'].")</font> <font color='red'>($total_trunks_nok ".$arrLang['NO_OK'].")</font></div>
-								<div class='typeActivity'><b>".$arrLang['Trunks_register'].": </b></div>
-								<div class='detailText'>".$arrLang['Trunks_register']." <b>($total_trunks_reg) </b>: <font color='green'>($total_trunks_reg_ok ".$arrLang['OK'].")</font> <font color='red'>($total_trunks_reg_nok ".$arrLang['NO_OK'].")</font></div>
+								<!--<div class='typeActivity'><b>".$arrLang['Trunks_register'].": </b></div>
+								<div class='detailText'>".$arrLang['Trunks_register']." <b>($total_trunks_reg) </b>: <font color='green'>($total_trunks_reg_ok ".$arrLang['OK'].")</font> <font color='red'>($total_trunks_reg_nok ".$arrLang['NO_OK'].")</font></div>-->
 								<div class='typeActivity'><b>".$arrLang['Network_traffic'].": </b></div>
 								<div class='detailText'>".$arrLang['rx_bytes']."<b>(".$rx_bytes."kB/s)</b>  ".$arrLang['tx_bytes']."<b>(".$tx_bytes."kB/s)</b></div>
 							</div>
