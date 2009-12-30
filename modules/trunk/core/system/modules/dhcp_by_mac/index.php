@@ -119,16 +119,16 @@ function reportDHCP_Configuration($smarty, $module_name, $local_templates_dir, &
     if(is_array($arrResult) && $total>0){
         foreach($arrResult as $key => $value){ 
         $arrTmp[0]  = "<input type='checkbox' name='DhcpConfID_{$value['id']}' />";
-	    $arrTmp[1] = "<a href='?menu=$module_name&action=view_dhcpconf&id=".$value['id']."'>".$value['hostname']."</a>";;
-	    $arrTmp[2] = $value['ipaddress'];
-	    $arrTmp[3] = $value['macaddress'];
+        $arrTmp[1] = "<a href='?menu=$module_name&action=view_dhcpconf&id=".$value['id']."'>".$value['hostname']."</a>";;
+        $arrTmp[2] = $value['ipaddress'];
+        $arrTmp[3] = $value['macaddress'];
             $arrData[] = $arrTmp;
         }
     }
 
     $buttonDelete = "<input type='submit' name='delete_dhcpConf' value='{$arrLang["Delete"]}' class='button' onclick=\" return confirmSubmit('{$arrLang["Are you sure you wish to delete the DHCP configuration."]}');\" />";
 
-    $arrGrid = array("title"    => $arrLang["DHCP Configuration"],
+    $arrGrid = array("title"    => $arrLang["DHCP By MAC"],
                         "icon"     => "images/list.png",
                         "width"    => "99%",
                         "start"    => ($total==0) ? 0 : $offset + 1,
@@ -138,11 +138,11 @@ function reportDHCP_Configuration($smarty, $module_name, $local_templates_dir, &
                         "columns"  => array(
                 0 => array("name"      => $buttonDelete,
                                     "property1" => ""),
-			    1 => array("name"      => $arrLang["Host Name"],
+                1 => array("name"      => $arrLang["Host Name"],
                                     "property1" => ""),
-			    2 => array("name"      => $arrLang["Ip Address"],
+                2 => array("name"      => $arrLang["Ip Address"],
                                     "property1" => ""),
-			    3 => array("name"      => $arrLang["Mac Address"],
+                3 => array("name"      => $arrLang["Mac Address"],
                                     "property1" => ""),
                             )
                     );
@@ -166,9 +166,9 @@ function reportDHCP_Configuration($smarty, $module_name, $local_templates_dir, &
 
 function createFieldFilter($arrLang){
     $arrFilter = array(
-	    "hostname" => $arrLang["Host Name"],
-	    "ipaddress" => $arrLang["Ip Address"],
-	    "macaddress" => $arrLang["Mac Address"],
+        "hostname" => $arrLang["Host Name"],
+        "ipaddress" => $arrLang["Ip Address"],
+        "macaddress" => $arrLang["Mac Address"],
                     );
 
     $arrFormElements = array(
@@ -225,7 +225,7 @@ function viewFormDHCP_Configuration($smarty, $module_name, $local_templates_dir,
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
     $smarty->assign("IMG", "images/list.png");
 
-    $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",$arrLang["DHCP Configuration"], $_DATA);
+    $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",$arrLang["DHCP By MAC"], $_DATA);
     $content = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
 
     return $content;
@@ -258,12 +258,11 @@ function saveDHCP_Configuration($smarty, $module_name, $local_templates_dir, &$p
         $contenidoModulo = "<form  method='POST' enctype='multipart/form-data' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
         return $contenidoModulo;
 
-    }else if($pDHCP_Configuration->valitadeDuplicateDhcpConfig2($_POST)) {
+    }else if($pDHCP_Configuration->valitadeDuplicateDhcpConfig2($_POST) && !$update) {
         $arrDuplicates = $pDHCP_Configuration->getDuplicateDhcpConfig($_POST);
-        exec("echo '".print_r($arrDuplicates, true)."' > /tmp/oscar"); 
         $smarty->assign("mb_title", $arrLang["Validation Error"]);
         $strErrorMsg = "<b>{$arrLang['The following fields are duplicates or already exists']}:</b><br/>";
-        //$strErrorMsg = "<b>{$arrLang['The name of hostname is duplicated please changes to another name']}:</b><br/>";
+  
         if(is_array($arrDuplicates) && count($arrDuplicates) > 0){
             foreach($arrDuplicates as $k=>$v) {
                 if($v) $strErrorMsg .= "$k, ";
@@ -282,7 +281,11 @@ function saveDHCP_Configuration($smarty, $module_name, $local_templates_dir, &$p
 
     }else {
         $arrDhcpPost = array();
-        $arrDhcpPost['hostname'] = getParameter("hostname");
+        $hostname = getParameter("hostname");
+        if(ereg("([a-zA-Z]+)[[:space:]]([a-zA-Z]+)", $hostname, $arrReg))
+            $arrDhcpPost['hostname'] = $arrReg[1]."_".$arrReg[2];
+        else $arrDhcpPost['hostname'] = getParameter("hostname");
+
         $arrDhcpPost['ipaddress'] = getParameter("ipaddress");
         $arrDhcpPost['macaddress'] = getParameter("macaddress");
         

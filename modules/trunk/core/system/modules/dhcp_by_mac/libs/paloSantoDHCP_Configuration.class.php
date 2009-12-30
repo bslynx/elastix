@@ -113,6 +113,7 @@ class paloSantoDHCP_Configuration {
     }
 
     function saveFileDhcpConfig($pDB){
+        //exec("sudo chown asterisk.asterisk /etc/dhcpd.conf");
         $FILE='/etc/dhcpd.conf';
         $query = "DELETE FROM dhcp_conf";
         $this->_DB->genQuery($query);
@@ -124,21 +125,18 @@ class paloSantoDHCP_Configuration {
         while($line = fgets($fp, filesize($FILE)))
         {
             if(eregi("host", $line)) {
-                if(ereg("^[[:space:]]{8}([a-z]+)[[:space:]]([a-zA-Z0-9_]+)", $line, $arrReg)){
+                if(ereg("^[[:space:]]*([a-z]+)[[:space:]]([a-zA-Z0-9_]+)", $line, $arrReg)){
                     $data['hostname'] = $pDB->DBCAMPO($arrReg[2]);
-                    //$data[$count]['hostname'] = $pDB->DBCAMPO($arrReg[2]);
                 }else $data['hostname'] = "";
                 $i++;
             }elseif(eregi("hardware", $line)) {
-                if(ereg("^[[:space:]]{16}([a-z]+)[[:space:]]([a-z]+)[[:space:]]([a-zA-Z0-9:]+)", $line, $arrReg)){
+                if(ereg("^[[:space:]]*([a-z]+)[[:space:]]([a-z]+)[[:space:]]([a-zA-Z0-9:]+)", $line, $arrReg)){
                     $data['macaddress'] = $pDB->DBCAMPO($arrReg[3]);
-                    //$data[$count]['macaddress'] = $pDB->DBCAMPO($arrReg[3]);
                 }else $data['macaddress'] = "";
                 $i++;
             }elseif(eregi("fixed", $line)) {
-                if(ereg("^[[:space:]]{16}([a-z-]+)[[:space:]]([0-9.]+)", $line, $arrReg)){
+                if(ereg("^[[:space:]]*([a-z-]+)[[:space:]]([0-9.]+)", $line, $arrReg)){
                     $data['ipaddress'] = $pDB->DBCAMPO($arrReg[2]);
-                    //$data[$count]['ipaddress'] = $pDB->DBCAMPO($arrReg[2]);
                 }else $data['ipaddress'] = "";
                 //$count++;
                 $i++;
@@ -153,7 +151,7 @@ class paloSantoDHCP_Configuration {
                 $i=0;
             }
         }
-
+        //exec("sudo -u root chown root.root /etc/dhcpd.conf");
         fclose($fp);
         return $data;
     }
@@ -233,16 +231,16 @@ class paloSantoDHCP_Configuration {
         $FILE='/etc/dhcpd.conf';
         $fp = fopen($FILE,'r');
         $arrValidate = array();
-        $arrValidate['hostname']=false;
+//         $arrValidate['hostname']=false;
         $arrValidate['macaddress']=false;
         $arrValidate['ipaddress']=false; 
         $count = 0;
         while($line = fgets($fp, filesize($FILE)))
         {
-            if(eregi("host", $line)) {
+            /*if(eregi("host", $line)) {
                 if(eregi($arrDhcpPost['hostname'], $line)) $arrValidate['hostname']=true;
                 $count++;
-            }else if(eregi("hardware", $line)) { 
+            }else */if(eregi("hardware", $line)) { 
                 if(eregi($arrDhcpPost['macaddress'], $line)) $arrValidate['macaddress']=true;
                 $count++;
             }else if(eregi("fixed", $line)) { 
@@ -250,8 +248,10 @@ class paloSantoDHCP_Configuration {
                 $count++;
             }
 
-            if($count==3){
-                if($arrValidate['hostname'] || $arrValidate['macaddress'] || $arrValidate['hostname']) break;
+            //if($count==3){
+            if($count==2){
+                //if($arrValidate['hostname'] || $arrValidate['macaddress'] || $arrValidate['ipaddress']) break;
+                if($arrValidate['macaddress'] || $arrValidate['ipaddress']) break;
                 $count=0;
             }
         }
@@ -266,10 +266,10 @@ class paloSantoDHCP_Configuration {
 
         while($line = fgets($fp, filesize($FILE)))
         {
-            if(eregi("host", $line) && eregi($arrDhcpPost['hostname'], $line)) {
+            /*if(eregi("host", $line) && eregi($arrDhcpPost['hostname'], $line)) {
                 $exist_anyone=true;
                 break;
-            }if(eregi("hardware", $line) && eregi($arrDhcpPost['macaddress'], $line)) {
+            }*/if(eregi("hardware", $line) && eregi($arrDhcpPost['macaddress'], $line)) {
                 $exist_anyone=true;
                 break;
             }if(eregi("fixed", $line) && eregi($arrDhcpPost['ipaddress'], $line)) {
@@ -289,12 +289,25 @@ class paloSantoDHCP_Configuration {
 
         while($line = fgets($fp, filesize($FILE)))
         {
-            if(eregi("host", $line) && eregi($arrDhcpDB['hostname'], $line)) {
-                $count++;
-            }elseif(eregi("hardware", $line) && eregi($arrDhcpDB['macaddress'], $line)) {
-                $count++;
-            }elseif(eregi("fixed", $line) && eregi($arrDhcpDB['ipaddress'], $line)) {
-                $count++;
+            if(eregi("host", $line)) {
+                if(ereg("^[[:space:]]*([a-z]+)[[:space:]]([a-zA-Z0-9_]+)", $line, $arrReg)){
+                    if($arrDhcpDB['hostname'] == $arrReg[2])
+                        $count++;
+                    else $text .= $line;
+                }
+            }elseif(eregi("hardware", $line)) {
+                if(ereg("^[[:space:]]*([a-z]+)[[:space:]]([a-z]+)[[:space:]]([a-zA-Z0-9:]+)", $line, $arrReg)){
+                    if($arrDhcpDB['macaddress'] == $arrReg[3])
+                        $count++;
+                    else $text .= $line;
+                }
+            }elseif(eregi("fixed", $line)) {
+                if(ereg("^[[:space:]]*([a-z-]+)[[:space:]]([0-9.]+)", $line, $arrReg)){
+                    if($arrDhcpDB['ipaddress'] == $arrReg[2])
+                        $count++;
+                    else $text .= $line;
+                }
+                
             }elseif($count==3) {
                 $count=0;
             }else {

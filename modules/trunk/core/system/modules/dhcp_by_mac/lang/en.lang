@@ -28,7 +28,7 @@
   $Id: en.lang,v 1.1 2009-11-12 04:11:04 Oscar Navarrete onavarrete.palosanto.com Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"DHCP Configuration" => "DHCP Configuration",
+"DHCP By MAC" => "DHCP By MAC",
 "Host Name" => "Host Name",
 "Ip Address" => "Ip Address",
 "Mac Address" => "Mac Address",
