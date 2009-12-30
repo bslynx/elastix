@@ -46,8 +46,8 @@ $arrLangModule=array(
 "See All Dhcp Info" => "See All Dhcp Info",
 
 "Lease Ip" => "Lease Ip",
-"Starts Date" => "Starts Date",
-"Ends Date" => "Ends Date",
+"Start Date" => "Start Date",
+"End Date" => "End Date",
 "Mac Address" => "Mac Address",
 );
 ?>

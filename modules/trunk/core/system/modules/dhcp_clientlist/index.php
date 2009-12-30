@@ -257,14 +257,14 @@ function createFieldForm($arrLang)
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-            "date_starts"   => array(      "LABEL"                  => $arrLang["Starts Date"],
+            "date_starts"   => array(      "LABEL"                  => $arrLang["Start Date"],
                                             "REQUIRED"               => "no",
                                             "INPUT_TYPE"             => "TEXT",
                                             "INPUT_EXTRA_PARAM"      => array("style" => "width:200px","maxlength" =>"200"),
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-            "date_ends"   => array(      "LABEL"                  => $arrLang["Ends Date"],
+            "date_ends"   => array(      "LABEL"                  => $arrLang["End Date"],
                                             "REQUIRED"               => "no",
                                             "INPUT_TYPE"             => "TEXT",
                                             "INPUT_EXTRA_PARAM"      => array("style" => "width:200px","maxlength" =>"200"),
