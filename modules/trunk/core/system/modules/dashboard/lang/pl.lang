@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.0                                                  |
+  | Elastix version 0.5                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -11,6 +11,9 @@
   | Telfs. 2283-268, 2294-440, 2284-356                                  |
   | Guayaquil - Ecuador                                                  |
   | http://www.palosanto.com                                             |
+  |                                                                      |
+  | Translate bye: Aneta and Tomasz Stachowicz by TIMI                   |
+  | timi_pl@tlen.pl                                                      |
   +----------------------------------------------------------------------+
   | The contents of this file are subject to the General Public License  |
   | (GPL) Version 2 (the "License"); you may not use this file except in |
@@ -24,28 +27,24 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
-  |                                                                      |
-  | Translate by: Haamed Kouhfallah                                      |
-  | Email: haamed@cytco.net                                              |
-  |                                                                      |
   +----------------------------------------------------------------------+
-  $Id: fa.lang,v 1.2 2008/04/21 10:11:44 bmacias@palosanto.com Exp $ */
+  $Id: pl.lang,v 1.6 2007/09/05 00:36:42 gcarrillo Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
 /*System Info*/
-"System Resources" => "منابع سیستم",
-"CPU Info" => "مشخصات پردازنده",
-"Uptime" => "فعال",
-"CPU usage" => "میزان استفاده از پردازنده",
-"Memory usage" => "میزان استفاده از حافظه",
-"Swap usage" => "میزان حافظه مبادله استفاده شده",
-"Hard Drives" => "هارد دیسک ها",
-"Partition Name" => "نام پارتیشن",
-"Capacity" => "ظرفیت",
-"Usage" => "میزان استفاده شده",
-"Mount point" => "میزان قابل استفاده از هارد دیسک",
-"No records found" => "رکوردی پیدا نشد",
-"It was not possible to obtain information about the graph" => "امکان بدست آوردن اطلاعات در خصوص نمودار نیست",
+"System Resources"=>"Zasoby systemowe",
+"CPU Info"=>"Informacja o procesorze",
+"Uptime"=>"Czas pracy od uruchomienia",
+"CPU usage"=>"Wykorzystanie procesora",
+"Memory usage"=>"Wykorzystanie pamięci",
+"Swap usage"=>"Wykorzystanie pliku wymiany",
+"Hard Drives"=>"Dyski twarde",
+"Partition Name"=>"Nazwa partycji",
+"Capacity"=>"Pojemność",
+"Usage"=>"Wykorzystanie",
+"Mount point"=>"Punkt montowania",
+"No records found"=>"Brak rekordów",
+"It was not possible to obtain information about the graph" =>"Nie jest możliwe uzuskanie informacji o wykresie",
 "% used of"=>"% used of",
 "News"=>"News",
 "prev"=>"prev",

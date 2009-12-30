@@ -49,6 +49,7 @@ $arrLangModule=array(
 "show_vertical"=>"show vertical scroller",
 "show_horizontal"=>"show horizontal scroller",
 "NoConnection"=>"There seems no internet connection",
+////new
 "Performance Graphic"=>"Performance Graphic",
 "Processes Status"=>"Processes Status",
 "Communication Activity"=>"Communication Activity",
@@ -62,8 +63,8 @@ $arrLangModule=array(
 "Running"=>"Running",
 "Not installed"=>"Not installed",
 "Not running"=>"Not running",
-"OK" => "OK",
-"Shutdown" => "Shutdown",
+"OK1" => "OK",
+"Shutdown" => "N/A",
 "IAXModem Service" => "IAXModem Service",
 /*copiado desde el dashboard*/
 "You haven't extension" => "Extension has not been assigned.",

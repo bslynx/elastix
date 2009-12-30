@@ -24,28 +24,24 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
-  |                                                                      |
-  | Translate by: Haamed Kouhfallah                                      |
-  | Email: haamed@cytco.net                                              |
-  |                                                                      |
   +----------------------------------------------------------------------+
-  $Id: fa.lang,v 1.2 2008/04/21 10:11:44 bmacias@palosanto.com Exp $ */
+  $Id: sv.lang,v 0.1 2008/03/25 00:36:42 IFIT DATA - http://www.ifit.se Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
 /*System Info*/
-"System Resources" => "منابع سیستم",
-"CPU Info" => "مشخصات پردازنده",
-"Uptime" => "فعال",
-"CPU usage" => "میزان استفاده از پردازنده",
-"Memory usage" => "میزان استفاده از حافظه",
-"Swap usage" => "میزان حافظه مبادله استفاده شده",
-"Hard Drives" => "هارد دیسک ها",
-"Partition Name" => "نام پارتیشن",
-"Capacity" => "ظرفیت",
-"Usage" => "میزان استفاده شده",
-"Mount point" => "میزان قابل استفاده از هارد دیسک",
-"No records found" => "رکوردی پیدا نشد",
-"It was not possible to obtain information about the graph" => "امکان بدست آوردن اطلاعات در خصوص نمودار نیست",
+"System Resources"=>"System Resurser",
+"CPU Info"=>"CPU Information",
+"Uptime"=>"Drifttid",
+"CPU usage"=>"CPU Anv&auml;ndning",
+"Memory usage"=>"Minnesanv&auml;ndning",
+"Swap usage"=>"Swap Anv&auml;ndning",
+"Hard Drives"=>"H&aring;rddiskar",
+"Partition Name"=>"Partions Namn",
+"Capacity"=>"Kapacitet",
+"Usage"=>"Anv&auml;ndning",
+"Mount point"=>"Monterade Filsystem",
+"No records found"=>"Inga uppgifter hittade",
+"It was not possible to obtain information about the graph" =>"Det var inte m&ouml;jligt att h&auml;mta information om grafen",
 "% used of"=>"% used of",
 "News"=>"News",
 "prev"=>"prev",

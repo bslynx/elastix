@@ -11,6 +11,10 @@
   | Telfs. 2283-268, 2294-440, 2284-356                                  |
   | Guayaquil - Ecuador                                                  |
   | http://www.palosanto.com                                             |
+  |                                                                      |
+  | Translate bye:  Jaume Ponsa - Sistemes i Xarxes Informatiques Calidae|
+  |        (Caldes de Montbui, Barcelona)                                |
+  |                                                                      |
   +----------------------------------------------------------------------+
   | The contents of this file are subject to the General Public License  |
   | (GPL) Version 2 (the "License"); you may not use this file except in |
@@ -24,28 +28,24 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
-  |                                                                      |
-  | Translate by: Haamed Kouhfallah                                      |
-  | Email: haamed@cytco.net                                              |
-  |                                                                      |
   +----------------------------------------------------------------------+
-  $Id: fa.lang,v 1.2 2008/04/21 10:11:44 bmacias@palosanto.com Exp $ */
+  $Id: ca.lang,v 1.5 2008/02/17 11:45:00 bmacias Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
 /*System Info*/
-"System Resources" => "منابع سیستم",
-"CPU Info" => "مشخصات پردازنده",
-"Uptime" => "فعال",
-"CPU usage" => "میزان استفاده از پردازنده",
-"Memory usage" => "میزان استفاده از حافظه",
-"Swap usage" => "میزان حافظه مبادله استفاده شده",
-"Hard Drives" => "هارد دیسک ها",
-"Partition Name" => "نام پارتیشن",
-"Capacity" => "ظرفیت",
-"Usage" => "میزان استفاده شده",
-"Mount point" => "میزان قابل استفاده از هارد دیسک",
-"No records found" => "رکوردی پیدا نشد",
-"It was not possible to obtain information about the graph" => "امکان بدست آوردن اطلاعات در خصوص نمودار نیست",
+"System Resources"=>"Recursos del sistema",
+"CPU Info"=>"Informació de la CPU",
+"Uptime"=>"Temps de funcionament",
+"CPU usage"=>"Utilització de la CPU",
+"Memory usage"=>"Utilització de la memòria",
+"Swap usage"=>"Utilització de la Swap",
+"Hard Drives"=>"Disc durs",
+"Partition Name"=>"Nom de la Partició",
+"Capacity"=>"Capacitat",
+"Usage"=>"Utilització",
+"Mount point"=>"Punt de muntatge",
+"No records found"=>"No s'ha trobat resultats",
+"It was not possible to obtain information about the graph" =>"No ha estat possible obtenir informació del gràfic",
 "% used of"=>"% used of",
 "News"=>"News",
 "prev"=>"prev",
@@ -133,5 +133,6 @@ $arrLangModule=array(
 "Network_traffic" => "Network Traffic",
 "rx_bytes" => "bytes rx",
 "tx_bytes" => "bytes tx",
+/*System Info*/
 );
 ?>

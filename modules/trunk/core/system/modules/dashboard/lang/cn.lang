@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.0                                                  |
+  | Elastix version 0.5                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -24,28 +24,24 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
-  |                                                                      |
-  | Translate by: Haamed Kouhfallah                                      |
-  | Email: haamed@cytco.net                                              |
-  |                                                                      |
   +----------------------------------------------------------------------+
-  $Id: fa.lang,v 1.2 2008/04/21 10:11:44 bmacias@palosanto.com Exp $ */
+  $Id: cn.lang,v 1.6 2007/09/05 00:36:42 gcarrillo Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
 /*System Info*/
-"System Resources" => "منابع سیستم",
-"CPU Info" => "مشخصات پردازنده",
-"Uptime" => "فعال",
-"CPU usage" => "میزان استفاده از پردازنده",
-"Memory usage" => "میزان استفاده از حافظه",
-"Swap usage" => "میزان حافظه مبادله استفاده شده",
-"Hard Drives" => "هارد دیسک ها",
-"Partition Name" => "نام پارتیشن",
-"Capacity" => "ظرفیت",
-"Usage" => "میزان استفاده شده",
-"Mount point" => "میزان قابل استفاده از هارد دیسک",
-"No records found" => "رکوردی پیدا نشد",
-"It was not possible to obtain information about the graph" => "امکان بدست آوردن اطلاعات در خصوص نمودار نیست",
+"System Resources"=>"系统资源",
+"CPU Info"=>"CPU信息",
+"Uptime"=>"使用中",
+"CPU usage"=>"CPU使用量",
+"Memory usage"=>"内存使用量",
+"Swap usage"=>"交换分区使用量",
+"Hard Drives"=>"硬盘",
+"Partition Name"=>"分区名称",
+"Capacity"=>"容量",
+"Usage"=>"使用量",
+"Mount point"=>"挂载点",
+"No records found"=>"记录不存在",
+"It was not possible to obtain information about the graph "=>"无法获取图表信息",
 "% used of"=>"% used of",
 "News"=>"News",
 "prev"=>"prev",

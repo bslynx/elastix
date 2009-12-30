@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.0                                                  |
+  | Elastix version 0.5                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -24,28 +24,24 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
-  |                                                                      |
-  | Translate by: Haamed Kouhfallah                                      |
-  | Email: haamed@cytco.net                                              |
-  |                                                                      |
   +----------------------------------------------------------------------+
-  $Id: fa.lang,v 1.2 2008/04/21 10:11:44 bmacias@palosanto.com Exp $ */
+  $Id: sr.lang,v 1.6 2007/10/23 00:36:42 bmacias Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
 /*System Info*/
-"System Resources" => "منابع سیستم",
-"CPU Info" => "مشخصات پردازنده",
-"Uptime" => "فعال",
-"CPU usage" => "میزان استفاده از پردازنده",
-"Memory usage" => "میزان استفاده از حافظه",
-"Swap usage" => "میزان حافظه مبادله استفاده شده",
-"Hard Drives" => "هارد دیسک ها",
-"Partition Name" => "نام پارتیشن",
-"Capacity" => "ظرفیت",
-"Usage" => "میزان استفاده شده",
-"Mount point" => "میزان قابل استفاده از هارد دیسک",
-"No records found" => "رکوردی پیدا نشد",
-"It was not possible to obtain information about the graph" => "امکان بدست آوردن اطلاعات در خصوص نمودار نیست",
+"System Resources"=>"Sistemski resursi",
+"CPU Info"=>"CPU info",
+"Uptime"=>"Vreme funkcionisanja",
+"CPU usage"=>"Iskoriscenost CPU-a",
+"Memory usage"=>"Iskoriscenost memorije",
+"Swap usage"=>"Iskoriscenost Swap-a",
+"Hard Drives"=>"Tvrdi diskovi",
+"Partition Name"=>"Ime particije",
+"Capacity"=>"Kapacitet",
+"Usage"=>"Iskoriscenost",
+"Mount point"=>"Tacka mountovanja",
+"No records found"=>"Podaci nisu pronadjeni",
+"It was not possible to obtain information about the graph "=>"Nije bilo moguce dobiti informacije o grafici",
 "% used of"=>"% used of",
 "News"=>"News",
 "prev"=>"prev",

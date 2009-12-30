@@ -25,27 +25,28 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   |                                                                      |
-  | Translate by: Haamed Kouhfallah                                      |
-  | Email: haamed@cytco.net                                              |
+  | Translate by: Davide Lo Leggio                                       |
+  | Email: cerino@smat.it                                                |
   |                                                                      |
   +----------------------------------------------------------------------+
-  $Id: fa.lang,v 1.2 2008/04/21 10:11:44 bmacias@palosanto.com Exp $ */
+  $Id: it.lang,v 1.7 2008/02/18 10:07:17 bmacias@palosanto.com Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
 /*System Info*/
-"System Resources" => "منابع سیستم",
-"CPU Info" => "مشخصات پردازنده",
-"Uptime" => "فعال",
-"CPU usage" => "میزان استفاده از پردازنده",
-"Memory usage" => "میزان استفاده از حافظه",
-"Swap usage" => "میزان حافظه مبادله استفاده شده",
-"Hard Drives" => "هارد دیسک ها",
-"Partition Name" => "نام پارتیشن",
-"Capacity" => "ظرفیت",
-"Usage" => "میزان استفاده شده",
-"Mount point" => "میزان قابل استفاده از هارد دیسک",
-"No records found" => "رکوردی پیدا نشد",
-"It was not possible to obtain information about the graph" => "امکان بدست آوردن اطلاعات در خصوص نمودار نیست",
+"System Resources" => "Risorse di sistema",
+"CPU Info" => "Informazioni CPU",
+"Uptime" => "Tempo di funzionamento",
+"CPU usage" => "Utilizzo CPU",
+"Memory usage" => "Utilizzo Memoria",
+"Swap usage" => "Utilizzo file di Swap",
+"Hard Drives" => "Dischi Rigidi",
+"Partition Name" => "Nome della Partizione",
+"Capacity" => "Capacità",
+"Usage" => "Utilizzo",
+"Mount point" => "Punto di montaggio",
+"No records found" => "Nessun record trovato",
+"It was not possible to obtain information about the graph" => "Non è possibile ottenere 
+informazioni sul grafico",
 "% used of"=>"% used of",
 "News"=>"News",
 "prev"=>"prev",

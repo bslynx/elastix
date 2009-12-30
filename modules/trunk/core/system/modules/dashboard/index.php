@@ -329,7 +329,7 @@ function createSystem($systemStatus,$module_name){
 					<div class='portlet_topper'>
 						<div width='100%'>
 							<div class='imgapplet' width='10%' style='float:left;'>
-								<img src='modules/$module_name/images/system.gif' border='0' align='absmiddle' />
+								<img src='modules/$module_name/images/system.png' border='0' align='absmiddle' />
 							</div>
 							<div class='tabapplet' width='80%' style='float:left;'>
 								".$arrLang["System"]."
@@ -356,18 +356,21 @@ function process_status($module_name, $arrServices)
    $color = "";
    foreach($arrServices as $key=>$value){
 		    if($value["status_service"]=="OK"){
-			    $status = $arrLang['Running'];
+			    $status = "<font color='green'><i>".$arrLang['Running']."</i></font>";
+				 $serStatus = $arrLang['OK1'];
 			    $color = "#10ED00";
 		    }
 		    elseif($value["status_service"]=="Shutdown"){
-			    $status = $arrLang['Not running'];
+			    $status = "<font color='blue'><i>".$arrLang['Not running']."</i></font>";
+				 $serStatus = $arrLang['Shutdown'];
 			    $color = "#0043EC";
 		    }
 		    else{
-			    $status = $arrLang['Not installed'];
+			    $status = "<font color='red'><i>".$arrLang['Not installed']."</i></font>";
+				 $serStatus = $arrLang['Shutdown'];
 			    $color = "#0043EC";
 		    }
-		    $servicesStatus .= "<div class='services'>".$arrLang[$value['name_service']]."&nbsp;  ($key): &nbsp;&nbsp; "."<font color='green'><i>$status</i></font></div><div align='center' style='background-color:".$color.";' class='status' >".$value['status_service']."</div>";
+		    $servicesStatus .= "<div class='services'>".$arrLang[$value['name_service']]."&nbsp;  ($key): &nbsp;&nbsp; "."$status</div><div align='center' style='background-color:".$color.";' class='status' >$serStatus</div>";
 	}
 	
     $str = "<div class='portlet'>
@@ -399,7 +402,7 @@ function createCallRows($callsRows,$module_name){
 					<div class='portlet_topper'>
 						<div width='100%'>
 							<div class='imgapplet' width='10%' style='float:left;'>
-								<img src='modules/$module_name/images/call.gif' border='0' align='absmiddle' />
+								<img src='modules/$module_name/images/call.png' border='0' align='absmiddle' />
 							</div>
 							<div class='tabapplet' width='80%' style='float:left;'>
 								".$arrLang["Calls"]."
@@ -424,7 +427,7 @@ function createFaxRows($faxRows,$module_name){
 					<div class='portlet_topper'>
 						<div width='100%'>
 							<div class='imgapplet' width='10%' style='float:left;'>
-								<img src='modules/$module_name/images/fax.gif' border='0' align='absmiddle' />
+								<img src='modules/$module_name/images/fax.png' border='0' align='absmiddle' />
 							</div>
 							<div class='tabapplet' width='80%' style='float:left;'>
 								".$arrLang["Faxes"]."
@@ -449,7 +452,7 @@ function createCalendarEvents($eventsRows,$module_name){
 					<div class='portlet_topper'>
 						<div width='100%'>
 							<div class='imgapplet' width='10%' style='float:left;'>
-								<img src='modules/$module_name/images/calendar.gif' border='0' align='absmiddle' />
+								<img src='modules/$module_name/images/calendar.png' border='0' align='absmiddle' />
 							</div>
 							<div class='tabapplet' width='80%' style='float:left;'>
 								".$arrLang["Calendar"]."
@@ -474,7 +477,7 @@ function createEmails($mails,$module_name){
 					<div class='portlet_topper'>
 						<div width='100%'>
 							<div class='imgapplet' width='10%' style='float:left;'>
-								<img src='modules/$module_name/images/email.gif' border='0' align='absmiddle' />
+								<img src='modules/$module_name/images/email.png' border='0' align='absmiddle' />
 							</div>
 							<div class='tabapplet' width='80%' style='float:left;'>
 								".$arrLang["Em@ils"]."
@@ -499,7 +502,7 @@ function createVoicemails($voiceMails,$module_name){
 					<div class='portlet_topper'>
 						<div width='100%'>
 							<div class='imgapplet' width='10%' style='float:left;'>
-								<img src='modules/$module_name/images/voice.gif' border='0' align='absmiddle' />
+								<img src='modules/$module_name/images/voicemail.png' border='0' align='absmiddle' />
 							</div>
 							<div class='tabapplet' width='80%' style='float:left;'>
 								".$arrLang["Voicem@ils"]."
@@ -589,7 +592,7 @@ function communicationActivity($module_name)
 					<div class='portlet_topper'>
 						<div width='100%'>
 							<div class='imgapplet' width='10%' style='float:left;'>
-								<img src='modules/$module_name/images/communication.gif' border='0' align='absmiddle' />
+								<img src='modules/$module_name/images/communication.png' border='0' align='absmiddle' />
 							</div>
 							<div class='tabapplet' width='80%' style='float:left;'>
 								".$arrLang['Communication Activity']."

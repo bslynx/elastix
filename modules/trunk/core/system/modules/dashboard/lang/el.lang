@@ -25,28 +25,28 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   |                                                                      |
-  | Translate by: Haamed Kouhfallah                                      |
-  | Email: haamed@cytco.net                                              |
+  | Translate by: Jason Papanayotou                                      |
+  | Email: jasonpap@gmail.com                                            |
   |                                                                      |
   +----------------------------------------------------------------------+
-  $Id: fa.lang,v 1.2 2008/04/21 10:11:44 bmacias@palosanto.com Exp $ */
+  $Id: el.lang,v 1.6 2008/02/11 11:07:22 bmacias@palosanto.com Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
 /*System Info*/
-"System Resources" => "منابع سیستم",
-"CPU Info" => "مشخصات پردازنده",
-"Uptime" => "فعال",
-"CPU usage" => "میزان استفاده از پردازنده",
-"Memory usage" => "میزان استفاده از حافظه",
-"Swap usage" => "میزان حافظه مبادله استفاده شده",
-"Hard Drives" => "هارد دیسک ها",
-"Partition Name" => "نام پارتیشن",
-"Capacity" => "ظرفیت",
-"Usage" => "میزان استفاده شده",
-"Mount point" => "میزان قابل استفاده از هارد دیسک",
-"No records found" => "رکوردی پیدا نشد",
-"It was not possible to obtain information about the graph" => "امکان بدست آوردن اطلاعات در خصوص نمودار نیست",
-"% used of"=>"% used of",
+"System Resources" => "Πόροι Συστήματος",
+"CPU Info" => "Πληροφορίες Επεξεργαστή",
+"Uptime" => "Χρόνος Αδιάλειπτης Λειτουργίας",
+"CPU usage" => "Χρήση Επεξεργαστή",
+"Memory usage" => "Χρήση Μνήμης",
+"Swap usage" => "Χρήση Κατατμήσεως Ανταλλαγής (Swap)",
+"Hard Drives" => "Σκληροί Δίσκοι",
+"Partition Name" => "Όνομα Κατατμήσεως",
+"Capacity" => "Χωρητικότητα",
+"Usage" => "Χρήση",
+"Mount point" => "Σημείο Τοποθέτησης",
+"No records found" => "Δεν Βρέθηκαν Εγγραφές",
+"It was not possible to obtain information about the graph" => "Δεν ήταν δυνατή η εύρεση πληροφοριών για το γράφημα",
+"% used of"=>"% used of",);
 "News"=>"News",
 "prev"=>"prev",
 "next"=>"next",
@@ -133,5 +133,4 @@ $arrLangModule=array(
 "Network_traffic" => "Network Traffic",
 "rx_bytes" => "bytes rx",
 "tx_bytes" => "bytes tx",
-);
 ?>
