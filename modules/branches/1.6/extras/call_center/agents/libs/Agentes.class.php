@@ -116,6 +116,11 @@ class Agentes
             return FALSE;
         }
 
+        if (!is_null($this->getAgents($agent[0]))) {
+            $this->errMsg = 'Agent already exists';
+            return FALSE;
+        }
+
         // GRABAR EN BASE DE DATOS
 
         $sPeticionSQL = paloDB::construirInsert(

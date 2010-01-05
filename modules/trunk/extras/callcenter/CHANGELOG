@@ -1,3 +1,5 @@
+* Agents: detect and fail operation to add an agent if the agent already exists.
+  Should fix Elastix bug #209
 * Agents: remove obsolete parameter from method call that references an 
   undefined variable.
 * Merge improvements to templates for Campaign Out by Franck Danard
