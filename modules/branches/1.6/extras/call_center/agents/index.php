@@ -429,11 +429,11 @@ function formEditAgent($pDB, $smarty, $module_name, $local_templates_dir, $id_ag
                     2 => $_POST['description'],
                 );
                 if ($bDoCreate) {
-                    $bExito = $oAgentes->addAgent($agente,$message);
+                    $bExito = $oAgentes->addAgent($agente);
                     if (!$bExito) $smarty->assign("mb_message",
                         "{$arrLan["Error Insert Agent"]} ".$oAgentes->errMsg);
                 } elseif ($bDoUpdate) {
-                    $bExito = $oAgentes->editAgent($agente,$message);
+                    $bExito = $oAgentes->editAgent($agente);
                     if (!$bExito) $smarty->assign("mb_message",
                         "{$arrLan["Error Update Agent"]} ".$oAgentes->errMsg);
                 }
