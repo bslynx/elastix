@@ -41,12 +41,16 @@ function _moduleContent(&$smarty, $module_name)
     // si el archivo de idioma no existe incluir el idioma por defecto
     $lang=get_language();
     $script_dir=dirname($_SERVER['SCRIPT_FILENAME']);
-    $lang_file="modules/$module_name/lang/$lang.lang";
 
-    if (file_exists("$script_dir/$lang_file"))
+    // Include language file for EN, then for local, and merge the two.
+    $arrLan = NULL;
+    include_once("modules/$module_name/lang/en.lang");
+    $lang_file="modules/$module_name/lang/$lang.lang";
+    if (file_exists("$script_dir/$lang_file")) {
+        $arrLanEN = $arrLan;
         include_once($lang_file);
-    else
-        include_once("modules/$module_name/lang/en.lang");
+        $arrLan = array_merge($arrLanEN, $arrLan);
+    }
 
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
@@ -184,7 +188,7 @@ function _moduleContent(&$smarty, $module_name)
 
         // PARA IMPLEMENTACIÓN A LA FUNCIÓN HOLD. AÚN NO ESTÁ IMPLEMENTADA POR FALLO
         if (isset($_SESSION['channel_active']) && !is_null($_SESSION['channel_active'])) {
-            $etiqueta_hold = $arrLan["UnHold"];
+            $etiqueta_hold = $arrLan["Unhold"];
             $estilo_hold = 'boton_unbreak';
         } else {
             $etiqueta_hold = $arrLan["Hold"];

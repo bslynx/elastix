@@ -1,3 +1,6 @@
+* Agent Console: fix case typo for reference to translated string
+* Agent Console: tweak loading of language files to have English strings as 
+  fallback if no localized string is available
 * Break Administrator: fix reference to nonexistent translation string. Spotted
   and fixed by Jorge Gutierrez.
 * Agents: detect and fail operation to add an agent if the agent already exists.
