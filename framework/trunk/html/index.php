@@ -159,7 +159,8 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
 
     // rawmode es un modo de operacion que pasa directamente a la pantalla la salida
     // del modulo. Esto es util en ciertos casos.
-    if(isset($_GET['rawmode']) && $_GET['rawmode']=='yes') {
+    $rawmode = getParameter("rawmode");
+    if(isset($rawmode) && $rawmode=='yes') {
          // Autorizacion
         if($pACL->isUserAuthorizedById($idUser, "access", $oPn->currSubMenu) or $developerMode==true) {
             echo $oPn->showContent();

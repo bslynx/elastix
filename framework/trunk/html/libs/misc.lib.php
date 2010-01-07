@@ -551,7 +551,6 @@ function combo($arreglo_valores, $selected) {
            ......... por POST lo recibo ......
 *          $check = $_POST['chk_01'] //recibo 'on' or 'off' segun el caso de q este seteado o  no.
 */
-
 function checkbox($id_name, $checked='off', $disable='off')
 {
     $check = $disab = "";
@@ -572,5 +571,23 @@ function checkbox($id_name, $checked='off', $disable='off')
                     }
                   </script>";
     return $checkbox;
+}
+
+/**
+* Funcion que sirve para obtener los valores de los parametros de los campos en los
+* formularios, Esta funcion verifiva si el parametro viene por POST y si no lo encuentra
+* trata de buscar por GET para poder retornar algun valor, si el parametro ha consultar no
+* no esta en request retorna null.
+*
+* Ejemplo: $nombre = getParameter('nombre');
+*/
+function getParameter($parameter)
+{
+    if(isset($_POST[$parameter]))
+        return $_POST[$parameter];
+    else if(isset($_GET[$parameter]))
+        return $_GET[$parameter];
+    else
+        return null;
 }
 ?>
