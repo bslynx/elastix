@@ -55,6 +55,8 @@ class GestorLlamadasEntrantes
     private $_tieneCampaignEntry;	// VERDADERO si hay soporte para campañas de llamadas entrantes
     private $_tieneTrunk;           // VERDADERO si hay soporte para registrar trunk de llamadas entrantes
 
+    private $_mapaUID;  // Lista de tuplas [CID] UniqueID de llamada entrante, [AID] UniqueID de llamada a agente
+
     var $DEBUG = FALSE;
 
     /**
@@ -77,6 +79,7 @@ class GestorLlamadasEntrantes
         $this->_cacheColasMonitoreadas = NULL;
         $this->_tieneCampaignEntry = FALSE;
         $this->_tieneTrunk = FALSE;
+        $this->_mapaUID = array();
 
 		// Verificar si el esquema de base de datos tiene soporte de campaña entrante
 		$recordset =& $dbConn->query('DESCRIBE call_entry');
@@ -288,6 +291,13 @@ class GestorLlamadasEntrantes
                 }
             }
             
+            // Llevar el registro del Uniqueid de la llamada que entra
+            $this->_mapaUID[] = array(
+                'CID'   =>  $eventParams['Uniqueid'],
+                'AID'   =>  NULL,
+            );
+
+            // Insertar la información de la llamada entrante en el registro
             $idCola = array_search($eventParams['Queue'], $this->_cacheColasMonitoreadas);
             $camposSQL = array(
                 array('id_agent',               'NULL',         null),
@@ -361,6 +371,7 @@ class GestorLlamadasEntrantes
 
         // Nótese que para canal 1, se requiere ID y CID 2, y viceversa.
         $sKey_Uniqueid = NULL;
+        $sKey_Uniqueid_Agente = NULL;
         $sKey_CallerID = NULL;
         $listaColasCandidatas = NULL;
         $sNombreAgente = NULL;
@@ -372,6 +383,7 @@ class GestorLlamadasEntrantes
             $listaColasCandidatas = $this->_cacheAgentesCola[$sNombreAgente];
             $sKey_Uniqueid = 'Uniqueid2';
             $sKey_CallerID = 'CallerID2';
+            $sKey_Uniqueid_Agente = 'Uniqueid1';
         } elseif (isset($eventParams['Channel2']) && 
             isset($this->_cacheAgentesCola[$eventParams['Channel2']])) {
             $sNombreAgente = $eventParams['Channel2'];
@@ -379,6 +391,7 @@ class GestorLlamadasEntrantes
             $listaColasCandidatas = $this->_cacheAgentesCola[$sNombreAgente];
             $sKey_Uniqueid = 'Uniqueid1';
             $sKey_CallerID = 'CallerID1';
+            $sKey_Uniqueid_Agente = 'Uniqueid2';
         } elseif ($this->DEBUG) {
             $this->_oMainLog->output("DEBUG: no se encuentra un agente llamado ".
                 "$eventParams[Channel1] ni uno llamado $eventParams[Channel2] en cache de agentes : ".
@@ -440,6 +453,7 @@ class GestorLlamadasEntrantes
                     	die();
                     }
                     
+                    // Buscar el ID de base de datos de la llamada a partir de su Uniqueid
                     $tuplaLlamada =& $this->_dbConn->getRow(
                         'SELECT id, id_queue_call_entry, callerid FROM call_entry WHERE uniqueid = ?',
                         array($eventParams[$sKey_Uniqueid]),
@@ -455,6 +469,16 @@ class GestorLlamadasEntrantes
                         }
                         $bLlamadaManejada = FALSE;
                     } else {
+                        // Recoger el ID de la llamada al agente que fue enlazada
+                        // con esta llamada entrante. Esto es necesario para 
+                        // marcar la llamada como cerrada al transferir.
+                        for ($i = 0; $i < count($this->_mapaUID); $i++) {
+                            if ($this->_mapaUID[$i]['CID'] == $eventParams[$sKey_Uniqueid]) {
+                                $this->_mapaUID[$i]['AID'] = $eventParams[$sKey_Uniqueid_Agente];
+                            }
+                        }
+
+                        // Verificaciones de depuración                        
                     	$idCola = NULL;
                     	if (in_array($tuplaLlamada->id_queue_call_entry, $listaIdCola))
                     		$idCola = $tuplaLlamada->id_queue_call_entry;
@@ -470,6 +494,8 @@ class GestorLlamadasEntrantes
                                 "uniqueid={$eventParams[$sKey_Uniqueid]} indica ".
                                 "callerid {$tuplaLlamada->callerid} vs. {$eventParams[$sKey_CallerID]}!");                            
                         }
+
+                        // Actualización de la tabla de llamadas entrantes
                         $resultado =& $this->_dbConn->query(
                             'UPDATE call_entry SET id_agent = ?, datetime_init = NOW(), '.
                                 'duration_wait = UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(datetime_entry_queue), '.
@@ -530,45 +556,41 @@ class GestorLlamadasEntrantes
     /**
      * Procedimiento que remueve una llamada ya terminada de la lista de las 
      * llamadas en curso en current_call_entry, en base a los parámetros en
-     * $eventParams. La llamada es idempotente, y por lo tanto no causa daño
-     * el llamarla múltiples veces (para unlink y luego para hangup).
+     * $eventParams. 
      * 
      * @param array eventParams Parámetros que fueron pasados al evento 
      * 
      * @return bool VERDADERO si la llamada fue reconocida y procesada
      */    
-    function notificarUnlink($eventParams)
+    function notificarHangup($eventParams)
     {
-        if ($this->DEBUG) $this->_oMainLog->output("DEBUG: ENTER notificarUnlink");
+        if ($this->DEBUG) $this->_oMainLog->output("DEBUG: ENTER notificarHangup");
         $bLlamadaManejada = FALSE;
         $tuplaLlamada = NULL;
 
         // Buscar el Uniqueid de la llamada recibida
-        foreach (array('Uniqueid1', 'Uniqueid2', 'Uniqueid') as $sKey) {
-            if (isset($eventParams[$sKey])) {
-                $tuplaLlamada =& $this->_dbConn->getRow(
-                    'SELECT id, id_call_entry, hold FROM current_call_entry WHERE uniqueid = ?',
-                    array($eventParams[$sKey]),
-                    DB_FETCHMODE_ASSOC);
-                if (DB::isError($tuplaLlamada)) {
-                    $this->_oMainLog->output(
-                        'ERR: no se puede buscar registro de llamada (actual) - '.
-                        $tuplaLlamada->getMessage());
-                    $tuplaLlamada = NULL;                	
-                } elseif (is_array($tuplaLlamada)) {
-                	break;
-                } else {
-                	$tuplaLlamada = NULL;
-                }
-            }
+        $tuplaLlamada =& $this->_dbConn->getRow(
+            'SELECT id, id_call_entry, hold FROM current_call_entry WHERE uniqueid = ?',
+            array($eventParams['Uniqueid']),
+            DB_FETCHMODE_ASSOC);
+        if (DB::isError($tuplaLlamada)) {
+            $this->_oMainLog->output(
+                'ERR: no se puede buscar registro de llamada (actual) - '.
+                $tuplaLlamada->getMessage());
+            $tuplaLlamada = NULL;                	
+        } elseif (is_array($tuplaLlamada)) {
+        } else {
+        	$tuplaLlamada = NULL;
         }
 
-        if (is_null($tuplaLlamada) && isset($eventParams['Uniqueid'])) {
+        if (is_null($tuplaLlamada)) {
         	// Caso Hangup/abandonada - también se debe buscar en call_entry
             $tuplaLlamada =& $this->_dbConn->getRow(
-                'SELECT NULL AS id, call_entry.id AS id_call_entry, NULL as hold '.
-                'FROM call_entry WHERE uniqueid = ? AND datetime_end IS NULL',
-                array($eventParams[$sKey]),
+                'SELECT current_call_entry.id AS id, call_entry.id AS id_call_entry, '.
+                    'current_call_entry.hold AS hold FROM call_entry '.
+                'LEFT JOIN current_call_entry ON current_call_entry.id_call_entry = call_entry.id '.
+                'WHERE call_entry.uniqueid = ? AND call_entry.datetime_end IS NULL',
+                array($eventParams['Uniqueid']),
                 DB_FETCHMODE_ASSOC);
             if (DB::isError($tuplaLlamada)) {
                 $this->_oMainLog->output(
@@ -578,6 +600,31 @@ class GestorLlamadasEntrantes
             }
         }
         
+        if (is_null($tuplaLlamada)) {
+            /* Si la llamada ha sido transferida, la porción que está siguiendo
+               el marcador todavía está activa, pero transferida a otra persona.
+               Sin embargo, el agente está ahora libre y recibirá otra llamada.
+               El hangup de aquí podría ser para la parte de la llamada del 
+               agente. */
+            for ($i = 0; $i < count($this->_mapaUID); $i++) {
+                if ($this->_mapaUID[$i]['AID'] == $eventParams['Uniqueid']) {
+                    $tuplaLlamada =& $this->_dbConn->getRow(
+                        'SELECT current_call_entry.id AS id, call_entry.id AS id_call_entry, '.
+                            'current_call_entry.hold AS hold FROM call_entry '.
+                        'LEFT JOIN current_call_entry ON current_call_entry.id_call_entry = call_entry.id '.
+                        'WHERE call_entry.uniqueid = ? AND call_entry.datetime_end IS NULL',
+                        array($this->_mapaUID[$i]['CID']),
+                        DB_FETCHMODE_ASSOC);
+                    if (DB::isError($tuplaLlamada)) {
+                        $this->_oMainLog->output(
+                            'ERR: no se puede buscar registro de llamada (actual) - '.
+                            $tuplaLlamada->getMessage());
+                        $tuplaLlamada = NULL;                   
+                    }
+                }
+            }
+        }
+
         if (!is_null($tuplaLlamada)) {
         	$bLlamadaManejada = TRUE;
             
@@ -626,10 +673,18 @@ class GestorLlamadasEntrantes
                 $this->_oMainLog->output(
                     'ERR: no se puede actualizar registro de llamada (log) - '.
                     $result->getMessage());
-            }                   
+            }
+            
+            // Remover rastro de la llamada del arreglo _mapaUID
+            $temp = array();
+            foreach ($this->_mapaUID as $tupla) {
+                if ($tupla['CID'] != $eventParams['Uniqueid'] && $tupla['AID'] != $eventParams['Uniqueid'])
+                    $temp[] = $tupla;
+            }
+            $this->_mapaUID = $temp;
         }
         
-        if ($this->DEBUG) $this->_oMainLog->output("DEBUG: EXIT notificarUnlink");
+        if ($this->DEBUG) $this->_oMainLog->output("DEBUG: EXIT notificarHangup");
         return $bLlamadaManejada;
     }
     

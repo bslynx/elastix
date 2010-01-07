@@ -2082,9 +2082,9 @@ PETICION_LLAMADAS;
 
         // Verificar si es una llamada entrante monitoreada. Si lo es, 
         // se termina el procesamiento sin hacer otra cosa
-        if ($this->_oGestorEntrante->notificarUnlink($params)) {
+        if ($this->_oGestorEntrante->notificarHangup($params)) {
             if ($this->DEBUG) {
-                $this->oMainLog->output("DEBUG: llamada manejada por GestorLlamadasEntrantes::notificarUnlink");
+                $this->oMainLog->output("DEBUG: llamada manejada por GestorLlamadasEntrantes::notificarHangup");
                 $this->oMainLog->output("DEBUG: EXIT OnHangup");
             }
             return FALSE;

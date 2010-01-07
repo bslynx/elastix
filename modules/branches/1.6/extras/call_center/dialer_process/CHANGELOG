@@ -1,3 +1,7 @@
+* Dialer: An incoming call that is transferred should result in the agent being
+  marked as idle in the database, instead of incorrectly keep displaying the
+  information for the transferred call. Fixes Elastix bug #213.
+* Dialer: rename a method to reflect context in which it is used.
 * Agent Console: only build VTiger link if contact information for incoming call
   actually exists.
 * Agent Console: fix case typo for reference to translated string
