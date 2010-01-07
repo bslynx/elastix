@@ -169,11 +169,13 @@ function notificaLlamada($pestania, $prefijo_objeto, $nueva_llamada, $id_formula
                             $row_contacto = array();
                             $data_contact = consultar_registro_contacto($id_contact, $row_contacto);
                             $texto_llamada = $data_contact;
+
+                            $link_crm = crea_link_vtiger($id_contact, $row_contacto["origen"]);
+                            $respuesta->addAssign("link_crm","innerHTML",$link_crm);
+
                         } else {
                             $combo_cedula_ruc .= $arrLan["Number Phone not Registered"];
                         }
-                        $link_crm = crea_link_vtiger($id_contact, $row_contacto["origen"]);
-                        $respuesta->addAssign("link_crm","innerHTML",$link_crm);
 
                         // se muestra el número telefónico de la llamada entrante
                         $telefono_cedula =  "<b>".$arrLan["Phone"].":</b> ".$phone."<br>";

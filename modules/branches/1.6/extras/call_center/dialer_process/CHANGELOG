@@ -1,3 +1,5 @@
+* Agent Console: only build VTiger link if contact information for incoming call
+  actually exists.
 * Agent Console: fix case typo for reference to translated string
 * Agent Console: tweak loading of language files to have English strings as 
   fallback if no localized string is available
