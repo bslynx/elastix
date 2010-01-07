@@ -49,12 +49,22 @@ function writeFilesAsterisk(){
 	//configurando dundi.conf
 	$file = "/etc/asterisk/dundi.conf";
 	$contents = getFile($file);
-	$general = "[general] \n #include dundi_general_custom_elastix.conf";
-	$mappings = "[mappings] \n #include dundi_mappings_custom_elastix.conf \n #include dundi_peers_custom_elastix.conf";
+	$general = "[general]\n#include dundi_general_custom_elastix.conf";
+	$mappings = "[mappings]\n#include dundi_mappings_custom_elastix.conf\n#include dundi_peers_custom_elastix.conf";
 
 	//verificar si ya estan incluidas las librerias
 	$exist = strstr($contents,"#include dundi_general_custom_elastix.conf");
 	if($exist==""){
+		//creando archivos dundi
+		$filename = "/etc/asterisk/dundi_general_custom_elastix.conf";
+		$filename2= "/etc/asterisk/dundi_mappings_custom_elastix.conf";
+		$filename3= "/etc/asterisk/dundi_peers_custom_elastix.conf";
+		if(!file_exists($filename))
+			exec("touch ".$filename)
+		if(!file_exists($filename2))
+			exec("touch ".$filename2)	
+		if(!file_exists($filename3))
+			exec("touch ".$filename3)		
 		$new_contents = str_replace("[general]",$general,$contents);
 		$new_contents = str_replace("[mappings]",$mappings,$new_contents);
 		setFile($file, $new_contents);
@@ -66,30 +76,30 @@ function writeFilesAsterisk(){
 ; ********************************************
 ; CONFIGURACION PARA DUNDi
 [dundi-priv-canonical]
-; Aqui incluimos el contexto que contiene las extensiones.
+; Here we include the context that contains the extensions.
 include => ext-local
-; Aqui incluimos el contexto que contiene las colas de atención o queues.
+; Here we include the context that contains the queues.
 include => ext-queues
 	
 [dundi-priv-customers]
-; Si tenemos clientes (o revendemos servicios) podemos listarlos aqui
+; If you have customers (or resell services) we can list them here
 	
 [dundi-priv-via-pstn]
-; Aqui podemos incluir el contexto con nuestras troncales hacia la PSTN,
-; si queremos que los demas equipos puedan usar nuestras troncales
+; Here we include the context with our trunk to the PSTN,
+; if we want the other teams can use our trunks
 include => outbound-allroutes
 	
 [dundi-priv-local]
-; En este contexto unificamos los tres contextos, este lo podemos usar como
-; contexto de la troncal iax de dundi
+; In this context we unify the three contexts, we can use this as
+; context of the trunks of dundi iax
 include => dundi-priv-canonical
 include => dundi-priv-customers
 include => dundi-priv-via-pstn
 	
 [dundi-priv-lookup]
-; Este contexto se encarga de hacer la busqueda de un numero por dundi
-; Antes de hacer la busqueda definimos apropiadamente nuestro caller id.
-; ya que si no tendremos un caller id como 'device<0000>'.
+; This context is responsible for making the search for a number of dundi
+; Before you do the search properly define our caller id.
+; because if not we have a caller id as 'device<0000>'.
 exten => _X.,1,Macro(user-callerid)
 exten => _X.,n,Macro(dundi-priv,$"."{"."EXTEN})
 exten => _X.,n,GotoIf($['$".$var."' = "."'BUSY'"."]?100)
@@ -98,8 +108,8 @@ exten => _X.,100,Playtones(congestion)
 exten => _X.,101,Congestion(10)
 	
 [macro-dundi-priv]
-; Esta es la macro que llamamos desde el contexto [dundi-priv-lookup]
-; Tambien evita que hayan loops en las consultas dundi.
+; This is the macro is called from the context [dundi-priv-lookup]
+; It also avoids having loops in the consultations dundi.
 exten => s,1,Goto($"."{"."ARG1},1)
 switch => DUNDi/priv
 ; ********************************************";
@@ -132,7 +142,7 @@ allow=g726";
 	
 	//configurando extension.conf definiendo contextos
 	$buscar = "include => from-internal-xfer\ninclude => bad-number";
-	$reemplazar ="include => from-internal-xfer\ninclude => dundi-priv-lookup";
+	$reemplazar ="include => from-internal-xfer\n; include => bad-number\ninclude => dundi-priv-lookup";
 
 	$file = "/etc/asterisk/extensions.conf";
 	$contents = getFile($file);
