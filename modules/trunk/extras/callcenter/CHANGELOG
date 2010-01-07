@@ -1,3 +1,5 @@
+* Break Administrator: fix reference to nonexistent translation string. Spotted
+  and fixed by Jorge Gutierrez.
 * Agents: detect and fail operation to add an agent if the agent already exists.
   Should fix Elastix bug #209
 * Agents: remove obsolete parameter from method call that references an 

@@ -280,7 +280,7 @@ function listBreaks($pDB, $smarty, $module_name, $local_templates_dir) {
                     $arrTmp[3] = "&nbsp;<a href='?menu=$module_name&action=activar&id=".$break['id']."'>{$arrLan['Activate']}</a>";
                 }else{
                     $arrTmp[2] = $arrLan['Active'];
-                    $arrTmp[3] = "&nbsp;<a href='?menu=$module_name&action=view&id=".$break['id']."'>{$arrLang['View']}</a>";
+                    $arrTmp[3] = "&nbsp;<a href='?menu=$module_name&action=view&id=".$break['id']."'>{$arrLan['View Break']}</a>";
                 } 
                 $arrData[] = $arrTmp;
             }
