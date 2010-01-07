@@ -63,47 +63,46 @@ function writeFilesAsterisk(){
 	// configurando extension.conf
 	$var = "{DIALSTATUS}";
 	$dundi = "
-	; ********************************************
-	; CONFIGURACION PARA DUNDi
-	[dundi-priv-canonical]
-	; Aqui incluimos el contexto que contiene las extensiones.
-	include => ext-local
-	; Aqui incluimos el contexto que contiene las colas de atención o queues.
-	include => ext-queues
+; ********************************************
+; CONFIGURACION PARA DUNDi
+[dundi-priv-canonical]
+; Aqui incluimos el contexto que contiene las extensiones.
+include => ext-local
+; Aqui incluimos el contexto que contiene las colas de atención o queues.
+include => ext-queues
 	
-	[dundi-priv-customers]
-	; Si tenemos clientes (o revendemos servicios) podemos listarlos aqui
+[dundi-priv-customers]
+; Si tenemos clientes (o revendemos servicios) podemos listarlos aqui
 	
-	[dundi-priv-via-pstn]
-	; Aqui podemos incluir el contexto con nuestras troncales hacia la PSTN,
-	; si queremos que los demas equipos puedan usar nuestras troncales
-	include => outbound-allroutes
+[dundi-priv-via-pstn]
+; Aqui podemos incluir el contexto con nuestras troncales hacia la PSTN,
+; si queremos que los demas equipos puedan usar nuestras troncales
+include => outbound-allroutes
 	
-	[dundi-priv-local]
-	; En este contexto unificamos los tres contextos, este lo podemos usar como
-	; contexto de la troncal iax de dundi
-	include => dundi-priv-canonical
-	include => dundi-priv-customers
-	include => dundi-priv-via-pstn
+[dundi-priv-local]
+; En este contexto unificamos los tres contextos, este lo podemos usar como
+; contexto de la troncal iax de dundi
+include => dundi-priv-canonical
+include => dundi-priv-customers
+include => dundi-priv-via-pstn
 	
-	[dundi-priv-lookup]
-	; Este contexto se encarga de hacer la busqueda de un numero por dundi
-	; Antes de hacer la busqueda definimos apropiadamente nuestro caller id.
-	; ya que si no tendremos un caller id como 'device<0000>'.
-	exten => _X.,1,Macro(user-callerid)
-	exten => _X.,n,Macro(dundi-priv,$"."{"."EXTEN})
-	exten => _X.,n,GotoIf($['$".$var."' = "."'BUSY'"."]?100)
-	exten => _X.,n,Goto(bad-number,$"."{"."EXTEN},1)
-	exten => _X.,100,Playtones(congestion)
-	exten => _X.,101,Congestion(10)
+[dundi-priv-lookup]
+; Este contexto se encarga de hacer la busqueda de un numero por dundi
+; Antes de hacer la busqueda definimos apropiadamente nuestro caller id.
+; ya que si no tendremos un caller id como 'device<0000>'.
+exten => _X.,1,Macro(user-callerid)
+exten => _X.,n,Macro(dundi-priv,$"."{"."EXTEN})
+exten => _X.,n,GotoIf($['$".$var."' = "."'BUSY'"."]?100)
+exten => _X.,n,Goto(bad-number,$"."{"."EXTEN},1)
+exten => _X.,100,Playtones(congestion)
+exten => _X.,101,Congestion(10)
 	
-	[macro-dundi-priv]
-	; Esta es la macro que llamamos desde el contexto [dundi-priv-lookup]
-	; Tambien evita que hayan loops en las consultas dundi.
-	exten => s,1,Goto($"."{"."ARG1},1)
-	switch => DUNDi/priv
-	; ********************************************
-	";
+[macro-dundi-priv]
+; Esta es la macro que llamamos desde el contexto [dundi-priv-lookup]
+; Tambien evita que hayan loops en las consultas dundi.
+exten => s,1,Goto($"."{"."ARG1},1)
+switch => DUNDi/priv
+; ********************************************";
 	
 	$file = "/etc/asterisk/extensions_custom.conf";
 	$contents = getFile($file);
@@ -115,13 +114,13 @@ function writeFilesAsterisk(){
 
 	// configuracion de iax_custom.conf
 	$iax = "
-	[dundi]
-	type=user
-	dbsecret=dundi/secret
-	context=ext-local
-	disallow=all
-	allow=ulaw
-	allow=g726";
+[dundi]
+type=user
+dbsecret=dundi/secret
+context=ext-local
+disallow=all
+allow=ulaw
+allow=g726";
 	
 	$file = "/etc/asterisk/iax_custom.conf";
 	$contents = getFile($file);
