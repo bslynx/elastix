@@ -127,9 +127,9 @@ function _moduleContent($smarty, $module_name)
     return $sContenido;
 }
 
-function obteinName($file_name){
+function obtainName($file_name){
     $pos = 0;
-    $file_name = "elastix-callcenter_1.5-1.zip";
+     //Name file format elastix-callcenter_1.5-1.zip
     $file_name = trim($file_name);
 
     if (eregi(' ', $file_name)) 
@@ -207,7 +207,7 @@ function verifyFileContent($pDB, &$errorMsg, $arrLang,$oMenu,$oACL)
         }
         else{
 
-            $arrReg = obteinName($_FILES['module_file']['name']);
+            $arrReg = obtainName($_FILES['module_file']['name']);
             $file_xml       = "$tmpDir/$arrReg/menu.xml";
             $file_installer = "$tmpDir/$arrReg/setup/installer.php";
             $path_modules   = "$tmpDir/$arrReg/modules";
