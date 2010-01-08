@@ -111,16 +111,6 @@ function viewFormControlPanel($smarty, $module_name, $local_templates_dir, &$pDB
     return $content;
 }
 
-function getParameter($parameter)
-{
-    if(isset($_POST[$parameter]))
-        return $_POST[$parameter];
-    else if(isset($_GET[$parameter]))
-        return $_GET[$parameter];
-    else
-        return null;
-}
-
 function getAction()
 {
     if(getParameter("save_new")) //Get parameter by POST (submit)

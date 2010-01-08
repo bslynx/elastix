@@ -3,6 +3,7 @@
 $base_dir="/var/www/html";
 $base_db ="/var/www/db";
 include_once "$base_dir/modules/backup_restore/configs/default.conf.php";
+include_once "$base_dir/libs/misc.lib.php";
 include_once "$base_dir/modules/backup_restore/libs/paloSantoFTPBackup.class.php";
 include_once "$base_dir/libs/paloSantoDB.class.php";
 include_once "$base_dir/modules/backup_restore/lang/en.lang";
@@ -540,16 +541,6 @@ include_once "$base_dir/modules/backup_restore/lang/en.lang";
 		}
 	
 		return $bContinuar?0:($retorno>0?1:$retorno);
-	}
-
-	function getParameter($parameter)
-	{
-		if(isset($_POST[$parameter]))
-			return $_POST[$parameter];
-		else if(isset($_GET[$parameter]))
-			return $_GET[$parameter];
-		else
-			return null;
 	}
 
  ?>

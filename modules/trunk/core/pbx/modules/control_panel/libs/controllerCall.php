@@ -100,13 +100,4 @@ else if ($action == "addExttoQueue"){
     $pControlPanel->queueAddMember($queue, $number_org);
 }
 
-function getParameter($parameter)
-{
-    if(isset($_POST[$parameter]))
-        return $_POST[$parameter];
-    else if(isset($_GET[$parameter]))
-        return $_GET[$parameter];
-    else
-        return null;
-}
 ?>

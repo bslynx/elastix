@@ -904,14 +904,5 @@ function saveApplets_Admin()
     //return showApplets_Admin();
     header("Location: /index.php?menu=$module_name");
 }
-function getParameter($parameter)
-{
-    if(isset($_POST[$parameter]))
-        return $_POST[$parameter];
-    else if(isset($_GET[$parameter]))
-        return $_GET[$parameter];
-    else
-        return null;
-}
 ////////////////////// End Funciones para Applets Admin /////////////////////////////////
 ?>

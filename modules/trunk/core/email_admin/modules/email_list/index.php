@@ -545,17 +545,6 @@ function delete_memberList($smarty, $module_name, $local_templates_dir, $pDB, $a
     
 }
 
-
-function getParameter($parameter)
-{
-    if(isset($_POST[$parameter]))
-        return $_POST[$parameter];
-    else if(isset($_GET[$parameter]))
-        return $_GET[$parameter];
-    else
-        return null;
-}
-
 function getAction()
 {
     if(getParameter("save_newList")) //Get parameter by POST (submit)

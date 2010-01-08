@@ -162,14 +162,5 @@ function obtainList($fileString)
     }
     return $out;
 }
-
-function getParameter($parameter)
-{
-    if(isset($_POST[$parameter]))
-        return $_POST[$parameter];
-    else if(isset($_GET[$parameter]))
-        return $_GET[$parameter];
-    else
-        return null;
-}
+
 ?>
