@@ -10,6 +10,7 @@
  *
  */
 $(document).ready((function() {
+
     $("ul.droptrue").sortable({
         connectWith: 'ul',
     });
@@ -59,5 +60,7 @@ $(document).ready((function() {
     });
 
     $("#sortable1, #sortable2").disableSelection();
+
+    $("a[rel*=facebox]").facebox();
 }));
 
