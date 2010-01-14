@@ -24,7 +24,7 @@
 											<tr>
 											<td class="menutabletabon">
 												<img src="themes/{$THEMENAME}/images/{$idMenu}_icon.gif" border="0" alt="" />
-												<a class="menutableon" href="?menu={$idMenu}">{$menu.Name}</a>
+												<a class="menutableon" href="index.php?menu={$idMenu}">{$menu.Name}</a>
 											</td>
 											</tr>
 										</table>
@@ -42,7 +42,7 @@
 											<tr>
 												<td class="menutabletabon" rowspan="2">
 													<img src="themes/{$THEMENAME}/images/{$idMenu}_icon.gif" border="0" alt="" />
-													<a class="menutableon" href="?menu={$idMenu}">{$menu.Name}</a>
+													<a class="menutableon" href="index.php?menu={$idMenu}">{$menu.Name}</a>
 												</td>
 											</tr>
 										</table>
@@ -54,7 +54,7 @@
 										<table cellSpacing="0" cellPadding="0" border="0" width="100%">
 											<tr>
 												<td class="menutabletaboff" nowrap="">
-												<a class="menutable" href="?menu={$idMenu}">{$menu.Name}</a>
+												<a class="menutable" href="index.php?menu={$idMenu}">{$menu.Name}</a>
 												</td>
 											</tr>
 										</table> 
@@ -71,7 +71,7 @@
 										<table cellSpacing="0" cellPadding="0" border="0" width="100%">
 											<tr>
 												<td class="menutabletaboff" nowrap="">
-													<a class="menutable" href="?menu={$idMenu}">{$menu.Name}</a>
+													<a class="menutable" href="index.php?menu={$idMenu}">{$menu.Name}</a>
 												</td>
 											</tr>
 										</table> 
@@ -108,10 +108,10 @@
                                 {foreach from=$arrSubMenu key=idSubMenu item=subMenu}
                                 {if $idSubMenu eq $idSubMenuSelected}
                                 <td title="" class="botonon">
-                                        <a href="?menu={$idSubMenu}" class="submenu_on">{$subMenu.Name}</a>
+                                        <a href="index.php?menu={$idSubMenu}" class="submenu_on">{$subMenu.Name}</a>
                                 </td>
                                 {else}
-                                <td title="" class="botonoff"><a href="?menu={$idSubMenu}">{$subMenu.Name}</a></td>
+                                <td title="" class="botonoff"><a href="index.php?menu={$idSubMenu}">{$subMenu.Name}</a></td>
                                 {/if}
                                 {/foreach}
                                 </tr>
@@ -171,9 +171,9 @@
           <tr><td title="" class="menuiz_start"></td></tr>
         {foreach from=$arrSubMenu2 key=idSubMenu2 item=subMenu2}
           {if $idSubMenu2 eq $idSubMenu2Selected}
-          <tr><td title="" class="menuiz_botonon"><a href="?menu={$idSubMenu2}">{$subMenu2.Name}</td></tr>
+          <tr><td title="" class="menuiz_botonon"><a href="index.php?menu={$idSubMenu2}">{$subMenu2.Name}</td></tr>
           {else}
-          <tr><td title="" class="menuiz_botonoff"><a href="?menu={$idSubMenu2}">{$subMenu2.Name}</a></td></tr>
+          <tr><td title="" class="menuiz_botonoff"><a href="index.php?menu={$idSubMenu2}">{$subMenu2.Name}</a></td></tr>
           {/if}
         {/foreach}
       </table>
