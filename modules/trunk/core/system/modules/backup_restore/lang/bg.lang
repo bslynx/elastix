@@ -131,7 +131,7 @@ $arrLangModule=array(
 "external_version" => "The restore versions",
 "details" => "view details",
 "warning_details" => "Warning Details",
-"no_file_xml" => "<b><font size='2' color='red'>WARNING:</font></b> No Data versions in file Restore. You can have any problem with the behavior of the programs after restoring",
+"no_file_xml" => "<b><font size='2' color='red'>WARNING:</font></b> No Data versions in file Restore. You could have any problem with the behavior of the programs after restoring",
 "asterisk" => "Asterisk",
 "dahdi" => "DAHDI",
 "wanpipe-util" => "Wanpipe-Util",

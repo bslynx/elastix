@@ -1723,13 +1723,13 @@ function showAlert($path_backup, $smarty, $arrLang, $backup_file, $module_name, 
 				}
 				$compare = compareArrays($path_backup_XML, $arr_XML);
 				// si hay alerta de versiones 
+				exec("echo 'es ".count($compare).": ".print_r($compare,true)."' > /tmp/edu");
 				//$compare = $arr_XML;
 				if($parameter == 0){
-					if(count($compare)>=1){
+					if(count($compare)>=1 && $compare!=null){
 						$warning = $arrLang["Warning"];
 						$outMessage = $warning." <a href='?menu=$module_name&action=detail&rawmode=yes&file_name=$backup_file' rel='facebox'>".$arrLang["details"]."</a>";
 						$smarty->assign("mb_message", $outMessage);
-						exec("rm $ruta_restaurar -rf");
 					}
 					exec("rm $ruta_restaurar -rf");
 					return ;				
