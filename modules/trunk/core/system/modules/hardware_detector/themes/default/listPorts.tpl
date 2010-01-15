@@ -1,3 +1,6 @@
+<script type="text/javascript" src ="/libs/js/jquery/js/jquery-1.3.2.min.js"></script>
+<script type="text/javascript" src ="/libs/js/jquery/js/jquery-ui-1.7.2.custom.min.js"></script>
+<script type="text/javascript" src ="/modules/hardware_detector/themes/js/javascript.js"></script>
 <link   rel ="stylesheet"      href="modules/hardware_detector/themes/style.css" />
 
 <table width="{$width}" align="center" border="0" cellpadding="0" cellspacing="0">
@@ -24,9 +27,9 @@
         {foreach from=$arrData key=k item=data name=filas}
             {if $data.DESC.TIPO ne $CARD_NO_MOSTRAR}
                 <tr>
-                    <td style='border: 1px #CCCCCC solid; font-size:12px;' align='left' class="moduleTitle">{$CARD} # {$data.DESC.ID}: {$data.DESC.TIPO} {$data.DESC.ADICIONAL}</td>
-<!--                    <td style='border: 1px #CCCCCC solid; width:30px;'>  <img class="icon" src="modules/hardware_detector/images/icon1.png" /> </td>
-                    <td style='border: 1px #CCCCCC solid; width:30px;'>  <img class="icon" src="modules/hardware_detector/images/call2.png" /> </td>-->
+                    <td style='border: 1px #CCCCCC solid; font-size:12px;' align='left' class="moduleTitle">{$CARD} # {$data.DESC.ID}: {$data.DESC.TIPO} {$data.DESC.ADICIONAL} </td>
+                    <td style='border: 1px #CCCCCC solid; width:30px;'> <span id="editArea{$data.DESC.ID}"> <img class="icon" src="modules/hardware_detector/images/icon1.png" /> </span> </td>
+                    <!--<td style='border: 1px #CCCCCC solid; width:30px;'>  <img class="icon" src="modules/hardware_detector/images/call2.png" /> </td>-->
                     <td style='border: 1px #CCCCCC solid; width:30px;'><a href='?menu=hardware_detector&action=config_echo&cardId={$data.DESC.ID}'><img class="icon" src="modules/hardware_detector/images/icon_configecho.png" title="Config echo Canceller"/></a></td>
                 </tr>
                 <tr> 
@@ -110,3 +113,54 @@
     } 
 </script>
 {/literal}
+
+{counter start=1 skip=1 print=false assign=cnt}
+{foreach from=$arrSpanConf key=k item=data name=filas}
+<div id="layer{$cnt}" class="move">
+    <div class="layer_handle">
+        <a href="#" id="close{$cnt}">[ x ]</a>
+        Preferences
+    </div>
+    <div id="layer{$cnt}_content">
+        <form id="layer{$cnt}_form" method="post" action="">
+            <legend >Span Settings</legend><br />
+            <table>
+                <tr>
+                    <td><label style='font-size: 11px'>Timing source:</label></td>
+                    <td><select id='tmsource_{$cnt}' name='tmsource_{$cnt}'>
+                    {html_options options=$type_timing_source selected=$data.tmsource}
+                    </select></td>
+                </tr>
+                <tr>
+                    <td><label style='font-size: 11px'>Line build out:</label></td>
+                    <td><select id='lnbuildout_{$cnt}' name='lnbuildout_{$cnt}'>
+                    {html_options options=$type_lnbuildout selected=$data.lnbuildout}
+                    </select></td>
+                </tr>
+                <tr>
+                    <td><label style='font-size: 11px'>Framing:</label></td>
+                    <td><select id='framing_{$cnt}' name='framing_{$cnt}'>
+                    {html_options options=$type_framing selected=$data.framing}
+                    </select></td>
+                </tr>
+                <tr>
+                    <td><label style='font-size: 11px'>Coding:</label></td>
+                    <td><select id='coding_{$cnt}' name='coding_{$cnt}'>
+                    {html_options options=$type_coding selected=$data.coding}
+                    </select></td>
+                </tr>
+                <input type="hidden" value="{$cnt}" name="idSpan_{$cnt}" />
+                
+                <tr>
+                    <td></td>
+                    <br>
+                    <td align="right">
+                        <input type="button" value="Save" onclick="saveSpanConfiguration({$cnt});" class="boton"/>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</div>
+{counter}
+{/foreach} 

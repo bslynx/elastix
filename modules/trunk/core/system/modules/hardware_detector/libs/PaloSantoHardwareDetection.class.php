@@ -178,5 +178,83 @@ class PaloSantoHardwareDetection
             return $message;
         }
     }
+
+    /////////////////////////NEW FUNCTIONS/////////////////////////
+
+    function addSpanParameter($data, $pDB)
+    {
+        $queryInsert = $pDB->construirInsert('span_parameter', $data);
+        $result = $pDB->genQuery($queryInsert);
+
+        return $result;
+    }
+
+    function getSpanConfig($pDB)
+    {
+        $query = "DELETE FROM span_parameter";
+        //$result = $this->_DB->genQuery($query);
+        $result = $pDB->genQuery($query);
+    
+        $FILE='/etc/dahdi/system.conf';
+        $count = 0;
+        $dataSpans = array();
+        $fp = fopen($FILE,'r');
+        while($line = fgets($fp, filesize($FILE)))
+        {
+            if(ereg("^([a-z=0-9]+),([[:digit:]]+),([[:digit:]]+),([[:alnum:]]+),([[:alnum:]]+),([[:alnum:]]+)", $line, $arrReg) || ereg("^([a-z=0-9]+),([[:digit:]]+),([[:digit:]]+),([[:alnum:]]+),([[:alnum:]]+)", $line, $arrReg)){
+                $count++;
+                $span = split('[=]',$arrReg[1]);
+                $data['span_num']    = $pDB->DBCAMPO(trim($span[1]));
+                $dataSpans[$count]['tmsource'] = trim($arrReg[2]);
+                $data['timing_source']    = $pDB->DBCAMPO(trim($arrReg[2]));
+                $dataSpans[$count]['lnbuildout'] = trim($arrReg[3]);
+                $data['linebuildout']    = $pDB->DBCAMPO(trim($arrReg[2]));
+                $dataSpans[$count]['framing'] = trim($arrReg[4]);
+                $data['framing']    = $pDB->DBCAMPO(trim($arrReg[4]));
+                $dataSpans[$count]['coding'] = trim($arrReg[5]);
+                $data['coding']    = $pDB->DBCAMPO(trim($arrReg[5]));
+                $data['id_card']   = $pDB->DBCAMPO(trim($span[1]));
+            
+                $this->addSpanParameter($data, $pDB);
+            }
+        }
+        fclose($fp);
+        return $dataSpans;
+    }
+
+    function updateChangeFileSystemConf($text) {
+        exec("sudo -u root chown asterisk.asterisk /etc/dahdi/system.conf");
+        $fp = fopen('/etc/dahdi/system.conf', 'w');
+
+        fwrite($fp, $text);
+        fclose($fp);
+        exec("sudo -u root chown root.root /etc/dahdi/system.conf");
+    }
+
+    function updateFileSipCustom($idSpan, $arrSpanConfig)
+    {
+        $FILE='/etc/dahdi/system.conf';
+        $text = "";
+        $find="false";
+        $fp = fopen($FILE,'r');
+
+        while($line = fgets($fp, filesize($FILE)))
+        {
+            if(ereg("^([a-z=0-9]+),([[:digit:]]+),([[:digit:]]+),([[:alnum:]]+),([[:alnum:]]+),([[:alnum:]]+)", $line, $arrReg) || ereg("^([a-z=0-9]+),([[:digit:]]+),([[:digit:]]+),([[:alnum:]]+),([[:alnum:]]+)", $line, $arrReg)){
+                $data = split('[=]',$arrReg[1]);
+                if($data[1]==$idSpan){
+                    if(!empty($arrReg[6])) $text .=$arrReg[1].",".$arrSpanConfig['tmsource'].",".$arrSpanConfig['lnbuildout'].",".$arrSpanConfig['framing'].",".$arrSpanConfig['coding'].",".$arrReg[6]."\n";
+                    else $text .=$arrReg[1].",".$arrSpanConfig['tmsource'].",".$arrSpanConfig['lnbuildout'].",".$arrSpanConfig['framing'].",".$arrSpanConfig['coding']."\n";
+                    
+                }else
+                    $text .= $line;
+            }else
+                $text .= $line;
+        }
+        $this->updateChangeFileSystemConf($text);
+        //exec("sudo -u root service dahdi restart");
+        fclose($fp);
+    }
+
 }
 ?>

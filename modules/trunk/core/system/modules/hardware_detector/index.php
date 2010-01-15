@@ -91,6 +91,9 @@ function listPorts($smarty, $module_name, $local_templates_dir, $pDB) {
     $oGrid = new paloSantoGrid($smarty); 
     $contenidoModulo = "";
 
+    $arrSpanConf = $oPortsDetails->getSpanConfig($pDB);
+    $smarty->assign("arrSpanConf",$arrSpanConf);
+
     $smarty->assign("HARDWARE_DETECT",$arrLang['Hardware Detect']);
     $smarty->assign("CHAN_DAHDI_REPLACE",$arrLang['Replace file chan_dahdi.conf']);
     $smarty->assign("DETECT_SANGOMA", $arrLang['Detect Sangoma hardware']);
@@ -126,6 +129,39 @@ function llenarTpl($local_templates_dir,$smarty,$arrGrid, $arrData, $arrMisdn)
     $smarty->assign("width", $arrGrid['width']);
     $smarty->assign("arrData", $arrData);
     $smarty->assign("arrMisdn", $arrMisdn);
+
+    $smarty->assign('type_timing_source', array(
+                              '0' => '0',
+                              '1' => '1',
+                              '2' => '2',
+                              '3' => '3',
+                              '4' => '4',
+                              '5' => '5',
+                              '6' => '6',
+                              '7' => '7'));
+
+    $smarty->assign('type_lnbuildout', array(
+                              '0' => '0',
+                              '1' => '1',
+                              '2' => '2',
+                              '3' => '3',
+                              '4' => '4',
+                              '5' => '5',
+                              '6' => '6',
+                              '7' => '7'));
+
+    $smarty->assign('type_framing', array(
+                              'd4' => 'd4',
+                              'esf' => 'esf',
+                              'cas' => 'cas',
+                              'ccs' => 'ccs',
+                              'd4' => 'd4'));
+
+    $smarty->assign('type_coding', array(
+                              'ami' => 'ami',
+                              'b8zs' => 'b8zs',
+                              'hdb3' => 'hdb3'));
+
     return $smarty->fetch($local_templates_dir."/listPorts.tpl");
 }
 
@@ -245,9 +281,7 @@ function saveNewConfEcho($smarty, $module_name, $local_templates_dir, &$pDB, $ar
 
             header("Location: ?menu=$module_name&action=report");
         }
-        
     }
-    
 }
 
 function createFieldForm($arrLang)

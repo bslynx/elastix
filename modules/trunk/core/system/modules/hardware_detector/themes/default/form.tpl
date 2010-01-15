@@ -1,5 +1,6 @@
 <link   rel ="stylesheet"      href="modules/hardware_detector/themes/style.css" />
 
+
 <table width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
     <tr class="moduleTitle">
         <td class="moduleTitle" valign="middle" colspan='2'>&nbsp;&nbsp;<img src="{$IMG}" border="0" align="absmiddle">&nbsp;&nbsp;{$title}</td>
@@ -33,19 +34,13 @@
         <tr class="letra12">
             <td> </td>
             <td> </td>
-            <td align="left"><b>{$key}</b>  {$echocancel.name_port}: </td>
-            <td width="15%" align="left">
+            <td width="10%" align="left"><b>{$key}</b>  {$echocancel.name_port}: </td>
+            <td width="50%" align="left">
                 <select id='typeecho_{$key}' name='typeecho_{$key}'>
                     {html_options options=$type_echo_names selected=$echocancel.type_echo}
                 </select>
             </td>
             <input type="hidden" value="{$echocancel.type_echo}" name="tmpTypeEcho{$key}" />
-            <td> </td>
-            <td> </td>
-            <td> </td>
-            <td> </td>
-            <td> </td>
-            <td> </td>
         </tr>
         {/foreach}
     <!--</table>-->

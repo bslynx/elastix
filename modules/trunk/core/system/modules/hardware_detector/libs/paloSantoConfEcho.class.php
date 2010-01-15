@@ -134,10 +134,12 @@ class paloSantoConfEcho {
 
     function saveChangeFileSystemConfig($text)
     {
+        exec("sudo -u root chown asterisk.asterisk /etc/dahdi/system.conf");
         $fp = fopen('/etc/dahdi/system.conf', 'w');
 
         fwrite($fp, $text);
         fclose($fp);
+        exec("sudo -u root chown root.root /etc/dahdi/system.conf");
     }
 
 
@@ -364,7 +366,7 @@ class paloSantoConfEcho {
         
         $this->saveChangeFileSystemConfig($text);
         fclose($fp);
-        exec("sudo -u root chown -R root.root /etc/dahdi/system.conf");
+        //exec("sudo -u root chown -R root.root /etc/dahdi/system.conf");
         exec("sudo -u root service dahdi restart");
     }
 
