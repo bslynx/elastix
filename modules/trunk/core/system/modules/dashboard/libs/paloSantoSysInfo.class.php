@@ -457,6 +457,7 @@ class paloSantoSysInfo
         $pDBTrunk  = new paloDB($dsn);
         $arrTrunks = getTrunks($pDBTrunk);
         $trunks = array();
+        if(empty($arrTrunks)) return $trunks;
 
         if(is_array($arrTrunks) & count($arrTrunks)>0){
             foreach($arrTrunks as $key => $trunk){
