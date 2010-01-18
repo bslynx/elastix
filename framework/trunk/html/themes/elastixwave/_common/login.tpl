@@ -6,15 +6,13 @@
 </head>
 
 <body bgcolor="#ffffff" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
-  <table cellspacing=0 cellpadding=0 width="100%" border=0>
+  <table cellspacing="0" cellpadding="0" width="100%" border="0" class="menulogo2" height="92">
     <tr>
-      <td>
-        <table cellSpacing="0" cellPadding="0" width="100%" border="0">
-          <tr>
-            <td class="menulogo2" width=380><img src="themes/{$THEMENAME}/images/logo_elastix_new3.png" width="233" height="75" /></td>
-          </tr>
-        </table>
-      </td>
+        <td class="menulogo" valign="top">
+	    <a target="_blank" href="http://www.elastix.org">
+		<img border="0" src="themes/{$THEMENAME}/images/logo_elastix.gif"/>
+           </a>
+	</td>
     </tr>
   </table>
 <form method="POST">
