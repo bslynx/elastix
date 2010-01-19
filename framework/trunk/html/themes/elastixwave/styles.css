@@ -794,10 +794,14 @@ td.botonon {
     margin: 0px;
 }
 .menuiz_start {
-    BACKGROUND-IMAGE: url(images/menuiz_start.jpg);
+	 BACKGROUND-IMAGE: url(images/menuiz_start.gif);
     padding: 0px;
-    border: 0px;
+    /*border: 0px;*/
     height: 21px;
+    border-bottom-color: #e35332;
+    border-bottom-style: dashed;
+    border-bottom-width: 1px;
+    background-repeat: repeat-x;
 }
 .background {
 	BACKGROUND-IMAGE: url(images/borde_redondeado.gif);
