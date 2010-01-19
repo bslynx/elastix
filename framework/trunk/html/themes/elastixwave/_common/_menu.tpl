@@ -168,7 +168,7 @@
     {if !empty($idSubMenu2Selected)}
     <td width="200px" align="left" valign="top" bgcolor="#f6f6f6" id="tdMenuIzq">
       <table cellspacing="0" cellpadding="0" width="100%" class="" align="left">
-          <tr><td title="" class="menuiz_start"></td></tr>
+          <tr><td title="" class="menuiz_start">&nbsp;</td></tr>
         {foreach from=$arrSubMenu2 key=idSubMenu2 item=subMenu2}
           {if $idSubMenu2 eq $idSubMenu2Selected}
           <tr><td title="" class="menuiz_botonon"><a href="index.php?menu={$idSubMenu2}">{$subMenu2.Name}</td></tr>
