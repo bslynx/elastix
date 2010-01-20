@@ -25,13 +25,12 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: paloSantoSip_buddies.class.php,v 1.1 2009-03-27 12:03:59 Oscar Navarrete anavarre@espol.edu.ec Exp $
   $Id: paloSantoSip_buddies.class.php,v 1.2 2010-01-15 12:03:59 Oscar Navarrete anavarre@espol.edu.ec Exp $ */
-class paloSantoSip_buddies {
+class paloSantoIax_buddies {
     var $_DB;
     var $errMsg;
 
-    function paloSantoSip_buddies(&$pDB)
+    function paloSantoIax_buddies(&$pDB)
     {
         // Se recibe como parámetro una referencia a una conexión paloDB
         if (is_object($pDB)) {
@@ -52,14 +51,14 @@ class paloSantoSip_buddies {
 
     /*HERE YOUR FUNCTIONS*/
 
-    function ObtainNumSip_buddies($filter_field, $filter_value)
+    function ObtainNumIax_buddies($filter_field, $filter_value)
     {
         //Here your implementation
         $where = "";
         if(isset($filter_field) & $filter_field !="")
             $where = "where $filter_field like '$filter_value%'";
 
-        $query   = "SELECT COUNT(*) FROM sip_buddies $where";
+        $query   = "SELECT COUNT(*) FROM iax_buddies $where";
 
         $result=$this->_DB->getFirstRowQuery($query);
 
@@ -71,14 +70,14 @@ class paloSantoSip_buddies {
     }
 
 
-    function ObtainSip_buddies($limit=NULL, $offset=NULL, $filter_field=NULL, $filter_value=NULL)
+    function ObtainIax_buddies($limit=NULL, $offset=NULL, $filter_field=NULL, $filter_value=NULL)
     {
         //Here your implementation
         $where = "";
         if(!empty($filter_field) and !empty($filter_value ))
             $where = "where $filter_field like '%$filter_value%'";
 
-        $query   = "SELECT * FROM sip_buddies $where LIMIT $limit OFFSET $offset";
+        $query   = "SELECT * FROM iax_buddies $where LIMIT $limit OFFSET $offset";
         //ORDER BY
         //$query .= " ORDER BY name";        
 
@@ -92,9 +91,9 @@ class paloSantoSip_buddies {
     }
 
     
-    function addSipBuddies($data)
+    function addIaxBuddies($data)
     {
-        $queryInsert = $this->_DB->construirInsert('sip_buddies', $data);
+        $queryInsert = $this->_DB->construirInsert('iax_buddies', $data);
 
         echo $queryInsert;
         $result = $this->_DB->genQuery($queryInsert);
@@ -103,9 +102,9 @@ class paloSantoSip_buddies {
     }
 
 
-    function getSipBuddiesById($id)
+    function getIaxBuddiesById($id)
     {
-        $query   = "SELECT * FROM sip_buddies ";
+        $query   = "SELECT * FROM iax_buddies ";
         $strWhere = "id=$id";
 
         // Clausula WHERE aqui
@@ -116,18 +115,18 @@ class paloSantoSip_buddies {
     }
     
 
-    function updateSipBuddies($data,$where)
+    function updateIaxBuddies($data,$where)
     {
-        $queryUpdate = $this->_DB->construirUpdate('sip_buddies', $data,$where);
+        $queryUpdate = $this->_DB->construirUpdate('iax_buddies', $data,$where);
         $result = $this->_DB->genQuery($queryUpdate);
 
         return $result;
     }
 
 
-    function deleteSipBuddies($id)
+    function deleteIaxBuddies($id)
     {
-        $query = "DELETE FROM sip_buddies WHERE id=$id";
+        $query = "DELETE FROM iax_buddies WHERE id=$id";
         $result = $this->_DB->genQuery($query);
         if($result[0] > 0)
             return true;

@@ -29,12 +29,13 @@
 global $arrLangModule;
 $arrLangModule=array(
 "Sip buddies" => "Sip buddies",
+"Iax buddies" => "Iax buddies",
 "name" => "name",
 "context" => "context",
 "secret" => "secret",
 "username" => "username",
 "New Sip Buddies" => "New Sip Buddies",
-"New SipBuddies" => "New SipBuddies",
+"New Iax Buddies" => "New Iax Buddies",
 
 "Name" => "Name",
 "Caller ID" => "Caller ID",
@@ -59,6 +60,11 @@ $arrLangModule=array(
 "Setvar" => "Setvar",
 "Full contact" => "Full contact",
 "Ip addr" => "Ip addr",
+"Dbsecret" => "Dbsecret",
+"Notransfer" => "Notransfer",
+"Inkeys" => "Inkeys",
+"Outkey" => "Outkey",
+"Auth" => "Auth",
 "Host" => "Host",
 "Nat" => "Nat",
 "Insecure" => "Insecure",
@@ -72,7 +78,8 @@ $arrLangModule=array(
 "User Name" => "User Name",
 "Disallow" => "Disallow",
 "Allow" => "Allow",
-"Reg Second" => "Reg Second",
+"Reg Server" => "Reg Server",
+"Reg Seconds" => "Reg Seconds",
 "Ip Address" => "Ip Address",
 "Can Call Forward" => "Can Call Forward",
 
@@ -87,7 +94,8 @@ $arrLangModule=array(
 "Email Address" => "Email Address",
 "Accound Code" => "Accound Code",
 
-"Are you sure you wish to delete the contact." => "Are you sure you wish to delete the contact.",
+"Are you sure you wish to delete the configuration(s) sip" => "Are you sure you wish to delete the configuration(s) sip",
+"Are you sure you wish to delete the configuration(s) iax" => "Are you sure you wish to delete the configuration(s) iax",
 
 );
 ?>
