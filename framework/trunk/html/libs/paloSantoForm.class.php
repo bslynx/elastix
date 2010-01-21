@@ -211,15 +211,19 @@ class paloForm
                     if($this->modo=='input' or ($this->modo=='edit' and $arrVars['EDITABLE']!='no')) {
                         $multiple = "";
                         $size = "";
+                        $name_select = $varName;
                         if(isset($arrVars['SIZE'])){
                             if($arrVars['SIZE']!="")
                                 $size=" size='".$arrVars['SIZE']."' ";
                         }
                         if(isset($arrVars['MULTIPLE'])){
-                            if($arrVars['MULTIPLE']!="" || $arrVars['MULTIPLE']==true)
+                            if($arrVars['MULTIPLE']!="" || $arrVars['MULTIPLE']==true){
                                 $multiple=" multiple='multiple' ";
+                                $name_select = $varName."[]";
+                            }
                         }
-                        $strInput  = "<select name='$varName' $multiple $size>";
+                        $strInput  = "<select name='$name_select' $multiple $size>";
+
                         if(is_array($arrVars['INPUT_EXTRA_PARAM'])) {
                             foreach($arrVars['INPUT_EXTRA_PARAM'] as $idSeleccion => $nombreSeleccion) {
                                 if(is_array($arrPreFilledValues[$varName])){
