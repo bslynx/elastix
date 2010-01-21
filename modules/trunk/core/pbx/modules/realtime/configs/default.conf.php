@@ -30,6 +30,6 @@
 
     $arrConfModule['module_name']       = 'sip_buddies';
     $arrConfModule['templates_dir']     = 'themes';
-    //$arrConfModule['dsn_conn_database'] = 'mysql://root:eLaStIx.2oo7@localhost/asteriskrealtime';
-    $arrConfModule['dsn_conn_database'] = 'mysql://root:eLaStIx.2oo7@localhost/general';
+    $arrConfModule['dsn_conn_database'] = 'mysql://root:eLaStIx.2oo7@localhost/asteriskrealtime';
+    
 ?>

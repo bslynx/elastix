@@ -133,6 +133,17 @@ class paloSantoIax_buddies {
         else return false;
     }
 
+    function generateNums(){
+        $arr_nums =array();
+        $i=0;
+        $arr_nums['default'] = "Default";
+        while($i<121){
+            $arr_nums[$i] = $i;
+            $i++;
+        }
+        return $arr_nums;
+    }
+
 }
 
 

@@ -5,7 +5,7 @@
     
         <td width="10%" align="right">
             {$filter_field.LABEL}:&nbsp;&nbsp;{$filter_field.INPUT}&nbsp;&nbsp;{$filter_value.INPUT}
-            <input class="button" type="submit" name="filter" value="{$SHOW}" />
+            <input class="button" type="submit" name="showIax" value="{$SHOW}" />
         </td>
     </tr>
 </table>

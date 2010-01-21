@@ -15,7 +15,7 @@
             {elseif $Commit}
             <input class="button" type="submit" name="commit_iax" value="{$SAVE}">&nbsp;&nbsp;&nbsp;&nbsp;
             {/if}
-            <input class="button" type="submit" name="cancel" value="{$CANCEL}">
+            <input class="button" type="submit" name="cancel_iax" value="{$CANCEL}">
         </td>
         <td align="right" nowrap><span class="letra12"><span  class="required">*</span> {$REQUIRED_FIELD}</span></td>
     </tr>
@@ -53,6 +53,7 @@
             <tr class="letra12">
                 <td align="left" width="50%"><b>{$dbsecret.LABEL}: </b></td>
                 <td align="left">{$dbsecret.INPUT}</td>
+                <td align="left"><span id="text" onclick="hideAllParameters();">Hide All</span></td>
             </tr>
             <tr class="letra12">
                 <td align="left" width="50%"><b>{$notransfer.LABEL}: </b></td>
@@ -73,7 +74,6 @@
             <tr class='letra12'>
                 <td align="left" width="50%"><b>{$host.LABEL}: </b></td>
                 <td align="left">{$host.INPUT}</td> 
-                <td align="left"><span id="text" onclick="hideAllParameters();">Hide All</span></td>
             </tr>
             <tr class="letra12">
                 <td align="left" width="50%"><b>{$accountcode.LABEL}: </b></td>
