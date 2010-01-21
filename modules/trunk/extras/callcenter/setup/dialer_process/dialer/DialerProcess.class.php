@@ -75,7 +75,7 @@ class DialerProcess extends AbstractProcess
     private $_tieneCallsAgent = FALSE;  // VERDADERO si tiene campo calls.agent para llamadas agendadas
     
     private $_fuenteCredAst = ASTCONN_CRED_DESCONOCIDO;
-    
+
     var $DEBUG = FALSE;
     var $REPORTAR_TODO = FALSE;
     var $_iUltimoDebug = NULL;
@@ -423,6 +423,7 @@ class DialerProcess extends AbstractProcess
         } else {
             if ($this->DEBUG && $this->REPORTAR_TODO)
                 $astman->add_event_handler('*', array($this, 'OnDefault'));
+            $astman->add_event_handler('Newchannel', array($this, 'OnNewchannel'));
             $astman->add_event_handler('Join', array($this, 'OnJoin'));
             $astman->add_event_handler('Link', array($this, 'OnLink'));
             $astman->add_event_handler('Unlink', array($this, 'OnUnlink'));
@@ -985,7 +986,13 @@ PETICION_LLAMADAS_AGENTE;
                             $listaLlamadas[$sKey]->OriginateStart = time();
                             $listaLlamadas[$sKey]->OriginateEnd = NULL;
                             $listaLlamadas[$sKey]->Channel = NULL;
+                            $listaLlamadas[$sKey]->PendingEvents = NULL;
     
+                            // Para llamadas por plan de marcado, se requiere guardar la 
+                            // cadena de marcado para poder identificar los eventos Join
+                            // y Link que se generen antes del OriginateResponse
+                            $listaLlamadas[$sKey]->DialString = is_null($infoCampania->trunk) ? $sCanalTrunk : NULL;
+                            
                             $this->_numLlamadasOriginadas[$infoCampania->queue]++;
                             $bErrorLocked = FALSE;
                             do {
@@ -1272,6 +1279,12 @@ PETICION_LLAMADAS;
                     $listaLlamadas[$sKey]->OriginateEnd = NULL;
                     $listaLlamadas[$sKey]->agent = NULL;    // Por esta ruta de código, la llamada no es agendada a agente.
                     $listaLlamadas[$sKey]->Channel = NULL;
+
+                    // Para llamadas por plan de marcado, se requiere guardar la 
+                    // cadena de marcado para poder identificar los eventos Join
+                    // y Link que se generen antes del OriginateResponse
+                    $listaLlamadas[$sKey]->DialString = is_null($infoCampania->trunk) ? $sCanalTrunk : NULL;
+                    $listaLlamadas[$sKey]->PendingEvents = NULL;
                     
                     $this->_numLlamadasOriginadas[$infoCampania->queue]++;
                     $bErrorLocked = FALSE;
@@ -1598,6 +1611,44 @@ PETICION_LLAMADAS;
         return TRUE;
     }
 
+    // Callback invocado al recibir el evento Newchannel
+    function OnNewchannel($sEvent, $params, $sServer, $iPort)
+    {
+        if ($this->DEBUG) {
+            $this->oMainLog->output("DEBUG: ENTER OnNewchannel");
+            $this->oMainLog->output("DEBUG: $sEvent:\nparams => ".print_r($params, TRUE));
+        }
+
+        /* Para cada llamada en espera de responder, se verifica si el canal
+           esperado corresponde al canal que se acaba de crear. Si es así, se
+           registra el UniqueID para poder atrapar el resto de los eventos. 
+           Nótese que sólo se considera la pata 1 de la llamada.
+         */
+        $regs = NULL;
+        if (isset($params['Channel']) && preg_match('|^(Local/.+@from-internal)-[\dabcdef]+,1$|', $params['Channel'], $regs)) {
+            if ($this->DEBUG) {
+                $this->oMainLog->output("DEBUG: se ha creado pata 1 de llamada Local/XXX@from-internal");         
+            }
+            foreach (array_keys($this->_infoLlamadas['llamadas']) as $sKey) {
+            	if (!is_null($this->_infoLlamadas['llamadas'][$sKey]->DialString) && 
+                    $this->_infoLlamadas['llamadas'][$sKey]->DialString == $regs[1]) {
+
+            		$this->_infoLlamadas['llamadas'][$sKey]->Uniqueid = $params['Uniqueid'];
+                    $this->_infoLlamadas['llamadas'][$sKey]->PendingEvents = array();
+                    if ($this->DEBUG) {
+                        $this->oMainLog->output("DEBUG: Llamada localizada, Uniqueid={$params['Uniqueid']}");
+                        $this->oMainLog->output("DEBUG: EXIT OnNewchannel");         
+                    }
+                    return FALSE;
+            	}
+            }
+        }
+        if ($this->DEBUG) {
+            $this->oMainLog->output("DEBUG: EXIT OnNewchannel");         
+        }
+        return FALSE;
+    }
+
     // Callback invocado al recibir el evento OriginateResponse
     function OnOriginateResponse($sEvent, $params, $sServer, $iPort)
     {
@@ -1663,6 +1714,13 @@ PETICION_LLAMADAS;
             
             if ($params['Response'] == 'Success') {
                 if (isset($this->_infoLlamadas['llamadas'][$sKey])) {
+                    if (isset($this->_infoLlamadas['llamadas'][$sKey]->Uniqueid) && 
+                        $this->_infoLlamadas['llamadas'][$sKey]->Uniqueid != $params['Uniqueid']) {
+                    
+                        $this->oMainLog->output("ERR: se procesó pata equivocada en evento Newchannel ".
+                            "anterior, pata procesada es {$this->_infoLlamadas['llamadas'][$sKey]->Uniqueid}, ".
+                            "pata real es {$params['Uniqueid']}");    	
+                    }                    
                     $this->_infoLlamadas['llamadas'][$sKey]->Uniqueid = $params['Uniqueid'];
                     $this->_infoLlamadas['llamadas'][$sKey]->Response = $params['Response'];
                     $this->_infoLlamadas['llamadas'][$sKey]->queue = $infoCampania->queue;
@@ -1744,6 +1802,25 @@ PETICION_LLAMADAS;
         if ($this->DEBUG) {
             $this->oMainLog->output("DEBUG: EXIT OnOriginateResponse");        	
         }
+
+        /* Buscar el posible evento Join/Link que se haya almacenado previamente */
+        if (isset($this->_infoLlamadas['llamadas'][$sKey]) && 
+            is_array($this->_infoLlamadas['llamadas'][$sKey]->PendingEvents)) {
+        	// Hay eventos pendientes para esta llamada...
+            if (isset($this->_infoLlamadas['llamadas'][$sKey]->PendingEvents['Join'])) {
+                if ($this->DEBUG) {
+                    $this->oMainLog->output("DEBUG: volviendo a ejecutar el evento Join almacenado");
+                }
+                $this->OnJoin('join', $this->_infoLlamadas['llamadas'][$sKey]->PendingEvents['Join'], $sServer, $iPort);
+        	}
+            if (isset($this->_infoLlamadas['llamadas'][$sKey]->PendingEvents['Link'])) {
+                if ($this->DEBUG) {
+                    $this->oMainLog->output("DEBUG: volviendo a ejecutar el evento Link almacenado");
+                }
+                $this->OnLink('link', $this->_infoLlamadas['llamadas'][$sKey]->PendingEvents['Link'], $sServer, $iPort);
+            }
+        }
+
         return FALSE;
     }
 
@@ -1772,6 +1849,21 @@ PETICION_LLAMADAS;
                 $sKey = $key;
             }
         }
+
+        if (!is_null($sKey) && 
+            is_null($this->_infoLlamadas['llamadas'][$sKey]->OriginateEnd) && 
+            is_array($this->_infoLlamadas['llamadas'][$sKey]->PendingEvents)) {
+                
+            /* Este event Join se recibió antes de tiempo. Se lo debe almacenar */
+            $this->_infoLlamadas['llamadas'][$sKey]->PendingEvents['Join'] = $params;
+
+            $sKey = NULL;
+            if ($this->DEBUG) {
+                $this->oMainLog->output("DEBUG: EXIT OnJoin");                  
+            }
+            return FALSE;
+        }
+
         if (!is_null($sKey)) {
             $this->_infoLlamadas['llamadas'][$sKey]->enterqueue_timestamp = time();
             $sLlamadaEnCola = 
@@ -1843,6 +1935,21 @@ PETICION_LLAMADAS;
                 if (!is_null($sKey)) break;
             }
         }
+
+        if (!is_null($sKey) && 
+            is_null($this->_infoLlamadas['llamadas'][$sKey]->OriginateEnd) && 
+            is_array($this->_infoLlamadas['llamadas'][$sKey]->PendingEvents)) {
+            	
+            /* Este event Link se recibió antes de tiempo. Se lo debe almacenar */
+            $this->_infoLlamadas['llamadas'][$sKey]->PendingEvents['Link'] = $params;
+
+            $sKey = NULL;
+            if ($this->DEBUG) {
+                $this->oMainLog->output("DEBUG: EXIT OnLink");                  
+            }
+            return FALSE;
+        }
+
         if (!is_null($sKey)) {
         	/* Si una llamada regresa de HOLD a activa, se recibe un evento Link,
              * pero la llamada ya se encuentra en current_calls. */

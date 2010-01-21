@@ -1,3 +1,7 @@
+* Dialer: Fix assumption that Link and Join events will always occur before
+  the OriginateResponse event. This does not always hold for calls made through
+  the dialplan (Local/XXX@from-internal). Should fix issue of some calls not
+  being detected when using dialplan for campaigns. 
 * Dialer: An incoming call that is transferred should result in the agent being
   marked as idle in the database, instead of incorrectly keep displaying the
   information for the transferred call. Fixes Elastix bug #213.
