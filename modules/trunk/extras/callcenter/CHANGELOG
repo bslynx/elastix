@@ -1,4 +1,4 @@
-* Dialer: Fix assumption that Link and Join events will always occur before
+* Dialer: Fix assumption that Link and Join events will always occur after
   the OriginateResponse event. This does not always hold for calls made through
   the dialplan (Local/XXX@from-internal). Should fix issue of some calls not
   being detected when using dialplan for campaigns. 
