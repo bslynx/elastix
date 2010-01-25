@@ -101,7 +101,7 @@ function reportEmaillist($smarty, $module_name, $local_templates_dir, &$pDB, $ar
     //begin grid parameters
     $oGrid  = new paloSantoGrid($smarty);
     $limit  = 20;
-
+    $pEmaillist->ejecucion();
     if (isset($_POST['domain'])){ 
         $id_domain=$_POST['domain'];
         $arrResult =$pEmaillist->getEmailListByDomainDB($id_domain);
@@ -418,16 +418,16 @@ function saveNewEmailMember($smarty, $module_name, $local_templates_dir, &$pDB, 
     }
     else{
         $id_emaillist     = getParameter("id_emaillist");
-        $emallistname     = getParameter("name_emaillist");
-
+        $emaillistname     = getParameter("name_emaillist");
+    exec("echo '-$id_emaillist--$emaillistname-' > /tmp/oscar");
         $dataEmailMember = array();
         $dataEmailMember['id_emaillist'] = $pDB->DBCAMPO($id_emaillist);
         $dataEmailMember['mailmember'] = $pDB->DBCAMPO($_POST['emailmember']);
 
-        $pEmaillist->addNewMember($emallistname, $_POST['emailmember']);
-        //$result = $pEmaillist->addEmailMemberDB($dataEmailMember);
+        $pEmaillist->addNewMember($emaillistname, $_POST['emailmember']);
+        $result = $pEmaillist->addEmailMemberDB($dataEmailMember);
         
-        header("Location: ?menu=$module_name&action=new_memberlist&id=$id_emaillist&namelist=$emallistname");
+        header("Location: ?menu=$module_name&action=new_memberlist&id=$id_emaillist&namelist=$emaillistname");
     }
 
 }
@@ -543,6 +543,16 @@ function delete_memberList($smarty, $module_name, $local_templates_dir, $pDB, $a
     }
     header("Location: ?menu=$module_name&action=new_memberlist&id=$id&namelist=$emallistname");
     
+}
+
+function getParameter($parameter)
+{
+    if(isset($_POST[$parameter]))
+        return $_POST[$parameter];
+    else if(isset($_GET[$parameter]))
+        return $_GET[$parameter];
+    else
+        return null;
 }
 
 function getAction()

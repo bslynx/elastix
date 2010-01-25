@@ -87,16 +87,16 @@ class paloSantoEmaillist {
 
     
     function readFileMm_cfg() {
-        $myFile='/etc/mailman/mm_cfg.py';
+        $myFile='/usr/lib/mailman/Mailman/mm_cfg.py';
         $fh = fopen($myFile, 'r');
         return $fh;
     }
 
     function saveChangeFileMm_cfg($text){
-        exec("sudo -u root chown -R asterisk.asterisk /usr/lib/mailman/Mailman/mm_cfg.py");
+        exec("sudo -u root chown asterisk.asterisk /usr/lib/mailman/Mailman/mm_cfg.py");
         $fp = fopen('/usr/lib/mailman/Mailman/mm_cfg.py', 'w');
         fwrite($fp, $text);   
-        exec("sudo -u root chown -R root.mailman /usr/lib/mailman/Mailman/mm_cfg.py");
+        exec("sudo -u root chown root.mailman /usr/lib/mailman/Mailman/mm_cfg.py");
         fclose($fp);
     }
 
@@ -111,6 +111,14 @@ class paloSantoEmaillist {
         $fp = fopen('/etc/aliases', 'a');
         fwrite($fp, $text);   
 
+        fclose($fp);
+    }
+
+    function updateChangeFileDefaultsPy($text){
+    exec("sudo -u root chown asterisk.asterisk /usr/lib/mailman/Mailman/Defaults.py");
+        $fp = fopen('/usr/lib/mailman/Mailman/Defaults.py', 'w');
+        fwrite($fp, $text);
+    exec("sudo -u root chown root.mailman /usr/lib/mailman/Mailman/Defaults.py");
         fclose($fp);
     }
 
@@ -152,6 +160,7 @@ class paloSantoEmaillist {
         exec("sudo -u root chown -R asterisk.asterisk /var/lock/mailman/");
         
         $this->replaceFileMM_cfg($domainName);
+    $this->replaceFileDefaultsPy($domainName);
 
         exec("touch /usr/lib/mailman/bin/lista_member.tmp");
 
@@ -200,6 +209,7 @@ class paloSantoEmaillist {
         while($line = fgets($fp, filesize($FILE)))
         {
             if(eregi("socket", $line)) {
+        if(!eregi("# from socket import *", $line))
                 $line = str_ireplace("from socket import *","# from socket import *", $line);
                 $text .= $line; 
             }else if(eregi("try:", $line)) {
@@ -218,20 +228,41 @@ class paloSantoEmaillist {
                 if(!eregi("# fqdn = 'mm_cfg_has_unknown_host_domains'", $line))
                 $line = str_ireplace("fqdn = 'mm_cfg_has_unknown_host_domains'", "# fqdn = 'mm_cfg_has_unknown_host_domains'", $line);
                 $text .= $line;
-            }elseif(eregi("DEFAULT_URL_HOST   = fqdn", $line)) {
+            }elseif(eregi("DEFAULT_URL_HOST   = ", $line)) {
                 $line = str_ireplace("fqdn", "\"www.$domainName\"", $line);
                 $text .= $line;
-            }elseif(eregi("DEFAULT_EMAIL_HOST = fqdn", $line)) {
+            }elseif(eregi("DEFAULT_EMAIL_HOST = ", $line)) {
                 $line = str_ireplace("fqdn", "\"$domainName\"", $line);
                 $text .= $line;
             }else {
                 $text .= $line;
             }
         }
-        return $text;
+        //return $text;
         $this->saveChangeFileMm_cfg($text);
         fclose($fp);
     }
+
+    function replaceFileDefaultsPy($domainName){
+        $FILE='/usr/lib/mailman/Mailman/Defaults.py';
+        $text = "";
+        $fp = fopen($FILE,'r');
+        while($line = fgets($fp, filesize($FILE)))
+        {
+       if(eregi("POSTFIX_STYLE_VIRTUAL_DOMAINS =", $line)){
+        $data = split('[=]',$line);
+        if(trim($data[0])=='POSTFIX_STYLE_VIRTUAL_DOMAINS'){
+          $text .= "POSTFIX_STYLE_VIRTUAL_DOMAINS = ['$domainName']\n";
+        }else
+          $text .=$line;
+        }else
+        $text .= $line;
+        }
+        //return $text;
+        $this->updateChangeFileDefaultsPy($text);
+        fclose($fp);
+    }
+
 
     function addNewMailList($emailRootList, $passRootList, $nameList){
         $text="";
@@ -275,6 +306,8 @@ class paloSantoEmaillist {
         exec("sudo -u root chown -R root.mailman /var/log/mailman/");
         exec("sudo -u root chown -R root.mailman /var/lock/mailman/");
         
+    exec("rm -rf /var/run/mailman/master-qrunner.pid");
+    exec("/etc/init.d/mailman start");
     }
 
 
@@ -492,5 +525,12 @@ class paloSantoEmaillist {
         exec("sudo -u root chown -R root.mailman /var/lock/mailman/");
         
     }
+
+    function ejecucion(){
+      exec("sudo -u root rm -f /var/run/mailman/master-qrunner.pid");
+      //exec("sudo -u root etc/init.d/mailman start");
+      exec("sudo -u root service mailman restart");
+    }
+
 }
 ?>
