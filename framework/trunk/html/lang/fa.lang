@@ -136,6 +136,8 @@ $arrLang=array(
 "IM" => "پیام فوری",
 "OpenFire" => "سرور پیام فوری",
 "The service Openfire No running" => "در حال حاضر سرویس Openfire فعال نیست در صورت تمایل برای فعال سازی لطفا",
+"Webmin" => "Webmin",
+"The service Webmin No running" => "The Webmin service is not active at this moment. If you want to activate it please ",
 
 /*vTigerCRM*/
 "vTigerCRM" => "برنامه ارتباط با مشتری",

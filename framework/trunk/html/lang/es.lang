@@ -137,6 +137,9 @@ $arrLang=array(
 "IM" => "IM",
 "OpenFire" => "OpenFire",
 "The service Openfire No running" => "El servicio Openfire no esta activo en este momento. Si deseas activarlo haga ",
+"Webmin" => "Webmin",
+"The service Webmin No running" => "El servicio Webmin no esta activo en este momento.Si deseas activarlo haga ",
+
 
 /*vTigerCRM*/
 "vTigerCRM" => "vTigerCRM",
