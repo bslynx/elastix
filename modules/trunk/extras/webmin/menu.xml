@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module>
+  <menulist>
+    <menuitem menuid="extra"   desc="Extra"   parent=""         module="no"  link="" order="0"></menuitem>
+    <menuitem menuid="webmin"  desc="Webmin"  parent="extra"    module="no"  link="webminWrapper.php?IP={NAME_SERVER}&amp;PORT=10000" order="1"></menuitem>
+  </menulist>
+</module>
