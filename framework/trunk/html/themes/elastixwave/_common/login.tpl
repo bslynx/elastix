@@ -43,7 +43,7 @@
               <div align="right">{$USERNAME}:</div>
           </td>
           <td>
-            <input type="text" name="input_user" style="color:#000000; FONT-FAMILY: verdana, arial, helvetica, sans-serif; FONT-SIZE: 8pt;
+            <input type="text" id="input_user" name="input_user" style="color:#000000; FONT-FAMILY: verdana, arial, helvetica, sans-serif; FONT-SIZE: 8pt;
              font-weight: none; text-decoration: none; background: #fbfeff; border: 1 solid #000000;">
           </td>
         </tr>
@@ -72,5 +72,8 @@
 <br>
 <div align="center" class="copyright">Copyright &copy; 2006 by <a href="http://www.palosanto.com">PaloSanto Solutions</a></div>
 <br>
+<script type="text/javascript">
+    document.getElementById("input_user").focus();
+</script>
 </body>
 </html>
