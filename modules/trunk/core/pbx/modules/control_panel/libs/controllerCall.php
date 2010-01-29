@@ -56,23 +56,21 @@ else if ($action == "savechange2"){
     $pDB2 = new paloDB($arrConfModule['dsn_conn_database2']);
     $pControlPanel = new paloSantoControlPanel($pDB1,$pDB2);
     $pControlPanel->saveChangeArea2($number_org,$number_dst); 
+
 }
 else if ($action == "saveresize"){
     $pDB1 = new paloDB($arrConfModule['dsn_conn_database1']);
     $pDB2 = new paloDB($arrConfModule['dsn_conn_database2']);
     $pControlPanel = new paloSantoControlPanel($pDB1,$pDB2);
     
-    if($width>2071) $num=10;
-    elseif($width>1882 && $width<2072) $num=10;
-    elseif($width>1693 && $width<1883) $num=9;
-    elseif($width>1504 && $width<1694) $num=8;
-    elseif($width>1315 && $width<1505) $num=7;
-    elseif($width>1126 && $witdth<1316) $num=6;
-    elseif($width>936 && $witdth<1127) $num=5;
-    elseif($width>747 && $width<937) $num=4;
-    elseif($width>559 && $width<748) $num=3;
-    elseif($width>370 && $width<560) $num=2;
-    elseif($width>184 && $width<371) $num=1;
+    if($width>747)
+        $num=3;
+    elseif($width>559 && $width<748)
+        $num=3;
+    elseif($width>370 && $width<560)
+        $num=2;
+    elseif($width>184 && $width<371)
+        $num=1;
 
     if($type!="alsoResize")
         $pControlPanel->updateResizeArea($height,$width,$num,$id_area);
@@ -100,4 +98,13 @@ else if ($action == "addExttoQueue"){
     $pControlPanel->queueAddMember($queue, $number_org);
 }
 
+// function getParameter($parameter)
+// {
+//     if(isset($_POST[$parameter]))
+//         return $_POST[$parameter];
+//     else if(isset($_GET[$parameter]))
+//         return $_GET[$parameter];
+//     else
+//         return null;
+// }
 ?>

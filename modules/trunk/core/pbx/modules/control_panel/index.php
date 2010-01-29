@@ -104,12 +104,29 @@ function viewFormControlPanel($smarty, $module_name, $local_templates_dir, &$pDB
         $smarty->assign("size$i", $value['a.no_column']);
         $i++;
     }
+    //New Feauters
+    $totalQueues = 0;
+    $arrNumQueues = $pControlPanel->getAsterisk_QueueInfo();
+    foreach($arrNumQueues as $key=>$value){
+        $totalQueues += $value;
+    }
+    $smarty->assign("total_queues",$totalQueues);
 
     $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",$arrLang["Control Panel"], $_POST);
     $content = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
 
     return $content;
 }
+
+// function getParameter($parameter)
+// {
+//     if(isset($_POST[$parameter]))
+//         return $_POST[$parameter];
+//     else if(isset($_GET[$parameter]))
+//         return $_GET[$parameter];
+//     else
+//         return null;
+// }
 
 function getAction()
 {

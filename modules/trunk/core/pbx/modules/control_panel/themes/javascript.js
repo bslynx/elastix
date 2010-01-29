@@ -115,24 +115,29 @@ $(document).ready(function(){
         }
     });
 
-    $(".areaDrop").droppable({
-        accept: ".item_box",
-        drop: function(event, ui) {
-            $(this).append($(ui.draggable));
-        }
-    });
+//     $(".item_box").droppable({
+//         accept: ".item_box",
+//         drop: function(event, ui) {
+//             $(this).append($(ui.draggable));
+//         }
+//     });
+    //NUEVA AGREGACION
+//     $(".item_box").droppable({
+//         accept: ".item_box",
+//         drop: function(event, ui) {
+//             $(this).append($(ui.draggable));
+//         }
+//     });
 
     $(".areaDrop").droppable({
-        accept: "#lista_local",
+        accept: ".item_box",//#lista_local
         drop: function(event, ui) {
+            $(this).append($(ui.draggable));
             var idStart = ($(ui.draggable).attr("id")).split("_");
             var idFinish = ($(this).attr("id")).split("_");
-
-            $(this).append($(ui.draggable));
-
             var order = '' + '&action=savechange2&menu=control_panel&extStart='+idStart[1]+'&extFinish='+idFinish[1]+'';
             $.post("modules/control_panel/libs/controllerCall.php", order, function(theResponse){
-                $("#contentRight").html(theResponse);
+                $("#contentRight").html(theResponse); 
             });
         }
     });
@@ -146,6 +151,7 @@ $(document).ready(function(){
             var order = '' + '&action=savechange&menu=control_panel&extStart='+idStart[1]+'&area=2';
             $.post("modules/control_panel/libs/controllerCall.php", order, function(theResponse){
                 $("#contentRight").html(theResponse);
+                alert(order);
             });
         }
     });
@@ -685,4 +691,12 @@ loadSizeArea();
 
 function reFresh() {
     location.reload(true)
+}
+
+function actualizarQueues()
+{
+    $.post("modules/control_panel/libs/controllerCall.php", '&action=refreshQueues&menu=control_panel', function(theResponse){
+        reloadQueues(theResponse);
+    }); 
+    //setTimeout('actualizar()',2000);//recargar cada 2 segundo
 }

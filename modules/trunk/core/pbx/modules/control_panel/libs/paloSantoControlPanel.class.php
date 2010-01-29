@@ -168,6 +168,7 @@ class paloSantoControlPanel {
                 if(ereg("^/AMPUSER/([[:digit:]]+)/cidname[[:space:]]+:([[:alnum:]| |-|_|\.]+)$",$ext_data,$arrReg)){
                     $value['user']    = $arrReg[1];
                     $value['cidname'] = $arrReg[2];
+                    
                     $call_dstn = " ";
                     if(isset($arrChan[$value['user']]['dstn'])){
                         $tmp = split("-",$arrChan[$value['user']]['dstn']);
@@ -335,10 +336,11 @@ class paloSantoControlPanel {
         $count=-1;
         if(is_array($arrMember) & count($arrMember)>0){
             foreach($arrMember as $key => $queue_data) {
-                if(ereg("^([[:digit:]]+)[[:space:]]",$queue_data, $arrReg)){
+                if(ereg("^([0-9]+)[[:space:]]*has ([0-9]+)",$queue_data, $arrReg)){
                     $count++;
                     $arrQueue[$count]['number'] = $arrReg[1]; 
                     $arrQueue[$count]['name'] = $arrReg[1]; 
+                    $arrQueue[$count]['queue_wait'] = $arrReg[2]; 
                     $arrQueue[$count]['members']="Queues attended by ";
                 }else{
                     //$data=split('[/@]',$queue_data,3);
@@ -541,6 +543,55 @@ class paloSantoControlPanel {
         if( $SS < 10 ) $SS = "0$SS";
 
         return "$HH:$MM:$SS";
+    }
+
+    function getNumQueueWaitingByUser($user) {
+        $parameters = array('Command'=>"queue show");
+        $arrQueues = $this->AsteriskManagerAPI("Command",$parameters,true);
+        $arrQue = array();
+        $num = 0;
+        foreach($arrQueues as $line){
+            if(ereg("^([0-9]+)[[:space:]]*has ([0-9]+)",$line,$arrToken)){
+                if(trim($arrToken[1])==$queue)   
+                    $num = $arrToken[2];
+            }
+//             if(ereg("^[[:space:]]*Local/([0-9]+))){
+//                 if(trim($arrMember[1]==$user))
+//             }
+        }
+        return $arrQue;
+    }
+
+    function getAsterisk_QueueInfo() {
+        $parameters = array('Command'=>"queue show");
+        $arrQueues = $this->AsteriskManagerAPI("Command",$parameters,true);
+        $arrQue = array();
+
+        foreach($arrQueues as $line){
+            if(ereg("^([0-9]+)[[:space:]]*has ([0-9]+)",$line,$arrToken))
+                $arrQue[$arrToken[1]] = $arrToken[2];
+        }
+        return $arrQue;
+    }
+
+     function getAllQueuesXML(){
+        global $arrLang;
+        $arrDevs   = $this->getAllQueuesARRAY2();
+
+        $xmlRecords = "";
+        if(is_array($arrDevs) & count($arrDevs)>0){
+            $xmlRecords .= "<?xml version=\"1.0\"?>\n";
+            $xmlRecords .= "<items>\n";
+            foreach($arrDevs as $key => $queue_data){
+                    $xmlRecords .= "  <queue>\n";
+                    $xmlRecords .= "    <name>{$queue_data['name']}</name>\n";
+                    $xmlRecords .= "    <queue_wait>{$queue_data['queue_wait']}</queue_wait>\n";
+                    $xmlRecords .= "    <members>{$queue_data['members']}</members>\n";
+                    $xmlRecords .= "  </queue>\n";
+            }
+            $xmlRecords .= "</items>\n";
+        }
+        return $xmlRecords;
     }
 }
 ?>

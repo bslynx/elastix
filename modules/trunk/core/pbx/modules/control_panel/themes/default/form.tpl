@@ -13,6 +13,8 @@
 
     <div id="tool"> 
         <input type="button" value="Reload" onclick="loadSizeArea()"/>
+        <span id="timewaiting">Half waiting time Queue: </span>
+        <span id="allqueue">Calls in Queue: {$total_queues}</span>
     </div>
 
     <ul id="sortable-list1">
@@ -278,7 +280,7 @@
                                                 <a class="tooltipInfo" href="#"><img class="infor_box" src="modules/{$module_name}/images/info.png" /><span>{$queu_info.members}&nbsp;</span></a>
                                             </div>
                                             <div style='float:left;width:115px;text-align:left;padding-left:4px;'>
-                                                <b>{$queu_info.number}:</b>&nbsp;{$queu_info.number}<br />
+                                                <b>{$queu_info.number}:</b>&nbsp;{$queu_info.number}<br />calls waiting:<span class="monitor">&nbsp;{$queu_info.queue_wait}&nbsp;</span>
                                             </div>
                                             <div style='border: black solid 0px'>
                                                 <img id="phone_{$queu_info.number}" class="phone_boxqueue" src="modules/{$module_name}/images/icon_queue.png" />

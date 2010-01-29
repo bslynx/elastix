@@ -444,3 +444,22 @@ a.tooltipInfo:hover span{
     height: 24px;
     border: black solid 0px;
 }
+
+#timewaiting {
+    color: #4084C3;
+    font-size: 11px;
+    margin-left: 10px;
+}
+
+#allqueue {
+    color: #4084C3;
+    font-size: 11px;
+    margin-left: 60px;
+
+}
+
+#parametro {
+    color: black;
+    font-size: 9px;
+    padding: 5px;
+}
