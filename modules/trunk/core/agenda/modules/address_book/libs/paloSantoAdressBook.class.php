@@ -61,7 +61,7 @@ class paloAdressBook {
 This function obtain all records in the table, but, if the param $count is passed as true the function only return
 a array with the field "total" containing the total of records.
 */
-    function getAddressBook($limit=NULL, $offset=NULL, $field_name=NULL, $field_pattern=NULL,$count=FALSE)
+    function getAddressBook($limit=NULL, $offset=NULL, $field_name=NULL, $field_pattern=NULL, $iduser, $count=FALSE)
     {
     //Defining the fields to get. If the param $count is true, then we will get the result of the sql function count(), else, we will get all fields in the table.
     $fields=($count)?"count(id) as total":"*";
@@ -72,9 +72,9 @@ a array with the field "total" containing the total of records.
         $strWhere = "";
 
         if(!is_null($field_name) and !is_null($field_pattern))
-            $strWhere .= " $field_name like '%$field_pattern%' ";
+            $strWhere .= " $field_name like '%$field_pattern%' and iduser=$iduser";
         if($field_name=="telefono")
-            $strWhere .= " or extension like '%$field_pattern%' ";
+            $strWhere .= " or extension like '%$field_pattern%' and iduser=$iduser";
 
         // Clausula WHERE aqui
         if(!empty($strWhere)) $query .= "WHERE $strWhere ";
@@ -255,6 +255,21 @@ a array with the field "total" containing the total of records.
             }
         }
         return $result;
+    }
+
+    function getIdUser($sNombreUser)
+    {
+        $idUser = FALSE;
+    
+        $this->errMsg = '';
+        $sPeticionSQL = "SELECT id FROM acl_user WHERE name = ".paloDB::DBCAMPO($sNombreUser);
+        exec("echo 'Entro' > /tmp/oscar");
+        $result = $this->_DB->getFirstRowQuery($sPeticionSQL, FALSE);
+        if ($result && is_array($result) && count($result)>0) {
+            $idUser = $result[0];
+        }else $this->errMsg = $this->_DB->errMsg;
+        return $idUser;
+        
     }
 }
 ?>

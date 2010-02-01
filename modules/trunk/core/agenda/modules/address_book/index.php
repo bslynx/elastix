@@ -76,7 +76,7 @@ function _moduleContent(&$smarty, $module_name)
                    $arrConfig['AMPDBHOST']['valor']."/asterisk";
 
     $pDB = new paloDB($arrConf['dsn_conn_database']);
-
+    $pDB_2 = new paloDB($arrConf['dsn_conn_database2']);
     $action = getAction();
 
     $content = "";
@@ -89,7 +89,7 @@ function _moduleContent(&$smarty, $module_name)
             header("Location: ?menu=$module_name");
             break;
         case "commit":
-            $content = save_adress_book($smarty,$module_name, $local_templates_dir, $pDB, $arrLang,true);
+            $content = save_adress_book($smarty,$module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang,true);
             break;
         case "edit":
             $content = view_adress_book($smarty,$module_name, $local_templates_dir, $pDB, $arrLang);
@@ -101,7 +101,7 @@ function _moduleContent(&$smarty, $module_name)
             if($_POST['address_book_options']=="address_from_csv")
                 $content = save_csv($smarty,$module_name, $local_templates_dir, $pDB, $arrLang, $dsnAsterisk);
             else
-                $content = save_adress_book($smarty,$module_name, $local_templates_dir, $pDB, $arrLang);
+                $content = save_adress_book($smarty,$module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang);
             break;
         case "delete":
             $content = deleteContact($smarty,$module_name, $local_templates_dir, $pDB, $arrLang, $dsnAsterisk);
@@ -283,7 +283,7 @@ function new_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $arr
 /*
 ******** Funciones del modulo
 */
-function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $dsnAsterisk)
+function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $dsnAsterisk)
 {
     if(getParametro('select_directory_type') != null && getParametro('select_directory_type')=='external')
     {
@@ -340,9 +340,12 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
     $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter_adress_book.tpl", "", $_POST);
 
     $padress_book = new paloAdressBook($pDB);
+    $p_book = new paloAdressBook($pDB_2);
+
+    $id_user = $p_book->getIdUser($_SESSION["elastix_user"]);
 
     if($directory_type=='external')
-        $total = $padress_book->getAddressBook(NULL,NULL,$field,$pattern,TRUE);
+        $total = $padress_book->getAddressBook(NULL,NULL,$field,$pattern,$id_user,TRUE);
     else
         $total = $padress_book->getDeviceFreePBX($dsnAsterisk, NULL,NULL,$field,$pattern,TRUE);
 
@@ -361,7 +364,7 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
     //Fin Paginacion
 
     if($directory_type=='external')
-        $arrResult =$padress_book->getAddressBook($limit, $offset, $field, $pattern);
+        $arrResult =$padress_book->getAddressBook($limit, $offset, $field, $pattern, $id_user);
     else
         $arrResult =$padress_book->getDeviceFreePBX($dsnAsterisk, $limit,$offset,$field,$pattern);
 
@@ -446,7 +449,7 @@ function createFieldForm($arrLang)
     return $arrFields;
 }
 
-function save_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $arrLang,$update=FALSE)
+function save_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang,$update=FALSE)
 {
     $arrForm = createFieldForm($arrLang);
     $oForm = new paloForm($smarty, $arrForm);
@@ -499,11 +502,16 @@ function save_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $ar
         }
     }else{
         $data = array();
+        $padress_book = new paloAdressBook($pDB);
+        $p_book = new paloAdressBook($pDB_2);
+
+        $id_user = $p_book->getIdUser($_SESSION["elastix_user"]);
 
         $data['name']       = $pDB->DBCAMPO($_POST['name']);
         $data['last_name']  = $pDB->DBCAMPO($_POST['last_name']);
         $data['telefono']   = $pDB->DBCAMPO($_POST['telefono']);
         $data['email']      = $pDB->DBCAMPO($_POST['email']);
+        $data['iduser']     = $pDB->DBCAMPO($id_user);
 
         $padress_book = new paloAdressBook($pDB);
         if($update)
