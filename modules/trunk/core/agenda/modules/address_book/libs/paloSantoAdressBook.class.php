@@ -27,12 +27,15 @@
   +----------------------------------------------------------------------+
   $Id: paloSantoCDR.class.php,v 1.1.1.1 2008/01/31 21:31:55 bmacias Exp $
   $Id: paloSantoCDR.class.php,v 1.1.1.1 2008/06/25 16:51:50 afigueroa Exp $
+  $Id: index.php,v 1.1 2010/02/04 09:20:00 onavarrete@palosanto.com Exp $
  */
 
 //ini_set("display_errors", true);
 if (file_exists("/var/lib/asterisk/agi-bin/phpagi-asmanager.php")) {
 require_once "/var/lib/asterisk/agi-bin/phpagi-asmanager.php";
 }
+global $arrConf; 
+//include_once("$arrConf[basePath]/libs/paloSantoACL.class.php");
 
 class paloAdressBook {
     var $_DB;
@@ -61,7 +64,7 @@ class paloAdressBook {
 This function obtain all records in the table, but, if the param $count is passed as true the function only return
 a array with the field "total" containing the total of records.
 */
-    function getAddressBook($limit=NULL, $offset=NULL, $field_name=NULL, $field_pattern=NULL, $iduser, $count=FALSE)
+    function getAddressBook($limit=NULL, $offset=NULL, $field_name=NULL, $field_pattern=NULL, $count=FALSE, $iduser=NULL)
     {
     //Defining the fields to get. If the param $count is true, then we will get the result of the sql function count(), else, we will get all fields in the table.
     $fields=($count)?"count(id) as total":"*";

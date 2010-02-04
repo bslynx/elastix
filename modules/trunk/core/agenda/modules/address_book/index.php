@@ -27,6 +27,7 @@
   +----------------------------------------------------------------------+
   $Id: index.php,v 1.1 2008/01/30 15:55:57 bmacias Exp $
   $Id: index.php,v 1.1 2008/06/25 16:51:50 afigueroa Exp $
+  $Id: index.php,v 1.1 2010/02/04 09:20:00 onavarrete@palosanto.com Exp $
  */
 
 function _moduleContent(&$smarty, $module_name)
@@ -74,9 +75,9 @@ function _moduleContent(&$smarty, $module_name)
                    $arrConfig['AMPDBUSER']['valor']. ":".
                    $arrConfig['AMPDBPASS']['valor']. "@".
                    $arrConfig['AMPDBHOST']['valor']."/asterisk";
-
     $pDB = new paloDB($arrConf['dsn_conn_database']);
     $pDB_2 = new paloDB($arrConf['dsn_conn_database2']);
+
     $action = getAction();
 
     $content = "";
@@ -107,10 +108,10 @@ function _moduleContent(&$smarty, $module_name)
             $content = deleteContact($smarty,$module_name, $local_templates_dir, $pDB, $arrLang, $dsnAsterisk);
             break;
         case "call2phone":
-            $content = call2phone($smarty,$module_name, $local_templates_dir, $pDB, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk);
+            $content = call2phone($smarty,$module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk);
             break;
         default:
-            $content = report_adress_book($smarty,$module_name, $local_templates_dir, $pDB, $arrLang, $dsnAsterisk);
+            $content = report_adress_book($smarty,$module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $dsnAsterisk);
             break;
     }
 
@@ -345,7 +346,7 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
     $id_user = $p_book->getIdUser($_SESSION["elastix_user"]);
 
     if($directory_type=='external')
-        $total = $padress_book->getAddressBook(NULL,NULL,$field,$pattern,$id_user,TRUE);
+        $total = $padress_book->getAddressBook(NULL,NULL,$field,$pattern,TRUE,$id_user);
     else
         $total = $padress_book->getDeviceFreePBX($dsnAsterisk, NULL,NULL,$field,$pattern,TRUE);
 
@@ -364,7 +365,7 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
     //Fin Paginacion
 
     if($directory_type=='external')
-        $arrResult =$padress_book->getAddressBook($limit, $offset, $field, $pattern, $id_user);
+        $arrResult =$padress_book->getAddressBook($limit, $offset, $field, $pattern, FALSE, $id_user);
     else
         $arrResult =$padress_book->getDeviceFreePBX($dsnAsterisk, $limit,$offset,$field,$pattern);
 
@@ -512,8 +513,7 @@ function save_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pD
         $data['telefono']   = $pDB->DBCAMPO($_POST['telefono']);
         $data['email']      = $pDB->DBCAMPO($_POST['email']);
         $data['iduser']     = $pDB->DBCAMPO($id_user);
-
-        $padress_book = new paloAdressBook($pDB);
+        
         if($update)
             $result = $padress_book->updateContact($data,array("id"=>$_POST['id']));
         else
