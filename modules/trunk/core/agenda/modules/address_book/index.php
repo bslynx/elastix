@@ -108,7 +108,7 @@ function _moduleContent(&$smarty, $module_name)
             $content = deleteContact($smarty,$module_name, $local_templates_dir, $pDB, $arrLang, $dsnAsterisk);
             break;
         case "call2phone":
-            $content = call2phone($smarty,$module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk);
+            $content = call2phone($smarty,$module_name, $local_templates_dir, $pDB, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk);
             break;
         default:
             $content = report_adress_book($smarty,$module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $dsnAsterisk);
