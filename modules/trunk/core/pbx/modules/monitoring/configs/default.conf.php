@@ -29,5 +29,5 @@
 global $arrConfModule;
 $arrConfModule['module_name'] = 'monitoring';
 $arrConfModule['templates_dir'] = 'themes';
-
+$arrConfModule['dsn_conn_database'] = 'mysql://root:eLaStIx.2oo7@localhost/asteriskcdrdb';
 ?>
