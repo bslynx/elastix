@@ -26,6 +26,18 @@ if($action == "setConfig"){
     $oPortsDetails = new PaloSantoHardwareDetection();
     
     $oPortsDetails->updateFileSipCustom($idSpan, $arrSpanConf);
+
+}else if($action == "setDataCard"){
+    header("Content-type: text/xml");
+    $arrCardParam = array();
+    $idCard = getParameter("idCard");
+    $pDB = new paloDB($arrConfModule['dsn_conn_database']);
+    $oPortsDetails = new PaloSantoHardwareDetection();
+
+    $arrCardParam['manufacturer'] = $pDB->DBCAMPO(getParameter("manufacturer"));
+    $arrCardParam['num_serie'] = $pDB->DBCAMPO(getParameter("num_serie"));
+    
+    $oPortsDetails->updateCardParameter($pDB, $arrCardParam, array("id_card"=>$idCard));
 }
 
 

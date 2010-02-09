@@ -28,8 +28,8 @@
             {if $data.DESC.TIPO ne $CARD_NO_MOSTRAR}
                 <tr>
                     <td style='border: 1px #CCCCCC solid; font-size:12px;' align='left' class="moduleTitle">{$CARD} # {$data.DESC.ID}: {$data.DESC.TIPO} {$data.DESC.ADICIONAL} </td>
+                    <td style='border: 1px #CCCCCC solid; width:30px;'> <span id="editMan{$data.DESC.ID}"> <img class="icon" src="modules/hardware_detector/images/iconManufactur.gif" /> </span> </td>
                     <td style='border: 1px #CCCCCC solid; width:30px;'> <span id="editArea{$data.DESC.ID}"> <img class="icon" src="modules/hardware_detector/images/icon1.png" /> </span> </td>
-                    <!--<td style='border: 1px #CCCCCC solid; width:30px;'>  <img class="icon" src="modules/hardware_detector/images/call2.png" /> </td>-->
                     <td style='border: 1px #CCCCCC solid; width:30px;'><a href='?menu=hardware_detector&action=config_echo&cardId={$data.DESC.ID}'><img class="icon" src="modules/hardware_detector/images/icon_configecho.png" title="Config echo Canceller"/></a></td>
                 </tr>
                 <tr> 
@@ -163,4 +163,41 @@
     </div>
 </div>
 {counter}
-{/foreach} 
+{/foreach}
+
+{counter start=1 skip=1 print=false assign=cnt2}
+{foreach from=$arrCardManufacturer key=k2 item=data2 name=filas}
+<div id="layerCM{$cnt2}" class="move">
+    <div class="layer_handle">
+        <a href="#" id="closeCM{$cnt2}">[ x ]</a>
+        Preferences
+    </div>
+    <div id="layerCM{$cnt2}_content">
+        <form id="layerCM{$cnt2}_form" method="post" action="">
+            <legend >Card Register</legend><br />
+            <table>
+                <tr>
+                    <td><label style='font-size: 11px'>Timing source:</label></td>
+                    <td><select id='manufacturer_{$cnt2}' name='manufacturer_{$cnt2}'>
+                    {html_options options=$type_manufacturer selected=$data2.manufacturer }
+                    </select></td>
+                </tr>
+                <tr>
+                    <td><label style='font-size: 11px'>Line build out:</label></td>
+                    <td><input type="text" value="{$data2.num_serie}" name="noSerie_{$cnt2}" id="noSerie_{$cnt2}" /></td>
+                </tr>
+                <input type="hidden" value="{$cnt2}" name="idCard_{$cnt2}" />
+                
+                <tr>
+                    <td></td>
+                    <br>
+                    <td align="right">
+                        <input type="button" value="Save" onclick="saveCardSpecification({$cnt2});" class="boton"/>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</div>
+{counter}
+{/foreach}  

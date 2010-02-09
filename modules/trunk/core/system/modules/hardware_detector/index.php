@@ -25,6 +25,7 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
+    Modificado 2010/02/09 Por Oscar Navarrete J. onavarrete@palosanto.com
   */
 
 require_once "libs/paloSantoForm.class.php";
@@ -69,7 +70,6 @@ function _moduleContent(&$smarty, $module_name)
     $content = "";    
 
     switch($action){
-
         case "config_echo":
             $content = viewFormConfEcho($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
             break;
@@ -92,7 +92,9 @@ function listPorts($smarty, $module_name, $local_templates_dir, $pDB) {
     $contenidoModulo = "";
 
     $arrSpanConf = $oPortsDetails->getSpanConfig($pDB);
+    $arrCardManufacturer = $oPortsDetails->getCardManufacturer($pDB);
     $smarty->assign("arrSpanConf",$arrSpanConf);
+    $smarty->assign("arrCardManufacturer",$arrCardManufacturer);
 
     $smarty->assign("HARDWARE_DETECT",$arrLang['Hardware Detect']);
     $smarty->assign("CHAN_DAHDI_REPLACE",$arrLang['Replace file chan_dahdi.conf']);
@@ -130,6 +132,7 @@ function llenarTpl($local_templates_dir,$smarty,$arrGrid, $arrData, $arrMisdn)
     $smarty->assign("arrData", $arrData);
     $smarty->assign("arrMisdn", $arrMisdn);
 
+    //Span Parameters
     $smarty->assign('type_timing_source', array(
                               '0' => '0',
                               '1' => '1',
@@ -161,6 +164,14 @@ function llenarTpl($local_templates_dir,$smarty,$arrGrid, $arrData, $arrMisdn)
                               'ami' => 'ami',
                               'b8zs' => 'b8zs',
                               'hdb3' => 'hdb3'));
+
+    //Card Manufacturer
+    $smarty->assign('type_manufacturer', array(
+                              'Digium' => 'Digium',
+                              'OpenVox' => 'OpenVox',
+                              'Rhino' => 'Rhino',
+                              'Sangoma' => 'Sangoma',
+                              'Otros' => 'Otros' ));
 
     return $smarty->fetch($local_templates_dir."/listPorts.tpl");
 }

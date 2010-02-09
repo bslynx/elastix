@@ -50,11 +50,14 @@ class PaloSantoHardwareDetection
         $pconfEcho = new paloSantoConfEcho($pDB);
         $pconfEcho->deleteEchoCanceller();
         $pconfEcho->deleteCardParameter();
+        $this->deleteCardManufacturer($pDB);
         //$data = array();
         global $arrLang;
         $tarjetas = array(); 
         $data = array();
         $data2 = array();
+        $data3 = array();
+    
         unset($respuesta);
     exec('lsdahdi',$respuesta,$retorno);
         if($retorno==0 && $respuesta!=null && count($respuesta) > 0 && is_array($respuesta)){
@@ -71,7 +74,11 @@ class PaloSantoHardwareDetection
                     $data2['id_card']    = $pDB->DBCAMPO($regs[1]);
                     $data2['type']       = $pDB->DBCAMPO($regs[2]);
                     $data2['additonal']  = $pDB->DBCAMPO($regs[3]);
+                    $data3['id_card']    = $pDB->DBCAMPO($regs[1]);
+                    $data3['manufacturer'] = $pDB->DBCAMPO("No set");
+                    $data3['num_serie']    = $pDB->DBCAMPO("No set");
                     $pconfEcho->addCardParameter($data2);
+                    $this->addCardManufacturer($pDB, $data3);
                 }
                 else if(ereg("[[:space:]]*([[:digit:]]+) ([[:alnum:]]+)[[:space:]]+([[:alnum:]]+)(.*)",$linea,$regs1)){
                     //Estados de las lineas
@@ -254,6 +261,43 @@ class PaloSantoHardwareDetection
         $this->updateChangeFileSystemConf($text);
         //exec("sudo -u root service dahdi restart");
         fclose($fp);
+    }
+
+    //FUNCIONES DE CARD MANUFACTURER//
+
+    function updateCardParameter($pDB, $arrParameter, $where)
+    {
+        $queryUpdate = $pDB->construirUpdate('card_parameter', $arrParameter, $where);
+        $result = $pDB->genQuery($queryUpdate);
+
+        return $result;
+    }
+
+
+    function addCardManufacturer($pDB, $data)
+    {
+        $queryInsert = $pDB->construirInsert('card_parameter', $data);
+        $result = $pDB->genQuery($queryInsert);
+
+        return $result;
+    }
+
+    function getCardManufacturer($pDB)
+    {
+        $query = "SELECT id, manufacturer, num_serie, id_card FROM card_parameter";
+        $providers = array();
+        $result= $pDB->fetchTable($query, true);
+
+        if($result==FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return array();
+        }
+        return $result;
+    }
+
+    function deleteCardManufacturer($pDB){
+        $query = "DELETE FROM card_parameter";
+        $result = $pDB->genQuery($query);
     }
 
 }

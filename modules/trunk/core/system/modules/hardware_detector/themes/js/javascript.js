@@ -79,6 +79,79 @@ $(document).ready(function(){
     $('#close10').click(function() {
         $("#layer10").hide();
     });
+
+    /*Manufacturer*/
+    
+    $('#editMan1').click(function() {
+        $("#layerCM1").show(); 
+    });
+    $('#closeCM1').click(function() {
+        $("#layerCM1").hide();
+    });
+
+    $('#editMan2').click(function() {
+        $("#layerCM2").show(); 
+    });
+    $('#closeCM2').click(function() {
+        $("#layerCM2").hide();
+    });
+
+    $('#editMan3').click(function() {
+        $("#layerCM3").show(); 
+    });
+    $('#closeCM3').click(function() {
+        $("#layerCM3").hide();
+    });
+
+    $('#editMan4').click(function() {
+        $("#layerCM4").show(); 
+    });
+    $('#closeCM4').click(function() {
+        $("#layerCM4").hide();
+    });
+
+    $('#editMan5').click(function() {
+        $("#layerCM5").show(); 
+    });
+    $('#closeCM5').click(function() {
+        $("#layerCM5").hide();
+    });
+
+    $('#editMan6').click(function() {
+        $("#layerCM6").show(); 
+    });
+    $('#closeCM6').click(function() {
+        $("#layerCM6").hide();
+    });
+
+    $('#editMan7').click(function() {
+        $("#layerCM7").show(); 
+    });
+    $('#closeCM7').click(function() {
+        $("#layerCM7").hide();
+    });
+
+    $('#editMan8').click(function() {
+        $("#layerCM8").show(); 
+    });
+    $('#closeCM8').click(function() {
+        $("#layerCM8").hide();
+    });
+
+    $('#editMan9').click(function() {
+        $("#layerCM9").show(); 
+    });
+    $('#closeCM9').click(function() {
+        $("#layerCM9").hide();
+    });
+
+    $('#editMan10').click(function() {
+        $("#layerCM10").show(); 
+    });
+    $('#closeCM10').click(function() {
+        $("#layerCM10").hide();
+    });
+
 });
 
 function saveSpanConfiguration(idSpan){
@@ -111,6 +184,26 @@ function saveSpanConfiguration(idSpan){
     return;
 }
 
+
+function saveCardSpecification(idCard){
+    var xhr = objAjax();
+    var arrSpanConf = new Array();
+    
+    var manufacturer = document.getElementById("manufacturer_"+idCard);
+    var manufacturer_selected = manufacturer.options[manufacturer.selectedIndex].text;
+
+    var num_serie = document.getElementById("noSerie_"+idCard).value;
+    
+    xhr.open("GET","modules/hardware_detector/libs/controller.php?action=setDataCard&idCard="+idCard+"&manufacturer="+manufacturer_selected+"&num_serie="+num_serie,true);
+    xhr.onreadystatechange = function()
+    {
+        controllerCardManufacturer(xhr);
+    }
+    xhr.send(null); 
+
+    return;
+}
+
 function controllerDisplayConfig(xhr)
 {
     if(xhr.readyState==4)
@@ -118,6 +211,17 @@ function controllerDisplayConfig(xhr)
         if(xhr.status==200)
         {
             alert("Span configuration saved succesful");
+        }
+    }
+}
+
+function controllerCardManufacturer(xhr)
+{
+    if(xhr.readyState==4)
+    {
+        if(xhr.status==200)
+        {
+            alert("Card Manufacturer saved succesful");
         }
     }
 }
@@ -135,7 +239,7 @@ function objAjax()
         }
         catch(E) {
             xmlhttp = false;
-	    }
+        }
     }
     if (!xmlhttp && typeof XMLHttpRequest!='undefined')
     {
