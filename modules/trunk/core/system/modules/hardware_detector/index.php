@@ -25,7 +25,6 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-    Modificado 2010/02/09 Por Oscar Navarrete J. onavarrete@palosanto.com
   */
 
 require_once "libs/paloSantoForm.class.php";
@@ -171,6 +170,9 @@ function llenarTpl($local_templates_dir,$smarty,$arrGrid, $arrData, $arrMisdn)
                               'OpenVox' => 'OpenVox',
                               'Rhino' => 'Rhino',
                               'Sangoma' => 'Sangoma',
+                              'RedFone' => 'RedFone',
+                              'XorCom' => 'XorCom',
+                              'Dialogic' => 'Dialogic',
                               'Otros' => 'Otros' ));
 
     return $smarty->fetch($local_templates_dir."/listPorts.tpl");

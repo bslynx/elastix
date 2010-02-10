@@ -170,20 +170,20 @@
 <div id="layerCM{$cnt2}" class="move">
     <div class="layer_handle">
         <a href="#" id="closeCM{$cnt2}">[ x ]</a>
-        Preferences
+        Card Register
     </div>
     <div id="layerCM{$cnt2}_content">
         <form id="layerCM{$cnt2}_form" method="post" action="">
             <legend >Card Register</legend><br />
             <table>
                 <tr>
-                    <td><label style='font-size: 11px'>Timing source:</label></td>
-                    <td><select id='manufacturer_{$cnt2}' name='manufacturer_{$cnt2}'>
+                    <td><label style='font-size: 11px'>Vendor:</label></td>
+                    <td id="select_{$cnt2}" ><select id='manufacturer_{$cnt2}' name='manufacturer_{$cnt2}' onChange="addTextBox({$cnt2})">
                     {html_options options=$type_manufacturer selected=$data2.manufacturer }
                     </select></td>
                 </tr>
                 <tr>
-                    <td><label style='font-size: 11px'>Line build out:</label></td>
+                    <td><label style='font-size: 11px'>Serial Number:</label></td>
                     <td><input type="text" value="{$data2.num_serie}" name="noSerie_{$cnt2}" id="noSerie_{$cnt2}" /></td>
                 </tr>
                 <input type="hidden" value="{$cnt2}" name="idCard_{$cnt2}" />

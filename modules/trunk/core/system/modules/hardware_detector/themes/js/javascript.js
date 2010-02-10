@@ -193,8 +193,12 @@ function saveCardSpecification(idCard){
     var manufacturer_selected = manufacturer.options[manufacturer.selectedIndex].text;
 
     var num_serie = document.getElementById("noSerie_"+idCard).value;
+    if(manufacturer_selected=="Otros"){
+        var manufacturer_other = document.getElementById("manufacturer_other_"+idCard).value;
+        xhr.open("GET","modules/hardware_detector/libs/controller.php?action=setDataCard&idCard="+idCard+"&manufacturer="+manufacturer_other+"&num_serie="+num_serie,true);
+    }else    
+        xhr.open("GET","modules/hardware_detector/libs/controller.php?action=setDataCard&idCard="+idCard+"&manufacturer="+manufacturer_selected+"&num_serie="+num_serie,true);
     
-    xhr.open("GET","modules/hardware_detector/libs/controller.php?action=setDataCard&idCard="+idCard+"&manufacturer="+manufacturer_selected+"&num_serie="+num_serie,true);
     xhr.onreadystatechange = function()
     {
         controllerCardManufacturer(xhr);
@@ -224,6 +228,28 @@ function controllerCardManufacturer(xhr)
             alert("Card Manufacturer saved succesful");
         }
     }
+}
+
+function addTextBox(idCard){
+    var xhr = objAjax();
+    var arrSpanConf = new Array();
+    var manufacturer = document.getElementById("manufacturer_"+idCard);
+    var manufacturer_selected = manufacturer.options[manufacturer.selectedIndex].text;
+    
+    if(manufacturer_selected=="Otros"){
+        var select_td = document.getElementById("select_"+idCard);
+        inputtag = document.createElement("input");
+        inputtag.setAttribute("type", "text");
+        inputtag.setAttribute("name", "manufacturer_other_"+idCard);
+        inputtag.setAttribute("id", "manufacturer_other_"+idCard);
+        inputtag.setAttribute("size", "12");
+        select_td.appendChild(inputtag);
+    }else{
+        var select_td = document.getElementById("select_"+idCard);
+        var kids = select_td.childNodes;
+        select_td.removeChild(kids[1]);
+    }
+
 }
 
 function objAjax()
