@@ -80,6 +80,40 @@ $(document).ready(function(){
         $("#layer10").hide();
     });
 
+    $('#editArea11').click(function() {
+        $("#layer10").show(); 
+    });
+    $('#close11').click(function() {
+        $("#layer10").hide();
+    });
+
+    $('#editArea12').click(function() {
+        $("#layer10").show(); 
+    });
+    $('#close12').click(function() {
+        $("#layer10").hide();
+    });
+
+    $('#editArea13').click(function() {
+        $("#layer10").show(); 
+    });
+    $('#close13').click(function() {
+        $("#layer10").hide();
+    });
+
+    $('#editArea14').click(function() {
+        $("#layer10").show(); 
+    });
+    $('#close14').click(function() {
+        $("#layer10").hide();
+    });
+
+    $('#editArea15').click(function() {
+        $("#layer10").show(); 
+    });
+    $('#close15').click(function() {
+        $("#layer10").hide();
+    });
     /*Manufacturer*/
     
     $('#editMan1').click(function() {
@@ -152,6 +186,40 @@ $(document).ready(function(){
         $("#layerCM10").hide();
     });
 
+    $('#editMan11').click(function() {
+        $("#layerCM10").show(); 
+    });
+    $('#closeCM11').click(function() {
+        $("#layerCM10").hide();
+    });
+    
+    $('#editMan12').click(function() {
+        $("#layerCM10").show(); 
+    });
+    $('#closeCM12').click(function() {
+        $("#layerCM10").hide();
+    });
+
+    $('#editMan13').click(function() {
+        $("#layerCM10").show(); 
+    });
+    $('#closeCM13').click(function() {
+        $("#layerCM10").hide();
+    });
+
+    $('#editMan14').click(function() {
+        $("#layerCM10").show(); 
+    });
+    $('#closeCM14').click(function() {
+        $("#layerCM10").hide();
+    });
+
+    $('#editMan15').click(function() {
+        $("#layerCM10").show(); 
+    });
+    $('#closeCM15').click(function() {
+        $("#layerCM10").hide();
+    });
 });
 
 function saveSpanConfiguration(idSpan){
@@ -225,7 +293,15 @@ function controllerCardManufacturer(xhr)
     {
         if(xhr.status==200)
         {
+            var idCard = xhr.responseText;
             alert("Card Manufacturer saved succesful");
+            var span = document.getElementById("editMan"+idCard);
+            span.removeChild(span.getElementsByTagName("img")[0]);
+            
+            imgtag = document.createElement("input");
+            imgtag.setAttribute("class", "icon");
+            imgtag.setAttribute("src", "/var/www/html/modules/hardware_detector/images/call2.png");
+            span.appendChild(imgtag);
         }
     }
 }

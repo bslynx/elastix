@@ -14,7 +14,7 @@ $action     = getParameter('action');
 //$arrSpanConf = getParameter("arrSpanConf");
 
 if($action == "setConfig"){
-    header("Content-type: text/xml");
+    //header("Content-type: text/xml");
     $arrSpanConf = array();
     $idSpan = getParameter("idSpan");
     $arrSpanConf['tmsource'] = getParameter("tmsource");
@@ -28,7 +28,7 @@ if($action == "setConfig"){
     $oPortsDetails->updateFileSipCustom($idSpan, $arrSpanConf);
 
 }else if($action == "setDataCard"){
-    header("Content-type: text/xml");
+    //header("Content-type: text/text");
     $arrCardParam = array();
     $idCard = getParameter("idCard");
     $pDB = new paloDB($arrConfModule['dsn_conn_database']);
@@ -38,6 +38,7 @@ if($action == "setConfig"){
     $arrCardParam['num_serie'] = $pDB->DBCAMPO(getParameter("num_serie"));
     
     $oPortsDetails->updateCardParameter($pDB, $arrCardParam, array("id_card"=>$idCard));
+    echo "$idCard";
 }
 
 

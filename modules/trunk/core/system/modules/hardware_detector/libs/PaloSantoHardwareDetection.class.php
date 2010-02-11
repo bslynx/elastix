@@ -27,8 +27,8 @@
   +----------------------------------------------------------------------+
   $Id: puetos  */
 
-include_once("libs/paloSantoDB.class.php");
-include_once("modules/hardware_detector/libs/paloSantoConfEcho.class.php");
+include_once("/var/www/html/libs/paloSantoDB.class.php");
+include_once("/var/www/html/modules/hardware_detector/libs/paloSantoConfEcho.class.php");
 
 class PaloSantoHardwareDetection
 {
@@ -50,14 +50,14 @@ class PaloSantoHardwareDetection
         $pconfEcho = new paloSantoConfEcho($pDB);
         $pconfEcho->deleteEchoCanceller();
         $pconfEcho->deleteCardParameter();
-        $this->deleteCardManufacturer($pDB);
+        //$this->deleteCardManufacturer($pDB);
         //$data = array();
         global $arrLang;
         $tarjetas = array(); 
         $data = array();
         $data2 = array();
         $data3 = array();
-    
+        $exist_data = "no";
         unset($respuesta);
     exec('lsdahdi',$respuesta,$retorno);
         if($retorno==0 && $respuesta!=null && count($respuesta) > 0 && is_array($respuesta)){
@@ -66,19 +66,40 @@ class PaloSantoHardwareDetection
             foreach($respuesta as $key => $linea){
                 $estado = $arrLang['Unknown'];
                 $colorEstado = 'gray';               
-
                 if(ereg("^### Span[[:space:]]+([[:digit:]]{1,}): ([[:alnum:]| |-|\/]+)(.*)$",$linea,$regs)){
                    $idTarjeta = $regs[1];
-                   $tarjetas["TARJETA$idTarjeta"]['DESC'] = array('ID' => $regs[1], 'TIPO' => $regs[2], 'ADICIONAL' => $regs[3]);
+                   $dataCardParam = $this->getCardManufacturerById($pDB, $idTarjeta);
+                   if(empty($dataCardParam)){
+                   $dataCardParam['manufacturer'] = " ";
+                   $dataCardParam['num_serie'] = " ";
+                   $dataCardParam['id_card'] = " ";
+                   }else $dataCardParam['id_card']=$idTarjeta;
+                   if($dataCardParam['manufacturer']!=" "){ 
+                        $exist_data="yes";
+                        $data3['manufacturer'] = $pDB->DBCAMPO($dataCardParam['manufacturer']); 
+                   }else{ $data3['manufacturer']    = $pDB->DBCAMPO(" ");
+                        $exist_data = "no";
+                   }
+
+                   if($dataCardParam['num_serie']!=" "){ 
+                        $exist_data="yes";
+                        $data3['num_serie'] = $pDB->DBCAMPO($dataCardParam['num_serie']);
+                   }else{ $data3['num_serie'] = $pDB->DBCAMPO(" ");
+                        $exist_data = "no";
+                   }
+                   
+                   if($dataCardParam['manufacturer']==" " && $dataCardParam['num_serie']==" " && $dataCardParam['id_card']==" "){
+                        $data3['id_card']    = $pDB->DBCAMPO($regs[1]); 
+                        $this->addCardManufacturer($pDB, $data3);    
+                   }else $this->updateCardParameter($pDB, $data3, array("id_card"=>$regs[1]));
+                   $tarjetas["TARJETA$idTarjeta"]['DESC'] = array('ID' => $regs[1], 'TIPO' => $regs[2], 'ADICIONAL' => $regs[3], 'MANUFACTURER' => $exist_data);
                    $count++;
                     $data2['id_card']    = $pDB->DBCAMPO($regs[1]);
                     $data2['type']       = $pDB->DBCAMPO($regs[2]);
                     $data2['additonal']  = $pDB->DBCAMPO($regs[3]);
-                    $data3['id_card']    = $pDB->DBCAMPO($regs[1]);
-                    $data3['manufacturer'] = $pDB->DBCAMPO("No set");
-                    $data3['num_serie']    = $pDB->DBCAMPO("No set");
+
                     $pconfEcho->addCardParameter($data2);
-                    $this->addCardManufacturer($pDB, $data3);
+                    
                 }
                 else if(ereg("[[:space:]]*([[:digit:]]+) ([[:alnum:]]+)[[:space:]]+([[:alnum:]]+)(.*)",$linea,$regs1)){
                     //Estados de las lineas
@@ -284,7 +305,7 @@ class PaloSantoHardwareDetection
 
     function getCardManufacturer($pDB)
     {
-        $query = "SELECT id, manufacturer, num_serie, id_card FROM card_parameter";
+        $query = "SELECT * FROM card_parameter";
         $providers = array();
         $result= $pDB->fetchTable($query, true);
 
@@ -295,9 +316,25 @@ class PaloSantoHardwareDetection
         return $result;
     }
 
-    function deleteCardManufacturer($pDB){
+    function deleteCardManufacturer($pDB, $idCard){
         $query = "DELETE FROM card_parameter";
+        
+        $strWhere = "id_card=$idCard";
+        // Clausula WHERE aqui
+        if(!empty($strWhere)) $query .= "WHERE $strWhere ";
+    
         $result = $pDB->genQuery($query);
+    }
+
+    function getCardManufacturerById($pDB, $idCard){
+        $query   = "SELECT manufacturer, num_serie FROM card_parameter ";
+        $strWhere = "id_card=$idCard";
+
+        // Clausula WHERE aqui
+        if(!empty($strWhere)) $query .= "WHERE $strWhere ";
+
+        $result=$pDB->getFirstRowQuery($query, true);
+        return $result;
     }
 
 }
