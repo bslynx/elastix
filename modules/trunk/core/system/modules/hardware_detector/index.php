@@ -108,6 +108,7 @@ function listPorts($smarty, $module_name, $local_templates_dir, $pDB) {
     //$smarty->assign("NO_PUERTO",$arrLang['No. Port']);
     $smarty->assign("NO_PUERTO",$arrLang["Port"]." ");
     $arrPortsDetails = $oPortsDetails->getPorts($pDB);
+
     $arrMisdnInfo = $oPortsDetails->getMisdnPortInfo();
     if(count($arrMisdnInfo)<=0)
         $arrMisdnInfo = "noMISDN";

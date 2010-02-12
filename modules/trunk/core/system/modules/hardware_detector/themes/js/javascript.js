@@ -282,7 +282,7 @@ function controllerDisplayConfig(xhr)
     {
         if(xhr.status==200)
         {
-            alert("Span configuration saved succesful");
+            alert("Span configuration saved succesfully");
         }
     }
 }
@@ -294,14 +294,15 @@ function controllerCardManufacturer(xhr)
         if(xhr.status==200)
         {
             var idCard = xhr.responseText;
-            alert("Card Manufacturer saved succesful");
+            alert("Card Manufacturer saved succesfully");
             var span = document.getElementById("editMan"+idCard);
             span.removeChild(span.getElementsByTagName("img")[0]);
-            
-            imgtag = document.createElement("input");
-            imgtag.setAttribute("class", "icon");
-            imgtag.setAttribute("src", "/var/www/html/modules/hardware_detector/images/call2.png");
-            span.appendChild(imgtag);
+               
+            span.innerHTML = "<img class='icon' src='modules/hardware_detector/images/call2.png' />";
+//            imgtag = document.createElement("input");
+//             imgtag.setAttribute("class", "icon");
+//             imgtag.setAttribute("src", "modules/hardware_detector/images/call2.png");
+//             span.appendChild(imgtag);
         }
     }
 }
