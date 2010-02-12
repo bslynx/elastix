@@ -127,47 +127,11 @@ function _moduleContent($smarty, $module_name)
     return $sContenido;
 }
 
-function obtainName($file_name){
-    $pos = 0;
-    //Name file format elastix-callcenter_1.5-1.zip
-    $file_name = trim($file_name);
+function obtainName($file_name)
+{
 
-    if (eregi(' ', $file_name)) 
-        return false;
-    //archivo zip
-    if (eregi('.zip$', $file_name))
-        $pos=strpos($file_name,".zip");
-
-    //archivo tar.gz
-    if (eregi('.tar.gz$', $file_name)) 
-        $pos=strpos($file_name,".tar.gz");
-
-    //archivo tgz
-    if(eregi('.tgz$', $file_name))
-        $pos=strpos($file_name,".tgz");
-
-    $name = substr($file_name,0,$pos);
-    $arr = obtainTokens($name);
-    $size = count($arr);
-    $posName = $size - 2;
-    if($posName == 0)
-        return false;
-    $nPos = $arr[$posName];
-    $newName = substr($file_name,0,$nPos);
+    $newName = trim(`tar -tf $file_name | head -n 1`);
     return $newName;
-}
-
-function obtainTokens($name){
-    $array_tokens = "";
-    $j=0;
-    for($i=0; $i <strlen($name) ; $i++){
-        if($name[$i] == '-' || $name[$i] == '_')
-        {
-            $array_tokens[$j] = $i;
-            $j++;
-        }
-    }
-    return $array_tokens;
 }
 
 function verifyFileContent($pDB, &$errorMsg, $arrLang,$oMenu,$oACL)
@@ -176,10 +140,7 @@ function verifyFileContent($pDB, &$errorMsg, $arrLang,$oMenu,$oACL)
     $arrArchivos = array();
     $output = '';
     $retVal = 1;
-    
-    
-      
-    
+
     $tmpDir = '/tmp/new_module';
     #crear un directorio para descomprimir
     mkdir($tmpDir);
@@ -207,7 +168,7 @@ function verifyFileContent($pDB, &$errorMsg, $arrLang,$oMenu,$oACL)
         }
         else{
 
-            $arrReg = obtainName($_FILES['module_file']['name']);
+            $arrReg = obtainName($tmpFile);
             $file_xml       = "$tmpDir/$arrReg/menu.xml";
             $file_installer = "$tmpDir/$arrReg/setup/installer.php";
             $path_modules   = "$tmpDir/$arrReg/modules";
