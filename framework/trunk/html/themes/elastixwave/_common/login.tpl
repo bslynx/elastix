@@ -6,13 +6,13 @@
 </head>
 
 <body bgcolor="#ffffff" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
-  <table cellspacing="0" cellpadding="0" width="100%" border="0" class="menulogo2" height="92">
+  <table cellspacing="0" cellpadding="0" width="100%" border="0" class="menulogo2" height="74">
     <tr>
-        <td class="menulogo" valign="top">
-	    <a target="_blank" href="http://www.elastix.org">
-		<img border="0" src="themes/{$THEMENAME}/images/logo_elastix.gif"/>
+       <td class="menulogo" valign="top">
+           <a target="_blank" href="http://www.elastix.org">
+               <img border="0" src="themes/{$THEMENAME}/images/logo_elastix.gif"/>
            </a>
-	</td>
+       </td>
     </tr>
   </table>
 <form method="POST">
@@ -43,7 +43,7 @@
               <div align="right">{$USERNAME}:</div>
           </td>
           <td>
-            <input type="text" id="input_user" name="input_user" style="color:#000000; FONT-FAMILY: verdana, arial, helvetica, sans-serif; FONT-SIZE: 8pt;
+            <input type="text" name="input_user" style="color:#000000; FONT-FAMILY: verdana, arial, helvetica, sans-serif; FONT-SIZE: 8pt;
              font-weight: none; text-decoration: none; background: #fbfeff; border: 1 solid #000000;">
           </td>
         </tr>
@@ -72,8 +72,5 @@
 <br>
 <div align="center" class="copyright">Copyright &copy; 2006 by <a href="http://www.palosanto.com">PaloSanto Solutions</a></div>
 <br>
-<script type="text/javascript">
-    document.getElementById("input_user").focus();
-</script>
 </body>
 </html>

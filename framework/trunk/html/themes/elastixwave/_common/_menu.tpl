@@ -1,8 +1,8 @@
 <div id="fullMenu">
     <div id="">
         <table cellspacing="0" cellpadding="0" width="100%" border="0" class="fondomenu_headertop">
-            <tr >
-                <td width="24%">
+            <tr>
+                <td width="20%">
                     <table cellSpacing="0" cellPadding="0" border="0" height="65px">
                         <tr>
                             <td class="menulogo"  valign="top">
@@ -13,90 +13,53 @@
                         </tr>
                     </table>
                 </td>
-                <td width="52%" rowspan="2" valign="bottom">
-                    <table cellSpacing="0" cellPadding="0" border="0" align="center" width="100%">
+                <td width="50%" valign="top">
+                    <table cellSpacing="0" cellPadding="0" border="0" align="center" width="100%" height="77">
                         <tr>
                             {foreach from=$arrMainMenu key=idMenu item=menu name=menuMain}
                                 {if $idMenu eq $idMainMenuSelected}
-									{if $smarty.foreach.menuMain.first}
-									<td valign="bottom" align="center">
-										<table cellSpacing="0" cellPadding="0" border="0" width="69px">
+									<td width="4px">&nbsp;</td>
+									<td align="center" id="menu_selected">
+										<table cellSpacing="0" cellPadding="0" border="0" width="69px" id="table_on">
 											<tr>
-											<td class="menutabletabon">
-												<img src="themes/{$THEMENAME}/images/{$idMenu}_icon.gif" border="0" alt="" />
-												<a class="menutableon" href="index.php?menu={$idMenu}">{$menu.Name}</a>
-											</td>
-											</tr>
-										</table>
-									</td>
-									{else}
-									<td valign="bottom">
-										<table cellSpacing="0" cellPadding="0" border="0" width="100%">
-											<tr>
-												<td class="menutabletaboff2" valign="top"> . </td>
-											</tr>
-										</table> 
-									</td>
-									<td valign="bottom" align="center">
-										<table cellSpacing="0" cellPadding="0" border="0" width="69px">
-											<tr>
-												<td class="menutabletabon" rowspan="2">
+												<td class="menutabletabon">
 													<img src="themes/{$THEMENAME}/images/{$idMenu}_icon.gif" border="0" alt="" />
 													<a class="menutableon" href="index.php?menu={$idMenu}">{$menu.Name}</a>
+                                                    <input type="hidden" name="desc_menu" id="desc_menu" value="{$THEMENAME},{$idMenu},{$menu.Name}" />
 												</td>
 											</tr>
 										</table>
 									</td>
-									{/if}
                                 {else}
-									{if $smarty.foreach.menuMain.first}
-									<td valign="bottom">
-										<table cellSpacing="0" cellPadding="0" border="0" width="100%">
+                                    <td width="4px">&nbsp;</td>
+									<td align="center">
+										<table cellSpacing="0" cellPadding="0" border="0" width="100%" style="position:relative;top:17px">
 											<tr>
-												<td class="menutabletaboff" nowrap="">
-												<a class="menutable" href="index.php?menu={$idMenu}">{$menu.Name}</a>
-												</td>
-											</tr>
-										</table> 
-									</td>
-									{else}
-									<td valign="bottom">
-										<table cellSpacing="0" cellPadding="0" border="0" width="100%">
-											<tr>
-												<td class="menutabletaboff2" valign="top"> . </td>
-											</tr>
-										</table> 
-									</td>
-									<td valign="bottom">
-										<table cellSpacing="0" cellPadding="0" border="0" width="100%">
-											<tr>
+												<td valign="top"><img border="0" align="absmiddle" src="themes/elastixwave/images/fondo_boton_left.gif"/></td>
 												<td class="menutabletaboff" nowrap="">
 													<a class="menutable" href="index.php?menu={$idMenu}">{$menu.Name}</a>
 												</td>
+												<td valign="top"><img border="0" align="absmiddle" src="themes/elastixwave/images/fondo_boton_right.gif"/></td>
 											</tr>
 										</table> 
 									</td>
-									{/if}
                                  {/if}
                             {/foreach}
+                                    <td width="69px">&nbsp;</td>
                         </tr>
                     </table>
                 </td>
-                <td width="24%">
-                     <table cellSpacing="0" cellPadding="0" border="0" height="25">
-                        <tr class="background">
-							<td class="menuaftertab" width="19%" align="center">&nbsp;<a class="logout" href="javascript:openWindow('help/?id_nodo={$idSubMenuSelected}&name_nodo={$nameSubMenuSelected}')">{$HELP}</a></td>
-							<td class="menuaftertab">-</td>
-                            <td class="menuaftertab" width="32%" align="center">&nbsp;<a class="logout" href="javascript:mostrar();">{$ABOUT_ELASTIX2}</a></td>
-							<td class="menuaftertab">-</td>
-                            <td class="menuaftertab" width="55%" align="center">&nbsp;<a class="logout" href="?logout=yes">{$LOGOUT} (<font color='white'>{$USER_LOGIN}</font>)</a></td>
-                        </tr>
-                    </table>
+                <td width="30%" nowrap="">
+                    <div id="menu_float" class="background">
+                        <div id="logout_in">
+                            <span><a class="logout" href="javascript:mostrar();">{$ABOUT_ELASTIX2}</a></span>&nbsp;
+                            <span class="menuguion">*</span>&nbsp;
+                            <span><a class="logout" href="javascript:openWindow('help/?id_nodo={$idSubMenuSelected}&name_nodo={$nameSubMenuSelected}')">{$HELP}</a></span>&nbsp;
+                            <span class="menuguion">*</span>&nbsp;
+                            <span><a class="logout" href="?logout=yes">{$LOGOUT} (<font color='#c0d0e0'>{$USER_LOGIN}</font>)</a></span>&nbsp;
+                        </div>
+                    <div>
                 </td>
-            </tr>
-            <tr>
-                <td width="20%" height="34"></td>
-                <td width="50%" height="34"></td>
             </tr>
             <tr>
                 <td class="menudescription" colspan="3">
@@ -108,7 +71,7 @@
                                 {foreach from=$arrSubMenu key=idSubMenu item=subMenu}
                                 {if $idSubMenu eq $idSubMenuSelected}
                                 <td title="" class="botonon">
-                                        <a href="index.php?menu={$idSubMenu}" class="submenu_on">{$subMenu.Name}</a>
+                                        <a href="?menu={$idSubMenu}" class="submenu_on">{$subMenu.Name}</a>
                                 </td>
                                 {else}
                                 <td title="" class="botonoff"><a href="index.php?menu={$idSubMenu}">{$subMenu.Name}</a></td>
@@ -225,5 +188,38 @@ function mostrar_Menu(element)
     }
     else idMenu.setAttribute("value", "");
 }
+
+
+function createMenuSelectedSplash()
+{
+    var desc_menu = document.getElementById("desc_menu").value;
+    var arrDesc = desc_menu.split(",");
+
+    var html  = "<table cellSpacing='0' cellPadding='0' border='0' width='100%' style='position:relative;top:17px'>";
+        html += "   <tr>";
+        html += "       <td valign='top'><img border='0' align='absmiddle' src='themes/" + arrDesc[0] + "/images/fondo_boton_on_left.gif'/></td>";
+        html += "       <td class='menutabletabon2' nowrap=''>";
+        html += "           <a class='menutable' href='javascript:openMenu(\"" + arrDesc[1] + "\");'>" + arrDesc[2] + "</a>";
+        html += "       </td>";
+        html += "       <td valign='top'><img border='0' align='absmiddle' src='themes/" + arrDesc[0] + "/images/fondo_boton_on_right.gif'/></td>";
+        html += "   </tr>";
+        html += "</table>";
+
+    var menu_selected = document.getElementById("menu_selected");
+    menu_selected.innerHTML = html;
+}
+setTimeout("createMenuSelectedSplash()",1400);
+
+// var cnt = 0;
+// function load()
+// {
+//     if(cnt > 1)
+//         createMenuSelectedSplash();
+//     else {
+//         setTimeout("load()",500);
+//         cnt++;
+//     }
+// }
+// load();
 </script>
 {/literal}

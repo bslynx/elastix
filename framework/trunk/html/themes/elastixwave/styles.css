@@ -187,7 +187,7 @@ A.logout
 {
     FONT-FAMILY: verdana, arial, helvetica, sans-serif;
     FONT-SIZE: 15px;
-    COLOR: #FFFFFF;
+    COLOR: #c0d0e0;
 }
 TD.menuspacer {
     BORDER-BOTTOM: #333333 1px solid;
@@ -203,6 +203,23 @@ TD.menutabletaboff {
     TEXT-ALIGN: center;
 	width:10;
     height: 37px;
+    background-image: url(images/fondo_boton_center.gif); 
+    background-repeat: repeat-x;
+}
+
+TD.menutabletabon2 {
+    FONT-FAMILY: verdana, arial, helvetica, sans-serif;
+    FONT-SIZE: 14px;
+    FONT-WEIGHT: bold;
+    COLOR: #DDDDDD;
+    PADDING-LEFT: 7px;
+    PADDING-RIGHT: 7px;
+    TEXT-ALIGN: center;
+    width:10;
+    height: 37px;
+    background-image: url(images/fondo_boton_on_center.gif);
+    /*background-image: url(images/boton_naranja.gif);*/ 
+    background-repeat: repeat-x;
 }
 .menutabletaboff2 {
     FONT-FAMILY: verdana, arial, helvetica, sans-serif;
@@ -282,6 +299,7 @@ TD.menutabletabon {
     PADDING: 0px;
     background-image:url(images/menu_logo.gif);
     background-position: bottom;
+    background-repeat: no-repeat;
     TEXT-ALIGN: center;
     width: 69px;
     height: 77px;
@@ -303,12 +321,12 @@ TD.menudescription {
 }
 
 A.menutable {
-    COLOR: #FFFFFF;
+    COLOR: #f8d4cc;
     FONT-SIZE: 100%;
     FONT-WEIGHT: bold;
     TEXT-DECORATION: none;
     position: relative;
-    bottom: 5px; 
+    bottom: 0px; 
 }
 A.menutableon {
     COLOR: #ffffff; 
@@ -322,7 +340,7 @@ A.logout{
     FONT-FAMILY: verdana, arial, helvetica, sans-serif;
     FONT-SIZE: 13px;
     TEXT-DECORATION: none;
-    COLOR: #FFA590;
+    COLOR: #c0d0e0;
 }
 TD.submenufondo {
     BACKGROUND: #FFFFFF;
@@ -744,11 +762,21 @@ a.letranodec:link, a.letranodec:visited {
 TD.menulogo {
     FONT-FAMILY: verdana, arial, helvetica, sans-serif;
     FONT-SIZE: 9pt;
-    PADDING-RIGHT: 70px;
+    PADDING-RIGHT: 3px;
     PADDING-LEFT: 15px;
     PADDING-BOTTOM: 0px;
     PADDING-TOP: 4px;
 }
+
+TD.menulogo_login {
+    FONT-FAMILY: verdana, arial, helvetica, sans-serif;
+    FONT-SIZE: 9pt;
+    PADDING-RIGHT: 70px;
+    PADDING-LEFT: 15px;
+    PADDING-BOTTOM: 0px;
+    PADDING-TOP: 8px;
+}
+
 TD.menudescription2 {    
     FONT-FAMILY: verdana, arial, helvetica, sans-serif;
     FONT-SIZE: 9pt;
@@ -774,27 +802,27 @@ td.botonon {
     padding-right: 8px;
     border-right: 1px solid #e35332;
     background: #dce7f3;
-    background-image:url(images/botonAzul.png);
+/*     background-image:url(images/botonAzul.png); */
 }
 .menulogo2 {
     FONT-FAMILY: verdana, arial, helvetica, sans-serif;
     FONT-SIZE: 9pt;
     BACKGROUND: #ffffff;
-    BACKGROUND-IMAGE: url(images/fondo_azul_puntos.jpg); 
-    /*PADDING-RIGHT: 92px;*/
+    BACKGROUND-IMAGE: url(images/fondomenu_header.png); 
+/*     PADDING-RIGHT: 92px; */
     border-bottom: #E35332 5px solid;
-    /*PADDING-LEFT: 15px;
+/*    PADDING-LEFT: 15px;
     PADDING-BOTTOM: 0px;
     PADDING-TOP: 8px;*/
 }
 .fondomenu_headertop {
-    background-image: url(images/fondomenu_header.jpg);
+    background-image: url(images/fondomenu_header.png);
     background-repeat: repeat-x;
     padding: 0px;
     margin: 0px;
 }
 .menuiz_start {
-	 BACKGROUND-IMAGE: url(images/menuiz_start.gif);
+    BACKGROUND-IMAGE: url(images/menuiz_start.gif);
     padding: 0px;
     /*border: 0px;*/
     height: 21px;
@@ -813,4 +841,23 @@ td.botonon {
     color: #aaaaaa;
     padding: 1px 3px 3px 1px;
     font-size: 12px;
+}
+#menu_float {
+    position:absolute;
+    right:0%;
+    top: 0%;
+    height:32px;
+    width:246px;
+}
+.menuguion {
+    FONT-FAMILY: verdana, arial, helvetica, sans-serif;
+    /*FONT-SIZE: 9pt;*/
+    COLOR: #c0d0e0;/*FFA590;*/
+    position: relative;
+    top: 5px;
+}
+#logout_in{
+    padding-left:12px;
+    padding-right:2px;
+    padding-top:1px;
 }
