@@ -199,7 +199,7 @@ function createMenuSelectedSplash()
         html += "   <tr>";
         html += "       <td valign='top'><img border='0' align='absmiddle' src='themes/" + arrDesc[0] + "/images/fondo_boton_on_left.gif'/></td>";
         html += "       <td class='menutabletabon2' nowrap=''>";
-        html += "           <a class='menutable' href='javascript:openMenu(\"" + arrDesc[1] + "\");'>" + arrDesc[2] + "</a>";
+        html += "           <a class='menutable2' href='javascript:openMenu(\"" + arrDesc[1] + "\");'>" + arrDesc[2] + "</a>";
         html += "       </td>";
         html += "       <td valign='top'><img border='0' align='absmiddle' src='themes/" + arrDesc[0] + "/images/fondo_boton_on_right.gif'/></td>";
         html += "   </tr>";

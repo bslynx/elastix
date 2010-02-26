@@ -321,6 +321,14 @@ TD.menudescription {
 }
 
 A.menutable {
+    COLOR: #c0d0e0;
+    FONT-SIZE: 100%;
+    FONT-WEIGHT: bold;
+    TEXT-DECORATION: none;
+    position: relative;
+    bottom: 0px; 
+}
+A.menutable2 {
     COLOR: #f8d4cc;
     FONT-SIZE: 100%;
     FONT-WEIGHT: bold;
@@ -328,6 +336,7 @@ A.menutable {
     position: relative;
     bottom: 0px; 
 }
+
 A.menutableon {
     COLOR: #ffffff; 
     FONT-SIZE: 100%;
@@ -792,7 +801,7 @@ a.submenu_on{
     font-size: 11px;
     text-decoration: none;
     color: #165797;
-    background-color:#dce7f3;
+/*     background-color:#dce7f3; */
 }
 td.botonon {
     font-family: verdana, arial, helvetica, sans-serif;
@@ -800,9 +809,12 @@ td.botonon {
     color: #ffffff;
     padding-left: 8px;
     padding-right: 8px;
+    padding-top: 0px;
+    padding-bottom: 0px;
     border-right: 1px solid #e35332;
-    background: #dce7f3;
-/*     background-image:url(images/botonAzul.png); */
+/*     background: #dce7f3; */
+    background-image:url(images/fondo_boton_2do_on.gif);
+    background-repeat: repeat-x;
 }
 .menulogo2 {
     FONT-FAMILY: verdana, arial, helvetica, sans-serif;
