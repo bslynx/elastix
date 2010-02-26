@@ -238,7 +238,7 @@ function faxes($company_name,$company_fax,$fecha_fax,$inicio_paginacion,$accion,
     $arr_faxes = $oFax->obtener_faxes($company_name,$company_fax,$fecha_fax,$offset,$tamanio_busqueda,$type);
 
     $html_faxes = html_faxes($arr_faxes);
-    $html_paginacion = html_paginacion_faxes($offset,$cantidad_faxes,$tamanio_busqueda,"crm/themes/Sugar/images");
+    $html_paginacion = html_paginacion_faxes($offset,$cantidad_faxes,$tamanio_busqueda,"images");
 
     $respuesta = new xajaxResponse();
     $respuesta->addAssign("td_paginacion","innerHTML",$html_paginacion);
