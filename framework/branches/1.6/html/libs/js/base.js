@@ -99,33 +99,4 @@
         popupWin.focus();
         //return true;
     }
-
-// document.onclick = ConfirmarCierre();
-// var micierre = false;
-// function ConfirmarCierre()
-// {
-//     if (window.ActiveXObject){
-//         if (window.event.clientY < 0){alert(window.ActiveXObject + " - " + event.clientY );
-//             setTimeout('micierre = false', 100);
-//             micierre = true;
-//         }
-//     }
-//     else if (window.XMLHttpRequest){
-//         alert ('estamos en firefox'); 
-// //         if(event.srcElement.tagName == "A")
-// //         req = new XMLHttpRequest();
-//             alert(window.event.srcElement);
-//     }
-// }
-// 
-// function ManejadorCierre()
-// {
-//     if (micierre == true){
-//         alert ('llamo a startRequest');
-//     }
-// }
-// 
-// window.inhibited_unload = function() {if(self.screenTop>9000) alert('Me estoy cerrando....'); }
-   
-window.capture
     // End -->
