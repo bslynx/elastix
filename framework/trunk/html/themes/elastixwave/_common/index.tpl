@@ -23,7 +23,7 @@
                         </table><br />
                         <!-- end of Message board -->
                     {/if}
-                    <table border="0" cellpadding="1" cellspacing="1" width="100%">
+                    <table border="0" cellpadding="2" cellspacing="1" width="100%">
                         <tr>
                             <td>
                             {$CONTENT}
