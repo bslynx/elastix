@@ -18,6 +18,9 @@ $smarty->config_dir =   "$path/configs/";
 $smarty->cache_dir =    "$path/var/cache/";
 //$smarty->debugging =    true;
 
+session_name("elastixSession");
+session_start();
+
 $html = _moduleContent($smarty, $module_name);
 $smarty->assign("CONTENT", $html);
 $smarty->assign("THEMENAME", $arrConf['mainTheme']);
@@ -73,22 +76,22 @@ function _moduleContent(&$smarty, $module_name)
                    $arrConfig['AMPDBPASS']['valor']. "@".
                    $arrConfig['AMPDBHOST']['valor']."/asterisk";
 
-	$pDB = new paloDB("sqlite3:///$arrConf[elastix_dbdir]/address_book.db");
-
+	$pDB   = new paloDB("sqlite3:///$arrConf[elastix_dbdir]/address_book.db");
+    $pDB_2 = new paloDB("sqlite3:///$arrConf[elastix_dbdir]/acl.db");
     $action = getAction();
 	
 	$content = "";
     switch($action)
     {
         default:
-            $content = report_adress_book($smarty,$module_name, $local_templates_dir, $pDB, $arrLang, $dsnAsterisk);
+            $content = report_adress_book($smarty,$module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $dsnAsterisk);
             break;
 	}
 	
 	return $content;
 }
 
-function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $dsnAsterisk)
+function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $dsnAsterisk)
 {
     if(isset($_POST['select_directory_type']) && $_POST['select_directory_type']=='External')
     {
@@ -144,9 +147,11 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
     $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter_adress_book.tpl", "", $_POST);
 
     $padress_book = new paloAdressBook($pDB);
+    $p_book  = new paloAdressBook($pDB_2);
+    $id_user = $p_book->getIdUser($_SESSION["elastix_user"]);
 
     if($directory_type=='external')
-        $total = $padress_book->getAddressBook(NULL,NULL,$field,$pattern,TRUE);
+        $total = $padress_book->getAddressBook(NULL,NULL,$field,$pattern,TRUE,$id_user);
     else
         $total = $padress_book->getDeviceFreePBX($dsnAsterisk, NULL,NULL,$field,$pattern,TRUE);
 
@@ -165,7 +170,7 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
     //Fin Paginacion
 
     if($directory_type=='external')
-        $arrResult =$padress_book->getAddressBook($limit, $offset, $field, $pattern);
+        $arrResult =$padress_book->getAddressBook($limit, $offset, $field, $pattern, FALSE, $id_user);
     else
         $arrResult =$padress_book->getDeviceFreePBX($dsnAsterisk, $limit,$offset,$field,$pattern);
 

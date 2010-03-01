@@ -66,6 +66,25 @@ function _moduleContent($smarty, $module_name)
     $arrSysInfo = $oPalo->getSysInfo();
 
 
+
+     $action = getParameter("action");
+    if($action=="saveRegister"){
+        $hwd = getParameter("hwd");
+        $num_serie = getParameter("num_serie");
+        $vendor = getParameter("vendor");
+
+        ini_set("soap.wsdl_cache_enabled", "0");
+        $client = new SoapClient("http://192.168.1.89/modules/serial_hardware_telephony/webservice/telephonyHardware.wsdl");
+
+        $client->registerHardware($vendor,$num_serie);
+        return $oPalo->registerCard($hwd, $num_serie,$vendor);
+    }
+    else if($action=="getRegister"){
+        $hwd = getParameter("hwd");
+        return $oPalo->getDataCardRegister($hwd);
+    }
+
+
     //CPU INFO
     $smarty->assign("cpu_info", $arrSysInfo['CpuVendor'] . " " . $arrSysInfo['CpuModel']);
     $cpu_info = $arrSysInfo['CpuVendor'] . " " . $arrSysInfo['CpuModel'];
@@ -145,17 +164,18 @@ function _moduleContent($smarty, $module_name)
 //print_r($oPalo->getNetwork_TrafficAverage());////
 //print_r($oPalo->getAsterisk_QueueWaiting());
 
-		$arrParticiones1 = $arrSysInfo['particiones'];
-		$arrServices = $oPalo->getStatusServices();
-		////////////////////////SYSTEM RESOURCE/////////////////
-		$SYSTEM_INFO_TITLE1 = $arrLang['System Resources'];
-      $CPU_INFO_TITLE = $arrLang['CPU Info'];
-      $UPTIME_TITLE = $arrLang['Uptime'];
-      $CPU_USAGE_TITLE = $arrLang['CPU usage'];
-      $MEMORY_USAGE_TITLE = $arrLang['Memory usage'];
-      $SWAP_USAGE_TITLE = $arrLang['Swap usage'];
-	    $system_resource = getSystemResource($SYSTEM_INFO_TITLE1,$CPU_INFO_TITLE,$cpu_info,$UPTIME_TITLE,$uptime,$CPU_USAGE_TITLE,$cpu_usage,$MEMORY_USAGE_TITLE,$mem_usage,$SWAP_USAGE_TITLE,$swap_usage);
-		////////////////////////////////////////////////////////
+	$arrParticiones1 = $arrSysInfo['particiones'];
+    $arrServices = $oPalo->getStatusServices();
+    $arrCards = $oPalo->checkRegistedCards();
+	////////////////////////SYSTEM RESOURCE/////////////////
+    $SYSTEM_INFO_TITLE1 = $arrLang['System Resources'];
+    $CPU_INFO_TITLE = $arrLang['CPU Info'];
+    $UPTIME_TITLE = $arrLang['Uptime'];
+    $CPU_USAGE_TITLE = $arrLang['CPU usage'];
+    $MEMORY_USAGE_TITLE = $arrLang['Memory usage'];
+    $SWAP_USAGE_TITLE = $arrLang['Swap usage'];
+	$system_resource = getSystemResource($SYSTEM_INFO_TITLE1,$CPU_INFO_TITLE,$cpu_info,$UPTIME_TITLE,$uptime,$CPU_USAGE_TITLE,$cpu_usage,$MEMORY_USAGE_TITLE,$mem_usage,$SWAP_USAGE_TITLE,$swap_usage);
+	///////////////////////////////////////////////////////
 
 // $oPalo->asteriskActivity();
     //asignar los valores del idioma
@@ -170,10 +190,10 @@ function _moduleContent($smarty, $module_name)
     $smarty->assign("News",  $arrLang['News']);
     $smarty->assign("Expand",  $arrLang['Expand']);
     $smarty->assign("Collapse",  $arrLang['Collapse']);
-	 $smarty->assign("NoConnection",  $arrLang['NoConnection']);
-	 $smarty->assign("Performance_Graphic",  $arrLang['Performance Graphic']);
-	 $smarty->assign("Processes_Status",  $arrLang['Processes Status']);
-	 $smarty->assign("Communication_Activity", $arrLang['Communication Activity']);
+	$smarty->assign("NoConnection",  $arrLang['NoConnection']);
+	$smarty->assign("Performance_Graphic",  $arrLang['Performance Graphic']);
+	$smarty->assign("Processes_Status",  $arrLang['Processes Status']);
+	$smarty->assign("Communication_Activity", $arrLang['Communication Activity']);
     $smarty->assign("module_name",  $module_name);
     $imagen_hist = getImage_Hit($module_name);
     $smarty->assign("imagen_hist", $imagen_hist);
@@ -189,7 +209,7 @@ function _moduleContent($smarty, $module_name)
 //////////////////////////////////////////////////////////////////////////////////
 // fin de todo
 	  $arrPaneles = $oPalo->getAppletsActivated($_SESSION["elastix_user"]);
-	  $AppletsPanels = createApplesTD($arrPaneles, $module_name, $voiceMails, $faxRows, $mails, $callsRows, $arrServices, $arrParticiones1, $eventsRows, $systemStatus, $system_resource);
+	  $AppletsPanels = createApplesTD($arrPaneles, $module_name, $voiceMails, $faxRows, $mails, $callsRows, $arrServices, $arrParticiones1, $eventsRows, $systemStatus, $system_resource, $arrCards);
 	  $smarty->assign("AppletsPanels",$AppletsPanels);
 //////////////////////////////////////////////////////////////////////////////////
     $action = getParameter("save_new");
@@ -393,6 +413,59 @@ function process_status($module_name, $arrServices)
 						<div class='tabFormTable'>$servicesStatus</div>
 					</div>
 				</div>";
+    return $str;
+}
+
+function telephony_hardware($module_name, $arrCards)
+{
+   global $arrLang;
+   $str = "";
+   $cardsStatus = "";
+   $color = "";
+   $i = 1;
+   foreach($arrCards as $key=>$value){
+        if($value["num_serie"]==""){
+            $serStatus = "<a href='#' id='editMan1_$value[hwd]' style='text-decoration:none;color:white'>{$arrLang['No Registered']}</a>";
+            $color = "#FF0000";
+            $image = "modules/hardware_detector/images/card_no_registered.gif";
+        }
+        else{
+            $serStatus = "<a href='#' id='editMan2_$value[hwd]' style='text-decoration:none;color:white'>$arrLang[Registered]</a>";
+            $color = "#10ED00";
+            $image = "modules/hardware_detector/images/card_registered.gif";
+        }
+        $cardsStatus .= "<div class='services'>$i.-&nbsp;".$value['card']." ($value[vendor]): &nbsp;&nbsp; </div>
+                         <div align='center' style='background-color:".$color.";' class='status' >$serStatus</div>";
+        $i++;
+    }
+
+    $str = "<div class='portlet'>
+                <div class='portlet_topper'>
+                    <div width='100%'>
+                        <div class='imgapplet' width='10%' style='float:left;'>
+                            <img src='modules/$module_name/images/semaf.gif' border='0' align='absmiddle' />
+                        </div>
+                        <div class='tabapplet' width='80%' style='float:left;'>
+                            ".$arrLang['Telephony Hardware']."
+                        </div>
+                        <div class='closeapplet' align='right' width='10%'>
+                            <a href='#' class='toggle'>
+                                <img id='imga3'  class='ima'  src='/images/arrow_top.gif' border='0' align='absmiddle'/>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class='portlet_content'>
+                    <div class='tabFormTable'>$cardsStatus</div>
+                </div>
+            </div>
+            <div id='layerCM'>
+                <div class='layer_handle'>
+                    <a href='#' id='closeCM'>[ x ]</a>
+                    Card Register
+                </div>
+                <div id='layerCM_content'></div>
+            </div>";
     return $str;
 }
 
@@ -639,16 +712,16 @@ function communicationActivity($module_name)
     return $str;
 }
 
-function createApplesTD($arrPaneles, $module_name, $voiceMails, $faxRows, $mails, $callsRows, $arrServices, $arrParticiones, $eventsRows, $systemStatus, $system_resource){
+function createApplesTD($arrPaneles, $module_name, $voiceMails, $faxRows, $mails, $callsRows, $arrServices, $arrParticiones, $eventsRows, $systemStatus, $system_resource, $arrCards){
 	$str1 = "<td>";
 	$str2 = "<td>";
 	$idApplet = "";
 	for($i=0; $i<count($arrPaneles); $i++){
 		$idApplet = $arrPaneles[$i]; 
 		if(($i%2)==0){
-			$str1 .= returnAppletPannel($idApplet,$module_name, $voiceMails, $faxRows, $mails, $callsRows, $arrServices, $arrParticiones, $eventsRows, $systemStatus, $system_resource);
+			$str1 .= returnAppletPannel($idApplet,$module_name, $voiceMails, $faxRows, $mails, $callsRows, $arrServices, $arrParticiones, $eventsRows, $systemStatus, $system_resource, $arrCards);
 		}else{
-			$str2 .= returnAppletPannel($idApplet,$module_name, $voiceMails, $faxRows, $mails, $callsRows, $arrServices, $arrParticiones, $eventsRows, $systemStatus, $system_resource);
+			$str2 .= returnAppletPannel($idApplet,$module_name, $voiceMails, $faxRows, $mails, $callsRows, $arrServices, $arrParticiones, $eventsRows, $systemStatus, $system_resource, $arrCards);
 		}
 	}
 	$str1 .= "</td>";
@@ -657,7 +730,7 @@ function createApplesTD($arrPaneles, $module_name, $voiceMails, $faxRows, $mails
 	return $str;
 }
 
-function returnAppletPannel($idApplet, $module_name, $voiceMails, $faxRows, $mails, $callsRows, $arrServices, $arrParticiones, $eventsRows, $systemStatus, $system_resource){
+function returnAppletPannel($idApplet, $module_name, $voiceMails, $faxRows, $mails, $callsRows, $arrServices, $arrParticiones, $eventsRows, $systemStatus, $system_resource, $arrCards){
 	$str = "";
 	switch ($idApplet)
 	{
@@ -694,6 +767,9 @@ function returnAppletPannel($idApplet, $module_name, $voiceMails, $faxRows, $mai
 		case "system":
 			$str = createSystem($systemStatus,$module_name);
 		break;
+        case "telephony_hardware";
+            $str = telephony_hardware($module_name, $arrCards);
+        break;
 		default:
 			$str = communicationActivity($module_name);
 		break;

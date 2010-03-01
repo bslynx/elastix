@@ -35,7 +35,7 @@ if($action == "setConfig"){
     $oPortsDetails = new PaloSantoHardwareDetection();
 
     $arrCardParam['manufacturer'] = $pDB->DBCAMPO(getParameter("manufacturer"));
-    $arrCardParam['num_serie'] = $pDB->DBCAMPO(getParameter("num_serie"));
+    $arrCardParam['num_serie'] = $pDB->DBCAMPO(trim(getParameter("num_serie")));
     
     $oPortsDetails->updateCardParameter($pDB, $arrCardParam, array("id_card"=>$idCard));
     echo "$idCard";

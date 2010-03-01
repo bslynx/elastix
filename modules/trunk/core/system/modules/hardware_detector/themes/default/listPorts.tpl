@@ -29,9 +29,9 @@
                 <tr>
                     <td style='border: 1px #CCCCCC solid; font-size:12px;' align='left' class="moduleTitle">{$CARD} # {$data.DESC.ID}: {$data.DESC.TIPO} {$data.DESC.ADICIONAL} </td>
                     {if $data.DESC.MANUFACTURER eq 'yes'}
-                    <td style='border: 1px #CCCCCC solid; width:30px;'> <span id="editMan{$data.DESC.ID}"> <img class="icon" src="modules/hardware_detector/images/call2.png" /> </span> </td>
+                    <td style='border: 1px #CCCCCC solid; width:30px;' align="center"> <span id="editMan{$data.DESC.ID}"> <img class="icon" src="modules/hardware_detector/images/card_registered.gif" /> </span> </td>
                     {elseif $data.DESC.MANUFACTURER  eq 'no'}
-                    <td style='border: 1px #CCCCCC solid; width:30px;'> <span id="editMan{$data.DESC.ID}"> <img class="icon" src="modules/hardware_detector/images/iconManufactur.gif" /> </span> </td>
+                    <td style='border: 1px #CCCCCC solid; width:30px;' align="center"> <span id="editMan{$data.DESC.ID}"> <img class="icon" src="modules/hardware_detector/images/card_no_registered.gif" /> </span> </td>
                     {/if}
                     <td style='border: 1px #CCCCCC solid; width:30px;'> <span id="editArea{$data.DESC.ID}"> <img class="icon" src="modules/hardware_detector/images/icon1.png" /> </span> </td>
                     <td style='border: 1px #CCCCCC solid; width:30px;'><a href='?menu=hardware_detector&action=config_echo&cardId={$data.DESC.ID}'><img class="icon" src="modules/hardware_detector/images/icon_configecho.png" title="Config echo Canceller"/></a></td>
@@ -178,28 +178,39 @@
     </div>
     <div id="layerCM{$cnt2}_content">
         <form id="layerCM{$cnt2}_form" method="post" action="">
-            <legend >Card Register</legend><br />
-            <table>
-                <tr>
-                    <td><label style='font-size: 11px'>Vendor:</label></td>
-                    <td id="select_{$cnt2}" ><select id='manufacturer_{$cnt2}' name='manufacturer_{$cnt2}' onChange="addTextBox({$cnt2})">
-                    {html_options options=$type_manufacturer selected=$data2.manufacturer }
-                    </select></td>
-                </tr>
-                <tr>
-                    <td><label style='font-size: 11px'>Serial Number:</label></td>
-                    <td><input type="text" value="{$data2.num_serie}" name="noSerie_{$cnt2}" id="noSerie_{$cnt2}" /></td>
-                </tr>
-                <input type="hidden" value="{$cnt2}" name="idCard_{$cnt2}" />
-                
-                <tr>
-                    <td></td>
-                    <br>
-                    <td align="right">
-                        <input type="button" value="Save" onclick="saveCardSpecification({$cnt2});" class="boton"/>
-                    </td>
-                </tr>
-            </table>
+            {if $data2.num_serie eq ' '}
+                <font style="color:red">Card has not been Registered</font><br />
+                <table>
+                    <tr>
+                        <td><label style='font-size: 11px'>Vendor:</label></td>
+                        <td id="select_{$cnt2}" ><select id='manufacturer_{$cnt2}' name='manufacturer_{$cnt2}' onChange="addTextBox({$cnt2})">
+                        {html_options options=$type_manufacturer selected=$data2.manufacturer }
+                        </select></td>
+                    </tr>
+                    <tr>
+                        <td><label style='font-size: 11px'>Serial Number:</label></td>
+                        <td><input type="text" value="{$data2.num_serie}" name="noSerie_{$cnt2}" id="noSerie_{$cnt2}" /></td>
+                    </tr>
+                    <input type="hidden" value="{$cnt2}" name="idCard_{$cnt2}" />
+                    <tr>
+                        <td></td>
+                        <br>
+                        <td align="right">
+                            <input type="button" value="Save" onclick="saveCardSpecification({$cnt2});" class="boton"/>
+                        </td>
+                    </tr>
+                </table>
+            {else}
+                <font style="color:#32CD32" >Card has been Registered</font><br />
+                <table>
+                    <tr>
+                        <td><label style='font-size: 11px'>Vendor:  {$data2.manufacturer}</label></td>
+                    </tr>
+                    <tr>
+                        <td><label style='font-size: 11px'>Serial Number:  {$data2.num_serie}</label></td>
+                    </tr>
+                </table>
+            {/if}
         </form>
     </div>
 </div>

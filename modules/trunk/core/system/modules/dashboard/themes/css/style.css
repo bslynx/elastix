@@ -37,7 +37,6 @@
 	border-color: #fff #665 #665 #fff;
 	border-style: solid;
 	border-width: 1px;
-	cursor: move;
 	margin: 0 0 10px;
 	width: 100%;
 }
@@ -46,13 +45,14 @@
 {
 	/*background: #eed;*/
 	padding: 5px 10px;
-   background-color:#FFFFFF;
+    background-color:#FFFFFF;
 	background-image:url(../../../../images/bgGray.gif);
 	border-color:#999999;
 	color:#E35332;
-   font-family:verdana,arial,helvetica,sans-serif;
+    font-family:verdana,arial,helvetica,sans-serif;
 	font-size:13pt;
 	font-weight:bold;
+    cursor: move;
 }
 
 .portlet_topper a
@@ -109,7 +109,7 @@
 }
 
 .status{
-	width:70px;
+	width:82px;
 	float:left;
 	margin-top:3px;
 	margin-bottom:3px;
@@ -235,4 +235,30 @@
     width:240px;
     background-color: #fafafa;
     border:2px solid #800000;
+}
+
+#layerCM {
+    position: absolute;
+    left:150px;
+    top:380px;
+    width:300px;
+    background-color:#f0f5FF;
+    border: 1px solid #000;
+    z-index: 50;
+    display:none;
+}
+#layerCM_content {
+    padding:5px;
+    font-size: 11px;
+    font-family:Verdana,Arial,Helvetica,sans-serif;
+}
+
+.layer_handle{
+    background-color:#5588bb;
+    padding:2px;
+    text-align:center;
+    font-weight:bold;
+    color: #FFFFFF;
+    vertical-align:middle;
+    font-size: 12px;
 }

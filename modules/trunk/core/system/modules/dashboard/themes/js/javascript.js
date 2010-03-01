@@ -91,8 +91,99 @@ $(document).ready(
                 return false;
             }
         );
+
+        $('#closeCM').click(function() {
+            $("#layerCM").hide();
+        });
+        $('[id=^editMan_],[id^=editMan1_],[id^=editMan2_]').click(function() {
+            var arrID = $(this).attr("id").split("_"); 
+            var a_id_card = arrID[1];
+
+            if(arrID[0]=="editMan1") openWndMan1(a_id_card);
+            else getDataCard(a_id_card);
+            $("#layerCM").show();
+        });
 	}
 );
+
+
+function saveRegister(id_card)
+{
+    var vendor = document.getElementById("manufacturer").value;
+    var num_se = document.getElementById("noSerie").value;
+
+    var order = 'menu=dashboard&action=saveRegister&rawmode=yes&num_serie=' + num_se + '&hwd=' + id_card + '&vendor=' + vendor ;
+
+    $.post("index.php", order,
+        function(theResponse){ alert(theResponse);
+            alert("Card has been registered");
+            $("#layerCM").hide();
+            window.open("index.php?menu=dashboard","_self");
+    });
+}
+
+function getDataCard(id_card)
+{
+    var order = 'menu=dashboard&action=getRegister&rawmode=yes&hwd=' + id_card;
+
+    $.post("index.php", order,
+        function(theResponse){
+            salida = theResponse.split(',');
+            openWndMan2(salida[0],salida[1]);
+    });
+}
+
+function openWndMan1(id_card)
+{
+     html = "<table>" +
+                "<tr>" +
+                    "<td colspan='2' style='font-size: 11px'>" +
+                        "<font style='color:red'>Card has not been Registered</font>" +
+                    "</td>" +
+                "</tr>" +
+                "<tr>" +
+                    "<td><label style='font-size: 11px'>Vendor:</label></td>" +
+                    "<td><select id='manufacturer' name='manufacturer' >" +
+                        "<option value='Digium' label='Digium'>Digium</option>" +
+                        "<option value='OpenVox' label='OpenVox'>OpenVox</option>" +
+                        "<option value='Rhino' label='Rhino'>Rhino</option>" +
+                        "<option value='Sangoma' label='Sangoma'>Sangoma</option>" +
+                        "<option value='RedFone' label='RedFone'>RedFone</option>" +
+                        "<option value='XorCom' label='XorCom'>XorCom</option>" +
+                        "<option value='Dialogic' label='Dialogic'>Dialogic</option>" +
+                        "<option value='Otros' label='Otros'>Otros</option>" +
+                    "</select></td>" +
+                "</tr> <tr>" +
+                    "<td><label style='font-size: 11px'>Serial Number:</label></td>" +
+                    "<td><input type='text' value='' name='noSerie' id='noSerie' /></td>" +
+                "</tr> <tr>" +
+                    "<td align='center' colspan='2'>" +
+                        "<input type='button' value='Save' class='boton'onclick='saveRegister(\"" + id_card + "\");' />" +
+                    "</td>" +
+                "</tr>" +
+            "</table>";
+
+    document.getElementById("layerCM_content").innerHTML = html;
+}
+
+
+function openWndMan2(vendor,num_serie)
+{
+     html = "<table>" +
+                "<tr>" +
+                    "<td colspan='2' style='font-size: 11px'>" +
+                        "<font style='color:green'>Card has been Registered</font>" +
+                    "</td>" +
+                "</tr>" +
+                "<tr>" +
+                    "<td><label style='font-size: 11px'>Vendor: "+ vendor + "</label></td>" +
+                "</tr> <tr>" +
+                    "<td><label style='font-size: 11px'>Serial Number: " + num_serie + "</label></td>" +
+                "</tr>" +
+            "</table>";
+    document.getElementById("layerCM_content").innerHTML = html;
+}
+
 
 function changeArrow(urlimg,id){
   var sal = "";

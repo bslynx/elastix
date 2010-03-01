@@ -90,7 +90,7 @@ class PaloSantoHardwareDetection
                    
                    if($dataCardParam['manufacturer']==" " && $dataCardParam['num_serie']==" " && $dataCardParam['id_card']==" "){
                         $data3['id_card']    = $pDB->DBCAMPO($regs[1]); 
-                        $this->addCardManufacturer($pDB, $data3);    
+                        $this->addCardManufacturer($pDB, $data3);
                    }else $this->updateCardParameter($pDB, $data3, array("id_card"=>$regs[1]));
                    $tarjetas["TARJETA$idTarjeta"]['DESC'] = array('ID' => $regs[1], 'TIPO' => $regs[2], 'ADICIONAL' => $regs[3], 'MANUFACTURER' => $exist_data);
                    $count++;
@@ -310,7 +310,7 @@ class PaloSantoHardwareDetection
         $result= $pDB->fetchTable($query, true);
 
         if($result==FALSE){
-            $this->errMsg = $this->_DB->errMsg;
+            $this->errMsg = $pDB->errMsg;
             return array();
         }
         return $result;

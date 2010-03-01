@@ -298,7 +298,7 @@ function controllerCardManufacturer(xhr)
             var span = document.getElementById("editMan"+idCard);
             span.removeChild(span.getElementsByTagName("img")[0]);
                
-            span.innerHTML = "<img class='icon' src='modules/hardware_detector/images/call2.png' />";
+            span.innerHTML = "<img class='icon' src='modules/hardware_detector/images/card_registered.gif' />";
 //            imgtag = document.createElement("input");
 //             imgtag.setAttribute("class", "icon");
 //             imgtag.setAttribute("src", "modules/hardware_detector/images/call2.png");
@@ -342,7 +342,7 @@ function objAjax()
         }
         catch(E) {
             xmlhttp = false;
-        }
+	    }
     }
     if (!xmlhttp && typeof XMLHttpRequest!='undefined')
     {
