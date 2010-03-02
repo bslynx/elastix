@@ -309,7 +309,6 @@ class paloSantoCalendar {
 
     function getEventByDate($startdate, $enddate){
         $query = "SELECT * FROM events WHERE (startdate <= '$startdate' AND enddate >= '$enddate') OR (startdate >= '$startdate' AND enddate <= '$enddate') OR (startdate <= '$startdate' AND enddate >= '$startdate') OR (startdate >= '$startdate' AND enddate >= '$enddate')";
-//startdate >= '$startdate' AND enddate <= '$enddate'";
         $result = $this->_DB->fetchTable($query,true);
         if($result==FALSE){
             $this->errMsg = $this->_DB->errMsg;
@@ -320,7 +319,6 @@ class paloSantoCalendar {
 
     function getAllEvents(){
         $query = "SELECT * FROM events";
-//startdate >= '$startdate' AND enddate <= '$enddate'";
         $result = $this->_DB->fetchTable($query,true);
         if($result==FALSE){
             $this->errMsg = $this->_DB->errMsg;

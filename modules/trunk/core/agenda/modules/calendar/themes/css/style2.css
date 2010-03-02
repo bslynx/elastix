@@ -392,6 +392,11 @@ z-index:1;
     border-bottom:1px solid #DDDDDD;
 }
 
+#icals{
+    padding: 10px;
+    text-align: right;
+}
+
 /*
 * html #box_overlay { /* ie6 hack */
 /*  position: absolute;

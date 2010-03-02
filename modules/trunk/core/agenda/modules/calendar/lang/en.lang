@@ -118,5 +118,6 @@ $arrLangModule=array(
 "Notification_Alert" => "Notification Alert",
 "Email" => "E-mail",
 "Contact" => "Contact",
+"Export_Calendar" => "Export Calendar",
 );
 ?>

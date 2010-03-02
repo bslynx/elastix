@@ -196,6 +196,7 @@ function viewCalendar($smarty, $module_name, $local_templates_dir, &$pDB, $arrCo
     $smarty->assign("Email",$arrLang["Email"]);
     $smarty->assign("Contact",$arrLang["Contact"]);
     $smarty->assign("visibility_emails",$visibility_emails);
+    $smarty->assign("Export_Calendar",$arrLang["Export_Calendar"]);
 
     $smarty->assign("NEW", $arrLang["Add Event"]);
     $smarty->assign("SEARCH", $arrLang["Search"]);
@@ -836,7 +837,7 @@ function download_icals($arrLang,&$pDB,$module_name){//createICALToExport(){
     header('Content-disposition: inline; filename="icalout.ics"');
     header('Content-Type: application/force-download');
 
-    //exec("echo 'array_salida: ".print_r($arr_out,true)."' > /tmp/edu");
+    exec("echo 'array_salida: ".print_r($arr_out,true)."' > /tmp/edu");
     /*array(
         'id'    => "1",
         'title' => "event title",
@@ -845,25 +846,25 @@ function download_icals($arrLang,&$pDB,$module_name){//createICALToExport(){
         'allDay'=> "false",
         'url' => "url"
      );*/
-    $document_output = "BEGIN:VCALENDAR \nPRODID:-//Elastix Development Department// Elastix 2.0 //EN \nVERSION:2.0\n\n";
+    $document_output = "BEGIN:VCALENDAR\nPRODID:-//Elastix Development Department// Elastix 2.0 //EN\nVERSION:2.0\n\n";
     for($i=0; $i<count($arr_out); $i++){
-        $start_time = strtotime($arr_out[$i]['start']);
-        $end_time = strtotime($arr_out[$i]['end']);
+        $start_time = date("Ymd",strtotime($arr_out[$i]['start']))."T".date("Hi",strtotime($arr_out[$i]['start']))."00Z";
+        $end_time = date("Ymd",strtotime($arr_out[$i]['end']))."T".date("Hi",strtotime($arr_out[$i]['end']))."00Z";
 
         $document_output.= "BEGIN:VEVENT\n";
         $document_output.= "DTSTAMP:$start_time\n";
         $document_output.= "CREATED:$start_time\n";
-        $document_output.= "UID:".$arr_out[$i]['id']."\n";
+        $document_output.= "UID:$i-".$arr_out[$i]['id']."\n";
         $document_output.= "SUMMARY:".$arr_out[$i]['title']."\n";
         $document_output.= "CLASS:PUBLIC\n";
         $document_output.= "PRIORITY:5\n";
         $document_output.= "DTSTART:$start_time\n";
         $document_output.= "DTEND:$end_time\n";
         $document_output.= "TRANSP:OPAQUE\n";
-        $document_output.= "SEQUENCE=0";
-        $document_output.= "END:VEVENT\n";
+        $document_output.= "SEQUENCE=0\n";
+        $document_output.= "END:VEVENT\n\n";
     }
-    $document_output .= "\nEND:VCALENDAR";
+    $document_output .= "END:VCALENDAR";
     echo($document_output);
 
 }

@@ -1,8 +1,5 @@
 <script type="text/javascript" src ="libs/js/jquery/js/jquery-1.3.2.min.js"></script>
 <script type="text/javascript" src ="libs/js/jquery/js/jquery-ui-1.7.2.custom.min.js"></script>
-<script type="text/javascript" src ="modules/{$module_name}/themes/js/jquery/ui.core.js"></script>
-<script type="text/javascript" src ="modules/{$module_name}/themes/js/jquery/ui.draggable.js"></script>
-<script type="text/javascript" src ="modules/{$module_name}/themes/js/jquery/ui.resizable.js"></script>
 <script type="text/javascript" src ="modules/{$module_name}/themes/js/fullcalendar.js"></script>
 <script type="text/javascript" src="modules/{$module_name}/themes/js/jquery.fcbkcomplete.js"></script>
 <link rel="stylesheet" type="text/css" href="modules/{$module_name}/themes/css/theme.css" />
@@ -17,35 +14,14 @@
 </table>
 
 <table class="tabForm" style="font-size: 16px;" width="100%">
-    <tr><td><a id="icals" href="index.php?menu={$module_name}&action=download_icals&rawmode=yes">Download-Icals</a></td></tr>
     <tr>
         <td align="left" valign="top" style="font-size:64%;">
             <div type="text" id="datepicker"></div>
-            <!--<table class="phpc-main" cellspacing="0" cellpadding="0" width="100%">
-                <tr>
-                    <td align="left"><a href="{$URL_PREVIOUS_MONTH}"><img src="images/previous.gif" border="0"></a></td>
-                    <td align="center">
-                        <select name="month" id="month" onchange="javascript:change_month(this);">
-                            {$OPTION_MONTH}
-                        </select>
-                    </td>
-                    <td align="right"><a href="{$URL_NEXT_MONTH}"><img src="images/next.gif" border="0"></a></td>
-                </tr>
-                <tr>
-                    <td align="left"><a href="{$URL_PREVIOUS_YEAR}"><img src="images/start.gif" border="0"></a></td>
-                    <td align="center">
-                        <select name="year" id="year" onchange="javascript:change_year(this);">
-                            {$OPTION_YEAR}
-                        </select>
-                    </td>
-                    <td align="right"><a href="{$URL_NEXT_YEAR}"><img src="images/end.gif" border="0"></a></td>
-                </tr>
-                <tr>
-                    <td colspan="3" style="font-size:64%;">
-                        <div type="text" id="datepicker"></div>
-                    </td>
-                </tr>
-            </table>-->
+            <div id="icals" >
+                <a  href="index.php?menu={$module_name}&action=download_icals&rawmode=yes">
+                    <span>{$Export_Calendar}</span>
+                </a>
+            </div>
         </td>
         <td align="right" width="90%" >
             <div id='calendar'></div>
