@@ -66,8 +66,6 @@ class DialerProcess extends AbstractProcess
     private $_bSobrecolocarLlamadas = FALSE;// VERDADERO si se intenta compensar por baja contestación mediante
                                             // colocar más llamadas de las predichas por estado de cola. 
 
-    private $_numLlamadasOriginadas;    // Llamadas originadas sin OriginateResponse, por cola
-
     private $_oGestorEntrante;      // Gestor de llamadas entrantes
     
     private $_plantillasMarcado;
@@ -85,7 +83,6 @@ class DialerProcess extends AbstractProcess
     function inicioPostDemonio($infoConfig, &$oMainLog)
     {
         $bContinuar = TRUE;
-        $this->_numLlamadasOriginadas = array();
         $this->_oGestorEntrante = NULL;
         $this->_plantillasMarcado = array();
 
@@ -593,18 +590,6 @@ class DialerProcess extends AbstractProcess
 		                        "[id_campaign=$infoCampania->id, id=".$this->_infoLlamadas['llamadas'][$k]->id."]".
 		                        $result->getMessage());
 		                }
-
-						// Quitar llamada de lista de llamadas monitoreadas
-	                	if (!isset($this->_numLlamadasOriginadas[$infoCampania->queue])) {
-	                		$this->oMainLog->output("ERR: cola {$infoCampania->queue} no se encuentra entre llamadas originadas!");
-	                	} elseif ($this->_numLlamadasOriginadas[$infoCampania->queue] <= 0) {
-			                // Esta situación no debería ocurrir nunca
-			            	$this->oMainLog->output("ERR: (limpieza de llamadas perdidas) ha encontrado llamada ".
-			                    "propia, pero ".$this->_numLlamadasOriginadas[$infoCampania->queue].
-			                    " llamadas en espera de respuesta! \n");
-	                	} else {
-	                		$this->_numLlamadasOriginadas[$infoCampania->queue]--;
-	                	}
 	                }
 	                
 	                unset($this->_infoLlamadas['llamadas'][$k]);
@@ -617,7 +602,6 @@ class DialerProcess extends AbstractProcess
         	$this->_iUltimoDebug = $iTimestamp;
             if ($this->DEBUG) {
             	$this->oMainLog->output("DEBUG: estado actual de campañas => ".print_r($this->_infoLlamadas, TRUE));
-                $this->oMainLog->output("DEBUG: estado actual de llamadas esperadas => ".print_r($this->_numLlamadasOriginadas, TRUE));
             }
         }
 
@@ -958,6 +942,7 @@ PETICION_LLAMADAS_AGENTE;
 
                     foreach ($listaLlamadas as $sKey => $tupla) {
                         $sCanalTrunk = str_replace('$OUTNUM$', $tupla->phone, $datosTrunk['TRUNK']);
+                        $listaLlamadas[$sKey]->queue = $infoCampania->queue;
                         if ($this->DEBUG) {
                             $this->oMainLog->output("DEBUG: generando llamada agendada\n".
                                 "\tAgente...... $tupla->agent\n" .
@@ -993,7 +978,6 @@ PETICION_LLAMADAS_AGENTE;
                             // y Link que se generen antes del OriginateResponse
                             $listaLlamadas[$sKey]->DialString = is_null($infoCampania->trunk) ? $sCanalTrunk : NULL;
                             
-                            $this->_numLlamadasOriginadas[$infoCampania->queue]++;
                             $bErrorLocked = FALSE;
                             do {
                                 $bErrorLocked = FALSE;
@@ -1063,13 +1047,11 @@ PETICION_LLAMADAS_AGENTE;
             }
 		}
 
-        if (!isset($this->_numLlamadasOriginadas[$infoCampania->queue])) {
-        	$this->_numLlamadasOriginadas[$infoCampania->queue] = 0;
-        }
+        $iNumEsperanRespuesta = $this->_contarLlamadasEsperandoRespuesta($infoCampania->queue);
         if ($this->DEBUG) {
-            if ($this->_numLlamadasOriginadas[$infoCampania->queue] > 0)
+            if ($iNumEsperanRespuesta > 0)
                 $this->oMainLog->output("DEBUG: (campania $infoCampania->id cola $infoCampania->queue) todavia quedan ".
-                	$this->_numLlamadasOriginadas[$infoCampania->queue].
+                	$iNumEsperanRespuesta.
 					" llamadas pendientes de OriginateResponse!");
 			foreach ($this->_infoLlamadas['llamadas'] as $k => $tupla) {
 				if (is_null($tupla->OriginateEnd) && $tupla->id_campaign == $infoCampania->id) {
@@ -1078,8 +1060,8 @@ PETICION_LLAMADAS_AGENTE;
 				}
 			}
         }
-        if ($iNumLlamadasColocar > $this->_numLlamadasOriginadas[$infoCampania->queue])
-            $iNumLlamadasColocar -= $this->_numLlamadasOriginadas[$infoCampania->queue];
+        if ($iNumLlamadasColocar > $iNumEsperanRespuesta)
+            $iNumLlamadasColocar -= $iNumEsperanRespuesta;
         else $iNumLlamadasColocar = 0;
         
         if ($this->_astConn->request_err) {
@@ -1251,6 +1233,7 @@ PETICION_LLAMADAS;
             $listaLlamadasOriginadas = array();
             foreach ($listaLlamadas as $sKey => $tupla) {
                 $sCanalTrunk = str_replace('$OUTNUM$', $tupla->phone, $datosTrunk['TRUNK']);
+                $listaLlamadas[$sKey]->queue = $infoCampania->queue;
                 if ($this->DEBUG) {
                     $this->oMainLog->output("DEBUG: generando llamada\n".
 						"\tDestino..... $tupla->phone\n" .
@@ -1286,7 +1269,6 @@ PETICION_LLAMADAS;
                     $listaLlamadas[$sKey]->DialString = is_null($infoCampania->trunk) ? $sCanalTrunk : NULL;
                     $listaLlamadas[$sKey]->PendingEvents = NULL;
                     
-                    $this->_numLlamadasOriginadas[$infoCampania->queue]++;
                     $bErrorLocked = FALSE;
                     do {
                     	$bErrorLocked = FALSE;
@@ -1325,6 +1307,21 @@ PETICION_LLAMADAS;
 
             return FALSE;
         }
+    }
+
+    /* Contar el número de llamadas que se colocaron en la cola $queue y que han
+     * sido originadas, pero todavía esperan respuesta */
+    private function _contarLlamadasEsperandoRespuesta($queue)
+    {
+    	$iNumEspera = 0;
+        
+        foreach ($this->_infoLlamadas['llamadas'] as $tuplaLlamada) {
+        	if ($tuplaLlamada->queue == $queue && 
+                !is_null($tuplaLlamada->OriginateStart) && 
+                is_null($tuplaLlamada->OriginateEnd))
+                $iNumEspera++;
+        }
+        return $iNumEspera;
     }
 
 	/**
@@ -1674,14 +1671,6 @@ PETICION_LLAMADAS;
                 // siguiente iteración la campaña haya terminado. Todavía
                 // debe de seguirse la pista de la campaña.
                 $infoCampania = $this->_leerCampania($idCampaign);
-            }
-            if ($this->_numLlamadasOriginadas[$infoCampania->queue] > 0) {
-                $this->_numLlamadasOriginadas[$infoCampania->queue]--;
-            } else {
-                // Esta situación no debería ocurrir nunca
-            	$this->oMainLog->output("ERR: OnOriginateResponse ha encontrado llamada ".
-                    "propia, pero ".$this->_numLlamadasOriginadas[$infoCampania->queue].
-                    " llamadas en espera de respuesta! \n".print_r($params, TRUE));
             }
             
             $bErrorLocked = FALSE;
@@ -2238,7 +2227,8 @@ PETICION_LLAMADAS;
 
             // Se ha observado que ocasionalmente se pierde el evento Link
             $idCampaign = $this->_infoLlamadas['llamadas'][$sKey]->id_campaign;
-            if (is_null($this->_infoLlamadas['llamadas'][$sKey]->start_timestamp)) {
+            if (!isset($this->_infoLlamadas['llamadas'][$sKey]->start_timestamp) || 
+                is_null($this->_infoLlamadas['llamadas'][$sKey]->start_timestamp)) {
                 if (!is_null($this->_infoLlamadas['llamadas'][$sKey]->Channel) &&
                     strpos($params["Channel"], $this->_infoLlamadas['llamadas'][$sKey]->Channel) !== false) {
                     if ($this->DEBUG) {

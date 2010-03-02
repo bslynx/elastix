@@ -1,3 +1,6 @@
+* Dialer: Remove per-queue counter of pending calls. This code is prone to get
+  out of sync with the actual count of pending calls. Instead, store queue
+  in call structure and count pending calls that match a given queue.
 * Dialer: Fix assumption that Link and Join events will always occur after
   the OriginateResponse event. This does not always hold for calls made through
   the dialplan (Local/XXX@from-internal). Should fix issue of some calls not
