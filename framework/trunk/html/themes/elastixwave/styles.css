@@ -812,9 +812,9 @@ td.botonon {
     padding-top: 0px;
     padding-bottom: 0px;
     border-right: 1px solid #e35332;
-/*     background: #dce7f3; */
-    background-image:url(images/fondo_boton_2do_on.gif);
-    background-repeat: repeat-x;
+    background-color: #dce7f3;
+    /*background-image:url(images/fondo_boton_2do_on.gif);
+    background-repeat: repeat-x;*/
 }
 .menulogo2 {
     FONT-FAMILY: verdana, arial, helvetica, sans-serif;
