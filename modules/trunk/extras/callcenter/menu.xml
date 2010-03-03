@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module>
   <menulist>
-    <menuitem menuid="call_center"            desc="Call Center"            parent=""                     module="no"  link="" order="0"></menuitem>
+    <menuitem menuid="call_center"            desc="Call Center"            parent=""                     module="no"  link="" order="9"></menuitem>
     <menuitem menuid="agent_console"          desc="Agent Console"          parent="call_center"          module="yes" link="" order="1"></menuitem>
     <menuitem menuid="outgoing_calls"         desc="Outgoing Calls"         parent="call_center"          module="no"  link="" order="2"></menuitem>
     <menuitem menuid="campaign_out"           desc="Campaigns"              parent="outgoing_calls"       module="yes" link="" order="21"></menuitem>
