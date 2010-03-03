@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module>
   <menulist>
-    <menuitem menuid="agenda"       desc="Agenda"       parent=""       module="no"  link="" order="0"></menuitem>
+    <menuitem menuid="agenda"       desc="Agenda"       parent=""       module="no"  link="" order="2"></menuitem>
     <menuitem menuid="calendar"     desc="Calendar"     parent="agenda" module="yes" link="" order="1"></menuitem>
     <menuitem menuid="address_book" desc="Address Book" parent="agenda" module="yes" link="" order="2"></menuitem>
     <menuitem menuid="recordings"   desc="Recordings"   parent="agenda" module="yes" link="" order="3"></menuitem>
