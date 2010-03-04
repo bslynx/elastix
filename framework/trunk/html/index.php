@@ -133,6 +133,8 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
     $oPn = new paloSantoNavigation($arrConf, $arrMenuFiltered, $smarty);
 
     $smarty->assign("THEMENAME", $arrConf['mainTheme']);
+    $smarty->assign("md_message_title",$arrLang['md_message_title']);
+
 	if($arrConf['mainTheme']=="elastixwave"){
 		$smarty->assign("ABOUT_ELASTIX2",$arrLang['About Elastix2']);
     	$smarty->assign("HELP",$arrLang['HELP']);
@@ -151,7 +153,36 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
     else $menu='';
 
     $_SESSION['menu']=$menu; 
- 
+
+    // get the header with scripts and links(css)
+    $directory = "/var/www/html/modules/".$menu;
+    $HEADER = "";
+    if(is_dir($directory)){
+        $directoryScrips = "/var/www/html/modules/$menu/themes/default/js/";
+        $directoryCss = "/var/www/html/modules/$menu/themes/default/css/";
+        exec("echo 'array jsrr: $directory' > /tmp/edu");
+        if(is_dir($directoryScrips)){
+            $arr_js = obtainFiles($directoryScrips,"js");
+            if($arr_js!=false && count($arr_js)>0){
+                for($i=0; $i<count($arr_js); $i++){
+                    $dir_script = "/modules/$menu/themes/default/js/".$arr_js[$i];
+                    $HEADER .= "\n<script src='$dir_script'></script>";
+                }
+            }
+        }
+        if(is_dir($directoryCss)){
+            $arr_css = obtainFiles($directoryCss,"css");
+            if($arr_css!=false && count($arr_css)>0){
+                for($i=0; $i<count($arr_css); $i++){
+                    $dir_css = "/modules/$menu/themes/default/css/".$arr_css[$i];
+                    $HEADER .= "\n<link rel='stylesheet' href='$dir_css' />";
+                }
+            }
+        }
+
+    }
+    $smarty->assign("HEADER",$HEADER);
+
     if (count($arrMenuFiltered)>0)
         $smarty->assign("MENU", $oPn->showMenu($menu));
     else
@@ -185,5 +216,14 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
 
     $smarty->display("_common/login.tpl");
 
+}
+
+function obtainFiles($dir,$type){
+        $files =  glob($dir."/{*.$type}",GLOB_BRACE);
+        $names ="";
+        foreach ($files as $ima)
+            $names[]=array_pop(split("/",$ima));
+        if(!$names) return false;
+        return $names;
 }
 ?>
