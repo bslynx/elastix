@@ -99,4 +99,9 @@
         popupWin.focus();
         //return true;
     }
+
+    function hide_message_error()
+    {
+        document.getElementById("message_error").style.display = 'none';
+    }
     // End -->
