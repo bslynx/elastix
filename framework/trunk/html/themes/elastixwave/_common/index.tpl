@@ -4,6 +4,8 @@
         <title>Elastix</title>
         <link rel="stylesheet" href="themes/{$THEMENAME}/styles.css" />
         <link rel="stylesheet" href="themes/{$THEMENAME}/help.css" />
+        <script type="text/javascript" src ="libs/js/jquery/js/jquery-1.3.2.min.js"></script>
+        <script type="text/javascript" src ="libs/js/jquery/js/jquery-ui-1.7.2.custom.min.js"></script>
         <script src="libs/js/base.js"></script>
         <script src="libs/js/iframe.js"></script>
         {$HEADER}
@@ -12,15 +14,14 @@
         {$MENU} <!-- Viene del tpl menu.tlp-->
                 <td align="left" valign="top">
                     {if !empty($mb_message)}
-                        <!-- Message board -->
-                        <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center" class="message_board">
-                            <tr>
-                                <td id="mb_title" valign="middle" class="mb_title">&nbsp;{$mb_title}</td>
-                            </tr>
-                            <tr>
-                                <td id="mb_message" valign="middle" class="mb_message">{$mb_message}</td>
-                            </tr>
-                        </table><br />
+                        <div style="background-color: rgb(255, 238, 255);" id="message_error">
+                            <table width="100%">
+                                <tr>
+                                    <td align="left"><b style="color:red;">{$mb_title} </b>{$mb_message}</td>
+                                    <td align="right"><input type="button" onclick="hide_message_error();" value="{$md_message_title}"/></td>
+                                </tr>
+                            </table>
+                        </div>
                         <!-- end of Message board -->
                     {/if}
                     <table border="0" cellpadding="2" cellspacing="1" width="100%">

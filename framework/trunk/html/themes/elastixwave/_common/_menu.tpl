@@ -65,10 +65,10 @@
                 <td class="menudescription" colspan="3">
                   <table cellspacing="0" cellpadding="0" width="100%">
                     <tr>
-                        <td>
+                        <td><!--{$arrMenuTotalChildren}-->
                             <table cellspacing="2" cellpadding="4" border="0">
                                 <tr>
-                                {foreach from=$arrSubMenu key=idSubMenu item=subMenu}
+                                {foreach from=$arrSubMenuByParents key=idSubMenu item=subMenu}
                                 {if $idSubMenu eq $idSubMenuSelected}
                                 <td title="" class="botonon">
                                         <a href="?menu={$idSubMenu}" class="submenu_on">{$subMenu.Name}</a>
@@ -221,5 +221,23 @@ setTimeout("createMenuSelectedSplash()",1400);
 //     }
 // }
 // load();
+</script>
+
+<script type="text/javascript">
+
+    $(".menutabletaboff").mouseover(function(){
+        $(this).attr("class","menutabletaboffover");
+        $(this).find('a:first').attr("class","menutableOver");
+        $(this).parent().find('img:first').attr("src","themes/elastixwave/images/fondo_boton_left2.gif");
+        $(this).parent().find('img:last').attr("src","themes/elastixwave/images/fondo_boton_right2.gif");
+    });
+
+    $(".menutabletaboff").mouseout(function(){
+        $(this).attr("class","menutabletaboff");
+        $(this).find('a:first').attr("class","menutable");
+        $(this).parent().find('img:first').attr("src","themes/elastixwave/images/fondo_boton_left.gif");
+        $(this).parent().find('img:last').attr("src","themes/elastixwave/images/fondo_boton_right.gif");
+    });
+
 </script>
 {/literal}
