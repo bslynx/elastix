@@ -181,5 +181,6 @@ alrededor del mundo.",
 "Title" => "Título",
 "Search" => "Buscar",
 "Show"   => "Mostrar",
+'md_message_title' => 'Dismiss',
 );
 ?>

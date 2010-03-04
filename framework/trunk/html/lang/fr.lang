@@ -183,5 +183,6 @@ de Voix sur IP tout autour du globe.",
 "Title" => "Title",
 "Search" => "Search",
 "Show"   => "Show",
+'md_message_title' => 'Dismiss',
 );
 ?>
