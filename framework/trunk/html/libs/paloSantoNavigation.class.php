@@ -35,6 +35,7 @@ class paloSantoNavigation {
     var $currMainMenu;
     var $currSubMenu;
     var $currSubMenu2;
+    var $currSubMenuByParents;
 
     function paloSantoNavigation($arrConf, $arrMenu, &$smarty)
     {
@@ -123,6 +124,7 @@ class paloSantoNavigation {
             $currMainMenu=NULL;
             $currSubMenu =NULL;
             $currSubMenu2=NULL;
+            $currSubMenuByParents=NULL;
 
             if(count($arrIds)==1){
                 $currMainMenu=$arrIds[0];
@@ -130,6 +132,7 @@ class paloSantoNavigation {
             if(count($arrIds)==2){
                 $currMainMenu=$arrIds[0];
                 $currSubMenu =$arrIds[1];
+                $currSubMenuByParents=$arrIds[1];
             }
             if(count($arrIds)==3){
                 $currMainMenu=$arrIds[0];
@@ -142,11 +145,13 @@ class paloSantoNavigation {
             $currMainMenu = $this->defaultMenu;
             $currSubMenu  = $this->getIdFirstSubMenu($currMainMenu);
             $currSubMenu2 = $this->getIdFirstSubMenu($currSubMenu);
+            $currSubMenuByParents = $this->getIdFirstSubMenu($currMainMenu);
         }
 
         $this->currMainMenu = $currMainMenu;
         $this->currSubMenu  = $currSubMenu;
         $this->currSubMenu2 = $currSubMenu2;
+        $this->currSubMenuByParents  = $currSubMenuByParents;
 
         // Get the main menu
         $arrMainMenu = $this->getArrSubMenu("");
@@ -159,6 +164,9 @@ class paloSantoNavigation {
         // Get the 3th level menu
         $arrSubMenu2 = $this->getArrSubMenu($currSubMenu); 
         $this->smarty->assign("arrSubMenu2", $arrSubMenu2);
+
+        $arrSubMenuByParents = $this->getArrSubMenuByParents($currMainMenu); // added by eduardo
+        $this->smarty->assign("arrSubMenuByParents", $arrSubMenuByParents);   // added by eduardo
 
         $this->smarty->assign("idMainMenuSelected",   $currMainMenu);
         $this->smarty->assign("idSubMenuSelected",    $currSubMenu);
@@ -210,6 +218,24 @@ class paloSantoNavigation {
         foreach($this->arrMenu as $id => $element) {
             if($element['IdParent']==$idParent) {
                 $arrSubMenu[$id] = $element;
+            }
+        }
+        if(count($arrSubMenu)<=0) return false;
+        return $arrSubMenu;
+    }
+
+// added by eduardo
+    function getArrSubMenuByParents($idParent)
+    {
+        $arrSubMenu = array();
+        foreach($this->arrMenu as $id => $element) {
+            if($element['IdParent']==$idParent) {
+                if($this->getArrSubMenu($element['id'])!=false){
+                    $element['Name'] = $element['Name']."...";
+                    $arrSubMenu[$id] = $element;
+                }else{
+                    $arrSubMenu[$id] = $element;
+                }
             }
         }
         if(count($arrSubMenu)<=0) return false;
