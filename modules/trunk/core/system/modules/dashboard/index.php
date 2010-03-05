@@ -65,9 +65,7 @@ function _moduleContent($smarty, $module_name)
     $oPalo = new paloSantoSysInfo();
     $arrSysInfo = $oPalo->getSysInfo();
 
-
-
-     $action = getParameter("action");
+    $action = getParameter("action");
     if($action=="saveRegister"){
         $hwd = getParameter("hwd");
         $num_serie = getParameter("num_serie");
@@ -83,38 +81,13 @@ function _moduleContent($smarty, $module_name)
         $hwd = getParameter("hwd");
         return $oPalo->getDataCardRegister($hwd);
     }
+    else if($action=="updateOrder"){
+        $ids_applet = getParameter("ids_applet");
+        return $oPalo->setApplets_UserOrder($ids_applet);
+    }
 
-
-    //CPU INFO
-    $smarty->assign("cpu_info", $arrSysInfo['CpuVendor'] . " " . $arrSysInfo['CpuModel']);
-    $cpu_info = $arrSysInfo['CpuVendor'] . " " . $arrSysInfo['CpuModel'];
-
-    //CPU USAGE
-    $img = getImage_CPU_Usage($module_name);
-    $inf = number_format($arrSysInfo['CpuUsage']*100, 2)."{$arrLang['% used of']} ".number_format($arrSysInfo['CpuMHz'], 2)." MHz";
-    $smarty->assign("cpu_usage", $img."&nbsp;&nbsp;&nbsp;".$inf);
-	 $cpu_usage =  $img."&nbsp;&nbsp;&nbsp;".$inf;
-
-    //MEMORY USAGE
-    $mem_usage  = ($arrSysInfo['MemTotal'] - $arrSysInfo['MemFree'] - $arrSysInfo['Cached'] - $arrSysInfo['MemBuffers'])/$arrSysInfo['MemTotal'];
-    $img = getImage_MEM_Usage($module_name);
-    $inf = number_format($mem_usage*100, 2)."{$arrLang['% used of']} ".number_format($arrSysInfo['MemTotal']/1024, 2)." Mb";
-    $smarty->assign("mem_usage", $img."&nbsp;&nbsp;&nbsp;".$inf);
-    $mem_usage = $img."&nbsp;&nbsp;&nbsp;".$inf;
-
-    //SWAP USAGE
-    $swap_usage = ($arrSysInfo['SwapTotal'] - $arrSysInfo['SwapFree'])/$arrSysInfo['SwapTotal'];
-    $img = getImage_Swap_Usage($module_name);
-    $inf = number_format($swap_usage*100, 2)."{$arrLang['% used of']} ".number_format($arrSysInfo['SwapTotal']/1024, 2)." Mb";
-    $smarty->assign("swap_usage", $img."&nbsp;&nbsp;&nbsp;".$inf );
-    $swap_usage = $img."&nbsp;&nbsp;&nbsp;".$inf;
-
-    //UPTIME
-    $smarty->assign("uptime",  $arrSysInfo['SysUptime']);
-	 $uptime = $arrSysInfo['SysUptime'];
 
     // DASHBOARD
-
  	$callsRows   =$arrLang["Error at read yours calls."];
 	$faxRows     =$arrLang["Error at read yours faxes."];
 	$voiceMails  =$arrLang["Error at read yours voicemails."];
@@ -142,76 +115,18 @@ function _moduleContent($smarty, $module_name)
 	    }
 	}
 
-	$smarty->assign("userInf",$arrLang["Dashboard"]);
-	$smarty->assign("calls",$arrLang["Calls"]);
-	$smarty->assign("emails",$arrLang["Em@ils"]);
-	$smarty->assign("faxes",$arrLang["Faxes"]);
-	$smarty->assign("voicemails",$arrLang["Voicem@ils"]);
-	$smarty->assign("calendar",$arrLang["Calendar"]);
-	$smarty->assign("system",$arrLang["System"]);
 
-	///////////////////////
-
-	/////////////News_RSS////////////////////////////
-
-	
-    $arrParticiones = array();
-    $i=0;
-
-	
-//print_r($oPalo->getAsterisk_Connections());
-//print_r($oPalo->getAsterisk_Channels());////
-//print_r($oPalo->getNetwork_TrafficAverage());////
-//print_r($oPalo->getAsterisk_QueueWaiting());
-
-	$arrParticiones1 = $arrSysInfo['particiones'];
+    $arrParticiones = $arrSysInfo['particiones'];
     $arrServices = $oPalo->getStatusServices();
     $arrCards = $oPalo->checkRegistedCards();
-	////////////////////////SYSTEM RESOURCE/////////////////
-    $SYSTEM_INFO_TITLE1 = $arrLang['System Resources'];
-    $CPU_INFO_TITLE = $arrLang['CPU Info'];
-    $UPTIME_TITLE = $arrLang['Uptime'];
-    $CPU_USAGE_TITLE = $arrLang['CPU usage'];
-    $MEMORY_USAGE_TITLE = $arrLang['Memory usage'];
-    $SWAP_USAGE_TITLE = $arrLang['Swap usage'];
-	$system_resource = getSystemResource($SYSTEM_INFO_TITLE1,$CPU_INFO_TITLE,$cpu_info,$UPTIME_TITLE,$uptime,$CPU_USAGE_TITLE,$cpu_usage,$MEMORY_USAGE_TITLE,$mem_usage,$SWAP_USAGE_TITLE,$swap_usage);
-	///////////////////////////////////////////////////////
 
-// $oPalo->asteriskActivity();
-    //asignar los valores del idioma
-    $smarty->assign("SYSTEM_INFO_TITLE1",  $arrLang['System Resources']);
-    $smarty->assign("CPU_INFO_TITLE",  $arrLang['CPU Info']);
-    $smarty->assign("UPTIME_TITLE",  $arrLang['Uptime']);
-    $smarty->assign("CPU_USAGE_TITLE",  $arrLang['CPU usage']);
-    $smarty->assign("MEMORY_USAGE_TITLE",  $arrLang['Memory usage']);
-    $smarty->assign("SWAP_USAGE_TITLE",  $arrLang['Swap usage']);
-    $smarty->assign("SYSTEM_INFO_TITLE2",  $arrLang['Hard Drives']);
-	//new
-    $smarty->assign("News",  $arrLang['News']);
-    $smarty->assign("Expand",  $arrLang['Expand']);
-    $smarty->assign("Collapse",  $arrLang['Collapse']);
-	$smarty->assign("NoConnection",  $arrLang['NoConnection']);
-	$smarty->assign("Performance_Graphic",  $arrLang['Performance Graphic']);
-	$smarty->assign("Processes_Status",  $arrLang['Processes Status']);
-	$smarty->assign("Communication_Activity", $arrLang['Communication Activity']);
+
+    $arrPaneles = $oPalo->getAppletsActivated($_SESSION["elastix_user"]);
+    $AppletsPanels = createApplesTD($arrPaneles, $module_name, $voiceMails, $faxRows, $mails, $callsRows, $arrServices, $arrParticiones, $eventsRows, $systemStatus, $arrCards, $arrSysInfo);
+
     $smarty->assign("module_name",  $module_name);
-    $imagen_hist = getImage_Hit($module_name);
-    $smarty->assign("imagen_hist", $imagen_hist);
-///////////////////////////////////////////////////////////////////////////////////
-	 /*$smarty->assign("system_resource", $system_resource);
-    $smarty->assign("callsRows",$callsRows);
-	 $smarty->assign("faxRows",$faxRows);
-	 $smarty->assign("calendarEvents",$calendarEvents);
-    $smarty->assign("rss2", $str2);
-	 $smarty->assign("mails",$mailsPanel);
-	 $smarty->assign("voiceMails",$voiceMails);
-	 $smarty->assign("systemStatus",$systemStatus);*/
-//////////////////////////////////////////////////////////////////////////////////
-// fin de todo
-	  $arrPaneles = $oPalo->getAppletsActivated($_SESSION["elastix_user"]);
-	  $AppletsPanels = createApplesTD($arrPaneles, $module_name, $voiceMails, $faxRows, $mails, $callsRows, $arrServices, $arrParticiones1, $eventsRows, $systemStatus, $system_resource, $arrCards);
-	  $smarty->assign("AppletsPanels",$AppletsPanels);
-//////////////////////////////////////////////////////////////////////////////////
+    $smarty->assign("AppletsPanels",$AppletsPanels);
+
     $action = getParameter("save_new");
     if(isset($action))
      $app = saveApplets_Admin();
@@ -221,7 +136,7 @@ function _moduleContent($smarty, $module_name)
     return $smarty->fetch("file:$local_templates_dir/sysinfo.tpl");
 }
 
-function buildInfoImage_Discs($arrParticiones, $module_name)
+function buildInfoImage_Discs($arrParticiones, $module_name,$idApplet)
 {
     Global $arrLang;
     $str = ""; $val = null;
@@ -231,7 +146,7 @@ function buildInfoImage_Discs($arrParticiones, $module_name)
                  ? $arrReg[1]: NULL;
         $val_2 = number_format($particion['num_bloques_total'] / 1024 / 1024, 2);
 		//getImage_Disc_Usage($module_name, $val_1)
-	$str = "	<div class='portlet'>
+	$str = "	<div class='portlet' id='applet_$idApplet'>
 					<div class='portlet_topper'>
 						<div width='100%'>
 							<div class='imgapplet' width='10%' style='float:left;'>
@@ -242,7 +157,7 @@ function buildInfoImage_Discs($arrParticiones, $module_name)
 							</div>
 							<div class='closeapplet' align='right' width='10%'>
 								<a href='#' class='toggle'>
-									<img id='imga2'  class='ima'  src='/images/arrow_top.gif' border='0' align='absmiddle' />
+									<img id='imga2'  class='ima'  src='modules/$module_name/images/flecha_up.gif' border='0' align='absmiddle' />
 								</a>
 							</div>
 						</div>
@@ -250,7 +165,7 @@ function buildInfoImage_Discs($arrParticiones, $module_name)
 					<div class='portlet_content'>
 						<div class='infoDisc'>
 							<div class='type'><b>".$arrLang['Partition Name'].":</b></div>
-							<div align='center' class='detail'><b>".$particion['fichero']."</b></div>
+							<div align='center' class='detail'>".$particion['fichero']."</div>
 							<div class='type'>".$arrLang['Capacity'].":</div>
 							<div align='center' class='detail'>".$val_2."GB</div>
 							<div class='type'>".$arrLang['Usage'].":</div>
@@ -265,10 +180,10 @@ function buildInfoImage_Discs($arrParticiones, $module_name)
     return $str;
 }
 
-function performanceGrafic($arrParticiones, $module_name)
+function performanceGrafic($arrParticiones, $module_name, $idApplet)
 {
     Global $arrLang;
-	 $str = "<div class='portlet'>
+	 $str = "<div class='portlet' id='applet_$idApplet'>
 					<div class='portlet_topper'>
 						<div width='100%'>
 							<div class='imgapplet' width='10%' style='float:left;'>
@@ -279,7 +194,7 @@ function performanceGrafic($arrParticiones, $module_name)
 							</div>
 							<div class='closeapplet' align='right' width='10%'>
 								<a href='#' class='toggle'>
-									<img id='imga8'  class='ima' src='/images/arrow_top.gif' border='0' align='absmiddle' />
+									<img id='imga8'  class='ima' src='modules/$module_name/images/flecha_up.gif' border='0' align='absmiddle' />
 								</a>
 							</div>
 						</div>
@@ -291,7 +206,7 @@ function performanceGrafic($arrParticiones, $module_name)
     return $str;
 }
 
-function createNews($module_name){
+function createNews($module_name, $idApplet){
 	$str = "";
 	//$url = "http://sourceforge.net/export/rss2_projnews.php?group_id=161807";
     $url = "http://www.elastix.org/component/option,com_rss/feed,RSS2.0/no_html,1/lang,en";
@@ -314,7 +229,7 @@ function createNews($module_name){
 		$str2 = "<span>".$arrLang['NoConnection']."</span>";
 	}
 	// asignar los links para publicar
-	$str = " <div class='portlet'>
+	$str = " <div class='portlet' id='applet_$idApplet'>
 					<div class='portlet_topper'>
 						<div width='100%'>
 							<div class='imgapplet' width='10%' style='float:left;'>
@@ -324,7 +239,7 @@ function createNews($module_name){
 								".$arrLang['News']."
 							</div>
 							<div class='closeapplet' align='right' width='10%'><a href='#' class='toggle'>
-								<a href='#' class='toggle'><img id='imga7'  class='ima'  src='/images/arrow_top.gif' border='0' align='absmiddle'></a>
+								<a href='#' class='toggle'><img id='imga7'  class='ima'  src='modules/$module_name/images/flecha_up.gif' border='0' align='absmiddle'></a>
 							</div>
 						</div>
 					</div>
@@ -343,9 +258,9 @@ function createNews($module_name){
 	return $str;
 }
 
-function createSystem($systemStatus,$module_name){
+function createSystem($systemStatus,$module_name, $idApplet){
 	global $arrLang;
-	$str = " <div class='portlet'>
+	$str = " <div class='portlet' id='applet_$idApplet'>
 					<div class='portlet_topper'>
 						<div width='100%'>
 							<div class='imgapplet' width='10%' style='float:left;'>
@@ -356,7 +271,7 @@ function createSystem($systemStatus,$module_name){
 							</div>
 							<div class='closeapplet' align='right' width='10%'>
 								<a href='#' class='toggle'>
-									<img id='imga12'  class='ima'  src='/images/arrow_top.gif' border='0' align='absmiddle' />
+									<img id='imga12'  class='ima'  src='modules/$module_name/images/flecha_up.gif' border='0' align='absmiddle' />
 								</a>
 							</div>
 						</div>
@@ -368,12 +283,13 @@ function createSystem($systemStatus,$module_name){
 	return $str;
 }
 
-function process_status($module_name, $arrServices)
+function process_status($module_name, $arrServices, $idApplet)
 {
    global $arrLang;
    $str = "";
    $servicesStatus = "";
    $color = "";
+
    foreach($arrServices as $key=>$value){
 		    if($value["status_service"]=="OK"){
 			    $status = "<font color='green'><i>".$arrLang['Running']."</i></font>";
@@ -382,18 +298,18 @@ function process_status($module_name, $arrServices)
 		    }
 		    elseif($value["status_service"]=="Shutdown"){
 			    $status = "<font color='blue'><i>".$arrLang['Not running']."</i></font>";
-				 $serStatus = $arrLang['Shutdown'];
+				$serStatus = $arrLang['Shutdown'];
 			    $color = "#0043EC";
 		    }
 		    else{
-			    $status = "<font color='red'><i>".$arrLang['Not installed']."</i></font>";
-				 $serStatus = $arrLang['Shutdown'];
+			    $status = "<font color='blue'><i>".$arrLang['Not installed']."</i></font>";
+				$serStatus = $arrLang['Shutdown'];
 			    $color = "#0043EC";
 		    }
 		    $servicesStatus .= "<div class='services'>".$arrLang[$value['name_service']]."&nbsp;  ($key): &nbsp;&nbsp; "."$status</div><div align='center' style='background-color:".$color.";' class='status' >$serStatus</div>";
 	}
 	
-    $str = "<div class='portlet'>
+    $str = "<div class='portlet' id='applet_$idApplet'>
 					<div class='portlet_topper'>
 						<div width='100%'>
 							<div class='imgapplet' width='10%' style='float:left;'>
@@ -404,7 +320,7 @@ function process_status($module_name, $arrServices)
 							</div>
 							<div class='closeapplet' align='right' width='10%'>
 								<a href='#' class='toggle'>
-									<img id='imga3'  class='ima'  src='/images/arrow_top.gif' border='0' align='absmiddle'/>
+									<img id='imga3'  class='ima'  src='modules/$module_name/images/flecha_up.gif' border='0' align='absmiddle'/>
 								</a>
 							</div>
 						</div>
@@ -416,41 +332,45 @@ function process_status($module_name, $arrServices)
     return $str;
 }
 
-function telephony_hardware($module_name, $arrCards)
+function telephony_hardware($module_name, $arrCards, $idApplet)
 {
    global $arrLang;
    $str = "";
    $cardsStatus = "";
    $color = "";
    $i = 1;
-   foreach($arrCards as $key=>$value){
-        if($value["num_serie"]==""){
-            $serStatus = "<a href='#' id='editMan1_$value[hwd]' style='text-decoration:none;color:white'>{$arrLang['No Registered']}</a>";
-            $color = "#FF0000";
-            $image = "modules/hardware_detector/images/card_no_registered.gif";
+   if(count($arrCards)>0 && $arrCards!=null){
+    foreach($arrCards as $key=>$value){
+            if($value["num_serie"]==""){
+                $serStatus = "<a href='#' id='editMan1_$value[hwd]' style='text-decoration:none;color:white'>{$arrLang['No Registered']}</a>";
+                $color = "#FF0000";
+                $image = "modules/hardware_detector/images/card_no_registered.gif";
+            }
+            else{
+                $serStatus = "<a href='#' id='editMan2_$value[hwd]' style='text-decoration:none;color:white'>$arrLang[Registered]</a>";
+                $color = "#10ED00";
+                $image = "modules/hardware_detector/images/card_registered.gif";
+            }
+            $cardsStatus .= "<div class='services'>$i.-&nbsp;".$value['card']." ($value[vendor]): &nbsp;&nbsp; </div>
+                            <div align='center' style='background-color:".$color.";' class='status' >$serStatus</div>";
+            $i++;
         }
-        else{
-            $serStatus = "<a href='#' id='editMan2_$value[hwd]' style='text-decoration:none;color:white'>$arrLang[Registered]</a>";
-            $color = "#10ED00";
-            $image = "modules/hardware_detector/images/card_registered.gif";
-        }
-        $cardsStatus .= "<div class='services'>$i.-&nbsp;".$value['card']." ($value[vendor]): &nbsp;&nbsp; </div>
-                         <div align='center' style='background-color:".$color.";' class='status' >$serStatus</div>";
-        $i++;
+    }else{
+        $cardsStatus="<br /><div align='center' style='color:red;'><strong>".$arrLang['Cards no found']."</strong></div>";
     }
 
-    $str = "<div class='portlet'>
+    $str = "<div class='portlet' id='applet_$idApplet'>
                 <div class='portlet_topper'>
                     <div width='100%'>
                         <div class='imgapplet' width='10%' style='float:left;'>
-                            <img src='modules/$module_name/images/semaf.gif' border='0' align='absmiddle' />
+                            <img src='images/pci.png' border='0' align='absmiddle' />
                         </div>
                         <div class='tabapplet' width='80%' style='float:left;'>
                             ".$arrLang['Telephony Hardware']."
                         </div>
                         <div class='closeapplet' align='right' width='10%'>
                             <a href='#' class='toggle'>
-                                <img id='imga3'  class='ima'  src='/images/arrow_top.gif' border='0' align='absmiddle'/>
+                                <img id='imga3'  class='ima'  src='modules/$module_name/images/flecha_up.gif' border='0' align='absmiddle'/>
                             </a>
                         </div>
                     </div>
@@ -460,18 +380,15 @@ function telephony_hardware($module_name, $arrCards)
                 </div>
             </div>
             <div id='layerCM'>
-                <div class='layer_handle'>
-                    <a href='#' id='closeCM'>[ x ]</a>
-                    Card Register
-                </div>
+                <div class='layer_handle' id='closeCM'></div>
                 <div id='layerCM_content'></div>
             </div>";
     return $str;
 }
 
-function createCallRows($callsRows,$module_name){
+function createCallRows($callsRows,$module_name, $idApplet){
    Global $arrLang;
-	$str = " <div class='portlet'>
+	$str = " <div class='portlet' id='applet_$idApplet'>
 					<div class='portlet_topper'>
 						<div width='100%'>
 							<div class='imgapplet' width='10%' style='float:left;'>
@@ -482,7 +399,7 @@ function createCallRows($callsRows,$module_name){
 							</div>
 							<div class='closeapplet' align='right' width='10%'>
 								<a href='#' class='toggle'>
-									<img id='imga4'  class='ima' src='/images/arrow_top.gif' border='0' align='absmiddle' />
+									<img id='imga4'  class='ima' src='modules/$module_name/images/flecha_up.gif' border='0' align='absmiddle' />
 								</a>
 							</div>
 						</div>
@@ -494,9 +411,9 @@ function createCallRows($callsRows,$module_name){
 	return $str;
 }
 
-function createFaxRows($faxRows,$module_name){
+function createFaxRows($faxRows,$module_name, $idApplet){
    Global $arrLang;
-	$str = " <div class='portlet'>
+	$str = " <div class='portlet' id='applet_$idApplet'>
 					<div class='portlet_topper'>
 						<div width='100%'>
 							<div class='imgapplet' width='10%' style='float:left;'>
@@ -507,7 +424,7 @@ function createFaxRows($faxRows,$module_name){
 							</div>
 							<div class='closeapplet' align='right' width='10%'>
 								<a href='#' class='toggle'>
-									<img id='imga5'  class='ima'  src='/images/arrow_top.gif' border='0' align='absmiddle' />
+									<img id='imga5'  class='ima'  src='modules/$module_name/images/flecha_up.gif' border='0' align='absmiddle' />
 								</a>
 							</div>
 						</div>
@@ -519,9 +436,9 @@ function createFaxRows($faxRows,$module_name){
 	return $str;
 }
 
-function createCalendarEvents($eventsRows,$module_name){
+function createCalendarEvents($eventsRows,$module_name, $idApplet){
 	Global $arrLang;
-	$str = "<div class='portlet'>
+	$str = "<div class='portlet' id='applet_$idApplet'>
 					<div class='portlet_topper'>
 						<div width='100%'>
 							<div class='imgapplet' width='10%' style='float:left;'>
@@ -532,7 +449,7 @@ function createCalendarEvents($eventsRows,$module_name){
 							</div>
 							<div class='closeapplet' align='right' width='10%'>
 								<a href='#' class='toggle'>
-									<img id='imga6'  class='ima'  src='/images/arrow_top.gif' border='0' align='absmiddle' />
+									<img id='imga6'  class='ima'  src='modules/$module_name/images/arrow_top.gif' border='0' align='absmiddle' />
 								</a>
 							</div>
 						</div>
@@ -544,9 +461,9 @@ function createCalendarEvents($eventsRows,$module_name){
 	return $str;
 }
 
-function createEmails($mails,$module_name){
+function createEmails($mails,$module_name, $idApplet){
  	Global $arrLang;
-	$str = " <div class='portlet'>
+	$str = " <div class='portlet' id='applet_$idApplet'>
 					<div class='portlet_topper'>
 						<div width='100%'>
 							<div class='imgapplet' width='10%' style='float:left;'>
@@ -557,7 +474,7 @@ function createEmails($mails,$module_name){
 							</div>
 							<div class='closeapplet' align='right' width='10%'>
 								<a href='#' class='toggle'>
-									<img id='imga10'  class='ima'  src='/images/arrow_top.gif' border='0' align='absmiddle' />
+									<img id='imga10'  class='ima'  src='modules/$module_name/images/flecha_up.gif' border='0' align='absmiddle' />
 								</a>
 							</div>
 						</div>
@@ -569,9 +486,9 @@ function createEmails($mails,$module_name){
 
 	return $str;
 }
-function createVoicemails($voiceMails,$module_name){
+function createVoicemails($voiceMails,$module_name, $idApplet){
 	Global $arrLang;
-	$str = " <div class='portlet'>
+	$str = " <div class='portlet' id='applet_$idApplet'>
 					<div class='portlet_topper'>
 						<div width='100%'>
 							<div class='imgapplet' width='10%' style='float:left;'>
@@ -582,7 +499,7 @@ function createVoicemails($voiceMails,$module_name){
 							</div>
 							<div class='closeapplet' align='right' width='10%'>
 								<a href='#' class='toggle'>
-									<img id='imga11'  class='ima'  src='/images/arrow_top.gif' border='0' align='absmiddle' />
+									<img id='imga11'  class='ima'  src='modules/$module_name/images/flecha_up.gif' border='0' align='absmiddle' />
 								</a>
 							</div>
 						</div>
@@ -594,9 +511,9 @@ function createVoicemails($voiceMails,$module_name){
 	return $str;
 }
 
-function communicationActivity($module_name)
+function communicationActivity($module_name, $idApplet)
 {
-    Global $arrLang;
+    global $arrLang;
 	 $oPalo = new paloSantoSysInfo();
 	 $channels = $oPalo->getAsterisk_Channels();
 	 $queues = $oPalo->getAsterisk_QueueWaiting();
@@ -661,7 +578,7 @@ function communicationActivity($module_name)
 	$rx_packets = $network['rx_packets'];
 	$tx_packets = $network['tx_packets'];
 
-    $str = "<div class='portlet'>
+    $str = "<div class='portlet' id='applet_$idApplet'>
 					<div class='portlet_topper'>
 						<div width='100%'>
 							<div class='imgapplet' width='10%' style='float:left;'>
@@ -672,7 +589,7 @@ function communicationActivity($module_name)
 							</div>
 							<div class='closeapplet' align='right' width='10%'>
 								<a href='#' class='toggle'>
-									<img id='imga9'  class='ima'  src='/images/arrow_top.gif' border='0' align='absmiddle' />
+									<img id='imga9'  class='ima'  src='modules/$module_name/images/flecha_up.gif' border='0' align='absmiddle' />
 								</a>
 							</div>
 						</div>
@@ -712,16 +629,16 @@ function communicationActivity($module_name)
     return $str;
 }
 
-function createApplesTD($arrPaneles, $module_name, $voiceMails, $faxRows, $mails, $callsRows, $arrServices, $arrParticiones, $eventsRows, $systemStatus, $system_resource, $arrCards){
-	$str1 = "<td>";
-	$str2 = "<td>";
+function createApplesTD($arrPaneles, $module_name, $voiceMails, $faxRows, $mails, $callsRows, $arrServices, $arrParticiones, $eventsRows, $systemStatus, $arrCards, $arrSysInfo){
+	$str1 = "<td id='td_columns1'>";
+	$str2 = "<td id='td_columns2'>";
 	$idApplet = "";
 	for($i=0; $i<count($arrPaneles); $i++){
-		$idApplet = $arrPaneles[$i]; 
+		$applestUser = $arrPaneles[$i];
 		if(($i%2)==0){
-			$str1 .= returnAppletPannel($idApplet,$module_name, $voiceMails, $faxRows, $mails, $callsRows, $arrServices, $arrParticiones, $eventsRows, $systemStatus, $system_resource, $arrCards);
+			$str1 .= returnAppletPannel($applestUser, $module_name, $voiceMails, $faxRows, $mails, $callsRows, $arrServices, $arrParticiones, $eventsRows, $systemStatus, $arrCards, $arrSysInfo);
 		}else{
-			$str2 .= returnAppletPannel($idApplet,$module_name, $voiceMails, $faxRows, $mails, $callsRows, $arrServices, $arrParticiones, $eventsRows, $systemStatus, $system_resource, $arrCards);
+			$str2 .= returnAppletPannel($applestUser, $module_name, $voiceMails, $faxRows, $mails, $callsRows, $arrServices, $arrParticiones, $eventsRows, $systemStatus, $arrCards, $arrSysInfo);
 		}
 	}
 	$str1 .= "</td>";
@@ -730,82 +647,108 @@ function createApplesTD($arrPaneles, $module_name, $voiceMails, $faxRows, $mails
 	return $str;
 }
 
-function returnAppletPannel($idApplet, $module_name, $voiceMails, $faxRows, $mails, $callsRows, $arrServices, $arrParticiones, $eventsRows, $systemStatus, $system_resource, $arrCards){
+function returnAppletPannel($applestUser, $module_name, $voiceMails, $faxRows, $mails, $callsRows, $arrServices, $arrParticiones, $eventsRows, $systemStatus, $arrCards, $arrSysInfo){
 	$str = "";
-	switch ($idApplet)
+	switch ($applestUser['code'])
 	{
 		case "sys_resource":
-			$str = $system_resource;
+			$str = getSystemResource($arrSysInfo, $module_name, $applestUser['aau_id']);
 		break;
 		case "news":
-			$str = createNews($module_name);
+			$str = createNews($module_name, $applestUser['aau_id']);
 		break;
 		case "hard_drivers":
-			$str = buildInfoImage_Discs($arrParticiones, $module_name);
+			$str = buildInfoImage_Discs($arrParticiones, $module_name, $applestUser['aau_id']);
 		break;
 		case "performance":
-			$str = performanceGrafic($arrParticiones, $module_name);
+			$str = performanceGrafic($arrParticiones, $module_name, $applestUser['aau_id']);
 		break;
 		case "process_status":
-			$str = process_status($module_name, $arrServices);
+			$str = process_status($module_name, $arrServices, $applestUser['aau_id']);
 		break;
 		case "asterisk_calls":
-			$str = createCallRows($callsRows, $module_name);
+			$str = createCallRows($callsRows, $module_name, $applestUser['aau_id']);
 		break;
 		case "emails":
-			$str = createEmails($mails, $module_name);
+			$str = createEmails($mails, $module_name, $applestUser['aau_id']);
 		break;
 		case "faxes":
-			$str = createFaxRows($faxRows, $module_name);
+			$str = createFaxRows($faxRows, $module_name, $applestUser['aau_id']);
 		break;
 		case "voicemails":
-			$str = createVoicemails($voiceMails, $module_name);
+			$str = createVoicemails($voiceMails, $module_name, $applestUser['aau_id']);
 		break;
 		case "calendar":
-			$str = createCalendarEvents($eventsRows,$module_name);
+			$str = createCalendarEvents($eventsRows,$module_name, $applestUser['aau_id']);
 		break;
 		case "system":
-			$str = createSystem($systemStatus,$module_name);
+			$str = createSystem($systemStatus,$module_name, $applestUser['aau_id']);
 		break;
         case "telephony_hardware";
-            $str = telephony_hardware($module_name, $arrCards);
+            $str = telephony_hardware($module_name, $arrCards, $applestUser['aau_id']);
         break;
 		default:
-			$str = communicationActivity($module_name);
+			$str = communicationActivity($module_name, $applestUser['aau_id']);
 		break;
 	} 
 	return $str;
 }
 
-function getSystemResource($SYSTEM_INFO_TITLE1,$CPU_INFO_TITLE,$cpu_info,$UPTIME_TITLE,$uptime,$CPU_USAGE_TITLE,$cpu_usage,$MEMORY_USAGE_TITLE,$mem_usage,$SWAP_USAGE_TITLE,$swap_usage){
-	$str = "<div class='portlet'>
+function getSystemResource($arrSysInfo, $module_name, $idApplet)
+{
+    global $arrLang;
+
+     //CPU INFO
+    $cpu_info = $arrSysInfo['CpuVendor'] . " " . $arrSysInfo['CpuModel'];
+
+    //CPU USAGE
+    $img = getImage_CPU_Usage($module_name);
+    $inf = number_format($arrSysInfo['CpuUsage']*100, 2)."{$arrLang['% used of']} ".number_format($arrSysInfo['CpuMHz'], 2)." MHz";
+    $cpu_usage =  $img."&nbsp;&nbsp;&nbsp;".$inf;
+
+    //MEMORY USAGE
+    $mem_usage  = ($arrSysInfo['MemTotal'] - $arrSysInfo['MemFree'] - $arrSysInfo['Cached'] - $arrSysInfo['MemBuffers'])/$arrSysInfo['MemTotal'];
+    $img = getImage_MEM_Usage($module_name);
+    $inf = number_format($mem_usage*100, 2)."{$arrLang['% used of']} ".number_format($arrSysInfo['MemTotal']/1024, 2)." Mb";
+    $mem_usage = $img."&nbsp;&nbsp;&nbsp;".$inf;
+
+    //SWAP USAGE
+    $swap_usage = ($arrSysInfo['SwapTotal'] - $arrSysInfo['SwapFree'])/$arrSysInfo['SwapTotal'];
+    $img = getImage_Swap_Usage($module_name);
+    $inf = number_format($swap_usage*100, 2)."{$arrLang['% used of']} ".number_format($arrSysInfo['SwapTotal']/1024, 2)." Mb";
+    $swap_usage = $img."&nbsp;&nbsp;&nbsp;".$inf;
+
+    //UPTIME
+    $uptime = $arrSysInfo['SysUptime'];
+
+	$str = "<div class='portlet' id='applet_$idApplet'>
 					<div class='portlet_topper'>
 						<div width='100%'>
 							<div class='imgapplet' width='10%' style='float:left;'>
 								<img src='images/memory.png' align='absmiddle' />
 							</div>
 							<div class='tabapplet' width='80%' style='float:left;'>
-								$SYSTEM_INFO_TITLE1
+								{$arrLang['System Resources']}
 							</div>
 							<div class='closeapplet' align='right' width='10%'>
 								<a href='#' class='toggle'>
-									<img id='imga1' class='ima'  src='/images/arrow_top.gif' border='0' align='absmiddle' />
+									<img id='imga1' class='ima'  src='modules/$module_name/images/flecha_up.gif' border='0' align='absmiddle' />
 								</a>
 							</div>
 						</div>
 					</div>
 					<div class='portlet_content'>
 						<div>
-							<div class='type'>$CPU_INFO_TITLE: </div>
-							<div class='detail'>$cpu_info	    </div>
-							<div class='type'>$UPTIME_TITLE:     </div>
-							<div class='detail'>$uptime	    </div>
-							<div class='type'>$CPU_USAGE_TITLE:  </div>
-							<div class='detail'>$cpu_usage	    </div>
-							<div class='type'>$MEMORY_USAGE_TITLE:</div>
-							<div class='detail'>$mem_usage          </div>
-							<div class='type'>$SWAP_USAGE_TITLE:  </div>
-							<div class='detail'>$swap_usage         </div>
+							<div class='type'>{$arrLang['CPU Info']}: </div>
+							<div class='detail'>$cpu_info</div>
+							<div class='type'>{$arrLang['Uptime']}:</div>
+							<div class='detail'>$uptime</div>
+							<div class='type'>{$arrLang['CPU usage']}:</div>
+							<div class='detail'>$cpu_usage</div>
+							<div class='type'>{$arrLang['Memory usage']}:</div>
+							<div class='detail'>$mem_usage</div>
+							<div class='type'>{$arrLang['Swap usage']}:</div>
+							<div class='detail'>$swap_usage</div>
 						</div>
 					</div>
 				</div>";

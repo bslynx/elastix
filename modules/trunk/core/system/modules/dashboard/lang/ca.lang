@@ -65,7 +65,7 @@ $arrLangModule=array(
 "Elastix Call Center Service"=>"Elastix Call Center Service",
 "Running"=>"Running",
 "Not installed"=>"Not installed",
-"Not running"=>"Not running",
+"Not running"=>"Service Not Activated",
 "OK1" => "OK",
 "Shutdown" => "N/A",
 "IAXModem Service" => "IAXModem Service",
@@ -133,6 +133,10 @@ $arrLangModule=array(
 "Network_traffic" => "Network Traffic",
 "rx_bytes" => "bytes rx",
 "tx_bytes" => "bytes tx",
+"Telephony Hardware" => "Telephony Hardware",
+"Registered" => "Registered",
+"No Registered" => "No Registered",
+"Cards no found" => "Telephony Hardware not found",
 /*System Info*/
 );
 ?>

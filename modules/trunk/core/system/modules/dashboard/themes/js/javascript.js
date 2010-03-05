@@ -1,3 +1,5 @@
+var module_name = "dashboard";
+
 $(document).ready(
 	function()
 	{
@@ -62,12 +64,49 @@ $(document).ready(
 		);
 
 		// Controls Drag + Drop
-		$('#columns td').Sortable(
+		$('#td_columns1,#td_columns2').Sortable(
 			{
 				accept: 'portlet',
 				helperclass: 'sort_placeholder',
 				opacity: 0.7,
-				tolerance: 'intersect'
+				tolerance: 'intersect',
+                handle: 'div.portlet_topper',
+                onStop: function() {
+                    var td_left  = document.getElementById("td_columns1");
+                    var td_right = document.getElementById("td_columns2");
+                    var children_left  = td_left.childNodes;
+                    var children_right = td_right.childNodes;
+                    var ids_applet = "";
+
+                    // Recorro los applet de la izquierda
+                    var j = 1;
+                    for(i=0; i<children_left.length;i++){
+                        if(children_left[i].nodeName == "DIV" || children_left[i].nodeName == "div"){
+                            var id_div = children_left[i].getAttribute("id");
+                            if(id_div.substring(0,6) == "applet"){
+                                var id_applet = id_div.substring(7);
+                                ids_applet = ids_applet + id_applet + ":" + j + ",";
+                                j = j+2;
+                            }
+                        }
+                    }
+
+                    // Recorro los applet de la derecha
+                    j = 2;
+                    for(i=0; i<children_right.length;i++){
+                        if(children_right[i].nodeName == "DIV" || children_right[i].nodeName == "div"){
+                            var id_div = children_right[i].getAttribute("id");
+                            if(id_div.substring(0,6) == "applet"){
+                                var id_applet = id_div.substring(7);
+                                ids_applet = ids_applet + id_applet + ":" + j + ",";
+                                j = j+2;
+                            }
+                        }
+                    }
+
+                    var order = 'menu=' + module_name + '&action=updateOrder&rawmode=yes&ids_applet=' + ids_applet;
+                    $.post("index.php", order,function(theResponse){});
+                }
 			}
 		);
 
@@ -75,7 +114,7 @@ $(document).ready(
         $('a#applet_admin,#close_applet_admin').click(function()
             { // variable statusDivAppletAdmin declarada en tpl applet_admin
                 if(statusDivAppletAdmin=='open'){
-                     $('div.portlet:hide').show();
+                    $('div.portlet:hide').show();
                     $('a#all_close:hide').show();
                     $('div#div_applet_admin:visible').hide();
                     $('a#all_open:hide').show();
@@ -103,6 +142,7 @@ $(document).ready(
             else getDataCard(a_id_card);
             $("#layerCM").show();
         });
+//         $('#layerCM').draggable();
 	}
 );
 
@@ -112,10 +152,10 @@ function saveRegister(id_card)
     var vendor = document.getElementById("manufacturer").value;
     var num_se = document.getElementById("noSerie").value;
 
-    var order = 'menu=dashboard&action=saveRegister&rawmode=yes&num_serie=' + num_se + '&hwd=' + id_card + '&vendor=' + vendor ;
+    var order = 'menu=' + module_name + '&action=saveRegister&rawmode=yes&num_serie=' + num_se + '&hwd=' + id_card + '&vendor=' + vendor ;
 
     $.post("index.php", order,
-        function(theResponse){ alert(theResponse);
+        function(theResponse){
             alert("Card has been registered");
             $("#layerCM").hide();
             window.open("index.php?menu=dashboard","_self");
@@ -124,7 +164,7 @@ function saveRegister(id_card)
 
 function getDataCard(id_card)
 {
-    var order = 'menu=dashboard&action=getRegister&rawmode=yes&hwd=' + id_card;
+    var order = 'menu=' + module_name + '&action=getRegister&rawmode=yes&hwd=' + id_card;
 
     $.post("index.php", order,
         function(theResponse){
@@ -142,17 +182,8 @@ function openWndMan1(id_card)
                     "</td>" +
                 "</tr>" +
                 "<tr>" +
-                    "<td><label style='font-size: 11px'>Vendor:</label></td>" +
-                    "<td><select id='manufacturer' name='manufacturer' >" +
-                        "<option value='Digium' label='Digium'>Digium</option>" +
-                        "<option value='OpenVox' label='OpenVox'>OpenVox</option>" +
-                        "<option value='Rhino' label='Rhino'>Rhino</option>" +
-                        "<option value='Sangoma' label='Sangoma'>Sangoma</option>" +
-                        "<option value='RedFone' label='RedFone'>RedFone</option>" +
-                        "<option value='XorCom' label='XorCom'>XorCom</option>" +
-                        "<option value='Dialogic' label='Dialogic'>Dialogic</option>" +
-                        "<option value='Otros' label='Otros'>Otros</option>" +
-                    "</select></td>" +
+                    "<td><label style='font-size: 11px'>Vendor: (ex. digium)</label></td>" +
+                    "<td><input type='text' value='' name='manufacturer' id='manufacturer' /></td>" +
                 "</tr> <tr>" +
                     "<td><label style='font-size: 11px'>Serial Number:</label></td>" +
                     "<td><input type='text' value='' name='noSerie' id='noSerie' /></td>" +
@@ -188,11 +219,11 @@ function openWndMan2(vendor,num_serie)
 function changeArrow(urlimg,id){
   var sal = "";
   var imgID = document.getElementById(id);
-  if(urlimg.indexOf('arrow_bottom.gif')!=-1){ 
-    sal = "/images/arrow_top.gif";
+  if(urlimg.indexOf('flecha_down.gif')!=-1){ 
+    sal = "modules/"+module_name+"/images/flecha_up.gif";
   }
   else{
-    sal = "/images/arrow_bottom.gif";
+    sal = "modules/"+module_name+"/images/flecha_down.gif";
   }
   return sal;
 }
@@ -201,7 +232,7 @@ function arrowsCollapse(){
   for(var i=1; i<=12; i++){
     var id = "imga"+i;
     var imgID = document.getElementById(id);
-    imgID.src = "/images/arrow_bottom.gif";
+    imgID.src = "modules/"+module_name+"/images/flecha_down.gif";
   }
 }
 
@@ -209,6 +240,6 @@ function arrowsExpand(){
   for(var i=1; i<=12; i++){
     var id = "imga"+i;
     var imgID = document.getElementById(id);
-    imgID.src = "/images/arrow_top.gif";
+    imgID.src = "modules/"+module_name+"/images/flecha_up.gif";
   }
 }

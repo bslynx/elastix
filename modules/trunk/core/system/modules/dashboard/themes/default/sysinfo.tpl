@@ -1,7 +1,6 @@
 <script type="text/javascript" src ="/libs/js/jquery/js/jquery-1.3.2.min.js"></script>
 <script type="text/javascript" src ="/libs/js/jquery/js/jquery-ui-1.7.2.custom.min.js"></script>
 <script type="text/javascript" src="modules/{$module_name}/themes/js/jquery.color.js"></script>
-<script type="text/javascript" src="modules/{$module_name}/themes/js/jquery.easing.1.3.js"></script>
 <script type="text/javascript" src="modules/{$module_name}/themes/js/mbScrollable.js"></script>
 <script type="text/javascript" src="modules/{$module_name}/themes/js/javascript.js"></script>
 <script type="text/javascript" src="modules/{$module_name}/themes/js/interface.js"></script>

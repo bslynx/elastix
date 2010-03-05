@@ -240,28 +240,28 @@ class paloSantoSysInfo
         // file pid service apache      is /var/run/httpd.pid
         // file pid service call_center is /opt/elastix/dialer/dialerd.pid
 
-        $arrSERVICES["Asterisk"]["status_service"] = $this->_existPID_ByFile("/var/run/asterisk/asterisk.pid");
+        $arrSERVICES["Asterisk"]["status_service"] = $this->_existPID_ByFile("/var/run/asterisk/asterisk.pid","asterisk");
         $arrSERVICES["Asterisk"]["name_service"]   = "Telephony Service";
 
-        $arrSERVICES["OpenFire"]["status_service"] = $this->_existPID_ByFile("/var/run/openfire.pid");
+        $arrSERVICES["OpenFire"]["status_service"] = $this->_existPID_ByFile("/var/run/openfire.pid","openfire");
         $arrSERVICES["OpenFire"]["name_service"]   = "Instant Messaging Service";
 
-        $arrSERVICES["Hylafax"]["status_service"]  = $this->_existPID_ByCMD("hfaxd") & $this->_existPID_ByCMD("faxq");
+        $arrSERVICES["Hylafax"]["status_service"]  = $this->_existPID_ByCMD("hfaxd","hylafax") & $this->_existPID_ByCMD("faxq","hylafax");
         $arrSERVICES["Hylafax"]["name_service"]    = "Fax Service";
 
-        $arrSERVICES["IAXModem"]["status_service"] = $this->_existPID_ByFile("/var/run/iaxmodem.pid");
+        $arrSERVICES["IAXModem"]["status_service"] = $this->_existPID_ByFile("/var/run/iaxmodem.pid","iaxmodem");
         $arrSERVICES["IAXModem"]["name_service"]   = "IAXModem Service";
 
-        $arrSERVICES["Postfix"]["status_service"]  = $this->_existPID_ByCMD("master");
+        $arrSERVICES["Postfix"]["status_service"]  = $this->_existPID_ByCMD("master","postfix");
         $arrSERVICES["Postfix"]["name_service"]    = "Email Service";
 
-        $arrSERVICES["MySQL"]["status_service"]    = $this->_existPID_ByCMD("mysqld");
+        $arrSERVICES["MySQL"]["status_service"]    = $this->_existPID_ByCMD("mysqld","mysqld");
         $arrSERVICES["MySQL"]["name_service"]      = "Database Service";
 
-        $arrSERVICES["Apache"]["status_service"]   = $this->_existPID_ByFile("/var/run/httpd.pid");
+        $arrSERVICES["Apache"]["status_service"]   = $this->_existPID_ByFile("/var/run/httpd.pid","httpd");
         $arrSERVICES["Apache"]["name_service"]     = "Web Server";
 
-        $arrSERVICES["Dialer"]["status_service"]   = $this->_existPID_ByFile("/opt/elastix/dialer/dialerd.pid");
+        $arrSERVICES["Dialer"]["status_service"]   = $this->_existPID_ByFile("/opt/elastix/dialer/dialerd.pid","elastixdialer");
         $arrSERVICES["Dialer"]["name_service"]     = "Elastix Call Center Service";
 
         return $arrSERVICES;
@@ -358,28 +358,39 @@ class paloSantoSysInfo
         return "$result[vendor],$result[num_serie]";
     }
 
-    function _existPID_ByFile($filePID)
+    function _existPID_ByFile($filePID, $nameService)
     {
-        if(file_exists($filePID)){
-            $pid=trim(`cat $filePID`);
+        if($this->_existService($nameService)){
+            if(file_exists($filePID)){
+                $pid=trim(`cat $filePID`);
+                $exist=`ps -p $pid | grep $pid`;
+                if(isset($exist)) return "OK";
+                else return "Shutdown";
+            }
+            return "Shutdown";
+        }
+        else
+            return "Not_exists";
+    }
+
+    function _existPID_ByCMD($serviceName, $nameService)
+    {
+        if($this->_existService($nameService)){
+            $pid=trim(`/sbin/pidof $serviceName`);
             $exist=`ps -p $pid | grep $pid`;
             if(isset($exist)) return "OK";
             else return "Shutdown";
         }
-        return "Shutdown";
+        else
+            return "Not_exists";
     }
 
-    function _existPID_ByCMD($serviceName)
+    function _existService($nameService)
     {
-        $pid=trim(`/sbin/pidof $serviceName`);
-        $exist=`ps -p $pid | grep $pid`;
-        if(isset($exist)) return "OK";
-        else return "Shutdown";
-    }
-
-    function _existElastixModule($nameModule)
-    {
-
+        $path = "/etc/rc.d/init.d";
+        if(file_exists("$path/$nameService"))
+            return true;
+        return false;
     }
 
     function getAsterisk_Connections()
@@ -588,7 +599,7 @@ class paloSantoSysInfo
         if($user!= "admin") $user="no_admin";
 
         $query = "select 
-                    a.code 
+                    a.code, aau.id aau_id
                   from 
                     activated_applet_by_user aau 
                         inner join 
@@ -607,9 +618,7 @@ class paloSantoSysInfo
             return array();
         }
 
-        foreach($result as $value)
-            $arrApplets[] = $value["code"];
-        return $arrApplets;
+        return $result;
     }
 
     function getApplets_User($user)
@@ -675,6 +684,32 @@ class paloSantoSysInfo
             $pDB->commit();
         }
         return true;
+    }
+
+    function setApplets_UserOrder($ids_applet)
+    {
+        global $arrConf;
+        $dsn = "sqlite3:///$arrConf[elastix_dbdir]/dashboard.db";
+        $pDB  = new paloDB($dsn);
+
+        if(isset($ids_applet)){
+
+            $tmp1 = split(",",$ids_applet);
+            foreach($tmp1 as $value){
+                if($value != ""){
+                    list($aau_id,$order_no) = split(":",$value);
+
+                    $query = "update activated_applet_by_user set order_no=$order_no where id=$aau_id";
+                    $result=$pDB->genQuery($query);
+
+                    if($result==FALSE){
+                        $this->errMsg = $pDB->errMsg;
+                        return false;
+                    }
+                }
+            }
+        }
+        return false;
     }
 }
 ?>

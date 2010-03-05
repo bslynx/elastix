@@ -53,6 +53,7 @@
 	font-size:13pt;
 	font-weight:bold;
     cursor: move;
+    height:21px;
 }
 
 .portlet_topper a
@@ -238,12 +239,14 @@
 }
 
 #layerCM {
+    background: transparent url('../../images/message_box_blue.png') no-repeat;
     position: absolute;
     left:150px;
     top:380px;
-    width:300px;
-    background-color:#f0f5FF;
-    border: 1px solid #000;
+    width:349px;
+    height:124px;
+/*     background-color:#f0f5FF; */
+/*     border: 1px solid #000; */
     z-index: 50;
     display:none;
 }
@@ -254,11 +257,18 @@
 }
 
 .layer_handle{
-    background-color:#5588bb;
-    padding:2px;
+/*     background-color:#5588bb; */
+    background: transparent url('../../images/close.png') no-repeat;
+    padding:0px;
     text-align:center;
     font-weight:bold;
-    color: #FFFFFF;
+    color: #000000;
     vertical-align:middle;
     font-size: 12px;
+    width:12px;
+    height:12px;
+    top: 10px;
+    left: 328px;
+    position: relative;
+    cursor: pointer;
 }
