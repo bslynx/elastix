@@ -14,6 +14,15 @@
         {$MENU} <!-- Viene del tpl menu.tlp-->
                 <td align="left" valign="top">
                     {if !empty($mb_message)}
+                        <!-- Message board -->
+                        <!--<table width="100%" border="0" cellspacing="0" cellpadding="0" align="center" class="message_board">
+                            <tr>
+                                <td id="mb_title" valign="middle" class="mb_title">&nbsp;{$mb_title}</td>
+                            </tr>
+                            <tr>
+                                <td id="mb_message" valign="middle" class="mb_message"><p>{$mb_message}</td>
+                            </tr>
+                        </table><br />-->
                         <div style="background-color: rgb(255, 238, 255);" id="message_error">
                             <table width="100%">
                                 <tr>

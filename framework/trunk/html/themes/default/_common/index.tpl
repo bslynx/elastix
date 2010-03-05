@@ -4,11 +4,13 @@
   <title>Elastix</title>
   <link rel="stylesheet" href="themes/{$THEMENAME}/styles.css">
   <link rel="stylesheet" href="themes/{$THEMENAME}/help.css">
+  <script type="text/javascript" src ="libs/js/jquery/js/jquery-1.3.2.min.js"></script>
+  <script type="text/javascript" src ="libs/js/jquery/js/jquery-ui-1.7.2.custom.min.js"></script>
   <script src="libs/js/base.js"></script>
   <script src="libs/js/iframe.js"></script>
   {$HEADER}
 </head>
-<body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" {$BODYPARAMS}  onbeforeunload="ConfirmarCierre()" onunload="ManejadorCierre()">
+<body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" {$BODYPARAMS}>
 {$MENU}
 <td align="left" valign="top">{if !empty($mb_message)}
 <!-- Message board -->
