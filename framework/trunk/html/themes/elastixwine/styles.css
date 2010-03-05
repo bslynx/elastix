@@ -838,7 +838,7 @@ a.letranodec:link, a.letranodec:visited {
 }
 
 #layerCM {
-    background: transparent url('../../images/message_box_blue.png') no-repeat;
+    background: transparent url('/images/message_box_blue.png') no-repeat;
     position: absolute;
     left:150px;
     top:380px;
@@ -857,7 +857,7 @@ a.letranodec:link, a.letranodec:visited {
 
 .layer_handle{
 /*     background-color:#5588bb; */
-    background: transparent url('../../images/close.png') no-repeat;
+    background: transparent url('/images/close.png') no-repeat;
     padding:0px;
     text-align:center;
     font-weight:bold;
