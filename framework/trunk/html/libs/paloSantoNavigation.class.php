@@ -231,7 +231,8 @@ class paloSantoNavigation {
         foreach($this->arrMenu as $id => $element) {
             if($element['IdParent']==$idParent) {
                 if($this->getArrSubMenu($element['id'])!=false){
-                    $element['Name'] = $element['Name']."...";
+					$img = "<img src='images/miniArrowDown.png' align='absmiddle' style='border:0;'/>";
+                    $element['Name'] = $element['Name']." ".$img;
                     $arrSubMenu[$id] = $element;
                 }else{
                     $arrSubMenu[$id] = $element;
