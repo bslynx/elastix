@@ -33,7 +33,7 @@
                                 {else}
                                     <td width="4px">&nbsp;</td>
 									<td align="center">
-										<table cellSpacing="0" cellPadding="0" border="0" width="100%" style="position:relative;top:17px">
+										<table cellSpacing="0" cellPadding="0" border="0" width="70%" style="position:relative;top:17px">
 											<tr>
 												<td valign="top"><img border="0" align="absmiddle" src="themes/elastixwave/images/fondo_boton_left.gif"/></td>
 												<td class="menutabletaboff" nowrap="">
@@ -195,7 +195,7 @@ function createMenuSelectedSplash()
     var desc_menu = document.getElementById("desc_menu").value;
     var arrDesc = desc_menu.split(",");
 
-    var html  = "<table cellSpacing='0' cellPadding='0' border='0' width='100%' style='position:relative;top:17px'>";
+    var html  = "<table cellSpacing='0' cellPadding='0' border='0' width='70%' style='position:relative;top:17px'>";
         html += "   <tr>";
         html += "       <td valign='top'><img border='0' align='absmiddle' src='themes/" + arrDesc[0] + "/images/fondo_boton_on_left.gif'/></td>";
         html += "       <td class='menutabletabon2' nowrap=''>";
