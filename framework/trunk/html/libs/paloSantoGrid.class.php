@@ -36,6 +36,7 @@ class paloSantoGrid {
     var $total;
     var $offset;
     var $end;
+    var $tplFile;
 
     //Implementation AJAX
     var $withAjax;
@@ -55,6 +56,7 @@ class paloSantoGrid {
         $this->functionNameAjax = "";
         $this->prefixAjax = "xajax_";
         $this->pagingShow = 1;
+        $this->tplFile = "_common/_list.tpl";
     }
 
     function withAjax()
@@ -65,6 +67,11 @@ class paloSantoGrid {
     function pagingShow($show)
     {
         $this->pagingShow = (int)$show;
+    }
+
+    function setTplFile($tplFile)
+    {
+        $this->tplFile  = $tplFile;
     }
 
     function withoutAjax()
@@ -110,7 +117,7 @@ class paloSantoGrid {
         {
             $this->smarty->assign("lbl$etiqueta", (isset($arrLang[$etiqueta])?$arrLang[$etiqueta]:$etiqueta));
         }
-        return $this->smarty->fetch("_common/_list.tpl");
+        return $this->smarty->fetch($this->tplFile);
     }
 
     function fetchGridCSV($arrGrid, $arrData)
