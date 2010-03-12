@@ -154,18 +154,25 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
 
     $_SESSION['menu']=$menu; 
 
+	// verify if menu is a main menu
+	$menuLibs = "";
+	if(isMainMenu($pDBMenu,$menu))
+        $menuLibs = obtainFirstChild($pDBMenu,$menu);
+    else
+        $menuLibs = $menu;
+
+
     // get the header with scripts and links(css)
-    $directory = "/var/www/html/modules/".$menu;
+    $directory = "/var/www/html/modules/".$menuLibs;
     $HEADER = "";
     if(is_dir($directory)){
-        $directoryScrips = "/var/www/html/modules/$menu/themes/default/js/";
-        $directoryCss = "/var/www/html/modules/$menu/themes/default/css/";
-        exec("echo 'array jsrr: $directory' > /tmp/edu");
+        $directoryScrips = "/var/www/html/modules/$menuLibs/themes/default/js/";
+        $directoryCss = "/var/www/html/modules/$menuLibs/themes/default/css/";
         if(is_dir($directoryScrips)){
             $arr_js = obtainFiles($directoryScrips,"js");
             if($arr_js!=false && count($arr_js)>0){
                 for($i=0; $i<count($arr_js); $i++){
-                    $dir_script = "/modules/$menu/themes/default/js/".$arr_js[$i];
+                    $dir_script = "/modules/$menuLibs/themes/default/js/".$arr_js[$i];
                     $HEADER .= "\n<script src='$dir_script'></script>";
                 }
             }
@@ -174,7 +181,7 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
             $arr_css = obtainFiles($directoryCss,"css");
             if($arr_css!=false && count($arr_css)>0){
                 for($i=0; $i<count($arr_css); $i++){
-                    $dir_css = "/modules/$menu/themes/default/css/".$arr_css[$i];
+                    $dir_css = "/modules/$menuLibs/themes/default/css/".$arr_css[$i];
                     $HEADER .= "\n<link rel='stylesheet' href='$dir_css' />";
                 }
             }
