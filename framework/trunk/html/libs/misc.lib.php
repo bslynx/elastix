@@ -309,6 +309,27 @@ function cargar_menu($db)
     return $menu;
 }
 
+//obtain if a menu is mainMenu
+function isMainMenu($db, $id_Menu){
+    $query="Select IdParent from menu where id='$id_Menu'";
+    $oRecordset=$db->getFirstRowQuery($query,true);
+    if($oRecordset['IdParent']=="" || $oRecordset['IdParent']==null)
+        return true;
+    else
+        return false;
+}
+
+//obtain the first child of a main menu
+function obtainFirstChild($db, $id_Menu)
+{
+    $query="Select id from menu where Idparent='$id_Menu' order by order_no asc";
+    $oRecordset=$db->getFirstRowQuery($query,true);
+    if($oRecordset['id']=="" || $oRecordset['id']==null)
+        return false;
+    else
+        return $oRecordset['id'];
+}
+
 function get_language($ruta_base='')
 {
     require_once $ruta_base."configs/default.conf.php";
