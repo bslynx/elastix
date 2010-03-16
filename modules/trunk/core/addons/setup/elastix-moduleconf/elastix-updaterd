@@ -23,7 +23,7 @@ fi
 DAEMON=elxupdaterd
 PROGRAMA="Elastix Update Helper"
 DIR_TRABAJO=/opt/elastix/elastix-updater
-USUARIO=asterisk
+USUARIO=root
 
 # Los siguientes parametros son normalmente derivados de los dos primeros
 SERVICE_LOCK="/var/lock/subsys/$DAEMON"
