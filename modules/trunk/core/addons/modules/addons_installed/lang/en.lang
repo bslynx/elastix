@@ -1,0 +1,71 @@
+<?php
+  /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
+  Codificación: UTF-8
+  +----------------------------------------------------------------------+
+  | Elastix version 2.0.0-15                                               |
+  | http://www.elastix.org                                               |
+  +----------------------------------------------------------------------+
+  | Copyright (c) 2006 Palosanto Solutions S. A.                         |
+  +----------------------------------------------------------------------+
+  | Cdla. Nueva Kennedy Calle E 222 y 9na. Este                          |
+  | Telfs. 2283-268, 2294-440, 2284-356                                  |
+  | Guayaquil - Ecuador                                                  |
+  | http://www.palosanto.com                                             |
+  +----------------------------------------------------------------------+
+  | The contents of this file are subject to the General Public License  |
+  | (GPL) Version 2 (the "License"); you may not use this file except in |
+  | compliance with the License. You may obtain a copy of the License at |
+  | http://www.opensource.org/licenses/gpl-license.php                   |
+  |                                                                      |
+  | Software distributed under the License is distributed on an "AS IS"  |
+  | basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See  |
+  | the License for the specific language governing rights and           |
+  | limitations under the License.                                       |
+  +----------------------------------------------------------------------+
+  | The Original Code is: Elastix Open Source.                           |
+  | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  +----------------------------------------------------------------------+
+  $Id: en.lang,v 1.1 2010-03-06 11:03:53 Eduardo Cueva ecueva@palosanto.com Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Addons Modules" => "Addons Modules",
+"texto1" => "texto1",
+"select1" => "select1",
+"textarea1" => "textarea1",
+"checkbox1" => "checkbox1",
+"file1" => "file1",
+"prueba" => "prueba",
+/////
+"Installed" => "Installed",
+"Updates" => "Updates",
+"Downloaded" => "Downloaded",
+"Availables" => "Availables",
+"Admin" => "Addons Admin",
+"Actual Progress" => "Actual Progress",
+"Total Progress" => "Total Progress",
+"Percent_loaded" => "Percent Loaded",
+"name" => "Name",
+"action" => "action",
+"of" => "of",
+"status" => "status",
+"downloading" => "downloading",
+"downloaded" => "downloaded",
+"installing" => "installing",
+"installed" => "installed",
+"removing" => "removing",
+"removed" => "removed",
+"waiting" => "waiting",
+"no_process" => "No process install running",
+"view_details" => "View Details",
+"process_installed" => "process_installed",
+"name" => "Name",
+"version" => "Version",
+"release" => "Release",
+"developed_by" => "Developed by",
+"Show" => "Show",
+"addons_installed" => "Addons Installed",
+"Options" => "Options",
+"Delete" => "Delete",
+"Update" => "Update",
+);
+?>

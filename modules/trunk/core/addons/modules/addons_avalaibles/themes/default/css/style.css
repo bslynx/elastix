@@ -1,0 +1,23 @@
+.loading {
+    position: relative;
+    top: 10px;
+    left: 253px;
+}
+
+.linkText {
+    position: relative;
+    top: 10%;
+    left: 30%;
+}
+
+.redirect{
+    position: relative;
+    top: 10%;
+    left: 30%;
+}
+
+.text_alert {
+    position: relative;
+    top: 0px;
+    left: 268px;
+}
