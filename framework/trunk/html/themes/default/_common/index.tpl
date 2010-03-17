@@ -9,6 +9,7 @@
   <script src="libs/js/base.js"></script>
   <script src="libs/js/iframe.js"></script>
   {$HEADER}
+  {$HEADER_MODULES}
 </head>
 <body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" {$BODYPARAMS}>
 {$MENU}

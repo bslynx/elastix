@@ -154,26 +154,25 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
 
     $_SESSION['menu']=$menu; 
 
-	// verify if menu is a main menu
-	$menuLibs = "";
-	if(isMainMenu($pDBMenu,$menu))
+    $menuLibs = "";
+    //add by eduardo
+    if(isMainMenu($pDBMenu,$menu))
         $menuLibs = obtainFirstChild($pDBMenu,$menu);
     else
         $menuLibs = $menu;
 
-
     // get the header with scripts and links(css)
     $directory = "/var/www/html/modules/".$menuLibs;
-    $HEADER = "";
+    $HEADER_MODULES = "";
     if(is_dir($directory)){
         $directoryScrips = "/var/www/html/modules/$menuLibs/themes/default/js/";
         $directoryCss = "/var/www/html/modules/$menuLibs/themes/default/css/";
         if(is_dir($directoryScrips)){
-            $arr_js = obtainFiles($directoryScrips,"js");
+            $arr_js = obtainFiles($directoryScrips,"js"); 
             if($arr_js!=false && count($arr_js)>0){
                 for($i=0; $i<count($arr_js); $i++){
                     $dir_script = "/modules/$menuLibs/themes/default/js/".$arr_js[$i];
-                    $HEADER .= "\n<script src='$dir_script'></script>";
+                    $HEADER_MODULES .= "\n<script src='$dir_script'></script>";
                 }
             }
         }
@@ -182,13 +181,13 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
             if($arr_css!=false && count($arr_css)>0){
                 for($i=0; $i<count($arr_css); $i++){
                     $dir_css = "/modules/$menuLibs/themes/default/css/".$arr_css[$i];
-                    $HEADER .= "\n<link rel='stylesheet' href='$dir_css' />";
+                    $HEADER_MODULES .= "\n<link rel='stylesheet' href='$dir_css' />";
                 }
             }
         }
-
+        //$HEADER
     }
-    $smarty->assign("HEADER",$HEADER);
+    $smarty->assign("HEADER_MODULES",$HEADER_MODULES);
 
     if (count($arrMenuFiltered)>0)
         $smarty->assign("MENU", $oPn->showMenu($menu));
