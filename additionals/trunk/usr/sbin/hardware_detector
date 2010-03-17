@@ -256,6 +256,12 @@ immediate=no
 DEFAULT_CHAN_DAHDI
 fi
 
+# The file chan_dahdi_additional.conf must exist, even if empty
+if [ ! -e /etc/asterisk/chan_dahdi_additional.conf ] ; then
+    touch /etc/asterisk/chan_dahdi_additional.conf
+    chown asterisk.asterisk /etc/asterisk/chan_dahdi_additional.conf
+fi
+
 # When detecting Sangoma cards, the wancfg_dahdi utility writes a chan_dahdi.conf
 # file that does not #include dahdi-channels.conf, nor chan_dahdi_additional.conf. 
 # This breaks non-Sangoma channels and FreePBX support unless fixed here.
