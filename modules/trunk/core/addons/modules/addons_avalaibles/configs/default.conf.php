@@ -32,8 +32,8 @@
     $arrConfModule['module_name']      = 'addons_avalaibles';
     $arrConfModule['templates_dir']    = 'themes';
     $arrConfModule['dsn_conn_database'] = "sqlite3:///$arrConf[elastix_dbdir]/addons.db";
-    $arrConfModule['socket_conn_ip']   = "192.168.1.110";
+    $arrConfModule['socket_conn_ip']   = "localhost";
     $arrConfModule['socket_conn_port'] = "20004";
-    $arrConfModule['url_webservice']   = 'http://192.168.1.80/modules/addons_availables/webservice/addons.wsdl';
-    $arrConfModule['url_images']       = 'http://192.168.1.80/modules/addons_availables/images';
+    $arrConfModule['url_webservice']   = 'http://webservice.elastix.org/modules/addons_availables/webservice/addons.wsdl';
+    $arrConfModule['url_images']       = 'http://webservice.elastix.org/modules/addons_availables/images';
 ?>

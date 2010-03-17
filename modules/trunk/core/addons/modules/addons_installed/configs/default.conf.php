@@ -34,7 +34,7 @@
     $arrConfModule['dsn_conn_database'] = "sqlite3:///$arrConf[elastix_dbdir]/addons.db";
 
     //ex2: $arrConfModule['dsn_conn_database'] = "mysql://user:password@ip_host_sever_mysql/base_name";
-    $arrConfModule['socket_conn_ip']   = "192.168.1.110";
+    $arrConfModule['socket_conn_ip']   = "localhost";
     $arrConfModule['socket_conn_port'] = "20004";
-    $arrConfModule['url_webservice']   = 'http://192.168.1.80/modules/addons_availables/webservice/addons.wsdl';
+    $arrConfModule['url_webservice']   = 'http://webservice.elastix.org/modules/addons_availables/webservice/addons.wsdl';
 ?>

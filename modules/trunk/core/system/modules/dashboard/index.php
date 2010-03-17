@@ -72,7 +72,7 @@ function _moduleContent($smarty, $module_name)
         $vendor = getParameter("vendor");
 
         ini_set("soap.wsdl_cache_enabled", "0");
-        $client = new SoapClient("http://192.168.1.89/modules/serial_hardware_telephony/webservice/telephonyHardware.wsdl");
+        $client = new SoapClient("http://webservice.elastix.org/modules/serial_hardware_telephony/webservice/telephonyHardware.wsdl");
 
         $client->registerHardware($vendor,$num_serie);
         return $oPalo->registerCard($hwd, $num_serie,$vendor);
