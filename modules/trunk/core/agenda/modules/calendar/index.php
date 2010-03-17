@@ -828,8 +828,8 @@ function viewBoxCalendar($arrConf,$arrLang,$pDB){
     return $json->encode($data);
 }
 
-function download_icals($arrLang,&$pDB,$module_name){//createICALToExport(){
-    $arr_out = getAllDataCalendar($arrLang,&$pDB,$module_name);
+function download_icals($arrLang,&$pDB,$module_name){
+    $arr_out = getAllDataCalendar($arrLang,$pDB,$module_name);
 
     header("Cache-Control: private");
     header("Pragma: cache");
@@ -837,7 +837,6 @@ function download_icals($arrLang,&$pDB,$module_name){//createICALToExport(){
     header('Content-disposition: inline; filename="icalout.ics"');
     header('Content-Type: application/force-download');
 
-    exec("echo 'array_salida: ".print_r($arr_out,true)."' > /tmp/edu");
     /*array(
         'id'    => "1",
         'title' => "event title",
@@ -865,7 +864,8 @@ function download_icals($arrLang,&$pDB,$module_name){//createICALToExport(){
         $document_output.= "END:VEVENT\n\n";
     }
     $document_output .= "END:VCALENDAR";
-    echo($document_output);
+    return $document_output;
+    //echo($document_output);
 
 }
 
@@ -953,7 +953,7 @@ function getAllDataCalendar($arrLang,&$pDB,$module_name){
             $starttime      = $arrDates[$j]['starttime'];
             $endtime        = $arrDates[$j]['endtime'];
             $type = 7;
-            getRepeatDate($each_repeat,$day_repeat,$starttime,$endtime,$j,&$k,&$arr,$arrDates,$type,$module_name);
+            getRepeatDate($each_repeat,$day_repeat,$starttime,$endtime,$j,$k,$arr,$arrDates,$type,$module_name);
         }
 
         if($event_type == 6){
@@ -962,7 +962,7 @@ function getAllDataCalendar($arrLang,&$pDB,$module_name){
             $starttime      = $arrDates[$j]['starttime'];
             $endtime        = $arrDates[$j]['endtime'];
             $type = 30;
-            getRepeatDate($each_repeat,$day_repeat,$starttime,$endtime,$j,&$k,&$arr,$arrDates,$type,$module_name);
+            getRepeatDate($each_repeat,$day_repeat,$starttime,$endtime,$j,$k,$arr,$arrDates,$type,$module_name);
         }
         $j++;
     }
@@ -1011,7 +1011,7 @@ function getDataCalendar($arrLang,&$pDB,$module_name){
             $starttime      = $arrDates[$j]['starttime'];
             $endtime        = $arrDates[$j]['endtime'];
             $type = 7;
-            getRepeatDate($each_repeat,$day_repeat,$starttime,$endtime,$j,&$k,&$arr,$arrDates,$type,$module_name);
+            getRepeatDate($each_repeat,$day_repeat,$starttime,$endtime,$j,$k,$arr,$arrDates,$type,$module_name);
         }
 
         if($event_type == 6){
@@ -1020,7 +1020,7 @@ function getDataCalendar($arrLang,&$pDB,$module_name){
             $starttime      = $arrDates[$j]['starttime'];
             $endtime        = $arrDates[$j]['endtime'];
             $type = 30;
-            getRepeatDate($each_repeat,$day_repeat,$starttime,$endtime,$j,&$k,&$arr,$arrDates,$type,$module_name);
+            getRepeatDate($each_repeat,$day_repeat,$starttime,$endtime,$j,$k,$arr,$arrDates,$type,$module_name);
         }
         $j++;
     }

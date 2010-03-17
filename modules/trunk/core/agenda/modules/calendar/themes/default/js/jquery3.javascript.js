@@ -45,6 +45,11 @@ $(document).ready(function(){
                 }
             }
 
+            if(!existRecording()){
+                connectJSON("error_recording");
+                return false;
+            }
+
             //asterisk_call_me is check 
             if(!getStatusCallsNotification()){// si en on => true
                 if(!validCallsTo()){
@@ -368,6 +373,14 @@ function obtainEmails(){
     if(total_emails=="")    return false;
     return total_emails;
 }
+
+    function existRecording(){
+        var recording = document.getElementsByName("recording")[0];
+        if(recording.childNodes.length > 0)
+            return true;
+        else 
+            return false;
+    }
 
 // this function quit the simbols < or > and return only email
     function quitSimbols(cad){

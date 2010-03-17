@@ -119,5 +119,6 @@ $arrLangModule=array(
 "Email" => "E-mail",
 "Contact" => "Contact",
 "Export_Calendar" => "Export Calendar",
+"error_recording" => "No Recording. Please create a new recording",
 );
 ?>

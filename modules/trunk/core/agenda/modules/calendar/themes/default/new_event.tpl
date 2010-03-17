@@ -1,8 +1,4 @@
-<script type="text/javascript" src ="libs/js/jquery/js/jquery-1.3.2.min.js"></script>
-<script type="text/javascript" src ="libs/js/jquery/js/jquery-ui-1.7.2.custom.min.js"></script>
-<script type="text/javascript" src="modules/{$module_name}/themes/js/jquery.fcbkcomplete.js"></script>
-<script type="text/javascript" src ="modules/{$module_name}/themes/js/javascript.js"></script>
-<link rel="stylesheet" type="text/css" href="modules/{$module_name}/themes/css/style2.css" />
+
 <table width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
     <tr class="moduleTitle">
         <td class="moduleTitle" valign="middle" colspan='2'>&nbsp;&nbsp;<img src="{$IMG}" border="0" align="absmiddle">&nbsp;&nbsp;{$title}</td>
