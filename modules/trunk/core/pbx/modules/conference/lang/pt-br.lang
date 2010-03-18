@@ -89,5 +89,6 @@ $arrLangModule=array(
 'Status'=>'Status',
 'Update'=>'Update',
 'No Extensions'=>'No Extensions',
+'Unselected' => 'Unselected',
 );
 ?>
