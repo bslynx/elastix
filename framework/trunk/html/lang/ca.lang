@@ -176,5 +176,6 @@ a tot el mon.",
 "Search" => "Search",
 "Show"   => "Show",
 'md_message_title' => 'Dismiss',
+"ERROR" => "Error",
 );
 ?>

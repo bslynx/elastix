@@ -169,5 +169,6 @@ implementations of Voice over IP around the globe.",
 /*Grouplist*/
 "Search" => "Search",
 "Show"   => "Show",
+"ERROR" => "Error",
 );
 ?>

@@ -173,5 +173,6 @@ $arrLang=array(
 
 "Search" => "Search",
 "Show"   => "Show",
+"ERROR" => "Error",
 );
 ?>

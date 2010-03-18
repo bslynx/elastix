@@ -168,5 +168,6 @@ implementations of Voice over IP around the globe.",
 'Active' => 'Active',
 'Filter' => 'Filter',
 'md_message_title' => 'Dismiss',
+"ERROR" => "Error",
 );
 ?>

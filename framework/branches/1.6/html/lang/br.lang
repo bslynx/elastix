@@ -173,5 +173,6 @@ implementations of Voice over IP around the globe.",
 
 "Search" => "Search",
 "Show"   => "Show",
+"ERROR" => "Error",
 );
 ?>

@@ -171,5 +171,6 @@ a tot el mon.",
 "Title" => "Title",
 "Search" => "Search",
 "Show"   => "Show",
+"ERROR" => "Error",
 );
 ?>

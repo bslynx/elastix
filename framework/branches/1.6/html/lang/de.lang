@@ -163,6 +163,6 @@ implementations of Voice over IP around the globe.",
 "Title" => "Title",
 "Search" => "Search",
 "Show"   => "Show",
-
+"ERROR" => "Error",
 );
 ?>

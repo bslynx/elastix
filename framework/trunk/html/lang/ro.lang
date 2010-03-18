@@ -177,5 +177,6 @@ $arrLang=array(
 "Search" => "Search",
 "Show"   => "Show",
 'md_message_title' => 'Dismiss',
+"ERROR" => "Error",
 );
 ?>

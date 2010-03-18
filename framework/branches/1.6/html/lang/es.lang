@@ -176,5 +176,6 @@ alrededor del mundo.",
 "Title" => "Título",
 "Search" => "Buscar",
 "Show"   => "Mostrar",
+"ERROR" => "Error",
 );
 ?>

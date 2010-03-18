@@ -171,5 +171,6 @@ implementations of Voice over IP around the globe.",
 "Search" => "Search",
 "Show"   => "Show",
 'md_message_title' => 'Dismiss',
+"ERROR" => "Error",
 );
 ?>
