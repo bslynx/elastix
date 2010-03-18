@@ -313,7 +313,7 @@ function cargar_menu($db)
 function isMainMenu($db, $id_Menu){
     $query="Select IdParent from menu where id='$id_Menu'";
     $oRecordset=$db->getFirstRowQuery($query,true);
-    if($oRecordset['IdParent']=="" || $oRecordset['IdParent']==null)
+    if(is_array($oRecordset) & ($oRecordset['IdParent']=="" || $oRecordset['IdParent']==null))
         return true;
     else
         return false;
