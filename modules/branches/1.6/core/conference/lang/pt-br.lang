@@ -85,5 +85,6 @@ $arrLangModule=array(
 "Filter" => "Filtro",
 "Show" => "Mostrar",
 "click here" => "clique aqui",
+'Unselected' => 'Unselected',
 );
 ?>

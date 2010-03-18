@@ -89,5 +89,6 @@ e; la conf&eacute;rence",
 "Filter" => "Filtre",
 "Show" => "Afficher",
 "click here" => "cliquer ici",
+'Unselected' => 'Unselected',
 );
 ?>
