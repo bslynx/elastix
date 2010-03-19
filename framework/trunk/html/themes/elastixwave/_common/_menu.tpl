@@ -20,7 +20,16 @@
                                 {if $idMenu eq $idMainMenuSelected}
 									<td width="4px">&nbsp;</td>
 									<td align="center" id="menu_selected">
-										<table cellSpacing="0" cellPadding="0" border="0" width="69px" id="table_on">
+                                         <table cellSpacing='0' cellPadding='0' border='0' style='position:relative;top:17px'>
+                                            <tr>
+                                                <td valign='top'><img border='0' align='absmiddle' src="themes/{$THEMENAME}/images/fondo_boton_on_left.gif"/></td>
+                                                <td class='menutabletabon2' nowrap=''>
+                                                    <a class='menutable2' href="index.php?menu={$idMenu}">{$menu.Name}</a>
+                                                </td>
+                                                <td valign='top'><img border='0' align='absmiddle' src="themes/{$THEMENAME}/images/fondo_boton_on_right.gif"/></td>
+                                            </tr>
+                                        </table>
+										<!--<table cellSpacing="0" cellPadding="0" border="0" width="69px" id="table_on">
 											<tr>
 												<td class="menutabletabon">
 													<img src="themes/{$THEMENAME}/images/{$idMenu}_icon.gif" border="0" alt="" />
@@ -28,7 +37,7 @@
                                                     <input type="hidden" name="desc_menu" id="desc_menu" value="{$THEMENAME},{$idMenu},{$menu.Name}" />
 												</td>
 											</tr>
-										</table>
+										</table>-->
 									</td>
                                 {else}
                                     <td width="4px">&nbsp;</td>
