@@ -232,7 +232,7 @@ if( sizeof($G_YDATAS) >= 1 )
 
         if( $G_SHADOW ) $graph->SetShadow();
 
-        $dataMarginColor = isset($result["ATTRIBUTES"]["MARGIN_COLOR"])?$result["ATTRIBUTES"]["MARGIN_COLOR"]:"·999999";
+        $dataMarginColor = isset($result["ATTRIBUTES"]["MARGIN_COLOR"])?$result["ATTRIBUTES"]["MARGIN_COLOR"]:"#999999";
         $dataSizePie     = isset($result["ATTRIBUTES"]["SIZE_PIE"])?$result["ATTRIBUTES"]["SIZE_PIE"]:"80";
 
         $graph->SetMarginColor($G_COLOR);
