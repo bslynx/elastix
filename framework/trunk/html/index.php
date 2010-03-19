@@ -154,6 +154,9 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
 
     $_SESSION['menu']=$menu; 
 
+	if(!(isset($_SESSION['menu']) & $_SESSION['menu']!=""))
+        $menu = obtainFirstMainMenu($pDBMenu);
+
     $menuLibs = "";
     //add by eduardo
     if(isMainMenu($pDBMenu,$menu))

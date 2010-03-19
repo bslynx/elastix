@@ -330,6 +330,16 @@ function obtainFirstChild($db, $id_Menu)
         return $oRecordset['id'];
 }
 
+//obtain first main menu
+function obtainFirstMainMenu($db){
+    $query="Select id from menu where order_no = 1";
+    $oRecordset=$db->getFirstRowQuery($query,true);
+    if($oRecordset['id']=="" || $oRecordset['id']==null)
+        return false;
+    else
+        return $oRecordset['id'];
+}
+
 function get_language($ruta_base='')
 {
     require_once $ruta_base."configs/default.conf.php";
