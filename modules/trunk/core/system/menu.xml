@@ -21,7 +21,7 @@
     <menuitem menuid="applet_admin"         desc="Applet Admin"       parent="preferences" module="yes" link="" order="105"></menuitem>
 
     <!--Temporalmente esto se va hace aqui para los menus de extras e IM-->
-    <menuitem menuid="extras"             desc="Extras"             parent=""           module="no" link=""                                     order="8"></menuitem>
+    <menuitem menuid="extras"             desc="Extras"             parent=""           module="no" link=""                                     order="9"></menuitem>
     <menuitem menuid="vtigercrm"          desc="vTigerCRM"          parent="extras"     module="no" link="vtigercrmWrapper.php?URL=/vtigercrm/" order="1"></menuitem>
     <menuitem menuid="a2b"                desc="Calling Cards"      parent="extras"     module="no" link="a2billing"                            order="2"></menuitem>
     <menuitem menuid="downloads"          desc="Downloads"          parent="extras"     module="no" link=""                                     order="3"></menuitem>

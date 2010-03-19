@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module>
   <menulist>
-    <menuitem menuid="reports"              desc="Reports"                   parent=""        module="no"  link="" order="7"></menuitem>
+    <menuitem menuid="reports"              desc="Reports"                   parent=""        module="no"  link="" order="8"></menuitem>
     <menuitem menuid="cdrreport"            desc="CDR Report"                parent="reports" module="yes" link="" order="1"></menuitem>
     <menuitem menuid="channelusage"         desc="Channels Usage"            parent="reports" module="yes" link="" order="2"></menuitem>
     <menuitem menuid="billing"              desc="Billing"                   parent="reports" module="no"  link="" order="3"></menuitem>

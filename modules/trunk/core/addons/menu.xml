@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module>
   <menulist>
-    <menuitem menuid="addons"            desc="Addons"       parent=""       module="no"  link="" order="9"></menuitem>
+    <menuitem menuid="addons"            desc="Addons"       parent=""       module="no"  link="" order="10"></menuitem>
     <menuitem menuid="addons_installed"  desc="Installed"    parent="addons" module="yes" link="" order="1"></menuitem>
     <menuitem menuid="addons_avalaibles" desc="Availables"   parent="addons" module="yes" link="" order="2"></menuitem>
   </menulist>
