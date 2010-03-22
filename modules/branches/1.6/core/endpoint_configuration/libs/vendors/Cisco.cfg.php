@@ -49,7 +49,7 @@ outbound_proxy_port: \"5060\"
 # NAT/Firewall Traversal
 nat_enable: \"0\"
 nat_address: \"\"
-voip_control_port: \"5061\"
+voip_control_port: \"5060\"
 start_media_port: \"16384\"
 end_media_port:  \"32766\"
 nat_received_processing: \"0\"
