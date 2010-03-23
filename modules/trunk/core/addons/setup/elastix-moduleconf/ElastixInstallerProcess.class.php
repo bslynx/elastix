@@ -41,6 +41,7 @@ class ElastixInstallerProcess extends AbstractProcess
     private $_bCapturarStderr = FALSE;
     private $_stderrBuf = '';    // Salida de stderr para actividad actual
     private $_estadoPaquete = NULL;
+    private $_timestampUltimoUso = NULL;    // timestamp de la última vez que se requirió yum shell
 
     function inicioPostDemonio($infoConfig, &$oMainLog)
     {
@@ -65,18 +66,6 @@ class ElastixInstallerProcess extends AbstractProcess
                 $this->oMainLog->output("INFO: escuchando peticiones en $sUrlSocket ...");
             }
         }
-        
-        if ($bContinuar)
-            $bContinuar = $this->_iniciarYumShell();
-        
-        return $bContinuar;
-    }
-    
-    private function _iniciarYumShell()
-    {
-        $bContinuar = TRUE;
-        $bFinInicio = FALSE;
-        
         $this->_estadoPaquete = array(
             'status'    =>  'idle',
             'action'    =>  'none',
@@ -87,6 +76,22 @@ class ElastixInstallerProcess extends AbstractProcess
             'warning'   =>  array(),
         );
 
+        return $bContinuar;
+    }
+
+    private function _asegurarYumShellIniciado()
+    {
+        $this->_timestampUltimoUso = time();
+        if (is_null($this->_procYum))
+            return $this->_iniciarYumShell();
+        else return TRUE;
+    }
+    
+    private function _iniciarYumShell()
+    {
+        $bContinuar = TRUE;
+        $bFinInicio = FALSE;
+        
         // Abrir proceso de yum
         if ($bContinuar) {
             $descriptores = array(
@@ -224,8 +229,10 @@ class ElastixInstallerProcess extends AbstractProcess
 
         // Recolectar todos los descriptores que se monitorean
         $listoLeer[] = $this->_hEscucha;        // Escucha de nuevas conexiones
-        $listoLeer[] = $this->_procPipes[1];    // yum salida estándar
-        $listoLeer[] = $this->_procPipes[2];    // yum error estándar
+        if (is_resource($this->_procYum)) {
+            $listoLeer[] = $this->_procPipes[1];    // yum salida estándar
+            $listoLeer[] = $this->_procPipes[2];    // yum error estándar
+        }
         foreach ($this->_conexiones as &$conexion) {
             if (!$conexion['exit_request']) $listoLeer[] = $conexion['socket'];
             if (strlen($conexion['pendiente_escribir']) > 0) {
@@ -242,12 +249,12 @@ class ElastixInstallerProcess extends AbstractProcess
                 // Entra una conexión nueva
                 $this->_procesarConexionNueva();
             }
-            if (in_array($this->_procPipes[1], $listoLeer)) {
+            if (is_resource($this->_procYum) && in_array($this->_procPipes[1], $listoLeer)) {
                 // Se tiene nueva información del yum shell
                 $bActivo = $this->_actualizarEstadoYumShell();
                 if (!$bActivo) return FALSE;
             }
-            if (in_array($this->_procPipes[2], $listoLeer)) {
+            if (is_resource($this->_procYum) && in_array($this->_procPipes[2], $listoLeer)) {
 		        // Mensaje de stderr de yum, mandar a log
 		        $this->_actualizarStderrYumShell();
             }
@@ -281,7 +288,16 @@ class ElastixInstallerProcess extends AbstractProcess
             // Revisar regularmente la descarga de los paquetes
             if ($this->_estadoPaquete['action'] == 'downloading')
                 $this->_revisarProgresoPaquetes();
+                
         }        
+
+        // Si el yum shell ha estado inactivo por más de 1 minuto se apaga
+        if (is_resource($this->_procYum) && 
+            time() - $this->_timestampUltimoUso > 60 &&
+            $this->_estadoPaquete['status'] == 'idle' &&
+            $this->_estadoPaquete['action'] == 'none')
+            $this->_finalizarYumShell();
+
         return TRUE;
     }
     
@@ -338,7 +354,7 @@ class ElastixInstallerProcess extends AbstractProcess
         // TODO: cancelar la operación yum activa
         
         // Cerrar las conexiones al yum shell
-        $this->_finalizarYumShell();
+        if (is_resource($this->_procYum)) $this->_finalizarYumShell();
         
         // Cerrar el socket de escucha de eventos
         fclose($this->_hEscucha);
@@ -516,7 +532,7 @@ Installing for dependencies:
         }
         
         if ($this->_estadoPaquete['status'] != 'error' && count($this->_estadoPaquete['progreso']) <= 0) {
-            $this->_estadoPaquete['action'] = 'idle';
+            $this->_estadoPaquete['action'] = 'none';
             $this->_estadoPaquete['warning'][] = 'No packages to install or update';
         }
         
@@ -656,6 +672,8 @@ Installing for dependencies:
         $this->_estadoPaquete['instalado'] = array();
 
         $sComando = "ts list\ninstall ".implode(' ', $listaArgs)."\nts solve\nts list\n";
+        if (!$this->_asegurarYumShellIniciado())
+            return "ERR Unable to start Yum Shell\n";
         fwrite($this->_procPipes[0], $sComando);
         return "OK Processing\n";
     }
@@ -674,6 +692,8 @@ Installing for dependencies:
         $this->_estadoPaquete['warning'] = array();
         $this->_estadoPaquete['instalado'] = array();
         $sComando = "ts list\nupdate ".implode(' ', $listaArgs)."\nts solve\nts list\n";
+        if (!$this->_asegurarYumShellIniciado())
+            return "ERR Unable to start Yum Shell\n";
         fwrite($this->_procPipes[0], $sComando);
         return "OK Processing\n";
     }
@@ -692,6 +712,8 @@ Installing for dependencies:
         $this->_estadoPaquete['warning'] = array();
         $this->_estadoPaquete['instalado'] = array();
         $sComando =  "list ".implode(' ', $listaArgs)."\nts list\n";
+        if (!$this->_asegurarYumShellIniciado())
+            return "ERR Unable to start Yum Shell\n";
         fwrite($this->_procPipes[0], $sComando);
         return "OK Processing\n";
     }
@@ -708,6 +730,8 @@ Installing for dependencies:
         $this->_estadoPaquete['progreso'] = array();
         $this->_estadoPaquete['instalado'] = array();
         $sComando = "ts reset\nts list\n";
+        if (!$this->_asegurarYumShellIniciado())
+            return "ERR Unable to start Yum Shell\n";
         fwrite($this->_procPipes[0], $sComando);
         return "OK\n";
     }
@@ -722,6 +746,8 @@ Installing for dependencies:
         // YUM requiere dos SIGINT para cancelar una descarga. El primero se 
         // envía aquí. El segundo se envía en _actualizarEstadoYumShell() al 
         // detectar la cadena de aviso de ctrl-c.
+        if (!$this->_asegurarYumShellIniciado())
+            return "ERR Unable to start Yum Shell\n";
         $infoYum = proc_get_status($this->_procYum);
         posix_kill($infoYum['pid'], SIGINT);
         $this->_estadoPaquete['status'] = 'busy';
@@ -743,6 +769,8 @@ Installing for dependencies:
         $this->_estadoPaquete['instalado'] = array();
 
         $sComando = "run\ny\n";
+        if (!$this->_asegurarYumShellIniciado())
+            return "ERR Unable to start Yum Shell\n";
         fwrite($this->_procPipes[0], $sComando);
         $this->_activarCapturaStderr();
         return "OK Starting transaction...\n";
@@ -750,6 +778,8 @@ Installing for dependencies:
 
     private function _actualizarEstadoYumShell()
     {
+        $this->_timestampUltimoUso = time();
+
         $s = stream_get_contents($this->_procPipes[1]);
         $this->_sContenido .= $s;
         if ($s == '') {
@@ -912,6 +942,8 @@ Installing for dependencies:
 
     private function _actualizarStderrYumShell()
     {
+        $this->_timestampUltimoUso = time();
+
         $s = stream_get_contents($this->_procPipes[2]);
         if ($this->_bCapturarStderr) {
             $this->_stderrBuf .= $s;
@@ -985,6 +1017,8 @@ Installing for dependencies:
         $this->_estadoPaquete['warning'] = array();
         $this->_estadoPaquete['instalado'] = array();
         $sComando = "ts list\nerase ".implode(' ', $listaArgs)."\nts solve\nts list\n";
+        if (!$this->_asegurarYumShellIniciado())
+            return "ERR Unable to start Yum Shell\n";
         fwrite($this->_procPipes[0], $sComando);
         return "OK Processing\n";
     }
