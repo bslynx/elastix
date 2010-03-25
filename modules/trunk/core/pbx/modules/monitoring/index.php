@@ -160,9 +160,9 @@ function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, &$
                 else
                     $src = $value['src'];
                 if(!isset($value['dst']) || $value['dst']=="")
-                    $src = "<font color='gray'>".$arrLang["unknown"]."</font>";
+                    $dst = "<font color='gray'>".$arrLang["unknown"]."</font>";
                 else
-                    $src = $value['dst'];
+                    $dst = $value['dst'];
 	            $arrTmp[3] = $src;
 	            $arrTmp[4] = $dst;
 	            $arrTmp[5] = "<label title='".$value['duration']." seconds' style='color:green'>".SecToHHMMSS( $value['duration'] )."</label>";
