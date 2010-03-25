@@ -44,7 +44,7 @@ $arrLangModule=array(
 "Destiny directory couldn't be created" => "Le r&eacute;pertoire de destination n'a pas pu &ecirc;tre cr&eacute;&eacute;",
 "File Upload" => "Fichier &agrave; envoyer",
 "ERROR" => "Erreur",
-"You don't have extension number associated with user" => "Vous n'avez aucun n&deg; d'extension associ&eacute; &agrave; l'utilisateur",
+"You don't have extension number associated with user" => "Vous n'avez aucun n&deg; d'extension associ&eacute; &agrave; l'utilisateur. Click <a href='index.php?menu=userlist'>here</a> to create an extension.",
 "The call couldn't be realized" => "L'appel ne peut &ecric;tre r&eacute;alis&eacute;.",
 "Error copying the file" => "Erreur lors de la copie de fichier",
 "Message" => "Message",
