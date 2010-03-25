@@ -45,7 +45,7 @@ $arrLangModule=array(
 "File Upload" => "Fichier &agrave; envoyer",
 "ERROR" => "ERREUR",
 "You don't have extension number associated with user" => "Vous n'avez aucun num&eacute;ro d'extension associ&eacute; &agrave
-; l'utilisateur",
+; l'utilisateur.  Click <a href='index.php?menu=userlist'>here</a> to create an extension.",
 "The call couldn't be realized" => "L'appel ne peut être r&eacute;alis&eacute;.",
 "Error copying the file" => "Erreur de copie de fichier",
 "Message" => "Message",
