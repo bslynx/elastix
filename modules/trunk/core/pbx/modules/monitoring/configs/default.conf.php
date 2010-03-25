@@ -1,8 +1,8 @@
 <?php
-/* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
+  /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.8                                                  |
+  | Elastix version 2.0.0-18                                               |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,9 +25,14 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
-global $arrConfModule;
-$arrConfModule['module_name'] = 'monitoring';
-$arrConfModule['templates_dir'] = 'themes';
-$arrConfModule['dsn_conn_database'] = 'mysql://root:eLaStIx.2oo7@localhost/asteriskcdrdb';
+  $Id: default.conf.php,v 1.1 2010-03-22 05:03:48 Eduardo Cueva ecueva@palosanto.com Exp $ */
+    global $arrConf;
+    global $arrConfModule;
+
+    $arrConfModule['module_name']       = 'monitoring2';
+    $arrConfModule['templates_dir']     = 'themes';
+    $arrConfModule['records_dir']       = '/var/spool/asterisk/monitor/';
+    //ex1: $arrConfModule['dsn_conn_database'] = "sqlite3:///$arrConf[elastix_dbdir]/base_name.db";
+    //ex2: $arrConfModule['dsn_conn_database'] = "mysql://user:password@ip_host_sever_mysql/base_name";
+    $arrConfModule['dsn_conn_database'] = 'mysql://root:eLaStIx.2oo7@localhost/asteriskcdrdb';
 ?>
