@@ -2288,10 +2288,11 @@ PETICION_LLAMADAS;
                     if ($this->DEBUG) {
                         $this->oMainLog->output("DEBUG: llamada fue identificada como llamada corta!");
                     }
-                    $sActualizarLlamada = 'UPDATE calls SET end_time = ?, duration = ?, status = "ShortCall" WHERE id = ?';
+                    $sActualizarLlamada = 'UPDATE calls SET end_time = ?, duration = ?, start_time = ?, status = "ShortCall" WHERE id = ?';
                     $result =& $this->_dbConn->query($sActualizarLlamada, 
                         array(date('Y-m-d H:i:s', $this->_infoLlamadas['llamadas'][$sKey]->end_timestamp), 
-                            $iDuracionLlamada, 
+                            $iDuracionLlamada,
+                            date('Y-m-d H:i:s', $this->_infoLlamadas['llamadas'][$sKey]->start_timestamp), 
                             $this->_infoLlamadas['llamadas'][$sKey]->id));
                     if (DB::isError($result)) {
                         $this->oMainLog->output("ERR: $sEvent: no se puede actualizar fecha fin llamada actual - ".$result->getMessage());

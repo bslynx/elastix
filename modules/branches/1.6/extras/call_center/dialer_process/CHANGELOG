@@ -1,3 +1,5 @@
+* Dialer: Always save start_time when marking a call as ShortCall. Should fix
+  Elastix bug #262.
 * Dialer: Remove per-queue counter of pending calls. This code is prone to get
   out of sync with the actual count of pending calls. Instead, store queue
   in call structure and count pending calls that match a given queue.
