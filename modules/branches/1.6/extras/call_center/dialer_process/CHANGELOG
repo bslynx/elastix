@@ -1,3 +1,15 @@
+* Merge new CallCenter reports into SVN:
+  - Agent Information: show summary of agent, first/last disconnection, and 
+    received incoming calls.
+  - Agents Monitoring: real-time status of agents per queue, with total login
+    time and number of calls
+  - Trunks used per hour: Displays calls placed/answered/abandoned per trunk
+    over a specified time period.
+  - Agents connection type: displays summary or detail of agent sessions, with
+    percentage of agent session actually spent handling calls, per queue, over
+    a specified time period.
+  - Incoming calls monitoring: real-time summary of incoming calls, grouped
+    by queue and status. 
 * Dialer: Always save start_time when marking a call as ShortCall. Should fix
   Elastix bug #262.
 * Dialer: Remove per-queue counter of pending calls. This code is prone to get
