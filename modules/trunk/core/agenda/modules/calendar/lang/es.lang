@@ -120,5 +120,9 @@ $arrLangModule=array(
 "Contact" => "Contact",
 "Export_Calendar" => "Export Calendar",
 "error_recording" => "No Recording. Please create a new recording",
+"Organizer" => "Organizer",
+"Confirm_event" => "Confirm Event",
+"Confirm" => "Confirm",
+"footer" => "Elastix is licensed under GPL by PaloSanto Solutions. 2006 - 2010",
 );
 ?>

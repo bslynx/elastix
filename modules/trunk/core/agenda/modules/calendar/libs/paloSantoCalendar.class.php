@@ -252,6 +252,58 @@ class paloSantoCalendar {
         return $archivos;
     }
 
+    function Obtain_Protocol_Current_User()
+    {
+        global $arrConf;
+        $pDB_acl = new paloDB($arrConf['elastix_dsn']['acl']);
+        $pACL = new paloACL($pDB_acl);
+        $username = $_SESSION["elastix_user"];
+        $extension = $pACL->getUserExtension($username);
+    
+        if($extension)
+        {
+            require_once "libs/paloSantoConfig.class.php";
+            $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
+            $arrConfig = $pConfig->leer_configuracion(false);
+    
+            $dsnAsterisk =  $arrConfig['AMPDBENGINE']['valor']."://".
+                            $arrConfig['AMPDBUSER']['valor']. ":".
+                            $arrConfig['AMPDBPASS']['valor']. "@".
+                            $arrConfig['AMPDBHOST']['valor']."/asterisk";
+    
+            $pDB = new paloDB($dsnAsterisk);
+    
+            $query = "SELECT dial, description, id FROM devices WHERE id=$extension";
+            $result = $pDB->getFirstRowQuery($query, TRUE);
+            if($result != FALSE)
+                return $result;
+            else return FALSE;
+        }else return FALSE;
+    }
+    
+    function Obtain_Protocol($extension)
+    {
+        if($extension)
+        {
+            require_once "libs/paloSantoConfig.class.php";
+            $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
+            $arrConfig = $pConfig->leer_configuracion(false);
+    
+            $dsnAsterisk =  $arrConfig['AMPDBENGINE']['valor']."://".
+                            $arrConfig['AMPDBUSER']['valor']. ":".
+                            $arrConfig['AMPDBPASS']['valor']. "@".
+                            $arrConfig['AMPDBHOST']['valor']."/asterisk";
+    
+            $pDB = new paloDB($dsnAsterisk);
+    
+            $query = "SELECT dial, description, id FROM devices WHERE id=$extension";
+            $result = $pDB->getFirstRowQuery($query, TRUE);
+            if($result != FALSE)
+                return $result;
+            else return FALSE;
+        }else return FALSE;
+    }
+
     function insertEvent($uid,$startdate,$enddate,$starttime,$eventtype,$subject,$description,$asterisk_call,$recording,$call_to,$notification,$email_notification, $endtime, $each_repeat,  $checkbox_days){
         $query = "INSERT INTO events(uid,startdate,enddate,starttime,eventtype,subject,description,asterisk_call,recording,call_to,notification,emails_notification,endtime,each_repeat,days_repeat) VALUES($uid,'$startdate','$enddate','$starttime',$eventtype,'$subject','$description','$asterisk_call','$recording','$call_to','$notification','$email_notification','$endtime',$each_repeat,'$checkbox_days')";
         $result = $this->_DB->genQuery($query);
@@ -318,6 +370,15 @@ class paloSantoCalendar {
         return $result;
     }
 
+    function getLastInsertIdEvent(){
+        $query = "SELECT id FROM events order by id desc";
+        $result = $this->_DB->getFirstRowQuery($query, TRUE);
+        if($result != FALSE || $result != "")
+            return $result['id'];
+        else
+            return false;
+    }
+
     function getAllEvents(){
         $query = "SELECT * FROM events";
 //startdate >= '$startdate' AND enddate <= '$enddate'";
@@ -327,6 +388,17 @@ class paloSantoCalendar {
             return null;
         }
         return $result;
+    }
+
+    function getNameUsers($id_user,$db)
+    {
+        $query = "SELECT name FROM acl_user WHERE id=$id_user";
+
+        $result = $db->getFirstRowQuery($query,true);
+        if($result != FALSE || $result != "")
+            return $result['name'];
+        else
+            return false;
     }
 }
 ?>

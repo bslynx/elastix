@@ -37,4 +37,6 @@
     //ex2: $arrConfModule['dsn_conn_database'] = "mysql://user:password@ip_host_sever_mysql/base_name";
     $arrConfModule['start_year'] = '2008';
     $arrConfModule['end_year']   = '2060';
+    $arrConfModule['sDirectorioBase'] = '/tmp';
+    $arrConfModule['dir_outgoing'] = "/var/spool/asterisk/outgoing";
 ?>
