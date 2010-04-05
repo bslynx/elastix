@@ -1,4 +1,5 @@
 1.5-3
+* Fix issue of /opt/elastix/dialer not being tracked by RPM and having wrong owner.
 * Fix behavior of agent reporting to prevent mistaking no-agent case with DB error
 * Remove declarations of getParameter() that conflict with existing declaration
   included in Elastix 2.0

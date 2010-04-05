@@ -45,17 +45,6 @@ if (file_exists($path_script_db))
     //STEP 1: Create database call_center
     $return=0;
     $return=$oInstaller->createNewDatabaseMySQL($path_script_db,"call_center",$datos_conexion);
-
-    //STEP 2: Dialer process
-    exec("sudo -u root chmod 777 /opt/",$arrConsole,$flagStatus);
-    exec("mkdir -p /opt/elastix/dialer/",$arrConsole,$flagStatus);
-    exec("mv -f $tmpDir/setup/dialer_process/dialer/* /opt/elastix/dialer/",$arrConsole,$flagStatus);
-    exec("sudo -u root chmod 755 /opt/",$arrConsole,$flagStatus);
- 
-    exec("sudo -u root chmod 777 /etc/rc.d/init.d/",$arrConsole,$flagStatus);
-    exec("mv $tmpDir/setup/dialer_process/elastixdialer /etc/rc.d/init.d/",$arrConsole,$flagStatus);
-    exec("sudo -u root chmod 755 /etc/rc.d/init.d/",$arrConsole,$flagStatus);
-    $return = ($flagStatus)?2:0;
 }
 
 exit($return);

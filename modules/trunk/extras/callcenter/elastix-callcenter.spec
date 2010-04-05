@@ -3,7 +3,7 @@
 Summary: Elastix Call Center 
 Name:    elastix-callcenter
 Version: 2.0.0
-Release: 2
+Release: 3
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
@@ -25,8 +25,13 @@ mkdir -p    $RPM_BUILD_ROOT/var/www/html/
 mv modules/ $RPM_BUILD_ROOT/var/www/html/
 
 # Additional (module-specific) files that can be handled by RPM
-#mkdir -p $RPM_BUILD_ROOT/opt/elastix/
-#mv setup/dialer
+mkdir -p $RPM_BUILD_ROOT/opt/elastix/
+mv setup/dialer_process/dialer/ $RPM_BUILD_ROOT/opt/elastix/
+chmod +x $RPM_BUILD_ROOT/opt/elastix/dialer/dialerd
+mkdir -p $RPM_BUILD_ROOT/etc/rc.d/init.d/
+mv setup/dialer_process/elastixdialer $RPM_BUILD_ROOT/etc/rc.d/init.d/
+chmod +x $RPM_BUILD_ROOT/etc/rc.d/init.d/elastixdialer
+rmdir setup/dialer_process
 
 # The following folder should contain all the data that is required by the installer,
 # that cannot be handled by RPM.
@@ -48,6 +53,13 @@ chown -R asterisk.asterisk /tmp/new_module/%{modname}
 php /tmp/new_module/%{modname}/setup/installer.php
 rm -rf /tmp/new_module
 
+# Add dialer to startup scripts, but disable it by default
+chkconfig --add elastixdialer
+chkconfig --level 2345 elastixdialer off
+
+# Fix incorrect permissions left by earlier versions of RPM
+chown -R asterisk.asterisk /opt/elastix/dialer
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -60,14 +72,20 @@ if [ $1 -eq 0 ] ; then # Check to tell apart update and uninstall
   else
     echo "No elastix-menuremove found, might have stale menu in web interface."
   fi
+  chkconfig --del elastixdialer
 fi
 
 %files
 %defattr(-, asterisk, asterisk)
 %{_localstatedir}/www/html/*
 /usr/share/elastix/module_installer/*
+/opt/elastix/dialer/*
+/etc/init.d/elastixdialer
 
 %changelog
+* Mon Apr 05 2010 Alex Villacis Lasso <a_villacis@palosanto.com> 2.0.0-3
+- Fix issue of /opt/elastix/dialer not being tracked by RPM and having wrong owner.
+
 * Mon Apr 05 2010 Alex Villacis Lasso <a_villacis@palosanto.com> 2.0.0-2
 - Updated version, synchronized with CallCenter 1.5-3
 - Use elastix-menuremove when available to remove menus.
