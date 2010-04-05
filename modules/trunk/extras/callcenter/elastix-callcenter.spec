@@ -80,7 +80,7 @@ fi
 %{_localstatedir}/www/html/*
 /usr/share/elastix/module_installer/*
 /opt/elastix/dialer/*
-/etc/init.d/elastixdialer
+/etc/rc.d/init.d/elastixdialer
 
 %changelog
 * Mon Apr 05 2010 Alex Villacis Lasso <a_villacis@palosanto.com> 2.0.0-3
