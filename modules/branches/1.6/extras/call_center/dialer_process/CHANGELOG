@@ -1,4 +1,5 @@
 1.5-3
+* Fix behavior of agent reporting to prevent mistaking no-agent case with DB error
 * Merge new CallCenter reports into SVN:
   - Agent Information: show summary of agent, first/last disconnection, and 
     received incoming calls.

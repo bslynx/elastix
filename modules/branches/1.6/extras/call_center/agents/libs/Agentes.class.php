@@ -80,8 +80,8 @@ class Agentes
 
         $arr_result = array();
         $arr_result =& $this->_DB->fetchTable($sQuery, true);
-        if ($arr_result) {
-            if (is_null($id)) {
+        if (is_array($arr_result)) {
+            if (is_null($id) || count($arr_result) <= 0) {
                 return $arr_result;
             } else {
                 return $arr_result[0];
