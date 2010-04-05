@@ -331,16 +331,6 @@ function obtenerArregloIaxSip($pDB, $pDB_asterisk, $valor=NULL){
 }
 
 
-function getParameter($parameter)
-{
-    if(isset($_POST[$parameter]))
-        return $_POST[$parameter];
-    else if(isset($_GET[$parameter]))
-        return $_GET[$parameter];
-    else
-        return null;
-}
-
 function getAction()
 {
     if(getParameter("show")) //Get parameter by POST (submit)
