@@ -226,13 +226,4 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
     $smarty->display("_common/login.tpl");
 
 }
-
-function obtainFiles($dir,$type){
-        $files =  glob($dir."/{*.$type}",GLOB_BRACE);
-        $names ="";
-        foreach ($files as $ima)
-            $names[]=array_pop(split("/",$ima));
-        if(!$names) return false;
-        return $names;
-}
 ?>
