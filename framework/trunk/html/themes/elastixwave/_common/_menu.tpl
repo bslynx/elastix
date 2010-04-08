@@ -14,13 +14,13 @@
                     </table>
                 </td>
                 <td width="50%" valign="top">
-                    <table cellSpacing="0" cellPadding="0" border="0" align="center" width="100%" height="77">
+                    <table cellSpacing="0" cellPadding="0" border="0" align="center" width="100%" height="74">
                         <tr>
                             {foreach from=$arrMainMenu key=idMenu item=menu name=menuMain}
                                 {if $idMenu eq $idMainMenuSelected}
 									<td width="4px">&nbsp;</td>
 									<td align="center" id="menu_selected">
-                                         <table cellSpacing='0' cellPadding='0' border='0' style='position:relative;top:17px'>
+                                         <table cellSpacing='0' cellPadding='0' border='0' style='position:relative;top:18px'>
                                             <tr>
                                                 <td valign='top'><img border='0' align='absmiddle' src="themes/{$THEMENAME}/images/fondo_boton_on_left.gif"/></td>
                                                 <td class='menutabletabon2' nowrap=''>
@@ -42,7 +42,7 @@
                                 {else}
                                     <td width="4px">&nbsp;</td>
 									<td align="center">
-										<table cellSpacing="0" cellPadding="0" border="0" style="position:relative;top:17px">
+										<table cellSpacing="0" cellPadding="0" border="0" style="position:relative;top:18px">
 											<tr>
 												<td valign="top"><img border="0" align="absmiddle" src="themes/elastixwave/images/fondo_boton_left.gif"/></td>
 												<td class="menutabletaboff" nowrap="">
@@ -75,7 +75,7 @@
                   <table cellspacing="0" cellpadding="0" width="100%">
                     <tr>
                         <td><!--{$arrMenuTotalChildren}-->
-                            <table cellspacing="2" cellpadding="4" border="0">
+                            <table cellspacing="1" cellpadding="5" border="0">
                                 <tr>
                                 {foreach from=$arrSubMenuByParents key=idSubMenu item=subMenu}
                                 {if $idSubMenu eq $idSubMenuSelected}

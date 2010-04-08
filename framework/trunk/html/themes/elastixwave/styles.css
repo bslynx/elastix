@@ -896,7 +896,8 @@ td.botonon {
     right:0%;
     top: 0%;
     height:32px;
-    width:246px;
+    /*width:246px;*/
+    width:30%;
 }
 .menuguion {
     FONT-FAMILY: verdana, arial, helvetica, sans-serif;
