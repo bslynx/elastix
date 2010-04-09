@@ -914,15 +914,14 @@ td.botonon {
 
 #layerCM {
     background: transparent url('/images/message_box_blue.png') no-repeat;
-    position: absolute;
-    left:150px;
-    top:380px;
+    /*position: absolute;*/
+    left:120px;
+    top:50px;
     width:349px;
     height:124px;
-/*     background-color:#f0f5FF; */
-/*     border: 1px solid #000; */
     z-index: 50;
     display:none;
+    cursor: move;
 }
 #layerCM_content {
     padding:5px;
@@ -931,7 +930,6 @@ td.botonon {
 }
 
 .layer_handle{
-/*     background-color:#5588bb; */
     background: transparent url('/images/close.png') no-repeat;
     padding:0px;
     text-align:center;
@@ -945,4 +943,11 @@ td.botonon {
     left: 328px;
     position: relative;
     cursor: pointer;
+}
+
+.div_content_bubble{
+    width: 321px;
+    height: 105px;
+    position: absolute;
+    text-align: center;
 }
