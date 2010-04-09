@@ -142,7 +142,7 @@ $(document).ready(
             else getDataCard(a_id_card);
             $("#layerCM").show();
         });
-//         $('#layerCM').draggable();
+        $('#layerCM').draggable();
 	}
 );
 
@@ -152,14 +152,19 @@ function saveRegister(id_card)
     var vendor = document.getElementById("manufacturer").value;
     var num_se = document.getElementById("noSerie").value;
 
-    var order = 'menu=' + module_name + '&action=saveRegister&rawmode=yes&num_serie=' + num_se + '&hwd=' + id_card + '&vendor=' + vendor ;
+    if(vendor != "" && num_se != ""){
+        var order = 'menu=' + module_name + '&action=saveRegister&rawmode=yes&num_serie=' + num_se + '&hwd=' + id_card + '&vendor=' + vendor ;
 
-    $.post("index.php", order,
-        function(theResponse){
-            alert("Card has been registered");
-            $("#layerCM").hide();
-            window.open("index.php?menu=dashboard","_self");
-    });
+        $.post("index.php", order,
+            function(theResponse){
+                alert("Card has been registered");
+                $("#layerCM").hide();
+                window.open("index.php?menu=dashboard","_self");
+        });
+    }
+    else{
+        alert("The data input are blank");
+    }
 }
 
 function getDataCard(id_card)
@@ -175,7 +180,7 @@ function getDataCard(id_card)
 
 function openWndMan1(id_card)
 {
-     html = "<table>" +
+     html = "<div class='div_content_bubble'><table align='center'>" +
                 "<tr>" +
                     "<td colspan='2' style='font-size: 11px'>" +
                         "<font style='color:red'>Card has not been Registered</font>" +
@@ -192,7 +197,7 @@ function openWndMan1(id_card)
                         "<input type='button' value='Save' class='boton'onclick='saveRegister(\"" + id_card + "\");' />" +
                     "</td>" +
                 "</tr>" +
-            "</table>";
+            "</table></div>";
 
     document.getElementById("layerCM_content").innerHTML = html;
 }
@@ -200,7 +205,7 @@ function openWndMan1(id_card)
 
 function openWndMan2(vendor,num_serie)
 {
-     html = "<table>" +
+     html = "<div class='div_content_bubble'><table align='center'>" +
                 "<tr>" +
                     "<td colspan='2' style='font-size: 11px'>" +
                         "<font style='color:green'>Card has been Registered</font>" +
@@ -211,7 +216,7 @@ function openWndMan2(vendor,num_serie)
                 "</tr> <tr>" +
                     "<td><label style='font-size: 11px'>Serial Number: " + num_serie + "</label></td>" +
                 "</tr>" +
-            "</table>";
+            "</table></div>";
     document.getElementById("layerCM_content").innerHTML = html;
 }
 

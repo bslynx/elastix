@@ -377,11 +377,11 @@ function telephony_hardware($module_name, $arrCards, $idApplet)
                 </div>
                 <div class='portlet_content'>
                     <div class='tabFormTable'>$cardsStatus</div>
+                    <div id='layerCM'>
+                        <div class='layer_handle' id='closeCM'></div>
+                        <div id='layerCM_content'></div>
+                    </div>
                 </div>
-            </div>
-            <div id='layerCM'>
-                <div class='layer_handle' id='closeCM'></div>
-                <div id='layerCM_content'></div>
             </div>";
     return $str;
 }
