@@ -2,19 +2,40 @@
     float: left;
     width:45%;
     height:200px;
+    margin:20px 20px 0px 0px;
 }
 
 #detail {
     float: left;
     width:40%;
-    background-color:#DEE4FA;
+    /*background-color:#DEE4FA;*/
     height:400px;
+    margin:3px 20px 0px 0px;
    /* margin: 3px 3px 3px 3px;*/
 }
 
 #title {
     color: black;
     font-size: 14px;
+}
+
+.fielform  {
+    border-color:#EE9A49;
+    border-width:thin;
+    color:black;
+    font-family:Verdana,Arial,Helvetica,sans-serif;
+    font-size:12px;
+    height:auto;
+    position:relative;
+    width:96%;
+}
+
+.sombreado {
+    /*background:none repeat scroll 0 0 white;*/
+    color:#DCA024;
+    font-family:Verdana;
+    font-size:12px;
+    font-weight:bold;
 }
 
 /*.icon {

@@ -46,7 +46,8 @@ $arrLangModule=array(
 "Sendrpid" => "Sendrpid",
 "Canreinvite" => "Canreinvite",
 "none" => "none",
-
+"General_Setting" => "General Setting",
+"PEER_Details" => "PEER Details",
 "Please select a type of VoIp Provider" => "Please select a type of VoIp Provider",
 "Some or someone necesary fields are empty please check and complete" => "Some or someone necesary fields are empty please check and complete",
 );

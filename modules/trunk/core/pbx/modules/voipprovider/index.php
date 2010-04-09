@@ -112,7 +112,8 @@ function viewFormVoIPProvider($smarty, $module_name, $local_templates_dir, &$pDB
     $smarty->assign("CANCEL", $arrLang["Cancel"]);
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
     $smarty->assign("IMG", "images/list.png");
-
+    $smarty->assign("General_Setting", $arrLang["General_Setting"]);
+    $smarty->assign("PEER_Details", $arrLang["PEER_Details"]);
     $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",$arrLang["VoIP Provider"], $_DATA);
     $content = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
 
