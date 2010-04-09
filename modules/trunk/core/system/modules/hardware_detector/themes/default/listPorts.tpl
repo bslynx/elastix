@@ -28,11 +28,13 @@
             {if $data.DESC.TIPO ne $CARD_NO_MOSTRAR}
                 <tr>
                     <td style='border: 1px #CCCCCC solid; font-size:12px;' align='left' class="moduleTitle">{$CARD} # {$data.DESC.ID}: {$data.DESC.TIPO} {$data.DESC.ADICIONAL} </td>
+<!--
                     {if $data.DESC.MANUFACTURER eq 'yes'}
                     <td style='border: 1px #CCCCCC solid; width:30px;' align="center"> <span id="editMan{$data.DESC.ID}"> <img class="icon" src="modules/hardware_detector/images/card_registered.gif" /> </span> </td>
                     {elseif $data.DESC.MANUFACTURER  eq 'no'}
                     <td style='border: 1px #CCCCCC solid; width:30px;' align="center"> <span id="editMan{$data.DESC.ID}"> <img class="icon" src="modules/hardware_detector/images/card_no_registered.gif" /> </span> </td>
                     {/if}
+-->
                     <td style='border: 1px #CCCCCC solid; width:30px;'> <span id="editArea{$data.DESC.ID}"> <img class="icon" src="modules/hardware_detector/images/icon1.png" /> </span> </td>
                     <td style='border: 1px #CCCCCC solid; width:30px;'><a href='?menu=hardware_detector&action=config_echo&cardId={$data.DESC.ID}'><img class="icon" src="modules/hardware_detector/images/icon_configecho.png" title="Config echo Canceller"/></a></td>
                 </tr>
