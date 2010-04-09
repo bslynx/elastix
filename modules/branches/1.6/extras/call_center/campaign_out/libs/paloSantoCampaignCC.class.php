@@ -383,7 +383,7 @@ class paloSantoCampaignCC
      * @return	mixed	Matriz cuyas tuplas contienen los contenidos del archivo,
      *					en el orden en que fueron leídos, o NULL en caso de error.
      */
-    function parseCampaignNumbers($sFilePath)
+    private function parseCampaignNumbers($sFilePath)
     {
         global $arrLang;
         global $arrLan;
@@ -399,32 +399,33 @@ class paloSantoCampaignCC
     		$clavesColumnas = array();
     		while ($tupla = fgetcsv($hArchivo, 2048,",")) {
     			$iNumLinea++;
-                        $tupla[0] = trim($tupla[0]);
+                $tupla[0] = trim($tupla[0]);
     			if (count($tupla) == 1 && trim($tupla[0]) == '') {
     				// Línea vacía
     			} elseif ($tupla[0]{0} == '#') {
     				// Línea que empieza por numeral
     			} elseif (!ereg('^[[:digit:]#*]+$', $tupla[0])) {
-                                if ($iNumLinea == 1) {
-                                    // Podría ser una cabecera de nombres de columnas
-                                    array_shift($tupla);
-                                    $clavesColumnas = $tupla;
-                                } else {
-                                    // Teléfono no es numérico
-                                    $this->errMsg = $arrLan["Invalid CSV File Line"]." "."$iNumLinea: ".$arrLan["Invalid number"];
-                                    return NULL;
-                                }
+                    if ($iNumLinea == 1) {
+                        // Podría ser una cabecera de nombres de columnas
+                        array_shift($tupla);
+                        $clavesColumnas = $tupla;
+                    } else {
+                        // Teléfono no es numérico
+                        $this->errMsg = $arrLan["Invalid CSV File Line"]." "."$iNumLinea: ".$arrLan["Invalid number"];
+                        return NULL;
+                    }
     			} else {
                     // Como efecto colateral, $tupla pierde su primer elemento
-    				$tuplaLista = array('__PHONE_NUMBER' => array_shift($tupla));
-
-                    // Asignar atributos de la tupla
-    				for ($i = 0; $i < count($tupla); $i++) {
-                        // Si alguna fila tiene más elementos que la lista inicial de nombres, el resto de columnas tiene números
-    				    $sClave = "$i";
-    				    if ($i < count($clavesColumnas) && $clavesColumnas[$i] != '') $sClave = $clavesColumnas[$i];    				    
-    				    $tuplaLista[$sClave] = $tupla[$i];
-    				}
+                    $tuplaLista = array(
+                        'NUMERO'    =>  array_shift($tupla),
+                        'ATRIBUTOS' =>  array(),
+                    );
+                    for ($i = 0; $i < count($tupla); $i++) {
+                    	$tuplaLista['ATRIBUTOS'][$i + 1] = array(
+                            'CLAVE' =>  ($i < count($clavesColumnas) && $clavesColumnas[$i] != '') ? $clavesColumnas[$i] : ($i + 1),
+                            'VALOR' =>  $tupla[$i],
+                        );
+                    }
   					$listaNumeros[] = $tuplaLista;
     			}
     		}
@@ -445,149 +446,55 @@ class paloSantoCampaignCC
      *
      * @return bool VERDADERO si todos los números fueron insertados, FALSO en error
      */
-    function addCampaignNumbers($idCampaign, $listaNumeros)
+    private function addCampaignNumbers($idCampaign, $listaNumeros)
     {
         global $arrLan;
-    	$bExito = FALSE;
     	
     	if (!ereg('^[[:digit:]]+$', $idCampaign)) {
     		$this->errMsg = $arrLan["Invalid Campaign ID"];//'ID de campaña no es numérico';
     	} elseif (!is_array($listaNumeros)) {
-    		$this->errMsg = $arrLang[""];//'Lista de números tiene que ser un arreglo';
+            // TODO: internacionalizar
+    		$this->errMsg = '(internal) Lista de números tiene que ser un arreglo';
     	} else {
-        	$bContinuar = TRUE;
-        	$listaValidada = array(); // Se usa copia porque tupla se modifica en validación
-        	
-        	// Verificar si todos los elementos son de max. 4 parametros y son
-        	// todos numéricos o NULL
-        	if ($bContinuar) {
-        		foreach ($listaNumeros as $tuplaNumero) {
-/*
-        			if (count($tuplaNumero) < 1) {
-        				$this->errMsg = "Encontrado elemento sin número telefónico";
-        				$bContinuar = FALSE;
-        			} elseif (!ereg('^[[:digit:]]+$', $tuplaNumero[0])) {
-        				$this->errMsg = "Teléfono encontrado que no es numerico";
-        				$bContinuar = FALSE;
-        			} elseif (count($tuplaNumero) > 1 + 4) {
-						$this->errMsg = "Para teléfono $tuplaNumero[0]: implementación actual soporta máximo 4 parámetros";
-						break;
-        			} else {
-        				$iCount = count($tuplaNumero) - 1;
-        				for ($i = 1; $i <= $iCount; $i++) {
-        					if (trim($tuplaNumero[$i]) == '') $tuplaNumero[$i] = NULL;
-        					if (!is_null($tuplaNumero[$i]) && !is_numeric($tuplaNumero[$i])) {
-        						$this->errMsg = "Para teléfono $tuplaNumero[0] se encontró parámetro $i = $tuplaNumero[$i] no numérico";
-        						$bContinuar = FALSE;
-        					}
-        				}
-        				if ($bContinuar) $listaValidada[] = $tuplaNumero;
-        			}
-*/
-                    if (!isset($tuplaNumero['__PHONE_NUMBER'])) {
-        				$this->errMsg = $arrLan["Element without phone number"];//"Encontrado elemento sin número telefónico";
-        				$bContinuar = FALSE;
-                    } elseif (!ereg('^[[:digit:]#*]+$', $tuplaNumero['__PHONE_NUMBER'])) {
-        				$this->errMsg = $arrLan["Invalid number"];
-        				$bContinuar = FALSE;
-                    } else {
-        				if ($bContinuar) $listaValidada[] = $tuplaNumero;
+            // Realizar inserción de número y de atributos 
+            // TODO: reportar cuáles números no serán marcados por DNC
+            foreach ($listaNumeros as $tuplaNumero) {
+            	// Buscar número en lista DNC. Esto es más rápido si hay índice sobre dont_call(caller_id).
+                $sql = 'SELECT COUNT(*) FROM dont_call WHERE caller_id = ? AND status = ?';
+                $tupla = $this->_DB->getFirstRowQuery($sql, FALSE, array($tuplaNumero['NUMERO'], 'A'));
+                $iDNC = ($tupla[0] != 0) ? 1 : 0;
+                
+                // Inserción del número principal
+                $sql = 'INSERT INTO calls (id_campaign, phone, status, dnc) VALUES (?, ?, NULL, ?)';
+                $result = $this->_DB->genQuery($sql, array($idCampaign, $tuplaNumero['NUMERO'], $iDNC));
+                if (!$result) {
+                    // TODO: internacionalizar
+                    $this->errMsg = sprintf('(internal) Cannot insert phone %s - %s', 
+                        $tuplaNumero['NUMERO'], $this->_DB->errMsg);
+                	return FALSE;
+                }
+                
+                // Recuperar el ID de inserción para insertar atributos. Esto asume MySQL.
+                $tupla = $this->_DB->getFirstRowQuery('SELECT LAST_INSERT_ID()');
+                $idCall = $tupla[0];
+                
+                // Insertar atributos adicionales.
+                foreach ($tuplaNumero['ATRIBUTOS'] as $iNumColumna => $atributos) {
+                    $sClave = $atributos['CLAVE'];
+                    $sValor = $atributos['VALOR'];
+                    $sql = 'INSERT INTO call_attribute (id_call, columna, value, column_number) VALUES (?, ?, ?, ?)';
+                    $result = $this->_DB->genQuery($sql, array($idCall, $sClave, $sValor, $iNumColumna));
+                    if (!$result) {
+                        // TODO: internacionalizar
+                        $this->errMsg = sprintf('(internal) Cannot insert attribute %s=%s for phone %s - %s',
+                            $sClave, $sValor, $tuplaNumero['__PHONE_NUMBER'], $this->_DB->errMsg);
+                    	return FALSE;
                     }
-        			if (!$bContinuar) break;
-                        			
-        		}
-        	}
-        	
-        	if ($bContinuar) {
-                // Inicia transacción
-//                 if(!$this->_DB->genQuery("BEGIN TRANSACTION")) {
-//                 	$this->errMsg = $this->_DB->errMsg;
-//                 } else {
-					foreach ($listaValidada as $tuplaNumero) {
-
-                        /********************************************
-                        ///// codigo agregado por Carlos Barcos
-                        *********************************************/
-                        // obtengo el numero para realizar la busqueda del mismo en la lista de llamadas bloqueadas
-                        $numero = $tuplaNumero['__PHONE_NUMBER'];
-                        // obtengo la lista de llamadas bloqueadas
-                        $listaDontCall=$this->convertir_array($this->getDontCallList());
-                        // evaluo si el numero obtenido esta en la lista dellamadas bloquedas
-			if( in_array($numero,$listaDontCall)){
-                            // si se encuentra marca el campo dnc a 1 para bloquear la llamada
-			    $dnc=1;
-			}else{
-                            // si se encuentra marca el campo dnc a 0 para permitir que se realice la llamada
-			    $dnc=0;
-			}
-                        /********************************************
-                        ///// fin codigo agregado por Carlos Barcos
-                        *********************************************/
-
-                        // arreglo con la informacion necesaria para realizar una llamada
-                        $campos = array(
-				'id_campaign'	=>	$idCampaign,
-				'phone'			=>	paloDB::DBCAMPO($tuplaNumero['__PHONE_NUMBER']),
-				'status'		=>	NULL,
-                                // campo agregado para permitir o denegar la llamada
-				'dnc'		=>	paloDB::DBCAMPO($dnc), // agregado por Carlos Barcos
-			);
-
-
-                        $sPeticionSQL = paloDB::construirInsert("calls", $campos);
-						$result = $this->_DB->genQuery($sPeticionSQL);
-						if (!$result) {
-							$bContinuar = FALSE;
-							$this->errMsg = $this->_DB->errMsg."<br/>$sPeticionSQL";
-							break;
-						}
-    
-    			        $id_call = NULL;
-
-                        // TODO: investigar equivalente de LAST_INSERT_ID() en SQLite
-                		$sPeticionSQL = "SELECT MAX(id) FROM calls WHERE id_campaign = $idCampaign and phone = '$tuplaNumero[__PHONE_NUMBER]' and status IS NULL";
-                		$tupla =& $this->_DB->getFirstRowQuery($sPeticionSQL);
-                		if (!is_array($tupla)) {
-                			$this->errMsg = $this->_DB->errMsg."<br/>$sPeticionSQL";
-                			$bContinuar = FALSE;
-                		} else {
-                			$id_call = (int)$tupla[0];
-                		}
-						if ($bContinuar){ 
-                                                    $cont_number_column = 1;
-                                                    foreach ($tuplaNumero as $sClave => $sValor) {
-						    if ($sClave !== '__PHONE_NUMBER') {
-						        $campos = array(
-						            'id_call'         =>  $id_call,
-						            'columna'             =>  paloDB::DBCAMPO($sClave),
-						            'value'           =>  paloDB::DBCAMPO($sValor),
-                                                            'column_number'   =>  $cont_number_column,
-						        );
-                                                        $sPeticionSQL = paloDB::construirInsert("call_attribute", $campos);
-        						$result = $this->_DB->genQuery($sPeticionSQL);
-        						if (!$result) {
-        							$bContinuar = FALSE;
-        							$this->errMsg = $this->_DB->errMsg."<br/>$sPeticionSQL";
-        							break;
-        						}
-                                                        $cont_number_column++;
-						    }
-						}
-						}
-						if (!$bContinuar) break;
-					}
-
-                    $bExito = $bContinuar;
-//                     if ($bExito) {
-//     	            	$this->_DB->genQuery("COMMIT");
-//     	            } else{
-//     	            	$this->_DB->genQuery("ROLLBACK");
-//                     }
-//                 }        		
-        	}
+                }
+            }
     	}
     	
-    	return $bExito;
+    	return TRUE;
     }
 
     /**

@@ -533,6 +533,8 @@ function formEditCampaign($pDB, $smarty, $module_name, $local_templates_dir, $id
                         
                         // Para creación, se introduce lista de valores CSV
                         if ($bExito && $bDoCreate) {
+                            // Se puede tardar mucho tiempo en la inserción
+                            ini_set('max_execution_time', 3600);
                             $bExito = $oCamp->addCampaignNumbersFromFile($id_campaign, $_FILES['phonefile']['tmp_name']);
                         }
 
