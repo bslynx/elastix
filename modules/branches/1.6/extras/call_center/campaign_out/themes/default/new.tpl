@@ -183,7 +183,7 @@ function leer_select_values(nombre)
 
 function enviar_datos()
 {   
-    document.getElementById("values_form").value = leer_select_values('formularios_elegidos');
+    document.getElementById("values_form").value = leer_select_values('formularios_elegidos[]');
     //boton.type='submit';
     updateRTEs();
     //boton.submit();
@@ -192,8 +192,8 @@ function enviar_datos()
 
 function add_form()
 {
-    var select_formularios = document.getElementsByName('formulario')[0];
-    var select_formularios_elegidos = document.getElementsByName('formularios_elegidos')[0];
+    var select_formularios = document.getElementsByName('formulario[]')[0];
+    var select_formularios_elegidos = document.getElementsByName('formularios_elegidos[]')[0];
 
     for(var i=0;i<select_formularios.length;i++){
         if(select_formularios[i].selected){
@@ -214,8 +214,8 @@ function add_form()
 
 function drop_form()
 {
-    var select_formularios = document.getElementsByName('formulario')[0];
-    var select_formularios_elegidos = document.getElementsByName('formularios_elegidos')[0];
+    var select_formularios = document.getElementsByName('formulario[]')[0];
+    var select_formularios_elegidos = document.getElementsByName('formularios_elegidos[]')[0];
 
     for(var i=0;i<select_formularios_elegidos.length;i++){
         if(select_formularios_elegidos[i].selected){
