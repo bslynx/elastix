@@ -182,7 +182,7 @@ function load_extension_from_csv($smarty, $arrLang, $ruta_archivo, $base_dir, $p
     $data_connection = array('host' => "127.0.0.1", 'user' => "admin", 'password' => "elastix456");
 
     $result = isValidCSV($arrLang, $ruta_archivo, $arrayColumnas);
-    if($result != true){
+    if($result != "valided"){
         $smarty->assign("mb_message", $result);
         return;
     }
@@ -319,7 +319,7 @@ function isValidCSV($arrLang, $sFilePath, &$arrayColumnas){
                             }
                         }
                     }
-                    return true;
+                    return "valided";
                 }
             }else return $arrLang["Verify the header"] ." - ". $arrLang["At minimum there must be the columns"].": \"Display Name\", \"User Extension\", \"Secret\"";
         }
