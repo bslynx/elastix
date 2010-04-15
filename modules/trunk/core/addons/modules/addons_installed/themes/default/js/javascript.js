@@ -30,7 +30,7 @@ function getPercent()
                 var url_redirect = "index.php?menu="+module_name;
                 window.open(url_redirect,"_self");
             }
-            else if(response['status']=="not_install"){
+            else if(response['status']=="not_install"){getPercent();
                 // nada que hacer
             }
             else
@@ -66,7 +66,7 @@ function process(response)
             $('#progressBarActual'+i).progressbar('value', percentActual);
         }
         $('#progressBarTotal').progressbar('value', valueTotal);
-    }
+    }$('#progressBarTotal').progressbar('value', 100);
 }
 
 function updateAddon(name_rpm)

@@ -99,6 +99,7 @@ class paloSantoAddonsModules {
             foreach($arrStatus as $k => $line){
                 $arrLine = split(" ",$line);
                 if($arrLine[0]=="status") $salida['status'] = $arrLine[1];
+
                 else if($arrLine[0]=="action")  $salida['action'] = $arrLine[1];
 
                 else if($salida['action']  == "confirm" || $salida['action']  == "downloading" || $salida['action']  == "applying"){
@@ -146,7 +147,7 @@ class paloSantoAddonsModules {
                 else
                     $salida['porcent_total_ins'] = 0;
             }
-        }
+        }exec("echo 'salida : ".print_r($salida,true)."' >> /tmp/edu");
         return $salida;
     }
 

@@ -13,18 +13,20 @@ $(document).ready(function(){
 
             var data_exp = $('.'+name_rpm).text();
             var order = 'menu='+module_name+'&name_rpm='+name_rpm+'&action=install&data_exp='+data_exp+'&rawmode=yes';
+
             $.post('index.php',order,function(theResponse){
                     var message = JSONtoString(theResponse);
-                    if(message['response'] == "there_install"){
+                    if(message['response'] == "there_install"){ //si existe una instalacion en progreso
                         there_install = true;
                         connectJSON("process_installing");
                         window.open("index.php?menu="+module_name2,"_self");
                     }
-                    else if(message['response'] == "OK"){
+                    else if(message['response'] == "OK"){ // listo para instalar
                         there_install = true;
-                        getStatusInstall();
+                        name_rpm = message['name_rpm'];
+                        getStatusInstall(name_rpm);
                     }
-                    else if(message['response'] == "error"){
+                    else if(message['response'] == "error"){ // error no install
                         there_install = false;
                         connectJSON("error_start_install");
                     }
@@ -35,8 +37,9 @@ $(document).ready(function(){
     });
 });
 
-function getStatusInstall(){
-    var order = 'menu='+module_name+'&action=get_status&rawmode=yes';
+function getStatusInstall(name_rpm){
+    var data_exp = $('.'+name_rpm).text(); // se recibe los datos q seran insertados en la db
+    var order = 'menu='+module_name+'&action=get_status&data_exp='+data_exp+'&rawmode=yes';
 
     $.post("index.php", order,
         function(theResponse){
@@ -44,14 +47,15 @@ function getStatusInstall(){
             var resp = response['response'];
             $('#action_install').val(resp);
 ////////////////////////////////////////////////////
+            var status_action = response['status_action'];
             var name_rpm = response['name_rpm'];
-            $('#'+name_rpm).parent().parent().children(':first-child').children(':first-child').next().text(resp);
+            $('#'+name_rpm).parent().parent().children(':first-child').children(':first-child').next().text(status_action);
 ////////////////////////////////////////////////////
             if(resp == "OK"){
-                changeStatus(response['name_rpm'],response['view_details']);
+                changeStatus(response['name_rpm'],response['view_details']); // listo para instalar
             }
             else
-                getStatusInstall();
+                getStatusInstall(name_rpm);
     });
 }
 

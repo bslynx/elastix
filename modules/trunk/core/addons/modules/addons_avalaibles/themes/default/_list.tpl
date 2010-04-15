@@ -104,4 +104,4 @@
   </tr>
 </table>
 <input type="hidden" name="installing" id="installing" value="0" />
-<input type="text" name="action_install" id="action_install" value="none" />
+<input type="text" style="display:none;" name="action_install" id="action_install" value="none" />

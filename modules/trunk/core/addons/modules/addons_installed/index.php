@@ -131,7 +131,7 @@ function viewFormAddonsModules($smarty, $module_name, $local_templates_dir, &$pD
 
     $arrGrid = array("title"    => $arrLang["addons_installed"],
                         "icon"     => "images/list.png",
-                        "width"    => "98%",
+                        "width"    => "100%",
                         "start"    => ($total==0) ? 0 : $offset + 1,
                         "end"      => $end,
                         "total"    => $total,
@@ -307,7 +307,6 @@ function updateAddons($smarty, $module_name, $local_templates_dir, &$pDB, $arrCo
     $arrSal['installing'] = $arrLang['installing'];
     $json = new Services_JSON();
 
-    exec("echo '".print_r($arrSal,true)."' >> /tmp/brunoo");
     return $json->encode($arrSal);
 }
 

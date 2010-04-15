@@ -90,7 +90,7 @@ function installAddons($smarty, $module_name, $local_templates_dir, &$pDB, $arrC
     $data_exp = getParameter("data_exp");
     $pAddonsModules = new paloSantoAddonsModules($pDB);
     $arrSal['response'] = false;
-    $_SESSION['elastix_addons']['data_install'] = $data_exp;
+    //$_SESSION['elastix_addons']['data_install'] = $data_exp;
 
     $arrStatus = $pAddonsModules->getStatus($arrConf);
 
@@ -100,6 +100,7 @@ function installAddons($smarty, $module_name, $local_templates_dir, &$pDB, $arrC
             $arrStatus = $pAddonsModules->getStatus($arrConf);
             if($arrStatus['status'] != "error"){
                 $arrSal['response'] = "OK";
+                $arrSal['name_rpm'] = $name_rpm;
                 $_SESSION['elastix_addons']['name_rpm'] = $name_rpm;
             }
             else
@@ -119,6 +120,7 @@ function installAddons($smarty, $module_name, $local_templates_dir, &$pDB, $arrC
 
 function getStatus($pDB, $arrConf, $arrLang){
     $pAddonsModules = new paloSantoAddonsModules($pDB);
+    $datatoInsert = getParameter("data_exp");
     sleep(10);
     $arrStatus = $pAddonsModules->getStatus($arrConf);
 
@@ -130,14 +132,22 @@ function getStatus($pDB, $arrConf, $arrLang){
             $arrSal['response'] = "OK";
             $arrSal['name_rpm'] = $_SESSION['elastix_addons']['name_rpm'];
             $arrSal['view_details'] = $arrLang['view_details'];
+            $_SESSION['elastix_addons']['data_install'] = $datatoInsert;
         }
         else
             $arrSal['response'] = "error";
     }
-    else
+    else{
+        if($arrStatus['action'] == "reporefresh")
+            $arrSal['status_action'] = $arrLang['reporefresh'];
+        if($arrStatus['action'] == "depsolving")
+            $arrSal['status_action'] = $arrLang['depsolving'];
+        if(!isset($arrSal['status_action']) || $arrSal['status_action']=="")
+            $arrSal['status_action'] = $arrLang['downloading'];
         $arrSal['response'] = $arrStatus['action'];
+        $arrSal['name_rpm'] = $_SESSION['elastix_addons']['name_rpm'];
 
-
+    }
     return $json->encode($arrSal);
 }
 
