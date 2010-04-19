@@ -34,7 +34,10 @@ $tmpDir = '/tmp/new_module/fax';  # in this folder the load module extract the p
 if(!file_exists("$DataBaseRoot/fax.db")){
     $cmd_mv    = "mv $tmpDir/setup/fax.db $DataBaseRoot/";
     $cmd_chown = "chown asterisk.asterisk $DataBaseRoot/fax.db";
+    $cmd_chmod = "chmod 666 $DataBaseRoot/fax.db";
+
     exec($cmd_mv);
     exec($cmd_chown);
+    exec($cmd_chmod);
 }
-?>
+>
