@@ -40,4 +40,4 @@ if(!file_exists("$DataBaseRoot/fax.db")){
     exec($cmd_chown);
     exec($cmd_chmod);
 }
->
+?>
