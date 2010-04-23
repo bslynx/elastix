@@ -297,13 +297,18 @@ class GestorLlamadasEntrantes
                 'AID'   =>  NULL,
             );
 
+            // Asterisk 1.6.2.x usa CallerIDNum y Asterisk 1.4.x usa CallerID
+            $sCallerID = '';
+            if (isset($eventParams['CallerIDNum'])) $sCallerID = $eventParams['CallerIDNum'];
+            if (isset($eventParams['CallerID'])) $sCallerID = $eventParams['CallerID'];
+            
             // Insertar la información de la llamada entrante en el registro
             $idCola = array_search($eventParams['Queue'], $this->_cacheColasMonitoreadas);
             $camposSQL = array(
                 array('id_agent',               'NULL',         null),
                 array('id_queue_call_entry',    '?',            $idCola),
                 array('id_contact',             'NULL',         null),
-                array('callerid',               '?',            $eventParams['CallerID']),
+                array('callerid',               '?',            $sCallerID),
                 array('datetime_entry_queue',   'NOW()',        null),
                 array('datetime_init',          'NULL',         null),
                 array('datetime_end',           'NULL',         null),

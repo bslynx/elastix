@@ -1,3 +1,5 @@
+* Dialer: Join event reports caller-id as CallerID in Asterisk 1.4.x and
+  CallerIDNum in Asterisk 1.6.2.x. Account for the difference.
 * Campaigns Out: greatly reduce time spent uploading a CSV phone file for
   a new campaign, by fixing an inefficient database operation. Also, set
   max_execution_time to 1 hour for the duration of the operation to prevent
