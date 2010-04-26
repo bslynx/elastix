@@ -116,7 +116,8 @@ class Agentes
             return FALSE;
         }
 
-        if (!is_null($this->getAgents($agent[0]))) {
+        $infoAgente = $this->getAgents($agent[0]);
+        if (!is_null($infoAgente) && count($infoAgente) > 0) {
             $this->errMsg = 'Agent already exists';
             return FALSE;
         }

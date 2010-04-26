@@ -102,6 +102,8 @@ function listAgent($pDB, $smarty, $module_name, $local_templates_dir)
                 'mb_title'      =>  'DB Error',
                 'mb_message'    =>  $oAgentes->errMsg,
             ));
+        } elseif (count($infoAgente) == 0) {
+            // Agente no existe en DB, no se hace nada
         } elseif (!$oAgentes->addAgentFile(array(
             $infoAgente['number'],
             $infoAgente['password'],

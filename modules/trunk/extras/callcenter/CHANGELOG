@@ -1,3 +1,6 @@
+1.5-3.1
+* Agents: Fix regression that prevented new agents from being created. Fixes
+  Elastix bug #299.
 * Dialer: Join event reports caller-id as CallerID in Asterisk 1.4.x and
   CallerIDNum in Asterisk 1.6.2.x. Account for the difference.
 * Campaigns Out: greatly reduce time spent uploading a CSV phone file for
