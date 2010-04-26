@@ -8,7 +8,7 @@
   max_execution_time to 1 hour for the duration of the operation to prevent
   it from being aborted.
 * Campaigns Out: fix inability to select a form for a new campaign due to
-  mismatch in control name in javascript code.
+  mismatch in control name in javascript code. Fixes Elastix bug #296.
 
 1.5-3
 * Fix behavior of agent reporting to prevent mistaking no-agent case with DB error
