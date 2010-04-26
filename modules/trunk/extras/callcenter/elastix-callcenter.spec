@@ -3,7 +3,7 @@
 Summary: Elastix Call Center 
 Name:    elastix-callcenter
 Version: 2.0.0
-Release: 3
+Release: 4
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
@@ -83,6 +83,22 @@ fi
 /etc/rc.d/init.d/elastixdialer
 
 %changelog
+* Mon Apr 26 2010 Alex Villacis Lasso <a_villacis@palosanto.com> 2.0.0-3
+- Updated version, synchronized with CallCenter 1.5-3.1
+- From CHANGELOG:
+	1.5-3.1
+	- Agents: Fix regression that prevented new agents from being created. Fixes
+  	  Elastix bug #299.
+	- Dialer: Join event reports caller-id as CallerID in Asterisk 1.4.x and
+  	  CallerIDNum in Asterisk 1.6.2.x. Account for the difference.
+	- Campaigns Out: greatly reduce time spent uploading a CSV phone file for
+  	  a new campaign, by fixing an inefficient database operation. Also, set
+      max_execution_time to 1 hour for the duration of the operation to prevent
+      it from being aborted.
+    - Campaigns Out: fix inability to select a form for a new campaign due to
+      mismatch in control name in javascript code. Fixes Elastix bug #296.
+
+
 * Mon Apr 05 2010 Alex Villacis Lasso <a_villacis@palosanto.com> 2.0.0-3
 - Fix issue of /opt/elastix/dialer not being tracked by RPM and having wrong owner.
 
