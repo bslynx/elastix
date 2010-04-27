@@ -1,3 +1,5 @@
+* Dialer: Handle Bridge event fired by Asterisk 1.6.2.x instead of Link
+
 1.5-3.1
 * Agents: Fix regression that prevented new agents from being created. Fixes
   Elastix bug #299.

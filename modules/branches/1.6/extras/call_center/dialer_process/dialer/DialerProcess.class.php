@@ -423,6 +423,7 @@ class DialerProcess extends AbstractProcess
             $astman->add_event_handler('Newchannel', array($this, 'OnNewchannel'));
             $astman->add_event_handler('Join', array($this, 'OnJoin'));
             $astman->add_event_handler('Link', array($this, 'OnLink'));
+            $astman->add_event_handler('Bridge', array($this, 'OnLink')); // Visto en Asterisk 1.6.2.x
             $astman->add_event_handler('Unlink', array($this, 'OnUnlink'));
             $astman->add_event_handler('Hangup', array($this, 'OnHangup'));
             $astman->add_event_handler('OriginateResponse', array($this, 'OnOriginateResponse'));
