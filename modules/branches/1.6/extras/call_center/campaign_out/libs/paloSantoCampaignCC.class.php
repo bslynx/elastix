@@ -757,18 +757,13 @@ class paloSantoCampaignCC
         $sqlLlamadas = <<<SQL_LLAMADAS
 SELECT
     c.id                AS id,
+    c.uniqueid          AS uniqueid,
     c.phone             AS telefono,
-    ca_nombre.value     AS nombre_valor,
-    ca_direccion.value  AS direccion_valor,
     c.status            AS estado,
     a.number            AS number,
     c.start_time        AS fecha_hora,
     c.duration          AS duracion
 FROM calls c
-LEFT JOIN call_attribute ca_nombre 
-    ON c.id = ca_nombre.id_call AND ca_nombre.column_number = 1
-LEFT JOIN call_attribute ca_direccion 
-    ON c.id = ca_direccion.id_call AND ca_direccion.column_number = 3
 LEFT JOIN agent a 
     ON c.id_agent = a.id
 WHERE
@@ -788,9 +783,8 @@ SQL_LLAMADAS;
             'BASE'  =>  array(
                 'LABEL' =>  array(
                     'id_call',
+                    'Uniqueid',
                     $arrLan['Phone Customer'],
-                    $arrLan['Name Customer'],
-                    $arrLan['Address'],
                     $arrLan['Status Call'],
                     "Agente",
                     $arrLan['Date & Time'],
@@ -810,6 +804,32 @@ SQL_LLAMADAS;
             $indexCall[$tuplaTelefono[0]] = $pos;
         }
         $datosCampania['BASE']['ID2POS'] = $indexCall;
+
+        // Leer los datos de los atributos de cada llamada
+        $iOffsetAttr = count($datosCampania['BASE']['LABEL']);
+        $sqlAtributos = <<<SQL_ATRIBUTOS
+SELECT
+    call_attribute.id_call          AS id_call,
+    call_attribute.columna          AS etiqueta,
+    call_attribute.value            AS valor,
+    call_attribute.column_number    AS posicion
+FROM calls, call_attribute
+WHERE calls.id_campaign = ? AND calls.id = call_attribute.id_call AND
+    (calls.status='Success' OR calls.status='Failure' OR calls.status='ShortCall')
+ORDER BY calls.id, call_attribute.column_number
+SQL_ATRIBUTOS;
+        $datosAtributos = $this->_DB->fetchTable($sqlAtributos, TRUE, array($id_campaign));
+        if (!is_array($datosAtributos)) {
+            $this->errMsg = 'Unable to read attribute data - '.$this->_DB->errMsg;
+            $datosCampania = NULL;
+            return $datosCampania;
+        }
+        foreach ($datosAtributos as $tuplaAtributo) {
+            // Se asume que el valor posicion empieza desde 1
+            $iPos = $iOffsetAttr + $tuplaAtributo['posicion'] - 1;
+            $datosCampania['BASE']['LABEL'][$iPos] = $tuplaAtributo['etiqueta'];
+            $datosCampania['BASE']['DATA'][$datosCampania['BASE']['ID2POS'][$tuplaAtributo['id_call']]][$iPos] = $tuplaAtributo['valor'];
+        }
 
         // Leer los datos de los formularios asociados a esta campaña
         $sqlFormularios = <<<SQL_FORMULARIOS
