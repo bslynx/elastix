@@ -757,12 +757,12 @@ class paloSantoCampaignCC
         $sqlLlamadas = <<<SQL_LLAMADAS
 SELECT
     c.id                AS id,
-    c.uniqueid          AS uniqueid,
     c.phone             AS telefono,
     c.status            AS estado,
     a.number            AS number,
     c.start_time        AS fecha_hora,
-    c.duration          AS duracion
+    c.duration          AS duracion,
+    c.uniqueid          AS uniqueid
 FROM calls c
 LEFT JOIN agent a 
     ON c.id_agent = a.id
@@ -783,12 +783,12 @@ SQL_LLAMADAS;
             'BASE'  =>  array(
                 'LABEL' =>  array(
                     'id_call',
-                    'Uniqueid',
                     $arrLan['Phone Customer'],
                     $arrLan['Status Call'],
                     "Agente",
                     $arrLan['Date & Time'],
                     $arrLan['Duration'],
+                    'Uniqueid',
                 ),
                 'DATA'  =>  array(),
             ),
