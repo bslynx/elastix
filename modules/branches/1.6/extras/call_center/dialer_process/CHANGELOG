@@ -1,3 +1,5 @@
+* Campaigns Out: previous fix for new campaign selection broke on old 
+  Elastix versions. Fix it properly for all Elastix versions.
 * Dialer: Handle Bridge event fired by Asterisk 1.6.2.x instead of Link
 
 1.5-3.1

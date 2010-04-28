@@ -167,33 +167,31 @@ function desactivar_campania()
 function delete_campania() {
 }
 
-function leer_select_values(nombre)
-{
-    var select_form = document.getElementsByName(nombre)[0];
-    var values = "";
-    
-    for(var i=0;i<select_form.length;i++){
-//         if(select_form[i].selected)
-            values = values + select_form[i].value + ",";
-    }
-    if(values!="")
-        values = values.substring(0,values.length-1);
-    return values;
-}
-
+/* Función para recoger todas las variables del formulario y procesarlas. Sólo
+   se requiere atención especial para el RTF del script, y para la lista de 
+   formularios elegidos. */
 function enviar_datos()
 {   
-    document.getElementById("values_form").value = leer_select_values('formularios_elegidos[]');
-    //boton.type='submit';
+	var lc = listaControlesFormularios();
+	var select_form = lc[1]; /* Formularios elegidos */
+    var values = "";
+    
+    for(var i=0; i < select_form.length; i++) {
+        values = values + select_form[i].value + ",";
+    }
+    if(values != "")
+        values = values.substring(0,values.length-1);
+    document.getElementById("values_form").value = values;
+
     updateRTEs();
-    //boton.submit();
     return true;
 }
 
 function add_form()
 {
-    var select_formularios = document.getElementsByName('formulario[]')[0];
-    var select_formularios_elegidos = document.getElementsByName('formularios_elegidos[]')[0];
+	var lc = listaControlesFormularios();
+	var select_formularios = lc[0];
+	var select_formularios_elegidos = lc[1];
 
     for(var i=0;i<select_formularios.length;i++){
         if(select_formularios[i].selected){
@@ -214,8 +212,9 @@ function add_form()
 
 function drop_form()
 {
-    var select_formularios = document.getElementsByName('formulario[]')[0];
-    var select_formularios_elegidos = document.getElementsByName('formularios_elegidos[]')[0];
+	var lc = listaControlesFormularios();
+	var select_formularios = lc[0];
+	var select_formularios_elegidos = lc[1];
 
     for(var i=0;i<select_formularios_elegidos.length;i++){
         if(select_formularios_elegidos[i].selected){
@@ -231,6 +230,30 @@ function drop_form()
             select_formularios_elegidos.removeChild(select_formularios_elegidos[i]);
         }
     }
+}
+
+/* Esta función es necesaria para lidiar con el cambio en los nombres de los 
+   controles generados por Elastix entre 1.6-12 y 1.6.2-1 */
+function listaControlesFormularios()
+{
+	var listaControles;
+	var select_formularios;
+	var select_formularios_elegidos;
+	
+	listaControles = document.getElementsByName('formulario');
+	if (listaControles.length == 0)
+		listaControles = document.getElementsByName('formulario[]');
+    select_formularios = listaControles[0];
+    
+	listaControles = document.getElementsByName('formularios_elegidos');
+	if (listaControles.length == 0)
+		listaControles = document.getElementsByName('formularios_elegidos[]');
+    select_formularios_elegidos = listaControles[0];
+
+	var lista = new Array();
+	lista[0] = select_formularios;
+	lista[1] = select_formularios_elegidos;
+	return lista;
 }
 </script>
 {/literal}
