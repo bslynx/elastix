@@ -209,7 +209,7 @@ class Predictivo
         // Leer información inmediata (que no depende de canal)
         $respuestaListaAgentes = $this->_astConn->Command('agent show');
         if (is_array($respuestaListaAgentes))
-            $respuestaCola = $this->_astConn->Command("show queue $sNombreCola");        
+            $respuestaCola = $this->_astConn->Command("queue show $sNombreCola");        
         if (is_array($respuestaListaAgentes) && is_array($respuestaCola)) {
 
         	// Averiguar qué canal (si alguno) usa cada agente

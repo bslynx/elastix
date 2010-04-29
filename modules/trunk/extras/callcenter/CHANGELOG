@@ -1,3 +1,4 @@
+* Dialer: use queue show instead of show queue for free agent report.
 * Campaigns Out: modify CSV report of completed calls to add Uniqueid and all
   attributes defined for each call.
 * Campaigns Out: previous fix for new campaign selection broke on old 
