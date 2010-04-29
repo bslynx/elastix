@@ -1451,9 +1451,7 @@ PETICION_LLAMADAS;
 
 		$infoTrunk = NULL;
 
-        // FreePBX todavía guarda la información sobre troncales DAHDI bajo nombres ZAP.
-        // Para encontrarla, se requiere de transformación antes de la consulta.
-        $sTrunkConsulta = str_replace('DAHDI', 'ZAP', $sTrunk);
+        $sTrunkConsulta = $sTrunk;
 
 		/* Buscar cuál de las opciones describe el trunk indicado. En FreePBX, la información de los
 		 * trunks está guardada en la tabla 'globals', donde globals.value tiene el nombre del
@@ -1465,9 +1463,33 @@ PETICION_LLAMADAS;
 		$sVariable = $dbConn->getOne($sPeticionSQL, array($sTrunkConsulta));
 		if (DB::isError($sVariable)) {
 			$this->oMainLog->output("ERR: al consultar información de trunk '$sTrunkConsulta' en FreePBX (1) - ".($sVariable->getMessage()));
-		} elseif (is_null($sVariable)) {
+            $dbConn->disconnect();
+            return NULL;
+		} elseif (is_null($sVariable) && strpos($sTrunkConsulta, 'DAHDI') !== 0) {
 			$this->oMainLog->output("ERR: al consultar información de trunk '$sTrunkConsulta' en FreePBX (1) - trunk no se encuentra!");
-		} elseif (!ereg('^OUT_([[:digit:]]+)$', $sVariable, $regs)) {
+            $dbConn->disconnect();
+            return NULL;
+		}
+        
+        if (is_null($sVariable) && strpos($sTrunkConsulta, 'DAHDI') === 0) {
+            /* Podría ocurrir que esta versión de FreePBX todavía guarda la 
+             * información sobre troncales DAHDI bajo nombres ZAP. Para 
+             * encontrarla, se requiere de transformación antes de la consulta. 
+             */
+            $sTrunkConsulta = str_replace('DAHDI', 'ZAP', $sTrunk);
+            $sVariable = $dbConn->getOne($sPeticionSQL, array($sTrunkConsulta));
+            if (DB::isError($sVariable)) {
+                $this->oMainLog->output("ERR: al consultar información de trunk '$sTrunkConsulta' en FreePBX (1) - ".($sVariable->getMessage()));
+                $dbConn->disconnect();
+                return NULL;
+            } elseif (is_null($sVariable)) {
+                $this->oMainLog->output("ERR: al consultar información de trunk '$sTrunkConsulta' en FreePBX (1) - trunk no se encuentra!");
+                $dbConn->disconnect();
+                return NULL;
+            }
+        }
+        
+        if (!ereg('^OUT_([[:digit:]]+)$', $sVariable, $regs)) {
 			$this->oMainLog->output("ERR: al consultar información de trunk '$sTrunkConsulta' en FreePBX (1) - se esperaba OUT_NNN pero se encuentra $sVariable - versión incompatible de FreePBX?");
 		} else {
 			$iNumTrunk = $regs[1];

@@ -1,3 +1,6 @@
+* Dialer: seems newer FreePBX versions store DAHDI trunk information as DAHDI
+  not ZAP as previous versions. The dialer now needs to check under both names
+  when supplied a DAHDI trunk.
 * Dialer: use queue show instead of show queue for free agent report.
 * Campaigns Out: modify CSV report of completed calls to add Uniqueid and all
   attributes defined for each call.
