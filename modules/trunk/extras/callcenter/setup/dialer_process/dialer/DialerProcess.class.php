@@ -70,7 +70,11 @@ class DialerProcess extends AbstractProcess
     
     private $_plantillasMarcado;
     
-    private $_tieneCallsAgent = FALSE;  // VERDADERO si tiene campo calls.agent para llamadas agendadas
+    // VERDADERO si tiene campo calls.agent para llamadas agendadas
+    private $_tieneCallsAgent = FALSE;
+    
+    // VERDADERO si existe tabla asterisk.trunks y se deben buscar troncales allí
+    private $_existeTrunksFPBX = FALSE;
     
     private $_fuenteCredAst = ASTCONN_CRED_DESCONOCIDO;
 
@@ -121,7 +125,7 @@ class DialerProcess extends AbstractProcess
                     ' registrar agente para campaña agendada.');
             }
     
-            
+            $this->_detectarTablaTrunksFPBX();
         }
 
         // Iniciar gestor de llamadas entrantes
@@ -133,6 +137,33 @@ class DialerProcess extends AbstractProcess
 
         $this->_iUltimoDebug = time();
         return $bContinuar;
+    }
+
+    /**
+     * Procedimiento que detecta la existencia de la tabla asterisk.trunks. Si
+     * existe, la información de troncales está almacenada allí, y no en la
+     * tabla globals. Esto se cumple en versiones recientes de FreePBX.
+     * 
+     * @return void
+     */
+    private function _detectarTablaTrunksFPBX()
+    {
+        $dbConn = $this->_abrirConexionFreePBX();
+        if (is_null($dbConn)) return;
+
+        $item =& $dbConn->getOne("SHOW TABLES LIKE 'trunks'");
+        if (DB::isError($item)) {
+            $this->oMainLog->output("ERR: al consultar tabla de troncales: ".$item->getMessage());
+        } elseif ($item != 'trunks') {
+        	// Probablemente error de que asterisk.trunks no existe
+            $this->oMainLog->output("INFO: tabla asterisk.trunks no existe, se asume FreePBX viejo.");
+        } else {
+        	// asterisk.trunks existe
+            $this->oMainLog->output("INFO: tabla asterisk.trunks sí existe, se asume FreePBX reciente.");
+            $this->_existeTrunksFPBX = TRUE;
+        }
+        
+        $dbConn->disconnect();
     }
 
     /* Interpretar la configuración cuyo hash se indica en el parámetro. Los 
@@ -1447,74 +1478,125 @@ PETICION_LLAMADAS;
 		}
 		
         $dbConn = $this->_abrirConexionFreePBX();
-        if (is_null($dbConn)) return;
+        if (is_null($dbConn)) return NULL;
 
 		$infoTrunk = NULL;
-
         $sTrunkConsulta = $sTrunk;
-
-		/* Buscar cuál de las opciones describe el trunk indicado. En FreePBX, la información de los
-		 * trunks está guardada en la tabla 'globals', donde globals.value tiene el nombre del
-		 * trunk buscado, y globals.variable es de la forma OUT_NNNNN. El valor de NNN se usa para
-		 * consultar el resto de las variables 
-		 */
-		$regs = NULL;		 
-		$sPeticionSQL = "SELECT variable FROM globals WHERE value = ? AND variable LIKE 'OUT_%'";
-		$sVariable = $dbConn->getOne($sPeticionSQL, array($sTrunkConsulta));
-		if (DB::isError($sVariable)) {
-			$this->oMainLog->output("ERR: al consultar información de trunk '$sTrunkConsulta' en FreePBX (1) - ".($sVariable->getMessage()));
-            $dbConn->disconnect();
-            return NULL;
-		} elseif (is_null($sVariable) && strpos($sTrunkConsulta, 'DAHDI') !== 0) {
-			$this->oMainLog->output("ERR: al consultar información de trunk '$sTrunkConsulta' en FreePBX (1) - trunk no se encuentra!");
-            $dbConn->disconnect();
-            return NULL;
-		}
         
-        if (is_null($sVariable) && strpos($sTrunkConsulta, 'DAHDI') === 0) {
-            /* Podría ocurrir que esta versión de FreePBX todavía guarda la 
-             * información sobre troncales DAHDI bajo nombres ZAP. Para 
-             * encontrarla, se requiere de transformación antes de la consulta. 
-             */
-            $sTrunkConsulta = str_replace('DAHDI', 'ZAP', $sTrunk);
-            $sVariable = $dbConn->getOne($sPeticionSQL, array($sTrunkConsulta));
-            if (DB::isError($sVariable)) {
-                $this->oMainLog->output("ERR: al consultar información de trunk '$sTrunkConsulta' en FreePBX (1) - ".($sVariable->getMessage()));
+        
+        if ($this->_existeTrunksFPBX) {
+        	/* Consulta directa de las opciones del trunk indicado. Se debe 
+             * separar la tecnología del nombre de la troncal, y consultar en
+             * campos separados en la tabla asterisk.trunks */
+            $camposTrunk = explode('/', $sTrunkConsulta, 2);
+            if (count($camposTrunk) < 2) {
+                $this->oMainLog->output("ERR: trunk '$sTrunkConsulta' no se puede interpretar, se espera formato TECH/CHANNELID");
                 $dbConn->disconnect();
-                return NULL;
-            } elseif (is_null($sVariable)) {
-                $this->oMainLog->output("ERR: al consultar información de trunk '$sTrunkConsulta' en FreePBX (1) - trunk no se encuentra!");
-                $dbConn->disconnect();
-                return NULL;
+            	return NULL;
             }
+            
+            // Formas posibles de localizar la información deseada de troncales
+            $listaIntentos = array(
+                array(
+                    'tech'      => strtolower($camposTrunk[0]),
+                    'channelid' => $camposTrunk[1]
+                ),
+            );
+            if ($listaIntentos[0]['tech'] == 'dahdi') {
+            	$listaIntentos[] = array(
+                    'tech'      => 'zap',
+                    'channelid' => $camposTrunk[1]
+                );
+            }
+            $sPeticionSQL = 
+                'SELECT outcid AS CID, dialoutprefix AS PREFIX '.
+                'FROM trunks WHERE tech = ? AND channelid = ?';
+            foreach ($listaIntentos as $tuplaIntento) {
+                $tupla = $dbConn->getRow($sPeticionSQL, 
+                    array($tuplaIntento['tech'], $tuplaIntento['channelid']), 
+                    DB_FETCHMODE_ASSOC);
+                if (DB::isError($tupla)) {
+                    $this->oMainLog->output(
+                        "ERR: al consultar información de trunk '$sTrunkConsulta' en FreePBX (1) - ".
+                        ($tupla->getMessage()));
+                    $dbConn->disconnect();
+                    return NULL;
+                } elseif (is_array($tupla) && count($tupla)) {
+                    $infoTrunk = array();
+                    if ($tupla['CID'] != '') $infoTrunk['CID'] = $tupla['CID'];
+                    if ($tupla['PREFIX'] != '') $infoTrunk['PREFIX'] = $tupla['PREFIX'];
+                    $this->_plantillasMarcado[$sTrunk] = array(
+                        'TIMESTAMP'     =>  time(),
+                        'PROPIEDADES'   =>  $infoTrunk,
+                    );
+                    break;
+                }
+            }
+        } else {
+    		/* Buscar cuál de las opciones describe el trunk indicado. En FreePBX,
+             * la información de los trunks está guardada en la tabla 'globals',
+             * donde globals.value tiene el nombre del trunk buscado, y 
+             * globals.variable es de la forma OUT_NNNNN. El valor de NNN se usa
+             * para consultar el resto de las variables 
+    		 */
+    		$regs = NULL;		 
+    		$sPeticionSQL = "SELECT variable FROM globals WHERE value = ? AND variable LIKE 'OUT_%'";
+    		$sVariable = $dbConn->getOne($sPeticionSQL, array($sTrunkConsulta));
+    		if (DB::isError($sVariable)) {
+    			$this->oMainLog->output("ERR: al consultar información de trunk '$sTrunkConsulta' en FreePBX (1) - ".($sVariable->getMessage()));
+                $dbConn->disconnect();
+                return NULL;
+    		} elseif (is_null($sVariable) && strpos($sTrunkConsulta, 'DAHDI') !== 0) {
+    			$this->oMainLog->output("ERR: al consultar información de trunk '$sTrunkConsulta' en FreePBX (1) - trunk no se encuentra!");
+                $dbConn->disconnect();
+                return NULL;
+    		}
+            
+            if (is_null($sVariable) && strpos($sTrunkConsulta, 'DAHDI') === 0) {
+                /* Podría ocurrir que esta versión de FreePBX todavía guarda la 
+                 * información sobre troncales DAHDI bajo nombres ZAP. Para 
+                 * encontrarla, se requiere de transformación antes de la consulta. 
+                 */
+                $sTrunkConsulta = str_replace('DAHDI', 'ZAP', $sTrunk);
+                $sVariable = $dbConn->getOne($sPeticionSQL, array($sTrunkConsulta));
+                if (DB::isError($sVariable)) {
+                    $this->oMainLog->output("ERR: al consultar información de trunk '$sTrunkConsulta' en FreePBX (1) - ".($sVariable->getMessage()));
+                    $dbConn->disconnect();
+                    return NULL;
+                } elseif (is_null($sVariable)) {
+                    $this->oMainLog->output("ERR: al consultar información de trunk '$sTrunkConsulta' en FreePBX (1) - trunk no se encuentra!");
+                    $dbConn->disconnect();
+                    return NULL;
+                }
+            }
+            
+            if (!ereg('^OUT_([[:digit:]]+)$', $sVariable, $regs)) {
+    			$this->oMainLog->output("ERR: al consultar información de trunk '$sTrunkConsulta' en FreePBX (1) - se esperaba OUT_NNN pero se encuentra $sVariable - versión incompatible de FreePBX?");
+    		} else {
+    			$iNumTrunk = $regs[1];
+    			
+    			// Consultar todas las variables asociadas al trunk
+    			$sPeticionSQL = 'SELECT variable, value FROM globals WHERE variable LIKE ?';
+    			$recordset =& $dbConn->query($sPeticionSQL, array('OUT%_'.$iNumTrunk));
+    			if (DB::isError($recordset)) {
+    				$this->oMainLog->output("ERR: al consultar información de trunk '$sTrunkConsulta' en FreePBX (2) - ".($recordset->getMessage()));
+    			} else {
+    				$infoTrunk = array();
+    				$sRegExp = '^OUT(.+)_'.$iNumTrunk.'$';
+    				while ($tupla = $recordset->fetchRow(DB_FETCHMODE_ASSOC)) {
+    					$regs = NULL;
+    					if (ereg($sRegExp, $tupla['variable'], $regs)) {
+    						$sValor = trim($tupla['value']);
+    						if ($sValor != '') $infoTrunk[$regs[1]] = $sValor;
+    					}
+    				}
+    				$this->_plantillasMarcado[$sTrunk] = array(
+    					'TIMESTAMP'		=>	time(),
+    					'PROPIEDADES'	=>	$infoTrunk,
+    				);
+    			}
+    		}
         }
-        
-        if (!ereg('^OUT_([[:digit:]]+)$', $sVariable, $regs)) {
-			$this->oMainLog->output("ERR: al consultar información de trunk '$sTrunkConsulta' en FreePBX (1) - se esperaba OUT_NNN pero se encuentra $sVariable - versión incompatible de FreePBX?");
-		} else {
-			$iNumTrunk = $regs[1];
-			
-			// Consultar todas las variables asociadas al trunk
-			$sPeticionSQL = 'SELECT variable, value FROM globals WHERE variable LIKE ?';
-			$recordset =& $dbConn->query($sPeticionSQL, array('OUT%_'.$iNumTrunk));
-			if (DB::isError($recordset)) {
-				$this->oMainLog->output("ERR: al consultar información de trunk '$sTrunkConsulta' en FreePBX (2) - ".($recordset->getMessage()));
-			} else {
-				$infoTrunk = array();
-				$sRegExp = '^OUT(.+)_'.$iNumTrunk.'$';
-				while ($tupla = $recordset->fetchRow(DB_FETCHMODE_ASSOC)) {
-					$regs = NULL;
-					if (ereg($sRegExp, $tupla['variable'], $regs)) {
-						$sValor = trim($tupla['value']);
-						if ($sValor != '') $infoTrunk[$regs[1]] = $sValor;
-					}
-				}
-				$this->_plantillasMarcado[$sTrunk] = array(
-					'TIMESTAMP'		=>	time(),
-					'PROPIEDADES'	=>	$infoTrunk,
-				);
-			}
-		}
 
 		$dbConn->disconnect();
 		return $infoTrunk;
