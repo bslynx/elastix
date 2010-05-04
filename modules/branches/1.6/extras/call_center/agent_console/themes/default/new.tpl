@@ -222,7 +222,7 @@ a.normal:link, a.normal:visited {
 <form method="POST" name="frm_agent_console" id="frm_agent_console">
 <table width="99%" border="0" cellspacing="0" cellpadding="0" align="center">
 <tr class="moduleTitle">
-  <td class="moduleTitle" valign="middle">&nbsp;&nbsp;<img src="images/icono_fono.jpg" border="0" align="absmiddle" >&nbsp;&nbsp;{$title}</td>
+  <td class="moduleTitle" valign="middle">&nbsp;&nbsp;<img src="images/call.png" border="0" align="absmiddle" >&nbsp;&nbsp;{$title}</td>
 </tr>
 <tr>
   <td valign="middle" class="mb_message">{$ERROR_DB}<div id="mensajes_informacion"></div></td>
