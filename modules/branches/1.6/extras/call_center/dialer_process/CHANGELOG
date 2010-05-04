@@ -1,3 +1,4 @@
+* Dialer: store Asterisk 1.6.x Bridge event as Link in current_calls.
 * Dialer: newer FreePBX versions store trunk information in table 
   'asterisk.trunks' instead of 'asterisk.globals' as previous versions did.
   The dialer daemon must look now on 'asterisk.trunks' if it exists. 

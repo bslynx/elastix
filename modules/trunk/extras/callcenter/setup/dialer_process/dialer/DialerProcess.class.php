@@ -2143,7 +2143,7 @@ PETICION_LLAMADAS;
                         $this->_infoLlamadas['llamadas'][$sKey]->queue,
                         $sAgentNum,
                         $this->_infoLlamadas['llamadas'][$sKey]->id,
-                        $params['Event'],
+                        'Link',                        
                         $sChannel, 
                         $sRemChannel));
                     if (DB::isError($result)) {
