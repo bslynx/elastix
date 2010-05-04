@@ -121,6 +121,11 @@ function form_Configuration(&$oDB, $smarty, $module_name, $local_templates_dir, 
         }
     }
     if (count($_POST) > 0) {
+        if (!isset($_POST['asterisk_astuser']) || trim($_POST['asterisk_astuser']) == '') {
+            $_POST['asterisk_astuser'] = '';
+            $_POST['asterisk_astpass_1'] = '';
+            $_POST['asterisk_astpass_2'] = '';
+        }
         foreach ($camposConocidos as $dbfield => $formfield) if (isset($_POST[$formfield])) {
             if ($dbfield == 'dialer.debug' || $dbfield == 'dialer.allevents' || $dbfield == 'dialer.overcommit')
             {
@@ -170,6 +175,8 @@ function form_Configuration(&$oDB, $smarty, $module_name, $local_templates_dir, 
                         $config[$dbfield] = $_POST[$formfield];
                     }
                 }
+                if (!isset($config['asterisk.astuser']) || $config['asterisk.astuser'] == '')
+                    $config['asterisk.astpass'] = '';
                 $bContinuar = $objConfig->SaveConfiguration($config);
                 if (!$bContinuar) {
                     $strErrorMsg = $objConfig->errMsg;
@@ -232,7 +239,7 @@ function createFieldForm($arrLang)
         ),
         'asterisk_astuser'  =>      array(
             'LABEL'                     =>  $arrLang['Asterisk Login'],
-            'REQUIRED'                  =>  'yes',
+            'REQUIRED'                  =>  'no',
             'INPUT_TYPE'                =>  'TEXT',
             'VALIDATION_TYPE'           =>  'text',
             'INPUT_EXTRA_PARAM'         =>  '',

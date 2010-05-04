@@ -1,3 +1,5 @@
+* Configuration: allow to save settings that include blank login, and
+  blank out the password in that case, to use settings from manager.conf.
 * Dialer: store Asterisk 1.6.x Bridge event as Link in current_calls.
 * Dialer: newer FreePBX versions store trunk information in table 
   'asterisk.trunks' instead of 'asterisk.globals' as previous versions did.
