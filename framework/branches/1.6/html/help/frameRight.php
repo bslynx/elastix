@@ -41,6 +41,11 @@ $smarty->config_dir =   "../configs/";
 $smarty->cache_dir =    "../var/cache/";
 $smarty->assign("THEMENAME", $arrConf['mainTheme']);
 
+// Nombres válidos de módulos son alfanuméricos y subguión
+if (!preg_match('/^\w+$/', $_GET['id_nodo'])) {
+    unset($_GET['id_nodo']);
+}
+
 if(!empty($_GET['id_nodo'])){
     $idMenuMostrar = $_GET['id_nodo'];
     if(!empty($_GET['name_nodo'])){
