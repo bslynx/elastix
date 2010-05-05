@@ -451,7 +451,7 @@ function html_campos_formulario($arr_campos,$edit=true)
         }
     }
     else{
-         $nodoContenido .= "<tr><td colspan='6'><center>".$arrLang['No Data Found']."</center></td></tr>";
+         $nodoContenido .= "<tr><td colspan='6'><center>".$arrLan['No Data Found']."</center></td></tr>";
     }
     return $nodoTablaInicio.$nodoContenido.$nodoTablaFin;
 }

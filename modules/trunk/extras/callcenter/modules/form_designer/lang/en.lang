@@ -91,5 +91,6 @@ $arrLan=array(
 "Inactive" => "Inactive",
 "View" => "View",
 "All" => "All",
+'No Data Found'=>'No Data Found',
 );
 ?>

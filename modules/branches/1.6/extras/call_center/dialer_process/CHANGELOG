@@ -1,3 +1,4 @@
+* Form Designer: fix missing string translation
 * Agent Console: fix reference for nonexistent icon image. 
 * Configuration: allow to save settings that include blank login, and
   blank out the password in that case, to use settings from manager.conf.
