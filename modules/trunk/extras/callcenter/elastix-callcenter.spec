@@ -3,7 +3,7 @@
 Summary: Elastix Call Center 
 Name:    elastix-callcenter
 Version: 2.0.0
-Release: 4
+Release: 5
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
@@ -83,7 +83,29 @@ fi
 /etc/rc.d/init.d/elastixdialer
 
 %changelog
-* Mon Apr 26 2010 Alex Villacis Lasso <a_villacis@palosanto.com> 2.0.0-3
+* Wed May 05 2010 Alex Villacis Lasso <a_villacis@palosanto.com> 2.0.0-5
+- Updated version, synchronized with CallCenter 1.5-3.2
+- From CHANGELOG:
+	1.5-3.2
+	- Form Designer: fix missing string translation
+	- Agent Console: fix reference for nonexistent icon image. 
+	- Configuration: allow to save settings that include blank login, and
+	  blank out the password in that case, to use settings from manager.conf.
+	- Dialer: store Asterisk 1.6.x Bridge event as Link in current_calls.
+	- Dialer: newer FreePBX versions store trunk information in table 
+	  'asterisk.trunks' instead of 'asterisk.globals' as previous versions did.
+	  The dialer daemon must look now on 'asterisk.trunks' if it exists. 
+	- Dialer: seems newer FreePBX versions store DAHDI trunk information as DAHDI
+	  not ZAP as previous versions. The dialer now needs to check under both names
+	  when supplied a DAHDI trunk.
+	- Dialer: use queue show instead of show queue for free agent report. 
+	- Campaigns Out: modify CSV report of completed calls to add Uniqueid and all
+	  attributes defined for each call.
+	- Campaigns Out: previous fix for new campaign selection broke on old 
+	  Elastix versions. Fix it properly for all Elastix versions.
+	- Dialer: Handle Bridge event fired by Asterisk 1.6.2.x instead of Link
+
+* Mon Apr 26 2010 Alex Villacis Lasso <a_villacis@palosanto.com> 2.0.0-4
 - Updated version, synchronized with CallCenter 1.5-3.1
 - From CHANGELOG:
 	1.5-3.1
