@@ -8,17 +8,15 @@
         <td width="12%" align="left" nowrap>{$date_start.INPUT}</td>
         <td width="12%" align="right">{$date_end.LABEL}: <span  class="required">*</span></td>
         <td width="12%" align="left" nowrap>{$date_end.INPUT}</td>
+        <td width="12%" align="center" colspan="4"><input class="button" type="submit" name="filter" value="{$Filter}" /></td>
      </tr>
      <tr class="letra12">
         <td width="10%" align="right">{$field_pattern.LABEL}: </td>
         <td width="12%" align="left" nowrap>{$field_name.INPUT}&nbsp;{$field_pattern.INPUT}</td>
-        <td width="10%" align="right">{$status.LABEL} </td>
-        <td width="12%" align="left" nowrap>{$status.INPUT}</td>
-        <td width="12%" align="center"><input class="button" type="submit" name="filter" value="{$Filter}" ></td>
+        <td width="10%" align="right">{$field_pattern_1.LABEL}: </td>
+        <td width="12%" align="left" nowrap colspan="2">{$field_name_1.INPUT}&nbsp;{$field_pattern_1.INPUT}</td>
       </tr>
       <tr class="letra12">
-        <td width="10%" align="right">{$field_pattern_1.LABEL}: </td>
-        <td width="12%" align="left" nowrap>{$field_name_1.INPUT}&nbsp;{$field_pattern_1.INPUT}</td>
       </tr>
    </table>
   </td>

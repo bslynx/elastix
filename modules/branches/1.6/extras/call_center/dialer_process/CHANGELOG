@@ -1,3 +1,6 @@
+* Calls Details: remove reference to not-used status variable, including use
+  of undefined $_POST index.
+
 1.5-3.2
 * Form Designer: fix missing string translation
 * Agent Console: fix reference for nonexistent icon image. 

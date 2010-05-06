@@ -91,7 +91,6 @@ function _moduleContent(&$smarty, $module_name)
                                    'field_pattern_1'=> $_GET['field_pattern_1']);
 //         $field_name = $_GET['field_name'];
 //         $field_pattern = $_GET['field_pattern'];
-//         $status = $_GET['status'];
         header("Cache-Control: private");
         header("Pragma: cache");
         header('Content-Type: application/octec-stream');
@@ -146,17 +145,6 @@ function _moduleContent(&$smarty, $module_name)
                                                         "INPUT_EXTRA_PARAM"      => "",
                                                         "VALIDATION_TYPE"        => "ereg",
                                                         "VALIDATION_EXTRA_PARAM" => "^[[:alnum:]@_\.,/\-]+$"),
-                                /* "status"  => array("LABEL"                  => $arrLang["Status"],
-                                                        "REQUIRED"               => "no",
-                                                        "INPUT_TYPE"             => "SELECT",
-                                                        "INPUT_EXTRA_PARAM"      => array(
-                                                                                    "ALL"         => "ALL",
-                                                                                    "ANSWERED"         => "ANSWERED",
-                                                                                    "BUSY"         => "BUSY",
-                                                                                    "FAILED"     => "FAILED",
-                                                                                    "NO ANSWER "  => "NO ANSWER"),
-                                                        "VALIDATION_TYPE"        => "text",
-                                                        "VALIDATION_EXTRA_PARAM" => ""),*/
                                  );
     
         $oFilterForm = new paloForm($smarty, $arrFormElements);
@@ -166,7 +154,6 @@ function _moduleContent(&$smarty, $module_name)
         $date_end   = date("Y-m-d") . " 23:59:59";
         $field_name = "";
         $field_pattern = ""; 
-        $status = "ALL"; 
     
         if(isset($_POST['filter'])) {
             if($oFilterForm->validateForm($_POST)) {
@@ -180,13 +167,11 @@ function _moduleContent(&$smarty, $module_name)
                 $field_pattern = array('field_pattern' => $_POST['field_pattern'],
                                    'field_pattern_1'=> $_POST['field_pattern_1']);
 
-                $status = $_POST['status'];    
                 $arrFilterExtraVars = array("date_start" => $_POST['date_start'], 
                                             "date_end" => $_POST['date_end'], 
                                             "field_name" => $_POST['field_name'], 
                                             "field_pattern" => $_POST['field_pattern'],
-                                            "field_name_1" => $_POST['field_name_1'], "field_pattern_1" => $_POST['field_pattern_1'],
-                                            "status" => $_POST['status']);
+                                            "field_name_1" => $_POST['field_name_1'], "field_pattern_1" => $_POST['field_pattern_1']);
             } else {
                 // Error
                 $smarty->assign("mb_title", $arrLang["Validation Error"]);
@@ -210,24 +195,22 @@ function _moduleContent(&$smarty, $module_name)
             $field_pattern = array('field_pattern' => $_GET['field_pattern'],
                                    'field_pattern_1'=> $_GET['field_pattern_1']);
 
-            $status = $_GET['status'];
             $arrFilterExtraVars = array("date_start" => $_GET['date_start'], "date_end" => $_GET['date_end']);
             $htmlFilter = $contenidoModulo=$oFilterForm->fetchForm("$local_templates_dir/filter.tpl", "", $_GET);
         } else {
             $htmlFilter = $contenidoModulo=$oFilterForm->fetchForm("$local_templates_dir/filter.tpl", "", 
-                          array('date_start' => date("d M Y"), 'date_end' => date("d M Y"),'field_name' => 'agent','field_pattern' => '','field_name_1' => 'agent','field_pattern_1' => '','status' => 'ALL' ));
+                          array('date_start' => date("d M Y"), 'date_end' => date("d M Y"),'field_name' => 'agent','field_pattern' => '','field_name_1' => 'agent','field_pattern_1' => '' ));
         }
     
         // LISTADO
         $offset = 0;
-        $arrCallsDetailTmp  = $oCallsDetail->obtenerCallsDetails(null,$offset, $date_start, $date_end, $field_name, $field_pattern/*,$status*/);
+        $arrCallsDetailTmp  = $oCallsDetail->obtenerCallsDetails(null,$offset, $date_start, $date_end, $field_name, $field_pattern);
     
         $limit = 50;
         $offset = 0;
     
         // Si se quiere avanzar a la sgte. pagina
         if(isset($_GET['nav']) && $_GET['nav']=="end") {
-//             $arrCallsDetailTmp  = $oCallsDetail->obtenerCallsDetails($limit, $offset, $date_start, $date_end, $field_name, $field_pattern,$status);
             $totalCallsDetails  = $arrCallsDetailTmp['NumRecords'];
             // Mejorar el sgte. bloque.
             if(($totalCallsDetails%$limit)==0) {
@@ -259,7 +242,7 @@ function _moduleContent(&$smarty, $module_name)
 
 
     // Bloque comun
-    $arrCallsDetail  = $oCallsDetail->obtenerCallsDetails($limit, $offset, $date_start, $date_end, $field_name, $field_pattern,$status);
+    $arrCallsDetail  = $oCallsDetail->obtenerCallsDetails($limit, $offset, $date_start, $date_end, $field_name, $field_pattern);
 
     $sumTotal = "00:00:00";
 
