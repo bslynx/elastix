@@ -2356,7 +2356,8 @@ PETICION_LLAMADAS;
                         'start_time = NULL, end_time = ?, duration = NULL, '.
                         'status = ?, retries = retries + 1 '.
                     'WHERE id = ?';
-                if (is_null($this->_infoLlamadas['llamadas'][$sKey]->enterqueue_timestamp)) {
+                if (!isset($this->_infoLlamadas['llamadas'][$sKey]->enterqueue_timestamp) || 
+                    is_null($this->_infoLlamadas['llamadas'][$sKey]->enterqueue_timestamp)) {
                     // Escenario en que llamada nunca fue respondida
                     $updateParams = array(
                         NULL, 
