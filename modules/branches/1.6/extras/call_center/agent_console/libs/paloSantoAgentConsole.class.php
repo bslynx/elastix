@@ -54,12 +54,12 @@ function notificaLlamada($pestania, $prefijo_objeto, $nueva_llamada, $id_formula
     // si el agente no esta conectado en el asterisk se llama a la funcion disconnet_agent,
     // se anulan las variables de sesión y
     // se hace submit de la pagina para regresar a la pantalla del login del agente
-    if (!estaAgenteConectado($agentnum,$extn,$mensaje,$no_queue)) {
+    if (!estaAgenteConectado($agentnum,$extn,$msj,$no_queue)) {
         disconnet_agent();
         $_SESSION['elastix_agent_user'] = null;
         $_SESSION['elastix_extension']  = null;
         $_SESSION['channel_active'] = null;
-        $respuesta->addAlert($arrLan["Agent disconnected"]);
+        $respuesta->addAlert($arrLan["Agent disconnected"]." - $msg");
         // se hace submit de la pagina para regresar a la pantalla del login del agente
         $respuesta->addScript("document.getElementById('frm_agent_console').submit();");
 
@@ -200,6 +200,13 @@ function notificaLlamada($pestania, $prefijo_objeto, $nueva_llamada, $id_formula
                     $respuesta->addScript("document.getElementById('tipo_llamada').value= 'SALIENTE';");
 
                     $id_call = $arr_campania["id_calls"];
+
+
+                    //ECUASISTENCIA 2do Punto : Estamos seteando a una variable de sesion el id de la llamada
+                    $_SESSION["id_last_call"] = $id_call; 
+                    //ECUASISTENCIA 2do Punto fin
+
+
                     $texto = $arr_campania["script"];
                     $colgar_disable = "false";
                     $llamada = $arr_campania["phone"];
@@ -209,7 +216,7 @@ function notificaLlamada($pestania, $prefijo_objeto, $nueva_llamada, $id_formula
                     $tiempo_transcurso_llamada = explode(":",$arr_campania["duracion_llamada"]);
 
                     $numero_telefono  = "<span class='celda_callcenter_grande'><b>".$arrLan['Call Number'].":</b> ".$llamada."<br>";
-                    $numero_telefono  .= "<b>".$arrLang['Name'].":</b> ".$cliente."</span>";
+                    $numero_telefono  .= "<b>".$arrLan['Name'].":</b> ".$cliente."</span>";
 
                     $respuesta->addAssign("numero_telefono","innerHTML",$numero_telefono);
                     $respuesta->addScript("document.getElementById('marcar').className = 'boton_marcar_activo';");
@@ -238,7 +245,7 @@ function notificaLlamada($pestania, $prefijo_objeto, $nueva_llamada, $id_formula
                             } // fin del if q controla si hay nueva llamada
                         break;
                         case 'SCRIPT':
-                            if ($nueva_llamada["script"] == "" || $nueva_llamada["nuevo_script"]!=$id_call) {
+                            if ($nueva_llamada["script"] == "" || !(isset($nueva_llamada["nuevo_script"]) && $nueva_llamada["nuevo_script"] == $id_call)) {
                                 $respuesta->addScript("document.getElementById('nuevo_script').value = '$id_call';");
                                 $actualizar_script=true;
                                 $arr_atributos = getAttributesCall($pDB, $id_call);
@@ -345,9 +352,9 @@ function notificaLlamada($pestania, $prefijo_objeto, $nueva_llamada, $id_formula
             $respuesta->addScript("document.getElementById('celda_estatus_actual').className = 'fondo_estatus_llamada'; ");
             //PARA EL CRONOMETRO 
             if($tiempo_transcurso_llamada) {
-                $hora    = $tiempo_transcurso_llamada[0];
-                $minuto  = $tiempo_transcurso_llamada[1];
-                $segundo = $tiempo_transcurso_llamada[2];
+                $hora    = (int)$tiempo_transcurso_llamada[0];
+                $minuto  = (int)$tiempo_transcurso_llamada[1];
+                $segundo = (int)$tiempo_transcurso_llamada[2];
             }
             else{
                 $hora    = 0;
@@ -369,7 +376,11 @@ function notificaLlamada($pestania, $prefijo_objeto, $nueva_llamada, $id_formula
 
             $respuesta->addAssign("numero_telefono","innerHTML","");
             // se activa las banderas que permiten luego actualizar la ventana con el nuevo texto
-            $actualizar_pagina=$actualizar_form=$actualizar_script=true;
+
+            //ECUASISTENCIA 2do Punto : Hemos dejado que el formulario se mantenga activo
+            $actualizar_pagina=$actualizar_script=true;
+            //ECUASISTENCIA 2do Punto fin
+            
             // se limpia la pantalla tanto para la pestaña llamada, script y form
             $respuesta->addScript("document.getElementById('nueva_llamada').value = '';
                                    document.getElementById('nuevo_script').value = '';
@@ -387,7 +398,7 @@ function notificaLlamada($pestania, $prefijo_objeto, $nueva_llamada, $id_formula
                 $respuesta->addScript("estado_cronometro('noLlamada',null);\n");
 
             } else {
-                if(is_null($_SESSION['elastix_agent_audit'])){
+                if(!isset($_SESSION['elastix_agent_audit']) || is_null($_SESSION['elastix_agent_audit'])){
                     $id_audit = auditoria_break_insert($_SESSION['elastix_agent_break'],$agentnum);
                     if($id_audit!=null) {
                         $_SESSION['elastix_agent_audit']=$id_audit;
@@ -407,9 +418,9 @@ function notificaLlamada($pestania, $prefijo_objeto, $nueva_llamada, $id_formula
                     $tiempo_acumulado = obtener_tiempo_acumulado_break(date('Y-m-d'),$agentnum,$_SESSION['elastix_agent_break']);
 
                     if($tiempo_acumulado) {
-                        $hora    = $tiempo_acumulado[0];
-                        $minuto  = $tiempo_acumulado[1];
-                        $segundo = $tiempo_acumulado[2];
+                        $hora    = (int)$tiempo_acumulado[0];
+                        $minuto  = (int)$tiempo_acumulado[1];
+                        $segundo = (int)$tiempo_acumulado[2];
                     }
                     else{
                         $hora    = 0;
@@ -600,7 +611,8 @@ function hold() {
         $tipo_llamada = "ENTRANTE";
     } else {
         // SE CONSULTAN LAS LLAMADAS SALIENTES
-        $arr_campania = getDataCampania($pDB,$agentnum);
+        $msg = NULL;
+        $arr_campania = getDataCampania($pDB, $agentnum, $msg);
         if (is_array($arr_campania) && count($arr_campania)>0) {
             $tipo_llamada = "SALIENTE";
         }
@@ -973,7 +985,7 @@ function wait_login($extn, $num_agent) {
     $respuesta = new xajaxResponse();
 
     $no_queue= false;
-    if (estaAgenteConectado($num_agent,$extn,$mensaje,$no_queue)) {
+    if (estaAgenteConectado($num_agent,$extn,$msj,$no_queue)) {
         $respuesta->addAssign("status_login", "value","1");
         $encolado = entrar_agente_sin_pausa($num_agent);
         if($encolado=='se_quito_pause' || $encolado=='sin_pause'){
@@ -1000,7 +1012,7 @@ function wait_login($extn, $num_agent) {
             $respuesta->addScript("document.getElementById('input_agent_user').value=''");
         }
     } else {
-        if ($mensaje!="" && !$no_queue) {
+        if ($msj!="" && !$no_queue) {
             $respuesta->addAssign("mensaje","innerHTML","$mensaje");
             $respuesta->addAssign("error_igual_numero_agente","value",1);
             $respuesta->addScript("document.getElementById('input_agent_user').value=''");
@@ -1021,12 +1033,22 @@ function guardar_informacion_cliente($data_cliente) {
     $pDB = getDB();
     $agentnum = $_SESSION['elastix_agent_user'];
 
-    $arr_campania = getDataCampania($pDB, $agentnum);
+    $msg = NULL;
+    $arr_campania = getDataCampania($pDB, $agentnum, $msg);
     $valido=false;
-    if (is_array($arr_campania) && count($arr_campania)>0) {
-        if (is_array($data_cliente)) {
-            $id_calls = $arr_campania["id_calls"];
 
+    //ECUASISTENCIA 2do Punto : Hemos hecho varipos cambios a las condiciones para manejar el formulario mientras el agente lo llena cuando cuelga la llamada
+    $id_calls="";
+    if (is_array($arr_campania) && count($arr_campania)>0) {
+            $id_calls = $arr_campania["id_calls"];
+            //$respuesta->addAlert("encontr�data en current_calls");
+    } else {
+        if (isset($_SESSION["id_last_call"]) && $_SESSION["id_last_call"]!="") {
+            //$respuesta->addAlert("obtuvo data de la session");
+            $id_calls = $_SESSION["id_last_call"];
+        }
+    }
+    if (is_array($data_cliente) && $id_calls!="") {
             foreach($data_cliente as $indice=>$objeto) {
                 $id_form_field = $objeto[0];
                 $value = trim($objeto[1]);
@@ -1064,7 +1086,6 @@ function guardar_informacion_cliente($data_cliente) {
                     $valido=true;
                 }
             }
-        }
     }
     if ($valido) {
         $respuesta->addScript("alert('".$arrLan["Information was saved"]."')");

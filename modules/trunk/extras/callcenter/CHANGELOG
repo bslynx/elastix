@@ -1,3 +1,11 @@
+* Agent Console: verify that $_SESSION['elastix_agent_audit'] is set
+* Agent Console: report most causes of "spontaneous" agent disconnection
+* Agent Console: implement ability to save form information after call is
+  disconnected. To use properly, the Wrapuptime parameter in the queue must
+  be set to an appropriate value.
+* Agent Console: fix reference to string without translation
+* Agent Console: fix incorrect javascript in time counter reset
+* Agent Console: fix function call with insufficient parameters
 * Calls Details: remove reference to not-used status variable, including use
   of undefined $_POST index.
 
