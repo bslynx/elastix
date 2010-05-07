@@ -1,3 +1,4 @@
+* Campaigns Out: fix warning on line that start with a comma
 * Agent Console: verify that $_SESSION['elastix_agent_audit'] is set
 * Agent Console: report most causes of "spontaneous" agent disconnection
 * Agent Console: implement ability to save form information after call is

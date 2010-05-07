@@ -402,7 +402,7 @@ class paloSantoCampaignCC
                 $tupla[0] = trim($tupla[0]);
     			if (count($tupla) == 1 && trim($tupla[0]) == '') {
     				// Línea vacía
-    			} elseif ($tupla[0]{0} == '#') {
+    			} elseif (strlen($tupla[0]) > 0 && $tupla[0]{0} == '#') {
     				// Línea que empieza por numeral
     			} elseif (!ereg('^[[:digit:]#*]+$', $tupla[0])) {
                     if ($iNumLinea == 1) {
