@@ -59,7 +59,7 @@ function notificaLlamada($pestania, $prefijo_objeto, $nueva_llamada, $id_formula
         $_SESSION['elastix_agent_user'] = null;
         $_SESSION['elastix_extension']  = null;
         $_SESSION['channel_active'] = null;
-        $respuesta->addAlert($arrLan["Agent disconnected"]." - $msg");
+        $respuesta->addAlert($arrLan["Agent disconnected"]." - $msj");
         // se hace submit de la pagina para regresar a la pantalla del login del agente
         $respuesta->addScript("document.getElementById('frm_agent_console').submit();");
 
