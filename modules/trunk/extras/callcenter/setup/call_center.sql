@@ -121,12 +121,20 @@ CREATE TABLE IF NOT EXISTS `calls` (
    */
   `agent`       varchar(32),
 
+  /* 2010-05-12: Failure cause number and description for a failed call */
+  `failure_cause`		int(10) unsigned default NULL,
+  `failure_cause_txt`	varchar(32) default NULL,
+  
   PRIMARY KEY  (`id`),
   KEY `id_campaign` (`id_campaign`),
   KEY `calls_ibfk_2` (`id_agent`),
   CONSTRAINT `calls_ibfk_1` FOREIGN KEY (`id_campaign`) REFERENCES `campaign` (`id`),
   CONSTRAINT `calls_ibfk_2` FOREIGN KEY (`id_agent`) REFERENCES `agent` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE calls 
+ADD COLUMN failure_cause int(10) unsigned default null, 
+ADD COLUMN failure_cause_txt varchar(32) default null;
 
 --
 -- Table structure for table `campaign`

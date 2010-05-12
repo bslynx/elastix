@@ -1,3 +1,5 @@
+* Dialer: record hangup cause code and description for a failed outgoing call
+  Currently implemented only for calls sent through default dialplan.
 * Dialer: verify that enterqueue_timestamp is set
 * Campaigns Out: fix warning on line that start with a comma
 * Agent Console: verify that $_SESSION['elastix_agent_audit'] is set

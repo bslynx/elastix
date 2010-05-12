@@ -76,6 +76,9 @@ class DialerProcess extends AbstractProcess
     // VERDADERO si existe tabla asterisk.trunks y se deben buscar troncales allí
     private $_existeTrunksFPBX = FALSE;
     
+    // VERDADERO si tiene campo calls.failure_cause_txt para registro de fallo
+    private $_tieneCallsFailureCause = FALSE;
+    
     private $_fuenteCredAst = ASTCONN_CRED_DESCONOCIDO;
 
     var $DEBUG = FALSE;
@@ -119,10 +122,14 @@ class DialerProcess extends AbstractProcess
             } else {
                 while ($tuplaCampo = $recordset->fetchRow(DB_FETCHMODE_OBJECT)) {
                     if ($tuplaCampo->Field == 'agent') $this->_tieneCallsAgent = TRUE;
+                    if ($tuplaCampo->Field == 'failure_cause') $this->_tieneCallsFailureCause = TRUE;
                 }
                 $this->oMainLog->output('INFO: sistema actual '.
                     ($this->_tieneCallsAgent ? 'sí puede' : 'no puede').
                     ' registrar agente para campaña agendada.');
+                $this->oMainLog->output('INFO: sistema actual '.
+                    ($this->_tieneCallsFailureCause ? 'sí puede' : 'no puede').
+                    ' registrar causa extendida de fallo de llamada.');
             }
     
             $this->_detectarTablaTrunksFPBX();
@@ -1778,33 +1785,51 @@ PETICION_LLAMADAS;
                 $infoCampania = $this->_leerCampania($idCampaign);
             }
             
-            $bErrorLocked = FALSE;
-            do {
-                $bErrorLocked = FALSE;
-                $sStatus = $params['Response'];
-                if ($params['Uniqueid'] == '<null>') $params['Uniqueid'] = NULL;
-                if ($sStatus == 'Success') $sStatus = 'Ringing';
-                
-                $sQuery = 
-                    'UPDATE calls ' .
-                    'SET status = ?, Uniqueid = ?, fecha_llamada = ?, start_time = NULL, end_time = NULL, retries = retries + ? '.
-                    'WHERE id_campaign = ? AND id = ?';
-                $queryParams = array($sStatus, $params['Uniqueid'], date('Y-m-d H:i:s'), (($sStatus == 'Failure') ? 1 : 0),
-                        $infoCampania->id, $this->_infoLlamadas['llamadas'][$sKey]->id);
-                
-                $result = $this->_dbConn->query($sQuery, $queryParams);
-                if (DB::isError($result)) {
-                    $bErrorLocked = ereg('database is locked', $result->getMessage());
-                    if ($bErrorLocked) {
-                        usleep(125000);
-                    } else {
-                        $this->oMainLog->output(
-                            "ERR: no se puede actualizar llamada con OriginateResponse ".
-                            "[id_campaign=$infoCampania->id, id=".$this->_infoLlamadas['llamadas'][$sKey]->id."]".
-                            $result->getMessage());
+            $sStatus = $params['Response'];
+            if ($params['Uniqueid'] == '<null>') $params['Uniqueid'] = NULL;
+            if ($sStatus == 'Success') $sStatus = 'Ringing';
+
+            $sQuery = <<<UPDATE_CALLS_ORIGINATE_RESPONSE
+UPDATE calls 
+SET status = ?, Uniqueid = ?, fecha_llamada = ?, start_time = NULL, 
+    end_time = NULL, retries = retries + ? 
+WHERE id_campaign = ? AND id = ?
+UPDATE_CALLS_ORIGINATE_RESPONSE;
+            $queryParams = array($sStatus, $params['Uniqueid'], date('Y-m-d H:i:s'), (($sStatus == 'Failure') ? 1 : 0),
+                    $infoCampania->id, $this->_infoLlamadas['llamadas'][$sKey]->id);
+            
+            $result = $this->_dbConn->query($sQuery, $queryParams);
+            if (DB::isError($result)) {
+                $this->oMainLog->output(
+                    "ERR: no se puede actualizar llamada con OriginateResponse ".
+                    "[id_campaign=$infoCampania->id, id=".$this->_infoLlamadas['llamadas'][$sKey]->id."]".
+                    $result->getMessage());
+            }
+            
+            // En faso de fallo, se almacena el código y descripción de causa
+            if ($this->_tieneCallsFailureCause) {
+            	$iCause = NULL; $sCauseTxt = NULL;
+                if ($sStatus == 'Failure') {
+                	$iCause = 0; $sCauseTxt = 'Unknown';
+                    
+                    // Código y descripción está en el evento Hangup recogido
+                    if (isset($this->_infoLlamadas['llamadas'][$sKey]) && 
+                        is_array($this->_infoLlamadas['llamadas'][$sKey]->PendingEvents) &&
+                        isset($this->_infoLlamadas['llamadas'][$sKey]->PendingEvents['Hangup'])) {
+                        $iCause = $this->_infoLlamadas['llamadas'][$sKey]->PendingEvents['Hangup']['Cause'];
+                        $sCauseTxt = $this->_infoLlamadas['llamadas'][$sKey]->PendingEvents['Hangup']['Cause-txt'];
                     }
-                }                        
-            } while (DB::isError($result) && $bErrorLocked);
+                }
+                $result = $this->_dbConn->query(
+                    'UPDATE calls SET failure_cause = ?, failure_cause_txt = ? WHERE id_campaign = ? AND id = ?',
+                    array($iCause, $sCauseTxt, $infoCampania->id, $this->_infoLlamadas['llamadas'][$sKey]->id));
+                if (DB::isError($result)) {
+                    $this->oMainLog->output(
+                        "ERR: no se puede actualizar llamada con causa de fallo de OriginateResponse ".
+                        "[id_campaign=$infoCampania->id, id=".$this->_infoLlamadas['llamadas'][$sKey]->id."]".
+                        $result->getMessage());
+                }
+            }                        
             
             if ($params['Response'] == 'Success') {
                 if (isset($this->_infoLlamadas['llamadas'][$sKey])) {
