@@ -209,12 +209,18 @@ class paloForm
                     break;
                 case "SELECT":
                     if($this->modo=='input' or ($this->modo=='edit' and $arrVars['EDITABLE']!='no')) {
-                        $multiple = "";
-                        $size = "";
+                        $multiple    = "";
+                        $size        = "";
+                        $onchange    = "";
                         $name_select = $varName;
+
+                        if(isset($arrVars['ONCHANGE'])){
+                            if($arrVars['ONCHANGE']!="")
+                                $onchange = "onchange='$arrVars[ONCHANGE]' ";
+                        }
                         if(isset($arrVars['SIZE'])){
                             if($arrVars['SIZE']!="")
-                                $size=" size='".$arrVars['SIZE']."' ";
+                                $size=" size='$arrVars[SIZE]' ";
                         }
                         if(isset($arrVars['MULTIPLE'])){
                             if($arrVars['MULTIPLE']!="" || $arrVars['MULTIPLE']==true){
@@ -222,7 +228,7 @@ class paloForm
                                 $name_select = $varName."[]";
                             }
                         }
-                        $strInput  = "<select name='$name_select' $multiple $size>";
+                        $strInput  = "<select name='$name_select' id='$name_select' $multiple $size $onchange>";
 
                         if(is_array($arrVars['INPUT_EXTRA_PARAM'])) {
                             foreach($arrVars['INPUT_EXTRA_PARAM'] as $idSeleccion => $nombreSeleccion) {

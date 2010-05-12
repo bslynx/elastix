@@ -55,17 +55,27 @@
           {/section}
         </tr>
         {foreach from=$arrData key=k item=data name=filas}
-        <tr onMouseOver="this.style.backgroundColor='#f2f2f2';" onMouseOut="this.style.backgroundColor='#ffffff';">
-          {if $smarty.foreach.filas.last}
-            {section name=columnNum loop=$numColumns start=0 step=1}
-            <td class="table_data_last_row">{if $data[$smarty.section.columnNum.index] eq ''}&nbsp;{/if}{$data[$smarty.section.columnNum.index]}</td>
-            {/section}
-          {else}
-            {section name=columnNum loop=$numColumns start=0 step=1}
-            <td class="table_data">{if $data[$smarty.section.columnNum.index] eq ''}&nbsp;{/if}{$data[$smarty.section.columnNum.index]}</td>
-            {/section}
-          {/if}
-        </tr>
+            {if $data.ctrl eq 'separator_line'}
+                <tr>
+                    {if $data.start > 0}
+                        <td colspan="{$data.start}"></td>
+                    {/if}
+                    {assign var="data_start" value="`$data.start`"}
+                    <td colspan="{$numColumns-$data.start}" style='background-color:black;height:1px;'></td>
+                </tr>
+            {else}
+                <tr onMouseOver="this.style.backgroundColor='#f2f2f2';" onMouseOut="this.style.backgroundColor='#ffffff';">
+                    {if $smarty.foreach.filas.last}
+                        {section name=columnNum loop=$numColumns start=0 step=1}
+                        <td class="table_data_last_row">{if $data[$smarty.section.columnNum.index] eq ''}&nbsp;{/if}{$data[$smarty.section.columnNum.index]}</td>
+                        {/section}
+                    {else}
+                        {section name=columnNum loop=$numColumns start=0 step=1}
+                        <td class="table_data">{if $data[$smarty.section.columnNum.index] eq ''}&nbsp;{/if}{$data[$smarty.section.columnNum.index]}</td>
+                        {/section}
+                    {/if}
+                </tr>
+            {/if}
         {/foreach}
         <tr class="table_navigation_row">
           <td colspan="{$numColumns}" class="table_navigation_row">
