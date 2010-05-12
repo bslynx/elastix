@@ -2343,6 +2343,23 @@ PETICION_LLAMADAS;
                     return FALSE;
                 }
 
+                /* Si se detecta el Hangup antes del OriginateResponse, se 
+                 * recoge el evento para que el OriginateResponse pueda reportar
+                 * información adicional sobre el fallo de la llamada.
+                 */
+                if (is_null($this->_infoLlamadas['llamadas'][$sKey]->OriginateEnd)) {
+                	if ($this->DEBUG) {
+                		$this->oMainLog->output("DEBUG: Hangup de llamada por fallo de Originate");                        
+                	}
+                    if (!is_array($this->_infoLlamadas['llamadas'][$sKey]->PendingEvents))
+                        $this->_infoLlamadas['llamadas'][$sKey]->PendingEvents = array();
+                    $this->_infoLlamadas['llamadas'][$sKey]->PendingEvents['Hangup'] = $params;
+                    if ($this->DEBUG) {
+                    	$this->oMainLog->output("DEBUG: EXIT OnHangup");
+                    }
+                    return FALSE;
+                }
+
                 $this->oMainLog->output("ERR: $sEvent: Hangup sin Link para llamada $sKey => ".
                     print_r($this->_infoLlamadas['llamadas'][$sKey], TRUE));
                 
