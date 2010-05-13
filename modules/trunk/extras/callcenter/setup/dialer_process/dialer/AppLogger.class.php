@@ -31,6 +31,7 @@ class AppLogger
 {
     private $LOGHANDLE;
     private $PREFIJO;
+    private $sNombreArchivo;
     
     // Crear una nueva instancia de AppLogger
     function AppLogger()
@@ -53,6 +54,18 @@ class AppLogger
             }
             stream_set_write_buffer($hLogHandle, 0);
             $this->LOGHANDLE = $hLogHandle;
+            $this->sNombreArchivo = $sNombreArchivo;
+        }
+    }
+
+    // Cerrar y volver a abrir el archivo de bitácora bajo el mismo nombre.
+    // Pensado para usar en rotación de logs con logrotate.
+    function reopen()
+    {
+        if (!is_null($this->LOGHANDLE)) {
+            $sTempNombre = $this->sNombreArchivo;
+            $this->close();
+            $this->open($sTempNombre);
         }
     }
 

@@ -184,11 +184,12 @@ BANNEREND;
             }
             
             // Revisar si existe señal que indique finalización del programa 
-            if (!is_null($gsNombreSignal) && ($gsNombreSignal == SIGTERM ||
-                $gsNombreSignal == SIGINT || $gsNombreSignal == SIGQUIT)) {
+            if (!is_null($gsNombreSignal) && 
+            	in_array($gsNombreSignal, array(SIGTERM, SIGINT, SIGQUIT, SIGHUP))) {
             
                 // Mandar la señal a todos los procesos controlados
-                $oMainLog->output("PID = ".posix_getpid().", $sNombreDemonio received signal #$gsNombreSignal, terminating...");
+                $oMainLog->output("PID = ".posix_getpid().", $sNombreDemonio received signal #$gsNombreSignal, ".
+                	(($gsNombreSignal == SIGHUP) ? 'switching logs' : 'terminating')."...");
                 foreach (array_keys($tablaProcesos) as $sTarea) {
                     if (!is_null($tablaProcesos[$sTarea])) {
                         $oMainLog->output("Forwarding signal #$gsNombreSignal to $sTarea...");
@@ -198,15 +199,21 @@ BANNEREND;
                     }
                 }
 
-                // Esperar a que todos los procesos controlados terminen
-                foreach (array_keys($tablaProcesos) as $sTarea) {
-                    if (!is_null($tablaProcesos[$sTarea])) {
-                        $iStatus = NULL;
-                        pcntl_waitpid($tablaProcesos[$sTarea], $iStatus, 0);
-                        $tablaProcesos[$sTarea] = NULL;
-                    }
+                if ($gsNombreSignal != SIGHUP) {
+	                // Esperar a que todos los procesos controlados terminen
+	                foreach (array_keys($tablaProcesos) as $sTarea) {
+	                    if (!is_null($tablaProcesos[$sTarea])) {
+	                        $iStatus = NULL;
+	                        pcntl_waitpid($tablaProcesos[$sTarea], $iStatus, 0);
+	                        $tablaProcesos[$sTarea] = NULL;
+	                    }
+	                }
+	                $bContinuar = 0;
+                } else {
+                	$oMainLog->reopen();
+                   	$oMainLog->output("PID = ".posix_getpid().", $sNombreDemonio received signal #$gsNombreSignal, using new log.");
+                   	$gsNombreSignal = NULL;
                 }
-                $bContinuar = 0;
             } else {
                 // Esperar medio segundo entre verificaciones de actividad
                 usleep(500000);
@@ -360,12 +367,16 @@ function iniciarTarea($sNombreDemonio, $sNombreTarea, $infoConfig, &$oMainLog)
                 }
                 
                 // Revisar si existe señal que indique finalización del programa
-                if (!is_null($gsNombreSignal) &&
-                    ($gsNombreSignal == SIGTERM ||
-                    $gsNombreSignal == SIGINT ||
-                    $gsNombreSignal == SIGQUIT)) {
-                    $oMainLog->output("PID = ".posix_getpid().", process received signal $gsNombreSignal, terminating...");
-                    $bContinuar = FALSE;
+                if (!is_null($gsNombreSignal)) {                    
+                    if (in_array($gsNombreSignal, array(SIGTERM, SIGINT, SIGQUIT))) {
+                    	$oMainLog->output("PID = ".posix_getpid().", process received signal $gsNombreSignal, terminating...");
+                    	$bContinuar = FALSE;
+                    } elseif ($gsNombreSignal == SIGHUP) {
+                    	$oMainLog->output("PID = ".posix_getpid().", process received signal $gsNombreSignal, switching logs...");
+                    	$oMainLog->reopen();
+                    	$oMainLog->output("PID = ".posix_getpid().", process received signal $gsNombreSignal, using new log.");
+                    }
+                   	$gsNombreSignal = NULL;
                 }
             }
 

@@ -32,6 +32,8 @@ mkdir -p $RPM_BUILD_ROOT/etc/rc.d/init.d/
 mv setup/dialer_process/elastixdialer $RPM_BUILD_ROOT/etc/rc.d/init.d/
 chmod +x $RPM_BUILD_ROOT/etc/rc.d/init.d/elastixdialer
 rmdir setup/dialer_process
+mkdir -p $RPM_BUILD_ROOT/etc/logrotate.d/
+mv setup/elastixdialer.logrotate $RPM_BUILD_ROOT/etc/logrotate.d/elastixdialer
 
 # The following folder should contain all the data that is required by the installer,
 # that cannot be handled by RPM.
@@ -81,6 +83,7 @@ fi
 /usr/share/elastix/module_installer/*
 /opt/elastix/dialer/*
 /etc/rc.d/init.d/elastixdialer
+/etc/logrotate.d/elastixdialer
 
 %changelog
 * Wed May 05 2010 Alex Villacis Lasso <a_villacis@palosanto.com> 2.0.0-5

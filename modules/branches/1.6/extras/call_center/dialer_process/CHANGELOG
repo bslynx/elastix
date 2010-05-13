@@ -1,3 +1,5 @@
+* Dialer: add support for reopening of logs when receiving SIGHUP, and 
+  implement a corresponding logrotate directive to make use of this.
 * Dialer: record hangup cause code and description for a failed outgoing call.
   Currently implemented only for calls sent through default dialplan.
 * Dialer: verify that enterqueue_timestamp is set
