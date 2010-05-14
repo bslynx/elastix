@@ -176,11 +176,19 @@ function reportAvailables($smarty, $module_name, $local_templates_dir, &$pDB, $a
     $module_name2 = "addons_installed";
 
     ini_set("soap.wsdl_cache_enabled", "0");
-    $client = new SoapClient($arrConf['url_webservice']);
+    try {
+        $client = new SoapClient($arrConf['url_webservice']);
+    } catch (SoapFault $e) {
+        return "<b><span style=\"color: #FF0000;\">".$e->getMessage()."</span></b>";
+    }
 
     //begin grid parameters
     $oGrid  = new paloSantoGrid($smarty);
-    $totalAvailables = $client->getNumAddonsAvailables("2.0.0", "name", $addons_search);
+    try {
+        $totalAvailables = $client->getNumAddonsAvailables("2.0.0", "name", $addons_search);
+    } catch (SoapFault $e) {
+        return "<b><span style=\"color: #FF0000;\">".$e->getMessage()."</span></b>";
+    }
     $limit  = 5;
     $total  = $totalAvailables;
     $oGrid->setLimit($limit);
@@ -194,7 +202,11 @@ function reportAvailables($smarty, $module_name, $local_templates_dir, &$pDB, $a
     $url    = "?menu=$module_name&filter_value=$addons_search";
 
     $arrData = null;
-    $arrResult =$client->getAddonsAvailables("2.0.0", $limit, $offset, "name", $addons_search);
+    try {
+        $arrResult =$client->getAddonsAvailables("2.0.0", $limit, $offset, "name", $addons_search);
+    } catch (SoapFault $e) {
+        return "<b><span style=\"color: #FF0000;\">".$e->getMessage()."</span></b>";
+    }
 
     if(is_array($arrResult) && $total>0){
         $smarty->assign('ETIQUETA_INSTALL', $arrLang['Install']);
