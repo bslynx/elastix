@@ -36,6 +36,7 @@ function _moduleContent(&$smarty, $module_name)
     include_once "modules/$module_name/configs/default.conf.php";
     include_once "modules/addons_installed/libs/paloSantoAddonsModules.class.php";
     include_once "modules/addons_installed/libs/JSON.php";
+    $smarty->assign('MODULE_NAME', $module_name);
 
     //include file language agree to elastix configuration
     //if file language not exists, then include language by default (en)
@@ -196,11 +197,21 @@ function reportAvailables($smarty, $module_name, $local_templates_dir, &$pDB, $a
     $arrResult =$client->getAddonsAvailables("2.0.0", $limit, $offset, "name", $addons_search);
 
     if(is_array($arrResult) && $total>0){
+        $smarty->assign('ETIQUETA_INSTALL', $arrLang['Install']);
         foreach($arrResult as $key => $value){
             if(!$pAvailables->exitAddons($value['name_rpm'])){
-                $arrTmp[0]  = "<img style='visibility:hidden;' class='loading' src='modules/$module_name/images/loading.gif' /><span class='text_alert' style='visibility:hidden;'>".$arrLang['downloading']."</span><img src='$arrConf[url_images]/$value[name_rpm].jpeg' align='absmiddle' border='0' width='126px' height='92px' />";
-                $arrTmp[1]  = $value['description']."<span style='display:none;' class='$value[name_rpm]' >$value[name]|$value[name_rpm]|$value[version]|$value[release]</span>";
-	            $arrTmp[1] .= "&nbsp;&nbsp;<a id='$value[name_rpm]' class='install' href='#'>$arrLang[Install]</a>";
+                $smarty->assign(array(
+                    'ETIQUETA_DOWNLOADING'  =>  $arrLang['downloading'],
+                    'URL_IMAGEN_PAQUETE'    =>  "$arrConf[url_images]/$value[name_rpm].jpeg",
+                    'DESCRIPCION_PAQUETE'   =>  $value['description'],
+                    'PAQUETE_RPM'           =>  $value['name_rpm'],
+                    'PAQUETE_NOMBRE'        =>  $value['name'],
+                    'PAQUETE_VERSION'       =>  $value['version'],
+                    'PAQUETE_RELEASE'       =>  $value['release'],
+                    'PAQUETE_CREADOR'       =>  $value['developed_by'],
+                ));
+                $arrTmp[0] = $smarty->fetch("$local_templates_dir/imagen_paquete.tpl");
+                $arrTmp[1] = $smarty->fetch("$local_templates_dir/info_paquete.tpl");
                 $arrData[] = $arrTmp;
             }
         }
