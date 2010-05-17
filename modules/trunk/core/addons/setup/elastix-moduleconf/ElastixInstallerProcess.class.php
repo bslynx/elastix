@@ -100,7 +100,7 @@ class ElastixInstallerProcess extends AbstractProcess
 	            2	=>	array('pipe', 'w'),
             );
             $this->_procPipes = NULL; $cwd = '/';
-            $this->_procYum = proc_open('/usr/bin/yum shell', $descriptores, $this->_procPipes, $cwd);
+            $this->_procYum = proc_open('/usr/bin/yum -y shell', $descriptores, $this->_procPipes, $cwd);
             if (!is_resource($this->_procYum)) {
                 $this->oMainLog->output("ERR: no se puede iniciar instancia de yum shell");
                 $bContinuar = FALSE;
@@ -252,7 +252,18 @@ class ElastixInstallerProcess extends AbstractProcess
             if (is_resource($this->_procYum) && in_array($this->_procPipes[1], $listoLeer)) {
                 // Se tiene nueva información del yum shell
                 $bActivo = $this->_actualizarEstadoYumShell();
-                if (!$bActivo) return FALSE;
+                if (!$bActivo) {
+                    $this->_finalizarYumShell();
+                    $this->_estadoPaquete = array(
+                        'status'    =>  'idle',
+                        'action'    =>  'none',
+
+                        'progreso'  =>  array(),
+                        'instalado' =>  array(),
+                        'errores'   =>  array(),
+                        'warning'   =>  array(),
+                    );
+                }
             }
             if (is_resource($this->_procYum) && in_array($this->_procPipes[2], $listoLeer)) {
 		        // Mensaje de stderr de yum, mandar a log
@@ -740,7 +751,8 @@ Installing for dependencies:
     {
         if ($this->_estadoPaquete['status'] != 'busy')
             return "ERR Nothing to cancel\n";
-        if ($this->_estadoPaquete['action'] != 'downloading')
+        if (!($this->_estadoPaquete['action'] == 'downloading' || 
+            $this->_estadoPaquete['action'] == 'reporefresh'))
             return "ERR Cannot cancel\n";
 
         // YUM requiere dos SIGINT para cancelar una descarga. El primero se 
@@ -768,7 +780,8 @@ Installing for dependencies:
         $this->_estadoPaquete['warning'] = array();
         $this->_estadoPaquete['instalado'] = array();
 
-        $sComando = "run\ny\n";
+        //$sComando = "run\ny\n";
+        $sComando = "run\n";
         if (!$this->_asegurarYumShellIniciado())
             return "ERR Unable to start Yum Shell\n";
         fwrite($this->_procPipes[0], $sComando);
