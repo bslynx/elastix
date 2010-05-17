@@ -81,8 +81,8 @@ function _moduleContent(&$smarty, $module_name)
                                                     "REQUIRED"               => "yes",
                                                     "INPUT_TYPE"             => "TEXT",
                                                     "INPUT_EXTRA_PARAM"      => "",
-                                                    "VALIDATION_TYPE"        => "ereg",
-                                                    "VALIDATION_EXTRA_PARAM" => "^[-_[:alnum:]]+(\.[-[:alnum:]]+)*(\.[a-z]{2,5})+$"),
+                                                    "VALIDATION_TYPE"        => "domain",
+                                                    "VALIDATION_EXTRA_PARAM" => ""),
 
                          );
 
