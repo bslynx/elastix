@@ -459,6 +459,7 @@ class DialerProcess extends AbstractProcess
             if ($this->DEBUG && $this->REPORTAR_TODO)
                 $astman->add_event_handler('*', array($this, 'OnDefault'));
             $astman->add_event_handler('Newchannel', array($this, 'OnNewchannel'));
+            $astman->add_event_handler('Dial', array($this, 'OnDial'));
             $astman->add_event_handler('Join', array($this, 'OnJoin'));
             $astman->add_event_handler('Link', array($this, 'OnLink'));
             $astman->add_event_handler('Bridge', array($this, 'OnLink')); // Visto en Asterisk 1.6.2.x
@@ -1720,6 +1721,54 @@ PETICION_LLAMADAS;
         return TRUE;
     }
 
+    // Callback invocado al recibir el evento Dial
+    function OnDial($sEvent, $params, $sServer, $iPort)
+    {
+        if ($this->DEBUG) {
+            $this->oMainLog->output("DEBUG: ENTER OnDial");
+            $this->oMainLog->output("DEBUG: $sEvent:\nparams => ".print_r($params, TRUE));
+        }
+
+        /*
+        2010-05-20 16:01:38 : (DialerProcess) DEBUG: dial:
+        params => Array
+        (
+            [Event] => Dial
+            [Privilege] => call,all
+            [Source] => Local/96350440@from-internal-a2b9,2
+            [Destination] => SIP/telmex-0000004c
+            [CallerID] => <unknown>
+            [CallerIDName] => <unknown>
+            [SrcUniqueID] => 1274385698.159
+            [DestUniqueID] => 1274385698.160
+        )
+        */
+
+        // Si el SrcUniqueID es alguno de los Uniqueid monitoreados, se añade
+        // el DestUniqueID correspondiente. Potencialmente esto permite también
+        // trazar la troncal por la cual salió la llamada.
+        foreach (array_keys($this->_infoLlamadas['llamadas']) as $sKey) {
+        	if ($params['SrcUniqueID'] == $this->_infoLlamadas['llamadas'][$sKey]->Uniqueid ||
+                (isset($this->_infoLlamadas['llamadas'][$sKey]->AuxChannels) && 
+                 in_array($params['SrcUniqueID'], array_keys($this->_infoLlamadas['llamadas'][$sKey]->AuxChannels)))) {
+                if (!isset($this->_infoLlamadas['llamadas'][$sKey]->AuxChannels))
+                    $this->_infoLlamadas['llamadas'][$sKey]->AuxChannels = array();
+                $this->_infoLlamadas['llamadas'][$sKey]->AuxChannels[$params['DestUniqueID']] = array(
+                    'Dial'  =>  $params,
+                );
+                if ($this->DEBUG) {
+                    $this->oMainLog->output("DEBUG: encontrado canal auxiliar para llamada: ".print_r($this->_infoLlamadas['llamadas'][$sKey], 1));         
+                }
+                break;
+            }
+        }
+    	
+        if ($this->DEBUG) {
+            $this->oMainLog->output("DEBUG: EXIT OnDial");         
+        }
+        return FALSE;
+    }
+
     // Callback invocado al recibir el evento Newchannel
     function OnNewchannel($sEvent, $params, $sServer, $iPort)
     {
@@ -1731,24 +1780,34 @@ PETICION_LLAMADAS;
         /* Para cada llamada en espera de responder, se verifica si el canal
            esperado corresponde al canal que se acaba de crear. Si es así, se
            registra el UniqueID para poder atrapar el resto de los eventos. 
-           Nótese que sólo se considera la pata 1 de la llamada.
          */
         $regs = NULL;
-        if (isset($params['Channel']) && preg_match('|^(Local/.+@from-internal)-[\dabcdef]+,1$|', $params['Channel'], $regs)) {
+        if (isset($params['Channel']) && 
+            preg_match('&^(Local/.+@from-internal)-[\dabcdef]+,(1|2)$&', $params['Channel'], $regs)) {
             if ($this->DEBUG) {
-                $this->oMainLog->output("DEBUG: se ha creado pata 1 de llamada Local/XXX@from-internal");         
+                $this->oMainLog->output("DEBUG: se ha creado pata {$regs[2]} de llamada {$regs[1]}");         
             }
             foreach (array_keys($this->_infoLlamadas['llamadas']) as $sKey) {
             	if (!is_null($this->_infoLlamadas['llamadas'][$sKey]->DialString) && 
                     $this->_infoLlamadas['llamadas'][$sKey]->DialString == $regs[1]) {
-
-            		$this->_infoLlamadas['llamadas'][$sKey]->Uniqueid = $params['Uniqueid'];
-                    $this->_infoLlamadas['llamadas'][$sKey]->PendingEvents = array();
-                    if ($this->DEBUG) {
-                        $this->oMainLog->output("DEBUG: Llamada localizada, Uniqueid={$params['Uniqueid']}");
-                        $this->oMainLog->output("DEBUG: EXIT OnNewchannel");         
+                    if ($regs[2] == '1') {
+                        // Pata 1, se requiere para los eventos Link/Join
+                		$this->_infoLlamadas['llamadas'][$sKey]->Uniqueid = $params['Uniqueid'];
+                        $this->_infoLlamadas['llamadas'][$sKey]->PendingEvents = array();
+                        if ($this->DEBUG) {
+                            $this->oMainLog->output("DEBUG: Llamada localizada, Uniqueid={$params['Uniqueid']}");
+                        }
+                        break;
+                    } elseif ($regs[2] == '2') {
+                    	// Pata 2, se requiere para recuperar razón de llamada fallida, 
+                        // en caso de que se desconozca vía pata 1.
+                        $this->_infoLlamadas['llamadas'][$sKey]->AuxChannels = array();
+                        $this->_infoLlamadas['llamadas'][$sKey]->AuxChannels[$params['Uniqueid']] = array(); 
+                        if ($this->DEBUG) {
+                            $this->oMainLog->output("DEBUG: Llamada localizada canal auxiliar Uniqueid={$params['Uniqueid']}");
+                        }
+                        break;
                     }
-                    return FALSE;
             	}
             }
         }
@@ -1818,6 +1877,18 @@ UPDATE_CALLS_ORIGINATE_RESPONSE;
                         isset($this->_infoLlamadas['llamadas'][$sKey]->PendingEvents['Hangup'])) {
                         $iCause = $this->_infoLlamadas['llamadas'][$sKey]->PendingEvents['Hangup']['Cause'];
                         $sCauseTxt = $this->_infoLlamadas['llamadas'][$sKey]->PendingEvents['Hangup']['Cause-txt'];
+                    }
+                    
+                    // Si el evento recogido tiene causa 0, se busca evento de
+                    // canal auxiliar que tenga información distinta
+                    // $this->_infoLlamadas['llamadas'][$key]->AuxChannels[$params['Uniqueid']]['Hangup'] = $params;
+                    if ($iCause == 0 && isset($this->_infoLlamadas['llamadas'][$sKey]->AuxChannels)) {
+                    	foreach ($this->_infoLlamadas['llamadas'][$sKey]->AuxChannels as $eventosAuxiliares) {
+                    		if (isset($eventosAuxiliares['Hangup']) && $eventosAuxiliares['Hangup']['Cause'] != 0) {
+                    			$iCause = $eventosAuxiliares['Hangup']['Cause'];
+                                $sCauseTxt = $eventosAuxiliares['Hangup']['Cause-txt'];
+                    		}
+                    	}
                     }
                 }
                 $result = $this->_dbConn->query(
@@ -2557,6 +2628,22 @@ UPDATE_CALLS_ORIGINATE_RESPONSE;
             
             // Al fin, quitar la llamada del arreglo de llamadas
             unset($this->_infoLlamadas['llamadas'][$sKey]);
+        } else {
+        	/* No se encuentra la llamada entre las monitoreadas. Puede ocurrir
+             * que este sea el Hangup de un canal auxiliar que tiene información
+             * de la falla de la llamada */
+            foreach (array_keys($this->_infoLlamadas['llamadas']) as $key) {
+                if (is_null($this->_infoLlamadas['llamadas'][$key]->OriginateEnd) &&
+                    isset($this->_infoLlamadas['llamadas'][$key]->AuxChannels) && 
+                    isset($this->_infoLlamadas['llamadas'][$key]->AuxChannels[$params['Uniqueid']])) {
+                	$this->_infoLlamadas['llamadas'][$key]->AuxChannels[$params['Uniqueid']]['Hangup'] = $params;
+                    if ($this->DEBUG) {
+                        $this->oMainLog->output("DEBUG: Hangup de canal auxiliar de llamada por fallo de Originate para llamada ".
+                            $this->_infoLlamadas['llamadas'][$key]->Uniqueid." canal auxiliar ".$params['Uniqueid']);                        
+                    }
+                    break;
+                }
+            }
         }
         if ($this->DEBUG) {
             $this->oMainLog->output("DEBUG: EXIT OnHangup");
