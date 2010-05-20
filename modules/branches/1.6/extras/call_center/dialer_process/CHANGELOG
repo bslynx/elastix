@@ -1,3 +1,6 @@
+* Reports Break: complete rewrite. Replace inefficient time lookup, and fix
+  no-data issue on CSV export, as well as HTML tags in CSV export. Should fix
+  Elastix bug #324. 
 * Dialer: add support for reopening of logs when receiving SIGHUP, and 
   implement a corresponding logrotate directive to make use of this.
 * Dialer: record hangup cause code and description for a failed outgoing call.
