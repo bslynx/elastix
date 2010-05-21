@@ -1320,8 +1320,8 @@ function obtener_tiempo_acumulado_break($fecha,$agentenum,$id_break)
 function obtener_informacion_agente($pDB,$num_agente)
 {
     global $arrLang;
-    $sql = "select id,number,name,password from agent where number = '$num_agente';";
-    $smarty = getSmarty(); // Load smarty 
+    $sql = "SELECT id, number, name, password FROM agent WHERE number = '$num_agente' AND estatus = 'A'";
+    //$smarty = getSmarty(); // Load smarty 
 
     $result = $pDB->getFirstRowQuery($sql, true); 
     if(is_array($result) && count($result)>0)

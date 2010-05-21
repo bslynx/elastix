@@ -1,3 +1,6 @@
+* Agent Console: fix issue in which a session or break is incorrectly marked as
+  belonging to an inactive agent with the same agent number as the current 
+  active agent. Should fix Elastix bug #329.
 * Dialer: monitor additional instances of Uniqueid that can be associated with
   a given call and might hold additional call failure information in their
   Hangup events.
