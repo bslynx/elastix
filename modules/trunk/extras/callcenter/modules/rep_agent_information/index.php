@@ -212,7 +212,7 @@ function reportrep_tiempoconexiondeagentes($smarty, $module_name, $local_templat
             $ind=13;
             foreach($arrCallsAgent['Data'] as $key=>$datos) {
                 if ($key!=0 && !is_numeric($datos[0])) {
-                    $arr_data[$ind]['label1'] = utf8_decode($datos[0]);
+                    $arr_data[$ind]['label1'] = $datos[0];
                     $arr_data[$ind]['data1'] = $datos[1];
                     $arr_data[$ind]['label2'] = $datos[2];
                     $arr_data[$ind]['data2'] = number_format($datos[3], 2)." %";
@@ -227,7 +227,7 @@ function reportrep_tiempoconexiondeagentes($smarty, $module_name, $local_templat
             $arr_data[12]['data2'] = "<u><b>".$arrLan['Porcent compare whit time not ready']."</b></u>";
 
             //Nombre del agente
-            $arr_data[0]['data1'] = isset($arrCallsAgent['Data'][0]['4'])?utf8_decode($arrCallsAgent['Data'][0]['4']):"";
+            $arr_data[0]['data1'] = isset($arrCallsAgent['Data'][0]['4'])?$arrCallsAgent['Data'][0]['4']:"";
 
             //Conexiones
             $arr_data[2]['data1'] = isset($arrCallsAgent['Data'][0]['0'])?$arrCallsAgent['Data'][0]['0']:"";
