@@ -1,3 +1,11 @@
+* Agent Information: (1/2) Replace questionable UNION statement that tries to
+  fetch everything at once with three distinct SELECTs. The UNION mixed 
+  different datatypes in several columns, resulting in a mangling of UTF-8 
+  encoding for break names. This mangling required a workaround in the view 
+  via utf8_decode(), which did not work at all with characters outside latin-1.
+  The mangling and the utf8_decode() workaround are no longer necessary.
+  (2/2) Rewrite report to use the new data structure returned by (1/2). Remove
+  dead code from (1/2). Fix CSV export to not insert HTML tags in download. 
 * Agent Console: fix issue in which a session or break is incorrectly marked as
   belonging to an inactive agent with the same agent number as the current 
   active agent. Should fix Elastix bug #329.

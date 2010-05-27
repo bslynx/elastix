@@ -27,365 +27,290 @@
   +----------------------------------------------------------------------+
   $Id: index.php,v 1.1.1.1 2009/07/27 09:10:19 dlopez Exp $ */
 
-include_once "libs/paloSantoQueue.class.php";
+include_once "libs/paloSantoGrid.class.php";
+include_once "libs/paloSantoDB.class.php";
+include_once "libs/paloSantoForm.class.php";
+//include_once "libs/paloSantoConfig.class.php";
+require_once "libs/misc.lib.php";
+
+if (!function_exists('_tr')) {
+    function _tr($s)
+    {
+        global $arrLang;
+        return isset($arrLang[$s]) ? $arrLang[$s] : $s;
+    }
+}
 
 function _moduleContent(&$smarty, $module_name)
 {
-     include_once "libs/paloSantoGrid.class.php";
-     include_once "libs/paloSantoDB.class.php";
-     include_once "libs/paloSantoForm.class.php";
-     include_once "libs/paloSantoConfig.class.php";
-     require_once "libs/misc.lib.php";
-
-     //include module files
-    include_once "modules/$module_name/configs/default.conf.php";
-    include_once "modules/$module_name/libs/paloSantoTiempoConexiondeAgentes.class.php";
-
-    //include file language agree to elastix configuration
-    //if file language not exists, then include language by default (en)
-    $lang=get_language();
-    $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
-    $lang_file="modules/$module_name/lang/$lang.lang";
-    if (file_exists("$base_dir/$lang_file")) include_once "$lang_file";
-    else include_once "modules/$module_name/lang/en.lang";
-
-    //global variables
     global $arrConf;
     global $arrConfModule;
     global $arrLang;
     global $arrLan;
+
+     //include module files
+    include_once "modules/$module_name/configs/default.conf.php";
+    include_once "modules/$module_name/libs/paloSantoTiempoConexiondeAgentes.class.php";
     $arrConf = array_merge($arrConf,$arrConfModule);
-    $arrLang = array_merge($arrLang,$arrLan);
 
-    //folder path for custom templates
-    $templates_dir=(isset($arrConf['templates_dir']))?$arrConf['templates_dir']:'themes';
-    $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
+    // Obtengo la ruta del template a utilizar para generar el filtro.
+    $base_dir = dirname($_SERVER['SCRIPT_FILENAME']);
+    $templates_dir = (isset($arrConf['templates_dir']))?$arrConf['templates_dir']:'themes';
+    $local_templates_dir = "$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
 
-    //conexion resource
+    // Obtengo el idioma actual utilizado en la aplicacion.
+    $language = get_language();
+    $script_dir = dirname($_SERVER['SCRIPT_FILENAME']);
+
+    // Include language file for EN, then for local, and merge the two.
+    $lang = NULL;
+    include_once("modules/$module_name/lang/en.lang");
+    $lang_file="modules/$module_name/lang/$language.lang";
+    if (file_exists("$script_dir/$lang_file")) {
+        $arrLanEN = $arrLan;
+        include_once($lang_file);
+        $arrLan = array_merge($arrLanEN, $arrLan);
+    }
+    $arrLang = array_merge($arrLang, $arrLan);
+
     $pDB = new paloDB($arrConf['dsn_conn_database']);
     $pDB_asterisk = new paloDB($arrConf['dsn_conn_database_asterisk']);
-
-
-    $pDB     = new paloDB($cadena_dsn);
-    //actions
-    $accion = getAction();
-    $content = "";
-
-    switch($accion){
-        default:
-            $content = reportrep_tiempoconexiondeagentes($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $arrLan, $pDB_asterisk);
-            break;
-    }
-
-    return $content;
-}
-
-
-function reportrep_tiempoconexiondeagentes($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang, $arrLan, &$pDB_asterisk)
-{
-
-    $arrData = array();
     $oCallsAgent = new paloSantoTiempoConexiondeAgentes($pDB);
-    $smarty->assign("menu","tiempo_conexion_agentes");
-    $smarty->assign("Filter",$arrLang['Show']);
 
+    // Variables estáticas asignadas vía Smarty
+    $smarty->assign(array(
+        "Filter"    =>  _tr('Show'),
+        'module_name'   =>  $module_name,
+    ));
 
-//para la cola
-    // se obtiene el arreglo con las colas para mostrarlas en el filtro
-    $arrQueue = getQueue($pDB, $pDB_asterisk);
+    // Verificar si se requiere generar archivo CSV
+    $bExportarCSV = (isset( $_GET['exportcsv'] ) && $_GET['exportcsv'] == 'yes');
 
-    // valores del filtro
-    $filter_field = getParameter("filter_field");
-    $filter_value = getParameter("filter_value");
-
-    $filter_pattern = getParameter("filter_pattern");
-
-    // para setear la cola la primera vez
-    $filter_value = getParameter("filter_value");
-    if (!isset($filter_value)) {
-        $queue = array_shift(array_keys($arrQueue));
-        $_POST["filter_value"] = $queue;
-        $filter_value = $queue;
-    }
+    // Estas son las colas entrantes disponibles en el sistema
+    $arrQueue = leerColasEntrantes($pDB, $pDB_asterisk);
+    $t = array_keys($arrQueue);
+    $sColaOmision = $t[0];
 
     //Esto es para validar cuando recien se entra al modulo, para q aparezca seteado un numero de agente en el textbox
-    if(!isset($filter_pattern)){
-        $agente = $oCallsAgent->obtener_agente();
-        $_POST['file_pattern'] = $agente;
-        $filter_pattern = $agente;
-    }
+    // TODO: reemplazar con lista desplegable de agentes en cola elegida
+    $sAgenteOmision = $oCallsAgent->obtener_agente();
 
-
-    $arrFormElements = createFieldFilter($arrLang, $arrLan, $arrQueue);
+    $arrFormElements = array(
+        "date_start"  => array(
+            "LABEL"                  => _tr('Start Date'),
+            "REQUIRED"               => "yes",
+            "INPUT_TYPE"             => "DATE",
+            "INPUT_EXTRA_PARAM"      => "",
+            "VALIDATION_TYPE"        => "ereg",
+            "VALIDATION_EXTRA_PARAM" => "^[[:digit:]]{1,2}[[:space:]]+[[:alnum:]]{3}[[:space:]]+[[:digit:]]{4}$"),
+        "date_end"    => array(
+            "LABEL"                  => _tr("End Date"),
+            "REQUIRED"               => "yes",
+            "INPUT_TYPE"             => "DATE",
+            "INPUT_EXTRA_PARAM"      => "",
+            "VALIDATION_TYPE"        => "ereg",
+            "VALIDATION_EXTRA_PARAM" => "^[[:digit:]]{1,2}[[:space:]]+[[:alnum:]]{3}[[:space:]]+[[:digit:]]{4}$"),
+        //COLA
+        "queue" => array(
+            "LABEL"                  => _tr("Queue"),
+            "REQUIRED"               => "no",
+            "INPUT_TYPE"             => "SELECT",
+            "INPUT_EXTRA_PARAM"      => $arrQueue,
+            "VALIDATION_TYPE"        => "ereg",
+            "VALIDATION_EXTRA_PARAM" => "^[[:digit:]]+$"),
+        "agent" => array(
+            "LABEL"                  => _tr("No.Agent"),
+            "REQUIRED"               => "yes",
+            "INPUT_TYPE"             => "TEXT",
+            "INPUT_EXTRA_PARAM"      => "",
+            "VALIDATION_TYPE"        => "ereg",
+            "VALIDATION_EXTRA_PARAM" => "^[[:digit:]]+$"),
+         );
     $oFilterForm = new paloForm($smarty, $arrFormElements);
 
-    // Por omision las fechas toman el sgte. valor (la fecha de hoy)
-    $date_start = date("Y-m-d") . " 00:00:00"; 
-    $date_end   = date("Y-m-d") . " 23:59:59";
-    $status = "ALL"; 
-
-    if(isset($_POST['submit'])) {
-            if($oFilterForm->validateForm($_POST)) {
-                // Exito, puedo procesar los datos ahora.
-                $date_start = translateDate($_POST['date_start']) . " 00:00:00"; 
-                $date_end   = translateDate($_POST['date_end']) . " 23:59:59";
-
-                $arrFilterExtraVars = array("date_start" => $_POST['date_start'], 
-                                            "date_end" => $_POST['date_end'], 
-                                            "filter_pattern" => $_POST['filter_pattern'],
-                                            "filter_value" => $_POST['filter_value'],);
-            } else {
-                // Error
-                $smarty->assign("mb_title", $arrLang["Validation Error"]);
-                $arrErrores=$oFilterForm->arrErroresValidacion;
-                $strErrorMsg = "<b>{$arrLang['Required field']}:</b><br>";
-                foreach($arrErrores as $k=>$v) {
-                    $strErrorMsg .= "$k, ";
-                }
-                $strErrorMsg .= "";
-                $smarty->assign("mb_message", $strErrorMsg);
-            }
-            $htmlFilter = $contenidoModulo=$oFilterForm->fetchForm("$local_templates_dir/filter.tpl", "", $_POST);
-    
-    } else if(isset($_GET['date_start']) AND isset($_GET['date_end'])) {
-            $date_start = translateDate($_GET['date_start']) . " 00:00:00";
-            $date_end   = translateDate($_GET['date_end']) . " 23:59:59";
-            $arrFilterExtraVars = array("date_start" => $_GET['date_start'], "date_end" => $_GET['date_end']);
-            $htmlFilter = $contenidoModulo=$oFilterForm->fetchForm("$local_templates_dir/filter.tpl", "", $_GET);
+    // Valores iniciales de las variables
+    $paramConsulta = array(
+        'date_start'    =>  date('d M Y'),
+        'date_end'      =>  date('d M Y'),
+        'queue'         =>  $sColaOmision,
+        'agent'         =>  $sAgenteOmision,
+    );
+    foreach (array_keys($paramConsulta) as $k) {
+        if (isset($_GET[$k])) $paramConsulta[$k] = $_GET[$k];
+        if (isset($_POST[$k])) $paramConsulta[$k] = $_POST[$k];
+    }
+    if($oFilterForm->validateForm($paramConsulta)) {
+        // Exito, puedo procesar los datos ahora.
     } else {
-            $htmlFilter = $contenidoModulo=$oFilterForm->fetchForm("$local_templates_dir/filter.tpl", "", 
-                          array('date_start' => date("d M Y"), 'date_end' => date("d M Y"),'filter_pattern' => $agente,'filter_field'=>'', 'filter_value'=>'','status' => 'ALL' ));
-    }
-
-
-    $action = getParameter("nav");
-    $start  = getParameter("start");
-    $iscsv  = getParameter("exportcsv");
-
-    //begin grid parameters
-    $oGrid  = new paloSantoGrid($smarty);
-    $oGrid->enableExport();
-    $limit  = 20;
-
-    $oGrid->setLimit($limit);    
-    $offset = $oGrid->getOffsetValue();
-    $arrCallsAgent  = $oCallsAgent->Obtainrep_tiempoConexionAgentes($limit, $offset, $arrLan, $filter_field, $filter_value, $filter_pattern, $date_start, $date_end);
-    $total = count($arrCallsAgent['Data']);
-
-    $oGrid->setTotal($total);
-    $oGrid->calculatePagination($action,$start);
-    $end    = $oGrid->getEnd();
-
-    //esto es solo para el caso csv
-    if(isset($_POST['date_start']) && isset($_POST['date_end'])){
-        $date_inicio = $_POST['date_start'];
-        $date_fin = $_POST['date_end'];
-    }else{
-        $date_inicio = date('d M Y',strtotime($date_start));
-        $date_fin = date('d M Y',strtotime($date_end));
-    }
-
-    $url    = "?menu=$module_name&filter_field=$filter_field&filter_value=$filter_value&filter_pattern=$filter_pattern&date_start=".$date_inicio."&date_end=".$date_fin;
-
-    $arrTmp = array();
-
-//Armamos el arreglo para la vista
-    $arr_data = array();
-    if(is_array($arrCallsAgent['Data']) && count($arrCallsAgent['Data'])>0)
-    { 
-            //idiomas para los lables de la primera columna
-            $arr_data[0]['label1'] = "<b>".strtoupper($arrLan['Agent name'])."</b>";
-            $arr_data[1]['label1'] = "<b>".strtoupper($arrLan['Conecction Data'])."</b>";
-            $arr_data[2]['label1'] = $arrLan['First Conecction'];
-            $arr_data[3]['label1'] = $arrLan['Last Conecction'];
-            $arr_data[4]['label1'] = $arrLan['Time Conecction'];
-            $arr_data[5]['label1'] = $arrLan['Count Conecction'];
-            $arr_data[6]['label1'] = "<b>".strtoupper($arrLan['Calls Entry'])."</b>";
-            $arr_data[7]['label1'] = $arrLan['Count Calls Entry'];
-            $arr_data[8]['label1'] = $arrLan['Calls/h'];
-            $arr_data[9]['label1'] = $arrLan['Time Call Entry'];
-            $arr_data[10]['label1'] = $arrLan['Average Calls Entry'];
-            $arr_data[11]['label1'] = "<b>".strtoupper($arrLan['Reason No Ready'])."</b>";
-            $arr_data[12]['label1'] = "<u><b>".$arrLan['Break']."</b></u>";
-
-            // para mostrar todos los breaks del agente
-            $ind=13;
-            foreach($arrCallsAgent['Data'] as $key=>$datos) {
-                if ($key!=0 && !is_numeric($datos[0])) {
-                    $arr_data[$ind]['label1'] = $datos[0];
-                    $arr_data[$ind]['data1'] = $datos[1];
-                    $arr_data[$ind]['label2'] = $datos[2];
-                    $arr_data[$ind]['data2'] = number_format($datos[3], 2)." %";
-                    $ind++; 
-                }
-            }
-
-            //Cabeceras Breaks
-            $arr_data[12]['label1'] = "<u><b>".$arrLan['Break']."</b></u>";
-            $arr_data[12]['data1'] = "<u><b>".$arrLan['Count']."</b></u>";
-            $arr_data[12]['label2'] = "<u><b>".$arrLan['Hour']."</b></u>";
-            $arr_data[12]['data2'] = "<u><b>".$arrLan['Porcent compare whit time not ready']."</b></u>";
-
-            //Nombre del agente
-            $arr_data[0]['data1'] = isset($arrCallsAgent['Data'][0]['4'])?$arrCallsAgent['Data'][0]['4']:"";
-
-            //Conexiones
-            $arr_data[2]['data1'] = isset($arrCallsAgent['Data'][0]['0'])?$arrCallsAgent['Data'][0]['0']:"";
-            $arr_data[3]['data1'] = isset($arrCallsAgent['Data'][0]['1'])?$arrCallsAgent['Data'][0]['1']:"";
-            $arr_data[4]['data1'] = isset($arrCallsAgent['Data'][0]['2'])?$arrCallsAgent['Data'][0]['2']:"";
-            $arr_data[5]['data1'] = isset($arrCallsAgent['Data'][0]['3'])?$arrCallsAgent['Data'][0]['3']:"";
-
-            //Llamadas entrantes
-            //validamos que no sean breaks
-            if(isset($arrCallsAgent['Data'][1]['0']) && !is_numeric($arrCallsAgent['Data'][1]['0'])){
-                $arr_data[7]['data1'] = "";
-                $arr_data[8]['data1'] = "";
-                $arr_data[9]['data1'] = "";
-                $arr_data[10]['data1'] = "";
-            }else{
-                //validamos para poner llamadas monitoreadas y no monitoreadas
-                $arr_data[7]['data1'] = isset($arrCallsAgent['Data'][1]['0'])?$arrCallsAgent['Data'][1]['4']."  ".$arrLan['Call']."s   (".$arrCallsAgent['Data'][1]['0']." ".$arrLan['Monitored'].",  ".($arrCallsAgent['Data'][1]['4']-$arrCallsAgent['Data'][1]['0'])." ".$arrLan['Unmonitored'].")":"";
-
-                $arr_data[8]['data1'] = isset($arrCallsAgent['Data'][1]['1'])?number_format($arrCallsAgent['Data'][1]['1'], 2):"";
-                $arr_data[9]['data1'] = isset($arrCallsAgent['Data'][1]['2'])?$arrCallsAgent['Data'][1]['2']:"";
-                $arr_data[10]['data1'] = isset($arrCallsAgent['Data'][1]['3'])?$arrCallsAgent['Data'][1]['3']."    (".$arrLan['Monitored only'].")":"";
-            }
-
-    } else {
-        $arr_data[]["label1"]="<b>".$arrLang["There aren't records to show"]."</b>";
-    }
-//fin de armar arreglo
-
-    $total = $arrCallsAgent['NumRecords'];
-
-    if(is_array($arr_data))
-    {
-        foreach($arr_data as $ind=>$dato) {
-            $arrTmp[0] = $dato["label1"];
-            $arrTmp[1] = isset($dato["data1"])?$dato["data1"]:"";
-            $arrTmp[2] = isset($dato["label2"])?$dato["label2"]:"";
-            $arrTmp[3] = isset($dato["data2"])?$dato["data2"]:"";
-            $arrData[] = $arrTmp;
+        // Error
+        $smarty->assign("mb_title", _tr("Validation Error"));
+        $arrErrores = $oFilterForm->arrErroresValidacion;
+        $strErrorMsg = "<b>"._tr('Required field').":</b><br/>";
+        foreach($arrErrores as $k=>$v) {
+            $strErrorMsg .= "$k, ";
         }
+        $strErrorMsg .= "";
+        $smarty->assign("mb_message", $strErrorMsg);
+        $paramConsulta = array(
+            'date_start'    =>  date('d M Y'),
+            'date_end'      =>  date('d M Y'),
+            'queue'         =>  $sColaOmision,
+            'agent'         =>  $sAgenteOmision,
+        );
     }
 
-    // se crea el grid
-    $arrGrid = array("title"    => $arrLang["Time conecction of agents"],
-                        "icon"     => "images/list.png",
-                        "width"    => "99%",
-                        "start"    => ($total==0) ? 0 : $offset + 1,
-                        "end"      => $end,
-                        "total"    => $total,
-                        "url"      => $url,
-                        "columns"  => array(
-                                         0 => array("name"      => "",
-                                                    "property" => ""),
-                                         1 => array("name"      => "",
-                                                    "property" => ""),
-                                         2 => array("name"      => "",
-                                                    "property" => ""),
-                                         3 => array("name"      => "",
-                                                    "property" => ""),
-                                        )
-                    );
+    // Se genera el filtro con las variables ya validadas
+    $htmlFilter = $oFilterForm->fetchForm(
+        "$local_templates_dir/filter.tpl", 
+        "", 
+        $paramConsulta);
+
+    // Consultar los datos y generar la matriz del reporte
+    $sFechaInicial = translateDate($paramConsulta['date_start']);
+    $sFechaFinal = translateDate($paramConsulta['date_end']);
+    $r = $oCallsAgent->reportarBreaksAgente($paramConsulta['agent'], $paramConsulta['queue'], $sFechaInicial, $sFechaFinal);
+    $b = $bExportarCSV ? array('','') : array('<b>','</b>');
+    $ub = $bExportarCSV ? array('','') : array('<u><b>','</b></u>');
+
+    $arrData = array();
+    if (is_array($r) && count($r) > 0) {
+        $tempTiempos = array(
+            'monitoreadas'      =>  0,  // número de llamadas monitoreadas (estatus 'terminada')
+            'llamadas_por_hora' =>  0,  // número de llamadas por hora (de todos los estados)
+            'duracion_llamadas' =>  0,  // duración de todas las llamadas entrantes (cualquier estado)
+            'promedio_duracion' =>  0,  // promedio de duración (estatus 'terminada')
+            'total_llamadas'    =>  0,  // número de llamadas (todos los estados)
+        );
+        foreach ($r['tiempos_llamadas'] as $tupla) {
+            $tempTiempos['llamadas_por_hora'] = $tempTiempos['total_llamadas'] += $tupla['N'];
+            $tempTiempos['duracion_llamadas'] += $tupla['tiempo_llamadas_entrantes'];
+            if ($tupla['status'] == 'terminada') {
+                $tempTiempos['monitoreadas'] = $tupla['N'];
+                $tempTiempos['promedio_duracion'] = $tupla['promedio_sobre_monitoreadas'];
+            }
+        }
+        $tempTiempos['llamadas_por_hora'] /= $r['tiempo_conexion'] / 3600;
+
+        $sFormatoMonitoreadas = sprintf(
+            '%d %s(s) (%d %s, %d %s)',
+            $tempTiempos['total_llamadas'],
+            _tr('Call'),
+            $tempTiempos['monitoreadas'],
+            _tr('Monitored'),
+            $tempTiempos['total_llamadas'] - $tempTiempos['monitoreadas'],
+            _tr('Unmonitored'));
+        $arrData = array(
+            array($b[0].strtoupper(_tr('Agent name')).$b[1], $r['name']),
+            array($b[0].strtoupper(_tr('Conecction Data')).$b[1],),
+            array(_tr('First Conecction'), $r['primera_conexion']),
+            array(_tr('Last Conecction'), $r['ultima_conexion']),
+            array(_tr('Time Conecction'), formatoSegundos($r['tiempo_conexion'])),
+            array(_tr('Count Conecction'), $r['conteo_conexion']),
+            array($b[0].strtoupper(_tr('Calls Entry')).$b[1],),
+            array(_tr('Count Calls Entry'), $sFormatoMonitoreadas),
+            array(_tr('Calls/h'), number_format($tempTiempos['llamadas_por_hora'], 2)),
+            array(_tr('Time Call Entry'), formatoSegundos($tempTiempos['duracion_llamadas'])),
+            array(_tr('Average Calls Entry'), $tempTiempos['promedio_duracion']."    ("._tr('Monitored only').')'),
+            array($b[0].strtoupper(_tr('Reason No Ready')).$b[1],),
+            array($ub[0].(_tr('Break')).$ub[1], $ub[0].(_tr('Count')).$ub[1], $ub[0].(_tr('Hour')).$ub[1], $ub[0].(_tr('Porcent compare whit time not ready')).$ub[1],),
+        );
+
+        $tempBreaks = array();
+        $iTotalSeg = 0;
+        foreach ($r['tiempos_breaks'] as $tupla) {
+            $tempBreaks[] = array(
+                $tupla['name'],
+                $tupla['N'],
+                formatoSegundos($tupla['total_break']),
+                $tupla['total_break'],
+            );
+            $iTotalSeg += $tupla['total_break'];
+        }
+        for ($i = 0; $i < count($tempBreaks); $i++) {
+            $tempBreaks[$i][3] = number_format(100.0 * ($tempBreaks[$i][3] / $iTotalSeg), 2).' %';
+            $arrData[] = $tempBreaks[$i];
+        }
+
+    } else {
+        if (!is_array($r)) {
+            $smarty->assign("mb_title", _tr("Database Error"));
+            $smarty->assign("mb_message", $oCallsAgent->errMsg);
+        }
+        $arrData[] = array(
+            $b[0]._tr("There aren't records to show").$b[1],
+            '',
+            '',
+            '',
+        );
+    }
 
     // Creo objeto de grid
     $oGrid = new paloSantoGrid($smarty);
     $oGrid->enableExport();
-
     $oGrid->showFilter($htmlFilter);
 
-    // se pregunta si la acci� es crear un csv con los datos del reporte 
-    if($iscsv != 'yes'){
-        $oGrid->showFilter(trim($htmlFilter));
-        return $content = "<form  method='POST' style='margin-bottom:0;' action=$url>".$oGrid->fetchGrid($arrGrid, $arrData,$arrLang)."</form>";
+    // La definición del grid
+    $total = $end = count($arrData);
+    $offset = 0;
+    $url = construirUrl($paramConsulta);
+    $arrGrid = array(
+        "title"    => _tr("Time conecction of agents"),
+        "icon"     => "images/list.png",
+        "width"    => "99%",
+        "start"    => ($total==0) ? 0 : $offset + 1,
+        "end"      => $end,
+        "total"    => $total,
+        "url"      => $url,
+        "columns"  => array(
+                         0 => array("name"      => "",
+                                    "property" => ""),
+                         1 => array("name"      => "",
+                                    "property" => ""),
+                         2 => array("name"      => "",
+                                    "property" => ""),
+                         3 => array("name"      => "",
+                                    "property" => ""),
+                        )
+    );
 
-    }
-    else{
+    // se pregunta si la acción es crear un csv con los datos del reporte 
+    if(!$bExportarCSV) {
+        return $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
+    } else {
         $fechaActual = date("d M Y");
         header("Cache-Control: private");
         header("Pragma: cache");
-        header('Content-Type: application/octec-stream');
-        $title = "\"".$fechaActual.".csv\"";
-        header("Content-disposition: inline; filename={$title}");
-        header('Content-Type: application/force-download');
-	return $content = $oGrid->fetchGridCSV($arrGrid, $arrData);
+        $title = $fechaActual;
+        header('Content-Type: text/csv; charset=utf-8; header=present');
+        header("Content-disposition: attachment; filename=\"".$title.".csv\"");
+    	return $content = $oGrid->fetchGridCSV($arrGrid, $arrData);
     }
-    //end grid parameters
-
 }
 
-function createFieldFilter($arrLang, $arrLan, $arrQueue){
+function leerColasEntrantes($pDB, $pDB_asterisk)
+{
+    include_once "libs/paloSantoQueue.class.php";
 
-    
-
-    $arrFormElements = array("date_start"  => array("LABEL"                  => $arrLan['Start Date'],
-                                        "REQUIRED"               => "yes",
-                                        "INPUT_TYPE"             => "DATE",
-                                        "INPUT_EXTRA_PARAM"      => "",
-                                        "VALIDATION_TYPE"        => "ereg",
-                                        "VALIDATION_EXTRA_PARAM" => "^[[:digit:]]{1,2}[[:space:]]+[[:alnum:]]{3}[[:space:]]+[[:digit:]]{4}$"),
-                                 "date_end"    => array("LABEL"                  => $arrLan["End Date"],
-                                        "REQUIRED"               => "yes",
-                                        "INPUT_TYPE"             => "DATE",
-                                        "INPUT_EXTRA_PARAM"      => "",
-                                        "VALIDATION_TYPE"        => "ereg",
-                                        "VALIDATION_EXTRA_PARAM" => "^[[:digit:]]{1,2}[[:space:]]+[[:alnum:]]{3}[[:space:]]+[[:digit:]]{4}$"),
-
-                                 "filter_pattern" => array("LABEL"                  => $arrLan["No.Agent"],
-                                        "REQUIRED"               => "yes",
-                                        "INPUT_TYPE"             => "TEXT",
-                                        "INPUT_EXTRA_PARAM"      => "",
-                                        "VALIDATION_TYPE"        => "ereg",
-                                        "VALIDATION_EXTRA_PARAM" => "^[[:alnum:]@_\.,/\-]+$"),
-
-
-                                //COLA
-                                "filter_field" => array("LABEL"                  => $arrLan["Queue"],
-                                        "REQUIRED"               => "no",
-                                        "INPUT_TYPE"             => "text",
-                                        "INPUT_EXTRA_PARAM"      => "no",
-                                        "VALIDATION_TYPE"        => "text",
-                                        "VALIDATION_EXTRA_PARAM" => ""),
-
-                                "filter_value" => array("LABEL"                  => "",
-                                        "REQUIRED"               => "no",
-                                        "INPUT_TYPE"             => "SELECT",
-                                        "INPUT_EXTRA_PARAM"      => $arrQueue,
-                                        "VALIDATION_TYPE"        => "",
-                                        "VALIDATION_EXTRA_PARAM" => ""),
-
-                                 );
-    return $arrFormElements;
-}
-
-
-function getQueue($pDB, $pDB_asterisk){
-    $arrQueue=array();
-    $oQueue  = new paloQueue($pDB_asterisk);
+    $arrQueue = array();
+    $oQueue = new paloQueue($pDB_asterisk);
     $PBXQueues = $oQueue->getQueue();
     if (is_array($PBXQueues)) {
         foreach($PBXQueues as $key => $value) {
-            $query = "SELECT id, queue from queue_call_entry where queue='".$value[0]."'";
-            $result=$pDB->getFirstRowQuery($query, true);
+            $query = "SELECT id, queue from queue_call_entry WHERE queue = ?";
+            $result = $pDB->getFirstRowQuery($query, true, array($value[0]));
             if (is_array($result) && count($result)>0) {
-                $arrQueue[$result['id']] =  $result['queue'];
+                $arrQueue[$result['queue']] =  $result['queue'];
             }
         }
     }
     return $arrQueue;
 }
 
-
-function getAction()
+function formatoSegundos($s)
 {
-    if(getParameter("submit")) //Get parameter by POST (submit)
-        return "submit";
-    else if(getParameter("new"))
-        return "new";
-    else if(getParameter("action")=="submit") //Get parameter by GET (command pattern, links)
-        return "submit";
-    else
-        return "report";
+    $sec = $s % 60; $s = ($s - $sec) / 60;
+    $min = $s % 60; $hora = ($s - $min) / 60;
+    return sprintf('%02d:%02d:%02d', $hora, $min, $sec);
 }
+
 ?>

@@ -103,6 +103,7 @@ SQL_REPORTE_CONEXIONES;
             return NULL;
         }
         $infoAgente = $tupla;
+        if (count($infoAgente) <= 0) return $infoAgente;
 
         // Reporte de tiempos en cada estado
         $sPeticionSQL = <<<SQL_REPORTE_TIEMPOS
@@ -141,88 +142,6 @@ SQL_REPORTE_BREAKS;
         $infoAgente['tiempos_breaks'] = $recordset;
 
         return $infoAgente;
-    }
-
-    function Obtainrep_tiempoConexionAgentes($dummy1, $dummy2, $dummy3, $dummy4, $idCola, $sNumAgente, $sFechaInicio, $sFechaFin, $dummy5 = NULL, $dummy6 = NULL)
-    {
-        // Obtener la cola dado el ID (temporal)
-        $sql = 'SELECT queue FROM queue_call_entry WHERE id = ?';
-        $tupla = $this->_DB->getFirstRowQuery($sql, TRUE, array($idCola));
-        $sNumCola = $tupla['queue'];
-        // Fechas sin hora (temporal)
-        $sFechaInicio = substr($sFechaInicio, 0, 10);
-        $sFechaFin = substr($sFechaFin, 0, 10);
-
-        $r = $this->reportarBreaksAgente($sNumAgente, $sNumCola, $sFechaInicio, $sFechaFin);
-        $reporte = array();
-
-        $reporte['Data'][] = array(
-            $r['primera_conexion'],
-            $r['ultima_conexion'],
-            $this->_formatoHora($r['tiempo_conexion']),
-            $r['conteo_conexion'],
-            $r['name'],
-        );
-        $tempTiempos = array(
-            0,  // número de llamadas monitoreadas (estatus 'terminada')
-            0,  // número de llamadas por hora (de todos los estados)
-            0,  // duración de todas las llamadas entrantes (cualquier estado)
-            0,  // promedio de duración (estatus 'terminada')
-            0,  // número de llamadas (todos los estados)
-        );
-        foreach ($r['tiempos_llamadas'] as $tupla) {
-            $tempTiempos[1] = $tempTiempos[4] += $tupla['N'];
-            $tempTiempos[2] += $tupla['tiempo_llamadas_entrantes'];
-            if ($tupla['status'] == 'terminada') {
-                $tempTiempos[0] = $tupla['N'];
-                $tempTiempos[3] = $tupla['promedio_sobre_monitoreadas'];
-            }
-        }
-        $tempTiempos[2] = $this->_formatoHora($tempTiempos[2]);
-        $tempTiempos[1] /= $r['tiempo_conexion'] / 3600;
-        $reporte['Data'][] = $tempTiempos;
-        
-        $tempBreaks = array();
-        $iTotalSeg = 0;
-        foreach ($r['tiempos_breaks'] as $tupla) {
-            $tempBreaks[] = array(
-                $tupla['name'],
-                $tupla['N'],
-                $this->_formatoHora($tupla['total_break']),
-                $tupla['total_break'],
-                ''
-            );
-            $iTotalSeg += $tupla['total_break'];
-        }
-        for ($i = 0; $i < count($tempBreaks); $i++) {
-            $tempBreaks[$i][3] = 100.0 * ($tempBreaks[$i][3] / $iTotalSeg);
-            $reporte['Data'][] = $tempBreaks[$i];
-        }
-        
-        $reporte['NumRecords'] = count($reporte['Data']);
-
-        return $reporte;
-    }
-
-    private function _formatoHora($s)
-    {
-        $sec = $s % 60; $s = ($s - $sec) / 60;
-        $min = $s % 60; $hora = ($s - $min) / 60;
-        return sprintf('%02d:%02d:%02d', $hora, $min, $sec);
-    }
-
-    function tiempo_de_conexion($where){
-        $sql = "select (sum(TIME_TO_SEC(duration))) tiempo
-        from audit, agent 
-        where agent.id=audit.id_agent  and id_break is null ";
-        if(!empty($where)) $sql .= " $where group by id_agent";
-        $result=$this->_DB->getFirstRowQuery($sql, true);
-        if(is_array($result) && count($result)>0){
-            return $result['tiempo'];
-        }
-        else
-            return;
-
     }
 
     function obtener_agente(){
