@@ -535,7 +535,11 @@ function formEditCampaign($pDB, $smarty, $module_name, $local_templates_dir, $id
                         if ($bExito && $bDoCreate) {
                             // Se puede tardar mucho tiempo en la inserción
                             ini_set('max_execution_time', 3600);
-                            $bExito = $oCamp->addCampaignNumbersFromFile($id_campaign, $_FILES['phonefile']['tmp_name']);
+                            $sEncoding = NULL;
+                            $bExito = $oCamp->addCampaignNumbersFromFile(
+                                $id_campaign,
+                                $_FILES['phonefile']['tmp_name'], 
+                                $sEncoding);
                         }
 
                         // Confirmar o deshacer la transacción según sea apropiado
@@ -789,7 +793,7 @@ function displayCampaignCSV($pDB, $smarty, $module_name, $local_templates_dir)
     } else {
         header("Cache-Control: private");
         header("Pragma: cache");
-        header('Content-Type: text/csv; charset=iso-8859-1; header=present');
+        header('Content-Type: text/csv; charset=UTF-8; header=present');
         header("Content-disposition: attachment; filename=\"".$arrCampaign[0]['name'].".csv\"");
 
         if (count($datosCampania['BASE']['DATA']) <= 0) {

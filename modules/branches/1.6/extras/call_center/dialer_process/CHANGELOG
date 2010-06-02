@@ -1,3 +1,6 @@
+* Campaigns Out: attempt to detect character encoding of uploaded CSV file in
+  order to always store UTF-8 data in the database. Currently detects UTF-8
+  and ISO-8859-15. Should fix Elastix bug #325.
 * Agent Information: (1/2) Replace questionable UNION statement that tries to
   fetch everything at once with three distinct SELECTs. The UNION mixed 
   different datatypes in several columns, resulting in a mangling of UTF-8 

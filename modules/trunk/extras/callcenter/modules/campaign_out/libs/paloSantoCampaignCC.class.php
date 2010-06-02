@@ -359,11 +359,11 @@ class paloSantoCampaignCC
      *
      * @return bool		VERDADERO si éxito, FALSO si ocurre un error
      */
-    function addCampaignNumbersFromFile($idCampaign, $sFilePath)
+    function addCampaignNumbersFromFile($idCampaign, $sFilePath, &$sEncoding)
     {
     	$bExito = FALSE;
     	
-    	$listaNumeros = $this->parseCampaignNumbers($sFilePath); 
+    	$listaNumeros = $this->parseCampaignNumbers($sFilePath, $sEncoding); 
     	if (is_array($listaNumeros)) {
     		$bExito = $this->addCampaignNumbers($idCampaign, $listaNumeros);
     	}
@@ -379,17 +379,21 @@ class paloSantoCampaignCC
      * líneas vacías se ignoran, al igual que las líneas que empiecen con #
      *
      * @param	string	$sFilePath	Archivo local a leer para la lista
+     * @param   string  $sEncoding  (SALIDA) Codificación detectada para archivo
      *
      * @return	mixed	Matriz cuyas tuplas contienen los contenidos del archivo,
      *					en el orden en que fueron leídos, o NULL en caso de error.
      */
-    private function parseCampaignNumbers($sFilePath)
+    private function parseCampaignNumbers($sFilePath, &$sEncoding)
     {
         global $arrLang;
         global $arrLan;
 
     	$listaNumeros = NULL;
-    	
+
+        // Detectar codificación para procesar siempre como UTF-8 (bug #325)
+        $sEncoding = $this->_adivinarCharsetArchivo($sFilePath);    	
+
     	$hArchivo = fopen($sFilePath, 'rt');
     	if (!$hArchivo) {
     		$this->errMsg = $arrLan["Invalid CSV File"];//'No se puede abrir archivo especificado para leer CSV';
@@ -399,6 +403,7 @@ class paloSantoCampaignCC
     		$clavesColumnas = array();
     		while ($tupla = fgetcsv($hArchivo, 2048,",")) {
     			$iNumLinea++;
+    			foreach ($tupla as $k => $v) $tupla[$k] = mb_convert_encoding($tupla[$k], "UTF-8", $sEncoding);
                 $tupla[0] = trim($tupla[0]);
     			if (count($tupla) == 1 && trim($tupla[0]) == '') {
     				// Línea vacía
@@ -432,6 +437,25 @@ class paloSantoCampaignCC
     		fclose($hArchivo);
     	}
     	return $listaNumeros;
+    }
+
+    // Función que intenta adivinar la codificación de caracteres del archivo
+    private function _adivinarCharsetArchivo($sFilePath)
+    {
+        // Agregar a lista para detectar más encodings. ISO-8859-15 debe estar
+        // al último porque toda cadena de texto es válida como ISO-8859-15.
+        $listaEncodings = array(
+            "ASCII",
+            "UTF-8",
+            //"EUC-JP",
+            //"SJIS",
+            //"JIS",
+            //"ISO-2022-JP",
+            "ISO-8859-15"
+        );
+        $sContenido = file_get_contents($sFilePath);
+        $sEncoding = mb_detect_encoding($sContenido, $listaEncodings);
+        return $sEncoding;
     }
     
     /**
