@@ -212,7 +212,7 @@ function listHistogram($pDB, $smarty, $module_name, $local_templates_dir)
         $fechaActual = date("Y-m-d");
         header("Cache-Control: private");
         header("Pragma: cache");
-        header('Content-Type: text/csv; charset=iso-8859-1; header=present');
+        header('Content-Type: text/csv; charset=UTF-8; header=present');
         $title = "\"calls-per-hour-".$fechaActual.".csv\"";
         header("Content-disposition: attachment; filename={$title}");
         return $oGrid->fetchGridCSV($arrGrid, $arrData);
