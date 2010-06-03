@@ -1,5 +1,4 @@
 <?php
-//bin/bash: indent: command not found
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
@@ -30,20 +29,20 @@
 
 require_once "libs/paloSantoForm.class.php";
 require_once "libs/misc.lib.php";
-include_once "libs/paloSantoConfig.class.php";
-include_once "libs/paloSantoGrid.class.php";
-include_once "modules/form_designer/libs/paloSantoDataForm.class.php";
-require_once "libs/xajax/xajax.inc.php";
-
-
+require_once "libs/paloSantoConfig.class.php";
+require_once "libs/paloSantoGrid.class.php";
 
 function _moduleContent(&$smarty, $module_name)
 {
+    require_once "modules/$module_name/libs/paloSantoCallsHour.class.php";
+
     #incluir el archivo de idioma de acuerdo al que este seleccionado
     #si el archivo de idioma no existe incluir el idioma por defecto
     $lang=get_language();
     $script_dir=dirname($_SERVER['SCRIPT_FILENAME']);
 
+    // Include language file for EN, then for local, and merge the two.
+    $arrLan = NULL;
     include_once("modules/$module_name/lang/en.lang");
     $lang_file="modules/$module_name/lang/$lang.lang";
     if (file_exists("$script_dir/$lang_file")) {
@@ -51,511 +50,222 @@ function _moduleContent(&$smarty, $module_name)
         include_once($lang_file);
         $arrLan = array_merge($arrLanEN, $arrLan);
     }
-
-
+    
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
+
     global $arrConf;
     global $arrLang;
+    global $arrConfig;
 
-    require_once "modules/$module_name/libs/paloSantoCallsHour.class.php";
     //folder path for custom templates
-    $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
-    $templates_dir=(isset($arrConfig['templates_dir']))?$arrConfig['templates_dir']:'themes';
-    $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
-    $relative_dir_rich_text = "modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
+    $base_dir = dirname($_SERVER['SCRIPT_FILENAME']);
+    $templates_dir = (isset($arrConfig['templates_dir']))?$arrConfig['templates_dir']:'themes';
+    $local_templates_dir = "$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
 
-    $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
-    $arrConfig = $pConfig->leer_configuracion(false);
+    // Conexión a la base de datos CallCenter
+    $pDB = new paloDB($arrConf['cadena_dsn']);
 
-    $dsn     = $arrConfig['AMPDBENGINE']['valor'] . "://" . $arrConfig['AMPDBUSER']['valor'] . ":" . $arrConfig['AMPDBPASS']['valor'] . "@" . $arrConfig['AMPDBHOST']['valor'] . "/asterisk";
-    $oDB = new paloDB($dsn);
-
-
-    // se conecta a la base
-    $pDB = new paloDB($arrConf["cadena_dsn"]);
-    $htmlFilter = "";
-    if (!is_object($pDB->conn) || $pDB->errMsg!="") {
-        $smarty->assign("mb_message", $arrLang["Error when connecting to database"]." ".$pDB->errMsg);
-    }elseif(isset($_GET['exportcsv']) && $_GET['exportcsv']=='yes') {
-        $fechaActual = date("d M Y");
-        header("Cache-Control: private");
-        header("Pragma: cache");
-        header('Content-Type: application/octec-stream');
-        $title = "\"".$fechaActual.".csv\"";
-        header("Content-disposition: inline; filename={$title}");
-        header('Content-Type: application/force-download');
-    }
-    
-    if(isset($arrFilterExtraVars) && is_array($arrFilterExtraVars) and count($arrFilterExtraVars)>0) {
-	$url = construirURL($arrFilterExtraVars); 
-    } else {
-	$url = construirURL(); 
+    // Mostrar pantalla correspondiente
+    $contenidoModulo = '';
+    $sAction = 'list_campaign';
+    if (isset($_GET['action'])) $sAction = $_GET['action'];
+    switch ($sAction) {
+    case 'list_histogram':
+    default:
+        $contenidoModulo = listHistogram($pDB, $smarty, $module_name, $local_templates_dir);
+        break;
     }
 
-    $smarty->assign("url", $url);
-    $oGrid = new paloSantoGrid($smarty);
-    $arrGrid = array();
-    $arrData = array();
-    //llamamos a funcion que construye la vista
-    $contenidoModulo = listadoCalls($pDB, $smarty, $module_name, $local_templates_dir,$oGrid,$arrGrid,$arrData);
-
-    if(  isset( $_GET['exportcsv'] ) && $_GET['exportcsv']=='yes' ) {
-	return $oGrid->fetchGridCSV($arrGrid, $arrData);
-    }else {
-	$oGrid->showFilter($htmlFilter);
-	return $contenidoModulo;//$oGrid->fetchGrid($arrGrid, $arrData,$lang);
-    }
-
+    return $contenidoModulo;
 }
 
+function sumar($a, $b) { return $a + $b; }
 
-//funcion que construye la vista del reporte
-function listadoCalls($pDB, $smarty, $module_name, $local_templates_dir,&$oGrid,&$arrGrid,&$arrData) {
+function listHistogram($pDB, $smarty, $module_name, $local_templates_dir)
+{
     global $arrLang;
     global $arrLan;
-    $arrData = array();
+
+    // Tipo de llamada
+    $comboTipos = array(
+        "E" => $arrLan["Ingoing"],
+        "S" => $arrLan["Outgoing"]
+    );
+    $sTipoLlamada = 'E';
+    if (isset($_GET['tipo'])) $sTipoLlamada = $_GET['tipo'];
+    if (isset($_POST['tipo'])) $sTipoLlamada = $_POST['tipo'];
+    if (!in_array($sTipoLlamada, array_keys($comboTipos))) $sTipoLlamada = 'E';
+    $_POST['tipo'] = $sTipoLlamada; // Para llenar el formulario
+    $smarty->assign('TIPO', $_POST['tipo']);
+    
+    // Estado de la llamada
+    $comboEstados = array(
+        'T' =>  $arrLan['All'],
+        'E' =>  $arrLan['Completed'],
+        'A' =>  $arrLan['Abandoned'],
+    );
+    if ($sTipoLlamada == 'S') $comboEstados['N'] = $arrLan['No answer/Short call'];
+    $sEstadoLlamada = 'T';
+    if (isset($_GET['estado'])) $sEstadoLlamada = $_GET['estado'];
+    if (isset($_POST['estado'])) $sEstadoLlamada = $_POST['estado'];
+    if (!in_array($sEstadoLlamada, array_keys($comboEstados))) $sEstadoLlamada = 'E';
+    $_POST['estado'] = $sEstadoLlamada; // Para llenar el formulario
+    $smarty->assign('ESTADO', $_POST['estado']);
+    
+    // Rango de fechas
+    $sFechaInicial = $sFechaFinal = date('Y-m-d');
+    if (isset($_GET['fecha_ini'])) $sFechaInicial = date('Y-m-d', strtotime($_GET['fecha_ini']));
+    if (isset($_POST['fecha_ini'])) $sFechaInicial = date('Y-m-d', strtotime($_POST['fecha_ini']));
+    if (isset($_GET['fecha_fin'])) $sFechaFinal = date('Y-m-d', strtotime($_GET['fecha_fin']));
+    if (isset($_POST['fecha_fin'])) $sFechaFinal = date('Y-m-d', strtotime($_POST['fecha_fin']));
+    $_POST['fecha_ini'] = date('d M Y', strtotime($sFechaInicial));
+    $_POST['fecha_fin'] = date('d M Y', strtotime($sFechaFinal));
+    $smarty->assign('FECHA_INI', $sFechaInicial);
+    $smarty->assign('FECHA_FIN', $sFechaFinal);
+
+    // Recuperar la lista de llamadas
     $oCalls = new paloSantoCallsHour($pDB);
-    $fecha_init = date("d M Y");
-    $fecha_end  = date("d M Y");
+    $arrCalls = $oCalls->getCalls($sTipoLlamada, $sEstadoLlamada, $sFechaInicial, $sFechaFinal);
 
-    // preguntamos por el TIPO del filtro (Entrante/Saliente)
-    if (!isset($_POST['cbo_tipos']) || $_POST['cbo_tipos']=="") {
-        $_POST['cbo_tipos'] = "E";//por defecto las consultas seran de Llamadas Entrantes
+    // TODO: manejar error al obtener llamadas
+    if (!is_array($arrCalls)) {
+        $smarty->assign("mb_title", $arrLang["Validation Error"]);
+        $smarty->assign("mb_message", $oCalls->errMsg);
+        $arrCalls = array();
     }
 
-    $tipo = 'E'; $entrantes = 'T'; $salientes = 'T';
-    if(isset($_POST['cbo_tipos']))
-        $tipo = $_POST['cbo_tipos'];
-    if(isset($_POST['cbo_estado_entrantes']))
-        $entrantes = $_POST['cbo_estado_entrantes'];
-    if(isset($_POST['cbo_estado_salientes']))
-        $salientes = $_POST['cbo_estado_salientes'];
+    // Lista de colas a elegir para gráfico. Sólo se elige de las colas devueltas 
+    // por la lista de datos.
+    $listaColas = array_keys($arrCalls);
+    $comboColas = array(
+        ''  =>  $arrLan['All'],
+    );
+    if (count($listaColas) > 0) 
+        $comboColas += array_combine($listaColas, $listaColas);
+    $sColaElegida = NULL;
+    if (isset($_GET['queue'])) $sColaElegida = $_GET['queue'];
+    if (isset($_POST['queue'])) $sColaElegida = $_POST['queue'];
+    if (!in_array($sColaElegida, $listaColas)) $sColaElegida = '';
+    $_POST['queue'] = $sColaElegida; // Para llenar el formulario
+    $smarty->assign('QUEUE', $_POST['queue']);
 
-       //validamos la fecha
-    if( isset($_POST['txt_fecha_init']) && isset($_POST['txt_fecha_end']) ) {
-        $fecha_init_actual = $_POST['txt_fecha_init'];
-        $fecha_end_actual = $_POST['txt_fecha_end'];
-    }elseif(isset($_GET['txt_fecha_init']) && isset($_GET['txt_fecha_end'])){
-        $fecha_init_actual = $_GET['txt_fecha_init'];
-        $fecha_end_actual = $_GET['txt_fecha_end'];
-    } 
-    else {
-        $fecha_init_actual  = $fecha_init;
-        $fecha_end_actual   = $fecha_end;
+    $smarty->assign('url', construirURL(array(
+        'tipo'      =>  $sTipoLlamada,
+        'estado'    =>  $sEstadoLlamada,
+        'queue'     =>  $sColaElegida,
+        'fecha_ini' =>  $sFechaInicial,
+        'fecha_fin' =>  $sFechaFinal,
+    )));
+
+    // Construir el arreglo como debe mostrarse en la tabla desglose
+    $arrData = array();
+    $arrTodos = array_fill(0, 24, 0);
+    foreach ($arrCalls as $sQueue => $hist) {
+        $arrData[] = array_merge(
+            array($sQueue),
+            $hist,
+            array(array_sum($hist))
+        );
+        $arrTodos = array_map('sumar', $arrTodos, $hist);
     }
+    $arrData[] = array_merge(
+        array($arrLan['All']),
+        $arrTodos,
+        array(array_sum($arrTodos))
+    );
 
-    $sValidacion = "^[[:digit:]]{1,2}[[:space:]]+[[:alnum:]]{3}[[:space:]]+[[:digit:]]{4}$";
-    if( isset($_POST['submit_fecha']) || isset($_POST['cbo_tipos'] )) {
-        // si se ha presionado el boton pregunto si hay una fecha de inicio elegida
-        if ( (isset( $_POST['txt_fecha_init']) && $_POST['txt_fecha_init']!="" && isset( $_POST['txt_fecha_end']) && $_POST['txt_fecha_end']!="")  ) {
-            // sihay una fecha de inicio pregunto si es valido el formato de la fecha
-            if ( ereg( $sValidacion , $_POST['txt_fecha_init'] ) ) {
-                // si el formato es valido procedo a convertir la fecha en un arreglo que contiene 
-                // el anio , mes y dia seleccionados
-                $fecha_init = $fecha_init_actual;//$_POST['txt_fecha_init'];
-                $arrFecha_init = explode('-',translateDate($fecha_init));
-            }else {
-                // si la fecha esta en un formato no valido se envia un mensaje de error
-                $smarty->assign("mb_title", $arrLan["Error"]);
-                $smarty->assign("mb_message", $arrLan["Debe ingresar una fecha valida"]);
-            }
-            // pregunto si es valido el formato de la fecha final
-                if ( ereg( $sValidacion , $_POST['txt_fecha_end'] ) ) {
-                    // si el formato es valido procedo a convertir la fecha en un arreglo que contiene 
-                // el anio , mes y dia seleccionados
-                    $fecha_end = $fecha_end_actual;//$_POST['txt_fecha_end'];
-                    $arrFecha_end = explode('-',translateDate($fecha_end));
-                }else {
-                    // si la fecha esta en un formato no valido se envia un mensaje de error
-                    $smarty->assign("mb_title", $arrLan["Error"]);
-                    $smarty->assign("mb_message", $arrLan["Debe ingresar una fecha valida"]);
-                }
+    $smarty->assign('MODULE_NAME', $module_name);
+    $smarty->assign('LABEL_FIND', $arrLan['Find']);
+    $formFilter = getFormFilter($comboTipos, $comboEstados, $comboColas);
+    $oForm = new paloForm($smarty, $formFilter);
 
-        //PRUEBA
-
-            $arrFilterExtraVars = array("cbo_tipos" => $tipo,
-                                    "cbo_estado_entrantes" => $entrantes,
-                                    "cbo_estado_salientes" => $salientes,
-                                    "txt_fecha_init" => $_POST['txt_fecha_init'], 
-                                    "txt_fecha_end" => $_POST['txt_fecha_end'], 
-                                    );
-        //PRUEBA
-        } elseif( (isset( $_GET['txt_fecha_init']) && $_GET['txt_fecha_init']!="" && isset( $_GET['txt_fecha_end']) && $_GET['txt_fecha_end']!="") ){
-            if ( ereg( $sValidacion , $_GET['txt_fecha_init'] ) ) {
-                // si el formato es valido procedo a convertir la fecha en un arreglo que contiene 
-                // el anio , mes y dia seleccionados
-                $fecha_init = $fecha_init_actual;//$_POST['txt_fecha_init'];
-                $arrFecha_init = explode('-',translateDate($fecha_init));
-            }else {
-                // si la fecha esta en un formato no valido se envia un mensaje de error
-                $smarty->assign("mb_title", $arrLan["Error"]);
-                $smarty->assign("mb_message", $arrLan["Debe ingresar una fecha valida"]);
-            }
-            // pregunto si es valido el formato de la fecha final
-                if ( ereg( $sValidacion , $_GET['txt_fecha_end'] ) ) {
-                    // si el formato es valido procedo a convertir la fecha en un arreglo que contiene 
-                // el anio , mes y dia seleccionados
-                    $fecha_end = $fecha_end_actual;//$_POST['txt_fecha_end'];
-                    $arrFecha_end = explode('-',translateDate($fecha_end));
-                }else {
-                    // si la fecha esta en un formato no valido se envia un mensaje de error
-                    $smarty->assign("mb_title", $arrLan["Error"]);
-                    $smarty->assign("mb_message", $arrLan["Debe ingresar una fecha valida"]);
-                }
-
-            $tipo =  $_GET['cbo_tipos'];
-            $entrantes =  $_GET['cbo_estado_entrantes'];
-            $salientes = $_GET['cbo_estado_salientes'];
-
-            $arrFilterExtraVars = array("cbo_tipos" => $_GET['cbo_tipos'],
-                                    "cbo_estado_entrantes" => $_GET['cbo_estado_entrantes'],
-                                    "cbo_estado_salientes" => $_GET['cbo_estado_salientes'],
-                                    "txt_fecha_init" => $_GET['txt_fecha_init'], 
-                                    "txt_fecha_end" => $_GET['txt_fecha_end'], 
-                                    );
-
-        }
-        elseif(!isset($fecha_init) && !isset($fecha_end)) {
-            // si se ha presionado el boton para listar por fechas, y no se ha ingresado una fecha
-            // se le muestra al usuario un mensaje de error
-            $smarty->assign("mb_title", $arrLan["Error"]);
-            $smarty->assign("mb_message", $arrLan["Debe ingresar una fecha inicio/fin"]);
-        }
-    }
-
-//para el pagineo
-       // LISTADO
-        $limit =2;//100000;
-        $offset = 0;
-
-        // Si se quiere avanzar a la sgte. pagina
-        if(isset($_GET['nav']) && $_GET['nav']=="end") {
-            $arrCallsTmp  = $oCalls->getCalls($tipo,$entrantes, $salientes,translateDate($fecha_init),translateDate($fecha_end), $limit, $offset);
-            $totalCalls  = $arrCallsTmp['NumRecords'];
-            // Mejorar el sgte. bloque.
-            if(($totalCalls%$limit)==0) {
-                $offset = $totalCalls - $limit;
-            } else {
-                $offset = $totalCalls - $totalCalls%$limit;
-            }
-        }
-
-        // Si se quiere avanzar a la sgte. pagina
-        if(isset($_GET['nav']) && $_GET['nav']=="next") {
-            $offset = $_GET['start'] + $limit - 1;
-        }
-
-        // Si se quiere retroceder
-        if(isset($_GET['nav']) && $_GET['nav']=="previous") {
-            $offset = $_GET['start'] - $limit - 1;
-        }
-
-
-        // Construyo el URL base
-        if(isset($arrFilterExtraVars) && is_array($arrFilterExtraVars) && count($arrFilterExtraVars)>0) {
-            $url = construirURL($arrFilterExtraVars, array("nav", "start")); 
-        } else {
-            $url = construirURL(array(), array("nav", "start")); 
-        }
-        $smarty->assign("url", $url);
-
-//fin de pagineo
-
-    //llamamos  a la función que hace la consulta  a la base según los criterios de búsqueda
-    $arrCalls = $oCalls->getCalls($tipo,$entrantes, $salientes,translateDate($fecha_init),translateDate($fecha_end), $limit, $offset);
-
-    //numero de registros
-    $arrCalls_1 = $oCalls->getCalls($tipo,$entrantes, $salientes,translateDate($fecha_init),translateDate($fecha_end), NULL, $offset);
-
-    $end = $arrCalls_1['NumRecords'];
-//Llenamos el contenido de las columnas
-    $arrTmp    = array();
-    if (is_array($arrCalls)) {
-        foreach($arrCalls['Data'] as $calls) {
-            $arrTmp[0] = $calls['cola'];
-            //primeramente enceramos los valores de horas
-            $arrTmp[1]="";  $arrTmp[2]="";  $arrTmp[3]=""; 
-            $arrTmp[4]="";  $arrTmp[5]="";  $arrTmp[6]="";
-            $arrTmp[7]="";  $arrTmp[8]="";  $arrTmp[9]=""; 
-            $arrTmp[10]=""; $arrTmp[11]=""; $arrTmp[12]="";
-            $arrTmp[13]=""; $arrTmp[14]=""; $arrTmp[15]=""; 
-            $arrTmp[16]=""; $arrTmp[17]=""; $arrTmp[18]=""; 
-            $arrTmp[19]=""; $arrTmp[20]=""; $arrTmp[21]="";
-            $arrTmp[22]=""; $arrTmp[23]=""; $arrTmp[24]="";
-                foreach($calls as $hora=>$num_veces){
-                    if($hora>="0" && $hora<"1")
-                        $arrTmp[1] = $num_veces;
-                    elseif($hora>="1" && $hora<"2") 
-                        $arrTmp[2] = $num_veces;
-                    elseif($hora>="2" && $hora<"3") 
-                        $arrTmp[3] = $num_veces;
-                    elseif($hora>="3" && $hora<"4") 
-                        $arrTmp[4] = $num_veces;
-                    elseif($hora>="4" && $hora<"5") 
-                        $arrTmp[5] = $num_veces;
-                    elseif($hora>="5" && $hora<"6") 
-                        $arrTmp[6] = $num_veces;
-                    elseif($hora>="6" && $hora<"7") 
-                        $arrTmp[7] = $num_veces;
-                    elseif($hora>="7" && $hora<"8") 
-                        $arrTmp[8] = $num_veces;
-                    elseif($hora>="8" && $hora<"9") 
-                        $arrTmp[9] = $num_veces;
-                    elseif($hora>="9" && $hora<"10") 
-                        $arrTmp[10] = $num_veces;
-                    elseif($hora>="10" && $hora<"11") 
-                        $arrTmp[11] = $num_veces;
-                    elseif($hora>="11" && $hora<"12") 
-                        $arrTmp[12] = $num_veces;
-                    elseif($hora>="12" && $hora<"13") 
-                        $arrTmp[13] = $num_veces;
-                    elseif($hora>="13" && $hora<"14") 
-                        $arrTmp[14] = $num_veces;
-                    elseif($hora>="14" && $hora<"15") 
-                        $arrTmp[15] = $num_veces;
-                    elseif($hora>="15" && $hora<"16") 
-                        $arrTmp[16] = $num_veces;
-                    elseif($hora>="16" && $hora<"17")
-                        $arrTmp[17] = $num_veces;
-                    elseif($hora>="17" && $hora<"18") 
-                        $arrTmp[18] = $num_veces;
-                    elseif($hora>="18" && $hora<"19") 
-                        $arrTmp[19] = $num_veces;
-                    elseif($hora>="19" && $hora<"20") 
-                        $arrTmp[20] = $num_veces;
-                    elseif($hora>="20" && $hora<"21") 
-                        $arrTmp[21] = $num_veces;
-                    elseif($hora>="21" && $hora<"22") 
-                        $arrTmp[22] = $num_veces;
-                    elseif($hora>="22" && $hora<"23") 
-                        $arrTmp[23] = $num_veces;
-                    elseif($hora>="23" && $hora<"24")
-                        $arrTmp[24] = $num_veces;
-                    $arrTmp[25] = $arrCalls['NumCalls'];// sumNumCalls($arrTmp);
-                }
-           $arrData[] = $arrTmp;
-        }
-        $arrTmp[0] = "<b>".$arrLan["Total"]."</b>";
-
-        for($j=1;$j<=25;$j++) {
-            $sum = 0;
-	    for($i=0;$i<count($arrData);$i++) {
-		$sum = $sum + $arrData[$i][$j];
-	    }
-            $arrTmp[$j] = "<b>".$sum."</b>";
-        }
-
-        $arrData[] = $arrTmp;
-    }
-
-//Llenamos las cabeceras
+    //Llenamos las cabeceras
     $arrGrid = array("title"    => $arrLan["Calls per hour"],
         "icon"     => "images/list.png",
         "width"    => "99%",
-        "start"    => ($end==0) ? 0 : $offset + 1,//($end==0) ? 0 : 1,
-        "end"      => ($offset+$limit)<=$end ? $offset+$limit : $end,//$end,
-        "total"    => $end,
+        "start"    => 0,
+        "end"      => 0,
+        "total"    => 0,
         "columns"  => array(0 => array("name"      => $arrLan["Cola"],
                                        "property1" => ""),
-                            1 => array("name"      => "00:00", 
-                                       "property1" => ""),
-                            2 => array("name"      => "01:00", 
-                                       "property1" => ""),
-                            3 => array("name"      => "02:00", 
-                                       "property1" => ""),
-                            4 => array("name"      => "03:00",
-                                       "property1" => ""),
-                            5 => array("name"      => "04:00", 
-                                       "property1" => ""),
-                            6 => array("name"      => "05:00", 
-                                       "property1" => ""),
-                            7 => array("name"      => "06:00", 
-                                       "property1" => ""),
-                            8 => array("name"      => "07:00",
-                                       "property1" => ""),
-                            9 => array("name"      => "08:00", 
-                                       "property1" => ""),
-                            10 => array("name"     => "09:00", 
-                                       "property1" => ""),
-                            11 => array("name"     => "10:00", 
-                                       "property1" => ""),
-                            12 => array("name"     => "11:00", 
-                                       "property1" => ""),
-                            13 => array("name"     => "12:00", 
-                                       "property1" => ""),
-                            14 => array("name"     => "13:00", 
-                                       "property1" => ""),
-                            15 => array("name"     => "14:00", 
-                                       "property1" => ""),
-                            16 => array("name"     => "15:00", 
-                                       "property1" => ""),
-                            17 => array("name"     => "16:00", 
-                                       "property1" => ""),
-                            18 => array("name"     => "17:00", 
-                                       "property1" => ""),
-                            19 => array("name"     => "18:00", 
-                                       "property1" => ""),
-                            20 => array("name"     => "19:00", 
-                                       "property1" => ""),
-                            21 => array("name"     => "20:00", 
-                                       "property1" => ""),
-                            22 => array("name"     => "21:00", 
-                                       "property1" => ""),
-                            23 => array("name"     => "22:00", 
-                                       "property1" => ""),
-                            24 => array("name"     => "23:00", 
-                                       "property1" => ""),
+                            // 1..24 se llenan con el bucle de abajo
                             25 => array("name"     => $arrLan["Total Calls"], 
                                        "property1" => ""),
 
                         ));
-
-    //Para el combo de tipos
-    $tipos = array("E"=>$arrLan["Ingoing"], "S"=>$arrLan["Outgoing"]);
-    $combo_tipos = "<select name='cbo_tipos' id='cbo_tipos' onChange='submit();'>".combo($tipos,$_POST['cbo_tipos'])."</select>";
-
-    //para el combo de entrantes
-    if(isset($_POST['cbo_estado_entrantes'])) $cbo_estado_entrates = $_POST['cbo_estado_entrantes'];
-    elseif(isset($_GET['cbo_estado_entrantes'])) $cbo_estado_entrates = $_GET['cbo_estado_entrantes'];
-    else $cbo_estado_entrates = 'T';
-    $estados_entrantes = array("T"=>$arrLan["All"], "E"=>$arrLan["Successful"], "A"=>$arrLan["Left"]);
-    $combo_estados_entrantes = "<select name='cbo_estado_entrantes' id='cbo_estado_entrantes' >".combo($estados_entrantes,$cbo_estado_entrates)."</select>";
-
-    //para el combo de salientes
-    if(isset($_POST['cbo_estado_salientes'])) $cbo_estado_salientes = $_POST['cbo_estado_salientes'];
-    elseif(isset($_GET['cbo_estado_salientes'])) $cbo_estado_salientes = $_GET['cbo_estado_salientes'];
-    else $cbo_estado_salientes = 'T';
-    $estados_salientes = array("T"=>$arrLan["All"], "E"=>$arrLan["Successful"],  "N"=>$arrLan["Not Realiced"], "A" => $arrLan["Left"]);
-    $combo_estados_salientes = "<select name='cbo_estado_salientes' id='cbo_estado_salientes' >".combo($estados_salientes,$cbo_estado_salientes)."</select>";
-
-    //validamos que combo se cargará segun lo electo en combo TIPO, al principio le seteamos por defecto el de ENTRANTES
-    $td = "<td class='letra12' align='right'>{$arrLan["Estado"]}</td><td>$combo_estados_entrantes</td>";
-    if (isset($_POST['cbo_tipos']) && $_POST['cbo_tipos']=="E")
-        $td = "<td class='letra12' align='left'>{$arrLan["Estado"]}</td><td>$combo_estados_entrantes</td>";
-    elseif (isset($_POST['cbo_tipos']) && $_POST['cbo_tipos']=="S")
-        $td =  "<td class='letra12' align='left'>{$arrLan["Estado"]}</td><td>$combo_estados_salientes</td>";
- 
-    $oGrid->showFilter( insertarCabeceraCalendario()."
-
-        <form style='margin-bottom:0;' method='POST' action='?menu=$module_name'>
-            <table width='100%' border='0'>
-                <tr>
-                    <td align='left'>
-                        <table>
-                        <tr>
-                            <td class='letra12'>
-                                {$arrLan["Date Init"]}
-                                <span  class='required'>*</span>
-                            </td>
-                            <td>
-                                ".insertarDateInit($fecha_init_actual)."
-                            </td>
-                            <td class='letra12'>
-                                &nbsp;
-                            </td>
-                            <td class='letra12'>
-                                {$arrLan["Date End"]}
-                                <span  class='required'>*</span>
-                            </td>
-                            <td>
-                                ".insertarDateEnd($fecha_end_actual)."
-                            </td>
-
-                        </tr>
-
-                        <tr>
-                            <td class='letra12' align='left'>{$arrLan["Tipo"]}</td>
-                            <td>$combo_tipos</td>
-                            <td class='letra12'>
-                                &nbsp;
-                            </td>
-                            ".$td."
-                            <td>
-                                <input type='submit' name='submit_fecha' value={$arrLan["Find"]} class='button'>
-                            </td>
-                        </tr>
-                        </table>
-                    </td>
-                </tr>
-            </table>
-        </form>
-
-        ");
-
-    $oGrid->enableExport();
-    $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
-    return $contenidoModulo;
-}
-
-/*    Esta funcion inserta el codigo necesario para visualizar el control fecha inicio
-*/
-function insertarDateInit($fecha_init) {
-    return 
-    " <input style='width: 10em; color: #840; background-color: #fafafa; border: 1px solid #999999;text-align: center' name='txt_fecha_init' value='{$fecha_init}' id='f-calendar-field-1' type='text' editable='false' class='button'/> "
-    .
-    insertarCalendario(1);
-}
-
-/*
-    Esta funcion inserta el codigo necesario para visualizar el control fecha fin
-*/
-function insertarDateEnd($fecha_end) {
-    return 
-    " <input style='width: 10em; color: #840; background-color: #fafafa; border: 1px solid #999999;text-align: center' name='txt_fecha_end' value='{$fecha_end}' id='f-calendar-field-2' type='text' editable='false' class='button'/> "
-    .
-    insertarCalendario(2);
-}
-
-/*
-    Esta funcion inserta el codigo necesario para visualizar y utilizar un calendario par escoger
-    una fecha determinada.
-*/
-function insertarCalendario($index) {
-
-    return 
-    "<a href='#' id='f-calendar-trigger-$index'>
-        <img align='middle' border='0' src='/libs/js/jscalendar/img.gif' alt='' />
-    </a>
-    
-    <script type='text/javascript'>
-        Calendar.setup(
-            {
-                'ifFormat':'%d %b %Y',
-                'daFormat':'%Y-%m-%d',
-                'firstDay':1,
-                'showsTime':true,
-                'showOthers':true,
-                'timeFormat':24,
-                'inputField':'f-calendar-field-$index',
-                'button':'f-calendar-trigger-$index'
-            }
-        );
-    </script> " ;
-}
-
-/*
-    Esta funcion inserta las dependencias necesarias para el calendario
-*/
-function insertarCabeceraCalendario() {
-
-    return 
-    "<link rel='stylesheet' type='text/css' media='all' href='/libs/js/jscalendar/calendar-win2k-2.css' />
-        <script type='text/javascript' src='/libs/js/jscalendar/calendar_stripped.js'></script>
-        <script type='text/javascript' src='/libs/js/jscalendar/lang/calendar-en.js'></script>
-        <script type='text/javascript' src='/libs/js/jscalendar/calendar-setup_stripped.js'></script>
-    ";
-}
-
-function sumNumCalls($arrTmp){
-
-    $sumCalls = 0;
-
-    for($i=1;$i<=24;$i++) {
-        $sumCalls = $sumCalls + $arrTmp[$i];
+    for ($i = 1; $i <= 24; $i++) {
+        $arrGrid['columns'][$i] = array('name' => sprintf('%02d:00', $i - 1), 'property1' => '');
     }
-    return $sumCalls;
+    $oGrid = new paloSantoGrid($smarty);
+    $oGrid->showFilter(
+        $oForm->fetchForm(
+            "$local_templates_dir/filter-calls.tpl", 
+            NULL,
+            $_POST)
+    );
+    $oGrid->enableExport();
+    if (isset($_GET['exportcsv']) && $_GET['exportcsv'] == 'yes') {
+        $fechaActual = date("Y-m-d");
+        header("Cache-Control: private");
+        header("Pragma: cache");
+        header('Content-Type: text/csv; charset=iso-8859-1; header=present');
+        $title = "\"calls-per-hour-".$fechaActual.".csv\"";
+        header("Content-disposition: attachment; filename={$title}");
+        return $oGrid->fetchGridCSV($arrGrid, $arrData);
+    } else {
+        return $oGrid->fetchGrid($arrGrid, $arrData, $arrLang);
+    }
+}
 
+function getFormFilter($arrDataTipo, $arrDataEstado, $arrDataQueues)
+{
+    global $arrLan;
+
+    $formCampos = array(
+        "fecha_ini"       => array(
+            "LABEL"                  => $arrLan["Date Init"],
+            "REQUIRED"               => "yes",
+            "INPUT_TYPE"             => "DATE",
+            "INPUT_EXTRA_PARAM"      => array("TIME" => false, "FORMAT" => "%d %b %Y"),
+            "VALIDATION_TYPE"        => 'ereg',
+            "VALIDATION_EXTRA_PARAM" => '^[[:digit:]]{2}[[:space:]]+[[:alpha:]]{3}[[:space:]]+[[:digit:]]{4}$'
+        ),
+        "fecha_fin"       => array(
+            "LABEL"                  => $arrLan["Date End"],
+            "REQUIRED"               => "yes",
+            "INPUT_TYPE"             => "DATE",
+            "INPUT_EXTRA_PARAM"      => array("TIME" => false, "FORMAT" => "%d %b %Y"),
+            "VALIDATION_TYPE"        => 'ereg',
+            "VALIDATION_EXTRA_PARAM" => '^[[:digit:]]{2}[[:space:]]+[[:alpha:]]{3}[[:space:]]+[[:digit:]]{4}$'
+        ),
+        "tipo" => array(
+            "LABEL"                  => $arrLan["Tipo"],
+            "REQUIRED"               => "yes",
+            "INPUT_TYPE"             => "SELECT",
+            "INPUT_EXTRA_PARAM"      => $arrDataTipo,
+            "VALIDATION_TYPE"        => "text",
+            "VALIDATION_EXTRA_PARAM" => ""
+        ),
+        "estado" => array(
+            "LABEL"                  => $arrLan["Estado"],
+            "REQUIRED"               => "yes",
+            "INPUT_TYPE"             => "SELECT",
+            "INPUT_EXTRA_PARAM"      => $arrDataEstado,
+            "VALIDATION_TYPE"        => "text",
+            "VALIDATION_EXTRA_PARAM" => ""
+        ),
+        "queue" => array(
+            "LABEL"                  => $arrLan["Cola"],
+            "REQUIRED"               => "yes",
+            "INPUT_TYPE"             => "SELECT",
+            "INPUT_EXTRA_PARAM"      => $arrDataQueues,
+            "VALIDATION_TYPE"        => "numeric",
+            "VALIDATION_EXTRA_PARAM" => ""
+        ),
+    );
+
+    return $formCampos;
 }
 
 ?>

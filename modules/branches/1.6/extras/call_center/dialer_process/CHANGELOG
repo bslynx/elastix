@@ -1,3 +1,7 @@
+* Calls per Hour: replaced implementation with newest implementation of Graphic
+  Calls. Originally (deduced via diff) Graphic Calls was a fork of Calls per
+  Hour, and it inherited major flaws. The fixed Graphics Calls implementation
+  is now folded back into Calls per Hour. Should fix Elastix bug #336.
 * Campaigns Out: attempt to detect character encoding of uploaded CSV file in
   order to always store UTF-8 data in the database. Currently detects UTF-8
   and ISO-8859-15. Should fix Elastix bug #325.

@@ -45,9 +45,14 @@ $arrLan = array(
 "Estado"                            => "Estados",
 "Ingoing"                           => "Entrante",
 "Outgoing"                          => "Saliente",
-"All"                               => "Todos",
+"All"                               => "Todas",
 "Successful"                        => "Exitosas",
 "Not Realiced"                      => "No realizadas",
 "Left"                              => "Abandonadas",
+'Completed'                         => 'Completadas',
+'Abandoned'                         => 'Abandonadas',
+'No answer/Short call'              => 'Sin respuesta/Llamada corta',
+'Calls'                             => 'Llamadas',
+'Total Calls'                       => 'Total de Llamadas',
 );
 ?>
