@@ -1,3 +1,5 @@
+* Forms Designer: fix default selection of field type. Should prevent instances
+  of Elastix bug #206.
 * Calls per Hour: replaced implementation with newest implementation of Graphic
   Calls. Originally (deduced via diff) Graphic Calls was a fork of Calls per
   Hour, and it inherited major flaws. The fixed Graphics Calls implementation

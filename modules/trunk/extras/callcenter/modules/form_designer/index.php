@@ -159,18 +159,20 @@ function _moduleContent(&$smarty, $module_name)
 
     $arr_type = array(
         "VALUE" => array (
-                    "LABEL",
                     "TEXT",
                     "LIST",
                     "DATE",
-                    "TEXTAREA"),
+                    "TEXTAREA",
+                    "LABEL",
+                    ),
         "NAME"  => array (
-                    $arrLan["Type Label"],
                     $arrLan["Type Text"],
                     $arrLan["Type List"],
                     $arrLan["Type Date"],
-                    $arrLan["Type Text Area"]),
-        "SELECTED" => "Text",     
+                    $arrLan["Type Text Area"],
+                    $arrLan["Type Label"],
+                    ),
+        "SELECTED" => "TEXT",     
         );
 
 
