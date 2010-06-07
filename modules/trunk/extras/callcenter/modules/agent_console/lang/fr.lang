@@ -35,59 +35,59 @@ $arrLan=array(
 "Script"=>"Script",
 "Form" => "Formulaire",
 "Agent" => "Agent",
-"Agent Number" => "Num&eacute;ro",
+"Agent Number" => "Numéro",
 "Take Break" => "Prendre une Pause",
 "Fill the fields" => "Veuillez renseigner les champs",
 "Break"=>"Pause",
 "UnBreak"=>"Reprendre",
 "In Break"=>"En Pause",
 "Welcome to Console Agent"=>"Bienvenue dans la Console Agent",
-"Please enter your number agent"=>"Veuillez entrer votre num&eacute;ro d'agent et votre extension",
-"Number Agent"=>"Agent Num&eacute;ro",
+"Please enter your number agent"=>"Veuillez entrer votre numéro d'agent et votre extension",
+"Number Agent"=>"Agent Numéro",
 "Enter Agent" => "Entrer",
 "Extension"=>"Extension",
 "Error when connecting to Asterisk Manager"=>"Erreur de connexion au Manager Asterisk",
-"Unable to add Agent to queue: No such queue" => "Impossible d'ajouter un Agent &agrave; la file: Pas de file", //Bruno agrego
+"Unable to add Agent to queue: No such queue" => "Impossible d'ajouter un Agent à la file: Pas de file", //Bruno agrego
 "Error when consulting Agent in Asterisk Manager" => "Erreur en consultant l'Agent dans le Manager Asterisk",
 "Agent isn't in Queue Asterisk"=>"L'Agent n'est pas dans la file Asterisk",
 "Unable to pause Agent to queue: No such queue" => "Impossible de sortir l'Agent de la file: Pas de file",
 "Audit Error" => "Erreur Audit",
-"Number Agent already connected with extension"=>"Num&eacute;ro de l'Agent d&eacute;j&agrave; connect&eacute; avec l'extension",
+"Number Agent already connected with extension"=>"Numéro de l'Agent déjà connecté avec l'extension",
 "Agent Error" => "Erreur Agent",
-"Audit of break could not be inserted" => "L'Audit de pause n'&agrave; p&ucirc; &ecirc;tre ins&eacute;r&eacute;",
-"Id of the agent could not be obtained" => "L'Id de l'agent n'&agrave; p&ucirc; &ecirc;tre obtenu",
-"Number of audit nonassigned" => "Num&eacute;ro d'audit non assign&eacute;",
+"Audit of break could not be inserted" => "L'Audit de pause n'à pû être inséré",
+"Id of the agent could not be obtained" => "L'Id de l'agent n'à pû être obtenu",
+"Number of audit nonassigned" => "Numéro d'audit non assigné",
 "Error saving client information"=>"Erreur de sauvegarde des informations client",
-"Information was saved"=>"L'information &agrave; &eacute;t&eacute; sauvegard&eacute;e",
+"Information was saved"=>"L'information à été sauvegardée",
 "Call no active"=>"Aucun Appel Actif",
-"Error when connecting to database Call Center"=>"Erreur de connexion &agrave; la base de donn&eacute;es Centre d'Appels",
+"Error when connecting to database Call Center"=>"Erreur de connexion à la base de données Centre d'Appels",
 "Calling"=>"Appelant",
-"Forms Nondefined" => "Formulaires Non d&eacute;finis", //Bruno agrego
-"Call Number" => "Appel Num&eacute;ro", //Bruno agrego
-"Name" => "Pr&eacute;nom",
+"Forms Nondefined" => "Formulaires Non définis", //Bruno agrego
+"Call Number" => "Appel Numéro", //Bruno agrego
+"Name" => "Prénom",
 "Last Name" => "Nom",
 "Error when consulting contact information" => "Erreur en consultant les informations de contact",
-"Phone" => "T&eacute;l&eacute;phone",
+"Phone" => "Téléphone",
 "Contacts" => "Contacts",
-"Number Phone not Registered" => "Num&eacute;ro de T&eacute;l&eacute;phone non Enregistr&eacute;",
+"Number Phone not Registered" => "Numéro de Téléphone non Enregistré",
 "Contact Basic Information" => "Contact Information Basique",
-"Number Identification" => "Num&eacute;ro d'Identification",
-"Error when updating call information" => "Erreur de mise &agrave; jour des informations d'appels",
+"Number Identification" => "Numéro d'Identification",
+"Error when updating call information" => "Erreur de mise à jour des informations d'appels",
 "Id call or Id contact have format invalid" => "Id appel ou Id contact ont un format invalide",
 "Confirm"=>"Confirmer",
 "vTigerCRM"=>"vTigerCRM",
 "Add Client"=>"Ajouter Client",
 "View Client"=>"Voir Client",
-"Call can't be closed, channel is empty"=>"L'appel ne peut pas &ecirc; ferm&eacute;, le canal est vide",
+"Call can't be closed, channel is empty"=>"L'appel ne peut pas ê fermé, le canal est vide",
 // para transferencia de llamadas
 "Accept"=>"Accepter",
-"error when creating new object"=>"Erreur de cr&eacute;ation d'un nouvel object",
+"error when creating new object"=>"Erreur de création d'un nouvel object",
 "No call"=>"Aucun Appel",
 "transfer_error"=>"Erreur de Transfert : ",
-"Success"=>"Transfert d'Appel R&eacute;ussi",
+"Success"=>"Transfert d'Appel Réussi",
 "Error when connecting to Call Center"=>"Erreur de connexion au Centre d'Appels",
 "Error query"=>"Erreur en question",
-"select extension"=>"s&eacute;lectionnez une extension",
+"select extension"=>"sélectionnez une extension",
 "consultar_llamada"=>"Consulter Transferts ?",
 // fin transferencia de llamadas
 
@@ -100,19 +100,13 @@ $arrLan=array(
 // para Marcado de llamadas
 "Marcar"        => "Marquer",
 "Cancel"        => "Annuler",
-"Marked Error"  => "Erreur Marqu&eacute;e",
-"Success Marked"=> "Appel marqu&eacute;v correctement",
-"Please enter a number to mark" => "Veuillez entrer un num&eacute;ro &agrave; marquer",
+"Marked Error"  => "Erreur Marquée",
+"Success Marked"=> "Appel marquév correctement",
+"Please enter a number to mark" => "Veuillez entrer un numéro à marquer",
 // fin de Envio de llamadas
 
 "vtigercrm"=>"vTiger CRM",
 
-"Agent disconnected"=>"Agent d&eacute;connect&eacute;"
+"Agent disconnected"=>"Agent déconnecté"
 );
-
-
-
-
-
-
 ?>
