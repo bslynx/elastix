@@ -294,5 +294,24 @@ class paloSantoUploadFile
     {
         return array($this->_numInserciones, $this->_numActualizaciones);
     }
+
+    /**
+     * Procedimiento para leer toda la información de contactos almacenada en la
+     * base de datos de CallCenter. Actualmente la información que se almacena
+     * sólo consiste de nombre, apellido y cédula, en el mismo orden que se 
+     * acepta para la subida de datos.
+     *
+     * @return  NULL en caso de error, o matriz con los datos.
+     */
+    function leerContactos()
+    {
+        $sPeticionSQL = 'SELECT telefono, cedula_ruc, name, apellido FROM contact';
+        $r = $this->_DB->fetchTable($sPeticionSQL);
+        if (!is_array($r)) {
+            $this->errMsg = '(internal) Unable to read contacts - '.$this->_DB->errMsg;
+            return NULL;
+        }
+        return $r;
+    }
 }
 ?>

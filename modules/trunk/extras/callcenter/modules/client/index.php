@@ -109,8 +109,32 @@ function _moduleContent(&$smarty,$module_name)
                     _tr('Detected charset').': '.$sEncoding);
             }
         }
+    } elseif (isset($_GET['action']) && $_GET['action'] == 'csvdownload') {
+        $pDB = new paloDB($arrConfig['cadena_dsn']);
+        $oCarga = new paloSantoUploadFile($pDB);
+        $r = $oCarga->leerContactos();
+        if (!is_array($r)) {
+            $smarty->assign("mb_title", _tr('Error'));
+            $smarty->assign("mb_message", $oCarga->errMsg);
+            return $oCarga->errMsg;
+        } else {
+            header("Cache-Control: private");
+            header("Pragma: cache");
+            header('Content-Type: text/csv; charset=UTF-8; header=present');
+            header("Content-disposition: attachment; filename=\"contacts.csv\"");
+
+            $fContenido = '';
+            foreach ($r as $tuplaDatos) {
+                $fContenido .= join(',', array_map('csv_replace', $tuplaDatos))."\r\n";
+            }
+        }
     }
     return $fContenido;
+}
+
+function csv_replace($s)
+{
+    return ($s == '') ? '""' : '"'.str_replace('"',"'", $s).'"';
 }
 
 ?>
