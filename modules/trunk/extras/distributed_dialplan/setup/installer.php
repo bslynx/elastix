@@ -59,12 +59,18 @@ function writeFilesAsterisk(){
 		$filename = "/etc/asterisk/dundi_general_custom_elastix.conf";
 		$filename2= "/etc/asterisk/dundi_mappings_custom_elastix.conf";
 		$filename3= "/etc/asterisk/dundi_peers_custom_elastix.conf";
-		if(!file_exists($filename))
+		if(!file_exists($filename)){
 			exec("touch ".$filename);
-		if(!file_exists($filename2))
+			exec("chown asterisk.asterisk ".$filename);
+		}
+		if(!file_exists($filename2)){
 			exec("touch ".$filename2);	
-		if(!file_exists($filename3))
-			exec("touch ".$filename3);		
+			exec("chown asterisk.asterisk ".$filename2);
+		}
+		if(!file_exists($filename3)){
+			exec("touch ".$filename3);	
+			exec("chown asterisk.asterisk ".$filename3);
+		}	
 		$new_contents = str_replace("[general]",$general,$contents);
 		$new_contents = str_replace("[mappings]",$mappings,$new_contents);
 		setFile($file, $new_contents);
