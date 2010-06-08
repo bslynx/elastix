@@ -1,80 +1,116 @@
 <?php
+/* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
+  Codificación: UTF-8
+  +----------------------------------------------------------------------+
+  | Elastix version 0.5                                                  |
+  | http://www.elastix.org                                               |
+  +----------------------------------------------------------------------+
+  | Copyright (c) 2006 Palosanto Solutions S. A.                         |
+  +----------------------------------------------------------------------+
+  | Cdla. Nueva Kennedy Calle E 222 y 9na. Este                          |
+  | Telfs. 2283-268, 2294-440, 2284-356                                  |
+  | Guayaquil - Ecuador                                                  |
+  | http://www.palosanto.com                                             |
+  +----------------------------------------------------------------------+
+  | The contents of this file are subject to the General Public License  |
+  | (GPL) Version 2 (the "License"); you may not use this file except in |
+  | compliance with the License. You may obtain a copy of the License at |
+  | http://www.opensource.org/licenses/gpl-license.php                   |
+  |                                                                      |
+  | Software distributed under the License is distributed on an "AS IS"  |
+  | basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See  |
+  | the License for the specific language governing rights and           |
+  | limitations under the License.                                       |
+  +----------------------------------------------------------------------+
+  | The Original Code is: Elastix Open Source.                           |
+  | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  +----------------------------------------------------------------------+
+*/
     
     require_once "libs/paloSantoForm.class.php";
 
-    function _moduleContent(&$smarty,$module_name) {
+if (!function_exists('_tr')) {
+    function _tr($s)
+    {
+        global $arrLang;
+        return isset($arrLang[$s]) ? $arrLang[$s] : $s;
+    }
+}
 
-        require_once "modules/$module_name/libs/paloSantoUploadFile.class.php";
+function _moduleContent(&$smarty,$module_name)
+{
+    global $arrLang;
 
-        $language=get_language();
-        $script_dir=dirname($_SERVER['SCRIPT_FILENAME']);
-        $lang_file="modules/$module_name/lang/$language.lang";
+    include_once "modules/$module_name/configs/config.php";
+    require_once "modules/$module_name/libs/paloSantoUploadFile.class.php";
 
-        if (file_exists("$script_dir/$lang_file")) {
-            include_once($lang_file);
+    // Obtengo la ruta del template a utilizar para generar el filtro.
+    $base_dir = dirname($_SERVER['SCRIPT_FILENAME']);
+    $templates_dir = (isset($config['templates_dir']))?$config['templates_dir']:'themes';
+    $local_templates_dir = "$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConfig['theme'];
+
+    // Obtengo el idioma actual utilizado en la aplicacion.
+    $language = get_language();
+    $script_dir = dirname($_SERVER['SCRIPT_FILENAME']);
+
+    // Include language file for EN, then for local, and merge the two.
+    $lang = NULL;
+    include_once("modules/$module_name/lang/en.lang");
+    $lang_file="modules/$module_name/lang/$language.lang";
+    if (file_exists("$script_dir/$lang_file")) {
+        $arrLanEN = $lang;
+        include_once($lang_file);
+        $lang = array_merge($arrLanEN, $lang);
+    }
+    $arrLang = array_merge($arrLang, $lang);
+
+
+    $smarty->assign("MODULE_NAME", $module_name);
+    $smarty->assign("LABEL_MESSAGE", _tr('Select file upload'));
+    $smarty->assign("Format_File", _tr('Format File'));
+    $smarty->assign("File", _tr('File'));
+    $smarty->assign('ETIQUETA_SUBMIT', _tr('Upload'));
+    $smarty->assign('ETIQUETA_DOWNLOAD', _tr('Download contacts'));
+
+    $form_campos = array(
+        'file'    =>    array(
+            "LABEL"                  => _tr('File'),
+            "REQUIRED"               => "yes",
+            "INPUT_TYPE"             => "FILE",
+            "INPUT_EXTRA_PARAM"      => "",
+            "VALIDATION_TYPE"        => "text",
+            "VALIDATION_EXTRA_PARAM" => "",
+        ),
+    );
+
+    $oForm = new paloForm($smarty,$form_campos);
+    $fContenido = $oForm->fetchForm("$local_templates_dir/form.tpl", _tr('Load File') ,$_POST);
+
+    if (isset($_POST['cargar_datos'])) {
+        $infoArchivo = $_FILES['fileCRM'];
+        if ($infoArchivo['error'] != 0) {
+            $smarty->assign("mb_title", _tr('Error'));
+            $smarty->assign("mb_message", _tr('Error while loading file'));
         } else {
-            include_once("modules/$module_name/lang/en.lang");
-        }
-
-        $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
-        $templates_dir=(isset($arrConfig['templates_dir']))?$arrConfig['templates_dir']:'themes';
-        $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'."default";
-
-        $smarty->assign("MODULE_NAME",$lang['Load File']);
-        $smarty->assign("NAME_FIELD_FILE",$lang['fileCRM']);
-        $smarty->assign("LABEL_MESSAGE",$lang['Select file upload']);
-        $botonSubmit = "<input class='button' type = 'submit' name='cargar_datos'
-                        value='{$lang['Upload']}' onClick=\"return validarFile(this.form.fileCRM.value)\" />";
-
-        $smarty->assign("Format_File",$lang['Format File']);
-        $smarty->assign("File",$lang['File']);
-        $smarty->assign("NAME_BUTTON",$botonSubmit);
-
-        $form_campos = array(
-            'file'    =>    array(
-                "LABEL"                  => $lang['File'],
-                "REQUIRED"               => "yes",
-                "INPUT_TYPE"             => "FILE",
-                "INPUT_EXTRA_PARAM"      => "",
-                "VALIDATION_TYPE"        => "text",
-                "VALIDATION_EXTRA_PARAM" => "",
-            ),
-        );
-
-        $oForm = new paloForm($smarty,$form_campos);
-
-        if ( is_object($oForm) ) {
-            $fContenido = mostrarFormulario($local_templates_dir,$oForm,$lang);
-            if (isset($_FILES['fileCRM'])) {
-                $file = $_FILES['fileCRM'];
-                if (isset($_POST["cargar_datos"])) {
-                    $cargaDatos = new Cargar_File($file);
-                    if( is_object($cargaDatos) )  {
-                        $nameFile=$cargaDatos->getFileName();
-                        $cargaDatos->guardarDatosClientes($nameFile,$module_name);
-                        $msgResultado = $cargaDatos->getMsgResultado();
-                        $oForm->setViewMode();
-                        $smarty->assign("mb_title",$lang['Result']);
-                        $smarty->assign("mb_message",$msgResultado);
-                        $fContenido = $oForm->fetchForm("$local_templates_dir/form.tpl", $lang['Load File'] ,null);
-                    } else { 
-                        $smarty->assign("mb_title",$lang['Error']);
-                        $smarty->assign("mb_message",$lang['Error when is loading file']);
-                    }
-                }
+            $sNombreTemp = $infoArchivo['tmp_name'];
+            $pDB = new paloDB($arrConfig['cadena_dsn']);
+            $oCarga = new paloSantoUploadFile($pDB);
+            $sEncoding = NULL;
+            $bExito = $oCarga->addCampaignNumbersFromFile($sNombreTemp, $sEncoding);
+            if (!$bExito) {
+                $smarty->assign("mb_title", _tr('Error'));
+                $smarty->assign("mb_message", _tr('Error while loading file').': '.$oCarga->errMsg);
+            } else {
+                $r = $oCarga->obtenerContadores();
+                $smarty->assign("mb_title", _tr('Result'));
+                $smarty->assign("mb_message", 
+                    _tr('Inserted records').': '.$r[0].'<br/>'.
+                    _tr('Updated records').': '.$r[1].'<br/>'.
+                    _tr('Detected charset').': '.$sEncoding);
             }
         }
-        return $fContenido;
     }
-
-    /*
-        Esta funcion muestra el formulario para cargar el archivo con los datos a ser subidos a a la base call_center
-        en la tabla contact
-    */
-    function mostrarFormulario($local_templates_dir,$oForm,$lang) {
-        $_POST["file"] = "";
-        $fContenido = $oForm->fetchForm("$local_templates_dir/form.tpl", $lang['Load File'] ,$_POST);
-        return $fContenido;
-    }
+    return $fContenido;
+}
 
 ?>

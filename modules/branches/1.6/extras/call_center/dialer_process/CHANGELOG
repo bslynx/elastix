@@ -1,3 +1,5 @@
+* Clients: rewrite file upload support to resemble campaign upload code, and 
+  detect charset encoding. Intended to fix Elastix bug #334.
 * Agent Console,Campaign Out: remove HTML codes from French translations, as 
   they seep into CSV export output. Fix #2 for Elastix bug #325.
 * Forms Designer: fix default selection of field type. Should prevent instances
