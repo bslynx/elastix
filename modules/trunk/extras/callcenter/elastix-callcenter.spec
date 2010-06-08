@@ -3,7 +3,7 @@
 Summary: Elastix Call Center 
 Name:    elastix-callcenter
 Version: 2.0.0
-Release: 5
+Release: 6
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
@@ -86,6 +86,58 @@ fi
 /etc/logrotate.d/elastixdialer
 
 %changelog
+* Tue Jun 08 2010 Alex Villacis Lasso <a_villacis@palosanto.com> 2.0.0-6
+- Updated version, synchronized with CallCenter 1.5-3.3
+- From CHANGELOG:
+	1.5-3.3
+	- Clients: implement download of existing contact information.
+	- Clients: rewrite file upload support to resemble campaign upload code, and 
+	  detect charset encoding. Intended to fix Elastix bug #334.
+	- Agent Console,Campaign Out: remove HTML codes from French translations, as 
+	  they seep into CSV export output. Fix #2 for Elastix bug #325.
+	- Forms Designer: fix default selection of field type. Should prevent instances
+	  of Elastix bug #206.
+	- Calls per Hour: replaced implementation with newest implementation of Graphic
+	  Calls. Originally (deduced via diff) Graphic Calls was a fork of Calls per
+	  Hour, and it inherited major flaws. The fixed Graphics Calls implementation
+	  is now folded back into Calls per Hour. Should fix Elastix bug #336.
+	- Campaigns Out: attempt to detect character encoding of uploaded CSV file in
+	  order to always store UTF-8 data in the database. Currently detects UTF-8
+	  and ISO-8859-15. Should fix Elastix bug #325.
+	- Agent Information: (1/2) Replace questionable UNION statement that tries to
+	  fetch everything at once with three distinct SELECTs. The UNION mixed 
+	  different datatypes in several columns, resulting in a mangling of UTF-8 
+	  encoding for break names. This mangling required a workaround in the view 
+	  via utf8_decode(), which did not work at all with characters outside latin-1.
+	  The mangling and the utf8_decode() workaround are no longer necessary.
+	  (2/2) Rewrite report to use the new data structure returned by (1/2). Remove
+	  dead code from (1/2). Fix CSV export to not insert HTML tags in download. 
+	- Agent Console: fix issue in which a session or break is incorrectly marked as
+	  belonging to an inactive agent with the same agent number as the current 
+	  active agent. Should fix Elastix bug #329.
+	- Dialer: monitor additional instances of Uniqueid that can be associated with
+	  a given call and might hold additional call failure information in their
+	  Hangup events.
+	- Reports Break: complete rewrite. Replace inefficient time lookup, and fix
+	  no-data issue on CSV export, as well as HTML tags in CSV export. Should fix
+	  Elastix bug #324. 
+	- Dialer: add support for reopening of logs when receiving SIGHUP, and 
+	  implement a corresponding logrotate directive to make use of this.
+	- Dialer: record hangup cause code and description for a failed outgoing call
+	  Currently implemented only for calls sent through default dialplan.
+	- Dialer: verify that enterqueue_timestamp is set
+	- Campaigns Out: fix warning on line that start with a comma
+	- Agent Console: verify that $_SESSION['elastix_agent_audit'] is set
+	- Agent Console: report most causes of "spontaneous" agent disconnection
+	- Agent Console: implement ability to save form information after call is
+	  disconnected. To use properly, the Wrapuptime parameter in the queue must
+	  be set to an appropriate value.
+	- Agent Console: fix reference to string without translation
+	- Agent Console: fix incorrect javascript in time counter reset
+	- Agent Console: fix function call with insufficient parameters
+	- Calls Details: remove reference to not-used status variable, including use
+	  of undefined $_POST index.
+
 * Wed May 05 2010 Alex Villacis Lasso <a_villacis@palosanto.com> 2.0.0-5
 - Updated version, synchronized with CallCenter 1.5-3.2
 - From CHANGELOG:
