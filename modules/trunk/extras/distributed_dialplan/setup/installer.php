@@ -39,7 +39,7 @@ if(!file_exists("$DataBaseRoot/elastixconnection.db")){
 }
 writeFilesAsterisk();
 $cmd_mkdir = "mkdir -p $DocumentRoot/elastixConnection";
-$cmd_mv    = "mv $tmpDir/setup/elastixconnection/* $DocumentRoot/elastixConnection";
+$cmd_mv    = "mv $tmpDir/setup/elastixConnection/* $DocumentRoot/elastixConnection";
 $cmd_chown = "chown -R asterisk.asterisk $DocumentRoot/elastixConnection";
 exec($cmd_mkdir);
 exec($cmd_mv);
