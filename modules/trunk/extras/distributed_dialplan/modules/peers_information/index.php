@@ -91,7 +91,7 @@ function _moduleContent(&$smarty, $module_name)
         case "new_request":
             $content = formRequest($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
             break;
-	case "request":
+    case "request":
             $content = sendConnectionRequest($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
             break;
         case "view":
@@ -105,7 +105,7 @@ function _moduleContent(&$smarty, $module_name)
             break;
         case "connect":
             $content = connectPeersInformation($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang); 
-            break;		
+            break;      
         case "acept_request":
             $content = AceptPeerRequest($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
             break;
@@ -164,7 +164,7 @@ function AceptPeerRequest($smarty, $module_name, $local_templates_dir, $pDB, $ar
       $arrPeerInfo = $pPeersInformation->ObtainPeersInformation();
       if(is_array($arrPeerInfo) && count($arrPeerInfo)>0){
          foreach($arrPeerInfo as $key => $value)
-  	     {
+         {
             if($value['mac'] == $mac)
                $peer_key = $value['key'];
          }
@@ -219,21 +219,24 @@ function socketConnection($smarty, $module_name, $local_templates_dir, $pDB, $ar
     $pPeersInformation = new paloSantoPeersInformation($pDB);
     $arrFormPeersInformation = createFieldForm($arrLang);
     $oForm = new paloForm($smarty,$arrFormPeersInformation);
-    $port_remote ="80";
+    //$port_remote ="80";
+    $port_remote ="443";
     $file_remote ="/elastixConnection/request.php";
     $respuesta = "";
     $key_answer = urlencode($local_key);
 
-    $conexion = fsockopen($ip_ask,$port_remote);
+    $conexion = fsockopen("ssl://".$ip_ask,$port_remote);
     if ($conexion) {
        //echo "Conexion realizada con éxito <br />";
        $dataSend="company_answer=$local_company&comment_answer=$comment&ip_answer=$local_ip&ip_ask=$ip_ask&mac_answer=$local_mac&key_answer=$key_answer&action=$action";
        $dataLenght = strlen($dataSend);
        $headerRequest = createHeaderHttp($ip_ask,$file_remote,$dataLenght);
        fputs($conexion,$headerRequest.$dataSend);
-       $var = fread($conexion,1024);
+       while(($r = fread($conexion,2048)) != ""){
+            $respuesta .= $r;
+       }
        //echo $var;
-       $respuesta = strstr($var,"BEGIN");
+       $respuesta = strstr($respuesta,"BEGIN");
        fclose ($conexion);
     }
   return $respuesta;
@@ -411,25 +414,25 @@ function reportPeersInformation($smarty, $module_name, $local_templates_dir, &$p
             else if($value['his_status'] == "connection rejected")
                $his_status = $arrLang["connection rejected"];
 
-	    	$arrTmp[0] = "<input type='checkbox' name='peer_{$value['id']}'  />";
-	    	$arrTmp[1] = $value['host'];
-	    	$arrTmp[2] = $value['mac'];
-        	if($value['status'] == "disconnected" || $value['status'] == "request accepted")
-             	$linkToConnect = "<a href='?menu=$module_name&action=connect&peerId=".$value['id']."'>{$arrLang['Connect']}</a>";
-        	else
-            	 $linkToConnect = "";
-        	if($value['status'] == "Requesting connection")
-           		 $arrTmp[3] = "<a href='?menu=$module_name&action=view&peerId=".$value['id']."&opcion=2'>$status</a>";
-        	else if($value['status'] == "request accepted" || $value['status'] == "connect")
+            $arrTmp[0] = "<input type='checkbox' name='peer_{$value['id']}'  />";
+            $arrTmp[1] = $value['host'];
+            $arrTmp[2] = $value['mac'];
+            if($value['status'] == "disconnected" || $value['status'] == "request accepted")
+                $linkToConnect = "<a href='?menu=$module_name&action=connect&peerId=".$value['id']."'>{$arrLang['Connect']}</a>";
+            else
+                 $linkToConnect = "";
+            if($value['status'] == "Requesting connection")
+                 $arrTmp[3] = "<a href='?menu=$module_name&action=view&peerId=".$value['id']."&opcion=2'>$status</a>";
+            else if($value['status'] == "request accepted" || $value['status'] == "connect")
                         $arrTmp[3] = "<span style='color:green;'>".$status."</span>";
-        	else if($value['status'] == "waiting response" || $value['status'] == "request reject" || $value['status'] == "request delete")
-            	       $arrTmp[3] = "<span style='color:red;'>".$status."</span>";
-        	else
-	       		$arrTmp[3] = $status;
-        	if($value['status'] =="waiting response" || $value['status'] == "request reject" || $value['status'] == "request delete")
-        		$arrTmp[5] = "";
-        	else
-            	       $arrTmp[5] = "<a href='?menu=$module_name&action=view&peerId=".$value['id']."&opcion=1'>{$arrLang['View']}</a>&nbsp;&nbsp;".$linkToConnect;
+            else if($value['status'] == "waiting response" || $value['status'] == "request reject" || $value['status'] == "request delete")
+                       $arrTmp[3] = "<span style='color:red;'>".$status."</span>";
+            else
+                $arrTmp[3] = $status;
+            if($value['status'] =="waiting response" || $value['status'] == "request reject" || $value['status'] == "request delete")
+                $arrTmp[5] = "";
+            else
+                       $arrTmp[5] = "<a href='?menu=$module_name&action=view&peerId=".$value['id']."&opcion=1'>{$arrLang['View']}</a>&nbsp;&nbsp;".$linkToConnect;
                 if($value['status'] == "request accepted")
                     $arrTmp[4] = "<span style='color:red;'>".$arrLang['disconnected']."</span>";
                 else{  if ($status == "disconnected" && $his_status == "disconnected")
@@ -441,7 +444,7 @@ function reportPeersInformation($smarty, $module_name, $local_templates_dir, &$p
                                 $arrTmp[4] = "<span style='color:red;'>".$his_status."</span>";
                        }
                     }
-        	$arrData[] = $arrTmp;
+            $arrData[] = $arrTmp;
         }
 
     }
@@ -455,17 +458,17 @@ function reportPeersInformation($smarty, $module_name, $local_templates_dir, &$p
                         "total"    => $total,
                         "url"      => $url,
                         "columns"  => array(
-			0 => array("name"      => "<input type='submit' name='delete_peer' value='{$arrLang["Delete"]}' class='button' onclick=\" return confirmSubmit('{$arrLang["Are you sure you wish to delete peer (s)?"]}');\" />",
+            0 => array("name"      => "<input type='submit' name='delete_peer' value='{$arrLang["Delete"]}' class='button' onclick=\" return confirmSubmit('{$arrLang["Are you sure you wish to delete peer (s)?"]}');\" />",
                                                     "property1" => ""),
-			1 => array("name"      => $arrLang["Host Name"],
+            1 => array("name"      => $arrLang["Host Name"],
                                                     "property1" => ""),
-			2 => array("name"      => $arrLang["MAC Address"],
+            2 => array("name"      => $arrLang["MAC Address"],
                                                     "property1" => ""),
-			3 => array("name"      => $arrLang["Local Status"],
+            3 => array("name"      => $arrLang["Local Status"],
                                                     "property1" => ""),
                         4 => array("name"      => $arrLang["Remote Status"],
                                                     "property1" => ""),
-			5 => array("name"      => $arrLang["Option"],
+            5 => array("name"      => $arrLang["Option"],
                                                     "property1" => ""),
                                         )
                     );
@@ -499,7 +502,7 @@ function rejectPeerRequest($smarty, $module_name, $local_templates_dir, $pDB, $a
     $ip_ask = $_POST['ipAsk'];  //ip de quien voy a eliminar
     $local_ip = isset($_SERVER['SERVER_ADDR'])?$_SERVER['SERVER_ADDR']:"";//ip local
     $action = 3; 
-	$pPeersInformation = new paloSantoPeersInformation($pDB);
+    $pPeersInformation = new paloSantoPeersInformation($pDB);
     $reject = socketReject($ip_ask, $local_ip, $action);
     if(ereg( "^BEGIN[[:space:]](.*)[[:space:]]END", $reject, $regs ))
       {
@@ -519,20 +522,23 @@ function rejectPeerRequest($smarty, $module_name, $local_templates_dir, $pDB, $a
 function socketReject($ip_ask, $local_ip, $action)
 {
    
-    $port_remote ="80";
+    //$port_remote ="80";
+    $port_remote ="443";
     $file_remote ="/elastixConnection/request.php";
     $respuesta = "";
     
-    $conexion = fsockopen($ip_ask,$port_remote);
+    $conexion = fsockopen("ssl://".$ip_ask,$port_remote);
     if ($conexion) {
        //echo "Conexion realizada con éxito <br />";
        $dataSend="ip_answer=$local_ip&action=$action";
        $dataLenght = strlen($dataSend);
        $headerRequest = createHeaderHttp($ip_ask,$file_remote,$dataLenght);
        fputs($conexion,$headerRequest.$dataSend);
-       $var = fread($conexion,1024);
+       while(($r = fread($conexion,2048)) != ""){
+            $respuesta .= $r;
+       }
        //echo $var;
-       $respuesta = strstr($var,"BEGIN");
+       $respuesta = strstr($respuesta,"BEGIN");
        fclose ($conexion);
     }
   return $respuesta;
@@ -551,19 +557,19 @@ function deletePeersInformation($smarty, $module_name, $local_templates_dir, $pD
             $tmpID = substr($key, 5);
             $dataPeer = $pPeersInformation->ObtainPeersDataById($tmpID);
             $ip_ask = $dataPeer['host'];
-		    $delete = socketReject($ip_ask, $local_ip, $action);
-    			if(ereg( "^BEGIN[[:space:]](.*)[[:space:]]END", $delete, $regs ))
-      			{
-          			if($regs[1] == "reject")
+            $delete = socketReject($ip_ask, $local_ip, $action);
+                if(ereg( "^BEGIN[[:space:]](.*)[[:space:]]END", $delete, $regs ))
+                {
+                    if($regs[1] == "reject")
                     {
-             			$result = $pPeersInformation->deleteInformationPeer($tmpID);
-		            	if(!$result)
-        		     	return($pDB->errMsg);
-            			$resultParameter = $pPeersInformation->deleteInformationParameter($tmpID);
-            			if(!$resultParameter)
-             			return($pDB->errMsg);
-          			}
-      			}          
+                        $result = $pPeersInformation->deleteInformationPeer($tmpID);
+                        if(!$result)
+                        return($pDB->errMsg);
+                        $resultParameter = $pPeersInformation->deleteInformationParameter($tmpID);
+                        if(!$resultParameter)
+                        return($pDB->errMsg);
+                    }
+                }          
         }
     }
     $content = reportPeersInformation($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
@@ -578,11 +584,12 @@ function socketRequest($smarty, $module_name, $local_templates_dir, $pDB, $arrCo
 
     $arrFormConnectionRequest = createFieldForm($arrLang);
     $oForm = new paloForm($smarty,$arrFormConnectionRequest);
-    $port_remote ="80";
+    //$port_remote ="80";
+    $port_remote ="443";
     $file_remote ="/elastixConnection/request.php";
     $respuesta = "";
     $key_request = urlencode($key);
-    $conexion = fsockopen($ip_remote,$port_remote);
+    $conexion = fsockopen("ssl://".$ip_remote,$port_remote);
     if ($conexion) {
        //echo "Conexion realizada con éxito <br />";
        $dataSend="ip_remote=$ip_remote&ip_request=$ip_request&company_request=$company_request&comment_request=$comment_request&mac_request=$mac_request&certificate_request=$certificate&key_request=$key_request&action=$action";
@@ -590,9 +597,11 @@ function socketRequest($smarty, $module_name, $local_templates_dir, $pDB, $arrCo
        $headerRequest = createHeaderHttp($ip_remote,$file_remote,$dataLenght);
        //echo "$headerRequest $dataSend";
        fputs($conexion,$headerRequest.$dataSend);
-       $var = fread($conexion,1024);
+       while(($r = fread($conexion,2048)) != ""){
+            $respuesta .= $r;
+       }
        //echo $var;
-       $respuesta = strstr($var,"BEGIN");
+       $respuesta = strstr($respuesta,"BEGIN");
        fclose ($conexion);
     }
   return $respuesta;
@@ -761,15 +770,15 @@ function createFieldForm($arrLang)
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-			"comment"  => array(      "LABEL"                  => $arrLang["Comment"],
-                							"REQUIRED"               => "no",
-							                "INPUT_TYPE"             => "TEXTAREA",
-							                "INPUT_EXTRA_PARAM"      => "",
-							                "VALIDATION_TYPE"        => "text",
-                							"EDITABLE"               => "no",
-                							"COLS"                   => "30",
-                							"ROWS"                   => "4",
-								            "VALIDATION_EXTRA_PARAM" => ""),
+            "comment"  => array(      "LABEL"                  => $arrLang["Comment"],
+                                            "REQUIRED"               => "no",
+                                            "INPUT_TYPE"             => "TEXTAREA",
+                                            "INPUT_EXTRA_PARAM"      => "",
+                                            "VALIDATION_TYPE"        => "text",
+                                            "EDITABLE"               => "no",
+                                            "COLS"                   => "30",
+                                            "ROWS"                   => "4",
+                                            "VALIDATION_EXTRA_PARAM" => ""),
             "company"   => array(      "LABEL"                  => $arrLang["Company"],
                                             "REQUIRED"               => "yes",
                                             "INPUT_TYPE"             => "TEXT",
@@ -777,7 +786,7 @@ function createFieldForm($arrLang)
                                             "VALIDATION_TYPE"        => "ip",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-			"ip"   => array(      "LABEL"                  => $arrLang["Host Remote"],
+            "ip"   => array(      "LABEL"                  => $arrLang["Host Remote"],
                                             "REQUIRED"               => "yes",
                                             "INPUT_TYPE"             => "TEXT",
                                             "INPUT_EXTRA_PARAM"      => "",
