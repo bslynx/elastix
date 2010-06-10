@@ -490,7 +490,7 @@ class paloSantoLoadExtension {
     {
         $querys = array();
 
-        $querys[] = "DELETE FROM sip";
+        $querys[] = "DELETE s FROM sip s INNER JOIN devices d ON s.id=d.id and d.tech='sip'";
         $querys[] = "DELETE u FROM users u INNER JOIN devices d ON u.extension=d.id and d.tech='sip'";
         $querys[] = "DELETE FROM devices WHERE tech='sip'";
         //$querys[] = "DELETE FROM iax";
