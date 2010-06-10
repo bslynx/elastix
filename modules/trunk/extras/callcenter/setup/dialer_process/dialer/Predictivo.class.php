@@ -220,8 +220,9 @@ class Predictivo
                 if (ereg('^[[:space:]]*([[:digit:]]{2,})', $sLinea, $regs)) {
             		$sAgente = $regs[1];  // Agente ha sido identificado
                     $regs = NULL;
-                    if (eregi('talking to ((SIP|IAX|ZAP|H323|OH323)/([[:alnum:]\-]{2,}))[[:space:]]+', $sLinea, $regs)) {
+                    if (eregi('talking to ((SIP|IAX|IAX2|ZAP|H323|OH323)/([[:alnum:]\-]{2,}))[[:space:]]+', $sLinea, $regs)) {
                     	$sCanalAgente = $regs[1];
+                        $tiempoAgente[$sAgente]['clientchannel'] = $sCanalAgente;
                         
                         // Para el canal, averiguar el momento de inicio de llamada
                         $respuestaCanal = $this->_astConn->Command("core show channel $sCanalAgente");
@@ -232,7 +233,10 @@ class Predictivo
                             if (ereg('level [[:digit:]]+: start=(.*)', $sLineaCanal, $regs)) {
                             	$sFechaInicio = $regs[1];
                                 $iTimestampInicio = strtotime($sFechaInicio);
-                                $tiempoAgente[$sAgente] = $iTimestampActual - $iTimestampInicio;
+                                $tiempoAgente[$sAgente]['talkTime'] = $iTimestampActual - $iTimestampInicio;
+                            }
+                            if (ereg('^DIALEDPEERNUMBER=(.+)$', $sLineaCanal, $regs)) {
+                                $tiempoAgente[$sAgente]['dialnumber'] = $regs[1];
                             }
                         }
                     } elseif (strpos($sLinea, 'is idle')) {
@@ -323,7 +327,12 @@ class Predictivo
 	                                // Agente está ocupado con una llamada
 	                                $estadoCola['members'][$sCodigoAgente]['status'] = 'inUse';
 	                                if (isset($tiempoAgente[$sCodigoAgente])) {
-	                                	$estadoCola['members'][$sCodigoAgente]['talkTime'] = $tiempoAgente[$sCodigoAgente]; 
+	                                	if (isset($tiempoAgente[$sCodigoAgente]['talkTime'])) 
+	                                	    $estadoCola['members'][$sCodigoAgente]['talkTime'] = $tiempoAgente[$sCodigoAgente]['talkTime']; 
+	                                	if (isset($tiempoAgente[$sCodigoAgente]['dialnumber'])) 
+    	                                	$estadoCola['members'][$sCodigoAgente]['dialnumber'] = $tiempoAgente[$sCodigoAgente]['dialnumber']; 
+	                                	if (isset($tiempoAgente[$sCodigoAgente]['clientchannel'])) 
+    	                                	$estadoCola['members'][$sCodigoAgente]['clientchannel'] = $tiempoAgente[$sCodigoAgente]['clientchannel']; 
 	                                }
                             	}
                             } else {
