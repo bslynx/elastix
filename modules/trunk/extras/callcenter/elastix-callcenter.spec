@@ -3,7 +3,7 @@
 Summary: Elastix Call Center 
 Name:    elastix-callcenter
 Version: 2.0.0
-Release: 6
+Release: 7
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
@@ -86,6 +86,17 @@ fi
 /etc/logrotate.d/elastixdialer
 
 %changelog
+* Fri Jun 11 2010 Alex Villacis Lasso <a_villacis@palosanto.com> 2.0.0-7
+- Updated version, synchronized with CallCenter 1.5-3.4
+- From CHANGELOG:
+	1.5-3.4
+	- Installer: The ALTER TABLE embedded in the middle of the SQL script to create
+	  the database will not work for creating the complete database in the clean
+	  install case. The script stops processing on the first error, so the remainder
+	  of the tables are not created. Embedding the creation in a stored procedure
+	  works in Elastix 2.0 but not in Elastix 1.6 due to Elastix bug #71. This makes
+	  it necessary to duplicate the schema check and update in PHP code.
+
 * Tue Jun 08 2010 Alex Villacis Lasso <a_villacis@palosanto.com> 2.0.0-6
 - Updated version, synchronized with CallCenter 1.5-3.3
 - From CHANGELOG:

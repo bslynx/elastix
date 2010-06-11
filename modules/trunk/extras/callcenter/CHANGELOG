@@ -1,3 +1,11 @@
+1.5-3.4
+* Installer: The ALTER TABLE embedded in the middle of the SQL script to create
+  the database will not work for creating the complete database in the clean
+  install case. The script stops processing on the first error, so the remainder
+  of the tables are not created. Embedding the creation in a stored procedure
+  works in Elastix 2.0 but not in Elastix 1.6 due to Elastix bug #71. This makes
+  it necessary to duplicate the schema check and update in PHP code.
+
 1.5-3.3
 * Clients: implement download of existing contact information.
 * Clients: rewrite file upload support to resemble campaign upload code, and 

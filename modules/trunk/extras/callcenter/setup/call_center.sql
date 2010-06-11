@@ -124,17 +124,13 @@ CREATE TABLE IF NOT EXISTS `calls` (
   /* 2010-05-12: Failure cause number and description for a failed call */
   `failure_cause`		int(10) unsigned default NULL,
   `failure_cause_txt`	varchar(32) default NULL,
-  
+
   PRIMARY KEY  (`id`),
   KEY `id_campaign` (`id_campaign`),
   KEY `calls_ibfk_2` (`id_agent`),
   CONSTRAINT `calls_ibfk_1` FOREIGN KEY (`id_campaign`) REFERENCES `campaign` (`id`),
   CONSTRAINT `calls_ibfk_2` FOREIGN KEY (`id_agent`) REFERENCES `agent` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-ALTER TABLE calls 
-ADD COLUMN failure_cause int(10) unsigned default null, 
-ADD COLUMN failure_cause_txt varchar(32) default null;
 
 --
 -- Table structure for table `campaign`
@@ -559,8 +555,35 @@ END;
 ++
 DELIMITER ; ++
 
-CALL temp_campania_entrante_trunk_2009_06_04();
-DROP PROCEDURE IF EXISTS temp_campania_entrante_trunk_2009_06_04;
+/* Procedimiento para agregar las columnas failure_cause y failure_cause_txt */
+DELIMITER ++ ;
+
+DROP PROCEDURE IF EXISTS temp_calls_failure_cause_2010_06_11 ++
+CREATE PROCEDURE temp_calls_failure_cause_2010_06_11 ()
+    READS SQL DATA
+    MODIFIES SQL DATA
+BEGIN
+    DECLARE l_existe_columna tinyint(1);
+    
+    SET l_existe_columna = 0;
+
+    /* Verificar existencia de columna calls.failure_cause que debe agregarse */
+    SELECT COUNT(*) INTO l_existe_columna 
+    FROM INFORMATION_SCHEMA.COLUMNS 
+    WHERE TABLE_SCHEMA = 'call_center' 
+        AND TABLE_NAME = 'calls' 
+        AND COLUMN_NAME = 'failure_cause';
+    IF l_existe_columna = 0 THEN
+		ALTER TABLE calls 
+		ADD COLUMN failure_cause int(10) unsigned default null, 
+		ADD COLUMN failure_cause_txt varchar(32) default null;
+    END IF;
+END;
+++
+DELIMITER ; ++
+
+CALL temp_calls_failure_cause_2010_06_11();
+DROP PROCEDURE IF EXISTS temp_calls_failure_cause_2010_06_11;
 
 
 /*!40000 ALTER TABLE `queue_call_entry` ENABLE KEYS */;
