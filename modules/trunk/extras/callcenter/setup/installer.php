@@ -45,6 +45,8 @@ if (file_exists($path_script_db))
     //STEP 1: Create database call_center
     $return=0;
     $return=$oInstaller->createNewDatabaseMySQL($path_script_db,"call_center",$datos_conexion);
+
+    $pDB = new paloDB ('mysql://root:'.MYSQL_ROOT_PASSWORD.'@localhost/call_center');
     quitarColumnaSiExiste($pDB, 'call_center', 'agent', 'queue');
     crearColumnaSiNoExiste($pDB, 'call_center', 'calls', 
         'dnc', 
