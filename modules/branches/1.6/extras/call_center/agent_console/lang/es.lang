@@ -108,6 +108,41 @@ $arrLan=array(
 
 
 "vtigercrm"=>"vTiger CRM",
-"Agent disconnected"=>"Agente desconectado"
+"Agent disconnected"=>"Agente desconectado",
+
+// ECUASISTENCIA
+"ProgramCalls"=>"Programar LLamadas",
+"Date Init"=>"Fecha Inicio",
+"Date End"=>"Fecha Fin",
+"Final Call" => "Llamar al final de la Campaña",
+"Add"=> "Agregar",
+"Add Other"=> "Agregar Otro",
+"Start time"=>"Hora Inicio",
+"End time"=>"Hora Fin",
+"Date field can not be empty"=>"El campo fecha no puede estar vacío",
+"You have to enter a a permitted hour"=>"Debe ingresar una hora válida",
+"Number field can not be empty"=>"Campo número no puede ser vacío",
+"Number field can be numeric"=>"Campo número debe ser numérico",
+
+"Invalid Start Date"=>"Fecha inicial inválida",
+"Invalid End Date" => "Fecha final inválida",
+"Invalid Start Time" => "Hora inicial inválida",
+"Invalid End Time" => "Hora final inválida",
+"Start Date must be greater than End Date" => "Fecha inicial debe ser mayor que fecha final",
+"Start Time must be greater than End Time" => "Hora inicial debe ser mayor que hora final",
+
+"Unable to parse start date specification" => "Unable to parse start date specification",
+"Unable to parse end date specification" => "Unable to parse end date specification",
+"Unable to parse start time specification" => "Unable to parse start time specification",
+"Unable to parse end time specification" => "Unable to parse end time specification",
+
+"You must be enter a valid init/end date" => "Debe ingresar una fecha inicio/fin",
+"The data has been saved" => "Los datos han sido guardados",
+"No data and no hour will be saved" => "No se guardará fecha ni hora",
+"A call with the same date and the same hour already exist"=>"Ya existe una llamada con la misma fecha y hora",
+"The scheduled call date range is not between the campaign date range"=>"El rango de fechas de la llamada programada no esta dentro del rango de fechas de la campaña",
+"The call has not been saved because the scheduled call date range is not between the campaign date range"=>"La llamada no ha sido guardada por que el rango de fechas de la llamada programada no esta dentro del rango de fechas de la campaña",
+"The scheduled call date range is not between the campaign date range. Are you sure do you want to save?"=>"El rango de fechas de la llamada programada no esta dentro del rango de fechas de la campaña. Esta seguro de que quiere guardar?"
+
 );
 ?>

@@ -242,6 +242,11 @@ function notificaLlamada($pestania, $prefijo_objeto, $nueva_llamada, $id_formula
                                     }
                                     $texto_llamada .= "</table>";
                                 }
+//ECUASISTENCIA: PONEMOS EL LINK DE PROGRAMAR LLAMADAS PARA GENERAR EL POPUP
+            $id_campana = $arr_campania["id_campaign"];
+            $respuesta->addAssign("link_programar_llamada","innerHTML","<a href='javascript: popup_llamada(\"modules/agent_console/libs/programar_llamadas.php?num_telefono=$llamada&id_call=$id_call&id_campana=$id_campana&cliente=$cliente\");' class='normal'>".$arrLan["ProgramCalls"]."</a>");
+
+//ECUASISTENCIA FIN 
                             } // fin del if q controla si hay nueva llamada
                         break;
                         case 'SCRIPT':
@@ -1947,10 +1952,13 @@ function transferirLlamadaCiega($id_extension) {
             $id_call = $arrValor['id'];
             // obtengo la extension de la llamada, sino hay una extension seleccionada se alamcena el valor 
             $cadenaExt = explode('/',$id_extension);
-            $extension = $cadenaExt[1];
+            if(count($cadenaExt)>1){
+                $extension = $cadenaExt[1];
+            }else{
+                $extension=$id_extension;
+            }
 
             $channel = getChannelClient($agentNum,$tipo,$resultado);
-
             if ($channel) {
                 if($id_extension=="No extension"){
                     $resultado = $arrLan["select extension"];

@@ -451,6 +451,9 @@ a.normal:link, a.normal:visited {
                                     <tr>
                                         <td valign='top' width='80%'><div id="numero_telefono"></div></td>
                                         <td valign='bottom' id='link_crm'>&nbsp;</td>
+<!--ECUASISTENCIA: LIN DE PROGRAMAR LLAMADAS-->
+                                        <td valign='bottom' id='link_programar_llamada'></td>
+<!--ECUASISTENCIA FIN-->
                                     </tr>
                                     </table><hr>
 <!--                              TABLA NUMERO TELEFONICO    -->
@@ -508,6 +511,16 @@ a.normal:link, a.normal:visited {
 document.getElementById("TABLA_LLAMADA").style.display="";
 document.getElementById("TABLA_SCRIPT").style.display="none";
 document.getElementById("TABLA_FORMULARIO").style.display="none";
+
+    function popup_llamada(url_popup)
+    {
+        var ancho = 600;
+        var alto = 300;
+        my_window = window.open(url_popup,"my_window","width="+ancho+",height="+alto+",location=yes,status=yes,resizable=yes,scrollbars=yes,fullscreen=no,toolbar=yes");
+        my_window.moveTo((screen.width-ancho)/2,(screen.height-alto)/2);
+        my_window.document.close();
+     }
+
 refrescar();
 </script>
 {/literal}

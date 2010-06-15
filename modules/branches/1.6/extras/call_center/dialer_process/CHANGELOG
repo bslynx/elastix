@@ -1,3 +1,6 @@
+* Agent Console: add interface for scheduling of calls to particular agents. 
+  This support requires a specific context to work properly.
+
 1.5-3.4
 * Installer: The ALTER TABLE embedded in the middle of the SQL script to create
   the database will not work for creating the complete database in the clean
