@@ -27,6 +27,7 @@
   +----------------------------------------------------------------------+
   $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
 
+global $arrConf;
 $arrConf['elastix_dbdir'] = '/var/www/db';
 $arrConf['elastix_dsn'] = array(
                                 "acl"       =>  "sqlite3:///$arrConf[elastix_dbdir]/acl.db",
@@ -41,3 +42,4 @@ $arrConf['elastix_version'] = load_version_elastix($arrConf['basePath']."/"); //
 $arrConf['defaultMenu'] = 'config';
 $arrConf['language'] = 'en';
 $arrConf['cadena_dsn'] = "mysql://asterisk:asterisk@localhost/call_center";
+?>
