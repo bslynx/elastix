@@ -1,3 +1,5 @@
+* Dialer: merge fix to prevent stale pidfile that happens to match an active 
+  process from making the daemon hang on startup. See Elastix bug #356. 
 * Agent Console: add interface for scheduling of calls to particular agents. 
   This support requires a specific context to work properly.
 
