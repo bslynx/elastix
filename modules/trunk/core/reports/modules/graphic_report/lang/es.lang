@@ -51,5 +51,6 @@ $arrLangModule=array(
 "All" => "Todos",
 "Show" => "Mostrar",
 "No records found"=>"No se encontraron registros",
+"No exist calls for this number" => "No hay llamadas para este número",
 );
 ?>

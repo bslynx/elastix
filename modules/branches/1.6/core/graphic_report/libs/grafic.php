@@ -11,10 +11,16 @@ load_language("../../../");
 $lang = get_language("../../../");
 $lang_file = "../lang/$lang.lang";
 
-if (file_exists( $lang_file ))
-    include_once($lang_file);
-else
+    // Include language file for EN, then for local, and merge the two.
+    $arrLangModule = NULL;
     include_once("../lang/en.lang");
+
+    if (file_exists($lang_file)) {
+        $arrLanEN = $arrLangModule;
+        include_once($lang_file);
+        $arrLangModule = array_merge($arrLanEN, $arrLangModule);
+    }
+
 global $arrLangModule;
 
 //*********************************************************
@@ -106,7 +112,7 @@ else
     $graph->xaxis->SetLabelAngle(90);
     $graph->xaxis->SetColor("#666666","#444444");
 
-    $titulo=utf8_decode("No exist calls for this number");
+    $titulo=utf8_decode($arrLangModule["No exist calls for this number"]);
     $im = imagecreate(400, 140);
     $background_color = imagecolorallocate($im, 255, 255, 255);
     $text_color = imagecolorallocate($im, 0, 0, 0);
@@ -117,6 +123,7 @@ else
         $msgError="Error data base...";
         imagestring($im, 2, 10, 40, $msgError, $text_color);
     }
+    header('Content-type: image/png');
     imagepng($im);
     imagedestroy($im);
 }
