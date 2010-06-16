@@ -79,6 +79,7 @@ function _moduleContent(&$smarty, $module_name)
     $accion = getAction();
 
     //Sirve para todos los casos
+    $smarty->assign("MODULE_NAME", $module_name);
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
     $smarty->assign("SAVE", $arrLang["Save"]);
     $smarty->assign("DOWNLOAD", $arrLang["Download Extensions"]);
@@ -87,7 +88,6 @@ function _moduleContent(&$smarty, $module_name)
     $smarty->assign("title_module", $arrLang["Batch of Extensions"]);
     $smarty->assign("HeaderFile", $arrLang["Header File Extensions Batch"]);
     $smarty->assign("AboutUpdate", $arrLang["About Update Extensions Batch"]);
-    $smarty->assign("LINK", "modules/$module_name/libs/download_csv.php");
     $html_input = "<input class='button' type='submit' name='delete_all' value='{$arrLang["Delete All Extensions"]}' onClick=\"return confirmSubmit('{$arrLang["Are you really sure you want to delete all the extensions in this server?"]}');\">";
     $smarty->assign("DELETE_ALL", $html_input);
 
@@ -99,6 +99,9 @@ function _moduleContent(&$smarty, $module_name)
             break;
         case 'load_extension':
             $content = load_extension($smarty, $module_name, $local_templates_dir, $arrLang, $arrConf, $base_dir, $pDB, $arrAST, $arrAMP);
+            break;
+        case 'download_csv':
+            download_extensions();
             break;
         default:
             $content = report_extension($smarty, $module_name, $local_templates_dir, $arrLang, $arrConf);
@@ -338,7 +341,65 @@ function getAction()
         return "delete_all";
     else if(isset($_GET["accion"]) && $_GET["accion"]=="backup_extension")
         return "backup_extension";
+    else if (isset($_GET['accion']) && $_GET['accion'] == 'download_csv')
+        return 'download_csv';
     else
         return "report_extension";
 }
+
+function download_extensions()
+{
+    
+    global $arrLang;
+    global $arrConf;
+    
+
+    $pDB = new paloDB($arrConf["cadena_dsn"]);
+    $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
+    $arrAMP  = $pConfig->leer_configuracion(false);
+
+    $dsnAsterisk = $arrAMP['AMPDBENGINE']['valor']."://".
+                   $arrAMP['AMPDBUSER']['valor']. ":".
+                   $arrAMP['AMPDBPASS']['valor']. "@".
+                   $arrAMP['AMPDBHOST']['valor']. "/asterisk";
+    $pDB = new paloDB($dsnAsterisk);
+    if(!empty($pDB->errMsg)) {
+        echo $arrLang["Error when connecting to database"]."\n".$pDB->errMsg;
+    }
+
+    header("Cache-Control: private");
+    header("Pragma: cache");
+    header('Content-Type: text/csv; charset=iso-8859-1; header=present');
+    header("Content-disposition: attachment; filename=extensions.csv");
+    echo backup_extensions($pDB);
+}
+
+function backup_extensions($pDB)
+{
+    global $arrLang;
+    $csv = "";
+    $pLoadExtension = new paloSantoLoadExtension($pDB);
+    $arrResult = $pLoadExtension->queryExtensions();
+
+    if(!$arrResult)
+        return $arrLang["There aren't extensions"];
+    else{
+        //cabecera
+        $csv .= "\"Display Name\",\"User Extension\",\"Direct DID\",\"Outbound CID\",\"Call Waiting\",".
+                "\"Secret\",\"Voicemail Status\",\"Voicemail Password\",\"VM Email Address\",".
+                "\"VM Pager Email Address\",\"VM Options\",\"VM Email Attachment\",".
+                "\"VM Play CID\",\"VM Play Envelope\",\"VM Delete Vmail\",\"Context\"\n";
+        foreach($arrResult as $key => $extension)
+        {
+            $csv .= "\"{$extension['name']}\",\"{$extension['extension']}\",\"{$extension['directdid']}\",\"{$extension['outboundcid']}\",".
+                    "\"{$extension['callwaiting']}\",\"{$extension['secret']}\",\"{$extension['voicemail']}\",".
+                    "\"{$extension['vm_secret']}\",\"{$extension['email_address']}\",\"{$extension['pager_email_address']}\",".
+                    "\"{$extension['vm_options']}\",\"{$extension['email_attachment']}\",\"{$extension['play_cid']}\",".
+                    "\"{$extension['play_envelope']}\",\"{$extension['delete_vmail']}\",\"{$extension['context']}\"".
+                    "\n";
+        }
+    }
+    return $csv;
+}
+
 ?>
