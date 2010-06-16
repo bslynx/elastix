@@ -305,7 +305,7 @@ $nodoContenido .= " <td class='table_data'><a href='".$self."/faxes/".$fax['faxp
             $nodoContenido .= " <td class='table_data'>".$fax['company_fax']."</td>\n";
             $nodoContenido .= " <td class='table_data'>".$fax['destiny_name']." - ".$fax['destiny_fax']."</td>\n";
             $nodoContenido .= " <td class='table_data'><center>".$fax['date']."</center></td>\n";
-            $nodoContenido .= " <td class='table_data'><a href='?menu=faxvisor&action=view&id=".$fax['id']."'>".$arrLang['Edit']."</a></td>\n";
+            $nodoContenido .= " <td class='table_data'><a href='?menu=faxviewer&action=view&id=".$fax['id']."'>".$arrLang['Edit']."</a></td>\n";
             $nodoContenido .= "</tr>\n";
         }
     }
