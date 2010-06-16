@@ -235,9 +235,14 @@ function notificaLlamada($pestania, $prefijo_objeto, $nueva_llamada, $id_formula
                                 if (is_array($arr_atributos)) {
                                     $texto_llamada = "<br><table border='0'>";
                                     foreach ($arr_atributos as $id=>$atributo) {
+                                        $sTextoValor = $atributo["value"];
+                                        if (strpos($sTextoValor, 'http://') === 0) {
+                                            $sTextoValor = "<a target=\"_blank\" href=\"".$atributo["value"]."\">".$atributo["value"]."</a>";
+                                        }
+                                        
                                         $texto_llamada .= "<tr>";
                                         $texto_llamada .= "<td with='350' class='celda_callcenter'><b>".$atributo["columna"].":</b></td>";
-                                        $texto_llamada .= "<td class='celda_callcenter'>".$atributo["value"]."</td>";
+                                        $texto_llamada .= "<td class='celda_callcenter'>$sTextoValor</td>";
                                         $texto_llamada .= "</tr>";
                                     }
                                     $texto_llamada .= "</table>";
