@@ -268,12 +268,31 @@ function finalizarInstanciaPrevia($sNombrePID)
         if (!is_array($contenido)) die("Unable to open PID file '$sNombrePID'\n");
         if (count($contenido) > 0 && ereg('^([[:digit:]]+)', $contenido[0], $regs)) {
             $iPid = $regs[1];
-            print "Signaling termination to PID $iPid...\n";
             if (posix_kill($iPid, 0)) {
-                if (!posix_kill($iPid, SIGINT)) die("Unable to signal PID $iPid (running as different user?)\n");
-                print "Waiting for PID $iPid to terminate...\n";
-                while (file_exists($sNombrePID)) usleep(1000000);
-                print "PID $iPid seems to have terminated, resuming startup...\n";
+                /* El siguiente método es específico de Linux y no funcionará 
+                   con otro OS. Se verifica si el proceso fue iniciado con PHP
+                   y si contiene como primer parámetro la cadena  */
+                $bValidoPID = TRUE;
+                if (!is_readable("/proc/$iPid/cmdline")) $bValidoPID = FALSE;
+                if ($bValidoPID) {
+                    $argv_proc = explode("\0", file_get_contents("/proc/$iPid/cmdline"));
+                    if (strpos($argv_proc[0], '/php') === FALSE) $bValidoPID = FALSE;
+                }
+                if (!$bValidoPID) {
+                    print "PID $iPid does not look like a PHP daemon. Assuming stale PID file.\n";
+                    unlink($sNombrePID);
+                } else {
+                    print "Signaling termination to PID $iPid...\n";
+                    if (!posix_kill($iPid, SIGINT)) {
+                        print "Unable to signal PID $iPid (running as different user?). Assuming stale PID file.\n";
+                        unlink($sNombrePID);
+                    }
+                }
+                if (file_exists($sNombrePID)) {
+                    print "Waiting for PID $iPid to terminate...\n";
+                    while (file_exists($sNombrePID)) usleep(1000000);
+                    print "PID $iPid seems to have terminated, resuming startup...\n";
+                }
             }
         }
     }
