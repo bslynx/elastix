@@ -369,12 +369,12 @@ function guardar_dominio_sistema($domain_name,&$errMsg)
     $continuar=FALSE;
     global $arrLang;
      //Se debe modificar el archivo /etc/postfix/main.cf para agregar el dominio a la variable
-     //virtual_mailbox_maps
+     //virtual_mailbox_domains
     $conf_file=new paloConfig("/etc/postfix","main.cf"," = ","[[:space:]]*=[[:space:]]*");
     $contenido=$conf_file->leer_configuracion();
-    $valor_anterior=$conf_file->privado_get_valor($contenido,"virtual_mailbox_maps");
+    $valor_anterior=$conf_file->privado_get_valor($contenido,"virtual_mailbox_domains");
     $valor_nuevo=construir_valor_nuevo_postfix($valor_anterior,$domain_name);
-    $arr_reemplazos=array('virtual_mailbox_maps'=>$valor_nuevo);
+    $arr_reemplazos=array('virtual_mailbox_domains'=>$valor_nuevo);
     $bValido=$conf_file->escribir_configuracion($arr_reemplazos);
     if($bValido){
         //Se deben recargar la configuracion de postfix
@@ -466,12 +466,12 @@ function eliminar_dominio($db,$arrDominio,&$errMsg)
 //Se elimina el dominio del archivo main.cf y se recarga la configuracion
         $continuar=FALSE;
        //Se debe modificar el archivo /etc/postfix/main.cf para borrar el dominio a la variable
-       //virtual_mailbox_maps
+       //virtual_mailbox_domains
         $conf_file=new paloConfig("/etc/postfix","main.cf"," = ","[[:space:]]*=[[:space:]]*");
         $contenido=$conf_file->leer_configuracion();
-        $valor_anterior=$conf_file->privado_get_valor($contenido,"virtual_mailbox_maps");
+        $valor_anterior=$conf_file->privado_get_valor($contenido,"virtual_mailbox_domains");
         $valor_nuevo=construir_valor_nuevo_postfix($valor_anterior,$arrDominio['domain_name'],TRUE);
-        $arr_reemplazos=array('virtual_mailbox_maps'=>$valor_nuevo);
+        $arr_reemplazos=array('virtual_mailbox_domains'=>$valor_nuevo);
         $bValido=$conf_file->escribir_configuracion($arr_reemplazos);
 
         if($bValido){
