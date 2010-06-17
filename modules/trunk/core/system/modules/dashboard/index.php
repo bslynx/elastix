@@ -65,6 +65,8 @@ function _moduleContent($smarty, $module_name)
     $oPalo = new paloSantoSysInfo();
     $arrSysInfo = $oPalo->getSysInfo();
 
+	$RSS = $arrConf['dir_RSS'];
+
     $action = getParameter("action");
     if($action=="saveRegister"){
         $hwd = getParameter("hwd");
@@ -72,7 +74,7 @@ function _moduleContent($smarty, $module_name)
         $vendor = getParameter("vendor");
 
         ini_set("soap.wsdl_cache_enabled", "0");
-        $client = new SoapClient("http://webservice.elastix.org/modules/serial_hardware_telephony/webservice/telephonyHardware.wsdl");
+        $client = new SoapClient($arrConf['dir_WebServices']);
 
         $client->registerHardware($vendor,$num_serie);
         return $oPalo->registerCard($hwd, $num_serie,$vendor);
@@ -122,7 +124,7 @@ function _moduleContent($smarty, $module_name)
 
 
     $arrPaneles = $oPalo->getAppletsActivated($_SESSION["elastix_user"]);
-    $AppletsPanels = createApplesTD($arrPaneles, $module_name, $voiceMails, $faxRows, $mails, $callsRows, $arrServices, $arrParticiones, $eventsRows, $systemStatus, $arrCards, $arrSysInfo);
+    $AppletsPanels = createApplesTD($arrPaneles, $module_name, $voiceMails, $faxRows, $mails, $callsRows, $arrServices, $arrParticiones, $eventsRows, $systemStatus, $arrCards, $arrSysInfo, $RSS);
 
     $smarty->assign("module_name",  $module_name);
     $smarty->assign("AppletsPanels",$AppletsPanels);
@@ -206,10 +208,10 @@ function performanceGrafic($arrParticiones, $module_name, $idApplet)
     return $str;
 }
 
-function createNews($module_name, $idApplet){
+function createNews($module_name, $idApplet, $RSS){
 	$str = "";
 	//$url = "http://sourceforge.net/export/rss2_projnews.php?group_id=161807";
-    $url = "http://www.elastix.org/component/option,com_rss/feed,RSS2.0/no_html,1/lang,en";
+    $url = $RSS;
 	$rss = fetch_rss($url);
     global $arrLang;
 	$str2 = "";
@@ -629,16 +631,16 @@ function communicationActivity($module_name, $idApplet)
     return $str;
 }
 
-function createApplesTD($arrPaneles, $module_name, $voiceMails, $faxRows, $mails, $callsRows, $arrServices, $arrParticiones, $eventsRows, $systemStatus, $arrCards, $arrSysInfo){
+function createApplesTD($arrPaneles, $module_name, $voiceMails, $faxRows, $mails, $callsRows, $arrServices, $arrParticiones, $eventsRows, $systemStatus, $arrCards, $arrSysInfo, $RSS){
 	$str1 = "<td id='td_columns1'>";
 	$str2 = "<td id='td_columns2'>";
 	$idApplet = "";
 	for($i=0; $i<count($arrPaneles); $i++){
 		$applestUser = $arrPaneles[$i];
 		if(($i%2)==0){
-			$str1 .= returnAppletPannel($applestUser, $module_name, $voiceMails, $faxRows, $mails, $callsRows, $arrServices, $arrParticiones, $eventsRows, $systemStatus, $arrCards, $arrSysInfo);
+			$str1 .= returnAppletPannel($applestUser, $module_name, $voiceMails, $faxRows, $mails, $callsRows, $arrServices, $arrParticiones, $eventsRows, $systemStatus, $arrCards, $arrSysInfo, $RSS);
 		}else{
-			$str2 .= returnAppletPannel($applestUser, $module_name, $voiceMails, $faxRows, $mails, $callsRows, $arrServices, $arrParticiones, $eventsRows, $systemStatus, $arrCards, $arrSysInfo);
+			$str2 .= returnAppletPannel($applestUser, $module_name, $voiceMails, $faxRows, $mails, $callsRows, $arrServices, $arrParticiones, $eventsRows, $systemStatus, $arrCards, $arrSysInfo, $RSS);
 		}
 	}
 	$str1 .= "</td>";
@@ -647,7 +649,7 @@ function createApplesTD($arrPaneles, $module_name, $voiceMails, $faxRows, $mails
 	return $str;
 }
 
-function returnAppletPannel($applestUser, $module_name, $voiceMails, $faxRows, $mails, $callsRows, $arrServices, $arrParticiones, $eventsRows, $systemStatus, $arrCards, $arrSysInfo){
+function returnAppletPannel($applestUser, $module_name, $voiceMails, $faxRows, $mails, $callsRows, $arrServices, $arrParticiones, $eventsRows, $systemStatus, $arrCards, $arrSysInfo, $RSS){
 	$str = "";
 	switch ($applestUser['code'])
 	{
@@ -655,7 +657,7 @@ function returnAppletPannel($applestUser, $module_name, $voiceMails, $faxRows, $
 			$str = getSystemResource($arrSysInfo, $module_name, $applestUser['aau_id']);
 		break;
 		case "news":
-			$str = createNews($module_name, $applestUser['aau_id']);
+			$str = createNews($module_name, $applestUser['aau_id'], $RSS);
 		break;
 		case "hard_drivers":
 			$str = buildInfoImage_Discs($arrParticiones, $module_name, $applestUser['aau_id']);
