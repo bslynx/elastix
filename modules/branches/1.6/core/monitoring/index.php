@@ -41,9 +41,16 @@ function _moduleContent(&$smarty, $module_name)
     
     $lang=get_language();
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
+
+    // Include language file for EN, then for local, and merge the two.
+    $arrLangModule = NULL;
+    include_once("modules/$module_name/lang/en.lang");
     $lang_file="modules/$module_name/lang/$lang.lang";
-    if (file_exists("$base_dir/$lang_file")) include_once "$lang_file";
-    else include_once "modules/$module_name/lang/en.lang";
+    if (file_exists("$base_dir/$lang_file")) {
+        $arrLanEN = $arrLangModule;
+        include_once($lang_file);
+        $arrLangModule = array_merge($arrLanEN, $arrLangModule);
+    }
 
     //global variables
     global $arrConf;
@@ -212,7 +219,7 @@ function _moduleContent(&$smarty, $module_name)
                 $llamada=obtenerCDROnDemand($pDBCDR,$extension,$regs[1], $esAdministrador);
                 if(count($llamada)>0){
                     $llamada['archivo']=$archivo;
-                    $llamada['type'] = "on demand";
+                    $llamada['type'] = $arrLang["on demand"];
                     $llamadas[strtotime($llamada['calldate'])]=$llamada;
                 }
              }
@@ -223,7 +230,7 @@ function _moduleContent(&$smarty, $module_name)
                 $llamada=obtenerCDR_with_uniqueid($pDBCDR,$unique_id);
                 if(count($llamada)>0){
                     $llamada['archivo'] = $archivo;
-                    $llamada['type'] = "auto - incoming";
+                    $llamada['type'] = $arrLang["auto - incoming"];
                     $llamadas[strtotime($llamada['calldate'])]=$llamada;
                 }
             }
@@ -238,7 +245,7 @@ function _moduleContent(&$smarty, $module_name)
                 $llamada=obtenerCDRIncoming($pDBCDR,$extension, $calldate, $esAdministrador);
                 if(count($llamada)>0){
                     $llamada['archivo']=$archivo;
-                    $llamada['type'] = "auto - incoming";
+                    $llamada['type'] = $arrLang["auto - incoming"];
                     $llamadas[strtotime($llamada['calldate'])]=$llamada;
                 }
             }/*
@@ -251,7 +258,7 @@ function _moduleContent(&$smarty, $module_name)
                  //ya tengo el archivo, busco el correspondiente en el registro de llamadas - con el timestamp y la extension
                  $llamada=obtenerCDRIncoming($pDBCDR,$extension, $calldate);
                  $llamada['archivo']=$archivo;
-                 $llamada['type'] = "incoming";
+                 $llamada['type'] = $arrLang["incoming"];
                  $llamadas[strtotime($llamada['calldate'])]=$llamada;
             }*/
 
@@ -262,7 +269,7 @@ function _moduleContent(&$smarty, $module_name)
                 $llamada=obtenerCDR_with_uniqueid($pDBCDR,$unique_id);
                 if(count($llamada)>0){
                     $llamada['archivo'] = $archivo;
-                    $llamada['type'] = "always";
+                    $llamada['type'] = $arrLang["always"];
                     if($extension==$llamada['src'] || $extension==$llamada['dst'] || $extension=="[[:digit:]]+") //se se cumple esto es porque es el usuario solo puede ver sus llamadas y la otra es porque es administrador
                         $llamadas[strtotime($llamada['calldate'])]=$llamada;
                 }
@@ -274,7 +281,7 @@ function _moduleContent(&$smarty, $module_name)
                 $llamada=obtenerCDR_with_uniqueid($pDBCDR,$unique_id);
                 if(count($llamada)>0){
                     $llamada['archivo'] = $archivo;
-                    $llamada['type'] = "always";
+                    $llamada['type'] = $arrLang["always"];
                     if($extension==$llamada['src'] || $extension==$llamada['dst'] || $extension=="[[:digit:]]+") //se se cumple esto es porque es el usuario solo puede ver sus llamadas y la otra es porque es administrador
                         $llamadas[strtotime($llamada['calldate'])]=$llamada;
                 }
@@ -289,7 +296,7 @@ function _moduleContent(&$smarty, $module_name)
                 $llamada=obtenerCDR_with_uniqueid($pDBCDR,$unique_id);
                 if(count($llamada)>0){
                     $llamada['archivo'] = $archivo;
-                    $llamada['type'] = "auto - outgoing";
+                    $llamada['type'] = $arrLang["auto - outgoing"];
                     $llamadas[strtotime($llamada['calldate'])]=$llamada;
                 }
             }
@@ -304,7 +311,7 @@ function _moduleContent(&$smarty, $module_name)
                 $llamada=obtenerCDROutgoing($pDBCDR,$extension, $calldate, $esAdministrador);
                 if(count($llamada)>0){
                     $llamada['archivo'] = $archivo;
-                    $llamada['type'] = "auto - outgoing";
+                    $llamada['type'] = $arrLang["auto - outgoing"];
                     $llamadas[strtotime($llamada['calldate'])]=$llamada;
                 }
             }
@@ -319,7 +326,7 @@ function _moduleContent(&$smarty, $module_name)
                 $llamada=obtenerCDROutgoing($pDBCDR,$extension, $calldate, $esAdministrador);
                 if(count($llamada)>0){
                     $llamada['archivo'] = $archivo;
-                    $llamada['type'] = "auto - outgoing";
+                    $llamada['type'] = $arrLang["auto - outgoing"];
                     $llamadas[strtotime($llamada['calldate'])]=$llamada;
                 }
             }
@@ -332,7 +339,7 @@ function _moduleContent(&$smarty, $module_name)
                 $llamada=obtenerCDR_with_uniqueid($pDBCDR,$unique_id);
                 if(count($llamada)>0){
                     $llamada['archivo'] = $archivo;
-                    $llamada['type'] = "queue - total";
+                    $llamada['type'] = $arrLang["queue - total"];
                     $llamadas[strtotime($llamada['calldate'])]=$llamada;
                 }
             }
@@ -343,7 +350,7 @@ function _moduleContent(&$smarty, $module_name)
                 $llamada=obtenerCDR_with_uniqueid($pDBCDR,$unique_id);
                 if(count($llamada)>0){
                     $llamada['archivo'] = $archivo;
-                    $llamada['type'] = "queue - in";
+                    $llamada['type'] = $arrLang["queue - in"];
                     $llamadas[strtotime($llamada['calldate'])."-in"]=$llamada;
                 }
             }
@@ -354,7 +361,7 @@ function _moduleContent(&$smarty, $module_name)
                 $llamada=obtenerCDR_with_uniqueid($pDBCDR,$unique_id);
                 if(count($llamada)>0){
                     $llamada['archivo'] = $archivo;
-                    $llamada['type'] = "queue - out";
+                    $llamada['type'] = $arrLang["queue - out"];
                     $llamadas[strtotime($llamada['calldate'])."-out"]=$llamada;
                 }
             }
@@ -366,7 +373,7 @@ function _moduleContent(&$smarty, $module_name)
                 $llamada = obtenerCDR_with_uniqueid($pDBCDR,$unique_id);
                 if(count($llamada)>0){
                     $llamada['archivo'] = $archivo;
-                    $llamada['type'] = "always";
+                    $llamada['type'] = $arrLang["always"];
                     if($extension==$llamada['src'] || $extension==$llamada['dst'] || $extension=="[[:digit:]]+") //se se cumple esto es porque es el usuario solo puede ver sus llamadas y la otra es porque es administrador
                         $llamadas[strtotime($llamada['calldate'])]=$llamada;
                 }

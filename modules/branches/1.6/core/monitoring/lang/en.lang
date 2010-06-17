@@ -44,5 +44,13 @@ $arrLangModule=array(
 "Message" => "Message",
 "Listen" => "Listen",
 "Download" => "Download",
+"on demand" => "on demand",
+"Auto" => "Auto",
+"always" => "always",
+"auto - outgoing" => "auto - outgoing",
+"auto - incoming" => "auto - incoming",
+"queue - total" => "queue - total",
+"queue - in" => "queue - in",
+"queue - out" => "queue - out",
 );
 ?>
