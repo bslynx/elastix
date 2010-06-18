@@ -603,19 +603,6 @@ function checkbox($id_name, $checked='off', $disable='off')
                   </script>";
     return $checkbox;
 }
-/**
-* This function Obtain all name files into of a directory where $type is the extension of the file
-*
-* Ejemplo: $array = obtainFiles('/var/www/html/modules/calendar/themes/default/js/','js');
-*/
-function obtainFiles($dir,$type){
-        $files =  glob($dir."/{*.$type}",GLOB_BRACE);
-        $names ="";
-        foreach ($files as $ima)
-            $names[]=array_pop(split("/",$ima));
-        if(!$names) return false;
-        return $names;
-}
 
 /**
 * Funcion que sirve para obtener los valores de los parametros de los campos en los

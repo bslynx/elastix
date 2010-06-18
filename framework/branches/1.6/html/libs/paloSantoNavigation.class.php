@@ -288,6 +288,7 @@ class paloSantoNavigation {
         if(file_exists("modules/$module/index.php")) {
             include "modules/$module/index.php";
             if(function_exists("_moduleContent")) {
+                $this->getModuleScripts($module);
                 return _moduleContent($this->smarty,$module);
             } else {
                 return "Wrong module: modules/$module/index.php";
@@ -315,8 +316,58 @@ class paloSantoNavigation {
         return $_SERVER['SERVER_NAME']; 
     }
 
-    function ObtenerMenu()
+    function getModuleScripts($menuLibs)  // add by eduardo
     {
+        // get the header with scripts and links(css)
+        $directory = "/var/www/html/modules/".$menuLibs;
+        $HEADER_MODULES = "";
+        if(is_dir($directory)){
+            $directoryScrips = "/var/www/html/modules/$menuLibs/themes/default/js/";
+            $directoryCss = "/var/www/html/modules/$menuLibs/themes/default/css/";
+            if(is_dir($directoryScrips)){
+                $arr_js = $this->obtainFiles($directoryScrips,"js");
+                if($arr_js!=false && count($arr_js)>0){
+                    for($i=0; $i<count($arr_js); $i++){
+                        $dir_script = "/modules/$menuLibs/themes/default/js/".$arr_js[$i];
+                        $HEADER_MODULES .= "\n<script src='$dir_script'></script>";
+                    }
+                }
+            }
+            if(is_dir($directoryCss)){
+                $arr_css = $this->obtainFiles($directoryCss,"css");
+                if($arr_css!=false && count($arr_css)>0){
+                    for($i=0; $i<count($arr_css); $i++){
+                        $dir_css = "/modules/$menuLibs/themes/default/css/".$arr_css[$i];
+                        $HEADER_MODULES .= "\n<link rel='stylesheet' href='$dir_css' />";
+                    }
+                }
+            }
+            //$HEADER
+        }
+        $this->smarty->assign("HEADER_MODULES",$HEADER_MODULES);
+    }
+
+    /**
+    *
+    * Description:
+    *   This function Obtain all name files into of a directory where $type is the extension of the file
+    *
+    * Example: 
+    *   $array = obtainFiles('/var/www/html/modules/calendar/themes/default/js/','js');
+    *
+    * Developer: 
+    *   Eduardo Cueva
+    *
+    * e-mail: 
+    *   ecueva@palosanto.com
+    */
+    function obtainFiles($dir,$type){
+            $files =  glob($dir."/{*.$type}",GLOB_BRACE);
+            $names ="";
+            foreach ($files as $ima)
+                $names[]=array_pop(split("/",$ima));
+            if(!$names) return false;
+            return $names;
     }
 }
 ?>
