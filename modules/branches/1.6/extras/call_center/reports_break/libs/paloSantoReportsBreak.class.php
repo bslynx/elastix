@@ -58,6 +58,15 @@ class paloSantoReportsBreak
      */
     function getReportesBreak($fecha_init,$fecha_end)
     {
+        if (!ereg('^[[:digit:]]{4}-[[:digit:]]{2}-[[:digit:]]{2}$', $fecha_init)) {
+            $this->errMsg = '(internal) Invalid start date, expected yyyy-mm-dd';
+            return NULL;
+        }
+        if (!ereg('^[[:digit:]]{4}-[[:digit:]]{2}-[[:digit:]]{2}$', $fecha_end)) {
+            $this->errMsg = '(internal) Invalid end date, expected yyyy-mm-dd';
+            return NULL;
+        }
+        
         $sPeticionSQL = <<<LEER_SUMARIO_BREAK
 SELECT agent.id AS id_agente, agent.number, agent.name AS nombre_agente, audit.id_break, 
     break.name AS nombre_break, 
@@ -70,7 +79,7 @@ WHERE agent.estatus = "A"
 GROUP BY agent.id, audit.id_break
 LEER_SUMARIO_BREAK;
 
-        $recordset =& $this->_DB->fetchTable($sPeticionSQL, TRUE, array($fecha_init, $fecha_end));
+        $recordset =& $this->_DB->fetchTable($sPeticionSQL, TRUE, array($fecha_init.' 00:00:00', $fecha_end.' 23:59:59'));
         if (!is_array($recordset)) {
             $this->errMsg = $this->_DB->errMsg;
             return NULL;
