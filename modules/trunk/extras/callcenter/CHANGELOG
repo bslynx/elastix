@@ -1,3 +1,4 @@
+* Dialer: fix accessing of undefined Uniqueid variable in OnDial event.
 * Agent Console: recognize call attributes that are HTTP URLs, and display them
   as hyperlinks.
 * Dialer: merge fix to prevent stale pidfile that happens to match an active 

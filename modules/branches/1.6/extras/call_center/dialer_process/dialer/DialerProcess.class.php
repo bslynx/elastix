@@ -1748,7 +1748,8 @@ PETICION_LLAMADAS;
         // el DestUniqueID correspondiente. Potencialmente esto permite también
         // trazar la troncal por la cual salió la llamada.
         foreach (array_keys($this->_infoLlamadas['llamadas']) as $sKey) {
-        	if ($params['SrcUniqueID'] == $this->_infoLlamadas['llamadas'][$sKey]->Uniqueid ||
+        	if ((isset($this->_infoLlamadas['llamadas'][$sKey]->Uniqueid) && 
+                $params['SrcUniqueID'] == $this->_infoLlamadas['llamadas'][$sKey]->Uniqueid) ||
                 (isset($this->_infoLlamadas['llamadas'][$sKey]->AuxChannels) && 
                  in_array($params['SrcUniqueID'], array_keys($this->_infoLlamadas['llamadas'][$sKey]->AuxChannels)))) {
                 if (!isset($this->_infoLlamadas['llamadas'][$sKey]->AuxChannels))
