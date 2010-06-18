@@ -302,7 +302,7 @@ class paloSantoNavigation {
         if(file_exists("modules/$module/index.php")) {
             include "modules/$module/index.php";
             if(function_exists("_moduleContent")) {
-                $this->getModuleScripts($module);
+                $this->putHEAD_HTML($module);
                 return _moduleContent($this->smarty,$module);
             } else {
                 return "Wrong module: modules/$module/index.php";
@@ -330,19 +330,37 @@ class paloSantoNavigation {
         return $_SERVER['SERVER_NAME']; 
     }
 
-    function getModuleScripts($menuLibs)  // add by eduardo
+    /**
+    *
+    * Description:
+    *   This function put the tags css and js per each module and the libs of the framework
+    *
+    * Example: 
+    *   $array = obtainFiles('calendar');
+    *
+    * Developer: 
+    *   Eduardo Cueva
+    *
+    * e-mail: 
+    *   ecueva@palosanto.com
+    */
+    function putHEAD_HTML($menuLibs)  // add by eduardo
     {
         // get the header with scripts and links(css)
-        $directory = "/var/www/html/modules/".$menuLibs;
+        $documentRoot = $_SERVER["DOCUMENT_ROOT"];
+
+        //STEP 1: include file of module
+        $directory = "$documentRoot/modules/".$menuLibs;
         $HEADER_MODULES = "";
         if(is_dir($directory)){
-            $directoryScrips = "/var/www/html/modules/$menuLibs/themes/default/js/";
-            $directoryCss = "/var/www/html/modules/$menuLibs/themes/default/css/";
+            // FIXED: The theme default shouldn't be static. 
+            $directoryScrips = "$documentRoot/modules/$menuLibs/themes/default/js/";
+            $directoryCss = "$documentRoot/modules/$menuLibs/themes/default/css/";
             if(is_dir($directoryScrips)){
                 $arr_js = $this->obtainFiles($directoryScrips,"js");
                 if($arr_js!=false && count($arr_js)>0){
                     for($i=0; $i<count($arr_js); $i++){
-                        $dir_script = "/modules/$menuLibs/themes/default/js/".$arr_js[$i];
+                        $dir_script = "modules/$menuLibs/themes/default/js/".$arr_js[$i];
                         $HEADER_MODULES .= "\n<script src='$dir_script'></script>";
                     }
                 }
@@ -351,14 +369,45 @@ class paloSantoNavigation {
                 $arr_css = $this->obtainFiles($directoryCss,"css");
                 if($arr_css!=false && count($arr_css)>0){
                     for($i=0; $i<count($arr_css); $i++){
-                        $dir_css = "/modules/$menuLibs/themes/default/css/".$arr_css[$i];
+                        $dir_css = "modules/$menuLibs/themes/default/css/".$arr_css[$i];
                         $HEADER_MODULES .= "\n<link rel='stylesheet' href='$dir_css' />";
                     }
                 }
             }
-            //$HEADER
+            //$HEADER_MODULES
         }
         $this->smarty->assign("HEADER_MODULES",$HEADER_MODULES);
+
+        //STEP 2: include file of framework
+        $HEADER_LIBS_JQUERY = "";
+        $JQqueryDirectory = "$documentRoot/libs/js/jquery";
+        // it to load libs JQuery
+        if(is_dir($JQqueryDirectory)){
+            $directoryScrips = "$documentRoot/libs/js/jquery/";
+            if(is_dir($directoryScrips)){
+                $arr_js = $this->obtainFiles($directoryScrips,"js");
+                if($arr_js!=false && count($arr_js)>0){
+                    for($i=0; $i<count($arr_js); $i++){
+                        $dir_script = "libs/js/jquery/".$arr_js[$i];
+                        $HEADER_LIBS_JQUERY .= "\n<script src='$dir_script'></script>";
+                    }
+                }
+            }
+
+            // FIXED: The css ui-lightness shouldn't be static.
+            $directoryCss = "$documentRoot/libs/js/jquery/css/ui-lightness/";
+            if(is_dir($directoryCss)){
+                $arr_css = $this->obtainFiles($directoryCss,"css");
+                if($arr_css!=false && count($arr_css)>0){
+                    for($i=0; $i<count($arr_css); $i++){
+                        $dir_css = "libs/js/jquery/css/ui-lightness/".$arr_css[$i];
+                        $HEADER_LIBS_JQUERY .= "\n<link rel='stylesheet' href='$dir_css' />";
+                    }
+                }
+            }
+            //$HEADER_LIBS_JQUERY
+        }
+        $this->smarty->assign("HEADER_LIBS_JQUERY",$HEADER_LIBS_JQUERY);
     }
 
     /**
