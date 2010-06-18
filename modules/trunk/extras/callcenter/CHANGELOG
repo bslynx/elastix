@@ -1,3 +1,6 @@
+* Dialer: add and use new column to record timestamp of Originate execution for
+  call. This is needed for upcoming support for outgoing monitoring 
+  information. 
 * Reports Break: rewrite introduced a regression in date select that prevented
   data from being fetched if the start and end date are the same. Fixed. Should
   fix Elastix bug #360.

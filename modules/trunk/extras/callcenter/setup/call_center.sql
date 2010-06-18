@@ -99,14 +99,14 @@ CREATE TABLE IF NOT EXISTS `calls` (
   `phone` varchar(32) NOT NULL,
   `status` varchar(32) default NULL,
   `uniqueid` varchar(32) default NULL,
-  `fecha_llamada` datetime default NULL,
-  `start_time` datetime default NULL,
-  `end_time` datetime default NULL,
+  `fecha_llamada` datetime default NULL,	/* Received event: OriginateResponse */
+  `start_time` datetime default NULL,		/* Received event: Link */
+  `end_time` datetime default NULL,			/* Received event: Unlink/Hangup */
   `retries` int(10) unsigned NOT NULL default '0',
   `duration` int(10) unsigned default NULL,
   `id_agent` int(10) unsigned default NULL,
   `transfer` varchar(6) default NULL,
-  `datetime_entry_queue` datetime default NULL,
+  `datetime_entry_queue` datetime default NULL,	/* Received event: Join */
   `duration_wait` int(11) default NULL,
   `dnc` int(1) NOT NULL default '0',
 
@@ -125,6 +125,9 @@ CREATE TABLE IF NOT EXISTS `calls` (
   `failure_cause`		int(10) unsigned default NULL,
   `failure_cause_txt`	varchar(32) default NULL,
 
+  /* 2010-06-18: Store timestamp of Originate call */
+  `datetime_originate` datetime default NULL,
+  
   PRIMARY KEY  (`id`),
   KEY `id_campaign` (`id_campaign`),
   KEY `calls_ibfk_2` (`id_agent`),
@@ -555,6 +558,9 @@ END;
 ++
 DELIMITER ; ++
 
+CALL temp_campania_entrante_trunk_2009_06_04();
+DROP PROCEDURE IF EXISTS temp_campania_entrante_trunk_2009_06_04;
+
 /* Procedimiento para agregar las columnas failure_cause y failure_cause_txt */
 DELIMITER ++ ;
 
@@ -584,6 +590,34 @@ DELIMITER ; ++
 
 CALL temp_calls_failure_cause_2010_06_11();
 DROP PROCEDURE IF EXISTS temp_calls_failure_cause_2010_06_11;
+
+/* Procedimiento para agregar columna que registra fecha de Originate */
+DELIMITER ++ ;
+
+DROP PROCEDURE IF EXISTS temp_calls_datetime_originate_2010_06_18 ++
+CREATE PROCEDURE temp_calls_datetime_originate_2010_06_18 ()
+    READS SQL DATA
+    MODIFIES SQL DATA
+BEGIN
+    DECLARE l_existe_columna tinyint(1);
+    
+    SET l_existe_columna = 0;
+
+    /* Verificar existencia de columna call_entry.trunk que debe agregarse */
+    SELECT COUNT(*) INTO l_existe_columna 
+    FROM INFORMATION_SCHEMA.COLUMNS 
+    WHERE TABLE_SCHEMA = 'call_center' 
+        AND TABLE_NAME = 'calls' 
+        AND COLUMN_NAME = 'datetime_originate';
+    IF l_existe_columna = 0 THEN
+        ALTER TABLE calls ADD COLUMN datetime_originate datetime default NULL;
+    END IF;
+END;
+++
+DELIMITER ; ++
+
+CALL temp_calls_datetime_originate_2010_06_18();
+DROP PROCEDURE IF EXISTS temp_calls_datetime_originate_2010_06_18;
 
 
 /*!40000 ALTER TABLE `queue_call_entry` ENABLE KEYS */;

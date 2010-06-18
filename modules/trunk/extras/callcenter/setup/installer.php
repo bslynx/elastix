@@ -66,6 +66,9 @@ if (file_exists($path_script_db))
     crearColumnaSiNoExiste($pDB, 'call_center', 'calls', 
         'failure_cause', 
         "ADD COLUMN failure_cause int(10) unsigned default null, ADD COLUMN failure_cause_txt varchar(32) default null");
+    crearColumnaSiNoExiste($pDB, 'call_center', 'calls', 
+        'datetime_originate', 
+        "ADD COLUMN datetime_originate datetime default NULL");
     $pDB->disconnect();
 }
 

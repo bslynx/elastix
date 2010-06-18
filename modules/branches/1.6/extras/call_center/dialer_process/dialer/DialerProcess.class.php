@@ -78,6 +78,9 @@ class DialerProcess extends AbstractProcess
     
     // VERDADERO si tiene campo calls.failure_cause_txt para registro de fallo
     private $_tieneCallsFailureCause = FALSE;
+
+    // VERDADERO si se tiene campo calls.datetime_originate para registro de Originate
+    private $_tieneCallsDatetimeOriginate = FALSE;
     
     private $_fuenteCredAst = ASTCONN_CRED_DESCONOCIDO;
 
@@ -123,6 +126,7 @@ class DialerProcess extends AbstractProcess
                 while ($tuplaCampo = $recordset->fetchRow(DB_FETCHMODE_OBJECT)) {
                     if ($tuplaCampo->Field == 'agent') $this->_tieneCallsAgent = TRUE;
                     if ($tuplaCampo->Field == 'failure_cause') $this->_tieneCallsFailureCause = TRUE;
+                    if ($tuplaCampo->Field == 'datetime_originate') $this->_tieneCallsDatetimeOriginate = TRUE;
                 }
                 $this->oMainLog->output('INFO: sistema actual '.
                     ($this->_tieneCallsAgent ? 'sí puede' : 'no puede').
@@ -130,6 +134,9 @@ class DialerProcess extends AbstractProcess
                 $this->oMainLog->output('INFO: sistema actual '.
                     ($this->_tieneCallsFailureCause ? 'sí puede' : 'no puede').
                     ' registrar causa extendida de fallo de llamada.');
+                $this->oMainLog->output('INFO: sistema actual '.
+                    ($this->_tieneCallsDatetimeOriginate ? 'sí puede' : 'no puede').
+                    ' registrar timestamp de Originate.');
             }
     
             $this->_detectarTablaTrunksFPBX();
@@ -1021,9 +1028,14 @@ PETICION_LLAMADAS_AGENTE;
                             $bErrorLocked = FALSE;
                             do {
                                 $bErrorLocked = FALSE;
-                                $result = $this->_dbConn->query(
-                                    'UPDATE calls SET status = ? WHERE id_campaign = ? AND id = ?',
-                                    array('Placing', $infoCampania->id, $tupla->id));
+                                if ($this->_tieneCallsDatetimeOriginate) {
+                                    $sql = 'UPDATE calls SET status = ?, datetime_originate = ? WHERE id_campaign = ? AND id = ?';
+                                    $sqlparams = array('Placing', date('Y-m-d H:i:s', $listaLlamadas[$sKey]->OriginateStart), $infoCampania->id, $tupla->id);
+                                } else {
+                                    $sql = 'UPDATE calls SET status = ? WHERE id_campaign = ? AND id = ?';
+                                    $sqlparams = array('Placing', $infoCampania->id, $tupla->id);
+                                }
+                                $result = $this->_dbConn->query($sql, $sqlparams);
                                 if (DB::isError($result)) {
                                     $bErrorLocked = ereg('database is locked', $result->getMessage());
                                     if ($bErrorLocked) {
@@ -1312,9 +1324,14 @@ PETICION_LLAMADAS;
                     $bErrorLocked = FALSE;
                     do {
                     	$bErrorLocked = FALSE;
-                        $result = $this->_dbConn->query(
-                            'UPDATE calls SET status = ? WHERE id_campaign = ? AND id = ?',
-                            array('Placing', $infoCampania->id, $tupla->id));
+                        if ($this->_tieneCallsDatetimeOriginate) {
+                            $sql = 'UPDATE calls SET status = ?, datetime_originate = ? WHERE id_campaign = ? AND id = ?';
+                            $sqlparams = array('Placing', date('Y-m-d H:i:s', $listaLlamadas[$sKey]->OriginateStart), $infoCampania->id, $tupla->id);
+                        } else {
+                            $sql = 'UPDATE calls SET status = ? WHERE id_campaign = ? AND id = ?';
+                            $sqlparams = array('Placing', $infoCampania->id, $tupla->id);
+                        }
+                        $result = $this->_dbConn->query($sql, $sqlparams);
                         if (DB::isError($result)) {
                             $bErrorLocked = ereg('database is locked', $result->getMessage());
                             if ($bErrorLocked) {
