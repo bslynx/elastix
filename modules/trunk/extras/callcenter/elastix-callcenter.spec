@@ -3,7 +3,7 @@
 Summary: Elastix Call Center 
 Name:    elastix-callcenter
 Version: 2.0.0
-Release: 7
+Release: 8
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
@@ -86,6 +86,24 @@ fi
 /etc/logrotate.d/elastixdialer
 
 %changelog
+* Mon Jun 21 2010 Alex Villacis Lasso <a_villacis@palosanto.com> 2.0.0-8
+- Updated version, synchronized with CallCenter 1.5-3.5 (SVN revision 1563)
+- From CHANGELOG:
+1.5-3.5 (SVN revision 1563)
+	- Dialer: add and use new column to record timestamp of Originate execution for
+	  call. This is needed for upcoming support for outgoing monitoring 
+	  information. 
+	- Reports Break: rewrite introduced a regression in date select that prevented
+	  data from being fetched if the start and end date are the same. Fixed. Should
+	  fix Elastix bug #360.
+	- Dialer: fix accessing of undefined Uniqueid variable in OnDial event.
+	- Agent Console: recognize call attributes that are HTTP URLs, and display them
+	  as hyperlinks.
+	- Dialer: merge fix to prevent stale pidfile that happens to match an active 
+	  process from making the daemon hang on startup. See Elastix bug #356. 
+	- Agent Console: add interface for scheduling of calls to particular agents. 
+	  This support requires a specific context to work properly.
+
 * Fri Jun 11 2010 Alex Villacis Lasso <a_villacis@palosanto.com> 2.0.0-7
 - Updated version, synchronized with CallCenter 1.5-3.4
 - From CHANGELOG:
