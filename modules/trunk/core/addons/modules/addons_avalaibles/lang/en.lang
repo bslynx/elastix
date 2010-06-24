@@ -45,5 +45,8 @@ $arrLangModule=array(
 "downloading" => "Starting to install",
 "depsolving" => "Resolving Dependencies",
 "reporefresh" => "Downloading packages list",
+"Ok" => "OK",
+"Loading" => "Loading",
+"Starting" => "Starting...",
 );
 ?>

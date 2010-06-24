@@ -2,7 +2,7 @@
   /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 2.0.0-15                                               |
+  | Elastix version 2.0.0-15                                             |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -65,7 +65,7 @@ function _moduleContent(&$smarty, $module_name)
     $action = getAction();
     $content = "";
 
-    switch($action){
+    switch($action) {
         case "install":
             $content = installAddons($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
             break;
@@ -77,6 +77,12 @@ function _moduleContent(&$smarty, $module_name)
             break;
         case "confirm":
             $content = getConfirm($pDB, $arrConf, $arrLang);
+            break;
+        case "getPackages":
+            $content = getStatusUpdateCache($arrConf, $pDB, $arrLang);
+            break;
+        case "getStatusCache":
+            $content = getStatusCache($pDB, $arrConf, $arrLang);
             break;
         default:
             $content = reportAvailables($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
@@ -211,7 +217,7 @@ function reportAvailables($smarty, $module_name, $local_templates_dir, &$pDB, $a
     if(is_array($arrResult) && $total>0){
         $smarty->assign('ETIQUETA_INSTALL', $arrLang['Install']);
         foreach($arrResult as $key => $value){
-            if(!$pAvailables->exitAddons($value['name_rpm'])){
+            if(!$pAvailables->exitAddons($value)){
                 $smarty->assign(array(
                     'ETIQUETA_DOWNLOADING'  =>  $arrLang['downloading'],
                     'URL_IMAGEN_PAQUETE'    =>  "$arrConf[url_images]/$value[name_rpm].jpeg",
@@ -224,6 +230,18 @@ function reportAvailables($smarty, $module_name, $local_templates_dir, &$pDB, $a
                 ));
                 $arrTmp[0] = $smarty->fetch("$local_templates_dir/imagen_paquete.tpl");
                 $arrTmp[1] = $smarty->fetch("$local_templates_dir/info_paquete.tpl");
+                //$arrTmp[2] = "<input type='button' value='$arrLang[Install]' class='install' id='$value[name_rpm]' name='installButton' style='visibility: hidden;' />";
+                $arrTmp[2] = "<div id='img_$value[name_rpm]' align='center' width='9%'>".
+                                "<img src='modules/addons_avalaibles/images/loading.gif' class='loadingAjax' style='display: block;' />".
+                                "<div id='start_$value[name_rpm]' style='display: none;'>".
+                                    "<div class='text_starting'>$arrLang[Starting]</div>".
+                                    "<div>".
+                                        "<img src='modules/addons_avalaibles/images/starting.gif' class='startingAjax' />".
+                                    "</div>".
+                                "</div>".
+                                "<input type='button' value='$arrLang[Install]' class='install' id='$value[name_rpm]' name='installButton' style='display: none;' />".
+                            "</div>";
+                $arrTmp[3] = "<div id='status_$value[name_rpm]' class='text_downloading' align='center' width='10%'>$arrLang[Loading]</div>";
                 $arrData[] = $arrTmp;
             }
         }
@@ -241,6 +259,10 @@ function reportAvailables($smarty, $module_name, $local_templates_dir, &$pDB, $a
 			0 => array("name"      => "",
                                    "property1" => ""),
             1 => array("name"      => "",
+                                   "property1" => ""),
+            2 => array("name"      => "",
+                                   "property1" => ""),
+            3 => array("name"      => "",
                                    "property1" => ""))
                     );
 
@@ -251,6 +273,114 @@ function reportAvailables($smarty, $module_name, $local_templates_dir, &$pDB, $a
 
     return $content;
 }
+
+// funcion que ejecuta el demunio YUM para verificar los ultimos rpms a instalar
+function getPackagesCache($arrConf, &$pDB, $arrLang){
+
+    $client = new SoapClient($arrConf['url_webservice']);
+    $packages = $client->getAllAddons("2.0.0");
+/*quitar esto*/
+    $packages = str_replace("elastix-conferenceroom ","",$packages);
+/*quitar esto*/
+    $pAddonsModules = new paloSantoAddonsModules($pDB);
+
+    $arrStatus = $pAddonsModules->getStatus($arrConf);
+
+    if($arrStatus['action'] == "none" && $arrStatus['status'] == "idle"){
+        $salida = $pAddonsModules->addAddon($arrConf, $packages);
+        if(ereg("OK Processing",$salida)){
+            $arrStatus = $pAddonsModules->getStatus($arrConf);
+            if($arrStatus['status'] != "error"){
+                $arrSal['response'] = "OK";
+            }
+            else
+                $arrSal['response'] = "error";
+        }
+        else
+            $arrSal['response'] = "error";
+    }
+    else{
+        $arrSal['response'] = "there_install"; //retornar que existe una instalacion
+    }
+
+    $arrSal['status'] = $arrLang['installing'];
+    //$json = new Services_JSON();
+    //return $json->encode($arrSal);
+    return $arrSal;
+}
+
+// funcion que verifica si y se hizo la descarga en cache de los rpm anstes de instalar
+function getStatusCache(&$pDB, $arrConf, $arrLang){
+    $pAddonsModules = new paloSantoAddonsModules($pDB);
+    sleep(10);
+    $arrStatus = $pAddonsModules->getStatus($arrConf);
+    $client = new SoapClient($arrConf['url_webservice']);
+    $json = new Services_JSON();
+
+    if($arrStatus['action'] == "confirm"){
+        $salida = $pAddonsModules->clearAddon($arrConf);
+        if(ereg("OK",$salida)){
+            $arrSal['response'] = "OK";
+            $packages = $client->getAllAddons("2.0.0");
+            /*quitar esto*/
+            //$packages = str_replace("elastix-conferenceroom ","",$packages);
+            /*quitar esto*/
+            $arr_packages = explode(" ",$packages);
+/////
+$arr_RPMs["elastix-callcenter"]["status"]           = "OK";
+$arr_RPMs["elastix-developer"]["status"]            = "OK";
+$arr_RPMs["elastix-redfonetools"]["status"]         = "OK";
+$arr_RPMs["elastix-conferenceroom"]["status"]       = "OK";
+$arr_RPMs["elastix-distributed_dialplan"]["status"] = "OK";
+
+$arr_RPMs["elastix-callcenter"]["observation"]           = "OK";
+$arr_RPMs["elastix-developer"]["observation"]            = "OK";
+$arr_RPMs["elastix-redfonetools"]["observation"]         = "OK";
+$arr_RPMs["elastix-conferenceroom"]["observation"]       = "OK";
+$arr_RPMs["elastix-distributed_dialplan"]["observation"] = "OK";
+////
+
+            $pAddonsModules->fillDataCache($arr_packages, $arr_RPMs);
+        }
+        else
+            $arrSal['response'] = "error";
+    }
+    else{
+        if($arrStatus['action'] == "reporefresh")
+            $arrSal['status_action'] = $arrLang['reporefresh'];
+        if($arrStatus['action'] == "depsolving")
+            $arrSal['status_action'] = $arrLang['depsolving'];
+        if(!isset($arrSal['status_action']) || $arrSal['status_action']=="")
+            $arrSal['status_action'] = $arrLang['downloading'];
+        $arrSal['response'] = $arrStatus['action'];
+    }
+    return $json->encode($arrSal);
+}
+
+// funcion que verifica si se debe o no actualizar la lista de rpm a instalar
+function getStatusUpdateCache($arrConf, &$pDB, $arrLang){
+    $pAddonsModules = new paloSantoAddonsModules($pDB);
+    $json = new Services_JSON();
+    if(isset($_SESSION['elastix_addons']['last_update'])){
+        $timeLast = $_SESSION['elastix_addons']['last_update'];
+        $timeNew = time();
+        if(($timeNew - $timeLast) > 300){ //si es mayor a 5 minutos al fina1 son 2h -> 7200
+            $_SESSION['elastix_addons']['last_update'] = $timeNew;
+            $arrSal = getPackagesCache($arrConf, $pDB, $arrLang);
+            return $json->encode($arrSal);
+        }
+        else{
+            $arrSal['response'] = "noFillDataCache";
+            $arrSal['data_cache'] = $pAddonsModules->getDataCache();
+            return $json->encode($arrSal);
+        }
+    }else{
+        $_SESSION['elastix_addons']['last_update'] = time();
+        $arrSal = getPackagesCache($arrConf, $pDB, $arrLang);
+        return $json->encode($arrSal);
+    }
+}
+
 
 
 function getAction()
@@ -263,6 +393,10 @@ function getAction()
         return "install";
     else if(getParameter("action")=="get_lang")
         return "get_lang";
+    else if(getParameter("action")=="getPackagesCache")
+        return "getPackages";
+    else if(getParameter("action")=="getStatusCache")
+        return "getStatusCache";
     else
         return "report"; //cancel
 }

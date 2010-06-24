@@ -9,7 +9,7 @@
           <td colspan="{$numColumns}" class="table_navigation_row">
             <table border="0" cellpadding="0" cellspacing="0" width="100%" class="table_navigation_text">
               <tr>
-                <td align="left">
+                <td align="left" colspan="3">
                     <input type="text" value="" name="addons_search" >
                     <a href="index.php?menu={$module_name}&action=search">
                         <img src='modules/{$module_name}/images/lupa.jpeg' align='absmiddle' border='0' width='15' height='15' />
@@ -52,11 +52,21 @@
         <tr onMouseOver="this.style.backgroundColor='#f2f2f2';" onMouseOut="this.style.backgroundColor='#ffffff';">
           {if $smarty.foreach.filas.last}
             {section name=columnNum loop=$numColumns start=0 step=1}
-            <td class="table_data_last_row">{if $data[$smarty.section.columnNum.index] eq ''}&nbsp;{/if}{$data[$smarty.section.columnNum.index]}</td>
+                <td class="table_data_last_row">
+                    {if $data[$smarty.section.columnNum.index] eq ''}&nbsp;{/if}
+                    {$data[$smarty.section.columnNum.index]}
+                </td>
             {/section}
           {else}
             {section name=columnNum loop=$numColumns start=0 step=1}
-            <td class="table_data">{if $data[$smarty.section.columnNum.index] eq ''}&nbsp;{/if}{$data[$smarty.section.columnNum.index]}</td>
+                {if $smarty.section.columnNum.index>1}
+                <td class="table_data" width="16%">
+                {else}
+                <td class="table_data">
+                {/if}
+                    {if $data[$smarty.section.columnNum.index] eq ''}&nbsp;{/if}
+                    {$data[$smarty.section.columnNum.index]}
+                </td>
             {/section}
           {/if}
         </tr>
@@ -66,8 +76,8 @@
             <table border="0" cellpadding="0" cellspacing="0" width="100%" class="table_navigation_text">
               <tr>
                 <td align="left">&nbsp;</td>
-                <td align="right">
-                  {if $pagingShow}  
+                <td align="right" colspan="3">
+                  {if $pagingShow}
                     {if $start<=1}
                     <img
                     src='images/start_off.gif' alt='{$lblStart}' align='absmiddle'

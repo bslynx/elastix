@@ -210,7 +210,8 @@ class paloSantoAddonsModules {
     }
 
 
-    function insertAddons($name,$name_rpm,$version,$release){
+    function insertAddons($name,$name_rpm,$version,$release)
+    {
         $query = "INSERT INTO addons(name,name_rpm,version,release) VALUES('$name','$name_rpm','$version','$release')";
         $result = $this->_DB->genQuery($query);
         if($result==FALSE){
@@ -220,17 +221,45 @@ class paloSantoAddonsModules {
         return true; 
     }
 
-    function exitAddons($name_rpm){
-        $query = "SELECT id FROM addons WHERE name_rpm='$name_rpm'";
-        $result = $this->_DB->getFirstRowQuery($query,true);
-        if($result==FALSE || $result==null){
-            $this->errMsg = $this->_DB->errMsg;
-            return false;
+    function exitAddons($arrAddon)
+    {
+
+        $rpm = $this->rpms_Installed($arrAddon['name_rpm']);
+
+        // EXISTE EN EL SISTEMA
+        if($rpm[$arrAddon['name_rpm']]){ //esta instalado en el sistema
+            $query  = "SELECT id FROM addons WHERE name_rpm='$arrAddon[name_rpm]'";
+            $result = $this->_DB->getFirstRowQuery($query,true);
+            if(is_array($result) && count($result) > 0)//existe, en la base
+                return true; // esta instalado ...
+            else{ //no existe en la base, hay que insertarlo, xq si esta instalado en el sistema
+                if($this->insertAddons($arrAddon['name'],$arrAddon['name_rpm'],$arrAddon['version'],$arrAddon['release']))
+                    return true;
+                else{
+                    $this->errMsg = "Error esta instalado en el sistema, pero no esta en la base, hay que insertar en registro en la base";
+                    return true;
+                }
+            }
         }
-        return $result['id'];
+        // NO EXISTE EN EL SISTEMA
+        else{
+            $query  = "SELECT id FROM addons WHERE name_rpm='$arrAddon[name_rpm]'";
+            $result = $this->_DB->getFirstRowQuery($query,true);
+            if(is_array($result) && count($result) > 0){//existe, en la base
+                $query  = "DELETE FROM addons WHERE name_rpm='$arrAddon[name_rpm]'";
+                if($this->_DB->genQuery($query)) 
+                    return false;
+                else{
+                    $this->errMsg = "Error no existe en el sistema, pero si en la base, hay que eliminarlo de la base.";
+                    return true; // esto es un error
+                }
+            }
+            return false; // no existe;
+        }
     }
 
-    function getCheckAddonsInstalled(){
+    function getCheckAddonsInstalled()
+    {
         $arrResult = $this->getAddonsInstalledALL();
         $sal = "";
         if(isset($arrResult) && $arrResult!=""){
@@ -255,6 +284,62 @@ class paloSantoAddonsModules {
             }
         }
         return true; 
+    }
+
+    function rpms_Installed($addons)
+    {
+        $rpms = null;
+
+        if(!empty($addons)){
+            $arrAddons = split(" ",$addons);
+            foreach($arrAddons as $rpm){
+                exec("rpm -q $rpm",$arrConsole,$exito);
+                $rpms[$rpm] = $exito?"0":"1";
+            }
+        }
+        return $rpms;
+    }
+
+    // This function fill tte data cache in database
+    function fillDataCache($arr_packages, $arr_RPMsInfo)
+    {
+        // all information is deleted to fill th new data cache
+        $query = "delete from addons_cache";
+        $result = $this->_DB->genQuery($query);
+        if($result==FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+        }
+
+        // the database is filled again with a new data cache
+        for($i=0; $i<count($arr_packages)-1; $i++){
+            $package = $arr_packages[$i];
+            $status = $arr_RPMsInfo[$package]["status"];
+            $observation = $arr_RPMsInfo[$package]["observation"];
+            if($status == "OK")
+                $status = 1;
+            else
+                $status = 0;
+            $query = "insert into addons_cache(name_rpm, status, observation) values('$package', $status, '$observation')";
+            exec("echo 'packages: $package \n status: $status \n obser: $observation \n query: $query' > /tmp/edu");
+            $result = $this->_DB->genQuery($query);
+            if($result==FALSE){
+                $this->errMsg = $this->_DB->errMsg;
+            }
+        }
+    }
+
+    //  This function get all data cache from addons_cache
+    function getDataCache()
+    {
+        $query   = "SELECT * FROM addons_cache";
+
+        $result=$this->_DB->fetchTable($query, true);
+
+        if($result==FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return array();
+        }
+        return $result;
     }
 }
 ?>
