@@ -58,6 +58,8 @@ function _moduleContent(&$smarty, $module_name)
     global $arrLangModule;
     $arrConf = array_merge($arrConf,$arrConfModule);
     $arrLang = array_merge($arrLang,$arrLangModule);
+    
+    $smarty->assign('MODULE_NAME', $module_name);
 
     //folder path for custom templates
     $templates_dir=(isset($arrConf['templates_dir']))?$arrConf['templates_dir']:'themes';
@@ -109,6 +111,9 @@ function _moduleContent(&$smarty, $module_name)
             break;
         case "call2phone":
             $content = call2phone($smarty,$module_name, $local_templates_dir, $pDB, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk);
+            break;
+        case 'download_csv':
+            $content = download_address_book();
             break;
         default:
             $content = report_adress_book($smarty,$module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $dsnAsterisk);
@@ -269,7 +274,6 @@ function new_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $arr
     $smarty->assign("DOWNLOAD", $arrLang["Download Address Book"]);
     $smarty->assign("HeaderFile", $arrLang["Header File Address Book"]);
     $smarty->assign("AboutContacts", $arrLang["About Address Book"]);
-    $smarty->assign("LINK", "modules/$module_name/libs/download_csv.php");
 
 
     $padress_book = new paloAdressBook($pDB);
@@ -489,7 +493,6 @@ function save_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pD
         $smarty->assign("DOWNLOAD", $arrLang["Download Address Book"]);
         $smarty->assign("HeaderFile", $arrLang["Header File Address Book"]);
         $smarty->assign("AboutContacts", $arrLang["About Address Book"]);
-        $smarty->assign("LINK", "modules/$module_name/libs/download_csv.php");
 
         if($update)
         {
@@ -580,7 +583,6 @@ function view_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $ar
     $smarty->assign("DOWNLOAD", $arrLang["Download Address Book"]);
     $smarty->assign("HeaderFile", $arrLang["Header File Address Book"]);
     $smarty->assign("AboutContacts", $arrLang["About Address Book"]);
-    $smarty->assign("LINK", "modules/$module_name/libs/download_csv.php");
 
     $smarty->assign("style_address_options", "style='display:none'");
 
@@ -696,6 +698,8 @@ function getAction()
         return "delete";
     else if(getParametro("action")=="show")
         return "show";
+    else if(getParametro("action")=="download_csv")
+        return "download_csv";
     else if(getParametro("action")=="call2phone")
         return "call2phone";
     else
@@ -711,4 +715,48 @@ function getParametro($parametro)
     else
         return null;
 }
+
+function download_address_book()
+{
+    global $arrConf;
+    global $arrLangModule;
+
+    $pDB = new paloDB("sqlite3:///$arrConf[elastix_dbdir]/address_book.db");
+    if(!empty($pDB->errMsg)) {
+        $smarty->assign("mb_message", $arrLangModule["Error when connecting to database"]."<br/>".$pDB->errMsg);
+    }
+
+    header("Cache-Control: private");
+    header("Pragma: cache");
+    header('Content-Type: text/csv; charset=iso-8859-1; header=present');
+    header("Content-disposition: attachment; filename=address_book.csv");
+    echo backup_contacts($pDB);
+}
+
+function backup_contacts($pDB)
+{
+    global $arrLangModule;
+    $Messages = "";
+    $csv = "";
+    $pAdressBook = new paloAdressBook($pDB);
+    $fields = "name, last_name, telefono, email";
+    $arrResult = $pAdressBook->getAddressBook(null, null, $fields, null);
+
+    if(!$arrResult)
+    {
+        $Messages .= $arrLangModule["There aren't contacts"].". ".$pAdressBook->errMsg;
+        echo $Messages;
+    }else{
+        //cabecera
+        $csv .= "\"Name\",\"Last Name\",\"Phone Number\",\"Email\"\n";
+        foreach($arrResult as $key => $contact)
+        {
+            $csv .= "\"{$contact['name']}\",\"{$contact['last_name']}\",".
+                    "\"{$contact['telefono']}\",\"{$contact['email']}\"".
+                    "\n";
+        }
+    }
+    return $csv;
+}
+
 ?>

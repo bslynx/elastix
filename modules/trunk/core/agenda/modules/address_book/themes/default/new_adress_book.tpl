@@ -53,7 +53,7 @@
                 <tr id="tr_from_csv">
                     <td>{$label_file}&nbsp;(file.csv):<span  class="required">*</span></td>
                     <td><input type='file' id='userfile' name='userfile'></td>
-                    <td><a href="{$LINK}" name="link_download">{$DOWNLOAD}</a></td>
+                    <td><a href="?menu={$MODULE_NAME}&amp;action=download_csv&amp;rawmode=yes" name="link_download">{$DOWNLOAD}</a></td>
                 </tr>
             </table>
             <table id="table_from_csv" width="100%" cellpadding="4" cellspacing="0" border="0" class="tabForm">
