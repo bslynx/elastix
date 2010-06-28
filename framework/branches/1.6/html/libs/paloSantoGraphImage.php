@@ -22,6 +22,36 @@ $G_FUNCTION   = isset($_GET['function'])   ? $_GET['function']   : '';//function
 $G_PARAMETERS = isset($_GET['parameters']) ? $_GET['parameters'] : array();//parameros para la function de la clase del modulo a utilizar
 $G_FUNCTIONCB = isset($_GET['functionCB']) ? $_GET['functionCB'] : '';//funcion callback
 
+//------- VERIFICAR QUE USUARIO ESTÁ AUTORIZADO A VER EL GRÁFICO -------
+include_once "../libs/paloSantoNavigation.class.php";
+include_once("../libs/paloSantoACL.class.php");
+session_name("elastixSession");
+session_start();
+if (!isset($_SESSION['elastix_user_permission']) || !isset($_SESSION['elastix_user'])) {
+	Header("HTTP/1.1 403 Forbidden");
+	echo "No active session";
+	exit(1);
+}
+$pDB = new paloDB($arrConf['elastix_dsn']['acl']);
+$pACL = new paloACL($pDB);
+$idUser = $pACL->getIdUser($_SESSION['elastix_user']);
+$oPn = new paloSantoNavigation($arrConf, $_SESSION['elastix_user_permission'], $smarty);
+if (!$oPn->isValidMenu($G_MODULE)) {
+	Header("HTTP/1.1 404 Not Found");
+	echo "Module not found";
+	exit(1);
+}
+if (!$pACL->isUserAuthorizedById($idUser, "access", $G_MODULE)) {
+	Header("HTTP/1.1 403 Forbidden");
+	echo "Not authorized to module";
+	exit(1);
+}
+if (!preg_match('/^[\w_]+$/', $G_CLASS)) {
+	Header("HTTP/1.1 404 Not Found");
+	echo "Invalid class or class not found";
+	exit(1);
+}
+
 //------- PARAMETROS DEL GRAPH -------
 $G_TYPE    = null;//tipo de grafica
 $G_TITLE   = null;//titulo
@@ -269,7 +299,7 @@ if( sizeof($G_YDATAS) >= 1 )
         $graph->img->SetMargin($G_MARGIN[0],$G_MARGIN[1],$G_MARGIN[2],$G_MARGIN[3]);
         $graph->title->Set($G_TITLE);
         $graph->xaxis->title->Set($G_LABEL[0]);
-	$graph->xaxis->SetLabelFormatCallback("CallBack");
+        $graph->xaxis->SetLabelFormatCallback("CallBack");
         $graph->xaxis->SetLabelAngle(90);
         //$graph->xaxis->SetTickLabels($xData);
         $graph->yaxis->title->Set($G_LABEL[1]);
