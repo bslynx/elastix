@@ -121,7 +121,7 @@
                         <td align="left">{$call_to.INPUT}&nbsp;&nbsp;
                             <span id="add_phone">
                                 {if $mode eq 'input'}
-                                    {$add_phone}<a href="javascript: popup_phone_number('modules/{$module_name}/phone_numbers.php');"> Here</a>
+                                    {$add_phone}<a href="javascript: popup_phone_number('?menu={$module_name}&amp;action=phone_numbers&amp;rawmode=yes');"> Here</a>
                                 {/if}
                             </span>
                         </td>

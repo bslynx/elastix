@@ -46,15 +46,15 @@ function month_navbar($month, $year)
 {
     global $options;
     $html = tag('div', attributes('class="phpc-navbar"'));
-    menu_item_append($html, $options['last year'], 'display', $year - 1, $month);
-    menu_item_append($html, $options['last month'], 'display', $year, $month - 1);
+    menu_item_append($html, $options['last year'], 'display&amp;menu=calendar', $year - 1, $month);
+    menu_item_append($html, $options['last month'], 'display&amp;menu=calendar', $year, $month - 1);
 
     for($i = 1; $i <= 12; $i++) {
-        menu_item_append($html, short_month_name($i), 'display', $year,
+        menu_item_append($html, short_month_name($i), 'display&amp;menu=calendar', $year,
                 $i);
     }
-    menu_item_append($html,  $options['next month'], 'display', $year, $month + 1);
-    menu_item_append($html,  $options['next year'], 'display', $year + 1, $month);
+    menu_item_append($html,  $options['next month'], 'display&amp;menu=calendar', $year, $month + 1);
+    menu_item_append($html,  $options['next year'], 'display&amp;menu=calendar', $year + 1, $month);
 
     return $html;
 }
@@ -101,8 +101,8 @@ function display_month($month, $year)
     $next_month = "<img border='0' src='images/next.gif' />";
     $next_year  = "<img border='0' src='images/end.gif' />";
 
-    menu_item_append($html, $last_year,  'display', $year - 1, $month);
-    menu_item_append($html, $last_month, 'display', $year, $month - 1);
+    menu_item_append($html, $last_year,  'display&amp;menu=calendar', $year - 1, $month);
+    menu_item_append($html, $last_month, 'display&amp;menu=calendar', $year, $month - 1);
 
     $year_sequence = create_sequence($min_year, $max_year);
 
@@ -131,8 +131,8 @@ function display_month($month, $year)
     $actual_month_year = "&nbsp;&nbsp;$select_month $select_year&nbsp;&nbsp;";
     $html->add($actual_month_year);
 
-    menu_item_append($html, $next_month, 'display', $year, $month + 1);
-    menu_item_append($html, $next_year,  'display', $year + 1, $month);
+    menu_item_append($html, $next_month, 'display&amp;menu=calendar', $year, $month + 1);
+    menu_item_append($html, $next_year,  'display&amp;menu=calendar', $year + 1, $month);
 
     //$month_year = tag('div', attributes('class="month_div"'), month_name($month)." $year");
     //$html_navbar->add(tag('div', $month_year));
@@ -203,12 +203,12 @@ function display_days($day_count, $week_of_month, $month, $year)
 
             $html_day = tag('td', attributes('valign="top"',
                                             "class=\"$current_era\""),
-                                    create_date_link('+', 'event_form',
+                                    create_date_link('+', 'event_form&amp;menu=calendar',
                                             $year, $month,
                                             $day_of_month,
                                             array('class="phpc-add"')),
                                     create_date_link($day_of_month,
-                                            'display', $year, $month,
+                                            'display&amp;menu=calendar', $year, $month,
                                             $day_of_month,
                                             array('class="date"')));
 
@@ -232,7 +232,7 @@ function display_days($day_count, $week_of_month, $month, $year)
                                         tag('a',
                                                 attributes(
                                                         "href=\"$phpc_script"
-                                                        ."?action=display&amp;"
+                                                        ."?menu=calendar&amp;action=display&amp;"
                                                         ."id=$row[id]\""),
                                                 ($event_time ? "$event_time - "
                                                  : '')
