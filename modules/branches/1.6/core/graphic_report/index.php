@@ -26,6 +26,12 @@
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
   $Id: default.conf.php,v 1.1 2008-09-01 10:09:57 jjvega Exp $ */
+require_once("libs/jpgraph/jpgraph.php");
+require_once("libs/jpgraph/jpgraph_pie.php");
+require_once("libs/jpgraph/jpgraph_pie3d.php");
+require_once "libs/jpgraph/jpgraph_line.php";
+require_once "libs/paloSantoDB.class.php";
+require_once "libs/paloSantoSampler.class.php";
 
 function _moduleContent(&$smarty, $module_name)
 {
@@ -54,13 +60,14 @@ function _moduleContent(&$smarty, $module_name)
         include_once($lang_file);
         $arrLangModule = array_merge($arrLanEN, $arrLangModule);
     }
+    $arrLang = array_merge($arrLang,$arrLangModule);
 
 
     //global variables
     global $arrConf;
     global $arrConfModule;
     $arrConf = array_merge($arrConf,$arrConfModule);
-    $arrLang = array_merge($arrLang,$arrLangModule);
+
     //folder path for custom templates
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
     $templates_dir=(isset($arrConf['templates_dir']))?$arrConf['templates_dir']:'themes';
@@ -92,6 +99,36 @@ function _moduleContent(&$smarty, $module_name)
         case "show":
             $_POST['nav'] = null; $_POST['start'] = null;
             $content = report_Extention($smarty, $module_name, $local_templates_dir, $arrLang, $pDB_cdr, $pDB_ext, $arrLangModule);
+            break;
+        case 'grafic':
+            $du = $_GET['du'];
+            $totIn = $_GET['in'];
+            $totOut = $_GET['out'];
+            $tot = $_GET['tot'];
+            $ext = $_GET['ext'];
+
+            grafic($du, $totIn, $totOut, $tot, $ext);
+            break;
+        case 'grafic_queue':
+            $queue = "";//isset($_GET['queue'])?$_GET['queue']:"";//queue
+            $dti   = isset($_GET['dti'])?$_GET['dti']:"";//fecha inicio
+            $dtf   = isset($_GET['dtf'])?$_GET['dtf']:"";//fecha fin
+
+            grafic_queue($pDB_cdr, $pDB_ext, $queue, $dti, $dtf);
+            break;
+        case 'grafic_trunk':
+            $trunk = isset($_GET['trunk'])?$_GET['trunk']:"";
+            $dti  = isset($_GET['dti'])?$_GET['dti']:"";
+            $dtf  = isset($_GET['dtf'])?$_GET['dtf']:"";
+
+            grafic_trunk($pDB_cdr, $pDB_ext, $module_name, $trunk, $dti, $dtf);
+            break;
+        case 'grafic_trunk2':
+            $trunk = isset($_GET['trunk'])?$_GET['trunk']:"";
+            $dti  = isset($_GET['dti'])?$_GET['dti']:"";
+            $dtf  = isset($_GET['dtf'])?$_GET['dtf']:"";
+
+            grafic_trunk2($pDB_cdr, $pDB_ext, $module_name, $trunk, $dti, $dtf);
             break;
         default:
             $content = report_Extention($smarty, $module_name, $local_templates_dir, $arrLang, $pDB_cdr, $pDB_ext, $arrLangModule);
@@ -195,6 +232,7 @@ function report_Extention($smarty, $module_name, $local_templates_dir, $arrLang,
 
     $pExtention = new paloSantoExtention($pDB_cdr);
 
+    $ruta_img = '';
     if( $option == "Number" )
     {
         $smarty->assign("SELECTED_1","selected");
@@ -232,16 +270,14 @@ function report_Extention($smarty, $module_name, $local_templates_dir, $arrLang,
         if($numIn != 0) $VALUE = (int)( 100*( $numIn/$numTot ) );
         else $VALUE = 0;
 
-        $ruta_img = "<tr class='letra12'><td align='center'><img src='modules/{$module_name}/libs/grafic.php?du={$VALUE}%&in={$numIn}&out={$numOut}&ext={$ext2}&tot={$numTot}' border='0'></td></tr>";
-        $smarty->assign("ruta_img", $ruta_img);
+        $ruta_img = array("?menu={$module_name}&amp;action=grafic&amp;du={$VALUE}%&amp;in={$numIn}&amp;out={$numOut}&amp;ext={$ext2}&amp;tot={$numTot}");
     }
     else if($option == "Queue"){
         $smarty->assign("SELECTED_1","");
         $smarty->assign("SELECTED_2","selected");
         $smarty->assign("SELECTED_3","");
 
-        $ruta_img = "<tr class='letra12'><td align='center'><img src='modules/{$module_name}/libs/grafic_queue.php?queue={$ext2}&dti={$date_ini2}&dtf={$date_fin2}' border='0'></td></tr>";
-        $smarty->assign("ruta_img", $ruta_img);
+        $ruta_img = array("?menu={$module_name}&amp;action=grafic_queue&amp;queue={$ext2}&amp;dti={$date_ini2}&amp;dtf={$date_fin2}");
     }
     else if($option == "Trunk"){
         $smarty->assign("SELECTED_1","");
@@ -250,18 +286,16 @@ function report_Extention($smarty, $module_name, $local_templates_dir, $arrLang,
 
         $trunkT = getParameter("trunks");
         $smarty->assign("trunks", $trunkT);
+        $ruta_img  = array(
+            "?menu={$module_name}&amp;action=grafic_trunk&amp;trunk={$trunkT}&amp;dti={$date_ini2}&amp;dtf={$date_fin2}",
+            "?menu={$module_name}&amp;action=grafic_trunk2&amp;trunk={$trunkT}&amp;dti={$date_ini2}&amp;dtf={$date_fin2}");
 
-        //$ruta_img  = "<tr class='letra12'><td align='center'><img src='modules/{$module_name}/libs/grafic_trunk.php?trunk={$trunkT}&dti={$date_ini2}&dtf={$date_fin2}' border='0'></td></tr>";
-        //$ruta_img .= "<tr class='letra12'><td align='center'><img src='modules/{$module_name}/libs/grafic_trunk2.php?trunk={$trunkT}&dti={$date_ini2}&dtf={$date_fin2}' border='0'></td></tr>";
-        $ruta_img  = "<tr class='letra12'><td align='center'><img src='modules/{$module_name}/libs/grafic_trunk.php?trunk={$trunkT}&dti={$date_ini2}&dtf={$date_fin2}' border='0'>&nbsp;&nbsp;
-                                                             <img src='modules/{$module_name}/libs/grafic_trunk2.php?trunk={$trunkT}&dti={$date_ini2}&dtf={$date_fin2}' border='0'></td></tr>";
-
-        $smarty->assign("ruta_img", $ruta_img);
     }
     else{//default
-        $ruta_img = "<tr class='letra12'><td align='center'><img src='modules/{$module_name}/libs/grafic.php?du=0%&in=0&out=0&ext=0&tot=0' border='0'><td></tr>";
-        $smarty->assign("ruta_img", $ruta_img);
+        $ruta_img = array("?menu={$module_name}&amp;action=grafic&amp;du=0%&amp;in=0&amp;out=0&amp;ext=0&amp;tot=0");
     }
+    for ($i = 0; $i < count($ruta_img); $i++) $ruta_img[$i] = "<img src='".$ruta_img[$i]."' border='0'>";
+    $smarty->assign("ruta_img",  "<tr class='letra12'><td align='center'>".implode('&nbsp;&nbsp;', $ruta_img).'<td></tr>');
 
     $htmlForm = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl", $arrLangModule["Graphic Report"], $_POST);
 
@@ -365,13 +399,475 @@ function getParameter($parameter)
 
 function getAction()
 {
-    if(getParameter("show")) //Get parameter by POST (submit)
-        return "show";
-    else if(getParameter("new"))
-        return "new";
-    else if(getParameter("action")=="show") //Get parameter by GET (command pattern, links)
-        return "show";
-    else
-        return "report";
+    foreach (array('show', 'new') as $key)
+        if (getParameter($key)) return $key;
+    $action = getParameter('action');
+    if (in_array($action, array('show', 'grafic', 'grafic_queue', 'grafic_trunk', 'grafic_trunk2')))
+        return $action;
+    return 'report';
 }
+
+// Generación de todos los gráficos a partir de este punto
+function grafic($du, $totIn, $totOut, $tot, $ext)
+{
+	global $arrLangModule;
+
+	if(ereg("^([[:digit:]]{1,3})%", trim($du), $arrReg)) {
+		$usoDisco = $arrReg[1];
+	} else {
+		$usoDisco = $du;
+	}
+
+	if( $tot != 0 )
+	{
+		$freeDisco = 100 - $usoDisco;
+		
+		// Some data
+		$data = array($usoDisco, $freeDisco);
+		
+		// Create the Pie Graph.
+		$graph = new PieGraph(630, 170,"auto");
+		//$graph->SetShadow();
+		$graph->SetMarginColor('#fafafa');
+		$graph->SetFrame(true,'#999999');
+		
+		$graph->legend->SetFillColor("#fafafa");
+		//$graph->legend->Pos(0.012, 0.5, "right","center");
+		$graph->legend->SetColor("#444444", "#999999");
+		$graph->legend->SetShadow('gray@0.6',4);
+		
+		//$graph->title->SetColor("#444444");
+		
+		// Set A title for the plot
+		$graph->title->Set(utf8_decode($arrLangModule["Number of calls from"]." $ext"));
+		//$graph->title->SetFont(FF_VERDANA,FS_BOLD,18);
+		$graph->title->SetColor("#444444");
+		$graph->legend->Pos(0.1,0.2);
+		
+		// Create 3D pie plot
+		$p1 = new PiePlot3d($data);
+		//$p1->SetTheme("water");
+		$p1->SetSliceColors( array("#3333cc", "#9999cc", "#CC3333", "#72394a", "#aa3424") ); 
+		$p1->SetCenter(0.4);
+		$p1->SetSize(80);
+		
+		// Adjust projection angle
+		$p1->SetAngle(45);
+		
+		// Adjsut angle for first slice
+		$p1->SetStartAngle(45);
+		
+		// Display the slice values
+		//$p1->value->SetFont(FF_ARIAL,FS_BOLD,11);
+		//$p1->value->SetColor("navy");
+		$p1->value->SetColor("black");
+		
+		// Add colored edges to the 3D pies
+		// NOTE: You can't have exploded slices with edges!
+		$p1->SetEdge("black");
+		
+		$p1->SetLegends(array(utf8_decode($arrLangModule["Incoming Calls"]." ").$totIn,
+		                      utf8_decode($arrLangModule["Outcoming Calls"]." ").$totOut ));
+		
+		$graph->Add($p1);
+		$graph->Stroke();
+	}
+	else
+	{
+		$ancho = "700";
+		$margenDerecho = "100";
+		
+		$graph = new Graph($ancho,250);
+		$graph->SetMargin(50,$margenDerecho,30,40);
+		$graph->SetMarginColor('#fafafa');
+		$graph->SetFrame(true,'#999999');
+		
+		$graph->legend->SetFillColor("#fafafa");
+		$graph->legend->Pos(0.012, 0.5, "right","center");
+		$graph->legend->SetColor("#444444", "#999999");
+		$graph->legend->SetShadow('gray@0.6',4);
+		$graph->title->SetColor("#444444");
+		
+		// Especifico la escala
+		$graph->SetScale("intlin");
+		$graph->title->Set(utf8_decode("Gráfico de Movimientos"));
+		$graph->xaxis->SetLabelFormatCallback('MonthCallback');
+		$graph->xaxis->SetLabelAngle(90);
+		$graph->xaxis->SetColor("#666666","#444444");
+
+		$titulo=utf8_decode($arrLangModule["No exist calls for this number"]);
+		$im = imagecreate(400, 140);
+		$background_color = imagecolorallocate($im, 255, 255, 255);
+		$text_color = imagecolorallocate($im, 0, 0, 0);
+		imagestring($im, 5, 50, 0, "$titulo",$text_color);
+		$text_color = imagecolorallocate($im, 233, 14, 91);
+		imagestring($im, 2, 130, 20, "", $text_color);
+		if (!empty($msgError)){
+		    $msgError="Error data base...";
+		    imagestring($im, 2, 10, 40, $msgError, $text_color);
+		}
+		header('Content-type: image/png');
+		imagepng($im);
+		imagedestroy($im);
+	}
+}
+
+function grafic_queue(&$pDB_ast_cdr, &$pDB_ast, $queue, $dti, $dtf)
+{
+    global $arrLangModule;
+    global $arrConf;
+
+    $ancho = "700";
+    $margenDerecho = "100";
+
+    //============================================================================
+
+    $objPalo_AST_CDR = new paloSantoExtention($pDB_ast_cdr);
+
+    /*
+    *   VALORES POR GET
+    */
+
+    $arrData=array();
+    $numResults=0;
+    $arrValue=array();
+    $arrTimestamp=array();
+
+    //============================================================================
+
+    include_once "libs/paloSantoQueue.class.php";
+    $paloQueue = new paloQueue($pDB_ast);
+    $arrResult = ( strlen($queue) != 0 )?$paloQueue->getQueue($queue):$paloQueue->getQueue();
+
+    //$arrResult
+    //Array ( [0] => Array ( [0] => 2000 [1] => 2000 Recepcion )
+    //        [1] => Array ( [0] => 5000 [1] => 5000 Soporte )
+    //        [2] => Array ( [0] => 7000 [1] => 7000 Ventas )  )
+
+    /*
+    *   SE CREA UN 2 ARREGLOS DE TAMAÑO 3*X+1
+    *   $arrData PARA LOS DATOS DEL EJE Y
+    *   $arrayX PARA EL ARREGLO DE DATOS PARA EL EJE X
+    */
+
+    $arrayX = array();
+    $num = sizeof($arrResult) ;
+    $i = 0;
+    for($i = 1; $i <= $num ; $i++){
+
+        $s = $arrResult[$i-1];
+        $s_0 = array( 0 => "", 1 => "" );
+
+        if( $i == 1 ){ $arrData[0] = $s_0; $arrayX[0] = ""; }
+
+        $arrData[3*($i-1)+1] = $s;    $arrayX[3*($i-1)+1] = "";
+        $arrData[3*($i-1)+2] = $s;    $arrayX[3*($i-1)+2] = $s[0];
+        $arrData[3*($i-1)+3] = $s_0;  $arrayX[3*($i-1)+3] = "";
+
+        if($i == $num){ $arrData[3*($i-1)+4] = $s_0; $arrayX[3*($i-1)+4] = ""; }
+    }
+
+    //======================================================
+
+    $graph = new Graph($ancho,250);
+    $graph->SetMargin(50,$margenDerecho,30,40);
+    $graph->SetMarginColor('#fafafa');
+    $graph->SetFrame(true,'#999999');
+
+    $graph->legend->SetFillColor("#fafafa");
+    $graph->legend->Pos(0.012, 0.5, "right","center");
+    $graph->legend->SetColor("#444444", "#999999");
+    $graph->legend->SetShadow('gray@0.6',4);
+    $graph->title->SetColor("#444444");
+
+    // Especifico la escala
+    $graph->SetScale("intlin");
+    $graph->title->Set(utf8_decode($arrLangModule["Number Calls vs Queues"]));
+    $graph->xaxis->SetLabelFormatCallback('NameQueue');
+    $graph->xaxis->SetLabelAngle(90);
+    $graph->xaxis->SetColor("#666666","#444444");
+
+    if(is_array($arrData) && count($arrData) > 0 ){
+        foreach($arrData as $k => $arrMuestra){
+            $arrTimestamp[$k] = $k; /* X */
+            
+            //$arr = $objPalo_AST_CDR->countQueue( $arrMuestra['id'], $dti, $dtf);
+            $arr = $objPalo_AST_CDR->countQueue( $arrMuestra[0], $dti, $dtf);
+            $arrValue[$k] = $arr[0]; /* Y */
+        }
+        
+        if( count($arrTimestamp) > 0 ){
+            $numResults++;
+            $line = new LinePlot($arrValue, $arrTimestamp);
+            $line->SetStepStyle();
+            $line->SetColor("#00cc00");
+            $line->setFillColor("#00cc00");
+            $line->SetLegend("# ".$arrLangModule["Calls"]);
+            $graph->Add($line);
+            $graph->yaxis->SetColor("#00cc00");
+        }
+    }
+
+    //======================================================================================
+
+    if ($numResults>0)
+        $graph->Stroke();
+    else{
+        $titulo=utf8_decode("Gráfico");
+        $im = imagecreate(400, 140);
+        $background_color = imagecolorallocate($im, 255, 255, 255);
+        $text_color = imagecolorallocate($im, 0, 0, 0);
+        imagestring($im, 5, 50, 0, "$titulo",$text_color);
+        $text_color = imagecolorallocate($im, 233, 14, 91);
+        imagestring($im, 2, 130, 20, $arrLangModule["No records found"], $text_color);
+        if( !empty($msgError) ){
+            $msgError="Error data base...";
+            imagestring($im, 2, 10, 40, $msgError, $text_color);
+        }
+		header('Content-type: image/png');
+        imagepng($im);
+        imagedestroy($im);
+    }
+
+}
+
+function NameQueue($aVal){
+    global $arrayX;
+    return $arrayX[$aVal];
+}
+
+function grafic_trunk(&$pDB_ast_cdr, &$pDB_ast, $module_name, $trunk, $dti, $dtf)
+{
+	global $arrLangModule;
+
+	//*******************
+	require_once "modules/$module_name/libs/paloSantoExtention.class.php";
+	$objPalo_AST_CDR = new paloSantoExtention($pDB_ast_cdr);
+
+	//total minutos de llamadas in y out
+	$arrayTemp = $objPalo_AST_CDR->loadTrunks($trunk, "min", $dti, $dtf);
+	$arrResult = $arrayTemp[0];
+
+	//$arrResult[0] => "IN"
+	//$arrResult[1] => "OUT"
+	$tot = $arrResult[0] + $arrResult[1];
+	$usoDisco = ($tot!=0)?100*( $arrResult[0] / $tot ):0;
+
+	if( $tot != 0 )
+	{
+		$freeDisco = 100 - $usoDisco;
+		
+		// Some data
+		$data = array($usoDisco, $freeDisco);
+		
+		// Create the Pie Graph.
+		$graph = new PieGraph(400, 170,"auto");
+		//$graph->SetShadow();
+		$graph->SetMarginColor('#fafafa');
+		$graph->SetFrame(true,'#999999');
+		
+		$graph->legend->SetFillColor("#fafafa");
+		//$graph->legend->Pos(0.012, 0.5, "right","center");
+		$graph->legend->SetColor("#444444", "#999999");
+		$graph->legend->SetShadow('gray@0.6',4);
+		
+		//$graph->title->SetColor("#444444");
+		
+		// Set A title for the plot
+		$graph->title->Set(utf8_decode($arrLangModule["Total Time"]));
+		//$graph->title->SetFont(FF_VERDANA,FS_BOLD,18);
+		$graph->title->SetColor("#444444");
+		$graph->legend->Pos(0.05,0.2);
+		
+		// Create 3D pie plot
+		$p1 = new PiePlot3d($data);
+		//$p1->SetTheme("water");
+		$p1->SetSliceColors( array("#3333cc", "#9999cc", "#CC3333", "#72394a", "#aa3424") ); 
+		$p1->SetCenter(0.3);
+		$p1->SetSize(80);
+		
+		// Adjust projection angle
+		$p1->SetAngle(45);
+		
+		// Adjsut angle for first slice
+		$p1->SetStartAngle(45);
+		
+		// Display the slice values
+		//$p1->value->SetFont(FF_ARIAL,FS_BOLD,11);
+		//$p1->value->SetColor("navy");
+		$p1->value->SetColor("black");
+		
+		// Add colored edges to the 3D pies
+		// NOTE: You can't have exploded slices with edges!
+		$p1->SetEdge("black");
+		
+		$p1->SetLegends(array( utf8_decode($arrLangModule["Incoming Calls"].":\n").SecToHHMMSS($arrResult[0]),
+		                       utf8_decode($arrLangModule["Outcoming Calls"].":\n").SecToHHMMSS($arrResult[1])));
+		
+		$graph->Add($p1);
+		$graph->Stroke();
+	}
+	else
+	{
+		$ancho = "700";
+		$margenDerecho = "100";
+		
+		$graph = new Graph($ancho,250);
+		$graph->SetMargin(50,$margenDerecho,30,40);
+		$graph->SetMarginColor('#fafafa');
+		$graph->SetFrame(true,'#999999');
+		
+		$graph->legend->SetFillColor("#fafafa");
+		$graph->legend->Pos(0.012, 0.5, "right","center");
+		$graph->legend->SetColor("#444444", "#999999");
+		$graph->legend->SetShadow('gray@0.6',4);
+		$graph->title->SetColor("#444444");
+		
+		// Especifico la escala
+		$graph->SetScale("intlin");
+		$graph->title->Set(utf8_decode("Gráfico de Movimientos"));
+		$graph->xaxis->SetLabelFormatCallback('MonthCallback');
+		$graph->xaxis->SetLabelAngle(90);
+		$graph->xaxis->SetColor("#666666","#444444");
+
+		$titulo=utf8_decode($arrLangModule["There are no data to present"]);
+		$im = imagecreate(400, 140);
+		$background_color = imagecolorallocate($im, 255, 255, 255);
+		$text_color = imagecolorallocate($im, 0, 0, 0);
+		imagestring($im, 5, 50, 0, "$titulo",$text_color);
+		$text_color = imagecolorallocate($im, 233, 14, 91);
+		imagestring($im, 2, 130, 20, "", $text_color);
+		if (!empty($msgError)){
+		    $msgError="Error data base...";
+		    imagestring($im, 2, 10, 40, $msgError, $text_color);
+		}
+		header('Content-type: image/png');
+		imagepng($im);
+		imagedestroy($im);
+	}
+}
+
+function SecToHHMMSS($sec)
+{
+    $HH = 0;$MM = 0;$SS = 0;
+    $segundos = $sec;
+
+    if( $segundos/3600 >= 1 ){ $HH = (int)($segundos/3600);$segundos = $segundos%3600;} if($HH < 10) $HH = "0$HH";
+    if(  $segundos/60 >= 1  ){ $MM = (int)($segundos/60);  $segundos = $segundos%60;  } if($MM < 10) $MM = "0$MM";
+    $SS = $segundos; if($SS < 10) $SS = "0$SS";
+
+    return "$HH:$MM:$SS";
+}
+
+function grafic_trunk2(&$pDB_ast_cdr, &$pDB_ast, $module_name, $trunk, $dti, $dtf)
+{
+	global $arrLangModule;
+
+	//
+	require_once "modules/$module_name/libs/paloSantoExtention.class.php";
+	$objPalo_AST_CDR = new paloSantoExtention($pDB_ast_cdr);
+
+	//total minutos de llamadas in y out
+	$arrayTemp = $objPalo_AST_CDR->loadTrunks($trunk, "numcall", $dti, $dtf);
+	$arrResult = $arrayTemp[0];
+
+	//$arrResult[0] => "IN"
+	//$arrResult[1] => "OUT"
+	$tot = $arrResult[0] + $arrResult[1];
+	$usoDisco = ($tot!=0)?100*( $arrResult[0] / $tot ):0;
+
+	if( $tot != 0 )
+	{
+		$freeDisco = 100 - $usoDisco;
+		
+		// Some data
+		$data = array($usoDisco, $freeDisco);
+		
+		// Create the Pie Graph.
+		$graph = new PieGraph(400, 170,"auto");
+		//$graph->SetShadow();
+		$graph->SetMarginColor('#fafafa');
+		$graph->SetFrame(true,'#999999');
+		
+		$graph->legend->SetFillColor("#fafafa");
+		//$graph->legend->Pos(0.012, 0.5, "right","center");
+		$graph->legend->SetColor("#444444", "#999999");
+		$graph->legend->SetShadow('gray@0.6',4);
+		
+		//$graph->title->SetColor("#444444");
+		
+		// Set A title for the plot
+		$graph->title->Set(utf8_decode($arrLangModule["Number of Calls"]));
+		//$graph->title->SetFont(FF_VERDANA,FS_BOLD,18);
+		$graph->title->SetColor("#444444");
+		$graph->legend->Pos(0.04,0.2);
+		
+		// Create 3D pie plot
+		$p1 = new PiePlot3d($data);
+		//$p1->SetTheme("water");
+		$p1->SetSliceColors( array("#3333cc", "#9999cc", "#CC3333", "#72394a", "#aa3424") ); 
+		$p1->SetCenter(0.3);
+		$p1->SetSize(80);
+		
+		// Adjust projection angle
+		$p1->SetAngle(45);
+		
+		// Adjsut angle for first slice
+		$p1->SetStartAngle(45);
+		
+		// Display the slice values
+		//$p1->value->SetFont(FF_ARIAL,FS_BOLD,11);
+		//$p1->value->SetColor("navy");
+		$p1->value->SetColor("black");
+		
+		// Add colored edges to the 3D pies
+		// NOTE: You can't have exploded slices with edges!
+		$p1->SetEdge("black");
+		
+		$p1->SetLegends(array( utf8_decode($arrLangModule["Incoming Calls"].":  ").$arrResult[0],
+		                       utf8_decode($arrLangModule["Outcoming Calls"].": ").$arrResult[1] ));
+		
+		$graph->Add($p1);
+		$graph->Stroke();
+	}
+	else
+	{
+		$ancho = "700";
+		$margenDerecho = "100";
+		
+		$graph = new Graph($ancho,250);
+		$graph->SetMargin(50,$margenDerecho,30,40);
+		$graph->SetMarginColor('#fafafa');
+		$graph->SetFrame(true,'#999999');
+		
+		$graph->legend->SetFillColor("#fafafa");
+		$graph->legend->Pos(0.012, 0.5, "right","center");
+		$graph->legend->SetColor("#444444", "#999999");
+		$graph->legend->SetShadow('gray@0.6',4);
+		$graph->title->SetColor("#444444");
+		
+		// Especifico la escala
+		$graph->SetScale("intlin");
+		$graph->title->Set(utf8_decode("Gráfico de Movimientos"));
+		$graph->xaxis->SetLabelFormatCallback('MonthCallback');
+		$graph->xaxis->SetLabelAngle(90);
+		$graph->xaxis->SetColor("#666666","#444444");
+
+		$titulo=utf8_decode($arrLangModule["There are no data to present"]);
+		$im = imagecreate(400, 140);
+		$background_color = imagecolorallocate($im, 255, 255, 255);
+		$text_color = imagecolorallocate($im, 0, 0, 0);
+		imagestring($im, 5, 50, 0, "$titulo",$text_color);
+		$text_color = imagecolorallocate($im, 233, 14, 91);
+		imagestring($im, 2, 130, 20, "", $text_color);
+		if (!empty($msgError)){
+		    $msgError="Error data base...";
+		    imagestring($im, 2, 10, 40, $msgError, $text_color);
+		}
+		header('Content-type: image/png');
+		imagepng($im);
+		imagedestroy($im);
+	}
+}
+
 ?>

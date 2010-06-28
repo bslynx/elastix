@@ -21,7 +21,7 @@
         <td align="left" nowrap>{$date_to.INPUT}</td>
 
         <td align="left" nowrap id="td_link">{$call_to.INPUT}
-            <a href='javascript: popup_phone_number("modules/calendar/phone_numbers.php");'>{$HERE}</a>
+            <a href='javascript: popup_phone_number("?menu=calendar&action=phone_numbers&rawmode=yes");'>{$HERE}</a>
         </td>
         <td id="id_vacio">&nbsp;</td>
         <td id="id_trunk">{$trunks.INPUT}</td>
