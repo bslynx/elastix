@@ -623,7 +623,7 @@ function communicationActivity($module_name, $idApplet)
 								<!--<div class='typeActivity'><b>".$arrLang['Trunks_register'].": </b></div>
 								<div class='detailText'>".$arrLang['Trunks_register']." <b>($total_trunks_reg) </b>: <font color='green'>($total_trunks_reg_ok ".$arrLang['OK'].")</font> <font color='red'>($total_trunks_reg_nok ".$arrLang['NO_OK'].")</font></div>-->
 								<div class='typeActivity'><b>".$arrLang['Network_traffic'].": </b></div>
-								<div class='detailText'>".$arrLang['rx_bytes']."<b>(".$rx_bytes."kB/s)</b>  ".$arrLang['tx_bytes']."<b>(".$tx_bytes."kB/s)</b></div>
+								<div class='detailText'>".$arrLang['Bytes']." <b>(".$rx_bytes."kB/s)</b> <= RX | TX =>  <b>(".$tx_bytes."kB/s)</b></div>
 							</div>
 						</div>
 					</div>
