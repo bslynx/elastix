@@ -419,7 +419,7 @@ class paloSantoSysInfo
             foreach($arrSIPs as $key => $line){
                 //ex: Name/username              Host            Dyn Nat ACL Port     Status
                 //    412/412                    192.168.1.82     D   N   A  5060     OK (17 ms)
-                if(eregi("^(([[:alnum:]\-_\.]*)[[:alnum:]/\-_\.]*)[[:space:]]*([[:alnum:]\.\(\)]+)[[:space:]]*([a-zA-Z]*)[[:space:]]*([a-zA-Z]*)[[:space:]]*([a-zA-Z]*)[[:space:]]*([0-9]+)[[:space:]]*([[:alnum:]\ \(\)]+)$",$line,$arrToken)){
+                if(eregi("^(([[:alnum:]_.-]*)[[:alnum:]_.-/]*)[[:space:]]*([[:alnum:]\.\(\)]+)[[:space:]]*([a-zA-Z]*)[[:space:]]*([a-zA-Z]*)[[:space:]]*([a-zA-Z]*)[[:space:]]*([0-9]+)[[:space:]]*([[:alnum:]\ \(\)]+)$",$line,$arrToken)){
                     if(eregi("OK",$arrToken[8])){ // estado OK
                         if(in_array($arrToken[2],$arrTrunks)) // es una troncal?, registrada
                             $arrActivity["sip"]["trunk"]["ok"]++;
@@ -442,7 +442,7 @@ class paloSantoSysInfo
             foreach($arrIAXs as $key => $line){
                 //ex: Name/Username    Host                 Mask             Port          Status
                 //    512              127.0.0.1       (D)  255.255.255.255  40002         OK (3 ms)
-                if(eregi("^(([[:alnum:]\-_\.]*)[[:alnum:]/\-_\.]*)[[:space:]]*([[:alnum:]\.\(\)]+)[[:space:]]*([a-zA-Z\(\)]*)[[:space:]]*([[:alnum:]\.\(\)]+)[[:space:]]*([0-9]+)[[:space:]]*([[:alnum:]\ \(\)]+)$",$line,$arrToken)){
+                if(eregi("^(([[:alnum:]_.-]*)[[:alnum:]_.-/]*)[[:space:]]*([[:alnum:]\.\(\)]+)[[:space:]]*([a-zA-Z\(\)]*)[[:space:]]*([[:alnum:]\.\(\)]+)[[:space:]]*([0-9]+)[[:space:]]*([[:alnum:]\ \(\)]+)$",$line,$arrToken)){
                     if(eregi("OK",$arrToken[7])){ // estado OK
                         if(in_array($arrToken[2],$arrTrunks)) // es una troncal?, registrada
                             $arrActivity["iax"]["trunk"]["ok"]++;
