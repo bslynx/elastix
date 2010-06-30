@@ -37,4 +37,19 @@ if(!file_exists("$DataBaseRoot/addons.db")){
     exec($cmd_mv);
     exec($cmd_chown);
 }
+
+exec("sqlite3 $DataBaseRoot/addons.db '.tables addons_cache'",$arrConsole,$flagStatus);
+
+if($flagStatus==0){
+  $exists = isset($arrConsole[0]) & $arrConsole=='addons_cache';
+  if(!$exists){
+        $sql = "CREATE TABLE addons_cache(
+                  name_rpm         varchar(20),
+                  status           int,
+                  observation      varchar(100)
+                );";
+        exec("sqlite3 $DataBaseRoot/addons.db '$sql'",$arrConsole,$flagStatus);
+  }
+exit($flagStatus);
+}
 ?>
