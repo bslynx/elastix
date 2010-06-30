@@ -22,7 +22,7 @@
 <table class="tabForm" style="font-size: 16px;" COLS="4" width="100%" >
     <tr>   
     <td>
-    <table border="0" width="100%" cellspacing="0" cellpadding="8" style="border:1px solid black">
+    <table border="0" width="100%" cellspacing="0" cellpadding="8">
         <tr class="letra12">
             <td align="left"><b>Feature: <span  class="required">*</span></b></td>
             <td align="left"><input type="radio" onclick="displayConfig();" value="d" id="status1" name="feature" align="left" checked tabindex="1"/>Disabled<br>
