@@ -279,9 +279,7 @@ function getPackagesCache($arrConf, &$pDB, $arrLang){
 
     $client = new SoapClient($arrConf['url_webservice']);
     $packages = $client->getAllAddons("2.0.0");
-/*quitar esto*/
-    $packages = str_replace("elastix-conferenceroom ","",$packages);
-/*quitar esto*/
+
     $pAddonsModules = new paloSantoAddonsModules($pDB);
 
     $arrStatus = $pAddonsModules->getStatus($arrConf);
@@ -322,9 +320,7 @@ function getStatusCache(&$pDB, $arrConf, $arrLang){
         if(ereg("OK",$salida)){
             $arrSal['response'] = "OK";
             $packages = $client->getAllAddons("2.0.0");
-            /*quitar esto*/
-            //$packages = str_replace("elastix-conferenceroom ","",$packages);
-            /*quitar esto*/
+
             $arr_packages = explode(" ",$packages);
 /////
 $arr_RPMs["elastix-callcenter"]["status"]           = "OK";
