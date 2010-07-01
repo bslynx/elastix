@@ -325,13 +325,13 @@ function getStatusCache(&$pDB, $arrConf, $arrLang){
 /////
 $arr_RPMs["elastix-callcenter"]["status"]           = "OK";
 $arr_RPMs["elastix-developer"]["status"]            = "OK";
-$arr_RPMs["elastix-redfonetools"]["status"]         = "OK";
+$arr_RPMs["elastix-redfone"]["status"]         = "OK";
 $arr_RPMs["elastix-conferenceroom"]["status"]       = "OK";
 $arr_RPMs["elastix-distributed_dialplan"]["status"] = "OK";
 
 $arr_RPMs["elastix-callcenter"]["observation"]           = "OK";
 $arr_RPMs["elastix-developer"]["observation"]            = "OK";
-$arr_RPMs["elastix-redfonetools"]["observation"]         = "OK";
+$arr_RPMs["elastix-redfone"]["observation"]         = "OK";
 $arr_RPMs["elastix-conferenceroom"]["observation"]       = "OK";
 $arr_RPMs["elastix-distributed_dialplan"]["observation"] = "OK";
 ////
@@ -360,7 +360,7 @@ function getStatusUpdateCache($arrConf, &$pDB, $arrLang){
     if(isset($_SESSION['elastix_addons']['last_update'])){
         $timeLast = $_SESSION['elastix_addons']['last_update'];
         $timeNew = time();
-        if(($timeNew - $timeLast) > 300){ //si es mayor a 5 minutos al fina1 son 2h -> 7200
+        if(($timeNew - $timeLast) > 7200){ //si es mayor a 5 minutos al fina1 son 2h -> 7200
             $_SESSION['elastix_addons']['last_update'] = $timeNew;
             $arrSal = getPackagesCache($arrConf, $pDB, $arrLang);
             return $json->encode($arrSal);

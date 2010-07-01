@@ -147,7 +147,7 @@ class paloSantoAddonsModules {
                 else
                     $salida['porcent_total_ins'] = 0;
             }
-        }exec("echo 'salida : ".print_r($salida,true)."' >> /tmp/edu");
+        }
         return $salida;
     }
 
@@ -320,7 +320,6 @@ class paloSantoAddonsModules {
             else
                 $status = 0;
             $query = "insert into addons_cache(name_rpm, status, observation) values('$package', $status, '$observation')";
-            exec("echo 'packages: $package \n status: $status \n obser: $observation \n query: $query' > /tmp/edu");
             $result = $this->_DB->genQuery($query);
             if($result==FALSE){
                 $this->errMsg = $this->_DB->errMsg;
