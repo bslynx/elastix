@@ -508,6 +508,7 @@ Installing for dependencies:
         $this->_estadoPaquete['progreso'] = array();
         $bReporte = FALSE;
         $sOperacion = NULL;
+        $sLineaPrevia = '';
         foreach ($lineas as $sLinea) {
             $regs = NULL;
             if (!$bReporte && preg_match('/^\s+Package\s+Arch\s+Version\s+Repository\s+Size/', $sLinea)) {
@@ -516,7 +517,8 @@ Installing for dependencies:
                 $bReporte = FALSE;
             } elseif ($bReporte) {
                 $regs = NULL;
-                if (preg_match('/^\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)/', $sLinea, $regs)) {
+                $sLineaCompleta = ' '.$sLineaPrevia.$sLinea;
+                if (preg_match('/^\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+[kM]/', $sLineaCompleta, $regs)) {
                     $this->_estadoPaquete['progreso'][] = array(
                         'pkgaction' =>  $sOperacion,
                         'nombre'    =>  $regs[1],
@@ -528,12 +530,18 @@ Installing for dependencies:
                         'descargado'=>  '-',
                         'currstatus'=>  ($sOperacion == 'remove') ? 'installed' : 'waiting',
                     );
+                    $sLineaPrevia = '';
                 } elseif (strpos($sLinea, 'Installing') === 0) {
                     $sOperacion = 'install';
+                    $sLineaPrevia = '';
                 } elseif (strpos($sLinea, 'Updating') === 0) {
                     $sOperacion = 'update';
+                    $sLineaPrevia = '';
                 } elseif (strpos($sLinea, 'Removing') === 0) {
                     $sOperacion = 'remove';
+                    $sLineaPrevia = '';
+                } else {
+                    $sLineaPrevia .= $sLinea;
                 }
             } 
             if (preg_match('/No package (\S+) available/', $sLinea, $regs)) {
