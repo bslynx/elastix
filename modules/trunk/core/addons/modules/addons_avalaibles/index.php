@@ -284,7 +284,7 @@ function getPackagesCache($arrConf, &$pDB, $arrLang){
 
     $arrStatus = $pAddonsModules->getStatus($arrConf);
 
-    if($arrStatus['action'] == "none" && $arrStatus['status'] == "idle"){
+    if(isset($arrStatus['action']) && ($arrStatus['action'] == "none" && $arrStatus['status'] == "idle")){
         $salida = $pAddonsModules->addAddon($arrConf, $packages);
         if(ereg("OK Processing",$salida)){
             $arrStatus = $pAddonsModules->getStatus($arrConf);
