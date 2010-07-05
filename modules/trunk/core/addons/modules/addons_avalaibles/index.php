@@ -322,20 +322,10 @@ function getStatusCache(&$pDB, $arrConf, $arrLang){
             $packages = $client->getAllAddons("2.0.0");
 
             $arr_packages = explode(" ",$packages);
-/////
-$arr_RPMs["elastix-callcenter"]["status"]           = "OK";
-$arr_RPMs["elastix-developer"]["status"]            = "OK";
-$arr_RPMs["elastix-redfone"]["status"]              = "OK";
-$arr_RPMs["elastix-conferenceroom"]["status"]       = "OK";
-$arr_RPMs["elastix-distributed_dialplan"]["status"] = "OK";
-
-$arr_RPMs["elastix-callcenter"]["observation"]           = "OK";
-$arr_RPMs["elastix-developer"]["observation"]            = "OK";
-$arr_RPMs["elastix-redfone"]["observation"]              = "OK";
-$arr_RPMs["elastix-conferenceroom"]["observation"]       = "OK";
-$arr_RPMs["elastix-distributed_dialplan"]["observation"] = "OK";
-////
-
+            $arr_RPMs = array();
+            foreach ($arr_packages as $sNombreRPM) {
+                $arr_RPMs[$sNombreRPM] = array('status' => 'OK', 'observation' => 'OK');
+            }
             $pAddonsModules->fillDataCache($arr_packages, $arr_RPMs);
         }
         else
