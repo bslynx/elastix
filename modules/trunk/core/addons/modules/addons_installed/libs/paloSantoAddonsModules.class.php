@@ -186,29 +186,33 @@ class paloSantoAddonsModules {
         return $this->commandAddons($arrConf, "status");
     }
 
-    function commandAddons($arrConf, $cmd, $parameters="")
+    private function commandAddons($arrConf, $cmd, $parameters = '')
     {
-        $salida = null;
-        try{
-            $conexion = @fsockopen($arrConf['socket_conn_ip'],$arrConf['socket_conn_port'],$errno,$errstr,$timeout=30);
-            if(!$conexion){
-                //die($errstr.$errno);
-                echo "Error: $errstr $errno";
-            }
-            else{
-                fread($conexion,1024); // consumo el status que es default
-                fputs($conexion,"$cmd $parameters\n");
-                $salida = fread($conexion,1024);
-                fputs($conexion,"exit\n");
-            }
+        $errno = $errstr = NULL;
+        $hConn = @fsockopen($arrConf['socket_conn_ip'],$arrConf['socket_conn_port'],$errno,$errstr,$timeout=30);
+        if (!$hConn) {
+            $this->errMsg = "(internal) Cannot connect to updater daemon - ($errno) $errstr";
+            return NULL;
         }
-        catch(Exception $e){
-            $salida = null;
-            echo $e->getMessage();
+        $sSalida = $this->_consumirStatus($hConn);
+        if ($cmd != 'status') {
+            fputs($hConn, "$cmd $parameters\n");
+            $sSalida = fgets($hConn);
         }
-        return $salida;
+        fputs($hConn, "exit\n");
+        fclose($hConn);
+        return $sSalida;
     }
 
+    private function _consumirStatus($hConn)
+    {
+        $sStatus = $sLinea = '';
+        do {
+            $sLinea = fgets($hConn);
+            $sStatus .= $sLinea;
+        } while ($sLinea != "end status\n");
+        return $sStatus;
+    }
 
     function insertAddons($name,$name_rpm,$version,$release)
     {
@@ -221,6 +225,19 @@ class paloSantoAddonsModules {
         return true; 
     }
 
+    /**
+     * Procedimiento que verifica si un RPM de addon, descrito por $arrAddon,
+     * está instalado en el sistema. Además, este método actualiza el caché de
+     * los addons, agregando o quitando los registros del caché de addons.
+     * 
+     * @param array $arrAddon   Arreglo de información de addon que tiene los
+     *                          siguientes elementos esperados:
+     *                          name_rpm    Nombre formal del RPM
+     *                          name        Nombre descriptivo del addon
+     *                          version     Versión del addon (2.0.0)
+     *                          release     Revisión del addon
+     * @return bool VERDADERO si el addon existe, FALSO si no existe
+     */
     function exitAddons($arrAddon)
     {
 
