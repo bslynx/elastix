@@ -217,7 +217,7 @@ function createMenuSelectedSplash()
     var menu_selected = document.getElementById("menu_selected");
     menu_selected.innerHTML = html;
 }
-setTimeout("createMenuSelectedSplash()",1400);
+//setTimeout("createMenuSelectedSplash()",1400);
 
 // var cnt = 0;
 // function load()
