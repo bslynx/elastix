@@ -326,6 +326,7 @@ class paloSantoAddonsModules {
 
     function updateInDB($arrAddons)
     {
+        $this->_DB->genQuery('UPDATE addons SET update_st = 0');
         foreach($arrAddons as $k => $name_rpm){
             $query = "update addons set update_st=1 where name_rpm='$name_rpm'";
             $result = $this->_DB->genQuery($query);
