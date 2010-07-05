@@ -62,8 +62,41 @@ class paloSantoAddonsModules {
         return $result[0];
     }
 
+    // Procedimiento privado para refrescar la versión instalada del módulo
+    private function _refrescarVersionInstaladaAddons()
+    {
+        $result = $this->_DB->fetchTable('SELECT name_rpm, version, release FROM addons', TRUE);
+        if (is_array($result)) {
+            foreach ($result as $tupla) {
+                $salida = $result = NULL;
+                exec("rpm -qi {$tupla['name_rpm']}", $salida, $exitcode);
+                if ($exitcode == 0) {
+                    // Se busca la versión y release de la instalación
+                    $sVersion = $sRelease = NULL;
+                    foreach ($salida as $sLinea) {
+                        $regs = NULL;
+                        if (preg_match('/^Version\s+:\s+(\S+)/', $sLinea, $regs)) {
+                            $sVersion = $regs[1];
+                        }
+                        if (preg_match('/^Release\s+:\s+(\S+)/', $sLinea, $regs)) {
+                            $sRelease = $regs[1];
+                        }
+                    }
+                    if ($sVersion != $tupla['version'] || $sRelease != $tupla['release']) {
+                        $this->_DB->genQuery('UPDATE addons SET version = ?, release = ? WHERE name_rpm = ?',
+                            array($sVersion, $sRelease, $tupla['name_rpm']));
+                    }
+                } else {
+                    // Probablemente el paquete no está instalado ya, se borra...
+                    $this->_DB->genQuery('DELETE FROM addons WHERE name_rpm = ?', array($tupla['name_rpm']));
+                }
+            }
+        }
+    }
+
     function getAddonsInstalled($limit, $offset)
     {
+        $this->_refrescarVersionInstaladaAddons();
         $query   = "SELECT * FROM addons LIMIT $limit OFFSET $offset";
 
         $result=$this->_DB->fetchTable($query, true);
@@ -77,6 +110,7 @@ class paloSantoAddonsModules {
 
     function getAddonsInstalledALL()
     {
+        $this->_refrescarVersionInstaladaAddons();
         $query   = "SELECT * FROM addons";
 
         $result=$this->_DB->fetchTable($query, true);
