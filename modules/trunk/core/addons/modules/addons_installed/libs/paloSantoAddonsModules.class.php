@@ -95,14 +95,14 @@ class paloSantoAddonsModules {
             $arrStatus = split("\n",$status);
             $porcent_total_all = 0;
             $porcent_downl_all = 0;
-
+            $salida = array();
             foreach($arrStatus as $k => $line){
                 $arrLine = split(" ",$line);
                 if($arrLine[0]=="status") $salida['status'] = $arrLine[1];
 
                 else if($arrLine[0]=="action")  $salida['action'] = $arrLine[1];
 
-                else if($salida['action']  == "confirm" || $salida['action']  == "downloading" || $salida['action']  == "applying"){
+                else if(isset($salida['action']) &&  ($salida['action']  == "confirm" || $salida['action']  == "downloading" || $salida['action']  == "applying")){
                     if($arrLine[0]=="package"){
                         if($arrLine[1] == "install" || $arrLine[1] == "update"){
                             $porcent_downl_all += $arrLine[4];
@@ -126,7 +126,7 @@ class paloSantoAddonsModules {
                         }
                     }
                 }
-                else if($salida['action']  == "checkinstalled"){
+                else if(isset($salida['action']) && ($salida['action']  == "checkinstalled")){
                     if($arrLine[0]=="installed"){
                         $salida['installed'][] = array(
                             "name"    => $arrLine[1], //name's package
@@ -139,7 +139,7 @@ class paloSantoAddonsModules {
                 }
             }
 
-            if($salida['action']  == "confirm" || $salida['action']  == "downloading" || $salida['action']  == "applying"){
+            if(isset($salida['action']) && ($salida['action']  == "confirm" || $salida['action']  == "downloading" || $salida['action']  == "applying")){
                 if($porcent_total_all!=0){
                     $totalShow =  number_format(($porcent_downl_all*100/$porcent_total_all),0);
                     $salida['porcent_total_ins'] = $totalShow;
