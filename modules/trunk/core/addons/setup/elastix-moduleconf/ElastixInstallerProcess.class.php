@@ -874,6 +874,27 @@ Installing for dependencies:
                         $this->_estadoPaquete['action'] = 'confirm';
                         $this->_recogerPaquetesTransaccion();
                     }
+                } else {
+                    // Ocurren problemas de resolución de dependencias
+                    $pos = strpos($this->_sContenido, "has depsolving problems");
+                    $pos2 = strpos($this->_sContenido, "Transaction Summary", $pos);
+                    if ($pos !== FALSE && $pos2 !== FALSE) {
+                        // Recoger los errores de dependencias que han ocurrido
+                        $this->_estadoPaquete['status'] = 'error';
+                        $this->_estadoPaquete['action'] = 'none';
+                        $this->_estadoPaquete['progreso'] = array();
+                        $this->_estadoPaquete['warning'] = array();
+                        $this->_estadoPaquete['errores'] = array();
+
+                        $lineas = explode("\n", $this->_sContenido);
+                        foreach ($lineas as $sLinea) {
+                            $regs = NULL;
+                            if (preg_match('/Missing Dependency: (.+) is needed by package (\S+) \(\S+\)/', $sLinea, $regs)) {
+                                // TODO: parsear estado de árbol para trazar árbol de dependencias
+                                $this->_estadoPaquete['errores'][] = $regs[0];
+                            }
+                        }
+                    }
                 }
                 break;
             case 'downloading':
