@@ -157,6 +157,33 @@ a array with the field "total" containing the total of records.
         return $this->AsteriskManager_Originate($data_connection['host'], $data_connection['user'], $data_connection['password'], $command_data);
     }
 
+    function TranferCall($data_connection, $origen, $destino, $channel, $description)
+    {
+        // /usr/sbin/asterisk -rx "core show channels concise" | grep ^SIP/215
+        $command_data['origen']  = $origen;
+        $command_data['destino'] = $destino;
+        $command_data['channel'] = $channel;
+        $command_data['description'] = $description;
+        return $this->AsteriskManager_Redirect($data_connection['host'], $data_connection['user'], $data_connection['password'], $command_data);
+    }
+
+    function AsteriskManager_Redirect($host, $user, $password, $command_data) {
+        global $arrLang;
+        $astman = new AGI_AsteriskManager();
+
+        if (!$astman->connect("$host", "$user" , "$password")) {
+            $this->errMsg = $arrLang["Error when connecting to Asterisk Manager"];
+        } else{
+            $salida = $astman->Redirect($command_data['channel'], "", $command_data['destino'], "from-internal", "1");
+
+            $astman->disconnect();
+            if (strtoupper($salida["Response"]) != "ERROR") {
+                return split("\n", $salida["Response"]);
+            }else return false;
+        }
+        return false;
+    }
+
     function AsteriskManager_Originate($host, $user, $password, $command_data) {
         global $arrLang;
         $astman = new AGI_AsteriskManager();
@@ -266,7 +293,6 @@ a array with the field "total" containing the total of records.
     
         $this->errMsg = '';
         $sPeticionSQL = "SELECT id FROM acl_user WHERE name = ".paloDB::DBCAMPO($sNombreUser);
-        exec("echo 'Entro' > /tmp/oscar");
         $result = $this->_DB->getFirstRowQuery($sPeticionSQL, FALSE);
         if ($result && is_array($result) && count($result)>0) {
             $idUser = $result[0];

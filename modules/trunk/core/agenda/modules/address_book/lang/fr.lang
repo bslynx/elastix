@@ -71,5 +71,7 @@ $arrLangModule=array(
 "You don't have extension number associated with user" => "Vous n'avez aucun num&eacute;ro d'extension associ&eacute; &agrave
 ; l'utilisateur",
 "ERROR" => "ERREUR",
+"Transfer" => "Transfer",
+"The tranfer couldn't be realized" => "The tranfer couldn't be realized",
 );
 ?>

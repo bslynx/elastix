@@ -68,5 +68,7 @@ $arrLangModule=array(
 "The file is incorrect or empty" => "Файлът е грешен или празен",
 "You don't have extension number associated with user" => "Вие нямате вътрешен номер свързан с потребителя",
 "ERROR" => "ГРЕШКА",
+"Transfer" => "Transfer",
+"The tranfer couldn't be realized" => "The tranfer couldn't be realized",
 );
 ?>

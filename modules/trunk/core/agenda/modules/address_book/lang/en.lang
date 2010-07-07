@@ -68,5 +68,7 @@ $arrLangModule=array(
 "The file is incorrect or empty" => "The file is incorrect or empty",
 "You don't have extension number associated with user" => "You don't have extension number associated with user",
 "ERROR" => "ERROR",
+"Transfer" => "Transfer",
+"The tranfer couldn't be realized" => "The tranfer couldn't be realized",
 );
 ?>
