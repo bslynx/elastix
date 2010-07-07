@@ -708,7 +708,7 @@ function transferCALL($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2,
                     if(!$result)
                     {
                         $smarty->assign("mb_title", $arrLang['ERROR'].":");
-                        $smarty->assign("mb_message", $arrLang["The tranfer couldn't be realized"]);
+                        $smarty->assign("mb_message", $arrLang["The transfer couldn't be realized, maybe you don't have any conversation now."]);
                     }
                 }
                 else {

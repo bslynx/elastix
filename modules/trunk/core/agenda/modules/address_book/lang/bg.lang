@@ -69,6 +69,6 @@ $arrLangModule=array(
 "You don't have extension number associated with user" => "Вие нямате вътрешен номер свързан с потребителя",
 "ERROR" => "ГРЕШКА",
 "Transfer" => "Transfer",
-"The tranfer couldn't be realized" => "The tranfer couldn't be realized",
+"The transfer couldn't be realized, maybe you don't have any conversation now." => "The transfer couldn't be realized, maybe you don't have any conversation now.",
 );
 ?>

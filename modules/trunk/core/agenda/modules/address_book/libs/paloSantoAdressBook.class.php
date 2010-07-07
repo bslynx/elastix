@@ -159,12 +159,16 @@ a array with the field "total" containing the total of records.
 
     function TranferCall($data_connection, $origen, $destino, $channel, $description)
     {
-        // /usr/sbin/asterisk -rx "core show channels concise" | grep ^SIP/215
-        $command_data['origen']  = $origen;
-        $command_data['destino'] = $destino;
-        $command_data['channel'] = $channel;
-        $command_data['description'] = $description;
-        return $this->AsteriskManager_Redirect($data_connection['host'], $data_connection['user'], $data_connection['password'], $command_data);
+        exec("/usr/sbin/asterisk -rx 'core show channels concise' | grep ^$channel",$arrConsole,$flagStatus);
+        if($flagStatus == 0){
+            $arrData = split("!",$arrConsole[0]);
+            $command_data['origen']  = $origen;
+            $command_data['destino'] = $destino;
+            $command_data['channel'] = $arrData[0];
+            $command_data['description'] = $description;
+            return $this->AsteriskManager_Redirect($data_connection['host'], $data_connection['user'], $data_connection['password'], $command_data);
+        }
+        return false;
     }
 
     function AsteriskManager_Redirect($host, $user, $password, $command_data) {
