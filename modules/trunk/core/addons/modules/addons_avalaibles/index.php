@@ -312,13 +312,13 @@ function getStatusCache(&$pDB, $arrConf, $arrLang){
     $pAddonsModules = new paloSantoAddonsModules($pDB);
     sleep(10);
     $arrStatus = $pAddonsModules->getStatus($arrConf);
-    $client = new SoapClient($arrConf['url_webservice']);
     $json = new Services_JSON();
 
     if($arrStatus['action'] == "confirm"){
         $salida = $pAddonsModules->clearAddon($arrConf);
         if(ereg("OK",$salida)){
             $arrSal['response'] = "OK";
+            $client = new SoapClient($arrConf['url_webservice']);
             $packages = $client->getAllAddons("2.0.0");
 
             $arr_packages = explode(" ",$packages);
@@ -330,8 +330,7 @@ function getStatusCache(&$pDB, $arrConf, $arrLang){
         }
         else
             $arrSal['response'] = "error";
-    }
-    else{
+    } elseif ($arrStatus['status'] != 'error') {
         if($arrStatus['action'] == "reporefresh")
             $arrSal['status_action'] = $arrLang['reporefresh'];
         if($arrStatus['action'] == "depsolving")
@@ -339,6 +338,36 @@ function getStatusCache(&$pDB, $arrConf, $arrLang){
         if(!isset($arrSal['status_action']) || $arrSal['status_action']=="")
             $arrSal['status_action'] = $arrLang['downloading'];
         $arrSal['response'] = $arrStatus['action'];
+    } else {
+        // Ha ocurrido un error 
+        $pAddonsModules->clearAddon($arrConf);
+        $arrSal['response'] = "error";
+        
+        // Separar los mensajes que referencian a un paquete objetivo
+        $listaErr = array();
+        foreach ($arrStatus['errmsg'] as $sErrMsg) {
+            $regs = NULL;
+            if (preg_match('/^TARGET (\S+) REQUIRES (.+)$/', $sErrMsg, $regs)) {
+                $listaErr[$regs[1]][] = $regs[2];
+            }
+        }
+
+        $client = new SoapClient($arrConf['url_webservice']);
+        $packages = $client->getAllAddons("2.0.0");
+
+        $arr_packages = explode(" ",$packages);
+        $arr_RPMs = array();
+        foreach ($arr_packages as $sNombreRPM) {
+            // TODO: internacionalizar
+            if (isset($listaErr[$sNombreRPM])) {
+                $arr_RPMs[$sNombreRPM] = array(
+                    'status' => 'FAIL', 
+                    'observation' => 'Addon '.$sNombreRPM.' requires '.implode(', ', $listaErr[$sNombreRPM]));
+            } else {
+                $arr_RPMs[$sNombreRPM] = array('status' => 'OK', 'observation' => 'OK');
+            }
+        }
+        $pAddonsModules->fillDataCache($arr_packages, $arr_RPMs);
     }
     return $json->encode($arrSal);
 }
