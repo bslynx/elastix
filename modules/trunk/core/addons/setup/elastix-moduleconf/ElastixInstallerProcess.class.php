@@ -70,6 +70,7 @@ class ElastixInstallerProcess extends AbstractProcess
             'status'    =>  'idle',
             'action'    =>  'none',
 
+            'iniciales' =>  array(),
             'progreso'  =>  array(),
             'instalado' =>  array(),
             'errores'   =>  array(),
@@ -529,6 +530,8 @@ Installing for dependencies:
                         'rpmfile'   =>  NULL,
                         'descargado'=>  '-',
                         'currstatus'=>  ($sOperacion == 'remove') ? 'installed' : 'waiting',
+                        'provides'  =>  NULL,
+                        'requires'  =>  NULL,
                     );
                     $sLineaPrevia = '';
                 } elseif (strpos($sLinea, 'Installing') === 0) {
@@ -635,9 +638,11 @@ Installing for dependencies:
                         $this->_estadoPaquete['status'] = 'error';
                         $this->_estadoPaquete['errores'][] = "Unable to open primary_db for package: ".$infoPaquete['nombre'];
                     } else {
+                        $pkgKey = NULL;
+                        
                         // select size_package from packages where name = "pidgin" and arch = "x86_64" and epoch = "0" and version = "2.6.6" and release = "1.el5"
                         $sql =
-                            'SELECT size_package, location_href FROM packages '.
+                            'SELECT size_package, location_href, pkgKey FROM packages '.
                             'WHERE name = ? AND arch = ? AND epoch = ? AND version = ? AND release = ?';
                         $recordset = $oDB->fetchTable($sql, FALSE, array(
                             $infoPaquete['nombre'],
@@ -657,6 +662,7 @@ Installing for dependencies:
                             $this->_estadoPaquete['status'] = 'error';
                             $this->_estadoPaquete['errores'][] = "Duplicate package information in primary_db for package: ".$infoPaquete['nombre'];
                         } else {
+                            $pkgKey = $recordset[0][2];
                             $infoPaquete['longitud'] = $recordset[0][0];
                             if ($infoPaquete['pkgaction'] != 'remove') 
                                 $infoPaquete['descargado'] = 0;
@@ -667,6 +673,12 @@ Installing for dependencies:
                                 $this->_estadoPaquete['status'] = 'error';
                                 $this->_estadoPaquete['errores'][] = "Unable to discover RPM filename for package: ".$infoPaquete['nombre'];
                             }                            
+                        }
+
+                        // Leer los datos de lo que provee y lo que requiere
+                        if (!is_null($pkgKey)) {
+                            $infoPaquete['provides'] = $oDB->fetchTable('SELECT * FROM provides WHERE pkgKey = ?', TRUE, array($pkgKey));
+                            $infoPaquete['requires'] = $oDB->fetchTable('SELECT * FROM requires WHERE pkgKey = ?', TRUE, array($pkgKey));
                         }
 
                         $oDB->disconnect();
@@ -689,6 +701,7 @@ Installing for dependencies:
         $this->_estadoPaquete['errores'] = array();
         $this->_estadoPaquete['warning'] = array();
         $this->_estadoPaquete['instalado'] = array();
+        $this->_estadoPaquete['iniciales'] = $listaArgs;
 
         $sComando = "ts list\ninstall ".implode(' ', $listaArgs)."\nts solve\nts list\n";
         if (!$this->_asegurarYumShellIniciado())
@@ -710,6 +723,7 @@ Installing for dependencies:
         $this->_estadoPaquete['errores'] = array();
         $this->_estadoPaquete['warning'] = array();
         $this->_estadoPaquete['instalado'] = array();
+        $this->_estadoPaquete['iniciales'] = $listaArgs;
         $sComando = "ts list\nupdate ".implode(' ', $listaArgs)."\nts solve\nts list\n";
         if (!$this->_asegurarYumShellIniciado())
             return "ERR Unable to start Yum Shell\n";
@@ -880,18 +894,212 @@ Installing for dependencies:
                     $pos2 = strpos($this->_sContenido, "Transaction Summary", $pos);
                     if ($pos !== FALSE && $pos2 !== FALSE) {
                         // Recoger los errores de dependencias que han ocurrido
-                        $this->_estadoPaquete['status'] = 'error';
+                        $this->_estadoPaquete['status'] = 'idle';
                         $this->_estadoPaquete['action'] = 'none';
-                        $this->_estadoPaquete['progreso'] = array();
                         $this->_estadoPaquete['warning'] = array();
                         $this->_estadoPaquete['errores'] = array();
 
+                        $this->_recogerPaquetesTransaccion();
+                        $this->_estadoPaquete['status'] = 'error';
+                        $listaPaquetes = $this->_estadoPaquete['progreso'];
+                        $this->_estadoPaquete['progreso'] = array();
+
                         $lineas = explode("\n", $this->_sContenido);
+                        $listaDepFaltantes = array();
                         foreach ($lineas as $sLinea) {
                             $regs = NULL;
                             if (preg_match('/Missing Dependency: (.+) is needed by package (\S+) \(\S+\)/', $sLinea, $regs)) {
                                 // TODO: parsear estado de árbol para trazar árbol de dependencias
                                 $this->_estadoPaquete['errores'][] = $regs[0];
+                                //$listaDepFaltantes[] = $regs[1];
+                                $sDependencia = $regs[1];
+                                
+                                // Se verifica si la dependencia es por una versión de RPM,
+                                // o por una versión específica. Se usa a propósito el formato
+                                // de la petición de requires.
+                                $regs = NULL;
+                                if (preg_match('/^(\S+)\s+(\S+)\s+(\S+)$/', $sDependencia, $regs)) {
+                                    $sNombreBase = $regs[1];
+                                    $sSimboloComparador = $regs[2];
+                                    $sVersion = $regs[3];
+                                    
+                                    // Elegir comparador adecuado
+                                    $mapaComp = array(
+                                        '>' =>  'GT',
+                                        '>=' => 'GE',
+                                        '=' =>  'EQ',
+                                        '<=' => 'LE',
+                                        '<' =>  'LT',
+                                    );
+                                    $sComparador = isset($mapaComp[$sSimboloComparador]) ? $mapaComp[$sSimboloComparador] : 'EQ';
+                                    $reqDesc = array(
+                                        'name'  =>  $sNombreBase,
+                                        'flags' =>  $sComparador,
+                                        'epoch' =>  NULL,
+                                        'version' =>  NULL,
+                                        'release' =>  NULL,
+                                    );
+                                    
+                                    // Parseo de la cadena de versión
+                                    if (preg_match('/^((\S+):)?(\S+)-(\S+)$/', $infoPaquete['version'], $regs)) {
+                                        $reqDesc['epoch'] = $regs[2];
+                                        $reqDesc['version'] = $regs[3];
+                                        $reqDesc['version'] = $regs[4];
+                                    } else {
+                                        $reqDesc['version'] = $infoPaquete['version'];
+                                    }
+                                    
+                                    $listaDepFaltantes[] = $reqDesc;
+                                } else {
+                                    $listaDepFaltantes[] = array(
+                                        'name'  =>  $sDependencia,
+                                        'flags' =>  NULL,
+                                        'epoch' =>  NULL,
+                                        'version' =>  NULL,
+                                        'release' =>  NULL,
+                                    );
+                                }
+                            }
+                        }
+
+                        /* Marcar cada paquete como inicial si el paquete fue pedido como parte del comando add o update */
+                        for ($i = 0; $i < count($listaPaquetes); $i++) {
+                            $listaPaquetes[$i]['inicial'] = in_array($listaPaquetes[$i]['nombre'], $this->_estadoPaquete['iniciales']);
+                            $listaPaquetes[$i]['faltadep'] = array();
+                            $listaPaquetes[$i]['requerido'] = array();
+
+                            for ($j = 0; $j < count($listaPaquetes); $j++) {
+                                if ($i == $j) continue;
+                                
+                                /* Verificar si el paquete i-ésimo es dependencia del paquete j-ésimo */
+                                $bEsDependencia = FALSE;
+                                for ($k = 0; !$bEsDependencia && $k < count($listaPaquetes[$i]['provides']); $k++) {
+                                    for ($n = 0; !$bEsDependencia && $n < count($listaPaquetes[$j]['requires']); $n++) {
+                                        $prov =& $listaPaquetes[$i]['provides'][$k];
+                                        $req =& $listaPaquetes[$j]['requires'][$n];
+                                        
+                                        /* $req puede tener flags como un comparador, o vacío. Si es vacío, se busca
+                                           el valor exacto en $prov, sin bandera. Si tiene bandera, se busca un $prov
+                                           que satisfaga el comparador 
+                                         */
+                                        if ($req['name'] == $prov['name']) {
+                                            if ($req['flags'] == '') {
+                                                $bEsDependencia = TRUE;
+                                            } elseif ($prov['version'] != '' && $req['version'] != '') {
+                                                $reqversion = array(
+                                                    'epoch' => ($req['epoch'] != '') ? $req['epoch'] : 0, 
+                                                    'version' => ($req['version'] != '') ? explode('.', $req['version']) : array(), 
+                                                    'release' => ($req['release'] != '') ? explode('.', $req['release']) : array());
+                                                $provversion = array(
+                                                    'epoch' => ($prov['epoch'] != '') ? $prov['epoch'] : 0, 
+                                                    'version' => ($prov['version'] != '') ? explode('.', $prov['version']) : array(), 
+                                                    'release' => ($prov['release'] != '') ? explode('.', $prov['release']) : array());
+                                                $sComp = 'EQ'; // Se asume al inicio que son iguales
+                                                
+                                                // Generar comparador que describe $prov COMP $req
+                                                if ($provversion['epoch'] < $reqversion['epoch']) $sComp = 'LT';
+                                                if ($provversion['epoch'] > $reqversion['epoch']) $sComp = 'GT';
+                                                if ($sComp == 'EQ') {
+                                                    while (count($reqversion['version']) && count($provversion['version'])) {
+                                                        $r = array_shift($reqversion['version']);
+                                                        $p = array_shift($provversion['version']);
+                                                        if ($p < $r) $sComp = 'LT';
+                                                        if ($p > $r) $sComp = 'GT';
+                                                    }
+                                                    if ($sComp == 'EQ' && count($reqversion['version'])) $sComp = 'LT';
+                                                    if ($sComp == 'EQ' && count($provversion['version'])) $sComp = 'GT';
+                                                }
+                                                if ($sComp == 'EQ') {
+                                                    while (count($reqversion['release']) && count($provversion['release'])) {
+                                                        $r = array_shift($reqversion['release']);
+                                                        $p = array_shift($provversion['release']);
+                                                        if ($p < $r) $sComp = 'LT';
+                                                        if ($p > $r) $sComp = 'GT';
+                                                    }
+                                                    if ($sComp == 'EQ' && count($reqversion['release'])) $sComp = 'LT';
+                                                    if ($sComp == 'EQ' && count($provversion['release'])) $sComp = 'GT';
+                                                }
+                                                
+                                                // Verificar comparador de $req
+                                                switch ($req['flags']) {
+                                                case 'GT':  $bEsDependencia = ($sComp == 'GT'); break;
+                                                case 'GE':  $bEsDependencia = ($sComp == 'GT' || $sComp == 'EQ'); break;
+                                                case 'EQ':  $bEsDependencia = ($sComp == 'EQ'); break;
+                                                case 'LE':  $bEsDependencia = ($sComp == 'EQ' || $sComp == 'LT'); break;
+                                                case 'LT':  $bEsDependencia = ($sComp == 'LQ'); break;
+                                                }
+                                            }
+                                        }
+                                        
+                                        if ($bEsDependencia) {
+                                            // Marcar que el paquete i-ésimo es requerido por el j-ésimo
+                                            $listaPaquetes[$i]['requerido'][] = $j;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        
+                        // Localizar todos los paquetes que dependen directamente de una dependencia
+                        // faltante indicada en $listaDepFaltantes
+                        for ($i = 0; $i < count($listaPaquetes); $i++) {
+                            for ($j = 0; $j < count($listaPaquetes[$i]['requires']); $j++) {
+                                $req =& $listaPaquetes[$i]['requires'][$j];
+                                for ($k = 0; $k < count($listaDepFaltantes); $k++) {
+                                    if ($req['name'] == $listaDepFaltantes[$k]['name'] && 
+                                        $req['flags'] == $listaDepFaltantes[$k]['flags'] &&
+                                        $req['epoch'] == $listaDepFaltantes[$k]['epoch'] &&
+                                        $req['version'] == $listaDepFaltantes[$k]['version'] &&
+                                        $req['release'] == $listaDepFaltantes[$k]['release']) {
+                                        
+                                        $listaPaquetes[$i]['faltadep'][] = $listaDepFaltantes[$k];
+                                    }
+                                }
+                            }
+                        }
+
+                        /* Revisar las dependencias faltantes. Si se encuentra un paquete
+                           con dependencias faltantes, se propagan estas dependencias faltantes
+                           a todos los paquetes que se listan como que dependen del paquete 
+                           examinado. Se termina cuando en una pasada no hay más propagaciones. */
+                        $bNuevaDep = TRUE;
+                        while ($bNuevaDep) {
+                            $bNuevaDep = FALSE;
+                            for ($i = 0; $i < count($listaPaquetes); $i++) {
+                                if (count($listaPaquetes[$i]['faltadep']) > 0 && count($listaPaquetes[$i]['requerido']) > 0) {
+                                    for ($j = 0; $j < count($listaPaquetes[$i]['requerido']); $j++) {                                        
+                                        $dep =& $listaPaquetes[$listaPaquetes[$i]['requerido'][$j]];
+                                        for ($k = 0; $k < count($listaPaquetes[$i]['faltadep']); $k++) {
+                                            if (!in_array($listaPaquetes[$i]['faltadep'][$k], $dep['faltadep'])) {
+                                                $bNuevaDep = TRUE;
+                                                $dep['faltadep'][] = $listaPaquetes[$i]['faltadep'][$k];
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        // Reportar las dependencias que impiden instalación de paquetes objetivo
+                        foreach ($listaPaquetes as $infoPaquete) {
+                            if ($infoPaquete['inicial'] && count($infoPaquete['faltadep']) > 0) {
+                                foreach ($infoPaquete['faltadep'] as $req) {
+                                    $sDescDependencia = $req['name'];
+                                    $mapaComp = array(
+                                        'GT' => '>',
+                                        'GE' => '>=',
+                                        'EQ' => '=',
+                                        'LE' => '<=',
+                                        'LT' => '<',
+                                    );
+                                    if ($req['flags'] != '') {
+                                        $sDescDependencia .= ' '.$mapaComp[$req['flags']].' ';
+                                        if ($req['epoch'] != '') $sDescDependencia .= $req['epoch'].':';
+                                        $sDescDependencia .= $req['version'];
+                                        if ($req['release'] != '') $sDescDependencia .= '-'.$req['release'];
+                                    }
+                                    $this->_estadoPaquete['errores'][] = "TARGET ".$infoPaquete['nombre'].' REQUIRES '.$sDescDependencia;
+                                }
                             }
                         }
                     }
