@@ -231,7 +231,7 @@ class paloSantoNavigation {
         foreach($this->arrMenu as $id => $element) {
             if($element['IdParent']==$idParent) {
                 if($this->getArrSubMenu($element['id'])!=false){
-					$img = "<img src='images/miniArrowDown.png' align='absmiddle' style='border:0;'/>";
+					$img = "<img alt='' src='images/miniArrowDown.png' align='absmiddle' style='border:0;'/>";
                     $element['Name'] = $element['Name']." ".$img;
                     $arrSubMenu[$id] = $element;
                 }else{
@@ -361,7 +361,7 @@ class paloSantoNavigation {
                 if($arr_js!=false && count($arr_js)>0){
                     for($i=0; $i<count($arr_js); $i++){
                         $dir_script = "modules/$menuLibs/themes/default/js/".$arr_js[$i];
-                        $HEADER_MODULES .= "\n<script src='$dir_script'></script>";
+                        $HEADER_MODULES .= "\n<script type='text/javascript' src='$dir_script'></script>";
                     }
                 }
             }
@@ -389,7 +389,7 @@ class paloSantoNavigation {
                 if($arr_js!=false && count($arr_js)>0){
                     for($i=0; $i<count($arr_js); $i++){
                         $dir_script = "libs/js/jquery/".$arr_js[$i];
-                        $HEADER_LIBS_JQUERY .= "\n<script src='$dir_script'></script>";
+                        $HEADER_LIBS_JQUERY .= "\n<script type='text/javascript' src='$dir_script'></script>";
                     }
                 }
             }

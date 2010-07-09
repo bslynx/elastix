@@ -1,38 +1,37 @@
 <div id="fullMenu">
-    <div id="">
         <table cellspacing="0" cellpadding="0" width="100%" border="0" class="fondomenu_headertop">
             <tr>
                 <td width="20%">
-                    <table cellSpacing="0" cellPadding="0" border="0" height="65px">
+                    <table cellspacing="0" cellpadding="0" border="0" height="65px">
                         <tr>
                             <td class="menulogo"  valign="top">
                                 <a href='http://www.elastix.org' target='_blank'>
-                                    <img src="themes/{$THEMENAME}/images/logo_elastix.gif" border='0' />
+                                    <img alt="" src="themes/{$THEMENAME}/images/logo_elastix.gif" border='0' />
                                 </a>
                             </td>
                         </tr>
                     </table>
                 </td>
                 <td width="50%" valign="top">
-                    <table cellSpacing="0" cellPadding="0" border="0" align="center" width="100%" height="74">
+                    <table cellspacing="0" cellpadding="0" border="0" align="center" width="100%" height="74">
                         <tr>
                             {foreach from=$arrMainMenu key=idMenu item=menu name=menuMain}
                                 {if $idMenu eq $idMainMenuSelected}
 									<td width="4px">&nbsp;</td>
 									<td align="center" id="menu_selected">
-                                         <table cellSpacing='0' cellPadding='0' border='0' style='position:relative;top:18px'>
+                                         <table cellspacing='0' cellpadding='0' border='0' style='position:relative;top:18px'>
                                             <tr>
-                                                <td valign='top'><img border='0' align='absmiddle' src="themes/{$THEMENAME}/images/fondo_boton_on_left.gif"/></td>
-                                                <td class='menutabletabon2' nowrap=''>
+                                                <td valign='top'><img alt="" border='0' align='absmiddle' src="themes/{$THEMENAME}/images/fondo_boton_on_left.gif"/></td>
+                                                <td class='menutabletabon2' nowrap='nowrap'>
                                                     <a class='menutable2' href="index.php?menu={$idMenu}">{$menu.Name}</a>
                                                 </td>
-                                                <td valign='top'><img border='0' align='absmiddle' src="themes/{$THEMENAME}/images/fondo_boton_on_right.gif"/></td>
+                                                <td valign='top'><img alt="" border='0' align='absmiddle' src="themes/{$THEMENAME}/images/fondo_boton_on_right.gif"/></td>
                                             </tr>
                                         </table>
-										<!--<table cellSpacing="0" cellPadding="0" border="0" width="69px" id="table_on">
+										<!--<table cellspacing="0" cellpadding="0" border="0" width="69px" id="table_on">
 											<tr>
 												<td class="menutabletabon">
-													<img src="themes/{$THEMENAME}/images/{$idMenu}_icon.gif" border="0" alt="" />
+													<img alt="" src="themes/{$THEMENAME}/images/{$idMenu}_icon.gif" border="0" alt="" />
 													<a class="menutableon" href="index.php?menu={$idMenu}">{$menu.Name}</a>
                                                     <input type="hidden" name="desc_menu" id="desc_menu" value="{$THEMENAME},{$idMenu},{$menu.Name}" />
 												</td>
@@ -42,13 +41,13 @@
                                 {else}
                                     <td width="4px">&nbsp;</td>
 									<td align="center">
-										<table cellSpacing="0" cellPadding="0" border="0" style="position:relative;top:18px">
+										<table cellspacing="0" cellpadding="0" border="0" style="position:relative;top:18px">
 											<tr>
-												<td valign="top"><img border="0" align="absmiddle" src="themes/elastixwave/images/fondo_boton_left.gif"/></td>
-												<td class="menutabletaboff" nowrap="">
+												<td valign="top"><img alt="" border="0" align="absmiddle" src="themes/elastixwave/images/fondo_boton_left.gif"/></td>
+												<td class="menutabletaboff" nowrap="nowrap">
 													<a class="menutable" href="index.php?menu={$idMenu}">{$menu.Name}</a>
 												</td>
-												<td valign="top"><img border="0" align="absmiddle" src="themes/elastixwave/images/fondo_boton_right.gif"/></td>
+												<td valign="top"><img alt="" border="0" align="absmiddle" src="themes/elastixwave/images/fondo_boton_right.gif"/></td>
 											</tr>
 										</table> 
 									</td>
@@ -58,16 +57,16 @@
                         </tr>
                     </table>
                 </td>
-                <td width="30%" nowrap="">
+                <td width="30%" nowrap="nowrap">
                     <div id="menu_float" class="background">
                         <div id="logout_in">
                             <span><a class="logout" href="javascript:mostrar();">{$ABOUT_ELASTIX2}</a></span>&nbsp;
                             <span class="menuguion">*</span>&nbsp;
-                            <span><a class="logout" href="javascript:openWindow('help/?id_nodo={$idSubMenuSelected}&name_nodo={$nameSubMenuSelected}')">{$HELP}</a></span>&nbsp;
+                            <span><a class="logout" href="javascript:openWindow('help/?id_nodo={$idSubMenuSelected}&amp;name_nodo={$nameSubMenuSelected}')">{$HELP}</a></span>&nbsp;
                             <span class="menuguion">*</span>&nbsp;
                             <span><a class="logout" href="?logout=yes">{$LOGOUT} (<font color='#c0d0e0'>{$USER_LOGIN}</font>)</a></span>&nbsp;
                         </div>
-                    <div>
+                    </div>
                 </td>
             </tr>
             <tr>
@@ -89,24 +88,23 @@
                                 </tr>
                             </table>
                         </td>
-                        <td align="right" valign="middle"><a href="javascript:openWindow('help/?id_nodo={$idSubMenuSelected}&name_nodo={$nameSubMenuSelected}')"><img
-                            src="themes/{$THEMENAME}/images/help_bottom.gif" border="0"></a>&nbsp;&nbsp;<a href="javascript:changeMenu()"><img
-                            src="themes/{$THEMENAME}/images/arrow_top.gif" border="0"></a>&nbsp;&nbsp;</td>
+                        <td align="right" valign="middle"><a href="javascript:openWindow('help/?id_nodo={$idSubMenuSelected}&amp;name_nodo={$nameSubMenuSelected}')"><img alt=""
+                            src="themes/{$THEMENAME}/images/help_bottom.gif" border="0" /></a>&nbsp;&nbsp;<a href="javascript:changeMenu()"><img alt=""
+                            src="themes/{$THEMENAME}/images/arrow_top.gif" border="0" /></a>&nbsp;&nbsp;</td>
                     </tr>
                   </table>
                 </td>
             </tr>
         </table>
-    </div>
 </div>
 <div id="miniMenu" style="display: none;">
   <table cellspacing="0" cellpadding="0" width="100%" class="menumini">
     <tr>
-      <td><img src="images/logo_elastix_mini.jpg" border="0"></td>
+      <td><img alt="" src="images/logo_elastix_mini.jpg" border="0" /></td>
       <td align="right" class="letra_gris" valign="middle">{$nameMainMenuSelected} &rarr; {$nameSubMenuSelected} {if !empty($idSubMenu2Selected)} &rarr; {$nameSubMenu2Selected} {/if}
-          &nbsp;&nbsp;<a href="javascript:openWindow('help/?id_nodo={$idSubMenuSelected}&name_nodo={$nameSubMenuSelected}')"><img src="themes/{$THEMENAME}/images/help_bottom.gif" border="0" 
-          align="absmiddle"></a>
-          &nbsp;&nbsp;<a href="javascript:changeMenu()"><img src="themes/{$THEMENAME}/images/arrow_bottom.gif" border="0" align="absmiddle"></a>&nbsp;&nbsp;
+          &nbsp;&nbsp;<a href="javascript:openWindow('help/?id_nodo={$idSubMenuSelected}&amp;name_nodo={$nameSubMenuSelected}')"><img alt="" src="themes/{$THEMENAME}/images/help_bottom.gif" border="0" 
+          align="absmiddle" /></a>
+          &nbsp;&nbsp;<a href="javascript:changeMenu()"><img alt="" src="themes/{$THEMENAME}/images/arrow_bottom.gif" border="0" align="absmiddle" /></a>&nbsp;&nbsp;
       </td>
     </tr>
   </table>
@@ -163,6 +161,7 @@
 }
 </style>
 <script type='text/javascript'>
+//<![CDATA[
 cerrar();
 function cerrar()
 {
@@ -204,20 +203,20 @@ function createMenuSelectedSplash()
     var desc_menu = document.getElementById("desc_menu").value;
     var arrDesc = desc_menu.split(",");
 
-    var html  = "<table cellSpacing='0' cellPadding='0' border='0' style='position:relative;top:17px'>";
+    var html  = "<table cellspacing='0' cellpadding='0' border='0' style='position:relative;top:17px'>";
         html += "   <tr>";
-        html += "       <td valign='top'><img border='0' align='absmiddle' src='themes/" + arrDesc[0] + "/images/fondo_boton_on_left.gif'/></td>";
-        html += "       <td class='menutabletabon2' nowrap=''>";
+        html += "       <td valign='top'><img alt='' border='0' align='absmiddle' src='themes/" + arrDesc[0] + "/images/fondo_boton_on_left.gif'/></td>";
+        html += "       <td class='menutabletabon2' nowrap='nowrap'>";
         html += "           <a class='menutable2' href='javascript:openMenu(\"" + arrDesc[1] + "\");'>" + arrDesc[2] + "</a>";
         html += "       </td>";
-        html += "       <td valign='top'><img border='0' align='absmiddle' src='themes/" + arrDesc[0] + "/images/fondo_boton_on_right.gif'/></td>";
+        html += "       <td valign='top'><img alt='' border='0' align='absmiddle' src='themes/" + arrDesc[0] + "/images/fondo_boton_on_right.gif'/></td>";
         html += "   </tr>";
         html += "</table>";
 
     var menu_selected = document.getElementById("menu_selected");
     menu_selected.innerHTML = html;
 }
-//setTimeout("createMenuSelectedSplash()",1400);
+setTimeout("createMenuSelectedSplash()",1400);
 
 // var cnt = 0;
 // function load()
@@ -230,10 +229,12 @@ function createMenuSelectedSplash()
 //     }
 // }
 // load();
+
+//]]>
 </script>
 
 <script type="text/javascript">
-
+//<![CDATA[
     $(".menutabletaboff").mouseover(function(){
         $(this).attr("class","menutabletaboffover");
         $(this).find('a:first').attr("class","menutableOver");
@@ -247,6 +248,6 @@ function createMenuSelectedSplash()
         $(this).parent().find('img:first').attr("src","themes/elastixwave/images/fondo_boton_left.gif");
         $(this).parent().find('img:last').attr("src","themes/elastixwave/images/fondo_boton_right.gif");
     });
-
+//]]>
 </script>
 {/literal}

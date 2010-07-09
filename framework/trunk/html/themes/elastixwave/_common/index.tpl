@@ -1,3 +1,5 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF8" />
@@ -5,8 +7,8 @@
         <link rel="stylesheet" href="themes/{$THEMENAME}/styles.css" />
         <link rel="stylesheet" href="themes/{$THEMENAME}/help.css" />
 	{$HEADER_LIBS_JQUERY}
-        <script src="libs/js/base.js"></script>
-        <script src="libs/js/iframe.js"></script>
+        <script type='text/javascript' src="libs/js/base.js"></script>
+        <script type='text/javascript' src="libs/js/iframe.js"></script>
         {$HEADER}
 	{$HEADER_MODULES}
     </head>
@@ -41,7 +43,7 @@
                         </tr>
                     </table><br />
                     <div align="center" class="copyright"><a href="http://www.elastix.org" target='_blank'>Elastix</a> is licensed under <a href="http://www.opensource.org/licenses/gpl-license.php" target='_blank'>GPL</a> by <a href="http://www.palosanto.com" target='_blank'>PaloSanto Solutions</a>. 2006 - 2010.</div>
-                    <br>
+                    <br />
                 </td>
             </tr>
         </table>
