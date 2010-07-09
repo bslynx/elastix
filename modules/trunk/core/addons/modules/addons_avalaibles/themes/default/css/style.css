@@ -17,9 +17,9 @@
 }
 
 .text_alert {
-    position: relative;
-    top: 0px;
-    left: 268px;
+    color:#FF0000;
+    font-weight:bold;
+    font-size:12px;
 }
 
 .text_downloading {

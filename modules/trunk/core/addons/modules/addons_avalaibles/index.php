@@ -205,7 +205,7 @@ function reportAvailables($smarty, $module_name, $local_templates_dir, &$pDB, $a
     $oGrid->calculatePagination($action,$start);
     $offset = $oGrid->getOffsetValue();
     $end    = $oGrid->getEnd();
-    $url    = "?menu=$module_name&filter_value=$addons_search";
+    $url    = "?menu=$module_name&amp;filter_value=$addons_search";
 
     $arrData = null;
     try {
@@ -231,17 +231,17 @@ function reportAvailables($smarty, $module_name, $local_templates_dir, &$pDB, $a
                 $arrTmp[0] = $smarty->fetch("$local_templates_dir/imagen_paquete.tpl");
                 $arrTmp[1] = $smarty->fetch("$local_templates_dir/info_paquete.tpl");
                 //$arrTmp[2] = "<input type='button' value='$arrLang[Install]' class='install' id='$value[name_rpm]' name='installButton' style='visibility: hidden;' />";
-                $arrTmp[2] = "<div id='img_$value[name_rpm]' align='center' width='9%'>".
-                                "<img src='modules/addons_avalaibles/images/loading.gif' class='loadingAjax' style='display: block;' />".
+                $arrTmp[2] = "<div id='img_$value[name_rpm]' align='center' >".
+                                "<img alt='' src='modules/addons_avalaibles/images/loading.gif' class='loadingAjax' style='display: block;' />".
                                 "<div id='start_$value[name_rpm]' style='display: none;'>".
                                     "<div class='text_starting'>$arrLang[Starting]</div>".
                                     "<div>".
-                                        "<img src='modules/addons_avalaibles/images/starting.gif' class='startingAjax' />".
+                                        "<img alt='' src='modules/addons_avalaibles/images/starting.gif' class='startingAjax' />".
                                     "</div>".
                                 "</div>".
                                 "<input type='button' value='$arrLang[Install]' class='install' id='$value[name_rpm]' name='installButton' style='display: none;' />".
                             "</div>";
-                $arrTmp[3] = "<div id='status_$value[name_rpm]' class='text_downloading' align='center' width='10%'>$arrLang[Loading]</div>";
+                $arrTmp[3] = "<div id='status_$value[name_rpm]' class='text_downloading' align='center' >$arrLang[Loading]</div>";
                 $arrData[] = $arrTmp;
             }
         }
@@ -269,7 +269,7 @@ function reportAvailables($smarty, $module_name, $local_templates_dir, &$pDB, $a
     $smarty->assign("Search", $arrLang["Search"]);
     $smarty->assign("module_name", $module_name);
 
-    $content = "<form  method='POST' style='margin-bottom:0;' action=\"$url\">".$oGrid->fetchGrid($arrGrid, $arrData,$arrLang)."</form>";
+    $content = "<form  method='post' style='margin-bottom:0;' action=\"$url\">".$oGrid->fetchGrid($arrGrid, $arrData,$arrLang)."</form>";
 
     return $content;
 }
