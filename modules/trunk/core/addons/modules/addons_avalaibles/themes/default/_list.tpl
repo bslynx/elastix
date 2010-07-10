@@ -4,14 +4,14 @@
   </tr>
   <tr>
     <td>
-      <table class="table_data" align="center" border="1" cellspacing="0" cellpadding="0" width="100%">
+      <table class="table_data" align="center" border="0" cellspacing="0" cellpadding="0" width="100%">
         <tr class="table_navigation_row">
           <td colspan="{$numColumns}" class="table_navigation_row">
             <table border="0" cellpadding="0" cellspacing="0" width="100%" class="table_navigation_text">
               <tr>
                 <td align="left" colspan="3">
-                    <input type="text" value="" name="addons_search" >
-                    <a href="index.php?menu={$module_name}&action=search">
+                    <input type="text" value="" name="addons_search" />
+                    <a href="index.php?menu={$module_name}&amp;action=search">
                         <img alt="" src='modules/{$module_name}/images/lupa.jpeg' align='absmiddle' border='0' width='15' height='15' />
                     </a>
                 </td>

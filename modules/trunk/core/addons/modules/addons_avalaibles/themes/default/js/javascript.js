@@ -190,17 +190,18 @@ function changeStatus(name_rpm, view_details ){
     ////////////////////////////////////////////////////
                 if(resp == "OK"){
                     // aqui se muestran los botones de install y los errores que pudieron haber
-                    changeStatusButtonInstall(resp)
+                    changeStatusButtonInstall(response)
                 }else if(resp == "error"){
-                    alert("uno o algunos paquetes no se pueden instalar");
-                    changeStatusButtonInstall(resp)
+                    //alert("uno o algunos paquetes no se pueden instalar");
+                    changeStatusButtonInstall(response)
                 }
                 else
                     getStatusCache();
         });
     }
 
-    function changeStatusButtonInstall(resp){
+    function changeStatusButtonInstall(response){
+		var resp = response['response'];
         var order = 'menu='+module_name+'&action=get_lang&rawmode=yes';
         if(resp == "OK"){
             $.post("index.php", order,
@@ -223,10 +224,38 @@ function changeStatus(name_rpm, view_details ){
             });
             there_install = false;
         }else{
+/*
             $("div[id^='img_']").each(function(){
                 var id = $(this).attr('id');
                 alert(id+" error");
             });
+*/
+            var arr_data = response['data_cache'];
+            var link_img = "modules/"+module_name+"/images/warning.png";
+            //elastix-developer id
+            //status_elastix-developer id
+            for(var i=0; i<arr_data.length; i++){
+                var rpm_name = arr_data[i]["name_rpm"];
+                var status = arr_data[i]["status"];
+                var observation = arr_data[i]["observation"];
+                var id_status = "status_"+rpm_name;
+                if(document.getElementById(rpm_name)){
+                    if(status == "1"){ // se muestra el boton de instalar
+                        $("#"+rpm_name).attr("style","display: block;");
+                        // se oculta el loading
+                        $("#"+rpm_name).parent().children(':first-child').attr('style','display: none;');
+                        // cambiando la clase
+                        $("#status_"+rpm_name).attr("class","text_install");
+                    }else{ // se debe mostrar el error como descripcion
+                        // cambiando el loading por img error
+                        $("#"+rpm_name).parent().children(':first-child').attr('src',link_img);
+                        $("#status_"+rpm_name).attr("class","text_alert");
+                    }
+                    // cambiando la observacion
+                    $("#status_"+rpm_name).text(observation);
+                }
+            }
+            
             there_install = false;
         }
     }

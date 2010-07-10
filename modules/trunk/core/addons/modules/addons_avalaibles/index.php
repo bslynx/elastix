@@ -293,9 +293,12 @@ function getPackagesCache($arrConf, &$pDB, $arrLang){
             }
             else
                 $arrSal['response'] = "error";
+                $arrSal['data_cache'] = array();
         }
-        else
+        else {
             $arrSal['response'] = "error";
+            $arrSal['data_cache'] = array();
+        }
     }
     else{
         $arrSal['response'] = "there_install"; //retornar que existe una instalacion
@@ -368,6 +371,7 @@ function getStatusCache(&$pDB, $arrConf, $arrLang){
             }
         }
         $pAddonsModules->fillDataCache($arr_packages, $arr_RPMs);
+        $arrSal['data_cache'] = $pAddonsModules->getDataCache();
     }
     return $json->encode($arrSal);
 }
