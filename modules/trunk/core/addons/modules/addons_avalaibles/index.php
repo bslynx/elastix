@@ -109,6 +109,7 @@ function installAddons($smarty, $module_name, $local_templates_dir, &$pDB, $arrC
                 $arrSal['response'] = "OK";
                 $arrSal['name_rpm'] = $name_rpm;
                 $_SESSION['elastix_addons']['name_rpm'] = $name_rpm;
+                $_SESSION['elastix_addons']['action_rpm'] = 'install';
             }
             else
                 $arrSal['response'] = "error";

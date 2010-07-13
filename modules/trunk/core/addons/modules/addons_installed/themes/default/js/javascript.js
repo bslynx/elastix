@@ -30,11 +30,12 @@ function getPercent()
                 var url_redirect = "index.php?menu="+module_name;
                 window.open(url_redirect,"_self");
             }
-            else if(response['status']=="not_install"){getPercent();
+            else if(response['status']=="not_install"){
                 // nada que hacer
             }
-            else
+            else {
                 getPercent();
+            }
     });
 }
 
@@ -43,8 +44,19 @@ function process(response)
     var valueActual = response['valueActual'];
     var valueTotal  = response['valueTotal'];
 
-    if(response['action'] != "none")
-        document.getElementById('percentTotal').firstChild.nodeValue=valueTotal;
+	if (response['status'] == "not_install")
+		return;
+
+    if(response['action'] != "none") {
+        var ctl_percent = document.getElementById('percentTotal');
+        if (ctl_percent != null) {
+        	ctl_percent.firstChild.nodeValue=valueTotal;
+        } else {
+            var url_redirect = "index.php?menu="+module_name;
+            window.open(url_redirect,"_self");
+        	return;
+        }
+    }
 
     if(valueActual != "none"){
         for(var i=0; i<valueActual.length; i++){
@@ -66,7 +78,8 @@ function process(response)
             $('#progressBarActual'+i).progressbar('value', percentActual);
         }
         $('#progressBarTotal').progressbar('value', valueTotal);
-    }$('#progressBarTotal').progressbar('value', 100);
+    }
+    $('#progressBarTotal').progressbar('value', 100);
 }
 
 function updateAddon(name_rpm)
@@ -75,10 +88,41 @@ function updateAddon(name_rpm)
     $.post('index.php',order,function(theResponse){
             var message = JSONtoString(theResponse);
             if(message['response'] == "OK")
-                getStatusInstall();
+                //getStatusInstall();
+                confirmOperation();
             else if(message['response'] == "error"){
                 connectJSON("error_start_install");
             }
+    });
+}
+
+function removeAddon(name_rpm)
+{
+    var order = 'menu='+module_name+'&name_rpm='+name_rpm+'&action=remove&rawmode=yes';
+    $.post('index.php',order,function(theResponse){
+            var message = JSONtoString(theResponse);
+            if(message['response'] == "OK")
+                //getStatusInstall();
+                confirmOperation();
+            else if(message['response'] == "error"){
+                connectJSON("error_start_install");
+            }
+    });
+}
+
+function confirmOperation(){
+    var order = 'menu='+module_name2+'&action=confirm&rawmode=yes';
+
+    $.post("index.php", order,
+        function(theResponse){
+            response = JSONtoString(theResponse);
+            var resp = response['response'];
+
+            if(resp == "OK")
+                //window.open("index.php?menu="+module_name,"_self");
+                getStatusInstall();
+            else
+                confirmOperation();
     });
 }
 
@@ -87,13 +131,17 @@ function getStatusInstall(){
 
     $.post("index.php", order,
         function(theResponse){
-            response = JSONtoString(theResponse);
+            var response = JSONtoString(theResponse);
             var resp = response['response'];
 
             if(resp == "OK")
                 window.open("index.php?menu="+module_name,"_self");
-            else
+            else if (resp == "not_install") {
+            	// Nada que hacer
+			} else {
+            	process(response);
                 getStatusInstall();
+            }
     });
 }
 

@@ -79,6 +79,9 @@ function _moduleContent(&$smarty, $module_name)
         case "update":
             $content = updateAddons($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
             break;
+        case "remove":
+            $content = removeAddons($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+            break;
         case "confirm":
             $content = getconfirm($module_name, $pDB, $arrConf, $arrLang);
             break;
@@ -123,8 +126,9 @@ function viewFormAddonsModules($smarty, $module_name, $local_templates_dir, &$pD
             $arrTmp[0] = $value['name'];
             $arrTmp[1] = $value['version'];
             $arrTmp[2] = $value['release'];
-            if($value['update_st']) $strUp = "<a href='javascript:void(0);' onclick=\"javascript:updateAddon('$value[name_rpm]');\">$arrLang[Update]</a>";
-            $arrTmp[3] = "$strUp&nbsp;&nbsp;&nbsp;<a href='#'>$arrLang[Delete]</a>";
+            if($value['update_st'])
+                $strUp = "<a href='javascript:void(0);' onclick=\"javascript:updateAddon('$value[name_rpm]');\">$arrLang[Update]</a>";
+            $arrTmp[3] = "$strUp&nbsp;&nbsp;&nbsp;<a href='javascript:void(0);' onclick=\"javascript:removeAddon('$value[name_rpm]');\">$arrLang[Delete]</a>";
             $arrData[] = $arrTmp;
         }
     }
@@ -167,7 +171,7 @@ function viewFormAddonsModules($smarty, $module_name, $local_templates_dir, &$pD
     $divs_packages = createProgressBarsSecondary($output,$module_name,$arrLang);
     $smarty->assign("divs_packages", $divs_packages);
     $htmlForm = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
-    $htmlForm = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
+    $htmlForm = "<form  method='post' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
     $smarty->assign("ADDONS_INSTALLED",$htmlForm);
     $smarty->assign("SHOW_PROGRESS",$show_progress);
 
@@ -201,12 +205,12 @@ function createProgressBarsSecondary($output,$module_name,$arrLang){
     for($i=0; $i<count($output['package']); $i++){
         $name = $output['package'][$i]['name'];
         $action = $output['package'][$i]['action'];
-        $lon_total = $output['package'][$i]['lon_total'];
-        $lon_downl = $output['package'][$i]['lon_downl'];
+        $lon_total = isset($output['package'][$i]['lon_total']) ? $output['package'][$i]['lon_total'] : 0;
+        $lon_downl = isset($output['package'][$i]['lon_downl']) ? $output['package'][$i]['lon_downl'] : 0;
         $status_pa = $output['package'][$i]['status_pa'];
 
         $status_pa = $arrLang[$status_pa];
-        $porcent_ins = $output['package'][$i]['porcent_ins'];
+        $porcent_ins = isset($output['package'][$i]['porcent_ins']) ? $output['package'][$i]['porcent_ins'] : 0;
         $html .= "<div class='margin_bars'>\n";
         $html .= "<div id='progressBarActual$i'>\n";
         $html .= "</div>\n";
@@ -224,7 +228,7 @@ function getProgressBar($module_name, $pDB, $arrConf, $arrLang){
     $pAddonsModules = new paloSantoAddonsModules($pDB);
     $arrStatus = $pAddonsModules->getStatus($arrConf);
 
-    if(isset($_SESSION['elastix_addons'])){ // hay instalacion en progreso
+    if (isset($_SESSION['elastix_addons'])) { // hay instalacion en progreso
         $valueActual = "none";
         $valueTotal = "0";
         if(isset($arrStatus['package']))
@@ -246,15 +250,30 @@ function getProgressBar($module_name, $pDB, $arrConf, $arrLang){
                 }
                 unset($_SESSION['elastix_addons']['data_install']);
                 unset($_SESSION['elastix_addons']['name_rpm']);
+                unset($_SESSION['elastix_addons']['action_rpm']);
                 unset($_SESSION['elastix_addons']);
                 $arr['status'] = "finished";
+                $arr['response'] = "OK";
+                
+                // Refrescar el estado de actualización
+                $addons_installed = $pAddonsModules->getCheckAddonsInstalled();
+                ini_set("soap.wsdl_cache_enabled", "0");
+                $client = new SoapClient($arrConf['url_webservice']);
+                $arrAddons = $client->getCheckAddonsUpdate($addons_installed);
+                $arrAddons = explode(",",$arrAddons);
+                $pAddonsModules->updateInDB($arrAddons);
+            } else {
+                $arr['status'] = "not_install";
+                $arr['response'] = "not_install";
             }
         }
+        sleep(4);
     }
-    else
+    else {
         $arr['status'] = "not_install";
+        $arr['response'] = "not_install";
+    }
 
-    sleep(4);
     $json = new Services_JSON();
     return $json->encode($arr);
 }
@@ -293,6 +312,41 @@ function updateAddons($smarty, $module_name, $local_templates_dir, &$pDB, $arrCo
             if($arrStatus['status'] != "error"){
                 $arrSal['response'] = "OK";
                 $_SESSION['elastix_addons']['name_rpm'] = $name_rpm;
+                $_SESSION['elastix_addons']['action_rpm'] = 'update';
+            }
+            else
+                $arrSal['response'] = "error";
+        }
+        else
+            $arrSal['response'] = "error";
+    }
+    else{
+        $arrSal['response'] = "there_install"; //retornar que existe una instalacion
+        $arrSal['name_rpm'] = $_SESSION['elastix_addons']['name_rpm'];
+    }
+    $arrSal['installing'] = $arrLang['installing'];
+    $json = new Services_JSON();
+
+    return $json->encode($arrSal);
+}
+
+function removeAddons($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
+{
+    $name_rpm = getParameter("name_rpm");
+    $pAddonsModules = new paloSantoAddonsModules($pDB);
+    $arrSal['response'] = false;
+    $_SESSION['elastix_addons']['data_install'] = '';
+
+    $arrStatus = $pAddonsModules->getStatus($arrConf);
+
+    if($arrStatus['action'] == "none" && $arrStatus['status'] == "idle"){
+        $salida = $pAddonsModules->removeAddon($arrConf, $name_rpm);
+        if(ereg("OK Processing",$salida)){
+            $arrStatus = $pAddonsModules->getStatus($arrConf);
+            if($arrStatus['status'] != "error"){
+                $arrSal['response'] = "OK";
+                $_SESSION['elastix_addons']['name_rpm'] = $name_rpm;
+                $_SESSION['elastix_addons']['action_rpm'] = 'remove';
             }
             else
                 $arrSal['response'] = "error";
@@ -312,10 +366,20 @@ function updateAddons($smarty, $module_name, $local_templates_dir, &$pDB, $arrCo
 
 function getconfirm($module_name, $pDB, $arrConf, $arrLang){
     $pAddonsModules = new paloSantoAddonsModules($pDB);
-    $arrStatus = $pAddonsModules->confirmAddon($arrConf);
+
+    $arrStatus = $pAddonsModules->getStatus($arrConf);
+    if ($arrStatus['status'] == 'idle' && $arrStatus['action'] == 'confirm') {
+        $sRespuesta = $pAddonsModules->confirmAddon($arrConf);
+        if (preg_match('/^OK /', $sRespuesta)) {
+            $arrStatus['response'] = 'OK';
+        }
+    } else {
+        // Todavía está resolviendo dependencias...
+        sleep(4);
+    }
+//    $arr['status'] = $arrStatus;
     $json = new Services_JSON();
-    $arr['status'] = $arrStatus;
-    return $json->encode($arr);
+    return $json->encode($arrStatus);
 }
 
 function getAction()
@@ -332,6 +396,8 @@ function getAction()
         return "confirm";
     else if(getParameter("action")=="update")
         return "update";
+    else if(getParameter("action")=="remove")
+        return "remove";
     else if(getParameter("check_update"))
         return "check_update";
     else

@@ -124,15 +124,27 @@ class paloSantoAddonsModules {
 
     function getStatus($arrConf)
     {
+        $salida = NULL;
         $status = $this->statusAddon($arrConf);
         if($status!=null){
             $arrStatus = split("\n",$status);
             $porcent_total_all = 0;
             $porcent_downl_all = 0;
-            $salida = array();
+            $salida = array(
+                'errmsg' => array(),
+                'warnmsg' => array(),
+            );
             foreach($arrStatus as $k => $line){
                 $arrLine = split(" ",$line);
-                if($arrLine[0]=="status") $salida['status'] = $arrLine[1];
+                if ($arrLine[0] == 'errmsg') {
+                    array_shift($arrLine);
+                    $salida['errmsg'][] = implode(' ', $arrLine);
+                }
+                else if ($arrLine[0] == 'warnmsg') {
+                    array_shift($arrLine);
+                    $salida['warnmsg'][] = implode(' ', $arrLine);
+                }
+                else if($arrLine[0]=="status") $salida['status'] = $arrLine[1];
 
                 else if($arrLine[0]=="action")  $salida['action'] = $arrLine[1];
 
