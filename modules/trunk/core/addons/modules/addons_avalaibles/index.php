@@ -391,8 +391,16 @@ function getStatusUpdateCache($arrConf, &$pDB, $arrLang){
         }
         else{
             $arrSal['response'] = "noFillDataCache";
-            $arrSal['data_cache'] = $pAddonsModules->getDataCache();
-            return $json->encode($arrSal);
+            $arrData = $pAddonsModules->getDataCache();
+            if(is_array($arrData) && count($arrData) > 0){
+                $arrSal['data_cache'] = $arrData;
+                return $json->encode($arrSal);
+            }
+            else{ // La session existe pero no hay cache local de los addons
+                $_SESSION['elastix_addons']['last_update'] = time();
+                $arrSal = getPackagesCache($arrConf, $pDB, $arrLang);
+                return $json->encode($arrSal);
+            }
         }
     }else{
         $_SESSION['elastix_addons']['last_update'] = time();
