@@ -941,12 +941,12 @@ Installing for dependencies:
                                     );
                                     
                                     // Parseo de la cadena de versión
-                                    if (preg_match('/^((\S+):)?(\S+)-(\S+)$/', $infoPaquete['version'], $regs)) {
+                                    if (preg_match('/^((\S+):)?(\S+)-(\S+)$/', $sVersion, $regs)) {
                                         $reqDesc['epoch'] = $regs[2];
                                         $reqDesc['version'] = $regs[3];
-                                        $reqDesc['version'] = $regs[4];
+                                        $reqDesc['release'] = $regs[4];
                                     } else {
-                                        $reqDesc['version'] = $infoPaquete['version'];
+                                        $reqDesc['version'] = $sVersion;
                                     }
                                     
                                     $listaDepFaltantes[] = $reqDesc;
