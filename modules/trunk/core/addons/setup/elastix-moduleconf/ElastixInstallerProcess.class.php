@@ -43,6 +43,8 @@ class ElastixInstallerProcess extends AbstractProcess
     private $_estadoPaquete = NULL;
     private $_timestampUltimoUso = NULL;    // timestamp de la última vez que se requirió yum shell
 
+    private $_customStatus = '';    // Estado arbitrario para compartir con interfaz web
+
     function inicioPostDemonio($infoConfig, &$oMainLog)
     {
         $bContinuar = TRUE;
@@ -449,6 +451,12 @@ Interfaz simple de comandos vía socket:
         case 'quit':
             $this->_conexiones[$iPos]['exit_request'] = TRUE;
             break;
+        case 'setcustom':
+            $sTextoSalida = $this->_procesarSetCustom($listaComando);
+            break;
+        case 'getcustom':
+            $sTextoSalida = $this->_customStatus."\n";
+            break;
         default:
             $sTextoSalida = "ERR Unrecognized\n";
             break;
@@ -809,6 +817,12 @@ Installing for dependencies:
         fwrite($this->_procPipes[0], $sComando);
         $this->_activarCapturaStderr();
         return "OK Starting transaction...\n";
+    }
+
+    private function _procesarSetCustom(&$listaArgs)
+    {
+        $this->_customStatus = implode(' ', $listaArgs);
+        return "OK Stored\n";
     }
 
     private function _actualizarEstadoYumShell()
