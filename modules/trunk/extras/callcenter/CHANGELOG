@@ -1,3 +1,5 @@
+* Calls Detail: fix broken chronological ordering of call records. Spotted while
+  fixing Elastix bug #373.
 * Calls Detail: when filtering by phone number, the SELECT statement for incoming
   calls failed to take into account that there might be no contact available for
   a given incoming call, but the Caller ID was available anyway. This resulted in

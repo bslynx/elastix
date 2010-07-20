@@ -92,12 +92,12 @@ class paloSantoCallsDetail {
         //if(!empty($status) && $status!="ALL") $strWhere .= " AND disposition = '$status' ";
 
 
-        $sqlQueryCalls = "select age.number,age.name, SUBSTR(start_time,1,10) start_date,SUBSTR(start_time,12,19) start_time,SUBSTR(end_time,1,10) end_date,SUBSTR(end_time,12,19) end_time, sec_to_time(duration),sec_to_time(duration_wait),cam.queue,'Outbound' as type, phone, transfer, cal.status
+        $sqlQueryCalls = "select age.number,age.name, SUBSTR(start_time,1,10) start_date,SUBSTR(start_time,12,19) start_time,SUBSTR(end_time,1,10) end_date,SUBSTR(end_time,12,19) end_time, sec_to_time(duration),sec_to_time(duration_wait),cam.queue,'Outbound' as type, phone, transfer, cal.status, start_time AS start_timestamp
         from calls cal
         inner join campaign cam on cam.id=cal.id_campaign
         left join agent age on age.id=cal.id_agent";
         if(!empty($strWhereCalls)) $sqlQueryCalls .= " WHERE $strWhereCalls"; 
-        $sqlQueryCallEn = "select age.number,age.name, SUBSTR(datetime_init,1,10) start_date,SUBSTR(datetime_init,12,19) start_time,SUBSTR(datetime_end,1,10) end_date,SUBSTR(datetime_end,12,19) end_time,sec_to_time(duration),sec_to_time(duration_wait),que.queue,'Inbound' as type,IF(con.telefono is NULL,cale.callerid,con.telefono) as telefono, transfer, cale.status
+        $sqlQueryCallEn = "select age.number,age.name, SUBSTR(datetime_init,1,10) start_date,SUBSTR(datetime_init,12,19) start_time,SUBSTR(datetime_end,1,10) end_date,SUBSTR(datetime_end,12,19) end_time,sec_to_time(duration),sec_to_time(duration_wait),que.queue,'Inbound' as type,IF(con.telefono is NULL,cale.callerid,con.telefono) as telefono, transfer, cale.status, datetime_init AS start_timestamp
         from call_entry cale
         left join contact con on con.id=cale.id_contact
         left join agent age on age.id=cale.id_agent
@@ -127,9 +127,9 @@ class paloSantoCallsDetail {
             $sqlQuery=$sqlQueryCalls." union ".$sqlQueryCallEn;
         }
         if($field_name_1!="type" && $field_name_2!="type"){
-            $sqlQuery=$sqlQueryCalls." union ".$sqlQueryCallEn;
+            $sqlQuery='('.$sqlQueryCalls.") union (".$sqlQueryCallEn.')';
         }
-        $sqlQuery .= "order by start_time";
+        $sqlQuery .= " order by start_timestamp";
 
         if(!empty($limit)) {
 	        $sqlQuery  .= " LIMIT $limit OFFSET $offset";
