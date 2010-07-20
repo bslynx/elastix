@@ -1,3 +1,9 @@
+* Calls Detail: when filtering by phone number, the SELECT statement for incoming
+  calls failed to take into account that there might be no contact available for
+  a given incoming call, but the Caller ID was available anyway. This resulted in
+  missing incoming calls when filtering by telephone. Fixed. Should fix Elastix 
+  bug #373.
+
 1.5-3.5 (SVN revision 1563)
 * Dialer: add and use new column to record timestamp of Originate execution for
   call. This is needed for upcoming support for outgoing monitoring 

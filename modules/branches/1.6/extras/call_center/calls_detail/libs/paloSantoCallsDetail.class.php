@@ -150,7 +150,7 @@ class paloSantoCallsDetail {
                 $strWheredateCallEn .= " AND que.$field_name like '%$field_pattern%' ";
             }else if($field_name=="phone"){
                 $strWhereCalls .= " AND cal.$field_name like '%$field_pattern%' ";
-                $strWheredateCallEn .= " AND con.telefono like '%$field_pattern%' ";
+                $strWheredateCallEn .= " AND IF(con.telefono is NULL,cale.callerid,con.telefono) like '%$field_pattern%' ";
             }else if($field_name=="number"){
                  $strWhereCalls .= " AND age.$field_name like '%$field_pattern%' ";
                 $strWheredateCallEn .= " AND age.$field_name like '%$field_pattern%' ";
@@ -178,11 +178,11 @@ class paloSantoCallsDetail {
             }else if($field_name=="phone"){
                 if($n_field==0){
                     $strWhereCalls .= " AND (cal.$field_name like '%$field_pattern%' ";
-                    $strWheredateCallEn .= " AND (con.telefono like '%$field_pattern%' ";
+                    $strWheredateCallEn .= " AND (IF(con.telefono is NULL,cale.callerid,con.telefono) like '%$field_pattern%' ";
                     $n_field++;
                 } else {
                     $strWhereCalls .= " OR cal.$field_name like '%$field_pattern%') ";
-                    $strWheredateCallEn .= " OR con.telefono like '%$field_pattern%') ";
+                    $strWheredateCallEn .= " OR IF(con.telefono is NULL,cale.callerid,con.telefono) like '%$field_pattern%') ";
                     $n_field=0;
                 }
             }else if($field_name=="number"){
