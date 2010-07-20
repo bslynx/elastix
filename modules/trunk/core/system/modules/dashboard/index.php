@@ -66,6 +66,7 @@ function _moduleContent($smarty, $module_name)
     $arrSysInfo = $oPalo->getSysInfo();
 
 	$RSS = $arrConf['dir_RSS'];
+    $smarty->assign("HEADER_LIBS_JQUERY", "");
 
     $action = getParameter("action");
     if($action=="saveRegister"){
@@ -451,7 +452,7 @@ function createCalendarEvents($eventsRows,$module_name, $idApplet){
 							</div>
 							<div class='closeapplet' align='right' width='10%'>
 								<a href='#' class='toggle'>
-									<img id='imga6'  class='ima'  src='modules/$module_name/images/arrow_top.gif' border='0' align='absmiddle' />
+									<img id='imga6'  class='ima'  src='modules/$module_name/images/flecha_up.gif' border='0' align='absmiddle' />
 								</a>
 							</div>
 						</div>
