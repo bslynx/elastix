@@ -25,12 +25,11 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1 2009-08-07 01:08:56 Oscar Navarrete onavarrete@palosanto.com Exp $ */
+  $Id: default.conf.php,v 1.1 2010-07-21 01:08:56 Bruno Macias bmacias@palosanto.com Exp $ */
     global $arrConf;
     global $arrConfModule;
 
-    $arrConfModule['module_name']       = 'email_relay2';
+    $arrConfModule['module_name']       = 'remote_smtp';
     $arrConfModule['templates_dir']     = 'themes';
     $arrConfModule['dsn_conn_database'] = "sqlite3:///$arrConf[elastix_dbdir]/email.db";
-    //ex2: $arrConfModule['dsn_conn_database'] = "mysql://user:password@ip_host_sever_mysql/base_name";
 ?>

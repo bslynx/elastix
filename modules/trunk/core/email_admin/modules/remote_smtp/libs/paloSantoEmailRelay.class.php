@@ -25,7 +25,7 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: paloSantoEmailRelay.class.php,v 1.1 2009-08-07 01:08:56 Oscar Navarrete onavarrete@palosanto.com Exp $ */
+  $Id: paloSantoEmailRelay.class.php,v 1.1 2010-07-21 01:08:56 Bruno Macias bmacias@palosanto.com Exp $ */
 class paloSantoEmailRelay {
     var $_DB;
     var $errMsg;
@@ -49,539 +49,169 @@ class paloSantoEmailRelay {
         }
     }
 
-    /*HERE YOUR FUNCTIONS*/
+    function getMainConfigByAll()
+    {
+        $query  = "SELECT id, name, value FROM email_relay ";
+        $result = $this->_DB->fetchTable($query, true);
 
-    function init(){
+        if($result==FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return null;
+        }
+
+        $arrData = null;
+        if(is_array($result) && count($result)>0){
+            foreach($result as $k => $data)
+                $arrData[$data['name']] = $data['value'];
+        }
+        return $arrData;
+    }
+
+    function processUpdateConfiguration($arrData)
+    {
+        $this->_DB->beginTransaction();
+
+        if($this->processUpdateConfigurationDB($arrData)){
+            if($this->processUpdateConfigurationFile($arrData)){
+                $this->_DB->commit();
+                return true;
+            }
+            else{
+                $this->_DB->rollBack();
+                return false;
+            }
+        }
+        else{
+            $this->_DB->rollBack();
+            return false;
+        }
+    }
+
+    function processUpdateConfigurationDB($arrData)
+    {
+        if(is_array($arrData) && count($arrData)>0){
+            $query = "delete from email_relay;";
+            $ok = $this->_DB->genQuery($query);
+
+            if(!$ok){
+                $this->errMsg = $this->_DB->errMsg;
+                return false;
+            }
+            foreach($arrData as $name => $value){
+                $query = "insert into email_relay(name,value) values('$name','$value');";
+                $ok = $this->_DB->genQuery($query);
+
+                if(!$ok){
+                    $this->errMsg = $this->_DB->errMsg;
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    function processUpdateConfigurationFile($arrData)
+    {
+        if(is_array($arrData) && count($arrData)>0){
+            $activated = $arrData['status'];
+
+            $arrReplaces['relayhost'] = ($activated)?$arrData['relayhost']:"";
+
+            if($arrData['port']!="")
+                $arrReplaces['relayhost'] = ($activated)?"$arrData[relayhost]:$arrData[port]":"";
+
+            if($arrData['user'] && $arrData['password']){
+                $arrReplaces['smtp_sasl_auth_enable']      = ($activated)?"yes":"no"; // default no
+                $arrReplaces['smtp_sasl_password_maps']    = ($activated)?"hash:/etc/postfix/sasl/passwd":""; // default ""
+                $arrReplaces['smtp_sasl_security_options'] = ($activated)?"":"noplaintext, noanonymous"; //default noplaintext, noanonymous
+                $arrReplaces['broken_sasl_auth_clients']   = ($activated)?"yes":"no";// default no
+
+                $this->createSASL();
+                $data = ($activated)?"$arrData[relayhost] $arrData[user]:$arrData[password]":"";
+                $this->writeSASL($data);
+            }
+            else{
+                $arrReplaces['smtp_sasl_auth_enable']      = "no";
+                $arrReplaces['smtp_sasl_password_maps']    = "";
+                $arrReplaces['smtp_sasl_security_options'] = "noplaintext, noanonymous";
+                $arrReplaces['broken_sasl_auth_clients']   = "no";
+
+                $this->createSASL();
+                $data = "";
+                $this->writeSASL($data);
+            }
+
+            $conf_file = new paloConfig("/etc/postfix","main.cf"," = ","[[:space:]]*=[[:space:]]*");
+            $bValido   = $conf_file->escribir_configuracion($arrReplaces);
+
+            if($bValido){
+                $this->restartingServices();
+            }
+        }
+        return true;
+    }
+
+    function setStatus($status)
+    {
+        // Existe name status
+        $query  = "select count(*) existe from email_relay where name='status';";
+        $result = $this->_DB->getFirstRowQuery($query,true);
+
+        if(is_array($result) && count($result) >0){
+            if($result['existe']==1){
+                $query = "update email_relay set value='$status' where name='status';";
+                $ok = $this->_DB->genQuery($query);
+            }
+            else{
+                $query = "insert into email_relay(name,value) values('status','$status');";
+                $ok = $this->_DB->genQuery($query);
+            }
+
+            if(!$ok){
+                $this->errMsg = $this->_DB->errMsg;
+                return false;
+            }
+            return true;
+        }
+        else{
+            $this->errMsg = $this->_DB->errMsg;
+            return false;
+        }
+    }
+
+    function getStatus()
+    {
+        // Existe name status
+        $query  = "select value from email_relay where name='status';";
+        $result = $this->_DB->getFirstRowQuery($query,true);
+
+        if(is_array($result) && count($result) >0)
+            return $result['value'];
+        else return 0;
+    }
+
+    function createSASL()
+    {
         exec("sudo -u root chown -R asterisk.asterisk /etc/postfix/");
         exec("mkdir /etc/postfix/sasl");
         exec("touch /etc/postfix/sasl/passwd");
         exec("chmod 600 /etc/postfix/sasl/passwd");
-
-        //exec("mkdir /etc/postfix/tls");
-        //exec("sudo -u root chown -R root.root /etc/postfix/");
+        exec("sudo -u root chown -R root.root /etc/postfix/");
     }
 
 
-    function readFileMainCF()
+    function writeSASL($data)
     {
-        $myFile='/etc/postfix/main.cf';
-        $fh = fopen($myFile, 'r');
-        return $fh;
-    }
-
-    function saveChangeFileMainCF($text){
         exec("sudo -u root chown -R asterisk.asterisk /etc/postfix/");
-        $archivo = file('/etc/postfix/main.cf');
-         
-        $fp = fopen('/etc/postfix/main.cf', 'w');
-        fwrite($fp, $text);   
-        exec("sudo -u root chown -R root.root /etc/postfix/");
-        fclose($fp);
-    }
-
-    /*Cuando el archivo main.cf es original sin modificaciones*/
-    function execConfigPosfix_1($smtp_server, $port, $user, $password){
-        exec("sudo -u root chown -R asterisk.asterisk /etc/postfix/");
-        //exec("echo '[smtp.$host.com]:$port    $user@$host.com:$password' > /etc/postfix/sasl/passwd");
-        exec("echo '$smtp_server $user:$password' > /etc/postfix/sasl/passwd");
+        exec("echo '$data' > /etc/postfix/sasl/passwd");
         exec("postmap /etc/postfix/sasl/passwd");
         exec("sudo -u root chown -R root.root /etc/postfix/");
     }
 
-    /*Cuando el archivo main.cf es original ya ha sido modificado*/
-    function execConfigPosfix_1Mod($smtp_server, $port, $user, $password){
-        exec("sudo -u root chown -R asterisk.asterisk /etc/postfix/");
-        //exec("echo '[smtp.$host.com]:$port    $user@$host.com:$password' > /etc/postfix/sasl/passwd");
-        exec("echo '$smtp_server $user:$password' > /etc/postfix/sasl/passwd");
-        exec("postmap /etc/postfix/sasl/passwd");
-        exec("sudo -u root chown -R root.root /etc/postfix/");
-    }
-
-    //function replaceFileMainCF($host, $port, $data_step1, $arr_MainCF){
-    function replaceFileMainCF($host_name, $smtp_server, $port, $data_step1, $arr_MainCF){
-        $FILE='/etc/postfix/main.cf';
-        $text = "";
-        $fp = fopen($FILE,'r');
-//         $data = split('[:]',$arr_MainCF[0]);
-        $data = split('[:]',$arr_MainCF[1]);
-        if(!empty($data[1]))  $filter = $data[1];
-        else $filter = "gateway.";
-        
-        $found=false;
-
-        while($line = fgets($fp, filesize($FILE)))
-        {
-            if(eregi($arr_MainCF[0], $line)) {
-                $line = str_ireplace($arr_MainCF[0], $host_name, $line);
-                $line = str_ireplace("#myhostname", "myhostname", $line);
-                $text .= $line; 
-            }else if(eregi("inet_interfaces = all", $line)){
-                $line = str_ireplace("inet_interfaces = all", "inet_interfaces = localhost", $line);
-                $text .= $line; 
-            }else if(eregi("mynetworks = /etc/postfix/network_table", $line)){
-                if(!eregi("#mynetworks = /etc/postfix/network_table", $line))
-                $line = str_ireplace("mynetworks = /etc/postfix/network_table", "#mynetworks = /etc/postfix/network_table", $line);
-                $text .= $line; 
-            }else if(eregi($filter, $line)) {
-                //$line = str_ireplace($arr_MainCF[1], "[smtp.".$host.".com]:$port", $line);
-                $line = str_ireplace($arr_MainCF[1], $smtp_server.":".$port, $line);
-                $line = str_ireplace("#relayhost", "relayhost", $line);
-                $text .= $line;
-            }elseif(eregi("smtp_sasl_auth_enable ", $line)) {
-                $line = str_ireplace($arr_MainCF[2], $data_step1['smtp_sasl_auth_enable'], $line);
-                $text .= $line;
-                $found=true;
-            }elseif(eregi("smtp_sasl_password_maps ", $line)) {
-                $line = str_ireplace($arr_MainCF[3], $data_step1['smtp_sasl_password_maps'], $line);
-                $text .= $line;
-                $found=true;
-            }elseif(eregi("smtp_sasl_security_options ", $line)) {
-                $line = str_ireplace($arr_MainCF[4], $data_step1['smtp_sasl_security_options'], $line);
-                $text .= $line;
-                $found=true;
-            }else{
-                $text .= $line;
-            }
-        }
-
-        if($found==false){
-            $text .="smtp_sasl_auth_enable = ".$data_step1['smtp_sasl_auth_enable']."\n";
-            $text .="smtp_sasl_password_maps = ".$data_step1['smtp_sasl_password_maps']."\n";
-            $text .="smtp_sasl_security_options = ".$data_step1['smtp_sasl_security_options']."\n";
-        }
-
-        $this->saveChangeFileMainCF($text);
-        fclose($fp);
-    }
-
-
-    function execConfigPosfix_2($password, $countryName, $ProvinceName, $localityName, $organizationName, $organizationalUnitName, $commonName){      
-        exec("postfix reload");
-        //exec("mkdir /etc/postfix/tls");
-        exec("sudo -u root chown -R asterisk.asterisk /etc/postfix/");
-        //exec("echo "$contrasenia" | openssl genrsa -des3 -rand /etc/hosts -passout stdin -out smtpd.key 1024");
-        exec("openssl genrsa -des3 -rand /etc/hosts -passout pass:$password -out /etc/postfix/tls/smtpd.key 1024");
-        //exec("openssl genrsa -des3 -rand /etc/hosts -passout pass:Hola -out /etc/postfix/tls2/smtpd.key 1024");
-
-        //exec("openssl req -new -key /etc/postfix/tls2/smtpd.key -passin pass:Hola -out /etc/postfix/tls2/smtpd.csr -subj '/C=EC/ST=Guayas/L=Guayaquil/O=Megatelcon/OU=Desarrollo/CN=elastix.palosanto.com'");
-        exec("openssl req -new -key /etc/postfix/tls/smtpd.key -passin pass:$password -out /etc/postfix/tls/smtpd.csr -subj '/C=$countryName/ST=$ProvinceName/L=$localityName/O=$organizationName/OU=$organizationalUnitName/CN=$commonName'");
-        
-        //exec("openssl x509 -req -days 3650 -in /etc/postfix/tls2/smtpd.csr -signkey /etc/postfix/tls2/smtpd.key -passin pass:Hola -out /etc/postfix/tls2/smtpd.crt");
-        exec("openssl x509 -req -days 3650 -in /etc/postfix/tls/smtpd.csr -signkey /etc/postfix/tls/smtpd.key -passin pass:$password -out /etc/postfix/tls/smtpd.crt");
-
-        //exec("openssl rsa -in /etc/postfix/tls2/smtpd.key -passin pass:Hola -out /etc/postfix/tls2/smtpd.key.unencrypted");
-        exec("openssl rsa -in /etc/postfix/tls/smtpd.key -passin pass:$password /etc/postfix/tls/smtpd.key.unencrypted");
-
-        exec("mv -f /etc/postfix/tls/smtpd.key.unencrypted /etc/postfix/tls/smtpd.key");
-
-        //exec("openssl req -new -x509 -extensions v3_ca -keyout /etc/postfix/tls2/cakey.pem -passout pass:12345 -out /etc/postfix/tls2/cacert.pem -days 3650 -subj '/C=EC/ST=Guayas/L=Guayaquil/O=Megatelcon/OU=Desarrollo/CN=elastix.palosanto.com'");
-        exec("openssl req -new -x509 -extensions v3_ca -keyout /etc/postfix/tls/cakey.pem -passout pass:$password -out /etc/postfix/tls/cacert.pem -days 3650 -subj '/C=$countryName/ST=$ProvinceName/L=$localityName/O=$organizationName/OU=$organizationalUnitName/CN=$commonName'");
-        exec("sudo -u root chown -R root.root /etc/postfix/");
-    }
-
-    function execConfigPosfix_2Mod($password, $countryName, $ProvinceName, $localityName, $organizationName, $organizationalUnitName, $commonName){
-        exec("postfix reload");
-        exec("sudo -u root chown -R asterisk.asterisk /etc/postfix/");
-        exec("openssl genrsa -des3 -rand /etc/hosts -passout pass:$password -out /etc/postfix/tls/smtpd.key 1024");
-        exec("openssl req -new -key /etc/postfix/tls/smtpd.key -passin pass:$password -out /etc/postfix/tls/smtpd.csr -subj '/C=$countryName/ST=$ProvinceName/L=$localityName/O=$organizationName/OU=$organizationalUnitName/CN=$commonName'");
-        exec("openssl x509 -req -days 3650 -in /etc/postfix/tls/smtpd.csr -signkey /etc/postfix/tls/smtpd.key -passin pass:$password -out /etc/postfix/tls/smtpd.crt");
-        exec("openssl rsa -in /etc/postfix/tls/smtpd.key -passin pass:$password /etc/postfix/tls/smtpd.key.unencrypted");
-        exec("mv -f /etc/postfix/tls/smtpd.key.unencrypted /etc/postfix/tls/smtpd.key");
-        exec("openssl req -new -x509 -extensions v3_ca -keyout /etc/postfix/tls/cakey.pem -passout pass:$password -out /etc/postfix/tls/cacert.pem -days 3650 -subj '/C=$countryName/ST=$ProvinceName/L=$localityName/O=$organizationName/OU=$organizationalUnitName/CN=$commonName'");
-        exec("sudo -u root chown -R root.root /etc/postfix/");
-    }
-
-    function replaceFileMainCF_2($data_step2, $arr_MainCF){
-        $FILE='/etc/postfix/main.cf';
-        $text = "";
-        $fp = fopen($FILE,'r');
-
-        $found=false;
-
-        while($line = fgets($fp, filesize($FILE)))
-        {
-            if(eregi("broken_sasl_auth_clients ", $line)){
-                $line = str_ireplace($arr_MainCF[5], $data_step2['broken_sasl_auth_clients'], $line);
-                $text .= $line;
-                $found=true;
-            }else if(eregi("smtpd_sasl_auth_enable ", $line)){
-                $line = str_ireplace($arr_MainCF[6], $data_step2['smtpd_sasl_auth_enable'], $line);
-                $text .= $line;
-                $found=true;
-            }else if(eregi("smtp_always_send_ehlo ", $line)){
-                $line = str_ireplace($arr_MainCF[7], $data_step2['smtp_always_send_ehlo'], $line);
-                $text .= $line;
-                $found=true;
-            }
-
-            /*if(eregi("smtpd_tls_auth_only ", $line)){
-                $line = str_ireplace($arr_MainCF[5], $data_step2['smtpd_tls_auth_only'], $line);
-                $text .= $line;
-                $found=true;
-            }elseif(eregi("smtp_use_tls ", $line)){
-                $line = str_ireplace($arr_MainCF[6], $data_step2['smtp_use_tls'], $line);
-                $text .= $line;
-                $found=true;
-            }elseif(eregi("smtpd_use_tls ", $line)){
-                $line = str_ireplace($arr_MainCF[7], $data_step2['smtpd_use_tls'], $line);
-                $text .= $line;
-                $found=true;
-            }elseif(eregi("smtp_tls_note_starttls_offer ", $line)){
-                $line = str_ireplace($arr_MainCF[8], $data_step2['smtp_tls_note_starttls_offer'], $line);
-                $text .= $line;
-                $found=true;
-            }elseif(eregi("smtpd_tls_key_file ", $line)){
-                $line = str_ireplace($arr_MainCF[9], $data_step2['smtpd_tls_key_file'], $line);
-                $text .= $line;
-                $found=true;
-            }elseif(eregi("smtpd_tls_cert_file ", $line)){
-                $line = str_ireplace($arr_MainCF[10], $data_step2['smtpd_tls_cert_file'], $line);
-                $text .= $line;
-                $found=true;
-            }elseif(eregi("smtp_tls_CAfile ", $line)){
-                $line = str_ireplace($arr_MainCF[11], $data_step2['smtp_tls_CAfile'], $line);
-                $text .= $line;
-                $found=true;
-            }elseif(eregi("smtpd_tls_loglevel ", $line)){
-                $line = str_ireplace($arr_MainCF[12], $data_step2['smtpd_tls_loglevel'], $line);
-                $text .= $line;
-                $found=true;
-            }elseif(eregi("smtpd_tls_received_header ", $line)){
-                $line = str_ireplace($arr_MainCF[13], $data_step2['smtpd_tls_received_header'], $line);
-                $text .= $line;
-                $found=true;
-            }elseif(eregi("smtpd_tls_session_cache_timeout ", $line)){
-                $line = str_ireplace($arr_MainCF[14], $data_step2['smtpd_tls_session_cache_timeout'], $line);
-                $text .= $line;
-                $found=true;
-            }elseif(eregi("tls_random_source ", $line)){
-                $line = str_ireplace($arr_MainCF[15], $data_step2['tls_random_source'], $line);
-                $text .= $line;
-                $found=true;
-            }elseif(eregi("tls_daemon_random_source ", $line)){
-                $line = str_ireplace($arr_MainCF[16], $data_step2['tls_daemon_random_source'], $line);
-                $text .= $line;
-                $found=true;
-            }*/else{
-                $text .= $line;
-            }
-        }
-
-        if($found==false){
-//             $text .="smtpd_tls_auth_only = ".$data_step2['smtpd_tls_auth_only']."\n";
-//             $text .="smtp_use_tls = ".$data_step2['smtp_use_tls']."\n";
-//             $text .="smtpd_use_tls = ".$data_step2['smtpd_use_tls']."\n";
-//             $text .="smtp_tls_note_starttls_offer = ".$data_step2['smtp_tls_note_starttls_offer']."\n";
-//             $text .="smtpd_tls_key_file = ".$data_step2['smtpd_tls_key_file']."\n";
-//             $text .="smtpd_tls_cert_file = ".$data_step2['smtpd_tls_cert_file']."\n";
-//             $text .="smtp_tls_CAfile = ".$data_step2['smtp_tls_CAfile']."\n";
-//             $text .="smtpd_tls_loglevel = ".$data_step2['smtpd_tls_loglevel']."\n";
-//             $text .="smtpd_tls_received_header = ".$data_step2['smtpd_tls_received_header']."\n";
-//             $text .="smtpd_tls_session_cache_timeout = ".$data_step2['smtpd_tls_session_cache_timeout']."\n";
-//             $text .="tls_random_source = ".$data_step2['tls_random_source']."\n";
-//             $text .="tls_daemon_random_source = ".$data_step2['tls_daemon_random_source']."\n";
-            
-            $text .="\nbroken_sasl_auth_clients = ".$data_step2['broken_sasl_auth_clients']."\n";
-            $text .="smtpd_sasl_auth_enable = ".$data_step2['smtpd_sasl_auth_enable']."\n";
-            $text .="smtp_always_send_ehlo = ".$data_step2['smtp_always_send_ehlo']."\n";
-        }
-        
-        $this->saveChangeFileMainCF($text);
-        fclose($fp);
-    }
-
-
-    function execConfigPosfix_3(){
+    function restartingServices(){
         //se ejecuta de esa forma porque es usuario asterisk el que corre el programa de elastix
         exec("sudo /sbin/service saslauthd restart");
         exec("sudo /sbin/service postfix restart");
     }
-
-
-    function saveFileMainCf($fh, $pDB){
-        $query = "DELETE FROM email_relay";
-        $result = $this->_DB->genQuery($query);
-
-        while(!feof($fh))
-        {
-            $linea = fgets($fh);
-            $datos=split('[=]',$linea);
-            if(count($datos)>1)
-            {
-                if(((trim($datos[0])=="myhostname") && trim($datos[1])=="yb-server.example.com") || ((trim($datos[0])=="#myhostname") && trim($datos[1])=="host.domain.tld") || trim($datos[0])=="myhostname" ) {
-                    $data = array();
-                    $data['name']    = $pDB->DBCAMPO(trim($datos[0]));
-                    $data['value']   = $pDB->DBCAMPO(trim($datos[1]));
-                    $result = $this->addMainConfig($data);
-
-                }else if(((trim($datos[0])=="#relayhost") && trim($datos[1])=="[gateway.my.domain]") || trim($datos[0])=="relayhost" ) {
-                    $data = array();
-                    $data['name']    = $pDB->DBCAMPO(trim($datos[0]));
-                    $data['value']   = $pDB->DBCAMPO(trim($datos[1]));
-                    $result = $this->addMainConfig($data);
-                    
-                }/*elseif(trim($datos[0])=="mydomain") {
-                    $data = array();
-                    $data['name']    = $pDB->DBCAMPO(trim($datos[0]));
-                    $data['value']   = $pDB->DBCAMPO(trim($datos[1]));
-                    $result = $this->addMainConfig($data);
-
-                }*/elseif(trim($datos[0])=="smtp_sasl_auth_enable") {
-                    $data = array();
-                    $data['name']    = $pDB->DBCAMPO(trim($datos[0]));
-                    $data['value']   = $pDB->DBCAMPO(trim($datos[1]));
-                    $result = $this->addMainConfig($data);
-
-                }elseif(trim($datos[0])=="smtp_sasl_password_maps") {
-                    $data = array();
-                    $data['name']    = $pDB->DBCAMPO(trim($datos[0]));
-                    $data['value']   = $pDB->DBCAMPO(trim($datos[1]));
-                    $result = $this->addMainConfig($data);
-
-                }elseif(trim($datos[0])=="smtp_sasl_security_options") {
-                    $data = array();
-                    $data['name']    = $pDB->DBCAMPO(trim($datos[0]));
-                    $data['value']   = $pDB->DBCAMPO(trim($datos[1]));
-                    $result = $this->addMainConfig($data);
-
-                }
-//                 elseif(trim($datos[0])=="smtpd_tls_auth_only") {
-//                     $data = array();
-//                     $data['name']    = $pDB->DBCAMPO(trim($datos[0]));
-//                     $data['value']   = $pDB->DBCAMPO(trim($datos[1]));
-//                     $result = $this->addMainConfig($data);
-// 
-//                 }elseif(trim($datos[0])=="smtp_use_tls") {
-//                     $data = array();
-//                     $data['name']    = $pDB->DBCAMPO(trim($datos[0]));
-//                     $data['value']   = $pDB->DBCAMPO(trim($datos[1]));
-//                     $result = $this->addMainConfig($data);
-// 
-//                 }elseif(trim($datos[0])=="smtpd_use_tls") {
-//                     $data = array();
-//                     $data['name']    = $pDB->DBCAMPO(trim($datos[0]));
-//                     $data['value']   = $pDB->DBCAMPO(trim($datos[1]));
-//                     $result = $this->addMainConfig($data);
-// 
-//                 }elseif(trim($datos[0])=="smtp_tls_note_starttls_offer") {
-//                     $data = array();
-//                     $data['name']    = $pDB->DBCAMPO(trim($datos[0]));
-//                     $data['value']   = $pDB->DBCAMPO(trim($datos[1]));
-//                     $result = $this->addMainConfig($data);
-// 
-//                 }elseif(trim($datos[0])=="smtpd_tls_key_file") {
-//                     $data = array();
-//                     $data['name']    = $pDB->DBCAMPO(trim($datos[0]));
-//                     $data['value']   = $pDB->DBCAMPO(trim($datos[1]));
-//                     $result = $this->addMainConfig($data);
-// 
-//                 }elseif(trim($datos[0])=="smtpd_tls_cert_file") {
-//                     $data = array();
-//                     $data['name']    = $pDB->DBCAMPO(trim($datos[0]));
-//                     $data['value']   = $pDB->DBCAMPO(trim($datos[1]));
-//                     $result = $this->addMainConfig($data);
-// 
-//                 }elseif(trim($datos[0])=="smtp_tls_CAfile") {
-//                     $data = array();
-//                     $data['name']    = $pDB->DBCAMPO(trim($datos[0]));
-//                     $data['value']   = $pDB->DBCAMPO(trim($datos[1]));
-//                     $result = $this->addMainConfig($data);
-// 
-//                 }elseif(trim($datos[0])=="smtpd_tls_loglevel") {
-//                     $data = array();
-//                     $data['name']    = $pDB->DBCAMPO(trim($datos[0]));
-//                     $data['value']   = $pDB->DBCAMPO(trim($datos[1]));
-//                     $result = $this->addMainConfig($data);
-// 
-//                 }elseif(trim($datos[0])=="smtpd_tls_received_header") {
-//                     $data = array();
-//                     $data['name']    = $pDB->DBCAMPO(trim($datos[0]));
-//                     $data['value']   = $pDB->DBCAMPO(trim($datos[1]));
-//                     $result = $this->addMainConfig($data);
-// 
-//                 }elseif(trim($datos[0])=="smtpd_tls_session_cache_timeout") {
-//                     $data = array();
-//                     $data['name']    = $pDB->DBCAMPO(trim($datos[0]));
-//                     $data['value']   = $pDB->DBCAMPO(trim($datos[1]));
-//                     $result = $this->addMainConfig($data);
-// 
-//                 }elseif(trim($datos[0])=="tls_random_source") {
-//                     $data = array();
-//                     $data['name']    = $pDB->DBCAMPO(trim($datos[0]));
-//                     $data['value']   = $pDB->DBCAMPO(trim($datos[1]));
-//                     $result = $this->addMainConfig($data);
-// 
-//                 }elseif(trim($datos[0])=="tls_daemon_random_source") {
-//                     $data = array();
-//                     $data['name']    = $pDB->DBCAMPO(trim($datos[0]));
-//                     $data['value']   = $pDB->DBCAMPO(trim($datos[1]));
-//                     $result = $this->addMainConfig($data);
-// 
-//                 }
-                elseif(trim($datos[0])=="broken_sasl_auth_clients") {
-                    $data = array();
-                    $data['name']    = $pDB->DBCAMPO(trim($datos[0]));
-                    $data['value']   = $pDB->DBCAMPO(trim($datos[1]));
-                    $result = $this->addMainConfig($data);
-                }elseif(trim($datos[0])=="smtpd_sasl_auth_enable") {
-                    $data = array();
-                    $data['name']    = $pDB->DBCAMPO(trim($datos[0]));
-                    $data['value']   = $pDB->DBCAMPO(trim($datos[1]));
-                    $result = $this->addMainConfig($data);
-                }elseif(trim($datos[0])=="smtp_always_send_ehlo") {
-                    $data = array();
-                    $data['name']    = $pDB->DBCAMPO(trim($datos[0]));
-                    $data['value']   = $pDB->DBCAMPO(trim($datos[1]));
-                    $result = $this->addMainConfig($data);
-                }
-                
-            }
-        }
-        if($result == false){
-            $this->errMsg = $this->_DB->errMsg;
-            return false;
-        }
-        fclose($fh);
-        return $result;
-    }
-
-    function addMainConfig($data)
-    {
-        $queryInsert = $this->_DB->construirInsert('email_relay', $data);
-        $result = $this->_DB->genQuery($queryInsert);
-
-        return $result;
-    }
-
-    function updateMainConfig($data,$where)
-    {
-        $queryUpdate = $this->_DB->construirUpdate('email_relay', $data,$where);
-        $result = $this->_DB->genQuery($queryUpdate);
-
-        return $result;
-    }
-
-    function getMainConfigByAll(){
-        $query   = "SELECT id, name, value FROM email_relay ";
-        
-        $result=$this->_DB->fetchTable($query, true);
-
-        if($result==FALSE){
-            $this->errMsg = $this->_DB->errMsg;
-            return array();
-        }
-
-        $count=0;
-        $arrMainConf = array();
-        if(is_array($result) & count($result)>0){
-            foreach($result as $key => $value){
-                $arrMainConf[$count] = $value['value'];
-                $count++;
-            }
-        }
-        return $arrMainConf;
-    }
-
-    function getMainConfigByAll2(){
-        $query   = "SELECT id, name, value FROM email_relay ";
-        
-        $result=$this->_DB->fetchTable($query, true);
-
-        if($result==FALSE){
-            $this->errMsg = $this->_DB->errMsg;
-            return array();
-        }
-        return $result;
-    }
-
-    function readFileSSL()
-    {
-        exec("sudo -u root chown -R asterisk.asterisk /etc/postfix/");
-        $myFile='/etc/postfix/sasl/passwd';
-        $fh = fopen($myFile, 'r');
-        exec("sudo -u root chown -R root.root /etc/postfix/");
-        return $fh;
-    }
-
-//     function getDataSsl($fhssl){
-//         $data = array();
-// 
-//         while(!feof($fhssl))
-//         {
-//             $linea = fgets($fhssl);
-//             $part1=split('[@]',$linea);
-//             if(count($part1)>1){
-//                 $part2=split('[:]',$part1[0]);
-//                 $part3=split('[:]',$part1[1]);
-//                 if(ereg("[^0-9]([[:alpha:]]+)",$part2[1], $arrReg)){
-//                     $data['user'] =  trim($arrReg[1]);
-//                 }
-//                 $data['password'] = trim($part3[1]);
-//             }
-//         }
-//         fclose($fhssl);
-//         return $data;
-//     }
-
-    function getDataSsl($fhssl){
-        $data = array();
-
-        while(!feof($fhssl))
-        {
-            $linea = fgets($fhssl);
-            $part1=split(':',$linea);
-            if(count($part1)>1){
-                //if(ereg("([[:alpha:]]+)[[:space:]]([[:alpha:]]+_[a-zA-Z.]+)",$part1[0], $arrReg)){
-                if(ereg("([a-zA-Z.@0-9_]+)[[:space:]]([a-zA-Z.@0-9_]+)",$part1[0], $arrReg)){
-                    $data['user'] =  trim($arrReg[2]);
-                }
-                $data['password'] = trim($part1[1]);
-            }
-        }
-        fclose($fhssl);
-        return $data;
-    }
-
-    function getEmailRelayAuthenticateById($id)
-    {
-        $query   = "SELECT * FROM email_authenticate ";
-        $strWhere = "id=$id";
-
-        // Clausula WHERE aqui
-        if(!empty($strWhere)) $query .= "WHERE $strWhere ";
-
-        $result=$this->_DB->getFirstRowQuery($query, true);
-        return $result;
-    }
-
-    function addEmailRelayAuthenticate($data)
-    {
-        $queryInsert = $this->_DB->construirInsert('email_authenticate', $data);
-        echo $queryInsert;
-        $result = $this->_DB->genQuery($queryInsert);
-
-        return $result;
-    }
-
-    function updateEmailRelayAuthenticate($data,$where)
-    {
-        $queryUpdate = $this->_DB->construirUpdate('email_authenticate', $data,$where);
-        $result = $this->_DB->genQuery($queryUpdate);
-
-        return $result;
-    }
-
-    function getEmailRelayAuthenticate(){
-        $query   = "SELECT * FROM email_authenticate ";
-        
-        $result=$this->_DB->fetchTable($query, true);
-
-        if($result==FALSE){
-            $this->errMsg = $this->_DB->errMsg;
-            return array();
-        }
-        return $result;
-    }
-
 }
 ?>
