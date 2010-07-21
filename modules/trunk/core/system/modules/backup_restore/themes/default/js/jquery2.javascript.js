@@ -9,6 +9,8 @@
  *   
  *
  */
+var module_name = "backup_restore";
+
 $(document).ready((function() {
 
     $("ul.droptrue").sortable({
@@ -33,7 +35,7 @@ $(document).ready((function() {
             file = $(ui.draggable).attr("id");
             var types = file.substring(4,file.length);
             var order = '&action=download&menu=backup_restore&file='+file+'&lista=droptrue';
-            $.post("modules/backup_restore/libs/control.php", order, function(theResponse){
+            $.post("modules/"+module_name+"/libs/control.php", order, function(theResponse){
                     alert(theResponse);
             });
         }
@@ -53,7 +55,7 @@ $(document).ready((function() {
             file = $(ui.draggable).attr("id");
             var types = file.substring(4,file.length);
             var order = '&action=upload&menu=backup_restore&file='+file+'&lista=droptrue2';
-            $.post("modules/backup_restore/libs/control.php", order, function(theResponse){
+            $.post("modules/"+module_name+"/libs/control.php", order, function(theResponse){
                       alert(theResponse);
             });
         }

@@ -1,8 +1,4 @@
-<script type="text/javascript" src ="/libs/js/jquery/js/jquery-1.3.2.min.js"></script>
-<script type="text/javascript" src ="/libs/js/jquery/js/jquery-ui-1.7.2.custom.min.js"></script>
 
-<link   rel ="stylesheet"      href="modules/{$module_name}/themes/style.css" />
-<script type="text/javascript" src ="/modules/{$module_name}/themes/javascript.js"></script>
 
 <table width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
     <tr class="moduleTitle">

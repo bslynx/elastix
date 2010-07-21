@@ -1,8 +1,4 @@
-<script type="text/javascript" src ="/libs/js/jquery/js/jquery-1.3.2.min.js"></script>
-<script type="text/javascript" src ="/libs/js/jquery/js/jquery-ui-1.7.2.custom.min.js"></script>
-<link   rel ="stylesheet"      href="modules/{$module}/themes/facebox.css" />
-<script type="text/javascript" src ="/modules/{$module}/themes/facebox.js"></script>
-<script type="text/javascript" src ="/modules/{$module}/themes/javascript.js"></script>
+
 {literal}
 <script type="text/javascript">
 

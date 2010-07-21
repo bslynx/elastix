@@ -60,6 +60,9 @@
  *   $(document).bind('reveal.facebox', function() { ...stuff to do after the facebox and contents are revealed... })
  *
  */
+
+var module_name = "backup_restore";
+
 (function($) {
   $.facebox = function(data, klass) {
     $.facebox.loading()
@@ -79,8 +82,8 @@
     settings: {
       opacity      : 0,
       overlay      : true,
-      loadingImage : '/modules/backup_restore/images/loading.gif',
-      closeImage   : '/modules/backup_restore/images/closelabel.gif',
+      loadingImage : '/modules/'+module_name+'/images/loading.gif',
+      closeImage   : '/modules/'+module_name+'/images/closelabel.gif',
       imageTypes   : [ 'png', 'jpg', 'jpeg', 'gif' ],
       faceboxHtml  : '\
     <div id="facebox" style="display:none;"> \
@@ -97,7 +100,7 @@
                 </div> \
                 <div class="footer"> \
                   <a href="#" class="close"> \
-                    <img src="/modules/backup_restore/images/closelabel.gif" title="close" class="close_image" /> \
+                    <img src="/modules/"+module_name+"/images/closelabel.gif" title="close" class="close_image" /> \
                   </a> \
                 </div> \
               </td> \

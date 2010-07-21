@@ -1,21 +1,21 @@
 #facebox .b {
-  background:url(/modules/backup_restore/images/b.png);
+  background:url(../../../images/b.png);
 }
 
 #facebox .tl {
-  background:url(/modules/backup_restore/images/tl.png);
+  background:url(../../../images/tl.png);
 }
 
 #facebox .tr {
-  background:url(/modules/backup_restore/images/tr.png);
+  background:url(../../../images/tr.png);
 }
 
 #facebox .bl {
-  background:url(/modules/backup_restore/images/bl.png);
+  background:url(../../../images/bl.png);
 }
 
 #facebox .br {
-  background:url(/modules/backup_restore/images/br.png);
+  background:url(../../../images/br.png);
 }
 
 #facebox {
