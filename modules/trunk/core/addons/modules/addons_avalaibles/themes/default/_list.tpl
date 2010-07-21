@@ -12,7 +12,7 @@
                 <td align="left" colspan="3">
                     <input type="text" value="" name="addons_search" />
                     <a href="index.php?menu={$module_name}&amp;action=search">
-                        <img alt="" src='modules/{$module_name}/images/lupa.jpeg' align='absmiddle' border='0' width='15' height='15' />
+                        <img alt="" src='modules/{$module_name}/images/lupa.png' align='absmiddle' border='0' width='15' height='15' />
                     </a>
                 </td>
                 <td align="right"> 
@@ -49,7 +49,7 @@
           </td>
         </tr>
         {foreach from=$arrData key=k item=data name=filas}
-        <tr onmouseover="this.style.backgroundColor='#f2f2f2';" onmouseout="this.style.backgroundColor='#ffffff';">
+        <tr style="background-color:#f2f2f2;" class="backgroundTable">
           {if $smarty.foreach.filas.last}
             {section name=columnNum loop=$numColumns start=0 step=1}
                 <td class="table_data_last_row">

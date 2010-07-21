@@ -42,3 +42,24 @@
 .RpmImg{
    padding: 0px 25px 0px 50px;
 }
+
+.title_package {
+    font-size: 18px;
+}
+
+.title_version {
+    font-size: 18px;
+}
+
+.contentStyle {
+    font-size: 13px;
+}
+
+.backgroundTable {
+/*    background-image: url(../../../images/fondo.png);
+    background-repeat: repeat-x;*/
+}
+
+.divTD {
+    padding-left: 0px;
+}
