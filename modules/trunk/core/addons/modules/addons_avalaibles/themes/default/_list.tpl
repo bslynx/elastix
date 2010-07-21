@@ -49,7 +49,7 @@
           </td>
         </tr>
         {foreach from=$arrData key=k item=data name=filas}
-        <tr style="background-color:#f2f2f2;" class="backgroundTable">
+        <tr style="background-color:#fafafa;" class="backgroundTable">
           {if $smarty.foreach.filas.last}
             {section name=columnNum loop=$numColumns start=0 step=1}
                 <td class="table_data_last_row">
