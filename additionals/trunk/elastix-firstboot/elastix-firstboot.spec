@@ -1,14 +1,16 @@
 Summary: Elastix First Boot Setup
 Name:    elastix-firstboot
-Version: 0.0.0
-Release: 1
+Version: 2.0.0
+Release: 2
 License: GPL
 Group:   Applications/System
 Source0: %{name}-%{version}.tar.bz2
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
 Prereq: elastix >= 2.0, 
-Requires: mysql, mysql-server
+Requires: mysql, mysql-server, dialog
+Requires: sed, grep
+Requires: coreutils
 Conflicts: elastix-mysqldbdata
 Requires(post): chkconfig, /bin/cp
 
@@ -49,6 +51,9 @@ fi
 if [ ! -d /var/lib/mysql/roundcubedb ] ; then
 	cp /usr/share/elastix-firstboot/compat-dbscripts/05-roundcubedb.sql /usr/share/elastix-firstboot/compat-dbscripts/06-roundcube-password.sql /var/spool/elastix-mysqldbscripts/
 fi
+if [ ! -d /var/lib/mysql/vtigercrm510 ] ; then
+	cp /usr/share/elastix-firstboot/compat-dbscripts/08-schema-vtiger.sql /var/spool/elastix-mysqldbscripts/
+fi
 cp /usr/share/elastix-firstboot/compat-dbscripts/07-sugarcrm-password.sql /var/spool/elastix-mysqldbscripts/
 
 %clean
@@ -65,9 +70,17 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/elastix-firstboot/compat-dbscripts/05-roundcubedb.sql
 /usr/share/elastix-firstboot/compat-dbscripts/06-roundcube-password.sql
 /usr/share/elastix-firstboot/compat-dbscripts/07-sugarcrm-password.sql
-
+/usr/share/elastix-firstboot/compat-dbscripts/08-schema-vtiger.sql
 
 %changelog
+* Thu Jul 22 2010 Alex Villacis Lasso <a_villacis@palosanto.com> 2.0.0-2
+- Bump to version 2.0.0 for consistency with other Elastix-2 packages
+- Add VTigerCRM schema to compatibility database files
+- Add the new task of reading the MySQL root password for the newly installed
+  system, and storing it in /etc/mysql.conf , and requesting a password for
+  the 'admin' login in Elastix, FreePBX, A2Billing, VTiger. This requires
+  dialog to be installed in the system.
+
 * Wed Sep 03 2009 Alex Villacis Lasso <a_villacis@palosanto.com> 0.0.0-1
 - Initial version. Supports delayed initialization of databases.
 
