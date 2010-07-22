@@ -31,6 +31,6 @@
 
     $arrConfModule['module_name']       = "control_panel";
     $arrConfModule['templates_dir']     = "themes";
-    $arrConfModule['dsn_conn_database1'] = "mysql://root:eLaStIx.2oo7@localhost/asterisk";
+    $arrConfModule['dsn_conn_database1'] = ""; // A ser resuelto vía /etc/elastix.conf
     $arrConfModule['dsn_conn_database2'] = "sqlite3:///$arrConf[elastix_dbdir]/control_panel_design.db";
 ?>

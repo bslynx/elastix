@@ -57,6 +57,7 @@ function _moduleContent(&$smarty, $module_name)
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
 
     //conexion resource
+    $arrConf['dsn_conn_database1'] = generarDSNSistema('asteriskuser', 'asterisk');
     $pDB1 = new paloDB($arrConf['dsn_conn_database1']);
     $pDB2 = new paloDB($arrConf['dsn_conn_database2']);
 
