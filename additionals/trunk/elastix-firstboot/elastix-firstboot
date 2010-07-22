@@ -1,0 +1,101 @@
+#!/bin/bash
+#
+# elastix-firstboot	This shell script sets up the various MySQL databases for the 
+#                       modules that need an initialized database to work. Other tasks
+#                       to be performed on first boot should be placed here.
+#
+# chkconfig: - 66 36
+# description:	Elastix setup for first boot.
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+# Source networking configuration.
+. /etc/sysconfig/network
+
+
+# TODO: place in config file?
+elastix_root_password="eLaStIx.2oo7"
+
+# extract value of a MySQL option from config files
+# Usage: get_mysql_option SECTION VARNAME DEFAULT
+# result is returned in $result
+# We use my_print_defaults which prints all options from multiple files,
+# with the more specific ones later; hence take the last match.
+get_mysql_option(){
+	result=`/usr/bin/my_print_defaults "$1" | sed -n "s/^--$2=//p" | tail -n 1`
+	if [ -z "$result" ]; then
+	    # not found, use default
+	    result="$3"
+	fi
+}
+
+get_mysql_option mysqld datadir "/var/lib/mysql"
+datadir="$result"
+get_mysql_option mysqld socket "$datadir/mysql.sock"
+socketfile="$result"
+get_mysql_option mysqld_safe log-error "/var/log/mysqld.log"
+errlogfile="$result"
+get_mysql_option mysqld_safe pid-file "/var/run/mysqld/mysqld.pid"
+mypidfile="$result"
+
+elastix_mysql_init(){
+	# Try to unconditionally set the root password. This will only succeed
+	# for the case where the root password is not set (as is the case on 
+	# first boot).
+	/usr/bin/mysqladmin -u root password "$elastix_root_password" 2>/dev/null
+	/usr/bin/mysqladmin -u root -h `hostname` password "$elastix_root_password" 2>/dev/null
+
+	# The scripts placed in /var/spool/elastix-mysqldbscripts should be executed now.
+	ret=0
+	for dbscript in /var/spool/elastix-mysqldbscripts/*.sql ; do
+		echo "Applying MySQL script $dbscript ..."
+		if [ -e $dbscript ]; then
+			mysql -u root -p$elastix_root_password < $dbscript
+			ret=$?
+		fi
+	        if [ $ret -ne 0 ] ; then
+                	return $ret
+		else
+			# Remove just-executed script
+			rm -f $dbscript
+        	fi
+	done
+
+	return $ret
+}
+
+start(){
+	ret=0
+
+	# Perform all tasks that require a running MySQL database
+        MYSQLPID=`cat "$mypidfile"  2>/dev/null `
+        if [ -n "$MYSQLPID" ]; then
+		elastix_mysql_init
+		ret=$?	
+	else
+		echo "No running MySQL server has been found."
+		ret=1
+	fi
+
+	return $ret
+}
+
+stop(){
+	return 0
+}
+
+# See how we were called.
+case "$1" in
+  start)
+    start
+    ;;
+  stop)
+    stop
+    ;;
+  *)
+    echo $"Usage: $0 {start|stop}"
+    exit 1
+esac
+
+exit $?
