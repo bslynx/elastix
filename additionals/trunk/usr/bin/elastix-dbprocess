@@ -1,0 +1,96 @@
+#!/usr/bin/php
+<?php
+/* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
+  Codificación: UTF-8
+  +----------------------------------------------------------------------+
+  | Elastix version 2.0                                                  |
+  | http://www.elastix.org                                               |
+  +----------------------------------------------------------------------+
+  | Copyright (c) 2006 Palosanto Solutions S. A.                         |
+  +----------------------------------------------------------------------+
+  | Cdla. Nueva Kennedy Calle E 222 y 9na. Este                          |
+  | Telfs. 2283-268, 2294-440, 2284-356                                  |
+  | Guayaquil - Ecuador                                                  |
+  | http://www.palosanto.com                                             |
+  +----------------------------------------------------------------------+
+  | The contents of this file are subject to the General Public License  |
+  | (GPL) Version 2 (the "License"); you may not use this file except in |
+  | compliance with the License. You may obtain a copy of the License at |
+  | http://www.opensource.org/licenses/gpl-license.php                   |
+  |                                                                      |
+  | Software distributed under the License is distributed on an "AS IS"  |
+  | basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See  |
+  | the License for the specific language governing rights and           |
+  | limitations under the License.                                       |
+  +----------------------------------------------------------------------+
+  | The Original Code is: Elastix Open Source.                           |
+  | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  +----------------------------------------------------------------------+
+ */
+
+/*
+This script takes two argument, the first is the action (install,update,delete)
+and the second argument is the database folder path where are files sqls. 
+This script install, update and delete database.
+*/
+
+if ($argc < 3){
+   die("Please specify the action and folder path files sqls.\n Usage: {$_SERVER['argv'][0]} install /usr/share/elastix/.../db/\n");
+}
+
+$documentRoot="/var/www/html";
+require_once("$documentRoot/libs/misc.lib.php");
+require_once("$documentRoot/configs/default.conf.php");
+//global variables framework
+global $arrConf;
+require_once("$arrConf[basePath]/libs/paloSantoConfig.class.php");
+
+$arrActions = array("install","update","delete");
+
+if(isset($_SERVER['argv'][1]) & in_array($_SERVER['argv'][1],$arrActions)){
+   if(isset($_SERVER['argv'][2])){
+      $action      = $_SERVER['argv'][1];
+      $path_folder = $_SERVER['argv'][2]; 
+      $arrFiles    = scandir("$path_folder/$action");
+
+      if(is_array($arrFiles) && count($arrFiles)>0){
+          $confElastix = new paloConfig("/etc","elastix.conf"," = ","[[:space:]]*=[[:space:]]*");
+          $contentFile = $confElastix->leer_configuracion();
+          $password    = $confElastix->privado_get_valor($contentFile,"mysqlrootpwd");
+
+          if($action=="install"){
+             foreach($arrFiles as $k => $file){// must only have sqls files valids.
+                if(ereg("\.sql$",$file)){
+                   echo "Executing mysql -uroot -p$password < $path_folder/$action/$file ... \n";
+                   exec("mysql -uroot -p$password < $path_folder/$action/$file",$arrConsole,$flatStatus);
+                   //TODO: falta validar error
+                   echo "RETURN $flatStatus\n";
+                   //print_r($arrConsole);
+                   //return $flaStatus;
+                }
+             }
+             return 0;
+          }
+	  else if($action=="update"){
+	     echo "Nothing to be done in database. The action $action did have implementation yet.\n";
+             return 0;
+          }
+          else if($action=="delete"){
+             echo "Nothing to be done in database. The action $action did have implementation yet.\n";
+             return 0;
+          }
+      }
+      else{
+         echo "Nothing to be done. The action $action did not find any sql file, in $path_folder/$action";
+      }
+   }
+   else{
+      echo "Error: second arg not defined. Usage: {$_SERVER['argv'][0]} action path_folder_files_sqls\nThe actions will be: install, update and delete.\n";
+      return 1;
+   }
+}
+else{
+   echo "Error: first arg not defined. Usage: {$_SERVER['argv'][0]} action path_folder_files_sqls \n The actions will be: install, update and delete.\n";
+   return 1;
+}
+?>
