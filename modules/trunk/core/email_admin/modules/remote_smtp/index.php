@@ -126,6 +126,8 @@ function viewFormEmailRelay($smarty, $module_name, $local_templates_dir, &$pDB, 
     $smarty->assign("CONFIGURATION_UPDATE",$arrLang['Save/Update']);
     $smarty->assign("ENABLED", $arrLang["Enabled"]);
     $smarty->assign("DISABLED", $arrLang["Disabled"]);
+	$smarty->assign("ENABLE", $arrLang["Enable"]);
+    $smarty->assign("DISABLE", $arrLang["Disable"]);
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
     $smarty->assign("STATUS",$arrLang['Status']);
     $smarty->assign("MSG_REMOTE_SMTP",$arrLang['Message Remote SMTP Server']);

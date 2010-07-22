@@ -7,9 +7,9 @@
             <input class="button" name="in_actualizar_conf" value="{$CONFIGURATION_UPDATE}" type="submit" />&nbsp;&nbsp;
             <input type="hidden"  value="{$ACTIVATED}" name="status" />
             {if $ACTIVATED_BUTTON}
-                <input class="button" name="enabled"   value="{$ENABLED}"  type="submit" />
+                <input class="button" name="enabled"   value="{$ENABLE}"  type="submit" />
             {else}
-                <input class="button" name="disabled"  value="{$DISABLED}" type="submit" />
+                <input class="button" name="disabled"  value="{$DISABLE}" type="submit" />
             {/if}
         </td>
         <td align="right" nowrap><span class="letra12"><span  class="required">*</span> {$REQUIRED_FIELD}</span></td>
