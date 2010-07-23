@@ -32,7 +32,5 @@
     $arrConfModule['module_name']       = 'monitoring2';
     $arrConfModule['templates_dir']     = 'themes';
     $arrConfModule['records_dir']       = '/var/spool/asterisk/monitor/';
-    //ex1: $arrConfModule['dsn_conn_database'] = "sqlite3:///$arrConf[elastix_dbdir]/base_name.db";
-    //ex2: $arrConfModule['dsn_conn_database'] = "mysql://user:password@ip_host_sever_mysql/base_name";
-    $arrConfModule['dsn_conn_database'] = 'mysql://root:eLaStIx.2oo7@localhost/asteriskcdrdb';
+    $arrConfModule['dsn_conn_database'] = ''; // A ser leído de /etc/amportal.conf
 ?>
