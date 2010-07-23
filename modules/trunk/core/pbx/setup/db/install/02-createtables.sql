@@ -1,3 +1,4 @@
+USE meetme;
 -- Database: `meetme`
 -- 
 
@@ -88,6 +89,3 @@ CREATE TABLE `user` (
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;
 
-
-GRANT SELECT, UPDATE, INSERT, DELETE ON `meetme`.* to asteriskuser@localhost
-IDENTIFIED BY 'eLaStIx.asteriskuser.2oo7';
