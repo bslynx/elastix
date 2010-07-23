@@ -35,7 +35,6 @@ include_once "libs/paloSantoEmail.class.php";
 include_once "libs/cyradm.php";
 include_once "configs/email.conf.php";
 
-define("MYSQL_ROOT_PASSWORD","eLaStIx.2oo7");
 function _moduleContent(&$smarty, $module_name)
 {
 //include elastix framework
@@ -1034,7 +1033,7 @@ function respaldar_base_mysql($dir_resp_db,$base)
     $bContinuar = FALSE;
     $host="localhost";
     $user="root";
-    $pass=MYSQL_ROOT_PASSWORD;
+    $pass=obtenerClaveConocidaMySQL('root');
     $dsn     = "mysql://$user:$pass@$host/$base";
     $db=new paloDB($dsn);
     //mysqldump solo para la estructura
@@ -1115,6 +1114,8 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
     global $arrConf;
     $error="";
 	
+	$root_password = obtenerClaveConocidaMySQL('root');
+	
     foreach ($arrSelectedOptions as $option)
     {
         $bExito=true;
@@ -1134,7 +1135,7 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
                         {
                             $base = $regs[1];
                             $fileSQL = $archivo;
-                            $comando="mysql --password=".MYSQL_ROOT_PASSWORD." --user=root $base < $ruta_respaldo_db/$fileSQL";
+                            $comando="mysql --password=".$root_password." --user=root $base < $ruta_respaldo_db/$fileSQL";
                             exec($comando,$output,$retval);
                             if ($retval!=0) $bExito = false;
                         }
@@ -1429,7 +1430,7 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
                 exec($comando,$output,$retval);
 
                 $base = $archivo;
-                $comando="mysql --password=".MYSQL_ROOT_PASSWORD." --user=root $base < $ruta_respaldo/$archivo.sql";
+                $comando="mysql --password=".$root_password." --user=root $base < $ruta_respaldo/$archivo.sql";
                 exec($comando,$output,$retval);
                 if ($retval!=0) $bExito = false;
 
@@ -1534,7 +1535,7 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
                 exec($comando,$output,$retval);
 
                 $base = $archivo;
-                $comando="mysql --password=".MYSQL_ROOT_PASSWORD." --user=root $base < $ruta_respaldo/$archivo.sql";
+                $comando="mysql --password=".$root_password." --user=root $base < $ruta_respaldo/$archivo.sql";
                 exec($comando,$output,$retval);
                 if ($retval!=0) $bExito = false;
 
@@ -1549,7 +1550,7 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
                 exec($comando,$output,$retval);
 
                 $base = $archivo;
-                $comando="mysql --password=".MYSQL_ROOT_PASSWORD." --user=root $base < $ruta_respaldo/$archivo.sql";
+                $comando="mysql --password=".$root_password." --user=root $base < $ruta_respaldo/$archivo.sql";
                 exec($comando,$output,$retval);
                 if ($retval!=0) $bExito = false;
 
@@ -1564,7 +1565,7 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
                 exec($comando,$output,$retval);
 
                 $base = $archivo;
-                $comando="mysql --password=".MYSQL_ROOT_PASSWORD." --user=root $base < $ruta_respaldo/$archivo.sql";
+                $comando="mysql --password=".$root_password." --user=root $base < $ruta_respaldo/$archivo.sql";
                 exec($comando,$output,$retval);
                 if ($retval!=0) $bExito = false;
 
@@ -1579,7 +1580,7 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
                 exec($comando,$output,$retval);
 
                 $base = $archivo;
-                $comando="mysql --password=".MYSQL_ROOT_PASSWORD." --user=root $base < $ruta_respaldo/$archivo.sql";
+                $comando="mysql --password=".$root_password." --user=root $base < $ruta_respaldo/$archivo.sql";
                 exec($comando,$output,$retval);
                 if ($retval!=0) $bExito = false;
 
@@ -1649,7 +1650,7 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
                 exec($comando,$output,$retval);
 
                 $base = $archivo;
-                $comando="mysql --password=".MYSQL_ROOT_PASSWORD." --user=root $base < $ruta_respaldo/$archivo.sql";
+                $comando="mysql --password=".$root_password." --user=root $base < $ruta_respaldo/$archivo.sql";
                 exec($comando,$output,$retval);
                 if ($retval!=0) $bExito = false;
             }
