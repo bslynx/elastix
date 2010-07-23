@@ -6,9 +6,6 @@
 -- 
 -- Table structure for table `booking`
 -- 
-CREATE DATABASE `meetme`;
-
-USE `meetme`;
 
 CREATE TABLE `booking` (
   `bookId` int(10) unsigned NOT NULL auto_increment,
