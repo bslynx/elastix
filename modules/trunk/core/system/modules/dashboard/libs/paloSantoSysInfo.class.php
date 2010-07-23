@@ -555,7 +555,7 @@ class paloSantoSysInfo
 
     function _getAll_Trunk()
     {
-        $dsn = "mysql://root:eLaStIx.2oo7@localhost/asterisk";
+        $dsn = generarDSNSistema('asteriskuser', 'asterisk');
         $pDBTrunk  = new paloDB($dsn);
         $arrTrunks = getTrunks($pDBTrunk);
         $trunks = array();
