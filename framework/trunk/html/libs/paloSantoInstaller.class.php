@@ -22,10 +22,13 @@
   +----------------------------------------------------------------------+
   $Id: paloSantoInstaller.class.php,v 1.1 2007/09/05 00:25:25 gcarrillo Exp $
 */
-define("MYSQL_ROOT_PASSWORD","eLaStIx.2oo7");
 
 require_once "paloSantoDB.class.php";
 require_once "paloSantoModuloXML.class.php";
+require_once "misc.lib.php";
+
+// La presencia de MYSQL_ROOT_PASSWORD es parte del API global.
+define('MYSQL_ROOT_PASSWORD', obtenerClaveConocidaMySQL('root', '/var/www/html/'));
 
 class Installer
 {
@@ -88,7 +91,9 @@ class Installer
     }
     function createNewDatabaseMySQL($path_script_db, $db_name, $datos_conexion)
     {
-        $db = 'mysql://root:'.MYSQL_ROOT_PASSWORD.'@localhost/';
+        $root_password = MYSQL_ROOT_PASSWORD;
+
+        $db = 'mysql://root:'.$root_password.'@localhost/';
         $pDB = new paloDB ($db);
         $sPeticionSQL = "CREATE DATABASE $db_name";
         $result = $pDB->genExec($sPeticionSQL);
@@ -97,7 +102,7 @@ class Installer
         $GrantSQL = "GRANT SELECT, INSERT, UPDATE, DELETE ON $db_name.* TO ";
         $GrantSQL .= $datos_conexion['user']."@".$datos_conexion['locate']." IDENTIFIED BY '".                          $datos_conexion['password']."'";
         $result = $pDB->genExec($GrantSQL);
-        $comando="mysql --password=".MYSQL_ROOT_PASSWORD." --user=root $db_name < $path_script_db";
+        $comando="mysql --password=".$root_password." --user=root $db_name < $path_script_db";
         exec($comando,$output,$retval);
         return $retval;
     }
