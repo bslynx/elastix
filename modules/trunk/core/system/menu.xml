@@ -22,13 +22,12 @@
 
     <!--Temporalmente esto se va hace aqui para los menus de extras e IM-->
     <menuitem menuid="extras"             desc="Extras"             parent=""           module="no" link=""                                     order="9"></menuitem>
-    <menuitem menuid="vtigercrm"          desc="vTigerCRM"          parent="extras"     module="no" link="vtigercrmWrapper.php?URL=/vtigercrm/" order="1"></menuitem>
+    <menuitem menuid="vtigercrm"          desc="vTigerCRM"          parent="extras"     module="no" link="vtigercrm"                            order="1"></menuitem>
     <menuitem menuid="a2b"                desc="Calling Cards"      parent="extras"     module="no" link="a2billing"                            order="2"></menuitem>
     <menuitem menuid="downloads"          desc="Downloads"          parent="extras"     module="no" link=""                                     order="3"></menuitem>
     <menuitem menuid="sphones"            desc="Softphones"         parent="downloads"  module="no" link="static/softphones.htm"                order="31"></menuitem>
     <menuitem menuid="faxutils"           desc="Fax Utilities"      parent="downloads"  module="no" link="static/faxutils.htm"                  order="32"></menuitem>
     <menuitem menuid="instantmessaging"   desc="Instant Messaging"  parent="downloads"  module="no" link="static/instantmessaging.htm"          order="33"></menuitem>
-    <menuitem menuid="crm"                desc="SugarCRM"           parent="extras"     module="no" link="sugarcrmWrapper.php?URL=/crm/"        order="4"></menuitem>
     
     <menuitem menuid="im"                 desc="IM"                 parent=""           module="no" link=""                                                   order="6"></menuitem>
     <menuitem menuid="openfire"           desc="OpenFire"           parent="im"         module="no" link="openfireWrapper.php?IP={NAME_SERVER}&amp;PORT=9090" order="1"></menuitem>
