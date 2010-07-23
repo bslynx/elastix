@@ -1,7 +1,7 @@
 Summary: Elastix First Boot Setup
 Name:    elastix-firstboot
 Version: 2.0.0
-Release: 4
+Release: 5
 License: GPL
 Group:   Applications/System
 Source0: %{name}-%{version}.tar.bz2
@@ -55,6 +55,14 @@ if [ ! -d /var/lib/mysql/vtigercrm510 ] ; then
 	cp /usr/share/elastix-firstboot/compat-dbscripts/08-schema-vtiger.sql /var/spool/elastix-mysqldbscripts/
 fi
 
+# If updating, and there is no /etc/elastix.conf , a default file is generated with
+# legacy password so new modules continue to work.
+if [ $1 -eq 2 ] ; then
+	if [ ! -e /etc/elastix.conf ] ; then
+		echo "mysqlrootpwd=eLaStIx.2oo7" >> /etc/elastix.conf
+	fi
+fi
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -71,6 +79,10 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/elastix-firstboot/compat-dbscripts/08-schema-vtiger.sql
 
 %changelog
+* Fri Jul 23 2010 Alex Villacis Lasso <a_villacis@palosanto.com> 2.0.0-5
+- FIXED: generate default /etc/elastix.conf when upgrading from previous
+  RPM version that did not have password prompting functionality.
+
 * Thu Jul 22 2010 Alex Villacis Lasso <a_villacis@palosanto.com> 2.0.0-4
 - FIXED: salt for crypt for VTiger generated wrongly. Should be 'admin', not entered password.
 - REMOVED: Password setting for sugarcrm no longer necessary
