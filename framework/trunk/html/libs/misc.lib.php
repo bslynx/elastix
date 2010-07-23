@@ -610,6 +610,7 @@ function obtenerClaveConocidaMySQL($sNombreUsuario, $ruta_base='')
         $listaParam = $pConfig->leer_configuracion(FALSE);
         if (isset($listaParam['mysqlrootpwd'])) 
             return $listaParam['mysqlrootpwd']['valor'];
+        else return 'eLaStIx.2oo7'; // Compatibility for updates where /etc/elastix.conf is not available
         break;
     case 'asteriskuser':
         $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
