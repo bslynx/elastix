@@ -28,7 +28,7 @@
   $Id: en.lang,v 1.1 2009-06-08 03:06:39 Oscar Navarrete onavarrete@palosanto.com Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Control Panel" => "Control Panel",
+"Control Panel" => "Operator Panel",
 "Name" => "Name",
 "New" => "New",
 "Old" => "Old",

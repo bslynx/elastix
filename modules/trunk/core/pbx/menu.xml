@@ -3,7 +3,7 @@
   <menulist>
     <menuitem menuid="pbxconfig"              desc="PBX"                     parent=""          module="no"  link=""      order="5"></menuitem>
     <menuitem menuid="pbxadmin"               desc="PBX Configuration"       parent="pbxconfig" module="yes" link=""      order="1"></menuitem>
-    <menuitem menuid="control_panel"          desc="Control Panel"           parent="pbxconfig" module="yes" link=""      order="2"></menuitem>
+    <menuitem menuid="control_panel"          desc="Operator Panel"          parent="pbxconfig" module="yes" link=""      order="2"></menuitem>
     <menuitem menuid="voicemail"              desc="Voicemail"               parent="pbxconfig" module="yes" link=""      order="3"></menuitem>
     <menuitem menuid="monitoring"             desc="Monitoring"              parent="pbxconfig" module="yes" link=""      order="4"></menuitem>
     <menuitem menuid="endpoint_configurator"  desc="Endpoint Configurator"   parent="pbxconfig" module="yes" link=""      order="5"></menuitem>
