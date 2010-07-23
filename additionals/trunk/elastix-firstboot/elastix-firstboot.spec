@@ -1,7 +1,7 @@
 Summary: Elastix First Boot Setup
 Name:    elastix-firstboot
 Version: 2.0.0
-Release: 3
+Release: 4
 License: GPL
 Group:   Applications/System
 Source0: %{name}-%{version}.tar.bz2
@@ -54,7 +54,6 @@ fi
 if [ ! -d /var/lib/mysql/vtigercrm510 ] ; then
 	cp /usr/share/elastix-firstboot/compat-dbscripts/08-schema-vtiger.sql /var/spool/elastix-mysqldbscripts/
 fi
-cp /usr/share/elastix-firstboot/compat-dbscripts/07-sugarcrm-password.sql /var/spool/elastix-mysqldbscripts/
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -69,10 +68,13 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/elastix-firstboot/compat-dbscripts/04-a2billinguser-password.sql
 /usr/share/elastix-firstboot/compat-dbscripts/05-roundcubedb.sql
 /usr/share/elastix-firstboot/compat-dbscripts/06-roundcube-password.sql
-/usr/share/elastix-firstboot/compat-dbscripts/07-sugarcrm-password.sql
 /usr/share/elastix-firstboot/compat-dbscripts/08-schema-vtiger.sql
 
 %changelog
+* Thu Jul 22 2010 Alex Villacis Lasso <a_villacis@palosanto.com> 2.0.0-4
+- FIXED: salt for crypt for VTiger generated wrongly. Should be 'admin', not entered password.
+- REMOVED: Password setting for sugarcrm no longer necessary
+
 * Thu Jul 22 2010 Alex Villacis Lasso <a_villacis@palosanto.com> 2.0.0-3
 - FIXED: fix incorrect reference to shell variable
 
