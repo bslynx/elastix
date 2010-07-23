@@ -1216,7 +1216,7 @@ class paloACL {
             if ($result && is_array($result) && count($result)>0) {
                 $id_resource = $result[0];
                 return $id_resource;
-            }else $this->errMsg = $this->_DB->errMs;
+            }else $this->errMsg = $this->_DB->errMsg;
         }
         return 0;
     }
