@@ -83,21 +83,21 @@ elastix_mysql_init(){
 }
 
 elastix_prompt_mysql_passwd(){
-	dialog --backtitle "$BACKTITLE" --msgbox "The following screen will now ask for a password for the 'root' account of MySQL" 10 40
+	DIALOG_PURPOSE="This screen will now ask for a password for the 'root' account of MySQL.\n\n"
 	
 	# Read and set new MySQL root password
 	while [ "$MYSQL_PASSWD1" == "" ] ; do
 	    MYSQL_PASSWD1=""
 	    MYSQL_PASSWD2=""
 	    while [ "$MYSQL_PASSWD1" == "" ] ; do
-	        dialog --backtitle "$BACKTITLE" --insecure --passwordbox "Enter new MySQL root password" 10 60 2>$OPTFILE
+	        dialog --backtitle "$BACKTITLE" --insecure --passwordbox "$DIALOG_PURPOSE Enter new MySQL root password:" 10 60 2>$OPTFILE
 	        MYSQL_PASSWD1=`cat $OPTFILE`
 	        if [ "$MYSQL_PASSWD1" == "" ] ; then
-	            dialog --backtitle "$BACKTITLE" --msgbox "MySQL root password must be nonempty" 7 40
+	            dialog --backtitle "$BACKTITLE" --msgbox "MySQL root password must be nonempty." 7 40
 	        fi
 	    done
 	    while [ "$MYSQL_PASSWD2" == "" ] ; do
-	        dialog --backtitle "$BACKTITLE" --insecure --passwordbox "Enter new MySQL root password again" 10 60 2>$OPTFILE
+	        dialog --backtitle "$BACKTITLE" --insecure --passwordbox "$DIALOG_PURPOSE Enter new MySQL root password again:" 10 60 2>$OPTFILE
 	        MYSQL_PASSWD2=`cat $OPTFILE`
 	    done
 	    if [ "$MYSQL_PASSWD1" != "$MYSQL_PASSWD2" ] ; then
@@ -123,7 +123,7 @@ elastix_prompt_mysql_passwd(){
 }
 
 elastix_prompt_web_passwd() {
-	dialog --backtitle "$BACKTITLE" --msgbox "The following screen will now ask for a password for user 'admin' that will be used for: Elastix Web Login, FreePBX, VTiger, A2Billing" 10 40
+	DIALOG_PURPOSE="This screen will now ask for a password for user 'admin' that will be used for: Elastix Web Login, FreePBX, VTiger, and A2Billing.\n\n"
 	
 	MYSQL_PASSWD1=`grep mysqlrootpwd= /etc/elastix.conf | sed 's/^mysqlrootpwd=//'`
 
@@ -133,14 +133,14 @@ elastix_prompt_web_passwd() {
 	    FREEPBX_PASSWD1=""
 	    FREEPBX_PASSWD2=""
 	    while [ "$FREEPBX_PASSWD1" == "" ] ; do
-	        dialog --backtitle "$BACKTITLE" --insecure --passwordbox "Enter new password for 'admin'" 10 60 2>$OPTFILE
+	        dialog --backtitle "$BACKTITLE" --insecure --passwordbox "$DIALOG_PURPOSE Enter new password for 'admin':" 10 60 2>$OPTFILE
 	        FREEPBX_PASSWD1=`cat $OPTFILE`
 	        if [ "$FREEPBX_PASSWD1" == "" ] ; then
-	            dialog --backtitle "$BACKTITLE" --msgbox "Admin password must be nonempty" 7 40
+	            dialog --backtitle "$BACKTITLE" --msgbox "Admin password must be nonempty." 7 40
 	        fi
 	    done
 	    while [ "$FREEPBX_PASSWD2" == "" ] ; do
-	        dialog --backtitle "$BACKTITLE" --insecure --passwordbox "Enter new password for 'admin' again" 10 60 2>$OPTFILE
+	        dialog --backtitle "$BACKTITLE" --insecure --passwordbox "$DIALOG_PURPOSE Enter new password for 'admin' again:" 10 60 2>$OPTFILE
 	        FREEPBX_PASSWD2=`cat $OPTFILE`
 	    done
 	    if [ "$FREEPBX_PASSWD1" != "$FREEPBX_PASSWD2" ] ; then
