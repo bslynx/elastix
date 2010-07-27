@@ -83,21 +83,24 @@ elastix_mysql_init(){
 }
 
 elastix_prompt_mysql_passwd(){
-	DIALOG_PURPOSE="This screen will now ask for a password for the 'root' account of MySQL.\n\n"
+	DIALOG_PURPOSE="The Elastix system uses the open-source database engine MySQL for storage \
+of important telephony information. In order to protect your data, a master password must \
+be set up for the database.\n\n\
+This screen will now ask for a password for the 'root' account of MySQL.\n\n"
 	
 	# Read and set new MySQL root password
 	while [ "$MYSQL_PASSWD1" == "" ] ; do
 	    MYSQL_PASSWD1=""
 	    MYSQL_PASSWD2=""
 	    while [ "$MYSQL_PASSWD1" == "" ] ; do
-	        dialog --backtitle "$BACKTITLE" --insecure --passwordbox "$DIALOG_PURPOSE Enter new MySQL root password:" 10 60 2>$OPTFILE
+	        dialog --backtitle "$BACKTITLE (Screen 1 of 4)" --insecure --passwordbox "$DIALOG_PURPOSE Please enter your new MySQL root password:" 16 70 2>$OPTFILE
 	        MYSQL_PASSWD1=`cat $OPTFILE`
 	        if [ "$MYSQL_PASSWD1" == "" ] ; then
 	            dialog --backtitle "$BACKTITLE" --msgbox "MySQL root password must be nonempty." 7 40
 	        fi
 	    done
 	    while [ "$MYSQL_PASSWD2" == "" ] ; do
-	        dialog --backtitle "$BACKTITLE" --insecure --passwordbox "$DIALOG_PURPOSE Enter new MySQL root password again:" 10 60 2>$OPTFILE
+	        dialog --backtitle "$BACKTITLE (Screen 2 of 4)" --insecure --passwordbox "Please (re)confirm your new MySQL root password:" 10 70 2>$OPTFILE
 	        MYSQL_PASSWD2=`cat $OPTFILE`
 	    done
 	    if [ "$MYSQL_PASSWD1" != "$MYSQL_PASSWD2" ] ; then
@@ -120,10 +123,15 @@ elastix_prompt_mysql_passwd(){
 	fi
 	echo "FLUSH PRIVILEGES;" | mysql -u root -p$MYSQL_PASSWD1
 	echo "mysqlrootpwd=$MYSQL_PASSWD1" > $PASSWD_PATH
+	chmod 600 $PASSWD_PATH
+	chown asterisk.asterisk $PASSWD_PATH
 }
 
 elastix_prompt_web_passwd() {
-	DIALOG_PURPOSE="This screen will now ask for a password for user 'admin' that will be used for: Elastix Web Login, FreePBX, VTiger, and A2Billing.\n\n"
+	DIALOG_PURPOSE="Several Elastix components have administrative interfaces that are can be used \
+through the Web. A web login password must be set for these components in order to prevent \
+unauthorized access to these administration interfaces.\n\n\
+This screen will now ask for a password for user 'admin' that will be used for: Elastix Web Login, FreePBX, VTiger, and A2Billing.\n\n"
 	
 	MYSQL_PASSWD1=`grep mysqlrootpwd= /etc/elastix.conf | sed 's/^mysqlrootpwd=//'`
 
@@ -133,14 +141,14 @@ elastix_prompt_web_passwd() {
 	    FREEPBX_PASSWD1=""
 	    FREEPBX_PASSWD2=""
 	    while [ "$FREEPBX_PASSWD1" == "" ] ; do
-	        dialog --backtitle "$BACKTITLE" --insecure --passwordbox "$DIALOG_PURPOSE Enter new password for 'admin':" 10 60 2>$OPTFILE
+	        dialog --backtitle "$BACKTITLE (Screen 3 of 4)" --insecure --passwordbox "$DIALOG_PURPOSE Please enter your new password for 'admin':" 16 70 2>$OPTFILE
 	        FREEPBX_PASSWD1=`cat $OPTFILE`
 	        if [ "$FREEPBX_PASSWD1" == "" ] ; then
 	            dialog --backtitle "$BACKTITLE" --msgbox "Admin password must be nonempty." 7 40
 	        fi
 	    done
 	    while [ "$FREEPBX_PASSWD2" == "" ] ; do
-	        dialog --backtitle "$BACKTITLE" --insecure --passwordbox "$DIALOG_PURPOSE Enter new password for 'admin' again:" 10 60 2>$OPTFILE
+	        dialog --backtitle "$BACKTITLE (Screen 4 of 4)" --insecure --passwordbox "Please (re)confirm your new password for 'admin':" 10 70 2>$OPTFILE
 	        FREEPBX_PASSWD2=`cat $OPTFILE`
 	    done
 	    if [ "$FREEPBX_PASSWD1" != "$FREEPBX_PASSWD2" ] ; then
