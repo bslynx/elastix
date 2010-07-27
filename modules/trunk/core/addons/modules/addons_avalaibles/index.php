@@ -196,7 +196,7 @@ function reportAvailables($smarty, $module_name, $local_templates_dir, &$pDB, $a
     } catch (SoapFault $e) {
         return "<b><span style=\"color: #FF0000;\">".$e->getMessage()."</span></b>";
     }
-    $limit  = 5;
+    $limit  = 20;
     $total  = $totalAvailables;
     $oGrid->setLimit($limit);
     $oGrid->setTotal($total);
