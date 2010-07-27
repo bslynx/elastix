@@ -121,7 +121,7 @@ function reportDhcpClientlist($smarty, $module_name, $local_templates_dir, &$pDB
 
     $buttonDelete = "<input type='submit' name='delete_dhcpclient' value='{$arrLang["Delete"]}' class='button' onclick=\" return confirmSubmit('{$arrLang["Are you sure you wish to delete the Ip."]}');\" />";
 
-    $arrGrid = array("title"    => $arrLang["Dhcp Client List"],
+    $arrGrid = array("title"    => $arrLang["DHCP Client List"],
                         "icon"     => "images/list.png",
                         "width"    => "99%",
                         "start"    => ($total==0) ? 0 : $offset + 1,

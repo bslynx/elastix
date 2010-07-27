@@ -38,7 +38,7 @@ $arrLangModule=array(
 
 "Number of Accounts" => "Number of Accounts",
 //nuevos
-"Dhcp Client List" => "Dhcp Client List",
+"DHCP Client List" => "DHCP Client List",
 "New Dhcp client" => "New Dhcp client",
 "Are you sure you wish to delete the Ip." => "Are you sure you wish to delete the Ip.",
 "Ip Host" => "Ip Host",

@@ -140,9 +140,9 @@ function reportDHCP_Configuration($smarty, $module_name, $local_templates_dir, &
                                     "property1" => ""),
                 1 => array("name"      => $arrLang["Host Name"],
                                     "property1" => ""),
-                2 => array("name"      => $arrLang["Ip Address"],
+                2 => array("name"      => $arrLang["IP Address"],
                                     "property1" => ""),
-                3 => array("name"      => $arrLang["Mac Address"],
+                3 => array("name"      => $arrLang["MAC Address"],
                                     "property1" => ""),
                             )
                     );
@@ -151,7 +151,7 @@ function reportDHCP_Configuration($smarty, $module_name, $local_templates_dir, &
     $arrFormFilterDHCP_Configuration = createFieldFilter($arrLang);
     $oFilterForm = new paloForm($smarty, $arrFormFilterDHCP_Configuration);
     $smarty->assign("SHOW", $arrLang["Show"]);
-    $smarty->assign("NEW_DHCPCONF", $arrLang["New Dhcp Config"]);
+    $smarty->assign("NEW_DHCPCONF", $arrLang["New DHCP Config"]);
 
     $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl","",$_POST);
     //end section filter
@@ -167,8 +167,8 @@ function reportDHCP_Configuration($smarty, $module_name, $local_templates_dir, &
 function createFieldFilter($arrLang){
     $arrFilter = array(
         "hostname" => $arrLang["Host Name"],
-        "ipaddress" => $arrLang["Ip Address"],
-        "macaddress" => $arrLang["Mac Address"],
+        "ipaddress" => $arrLang["IP Address"],
+        "macaddress" => $arrLang["MAC Address"],
                     );
 
     $arrFormElements = array(
@@ -326,7 +326,7 @@ function createFieldForm($arrLang)
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-            "ipaddress"   => array(      "LABEL"                  => $arrLang["Ip Address"],
+            "ipaddress"   => array(      "LABEL"                  => $arrLang["IP Address"],
                                             "REQUIRED"               => "yes",
                                             "INPUT_TYPE"             => "TEXT",
                                             "INPUT_EXTRA_PARAM"      => array("style" => "width:200px","maxlength" =>"200"),
@@ -334,7 +334,7 @@ function createFieldForm($arrLang)
                                             //"VALIDATION_EXTRA_PARAM" => "([0-9]){1,3}.([0-9]+){1,3}.([0-9]+){1,3}.([0-9]+){1,3}$"
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-            "macaddress"   => array(      "LABEL"                  => $arrLang["Mac Address"],
+            "macaddress"   => array(      "LABEL"                  => $arrLang["MAC Address"],
                                             "REQUIRED"               => "yes",
                                             "INPUT_TYPE"             => "TEXT",
                                             "INPUT_EXTRA_PARAM"      => array("style" => "width:200px","maxlength" =>"200"),
