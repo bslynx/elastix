@@ -67,11 +67,22 @@ function _moduleContent(&$smarty, $module_name)
         case "save_new":
             $content = saveNewVoIPProvider($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
             break;
+        case "setConfig":
+            $content = setConfigVoIPProvider($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+            break;
         default: // view_form
             $content = viewFormVoIPProvider($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
             break;
     }
     return $content;
+}
+
+function setConfigVoIPProvider($smarty, $module_name, $local_templates_dir,& $pDB, $arrConf, $arrLang)
+{
+    header("Content-type: text/xml");
+    $type = getParameter("type");
+    $pControlPanel = new paloSantoVoIPProvider($pDB);
+    return $pControlPanel->getConfigByType($type);
 }
 
 function viewFormVoIPProvider($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
@@ -411,6 +422,8 @@ function getAction()
         return "view_form";
     else if(getParameter("action")=="view_edit")
         return "view_form";
+    else if(getParameter("action")=="setConfig")
+        return "setConfig";
     else
         return "report"; //cancel
 }

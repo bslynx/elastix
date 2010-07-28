@@ -6,8 +6,7 @@
 function validateRegister()
 {
     var selec = document.getElementById("type_provider");
-    var escogida=selec.options[selec.selectedIndex].text;
-    
+
     if(selec.value=="none"){
         alert("Please select a type VoIp Provider");
         document.getElementById("type_provider").focus();
