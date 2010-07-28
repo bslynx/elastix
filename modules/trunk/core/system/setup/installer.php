@@ -27,8 +27,9 @@
   +----------------------------------------------------------------------+
 */
 
-$DocumentRoot = (isset($_SERVER['argv'][1]))?$_SERVER['argv'][1]:"/var/www/html";
-$DataBaseRoot = "/var/www/db";
+$DocumentRoot  = (isset($_SERVER['argv'][1]))?$_SERVER['argv'][1]:"/var/www/html";
+$DataBaseRoot  = "/var/www/db";
+$DataBackupDir = "/var/www/backup"; 
 $tmpDir = '/tmp/new_module/system';  # in this folder the load module extract the package content
 
 if(!file_exists("$DataBaseRoot/FTP.db")){
@@ -55,6 +56,13 @@ if(!file_exists("$DataBaseRoot/network.db")){
 if(!file_exists("$DataBaseRoot/dashboard.db")){
     $cmd_mv    = "mv $tmpDir/setup/dashboard.db $DataBaseRoot/";
     $cmd_chown = "chown asterisk.asterisk $DataBaseRoot/dashboard.db";
+    exec($cmd_mv);
+    exec($cmd_chown);
+}
+
+if(!file_exists("$DataBackupDir/automatic_backup.php")){
+    $cmd_mv    = "mv $tmpDir/setup/automatic_backup.php $DataBackupDir/";
+    $cmd_chown = "chown asterisk.asterisk $DataBackupDir/automatic_backup.php";
     exec($cmd_mv);
     exec($cmd_chown);
 }
