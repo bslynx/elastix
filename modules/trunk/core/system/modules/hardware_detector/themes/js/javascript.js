@@ -242,7 +242,7 @@ function saveSpanConfiguration(idSpan){
     var coding_escogida = coding.options[coding.selectedIndex].text;
     //arrSpanConf[3] = coding.options[coding.selectedIndex].text;
     
-    xhr.open("GET","modules/hardware_detector/libs/controller.php?action=setConfig&idSpan="+idSpan+"&tmsource="+tmsource_escogida+"&lnbuildout="+lnbuildout_escogida+"&framing="+framing_escogida+"&coding="+coding_escogida,true);
+    xhr.open("POST","index.php?menu=hardware_detector&rawmode=yes&action=setConfig&idSpan="+idSpan+"&tmsource="+tmsource_escogida+"&lnbuildout="+lnbuildout_escogida+"&framing="+framing_escogida+"&coding="+coding_escogida,true);
     xhr.onreadystatechange = function()
     {
         controllerDisplayConfig(xhr);
@@ -263,9 +263,9 @@ function saveCardSpecification(idCard){
     var num_serie = document.getElementById("noSerie_"+idCard).value;
     if(manufacturer_selected=="Otros"){
         var manufacturer_other = document.getElementById("manufacturer_other_"+idCard).value;
-        xhr.open("GET","modules/hardware_detector/libs/controller.php?action=setDataCard&idCard="+idCard+"&manufacturer="+manufacturer_other+"&num_serie="+num_serie,true);
+        xhr.open("POST","index.php?menu=hardware_detector&rawmode=yes&action=setDataCard&idCard="+idCard+"&manufacturer="+manufacturer_other+"&num_serie="+num_serie,true);
     }else    
-        xhr.open("GET","modules/hardware_detector/libs/controller.php?action=setDataCard&idCard="+idCard+"&manufacturer="+manufacturer_selected+"&num_serie="+num_serie,true);
+        xhr.open("POST","index.php?menu=hardware_detector&rawmode=yes&action=setDataCard&idCard="+idCard+"&manufacturer="+manufacturer_selected+"&num_serie="+num_serie,true);
     
     xhr.onreadystatechange = function()
     {
@@ -342,7 +342,7 @@ function objAjax()
         }
         catch(E) {
             xmlhttp = false;
-	    }
+        }
     }
     if (!xmlhttp && typeof XMLHttpRequest!='undefined')
     {

@@ -75,6 +75,12 @@ function _moduleContent(&$smarty, $module_name)
         case "save_new":
             $content = saveNewConfEcho($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
             break;
+        case "setConfig":
+            $content = setConfigHardware();
+            break;
+        case "setDataCard":
+            $content = setDataCardHardware($pDB);
+            break;
         default:
             $content  = $xajax->printJavascript("libs/xajax/");
             $content .= listPorts($smarty, $module_name, $local_templates_dir, $pDB);
@@ -316,6 +322,30 @@ function createFieldForm($arrLang)
     return $arrFields;
 }
 
+function setConfigHardware(){
+    $arrSpanConf = array();
+    $idSpan = getParameter("idSpan");
+    $arrSpanConf['tmsource']   = getParameter("tmsource");
+    $arrSpanConf['lnbuildout'] = getParameter("lnbuildout");
+    $arrSpanConf['framing']    = getParameter("framing");
+    $arrSpanConf['coding']     = getParameter("coding");
+
+    $oPortsDetails = new PaloSantoHardwareDetection();
+    $oPortsDetails->updateFileSipCustom($idSpan, $arrSpanConf);
+    return "";
+}
+
+function setDataCardHardware(&$pDB){
+    $arrCardParam  = array();
+    $idCard        = getParameter("idCard");
+    $oPortsDetails = new PaloSantoHardwareDetection();
+
+    $arrCardParam['manufacturer'] = $pDB->DBCAMPO(getParameter("manufacturer"));
+    $arrCardParam['num_serie']    = $pDB->DBCAMPO(trim(getParameter("num_serie")));
+    $oPortsDetails->updateCardParameter($pDB, $arrCardParam, array("id_card"=>$idCard));
+    return $idCard;
+}
+
 function getAction()
 {
     if(getParameter("save_new")) //Get parameter by POST (submit)
@@ -332,6 +362,10 @@ function getAction()
         return "view_form";
     else if(getParameter("action")=="config_echo")
         return "config_echo";
+    else if(getParameter("action")=="setConfig")
+        return "setConfig";
+    else if(getParameter("action")=="setDataCard")
+        return "setDataCard";
     else
         return "report"; //cancel
 }
