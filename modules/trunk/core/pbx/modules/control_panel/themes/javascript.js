@@ -64,9 +64,9 @@ $(document).ready(function(){
             var idStart = ($(ui.draggable).attr("id")).split("_");
             var idFinish = ($(this).attr("id")).split("_");
             
-            var order = '' + '&action=call&menu=control_panel&extStart='+idStart[1]+'&extFinish='+idFinish[1]+'';
+            var order = 'rawmode=yes&action=call&menu=control_panel&extStart='+idStart[1]+'&extFinish='+idFinish[1];
 
-            $.post("modules/control_panel/libs/controllerCall.php", order, function(theResponse){
+            $.post("index.php", order, function(theResponse){
                 $("#contentRight").html(theResponse);
             });
         }
@@ -77,9 +77,9 @@ $(document).ready(function(){
     {
         var extStart = ($(this).attr("id")).split("_");
         
-        var order2 = '' + '&action=hangup&menu=control_panel&extStart='+extStart[1]+'';
+        var order2 = 'rawmode=yes&action=hangup&menu=control_panel&extStart='+extStart[1];
 
-        $.post("modules/control_panel/libs/controllerCall.php", order2, function(theResponse){
+        $.post("index.php", order2, function(theResponse){
             $("#contentRight").html(theResponse);
         });
     });
@@ -99,8 +99,8 @@ $(document).ready(function(){
             var idStart = ($(ui.draggable).attr("id")).split("_");
             //var idFinish = ($(this).attr("id")).split("_");
 
-            var order = '' + '&action=voicemail&menu=control_panel&extStart='+idStart[1]+'';
-            $.post("modules/control_panel/libs/controllerCall.php", order, function(theResponse){
+            var order = 'rawmode=yes&action=voicemail&menu=control_panel&extStart='+idStart[1];
+            $.post("index.php", order, function(theResponse){
                 $("#contentRight").html(theResponse);
             });
         }
@@ -135,8 +135,8 @@ $(document).ready(function(){
             $(this).append($(ui.draggable));
             var idStart = ($(ui.draggable).attr("id")).split("_");
             var idFinish = ($(this).attr("id")).split("_");
-            var order = '' + '&action=savechange2&menu=control_panel&extStart='+idStart[1]+'&extFinish='+idFinish[1]+'';
-            $.post("modules/control_panel/libs/controllerCall.php", order, function(theResponse){
+            var order = 'rawmode=yes&action=savechange2&menu=control_panel&extStart='+idStart[1]+'&extFinish='+idFinish[1];
+            $.post("index.php", order, function(theResponse){
                 $("#contentRight").html(theResponse); 
             });
         }
@@ -148,10 +148,10 @@ $(document).ready(function(){
         drop: function(event, ui) {
             $(this).append($(ui.draggable));
             var idStart = ($(ui.draggable).attr("id")).split("_");
-            var order = '' + '&action=savechange&menu=control_panel&extStart='+idStart[1]+'&area=2';
-            $.post("modules/control_panel/libs/controllerCall.php", order, function(theResponse){
+            var order = 'rawmode=yes&action=savechange&menu=control_panel&extStart='+idStart[1]+'&area=2';
+            $.post("index.php", order, function(theResponse){
                 $("#contentRight").html(theResponse);
-                alert(order);
+                //alert(order);
             });
         }
     });
@@ -162,8 +162,8 @@ $(document).ready(function(){
         {
             $(this).append($(ui.draggable));
             var idStart = ($(ui.draggable).attr("id")).split("_");
-            var order = '' + '&action=savechange&menu=control_panel&extStart='+idStart[1]+'&area=3';
-            $.post("modules/control_panel/libs/controllerCall.php", order, function(theResponse){
+            var order = 'rawmode=yes&action=savechange&menu=control_panel&extStart='+idStart[1]+'&area=3';
+            $.post("index.php", order, function(theResponse){
                 $("#contentRight").html(theResponse);
             });
         }
@@ -175,8 +175,8 @@ $(document).ready(function(){
         {
             $(this).append($(ui.draggable));
             var idStart = ($(ui.draggable).attr("id")).split("_");
-            var order = '' + '&action=savechange&menu=control_panel&extStart='+idStart[1]+'&area=4';
-            $.post("modules/control_panel/libs/controllerCall.php", order, function(theResponse){
+            var order = 'rawmode=yes&action=savechange&menu=control_panel&extStart='+idStart[1]+'&area=4';
+            $.post("index.php", order, function(theResponse){
                 $("#contentRight").html(theResponse);
             });
         }
@@ -189,9 +189,9 @@ $(document).ready(function(){
             var idStart = ($(ui.draggable).attr("id")).split("_");
             var queue = ($(this).attr("id")).split("_");
 
-            var order = '' + '&action=addExttoQueue&menu=control_panel&extStart='+idStart[1]+'&queue='+queue[1]+'';
+            var order = 'rawmode=yes&action=addExttoQueue&menu=control_panel&extStart='+idStart[1]+'&queue='+queue[1];
             //alert(order);
-            $.post("modules/control_panel/libs/controllerCall.php", order, function(theResponse){
+            $.post("index.php", order, function(theResponse){
                 $("#contentRight").html(theResponse);
             });
         }
@@ -255,9 +255,9 @@ $(function(){
         stop: function(event, ui) {
             var heightsize = $("#contentExtension").height();
             var widthsize = $("#contentExtension").width();
-            var order = '' + '&action=saveresize&menu=control_panel&height='+heightsize+'&width='+widthsize+'&area=1&type=alsoResize';
+            var order = 'rawmode=yes&action=saveresize&menu=control_panel&height='+heightsize+'&width='+widthsize+'&area=1&type=alsoResize';
 
-            $.post("modules/control_panel/libs/controllerCall.php", order, function(theResponse){
+            $.post("index.php", order, function(theResponse){
                 //$("#contentRight").html(theResponse);
                 reFresh();  
             });
@@ -273,9 +273,9 @@ $(function(){
         stop: function(event, ui) {
             var heightsize = $("#contentTrunks").height();
             var widthsize = $("#contentTrunks").width();
-            var order = '' + '&action=saveresize&menu=control_panel&height='+heightsize+'&width='+widthsize+'&area=6&type=alsoResize';
+            var order = 'rawmode=yes&action=saveresize&menu=control_panel&height='+heightsize+'&width='+widthsize+'&area=6&type=alsoResize';
 
-            $.post("modules/control_panel/libs/controllerCall.php", order, function(theResponse){
+            $.post("index.php", order, function(theResponse){
                 //$("#contentRight").html(theResponse);
                 reFresh();
             });
@@ -291,9 +291,9 @@ $(function(){
         stop: function(event, ui) {
             var heightsize = $("#contentArea1").height();
             var widthsize = $("#contentArea1").width();
-            var order = '' + '&action=saveresize&menu=control_panel&height='+heightsize+'&width='+widthsize+'&area=2';
+            var order = 'rawmode=yes&action=saveresize&menu=control_panel&height='+heightsize+'&width='+widthsize+'&area=2';
 
-            $.post("modules/control_panel/libs/controllerCall.php", order, function(theResponse){
+            $.post("index.php", order, function(theResponse){
                 //$("#contentRight").html(theResponse);
                 reFresh();
             });
@@ -309,9 +309,9 @@ $(function(){
         stop: function(event, ui) {
             var heightsize = $("#contentArea2").height();
             var widthsize = $("#contentArea2").width();
-            var order = '' + '&action=saveresize&menu=control_panel&height='+heightsize+'&width='+widthsize+'&area=3';
+            var order = 'rawmode=yes&action=saveresize&menu=control_panel&height='+heightsize+'&width='+widthsize+'&area=3';
 
-            $.post("modules/control_panel/libs/controllerCall.php", order, function(theResponse){
+            $.post("index.php", order, function(theResponse){
                 //$("#contentRight").html(theResponse);
                 reFresh();   
             });
@@ -327,9 +327,9 @@ $(function(){
         stop: function(event, ui) {
             var heightsize = $("#contentArea3").height();
             var widthsize = $("#contentArea3").width();
-            var order = '' + '&action=saveresize&menu=control_panel&height='+heightsize+'&width='+widthsize+'&area=4';
+            var order = 'rawmode=yes&action=saveresize&menu=control_panel&height='+heightsize+'&width='+widthsize+'&area=4';
 
-            $.post("modules/control_panel/libs/controllerCall.php", order, function(theResponse){
+            $.post("index.php", order, function(theResponse){
                 //$("#contentRight").html(theResponse);
                 reFresh();   
             });
@@ -344,9 +344,9 @@ $(function(){
         stop: function(event, ui) {
             var heightsize = $("#contentQueues").height();
             var widthsize = $("#contentQueues").width();
-            var order = '' + '&action=saveresize&menu=control_panel&height='+heightsize+'&width='+widthsize+'&area=5';
+            var order = 'rawmode=yes&action=saveresize&menu=control_panel&height='+heightsize+'&width='+widthsize+'&area=5';
 
-            $.post("modules/control_panel/libs/controllerCall.php", order, function(theResponse){
+            $.post("index.php", order, function(theResponse){
                 //$("#contentRight").html(theResponse);
                 reFresh();   
             });
@@ -357,7 +357,7 @@ $(function(){
 
 function actualizar()
 {
-    $.post("modules/control_panel/libs/controllerCall.php", '&action=refresh&menu=control_panel', function(theResponse){
+    $.post("index.php", 'rawmode=yes&action=refresh&menu=control_panel', function(theResponse){
         reloadDevices(theResponse);
     }); 
     setTimeout('actualizar()',2000);//recargar cada 2 segundo
@@ -436,14 +436,14 @@ actualizar();
 
 function loadSizeArea2()
 {
-    $.post("modules/control_panel/libs/controllerCall.php", '&menu=control_panel', function(theResponse){
+    $.post("index.php", 'rawmode=yes&action=loadArea2&menu=control_panel', function(theResponse){
         loadArea2(theResponse);
     }); 
 }
 
 function loadSizeArea()
 {
-    $.post("modules/control_panel/libs/controllerCall.php", '&action=loadArea&menu=control_panel', function(theResponse){
+    $.post("index.php", 'rawmode=yes&action=loadArea&menu=control_panel', function(theResponse){
         loadArea(theResponse);
     }); 
 }
@@ -639,8 +639,8 @@ function loadArea2(xmlLoad){
 function saveDescriptionArea1(){
     var descripA1 =document.getElementById("descrip1").value;
 
-    var order = '' + '&action=saveEdit&menu=control_panel&description='+descripA1+'&area=2';
-    $.post("modules/control_panel/libs/controllerCall.php", order, function(theResponse){
+    var order = 'rawmode=yes&action=saveEdit&menu=control_panel&description='+descripA1+'&area=2';
+    $.post("index.php", order, function(theResponse){
         controlSaveDescripion1(theResponse);
     }); 
 }
@@ -656,8 +656,8 @@ function controlSaveDescripion1(message) {
 function saveDescriptionArea2() {
     var descripA2 =document.getElementById("descrip2").value;
     
-    var order = '' + '&action=saveEdit&menu=control_panel&description='+descripA2+'&area=3';
-    $.post("modules/control_panel/libs/controllerCall.php", order, function(theResponse){
+    var order = 'rawmode=yes&action=saveEdit&menu=control_panel&description='+descripA2+'&area=3';
+    $.post("index.php", order, function(theResponse){
         controlSaveDescripion2(theResponse);
     }); 
 }
@@ -673,8 +673,8 @@ function controlSaveDescripion2(message) {
 function saveDescriptionArea3() {
     var descripA3 =document.getElementById("descrip3").value;
     
-    var order = '' + '&action=saveEdit&menu=control_panel&description='+descripA3+'&area=4';
-    $.post("modules/control_panel/libs/controllerCall.php", order, function(theResponse){
+    var order = 'rawmode=yes&action=saveEdit&menu=control_panel&description='+descripA3+'&area=4';
+    $.post("index.php", order, function(theResponse){
         controlSaveDescripion3(theResponse);
     }); 
 }
@@ -695,7 +695,7 @@ function reFresh() {
 
 function actualizarQueues()
 {
-    $.post("modules/control_panel/libs/controllerCall.php", '&action=refreshQueues&menu=control_panel', function(theResponse){
+    $.post("index.php", 'rawmode=yes&action=refreshQueues&menu=control_panel', function(theResponse){
         reloadQueues(theResponse);
     }); 
     //setTimeout('actualizar()',2000);//recargar cada 2 segundo

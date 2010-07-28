@@ -66,6 +66,39 @@ function _moduleContent(&$smarty, $module_name)
     $content  = "";
 
     switch($action){
+        case "call":
+            $content = callAction($pDB1, $pDB2);
+            break;
+        case "voicemail":
+            $content = voicemailAction($pDB1,$pDB2);
+            break;
+        case "hangup":
+            $content = hangupAction($pDB1, $pDB2);
+            break;
+        case "refresh":
+            $content = refreshAction($pDB1, $pDB2);
+            break;
+        case "savechange":
+            $content = savechangeAction($pDB1, $pDB2);
+            break;
+        case "savechange2":
+            $content = savechange2Action($pDB1, $pDB2);
+            break;
+        case "saveresize":
+            $content = saveresizeAction($pDB1, $pDB2);
+            break;
+        case "loadArea":
+            $content = loadAreaAction($pDB1, $pDB2);
+            break;
+        case "loadArea2":
+            $content = loadArea2Action($pDB1, $pDB2);
+            break;
+        case "saveEdit":
+            $content = saveEditAction($pDB1, $pDB2);
+            break;
+        case "addExttoQueue":
+            $content = addExttoQueueAction($pDB1, $pDB2);
+            break;
         default: // view_form
             $content = viewFormControlPanel($smarty, $module_name, $local_templates_dir, $pDB1, $pDB2, $arrConf, $arrLang);
             break;
@@ -119,15 +152,121 @@ function viewFormControlPanel($smarty, $module_name, $local_templates_dir, &$pDB
     return $content;
 }
 
-// function getParameter($parameter)
-// {
-//     if(isset($_POST[$parameter]))
-//         return $_POST[$parameter];
-//     else if(isset($_GET[$parameter]))
-//         return $_GET[$parameter];
-//     else
-//         return null;
-// }
+function callAction(&$pDB1, &$pDB2)
+{
+    $number_org = getParameter('extStart');
+    $number_dst = getParameter('extFinish');
+    if (!is_null($number_org) & !is_null($number_dst)){
+        $pControlPanel = new paloSantoControlPanel($pDB1,$pDB2);
+        $pControlPanel->makeCalled($number_org, $number_dst);
+    }
+    return "";
+}
+
+function voicemailAction(&$pDB1, &$pDB2)
+{
+    $number_org = getParameter('extStart');
+    if (!is_null($number_org)){
+        $pControlPanel = new paloSantoControlPanel($pDB1,$pDB2);
+        $number_dst = "*98";
+        $pControlPanel->makeCalled($number_org, $number_dst);
+    }
+    return "";
+}
+
+function hangupAction(&$pDB1, &$pDB2)
+{
+    $number_org = getParameter('extStart');
+    if (!is_null($number_org)){
+        $pControlPanel = new paloSantoControlPanel($pDB1,$pDB2);
+        $pControlPanel->hangupCalled($number_org);
+    }
+    return "";
+}
+
+function refreshAction(&$pDB1, &$pDB2)
+{
+    $pControlPanel = new paloSantoControlPanel($pDB1,$pDB2);
+    return $pControlPanel->getAllDevicesXML();
+}
+
+function savechangeAction(&$pDB1, &$pDB2)
+{
+    $number_org = getParameter('extStart');
+    $id_area    = getParameter('area');
+    //if (!is_null($number_org) & !is_null($id_area)){
+        $pControlPanel = new paloSantoControlPanel($pDB1,$pDB2);
+        $pControlPanel->saveChangeArea($number_org,$id_area);
+    //}
+    return "";
+}
+
+
+function savechange2Action(&$pDB1, &$pDB2)
+{
+    $number_org = getParameter('extStart');
+    $number_dst = getParameter('extFinish');
+    //if (!is_null($number_org) & !is_null($number_dst)){
+        $pControlPanel = new paloSantoControlPanel($pDB1,$pDB2);
+        $pControlPanel->saveChangeArea2($number_org,$number_dst);
+    //}
+    return "";
+}
+
+
+function saveresizeAction(&$pDB1, &$pDB2)
+{
+    $pControlPanel = new paloSantoControlPanel($pDB1,$pDB2);
+    $id_area = getParameter('area');
+    $type    = getParameter('type');
+    $height  = getParameter('height');
+    $width   =  getParameter('width');
+
+    if($width>747)
+        $num=3;
+    elseif($width>559 && $width<748)
+        $num=3;
+    elseif($width>370 && $width<560)
+        $num=2;
+    elseif($width>184 && $width<371)
+        $num=1;
+
+    if($type!="alsoResize")
+        $pControlPanel->updateResizeArea($height,$width,$num,$id_area);
+    else
+        $pControlPanel->updateResizeArea2($height,$width,$num,$id_area);
+    return "";
+}
+
+function loadAreaAction(&$pDB1, &$pDB2)
+{
+    $pControlPanel = new paloSantoControlPanel($pDB1,$pDB2);
+    return $pControlPanel->getAllAreasXML();
+}
+
+function loadArea2Action(&$pDB1, &$pDB2)
+{
+    return "";
+}
+
+function saveEditAction(&$pDB1, &$pDB2)
+{
+    $id_area = getParameter('area');
+    $description = getParameter('description');
+
+    $pControlPanel = new paloSantoControlPanel($pDB1,$pDB2);
+    return $pControlPanel->updateDescriptionArea($description,$id_area);
+}
+
+function addExttoQueueAction(&$pDB1, &$pDB2)
+{
+    $number_org = getParameter('extStart');
+    $queue      = getParameter('queue');
+
+    $pControlPanel = new paloSantoControlPanel($pDB1,$pDB2);
+    $pControlPanel->queueAddMember($queue, $number_org);
+    return "";
+}
 
 function getAction()
 {
@@ -143,6 +282,28 @@ function getAction()
         return "view_form";
     else if(getParameter("action")=="view_edit")
         return "view_form";
+    else if(getParameter("action")=="call")
+        return "call";
+    else if(getParameter("action")=="voicemail")
+        return "voicemail";
+    else if(getParameter("action")=="hangup")
+        return "hangup";
+    else if(getParameter("action")=="refresh")
+        return "refresh";
+    else if(getParameter("action")=="savechange")
+        return "savechange";
+    else if(getParameter("action")=="savechange2")
+        return "savechange2";
+    else if(getParameter("action")=="saveresize")
+        return "saveresize";
+    else if(getParameter("action")=="loadArea")
+        return "loadArea";
+    else if(getParameter("action")=="loadArea2")
+        return "loadArea2";
+    else if(getParameter("action")=="saveEdit")
+        return "saveEdit";
+    else if(getParameter("action")=="addExttoQueue")
+        return "addExttoQueue";
     else
         return "report"; //cancel
 }
