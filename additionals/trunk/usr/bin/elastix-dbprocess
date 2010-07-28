@@ -59,21 +59,10 @@ if(isset($_SERVER['argv'][1]) & in_array($_SERVER['argv'][1],$arrActions)){
           $password    = $confElastix->privado_get_valor($contentFile,"mysqlrootpwd");
 
           if($action=="install"){
-             foreach($arrFiles as $k => $file){// must only have sqls files valids.
-                if(ereg("\.sql$",$file)){
-                   echo "Executing mysql -uroot -p$password < $path_folder/$action/$file ... \n";
-                   exec("mysql -uroot -p$password < $path_folder/$action/$file",$arrConsole,$flatStatus);
-                   //TODO: falta validar error
-                   echo "RETURN $flatStatus\n";
-                   //print_r($arrConsole);
-                   //return $flaStatus;
-                }
-             }
-             return 0;
+             return executeFiles_SQL($arrFiles, $password, $path_folder, $action);
           }
 	  else if($action=="update"){
-	     echo "Nothing to be done in database. The action $action did have implementation yet.\n";
-             return 0;
+             return executeFiles_SQL($arrFiles, $password, $path_folder, $action);
           }
           else if($action=="delete"){
              echo "Nothing to be done in database. The action $action did have implementation yet.\n";
@@ -92,5 +81,28 @@ if(isset($_SERVER['argv'][1]) & in_array($_SERVER['argv'][1],$arrActions)){
 else{
    echo "Error: first arg not defined. Usage: {$_SERVER['argv'][0]} action path_folder_files_sqls \n The actions will be: install, update and delete.\n";
    return 1;
+}
+
+function executeFiles_SQL($arrFiles, $password, $path_folder, $action)
+{
+   if(is_array($arrFiles) && count($arrFiles)>0){
+      foreach($arrFiles as $k => $file){// must only have sqls files valids.
+         if(ereg("\.sql$",$file)){
+            echo "Executing mysql -uroot -p$password < $path_folder/$action/$file ... \n";
+            exec("mysql -uroot -p$password < $path_folder/$action/$file",$arrConsole,$flatStatus);
+            
+            echo "RETURN $flatStatus\n";
+            if($flatStatus != 0){
+                print_r($arrConsole);
+                echo "Error, The database can't install.\n";
+		return 1;
+	    }
+         }
+      }
+      echo "Successfull, the database was installed.";
+      return 0;
+   }
+   echo "Nothing to be done in database.";
+   return 0;
 }
 ?>
