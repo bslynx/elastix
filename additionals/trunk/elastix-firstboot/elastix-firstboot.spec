@@ -1,7 +1,7 @@
 Summary: Elastix First Boot Setup
 Name:    elastix-firstboot
 Version: 2.0.0
-Release: 7
+Release: 8
 License: GPL
 Group:   Applications/System
 Source0: %{name}-%{version}.tar.bz2
@@ -74,11 +74,13 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/elastix-firstboot/compat-dbscripts/02-asteriskuser-password.sql
 /usr/share/elastix-firstboot/compat-dbscripts/03-mya2billing.sql
 /usr/share/elastix-firstboot/compat-dbscripts/04-a2billinguser-password.sql
-/usr/share/elastix-firstboot/compat-dbscripts/05-roundcubedb.sql
-/usr/share/elastix-firstboot/compat-dbscripts/06-roundcube-password.sql
 /usr/share/elastix-firstboot/compat-dbscripts/08-schema-vtiger.sql
 
 %changelog
+* Wed Jul 28 2010 Alex Villacis Lasso <a_villacis@palosanto.com> 2.0.0-8
+- REMOVED: Removed SQL scripts for RoundCube - newer RoundCube installs them
+  on its own.
+
 * Tue Jul 27 2010 Alex Villacis Lasso <a_villacis@palosanto.com> 2.0.0-7
 - CHANGED: Add explanation text for prompts and screen numbers.
 - CHANGED: chown 600 asterisk.asterisk for /etc/elastix.conf
