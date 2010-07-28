@@ -94,12 +94,12 @@ function executeFiles_SQL($arrFiles, $password, $path_folder, $action)
             echo "RETURN $flatStatus\n";
             if($flatStatus != 0){
                 print_r($arrConsole);
-                echo "Error, The database can't install.\n";
+                echo "Error, Action $action database failed.\n";
 		return 1;
 	    }
          }
       }
-      echo "Successfull, the database was installed.";
+      echo "Successfull, Action $action database.";
       return 0;
    }
    echo "Nothing to be done in database.";
