@@ -27,6 +27,7 @@
   +----------------------------------------------------------------------+
   $Id: default.conf.php,v 1.1.1.1 2007/03/23 00:13:58 elandivar Exp $ */
 global $arrConfModule;
+global $arrConf;
 $arrConfModule['module_name'] = 'backuplist';
 $arrConfModule['templates_dir'] = 'themes';
 $arrConfModule['dir']     = '/var/www/backup';

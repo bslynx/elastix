@@ -34,8 +34,8 @@ $(document).ready((function() {
             }
             file = $(ui.draggable).attr("id");
             var types = file.substring(4,file.length);
-            var order = '&action=download&menu=backup_restore&file='+file+'&lista=droptrue';
-            $.post("modules/"+module_name+"/libs/control.php", order, function(theResponse){
+            var order = '&action=downloadFTPServer&menu='+module_name+'&rawmode=yes&file='+file+'&lista=droptrue';
+            $.post("index.php", order, function(theResponse){
                     alert(theResponse);
             });
         }
@@ -54,8 +54,8 @@ $(document).ready((function() {
             }
             file = $(ui.draggable).attr("id");
             var types = file.substring(4,file.length);
-            var order = '&action=upload&menu=backup_restore&file='+file+'&lista=droptrue2';
-            $.post("modules/"+module_name+"/libs/control.php", order, function(theResponse){
+            var order = '&action=uploadFTPServer&menu='+module_name+'&rawmode=yes&file='+file+'&lista=droptrue2';
+            $.post("index.php", order, function(theResponse){
                       alert(theResponse);
             });
         }
