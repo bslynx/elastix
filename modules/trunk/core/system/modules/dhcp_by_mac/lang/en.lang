@@ -28,13 +28,13 @@
   $Id: en.lang,v 1.1 2009-11-12 04:11:04 Oscar Navarrete onavarrete.palosanto.com Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"DHCP By MAC" => "DHCP By MAC",
+"Assign IP Address to Host" => "Assign IP Address to Host",
 "Host Name" => "Host Name",
 "IP Address" => "IP Address",
 "MAC Address" => "MAC Address",
 
 "Hostname" => "Hostname",
-"New DHCP Config" => "New DHCP Config",
+"Assign IP Address" => "Assign IP Address",
 "View edit" => "View edit",
 
 "Are you sure you wish to delete the DHCP configuration." => "Are you sure you wish to delete the DHCP configuration.",

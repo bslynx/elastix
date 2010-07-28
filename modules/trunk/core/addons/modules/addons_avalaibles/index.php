@@ -186,7 +186,9 @@ function reportAvailables($smarty, $module_name, $local_templates_dir, &$pDB, $a
     try {
         $client = new SoapClient($arrConf['url_webservice']);
     } catch (SoapFault $e) {
-        return "<b><span style=\"color: #FF0000;\">".$e->getMessage()."</span></b>";
+        $smarty->assign("mb_title", $arrLang["ERROR"].": ");
+        $smarty->assign("mb_message",$arrLang["The system can not connect to the Web Service resource. Please check your Internet connection."]);
+        return ;
     }
 
     //begin grid parameters
@@ -194,7 +196,9 @@ function reportAvailables($smarty, $module_name, $local_templates_dir, &$pDB, $a
     try {
         $totalAvailables = $client->getNumAddonsAvailables("2.0.0", "name", $addons_search);
     } catch (SoapFault $e) {
-        return "<b><span style=\"color: #FF0000;\">".$e->getMessage()."</span></b>";
+        $smarty->assign("mb_title", $arrLang["ERROR"].": ");
+        $smarty->assign("mb_message",$arrLang["The system can not connect to the Web Service resource. Please check your Internet connection."]);
+        return ;
     }
     $limit  = 20;
     $total  = $totalAvailables;
@@ -212,7 +216,9 @@ function reportAvailables($smarty, $module_name, $local_templates_dir, &$pDB, $a
     try {
         $arrResult =$client->getAddonsAvailables("2.0.0", $limit, $offset, "name", $addons_search);
     } catch (SoapFault $e) {
-        return "<b><span style=\"color: #FF0000;\">".$e->getMessage()."</span></b>";
+        $smarty->assign("mb_title", $arrLang["ERROR"].": ");
+        $smarty->assign("mb_message",$arrLang["The system can not connect to the Web Service resource. Please check your Internet connection."]);
+        return ;
     }
 
     if(is_array($arrResult) && $total>0){

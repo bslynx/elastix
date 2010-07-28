@@ -7,7 +7,7 @@
     <menuitem menuid="network_parameters"   desc="Network Parameters" parent="network"     module="yes" link="" order="31"></menuitem>
     <menuitem menuid="dhcp_server"          desc="DHCP Server"        parent="network"     module="yes" link="" order="32"></menuitem>
     <menuitem menuid="dhcp_clientlist"      desc="DHCP Client List"   parent="network"     module="yes" link="" order="33"></menuitem>
-    <menuitem menuid="dhcp_by_mac"          desc="DHCP By MAC"        parent="network"     module="yes" link="" order="34"></menuitem>
+    <menuitem menuid="dhcp_by_mac"          desc="Assign IP Address to Host"        parent="network"     module="yes" link="" order="34"></menuitem>
     <menuitem menuid="usermgr"              desc="User Management"    parent="system"      module="no"  link="" order="4"></menuitem>
     <menuitem menuid="userlist"             desc="Users"              parent="usermgr"     module="yes" link="" order="42"></menuitem>
     <menuitem menuid="shutdown"             desc="Shutdown"           parent="system"      module="yes" link="" order="6"></menuitem>
@@ -18,7 +18,7 @@
     <menuitem menuid="backup_restore"       desc="Backup/Restore"     parent="system"      module="yes" link="" order="9"></menuitem>
     <menuitem menuid="preferences"          desc="Preferences"        parent="system"      module="no"  link="" order="10"></menuitem>
     <menuitem menuid="currency"             desc="Currency"           parent="preferences" module="yes" link="" order="104"></menuitem>
-    <menuitem menuid="applet_admin"         desc="Applet Admin"       parent="preferences" module="yes" link="" order="105"></menuitem>
+    <menuitem menuid="applet_admin"         desc="Dashboard Applet Admin" parent="preferences" module="yes" link="" order="105"></menuitem>
 
     <!--Temporalmente esto se va hace aqui para los menus de extras e IM-->
     <menuitem menuid="extras"             desc="Extras"             parent=""           module="no" link=""                                     order="9"></menuitem>

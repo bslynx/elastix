@@ -119,10 +119,16 @@ class paloSantoReportCall {
 
     function ObtainReportCall($limit, $offset, $date_ini, $date_end, $type, $value, $order_by, $order_type="desc")
     {
+        $expression_extension  = "[A-Za-z0-9]+";
         $extension   = "";
         $description = "";
+        $expression_channel    = "substring_index(substring_index(channel,'-',1),'/',-1)"; //solo funciona con formato SIP/123-345gf
+        $expression_dstchannel = "substring_index(substring_index(dstchannel,'-',1),'/',-1)"; //solo funciona con formato SIP/123-345gf
 
-        if($type=='Ext') $extension = $value;
+        if($type=='Ext'){
+            $extension = $value;
+            if(trim($value) != "") $expression_extension = $value."[A-Za-z0-9]*";
+        }
         else if($type=='User') $description = $value;
 
         //PASO 1: Obtengo datos salientes de todas las extensiones que estan en la tabla devices, por ello uso
@@ -135,16 +141,16 @@ class paloSantoReportCall {
                 ifnull(t_cdr.duration_outgoing_call,0) duration_outgoing_call
             FROM 
                 (SELECT 
-                    c.src source, 
-                    count(c.src) num_outgoing_call, 
+                    $expression_channel source,
+                    count(c.src) num_outgoing_call,
                     sum(c.billsec) duration_outgoing_call
                 FROM 
-                    asteriskcdrdb.cdr c 
+                    asteriskcdrdb.cdr c
                 WHERE 
-                    c.calldate>='$date_ini' AND 
+                    c.calldate>='$date_ini' AND
                     c.calldate<='$date_end' AND
-                    c.src like '$extension%'
-                GROUP BY c.src) t_cdr 
+                    substring_index(channel,'-',1) regexp '^[A-Za-z0-9]+/$expression_extension$'
+                GROUP BY source) t_cdr
             RIGHT JOIN 
                 (SELECT 
                     d.id, 
@@ -167,19 +173,19 @@ class paloSantoReportCall {
                 ifnull(t_cdr.duration_incoming_call,0) duration_incoming_call 
             FROM 
                 (SELECT 
-                    c.dst destiny, 
-                    count(c.dst) num_incoming_call, 
-                    sum(c.billsec) duration_incoming_call 
+                    $expression_dstchannel destiny,
+                    count(c.dst) num_incoming_call,
+                    sum(c.billsec) duration_incoming_call
                 FROM 
-                    asteriskcdrdb.cdr c 
+                    asteriskcdrdb.cdr c
                 WHERE 
                     c.calldate>='$date_ini' AND 
                     c.calldate<='$date_end' AND
-                    c.dst like '$extension%'
-                GROUP BY c.dst ) t_cdr 
+                    substring_index(dstchannel,'-',1) regexp '^[A-Za-z0-9]+/$expression_extension$'
+                GROUP BY destiny ) t_cdr 
             RIGHT JOIN 
                 (SELECT 
-                    d.id, 
+                    d.id,
                     d.description
                  FROM
                     asterisk.devices d
@@ -196,7 +202,7 @@ class paloSantoReportCall {
                 t_outgoing_call.name user_name,
                 t_incoming_call.num_incoming_call,
                 t_outgoing_call.num_outgoing_call,
-                t_incoming_call.duration_incoming_call, 
+                t_incoming_call.duration_incoming_call,
                 t_outgoing_call.duration_outgoing_call
             FROM 
                 ($query_outgoing_call) t_outgoing_call
@@ -283,7 +289,7 @@ class paloSantoReportCall {
                  "FROM cdr ".
                  "WHERE calldate >= '$date_ini' AND ".
                        "calldate <= '$date_end' AND ".
-                       "src = $ext ".
+                       "substring_index(channel,'-',1) regexp '^[A-Za-z0-9]+/$ext$'".
                  "GROUP BY dst ".
                  "ORDER BY 1 desc ".
                  "LIMIT 10 ";
@@ -314,7 +320,7 @@ class paloSantoReportCall {
                          cdr 
                    WHERE calldate >= '$date_ini' AND 
                          calldate <= '$date_end' AND
-                         src = $ext";
+                         substring_index(channel,'-',1) regexp '^[A-Za-z0-9]+/$ext$'";
         $result = $this->_DB_cdr->fetchTable($query, false);
 
         if($result == FALSE){
@@ -331,7 +337,7 @@ class paloSantoReportCall {
                          cdr 
                    WHERE calldate >= '$date_ini' AND 
                          calldate <= '$date_end' AND
-                         dst = $ext";
+                         substring_index(dstchannel,'-',1) regexp '^[A-Za-z0-9]+/$ext$'";
         $result = $this->_DB_cdr->fetchTable($query, false);
 
         if($result == FALSE){
@@ -408,7 +414,7 @@ class paloSantoReportCall {
                  "FROM cdr ".
                  "WHERE calldate >= '$date_ini' AND ".
                        "calldate <= '$date_end' AND ".
-                       "dst = $ext ".
+                       "substring_index(dstchannel,'-',1) regexp '^[A-Za-z0-9]+/$ext$'".
                  "GROUP BY src ".
                  "ORDER BY 1 desc ".
                  "LIMIT 10 ";

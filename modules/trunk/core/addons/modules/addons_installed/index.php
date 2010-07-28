@@ -71,7 +71,7 @@ function _moduleContent(&$smarty, $module_name)
 
     switch($action){
         case "progressbar":
-            $content = getProgressBar($module_name, $pDB, $arrConf, $arrLang);
+            $content = getProgressBar($smarty, $module_name, $pDB, $arrConf, $arrLang);
             break;
         case "check_update":
             $content = checkUpdates($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
@@ -224,7 +224,7 @@ function createProgressBarsSecondary($output,$module_name,$arrLang){
     return $html;
 }
 
-function getProgressBar($module_name, $pDB, $arrConf, $arrLang){
+function getProgressBar($smarty, $module_name, $pDB, $arrConf, $arrLang){
     $pAddonsModules = new paloSantoAddonsModules($pDB);
     $arrStatus = $pAddonsModules->getStatus($arrConf);
 
@@ -257,11 +257,16 @@ function getProgressBar($module_name, $pDB, $arrConf, $arrLang){
                 
                 // Refrescar el estado de actualización
                 $addons_installed = $pAddonsModules->getCheckAddonsInstalled();
-                ini_set("soap.wsdl_cache_enabled", "0");
-                $client = new SoapClient($arrConf['url_webservice']);
-                $arrAddons = $client->getCheckAddonsUpdate($addons_installed);
-                $arrAddons = explode(",",$arrAddons);
-                $pAddonsModules->updateInDB($arrAddons);
+
+                try {
+                    $client = new SoapClient($arrConf['url_webservice']);
+                    $arrAddons = $client->getCheckAddonsUpdate($addons_installed);
+                    $arrAddons = explode(",",$arrAddons);
+                    $pAddonsModules->updateInDB($arrAddons);
+                } catch (SoapFault $e) {
+                    $smarty->assign("mb_title", $arrLang["ERROR"].": ");
+                    $smarty->assign("mb_message",$arrLang["The system can not connect to the Web Service resource. Please check your Internet connection."]);
+                }
             } else {
                 $arr['status'] = "not_install";
                 $arr['response'] = "not_install";

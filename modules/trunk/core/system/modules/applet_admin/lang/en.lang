@@ -28,7 +28,7 @@
   $Id: en.lang,v 1.1 2009-12-28 06:12:49 Bruno bomv.27 Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Applet Admin" => "Applet Admin",
+"Dashboard Applet Admin" => "Dashboard Applet Admin",
 "Applet" => "Applet",
 "Activated" => "Activated",
 );

@@ -67,5 +67,6 @@ $arrLangModule=array(
 "Options" => "Options",
 "Delete" => "Delete",
 "Update" => "Update",
+"The system can not connect to the Web Service resource. Please check your Internet connection." => "The system can not connect to the Web Service resource. Please check your Internet connection.",
 );
 ?>
