@@ -115,11 +115,11 @@
     <table border='0' cellspacing="0" cellpadding="2" width='100%'>
         <tr class="moduleTitle">
             <td class="moduleTitle" align="center" colspan='2'>
-                {$ABOUT_ELASTIX}
+                {$ABOUT_ELASTIX2}
             </td>
         </tr>
         <tr class="tabForm" >
-            <td class="tabForm"  height='138' colspan='2' align='center'>
+            <td class="tabForm"  height='120' colspan='2' align='center'>
                 {$ABOUT_ELASTIX_CONTENT}<br />
                 <a href='http://www.elastix.org' target='_blank'>www.elastix.org</a>
             </td>
@@ -155,8 +155,8 @@
 <style type='text/css'>
 #acerca_de{
     position:absolute; 
-    width:440px;
-    height:200px;
+    width:420px;
+    height:174px;
     border:1px solid #800000;
 }
 </style>
