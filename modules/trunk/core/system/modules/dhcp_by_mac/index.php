@@ -224,6 +224,9 @@ function viewFormDHCP_Configuration($smarty, $module_name, $local_templates_dir,
     $smarty->assign("CANCEL", $arrLang["Cancel"]);
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
     $smarty->assign("IMG", "images/list.png");
+    $smarty->assign("HOST_NAME", $arrLang["ex_hostname"]);
+    $smarty->assign("IP_ADDRESS", $arrLang["ex_ipaddress"]);
+    $smarty->assign("MAC_ADDRESS", $arrLang["ex_mac_address"]);
 
     $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",$arrLang["Assign IP Address to Host"], $_DATA);
     $content = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
@@ -319,14 +322,14 @@ function deleteDHCP_Configuration($smarty, $module_name, $local_templates_dir, &
 function createFieldForm($arrLang)
 {
     $arrFields = array(
-            "hostname"   => array(      "LABEL"                  => $arrLang["Host Name"]."(ex. myhostname.com)",
+            "hostname"   => array(      "LABEL"                  => $arrLang["Host Name"],
                                             "REQUIRED"               => "yes",
                                             "INPUT_TYPE"             => "TEXT",
                                             "INPUT_EXTRA_PARAM"      => array("style" => "width:200px","maxlength" =>"200"),
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-            "ipaddress"   => array(      "LABEL"                  => $arrLang["IP Address"]."(ex. 127.0.0.1)",
+            "ipaddress"   => array(      "LABEL"                  => $arrLang["IP Address"],
                                             "REQUIRED"               => "yes",
                                             "INPUT_TYPE"             => "TEXT",
                                             "INPUT_EXTRA_PARAM"      => array("style" => "width:200px","maxlength" =>"200"),
@@ -334,7 +337,7 @@ function createFieldForm($arrLang)
                                             //"VALIDATION_EXTRA_PARAM" => "([0-9]){1,3}.([0-9]+){1,3}.([0-9]+){1,3}.([0-9]+){1,3}$"
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-            "macaddress"   => array(      "LABEL"                  => $arrLang["MAC Address"]."(ex. AA:BB:CC:DD:EE:FF)",
+            "macaddress"   => array(      "LABEL"                  => $arrLang["MAC Address"],
                                             "REQUIRED"               => "yes",
                                             "INPUT_TYPE"             => "TEXT",
                                             "INPUT_EXTRA_PARAM"      => array("style" => "width:200px","maxlength" =>"200"),

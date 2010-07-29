@@ -25,17 +25,17 @@
 <table class="tabForm" style="font-size: 16px;" width="100%" >
     <tr class="letra12">
         <td align="left"><b>{$hostname.LABEL}: <span class="required">*</span></b></td>
-        <td align="left">{$hostname.INPUT}</td>
+        <td align="left">{$hostname.INPUT}&nbsp;&nbsp;{$HOST_NAME}</td>
     </tr>
 
     <tr class="letra12">
         <td align="left"><b>{$ipaddress.LABEL}: <span class="required">*</span></b></td>
-        <td align="left">{$ipaddress.INPUT}</td>
+        <td align="left">{$ipaddress.INPUT}&nbsp;&nbsp;{$IP_ADDRESS}</td>
     </tr>
 
     <tr class="letra12">
         <td align="left"><b>{$macaddress.LABEL}: <span class="required">*</span></b></td>
-        <td align="left">{$macaddress.INPUT}</td>
+        <td align="left">{$macaddress.INPUT}&nbsp;&nbsp;{$MAC_ADDRESS}</td>
     </tr>
 
 </table>

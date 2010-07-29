@@ -113,7 +113,7 @@ function reportDhcpClientlist($smarty, $module_name, $local_templates_dir, &$pDB
 //          $arrTmp[1] = "<a href='?menu=$module_name&action=show&id=".$id."'>".$arrResult[$id]['iphost']."</a>";
             $arrTmp[0] = "".$arrResult[$i]['iphost'];
             $arrTmp[1] = "".$arrResult[$i]['macaddress'];
-            $arrTmp[2] = "<a href='?menu=$module_name&action=see_dhcpclient&id=".$i."'>{$arrLang["See All Dhcp Info"]}</a>";
+            $arrTmp[2] = "<a href='?menu=$module_name&action=see_dhcpclient&id=".$i."'>{$arrLang["View Details"]}</a>";
     
             $arrData[] = $arrTmp;
         }
@@ -131,9 +131,9 @@ function reportDhcpClientlist($smarty, $module_name, $local_templates_dir, &$pDB
                         "columns"  => array(
 //             0 => array("name"      => $buttonDelete,
 //                                    "property1" => ""),
-            0 => array("name"      => $arrLang["Ip Host"],
+            0 => array("name"      => $arrLang["IP Address"],
                                    "property1" => ""),
-            1 => array("name"      => $arrLang["Mac Address"],
+            1 => array("name"      => $arrLang["MAC Address"],
                                    "property1" => ""),
             2 => array("name"      => $arrLang["Action"],
                                    "property1" => ""),
@@ -206,7 +206,7 @@ function viewFormDhcpClientlist($smarty, $module_name, $local_templates_dir, &$p
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
     $smarty->assign("IMG", "images/list.png");
 
-    $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",$arrLang["Dhcp list"], $_DATA);
+    $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",$arrLang["View Details"], $_DATA);
     $content = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
 
     return $content;
@@ -250,7 +250,7 @@ function saveNewDhcpClient($smarty, $module_name, $local_templates_dir, &$pDB, $
 function createFieldForm($arrLang)
 {
     $arrFields = array(
-            "iphost"   => array(      "LABEL"                  => $arrLang["Lease Ip"],
+            "iphost"   => array(      "LABEL"                  => $arrLang["IP Address"],
                                             "REQUIRED"               => "no",
                                             "INPUT_TYPE"             => "TEXT",
                                             "INPUT_EXTRA_PARAM"      => array("style" => "width:200px","maxlength" =>"200"),
@@ -271,7 +271,7 @@ function createFieldForm($arrLang)
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-            "macaddress"   => array(      "LABEL"                  => $arrLang["Mac Address"],
+            "macaddress"   => array(      "LABEL"                  => $arrLang["MAC Address"],
                                             "REQUIRED"               => "no",
                                             "INPUT_TYPE"             => "TEXT",
                                             "INPUT_EXTRA_PARAM"      => array("style" => "width:200px","maxlength" =>"200"),
