@@ -157,11 +157,11 @@ function new_module($smarty, $module_name, $local_templates_dir, $arrLangModule,
 
 function save_module($new_module_name, $new_id_module, $selected_gp, $module_type, $your_name, $level, $exists_p1, $exists_p2, $parent_1_name, $parent_1_id, $parent_2_name, $parent_2_id, $selected_parent_1, $selected_parent_2, $arr_form, $email_module,$val_url)
 {
-    $ruta = "/var/www/html/modules";
-    $this_module_name = "build_module";
-
     global $arrLangModule;
     global $arrConf;
+    $ruta = "$arrConf[basePath]/modules";
+    $this_module_name = "build_module";
+
     $respuesta = new xajaxResponse();
 
     $errMsg = $arrLangModule["The following fields contain errors"].": ";
@@ -280,7 +280,7 @@ function save_module($new_module_name, $new_id_module, $selected_gp, $module_typ
             }
         }
     }
-    if (file_exists("/var/www/html/modules/$new_id_module")) {
+    if (file_exists("$ruta/$new_id_module")) {
         $errMsg .= "$new_id_module (". $arrLangModule["Folder already exists"]."), ";
         $error = true;
     }
