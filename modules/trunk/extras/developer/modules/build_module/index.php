@@ -60,7 +60,7 @@ function _moduleContent(&$smarty, $module_name)
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
 
     require_once('libs/paloSantoDB.class.php');
-    $pDB_acl = new paloDB("sqlite3:////var/www/db/acl.db");
+    $pDB_acl = new paloDB($arrConf['elastix_dsn']['acl']);
     if(!empty($pDB_acl->errMsg)) {
         echo "ERROR DE DB: $pDB_acl->errMsg <br>";
     }
@@ -161,23 +161,24 @@ function save_module($new_module_name, $new_id_module, $selected_gp, $module_typ
     $this_module_name = "build_module";
 
     global $arrLangModule;
+    global $arrConf;
     $respuesta = new xajaxResponse();
 
     $errMsg = $arrLangModule["The following fields contain errors"].": ";
     $errTitle = "";
     $error = false;
 
-    $db_menu = new paloDB("sqlite3:////var/www/db/menu.db");
+    $db_menu = new paloDB($arrConf['elastix_dsn']['menu']);
     if(!empty($db_menu->errMsg)) {
         echo "ERROR DE DB: $db_menu->errMsg <br>";
     }
 
-    $db_acl = new paloDB("sqlite3:////var/www/db/acl.db");
+    $db_acl = new paloDB($arrConf['elastix_dsn']['acl']);
     if(!empty($db_acl->errMsg)) {
         echo "ERROR DE DB: $db_acl->errMsg <br>";
     }
 
-    $db_settings = new paloDB("sqlite3:////var/www/db/settings.db");
+    $db_settings = new paloDB($arrConf['elastix_dsn']['settings']);
     if(!empty($db_settings->errMsg)) {
         echo "ERROR DE DB: $db_settings->errMsg <br>";
     }
@@ -601,6 +602,7 @@ function mostrar_menu($level, $parent_1_existing, $parent_2_existing, $id_parent
     require_once('libs/paloSantoMenu.class.php');
 
     global $arrLangModule;
+    global $arrConf;
 
     $respuesta = new xajaxResponse();
 
@@ -610,7 +612,7 @@ function mostrar_menu($level, $parent_1_existing, $parent_2_existing, $id_parent
         //Padre nivel 1 SI existe
         if($parent_1_existing==0)
         {
-            $pDB_menu = new paloDB("sqlite3:////var/www/db/menu.db");
+            $pDB_menu = new paloDB($arrConf['elastix_dsn']['menu']);
             if(!empty($pDB_menu->errMsg))
                 echo "ERROR DE DB: $pDB_menu->errMsg <br>";
 
@@ -677,7 +679,7 @@ function mostrar_menu($level, $parent_1_existing, $parent_2_existing, $id_parent
             }
             //Aun no se a creado el select
             else{
-                $pDB_menu = new paloDB("sqlite3:////var/www/db/menu.db");
+                $pDB_menu = new paloDB($arrConf['elastix_dsn']['menu']);
                 if(!empty($pDB_menu->errMsg))
                     echo "ERROR DE DB: $pDB_menu->errMsg <br>";
 
