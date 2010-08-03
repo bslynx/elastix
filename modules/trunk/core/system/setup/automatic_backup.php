@@ -467,7 +467,7 @@ include_once "$base_dir/lang/en.lang";
     
             case "fop_config":
                 //FLASH
-                $arrInfoRespaldo = array('folder_path'            =>"/var/www/html/",
+                $arrInfoRespaldo = array('folder_path'            =>"/var/www/html",
                                         'folder_name'            =>"panel/*.cfg panel/*.txt",
                                         'nombre_archivo_respaldo'=>"var.www.html.panel.tgz"
                                     );
@@ -528,13 +528,26 @@ include_once "$base_dir/lang/en.lang";
     function respaldar_carpeta($arrInfoRespaldo,$ruta_respaldo,&$error)
     {
         $bExito=true;
-        $comando="tar -C ".$arrInfoRespaldo['folder_path'] .
-                " -cvzf $ruta_respaldo/{$arrInfoRespaldo['nombre_archivo_respaldo']} ".
-                $arrInfoRespaldo['folder_name'];
+        $comando = "cd ".$arrInfoRespaldo['folder_path'] ."; ".
+                   "tar -cvzf $ruta_respaldo/{$arrInfoRespaldo['nombre_archivo_respaldo']}  {$arrInfoRespaldo['folder_name']}";
         exec($comando,$output,$retval);
         if ($retval<>0) $bExito=false;
     
         return $bExito;
+    }
+
+    function databaseExist($base, $pass, $host, $user)
+    {
+        $pathDBs = "/var/lib/mysql/".$base;
+        if(is_dir($pathDBs)){
+            //Ejecutando el siguiente comando en la base schema de mysql.
+            $pDB = new paloDB("mysql://$user:$pass@$host/information_schema");
+            $pFTPBackup = new paloSantoFTPBackup($pDB);
+            $result = $pFTPBackup->existSchemaDB($base, $pDB);
+            return $result;
+        }else{
+            return false;
+        }
     }
     
     function respaldar_base_mysql($dir_resp_db,$base)
@@ -548,7 +561,11 @@ include_once "$base_dir/lang/en.lang";
         $dsn     = "mysql://$user:$pass@$host/$base";
         $db=new paloDB($dsn);
         //mysqldump solo para la estructura
-        system("mysqldump -h $host -u $user -p$pass  $base -t -c > $dir_resp_db/{$base}2.sql",$retorno);
+        if(databaseExist($base, $pass, $host, $user))
+            //mysqldump solo para la estructura
+            system("mysqldump -h $host -u $user -p$pass  $base -t -c > $dir_resp_db/{$base}2.sql",$retorno);
+        else
+            $retorno = 1;
     
         if ($retorno==0) $bContinuar = TRUE;
     /*

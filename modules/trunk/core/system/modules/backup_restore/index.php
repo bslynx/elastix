@@ -1023,7 +1023,11 @@ function respaldar_base_mysql($dir_resp_db,$base)
     $dsn     = "mysql://$user:$pass@$host/$base";
     $db=new paloDB($dsn);
     //mysqldump solo para la estructura
-    system("mysqldump -h $host -u $user -p$pass  $base -t -c > $dir_resp_db/{$base}2.sql",$retorno);
+    if(databaseExist($base, $pass, $host, $user))
+        //mysqldump solo para la estructura
+        system("mysqldump -h $host -u $user -p$pass  $base -t -c > $dir_resp_db/{$base}2.sql",$retorno);
+    else
+        $retorno = 1;
 
     if ($retorno==0) $bContinuar = TRUE;
 /*
@@ -1993,6 +1997,20 @@ function crear_mailbox_usuario($email,$username,$quota,&$error_msg){
     }
 
     return TRUE;
+}
+
+function databaseExist($base, $pass, $host, $user)
+{
+    $pathDBs = "/var/lib/mysql/".$base;
+    if(is_dir($pathDBs)){
+        //Ejecutando el siguiente comando en la base schema de mysql.
+        $pDB = new paloDB("mysql://$user:$pass@$host/information_schema");
+        $pFTPBackup = new paloSantoFTPBackup($pDB);
+        $result = $pFTPBackup->existSchemaDB($base, $pDB);
+        return $result;
+    }else{
+        return false;
+    }
 }
 
 /************************  FUNCIONES PARA FTP BACKUP ***********************************/
