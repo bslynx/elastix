@@ -1,3 +1,8 @@
+* Dialer: phpagi-asmanager-elastix.php: factor out handling of queued events 
+  into a separate function, and add events to the queue, not only on reentrancy,
+  but also when the queue is non-empty. This ensures that any events already in the
+  queue when entering wait_response() will be dispatched before any new events
+  that were picked up on the event loop.  
 * Calls Detail: fix broken chronological ordering of call records. Spotted while
   fixing Elastix bug #373.
 * Calls Detail: when filtering by phone number, the SELECT statement for incoming

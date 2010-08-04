@@ -207,7 +207,7 @@
             break;
           case 'event':
             $this->reentrant_count++;
-            if ($this->avoid_reentrancy && $this->reentrant_count > 1)
+            if ($this->avoid_reentrancy && ($this->reentrant_count > 1 || count($this->queued_events) > 0))
                 array_push($this->queued_events, $parameters);
             else
                 $handler_ret = $this->process_event($parameters);
@@ -222,17 +222,23 @@
         }
       } while(!is_null($type) && $type != 'response' && !$timeout);
       
+      // Dispatch pending queued events
+      $this->_dispatch_queued_events();
+      
+      return $parameters;
+    }
+    
+    private function _dispatch_queued_events()
+    {
       // dispatch queued events
       if ($this->reentrant_count == 0) {
-      	while (count($this->queued_events) > 0) {
-      	  $event_parameters = array_shift($this->queued_events);
+        while (count($this->queued_events) > 0) {
+          $event_parameters = array_shift($this->queued_events);
           $this->reentrant_count++;
           $this->process_event($event_parameters);
           $this->reentrant_count--;
-      	}
+        }
       }
-      
-      return $parameters;
     }
 
    /**
