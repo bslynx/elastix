@@ -650,6 +650,7 @@ class DialerProcess extends AbstractProcess
             if ($this->DEBUG) {
             	$this->oMainLog->output("DEBUG: estado actual de campañas => ".print_r($this->_infoLlamadas, TRUE));
             }
+            $this->_listarCurrentCalls();
         }
 
         return TRUE;
@@ -952,6 +953,7 @@ PETICION_LLAMADAS_AGENTE;
                             $this->oMainLog->output("DEBUG: (campania $infoCampania->id cola $infoCampania->queue) ".
                                 "Agent/$idAgente debe de ser reservado...");
                         }
+                        // TODO: POSIBLE PUNTO DE REENTRANCIA
                         $resultado = $this->_astConn->QueuePause($infoCampania->queue, "Agent/$idAgente", 'true');
                         if ($this->DEBUG) {
                             $this->oMainLog->output("DEBUG: (campania $infoCampania->id cola $infoCampania->queue) " .
@@ -992,6 +994,7 @@ PETICION_LLAMADAS_AGENTE;
                         $listaLlamadas[$sKey]->queue = $infoCampania->queue;
                         if ($this->DEBUG) {
                             $this->oMainLog->output("DEBUG: generando llamada agendada\n".
+                                "\tClave....... $sKey\n" .
                                 "\tAgente...... $tupla->agent\n" .
                                 "\tDestino..... $tupla->phone\n" .
                                 "\tCola (N/A).. $infoCampania->queue\n" .
@@ -1001,6 +1004,8 @@ PETICION_LLAMADAS_AGENTE;
                                 "\tCaller ID... ".(isset($datosTrunk['CID']) ? $datosTrunk['CID'] : "(no definido)")."\n".
                                 "\tCadena de marcado $sCanalTrunk");
                         }
+                        // TODO: POSIBLE PUNTO DE REENTRANCIA
+                        $this->_astConn->reentrant_count++; // Acumular eventos en lugar de procesarlos
                         $resultado = $this->_astConn->Originate(
                             $sCanalTrunk, 
                             NULL, NULL, NULL,
@@ -1009,9 +1014,13 @@ PETICION_LLAMADAS_AGENTE;
                             "ID_CAMPAIGN={$infoCampania->id}|ID_CALL={$tupla->id}|NUMBER={$tupla->phone}|QUEUE={$infoCampania->queue}|CONTEXT={$infoCampania->context}",
                             NULL, 
                             TRUE, $sKey);
+                        $this->_astConn->reentrant_count--;
                         if (!is_array($resultado) || count($resultado) == 0) {
                             $this->oMainLog->output("ERR: problema al enviar Originate a Asterisk");
                             $this->iniciarConexionAsterisk();
+                        }
+                        if ($this->DEBUG) {
+                            $this->oMainLog->output("DEBUG: llamada agendada generada: $sKey $sCanalTrunk\n");
                         }
                         if ($resultado['Response'] == 'Success') {
                             // Guardar el momento en que se originó la llamada
@@ -1053,7 +1062,10 @@ PETICION_LLAMADAS_AGENTE;
                             
                             // TODO: Qué hacer con retries si falla la llamada?
                             $this->_infoLlamadas['agentes_reservados'][$idAgente] = 0;
+                            // TODO: POSIBLE PUNTO DE REENTRANCIA
+                            $this->_astConn->reentrant_count++; // Acumular eventos en lugar de procesar
                             $resultado = $this->_astConn->QueuePause($infoCampania->queue, $tupla->agent, 'false');
+                            $this->_astConn->reentrant_count--;
                             if ($this->DEBUG) {
                                 $this->oMainLog->output("DEBUG: resultado de QueuePause($infoCampania->queue, $tupla->agent, 'false') : ".
                                     print_r($resultado, TRUE));
@@ -1288,6 +1300,7 @@ PETICION_LLAMADAS;
                 $listaLlamadas[$sKey]->queue = $infoCampania->queue;
                 if ($this->DEBUG) {
                     $this->oMainLog->output("DEBUG: generando llamada\n".
+                        "\tClave....... $sKey\n" .
 						"\tDestino..... $tupla->phone\n" .
 						"\tCola........ $infoCampania->queue\n" .
 						"\tContexto.... $infoCampania->context\n" .
@@ -1296,6 +1309,8 @@ PETICION_LLAMADAS;
 						"\tCaller ID... ".(isset($datosTrunk['CID']) ? $datosTrunk['CID'] : "(no definido)")."\n".
 						"\tCadena de marcado $sCanalTrunk");
                 }
+                // TODO: POSIBLE PUNTO DE REENTRANCIA
+                $this->_astConn->reentrant_count++; // Acumular eventos en lugar de procesar
                 $resultado = $this->_astConn->Originate(
                     $sCanalTrunk, $infoCampania->queue, $infoCampania->context, 1,
                     NULL, NULL, NULL, 
@@ -1303,9 +1318,13 @@ PETICION_LLAMADAS;
                     "ID_CAMPAIGN={$infoCampania->id}|ID_CALL={$tupla->id}|NUMBER={$tupla->phone}|QUEUE={$infoCampania->queue}|CONTEXT={$infoCampania->context}",
                     NULL, 
                     TRUE, $sKey);
+                $this->_astConn->reentrant_count--;
                 if (!is_array($resultado) || count($resultado) == 0) {
                 	$this->oMainLog->output("ERR: problema al enviar Originate a Asterisk");
                     $this->iniciarConexionAsterisk();
+                }
+                if ($this->DEBUG) {
+                	$this->oMainLog->output("DEBUG: llamada generada: $sKey $sCanalTrunk\n");
                 }
 
                 if ($resultado['Response'] == 'Success') {
@@ -1633,8 +1652,10 @@ PETICION_LLAMADAS;
     {
         if (!is_array($this->_infoLlamadas['historial_contestada'])) 
             $this->_infoLlamadas['historial_contestada'] = array();
-    	if (!is_array($this->_infoLlamadas['historial_contestada'][$idCampaign]))
+    	if (!isset($this->_infoLlamadas['historial_contestada'][$idCampaign]) ||
+            !is_array($this->_infoLlamadas['historial_contestada'][$idCampaign])) {
             $this->_infoLlamadas['historial_contestada'][$idCampaign] = array();
+        }
         array_push($this->_infoLlamadas['historial_contestada'][$idCampaign], $iMuestra);
         while (count($this->_infoLlamadas['historial_contestada'][$idCampaign]) > NUM_LLAMADAS_HISTORIAL_CONTESTADA)
             array_shift($this->_infoLlamadas['historial_contestada'][$idCampaign]);
@@ -1851,6 +1872,14 @@ PETICION_LLAMADAS;
         }
         $sKey = $params['ActionID'];
         if (isset($this->_infoLlamadas['llamadas'][$sKey])) {
+            if (!is_null($this->_infoLlamadas['llamadas'][$sKey]->OriginateEnd)) {
+                if ($this->DEBUG) {
+                    $this->oMainLog->output("DEBUG: Llamada ya fue procesada con OriginateResponse sintético.");
+                    $this->oMainLog->output("DEBUG: EXIT OnOriginateResponse");
+                }
+            	return FALSE;
+            }
+
             $this->_infoLlamadas['llamadas'][$sKey]->OriginateEnd = time();
             $idCampaign = $this->_infoLlamadas['llamadas'][$sKey]->id_campaign;
             if (isset($this->_infoLlamadas['campanias'][$idCampaign])) {
@@ -1860,6 +1889,31 @@ PETICION_LLAMADAS;
                 // siguiente iteración la campaña haya terminado. Todavía
                 // debe de seguirse la pista de la campaña.
                 $infoCampania = $this->_leerCampania($idCampaign);
+            }
+
+            /* Se ha observado que algunos Asterisk mienten sobre el estado de
+               la llamada, y reportan Response=Success mientras que ya han 
+               colgado la llamada. Si ha ocurrido este caso, la pata principal
+               tiene el Hangup pendiente incluso cuando el estado es Success
+             */
+            if ($params['Response'] == 'Success' && 
+                isset($this->_infoLlamadas['llamadas'][$sKey]->PendingEvents['Hangup']) &&
+                !isset($this->_infoLlamadas['llamadas'][$sKey]->PendingEvents['Link'])) {
+                $this->oMainLog->output("ERR: Asterisk reporta éxito de llamada ya colgada, se cambia a Failure");
+                $params['Response'] = 'Failure';
+            }
+            // También hay caso de pata auxiliar con Hangup
+            if ($params['Response'] == 'Success' &&
+                isset($this->_infoLlamadas['llamadas'][$sKey]->AuxChannels)) {
+                $bHayHangup = FALSE;
+                foreach (array_keys($this->_infoLlamadas['llamadas'][$sKey]->AuxChannels) as $auxKey) {
+                    if (isset($this->_infoLlamadas['llamadas'][$sKey]->AuxChannels[$auxKey]['Hangup']))
+                        $bHayHangup = TRUE;                        
+                }
+                if ($bHayHangup) {
+                    $this->oMainLog->output("ERR: Asterisk reporta éxito de llamada ya colgada (canal auxiliar), se cambia a Failure");
+                    $params['Response'] = 'Failure';
+                }
             }
             
             $sStatus = $params['Response'];
@@ -2151,10 +2205,42 @@ UPDATE_CALLS_ORIGINATE_RESPONSE;
             /* Este event Link se recibió antes de tiempo. Se lo debe almacenar */
             $this->_infoLlamadas['llamadas'][$sKey]->PendingEvents['Link'] = $params;
 
-            $sKey = NULL;
+            // Generar un OriginateResponse lo antes posible.
+            if (ereg('^Agent/([[:digit:]]+)$', $params['Channel1']) || 
+                ereg('^Agent/([[:digit:]]+)$', $params['Channel2']) ) {
+
+                if (ereg('^Agent/([[:digit:]]+)$', $params['Channel1'], $regs)) {
+                    $sAgentNum = $regs[1];
+                    $sChannel = $params['Channel1'];
+                    $sRemChannel = $params['Channel2'];
+                }
+                if (ereg('^Agent/([[:digit:]]+)$', $params['Channel2'], $regs)) {
+                    $sAgentNum = $regs[1];
+                    $sChannel = $params['Channel2'];
+                    $sRemChannel = $params['Channel1'];
+                }
+
+                if ($this->DEBUG) {
+                    $this->oMainLog->output("DEBUG: Sintetizando OriginateResponse...");                  
+                }
+                $paramsEvento = array(
+                    'Event' =>  'OriginateResponse',
+                    'Privilege' =>  $params['Privilege'],
+                    'ActionID'  =>  $sKey,
+                    'Response'  =>  'Success',
+                    'Channel'   =>  $sRemChannel,
+                    'Uniqueid'  =>  $this->_infoLlamadas['llamadas'][$sKey]->Uniqueid, 
+                );
+                $this->OnOriginateResponse('originateresponse', $paramsEvento, $sServer, $iPort);
+                if ($this->DEBUG) {
+                    $this->oMainLog->output("DEBUG: Fin de OriginateResponse sintetizado.");                  
+                }
+            }
+
             if ($this->DEBUG) {
                 $this->oMainLog->output("DEBUG: EXIT OnLink");                  
             }
+            $sKey = NULL;
             return FALSE;
         }
 
@@ -2319,6 +2405,9 @@ UPDATE_CALLS_ORIGINATE_RESPONSE;
                 if (DB::isError($result)) {
                 	$this->oMainLog->output("ERR: $sEvent: no se puede actualizar fecha inicio llamada actual - ".$result->getMessage());
                 }
+                
+                $this->_listarCurrentCalls();
+                
             } else {
             	$this->oMainLog->output("ERR: no se puede identificar agente asignado a llamada $sKey!");
             }
@@ -2338,6 +2427,34 @@ UPDATE_CALLS_ORIGINATE_RESPONSE;
             $this->oMainLog->output("DEBUG: EXIT OnLink");
         }
         return FALSE;
+    }
+
+    private function _listarCurrentCalls()
+    {
+    	if ($this->DEBUG) {
+    		$sListarCurrentCalls = 
+                'SELECT fecha_inicio, Uniqueid, queue, agentnum, id_call, event, Channel, ChannelClient '.
+                'FROM current_calls ORDER BY fecha_inicio';
+            $recordset = $this->_dbConn->query($sListarCurrentCalls);
+            if (DB::isError($recordset)) {
+            	$this->oMainLog->output("DEBUG: no se puede listar llamadas actuales en current_calls - ".$recordset->getMessage());
+            } else {
+                $this->oMainLog->output("DEBUG: current_calls:");
+                $this->oMainLog->output("DEBUG: fecha_inicio\tUniqueid\tqueue\tagentnum\tid_call\tevent\tChannel\tChannelClient:");
+            	while ($tupla = $recordset->fetchRow(DB_FETCHMODE_ASSOC)) {
+            		$this->oMainLog->output("DEBUG: ".
+                        $tupla['fecha_inicio']."\t".
+                        $tupla['Uniqueid']."\t".
+                        $tupla['queue']."\t".
+                        $tupla['agentnum']."\t".
+                        $tupla['id_call']."\t".
+                        $tupla['event']."\t".
+                        $tupla['Channel']."\t".
+                        $tupla['ChannelClient']
+                        );
+            	}
+            }
+    	}
     }
 
     // Callback invocado al llegar el evento Unlink

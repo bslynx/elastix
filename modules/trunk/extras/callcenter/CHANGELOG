@@ -1,3 +1,14 @@
+* Dialer: if the AMI reports an OriginateResponse with a Success status, but
+  the channel (or an auxiliary channel) has seen a Hangup, treat the call as
+  a failure instead. 
+* Dialer: when receiving a Link event before an OriginateResponse, do not wait
+  until the OriginateResponse if the Uniqueid is known. Instead, fake an 
+  OriginateResponse event to handle the call as soon as possible. 
+* Dialer: prevent event re-entrancy when originating outgoing calls and pausing
+  queue agents.
+* Dialer: document more possible re-entrancy points where nested event handling
+  could happen.
+* Dialer: add debugging function to dump list of current_calls to log
 * Dialer: phpagi-asmanager-elastix.php: factor out handling of queued events 
   into a separate function, and add events to the queue, not only on reentrancy,
   but also when the queue is non-empty. This ensures that any events already in the
