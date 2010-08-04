@@ -1,7 +1,7 @@
 Summary: Elastix First Boot Setup
 Name:    elastix-firstboot
 Version: 2.0.0
-Release: 9
+Release: 10
 License: GPL
 Group:   Applications/System
 Source0: %{name}-%{version}.tar.bz2
@@ -52,10 +52,22 @@ if [ ! -d /var/lib/mysql/vtigercrm510 ] ; then
 	cp /usr/share/elastix-firstboot/compat-dbscripts/08-schema-vtiger.sql /var/spool/elastix-mysqldbscripts/
 fi
 
+# If installing, the system might have mysql running (upgrading from a RC). 
+# The default password is written to the configuration file. 
+if [ $1 -eq 1 ] ; then
+	if [ -e /var/lib/mysql/mysql ] ; then
+		if [ ! -e /etc/elastix.conf ] ; then
+			echo "Installing in active system - legacy password written to /etc/elastix.conf"
+			echo "mysqlrootpwd=eLaStIx.2oo7" >> /etc/elastix.conf
+		fi
+	fi
+fi
+
 # If updating, and there is no /etc/elastix.conf , a default file is generated with
 # legacy password so new modules continue to work.
 if [ $1 -eq 2 ] ; then
 	if [ ! -e /etc/elastix.conf ] ; then
+		echo "Updating in active system - legacy password written to /etc/elastix.conf"
 		echo "mysqlrootpwd=eLaStIx.2oo7" >> /etc/elastix.conf
 	fi
 fi
@@ -74,6 +86,10 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/elastix-firstboot/compat-dbscripts/08-schema-vtiger.sql
 
 %changelog
+* Wed Aug 04 2010 Alex Villacis Lasso <a_villacis@palosanto.com> 2.0.0-10
+- FIXED: handle install in active system as dependency install by writing
+  default legacy password to /etc/elastix.conf.
+
 * Thu Jul 29 2010 Alex Villacis Lasso <a_villacis@palosanto.com> 2.0.0-9
 - CHANGED: Remove references to non-existent RoundCube scripts in postinstall.
 
