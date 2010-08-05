@@ -1950,7 +1950,8 @@ PETICION_LLAMADAS;
             }
 
             if (isset($this->_infoLlamadas['llamadas'][$sKey]->Uniqueid) && 
-                $this->_infoLlamadas['llamadas'][$sKey]->Uniqueid != $params['Uniqueid']) {
+                $this->_infoLlamadas['llamadas'][$sKey]->Uniqueid != $params['Uniqueid'] &&
+                $params['Uniqueid'] != '<null>') {
             
                 $this->oMainLog->output("ERR: se procesó pata equivocada en evento Newchannel ".
                     "anterior, pata procesada es {$this->_infoLlamadas['llamadas'][$sKey]->Uniqueid}, ".
