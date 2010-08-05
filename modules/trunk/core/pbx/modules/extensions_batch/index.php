@@ -381,9 +381,12 @@ function backup_extensions($pDB)
     $pLoadExtension = new paloSantoLoadExtension($pDB);
     $arrResult = $pLoadExtension->queryExtensions();
 
-    if(!$arrResult)
-        return $arrLang["There aren't extensions"];
-    else{
+    if(!$arrResult){
+	$csv .= "\"Display Name\",\"User Extension\",\"Direct DID\",\"Outbound CID\",\"Call Waiting\",".
+                "\"Secret\",\"Voicemail Status\",\"Voicemail Password\",\"VM Email Address\",".
+                "\"VM Pager Email Address\",\"VM Options\",\"VM Email Attachment\",".
+                "\"VM Play CID\",\"VM Play Envelope\",\"VM Delete Vmail\",\"Context\"\n";
+    }else{
         //cabecera
         $csv .= "\"Display Name\",\"User Extension\",\"Direct DID\",\"Outbound CID\",\"Call Waiting\",".
                 "\"Secret\",\"Voicemail Status\",\"Voicemail Password\",\"VM Email Address\",".
