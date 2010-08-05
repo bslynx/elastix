@@ -990,7 +990,33 @@ PETICION_LLAMADAS_AGENTE;
                     }
 
                     foreach ($listaLlamadas as $sKey => $tupla) {
+                
+                        /* Para poder monitorear el evento Onnewchannel, se depende de 
+                         * la cadena de marcado para identificar cuál de todos los eventos
+                         * es el correcto. Si una llamada generada produce la misma cadena
+                         * de marcado que una que ya se monitorea, o que otra en la misma
+                         * lista, ocurrirán confusiones entre los eventos. Se filtran las
+                         * llamadas que tengan cadenas de marcado repetidas. */
                         $sCanalTrunk = str_replace('$OUTNUM$', $tupla->phone, $datosTrunk['TRUNK']);
+                        $bLlamadaRepetida = FALSE;
+                        foreach ($this->_infoLlamadas['llamadas'] as $infoLlamadaMonitoreada) {
+                            if (isset($infoLlamadaMonitoreada->DialString) &&
+                                !is_null($infoLlamadaMonitoreada->DialString) &&
+                                $infoLlamadaMonitoreada->DialString == $sCanalTrunk) {
+                                $this->oMainLog->output("INFO: se ignora llamada $sKey con DialString $sCanalTrunk - mismo DialString usado por llamada monitoreada.");
+                                $bLlamadaRepetida = TRUE;
+                            }
+                        }
+                        foreach ($listaLlamadasOriginadas as $infoLlamadaOriginada) {
+                            if (isset($infoLlamadaOriginada->DialString) &&
+                                !is_null($infoLlamadaOriginada->DialString) &&
+                                $infoLlamadaOriginada->DialString == $sCanalTrunk) {
+                                $this->oMainLog->output("INFO: se ignora llamada $sKey con DialString $sCanalTrunk - mismo DialString usado por llamada recién originada.");
+                                $bLlamadaRepetida = TRUE;
+                            }
+                        }
+                        if ($bLlamadaRepetida) continue;
+
                         $listaLlamadas[$sKey]->queue = $infoCampania->queue;
                         if ($this->DEBUG) {
                             $this->oMainLog->output("DEBUG: generando llamada agendada\n".
@@ -1296,7 +1322,34 @@ PETICION_LLAMADAS;
             // Colocar todas las llamadas elegidas para ser realizadas por el Asterisk.
             $listaLlamadasOriginadas = array();
             foreach ($listaLlamadas as $sKey => $tupla) {
+                
+                /* Para poder monitorear el evento Onnewchannel, se depende de 
+                 * la cadena de marcado para identificar cuál de todos los eventos
+                 * es el correcto. Si una llamada generada produce la misma cadena
+                 * de marcado que una que ya se monitorea, o que otra en la misma
+                 * lista, ocurrirán confusiones entre los eventos. Se filtran las
+                 * llamadas que tengan cadenas de marcado repetidas. */
                 $sCanalTrunk = str_replace('$OUTNUM$', $tupla->phone, $datosTrunk['TRUNK']);
+                $bLlamadaRepetida = FALSE;
+                foreach ($this->_infoLlamadas['llamadas'] as $infoLlamadaMonitoreada) {
+                	if (isset($infoLlamadaMonitoreada->DialString) &&
+                        !is_null($infoLlamadaMonitoreada->DialString) &&
+                        $infoLlamadaMonitoreada->DialString == $sCanalTrunk) {
+                        $this->oMainLog->output("INFO: se ignora llamada $sKey con DialString $sCanalTrunk - mismo DialString usado por llamada monitoreada.");
+                        $bLlamadaRepetida = TRUE;
+                    }
+                }
+                foreach ($listaLlamadasOriginadas as $infoLlamadaOriginada) {
+                    if (isset($infoLlamadaOriginada->DialString) &&
+                        !is_null($infoLlamadaOriginada->DialString) &&
+                        $infoLlamadaOriginada->DialString == $sCanalTrunk) {
+                        $this->oMainLog->output("INFO: se ignora llamada $sKey con DialString $sCanalTrunk - mismo DialString usado por llamada recién originada.");
+                        $bLlamadaRepetida = TRUE;
+                    }
+                }
+                if ($bLlamadaRepetida) continue;
+                
+                
                 $listaLlamadas[$sKey]->queue = $infoCampania->queue;
                 if ($this->DEBUG) {
                     $this->oMainLog->output("DEBUG: generando llamada\n".
@@ -1890,6 +1943,22 @@ PETICION_LLAMADAS;
                 // debe de seguirse la pista de la campaña.
                 $infoCampania = $this->_leerCampania($idCampaign);
             }
+
+            if ($this->DEBUG) {
+            	$this->oMainLog->output("DEBUG: llamada identificada es: $sKey : ".
+                    print_r($this->_infoLlamadas['llamadas'][$sKey], TRUE));
+            }
+
+            if (isset($this->_infoLlamadas['llamadas'][$sKey]->Uniqueid) && 
+                $this->_infoLlamadas['llamadas'][$sKey]->Uniqueid != $params['Uniqueid']) {
+            
+                $this->oMainLog->output("ERR: se procesó pata equivocada en evento Newchannel ".
+                    "anterior, pata procesada es {$this->_infoLlamadas['llamadas'][$sKey]->Uniqueid}, ".
+                    "pata real es {$params['Uniqueid']}");
+                $this->oMainLog->output("ERR: desechando eventos inválidos...");      
+                $this->_infoLlamadas['llamadas'][$sKey]->PendingEvents = array();
+                $this->_infoLlamadas['llamadas'][$sKey]->AuxChannels = array();
+            }                    
 
             /* Se ha observado que algunos Asterisk mienten sobre el estado de
                la llamada, y reportan Response=Success mientras que ya han 

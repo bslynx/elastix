@@ -1,3 +1,7 @@
+* Dialer: with low-quality phone number databases with lots of repeated 
+  numbers, the generation of a call with the same number as one already
+  being originated or monitored will confuse the dialer and mix up events.
+  So skip over calls that duplicate calls already originated/in progress.  
 * Dialer: if the AMI reports an OriginateResponse with a Success status, but
   the channel (or an auxiliary channel) has seen a Hangup, treat the call as
   a failure instead. 
