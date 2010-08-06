@@ -225,3 +225,11 @@
         </table>
     </div>
 </div>
+{literal}
+<script type="text/javascript">
+$(document).ready(function() {
+    //remove lupa
+    $("#search").parent("div").remove();
+});
+</script>
+{/literal}

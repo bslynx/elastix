@@ -246,10 +246,10 @@ $(document).ready(function(){
                 var cal = $.fullCalendar;
                 //alert("hola    " + cal.views.month.prev());
             });
-        },
+        }/*,
         onSelect: function(dateText, inst){
             alert("dateText: " + dateText);
-        }
+        }*/
     });
 
 // checkbox notificacion
