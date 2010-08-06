@@ -39,14 +39,29 @@ function getPercent()
     });
 }
 
+/******************************************************************************************** 
+VALUES OF response (this the response of server in format JSON)
+        valueActual        : Object. It content all information about actual downloading package by each mini progressBar. The values included are:
+            "action"       : It the action actual, It can be "install" or "none",
+            "name"         : The name of package to install,
+            "lon_total"    : Size of package in bytes,
+            "lon_downl"    : Size of package downloaded in bytes,
+            "status_pa"    : The status of request, It can be "downloading" or "not_install" or "waiting",
+            "porcent_ins"  : Percent value of this package but no all.
+        valueTotal         : Percent total of installation,
+        status             : Status of intallation about addons. If all if fine this can be  "progress",
+        action             : The action do in that instant, it can be "downloading" or "insatalling",
+        process_installed  : The current process can be "process_installed"
+
+*********************************************************************************************/
 function process(response)
 {
     var valueActual = response['valueActual'];
     var valueTotal  = response['valueTotal'];
-
+    // if no preocess to install
 	if (response['status'] == "not_install")
 		return;
-
+    // if the process to install is finished
     if(response['action'] != "none") {
         var ctl_percent = document.getElementById('percentTotal');
         if (ctl_percent != null) {
@@ -57,8 +72,9 @@ function process(response)
         	return;
         }
     }
-
+    // if exists a process install in progress
     if(valueActual != "none"){
+        // obtain each package by Actual progressbar 
         for(var i=0; i<valueActual.length; i++){
             var percentActual = valueActual[i]['porcent_ins'];
             var lon_total = valueActual[i]['lon_total'];
@@ -70,16 +86,17 @@ function process(response)
             var status_pa_lb  = document.getElementById('status_pa'+i);
             var percent_pa_lb = document.getElementById('percentTotal'+i);
 
-            lon_total_lb.firstChild.nodeValue  = lon_downl;
-            lon_downl_lb.firstChild.nodeValue  = lon_total;
+            lon_total_lb.firstChild.nodeValue  = " "+lon_downl+" bytes";
+            lon_downl_lb.firstChild.nodeValue  = lon_total+" bytes";
             status_pa_lb.firstChild.nodeValue  = status_pa;
             percent_pa_lb.firstChild.nodeValue = percentActual;
 
-            $('#progressBarActual'+i).progressbar('value', percentActual);
+            // fill the progressBar actual(no main progressBar)
+            $('#progressBarActual'+i).progressbar('value', parseInt(percentActual));
         }
-        $('#progressBarTotal').progressbar('value', valueTotal);
+        // fill the main progressBar by the correcta value
+        $('#progressBarTotal').progressbar('value', parseInt(valueTotal));
     }
-    $('#progressBarTotal').progressbar('value', 100);
 }
 
 function updateAddon(name_rpm)
