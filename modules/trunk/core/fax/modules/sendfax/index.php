@@ -126,6 +126,7 @@ function viewFormSendFax($smarty, $module_name, $local_templates_dir, &$pDB, $ar
     $smarty->assign("file_upload", $arrLang["File Upload"]);
     $smarty->assign("text_area", $arrLang["Text Information"]);
     $smarty->assign("record_Label", $arrLang["Select the files to FAX"]);
+	$smarty->assign("type_files", $arrLang["Types of files"]);
 
     $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",$arrLang["Send Fax"], $_DATA);
     $content = "<form  method='POST' enctype='multipart/form-data' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";

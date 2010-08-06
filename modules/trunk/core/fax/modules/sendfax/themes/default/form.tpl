@@ -50,7 +50,7 @@
     <tr class="letra12" id='upload_option'>
         <td align="left"><b>{$record_Label}</b></td>
         <td align="left">
-            <input name="file_record" id="file_record" type="file" value="{$file_record_name}" size='30' />
+            <input name="file_record" id="file_record" type="file" value="{$file_record_name}" size='30' />&nbsp;&nbsp;<span style='font-size: 11px;'><b>{$type_files}</b>pdf, tiff, txt</span>
         </td>
     </tr>
 

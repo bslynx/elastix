@@ -40,5 +40,6 @@ $arrLangModule=array(
 "File to upload is empty" => "File to upload is empty",
 "Text to send is empty" => "Text to send is empty",
 "Please, select a valid Fax Device" => "Please, select a valid Fax Device",
+"Types of files" => "Types of files supported: ",
 );
 ?>
