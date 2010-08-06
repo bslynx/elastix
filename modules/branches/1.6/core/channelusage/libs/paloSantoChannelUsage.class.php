@@ -30,7 +30,7 @@ class paloSantoChannelUsage
         $starttime = $endtime - 26*60*60;
         $oSampler->deleteDataBeforeThisTimestamp($starttime);
 
-        $arrayResult['ATTRIBUTES'] = array('TITLE' => $arrGraph['name'],'TYPE'=>'lineplot',
+        $arrayResult['ATTRIBUTES'] = array('TITLE' => str_ireplace('zap', 'DAHDI', $arrGraph['name']),'TYPE'=>'lineplot',
             'LABEL_X'=>"",'LABEL_Y'=>'','SHADOW'=>false,'SIZE'=>"570,170",'MARGIN'=>"50,140,30,50",
             'COLOR' => "#fafafa",'POS_LEYEND'=> "0.02,0.5");
 
@@ -54,7 +54,7 @@ class paloSantoChannelUsage
 
             $arrStyle = array();
             $arrStyle['COLOR'] = $line['color'];
-            $arrStyle['LEYEND'] = $line['name'];
+            $arrStyle['LEYEND'] = str_ireplace('zap', 'DAHDI', $line['name']);
             $arrStyle['STYLE_STEP'] = true;
             $arrStyle['FILL_COLOR'] = false;
 
