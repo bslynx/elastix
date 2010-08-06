@@ -529,7 +529,7 @@ function loadArea(xmlLoad){
 
     var db=xmlDoc.getElementsByTagName("areas");
     var area_box=db[0].getElementsByTagName("area_box");
-    alert("Presione [Enter] o de clic en [Aceptar] para recargar Areas");
+    //alert("Presione [Enter] o de clic en [Aceptar] para recargar Areas");
     for(var i=0;i<area_box.length;i++)
     {
         var namearea = area_box[i].getElementsByTagName("name")[0];
@@ -579,7 +579,7 @@ function loadArea(xmlLoad){
 }
 
 function loadArea2(xmlLoad){
-    alert("Presione [Enter] o de clic en [Aceptar] para recargar Areas");
+    //alert("Presione [Enter] o de clic en [Aceptar] para recargar Areas");
     if(document.getElementById("nameArea1").value=="Extension"){
 
         var area1 = document.getElementById("content"+document.getElementById("nameArea1").value);
