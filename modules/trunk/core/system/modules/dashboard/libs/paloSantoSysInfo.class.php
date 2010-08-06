@@ -248,10 +248,10 @@ class paloSantoSysInfo
 
         $arrSERVICES["Hylafax"]["status_service"]  = $this->_existPID_ByCMD("hfaxd","hylafax") & $this->_existPID_ByCMD("faxq","hylafax");
         $arrSERVICES["Hylafax"]["name_service"]    = "Fax Service";
-
+/*
         $arrSERVICES["IAXModem"]["status_service"] = $this->_existPID_ByFile("/var/run/iaxmodem.pid","iaxmodem");
         $arrSERVICES["IAXModem"]["name_service"]   = "IAXModem Service";
-
+*/
         $arrSERVICES["Postfix"]["status_service"]  = $this->_existPID_ByCMD("master","postfix");
         $arrSERVICES["Postfix"]["name_service"]    = "Email Service";
 
