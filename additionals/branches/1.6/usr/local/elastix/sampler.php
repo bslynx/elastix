@@ -36,7 +36,7 @@ $oSampler = new paloSampler();
 
 // NUMERO DE LLAMADAS SIMULTANEAS
 $simCalls = 0;
-$comando = "/usr/sbin/asterisk -r -x \"show channels\"";
+$comando = "/usr/sbin/asterisk -r -x \"core show channels\"";
 exec($comando, $arrSalida, $varSalida);
 
 $counter_channels_dahdi = 0;
