@@ -31,6 +31,7 @@ include_once "libs/paloSantoGrid.class.php";
 include_once "libs/paloSantoForm.class.php";
 include_once "libs/paloSantoGraph.class.php";
 include_once "libs/misc.lib.php";
+include_once "libs/paloSantoGraph.class.php";//lib paloGrapf
 
 function _moduleContent(&$smarty, $module_name)
 {
@@ -75,6 +76,9 @@ function _moduleContent(&$smarty, $module_name)
     $content = "";
 
     switch($accion){
+        case 'graph':
+            $content = graphLinks($smarty, $module_name, $local_templates_dir);
+            break;
         default:
             $content = reportReportCall($smarty, $module_name, $local_templates_dir, $pDB_cdr, $pDB_billing, $arrConf, $arrLang);
             break;
@@ -128,7 +132,6 @@ function reportReportCall($smarty, $module_name, $local_templates_dir, &$pDB_cdr
     $arrResult = $pReportCall->ObtainReportCall($limit,$offset,$date_ini,$date_end,$type,$value,$order_by,$order_type);
 
     $order_type = ($order_type == "desc")?"asc":"desc";
-    $rut_img = "\"modules/$module_name/images/graphReport.php";
 
     if(is_array($arrResult) && $total>0){
         foreach($arrResult as $key => $val){
@@ -140,7 +143,7 @@ function reportReportCall($smarty, $module_name, $local_templates_dir, &$pDB_cdr
             $arrTmp[3] = $val['num_outgoing_call'];
             $arrTmp[4] = "<label style='color: green;' title='{$val['duration_incoming_call']} {$arrLang['seconds']}'>".$pReportCall->Sec2HHMMSS($val['duration_incoming_call'])."</label>";
             $arrTmp[5] = "<label style='color: green;' title='{$val['duration_outgoing_call']} {$arrLang['seconds']}'>".$pReportCall->Sec2HHMMSS($val['duration_outgoing_call'])."</label>";
-            $arrTmp[6] = "<a href='javascript: popup_ventana($rut_img?ext=$ext&dini=$date_ini&dfin=$date_end&num_in=$val[num_incoming_call]&num_out=$val[num_outgoing_call]\");'>".
+            $arrTmp[6] = "<a href='javascript: popup_ventana(\"?menu=$module_name&action=graph&rawmode=yes&ext=$ext&dini=$date_ini&dfin=$date_end&num_in=$val[num_incoming_call]&num_out=$val[num_outgoing_call]\");'>".
                     "".$arrLang['Call Details']."</a>";
 
             $arrData[] = $arrTmp;
@@ -240,6 +243,42 @@ function createFieldForm($arrLang){
     return $arrFormElements;
 }
 
+function graphLinks($smarty, $module_name, $local_templates_dir)
+{
+    $ext      = $_GET['ext'];
+    $date_ini = $_GET['dini'];
+    $date_end = $_GET['dfin'];
+    $num_in   = $_GET['num_in'];
+    $num_out  = $_GET['num_out'];
+
+    $imagen1 = reportTop10Incoming($module_name, $date_ini, $date_end, $ext, $num_in);//PLOT3D
+    $imagen2 = reportTop10Outgoing($module_name, $date_ini, $date_end, $ext, $num_out);//PLOT3D
+    
+    return "<table width='100%' border='0' cellspacing='0' cellpadding='0' align='center'>
+        <tr>
+          <td align='center'>$imagen1</td>
+        </tr>
+        <br/>
+        <tr>
+          <td align='center'>$imagen2</td>
+        </tr>
+      </table>";
+}
+
+function reportTop10Outgoing($module_name, $date_ini_tmp, $date_end_tmp, $ext, $num_out)//PLOT3D
+{
+    $arrParameterCallbyGraph = array($date_ini_tmp, $date_end_tmp, $ext, $num_out);
+    $oPaloGraph = new paloSantoGraph($module_name,"paloSantoReportCall","callbackTop10Salientes",$arrParameterCallbyGraph);
+    return $oPaloGraph->getGraph("../../../");
+}
+
+function reportTop10Incoming($module_name, $date_ini_tmp, $date_end_tmp, $ext, $num_in)//PLOT3D
+{
+    $arrParameterCallbyGraph = array($date_ini_tmp, $date_end_tmp, $ext, $num_in);
+    $oPaloGraph = new paloSantoGraph($module_name,"paloSantoReportCall","callbackTop10Entrantes",$arrParameterCallbyGraph);
+    return $oPaloGraph->getGraph("../../../");
+}
+
 function getParameter($parameter)
 {
     if(isset($_POST[$parameter]))
@@ -256,6 +295,8 @@ function getAction()
         return "show";
     else if(getParameter("action")=="show") //Get parameter by GET (command pattern, links)
         return "show";
+    else if(getParameter("action")=="graph") //Get parameter by GET (command pattern, links)
+        return "graph";
     else
         return "report";
 }
