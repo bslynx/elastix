@@ -8,15 +8,8 @@
         <p align="Justify"></p>
 
         <!-- Form to add images -->
-        <!--<div><img src="../modules/{$node_id}/images/images.png" border="0"></div> -->
-
-        <table class="inline">
-            <tr>
-                <th></th>
-            </tr>
-            <tr>
-                <td></td>
-            </tr>
-        </table>
+        <div><img src="../modules/{$node_id}/images/help_applet_admin.png" border="0"></div>
+	<p>Figura 1</p>
+	<p>La opción "Dashboard Applet Admin" del menú "Preferencias" de Elastix permite activar y desactivar los applets que se van a utilizar en Elastix.</p>
     </body>
 </html>

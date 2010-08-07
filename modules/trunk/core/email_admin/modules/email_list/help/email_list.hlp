@@ -1,22 +1,23 @@
 <html>
-    <header>
-        <link rel="stylesheet" href="/themes/{$THEMENAME}/styles.css">
-        <link rel="stylesheet" href="/themes/{$THEMENAME}/help.css">
-    </header>
-    <body>
-        <h1>{$node_name}</h1>
-        <p align="Justify"></p>
+<header>
+  <link rel="stylesheet" href="/themes/{$THEMENAME}/styles.css">
+  <link rel="stylesheet" href="/themes/{$THEMENAME}/help.css">
+</header>
+<body>
+<h1>{$node_name}</h1>
 
-        <!-- Form to add images -->
-        <!--<div><img src="../modules/{$node_id}/images/images.png" border="0"></div> -->
+<p>La opción Mailing Lists permite agregar una lista de emails con el dominio correspondiente.</p>
 
-        <table class="inline">
-            <tr>
-                <th></th>
-            </tr>
-            <tr>
-                <td></td>
-            </tr>
-        </table>
-    </body>
+<div><img src="../modules/{$node_id}/images/email_list.png" border="0"></div>
+<div>Figure 1</div>
+<br />
+
+<p>Cuando se crea una nueva lista de email se debe proporcionar la información que se muestra en la imagen a continuación:</p>
+
+<div><img src="../modules/{$node_id}/images/email_list_edit.png" border="0"></div>
+<div>Figure 2</div>
+<br />
+
+</body>
 </html>
+

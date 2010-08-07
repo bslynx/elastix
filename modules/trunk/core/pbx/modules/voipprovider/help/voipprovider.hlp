@@ -8,15 +8,10 @@
         <p align="Justify"></p>
 
         <!-- Form to add images -->
-        <!--<div><img src="../modules/{$node_id}/images/images.png" border="0"></div> -->
-
-        <table class="inline">
-            <tr>
-                <th></th>
-            </tr>
-            <tr>
-                <td></td>
-            </tr>
-        </table>
+        <div><img src="../modules/{$node_id}/images/help_voip_provider.png" border="0"></div>
+	<p>Figura 1</p>
+	<p></p>
+	<p>La opción "VoIP Provider" del menú "PBX" de Elastix permite definir los detalles de un nuevo proveedor de VoIP. Estos detalles están divididos en 2 categorías: "General Setting" y "PEER Details".
+(Figura 1).</p>
     </body>
 </html>

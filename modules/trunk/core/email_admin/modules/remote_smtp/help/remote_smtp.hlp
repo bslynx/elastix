@@ -1,22 +1,17 @@
 <html>
-    <header>
-        <link rel="stylesheet" href="/themes/{$THEMENAME}/styles.css">
-        <link rel="stylesheet" href="/themes/{$THEMENAME}/help.css">
-    </header>
-    <body>
-        <h1>{$node_name}</h1>
-        <p align="Justify"></p>
+<header>
+  <link rel="stylesheet" href="/themes/{$THEMENAME}/styles.css">
+  <link rel="stylesheet" href="/themes/{$THEMENAME}/help.css">
+</header>
+<body>
+<h1>{$node_name}</h1>
 
-        <!-- Form to add images -->
-        <!--<div><img src="../modules/{$node_id}/images/images.png" border="0"></div> -->
+<p>La opción Remote-SMTP permite agregar un servidor smtp remoto, indicando el nombre del servidor, puerto, dirección ip del servidor, cuenta de email del usuario y contraseña de la misma.</p>
 
-        <table class="inline">
-            <tr>
-                <th></th>
-            </tr>
-            <tr>
-                <td></td>
-            </tr>
-        </table>
-    </body>
+<div><img src="../modules/{$node_id}/images/remote-smtp.png" border="0"></div>
+<div>Figure 1</div>
+<br />
+
+</body>
 </html>
+
