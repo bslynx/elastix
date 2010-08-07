@@ -52,6 +52,16 @@ class paloSantoExtention {
         }
     }
 
+    private function _src_ext($ext)
+    {
+        return "substring_index(channel,'-',1) regexp '^[A-Za-z0-9]+/$ext$'";
+    }
+
+    private function _dst_ext($ext)
+    {
+        return "substring_index(dstchannel,'-',1) regexp '^[A-Za-z0-9]+/$ext$'";
+    }
+
     function ObtainNumExtention($date_ini, $date_fin, $ext, $calls_io)
     {
         if( strlen($ext) == 0 )
@@ -60,11 +70,11 @@ class paloSantoExtention {
         $query = "SELECT count(*) FROM cdr";
 
         if($calls_io=="Incoming_Calls")
-            $query .= " WHERE dst = '$ext'" ;
+            $query .= " WHERE ".$this->_dst_ext($ext) ;
         else if($calls_io=="Outcoming_Calls")
-            $query .= " WHERE src = '$ext'" ;
+            $query .= " WHERE ".$this->_src_ext($ext) ;
         else
-            $query .= " WHERE (src = '$ext' OR dst = '$ext')" ;
+            $query .= " WHERE ((".$this->_src_ext($ext).") OR (".$this->_dst_ext($ext)."))" ;
 
       
         if( strlen($date_ini) >= 5 ){
@@ -92,9 +102,9 @@ class paloSantoExtention {
             return 0;
 
         if( $io == "in" )
-            $query = "SELECT count(*) FROM cdr WHERE dst = '$ext' ";
+            $query = "SELECT count(*) FROM cdr WHERE ".$this->_dst_ext($ext)." ";
         else//if( $io == "in" )
-            $query = "SELECT count(*) FROM cdr WHERE src = '$ext' ";
+            $query = "SELECT count(*) FROM cdr WHERE ".$this->_src_ext($ext)." ";
       
         if( strlen($date_ini) >= 5 ){
             if( strlen($date_fin) <= 5 )
