@@ -6,6 +6,7 @@ Para establecer comunicación con el programa, el cliente (la página web) tiene
 Los comandos definidos hasta ahora son:
        status 
        add nombredepaquete( nombrepaquete2 ...)
+       testadd nombredepaquete( nombrepaquete2 ...)
        remove nombredepaquete( nombredepaquete2 ...)
        clear
        confirm
@@ -40,6 +41,9 @@ reporefresh El programa yum está descargando la lista de paquetes disponibles d
 depsolving	El programa yum está resolviendo dependencias, lo cual puede agregar paquetes adicionales a la transacción. Esta acción aparece en status busy.
 downloading	El programa yum está descargando los paquetes de la transacción. Esta acción aparece en status busy.
 applying	El programa yum está aplicando los cambios indicados por la transacción. Esta acción aparece en status busy.
+cancelling  El programa yum ha recibido la orden de cancelar la operación. Esta acción aparece en status busy.
+checkinstalled El programa yum está verificando si un conjunto de paquetes está instalado. Esta acción aparece en status busy.
+
 
 El campo ACCION_PAQUETE puede ser uno de los siguientes identificadores: install update remove
 NOMBRE_PAQUETE indica el nombre del paquete involucrado en la transacción.
@@ -60,6 +64,22 @@ Agrega un paquete a la transacción en curso para ser instalado, iniciándola si
 ERR No packages
 y la transacción sigue sin cambios. Si el estado no es válido, el programa contesta:
 ERR Invalid status
+Si el programa no puede iniciar el shell de yum, el programa contesta:
+ERR Unable to start Yum Shell
+Con al menos un paquete, el programa contesta:
+OK Processing
+y el cliente tiene que preguntar regularmente con el comando status para averiguar el estado del demonio ayudante.
+
+Comando 'testadd':
+Este comando recibe una lista de paquetes a instalar, y verifica si todas las dependencias pueden resolverse. A diferencia del comando 'add', este comando vuelve al estado idle y action none al terminar de generar la lista de dependencias, en lugar de action confirm. En otros aspectos es idéntico al comando 'add'.
+
+Comando 'check':
+Verifica si la lista de paquetes que se le especifica están instalados. Si no se provee paquete alguno, el programa contesta:
+ERR No packages
+y la transacción sigue sin cambios. Si el estado no es válido, el programa contesta:
+ERR Invalid status
+Si el programa no puede iniciar el shell de yum, el programa contesta:
+ERR Unable to start Yum Shell
 Con al menos un paquete, el programa contesta:
 OK Processing
 y el cliente tiene que preguntar regularmente con el comando status para averiguar el estado del demonio ayudante.
@@ -90,10 +110,15 @@ Agrega un paquete a la transacción para ser actualizado, iniciándola si no est
 ERR No packages
 y la transacción sigue sin cambios. Si el estado no es válido, el programa contesta:
 ERR Invalid status
+Si el programa no puede iniciar el shell de yum, el programa contesta:
+ERR Unable to start Yum Shell
 Con al menos un paquete, el programa contesta:
 OK Processing
 y el cliente tiene que preguntar regularmente con el comando status para averiguar el estado del demonio ayudante. 
 ATENCION: Puede ocurrir que no haya actualizaciones disponibles para el paquete elegido. Entonces la salida del comando status tendrá un warnmsg indicado que no hay actualizaciones, y la transacción NO INCLUIRÁ el paquete.
+
+Comando 'testupdate':
+Verifica que los paquetes indicados pueden actualizarse, pero a diferencia de 'update', termina en el estado idle y action none. En otros aspectos es idéntico al comando 'update'.
 
 Comando 'cancel':
 Cancela la descarga de los paquetes que se han mandado a instalar con el comando confirm. Este comando sólo es válido en el estado busy acción downloading. Si el estado es idle, contestará

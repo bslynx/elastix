@@ -71,6 +71,7 @@ class ElastixInstallerProcess extends AbstractProcess
         $this->_estadoPaquete = array(
             'status'    =>  'idle',
             'action'    =>  'none',
+            'testonly'  =>  FALSE,
 
             'iniciales' =>  array(),
             'progreso'  =>  array(),
@@ -260,6 +261,7 @@ class ElastixInstallerProcess extends AbstractProcess
                     $this->_estadoPaquete = array(
                         'status'    =>  'idle',
                         'action'    =>  'none',
+                        'testonly'  =>  FALSE,
 
                         'progreso'  =>  array(),
                         'instalado' =>  array(),
@@ -423,6 +425,9 @@ Interfaz simple de comandos vía socket:
         case 'add':
             $sTextoSalida = $this->_procesarAdd($listaComando);
             break;
+        case 'testadd':
+            $sTextoSalida = $this->_procesarTestAdd($listaComando);
+            break;
         case 'remove':
             $sTextoSalida = $this->_procesarRemove($listaComando);
             break;
@@ -434,6 +439,9 @@ Interfaz simple de comandos vía socket:
             break;
         case 'update':
             $sTextoSalida = $this->_procesarUpdate($listaComando);
+            break;
+        case 'testupdate':
+            $sTextoSalida = $this->_procesarTestUpdate($listaComando);
             break;
         case 'cancel':
             $sTextoSalida = $this->_procesarCancel($listaComando);
@@ -710,6 +718,30 @@ Installing for dependencies:
         $this->_estadoPaquete['warning'] = array();
         $this->_estadoPaquete['instalado'] = array();
         $this->_estadoPaquete['iniciales'] = $listaArgs;
+        $this->_estadoPaquete['testonly'] = FALSE;
+
+        $sComando = "ts list\ninstall ".implode(' ', $listaArgs)."\nts solve\nts list\n";
+        if (!$this->_asegurarYumShellIniciado())
+            return "ERR Unable to start Yum Shell\n";
+        fwrite($this->_procPipes[0], $sComando);
+        return "OK Processing\n";
+    }
+
+    private function _procesarTestAdd(&$listaArgs)
+    {
+        if (!is_array($listaArgs) || count($listaArgs) <= 0)
+            return "ERR No packages\n";
+        if ($this->_estadoPaquete['status'] != 'idle')
+            return "ERR Invalid status\n";
+        
+        $this->_sContenido = '';    // Anular la salida de yum que se haya leído
+        $this->_estadoPaquete['status'] = 'busy';
+        $this->_estadoPaquete['action'] = 'reporefresh';
+        $this->_estadoPaquete['errores'] = array();
+        $this->_estadoPaquete['warning'] = array();
+        $this->_estadoPaquete['instalado'] = array();
+        $this->_estadoPaquete['iniciales'] = $listaArgs;
+        $this->_estadoPaquete['testonly'] = TRUE;
 
         $sComando = "ts list\ninstall ".implode(' ', $listaArgs)."\nts solve\nts list\n";
         if (!$this->_asegurarYumShellIniciado())
@@ -732,6 +764,31 @@ Installing for dependencies:
         $this->_estadoPaquete['warning'] = array();
         $this->_estadoPaquete['instalado'] = array();
         $this->_estadoPaquete['iniciales'] = $listaArgs;
+        $this->_estadoPaquete['testonly'] = FALSE;
+        
+        $sComando = "ts list\nupdate ".implode(' ', $listaArgs)."\nts solve\nts list\n";
+        if (!$this->_asegurarYumShellIniciado())
+            return "ERR Unable to start Yum Shell\n";
+        fwrite($this->_procPipes[0], $sComando);
+        return "OK Processing\n";
+    }
+
+    private function _procesarTestUpdate(&$listaArgs)
+    {
+        if (!is_array($listaArgs) || count($listaArgs) <= 0)
+            return "ERR No packages\n";
+        if ($this->_estadoPaquete['status'] != 'idle')
+            return "ERR Invalid status\n";
+        
+        $this->_sContenido = '';    // Anular la salida de yum que se haya leído
+        $this->_estadoPaquete['status'] = 'busy';
+        $this->_estadoPaquete['action'] = 'reporefresh';
+        $this->_estadoPaquete['errores'] = array();
+        $this->_estadoPaquete['warning'] = array();
+        $this->_estadoPaquete['instalado'] = array();
+        $this->_estadoPaquete['iniciales'] = $listaArgs;
+        $this->_estadoPaquete['testonly'] = TRUE;
+        
         $sComando = "ts list\nupdate ".implode(' ', $listaArgs)."\nts solve\nts list\n";
         if (!$this->_asegurarYumShellIniciado())
             return "ERR Unable to start Yum Shell\n";
@@ -752,6 +809,8 @@ Installing for dependencies:
         $this->_estadoPaquete['errores'] = array();
         $this->_estadoPaquete['warning'] = array();
         $this->_estadoPaquete['instalado'] = array();
+        $this->_estadoPaquete['testonly'] = FALSE;
+        
         $sComando =  "list ".implode(' ', $listaArgs)."\nts list\n";
         if (!$this->_asegurarYumShellIniciado())
             return "ERR Unable to start Yum Shell\n";
@@ -770,6 +829,8 @@ Installing for dependencies:
         $this->_estadoPaquete['warning'] = array();
         $this->_estadoPaquete['progreso'] = array();
         $this->_estadoPaquete['instalado'] = array();
+        $this->_estadoPaquete['testonly'] = FALSE;
+        
         $sComando = "ts reset\nts list\n";
         if (!$this->_asegurarYumShellIniciado())
             return "ERR Unable to start Yum Shell\n";
@@ -809,8 +870,8 @@ Installing for dependencies:
         $this->_estadoPaquete['errores'] = array();
         $this->_estadoPaquete['warning'] = array();
         $this->_estadoPaquete['instalado'] = array();
+        $this->_estadoPaquete['testonly'] = FALSE;
 
-        //$sComando = "run\ny\n";
         $sComando = "run\n";
         if (!$this->_asegurarYumShellIniciado())
             return "ERR Unable to start Yum Shell\n";
@@ -899,8 +960,18 @@ Installing for dependencies:
                     if ($pos2 !== FALSE) {
                         // Ya es seguro recolectar los paquetes que conforman la transacción
                         $this->_estadoPaquete['status'] = 'idle';
-                        $this->_estadoPaquete['action'] = 'confirm';
-                        $this->_recogerPaquetesTransaccion();
+                        if ($this->_estadoPaquete['testonly']) {
+                            $this->_estadoPaquete['action'] = 'none';
+                            $this->_estadoPaquete['testonly'] = FALSE;
+                            $this->_recogerPaquetesTransaccion();
+                            $sComando = "ts reset\nts list\n";
+                            fwrite($this->_procPipes[0], $sComando);
+                        } else {
+                            $this->_estadoPaquete['action'] = 'confirm';
+                            $this->_estadoPaquete['testonly'] = FALSE;
+                            $this->_recogerPaquetesTransaccion();
+                        }
+                        
                     }
                 } else {
                     // Ocurren problemas de resolución de dependencias
@@ -910,6 +981,7 @@ Installing for dependencies:
                         // Recoger los errores de dependencias que han ocurrido
                         $this->_estadoPaquete['status'] = 'idle';
                         $this->_estadoPaquete['action'] = 'none';
+                        $this->_estadoPaquete['testonly'] = FALSE;
                         $this->_estadoPaquete['warning'] = array();
                         $this->_estadoPaquete['errores'] = array();
 
@@ -1280,6 +1352,8 @@ Installing for dependencies:
         $this->_estadoPaquete['errores'] = array();
         $this->_estadoPaquete['warning'] = array();
         $this->_estadoPaquete['instalado'] = array();
+        $this->_estadoPaquete['testonly'] = FALSE;
+        
         $sComando = "ts list\nerase ".implode(' ', $listaArgs)."\nts solve\nts list\n";
         if (!$this->_asegurarYumShellIniciado())
             return "ERR Unable to start Yum Shell\n";
