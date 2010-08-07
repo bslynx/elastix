@@ -50,6 +50,16 @@ if($flagStatus==0){
                 );";
         exec("sqlite3 $DataBaseRoot/addons.db '$sql'",$arrConsole,$flagStatus);
   }
+
+
+exec("sqlite3 $DataBaseRoot/addons.db '.tables action_tmp'",$arrConsole,$flagStatus);
+
+if($flagStatus==0){
+  $exists = isset($arrConsole[0]) & $arrConsole=='action_tmp';
+  if(!$exists){
+        $sql = "CREATE TABLE action_tmp (name_rpm varchar(20), action_rpm varchar(20), data_exp varchar(100), user varchar(20));";
+        exec("sqlite3 $DataBaseRoot/addons.db '$sql'",$arrConsole,$flagStatus);
+  }
 exit($flagStatus);
 }
 ?>

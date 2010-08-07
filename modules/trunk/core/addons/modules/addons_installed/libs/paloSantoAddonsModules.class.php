@@ -232,6 +232,11 @@ class paloSantoAddonsModules {
         return $this->commandAddons($arrConf, "status");
     }
 
+    function testAddAddon($arrConf, $addAddons)
+    {
+        return $this->commandAddons($arrConf, "testadd $addAddons");
+    }
+
     private function commandAddons($arrConf, $cmd, $parameters = '')
     {
         $errno = $errstr = NULL;
@@ -403,6 +408,56 @@ class paloSantoAddonsModules {
             return array();
         }
         return $result;
+    }
+
+    function setActionTMP($name_rpm, $action_rpm, $data_exp)
+    {
+        $user  = $_SESSION['elastix_user'];
+        $query = "INSERT INTO action_tmp (name_rpm,action_rpm,data_exp,user) values ('$name_rpm','$action_rpm','$data_exp','$user');";
+
+        $result=$this->_DB->genQuery($query);
+
+        if($result==FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return false;
+        }
+        return true;
+    }
+
+    function getActionTMP()
+    {
+        $query = "SELECT * FROM action_tmp;";
+
+        $result=$this->_DB->getFirstRowQuery($query,true);
+
+        if($result==FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return array();
+        }
+        return $result;
+    }
+
+    function clearActionTMP()
+    {
+        $query = "DELETE FROM action_tmp;";
+
+        $result=$this->_DB->genQuery($query);
+
+        if($result==FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return false;
+        }
+        return true;
+    }
+
+    function existsActionTMP()
+    {
+        $result=$this->getActionTMP();
+
+        if(is_array($result) && count($result)>0){
+            return true;
+        }
+        return false;
     }
 }
 ?>

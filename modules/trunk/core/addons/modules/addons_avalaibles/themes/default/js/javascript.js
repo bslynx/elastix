@@ -138,6 +138,12 @@ function changeStatus(name_rpm, view_details ){
                     connectJSON("process_installing");
                     //window.open("index.php?menu="+module_name2,"_self");
                 }
+                else if(message['response'] == "status_confirm"){
+                    var con = confirm(message['msg']);
+                    if(con){
+                        getStatusInstall(message['name_rpm']);
+                    }
+                }
                 else if(message['response'] == "OK"){ // listo para instalar
                     there_install = true;
                     //name_rpm = message['name_rpm'];

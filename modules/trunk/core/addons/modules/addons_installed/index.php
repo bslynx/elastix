@@ -228,7 +228,8 @@ function getProgressBar($smarty, $module_name, $pDB, $arrConf, $arrLang){
     $pAddonsModules = new paloSantoAddonsModules($pDB);
     $arrStatus = $pAddonsModules->getStatus($arrConf);
 
-    if (isset($_SESSION['elastix_addons'])) { // hay instalacion en progreso
+
+    if($pAddonsModules->existsActionTMP()) {
         $valueActual = "none";
         $valueTotal = "0";
         if(isset($arrStatus['package']))
@@ -242,34 +243,27 @@ function getProgressBar($smarty, $module_name, $pDB, $arrConf, $arrLang){
         $arr['action']  = $arrStatus['action'];
         $arr['process_installed'] = $arrLang['process_installed'];
         if($arrStatus['status'] == "idle" && $arrStatus['action'] == "none"){
-            if(isset($_SESSION['elastix_addons']['name_rpm'])){
-                $data_exp = $_SESSION['elastix_addons']['data_install'];
-                if(isset($data_exp) && $data_exp != ""){
-                    $arrDataInsert = explode("|",$data_exp);
-                    $pAddonsModules->insertAddons($arrDataInsert[0],$arrDataInsert[1],$arrDataInsert[2],$arrDataInsert[3]);
-                }
-                unset($_SESSION['elastix_addons']['data_install']);
-                unset($_SESSION['elastix_addons']['name_rpm']);
-                unset($_SESSION['elastix_addons']['action_rpm']);
-                unset($_SESSION['elastix_addons']);
-                $arr['status'] = "finished";
-                $arr['response'] = "OK";
-                
-                // Refrescar el estado de actualización
-                $addons_installed = $pAddonsModules->getCheckAddonsInstalled();
+            $arrDataTMP = $pAddonsModules->getActionTMP();
+            $data_exp = $arrDataTMP['data_exp'];
+            if(isset($data_exp) && $data_exp != ""){
+                $arrDataInsert = explode("|",$data_exp);
+                $pAddonsModules->insertAddons($arrDataInsert[0],$arrDataInsert[1],$arrDataInsert[2],$arrDataInsert[3]);
+            }
+            $pAddonsModules->clearActionTMP();
+            $arr['status'] = "finished";
+            $arr['response'] = "OK";
 
-                try {
-                    $client = new SoapClient($arrConf['url_webservice']);
-                    $arrAddons = $client->getCheckAddonsUpdate($addons_installed);
-                    $arrAddons = explode(",",$arrAddons);
-                    $pAddonsModules->updateInDB($arrAddons);
-                } catch (SoapFault $e) {
-                    $smarty->assign("mb_title", $arrLang["ERROR"].": ");
-                    $smarty->assign("mb_message",$arrLang["The system can not connect to the Web Service resource. Please check your Internet connection."]);
-                }
-            } else {
-                $arr['status'] = "not_install";
-                $arr['response'] = "not_install";
+            // Refrescar el estado de actualización
+            $addons_installed = $pAddonsModules->getCheckAddonsInstalled();
+
+            try {
+                $client = new SoapClient($arrConf['url_webservice']);
+                $arrAddons = $client->getCheckAddonsUpdate($addons_installed);
+                $arrAddons = explode(",",$arrAddons);
+                $pAddonsModules->updateInDB($arrAddons);
+            } catch (SoapFault $e) {
+                $smarty->assign("mb_title", $arrLang["ERROR"].": ");
+                $smarty->assign("mb_message",$arrLang["The system can not connect to the Web Service resource. Please check your Internet connection."]);
             }
         }
         sleep(4);

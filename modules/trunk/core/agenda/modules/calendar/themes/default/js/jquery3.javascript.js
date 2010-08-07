@@ -1126,7 +1126,34 @@ function obtainEmails(){
                             break;
                     }
             });
+
+             //marseaplage
+           // $("legend:contains('Notification Alert')").html("Notify Guests by Email");
+            //$("legend:contains('Phone Call Alert')").html("Phone Call Reminder");
+            $("legend:contains('New Event')").html("");
+            $("legend:contains('Date Event')").html("");
+            $("fieldset.fielform").css("border-color","transparent");
+            $("b:contains('To Notify:')").html("Enable Email Notifications");
+            $("#notification_email_label").css("display","none");
+            $("#lstholder").css("display","none");
+            $(document).ready(
+              function(){
+                $("#noti input").bind("click",function(){
+                    $("#notification_email_label").css("display","block");
+                    $("#lstholder").css("display","block");
+                });
+            });
+            /**/
     }
+    function notificationcheck2(){
+        var node = document.getElementById('notification2');
+        if(node.value == 'on')
+        node.value = 'off';
+        else node.value = 'on';
+    } 
+//      function showTable(tableForm){
+//                     $("legend:contains('Phone Call Reminder')").append(tableForm);
+//                }
 
     function RemoveAttributeSelect(selectObject){
         for(var j = 0; j<selectObject.childNodes.length; j++){

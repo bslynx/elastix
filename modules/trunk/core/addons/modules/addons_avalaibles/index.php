@@ -108,8 +108,8 @@ function installAddons($smarty, $module_name, $local_templates_dir, &$pDB, $arrC
             if($arrStatus['status'] != "error"){
                 $arrSal['response'] = "OK";
                 $arrSal['name_rpm'] = $name_rpm;
-                $_SESSION['elastix_addons']['name_rpm'] = $name_rpm;
-                $_SESSION['elastix_addons']['action_rpm'] = 'install';
+                $pAddonsModules->clearActionTMP(); //TODO: falta validar
+                $pAddonsModules->setActionTMP($name_rpm, 'install', $data_exp);
             }
             else
                 $arrSal['response'] = "error";
@@ -118,8 +118,16 @@ function installAddons($smarty, $module_name, $local_templates_dir, &$pDB, $arrC
             $arrSal['response'] = "error";
     }
     else{
-        $arrSal['response'] = "there_install"; //retornar que existe una instalacion
-        $arrSal['name_rpm'] = $_SESSION['elastix_addons']['name_rpm'];
+        if($pAddonsModules->existsActionTMP()){
+            if($arrStatus['action'] == "confirm")
+                $arrSal['response'] = "status_confirm";
+            else
+                $arrSal['response'] = "there_install"; //retornar que existe una instalacion
+            $arrDataTMP = $pAddonsModules->getActionTMP();
+            $arrSal['name_rpm'] = $arrDataTMP['name_rpm'];
+        }
+        else
+            $arrSal['response'] = "error";
     }
     $arrSal['installing'] = $arrLang['installing'];
     $json = new Services_JSON();
@@ -138,9 +146,10 @@ function getStatus($pDB, $arrConf, $arrLang){
         $salida = $pAddonsModules->confirmAddon($arrConf);
         if(ereg("OK Starting transaction...",$salida)){
             $arrSal['response'] = "OK";
-            $arrSal['name_rpm'] = $_SESSION['elastix_addons']['name_rpm'];
+            $arrDataTMP = $pAddonsModules->getActionTMP();
+            $arrSal['name_rpm'] = $arrDataTMP['name_rpm'];
             $arrSal['view_details'] = $arrLang['view_details'];
-            $_SESSION['elastix_addons']['data_install'] = $datatoInsert;
+            //$_SESSION['elastix_addons']['data_install'] = $datatoInsert;
         }
         else
             $arrSal['response'] = "error";
@@ -153,8 +162,8 @@ function getStatus($pDB, $arrConf, $arrLang){
         if(!isset($arrSal['status_action']) || $arrSal['status_action']=="")
             $arrSal['status_action'] = $arrLang['downloading'];
         $arrSal['response'] = $arrStatus['action'];
-        $arrSal['name_rpm'] = $_SESSION['elastix_addons']['name_rpm'];
-
+        $arrDataTMP = $pAddonsModules->getActionTMP();
+        $arrSal['name_rpm'] = $arrDataTMP['name_rpm'];
     }
     return $json->encode($arrSal);
 }
@@ -292,7 +301,8 @@ function getPackagesCache($arrConf, &$pDB, $arrLang){
     $arrStatus = $pAddonsModules->getStatus($arrConf);
 
     if(isset($arrStatus['action']) && ($arrStatus['action'] == "none" && $arrStatus['status'] == "idle")){
-        $salida = $pAddonsModules->addAddon($arrConf, $packages);
+        //$salida = $pAddonsModules->addAddon($arrConf, $packages);
+        $salida = $pAddonsModules->testAddAddon($arrConf, $packages);
         if(ereg("OK Processing",$salida)){
             $arrStatus = $pAddonsModules->getStatus($arrConf);
             if($arrStatus['status'] != "error"){
@@ -308,7 +318,23 @@ function getPackagesCache($arrConf, &$pDB, $arrLang){
         }
     }
     else{
-        $arrSal['response'] = "there_install"; //retornar que existe una instalacion
+        if($pAddonsModules->existsActionTMP()){
+            $arrDataTMP = $pAddonsModules->getActionTMP();
+            $arrSal['name_rpm'] = $arrDataTMP['name_rpm'];
+            $tmp = explode("|",$arrDataTMP['data_exp']);
+
+            if($arrStatus['action'] == "confirm"){
+                $arrSal['response'] = "status_confirm";
+                $arrSal['msg'] = $arrLang["There is a facility that awaits confirmation to install NAME, the user who initiated the installation was"]." ($arrDataTMP[user]).";
+                $arrSal['msg'] = str_replace("NAME",$tmp[0]." version: $tmp[2]-$tmp[3]",$arrSal['msg']);
+            }
+            else{
+               $arrSal['response'] = "there_install"; //retornar que existe una instalacion
+               $arrSal['msg'] = $tmp[0]."version $tmp[2]-$tmp[3]";
+            }
+        }
+        else
+            $arrSal['response'] = "error";
     }
 
     $arrSal['status'] = $arrLang['installing'];
@@ -324,9 +350,10 @@ function getStatusCache(&$pDB, $arrConf, $arrLang){
     $arrStatus = $pAddonsModules->getStatus($arrConf);
     $json = new Services_JSON();
 
-    if($arrStatus['action'] == "confirm"){
-        $salida = $pAddonsModules->clearAddon($arrConf);
-        if(ereg("OK",$salida)){
+    //if($arrStatus['action'] == "confirm"){
+    if($arrStatus['action'] == "none" & $arrStatus['status'] == "idle"){ // if testadd ya realizado la descaraga en cache
+        //$salida = $pAddonsModules->clearAddon($arrConf);
+        //if(ereg("OK",$salida)){
             $arrSal['response'] = "OK";
             $client = new SoapClient($arrConf['url_webservice']);
             $packages = $client->getAllAddons("2.0.0");
@@ -337,9 +364,9 @@ function getStatusCache(&$pDB, $arrConf, $arrLang){
                 $arr_RPMs[$sNombreRPM] = array('status' => 'OK', 'observation' => 'OK');
             }
             $pAddonsModules->fillDataCache($arr_packages, $arr_RPMs);
-        }
+        /*}
         else
-            $arrSal['response'] = "error";
+            $arrSal['response'] = "error";*/
     } elseif ($arrStatus['status'] != 'error') {
         if($arrStatus['action'] == "reporefresh")
             $arrSal['status_action'] = $arrLang['reporefresh'];
@@ -390,12 +417,12 @@ function getStatusUpdateCache($arrConf, &$pDB, $arrLang){
     if(isset($_SESSION['elastix_addons']['last_update'])){
         $timeLast = $_SESSION['elastix_addons']['last_update'];
         $timeNew = time();
-        if(($timeNew - $timeLast) > 7200){ //si es mayor a 5 minutos al fina1 son 2h -> 7200
+        if(($timeNew - $timeLast) > 30){ //si es mayor a 5 minutos al fina1 son 2h -> 7200
             $_SESSION['elastix_addons']['last_update'] = $timeNew;
             $arrSal = getPackagesCache($arrConf, $pDB, $arrLang);
             return $json->encode($arrSal);
         }
-        else{
+        else{ // no se actualiza.... se toma esta en cache
             $arrSal['response'] = "noFillDataCache";
             $arrData = $pAddonsModules->getDataCache();
             if(is_array($arrData) && count($arrData) > 0){

@@ -38,7 +38,7 @@ $arrLangModule=array(
 "Search" => "Search",
 "view_details" => "View Details",
 "error_downloading" => "Downloading error",
-"process_installing" => "Already exist a process installing",
+"process_installing" => "Already exist a addon installing",
 "addons_installed" => "Addons Installed",
 "error_start_install" => "Error start to install",
 "installing" => "Installing",
@@ -49,5 +49,6 @@ $arrLangModule=array(
 "Loading" => "Loading",
 "Starting" => "Starting...",
 "The system can not connect to the Web Service resource. Please check your Internet connection." => "The system can not connect to the Web Service resource. Please check your Internet connection.",
+"There is a facility that awaits confirmation to install NAME, the user who initiated the installation was" => "There is a facility that awaits confirmation to install NAME, the user who initiated the installation was",
 );
 ?>

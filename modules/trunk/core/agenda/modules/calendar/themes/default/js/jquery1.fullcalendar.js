@@ -268,6 +268,8 @@ $.fn.fullCalendar = function(options) {
 				if (header) {
 					// update title text
 					header.find('h2.fc-header-title').html(view.title);
+                    //marseaplage
+                    header.find('h2.fc-header-title').css("color","#E35332");
 					// enable/disable 'today' button
 					var today = new Date();
 					if (today >= view.start && today < view.end) {
