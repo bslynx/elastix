@@ -50,7 +50,7 @@ if($flagStatus==0){
                 );";
         exec("sqlite3 $DataBaseRoot/addons.db '$sql'",$arrConsole,$flagStatus);
   }
-
+}
 
 exec("sqlite3 $DataBaseRoot/addons.db '.tables action_tmp'",$arrConsole,$flagStatus);
 
