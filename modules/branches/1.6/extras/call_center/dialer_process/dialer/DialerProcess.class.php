@@ -1981,8 +1981,8 @@ PETICION_LLAMADAS;
                         $bHayHangup = TRUE;                        
                 }
                 if ($bHayHangup) {
-                    $this->oMainLog->output("ERR: Asterisk reporta éxito de llamada ya colgada (canal auxiliar), se cambia a Failure");
-                    $params['Response'] = 'Failure';
+                    $this->oMainLog->output("ERR: Asterisk reporta éxito de llamada ya colgada (canal auxiliar), se sospecha colgado próximo.");
+                    //$params['Response'] = 'Failure';
                 }
             }
             
