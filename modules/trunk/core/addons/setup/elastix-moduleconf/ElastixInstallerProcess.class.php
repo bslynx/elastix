@@ -310,7 +310,7 @@ class ElastixInstallerProcess extends AbstractProcess
         // Si el yum shell ha estado inactivo por más de 1 minuto se apaga
         if (is_resource($this->_procYum) && 
             time() - $this->_timestampUltimoUso > 60 &&
-            $this->_estadoPaquete['status'] == 'idle' &&
+            ($this->_estadoPaquete['status'] == 'idle' || $this->_estadoPaquete['status'] == 'error') &&
             $this->_estadoPaquete['action'] == 'none')
             $this->_finalizarYumShell();
 
