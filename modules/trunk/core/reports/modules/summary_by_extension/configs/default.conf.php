@@ -30,5 +30,4 @@
 
     $arrConfModule['module_name']   = 'summary_by_extension';
     $arrConfModule['templates_dir'] = 'themes';
-    $arrConfModule['dsn_conn_database'] = 'mysql://asteriskuser:eLaStIx.asteriskuser.2oo7@localhost/asteriskcdrdb';
 ?>
