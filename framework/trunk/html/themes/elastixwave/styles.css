@@ -951,3 +951,17 @@ td.botonon {
     position: absolute;
     text-align: center;
 }
+
+.div_bar_right{
+    background-image: url(images/fondo_boton_right.gif);
+    height:35px;
+    width:9px;
+    background-repeat: no-repeat;
+}
+
+.div_bar_left{
+    background-image: url(images/fondo_boton_left.gif);
+    height:35px;
+    width:10px;
+    background-repeat: no-repeat;
+}
