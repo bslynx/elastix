@@ -166,6 +166,16 @@ This screen will now ask for a password for user 'admin' that will be used for: 
 	    return 1
 	fi
 	
+    # Use the same password for freePBX login and for updating /etc/amportal.conf
+    echo "GRANT USAGE ON *.* TO 'asteriskuser'@'localhost' IDENTIFIED BY '$FREEPBX_PASSWD1'" | mysql -u root -p$MYSQL_PASSWD1
+    ret=$?
+    if [ $? -ne 0 ]; then
+        echo "Unable to set database password for FreePBX !"
+        return 1
+    fi
+    cat /etc/amportal.conf | sed "s/AMPDBPASS=eLaStIx.asteriskuser.2oo7/AMPDBPASS=$FREEPBX_PASSWD1/" > /tmp/amportal.conf.tmp
+    mv /tmp/amportal.conf.tmp /etc/amportal.conf
+
 	# Set password for Elastix login. Requires sed, md5sum, sqlite3.
 	MD5HASH=`echo -n "$FREEPBX_PASSWD1" | md5sum | sed 's/^\(.\{32\}\)  -/\1/'`
 	sqlite3 /var/www/db/acl.db "UPDATE acl_user SET md5_password = '$MD5HASH' WHERE name = 'admin'"
