@@ -34,6 +34,5 @@
     //ex1: $arrConfModule['dsn_conn_database'] = "sqlite3:///$arrConf[elastix_dbdir]/base_name.db";
     //ex2: $arrConfModule['dsn_conn_database'] = "mysql://user:password@ip_host_sever_mysql/base_name";
     $arrConfModule['dsn_conn_database'] = 'mysql://asterisk:asterisk@localhost/call_center';
-    $arrConfModule['dsn_conn_database_asterisk'] = 'mysql://asteriskuser:eLaStIx.asteriskuser.2oo7@localhost/asterisk';
 
 ?>

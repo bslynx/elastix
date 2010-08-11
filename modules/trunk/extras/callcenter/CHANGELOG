@@ -1,3 +1,6 @@
+* Reports (Agent Connection Time, Agent Information, Trunks Used per Hour):
+  remove hardcoded freePBX database credentials, and instead parse them from
+  /etc/amportal.conf .
 * Dialer: with low-quality phone number databases with lots of repeated 
   numbers, the generation of a call with the same number as one already
   being originated or monitored will confuse the dialer and mix up events.

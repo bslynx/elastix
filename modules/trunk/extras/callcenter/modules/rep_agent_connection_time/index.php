@@ -36,6 +36,7 @@ function _moduleContent(&$smarty, $module_name)
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
     include_once "modules/$module_name/libs/paloSantoReporteGeneraldeTiempoConexionAgentesPorDia.class.php";
+    include_once "libs/paloSantoConfig.class.php";
 
     //include file language agree to elastix configuration
     //if file language not exists, then include language by default (en)
@@ -54,8 +55,16 @@ function _moduleContent(&$smarty, $module_name)
     $arrLang = array_merge($arrLang,$arrLangModule);
 
     //conexion resource
+    $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
+    $arrConfig = $pConfig->leer_configuracion(false);
+    $dsnAsteriskCdr = $arrConfig['AMPDBENGINE']['valor']."://".
+                      $arrConfig['AMPDBUSER']['valor']. ":".
+                      $arrConfig['AMPDBPASS']['valor']. "@".
+                      $arrConfig['AMPDBHOST']['valor']."/asterisk";
+
+    //conexion resource
     $pDB = new paloDB($arrConf['dsn_conn_database']);
-    $pDB_asterisk = new paloDB($arrConf['dsn_conn_database_asterisk']);
+    $pDB_asterisk = new paloDB($dsnAsteriskCdr);
 
     //folder path for custom templates
     $templates_dir=(isset($arrConf['templates_dir']))?$arrConf['templates_dir']:'themes';

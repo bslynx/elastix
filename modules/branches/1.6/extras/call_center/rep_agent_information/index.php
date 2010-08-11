@@ -51,6 +51,7 @@ function _moduleContent(&$smarty, $module_name)
      //include module files
     include_once "modules/$module_name/configs/default.conf.php";
     include_once "modules/$module_name/libs/paloSantoTiempoConexiondeAgentes.class.php";
+    include_once "libs/paloSantoConfig.class.php";
     $arrConf = array_merge($arrConf,$arrConfModule);
 
     // Obtengo la ruta del template a utilizar para generar el filtro.
@@ -73,8 +74,16 @@ function _moduleContent(&$smarty, $module_name)
     }
     $arrLang = array_merge($arrLang, $arrLan);
 
+    //conexion resource
+    $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
+    $arrConfig = $pConfig->leer_configuracion(false);
+    $dsnAsteriskCdr = $arrConfig['AMPDBENGINE']['valor']."://".
+                      $arrConfig['AMPDBUSER']['valor']. ":".
+                      $arrConfig['AMPDBPASS']['valor']. "@".
+                      $arrConfig['AMPDBHOST']['valor']."/asterisk";
+
     $pDB = new paloDB($arrConf['dsn_conn_database']);
-    $pDB_asterisk = new paloDB($arrConf['dsn_conn_database_asterisk']);
+    $pDB_asterisk = new paloDB($dsnAsteriskCdr);
     $oCallsAgent = new paloSantoTiempoConexiondeAgentes($pDB);
 
     // Variables estáticas asignadas vía Smarty
