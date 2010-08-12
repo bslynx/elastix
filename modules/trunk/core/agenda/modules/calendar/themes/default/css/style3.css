@@ -96,7 +96,8 @@ border: 1px solid #999;
 
 form ul.holder { 
 /*width: 500px;*/ 
-width:350px;
+/*width:350px;*/
+    width: 90%;
 }
 
 form ul { 
@@ -152,7 +153,8 @@ ul.holder li.bit-box-focus a.closebutton, ul.holder li.bit-box-focus a.closebutt
 display: none; 
 position: absolute; 
 /*width: 512px; */
-width: 362px;
+/*width: 362px;*/
+/*width: 69%;*/
 background: #eee; 
 }
 
@@ -171,7 +173,8 @@ padding: 0;
 overflow: auto; 
 position:absolute; 
 z-index:9999;
-width: 362px;
+/*width: 362px;*/
+width: 78%;
 }
 
 .facebook-auto ul li { 
@@ -225,7 +228,7 @@ z-index:1;
 }
 
 .sombreado {
-    background:none repeat scroll 0 0 white;
+    background:none repeat scroll 0 0;
     color:#DCA024;
     font-family:Verdana;
     font-size:12px;
@@ -233,7 +236,8 @@ z-index:1;
 }
 
 .fielform {
-    border-color:#EE9A49;
+    border-color: transparent;
+    /*border-color:#EE9A49;*/
     border-width:thin;
     color:black;
     font-family:Verdana,Arial,Helvetica,sans-serif;
@@ -316,7 +320,7 @@ z-index:1;
   height: 30%;
   margin-top: -15%;
   margin-left: -25%;
-  cursor: move;
+  /*cursor: move;*/
 /*  top: 0;
   left: 0;*/
   z-index: 100;
@@ -341,7 +345,7 @@ z-index:1;
   padding: 2%;
   background: #fff;
   /*width: 370px;*/
-  width: 97%;
+  width: 470px;
 }
 
 #box .loading {
@@ -393,13 +397,108 @@ z-index:1;
 }
 
 #icals{
-    padding: 10px;
-    text-align: right;
+    margin-top:5px;
 }
 
-/*
-* html #box_overlay { /* ie6 hack */
-/*  position: absolute;
-  top: expression(document.body.scrollHeight+'px');
-  height: expression(document.body.scrollHeight > document.body.offsetHeight ? document.body.scrollHeight : document.body.offsetHeight + 'px');
-}*/
+#share_calendar, .mlogin{
+    margin-top:5px;
+}
+
+#loginCalendar{
+    text-align: center;
+    height:140px;
+}
+
+#logoutCalendar{
+    text-align: right;
+    
+}
+
+#other_calendars{
+    margin-top:5px;
+    height:200px;
+}
+
+.title_size{
+    height:20px;
+    text-align:center;
+}
+
+.title_email_to{
+    margin: 10px 0px 5px 15px;
+}
+
+.content_others{
+    margin: 10px;
+}
+
+.share_calendar{
+    margin: 10px;
+}
+
+.content_share{
+    margin: 10px 10px 30px 10px;
+}
+
+.content_ical{
+    margin: 10px;
+}
+
+.content_ical a span{
+    padding: 2px 2px 2px 20px;
+}
+
+.button_send{
+    padding: 2% 1% 1% 66%;
+}
+
+.divCorners {
+background:none repeat scroll 0 0 #E8E8E8;
+margin-bottom:10px;
+margin-top:10px;
+padding:10px;
+cursor: pointer;
+/*width:18em;*/
+}
+
+#new_box{
+    padding:10px;
+}
+
+#edit_box{
+    padding:10px;
+}
+
+#view_box{
+    padding:10px;
+}
+
+.titleBox{
+    border-bottom: 1px solid #DDDDDD;
+    margin-top:10px;
+    margin-bottom:10px;
+    padding-bottom:5px;
+    cursor: move;
+}
+
+.CheckBoxClass{
+    display: none;
+}
+
+.CheckBoxLabelClass{
+    background: url("../../../images/UnCheck.png") no-repeat;
+    padding-left: 30px;
+    padding-top: 5px;
+    /*margin: 5px;*/
+    height: 20px;
+    width: 90%;
+    display: block;
+}
+
+.CheckBoxLabelClass:hover{
+    cursor: pointer;
+}
+
+.LabelSelected{
+    background: url("../../../images/Check.png") no-repeat;
+}

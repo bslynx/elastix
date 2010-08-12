@@ -106,9 +106,6 @@ function _moduleContent(&$smarty, $module_name)
         case "delete_box":
             $content = deleteBoxCalendar($arrConf,$arrLang,$pDB);
             break;
-        default: // view_form
-            $content = viewCalendar($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
-            break;
         case "download_icals":
             $content = download_icals($arrLang,$pDB,$module_name);
             break;
@@ -139,6 +136,9 @@ $smarty->assign("CONTENT", $html);
 $smarty->assign("THEMENAME", $arrConf['mainTheme']);
 $smarty->assign("path", "");
 $content = $smarty->display("$local_templates_dir/address_book_list.tpl");
+            break;
+        default: // view_form
+            $content = viewCalendar($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
             break;
     }
     return $content;
@@ -187,10 +187,11 @@ function viewCalendar($smarty, $module_name, $local_templates_dir, &$pDB, $arrCo
     $visibility        = "visibility: hidden;";
     $visibility_repeat = "visibility: hidden;";
     $visibility_emails = "visibility: visible;";
+    $visibility_alert  = "display: none;";
     $repeat_date = "";
 
     $today = date("D");
-
+    $icalFile = $arrLang["Download"]." ".$_SESSION["elastix_user"]." ".$arrLang["Calendar"];
     $smarty->assign("repeat_date", $repeat_date);
     $smarty->assign("visibility", $visibility);
     $smarty->assign("visibility_repeat", $visibility_repeat);
@@ -226,7 +227,7 @@ function viewCalendar($smarty, $module_name, $local_templates_dir, &$pDB, $arrCo
     $smarty->assign("Contact",$arrLang["Contact"]);
     $smarty->assign("visibility_emails",$visibility_emails);
     $smarty->assign("Export_Calendar",$arrLang["Export_Calendar"]);
-
+    $smarty->assign("ical",$icalFile);
     $smarty->assign("NEW", $arrLang["Add Event"]);
     $smarty->assign("SEARCH", $arrLang["Search"]);
     $smarty->assign("module_name", $module_name);
@@ -234,6 +235,13 @@ function viewCalendar($smarty, $module_name, $local_templates_dir, &$pDB, $arrCo
     $smarty->assign("MONTH", $arrLang["Month"]);
     $smarty->assign("WEEK", $arrLang["Week"]);
     $smarty->assign("DAY", $arrLang["Day"]);
+    $smarty->assign("visibility_alert", $visibility_alert);
+    $smarty->assign("share_calendar", $arrLang["share_calendar"]);
+    $smarty->assign("other_calendar", $arrLang["other_calendar"]);
+    $smarty->assign("enter_emails", $arrLang["enter_emails"]);
+    $smarty->assign("Send",$arrLang["Send"]);
+    $smarty->assign("formatIcal",$arrLang["ical"]);
+
 
     $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",$arrLang["Calendar"], $_DATA);
     $content = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name' name='formNewEvent' id='formNewEvent'>".$htmlForm."</form>";
@@ -250,13 +258,14 @@ function saveEvent($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf,
     $event              = getParameter("event");
     $date_ini           = getParameter("date");
     $date_end           = getParameter("to");
-    $hora               = getParameter("hora1");
-    $minuto             = getParameter("minuto1");
-    $hora2              = getParameter("hora2");
-    $minuto2            = getParameter("minuto2");
+    $hora               = date('H',strtotime($date_ini));//getParameter("hora1");
+    $minuto             = date('i',strtotime($date_ini));//getParameter("minuto1");
+    $hora2              = date('H',strtotime($date_end));//getParameter("hora2");
+    $minuto2            = date('i',strtotime($date_end));//getParameter("minuto2");
     $repeat             = getParameter("it_repeat");
     $description        = getParameter("description");
-    $asterisk_calls     = getParameter("asterisk_call_me");  // puede ser on o off
+    //$asterisk_calls     = getParameter("asterisk_call_me");  // puede ser on o off
+    $asterisk_calls     = "";
     $call_to            = getParameter("call_to");
     $notification       = getParameter("notification");      // puede ser on o off 
     $notification_email = getParameter("notification_email"); // si es notification==off => no se toma en cuenta esta variable
@@ -269,7 +278,9 @@ function saveEvent($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf,
     $friday             = getParameter("Friday");
     $saturday           = getParameter("Saturday");
     $each_repeat        = getParameter("repeat");
-
+/////////////////////last calendar///////////////////
+    $reminder           = getParameter("reminder");
+/////////////////////////////////////////////////////
     $list               = getParameter("emails");
     $recording          = getParameter("recording");
     $pCalendar = new paloSantoCalendar($pDB);
@@ -277,7 +288,12 @@ function saveEvent($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf,
     $uid = Obtain_UID_From_User($user,$arrConf);
     $pDB3 = new paloDB($arrConf['dsn_conn_database1']);
     $ext = $pCalendar->obtainExtension($pDB3,$uid);
-
+///////////////////last calendar///////////////////
+    if(!isset($repeat) || $repeat == "")
+        $repeat = "none";
+    if(!isset($each_repeat) || $each_repeat == "")
+        $each_repeat = 1;
+///////////////////////////////////////////////////
     $event_type = 0;
     $checkbox_days = getCheckDays($sunday,$monday,$tuesday,$wednesday,$thursday,$friday,$saturday);
     $start_event = strtotime($date_ini);
@@ -286,20 +302,26 @@ function saveEvent($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf,
     //validar si la primera fecha es menor que la segunda
     if($event != ""){
         if($start_event <= $end_event){
-            if($asterisk_calls == "on"){ // si es on entonces el campo call_to es vacio
-                $call_to = $ext;
-                if($ext==null || $ext==""){
-                    $link = "<a href='?menu=userlist'>".$arrLang['user_list']."</a>";
-                    $smarty->assign("mb_message", $arrLang['error_ext'].$link);
-                    $content = viewForm_NewEvent($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
-                    return $content;
+            if($reminder == "on"){
+                $asterisk_calls = $reminder;
+                if($asterisk_calls == "on"){ // si es on entonces el campo call_to es vacio
+                    if($call_to==null || $call_to==""){
+                        $link = "<a href='?menu=userlist'>".$arrLang['user_list']."</a>";
+                        $smarty->assign("mb_message", $arrLang['error_ext'].$link);
+                        $content = viewForm_NewEvent($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+                        return $content;
+                    }
+                }else{// se asigna una extension cualquiera
+                    if($call_to==""){
+                        $smarty->assign("mb_message", $arrLang['error_call_to']);
+                        $content = viewForm_NewEvent($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+                        return $content;
+                    }
                 }
-            }else{// se asigna una extension cualquiera
-                if($call_to==""){
-                    $smarty->assign("mb_message", $arrLang['error_call_to']);
-                    $content = viewForm_NewEvent($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
-                    return $content;
-                }
+            }else{
+                $call_to = "";
+                $asterisk_calls = "off";
+                $recording = "";
             }
 
             if($notification == "on"){ // si ingresa emails o contactos
@@ -309,11 +331,16 @@ function saveEvent($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf,
                 $notification_email = $list;
             }else{
                 $notification_email = "";
+                $notification = "off";
             }
 
             $start = date('Y-m-d',$start_event);
             $end   = date('Y-m-d',$end_event);
-
+////////////////////////////last calendar//////////////////////////////////////
+            if(!isset($checkbox_days) || $checkbox_days==""){
+                $checkbox_days = getConvertDay($start_event);
+            }
+//////////////////////////////////////////////////////////////////////////////
             $starttime = date('Y-m-d',$start_event)." ".$hora.":".$minuto;
             $endtime = date('Y-m-d',$end_event2)." ".$hora2.":".$minuto2;
             $day_repeat  = explode(',',$checkbox_days);
@@ -330,7 +357,8 @@ function saveEvent($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf,
                    else 
                         $id_last += 1;
                 }
-                createRepeatAudioFile($each_repeat,$day_repeat,$starttime,$endtime,$num_frec,$asterisk_calls,$ext,$call_to,$pDB,$id_last,$arrLang,$arrConf,$recording);
+                if($reminder == "on")
+                    createRepeatAudioFile($each_repeat,$day_repeat,$starttime,$endtime,$num_frec,$asterisk_calls,$ext,$call_to,$pDB,$id_last,$arrLang,$arrConf,$recording);
             }
             if($repeat == "each_day"){ //dias que se repiten durante un numero de semanas
                 $event_type = 5;
@@ -344,7 +372,8 @@ function saveEvent($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf,
                         else 
                             $id_last += 1;
                      }
-                createRepeatAudioFile($each_repeat,$day_repeat,$starttime,$endtime,$num_frec,$asterisk_calls,$ext,$call_to,$pDB,$id_last,$arrLang,$arrConf,$recording);
+                if($reminder == "on")
+                    createRepeatAudioFile($each_repeat,$day_repeat,$starttime,$endtime,$num_frec,$asterisk_calls,$ext,$call_to,$pDB,$id_last,$arrLang,$arrConf,$recording);
             }
             if($repeat == "each_month"){ //dias que se repiten durante un numero de meses
                 $event_type = 6;
@@ -358,10 +387,10 @@ function saveEvent($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf,
                         else 
                                 $id_last += 1;
                      }
-
-                createRepeatAudioFile($each_repeat,$day_repeat,$starttime,$endtime,$num_frec,$asterisk_calls,$ext,$call_to,$pDB,$id_last,$arrLang,$arrConf,$recording);
+                if($reminder == "on")
+                    createRepeatAudioFile($each_repeat,$day_repeat,$starttime,$endtime,$num_frec,$asterisk_calls,$ext,$call_to,$pDB,$id_last,$arrLang,$arrConf,$recording);
             }
-
+            
             if(getParameter("save_edit")){ // si se va modificar un evento existente
                 $val = $pCalendar->updateEvent($id,$start,$end,$starttime,$event_type,$event,$description,$asterisk_calls,$recording,$call_to,$notification,$notification_email,$endtime,$each_repeat,$checkbox_days);
                 if($val == true){
@@ -372,7 +401,7 @@ function saveEvent($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf,
                 }
                 else{
                     $smarty->assign("mb_message", $arrLang['error_update']);
-                    $content = viewForm_NewEvent($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+                    $content = viewCalendar($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
                     return $content;
                 }
             }
@@ -387,18 +416,18 @@ function saveEvent($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf,
                 }
                 else{
                     $smarty->assign("mb_message", $arrLang['error_insert']);
-                    $content = viewForm_NewEvent($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+                    $content = viewCalendar($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
                     return $content;
                 }
             }
         }else{
             $smarty->assign("mb_message", $arrLang['error_date']);
-            $content = viewForm_NewEvent($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+            $content = viewCalendar($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
             return $content;
         }
     }else{
         $smarty->assign("mb_message", $arrLang['error_eventName']);
-        $content = viewForm_NewEvent($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+        $content = viewCalendar($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
         return $content;
     }
 }
@@ -410,6 +439,10 @@ function viewForm_NewEvent($smarty, $module_name, $local_templates_dir, &$pDB, $
     $oForm = new paloForm($smarty,$arrForm);
     $date_ini = getParameter("date");
     $date_end = getParameter("to");
+    $hour1    = date('H',strtotime($date_ini));//getParameter("hora1");
+    $minute1  = date('i',strtotime($date_ini));//getParameter("minuto1");
+    $hour2    = date('H',strtotime($date_end));//getParameter("hora2");
+    $minute2  = date('i',strtotime($date_end));//getParameter("minuto2");
     $options_emails = "";
     $id_event = "";
     //begin, Form data persistence to errors and other events.
@@ -421,6 +454,7 @@ function viewForm_NewEvent($smarty, $module_name, $local_templates_dir, &$pDB, $
 
     $visibility        = "visibility: hidden;";
     $visibility_repeat = "visibility: hidden;";
+    $visibility_alert  = "display: none;";
     $repeat_date = "";
 
     $today = date("D");
@@ -570,6 +604,8 @@ function viewForm_NewEvent($smarty, $module_name, $local_templates_dir, &$pDB, $
     $smarty->assign("Th",$arrLang["Th"]);
     $smarty->assign("Fr",$arrLang["Fr"]);
     $smarty->assign("Sa",$arrLang["Sa"]);
+    $smarty->assign("visibility_alert", $visibility_alert);
+
 
     $htmlForm = $oForm->fetchForm("$local_templates_dir/new_event.tpl",$title, $_DATA);
     $content = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'  name='formNewEvent' id='formNewEvent'>".$htmlForm."</form>";
@@ -680,10 +716,6 @@ $msg = "
                     <td>".date("d M Y",strtotime($end)).".</td>
                 </tr>
                 <tr class='tr'>
-                    <td class='td1'>".$arrLang['It repeat'].": </td>
-                    <td>$event_type.</td>
-                </tr>
-                <tr class='tr'>
                     <td class='td1'>".$arrLang['time'].": </stronge></td>
                     <td>".$startarray[1]." - ".$endarray[1].".</td>
                 </tr>
@@ -695,10 +727,6 @@ $msg = "
                     <td class='td1'><stronge>".$arrLang['Organizer'].": </stronge></td>
                     <td><span>$user_name.</span></td>
                 </tr>
-                <tr class='tr'>
-                    <td class='td1'><stronge>".$arrLang['Confirm_event'].": </stronge></td>
-                    <td><a href='#' target='_blank'>".$arrLang['Confirm']."</a></td>
-                </tr>
                 <tr class='footer'>
                     <td colspan='2'><center><span>".$arrLang['footer']."</span></center></td>
                 </tr>
@@ -706,8 +734,14 @@ $msg = "
         </div>
     </body>
 </html>";
-
-
+//                 <tr class='tr'>
+//                     <td class='td1'>".$arrLang['It repeat'].": </td>
+//                     <td>$event_type.</td>
+//                 </tr>
+//                 <tr class='tr'>
+//                     <td class='td1'><stronge>".$arrLang['Confirm_event'].": </stronge></td>
+//                     <td><a href='#' target='_blank'>".$arrLang['Confirm']."</a></td>
+//                 </tr>
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -837,6 +871,39 @@ function getCheckDays($sunday,$monday,$tuesday,$wednesday,$thursday,$friday,$sat
     return $out;
 }
 
+/////////////////////// the last calendar  ///////////////////////////////////////
+
+function getConvertDay($start){
+    $ini = date('D', $start);
+    $out = "";
+    switch($ini){
+        case "Sun":
+            $out .= "Su,";
+            break;
+        case "Mon":
+            $out .= "Mo,";
+            break;
+        case "Tue":
+            $out .= "Tu,";
+            break;
+        case "Wed":
+            $out .= "We,";
+            break;
+        case "Thu":
+            $out .= "Th,";
+            break;
+        case "Fri":
+            $out .= "Fr,";
+            break;
+        case "Sat":
+            $out .= "Sa,";
+            break;
+    }
+    return $out;
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+
 function getDaysByCheck($days,$type=0){
     $arrDays = explode(',',$days);
     $arrOut  = "";
@@ -918,11 +985,11 @@ function viewBoxCalendar($arrConf,$arrLang,$pDB){
         $data['notification_status'] = $data['notification'];
         $title = "View Event";
         $data['title'] = $title;
-        // convert times to (d M Y) like (02 Feb 2010)
-        $new_date_ini = $data['date'];
-        $new_date_end = $data['to'];
-        $data['date'] = date("d M Y",strtotime($new_date_ini));
-        $data['to'] = date("d M Y",strtotime($new_date_end));
+        // convert times to (d M Y H:i) like (02 Feb 2010 15:25)
+        $new_date_ini = $data['starttime'];
+        $new_date_end = $data['endtime'];
+        $data['date'] = date("d M Y H:i",strtotime($new_date_ini));
+        $data['to'] = date("d M Y H:i",strtotime($new_date_end));
 
         if($data['notification']=="on"){
             $arrContacts = getEmailToTables($data['emails_notification']);
@@ -1000,8 +1067,11 @@ function newBoxCalendar($arrConf,$arrLang,$pDB){
     $data['uid'] = $uid;
     $data['title'] = $arrLang["Add Event"];
     // convert times to (d M Y) like (02 Feb 2010)
-    $data['now'] = date("d M Y");
+    $data['now'] = date("d M Y H:i");
     $data['dayLe'] = date("D");
+
+    $data['hour'] = date("H");
+    $data['minute'] = date("i");
 
     $data = array_merge($data,$arrLang);
 
@@ -1319,7 +1389,8 @@ function setDataCalendar($arrLang,$pDB,$arrConf){
     $event = $pCalendar->getEventById($id);
     $start = $event['startdate'];
     $end = $event['enddate'];
-    if($days >= 0){
+    $checkbox_days = "";
+    /*if($days >= 0){
         $startdate = date("Y-m-d",strtotime("$start + $days days"));
         $enddate = date("Y-m-d",strtotime("$end + $days days"));
     }else{
@@ -1327,15 +1398,20 @@ function setDataCalendar($arrLang,$pDB,$arrConf){
         $days = $num_days[1];
         $startdate = date("Y-m-d",strtotime("$start - $days days"));
         $enddate = date("Y-m-d",strtotime("$end - $days days"));
-    }
+    }*/
+    $startdate = date("Y-m-d",strtotime($dateIni));
+    $enddate   = date("Y-m-d",strtotime($dateEnd));
     $starttime = $startdate." ".$hour_ini;
-    $endtime = $enddate." ".$hour_end;
+    $endtime   = $enddate." ".$hour_end;
 
     // obtain data to create audio files
     $arrResult = $pCalendar->getEventById($id);
     // first remove the old audio files
     $dir_outgoing = $arrConf['dir_outgoing'];
-    exec("rm -f $dir_outgoing/event_{$id}*.call");
+////////////////las calendar //////////////////////////////////////
+    if(isset($arrResult['call_to']) && $arrResult['call_to'] != "")
+////////////////////////////////////////////////////////////////////
+        exec("rm -f $dir_outgoing/event_{$id}*.call");
 
     $uid = $arrResult['uid'];
     $pDB3 = new paloDB($arrConf['dsn_conn_database1']);
@@ -1343,6 +1419,8 @@ function setDataCalendar($arrLang,$pDB,$arrConf){
 
     $each_repeat = $arrResult['each_repeat'];
     $day_repeat = explode(',',$arrResult['days_repeat']);
+
+
     if($arrResult['eventtype'] == 1)
         $num_frec = 0;
     else{ if($arrResult['eventtype'] == 5){
@@ -1351,15 +1429,26 @@ function setDataCalendar($arrLang,$pDB,$arrConf){
             $num_frec = 30;
           }
     }
-
+/////////////////////// last calendar //////////////////////////////
+    if($arrResult['eventtype'] == 1){
+        $startdateTime = strtotime($startdate);
+        $checkbox_days = getConvertDay($startdateTime);
+        $day_repeat  = explode(',',$checkbox_days);
+    }
+////////////////////////////////////////////////////////////////////
     $asterisk_calls = $arrResult['asterisk_call'];
     //$ext = $arrResult['call_to'];
     $call_to = $arrResult['call_to'];
     $recording = $arrResult['recording'];
 
-    createRepeatAudioFile($each_repeat,$day_repeat,$starttime,$endtime,$num_frec,$asterisk_calls,$ext,$call_to,$pDB,$id,$arrLang,$arrConf,$recording);
 
-    $val = $pCalendar->updateDateEvent($id,$startdate,$enddate,$starttime,$endtime);
+////////////////las calendar //////////////////////////////////////
+    if(isset($arrResult['call_to']) && $arrResult['call_to'] != "")
+////////////////////////////////////////////////////////////////////
+        createRepeatAudioFile($each_repeat,$day_repeat,$starttime,$endtime,$num_frec,$asterisk_calls,$ext,$call_to,$pDB,$id,$arrLang,$arrConf,$recording);
+
+
+    $val = $pCalendar->updateDateEvent($id,$startdate,$enddate,$starttime,$endtime, $checkbox_days);
 
     if($val)
         return $arrLang['update_successful'];
@@ -1557,7 +1646,7 @@ function convertDayToInt($day)
 
 function createFieldForm($arrLang)
 {
-    for($i=0; $i<60; $i=$i+10){
+    for($i=0; $i<60; $i++){
         if($i < 10) $arrMin["0$i"] = "0$i";
         else $arrMin[$i] = $i;
     }
@@ -1581,22 +1670,22 @@ function createFieldForm($arrLang)
     $arrRecording = $pCalendar->Obtain_Recordings_Current_User();
 
     $arrFields = array(
-            "event"   => array(      "LABEL"                  => $arrLang["Event"],
+            "event"   => array(      "LABEL"                  => $arrLang["Name"],
                                             "REQUIRED"               => "no",
                                             "INPUT_TYPE"             => "TEXT",
-                                            "INPUT_EXTRA_PARAM"      => array("style" => "width:363px", "id" => "event"),
+                                            "INPUT_EXTRA_PARAM"      => array("style" => "width:230px", "id" => "event"),
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
             "date"   => array(      "LABEL"                  => $arrLang["Date"],
                                             "REQUIRED"               => "no",
                                             "INPUT_TYPE"             => "DATE",
-                                            "INPUT_EXTRA_PARAM"      => array("TIME" => false, "FORMAT" => "%d %b %Y", "style" => "width:80px"),
+                                            "INPUT_EXTRA_PARAM"      => array("TIME" => true, "FORMAT" => "%d %b %Y %H:%M", "style" => "width:80px"),
                                             "VALIDATION_TYPE"        => "",
                                             "EDITABLE"               => "si",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-            "hora1"   => array(      "LABEL"                  => "",
+            /*"hora1"   => array(      "LABEL"                  => "",
                                             "REQUIRED"               => "no",
                                             "INPUT_TYPE"             => "SELECT",
                                             "INPUT_EXTRA_PARAM"      => $arrHou,
@@ -1627,11 +1716,11 @@ function createFieldForm($arrLang)
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => "",
                                             "EDITABLE"               => "si",
-                                            ),
+                                            ),*/
             "to"   => array(      "LABEL"                  => $arrLang["To"],
                                             "REQUIRED"               => "no",
                                             "INPUT_TYPE"             => "DATE",
-                                            "INPUT_EXTRA_PARAM"      => array("TIME" => false, "FORMAT" => "%d %b %Y"),
+                                            "INPUT_EXTRA_PARAM"      => array("TIME" => true, "FORMAT" => "%d %b %Y %H:%M"),
                                             "VALIDATION_TYPE"        => "",
                                             "EDITABLE"               => "si",
                                             "VALIDATION_EXTRA_PARAM" => ""
@@ -1666,21 +1755,21 @@ function createFieldForm($arrLang)
                                             "INPUT_EXTRA_PARAM"      => "",
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => "",
-                                            "COLS"                   => "55",
+                                            "COLS"                   => "30",
                                             "ROWS"                   => "4",
                                             "EDITABLE"               => "si",
                                             ),
-            "asterisk_call_me"   => array(      "LABEL"                  => $arrLang["Asterisk Call Me"],
+/*            "asterisk_call_me"   => array(      "LABEL"                  => $arrLang["Asterisk Call Me"],
                                             "REQUIRED"               => "no",
                                             "INPUT_TYPE"             => "CHECKBOX",
                                             "INPUT_EXTRA_PARAM"      => "",
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
-                                            ),
+                                            ),*/
             "call_to"   => array(      "LABEL"                  => $arrLang["Call to"],
                                             "REQUIRED"               => "no",
                                             "INPUT_TYPE"             => "TEXT",
-                                            "INPUT_EXTRA_PARAM"      => array("id"=>"call_to"),
+                                            "INPUT_EXTRA_PARAM"      => array("style" => "width:70px","id"=>"call_to"),
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
@@ -1756,6 +1845,14 @@ function createFieldForm($arrLang)
                                             "VALIDATION_EXTRA_PARAM" => "",
                                             "EDITABLE"               => "si",
                                             ),
+            "reminder"   => array(      "LABEL"                  => $arrLang["active_foneCall"],
+                                            "REQUIRED"               => "no",
+                                            "INPUT_TYPE"             => "CHECKBOX",
+                                            "INPUT_EXTRA_PARAM"      => "",
+                                            "VALIDATION_TYPE"        => "text",
+                                            "VALIDATION_EXTRA_PARAM" => ""
+                                            ),
+
             );
     return $arrFields;
 }

@@ -40,6 +40,9 @@
 /*
  * json_url         - url to fetch json object
  * cache       		- use cache
+ * component        - numbers of component to add. can be more than one element and the id has to be difference
+ * size_block       - is the size of the div facebook-auto which have the total content(list emails)
+ * size_type        - is the size of the div to appear while writing
  * height           - maximum number of element shown before scroll will apear
  * newel            - show typed text like a element
  * firstselected	- automaticly select first element from dropdown
@@ -60,11 +63,11 @@ jQuery(
 			{
 		        function init()
 		        {
-		           createFCBK();       
+		           createFCBK();
 	               preSet();
-	               addInput(0); 
+	               addInput(0);
 		        }
-	        	
+
 		        function createFCBK()
 		        {	    
 		           element.hide();
@@ -73,16 +76,24 @@ jQuery(
 		           {
 		           	   element.attr("name",element.attr("name")+"[]");
 		           }
-	        	   
+
 		           holder = $(document.createElement("ul"));
 	               holder.attr("class", "holder");
-                   holder.attr("id", "lstholder");
+                   //holder.attr("id", "lstholder");
+//////////////////////////////////////////////////////////////////////////////
+                   holder.attr("id", "lstholder"+options.component);
+/////////////////////////////////////////////////////////////////////////////
 	               element.after(holder);
 	               
 	               complete = $(document.createElement("div"));
 	               complete.addClass("facebook-auto");
+                   //complete.append('<div class="default">'+ options.complete_text +"</div>");
+//////////////////////////////////////////////////////////////////////
+                   var styles = complete.attr("style");
+                   var sizeType = options.size_type;
+                   complete.attr("style", "width:"+sizeType+";"+styles);
 	               complete.append('<div class="default">'+ options.complete_text +"</div>");
-	               
+//////////////////////////////////////////////////////////////////////
 				   if (browser_msie)
 	               {
 	                    complete.append('<iframe class="ie6fix" scrolling="no" frameborder="0"></iframe>');
@@ -94,7 +105,11 @@ jQuery(
 	               
 	               complete.prepend(feed);
 	               holder.after(complete);
-				   feed.css("width","362px");//feed.css("width",complete.width())
+                   //feed.css("width","362px");//feed.css("width",complete.width())
+////////////////////////////////////////////////////////////////////////////////////////
+                   var sizeOp = options.size_block
+				   feed.css("width",sizeOp);
+////////////////////////////////////////////////////////////////////////////////////////
 		        }
 	        	
 		        function preSet()
@@ -156,7 +171,7 @@ jQuery(
 	                {						
 	                    $("#"+elemid + "_annoninput").remove();
 						var _item;
-	                    addInput(1);                        
+	                    addInput(1);
 	                    if (element.children("option[value=" + value + "]").length)
 	                    {   
 							_item = element.children("option[value=" + value + "]");            
@@ -236,7 +251,7 @@ jQuery(
 				            }
 	                    }
 	                );
-	                
+
 					input.keypress(
 	                    function(event)
 	                    {							
@@ -468,10 +483,10 @@ jQuery(
 	        	
 		        function bindEvents()
 		        {
-		            var maininput = $("#"+elemid + "_annoninput").children(".maininput");	                 	
-	       	        bindFeedEvent();      	
-	                feed.children("li").unbind("mousedown");        
-	                feed.children("li").mousedown( 
+		            var maininput = $("#"+elemid + "_annoninput").children(".maininput");
+	       	        bindFeedEvent();
+	                feed.children("li").unbind("mousedown");
+	                feed.children("li").mousedown(
 	                    function()
 	                    {
 	                        var option = $(this);
@@ -481,7 +496,7 @@ jQuery(
 	                        complete.hide();
 	                    }
 	                );
-	                
+
 	                maininput.unbind("keydown");
 	                maininput.keydown(
 	                    function(event)
@@ -519,9 +534,9 @@ jQuery(
 								}
 								return false;							
 	                        }
-	                        
-	                        if (event.keyCode == 40) 
-	                        {               
+
+	                        if (event.keyCode == 40)
+	                        {
 					            removeFeedEvent();
 	                            if (focuson == null || focuson.length == 0) 
 	                            {
@@ -631,6 +646,11 @@ jQuery(
 				        height: "10",
 				        newel: false,
 						firstselected: false,
+//////////////////////////////////////////////////////////////////
+                        component: 0,
+                        size_block: "0%",
+                        size_type : "0%",
+////////////////////////////////////////////////////////////////////
 				        filter_case: false,
 				        filter_hide: false,
 				        complete_text: "Start to type...",

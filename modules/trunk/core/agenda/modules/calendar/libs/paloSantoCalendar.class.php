@@ -325,8 +325,8 @@ class paloSantoCalendar {
         return true; 
     }
 
-    function updateDateEvent($id_event,$startdate,$enddate,$starttime,$endtime){
-        $query = "UPDATE events SET  startdate='$startdate',enddate='$enddate',starttime='$starttime',endtime='$endtime' WHERE id=$id_event";
+    function updateDateEvent($id_event,$startdate,$enddate,$starttime,$endtime,$day_repeat){
+        $query = "UPDATE events SET  startdate='$startdate',enddate='$enddate',starttime='$starttime',endtime='$endtime',days_repeat='$day_repeat' WHERE id=$id_event";
 
         $result = $this->_DB->genQuery($query);
         if($result==FALSE){
@@ -381,7 +381,6 @@ class paloSantoCalendar {
 
     function getAllEvents(){
         $query = "SELECT * FROM events";
-//startdate >= '$startdate' AND enddate <= '$enddate'";
         $result = $this->_DB->fetchTable($query,true);
         if($result==FALSE){
             $this->errMsg = $this->_DB->errMsg;
@@ -399,6 +398,46 @@ class paloSantoCalendar {
             return $result['name'];
         else
             return false;
+    }
+
+function existPassword($pass){
+        $query = "SELECT password FROM share_calendar WHERE password = '$pass'";
+        $result = $this->_DB->getFirstRowQuery($query,true);
+        if($result==FALSE || $result==null || $result==""){
+            $this->errMsg = $this->_DB->errMsg;
+            return false; //no existe
+        }
+        return true; // existe
+    }
+
+    function createShareCalendar($uid_from, $user, $password){
+        $query = "INSERT INTO share_calendar(uid_from,uid_to,user,password,confirm) VALUES('$uid_from','','$user','$password','FALSE')";
+
+        $result = $this->_DB->genQuery($query);
+        if($result==FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return false;
+        }
+        return true; 
+    }
+
+    function getUidFrom($userEXT,$passEXT){
+        $query = "SELECT uid_from FROM share_calendar WHERE user='$userEXT' and password='$passEXT'";
+        $result = $this->_DB->getFirstRowQuery($query,true);
+        if($result==FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return false;
+        }
+        return $result['uid_from'];
+    }
+
+    function getUserNameFromById()
+    {
+        global $pACL;
+        global $arrConf;
+        $idUser = $_SESSION["elastix_userFromUid"];
+        $name = $pACL->getNameFromIdUser($idUser);
+        return $name;
     }
 }
 ?>

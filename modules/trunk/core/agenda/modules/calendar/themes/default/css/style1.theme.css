@@ -115,6 +115,7 @@
 
 .ui-widget-content a { 
     color: #222222; 
+    text-decoration:none;
 }
 
 .ui-widget-header { 
@@ -210,6 +211,7 @@
     opacity: .7; 
     filter:Alpha(Opacity=70); 
     font-weight: normal; 
+    cursor:pointer;
 }
 
 /* Icons

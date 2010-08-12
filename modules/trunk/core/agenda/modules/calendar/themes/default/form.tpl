@@ -7,12 +7,35 @@
 
 <table class="tabForm" style="font-size: 16px;" width="100%">
     <tr>
-        <td align="left" valign="top" style="font-size:64%;">
-            <div type="text" id="datepicker"></div>
-            <div id="icals" >
-                <a  href="index.php?menu={$module_name}&action=download_icals&rawmode=yes">
-                    <span>{$Export_Calendar}</span>
-                </a>
+        <td width="10%" align="left" valign="top" style="font-size:64%;">
+            <div id="datepicker"></div>
+            <!--<div id="share_calendar" class="ui-datepicker-inline ui-datepicker ui-widget ui-widget-content ui-helper-clearfix ui-corner-all">
+                <div class="ui-datepicker-header ui-widget-header ui-helper-clearfix ui-corner-all title_size">{$share_calendar}</div>
+                <div class="content_share">
+                    <div class="title_email_to">
+                        <strong>{$enter_emails}</strong>
+                    </div>
+                    <div style="width:100%;">
+                        <select id="selectE" name="selectE">
+                        </select>
+                    </div>
+                    <div class="button_send">
+                        <input type="button" class="ui-datepicker-current ui-state-default ui-priority-secondary ui-corner-all" id="sent_emails" name="send_emails" value="{$Send}" />
+                    </div>
+                </div>
+            </div>
+            <div id="other_calendars" class="ui-datepicker-inline ui-datepicker ui-widget ui-widget-content ui-helper-clearfix ui-corner-all">
+                <div class="ui-datepicker-header ui-widget-header ui-helper-clearfix ui-corner-all title_size">{$other_calendar}</div>
+                <div class="content_others"></div>
+            </div>-->
+            <div id="icals" class="ui-datepicker-inline ui-datepicker ui-widget ui-widget-content ui-helper-clearfix ui-corner-all">
+                <div class="ui-datepicker-header ui-widget-header ui-helper-clearfix ui-corner-all title_size">{$Export_Calendar}</div>
+                <div class="content_ical">
+                    <a  href="index.php?menu={$module_name}&action=download_icals&rawmode=yes">
+                            <span>{$ical}</span>
+                    </a>
+                    <div align="center"><span>{$formatIcal}</span></div>
+                </div>
             </div>
         </td>
         <td align="right" width="90%" >
@@ -39,36 +62,43 @@
                         </div>
                         <div id="table_box">
                             <table width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
-                                <tr class="moduleTitle">
+                                <tr height="40px" class="moduleTitle titleBox">
                                     <td class="moduleTitle" valign="middle" colspan='2'>&nbsp;&nbsp;<img src="{$IMG}" border="0" align="absmiddle">&nbsp;&nbsp;<span id="title_box"></span></td>
                                 </tr>
                                 <tr class="letra12">
                                     <td align="left">
                                         <div id="new_box" style="display:none">
                                             <input id="save" class="button" type="submit" name="save_new" value="{$SAVE}">&nbsp;&nbsp;
-                                            <input id="cancel" class="button" type="button" name="cancel" value="{$CANCEL}">
+                                            <input id="cancel" class="button cancel" type="button" name="cancel" value="{$CANCEL}">
                                         </div>
                                         <div id="view_box" style="display:none">
                                             <input id="edit" class="button" type="button" name="edit" value="{$EDIT}">
                                             <input id="delete" class="button" type="button" name="delete" value="{$DELETE}">
-                                            <input id="cancel" class="button" type="button" name="cancel" value="{$CANCEL}">
+                                            <input id="cancel" class="button cancel" type="button" name="cancel" value="{$CANCEL}">
                                         </div>
                                         <div id="edit_box" style="display:none">
                                             <input id="save" class="button" type="submit" name="save_edit" value="{$SAVE}">&nbsp;&nbsp;
-                                            <input id="cancel" class="button" type="button" name="cancel" value="{$CANCEL}">
+                                            <input id="cancel" class="button cancel" type="button" name="cancel" value="{$CANCEL}">
                                         </div>
                                     </td>
                                 </tr>
                             </table>
                             <table style="font-size: 16px;" width="99%" border="0">
                                 <tr>
+                                    <td>&nbsp;&nbsp;&nbsp;</td>
+                                </tr>
+                                <tr>
                                     <td align="left" colspan=2>
                                         <fieldset class="fielform">
-                                            <legend class="sombreado">{$New_Event}</legend>
+                                            <!--<legend class="sombreado">{$New_Event}</legend>-->
                                             <table style="font-size: 16px;" width="99%" border="0">
                                                 <tr class="letra12">
                                                     <td align="left" width="23%"><b>{$event.LABEL}: <span  class="required">*</span></b></td>
                                                     <td align="left">{$event.INPUT}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>&nbsp;&nbsp;&nbsp;</td>
+                                                    <td>&nbsp;&nbsp;&nbsp;</td>
                                                 </tr>
                                                 <tr class="letra12">
                                                     <td align="left"><b>{$description.LABEL}: <span  class="required">*</span></b></td>
@@ -81,29 +111,27 @@
                                 <tr>
                                     <td align="left" colspan=2 width="50%">
                                         <fieldset class="fielform">
-                                            <legend class="sombreado">{$Date_event}</legend>
-                                            <table style="font-size: 16px;" width="99%" border="0">
+                                            <!--<legend class="sombreado">{$Date_event}</legend>-->
+                                            <table style="font-size: 16px;" width="85%" border="0">
                                                 <tr class="letra12">
                                                     <td align="left" width="20%"><b>{$Start_date}: <span  class="required">*</span></b></td>
                                                     <td align="left">
                                                         {$date.INPUT}
                                                     </td>
-                                                    <td align="left"><b>{$Hour_ini}: <span  class="required">*</span></b></td>
-                                                    <td align="left" width="23%">
+                                                    <!--<td align="left" width="34%">
                                                         {$hora1.INPUT}&nbsp;<b>:</b>&nbsp;{$minuto1.INPUT}
-                                                    </td>
+                                                    </td>-->
                                                 </tr>
                                                 <tr class="letra12">
                                                     <td align="left"><b>{$End_date}: <span  class="required">*</span></b></td>
                                                     <td align="left">
                                                         {$to.INPUT}
                                                     </td>
-                                                    <td align="left"><b>{$Hour_end}: <span  class="required">*</span></b></td>
-                                                    <td align="left"  width="21%">
+                                                    <!--<td align="left"  width="21%">
                                                         {$hora2.INPUT}&nbsp;<b>:</b>&nbsp;{$minuto2.INPUT}
-                                                    </td>
+                                                    </td>-->
                                                 </tr>
-                                                <tr class="letra12">
+                                                <!--<tr class="letra12">
                                                     <td align="left"><b>{$it_repeat.LABEL}: <span  class="required">*</span></b></td>
                                                     <td align="left">{$it_repeat.INPUT}</td>
                                                     <td align="left" class="repeat" style="{$visibility_repeat}"><b>{$repeat.LABEL}: <span  class="required">*</span></b></td>
@@ -134,75 +162,92 @@
                                                         </table>
                                                     </td>
                                                     <td align="left">&nbsp;&nbsp;</td>
-                                                </tr>
+                                                </tr>-->
                                             </table>
                                         </fieldset>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td align="left" colspan=2>
-                                        <fieldset class="fielform">
-                                            <legend class="sombreado">{$Call_alert}</legend>
-                                            <table style="font-size: 16px;" width="99%" border="0">
-                                                <tr class="letra12">
-                                                    <td align="left" width="23%"><b>{$asterisk_call_me.LABEL}: </b></td>
-                                                    <td align="left" id="asterisk_call">{$asterisk_call_me.INPUT}</td>
-                                                </tr>
-                                                <tr class="letra12">
-                                                    <td align="right" colspan="2"><div id="label_call"></td>
-                                                </tr>
-                                                <tr class="letra12" id="check">
-                                                    <td align="left"><b>{$call_to.LABEL}: <span  class="required">*</span></b></td>
-                                                    <td align="left">{$call_to.INPUT}&nbsp;&nbsp;
-                                                        <span id="add_phone">
-                                                                {$add_phone}<a href="javascript: popup_phone_number('?menu={$module_name}&amp;action=phone_numbers&amp;rawmode=yes');"> Here</a>
-                                                        </span>
-                                                    </td>
-                                                </tr>
-                                                <tr class="letra12">
-                                                    <td align="left"><b>{$recording.LABEL}: <span  class="required">*</span></b></td>
-                                                    <td align="left">{$recording.INPUT}&nbsp;&nbsp;
-                                                        <div class="new_box_rec" style="display: inline;">
-                                                            {$new_recording}
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                        </fieldset>
+                                        <div class="divCorners" style="-moz-border-radius: 10px 10px 10px 10px;" id="divReminder">
+                                            <div class="sombreado">
+                                                <input id="CheckBoxRemi" type="checkbox" class="CheckBoxClass"/>
+                                                <label id="Label1" for="CheckBoxRemi" class="CheckBoxLabelClass">{$Call_alert}</label>
+                                            </div>
+                                        </div>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td align="left" colspan=2>
-                                        <fieldset class="fielform">
-                                            <legend class="sombreado">{$Notification_Alert}</legend>
-                                            <table style="font-size: 16px;" width="99%" border="0">
-                                                <tr class="letra12">
-                                                    <td align="left" width="23%"><b>{$notification.LABEL}: </b></td>
-                                                    <td align="left" id="noti">{$notification.INPUT}</td>
-                                                </tr>
-                                                <tr class="letra12" id="notification_email" style="{$visibility}">
-                                                    <td align="left"><b id="notification_email_label">{$notification_email}: <span  class="required">*</span></b></td>
-                                                    <td align="left">
-                                                        <div>
-                                                            <select id="select2" name="select2">
+                                        <table style="font-size: 16px; margin-left:10px;" width="99%" border="0">
+                                            <tr class="letra12" style="display: none;"> 
+                                                <td align="left" width="23%"><b>{$reminder.LABEL}: </b></td>
+                                                <td align="left" id="remi">{$reminder.INPUT}</td>
+                                            </tr>
+                                            <!--<tr class="letra12 remin" style="{$visibility_alert}">
+                                                <td align="left" width="23%"><b>{$asterisk_call_me.LABEL}: </b></td>
+                                                <td align="left" id="asterisk_call">{$asterisk_call_me.INPUT}</td>
+                                            </tr>-->
+                                            <tr class="letra12 remin"  style="{$visibility_alert}">
+                                                <td align="right" colspan="2"><div id="label_call"></td>
+                                            </tr>
+                                            <tr class="letra12 remin" height="30px" id="check" style="{$visibility_alert}">
+                                                <td align="left"><b>{$call_to.LABEL}: <span  class="required">*</span></b></td>
+                                                <td align="left">{$call_to.INPUT}&nbsp;&nbsp;
+                                                    <span id="add_phone">
+                                                            {$add_phone}<a href="javascript: popup_phone_number('?menu={$module_name}&amp;action=phone_numbers&amp;rawmode=yes');"> Here</a>
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            <tr class="letra12 remin" style="{$visibility_alert}">
+                                                <td align="left"><b>{$recording.LABEL}: <span  class="required">*</span></b></td>
+                                                <td align="left">{$recording.INPUT}&nbsp;&nbsp;
+                                                    <div class="new_box_rec" style="display: inline;">
+                                                        {$new_recording}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="left" colspan=2>
+                                        <div class="divCorners" style="-moz-border-radius: 10px 10px 10px 10px;" id="divNotification">
+                                            <div class="sombreado">
+                                                <input id="CheckBoxNoti" type="checkbox" class="CheckBoxClass"/>
+                                                <label id="Label2" for="CheckBoxNoti" class="CheckBoxLabelClass">{$Notification_Alert}</label>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="left" colspan=2>
+                                        <table style="font-size: 16px; margin-left:10px;" width="99%" border="0">
+                                            <tr class="letra12" style="display: none;">
+                                                <td align="left" width="23%"><b>{$notification.LABEL}: </b></td>
+                                                <td align="left" id="noti">{$notification.INPUT}</td>
+                                            </tr>
+                                            <tr class="letra12" id="notification_email" style="{$visibility}">
+                                                <td align="left" width="25%"><b id="notification_email_label">{$notification_email}: <span  class="required">*</span></b></td>
+                                                <td align="left">
+                                                    <div>
+                                                        <select id="select2" name="select2">
 
-                                                            </select>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tr class="letra12" id="email_to" style="{$visibility_emails}">
-                                                    <td align="center" colspan="2">
-                                                        <table id="grilla" style="font-size: 16px;" width="90%" border="0">
-                                                        </table>
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                        </fieldset>
+                                                        </select>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr class="letra12" id="email_to" style="{$visibility_emails}">
+                                                <td align="center" class="noti_email" colspan="2">
+                                                    <table id="grilla" style="font-size: 16px;" width="90%" border="0">
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
                                     </td>
                                 </tr>
                             </table>
 
-                            <input class="button" type="hidden" name="id" value="" id="id" />
                             <input class="button" type="hidden" name="id_event" value="" id="id_event" />
                             <input type="hidden" id="phone_type" name="phone_type" value="" />
                             <input type="hidden" id="phone_id" name="phone_id" value="" />
@@ -225,11 +270,5 @@
         </table>
     </div>
 </div>
-{literal}
-<script type="text/javascript">
-$(document).ready(function() {
-    //remove lupa
-    $("#search").parent("div").remove();
-});
-</script>
-{/literal}
+<input class="button" type="hidden" name="id" value="{$ID}" id="id" />
+<input class="button" type="hidden" name="share_emails" value="" id="share_emails" />

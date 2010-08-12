@@ -15,7 +15,7 @@
  *
  */
  
-var module_name = "calendar";
+//var module_name = "calendar";
 
 (function($) {
 
@@ -28,6 +28,11 @@ var views = fc.views = {};
 -----------------------------------------------------------------------------*/
 
 var defaults = {
+
+    // for elastix
+    // if the user is owner of calendar or if is a invited
+    owner: true,
+    module_name: "calendar",
 
 	// display
 	defaultView: 'month',
@@ -268,8 +273,6 @@ $.fn.fullCalendar = function(options) {
 				if (header) {
 					// update title text
 					header.find('h2.fc-header-title').html(view.title);
-                    //marseaplage
-                    header.find('h2.fc-header-title').css("color","#E35332");
 					// enable/disable 'today' button
 					var today = new Date();
 					if (today >= view.start && today < view.end) {
@@ -655,6 +658,8 @@ $.fn.fullCalendar = function(options) {
 		
 		var header,
 			sections = options.header;
+        var addImage = options.owner;
+        var module = options.module_name;
 		if (sections) {
 			header = $("<table class='fc-header'/>")
 				.append($("<tr/>")
@@ -663,9 +668,11 @@ $.fn.fullCalendar = function(options) {
 					.append($("<td class='fc-header-right'/>").append(buildSection(sections.right))))
 				.prependTo(element);
             //************************** add new for elastix*********************************
-            $('.fc-header-left tr').append("<td><div class='fc-button-search ui-state-default ui-corner-left ui-corner-right'><a id='search' href='#'><image src='/modules/"+module_name+"/images/Search.png' width='21' height='21' style='border:none;' alt='Search' /></a></div></td>");
+            //$('.fc-header-left tr').append("<td><div class='fc-button-search ui-state-default ui-corner-left ui-corner-right'><a id='search' href='#'><image src='/modules/"+module+"/images/Search.png' width='21' height='21' style='border:none;' alt='Search' /></a></div></td>");
             $('.fc-header-left tr').append("<td><span class='fc-header-space'></span></td>");
-            $('.fc-header-left tr').append("<td><div class='fc-button-add ui-state-default  ui-corner-left ui-corner-right'><a id='add_news' href='#' '><image src='/modules/"+module_name+"/images/Add.png' width='21' height='21'  onclick='displayNewEvent();' style='border:none;' alt='Add' /></a></div></td>");
+            if(addImage == true){
+                $('.fc-header-left tr').append("<td><div class='fc-button-add ui-state-default  ui-corner-left ui-corner-right'><a id='add_news' href='#' '><image src='/modules/"+module+"/images/Add.png' width='21' height='21'  onclick='displayNewEvent();' style='border:none;' alt='Add' /></a></div></td>");
+            }
             $('.fc-header-left tr').append("<td><span class='fc-header-space'></span></td>");
             //*******************************************************************************
 		}
@@ -679,7 +686,7 @@ $.fn.fullCalendar = function(options) {
 					var prevButton;
 					$.each(this.split(','), function(j, buttonName) {
 						if (buttonName == 'title') {
-							tr.append("<td><h2 class='fc-header-title'>&nbsp;</h2></td>");
+							tr.append("<td><h2 class='fc-header-title' style='color:#E35332;'>&nbsp;</h2></td>");
 							if (prevButton) {
 								prevButton.addClass(tm + '-corner-right');
 							}

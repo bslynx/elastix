@@ -1,5 +1,4 @@
 var module_name = "calendar";
-
 $(document).ready(function() {
 
 	$('#calendar').fullCalendar({
@@ -17,9 +16,9 @@ $(document).ready(function() {
             //event.end     last date end
 
             var order = "menu="+module_name+"&action=set_data&id="+event._id+"&days="+delta+"&minutes="+minutes+"&dateIni="+event.start+"&dateEnd="+event.end+"&rawmode=yes";
-
             $.post("index.php", order, function(theResponse){
-                //alert(theResponse);
+                //location.reload();
+                //alert(theResponse + " eventDrop");
             });
 		},
         eventResize: function(event, delta, minutes) { //linea 2627
@@ -30,9 +29,9 @@ $(document).ready(function() {
             //event.end     last date end
 
             var order = "menu="+module_name+"&action=set_data&id="+event._id+"&days="+delta+"&minutes="+minutes+"&dateIni="+event.start+"&dateEnd="+event.end+"&rawmode=yes";
-
             $.post("index.php", order, function(theResponse){
-                //alert(theResponse);
+                //location.reload();
+                //alert(theResponse + " eventResize");
             });
         },
 		loading: function(bool) {
@@ -40,6 +39,8 @@ $(document).ready(function() {
 			else $('#loading').hide();
 		},
 		editable: true,
+        module: module_name,
+        owner: true, // para cuando son usuarios elastix
 		events: "index.php?menu="+module_name+"&action=get_data&rawmode=yes",
 		/*events: [
 			{
@@ -88,5 +89,22 @@ $(document).ready(function() {
 			}
 		]*/
 	});
+
+    $('#calendar_invited').fullCalendar({
+        theme: true,
+        header: {
+            left: 'prev,next today create',
+            center: 'title',
+            right: 'month,agendaWeek,agendaDay'
+        },
+        loading: function(bool) {
+            if (bool) $('#loading').show();
+            else $('#loading').hide();
+        },
+        editable: false,
+        owner: false,
+        events: "share_calendar.php?menu="+module_name+"&action=get_data&rawmode=yes",
+        module: module_name,
+    });
 	
 });
