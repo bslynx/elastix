@@ -255,6 +255,7 @@ class paloSantoNavigation {
     {
 	$bMostrarModulo = false;
 	$bSubMenu2Framed = false;
+        $this->putHEAD_JQUERY_HTML();
         if($this->arrMenu[$this->currSubMenu]['Type']=='module') {
 	    $bMostrarModulo = true;
 
@@ -302,7 +303,7 @@ class paloSantoNavigation {
         if(file_exists("modules/$module/index.php")) {
             include "modules/$module/index.php";
             if(function_exists("_moduleContent")) {
-                $this->putHEAD_HTML($module);
+                $this->putHEAD_MODULE_HTML($module);
                 return _moduleContent($this->smarty,$module);
             } else {
                 return "Wrong module: modules/$module/index.php";
@@ -344,7 +345,7 @@ class paloSantoNavigation {
     * e-mail: 
     *   ecueva@palosanto.com
     */
-    function putHEAD_HTML($menuLibs)  // add by eduardo
+    function putHEAD_MODULE_HTML($menuLibs)  // add by eduardo
     {
         // get the header with scripts and links(css)
         $documentRoot = $_SERVER["DOCUMENT_ROOT"];
@@ -377,8 +378,12 @@ class paloSantoNavigation {
             //$HEADER_MODULES
         }
         $this->smarty->assign("HEADER_MODULES",$HEADER_MODULES);
+    }
 
-        //STEP 2: include file of framework
+    function putHEAD_JQUERY_HTML()   
+    {
+        $documentRoot = $_SERVER["DOCUMENT_ROOT"];
+        // include file of framework
         $HEADER_LIBS_JQUERY = "";
         $JQqueryDirectory = "$documentRoot/libs/js/jquery";
         // it to load libs JQuery
