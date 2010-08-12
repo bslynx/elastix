@@ -14,6 +14,8 @@
     <menuitem menuid="file_editor"            desc="Asterisk File Editor"    parent="tools"     module="yes" link=""      order="82"></menuitem>
     <menuitem menuid="text_to_wav"            desc="Text to Wav"             parent="tools"     module="yes" link=""      order="83"></menuitem>
     <menuitem menuid="fop"                    desc="Flash Operator Panel"    parent="pbxconfig" module="no"  link="panel" order="9"></menuitem>
-    <menuitem menuid="voipprovider"           desc="VoIP Provider"           parent="pbxconfig" module="no"  link=""      order="10"></menuitem>
+    <menuitem menuid="voipprovider"           desc="VoIP Provider"           parent="pbxconfig" module="yes"  link=""      order="10"></menuitem>
+    <menuitem menuid="myextension"            desc="My Extension"            parent="pbxconfig" module="yes"  link=""      order="11"></menuitem>
+
   </menulist>
 </module>
