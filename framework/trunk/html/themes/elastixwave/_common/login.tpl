@@ -62,7 +62,7 @@
           </td>
         </tr>
         <tr>
-            <td colspan="2"><img src="themes/{$THEMENAME}/images/0.gif" width="1" height="5"></td>
+            <td colspan="2">&nbsp;&nbsp;</td>
         </tr>
       </table>
     </td>

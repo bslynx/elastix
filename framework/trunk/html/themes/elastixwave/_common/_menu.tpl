@@ -44,13 +44,13 @@
 									<td align="center">
 										<table cellspacing="0" cellpadding="0" border="0" style="position:relative;top:18px">
 											<tr>
-												<td valign="top"><!--<img alt="" border="0" align="absmiddle" src="themes/{$THEMENAME}/images/fondo_boton_left.gif"/>-->
+												<td valign="top">
                                                     <div class="div_bar_left">&nbsp;</div>
                                                 </td>
 												<td class="menutabletaboff" nowrap="nowrap">
 													<a class="menutable" href="index.php?menu={$idMenu}">{$menu.Name}</a>
 												</td>
-												<td valign="top"><!--<img alt="" border="0" align="absmiddle" src="themes/{$THEMENAME}/images/fondo_boton_right.gif"/>-->
+												<td valign="top">
                                                     <div class="div_bar_right">&nbsp;</div>
                                                 </td>
 											</tr>
@@ -240,22 +240,26 @@ function mostrar_Menu(element)
 
 <script type="text/javascript">
 //<![CDATA[
-    $(".menutabletaboff").mouseover(function(){
-        $(this).css("background-image","url(themes/elastixwave/images/fondo_boton_center2.gif)");
+    $(".menutabletaboff").mouseover(function(){ 
+        var source_img = $('.menulogo').find('a:first').find('img:first').attr("src");
+        var themeName = source_img.split("/",2);
+        $(this).css("background-image","url(themes/"+themeName[1]+"/images/fondo_boton_center2.gif)");
         $(this).css("height","47px");
         $(this).find('a:first').css("bottom","6px");
-        $(this).parent().find('div:first').css("background-image","url(themes/elastixwave/images/fondo_boton_left2.gif)");
-        $(this).parent().find('div:last').css("background-image","url(themes/elastixwave/images/fondo_boton_right2.gif)");
+        $(this).parent().find('div:first').css("background-image","url(themes/"+themeName[1]+"/images/fondo_boton_left2.gif)");
+        $(this).parent().find('div:last').css("background-image","url(themes/"+themeName[1]+"/images/fondo_boton_right2.gif)");
         $(this).parent().find('div:first').css("height","38px");
         $(this).parent().find('div:last').css("height","38px");
     });
 
     $(".menutabletaboff").mouseout(function(){
-        $(this).css("background-image","url(themes/elastixwave/images/fondo_boton_center.gif)");
+        var source_img = $('.menulogo').find('a:first').find('img:first').attr("src");
+        var themeName = source_img.split("/",2);
+        $(this).css("background-image","url(themes/"+themeName[1]+"/images/fondo_boton_center.gif)");
         $(this).css("height","37px");
         $(this).find('a:first').css("bottom","0px");
-        $(this).parent().find('div:first').css("background-image","url(themes/elastixwave/images/fondo_boton_left.gif)");
-        $(this).parent().find('div:last').css("background-image","url(themes/elastixwave/images/fondo_boton_right.gif)");
+        $(this).parent().find('div:first').css("background-image","url(themes/"+themeName[1]+"/images/fondo_boton_left.gif)");
+        $(this).parent().find('div:last').css("background-image","url(themes/"+themeName[1]+"/images/fondo_boton_right.gif)");
         $(this).parent().find('div:first').css("height","35px");
         $(this).parent().find('div:last').css("height","35px");
     });
