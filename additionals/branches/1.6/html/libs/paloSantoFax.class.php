@@ -124,8 +124,8 @@ class paloFax {
 
         // 5) Acciones finales
         exec("sudo -u root init q");
-        exec("sudo -u root service iaxmodem restart");
-        exec("sudo -u root service hylafax restart");
+        exec("sudo -u root service generic-cloexec iaxmodem restart");
+        exec("sudo -u root service generic-cloexec hylafax restart");
     }
 
     function getFaxList()
@@ -212,8 +212,8 @@ class paloFax {
 
             // Reinicio los servicios
             
-            exec("sudo -u root service iaxmodem restart");
-            exec("sudo -u root service hylafax restart");
+            exec("sudo -u root service generic-cloexec  iaxmodem restart");
+            exec("sudo -u root service generic-cloexec hylafax restart");
             exec("sudo -u root init q");
 
         } else {
@@ -639,8 +639,8 @@ class paloFax {
         
         // 5) Acciones finales
         exec("sudo -u root init q");
-        exec("sudo -u root service iaxmodem restart");
-        exec("sudo -u root service hylafax restart");
+        exec("sudo -u root service generic-cloexec iaxmodem restart");
+        exec("sudo -u root service generic-cloexec hylafax restart");
     }
 
  
