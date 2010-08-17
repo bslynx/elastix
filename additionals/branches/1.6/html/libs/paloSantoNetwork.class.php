@@ -264,7 +264,7 @@ class paloNetwork
         }
                       
         if ($bValido) {
-            $comando = "sudo -u root service networkt restart";
+            $comando = "sudo -u root service network restart";
             $mensaje = `$comando 2>&1`;
         }
                  
