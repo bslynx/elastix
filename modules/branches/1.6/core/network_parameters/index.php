@@ -296,7 +296,7 @@ function modificar_archivos_mail(&$error){
 
     if($bool){
        //Se debe reiniciar el servicio postfix
-        $cmd_restart = escapeshellcmd("sudo -u root service postfix restart");
+        $cmd_restart = escapeshellcmd("sudo -u root service generic-cloexec postfix restart");
         $output="";
         exec($cmd_restart,$output);
             if(is_array($output) && isset($output[1])){
