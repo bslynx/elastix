@@ -99,7 +99,7 @@ function _moduleContent(&$smarty, $module_name)
                 exec("sudo -u root chown asterisk.asterisk $conf_relay");
                 if($fh = @fopen($conf_relay, "w")) {
                     if(fwrite($fh, "$in_redes_relay")) {
-                        exec("sudo -u root service postfix restart");
+                        exec("sudo -u root service generic-cloexec postfix restart");
                         // TODO: Tengo que revisar si este comando se ejecuto correctamente
                         $smarty->assign("mb_title",$arrLang["Message"]);
                         $smarty->assign("mb_message", $arrLang["Configuration updated successfully"]);
