@@ -294,19 +294,16 @@ $(document).ready(function(){
         //yearRange: '2010:2099',
         changeYear: true,
         changeMonth: true,
-        showButtonPanel: true,
+        showButtonPanel: false, //today buttom
         onChangeMonthYear: function(year, month, inst){
-            var order = 'menu='+module_name+'&action=calendar_monthly&rawmode=yes&year='+year+'&month='+month;
-            $.post("index.php", order, function(theResponse){
-                //var cc = document.getElementById("calendar_content");
-                //cc.innerHTML = theResponse;
-                //$("#calendar_content").html(theResponse);
-                var cal = $.fullCalendar;
-                //alert("hola    " + cal.views.month.prev());
-            });
+            $('#calendar').fullCalendar('gotoDate', year, month-1);
         },
         onSelect: function(dateText, inst){
-            //alert("dateText: " + dateText);
+            //// dateText mm/dd/yyyy
+            //// año , mes[0,1,2,3...11], day
+            var date = dateText.split("/",3);
+            $('#calendar').fullCalendar( 'gotoDate', date[2], date[0] - 1, date[1]);
+            $('#calendar').fullCalendar('changeView', 'agendaDay');
         }
     });
 
@@ -556,6 +553,50 @@ function obtainEmails(){
         if(saturday == "on")  count ++;
 
         return count;
+    }
+
+	function getNumMonth(month){
+        var num;
+        month = month.toLowerCase();
+        switch(month){
+            case 'jan':
+                num = "01";
+                break;
+            case 'feb':
+                num = "02";
+                break;
+            case 'mar':
+                num = "03";
+                break;
+            case 'apr':
+                num = "04";
+                break;
+            case 'may':
+                num = "05";
+                break;
+            case 'jun':
+                num = "06";
+                break;
+            case 'jul':
+                num = "07";
+                break;
+            case 'aug':
+                num = "08";
+                break;
+            case 'sep':
+                num = "09";
+                break;
+            case 'oct':
+                num = "10";
+                break;
+            case 'nov':
+                num = "11";
+                break;
+            case 'dec':
+                num = "12";
+                break;
+        }
+        return num;
     }
 
     function getStatusEvent(){
