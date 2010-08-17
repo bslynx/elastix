@@ -210,8 +210,8 @@ class paloSantoEmailRelay {
 
     function restartingServices(){
         //se ejecuta de esa forma porque es usuario asterisk el que corre el programa de elastix
-        exec("sudo /sbin/service saslauthd restart");
-        exec("sudo /sbin/service postfix restart");
+        exec("sudo /sbin/service generic-cloexec saslauthd restart");
+        exec("sudo /sbin/service generic-cloexec postfix restart");
     }
 }
 ?>
