@@ -195,7 +195,7 @@ class paloSantoEmaillist {
         exec("sudo -u root chown -R root.mailman /var/log/mailman/");
         exec("sudo -u root chown -R root.mailman /var/lock/mailman/");
         exec("sudo -u root newaliases");
-        exec("sudo -u root service mailman restart");
+        exec("sudo -u root service generic-cloexec mailman restart");
         exec("chkconfig --level 3 mailman on");
         //fclose($fp);
     }
@@ -294,7 +294,7 @@ class paloSantoEmaillist {
         $this->saveChangeFileAliases($text);
 
         exec("sudo -u root newaliases");
-        exec("sudo -u root service mailman restart");
+        exec("sudo -u root service generic-cloexec mailman restart");
 
         exec("sudo -u root chown -R root.root /etc/aliases");
         exec("sudo -u root chown -R root.root /etc/aliases.db");
@@ -318,12 +318,12 @@ class paloSantoEmaillist {
         exec("sudo -u root chown -R asterisk.asterisk /var/spool/mailman/");
         exec("sudo -u root chown -R asterisk.asterisk /var/log/mailman/");
         exec("sudo -u root chown -R asterisk.asterisk /var/lock/mailman/");
-        //exec("sudo /sbin/service mailman restart");
+        //exec("sudo /sbin/service generic-cloexec mailman restart");
 
         exec("echo '$emailMember' > /usr/lib/mailman/bin/lista_member.tmp");
         exec("/usr/lib/mailman/bin/add_members -r /usr/lib/mailman/bin/lista_member.tmp $nameList");
 
-        exec("sudo -u root service mailman restart");
+        exec("sudo -u root service generic-cloexec mailman restart");
         //cambio de usuario a como estaba inicialmente
         exec("sudo -u root chown -R root.mailman /usr/lib/mailman/");
         exec("sudo -u root chown -R root.mailman /var/run/mailman/");
@@ -441,7 +441,7 @@ class paloSantoEmaillist {
         exec("sudo -u root chown -R root.mailman /var/log/mailman/");
         exec("sudo -u root chown -R root.mailman /var/lock/mailman/");
         exec("sudo -u root newaliases");
-        //exec("sudo -u root service mailman restart");
+        //exec("sudo -u root service generic-cloexec mailman restart");
     }
 
     function getEmailListByDomainDB($id)
@@ -514,8 +514,8 @@ class paloSantoEmaillist {
         exec("sudo -u root chown -R asterisk.asterisk /var/lock/mailman/");
         
         exec("/usr/lib/mailman/bin/remove_members $nameList $emailMember");
-        exec("sudo -u root service mailman restart");
-        //exec("sudo /sbin/service mailman restart");
+        exec("sudo -u root service generic-cloexec mailman restart");
+
         //cambio de usuario a como estaba inicialmente
         exec("sudo -u root chown -R root.mailman /usr/lib/mailman/");
         exec("sudo -u root chown -R root.mailman /var/run/mailman/");
@@ -529,7 +529,7 @@ class paloSantoEmaillist {
     function ejecucion(){
       exec("sudo -u root rm -f /var/run/mailman/master-qrunner.pid");
       //exec("sudo -u root etc/init.d/mailman start");
-      exec("sudo -u root service mailman restart");
+      exec("sudo -u root service generic-cloexec mailman restart");
     }
 
 }
