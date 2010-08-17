@@ -189,7 +189,7 @@ class PaloSantoDHCP
     {
         $flag = false;
         if(!file_exists("/var/run/dhcpd.pid")) {
-            $out = `sudo /sbin/service dhcpd start`;
+            $out = `sudo /sbin/service generic-cloexec dhcpd start`;
             if(eregi("OK",$out)){
                 exec("sudo -u root chkconfig --level 235 dhcpd on",$arrConsole,$flagStatus);
                 $flag = ($flagStatus)?false:true;
@@ -340,22 +340,22 @@ class PaloSantoDHCP
         // Hay 3 casos
         $dhcp_status = $this->getStatusServiceDHCP();
         if(file_exists("/var/run/dhcpd.pid") and $dhcp_status=='active') {
-            exec("/sg/bin/sudo -u root service dhcpd restart",$arrConsole,$flagReturn1);
-            exec("/sg/bin/sudo -u root chkconfig --level 235 dhcpd on",$arrConsole,$flagReturn2);
+            exec("sudo -u root /sbin/service generic-cloexec dhcpd restart",$arrConsole,$flagReturn1);
+            exec("sudo -u root chkconfig --level 235 dhcpd on",$arrConsole,$flagReturn2);
             return (($flagReturn1)?false:true) and (($flagReturn2)?false:true);
         } 
         else if (file_exists("/var/run/dhcpd.pid") and $dhcp_status=='desactive') {
-            exec("/sg/bin/sudo -u root service dhcpd stop",$arrConsole,$flagReturn1);
-            exec("/sg/bin/sudo -u root chkconfig --level 235 dhcpd off",$arrConsole,$flagReturn2);
+            exec("sudo -u root /sbin/service dhcpd stop",$arrConsole,$flagReturn1);
+            exec("sudo -u root chkconfig --level 235 dhcpd off",$arrConsole,$flagReturn2);
             return (($flagReturn1)?false:true) and (($flagReturn2)?false:true);
         } 
         else if (!file_exists("/var/run/dhcpd.pid") and $dhcp_status=='active') {
-            exec("/sg/bin/sudo -u root service dhcpd start",$arrConsole,$flagReturn1);
-            exec("/sg/bin/sudo -u root chkconfig --level 235 dhcpd on",$arrConsole,$flagReturn2);
+            exec("sudo -u root /sbin/service generic-cloexec dhcpd start",$arrConsole,$flagReturn1);
+            exec("sudo -u root chkconfig --level 235 dhcpd on",$arrConsole,$flagReturn2);
             return (($flagReturn1)?false:true) and (($flagReturn2)?false:true);
         } 
         else {
-            exec("/sg/bin/sudo -u root chkconfig --level 235 dhcpd off",$arrConsole,$flagReturn2);
+            exec("sudo -u root chkconfig --level 235 dhcpd off",$arrConsole,$flagReturn2);
             return ($flagReturn2)?false:true;
         }
     }
