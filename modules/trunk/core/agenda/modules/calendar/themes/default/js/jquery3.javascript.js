@@ -1440,7 +1440,8 @@ function obtainEmails(){
 //                    repeat_name.childNodes[0].setAttribute('selected', 'selected');
 //                    $('#type_repeat_event').html("");
                     getNumExtesion();
-                    recording_event.childNodes[0].setAttribute('selected', 'selected');
+		    if(recording_event.childNodes[0])
+                    	recording_event.childNodes[0].setAttribute('selected', 'selected');
 //                    $('.repeat').attr("style","visibility: hidden;");
                     $('#notification_email').attr("style","visibility: hidden;");
                     $('#add_phone').attr("style","display: inline;");
