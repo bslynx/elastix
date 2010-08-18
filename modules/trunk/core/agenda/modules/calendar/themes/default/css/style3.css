@@ -445,7 +445,11 @@ z-index:1;
 }
 
 .content_ical a span{
-    padding: 2px 2px 2px 20px;
+    padding: 2px 2px 2px 15px;
+}
+
+.content_ical a:hover{
+    color:#3366CC;
 }
 
 .button_send{
@@ -481,24 +485,34 @@ cursor: pointer;
     cursor: move;
 }
 
-.CheckBoxClass{
-    display: none;
-}
+.CheckBoxClass{
 
-.CheckBoxLabelClass{
-    background: url("../../../images/UnCheck.png") no-repeat;
-    padding-left: 30px;
-    padding-top: 5px;
+    display: none;
+
+}
+
+
+.CheckBoxLabelClass{
+    background: url("../../../images/UnCheck.png") no-repeat;
+    padding-left: 30px;
+    padding-top: 5px;
     /*margin: 5px;*/
     height: 20px;
-    width: 90%;
-    display: block;
-}
+    width: 90%;
+    display: block;
+    font-family: verdana,arial,helvetica,sans-serif;
+    color: #2E6E9E;
+    font-size: 13px;
+}
 
-.CheckBoxLabelClass:hover{
+
+.CheckBoxLabelClass:hover{
+
     cursor: pointer;
 }
 
-.LabelSelected{
-    background: url("../../../images/Check.png") no-repeat;
+.LabelSelected{
+
+    background: url("../../../images/Check.png") no-repeat;
+
 }

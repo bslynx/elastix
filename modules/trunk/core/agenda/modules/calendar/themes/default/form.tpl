@@ -114,7 +114,7 @@
                                             <!--<legend class="sombreado">{$Date_event}</legend>-->
                                             <table style="font-size: 16px;" width="85%" border="0">
                                                 <tr class="letra12">
-                                                    <td align="left" width="20%"><b>{$Start_date}: <span  class="required">*</span></b></td>
+                                                    <td align="left" width="27%"><b>{$Start_date}: <span  class="required">*</span></b></td>
                                                     <td align="left">
                                                         {$date.INPUT}
                                                     </td>

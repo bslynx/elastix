@@ -479,10 +479,12 @@ $.fn.fullCalendar = function(options) {
 			
 			prev: function() {
 				render(-1);//alert('previo');
+                $("#datepicker").datepicker( "setDate", date );
 			},
 			
 			next: function() {
 				render(1);//alert('next');
+                $("#datepicker").datepicker( "setDate", date );
 			},
 			
 			prevYear: function() {
@@ -497,6 +499,7 @@ $.fn.fullCalendar = function(options) {
 			
 			today: function() {
 				date = new Date();//alert('today');
+                $("#datepicker").datepicker( "setDate", date );
 				render();
 			},
 			
