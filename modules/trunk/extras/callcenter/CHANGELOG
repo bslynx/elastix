@@ -1,4 +1,9 @@
-* Dialer: remove broken "reload" verb support from init script.
+* Configuration: detect and use generic-cloexec if available. Should fix issue
+  of httpd failing to restart due to dialer process grabbing HTTP[S] ports
+  as in Elastix bug #425. If generic-cloexec is not available, this has no 
+  effect.
+* Dialer: remove broken "reload" verb support from init script. Should fix 
+  Elastix bug #434.
 * Reports (Agent Connection Time, Agent Information, Trunks Used per Hour):
   remove hardcoded freePBX database credentials, and instead parse them from
   /etc/amportal.conf .
