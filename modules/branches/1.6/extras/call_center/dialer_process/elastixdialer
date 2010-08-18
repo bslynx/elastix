@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#   Script de inicio y finalizaci� de un servicio de framework
+#   Script de inicio y finalización de un servicio de framework
 #   de demonio de Palosanto Solutions, compatible con
 #   sistema de inicio de servicios de RedHat/Fedora (chkconfig).
 #   Este script asume que el servicio se inicia desde el comienzo
@@ -71,25 +71,12 @@ case $1 in
 	condrestart)
 		[ -f $SERVICE_LOCK ] && restart || :
 	;;
-	reload)
-		echo -n $"Reloading $PROGRAMA: "
-		config
-		killproc $DAEMON -HUP
-		RETVAL=$?
-		echo
-		if [ $RETVAL -ne 0 ]
-		then
-			# Rebuild ppds.dat file if the daemon wasn't
-			# there to do it.
-			$DAEMON --ppdsdat
-		fi
-	;;
 	status)
 		status $DAEMON
 	;;
 	*)
 
-	echo $"Uso: $prog {start|stop|restart|condrestart|reload|status}"
+	echo $"Uso: $prog {start|stop|restart|condrestart|status}"
 	exit 1
 esac
 

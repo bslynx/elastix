@@ -1,3 +1,4 @@
+* Dialer: remove broken "reload" verb support from init script.
 * Reports (Agent Connection Time, Agent Information, Trunks Used per Hour):
   remove hardcoded freePBX database credentials, and instead parse them from
   /etc/amportal.conf .
