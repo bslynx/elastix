@@ -9,11 +9,13 @@
           <td colspan="{$numColumns}" class="table_navigation_row">
             <table border="0" cellpadding="0" cellspacing="0" width="100%" class="table_navigation_text">
               <tr>
-                <td align="left" colspan="3">
+                <td align="left" width="295px">
                     <input type="text" value="" name="addons_search" />
                     <a href="index.php?menu={$module_name}&amp;action=search">
                         <img alt="" src='modules/{$module_name}/images/lupa.png' align='absmiddle' border='0' width='15' height='15' />
                     </a>
+                </td>
+                <td align="left" id="msg_status">
                 </td>
                 <td align="right"> 
                   {if $pagingShow}

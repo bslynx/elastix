@@ -133,6 +133,7 @@ function changeStatus(name_rpm, view_details ){
         $.post("index.php", order,
             function(theResponse){
                 message = JSONtoString(theResponse);
+                showPogressMessage(message['status_action']);
                 if(message['response'] == "there_install"){ //si existe una instalacion en progreso
                     there_install = true;
                     connectJSON("process_installing");
@@ -189,14 +190,15 @@ function changeStatus(name_rpm, view_details ){
             function(theResponse){
                 response = JSONtoString(theResponse);
     ////////////////////////////////////////////////////
-                //var status_action = response['status_action'];
+                showPogressMessage(response['status_action']);
                 //var name_rpm = response['name_rpm'];
                 var resp = response['response'];
                 //$('#'+name_rpm).parent().parent().children(':first-child').children(':first-child').next().text(status_action);
     ////////////////////////////////////////////////////
                 if(resp == "OK"){
                     // aqui se muestran los botones de install y los errores que pudieron haber
-                    changeStatusButtonInstall(response)
+                    changeStatusButtonInstall(response);
+                    $("#msg_status").html("");
                 }else if(resp == "error"){
                     //alert("uno o algunos paquetes no se pueden instalar");
                     changeStatusButtonInstall(response)
@@ -263,6 +265,18 @@ function changeStatus(name_rpm, view_details ){
             }
             
             there_install = false;
+        }
+    }
+
+    var str_dot = ".";
+    function showPogressMessage(msg)
+    {
+        if(msg){
+            if(str_dot.length == 5)
+                str_dot = ".";
+            else
+                str_dot += ".";
+            $("#msg_status").html("<b style='font-size:10pt;color:#E35332'>" + msg + " " + str_dot + "</b>");
         }
     }
 

@@ -156,11 +156,11 @@ function getStatus($pDB, $arrConf, $arrLang){
     }
     else{
         if($arrStatus['action'] == "reporefresh")
-            $arrSal['status_action'] = $arrLang['reporefresh'];
+            $arrSal['status_action'] = $arrLang['Status'].": ".$arrLang['reporefresh'];
         if($arrStatus['action'] == "depsolving")
-            $arrSal['status_action'] = $arrLang['depsolving'];
+            $arrSal['status_action'] = $arrLang['Status'].": ".$arrLang['depsolving'];
         if(!isset($arrSal['status_action']) || $arrSal['status_action']=="")
-            $arrSal['status_action'] = $arrLang['downloading'];
+            $arrSal['status_action'] = $arrLang['Status'].": ".$arrLang['downloading'];
         $arrSal['response'] = $arrStatus['action'];
         $arrDataTMP = $pAddonsModules->getActionTMP();
         $arrSal['name_rpm'] = $arrDataTMP['name_rpm'];
@@ -333,11 +333,13 @@ function getPackagesCache($arrConf, &$pDB, $arrLang){
                $arrSal['msg'] = $tmp[0]."version $tmp[2]-$tmp[3]";
             }
         }
-        else
+        else if($arrStatus['status'] == "error")
             $arrSal['response'] = "error";
+        else
+            $arrSal['response'] = "OK";
     }
 
-    $arrSal['status'] = $arrLang['installing'];
+    $arrSal['status_action'] = $arrLang['Status'].": ".$arrStatus['status'];
     //$json = new Services_JSON();
     //return $json->encode($arrSal);
     return $arrSal;
@@ -346,7 +348,7 @@ function getPackagesCache($arrConf, &$pDB, $arrLang){
 // funcion que verifica si y se hizo la descarga en cache de los rpm anstes de instalar
 function getStatusCache(&$pDB, $arrConf, $arrLang){
     $pAddonsModules = new paloSantoAddonsModules($pDB);
-    sleep(10);
+    sleep(5);
     $arrStatus = $pAddonsModules->getStatus($arrConf);
     $json = new Services_JSON();
 
@@ -369,11 +371,11 @@ function getStatusCache(&$pDB, $arrConf, $arrLang){
             $arrSal['response'] = "error";*/
     } elseif ($arrStatus['status'] != 'error') {
         if($arrStatus['action'] == "reporefresh")
-            $arrSal['status_action'] = $arrLang['reporefresh'];
+            $arrSal['status_action'] = $arrLang['Status'].": ".$arrLang['reporefresh'];
         if($arrStatus['action'] == "depsolving")
-            $arrSal['status_action'] = $arrLang['depsolving'];
+            $arrSal['status_action'] = $arrLang['Status'].": ".$arrLang['depsolving'];
         if(!isset($arrSal['status_action']) || $arrSal['status_action']=="")
-            $arrSal['status_action'] = $arrLang['downloading'];
+            $arrSal['status_action'] = $arrLang['Status'].": ".$arrLang['downloading'];
         $arrSal['response'] = $arrStatus['action'];
     } else {
         // Ha ocurrido un error 
@@ -417,7 +419,7 @@ function getStatusUpdateCache($arrConf, &$pDB, $arrLang){
     if(isset($_SESSION['elastix_addons']['last_update'])){
         $timeLast = $_SESSION['elastix_addons']['last_update'];
         $timeNew = time();
-        if(($timeNew - $timeLast) > 30){ //si es mayor a 5 minutos al fina1 son 2h -> 7200
+        if(($timeNew - $timeLast) > 7200){ //si es mayor a 5 minutos al fina1 son 2h -> 7200
             $_SESSION['elastix_addons']['last_update'] = $timeNew;
             $arrSal = getPackagesCache($arrConf, $pDB, $arrLang);
             return $json->encode($arrSal);
@@ -427,6 +429,7 @@ function getStatusUpdateCache($arrConf, &$pDB, $arrLang){
             $arrData = $pAddonsModules->getDataCache();
             if(is_array($arrData) && count($arrData) > 0){
                 $arrSal['data_cache'] = $arrData;
+                $arrSal['status_action'] = "";
                 return $json->encode($arrSal);
             }
             else{ // La session existe pero no hay cache local de los addons
