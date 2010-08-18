@@ -44,7 +44,7 @@ $arrLangModule=array(
 "It was not possible to obtain information about the graph "=>"无法获取图表信息",
 "% used of"=>"% used of",
 "News"=>"News",
-"prev"=>"prev",
+"prev"=>"prev","Unknown" => "Unknown",
 "next"=>"next",
 "show_vertical"=>"show vertical scroller",
 "show_horizontal"=>"show horizontal scroller",
@@ -134,5 +134,6 @@ $arrLangModule=array(
 "No Registered" => "Not Registered",
 "Cards no found" => "Telephony Hardware not found",
 "Bytes" => "Bytes",
+"Unknown" => "Unknown",
 );
 ?>

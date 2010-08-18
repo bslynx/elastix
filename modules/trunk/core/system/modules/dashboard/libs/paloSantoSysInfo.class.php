@@ -400,6 +400,7 @@ class paloSantoSysInfo
         $arrActivity["sip"]["ext"]["no_ok"]=0;
         $arrActivity["sip"]["trunk"]["ok"]=0;
         $arrActivity["sip"]["trunk"]["no_ok"]=0;
+        $arrActivity["sip"]["trunk"]["unknown"]=0;
         $arrActivity["sip"]["trunk_registry"]["ok"]=0;
         $arrActivity["sip"]["trunk_registry"]["no_ok"]=0;
         //IAXs
@@ -407,6 +408,7 @@ class paloSantoSysInfo
         $arrActivity["iax"]["ext"]["no_ok"]=0;
         $arrActivity["iax"]["trunk"]["ok"]=0;
         $arrActivity["iax"]["trunk"]["no_ok"]=0;
+        $arrActivity["iax"]["trunk"]["unknown"]=0;
         $arrActivity["iax"]["trunk_registry"]["ok"]=0;
         $arrActivity["iax"]["trunk_registry"]["no_ok"]=0;
 
@@ -423,6 +425,12 @@ class paloSantoSysInfo
                     if(eregi("OK",$arrToken[8])){ // estado OK
                         if(in_array($arrToken[2],$arrTrunks)) // es una troncal?, registrada
                             $arrActivity["sip"]["trunk"]["ok"]++;
+                        else
+                            $arrActivity["sip"]["ext"]["ok"]++;
+                    }
+                    else if(eregi("Unmonitored ",$arrToken[8])){ // estado desconocido, un caso es cuando no esta definido el parametro quality=yes
+                        if(in_array($arrToken[2],$arrTrunks)) // es una troncal?, registrada
+                            $arrActivity["sip"]["trunk"]["unknown"]++;
                         else
                             $arrActivity["sip"]["ext"]["ok"]++;
                     }
@@ -449,6 +457,12 @@ class paloSantoSysInfo
                         else
                             $arrActivity["iax"]["ext"]["ok"]++;
                     }
+                    else if(eregi("Unmonitored ",$arrToken[7])){ // estado desconocido, un caso es cuando no esta definido el parametro quality=yes
+                        if(in_array($arrToken[2],$arrTrunks)) // es una troncal?, registrada
+                            $arrActivity["iax"]["trunk"]["unknown"]++;
+                        else
+                            $arrActivity["iax"]["ext"]["ok"]++;
+                    }
                     else{
                         if(in_array($arrToken[2],$arrTrunks)) // es una troncal?, no registrada
                             $arrActivity["iax"]["trunk"]["no_ok"]++;
@@ -460,7 +474,7 @@ class paloSantoSysInfo
         }
 
         //4.- get sip registry
-        $arrSIPsRegistry = $this->AsteriskManager_Command("sip show registry");
+        /*$arrSIPsRegistry = $this->AsteriskManager_Command("sip show registry");
         if(is_array($arrSIPsRegistry) & count($arrSIPsRegistry)>0){
             foreach($arrSIPsRegistry as $key => $line){
                 if(ereg("^([[:digit:]\:\.]+).*(Registered*)",$line,$arrToken))
@@ -479,7 +493,7 @@ class paloSantoSysInfo
                 else if(ereg("^([[:digit:]\:\.]+)",$line))
                     $arrActivity["iax"]["trunk_registry"]["no_ok"]++;
             }
-        }
+        }*/
         return $arrActivity;
     }
 

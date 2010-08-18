@@ -545,36 +545,39 @@ function communicationActivity($module_name, $idApplet)
 	 else	$channel = $channel." ".$arrLang['channels'];
 
 //// asterisk connection
-   $sip_Ext_ok  = $connections['sip']['ext']['ok'];
-   $sip_Ext_nok = $connections['sip']['ext']['no_ok'];
+    $sip_Ext_ok  = $connections['sip']['ext']['ok'];
+    $sip_Ext_nok = $connections['sip']['ext']['no_ok'];
 	$total_sip_Ext = $sip_Ext_ok + $sip_Ext_nok;
 
-	$sip_trunk_ok = $connections['sip']['trunk']['ok'];
+	$sip_trunk_ok  = $connections['sip']['trunk']['ok'];
 	$sip_trunk_nok = $connections['sip']['trunk']['no_ok'];
-	$total_sip_trunk = $sip_trunk_ok + $sip_trunk_nok;
+    $sip_trunk_unk = $connections['sip']['trunk']['unknown'];
+	$total_sip_trunk = $sip_trunk_ok + $sip_trunk_nok + $sip_trunk_unk;
 
-	$sip_trunk_reg_ok = $connections['sip']['trunk_registry']['ok'];
-	$sip_trunk_reg_nok= $connections['sip']['trunk_registry']['no_ok'];
-	$total_sip_trunk_reg = $sip_trunk_reg_ok + $sip_trunk_reg_nok;
+	//$sip_trunk_reg_ok = $connections['sip']['trunk_registry']['ok'];
+	//$sip_trunk_reg_nok= $connections['sip']['trunk_registry']['no_ok'];
+	//$total_sip_trunk_reg = $sip_trunk_reg_ok + $sip_trunk_reg_nok;
 
 	$iax_Ext_ok  = $connections['iax']['ext']['ok'];
-   $iax_Ext_nok = $connections['iax']['ext']['no_ok'];
+    $iax_Ext_nok = $connections['iax']['ext']['no_ok'];
 	$total_iax_Ext = $iax_Ext_ok + $iax_Ext_nok;
 
-	$iax_trunk_ok = $connections['iax']['trunk']['ok'];
+	$iax_trunk_ok  = $connections['iax']['trunk']['ok'];
 	$iax_trunk_nok = $connections['iax']['trunk']['no_ok'];
-	$total_iax_trunk = $iax_trunk_ok + $iax_trunk_nok;
+    $iax_trunk_unk = $connections['iax']['trunk']['unknown'];
+	$total_iax_trunk = $iax_trunk_ok + $iax_trunk_nok + $iax_trunk_unk;
 
-	$iax_trunk_reg_ok = $connections['iax']['trunk_registry']['ok'];
-	$iax_trunk_reg_nok= $connections['iax']['trunk_registry']['no_ok'];
-	$total_iax_trunk_reg = $iax_trunk_reg_ok + $iax_trunk_reg_nok;
+	//$iax_trunk_reg_ok = $connections['iax']['trunk_registry']['ok'];
+	//$iax_trunk_reg_nok= $connections['iax']['trunk_registry']['no_ok'];
+	//$total_iax_trunk_reg = $iax_trunk_reg_ok + $iax_trunk_reg_nok;
 
-	$total_trunks_ok = $sip_trunk_ok + $iax_trunk_ok;
+	$total_trunks_ok  = $sip_trunk_ok  + $iax_trunk_ok;
 	$total_trunks_nok = $sip_trunk_nok + $iax_trunk_nok;
-	$total_trunks_reg_ok = $sip_trunk_reg_ok + $iax_trunk_reg_ok;
-	$total_trunks_reg_nok = $sip_trunk_reg_nok + $iax_trunk_reg_nok;
-	$total_trunks = $total_trunks_ok + $total_trunks_nok;
-	$total_trunks_reg = $total_trunks_reg_ok + $total_trunks_reg_nok;
+    $total_trunks_unk = $sip_trunk_unk + $iax_trunk_unk;
+	//$total_trunks_reg_ok = $sip_trunk_reg_ok + $iax_trunk_reg_ok;
+	//$total_trunks_reg_nok = $sip_trunk_reg_nok + $iax_trunk_reg_nok;
+	$total_trunks = $total_sip_trunk + $total_iax_trunk;
+	//$total_trunks_reg = $total_trunks_reg_ok + $total_trunks_reg_nok;
 ///////traffic network
    $rx_bytes = $network['rx_bytes'];
 	$tx_bytes = $network['tx_bytes'];
@@ -620,10 +623,10 @@ function communicationActivity($module_name, $idApplet)
 								<div class='typeActivity'></div>
 								<div class='detailText'>".$arrLang['iax_extensions']." <b>($total_iax_Ext) </b>: <font color='green'>($iax_Ext_ok ".$arrLang['OK'].")</font> <font color='red'>($iax_Ext_nok ".$arrLang['NO_OK'].")</font></div>
 								<div class='typeActivity'><b>".$arrLang['Trunks'].": </b></div>
-								<div class='detailText'>".$arrLang['Trunks']." <b>($total_trunks) </b>: <font color='green'>($total_trunks_ok ".$arrLang['OK'].")</font> <font color='red'>($total_trunks_nok ".$arrLang['NO_OK'].")</font></div>
-								<!--<div class='typeActivity'><b>".$arrLang['Trunks_register'].": </b></div>
-								<div class='detailText'>".$arrLang['Trunks_register']." <b>($total_trunks_reg) </b>: <font color='green'>($total_trunks_reg_ok ".$arrLang['OK'].")</font> <font color='red'>($total_trunks_reg_nok ".$arrLang['NO_OK'].")</font></div>-->
-								<div class='typeActivity'><b>".$arrLang['Network_traffic'].": </b></div>
+								<div class='detailText'>".$arrLang['Trunks']." <b>($total_trunks) </b>: <font color='green'>($total_trunks_ok ".$arrLang['OK'].")</font> <font color='red'>($total_trunks_nok ".$arrLang['NO_OK'].")</font> </font> <font color='gray'>($total_trunks_unk ".$arrLang['Unknown'].")</div>".
+								//<div class='typeActivity'><b>".$arrLang['Trunks_register'].": </b></div>
+								//<div class='detailText'>".$arrLang['Trunks_register']." <b>($total_trunks_reg) </b>: <font color='green'>($total_trunks_reg_ok ".$arrLang['OK'].")</font> <font color='red'>($total_trunks_reg_nok ".$arrLang['NO_OK'].")</font></div>
+								"<div class='typeActivity'><b>".$arrLang['Network_traffic'].": </b></div>
 								<div class='detailText'>".$arrLang['Bytes']." <b>(".$rx_bytes."kB/s)</b> <= RX | TX =>  <b>(".$tx_bytes."kB/s)</b></div>
 							</div>
 						</div>
