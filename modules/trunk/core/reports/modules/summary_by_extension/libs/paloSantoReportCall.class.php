@@ -42,6 +42,10 @@ class paloSantoReportCall {
             $this->_DB_cdr =& $pDB_cdr;
             $this->errMsg = $this->_DB_cdr->errMsg;
         } else {
+            if ($pDB_cdr == '') {
+                $pDB_cdr = generarDSNSistema('asteriskuser', 'asteriskcdrdb', '../');
+            }
+
             $dsn = (string)$pDB_cdr;
             $this->_DB_cdr = new paloDB($dsn);
 
@@ -295,9 +299,9 @@ class paloSantoReportCall {
                  "LIMIT 10 ";
         $result = $this->_DB_cdr->fetchTable($query, false);
 
-        if($result == FALSE){
+        if(!is_array($result)){
             $this->errMsg = $this->_DB_cdr->errMsg;
-            print_r($this->errMsg);
+            print "Errmsg: ".$this->errMsg;
             return array();
         }
 
@@ -420,9 +424,9 @@ class paloSantoReportCall {
                  "LIMIT 10 ";
         $result = $this->_DB_cdr->fetchTable($query, false);
 
-        if($result == FALSE){
+        if(!is_array($result)){
             $this->errMsg = $this->_DB_cdr->errMsg;
-            print_r($this->errMsg);
+            print "Errmsg: ".$this->errMsg ;
             return array();
         }
 
