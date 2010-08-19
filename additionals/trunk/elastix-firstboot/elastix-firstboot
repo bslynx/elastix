@@ -166,15 +166,25 @@ This screen will now ask for a password for user 'admin' that will be used for: 
 	    return 1
 	fi
 	
-    # Use the same password for freePBX login and for updating /etc/amportal.conf
-    echo "GRANT USAGE ON *.* TO 'asteriskuser'@'localhost' IDENTIFIED BY '$FREEPBX_PASSWD1'" | mysql -u root -p$MYSQL_PASSWD1
-    ret=$?
-    if [ $? -ne 0 ]; then
-        echo "Unable to set database password for FreePBX !"
-        return 1
-    fi
-    cat /etc/amportal.conf | sed "s/AMPDBPASS=eLaStIx.asteriskuser.2oo7/AMPDBPASS=$FREEPBX_PASSWD1/" > /tmp/amportal.conf.tmp
-    mv /tmp/amportal.conf.tmp /etc/amportal.conf
+	# Use the same password for freePBX login and for updating /etc/amportal.conf
+	echo "GRANT USAGE ON *.* TO 'asteriskuser'@'localhost' IDENTIFIED BY '$FREEPBX_PASSWD1'" | mysql -u root -p$MYSQL_PASSWD1
+	ret=$?
+	if [ $? -ne 0 ]; then
+	    echo "Unable to set database password for FreePBX !"
+	    return 1
+	fi
+	cat /etc/amportal.conf | sed "s/AMPDBPASS=eLaStIx.asteriskuser.2oo7/AMPDBPASS=$FREEPBX_PASSWD1/" > /tmp/amportal.conf.tmp
+	mv /tmp/amportal.conf.tmp /etc/amportal.conf
+	cat /etc/asterisk/res_mysql.conf | sed "s/dbpass = eLaStIx.asteriskuser.2oo7/dbpass = $FREEPBX_PASSWD1/" > /tmp/res_mysql.conf.tmp
+	mv /tmp/res_mysql.conf.tmp /etc/asterisk/res_mysql.conf
+	cat /etc/asterisk/cbmysql.conf | sed "s/password=eLaStIx.asteriskuser.2oo7/password=$FREEPBX_PASSWD1/" > /tmp/cbmysql.conf.tmp
+	mv /tmp/cbmysql.conf.tmp /etc/asterisk/cbmysql.conf
+	cat /etc/asterisk/cdr_mysql.conf | sed "s/password = eLaStIx.asteriskuser.2oo7/password = $FREEPBX_PASSWD1/" > /tmp/cdr_mysql.conf.tmp
+	mv /tmp/cdr_mysql.conf.tmp /etc/asterisk/cdr_mysql.conf
+	for i in /etc/amportal.conf /etc/asterisk/res_mysql.conf /etc/asterisk/cbmysql.conf /etc/asterisk/cdr_mysql.conf ; do
+	    chown asterisk.asterisk $i
+	    chmod 644 $i
+	done
 
 	# Set password for Elastix login. Requires sed, md5sum, sqlite3.
 	MD5HASH=`echo -n "$FREEPBX_PASSWD1" | md5sum | sed 's/^\(.\{32\}\)  -/\1/'`
