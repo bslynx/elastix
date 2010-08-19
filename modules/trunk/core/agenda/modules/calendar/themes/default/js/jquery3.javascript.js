@@ -164,9 +164,16 @@ $(document).ready(function(){
         $('#view_box').attr("style","display:none;");
         $('#email_to').attr("style","visibility:visible;");
         $('.del_contact').attr("style","visibility:visible;");
+        $('#divReminder').show('slow');
+        $('#divNotification').show('slow');
+        $('#notification_email').attr("style","visibility:hidden;");
+        $('#lblCheckBoxNoti').attr("for","CheckBoxNoti");
+        $('#lblCheckBoxRemi').attr("for","CheckBoxRemi");
+        var title_box = $('#lblEdit').val();
+        $('#title_box').html(title_box);
         var estado = $('#notification').val();
-        /*if(estado == "on")
-            $('#notification_email').attr("style","visibility:visible;");*/
+        if(estado == "on")
+            $('#notification_email').attr("style","visibility:visible;");
 
         var event_name        = document.getElementById('event');
         var description_event = document.getElementsByName('description')[0];
@@ -650,7 +657,7 @@ function obtainEmails(){
         var date2 = document.getElementById('f-calendar-field-2').value;
         strDate1 = new Date(date1);
         strDate2 = new Date(date2);
-        if(strDate1 > strDate2)
+        if(strDate1 >= strDate2)
             return true;
         else
             return false;
@@ -772,6 +779,10 @@ function obtainEmails(){
         $('#title_box').html("");
         $('#box').show();
         $('.loading').show();
+        //$('#divReminder').hide();
+        //$('#divNotification').hide();
+        $('#lblCheckBoxNoti').attr("for","CheckBoxNoti1");
+        $('#lblCheckBoxRemi').attr("for","CheckBoxRemi1");
 ////// to remove checkbox status in reminder call or notification /////////////////
         RemoveAttributeImageCheck();
 ///////////////////////////////////////////////////////////////////////////////////
@@ -1112,7 +1123,7 @@ function obtainEmails(){
                         // fill checkbox notification emails
                         if(message['notification_status'] == "on"){
                             chkoldnoti.setAttribute("checked","checked");
-                            $('#notification_email').attr("style","visibility:visible;");
+                            //$('#notification_email').attr("style","visibility:visible;");
                             $('.noti_email').attr("style","visibility:visible;");
                             inputNotification.value = "on";
                             $('#CheckBoxNoti').attr('checked','checked');
@@ -1346,6 +1357,10 @@ function obtainEmails(){
         $('#title_box').html("");
         $('#box').show();
         $('.loading').show();
+        $('#divReminder').show();
+        $('#divNotification').show();
+        $('#lblCheckBoxNoti').attr("for","CheckBoxNoti");
+        $('#lblCheckBoxRemi').attr("for","CheckBoxRemi");
 ////// to remove checkbox status in reminder call or notification /////////////////
         RemoveAttributeImageCheck();
 ///////////////////////////////////////////////////////////////////////////////////

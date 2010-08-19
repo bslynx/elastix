@@ -172,7 +172,7 @@
                                         <div class="divCorners" style="-moz-border-radius: 10px 10px 10px 10px;" id="divReminder">
                                             <div class="sombreado">
                                                 <input id="CheckBoxRemi" type="checkbox" class="CheckBoxClass"/>
-                                                <label id="Label1" for="CheckBoxRemi" class="CheckBoxLabelClass">{$Call_alert}</label>
+                                                <label id="lblCheckBoxRemi" for="CheckBoxRemi" class="CheckBoxLabelClass">{$Call_alert}</label>
                                             </div>
                                         </div>
                                     </td>
@@ -215,7 +215,7 @@
                                         <div class="divCorners" style="-moz-border-radius: 10px 10px 10px 10px;" id="divNotification">
                                             <div class="sombreado">
                                                 <input id="CheckBoxNoti" type="checkbox" class="CheckBoxClass"/>
-                                                <label id="Label2" for="CheckBoxNoti" class="CheckBoxLabelClass">{$Notification_Alert}</label>
+                                                <label id="lblCheckBoxNoti" for="CheckBoxNoti" class="CheckBoxLabelClass">{$Notification_Alert}</label>
                                             </div>
                                         </div>
                                     </td>
@@ -272,3 +272,4 @@
 </div>
 <input class="button" type="hidden" name="id" value="{$ID}" id="id" />
 <input class="button" type="hidden" name="share_emails" value="" id="share_emails" />
+<input class="button" type="hidden" name="lblEdit" value="{$LBL_EDIT}" id="lblEdit" />
