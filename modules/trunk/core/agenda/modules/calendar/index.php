@@ -61,7 +61,7 @@ function _moduleContent(&$smarty, $module_name)
 
     //conexion resource
     $pDB = new paloDB($arrConf['dsn_conn_database']);
-    
+
     //actions
     $action = getAction();
     $content = "";
@@ -180,8 +180,8 @@ function viewCalendar($smarty, $module_name, $local_templates_dir, &$pDB, $arrCo
     $id_event = "";
     //begin, Form data persistence to errors and other events.
     //$action = getParameter("action");
-    //$user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
-    $uid = "";//Obtain_UID_From_User($user,$arrConf);
+    $user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
+    $uid = Obtain_UID_From_User($user,$arrConf);
     $title = $arrLang["Add Event"];
 
     $visibility        = "visibility: hidden;";
@@ -1017,6 +1017,7 @@ function viewBoxCalendar($arrConf,$arrLang,$pDB){
 }
 
 function download_icals($arrLang,&$pDB,$module_name){
+
     $arr_out = getAllDataCalendar($arrLang,$pDB,$module_name);
 
     header("Cache-Control: private");
@@ -1114,7 +1115,10 @@ function getNumExtesion($arrConf,&$pDB,$arrLang){
 function getAllDataCalendar($arrLang,&$pDB,$module_name){
     $pCalendar = new paloSantoCalendar($pDB);
 
-    $arrDates = $pCalendar->getAllEvents();
+    //$arrDates = $pCalendar->getAllEvents();
+    $user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
+    $uid = Obtain_UID_From_User($user,$arrConf);
+    $arrDates = $pCalendar->getAllEventsByUid($uid);
 
     $arr = array();
 
@@ -1318,6 +1322,7 @@ function getDataCalendar($arrLang,&$pDB,$module_name){
     $pCalendar = new paloSantoCalendar($pDB);
     $start = getParameter('start');
     $end = getParameter('end');
+    $uid = getParameter('uid');
     $start_time = date('Y-m-d', $start);
     $end_time = date('Y-m-d', $end);
 
@@ -1325,7 +1330,7 @@ function getDataCalendar($arrLang,&$pDB,$module_name){
     $month = date('m');
     $day = date('d');
 
-    $arrDates = $pCalendar->getEventByDate($start_time, $end_time);
+    $arrDates = $pCalendar->getEventByDate($start_time, $end_time, $uid);
 
     $arr = array();
 

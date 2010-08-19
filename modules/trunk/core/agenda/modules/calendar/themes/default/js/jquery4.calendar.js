@@ -41,7 +41,8 @@ $(document).ready(function() {
 		editable: true,
         module: module_name,
         owner: true, // para cuando son usuarios elastix
-		events: "index.php?menu="+module_name+"&action=get_data&rawmode=yes",
+        uid: $('#id').val(),
+		events: "index.php?menu="+module_name+"&uid="+$('#id').val()+"&action=get_data&rawmode=yes",
 		/*events: [
 			{
 				title: 'All Day Event',

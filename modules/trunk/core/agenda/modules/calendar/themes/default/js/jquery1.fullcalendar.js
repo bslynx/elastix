@@ -33,6 +33,7 @@ var defaults = {
     // if the user is owner of calendar or if is a invited
     owner: true,
     module_name: "calendar",
+    uid: "",
 
 	// display
 	defaultView: 'month',
