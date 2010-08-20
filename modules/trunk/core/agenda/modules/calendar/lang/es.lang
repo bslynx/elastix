@@ -144,5 +144,6 @@ $arrLangModule=array(
 "active_foneCall" => "Habilitar Recordatorio",
 "Name" => "Nombre",
 "Download" => "Descargar",
+"Here" => "Aqui",
 );
 ?>

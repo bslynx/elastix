@@ -242,6 +242,7 @@ function viewCalendar($smarty, $module_name, $local_templates_dir, &$pDB, $arrCo
     $smarty->assign("Send",$arrLang["Send"]);
     $smarty->assign("formatIcal",$arrLang["ical"]);
     $smarty->assign("LBL_EDIT", $arrLang["Edit Event"]);
+    $smarty->assign("Here", $arrLang["Here"]);
 
     $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",$arrLang["Calendar"], $_DATA);
     $content = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name' name='formNewEvent' id='formNewEvent'>".$htmlForm."</form>";

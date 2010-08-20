@@ -195,7 +195,7 @@
                                                 <td align="left"><b>{$call_to.LABEL}: <span  class="required">*</span></b></td>
                                                 <td align="left">{$call_to.INPUT}&nbsp;&nbsp;
                                                     <span id="add_phone">
-                                                            {$add_phone}<a href="javascript: popup_phone_number('?menu={$module_name}&amp;action=phone_numbers&amp;rawmode=yes');"> Here</a>
+                                                            {$add_phone}<a href="javascript: popup_phone_number('?menu={$module_name}&amp;action=phone_numbers&amp;rawmode=yes');"> {$Here}</a>
                                                     </span>
                                                 </td>
                                             </tr>
