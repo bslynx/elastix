@@ -46,9 +46,15 @@ function _moduleContent(&$smarty, $module_name)
     //if file language not exists, then include language by default (en)
     $lang=get_language();
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
+
+    // Include language file for EN, then for local, and merge the two.
+    include_once("modules/$module_name/lang/en.lang");
     $lang_file="modules/$module_name/lang/$lang.lang";
-    if (file_exists("$base_dir/$lang_file")) include_once "$lang_file";
-    else include_once "modules/$module_name/lang/en.lang";
+    if (file_exists("$base_dir/$lang_file")) {
+        $arrLanEN = $arrLangModule;
+        include_once($lang_file);
+        $arrLangModule = array_merge($arrLanEN, $arrLangModule);
+    }
 
     //global variables
     global $arrConf;
