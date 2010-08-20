@@ -117,7 +117,9 @@ function viewFormMyExtension($smarty, $module_name, $local_templates_dir, $pDB, 
     $statusCF        = $pMyExtension->getConfig_CallForwarding($extension);
     $statusCFU       = $pMyExtension->getConfig_CallForwardingOnUnavail($extension);
     $statusCFB       = $pMyExtension->getConfig_CallForwardingOnBusy($extension);
-    $statusRecording = $pMyExtension->getRecordSettings($extension);
+    $statusRecording = array('record_in' => FALSE, 'record_out' => FALSE);
+    if ($extension != '')
+        $statusRecording = $pMyExtension->getRecordSettings($extension);
     $extensionCID    = $pMyExtension->getExtensionCID($extension);
 
     $_DATA["do_not_disturb"]    = $statusDND;
