@@ -1,7 +1,7 @@
 Summary: Elastix First Boot Setup
 Name:    elastix-firstboot
 Version: 2.0.0
-Release: 12
+Release: 13
 License: GPL
 Group:   Applications/System
 Source0: %{name}-%{version}.tar.bz2
@@ -77,7 +77,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-, root, root)
-/etc/init.d/*
+%attr(755, root, root) /etc/init.d/*
 %dir %{_localstatedir}/spool/elastix-mysqldbscripts/
 /usr/share/elastix-firstboot/compat-dbscripts/01-asteriskcdrdb.sql
 /usr/share/elastix-firstboot/compat-dbscripts/02-asteriskuser-password.sql
@@ -86,6 +86,9 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/elastix-firstboot/compat-dbscripts/08-schema-vtiger.sql
 
 %changelog
+* Fri Aug 20 2010 Alex Villacis Lasso <a_villacis@palosanto.com> 2.0.0-13
+- FIXED: Ensure everything in /etc/init.d/ is executable.
+
 * Thu Aug 19 2010 Alex Villacis Lasso <a_villacis@palosanto.com> 2.0.0-12
 - FIXED: Also set password on files in /etc/asterisk/ that had copies of
   the FreePBX database password.
