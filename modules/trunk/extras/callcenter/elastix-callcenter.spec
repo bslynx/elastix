@@ -3,7 +3,7 @@
 Summary: Elastix Call Center 
 Name:    elastix-callcenter
 Version: 2.0.0
-Release: 8
+Release: 9
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
@@ -86,6 +86,47 @@ fi
 /etc/logrotate.d/elastixdialer
 
 %changelog
+* Mon Aug 23 2010 Alex Villacis Lasso <a_villacis@palosanto.com> 2.0.0-9
+- Updated version, synchronized with CallCenter 1.5-3.6 (SVN revision 1713)
+- From CHANGELOG:
+1.5-3.6 (SVN revision 1713)
+	- Configuration: detect and use generic-cloexec if available. Should fix issue
+	  of httpd failing to restart due to dialer process grabbing HTTP[S] ports
+	  as in Elastix bug #425. If generic-cloexec is not available, this has no 
+	  effect.
+	- Dialer: remove broken "reload" verb support from init script. Should fix 
+	  Elastix bug #434.
+	- Reports (Agent Connection Time, Agent Information, Trunks Used per Hour):
+	  remove hardcoded freePBX database credentials, and instead parse them from
+	  /etc/amportal.conf .
+	- Dialer: with low-quality phone number databases with lots of repeated 
+	  numbers, the generation of a call with the same number as one already
+	  being originated or monitored will confuse the dialer and mix up events.
+	  So skip over calls that duplicate calls already originated/in progress.  
+	- Dialer: if the AMI reports an OriginateResponse with a Success status, but
+	  the channel (or an auxiliary channel) has seen a Hangup, treat the call as
+	  a failure instead. 
+	- Dialer: when receiving a Link event before an OriginateResponse, do not wait
+	  until the OriginateResponse if the Uniqueid is known. Instead, fake an 
+	  OriginateResponse event to handle the call as soon as possible. 
+	- Dialer: prevent event re-entrancy when originating outgoing calls and pausing
+	  queue agents.
+	- Dialer: document more possible re-entrancy points where nested event handling
+	  could happen.
+	- Dialer: add debugging function to dump list of current_calls to log
+	- Dialer: phpagi-asmanager-elastix.php: factor out handling of queued events 
+	  into a separate function, and add events to the queue, not only on reentrancy,
+	  but also when the queue is non-empty. This ensures that any events already in the
+	  queue when entering wait_response() will be dispatched before any new events
+	  that were picked up on the event loop.  
+	- Calls Detail: fix broken chronological ordering of call records. Spotted while
+	  fixing Elastix bug #373.
+	- Calls Detail: when filtering by phone number, the SELECT statement for incoming
+	  calls failed to take into account that there might be no contact available for
+	  a given incoming call, but the Caller ID was available anyway. This resulted in
+	  missing incoming calls when filtering by telephone. Fixed. Should fix Elastix 
+	  bug #373.
+
 * Mon Jun 21 2010 Alex Villacis Lasso <a_villacis@palosanto.com> 2.0.0-8
 - Updated version, synchronized with CallCenter 1.5-3.5 (SVN revision 1563)
 - From CHANGELOG:

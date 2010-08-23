@@ -1,3 +1,4 @@
+1.5-3.6 (SVN revision 1713)
 * Configuration: detect and use generic-cloexec if available. Should fix issue
   of httpd failing to restart due to dialer process grabbing HTTP[S] ports
   as in Elastix bug #425. If generic-cloexec is not available, this has no 
