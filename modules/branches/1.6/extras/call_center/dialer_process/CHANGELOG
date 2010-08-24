@@ -1,3 +1,9 @@
+* Campaigns Out: set array variables holding recordsets to NULL as soon as 
+  possible in the CSV download codepath. This reduces memory usage and allows
+  processing of a larger number of call records without exceeding the PHP
+  memory limit. Also, for the same purpose, replace superfluous array 
+  assignment via loop, with direct recordset assignment.
+
 1.5-3.6 (SVN revision 1713)
 * Configuration: detect and use generic-cloexec if available. Should fix issue
   of httpd failing to restart due to dialer process grabbing HTTP[S] ports

@@ -814,13 +814,11 @@ SQL_LLAMADAS;
                     $arrLan['Duration'],
                     'Uniqueid',
                 ),
-                'DATA'  =>  array(),
+                'DATA'  =>  $datosTelefonos,
             ),
             'FORMS' =>  array(),
         );
-        foreach ($datosTelefonos as $tuplaTelefono) {
-            $datosCampania['BASE']['DATA'][] = $tuplaTelefono;        
-        }
+        $datosTelefonos = NULL;
 
         // Construir índice para obtener la posición de la llamada, dado su ID
         $indexCall = array();
@@ -854,6 +852,7 @@ SQL_ATRIBUTOS;
             $datosCampania['BASE']['LABEL'][$iPos] = $tuplaAtributo['etiqueta'];
             $datosCampania['BASE']['DATA'][$datosCampania['BASE']['ID2POS'][$tuplaAtributo['id_call']]][$iPos] = $tuplaAtributo['valor'];
         }
+        $datosAtributos = NULL;
 
         // Leer los datos de los formularios asociados a esta campaña
         $sqlFormularios = <<<SQL_FORMULARIOS
@@ -886,6 +885,7 @@ SQL_FORMULARIOS;
             // Construir índice para obtener posición/orden del campo de formulario, dado su ID.
             $datosCampania['FORMS'][$tuplaFormulario[0]]['FF2POS'][$tuplaFormulario[1]] = count($datosCampania['FORMS'][$tuplaFormulario[0]]['LABEL']) - 1;
         }
+        $datosFormularios = NULL;
 
         // Leer los datos recolectados de los formularios
         $sqlDatosForm = <<<SQL_DATOS_FORM
@@ -916,6 +916,7 @@ SQL_DATOS_FORM;
             $iPos = $datosCampania['FORMS'][$vr['id_form']]['FF2POS'][$vr['id_form_field']];
             $datosCampania['FORMS'][$vr['id_form']]['DATA'][$vr['id_call']][$iPos] = $vr['campo_valor'];
         }
+        $datosRecolectados = NULL;
 
         return $datosCampania;
     }
