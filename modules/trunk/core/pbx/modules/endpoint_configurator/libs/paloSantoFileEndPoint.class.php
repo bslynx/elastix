@@ -157,6 +157,9 @@ class PaloSantoFileEndPoint
 
         if(!is_dir($tftpBootPath)) mkdir($tftpBootPath,0755,true);
 
+        if (file_exists("$tftpBootPath/$nameFileConf") && !is_writable("$tftpBootPath/$nameFileConf")) {
+            unlink("$tftpBootPath/$nameFileConf");
+        }
         $fd = fopen ("$tftpBootPath/$nameFileConf", "w");
         if ($fd){
             fputs($fd,$contentConf,strlen($contentConf)); // write config file
