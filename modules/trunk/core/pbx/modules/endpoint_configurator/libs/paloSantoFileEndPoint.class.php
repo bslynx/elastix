@@ -41,7 +41,7 @@ class PaloSantoFileEndPoint
     /*
         La funcion createFiles nos permite crear los archivos de configuracion de un EndPoint
         Para ello recibimos un arreglo con los datos necesarios para crear estos archivos,
-        Entre los datos tenemos el nombre del vendor, nombre de archivo, mas address.
+        Entre los datos tenemos el nombre del vendor, nombre de archivo, mac address.
      */
     function createFiles($ArrayData)
     {
@@ -51,8 +51,7 @@ class PaloSantoFileEndPoint
                 //Header Polycom
                 $contentHeader = HeaderFilePolycom($ArrayData['data']['filename']);
 
-                if($this->createFileConf($this->directory, $ArrayData['data']['filename'].".cfg", $contentHeader))
-                {
+                if($this->createFileConf($this->directory, $ArrayData['data']['filename'].".cfg", $contentHeader)){
                     //Archivo Principal
                     $contentFilePolycom = PrincipalFilePolycom($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret']);
 
@@ -64,9 +63,8 @@ class PaloSantoFileEndPoint
                 break;
 
             case 'Linksys':
-                $contentFileLinksys =PrincipalFileLinksys($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer);
-                if($this->createFileConf($this->directory, "spa".$ArrayData['data']['filename'].".cfg", $contentFileLinksys))
-                {
+                $contentFileLinksys = PrincipalFileLinksys($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer);
+                if($this->createFileConf($this->directory, "spa".$ArrayData['data']['filename'].".cfg", $contentFileLinksys)){
                     if(conexionHTTP($ArrayData['data']['ip_endpoint'], $this->ipAdressServer, $ArrayData['data']['filename']))
                         return true;
                     else return false;
@@ -76,15 +74,15 @@ class PaloSantoFileEndPoint
                 break;
 
             case 'Aastra':
-                $contentFileAastra =PrincipalFileAastra($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer);
-                if( $this->createFileConf($this->directory, strtoupper($ArrayData['data']['filename']).".cfg", $contentFileAastra) )
+                $contentFileAastra = PrincipalFileAastra($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer);
+                if($this->createFileConf($this->directory, strtoupper($ArrayData['data']['filename']).".cfg", $contentFileAastra) )
                     return true;
                 else return false;
 
                 break;
 
             case 'Cisco':
-                 $contentFileCisco =PrincipalFileCisco($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer, $this->find_version() );
+                 $contentFileCisco = PrincipalFileCisco($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer, $this->find_version() );
                 if($this->createFileConf($this->directory, strtoupper("SIP".$ArrayData['data']['filename']).".cnf", $contentFileCisco))
                     return true;
                 else return false;
@@ -92,13 +90,13 @@ class PaloSantoFileEndPoint
                 break;
 
             case 'Atcom':
-                if($ArrayData['data']['model'] == "AT 320")
-                {
+                if($ArrayData['data']['model'] == "AT 320"){
                     $contentFileAtcom = PrincipalFileAtcom320($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer,$ArrayData['data']['filename']);
                     $result = $this->telnet($ArrayData['data']['ip_endpoint'], "", "12345678", $contentFileAtcom);
                     if($result) return true;
                     else return false;
-                }else if($ArrayData['data']['model'] == "AT 530"){
+                }
+                else if($ArrayData['data']['model'] == "AT 530"){
                     $contentFileAtcom = PrincipalFileAtcom530($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer,$ArrayData['data']['filename'], $ArrayData['data']['arrParameters']['versionCfg']);
                     if($this->createFileConf($this->directory,"atc".$ArrayData['data']['filename'].".cfg", $contentFileAtcom))
                     {
@@ -112,7 +110,7 @@ class PaloSantoFileEndPoint
                 break;
 
             case 'Snom':
-                $contentFileSnom =PrincipalFileSnom($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer);
+                $contentFileSnom = PrincipalFileSnom($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer);
                 if($this->createFileConf($this->directory, "snom".$ArrayData['data']['model']."-".strtoupper($ArrayData['data']['filename']).".htm", $contentFileSnom))
                     return true;
                 else return false;
@@ -121,7 +119,7 @@ class PaloSantoFileEndPoint
 
             case 'Grandstream':
         	$contentFileGrandstream = PrincipalFileGrandstream($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer);
-                if( $this->createFileConf($this->directory, "gxp".$ArrayData['data']['filename'].".cfg", $contentFileGrandstream)) {
+                if($this->createFileConf($this->directory, "gxp".$ArrayData['data']['filename'].".cfg", $contentFileGrandstream)) {
 		    exec("sudo -u root chmod o+rx /opt/openfire");
                     //ex: . /tftpboot/GS_CFG_GEN/bin/encode.sh 000945531b3b /tftpboot/gxp_config_1.1.6.46.template.cfg /tftpboot/cfg000945531b3b
 		    exec("/tftpboot/GS_CFG_GEN/bin/encode.sh {$ArrayData['data']['filename']} /tftpboot/gxp{$ArrayData['data']['filename']}.cfg /tftpboot/cfg{$ArrayData['data']['filename']}.cfg",$arrConsole,$flagStatus);
@@ -190,7 +188,7 @@ class PaloSantoFileEndPoint
             case 'Grandstream':
 		if($this->deleteFileConf($this->directory, "cfg".$ArrayData['data']['filename'].".cfg")){
                     return $this->deleteFileConf($this->directory, "gxp".$ArrayData['data']['filename'].".cfg");
-                } else return false;
+                }else return false;
                 break;
         }
     }
