@@ -30,6 +30,6 @@ global $arrConfModule;
 global $arrConf;
 $arrConfModule['module_name'] = 'endpoint_configuration';
 $arrConfModule['templates_dir'] = 'themes';
-$arrConfModule['tftpboot_path'] = '/tftpboot/';
+$arrConfModule['tftpboot_path'] = '/tftpboot';
 $arrConfModule['dsn_conn_database_1'] = "sqlite3:///$arrConf[elastix_dbdir]";
 ?>

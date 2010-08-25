@@ -128,6 +128,21 @@ class PaloSantoFileEndPoint
 			return true;
 		}
                 else return false;
+
+                break;
+
+            case 'Zultys':
+                //Common file Zultys models ZIP 2x1 and ZIP 2x2
+                $contentCommon = CommonFileZultys($ArrayData['data']['model'],$this->ipAdressServer);
+                if($this->createFileConf($this->directory,"{$ArrayData['data']['model']}_common.cfg",$contentCommon)){
+                    //Archivo Principal
+                    $contentFileZultys = PrincipalFileZultys($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret']);
+                    if($this->createFileConf("{$this->directory}/{$ArrayData['data']['model']}",strtoupper($ArrayData['data']['filename']).".cfg",$contentFileZultys))
+                        return true;
+                    else return false;
+                }
+                else return false;
+
                 break;
         }
     }
@@ -140,7 +155,9 @@ class PaloSantoFileEndPoint
     {
         global $arrLang;
 
-        $fd = fopen ($tftpBootPath.$nameFileConf, "w");
+        if(!is_dir($tftpBootPath)) mkdir($tftpBootPath,0755,true);
+
+        $fd = fopen ("$tftpBootPath/$nameFileConf", "w");
         if ($fd){
             fputs($fd,$contentConf,strlen($contentConf)); // write config file
         fclose ($fd);
@@ -190,6 +207,10 @@ class PaloSantoFileEndPoint
                     return $this->deleteFileConf($this->directory, "gxp".$ArrayData['data']['filename'].".cfg");
                 }else return false;
                 break;
+
+            case 'Zultys':
+                return $this->deleteFileConf("{$this->directory}/{$ArrayData['data']['model']}", strtoupper($ArrayData['data']['filename']).".cfg");
+                break;
         }
     }
 
@@ -201,8 +222,8 @@ class PaloSantoFileEndPoint
     {
         global $arrLang;
 
-        if (file_exists($tftpBootPath.$nameFileConf)) {
-            if(!unlink($tftpBootPath.$nameFileConf)){
+        if (file_exists("$tftpBootPath/$nameFileConf")) {
+            if(!unlink("$tftpBootPath/$nameFileConf")){
                 $this->errMsg = $arrLang['Unable delete the file'].": $nameFileConf";
                 return false;
             }
@@ -276,6 +297,15 @@ class PaloSantoFileEndPoint
                 $this->createFileConf($this->directory, "gxp_config_1.1.6.46.template.cfg", $contentFileAatra);
                 return true; //no es tan importante la necesidad de estos archivos solo son de ejemplo.
                 break;
+
+            case 'Zultys':
+                //Creando archivos de ejemplo.
+                $contentFileZultys = templatesFileZultys("ZIP2x1",$this->ipAdressServer);
+                $this->createFileConf($this->directory, "ZIP2x1_common.template.cfg", $contentFileZultys);
+                 $contentFileZultys = templatesFileZultys("ZIP2x2",$this->ipAdressServer);
+                $this->createFileConf($this->directory, "ZIP2x2_common.template.cfg", $contentFileZultys);
+                return true; //no es tan importante la necesidad de estos archivos solo son de ejemplo.
+                break;
         }
     }
 
@@ -335,6 +365,9 @@ class PaloSantoFileEndPoint
                 break;
 
             case 'Grandstream':
+                break;
+
+            case 'Zultys':
                 break;
         }
 

@@ -631,9 +631,9 @@ SIP;
 */
 function mkdirFilePolycom($directory)
 {
-    exec("mkdir -p {$directory}polycom/logs"     ,$arrConsole,$dirLogs);
-    exec("mkdir -p {$directory}polycom/overrides",$arrConsole,$dirOver);
-    exec("mkdir -p {$directory}polycom/contacts" ,$arrConsole,$dirCont);
+    exec("mkdir -p {$directory}/polycom/logs"     ,$arrConsole,$dirLogs);
+    exec("mkdir -p {$directory}/polycom/overrides",$arrConsole,$dirOver);
+    exec("mkdir -p {$directory}/polycom/contacts" ,$arrConsole,$dirCont);
     return (!$dirLogs && !$dirOver && !$dirCont);
 }
 ?>
