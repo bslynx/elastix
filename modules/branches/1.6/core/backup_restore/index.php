@@ -708,7 +708,7 @@ function process_each_backup($arrSelectedOptions,$ruta_respaldo,&$arrBackupOptio
                 if(!respaldar_carpeta($arrInfoRespaldo,$ruta_respaldo,$error))
                     $bExito = false;
                 //cambio de nuevo a root
-                $comando="sudo -u root /bin/chown root:root /tftpboot -R";
+                $comando="sudo -u root /bin/chown root:root ";
                 exec($comando,$output,$retval);
             }
             break;
@@ -1334,7 +1334,7 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
                         $bExito = false;
 
                     //cambio de nuevo a root
-                    $comando="sudo -u root /bin/chown root:root /tftpboot -R";
+                    $comando="sudo -u root /bin/chown root:root ";
                     exec($comando,$output,$retval);
                 }
             }
