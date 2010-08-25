@@ -86,6 +86,9 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/elastix-firstboot/compat-dbscripts/08-schema-vtiger.sql
 
 %changelog
+* Tue Aug 23 2010 Alex Villacis Lasso <a_villacis@palosanto.com>
+- FIXED: fix typo in Elastix password screen.
+
 * Fri Aug 20 2010 Alex Villacis Lasso <a_villacis@palosanto.com> 2.0.0-13
 - FIXED: Ensure everything in /etc/init.d/ is executable.
 

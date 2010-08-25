@@ -128,7 +128,7 @@ This screen will now ask for a password for the 'root' account of MySQL.\n\n"
 }
 
 elastix_prompt_web_passwd() {
-	DIALOG_PURPOSE="Several Elastix components have administrative interfaces that are can be used \
+	DIALOG_PURPOSE="Several Elastix components have administrative interfaces that can be used \
 through the Web. A web login password must be set for these components in order to prevent \
 unauthorized access to these administration interfaces.\n\n\
 This screen will now ask for a password for user 'admin' that will be used for: Elastix Web Login, FreePBX, VTiger, and A2Billing.\n\n"
