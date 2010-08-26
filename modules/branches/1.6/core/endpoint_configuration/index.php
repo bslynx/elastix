@@ -72,6 +72,11 @@ function _moduleContent(&$smarty, $module_name)
     else if(isset($_POST["endpoint_unset"])) $accion ="endpoint_unset";
     else $accion ="endpoint_show";
     $content = "";
+
+    // Asegurarse de que el arreglo siempre exista, aunque esté vacío
+    if (!isset($_SESSION['elastix_endpoints']))
+        $_SESSION['elastix_endpoints'] = array();
+
     switch($accion){ 
         case "endpoint_scan":
             $content = endpointScan($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrLang, $arrConf);
@@ -83,9 +88,7 @@ function _moduleContent(&$smarty, $module_name)
             $content = endpointConfiguratedUnset($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrLang, $arrConf);
             break;
         default: // endpoint_show            
-            if(isset($_SESSION['elastix_endpoints']))//si existe este arreglo lo borro, esto asegura de q cada vez q entre al modulo endpoint configuration vuelva a crear el arreglo de los endpoint en la SESSION
-                unset($_SESSION['elastix_endpoints']);
-            $content = buildReport(array(), $smarty, $module_name, $arrLang, network());
+            $content = buildReport($_SESSION['elastix_endpoints'], $smarty, $module_name, $arrLang, network());
             break;
     }
     return $content;
@@ -173,6 +176,15 @@ function buildReport($arrData, $smarty, $module_name, $arrLang, $endpoint_mask)
        $smarty->assign("mb_title",$arrLang['WARNING'].":");
        $smarty->assign("mb_message",$arrLang["It can take several minutes, because your ip address has some devices, "].$devices);
     }
+    
+    $sUrlNavPost = '';
+    if (isset($_GET['start'])) $sUrlNavPost .= '&start='.$_GET['start'];
+    if (isset($_GET['nav'])) $sUrlNavPost .= '&nav='.$_GET['nav'];
+    
+    if ($total <= $limit)
+        $arrDataPorcion = $arrData;
+    else $arrDataPorcion = array_slice($arrData, $offset, $limit);
+
     $arrGrid = array("title"    => $arrLang["Endpoint Configuration"],
         "icon"     => "images/endpoint.png",
         "width"    => "99%",
@@ -198,8 +210,8 @@ function buildReport($arrData, $smarty, $module_name, $arrLang, $endpoint_mask)
     $html_filter = "<input type='submit' name='endpoint_scan' value='{$arrLang['Endpoint Scan']}' class='button' />";
     $html_filter.= "&nbsp;&nbsp;<input type='text' name='endpoint_mask' value='$endpoint_mask' style='text-align:right; width:90px;' />";
     $oGrid->showFilter($html_filter);
-    $contenidoModulo  = "<form style='margin-bottom:0;' method='POST' action='?menu=$module_name'>";
-    $contenidoModulo .= $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
+    $contenidoModulo  = "<form style='margin-bottom:0;' method='POST' action='?menu=$module_name$sUrlNavPost'>";
+    $contenidoModulo .= $oGrid->fetchGrid($arrGrid, $arrDataPorcion,$arrLang);
     $contenidoModulo .= "</form>";
     return $contenidoModulo;
 }

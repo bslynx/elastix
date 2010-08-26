@@ -189,6 +189,15 @@ class paloSantoEndPoint
                 }
             }//end foreach main
         }
+        function _paloSantoEndPoint_cmp_endpoints(&$a, &$b)
+        {
+            $ip_a = explode('.', $a['ip_adress']);
+            $ip_b = explode('.', $b['ip_adress']);
+            if ($ip_a > $ip_b) return 1;
+            if ($ip_a < $ip_b) return -1;
+            return 0;
+        }
+        usort($map, '_paloSantoEndPoint_cmp_endpoints');
         return $map;
     }
 
