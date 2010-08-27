@@ -27,14 +27,27 @@
   +----------------------------------------------------------------------+
   $Id: index.php,v 1.3 2007/07/17 00:03:42 gcarrillo Exp $ */
 
+if (!function_exists('_tr')) {
+    function _tr($s)
+    {
+        global $arrLang;
+        return isset($arrLang[$s]) ? $arrLang[$s] : $s;
+    }
+}
+
 function _moduleContent(&$smarty, $module_name)
 {
     require_once "libs/misc.lib.php";
     $lang=get_language();
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
     $lang_file="modules/$module_name/lang/$lang.lang";
-    if (file_exists("$base_dir/$lang_file")) include_once "$lang_file";
-    else include_once "modules/$module_name/lang/en.lang";
+    include_once "modules/$module_name/lang/en.lang";
+    if (file_exists("$base_dir/$lang_file")) {
+        $arrLangEn = $arrLangModule;
+        include_once $lang_file;
+        $arrLangModule = array_merge($arrLangEn, $arrLangModule);
+    }
+    $skip_astman = NULL;
 
     /*interprete language to freepbx, todavia no funciona de todo bien :)
       en_US - English
@@ -523,34 +536,43 @@ function _moduleContent(&$smarty, $module_name)
         $salida .= "<table border=0 cellpadding=2 cellspacing=0 align='center' width='100%'><tr bgcolor='#f6bbbb'><td align='center'><a href='$URL_RELOAD'>Apply Configuration Changes Here</a></td></tr></table>";
     }
 
-    $smarty->assign("Option", $arrLang['Option']);
-    $smarty->assign("Unembedded_freePBX", $arrLang['Unembedded freePBX']);
-    $smarty->assign("Basic", $arrLang['Basic']);
-    $smarty->assign("Extensions", $arrLang['Extensions']);
-    $smarty->assign("Feature_Codes", $arrLang['Feature Codes']);
-    $smarty->assign("General_Settings", $arrLang['General Settings']);
-    $smarty->assign("Outbound_Routes", $arrLang['Outbound Routes']);
-    $smarty->assign("Trunks", $arrLang['Trunks']);
-    $smarty->assign("Inbound_Call_Control", $arrLang['Inbound Call Control']);
-    $smarty->assign("Inbound_Routes", $arrLang['Inbound Routes']);
-    $smarty->assign("Announcements", $arrLang['Announcements']);
-    $smarty->assign("Follow_Me", $arrLang['Follow Me']);
-    $smarty->assign("IVR", $arrLang['IVR']);
-    $smarty->assign("Misc_Destinations", $arrLang['Misc Destinations']);
-    $smarty->assign("Queues", $arrLang['Queues']);
-    $smarty->assign("Ring_Groups", $arrLang['Ring Groups']);
-    $smarty->assign("Time_Conditions", $arrLang['Time Conditions']);
-    $smarty->assign("Internal_Options_Configuration", $arrLang['Internal Options & Configuration']);
-    $smarty->assign("Conferences", $arrLang['Conferences']);
-    $smarty->assign("Misc_Applications", $arrLang['Misc Applications']);
-    $smarty->assign("Music_on_Hold", $arrLang['Music on Hold']);
-    $smarty->assign("PIN_Sets", $arrLang['PIN Sets']);
-    $smarty->assign("Paging_Intercom", $arrLang['Paging and Intercom']);
-    $smarty->assign("Parking_Lot", $arrLang['Parking Lot']);
-    $smarty->assign("System_Recordings", $arrLang['System Recordings']);
-    $smarty->assign("Remote_Access", $arrLang['Remote Access']);
-    $smarty->assign("Callback", $arrLang['Callback']);
-    $smarty->assign("DISA", $arrLang['DISA']);
+    $smarty->assign("Option", _tr('Option'));
+    $smarty->assign("Unembedded_freePBX", _tr('Unembedded freePBX'));
+    $smarty->assign("Basic", _tr('Basic'));
+    $smarty->assign("Extensions", _tr('Extensions'));
+    $smarty->assign("Feature_Codes", _tr('Feature Codes'));
+    $smarty->assign("General_Settings", _tr('General Settings'));
+    $smarty->assign("Outbound_Routes", _tr('Outbound Routes'));
+    $smarty->assign("Trunks", _tr('Trunks'));
+    $smarty->assign("Inbound_Call_Control", _tr('Inbound Call Control'));
+    $smarty->assign("Inbound_Routes", _tr('Inbound Routes'));
+    $smarty->assign("Announcements", _tr('Announcements'));
+    $smarty->assign("Follow_Me", _tr('Follow Me'));
+    $smarty->assign("IVR", _tr('IVR'));
+    $smarty->assign("Misc_Destinations", _tr('Misc Destinations'));
+    $smarty->assign("Queues", _tr('Queues'));
+    $smarty->assign("Ring_Groups", _tr('Ring Groups'));
+    $smarty->assign("Time_Conditions", _tr('Time Conditions'));
+    $smarty->assign("Internal_Options_Configuration", _tr('Internal Options & Configuration'));
+    $smarty->assign("Conferences", _tr('Conferences'));
+    $smarty->assign("Misc_Applications", _tr('Misc Applications'));
+    $smarty->assign("Music_on_Hold", _tr('Music on Hold'));
+    $smarty->assign("PIN_Sets", _tr('PIN Sets'));
+    $smarty->assign("Paging_Intercom", _tr('Paging and Intercom'));
+    $smarty->assign("Parking_Lot", _tr('Parking Lot'));
+    $smarty->assign("System_Recordings", _tr('System Recordings'));
+    $smarty->assign("Remote_Access", _tr('Remote Access'));
+    $smarty->assign("Callback", _tr('Callback'));
+    $smarty->assign("DISA", _tr('DISA'));
+
+    $smarty->assign("Zap_Channel_DIDs", _tr('Zap Channel DIDs'));
+    $smarty->assign("Blacklist", _tr('Blacklist'));
+    $smarty->assign("CallerID_Lookup_Sources", _tr('CallerID Lookup Sources'));
+    $smarty->assign("Day_Night_Control", _tr('Day/Night Control'));
+    $smarty->assign("Queue_Priorities", _tr('Queue Priorities'));
+    $smarty->assign("Time_Groups", _tr('Time Groups'));
+    $smarty->assign("Languages", _tr('Languages'));
+    $smarty->assign("VoiceMail_Blasting", _tr('VoiceMail Blasting'));
 
     $smarty->assign("htmlFPBX", $htmlFPBX);
     $salida .= $smarty->fetch("$local_templates_dir/main.tpl");
