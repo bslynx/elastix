@@ -38,8 +38,10 @@ $arrLangModule=array(
 "Text Information" => "Text Information",
 "Select a Fax Device" => "Select a Fax Device",
 "File to upload is empty" => "File to upload is empty",
+"Wrong type of file" => "Wrong type of file",
 "Text to send is empty" => "Text to send is empty",
 "Please, select a valid Fax Device" => "Please, select a valid Fax Device",
 "Types of files" => "Types of files supported: ",
+"Fax has been sended correctly" => "Fax has been sended correctly",
 );
 ?>

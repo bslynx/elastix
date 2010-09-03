@@ -138,7 +138,7 @@ function sendNewSendFax($smarty, $module_name, $local_templates_dir, &$pDB, $arr
 {
     $pSendFax = new paloSantoSendFax($pDB);
     $pFaxList = new paloFax($pDB);
-
+    $ruta_archivo = "";
     $faxes      = $pFaxList->getFaxList();
     $arrFaxList = array("none"=>'-- '.$arrLang["Select a Fax Device"].' --');
     foreach($faxes as $values){
@@ -175,6 +175,15 @@ function sendNewSendFax($smarty, $module_name, $local_templates_dir, &$pDB, $arr
         if(getParameter("option_fax")=="by_file"){
             if(is_uploaded_file($_FILES['file_record']['tmp_name'])) {
                 $ruta_archivo = "/tmp/".$_FILES['file_record']['name'];
+                // Validation of type file
+                $ext = explode(".",$_FILES['file_record']['name']);
+                $size_ext = count($ext) - 1;
+                if($ext[$size_ext]!="pdf" && $ext[$size_ext]!="tiff" && $ext[$size_ext]!="txt"){
+                    $smarty->assign("mb_title", $arrLang["Validation Error"]);
+                    $smarty->assign("mb_message", $arrLang["Wrong type of file"]);
+                    return $content = viewFormSendFax($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+                }
+                // Done by Ivette
                 copy($_FILES['file_record']['tmp_name'], $ruta_archivo);
             }
             else{
@@ -195,10 +204,14 @@ function sendNewSendFax($smarty, $module_name, $local_templates_dir, &$pDB, $arr
                 return $content = viewFormSendFax($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
             }
         }
-
+    
         $pSendFax->sendFax($faxexten, $destine, $ruta_archivo);
         exec("rm -rf $ruta_archivo");
-        header("Location: ?menu=$module_name");
+        //Notification Sucessfull
+        $smarty->assign("mb_title", $arrLang["Notification Sucessfull"]);
+        $smarty->assign("mb_message", $arrLang["Fax has been sended correctly"]);
+        return $content = viewFormSendFax($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+        //done by Ivette
     }
     //return $content;
 }
