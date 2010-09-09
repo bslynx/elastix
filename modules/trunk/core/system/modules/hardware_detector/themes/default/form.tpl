@@ -1,5 +1,3 @@
-<link   rel ="stylesheet"      href="modules/hardware_detector/themes/style.css" />
-
 
 <table width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
     <tr class="moduleTitle">

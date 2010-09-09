@@ -1,7 +1,4 @@
-<script type="text/javascript" src ="/libs/js/jquery/js/jquery-1.3.2.min.js"></script>
-<script type="text/javascript" src ="/libs/js/jquery/js/jquery-ui-1.7.2.custom.min.js"></script>
-<script type="text/javascript" src ="/modules/hardware_detector/themes/js/javascript.js"></script>
-<link   rel ="stylesheet"      href="modules/hardware_detector/themes/style.css" />
+
 
 <table width="{$width}" align="center" border="0" cellpadding="0" cellspacing="0">
     <tr class="moduleTitle">
