@@ -28,6 +28,8 @@
   $Id: paloSantoGrid.class.php,v 1.1.1.1 2007/07/06 21:31:55 gcarrillo Exp $ */
 global $arrConf;
 require_once "{$arrConf['basePath']}/libs/xajax/xajax.inc.php";
+require_once "{$arrConf['basePath']}/libs/paloSantoPDF.class.php";
+
 
 class paloSantoGrid {
 
@@ -43,6 +45,7 @@ class paloSantoGrid {
     var $functionNameAjax;
     var $prefixAjax;
     var $pagingShow;
+    var $nameFile_Export;
 
     function paloSantoGrid($smarty)
     {
@@ -57,6 +60,7 @@ class paloSantoGrid {
         $this->prefixAjax = "xajax_";
         $this->pagingShow = 1;
         $this->tplFile = "_common/_list.tpl";
+        $this->nameFile_Export = "Report-".date("YMd.His");
     }
 
     function withAjax()
@@ -80,6 +84,96 @@ class paloSantoGrid {
     }
 
     function fetchGrid($arrGrid, $arrData,$arrLang=array())
+    {
+        $export = $this->exportType();
+
+        switch($export){
+            case "csv":
+                $content = $this->fetchGridCSV($arrGrid, $arrData);
+                break;
+            case "pdf":
+                $content = $this->fetchGridPDF($arrGrid, $arrData);
+                break;
+            case "xls":
+                $content = $this->fetchGridXLS($arrGrid, $arrData);
+                break;
+            default: //html
+                $content = $this->fetchGridHTML($arrGrid, $arrData, $arrLang);
+                break;
+        }
+        return $content;
+    }
+
+    function fetchGridCSV($arrGrid, $arrData)
+    {
+        header("Cache-Control: private");
+        header("Pragma: cache");
+        header("Content-Type: application/octec-stream");
+        header("Content-disposition: inline; filename={$this->nameFile_Export}.csv");
+        header("Content-Type: application/force-download");
+
+        $numColumns=count($arrGrid["columns"]);
+
+        $this->smarty->assign("title", $arrGrid['title']);
+        $this->smarty->assign("icon",  $arrGrid['icon']);
+        $this->smarty->assign("width", $arrGrid['width']);
+
+        $this->smarty->assign("start", $arrGrid['start']);
+        $this->smarty->assign("end",   $arrGrid['end']);
+        $this->smarty->assign("total", $arrGrid['total']);
+
+        $this->smarty->assign("url",   isset($arrGrid['url'])?$arrGrid['url']:'');
+
+        $this->smarty->assign("header",  $arrGrid["columns"]);
+
+        $this->smarty->assign("arrData", $arrData);
+        $this->smarty->assign("numColumns", $numColumns);
+        return $this->smarty->fetch("_common/listcsv.tpl");
+    }
+
+    function fetchGridPDF($arrGrid, $arrData)
+    {
+	    $pdf= new paloPDF();
+	    //$pdf->setLogoHeader("themes/elastixwave/images/logo_elastix.gif");
+	    $pdf->setColorHeader(array(5,68,132));
+	    $pdf->setColorHeaderTable(array(227,83,50));
+	    $pdf->setFont("Verdana");
+	    $pdf->printTable("{$this->nameFile_Export}.pdf",$arrGrid['title'],$arrGrid['columns'],$arrData);
+        return "";
+    }
+
+    function fetchGridXLS($arrGrid, $arrData)
+    {
+        //header ("Expires: 0");
+        header ("Cache-Control: no-cache, must-revalidate, post-check=0, pre-check=0");
+        header ("Pragma: no-cache");
+        //header("Pragma: public");
+        header ("Content-Type: application/force-download");
+        header ("Content-Type: application/vnd.ms-excel;");   // This should work for IE & Opera
+        header ("Content-type: application/x-msexcel");       // This should work for the rest
+        header ("Content-Type: application/octet-stream");
+        header ("Content-Type: application/download");
+        header ("Content-Type: charset=UTF-8");
+        header ("Content-Transfer-Encoding: none");
+        //header ("Content-Transfer-Encoding: binary");
+        header ("Content-Disposition: attachment; filename={$this->nameFile_Export}.xls");
+
+        $tmp = $this->xlsBOF();
+        # header
+        foreach($arrGrid["columns"] as $i => $header)
+            $tmp .= $this->xlsWriteCell(0,$i,$header["name"]);
+
+        #data
+        foreach($arrData as $k => $row) {
+            foreach($row as $i => $cell){
+                $tmp .= $this->xlsWriteCell($k+1,$i,$cell);
+            }
+        }
+        $tmp .= $this->xlsEOF();
+        echo $tmp;
+    }
+
+    function fetchGridHTML($arrGrid, $arrData,$arrLang=array())
     {
         $this->smarty->assign("withAjax",$this->withAjax);
         $this->smarty->assign("functionName",$this->prefixAjax.$this->functionNameAjax);
@@ -118,27 +212,6 @@ class paloSantoGrid {
             $this->smarty->assign("lbl$etiqueta", (isset($arrLang[$etiqueta])?$arrLang[$etiqueta]:$etiqueta));
         }
         return $this->smarty->fetch($this->tplFile);
-    }
-
-    function fetchGridCSV($arrGrid, $arrData)
-    {
-        $numColumns=count($arrGrid["columns"]);
-
-        $this->smarty->assign("title", $arrGrid['title']);
-        $this->smarty->assign("icon",  $arrGrid['icon']);
-        $this->smarty->assign("width", $arrGrid['width']);
-
-        $this->smarty->assign("start", $arrGrid['start']);
-        $this->smarty->assign("end",   $arrGrid['end']);
-        $this->smarty->assign("total", $arrGrid['total']);
-
-        $this->smarty->assign("url",   isset($arrGrid['url'])?$arrGrid['url']:'');
-
-        $this->smarty->assign("header",  $arrGrid["columns"]);
-
-        $this->smarty->assign("arrData", $arrData);
-        $this->smarty->assign("numColumns", $numColumns);
-        return $this->smarty->fetch("_common/listcsv.tpl");
     }
 
     function showFilter($htmlFilter)
@@ -228,6 +301,59 @@ class paloSantoGrid {
     function getEnd()
     {
         return $this->end;
+    }
+
+    function exportType()
+    {
+        if(getParameter("exportcsv") == "yes")
+            return "csv";
+        else if(getParameter("exportpdf") == "yes")
+            return "pdf";
+        else if(getParameter("exportspreadsheet") == "yes")
+            return "xls";
+        else
+            return "html";
+    }
+
+    function setNameFile_Export($nameFile)
+    {
+        $this->nameFile_Export = $nameFile;
+    }
+
+    function xlsBOF()
+    {
+        $data = pack("ssssss", 0x809, 0x8, 0x0, 0x10, 0x0, 0x0);
+        return $data;
+    }
+
+    function xlsEOF()
+    {
+        $data = pack("ss", 0x0A, 0x00);
+        return $data;
+    }
+
+    function xlsWriteNumber($Row, $Col, $Value)
+    {
+        $data  = pack("sssss", 0x203, 14, $Row, $Col, 0x0);
+        $data .= pack("d", $Value);
+        return $data;
+    }
+
+    function xlsWriteLabel($Row, $Col, $Value )
+    {
+        $Value2UTF8=utf8_decode($Value);
+        $L = strlen($Value2UTF8);
+        $data  = pack("ssssss", 0x204, 8 + $L, $Row, $Col, 0x0, $L);
+        $data .= $Value2UTF8;
+        return $data;
+    }
+
+    function xlsWriteCell($Row, $Col, $Value )
+    {
+        if(is_numeric($Value))
+            return $this->xlsWriteNumber($Row, $Col, $Value);
+        else
+            return $this->xlsWriteLabel($Row, $Col, $Value);
     }
 }
 ?>
