@@ -217,7 +217,8 @@ function load_extension_from_csv($smarty, $arrLang, $ruta_archivo, $base_dir, $p
                 $VM_Play_Envelope   = isset($arrayColumnas[13])?$tupla[$arrayColumnas[13]]:"";
                 $VM_Delete_Vmail    = isset($arrayColumnas[14])?$tupla[$arrayColumnas[14]]:"";
                 $Context            = isset($arrayColumnas[15])?$tupla[$arrayColumnas[15]]:"from-internal";
-
+		$Ext=trim($Ext);
+		$Secret=trim($Secret);
                 //Paso 1: creando en la tabla sip
                 if(!$pLoadExtension->createSipDevices($Ext,$Secret,$VoiceMail,$Context))
                 {
@@ -298,16 +299,16 @@ function isValidCSV($arrLang, $sFilePath, &$arrayColumnas){
                     if(is_array($tupla) && count($tupla)>=3)
                     {
                         $Ext = $tupla[$arrayColumnas[1]];
-                        if($Ext != '')
+                        if(trim($Ext) != '')
                             $arrExt[] = array("ext" => $Ext);
                         else return $arrLang["Can't exist a extension empty. Line"].": $count. - ". $arrLang["Please read the lines in the footer"];
 
                         $Secret       = $tupla[$arrayColumnas[5]];
-                        if($Secret == '')
+                        if(trim($Secret) =='')
                             return $arrLang["Can't exist a secret empty. Line"].": $count. - ". $arrLang["Please read the lines in the footer"];
 
                         $Display      = $tupla[$arrayColumnas[0]];
-                        if($Display == '')
+                        if(trim($Display) == '')
                             return $arrLang["Can't exist a display name empty. Line"].": $count. - ". $arrLang["Please read the lines in the footer"];
                     }
                     $count++;
