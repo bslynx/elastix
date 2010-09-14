@@ -173,5 +173,6 @@ $arrLang=array(
 "Show"   => "Show",
 'md_message_title' => 'Dismiss',
 "ERROR" => "Error",
+"VersionDetails" => "Version",
 );
 ?>

@@ -139,6 +139,7 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
 		$smarty->assign("ABOUT_ELASTIX2",$arrLang['About Elastix2']);
     	$smarty->assign("HELP",$arrLang['HELP']);
         $smarty->assign("USER_LOGIN",$_SESSION['elastix_user']);
+        $smarty->assign("VersionDetails",$arrLang['VersionDetails']);
 	}
 	else{
 		$smarty->assign("ABOUT_ELASTIX",$arrLang['About Elastix']." ".$arrConf['elastix_version']);
@@ -153,6 +154,10 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
     else $menu='';
 
     $_SESSION['menu']=$menu; 
+
+    $arrDetails = obtenerDetallesRPMS(); // obtain RPMs Details
+    //echo print_r($arrDetails, true);
+    $smarty->assign("RPMSDetails", $arrDetails);
 
     if (count($arrMenuFiltered)>0)
         $smarty->assign("MENU", $oPn->showMenu($menu));

@@ -185,5 +185,6 @@ de Voix sur IP tout autour du globe.",
 "Show"   => "Show",
 'md_message_title' => 'Dismiss',
 "ERROR" => "Error",
+"VersionDetails" => "Version",
 );
 ?>

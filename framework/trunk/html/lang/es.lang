@@ -183,5 +183,6 @@ alrededor del mundo.",
 "Show"   => "Mostrar",
 'md_message_title' => 'Dismiss',
 "ERROR" => "Error",
+"VersionDetails" => "Version",
 );
 ?>
