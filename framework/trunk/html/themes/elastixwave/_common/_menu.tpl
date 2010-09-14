@@ -65,6 +65,8 @@
                 <td width="30%" nowrap="nowrap">
                     <div id="menu_float" class="background">
                         <div id="logout_in">
+                            <span><a class="logout" id="viewDetailsRPMs">{$VersionDetails}</a></span>&nbsp;
+                            <span class="menuguion">*</span>&nbsp;
                             <span><a class="logout" href="javascript:mostrar();">{$ABOUT_ELASTIX2}</a></span>&nbsp;
                             <span class="menuguion">*</span>&nbsp;
                             <span><a class="logout" href="javascript:openWindow('help/?id_nodo={$idSubMenuSelected}&amp;name_nodo={$nameSubMenuSelected}')">{$HELP}</a></span>&nbsp;
@@ -137,6 +139,62 @@
     </table> 
 </div>
 
+<div id="boxRPM" style="display:none;">
+    <div class="popup">
+        <table>
+            <tr>
+                <td class="tl"/>
+                <td class="b"/>
+                <td class="tr"/>
+            </tr>
+            <tr>
+                <td class="b"/>
+                <td class="body">
+                    <div class="content_box">
+                        <div id="table_boxRPM">
+                           <table width="100%" border="1" cellspacing="0" cellpadding="4" align="center">
+                                <tr class="moduleTitle">
+                                    <td class="moduleTitle" colspan="4">&nbsp;&nbsp;System Details </td>
+                                </tr>
+                                {foreach from=$RPMSDetails key=idRPMDetail item=valueRPM}
+                                        <tr class="letra12">
+                                            <td class="letra12 tdRPMNamesCol">&nbsp;&nbsp;<b>Name</b></td>
+                                            <td class="letra12 tdRPMNamesCol">&nbsp;&nbsp;<b>Package Name</b></td>
+                                            <td class="letra12 tdRPMNamesCol">&nbsp;&nbsp;<b>Version</b></td>
+                                            <td class="letra12 tdRPMNamesCol">&nbsp;&nbsp;<b>Release</b></td>
+                                        </tr>
+                                        <tr class="letra12">
+                                            <td class="letra12 tdRPMDetail" colspan="4" align="left">&nbsp;&nbsp;{$idRPMDetail}</td>
+                                        </tr>
+                                        {foreach from=$valueRPM key=idRPMElastix item=valRPMElastix}
+                                            <tr class="letra12">
+                                                <td class="letra12">&nbsp;&nbsp;</td>
+                                                <td class="letra12">&nbsp;&nbsp;{$valRPMElastix[0]}</td>
+                                                <td class="letra12">&nbsp;&nbsp;{$valRPMElastix[1]}</td>
+                                                <td class="letra12">&nbsp;&nbsp;{$valRPMElastix[2]}</td>
+                                            </tr>
+                                        {/foreach}
+                                {/foreach}
+                            </table>
+                        </div>
+                    </div>
+                    <div class="footer">
+                        <a class="close_box_RPM">
+                        <img src="themes/{$THEMENAME}/images/closelabel.gif" title="close" class="close_image_box" />
+                        </a>
+                    </div>
+                </td>
+                <td class="b"/>
+            </tr>
+            <tr>
+                <td class="bl"/>
+                <td class="b"/>
+                <td class="br"/>
+            </tr>
+        </table>
+    </div>
+</div>
+<div id="fade_overlay" class="black_overlay"></div>
 
 <table width="100%" cellpadding="0" cellspacing="0" height="100%">
   <tr>
@@ -161,8 +219,9 @@
 #acerca_de{
     position:absolute; 
     width:420px;
-    height:174px;
+    height:175px;
     border:1px solid #800000;
+    z-index: 10000;
 }
 </style>
 <script type='text/javascript'>
@@ -263,6 +322,23 @@ function mostrar_Menu(element)
         $(this).parent().find('div:first').css("height","35px");
         $(this).parent().find('div:last').css("height","35px");
     });
+
+    $(".close_image_box").click(function(){
+        $("#boxRPM").attr("style","display: none;");
+        $("#fade_overlay").attr("style","display: none;");
+    });
+
+    $("#viewDetailsRPMs").click(function(){
+        $("#boxRPM").attr("style","display: block;");
+        $("#fade_overlay").attr("style","display: block;");
+    });
+
+    $("#fade_overlay").click(function(){
+        $("#boxRPM").attr("style","display: none;");
+        $("#fade_overlay").attr("style","display: none;");
+    });
+
+    
 //]]>
 </script>
 {/literal}
