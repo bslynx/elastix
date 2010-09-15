@@ -134,11 +134,13 @@ class paloSantoGrid {
     function fetchGridPDF($arrGrid, $arrData)
     {
 	    $pdf= new paloPDF();
+            $pdf->setOrientation("L");
+            $pdf->setFormat("A3");            
 	    //$pdf->setLogoHeader("themes/elastixwave/images/logo_elastix.gif");
 	    $pdf->setColorHeader(array(5,68,132));
 	    $pdf->setColorHeaderTable(array(227,83,50));
 	    $pdf->setFont("Verdana");
-	    $pdf->printTable("{$this->nameFile_Export}.pdf",$arrGrid['title'],$arrGrid['columns'],$arrData);
+            $pdf->printTable("{$this->nameFile_Export}.pdf",$arrGrid['title'],$arrGrid['columns'],$arrData);
         return "";
     }
 
