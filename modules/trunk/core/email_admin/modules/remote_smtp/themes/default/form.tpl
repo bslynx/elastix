@@ -42,4 +42,38 @@
         <td align="left"><b>{$password.LABEL}:</b></td>
         <td align="left">{$password.INPUT}</td>
     </tr>
+    <tr class="letra12">
+        <td align="left"><b>{$autentification.LABEL}:</b></td>
+        <td align="left">{$autentification.INPUT}{$MSG_REMOTE_AUT}</td>       
+    </tr>
 </table>
+<div id="activeCert">
+    <table class="tabForm" style="font-size: 16px;" cellspacing="0" cellpadding="0" width="100%">
+        <tr class="letra12" >
+            <td align="left"><b>{$passwordCert.LABEL}:</b><span class="required">*</span></td>
+            <td align="left">{$passwordCert.INPUT}</td>
+        </tr>
+        <tr class="letra12" >
+            <td align="left"><b>{$organizationCert.LABEL}:</b><span class="required">*</span></td>
+            <td align="left">{$organizationCert.INPUT}</td>
+            <td align="left"><b>{$organizationUnitCert.LABEL}:</b><span class="required">*</span></td>
+            <td align="left">{$organizationUnitCert.INPUT}</td>
+        </tr>
+        <tr class="letra12" >
+            <td align="left"><b>{$countryCert.LABEL}:</b><span class="required">*</span></td>
+            <td align="left">{$countryCert.INPUT}</td>
+            <td align="left"><b>{$commonNameCert.LABEL}:</b><span class="required">*</span></td>
+            <td align="left">{$commonNameCert.INPUT}</td>
+
+        </tr>
+        <tr class="letra12" >
+            <td align="left"><b>{$provinceCert.LABEL}:</b><span class="required">*</span></td>
+            <td align="left">{$provinceCert.INPUT}</td>
+            <td align="left"><b>{$localityCert.LABEL}:</b><span class="required">*</span></td>
+            <td align="left">{$localityCert.INPUT}</td>
+        </tr>
+    </table>
+</div>
+
+
+
