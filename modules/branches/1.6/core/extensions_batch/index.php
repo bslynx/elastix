@@ -304,7 +304,7 @@ function isValidCSV($arrLang, $sFilePath, &$arrayColumnas){
                         else return $arrLang["Can't exist a extension empty. Line"].": $count. - ". $arrLang["Please read the lines in the footer"];
 
                         $Secret       = $tupla[$arrayColumnas[5]];
-                        if(trim($Secret) ==''
+                        if(trim($Secret) =='')
                             return $arrLang["Can't exist a secret empty. Line"].": $count. - ". $arrLang["Please read the lines in the footer"];
 
                         $Display      = $tupla[$arrayColumnas[0]];
