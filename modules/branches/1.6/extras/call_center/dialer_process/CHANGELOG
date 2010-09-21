@@ -1,3 +1,6 @@
+* Trunks Used per Hour: fix over-complicated query for active trunks from 
+  FreePBX database that resulted in misnamed trunk sources. Should fix Elastix
+  bug #499.
 * Campaigns Out: set array variables holding recordsets to NULL as soon as 
   possible in the CSV download codepath. This reduces memory usage and allows
   processing of a larger number of call records without exceeding the PHP
