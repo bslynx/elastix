@@ -155,9 +155,13 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
 
     $_SESSION['menu']=$menu; 
 
-    $arrDetails = obtenerDetallesRPMS(); // obtain RPMs Details
-    //echo print_r($arrDetails, true);
-    $smarty->assign("RPMSDetails", $arrDetails);
+	if(getParameter("action")=="versionRPM"){
+        $arrDetails = obtenerDetallesRPMS(); // obtain RPMs Details
+        require_once("libs/JSON.php");
+        $json = new Services_JSON(); 
+        echo $json->encode($arrDetails);
+        return;
+    }
 
     if (count($arrMenuFiltered)>0)
         $smarty->assign("MENU", $oPn->showMenu($menu));

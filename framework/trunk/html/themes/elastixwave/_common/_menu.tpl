@@ -154,27 +154,20 @@
                         <div id="table_boxRPM">
                            <table width="100%" border="1" cellspacing="0" cellpadding="4" align="center">
                                 <tr class="moduleTitle">
-                                    <td class="moduleTitle" colspan="4">&nbsp;&nbsp;System Details </td>
+                                    <td class="moduleTitle">&nbsp;&nbsp;System Details </td>
                                 </tr>
-                                {foreach from=$RPMSDetails key=idRPMDetail item=valueRPM}
-                                        <tr class="letra12">
-                                            <td class="letra12 tdRPMNamesCol">&nbsp;&nbsp;<b>Name</b></td>
-                                            <td class="letra12 tdRPMNamesCol">&nbsp;&nbsp;<b>Package Name</b></td>
-                                            <td class="letra12 tdRPMNamesCol">&nbsp;&nbsp;<b>Version</b></td>
-                                            <td class="letra12 tdRPMNamesCol">&nbsp;&nbsp;<b>Release</b></td>
-                                        </tr>
-                                        <tr class="letra12">
-                                            <td class="letra12 tdRPMDetail" colspan="4" align="left">&nbsp;&nbsp;{$idRPMDetail}</td>
-                                        </tr>
-                                        {foreach from=$valueRPM key=idRPMElastix item=valRPMElastix}
-                                            <tr class="letra12">
-                                                <td class="letra12">&nbsp;&nbsp;</td>
-                                                <td class="letra12">&nbsp;&nbsp;{$valRPMElastix[0]}</td>
-                                                <td class="letra12">&nbsp;&nbsp;{$valRPMElastix[1]}</td>
-                                                <td class="letra12">&nbsp;&nbsp;{$valRPMElastix[2]}</td>
-                                            </tr>
-                                        {/foreach}
-                                {/foreach}
+                                <tr>
+                                    <td class="moduleTitle" id="loadingRPM" align="center" style="display: block;">
+                                        <img alt="loading" src="images/loading.gif"  />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <table id="tableRMP" width="100%" border="1" cellspacing="0" cellpadding="4" align="center">
+
+                                        </table>
+                                    </td>
+                                </tr>
                             </table>
                         </div>
                     </div>
@@ -331,6 +324,42 @@ function mostrar_Menu(element)
     $("#viewDetailsRPMs").click(function(){
         $("#boxRPM").attr("style","display: block;");
         $("#fade_overlay").attr("style","display: block;");
+        $("#loadingRPM").attr("style","display: block;");
+        $("#tableRMP").html("");
+        var order = "action=versionRPM&rawmode=yes";
+        $.post("index.php", order, function(theResponse){
+            $("#loadingRPM").attr("style","display: none;");
+            $("#boxRPM").attr("style","display: block;");
+            $("#fade_overlay").attr("style","display: block;");
+            var message = JSONRPMtoString(theResponse);
+            var html = ""; 
+            var key = "";
+            var key2 = "";
+            var message2 = "";
+            var i = 0;
+            for(key in message){
+                html += "<tr class='letra12'>" +
+                            "<td class='letra12 tdRPMNamesCol'>&nbsp;&nbsp;<b>Name</b></td>" +
+                            "<td class='letra12 tdRPMNamesCol'>&nbsp;&nbsp;<b>Package Name</b></td>" +
+                            "<td class='letra12 tdRPMNamesCol'>&nbsp;&nbsp;<b>Version</b></td>" +
+                            "<td class='letra12 tdRPMNamesCol'>&nbsp;&nbsp;<b>Release</b></td>" +
+                        "</tr>" +
+                        "<tr class='letra12'>" +
+                            "<td class='letra12 tdRPMDetail' colspan='4' align='left'>&nbsp;&nbsp;" + key + "</td>" +
+                        "</tr>";
+                message2 = message[key];
+                for(i = 0; i<message2.length; i++){
+                    html += "<tr class='letra12'>" +
+                                "<td class='letra12'>&nbsp;&nbsp;</td>" +
+                                "<td class='letra12'>&nbsp;&nbsp;" + message2[i][0] + "</td>" +
+                                "<td class='letra12'>&nbsp;&nbsp;" + message2[i][1] + "</td>" +
+                                "<td class='letra12'>&nbsp;&nbsp;" + message2[i][2] + "</td>" +
+                            "</tr>";
+                }
+
+            }
+            $("#tableRMP").html(html);
+        });
     });
 
     $("#fade_overlay").click(function(){
@@ -339,6 +368,13 @@ function mostrar_Menu(element)
     });
 
     
+// implement JSON.parse de-serialization  
+    function JSONRPMtoString(str) {
+        if (str === "") str = '""';
+        eval("var p=" + str + ";");
+        return p;
+    }
+
 //]]>
 </script>
 {/literal}
