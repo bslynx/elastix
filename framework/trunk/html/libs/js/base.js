@@ -99,9 +99,68 @@
         popupWin.focus();
         //return true;
     }
-
-    function hide_message_error()
-    {
-        document.getElementById("message_error").style.display = 'none';
-    }
     // End -->
+
+
+
+var current_setTimeout = null;
+function request(url,arrParams, recursive, callback)
+{
+    var queryString    = array2QueryString(arrParams);
+    callback           = callback  || null;
+    recursive          = recursive || null;
+
+    // Comienza petición por ajax
+    $.post(url,
+        queryString,
+        function(dataResponse){
+            var message        = dataResponse.message;
+            var statusResponse = dataResponse.statusResponse;
+            var error          = dataResponse.error;
+            var stop_recursive = false;
+
+            if(callback)
+                stop_recursive = callback(message,statusResponse,error);
+            if(statusResponse){
+                if(recursive & !stop_recursive){
+                   current_setTimeout = setTimeout(function(){request(url,arrParams,recursive,callback)},2);
+                   //la funcion espera 200ms para ejecutarse,pero la funcion actual si se termina de ejecutar,creando un hilo.
+                }
+            }
+            else{
+                //alert("hubo un problema de comunicacion...");
+            }
+        },
+        'json');
+    // Termina petición por ajax
+
+}
+
+function existsRequestRecursive()
+{
+    return (current_setTimeout)?true:false;
+}
+
+function clearResquestRecursive()
+{
+    clearTimeout(current_setTimeout);
+}
+
+function array2QueryString(arrayParams)//formato: arr["action"]="iniciar";arr["param1"]="mensaje1"
+{
+    var queryString="";
+    var tamanio=0;
+    var i=0;
+    for(var key in arrayParams){
+                tamanio++;
+    }
+    for(var key in arrayParams){
+        if(i==tamanio-1)
+            queryString+=key+"="+arrayParams[key];
+        else
+            queryString+=key+"="+arrayParams[key]+"&";
+        i++;
+    }
+    return queryString;
+}
+
