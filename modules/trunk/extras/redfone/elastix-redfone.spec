@@ -3,13 +3,15 @@
 Summary: Elastix Module Redfone 
 Name:    elastix-%{modname}
 Version: 2.0.0
-Release: 1
+Release: 2
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
 Prereq: elastix >= 2.0
+
+Requires: fonulator >= 2.0.1
 
 %description
 Elastix Module Developer
@@ -62,5 +64,8 @@ fi
 /usr/share/elastix/module_installer/*
 
 %changelog
+* Mon Sep 27 2010 Alex Villacis Lasso <a_villacis@palosanto.com> 2.0.0-2
+- FIXED: Added missing Requires: fonulator for module.
+
 * Mon Jun 07 2010 Eduardo Cueva <ecueva@palosanto.com> 2.0.0-1
 - Initial version.
