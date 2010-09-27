@@ -249,8 +249,20 @@ function _moduleContent(&$smarty, $module_name)
                 // Creo al usuario
                 $md5_password = md5($_POST['password1']);
                 $pACL->createUser($_POST['name'], $_POST['description'], $md5_password,$_POST['extension']);
-                // Creo la membresia
+
                 $idUser = $pACL->getIdUser($_POST['name']);
+
+                // Versiones viejas del archivo acl.db tienen una fila con una
+                // tupla que asocia al usuario inexistente con ID 2, con el 
+                // grupo 2 (Operadores). Se limpia cualquier membresía extraña.
+                $listaMembresia = $pACL->getMembership($idUser);
+                if (is_array($listaMembresia) && count($listaMembresia) > 0) {
+                    foreach ($listaMembresia as $idGrupo) {
+                        $pACL->delFromGroup($idUser, $idGrupo);
+                    }
+                }
+
+                // Creo la membresia
                 $pACL->addToGroup($idUser, $_POST['group']);
 
                 $bExito = TRUE;
