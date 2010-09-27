@@ -46,6 +46,6 @@ $arrLangModule=array(
 "Webmail Password" => "Contraseña de Webmail",
 "Retype Webmail password" => "Reingrese contraseña de Webmail",
 "Mail Profile" => "Perfil de Mail",
-"No extension associated" => "Extesión no ha sido asociada",
+"No extension associated" => "La extensión no ha sido asociada",
 );
 ?>
