@@ -183,7 +183,7 @@ class paloTrunk {
 
        //reemplazo el id del grupo por el valor
        foreach ($this->getTrunksBill() as $trunkBill)
-       { 
+       {
            // Sólo los grupos de puertos DAHDI pueden tener un precio
            //if (substr($tupla[1], 0, 5) == 'DAHDI' && $tupla[1]{4} != 'g') continue;  
 
@@ -219,8 +219,8 @@ function getTrunks($oDB)
 
 	 $arr_result =& $oDB->fetchTable("SHOW TABLES LIKE 'trunks'");
 	 if (!is_array($arr_result)) {
-            $this->errMsg = $this->_DB->errMsg;
-            $arr_result = FALSE;
+            //$this->errMsg = $this->_DB->errMsg;
+            $arrResult = FALSE;
 	 }
 	 else{
 			 if (count($arr_result) > 0) { // si se usa freepbx 2.6
