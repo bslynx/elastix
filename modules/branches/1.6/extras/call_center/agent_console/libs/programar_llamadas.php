@@ -703,6 +703,8 @@ function getAction()
     else
         return "cancel";
 }
+
+if (!function_exists('getParameter')) {
 function getParameter($parameter)
 {
     if(isset($_POST[$parameter]))
@@ -712,6 +714,6 @@ function getParameter($parameter)
     else
         return null;
 }
-
+}
 
 ?>

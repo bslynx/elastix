@@ -1,3 +1,6 @@
+* Agent Console: protect private declaration of getParameter() in call 
+  programming so that it does not conflict with Elastix 2 framework. Fixes
+  Elastix bug #478.
 * Trunks Used per Hour: fix over-complicated query for active trunks from 
   FreePBX database that resulted in misnamed trunk sources. Should fix Elastix
   bug #499.
