@@ -1,3 +1,4 @@
+* Reports (Agent Information): behave properly when no queues have been defined.
 * Agent Console: protect private declaration of getParameter() in call 
   programming so that it does not conflict with Elastix 2 framework. Fixes
   Elastix bug #478.

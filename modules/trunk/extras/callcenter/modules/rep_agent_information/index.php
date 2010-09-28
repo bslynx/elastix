@@ -98,6 +98,15 @@ function _moduleContent(&$smarty, $module_name)
     // Estas son las colas entrantes disponibles en el sistema
     $arrQueue = leerColasEntrantes($pDB, $pDB_asterisk);
     $t = array_keys($arrQueue);
+
+    if (count($t) <= 0) {
+        // TODO: internacionalizar y poner en plantilla
+        return <<<NO_QUEUE_END
+<p><b>No queues have been defined</b></p>
+<p>For proper operation and reporting, it is necessary to configure at least one queue. You can add queues <a href="?menu=pbxconfig&amp;display=queues">here</a>.</p>
+NO_QUEUE_END;
+    }
+
     $sColaOmision = $t[0];
 
     //Esto es para validar cuando recien se entra al modulo, para q aparezca seteado un numero de agente en el textbox
