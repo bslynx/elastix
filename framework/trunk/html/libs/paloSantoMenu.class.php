@@ -143,6 +143,35 @@ class paloMenu {
 
         return $bExito;
     }
+    
+    /*********************************************************************************************/
+    function updateItemMenu($id, $name, $id_parent, $type='module', $link='', $order=-1){
+        $bExito = FALSE;
+        if ($id == "" && $name == "") {
+            $this->errMsg = "ID and module name can't be empty";
+        }else{
+            $query = "";
+            if($order != -1){
+                $query = "UPDATE menu SET ".
+                    "Name='$name', IdParent='$id_parent', Link='$link', Type='$type', order_no='$order'".
+                    " WHERE id = '$id'";
+            }else{
+                $query = "UPDATE menu SET ".
+                    "Name='$name', IdParent='$id_parent', Link='$link', Type='$type'".
+                    " WHERE id = '$id'";
+            }
+            $result=$this->_DB->genQuery($query);
+            if($result==FALSE){
+                $this->errMsg = $this->_DB->errMsg;
+                return 0;
+            }
+            return 1;
+        }
+    }
+
+
+
+/**********************************************************************************************/
 
     function existeMenu($id_menu){
         $bExiste=false;
@@ -153,6 +182,7 @@ class paloMenu {
         {
             $bExiste=true;
         }
+        return $bExiste;
     }
 
  /**

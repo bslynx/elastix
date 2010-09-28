@@ -57,6 +57,36 @@ class Installer
         else
           $type="framed";
     }
+    
+    /*****************************************************************************************************/
+// funcion para actualizar un item de menu
+    function UpdateMenu($oMenu,$arrTmp){
+        $parentId = isset($arrTmp['parent'])?$arrTmp['parent']:"";
+        $link     = isset($arrTmp['link'])?$arrTmp['link']:"";
+        $order    = isset($arrTmp['order'])?$arrTmp['order']:"-1";
+        $tag      = isset($arrTmp['tag'])?$arrTmp['tag']:"";
+        $menuid   = isset($arrTmp['menuid'])?$arrTmp['menuid']:"";
+    
+        if ($parentId=="")
+            $type="";
+        else{
+            if($link=="")
+            $type="module";
+            else
+            $type="framed";
+        }
+    
+        //creo el menu
+        $bExito = $oMenu->updateItemMenu($menuid,$tag,$parentId,$type,$link,$order);
+        if (!$bExito){
+                $this->_errMsg = $oMenu->errMsg;
+                return false;
+            }
+        return true;
+    }
+
+
+/*****************************************************************************************************/
 
     //creo el menu
     $bExito = $oMenu->createMenu($menuid,$tag,$parentId,$type,$link,$order);
