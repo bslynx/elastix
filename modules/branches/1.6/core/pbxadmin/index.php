@@ -185,11 +185,14 @@ function _moduleContent(&$smarty, $module_name)
     if ($category == null) $category = 'default';
 
     if ($category == "default")
-        $path_to_dir = $asterisk_conf['astvarlibdir']."/mohmp3"; //path to directory u want to read.
+        $path_to_dir = $asterisk_conf['astvarlibdir']."/".$amp_conf["MOHDIR"]."/"; //path to directory u want to read.
     else
-        $path_to_dir = $asterisk_conf['astvarlibdir']."/mohmp3/$category"; //path to directory u want to read.
+        $path_to_dir = $asterisk_conf['astvarlibdir']."/".$amp_conf["MOHDIR"]."/$category"; //path to directory u want to read.
 
     $GLOBALS['path_to_dir'] = $path_to_dir;
+
+    $path_to_moh_dir = $amp_conf['ASTVARLIBDIR'].'/'.$amp_conf['MOHDIR'];
+    $GLOBALS['path_to_moh_dir'] = $path_to_moh_dir;
 
     /*************************************************************/
     /* Fin del bloque                                            */
