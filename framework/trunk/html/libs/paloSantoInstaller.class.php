@@ -57,8 +57,17 @@ class Installer
         else
           $type="framed";
     }
-    
-    /*****************************************************************************************************/
+   
+    //creo el menu
+    $bExito = $oMenu->createMenu($menuid,$tag,$parentId,$type,$link,$order);
+    if (!$bExito){
+            $this->_errMsg = $oMenu->errMsg;
+            return false;
+        }
+    return true;
+    }
+
+ /*****************************************************************************************************/
 // funcion para actualizar un item de menu
     function UpdateMenu($oMenu,$arrTmp){
         $parentId = isset($arrTmp['parent'])?$arrTmp['parent']:"";
@@ -87,15 +96,6 @@ class Installer
 
 
 /*****************************************************************************************************/
-
-    //creo el menu
-    $bExito = $oMenu->createMenu($menuid,$tag,$parentId,$type,$link,$order);
-    if (!$bExito){
-            $this->_errMsg = $oMenu->errMsg;
-            return false;
-        }
-    return true;
-    }
 
     function addResourceMembership($oACL,$arrTmp){
         $bExito = $oACL->createResource($arrTmp['menuid'], $arrTmp['tag']);
