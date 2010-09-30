@@ -102,8 +102,9 @@ function _moduleContent(&$smarty, $module_name)
     if (count($t) <= 0) {
         // TODO: internacionalizar y poner en plantilla
         return <<<NO_QUEUE_END
-<p><b>No queues have been defined</b></p>
-<p>For proper operation and reporting, it is necessary to configure at least one queue. You can add queues <a href="?menu=pbxconfig&amp;display=queues">here</a>.</p>
+<p><b>No queues have been defined for incoming calls.</b></p>
+<p>For proper operation and reporting, it is necessary to configure at least one queue. You can add queues <a href="?menu=pbxconfig&amp;display=queues">here</a>. 
+In addition, the queue must be registered for use by incoming calls by clicking <a href="?menu=queues">here</a>.</p>
 NO_QUEUE_END;
     }
 
