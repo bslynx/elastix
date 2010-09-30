@@ -222,8 +222,7 @@ class paloConfig
 			if ($continuar) {
 			    foreach (array_keys($lista_archivos) as $clave) {
 				    if ($continuar) {
-					    //$sNuevoNombre = $lista_archivos[$clave]["nombre"].".old";
-					    $sNuevoNombre = "/tmp/".basename($lista_archivos[$clave]["nombre"]);
+					    $sNuevoNombre = $lista_archivos[$clave]["nombre"].".old";
 
  			            $exito = rename($lista_archivos[$clave]["nombre"],$sNuevoNombre);
 				        if (!$exito) {
@@ -251,6 +250,20 @@ class paloConfig
 				}
 			}
              
+            // Si se pudieron renombrar los archivos, se procede a borrar los respaldos
+            if ($continuar) {
+                foreach (array_keys($lista_archivos) as $clave) {
+                    if ($continuar) {
+                        $exito = unlink($lista_archivos[$clave]["nombre"].'.old');
+                        if (!$exito) {
+                            $continuar = false;
+                            $this->errMsg = "No se puede borrar archivo de respaldo ".
+                                $lista_archivos[$clave]["nombre"].'.old';
+                        }
+                    }
+                }
+            }
+
 			// Si se alcanz a cambiar los permisos de los directorios, se deshace el cambio
 
             if ($cambio_permisos_archivos) {
