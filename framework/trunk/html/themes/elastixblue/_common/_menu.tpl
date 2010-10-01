@@ -91,6 +91,7 @@
                     </table> 
                 </div>
             </td>
+            <td class="menuaftertab" width="40%" align="right">&nbsp;<a class="logout" id="viewDetailsRPMs">{$VersionDetails}</a></td>
             <td class="menuaftertab" width="40%" align="right">&nbsp;<a href="javascript:mostrar();">{$ABOUT_ELASTIX}</a></td>
             <td class="menuaftertab" width="20%" align="right">&nbsp;<a href="?logout=yes">{$LOGOUT}</a></td>
           </tr>
@@ -136,6 +137,57 @@
     </tr>
   </table>
 </div>
+
+<div id="boxRPM" style="display:none;">
+    <div class="popup">
+        <table>
+            <tr>
+                <td class="tl"/>
+                <td class="b"/>
+                <td class="tr"/>
+            </tr>
+            <tr>
+                <td class="b"/>
+                <td class="body">
+                    <div class="content_box">
+                        <div id="table_boxRPM">
+                           <table width="100%" border="1" cellspacing="0" cellpadding="4" align="center">
+                                <tr class="moduleTitle">
+                                    <td class="moduleTitle">&nbsp;&nbsp;System Details </td>
+                                </tr>
+                                <tr>
+                                    <td class="moduleTitle" id="loadingRPM" align="center" style="display: block;">
+                                        <img alt="loading" src="images/loading.gif"  />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <table id="tableRMP" width="100%" border="1" cellspacing="0" cellpadding="4" align="center">
+
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="footer">
+                        <a class="close_box_RPM">
+                        <img src="images/closelabel.gif" title="close" class="close_image_box" />
+                        </a>
+                    </div>
+                </td>
+                <td class="b"/>
+            </tr>
+            <tr>
+                <td class="bl"/>
+                <td class="b"/>
+                <td class="br"/>
+            </tr>
+        </table>
+    </div>
+</div>
+<div id="fade_overlay" class="black_overlay"></div>
+
 <table width="100%" cellpadding="0" cellspacing="0" height="100%">
   <tr>
     {if !empty($idSubMenu2Selected)}
