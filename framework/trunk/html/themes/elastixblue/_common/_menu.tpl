@@ -153,7 +153,7 @@
                         <div id="table_boxRPM">
                            <table width="100%" border="1" cellspacing="0" cellpadding="4" align="center">
                                 <tr class="moduleTitle">
-                                    <td class="moduleTitle">&nbsp;&nbsp;System Details </td>
+                                    <td class="moduleTitle">&nbsp;&nbsp;{$VersionPackage} </td>
                                 </tr>
                                 <tr>
                                     <td class="moduleTitle" id="loadingRPM" align="center" style="display: block;">

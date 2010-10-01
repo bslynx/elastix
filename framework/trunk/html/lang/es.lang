@@ -184,5 +184,6 @@ alrededor del mundo.",
 'md_message_title' => 'Dismiss',
 "ERROR" => "Error",
 "VersionDetails" => "Version",
+"VersionPackage" => "Detalles de las versiones de los paquetes",
 );
 ?>

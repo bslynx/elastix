@@ -182,5 +182,6 @@ $arrLang=array(
 'md_message_title' => 'Dismiss',
 "ERROR" => "Error",
 "VersionDetails" => "Version",
+"VersionPackage" => "Details of package versions",
 );
 ?>
