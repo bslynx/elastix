@@ -5,6 +5,8 @@
 # 2.- vtiger, roundcube, freepbx
 # 3.- dahdi, asterisk, hylafax, iaxmoden
 
+echo "RPM:Kernel"
+uname -s -r -i
 
 echo "RPM:Elastix"
 rpm -q --queryformat "%{name} %{version} %{release}\n" elastix
@@ -12,6 +14,13 @@ rpm -qa --queryformat "%{name} %{version} %{release}\n" | grep -i elastix-
 
 echo "RPM:RounCubeMail"
 rpm -q --queryformat "%{name} %{version} %{release}\n" RoundCubeMail
+
+echo "RPM:Mail"
+rpm -q --queryformat "%{name} %{version} %{release}\n" postfix
+rpm -q --queryformat "%{name} %{version} %{release}\n" cyrus-imapd
+
+echo "RPM:IM"
+rpm -q --queryformat "%{name} %{version} %{release}\n" openfire
 
 echo "RPM:FreePBX"
 rpm -q --queryformat "%{name} %{version} %{release}\n" freePBX
