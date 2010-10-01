@@ -139,7 +139,7 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
 		$smarty->assign("ABOUT_ELASTIX2",$arrLang['About Elastix2']);
     	$smarty->assign("HELP",$arrLang['HELP']);
         $smarty->assign("USER_LOGIN",$_SESSION['elastix_user']);
-        $smarty->assign("VersionDetails",$arrLang['VersionDetails']);
+
 	}
 	else{
 		$smarty->assign("ABOUT_ELASTIX",$arrLang['About Elastix']." ".$arrConf['elastix_version']);
@@ -147,7 +147,7 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
     $smarty->assign("ABOUT_ELASTIX_CONTENT",$arrLang['About Elastix Content']);
     $smarty->assign("ABOUT_CLOSED",$arrLang['About Elastix Closed']);
     $smarty->assign("LOGOUT",$arrLang['Logout']);
-
+    $smarty->assign("VersionDetails",$arrLang['VersionDetails']);
     //$menu= (isset($_GET['menu']))?$_GET['menu']:'';
     if(isset($_GET['menu'])) $menu=$_GET['menu'];
     elseif(empty($menu) and !empty($_SESSION['menu'])) $menu=$_SESSION['menu'];
