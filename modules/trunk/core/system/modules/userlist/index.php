@@ -77,8 +77,17 @@ function _moduleContent(&$smarty, $module_name)
         echo "ERROR DE ACL: $pACL->errMsg <br>";
     }
 
-
-
+/*******/
+    $typeUser = "";
+    $userAccount = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
+    $idUserAccount = $pACL->isUserAdministratorGroup($userAccount);
+    $idUserInt = $pACL->getIdUser($userAccount);
+    if($idUserAccount)
+        $userLevel1 = "admin";
+    else
+        $userLevel1 = "other";
+    $smarty->assign("userLevel1", $userLevel1);
+/*******/
     $sQuery="select extension from users order by extension;";
     $arrayResult = $pDBa->fetchTable($sQuery,true);
     if (!$arrayResult){
@@ -86,8 +95,15 @@ function _moduleContent(&$smarty, $module_name)
     }else{
         if (is_array($arrayResult) && count($arrayResult)>0) {
             //$arrData[$item["null"]] = "No extension";
-            foreach($arrayResult as $item) {
-                $arrData[$item["extension"]] = $item["extension"];
+            if($idUserAccount){
+                foreach($arrayResult as $item) {
+                    $arrData[$item["extension"]] = $item["extension"];
+                }
+            }else{
+                $idOther = $pACL->getIdUser($userAccount);
+                $arrUserOther = $pACL->getUsers($idOther);
+                $extOther = $arrUserOther[0][3];
+                $arrData[$extOther] = $extOther;
             }
         }
     }
@@ -101,8 +117,16 @@ function _moduleContent(&$smarty, $module_name)
             $arrGruposACL[$i][1] = $arrLang['operator'];
         else if($arrGruposACL[$i][1]=='extension')
             $arrGruposACL[$i][1] = $arrLang['extension'];
-
-        $arrGrupos[$arrGruposACL[$i][0]] = $arrGruposACL[$i][1];
+        if($idUserAccount)
+            $arrGrupos[$arrGruposACL[$i][0]] = $arrGruposACL[$i][1];
+        else{
+            $arrUserPer = $pACL->getMembership($idUserInt);
+            foreach($arrUserPer as $key => $value){
+                if($arrGruposACL[$i][1] == $key){
+                    $arrGrupos[$arrGruposACL[$i][0]] = $arrGruposACL[$i][1];
+                }
+            }
+        }
     }
 
     $arrFormElements = array("description" => array("LABEL"                  => "{$arrLang['Name']} {$arrLang['(Ex. John Doe)']}",
@@ -402,7 +426,7 @@ function _moduleContent(&$smarty, $module_name)
         //- TODO: Tengo que validar que el id sea valido, si no es valido muestro un mensaje de error
 
         $oForm->setViewMode(); // Esto es para activar el modo "preview"
-        $arrUser = $pACL->getUsers($_GET['id']);
+        $arrUser = $pACL->getUsers($_GET['id']); 
 
         // Conversion de formato
         $arrTmp['name']        = $arrUser[0][1];
@@ -467,11 +491,26 @@ function _moduleContent(&$smarty, $module_name)
             $arrTmp    = array();
             //$arrTmp[0] = "&nbsp;<a href='?menu=usernew&action=view&id=" . $user['id'] . "'>" . $user['name'] . "</a>";
             //$arrTmp[1] = $user['description'];
-            $arrTmp[0] = "&nbsp;<a href='?menu=userlist&action=view&id=" . $user[0] . "'>" . $user[1] . "</a>";
-            $arrTmp[1] = $user[2];
-            $arrTmp[2] = $group;
-            $arrTmp[3] = is_null($user[3])?$arrLang["No extension associated"]:$user[3];
-            $arrData[] = $arrTmp;
+
+            if($idUserAccount){
+                $arrTmp[0] = "&nbsp;<a href='?menu=userlist&action=view&id=" . $user[0] . "'>" . $user[1] . "</a>";
+                $arrTmp[1] = $user[2];
+                $arrTmp[2] = $group;
+                $arrTmp[3] = is_null($user[3])?$arrLang["No extension associated"]:$user[3];
+                $arrData[] = $arrTmp;
+                $smarty->assign("usermode","admin");
+                $typeUser = "admin";
+            }else{
+                if($user[1] == $userAccount){
+                    $arrTmp[0] = "&nbsp;<a href='?menu=userlist&action=view&id=" . $user[0] . "'>" . $user[1] . "</a>";
+                    $arrTmp[1] = $user[2];
+                    $arrTmp[2] = $group;
+                    $arrTmp[3] = is_null($user[3])?$arrLang["No extension associated"]:$user[3];
+                    $arrData[] = $arrTmp;
+                    $smarty->assign("usermode","other");
+                    $typeUser = "other";
+                }
+            }
 
         }
 
@@ -493,8 +532,10 @@ function _moduleContent(&$smarty, $module_name)
                         );
 
         $oGrid = new paloSantoGrid($smarty);
-        $oGrid->showFilter("<form style='margin-bottom:0;' method='POST' action='?menu=userlist'>" .
-                           "<input type='submit' name='submit_create_user' value='{$arrLang['Create New User']}' class='button'></form>");
+        $buttonCreateNewUser = "<input type='submit' name='submit_create_user' value='{$arrLang['Create New User']}' class='button'>";
+        if($typeUser == "other")
+            $buttonCreateNewUser = "";
+        $oGrid->showFilter("<form style='margin-bottom:0;' method='POST' action='?menu=userlist'>$buttonCreateNewUser</form>");
         $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
     }
 

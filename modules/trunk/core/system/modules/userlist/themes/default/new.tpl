@@ -14,10 +14,12 @@
           {elseif $mode eq 'edit'}
           <input class="button" type="submit" name="submit_apply_changes" value="{$APPLY_CHANGES}" >
           <input class="button" type="submit" name="cancel" value="{$CANCEL}"></td>
-          {else}
+          {elseif $userLevel1 eq 'admin'}
           <input class="button" type="submit" name="edit" value="{$EDIT}">
           <input class="button" type="submit" name="delete" value="{$DELETE}"  onClick="return confirmSubmit('{$CONFIRM_CONTINUE}')"></td>
-          {/if}          
+          {else}
+          <input class="button" type="submit" name="edit" value="{$EDIT}">
+          {/if}
         <td align="right" nowrap><span class="letra12"><span  class="required">*</span> {$REQUIRED_FIELD}</span></td>
      </tr>
    </table>
