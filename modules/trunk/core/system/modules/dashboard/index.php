@@ -66,7 +66,8 @@ function _moduleContent($smarty, $module_name)
     $arrSysInfo = $oPalo->getSysInfo();
 
 	$RSS = $arrConf['dir_RSS'];
-    $smarty->assign("HEADER_LIBS_JQUERY", "");
+	$smarty->assign("HEADER_LIBS_JQUERY", getHeaderJQuery());
+    $smarty->assign("HEADER_MODULES", "");
 
     $action = getParameter("action");
     if($action=="saveRegister"){
@@ -930,4 +931,16 @@ function saveApplets_Admin()
     header("Location: /index.php?menu=$module_name");
 }
 ////////////////////// End Funciones para Applets Admin /////////////////////////////////
+function getHeaderJQuery()
+{
+   return "<script type='text/javascript' src='modules/dashboard/themes/default/js/jquery00.js'></script>
+<script type='text/javascript' src='modules/dashboard/themes/default/js/jquery01-ui.js'></script>
+<script type='text/javascript' src='modules/dashboard/themes/default/js/jquery1.color.js'></script>
+<script type='text/javascript' src='modules/dashboard/themes/default/js/jquery2.mbScrollable.js'></script>
+<script type='text/javascript' src='modules/dashboard/themes/default/js/jquery3.javascript.js'></script>
+<script type='text/javascript' src='modules/dashboard/themes/default/js/jquery4.interface.js'></script>
+<link rel='stylesheet' href='modules/dashboard/themes/default/css/mb.scrollable.css' />
+<link rel='stylesheet' href='modules/dashboard/themes/default/css/style.css' />
+";
+}
 ?>
