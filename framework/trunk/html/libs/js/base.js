@@ -172,21 +172,31 @@ $(document).ready(function(){
         });
 
     $("#viewDetailsRPMs").click(function(){
+        $("#changeMode").attr("style", "visibility: hidden;");
         $("#boxRPM").attr("style","display: block;");
         $("#fade_overlay").attr("style","display: block;");
         $("#loadingRPM").attr("style","display: block;");
+        $("#tdTa").attr("style","display: none;");
+        $("#tdRpm").attr("style","display: block;");
         $("#tableRMP").html("");
+        $("#tdTa").val("");
+        var lbltextMode = $("#lblTextMode").val();
+        $("#changeMode").text("("+lbltextMode+")");
+        $("#txtMode").val("");
         var order = "action=versionRPM&rawmode=yes";
         $.post("index.php", order, function(theResponse){
             $("#loadingRPM").attr("style","display: none;");
             $("#boxRPM").attr("style","display: block;");
             $("#fade_overlay").attr("style","display: block;");
+            $("#changeMode").attr("style", "visibility: visible;");
             var message = JSONRPMtoString(theResponse);
             var html = ""; 
+            var html2 = "";
             var key = "";
             var key2 = "";
             var message2 = "";
             var i = 0;
+            var cont = 0;
             for(key in message){
                 html += "<tr class='letra12'>" +
                             "<td class='letra12 tdRPMNamesCol'>&nbsp;&nbsp;<b>Name</b></td>" +
@@ -197,6 +207,9 @@ $(document).ready(function(){
                         "<tr class='letra12'>" +
                             "<td class='letra12 tdRPMDetail' colspan='4' align='left'>&nbsp;&nbsp;" + key + "</td>" +
                         "</tr>";
+                /*html2 += "Name|Package Name|Version|Release\n";*/
+                cont = cont + 2;
+                html2 += "\n " + key+"\n";
                 message2 = message[key];
                 if(key == "Kernel"){
                     for(i = 0; i<message2.length; i++){
@@ -207,6 +220,8 @@ $(document).ready(function(){
                                     "<td class='letra12'>&nbsp;&nbsp;" + arryVersions[0] + "</td>" +
                                     "<td class='letra12'>&nbsp;&nbsp;" + arryVersions[1] + "</td>" +
                                 "</tr>";
+                        html2+= "   " + message2[i][0] + "(" + message2[i][2] + ")-"+arryVersions[0] + "-"+arryVersions[1] + "\n";
+                        cont++;
                     }
                 }else{
                     for(i = 0; i<message2.length; i++){
@@ -216,17 +231,40 @@ $(document).ready(function(){
                                     "<td class='letra12'>&nbsp;&nbsp;" + message2[i][1] + "</td>" +
                                     "<td class='letra12'>&nbsp;&nbsp;" + message2[i][2] + "</td>" +
                                 "</tr>";
+                        html2+= "   " + message2[i][0] + "-" + message2[i][1] + "-" + message2[i][2] + "\n";
+                        cont++;
                     }
                 }
 
             }
+            cont = cont + 2;
+            $("#txtMode").attr("rows", cont);
             $("#tableRMP").html(html);
+            $("#txtMode").val(html2);
         });
     });
 
     $("#fade_overlay").click(function(){
         $("#boxRPM").attr("style","display: none;");
         $("#fade_overlay").attr("style","display: none;");
+    });
+
+    $("#changeMode").click(function(){
+        var viewTbRpm = $("#tdRpm").attr("style");
+        if(viewTbRpm == "display: block;"){
+            //change lbltextMode
+            var lblhtmlMode = $("#lblHtmlMode").val();
+            $("#changeMode").text("("+lblhtmlMode+")");
+            
+            $("#tdRpm").attr("style","display: none;");
+            $("#tdTa").attr("style","display: block;");
+        }else{
+            //change lblHtmlMode
+            var lbltextMode = $("#lblTextMode").val();
+            $("#changeMode").text("("+lbltextMode+")");
+            $("#tdRpm").attr("style","display: block;");
+            $("#tdTa").attr("style","display: none;");
+        }
     });
 });
 // implement JSON.parse de-serialization  
