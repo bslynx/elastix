@@ -183,5 +183,7 @@ $arrLang=array(
 "ERROR" => "Error",
 "VersionDetails" => "Version",
 "VersionPackage" => "Details of package versions",
+"textMode" => "Text Mode",
+"htmlMode" => "Html Mode",
 );
 ?>
