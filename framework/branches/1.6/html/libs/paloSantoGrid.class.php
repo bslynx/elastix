@@ -307,11 +307,11 @@ class paloSantoGrid {
 
     function exportType()
     {
-        if(getParameter("exportcsv") == "yes")
+        if(getParameter2("exportcsv") == "yes")
             return "csv";
-        else if(getParameter("exportpdf") == "yes")
+        else if(getParameter2("exportpdf") == "yes")
             return "pdf";
-        else if(getParameter("exportspreadsheet") == "yes")
+        else if(getParameter2("exportspreadsheet") == "yes")
             return "xls";
         else
             return "html";
@@ -357,5 +357,15 @@ class paloSantoGrid {
         else
             return $this->xlsWriteLabel($Row, $Col, $Value);
     }
+    
+    function getParameter2($parameter)
+	{
+		if(isset($_POST[$parameter]))
+			return $_POST[$parameter];
+		else if(isset($_GET[$parameter]))
+			return $_GET[$parameter];
+		else
+			return null;
+	}
 }
 ?>
