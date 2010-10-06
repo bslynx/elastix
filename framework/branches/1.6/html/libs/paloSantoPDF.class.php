@@ -338,8 +338,4 @@ class paloPDF extends FPDF
         $this->SetX($pX);
     }
 }
-function wlog($txt)
-{
-    exec("echo '$txt' >> /tmp/wlog.log");
-}
 ?>
