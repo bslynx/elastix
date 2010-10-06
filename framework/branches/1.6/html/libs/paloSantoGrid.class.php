@@ -307,11 +307,11 @@ class paloSantoGrid {
 
     function exportType()
     {
-        if(getParameter2("exportcsv") == "yes")
+        if($this->getParameter2("exportcsv") == "yes")
             return "csv";
-        else if(getParameter2("exportpdf") == "yes")
+        else if($this->getParameter2("exportpdf") == "yes")
             return "pdf";
-        else if(getParameter2("exportspreadsheet") == "yes")
+        else if($this->getParameter2("exportspreadsheet") == "yes")
             return "xls";
         else
             return "html";
