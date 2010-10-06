@@ -1088,3 +1088,12 @@ td.botonon {
     opacity:.40;
     filter: alpha(opacity=40);
 }
+
+#changeMode{
+    font-size: 10px;
+    cursor: pointer;
+}
+
+.loadingRPMimg{
+    padding: 10px;
+}

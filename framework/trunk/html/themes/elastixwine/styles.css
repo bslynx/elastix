@@ -1018,3 +1018,11 @@ a.letranodec:link, a.letranodec:visited {
     filter: alpha(opacity=40);
 }
 
+#changeMode{
+    font-size: 10px;
+    cursor: pointer;
+}
+
+.loadingRPMimg{
+    padding: 10px;
+}
