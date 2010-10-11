@@ -264,7 +264,7 @@ class paloNetwork
         }
                       
         if ($bValido) {
-            $comando = "sudo -u root service network restart";
+            $comando = "sudo -u root service generic-cloexec network restart";
             $mensaje = `$comando 2>&1`;
         }
                  
@@ -293,7 +293,7 @@ class paloNetwork
         $oConf = new paloConfig("/etc/sysconfig/network-scripts", $archivoEth, "=", "[[:blank:]]*=[[:blank:]]*");
         $oConf->escribir_configuracion($arrReemplazos, false);
 
-        exec("sudo -u root service network restart");
+        exec("sudo -u root service generic-cloexec network restart");
 
         // Luego de escribir la configuracion hay que hacer un ifconfig?
         return true;
