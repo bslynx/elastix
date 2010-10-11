@@ -40,5 +40,7 @@ $arrLangModule=array(
 "File to upload is empty" => "فايل بارگذاري شده خالي است",
 "Text to send is empty" => "متني براي ارسال وجود ندارد",
 "Please, select a valid Fax Device" => "لطفا يک دستگاه فکس معتبر انتخاب کنيد",
+"Types of files" => "Types of files supported: ",
+"Fax has been sent correctly" => "Fax has been sent correctly",
 );
 ?>
