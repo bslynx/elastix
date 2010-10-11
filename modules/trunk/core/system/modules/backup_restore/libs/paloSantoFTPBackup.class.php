@@ -128,10 +128,11 @@ class paloSantoFTPBackup {
     //obtiene lo asrchivos locales
     function obtainFiles($dir){
         $files =  glob($dir."/{*.tar}",GLOB_BRACE);
+        $array = array();
         $names ="";
         foreach ($files as $ima)
             $names[]=array_pop(split("/",$ima));
-        if(!$names) return 'empty';
+        if(!$names) return $array;
         return $names;
     }
 
