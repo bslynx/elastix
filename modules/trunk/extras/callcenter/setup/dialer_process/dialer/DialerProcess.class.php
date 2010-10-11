@@ -1821,6 +1821,7 @@ PETICION_LLAMADAS;
         }
 
         /*
+        Asterisk 1.4.x
         2010-05-20 16:01:38 : (DialerProcess) DEBUG: dial:
         params => Array
         (
@@ -1833,25 +1834,51 @@ PETICION_LLAMADAS;
             [SrcUniqueID] => 1274385698.159
             [DestUniqueID] => 1274385698.160
         )
+        
+        Asterisk 1.6.2.x
+        2010-10-08 18:49:18 : (DialerProcess) DEBUG: dial:
+        params => Array
+        (
+            [Event] => Dial
+            [Privilege] => call,all
+            [SubEvent] => Begin
+            [Channel] => Local/1065@from-internal-fd98;2
+            [Destination] => SIP/1065-00000003
+            [CallerIDNum] => <unknown>
+            [CallerIDName] => <unknown>
+            [UniqueID] => 1286581757.4
+            [DestUniqueID] => 1286581758.5
+            [Dialstring] => 1065
+        )
         */
+
+        $srcUniqueId = $destUniqueID = NULL;
+        if (isset($params['SrcUniqueID']))
+            $srcUniqueId = $params['SrcUniqueID'];
+        elseif (isset($params['UniqueID']))
+            $srcUniqueId = $params['UniqueID'];
+        if (isset($params['DestUniqueID']))
+            $destUniqueID = $params['DestUniqueID'];
 
         // Si el SrcUniqueID es alguno de los Uniqueid monitoreados, se añade
         // el DestUniqueID correspondiente. Potencialmente esto permite también
         // trazar la troncal por la cual salió la llamada.
-        foreach (array_keys($this->_infoLlamadas['llamadas']) as $sKey) {
-        	if ((isset($this->_infoLlamadas['llamadas'][$sKey]->Uniqueid) && 
-                $params['SrcUniqueID'] == $this->_infoLlamadas['llamadas'][$sKey]->Uniqueid) ||
-                (isset($this->_infoLlamadas['llamadas'][$sKey]->AuxChannels) && 
-                 in_array($params['SrcUniqueID'], array_keys($this->_infoLlamadas['llamadas'][$sKey]->AuxChannels)))) {
-                if (!isset($this->_infoLlamadas['llamadas'][$sKey]->AuxChannels))
-                    $this->_infoLlamadas['llamadas'][$sKey]->AuxChannels = array();
-                $this->_infoLlamadas['llamadas'][$sKey]->AuxChannels[$params['DestUniqueID']] = array(
-                    'Dial'  =>  $params,
-                );
-                if ($this->DEBUG) {
-                    $this->oMainLog->output("DEBUG: encontrado canal auxiliar para llamada: ".print_r($this->_infoLlamadas['llamadas'][$sKey], 1));         
+        if (!is_null($srcUniqueId) && !is_null($destUniqueID)) {
+            foreach (array_keys($this->_infoLlamadas['llamadas']) as $sKey) {
+            	if ((isset($this->_infoLlamadas['llamadas'][$sKey]->Uniqueid) && 
+                    $srcUniqueId == $this->_infoLlamadas['llamadas'][$sKey]->Uniqueid) ||
+                    (isset($this->_infoLlamadas['llamadas'][$sKey]->AuxChannels) && 
+                     in_array($srcUniqueId, array_keys($this->_infoLlamadas['llamadas'][$sKey]->AuxChannels)))) {
+                    if (!isset($this->_infoLlamadas['llamadas'][$sKey]->AuxChannels))
+                        $this->_infoLlamadas['llamadas'][$sKey]->AuxChannels = array();
+                    $this->_infoLlamadas['llamadas'][$sKey]->AuxChannels[$destUniqueID] = array(
+                        'Dial'  =>  $params,
+                    );
+                    if ($this->DEBUG) {
+                        $this->oMainLog->output("DEBUG: encontrado canal auxiliar para llamada: ".print_r($this->_infoLlamadas['llamadas'][$sKey], 1));         
+                    }
+                    break;
                 }
-                break;
             }
         }
     	
