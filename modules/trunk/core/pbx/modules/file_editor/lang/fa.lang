@@ -34,9 +34,9 @@ $arrLangModule=array(
 "Command" => "فرمان",
 "Execute" => "اجرا",
 "Result" => "نتیجه",
-"File Editor" => "Asterisk File Editor",
-"File List" => "File Name",
-"File Size" => "File Size",
+"File Editor" => "ويرايشگر فايل",
+"File List" => "نام فايل",
+"File Size" => "سايز فايل",
 "Back" => "بازگشت",
 "This file doesn't have permisses to read" => "این فایل مجوز مشاهده ندارد",
 "This file doesn't have permisses to write" => "این فایل مجوز تغییر ندارد",
@@ -47,6 +47,6 @@ $arrLangModule=array(
 "New File" => "فایل جدید",
 "File already exist" => "فایل در حال حاضر وجود دارد",
 "File" => "فایل",
-"Filter" => "فیلتر",
+"Filter" => "فيلتر",
 );
 ?>

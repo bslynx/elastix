@@ -41,11 +41,11 @@ $arrLangModule=array(
 "Summary Cost" => "خلاصه هزینه",
 "Rate Applied" => "نرخ کاربردی",
 "Date" => "تاریخ",
-"Source" => "منبع ",
+"Source" => "مبدأ",
 "Destination" => "مقصد",
 "Dst. Channel" => "کانال مقصد",
 "Duration" => "مدت",
-"Filter" => "فیلتر",
+"Filter" => "فيلتر",
 "Field" => "فیلد ",
 );
 ?>

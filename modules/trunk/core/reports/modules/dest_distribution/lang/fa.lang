@@ -31,14 +31,14 @@
    $Id: fa.lang,v 1.2 2008/04/21 10:11:44 bmacias@palosanto.com Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Filter" => "فیلتر",
+"Filter" => "فيلتر",
 "Start Date" => "تاریخ شروع",
 "End Date" => "تاریخ پایان",
 "Destination Distribution" => "توزیع مقصد",
 "Criteria" => "معیار",
-"Distribution by Time" => "توزیع با زمان",
-"Distribution by Number of Calls" => "توزیع با تعداد مکالمات",
-"Distribution by Cost" => "توزیع با هزینه",
+"Distribution by Time" => "توزيع با زمان",
+"Distribution by Number of Calls" => "توزيع با تعداد مكالمات",
+"Distribution by Cost" => "توزيع با هزينه",
 "Date Range spans maximum number of days" => "محدوده زمانی از بالاترین تعداد روزهای ممکن تعیین شده است",
 "ERROR" => "خطا",
 "Minutes" => "دقیقه ها",

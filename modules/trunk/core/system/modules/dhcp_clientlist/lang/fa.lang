@@ -2,7 +2,7 @@
   /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.5.2-3.1                                               |
+  | Elastix version 1.6-6                                               |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,17 +25,25 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: fa.lang,v 1.1.1.1 2009/07/27 09:10:19 dlopez Exp $ */
+  $Id: en.lang,v 1.1 2009-11-09 09:08:29 Oscar Navarrete onavarrete@palosanto.com Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Incoming calls monitoring" => "نظارت تماس هاي ورودي",
-"Queue" => "صف",
-"Entered" => "وارد شده",
-"Answered" => "پاسخ داده شده",
-"Abandoned" => "از دست رفته",
-"Waiting calls" => "تماس هاي در انتظار",
-"Without monitoring" => "بدون نظارت",
-"Total" => "کل",
-
+"New Email list" => "ليست ايميل جديد",
+"Are you sure you wish to delete the email list." => "آيا مطمئنيد که مي خواهيد ليست ايميل را حذف کنيد؟",
+"Email List Name" => "نام ليست ايميل",
+"Email Member" => "عضو ايميل",
+"Email List Members" => "اعضا ليست ايميل",
+"Number of Accounts" => "تعداد حساب ها",
+//nuevos
+"DHCP Client List" => "DHCP ليست مشتريان",
+"New Dhcp client" => "DHCP مشتري جديد",
+"Are you sure you wish to delete the Ip." => "آيا مطمئنيد که مي خواهيد آي پي را حذف کنيد؟",
+"Action" => "عمل",
+"See All DHCP Info" => "را ببينيد DHCP تمامي اطلاعات ",
+"IP Address" => " آدرس آي پي",
+"Start Date" => "تاريخ شروع",
+"End Date" => "تاريخ پايان",
+"MAC Address" => "آدرس مک",
+"View Details" => "نمايش جزئيات",
 );
 ?>

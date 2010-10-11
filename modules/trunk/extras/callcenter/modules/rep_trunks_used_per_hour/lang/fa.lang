@@ -28,17 +28,17 @@
   $Id: fa.lang,v 1.1.1.1 2009/07/27 09:10:19 dlopez Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Reporte de Troncales usadas por Hora en el dia" => "Reporte de Troncales usadas por Hora en el dia",
-"Time Period " => "Time Period ",
-"Entered" => "Entered",
-"Answered" => "Answered",
-"Abandoned" => "Abandoned",
-"In queue" => "In queue",
-"Without monitoring " => "Without monitoring ",
-"Queue" => "Queue",
-"Start date" => "Start date",
-"End date" => "End date",
-"Total" => "Total",
-"Trunk"=>"Trunk",
+"Reporte de Troncales usadas por Hora en el dia" => "گزارش ترانک استفاده شده بر اساس زمان در طول روز",
+"Time Period " => "زمان دوره ",
+"Entered" => "وارد شده",
+"Answered" => "پاسخ داده شده",
+"Abandoned" => "از دست رفته",
+"In queue" => "در صف",
+"Without monitoring " => "بدون نظارت ",
+"Queue" => "صف",
+"Start date" => "تاريخ شروع",
+"End date" => "تاريخ پايان",
+"Total" => "کل",
+"Trunk"=>"ترانک",
 );
 ?>

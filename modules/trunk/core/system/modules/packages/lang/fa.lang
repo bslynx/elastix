@@ -32,7 +32,7 @@
 global $arrLangModule;
 $arrLangModule=array(
 "Updates" => "بسته های به روز",
-"Repositories" => "بسته ها",
+"Repositories" =>"مخزن ها",
 "Package Name" => "نام بسته",
 "Package Info" => "مشخصات بسته",
 "Package Version" => "نسخه بسته",
@@ -46,7 +46,7 @@ $arrLangModule=array(
 "Package Noninstalled" => "بسته نصب نشده",
 "Repositor not Found" => "نصب کننده بسته پیدا نشد",
 "Package Search" => "جستجوی بسته",
-"Repositor Place" => "Repository",
+"Repositor Place" => "مخزن",
 "Package Update" => "به روز رسانی بسته ها",
 "Updating Packages" => "بسته ها در حال به روز رسانی",
 "Satisfactory Update" => "به روز رسانی رضایت بخش",

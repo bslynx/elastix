@@ -2,7 +2,7 @@
   /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.5.2-3.1                                               |
+  | Elastix version 1.5.2-2                                               |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,17 +25,30 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: fa.lang,v 1.1.1.1 2009/07/27 09:10:19 dlopez Exp $ */
+  $Id: en.lang,v 1.1 2009-09-29 05:09:50 Oscar Navarrete onavarrete@palosanto.com Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Incoming calls monitoring" => "نظارت تماس هاي ورودي",
-"Queue" => "صف",
-"Entered" => "وارد شده",
-"Answered" => "پاسخ داده شده",
-"Abandoned" => "از دست رفته",
-"Waiting calls" => "تماس هاي در انتظار",
-"Without monitoring" => "بدون نظارت",
-"Total" => "کل",
-
+"VoIP Provider" => "VoIP سرويس دهنده",
+"Username" => "نام کاربري",
+"Secret" => "رمز",
+"Configuration" => "پيکربندي",
+"Type" => "نوع",
+"Qualify" => "واجد شرايط",
+"Insecure" => "نا امن",
+"Host" => "هاست",
+"Fromuser" => "از کاربر",
+"Fromdomain" => "از دمين",
+"Dtmfmode" => "Dtmf مد",
+"Disallow" => "غيرمجاز",
+"Context" => "متن",
+"Allow" => "مجاز",
+"Trustrpid" => "Trustrpid",
+"Sendrpid" => "Sendrpid",
+"Canreinvite" => "Canreinvite",
+"none" => "هيچ",
+"General_Setting" => "تنظيمات عمومي",
+"PEER_Details" => "جزئيات نقطه تماس",
+"Please select a type of VoIp Provider" => "را انتخاب کنيد VoIP لطفا يک نوع سرويس دهنده",
+"Some or someone necesary fields are empty please check and complete" => "تعدادي از فيلدهاي ضروري خالي هستند. لطفا بررسي و تکميل کنيد",
 );
 ?>

@@ -31,9 +31,9 @@
    $Id: fa.lang,v 1.2 2008/04/21 10:11:44 bmacias@palosanto.com Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Search string" => "Search string",
+"Search string" => "متن جستجو",
 "Search" => "جستجو",
-"Search next" => "Search next",
+"Search next" => "جستجوي بعدي",
 "offset" => "offset",
 "Asterisk Logs" => "گزارش سیستم",
 "Date" => "تاریخ",

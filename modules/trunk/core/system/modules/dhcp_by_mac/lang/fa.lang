@@ -2,7 +2,7 @@
   /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.5.2-3.1                                               |
+  | Elastix version 1.6-12                                               |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,17 +25,21 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: fa.lang,v 1.1.1.1 2009/07/27 09:10:19 dlopez Exp $ */
+  $Id: en.lang,v 1.1 2009-11-12 04:11:04 Oscar Navarrete onavarrete.palosanto.com Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Incoming calls monitoring" => "نظارت تماس هاي ورودي",
-"Queue" => "صف",
-"Entered" => "وارد شده",
-"Answered" => "پاسخ داده شده",
-"Abandoned" => "از دست رفته",
-"Waiting calls" => "تماس هاي در انتظار",
-"Without monitoring" => "بدون نظارت",
-"Total" => "کل",
-
+"Assign IP Address to Host" => "اختصاص دادن آدرس آي پي به هاست",
+"Host Name" => "نام هاست",
+"IP Address" => "آدرس آي پي ",
+"MAC Address" => "آدرس مک",
+"Hostname" => "نام هاست",
+"Assign IP Address" => "اختصاص دادن آدرس آي پي",
+"View edit" => "نمايش ويرايش",
+"Are you sure you wish to delete the DHCP configuration." => "را حذف کنيد؟ DHCP آيا مطمئنيد که مي خواهيد تنظيمات",
+"The name of hostname is duplicated please changes to another name" => "نام هاست تکراري است لطفا به نام ديگري تغيير دهيد",
+"The following fields are duplicates or already exists" => ".فيلد هاي زير تکراري هستند يا از قبل وجود دارند",
+"ex_hostname" => "(ex. myhostname)",
+"ex_ipaddress" => "(ex. 127.0.0.1)",
+"ex_mac_address" => "(ex. AA:BB:CC:DD:EE:FF)",
 );
 ?>

@@ -32,7 +32,7 @@
 global $arrLangModule;
 $arrLangModule=array(
 "DHCP Server" => "سرور DHCP",
-"Update" => "به روز رسانی",
+"Update" => "به روز رساني/ذخيره",
 "Service Start" => "آغاز سرویس",
 "Service Stop" => "پایان سرویس",
 "Start range of IPs" => "ابتدای محدوده آی پی ها",
@@ -43,7 +43,7 @@ $arrLangModule=array(
 "Gateway" => "Gateway",
 "Optional" => "انتخابی",
 "Of 1 to 50000 Seconds" => "از 1 تا 50000 ثانیه",
-"Time of client refreshment" => "زمان تازه سازی مشتری ها",
+"Time of client refreshment" => "زمان تازه سازی کلاينت ها",
 "DHCP Configuration" => "تنظیمات DHCP",
 "Could not find IP range" => "محدوده آی پی پیدا نشد",
 "DHCP configuration reading error: Verify that the DHCP service is installed and try again." => "خطا در خواندن فایل پیکربندی سرور DHCP: بررسی کنید که سرویس DHCP نصب گردیده سپس دوباره امتحان کنید.",
@@ -61,7 +61,7 @@ $arrLangModule=array(
 "Update Error" => "خطا در به روز رسانی",
 "Status" => "وضعیت",
 "Inactive" => "غیر فعال",
-"Information" => "Information",
+"Information" => "اطلاعات",
 "Active" => "فعال",
 );
 ?>

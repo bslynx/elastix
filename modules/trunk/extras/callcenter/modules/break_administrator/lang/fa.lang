@@ -28,28 +28,26 @@
   $Id: es.lang,v 1.2 2007/08/09 00:31:28 jmartinez Exp $ */
 global $arrLan;
 $arrLan=array(
-"Name Break" => "Name",
-"Description Break" => "Description",
-"New Break" => "New Break",
-"View Break" => "View Break",
-"Edit Break" => "Edit Break",
-"Active" => "Active",
-"Inactive" => "Inactive",
-"Breaks List" => "Breaks List",
-"Name Break" => "Name",
-"Description Break" => "Description",
-"Create New Break" => "Create New Break",
-"Error when Activating the Break" => "Error when Activating the Break",
-"Activate Error" => "Activate Error", //Bruno agrego
-"Break ID is not valid" => "Break ID is not valid",
-"Name Break can't be empty" => "Name Break can't be empty",
-"Name Break already exists" => "Name Break already exists",
-"Id Break is empty" => "Id Break is empty",
-"Desactivate Error" => "Desactivate Error", //Bruno agrego
-"Error when desactivating the Break" => "Error when desactivating the Break",
-"Desactivate"=>"Desactivate",
-"Activate"=>"Activate",
+"Name Break" => "نام",
+"Description Break" => "توصيفات",
+"New Break" => "تنفس جديد",
+"View Break" => "نمايش تنفس",
+"Edit Break" => "ويرايش تنفس",
+"Active" => "فعال",
+"Inactive" => "غيرفعال",
+"Breaks List" => "ليست تنفس ها",
+"Name Break" => "نام",
+"Description Break" => "توصيفات",
+"Create New Break" => "ايجاد تنفس جديد",
+"Error when Activating the Break" => "خطا در هنگام فعال نمودن تنفس",
+"Activate Error" => "خطاي فعال سازي", //Bruno agrego
+"Break ID is not valid" => "شناسه تنفس معتبر نيست",
+"Name Break can't be empty" => " نام تنفس بايد درج شود",
+"Name Break already exists" => "نام تنفس از پيش وجود دارد ",
+"Id Break is empty" => "شناسه تنفس نوشته نشده",
+"Desactivate Error" => "خطاي غيرفعال سازي", //Bruno agrego
+"Error when desactivating the Break" => "خطا در هنگام غيرفعال نمودن تنفس",
+"Desactivate"=>"غيرفعال نمودن",
+"Activate"=>"فعال نمودن",
 );
-
-
 ?>

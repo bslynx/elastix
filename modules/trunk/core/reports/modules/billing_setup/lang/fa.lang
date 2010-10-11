@@ -37,5 +37,6 @@ $arrLangModule=array(
 "Default Rate Offset" => "نرخ تراز پیش فرض",
 "Trunk Bill Configuration" => "تنظیم صورت حساب ترانک",
 "Trunk" => "ترانک",
+"Billing Capable"=>"صورت حساب قابل پرداخت",
 );
 ?>

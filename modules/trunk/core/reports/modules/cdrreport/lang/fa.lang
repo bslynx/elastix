@@ -25,6 +25,8 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   |                                                                      |
+
+
   | Translate by: Haamed Kouhfallah                                      |
   | Email: haamed@cytco.net                                              |                                                                    |
   +----------------------------------------------------------------------+
@@ -35,22 +37,22 @@ $arrLangModule=array(
 "End Date" => "تاریخ پایان",
 "Field Name" => "نام فیلد",
 "Field" => "فیلد ",
-"CDR Report List" => "CDR Report",
+"CDR Report List" => "گزارش ریز مکالمات",
 "Account Code" => "کد حساب",
 "Date" => "تاریخ",
-"Source" => "منبع ",
+"Source" => "مبداء",
 "Destination" => "مقصد",
-"Src. Channel" => "کانال منبع",
+"Src. Channel" => "كانال مبداء",
 "Dst. Channel" => "کانال مقصد",
 "Duration" => "مدت",
-"Filter" => "فیلتر",
+"Filter" => "فيلتر",
 "Are you sure you wish to delete CDR(s) Report(s)?" => "آیا مطمئن به حذف ریز مکالمات هستید؟",
 "Status" => "وضعیت",
-"ALL" => "ALL",
-"ANSWERED" => "ANSWERED",
-"BUSY" => "BUSY",
-"FAILED" => "FAILED",
-"NO ANSWER" => "NO ANSWER",
-"Delete" => "Delete the CDRs in this Report",
+"ALL" => "تمامي تماس ها",
+"ANSWERED" => "پاسخ داده شده",
+"BUSY" => "مشغول",
+"FAILED" => "نا موفق",
+"NO ANSWER" => "پاسخ داده نشده",
+"Delete" => "حذف ريز مكالمات",
 );
 ?>

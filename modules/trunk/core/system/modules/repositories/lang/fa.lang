@@ -31,9 +31,9 @@
    $Id: fa.lang,v 1.2 2008/04/21 10:11:44 bmacias@palosanto.com Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Repositories" => "بسته ها",
-"Active" => "Active",
+"Repositories" =>"مخزن ها",
+"Active" => "فعال",
 "Name" => "نام",
-"Save/Update" => "Save/Update",
+"Save/Update" => "ذخيره/به روز رساني",
 );
 ?>
