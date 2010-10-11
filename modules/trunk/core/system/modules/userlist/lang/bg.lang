@@ -50,5 +50,6 @@ $arrLangModule=array(
 "Retype Webmail password" => "Повторете eMail паролата",
 "Mail Profile" => "eMail Профил",
 "No extension associated" => "No extension associated",
+"userNoAllowed" => "User is not allowed to do this action",
 );
 ?>

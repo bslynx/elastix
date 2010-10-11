@@ -50,5 +50,6 @@ $arrLangModule=array(
 "Retype Webmail password" => "رمز ایمیل تحت وب را دوباره وارد کنید",
 "Mail Profile" => "پروفایل ایمیل",
 "No extension associated" => "هيچ داخلي اضافه نشده",
+"userNoAllowed" => "User is not allowed to do this action",
 );
 ?>
