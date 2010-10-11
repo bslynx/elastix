@@ -33,7 +33,7 @@ global $arrLangModule;
 $arrLangModule=array(
 "New Contact" => "مخاطب جدید",
 "Address Book" => "دفتر تلفن",
-"Are you sure you wish to delete the contact." => "آیا نسبت به حذف این مخاطب اطمینان دارید",
+"Are you sure you wish to delete the contact." => " آيا مطمئنيد که مي خواهيد مخاطب را حذف کنيد؟",
 "First Name" => "نام",
 "Last Name" => " نام خانوادگی",
 "Phone Number" => " شماره تلفن",
@@ -68,7 +68,5 @@ $arrLangModule=array(
 "The file is incorrect or empty" => "فایل اشتباه یا خالی است",
 "You don't have extension number associated with user" => "شما شماره داخلی وابسته به کاربر ندارید",
 "ERROR" => "خطا",
-"Transfer" => "Transfer",
-"The transfer couldn't be realized, maybe you don't have any conversation now." => "The transfer couldn't be realized, maybe you don't have any conversation now.",
 );
 ?>
