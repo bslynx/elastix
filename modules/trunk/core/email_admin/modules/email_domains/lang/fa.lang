@@ -32,14 +32,14 @@
 global $arrLangModule;
 $arrLangModule=array(
 "Email" => "ایمیل",
-"Domains" =>  "قلمروها",
-"Domain" => "قلمرو",
-"Domain name" => "نام قلمرو",
-"Domain List" => "لیست قلمرو",
+"Domains" =>  "دامين ها",
+"Domain" => "دامين",
+"Domain name" => "نام دامين",
+"Domain List" => "ليست دامين",
 "Number of Accounts" => "تعداد حساب ها",
-"Create Domain" => "ایجاد قلمرو",
-"New Domain" => "قلمرو جدید",
-"View Domain" => "مشاهده قلمرو",
-"Edit Domain" => "تغییر قلمرو",
+"Create Domain" => "ايجاد دامين",
+"New Domain" => "دامين جديد",
+"View Domain" => "مشاهده دامين",
+"Edit Domain" => "ويرايش دامين",
 );
 ?>
