@@ -74,7 +74,7 @@ $arrLangModule=array(
 "Are you sure you wish to Kick caller (s)?" => "آیا مطمئنید که می خواهید تماس گیرنده را بیرون بیاندازید؟",
 "Muted" => "بدون صدا",
 "UnMuted" => "با صدا",
-"Error when connecting to Asterisk Manager" => "خطا در زمان اتصال به Asterisk",
+"Error when connecting to Asterisk Manager" => "خطا در زمان اتصال به استريسک",
 "The conference installation is almost done. To complete it please" => "نصب کنفرانس انجام شد لطفا جهت تکمیل",
 "Kick All" => "اخراج همه",
 "Invite Caller" => "دعوت شرکت کننده",
@@ -84,10 +84,9 @@ $arrLangModule=array(
 "Filter" => "فیلتر",
 "Show" => "نمایش",
 "click here" => "اینجا را کلیک کنید",
-'Duration'=>'Duration',
-'Status'=>'Status',
-'Update'=>'Update',
-'No Extensions'=>'No Extensions',
-'Unselected' => 'Unselected',
+'Status'=>'وضعيت',
+'Update'=>'به روز رساني',
+'No Extensions'=>'بدون داخلي',
+'Unselected' => 'انتخاب نشده',
 );
 ?>
