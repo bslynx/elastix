@@ -68,5 +68,6 @@ $arrLangModule=array(
 "The file is incorrect or empty" => "فایل اشتباه یا خالی است",
 "You don't have extension number associated with user" => "شما شماره داخلی وابسته به کاربر ندارید",
 "ERROR" => "خطا",
+"Transfer" => "Transfer",
 );
 ?>
