@@ -47,5 +47,6 @@ $arrLangModule=array(
 "Retype Webmail password" => "Reingrese contraseña de Webmail",
 "Mail Profile" => "Perfil de Mail",
 "No extension associated" => "La extesión no ha sido asociada",
+"userNoAllowed" => "User is not allowed to do this action",
 );
 ?>

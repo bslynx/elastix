@@ -79,6 +79,8 @@ function _moduleContent(&$smarty, $module_name)
 
 /*******/
     $typeUser = "";
+    $userLevel1 = "";
+    $extOther = "";
     $userAccount = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
     $idUserAccount = $pACL->isUserAdministratorGroup($userAccount);
     $idUserInt = $pACL->getIdUser($userAccount);
@@ -270,40 +272,44 @@ function _moduleContent(&$smarty, $module_name)
                 $contenidoModulo=$oForm->fetchForm("$local_templates_dir/new.tpl", $arrLang["New User"], $_POST);
             } else {
 
-                // Creo al usuario
-                $md5_password = md5($_POST['password1']);
-                $pACL->createUser($_POST['name'], $_POST['description'], $md5_password,$_POST['extension']);
-
-                $idUser = $pACL->getIdUser($_POST['name']);
-
-                // Versiones viejas del archivo acl.db tienen una fila con una
-                // tupla que asocia al usuario inexistente con ID 2, con el 
-                // grupo 2 (Operadores). Se limpia cualquier membresía extraña.
-                $listaMembresia = $pACL->getMembership($idUser);
-                if (is_array($listaMembresia) && count($listaMembresia) > 0) {
-                    foreach ($listaMembresia as $idGrupo) {
-                        $pACL->delFromGroup($idUser, $idGrupo);
+                if($userLevel1=="admin"){
+                    // Creo al usuario
+                    $md5_password = md5($_POST['password1']);
+                    $pACL->createUser($_POST['name'], $_POST['description'], $md5_password,$_POST['extension']);
+    
+                    $idUser = $pACL->getIdUser($_POST['name']);
+    
+                    // Versiones viejas del archivo acl.db tienen una fila con una
+                    // tupla que asocia al usuario inexistente con ID 2, con el 
+                    // grupo 2 (Operadores). Se limpia cualquier membresía extraña.
+                    $listaMembresia = $pACL->getMembership($idUser);
+                    if (is_array($listaMembresia) && count($listaMembresia) > 0) {
+                        foreach ($listaMembresia as $idGrupo) {
+                            $pACL->delFromGroup($idUser, $idGrupo);
+                        }
                     }
-                }
-
-                // Creo la membresia
-                $pACL->addToGroup($idUser, $_POST['group']);
-
-                $bExito = TRUE;
-                if (empty($pACL->errMsg)) {
-                    $nuevasPropiedades = array();
-                    if (!empty($_POST['webmailuser'])) $nuevasPropiedades['login'] = $_POST['webmailuser'];
-                    if (!empty($_POST['webmailpassword1'])) $nuevasPropiedades['password'] = $_POST['webmailpassword1'];
-                    if (!empty($_POST['webmaildomain'])) $nuevasPropiedades['domain'] = $_POST['webmaildomain'];
-                    $bExito = actualizarPropiedades($pDB, $smarty, $idUser, 'webmail', 'default', $nuevasPropiedades);
-                }
-
-                if(!empty($pACL->errMsg)) {
-                    // Ocurrio algun error aqui
-                    $smarty->assign("mb_message", "ERROR: $pACL->errMsg");
-                    $contenidoModulo=$oForm->fetchForm("$local_templates_dir/new.tpl", $arrLang["New User"], $_POST);
-                } else if ($bExito) {
-                    header("Location: ?menu=userlist");
+    
+                    // Creo la membresia
+                    $pACL->addToGroup($idUser, $_POST['group']);
+    
+                    $bExito = TRUE;
+                    if (empty($pACL->errMsg)) {
+                        $nuevasPropiedades = array();
+                        if (!empty($_POST['webmailuser'])) $nuevasPropiedades['login'] = $_POST['webmailuser'];
+                        if (!empty($_POST['webmailpassword1'])) $nuevasPropiedades['password'] = $_POST['webmailpassword1'];
+                        if (!empty($_POST['webmaildomain'])) $nuevasPropiedades['domain'] = $_POST['webmaildomain'];
+                        $bExito = actualizarPropiedades($pDB, $smarty, $idUser, 'webmail', 'default', $nuevasPropiedades);
+                    }
+    
+                    if(!empty($pACL->errMsg)) {
+                        // Ocurrio algun error aqui
+                        $smarty->assign("mb_message", "ERROR: $pACL->errMsg");
+                        $contenidoModulo=$oForm->fetchForm("$local_templates_dir/new.tpl", $arrLang["New User"], $_POST);
+                    } else if ($bExito) {
+                        header("Location: ?menu=userlist");
+                    }
+                }else{
+                     $smarty->assign("mb_message", $arrLang["userNoAllowed"]);
                 }
             }
         } else {
@@ -335,7 +341,7 @@ function _moduleContent(&$smarty, $module_name)
 
         $oForm->setEditMode();
         if($oForm->validateForm($_POST)) {
-
+            
             if((!empty($_POST['password1']) && ($_POST['password1']!=$_POST['password2'])) 
                 ||
                 (!empty($_POST['webmailpassword1']) && ($_POST['webmailpassword1']!=$_POST['webmailpassword2']))) {
@@ -358,6 +364,9 @@ function _moduleContent(&$smarty, $module_name)
                 // Exito, puedo procesar los datos ahora.
                 $pACL = new paloACL($pDB);
 
+                if($userLevel1!="admin"){
+                    $_POST['id_user'] = $idUserInt;
+                }
                 // Lleno el grupo
                 $arrMembership  = $pACL->getMembership($_POST['id_user']);
                 $id_group="";
@@ -371,13 +380,20 @@ function _moduleContent(&$smarty, $module_name)
 
                 // El usuario trato de cambiar de grupo
                 if($id_group!=$_POST['group']) {
-                    $pACL->delFromGroup($_POST['id_user'], $id_group);
-                    $pACL->addToGroup($_POST['id_user'], $_POST['group']);
+                    if($userLevel1=="admin"){
+                        $pACL->delFromGroup($_POST['id_user'], $id_group);
+                        $pACL->addToGroup($_POST['id_user'], $_POST['group']);
+                    }
                 }
 
                 //- La updateUser no es la adecuada porque pide el username. Deberia
                 //- hacer una que no pida username en la proxima version
-                $_POST['extension'] = isset($_POST['extension'])?$_POST['extension']:"";
+
+                if($userLevel1=="admin")
+                    $_POST['extension'] = isset($_POST['extension'])?$_POST['extension']:"";
+                else
+                    $_POST['extension'] = $extOther;
+
                 $pACL->updateUser($_POST['id_user'], $username, $_POST['description'],$_POST['extension']);
                 //si se ha puesto algo en passwor se actualiza el password
                 if (!empty($_POST['password1']))
@@ -394,7 +410,7 @@ function _moduleContent(&$smarty, $module_name)
     
                 if ($bExito) header("Location: ?menu=userlist");
             }
-
+           
         } else {
             // Manejo de Error
             $smarty->assign("mb_title", $arrLang["Validation Error"]);
@@ -426,7 +442,7 @@ function _moduleContent(&$smarty, $module_name)
         //- TODO: Tengo que validar que el id sea valido, si no es valido muestro un mensaje de error
 
         $oForm->setViewMode(); // Esto es para activar el modo "preview"
-        $arrUser = $pACL->getUsers($_GET['id']);
+        $arrUser = $pACL->getUsers($_GET['id']); 
 
         // Conversion de formato
         $arrTmp['name']        = $arrUser[0][1];
@@ -459,11 +475,15 @@ function _moduleContent(&$smarty, $module_name)
 
         if (isset($_POST['delete'])) {
            //- TODO: Validar el id de user
-            if(isset($_POST['id_user']) && $_POST['id_user']=='1') {
-                // No se puede elimiar al usuario admin
-                $smarty->assign("mb_message", $arrLang["The admin user cannot be deleted because is the default Elastix administrator. You can delete any other user."]);
-            } else {
-                $pACL->deleteUser($_POST['id_user']);
+            if($userLevel1=="admin"){
+                if(isset($_POST['id_user']) && $_POST['id_user']=='1') {
+                    // No se puede elimiar al usuario admin
+                    $smarty->assign("mb_message", $arrLang["The admin user cannot be deleted because is the default Elastix administrator. You can delete any other user."]);
+                } else {
+                    $pACL->deleteUser($_POST['id_user']);
+                }
+            }else{
+                $smarty->assign("mb_message", $arrLang["userNoAllowed"]);
             }
         }
 
@@ -548,7 +568,7 @@ function leerPropiedadesWebmail(&$pDB, &$smarty, $idUser)
     $sPeticionPropiedades = 
         'SELECT pp.property, pp.value '.
         'FROM acl_profile_properties pp, acl_user_profile up, acl_resource r '.
-    	'WHERE up.id_user = ? '.
+        'WHERE up.id_user = ? '.
             'AND up.profile = "default" '.
             'AND up.id_profile = pp.id_profile '.
             'AND up.id_resource = r.id '.
@@ -630,7 +650,7 @@ function actualizarPropiedades(&$pDB, &$smarty, $idUser, $sModulo, $sPerfil, $pr
     $sPeticionPropiedades = 
         'SELECT property, value '.
         'FROM acl_profile_properties '.
-    	'WHERE id_profile = ?';
+        'WHERE id_profile = ?';
     $listaPropiedades = array();
     $tabla = $pDB->fetchTable($sPeticionPropiedades, FALSE, array($idPerfil));
     if ($tabla === FALSE) {
