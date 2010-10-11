@@ -31,8 +31,8 @@
    $Id: fa.lang,v 1.2 2008/04/21 10:11:44 bmacias@palosanto.com Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Endpoint Configurator" => "تنظیمات تلفن ها",
-"Discover Endpoints in this Network" => "جستجوی تلفن ها",
+"Endpoint Configuration" => "تنظیمات تلفن ها",
+"Discover Endpoints in this Network" => "يافتن تلفن ها در اين شبکه",
 "Display Name" => "نام",
 "MAC Adress" => "آدرس مک شبکه",
 "Phone Type" => "نوع تلفن",
@@ -58,7 +58,7 @@ $arrLangModule=array(
 "No Extensions" => "بدون داخلی",
 "Invalid Format in Parameter" => "پارامتر با ساختار ناشناخته",
 "It can take several minutes, because your ip address has some devices, " => "It can take several minutes, because your ip address has some devices, ",
-"WARNING" => "WARNING",
+"WARNING" => "اخطار",
 "Status" => "وضعیت",
 "ERROR" => "خطا",
 );
