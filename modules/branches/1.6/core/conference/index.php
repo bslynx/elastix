@@ -531,7 +531,7 @@ function show_callers($smarty, $module_name, $local_templates_dir, $pDB, $arrLan
     if(is_array($arrCallers) && count($arrCallers)>0){
         foreach($arrCallers as $key => $caller){
             $arrTmp[0] = $caller['userId'];
-            $arrTmp[1] = $arrDevices[$caller['callerId']];
+            $arrTmp[1] = isset($arrDevices[$caller['callerId']])?$arrDevices[$caller['callerId']]:$caller['callerId'];
             $arrTmp[2] = $caller['duration'];
             $mode = strstr($caller['mode'], "Muted");
             if(!$mode)
