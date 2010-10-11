@@ -27,6 +27,8 @@
   |                                                                      |
   | Translate by: Haamed Kouhfallah                                      |
   | Email: haamed@cytco.net                                              |                                                                    |
+
+
   +----------------------------------------------------------------------+
    $Id: fa.lang,v 1.2 2008/04/21 10:11:44 bmacias@palosanto.com Exp $ */
 global $arrLangModule;
@@ -36,6 +38,6 @@ $arrLangModule=array(
 "Value for Fax Master is not valid" => "مقدار فکس اصلی معتبر نیست",
 "Fax Master Email" => "ایمیل فکس اصلی",
 "Write the email address which will receive the notifications of received messages, errors and activity summary of the Fax Server" => "تعیین یک ایمیل جهت دریافت اعلام فکس جدید، خطاها و یا خلاصه فعالیت های سرور فکس",
-"Error when saving Fax Master" => "Error when saving Fax Master",
+"Error when saving Fax Master" => "خطا هنگام ذخيره فکس اصلي",
 );
 ?>
