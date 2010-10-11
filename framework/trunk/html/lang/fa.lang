@@ -256,6 +256,8 @@ $arrLang=array(
 "Trunks used per hour" => "زمان استفاده از ترانک ها در ساعت",
 "Agents connection time" => "زمان اتصال اپراتورها",
 "Incoming calls monitoring" => "گزارش تماس هاي ورودي",
-
+"VersionPackage" => "Details of package versions",
+"textMode" => "Text Mode",
+"htmlMode" => "Html Mode",
 );
 ?>
