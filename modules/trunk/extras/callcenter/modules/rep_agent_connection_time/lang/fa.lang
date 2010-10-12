@@ -46,5 +46,7 @@ $arrLangModule=array(
 "Status"=>"وضعيت",
 "Validation Error"=>"خطاي اعتبار",
 "The following fields contain errors"=>"فيلدهاي زير داراي خطا هستند",
+"Number Agent" => "Number Agente",
+"Time Total Calls" => "Time Total Calls",
 );
 ?>

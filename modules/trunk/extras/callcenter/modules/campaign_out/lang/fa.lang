@@ -112,5 +112,15 @@ $arrLan=array(
 "Start time" => "تاريخ شروع",
 "End time" => "تاريخ پايان",
 'Max. used channels' => 'ماکزيمم کانال هاي استفاده شده',
+"View" => "View",
+"Activate" => "Activate",
+"Campaign state" => "Campaign state",
+"With selection" => "With selection",
+"Call File" => "Call File",
+"By Dialplan" => "By Dialplan",
+"Manage Trunks" => "Manage Trunks",
+"Manage Queues" => "Manage Queues",
+"Manage Forms" => "Manage Forms",
+
 );
 ?>

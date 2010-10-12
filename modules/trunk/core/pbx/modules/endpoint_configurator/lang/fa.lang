@@ -61,5 +61,6 @@ $arrLangModule=array(
 "WARNING" => "اخطار",
 "Status" => "وضعیت",
 "ERROR" => "خطا",
+"Endpoint Configurator" => "Endpoint Configurator",
 );
 ?>

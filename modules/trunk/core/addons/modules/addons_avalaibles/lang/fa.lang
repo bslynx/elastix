@@ -49,5 +49,8 @@ $arrLangModule=array(
 "Loading" => "بارگيري",
 "Starting" => "شروع...",
 "The system can not connect to the Web Service resource. Please check your Internet connection." => ". سيستم نمي تواند به منابع سرويس تحت وب دسترسي يابد.لطفا اتصال اينترنت خود را چک کنيد",
+"updating_repo" => "Updating REPO",
+"Status" => "Status",
+"There is a facility that awaits confirmation to install NAME, the user who initiated the installation was" => "There is a facility that awaits confirmation to install NAME, the user who initiated the installation was",
 );
 ?>

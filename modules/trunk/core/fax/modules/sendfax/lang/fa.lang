@@ -42,5 +42,6 @@ $arrLangModule=array(
 "Please, select a valid Fax Device" => "لطفا يک دستگاه فکس معتبر انتخاب کنيد",
 "Types of files" => "Types of files supported: ",
 "Fax has been sent correctly" => "Fax has been sent correctly",
+"Wrong type of file" => "Wrong type of file",
 );
 ?>

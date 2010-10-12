@@ -150,5 +150,6 @@ $arrLangModule=array(
 "Name" => "Name",
 "Download" => "Download",
 "Here" => "Here",
+"May" => "May",
 );
 ?>

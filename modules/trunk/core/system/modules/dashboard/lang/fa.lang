@@ -138,5 +138,6 @@ $arrLangModule=array(
 "No Registered" => "ثبت نشد",
 "Cards no found" => "سخت افزار تلفني يافت نشد",
 "Bytes" => "بايت ها",
+"Unknown" => "Unknown",
 );
 ?>

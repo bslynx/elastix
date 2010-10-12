@@ -49,5 +49,6 @@ $arrLan=array(
 "Error when desactivating the Break" => "خطا در هنگام غيرفعال نمودن تنفس",
 "Desactivate"=>"غيرفعال نمودن",
 "Activate"=>"فعال نمودن",
+"Status" => "Status",
 );
 ?>

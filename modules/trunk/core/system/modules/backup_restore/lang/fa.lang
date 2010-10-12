@@ -137,6 +137,7 @@ $arrLangModule=array(
 "wanpipe-util" => "ابزار سنگما",
 "freepbx" => "تنظيمات تلفني",
 "elastix" => "Elastix",
+"Select All options" => "Select All options",
 );
 ?>
 

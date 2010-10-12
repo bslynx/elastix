@@ -88,5 +88,7 @@ $arrLangModule=array(
 'Update'=>'به روز رساني',
 'No Extensions'=>'بدون داخلي',
 'Unselected' => 'انتخاب نشده',
+"Duration" => "Duration",
+
 );
 ?>

@@ -51,5 +51,8 @@ $arrLangModule=array(
 "Queue" => "صف",
 "Group" => "گروه",
 "unknown" => "ناشناخته",
+"Start_Date" => "Start Date",
+"End_Date" => "End Date",
+
 );
 ?>

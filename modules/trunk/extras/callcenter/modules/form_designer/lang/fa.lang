@@ -91,5 +91,6 @@ $arrLan=array(
 "Inactive" => "غيرفعال",
 "View" => "مشاهده",
 "All" => "همه",
+"No Data Found" => "No Data Found",
 );
 ?>
