@@ -150,7 +150,7 @@ $arrLang=array(
 /* Start About Elastix */
 "About Elastix" => "درباره سيتکو",
 "About Elastix2"=>"درباره ما",
-
+"HELP"=>"Help",
 "About Elastix Content" => "این سیستم جامع ارتباطی بر اساس قابلیت اطمینان بالا، کاربری آسان و مدیریت تحت وب طراحی شده و با زبان پارسی و پشتیبانی کامل شرکت سیتکو ارائه می گردد - انجمن و مقالات voip-iran.com ",
 "About Elastix Closed" => "پنجره را ببند",
 /* end  About Elastix */
@@ -256,6 +256,7 @@ $arrLang=array(
 "Trunks used per hour" => "زمان استفاده از ترانک ها در ساعت",
 "Agents connection time" => "زمان اتصال اپراتورها",
 "Incoming calls monitoring" => "گزارش تماس هاي ورودي",
+"VersionDetails" => "Version",
 "VersionPackage" => "Details of package versions",
 "textMode" => "Text Mode",
 "htmlMode" => "Html Mode",
