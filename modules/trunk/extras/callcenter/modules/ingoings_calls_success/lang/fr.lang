@@ -1,13 +1,13 @@
 <?php
 $lang = array(
-"List Calls"     => "Liste Appels",
+"List Calls"     => "Liste des Appels",
 "Queue"          => "File",
 "Successful"     => "R&eacute;ussis",
 "Left"           => "Perdus",
 "Time Hopes"     => "Temps Esp&eacute;r&eacute;",
-"Find"           => "Trouver",
-"Date Init"      => "Date de D&eacute;but",
-"Date End"       => "Date de Fin",
+"Find"           => "Rechercher",
+"Date Init"      => "Du",
+"Date End"       => "Au",
 "Error"          => "Erreur",
 "Error when connecting to database"          => "Erreur de connexion &agrave; la base de donn&eacute;es",
 "Error when creating object paloSantoReportsCalls" => "Erreur en cr&eacute;ant l'objet paloSantoReportsCalls",

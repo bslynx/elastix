@@ -48,23 +48,19 @@ $arrLangModule=array(
 "Time of client refreshment" => "Dur&eacute;e du bail",
 "DHCP Configuration" => "Configuration Server DHCP",
 "Could not find IP range" => "Impossible de trouver l'intervalle IP",
-"DHCP configuration reading error: Verify that the DHCP service is installed and try again." => "Erreur de lecture de configu
-ration DHCP: V&eacute;rifiez que le service DHCP est install&eacute; et essayez de nouveau.",
+"DHCP configuration reading error: Verify that the DHCP service is installed and try again." => "Erreur de lecture de configuration DHCP: V&eacute;rifiez que le service DHCP soit install&eacute; et essayez de nouveau.",
 "Information DHCP" => "Information DHCP",
 "The Service dhcpd can't stop" => "Impossible d'arr&ecirc;ter le service dhcpd",
 "The Service dhcpd can't start" => "Impossible de d&eacute;marrer le service dhcpd",
 "The start IP is outside the LAN network" => "L'adresse IP de d&eacute;part est en dehors du r&eacute;seau local",
 "The final IP is outside the LAN network" => "L'adresse IP de fin est en dehors du r&eacute;seau local",
-"IP Range is invalid for available devices" => "L'intervalle IP est invalide pour les p&eacute;riph&eacute;riques disponibles
-",
+"IP Range is invalid for available devices" => "L'intervalle IP est invalide pour les p&eacute;riph&eacute;riques disponibles",
 "Gateway is outside the LAN network" => "La passerelle est en dehors du r&eacute;seau local",
-"You can only choose between Enabled and Disabled" => "Vous pouvez choisir uniquement Activ&eacute; ou D&eacute;sactiv&eacute
-;",
+"You can only choose between Enabled and Disabled" => "Vous pouvez choisir uniquement Activ&eacute; ou D&eacute;sactiv&eacute;",
 "Value outside the range (1-50000)" => "Valeur en dehors de l'intervalle (1-50000)",
 "Failed to update the file configuration" => "Echec de mise &agrave; jour du fichier de configuration",
-"The update was successful, but was unable to reestablish the permissions of the file dhcp.conf" => "La mise &agrave; jour a
-r&eacute;ussie mais impossible de r&eacute;tablir les permissions du fichier dhcp.conf",
-"Update Error" => "Erreur de Mise &agrave; jour",
+"The update was successful, but was unable to reestablish the permissions of the file dhcp.conf" => "La mise &agrave; jour a r&eacute;ussi mais impossible de r&eacute;tablir les permissions du fichier dhcp.conf",
+"Update Error" => "Erreur de mise &agrave; jour",
 "Status" => "Statut",
 "Inactive" => "Inactif",
 "Information" => "Information",

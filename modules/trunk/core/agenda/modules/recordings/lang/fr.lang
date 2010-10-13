@@ -34,8 +34,8 @@
 global $arrLangModule;
 $arrLangModule=array(
 "Recordings" => "Enregistrements",
-"Record Name" => "Nom d'enregistrement",
-"Record" => "Enregistrement",
+"Record Name" => "Nom du fichier :",
+"Record" => "Enregistrer",
 "Insert the Recording Name" => "Ins&eacute;rez le nom d'enregistrement",
 "The recording couldn't be realized" => "L'enregistrement n'a pas pu &ecirc;tre effectu&eacute;",
 "The recording was saved" => "L'enregistement a &eacute;t&eacute; sauvegard&eacute;",
@@ -44,11 +44,10 @@ $arrLangModule=array(
 "Destiny directory couldn't be created" => "Le r&eacute;pertoire de destination n'a pas pu &ecirc;tre cr&eacute;&eacute;",
 "File Upload" => "Fichier &agrave; envoyer",
 "ERROR" => "ERREUR",
-"You don't have extension number associated with user" => "Vous n'avez aucun num&eacute;ro d'extension associ&eacute; &agrave
-; l'utilisateur.  Click <a href='index.php?menu=userlist'>here</a> to create an extension.",
+"You don't have extension number associated with user" => "Vous n'avez aucun n&deg; d'extension associ&eacute; &agrave; l'utilisateur.  Cliquer <a href='index.php?menu=userlist'>ici</a> pour cr&eacute;er une extension.",
 "The call couldn't be realized" => "L'appel ne peut Ãªtre r&eacute;alis&eacute;.",
 "Error copying the file" => "Erreur de copie de fichier",
 "Message" => "Message",
-"Possible file upload attack" => "Possible file upload attack",
+"Possible file upload attack" => "Possibilité d'attaque du fichier transmis.",
 );
 ?>

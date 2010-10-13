@@ -1,0 +1,90 @@
+<?php
+  /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
+  CodificaciÃ³n: UTF-8
+  +----------------------------------------------------------------------+
+  | Elastix version 1.6-6                                               |
+  | http://www.elastix.org                                               |
+  +----------------------------------------------------------------------+
+  | Copyright (c) 2006 Palosanto Solutions S. A.                         |
+  +----------------------------------------------------------------------+
+  | Cdla. Nueva Kennedy Calle E 222 y 9na. Este                          |
+  | Telfs. 2283-268, 2294-440, 2284-356                                  |
+  | Guayaquil - Ecuador                                                  |
+  | http://www.palosanto.com                                             |
+  +----------------------------------------------------------------------+
+  | The contents of this file are subject to the General Public License  |
+  | (GPL) Version 2 (the "License"); you may not use this file except in |
+  | compliance with the License. You may obtain a copy of the License at |
+  | http://www.opensource.org/licenses/gpl-license.php                   |
+  |                                                                      |
+  | Software distributed under the License is distributed on an "AS IS"  |
+  | basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See  |
+  | the License for the specific language governing rights and           |
+  | limitations under the License.                                       |
+  +----------------------------------------------------------------------+
+  | The Original Code is: Elastix Open Source.                           |
+  | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  +----------------------------------------------------------------------+
+  $Id: en.lang,v 1.1 2009-08-07 01:08:56 Oscar Navarrete onavarrete@palosanto.com Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Host Name" => "Nom d'h&ocirc;te",
+"Remote SMTP Delivery" => "SMTP Distant",
+"Remote SMTP Server" => "Serveur SMTP distant",
+"Port" => "Port",
+"Require authenticate" => "Exiger une authentification",
+"File Name SASL" => "Nom de fichier SASL",
+"User (Email Account)" => "Utilisateur (Compte eMail)",
+"Password (Email Account)" => "Mot de passe (Compte eMail)",
+"Smtp sasl auth enable" => "Smtp sasl auth. valide",
+"Smtp sasl password maps" => "Smtp sasl plan de mot de passe.",
+"Smtp sasl security options" => "Smtp sasl option de s&eacute,cu.",
+"Smtpd tls auth only" => "Smtpd tls auth. seule",
+"Smtp use tls" => "Smtp utilise le tls",
+"Smtpd use tls" => "Smtpd utilise le tls",
+"Smtp tls note starttls offer" => "Smtp tls note le d&eacute;but de l'offre tls",
+"Smtpd tls key file" => "Smtpd tls fichier de clefs.",
+"Smtpd tls cert file" => "Smtpd tls fichier de certificats",
+"Smtp tls CAfile" => "Smtp tls fichier CA",
+"Smtpd tls loglevel" => "Smtpd tls Niveau de log",
+"Smtpd tls received header" => "Smtpd tls en-t&ecirc;te re&çcedil;u",
+"Smtpd tls session cache timeout" => "Smtpd tls session cache timeout",
+"Tls random source" => "Tls source aléatoire",
+"Tls daemon random source" => "Tls daemon de source aléatoire.",
+
+"Broken sasl auth clients" => "Broken sasl auth clients",
+"Smtpd sasl auth enable" => "Smtpd sasl auth enable",
+"Smtp always send ehlo" => "Smtp always send ehlo",
+
+"Result transaction" => "R&eacute;sultat de la transaction.",
+"Configured successful" => "Configur&eacute; avec succ&egrave;s",
+"Pass phrase for smtpd" => "Pass phrase pour smtpd",
+"Country Name (2 letter code)" => "Nom de pays (en 2 lettres)",
+"State or Province Name" => "Etat ou nom de province",
+"Locality Name" => "Nom de la localit&eacute;",
+"Organization Name" => "Nom d'organisation",
+"Organizational Unit Name" => "Nom d'OU",
+"Common Name" => "Nom commun",
+"Autentification" => "Autentification",
+"CertPassword" => "CertPassword",
+"Country" => "Country",
+"Province" => "Province",
+"Locality" => "Locality",
+"Organization" => "Organization",
+"Organization Deparment" => "Organization Deparment",
+"Enable" => "Enable",
+"Disable" => "Disable",
+"Enabled" => "Enabled",
+"Disabled" => "Disabled",
+"Save/Update" => "Save/Update",
+"Status" => "Status",
+"Invalid file extension.- It must be pem" => "Invalid file extension.- It must be pem",
+"Message Remote SMTP Server" => "<p>The Remote SMTP Server parameter specifies the default host to send mail. In the case of SMTP, specify a domain, host, [host] or [address]; the form [host] turns off MX lookups.<br /><br />
+            Remote SMTP Server = [gateway.my.domain]<br />
+            Remote SMTP Server = [mailserver.isp.tld]<br />
+            Remote SMTP Server = uucphost<br />
+            Remote SMTP Server = [an.ip.add.ress]</p>",
+"Message Remote Autentification" => "This option allows the autentification with certificates.",
+"Message Remote SMTP Cert" => "To enable the certificates option is neccesary to specify the required fields",
+);
+?>

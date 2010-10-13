@@ -60,6 +60,8 @@ $arrLang=array(
 "Welcome to Elastix"=>"Bienvenue sur Elastix",
 "Please enter your username and password"=>"Veuillez entrer votre nom d'utilisateur et votre mot de passe",
 "Username"=>"Nom d'utilisateur",
+"Name" => "Nom",
+"Retype password" => "Retapez le mot de passe",
 "Password"=>"Mot de passe",
 "Submit"=>"Envoyer",
 "Login page"=>"Page de connexion",
@@ -110,11 +112,11 @@ $arrLang=array(
 /*end user*/
 
 /*system - date/time*/
-"Date/Time"  =>  "Date/Temps",
+"Date/Time"  =>  "Date & Heure",
 /*end system - date/time*/
 
 /*load module*/
-"Load Module"  =>  "Chargement Module",
+"Load Module"  =>  "Chargement de Modules",
 "ID for new module (folder name)"  =>  "ID pour nouveau module (nom dossier)",
 "Choose Menu"  =>  "Choisir Menu",
 "ID for new menu"  =>  "ID pour nouveau menu",
@@ -139,8 +141,6 @@ $arrLang=array(
 "IM" => "IM",
 "OpenFire" => "OpenFire",
 "The service Openfire No running" => "Le service Openfire n'est pas actif actuellement. Si vous voulez l'activer veuillez ",
-"Webmin" => "Webmin",
-"The service Webmin No running" => "The Webmin service is not active at this moment. If you want to activate it please ",
 
 /*vTigerCRM*/
 "vTigerCRM" => "vTigerCRM",
@@ -158,8 +158,6 @@ r la finir veuillez ",
 
 /* Start About Elastix */
 "About Elastix"=>"A propos d'Elastix",
-"About Elastix2"=>"About us",
-"HELP"=>"Help",
 "About Elastix Content"=>"Elastix a &eacute;t&eacute; cr&eacute;&eacute; dans le but de devenir un syst&egrave;me bas&eacute; web fiable, facile &agrave; utiliser pour la gestion des communications VOIP. Ce logiciel open
 source qui a d&eacute;marr&eacute; en Equateur est devenu la solution de choix pour l'impl&eacute;mentation
 de Voix sur IP tout autour du globe.",
@@ -183,11 +181,124 @@ de Voix sur IP tout autour du globe.",
 "Title" => "Title",
 "Search" => "Search",
 "Show"   => "Show",
-'md_message_title' => 'Dismiss',
+
+"Network Parameters" => "Param&egrave;tres R&eacute;seau",
+"DHCP Server" => "Seveur DHCP",
+
+"Repositories" => "D&eacute;p&ocirc;ts",
+"Currency" => "Devises",
+
+/** Call Center **/
+"Outgoing Calls" => "Campagne d'appels",
+"Ingoing Calls" => "File d'Attente",
+"Breaks" => "Pauses",
+"Reports" => "Rapports",
+"Forms" => "Formulaires",
+"Campaigns" => "Campagnes",
+"Do not Call List" => "&Agrave; ne pas appeller",
+"Form Designer" => "Conception de formulaire",
+"Form Preview" => "Aper&ccedil;u du formulaire",
+"Reports Break" => "Rapports Pauses",
+"Calls Detail" => "Appels D&eacute;taill&eacute;",
+"Calls per hour" => "Appels / heure",
+"Calls per Agent" => "Appels par Agent",
+"Agent Console" => "Console Agent",
+"Hold Time" => "Temps d'attente",
+"Login Logout" => "Connexion D&eacute;connexion",
+"Ingoing Calls Success" => "Appels R&eacute;ussis",
+"Graphic Calls per hour" => "Graphique Appels / heure",
+"wallboard" => "Barom&egrave;tre",
+"Queues" => "Files d'Attente",
+
+"Dashboard" => "Tableau de bord",
+"Network" => "R&eacute;seau",
+"Shutdown" => "Arr&ecirc;t Machine",
+"Hardware Detection" => "D&eacute;tection Mat&eacute;riel",
+"Updates" => "Mises &agrave; jour",
+"Backup/Restore" => "Sauvegarde\nRestauration",
+
+"PBX Configuration" => "Configuration PBX",
+"Flash Operator Panel" => "Panneau Op&eacute;rateur",
+"Voicemails" => "Bo&icirc;tes\nVocales",
+"Monitoring" => "Contr&ocirc;le\ndes Conversations",
+"Endpoint Configuration" => "Configuration\nDes Postes",
+"Conference" => "Conf&eacute;rence",
+"Extensions Batch" => "Extensions\nPar Lots",
+"Tools" => "Outils",
+
+"Virtual Fax List" => "Liste des Fax Virtuels",
+"New Virtual Fax" => "Nouveau Fax Virtuel",
+"Fax Master" => "Gestionnaire des Fax",
+"Fax Clients" => "Clients Fax",
+"Fax Visor" => "Visualiseur de Fax",
+"Template Email" => "Mod&egrave;le de Fax",
+
+"Domains" => "Domaines",
+"Accounts" => "Comptes",
+"Relay" => "Relais",
+"Webmail" => "Webmail",
+"Antispam" => "Antispam",
+
+"CDR Report" => "Rapports d'appels",
+"Channels Usage" => "Utilisation des Canaux",
+"Billing" => "Facturation",
+"Asterisk Logs" => "Logs Asterisk",
+"Graphic Report" => "Rapport graphique",
+"Summary by Extension" => "R&eacute;sum&eacute; par extension",
+
+"Rates" => "Tarifs",
+"Billing Report" => "Rapport de Facturation",
+"Destination Distribution" => "R&eacute;partition par Destination",
+"Billing Setup" => "Config Facturation",
+
+"Calling Cards" => "Taxation",
+"Downloads" => "T&eacute;l&eacute;chargements",
+"Text to Wav" => "Du Text\nEn Wav",
+
+"Calendar" => "Calendrier",
+"Address Book" => "Carnet d'Adresses",
+"Recordings" => "Enregistrements",
+
+"File Editor" => "Editeur de fichier",
+
+"Fax Utilities" => "Utilistaire Fax",
+"Instant Messaging" => "Messagerie Isntantan&eacute;e",
+"Build Module" => "Cr&eacute;er un Module",
+"Delete Module" => "Effacer un Module",
+"Language Admin" => "Gestion des langues",
+
+"Addons" => "Add-on",
+"Developer" => "D&eacute;veloppeur",
+"Installed" => "Install&eacute;",
+"Availables" => "Disponible",
+
+"Applet Admin" => "Gestion des Applets",
+"Control Panel" => "Panneau de contr&ocirc;le",
+"DHCP By MAC" => "DHCP par MAC",
+"DHCP Client List" => "Liste Clients DHCP",
+"Endpoint Configurator" => "Configuration Terminal",
+"Extensions Batch" => "Extensions par lot",
+"Fax Viewer" => "Visualisation de Fax",
+"Asterisk File Editor" => "Editeur de fichiers Asterisk",
+"Form Designer" => "Concepteur du formulaire",
+"Hardware Detector" => "D&eacute;tection Mat&eacute;riel",
+"operator" => "operator",
+"File install.php doesn't exist in module file" => "File install.php doesn't exist in module file",
+"Webmin" => "Webmin",
+"The service Webmin No running" => "The Webmin service is not active at this moment. If you want to activate it please ",
+"About Elastix2" => "About us",
+"HELP" => "Help",
+"View" => "View",
+"Status" => "Status",
+"Type" => "Type",
+"Active" => "Active",
+"Filter" => "Filter",
+"md_message_title" => "Dismiss",
 "ERROR" => "Error",
 "VersionDetails" => "Version",
 "VersionPackage" => "Details of package versions",
 "textMode" => "Text Mode",
 "htmlMode" => "Html Mode",
+
 );
 ?>

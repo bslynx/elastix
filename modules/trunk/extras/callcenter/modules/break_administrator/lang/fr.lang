@@ -31,24 +31,25 @@ $arrLan=array(
 "Name Break" => "Nom",
 "Description Break" => "Description",
 "New Break" => "Nouvelle Pause",
-"View Break" => "Voir Pause",
-"Edit Break" => "Editer Pause",
+"View Break" => "Voir",
+"Edit Break" => "Editer une Pause",
 "Active" => "Active",
 "Inactive" => "Inactive",
-"Breaks List" => "Liste Pauses",
+"Breaks List" => "Liste des Pauses",
 "Name Break" => "Nom",
 "Description Break" => "Description",
-"Create New Break" => "Cr&eacute;er Nouvelle Pause",
+"Create New Break" => "Nouvelle Pause",
 "Error when Activating the Break" => "Erreur en activant la Pause",
 "Activate Error" => "Erreur d'Activation", //Bruno agrego
 "Break ID is not valid" => "ID Pause non valide",
-"Name Break can't be empty" => "Le Nom pause ne peut pas &ecirc;tre vide",
-"Name Break already exists" => "Le Nom de Pause existe d&eacute;j&agrave;",
+"Name Break can't be empty" => "Le nom de la pause ne peut pas &ecirc;tre vide",
+"Name Break already exists" => "Le nom de la pause existe d&eacute;j&agrave;",
 "Id Break is empty" => "Id Pause vide",
 "Desactivate Error" => "Erreur de D&eacute;sactivation", //Bruno agrego
 "Error when desactivating the Break" => "Erreur en d&eacute;sactivant la Pause",
 "Desactivate"=>"D&eacute;sactiver",
 "Activate"=>"Activer",
+"Status" => "Status",
 );
 
 

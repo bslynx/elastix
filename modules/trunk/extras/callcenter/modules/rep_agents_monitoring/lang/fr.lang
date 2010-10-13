@@ -28,19 +28,19 @@
   $Id: fr.lang,v 1.1.1.1 2009/07/27 09:10:19 dlopez Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Agents Monitoring" => "Agents Monitoring",
-"Queue" => "Queue",
+"Agents Monitoring" => "Contr&ocirc;le des Agents",
+"Queue" => "File",
 "Agent" => "Agent",
-"Current status" => "Current status",
-"Total calls" => "Total calls",
-"Total login time" => "Total login time",
-"Total talk time" => "Total talk time",
-"No registered" => "No registered",
-"LOGOUT" => "LOGOUT",
+"Current status" => "Etat Actuel",
+"Total calls" => "Total des appels",
+"Total login time" => "Dur&eacute;e Totale login",
+"Total talk time" => "Total temps de parole",
+"No registered" => "Non enregistr&eacute;",
+"LOGOUT" => "Logout",
 "Agent" => "Agent",
 "Agents" => "Agents",
 "Total" => "Total",
-"Number" => "Number",
+"Number" => "N&deg;",
 
 
 );?>

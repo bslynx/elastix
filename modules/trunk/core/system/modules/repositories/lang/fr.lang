@@ -33,9 +33,9 @@
   $Id: fr.lang,v 1.8 2008/05/20 00:36:42 bmacias Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Repositories" => "Installateurs",
-"Active" => "Active",
+"Repositories" => "D&eacute;p&ocirc;ts",
+"Active" => "Actif",
 "Name" => "Nom",
-"Save/Update" => "Save/Update",
+"Save/Update" => "Sauver / Mettre &agrave; jour",
 );
 ?>

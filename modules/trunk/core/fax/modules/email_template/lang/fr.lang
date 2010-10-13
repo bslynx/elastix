@@ -36,9 +36,9 @@ $arrLangModule=array(
 "Template Email" => "Gabarit Email",
 "Fax From" => "Fax de",
 "Fax From Name" => "Fax de (Nom)",
-"Fax Suject" => "Sujet Fax",
-"Fax Content" => "Contenu Fax",
-"Configuration Sending Fax Mail" => "Configuration Email d'envoi de Fax",
-"Edit Parameters" => "Editer Param&egrave;tres",
+"Fax Suject" => "Sujet du Fax",
+"Fax Content" => "Contenu du Fax",
+"Configuration Sending Fax Mail" => "Configuration Email pour l'envoi de Fax",
+"Edit Parameters" => "Editer les Param&egrave;tres",
 );
 ?>

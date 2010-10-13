@@ -1,11 +1,11 @@
 <?php
-/* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
+  /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.0-17                                               |
+  | Elastix version 1.5.2-2                                               |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
-  | Copyright (c) 2008 Palosanto Solutions S. A.                         |
+  | Copyright (c) 2006 Palosanto Solutions S. A.                         |
   +----------------------------------------------------------------------+
   | Cdla. Nueva Kennedy Calle E 222 y 9na. Este                          |
   | Telfs. 2283-268, 2294-440, 2284-356                                  |
@@ -25,31 +25,30 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: fr.lang,v 1.3 2008/05/20 00:31:28 jmartinez Exp $ */
-global $arrLan;
-$arrLan=array(
-"Hold Time"             => "Temps de prise",
-"Cola"                  => "File",
-"date"                  => "Date",
-"query"                 => "Chercher",
-"Debe ingresar una fecha valida"                => "Vous devez entrer une date valide",
-"Debe ingresar una fecha inicio/fin"            => "Vous devez entrer une date",
-"Error"                             => "Erreur",
-"Find"                              => "Rechercher",
-"Date Init"                         => "Du",
-"Date End"                          => "Au",
-"Tipo"                              => "Type",
-"Estado"                            => "Etat",
-"Ingoing"                           => "Entrant",
-"Outgoing"                          => "Sortant",
-"Todas"                             => "Tous",
-"Exitosas"                          => "R&eacute;ussis",
-"Abandonadas"                       => "Perdus",
-"No Realizadas"                     => "Non R&eacute;alis&eacute;s",
-
-"Total Calls" => "Total des Appels",
-"Total" => "Total",
-"Tiempo Promedio Espera(Seg)" => "Temps d'Attente Moyen (Seg)",
-"Espera Mayor(seg)" => "Meilleure Attente",
+  $Id: en.lang,v 1.1 2009-09-29 05:09:50 Oscar Navarrete onavarrete@palosanto.com Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"VoIP Provider" => "Op&eacute;rateur VoIP",
+"Username" => "Nom d'utilisateur",
+"Secret" => "Code secret",
+"Configuration" => "Configuration",
+"Type" => "Type",
+"Qualify" => "Qualify",
+"Insecure" => "Insecure",
+"Host" => "Host",
+"Fromuser" => "Fromuser",
+"Fromdomain" => "Fromdomain",
+"Dtmfmode" => "Dtmfmode",
+"Disallow" => "Disallow",
+"Context" => "Context",
+"Allow" => "Allow",
+"Trustrpid" => "Trustrpid",
+"Sendrpid" => "Sendrpid",
+"Canreinvite" => "Canreinvite",
+"none" => "aucun",
+"General_Setting" => "Param&egrave;tres G&eacute;n&eacute;raux",
+"PEER_Details" => "D&eacute;tailles du Peer",
+"Please select a type of VoIp Provider" => "S'il vous pla&icirc;t. S&eacute;lectionnez un type d'op&eacute;rateur VoIp",
+"Some or someone necesary fields are empty please check and complete" => "Un ou plusieurs champs obligatoire sont vides. V&eacute;rifiez les et compl&eacute;tez les.",
 );
 ?>

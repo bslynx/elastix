@@ -63,5 +63,8 @@ $arrLan=array(
 'Disconnect' => 'D&eacute;connexion',
 "The passwords aren't numeric values" => "Les mots de passe ne sont pas des valeurs num&eacute;riques.",
 "The passwords are empty or don't match" => "Les mots de passe sont vides ou ne sont pas identique.",
+"To rapair is necesary delete agent from configuration file. Do you want to continue?" => "To repair, it is necessary to delete the agent from the configuration file. Continue?",
+"To rapair is necesary add an agent in configuration file. Do you want to continue?" => "To repair, it is necessary to add the agent to the configuration file. Continue?",
+
 );
 ?>

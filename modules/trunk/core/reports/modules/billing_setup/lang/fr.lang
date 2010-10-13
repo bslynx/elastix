@@ -37,7 +37,7 @@ $arrLangModule=array(
 "Default Rate Configuration" => "Configuration du tarif par d&eacute;faut",
 "Default Rate" => "Tarif par d&eacute;faut",
 "Default Rate Offset" => "Tarif de connexion par d&eacute;faut",
-"Trunk Bill Configuration" => "Configuration des troncs de facturation",
-"Trunk" => "Tronc",
+"Trunk Bill Configuration" => "Configuration des Trunks Facturables",
+"Trunk" => "Trunk",
 );
 ?>

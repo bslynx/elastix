@@ -1,0 +1,60 @@
+<?php
+/* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
+  Codificación: UTF-8
+  +----------------------------------------------------------------------+
+  | Elastix version 1.0                                                  |
+  | http://www.elastix.org                                               |
+  +----------------------------------------------------------------------+
+  | Copyright (c) 2006 Palosanto Solutions S. A.                         |
+  +----------------------------------------------------------------------+
+  | Cdla. Nueva Kennedy Calle E 222 y 9na. Este                          |
+  | Telfs. 2283-268, 2294-440, 2284-356                                  |
+  | Guayaquil - Ecuador                                                  |
+  | http://www.palosanto.com                                             |
+  +----------------------------------------------------------------------+
+  | The contents of this file are subject to the General Public License  |
+  | (GPL) Version 2 (the "License"); you may not use this file except in |
+  | compliance with the License. You may obtain a copy of the License at |
+  | http://www.opensource.org/licenses/gpl-license.php                   |
+  |                                                                      |
+  | Software distributed under the License is distributed on an "AS IS"  |
+  | basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See  |
+  | the License for the specific language governing rights and           |
+  | limitations under the License.                                       |
+  +----------------------------------------------------------------------+
+  | The Original Code is: Elastix Open Source.                           |
+  | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  |                                                                      |
+  | Translate by: Bruno Macias                                           |
+  | Email: bmacias@palosanto.com                                         |
+  +----------------------------------------------------------------------+
+  $Id: en.lang,v 1.7 2008/02/18 09:49:00 bmacias Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Accounts"=>"Comptes",
+"Email Account List"=>"Liste des comptes Mail",
+"Create Account"=>"Cr&eacute;er un compte",
+"Select a domain"=>"S&eacute;lectionner un Domaine",
+"Email Address"=>"Adresse Mail",
+"Account Name"=>"Nom du Compte",
+"Used Space"=>"Espace utilis&eacute;",
+"Options"=>"Options",
+"New Email Account"=>"Nouveau compte Mail",
+"Quota (Kb)"=>"Quota (Ko)",
+"The e-mail address already exists"=>"L'adresse mail existe d&eacute;j&agrave;!",
+"View Account"=>"Visualisation du compte",
+"Edit Account"=>"Edition du compte",
+"Retype password" => "Retaper le mot de passe",
+"Domain" => "Domaine",
+"Show" => "Voir",
+"Error" => "Erreur",
+"EDITABLE" => "EDITABLE",
+"Error deleting user accounts from system"=>"Erreur lors de l'effacement du compte du syst&egrave;",
+"Error deleting user accounts"=>"Erreur lors de l'effacement du compte utilisateur.",
+"Error deleting record from table domain"=>"Erreur lors de l'effacement de l'enregistrement de la table des domaines.",
+"You must select a domain to create an account" => "Vous devez s&eacute;lectionner un domaine pour cr&eacute;er un compte.",
+"Could not query used disc space" => "N'a pas pu affecter l'espace utilis&eacute;.",
+"The passwords are empty or don't match" => "Les mots de passe sont vides ou ne sont pas indentiques.",
+"The passwords don't match" => "Les mots de passe ne sont pas indentiques.",
+);
+?>

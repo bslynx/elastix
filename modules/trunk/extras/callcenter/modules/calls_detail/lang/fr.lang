@@ -1,13 +1,13 @@
 <?php
 global $arrLan;
 $arrLan = array(
-    "Calls Detail"  => "D&eacute;tails Appels",
-    "Start Date"    => "Date de D&eacute;but",
-    "End Date"      => "Date de Fin",
-    "Start Time"    => "Heure de D&eacute;but",
-    "End Time"      => "Heure de Fin",
+    "Calls Detail"  => "D&eacute;tails des Appels",
+    "Start Date"    => "Du",
+    "End Date"      => "Au",
+    "Start Time"    => "&agrave;",
+    "End Time"      => "&agrave;",
     "Query"         => "Filtrer",
-    "No.Agent"      => "No. Agent",
+    "No.Agent"      => "N&deg; d'Agent",
     "Agent"         => "Agent",
     "Queue"         => "File",
     "Type"          => "Type",
@@ -25,14 +25,15 @@ $arrLan = array(
     "Status" => "Statut",
     "Success" => "Succ&egrave;",
     "Abandoned" => "Abandonn&eacute;",
-    "End Monitor" => "End Monitor",
-    "Failure" => "Failure",
+    "End Monitor" => "Surveillance Fini",
+    "Failure" => "&Eacute;chec",
     "NoAnswer" => "Sans r&eacuteponse",
     "OnQueue" => "Dans la file",
     "Placing" => "Placé",
     "Ringing" => "En sonnerie",
     "ShortCall" => "Appel court",
     "Duration Wait" => "Dur&eacute;e d'attente",
+    "Filter" => "Filter",
 /**/
 
 );

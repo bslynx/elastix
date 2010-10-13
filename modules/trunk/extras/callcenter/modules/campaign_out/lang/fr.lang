@@ -30,7 +30,7 @@ global $arrLan;
 $arrLan=array(
 "Outgoing Campaigns" => "Campagnes Sortantes",
 "Campaigns" => "Campagnes",
-"Estado" => "Etat",
+"Estado" => "&Eacute;tat",
 "New Campaign" => "Nouvelle Campagne",
 "Campaigns List" => "Liste des Campagnes",
 "View Campaign" => "Voir Campagne",

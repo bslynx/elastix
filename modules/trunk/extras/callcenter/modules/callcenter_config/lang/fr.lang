@@ -48,9 +48,9 @@ $arrLangModule=array(
 "Start" => "Demarrer",
 "Stop" => "Stoper",
 "Internal DB error" => "Erreur interne de la base de donn&eacute;es",
-"Dialer Status" => "Etat du num&eacute;roteur",
-"Current Status" => "Etat actuel",
-"Enable overcommit of outgoing calls" => "Enable overcommit of outgoing calls",
+"Dialer Status" => "&Eacute;tat du num&eacute;roteur",
+"Current Status" => "&Eacute;tat actuel",
+"Enable overcommit of outgoing calls" => "Autoriser le d&eacute;passement d'appels sortants",
 "AMI Session Duration" => "Dur&eacute;e de la session AMI. (0 pour une session permanente)",
 "Service percent" => "Pourcentage de service",
 );

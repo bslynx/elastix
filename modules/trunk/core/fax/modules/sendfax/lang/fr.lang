@@ -1,11 +1,11 @@
 <?php
-/* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
+  /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.0-17                                               |
+  | Elastix version 2.0.0-7                                               |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
-  | Copyright (c) 2008 Palosanto Solutions S. A.                         |
+  | Copyright (c) 2006 Palosanto Solutions S. A.                         |
   +----------------------------------------------------------------------+
   | Cdla. Nueva Kennedy Calle E 222 y 9na. Este                          |
   | Telfs. 2283-268, 2294-440, 2284-356                                  |
@@ -25,31 +25,23 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: fr.lang,v 1.3 2008/05/20 00:31:28 jmartinez Exp $ */
-global $arrLan;
-$arrLan=array(
-"Hold Time"             => "Temps de prise",
-"Cola"                  => "File",
-"date"                  => "Date",
-"query"                 => "Chercher",
-"Debe ingresar una fecha valida"                => "Vous devez entrer une date valide",
-"Debe ingresar una fecha inicio/fin"            => "Vous devez entrer une date",
-"Error"                             => "Erreur",
-"Find"                              => "Rechercher",
-"Date Init"                         => "Du",
-"Date End"                          => "Au",
-"Tipo"                              => "Type",
-"Estado"                            => "Etat",
-"Ingoing"                           => "Entrant",
-"Outgoing"                          => "Sortant",
-"Todas"                             => "Tous",
-"Exitosas"                          => "R&eacute;ussis",
-"Abandonadas"                       => "Perdus",
-"No Realizadas"                     => "Non R&eacute;alis&eacute;s",
-
-"Total Calls" => "Total des Appels",
-"Total" => "Total",
-"Tiempo Promedio Espera(Seg)" => "Temps d'Attente Moyen (Seg)",
-"Espera Mayor(seg)" => "Meilleure Attente",
+  $Id: en.lang,v 1.1 2009-12-14 02:12:12 Oscar Navarrete J. onavarrete@palosanto.com Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Send Fax" => "Emettre un Fax",
+"Destination fax numbers" => "N&deg; Fax destinataire",
+"Fax Device to use" => "Fax &agrave; utiliser",
+"Text to FAX" => "Texte",
+"Send" => "Emettre",
+"Select the files to FAX" => "Selectionner le fichier pour le Fax",
+"File Upload" => "Fichier &agrave; &eacute;mettre",
+"Text Information" => "Information Texte",
+"Select a Fax Device" => "Selectionner un &eacute;quipement Fax",
+"File to upload is empty" => "Le fichier &agrave; transmettre est vide!",
+"Text to send is empty" => "Le texte &agrave; &eacute;mettre est vide",
+"Please, select a valid Fax Device" => "S&eacute;lectionner un &eacute;quipement Fax valide.",
+"Wrong type of file" => "Wrong type of file",
+"Types of files" => "Types of files supported: ",
+"Fax has been sent correctly" => "Fax has been sent correctly",
 );
 ?>

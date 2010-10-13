@@ -2,7 +2,7 @@
   /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.5.2-3.1                                               |
+  | Elastix version 2.0.0-15                                               |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,20 +25,48 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: fr.lang,v 1.1.1.1 2009/07/27 09:10:19 dlopez Exp $ */
+  $Id: en.lang,v 1.1 2010-03-06 11:03:53 Eduardo Cueva ecueva@palosanto.com Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Reporte de Troncales usadas por Hora en el dia" => "Trunks utils&eacute; par heure",
-"Time Period " => "Dur&eacute;e de la p&eacute;riode ",
-"Entered" => "Re&ccedil;u",
-"Answered" => "R&eacute;pondu",
-"Abandoned" => "Abandonn&eacute;",
-"In queue" => "Dans la file",
-"Without monitoring " => "Sans Contr&ocirc;le ",
-"Queue" => "File",
-"Start date" => "Du",
-"End date" => "Au",
-"Total" => "Total",
-"Trunk"=>"Trunk",
+"Addons Modules" => "Modules Add-on",
+"texto1" => "texto1",
+"select1" => "select1",
+"textarea1" => "textarea1",
+"checkbox1" => "checkbox1",
+"file1" => "file1",
+"prueba" => "prueba",
+/////
+"Installed" => "Install&eacute;",
+"Updates" => "Mise &agrave; jour",
+"Downloaded" => "T&eacute;l&eacute;charg&eacute;",
+"Availables" => "Disponible",
+"Admin" => "Administration des Add-on",
+"Actual Progress" => "Progression actuelle",
+"Total Progress" => "Progrssion Totale",
+"Percent_loaded" => "Pourcentage de chargement",
+"name" => "Nom",
+"action" => "Action",
+"of" => "De",
+"status" => "Etat",
+"downloading" => "En  cours de t&eacute;l&eacute;chargement",
+"downloaded" => "T&eacute;l&eacute;charg&eacute;",
+"installing" => "En cour d'installation",
+"installed" => "Install&eacute;",
+"removing" => "En cour de suppression",
+"removed" => "Supprim&eacute;",
+"waiting" => "En Attente",
+"no_process" => "Aucun process d'installation en cour",
+"view_details" => "Voir les d&eacute;tails",
+"process_installed" => "Process install&eacute;",
+"name" => "Nom",
+"version" => "Version",
+"release" => "mise &agrave; jour",
+"developed_by" => "D&eacute;velopp&eacute; par",
+"Show" => "Voir",
+"addons_installed" => "Add-on Install&eacute;",
+"Options" => "Options",
+"Delete" => "Effacer",
+"Update" => "Mise &agrave; jour",
+"The system can not connect to the Web Service resource. Please check your Internet connection." => "The system can not connect to the Web Service resource. Please check your Internet connection.",
 );
 ?>

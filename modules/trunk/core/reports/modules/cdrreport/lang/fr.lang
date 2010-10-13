@@ -33,12 +33,12 @@
   $Id: fr.lang,v 1.8 2008/05/20 00:36:42 bmacias Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Start Date" => "Date de d&eacute;but",
-"End Date" => "Date de fin",
+"Start Date" => "Du",
+"End Date" => "Au",
 "Field Name" => "Nom du champ",
 "Field" => "Champ",
-"CDR Report List" => "CDR Report",
-"Account Code" => "Code Compte",
+"CDR Report List" => "Rapport d'appels",
+"Account Code" => "Centre de co&ucirc;ts",
 "Date" => "Date",
 "Source" => "Source",
 "Destination" => "Destination",
@@ -46,13 +46,13 @@ $arrLangModule=array(
 "Dst. Channel" => "Canal Dst.",
 "Duration" => "Dur&eacute;e",
 "Filter" => "Filtre",
-"Are you sure you wish to delete CDR(s) Report(s)?" => "Etes vous s&ucirc;r de vouloir effacer le(s) Rapport(s) CDR?",
+"Are you sure you wish to delete CDR(s) Report(s)?" => "&Ecirc;tes vous s&ucirc;r de vouloir effacer ces donn&eacute;es du rapport ?",
 "Status" => "Statut",
-"ALL" => "ALL",
-"ANSWERED" => "ANSWERED",
-"BUSY" => "BUSY",
-"FAILED" => "FAILED",
-"NO ANSWER" => "NO ANSWER",
-"Delete" => "Delete the CDRs in this Report",
+"ALL" => "Tout",
+"ANSWERED" => "R&eacute;pondu",
+"BUSY" => "Occup&eacute;",
+"FAILED" => "Manqu&eacute;",
+"NO ANSWER" => "Non r&eacute;pondu",
+"Delete" => "Effacer",
 );
 ?>

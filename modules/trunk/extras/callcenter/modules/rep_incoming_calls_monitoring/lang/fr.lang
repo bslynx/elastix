@@ -28,13 +28,13 @@
   $Id: fr.lang,v 1.1.1.1 2009/07/27 09:10:19 dlopez Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Incoming calls monitoring" => "Incoming calls monitoring",
-"Queue" => "Queue",
-"Entered" => "Entered",
-"Answered" => "Answered",
-"Abandoned" => "Abandoned",
-"Waiting calls" => "Waiting calls",
-"Without monitoring" => "Without monitoring",
+"Incoming calls monitoring" => "Contr&ocirc;le appels entrants",
+"Queue" => "File",
+"Entered" => "Re&ccedil;u",
+"Answered" => "R&eacute;pondu",
+"Abandoned" => "Abandonn&eacute;",
+"Waiting calls" => "En attente d'appel",
+"Without monitoring" => "Sans contr&ocirc;le",
 "Total" => "Total",
 
 );

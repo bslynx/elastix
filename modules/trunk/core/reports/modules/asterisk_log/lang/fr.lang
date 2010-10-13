@@ -33,9 +33,9 @@
   $Id: fr.lang,v 1.8 2008/05/20 00:36:42 bmacias Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Search string" => "Search string",
+"Search string" => "Chaine Sp&eacute;cifique",
 "Search" => "Chercher",
-"Search next" => "Search next",
+"Search next" => "Suite",
 "offset" => "Offset",
 "Asterisk Logs" => "Traces Asterisk",
 "Date" => "Date",

@@ -1,11 +1,11 @@
 <?php
-/* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
+  /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.0-17                                               |
+  | Elastix version 1.4-1                                               |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
-  | Copyright (c) 2008 Palosanto Solutions S. A.                         |
+  | Copyright (c) 2006 Palosanto Solutions S. A.                         |
   +----------------------------------------------------------------------+
   | Cdla. Nueva Kennedy Calle E 222 y 9na. Este                          |
   | Telfs. 2283-268, 2294-440, 2284-356                                  |
@@ -25,31 +25,30 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: fr.lang,v 1.3 2008/05/20 00:31:28 jmartinez Exp $ */
-global $arrLan;
-$arrLan=array(
-"Hold Time"             => "Temps de prise",
-"Cola"                  => "File",
-"date"                  => "Date",
-"query"                 => "Chercher",
-"Debe ingresar una fecha valida"                => "Vous devez entrer une date valide",
-"Debe ingresar una fecha inicio/fin"            => "Vous devez entrer une date",
-"Error"                             => "Erreur",
-"Find"                              => "Rechercher",
-"Date Init"                         => "Du",
-"Date End"                          => "Au",
-"Tipo"                              => "Type",
-"Estado"                            => "Etat",
-"Ingoing"                           => "Entrant",
-"Outgoing"                          => "Sortant",
-"Todas"                             => "Tous",
-"Exitosas"                          => "R&eacute;ussis",
-"Abandonadas"                       => "Perdus",
-"No Realizadas"                     => "Non R&eacute;alis&eacute;s",
+  $Id: en.lang,v 1.1 2009-01-06 09:01:38 jvega jvega@palosanto.com Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"Summary by Extension" => "R&eacute;sum&eacute; par extension",
+"Start date" => "Du",
+"End date" => "Au",
+"Extension"=>"Extension",
+"User name"=>"Utilisateur",
+"Sec. Outgoing Calls"=>"Dur&eacute;e Comm. sortantes",
+"Sec. Incoming Calls"=>"Dur&eacute;e Appels entrants",
+"Num. Outgoing Calls"=>"Nb de Comm. Sortantes",
+"Num. Incoming Calls"=>"Nb d'Appels Entrants",
+"Call Details" => "D&eacute;tails",
+"Top 10 (Outgoing) ext" => "Top 10 (Sortant) ext",
+"Top 10 (Incoming) ext" => "Top 10 (Entrant) ext",
+"Filter by" => "Filtrage par",
+"User" => "Utilisateurs",
+"seconds" => "secondes",
+"Other calls" => "Autres appels",
+"External #" => "N&deg; externe",
+"calls" => "appels",
+"call" => "appel",
+"No data to display" => "Pas de donnee a afficher",
+"Show" => "Voir",
 
-"Total Calls" => "Total des Appels",
-"Total" => "Total",
-"Tiempo Promedio Espera(Seg)" => "Temps d'Attente Moyen (Seg)",
-"Espera Mayor(seg)" => "Meilleure Attente",
 );
 ?>

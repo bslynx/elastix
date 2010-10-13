@@ -55,5 +55,10 @@ $arrLan=array(
 "Todas" => "Tout",
 "Exitosas" => "Répondu",
 "Abandonadas" => "Abandonné",
+"Completed" => "Completed",
+"Abandoned" => "Abandoned",
+"No answer/Short call" => "No answer/Short call",
+"Calls" => "Calls",
+
 );
 ?>

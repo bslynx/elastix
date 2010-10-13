@@ -58,6 +58,6 @@ $arrLangModule=array(
 "Edit Network Parameters" => "Editer les param&egrave;tres r&eacute;seau",
 "Required field" => "Champ requis",
 "Apply changes" => "Appliquer les changements",
-"Are you sure you want to edit network parameters?" => "Etes vous s&ucirc;r de vouloir modifier les param&egrave;tres r&eacute; seau ?",
+"Are you sure you want to edit network parameters?" => "Etes vous s&ucirc;r de vouloir modifier les param&egrave;tres r&eacute;seau ?",
 );
 ?>

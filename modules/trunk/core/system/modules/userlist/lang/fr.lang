@@ -41,9 +41,7 @@ $arrLangModule=array(
 "New User" => "Nouvel utilisateur",
 "Edit User" => "Editer utilisateur",
 "The passwords are empty or don't match" => "Les mots de passe sont vides ou diff&egrave;rent",
-"The admin user cannot be deleted because is the default Elastix administrator. You can delete any other user." => "L'utilisate
-ur Admin ne peut pas &ecirc;tre supprim&eacute; car c'est l'administrateur par d&eacute;faut de Elastix. Vous pouvez supprime
-r les autres",
+"The admin user cannot be deleted because is the default Elastix administrator. You can delete any other user." => "L'utilisateur Admin ne peut pas &ecirc;tre supprim&eacute; car c'est l'administrateur par d&eacute;faut d'Elastix. Vous pouvez supprimer les autres",
 "User List" => "Liste des utilisateurs",
 "Real Name" => "Nom",
 "Extension" => "Num&eacute;ro de Poste",
@@ -53,7 +51,7 @@ r les autres",
 "Webmail Password" => "Mot de passe Webmail",
 "Retype Webmail password" => "Retapez le mot de passe Webmail",
 "Mail Profile" => "Profile du mail",
-"No extension associated" => "No extension associated",
+"No extension associated" => "N&deg; d'extension associ&eacute;",
 "userNoAllowed" => "User is not allowed to do this action",
 );
 ?>
