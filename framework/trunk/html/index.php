@@ -78,6 +78,7 @@ if(isset($_POST['submit_login']) and !empty($_POST['input_user'])) {
     if($pACL->authenticateUser($_POST['input_user'], $pass_md5)) {
         $_SESSION['elastix_user'] = $_POST['input_user'];
         $_SESSION['elastix_pass'] = $pass_md5;
+        
     } else {
         // Debo hacer algo aquí?
     }
@@ -134,7 +135,7 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
 
     $smarty->assign("THEMENAME", $arrConf['mainTheme']);
     $smarty->assign("md_message_title",$arrLang['md_message_title']);
-
+    $smarty->assign("currentyear",date("Y"));
 	if($arrConf['mainTheme']=="elastixwave"){
 		$smarty->assign("ABOUT_ELASTIX2",$arrLang['About Elastix2']);
     	$smarty->assign("HELP",$arrLang['HELP']);
@@ -190,6 +191,7 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
 
 } else {
     $smarty->assign("THEMENAME", $arrConf['mainTheme']);
+    $smarty->assign("currentyear",date("Y"));
     $smarty->assign("PAGE_NAME",$arrLang['Login page']);
     $smarty->assign("WELCOME",$arrLang['Welcome to Elastix']);
     $smarty->assign("ENTER_USER_PASSWORD",$arrLang['Please enter your username and password']);
