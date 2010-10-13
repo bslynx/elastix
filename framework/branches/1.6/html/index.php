@@ -137,7 +137,7 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
     $smarty->assign("ABOUT_ELASTIX_CONTENT",$arrLang['About Elastix Content']);
     $smarty->assign("ABOUT_CLOSED",$arrLang['About Elastix Closed']);
     $smarty->assign("LOGOUT",    $arrLang['Logout']);
-
+    $smarty->assign("currentyear",date("Y"));
     //$menu= (isset($_GET['menu']))?$_GET['menu']:'';
     if(isset($_GET['menu'])) $menu=$_GET['menu'];
     elseif(empty($menu) and !empty($_SESSION['menu'])) $menu=$_SESSION['menu'];
@@ -174,7 +174,7 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
     $smarty->assign("USERNAME",$arrLang['Username']);
     $smarty->assign("PASSWORD",$arrLang['Password']);
     $smarty->assign("SUBMIT",$arrLang['Submit']);
-
+    $smarty->assign("currentyear",date("Y"));
     $smarty->display("_common/login.tpl");
 
 }
