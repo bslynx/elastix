@@ -419,7 +419,6 @@ function saveNewEmailMember($smarty, $module_name, $local_templates_dir, &$pDB, 
     else{
         $id_emaillist     = getParameter("id_emaillist");
         $emaillistname     = getParameter("name_emaillist");
-    exec("echo '-$id_emaillist--$emaillistname-' > /tmp/oscar");
         $dataEmailMember = array();
         $dataEmailMember['id_emaillist'] = $pDB->DBCAMPO($id_emaillist);
         $dataEmailMember['mailmember'] = $pDB->DBCAMPO($_POST['emailmember']);
