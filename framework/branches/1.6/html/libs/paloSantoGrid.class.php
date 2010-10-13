@@ -317,9 +317,21 @@ class paloSantoGrid {
             return "html";
     }
 
+    function isExportAction()
+    {
+        if(getParameter2("exportcsv") == "yes")
+            return true;
+        else if(getParameter2("exportpdf") == "yes")
+            return true;
+        else if(getParameter2("exportspreadsheet") == "yes")
+            return true;
+        else
+            return false;
+    }
+
     function setNameFile_Export($nameFile)
     {
-        $this->nameFile_Export = $nameFile;
+        $this->nameFile_Export = "$nameFile-".date("YMd.His");
     }
 
     function xlsBOF()
