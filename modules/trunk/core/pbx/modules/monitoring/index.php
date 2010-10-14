@@ -192,7 +192,7 @@ function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, &$
                 }
                 $recordingLink = "<a  href=\"javascript:popUp('index.php?menu=$module_name&action=display_record&id=$file&rawmode=yes',350,100);\">{$arrLang['Listen']}</a>&nbsp;";
 
-                $recordingLink .= "<a href='?menu=$module_name&action=download&id=$file' >{$arrLang['Download']}</a>";
+                $recordingLink .= "<a href='?menu=$module_name&action=download&id=$file&rawmode=yes' >{$arrLang['Download']}</a>";
 
 	            $arrTmp[7] = $recordingLink;
                 $arrData[] = $arrTmp;
