@@ -397,7 +397,7 @@ function _moduleContent(&$smarty, $module_name)
             $arrTmp[6] = $llamada['type'];
             $pathRecordFile2=$llamada['archivo'];//archivo de audio
             $recordingLink = "<a  href=\"javascript:popUp('index.php?menu=$module_name&action=display_record&id=".base64_encode($pathRecordFile2)."&rawmode=yes',350,100);\">{$arrLang['Listen']}</a>&nbsp;";
-            $recordingLink .= "<a href='?menu=$module_name&action=download&id=".base64_encode($pathRecordFile2)."' >{$arrLang['Download']}</a>";
+            $recordingLink .= "<a href='?menu=$module_name&action=download&id=".base64_encode($pathRecordFile2)."&rawmode=yes' >{$arrLang['Download']}</a>";
             $arrTmp[7] = $recordingLink;
             $arrData[] = $arrTmp;
         }
