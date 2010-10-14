@@ -127,15 +127,26 @@ function save_recording($smarty, $module_name, $local_templates_dir, $arrLang, $
             {
                 if(!file_exists($destiny_path))
                 {
-                    $comando="mkdir $destiny_path";
-                    exec($comando, $output, $retval);
-                    if ($retval!=0) $bExito = false;
+                    if (!mkdir($destiny_path, 0755, false)){
+                        $bExito = false;
+                    }
                 }
                 if($bExito)
                 {
-                    $comando="mv /tmp/$tmp_file $destiny_path/$filename";
-                    exec($comando, $output, $retval);
-                    if ($retval!=0) $bExito = false;
+                    $filetmp = basename("$destiny_path/$filename"); 
+                    $dirFile = "/tmp/$tmp_file";
+                    $dirDest = $destiny_path.$filetmp;
+
+                    if(is_file($dirFile)){
+                        if(!rename($dirFile, $dirDest)){
+                            $smarty->assign("mb_title", $arrLang['ERROR'].":");
+                            $smarty->assign("mb_message", $arrLang["Possible file upload attack"]." $filename");
+                            $bExito = false;
+                            return form_Recordings($smarty, $module_name, $local_templates_dir, $arrLang);
+                        }
+                    }else{
+                        $bExito = false;
+                    }
                 }
             }else $bExito = false;
         }else $bExito = false;
