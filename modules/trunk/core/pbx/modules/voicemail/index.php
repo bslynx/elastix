@@ -233,7 +233,7 @@ contenido;
             }
     
         // need to check if file is mislabeled or a liar.
-            $fp=fopen($path, "rb");
+            $fp=fopen($voicemailPath, "rb");
             if ($size && $ctype && $fp) {
                 header("Pragma: public");
                 header("Expires: 0");
@@ -304,7 +304,7 @@ contenido;
                                     //$pathRecordFile="$voicemailPath/".$regs[1].'.wav';
                                     $pathRecordFile=base64_encode($regs[1].'.wav');
                                     $recordingLink = "<a href='#' onClick=\"javascript:popUp('index.php?menu=$module_name&action=display_record&ext=$directorio&name=$pathRecordFile&rawmode=yes',350,100); return false;\">{$arrLang['Listen']}</a>&nbsp;";
-                                    $recordingLink .= "<a href='?menu=$module_name&action=download&ext=$directorio&name=$pathRecordFile'>{$arrLang['Download']}</a>";
+                                    $recordingLink .= "<a href='?menu=$module_name&action=download&ext=$directorio&name=$pathRecordFile&rawmode=yes'>{$arrLang['Download']}</a>";
 
                                     $arrTmp[6] = $recordingLink;
                                     $arrData[] = $arrTmp;
