@@ -147,6 +147,111 @@ function _moduleContent(&$smarty, $module_name)
             return form_config($smarty, $module_name, $local_templates_dir, $arrLang, $ext, $pDB_ast);
     }
 
+    if( getParameter('action') == "display_record"){
+
+        $file = getParameter("name");
+        $ext  = getParameter("ext");        
+        $user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
+        $extension = $pACL->getUserExtension($user);
+        $esAdministrador = $pACL->isUserAdministratorGroup($user);
+        $path = "/var/spool/asterisk/voicemail/default";
+        $voicemailPath = "$path/$ext/INBOX/".base64_decode($file);
+        $tmpfile = basename($voicemailPath);
+        $filetmp = "$path/$ext/INBOX/$tmpfile";
+        if(!is_file($filetmp)){
+            die("<b>404 ".$arrLang["no_file"]."</b>");
+        }
+        if(!$esAdministrador){
+            if($extension != $ext){
+                 die("<b>404 ".$arrLang["no_file"]."</b>");
+            }
+            $voicemailPath = "$path/$extension/INBOX/".base64_decode($file);
+        }
+
+        if (isset($file) && preg_match("/^[[:alpha:]]+[[:digit:]]+\.(wav|WAV|Wav|mp3|gsm)$/",base64_decode($file))) {
+            if (!is_file($voicemailPath)) { 
+                die("<b>404 ".$arrLang["no_file"]."</b>");
+            }
+            $sContenido="";
+
+            $sContenido=<<<contenido
+                    <embed src='index.php?menu=$module_name&action=download&ext=$ext&name=$file&rawmode=yes' width=300, height=20 autoplay=true loop=false></embed><br>
+contenido;
+
+            $smarty->assign("CONTENT", $sContenido);
+            $smarty->display("_common/popup.tpl");
+        }else{
+            die("<b>404 ".$arrLang["no_file"]."</b>");
+        }
+        return;
+    }
+
+    if( getParameter('action') == "download"){
+        $user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
+        $extension = $pACL->getUserExtension($user);
+        $esAdministrador = $pACL->isUserAdministratorGroup($user);
+        $record = getParameter("name");
+        $ext  = getParameter("ext");
+        $record = base64_decode($record);
+        $path = "/var/spool/asterisk/voicemail/default";
+        $voicemailPath = "$path/$ext/INBOX/".$record;//"$path/$record";
+        $tmpfile = basename($voicemailPath);
+        $filetmp = "$path/$ext/INBOX/$tmpfile";
+        if(!is_file($filetmp)){
+            die("<b>404 ".$arrLang["no_file"]."</b>");
+        }
+        if(!$esAdministrador){
+            if($extension != $ext){
+                 die("<b>404 ".$arrLang["no_extension"]."</b>");
+            }
+            $voicemailPath = "$path/$extension/INBOX/".$record;
+        }
+        if (isset($record) && preg_match("/^[[:alpha:]]+[[:digit:]]+\.(wav|WAV|Wav|mp3|gsm)$/",$record)) {
+        // See if the file exists
+
+            if (!is_file($voicemailPath)) { 
+                die("<b>404 ".$arrLang["no_file"]."</b>");
+            }
+        // Gather relevent info about file
+            $size = filesize($voicemailPath);
+            $name = basename($voicemailPath);
+    
+        //$extension = strtolower(substr(strrchr($name,"."),1));
+            $extension=substr(strtolower($name), -3); 
+
+        // This will set the Content-Type to the appropriate setting for the file
+            $ctype ='';
+            switch( $extension ) {
+    
+                case "mp3": $ctype="audio/mpeg"; break;
+                case "wav": $ctype="audio/x-wav"; break;
+                case "Wav": $ctype="audio/x-wav"; break;
+                case "WAV": $ctype="audio/x-wav"; break;
+                case "gsm": $ctype="audio/x-gsm"; break;
+                // not downloadable
+                default: die("<b>404 ".$arrLang["no_file"]."</b>"); break ;
+            }
+    
+        // need to check if file is mislabeled or a liar.
+            $fp=fopen($path, "rb");
+            if ($size && $ctype && $fp) {
+                header("Pragma: public");
+                header("Expires: 0");
+                header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+                header("Cache-Control: public");
+                header("Content-Description: wav file");
+                header("Content-Type: " . $ctype);
+                header("Content-Disposition: attachment; filename=" . $name);
+                header("Content-Transfer-Encoding: binary");
+                header("Content-length: " . $size);
+                fpassthru($fp);
+            }
+        }else{
+            die("<b>404 ".$arrLang["no_file"]."</b>");
+        }
+        return;
+    }
+
     $end = 0;
     //si tiene extension consulto sino, muestro un mensaje de que no tiene asociada extension
     $archivos=array();
@@ -195,9 +300,12 @@ function _moduleContent(&$smarty, $module_name)
                                     $arrTmp[3] = $arrVoiceMailDes['callerid']['valor'];
                                     $arrTmp[4] = $arrVoiceMailDes['origmailbox']['valor'];
                                     $arrTmp[5] = $arrVoiceMailDes['duration']['valor'].' sec.';
-                                    $pathRecordFile="$voicemailPath/".$regs[1].'.wav';
-                                    $recordingLink = "<a href='#' onClick=\"javascript:popUp('libs/popup.php?action=display_record&record_file=" . base64_encode($pathRecordFile) ."',350,100); return false;\">Listen</a>&nbsp;";
-                                    $recordingLink .= "<a href='libs/audio.php?recording=".base64_encode($pathRecordFile)."'>Download</a>";
+
+                                    //$pathRecordFile="$voicemailPath/".$regs[1].'.wav';
+                                    $pathRecordFile=base64_encode($regs[1].'.wav');
+                                    $recordingLink = "<a href='#' onClick=\"javascript:popUp('index.php?menu=$module_name&action=display_record&ext=$directorio&name=$pathRecordFile&rawmode=yes',350,100); return false;\">{$arrLang['Listen']}</a>&nbsp;";
+                                    $recordingLink .= "<a href='?menu=$module_name&action=download&ext=$directorio&name=$pathRecordFile'>{$arrLang['Download']}</a>";
+
                                     $arrTmp[6] = $recordingLink;
                                     $arrData[] = $arrTmp;
                                 }

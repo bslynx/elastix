@@ -46,5 +46,7 @@ $arrLangModule=array(
 "Download" => "Download"
 "Listen" => "Listen",
 "Download" => "Download",
+"no_extension" => "This file is not allowed to download",
+"no_file" => "File hasn't been found!",
 );
 ?>

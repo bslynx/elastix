@@ -53,5 +53,7 @@ $arrLangModule=array(
 "Disable" => "Disable",
 "Yes" => "Yes",
 "No" => "No",
+"no_file" => "File hasn't been found!",
+"no_extension" => "This file is not allowed to download",
 );
 ?>

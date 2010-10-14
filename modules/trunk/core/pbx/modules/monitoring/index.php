@@ -174,7 +174,8 @@ function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, &$
 	            $arrTmp[4] = $dst;
 	            $arrTmp[5] = "<label title='".$value['duration']." seconds' style='color:green'>".SecToHHMMSS( $value['duration'] )."</label>";
 
-                $file = base64_encode($value['userfield']);
+                //$file = base64_encode($value['userfield']);
+                $file = $value['uniqueid'];
                 switch($value['userfield'][6]){
                     case "O":
                         $arrTmp[6] = $arrLang["Outgoing"];
@@ -189,10 +190,9 @@ function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, &$
                         $arrTmp[6] = $arrLang["Incoming"];
                         break;
                 }
+                $recordingLink = "<a  href=\"javascript:popUp('index.php?menu=$module_name&action=display_record&id=$file&rawmode=yes',350,100);\">{$arrLang['Listen']}</a>&nbsp;";
 
-                $recordingLink = "<a  href=\"javascript:popUp('index.php?menu=$module_name&action=display_record&file=$file&rawmode=yes',350,100);\">{$arrLang['Listen']}</a>&nbsp;";
-
-                $recordingLink .= "<a href='?menu=$module_name&action=download&file=$file' >{$arrLang['Download']}</a>";
+                $recordingLink .= "<a href='?menu=$module_name&action=download&id=$file' >{$arrLang['Download']}</a>";
 
 	            $arrTmp[7] = $recordingLink;
                 $arrData[] = $arrTmp;
@@ -256,17 +256,18 @@ function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, &$
 }
 
 function downloadFile($smarty, $module_name, $local_templates_dir, $pDB, $pDBACL, $arrConf, $arrLang){
-    $record = getParameter("file");
+    $record = getParameter("id");
     $path_record = $arrConf['records_dir'];
-    if (isset($record)) {
-
-        $file = base64_decode($record);
+    if (isset($record) && preg_match("/^[[:digit:]]+\.[[:digit:]]+$/",$record)) {
+        $pMonitoring = new paloSantoMonitoring($pDB);
+        $filebyUid = $pMonitoring->getAudioByUniqueId($record);
+        $file = $filebyUid['userfield'];
         $file = str_replace("audio:","",$file);
         $path = $path_record.$file;
 
     // See if the file exists
         if (!is_file($path)) { 
-            die("<b>404 ".$arrLang["no_file"]." $path</b>");
+            die("<b>404 ".$arrLang["no_file"]." </b>");
         }
 
     // Gather relevent info about file
@@ -303,12 +304,14 @@ function downloadFile($smarty, $module_name, $local_templates_dir, $pDB, $pDBACL
             header("Content-length: " . $size);
             fpassthru($fp);
         }
+    }else{
+        die("<b>404 ".$arrLang["no_file"]." </b>");
     }
 }
 
 function display_record($smarty, $module_name, $local_templates_dir, $pDB, $pDBACL, $arrConf, $arrLang){
     $action = getParameter("action");
-    $file = getParameter("file");
+    $file = getParameter("id");
     $path_record = $arrConf['records_dir'];
         $sContenido="";
         switch($action){

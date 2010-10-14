@@ -200,5 +200,19 @@ class paloSantoMonitoring {
         return $result['userfield'];
     }
 
+    function getAudioByUniqueId($id)
+    {
+        
+        $query = "select userfield from cdr where uniqueid=?";
+        $parame = array($id);
+        $result=$this->_DB->getFirstRowQuery($query, true, $parame);
+        if($result==FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return null;
+        }
+        
+        return $result;
+    }
+
 }
 ?>

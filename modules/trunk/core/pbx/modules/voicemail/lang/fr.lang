@@ -40,7 +40,7 @@ $arrLangModule=array(
 "Start Date"=>"Du",
 "End Date"=>"Au",
 "Voicemail List" => "Liste des messages vocaux",
-"Are you sure you wish to delete voicemails?" => "Est vous sûrs de vouloir effacer les messages vocaux ?",
+"Are you sure you wish to delete voicemails?" => "Est vous sï¿½rs de vouloir effacer les messages vocaux ?",
 "Date"=>"Date",
 "Time"=>"Heure",
 "Message"=>"Message",
@@ -53,5 +53,9 @@ $arrLangModule=array(
 "Disable" => "D&eacute;valider",
 "Yes" => "Oui",
 "No" => "Non",
+"no_file" => "File hasn't been found!",
+"no_extension" => "This file is not allowed to download",
+"Download" => "Download",
+"Listen" => "Listen",
 );
 ?>

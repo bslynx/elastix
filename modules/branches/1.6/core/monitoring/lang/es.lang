@@ -52,5 +52,7 @@ $arrLangModule=array(
 "queue - total" => "cola - total",
 "queue - in" => "cola - entrante",
 "queue - out" => "cola - saliente",
+"no_extension" => "Este archivo no esta permitido para su descarga",
+"no_file" => "Archivo no encontrado!",
 );
 ?>

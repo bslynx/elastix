@@ -52,5 +52,7 @@ $arrLangModule=array(
 "queue - total" => "queue - total",
 "queue - in" => "queue - in",
 "queue - out" => "queue - out",
+"no_extension" => "This file is not allowed to download",
+"no_file" => "File hasn't been found!",
 );
 ?>

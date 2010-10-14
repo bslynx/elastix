@@ -395,8 +395,9 @@ function _moduleContent(&$smarty, $module_name)
             $arrTmp[4] = $llamada['dst'];
             $arrTmp[5] = "<label title='".$llamada['duration']." seconds' style='color:green'><u>".SecToHHMMSS( $llamada['duration'] )."</u></label>";
             $arrTmp[6] = $llamada['type'];
-            $recordingLink = "<a href='#' onClick=\"javascript:popUp('libs/popup.php?action=display_record&record_file=" . base64_encode($pathRecordFile) ."',350,100); return false;\">{$arrLang['Listen']}</a>&nbsp;";
-            $recordingLink .= "<a href='libs/audio.php?recording=".base64_encode($pathRecordFile)."'>{$arrLang['Download']}</a>";
+            $pathRecordFile2=$llamada['archivo'];//archivo de audio
+            $recordingLink = "<a  href=\"javascript:popUp('index.php?menu=$module_name&action=display_record&id=".base64_encode($pathRecordFile2)."&rawmode=yes',350,100);\">{$arrLang['Listen']}</a>&nbsp;";
+            $recordingLink .= "<a href='?menu=$module_name&action=download&id=".base64_encode($pathRecordFile2)."' >{$arrLang['Download']}</a>";
             $arrTmp[7] = $recordingLink;
             $arrData[] = $arrTmp;
         }
@@ -404,6 +405,86 @@ function _moduleContent(&$smarty, $module_name)
     else {
         $smarty->assign("mb_message", "<b>".$arrLang["You don't have extension number associated with user"]."</b>");
     }
+
+    if(getParameter("action")== "download"){
+        $record = getParameter("id");
+        $path_record = "/var/spool/asterisk/monitor/";
+        if (isset($record)) {
+            $file = base64_decode($record);
+            $path = $path_record.$file;
+            $file = basename($path);
+
+        // See if the file exists
+            if (!is_file($path_record.$file)) { 
+                die("<b>404 ".$arrLang["no_file"]."</b>");
+            }
+    
+        // Gather relevent info about file
+            $size = filesize($path);
+            $name = basename($path);
+    
+        //$extension = strtolower(substr(strrchr($name,"."),1));
+            $extension=substr(strtolower($name), -3); 
+    
+        // This will set the Content-Type to the appropriate setting for the file
+            $ctype ='';
+            switch( $extension ) {
+    
+                case "mp3": $ctype="audio/mpeg"; break;
+                case "wav": $ctype="audio/x-wav"; break;
+                case "Wav": $ctype="audio/x-wav"; break;
+                case "WAV": $ctype="audio/x-wav"; break;
+                case "gsm": $ctype="audio/x-gsm"; break;
+                // not downloadable
+                default: die("<b>404 ".$arrLang["no_file"]." </b>"); break ;
+            }
+    
+        // need to check if file is mislabeled or a liar.
+            $fp=fopen($path, "rb");
+            if ($size && $ctype && $fp) {
+                header("Pragma: public");
+                header("Expires: 0");
+                header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+                header("Cache-Control: public");
+                header("Content-Description: wav file");
+                header("Content-Type: " . $ctype);
+                header("Content-Disposition: attachment; filename=" . $name);
+                header("Content-Transfer-Encoding: binary");
+                header("Content-length: " . $size);
+                fpassthru($fp);
+            }
+        }else{
+            die("<b>404 ".$arrLang["no_file"]." </b>");
+        }
+        return;
+    }
+
+    if(getParameter('action') == "display_record"){
+        $file = getParameter("id");
+        $path = "/var/spool/asterisk/monitor/";
+        $voicemailPath = $path.base64_decode($file);
+        $sContenido="";
+        if (isset($file)) {
+            $path2 = $path.base64_decode($file);
+            $file2 = basename($path2);
+    
+        // See if the file exists
+            if (!is_file($path.$file2)) { 
+                die("<b>404 ".$arrLang["no_file"]."</b>");
+            }
+
+            $sContenido=<<<contenido
+                <embed src='index.php?menu=$module_name&action=download&name=$file&rawmode=yes' width=300, height=20 autoplay=true loop=false></embed><br>
+contenido;
+
+            $smarty->assign("CONTENT", $sContenido);
+            $smarty->display("_common/popup.tpl");
+        }else{
+            die("<b>404 ".$arrLang["no_file"]." </b>");
+        }
+        return;
+    }
+
     $arrGrid = array("title"    => $arrLang["Monitorig List"],
                      "icon"     => "images/record.png",
                      "width"    => "99%",
@@ -591,5 +672,15 @@ function SecToHHMMSS($sec)
     $SS = $segundos; if($SS < 10) $SS = "0$SS";
 
     return "$HH:$MM:$SS";
+}
+
+function getParameter($parameter)
+{
+    if(isset($_POST[$parameter]))
+        return $_POST[$parameter];
+    else if(isset($_GET[$parameter]))
+        return $_GET[$parameter];
+    else
+        return null;
 }
 ?>
