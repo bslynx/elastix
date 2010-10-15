@@ -337,13 +337,19 @@ function guardar_dominio_sistema($domain_name,&$errMsg)
 {
     $continuar=FALSE;
     global $arrLang;
+    $configPostfix2 = isPostfixToElastix2();
+    $param1 = ""; // virtual_mailbox_domains or mydomain2
      //Se debe modificar el archivo /etc/postfix/main.cf para agregar el dominio a la variable
-     //virtual_mailbox_domains
+     //virtual_mailbox_domains if $configPostfix2=TRUE or mydomain2 if $configPostfix2=FALSE
+    if($configPostfix2)
+        $param1 = "virtual_mailbox_domains";
+    else
+        $param1 = "mydomain2";
     $conf_file=new paloConfig("/etc/postfix","main.cf"," = ","[[:space:]]*=[[:space:]]*");
     $contenido=$conf_file->leer_configuracion();
-    $valor_anterior=$conf_file->privado_get_valor($contenido,"virtual_mailbox_domains");
+    $valor_anterior=$conf_file->privado_get_valor($contenido,$param1);
     $valor_nuevo=construir_valor_nuevo_postfix($valor_anterior,$domain_name);
-    $arr_reemplazos=array('virtual_mailbox_domains'=>$valor_nuevo);
+    $arr_reemplazos=array("$param1"=>$valor_nuevo);
     $bValido=$conf_file->escribir_configuracion($arr_reemplazos);
     if($bValido){
         //Se deben recargar la configuracion de postfix
@@ -392,11 +398,18 @@ function eliminar_dominio($db,$arrDominio,&$errMsg)
     $pEmail = new paloEmail($db);
     $total_cuentas=0;
     $output="";
+    $configPostfix2 = isPostfixToElastix2();
+    $param1 = "";
 
     global $CYRUS;
     global $arrLang;
     $cyr_conn = new cyradm;
-    $continuar=$cyr_conn -> imap_login();
+    $continuar=$cyr_conn->imap_login();
+
+    if($configPostfix2)
+        $param1 = "virtual_mailbox_domains";
+    else
+        $param1 = "mydomain2";
 
       # First Delete all stuff related to the domain from the database
     if ($continuar){
@@ -435,12 +448,12 @@ function eliminar_dominio($db,$arrDominio,&$errMsg)
 //Se elimina el dominio del archivo main.cf y se recarga la configuracion
         $continuar=FALSE;
        //Se debe modificar el archivo /etc/postfix/main.cf para borrar el dominio a la variable
-       //virtual_mailbox_domains
+       //virtual_mailbox_domains if $configPostfix2=TRUE or mydomain2 if $configPostfix2=FALSE
         $conf_file=new paloConfig("/etc/postfix","main.cf"," = ","[[:space:]]*=[[:space:]]*");
         $contenido=$conf_file->leer_configuracion();
-        $valor_anterior=$conf_file->privado_get_valor($contenido,"virtual_mailbox_domains");
+        $valor_anterior=$conf_file->privado_get_valor($contenido,$param1);
         $valor_nuevo=construir_valor_nuevo_postfix($valor_anterior,$arrDominio['domain_name'],TRUE);
-        $arr_reemplazos=array('virtual_mailbox_domains'=>$valor_nuevo);
+        $arr_reemplazos=array("$param1"=>$valor_nuevo);
         $bValido=$conf_file->escribir_configuracion($arr_reemplazos);
 
         if($bValido){
@@ -460,7 +473,11 @@ function eliminar_dominio($db,$arrDominio,&$errMsg)
 }
 function eliminar_usuario_correo_sistema($username,$email,&$error){
     $output=array();
-    exec("sudo -u root /usr/sbin/saslpasswd2 -d $email",$output);
+    $configPostfix2 = isPostfixToElastix2();
+    if($configPostfix2)
+        exec("sudo -u root /usr/sbin/saslpasswd2 -d $email",$output);
+    else
+        exec("sudo -u root /usr/sbin/saslpasswd2 -d $username@".SASL_DOMAIN,$output);
     if(is_array($output) && count($output)>0){
         foreach($output as $linea)
             $error.=$linea."<br>";
@@ -472,20 +489,90 @@ function eliminar_usuario_correo_sistema($username,$email,&$error){
         return TRUE;
 }
 
+function eliminar_virtual_sistema($email,&$error){
+    $config=new paloConfig("/etc/postfix","virtual","\t","[[:space:]?\t[:space:]?]");     
+    $arr_direcciones=$config->leer_configuracion();
+
+
+    $eliminado=FALSE;
+    foreach($arr_direcciones as $key=>$fila){
+        if(isset($fila['clave']) && $fila['clave']==$email){
+             unset($arr_direcciones[$key]);
+             $eliminado=TRUE;
+        }
+        elseif(ereg("^$email",$fila)){
+             unset($arr_direcciones[$key]);
+             $eliminado=TRUE;
+        }
+    }
+    if($eliminado){
+        $bool=$config->escribir_configuracion($arr_direcciones,true);
+        if($bool){
+            exec("sudo -u root postmap /etc/postfix/virtual",$output);
+            if(is_array($output) && count($output)>0)
+                foreach($output as $linea)
+                    $error.=$linea."<br>";
+        }
+        else{
+            $error.=$config->getMessage();
+            return FALSE;
+        }
+    }
+
+    return TRUE;
+}
+
 function crear_usuario_correo_sistema($email,$username,$clave,&$error,$virtual=TRUE){
     $output=array();
-
-    exec("echo \"$clave\" | sudo -u root /usr/sbin/saslpasswd2 -c $email",$output);
+    $configPostfix2 = isPostfixToElastix2();
+    if($configPostfix2)
+        exec("echo \"$clave\" | sudo -u root /usr/sbin/saslpasswd2 -c $email",$output);
+    else
+        exec("echo \"$clave\" | sudo -u root /usr/sbin/saslpasswd2 -c $username -u ".SASL_DOMAIN,$output);
 
 
     if(is_array($output) && count($output)>0){
         foreach($output as $linea_salida)
             $error.=$linea_salida."<br>";
     }
-    if($error!="") 
-      return FALSE;
+
+    if($configPostfix2){
+        if($error!="") 
+            return FALSE;
+    }else{
+        if($error!="") 
+            return FALSE;
+        if($virtual){
+            $bool=crear_virtual_sistema($email,$username,$error);
+            if(!$bool)
+                return FALSE;
+        }
+    }
+    return TRUE;
+}
+
+function crear_virtual_sistema($email,$username,&$error){
+    $output=array();
+
+    exec("sudo -u root chown asterisk /etc/postfix/virtual");
+    $username.='@'.SASL_DOMAIN;
+    exec("echo \"$email \t $username\" >> /etc/postfix/virtual",$output);
+
+    if(is_array($output) && count($output)>0){
+        foreach($output as $linea)
+            $error.=$linea."<br>";
+    }   
+    exec("sudo -u root chown root /etc/postfix/virtual");
+
+    exec("sudo -u root postmap /etc/postfix/virtual",$output);
+    if(is_array($output) && count($output)>0){
+         foreach($output as $linea)
+            $error.=$linea."<br>";
+    }
+    if($error!="")
+        return FALSE;
     else
-      return TRUE;
+        return TRUE;
 }
 
 function eliminar_cuenta($db,$username,$errMsg){
@@ -638,7 +725,7 @@ function generarDSNSistema($sNombreUsuario, $sNombreDB, $ruta_base='')
     require_once $ruta_base.'libs/paloSantoConfig.class.php';
     switch ($sNombreUsuario) {
     case 'root':
-        $sClave = obtenerClaveConocidaMySQL($sNombreUsuario, $ruta_base);
+        $sClave = obtenerClaveConocidaMySQL($sNombreUsuario);
         if (is_null($sClave)) return NULL;
         return 'mysql://root:'.$sClave.'@localhost/'.$sNombreDB;
     case 'asteriskuser':
@@ -681,6 +768,22 @@ function obtenerDetallesRPMS(){
         }
     }
     return $arrPro;
+}
+
+function isPostfixToElastix2(){
+    $pathImap    = "/etc/imapd.conf";
+    $vitualDomain = "virtdomains: yes";
+    $band = TRUE;
+    $handle = fopen($pathImap, "r");
+    $contents = fread($handle, filesize($pathImap));
+    fclose($handle);
+    if(strstr($contents,$vitualDomain)){
+        $band = TRUE; // if the conf postfix is for Elastix 2.0
+    }
+    else{
+        $band = FALSE;// if the conf postfix is for Elastix 1.6
+    } 
+    return $band;
 }
 
 ?>
