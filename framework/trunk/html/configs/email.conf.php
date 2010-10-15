@@ -27,11 +27,24 @@
   +----------------------------------------------------------------------+
   $Id: email.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
 
+
+
+$configPostfix2 = isPostfixToElastix2();// in misc.lib.php
+$host = "";
+
+if($configPostfix2){
+    $host = obtenerIpServer('eth0'); // mejorar esta funcion ya que no necesariamente puede ser la eth0 como intefaz de red asignada
+}else{
+    $host = 'localhost';
+    define("SASL_DOMAIN","example.com");
+}
+
+
 $GLOBALS['CYRUS'] = array(
-              'HOST'	=> obtenerIpServer('eth0'),
-              'PORT'	=> 143,
-              'ADMIN'	=> 'cyrus',
-              'PASS'	=> 'palosanto'
+              'HOST'    => $host,
+              'PORT'    => 143,
+              'ADMIN'   => 'cyrus',
+              'PASS'    => 'palosanto'
               );
 
 $script="require [\"fileinto\",\"vacation\"];\n";
