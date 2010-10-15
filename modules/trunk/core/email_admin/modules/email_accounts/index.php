@@ -67,6 +67,8 @@ function _moduleContent(&$smarty, $module_name)
         echo "ERROR DE DB: $pDB->errMsg <br>";
     }
     $error="";
+    $errMsg = "";
+    $contenidoModulo = "";
     $arrData = array();
     $pEmail = new paloEmail($pDB);
     if(!empty($pEmail->errMsg)) {
@@ -122,9 +124,9 @@ function _moduleContent(&$smarty, $module_name)
             $domain_name="@".$arrDomain[0][1];
             $smarty->assign("domain_name", $domain_name);
             $arrTmp['address']   = "";
-        	$arrTmp['password1'] = "";
-        	$arrTmp['password2'] = "";
-        	$arrTmp['quota']     = "";
+            $arrTmp['password1'] = "";
+            $arrTmp['password2'] = "";
+            $arrTmp['quota']     = "";
             $contenidoModulo=$oForm->fetchForm("$local_templates_dir/form_account.tpl", $arrLang["New Email Account"],$arrTmp);
         }else{
                $smarty->assign("mb_title",$arrLang["Error"]);
@@ -312,13 +314,13 @@ function _moduleContent(&$smarty, $module_name)
 ////////////////////////////////////////////////////////////////////////////////////////
         $arrData=array();
  
-		$end=0;
+        $end=0;
         if ($id_domain>0){
             $arrAccounts = $pEmail->getAccountsByDomain($id_domain);
  //username, password, id_domain, quota
 
             $end = count($arrAccounts);
-          
+            //$configPostfix2 = isPostfixToElastix2();// in misc.lib.php
             foreach($arrAccounts as $account) {
                 $arrTmp    = array();
                 $username=$account[0];
@@ -381,8 +383,13 @@ function create_email_account($pDB,$domain_name,&$errMsg)
     // -- inserto el usuario en la base de datos
     // -- si hay error al insertarlo en la bd lo elimino del sistema
     // -- creo el mailbox para la cuenta (si hay error deshacer lo realizado)
-
-    $username=$_POST['address'].'@'.$domain_name;
+    $username = "";
+    $configPostfix2 = isPostfixToElastix2();// in misc.lib.php
+echo $configPostfix2;
+    if($configPostfix2)
+        $username=$_POST['address'].'@'.$domain_name;
+    else
+        $username=$_POST['address'].'.'.$domain_name;
     $arrAccount=$pEmail->getAccount($username);
     
     if (is_array($arrAccount) && count($arrAccount)>0 ){
@@ -422,7 +429,7 @@ function crear_mailbox_usuario($db,$email,$username,&$error_msg){
         $error_msg.="IMAP login error: $error <br>";
     }
     else{
-        $seperator	= '/';
+        $seperator  = '/';
         $bValido=$cyr_conn->createmb("user" . $seperator . $username);
         if(!$bValido)
             $error_msg.="Error creating user:".$cyr_conn->getMessage()."<br>";
