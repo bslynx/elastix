@@ -385,7 +385,7 @@ function create_email_account($pDB,$domain_name,&$errMsg)
     // -- creo el mailbox para la cuenta (si hay error deshacer lo realizado)
     $username = "";
     $configPostfix2 = isPostfixToElastix2();// in misc.lib.php
-echo $configPostfix2;
+
     if($configPostfix2)
         $username=$_POST['address'].'@'.$domain_name;
     else
