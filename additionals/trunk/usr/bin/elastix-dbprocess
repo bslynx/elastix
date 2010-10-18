@@ -105,4 +105,54 @@ function executeFiles_SQL($arrFiles, $password, $path_folder, $action)
    echo "Nothing to be done in database.";
    return 0;
 }
+
+
+function updatedatabase($version_actual)
+{
+	$arreglototal=ObtenerArregloDirectorio();
+	imprimirArreglo($arreglototal,$version_actual);
+}
+function imprimirArreglo($arreglototal, $version_actual)
+{
+     $update="";
+     $a=1;
+     foreach ($arreglototal  as $value)
+     {   
+        if( $value['before']==$version_actual)
+            $a=0;
+        if($a==0)
+        {
+           $lines = file("setup/db/update/$value[namefile]");
+           for($i=0;$i<count($lines);$i++)
+               $update=$update.$lines[$i];
+        }
+           $update=$update."\n\n";
+    }
+    echo  $update;    
+}
+    
+function ObtenerArregloDirectorio()
+{
+    $directorio=dir("setup/db/update");
+    $arreglototal=array();
+    while ($archivo = $directorio->read())
+    {
+        if($archivo[strlen($archivo)-1]!="~" &&  $archivo[0]!="." )
+        {        
+              list($id,$before,$currentt)=split('_',$archivo);
+              list($current)=split('.sql',$currentt);
+              $arrversion=array("id"=>$id,"before"=>$before,"current"=>$current,"namefile"=>$archivo);
+              $arreglototal[]=$arrversion;      
+        }
+    }  
+    sort($arreglototal);
+    $directorio->close();    
+    return $arreglototal;
+}
+
+
+
+
+
+
 ?>
