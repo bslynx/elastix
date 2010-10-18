@@ -38,6 +38,8 @@ function _moduleContent(&$smarty, $module_name)
     include_once "libs/paloSantoConfig.class.php";
     include_once "libs/misc.lib.php";
     include_once "libs/paloSantoForm.class.php";
+    include_once "libs/paloSantoACL.class.php";
+
 
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
@@ -150,6 +152,8 @@ function load_address_book_from_csv($smarty, $arrLang, $ruta_archivo, $pDB, $pDB
 {
     $Messages = "";
     $arrayColumnas = array();
+    $pACL         = new paloACL($pDB_2);
+    $id_user      = $pACL->getIdUser($_SESSION["elastix_user"]);
 
     $result = isValidCSV($arrLang, $ruta_archivo, $arrayColumnas);
     if($result != 'true'){
@@ -179,8 +183,6 @@ function load_address_book_from_csv($smarty, $arrLang, $ruta_archivo, $pDB, $pDB
                 $Email = isset($arrayColumnas[3])?$tupla[$arrayColumnas[3]]:"";
                 $data['email']      = $pDB->DBCAMPO($Email);
 
-                $p_book             = new paloAdressBook($pDB_2);
-                $id_user            = $p_book->getIdUser($_SESSION["elastix_user"]);
                 $data['iduser']     = $pDB->DBCAMPO($id_user);
 
                 //Paso 1: verificar que no exista un usuario con los mismos datos
@@ -353,9 +355,8 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
     $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter_adress_book.tpl", "", $_POST);
 
     $padress_book = new paloAdressBook($pDB);
-    $p_book = new paloAdressBook($pDB_2);
-
-    $id_user = $p_book->getIdUser($_SESSION["elastix_user"]);
+    $pACL         = new paloACL($pDB_2);
+    $id_user      = $pACL->getIdUser($_SESSION["elastix_user"]);
 
     if($directory_type=='external')
         $total = $padress_book->getAddressBook(NULL,NULL,$field,$pattern,TRUE,$id_user);
@@ -469,7 +470,8 @@ function save_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pD
 {
     $arrForm = createFieldForm($arrLang);
     $oForm = new paloForm($smarty, $arrForm);
-
+    $pACL         = new paloACL($pDB_2);
+    $id_user      = $pACL->getIdUser($_SESSION["elastix_user"]);
     $bandera = true;
 
     if(!$oForm->validateForm($_POST)) {
@@ -518,10 +520,7 @@ function save_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pD
     }else{
         $data = array();
         $padress_book = new paloAdressBook($pDB);
-        $p_book = new paloAdressBook($pDB_2);
-
-        $id_user = $p_book->getIdUser($_SESSION["elastix_user"]);
-
+        
         $data['name']       = $pDB->DBCAMPO($_POST['name']);
         $data['last_name']  = $pDB->DBCAMPO($_POST['last_name']);
         $data['telefono']   = $pDB->DBCAMPO($_POST['telefono']);
@@ -555,8 +554,8 @@ function save_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pD
 function deleteContact($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk)
 {
     $padress_book = new paloAdressBook($pDB);
-    $p_book = new paloAdressBook($pDB_2);
-    $id_user      = $p_book->getIdUser($_SESSION["elastix_user"]);
+    $pACL         = new paloACL($pDB_2);
+    $id_user      = $pACL->getIdUser($_SESSION["elastix_user"]);
     foreach($_POST as $key => $values){
         if(substr($key,0,8) == "contact_")
         {
@@ -572,8 +571,8 @@ function deleteContact($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2
 function view_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk)
 {
     $arrFormadress_book = createFieldForm($arrLang);
-    $p_book  = new paloAdressBook($pDB_2);
-    $id_user = $p_book->getIdUser($_SESSION["elastix_user"]);
+    $pACL    = new paloACL($pDB_2);
+    $id_user = $pACL->getIdUser($_SESSION["elastix_user"]);
     $oForm = new paloForm($smarty,$arrFormadress_book);
 
     if(isset($_POST["edit"])){
@@ -634,8 +633,7 @@ function view_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pD
 
 function call2phone($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk)
 {
-    require_once "libs/paloSantoACL.class.php";
-    require_once "libs/paloSantoConfig.class.php";
+
 
     $padress_book = new paloAdressBook($pDB);
     $pACL         = new paloACL($pDB_2);
@@ -694,8 +692,7 @@ function call2phone($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $
 
 function transferCALL($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk)
 {
-    require_once "libs/paloSantoACL.class.php";
-    require_once "libs/paloSantoConfig.class.php";
+
 
     $padress_book = new paloAdressBook($pDB);
     $pACL         = new paloACL($pDB_2);
@@ -808,8 +805,8 @@ function backup_contacts($pDB, $pDB_2, $arrLang)
     $csv = "";
     $pAdressBook = new paloAdressBook($pDB);
     $fields = "name, last_name, telefono, email";
-    $p_book  = new paloAdressBook($pDB_2);
-    $id_user = $p_book->getIdUser($_SESSION["elastix_user"]);
+    $pACL         = new paloACL($pDB_2);
+    $id_user      = $pACL->getIdUser($_SESSION["elastix_user"]);
     $arrResult = $pAdressBook->getAddressBookByCsv(null, null, $fields, null, null, $id_user);
 
     if(!$arrResult)

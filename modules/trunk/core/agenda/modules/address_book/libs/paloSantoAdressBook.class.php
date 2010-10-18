@@ -327,19 +327,5 @@ a array with the field "total" containing the total of records.
         return $result;
     }
 
-    function getIdUser($sNombreUser)
-    {
-        $idUser = FALSE;
-    
-        $this->errMsg = '';
-        $sPeticionSQL = "SELECT id FROM acl_user WHERE name = ".paloDB::DBCAMPO($sNombreUser);
-        $result = $this->_DB->getFirstRowQuery($sPeticionSQL, FALSE);
-        if ($result && is_array($result) && count($result)>0) {
-            $idUser = $result[0];
-        }else $this->errMsg = $this->_DB->errMsg;
-        return $idUser;
-        
-    }
-
 }
 ?>
