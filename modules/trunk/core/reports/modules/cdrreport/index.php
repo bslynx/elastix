@@ -261,7 +261,7 @@ function _moduleContent(&$smarty, $module_name)
 	       $timeToSecond = secondsToTime($cdr[8]);
 	       $time = $cdr[8].'s '.$timeToSecond;
 	    }
-            $arrTmp[7] = $cdr[8];
+            $arrTmp[7] = $time;
 
             $arrData[] = $arrTmp;
         }
@@ -314,7 +314,7 @@ function secondsToTime($time){
             $minutesTotal = $decimalMinutes*60;
             $minutes = floor($minutesTotal);
 
-            $decimalSeconds = $decimalTotal - $minutes;
+            $decimalSeconds = $minutesTotal - $minutes;
             $seconds = $decimalSeconds*60;
             return "( ".$hours."h ".$minutes."m ".$seconds."s )";
         }
