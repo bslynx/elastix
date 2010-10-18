@@ -1,3 +1,6 @@
+* Dialer: Add debug notification when record has just been inserted in 
+  current_calls. Should help debug unexplained delays of call notifications in
+  agent console.
 * Dialer: Asterisk 1.6.x expects context variables separated by commas, not 
   pipes. Should fix Elastix bug #558.
 * Dialer: asterisk 1.6.2.x emits Dial event with changed property name. Account

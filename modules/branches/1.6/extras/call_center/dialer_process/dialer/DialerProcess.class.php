@@ -2499,6 +2499,11 @@ UPDATE_CALLS_ORIGINATE_RESPONSE;
                         }
                     }
                 } while (DB::isError($result) && $bErrorLocked);
+
+                if ($this->DEBUG && !DB::isError($result)) {
+                	$this->oMainLog->output("DEBUG: $sEvent: llamada $sKey para agente $sAgentNum acaba de ser insertada en current_calls");
+                }
+
                 // Obtengo los datos del agente 
                 $sDatosAgente = 
                     'SELECT id '.
