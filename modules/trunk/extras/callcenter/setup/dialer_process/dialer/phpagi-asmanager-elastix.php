@@ -967,5 +967,15 @@
 		return (bool)strstr($r["data"], "removed");
 	}
 
+    /** 
+     * Fetch core settings from the running Asterisk server.
+     * Only available in Asterisk 1.6.0 and later.
+     *
+     * @return array Response with requested data, if successful
+     */
+    function CoreSettings()
+    {
+        return $this->send_request('CoreSettings');
+    }
 }
 ?>

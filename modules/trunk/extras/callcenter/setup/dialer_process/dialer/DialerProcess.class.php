@@ -84,6 +84,9 @@ class DialerProcess extends AbstractProcess
     
     private $_fuenteCredAst = ASTCONN_CRED_DESCONOCIDO;
 
+    // Estimación de la versión de Asterisk que se usa
+    private $_asteriskVersion = array(1, 4, 0, 0);
+
     var $DEBUG = FALSE;
     var $REPORTAR_TODO = FALSE;
     var $_iUltimoDebug = NULL;
@@ -463,6 +466,17 @@ class DialerProcess extends AbstractProcess
             $this->oMainLog->output("FATAL: no se puede conectar a Asterisk Manager\n");
             return FALSE;
         } else {
+            // Averiguar la versión de Asterisk que se usa
+            $this->_asteriskVersion = array(1, 4, 0, 0);
+            $r = $astman->CoreSettings(); // Sólo disponible en Asterisk >= 1.6.0
+            if ($r['Response'] == 'Success' && isset($r['AsteriskVersion'])) {
+                $this->_asteriskVersion = explode('.', $r['AsteriskVersion']);
+                $this->oMainLog->output("INFO: CoreSettings reporta Asterisk ".implode('.', $this->_asteriskVersion));
+            } else {
+                $this->oMainLog->output("INFO: no hay soporte CoreSettings en Asterisk Manager, se asume Asterisk 1.4.x.");
+            }
+
+            // Instalación de los manejadores de eventos
             if ($this->DEBUG && $this->REPORTAR_TODO)
                 $astman->add_event_handler('*', array($this, 'OnDefault'));
             $astman->add_event_handler('Newchannel', array($this, 'OnNewchannel'));
@@ -823,6 +837,23 @@ PETICION_LLAMADAS_AGENTE;
 
     }
 
+    // Construir la cadena de variables, con separador adecuado según versión Asterisk
+    private function _construirCadenaVariables($listaVar)
+    {
+        // "ID_CAMPAIGN={$infoCampania->id}|ID_CALL={$tupla->id}|NUMBER={$tupla->phone}|QUEUE={$infoCampania->queue}|CONTEXT={$infoCampania->context}",
+        $versionMinima = array(1, 6, 0);
+        while (count($versionMinima) < count($this->_asteriskVersion))
+            array_push($versionMinima, 0);
+        while (count($versionMinima) > count($this->_asteriskVersion))
+            array_push($this->_asteriskVersion, 0);
+        $sSeparador = ($this->_asteriskVersion >= $versionMinima) ? ',' : '|';
+        $sCadenaVar = '';
+        foreach ($listaVar as $sKey => $sVal) {
+            if ($sCadenaVar != '') $sCadenaVar .= $sSeparador;
+            $sCadenaVar .= "{$sKey}={$sVal}";
+        }
+        return $sCadenaVar;
+    }
 
     /**
      * Procedimiento que actualiza el número de llamadas que están siendo manejadas
@@ -1017,6 +1048,13 @@ PETICION_LLAMADAS_AGENTE;
                         }
                         if ($bLlamadaRepetida) continue;
 
+                        $sCadenaVar = $this->_construirCadenaVariables(array(
+                            'ID_CAMPAIGN'   =>  $infoCampania->id,
+                            'ID_CALL'       =>  $tupla->id,
+                            'NUMBER'        =>  $tupla->phone,
+                            'QUEUE'         =>  $infoCampania->queue,
+                            'CONTEXT'       =>  $infoCampania->context,
+                        ));
                         $listaLlamadas[$sKey]->queue = $infoCampania->queue;
                         if ($this->DEBUG) {
                             $this->oMainLog->output("DEBUG: generando llamada agendada\n".
@@ -1025,6 +1063,7 @@ PETICION_LLAMADAS_AGENTE;
                                 "\tDestino..... $tupla->phone\n" .
                                 "\tCola (N/A).. $infoCampania->queue\n" .
                                 "\tContexto (N/A) $infoCampania->context\n" .
+                                "\tVar. Contexto $sCadenaVar\n" .
                                 "\tTrunk....... ".(is_null($infoCampania->trunk) ? '(by dialplan)' : $infoCampania->trunk)."\n" .
                                 "\tPlantilla... ".$datosTrunk['TRUNK']."\n" .
                                 "\tCaller ID... ".(isset($datosTrunk['CID']) ? $datosTrunk['CID'] : "(no definido)")."\n".
@@ -1037,7 +1076,7 @@ PETICION_LLAMADAS_AGENTE;
                             NULL, NULL, NULL,
                             "Wait" ,  "5" , NULL, 
                             (isset($datosTrunk['CID']) ? $datosTrunk['CID'] : NULL), 
-                            "ID_CAMPAIGN={$infoCampania->id}|ID_CALL={$tupla->id}|NUMBER={$tupla->phone}|QUEUE={$infoCampania->queue}|CONTEXT={$infoCampania->context}",
+                            $sCadenaVar,
                             NULL, 
                             TRUE, $sKey);
                         $this->_astConn->reentrant_count--;
@@ -1350,6 +1389,13 @@ PETICION_LLAMADAS;
                 if ($bLlamadaRepetida) continue;
                 
                 
+                $sCadenaVar = $this->_construirCadenaVariables(array(
+                    'ID_CAMPAIGN'   =>  $infoCampania->id,
+                    'ID_CALL'       =>  $tupla->id,
+                    'NUMBER'        =>  $tupla->phone,
+                    'QUEUE'         =>  $infoCampania->queue,
+                    'CONTEXT'       =>  $infoCampania->context,
+                ));
                 $listaLlamadas[$sKey]->queue = $infoCampania->queue;
                 if ($this->DEBUG) {
                     $this->oMainLog->output("DEBUG: generando llamada\n".
@@ -1357,6 +1403,7 @@ PETICION_LLAMADAS;
 						"\tDestino..... $tupla->phone\n" .
 						"\tCola........ $infoCampania->queue\n" .
 						"\tContexto.... $infoCampania->context\n" .
+                        "\tVar. Contexto $sCadenaVar\n" .
 						"\tTrunk....... ".(is_null($infoCampania->trunk) ? '(by dialplan)' : $infoCampania->trunk)."\n" .
 						"\tPlantilla... ".$datosTrunk['TRUNK']."\n" .
 						"\tCaller ID... ".(isset($datosTrunk['CID']) ? $datosTrunk['CID'] : "(no definido)")."\n".
@@ -1368,7 +1415,7 @@ PETICION_LLAMADAS;
                     $sCanalTrunk, $infoCampania->queue, $infoCampania->context, 1,
                     NULL, NULL, NULL, 
                     (isset($datosTrunk['CID']) ? $datosTrunk['CID'] : NULL), 
-                    "ID_CAMPAIGN={$infoCampania->id}|ID_CALL={$tupla->id}|NUMBER={$tupla->phone}|QUEUE={$infoCampania->queue}|CONTEXT={$infoCampania->context}",
+                    $sCadenaVar,
                     NULL, 
                     TRUE, $sKey);
                 $this->_astConn->reentrant_count--;

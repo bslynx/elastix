@@ -1,3 +1,5 @@
+* Dialer: Asterisk 1.6.x expects context variables separated by commas, not 
+  pipes. Should fix Elastix bug #558.
 * Dialer: asterisk 1.6.2.x emits Dial event with changed property name. Account
   for the difference in order to prevent access to undefined property.
 * Reports (Agent Information): behave properly when no queues have been defined.
