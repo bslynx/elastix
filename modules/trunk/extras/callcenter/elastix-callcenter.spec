@@ -3,13 +3,13 @@
 Summary: Elastix Call Center 
 Name:    elastix-callcenter
 Version: 2.0.0
-Release: 9
+Release: 10
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
-Prereq: elastix >= 2.0
+Prereq: elastix >= 2.0.0-35
 
 %description
 Elastix Call Center
@@ -86,6 +86,31 @@ fi
 /etc/logrotate.d/elastixdialer
 
 %changelog
+* Mon Oct 18 2010 Alex Villacis Lasso <a_villacis@palosanto.com> 2.0.0-10
+- Requires: elastix-2.0.0-35 or later, for generic-cloexec
+- Updated version, synchronized with CallCenter 1.5-3.7 (SVN revision 1843)
+- From CHANGELOG:
+1.5-3.7 (SVN revision 1843)
+	- Dialer: Add debug notification when record has just been inserted in 
+	  current_calls. Should help debug unexplained delays of call notifications in
+	  agent console.
+	- Dialer: Asterisk 1.6.x expects context variables separated by commas, not 
+	  pipes. Should fix Elastix bug #558.
+	- Dialer: asterisk 1.6.2.x emits Dial event with changed property name. Account
+	  for the difference in order to prevent access to undefined property.
+	- Reports (Agent Information): behave properly when no queues have been defined.
+	- Agent Console: protect private declaration of getParameter() in call 
+	  programming so that it does not conflict with Elastix 2 framework. Fixes
+	  Elastix bug #478.
+	- Trunks Used per Hour: fix over-complicated query for active trunks from 
+	  FreePBX database that resulted in misnamed trunk sources. Should fix Elastix
+	  bug #499.
+	- Campaigns Out: set array variables holding recordsets to NULL as soon as 
+	  possible in the CSV download codepath. This reduces memory usage and allows
+	  processing of a larger number of call records without exceeding the PHP
+	  memory limit. Also, for the same purpose, replace superfluous array 
+	  assignment via loop, with direct recordset assignment.
+
 * Mon Aug 23 2010 Alex Villacis Lasso <a_villacis@palosanto.com> 2.0.0-9
 - Updated version, synchronized with CallCenter 1.5-3.6 (SVN revision 1713)
 - From CHANGELOG:

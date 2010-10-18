@@ -1,3 +1,4 @@
+1.5-3.7 (SVN revision 1843)
 * Dialer: Add debug notification when record has just been inserted in 
   current_calls. Should help debug unexplained delays of call notifications in
   agent console.
