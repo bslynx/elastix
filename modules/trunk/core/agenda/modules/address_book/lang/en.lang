@@ -70,5 +70,6 @@ $arrLangModule=array(
 "ERROR" => "ERROR",
 "Transfer" => "Transfer",
 "The transfer couldn't be realized, maybe you don't have any conversation now." => "The transfer couldn't be realized, maybe you don't have any conversation now.",
+"Not_allowed_change" => "This changes disallowed for your user. This contact it not associated to your address book",
 );
 ?>

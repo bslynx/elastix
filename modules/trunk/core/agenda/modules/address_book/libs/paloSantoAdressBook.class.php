@@ -75,9 +75,9 @@ a array with the field "total" containing the total of records.
         $strWhere = "";
 
         if(!is_null($field_name) and !is_null($field_pattern))
-            $strWhere .= " $field_name like '%$field_pattern%' and iduser=$iduser";
+            $strWhere .= " $field_name like $field_pattern and iduser=$iduser";
         if($field_name=="telefono")
-            $strWhere .= " or extension like '%$field_pattern%' and iduser=$iduser";
+            $strWhere .= " or extension like $field_pattern and iduser=$iduser";
 
         // Clausula WHERE aqui
         if(!empty($strWhere)) $query .= "WHERE $strWhere ";
@@ -91,22 +91,57 @@ a array with the field "total" containing the total of records.
 
     if(!is_null($offset) and $offset > 0)
         $query .= " OFFSET $offset";
-
         $result=$this->_DB->fetchTable($query, true);
 
         return $result;
     }
 
-    function contactData($id)
+    function getAddressBookByCsv($limit=NULL, $offset=NULL, $field_name=NULL, $field_pattern=NULL, $count=FALSE, $iduser=NULL)
     {
-        $query   = "SELECT * FROM contact ";
+    //Defining the fields to get. If the param $count is true, then we will get the result of the sql function count(), else, we will get all fields in the table.
+    $fields=($count)?"count(id) as total":"*";
 
-        $strWhere = "id=$id";
+    //Begin to build the query.
+        $query   = "SELECT $fields FROM contact ";
+
+        $strWhere = "";
+
+        if(!is_null($field_name) and !is_null($field_pattern))
+            $strWhere .= " $field_name like $field_pattern and iduser=$iduser";
+        if($field_name=="telefono")
+            $strWhere .= " or extension like $field_pattern and iduser=$iduser";
 
         // Clausula WHERE aqui
         if(!empty($strWhere)) $query .= "WHERE $strWhere ";
+        else $query .= "WHERE iduser=$iduser";
 
-        $result=$this->_DB->getFirstRowQuery($query, true);
+        //ORDER BY
+        $query .= " ORDER BY last_name, name";
+
+        // Limit
+        if(!is_null($limit))
+            $query .= " LIMIT $limit ";
+
+    if(!is_null($offset) and $offset > 0)
+        $query .= " OFFSET $offset";
+        $result=$this->_DB->fetchTable($query, true);
+
+        return $result;
+    }
+
+    function contactData($id, $id_user)
+    {
+        $params = array($id, $id_user);
+        $query   = "SELECT * FROM contact WHERE id=? and iduser=?";
+
+        //$strWhere = "id=$id";
+
+        // Clausula WHERE aqui
+        //if(!empty($strWhere)) $query .= "WHERE $strWhere ";
+
+        $result=$this->_DB->getFirstRowQuery($query, true, $params);
+        if(!$result && $result==null && count($result) < 1)
+            return false;
         return $result;
     }
 
@@ -139,10 +174,11 @@ a array with the field "total" containing the total of records.
         return $result;
     }
 
-    function deleteContact($id)
+    function deleteContact($id, $id_user)
     {
-        $query = "DELETE FROM contact WHERE id=$id";
-        $result = $this->_DB->genQuery($query);
+        $params = array($id, $id_user);
+        $query = "DELETE FROM contact WHERE id=? and iduser=?";
+        $result = $this->_DB->genQuery($query, $params);
         if($result[0] > 0)
             return true;
         else return false;
@@ -248,9 +284,9 @@ a array with the field "total" containing the total of records.
         if(!is_null($field_name) and !is_null($field_pattern))
         {
             if($field_name=='name')
-                $strWhere .= " description like '%$field_pattern%' ";
+                $strWhere .= " description like $field_pattern ";
             else if($field_name=='telefono')
-                $strWhere .= " id like '%$field_pattern%' ";
+                $strWhere .= " id like $field_pattern ";
         }
 
         // Clausula WHERE aqui
@@ -304,5 +340,6 @@ a array with the field "total" containing the total of records.
         return $idUser;
         
     }
+
 }
 ?>
