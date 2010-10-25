@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.0                                                  |
+  | Elastix version: 1.6                                           |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,12 +25,12 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   |                                                                      |
-  | Translate by: Chavdar Iliev                                          |
-  | Email: chavdar_75@yahoo.com                                          |
+  | Translate by:Dannarz                                             |
+  | Email: sesshomarurin7@palosanto.com                                                       |
   +----------------------------------------------------------------------+
-  $Id: en.lang,v 1.7 2008/02/18 09:48:00 bmacias Exp $ */
-global $arrLangModule2;
-$arrLangModule2=array(
+  $Id: bg.lang, October 25, 2010, 3:01 pm kleber andres loayza Exp $ */
+global $arrLangModule;
+$arrLangModule=array(  
 "Option" => "Опция",
 "Unembedded freePBX" => "Оригинална FreePBX",
 "Basic" => "Основни Настройки",
@@ -41,23 +41,24 @@ $arrLangModule2=array(
 "Trunks" => "Външни Линии",
 "Inbound Call Control" => "Входящи Обаждания",
 "Inbound Routes" => "Входящи Маршрути",
-"Announcements" => "Известия",
+"Announcements" => "Съобщения",
 "Follow Me" => "Следвай Ме",
 "IVR" => "IVR",
-"Misc Destinations" => "Смесени Направления",
+"Misc Destinations" => "Други Направления",
 "Queues" => "Опашки",
 "Ring Groups" => "Групи на Звънене",
 "Time Conditions" => "Времеви Условия",
 "Internal Options & Configuration" => "Вътрешни Опции и Профили",
 "Conferences" => "Конференции",
-"Misc Applications" => "Смесени Приложения",
+"Misc Applications" => "Други Приложения",
 "Music on Hold" => "Музика при Задържане",
 "PIN Sets" => "PIN Въвеждане",
-"Paging and Intercom" => "Paging and Intercom",
+"Paging and Intercom" => "Търсене и Интерком",
 "Parking Lot" => "Група за Паркиране",
 "System Recordings" => "Системни Записи",
 "Remote Access" => "Отдалечен Достъп",
 "Callback" => "Обратно Обаждане",
 "DISA" => "DISA",
+
 );
 ?>

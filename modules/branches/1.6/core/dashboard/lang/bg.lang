@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.0                                                  |
+  | Elastix version: 1.6                                           |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,13 +25,13 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   |                                                                      |
-  | Translate by: Chavdar Iliev                                          |
-  | Email: chavdar_75@yahoo.com                                          |
+  | Translate by:Dannarz                                             |
+  | Email: sesshomarurin7@palosanto.com                                                       |
   +----------------------------------------------------------------------+
-  $Id: en.lang,v 1.7 2008/02/18 09:48:00 bmacias Exp $ */
+  $Id: bg.lang, October 25, 2010, 3:01 pm kleber andres loayza Exp $ */
 global $arrLangModule;
-$arrLangModule=array(
-"You haven't extension" => "Нямате въеден Вътрешен Номер.",
+$arrLangModule=array(  
+"You haven't extension" => "Нямате въведен Вътрешен Номер.",
 "Imap: Connection error" => "Imap: Грешка при свързване.",
 "You don't recibed emails" => "Нямате получени писма.",
 "You don't recibed faxes" => "Нямате получени факсове.",
@@ -61,8 +61,9 @@ $arrLangModule=array(
 "Error at read yours mails." => "Грешка при четене на писмата.",
 "Error at read status system." => "Грешка при четене на информацията за системата.",
 "Error at read your calendar." => "Грешка при четене на календара.",
-"You don't have events" => "Нямате въведени събития.",
-"You don't have a webmail account" => "Нямате eMail акаунт",
+"You don't have events" => "Нямате въведени срещи в календара.",
+"You don't have a webmail account" => "Нямате eMail свързан с този акаунт.",
 "Calendar" => "Календар",
+
 );
 ?>

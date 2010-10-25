@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.0                                                  |
+  | Elastix version: 1.6                                           |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,12 +25,12 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   |                                                                      |
-  | Translate by: Chavdar Iliev                                          |
-  | Email: chavdar_75@yahoo.com                                          |
+  | Translate by:Dannarz                                             |
+  | Email: sesshomarurin7@palosanto.com                                                       |
   +----------------------------------------------------------------------+
-  $Id: en.lang,v 1.7 2008/02/18 09:48:00 bmacias Exp $ */
+  $Id: bg.lang, October 25, 2010, 3:01 pm kleber andres loayza Exp $ */
 global $arrLangModule;
-$arrLangModule=array(
+$arrLangModule=array(  
 "Are you sure you wish to delete backup (s)?" => "Сигурни ли сте че искате да изтриете архивите?",
 "Database" => "База Данни",
 "PDF" => "PDF",
@@ -40,7 +40,7 @@ $arrLangModule=array(
 "All options (Email)" => "Всички опции (eMail)",
 "All options (Endpoint)" => "Всички опции (Телефонни Апарати)",
 "All options (Asterisk)" => "Всички опции (Астериск)",
-"DAHDI Configuration" => "Заптел Настройки",
+"DAHDI Configuration" => "DAHDI Настройки",
 "Others" => "Други",
 "All options (Others)" => "Всички опции (Други)",
 "SugarCRM Database" => "SugarCRM База Данни",
@@ -56,7 +56,7 @@ $arrLangModule=array(
 "The backup file would have a tar extension" => "Файлът с архивите нямаше разширение .tar",
 "Error copying the file" => "Грешка при копиране на файл",
 "The file was copied correctly" => "Копирането завърши нормално",
-"Backup" => "Perform a Backup...",
+"Backup" => "Архивирай",
 "Process" => "Напред",
 "Restore" => "Възстанови",
 "Elastix Database" => "Еластикс База Данни",
@@ -73,7 +73,7 @@ $arrLangModule=array(
 "File doesn't exist" => "Файлът не съществува",
 "Restore Complete!" => "Възстановяването Завърши!",
 "Backup File Location" => "Местоположение на Архива",
-"Select All options" => "Select All options",
+"Select All options" => "Избери Всички Опции",
 "Backup/Restore" => "Архивиране",
 "Backup List" => "Списък с Архиви",
 "Name Backup" => "Име на Архив",
@@ -81,18 +81,19 @@ $arrLangModule=array(
 "There are not backup file selected" => "Не е избран архив",
 "Action" => "Действие",
 "Folder backup doesn't exist" => "Директорията с архиви не съществува",
-"Flash Operator Panel Config Files" => "Flash Operator Panel Config Files",
+"Flash Operator Panel Config Files" => "ФОП Конфигурационни Файлове",
 "Date" => "Дата",
 "Voicemails" => "Гласова Поща",
 "Fax" => "Факс",
 "Email" => "eMail",
-"Dahdi Configuration" => "Dahdi Configuration",
-"Cancel" => "Cancel",
-"Select all in this section" => "Select all in this section",
-"MOH" => "Music on Hold",
-"Others new" => "Others",
-"Calendar  Database" => "Calendar  Database",
-"Address Book Database" => "Address Book Database",
-"Conference  Database" => "Conference  Database",
+"Dahdi Configuration" => "DAHDI Настройки",
+"Cancel" => "Отказ",
+"Select all in this section" => "Избери всичко в тази секция",
+"MOH" => "Музика при Задържане",
+"Others new" => "Други",
+"Calendar  Database" => "База Данни на Календар",
+"Address Book Database" => "База Данни на Указател",
+"Conference  Database" => "База Данни на Конференции",
+
 );
 ?>

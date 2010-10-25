@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.0                                                  |
+  | Elastix version: 1.6                                           |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,15 +25,15 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   |                                                                      |
-  | Translate by: Chavdar Iliev                                          |
-  | Email: chavdar_75@yahoo.com                                          |
+  | Translate by:Dannarz                                             |
+  | Email: sesshomarurin7@palosanto.com                                                       |
   +----------------------------------------------------------------------+
-  $Id: en.lang,v 1.7 2008/02/18 09:48:00 bmacias Exp $ */
+  $Id: bg.lang, October 25, 2010, 3:01 pm kleber andres loayza Exp $ */
 global $arrLangModule;
-$arrLangModule=array(
-"Extensions Batch" => "Групиране Вътрешни",
-"Batch of Extensions" => "Batch of Extensions",
-"Are you really sure you want to delete all the extensions in this server?" => "Are you really sure you want to delete all the extensions in this server?",
+$arrLangModule=array(  
+"Extensions Batch" => "Групиране Вътрешни Номера",
+"Batch of Extensions" => "Групиране на Вътрешни Номера",
+"Are you really sure you want to delete all the extensions in this server?" => "Сигурни ли сте че искате да изтриете всички вътрешни номера в този сървър?",
 "Invalid file extension.- It must be csv" => "Грешно файлово разширение, трябва да бъде (.csv)",
 "Possible file upload attack. Filename" => "Възможна атака с качване на файлове. Файл с име",
 "Error" => "Грешка",
@@ -54,25 +54,26 @@ $arrLangModule=array(
 "Can't exist a secret empty. Line" => "Не е въведена парола. Ред",
 "Can't exist a display name empty. Line" => "Не е въведено име на вътрешен номер. Ред",
 "Please read the lines in the footer" => "Моля прочетете текста в долната част на страницата",
-"Header File Extensions Batch" => "The first line must contains the name (or title) of the columns, and the file must have at minimum three columns: Display Name, User Extension, Secret. For more information about all the parameters supported, please read the online embedded help.",
+"Header File Extensions Batch" => "Първият ред трябва да съдържа името на колоните, като файла трябва да има минимум три колони: Display Name, User Extension, Secret.<br>За повече информация относно всички поддържани параметри, моля използвайте менюто за помощ.",
 "About Update Extensions Batch" => "Ако заредите файл със съществуващи вътрешни номера, те ще бъдат обновени.",
-"There aren't extensions" => "Тук няма вътрешни номера",
-"Download Extensions" => "Download the current extensions in CSV format",
-"Error processing Database Family" => "Error processing Database Family",
-"Delete All Extensions" => "Delete All Extensions",
-"All extensions deletes" => "All extensions deletes",
-"Error to delete extensions" => "Error to delete extensions",
-"Unable to reload the changes" => "Unable to reload the changes",
-"Could not delete the database" => "Could not delete the database",
-"Could not delete the ASTERISK database" => "Could not delete the ASTERISK database",
-"Unable delete AMPUSER in database astDB" => "Unable delete AMPUSER in database astDB",
-"Unable delete DEVICE in database astDB" => "Unable delete DEVICE in database astDB",
-"Unable delete CW in database astDB" => "Unable delete CW in database astDB",
-"Unable delete CF in database astDB" => "Unable delete CF in database astDB",
-"Unable delete CFB in database astDB" => "Unable delete CFB in database astDB",
-"Unable delete CFU in database astDB" => "Unable delete CFU in database astDB",
-"File" => "File to Upload (*.csv)",
+"There aren't extensions" => "Няма Вътрешни Номера",
+"Download Extensions" => "Изтегли текущите Вътрешни Номера в CSV формат",
+"Error processing Database Family" => "Грешка при работа с базата данни",
+"Delete All Extensions" => "Изтрий Всички Вътрешни Номера",
+"All extensions deletes" => "Всички Вътрешни Номера са изтрити",
+"Error to delete extensions" => "Грешка при изтриване на Вътрешни Номера",
+"Unable to reload the changes" => "Не мога да презаредя промените",
+"Could not delete the database" => "Не мога да изтрия базата данни",
+"Could not delete the ASTERISK database" => "Не мога да изтрия ASTERISK база данни",
+"Unable delete AMPUSER in database astDB" => "Не мога да изтрия AMPUSER в база данни astDB",
+"Unable delete DEVICE in database astDB" => "Не мога да изтрия DEVICE в база данни astDB",
+"Unable delete CW in database astDB" => "Не мога да изтрия CW в база данни astDB",
+"Unable delete CF in database astDB" => "Не мога да изтрия CF в база данни astDB",
+"Unable delete CFB in database astDB" => "Не мога да изтрия CFB в база данни astDB",
+"Unable delete CFU in database astDB" => "Не мога да изтрия CFU в база данни astDB",
+"File" => "Файл за Качване (*.csv)",
 "Message" => "Съобщение",
-"Save" => "Upload CVS File",
+"Save" => "Качи CSV Файл",
+
 );
 ?>
