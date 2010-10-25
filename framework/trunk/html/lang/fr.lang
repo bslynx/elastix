@@ -2,20 +2,15 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.0                                                  |
+  | Elastix version: 2.0                                           |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
-  | Copyright (c) 2008 Palosanto Solutions S. A.                         |
+  | Copyright (c) 2006 Palosanto Solutions S. A.                         |
   +----------------------------------------------------------------------+
   | Cdla. Nueva Kennedy Calle E 222 y 9na. Este                          |
   | Telfs. 2283-268, 2294-440, 2284-356                                  |
   | Guayaquil - Ecuador                                                  |
-  | http://www.palosanto.com 						                     |
-  |                                                                      |
-  | Translated by: Erwan DESVERGNES - SDCI                               |
-  | erwan.desvergnes@SDCI.fr                                             |
-  |   Revision 1.0-17 by Gregory BOUZINAC - GMixon                       | 
-  | greg@gmixon.com                                                      |
+  | http://www.palosanto.com                                             |
   +----------------------------------------------------------------------+
   | The contents of this file are subject to the General Public License  |
   | (GPL) Version 2 (the "License"); you may not use this file except in |
@@ -29,166 +24,108 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  |                                                                      |
+  | Translate by:Dannarz                                             |
+  | Email: sesshomarurin7@palosanto.com                                                       |
   +----------------------------------------------------------------------+
-  $Id: fr.lang,v 1.8 2008/05/20 00:36:42 bmacias Exp $ */
+  $Id: fr.lang, October 25, 2010, 5:39 pm kleber andres loayza Exp $ */
 global $arrLang;
-$arrLang=array(
-/*System Info*/
-"Disk usage"=>"Utilisation disque",
-"Used space"=>"Espace utilisé",
-"Free space"=>"Espace libre",
-"Simultaneous calls, memory and CPU"=>"Appels simultanés, mémoire et CPU",
-"Sim. calls"=>"Appels Sim.",
-"CPU usage (%)"=>"Utilisation CPU (%)",
-"Mem. usage (MB)"=>"Utilisation Mem. (Mo)",
-
-"Export"=>"Exporter",
-"Start"=>"D&eacute;but",
-"End"=>"Fin",
-"Next"=>"Suivant",
-"Previous"=>"Pr&eacute;c&eacute;dent",
-
-
-"Validation Error"=>"Erreur de validation",
-"The following fields contain errors"=>"Les champs suivants contiennent des erreurs",
-"Save"=>"Sauver",
-"Required field"=>"Champ requis",
-"Apply changes"=>"Appliquer les changements",
-"Cancel"=>"Annuler",
-
-/*Login to Elastix*/
-"Welcome to Elastix"=>"Bienvenue sur Elastix",
-"Please enter your username and password"=>"Veuillez entrer votre nom d'utilisateur et votre mot de passe",
-"Username"=>"Nom d'utilisateur",
+$arrLang=array(  
+"Disk usage" => "Utilisation disque",
+"Used space" => "Espace utilisé",
+"Free space" => "Espace libre",
+"Simultaneous calls, memory and CPU" => "Appels simultanés, mémoire et CPU",
+"Sim. calls" => "Appels Sim.",
+"CPU usage (%)" => "Utilisation CPU (%)",
+"Mem. usage (MB)" => "Utilisation Mem. (Mo)",
+"Export" => "Exporter",
+"Start" => "D&eacute;but",
+"End" => "Fin",
+"Next" => "Suivant",
+"Previous" => "Pr&eacute;c&eacute;dent",
+"Validation Error" => "Erreur de validation",
+"The following fields contain errors" => "Les champs suivants contiennent des erreurs",
+"Save" => "Sauver",
+"Required field" => "Champ requis",
+"Apply changes" => "Appliquer les changements",
+"Cancel" => "Annuler",
+"Welcome to Elastix" => "Bienvenue sur Elastix",
+"Please enter your username and password" => "Veuillez entrer votre nom d'utilisateur et votre mot de passe",
+"Username" => "Nom d'utilisateur",
 "Name" => "Nom",
 "Retype password" => "Retapez le mot de passe",
-"Password"=>"Mot de passe",
-"Submit"=>"Envoyer",
-"Login page"=>"Page de connexion",
-/*Login to Elastix*/
-
-/*start User Management*/
-"Group"=>"Groupe",
-"User List"=>"Liste des utilisateurs",
-"The passwords are empty or don't match"=>"Les mots de passe sont vides ou diff&egrave;rent",
-"The group is wrong"=>"Le groupe est faux",
-
-"Are you sure you wish to continue?"=>"Etes vous s&ucirc;r de vouloir continuer ?",
-"Edit"=>"Editer",
-"Delete"=>"Supprimer",
-"Accept"=>"Accepter",
-"Group Permission"=>"Permissions des Groupes",
-"Users"=>"Utilisateurs",
-"Directory couldn't be opened"=>"Le r&eacute;pertoire ne peut pas &ecirc;tre ouvert",
-/*end User Management*/
-
-
-/*start menu*/
-"System"=>"Syst&egrave;me",
-"System Info"=>"Info syst&egrave;me",
-"User Management"=>"Gestion des utilisateurs",
-"Menu Administrator"=>"Menu Administrateur",
-/*end menu*/
-
-/*Start Language*/
-"Language"=>"Langue",
-"Change"=>"Changer",
-"Logout"=>"D&eacute;connexion",
-/*end Language*/
-
-
-/*version 0.7*/
-/*start paloSantoValidar.class.php*/
-"Options"=>"Options",
-"Empty field"=>"Champ vide",
-"Bad Format"=>"Mauvais format",
-"No option was selected"=>"Aucune option s&eacute;lectionn&eacute;e",
-"Octets out of range"=>"Octets en dehors de la plage",
-/*end paloSantoValidar.class.php*/
-
-/*version 0.8*/
-/*start user*/
+"Password" => "Mot de passe",
+"Submit" => "Envoyer",
+"Login page" => "Page de connexion",
+"Group" => "Groupe",
+"User List" => "Liste des utilisateurs",
+"The passwords are empty or don't match" => "Les mots de passe sont vides ou diff&egrave;rent",
+"The group is wrong" => "Le groupe est faux",
+"Are you sure you wish to continue?" => "Etes vous s&ucirc;r de vouloir continuer ?",
+"Edit" => "Editer",
+"Delete" => "Supprimer",
+"Accept" => "Accepter",
+"Group Permission" => "Permissions des Groupes",
+"Users" => "Utilisateurs",
+"Directory couldn't be opened" => "Le r&eacute;pertoire ne peut pas &ecirc;tre ouvert",
+"System" => "Syst&egrave;me",
+"System Info" => "Info syst&egrave;me",
+"User Management" => "Gestion des utilisateurs",
+"Menu Administrator" => "Menu Administrateur",
+"Language" => "Langue",
+"Change" => "Changer",
+"Logout" => "D&eacute;connexion",
+"Options" => "Options",
+"Empty field" => "Champ vide",
+"Bad Format" => "Mauvais format",
+"No option was selected" => "Aucune option s&eacute;lectionn&eacute;e",
+"Octets out of range" => "Octets en dehors de la plage",
 "View User" => "Voir Utilisateur",
-/*end user*/
-
-/*system - date/time*/
-"Date/Time"  =>  "Date & Heure",
-/*end system - date/time*/
-
-/*load module*/
-"Load Module"  =>  "Chargement de Modules",
-"ID for new module (folder name)"  =>  "ID pour nouveau module (nom dossier)",
-"Choose Menu"  =>  "Choisir Menu",
-"ID for new menu"  =>  "ID pour nouveau menu",
-"Menu Name"  =>  "Nom Menu",
-"Defined Menu"  =>  "Menu D&eacute;fini",
-"New Menu"  =>  "Nouveau Menu",
-"Module sucessfully loaded"  =>  "Module correctement charg&eacute;",
-"Folder name doesn't exist in module file"  =>  "Dossier Nom inexistant dans le fichier de module",
-"Folder configs doesn't exist in module file"  =>  "Dossier configs inexistant dans le fichier de module",
-"Folder themes doesn't exist in module file"  =>  "Dossier th&egrave;mes inexistant dans le fichier de module",
-"File index.php doesn't exist in module file"  =>  "Fichier index.php inexistant dans le fichier de module",
-/*end load module*/
-
-// Elastix 0.9 
-
-//Inicio SubModule Themes
+"Date/Time" => "Date & Heure",
+"Load Module" => "Chargement de Modules",
+"ID for new module (folder name)" => "ID pour nouveau module (nom dossier)",
+"Choose Menu" => "Choisir Menu",
+"ID for new menu" => "ID pour nouveau menu",
+"Menu Name" => "Nom Menu",
+"Defined Menu" => "Menu D&eacute;fini",
+"New Menu" => "Nouveau Menu",
+"Module sucessfully loaded" => "Module correctement charg&eacute;",
+"Folder name doesn't exist in module file" => "Dossier Nom inexistant dans le fichier de module",
+"Folder configs doesn't exist in module file" => "Dossier configs inexistant dans le fichier de module",
+"Folder themes doesn't exist in module file" => "Dossier th&egrave;mes inexistant dans le fichier de module",
+"File index.php doesn't exist in module file" => "Fichier index.php inexistant dans le fichier de module",
 "Themes" => "Th&egrave;mes",
 "Change Theme" => "Changer Th&egrave;me",
-//Fin SubModule Themes
-
-/*Module IM*/
 "IM" => "IM",
 "OpenFire" => "OpenFire",
 "The service Openfire No running" => "Le service Openfire n'est pas actif actuellement. Si vous voulez l'activer veuillez ",
-
-/*vTigerCRM*/
 "vTigerCRM" => "vTigerCRM",
 "The vTiger installation is almost done. To complete it please" => "L'installation de vTiger est presque termin&eacute;e. Pou
 r la finir veuillez ",
 "click here" => "cliquer ici",
-
-/*Sugarcrm*/
 "SugarCRM" => "SugarCRM",
 "The SugarCRM installation is almost done. To complete it please" => "L'installation de SugarCRM est presque termin&eacute;e.
  Pour la finir veuillez",
-
-/* Preferences*/
 "Preferences" => "Pr&eacute;f&eacute;rences",
-
-/* Start About Elastix */
-"About Elastix"=>"A propos d'Elastix",
-"About Elastix Content"=>"Elastix a &eacute;t&eacute; cr&eacute;&eacute; dans le but de devenir un syst&egrave;me bas&eacute; web fiable, facile &agrave; utiliser pour la gestion des communications VOIP. Ce logiciel open
+"About Elastix" => "A propos d'Elastix",
+"About Elastix Content" => "Elastix a &eacute;t&eacute; cr&eacute;&eacute; dans le but de devenir un syst&egrave;me bas&eacute; web fiable, facile &agrave; utiliser pour la gestion des communications VOIP. Ce logiciel open
 source qui a d&eacute;marr&eacute; en Equateur est devenu la solution de choix pour l'impl&eacute;mentation
 de Voix sur IP tout autour du globe.",
-"About Elastix Closed"=>"Fermer",
-/* End About Elastix */
-
-//Elastix 0.9.1
-/*Start module Group List*/
-"Groups"=>"Groupes",
-"Group List"=>"Liste Groupes",
-/*End module Group List*/
-
-/** Elastix 1.0 **/
-/*Grouplist*/
+"About Elastix Closed" => "Fermer",
+"Groups" => "Groupes",
+"Group List" => "Liste Groupes",
 "administrator" => "Administrateur",
 "operador" => "Op&eacute;rateur",
 "extension" => "Extension",
 "total access" => "Acc&egrave;s Total",
 "extension user" => "Utilisateur Extension",
-/*Grouplist*/
 "Title" => "Title",
 "Search" => "Search",
-"Show"   => "Show",
-
+"Show" => "Show",
 "Network Parameters" => "Param&egrave;tres R&eacute;seau",
 "DHCP Server" => "Seveur DHCP",
-
 "Repositories" => "D&eacute;p&ocirc;ts",
 "Currency" => "Devises",
-
-/** Call Center **/
 "Outgoing Calls" => "Campagne d'appels",
 "Ingoing Calls" => "File d'Attente",
 "Breaks" => "Pauses",
@@ -196,7 +133,7 @@ de Voix sur IP tout autour du globe.",
 "Forms" => "Formulaires",
 "Campaigns" => "Campagnes",
 "Do not Call List" => "&Agrave; ne pas appeller",
-"Form Designer" => "Conception de formulaire",
+"Form Designer" => "Concepteur du formulaire",
 "Form Preview" => "Aper&ccedil;u du formulaire",
 "Reports Break" => "Rapports Pauses",
 "Calls Detail" => "Appels D&eacute;taill&eacute;",
@@ -209,78 +146,69 @@ de Voix sur IP tout autour du globe.",
 "Graphic Calls per hour" => "Graphique Appels / heure",
 "wallboard" => "Barom&egrave;tre",
 "Queues" => "Files d'Attente",
-
 "Dashboard" => "Tableau de bord",
 "Network" => "R&eacute;seau",
 "Shutdown" => "Arr&ecirc;t Machine",
 "Hardware Detection" => "D&eacute;tection Mat&eacute;riel",
 "Updates" => "Mises &agrave; jour",
-"Backup/Restore" => "Sauvegarde\nRestauration",
-
+"Backup/Restore" => "Sauvegarde
+Restauration",
 "PBX Configuration" => "Configuration PBX",
 "Flash Operator Panel" => "Panneau Op&eacute;rateur",
-"Voicemails" => "Bo&icirc;tes\nVocales",
-"Monitoring" => "Contr&ocirc;le\ndes Conversations",
-"Endpoint Configuration" => "Configuration\nDes Postes",
+"Voicemails" => "Bo&icirc;tes
+Vocales",
+"Monitoring" => "Contr&ocirc;le
+des Conversations",
+"Endpoint Configuration" => "Configuration
+Des Postes",
 "Conference" => "Conf&eacute;rence",
-"Extensions Batch" => "Extensions\nPar Lots",
+"Extensions Batch" => "Extensions par lot",
 "Tools" => "Outils",
-
 "Virtual Fax List" => "Liste des Fax Virtuels",
 "New Virtual Fax" => "Nouveau Fax Virtuel",
 "Fax Master" => "Gestionnaire des Fax",
 "Fax Clients" => "Clients Fax",
 "Fax Visor" => "Visualiseur de Fax",
 "Template Email" => "Mod&egrave;le de Fax",
-
 "Domains" => "Domaines",
 "Accounts" => "Comptes",
 "Relay" => "Relais",
 "Webmail" => "Webmail",
 "Antispam" => "Antispam",
-
 "CDR Report" => "Rapports d'appels",
 "Channels Usage" => "Utilisation des Canaux",
 "Billing" => "Facturation",
 "Asterisk Logs" => "Logs Asterisk",
 "Graphic Report" => "Rapport graphique",
 "Summary by Extension" => "R&eacute;sum&eacute; par extension",
-
 "Rates" => "Tarifs",
 "Billing Report" => "Rapport de Facturation",
 "Destination Distribution" => "R&eacute;partition par Destination",
 "Billing Setup" => "Config Facturation",
-
 "Calling Cards" => "Taxation",
 "Downloads" => "T&eacute;l&eacute;chargements",
-"Text to Wav" => "Du Text\nEn Wav",
-
+"Text to Wav" => "Du Text
+En Wav",
 "Calendar" => "Calendrier",
 "Address Book" => "Carnet d'Adresses",
 "Recordings" => "Enregistrements",
-
 "File Editor" => "Editeur de fichier",
-
 "Fax Utilities" => "Utilistaire Fax",
 "Instant Messaging" => "Messagerie Isntantan&eacute;e",
 "Build Module" => "Cr&eacute;er un Module",
 "Delete Module" => "Effacer un Module",
 "Language Admin" => "Gestion des langues",
-
 "Addons" => "Add-on",
 "Developer" => "D&eacute;veloppeur",
 "Installed" => "Install&eacute;",
 "Availables" => "Disponible",
-
 "Applet Admin" => "Gestion des Applets",
 "Control Panel" => "Panneau de contr&ocirc;le",
 "DHCP By MAC" => "DHCP par MAC",
 "DHCP Client List" => "Liste Clients DHCP",
 "Endpoint Configurator" => "Configuration Terminal",
-"Extensions Batch" => "Extensions par lot",
 "Fax Viewer" => "Visualisation de Fax",
 "Asterisk File Editor" => "Editeur de fichiers Asterisk",
-"Form Designer" => "Concepteur du formulaire",
 "Hardware Detector" => "D&eacute;tection Mat&eacute;riel",
 "operator" => "operator",
 "File install.php doesn't exist in module file" => "File install.php doesn't exist in module file",
