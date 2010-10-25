@@ -3,7 +3,7 @@
         <form  method='POST' style='margin-bottom:0;' action='?menu={$module_name}'>
             <td width="15%" align="center"><input class="button" type="submit" name="new" value="{$NEW_adress_book}"></td>
         </form>
-        <form name="form_filter" method='POST' style='margin-bottom:0;' action='?menu={$module_name}'>
+        <form id="form_filter" name="form_filter" method='POST' style='margin-bottom:0;' action='?menu={$module_name}'>
             <td width="30%" align="right">{$Phone_Directory}:</td>
             <td width="15%" align="left">
                 <select name="select_directory_type" onchange='report_by_directory_type()'>
@@ -24,6 +24,7 @@
     <script type="text/javascript">
         function report_by_directory_type()
         {
+            var form_filter = document.getElementsByName('form_filter')[0];
             form_filter.submit();
         }
     </script>

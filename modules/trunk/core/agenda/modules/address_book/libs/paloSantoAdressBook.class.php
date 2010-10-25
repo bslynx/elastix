@@ -75,13 +75,13 @@ a array with the field "total" containing the total of records.
         $strWhere = "";
 
         if(!is_null($field_name) and !is_null($field_pattern))
-            $strWhere .= " $field_name like $field_pattern and iduser=$iduser";
+            $strWhere .= " $field_name like $field_pattern and (iduser=$iduser or status='isPublic') ";
         if($field_name=="telefono")
-            $strWhere .= " or extension like $field_pattern and iduser=$iduser";
+            $strWhere .= " or extension like $field_pattern and (iduser=$iduser or status='isPublic') ";
 
         // Clausula WHERE aqui
         if(!empty($strWhere)) $query .= "WHERE $strWhere ";
-
+        //else   $query .= "WHERE $strWhere";
         //ORDER BY
         $query .= " ORDER BY last_name, name";
 
@@ -107,13 +107,13 @@ a array with the field "total" containing the total of records.
         $strWhere = "";
 
         if(!is_null($field_name) and !is_null($field_pattern))
-            $strWhere .= " $field_name like $field_pattern and iduser=$iduser";
+            $strWhere .= " $field_name like $field_pattern and (iduser=$iduser  or status='isPublic') ";
         if($field_name=="telefono")
-            $strWhere .= " or extension like $field_pattern and iduser=$iduser";
+            $strWhere .= " or extension like $field_pattern and (iduser=$iduser  or status='isPublic') ";
 
         // Clausula WHERE aqui
         if(!empty($strWhere)) $query .= "WHERE $strWhere ";
-        else $query .= "WHERE iduser=$iduser";
+        else $query .= "WHERE iduser=$iduser or status='isPublic'";
 
         //ORDER BY
         $query .= " ORDER BY last_name, name";
@@ -132,7 +132,7 @@ a array with the field "total" containing the total of records.
     function contactData($id, $id_user)
     {
         $params = array($id, $id_user);
-        $query   = "SELECT * FROM contact WHERE id=? and iduser=?";
+        $query   = "SELECT * FROM contact WHERE id=? and (iduser=? or status='isPublic')";
 
         //$strWhere = "id=$id";
 
@@ -147,26 +147,37 @@ a array with the field "total" containing the total of records.
 
     function addContact($data)
     {
-        $queryInsert = $this->_DB->construirInsert('contact', $data);
-        $result = $this->_DB->genQuery($queryInsert);
+        //$queryInsert = $this->_DB->construirInsert('contact', $data);
+        $queryInsert = "insert into contact(name,last_name,telefono,email,iduser,picture,address,company,notes,status) values(?,?,?,?,?,?,?,?,?,?)";
+        $result = $this->_DB->genQuery($queryInsert, $data);
 
         return $result;
     }
 
-    function updateContact($data,$where)
+    function addContactCsv($data)
     {
-        $queryUpdate = $this->_DB->construirUpdate('contact', $data,$where);
-//        die($queryUpdate);
-        $result = $this->_DB->genQuery($queryUpdate);
+        //$queryInsert = $this->_DB->construirInsert('contact', $data);
+        $queryInsert = "insert into contact(name,last_name,telefono,email,iduser,address,company,status) values(?,?,?,?,?,?,?,?)";
+        $result = $this->_DB->genQuery($queryInsert, $data);
 
         return $result;
     }
 
-    function existContact($data)
+    function updateContact($data,$id)
+    {
+        //$queryUpdate = $this->_DB->construirUpdate('contact', $data,$where);
+//        die($queryUpdate);
+        $queryUpdate = "update contact set name=?, last_name=?, telefono=?, email=?, iduser=?, picture=?, address=?, company=?, notes=?, status=?  where id=$id";
+        $result = $this->_DB->genQuery($queryUpdate, $data);
+
+        return $result;
+    }
+
+    function existContact($name, $last_name, $telefono)
     {
         $query =     " SELECT count(*) as total FROM contact "
-                    ." WHERE name={$data['name']} and last_name={$data['last_name']}"
-                    ." and telefono={$data['telefono']}";
+                    ." WHERE name='$name' and last_name='$last_name'"
+                    ." and telefono='$telefono'";
 
         $result=$this->_DB->getFirstRowQuery($query, true);
         if(!$result)
@@ -324,6 +335,21 @@ a array with the field "total" containing the total of records.
                 $result[$regs[1]] = $arrVal[2];
             }
         }
+        return $result;
+    }
+
+    function isEditablePublicContact($id, $id_user){
+        $params = array($id, $id_user);
+        $query   = "SELECT * FROM contact WHERE id=? and iduser=? ";
+
+        //$strWhere = "id=$id";
+
+        // Clausula WHERE aqui
+        //if(!empty($strWhere)) $query .= "WHERE $strWhere ";
+
+        $result=$this->_DB->getFirstRowQuery($query, true, $params);
+        if(!$result && $result==null && count($result) < 1)
+            return false;
         return $result;
     }
 

@@ -119,6 +119,9 @@ function _moduleContent(&$smarty, $module_name)
         case 'download_csv':
             $content = download_address_book($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk);
             break;
+        case 'getImage':
+            $content = getImageContact($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk);
+            break;
         default:
             $content = report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk);
             break;
@@ -176,24 +179,25 @@ function load_address_book_from_csv($smarty, $arrLang, $ruta_archivo, $pDB, $pDB
             {
                 $data = array();
 
-                $data['name']       = $pDB->DBCAMPO($tupla[$arrayColumnas[0]]);
-                $data['last_name']  = $pDB->DBCAMPO($tupla[$arrayColumnas[1]]);
-                $data['telefono']   = $pDB->DBCAMPO($tupla[$arrayColumnas[2]]);
+                $namedb       = $tupla[$arrayColumnas[0]];
+                $last_namedb  = $tupla[$arrayColumnas[1]];
+                $telefonodb   = $tupla[$arrayColumnas[2]];
+                $emaildb      = isset($arrayColumnas[3])?$tupla[$arrayColumnas[3]]:"";
+                $addressdb    = isset($arrayColumnas[4])?$tupla[$arrayColumnas[4]]:"";
+                $companydb    = isset($arrayColumnas[5])?$tupla[$arrayColumnas[5]]:"";
+                $statusdb     = "isPrivate";
+                $iduserdb     = $id_user;
 
-                $Email = isset($arrayColumnas[3])?$tupla[$arrayColumnas[3]]:"";
-                $data['email']      = $pDB->DBCAMPO($Email);
-
-                $data['iduser']     = $pDB->DBCAMPO($id_user);
-
+                $data = array($namedb, $last_namedb, $telefonodb, $emaildb, $iduserdb, $addressdb, $companydb, $statusdb);
                 //Paso 1: verificar que no exista un usuario con los mismos datos
-                $result = $pAdressBook->existContact($data);
+                $result = $pAdressBook->existContact($namedb, $last_namedb, $telefonodb);
                 if(!$result)
                     $Messages .= "{$arrLang["ERROR"]}:" . $pAdressBook->errMsg . "  <br />";
                 else if($result['total']>0)
                     $Messages .= "{$arrLang["ERROR"]}: {$arrLang["Contact Data already exists"]}: {$data['name']} <br />";
                 else{
                     //Paso 2: creando en la contact data
-                    if(!$pAdressBook->addContact($data))
+                    if(!$pAdressBook->addContactCsv($data))
                         $Messages .= $arrLang["ERROR"] . $pDB->errMsg . "<br />";
 
                     $cont++;
@@ -228,6 +232,10 @@ function isValidCSV($arrLang, $sFilePath, &$arrayColumnas){
                     $arrayColumnas[2] = $i;
                 else if($tupla[$i] == 'Email')
                     $arrayColumnas[3] = $i;
+                else if($tupla[$i] == 'Address')
+                    $arrayColumnas[4] = $i;
+                else if($tupla[$i] == 'Company')
+                    $arrayColumnas[5] = $i;
             }
             if(isset($arrayColumnas[0]) && isset($arrayColumnas[1]) && isset($arrayColumnas[2]))
             {
@@ -263,6 +271,7 @@ function new_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pDB
     $oForm = new paloForm($smarty,$arrFormadress_book);
 
     $smarty->assign("Show", 1);
+    $smarty->assign("ShowImg",0);
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
     $smarty->assign("SAVE", $arrLang["Save"]);
     $smarty->assign("CANCEL", $arrLang["Cancel"]);
@@ -270,10 +279,16 @@ function new_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pDB
 
     $smarty->assign("new_contact", $arrLang["New Contact"]);
     $smarty->assign("address_from_csv", $arrLang["Address Book from CSV"]);
+    $smarty->assign("private_contact", $arrLang["Private Contact"]);
+    $smarty->assign("public_contact", $arrLang["Public Contact"]);
 
     if(isset($_POST['address_book_options']) && $_POST['address_book_options']=='address_from_csv')
         $smarty->assign("check_csv", "checked");
     else $smarty->assign("check_new_contact", "checked");
+
+
+    $smarty->assign("check_isPrivate", "checked");
+
 
     $smarty->assign("SAVE", $arrLang["Save"]);
     $smarty->assign("CANCEL", $arrLang["Cancel"]);
@@ -293,11 +308,17 @@ function new_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pDB
     return $contenidoModulo;
 }
 
+
+
 /*
 ******** Funciones del modulo
 */
 function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk)
 {
+    $padress_book = new paloAdressBook($pDB);
+    $pACL         = new paloACL($pDB_2);
+    $id_user      = $pACL->getIdUser($_SESSION["elastix_user"]);
+
     if(getParametro('select_directory_type') != null && getParametro('select_directory_type')=='external')
     {
         $smarty->assign("external_sel",'selected=selected');
@@ -354,10 +375,6 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
 
     $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter_adress_book.tpl", "", $_POST);
 
-    $padress_book = new paloAdressBook($pDB);
-    $pACL         = new paloACL($pDB_2);
-    $id_user      = $pACL->getIdUser($_SESSION["elastix_user"]);
-
     if($directory_type=='external')
         $total = $padress_book->getAddressBook(NULL,NULL,$field,$pattern,TRUE,$id_user);
     else
@@ -378,30 +395,46 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
     //Fin Paginacion
 
     if($directory_type=='external')
-        $arrResult =$padress_book->getAddressBook($limit, $offset, $field, $pattern, FALSE, $id_user);
+        $arrResult = $padress_book->getAddressBook($limit, $offset, $field, $pattern, FALSE, $id_user);
     else
-        $arrResult =$padress_book->getDeviceFreePBX($dsnAsterisk, $limit,$offset,$field,$pattern);
+        $arrResult = $padress_book->getDeviceFreePBX($dsnAsterisk, $limit,$offset,$field,$pattern);
 
-    $arrData = null;
+    $arrData = null; //echo print_r($arrResult,true);
     if(is_array($arrResult) && $total>0){
         $arrMails = array();
-
+        $typeContact = "";
         if($directory_type=='internal')
             $arrMails = $padress_book->getMailsFromVoicemail();
 
         foreach($arrResult as $key => $adress_book){
-            if($directory_type=='external')
-                $email = $adress_book['email'];
-            else if(isset($arrMails[$adress_book['id']]))
-                $email = $arrMails[$adress_book['id']];
-            else $email = '';
-
             $arrTmp[0]  = ($directory_type=='external')?"<input type='checkbox' name='contact_{$adress_book['id']}'  />":'';
+            if($directory_type=='external'){
+                $email = $adress_book['email'];
+                if($adress_book['status']=='isPublic'){
+                    if($id_user == $adress_book['iduser']){
+                        $typeContact = "<a href='?menu=$module_name&action=show&id=".$adress_book['id']."'><img alt='public' title='".$arrLang['Public Contact']."' border='0' src='modules/$module_name/images/public_edit.png' /></a>";
+                        $arrTmp[0]  = "<input type='checkbox' name='contact_{$adress_book['id']}'  />";
+                    }else{
+                        $typeContact = "<a href='?menu=$module_name&action=show&id=".$adress_book['id']."'><img alt='public' title='".$arrLang['Public Contact']."' border='0' src='modules/$module_name/images/public.png' /></a";
+                        $arrTmp[0]  = "";
+                    }
+                }else
+                    $typeContact = "<a href='?menu=$module_name&action=show&id=".$adress_book['id']."'><img alt='private' title='".$arrLang['Private Contact']."' border='0' src='modules/$module_name/images/contact.png' /></a>";
+            }else if(isset($arrMails[$adress_book['id']])){
+                $email = $arrMails[$adress_book['id']];
+                $typeContact = "<img alt='public' title='".$arrLang['Public Contact']."' src='modules/$module_name/images/public.png' />";
+            }else{ 
+                $email = '';
+                $typeContact = "<img alt='public' title='".$arrLang['Public Contact']."' src='modules/$module_name/images/public.png' />";
+            }
+            
+
             $arrTmp[1]  = ($directory_type=='external')?"<a href='?menu=$module_name&action=show&id=".$adress_book['id']."'>{$adress_book['last_name']} {$adress_book['name']}</a>":$adress_book['description'];
             $arrTmp[2]  = ($directory_type=='external')?$adress_book['telefono']:$adress_book['id'];
             $arrTmp[3]  = $email;
             $arrTmp[4]  = "<a href='?menu=$module_name&action=call2phone&id=".$adress_book['id']."&type=".$directory_type."'><img border=0 src='/modules/$module_name/images/call.png' /></a>";
             $arrTmp[5]  = "<a href='?menu=$module_name&action=transfer_call&id=".$adress_book['id']."&type=".$directory_type."'>{$arrLang["Transfer"]}</a>";
+            $arrTmp[6]  = $typeContact;
             $arrData[]  = $arrTmp;
         }
     }
@@ -426,6 +459,8 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
                                             4 => array("name"      => $arrLang["Call"],
                                                     "property1" => ""),
                                             5 => array("name"      => $arrLang["Transfer"],
+                                                    "property1" => ""),
+                                            6 => array("name"      => $arrLang["Type Contact"],
                                                     "property1" => "")
                                         )
                     );
@@ -438,7 +473,7 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
 function createFieldForm($arrLang)
 {
     $arrFields = array(
-                "name"          => array(   "LABEL"                 => $arrLang["Name"],
+                "name"          => array(   "LABEL"                 => $arrLang["First Name"],
                                             "REQUIRED"              => "yes",
                                             "INPUT_TYPE"            => "TEXT",
                                             "INPUT_EXTRA_PARAM"     => array("style" => "width:300px;"),
@@ -462,6 +497,39 @@ function createFieldForm($arrLang)
                                             "INPUT_EXTRA_PARAM"     => "",
                                             "VALIDATION_TYPE"       => "ereg",
                                             "VALIDATION_EXTRA_PARAM"=> "([[:alnum:]]|.|_|-){1,}@([[:alnum:]]|.|_|-){1,}"),
+                "picture"   => array(      "LABEL"                  => $arrLang["picture"],
+                                            "REQUIRED"               => "no",
+                                            "INPUT_TYPE"             => "FILE",
+                                            "INPUT_EXTRA_PARAM"      => array("id" => "picture"),
+                                            "VALIDATION_TYPE"        => "text",
+                                            "VALIDATION_EXTRA_PARAM" => ""),
+                "address"     => array(     "LABEL"                 => $arrLang["Address"],
+                                            "REQUIRED"              => "no",
+                                            "INPUT_TYPE"            => "TEXT",
+                                            "INPUT_EXTRA_PARAM"     => array("style" => "width:300px;"),
+                                            "VALIDATION_TYPE"       => "text",
+                                            "VALIDATION_EXTRA_PARAM"=> ""),
+                "company"     => array(     "LABEL"                 => $arrLang["Company"],
+                                            "REQUIRED"              => "no",
+                                            "INPUT_TYPE"            => "TEXT",
+                                            "INPUT_EXTRA_PARAM"     => array("style" => "width:300px;"),
+                                            "VALIDATION_TYPE"       => "text",
+                                            "VALIDATION_EXTRA_PARAM"=> ""),
+                "notes"   => array(         "LABEL"                  => $arrLang["Notes"],
+                                            "REQUIRED"               => "no",
+                                            "INPUT_TYPE"             => "TEXTAREA",
+                                            "INPUT_EXTRA_PARAM"      => array("id" => "notes"),
+                                            "VALIDATION_TYPE"        => "text",
+                                            "EDITABLE"               => "si",
+                                            "COLS"                   => "40",
+                                            "ROWS"                   => "4",
+                                            "VALIDATION_EXTRA_PARAM" => ""),
+                "status"   => array(        "LABEL"                  => $arrLang["Status"],
+                                            "REQUIRED"               => "no",
+                                            "INPUT_TYPE"             => "CHECKBOX",
+                                            "INPUT_EXTRA_PARAM"      => array("id" => "status"),
+                                            "VALIDATION_TYPE"        => "text",
+                                            "VALIDATION_EXTRA_PARAM" => ""),
                 );
     return $arrFields;
 }
@@ -494,10 +562,16 @@ function save_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pD
 
         $smarty->assign("new_contact", $arrLang["New Contact"]);
         $smarty->assign("address_from_csv", $arrLang["Address Book from CSV"]);
+        $smarty->assign("private_contact", $arrLang["Private Contact"]);
+        $smarty->assign("public_contact", $arrLang["Public Contact"]);
 
         if(isset($_POST['address_book_options']) && $_POST['address_book_options']=='address_from_csv')
             $smarty->assign("check_csv", "checked");
         else $smarty->assign("check_new_contact", "checked");
+
+        if(isset($_POST['address_book_status']) && $_POST['address_book_status']=='isPrivate')
+            $smarty->assign("check_isPrivate", "checked");
+        else $smarty->assign("check_isPublic", "checked");
 
         $smarty->assign("SAVE", $arrLang["Save"]);
         $smarty->assign("CANCEL", $arrLang["Cancel"]);
@@ -513,39 +587,142 @@ function save_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pD
             return view_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk);
         }else{
             $smarty->assign("Show", 1);
+            $smarty->assign("ShowImg",1);
             $htmlForm = $oForm->fetchForm("$local_templates_dir/new_adress_book.tpl", $arrLang, $_POST);
             $contenidoModulo = "<form  method='POST' enctype='multipart/form-data' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
             return $contenidoModulo;
         }
     }else{
+        $pictureUpload = $_FILES['picture']['name'];
+        $file_upload = "";
+        $ruta_destino = "/var/www/address_book_images";
+        $idPost = $_POST['id'];
         $data = array();
         $padress_book = new paloAdressBook($pDB);
-        
-        $data['name']       = $pDB->DBCAMPO($_POST['name']);
-        $data['last_name']  = $pDB->DBCAMPO($_POST['last_name']);
-        $data['telefono']   = $pDB->DBCAMPO($_POST['telefono']);
-        $data['email']      = $pDB->DBCAMPO($_POST['email']);
-        $data['iduser']     = $pDB->DBCAMPO($id_user);
-        
-        if($update){ 
-            $idPost = $_POST['id'];
-            $contactData = $padress_book->contactData($idPost, $id_user);
-            if($contactData)
-                $result = $padress_book->updateContact($data,array("id"=>$_POST['id']));
-            else{
+        $contactData = $padress_book->contactData($idPost, $id_user);
+        $lastId = 0;
+        if($update)
+            $idImg = $contactData['id'];
+        else{
+            $idImg = date("Ymdhis");
+        }
+        //valido el tipo de archivo
+        if(isset($pictureUpload) && $pictureUpload != ""){
+            // \w cualquier caracter, letra o guion bajo
+            // \s cualquier espacio en blanco
+            if (!preg_match("/^(\w|-|\.|\(|\)|\s)+\.(png|PNG|JPG|jpg|JPEG|jpeg)$/",$pictureUpload)) {
                 $smarty->assign("mb_title", $arrLang["Validation Error"]);
-                $smarty->assign("mb_message", $arrLang["Not_allowed_change"]);
+                $smarty->assign("mb_message", $arrLang["Invalid file extension.- It must be png or jpg or jpeg"]);
+                if($update)
+                    return view_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk, TRUE);
+                else
+                    return new_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk);
+            }else {
+                if(is_uploaded_file($_FILES['picture']['tmp_name'])) {
+                    $file_upload = basename($_FILES['picture']['tmp_name']); // verificando que solo tenga la ruta al archivo
+                    $file_name = basename("/tmp/".$_FILES['picture']['name']);
+                    $ruta_archivo = "/tmp/$file_upload";
+                    $arrIm = explode(".",$pictureUpload);
+                    $renameFile = "$ruta_destino/$idImg.".$arrIm[count($arrIm)-1];
+                    $file_upload = $idImg.".".$arrIm[count($arrIm)-1];
+                    $filesize = $_FILES['picture']['size'];
+                    $filetype = $_FILES['picture']['type'];
+
+                    $sizeImgUp=getimagesize($ruta_archivo);
+                    if(!$sizeImgUp){
+                         $smarty->assign("mb_title", $arrLang["ERROR"]);
+                         $smarty->assign("mb_message", $arrLang["Possible file upload attack. Filename"] ." : ". $pictureUpload);
+                        if($update)
+                            return view_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk,TRUE);
+                        else
+                            return new_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk);
+                    }
+                    //realizar acciones
+                    if(!rename($ruta_archivo, $renameFile)){
+                        $smarty->assign("mb_title", $arrLang["ERROR"]);
+                        $smarty->assign("mb_message", $arrLang["Error to Upload"] ." : ". $pictureUpload);
+                        if($update)
+                            return view_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk,TRUE);
+                        else
+                            return new_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk);
+                    }else{ //redimensiono la imagen
+                        $ancho = 280;
+                        $alto = 200;
+                        if(is_file($renameFile)){
+                            if(!redimensionarImagen($renameFile,$renameFile,$ancho,$alto)){
+                                $smarty->assign("mb_title", $arrLang["ERROR"]);
+                                $smarty->assign("mb_message", $arrLang["Possible file upload attack. Filename"] ." : ". $pictureUpload);
+                                if($update)
+                                    return view_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk,TRUE);
+                                else
+                                    return new_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk);
+                            }
+                        }
+                    }
+                }else {
+                    $smarty->assign("mb_title", $arrLang["ERROR"]);
+                    $smarty->assign("mb_message", $arrLang["Possible file upload attack. Filename"] ." : ". $pictureUpload);
+                    if($update)
+                        return view_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk,TRUE);
+                    else
+                        return new_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk);
+                }
+            }
+        }
+
+        $namedb       = isset($_POST['name'])?$_POST['name']:"";
+        $last_namedb  = isset($_POST['last_name'])?$_POST['last_name']:"";
+        $telefonodb   = isset($_POST['telefono'])?$_POST['telefono']:"";
+        //$extensiondb  = isset($_POST['extension'])?$_POST['extension']:"";
+        $emaildb      = isset($_POST['email'])?$_POST['email']:"";;
+        $iduserdb     = isset($id_user)?"$id_user":"";
+        $picturedb    = isset($file_upload)?"$file_upload":"";
+        $addressdb    = isset($_POST['address'])?$_POST['address']:"";
+        $companydb    = isset($_POST['company'])?$_POST['company']:"";
+        $notesdb      = isset($_POST['notes'])?$_POST['notes']:"";
+        $statusdb     = isset($_POST['address_book_status'])?$_POST['address_book_status']:"";
+        $data = array($namedb, $last_namedb, $telefonodb, $emaildb, $iduserdb, $picturedb, $addressdb, $companydb, $notesdb, $statusdb);
+        if($update){ // actualizacion del contacto
+            if($contactData){
+                if($file_upload == ""){
+                    $data[5] = $contactData['picture'];
+                }
+                $result = $padress_book->updateContact($data,$_POST['id']);
+                if(!$result){
+                    $smarty->assign("mb_title", $arrLang["Validation Error"]);
+                    $smarty->assign("mb_message", $arrLang["Internal Error"]);
+                    return report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk);
+                }
+            }else{
+                $smarty->assign("mb_title", $arrLang["Validation Error"]);
+                $smarty->assign("mb_message", $arrLang["Internal Error"]);
                 return report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk);
             }
-        }else
+        }else{ //// creacion de contacto
             $result = $padress_book->addContact($data);
+            if(!$result){
+                $smarty->assign("mb_title", $arrLang["Validation Error"]);
+                $smarty->assign("mb_message", $arrLang["Internal Error"]);
+                return new_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk);
+            }
+            $lastId = $pDB->getLastInsertId();
+            $contactData2 = $padress_book->contactData($lastId, $id_user);
+            if($contactData2['picture']!="" && isset($contactData2['picture'])){
+                $arrIm = explode(".",$contactData2['picture']);
+                $renameFile = "$ruta_destino/".$lastId.".".$arrIm[count($arrIm)-1];
+                $file_upload = $lastId.".".$arrIm[count($arrIm)-1];
+                rename($ruta_destino."/".$contactData2['picture'], $renameFile);
+                $data[5] = $file_upload;
+                $padress_book->updateContact($data,$lastId);
+            }
+        }
 
         if(!$result)
             return($pDB->errMsg);
 
         //'?menu=$module_name&action=show&id=".$adress_book['id']."'
         if($_POST['id'])
-                header("Location: ?menu=$module_name&action=show&id=".$_POST['id']);
+            header("Location: ?menu=$module_name&action=show&id=".$_POST['id']);
         else
             header("Location: ?menu=$module_name");
     }
@@ -554,13 +731,22 @@ function save_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pD
 function deleteContact($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk)
 {
     $padress_book = new paloAdressBook($pDB);
+    $ruta_destino = "/var/www/address_book_images/";
     $pACL         = new paloACL($pDB_2);
     $id_user      = $pACL->getIdUser($_SESSION["elastix_user"]);
+    $result = "";
     foreach($_POST as $key => $values){
         if(substr($key,0,8) == "contact_")
         {
             $tmpBookID = substr($key, 8);
-            $result = $padress_book->deleteContact($tmpBookID, $id_user);
+            if($padress_book->isEditablePublicContact($tmpBookID, $id_user)){
+                $contactTmp = $padress_book->contactData($tmpBookID, $id_user);
+                $result = $padress_book->deleteContact($tmpBookID, $id_user);
+                if($contactTmp['picture']!="" && isset($contactTmp['picture'])){
+                    if(is_file($ruta_destino."/".$contactTmp['picture']))
+                        unlink($ruta_destino."/".$contactTmp['picture']);
+                }
+            }
         }
     }
     $content = report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk);
@@ -568,20 +754,33 @@ function deleteContact($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2
     return $content;
 }
 
-function view_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk)
+function view_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk, $update=FALSE)
 {
     $arrFormadress_book = createFieldForm($arrLang);
     $pACL    = new paloACL($pDB_2);
     $id_user = $pACL->getIdUser($_SESSION["elastix_user"]);
+    $padress_book = new paloAdressBook($pDB);
     $oForm = new paloForm($smarty,$arrFormadress_book);
-
-    if(isset($_POST["edit"])){
+    $id = isset($_GET['id'])?$_GET['id']:(isset($_POST['id'])?$_POST['id']:"");
+    if(isset($_POST["edit"]) || $update==TRUE){
         $oForm->setEditMode();
-        $smarty->assign("Commit", 1);
-        $smarty->assign("SAVE",$arrLang["Save"]);
+        if($padress_book->isEditablePublicContact($id, $id_user)){
+            $smarty->assign("Commit", 1);
+            $smarty->assign("SAVE",$arrLang["Save"]);
+        }else{
+            $smarty->assign("Commit", 0);
+            $smarty->assign("SAVE",$arrLang["Save"]);
+        }
     }else{
         $oForm->setViewMode();
         $smarty->assign("Edit", 1);
+        if($padress_book->isEditablePublicContact($id, $id_user)){
+            $smarty->assign("Edit", 1);
+            $smarty->assign("EditW", 0);
+        }else{
+            $smarty->assign("Edit", 0);
+            $smarty->assign("EditW", 0);
+        }
     }
 
     $smarty->assign("EDIT", $arrLang["Edit"]);
@@ -592,10 +791,17 @@ function view_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pD
     $smarty->assign("LastName",$arrLang["Last Name"]);
     $smarty->assign("PhoneNumber",$arrLang["Phone Number"]);
     $smarty->assign("Email",$arrLang["Email"]);
+    $smarty->assign("address",$arrLang["Address"]);
+    $smarty->assign("company",$arrLang["Company"]);
+    $smarty->assign("notes",$arrLang["Notes"]);
+    $smarty->assign("picture",$arrLang["picture"]);
+    $smarty->assign("private_contact", $arrLang["Private Contact"]);
+    $smarty->assign("public_contact", $arrLang["Public Contact"]);
 
     if(isset($_POST['address_book_options']) && $_POST['address_book_options']=='address_from_csv')
         $smarty->assign("check_csv", "checked");
     else $smarty->assign("check_new_contact", "checked");
+ 
 
     $smarty->assign("SAVE", $arrLang["Save"]);
     $smarty->assign("CANCEL", $arrLang["Cancel"]);
@@ -607,26 +813,39 @@ function view_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pD
 
     $smarty->assign("style_address_options", "style='display:none'");
 
-    $padress_book = new paloAdressBook($pDB);
-    $id = isset($_GET['id'])?$_GET['id']:(isset($_POST['id'])?$_POST['id']:"");
+    $smarty->assign("idPhoto",$id);
 
     $contactData = $padress_book->contactData($id, $id_user);
-    if($contactData)
+    if($contactData){
         $smarty->assign("ID",$id);
-    else{
+    }else{
         $smarty->assign("mb_title", $arrLang["Validation Error"]);
-        $smarty->assign("mb_message", $arrLang["Not_allowed_change"]);
+        $smarty->assign("mb_message", $arrLang["Not_allowed_contact"]); 
         return report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk);
     }
 
-    $arrData['name']          = isset($_POST['name'])?$_POST['name']:$contactData['name'];
-    $arrData['last_name']     = isset($_POST['last_name'])?$_POST['last_name']:$contactData['last_name'];
-    $arrData['telefono']      = isset($_POST['telefono'])?$_POST['telefono']:$contactData['telefono'];
-    $arrData['email']         = isset($_POST['email'])?$_POST['email']:$contactData['email'];
+    if($contactData['status']=='isPrivate')
+       $smarty->assign("check_isPrivate", "checked"); 
+    else if($contactData['status']=='isPublic')
+        $smarty->assign("check_isPublic", "checked");
+    else
+        $smarty->assign("check_isPrivate", "checked");
 
+
+    $arrData['name']          = htmlspecialchars(isset($_POST['name'])?$_POST['name']:$contactData['name'],ENT_NOQUOTES, "UTF-8");
+    $arrData['last_name']     = htmlspecialchars(isset($_POST['last_name'])?$_POST['last_name']:$contactData['last_name'],ENT_NOQUOTES, "UTF-8");
+    $arrData['telefono']      = htmlspecialchars(isset($_POST['telefono'])?$_POST['telefono']:$contactData['telefono'],ENT_NOQUOTES, "UTF-8");
+    $arrData['email']         = htmlspecialchars(isset($_POST['email'])?$_POST['email']:$contactData['email'],ENT_NOQUOTES, "UTF-8");
+    $arrData['address']       = htmlspecialchars(isset($_POST['address'])?$_POST['address']:$contactData['address'],ENT_NOQUOTES, "UTF-8");
+    $arrData['company']       = htmlspecialchars(isset($_POST['company'])?$_POST['company']:$contactData['company'],ENT_NOQUOTES, "UTF-8");
+    $arrData['notes']         = htmlspecialchars(isset($_POST['notes'])?$_POST['notes']:$contactData['notes'],ENT_NOQUOTES, "UTF-8");
+    $arrData['picture']       = isset($_POST['picture'])?$_POST['picture']:$contactData['picture'];
+    $arrData['status']        = htmlspecialchars(isset($_POST['status'])?$_POST['status']:$contactData['status'],ENT_NOQUOTES, "UTF-8");
+
+    $smarty->assign("ShowImg",1);
     $htmlForm = $oForm->fetchForm("$local_templates_dir/new_adress_book.tpl", "", $arrData);
 
-    $contenidoModulo = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
+    $contenidoModulo = "<form  method='POST' enctype='multipart/form-data' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
 
     return $contenidoModulo;
 }
@@ -776,6 +995,8 @@ function getAction()
         return "call2phone";
     else if(getParametro("action")=="transfer_call")
         return "transfer_call";
+    else if(getParametro("action")=="getImage")
+        return "getImage";
     else
         return "report";
 }
@@ -799,6 +1020,40 @@ function download_address_book($smarty, $module_name, $local_templates_dir, $pDB
     echo backup_contacts($pDB, $pDB_2, $arrLang);
 }
 
+function getImageContact($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk)
+{
+    $contact_id = getParametro('idPhoto'); 
+    $pACL       = new paloACL($pDB_2);
+    $id_user    = $pACL->getIdUser($_SESSION["elastix_user"]);
+    $ruta_destino = "/var/www/address_book_images";
+    $imgDefault = $_SERVER['DOCUMENT_ROOT']."/modules/$module_name/images/Icon-user.png";
+    $padress_book = new paloAdressBook($pDB);
+    $contactData = $padress_book->contactData($contact_id, $id_user);
+
+    $arrIm = explode(".",$contactData['picture']);
+    $typeImage = $arrIm[count($arrIm)-1];
+    $image = $ruta_destino."/".$contactData['picture'];
+    // Creamos la imagen a partir de un fichero existente 
+    if(is_file($image)){
+        if(strtolower($typeImage) == "png"){
+            Header("Content-type: image/png"); 
+            $im = imagecreatefromPng($image); 
+            ImagePng($im); // Mostramos la imagen 
+            ImageDestroy($im); // Liberamos la memoria que ocupaba la imagen 
+        }else{
+            Header("Content-type: image/jpeg"); 
+            $im = imagecreatefromJpeg($image); 
+            ImageJpeg($im); // Mostramos la imagen 
+            ImageDestroy($im); // Liberamos la memoria que ocupaba la imagen 
+        }
+    }else{
+        Header("Content-type: image/png"); 
+        $image = file_get_contents($imgDefault); 
+        echo $image;
+    }
+    return;
+}
+
 function backup_contacts($pDB, $pDB_2, $arrLang)
 {
     $Messages = "";
@@ -815,15 +1070,94 @@ function backup_contacts($pDB, $pDB_2, $arrLang)
         echo $Messages;
     }else{
         //cabecera
-        $csv .= "\"Name\",\"Last Name\",\"Phone Number\",\"Email\"\n";
+        $csv .= "\"Name\",\"Last Name\",\"Phone Number\",\"Email\",\"Address\",\"Company\"\n";
         foreach($arrResult as $key => $contact)
         {
             $csv .= "\"{$contact['name']}\",\"{$contact['last_name']}\",".
-                    "\"{$contact['telefono']}\",\"{$contact['email']}\"".
+                    "\"{$contact['telefono']}\",\"{$contact['email']}\",".
+                    "\"{$contact['address']}\",\"{$contact['company']}\"".
                     "\n";
         }
     }
     return $csv;
+}
+
+function redimensionarImagen($ruta1,$ruta2,$ancho,$alto)
+{
+
+    # se obtene la dimension y tipo de imagen
+    $datos=getimagesize($ruta1);
+
+    if(!$datos)
+        return false;
+
+    $ancho_orig = $datos[0]; # Anchura de la imagen original
+    $alto_orig = $datos[1];    # Altura de la imagen original
+    $tipo = $datos[2];
+    $img = "";
+    if ($tipo==1){ # GIF
+        if (function_exists("imagecreatefromgif"))
+            $img = imagecreatefromgif($ruta1);
+        else
+            return false;
+    }
+    else if ($tipo==2){ # JPG
+        if (function_exists("imagecreatefromjpeg"))
+            $img = imagecreatefromjpeg($ruta1);
+        else
+            return false;
+    }
+    else if ($tipo==3){ # PNG
+        if (function_exists("imagecreatefrompng"))
+            $img = imagecreatefrompng($ruta1);
+        else
+            return false;
+    }
+
+    $anchoTmp = imagesx($img);
+    $altoTmp = imagesy($img);
+    if(($ancho > $anchoTmp || $alto > $altoTmp)){
+        ImageDestroy($img);
+        return true;
+    }
+
+    # Se calculan las nuevas dimensiones de la imagen
+    if ($ancho_orig>$alto_orig){
+        $ancho_dest=$ancho;
+        $alto_dest=($ancho_dest/$ancho_orig)*$alto_orig;
+    }else{
+        $alto_dest=$alto;
+        $ancho_dest=($alto_dest/$alto_orig)*$ancho_orig;
+    }
+    
+    // imagecreatetruecolor, solo estan en G.D. 2.0.1 con PHP 4.0.6+
+    $img2=@imagecreatetruecolor($ancho_dest,$alto_dest) or $img2=imagecreate($ancho_dest,$alto_dest);
+    
+    // Redimensionar
+    // imagecopyresampled, solo estan en G.D. 2.0.1 con PHP 4.0.6+
+    @imagecopyresampled($img2,$img,0,0,0,0,$ancho_dest,$alto_dest,$ancho_orig,$alto_orig) or imagecopyresized($img2,$img,0,0,0,0,$ancho_dest,$alto_dest,$ancho_orig,$alto_orig);
+    
+    // Crear fichero nuevo, según extensión.
+    if ($tipo==1) // GIF
+    if (function_exists("imagegif"))
+        imagegif($img2, $ruta2);
+    else
+        return false;
+    
+    if ($tipo==2) // JPG
+    if (function_exists("imagejpeg"))
+        imagejpeg($img2, $ruta2);
+    else
+        return false;
+    
+    if ($tipo==3)  // PNG
+    if (function_exists("imagepng"))
+        imagepng($img2, $ruta2);
+    else
+        return false;
+    
+    return true;
+
 }
 
 ?>

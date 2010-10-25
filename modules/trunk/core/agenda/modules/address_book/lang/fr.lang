@@ -73,5 +73,18 @@ $arrLangModule=array(
 "Transfer" => "Transfer",
 "The transfer couldn't be realized, maybe you don't have any conversation now." => "The transfer couldn't be realized, maybe you don't have any conversation now.",
 "Not_allowed_change" => "This changes disallowed for your user. This contact it not associated to your address book",
+"picture" => "Picture",
+"Address" => "Address",
+"Company" => "Company",
+"Notes" => "Notes",
+"Status" => "Status",
+"Private Contact" => "Private Contact",
+"Public Contact" => "Public Contact",
+"Invalid file extension.- It must be png or jpg or jpeg" => "Invalid file extension.- It must be png, jpg or jpeg without content special characters",
+"Validation Error" => "Validation Error",
+"Error to Upload" => "Error to Upload file",
+"Type Contact" => "Type Contact",
+"Internal Error" => "Please be sure if the parameters are corrects",
+"Not_allowed_contact" => "This contact don't exist in your Address Book",
 );
 ?>

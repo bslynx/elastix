@@ -1,5 +1,5 @@
 <input type='hidden' name='id' value='{$ID}'>
-<table width="99%" border="0" cellspacing="0" cellpadding="4" align="center">
+<table width="99%" border="0" cellspacing="0" cellpadding="0" align="center">
     <tr class="moduleTitle">
         <td class="moduleTitle" valign="middle">&nbsp;&nbsp;<img src="images/list.png" border="0" align="absmiddle">&nbsp;&nbsp;{$TITLE}</td>
         <td></td>
@@ -18,7 +18,7 @@
         <td align="right" nowrap><span class="letra12"><span  class="required">*</span> {$REQUIRED_FIELD}</span></td>
     </tr>
     <tr>
-        <td colspan=2>
+        <td  colspan='2'>
             <table width="100%" cellpadding="4" cellspacing="0" border="0" class="tabForm">
                 <tr class="letra12" {$style_address_options}>
                     <td colspan='2'>
@@ -29,6 +29,13 @@
                     </td>
                 </tr>
                 <tr id="tr_new_contact">
+                    <td width="310px" align="center">
+            {if $ShowImg}
+                        <img alt="image" src="index.php?menu={$MODULE_NAME}&action=getImage&idPhoto={$idPhoto}&rawmode=yes"/>
+            {else}
+                        <img alt="image" src="modules/{$MODULE_NAME}/images/Icon-user.png"/>
+            {/if}
+                    </td>
                     <td>
                         <table class="letra12" width="100%" cellpadding="4" cellspacing="0" border="0">
                             <tr>
@@ -47,6 +54,35 @@
                                 <td align="left"><b>{$email.LABEL}: </b></td>
                                 <td align="left">{$email.INPUT}</td>
                             </tr>
+                            <tr>
+                                <td align="left"><b>{$address.LABEL}: </b></td>
+                                <td align="left">{$address.INPUT}</td>
+                            </tr>
+                            <tr>
+                                <td align="left"><b>{$company.LABEL}: </b></td>
+                                <td align="left">{$company.INPUT}</td>
+                            </tr>
+                            <tr>
+                                <td align="left"><b>{$notes.LABEL}: </b></td>
+                                <td align="left">{$notes.INPUT}</td>
+                            </tr>
+                    {if ($EditW or $Commit or $Show)}
+                            <tr>
+                                <td align="left"><b>{$picture.LABEL}: </b></td>
+                                <td align="left">{$picture.INPUT}</td>
+                            </tr>
+                            <tr>
+                                <td align="right">
+                                    <input type="radio" name="address_book_status" id="isPrivate" value="isPrivate" {$check_isPrivate} />
+                                    {$private_contact} &nbsp;&nbsp;&nbsp;
+                                </td>
+                                <td align="left">
+                                    &nbsp;&nbsp;&nbsp;
+                                    <input type="radio" name="address_book_status" id="isPublic" value="isPublic" {$check_isPublic} />
+                                    {$public_contact}
+                                </td>
+                            </tr> 
+                    {/if}
                         </table>
                     </td>
                 </tr>
@@ -65,6 +101,7 @@
                 </tr>
             </table>
         </td>
+
     </tr>
 </table>
 

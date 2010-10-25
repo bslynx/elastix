@@ -37,10 +37,47 @@ if(!file_exists("$DataBaseRoot/calendar.db")){
     exec($cmd_mv);
     exec($cmd_chown);
 }
-if(!file_exists("$DocumentRoot/address_book.db")){
+if(!file_exists("$DataBaseRoot/address_book.db")){
     $cmd_mv    = "mv $tmpDir/setup/address_book.db $DataBaseRoot/";
     $cmd_chown = "chown asterisk.asterisk $DataBaseRoot/address_book.db";
     exec($cmd_mv);
     exec($cmd_chown);
 }
+
+$picture = existDBField("contact", "picture", $DataBaseRoot);
+$address = existDBField("contact", "address", $DataBaseRoot);
+$company = existDBField("contact", "company", $DataBaseRoot);
+$notes   = existDBField("contact", "notes",   $DataBaseRoot);
+$status  = existDBField("contact", "status",  $DataBaseRoot);
+
+if($picture==1){ // hubo error ya que no existe uno de esos campos
+	$sql = "ALTER TABLE contact ADD COLUMN picture varchar(50)";
+	exec("sqlite3 $DataBaseRoot/address_book.db '$sql'",$arrConsole,$flagStatus);
+}	
+if($address==1){
+	$sql = "ALTER TABLE contact ADD COLUMN address varchar(100)";
+	exec("sqlite3 $DataBaseRoot/address_book.db '$sql'",$arrConsole,$flagStatus);
+}
+if($company==1){
+	$sql = "ALTER TABLE contact ADD COLUMN company varchar(30)";
+	exec("sqlite3 $DataBaseRoot/address_book.db '$sql'",$arrConsole,$flagStatus);
+}
+if($notes==1){
+	$sql = "ALTER TABLE contact ADD COLUMN notes varchar(200)";
+	exec("sqlite3 $DataBaseRoot/address_book.db '$sql'",$arrConsole,$flagStatus);
+}
+if($status==1){
+	$sql = "ALTER TABLE contact ADD COLUMN status varchar(30)";
+	exec("sqlite3 $DataBaseRoot/address_book.db '$sql'",$arrConsole,$flagStatus);
+}
+
+
+function existDBField($table, $field, $DataBaseRoot)
+{
+	$query = "select $field from $table;";
+	exec("sqlite3 $DataBaseRoot/address_book.db '$query'",$arrConsole,$flagStatus);
+	return $flagStatus;
+}
+
+
 ?>
