@@ -2,10 +2,10 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.0-17                                               |
+  | Elastix version: 2.0                                           |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
-  | Copyright (c) 2008 Palosanto Solutions S. A.                         |
+  | Copyright (c) 2006 Palosanto Solutions S. A.                         |
   +----------------------------------------------------------------------+
   | Cdla. Nueva Kennedy Calle E 222 y 9na. Este                          |
   | Telfs. 2283-268, 2294-440, 2284-356                                  |
@@ -24,43 +24,45 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  |                                                                      |
+  | Translate by:Dannarz                                             |
+  | Email: sesshomarurin7@palosanto.com                                                       |
   +----------------------------------------------------------------------+
-  $Id: fr.lang,v 1.3 2008/05/20 00:31:28 jmartinez Exp $ */
-global $arrLan;
-$arrLan=array(
+  $Id: fr.lang, October 25, 2010, 5:39 pm kleber andres loayza Exp $ */
+global $arrLangModule;
+$arrLangModule=array(  
 "Agents" => "Agents",
-"New agent"=>"Nouvel Agent",
-"Agent List"=>"Liste des Agents",
-"Edit agent"=>"Edition de l'Agent",
-"Agent Number"=>"N&deg; d'Agent",
-"View agent"=>"Visualisation de l'Agent",
+"New agent" => "Nouvel Agent",
+"Agent List" => "Liste des Agents",
+"Edit agent" => "Edition de l'Agent",
+"Agent Number" => "N&deg; d'Agent",
+"View agent" => "Visualisation de l'Agent",
 "Queue" => "File d'Attente",
-"Error Delete Agent"=>"Erreur en essayant d'effacer un Agent.",
-"Error Update Agent"=>"Erreur en essayant de mettre &agrave; jour un Agent.",
-"Error Insert Agent"=>"Erreur en essayant d'ins&eacute;rer un Agent.",
-"Error Agent Number"=>"Le N&deg; d'Agent n'est pas au bon format.",
-"Error saving agent in file"=>"Erreur en sauvegardant l'Agent dans le fichier",
-"Error updating agent in file"=>"Erreur en mettant &agrave; jour l'agent dans le fichier",
-"Error when deleting agent in file"=>"Erreur en effa&ccedil;ant l'agent dans le fichier",
-"Agent number already exists"=>"Le N&deg; d'Agent existe d&eacute;j&agrave;.",
-"Agent doesn't exist in configuration file"=>"L'Agent n'existe pas dans le fichier de configuration",
-"Agent doesn't exist in database"=>"L'Agent n'existe pas dans la base de donn&eacute;es",
-// desconectar agentes
-"Number"=>"N&deg;",
-"Disconect"=>"D&eacute;connecter",
-"Configure"=>"Configur&eacute;",
-"Offline"=>"Hors Ligne",
-"Online"=>"En Ligne",
-"Not Status"=>"Pas d'Etat",
-"Repair"=>"En d&eacute;rangement",
-"All"=>"Tous",
-"No call"=>"Aucun appel",
+"Error Delete Agent" => "Erreur en essayant d'effacer un Agent.",
+"Error Update Agent" => "Erreur en essayant de mettre &agrave; jour un Agent.",
+"Error Insert Agent" => "Erreur en essayant d'ins&eacute;rer un Agent.",
+"Error Agent Number" => "Le N&deg; d'Agent n'est pas au bon format.",
+"Error saving agent in file" => "Erreur en sauvegardant l'Agent dans le fichier",
+"Error updating agent in file" => "Erreur en mettant &agrave; jour l'agent dans le fichier",
+"Error when deleting agent in file" => "Erreur en effa&ccedil;ant l'agent dans le fichier",
+"Agent number already exists" => "Le N&deg; d'Agent existe d&eacute;j&agrave;.",
+"Agent doesn't exist in configuration file" => "L'Agent n'existe pas dans le fichier de configuration",
+"Agent doesn't exist in database" => "L'Agent n'existe pas dans la base de donn&eacute;es",
+"Number" => "N&deg;",
+"Disconect" => "D&eacute;connecter",
+"Configure" => "Configur&eacute;",
+"Offline" => "Hors Ligne",
+"Online" => "En Ligne",
+"Not Status" => "Pas d'Etat",
+"Repair" => "En d&eacute;rangement",
+"All" => "Tous",
+"No call" => "Aucun appel",
 "Name" => "Nom",
 "Retype password" => "Retapez le mot de passe",
-'View' => 'Vue',
-'Status' => 'Statut',
-'With selection' => 'Pour la S&eacute;lection',
-'Disconnect' => 'D&eacute;connexion',
+"View" => "Vue",
+"Status" => "Statut",
+"With selection" => "Pour la S&eacute;lection",
+"Disconnect" => "D&eacute;connexion",
 "The passwords aren't numeric values" => "Les mots de passe ne sont pas des valeurs num&eacute;riques.",
 "The passwords are empty or don't match" => "Les mots de passe sont vides ou ne sont pas identique.",
 "To rapair is necesary delete agent from configuration file. Do you want to continue?" => "To repair, it is necessary to delete the agent from the configuration file. Continue?",

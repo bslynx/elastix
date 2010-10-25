@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.0                                                  |
+  | Elastix version: 2.0                                           |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,17 +25,17 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   |                                                                      |
-  | Translate by: Chavdar Iliev                                          |
-  | Email: chavdar_75@yahoo.com                                          |
+  | Translate by:Chavdar Iliev                                             |
+  | Email: chavdar_75@yahoo.com                                                       |
   +----------------------------------------------------------------------+
-  $Id: en.lang,v 1.7 2008/02/18 09:48:00 bmacias Exp $ */
+  $Id: bg.lang, October 25, 2010, 6:07 pm kleber andres loayza Exp $ */
 global $arrLangModule;
-$arrLangModule=array(
+$arrLangModule=array(  
 "Network Parameters" => "Параметри на Мрежата",
 "Device" => "Устройство",
 "Type" => "Тип",
 "IP" => "IP Адрес",
-"Mask" => "Mask",
+"Mask" => "Маска",
 "MAC Address" => "MAC Адрес",
 "HW Info" => "Информация за Хардуера",
 "Status" => "Състояние",
@@ -45,17 +45,18 @@ $arrLangModule=array(
 "Edit Interface" => "Редактиране на Устройството",
 "Validation Error" => "Грешка при Потвърждаване",
 "The following fields contain errors" => "Следните полета съдържат грешки",
-"Host" => "Host",
-"Primary DNS" => "Primary DNS",
-"Secondary DNS" => "Secondary DNS",
-"Default Gateway" => "Default Gateway",
-"IP Address" => "IP Address",
-"Network Mask" => "Network Mask",
+"Host" => "Хост",
+"Primary DNS" => "Първи DNS",
+"Secondary DNS" => "Втори DNS",
+"Default Gateway" => "Шлюз",
+"IP Address" => "IP Адрес",
+"Network Mask" => "Маска",
 "Interface Type" => "Метод на свързване",
 "Save" => "Запис",
 "Edit Network Parameters" => "Редактирай Мрежовите Параметри",
 "Required field" => "Задължителни полета",
 "Apply changes" => "Приложи Промените",
 "Are you sure you want to edit network parameters?" => "Сигурни ли сте че искате да промените мрежовите параметри?",
+
 );
 ?>

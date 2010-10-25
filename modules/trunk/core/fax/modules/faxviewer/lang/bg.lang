@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.0                                                  |
+  | Elastix version: 2.0                                           |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,28 +25,29 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   |                                                                      |
-  | Translate by: Chavdar Iliev                                          |
-  | Email: chavdar_75@yahoo.com                                          |
+  | Translate by:Chavdar Iliev                                             |
+  | Email: chavdar_75@yahoo.com                                                       |
   +----------------------------------------------------------------------+
-  $Id: en.lang,v 1.7 2008/02/18 09:48:00 bmacias Exp $ */
+  $Id: bg.lang, October 25, 2010, 6:07 pm kleber andres loayza Exp $ */
 global $arrLangModule;
-$arrLangModule=array(
-"Fax Viewer" => "Получени Факсове",
-"Search" => "Търси",
-"Company Name" => "Име на Фирма",
-"Company Fax" => "Факс Номер на Фирма",
-"Fax Date" => "Факс Дата",
-"File" => "Файл",
-"Fax Destiny" => "Факс Получател",
-"No Data Found" => "Не са намерени данни",
-"Are you sure you wish to delete fax (es)?" => "Сигурни ли сте че искате да изтриете факсовете?",
-"Unable to eliminate pdf file from the path." => "Не е възможно да се премахне pdf файла от пътя.",
-"Unable to eliminate pdf file from the database." => "Не е възможно да се премахне pdf файла от базата данни.",
+$arrLangModule=array(  
+"Fax Viewer" => "Fax Viewer",
+"Search" => "Search",
+"Company Name" => "Company Name",
+"Company Fax" => "Company Fax",
+"Fax Date" => "Fax Date",
+"File" => "File",
+"Fax Destiny" => "Fax Destiny",
+"No Data Found" => "No Data Found",
+"Are you sure you wish to delete fax (es)?" => "Are you sure you wish to delete fax (es)?",
+"Unable to eliminate pdf file from the path." => "Unable to eliminate pdf file from the path.",
+"Unable to eliminate pdf file from the database." => "Unable to eliminate pdf file from the database.",
 "Type Fax" => "Type Fax",
-"All" => "Всички",
-"in" => "Received",
-"out" => "Sent",
-"ERROR" => "ГРЕШКА",
+"All" => "All",
+"in" => "in",
+"out" => "out",
+"ERROR" => "ERROR",
 "Type" => "Type",
+
 );
 ?>

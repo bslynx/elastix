@@ -2,20 +2,15 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.0                                                  |
+  | Elastix version: 2.0                                           |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
-  | Copyright (c) 2008 Palosanto Solutions S. A.                         |
+  | Copyright (c) 2006 Palosanto Solutions S. A.                         |
   +----------------------------------------------------------------------+
   | Cdla. Nueva Kennedy Calle E 222 y 9na. Este                          |
   | Telfs. 2283-268, 2294-440, 2284-356                                  |
   | Guayaquil - Ecuador                                                  |
-  | http://www.palosanto.com 						                     |
-  |                                                                      |
-  | Translated by: Erwan DESVERGNES - SDCI                               |
-  | erwan.desvergnes@SDCI.fr                                             |
-  |   Revision 1.0-17 by Gregory BOUZINAC - GMixon                       | 
-  | greg@gmixon.com                                                      |
+  | http://www.palosanto.com                                             |
   +----------------------------------------------------------------------+
   | The contents of this file are subject to the General Public License  |
   | (GPL) Version 2 (the "License"); you may not use this file except in |
@@ -29,10 +24,13 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  |                                                                      |
+  | Translate by:Dannarz                                             |
+  | Email: sesshomarurin7@palosanto.com                                                       |
   +----------------------------------------------------------------------+
-  $Id: fr.lang,v 1.8 2008/05/20 00:36:42 bmacias Exp $ */
+  $Id: fr.lang, October 25, 2010, 5:39 pm kleber andres loayza Exp $ */
 global $arrLangModule;
-$arrLangModule=array(
+$arrLangModule=array(  
 "Are you sure you wish to delete backup (s)?" => "Etes vous s&ucirc;r de vouloir effacer la(les) sauvegarde (s)?",
 "Database" => "Base de donn&eacute;es",
 "PDF" => "PDF",
@@ -53,7 +51,7 @@ $arrLangModule=array(
 "This process could take several minutes" => "Cette action peut prendre quelques minutes",
 "Mailbox" => "Boite Email",
 "(Heavy Content)" => "(Contenu lourd)",
-"Upload" => "Envoyer",
+"Upload" => "Transmettre",
 "File Upload" => "Fichier &agrave; envoyer",
 "The backup file would have a tar extension" => "Le fichier de sauvegarde doit avoir une extension .tar .",
 "Error copying the file" => "Erreur de copie de fichier",
@@ -102,7 +100,6 @@ $arrLangModule=array(
 "User" => "Utilisateur",
 "Password" => "Mot de passe",
 "Local" => "Local",
-"Upload" => "Transmettre",
 "Download" => "T&eacute;l&eacute;charger",
 "Path Server FTP" => "Chemin du serveur",
 "Error to connect" => "SVP remplissez tous les champs pour vous connecter au serveur",
@@ -137,5 +134,6 @@ $arrLangModule=array(
 "wanpipe-util" => "Wanpipe-Util",
 "freepbx" => "Freepbx",
 "elastix" => "Elastix",
+
 );
 ?>

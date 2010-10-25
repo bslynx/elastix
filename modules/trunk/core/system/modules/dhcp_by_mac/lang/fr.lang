@@ -1,8 +1,8 @@
 <?php
-  /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
+/* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   CodificaciÃ³n: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.6-12                                               |
+  | Elastix version: 2.0                                           |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -24,21 +24,22 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  |                                                                      |
+  | Translate by:Dannarz                                             |
+  | Email: sesshomarurin7@palosanto.com                                                       |
   +----------------------------------------------------------------------+
-  $Id: en.lang,v 1.1 2009-11-12 04:11:04 Oscar Navarrete onavarrete.palosanto.com Exp $ */
+  $Id: fr.lang, October 25, 2010, 5:39 pm kleber andres loayza Exp $ */
 global $arrLangModule;
-$arrLangModule=array(
+$arrLangModule=array(  
 "DHCP By MAC" => "DHCP par MAC",
 "Host Name" => "Nom d'h&ocirc;te",
 "Ip Address" => "Adresse IP",
 "Mac Address" => "Adresse MAC",
 "Search" => "Recherche",
 "Show" => "Afficher",
-
 "Hostname" => "Nom d'h&ocirc;te",
 "New Dhcp Config" => "Nouvelle config DHCP",
 "View edit" => "Voir &Eacute;diter",
-
 "Are you sure you wish to delete the DHCP configuration." => "&Ecirc;tes_vous s&ucirc;r que vous souhaitiez effacer la configuration DHCP.",
 "The name of hostname is duplicated please changes to another name" => "The nom de l'hôte est dipliqu&eacute;, le changer par un autre nom SVP.",
 "The following fields are duplicates or already exists" => "Les champs suivants sont en double ou déjà existent.",
@@ -49,5 +50,6 @@ $arrLangModule=array(
 "ex_hostname" => "(ex. myhostname)",
 "ex_ipaddress" => "(ex. 127.0.0.1)",
 "ex_mac_address" => "(ex. AA:BB:CC:DD:EE:FF)",
+
 );
 ?>

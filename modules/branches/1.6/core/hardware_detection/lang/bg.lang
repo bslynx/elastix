@@ -25,33 +25,32 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   |                                                                      |
-  | Translate by:Dannarz                                             |
-  | Email: sesshomarurin7@palosanto.com                                                       |
+  | Translate by:Chavdar Iliev                                             |
+  | Email: chavdar_75@yahoo.com                                                       |
   +----------------------------------------------------------------------+
-  $Id: bg.lang, October 25, 2010, 3:01 pm kleber andres loayza Exp $ */
+  $Id: bg.lang, October 25, 2010, 6:10 pm kleber andres loayza Exp $ */
 global $arrLangModule;
 $arrLangModule=array(  
-"Hardware Detector" => "Откриване Хардуер",
-"Ports not Founds" => "Портовете не могат да бъдат намерени",
-"Card" => "Карта",
-"Type port" => "Тип",
-"No. Port" => "Порт #",
-"(In Use)" => "Използва се",
-"Hardware Detecting" => "Откриване на Хардуер",
-"Hardware Detect" => "Откриване на Нов Хардуер",
-"Cards undetected on your system, press for detecting hardware detection." => "Не са открити карти в системата. Моля натиснете бутона "Откриване на Нов Хардуер" <br> за да стартирате търсене на нов хардуер.",
-"Information" => "Информация",
-"Satisfactory Hardware Detection" => "Откриването на Хардуер Приключи",
-"Unknown" => "Неизвестен",
-"Replace file chan_dahdi.conf" => "Замени файла chan_dahdi.conf",
-"Unable to backup file chan_dahdi.conf by chan_dahdi.conf.replace_for_elastix" => "Не е възможно да се запази файла chan_dahdi.conf като chan_dahdi.conf.replace_for_elastix",
-"Unable to replace file chan_dahdi.conf" => "Не е възможно да се замени файла chan_dahdi.conf",
-"Detect Sangoma hardware" => "Откриване на Sangoma Хардуер",
-"Detect ISDN hardware" => "Откриване на ISDN Хардуер",
-"Misdn Card" => "mISDN Карта",
-"(Not in Use)" => "Свободен",
-"Port" => "Порт",
 "Hardware Detection" => "Hardware Detection",
+"Ports not Founds" => "Ports not Founds",
+"Card" => "Span",
+"Type port" => "Type",
+"No. Port" => "Port #",
+"(In Use)" => "In Use",
+"Hardware Detecting" => "Detecting Hardware",
+"Hardware Detect" => "Detect New Hardware",
+"Cards undetected on your system, press for detecting hardware detection." => "No cards were detected on your system. Please press the "Detect New Hardware" button to detect new hardware.",
+"Information" => "Information",
+"Satisfactory Hardware Detection" => "Done",
+"Unknown" => "Unknown",
+"Replace file chan_dahdi.conf" => "Replace file chan_dahdi.conf",
+"Unable to backup file chan_dahdi.conf by chan_dahdi.conf.replace_for_elastix" => "Unable to backup file chan_dahdi.conf by chan_dahdi.conf.replace_for_elastix",
+"Unable to replace file chan_dahdi.conf" => "Unable to replace file chan_dahdi.conf",
+"Detect Sangoma hardware" => "Detect Sangoma hardware",
+"Detect ISDN hardware" => "Detect ISDN hardware",
+"Misdn Card" => "Misdn Card",
+"(Not in Use)" => "Not in Use",
+"Port" => "Port",
 
 );
 ?>

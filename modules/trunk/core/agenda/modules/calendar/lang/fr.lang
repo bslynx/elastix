@@ -1,8 +1,8 @@
 <?php
-  /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
+/* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 2.0.0-7                                               |
+  | Elastix version: 2.0                                           |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -24,10 +24,13 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  |                                                                      |
+  | Translate by:Dannarz                                             |
+  | Email: sesshomarurin7@palosanto.com                                                       |
   +----------------------------------------------------------------------+
-  $Id: en.lang,v 1.1 2010-01-05 11:01:26 Bruno Macias V. bmacias@elastix.org Exp $ */
+  $Id: fr.lang, October 25, 2010, 5:39 pm kleber andres loayza Exp $ */
 global $arrLangModule;
-$arrLangModule=array(
+$arrLangModule=array(  
 "Calendar" => "Calendrier",
 "Monday" => "Lundi",
 "Tuesday" => "Mardi",
@@ -91,7 +94,7 @@ $arrLangModule=array(
 "Each_Week" => "Chaque semaine",
 "Each_Month" => "Chaque mois",
 "Delete" => "Effacer",
-"New_Event" => "Nouvel &eacute;v&eacute;nement.",
+"New_Event" => "Nouvel événement ",
 "Change_Event" => "&eacute;v&eacute;nement Chang&eacute;",
 "Delete_Event" => "&eacute;v&eacute;nement Annul&eacute;",
 "time" => "Heure",
@@ -99,7 +102,6 @@ $arrLangModule=array(
 "Start_date" => "Du",
 "End_date" => "Au",
 "new_recording" => "Pour cr&eacute;er un nouvel enregistrement cliquer <a href='?menu=recordings'>ici</a>",
-"New_Event" => "Nouvel événement ",
 "Edit Event" => "Editer un &eacute;v&eacute;nement ",
 "View Event" => "Voir un &eacute;v&eacute;nement ",
 "Date_event" => "Date de l'&eacute;v&eacute;nement ",
@@ -146,5 +148,6 @@ $arrLangModule=array(
 "active_foneCall" => "Enable Reminder",
 "Name" => "Name",
 "Download" => "Download",
+
 );
 ?>

@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.5                                                  |
+  | Elastix version: 2.0                                           |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -24,25 +24,33 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  |                                                                      |
+  | Translate by:Chavdar Iliev                                             |
+  | Email: chavdar_75@yahoo.com                                                       |
   +----------------------------------------------------------------------+
-   */
-global $arrLan;
-$arrLan=array(
+  $Id: bg.lang, October 25, 2010, 6:07 pm kleber andres loayza Exp $ */
+global $arrLangModule;
+$arrLangModule=array(  
 "Error when connecting to database" => "Error when connecting to database",
-"Error"                             => "Error",
-"Debe ingresar una fecha valida"    => "Put a valid date",
-"Debe ingresar una fecha inicio/fin"=> "Debe ingresar una fecha inicio/fin",
-"Login Logout"                      => "Time Login-Logout",
-"Agente"                            => "Agent",
-"Nombre"                            => "Name",
-"Login"                             => "Login",
-"Logout"                            => "Logout",
-"Total Login"                       => "Total Login",
-"Tiempo en Llamadas"                => "Time of Calls",
-"Service(%)"                        => "Service(%)",
-"Date Init"                         => "Date Init",
-"Tipo"                              => "Type",
-"Find"                              => "Find",
-"Estado"                            => "Status",
+"Error" => "Error",
+"Debe ingresar una fecha valida" => "Put a valid date",
+"Debe ingresar una fecha inicio/fin" => "Debe ingresar una fecha inicio/fin",
+"Login Logout" => "Time Login-Logout",
+"Agente" => "Agent",
+"Nombre" => "Name",
+"Login" => "Login",
+"Logout" => "Logout",
+"Total Login" => "Total Login",
+"Tiempo en Llamadas" => "Time of Calls",
+"Service(%)" => "Service(%)",
+"Date Init" => "Date Init",
+"Date End" => "Date End",
+"Tipo" => "Type",
+"Find" => "Find",
+"Estado" => "Status",
+"Total" => "Total",
+"Detallado" => "Detailed",
+"General" => "General",
+
 );
 ?>

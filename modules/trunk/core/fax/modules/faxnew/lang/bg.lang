@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.0                                                  |
+  | Elastix version: 2.0                                           |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,22 +25,23 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   |                                                                      |
-  | Translate by: Chavdar Iliev                                          |
-  | Email: chavdar_75@yahoo.com                                          |
+  | Translate by:Chavdar Iliev                                             |
+  | Email: chavdar_75@yahoo.com                                                       |
   +----------------------------------------------------------------------+
-  $Id: en.lang,v 1.7 2008/02/18 09:48:00 bmacias Exp $ */
+  $Id: bg.lang, October 25, 2010, 6:07 pm kleber andres loayza Exp $ */
 global $arrLangModule;
-$arrLangModule=array(
-"Virtual Fax Name" => "Име на Виртуален Факс",
+$arrLangModule=array(  
+"Virtual Fax Name" => "Име на Факс",
 "New Virtual Fax" => "Нов Виртуален Факс",
 "Edit Virtual Fax" => "Редактирай Виртуален Факс",
 "View Virtual Fax" => "Разгледай Виртуален Факс",
 "Destination Email" => "Изпрати на eMail",
-"Fax Extension" => "Вътрешен Номер на Факс",
+"Fax Extension" => "Вътрешен Номер",
 "Secret" => "Парола",
 "Caller ID Name" => "Caller ID Име",
 "Caller ID Number" => "Caller ID Номер",
 "Country Code" => "Национален Код",
 "Area Code" => "Областен Код",
+
 );
 ?>

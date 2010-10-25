@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.0                                                  |
+  | Elastix version: 2.0                                           |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,12 +25,12 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   |                                                                      |
-  | Translate by: Chavdar Iliev                                          |
-  | Email: chavdar_75@yahoo.com                                          |
+  | Translate by:Chavdar Iliev                                             |
+  | Email: chavdar_75@yahoo.com                                                       |
   +----------------------------------------------------------------------+
-  $Id: en.lang,v 1.7 2008/02/18 09:48:00 bmacias Exp $ */
+  $Id: bg.lang, October 25, 2010, 6:07 pm kleber andres loayza Exp $ */
 global $arrLangModule;
-$arrLangModule=array(
+$arrLangModule=array(  
 "Recordings" => "Записи",
 "Record Name" => "Име на Записа",
 "Record" => "Записване на Съобщение",
@@ -42,10 +42,11 @@ $arrLangModule=array(
 "Destiny directory couldn't be created" => "Желаната директория не може да бъде създадена",
 "File Upload" => "Добавяне на Файл",
 "ERROR" => "ГРЕШКА",
-"You don't have extension number associated with user" => "Вие нямате вътрешен номер свързан с потребителя.  Click <a href='index.php?menu=userlist'>here</a> to create an extension.",
+"You don't have extension number associated with user" => "Вие нямате вътрешен номер свързан с потребителя",
 "The call couldn't be realized" => "Обаждането не може да бъде осъществено",
 "Error copying the file" => "Грешка при копиране на файл",
 "Message" => "Съобщение",
-"Possible file upload attack" => "Possible file upload attack",
+"Possible file upload attack" => "Възможна атака с качване на файлове",
+
 );
 ?>

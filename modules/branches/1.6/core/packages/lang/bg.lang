@@ -25,10 +25,10 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   |                                                                      |
-  | Translate by:Dannarz                                             |
-  | Email: sesshomarurin7@palosanto.com                                                       |
+  | Translate by:Chavdar Iliev                                             |
+  | Email: chavdar_75@yahoo.com                                                       |
   +----------------------------------------------------------------------+
-  $Id: bg.lang, October 25, 2010, 3:01 pm kleber andres loayza Exp $ */
+  $Id: bg.lang, October 25, 2010, 6:10 pm kleber andres loayza Exp $ */
 global $arrLangModule;
 $arrLangModule=array(  
 "Updates" => "Обновяване",

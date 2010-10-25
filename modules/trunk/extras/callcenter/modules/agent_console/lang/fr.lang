@@ -2,10 +2,10 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.0-17                                               |
+  | Elastix version: 2.0                                           |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
-  | Copyright (c) 2008 Palosanto Solutions S. A.                         |
+  | Copyright (c) 2006 Palosanto Solutions S. A.                         |
   +----------------------------------------------------------------------+
   | Cdla. Nueva Kennedy Calle E 222 y 9na. Este                          |
   | Telfs. 2283-268, 2294-440, 2284-356                                  |
@@ -24,46 +24,49 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  |                                                                      |
+  | Translate by:Dannarz                                             |
+  | Email: sesshomarurin7@palosanto.com                                                       |
   +----------------------------------------------------------------------+
-  $Id: fr.lang,v 1.3 2008/05/20 00:31:28 jmartinez Exp $ */
-global $arrLan;
-$arrLan=array(
-"Agent Console"=>"Console Agent",
-"Hangup"=>"Raccrocher",
-"Tranfer"=>"Transferer",
-"Call"=>"Appeler",
-"Script"=>"Script",
+  $Id: fr.lang, October 25, 2010, 5:39 pm kleber andres loayza Exp $ */
+global $arrLangModule;
+$arrLangModule=array(  
+"Agent Console" => "Console Agent",
+"Hangup" => "Raccrocher",
+"Tranfer" => "Transferer",
+"Call" => "Appeler",
+"Script" => "Script",
 "Form" => "Formulaire",
 "Agent" => "Agent",
 "Agent Number" => "Numéro",
 "Take Break" => "Prendre une Pause",
 "Fill the fields" => "Veuillez renseigner les champs",
-"Break"=>"Pause",
-"UnBreak"=>"Reprendre",
-"In Break"=>"En Pause",
-"Welcome to Console Agent"=>"Bienvenue dans la Console Agent",
-"Please enter your number agent"=>"Veuillez entrer votre numéro d'agent et votre extension",
-"Number Agent"=>"Agent Numéro",
+"Break" => "Pause",
+"UnBreak" => "Reprendre",
+"In Break" => "En Pause",
+"Welcome to Console Agent" => "Bienvenue dans la Console Agent",
+"Please enter your number agent" => "Veuillez entrer votre numéro d'agent et votre extension",
+"Number Agent" => "Agent Numéro",
 "Enter Agent" => "Entrer",
-"Extension"=>"Extension",
-"Error when connecting to Asterisk Manager"=>"Erreur de connexion au Manager Asterisk",
-"Unable to add Agent to queue: No such queue" => "Impossible d'ajouter un Agent à la file: Pas de file", //Bruno agrego
+"Extension" => "Extension",
+"Error when connecting to Asterisk Manager" => "Erreur de connexion au Manager Asterisk",
+"Unable to add Agent to queue: No such queue" => "Impossible d'ajouter un Agent à la file: Pas de file",
 "Error when consulting Agent in Asterisk Manager" => "Erreur en consultant l'Agent dans le Manager Asterisk",
-"Agent isn't in Queue Asterisk"=>"L'Agent n'est pas dans la file Asterisk",
+"Agent isn't in Queue Asterisk" => "L'Agent n'est pas dans la file Asterisk",
 "Unable to pause Agent to queue: No such queue" => "Impossible de sortir l'Agent de la file: Pas de file",
 "Audit Error" => "Erreur Audit",
-"Number Agent already connected with extension"=>"Numéro de l'Agent déjà connecté avec l'extension",
+"Number Agent already connected with extension" => "Numéro de l'Agent déjà connecté avec l'extension",
 "Agent Error" => "Erreur Agent",
 "Audit of break could not be inserted" => "L'Audit de pause n'à pû être inséré",
 "Id of the agent could not be obtained" => "L'Id de l'agent n'à pû être obtenu",
 "Number of audit nonassigned" => "Numéro d'audit non assigné",
-"Error saving client information"=>"Erreur de sauvegarde des informations client",
-"Information was saved"=>"L'information à été sauvegardée",
-"Call no active"=>"Aucun Appel Actif",
-"Error when connecting to database Call Center"=>"Erreur de connexion à la base de données Centre d'Appels",
-"Calling"=>"Appelant",
-"Forms Nondefined" => "Formulaires Non définis", //Bruno agrego
-"Call Number" => "Appel Numéro", //Bruno agrego
+"Error saving client information" => "Erreur de sauvegarde des informations client",
+"Information was saved" => "L'information à été sauvegardée",
+"Call no active" => "Aucun Appel Actif",
+"Error when connecting to database Call Center" => "Erreur de connexion à la base de données Centre d'Appels",
+"Calling" => "Appelant",
+"Forms Nondefined" => "Formulaires Non définis",
+"Call Number" => "Appel Numéro",
 "Name" => "Prénom",
 "Last Name" => "Nom",
 "Error when consulting contact information" => "Erreur en consultant les informations de contact",
@@ -74,40 +77,29 @@ $arrLan=array(
 "Number Identification" => "Numéro d'Identification",
 "Error when updating call information" => "Erreur de mise àjour des informations d'appels",
 "Id call or Id contact have format invalid" => "Id appel ou Id contact ont un format invalide",
-"Confirm"=>"Confirmer",
-"vTigerCRM"=>"vTigerCRM",
-"Add Client"=>"Ajouter Client",
-"View Client"=>"Voir Client",
-"Call can't be closed, channel is empty"=>"L'appel ne peut pas ê fermé, le canal est vide",
-// para transferencia de llamadas
-"Accept"=>"Accepter",
-"error when creating new object"=>"Erreur de création d'un nouvel object",
-"No call"=>"Aucun Appel",
-"transfer_error"=>"Erreur de Transfert : ",
-"Success"=>"Transfert d'Appel Réussi",
-"Error when connecting to Call Center"=>"Erreur de connexion au Centre d'Appels",
-"Error query"=>"Erreur en question",
-"select extension"=>"sélectionnez une extension",
-"consultar_llamada"=>"Consulter Transferts ?",
-// fin transferencia de llamadas
-
-// para poner llamada en hold
-"Hold"=>"Mettre en Attente",
-"Unhold"=>"Reprendre",
-// fin hold llamada
-
-
-// para Marcado de llamadas
-"Marcar"        => "Marquer",
-"Cancel"        => "Annuler",
-"Marked Error"  => "Erreur Marquée",
-"Success Marked"=> "Appel marquév correctement",
+"Confirm" => "Confirmer",
+"vTigerCRM" => "vTigerCRM",
+"Add Client" => "Ajouter Client",
+"View Client" => "Voir Client",
+"Call can't be closed, channel is empty" => "L'appel ne peut pas ê fermé, le canal est vide",
+"Accept" => "Accepter",
+"error when creating new object" => "Erreur de création d'un nouvel object",
+"No call" => "Aucun Appel",
+"transfer_error" => "Erreur de Transfert : ",
+"Success" => "Transfert d'Appel Réussi",
+"Error when connecting to Call Center" => "Erreur de connexion au Centre d'Appels",
+"Error query" => "Erreur en question",
+"select extension" => "sélectionnez une extension",
+"consultar_llamada" => "Consulter Transferts ?",
+"Hold" => "Mettre en Attente",
+"Unhold" => "Reprendre",
+"Marcar" => "Marquer",
+"Cancel" => "Annuler",
+"Marked Error" => "Erreur Marquée",
+"Success Marked" => "Appel marquév correctement",
 "Please enter a number to mark" => "Veuillez entrer un numéro à marquer",
-// fin de Envio de llamadas
-
-"vtigercrm"=>"vTiger CRM",
-
-"Agent disconnected"=>"Agent déconnecté"
+"vtigercrm" => "vTiger CRM",
+"Agent disconnected" => "Agent déconnecté",
 "ProgramCalls" => "Programming Calls",
 "Date Init" => "Date Init",
 "Date End" => "Date End",
@@ -137,5 +129,6 @@ $arrLan=array(
 "The scheduled call date range is not between the campaign date range" => "The scheduled call date range is not between the campaign date range",
 "The call has not been saved because the scheduled call date range is not between the campaign date range" => "The call has not been saved because the scheduled call date range is not between the campaign date range",
 "The scheduled call date range is not between the campaign date range. Are you sure do you want to save?" => "The scheduled call date range is not between the campaign date range. Are you sure do you want to save?",
+
 );
 ?>

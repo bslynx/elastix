@@ -2,20 +2,15 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.0                                                  |
+  | Elastix version: 2.0                                           |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
-  | Copyright (c) 2008 Palosanto Solutions S. A.                         |
+  | Copyright (c) 2006 Palosanto Solutions S. A.                         |
   +----------------------------------------------------------------------+
   | Cdla. Nueva Kennedy Calle E 222 y 9na. Este                          |
   | Telfs. 2283-268, 2294-440, 2284-356                                  |
   | Guayaquil - Ecuador                                                  |
-  | http://www.palosanto.com 						                     |
-  |                                                                      |
-  | Translated by: Erwan DESVERGNES - SDCI                               |
-  | erwan.desvergnes@SDCI.fr                                             |
-  |   Revision 1.0-17 by Gregory BOUZINAC - GMixon                       | 
-  | greg@gmixon.com                                                      |
+  | http://www.palosanto.com                                             |
   +----------------------------------------------------------------------+
   | The contents of this file are subject to the General Public License  |
   | (GPL) Version 2 (the "License"); you may not use this file except in |
@@ -29,26 +24,30 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  |                                                                      |
+  | Translate by:Dannarz                                             |
+  | Email: sesshomarurin7@palosanto.com                                                       |
   +----------------------------------------------------------------------+
-  $Id: fr.lang,v 1.8 2008/05/20 00:36:42 bmacias Exp $ */
+  $Id: fr.lang, October 25, 2010, 5:39 pm kleber andres loayza Exp $ */
 global $arrLangModule;
-$arrLangModule=array(
-"Filter" => "Filtre",
-"Start Date" => "Date de d&eacute;but",
-"End Date" => "Date de fin",
-"Destination Distribution" => "R&eacute;partition par destination",
-"Criteria" => "Crit&egrave;re",
-"Distribution by Time" => "Distribution par temps",
-"Distribution by Number of Calls" => "Distribution par nombre d'appels",
-"Distribution by Cost" => "Distribution par coûts",
-"Date Range spans maximum number of days" => "L'intervalle de temps d&eacute;passe le nombre de jours",
-"ERROR" => "ERREUR",
+$arrLangModule=array(  
+"Filter" => "Filter",
+"Start Date" => "Start Date",
+"End Date" => "End Date",
+"Destination Distribution" => "Destination Distribution",
+"Criteria" => "Criteria",
+"Distribution by Time" => "Distribution by Time",
+"Distribution by Number of Calls" => "Distribution by Number of Calls",
+"Distribution by Cost" => "Distribution by Cost",
+"Date Range spans maximum number of days" => "Date Range spans maximum number of days",
+"ERROR" => "ERROR",
 "Minutes" => "Minutes",
-"Number of Calls" => "Nombre d'appels",
-"others" => "autres",
-"Rate Name" => "Nom du tarif",
-"default" => "d&eacute;faut",
-"Duration in seconds" => "Dur&eacute;e en secondes",
-"Cost" => "Co&ucirc;t",
+"Number of Calls" => "Number of Calls",
+"others" => "others",
+"Rate Name" => "Rate Name",
+"default" => "default",
+"Duration in seconds" => "Duration in seconds",
+"Cost" => "Cost",
+
 );
 ?>

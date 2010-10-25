@@ -1,8 +1,8 @@
 <?php
-  /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
+/* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 2.0.0-15                                               |
+  | Elastix version: 2.0                                           |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -24,10 +24,13 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  |                                                                      |
+  | Translate by:Dannarz                                             |
+  | Email: sesshomarurin7@palosanto.com                                                       |
   +----------------------------------------------------------------------+
-  $Id: en.lang,v 1.1 2010-03-06 11:03:53 Eduardo Cueva ecueva@palosanto.com Exp $ */
+  $Id: fr.lang, October 25, 2010, 5:39 pm kleber andres loayza Exp $ */
 global $arrLangModule;
-$arrLangModule=array(
+$arrLangModule=array(  
 "Addons Modules" => "Modules Add-on",
 "texto1" => "texto1",
 "select1" => "select1",
@@ -35,7 +38,6 @@ $arrLangModule=array(
 "checkbox1" => "checkbox1",
 "file1" => "file1",
 "prueba" => "prueba",
-/////
 "Installed" => "Install&eacute;",
 "Updates" => "Mise &agrave; jour",
 "Downloaded" => "T&eacute;l&eacute;charg&eacute;",
@@ -58,7 +60,6 @@ $arrLangModule=array(
 "no_process" => "Aucun process d'installation en cour",
 "view_details" => "Voir les d&eacute;tails",
 "process_installed" => "Process install&eacute;",
-"name" => "Nom",
 "version" => "Version",
 "release" => "mise &agrave; jour",
 "developed_by" => "D&eacute;velopp&eacute; par",
@@ -68,5 +69,6 @@ $arrLangModule=array(
 "Delete" => "Effacer",
 "Update" => "Mise &agrave; jour",
 "The system can not connect to the Web Service resource. Please check your Internet connection." => "The system can not connect to the Web Service resource. Please check your Internet connection.",
+
 );
 ?>

@@ -1,8 +1,8 @@
 <?php
-  /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
+/* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   CodificaciÃ³n: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.6-6                                               |
+  | Elastix version: 2.0                                           |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -24,27 +24,25 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  |                                                                      |
+  | Translate by:Dannarz                                             |
+  | Email: sesshomarurin7@palosanto.com                                                       |
   +----------------------------------------------------------------------+
-  $Id: en.lang,v 1.1 2009-11-09 09:08:29 Oscar Navarrete onavarrete@palosanto.com Exp $ */
+  $Id: fr.lang, October 25, 2010, 5:39 pm kleber andres loayza Exp $ */
 global $arrLangModule;
-$arrLangModule=array(
-
+$arrLangModule=array(  
 "New Email list" => "Nouvelle liste d'eMail",
 "Are you sure you wish to delete the email list." => "&Ecirc;tes_vous s&ucirc;r que vous souhaitiez effacer la liste de courrier électronique ?",
 "Email List Name" => "Nom de la liste d'eMail",
-
 "Email Member" => "Email Membre",
 "Email List Members" => "Liste des membres eMail.",
-
 "Number of Accounts" => "Nombre de comptes",
-//nuevos
 "Dhcp Client List" => "Liste des Clients DHCP",
 "New Dhcp client" => "Nouveau client DHCP",
 "Are you sure you wish to delete the Ip." => "&Ecirc;tes_vous s&ucirc;r que vous souhaitiez effacer l'adresse Ip ?",
 "Ip Host" => "Ip H&ocirc;te",
 "Action" => "Action",
 "See All Dhcp Info" => "Voir les info DHCP",
-
 "Lease Ip" => "Bail Ip",
 "Start Date" => "Date (d&eacute;but)",
 "End Date" => "Date (Fin)",
@@ -54,5 +52,6 @@ $arrLangModule=array(
 "IP Address" => "IP Address",
 "MAC Address" => "MAC Address",
 "View Details" => "View Details",
+
 );
 ?>

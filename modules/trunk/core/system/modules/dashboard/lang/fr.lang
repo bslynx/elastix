@@ -2,20 +2,15 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.0                                                  |
+  | Elastix version: 2.0                                           |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
-  | Copyright (c) 2008 Palosanto Solutions S. A.                         |
+  | Copyright (c) 2006 Palosanto Solutions S. A.                         |
   +----------------------------------------------------------------------+
   | Cdla. Nueva Kennedy Calle E 222 y 9na. Este                          |
   | Telfs. 2283-268, 2294-440, 2284-356                                  |
   | Guayaquil - Ecuador                                                  |
-  | http://www.palosanto.com 						                     |
-  |                                                                      |
-  | Translated by: Erwan DESVERGNES - SDCI                               |
-  | erwan.desvergnes@SDCI.fr                                             |
-  |   Revision 1.0-17 by Gregory BOUZINAC - GMixon                       | 
-  | greg@gmixon.com                                                      |
+  | http://www.palosanto.com                                             |
   +----------------------------------------------------------------------+
   | The contents of this file are subject to the General Public License  |
   | (GPL) Version 2 (the "License"); you may not use this file except in |
@@ -29,48 +24,49 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  |                                                                      |
+  | Translate by:Dannarz                                             |
+  | Email: sesshomarurin7@palosanto.com                                                       |
   +----------------------------------------------------------------------+
-  $Id: fr.lang,v 1.8 2008/05/20 00:36:42 bmacias Exp $ */
+  $Id: fr.lang, October 25, 2010, 5:39 pm kleber andres loayza Exp $ */
 global $arrLangModule;
-$arrLangModule=array(
-/*System Info*/
-"System Resources"=>"Ressources syst&egrave;me",
-"CPU Info"=>"Info CPU",
-"Uptime"=>"Temps de fonctionnement",
-"CPU usage"=>"Utilisation CPU",
-"Memory usage"=>"Utilisation m&eacute;moire",
-"Swap usage"=>"Utilisation Swap",
-"Hard Drives"=>"Disque dur",
-"Partition Name"=>"Nom de la Partition",
-"Capacity"=>"Capacit&eacute;",
-"Usage"=>"Utilisation",
-"Mount point"=>"Point de montage",
-"No records found"=>"Aucun enregistrement trouvé",
-"It was not possible to obtain information about the graph" =>"Impossible d'avoir des informations sur le graphique",
-"% used of"=>"% utilis&eacute; de ",
-"News"=>"Nouveaux",
-"prev"=>"Pr&eacutec&eacute;dent",
-"next"=>"suivant",
-"show_vertical"=>"Afficher la barre de d&eacutefilement verticale",
-"show_horizontal"=>"Afficher barre de d&eacute;filement horizontale",
-"NoConnection"=>"Aucune connexion",
-"Performance Graphic"=>"Performance Graphique",
-"Processes Status"=>"&Eacute;tat des Processus",
-"Communication Activity"=>"Activit&eacute; des Communications",
-"Telephony Service"=>"Service T&eacute;l.",
-"Instant Messaging Service"=>"Service Messagerie instantan&eacute;e.",
-"Fax Service"=>"Service Fax",
-"Email Service"=>"Service Mail",
-"Database Service"=>"Service BDD",
-"Web Server"=>"Serveur Web",
-"Elastix Call Center Service"=>"Elastix Call Center Service",
-"Running"=>"En fonction",
-"Not installed"=>"Service non activ&eacute;",
-"Not running"=>"Pas en fonction",
+$arrLangModule=array(  
+"System Resources" => "Ressources syst&egrave;me",
+"CPU Info" => "Info CPU",
+"Uptime" => "Temps de fonctionnement",
+"CPU usage" => "Utilisation CPU",
+"Memory usage" => "Utilisation m&eacute;moire",
+"Swap usage" => "Utilisation Swap",
+"Hard Drives" => "Disque dur",
+"Partition Name" => "Nom de la Partition",
+"Capacity" => "Capacit&eacute;",
+"Usage" => "Utilisation",
+"Mount point" => "Point de montage",
+"No records found" => "Aucun enregistrement trouvé",
+"It was not possible to obtain information about the graph" => "Impossible d'avoir des informations sur le graphique",
+"% used of" => "% utilis&eacute; de ",
+"News" => "Nouveaux",
+"prev" => "Pr&eacutec&eacute;dent",
+"next" => "suivant",
+"show_vertical" => "Afficher la barre de d&eacutefilement verticale",
+"show_horizontal" => "Afficher barre de d&eacute;filement horizontale",
+"NoConnection" => "Aucune connexion",
+"Performance Graphic" => "Performance Graphique",
+"Processes Status" => "&Eacute;tat des Processus",
+"Communication Activity" => "Activit&eacute; des Communications",
+"Telephony Service" => "Service T&eacute;l.",
+"Instant Messaging Service" => "Service Messagerie instantan&eacute;e.",
+"Fax Service" => "Service Fax",
+"Email Service" => "Service Mail",
+"Database Service" => "Service BDD",
+"Web Server" => "Serveur Web",
+"Elastix Call Center Service" => "Elastix Call Center Service",
+"Running" => "En fonction",
+"Not installed" => "Service non activ&eacute;",
+"Not running" => "Pas en fonction",
 "OK1" => "Ok",
 "Shutdown" => "N-A",
 "IAXModem Service" => "Service IAX Modem",
-/*copiado desde el dashboard*/
 "You haven't extension" => "L'extension n'a pas &eacute;t&eacute; affect&eacute;e.",
 "Imap: Connection error" => "Imap: Erreur de connexoin.",
 "You don't recibed emails" => "Aucun eMail rece&ccedil;u.",
@@ -140,5 +136,6 @@ $arrLangModule=array(
 "Cards no found" => "Carte T&eacute;l&eacute;phonique non trouv&eacute;e.",
 "Bytes" => "Bytes",
 "Unknown" => "Unknown",
+
 );
 ?>

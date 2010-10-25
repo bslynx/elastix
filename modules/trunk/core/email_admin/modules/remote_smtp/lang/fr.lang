@@ -1,8 +1,8 @@
 <?php
-  /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
+/* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   CodificaciÃ³n: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.6-6                                               |
+  | Elastix version: 2.0                                           |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -24,10 +24,13 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  |                                                                      |
+  | Translate by:Dannarz                                             |
+  | Email: sesshomarurin7@palosanto.com                                                       |
   +----------------------------------------------------------------------+
-  $Id: en.lang,v 1.1 2009-08-07 01:08:56 Oscar Navarrete onavarrete@palosanto.com Exp $ */
+  $Id: fr.lang, October 25, 2010, 5:39 pm kleber andres loayza Exp $ */
 global $arrLangModule;
-$arrLangModule=array(
+$arrLangModule=array(  
 "Host Name" => "Nom d'h&ocirc;te",
 "Remote SMTP Delivery" => "SMTP Distant",
 "Remote SMTP Server" => "Serveur SMTP distant",
@@ -51,11 +54,9 @@ $arrLangModule=array(
 "Smtpd tls session cache timeout" => "Smtpd tls session cache timeout",
 "Tls random source" => "Tls source aléatoire",
 "Tls daemon random source" => "Tls daemon de source aléatoire.",
-
 "Broken sasl auth clients" => "Broken sasl auth clients",
 "Smtpd sasl auth enable" => "Smtpd sasl auth enable",
 "Smtp always send ehlo" => "Smtp always send ehlo",
-
 "Result transaction" => "R&eacute;sultat de la transaction.",
 "Configured successful" => "Configur&eacute; avec succ&egrave;s",
 "Pass phrase for smtpd" => "Pass phrase pour smtpd",
@@ -86,5 +87,6 @@ $arrLangModule=array(
             Remote SMTP Server = [an.ip.add.ress]</p>",
 "Message Remote Autentification" => "This option allows the autentification with certificates.",
 "Message Remote SMTP Cert" => "To enable the certificates option is neccesary to specify the required fields",
+
 );
 ?>

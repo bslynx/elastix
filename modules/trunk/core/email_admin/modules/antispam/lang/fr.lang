@@ -1,8 +1,8 @@
 <?php
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
-   Codificación: UTF-8
+  Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.3                                                  |
+  | Elastix version: 2.0                                           |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -17,7 +17,7 @@
   | compliance with the License. You may obtain a copy of the License at |
   | http://www.opensource.org/licenses/gpl-license.php                   |
   |                                                                      |
-  | Software distributed under the License is distributed on "AS IS"     |
+  | Software distributed under the License is distributed on an "AS IS"  |
   | basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See  |
   | the License for the specific language governing rights and           |
   | limitations under the License.                                       |
@@ -25,12 +25,12 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   |                                                                      |
-  | Translate by: Bruno Macias                                           |
-  | Email: bmacias@palosanto.com                                         |
+  | Translate by:Dannarz                                             |
+  | Email: sesshomarurin7@palosanto.com                                                       |
   +----------------------------------------------------------------------+
-  $Id: en.lang,v 1.7 2008/02/18 09:49:00 bmacias Exp $ */
+  $Id: fr.lang, October 25, 2010, 5:39 pm kleber andres loayza Exp $ */
 global $arrLangModule;
-$arrLangModule=array(
+$arrLangModule=array(  
 "Antispam" => "Antispam",
 "Spam Level" => "Niveau des Spam",
 "Enabled" => "Valid&eacute;",
@@ -40,11 +40,11 @@ $arrLangModule=array(
 "Commad failed, try change thoroughness level" => "Commande manqu&eacute; essayez de changer de niveau",
 "Failed change thoroughness level" => "Changement de niveau manqu&eacute;",
 "Failed disactivate spam filter" => "D&eacute;sactivation du filtre antispam manqu&eacute;.",
-"Commad failed, try disactivate spam filter" => "Commande manqu&eacute;, essayez de d&eacute;sactiver le filtre anti-spam", 
+"Commad failed, try disactivate spam filter" => "Commande manqu&eacute;, essayez de d&eacute;sactiver le filtre anti-spam",
 "Status" => "Statut",
 "Update" => "Mise &agrave; jour",
 "Error" => "Erreur",
 "Legend" => "<i>Un niveau de 1 attrapera plus de spam, mais aussi augmente la probabilit&eacute; de faux positifs.<br>Un niveau de 10 attrapera moins de spam, mais d&eacute;cro&icirc;t la probabilit&eacute; de faux positifs.</i>",
-);
 
+);
 ?>

@@ -1,8 +1,8 @@
 <?php
-  /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
+/* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   CodificaciÃ³n: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.4-1                                               |
+  | Elastix version: 2.0                                           |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -24,31 +24,34 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  |                                                                      |
+  | Translate by:Dannarz                                             |
+  | Email: sesshomarurin7@palosanto.com                                                       |
   +----------------------------------------------------------------------+
-  $Id: en.lang,v 1.1 2008-11-11 09:11:49 jvega jvega@palosanto.com Exp $ */
+  $Id: fr.lang, October 25, 2010, 5:39 pm kleber andres loayza Exp $ */
 global $arrLangModule;
-$arrLangModule=array(
+$arrLangModule=array(  
 "Pager Email Address" => "Adresse eMail du Pager",
-"Confirm Password"=>"Confirmer le mot de passe",
-"Email Attachment"=>"Attachement",
-"Play CID"=>"Lire CID",
-"Play Envelope"=>"Lire l'Enveloppe",
-"Delete Vmail"=>"Effacer le message vocal",
-"Required Field"=>"Champ Requis",
-"Filter"=>"Filtre",
+"Confirm Password" => "Confirmer le mot de passe",
+"Email Attachment" => "Attachement",
+"Play CID" => "Lire CID",
+"Play Envelope" => "Lire l'Enveloppe",
+"Delete Vmail" => "Effacer le message vocal",
+"Required Field" => "Champ Requis",
+"Filter" => "Filtre",
 "Configuration" => "Configuration",
-"Start Date"=>"Du",
-"End Date"=>"Au",
+"Start Date" => "Du",
+"End Date" => "Au",
 "Voicemail List" => "Liste des messages vocaux",
-"Are you sure you wish to delete voicemails?" => "Est vous sï¿½rs de vouloir effacer les messages vocaux ?",
-"Date"=>"Date",
-"Time"=>"Heure",
-"Message"=>"Message",
+"Are you sure you wish to delete voicemails?" => "Est vous sûrs de vouloir effacer les messages vocaux ?",
+"Date" => "Date",
+"Time" => "Heure",
+"Message" => "Message",
 "CallerID" => "N&deg; de l'appelant",
 "Extension" => "Extension",
-"Duration"=>"Dur&eacute;",
-"Email"=>"Email",
-"Status"=>"Etat",
+"Duration" => "Dur&eacute;",
+"Email" => "Email",
+"Status" => "Etat",
 "Enable" => "Valider",
 "Disable" => "D&eacute;valider",
 "Yes" => "Oui",
@@ -57,5 +60,6 @@ $arrLangModule=array(
 "no_extension" => "This file is not allowed to download",
 "Download" => "Download",
 "Listen" => "Listen",
+
 );
 ?>
