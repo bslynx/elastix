@@ -75,5 +75,6 @@ $arrLangModule=array(
 "Message"=>"Message",
 "There aren't extensions" => "There aren't extensions",
 "Save" => "Upload CVS File",
+"Error to insert or update Direct DID" => "Error to insert or update Direct DID",
 );
 ?>

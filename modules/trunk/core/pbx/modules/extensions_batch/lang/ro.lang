@@ -75,5 +75,6 @@ $arrLangModule=array(
 "File" => "File to Upload (*.csv)",
 "Message" => "Mesaje",
 "Save" => "Upload CVS File",
+"Error to insert or update Direct DID" => "Error to insert or update Direct DID",
 );
 ?>
