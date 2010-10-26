@@ -252,7 +252,8 @@ function getProgressBar($smarty, $module_name, $pDB, $arrConf, $arrLang){
             $pAddonsModules->clearActionTMP();
             $arr['status'] = "finished";
             $arr['response'] = "OK";
-
+            //limpiar las variables de session del permiso de usuario 
+            unset($_SESSION['elastix_user_permission']);
             // Refrescar el estado de actualización
             $addons_installed = $pAddonsModules->getCheckAddonsInstalled();
 
