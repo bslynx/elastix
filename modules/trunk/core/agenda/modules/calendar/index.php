@@ -83,10 +83,10 @@ function _moduleContent(&$smarty, $module_name)
             $content = saveEvent($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
             break;
         case "get_lang":
-            $content = getLanguages($arrLang);
+            $content = getLanguages($arrLang, $arrConf);
             break;
         case "get_data":
-            $content = getDataCalendar($arrLang,$pDB,$module_name);
+            $content = getDataCalendar($arrLang,$pDB,$module_name,$arrConf);
             break;
         case "get_contacts":
             $content = getContactEmails($arrConf);
@@ -107,7 +107,7 @@ function _moduleContent(&$smarty, $module_name)
             $content = deleteBoxCalendar($arrConf,$arrLang,$pDB);
             break;
         case "download_icals":
-            $content = download_icals($arrLang,$pDB,$module_name);
+            $content = download_icals($arrLang,$pDB,$module_name, $arrConf);
             break;
         case "phone_numbers":
 
@@ -132,10 +132,10 @@ function _moduleContent(&$smarty, $module_name)
             $pDB_addressbook = new paloDB($arrConf['dsn_conn_database3']);
             $pDB_acl = new paloDB($arrConf['dsn_conn_database1']);
             $html = report_adress_book($smarty, $module_name, $local_templates_dir, $pDB_addressbook, $pDB_acl, $arrLang, $dsnAsterisk);
-$smarty->assign("CONTENT", $html);
-$smarty->assign("THEMENAME", $arrConf['mainTheme']);
-$smarty->assign("path", "");
-$content = $smarty->display("$local_templates_dir/address_book_list.tpl");
+            $smarty->assign("CONTENT", $html);
+            $smarty->assign("THEMENAME", $arrConf['mainTheme']);
+            $smarty->assign("path", "");
+            $content = $smarty->display("$local_templates_dir/address_book_list.tpl");
             break;
         default: // view_form
             $content = viewCalendar($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
@@ -171,6 +171,7 @@ function viewCalendar($smarty, $module_name, $local_templates_dir, &$pDB, $arrCo
     $_DATA['year']  = isset($anio)?$anio:date("Y");
     $_DATA['month'] = isset($mess)?$mess:date("n");
 
+    $_DATA['ReminderTime'] = isset($_DATA['ReminderTime'])?$_DATA['ReminderTime']:"10";
 
     // para lo de new_event.tpl
 
@@ -281,6 +282,7 @@ function saveEvent($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf,
     $each_repeat        = getParameter("repeat");
 /////////////////////last calendar///////////////////
     $reminder           = getParameter("reminder");
+    $remainerTime       = getParameter("ReminderTime"); 
 /////////////////////////////////////////////////////
     $list               = getParameter("emails");
     $recording          = getParameter("recording");
@@ -359,7 +361,7 @@ function saveEvent($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf,
                         $id_last += 1;
                 }
                 if($reminder == "on")
-                    createRepeatAudioFile($each_repeat,$day_repeat,$starttime,$endtime,$num_frec,$asterisk_calls,$ext,$call_to,$pDB,$id_last,$arrLang,$arrConf,$recording);
+                    createRepeatAudioFile($each_repeat,$day_repeat,$starttime,$endtime,$num_frec,$asterisk_calls,$ext,$call_to,$pDB,$id_last,$arrLang,$arrConf,$recording,$remainerTime);
             }
             if($repeat == "each_day"){ //dias que se repiten durante un numero de semanas
                 $event_type = 5;
@@ -374,7 +376,7 @@ function saveEvent($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf,
                             $id_last += 1;
                      }
                 if($reminder == "on")
-                    createRepeatAudioFile($each_repeat,$day_repeat,$starttime,$endtime,$num_frec,$asterisk_calls,$ext,$call_to,$pDB,$id_last,$arrLang,$arrConf,$recording);
+                    createRepeatAudioFile($each_repeat,$day_repeat,$starttime,$endtime,$num_frec,$asterisk_calls,$ext,$call_to,$pDB,$id_last,$arrLang,$arrConf,$recording, $remainerTime);
             }
             if($repeat == "each_month"){ //dias que se repiten durante un numero de meses
                 $event_type = 6;
@@ -389,15 +391,19 @@ function saveEvent($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf,
                                 $id_last += 1;
                      }
                 if($reminder == "on")
-                    createRepeatAudioFile($each_repeat,$day_repeat,$starttime,$endtime,$num_frec,$asterisk_calls,$ext,$call_to,$pDB,$id_last,$arrLang,$arrConf,$recording);
+                    createRepeatAudioFile($each_repeat,$day_repeat,$starttime,$endtime,$num_frec,$asterisk_calls,$ext,$call_to,$pDB,$id_last,$arrLang,$arrConf,$recording, $remainerTime);
             }
             
             if(getParameter("save_edit")){ // si se va modificar un evento existente
-                $val = $pCalendar->updateEvent($id,$start,$end,$starttime,$event_type,$event,$description,$asterisk_calls,$recording,$call_to,$notification,$notification_email,$endtime,$each_repeat,$checkbox_days);
+                $dataUp = $pCalendar->getEventById($id, $uid);
+                if($dataUp!="" && isset($dataUp))
+                    $val = $pCalendar->updateEvent($id,$start,$end,$starttime,$event_type,$event,$description,$asterisk_calls,$recording,$call_to,$notification,$notification_email,$endtime,$each_repeat,$checkbox_days, $remainerTime);
+                else    $val = false;
                 if($val == true){
                     $smarty->assign("mb_message", $arrLang['update_successful']);
                     $content = viewCalendar($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
-                    sendMails($notification_email,$start,$end,$starttime,$event_type,$event,$description, $arrLang, "UPDATE",$endtime,$arrConf,$pDB);
+                    if($notification_email != "")
+                        sendMails($notification_email,$start,$end,$starttime,$event_type,$event,$description, $arrLang, "UPDATE",$endtime,$arrConf,$pDB,$module_name, $id);
                     return $content;
                 }
                 else{
@@ -407,11 +413,12 @@ function saveEvent($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf,
                 }
             }
             else{ // si se va a ingresar un nuevo evento
-                $val = $pCalendar->insertEvent($uid,$start,$end,$starttime,$event_type,$event,$description,$asterisk_calls,$recording,$call_to,$notification,$notification_email,$endtime,$each_repeat,$checkbox_days);
-    
+                $val = $pCalendar->insertEvent($uid,$start,$end,$starttime,$event_type,$event,$description,$asterisk_calls,$recording,$call_to,$notification,$notification_email,$endtime,$each_repeat,$checkbox_days, $remainerTime);
+                $id = $pDB->getLastInsertId();
                 if($val == true){
                     $smarty->assign("mb_message", $arrLang['insert_successful']);
-                    sendMails($notification_email,$start,$end,$starttime,$event_type,$event,$description, $arrLang, "NEW", $endtime,$arrConf,$pDB);
+                    if($notification_email != "")
+                        sendMails($notification_email,$start,$end,$starttime,$event_type,$event,$description, $arrLang, "NEW", $endtime,$arrConf,$pDB,$module_name, $id);
                     $content = viewCalendar($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
                     return $content;
                 }
@@ -616,13 +623,19 @@ function viewForm_NewEvent($smarty, $module_name, $local_templates_dir, &$pDB, $
 
 function deleteEvent($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang){
     $pCalendar = new paloSantoCalendar($pDB);
-
+    $pDBACL    = new paloDB($arrConf['dsn_conn_database1']);
+    $pACL      = new paloACL($pDBACL);
+    $id_user   = $pACL->getIdUser($_SESSION["elastix_user"]);
     $_DATA  = $_POST;
     $action = getParameter("action");
     $id     = getParameter("id_event");
-    $data = $pCalendar->getEventById($id);
-    sendMails($data['emails_notification'],$data['startdate'],$data['enddate'],$data['starttime'],$data['eventtype'],$data['subject'],$data['description'], $arrLang,"DELETE", $data['endtime'],$arrConf,$pDB);
-    $val = $pCalendar->deleteEvent($id);
+    $data = $pCalendar->getEventById($id, $id_user);
+    $val = false;
+    if($data!="" && isset($data)){
+        if($data['emails_notification'] != "")
+            sendMails($data['emails_notification'],$data['startdate'],$data['enddate'],$data['starttime'],$data['eventtype'],$data['subject'],$data['description'], $arrLang,"DELETE", $data['endtime'],$arrConf,$pDB,$module_name, $id);
+        $val = $pCalendar->deleteEvent($id, $id_user);
+    }
     if($val == true){
         $smarty->assign("mb_message", $arrLang['delete_successful']);
         $content = viewCalendar($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
@@ -635,23 +648,38 @@ function deleteEvent($smarty, $module_name, $local_templates_dir, &$pDB, $arrCon
     }
 }
 
-function sendMails($emails,$start,$end,$starttime,$event_type,$event,$description, $arrLang, $type, $endtime,$arrConf,$pDB){
+function sendMails($emails,$start,$end,$starttime,$event_type,$event,$description, $arrLang, $type, $endtime,$arrConf,$pDB, $module_name, $idEvent){
+    require_once("/var/spool/hylafax/bin/includes/phpmailer/class.phpmailer.php");
     $pCalendar = new paloSantoCalendar($pDB);
     $user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
     $uid = Obtain_UID_From_User($user,$arrConf);
     $pDB3 = new paloDB($arrConf['dsn_conn_database1']);
     $user_name = $pCalendar->getNameUsers($uid,$pDB3);
+    $dirIcalTmp = "/tmp/icalout.ics";
+    if($uid == "" || !isset($uid)) return; // validar el error de envio de email
     //obtain email FROM....
     $From = 'admin@example.com';
-    $subject = $arrLang['New_Event']." :".$event;
+    $subject = $arrLang['New_Event'].": ".$event;
     if($type == "NEW")
-        $subject = $arrLang['New_Event']." :".$event;
+        $subject = $arrLang['New_Event'].": ".$event;
     if($type == "UPDATE")
-        $subject = $arrLang['Change_Event']." :".$event;
+        $subject = $arrLang['Change_Event'].": ".$event;
     if($type == "DELETE")
-        $subject = $arrLang['Delete_Event']." :".$event;
+        $subject = $arrLang['Delete_Event'].": ".$event;
 
     $event_type = returnTypeEvent($event_type, $arrLang);
+
+    createTmpIcal($arrLang,$pDB,$module_name, $arrConf, $idEvent); // write the file /tmp/icalout.ics
+
+    $file = fopen($dirIcalTmp, "r"); 
+    $encoded_attach = "";
+    if($file){
+        $contenido = fread($file, filesize($dirIcalTmp)); 
+        $encoded_attach = chunk_split(base64_encode($contenido)); 
+        $val = true;
+    }else{
+        $val = false;
+    }
 
     $startarray = explode(" ",$starttime);
     $endarray   = explode(" ",$endtime);
@@ -745,10 +773,21 @@ $msg = "
 //                 </tr>
 //////////////////////////////////////////////////////////////////////////////////////////////
 
+    $mail = new PHPMailer(); 
+    $mail->Host = "localhost";     
+    $mail->Body = $msg;        
+    $mail->IsHTML(true); // El correo se envía como HTML
+    $mail->WordWrap = 50; 
+    $mail->From = $From; 
+    $mail->FromName = $user_name; 
+    if($val){
+        $mail->AddAttachment($dirIcalTmp, "icalout.ics");
+    }
 
     for($i=0; $i<count($arrEmails)-1; $i++){
         $To = $arrEmails[$i];
-
+        $cabecerasIcal = "";
+        $cuerpo = "";
         $posini = strpos($To,"<");
         $posend = strpos($To,">");
 
@@ -757,12 +796,15 @@ $msg = "
         else
             $ToSend = $To;
 
-        $head  = "MIME-Version: 1.0\r\n"; 
-        $head .= "Content-type: text/html; charset=iso-8859-1\r\n";
-        $head .= "From: $From\r\n";
-        $head .= "To: $To\r\n";
+        $mail->ClearAddresses();
+        $mail->Subject = $subject; 
+        $mail->AddAddress($ToSend, $To);
 
-        $val = mail($ToSend, $subject, $msg, $head);
+        $mail->Send();
+    }
+    if($val){
+        fclose($file);
+        unlink($dirIcalTmp);
     }
 }
 
@@ -862,13 +904,13 @@ function Obtain_UID_From_User($user,$arrConf)
 function getCheckDays($sunday,$monday,$tuesday,$wednesday,$thursday,$friday,$saturday)
 {
     $out = "";
-    if($sunday == "on")    $out .= "Su,";
-    if($monday == "on")    $out .= "Mo,";
-    if($tuesday == "on")   $out .= "Tu,";
-    if($wednesday == "on") $out .= "We,";
-    if($thursday == "on")  $out .= "Th,";
-    if($friday == "on")    $out .= "Fr,";
-    if($saturday == "on")  $out .= "Sa,";
+    if($sunday    == "on")   $out .= "Su,";
+    if($monday    == "on")   $out .= "Mo,";
+    if($tuesday   == "on")   $out .= "Tu,";
+    if($wednesday == "on")   $out .= "We,";
+    if($thursday  == "on")   $out .= "Th,";
+    if($friday    == "on")   $out .= "Fr,";
+    if($saturday  == "on")   $out .= "Sa,";
     return $out;
 }
 
@@ -962,20 +1004,32 @@ function getDaysByCheck($days,$type=0){
     return $arrOut;
 }
 
-function getLanguages($arrLang)
+function getLanguages($arrLang, $arrConf)
 {
     $userid = getParameter('userid');
+    $pDBACL    = new paloDB($arrConf['dsn_conn_database1']);
+    $pACL      = new paloACL($pDBACL);
+    $id_user   = $pACL->getIdUser($_SESSION["elastix_user"]);
     $json = new Services_JSON();
-    return $json->encode($arrLang);
+    if($id_user)
+        return $json->encode($arrLang);
+    else
+        return array();
 }
 
 function viewBoxCalendar($arrConf,$arrLang,$pDB){
     $pCalendar = new paloSantoCalendar($pDB);
     $id        = getParameter('id_event');
     $action    = getParameter('action');
+	$userid = getParameter('userid');
+    $pDBACL    = new paloDB($arrConf['dsn_conn_database1']);
+    $pACL      = new paloACL($pDBACL);
+    $id_user   = $pACL->getIdUser($_SESSION["elastix_user"]);
     $json = new Services_JSON();
     $data = "";
-
+	$data = $pCalendar->getEventById($id, $id_user);
+    $val = false;
+    if($data=="" && !isset($data))  return $json->encode(array());
     if($action == "view_box"){
         $data = $pCalendar->get_event_by_id($id);
         $type_event = $data['it_repeat'];
@@ -1012,14 +1066,22 @@ function viewBoxCalendar($arrConf,$arrLang,$pDB){
             $arr = getDaysByCheck($days_repeat,2);
             $data = array_merge($data,$arr);
         }
-        $data = array_merge($data,$arrLang);
+        //$data = array_merge($data,$arrLang);
+		$data['New_Event'] = $arrLang['New_Event'];
+		$data['Edit Event'] = $arrLang['Edit Event'];
+		$data['View Event'] = $arrLang['View Event'];
+		$data['Contact'] = $arrLang['Contact'];
+		$data['Email'] = $arrLang['Email'];
     }
     return $json->encode($data);
 }
 
-function download_icals($arrLang,&$pDB,$module_name){
+function download_icals($arrLang,&$pDB,$module_name, $arrConf){
 
-    $arr_out = getAllDataCalendar($arrLang,$pDB,$module_name);
+    $pDBACL    = new paloDB($arrConf['dsn_conn_database1']);
+    $pACL      = new paloACL($pDBACL);
+    $id_user   = $pACL->getIdUser($_SESSION["elastix_user"]);
+    $arr_out = getAllDataCalendar($arrLang,$pDB,$module_name, $arrConf);
 
     header("Cache-Control: private");
     header("Pragma: cache");
@@ -1059,6 +1121,46 @@ function download_icals($arrLang,&$pDB,$module_name){
 
 }
 
+function createTmpIcal($arrLang,&$pDB,$module_name, $arrConf, $idEvent){
+    $pDBACL    = new paloDB($arrConf['dsn_conn_database1']);
+    $pACL      = new paloACL($pDBACL);
+    $id_user   = $pACL->getIdUser($_SESSION["elastix_user"]);
+    $arr_out   = getDataCalendarByEventId($arrLang,$pDB,$module_name, $arrConf, $idEvent);
+    $tmpFile   = "/tmp/icalout.ics";
+    $document_output = "BEGIN:VCALENDAR\nPRODID:-//Elastix Development Department// Elastix 2.0 //EN\nVERSION:2.0\n\n";
+    for($i=0; $i<count($arr_out); $i++){
+        $start_time = date("Ymd",strtotime($arr_out[$i]['start']))."T".date("Hi",strtotime($arr_out[$i]['start']))."00Z";
+        $end_time = date("Ymd",strtotime($arr_out[$i]['end']))."T".date("Hi",strtotime($arr_out[$i]['end']))."00Z";
+
+        $document_output.= "BEGIN:VEVENT\n";
+        $document_output.= "DTSTAMP:$start_time\n";
+        $document_output.= "CREATED:$start_time\n";
+        $document_output.= "UID:$i-".$arr_out[$i]['id']."\n";
+        $document_output.= "SUMMARY:".$arr_out[$i]['title']."\n";
+        $document_output.= "CLASS:PUBLIC\n";
+        $document_output.= "PRIORITY:5\n";
+        $document_output.= "DTSTART:$start_time\n";
+        $document_output.= "DTEND:$end_time\n";
+        $document_output.= "TRANSP:OPAQUE\n";
+        $document_output.= "SEQUENCE=0\n";
+        $document_output.= "END:VEVENT\n\n";
+    }
+    $document_output .= "END:VCALENDAR";
+    $fh = fopen($tmpFile, "w");
+    if($fh){
+        if(fwrite($fh, $document_output) == false){
+            fclose($fh);
+            return false;
+        }else{
+            fclose($fh);
+            return true;
+        }
+    }else{
+        fclose($fh);
+        return false;
+    }
+}
+
 function newBoxCalendar($arrConf,$arrLang,$pDB){
     $pCalendar = new paloSantoCalendar($pDB);
     $json = new Services_JSON();
@@ -1082,15 +1184,23 @@ function newBoxCalendar($arrConf,$arrLang,$pDB){
 
 function deleteBoxCalendar($arrConf,$arrLang,$pDB){
     $pCalendar = new paloSantoCalendar($pDB);
-    $id = getParameter('id_event');
+    $pDBACL    = new paloDB($arrConf['dsn_conn_database1']);
+    $pACL      = new paloACL($pDBACL);
+    $id_user   = $pACL->getIdUser($_SESSION["elastix_user"]);
+    $id   = getParameter('id_event');
     $json = new Services_JSON();
-    $data = $pCalendar->getEventById($id);
+    $data = $pCalendar->getEventById($id, $id_user);
     $dir_outgoing = $arrConf['dir_outgoing'];
-    $val = $pCalendar->deleteEvent($id);
+    $val = false;
+    if($data !="" && isset($data)){ // si el evento le pertenece al usuario
+        $val = $pCalendar->deleteEvent($id, $id_user);
+    }
+
     if($val == true){
         $data["error_delete_JSON"] = $arrLang['delete_successful'];
         $data["error_delete_status"] = "on"; 
-        sendMails($data['emails_notification'],$data['startdate'],$data['enddate'],$data['starttime'],$data['eventtype'],$data['subject'],$data['description'], $arrLang,"DELETE", $data['endtime'],$arrConf,$pDB);
+        if($data['emails_notification'] != "")
+            sendMails($data['emails_notification'],$data['startdate'],$data['enddate'],$data['starttime'],$data['eventtype'],$data['subject'],$data['description'], $arrLang,"DELETE", $data['endtime'],$arrConf,$pDB,$module_name, $id);
         exec("rm -f $dir_outgoing/event_{$id}*.call");
     }
     else{
@@ -1102,18 +1212,25 @@ function deleteBoxCalendar($arrConf,$arrLang,$pDB){
 }
 
 function getNumExtesion($arrConf,&$pDB,$arrLang){
+    $pDBACL  = new paloDB($arrConf['dsn_conn_database1']);
+    $pACL    = new paloACL($pDBACL);
+    $id_user = $pACL->getIdUser($_SESSION["elastix_user"]);
     $pCalendar = new paloSantoCalendar($pDB);
     $uid = getParameter('userid');
-    $pDB3 = new paloDB($arrConf['dsn_conn_database1']);
-    $ext = $pCalendar->obtainExtension($pDB3,$uid);
     $json = new Services_JSON();
-    if(empty($ext)) $ext = "empty";
-    $arr = array("ext" => $ext);
-    $arrLang = array_merge($arrLang,$arr);
+    if($id_user == $uid){
+        $pDB3 = new paloDB($arrConf['dsn_conn_database1']);
+        $ext = $pCalendar->obtainExtension($pDB3,$uid);
+        if(empty($ext)) $ext = "empty";
+        $arr = array("ext" => $ext);
+        $arrLang = array_merge($arrLang,$arr);
+    }else{
+        $arrLang = array();
+    }
     return $json->encode($arrLang);
 }
 
-function getAllDataCalendar($arrLang,&$pDB,$module_name){
+function getAllDataCalendar($arrLang,&$pDB,$module_name, $arrConf){
     $pCalendar = new paloSantoCalendar($pDB);
 
     //$arrDates = $pCalendar->getAllEvents();
@@ -1166,7 +1283,60 @@ function getAllDataCalendar($arrLang,&$pDB,$module_name){
     return $arr;
 }
 
-function createRepeatAudioFile($each_repeat,$day_repeat,$starttime,$endtime,$type,$asterisk_call_me,$ext,$call_to,$pDB,$id_event,$arrLang,$arrConf,$recording){
+function getDataCalendarByEventId($arrLang,&$pDB,$module_name, $arrConf, $idEvent){
+    $pCalendar = new paloSantoCalendar($pDB);
+
+    //$arrDates = $pCalendar->getAllEvents();
+    $user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
+    $uid = Obtain_UID_From_User($user,$arrConf);
+    $arrDates = $pCalendar->getEventIdByUid($uid, $idEvent);
+
+    $arr = array();
+
+    $j=0;
+    $k=0;
+    $arr = "";
+    while($j < count($arrDates)){
+        $event_type = $arrDates[$j]['eventtype'];
+        $arr1 = "";
+
+        if($event_type == 1){
+            $arr1 = array(
+                        'id'    => $arrDates[$j]['id'],
+                        'title' => $arrDates[$j]['subject'],
+                        'start' => $arrDates[$j]['starttime'],
+                        'end'   => $arrDates[$j]['endtime'],
+                        'allDay'=> false,
+                        //'url' => "?menu=".$module_name."&action=view&id_event=".$arrDates[$j]['id']
+                        'url' => "getDataAjaxForm('menu=".$module_name."&action=view_box&rawmode=yes&id_event=".$arrDates[$j]['id']."');"
+                        );
+            $arr[$k] = $arr1;
+            $k += 1;
+        }
+
+        if($event_type == 5){
+            $each_repeat = $arrDates[$j]['each_repeat'];
+            $day_repeat  = explode(',',$arrDates[$j]['days_repeat']);
+            $starttime      = $arrDates[$j]['starttime'];
+            $endtime        = $arrDates[$j]['endtime'];
+            $type = 7;
+            getRepeatDate($each_repeat,$day_repeat,$starttime,$endtime,$j,$k,$arr,$arrDates,$type,$module_name);
+        }
+
+        if($event_type == 6){
+            $each_repeat = $arrDates[$j]['each_repeat'];
+            $day_repeat  = explode(',',$arrDates[$j]['days_repeat']);
+            $starttime      = $arrDates[$j]['starttime'];
+            $endtime        = $arrDates[$j]['endtime'];
+            $type = 30;
+            getRepeatDate($each_repeat,$day_repeat,$starttime,$endtime,$j,$k,$arr,$arrDates,$type,$module_name);
+        }
+        $j++;
+    }
+    return $arr;
+}
+
+function createRepeatAudioFile($each_repeat,$day_repeat,$starttime,$endtime,$type,$asterisk_call_me,$ext,$call_to,$pDB,$id_event,$arrLang,$arrConf,$recording, $remainerTime){
     $day_start      = date("D",strtotime("$starttime"));
     $day_end        = date("D",strtotime("$endtime"));
     $hour_start     = date("H:i",strtotime("$starttime"));
@@ -1209,7 +1379,7 @@ function createRepeatAudioFile($each_repeat,$day_repeat,$starttime,$endtime,$typ
                     $last_day_tmp = $start;
                     $FechaInicio = $start.":00";
                     // crea el archivo de audio
-                    createAudioFiles($asterisk_call_me,$ext,$call_to,$pDB,$id_event,$arrLang,$dir_outgoing,$sDirectorioBase,$cont,$FechaInicio,$recording);
+                    createAudioFiles($asterisk_call_me,$ext,$call_to,$pDB,$id_event,$arrLang,$dir_outgoing,$sDirectorioBase,$cont,$FechaInicio,$recording, $remainerTime);
                 }
                 else{// ESPECIFICAR SI SOLO HAY UN DIA 
                     $m=1;
@@ -1251,7 +1421,7 @@ function createRepeatAudioFile($each_repeat,$day_repeat,$starttime,$endtime,$typ
                 if($end <= $endtime){
                     $FechaInicio = $start.":00";
                     // crea el archivo de audio
-                    createAudioFiles($asterisk_call_me,$ext,$call_to,$pDB,$id_event,$arrLang,$dir_outgoing,$sDirectorioBase,$cont,$FechaInicio,$recording);
+                    createAudioFiles($asterisk_call_me,$ext,$call_to,$pDB,$id_event,$arrLang,$dir_outgoing,$sDirectorioBase,$cont,$FechaInicio,$recording, $remainerTime);
                 }
                 $last_day_tmp = $start;
             }
@@ -1262,11 +1432,18 @@ function createRepeatAudioFile($each_repeat,$day_repeat,$starttime,$endtime,$typ
     }
 }
 
-function createAudioFiles($asterisk_call,$ext,$call_to,$pDB,$id_event,$arrLang,$dir_outgoing,$sDirectorioBase,$i,$FechaInicio,$recording){
+function createAudioFiles($asterisk_call,$ext,$call_to,$pDB,$id_event,$arrLang,$dir_outgoing,$sDirectorioBase,$i,$FechaInicio,$recording,$remainerTime){
     $pCalendar = new paloSantoCalendar($pDB);
 
     $result = "";
     $iRetries = 2;
+    if($remainerTime=="10"){
+        $FechaInicio = date("Y-m-d H:i",strtotime("$FechaInicio - 600 second"));
+    }elseif($remainerTime=="30"){
+        $FechaInicio = date("Y-m-d H:i",strtotime("$FechaInicio - 1800 second"));
+    }else{
+        $FechaInicio = date("Y-m-d H:i",strtotime("$FechaInicio - 3600 second"));
+    }
 
     if($asterisk_call=="on"){
         //Obtener datos sobre quien esta usando el sistema
@@ -1319,13 +1496,24 @@ function createAudioFiles($asterisk_call,$ext,$call_to,$pDB,$id_event,$arrLang,$
 
 }
 
-function getDataCalendar($arrLang,&$pDB,$module_name){
+function getDataCalendar($arrLang,&$pDB,$module_name,$arrConf){
+    $pDBACL  = new paloDB($arrConf['dsn_conn_database1']);
+    $pACL    = new paloACL($pDBACL);
+    $id_user = $pACL->getIdUser($_SESSION["elastix_user"]);
+
     $pCalendar = new paloSantoCalendar($pDB);
     $start = getParameter('start');
     $end = getParameter('end');
     $uid = getParameter('uid');
     $start_time = date('Y-m-d', $start);
     $end_time = date('Y-m-d', $end);
+    $arr = array();
+
+    if($id_user != $uid){
+        $json = new Services_JSON();
+        $arrLanJSON = $json->encode($arr);
+        return $arrLanJSON;
+    }
 
     $year = date('Y');
     $month = date('m');
@@ -1333,7 +1521,7 @@ function getDataCalendar($arrLang,&$pDB,$module_name){
 
     $arrDates = $pCalendar->getEventByDate($start_time, $end_time, $uid);
 
-    $arr = array();
+   
 
     $j=0;
     $k=0;
@@ -1381,6 +1569,9 @@ function getDataCalendar($arrLang,&$pDB,$module_name){
 }
 
 function setDataCalendar($arrLang,$pDB,$arrConf){
+    $pDBACL    = new paloDB($arrConf['dsn_conn_database1']);
+    $pACL      = new paloACL($pDBACL);
+    $id_user   = $pACL->getIdUser($_SESSION["elastix_user"]);
     $action    = getParameter('action');
     $days      = getParameter('days');
     $minutes   = getParameter('minutes');
@@ -1392,7 +1583,7 @@ function setDataCalendar($arrLang,$pDB,$arrConf){
     $Finally   = explode(" ",$dateEnd);
     $hour_ini = date("H:i",strtotime($Initial[4]));
     $hour_end = date("H:i",strtotime($Finally[4]));
-    $event = $pCalendar->getEventById($id);
+    $event = $pCalendar->getEventById($id, $id_user);
     $start = $event['startdate'];
     $end = $event['enddate'];
     $checkbox_days = "";
@@ -1411,7 +1602,7 @@ function setDataCalendar($arrLang,$pDB,$arrConf){
     $endtime   = $enddate." ".$hour_end;
 
     // obtain data to create audio files
-    $arrResult = $pCalendar->getEventById($id);
+    $arrResult = $pCalendar->getEventById($id, $id_user);
     // first remove the old audio files
     $dir_outgoing = $arrConf['dir_outgoing'];
 ////////////////las calendar //////////////////////////////////////
@@ -1451,7 +1642,7 @@ function setDataCalendar($arrLang,$pDB,$arrConf){
 ////////////////las calendar //////////////////////////////////////
     if(isset($arrResult['call_to']) && $arrResult['call_to'] != "")
 ////////////////////////////////////////////////////////////////////
-        createRepeatAudioFile($each_repeat,$day_repeat,$starttime,$endtime,$num_frec,$asterisk_calls,$ext,$call_to,$pDB,$id,$arrLang,$arrConf,$recording);
+        createRepeatAudioFile($each_repeat,$day_repeat,$starttime,$endtime,$num_frec,$asterisk_calls,$ext,$call_to,$pDB,$id,$arrLang,$arrConf,$recording,$remainerTime);
 
 
     $val = $pCalendar->updateDateEvent($id,$startdate,$enddate,$starttime,$endtime, $checkbox_days);
@@ -1474,15 +1665,21 @@ function updateAudioFiles($id_event,$arrLang,$dir_outgoing,$sDirectorioBase){
 
 function getContactEmails($arrConf)
 {
-    $userid = getParameter('userid');
+    $pDBACL  = new paloDB($arrConf['dsn_conn_database1']);
+    $pACL    = new paloACL($pDBACL);
+    $id_user = $pACL->getIdUser($_SESSION["elastix_user"]);
+    $userid = getParameter('userid'); 
     $parameters = explode("-", $userid);
     $tag = $parameters[1];
     $userid = $parameters[0];
-    $pDB  = new paloDB($arrConf['dsn_conn_database']);
-    $pDB1 = new paloDB($arrConf['dsn_conn_database3']);
-
-    $pCalendar = new paloSantoCalendar($pDB);
-    $salida = $pCalendar->getContactByTag($pDB1, $tag, $userid);
+    if($id_user == $userid){
+        $pDB  = new paloDB($arrConf['dsn_conn_database']);
+        $pDBAddress = new paloDB($arrConf['dsn_conn_database3']);
+        $pCalendar = new paloSantoCalendar($pDB);
+        $salida = $pCalendar->getContactByTag($pDBAddress, $tag, $userid);
+    }else{
+        $salida = array();
+    }
 
     /*for($i=0; $i<count($salida); $i++){
         //$salida[$i]['caption'] = htmlspecialchars_decode($salida[$i]['caption']);
@@ -1674,6 +1871,8 @@ function createFieldForm($arrLang)
 
     $pCalendar = new paloSantoCalendar($pDB);
     $arrRecording = $pCalendar->Obtain_Recordings_Current_User();
+    $lblTime = $arrLang["lblbefore"];
+    $arrRadio = array('10' => '10'.$lblTime, '30' => '30'.$lblTime, '60' => '60'.$lblTime);
 
     $arrFields = array(
             "event"   => array(      "LABEL"                  => $arrLang["Name"],
@@ -1836,7 +2035,7 @@ function createFieldForm($arrLang)
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-            "Sunday"   => array(      "LABEL"                  => $arrLang["Sunday"],
+            "Sunday"   => array(        "LABEL"                  => $arrLang["Sunday"],
                                             "REQUIRED"               => "no",
                                             "INPUT_TYPE"             => "CHECKBOX",
                                             "INPUT_EXTRA_PARAM"      => "",
@@ -1858,6 +2057,13 @@ function createFieldForm($arrLang)
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
+            "ReminderTime" => array(    "LABEL"                  => $arrLang["ReminderTime"],
+                                            "REQUIRED"               => "no",
+                                            "INPUT_TYPE"             => "RADIO",
+                                            "INPUT_EXTRA_PARAM"      => $arrRadio,
+                                            "VALIDATION_TYPE"        => "text",
+                                            "VALIDATION_EXTRA_PARAM" => ""
+                                            ), 
 
             );
     return $arrFields;
@@ -1867,8 +2073,8 @@ function getAction()
 {
     if(getParameter("save_new")) //Get parameter by POST (submit)
         return "save_new";
-    else if(getParameter("action")=="new")
-        return "view_form";
+    /*else if(getParameter("action")=="new")
+        return "view_form";*/
     else if(getParameter("action")=="save_edit")
         return "save_edit";
     else if(getParameter("action")=="set_data")
@@ -1917,6 +2123,9 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
 {
     include_once "modules/address_book/libs/paloSantoAdressBook.class.php";
 
+    $padress_book = new paloAdressBook($pDB);
+    $pACL    = new paloACL($pDB_2);
+    $id_user = $pACL->getIdUser($_SESSION["elastix_user"]);
     if(isset($_POST['select_directory_type']) && $_POST['select_directory_type']=='External')
     {
         $smarty->assign("external_sel",'selected=selected');
@@ -1961,18 +2170,17 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
     $field   = NULL;
     $pattern = NULL;
 
+    $allowSelection = array("name", "telefono", "last_name");
     if(isset($_POST['field']) and isset($_POST['pattern'])){
         $field      = $_POST['field'];
-        $pattern    = $_POST['pattern'];
+        if (!in_array($field, $allowSelection))
+            $field = "name";
+        $pattern    = $pDB->DBCAMPO('%'.$_POST['pattern'].'%');
     }
 
     $startDate = $endDate = date("Y-m-d H:i:s");
 
     $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter_adress_book.tpl", "", $_POST);
-
-    $padress_book = new paloAdressBook($pDB);
-    $p_book  = new paloAdressBook($pDB_2);
-    $id_user = $p_book->getIdUser($_SESSION["elastix_user"]);
 
     if($directory_type=='external')
         $total = $padress_book->getAddressBook(NULL,NULL,$field,$pattern,TRUE,$id_user);
@@ -2039,7 +2247,7 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
                     );
 
     $oGrid->showFilter(trim($htmlFilter));
-    $contenidoModulo = "<form method='post' style='margin-bottom: 0pt;' action='?menu=$module_name&action=phone_numbers&rawmode=yes'>".$oGrid->fetchGrid($arrGrid, $arrData,$arrLang)."</form>";
+    $contenidoModulo = "<form name='form_filter' method='post' style='margin-bottom: 0pt;' action='?menu=$module_name&action=phone_numbers&rawmode=yes'>".$oGrid->fetchGrid($arrGrid, $arrData,$arrLang)."</form>";
     return $contenidoModulo;
 }
 

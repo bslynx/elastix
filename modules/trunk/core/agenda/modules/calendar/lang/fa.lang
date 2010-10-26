@@ -151,5 +151,7 @@ $arrLangModule=array(
 "Download" => "Download",
 "Here" => "Here",
 "May" => "May",
+"ReminderTime" => "Reminder",
+"lblbefore" => "min before",
 );
 ?>

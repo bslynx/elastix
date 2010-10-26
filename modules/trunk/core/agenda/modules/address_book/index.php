@@ -427,9 +427,9 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
                 $email = '';
                 $typeContact = "<img alt='public' title='".$arrLang['Public Contact']."' src='modules/$module_name/images/public.png' />";
             }
-            
 
-            $arrTmp[1]  = ($directory_type=='external')?"<a href='?menu=$module_name&action=show&id=".$adress_book['id']."'>{$adress_book['last_name']} {$adress_book['name']}</a>":$adress_book['description'];
+
+            $arrTmp[1]  = ($directory_type=='external')?"<a href='?menu=$module_name&action=show&id=".$adress_book['id']."'>".htmlspecialchars($adress_book['last_name'], ENT_QUOTES, "UTF-8")." ".htmlspecialchars($adress_book['name'], ENT_QUOTES, "UTF-8")."</a>":$adress_book['description'];
             $arrTmp[2]  = ($directory_type=='external')?$adress_book['telefono']:$adress_book['id'];
             $arrTmp[3]  = $email;
             $arrTmp[4]  = "<a href='?menu=$module_name&action=call2phone&id=".$adress_book['id']."&type=".$directory_type."'><img border=0 src='/modules/$module_name/images/call.png' /></a>";
@@ -832,15 +832,15 @@ function view_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pD
         $smarty->assign("check_isPrivate", "checked");
 
 
-    $arrData['name']          = htmlspecialchars(isset($_POST['name'])?$_POST['name']:$contactData['name'],ENT_NOQUOTES, "UTF-8");
-    $arrData['last_name']     = htmlspecialchars(isset($_POST['last_name'])?$_POST['last_name']:$contactData['last_name'],ENT_NOQUOTES, "UTF-8");
-    $arrData['telefono']      = htmlspecialchars(isset($_POST['telefono'])?$_POST['telefono']:$contactData['telefono'],ENT_NOQUOTES, "UTF-8");
-    $arrData['email']         = htmlspecialchars(isset($_POST['email'])?$_POST['email']:$contactData['email'],ENT_NOQUOTES, "UTF-8");
-    $arrData['address']       = htmlspecialchars(isset($_POST['address'])?$_POST['address']:$contactData['address'],ENT_NOQUOTES, "UTF-8");
-    $arrData['company']       = htmlspecialchars(isset($_POST['company'])?$_POST['company']:$contactData['company'],ENT_NOQUOTES, "UTF-8");
-    $arrData['notes']         = htmlspecialchars(isset($_POST['notes'])?$_POST['notes']:$contactData['notes'],ENT_NOQUOTES, "UTF-8");
+    $arrData['name']          = htmlspecialchars(isset($_POST['name'])?$_POST['name']:$contactData['name'],ENT_QUOTES, "UTF-8");
+    $arrData['last_name']     = htmlspecialchars(isset($_POST['last_name'])?$_POST['last_name']:$contactData['last_name'],ENT_QUOTES, "UTF-8");
+    $arrData['telefono']      = htmlspecialchars(isset($_POST['telefono'])?$_POST['telefono']:$contactData['telefono'],ENT_QUOTES, "UTF-8");
+    $arrData['email']         = htmlspecialchars(isset($_POST['email'])?$_POST['email']:$contactData['email'],ENT_QUOTES, "UTF-8");
+    $arrData['address']       = htmlspecialchars(isset($_POST['address'])?$_POST['address']:$contactData['address'],ENT_QUOTES, "UTF-8");
+    $arrData['company']       = htmlspecialchars(isset($_POST['company'])?$_POST['company']:$contactData['company'],ENT_QUOTES, "UTF-8");
+    $arrData['notes']         = htmlspecialchars(isset($_POST['notes'])?$_POST['notes']:$contactData['notes'],ENT_QUOTES, "UTF-8");
     $arrData['picture']       = isset($_POST['picture'])?$_POST['picture']:$contactData['picture'];
-    $arrData['status']        = htmlspecialchars(isset($_POST['status'])?$_POST['status']:$contactData['status'],ENT_NOQUOTES, "UTF-8");
+    $arrData['status']        = htmlspecialchars(isset($_POST['status'])?$_POST['status']:$contactData['status'],ENT_QUOTES, "UTF-8");
 
     $smarty->assign("ShowImg",1);
     $htmlForm = $oForm->fetchForm("$local_templates_dir/new_adress_book.tpl", "", $arrData);

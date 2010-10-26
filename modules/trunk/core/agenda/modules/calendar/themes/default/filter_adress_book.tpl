@@ -3,7 +3,7 @@
         <form name="form_filter" id="form_filter" method='POST' style='margin-bottom:0;' action='?menu={$module_name}'>
             <td width="30%" align="right">{$Phone_Directory}:</td>
             <td width="15%" align="left">
-                <select name="select_directory_type">
+                <select name="select_directory_type" onchange='report_by_directory_type()'>
                     <option value="Internal" {$internal_sel}>{$Internal}</option>
                     <option value="External" {$external_sel}>{$External}</option>
                 </select>
@@ -25,6 +25,12 @@
             window.opener.document.getElementById("phone_type").value = type;
             window.opener.document.getElementById("phone_id").value = id;
             window.close();
+        }
+
+        function report_by_directory_type()
+        {
+            var form_filter = document.getElementsByName('form_filter')[0];
+            form_filter.submit();
         }
     </script>
 {/literal}

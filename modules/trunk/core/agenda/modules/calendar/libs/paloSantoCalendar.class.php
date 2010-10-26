@@ -85,9 +85,9 @@ class paloSantoCalendar {
         return $result;
     }
 
-    function getEventById($id)
+    function getEventById($id, $id_user)
     {
-        $query = "SELECT * FROM events WHERE id=$id";
+        $query = "SELECT * FROM events WHERE id=$id and uid=$id_user";
 
         $result=$this->_DB->getFirstRowQuery($query,true);
 
@@ -150,7 +150,7 @@ class paloSantoCalendar {
     function get_event_by_id($id)
     {
         $user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
-        $uid  = $this->Obtain_UID_From_User($user);
+        $uid  = $this->Obtain_UID_From_User($user); 
 
         $query = "SELECT 
                     id,
@@ -169,6 +169,7 @@ class paloSantoCalendar {
                     each_repeat as repeat,
                     days_repeat,
                     eventtype as it_repeat,
+					reminderTimer as reminderTimer,
                     strftime('%H', starttime) hora1, 
                     strftime('%M', starttime) minuto1,
                     strftime('%H', endtime) hora2, 
@@ -304,9 +305,10 @@ class paloSantoCalendar {
         }else return FALSE;
     }
 
-    function insertEvent($uid,$startdate,$enddate,$starttime,$eventtype,$subject,$description,$asterisk_call,$recording,$call_to,$notification,$email_notification, $endtime, $each_repeat,  $checkbox_days){
-        $query = "INSERT INTO events(uid,startdate,enddate,starttime,eventtype,subject,description,asterisk_call,recording,call_to,notification,emails_notification,endtime,each_repeat,days_repeat) VALUES($uid,'$startdate','$enddate','$starttime',$eventtype,'$subject','$description','$asterisk_call','$recording','$call_to','$notification','$email_notification','$endtime',$each_repeat,'$checkbox_days')";
-        $result = $this->_DB->genQuery($query);
+    function insertEvent($uid,$startdate,$enddate,$starttime,$eventtype,$subject,$description,$asterisk_call,$recording,$call_to,$notification,$email_notification, $endtime, $each_repeat,  $checkbox_days, $reminderTimer){
+        $data = array($uid,$startdate,$enddate,$starttime,$eventtype,$subject,$description,$asterisk_call,$recording,$call_to,$notification,$email_notification,$endtime,$each_repeat,$checkbox_days,$reminderTimer);
+        $query = "INSERT INTO events(uid,startdate,enddate,starttime,eventtype,subject,description,asterisk_call,recording,call_to,notification,emails_notification,endtime,each_repeat,days_repeat,reminderTimer) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        $result = $this->_DB->genQuery($query, $data);
         if($result==FALSE){
             $this->errMsg = $this->_DB->errMsg;
             return false;
@@ -314,10 +316,11 @@ class paloSantoCalendar {
         return true; 
     }
 
-    function updateEvent($id_event,$startdate,$enddate,$starttime,$eventtype,$subject,$description,$asterisk_call,$recording,$call_to,$notification,$email_notification, $endtime ,$each_repeat,$checkbox_days){
-        $query = "UPDATE events SET  startdate='$startdate',enddate='$enddate',starttime='$starttime',eventtype=$eventtype,subject='$subject',description='$description',asterisk_call='$asterisk_call',recording='$recording',call_to='$call_to',notification='$notification',emails_notification='$email_notification',endtime='$endtime',each_repeat=$each_repeat,days_repeat='$checkbox_days' WHERE id=$id_event";
+    function updateEvent($id_event,$startdate,$enddate,$starttime,$eventtype,$subject,$description,$asterisk_call,$recording,$call_to,$notification,$email_notification, $endtime ,$each_repeat,$checkbox_days,$reminderTimer){
+        $data = array($startdate,$enddate,$starttime,$eventtype,$subject,$description,$asterisk_call,$recording,$call_to,$notification,$email_notification,$endtime,$each_repeat,$checkbox_days,$reminderTimer,$id_event);
+        $query = "UPDATE events SET  startdate=?,enddate=?,starttime=?,eventtype=?,subject=?,description=?,asterisk_call=?,recording=?,call_to=?,notification=?,emails_notification=?,endtime=?,each_repeat=?,days_repeat=?,reminderTimer=? WHERE id=?";
         
-        $result = $this->_DB->genQuery($query);
+        $result = $this->_DB->genQuery($query, $data);
         if($result==FALSE){
             $this->errMsg = $this->_DB->errMsg;
             return false;
@@ -326,9 +329,10 @@ class paloSantoCalendar {
     }
 
     function updateDateEvent($id_event,$startdate,$enddate,$starttime,$endtime,$day_repeat){
-        $query = "UPDATE events SET  startdate='$startdate',enddate='$enddate',starttime='$starttime',endtime='$endtime',days_repeat='$day_repeat' WHERE id=$id_event";
+        $data = array($startdate, $enddate, $starttime, $endtime, $day_repeat, $id_event);
+        $query = "UPDATE events SET  startdate=?,enddate=?,starttime=?,endtime=?,days_repeat=? WHERE id=?";
 
-        $result = $this->_DB->genQuery($query);
+        $result = $this->_DB->genQuery($query, $data);
         if($result==FALSE){
             $this->errMsg = $this->_DB->errMsg;
             return false;
@@ -336,10 +340,10 @@ class paloSantoCalendar {
         return true; 
     }
 
-    function deleteEvent($id_event){
-        $query = "DELETE FROM events WHERE id=$id_event";
-
-        $result = $this->_DB->genQuery($query);
+    function deleteEvent($id_event, $id_user){
+        $query = "DELETE FROM events WHERE id=? and uid=?";
+        $data = array($id_event,$id_user);
+        $result = $this->_DB->genQuery($query, $data);
         if($result==FALSE){
             $this->errMsg = $this->_DB->errMsg;
             return false;
@@ -349,9 +353,9 @@ class paloSantoCalendar {
 
     function getContactByTag($db, $tag, $userid)
     {
-        $query = "SELECT  (lower(name)||' '||lower(last_name)||' '||'&lt;'||email||'&gt;') AS caption,id AS value FROM contact WHERE iduser = $userid";
-
-        $result = $db->fetchTable($query,true);
+        $query = "SELECT  (lower(name)||' '||lower(last_name)||' '||'&lt;'||email||'&gt;') AS caption,id AS value FROM contact WHERE iduser = ?";
+        $data = array($userid);
+        $result = $db->fetchTable($query,true, $data);
         if($result==FALSE){
             $this->errMsg = $this->_DB->errMsg;
             return null;
@@ -361,9 +365,9 @@ class paloSantoCalendar {
 
     function getContactByEmail($db, $tag, $userid)
     {
-        $query = "SELECT  email AS caption,id AS value FROM contact WHERE iduser = $userid";
-
-        $result = $db->fetchTable($query,true);
+        $query = "SELECT  email AS caption,id AS value FROM contact WHERE iduser = ?";
+        $data = array($userid);
+        $result = $db->fetchTable($query,true,$data);
         if($result==FALSE){
             $this->errMsg = $this->_DB->errMsg;
             return null;
@@ -411,15 +415,25 @@ class paloSantoCalendar {
         return $result;
     }
 
+    function getEventIdByUid($uid, $idEvent){
+        $query = "SELECT * FROM events WHERE uid = $uid and id=$idEvent";
+        $result = $this->_DB->fetchTable($query,true);
+        if($result==FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return null;
+        }
+        return $result;
+    }
+
     function getNameUsers($id_user,$db)
     {
         $query = "SELECT name FROM acl_user WHERE id=$id_user";
-
+		$username = $_SESSION["elastix_user"];
         $result = $db->getFirstRowQuery($query,true);
         if($result != FALSE || $result != "")
             return $result['name'];
         else
-            return false;
+            return $username;
     }
 
 function existPassword($pass){

@@ -203,7 +203,10 @@ $(document).ready(function(){
         var id_event_input    = document.getElementById('id_event');
         var uid               = document.getElementById('id');
                 //disabled all input and select
-
+		////change reminderTimer
+		$('input[name=ReminderTime]').each(function(){
+			$(this).removeAttr("disabled");
+		});
         $('#add_phone').attr("style","display: inline;");
         $('.new_box_rec').attr("style","display: inline;");
         RemoveAttributeDisable(event_name);
@@ -769,6 +772,9 @@ function obtainEmails(){
     }
 // view box detail event
     function getDataAjaxForm(order){
+        var eje_x = ((screen.width)/2) - 250;
+        $('#box').css('top','50%');
+        $('#box').css('left',eje_x+"px");
         //alert(order);
         $('#new_box').attr("style","display:none;");
         $('#edit_box').attr("style","display:none;");
@@ -809,14 +815,25 @@ function obtainEmails(){
                     var email_noti = message['emails_notification'];  //emails to notify
                     var visibility_noti = message['visibility'];      //visible or not emails_notification
                     var visibility_rep = message['visibility_repeat'];//visible or not days_repeat
-
+					var reminderTimer = message['reminderTimer']; //reminderTimer
              /***********************      var by DOM      **************************/
                     var title_evt         = document.getElementById('title_box');
                     var event_name        = document.getElementById('event');
                     var description_event = document.getElementsByName('description')[0];
                     var date_ini          = document.getElementById('f-calendar-field-1');
                     var date_end          = document.getElementById('f-calendar-field-2');
-
+					
+					////change reminderTimer
+					$('input[name=ReminderTime]').each(function(){
+						var valueReminder = $(this).attr("value");
+						if(valueReminder == reminderTimer){
+							$(this).attr("checked","checked");
+						}else{
+							$(this).removeAttr("checked");
+						}
+						$(this).attr("disabled","disabled");
+					});
+					
                     //var date_ini_hour1    = document.getElementsByName('hora1')[0];
                     //var date_ini_minute1  = document.getElementsByName('minuto1')[0];
                     //var date_end_hour2    = document.getElementsByName('hora2')[0];
@@ -1345,8 +1362,11 @@ function obtainEmails(){
     }
 
     function displayNewEvent(){
+        //centrar box
+        var eje_x = ((screen.width)/2) - 250;
         $('#box').css('top','50%');
-        $('#box').css('left','50%');
+        $('#box').css('left',eje_x+"px");
+
         $('#new_box').attr("style","display:none;");
         $('#edit_box').attr("style","display:none;");
         $('#view_box').attr("style","display:none;");
@@ -1416,7 +1436,16 @@ function obtainEmails(){
              /****************seteando variables ************************************/
                     //if(type_repeat_event.firstChild)
                         //type_repeat_event.removeChild(type_repeat_event.firstChild);
-
+					////change reminderTimer
+					$('input[name=ReminderTime]').each(function(){
+						var valueReminder = $(this).attr("value");
+						if(valueReminder == "10"){
+							$(this).attr("checked","checked");
+						}else{
+							$(this).removeAttr("checked");
+						}
+						$(this).removeAttr("disabled");
+					});
                     //show buttons for new event
                     $('#new_box').attr("style","display:block;");
                     $('#email_to').attr("style","visibility:hidden;");

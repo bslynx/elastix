@@ -43,12 +43,12 @@ if(!file_exists("$DataBaseRoot/address_book.db")){
     exec($cmd_mv);
     exec($cmd_chown);
 }
-
-$picture = existDBField("contact", "picture", $DataBaseRoot);
-$address = existDBField("contact", "address", $DataBaseRoot);
-$company = existDBField("contact", "company", $DataBaseRoot);
-$notes   = existDBField("contact", "notes",   $DataBaseRoot);
-$status  = existDBField("contact", "status",  $DataBaseRoot);
+//// para address_book
+$picture = existDBField("contact", "picture", "address_book.db", $DataBaseRoot);
+$address = existDBField("contact", "address", "address_book.db", $DataBaseRoot);
+$company = existDBField("contact", "company", "address_book.db", $DataBaseRoot);
+$notes   = existDBField("contact", "notes",   "address_book.db", $DataBaseRoot);
+$status  = existDBField("contact", "status",  "address_book.db", $DataBaseRoot);
 
 if($picture==1){ // hubo error ya que no existe uno de esos campos
 	$sql = "ALTER TABLE contact ADD COLUMN picture varchar(50)";
@@ -67,15 +67,22 @@ if($notes==1){
 	exec("sqlite3 $DataBaseRoot/address_book.db '$sql'",$arrConsole,$flagStatus);
 }
 if($status==1){
-	$sql = "ALTER TABLE contact ADD COLUMN status varchar(30)";
+	$sql = "ALTER TABLE contact ADD COLUMN status varchar(30) DEFAULT 'isPrivate'";
 	exec("sqlite3 $DataBaseRoot/address_book.db '$sql'",$arrConsole,$flagStatus);
 }
 
+//// para Calendar
+$reminderTimer = existDBField("events", "reminderTimer", "calendar.db", $DataBaseRoot);
+if($reminderTimer==1){
+	$sql = "ALTER TABLE events ADD COLUMN reminderTimer VARCHAR(5)";
+	exec("sqlite3 $DataBaseRoot/calendar.db '$sql'",$arrConsole,$flagStatus);
+}
 
-function existDBField($table, $field, $DataBaseRoot)
+
+function existDBField($table, $field, $db_name, $DataBaseRoot)
 {
 	$query = "select $field from $table;";
-	exec("sqlite3 $DataBaseRoot/address_book.db '$query'",$arrConsole,$flagStatus);
+	exec("sqlite3 $DataBaseRoot/$db_name '$query'",$arrConsole,$flagStatus);
 	return $flagStatus;
 }
 

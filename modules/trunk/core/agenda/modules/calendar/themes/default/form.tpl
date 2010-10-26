@@ -207,6 +207,10 @@
                                                     </div>
                                                 </td>
                                             </tr>
+                                            <tr class="letra12 remin" style="{$visibility_alert}">
+                                                <td align="left"><b>{$ReminderTime.LABEL}: <span  class="required">*</span></b></td>
+                                                <td align="left">{$ReminderTime.INPUT}&nbsp;&nbsp;</td>
+                                            </tr>
                                         </table>
                                     </td>
                                 </tr>
@@ -255,7 +259,7 @@
                         </div>
                     </div>
                     <div class="footer">
-                        <a href="#" class="close_box">
+                        <a class="close_box" style="cursor: pointer;">
                         <img src="modules/{$module_name}/images/closelabel.gif" title="close" class="close_image" />
                         </a>
                     </div>

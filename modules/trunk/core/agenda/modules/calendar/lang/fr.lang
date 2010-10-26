@@ -148,6 +148,8 @@ $arrLangModule=array(
 "active_foneCall" => "Enable Reminder",
 "Name" => "Name",
 "Download" => "Download",
-
+"Here" => "Here",
+"ReminderTime" => "Reminder",
+"lblbefore" => "min before",
 );
 ?>
