@@ -1,7 +1,7 @@
 Summary: Elastix First Boot Setup
 Name:    elastix-firstboot
 Version: 2.0.0
-Release: 13
+Release: 14
 License: GPL
 Group:   Applications/System
 Source0: %{name}-%{version}.tar.bz2
@@ -86,6 +86,10 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/elastix-firstboot/compat-dbscripts/08-schema-vtiger.sql
 
 %changelog
+* Tue Oct 26 2010 Alex Villacis Lasso <a_villacis@palosanto.com> 2.0.0-14
+- FIXED: Restrict range of special characters accepted as valid in passwords.
+  Should fix Elastix bug #462.
+
 * Tue Aug 23 2010 Alex Villacis Lasso <a_villacis@palosanto.com>
 - FIXED: fix typo in Elastix password screen.
 
