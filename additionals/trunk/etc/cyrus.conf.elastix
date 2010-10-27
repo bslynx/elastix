@@ -37,6 +37,10 @@ EVENTS {
   # Sieve or NNTP
   delprune	cmd="cyr_expire -E 3" at=0400
 
+  # add time for search INBOX by index
+  squatter      cmd="squatter -r *" period=15
+
+
   # this is only necessary if caching TLS sessions
   tlsprune	cmd="tls_prune" at=0400
 }
