@@ -37,7 +37,7 @@ if(!file_exists("$DataBaseRoot/trunk.db")){
     exec($cmd_mv);
     exec($cmd_chown);
 }
-if(!file_exists("$DocumentRoot/rate.db")){
+if(!file_exists("$DataBaseRoot/rate.db")){
     $cmd_mv    = "mv $tmpDir/setup/rate.db $DataBaseRoot/";
     $cmd_chown = "chown asterisk.asterisk $DataBaseRoot/rate.db";
     exec($cmd_mv);
