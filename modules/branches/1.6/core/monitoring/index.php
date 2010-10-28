@@ -317,7 +317,7 @@ function display_record($smarty, $module_name, $local_templates_dir, $pDB, $pDBA
         switch($action){
             case "display_record":
                 $sContenido=<<<contenido
-                    <embed src='index.php?menu=$module_name&action=download&file=$file&rawmode=yes' width=300, height=20 autoplay=true loop=false></embed><br>
+                    <embed src='index.php?menu=$module_name&action=download&id=$file&rawmode=yes' width=300, height=20 autoplay=true loop=false></embed><br>
 contenido;
                 break;
         }
