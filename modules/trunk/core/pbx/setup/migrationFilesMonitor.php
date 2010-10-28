@@ -33,7 +33,7 @@
 require_once("/var/www/html/libs/misc.lib.php");
 require_once("/var/www/html/configs/default.conf.php");
 require_once("/var/www/html/libs/paloSantoDB.class.php");
-$dsn_conn_database = generarDSNSistema('root', 'asteriskcdrdb',"/var/www/html/");
+$dsn_conn_database = generarDSNSistema('asteriskuser', 'asteriskcdrdb',"/var/www/html/");
 $pDBcdrdb = new paloDB($dsn_conn_database);
 if(!is_dir("/var/spool/asterisk/monitor_migration"))
     mkdir("/var/spool/asterisk/monitor_migration"); 
