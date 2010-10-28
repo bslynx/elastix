@@ -653,4 +653,66 @@ function checkbox($id_name, $checked='off', $disable='off')
                   </script>";
     return $checkbox;
 }
+
+/**
+ * Función para obtener la clave MySQL de usuarios bien conocidos de Elastix.
+ * Los usuarios conocidos hasta ahora son 'root' (sacada de /etc/elastix.conf)
+ * y 'asteriskuser' (sacada de /etc/amportal.conf)
+ *
+ * @param   string  $sNombreUsuario     Nombre de usuario para interrogar
+ * @param   string  $ruta_base          Ruta base para inclusión de librerías
+ *
+ * @return  mixed   NULL si no se reconoce usuario, o la clave en plaintext
+ */
+function obtenerClaveConocidaMySQL($sNombreUsuario, $ruta_base='')
+{
+    require_once $ruta_base.'libs/paloSantoConfig.class.php';
+    switch ($sNombreUsuario) {
+    case 'root':
+        $pConfig = new paloConfig("/etc", "elastix.conf", "=", "[[:space:]]*=[[:space:]]*");
+        $listaParam = $pConfig->leer_configuracion(FALSE);
+        if (isset($listaParam['mysqlrootpwd'])) 
+            return $listaParam['mysqlrootpwd']['valor'];
+        else return 'eLaStIx.2oo7'; // Compatibility for updates where /etc/elastix.conf is not available
+        break;
+    case 'asteriskuser':
+        $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
+        $listaParam = $pConfig->leer_configuracion(FALSE);
+        if (isset($listaParam['AMPDBPASS']))
+            return $listaParam['AMPDBPASS'];
+        break;
+    }
+    return NULL;
+}
+
+/**
+ * Función para construir un DSN para conectarse a varias bases de datos 
+ * frecuentemente utilizadas en Elastix. Para cada base de datos reconocida, se
+ * busca la clave en /etc/elastix.conf o en /etc/amportal.conf según corresponda.
+ *
+ * @param   string  $sNombreUsuario     Nombre de usuario para interrogar
+ * @param   string  $sNombreDB          Nombre de base de datos para DNS
+ * @param   string  $ruta_base          Ruta base para inclusión de librerías
+ *
+ * @return  mixed   NULL si no se reconoce usuario, o el DNS con clave resuelta
+ */
+function generarDSNSistema($sNombreUsuario, $sNombreDB, $ruta_base='')
+{
+    require_once $ruta_base.'libs/paloSantoConfig.class.php';
+    switch ($sNombreUsuario) {
+    case 'root':
+        $sClave = obtenerClaveConocidaMySQL($sNombreUsuario);
+        if (is_null($sClave)) return NULL;
+        return 'mysql://root:'.$sClave.'@localhost/'.$sNombreDB;
+    case 'asteriskuser':
+        $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
+        $listaParam = $pConfig->leer_configuracion(FALSE);
+        return $listaParam['AMPDBENGINE']['valor']."://".
+               $listaParam['AMPDBUSER']['valor']. ":".
+               $listaParam['AMPDBPASS']['valor']. "@".
+               $listaParam['AMPDBHOST']['valor']. "/".$sNombreDB;
+    }
+    return NULL;
+}
+
 ?>
