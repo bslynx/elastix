@@ -1,4 +1,3 @@
-#!/usr/bin/php
 <?php
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
@@ -35,7 +34,7 @@ This script install, update and delete database.
 */
 
 if ($argc < 3){
-   die("Please specify the action and folder path files sqls.\n Usage: {$_SERVER['argv'][0]} install /usr/share/elastix/.../db/\n");
+   die("Please specify the action and folder path files sqls.\n Usage: {$_SERVER['argv'][0]} install /usr/share/elastix/.../db/  sql_export version\n");
 }
 
 $documentRoot="/var/www/html";
@@ -51,6 +50,7 @@ if(isset($_SERVER['argv'][1]) & in_array($_SERVER['argv'][1],$arrActions)){
    if(isset($_SERVER['argv'][2])){
       $action      = $_SERVER['argv'][1];
       $path_folder = $_SERVER['argv'][2]; 
+	  $sql_export  = isset($_SERVER['argv'][3])?$_SERVER['argv'][3]:false; 
       $arrFiles    = scandir("$path_folder/$action");
 
       if(is_array($arrFiles) && count($arrFiles)>0){
@@ -59,10 +59,18 @@ if(isset($_SERVER['argv'][1]) & in_array($_SERVER['argv'][1],$arrActions)){
           $password    = $confElastix->privado_get_valor($contentFile,"mysqlrootpwd");
 
           if($action=="install"){
-             return executeFiles_SQL($arrFiles, $password, $path_folder, $action);
+             return executeFiles_SQL_install($arrFiles, $password, $path_folder, $action, $sql_export);
           }
-	  else if($action=="update"){
-             return executeFiles_SQL($arrFiles, $password, $path_folder, $action);
+	      else if($action=="update"){
+     		 $version = $_SERVER['argv'][4];			 
+			 if(isset($version) && !empty($version))
+			 {
+                 $stringsql=updatedatabase($version,$path_folder);
+	             return executeFiles_SQL_update($stringsql, $password, $action, $sql_export);
+			 } 
+             else
+    	         echo "Has not been passed the version to the process of updating.\n";
+             return 0;				
           }
           else if($action=="delete"){
              echo "Nothing to be done in database. The action $action did have implementation yet.\n";
@@ -83,20 +91,30 @@ else{
    return 1;
 }
 
-function executeFiles_SQL($arrFiles, $password, $path_folder, $action)
+function executeFiles_SQL_install($arrFiles, $password, $path_folder, $action, $sql_export=false)
 {
    if(is_array($arrFiles) && count($arrFiles)>0){
       foreach($arrFiles as $k => $file){// must only have sqls files valids.
          if(ereg("\.sql$",$file)){
-            echo "Executing mysql -uroot -p$password < $path_folder/$action/$file ... \n";
-            exec("mysql -uroot -p$password < $path_folder/$action/$file",$arrConsole,$flatStatus);
+			if($sql_export==false){
+            	echo "Executing mysql -uroot -p$password < $path_folder/$action/$file ... \n";
+	            exec("mysql -uroot -p$password < $path_folder/$action/$file",$arrConsole,$flatStatus);
             
-            echo "RETURN $flatStatus\n";
-            if($flatStatus != 0){
-                print_r($arrConsole);
-                echo "Error, Action $action database failed.\n";
-		return 1;
-	    }
+    	        echo "RETURN $flatStatus\n";
+        	    if($flatStatus != 0){
+	                print_r($arrConsole);
+	                echo "Error, Action $action database failed.\n";
+				    return 1;
+				}
+		    }
+			else{
+				exec("cat $path_folder/$action/$file",$arrConsole,$flatStatus);
+				if($flatStatus != 0){
+	                print_r($arrConsole);
+	                echo "Error, Action export_sql $action database failed.\n";
+				    return 1;
+				}
+			}			
          }
       }
       echo "Successfull, Action $action database.";
@@ -105,54 +123,114 @@ function executeFiles_SQL($arrFiles, $password, $path_folder, $action)
    echo "Nothing to be done in database.";
    return 0;
 }
-
-
-function updatedatabase($version_actual)
+function executeFiles_SQL_update($stringsql, $password, $action, $sql_export=false)
 {
-	$arreglototal=ObtenerArregloDirectorio();
-	imprimirArreglo($arreglototal,$version_actual);
+   if($sql_export==false){
+      	//echo "Executing mysql -uroot -p$password < $path_folder/$action/$file ... \n";
+	    //exec("mysql -uroot -p$password < $path_folder/$action/$file",$arrConsole,$flatStatus);
+        echo "Executing mysql -uroot -p$password <  string of updating... \n";    
+        exec("mysql -uroot -p$password < $stringsql",$arrConsole,$flatStatus);        
+	    echo "RETURN $flatStatus\n";
+        if($flatStatus != 0){
+	        echo "Error, Action $action database failed.\n";
+		    return 1;
+		}
+	}
+	else{
+		exec("cat $path_folder/$action/$file",$arrConsole,$flatStatus);
+		if($flatStatus != 0){
+	              echo "Error, Action export_sql $action database failed.\n";
+		    return 1;
+		}
+	}
+      echo "Successfull, Action $action database.";
+      return 0;  
 }
-function imprimirArreglo($arreglototal, $version_actual)
+function esmayor($cadenainteractual,$cadenadada)
 {
-     $update="";
-     $a=1;
-     foreach ($arreglototal  as $value)
-     {   
-        if( $value['before']==$version_actual)
-            $a=0;
-        if($a==0)
+     $versionreleasedada=split("-",$cadenadada);     
+     $versionreleaseinteractual=split("-",$cadenainteractual);
+        if($versionreleasedada[0]<$versionreleaseinteractual[0])
+            return true;
+        else if($versionreleasedada[0]==$versionreleaseinteractual[0])
         {
-           $lines = file("setup/db/update/$value[namefile]");
+            $number="[[:digit:]]+";
+            $curso="[a-zA-Z]+$";
+            ereg("^($number)($curso)*",$versionreleasedada[1],$regsdada);
+            ereg("^($number)($curso)*",$versionreleaseinteractual[1],$regsactual);
+            if(cursor($regsdada[2])<cursor($regsactual[2]))
+                return true;
+            else if(cursor($regsdada[2])==cursor($regsactual[2])) 
+            {    
+                if($regsdada[1]<$regsactual[1]);
+                    return true;
+                else
+                    return false;
+            }  
+            else   return false;
+        }   
+        else return false;    
+}
+/*
+    esta funcion lo que hace es dado un valor de alpha,beta,rc o simplemente vacio da como 
+    resultado 
+*/
+
+function cursor($valor)
+{    
+    if($valor=="alpha")
+    {
+       return 1;     
+    }
+    else if($valor=="beta")
+    {
+       return 2;     
+    }
+    else if($valor=="rc")
+    {
+       return 3;     
+    }
+    else if($valor=="") return 4;
+} 
+function imprimirArreglo($value, $version_actual,$path_folder)
+{
+        $update="";
+        //si $value['before'] es mayor a $version_actual entra en la condicion
+        //pero tambien $version_actual debe ser menor que $value['current']. 
+        if(esmayor($value['current'],$version_actual))
+        {
+           $lines = file($path_folder."/update/$value[namefile]");
            for($i=0;$i<count($lines);$i++)
                $update=$update.$lines[$i];
-        }
+        }            
            $update=$update."\n\n";
-    }
-    echo  $update;    
-}
-    
-function ObtenerArregloDirectorio()
+    return  $update;    
+}    
+//en esta funcion hay que comprobar que la variable $version_actual tiene que tener el mismo formato 
+//que los nombres de los archivos de actualizacion en la carpeta /setup/db/update. 
+//
+function updatedatabase($version_actual,$path_folder)
 {
-    $directorio=dir("setup/db/update");
-    $arreglototal=array();
-    while ($archivo = $directorio->read())
+    $cadenareturn= "";   
+    if(is_dir($path_folder."/update/version_sql"))
     {
-        if($archivo[strlen($archivo)-1]!="~" &&  $archivo[0]!="." )
-        {        
-              list($id,$before,$currentt)=split('_',$archivo);
-              list($current)=split('.sql',$currentt);
-              $arrversion=array("id"=>$id,"before"=>$before,"current"=>$current,"namefile"=>$archivo);
-              $arreglototal[]=$arrversion;      
-        }
-    }  
-    sort($arreglototal);
-    $directorio->close();    
-    return $arreglototal;
+        $directorio=dir($path_folder."/update/version_sql");
+        while ($archivo = $directorio->read())
+        {
+            if(is_file($archivo))
+            {
+                if($archivo[strlen($archivo)-1]!="~" &&  $archivo[0]!="." )
+                {        
+                    list($id,$before,$currentt)=split('_',$archivo);
+                    list($current)=split('.sql',$currentt);
+                    $arrversion=array("id"=>$id,"before"=>$before,"current"=>$current,"namefile"=>$archivo);
+                    $cadenareturn .= imprimirArreglo($arrversion, $version_actual,$path_folder);      
+                }
+            } 
+        }  
+        $directorio->close();   
+        return $cadenareturn;
+    }
+    else return "";
 }
-
-
-
-
-
-
 ?>
