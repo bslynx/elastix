@@ -144,13 +144,13 @@ function actualizarbasedatos($archivo,$pDBcdrdb){
 function  ejecutaractualizacion($pDBcdrdb,$query,$archivo)
 {
     if($pDBcdrdb->genQuery($query))
-       echo "updated\n";
+       echo "updated file $archivo in database\n";
     else 
        echo "could not execute the update\n";
 } 
 function validaract($pDBcdrdb,$query,$regs,$archivo)
 {
-    $query .= "WHERE uniqueid='$regs[1]'";    
+    $query .= "WHERE uniqueid='$regs'";    
     $query2="select count(*) valor from  cdr where uniqueid=?";
     $result = $pDBcdrdb->getFirstRowQuery($query2,true,array($regs));
     if(!$result)
