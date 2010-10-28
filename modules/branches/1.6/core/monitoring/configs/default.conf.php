@@ -29,5 +29,6 @@
 global $arrConfModule;
 $arrConfModule['module_name'] = 'monitoring';
 $arrConfModule['templates_dir'] = 'themes';
-
+$arrConfModule['records_dir']       = '/var/spool/asterisk/monitor/';
+$arrConfModule['dsn_conn_database'] = ''; // A ser leído de /etc/amportal.conf
 ?>

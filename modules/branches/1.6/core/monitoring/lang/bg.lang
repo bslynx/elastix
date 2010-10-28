@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version: 1.6                                           |
+  | Elastix version: 2.0                                           |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -28,7 +28,7 @@
   | Translate by:Chavdar Iliev                                             |
   | Email: chavdar_75@yahoo.com                                                       |
   +----------------------------------------------------------------------+
-  $Id: bg.lang, October 25, 2010, 6:10 pm kleber andres loayza Exp $ */
+  $Id: bg.lang, October 25, 2010, 6:07 pm kleber andres loayza Exp $ */
 global $arrLangModule;
 $arrLangModule=array(  
 "Filter" => "Филтър",
@@ -47,16 +47,16 @@ $arrLangModule=array(
 "Message" => "Съобщение",
 "Listen" => "Прослушай",
 "Download" => "Изтегли",
-"on demand" => "on demand",
-"Auto" => "Auto",
-"always" => "always",
-"auto - outgoing" => "auto - outgoing",
-"auto - incoming" => "auto - incoming",
-"queue - total" => "queue - total",
-"queue - in" => "queue - in",
-"queue - out" => "queue - out",
-"no_extension" => "This file is not allowed to download",
-"no_file" => "File hasn't been found!",
+"Start_Date" => "Start Date",
+"End_Date" => "End Date",
+"message_alert" => "Are you sure you wish to delete recordings?",
+"no_extension" => "There is no extension number associated with the current user. Please associate an extension with your user in order to see your call recordings, by clicking <a href='index.php?menu=userlist'>here</a>",
+"no_file" => "File not found!",
+"Outgoing" => "Outgoing",
+"Incoming" => "Incoming",
+"Queue" => "Queue",
+"Group" => "Group",
+"unknown" => "Unknown",
 
 );
 ?>
