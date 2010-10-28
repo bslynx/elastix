@@ -50,13 +50,13 @@ else
 function database_migrating($pDBcdrdb)
 {
     if(is_dir("/var/spool/asterisk/monitor/"))
-    {        
+    {
         $directorio=dir("/var/spool/asterisk/monitor/");
         while ($archivo = $directorio->read())
-        {                       
+        {
            if($archivo[0]!=".")//$arreglototal[]=$archivo;   
             actualizarbasedatos($archivo,$pDBcdrdb);
-        }  
+        }
         $directorio->close();
     }
     echo "The directory is empty";
@@ -144,13 +144,13 @@ function actualizarbasedatos($archivo,$pDBcdrdb){
 function  ejecutaractualizacion($pDBcdrdb,$query,$archivo)
 {
     if($pDBcdrdb->genQuery($query))
-       echo "updated\n";
+       echo "updated file $archivo in database\n";
     else 
        echo "could not execute the update\n";
 } 
 function validaract($pDBcdrdb,$query,$regs,$archivo)
 {
-    $query .= "WHERE uniqueid='$regs[1]'";    
+    $query .= "WHERE uniqueid='$regs'";    
     $query2="select count(*) valor from  cdr where uniqueid=?";
     $result = $pDBcdrdb->getFirstRowQuery($query2,true,array($regs));
     if(!$result)
