@@ -2220,10 +2220,10 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
                 $email = $arrMails[$adress_book['id']];
             else $email = '';
 
-            $arrTmp[0]  = ($directory_type=='external')?"{$adress_book['last_name']} {$adress_book['name']}":$adress_book['description'];
-            $number = ($directory_type=='external')?$adress_book['telefono']:$adress_book['id'];
+            $arrTmp[0]  = ($directory_type=='external')?htmlspecialchars($adress_book['last_name'], ENT_QUOTES, "UTF-8")." ".htmlspecialchars($adress_book['name'], ENT_QUOTES, "UTF-8"):$adress_book['description'];
+            $number = ($directory_type=='external')?htmlspecialchars($adress_book['telefono'], ENT_QUOTES, "UTF-8"):$adress_book['id'];
             $arrTmp[1]  = "<a href='javascript:return_phone_number(\"$number\", \"$directory_type\", \"{$adress_book['id']}\")'>$number</a>";
-            $arrTmp[2]  = $email;
+            $arrTmp[2]  = htmlspecialchars($email, ENT_QUOTES, "UTF-8");
             $arrData[]  = $arrTmp;
         }
     }
