@@ -1,3 +1,4 @@
+#!/usr/bin/php
 <?php
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
@@ -153,7 +154,7 @@ function esmayor($cadenainteractual,$cadenadada)
                 return true;
             else if(cursor($regsdada[2])==cursor($regsactual[2])) 
             {    
-                if($regsdada[1]<$regsactual[1]);
+                if($regsdada[1]<$regsactual[1])
                     return true;
                 else
                     return false;
