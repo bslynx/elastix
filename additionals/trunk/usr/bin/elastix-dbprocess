@@ -201,8 +201,7 @@ function imprimirArreglo($value, $version_actual,$path_folder)
 //
 function updatedatabase($version_actual,$path_folder)
 {
-    $cadenareturn= "";   
-    $version_actual="1.3.0-4"; 
+    $cadenareturn= "";    
     if(is_dir($path_folder."/update/version_sql"))
     {
         $directorio=dir($path_folder."/update/version_sql");
