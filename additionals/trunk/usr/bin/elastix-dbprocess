@@ -34,7 +34,7 @@ This script install, update and delete database.
 */
 
 if ($argc < 3){
-   die("Please specify the action and folder path files sqls.\n Usage: {$_SERVER['argv'][0]} install /usr/share/elastix/.../db/  sql_export version\n");
+   die("Please specify the action and folder path files sqls.\n Usage: {$_SERVER['argv'][0]} install /usr/share/elastix/.../db/  version sql_export\n");
 }
 
 $documentRoot="/var/www/html";
@@ -50,7 +50,7 @@ if(isset($_SERVER['argv'][1]) & in_array($_SERVER['argv'][1],$arrActions)){
    if(isset($_SERVER['argv'][2])){
       $action      = $_SERVER['argv'][1];
       $path_folder = $_SERVER['argv'][2]; 
-	  $sql_export  = isset($_SERVER['argv'][3])?$_SERVER['argv'][3]:false; 
+	  $sql_export  = isset($_SERVER['argv'][4])?$_SERVER['argv'][4]:false; 
       $arrFiles    = scandir("$path_folder/$action");
 
       if(is_array($arrFiles) && count($arrFiles)>0){
@@ -62,11 +62,13 @@ if(isset($_SERVER['argv'][1]) & in_array($_SERVER['argv'][1],$arrActions)){
              return executeFiles_SQL_install($arrFiles, $password, $path_folder, $action, $sql_export);
           }
 	      else if($action=="update"){
-     		 $version = $_SERVER['argv'][4];			 
+     		 $version = $_SERVER['argv'][3];			 
 			 if(isset($version) && !empty($version))
 			 {
                  $stringsql=updatedatabase($version,$path_folder);
-	             return executeFiles_SQL_update($stringsql, $password, $action, $sql_export);
+                 $fileupdate="$path_folder/$action/01-a2billing-update.sql";
+                 exec("echo '$stringsql' >  $fileupdate",$arrConsole,$flatStatus);
+	             return executeFiles_SQL_update($fileupdate, $password, $action, $sql_export);
 			 } 
              else
     	         echo "Has not been passed the version to the process of updating.\n";
@@ -108,12 +110,7 @@ function executeFiles_SQL_install($arrFiles, $password, $path_folder, $action, $
 				}
 		    }
 			else{
-				exec("cat $path_folder/$action/$file",$arrConsole,$flatStatus);
-				if($flatStatus != 0){
-	                print_r($arrConsole);
-	                echo "Error, Action export_sql $action database failed.\n";
-				    return 1;
-				}
+				echo `cat $path_folder/$action/$file`;
 			}			
          }
       }
@@ -123,13 +120,11 @@ function executeFiles_SQL_install($arrFiles, $password, $path_folder, $action, $
    echo "Nothing to be done in database.";
    return 0;
 }
-function executeFiles_SQL_update($stringsql, $password, $action, $sql_export=false)
+function executeFiles_SQL_update($fileupdate, $password, $action, $sql_export=false)
 {
    if($sql_export==false){
-      	//echo "Executing mysql -uroot -p$password < $path_folder/$action/$file ... \n";
-	    //exec("mysql -uroot -p$password < $path_folder/$action/$file",$arrConsole,$flatStatus);
-        echo "Executing mysql -uroot -p$password <  string of updating... \n";    
-        exec("mysql -uroot -p$password < $stringsql",$arrConsole,$flatStatus);        
+        echo "Executing mysql -uroot -p$password <  $fileupdate... \n";    
+        exec("mysql -uroot -p$password < $fileupdate",$arrConsole,$flatStatus);        
 	    echo "RETURN $flatStatus\n";
         if($flatStatus != 0){
 	        echo "Error, Action $action database failed.\n";
@@ -137,11 +132,7 @@ function executeFiles_SQL_update($stringsql, $password, $action, $sql_export=fal
 		}
 	}
 	else{
-		exec("cat $path_folder/$action/$file",$arrConsole,$flatStatus);
-		if($flatStatus != 0){
-	              echo "Error, Action export_sql $action database failed.\n";
-		    return 1;
-		}
+		echo `cat $fileupdate`;		
 	}
       echo "Successfull, Action $action database.";
       return 0;  
