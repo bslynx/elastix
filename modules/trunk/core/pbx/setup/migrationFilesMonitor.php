@@ -59,7 +59,6 @@ function database_migrating($pDBcdrdb)
         }  
         $directorio->close();
     }
-    echo "The directory is empty";
 }
 function actualizarbasedatos($archivo,$pDBcdrdb){
     $number   ="[[:digit:]]+";
