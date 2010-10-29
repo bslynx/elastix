@@ -66,6 +66,7 @@ if(isset($_SERVER['argv'][1]) & in_array($_SERVER['argv'][1],$arrActions)){
      		 $version = $_SERVER['argv'][3];			 
 			 if(isset($version) && !empty($version))
 			 {
+                 echo "Updating a2billing since $version\n";
                  $stringsql=updatedatabase($version,$path_folder);
                  $fileupdate="$path_folder/$action/01-a2billing-update.sql";
                  exec("echo '$stringsql' >  $fileupdate",$arrConsole,$flatStatus);
