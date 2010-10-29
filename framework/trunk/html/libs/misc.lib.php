@@ -725,7 +725,7 @@ function generarDSNSistema($sNombreUsuario, $sNombreDB, $ruta_base='')
     require_once $ruta_base.'libs/paloSantoConfig.class.php';
     switch ($sNombreUsuario) {
     case 'root':
-        $sClave = obtenerClaveConocidaMySQL($sNombreUsuario);
+        $sClave = obtenerClaveConocidaMySQL($sNombreUsuario, $ruta_base);
         if (is_null($sClave)) return NULL;
         return 'mysql://root:'.$sClave.'@localhost/'.$sNombreDB;
     case 'asteriskuser':
