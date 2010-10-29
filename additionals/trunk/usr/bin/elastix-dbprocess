@@ -65,11 +65,11 @@ if(isset($_SERVER['argv'][1]) & in_array($_SERVER['argv'][1],$arrActions)){
 	      else if($action=="update"){
      		 $version = $_SERVER['argv'][3];			 
 			 if(isset($version) && !empty($version))
-			 {
+			 { 
                  echo "Updating a2billing since $version\n";
                  $stringsql=updatedatabase($version,$path_folder);
                  $fileupdate="$path_folder/$action/01-a2billing-update.sql";
-                 exec("echo '$stringsql' >  $fileupdate",$arrConsole,$flatStatus);
+		 file_put_contents($fileupdate,$stringsql);		      
 	             return executeFiles_SQL_update($fileupdate, $password, $action, $sql_export);
 			 } 
              else
@@ -82,7 +82,7 @@ if(isset($_SERVER['argv'][1]) & in_array($_SERVER['argv'][1],$arrActions)){
           }
       }
       else{
-         echo "Nothing to be done. The action $action did not find any sql file, in $path_folder/$action";
+         echo "Nothing to be done. The action $action did not find any sql file, in $path_folder/$action\n";
       }
    }
    else{
@@ -112,14 +112,14 @@ function executeFiles_SQL_install($arrFiles, $password, $path_folder, $action, $
 				}
 		    }
 			else{
-				echo `cat $path_folder/$action/$file`;
+				echo  file_get_contents("$path_folder/$action/$file");
 			}			
          }
       }
-      echo "Successfull, Action $action database.";
+      echo "Successfull, Action $action database.\n";
       return 0;
    }
-   echo "Nothing to be done in database.";
+   echo "Nothing to be done in database.\n";
    return 0;
 }
 function executeFiles_SQL_update($fileupdate, $password, $action, $sql_export=false)
@@ -134,9 +134,9 @@ function executeFiles_SQL_update($fileupdate, $password, $action, $sql_export=fa
 		}
 	}
 	else{
-		echo `cat $fileupdate`;		
+		echo file_get_contents("$path_folder/$action/$file");
 	}
-      echo "Successfull, Action $action database.";
+      echo "Successfull, Action $action database.\n";
       return 0;  
 }
 function esmayor($cadenainteractual,$cadenadada)
@@ -187,17 +187,14 @@ function cursor($valor)
 } 
 function imprimirArreglo($value, $version_actual,$path_folder)
 {
-        $update="";
-        //si $value['before'] es mayor a $version_actual entra en la condicion
-        //pero tambien $version_actual debe ser menor que $value['current']. 
-        if(esmayor($value['current'],$version_actual))
-        {
-           $lines = file($path_folder."/update/$value[namefile]");
-           for($i=0;$i<count($lines);$i++)
-               $update=$update.$lines[$i];
-        }            
-           $update=$update."\n\n";
-    return  $update;    
+   $update="";
+   //si $value['before'] es mayor a $version_actual entra en la condicion
+   //pero tambien $version_actual debe ser menor que $value['current']. 
+   if(esmayor($value['current'],$version_actual)){
+       $update= file_get_contents("$path_folder/update/version_sql/{$value['namefile']}");
+       $update=$update."\n\n";
+   }
+   return  $update;    
 }    
 //en esta funcion hay que comprobar que la variable $version_actual tiene que tener el mismo formato 
 //que los nombres de los archivos de actualizacion en la carpeta /setup/db/update. 
@@ -205,15 +202,16 @@ function imprimirArreglo($value, $version_actual,$path_folder)
 function updatedatabase($version_actual,$path_folder)
 {
     $cadenareturn= "";   
+    $version_actual="1.3.0-4"; 
     if(is_dir($path_folder."/update/version_sql"))
     {
         $directorio=dir($path_folder."/update/version_sql");
         while ($archivo = $directorio->read())
-        {
-            if(is_file($archivo))
+        { 
+            if(is_file("$path_folder/update/version_sql/$archivo"))
             {
                 if($archivo[strlen($archivo)-1]!="~" &&  $archivo[0]!="." )
-                {        
+                {                            
                     list($id,$before,$currentt)=split('_',$archivo);
                     list($current)=split('.sql',$currentt);
                     $arrversion=array("id"=>$id,"before"=>$before,"current"=>$current,"namefile"=>$archivo);
@@ -221,7 +219,7 @@ function updatedatabase($version_actual,$path_folder)
                 }
             } 
         }  
-        $directorio->close();   
+        $directorio->close();  
         return $cadenareturn;
     }
     else return "";
