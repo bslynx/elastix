@@ -63,13 +63,14 @@ if(isset($_SERVER['argv'][1]) & in_array($_SERVER['argv'][1],$arrActions)){
              return executeFiles_SQL_install($arrFiles, $password, $path_folder, $action, $sql_export);
           }
 	      else if($action=="update"){
-     		 $version = $_SERVER['argv'][3];			 
+     		 $version = isset($_SERVER['argv'][3])?$_SERVER['argv'][3]:false;			 
 			 if(isset($version) && !empty($version))
 			 { 
-                 echo "Updating a2billing since $version\n";
+                 echo "Updating since $version\n";
                  $stringsql=updatedatabase($version,$path_folder);
-                 $fileupdate="$path_folder/$action/01-a2billing-update.sql";
-		 file_put_contents($fileupdate,$stringsql);		      
+                    
+                 $fileupdate="$path_folder/$action/01-updates-database.sql";
+		         file_put_contents($fileupdate,$stringsql);		      
 	             return executeFiles_SQL_update($fileupdate, $password, $action, $sql_export);
 			 } 
              else
