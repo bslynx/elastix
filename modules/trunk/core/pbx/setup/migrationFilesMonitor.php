@@ -33,14 +33,13 @@
 require_once("/var/www/html/libs/misc.lib.php");
 require_once("/var/www/html/configs/default.conf.php");
 require_once("/var/www/html/libs/paloSantoDB.class.php");
+
 $dsn_conn_database = generarDSNSistema('asteriskuser', 'asteriskcdrdb',"/var/www/html/");
 $pDBcdrdb = new paloDB($dsn_conn_database);
+
 if(!is_dir("/var/spool/asterisk/monitor_migration"))
     mkdir("/var/spool/asterisk/monitor_migration"); 
-if(!is_dir("/var/spool/asterisk/monitor_migration/no_found_database"))
-    mkdir("/var/spool/asterisk/monitor_migration/no_found_database");
-if(!is_dir("/var/spool/asterisk/monitor_migration/no_known_formatfile"))
-    mkdir("/var/spool/asterisk/monitor_migration/no_known_formatfile");
+
 if($pDBcdrdb==NULL)
     echo $pDBcdrdb->errMsg;
 else
@@ -138,7 +137,7 @@ function actualizarbasedatos($archivo,$pDBcdrdb){
                 validaract($pDBcdrdb,$query,$regs[1],$archivo);
            }
            else
-                `echo $archivo >> /var/spool/asterisk/monitor_migration/no_format_file_known.log `;  
+                `echo $archivo >> /var/spool/asterisk/monitor_migration/no_known_formatfile.log `;  
 }
 function  ejecutaractualizacion($pDBcdrdb,$query,$archivo)
 {
