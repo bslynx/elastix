@@ -56,19 +56,27 @@ function report{NAME_CLASS}($smarty, $module_name, $local_templates_dir, &$pDB, 
 
     //begin grid parameters
     $oGrid  = new paloSantoGrid($smarty);
-    $total{NAME_CLASS} = $p{NAME_CLASS}->getNum{NAME_CLASS}($filter_field, $filter_value);
-
-    $limit  = 20;
-    $total  = $total{NAME_CLASS};
-    $oGrid->setLimit($limit);
-    $oGrid->setTotal($total);
-    $oGrid->enableExport();   // enable csv export.
     $oGrid->pagingShow(true); // show paging section.
+    $oGrid->enableExport();   // enable export.
+    $oGrid->setNameFile_Export($arrLang["{NEW_MODULE_NAME}"]);
 
-    $oGrid->calculatePagination($action,$start);
-    $offset = $oGrid->getOffsetValue();
-    $end    = $oGrid->getEnd();
-    $url    = "?menu=$module_name&filter_field=$filter_field&filter_value=$filter_value";
+    $url   = "?menu=$module_name&filter_field=$filter_field&filter_value=$filter_value";
+    $total = $p{NAME_CLASS}->getNum{NAME_CLASS}($filter_field, $filter_value);
+    $end   = 0;
+
+    if($oGrid->isExportAction()){
+        $limit  = 1000; // max number of rows.
+        $offset = 0;    // since the start.
+    }
+    else{
+        $limit  = 20;
+        $oGrid->setLimit($limit);
+        $oGrid->setTotal($total);
+
+        $oGrid->calculatePagination($action,$start);
+        $offset = $oGrid->getOffsetValue();
+        $end    = $oGrid->getEnd();
+    }
 
     $arrData = null;
     $arrResult =$p{NAME_CLASS}->get{NAME_CLASS}($limit, $offset, $filter_field, $filter_value);
@@ -79,8 +87,7 @@ function report{NAME_CLASS}($smarty, $module_name, $local_templates_dir, &$pDB, 
         }
     }
 
-
-    $arrGrid = array("title"    => $arrLang["{NEW_MODULE_NAME}"],
+    $arrGrid = array(   "title"    => $arrLang["{NEW_MODULE_NAME}"],
                         "icon"     => "images/list.png",
                         "width"    => "99%",
                         "start"    => ($total==0) ? 0 : $offset + 1,
@@ -100,19 +107,8 @@ function report{NAME_CLASS}($smarty, $module_name, $local_templates_dir, &$pDB, 
     $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl","",$_POST);
     //end section filter
 
-    if($as_csv == 'yes'){
-        $name_csv = "{NAME_CLASS}_".date("d-M-Y").".csv";
-        header("Cache-Control: private");
-        header("Pragma: cache");
-        header("Content-Type: application/octec-stream");
-        header("Content-disposition: inline; filename={$name_csv}");
-        header("Content-Type: application/force-download");
-        $content = $oGrid->fetchGridCSV($arrGrid, $arrData);
-    }
-    else{
-        $oGrid->showFilter(trim($htmlFilter));
-        $content = "<form  method='POST' style='margin-bottom:0;' action=\"$url\">".$oGrid->fetchGrid($arrGrid, $arrData,$arrLang)."</form>";
-    }
+    $oGrid->showFilter(trim($htmlFilter));
+    $content = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
     //end grid parameters
 
     return $content;

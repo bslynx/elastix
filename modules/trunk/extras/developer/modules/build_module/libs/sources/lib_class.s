@@ -1,4 +1,4 @@
-class paloSanto{NAME_CLASS} {
+class paloSanto{NAME_CLASS}{
     var $_DB;
     var $errMsg;
 
@@ -25,13 +25,16 @@ class paloSanto{NAME_CLASS} {
 
     function getNum{NAME_CLASS}($filter_field, $filter_value)
     {
-        $where = "";
-        if(isset($filter_field) & $filter_field !="")
-            $where = "where $filter_field like '$filter_value%'";
+        $where    = "";
+        $arrParam = null;
+        if(isset($filter_field) & $filter_field !=""){
+            $where    = "where $filter_field like ?";
+            $arrParam = array("$filter_value%");
+        }
 
         $query   = "SELECT COUNT(*) FROM table $where";
 
-        $result=$this->_DB->getFirstRowQuery($query);
+        $result=$this->_DB->getFirstRowQuery($query, false, $arrParam);
 
         if($result==FALSE){
             $this->errMsg = $this->_DB->errMsg;
@@ -42,13 +45,16 @@ class paloSanto{NAME_CLASS} {
 
     function get{NAME_CLASS}($limit, $offset, $filter_field, $filter_value)
     {
-        $where = "";
-        if(isset($filter_field) & $filter_field !="")
-            $where = "where $filter_field like '$filter_value%'";
+        $where    = "";
+        $arrParam = null;
+        if(isset($filter_field) & $filter_field !=""){
+            $where    = "where $filter_field like ?";
+            $arrParam = array("$filter_value%");
+        }
 
         $query   = "SELECT * FROM table $where LIMIT $limit OFFSET $offset";
 
-        $result=$this->_DB->fetchTable($query, true);
+        $result=$this->_DB->fetchTable($query, true, $arrParam);
 
         if($result==FALSE){
             $this->errMsg = $this->_DB->errMsg;
@@ -59,9 +65,9 @@ class paloSanto{NAME_CLASS} {
 
     function get{NAME_CLASS}ById($id)
     {
-        $query = "SELECT * FROM table WHERE id=$id";
+        $query = "SELECT * FROM table WHERE id=?";
 
-        $result=$this->_DB->getFirstRowQuery($query,true);
+        $result=$this->_DB->getFirstRowQuery($query, true, array("$id"));
 
         if($result==FALSE){
             $this->errMsg = $this->_DB->errMsg;
