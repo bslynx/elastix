@@ -27,6 +27,7 @@
   +----------------------------------------------------------------------+
   $Id: index.php,v 1.1 2008/01/30 15:55:57 bmacias Exp $
   $Id: index.php,v 1.1 2008/06/25 16:51:50 afigueroa Exp $
+  $Id: index.php,v 1.1 2010/11/04 16:51:50 ecueva Exp $
  */
 
 function _moduleContent(&$smarty, $module_name)
@@ -37,6 +38,7 @@ function _moduleContent(&$smarty, $module_name)
     include_once "libs/paloSantoConfig.class.php";
     include_once "libs/misc.lib.php";
     include_once "libs/paloSantoForm.class.php";
+    include_once "libs/paloSantoACL.class.php";
 
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
@@ -76,53 +78,53 @@ function _moduleContent(&$smarty, $module_name)
                    $arrConfig['AMPDBUSER']['valor']. ":".
                    $arrConfig['AMPDBPASS']['valor']. "@".
                    $arrConfig['AMPDBHOST']['valor']."/asterisk";
-
-    $pDB = new paloDB($arrConf['dsn_conn_database']);
-
+    $pDB = new paloDB($arrConf['dsn_conn_database']); // address_book
+    $pDB_2 = new paloDB($arrConf['dsn_conn_database2']); // acl
+    
     $action = getAction();
 
     $content = "";
     switch($action)
     {
         case "new":
-            $content = new_adress_book($smarty,$module_name, $local_templates_dir, $pDB, $arrLang);
+            $content = new_adress_book($smarty,$module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk);
             break;
         case "cancel":
             header("Location: ?menu=$module_name");
             break;
         case "commit":
-            $content = save_adress_book($smarty,$module_name, $local_templates_dir, $pDB, $arrLang,true);
+            $content = save_adress_book($smarty,$module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk, true);
             break;
         case "edit":
-            $content = view_adress_book($smarty,$module_name, $local_templates_dir, $pDB, $arrLang);
+            $content = view_adress_book($smarty,$module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk);
             break;
         case "show":
-            $content = view_adress_book($smarty,$module_name, $local_templates_dir, $pDB, $arrLang);
+            $content = view_adress_book($smarty,$module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk);
             break;
         case "save":
             if($_POST['address_book_options']=="address_from_csv")
-                $content = save_csv($smarty,$module_name, $local_templates_dir, $pDB, $arrLang, $dsnAsterisk);
+                $content = save_csv($smarty,$module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk);
             else
-                $content = save_adress_book($smarty,$module_name, $local_templates_dir, $pDB, $arrLang);
+                $content = save_adress_book($smarty,$module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk);
             break;
         case "delete":
-            $content = deleteContact($smarty,$module_name, $local_templates_dir, $pDB, $arrLang, $dsnAsterisk);
+            $content = deleteContact($smarty,$module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk);
             break;
         case "call2phone":
-            $content = call2phone($smarty,$module_name, $local_templates_dir, $pDB, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk);
+            $content = call2phone($smarty,$module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk);
             break;
         case 'download_csv':
-            $content = download_address_book();
+            $content = download_address_book($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk);
             break;
         default:
-            $content = report_adress_book($smarty,$module_name, $local_templates_dir, $pDB, $arrLang, $dsnAsterisk);
+            $content = report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk);
             break;
     }
 
     return $content;
 }
 
-function save_csv($smarty,$module_name, $local_templates_dir, $pDB, $arrLang, $dsnAsterisk)
+function save_csv($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk)
 {
     //valido el tipo de archivo
     if (!eregi('.csv$', $_FILES['userfile']['name'])) {
@@ -133,20 +135,22 @@ function save_csv($smarty,$module_name, $local_templates_dir, $pDB, $arrLang, $d
             $ruta_archivo = "/tmp/".$_FILES['userfile']['name'];
             copy($_FILES['userfile']['tmp_name'], $ruta_archivo);
             //Funcion para cargar las extensiones
-            load_address_book_from_csv($smarty, $arrLang, $ruta_archivo, $pDB);
+            load_address_book_from_csv($smarty, $arrLang, $ruta_archivo, $pDB, $pDB_2);
         }else {
             $smarty->assign("mb_title", $arrLang["Error"]);
             $smarty->assign("mb_message", $arrLang["Possible file upload attack. Filename"] ." :". $_FILES['userfile']['name']);
         }
     }
-    $content = new_adress_book($smarty,$module_name, $local_templates_dir, $pDB, $arrLang);
+    $content = new_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk);
     return $content;
 }
 
-function load_address_book_from_csv($smarty, $arrLang, $ruta_archivo, $pDB)
+function load_address_book_from_csv($smarty, $arrLang, $ruta_archivo, $pDB, $pDB_2)
 {
     $Messages = "";
     $arrayColumnas = array();
+    $pACL         = new paloACL($pDB_2);
+    $id_user      = $pACL->getIdUser($_SESSION["elastix_user"]);
 
     $result = isValidCSV($arrLang, $ruta_archivo, $arrayColumnas);
     if($result != 'true'){
@@ -169,15 +173,14 @@ function load_address_book_from_csv($smarty, $arrLang, $ruta_archivo, $pDB)
             {
                 $data = array();
 
-                $data['name']       = $pDB->DBCAMPO($tupla[$arrayColumnas[0]]);
-                $data['last_name']  = $pDB->DBCAMPO($tupla[$arrayColumnas[1]]);
-                $data['telefono']   = $pDB->DBCAMPO($tupla[$arrayColumnas[2]]);
+                $namedb       = $tupla[$arrayColumnas[0]];
+                $last_namedb  = $tupla[$arrayColumnas[1]];
+                $telefonodb   = $tupla[$arrayColumnas[2]];
+                $emaildb      = isset($arrayColumnas[3])?$tupla[$arrayColumnas[3]]:"";
 
-                $Email = isset($arrayColumnas[3])?$tupla[$arrayColumnas[3]]:"";
-                $data['email']      = $pDB->DBCAMPO($Email);
-
+                $data = array($namedb, $last_namedb, $telefonodb, $emaildb);
                 //Paso 1: verificar que no exista un usuario con los mismos datos
-                $result = $pAdressBook->existContact($data);
+                $result = $pAdressBook->existContact($namedb, $last_namedb, $telefonodb);
                 if(!$result)
                     $Messages .= "{$arrLang["ERROR"]}:" . $pAdressBook->errMsg . "  <br />";
                 else if($result['total']>0)
@@ -248,7 +251,7 @@ function isValidCSV($arrLang, $sFilePath, &$arrayColumnas){
     }else return $arrLang["The file is incorrect or empty"] .": $sFilePath";
 }
 
-function new_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $arrLang)
+function new_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk)
 {
     $arrFormadress_book = createFieldForm($arrLang);
     $oForm = new paloForm($smarty,$arrFormadress_book);
@@ -287,8 +290,11 @@ function new_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $arr
 /*
 ******** Funciones del modulo
 */
-function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $dsnAsterisk)
+function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk)
 {
+    $padress_book = new paloAdressBook($pDB);
+    $pACL         = new paloACL($pDB_2);
+    $id_user      = $pACL->getIdUser($_SESSION["elastix_user"]);
     if(getParametro('select_directory_type') != null && getParametro('select_directory_type')=='external')
     {
         $smarty->assign("external_sel",'selected=selected');
@@ -333,20 +339,20 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
 
     $field   = NULL;
     $pattern = NULL;
-
+    $allowSelection = array("name", "telefono", "last_name");
     if(isset($_POST['field']) and isset($_POST['pattern'])){
         $field      = $_POST['field'];
-        $pattern    = $_POST['pattern'];
+        if (!in_array($field, $allowSelection))
+            $field = "name";
+        $pattern    = $pDB->DBCAMPO('%'.$_POST['pattern'].'%');
     }
 
     $startDate = $endDate = date("Y-m-d H:i:s");
 
     $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter_adress_book.tpl", "", $_POST);
 
-    $padress_book = new paloAdressBook($pDB);
-
     if($directory_type=='external')
-        $total = $padress_book->getAddressBook(NULL,NULL,$field,$pattern,TRUE);
+        $total = $padress_book->getAddressBook(NULL,NULL,$field,$pattern,TRUE,$id_user);
     else
         $total = $padress_book->getDeviceFreePBX($dsnAsterisk, NULL,NULL,$field,$pattern,TRUE);
 
@@ -365,14 +371,14 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
     //Fin Paginacion
 
     if($directory_type=='external')
-        $arrResult =$padress_book->getAddressBook($limit, $offset, $field, $pattern);
+        $arrResult =$padress_book->getAddressBook($limit, $offset, $field, $pattern, FALSE, $id_user);
     else
         $arrResult =$padress_book->getDeviceFreePBX($dsnAsterisk, $limit,$offset,$field,$pattern);
 
     $arrData = null;
     if(is_array($arrResult) && $total>0){
         $arrMails = array();
-
+        $typeContact = "";
         if($directory_type=='internal')
             $arrMails = $padress_book->getMailsFromVoicemail();
 
@@ -384,7 +390,7 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
             else $email = '';
 
             $arrTmp[0]  = ($directory_type=='external')?"<input type='checkbox' name='contact_{$adress_book['id']}'  />":'';
-            $arrTmp[1]  = ($directory_type=='external')?"<a href='?menu=$module_name&action=show&id=".$adress_book['id']."'>{$adress_book['last_name']} {$adress_book['name']}</a>":$adress_book['description'];
+            $arrTmp[1]  = ($directory_type=='external')?"<a href='?menu=$module_name&action=show&id=".$adress_book['id']."'>".htmlspecialchars($adress_book['last_name'], ENT_QUOTES, "UTF-8")." ".htmlspecialchars($adress_book['name'], ENT_QUOTES, "UTF-8")."</a>":$adress_book['description'];
             $arrTmp[2]  = ($directory_type=='external')?$adress_book['telefono']:$adress_book['id'];
             $arrTmp[3]  = $email;
             $arrTmp[4]  = "<a href='?menu=$module_name&action=call2phone&id=".$adress_book['id']."&type=".$directory_type."'><img border=0 src='/modules/$module_name/images/call.png' /></a>";
@@ -450,11 +456,13 @@ function createFieldForm($arrLang)
     return $arrFields;
 }
 
-function save_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $arrLang,$update=FALSE)
+function save_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk, $update=FALSE)
 {
     $arrForm = createFieldForm($arrLang);
     $oForm = new paloForm($smarty, $arrForm);
-
+    $pACL         = new paloACL($pDB_2);
+    $id_user      = $pACL->getIdUser($_SESSION["elastix_user"]);
+    $padress_book = new paloAdressBook($pDB);
     $bandera = true;
 
     if(!$oForm->validateForm($_POST)) {
@@ -493,7 +501,7 @@ function save_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $ar
         if($update)
         {
             $_POST["edit"] = 'edit';
-            return view_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $arrLang);
+            return view_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk);
         }else{
             $smarty->assign("Show", 1);
             $htmlForm = $oForm->fetchForm("$local_templates_dir/new_adress_book.tpl", $arrLang, $_POST);
@@ -502,17 +510,30 @@ function save_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $ar
         }
     }else{
         $data = array();
-
-        $data['name']       = $pDB->DBCAMPO($_POST['name']);
-        $data['last_name']  = $pDB->DBCAMPO($_POST['last_name']);
-        $data['telefono']   = $pDB->DBCAMPO($_POST['telefono']);
-        $data['email']      = $pDB->DBCAMPO($_POST['email']);
-
-        $padress_book = new paloAdressBook($pDB);
-        if($update)
-            $result = $padress_book->updateContact($data,array("id"=>$_POST['id']));
-        else
+        $idPost = $_POST['id'];
+        $contactData = $padress_book->contactData($idPost, $id_user);
+        $namedb       = isset($_POST['name'])?$_POST['name']:"";
+        $last_namedb  = isset($_POST['last_name'])?$_POST['last_name']:"";
+        $telefonodb   = isset($_POST['telefono'])?$_POST['telefono']:"";
+        $emaildb      = isset($_POST['email'])?$_POST['email']:"";
+        
+        $data = array($namedb, $last_namedb, $telefonodb, $emaildb);
+       
+        if($update){
+            $result = $padress_book->updateContact($data,$idPost);
+            if(!$result){
+                $smarty->assign("mb_title", $arrLang["Validation Error"]);
+                $smarty->assign("mb_message", $arrLang["Internal Error"]);
+                return report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk);
+            }
+        }else{
             $result = $padress_book->addContact($data);
+            if(!$result){
+                $smarty->assign("mb_title", $arrLang["Validation Error"]);
+                $smarty->assign("mb_message", $arrLang["Internal Error"]);
+                return new_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk);
+            }
+        }
 
         if(!$result)
             return($pDB->errMsg);
@@ -525,27 +546,31 @@ function save_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $ar
     }
 }
 
-function deleteContact($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $dsnAsterisk)
+function deleteContact($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk)
 {
     $padress_book = new paloAdressBook($pDB);
-
+    $pACL         = new paloACL($pDB_2);
+    $id_user      = $pACL->getIdUser($_SESSION["elastix_user"]);
     foreach($_POST as $key => $values){
         if(substr($key,0,8) == "contact_")
         {
             $tmpBookID = substr($key, 8);
-            $result = $padress_book->deleteContact($tmpBookID);
+            $result = $padress_book->deleteContact($tmpBookID, $id_user);
         }
     }
-    $content = report_adress_book($smarty,$module_name, $local_templates_dir, $pDB, $arrLang, $dsnAsterisk);
+    $content = report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk);
 
     return $content;
 }
 
-function view_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $arrLang)
+function view_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk, $update=FALSE)
 {
     $arrFormadress_book = createFieldForm($arrLang);
+    $pACL    = new paloACL($pDB_2);
+    $id_user = $pACL->getIdUser($_SESSION["elastix_user"]);
+    $padress_book = new paloAdressBook($pDB);
     $oForm = new paloForm($smarty,$arrFormadress_book);
-
+    $id = isset($_GET['id'])?$_GET['id']:(isset($_POST['id'])?$_POST['id']:"");
     if(isset($_POST["edit"])){
         $oForm->setEditMode();
         $smarty->assign("Commit", 1);
@@ -578,17 +603,24 @@ function view_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $ar
 
     $smarty->assign("style_address_options", "style='display:none'");
 
-    $padress_book = new paloAdressBook($pDB);
+
     $id = isset($_GET['id'])?$_GET['id']:(isset($_POST['id'])?$_POST['id']:"");
 
-    $contactData = $padress_book->contactData($id);
-
+    $contactData = $padress_book->contactData($id, $id_user);
+    if($contactData){
+        $smarty->assign("ID",$id);
+    }else{
+        $smarty->assign("mb_title", $arrLang["Validation Error"]);
+        $smarty->assign("mb_message", $arrLang["Not_allowed_contact"]); 
+        return report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk);
+    }
+    
     $smarty->assign("ID",$id);
 
-    $arrData['name']          = isset($_POST['name'])?$_POST['name']:$contactData['name'];
-    $arrData['last_name']     = isset($_POST['last_name'])?$_POST['last_name']:$contactData['last_name'];
-    $arrData['telefono']      = isset($_POST['telefono'])?$_POST['telefono']:$contactData['telefono'];
-    $arrData['email']         = isset($_POST['email'])?$_POST['email']:$contactData['email'];
+    $arrData['name']          = htmlspecialchars(isset($_POST['name'])?$_POST['name']:$contactData['name'],ENT_QUOTES, "UTF-8");
+    $arrData['last_name']     = htmlspecialchars(isset($_POST['last_name'])?$_POST['last_name']:$contactData['last_name'],ENT_QUOTES, "UTF-8");
+    $arrData['telefono']      = htmlspecialchars(isset($_POST['telefono'])?$_POST['telefono']:$contactData['telefono'],ENT_QUOTES, "UTF-8");
+    $arrData['email']         = htmlspecialchars(isset($_POST['email'])?$_POST['email']:$contactData['email'],ENT_QUOTES, "UTF-8");
 
     $htmlForm = $oForm->fetchForm("$local_templates_dir/new_adress_book.tpl", "", $arrData);
 
@@ -597,25 +629,11 @@ function view_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $ar
     return $contenidoModulo;
 }
 
-function call2phone($smarty,$module_name, $local_templates_dir, $pDB, $arrLang, $arrConf, $dsn_agi_manager)
+function call2phone($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk)
 {
-    require_once "libs/paloSantoACL.class.php";
-    require_once "libs/paloSantoConfig.class.php";
 
     $padress_book = new paloAdressBook($pDB);
-
-    $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
-    $arrConfig = $pConfig->leer_configuracion(false);
-
-    $dsnAsterisk = $arrConfig['AMPDBENGINE']['valor']."://".
-                   $arrConfig['AMPDBUSER']['valor']. ":".
-                   $arrConfig['AMPDBPASS']['valor']. "@".
-                   $arrConfig['AMPDBHOST']['valor']."/asterisk";
-
-
-    $pDB_acl = new paloDB($arrConf['elastix_dsn']['acl']);
-
-    $pACL = new paloACL($pDB_acl);
+    $pACL = new paloACL($pDB_2);
     $id_user = $pACL->getIdUser($_SESSION["elastix_user"]);
     if($id_user != FALSE)
     {
@@ -630,7 +648,7 @@ function call2phone($smarty,$module_name, $local_templates_dir, $pDB, $arrLang, 
                 $phone2call = '';
                 if(isset($_GET['type']) && $_GET['type']=='external')
                 {
-                    $contactData = $padress_book->contactData($id);
+                    $contactData = $padress_book->contactData($id, $id_user);
                     $phone2call = $contactData['telefono'];
                 }else
                     $phone2call = $id;
@@ -665,7 +683,7 @@ function call2phone($smarty,$module_name, $local_templates_dir, $pDB, $arrLang, 
         $smarty->assign("mb_message", $padress_book->errMsg);
     }
 
-    $content = report_adress_book($smarty,$module_name, $local_templates_dir, $pDB, $arrLang, $dsnAsterisk);
+    $content = report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk);
     return $content;
 }
 /*
@@ -708,35 +726,29 @@ function getParametro($parametro)
         return null;
 }
 
-function download_address_book()
+function download_address_book($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk)
 {
-    global $arrConf;
-    global $arrLangModule;
-
-    $pDB = new paloDB("sqlite3:///$arrConf[elastix_dbdir]/address_book.db");
-    if(!empty($pDB->errMsg)) {
-        $smarty->assign("mb_message", $arrLangModule["Error when connecting to database"]."<br/>".$pDB->errMsg);
-    }
 
     header("Cache-Control: private");
     header("Pragma: cache");
     header('Content-Type: text/csv; charset=iso-8859-1; header=present');
     header("Content-disposition: attachment; filename=address_book.csv");
-    echo backup_contacts($pDB);
+    echo backup_contacts($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk);
 }
 
-function backup_contacts($pDB)
+function backup_contacts($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk)
 {
-    global $arrLangModule;
     $Messages = "";
     $csv = "";
     $pAdressBook = new paloAdressBook($pDB);
     $fields = "name, last_name, telefono, email";
-    $arrResult = $pAdressBook->getAddressBook(null, null, $fields, null);
+    $pACL         = new paloACL($pDB_2);
+    $id_user      = $pACL->getIdUser($_SESSION["elastix_user"]);
+    $arrResult = $pAdressBook->getAddressBookByCsv(null, null, $fields, null, null, $id_user);
 
     if(!$arrResult)
     {
-        $Messages .= $arrLangModule["There aren't contacts"].". ".$pAdressBook->errMsg;
+        $Messages .= $arrLang["There aren't contacts"].". ".$pAdressBook->errMsg;
         echo $Messages;
     }else{
         //cabecera

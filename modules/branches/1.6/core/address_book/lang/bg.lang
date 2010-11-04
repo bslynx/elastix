@@ -68,6 +68,8 @@ $arrLangModule=array(
 "The file is incorrect or empty" => "Файлът е грешен или празен",
 "You don't have extension number associated with user" => "Вие нямате вътрешен номер свързан с потребителя",
 "ERROR" => "ГРЕШКА",
-
+"Internal Error" => "Please be sure if the parameters are corrects",
+"Validation Error" => "Validation Error",
+"Not_allowed_contact" => "This contact don't exist in your Address Book",
 );
 ?>

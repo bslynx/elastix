@@ -32,4 +32,5 @@ global $arrConfModule;
 $arrConfModule['module_name'] = 'address_book';
 $arrConfModule['templates_dir'] = 'themes';
 $arrConfModule['dsn_conn_database'] = "sqlite3:///$arrConf[elastix_dbdir]/address_book.db";
+$arrConfModule['dsn_conn_database2'] = "sqlite3:///$arrConf[elastix_dbdir]/acl.db";
 ?>

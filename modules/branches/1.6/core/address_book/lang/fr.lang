@@ -71,5 +71,8 @@ $arrLangModule=array(
 "You don't have extension number associated with user" => "Vous n'avez aucun num&eacute;ro d'extension associ&eacute; &agrave
 ; l'utilisateur",
 "ERROR" => "ERREUR",
+"Internal Error" => "Please be sure if the parameters are corrects",
+"Validation Error" => "Validation Error",
+"Not_allowed_contact" => "This contact don't exist in your Address Book",
 );
 ?>

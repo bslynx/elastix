@@ -80,8 +80,8 @@ function _moduleContent(&$smarty, $module_name)
     if (isset($_GET['action']) && $_GET['action'] == 'phone_numbers') {
         include_once "libs/paloSantoForm.class.php";
         include_once "modules/address_book/libs/paloSantoAdressBook.class.php";
-    	include_once "libs/paloSantoConfig.class.php";
-    	include_once "libs/paloSantoGrid.class.php";
+        include_once "libs/paloSantoConfig.class.php";
+        include_once "libs/paloSantoGrid.class.php";
 
         // Include language file for EN, then for local, and merge the two.
         $arrLangModule = NULL;
@@ -97,15 +97,15 @@ function _moduleContent(&$smarty, $module_name)
 
         $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
         $arrConfig = $pConfig->leer_configuracion(false);
-	
-	    //solo para obtener los devices (extensiones) creadas.
+    
+        //solo para obtener los devices (extensiones) creadas.
         $dsnAsterisk = $arrConfig['AMPDBENGINE']['valor']."://".
                        $arrConfig['AMPDBUSER']['valor']. ":".
                        $arrConfig['AMPDBPASS']['valor']. "@".
                        $arrConfig['AMPDBHOST']['valor']."/asterisk";
 
-	    $pDB = new paloDB("sqlite3:///$arrConf[elastix_dbdir]/address_book.db");
-        $html = report_adress_book($smarty,$module_name, $local_templates_dir, $pDB, $arrLang, $dsnAsterisk);
+        $pDB = new paloDB("sqlite3:///$arrConf[elastix_dbdir]/address_book.db");
+        $html = report_adress_book($smarty,$module_name, $local_templates_dir, $pDB, $arrLang, $arrConf, $dsnAsterisk);
         
         $smarty->assign("CONTENT", $html);
         $smarty->assign("THEMENAME", $arrConf['mainTheme']);
@@ -156,8 +156,11 @@ function _moduleContent(&$smarty, $module_name)
     return $contenidoModulo;
 }
 
-function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $dsnAsterisk)
+function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConf, $dsnAsterisk)
 {
+    $pDB_2        = new paloDB("sqlite3:///$arrConf[elastix_dbdir]/acl.db");
+    $pACL         = new paloACL($pDB_2);
+    $id_user      = $pACL->getIdUser($_SESSION["elastix_user"]);
     if(isset($_POST['select_directory_type']) && $_POST['select_directory_type']=='External')
     {
         $smarty->assign("external_sel",'selected=selected');
@@ -202,9 +205,12 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
     $field   = NULL;
     $pattern = NULL;
 
+    $allowSelection = array("name", "telefono", "last_name");
     if(isset($_POST['field']) and isset($_POST['pattern'])){
         $field      = $_POST['field'];
-        $pattern    = $_POST['pattern'];
+        if (!in_array($field, $allowSelection))
+            $field = "name";
+        $pattern    = $pDB->DBCAMPO('%'.$_POST['pattern'].'%');
     }
 
     $startDate = $endDate = date("Y-m-d H:i:s");
@@ -214,7 +220,7 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
     $padress_book = new paloAdressBook($pDB);
 
     if($directory_type=='external')
-        $total = $padress_book->getAddressBook(NULL,NULL,$field,$pattern,TRUE);
+        $total = $padress_book->getAddressBook(NULL,NULL,$field,$pattern,TRUE, $id_user);
     else
         $total = $padress_book->getDeviceFreePBX($dsnAsterisk, NULL,NULL,$field,$pattern,TRUE);
 
@@ -233,7 +239,7 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
     //Fin Paginacion
 
     if($directory_type=='external')
-        $arrResult =$padress_book->getAddressBook($limit, $offset, $field, $pattern);
+        $arrResult =$padress_book->getAddressBook($limit, $offset, $field, $pattern,FALSE, $id_user);
     else
         $arrResult =$padress_book->getDeviceFreePBX($dsnAsterisk, $limit,$offset,$field,$pattern);
 
@@ -251,10 +257,10 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
                 $email = $arrMails[$adress_book['id']];
             else $email = '';
 
-            $arrTmp[0]  = ($directory_type=='external')?"{$adress_book['last_name']} {$adress_book['name']}":$adress_book['description'];
-            $number = ($directory_type=='external')?$adress_book['telefono']:$adress_book['id'];
+            $arrTmp[0]  = ($directory_type=='external')?htmlspecialchars($adress_book['last_name'],ENT_QUOTES, "UTF-8")." ".htmlspecialchars($adress_book['name'],ENT_QUOTES, "UTF-8"):$adress_book['description'];
+            $number = ($directory_type=='external')?htmlspecialchars($adress_book['telefono'], ENT_QUOTES, "UTF-8"):$adress_book['id'];
             $arrTmp[1]  = "<a href='javascript:return_phone_number(\"$number\", \"$directory_type\", \"{$adress_book['id']}\")'>$number</a>";
-            $arrTmp[2]  = $email;
+            $arrTmp[2]  = htmlspecialchars($email, ENT_QUOTES, "UTF-8");
             $arrData[]  = $arrTmp;
         }
     }
@@ -278,7 +284,7 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
                     );
 
     $oGrid->showFilter(trim($htmlFilter));
-    $contenidoModulo = "<form method='post' style='margin-bottom: 0pt;' action='?menu=$module_name'>".$oGrid->fetchGrid($arrGrid, $arrData,$arrLang)."</form>";
+    $contenidoModulo = "<form name='form_filter' method='post' style='margin-bottom: 0pt;' action='?menu=$module_name&action=phone_numbers&rawmode=yes'>".$oGrid->fetchGrid($arrGrid, $arrData,$arrLang)."</form>";
     return $contenidoModulo;
 }
 
