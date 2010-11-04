@@ -216,6 +216,7 @@ function _moduleContent(&$smarty, $module_name)
     global $fc_save;
     global $fc_check; 
     global $recordings_save_path;
+    global $itemid;
 
     // handle special requests
     if (isset($_REQUEST['handler'])) {
