@@ -56,7 +56,7 @@ function _moduleContent(&$smarty, $module_name)
     if (file_exists("$script_dir/$lang_file")) {
         $arrLanEN = $arrLan;
         include_once($lang_file);
-        $arrLan = array_merge($arrLanEN, $arrLan);
+        $arrLan = array_merge($arrLanEN, $arrLangModule);
     }
 
     //include module files
@@ -120,7 +120,8 @@ function _moduleContent(&$smarty, $module_name)
 //funcion que construye la vista del reporte
 function listadoHoldTime($pDB, $smarty, $module_name, $local_templates_dir,&$oGrid,&$arrGrid,&$arrData) {
     global $arrLang;
-    global $arrLan;
+	global $arrLangModule;
+    $arrLan=$arrLangModule;
     $arrData = array();
     $oCalls = new paloSantoHoldTime($pDB);
     $fecha_init = date("d M Y");

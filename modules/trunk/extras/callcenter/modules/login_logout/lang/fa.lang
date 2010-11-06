@@ -26,8 +26,8 @@
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
    */
-global $arrLan;
-$arrLan=array(
+global $arrLangModule;
+$arrLangModule=array(
 "Error when connecting to database" => "خطا در هنگام اتصال به ديتابيس",
 "Error"                             => "خطا",
 "Debe ingresar una fecha valida"    => "يک تاريخ معتبر وارد کنيد",

@@ -98,7 +98,7 @@ class paloSantoUploadFile
     private function parseCampaignNumbers($sFilePath, &$sEncoding)
     {
         global $arrLang;
-        global $arrLan;
+        global $arrLangModule;
 
     	$listaNumeros = NULL;
 

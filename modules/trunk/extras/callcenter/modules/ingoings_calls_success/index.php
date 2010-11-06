@@ -51,7 +51,7 @@ function _moduleContent(&$smarty,$module_name) {
     if (file_exists("$script_dir/$lang_file")) {
         $arrLanEN = $lang;
         include_once($lang_file);
-        $lang = array_merge($arrLanEN, $lang);
+        $lang = array_merge($arrLanEN, $arrLangModule);
     }
 
     // se crea el objeto conexion a la base de datos

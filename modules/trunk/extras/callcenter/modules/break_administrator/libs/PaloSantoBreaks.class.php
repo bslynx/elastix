@@ -69,7 +69,7 @@ class PaloSantoBreaks
     function getBreaks($id_break = NULL,$estatus='all')
     {
         global $arrLang;
-        global $arrLan;
+        global $arrLangModule;
         $arr_result = FALSE;
         $where = " 1 ";
         if(!is_null($id_break))
@@ -82,7 +82,7 @@ class PaloSantoBreaks
             $where .=" and status='A' ";
 
         if (!is_null($id_break) && !ereg('^[[:digit:]]+$', "$id_break")) {
-            $this->errMsg = $arrLan["Break ID is not valid"];
+            $this->errMsg = $arrLangModule["Break ID is not valid"];
         } 
         else {
             $this->errMsg = "";
@@ -107,15 +107,15 @@ class PaloSantoBreaks
     function createBreak($sNombre, $sDescripcion)
     {
         global $arrLang;
-        global $arrLan;
+        global $arrLangModule;
 
         $sNombre = trim("$sNombre");
         if ($sNombre == '')
-            $this->errMsg = $arrLan["Name Break can't be empty"];
+            $this->errMsg = $arrLangModule["Name Break can't be empty"];
         else {
             $recordset =& $this->_DB->fetchTable("SELECT * FROM break WHERE name = ".paloDB::DBCAMPO($sNombre));
             if (is_array($recordset) && count($recordset) > 0) 
-                $this->errMsg = $arrLan["Name Break already exists"];
+                $this->errMsg = $arrLangModule["Name Break already exists"];
             else {
                 // Construir y ejecutar la orden de inserción SQL
                 $sPeticionSQL = paloDB::construirInsert(
@@ -148,12 +148,12 @@ class PaloSantoBreaks
     function updateBreak($idBreak, $sNombre, $sDescripcion)
     {
         global $arrLang;
-        global $arrLan;
+        global $arrLangModule;
         $sNombre = trim("$sNombre");
         if ($sNombre == '')
-            $this->errMsg = $arrLan["Name Break can't be empty"];
+            $this->errMsg = $arrLangModule["Name Break can't be empty"];
         else if (!isset($idBreak))
-            $this->errMsg = $arrLan["Id Break is empty"];
+            $this->errMsg = $arrLangModule["Id Break is empty"];
         else {
             // Construir y ejecutar la orden de update SQL
             $sPeticionSQL = paloDB::construirUpdate(
@@ -210,7 +210,7 @@ class PaloSantoBreaks
 function desactivateBreak($idBreak)
 {
     global $arrLang;
-    global $arrLan;
+    global $arrLangModule;
     global $arrConf;
     $respuesta = new xajaxResponse();
     
@@ -224,8 +224,8 @@ function desactivateBreak($idBreak)
     if($oBreaks->activateBreak($idBreak,'I'))
         $respuesta->addScript("window.open('?menu=break_administrator','_parent')");
     else{
-        $respuesta->addAssign("mb_title","innerHTML",$arrLan["Desactivate Error"]); 
-        $respuesta->addAssign("mb_message","innerHTML",$arrLan["Error when desactivating the Break"]); 
+        $respuesta->addAssign("mb_title","innerHTML",$arrLangModule["Desactivate Error"]); 
+        $respuesta->addAssign("mb_message","innerHTML",$arrLangModule["Error when desactivating the Break"]); 
     }
     
     return $respuesta;

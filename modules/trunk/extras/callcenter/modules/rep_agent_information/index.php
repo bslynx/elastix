@@ -70,9 +70,9 @@ function _moduleContent(&$smarty, $module_name)
     if (file_exists("$script_dir/$lang_file")) {
         $arrLanEN = $arrLan;
         include_once($lang_file);
-        $arrLan = array_merge($arrLanEN, $arrLan);
+        $arrLan = array_merge($arrLanEN, $arrLangModule);
     }
-    $arrLang = array_merge($arrLang, $arrLan);
+    $arrLang = array_merge($arrLang, $arrLangModule);
 
     //conexion resource
     $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");

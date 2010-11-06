@@ -29,8 +29,8 @@
   | Email: chavdar_75@yahoo.com                                                       |
   +----------------------------------------------------------------------+
   $Id: bg.lang, October 25, 2010, 6:07 pm kleber andres loayza Exp $ */
-global $arrLangModule;
-$arrLangModule=array(  
+
+$Lang=array(  
 "Ingoing Calls" => "Ingoing Calls",
 "guardar" => "Save",
 "cancelar" => "Cancel",

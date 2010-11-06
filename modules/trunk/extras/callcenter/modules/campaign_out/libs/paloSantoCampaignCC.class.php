@@ -71,7 +71,7 @@ class paloSantoCampaignCC
     function getCampaigns($limit, $offset, $id_campaign = NULL,$estatus='all')
     {
         global $arrLang;
-        global $arrLan;
+        global $arrLangModule;
         $where = "";
         if($estatus=='all')
             $where .= " where 1";
@@ -84,7 +84,7 @@ class paloSantoCampaignCC
 
         $arr_result = FALSE;
         if (!is_null($id_campaign) && !ereg('^[[:digit:]]+$', "$id_campaign")) {
-            $this->errMsg = $arrLan["Campaign ID is not valid"];
+            $this->errMsg = $arrLangModule["Campaign ID is not valid"];
         } 
         else {
             if ($where=="") {
@@ -130,7 +130,7 @@ class paloSantoCampaignCC
         $sFechaInicial, $sFechaFinal, $sHoraInicio, $sHoraFinal, $script, $combo)
     {
         global $arrLang;
-        global $arrLan;
+        global $arrLangModule;
         $id_campaign = NULL;
         $bExito = FALSE;
 //hacemos el query para ver lasa colas seleccionadas
@@ -172,36 +172,36 @@ class paloSantoCampaignCC
         if ($sTrunk == '') $sTrunk = NULL;
 
         if ($sNombre == '') {
-            $this->errMsg = $arrLan["Name Campaign can't be empty"];//'Nombre de campaña no puede estar vacío';
+            $this->errMsg = $arrLangModule["Name Campaign can't be empty"];//'Nombre de campaña no puede estar vacío';
         } elseif ($sContext == '') {
-            $this->errMsg = $arrLan["Context can't be empty"];//'Contexto no puede estar vacío';
+            $this->errMsg = $arrLangModule["Context can't be empty"];//'Contexto no puede estar vacío';
         } elseif (!ereg('^[[:digit:]]+$', $iRetries)) {
-            $this->errMsg = $arrLan["Retries must be numeric"];//'Número de reintentos debe de ser numérico y entero';
+            $this->errMsg = $arrLangModule["Retries must be numeric"];//'Número de reintentos debe de ser numérico y entero';
         } elseif ($sQueue == '') {
-            $this->errMsg = $arrLan["Queue can't be empty"];//'Número de cola no puede estar vacío';
+            $this->errMsg = $arrLangModule["Queue can't be empty"];//'Número de cola no puede estar vacío';
         } elseif (!ereg('^[[:digit:]]+$', $sQueue)) {
-            $this->errMsg = $arrLan["Queue must be numeric"];//'Número de cola debe de ser numérico y entero';
+            $this->errMsg = $arrLangModule["Queue must be numeric"];//'Número de cola debe de ser numérico y entero';
         } elseif (!ereg('^[[:digit:]]{4}-[[:digit:]]{2}-[[:digit:]]{2}$', $sFechaInicial)) {
-            $this->errMsg = $arrLan["Invalid Start Date"];//'Fecha de inicio no es válida (se espera yyyy-mm-dd)';
+            $this->errMsg = $arrLangModule["Invalid Start Date"];//'Fecha de inicio no es válida (se espera yyyy-mm-dd)';
         } elseif (!ereg('^[[:digit:]]{4}-[[:digit:]]{2}-[[:digit:]]{2}$', $sFechaFinal)) {
-            $this->errMsg = $arrLan["Invalid End Date"];//'Fecha de final no es válida (se espera yyyy-mm-dd)';
+            $this->errMsg = $arrLangModule["Invalid End Date"];//'Fecha de final no es válida (se espera yyyy-mm-dd)';
         } elseif ($sFechaInicial > $sFechaFinal) {
-            $this->errMsg = $arrLan["Start Date must be greater than End Date"];//'Fecha de inicio debe ser anterior a la fecha final';
+            $this->errMsg = $arrLangModule["Start Date must be greater than End Date"];//'Fecha de inicio debe ser anterior a la fecha final';
         } elseif (!ereg('^[[:digit:]]{2}:[[:digit:]]{2}$', $sHoraInicio)) {
-            $this->errMsg = $arrLan["Invalid Start Time"];//'Hora de inicio no es válida (se espera hh:mm)';
+            $this->errMsg = $arrLangModule["Invalid Start Time"];//'Hora de inicio no es válida (se espera hh:mm)';
         } elseif (!ereg('^[[:digit:]]{2}:[[:digit:]]{2}$', $sHoraFinal)) {
-            $this->errMsg = $arrLan["Invalid End Time"];//'Hora de final no es válida (se espera hh:mm)';
+            $this->errMsg = $arrLangModule["Invalid End Time"];//'Hora de final no es válida (se espera hh:mm)';
         } elseif (strcmp($sFechaInicial,$sFechaFinal)==0 && strcmp ($sHoraInicio,$sHoraFinal)>=0) {
-            $this->errMsg = $arrLan["Start Time must be greater than End Time"];//'Hora de inicio debe ser anterior a la hora final';
+            $this->errMsg = $arrLangModule["Start Time must be greater than End Time"];//'Hora de inicio debe ser anterior a la hora final';
    	} elseif ($error_cola==1){
-	     $this->errMsg =  $arrLan["Queue is being used, choose other one"];//La cola ya está siendo usada, escoja otra
+	     $this->errMsg =  $arrLangModule["Queue is being used, choose other one"];//La cola ya está siendo usada, escoja otra
 	}
 	else {
                 // Verificar que el nombre de la campaña es único
                 $recordset =& $this->_DB->fetchTable("SELECT * FROM campaign WHERE name = ".paloDB::DBCAMPO($sNombre));
                 if (is_array($recordset) && count($recordset) > 0) {
                     // Ya existe una campaña duplicada
-                    $this->errMsg = $arrLan["Name Campaign already exists"];//'Nombre de campaña indicado ya está en uso';
+                    $this->errMsg = $arrLangModule["Name Campaign already exists"];//'Nombre de campaña indicado ya está en uso';
                 } else {
                     // Construir y ejecutar la orden de inserción SQL
                     $sPeticionSQL = paloDB::construirInsert(
@@ -249,7 +249,7 @@ class paloSantoCampaignCC
     */
     function addCampaignForm($id_campania,$formularios)
     {
-        global $arrLan;
+        global $arrLangModule;
 
         if ($formularios != "") {
             $arr_form = explode(",",$formularios);
@@ -267,7 +267,7 @@ class paloSantoCampaignCC
                 }
             }
         } else {
-            $this->errMsg = $arrLan["There aren't form selected"];
+            $this->errMsg = $arrLangModule["There aren't form selected"];
             return false;
         }
         return true;
@@ -327,11 +327,11 @@ class paloSantoCampaignCC
 	 */
     function countCampaignNumbers($idCampaign)
     {
-        global $arrLan;
+        global $arrLangModule;
     	$iNumTelefonos = NULL;
     	
     	if (!ereg('^[[:digit:]]+$', $idCampaign)) {
-    		$this->errMsg = $arrLan["Invalid Campaign ID"]; //;'ID de campaña no es numérico';
+    		$this->errMsg = $arrLangModule["Invalid Campaign ID"]; //;'ID de campaña no es numérico';
     	} else {
     		$sPeticionSQL = "SELECT COUNT(*) FROM calls WHERE id_campaign = $idCampaign";
     		$tupla =& $this->_DB->getFirstRowQuery($sPeticionSQL);
@@ -387,7 +387,7 @@ class paloSantoCampaignCC
     private function parseCampaignNumbers($sFilePath, &$sEncoding)
     {
         global $arrLang;
-        global $arrLan;
+        global $arrLangModule;
 
     	$listaNumeros = NULL;
 
@@ -396,7 +396,7 @@ class paloSantoCampaignCC
 
     	$hArchivo = fopen($sFilePath, 'rt');
     	if (!$hArchivo) {
-    		$this->errMsg = $arrLan["Invalid CSV File"];//'No se puede abrir archivo especificado para leer CSV';
+    		$this->errMsg = $arrLangModule["Invalid CSV File"];//'No se puede abrir archivo especificado para leer CSV';
     	} else {
     		$iNumLinea = 0;
     		$listaNumeros = array();
@@ -416,7 +416,7 @@ class paloSantoCampaignCC
                         $clavesColumnas = $tupla;
                     } else {
                         // Teléfono no es numérico
-                        $this->errMsg = $arrLan["Invalid CSV File Line"]." "."$iNumLinea: ".$arrLan["Invalid number"];
+                        $this->errMsg = $arrLangModule["Invalid CSV File Line"]." "."$iNumLinea: ".$arrLangModule["Invalid number"];
                         return NULL;
                     }
     			} else {
@@ -472,10 +472,10 @@ class paloSantoCampaignCC
      */
     private function addCampaignNumbers($idCampaign, $listaNumeros)
     {
-        global $arrLan;
+        global $arrLangModule;
     	
     	if (!ereg('^[[:digit:]]+$', $idCampaign)) {
-    		$this->errMsg = $arrLan["Invalid Campaign ID"];//'ID de campaña no es numérico';
+    		$this->errMsg = $arrLangModule["Invalid Campaign ID"];//'ID de campaña no es numérico';
     	} elseif (!is_array($listaNumeros)) {
             // TODO: internacionalizar
     		$this->errMsg = '(internal) Lista de números tiene que ser un arreglo';
@@ -542,7 +542,7 @@ class paloSantoCampaignCC
         $sFechaInicial, $sFechaFinal, $sHoraInicio, $sHoraFinal, $script)
     {
         global $arrLang;
-        global $arrLan;
+        global $arrLangModule;
 
         $bExito = FALSE;
 
@@ -561,25 +561,25 @@ class paloSantoCampaignCC
         if ($sTrunk == '') $sTrunk = NULL;
 
         if ($sNombre == '') {
-            $this->errMsg = $arrLan["Name Campaign can't be empty"];//'Nombre de campaña no puede estar vacío';
+            $this->errMsg = $arrLangModule["Name Campaign can't be empty"];//'Nombre de campaña no puede estar vacío';
         } elseif ($sContext == '') {
-            $this->errMsg = $arrLan["Context can't be empty"];//'Contexto no puede estar vacío';
+            $this->errMsg = $arrLangModule["Context can't be empty"];//'Contexto no puede estar vacío';
         } elseif (!ereg('^[[:digit:]]+$', $iRetries)) {
-            $this->errMsg = $arrLan["Retries must be numeric"];//'Número de reintentos debe de ser numérico y entero';
+            $this->errMsg = $arrLangModule["Retries must be numeric"];//'Número de reintentos debe de ser numérico y entero';
         } elseif ($sQueue == '') {
-            $this->errMsg = $arrLan["Queue can't be empty"];//'Número de cola no puede estar vacío';
+            $this->errMsg = $arrLangModule["Queue can't be empty"];//'Número de cola no puede estar vacío';
         } elseif (!ereg('^[[:digit:]]{4}-[[:digit:]]{2}-[[:digit:]]{2}$', $sFechaInicial)) {
-            $this->errMsg = $arrLan["Invalid Start Date"];//'Fecha de inicio no es válida (se espera yyyy-mm-dd)';
+            $this->errMsg = $arrLangModule["Invalid Start Date"];//'Fecha de inicio no es válida (se espera yyyy-mm-dd)';
         } elseif (!ereg('^[[:digit:]]{4}-[[:digit:]]{2}-[[:digit:]]{2}$', $sFechaFinal)) {
-            $this->errMsg = $arrLan["Invalid End Date"];//'Fecha de final no es válida (se espera yyyy-mm-dd)';
+            $this->errMsg = $arrLangModule["Invalid End Date"];//'Fecha de final no es válida (se espera yyyy-mm-dd)';
         } elseif ($sFechaInicial > $sFechaFinal) {
-            $this->errMsg = $arrLan["Start Date must be greater than End Date"];//'Fecha de inicio debe ser anterior a la fecha final';
+            $this->errMsg = $arrLangModule["Start Date must be greater than End Date"];//'Fecha de inicio debe ser anterior a la fecha final';
         } elseif (!ereg('^[[:digit:]]{2}:[[:digit:]]{2}$', $sHoraInicio)) {
-            $this->errMsg = $arrLan["Invalid Start Time"];//'Hora de inicio no es válida (se espera hh:mm)';
+            $this->errMsg = $arrLangModule["Invalid Start Time"];//'Hora de inicio no es válida (se espera hh:mm)';
         } elseif (!ereg('^[[:digit:]]{2}:[[:digit:]]{2}$', $sHoraFinal)) {
-            $this->errMsg = $arrLan["Invalid End Time"];//'Hora de final no es válida (se espera hh:mm)';
+            $this->errMsg = $arrLangModule["Invalid End Time"];//'Hora de final no es válida (se espera hh:mm)';
         } elseif (strcmp($sFechaInicial,$sFechaFinal)==0 && strcmp ($sHoraInicio,$sHoraFinal)>=0) {
-            $this->errMsg = $arrLan["Start Time must be greater than End Time"];//'Hora de inicio debe ser anterior a la hora final';
+            $this->errMsg = $arrLangModule["Start Time must be greater than End Time"];//'Hora de inicio debe ser anterior a la hora final';
         } else {
 
             // Construir y ejecutar la orden de update SQL
@@ -630,7 +630,7 @@ class paloSantoCampaignCC
     function delete_campaign($idCampaign)
     {
         global $arrLang;
-        global $arrLan;
+        global $arrLangModule;
         $sQuery = "SELECT count(id) llamadas_realizadas FROM calls WHERE id_campaign=$idCampaign and status is not null";
 //echo "query = $sQuery<br>";
         $result =& $this->_DB->getFirstRowQuery($sQuery, true);
@@ -679,7 +679,7 @@ class paloSantoCampaignCC
                 }
             } else {
                 $valido = true;
-                $this->errMsg = $arrLan["This campaign have calls done"];
+                $this->errMsg = $arrLangModule["This campaign have calls done"];
             }
         }
         return $valido;
@@ -773,7 +773,7 @@ class paloSantoCampaignCC
      */
     function & getCompletedCampaignData($id_campaign)
     {
-        global $arrLan;
+        global $arrLangModule;
         global $arrLang;
 
         $this->errMsg = NULL;
@@ -807,11 +807,11 @@ SQL_LLAMADAS;
             'BASE'  =>  array(
                 'LABEL' =>  array(
                     'id_call',
-                    $arrLan['Phone Customer'],
-                    $arrLan['Status Call'],
+                    $arrLangModule['Phone Customer'],
+                    $arrLangModule['Status Call'],
                     "Agente",
-                    $arrLan['Date & Time'],
-                    $arrLan['Duration'],
+                    $arrLangModule['Date & Time'],
+                    $arrLangModule['Duration'],
                     'Uniqueid',
                 ),
                 'DATA'  =>  $datosTelefonos,
@@ -926,7 +926,7 @@ SQL_DATOS_FORM;
 function desactivar_campania($idCampaign)
 {
     global $arrLang;
-    global $arrLan;
+    global $arrLangModule;
     global $arrConf;
     $respuesta = new xajaxResponse();
     
@@ -942,8 +942,8 @@ function desactivar_campania($idCampaign)
     if($oCampaign->activar_campaign($idCampaign,'I'))
         $respuesta->addScript("window.open('?menu=campaign_out','_parent')");
     else{
-        $respuesta->addAssign("mb_title","innerHTML",$arrLan["Desactivate Error"]."<br/>".$pDB->errMsg); 
-        $respuesta->addAssign("mb_message","innerHTML",$arrLan["Error when desactivating the Campaign"]."<br/>".$pDB->errMsg); 
+        $respuesta->addAssign("mb_title","innerHTML",$arrLangModule["Desactivate Error"]."<br/>".$pDB->errMsg); 
+        $respuesta->addAssign("mb_message","innerHTML",$arrLangModule["Error when desactivating the Campaign"]."<br/>".$pDB->errMsg); 
     }
     return $respuesta;
 }

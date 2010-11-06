@@ -26,8 +26,8 @@
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
    */
-global $arrLan;
-$arrLan=array(
+global $arrLangModule;
+$arrLangModule=array(
 "Error when connecting to database" => "Erreur de connexion &agrave; la base de donn&eacute;es",
 "Error"                             => "Erreur",
 "Debe ingresar una fecha valida"    => "Vous devez entrer une date valide",

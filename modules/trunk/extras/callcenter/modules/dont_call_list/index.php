@@ -49,7 +49,7 @@ function _moduleContent(&$smarty, $module_name){
 
     global $arrConf;
     global $arrLang;
-
+	global $arrLangModule;
     require_once "modules/$module_name/libs/PaloSantoDontCalls.class.php";
     //folder path for custom templates
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
@@ -61,7 +61,7 @@ function _moduleContent(&$smarty, $module_name){
     if(!empty($pDB->errMsg)) {
         $smarty->assign("mb_message", $arrLang["Error when connecting to database"]."<br/>".$pDB->errMsg);
     }
-
+	$arrLan=$arrLangModule;
     $smarty->assign("MODULE_NAME", $arrLan["Add Number"]);
     $smarty->assign("label_file", $arrLan["Upload File"]);
     $smarty->assign("label_text", $arrLan["Add new Number"]);
@@ -92,14 +92,14 @@ function _moduleContent(&$smarty, $module_name){
 
 function AddCalls($pDB, $smarty, $module_name, $local_templates_dir, $formCampos, $oForm) {
     global $arrLang;
-    global $arrLan;
-    $contenidoModulo = $oForm->fetchForm("$local_templates_dir/new.tpl", $arrLan["Add Number"],$_POST);
+    global $arrLangModule;
+    $contenidoModulo = $oForm->fetchForm("$local_templates_dir/new.tpl", $arrLangModule["Add Number"],$_POST);
     return $contenidoModulo;
 }
 
 function newCalls($pDB, $smarty, $module_name, $local_templates_dir, $formCampos, $oForm) {
     global $arrLang;
-    global $arrLan;
+    global $arrLangModule;
     $fContenido="";
     $msgResultado="";
 
@@ -115,7 +115,7 @@ function newCalls($pDB, $smarty, $module_name, $local_templates_dir, $formCampos
 		$smarty->assign("mb_message",$lang['Error when is loading file']);
 	    }
         }else{
-            $msgResultado = $arrLan["Please select any file"];
+            $msgResultado = $arrLangModule["Please select any file"];
         }
     }elseif( isset( $_POST["txt_new_number"] ) ){
         if( $_POST["txt_new_number"]!="" ){
@@ -123,10 +123,10 @@ function newCalls($pDB, $smarty, $module_name, $local_templates_dir, $formCampos
             if(is_numeric($new_number) && $new_number>0){
                 $msgResultado = registrarNuevoNumero($pDB,$new_number);
             }else{
-                $msgResultado = $arrLan["Number phone is not numeric value"];
+                $msgResultado = $arrLangModule["Number phone is not numeric value"];
             }
         }else{
-            $msgResultado = $arrLan["Please enter a number phone"];
+            $msgResultado = $arrLangModule["Please enter a number phone"];
         }
     }
 

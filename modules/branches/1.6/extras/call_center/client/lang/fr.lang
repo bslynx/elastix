@@ -1,6 +1,7 @@
 <?php
 
-$lang=array(
+global $arrLangModule; 
+ $arrLangModule=array(
 
 "client"=>"client",
 "fileCRM"=>"fichier CRM",

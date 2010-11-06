@@ -1,6 +1,7 @@
 <?php
 
-$lang = array(
+global $arrLangModule; 
+ $arrLangModule = array(
 'Ingoing Calls'   => 'Ingoing Calls',
 'guardar'         => 'Save',
 'cancelar'        => 'Cancel',

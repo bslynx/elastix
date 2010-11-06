@@ -48,7 +48,7 @@ function _moduleContent(&$smarty, $module_name)
     if (file_exists("$script_dir/$lang_file")) {
         $arrLanEN = $arrLan;
         include_once($lang_file);
-        $arrLan = array_merge($arrLanEN, $arrLan);
+        $arrLan = array_merge($arrLanEN, $arrLangModule);
     }
     
     //include module files
@@ -88,7 +88,8 @@ function sumar($a, $b) { return $a + $b; }
 function listHistogram($pDB, $smarty, $module_name, $local_templates_dir)
 {
     global $arrLang;
-    global $arrLan;
+	global $arrLangModule;
+    $arrLan=$arrLangModule;
 
     // Tipo de llamada
     $comboTipos = array(
@@ -223,7 +224,8 @@ function listHistogram($pDB, $smarty, $module_name, $local_templates_dir)
 
 function getFormFilter($arrDataTipo, $arrDataEstado, $arrDataQueues)
 {
-    global $arrLan;
+	global $arrLangModule;
+    $arrLan=$arrLangModule;
 
     $formCampos = array(
         "fecha_ini"       => array(
@@ -273,7 +275,8 @@ function getFormFilter($arrDataTipo, $arrDataEstado, $arrDataQueues)
 
 function graphHistogram($pDB, $smarty, $module_name, $local_templates_dir)
 {
-    global $arrLan;
+	global $arrLangModule;	
+    	$arrLan=$arrLangModule;
     global $arrLang;
 
     include ("libs/jpgraph/jpgraph.php");

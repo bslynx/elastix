@@ -49,7 +49,7 @@ function _moduleContent(&$smarty, $module_name)
         include_once($lang_file);
     else
         include_once("modules/$module_name/lang/en.lang");
-
+	global $arrLangModule;
     require_once "modules/$module_name/libs/paloSantoDataFormList.class.php";
     //folder path for custom templates
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
@@ -71,7 +71,7 @@ function _moduleContent(&$smarty, $module_name)
     //Definicion de campos
     $formCampos = array(
         'form_nombre'    =>    array(
-            "LABEL"                => $arrLan["Form Name"],
+            "LABEL"                => $arrLangModule["Form Name"],
             "REQUIRED"               => "yes",
             "INPUT_TYPE"             => "TEXT",
             "INPUT_EXTRA_PARAM"      => array("size" => "40"),
@@ -79,7 +79,7 @@ function _moduleContent(&$smarty, $module_name)
             "VALIDATION_EXTRA_PARAM" => "",
         ),
         'form_description'    =>    array(
-            "LABEL"                => $arrLan["Form Description"],
+            "LABEL"                => $arrLangModule["Form Description"],
             "REQUIRED"               => "no",
             "INPUT_TYPE"             => "TEXTAREA",
             "INPUT_EXTRA_PARAM"      => "",
@@ -89,10 +89,10 @@ function _moduleContent(&$smarty, $module_name)
             "ROWS"                   => "2",
         ), 
     );
-    $smarty->assign("type",$arrLan['Type']);    
+    $smarty->assign("type",$arrLangModule['Type']);    
     $smarty->assign("select_type","type"); 
     $smarty->assign("option_type",$arrConfig['arr_type']); 
-    $smarty->assign("item_list",$arrLan['List Item']);    
+    $smarty->assign("item_list",$arrLangModule['List Item']);    
     $oForm = new paloForm($smarty, $formCampos);     
 // print_r($_SESSION['ayuda']);
 
@@ -102,9 +102,9 @@ function _moduleContent(&$smarty, $module_name)
         $smarty->assign("mb_message", $arrLang["Error when connecting to database"]." ".$pDB->errMsg);
     }
     if (isset($_GET['id']) && isset($_GET['action']) && $_GET['action']=="preview") {
-        $contenidoModulo = preview_form($pDB, $smarty, $module_name, $local_templates_dir, $formCampos, $oForm,$arrLan); 
+        $contenidoModulo = preview_form($pDB, $smarty, $module_name, $local_templates_dir, $formCampos, $oForm,$arrLangModule); 
     } else {
-        $contenidoModulo = listadoForm($pDB, $smarty, $module_name, $local_templates_dir,$arrLan); 
+        $contenidoModulo = listadoForm($pDB, $smarty, $module_name, $local_templates_dir,$arrLangModule); 
     }
 
     return $contenidoModulo;

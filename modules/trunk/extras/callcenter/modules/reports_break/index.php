@@ -65,9 +65,9 @@ function _moduleContent(&$smarty, $module_name)
     if (file_exists("$script_dir/$lang_file")) {
         $arrLanEN = $lang;
         include_once($lang_file);
-        $lang = array_merge($arrLanEN, $lang);
+        $lang = array_merge($arrLanEN, $arrLangModule);
     }
-    $arrLang = array_merge($arrLang, $lang);
+    $arrLang = array_merge($arrLang, $arrLangModule);
 
     // Abrir conexión a la base de datos
     $pDB = new paloDB($cadena_dsn);

@@ -93,7 +93,7 @@ class paloSantoDataForm
     function obtener_campos_formulario($id_formulario,$id_campo=NULL)
     {
         $respuesta = new xajaxResponse();
-        global $arrLan;
+        global $arrLangModule;
         $smarty = $this->getSmarty();
         $errMsg=""; 
         $sqliteError='';
@@ -125,14 +125,14 @@ class paloSantoDataForm
                 $codigo_js .= $funcion_js;
                 //echo $codigo_js;
                 $smarty->assign("FORMULARIO", $data_field);
-                $smarty->assign("formularios", $arrLan["Form"]);
+                $smarty->assign("formularios", $arrLangModule["Form"]);
                 $mostrar_template=true;
             }
             if ($mostrar_template) $template = "formulario.tpl";
             else $template = "vacio.tpl";
         }else{
             global $arrLang;
-            //$smarty->assign("no_definidos_formularios",$arrLan['Forms Nondefined']);
+            //$smarty->assign("no_definidos_formularios",$arrLangModule['Forms Nondefined']);
             $template = "vacio.tpl";
         }
         if (isset($codigo_js) && trim($codigo_js)!="") {
@@ -294,7 +294,7 @@ function crea_objeto(&$smarty, $field, $prefijo_objeto, &$funcion_js) {
 function html_campos_formulario($arr_campos,$edit=true)
     { 
         global $arrLang;
-        global $arrLan;
+        global $arrLangModule;
         $self=dirname($_SERVER['SCRIPT_NAME']);
         if($self=="/")
         $self="";
@@ -303,10 +303,10 @@ function html_campos_formulario($arr_campos,$edit=true)
                                 <tr class='table_title_row'>";
         if($edit)
             $nodoTablaInicio .= "   <td class='table_title_row' width='40'><input type='button' name='delete_field' id='delete_field' onclick='"."if(confirmSubmit(\"$msm_confimacion\"))eliminar_campo();"."' value='".$arrLang['Delete']."' /></td> ";
-        $nodoTablaInicio .= "       <td class='table_title_row' width='50'>".$arrLan['Order']."</td>
-                                    <td class='table_title_row'>".$arrLan['Field Name']."</td>
+        $nodoTablaInicio .= "       <td class='table_title_row' width='50'>".$arrLangModule['Order']."</td>
+                                    <td class='table_title_row'>".$arrLangModule['Field Name']."</td>
                                     <td class='table_title_row'>".$arrLang['Type']."</td>
-                                    <td class='table_title_row'>".$arrLan['Values Field']."</td>";
+                                    <td class='table_title_row'>".$arrLangModule['Values Field']."</td>";
         if($edit)
             $nodoTablaInicio .= "       <td class='table_title_row'>".$arrLang['Options']."</td> 
                                 </tr>\n";
@@ -320,7 +320,7 @@ function html_campos_formulario($arr_campos,$edit=true)
                     $nodoContenido .= ETQUETA" <td class='table_data'><center><input type='checkbox' id='field-".$field['id']."' name='field_chk' /></center></td>\n";
                 $nodoContenido .= " <td class='table_data'>".$field['orden']."</td>\n";
                 $nodoContenido .= " <td class='table_data'>".$field['etiqueta']."</td>\n";
-                $nodoContenido .= " <td class='table_data'>".$arrLan[$field['tipo']]."</td>\n";
+                $nodoContenido .= " <td class='table_data'>".$arrLangModule[$field['tipo']]."</td>\n";
                 if($field['value']=="")
                     $value = "&nbsp;";
                 else $value = $field['value'];

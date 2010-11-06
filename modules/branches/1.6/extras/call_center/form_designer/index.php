@@ -54,9 +54,9 @@ function _moduleContent(&$smarty, $module_name)
     include_once("modules/$module_name/lang/en.lang");
     $lang_file="modules/$module_name/lang/$lang.lang";
     if (file_exists("$script_dir/$lang_file")) {
-        $arrLanEN = $arrLan;
+        $arrLangModuleEN = $arrLangModule;
         include_once($lang_file);
-        $arrLan = array_merge($arrLanEN, $arrLan);
+        $arrLangModule = array_merge($arrLangModuleEN, $arrLangModule);
     }
 
     require_once "modules/$module_name/libs/paloSantoDataForm.class.php";
@@ -73,20 +73,20 @@ function _moduleContent(&$smarty, $module_name)
     $smarty->assign("APPLY_CHANGES", $arrLang["Apply changes"]);
     $smarty->assign("SAVE", $arrLang["Save"]);
     $smarty->assign("EDIT", $arrLang["Edit"]);
-    $smarty->assign("DESCATIVATE", $arrLan["Desactivate"]);
+    $smarty->assign("DESCATIVATE", $arrLangModule["Desactivate"]);
     $smarty->assign("DELETE", $arrLang["Delete"]);
     $smarty->assign("CONFIRM_CONTINUE", $arrLang["Are you sure you wish to continue?"]);
-    $smarty->assign("new_field", $arrLan["New Field"]);
-    $smarty->assign("add_field", $arrLan["Add Field"]);
-    $smarty->assign("update_field",$arrLan['Update Field']); 
-    $smarty->assign("CONFIRM_DELETE", $arrLan["Are you sure you wish to delete form?"]);
+    $smarty->assign("new_field", $arrLangModule["New Field"]);
+    $smarty->assign("add_field", $arrLangModule["Add Field"]);
+    $smarty->assign("update_field",$arrLangModule['Update Field']); 
+    $smarty->assign("CONFIRM_DELETE", $arrLangModule["Are you sure you wish to delete form?"]);
    
 // print_r($_POST);
 
     //Definicion de campos
     $formCampos = array(
         'form_nombre'    =>    array(
-            "LABEL"                => $arrLan["Form Name"],
+            "LABEL"                => $arrLangModule["Form Name"],
             "REQUIRED"               => "yes",
             "INPUT_TYPE"             => "TEXT",
             "INPUT_EXTRA_PARAM"      => array("size" => "60"),
@@ -94,7 +94,7 @@ function _moduleContent(&$smarty, $module_name)
             "VALIDATION_EXTRA_PARAM" => "",
         ),
         'form_description'    =>    array(
-            "LABEL"                => $arrLan["Form Description"],
+            "LABEL"                => $arrLangModule["Form Description"],
             "REQUIRED"               => "no",
             "INPUT_TYPE"             => "TEXTAREA",
             "INPUT_EXTRA_PARAM"      => "",
@@ -104,7 +104,7 @@ function _moduleContent(&$smarty, $module_name)
             "ROWS"                   => "2",
         ),
         'field_nombre'    =>    array(
-            "LABEL"                => $arrLan["Field Name"],
+            "LABEL"                => $arrLangModule["Field Name"],
             "REQUIRED"               => "yes",
             "INPUT_TYPE"             => "TEXTAREA",
             "INPUT_EXTRA_PARAM"      => "",
@@ -114,7 +114,7 @@ function _moduleContent(&$smarty, $module_name)
             "ROWS"                   => "2",
         ),
 //         "cvs_column"       => array(
-//             "LABEL"                  => $arrLan["CVS Column"],
+//             "LABEL"                  => $arrLangModule["CVS Column"],
 //             "REQUIRED"               => "no",
 //             "INPUT_TYPE"             => "TEXT",
 //             "INPUT_EXTRA_PARAM"      => "",
@@ -122,7 +122,7 @@ function _moduleContent(&$smarty, $module_name)
 //             "VALIDATION_EXTRA_PARAM" =>  '(({)([[:alpha:]]{3,})(}))$'
 //         ),
 //         "number_column"       => array(
-//             "LABEL"                  => $arrLan["Column Number"],
+//             "LABEL"                  => $arrLangModule["Column Number"],
 //             "REQUIRED"               => "yes",
 //             "INPUT_TYPE"             => "TEXT",
 //             "INPUT_EXTRA_PARAM"      => "",
@@ -130,7 +130,7 @@ function _moduleContent(&$smarty, $module_name)
 //             "VALIDATION_EXTRA_PARAM" => ''
 //         ),
 //         "number_line"   => array(
-//             "LABEL"                  => $arrLan["Lines Number"],
+//             "LABEL"                  => $arrLangModule["Lines Number"],
 //             "REQUIRED"               => "yes",
 //             "INPUT_TYPE"             => "TEXT",
 //             "INPUT_EXTRA_PARAM"      => "",
@@ -138,7 +138,7 @@ function _moduleContent(&$smarty, $module_name)
 //             "VALIDATION_EXTRA_PARAM" => '',
 //         ),
 //         "validation"   => array(
-//             "LABEL"                  => $arrLan["Field Validation"],
+//             "LABEL"                  => $arrLangModule["Field Validation"],
 //             "REQUIRED"               => "yes",
 //             "INPUT_TYPE"             => "SELECT",
 //             "INPUT_EXTRA_PARAM"      => $arrValidation,
@@ -146,7 +146,7 @@ function _moduleContent(&$smarty, $module_name)
 //             "VALIDATION_EXTRA_PARAM" => ""
 //         ),
         "order" => array(
-            "LABEL"                  => $arrLan["Order"],
+            "LABEL"                  => $arrLangModule["Order"],
             "REQUIRED"               => "yes",
             "INPUT_TYPE"             => "TEXT",
             "INPUT_EXTRA_PARAM"      => array("size" => "3"),
@@ -154,7 +154,7 @@ function _moduleContent(&$smarty, $module_name)
             "VALIDATION_EXTRA_PARAM" => ""
         ), 
     );
-    $smarty->assign("type",$arrLan['Type']);    
+    $smarty->assign("type",$arrLangModule['Type']);    
     $smarty->assign("select_type","type"); 
 
     $arr_type = array(
@@ -166,20 +166,20 @@ function _moduleContent(&$smarty, $module_name)
                     "LABEL",
                     ),
         "NAME"  => array (
-                    $arrLan["Type Text"],
-                    $arrLan["Type List"],
-                    $arrLan["Type Date"],
-                    $arrLan["Type Text Area"],
-                    $arrLan["Type Label"],
+                    $arrLangModule["Type Text"],
+                    $arrLangModule["Type List"],
+                    $arrLangModule["Type Date"],
+                    $arrLangModule["Type Text Area"],
+                    $arrLangModule["Type Label"],
                     ),
         "SELECTED" => "TEXT",     
         );
 
 
     $smarty->assign("option_type", $arr_type); 
-    $smarty->assign("item_list",$arrLan['List Item']);    
-    $smarty->assign("agregar",$arrLan["Add Item"]); 
-    $smarty->assign("quitar",$arrLan['Remove Item']); 
+    $smarty->assign("item_list",$arrLangModule['List Item']);    
+    $smarty->assign("agregar",$arrLangModule["Add Item"]); 
+    $smarty->assign("quitar",$arrLangModule['Remove Item']); 
     $oForm = new paloForm($smarty, $formCampos);     
 // print_r($_SESSION['ayuda']);
     $xajax = new xajax();
@@ -221,17 +221,17 @@ function _moduleContent(&$smarty, $module_name)
 function new_form($pDB, $smarty, $module_name, $local_templates_dir, $formCampos, $oForm) {
 
     global $arrLang;
-    global $arrLan;
+    global $arrLangModule;
     $oDataForm = new paloSantoDataForm($pDB);
     $id_nuevo_formulario = $oDataForm->proximo_id_formulario();
     $smarty->assign("id_formulario_actual",$id_nuevo_formulario); // obtengo el id para crear el nuevo formulario
-    $contenidoModulo = $oForm->fetchForm("$local_templates_dir/form.tpl", $arrLan["New Form"],$_POST);  
+    $contenidoModulo = $oForm->fetchForm("$local_templates_dir/form.tpl", $arrLangModule["New Form"],$_POST);  
     return $contenidoModulo;
 }
 
 function view_form($pDB, $smarty, $module_name, $local_templates_dir, $formCampos, $oForm) {
     global $arrLang;
-    global $arrLan;
+    global $arrLangModule;
 
     $oForm->setViewMode(); // Esto es para activar el modo "preview"
 
@@ -250,13 +250,13 @@ function view_form($pDB, $smarty, $module_name, $local_templates_dir, $formCampo
     $smarty->assign("style_field","style='display:none;'");
     $html_campos = html_campos_formulario($arrFieldForm,false);
     $smarty->assign("solo_contenido_en_vista",$html_campos);
-    $contenidoModulo=$oForm->fetchForm("$local_templates_dir/form.tpl", $arrLan["View Form"], $arrTmp); // hay que pasar el arreglo
+    $contenidoModulo=$oForm->fetchForm("$local_templates_dir/form.tpl", $arrLangModule["View Form"], $arrTmp); // hay que pasar el arreglo
     return $contenidoModulo;
 }
 
 function edit_form($pDB, $smarty, $module_name, $local_templates_dir, $formCampos, $oForm) {
     global $arrLang;
-    global $arrLan;
+    global $arrLangModule;
 
     // Tengo que recuperar los datos del formulario
     $oDataForm = new paloSantoDataForm($pDB);
@@ -271,14 +271,14 @@ function edit_form($pDB, $smarty, $module_name, $local_templates_dir, $formCampo
     $smarty->assign("id_formulario_actual", $_GET['id']);
     $html_campos = html_campos_formulario($arrFieldForm);
     $smarty->assign("solo_contenido_en_vista",$html_campos);
-    $contenidoModulo=$oForm->fetchForm("$local_templates_dir/form.tpl", $arrLan['Edit Form']." \"".$arrTmp['form_nombre']."\"", $arrTmp);
+    $contenidoModulo=$oForm->fetchForm("$local_templates_dir/form.tpl", $arrLangModule['Edit Form']." \"".$arrTmp['form_nombre']."\"", $arrTmp);
     return $contenidoModulo;
 }
 
 function listadoForm($pDB, $smarty, $module_name, $local_templates_dir) {
 
     global $arrLang;
-    global $arrLan;
+    global $arrLangModule;
     $oDataForm = new paloSantoDataForm($pDB);
     // preguntando por el estado del filtro
     if (!isset($_POST['cbo_estado']) || $_POST['cbo_estado']=="") {
@@ -296,40 +296,40 @@ function listadoForm($pDB, $smarty, $module_name, $local_templates_dir) {
                 $DataForm['descripcion']="&nbsp;";
             $arrTmp[1] = $DataForm['descripcion'];
             if($DataForm['estatus']=='I'){
-                $arrTmp[2] = $arrLan['Inactive'];
-                $arrTmp[3] = "&nbsp;<a href='?menu=$module_name&action=activar&id=".$DataForm['id']."'>{$arrLan['Activate']}</a>";
+                $arrTmp[2] = $arrLangModule['Inactive'];
+                $arrTmp[3] = "&nbsp;<a href='?menu=$module_name&action=activar&id=".$DataForm['id']."'>{$arrLangModule['Activate']}</a>";
             }
             else{
-                $arrTmp[2] = $arrLan['Active'];
-                $arrTmp[3] = "&nbsp;<a href='?menu=$module_name&action=view&id=".$DataForm['id']."'>{$arrLan['View']}</a>";
+                $arrTmp[2] = $arrLangModule['Active'];
+                $arrTmp[3] = "&nbsp;<a href='?menu=$module_name&action=view&id=".$DataForm['id']."'>{$arrLangModule['View']}</a>";
             }
             $arrData[] = $arrTmp;
         }
     }
 
-    $arrGrid = array("title"    => $arrLan["Form List"],
+    $arrGrid = array("title"    => $arrLangModule["Form List"],
         "icon"     => "images/list.png",
         "width"    => "99%",
         "start"    => ($end==0) ? 0 : 1,
         "end"      => $end,
         "total"    => $end,
-        "columns"  => array(0 => array("name"      => $arrLan["Form Name"],
+        "columns"  => array(0 => array("name"      => $arrLangModule["Form Name"],
                                        "property1" => ""),
-                            1 => array("name"      => $arrLan["Form Description"], 
+                            1 => array("name"      => $arrLangModule["Form Description"], 
                                        "property1" => ""),
-                            2 => array("name"      => $arrLan["Status"], 
+                            2 => array("name"      => $arrLangModule["Status"], 
                                        "property1" => ""),
                             3 => array("name"      => $arrLang["Options"], 
                                        "property1" => "")));
 
-    $estados = array("all"=>$arrLan["All"], "A"=>$arrLan["Active"], "I"=>$arrLan["Inactive"]);
+    $estados = array("all"=>$arrLangModule["All"], "A"=>$arrLangModule["Active"], "I"=>$arrLangModule["Inactive"]);
     $combo_estados = "<select name='cbo_estado' id='cbo_estado' onChange='submit();'>".combo($estados,$_POST['cbo_estado'])."</select>";
     $oGrid = new paloSantoGrid($smarty);
     $oGrid->showFilter(
               "<form style='margin-bottom:0;' method='POST' action='?menu=$module_name'>" .
               "<table width='100%' border='0'><tr>".
-              "<td><input type='submit' name='submit_create_form' value='{$arrLan['Create New Form']}' class='button'></td>".
-              "<td class='letra12' align='right'><b>".$arrLan["Status"].":</b>&nbsp;$combo_estados</td>".
+              "<td><input type='submit' name='submit_create_form' value='{$arrLangModule['Create New Form']}' class='button'></td>".
+              "<td class='letra12' align='right'><b>".$arrLangModule["Status"].":</b>&nbsp;$combo_estados</td>".
               "</tr></table>".
               "</form>");
 //print_r($arrData);
@@ -340,7 +340,7 @@ function listadoForm($pDB, $smarty, $module_name, $local_templates_dir) {
 function activar_form($pDB, $smarty, $module_name, $local_templates_dir, $formCampos, $oForm)
 {
     global $arrLang;
-    global $arrLan;
+    global $arrLangModule;
      if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
         return false;
     }
@@ -349,14 +349,14 @@ function activar_form($pDB, $smarty, $module_name, $local_templates_dir, $formCa
         header("Location: ?menu=$module_name");
     else
     {
-        $smarty->assign("mb_title",$arrLan['Activate Error']);
-        $smarty->assign("mb_message",$arrLan['Error when Activating the form']);
+        $smarty->assign("mb_title",$arrLangModule['Activate Error']);
+        $smarty->assign("mb_message",$arrLangModule['Error when Activating the form']);
     }
 }
 
 function delete_form($pDB, $smarty, $module_name, $local_templates_dir, $formCampos, $oForm) {
     global $arrLang;
-    global $arrLan;
+    global $arrLangModule;
     if (!isset($_POST['id_formulario']) || !is_numeric($_POST['id_formulario'])) {
         return false;
     }
@@ -372,7 +372,7 @@ function delete_form($pDB, $smarty, $module_name, $local_templates_dir, $formCam
     } else {
         $msg_error = ($oDataForm->errMsg!="")?"<br>".$oDataForm->errMsg:"";
         $smarty->assign("mb_title",$arrLang['Delete Error']);
-        $smarty->assign("mb_message",$arrLan['Error when deleting the Form'].$msg_error);
+        $smarty->assign("mb_message",$arrLangModule['Error when deleting the Form'].$msg_error);
     }
     $sContenido = view_form($pDB, $smarty, $module_name, $local_templates_dir, $formCampos, $oForm);
     return $sContenido;

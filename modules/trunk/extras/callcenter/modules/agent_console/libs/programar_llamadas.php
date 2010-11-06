@@ -127,13 +127,13 @@ function obtener_formulario(&$smarty, $module_name, $local_templates_dir, $arrLa
 {
 
     include_once "/var/www/html/libs/paloSantoForm.class.php";
-    global $arrLan;
-    $arr_programar_llamada = array('radio1' =>$arrLan["ProgramCalls"]);
-    $arr_final_campana = array('radio2' => $arrLan["Final Call"]); 
+    global $arrLangModule;
+    $arr_programar_llamada = array('radio1' =>$arrLangModule["ProgramCalls"]);
+    $arr_final_campana = array('radio2' => $arrLangModule["Final Call"]); 
 	$contenidoModulo = '';
 
     //msj para alert cuando se presiona Add
-    //$smarty->assign("no_guarda_fecha_hora", $arrLan["No data and no hour will be saved"]);
+    //$smarty->assign("no_guarda_fecha_hora", $arrLangModule["No data and no hour will be saved"]);
 
     $horas = array();
     $i = 0;
@@ -158,7 +158,7 @@ function obtener_formulario(&$smarty, $module_name, $local_templates_dir, $arrLa
         $num_telef = $_GET['num_telefono'];
 
     $arrFormElements = array(
-                "numero"          => array( "LABEL" => $arrLan["Agent Number"],
+                "numero"          => array( "LABEL" => $arrLangModule["Agent Number"],
                     "REQUIRED"              => "yes",
                     "INPUT_TYPE"            => "TEXT",
                     "INPUT_EXTRA_PARAM"     => "",
@@ -166,7 +166,7 @@ function obtener_formulario(&$smarty, $module_name, $local_templates_dir, $arrLa
                     "VALIDATION_EXTRA_PARAM"=> ""),
 
                 "hora_ini_HH"   => array(
-                    "LABEL"                  => $arrLan["Start time"],
+                    "LABEL"                  => $arrLangModule["Start time"],
                     "REQUIRED"               => "yes",
                     "INPUT_TYPE"             => "SELECT",
                     "INPUT_EXTRA_PARAM"      => $horas,
@@ -174,7 +174,7 @@ function obtener_formulario(&$smarty, $module_name, $local_templates_dir, $arrLa
                     "VALIDATION_EXTRA_PARAM" => '',
                 ),
                 "hora_ini_MM"   => array(
-                    "LABEL"                  => $arrLan["Start time"],
+                    "LABEL"                  => $arrLangModule["Start time"],
                     "REQUIRED"               => "yes",
                     "INPUT_TYPE"             => "SELECT",
                     "INPUT_EXTRA_PARAM"      => $minutos,
@@ -182,7 +182,7 @@ function obtener_formulario(&$smarty, $module_name, $local_templates_dir, $arrLa
                     "VALIDATION_EXTRA_PARAM" => '',
                 ),
                 "hora_fin_HH"   => array(
-                    "LABEL"                  => $arrLan["End time"],
+                    "LABEL"                  => $arrLangModule["End time"],
                     "REQUIRED"               => "yes",
                     "INPUT_TYPE"             => "SELECT",
                     "INPUT_EXTRA_PARAM"      => $horas,
@@ -190,7 +190,7 @@ function obtener_formulario(&$smarty, $module_name, $local_templates_dir, $arrLa
                     "VALIDATION_EXTRA_PARAM" => '',
                 ),
                 "hora_fin_MM"   => array(
-                    "LABEL"                  => $arrLan["End time"],
+                    "LABEL"                  => $arrLangModule["End time"],
                     "REQUIRED"               => "yes",
                     "INPUT_TYPE"             => "SELECT",
                     "INPUT_EXTRA_PARAM"      => $minutos,
@@ -199,7 +199,7 @@ function obtener_formulario(&$smarty, $module_name, $local_templates_dir, $arrLa
                 ),
 
 //                 PaloSanto- Agregado para registrar el nombre de la persona a la que vamos a llamar
-                "cliente"          => array( "LABEL" => $arrLan["Name"],
+                "cliente"          => array( "LABEL" => $arrLangModule["Name"],
                     "REQUIRED"              => "yes",
                     "INPUT_TYPE"            => "TEXT",
                     "INPUT_EXTRA_PARAM"     => "",
@@ -210,9 +210,9 @@ function obtener_formulario(&$smarty, $module_name, $local_templates_dir, $arrLa
 
     $oFilterForm = new paloForm($smarty, $arrFormElements);
 
-    $smarty->assign("label_llamar_final", $arrLan["Final Call"]);
-    $smarty->assign("label_programar", $arrLan["ProgramCalls"]);
-    $smarty->assign("label_numero", $arrLan["Agent Number"]);
+    $smarty->assign("label_llamar_final", $arrLangModule["Final Call"]);
+    $smarty->assign("label_programar", $arrLangModule["ProgramCalls"]);
+    $smarty->assign("label_numero", $arrLangModule["Agent Number"]);
 
     $time_ini = $time_fin = "";
     if(isset($_POST['hora_ini_HH']) && isset($_POST['hora_ini_MM']))
@@ -247,7 +247,7 @@ function obtener_formulario(&$smarty, $module_name, $local_templates_dir, $arrLa
     $smarty->assign("fecha_inicio",  insertarCabeceraCalendario()."
                         <tr>
                             <td class='letra12' width='15%'>
-                                {$arrLan["Date Init"]}
+                                {$arrLangModule["Date Init"]}
                                 <span  class='required'>*</span>
                             </td>
                             <td  width='30%'>
@@ -255,7 +255,7 @@ function obtener_formulario(&$smarty, $module_name, $local_templates_dir, $arrLa
                             </td>
  
                             <td class='letra12' width='15%'>
-                                {$arrLan["Date End"]}
+                                {$arrLangModule["Date End"]}
                                 <span  class='required'>*</span>
                             </td>
                             <td width='30%'>
@@ -264,9 +264,9 @@ function obtener_formulario(&$smarty, $module_name, $local_templates_dir, $arrLa
 
                         </tr>");
 
-    $smarty->assign("AGREGAR", $arrLan["Add"]);
-    $smarty->assign("AGREGAROTRO", $arrLan["Add Other"]);
-    $smarty->assign("CANCEL", $arrLan["Cancel"]);
+    $smarty->assign("AGREGAR", $arrLangModule["Add"]);
+    $smarty->assign("AGREGAROTRO", $arrLangModule["Add Other"]);
+    $smarty->assign("CANCEL", $arrLangModule["Cancel"]);
 
     $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/programar_llamadas.tpl", "", $_POST);
 
@@ -276,12 +276,12 @@ function obtener_formulario(&$smarty, $module_name, $local_templates_dir, $arrLa
         case "agregar":
         case "agregar_otro":
             //LLAMO A LA FUNCION AGREGAR QUE GUARDARA LA INFORMACION Y CERRARA LA VENTANA DESPUES DE GUARDAR UN NUMERO
-            $contenidoModulo = agregar($smarty, $arrLan, $id_campana,  $id_call, $fecha_init_actual,$fecha_end_actual, $hora_inicial, $hora_final ,$local_templates_dir,$oFilterForm, $module_name);
+            $contenidoModulo = agregar($smarty, $arrLangModule, $id_campana,  $id_call, $fecha_init_actual,$fecha_end_actual, $hora_inicial, $hora_final ,$local_templates_dir,$oFilterForm, $module_name);
             break;
 /*
         case "agregar_otro":
             //LLAMO A LA FUNCION AGREGAR OTRO QUE GUARDARA LA INFORMACION Y DEJARA LA VENTANA LISTA PARA SEGUIR GUARDANDO MAS NUMEROS
-            $contenidoModulo = agregar($smarty, $arrLan, $id_campana,  $id_call, $fecha_init_actual,$fecha_end_actual, $hora_inicial, $hora_final ,$local_templates_dir,$oFilterForm);
+            $contenidoModulo = agregar($smarty, $arrLangModule, $id_campana,  $id_call, $fecha_init_actual,$fecha_end_actual, $hora_inicial, $hora_final ,$local_templates_dir,$oFilterForm);
             break;
 */            
         case "cancel":
@@ -293,7 +293,7 @@ function obtener_formulario(&$smarty, $module_name, $local_templates_dir, $arrLa
 
 
 //Funcion Agregar
-function agregar(&$smarty, $arrLan, $id_campana,  $id_call, $fecha_init_actual,$fecha_end_actual, $hora_inicial, $hora_final, $local_templates_dir, $oForm){
+function agregar(&$smarty, $arrLangModule, $id_campana,  $id_call, $fecha_init_actual,$fecha_end_actual, $hora_inicial, $hora_final, $local_templates_dir, $oForm){
 	$msgResultado = NULL;
 	$msgResultadoBase = NULL;
 
@@ -321,7 +321,7 @@ function agregar(&$smarty, $arrLan, $id_campana,  $id_call, $fecha_init_actual,$
                     $arrFecha_init = explode('-',translateDate($fecha_init));
                 }else {
                     // si la fecha esta en un formato no valido se envia un mensaje de error
-                    $msgResultado = $arrLan["Invalid Start Date"];//'Fecha de inicio no es válida
+                    $msgResultado = $arrLangModule["Invalid Start Date"];//'Fecha de inicio no es válida
                     $bandera_error = true;//seteamos true  a error
                 }
                 // pregunto si es valido el formato de la fecha final
@@ -332,19 +332,19 @@ function agregar(&$smarty, $arrLan, $id_campana,  $id_call, $fecha_init_actual,$
                     $arrFecha_end = explode('-',translateDate($fecha_end));
                 }else {
                     // si la fecha esta en un formato no valido se envia un mensaje de error
-                    $msgResultado =  $arrLan["Invalid End Date"];//'Fecha de final no es válida
+                    $msgResultado =  $arrLangModule["Invalid End Date"];//'Fecha de final no es válida
                     $bandera_error = true;//seteamos true  a error
                 }
 
                 if ((ereg( $sValidacion , $_POST['txt_fecha_end'] ) && ereg( $sValidacion , $_POST['txt_fecha_init'] )) &&  ($_POST['txt_fecha_init']>$_POST['txt_fecha_end']) ) {
-                    $msgResultado =  $arrLan["Start Date must be greater than End Date"];//'Fecha de inicio debe ser anterior a la fecha final';
+                    $msgResultado =  $arrLangModule["Start Date must be greater than End Date"];//'Fecha de inicio debe ser anterior a la fecha final';
                     $bandera_error = true;//seteamos true  a error
                 } 
             }
             elseif(!isset($fecha_init) && !isset($fecha_end)) {
                 // si se ha presionado el boton para listar por fechas, y no se ha ingresado una fecha
                 // se le muestra al usuario un mensaje de error
-                $msgResultado =  $arrLan["You must be enter a valid init/end date"];//'Fecha de final no es válida
+                $msgResultado =  $arrLangModule["You must be enter a valid init/end date"];//'Fecha de final no es válida
                 $bandera_error = true;//seteamos true  a error
             }
 
@@ -353,13 +353,13 @@ function agregar(&$smarty, $arrLan, $id_campana,  $id_call, $fecha_init_actual,$
 
             //VALIDACION DE HORAS
             if (!ereg('^[[:digit:]]{2}:[[:digit:]]{2}$', $hora_inicial)) {
-                $msgResultado =  $arrLan["Invalid Start Time"];//'Hora de inicio no es válida (se espera hh:mm)';
+                $msgResultado =  $arrLangModule["Invalid Start Time"];//'Hora de inicio no es válida (se espera hh:mm)';
                 $bandera_error = true;//seteamos true  a error
             } elseif (!ereg('^[[:digit:]]{2}:[[:digit:]]{2}$', $hora_final)) {
-                $msgResultado =  $arrLan["Invalid End Time"];//'Hora de final no es válida (se espera hh:mm)';
+                $msgResultado =  $arrLangModule["Invalid End Time"];//'Hora de final no es válida (se espera hh:mm)';
                 $bandera_error = true;//seteamos true  a error
             } elseif (strcmp($fecha_init_actual,$fecha_end_actual)==0 && strcmp ($hora_inicial,$hora_final)>=0) {
-                $msgResultado =  $arrLan["Start Time must be greater than End Time"];//'Hora de inicio debe ser anterior a la hora final';
+                $msgResultado =  $arrLangModule["Start Time must be greater than End Time"];//'Hora de inicio debe ser anterior a la hora final';
                 $bandera_error = true;//seteamos true  a error
             } 
 
@@ -377,13 +377,13 @@ function agregar(&$smarty, $arrLan, $id_campana,  $id_call, $fecha_init_actual,$
 
         //VALIDAMOS CAMPO NUMERO Q NO ESTE VACIO
         if($_POST['numero']==""){
-            $msgResultado = $arrLan["Number field can not be empty"];
+            $msgResultado = $arrLangModule["Number field can not be empty"];
             $smarty->assign("mb_message","*".$msgResultado);
             $bandera_error = true;//seteamos true  a error
         }else{
             //Si NO es nuemrico tambien genero mensaje error
             if(!is_numeric($_POST['numero']) ){
-                $msgResultado = $arrLan["Number field can be numeric"];
+                $msgResultado = $arrLangModule["Number field can be numeric"];
                 $bandera_error = true;//seteamos true  a error
             }
         }
@@ -471,10 +471,10 @@ function agregar(&$smarty, $arrLan, $id_campana,  $id_call, $fecha_init_actual,$
                     //si es FALSO NO se permite guardar esta llamada xq NO esta dentro del rango de la campaña
 
                     if($existe){
-                        $msgResultadoBase = $arrLan["A call with the same date and the same hour already exist"];
+                        $msgResultadoBase = $arrLangModule["A call with the same date and the same hour already exist"];
                     }
                     elseif(!$rango_valido){
-                        $msgResultadoBase = $arrLan["The scheduled call date range is not between the campaign date range"];
+                        $msgResultadoBase = $arrLangModule["The scheduled call date range is not between the campaign date range"];
                     }
                     else{//si permite guardar la llamada programada
                         //CAMBIO DE  PLANES - AHORA SE REGISTRA UN NUEVA LLAMADA
@@ -500,10 +500,10 @@ function agregar(&$smarty, $arrLan, $id_campana,  $id_call, $fecha_init_actual,$
                     $rango_valido = llamada_rango_valido($id_campana_, $id_call_, $fecha_inicio_convertida, $hora_inicial_convertida, $fecha_fin_convertida, $hora_final_convertida, $pDB);
                     //si es FALSO NO se permite guardar esta llamada xq NO esta dentro del rango de la campaña
                     if(!$rango_valido){
-                        $msgResultadoBase = $arrLan["The scheduled call date range is not between the campaign date range"];
+                        $msgResultadoBase = $arrLangModule["The scheduled call date range is not between the campaign date range"];
                     }
                     elseif($existe){
-                        $msgResultadoBase = $arrLan["A call with the same date and the same hour already exist"];
+                        $msgResultadoBase = $arrLangModule["A call with the same date and the same hour already exist"];
                     }
                     else{
                         //Programar llamada - caso Numero Diferente - hacemos INSERT en calls
@@ -569,7 +569,7 @@ function agregar(&$smarty, $arrLan, $id_campana,  $id_call, $fecha_init_actual,$
 
         //Para mensaje de alert cuando se presiona Add, para que salga exito si se grabo  correctamente
         if(isset($_POST['agregar']) && $_POST['agregar']=='Add' && !$bandera_error && !$existe) {
-            echo '<script>alert(\''.$arrLan["The data has been saved"].'\');window.close();</script>';
+            echo '<script>alert(\''.$arrLangModule["The data has been saved"].'\');window.close();</script>';
         }
 
         $contenidoModulo = $oForm->fetchForm("$local_templates_dir/programar_llamadas.tpl", "",$_POST);

@@ -61,7 +61,7 @@ class paloSantoHoldTime
     function getHoldTime($tipo='all',$entrantes='all', $salientes='all',$fecha_init, $fecha_end, $limit, $offset)
     {
         global $arrLang;
-        global $arrLan;
+        global $arrLangModule;
 
         //validamos la fecha
         if($fecha_init!="" && $fecha_end!="" ) {

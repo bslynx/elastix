@@ -1,5 +1,6 @@
 <?php
-$lang = array(
+global $arrLangModule; 
+ $arrLangModule = array(
 'List Break'     => "Liste Pauses",
 'agent'          => "Agent",
 'break'          => "Type de Pause",

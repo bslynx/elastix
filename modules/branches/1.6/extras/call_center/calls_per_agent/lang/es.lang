@@ -1,6 +1,6 @@
 <?php
-global $arrLan;
-$arrLan = array(
+global $arrLangModule;
+$arrLangModule = array(
     "Calls per Agent"  => "Llamadas por Agente",
     "Start Date"    => "Fecha Inicio",
     "End Date"      => "Fecha Fin",

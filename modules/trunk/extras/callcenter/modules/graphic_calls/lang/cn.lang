@@ -26,8 +26,8 @@
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
   $Id: es.lang,v 1.2 2007/08/09 00:31:28 jmartinez Exp $ */
-global $arrLan;
-$arrLan=array(
+global $arrLangModule;
+$arrLangModule=array(
 "Outgoing Campaigns" => "外拨促销活动",
 "Campaigns" => "促销活动",
 "New Campaign" => "新促销活动",

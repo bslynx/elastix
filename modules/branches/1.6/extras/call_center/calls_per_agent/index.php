@@ -43,9 +43,9 @@ function _moduleContent(&$smarty, $module_name)
     include_once("modules/$module_name/lang/en.lang");
     $lang_file="modules/$module_name/lang/$lang.lang";
     if (file_exists("$script_dir/$lang_file")) {
-        $arrLanEN = $arrLan;
+        $arrLangModuleEN = $arrLangModule;
         include_once($lang_file);
-        $arrLan = array_merge($arrLanEN, $arrLan);
+        $arrLangModule = array_merge($arrLangModuleEN, $arrLangModule);
     }
 
     //include module files
@@ -71,7 +71,7 @@ function _moduleContent(&$smarty, $module_name)
     $oCallsAgent = new paloSantoCallsAgent($pDB);
 
     $smarty->assign("menu","calls_per_agent");
-    $smarty->assign("Filter",$arrLan['Query']);
+    $smarty->assign("Filter",$arrLangModule['Query']);
     if(isset($_GET['exportcsv']) && $_GET['exportcsv']=='yes') {
 
         $limit = "";
@@ -105,46 +105,46 @@ function _moduleContent(&$smarty, $module_name)
 
     } else {
     
-        $arrFormElements = array("date_start"  => array("LABEL"                  => $arrLan['Start Date'],
+        $arrFormElements = array("date_start"  => array("LABEL"                  => $arrLangModule['Start Date'],
                                                         "REQUIRED"               => "yes",
                                                         "INPUT_TYPE"             => "DATE",
                                                         "INPUT_EXTRA_PARAM"      => "",
                                                         "VALIDATION_TYPE"        => "ereg",
                                                         "VALIDATION_EXTRA_PARAM" => "^[[:digit:]]{1,2}[[:space:]]+[[:alnum:]]{3}[[:space:]]+[[:digit:]]{4}$"),
-                                 "date_end"    => array("LABEL"                  => $arrLan["End Date"],
+                                 "date_end"    => array("LABEL"                  => $arrLangModule["End Date"],
                                                         "REQUIRED"               => "yes",
                                                         "INPUT_TYPE"             => "DATE",
                                                         "INPUT_EXTRA_PARAM"      => "",
                                                         "VALIDATION_TYPE"        => "ereg",
                                                         "VALIDATION_EXTRA_PARAM" => "^[[:digit:]]{1,2}[[:space:]]+[[:alnum:]]{3}[[:space:]]+[[:digit:]]{4}$"),
-                                 "field_name"  => array("LABEL"                  => $arrLan["Column"],
+                                 "field_name"  => array("LABEL"                  => $arrLangModule["Column"],
                                                         "REQUIRED"               => "no",
                                                         "INPUT_TYPE"             => "SELECT",
                                                         "MULTIPLE"               => NULL,
                                                         "SIZE"                   => NULL,
-                                                        "INPUT_EXTRA_PARAM"      => array( "number"=> $arrLan["No.Agent"],
-                                                                                           "queue"  => $arrLan["Queue"],
-                                                                                           "type"   => $arrLan["Type"]),
+                                                        "INPUT_EXTRA_PARAM"      => array( "number"=> $arrLangModule["No.Agent"],
+                                                                                           "queue"  => $arrLangModule["Queue"],
+                                                                                           "type"   => $arrLangModule["Type"]),
                                                         "VALIDATION_TYPE"        => "ereg",
                                                         "VALIDATION_EXTRA_PARAM" => "^(number|queue|type)$"),
-                                 "field_pattern" => array("LABEL"                  => $arrLan["Column"],
+                                 "field_pattern" => array("LABEL"                  => $arrLangModule["Column"],
                                                         "REQUIRED"               => "no",
                                                         "INPUT_TYPE"             => "TEXT",
                                                         "INPUT_EXTRA_PARAM"      => "",
                                                         "VALIDATION_TYPE"        => "ereg",
                                                         "VALIDATION_EXTRA_PARAM" => "^[[:alnum:]@_\.,/\-]+$"),
 
-                                "field_name_1"  => array("LABEL"                  => $arrLan["Column"],
+                                "field_name_1"  => array("LABEL"                  => $arrLangModule["Column"],
                                                         "REQUIRED"               => "no",
                                                         "INPUT_TYPE"             => "SELECT",
                                                         "MULTIPLE"               => NULL,
                                                         "SIZE"                   => NULL,
-                                                        "INPUT_EXTRA_PARAM"      => array( "number"=> $arrLan["No.Agent"],
-                                                                                            "queue"   => $arrLan["Queue"],
-                                                                                            "type"    => $arrLan["Type"]),
+                                                        "INPUT_EXTRA_PARAM"      => array( "number"=> $arrLangModule["No.Agent"],
+                                                                                            "queue"   => $arrLangModule["Queue"],
+                                                                                            "type"    => $arrLangModule["Type"]),
                                                         "VALIDATION_TYPE"        => "ereg",
                                                         "VALIDATION_EXTRA_PARAM" => "^(number|queue|type)$"),
-                                "field_pattern_1" => array("LABEL"                  => $arrLan["Column"],
+                                "field_pattern_1" => array("LABEL"                  => $arrLangModule["Column"],
                                                         "REQUIRED"               => "no",
                                                         "INPUT_TYPE"             => "TEXT",
                                                         "INPUT_EXTRA_PARAM"      => "",
@@ -292,7 +292,7 @@ function _moduleContent(&$smarty, $module_name)
             $timeMayor = $oCallsAgent->getFechaMayor($timeMayor,$arrData[$i][7]);
         }
 
-        $arrTmp[0] = "<b>".$arrLan["Total"]."</b>";
+        $arrTmp[0] = "<b>".$arrLangModule["Total"]."</b>";
         $arrTmp[1] = "";
         $arrTmp[2] = "";
         $arrTmp[3] = "";
@@ -302,27 +302,27 @@ function _moduleContent(&$smarty, $module_name)
 	$arrTmp[7] = "<b>".$timeMayor."</b>";
         $arrData[] = $arrTmp;
     }
-    $arrGrid = array("title"    => $arrLan["Calls per Agent"],
+    $arrGrid = array("title"    => $arrLangModule["Calls per Agent"],
                      "icon"     => "images/user.png",
                      "width"    => "99%",
                      "start"    => ($total==0) ? 0 : $offset + 1,
                      "end"      => ($offset+$limit)<=$total ? $offset+$limit : $total,
                      "total"    => $total,
-                     "columns"  => array(0 => array("name"      => $arrLan["No.Agent"],
+                     "columns"  => array(0 => array("name"      => $arrLangModule["No.Agent"],
                                                     "property" => ""),
-                                         1 => array("name"      => $arrLan["Agent"],
+                                         1 => array("name"      => $arrLangModule["Agent"],
                                                     "property" => ""),
-                                         2 => array("name"	=> $arrLan["Type"],
+                                         2 => array("name"	=> $arrLangModule["Type"],
                                          	     "property"	=> ""),
-                                         3 => array("name"	=> $arrLan["Queue"],
+                                         3 => array("name"	=> $arrLangModule["Queue"],
                                                      "property"	=> ""),
-                                         4 => array("name"	=> $arrLan["Calls answered"],
+                                         4 => array("name"	=> $arrLangModule["Calls answered"],
                                                      "property"	=> ""),
-                                         5 => array("name"	=> $arrLan["Duration"],
+                                         5 => array("name"	=> $arrLangModule["Duration"],
                                                      "property"	=> ""),
-                                         6 => array("name"	=> $arrLan["Average"],
+                                         6 => array("name"	=> $arrLangModule["Average"],
                                          	     "property"	=> ""),
-                                         7 => array("name"	=> $arrLan["Call longest"],
+                                         7 => array("name"	=> $arrLangModule["Call longest"],
                                          	     "property"	=> ""),
                                         )
                     );

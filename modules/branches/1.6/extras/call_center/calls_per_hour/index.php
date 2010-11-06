@@ -42,13 +42,13 @@ function _moduleContent(&$smarty, $module_name)
     $script_dir=dirname($_SERVER['SCRIPT_FILENAME']);
 
     // Include language file for EN, then for local, and merge the two.
-    $arrLan = NULL;
+    $arrLangModule = NULL;
     include_once("modules/$module_name/lang/en.lang");
     $lang_file="modules/$module_name/lang/$lang.lang";
     if (file_exists("$script_dir/$lang_file")) {
-        $arrLanEN = $arrLan;
+        $arrLangModuleEN = $arrLangModule;
         include_once($lang_file);
-        $arrLan = array_merge($arrLanEN, $arrLan);
+        $arrLangModule = array_merge($arrLangModuleEN, $arrLangModule);
     }
     
     //include module files
@@ -85,12 +85,12 @@ function sumar($a, $b) { return $a + $b; }
 function listHistogram($pDB, $smarty, $module_name, $local_templates_dir)
 {
     global $arrLang;
-    global $arrLan;
+    global $arrLangModule;
 
     // Tipo de llamada
     $comboTipos = array(
-        "E" => $arrLan["Ingoing"],
-        "S" => $arrLan["Outgoing"]
+        "E" => $arrLangModule["Ingoing"],
+        "S" => $arrLangModule["Outgoing"]
     );
     $sTipoLlamada = 'E';
     if (isset($_GET['tipo'])) $sTipoLlamada = $_GET['tipo'];
@@ -101,11 +101,11 @@ function listHistogram($pDB, $smarty, $module_name, $local_templates_dir)
     
     // Estado de la llamada
     $comboEstados = array(
-        'T' =>  $arrLan['All'],
-        'E' =>  $arrLan['Completed'],
-        'A' =>  $arrLan['Abandoned'],
+        'T' =>  $arrLangModule['All'],
+        'E' =>  $arrLangModule['Completed'],
+        'A' =>  $arrLangModule['Abandoned'],
     );
-    if ($sTipoLlamada == 'S') $comboEstados['N'] = $arrLan['No answer/Short call'];
+    if ($sTipoLlamada == 'S') $comboEstados['N'] = $arrLangModule['No answer/Short call'];
     $sEstadoLlamada = 'T';
     if (isset($_GET['estado'])) $sEstadoLlamada = $_GET['estado'];
     if (isset($_POST['estado'])) $sEstadoLlamada = $_POST['estado'];
@@ -139,7 +139,7 @@ function listHistogram($pDB, $smarty, $module_name, $local_templates_dir)
     // por la lista de datos.
     $listaColas = array_keys($arrCalls);
     $comboColas = array(
-        ''  =>  $arrLan['All'],
+        ''  =>  $arrLangModule['All'],
     );
     if (count($listaColas) > 0) 
         $comboColas += array_combine($listaColas, $listaColas);
@@ -170,27 +170,27 @@ function listHistogram($pDB, $smarty, $module_name, $local_templates_dir)
         $arrTodos = array_map('sumar', $arrTodos, $hist);
     }
     $arrData[] = array_merge(
-        array($arrLan['All']),
+        array($arrLangModule['All']),
         $arrTodos,
         array(array_sum($arrTodos))
     );
 
     $smarty->assign('MODULE_NAME', $module_name);
-    $smarty->assign('LABEL_FIND', $arrLan['Find']);
+    $smarty->assign('LABEL_FIND', $arrLangModule['Find']);
     $formFilter = getFormFilter($comboTipos, $comboEstados, $comboColas);
     $oForm = new paloForm($smarty, $formFilter);
 
     //Llenamos las cabeceras
-    $arrGrid = array("title"    => $arrLan["Calls per hour"],
+    $arrGrid = array("title"    => $arrLangModule["Calls per hour"],
         "icon"     => "images/list.png",
         "width"    => "99%",
         "start"    => 0,
         "end"      => 0,
         "total"    => 0,
-        "columns"  => array(0 => array("name"      => $arrLan["Cola"],
+        "columns"  => array(0 => array("name"      => $arrLangModule["Cola"],
                                        "property1" => ""),
                             // 1..24 se llenan con el bucle de abajo
-                            25 => array("name"     => $arrLan["Total Calls"], 
+                            25 => array("name"     => $arrLangModule["Total Calls"], 
                                        "property1" => ""),
 
                         ));
@@ -220,11 +220,11 @@ function listHistogram($pDB, $smarty, $module_name, $local_templates_dir)
 
 function getFormFilter($arrDataTipo, $arrDataEstado, $arrDataQueues)
 {
-    global $arrLan;
+    global $arrLangModule;
 
     $formCampos = array(
         "fecha_ini"       => array(
-            "LABEL"                  => $arrLan["Date Init"],
+            "LABEL"                  => $arrLangModule["Date Init"],
             "REQUIRED"               => "yes",
             "INPUT_TYPE"             => "DATE",
             "INPUT_EXTRA_PARAM"      => array("TIME" => false, "FORMAT" => "%d %b %Y"),
@@ -232,7 +232,7 @@ function getFormFilter($arrDataTipo, $arrDataEstado, $arrDataQueues)
             "VALIDATION_EXTRA_PARAM" => '^[[:digit:]]{2}[[:space:]]+[[:alpha:]]{3}[[:space:]]+[[:digit:]]{4}$'
         ),
         "fecha_fin"       => array(
-            "LABEL"                  => $arrLan["Date End"],
+            "LABEL"                  => $arrLangModule["Date End"],
             "REQUIRED"               => "yes",
             "INPUT_TYPE"             => "DATE",
             "INPUT_EXTRA_PARAM"      => array("TIME" => false, "FORMAT" => "%d %b %Y"),
@@ -240,7 +240,7 @@ function getFormFilter($arrDataTipo, $arrDataEstado, $arrDataQueues)
             "VALIDATION_EXTRA_PARAM" => '^[[:digit:]]{2}[[:space:]]+[[:alpha:]]{3}[[:space:]]+[[:digit:]]{4}$'
         ),
         "tipo" => array(
-            "LABEL"                  => $arrLan["Tipo"],
+            "LABEL"                  => $arrLangModule["Tipo"],
             "REQUIRED"               => "yes",
             "INPUT_TYPE"             => "SELECT",
             "INPUT_EXTRA_PARAM"      => $arrDataTipo,
@@ -248,7 +248,7 @@ function getFormFilter($arrDataTipo, $arrDataEstado, $arrDataQueues)
             "VALIDATION_EXTRA_PARAM" => ""
         ),
         "estado" => array(
-            "LABEL"                  => $arrLan["Estado"],
+            "LABEL"                  => $arrLangModule["Estado"],
             "REQUIRED"               => "yes",
             "INPUT_TYPE"             => "SELECT",
             "INPUT_EXTRA_PARAM"      => $arrDataEstado,
@@ -256,7 +256,7 @@ function getFormFilter($arrDataTipo, $arrDataEstado, $arrDataQueues)
             "VALIDATION_EXTRA_PARAM" => ""
         ),
         "queue" => array(
-            "LABEL"                  => $arrLan["Cola"],
+            "LABEL"                  => $arrLangModule["Cola"],
             "REQUIRED"               => "yes",
             "INPUT_TYPE"             => "SELECT",
             "INPUT_EXTRA_PARAM"      => $arrDataQueues,

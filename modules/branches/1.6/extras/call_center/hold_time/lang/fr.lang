@@ -26,8 +26,8 @@
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
   $Id: fr.lang,v 1.3 2008/05/20 00:31:28 jmartinez Exp $ */
-global $arrLan;
-$arrLan=array(
+global $arrLangModule;
+$arrLangModule=array(
 "Hold Time"             => "Temps de prise",
 "Cola"                  => "File",
 "date"                  => "Date",

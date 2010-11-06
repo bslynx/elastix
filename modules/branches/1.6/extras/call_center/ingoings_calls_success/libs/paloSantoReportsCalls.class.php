@@ -17,21 +17,17 @@ class paloSantoReportsCalls {
             return false;
         }
     }
-
     /*
         Esta funcion retorna un arreglo con las colas registradas en la tabla queue_call_entry.
     */
     function getQueueCallEntry($limit=null,$offset=null) {
-
         $limite = "";
-
         if( !empty($limit) ){
             $limite = " limit {$limit} ";
             if ( !empty($offset) ) {
                 $limite .= " offset {$offset}";
             }
         }
-
         $SQLConsulta = "select id,queue from queue_call_entry where estatus='A' ".$limite;
         $resConsulta = $this->pDB->fetchTable($SQLConsulta,true);
         if (!is_array($resConsulta)) {

@@ -51,13 +51,13 @@ function _moduleContent(&$smarty, $module_name)
     $script_dir=dirname($_SERVER['SCRIPT_FILENAME']);
 
     // Include language file for EN, then for local, and merge the two.
-    $arrLan = NULL;
+    $arrLangModule = NULL;
     include_once("modules/$module_name/lang/en.lang");
     $lang_file="modules/$module_name/lang/$lang.lang";
     if (file_exists("$script_dir/$lang_file")) {
-        $arrLanEN = $arrLan;
+        $arrLangModuleEN = $arrLangModule;
         include_once($lang_file);
-        $arrLan = array_merge($arrLanEN, $arrLan);
+        $arrLangModule = array_merge($arrLangModuleEN, $arrLangModule);
     }
 
     //include module files
@@ -86,11 +86,11 @@ function _moduleContent(&$smarty, $module_name)
     $smarty->assign("EDIT", $arrLang["Edit"]);
     $smarty->assign("DELETE",$arrLang["Delete"]);
     $smarty->assign("CONFIRM_CONTINUE", $arrLang["Are you sure you wish to continue?"]);
-    $smarty->assign("DESACTIVATE", $arrLan["Desactivate"]);
+    $smarty->assign("DESACTIVATE", $arrLangModule["Desactivate"]);
 
     $formCampos = array(
         "nombre"    =>    array(
-                "LABEL"                  => $arrLan["Name Break"],
+                "LABEL"                  => $arrLangModule["Name Break"],
                 "REQUIRED"               => "yes",
                 "INPUT_TYPE"             => "TEXT",
                 "INPUT_EXTRA_PARAM"      => array("size" => "40"),
@@ -98,7 +98,7 @@ function _moduleContent(&$smarty, $module_name)
                 "VALIDATION_EXTRA_PARAM" => "",
         ),
         "descripcion" => array(
-                "LABEL"                  => $arrLan["Description Break"],
+                "LABEL"                  => $arrLangModule["Description Break"],
                 "REQUIRED"               => "yes",
                 "INPUT_TYPE"             => "TEXTAREA",
                 "INPUT_EXTRA_PARAM"      => "",
@@ -137,16 +137,16 @@ function _moduleContent(&$smarty, $module_name)
 function newBreak($pDB, $smarty, $module_name, $local_templates_dir, $formCampos, $oForm) {
 
     global $arrLang;
-    global $arrLan;
+    global $arrLangModule;
     if (!isset($_POST['nombre'])) $_POST['nombre']='';
     if (!isset($_POST['descripcion'])) $_POST['descripcion']='';
-    $contenidoModulo = $oForm->fetchForm("$local_templates_dir/new.tpl", $arrLan["New Break"],$_POST);
+    $contenidoModulo = $oForm->fetchForm("$local_templates_dir/new.tpl", $arrLangModule["New Break"],$_POST);
     return $contenidoModulo;
 }
 
 function saveBreak($pDB, $smarty, $module_name, $local_templates_dir, $formCampos, $oForm) {
     global $arrLang;
-    global $arrLan;
+    global $arrLangModule;
     if(!$oForm->validateForm($_POST)) {
         $smarty->assign("mb_title", $arrLang["Validation Error"]);
         $arrErrores=$oForm->arrErroresValidacion;
@@ -172,13 +172,13 @@ function saveBreak($pDB, $smarty, $module_name, $local_templates_dir, $formCampo
         } 
     }
 
-    $contenidoModulo = $oForm->fetchForm("$local_templates_dir/new.tpl", $arrLan["New Break"],$_POST);
+    $contenidoModulo = $oForm->fetchForm("$local_templates_dir/new.tpl", $arrLangModule["New Break"],$_POST);
     return $contenidoModulo;
 }
 
 function viewBreak($pDB, $smarty, $module_name, $local_templates_dir, $formCampos, $oForm) {
     global $arrLang;
-    global $arrLan;
+    global $arrLangModule;
 
     $oForm->setViewMode(); // Esto es para activar el modo "preview"
 
@@ -195,14 +195,14 @@ function viewBreak($pDB, $smarty, $module_name, $local_templates_dir, $formCampo
         $arrTmp['descripcion'] = $arrBreaks[0]['description'];
 
     $smarty->assign("id_break", $_GET['id']);
-    $contenidoModulo=$oForm->fetchForm("$local_templates_dir/new.tpl", $arrLan["View Break"], $arrTmp); 
+    $contenidoModulo=$oForm->fetchForm("$local_templates_dir/new.tpl", $arrLangModule["View Break"], $arrTmp); 
     return $contenidoModulo;
 }
 
 
 function editBreak($pDB, $smarty, $module_name, $local_templates_dir, $formCampos, $oForm) {
     global $arrLang;
-    global $arrLan;
+    global $arrLangModule;
     // Tengo que recuperar los datos del break
     $oBreaks = new PaloSantoBreaks($pDB);
     $arrBreaks = $oBreaks->getBreaks($_GET['id'],'A');
@@ -214,13 +214,13 @@ function editBreak($pDB, $smarty, $module_name, $local_templates_dir, $formCampo
     $oForm->setEditMode();
     $smarty->assign("id_break", $_POST['id_break']);
     
-    $contenidoModulo=$oForm->fetchForm("$local_templates_dir/new.tpl", $arrLan['Edit Break']." \"".$arrTmp['nombre']."\"", $arrTmp);
+    $contenidoModulo=$oForm->fetchForm("$local_templates_dir/new.tpl", $arrLangModule['Edit Break']." \"".$arrTmp['nombre']."\"", $arrTmp);
     return $contenidoModulo;
 }
 
 function updateBreak($pDB, $smarty, $module_name, $local_templates_dir, $formCampos, $oForm) {
     global $arrLang;
-    global $arrLan;
+    global $arrLangModule;
     if(!$oForm->validateForm($_POST)) {
         $smarty->assign("mb_title", $arrLang["Validation Error"]);
         $arrErrores=$oForm->arrErroresValidacion;
@@ -250,14 +250,14 @@ function updateBreak($pDB, $smarty, $module_name, $local_templates_dir, $formCam
  
     $oForm->setEditMode();
     $smarty->assign("id_break", $_POST['id_break']);
-    $contenidoModulo = $oForm->fetchForm("$local_templates_dir/new.tpl",$arrLan['Edit Break']." \"".$_POST['nombre']."\"",$_POST);
+    $contenidoModulo = $oForm->fetchForm("$local_templates_dir/new.tpl",$arrLangModule['Edit Break']." \"".$_POST['nombre']."\"",$_POST);
     return $contenidoModulo;
 }
 
 function listBreaks($pDB, $smarty, $module_name, $local_templates_dir) {
 
     global $arrLang;
-    global $arrLan;
+    global $arrLangModule;
     $oBreaks = new PaloSantoBreaks($pDB);
 
     $arrBreaks = $oBreaks->getBreaks();
@@ -276,28 +276,28 @@ function listBreaks($pDB, $smarty, $module_name, $local_templates_dir) {
                     $arrTmp[1] = $break['description'];
     
                 if($break['status']=='I'){
-                    $arrTmp[2] = $arrLan['Inactive'];
-                    $arrTmp[3] = "&nbsp;<a href='?menu=$module_name&action=activar&id=".$break['id']."'>{$arrLan['Activate']}</a>";
+                    $arrTmp[2] = $arrLangModule['Inactive'];
+                    $arrTmp[3] = "&nbsp;<a href='?menu=$module_name&action=activar&id=".$break['id']."'>{$arrLangModule['Activate']}</a>";
                 }else{
-                    $arrTmp[2] = $arrLan['Active'];
-                    $arrTmp[3] = "&nbsp;<a href='?menu=$module_name&action=view&id=".$break['id']."'>{$arrLan['View Break']}</a>";
+                    $arrTmp[2] = $arrLangModule['Active'];
+                    $arrTmp[3] = "&nbsp;<a href='?menu=$module_name&action=view&id=".$break['id']."'>{$arrLangModule['View Break']}</a>";
                 } 
                 $arrData[] = $arrTmp;
             }
         }
     }
 
-    $arrGrid = array("title"    => $arrLan["Breaks List"],
+    $arrGrid = array("title"    => $arrLangModule["Breaks List"],
         "icon"     => "images/list.png",
         "width"    => "99%",
         "start"    => ($end==0) ? 0 : 1,
         "end"      => $end,
         "total"    => $end,
-        "columns"  => array(0 => array("name"      => $arrLan["Name Break"],
+        "columns"  => array(0 => array("name"      => $arrLangModule["Name Break"],
                                        "property1" => ""),
-                            1 => array("name"      => $arrLan["Description Break"], 
+                            1 => array("name"      => $arrLangModule["Description Break"], 
                                        "property1" => ""),
-                            2 => array("name"      => $arrLan["Status"], 
+                            2 => array("name"      => $arrLangModule["Status"], 
                                        "property1" => ""),
                             3 => array("name"     => $arrLang["Options"], 
                                        "property1" => "")));
@@ -305,7 +305,7 @@ function listBreaks($pDB, $smarty, $module_name, $local_templates_dir) {
     $oGrid = new paloSantoGrid($smarty);
     $oGrid->showFilter(
               "<form style='margin-bottom:0;' method='POST' action='?menu=$module_name'>" .
-              "<input type='submit' name='submit_create_break' value='{$arrLan['Create New Break']}' class='button'></form>");
+              "<input type='submit' name='submit_create_break' value='{$arrLangModule['Create New Break']}' class='button'></form>");
 
     $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
     return $contenidoModulo;
@@ -313,7 +313,7 @@ function listBreaks($pDB, $smarty, $module_name, $local_templates_dir) {
 
 function activateBreak($pDB, $smarty, $module_name, $local_templates_dir, $formCampos, $oForm)
 {   global $arrLang;
-    global $arrLan;
+    global $arrLangModule;
      if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
         return false;
     }
@@ -322,8 +322,8 @@ function activateBreak($pDB, $smarty, $module_name, $local_templates_dir, $formC
         header("Location: ?menu=$module_name");
     else
     {
-        $smarty->assign("mb_title",$arrLan['Activate Error']);
-        $smarty->assign("mb_message",$arrLan['Error when Activating the Break']);
+        $smarty->assign("mb_title",$arrLangModule['Activate Error']);
+        $smarty->assign("mb_message",$arrLangModule['Error when Activating the Break']);
     }
 }
 ?>

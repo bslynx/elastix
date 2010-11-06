@@ -29,8 +29,9 @@
   | Email: sesshomarurin7@palosanto.com                                                       |
   +----------------------------------------------------------------------+
   $Id: fr.lang, October 25, 2010, 5:39 pm kleber andres loayza Exp $ */
-global $arrLangModule;
-$arrLangModule=array(  
+
+global $arrLangModule; 
+ $arrLangModule=array(  
 "List Calls" => "Liste des Appels",
 "Queue" => "File",
 "Successful" => "R&eacute;ussis",

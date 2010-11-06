@@ -189,7 +189,7 @@ class paloSantoDataForm
     function eliminar_campos_formulario($id_formulario,$id_campo=NULL)
     {
         global $arrLang;
-        global $arrLan;
+        global $arrLangModule;
 
         if (is_null($id_campo) || $id_campo=="") {
             $sQuery = "SELECT count(id) cantidad_data FROM form_data_recolected WHERE id_form_field in (
@@ -215,7 +215,7 @@ class paloSantoDataForm
                 }
                 return true;
             } else {
-                $this->errMsg = $arrLan["This field is been used by any campaign"]." ".$sQuery;
+                $this->errMsg = $arrLangModule["This field is been used by any campaign"]." ".$sQuery;
                 return false;
             }
         } else {
@@ -309,7 +309,7 @@ class paloSantoDataForm
 
     function delete_form($id_formulario) {
         global $arrLang;
-        global $arrLan;
+        global $arrLangModule;
         $sQuery = "SELECT count(id_campaign) cantidad_campanias FROM campaign_form WHERE id_form=$id_formulario";
         $result =& $this->_db->getFirstRowQuery($sQuery, true);
         $valido = false;
@@ -347,19 +347,19 @@ class paloSantoDataForm
                         }
                     } else {
                         $valido = true;
-                        $this->errMsg = $arrLan["This form is been used by any campaign"];
+                        $this->errMsg = $arrLangModule["This form is been used by any campaign"];
                     }
                 } else {
                     $valido = true;
-                    $this->errMsg = $arrLan["This form is been used by any campaign"];
+                    $this->errMsg = $arrLangModule["This form is been used by any campaign"];
                 }
             } else {
                 $valido = true;
-                $this->errMsg = $arrLan["This form is been used by any campaign"];
+                $this->errMsg = $arrLangModule["This form is been used by any campaign"];
             }
         } else {
             $valido = true;
-            $this->errMsg = $arrLan["This form is been used by any campaign"];
+            $this->errMsg = $arrLangModule["This form is been used by any campaign"];
         }
         return $valido;
     }
@@ -369,7 +369,7 @@ class paloSantoDataForm
 function agregar_campos_formulario($id_formulario,$nombre_formulario,$descripcion_formulario,$etiqueta_campo,$value_campo,$tipo_campo,$orden_campo)
 {
     global $arrLang;
-    global $arrLan;
+    global $arrLangModule;
     global $arrConf;
 
     $respuesta = new xajaxResponse();
@@ -392,16 +392,16 @@ function agregar_campos_formulario($id_formulario,$nombre_formulario,$descripcio
                 $respuesta->addScript($script);
                 $respuesta->addAssign("mb_title","innerHTML",""); 
                 $respuesta->addAssign("mb_message","innerHTML",""); 
-                $respuesta->addAssign("mb_msg_ok","innerHTML",$arrLan["Add Field Successfully"]. ":  <b>$etiqueta_campo</b>"); 
+                $respuesta->addAssign("mb_msg_ok","innerHTML",$arrLangModule["Add Field Successfully"]. ":  <b>$etiqueta_campo</b>"); 
              }
             else{
                 $respuesta->addAssign("mb_title","innerHTML",$arrLang["Validation Error"]); 
-                $respuesta->addAssign("mb_message","innerHTML",$arrLan['Field could not be added in the Form'].". ".$oDataForm->errMsg); 
+                $respuesta->addAssign("mb_message","innerHTML",$arrLangModule['Field could not be added in the Form'].". ".$oDataForm->errMsg); 
             }
         }
         else{
                 $respuesta->addAssign("mb_title","innerHTML",$arrLang["Validation Error"]); 
-                $respuesta->addAssign("mb_message","innerHTML",$arrLan['Form could not be added']); 
+                $respuesta->addAssign("mb_message","innerHTML",$arrLangModule['Form could not be added']); 
         }
     }
     else{
@@ -414,7 +414,7 @@ function agregar_campos_formulario($id_formulario,$nombre_formulario,$descripcio
 function html_campos_formulario($arr_campos,$edit=true)
 { 
     global $arrLang;
-    global $arrLan;
+    global $arrLangModule;
     $self=dirname($_SERVER['SCRIPT_NAME']);
     if($self=="/")
       $self="";
@@ -423,10 +423,10 @@ function html_campos_formulario($arr_campos,$edit=true)
                             <tr class='table_title_row'>";
     if($edit)
         $nodoTablaInicio .= "   <td class='table_title_row' width='40'><input type='button' name='delete_field' id='delete_field' onclick='"."if(confirmSubmit(\"$msm_confimacion\"))eliminar_campo();"."' value='".$arrLang['Delete']."' /></td> ";
-    $nodoTablaInicio .= "       <td class='table_title_row' width='50'>".$arrLan['Order']."</td>
-                                <td class='table_title_row'>".$arrLan['Field Name']."</td>
-                                <td class='table_title_row'>".$arrLan['Type']."</td>
-                                <td class='table_title_row'>".$arrLan['Values Field']."</td>";
+    $nodoTablaInicio .= "       <td class='table_title_row' width='50'>".$arrLangModule['Order']."</td>
+                                <td class='table_title_row'>".$arrLangModule['Field Name']."</td>
+                                <td class='table_title_row'>".$arrLangModule['Type']."</td>
+                                <td class='table_title_row'>".$arrLangModule['Values Field']."</td>";
     if($edit)
         $nodoTablaInicio .= "       <td class='table_title_row'>".$arrLang['Options']."</td> 
                             </tr>\n";
@@ -440,7 +440,7 @@ function html_campos_formulario($arr_campos,$edit=true)
                 $nodoContenido .= " <td class='table_data'><center><input type='checkbox' id='field-".$field['id']."' name='field_chk' /></center></td>\n";
             $nodoContenido .= " <td class='table_data'>".$field['orden']."</td>\n";
             $nodoContenido .= " <td class='table_data'>".$field['etiqueta']."</td>\n";
-            $nodoContenido .= " <td class='table_data'>".$arrLan[$field['tipo']]."</td>\n";
+            $nodoContenido .= " <td class='table_data'>".$arrLangModule[$field['tipo']]."</td>\n";
             if($field['value']=="")
                 $value = "&nbsp;";
             else $value = $field['value'];
@@ -451,7 +451,7 @@ function html_campos_formulario($arr_campos,$edit=true)
         }
     }
     else{
-         $nodoContenido .= "<tr><td colspan='6'><center>".$arrLan['No Data Found']."</center></td></tr>";
+         $nodoContenido .= "<tr><td colspan='6'><center>".$arrLangModule['No Data Found']."</center></td></tr>";
     }
     return $nodoTablaInicio.$nodoContenido.$nodoTablaFin;
 }
@@ -459,14 +459,14 @@ function html_campos_formulario($arr_campos,$edit=true)
 function cancelar_formulario_ingreso($id_formulario)
 {
     global $arrLang;
-    global $arrLan;
+    global $arrLangModule;
     global $arrConf;
     $respuesta = new xajaxResponse();
 
     $oDataForm = new paloSantoDataForm($arrConf["cadena_dsn"]);
     if(!$oDataForm->eliminar_formulario($id_formulario)){
         $respuesta->addAssign("mb_title","innerHTML",$arrLang["Validation Error"]);     
-        $respuesta->addAssign("mb_message","innerHTML",$arrLan['Form could not be cancelled']);     
+        $respuesta->addAssign("mb_message","innerHTML",$arrLangModule['Form could not be cancelled']);     
     }
     else
         $respuesta->addScript("window.open('?menu=form_designer','_parent')");
@@ -476,22 +476,22 @@ function cancelar_formulario_ingreso($id_formulario)
 function validar_campos($id_formulario,$nombre_formulario,$descripcion_formulario,$etiqueta_campo,$value_campo,$tipo_campo,$orden_campo,$actualiza=false)
 {
     global $arrLang;
-    global $arrLan;
+    global $arrLangModule;
     global $arrConf;
 
     if(!isset($id_formulario) || $id_formulario=="" || !is_numeric($id_formulario))
-        return $arrLan['Error Id Form'];
+        return $arrLangModule['Error Id Form'];
     if(!isset($nombre_formulario) || $nombre_formulario=="")
-        return $arrLan['Error Form Name is empty'];
+        return $arrLangModule['Error Form Name is empty'];
     if(!isset($etiqueta_campo) || $etiqueta_campo=="")
-        return $arrLan['Error Field Name is empty'];
+        return $arrLangModule['Error Field Name is empty'];
     if((!isset($value_campo) || $value_campo=="") && $tipo_campo=='LIST')
-        return $arrLan['Error List is empty'];
+        return $arrLangModule['Error List is empty'];
     if(!isset($orden_campo) || $orden_campo=="" || !is_numeric($orden_campo))
-        return $arrLan['Error in Order is empty or is not numeric'];
+        return $arrLangModule['Error in Order is empty or is not numeric'];
     $oDataForm = new paloSantoDataForm($arrConf["cadena_dsn"]);
     if($oDataForm->field_order_existe($id_formulario,$orden_campo) && !$actualiza) //si existe
-        return $arrLan['Order already exists'];
+        return $arrLangModule['Order already exists'];
     
     return 'true';
 }
@@ -499,18 +499,18 @@ function validar_campos($id_formulario,$nombre_formulario,$descripcion_formulari
 function validar_formulario($id_formulario,$nombre_formulario,$descripcion_formulario)
 {
     global $arrLang;
-    global $arrLan;
+    global $arrLangModule;
     if(!isset($id_formulario) || $id_formulario=="" || !is_numeric($id_formulario))
-        return $arrLan['Error Id Form'];
+        return $arrLangModule['Error Id Form'];
     if(!isset($nombre_formulario) || $nombre_formulario=="")
-        return $arrLan['Error Form Name is empty'];
+        return $arrLangModule['Error Form Name is empty'];
     return 'true';
 }
 
 function guardar_formulario($id_formulario,$form_name,$form_description,$lugar)
 {
     global $arrLang;
-    global $arrLan;
+    global $arrLangModule;
     global $arrConf;
 
     $respuesta = new xajaxResponse();
@@ -527,7 +527,7 @@ function guardar_formulario($id_formulario,$form_name,$form_description,$lugar)
     
         if(!$se_creo){
             $respuesta->addAssign("mb_title","innerHTML",$arrLang["Validation Error"]);
-            $respuesta->addAssign("mb_message","innerHTML",$arrLan['Form could not be added']); 
+            $respuesta->addAssign("mb_message","innerHTML",$arrLangModule['Form could not be added']); 
         }
         else{
             if($lugar=='nuevo')
@@ -547,7 +547,7 @@ function guardar_formulario($id_formulario,$form_name,$form_description,$lugar)
 function eliminar_campos_formulario($id_formulario,$arr_campos)
 {
     global $arrLang;
-    global $arrLan;
+    global $arrLangModule;
     global $arrConf;
 
     $respuesta = new xajaxResponse();
@@ -571,7 +571,7 @@ function eliminar_campos_formulario($id_formulario,$arr_campos)
     if($ban) {
         $respuesta->addAssign("mb_title","innerHTML",""); 
         $respuesta->addAssign("mb_message","innerHTML","");
-        $respuesta->addAssign("mb_msg_ok","innerHTML",$arrLan["Delete Field Successfully"]); 
+        $respuesta->addAssign("mb_msg_ok","innerHTML",$arrLangModule["Delete Field Successfully"]); 
     }
     return $respuesta;
 }
@@ -579,7 +579,7 @@ function eliminar_campos_formulario($id_formulario,$arr_campos)
 function editar_campo_formulario($id_formulario,$id_campo)
 {
     global $arrLang;
-    global $arrLan;
+    global $arrLangModule;
     global $arrConf;
 
     $respuesta = new xajaxResponse();
@@ -595,7 +595,7 @@ function editar_campo_formulario($id_formulario,$id_campo)
     $script .= " presentar_select_item(); \n";
     $script .= " visibilidad_botones_campo(1); \n";
 
-    $respuesta->addAssign("id_estado_field","innerHTML",$arrLan['Edit Field']);  
+    $respuesta->addAssign("id_estado_field","innerHTML",$arrLangModule['Edit Field']);  
     $respuesta->addScript(javascript_option($campo[0]['value'],$campo[0]['tipo']));  
     $respuesta->addScript($script);
     return $respuesta;
@@ -633,7 +633,7 @@ function html_option($value,$tipo)
 function update_campo_formulario($id_formulario,$nombre_formulario,$descripcion_formulario,$id_campo,$etiqueta_campo,$value_campo,$tipo_campo,$orden_campo)
 {
     global $arrLang;
-    global $arrLan;
+    global $arrLangModule;
     global $arrConf;
 
     $respuesta = new xajaxResponse();
@@ -655,19 +655,19 @@ function update_campo_formulario($id_formulario,$nombre_formulario,$descripcion_
                 $script  = "\n visibilidad_botones_campo(2); \n";    
                 $script .= "limpiar_campos(); \n";     
                 $respuesta->addScript($script);
-                $respuesta->addAssign("id_estado_field","innerHTML",$arrLan['Add Field']); 
+                $respuesta->addAssign("id_estado_field","innerHTML",$arrLangModule['Add Field']); 
                 $respuesta->addAssign("mb_title","innerHTML",""); 
                 $respuesta->addAssign("mb_message","innerHTML",""); 
-                $respuesta->addAssign("mb_msg_ok","innerHTML",$arrLan["Update Field Successfully"]. ":  <b>$etiqueta_campo</b>"); 
+                $respuesta->addAssign("mb_msg_ok","innerHTML",$arrLangModule["Update Field Successfully"]. ":  <b>$etiqueta_campo</b>"); 
              }
             else{
                 $respuesta->addAssign("mb_title","innerHTML",$arrLang["Validation Error"]); 
-                $respuesta->addAssign("mb_message","innerHTML",$arrLan['Field could not be updated in the Form']); 
+                $respuesta->addAssign("mb_message","innerHTML",$arrLangModule['Field could not be updated in the Form']); 
             }
         }
         else{
                 $respuesta->addAssign("mb_title","innerHTML",$arrLang["Validation Error"]); 
-                $respuesta->addAssign("mb_message","innerHTML",$arrLan['Form could not be updated']); 
+                $respuesta->addAssign("mb_message","innerHTML",$arrLangModule['Form could not be updated']); 
         }
     }
     else{
@@ -680,10 +680,10 @@ function update_campo_formulario($id_formulario,$nombre_formulario,$descripcion_
 function cancel_campo_formulario()
 {
     global $arrLang;
-    global $arrLan;
+    global $arrLangModule;
     $respuesta = new xajaxResponse();
     $script = " visibilidad_botones_campo(2); \n limpiar_campos();";     
-    $respuesta->addAssign("id_estado_field","innerHTML",$arrLan['Add Field']); 
+    $respuesta->addAssign("id_estado_field","innerHTML",$arrLangModule['Add Field']); 
     $respuesta->addScript($script);
     return $respuesta;
 }
@@ -691,7 +691,7 @@ function cancel_campo_formulario()
 function desactivar_formulario($id_formulario)
 {
     global $arrLang;
-    global $arrLan;
+    global $arrLangModule;
     global $arrConf;
 
     $respuesta = new xajaxResponse();
@@ -700,8 +700,8 @@ function desactivar_formulario($id_formulario)
     if($oDataForm->eliminado_logico_formulario($id_formulario)) header('?menu=form_designer');
         //$respuesta->addScript("window.open('?menu=form_designer','_parent')");
     else{
-        $respuesta->addAssign("mb_title","innerHTML",$arrLan["Desactivate Error"]); 
-        $respuesta->addAssign("mb_message","innerHTML",$arrLan["Error when eliminating the form"]); 
+        $respuesta->addAssign("mb_title","innerHTML",$arrLangModule["Desactivate Error"]); 
+        $respuesta->addAssign("mb_message","innerHTML",$arrLangModule["Error when eliminating the form"]); 
     }
     return $respuesta;
 }

@@ -1,6 +1,7 @@
 <?php
 
-$lang = array(
+global $arrLangModule; 
+ $arrLangModule = array(
 'Ingoing Calls'   => 'تماس هاي ورودي',
 'guardar'         => 'ذخيره',
 'cancelar'        => 'لغو',
