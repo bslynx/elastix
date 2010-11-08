@@ -55,17 +55,17 @@ function _moduleContent(&$smarty, $module_name)
     $local_templates_dir = "$base_dir/modules/$module_name/".$templates_dir.'/'.$config['theme'];
 
     // Obtengo el idioma actual utilizado en la aplicacion.
-    $language = get_language();
+    $Language = get_language();
     $script_dir = dirname($_SERVER['SCRIPT_FILENAME']);
 
     // Include language file for EN, then for local, and merge the two.
-    $lang = NULL;
+    $arrLangModule = NULL;
     include_once("modules/$module_name/lang/en.lang");
-    $lang_file="modules/$module_name/lang/$language.lang";
-    if (file_exists("$script_dir/$lang_file")) {
-        $arrLanEN = $lang;
-        include_once($lang_file);
-        $lang = array_merge($arrLanEN, $arrLangModule);
+    $arrLangModule_file="modules/$module_name/lang/$Language.lang";
+    if (file_exists("$script_dir/$arrLangModule_file")) {
+        $arrLanEN = $arrLangModule;
+        include_once($arrLangModule_file);
+        $arrLangModule = array_merge($arrLanEN, $arrLangModule);
     }
     $arrLang = array_merge($arrLang, $arrLangModule);
 
@@ -201,7 +201,7 @@ function _moduleContent(&$smarty, $module_name)
     $total = count($datosBreaks['reporte']) + 1;
     $limit = $total;
 
-    $arrGrid = array("title"    =>  $lang['Reports Break'],
+    $arrGrid = array("title"    =>  $arrLangModule['Reports Break'],
 	    "icon"     => "images/list.png",
 	    "width"    => "99%",
 	    "start"    => ($total==0) ? 0 : $offset + 1,

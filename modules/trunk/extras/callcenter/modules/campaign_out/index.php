@@ -44,13 +44,13 @@ function _moduleContent(&$smarty, $module_name)
     $script_dir=dirname($_SERVER['SCRIPT_FILENAME']);
 
     // Include language file for EN, then for local, and merge the two.
-    $arrLan = NULL;
+    $arrLangModule = NULL;
     include_once("modules/$module_name/lang/en.lang");
     $lang_file="modules/$module_name/lang/$lang.lang";
     if (file_exists("$script_dir/$lang_file")) {
-        $arrLanEN = $arrLan;
+        $arrLangModuleEN = $arrLangModule;
         include_once($lang_file);
-        $arrLan = array_merge($arrLanEN, $arrLangModule);
+        $arrLangModule = array_merge($arrLangModuleEN, $arrLangModule);
     }
     
     //include module files
@@ -96,7 +96,7 @@ function _moduleContent(&$smarty, $module_name)
 function listCampaign($pDB, $smarty, $module_name, $local_templates_dir)
 {
     global $arrLang;
-    global $arrLan;
+    global $arrLangModule;
     $arrData = '';
     $oCampaign = new paloSantoCampaignCC($pDB);
 
@@ -115,33 +115,33 @@ function listCampaign($pDB, $smarty, $module_name, $local_templates_dir)
             }
         } else {
             $msg_error = ($oCampaign->errMsg!="") ? "<br/>".$oCampaign->errMsg:"";
-            $smarty->assign("mb_title", $arrLan['Delete Error']);
-            $smarty->assign("mb_message", $arrLan['Error when deleting the Campaign'].$msg_error);
+            $smarty->assign("mb_title", $arrLangModule['Delete Error']);
+            $smarty->assign("mb_message", $arrLangModule['Error when deleting the Campaign'].$msg_error);
         }
     }
 
     // Revisar si se debe activar una campaña elegida
     if (isset($_POST['activate']) && !is_null($id_campaign)) {
         if(!$oCampaign->activar_campaign($id_campaign, 'A')) {
-            $smarty->assign("mb_title", $arrLan['Activate Error']);
-            $smarty->assign("mb_message", $arrLan['Error when Activating the Campaign']);
+            $smarty->assign("mb_title", $arrLangModule['Activate Error']);
+            $smarty->assign("mb_message", $arrLangModule['Error when Activating the Campaign']);
         }
     }
 
     // Revisar si se debe desactivar una campaña elegida
     if (isset($_POST['deactivate']) && !is_null($id_campaign)) {
         if(!$oCampaign->activar_campaign($id_campaign, 'I')) {
-            $smarty->assign("mb_title", $arrLan["Desactivate Error"]);
-            $smarty->assign("mb_message", $arrLan["Error when desactivating the Campaign"]);
+            $smarty->assign("mb_title", $arrLangModule["Desactivate Error"]);
+            $smarty->assign("mb_message", $arrLangModule["Error when desactivating the Campaign"]);
         }
     }
 
     // Validar el filtro por estado de actividad de la campaña
     $estados = array(
-        "all" => $arrLan["All"], 
-        "A" => $arrLan["Active"], 
-        "T" => $arrLan["Finish"],
-        "I" => $arrLan["Inactive"]
+        "all" => $arrLangModule["All"], 
+        "A" => $arrLangModule["Active"], 
+        "T" => $arrLangModule["Finish"],
+        "I" => $arrLangModule["Inactive"]
     );
     $sEstado = 'A';
     if (isset($_GET['cbo_estado']) && isset($estados[$_GET['cbo_estado']])) {
@@ -199,16 +199,16 @@ function listCampaign($pDB, $smarty, $module_name, $local_templates_dir)
             $arrTmp[7] = ($campaign['num_completadas']!="") ? $campaign['num_completadas'] : "N/A";
             $arrTmp[8] = ($campaign['promedio']!="") ? number_format($campaign['promedio'],0) : "N/A";
 
-            $csv_data = "&nbsp;<a href='?menu=$module_name&amp;action=csv_data&amp;id_campaign=".$campaign['id']."&amp;rawmode=yes'>[{$arrLan['CSV Data']}]</a>";
+            $csv_data = "&nbsp;<a href='?menu=$module_name&amp;action=csv_data&amp;id_campaign=".$campaign['id']."&amp;rawmode=yes'>[{$arrLangModule['CSV Data']}]</a>";
             $ver_campania = "&nbsp;<a href='?menu=$module_name&amp;action=edit_campaign&amp;id_campaign=".$campaign['id']."'>[{$arrLang['Edit']}]</a>";
             if($campaign['estatus']=='I'){
-                $arrTmp[9] = $arrLan['Inactive'];
+                $arrTmp[9] = $arrLangModule['Inactive'];
                 $arrTmp[10] = $ver_campania.$csv_data;
             } elseif($campaign['estatus']=='A'){
-                $arrTmp[9] = $arrLan['Active'];
+                $arrTmp[9] = $arrLangModule['Active'];
                 $arrTmp[10] = $ver_campania.$csv_data;
             } elseif ($campaign['estatus']=='T') {
-                $arrTmp[9] = $arrLan['Finish'];
+                $arrTmp[9] = $arrLangModule['Finish'];
                 $arrTmp[10] = $ver_campania.$csv_data;
             }
             $arrData[] = $arrTmp;
@@ -216,7 +216,7 @@ function listCampaign($pDB, $smarty, $module_name, $local_templates_dir)
     }
 
     // Definición de la tabla de las campañas
-    $arrGrid = array("title"    => $arrLan["Campaigns List"],
+    $arrGrid = array("title"    => $arrLangModule["Campaigns List"],
         "icon"     => "images/list.png",
         "width"    => "99%",
         "start"    => ($total==0) ? 0 : $offset + 1,
@@ -225,40 +225,40 @@ function listCampaign($pDB, $smarty, $module_name, $local_templates_dir)
         "columns"  => array(
                             0 => array("name"      => '',
                                        "property1" => ""),
-                            1 => array("name"      => $arrLan["Name Campaign"],
+                            1 => array("name"      => $arrLangModule["Name Campaign"],
                                        "property1" => ""),
-                            2 => array("name"      => $arrLan["Range Date"], 
+                            2 => array("name"      => $arrLangModule["Range Date"], 
                                        "property1" => ""),
-                            3 => array("name"      => $arrLan["Schedule per Day"], 
+                            3 => array("name"      => $arrLangModule["Schedule per Day"], 
                                        "property1" => ""),
-                            4 => array("name"      => $arrLan["Retries"], 
+                            4 => array("name"      => $arrLangModule["Retries"], 
                                        "property1" => ""),
-                            5 => array("name"      => $arrLan["Trunk"], 
+                            5 => array("name"      => $arrLangModule["Trunk"], 
                                        "property1" => ""),
-                            6 => array("name"      => $arrLan["Queue"], 
+                            6 => array("name"      => $arrLangModule["Queue"], 
                                        "property1" => ""),
-                            7 => array("name"      => $arrLan["Completed Calls"],
+                            7 => array("name"      => $arrLangModule["Completed Calls"],
                                        "property1" => ""),
-                            8 => array("name"      => $arrLan["Average Time"], 
+                            8 => array("name"      => $arrLangModule["Average Time"], 
                                        "property1" => ""),
-                            9 => array("name"     => $arrLan["Status"], 
+                            9 => array("name"     => $arrLangModule["Status"], 
                                        "property1" => ""),
-                            10 => array("name"     => $arrLan["Options"], 
+                            10 => array("name"     => $arrLangModule["Options"], 
                                        "property1" => "")));
 
     // Construir el HTML del filtro
     $smarty->assign(array(
         'MODULE_NAME'                   =>  $module_name,
-        'LABEL_CAMPAIGN_STATE'          =>  $arrLan['Campaign state'],
+        'LABEL_CAMPAIGN_STATE'          =>  $arrLangModule['Campaign state'],
         'estados'                       =>  $estados,
         'estado_sel'                    =>  $sEstado,
-        'LABEL_CREATE_CAMPAIGN'         =>  $arrLan['Create New Campaign'],
-        'LABEL_WITH_SELECTION'          =>  $arrLan['With selection'],
-        'LABEL_ACTIVATE'                =>  $arrLan['Activate'],
-        'LABEL_DEACTIVATE'              =>  $arrLan['Desactivate'],
+        'LABEL_CREATE_CAMPAIGN'         =>  $arrLangModule['Create New Campaign'],
+        'LABEL_WITH_SELECTION'          =>  $arrLangModule['With selection'],
+        'LABEL_ACTIVATE'                =>  $arrLangModule['Activate'],
+        'LABEL_DEACTIVATE'              =>  $arrLangModule['Desactivate'],
         'LABEL_DELETE'                  =>  $arrLang['Delete'],
         'MESSAGE_CONTINUE_DEACTIVATE'   =>  $arrLang["Are you sure you wish to continue?"],
-        'MESSAGE_CONTINUE_DELETE'       =>  $arrLan["Are you sure you wish to delete campaign?"],
+        'MESSAGE_CONTINUE_DELETE'       =>  $arrLangModule["Are you sure you wish to delete campaign?"],
     ));
     $oGrid = new paloSantoGrid($smarty);
     $oGrid->showFilter($smarty->fetch("$local_templates_dir/filter-list-campaign.tpl"));
@@ -294,7 +294,7 @@ function formEditCampaign($pDB, $smarty, $module_name, $local_templates_dir, $id
     include_once "libs/paloSantoQueue.class.php";
     include_once "modules/form_designer/libs/paloSantoDataForm.class.php";
 
-    global $arrLan;
+    global $arrLangModule;
     global $arrLang;
 
     // Si se ha indicado cancelar, volver a listado sin hacer nada más
@@ -326,7 +326,7 @@ function formEditCampaign($pDB, $smarty, $module_name, $local_templates_dir, $id
 
     // Leer las troncales que se han definido en FreePBX
     $arrDataTrunks = array(
-        ''  =>  '('.$arrLan['By Dialplan'].')',
+        ''  =>  '('.$arrLangModule['By Dialplan'].')',
     );
     $arrTrunks = getTrunks($oDB); //obtener la lista de trunks
     if (is_array($arrTrunks)){
@@ -370,16 +370,16 @@ function formEditCampaign($pDB, $smarty, $module_name, $local_templates_dir, $id
         $oForm = new paloForm($smarty, $formCampos);
         $smarty->assign('no_forms', 1);
     } else {
-        $smarty->assign('label_manage_trunks', $arrLan['Manage Trunks']);
-        $smarty->assign('label_manage_queues', $arrLan['Manage Queues']);
-        $smarty->assign('label_manage_forms',  $arrLan['Manage Forms']);
+        $smarty->assign('label_manage_trunks', $arrLangModule['Manage Trunks']);
+        $smarty->assign('label_manage_queues', $arrLangModule['Manage Queues']);
+        $smarty->assign('label_manage_forms',  $arrLangModule['Manage Forms']);
         
         // Definición del formulario de nueva campaña
         $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
         $smarty->assign("CANCEL", $arrLang["Cancel"]);
         $smarty->assign("SAVE", $arrLang["Save"]);
         $smarty->assign("APPLY_CHANGES", $arrLang["Apply changes"]);
-        $smarty->assign('LABEL_CALL_FILE', $arrLan['Call File']);
+        $smarty->assign('LABEL_CALL_FILE', $arrLangModule['Call File']);
 
         // Valores por omisión para primera carga
         $arrNoElegidos = array();   // Lista de selección de formularios elegibles
@@ -461,7 +461,7 @@ function formEditCampaign($pDB, $smarty, $module_name, $local_templates_dir, $id
                     }
                 }
                 if(!isset($_POST['rte_script']) || $_POST['rte_script']=='')
-                    $strErrorMsg .= $arrLan["Script"];
+                    $strErrorMsg .= $arrLangModule["Script"];
                 $strErrorMsg .= "";
                 $smarty->assign("mb_message", $strErrorMsg);
             } elseif ($_POST['max_canales'] <= 0) { 
@@ -475,16 +475,16 @@ function formEditCampaign($pDB, $smarty, $module_name, $local_templates_dir, $id
                 $iHoraFin =  strtotime($time_fin); 
                 if ($iFechaIni == -1 || $iFechaIni === FALSE) {
                     $smarty->assign("mb_title", $arrLang["Validation Error"]);
-                    $smarty->assign("mb_message", $arrLan['Unable to parse start date specification']);
+                    $smarty->assign("mb_message", $arrLangModule['Unable to parse start date specification']);
                 } elseif ($iFechaFin == -1 || $iFechaFin === FALSE) {
                     $smarty->assign("mb_title", $arrLang["Validation Error"]);
                     $smarty->assign("mb_message", $arrLang['Unable to parse end date specification']);
                 } elseif ($iHoraIni == -1 || $iHoraIni === FALSE) {
                     $smarty->assign("mb_title", $arrLang["Validation Error"]);
-                    $smarty->assign("mb_message", $arrLan['Unable to parse start time specification']);
+                    $smarty->assign("mb_message", $arrLangModule['Unable to parse start time specification']);
                 } elseif ($iHoraFin == -1 || $iHoraFin === FALSE) {
                     $smarty->assign("mb_title", $arrLang["Validation Error"]);
-                    $smarty->assign("mb_message", $arrLan['Unable to parse end time specification']);
+                    $smarty->assign("mb_message", $arrLangModule['Unable to parse end time specification']);
                 } else {
 
                     if(!$pDB->genQuery("SET AUTOCOMMIT=0")) {
@@ -560,14 +560,14 @@ function formEditCampaign($pDB, $smarty, $module_name, $local_templates_dir, $id
 
     $contenidoModulo = $oForm->fetchForm(
         "$local_templates_dir/new.tpl", 
-        is_null($id_campaign) ? $arrLan["New Campaign"] : $arrLan["Edit Campaign"].' "'.$_POST['nombre'].'"',
+        is_null($id_campaign) ? $arrLangModule["New Campaign"] : $arrLangModule["Edit Campaign"].' "'.$_POST['nombre'].'"',
         $_POST);
     return $contenidoModulo;
 }
 
 function getFormCampaign($arrDataTrunks, $arrDataQueues, $arrSelectForm, $arrSelectFormElegidos)
 {
-    global $arrLan;
+    global $arrLangModule;
 
     $horas = array();
     $i = 0;
@@ -589,7 +589,7 @@ function getFormCampaign($arrDataTrunks, $arrDataQueues, $arrSelectForm, $arrSel
 
     $formCampos = array(
         'nombre'    =>    array(
-            "LABEL"                => $arrLan["Name Campaign"],
+            "LABEL"                => $arrLangModule["Name Campaign"],
             "REQUIRED"               => "yes",
             "INPUT_TYPE"             => "TEXT",
             "INPUT_EXTRA_PARAM"      => "",
@@ -598,7 +598,7 @@ function getFormCampaign($arrDataTrunks, $arrDataQueues, $arrSelectForm, $arrSel
         ),
 
         'trunk'       => array(
-            "LABEL"                  => $arrLan["Trunk"],
+            "LABEL"                  => $arrLangModule["Trunk"],
             "REQUIRED"               => "no",
             "INPUT_TYPE"             => "SELECT",
             "INPUT_EXTRA_PARAM"      => $arrDataTrunks,
@@ -606,7 +606,7 @@ function getFormCampaign($arrDataTrunks, $arrDataQueues, $arrSelectForm, $arrSel
             "VALIDATION_EXTRA_PARAM" => ""
         ),
         "max_canales" => array(
-            "LABEL"                  => $arrLan['Max. used channels'],
+            "LABEL"                  => $arrLangModule['Max. used channels'],
             "REQUIRED"               => "yes", 
             "INPUT_TYPE"             => "TEXT",
             "INPUT_EXTRA_PARAM"      => "",
@@ -614,7 +614,7 @@ function getFormCampaign($arrDataTrunks, $arrDataQueues, $arrSelectForm, $arrSel
             "VALIDATION_EXTRA_PARAM" => ""
         ),
         "fecha_str"       => array(
-            "LABEL"                  => $arrLan["Range Date"],
+            "LABEL"                  => $arrLangModule["Range Date"],
             "REQUIRED"               => "yes",
             "INPUT_TYPE"             => "",
             "INPUT_EXTRA_PARAM"      => "",
@@ -622,7 +622,7 @@ function getFormCampaign($arrDataTrunks, $arrDataQueues, $arrSelectForm, $arrSel
             "VALIDATION_EXTRA_PARAM" => ''
         ),
         "fecha_ini"       => array(
-            "LABEL"                  => $arrLan["Start"],
+            "LABEL"                  => $arrLangModule["Start"],
             "REQUIRED"               => "yes",
             "INPUT_TYPE"             => "DATE",
             "INPUT_EXTRA_PARAM"      => array("TIME" => false, "FORMAT" => "%d %b %Y"),
@@ -630,7 +630,7 @@ function getFormCampaign($arrDataTrunks, $arrDataQueues, $arrSelectForm, $arrSel
             "VALIDATION_EXTRA_PARAM" => '^[[:digit:]]{2}[[:space:]]+[[:alpha:]]{3}[[:space:]]+[[:digit:]]{4}$'
         ),
         "fecha_fin"       => array(
-            "LABEL"                  => $arrLan["End"],
+            "LABEL"                  => $arrLangModule["End"],
             "REQUIRED"               => "yes",
             "INPUT_TYPE"             => "DATE",
             "INPUT_EXTRA_PARAM"      => array("TIME" => false, "FORMAT" => "%d %b %Y"),
@@ -638,7 +638,7 @@ function getFormCampaign($arrDataTrunks, $arrDataQueues, $arrSelectForm, $arrSel
             "VALIDATION_EXTRA_PARAM" => '^[[:digit:]]{2}[[:space:]]+[[:alpha:]]{3}[[:space:]]+[[:digit:]]{4}$'
         ),
         "hora_str"       => array(
-            "LABEL"                  => $arrLan["Schedule per Day"],
+            "LABEL"                  => $arrLangModule["Schedule per Day"],
             "REQUIRED"               => "yes",
             "INPUT_TYPE"             => "",
             "INPUT_EXTRA_PARAM"      => "",
@@ -647,7 +647,7 @@ function getFormCampaign($arrDataTrunks, $arrDataQueues, $arrSelectForm, $arrSel
             "VALIDATION_EXTRA_PARAM" => ''
         ),
         "hora_ini_HH"   => array(
-            "LABEL"                  => $arrLan["Start time"],
+            "LABEL"                  => $arrLangModule["Start time"],
             "REQUIRED"               => "yes",
             "INPUT_TYPE"             => "SELECT",
             "INPUT_EXTRA_PARAM"      => $horas,
@@ -655,7 +655,7 @@ function getFormCampaign($arrDataTrunks, $arrDataQueues, $arrSelectForm, $arrSel
             "VALIDATION_EXTRA_PARAM" => '',
          ),
         "hora_ini_MM"   => array(
-            "LABEL"                  => $arrLan["Start time"],
+            "LABEL"                  => $arrLangModule["Start time"],
             "REQUIRED"               => "yes",
             "INPUT_TYPE"             => "SELECT",
             "INPUT_EXTRA_PARAM"      => $minutos,
@@ -663,7 +663,7 @@ function getFormCampaign($arrDataTrunks, $arrDataQueues, $arrSelectForm, $arrSel
             "VALIDATION_EXTRA_PARAM" => '',
          ),
          "hora_fin_HH"   => array(
-            "LABEL"                  => $arrLan["End time"],
+            "LABEL"                  => $arrLangModule["End time"],
             "REQUIRED"               => "yes",
             "INPUT_TYPE"             => "SELECT",
             "INPUT_EXTRA_PARAM"      => $horas,
@@ -671,7 +671,7 @@ function getFormCampaign($arrDataTrunks, $arrDataQueues, $arrSelectForm, $arrSel
             "VALIDATION_EXTRA_PARAM" => '',
          ),
          "hora_fin_MM"   => array(
-            "LABEL"                  => $arrLan["End time"],
+            "LABEL"                  => $arrLangModule["End time"],
             "REQUIRED"               => "yes",
             "INPUT_TYPE"             => "SELECT",
             "INPUT_EXTRA_PARAM"      => $minutos,
@@ -679,7 +679,7 @@ function getFormCampaign($arrDataTrunks, $arrDataQueues, $arrSelectForm, $arrSel
             "VALIDATION_EXTRA_PARAM" => '',
          ),
          'formulario'       => array(
-            "LABEL"                  => $arrLan["Form"],
+            "LABEL"                  => $arrLangModule["Form"],
             "REQUIRED"               => "yes",
             "INPUT_TYPE"             => "SELECT",
             "INPUT_EXTRA_PARAM"      => $arrSelectForm,
@@ -689,7 +689,7 @@ function getFormCampaign($arrDataTrunks, $arrDataQueues, $arrSelectForm, $arrSel
             "SIZE"                   => "5"
         ),
         'formularios_elegidos'       => array(
-            "LABEL"                  => $arrLan["Form"],
+            "LABEL"                  => $arrLangModule["Form"],
             "REQUIRED"               => "yes",
             "INPUT_TYPE"             => "SELECT",
             "INPUT_EXTRA_PARAM"      => $arrSelectFormElegidos,
@@ -699,7 +699,7 @@ function getFormCampaign($arrDataTrunks, $arrDataQueues, $arrSelectForm, $arrSel
             "SIZE"                   => "5"
         ),
         "reintentos" => array(
-            "LABEL"                  => $arrLan["Retries"],
+            "LABEL"                  => $arrLangModule["Retries"],
             "REQUIRED"               => "yes", 
             "INPUT_TYPE"             => "TEXT",
             "INPUT_EXTRA_PARAM"      => "",
@@ -707,7 +707,7 @@ function getFormCampaign($arrDataTrunks, $arrDataQueues, $arrSelectForm, $arrSel
             "VALIDATION_EXTRA_PARAM" => ""
         ),
         "context" => array(
-            "LABEL"                  => $arrLan["Context"],
+            "LABEL"                  => $arrLangModule["Context"],
             "REQUIRED"               => "yes",
             "INPUT_TYPE"             => "TEXT",
             "INPUT_EXTRA_PARAM"      => "",
@@ -715,7 +715,7 @@ function getFormCampaign($arrDataTrunks, $arrDataQueues, $arrSelectForm, $arrSel
             "VALIDATION_EXTRA_PARAM" => "^[[:alpha:]-]+$"
         ),
         "queue" => array(
-            "LABEL"                  => $arrLan["Queue"],
+            "LABEL"                  => $arrLangModule["Queue"],
             "REQUIRED"               => "yes",
             "INPUT_TYPE"             => "SELECT",
             "INPUT_EXTRA_PARAM"      => $arrDataQueues,
@@ -723,7 +723,7 @@ function getFormCampaign($arrDataTrunks, $arrDataQueues, $arrSelectForm, $arrSel
             "VALIDATION_EXTRA_PARAM" => ""
         ),
         "script" => array(
-            "LABEL"                  => $arrLan["Script"],
+            "LABEL"                  => $arrLangModule["Script"],
             "REQUIRED"               => "yes",
             "INPUT_TYPE"             => "TEXT",
             "INPUT_EXTRA_PARAM"      => "",

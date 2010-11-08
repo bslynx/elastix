@@ -12,35 +12,35 @@
         require_once "modules/$module_name/configs/default.config.php";
         require_once "modules/$module_name/libs/paloSantoDataQueue.class.php";
 
-        $language=get_language();
+        $Language=get_language();
         $script_dir=dirname($_SERVER['SCRIPT_FILENAME']);
-        $lang_file="modules/$module_name/lang/$language.lang";
+        $arrLangModule_file="modules/$module_name/lang/$Language.lang";
 
-        if (file_exists("$script_dir/$lang_file")) {
-            include_once($lang_file);
+        if (file_exists("$script_dir/$arrLangModule_file")) {
+            include_once($arrLangModule_file);
         } else {
             include_once("modules/$module_name/lang/en.lang");
         }
 	global $arrLangModule;	
-	$lang=$arrLangModule;
+	$arrLangModule=$arrLangModule;
         $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
         $templates_dir=(isset($config['templates_dir']))?$config['templates_dir']:'themes';
         $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$config['theme'];
         $relative_dir_rich_text = "modules/$module_name/".$templates_dir.'/'.$config['theme'];
 
-        $smarty->assign("BTN_SELECT_QUEUE",$lang['Select Queue']);
+        $smarty->assign("BTN_SELECT_QUEUE",$arrLangModule['Select Queue']);
 
-        $smarty->assign("SAVE",$lang['guardar']);
-        $smarty->assign("LABEL_QUEUE",$lang['label_choice']);
-        $smarty->assign("EDIT",$lang['edit']);
-        $smarty->assign("DESACTIVATE",$lang['dasactivate']);
-        $smarty->assign("CONFIRM_CONTINUE",$lang['confirm continue']);
-        $smarty->assign("CANCEL",$lang['cancelar']);
+        $smarty->assign("SAVE",$arrLangModule['guardar']);
+        $smarty->assign("LABEL_QUEUE",$arrLangModule['label_choice']);
+        $smarty->assign("EDIT",$arrLangModule['edit']);
+        $smarty->assign("DESACTIVATE",$arrLangModule['dasactivate']);
+        $smarty->assign("CONFIRM_CONTINUE",$arrLangModule['confirm continue']);
+        $smarty->assign("CANCEL",$arrLangModule['cancelar']);
         $smarty->assign("relative_dir_rich_text", $relative_dir_rich_text);
-        $smarty->assign("APPLY_CHANGES",$lang['apply_changes']);
-        $smarty->assign("QUEUE",$lang['Queue']);
+        $smarty->assign("APPLY_CHANGES",$arrLangModule['apply_changes']);
+        $smarty->assign("QUEUE",$arrLangModule['Queue']);
 
-        $smarty->assign("LABEL_SELECT",$lang["Select Queue"]);
+        $smarty->assign("LABEL_SELECT",$arrLangModule["Select Queue"]);
 
         $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
         $config = $pConfig->leer_configuracion(false);
@@ -54,7 +54,7 @@
         $pDB = new paloDB($cadena_dsn);
         $arrValor = array();
         if (!is_object($pDB->conn) || $pDB->errMsg!="") {
-            $smarty->assign("mb_message", $lang["Error when connecting to database"]." ".$pDB->errMsg);
+            $smarty->assign("mb_message", $arrLangModule["Error when connecting to database"]." ".$pDB->errMsg);
         }else {
             $arrDataQueues = array();
             $oData = new DataQueue($pDB);
@@ -74,7 +74,7 @@
             $smarty->assign("INPUT_SELECT",$selectOp);
             $form_campos = array(
                 "script" => array(
-                    "LABEL"                  => $lang["Script"],
+                    "LABEL"                  => $arrLangModule["Script"],
                     "REQUIRED"               => "yes",
                     "INPUT_TYPE"             => "TEXT",
                     "INPUT_EXTRA_PARAM"      => "",
@@ -91,31 +91,31 @@
             $smarty->assign("xajax_javascript",$xajax->printJavascript("libs/xajax/"));
 
             if(isset($_POST['submit_select_queue'])) { 
-                $contenido = newQueue($lang,$oForm,$local_templates_dir);
+                $contenido = newQueue($arrLangModule,$oForm,$local_templates_dir);
             }else if (isset($_POST['save'])) {
-                $contenido = guardarQueue($smarty,$lang,$oForm,$local_templates_dir,$oData);
+                $contenido = guardarQueue($smarty,$arrLangModule,$oForm,$local_templates_dir,$oData);
             }else if (isset($_POST['edit'])) {
-                $contenido = editQueue($smarty,$lang,$oForm,$local_templates_dir,$oData);
+                $contenido = editQueue($smarty,$arrLangModule,$oForm,$local_templates_dir,$oData);
             }else if (isset($_POST['apply_changes'])) { 
-                $contenido = updateQueue($smarty,$lang,$oForm,$local_templates_dir,$oData);
+                $contenido = updateQueue($smarty,$arrLangModule,$oForm,$local_templates_dir,$oData);
             }else if (isset($_GET['id']) && isset($_GET['action']) && $_GET['action']=="view") {
-                $contenido = viewQueue($smarty,$lang,$oForm,$local_templates_dir,$oData);
+                $contenido = viewQueue($smarty,$arrLangModule,$oForm,$local_templates_dir,$oData);
             }else if (isset($_GET['id']) && isset($_GET['action']) && $_GET['action']=="activar") {
                 $contenidoModulo = activar_queue($smarty,$oData);
             }else {
-                $contenido = listadoQueue($smarty,$lang,$oForm,$local_templates_dir,$oData,$module_name,$_POST);
+                $contenido = listadoQueue($smarty,$arrLangModule,$oForm,$local_templates_dir,$oData,$module_name,$_POST);
             }
         }
         return $contenido;
     }
 
-    function newQueue($lang,$oForm,$local_templates_dir) {
+    function newQueue($arrLangModule,$oForm,$local_templates_dir) {
 
-        $contenido = $oForm->fetchForm("$local_templates_dir/form.tpl",$lang["Select Queue"],null);
+        $contenido = $oForm->fetchForm("$local_templates_dir/form.tpl",$arrLangModule["Select Queue"],null);
         return $contenido;
     }
 
-    function guardarQueue($smarty,$lang,$oForm,$local_templates_dir,$oData) {
+    function guardarQueue($smarty,$arrLangModule,$oForm,$local_templates_dir,$oData) {
         $valido = true;
 
         if (  !isset($_POST['select_queue'] ) || $_POST['select_queue']=="-1"  ) {
@@ -136,11 +136,11 @@
                 header("Location: ?menu=queues");
             }
         }
-        $contenido = $oForm->fetchForm("$local_templates_dir/form.tpl",$lang["Select Queue"],null);
+        $contenido = $oForm->fetchForm("$local_templates_dir/form.tpl",$arrLangModule["Select Queue"],null);
         return $contenido;
     }
 
-    function editQueue($smarty,$lang,$oForm,$local_templates_dir,$oData) {
+    function editQueue($smarty,$arrLangModule,$oForm,$local_templates_dir,$oData) {
 
         $arrTmp=array();
         $oForm->setEditMode();
@@ -153,11 +153,11 @@
 
         $smarty->assign("rte_script",adaptar_formato_rte($arrQueue[0]['script']));
         $smarty->assign("queue", $arrQueue[0]['queue']);
-        $contenido = $oForm->fetchForm("$local_templates_dir/form.tpl",$lang["Edit Queue"],$arrTmp);
+        $contenido = $oForm->fetchForm("$local_templates_dir/form.tpl",$arrLangModule["Edit Queue"],$arrTmp);
         return $contenido;
     }
 
-    function updateQueue($smarty,$lang,$oForm,$local_templates_dir,$oData) {
+    function updateQueue($smarty,$arrLangModule,$oForm,$local_templates_dir,$oData) {
 
         $valido = true;
         $arrTmp=array();
@@ -183,12 +183,12 @@
             }
         }
 
-        $contenido = $oForm->fetchForm("$local_templates_dir/form.tpl",$lang["Edit Queue"],null);
+        $contenido = $oForm->fetchForm("$local_templates_dir/form.tpl",$arrLangModule["Edit Queue"],null);
         return $contenido;
 
     }
 
-    function viewQueue($smarty,$lang,$oForm,$local_templates_dir,$oData) {
+    function viewQueue($smarty,$arrLangModule,$oForm,$local_templates_dir,$oData) {
 
         $oForm->setViewMode(); 
 
@@ -205,7 +205,7 @@
 
         $smarty->assign("id_queue", $_GET['id']);
 
-        $contenido = $oForm->fetchForm("$local_templates_dir/form.tpl",$lang["View Queue"],$arrTmp);
+        $contenido = $oForm->fetchForm("$local_templates_dir/form.tpl",$arrLangModule["View Queue"],$arrTmp);
         return $contenido;
 
     }
@@ -221,13 +221,13 @@
         }
         else
         {
-            $smarty->assign("mb_title",$lang['Activate Error']);
-            $smarty->assign("mb_message",$lang['Error when Activating the Queue']);
+            $smarty->assign("mb_title",$arrLangModule['Activate Error']);
+            $smarty->assign("mb_message",$arrLangModule['Error when Activating the Queue']);
         }
 
     }
 
-    function listadoQueue($smarty,$lang,$oForm,$local_templates_dir,$oData,$module_name,$_POST) {
+    function listadoQueue($smarty,$arrLangModule,$oForm,$local_templates_dir,$oData,$module_name,$_POST) {
 
         if (isset($_GET['cbo_estado']) && $_GET['cbo_estado']=="I") {
             $_POST['cbo_estado'] = 'I';
@@ -237,28 +237,28 @@
 
         $arrDataQueues = $oData->getQueues(NULL, $_POST['cbo_estado']);
         $end = count($arrDataQueues);
-        $arrGrid = array("title"    => $lang["Queue List"],
+        $arrGrid = array("title"    => $arrLangModule["Queue List"],
             "icon"     => "images/list.png",
             "width"    => "99%",
             "start"    => ($end==0) ? 0 : 1,
             "end"      => $end,
             "total"    => $end,
-            "columns"  => array(0 => array("name"       => $lang["Name Queue"],
+            "columns"  => array(0 => array("name"       => $arrLangModule["Name Queue"],
                                         "property1"  => ""),
-                            1 => array("name"       => $lang["Status"], 
+                            1 => array("name"       => $arrLangModule["Status"], 
                                        "property1"  => ""),
-                            2 => array("name"       => $lang["Options"], 
+                            2 => array("name"       => $arrLangModule["Options"], 
                                        "property1"  => "" ))); 
     
-        $estados = array("all"=>$lang['all'], "A"=>$lang['active'], "I"=>$lang['inactive']);
+        $estados = array("all"=>$arrLangModule['all'], "A"=>$arrLangModule['active'], "I"=>$arrLangModule['inactive']);
         $combo_estados = "<select name='cbo_estado' id='cbo_estado' onChange='submit();'>".combo($estados,$_POST['cbo_estado'])."</select>";
         
         $oGrid = new paloSantoGrid($smarty);
         $oGrid->showFilter(
                 "<form style='margin-bottom:0;' method='POST' action='?menu=$module_name'>" .
                 "<table width='100%' border='0'><tr>".
-                "<td><input type='submit' name='submit_select_queue' value='{$lang['Select Queue']}' class='button'></td>".
-                "<td class='letra12' align='right'>{$lang['Status']}&nbsp;$combo_estados </td>".
+                "<td><input type='submit' name='submit_select_queue' value='{$arrLangModule['Select Queue']}' class='button'></td>".
+                "<td class='letra12' align='right'>{$arrLangModule['Status']}&nbsp;$combo_estados </td>".
                 "</tr></table>".
                 "</form>");
         $arrData    = array();
@@ -267,19 +267,19 @@
                 
                 $arrTmp[0] = $queue['queue'];
 
-                $ver_queue = "&nbsp;<a href='?menu=$module_name&action=view&id=".$queue['id']."'>{$lang['View']}</a>";
+                $ver_queue = "&nbsp;<a href='?menu=$module_name&action=view&id=".$queue['id']."'>{$arrLangModule['View']}</a>";
                 if($queue['estatus']=='I') {
-                    $arrTmp[1] = $lang['Inactive'];
-                    $arrTmp[2] = "&nbsp;<a href='?menu=$module_name&action=activar&id=".$queue['id']."'>{$lang['Activate']}</a>";
+                    $arrTmp[1] = $arrLangModule['Inactive'];
+                    $arrTmp[2] = "&nbsp;<a href='?menu=$module_name&action=activar&id=".$queue['id']."'>{$arrLangModule['Activate']}</a>";
                 } elseif($queue['estatus']=='A') {
-                    $arrTmp[1] = $lang['Active'];
+                    $arrTmp[1] = $arrLangModule['Active'];
                     $arrTmp[2] = $ver_queue;
                 }
                 $arrData[] = $arrTmp;
             }
         }
 
-        $contenido = $oGrid->fetchGrid($arrGrid, $arrData,$lang);
+        $contenido = $oGrid->fetchGrid($arrGrid, $arrData,$arrLangModule);
         return $contenido;
     }
 

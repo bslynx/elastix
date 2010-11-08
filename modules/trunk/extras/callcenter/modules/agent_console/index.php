@@ -43,13 +43,13 @@ function _moduleContent(&$smarty, $module_name)
     $script_dir=dirname($_SERVER['SCRIPT_FILENAME']);
 
     // Include language file for EN, then for local, and merge the two.
-    $arrLan = NULL;
+    $arrLangModule = NULL;
     include_once("modules/$module_name/lang/en.lang");
     $lang_file="modules/$module_name/lang/$lang.lang";
     if (file_exists("$script_dir/$lang_file")) {
-        $arrLanEN = $arrLan;
+        $arrLangModuleEN = $arrLangModule;
         include_once($lang_file);
-        $arrLan = array_merge($arrLanEN, $arrLangModule);
+        $arrLangModule = array_merge($arrLangModuleEN, $arrLangModule);
     }
 
     //include module files
@@ -115,13 +115,13 @@ function _moduleContent(&$smarty, $module_name)
         $smarty->assign("SCRIPT_AJAX", $xajax->printJavascript("libs/xajax/"));
 
         // Texto de los botones
-        $smarty->assign("HANGUP", $arrLan["Hangup"]);
-        $smarty->assign("TRANFER", $arrLan["Tranfer"]);
+        $smarty->assign("HANGUP", $arrLangModule["Hangup"]);
+        $smarty->assign("TRANFER", $arrLangModule["Tranfer"]);
 
-        $smarty->assign("llamada", $arrLan["Call"]);
-        $smarty->assign("script", $arrLan["Script"]);
-        $smarty->assign("formulario", $arrLan["Form"]);
-        $smarty->assign("title", $arrLan["Agent Console"]);
+        $smarty->assign("llamada", $arrLangModule["Call"]);
+        $smarty->assign("script", $arrLangModule["Script"]);
+        $smarty->assign("formulario", $arrLangModule["Form"]);
+        $smarty->assign("title", $arrLangModule["Agent Console"]);
 
         // Conexión a la base de datos
         $pDB = getDB();
@@ -135,12 +135,12 @@ function _moduleContent(&$smarty, $module_name)
         if($informacion_agente != null && is_array($informacion_agente) && count($informacion_agente) >0)
             $nombre_agent = $informacion_agente['name'];
         //fin de los datos del agente
-        $smarty->assign("name_agent", $arrLan["Agent"].": ".$nombre_agent);
-        $smarty->assign("number_agent", $arrLan["Agent Number"].": ".$_SESSION['elastix_agent_user']);
+        $smarty->assign("name_agent", $arrLangModule["Agent"].": ".$nombre_agent);
+        $smarty->assign("number_agent", $arrLangModule["Agent Number"].": ".$_SESSION['elastix_agent_user']);
         $smarty->assign("logout", $arrLang["Logout"]);
         $smarty->assign("link_logout", "?menu=$module_name&logout_agent=yes");
         $smarty->assign("prefijo_objeto", $prefijo_objeto["prefijo"]);
-        $smarty->assign("TOMAR_BREAK", $arrLan["Take Break"]);
+        $smarty->assign("TOMAR_BREAK", $arrLangModule["Take Break"]);
         $smarty->assign("CANCEL", $arrLang["Cancel"]);
         $smarty->assign("ALL_BREAK", obtener_break());
 
@@ -152,8 +152,8 @@ function _moduleContent(&$smarty, $module_name)
         //$extensions = getExtensions($arrConfig);
 
         $opcion_select_extension = crearSelect($extensions);
-        $smarty->assign("LLAMAR", $arrLan["Accept"]);
-        $smarty->assign("CONSULTAR_LLAMADA",$arrLan["consultar_llamada"]);
+        $smarty->assign("LLAMAR", $arrLangModule["Accept"]);
+        $smarty->assign("CONSULTAR_LLAMADA",$arrLangModule["consultar_llamada"]);
         $smarty->assign("opcion_select_extension", $opcion_select_extension);
 
         /*if( $arrTipo['tipo']== "ENTRANTE" || $arrTipo['tipo']== "SALIENTE" ) {
@@ -179,19 +179,19 @@ function _moduleContent(&$smarty, $module_name)
         //$respuesta->addAssign( "document.getElementById('marcar').disabled  " );
         //$smarty->assign("ESTILO_MARCADO",$estilo_marcado);
 
-        $smarty->assign("MARCAR",$arrLan['Marcar']);
-        $smarty->assign("BTN_MARCAR",$arrLan['Marcar']);
-        $smarty->assign("BTN_CANCELAR",$arrLan['Cancel']);
+        $smarty->assign("MARCAR",$arrLangModule['Marcar']);
+        $smarty->assign("BTN_MARCAR",$arrLangModule['Marcar']);
+        $smarty->assign("BTN_CANCELAR",$arrLangModule['Cancel']);
 
 // fin de codigo agregado para la transferencia y el marcado de llamadas
 
 
         // PARA IMPLEMENTACIÓN A LA FUNCIÓN HOLD. AÚN NO ESTÁ IMPLEMENTADA POR FALLO
         if (isset($_SESSION['channel_active']) && !is_null($_SESSION['channel_active'])) {
-            $etiqueta_hold = $arrLan["Unhold"];
+            $etiqueta_hold = $arrLangModule["Unhold"];
             $estilo_hold = 'boton_unbreak';
         } else {
-            $etiqueta_hold = $arrLan["Hold"];
+            $etiqueta_hold = $arrLangModule["Hold"];
             $estilo_hold = 'boton_break';
         }
         $smarty->assign("LABEL_HOLD",$etiqueta_hold);
@@ -203,8 +203,8 @@ function _moduleContent(&$smarty, $module_name)
         $smarty->assign("DATOS_SCRIPT", $script);
 
         // para el formulario
-        $smarty->assign("formularios", $arrLan["Form"]);
-        $smarty->assign("fill_fields", $arrLan["Fill the fields"]);
+        $smarty->assign("formularios", $arrLangModule["Form"]);
+        $smarty->assign("fill_fields", $arrLangModule["Fill the fields"]);
         $smarty->assign("SAVE", $arrLang["Save"]);
         $smarty->assign("option_form", "combo");
 
@@ -216,11 +216,11 @@ function _moduleContent(&$smarty, $module_name)
         $agentnum = $_SESSION['elastix_agent_user'];
 
         if (!estaAgenteEnPausa(null,$agentnum)) {
-            $name_pausa = $arrLan["Break"];
+            $name_pausa = $arrLangModule["Break"];
             $style_pause = 'boton_break';
          }
         else {
-            $name_pausa = $arrLan["UnBreak"];
+            $name_pausa = $arrLangModule["UnBreak"];
             $style_pause = 'boton_unbreak';
         }
         //PARA EL CRONOMETRO //HAY QUE VER COMO SOLUCIONAR PORQUE ESTA FUNCION SE LLAMA CADA 4 SEGUNDOS (SOLUCIONADO CON $soloUnaVez)
@@ -241,10 +241,10 @@ function _moduleContent(&$smarty, $module_name)
         $xajax->processRequests();
         $smarty->assign("SCRIPT_AJAX", $xajax->printJavascript("libs/xajax/"));
 
-        $smarty->assign("WELCOME_AGENT", $arrLan["Welcome to Console Agent"]);
-        $smarty->assign("ENTER_USER_PASSWORD", $arrLan["Please enter your number agent"]);
-        $smarty->assign("USERNAME", $arrLan["Number Agent"]);
-        $smarty->assign("SUBMIT", $arrLan["Enter Agent"]);
+        $smarty->assign("WELCOME_AGENT", $arrLangModule["Welcome to Console Agent"]);
+        $smarty->assign("ENTER_USER_PASSWORD", $arrLangModule["Please enter your number agent"]);
+        $smarty->assign("USERNAME", $arrLangModule["Number Agent"]);
+        $smarty->assign("SUBMIT", $arrLangModule["Enter Agent"]);
 
         $id_extension_channel="";
         $extensions_name = array_keys($extensions);
@@ -258,7 +258,7 @@ function _moduleContent(&$smarty, $module_name)
         $smarty->assign("EXT_NAME", $extensions_name);
         $smarty->assign("agent_user_aux", isset($_POST['input_agent_user'])?$_POST['input_agent_user']:"");
         $smarty->assign("ID_EXTENSION", $id_extension_channel);
-        $smarty->assign("EXTENSION", $arrLan["Extension"]);
+        $smarty->assign("EXTENSION", $arrLangModule["Extension"]);
 
         if(isset($_POST['submit_agent_login']))
             $smarty->assign("llamar_conectar_extension", true); 

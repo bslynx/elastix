@@ -46,7 +46,7 @@ function _moduleContent(&$smarty, $module_name)
     global $arrConf;
     global $arrConfModule;
     global $arrLang;
-    global $arrLan;
+    global $arrLangModule;
 
      //include module files
     include_once "modules/$module_name/configs/default.conf.php";
@@ -68,9 +68,9 @@ function _moduleContent(&$smarty, $module_name)
     include_once("modules/$module_name/lang/en.lang");
     $lang_file="modules/$module_name/lang/$language.lang";
     if (file_exists("$script_dir/$lang_file")) {
-        $arrLanEN = $arrLan;
+        $arrLangModuleEN = $arrLangModule;
         include_once($lang_file);
-        $arrLan = array_merge($arrLanEN, $arrLangModule);
+        $arrLangModule = array_merge($arrLangModuleEN, $arrLangModule);
     }
     $arrLang = array_merge($arrLang, $arrLangModule);
 

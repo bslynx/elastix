@@ -52,17 +52,17 @@ function _moduleContent(&$smarty, $module_name)
         include_once("modules/$module_name/lang/en.lang");
 */
     include_once("modules/$module_name/lang/en.lang");
-    $lang_file="modules/$module_name/lang/$lang.lang";
+    $lang_file="modules/$module_name/lang/$lang.lang";	
     if (file_exists("$script_dir/$lang_file")) {
-        $arrLanEN = $arrLan;
+        $arrLangModuleEN = $arrLangModule;
         include_once($lang_file);
-        $arrLan = array_merge($arrLanEN, $arrLangModule);
-    }
+        $arrLangModule = array_merge($arrLangModuleEN, $arrLangModulegModule);
+	}
 
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
     global $arrConf;
-    global $arrLang;
+    global $arrLangModuleg;
 
     require_once "modules/$module_name/libs/paloSantoHoldTime.class.php";
     //folder path for custom templates
@@ -83,7 +83,7 @@ function _moduleContent(&$smarty, $module_name)
     $htmlFilter = "";
 
     if (!is_object($pDB->conn) || $pDB->errMsg!="") {
-        $smarty->assign("mb_message", $arrLang["Error when connecting to database"]." ".$pDB->errMsg);
+        $smarty->assign("mb_message", $arrLangModuleg["Error when connecting to database"]." ".$pDB->errMsg);
     }elseif(isset($_GET['exportcsv']) && $_GET['exportcsv']=='yes') {
         $fechaActual = date("d M Y");
         header("Cache-Control: private");
@@ -119,9 +119,9 @@ function _moduleContent(&$smarty, $module_name)
 
 //funcion que construye la vista del reporte
 function listadoHoldTime($pDB, $smarty, $module_name, $local_templates_dir,&$oGrid,&$arrGrid,&$arrData) {
-    global $arrLang;
-	global $arrLangModule;
-    $arrLan=$arrLangModule;
+    global $arrLangModuleg;
+	global $arrLangModulegModule;
+    $arrLangModule=$arrLangModulegModule;
     $arrData = array();
     $oCalls = new paloSantoHoldTime($pDB);
     $fecha_init = date("d M Y");
@@ -166,19 +166,19 @@ function listadoHoldTime($pDB, $smarty, $module_name, $local_templates_dir,&$oGr
                 $arrFecha_init = explode('-',translateDate($fecha_init));
             }else {
                 // si la fecha esta en un formato no valido se envia un mensaje de error
-                $smarty->assign("mb_title", $arrLan["Error"]);
-                $smarty->assign("mb_message", $arrLan["Debe ingresar una fecha valida"]);
+                $smarty->assign("mb_title", $arrLangModule["Error"]);
+                $smarty->assign("mb_message", $arrLangModule["Debe ingresar una fecha valida"]);
             }
             // pregunto si es valido el formato de la fecha final
-                if ( ereg( $sValidacion , $_POST['txt_fecha_end'] ) ) {
+                if (ereg( $sValidacion , $_POST['txt_fecha_end'] ) ) {
                     // si el formato es valido procedo a convertir la fecha en un arreglo que contiene 
                 // el anio , mes y dia seleccionados
                     $fecha_end = $fecha_end_actual;//$_POST['txt_fecha_end'];
                     $arrFecha_end = explode('-',translateDate($fecha_end));
                 }else {
                     // si la fecha esta en un formato no valido se envia un mensaje de error
-                    $smarty->assign("mb_title", $arrLan["Error"]);
-                    $smarty->assign("mb_message", $arrLan["Debe ingresar una fecha valida"]);
+                    $smarty->assign("mb_title", $arrLangModule["Error"]);
+                    $smarty->assign("mb_message", $arrLangModule["Debe ingresar una fecha valida"]);
                 }
 
         //PRUEBA
@@ -198,8 +198,8 @@ function listadoHoldTime($pDB, $smarty, $module_name, $local_templates_dir,&$oGr
                 $arrFecha_init = explode('-',translateDate($fecha_init));
             }else {
                 // si la fecha esta en un formato no valido se envia un mensaje de error
-                $smarty->assign("mb_title", $arrLan["Error"]);
-                $smarty->assign("mb_message", $arrLan["Debe ingresar una fecha valida"]);
+                $smarty->assign("mb_title", $arrLangModule["Error"]);
+                $smarty->assign("mb_message", $arrLangModule["Debe ingresar una fecha valida"]);
             }
             // pregunto si es valido el formato de la fecha final
                 if ( ereg( $sValidacion , $_GET['txt_fecha_end'] ) ) {
@@ -209,8 +209,8 @@ function listadoHoldTime($pDB, $smarty, $module_name, $local_templates_dir,&$oGr
                     $arrFecha_end = explode('-',translateDate($fecha_end));
                 }else {
                     // si la fecha esta en un formato no valido se envia un mensaje de error
-                    $smarty->assign("mb_title", $arrLan["Error"]);
-                    $smarty->assign("mb_message", $arrLan["Debe ingresar una fecha valida"]);
+                    $smarty->assign("mb_title", $arrLangModule["Error"]);
+                    $smarty->assign("mb_message", $arrLangModule["Debe ingresar una fecha valida"]);
                 }
 
             $tipo =  $_GET['cbo_tipos'];
@@ -228,8 +228,8 @@ function listadoHoldTime($pDB, $smarty, $module_name, $local_templates_dir,&$oGr
         elseif(!isset($fecha_init) && !isset($fecha_end)) {
             // si se ha presionado el boton para listar por fechas, y no se ha ingresado una fecha
             // se le muestra al usuario un mensaje de error
-            $smarty->assign("mb_title", $arrLan["Error"]);
-            $smarty->assign("mb_message", $arrLan["Debe ingresar una fecha inicio/fin"]);
+            $smarty->assign("mb_title", $arrLangModule["Error"]);
+            $smarty->assign("mb_message", $arrLangModule["Debe ingresar una fecha inicio/fin"]);
         }
     }
 
@@ -314,7 +314,7 @@ function listadoHoldTime($pDB, $smarty, $module_name, $local_templates_dir,&$oGr
            $arrData[] = $arrTmp;
         }
 
-        $arrTmp[0] = "<b>".$arrLan["Total"]."<b>";
+        $arrTmp[0] = "<b>".$arrLangModule["Total"]."<b>";
 
         for($j=1;$j<=8;$j++){
             $sum = 0;
@@ -338,13 +338,13 @@ function listadoHoldTime($pDB, $smarty, $module_name, $local_templates_dir,&$oGr
     }
 
 //Llenamos las cabeceras
-    $arrGrid = array("title"    => $arrLan["Hold Time"],
+    $arrGrid = array("title"    => $arrLangModule["Hold Time"],
         "icon"     => "images/list.png",
         "width"    => "99%",
         "start"    => ($end==0) ? 0 : $offset + 1,
         "end"      => ($offset+$limit)<=$end ? $offset+$limit : $end,
         "total"    => $end,
-        "columns"  => array(0 => array("name"      => $arrLan["Cola"],
+        "columns"  => array(0 => array("name"      => $arrLangModule["Cola"],
                                        "property1" => ""),
                             1 => array("name"      => "0 - 10", 
                                        "property1" => ""),
@@ -360,39 +360,39 @@ function listadoHoldTime($pDB, $smarty, $module_name, $local_templates_dir,&$oGr
                                        "property1" => ""),
                             7 => array("name"      => "61 >", 
                                        "property1" => ""),
-                            8 => array("name"      => $arrLan["Tiempo Promedio Espera(Seg)"], 
+                            8 => array("name"      => $arrLangModule["Tiempo Promedio Espera(Seg)"], 
                                        "property1" => ""),
 
-                            9 => array("name"      => $arrLan["Espera Mayor(seg)"], 
+                            9 => array("name"      => $arrLangModule["Espera Mayor(seg)"], 
                                        "property1" => ""),
-                            10 => array("name"      => $arrLan["Total Calls"], 
+                            10 => array("name"      => $arrLangModule["Total Calls"], 
                                        "property1" => ""),
                         ));
 
     //Para el combo de tipos
-    $tipos = array("E"=>$arrLan["Ingoing"], "S"=>$arrLan["Outgoing"]);
+    $tipos = array("E"=>$arrLangModule["Ingoing"], "S"=>$arrLangModule["Outgoing"]);
     $combo_tipos = "<select name='cbo_tipos' id='cbo_tipos' onChange='submit();'>".combo($tipos,$_POST['cbo_tipos'])."</select>";
 
     //para el combo de entrantes
     if(isset($_POST['cbo_estado_entrantes'])) $cbo_estado_entrates = $_POST['cbo_estado_entrantes'];
     elseif(isset($_GET['cbo_estado_entrantes'])) $cbo_estado_entrates = $_GET['cbo_estado_entrantes'];
     else $cbo_estado_entrates = 'T';
-    $estados_entrantes = array("T"=>$arrLan["Todas"], "E"=>$arrLan["Exitosas"],  "A"=>$arrLan["Abandonadas"]);
+    $estados_entrantes = array("T"=>$arrLangModule["Todas"], "E"=>$arrLangModule["Exitosas"],  "A"=>$arrLangModule["Abandonadas"]);
     $combo_estados_entrantes = "<select name='cbo_estado_entrantes' id='cbo_estado_entrantes' >".combo($estados_entrantes,$cbo_estado_entrates)."</select>";
 
     //para el combo de salientes
     if(isset($_POST['cbo_estado_salientes'])) $cbo_estado_salientes = $_POST['cbo_estado_salientes'];
     elseif(isset($_GET['cbo_estado_salientes'])) $cbo_estado_salientes = $_GET['cbo_estado_salientes'];
     else $cbo_estado_salientes = 'T';
-    $estados_salientes = array("T"=>$arrLan["Todas"], "E"=>$arrLan["Exitosas"],  "N"=>$arrLan["No Realizadas"], "A" => $arrLan["Abandonadas"]);
+    $estados_salientes = array("T"=>$arrLangModule["Todas"], "E"=>$arrLangModule["Exitosas"],  "N"=>$arrLangModule["No Realizadas"], "A" => $arrLangModule["Abandonadas"]);
     $combo_estados_salientes = "<select name='cbo_estado_salientes' id='cbo_estado_salientes' >".combo($estados_salientes,$cbo_estado_salientes)."</select>";
 
     //validamos que combo se cargará segun lo electo en combo TIPO, al principio le seteamos por defecto el de ENTRANTES
-    $td = "<td class='letra12' align='right'>{$arrLan["Estado"]}</td><td>$combo_estados_entrantes</td>";
+    $td = "<td class='letra12' align='right'>{$arrLangModule["Estado"]}</td><td>$combo_estados_entrantes</td>";
     if (isset($_POST['cbo_tipos']) && $_POST['cbo_tipos']=="E")
-        $td = "<td class='letra12' align='left'>{$arrLan["Estado"]}</td><td>$combo_estados_entrantes</td>";
+        $td = "<td class='letra12' align='left'>{$arrLangModule["Estado"]}</td><td>$combo_estados_entrantes</td>";
     elseif (isset($_POST['cbo_tipos']) && $_POST['cbo_tipos']=="S")
-        $td =  "<td class='letra12' align='left'>{$arrLan["Estado"]}</td><td>$combo_estados_salientes</td>";
+        $td =  "<td class='letra12' align='left'>{$arrLangModule["Estado"]}</td><td>$combo_estados_salientes</td>";
 
  
     $oGrid->showFilter( insertarCabeceraCalendario()."
@@ -404,7 +404,7 @@ function listadoHoldTime($pDB, $smarty, $module_name, $local_templates_dir,&$oGr
                         <table>
                         <tr>
                             <td class='letra12'>
-                                {$arrLan["Date Init"]}
+                                {$arrLangModule["Date Init"]}
                                 <span  class='required'>*</span>
                             </td>
                             <td>
@@ -414,7 +414,7 @@ function listadoHoldTime($pDB, $smarty, $module_name, $local_templates_dir,&$oGr
                                 &nbsp;
                             </td>
                             <td class='letra12'>
-                                {$arrLan["Date End"]}
+                                {$arrLangModule["Date End"]}
                                 <span  class='required'>*</span>
                             </td>
                             <td>
@@ -424,14 +424,14 @@ function listadoHoldTime($pDB, $smarty, $module_name, $local_templates_dir,&$oGr
                         </tr>
 
                         <tr>
-                            <td class='letra12' align='left'>{$arrLan["Tipo"]}</td>
+                            <td class='letra12' align='left'>{$arrLangModule["Tipo"]}</td>
                             <td>$combo_tipos</td>
                             <td class='letra12'>
                                 &nbsp;
                             </td>
                             ".$td."
                             <td>
-                                <input type='submit' name='submit_fecha' value={$arrLan["Find"]} class='button'>
+                                <input type='submit' name='submit_fecha' value={$arrLangModule["Find"]} class='button'>
                             </td>
                         </tr>
                         </table>
@@ -442,7 +442,7 @@ function listadoHoldTime($pDB, $smarty, $module_name, $local_templates_dir,&$oGr
 
         ");
     $oGrid->enableExport();
-    $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
+    $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData,$arrLangModuleg);
     return $contenidoModulo;
 }
 

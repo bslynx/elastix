@@ -47,9 +47,9 @@ function _moduleContent(&$smarty, $module_name)
     include_once("modules/$module_name/lang/en.lang");
     $lang_file="modules/$module_name/lang/$lang.lang";
     if (file_exists("$script_dir/$lang_file")) {
-        $arrLanEN = $arrLan;
+        $arrLangModuleEN = $arrLangModule;
         include_once($lang_file);
-        $arrLan = array_merge($arrLanEN, $arrLan);
+        $arrLangModule = array_merge($arrLangModuleEN, $arrLangModule);
     }
 
     //include module files
@@ -74,7 +74,7 @@ function _moduleContent(&$smarty, $module_name)
     // se conecta a la base
     $pDB = new paloDB($arrConf["cadena_dsn"]);
     if (!is_object($pDB->conn) || $pDB->errMsg!="") {
-        $smarty->assign("mb_message", $arrLan["Error when connecting to database"]." ".$pDB->errMsg);
+        $smarty->assign("mb_message", $arrLangModule["Error when connecting to database"]." ".$pDB->errMsg);
     }
     
     $htmlFilter = "";
@@ -130,7 +130,7 @@ function _moduleContent(&$smarty, $module_name)
 //funcion que construye la vista del reporte
 function listadoLoginLogout($pDB, $smarty, $module_name, $local_templates_dir,&$oGrid,&$arrGrid,&$arrData) {
     global $arrLang;
-    global $arrLan;
+    global $arrLangModule;
     $arrData = array();
     $oCalls = new paloSantoLoginLogout($pDB);
     $fecha_init = date("d M Y");
@@ -175,8 +175,8 @@ function listadoLoginLogout($pDB, $smarty, $module_name, $local_templates_dir,&$
                 $arrFecha_end = explode('-',translateDate($fecha_end));
             }else {
                 // si la fecha esta en un formato no valido se envia un mensaje de error
-                $smarty->assign("mb_title", $arrLan["Error"]);
-                $smarty->assign("mb_message", $arrLan["Debe ingresar una fecha valida"]);
+                $smarty->assign("mb_title", $arrLangModule["Error"]);
+                $smarty->assign("mb_message", $arrLangModule["Debe ingresar una fecha valida"]);
             }
 
 
@@ -198,8 +198,8 @@ function listadoLoginLogout($pDB, $smarty, $module_name, $local_templates_dir,&$
                 $arrFecha_end = explode('-',translateDate($fecha_end));
             }else {
                 // si la fecha esta en un formato no valido se envia un mensaje de error
-                $smarty->assign("mb_title", $arrLan["Error"]);
-                $smarty->assign("mb_message", $arrLan["Debe ingresar una fecha valida"]);
+                $smarty->assign("mb_title", $arrLangModule["Error"]);
+                $smarty->assign("mb_message", $arrLangModule["Debe ingresar una fecha valida"]);
             }
 
             $tipo =  $_GET['cbo_tipos'];
@@ -213,8 +213,8 @@ function listadoLoginLogout($pDB, $smarty, $module_name, $local_templates_dir,&$
         elseif(!isset($fecha_init) && !isset($fecha_end)) {
             // si se ha presionado el boton para listar por fechas, y no se ha ingresado una fecha
             // se le muestra al usuario un mensaje de error
-            $smarty->assign("mb_title", $arrLan["Error"]);
-            $smarty->assign("mb_message", $arrLan["Debe ingresar una fecha inicio/fin"]);
+            $smarty->assign("mb_title", $arrLangModule["Error"]);
+            $smarty->assign("mb_message", $arrLangModule["Debe ingresar una fecha inicio/fin"]);
         }
     }
 
@@ -289,7 +289,7 @@ function listadoLoginLogout($pDB, $smarty, $module_name, $local_templates_dir,&$
             $sumTimeCalls = $oCalls->getSumTime($sumTimeCalls,$arrData[$i][5]);
         }
 
-        $arrTmp[0] = "<b>".$arrLan["Total"]."</b>";
+        $arrTmp[0] = "<b>".$arrLangModule["Total"]."</b>";
         $arrTmp[1] = "";
         $arrTmp[2] = "";
         $arrTmp[3] = "";
@@ -302,33 +302,33 @@ function listadoLoginLogout($pDB, $smarty, $module_name, $local_templates_dir,&$
     }
 
 //Llenamos las cabeceras
-    $arrGrid = array("title"    => $arrLan["Login Logout"],
+    $arrGrid = array("title"    => $arrLangModule["Login Logout"],
         "icon"     => "images/list.png",
         "width"    => "99%",
         "start"    => ($end==0) ? 0 : $offset + 1,
         "end"      => ($offset+$limit)<=$end ? $offset+$limit : $end,
         "total"    => $end,
-        "columns"  => array(0 => array("name"      => $arrLan["Agente"],
+        "columns"  => array(0 => array("name"      => $arrLangModule["Agente"],
                                        "property1" => ""),
-                            1 => array("name"      => $arrLan["Nombre"],
+                            1 => array("name"      => $arrLangModule["Nombre"],
                                        "property1" => ""),
-                            2 => array("name"      => $arrLan["Login"], 
+                            2 => array("name"      => $arrLangModule["Login"], 
                                        "property1" => ""),
-                            3 => array("name"      => $arrLan["Logout"],
+                            3 => array("name"      => $arrLangModule["Logout"],
                                        "property1" => ""),
-                            4 => array("name"      => $arrLan["Total Login"],
+                            4 => array("name"      => $arrLangModule["Total Login"],
                                        "property1" => ""),
-                            5 => array("name"      => $arrLan["Tiempo en Llamadas"],
+                            5 => array("name"      => $arrLangModule["Tiempo en Llamadas"],
                                        "property1" => ""),
-                            6 => array("name"      => $arrLan["Service(%)"], 
+                            6 => array("name"      => $arrLangModule["Service(%)"], 
                                        "property1" => ""),
-                            7 => array("name"      => $arrLan["Estado"], 
+                            7 => array("name"      => $arrLangModule["Estado"], 
                                        "property1" => ""),
 
                         ));
 
     //Para el combo de tipos
-    $tipos = array("D"=>$arrLan["Detallado"], "G"=>$arrLan["General"]);
+    $tipos = array("D"=>$arrLangModule["Detallado"], "G"=>$arrLangModule["General"]);
     $combo_tipos = "<select name='cbo_tipos' id='cbo_tipos' onChange='submit();'>".combo($tipos,$_POST['cbo_tipos'])."</select>";
 
      $oGrid->showFilter( insertarCabeceraCalendario()."
@@ -340,14 +340,14 @@ function listadoLoginLogout($pDB, $smarty, $module_name, $local_templates_dir,&$
                         <table>
                         <tr>
                             <td class='letra12'>
-                                {$arrLan["Date Init"]}
+                                {$arrLangModule["Date Init"]}
                                 <span  class='required'>*</span>
                             </td>
                             <td>
                                 ".insertarDateInit($fecha_init_actual)."
                             </td>
                             <td class='letra12'>
-                                {$arrLan["Date End"]}
+                                {$arrLangModule["Date End"]}
                                 <span  class='required'>*</span>
                             </td>
                             <td>
@@ -356,10 +356,10 @@ function listadoLoginLogout($pDB, $smarty, $module_name, $local_templates_dir,&$
                             <td class='letra12'>
                                 &nbsp;
                             </td>
-                            <td class='letra12' align='left'>{$arrLan["Tipo"]}</td>
+                            <td class='letra12' align='left'>{$arrLangModule["Tipo"]}</td>
                             <td>$combo_tipos</td>
                             <td>
-                                <input type='submit' name='submit_fecha' value={$arrLan["Find"]} class='button'>
+                                <input type='submit' name='submit_fecha' value={$arrLangModule["Find"]} class='button'>
                             </td>
                         </tr>
 
