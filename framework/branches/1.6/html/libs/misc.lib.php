@@ -145,36 +145,42 @@ function obtener_info_de_sistema()
     return $arrInfo;
 }
 
+/**
+ * Procedimiento para construir una cadena de parámetros GET a partir de un 
+ * arreglo asociativo de variables. Opcionalmente se puede indicar un conjunto
+ * de variables a excluir de la construcción. Si se ejecuta en contexto web y
+ * se dispone del superglobal $_GET, sus variables se agregan también a la 
+ * cadena, a menos que el nombre de la variable GET conste también en la lista
+ * de variables indicada explícitamente.
+ *
+ * @param   array   $arrVars    Lista de variables a incluir en cadena URL
+ * @param   array   $arrExcluir Lista de variables a excluir de cadena URL
+ *
+ * @return  string  Cadena URL con signo de interrogación enfrente, si hubo al
+ *                  menos una variable a convertir, o cadena vacía si no hay
+ *                  variable alguna a convertir
+ */
 function construirURL($arrVars=array(), $arrExcluir=array())
 {
-    $strURL = "?";
+    $listaVars = array();   // Lista de variables inicial
 
-    // Incluyo en el string las variables arbitrarias
-    if(is_array($arrVars)) {
-        foreach($arrVars as $varName => $value) {
-            // Excluyo las variables que se deben excluir
-            if(!in_array($varName, $arrExcluir)) {
-                $strURL .="$varName=" . urlencode($value) . "&";
-            }
-        }
+    // Variables GET, si existen
+    if (isset($_GET) && is_array($_GET))
+        $listaVars = array_merge($listaVars, $_GET);
+
+    // Variables explícitas, si existen
+    if (is_array($arrVars))
+        $listaVars = array_merge($listaVars, $arrVars);
+
+    // Quitar variables excluídas
+    foreach ($arrExcluir as $k) unset($listaVars[$k]);
+    if (count($listaVars) <= 0) return '';
+
+    $keyval = array();
+    foreach ($listaVars as $k => $v) {
+        $keyval[] = urlencode($k).'='.urlencode($v);
     }
-
-    // Incluyo en el string las variables GET
-    if(is_array($_GET)) {
-        foreach($_GET as $varName => $value) {
-            if(!array_key_exists($varName, $arrVars)) {
-                // Excluyo las variables que se deben excluir
-                if(!in_array($varName, $arrExcluir)) {
-                    $strURL .= "$varName=$value&";
-                }
-            }
-        }
-    }
-
-    // Elimino el ultimo caracter pues es un ? o un &
-    $strURL = substr($strURL, 0, strlen($strURL)-1);
-
-    return $strURL;
+    return '?'.implode('&amp;', $keyval);    
 }
 
 // Translate a date in format 9 Dec 2006
