@@ -164,6 +164,9 @@ function array2QueryString(arrayParams)//formato: arr["action"]="iniciar";arr["p
     return queryString;
 }
 
+function hide_message_error(){
+    document.getElementById("message_error").style.display = 'none';
+}
 
 $(document).ready(function(){
     $(".close_image_box").click(function(){
