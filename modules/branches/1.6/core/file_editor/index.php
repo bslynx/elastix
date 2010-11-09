@@ -110,7 +110,11 @@ function _moduleContent(&$smarty, $module_name)
     }else if(isset($_POST["filter"]) && $_POST["filter"]){
         $verListado=true;
     }
-    if($verListado){
+    if($verListado){ 
+        $file = isset($_POST["file"])?$_POST["file"]:(isset($_GET["file"])?$_GET["file"]:"");
+        $_GET['file']  = $file;
+        $_POST['file'] = $file;
+
         ////codigo para mostrar la lista de archivos
         $path=$arrOtro['etc_asterisk'];
 
@@ -134,10 +138,6 @@ function _moduleContent(&$smarty, $module_name)
         if (is_array($arreglo_archivos)) {
             sort($arreglo_archivos);
             foreach($arreglo_archivos as $item){
-                //Filtrar
-                $file = "";
-                if(isset($_POST["filter"]) && $_POST["filter"])
-                    $file = $_POST['file'];
                 if(eregi(".*$file.*", $item))
                 {
                     $arrTmp    = array();
@@ -160,7 +160,7 @@ function _moduleContent(&$smarty, $module_name)
         }
 
         ////PARA EL PAGINEO
-        $total=count($arreglo_archivos);
+        $total=count($arrData);
         // LISTADO
         $limit = 25;
         $offset = 0;
@@ -187,12 +187,12 @@ function _moduleContent(&$smarty, $module_name)
         }
 
         // Construyo el URL base
-        if(is_array($arreglo_archivos) and count($arreglo_archivos)>0) {
+        /*if(is_array($arreglo_archivos) and count($arreglo_archivos)>0) {
 
             $url = construirURL($arreglo_archivos, array("nav", "start"));
-        } else {
+        } else {*/
             $url = construirURL(array(), array("nav", "start")); 
-        }
+        /*}*/
         $smarty->assign("url", $url);
 
         $inicio = ($total==0) ? 0 : $offset + 1;
