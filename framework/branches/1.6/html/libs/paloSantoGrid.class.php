@@ -198,8 +198,11 @@ class paloSantoGrid {
         $this->smarty->assign("end",   $arrGrid['end']);
         $this->smarty->assign("total", $arrGrid['total']);
 
-        if(isset($arrGrid['url']))
-            $this->smarty->assign("url", $arrGrid['url']);
+        if(isset($arrGrid['url'])) {
+            if (is_array($arrGrid['url']))
+                $this->smarty->assign("url", construirURL($arrGrid['url'], array('nav', 'start')));
+            else $this->smarty->assign("url", $arrGrid['url']);
+        }
 
         $this->smarty->assign("header",  $arrGrid["columns"]);
 
