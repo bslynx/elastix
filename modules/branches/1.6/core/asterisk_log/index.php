@@ -227,10 +227,14 @@ function report_AsteriskLogs($smarty, $module_name, $local_templates_dir, $arrLa
         }
     }
 
-    $url = "?menu=$module_name&filter=$field_pattern&offset=$offset&busqueda=$busqueda&ultima_busqueda=".
-        (isset($_POST['ultima_busqueda']) ? $_POST['ultima_busqueda'] : '')."&ultimo_offset=&".
-        (isset($_POST['ultimo_offset']) ? $_POST['ultimo_offset'] : '');
-    $smarty->assign("url", $url);
+    $url = array(
+        'menu'              =>  $module_name,
+        'filter'            =>  $field_pattern,
+        'offset'            =>  $offset,
+        'busqueda'          =>  $busqueda,
+        'ultima_busqueda'   =>  (isset($_POST['ultima_busqueda']) ? $_POST['ultima_busqueda'] : ''),
+        'ultimo_offset'     =>  (isset($_POST['ultimo_offset']) ? $_POST['ultimo_offset'] : ''),
+    );
     //Fin Paginacion
 
     $arrResult =$pAsteriskLogs->ObtainAsteriskLogs(10 * $iEstimadoBytesPagina, $offset, $field_pattern,
@@ -250,6 +254,7 @@ function report_AsteriskLogs($smarty, $module_name, $local_templates_dir, $arrLa
     }
 
     $arrGrid = array("title"    => $arrLang["Asterisk Logs"],
+                        "url"      => $url,
                         "icon"     => "images/list.png",
                         "width"    => "99%",
                         "start"    => ($totalBytes==0) ? 0 : 1 + (int)($offset / 128),
@@ -270,10 +275,7 @@ function report_AsteriskLogs($smarty, $module_name, $local_templates_dir, $arrLa
     $_POST['offset'] = $offset;
     $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl", "", $_POST);
     $oGrid->showFilter(trim($htmlFilter));
-    $contenidoModulo = 
-        "<form  method='POST' style='margin-bottom:0;' action=$url>".
-        $oGrid->fetchGrid($arrGrid, $arrData,$arrLang).
-        "</form>";
+    $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
 
     return $contenidoModulo;
 }
