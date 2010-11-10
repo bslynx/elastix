@@ -67,7 +67,7 @@ function _moduleContent(&$smarty, $module_name)
 //     $smarty->assign("CANCEL", $arrLang["Cancel"]);
 //     $smarty->assign("APPLY_CHANGES", $arrLang["Apply changes"]);
     
-//print_r($arrLan);
+//print_r($arrLangModule);
     //Definicion de campos
     $formCampos = array(
         'form_nombre'    =>    array(
@@ -111,7 +111,7 @@ function _moduleContent(&$smarty, $module_name)
 }
 
 
-function preview_form($pDB, $smarty, $module_name, $local_templates_dir, $formCampos, $oForm,$arrLan) {
+function preview_form($pDB, $smarty, $module_name, $local_templates_dir, $formCampos, $oForm,$arrLangModule) {
 
     $oForm->setViewMode(); // Esto es para activar el modo "preview"
 
@@ -126,9 +126,9 @@ function preview_form($pDB, $smarty, $module_name, $local_templates_dir, $formCa
     // Conversion de formato
     $arrTmp['form_nombre']       = $arrDataForm[0]['nombre'];
     $arrTmp['form_description']    = $arrDataForm[0]['descripcion'];  
-    $smarty->assign("title",$arrLan['Form']);
-    $smarty->assign("form_name_lbl", $arrLan['Form Name']);
-    $smarty->assign("form_description_lbl", $arrLan['Form Description']);
+    $smarty->assign("title",$arrLangModule['Form']);
+    $smarty->assign("form_name_lbl", $arrLangModule['Form Name']);
+    $smarty->assign("form_description_lbl", $arrLangModule['Form Description']);
     $smarty->assign("form_name_val", $arrTmp['form_nombre']);
     $smarty->assign("form_description_val", $arrTmp['form_description']);
     $smarty->assign("id_formulario_actual", $_GET['id']);
@@ -137,14 +137,14 @@ function preview_form($pDB, $smarty, $module_name, $local_templates_dir, $formCa
  
     //$html_campos = html_campos_formulario($arrFieldForm,false);
     //$smarty->assign("solo_contenido_en_vista",$html_campos);
-    $contenidoModulo=$oForm->fetchForm("$local_templates_dir/preview.tpl", $arrLan['Form'], $arrTmp); // hay que pasar el arreglo
+    $contenidoModulo=$oForm->fetchForm("$local_templates_dir/preview.tpl", $arrLangModule['Form'], $arrTmp); // hay que pasar el arreglo
     return $contenidoModulo;
 }
 
-function listadoForm($pDB, $smarty, $module_name, $local_templates_dir,$arrLan) {
+function listadoForm($pDB, $smarty, $module_name, $local_templates_dir,$arrLangModule) {
 
     //global $arrLang;
-    //global $arrLan;
+    //global $arrLangModule;
 
     $oDataForm = new paloSantoDataForm($pDB);
     // preguntando por el estado del filtro
@@ -163,43 +163,43 @@ function listadoForm($pDB, $smarty, $module_name, $local_templates_dir,$arrLan) 
                 $DataForm['descripcion']="&nbsp;";
             $arrTmp[1] = $DataForm['descripcion'];
             if($DataForm['estatus']=='I'){
-                $arrTmp[2] = $arrLan['Inactive'];
-                $arrTmp[3] = "&nbsp;<a href='?menu=$module_name&action=preview&id=".$DataForm['id']."'>{$arrLan['Preview']}</a>";
+                $arrTmp[2] = $arrLangModule['Inactive'];
+                $arrTmp[3] = "&nbsp;<a href='?menu=$module_name&action=preview&id=".$DataForm['id']."'>{$arrLangModule['Preview']}</a>";
             } else {
-                $arrTmp[2] = $arrLan['Active'];
-                $arrTmp[3] = "&nbsp;<a href='?menu=$module_name&action=preview&id=".$DataForm['id']."'>{$arrLan['Preview']}</a>";
+                $arrTmp[2] = $arrLangModule['Active'];
+                $arrTmp[3] = "&nbsp;<a href='?menu=$module_name&action=preview&id=".$DataForm['id']."'>{$arrLangModule['Preview']}</a>";
             }
             $arrData[] = $arrTmp;
         }
     }
 
-    $arrGrid = array("title"    => $arrLan["Form List"],
+    $arrGrid = array("title"    => $arrLangModule["Form List"],
         "icon"     => "images/list.png",
         "width"    => "99%",
         "start"    => ($end==0) ? 0 : 1,
         "end"      => $end,
         "total"    => $end,
-        "columns"  => array(0 => array("name"      => $arrLan["Form Name"],
+        "columns"  => array(0 => array("name"      => $arrLangModule["Form Name"],
                                        "property1" => ""),
-                            1 => array("name"      => $arrLan["Form Description"], 
+                            1 => array("name"      => $arrLangModule["Form Description"], 
                                        "property1" => ""),
-                            2 => array("name"      => $arrLan["Status"], 
+                            2 => array("name"      => $arrLangModule["Status"], 
                                        "property1" => ""),
-                            3 => array("name"      => $arrLan["Options"], 
+                            3 => array("name"      => $arrLangModule["Options"], 
                                        "property1" => "")));
 
-    $estados = array("all"=>$arrLan["All"], "A"=>$arrLan["Active"], "I"=>$arrLan["Inactive"]);
+    $estados = array("all"=>$arrLangModule["All"], "A"=>$arrLangModule["Active"], "I"=>$arrLangModule["Inactive"]);
     $combo_estados = "<select name='cbo_estado' id='cbo_estado' onChange='submit();'>".combo($estados,$_POST['cbo_estado'])."</select>";
     $oGrid = new paloSantoGrid($smarty);
     $oGrid->showFilter(
               "<form style='margin-bottom:0;' method='POST' action='?menu=$module_name'>" .
               "<table width='100%' border='0'><tr>".
-              "<td>".$arrLan["Forms"]."</td>".
-              "<td class='letra12' align='right'><b>".$arrLan["Status"].":</b>&nbsp;$combo_estados</td>".
+              "<td>".$arrLangModule["Forms"]."</td>".
+              "<td class='letra12' align='right'><b>".$arrLangModule["Status"].":</b>&nbsp;$combo_estados</td>".
               "</tr></table>".
               "</form>");
 //print_r($arrData);
-    $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData,$arrLan);
+    $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData,$arrLangModule);
     return $contenidoModulo;
 }
 ?>

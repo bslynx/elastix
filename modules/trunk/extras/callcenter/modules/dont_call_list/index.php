@@ -61,12 +61,12 @@ function _moduleContent(&$smarty, $module_name){
     if(!empty($pDB->errMsg)) {
         $smarty->assign("mb_message", $arrLang["Error when connecting to database"]."<br/>".$pDB->errMsg);
     }
-	$arrLan=$arrLangModule;
-    $smarty->assign("MODULE_NAME", $arrLan["Add Number"]);
-    $smarty->assign("label_file", $arrLan["Upload File"]);
-    $smarty->assign("label_text", $arrLan["Add new Number"]);
-    $smarty->assign("NAME_BUTTON_SUBMIT", $arrLan["SAVE"]);
-    $smarty->assign("NAME_BUTTON_CANCEL", $arrLan["CANCEL"]);
+	$arrLangModule=$arrLangModule;
+    $smarty->assign("MODULE_NAME", $arrLangModule["Add Number"]);
+    $smarty->assign("label_file", $arrLangModule["Upload File"]);
+    $smarty->assign("label_text", $arrLangModule["Add new Number"]);
+    $smarty->assign("NAME_BUTTON_SUBMIT", $arrLangModule["SAVE"]);
+    $smarty->assign("NAME_BUTTON_CANCEL", $arrLangModule["CANCEL"]);
 
     $formCampos = array();
     $oForm = new paloForm($smarty, $formCampos);
@@ -135,16 +135,16 @@ function newCalls($pDB, $smarty, $module_name, $local_templates_dir, $formCampos
     if($msgResultado==""){
         header("Location: ?menu=dont_call_list");
     }else{
-        $smarty->assign("mb_title",$arrLan['Result']);
+        $smarty->assign("mb_title",$arrLangModule['Result']);
         $smarty->assign("mb_message",$msgResultado);
     }
-    $fContenido = $oForm->fetchForm("$local_templates_dir/new.tpl", $arrLan['Load File'] ,null);
+    $fContenido = $oForm->fetchForm("$local_templates_dir/new.tpl", $arrLangModule['Load File'] ,null);
     return $fContenido;
 }
 
 function listCalls($pDB, $smarty, $module_name, $local_templates_dir) {
     global $arrLang;
-    global $arrLan;
+    global $arrLangModule;
     $arrCalls=array();
     $oCalls = new PaloSantoDontCalls($pDB);
     $arrCalls = $oCalls->getCalls();
@@ -157,9 +157,9 @@ function listCalls($pDB, $smarty, $module_name, $local_templates_dir) {
             $arrTmp[1] = $call['caller_id'];
             $arrTmp[2] = $call['date_income'];
             if($call['status']=='I'){
-                $arrTmp[3] = $arrLan['Inactive'];
+                $arrTmp[3] = $arrLangModule['Inactive'];
             }else{
-                $arrTmp[3] = $arrLan['Active'];
+                $arrTmp[3] = $arrLangModule['Active'];
             } 
             $arrData[] = $arrTmp;
          }
@@ -168,9 +168,9 @@ function listCalls($pDB, $smarty, $module_name, $local_templates_dir) {
     }
 
     $button_delete="<input class='button' type='submit' name='submit_delete'".
-                    " value='{$arrLan["Remove"]}'>";
+                    " value='{$arrLangModule["Remove"]}'>";
 
-    $arrGrid = array("title"    => $arrLan["Phone List"],
+    $arrGrid = array("title"    => $arrLangModule["Phone List"],
         "icon"     => "images/list.png",
         "width"    => "99%",
         "start"    => ($end==0) ? 0 : 1,
@@ -178,17 +178,17 @@ function listCalls($pDB, $smarty, $module_name, $local_templates_dir) {
         "total"    => $end,
         "columns"  => array(0 => array("name"      => $button_delete,
                                        "property1" => ""),
-                            1 => array("name"      => $arrLan["Number Phone's"],
+                            1 => array("name"      => $arrLangModule["Number Phone's"],
                                        "property1" => ""),
-                            2 => array("name"      => $arrLan["Date Income"],
+                            2 => array("name"      => $arrLangModule["Date Income"],
                                        "property1" => ""),
-                            3 => array("name"     => $arrLan["Status"],
+                            3 => array("name"     => $arrLangModule["Status"],
                                        "property1" => "")));
 
     $oGrid = new paloSantoGrid($smarty);
     $oGrid->showFilter(
-        "<input type='submit' name='submit_Add_Call' value='{$arrLan['Add']}' class='button'>&nbsp&nbsp&nbsp&nbsp".
-        "<input type='submit' name='submit_Apply' value='{$arrLan['Apply']}' class='button'>");
+        "<input type='submit' name='submit_Add_Call' value='{$arrLangModule['Add']}' class='button'>&nbsp&nbsp&nbsp&nbsp".
+        "<input type='submit' name='submit_Apply' value='{$arrLangModule['Apply']}' class='button'>");
 
     $abrir_form="<form style='margin-bottom:0;' method='POST' action='?menu=$module_name'>";
     $cerrar_form="</form>";
@@ -206,7 +206,7 @@ function applyList($pDB, $smarty, $module_name, $local_templates_dir, $formCampo
 }
 
 function deleteCalls($pDB, $smarty, $module_name, $local_templates_dir){
-    global $arrLan;
+    global $arrLangModule;
 
     $sContenido="";
     $arrIdCalls=array();
@@ -217,7 +217,7 @@ function deleteCalls($pDB, $smarty, $module_name, $local_templates_dir){
 	}
     }
     if(count($arrIdCalls)<=0){
-        $smarty->assign("mb_title",$arrLan['Result']);
+        $smarty->assign("mb_title",$arrLangModule['Result']);
         $smarty->assign("mb_message","No data selected");
     }else{
 	$oCalls = new PaloSantoDontCalls($pDB);

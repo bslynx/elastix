@@ -56,13 +56,13 @@ function _moduleContent(&$smarty, $module_name)
     if (file_exists("$script_dir/$lang_file")) {
         $arrLangModuleEN = $arrLangModule;
         include_once($lang_file);
-        $arrLangModule = array_merge($arrLangModuleEN, $arrLangModulegModule);
+        $arrLangModule = array_merge($arrLangModuleEN, $arrLangModule);
 	}
 
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
     global $arrConf;
-    global $arrLangModuleg;
+    global $arrLang;
 
     require_once "modules/$module_name/libs/paloSantoHoldTime.class.php";
     //folder path for custom templates
@@ -83,7 +83,7 @@ function _moduleContent(&$smarty, $module_name)
     $htmlFilter = "";
 
     if (!is_object($pDB->conn) || $pDB->errMsg!="") {
-        $smarty->assign("mb_message", $arrLangModuleg["Error when connecting to database"]." ".$pDB->errMsg);
+        $smarty->assign("mb_message", $arrLang["Error when connecting to database"]." ".$pDB->errMsg);
     }elseif(isset($_GET['exportcsv']) && $_GET['exportcsv']=='yes') {
         $fechaActual = date("d M Y");
         header("Cache-Control: private");
@@ -119,9 +119,9 @@ function _moduleContent(&$smarty, $module_name)
 
 //funcion que construye la vista del reporte
 function listadoHoldTime($pDB, $smarty, $module_name, $local_templates_dir,&$oGrid,&$arrGrid,&$arrData) {
-    global $arrLangModuleg;
-	global $arrLangModulegModule;
-    $arrLangModule=$arrLangModulegModule;
+    global $arrLang;
+	global $arrLangModule;
+    $arrLangModule=$arrLangModule;
     $arrData = array();
     $oCalls = new paloSantoHoldTime($pDB);
     $fecha_init = date("d M Y");
@@ -442,7 +442,7 @@ function listadoHoldTime($pDB, $smarty, $module_name, $local_templates_dir,&$oGr
 
         ");
     $oGrid->enableExport();
-    $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData,$arrLangModuleg);
+    $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
     return $contenidoModulo;
 }
 
