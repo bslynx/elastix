@@ -607,11 +607,13 @@ class DialerProcess extends AbstractProcess
                 }
 
                 // Consumir todos los eventos de llamada durante 3 segundos
+                $iMaxEspera = 3;
                 $iTimestampInicioEspera = time();
-                while (time() - $iTimestampInicioEspera <= 3) {
-                     $this->_astConn->SetTimeout(1);
-                     $r = $this->_astConn->wait_response(TRUE);
-                     if (is_null($r)) {
+                $iEsperaActual = time() - $iTimestampInicioEspera;
+                while ($iEsperaActual <= $iMaxEspera) {
+                    $this->_astConn->SetTimeout(1);
+                    $r = $this->_astConn->wait_response(TRUE, FALSE, $iMaxEspera - $iEsperaActual);
+                    if (is_null($r)) {
                         // Lo siguiente debería estar interno en AG_AsteriskManager
                         $metadata = stream_get_meta_data($this->_astConn->socket);
                         if (is_array($metadata) && !$metadata['timed_out']) {
@@ -619,7 +621,8 @@ class DialerProcess extends AbstractProcess
                             $this->iniciarConexionAsterisk();
                             break;
                         }
-                     }
+                    }
+                    $iEsperaActual = time() - $iTimestampInicioEspera;
                 }
                 if (!is_null($this->_astConn)) $this->_astConn->SetTimeout(10);
             } else {

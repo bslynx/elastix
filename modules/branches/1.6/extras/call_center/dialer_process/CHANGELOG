@@ -1,3 +1,9 @@
+* Dialer: Found probable cause of unexpected delays in outgoing calls. Asterisk
+  AMI may emit events at any arbitrary frequency. If AMI manages to continuosly 
+  emit events with less than 1 second delay, the event loop in the dialer will
+  get stuck processing events (even if not interesting) and never dispatch any
+  new calls. Fixed by forcing end of event receipt inside wait_response() method 
+  in phpagi-asmanager-elastix.php. Might fix Elastix bugs #543, #577.
 * Web interface: cleanup of i18n files to bring them in line with the rest of 
   the Elastix code.
 

@@ -156,10 +156,15 @@
     *
     * @param boolean $allow_timeout if the socket times out, return an empty array
     * @param boolean $allow_handler_terminate  if TRUE a handler may cause wait to terminate
+    * @param mixed   $max_sec_eventwait     maximum time in seconds to loop in event wait,
+    *                                       or NULL (default) to loop forever while there 
+    *                                       are unread events
+    * 
     * @return array of parameters, empty on timeout
     */
-    function wait_response($allow_timeout=false, $allow_handler_terminate=false)
+    function wait_response($allow_timeout=false, $allow_handler_terminate=false, $max_sec_eventwait=NULL)
     {
+      $iTimestampInicio = time();
       $timeout = false;
       do
       {
@@ -220,6 +225,8 @@
             $this->log('Unhandled response packet from Manager: ' . print_r($parameters, true));
             break;
         }
+        if (!is_null($max_sec_eventwait) && time() - $iTimestampInicio >= $max_sec_eventwait)
+            $timeout = true;
       } while(!is_null($type) && $type != 'response' && !$timeout);
       
       // Dispatch pending queued events
