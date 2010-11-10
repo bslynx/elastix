@@ -30,7 +30,8 @@
   +----------------------------------------------------------------------+
   $Id: bg.lang, October 25, 2010, 6:07 pm kleber andres loayza Exp $ */
 
-$Lang=array(  
+global $arrLangModule; 
+ $arrLangModule = array(
 "Ingoing Calls" => "Ingoing Calls",
 "guardar" => "Save",
 "cancelar" => "Cancel",
