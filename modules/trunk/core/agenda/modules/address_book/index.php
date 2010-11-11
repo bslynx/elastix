@@ -832,15 +832,15 @@ function view_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pD
         $smarty->assign("check_isPrivate", "checked");
 
 
-    $arrData['name']          = htmlspecialchars(isset($_POST['name'])?$_POST['name']:$contactData['name'],ENT_QUOTES, "UTF-8");
-    $arrData['last_name']     = htmlspecialchars(isset($_POST['last_name'])?$_POST['last_name']:$contactData['last_name'],ENT_QUOTES, "UTF-8");
-    $arrData['telefono']      = htmlspecialchars(isset($_POST['telefono'])?$_POST['telefono']:$contactData['telefono'],ENT_QUOTES, "UTF-8");
-    $arrData['email']         = htmlspecialchars(isset($_POST['email'])?$_POST['email']:$contactData['email'],ENT_QUOTES, "UTF-8");
-    $arrData['address']       = htmlspecialchars(isset($_POST['address'])?$_POST['address']:$contactData['address'],ENT_QUOTES, "UTF-8");
-    $arrData['company']       = htmlspecialchars(isset($_POST['company'])?$_POST['company']:$contactData['company'],ENT_QUOTES, "UTF-8");
-    $arrData['notes']         = htmlspecialchars(isset($_POST['notes'])?$_POST['notes']:$contactData['notes'],ENT_QUOTES, "UTF-8");
+    $arrData['name']          = isset($_POST['name'])?$_POST['name']:$contactData['name'];
+    $arrData['last_name']     = isset($_POST['last_name'])?$_POST['last_name']:$contactData['last_name'];
+    $arrData['telefono']      = isset($_POST['telefono'])?$_POST['telefono']:$contactData['telefono'];
+    $arrData['email']         = isset($_POST['email'])?$_POST['email']:$contactData['email'];
+    $arrData['address']       = isset($_POST['address'])?$_POST['address']:$contactData['address'];
+    $arrData['company']       = isset($_POST['company'])?$_POST['company']:$contactData['company'];
+    $arrData['notes']         = isset($_POST['notes'])?$_POST['notes']:$contactData['notes'];
     $arrData['picture']       = isset($_POST['picture'])?$_POST['picture']:$contactData['picture'];
-    $arrData['status']        = htmlspecialchars(isset($_POST['status'])?$_POST['status']:$contactData['status'],ENT_QUOTES, "UTF-8");
+    $arrData['status']        = isset($_POST['status'])?$_POST['status']:$contactData['status'];
 
     $smarty->assign("ShowImg",1);
     $htmlForm = $oForm->fetchForm("$local_templates_dir/new_adress_book.tpl", "", $arrData);

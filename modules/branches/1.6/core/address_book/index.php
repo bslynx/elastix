@@ -617,10 +617,10 @@ function view_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pD
     
     $smarty->assign("ID",$id);
 
-    $arrData['name']          = htmlspecialchars(isset($_POST['name'])?$_POST['name']:$contactData['name'],ENT_QUOTES, "UTF-8");
-    $arrData['last_name']     = htmlspecialchars(isset($_POST['last_name'])?$_POST['last_name']:$contactData['last_name'],ENT_QUOTES, "UTF-8");
-    $arrData['telefono']      = htmlspecialchars(isset($_POST['telefono'])?$_POST['telefono']:$contactData['telefono'],ENT_QUOTES, "UTF-8");
-    $arrData['email']         = htmlspecialchars(isset($_POST['email'])?$_POST['email']:$contactData['email'],ENT_QUOTES, "UTF-8");
+    $arrData['name']          = isset($_POST['name'])?$_POST['name']:$contactData['name'];
+    $arrData['last_name']     = isset($_POST['last_name'])?$_POST['last_name']:$contactData['last_name'];
+    $arrData['telefono']      = isset($_POST['telefono'])?$_POST['telefono']:$contactData['telefono'];
+    $arrData['email']         = isset($_POST['email'])?$_POST['email']:$contactData['email'];
 
     $htmlForm = $oForm->fetchForm("$local_templates_dir/new_adress_book.tpl", "", $arrData);
 
