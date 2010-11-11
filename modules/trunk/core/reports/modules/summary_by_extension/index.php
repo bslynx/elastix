@@ -122,8 +122,16 @@ function reportReportCall($smarty, $module_name, $local_templates_dir, &$pDB_cdr
     $oGrid->calculatePagination($action,$start);
     $offset = $oGrid->getOffsetValue();
     $end    = $oGrid->getEnd();
-    $url    = "?menu=$module_name&option_fil=$type&value_fil=$value&date_from=$date_from&date_to=$date_to";
-    $ulr_paging = $url."&order_by=$order_by&order_type=$order_type";
+    $urlFields = array(
+        'menu'          =>  $module_name,
+        'option_fil'    =>  $type,
+        'value_fil'     =>  $value,
+        'date_from'     =>  $date_from,
+        'date_to'       =>  $date_to,
+    );
+    $url = construirUrl($urlFields, array('nav', 'start'));
+    $urlFields['order_by'] = $order_by;
+    $urlFields['order_type'] = $order_type;
 
     $smarty->assign("order_by", $order_by);
     $smarty->assign("order_type", $order_type);
@@ -154,20 +162,20 @@ function reportReportCall($smarty, $module_name, $local_templates_dir, &$pDB_cdr
     $style_link_off = "style='text-decoration: none;color:black'";
     $style_link_on  = "style='text-decoration: none;color:blue'";
 
-    $leyend_1 = "<a $style_link_off href='$url&order_by=1&order_type=asc'>{$arrLang["Extension"]}</a>";
-    $leyend_2 = "<a $style_link_off href='$url&order_by=2&order_type=asc'>{$arrLang["User name"]}</a>";
-    $leyend_3 = "<a $style_link_off href='$url&order_by=3&order_type=asc'>{$arrLang["Num. Incoming Calls"]}</a>";
-    $leyend_4 = "<a $style_link_off href='$url&order_by=4&order_type=asc'>{$arrLang["Num. Outgoing Calls"]}</a>";
-    $leyend_5 = "<a $style_link_off href='$url&order_by=5&order_type=asc'>{$arrLang["Sec. Incoming Calls"]}</a>";
-    $leyend_6 = "<a $style_link_off href='$url&order_by=6&order_type=asc'>{$arrLang["Sec. Outgoing Calls"]}</a>";
+    $leyend_1 = "<a $style_link_off href='$url&amp;order_by=1&amp;order_type=asc'>{$arrLang["Extension"]}</a>";
+    $leyend_2 = "<a $style_link_off href='$url&amp;order_by=2&amp;order_type=asc'>{$arrLang["User name"]}</a>";
+    $leyend_3 = "<a $style_link_off href='$url&amp;order_by=3&amp;order_type=asc'>{$arrLang["Num. Incoming Calls"]}</a>";
+    $leyend_4 = "<a $style_link_off href='$url&amp;order_by=4&amp;order_type=asc'>{$arrLang["Num. Outgoing Calls"]}</a>";
+    $leyend_5 = "<a $style_link_off href='$url&amp;order_by=5&amp;order_type=asc'>{$arrLang["Sec. Incoming Calls"]}</a>";
+    $leyend_6 = "<a $style_link_off href='$url&amp;order_by=6&amp;order_type=asc'>{$arrLang["Sec. Outgoing Calls"]}</a>";
 
 
-    if($order_by == 1)      $leyend_1 = "<a $style_link_on href='$url&order_by=1&order_type=$order_type'>{$arrLang["Extension"]}&nbsp;$img</a>";  
-    else if($order_by == 2) $leyend_2 = "<a $style_link_on href='$url&order_by=2&order_type=$order_type'>{$arrLang["User name"]}&nbsp;$img</a>";
-    else if($order_by == 3) $leyend_3 = "<a $style_link_on href='$url&order_by=3&order_type=$order_type'>{$arrLang["Num. Incoming Calls"]}&nbsp;$img</a>";  
-    else if($order_by == 4) $leyend_4 = "<a $style_link_on href='$url&order_by=4&order_type=$order_type'>{$arrLang["Num. Outgoing Calls"]}&nbsp;$img</a>";  
-    else if($order_by == 5) $leyend_5 = "<a $style_link_on href='$url&order_by=5&order_type=$order_type'>{$arrLang["Sec. Incoming Calls"]}&nbsp;$img</a>";  
-    else if($order_by == 6) $leyend_6 = "<a $style_link_on href='$url&order_by=6&order_type=$order_type'>{$arrLang["Sec. Outgoing Calls"]}&nbsp;$img</a>";  
+    if($order_by == 1)      $leyend_1 = "<a $style_link_on href='$url&amp;order_by=1&amp;order_type=$order_type'>{$arrLang["Extension"]}&nbsp;$img</a>";  
+    else if($order_by == 2) $leyend_2 = "<a $style_link_on href='$url&amp;order_by=2&amp;order_type=$order_type'>{$arrLang["User name"]}&nbsp;$img</a>";
+    else if($order_by == 3) $leyend_3 = "<a $style_link_on href='$url&amp;order_by=3&amp;order_type=$order_type'>{$arrLang["Num. Incoming Calls"]}&nbsp;$img</a>";  
+    else if($order_by == 4) $leyend_4 = "<a $style_link_on href='$url&amp;order_by=4&amp;order_type=$order_type'>{$arrLang["Num. Outgoing Calls"]}&nbsp;$img</a>";  
+    else if($order_by == 5) $leyend_5 = "<a $style_link_on href='$url&amp;order_by=5&amp;order_type=$order_type'>{$arrLang["Sec. Incoming Calls"]}&nbsp;$img</a>";  
+    else if($order_by == 6) $leyend_6 = "<a $style_link_on href='$url&amp;order_by=6&amp;order_type=$order_type'>{$arrLang["Sec. Outgoing Calls"]}&nbsp;$img</a>";  
     
     $arrGrid = 
         array("title"    => $arrLang["Summary by Extension"],
@@ -176,7 +184,7 @@ function reportReportCall($smarty, $module_name, $local_templates_dir, &$pDB_cdr
               "start"    => ($total==0) ? 0 : $offset + 1,
               "end"      => $end,
               "total"    => $total,
-              "url"      => $ulr_paging,
+              "url"      => $urlFields,
               "columns"  => array(
 		            0 => array("name"      => $leyend_1,
                                "property1" => ""),
@@ -207,7 +215,7 @@ function reportReportCall($smarty, $module_name, $local_templates_dir, &$pDB_cdr
     //end section filter
 
     $oGrid->showFilter(trim($htmlFilter));
-    $contenidoModulo = "<form  method='POST' style='margin-bottom:0;' action=$url>".$oGrid->fetchGrid($arrGrid, $arrData,$arrLang)."</form>";
+    $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
 
     return $contenidoModulo;
 }
