@@ -98,10 +98,52 @@ class paloForm
                                // de datos donde no se puede modificar.
     }
 
-    // Esta funcion muestra un formulario. Para hacer esto toma una plantilla de 
-    // formulario e inserta en ella los elementos de formulario.
-    function fetchForm($templateName, $title, $arrPreFilledValues=array())
+    /**
+     * Esta función genera una cadena que contiene un formulario HTML. Para hacer
+     * esto, toma una plantilla de formulario e inserta en ella los elementos de
+     * formulario.
+     *
+     * @param   string  $templateName   Ruta al archivo de plantilla Smarty a usar.
+     * @param   string  $title          Texto a usar como título del formulario
+     * @param   array   $arrPreFilledValues Arreglo para asignar variables a mostrar
+     *                                  en el formulario. Este arreglo es idéntico
+     *                                  en formato al arreglo $_POST que se genera
+     *                                  al enviar el formulario lleno, de forma que
+     *                                  se puede usar $_POST directamente para 
+     *                                  llenar con valores en caso de que la 
+     *                                  validación falle.
+     *
+     * @return  string  Texto HTML del formulario con valores asignados
+     */
+    function fetchForm($templateName, $title, $arrPreFilledValues = array())
     {
+        /* Función interna para convertir un arreglo especificado en 
+           INPUT_EXTRA_PARAM en una cadena de atributos clave=valor adecuada 
+           para incluir al final de un widget HTML. Si no existe 
+           INPUT_EXTRA_PARAM, o no es un arreglo, se devuelve una cadena vacía
+         */
+        function _inputExtraParam_a_atributos(&$arrVars)
+        {
+            if (!isset($arrVars['INPUT_EXTRA_PARAM']) || 
+                !is_array($arrVars['INPUT_EXTRA_PARAM']) || 
+                count($arrVars['INPUT_EXTRA_PARAM']) <= 0)
+                return '';
+            $listaAttr = array();
+            foreach($arrVars['INPUT_EXTRA_PARAM'] as $key => $value) {
+                $listaAttr[] = sprintf(
+                    '%s="$s"', 
+                    htmlentities($key, ENT_COMPAT, 'UTF-8'),
+                    htmlentities($value, ENT_COMPAT, 'UTF-8'));
+            }
+            return implode(' ', $listaAttr);
+        }
+
+        // Función para usar con array_map
+        function _map_htmlentities($s)
+        {
+            return htmlentities($s, ENT_COMPAT, 'UTF-8');
+        }
+
         foreach($this->arrFormElements as $varName=>$arrVars) {
             if(!isset($arrPreFilledValues[$varName]))
                 $arrPreFilledValues[$varName] = "";
@@ -109,171 +151,140 @@ class paloForm
             $strInput = "";
             $arrVars['EDITABLE'] = isset($arrVars['EDITABLE'])?$arrVars['EDITABLE']:'';
 
+            // Verificar si se debe mostrar un widget activo para ingreso de valor
+            $bIngresoActivo = ($this->modo == 'input' || ($this->modo == 'edit' && $arrVars['EDITABLE']!='no'));
+
+            /* El indicar ENT_COMPAT escapa las comillas dobles y deja intactas
+               las comillas simples. Por lo tanto, se asume que todos los usos
+               de $varXXX_escaped serán dentro de comillas dobles, o en texto 
+               libre. */
+            $varName_escaped = htmlentities($varName, ENT_COMPAT, 'UTF-8');
+            $varValue_escaped = is_array($arrPreFilledValues[$varName]) 
+                ? NULL : htmlentities($arrPreFilledValues[$varName], ENT_COMPAT, 'UTF-8');
+
             switch($arrVars['INPUT_TYPE']) {
                 case "TEXTAREA":
-                    if($this->modo=='input' or ($this->modo=='edit' and $arrVars['EDITABLE']!='no')) {
-                        $cols = isset($arrVars['COLS'])?$arrVars['COLS']:20;
-                        $rows = isset($arrVars['ROWS'])?$arrVars['ROWS']:3;
-                        $strInput = "<textarea name=\"$varName\" rows=\"$rows\" cols=\"$cols\">$arrPreFilledValues[$varName]</textarea>";
-                    } else {
-                        $strInput = "$arrPreFilledValues[$varName]";
-                    }
+                    $strInput = $bIngresoActivo 
+                        ? sprintf(
+                            '<textarea name="%s" rows="%s" cols="%s" %s>%s</textarea>',
+                            $varName_escaped,
+                            isset($arrVars['ROWS']) ? (int)$arrVars['ROWS'] : 3,
+                            isset($arrVars['COLS']) ? (int)$arrVars['COLS'] : 20,
+                            _inputExtraParam_a_atributos($arrVals),
+                            $varValue_escaped)
+                        : $varValue_escaped;
                     break;
                 case "TEXT":
-                    if($this->modo=='input' or ($this->modo=='edit' and $arrVars['EDITABLE']!='no')) {
-                        $extras="";
-                        if(is_array($arrVars['INPUT_EXTRA_PARAM']) && count($arrVars['INPUT_EXTRA_PARAM'])>0) {
-                            foreach($arrVars['INPUT_EXTRA_PARAM'] as $key => $value)
-                                $extras .= " $key = '$value' ";
-                        }
-                        $strInput = "<input type=\"text\" name=\"$varName\" value=\"$arrPreFilledValues[$varName]\" $extras />";
-                    } else {
-                        $strInput = "$arrPreFilledValues[$varName]";
-                    }
+                    $strInput = $bIngresoActivo
+                        ? sprintf(
+                            '<input type="text" name="%s" value="%s" %s />', 
+                            $varName_escaped,
+                            $varValue_escaped,
+                            _inputExtraParam_a_atributos($arrVals))
+                        : $varValue_escaped;                    
                     break;
                 case "CHECKBOX":
                     $checked = 'off';
                     $disable = 'on';
                     if($arrPreFilledValues[$varName]=='on')
                         $checked = 'on';
-                    if($this->modo=='input' or ($this->modo=='edit' and $arrVars['EDITABLE']!='no'))
+                    if($bIngresoActivo)
                         $disable = 'off';
 
                     //Funcion definida en misc.lib.php
                     $strInput = checkbox($varName,$checked, $disable);
                     break;
                 case "PASSWORD":
-                    if($this->modo=='input' or ($this->modo=='edit' and $arrVars['EDITABLE']!='no')) {
-                        $strInput = "<input type=\"password\" name=\"$varName\" value=\"$arrPreFilledValues[$varName]\" />";
-                    } else {
-                        $strInput = "$arrPreFilledValues[$varName]";
-                    }
+                    $strInput = $bIngresoActivo
+                        ? sprintf(
+                            '<input type="password" name="%s" value="%s" %s />', 
+                            $varName_escaped,
+                            $varValue_escaped,
+                            _inputExtraParam_a_atributos($arrVals))
+                        : $varValue_escaped;                    
                     break;
                 case "HIDDEN":
-                    $strInput = "<input type=\"hidden\" name=\"$varName\" value=\"$arrPreFilledValues[$varName]\" />";
+                    $strInput = sprintf(
+                        '<input type="hidden" name="%s" value="%s" %s />', 
+                        $varName_escaped,
+                        $varValue_escaped,
+                        _inputExtraParam_a_atributos($arrVals));                    
                     break;
                 case "FILE":
-                    if($this->modo=='input' or ($this->modo=='edit' and $arrVars['EDITABLE']!='no')) {
-                        // Si viene un arreglo entonces puede ser que sea un submit de un campo tipo 'file'
-                        if(is_array($arrPreFilledValues[$varName]) and $arrPreFilledValues[$varName]['error']==0 and 
-                           !empty($arrPreFilledValues[$varName]['tmp_name']) and !empty($arrPreFilledValues[$varName]['name']) ) {
-
-                            $tmpFilename = $arrPreFilledValues[$varName]['name'] . "_" . basename($arrPreFilledValues[$varName]['tmp_name']);
-
-                            // Creo que no esta bien hacer esto aqui. Porque aqui se debe mostrar el formulario unicamente
-                            // y naturalmente no se esperaria que se copie aqui el archivo. 
-                            // Por ej. Qué pasa si este archivo no pasa alguna validación y por lo tanto no se desea guardarlo?
-                            //         Qué pasa si el formulario paso las validaciones correctamente y por lo tanto no se pasa por
-                            //         este bloque de codigo?
-                            // O qué pasa si la copia da error, cómo notifico esto al programa?
-                            copy($arrPreFilledValues[$varName]['tmp_name'], "{$arrConf['basePath']}/var/tmp/$tmpFilename");
-
-                            $strInput = "<div id=\"showFile\"><i>File: " . $arrPreFilledValues[$varName]['name'] . 
-                                        //"</i>&nbsp;&nbsp;<input type='button' name='' value='Change file' class=button onClick=''>" . 
-                                        "</i>" . 
-                                        "<input type=\"hidden\" name=\"$varName\" value=\"" . $arrPreFilledValues[$varName]['name'] . "\" />" .
-                                        "<input type=\"hidden\" name=\"_hidden_$varName\" value=\"$tmpFilename\" /></div>";
-                        // It's not and array, but can be a hidden field
-                        } else if (!is_array($arrPreFilledValues[$varName]) and !empty($arrPreFilledValues[$varName]) and
-                                   !empty($arrPreFilledValues["_hidden_" . $varName]) ) {
-                            $strInput = "<div id='showFile'><i>File: " . $arrPreFilledValues[$varName] .
-                                        //"</i>&nbsp;&nbsp;<input type='button' name='' value='Change file' class=button onClick=''>" .
-                                        "</i>" . 
-                                        "<input type='hidden' name='$varName' value='$arrPreFilledValues[$varName]'>" .
-                                        "<input type='hidden' name='_hidden_$varName' value='" . $arrPreFilledValues["_hidden_" . $varName] . "'></div>";
-                        // default. It's not an array and there is not hidden field
-                        } else {
-                            $strInput = "<input type=\"file\" name=\"$varName\" />";
-                        }
-                    } else {
-                        $strInput = "$arrPreFilledValues[$varName]";
-                    }
+                    $strInput = $bIngresoActivo
+                        ? sprintf(
+                            '<input type="file" name="%s" %s />', 
+                            $varName_escaped,
+                            _inputExtraParam_a_atributos($arrVals))
+                        : $varValue_escaped;                    
                     break;
                 case "RADIO":
-                    if($this->modo=='input' or ($this->modo=='edit' and $arrVars['EDITABLE']!='no')) {
+                    if($bIngresoActivo) {
                         $strInput = "";
                         if(is_array($arrVars['INPUT_EXTRA_PARAM'])) {
+                            $listaRadio = array();
                             foreach($arrVars['INPUT_EXTRA_PARAM'] as $radioValue => $radioLabel) {
-                                if($radioValue==$arrPreFilledValues[$varName]) {
-                                    $strInput .= "<input type=\"radio\" name=\"$varName\" value=\"$radioValue\" " .
-                                                 "checked=\"checked\" />&nbsp;$radioLabel&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-                                } else {
-                                    $strInput .= "<input type=\"radio\" name=\"$varName\" value=\"$radioValue\"" .
-                                                 " />&nbsp;$radioLabel&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-                                }
+                                $listaRadio[] = sprintf(
+                                    '<input type="radio" name="%s" value="%s" %s />&nbsp;%s&nbsp;',
+                                    $varName_escaped,
+                                    htmlentities($radioValue, ENT_COMPAT, 'UTF-8'),
+                                    ($radioValue == $arrPreFilledValues[$varName]) ? 'checked="checked"' : '',
+                                    htmlentities($radioLabel, ENT_COMPAT, 'UTF-8'));
                             }
+                            $strInput = implode("\n", $listaRadio);                            
                         }
                     } else {
-                        $strInput = "$arrPreFilledValues[$varName]";
+                        $strInput = $varValue_escaped;
                     }
                     break;
                 case "SELECT":
-                    if($this->modo=='input' or ($this->modo=='edit' and $arrVars['EDITABLE']!='no')) {
-                        $multiple    = "";
-                        $size        = "";
-                        $onchange    = "";
-                        $name_select = $varName;
-
-                        if(isset($arrVars['ONCHANGE'])){
-                            if($arrVars['ONCHANGE']!="")
-                                $onchange = "onchange='$arrVars[ONCHANGE]' ";
-                        }
-                        if(isset($arrVars['SIZE'])){
-                            if($arrVars['SIZE']!="")
-                                $size=" size='$arrVars[SIZE]' ";
-                        }
-                        if(isset($arrVars['MULTIPLE'])){
-                            if($arrVars['MULTIPLE']!="" || $arrVars['MULTIPLE']==true){
-                                $multiple=" multiple='multiple' ";
-                                $name_select = $varName."[]";
-                            }
-                        }
-                        $strInput  = "<select name='$name_select' id='$name_select' $multiple $size $onchange>";
-
-                        if(is_array($arrVars['INPUT_EXTRA_PARAM'])) {
+                    if ($bIngresoActivo) {
+                        $listaOpts = array();
+                        $keyVals = is_array($arrPreFilledValues[$varName]) 
+                            ? $arrPreFilledValues[$varName] 
+                            : array($arrPreFilledValues[$varName]);
+                        if (is_array($arrVars['INPUT_EXTRA_PARAM'])) {
                             foreach($arrVars['INPUT_EXTRA_PARAM'] as $idSeleccion => $nombreSeleccion) {
-                                if(is_array($arrPreFilledValues[$varName])){
-                                    $bandera = true;
-                                    foreach($arrPreFilledValues[$varName] as $key => $value){ //si hay mas  de uno elegido informacion como arreglo
-                                        if($idSeleccion==$value) {
-                                            $strInput .= "<option value=\"$idSeleccion\" selected=\"selected\">$nombreSeleccion</option>";
-                                            $bandera = false; //bandera que me ayuda a que no se cree otro option en el caso de que ya se creo uno en forma seleccionada
-                                            break; // rompo porque ya lo encontre
-                                        }
-                                    }
-                                    if($bandera) //si es true $idSeleccion es no seleccionado
-                                         $strInput .= "<option value=\"$idSeleccion\" >$nombreSeleccion</option>";    
-                                }
-                                else{ //solo uno elegido informacion como texto
-                                    if($idSeleccion==$arrPreFilledValues[$varName]) {
-                                        $strInput .= "<option value=\"$idSeleccion\" selected=\"selected\">$nombreSeleccion</option>";
-                                    } else {
-                                        $strInput .= "<option value=\"$idSeleccion\">$nombreSeleccion</option>";
-                                    }
-                                }
+                                $listaOpts[] = sprintf(
+                                    '<option value="%s" %s>%s</option>',
+                                    htmlentities($idSeleccion, ENT_COMPAT, 'UTF-8'),
+                                    in_array($idSeleccion, $keyVals) ? 'selected="selected"' : '',
+                                    htmlentities($nombreSeleccion, ENT_COMPAT, 'UTF-8'));
                             }
                         }
-                        $strInput .= "</select>";
-                    } else { 
-                            if(is_array($arrPreFilledValues[$varName])){
-                                $strInput .= "| ";
-                                foreach($arrVars['INPUT_EXTRA_PARAM'] as $idSeleccion => $nombreSeleccion) {
-                                    foreach($arrPreFilledValues[$varName] as $key => $value){ //si hay mas  de uno elegido informacion como arreglo
-                                        if($idSeleccion==$value) {
-                                            $strInput .=  $arrVars['INPUT_EXTRA_PARAM'][$idSeleccion]." | ";
-                                            break; // rompo porque ya lo encontre
-                                        }
-                                    }
-                                }
-                            }
-                            else{//solo uno elegido, informacion como texto
-                                $idSeleccion = $arrPreFilledValues[$varName];
-                                $strInput .= isset($arrVars['INPUT_EXTRA_PARAM'][$idSeleccion])?$arrVars['INPUT_EXTRA_PARAM'][$idSeleccion]:'';
-                            }
+                        $sNombreSelect = $varName_escaped;
+                        $sAttrMultiple = '';
+                        if (isset($arrVars['MULTIPLE']) && $arrVars['MULTIPLE'] != '' && $arrVars['MULTIPLE']) {
+                            $sAttrMultiple = 'multiple="multiple"';
+                            $sNombreSelect .= '[]';
+                        }
+                        $strInput = sprintf(
+                            '<select name="%s" id="%s" %s %s %s>%s</select>',
+                            $sNombreSelect,
+                            $sNombreSelect,
+                            $sAttrMultiple,
+                            (isset($arrVars['SIZE']) && $arrVars['SIZE'] != '') 
+                                ? sprintf('size="%s"', htmlentities($arrVars['SIZE'], ENT_COMPAT, 'UTF-8')) 
+                                : '',
+                            (isset($arrVars['ONCHANGE']) && $arrVars['ONCHANGE'] != '') 
+                                ? "onchange='{$arrVars[ONCHANGE]}'" 
+                                : '',
+                            implode("\n", $listaOpts));
+                    } else {
+                        $strInput = is_array($arrPreFilledValues[$varName])
+                            ? '| '.implode(' | ', 
+                                array_map('_map_htmlentities', 
+                                    array_intersect_key(
+                                        $arrVars['INPUT_EXTRA_PARAM'],
+                                        array_flip($arrPreFilledValues[$varName])
+                                    )))
+                            : (isset($arrVars['INPUT_EXTRA_PARAM'][$arrPreFilledValues[$varName]])
+                                ? htmlentities($arrVars['INPUT_EXTRA_PARAM'][$arrPreFilledValues[$varName]], ENT_COMPAT, 'UTF-8')
+                                : '');
                     }
                     break;
                 case "DATE":
-                    if($this->modo=='input' or ($this->modo=='edit' and $arrVars['EDITABLE']!='no')) {
+                    if($bIngresoActivo) {
                         require_once("libs/js/jscalendar/calendar.php");    
                         $time = false;
                         $format = '%d %b %Y';
@@ -305,17 +316,17 @@ class paloForm
                                               'value'       => $arrPreFilledValues[$varName]));
 
                     } else {
-                        $strInput = "$arrPreFilledValues[$varName]";
+                        $strInput = $varValue_escaped;
                     }
                     break;
                 default:
                     $strInput = "";
             }
-            $arrMacro['LABEL'] = $arrVars['LABEL'];
+            $arrMacro['LABEL'] = htmlentities($arrVars['LABEL'], ENT_COMPAT, 'UTF-8');
             $arrMacro['INPUT'] = $strInput;
             $this->smarty->assign($varName, $arrMacro);
         }
-        $this->smarty->assign("title", $title);
+        $this->smarty->assign("title", htmlentities($title, ENT_COMPAT, 'UTF-8'));
         $this->smarty->assign("mode", $this->modo);
         return $this->smarty->fetch("file:$templateName");
     }
