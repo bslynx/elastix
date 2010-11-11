@@ -139,7 +139,13 @@ function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, &$
     $oGrid->calculatePagination($action,$start);
     $offset = $oGrid->getOffsetValue();
     $end    = $oGrid->getEnd();
-    $url    = "?menu=$module_name&filter_field=$filter_field&filter_value=$filter_value&date_start=".$_POST['date_start']."&date_end=".$_POST['date_end'];
+    $url = array(
+        'menu'          =>  $module_name,
+        'filter_field'  =>  $filter_field,
+        'filter_value'  =>  $filter_value,
+        'date_start'    =>  $_POST['date_start'],
+        'date_end'      =>  $_POST['date_end'],
+    );
 
     $arrData = null;
 
@@ -248,7 +254,7 @@ function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, &$
     }
     else{
         $oGrid->showFilter(trim($htmlFilter));
-        $content = "<form  method='POST' style='margin-bottom:0;' action=\"$url\">".$oGrid->fetchGrid($arrGrid, $arrData,$arrLang)."</form>";
+        $content = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
     }
     //end grid parameters
 
