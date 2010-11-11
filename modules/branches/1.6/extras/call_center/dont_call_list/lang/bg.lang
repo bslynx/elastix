@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.5                                                  |
+  | Elastix version: 2.0                                           |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -24,33 +24,35 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  |                                                                      |
+  | Translate by:Chavdar Iliev                                             |
+  | Email: chavdar_75@yahoo.com                                                       |
   +----------------------------------------------------------------------+
-  $Id: es.lang,v 1.2 2007/08/09 00:31:28 jmartinez Exp $ */
+  $Id: bg.lang, October 25, 2010, 6:07 pm kleber andres loayza Exp $ */
 global $arrLangModule;
-$arrLangModule=array(
-"Phone List"=>"Phone List",
-"Number Phone's"=>"Number Phone's",
-"Date Income"=>"Date Income",
-"Add"=>"Add",
-"Apply"=>"Apply",
-"Status"=>"Status",
-"Upload File"=>"Upload File",
-"Add new Number"=>"Add new Number",
-"SAVE"=>"SAVE",
-"CANCEL"=>"CANCEL",
-"Remove"=>"Remove",
-"Result"=>"Result",
-"Load File"=>"Load File",
-"Please select any file"=>"Please select any file",
-"Please enter a number phone"=>"Please enter a number phone",
-"Number phone is not numeric value"=>"Number phone isn't a numeric value",
-"Add Number"=>"Add Number",
-"the number already exists"=>"The number already exists",
+$arrLangModule=array(  
+"Phone List" => "Phone List",
+"Number Phone's" => "Number Phone's",
+"Date Income" => "Date Income",
+"Add" => "Add",
+"Apply" => "Apply",
+"Status" => "Status",
+"Upload File" => "Upload File",
+"Add new Number" => "Add new Number",
+"SAVE" => "SAVE",
+"CANCEL" => "CANCEL",
+"Remove" => "Remove",
+"Result" => "Result",
+"Load File" => "Load File",
+"Please select any file" => "Please select any file",
+"Please enter a number phone" => "Please enter a number phone",
+"Number phone is not numeric value" => "Number phone isn't a numeric value",
+"Add Number" => "Add Number",
+"the number already exists" => "The number already exists",
 "Active" => "Active",
 "Inactive" => "Inactive",
-"Desactivate"=>"Desactivate",
-"Activate"=>"Activate",
+"Desactivate" => "Desactivate",
+"Activate" => "Activate",
+
 );
-
-
 ?>

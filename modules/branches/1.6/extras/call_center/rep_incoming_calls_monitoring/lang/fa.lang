@@ -28,14 +28,14 @@
   $Id: fa.lang,v 1.1.1.1 2009/07/27 09:10:19 dlopez Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Incoming calls monitoring" => "Incoming calls monitoring",
-"Queue" => "Queue",
-"Entered" => "Entered",
-"Answered" => "Answered",
-"Abandoned" => "Abandoned",
-"Waiting calls" => "Waiting calls",
-"Without monitoring" => "Without monitoring",
-"Total" => "Total",
+"Incoming calls monitoring" => "نظارت تماس هاي ورودي",
+"Queue" => "صف",
+"Entered" => "وارد شده",
+"Answered" => "پاسخ داده شده",
+"Abandoned" => "از دست رفته",
+"Waiting calls" => "تماس هاي در انتظار",
+"Without monitoring" => "بدون نظارت",
+"Total" => "کل",
 
 );
 ?>

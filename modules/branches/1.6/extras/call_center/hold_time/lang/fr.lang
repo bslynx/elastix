@@ -2,10 +2,10 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.0-17                                               |
+  | Elastix version: 2.0                                           |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
-  | Copyright (c) 2008 Palosanto Solutions S. A.                         |
+  | Copyright (c) 2006 Palosanto Solutions S. A.                         |
   +----------------------------------------------------------------------+
   | Cdla. Nueva Kennedy Calle E 222 y 9na. Este                          |
   | Telfs. 2283-268, 2294-440, 2284-356                                  |
@@ -24,32 +24,35 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  |                                                                      |
+  | Translate by:Dannarz                                             |
+  | Email: sesshomarurin7@palosanto.com                                                       |
   +----------------------------------------------------------------------+
-  $Id: fr.lang,v 1.3 2008/05/20 00:31:28 jmartinez Exp $ */
-global $arrLangModule;
-$arrLangModule=array(
-"Hold Time"             => "Temps de prise",
-"Cola"                  => "File",
-"date"                  => "Date",
-"query"                 => "Chercher",
-"Debe ingresar una fecha valida"                => "Vous devez entrer une date valide",
-"Debe ingresar una fecha inicio/fin"            => "Vous devez entrer une date",
-"Error"                             => "Erreur",
-"Find"                              => "Trouver",
-"Date Init"                         => "Date de D&eacute;but",
-"Date End"                          => "Date de Fin",
-"Tipo"                              => "Type",
-"Estado"                            => "Statut",
-"Ingoing"                           => "Entrant",
-"Outgoing"                          => "Sortant",
-"Todas"                             => "Tous",
-"Exitosas"                          => "R&eacute;ussis",
-"Abandonadas"                       => "Perdus",
-"No Realizadas"                     => "Non R&eacute;alis&eacute;s",
-
+  $Id: fr.lang, October 25, 2010, 5:39 pm kleber andres loayza Exp $ */
+global $arrLangModulegModule;
+$arrLangModulegModule=array(  
+"Hold Time" => "Temps de prise",
+"Cola" => "File",
+"date" => "Date",
+"query" => "Chercher",
+"Debe ingresar una fecha valida" => "Vous devez entrer une date valide",
+"Debe ingresar una fecha inicio/fin" => "Vous devez entrer une date",
+"Error" => "Erreur",
+"Find" => "Rechercher",
+"Date Init" => "Du",
+"Date End" => "Au",
+"Tipo" => "Type",
+"Estado" => "Etat",
+"Ingoing" => "Entrant",
+"Outgoing" => "Sortant",
+"Todas" => "Tous",
+"Exitosas" => "R&eacute;ussis",
+"Abandonadas" => "Perdus",
+"No Realizadas" => "Non R&eacute;alis&eacute;s",
 "Total Calls" => "Total des Appels",
 "Total" => "Total",
 "Tiempo Promedio Espera(Seg)" => "Temps d'Attente Moyen (Seg)",
 "Espera Mayor(seg)" => "Meilleure Attente",
+
 );
 ?>

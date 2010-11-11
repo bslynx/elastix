@@ -1,7 +1,6 @@
 <?php
-
 global $arrLangModule;
- $arrLangModule=array(
+$arrLangModule=array(
 "Form List"=>"Form List",
 "Form Name" => "Name",
 "Form Description" => "Description",

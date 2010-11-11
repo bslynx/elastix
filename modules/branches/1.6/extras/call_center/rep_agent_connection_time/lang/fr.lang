@@ -1,8 +1,8 @@
 <?php
-  /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
+/* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.5.2-3.1                                               |
+  | Elastix version: 2.0                                           |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -24,27 +24,33 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  |                                                                      |
+  | Translate by:Dannarz                                             |
+  | Email: sesshomarurin7@palosanto.com                                                       |
   +----------------------------------------------------------------------+
-  $Id: fr.lang,v 1.1.1.1 2009/07/27 09:10:19 dlopez Exp $ */
+  $Id: fr.lang, October 25, 2010, 5:39 pm kleber andres loayza Exp $ */
 global $arrLangModule;
-$arrLangModule=array(
-"Reporte General de Tiempo Conexion Agentes Por Dia" => "Reporte General de Tiempo Conexion Agentes Por Dia",
+$arrLangModule=array(  
+"Reporte General de Tiempo Conexion Agentes Por Dia" => "Rapport G&eacute;n&eacute;ral du Temps de Connexion des Agents",
 "Id Agent" => "Id Agent",
-"Agent Name" => "Agent Name",
-"First Conecction" => "First Conecction",
-"Last Conecction" => "Last Conecction",
-"Total time of session" => "Total time of session",
-//cola y fechas
-"Start date" => "Start date",
-"End date" => "End date",
-"Queue" => "Queue",
-"Type"=> "Type",
-"Details"=> "Details",
-"General"=> "General",
+"Agent Name" => "Nom",
+"First Conecction" => "Premi&eacute;re connexion.",
+"Last Conecction" => "Derni&egrave;re connexion.",
+"Total time of session" => "Dur&eacute;e total de session.",
+"Start date" => "Du",
+"End date" => "Au",
+"Queue" => "File",
+"Type" => "Type",
+"Details" => "D&eacute;tails",
+"General" => "G&eacute;n&eacute;ral",
 "Service %" => "Service %",
-"Total Calls"=>"Total Calls",
-"Status"=>"Status",
-"Validation Error"=>"Validation Error",
-"The following fields contain errors"=>"The following fields contain errors",
+"Total Calls" => "Total d'appels",
+"Status" => "Etat",
+"Validation Error" => "Erreur de validation",
+"The following fields contain errors" => "Les champs suivants contiennent des erreurs!",
+"Show" => "Afficher",
+"Time Total Calls" => "Dur&eacute;e Total des appels",
+"Number Agent" => "N&deg; Agent",
+
 );
 ?>

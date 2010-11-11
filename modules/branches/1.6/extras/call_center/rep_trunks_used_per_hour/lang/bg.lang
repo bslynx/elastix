@@ -1,8 +1,8 @@
 <?php
-  /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
+/* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.5.2-3.1                                               |
+  | Elastix version: 2.0                                           |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -24,10 +24,13 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  |                                                                      |
+  | Translate by:Chavdar Iliev                                             |
+  | Email: chavdar_75@yahoo.com                                                       |
   +----------------------------------------------------------------------+
-  $Id: bg.lang,v 1.1.1.1 2009/07/27 09:10:19 dlopez Exp $ */
+  $Id: bg.lang, October 25, 2010, 6:07 pm kleber andres loayza Exp $ */
 global $arrLangModule;
-$arrLangModule=array(
+$arrLangModule=array(  
 "Reporte de Troncales usadas por Hora en el dia" => "Reporte de Troncales usadas por Hora en el dia",
 "Time Period " => "Time Period ",
 "Entered" => "Entered",
@@ -39,6 +42,7 @@ $arrLangModule=array(
 "Start date" => "Start date",
 "End date" => "End date",
 "Total" => "Total",
-"Trunk"=>"Trunk",
+"Trunk" => "Trunk",
+
 );
 ?>
