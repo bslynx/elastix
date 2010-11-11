@@ -229,11 +229,10 @@ function _moduleContent(&$smarty, $module_name)
 
         // Construyo el URL base
         if(isset($arrFilterExtraVars) && is_array($arrFilterExtraVars) && count($arrFilterExtraVars)>0) {
-            $url = construirURL($arrFilterExtraVars, array("nav", "start")); 
+            $url = $arrFilterExtraVars; 
         } else {
-            $url = construirURL(array(), array("nav", "start")); 
+            $url = array(); 
         }
-        $smarty->assign("url", $url);
     }
 
     // Bloque comun
@@ -268,6 +267,7 @@ function _moduleContent(&$smarty, $module_name)
     }
 
     $arrGrid = array("title"    => $arrLang["CDR Report List"],
+                     "url"      => $url,
                      "icon"     => "images/user.png",
                      "width"    => "99%",
                      "start"    => ($total==0) ? 0 : $offset + 1,
