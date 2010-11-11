@@ -1,4 +1,3 @@
-<form id='form_packages' style='margin-botom:0px;padding:0px' method='POST' action='?menu={$module_name}'>
     <table border='0' cellpadding='0' callspacing='0' width='100%' height='44'>
         <tr class="letra12">
             <td width='70%'>{$Name} &nbsp;
@@ -19,7 +18,6 @@
         </tr>
     </table>
     <input type='hidden' id='estaus_reloj' value='apagado' />
-</form>
 {literal}
 <script type='text/javascript'>
     function mostrarReloj()

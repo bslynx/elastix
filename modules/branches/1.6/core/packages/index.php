@@ -91,7 +91,11 @@ function listPackages($smarty, $module_name, $local_templates_dir,$arrConf) {
     }
 
 
-    $smarty->assign("url","?menu=".$module_name."&submitInstalado=$submitInstalado&nombre_paquete=$nombre_paquete");
+    $url = array(
+        'menu'      =>  $module_name,
+        'submitInstalado'   =>  $submitInstalado,
+        'nombre_paquete'    =>  $nombre_paquete,
+    );
     $arrData = array();
     if (is_array($arrPaquetes)) {
         for($i=0;$i<count($arrPaquetes);$i++){
@@ -118,6 +122,7 @@ function listPackages($smarty, $module_name, $local_templates_dir,$arrConf) {
         "start"    => ($total==0) ? 0 : $offset + 1,
         "end"      => $end,
         "total"    => $total,
+        "url"      => $url,
         "columns"  => array(0 => array("name"      => $arrLang["Package Name"],
                                        "property1" => ""),
                             1 => array("name"      => $arrLang["Package Info"], 
@@ -145,7 +150,7 @@ function listPackages($smarty, $module_name, $local_templates_dir,$arrConf) {
     $smarty->assign("module_name",$module_name);
     $smarty->assign("RepositoriesUpdate",$arrLang['Repositories Update']);
     $smarty->assign("Name",$arrLang['Name']);
-    $smarty->assign("nombre_paquete",$nombre_paquete);
+    $smarty->assign("nombre_paquete",htmlentities($nombre_paquete, ENT_QUOTES, 'UTF-8'));
     $smarty->assign("Search",$arrLang['Search']);
     $smarty->assign("Status",$arrLang['Status']);
     $smarty->assign("opcion2",$opcion2);
