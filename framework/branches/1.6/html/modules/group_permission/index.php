@@ -333,7 +333,11 @@ function reportGroupPermission($smarty, $module_name, $local_templates_dir, &$pD
     $oGrid->calculatePagination($action,$start);
     $offset = $oGrid->getOffsetValue();
     $end    = $oGrid->getEnd();
-    $url    = "?menu=$module_name&filter_group=$filter_group&filter_resource=$parameter_to_find";
+    $url = array(
+        'menu'              =>  $module_name,
+        'filter_group'      =>  $filter_group,
+        'filter_resource'   =>  $parameter_to_find,
+    );
 
     $arrData = null;
     if($parameter_to_find == "")
@@ -388,7 +392,7 @@ function reportGroupPermission($smarty, $module_name, $local_templates_dir, &$pD
                         "end"      => $end,
                         "total"    => $total,
                         "url"      => $url,
-                        "columns"  => array(0 => array("name"      => "<input class='button' type='submit' name='apply' value='{$arrLang['Apply']}' >",
+                        "columns"  => array(0 => array("name"      => "<input class='button' type='submit' name='apply' value='{$arrLang['Apply']}' />",
                                                         "property1" => ""),
                                             1 => array("name"      => $arrLang["Resource"], 
                                                         "property1" => ""),
@@ -412,18 +416,18 @@ function reportGroupPermission($smarty, $module_name, $local_templates_dir, &$pD
 
     //ayuda para el pagineo -> estod datos son tomados en la function applyGroupPermission($smarty, $module_name, ......
     //ayuda a que despues de "aplicar" se quede en la misma pagina
-    $smarty->assign("resource_apply", $filter_resource);
-    $smarty->assign("limit_apply", $limit);
-    $smarty->assign("offset_apply", $offset);
+    $smarty->assign("resource_apply", htmlspecialchars($filter_resource, ENT_COMPAT, 'UTF-8'));
+    $smarty->assign("limit_apply", htmlspecialchars($limit, ENT_COMPAT, 'UTF-8'));
+    $smarty->assign("offset_apply", htmlspecialchars($offset, ENT_COMPAT, 'UTF-8'));
 
-    $smarty->assign("action_apply", $action);
-    $smarty->assign("start_apply", $start);
+    $smarty->assign("action_apply", htmlspecialchars($action, ENT_COMPAT, 'UTF-8'));
+    $smarty->assign("start_apply", htmlspecialchars($start, ENT_COMPAT, 'UTF-8'));
 
     $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl","",$_POST);
     //end section filter
 
     $oGrid->showFilter(trim($htmlFilter));
-    $contenidoModulo = "<form  method='POST' style='margin-bottom:0;' action=$url>".$oGrid->fetchGrid($arrGrid, $arrData,$arrLang)."</form>";
+    $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
     //end grid parameters
 
     return $contenidoModulo;
