@@ -274,23 +274,26 @@ function load_language($ruta_base='')
 {
     $lang = get_language($ruta_base);
 
-    $sFallbackEN = $ruta_base."lang/en.lang";
-    include_once $sFallbackEN;
+    include_once $ruta_base."lang/en.lang";
+    $lang_file = $ruta_base."lang/$lang.lang";
 
-    if ($lang != 'en') {
+    if ($lang != 'en' && file_exists("$lang_file")) {
         $arrLangEN = $arrLang;
-        include_once $ruta_base."lang/".$lang.".lang";
+        include_once "$lang_file";
         $arrLang = array_merge($arrLangEN, $arrLang);
     }
-
 }
 
 function load_language_module($module_id, $ruta_base='')
 {
     $lang = get_language($ruta_base);
+    include_once $ruta_base."modules/$module_id/lang/en.lang";
     $lang_file_module = $ruta_base."modules/$module_id/lang/$lang.lang";
-    if (file_exists("$lang_file_module")) include_once "$lang_file_module";
-    else include_once $ruta_base."modules/$module_id/lang/en.lang";
+    if ($lang != 'en' && file_exists("$lang_file_module")) {
+        $arrLangEN = $arrLangModule;
+        include_once "$lang_file_module";
+        $arrLangModule = array_merge($arrLangEN, $arrLangModule);
+    }
 
     global $arrLang;
     global $arrLangModule;
