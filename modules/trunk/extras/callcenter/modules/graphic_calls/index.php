@@ -88,8 +88,7 @@ function sumar($a, $b) { return $a + $b; }
 function listHistogram($pDB, $smarty, $module_name, $local_templates_dir)
 {
     global $arrLang;
-	global $arrLangModule;
-    $arrLangModule=$arrLangModule;
+    global $arrLangModule;
 
     // Tipo de llamada
     $comboTipos = array(
@@ -224,8 +223,7 @@ function listHistogram($pDB, $smarty, $module_name, $local_templates_dir)
 
 function getFormFilter($arrDataTipo, $arrDataEstado, $arrDataQueues)
 {
-	global $arrLangModule;
-    $arrLangModule=$arrLangModule;
+    global $arrLangModule;
 
     $formCampos = array(
         "fecha_ini"       => array(
@@ -275,8 +273,7 @@ function getFormFilter($arrDataTipo, $arrDataEstado, $arrDataQueues)
 
 function graphHistogram($pDB, $smarty, $module_name, $local_templates_dir)
 {
-	global $arrLangModule;	
-    	$arrLangModule=$arrLangModule;
+    global $arrLangModule;	
     global $arrLang;
 
     include ("libs/jpgraph/jpgraph.php");
