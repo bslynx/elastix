@@ -43,23 +43,25 @@ function _moduleContent(&$smarty,$module_name) {
     $templates_dir=(isset($config['templates_dir']))?$config['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$config['theme'];
     // obtengo el idioma actual utilizado en la aplicacion.
-    $language=get_language();
+    $Language=get_language();
     $script_dir=dirname($_SERVER['SCRIPT_FILENAME']);
 
+    global $arrLangModule;
+
     include_once("modules/$module_name/lang/en.lang");
-    $lang_file="modules/$module_name/lang/$language.lang";
-    if (file_exists("$script_dir/$lang_file")) {
-        $arrLanEN = $lang;
-        include_once($lang_file);
-        $lang = array_merge($arrLanEN, $arrLangModule);
+    $arrLangModule_file="modules/$module_name/lang/$Language.lang";
+    if (file_exists("$script_dir/$arrLangModule_file")) {
+        $arrLanEN = $arrLangModule;
+        include_once($arrLangModule_file);
+        $arrLangModule = array_merge($arrLanEN, $arrLangModule);
     }
 
     // se crea el objeto conexion a la base de datos
     $pDB = new paloDB($cadena_dsn);
     // valido lacreacion del objeto conexion, presentando un mensaje deerror si es invalido.
     if (!is_object($pDB->conn) || $pDB->errMsg!="") {
-            $smarty->assign("mb_title", $lang["Error"]);
-            $smarty->assign("mb_message", $lang["Error when connecting to database"]." ".$pDB->errMsg);
+            $smarty->assign("mb_title", $arrLangModule["Error"]);
+            $smarty->assign("mb_message", $arrLangModule["Error when connecting to database"]." ".$pDB->errMsg);
     // sio el objeto coenxion a la base no tiene problemas, consulto si se han seteado las variables GET.
     }elseif(isset($_GET['exportcsv']) && $_GET['exportcsv']=='yes') {
         $limit = "";
@@ -96,7 +98,7 @@ function _moduleContent(&$smarty,$module_name) {
             // particular a laque llamaremos txt_fecha_init y txt_fecha_end.
             "txt_fecha_init"  => array
             (
-                "LABEL"                     => $lang['Date Init'],
+                "LABEL"                     => $arrLangModule['Date Init'],
                 "REQUIRED"                  => "yes",
                 "INPUT_TYPE"                => "DATE",
                 "INPUT_EXTRA_PARAM"         => "",
@@ -105,7 +107,7 @@ function _moduleContent(&$smarty,$module_name) {
             ),
             "txt_fecha_end"  => array
             (
-                "LABEL"                     => $lang['Date End'],
+                "LABEL"                     => $arrLangModule['Date End'],
                 "REQUIRED"                  => "yes",
                 "INPUT_TYPE"                => "DATE",
                 "INPUT_EXTRA_PARAM"         => "",
@@ -117,7 +119,7 @@ function _moduleContent(&$smarty,$module_name) {
         $fecha_actual_init = date("d M Y"); 
         $fecha_actual_end  = date("d M Y");
         // nombre del boton que me permitira enviar los valores del formulario.
-        $smarty->assign("btn_consultar",$lang['Find']);
+        $smarty->assign("btn_consultar",$arrLangModule['Find']);
         // nombre del modulo actual.
         $smarty->assign("module_name",$module_name);
         // creo un objeto paloForm para crear el filtro del formulario.
@@ -140,11 +142,11 @@ function _moduleContent(&$smarty,$module_name) {
             } else {
                 // si la informacion es invalida presento un mensaje de error con la cadena "Error de validacion"
                 // dependiendo del idioma.
-                $smarty->assign("mb_title", $lang["Validation Error"]);
+                $smarty->assign("mb_title", $arrLangModule["Validation Error"]);
                 // en este arreglo se guarada los posibles errores de validacion generados.
                 $arrErrores=$oFilterForm->arrErroresValidacion;
                 // cadena que almacena el mensaje de error a mostrarse en la pantalla.
-                $strErrorMsg = "<b>{$lang['The following fields contain errors']}:</b><br>";
+                $strErrorMsg = "<b>{$arrLangModule['The following fields contain errors']}:</b><br>";
                 // se recorre el arreglo para revisar todos los errores encontrados en la informacion del formulario
                 foreach($arrErrores as $k=>$v) {
                     // se concatena los mensajes de error encontrados.
@@ -199,15 +201,15 @@ function _moduleContent(&$smarty,$module_name) {
     $oReportsCalls  = new paloSantoReportsCalls($pDB);
     // valido la creacion del objeto
     if( !$oReportsCalls ) {
-        $smarty->assign("mb_title", $lang["Error"]);
-        $smarty->assign("mb_message", $lang["Error when creating object paloSantoReportsCalls"]);
+        $smarty->assign("mb_title", $arrLangModule["Error"]);
+        $smarty->assign("mb_message", $arrLangModule["Error when creating object paloSantoReportsCalls"]);
     }else {
         // creo un arreglo para el grid
         $arrGrid = array();
         // envio el arreglo por referencia a la funcion para que esta se encargue de defnirlo. La funcion 
         // me retorna un arreglo con la informacion del reporte y ha generado el grid, 
         // el cual es devuelto por referencia.
-        $arrData = generarReporte($smarty,$fecha_actual_init,$fecha_actual_end,$oReportsCalls,$lang,$arrGrid);
+        $arrData = generarReporte($smarty,$fecha_actual_init,$fecha_actual_end,$oReportsCalls,$arrLangModule,$arrGrid);
         // creo el objeto GRID
         $oGrid = new paloSantoGrid($smarty);
         // habilito la opcion Export con la que se procedera a exportar la data a un archivo.
@@ -220,7 +222,7 @@ function _moduleContent(&$smarty,$module_name) {
         // sino se muestran los datos en la pantalla.
         else {
             $oGrid->showFilter($htmlFilter);
-            return $oGrid->fetchGrid($arrGrid, $arrData,$lang);
+            return $oGrid->fetchGrid($arrGrid, $arrData,$arrLangModule);
         }
     }
 }
@@ -228,7 +230,7 @@ function _moduleContent(&$smarty,$module_name) {
     Esta funcion muestra un reporte de llamadas exitosas y abandonadas en un rango de fechas determinado,
     por defecto se toma la fecha actual del sistema.
 */
-function generarReporte($smarty,$fecha_actual_init,$fecha_actual_end,$oReportsCalls,$lang,&$arrGrid=null) {
+function generarReporte($smarty,$fecha_actual_init,$fecha_actual_end,$oReportsCalls,$arrLangModule,&$arrGrid=null) {
     $fecha_init = translateDate($fecha_actual_init) . " 00:00:00";
     $fecha_end  = translateDate($fecha_actual_end)  . " 23:59:59";
 
@@ -268,22 +270,22 @@ function generarReporte($smarty,$fecha_actual_init,$fecha_actual_end,$oReportsCa
     //defino el esqueleto del reporte
 
     $arrGrid = array(
-        "title"    =>  $lang["List Calls"],
+        "title"    =>  $arrLangModule["List Calls"],
         "icon"     => "images/list.png",
         "width"    => "99%",
         "start"    => ($total==0) ? 0 : $offset + 1,
         "end"      => ($offset+$limit)<=$total ? $offset+$limit : $total,
         "total"    => $total,
         "columns"  => array(
-                            0 => array( 'name'      => $lang["Queue"],  // aqui se  crea la primera columna 
+                            0 => array( 'name'      => $arrLangModule["Queue"],  // aqui se  crea la primera columna 
                                         'property1' => ''),             // del reporte, y asi con las demas
-                            1 => array( 'name'      => $lang["Successful"],
+                            1 => array( 'name'      => $arrLangModule["Successful"],
                                         'property1' => ''),
-                            2 => array( 'name'      => $lang["Left"],
+                            2 => array( 'name'      => $arrLangModule["Left"],
                                         'property1' => ''),
-                            3 => array( 'name'      => $lang["Time Hopes"],
+                            3 => array( 'name'      => $arrLangModule["Time Hopes"],
                                         'property1' => ''),
-                            4 => array( 'name'      => $lang["Total Calls"],
+                            4 => array( 'name'      => $arrLangModule["Total Calls"],
                                         'property1' => ''),
                             ),
     );
@@ -310,7 +312,7 @@ function generarReporte($smarty,$fecha_actual_init,$fecha_actual_end,$oReportsCa
         $sumTotalCall = $sumTotalCall + $arrData[$i][4];
     }
 
-    $arrTmp[0] = "<b>".$lang["Total"]."</b>";
+    $arrTmp[0] = "<b>".$arrLangModule["Total"]."</b>";
     $arrTmp[1] = "<b>".$sumExitosa."</b>";
     $arrTmp[2] = "<b>".$sumAbandonada."</b>";
     $arrTmp[3] = "<b>".$sumWait."</b>";
