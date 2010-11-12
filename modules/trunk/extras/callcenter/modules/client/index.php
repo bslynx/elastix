@@ -50,13 +50,13 @@ function _moduleContent(&$smarty,$module_name)
     $local_templates_dir = "$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConfig['theme'];
 
     // Obtengo el idioma actual utilizado en la aplicacion.
-    $arrLangModuleuage = get_language();
+    $Language = get_language();
     $script_dir = dirname($_SERVER['SCRIPT_FILENAME']);
 
     // Include language file for EN, then for local, and merge the two.
     $arrLangModule = NULL;
     include_once("modules/$module_name/lang/en.lang");
-    $arrLangModule_file="modules/$module_name/lang/$arrLangModuleuage.lang";
+    $arrLangModule_file="modules/$module_name/lang/$Language.lang";
     if (file_exists("$script_dir/$arrLangModule_file")) {
         $arrLanEN = $arrLangModule;
         include_once($arrLangModule_file);
