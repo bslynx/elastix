@@ -52,12 +52,12 @@ function _moduleContent(&$smarty, $module_name)
         include_once("modules/$module_name/lang/en.lang");
 */
     include_once("modules/$module_name/lang/en.lang");
-    $lang_file="modules/$module_name/lang/$lang.lang";	
+    $lang_file="modules/$module_name/lang/$lang.lang";
     if (file_exists("$script_dir/$lang_file")) {
         $arrLangModuleEN = $arrLangModule;
         include_once($lang_file);
         $arrLangModule = array_merge($arrLangModuleEN, $arrLangModule);
-	}
+    }
 
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
@@ -120,8 +120,7 @@ function _moduleContent(&$smarty, $module_name)
 //funcion que construye la vista del reporte
 function listadoHoldTime($pDB, $smarty, $module_name, $local_templates_dir,&$oGrid,&$arrGrid,&$arrData) {
     global $arrLang;
-	global $arrLangModule;
-    $arrLangModule=$arrLangModule;
+    global $arrLangModule;
     $arrData = array();
     $oCalls = new paloSantoHoldTime($pDB);
     $fecha_init = date("d M Y");
@@ -170,7 +169,7 @@ function listadoHoldTime($pDB, $smarty, $module_name, $local_templates_dir,&$oGr
                 $smarty->assign("mb_message", $arrLangModule["Debe ingresar una fecha valida"]);
             }
             // pregunto si es valido el formato de la fecha final
-                if (ereg( $sValidacion , $_POST['txt_fecha_end'] ) ) {
+                if ( ereg( $sValidacion , $_POST['txt_fecha_end'] ) ) {
                     // si el formato es valido procedo a convertir la fecha en un arreglo que contiene 
                 // el anio , mes y dia seleccionados
                     $fecha_end = $fecha_end_actual;//$_POST['txt_fecha_end'];
