@@ -97,9 +97,6 @@ class paloSantoUploadFile
      */
     private function parseCampaignNumbers($sFilePath, &$sEncoding)
     {
-        global $arrLang;
-        global $arrLan;
-
     	$listaNumeros = NULL;
 
         // Detectar codificación para procesar siempre como UTF-8 (bug #325)
