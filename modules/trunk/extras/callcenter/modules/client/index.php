@@ -64,7 +64,6 @@ function _moduleContent(&$smarty,$module_name)
     }
     $arrLang = array_merge($arrLang, $arrLangModule);
 
-
     $smarty->assign("MODULE_NAME", $module_name);
     $smarty->assign("LABEL_MESSAGE", _tr('Select file upload'));
     $smarty->assign("Format_File", _tr('Format File'));
