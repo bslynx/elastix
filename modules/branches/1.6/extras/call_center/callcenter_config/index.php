@@ -122,7 +122,7 @@ function form_Configuration(&$oDB, $smarty, $module_name, $local_templates_dir, 
     }
     if (count($_POST) > 0) {
         if (!isset($_POST['asterisk_astuser']) || trim($_POST['asterisk_astuser']) == '') {
-        	$_POST['asterisk_astuser'] = '';
+            $_POST['asterisk_astuser'] = '';
             $_POST['asterisk_astpass_1'] = '';
             $_POST['asterisk_astpass_2'] = '';
         }
@@ -321,6 +321,7 @@ function createFieldForm($arrLang)
     );
 }
 
+if (!function_exists('getParameter')) {
 function getParameter($parameter)
 {
     if(isset($_POST[$parameter]))
@@ -329,6 +330,7 @@ function getParameter($parameter)
         return $_GET[$parameter];
     else
         return null;
+}
 }
 
 function getAction()
