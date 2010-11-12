@@ -43,7 +43,6 @@ require_once("modules/break_administrator/libs/PaloSantoBreaks.class.php");
       Se muestran diferentes datos dependiendo de la pestaña en que se encuentra.
 */
 function notificaLlamada($pestania, $prefijo_objeto, $nueva_llamada, $id_formulario=NULL) {
-    global $arrLangModule; 
     $msj="";
     $respuesta = new xajaxResponse();
     $agentnum = $_SESSION['elastix_agent_user'];
@@ -59,13 +58,12 @@ function notificaLlamada($pestania, $prefijo_objeto, $nueva_llamada, $id_formula
         $_SESSION['elastix_agent_user'] = null;
         $_SESSION['elastix_extension']  = null;
         $_SESSION['channel_active'] = null;
-        $respuesta->addAlert($arrLangModule["Agent disconnected"]." - $msj");
+        $respuesta->addAlert(_tr("Agent disconnected")." - $msj");
         // se hace submit de la pagina para regresar a la pantalla del login del agente
         $respuesta->addScript("document.getElementById('frm_agent_console').submit();");
 
     } else {
         // Conexión a la base de datos
-        global $arrLang;
         $pDB = getDB();
 
         // se comprueba la conexión a la base de datos
@@ -174,17 +172,17 @@ function notificaLlamada($pestania, $prefijo_objeto, $nueva_llamada, $id_formula
                             $respuesta->addAssign("link_crm","innerHTML",$link_crm);
 
                         } else {
-                            $combo_cedula_ruc .= $arrLangModule["Number Phone not Registered"];
+                            $combo_cedula_ruc .= _tr("Number Phone not Registered");
                         }
 
                         // se muestra el número telefónico de la llamada entrante
-                        $telefono_cedula =  "<b>".$arrLangModule["Phone"].":</b> ".$phone."<br>";
+                        $telefono_cedula =  "<b>"._tr("Phone").":</b> ".$phone."<br>";
                         // si hay mas de un contacto con el número telefonico, entonces se muestra una lista con
                         // los contactos que tienen ese número de telefono y un boton para confirmar cual es el contacto 
                         if ($combo_cedula_ruc!="") {
-                            $telefono_cedula .= "<b>".$arrLangModule["Contacts"].":</b> ".$combo_cedula_ruc;
-                            if ($combo_cedula_ruc!=$arrLangModule["Number Phone not Registered"]) {
-                                $telefono_cedula .= " <input type='button' name='confirmar' id='confirmar' value='".$arrLangModule["Confirm"]."' onClick='xajax_confirmar_cedula_contacto($id_call, document.getElementById(\"cedula_ruc\").value)'>";
+                            $telefono_cedula .= "<b>"._tr("Contacts").":</b> ".$combo_cedula_ruc;
+                            if ($combo_cedula_ruc!=_tr("Number Phone not Registered")) {
+                                $telefono_cedula .= " <input type='button' name='confirmar' id='confirmar' value='"._tr("Confirm")."' onClick='xajax_confirmar_cedula_contacto($id_call, document.getElementById(\"cedula_ruc\").value)'>";
                             }
                         }
                         $respuesta->addAssign("numero_telefono","innerHTML",$telefono_cedula);
@@ -215,8 +213,8 @@ function notificaLlamada($pestania, $prefijo_objeto, $nueva_llamada, $id_formula
 
                     $tiempo_transcurso_llamada = explode(":",$arr_campania["duracion_llamada"]);
 
-                    $numero_telefono  = "<span class='celda_callcenter_grande'><b>".$arrLangModule['Call Number'].":</b> ".$llamada."<br>";
-                    $numero_telefono  .= "<b>".$arrLangModule['Name'].":</b> ".$cliente."</span>";
+                    $numero_telefono  = "<span class='celda_callcenter_grande'><b>"._tr('Call Number').":</b> ".$llamada."<br>";
+                    $numero_telefono  .= "<b>"._tr('Name').":</b> ".$cliente."</span>";
 
                     $respuesta->addAssign("numero_telefono","innerHTML",$numero_telefono);
                     $respuesta->addScript("document.getElementById('marcar').className = 'boton_marcar_activo';");
@@ -249,7 +247,7 @@ function notificaLlamada($pestania, $prefijo_objeto, $nueva_llamada, $id_formula
                                 }
 //ECUASISTENCIA: PONEMOS EL LINK DE PROGRAMAR LLAMADAS PARA GENERAR EL POPUP
             $id_campana = $arr_campania["id_campaign"];
-            $respuesta->addAssign("link_programar_llamada","innerHTML","<a href='javascript: popup_llamada(\"modules/agent_console/libs/programar_llamadas.php?num_telefono=$llamada&id_call=$id_call&id_campana=$id_campana&cliente=$cliente\");' class='normal'>".$arrLangModule["ProgramCalls"]."</a>");
+            $respuesta->addAssign("link_programar_llamada","innerHTML","<a href='javascript: popup_llamada(\"modules/agent_console/libs/programar_llamadas.php?num_telefono=$llamada&id_call=$id_call&id_campana=$id_campana&cliente=$cliente\");' class='normal'>"._tr("ProgramCalls")."</a>");
 
 //ECUASISTENCIA FIN 
                             } // fin del if q controla si hay nueva llamada
@@ -332,9 +330,9 @@ function notificaLlamada($pestania, $prefijo_objeto, $nueva_llamada, $id_formula
             
                                             $smarty->assign("FORMULARIO", $data_field);
                                             $smarty->assign("id_formularios", $ids_formularios);
-                                            $smarty->assign("formularios", $arrLangModule["Form"]);
-                                            $smarty->assign("fill_fields", $arrLangModule["Fill the fields"]);
-                                            $smarty->assign("SAVE", $arrLang["Save"]);
+                                            $smarty->assign("formularios", _tr("Form"));
+                                            $smarty->assign("fill_fields", _tr("Fill the fields"));
+                                            $smarty->assign("SAVE", _tr("Save"));
                                             $mostrar_template=true;
                                         }
                                     }
@@ -342,8 +340,7 @@ function notificaLlamada($pestania, $prefijo_objeto, $nueva_llamada, $id_formula
                                     else $template = "vacio.tpl";
                                 }
                                 else{
-                                    global $arrLang;
-                                    $smarty->assign("no_definidos_formularios",$arrLangModule['Forms Nondefined']);
+                                    $smarty->assign("no_definidos_formularios",_tr('Forms Nondefined'));
                                     $template = "vacio.tpl";
                                 }
                                 $texto_formulario=$smarty->fetch("file:/var/www/html/modules/agent_console/themes/default/$template");
@@ -358,7 +355,7 @@ function notificaLlamada($pestania, $prefijo_objeto, $nueva_llamada, $id_formula
             //INICIO: DEL CODIGO QUE DEBE IR PARA LLAMADAS SALIENTES Y ENTRANTES
 
             // INICIO: SETEANDO MENSAJE DEL ESTATUS ACTUAL DE LA LLAMADA
-            $respuesta->addAssign("estatus_actual","innerHTML",$arrLangModule["Calling"]);
+            $respuesta->addAssign("estatus_actual","innerHTML",_tr("Calling"));
             $respuesta->addScript("document.getElementById('celda_estatus_actual').className = 'fondo_estatus_llamada'; ");
             //PARA EL CRONOMETRO 
             if($tiempo_transcurso_llamada) {
@@ -397,7 +394,7 @@ function notificaLlamada($pestania, $prefijo_objeto, $nueva_llamada, $id_formula
                                    document.getElementById('nuevo_form').value = '';");
             // si el agente $agentnum no esta en pausa entra por el if
             if (!estaAgenteEnPausa(null,$agentnum)) {
-                $estatus = $arrLangModule["Call no active"];
+                $estatus = _tr("Call no active");
                 $respuesta->addScript("document.getElementById('celda_estatus_actual').className = 'fondo_estatus_no_llamada';");
                 //$respuesta->addScript("document.getElementById('marcar').className = 'boton_marcar_inactivo';");
                 $respuesta->addScript("document.getElementById('transfer').className = 'boton_tranfer_inactivo';");
@@ -414,7 +411,7 @@ function notificaLlamada($pestania, $prefijo_objeto, $nueva_llamada, $id_formula
                         $_SESSION['elastix_agent_audit']=$id_audit;
                     }
                 } 
-                $estatus = $arrLangModule["In Break"].": ".obtener_break_audit($pDB,$_SESSION['elastix_agent_audit']);
+                $estatus = _tr("In Break").": ".obtener_break_audit($pDB,$_SESSION['elastix_agent_audit']);
 
                 $respuesta->addScript("document.getElementById('celda_estatus_actual').className = 'fondo_estatus_break';");
 
@@ -490,8 +487,6 @@ function colgarLlamada() {
     //if (!$agentnum)
     $agentnum = $_SESSION['elastix_agent_user'];
 
-    global $arrLang;
-    global $arrLangModule;
     $pDB = getDB();
     $smarty = getSmarty(); // Load smarty 
 
@@ -515,10 +510,10 @@ function colgarLlamada() {
         if (isset($arr_llamada["channel"])) {
             finalizar_llamada_asterisk($arr_llamada["channel"], $resultado);
         } else {
-            $resultado = $arrLangModule["Call no active"];
+            $resultado = _tr("Call no active");
         }
     } else {
-        $resultado = $arrLangModule["Call no active"];
+        $resultado = _tr("Call no active");
     }
     //instanciamos el objeto para generar la respuesta con ajax
     $respuesta = new xajaxResponse();
@@ -540,8 +535,6 @@ function colgarLlamadaEntrante() {
     $pDB = getDB();
     $agentnum = $_SESSION['elastix_agent_user'];
 
-    global $arrLang;
-    global $arrLangModule;
 
     $sQuery = "
         SELECT
@@ -578,7 +571,6 @@ function colgarLlamadaEntrante() {
     funcion que se conecta al asterisk y hace que finalice la llamada enviandole como parametro el canal.
 */
 function finalizar_llamada_asterisk($channel, &$resultado) {
-    global $arrLangModule;
     if ($channel!="") {
         $ip_asterisk = $_SESSION["ip_asterisk"];
         $user_asterisk = $_SESSION["user_asterisk"];
@@ -588,7 +580,7 @@ function finalizar_llamada_asterisk($channel, &$resultado) {
         $astman = new AGI_AsteriskManager();
         save_log_prueba("Conectando en finalizar_llamada_asterisk");
         if (!$astman->connect($ip_asterisk, $user_asterisk, $pass_asterisk)) {
-            $resultado = $arrLangModule["Error when connecting to database Call Center"];
+            $resultado = _tr("Error when connecting to database Call Center");
         save_log_prueba("Error al conectar en finalizar_llamada_asterisk");
         } else {
             $arr_resultado = $astman->Hangup($channel);
@@ -599,7 +591,7 @@ function finalizar_llamada_asterisk($channel, &$resultado) {
             $astman->disconnect();
         }
     } else {
-        $resultado = $arrLangModule["Call can't be closed, channel is empty"]; 
+        $resultado = _tr("Call can't be closed, channel is empty"); 
     }
 }
 
@@ -607,8 +599,6 @@ function finalizar_llamada_asterisk($channel, &$resultado) {
     funcion que hace que una llamada se ponga en hold 
 */
 function hold() {
-    global $arrLang;
-    global $arrLangModule;
     $respuesta = new xajaxResponse();
     $pDB = getDB();
 
@@ -691,8 +681,6 @@ function hold() {
     funcion que pone en break a un agente
 */
 function agente_break($id_break) {
-    global $arrLang;
-    global $arrLangModule;
 
     // datos para la conexión al asterisk
     $ip_asterisk = $_SESSION["ip_asterisk"];
@@ -705,7 +693,7 @@ function agente_break($id_break) {
     $astman = new AGI_AsteriskManager( );
     save_log_prueba("Conectando en agente_break");
     if (!$astman->connect($ip_asterisk, $user_asterisk, $pass_asterisk)) {
-        $resultado = $arrLangModule["Error when connecting to Asterisk Manager"];
+        $resultado = _tr("Error when connecting to Asterisk Manager");
         save_log_prueba("Error al conectar en agente_break");
     } 
     else{ 
@@ -720,7 +708,7 @@ function agente_break($id_break) {
             $_SESSION['elastix_agent_soloUnaVez']=null;
             $id_audit = auditoria_break_insert($_SESSION['elastix_agent_break'],$agentnum);
             $_SESSION['elastix_agent_audit'] = $id_audit;
-            $name_pausa = $arrLangModule["UnHold"];
+            $name_pausa = _tr("UnHold");
             $style = 'boton_unbreak';
             $respuesta .= "document.getElementById('div_list').style.display ='none';";
         // caso contrario, está en pausa, quiere decir que hay q quitar la pausa
@@ -731,13 +719,13 @@ function agente_break($id_break) {
         $astman->disconnect();
             $resultado = $salida['Message'];
             if(!auditoria_break_update($_SESSION['elastix_agent_audit'])){
-                $smarty->assign("mb_title", $arrLangModule["Audit Error"]);
-                $smarty->assign("mb_message", $arrLangModule['Audit of break could not be inserted']);
+                $smarty->assign("mb_title", _tr("Audit Error"));
+                $smarty->assign("mb_message", _tr('Audit of break could not be inserted'));
             }
             $_SESSION['elastix_agent_audit'] = null;
             $_SESSION['elastix_agent_break'] = null;
             $_SESSION['elastix_agent_soloUnaVez']=null;
-            $name_pausa = $arrLangModule["Hold"];
+            $name_pausa = _tr("Hold");
             $respuesta .= "estado_cronometro('unBreak',null);";
             $style = 'boton_break';
          }
@@ -759,7 +747,7 @@ function enviar_cola_parqueo($channel) {
     $astman = new AGI_AsteriskManager( );
     save_log_prueba("Conectando en enviar_cola_parqueo");
     if (!$astman->connect($ip_asterisk, $user_asterisk, $pass_asterisk)) {
-        $resultado = $arrLangModule["Error when connecting to Asterisk Manager"];
+        $resultado = _tr("Error when connecting to Asterisk Manager");
         save_log_prueba("Error al conectar en enviar_cola_parqueo");
     } 
     else{
@@ -784,7 +772,7 @@ function tomar_llamada_parqueo($ext_parqueo) {
     save_log_prueba("Conectando en tomar_llamada_parqueo");
     if (!$astman->connect($ip_asterisk, $user_asterisk, $pass_asterisk)) {
         save_log_prueba("Error al conectar en tomar_llamada_parqueo");
-        $resultado = $arrLangModule["Error when connecting to Asterisk Manager"];
+        $resultado = _tr("Error when connecting to Asterisk Manager");
     } else{
 
         $agentnum = $_SESSION['elastix_agent_user'];
@@ -818,7 +806,7 @@ function get_extension_parqueo($astman, $channel) {
         $astman = new AGI_AsteriskManager( );	
         if (!$astman->connect($ip_asterisk, $user_asterisk, $pass_asterisk)) {
             save_log_prueba("Error al conectar en get_extension_parqueo");
-            $resultado = $arrLangModule["Error when connecting to Asterisk Manager"];
+            $resultado = _tr("Error when connecting to Asterisk Manager");
             return false;
         }
     }
@@ -854,8 +842,6 @@ function get_break_hold($pDB) {
 */
 function pausar_llamadas($id_break)
 {
-    global $arrLang;
-    global $arrLangModule;
     $respuesta = new xajaxResponse();
     $agentnum = $_SESSION['elastix_agent_user'];
 
@@ -872,7 +858,7 @@ function pausar_llamadas($id_break)
     $astman = new AGI_AsteriskManager( );	
     if (!$astman->connect($ip_asterisk, $user_asterisk, $pass_asterisk)) {
         save_log_prueba("Error al conectar en pausar_llamadas");
-        $resultado = $arrLangModule["Error when connecting to Asterisk Manager"];
+        $resultado = _tr("Error when connecting to Asterisk Manager");
     } 
     else{ 
         if (!estaAgenteEnPausa($astman, $agentnum)) {
@@ -884,7 +870,7 @@ function pausar_llamadas($id_break)
             /*$id_audit = auditoria_break_insert($id_break,$agentnum); SE CAMBIO LA IMPLEMENTACION AL INSERTAR  A NOTIFICA LLAMADA POR RAZONES DE EXACTITUD EN EL TIEMPO DE INICIO DE BREAK
             if($id_audit!=null)
                 $_SESSION['elastix_agent_audit']=$id_audit;*/
-            $name_pausa = $arrLangModule["UnBreak"];
+            $name_pausa = _tr("UnBreak");
             $style = 'boton_unbreak';
             $respuesta->addScript("document.getElementById('div_list').style.display ='none'; \n");
         } else {
@@ -892,13 +878,13 @@ function pausar_llamadas($id_break)
             $salida = QueuePause($astman, null,$member,"false");
             $resultado = $salida['Message'];
             if(!auditoria_break_update($_SESSION['elastix_agent_audit'])){
-                $smarty->assign("mb_title", $arrLangModule["Audit Error"]);
-                $smarty->assign("mb_message", $arrLangModule['Audit of break could not be inserted']);
+                $smarty->assign("mb_title", _tr("Audit Error"));
+                $smarty->assign("mb_message", _tr('Audit of break could not be inserted'));
             }    
             $_SESSION['elastix_agent_audit'] = null;
             $_SESSION['elastix_agent_break'] = null;
             $_SESSION['elastix_agent_soloUnaVez']=null;
-            $name_pausa = $arrLangModule["Break"];
+            $name_pausa = _tr("Break");
             $respuesta->addScript("estado_cronometro('unBreak',null);\n");
             $style = 'boton_break';
         }
@@ -915,8 +901,6 @@ function pausar_llamadas($id_break)
 function entrar_agente_sin_pausa($agente)
 {
     $member = "Agent/$agente";
-    global $arrLang;
-    global $arrLangModule;
 
     // datos para la conexión al asterisk
     $ip_asterisk = $_SESSION["ip_asterisk"];
@@ -927,13 +911,13 @@ function entrar_agente_sin_pausa($agente)
     save_log_prueba("Conectando en entrar_agente_sin_pausa");
     if (!$astman->connect($ip_asterisk, $user_asterisk, $pass_asterisk)) {
         save_log_prueba("Error al conectar en entrar_agente_sin_pausa");
-        $resultado = $arrLangModule["Error when connecting to Asterisk Manager"];
+        $resultado = _tr("Error when connecting to Asterisk Manager");
     } else { 
         if(estaAgenteEnPausa($astman, $agente)) {
             //$salida = $astman->QueuePause(null,$member,"false");
             $salida = QueuePause($astman, null,$member,"false");
             if($salida['Response']=='Error') {
-                $mensaje_return = $arrLangModule['Unable to pause Agent to queue: No such queue']; 
+                $mensaje_return = _tr('Unable to pause Agent to queue: No such queue'); 
             } else {
                 $mensaje_return = 'se_quito_pause';
             }
@@ -952,8 +936,6 @@ function entrar_agente_sin_pausa($agente)
 */
 function loginAgente($extn,$numAgente) {
 
-    global $arrLang;
-    global $arrLangModule;
 
     $ip_asterisk = $_SESSION["ip_asterisk"];
     $user_asterisk = $_SESSION["user_asterisk"];
@@ -966,13 +948,13 @@ function loginAgente($extn,$numAgente) {
     $astman = new AGI_AsteriskManager();
     if (!$astman->connect($ip_asterisk, $user_asterisk, $pass_asterisk)) {
         save_log_prueba("Error al conectar en loginAgente");
-        $respuesta->addScript("alert('".$arrLangModule["Error when connecting to Asterisk Manager"]."')");
+        $respuesta->addScript("alert('"._tr("Error when connecting to Asterisk Manager")."')");
     } else {
         if ($extn!="0" && $numAgente!="") {
             $arr_resultado = $astman->Originate($extn, "*8888".$numAgente, 'from-internal',1,NULL,NULL, NULL, NULL, NULL, NULL,'yes', 'id_nada');
             $respuesta->addAssign("pregunta_logoneo", "value", "1");
         } else {
-            $respuesta->addAssign("mensaje","innerHTML",$arrLangModule["Please enter your number agent"]);
+            $respuesta->addAssign("mensaje","innerHTML",_tr("Please enter your number agent"));
             $respuesta->addAssign("pregunta_logoneo", "value", "0");
         }
         $astman->disconnect();
@@ -986,8 +968,6 @@ function loginAgente($extn,$numAgente) {
     funcion que pregunta cada segundo y medio si el agente que llega por parametro esta logoneado en la extension que tambien llega por parametro.
 */
 function wait_login($extn, $num_agent) {
-    global $arrLang;
-    global $arrLangModule;
     $pDB = getDB();
     $datetime_init = date("Y-m-d H:i:s");
     $msj="";
@@ -1036,8 +1016,6 @@ function wait_login($extn, $num_agent) {
     Que guarda la informacion del cliente que es ingresada desde el formulario del callcenter.
 */
 function guardar_informacion_cliente($data_cliente) {
-    global $arrLang;
-    global $arrLangModule;
     //instanciamos el objeto para generar la respuesta con ajax
     $respuesta = new xajaxResponse();
     $pDB = getDB();
@@ -1098,9 +1076,9 @@ function guardar_informacion_cliente($data_cliente) {
             }
     }
     if ($valido) {
-        $respuesta->addScript("alert('".$arrLangModule["Information was saved"]."')");
+        $respuesta->addScript("alert('"._tr("Information was saved")."')");
     } else {
-        $respuesta->addScript("alert('".$arrLangModule["Error saving client information"]."')");
+        $respuesta->addScript("alert('"._tr("Error saving client information")."')");
     }
     //$pDB->disconnect();
     return $respuesta;
@@ -1141,26 +1119,25 @@ function getDataContacto($id_contact) {
    que tiene un mismo numero telefonico (Cedulas). Esto se muestra en las llamadas entrantes.
 */
 function consultar_registro_contacto($id_contact, &$contacto) {
-    global $arrLangModule;
     $pDB = getDB();
     $sQuery = "
       SELECT cedula_ruc, name, apellido, origen FROM contact where id='$id_contact'";
     $contacto = $pDB->getFirstRowQuery($sQuery, true);
 
-    $data_contact = $arrLangModule["Error when consulting contact information"];
+    $data_contact = _tr("Error when consulting contact information");
     if (is_array($contacto) && count($contacto)>0) {
         $smarty = getSmarty(); // Load smarty
 
-        $cedula["label"] = $arrLangModule["Number Identification"];
+        $cedula["label"] = _tr("Number Identification");
         $cedula["value"] = $contacto["cedula_ruc"];
 
-        $name["label"] = $arrLangModule["Name"];
+        $name["label"] = _tr("Name");
         $name["value"] = $contacto["name"];
 
-        $apellido["label"] = $arrLangModule["Last Name"];
+        $apellido["label"] = _tr("Last Name");
         $apellido["value"] = $contacto["apellido"];
 
-        $smarty->assign("INFORMATION_CONTACT",$arrLangModule["Contact Basic Information"]);
+        $smarty->assign("INFORMATION_CONTACT",_tr("Contact Basic Information"));
         $smarty->assign("CEDULA",$cedula);
         $smarty->assign("NAME",$name);
         $smarty->assign("APELLIDO",$apellido);
@@ -1218,8 +1195,6 @@ function obtener_break_audit($pDB,$id_audit){
    en la variable de session elastix_agent_audit*/
 function auditoria_break_insert($id_break,$num_agent,$ext_parqueo=NULL)
 { 
-    global $arrLang;
-    global $arrLangModule;
     $pDB = getDB();
     $smarty = getSmarty(); // Load smarty 
     $informacion_agent = obtener_informacion_agente($pDB,$num_agent);
@@ -1238,20 +1213,20 @@ function auditoria_break_insert($id_break,$num_agent,$ext_parqueo=NULL)
                 return $id_audit['id_audit']; 
             }
             else {
-                $smarty->assign("mb_title", $arrLangModule["Audit Error"]);
-                $smarty->assign("mb_message", $arrLangModule['Number of audit nonassigned']);
+                $smarty->assign("mb_title", _tr("Audit Error"));
+                $smarty->assign("mb_message", _tr('Number of audit nonassigned'));
                 return null;
             }
         }
         else{
-            $smarty->assign("mb_title", $arrLangModule["Audit Error"]);
-            $smarty->assign("mb_message", $arrLangModule['Audit of break could not be inserted']);
+            $smarty->assign("mb_title", _tr("Audit Error"));
+            $smarty->assign("mb_message", _tr('Audit of break could not be inserted'));
             return null; 
         }
     }
     else{
-        $smarty->assign("mb_title", $arrLangModule["Agent Error"]);
-        $smarty->assign("mb_message", $arrLangModule['Id of the agent could not be obtained']);
+        $smarty->assign("mb_title", _tr("Agent Error"));
+        $smarty->assign("mb_message", _tr('Id of the agent could not be obtained'));
         return null;
     }
 }
@@ -1276,7 +1251,6 @@ function auditoria_break_update($id_audit)
    en la tabla auditoria */
 function obtener_tiempo_acumulado_break($fecha,$agentenum,$id_break)
 {
-    global $arrLang;
     $pDB = getDB();
     $smarty = getSmarty(); // Load smarty 
 
@@ -1329,7 +1303,6 @@ function obtener_tiempo_acumulado_break($fecha,$agentenum,$id_break)
    y retorna el id del agente */
 function obtener_informacion_agente($pDB,$num_agente)
 {
-    global $arrLang;
     $sql = "SELECT id, number, name, password FROM agent WHERE number = '$num_agente' AND estatus = 'A'";
     //$smarty = getSmarty(); // Load smarty 
 
@@ -1426,7 +1399,6 @@ function getDataIngoingCall($pDB,$agentnum,&$msj) {
   El objetivo de esta funcion es grabar en la tabla call_entry el id del contacto que realmente llamó. 
 */
 function confirmar_contacto($id_call, $id_contact, & $msj) {
-    global $arrLangModule;
     $pDB = getDB();
     if (is_numeric($id_call) && is_numeric($id_contact)) {
         $sPeticionSQL = "update call_entry set id_contact=$id_contact where id=$id_call";
@@ -1434,10 +1406,10 @@ function confirmar_contacto($id_call, $id_contact, & $msj) {
         if($result) 
             return true;
         else {
-            $msj = $arrLangModule["Error when updating call information"]."<br>".$pDB->errMsg;
+            $msj = _tr("Error when updating call information")."<br>".$pDB->errMsg;
         }
     } else {
-        $msj = $arrLangModule["Error when updating call information"]."<br>Error: ".$arrLangModule["Id call or Id contact have format invalid"];
+        $msj = _tr("Error when updating call information")."<br>Error: "._tr("Id call or Id contact have format invalid");
     }
     return false;
 }
@@ -1480,8 +1452,6 @@ function getScriptCampaniaActiva($pDB) {
 
 /* Funcion que hace que el agente se deslogonee */
 function disconnet_agent() {
-    global $arrLang;
-    global $arrLangModule;
 
     // datos para la conexión al asterisk
     $ip_asterisk = $_SESSION["ip_asterisk"];
@@ -1497,15 +1467,15 @@ function disconnet_agent() {
     $astman = new AGI_AsteriskManager();
     if (!$astman->connect($ip_asterisk, $user_asterisk, $pass_asterisk)) {
         save_log_prueba("Error al conectar en disconnet_agent");
-        $resultado = $arrLangModule["Error when connecting to Asterisk Manager"];
+        $resultado = _tr("Error when connecting to Asterisk Manager");
     } else { 
         if(estaAgenteEnPausa($astman, $agentnum)){
             //$salida = $astman->QueuePause(null,"Agent/$agentnum","false");
             $salida = QueuePause($astman, null,"Agent/$agentnum","false");
             if($salida['Response']=='Error')
-                $resultado = $arrLangModule['Unable to pause Agent to queue: No such queue'];
+                $resultado = _tr('Unable to pause Agent to queue: No such queue');
             if(!auditoria_break_update($_SESSION['elastix_agent_audit']))
-                $resultado = $arrLangModule["Audit Error"].": ".$arrLangModule['Audit of break could not be inserted'];
+                $resultado = _tr("Audit Error").": "._tr('Audit of break could not be inserted');
             $_SESSION['elastix_agent_audit'] = null;
             $_SESSION['elastix_agent_break'] = null;
         }
@@ -1579,8 +1549,6 @@ function getExtensionChannel($extensions, $id_extension) {
 /* funcion que retorna true si un agente esta conectado en una extension (estos datos llegan por parametro) */
 function estaAgenteConectado($numAgente,$extn, & $mensaje, &$no_queue, $cont_veces=0)
 {
-    global $arrLang;
-    global $arrLangModule;
 
     // datos para la conexión al asterisk
     $ip_asterisk = $_SESSION["ip_asterisk"];
@@ -1595,7 +1563,7 @@ function estaAgenteConectado($numAgente,$extn, & $mensaje, &$no_queue, $cont_vec
     save_log_prueba("Conectando en estaAgenteConectado");
     if (!$astman->connect($ip_asterisk, $user_asterisk, $pass_asterisk)) {
         save_log_prueba("Error al conectar en estaAgenteConectado");
-        $mensaje = $arrLangModule["Error when connecting to Asterisk Manager"];
+        $mensaje = _tr("Error when connecting to Asterisk Manager");
     } else {
         $strAgentShow = $astman->Command("agent show online");
         save_log_prueba("Desconecta en estaAgenteConectado\n");
@@ -1612,17 +1580,17 @@ function estaAgenteConectado($numAgente,$extn, & $mensaje, &$no_queue, $cont_vec
                             if($extn == $arrReg2[1]) {
                                 return true;
                             } else {
-                                $mensaje = $arrLangModule["Number Agent already connected with extension"]." $extn";
+                                $mensaje = _tr("Number Agent already connected with extension")." $extn";
                                 return false;
                             }
                         }
                     }
                 }
                 $no_queue = true;
-                //$mensaje = $arrLangModule["Agent isn't in Queue Asterisk"]."\n".$strAgentShow['data'];
+                //$mensaje = _tr("Agent isn't in Queue Asterisk")."\n".$strAgentShow['data'];
                 $mensaje = "";
             } else {
-                $mensaje = $arrLangModule["Error when consulting Agent in Asterisk Manager"];
+                $mensaje = _tr("Error when consulting Agent in Asterisk Manager");
             }
         } else {
             $mensaje = $strAgentShow["Message"];
@@ -1634,8 +1602,6 @@ function estaAgenteConectado($numAgente,$extn, & $mensaje, &$no_queue, $cont_vec
 
 /* funcion que retorna true si un agente esta en pause en la cola */
 function estaAgenteEnPausa($astman, $numAgente) {
-    global $arrLang;
-    global $arrLangModule;
 
     $desconectar = false;
     if (!is_object($astman)) {
@@ -1649,7 +1615,7 @@ function estaAgenteEnPausa($astman, $numAgente) {
         $astman = new AGI_AsteriskManager();	
         if (!$astman->connect($ip_asterisk, $user_asterisk, $pass_asterisk)) {
             save_log_prueba("Error al conectar en estaAgenteEnPausa");
-            $resultado = $arrLangModule["Error when connecting to Asterisk Manager"];
+            $resultado = _tr("Error when connecting to Asterisk Manager");
             return false;
         }
     } 
@@ -1803,7 +1769,7 @@ function getChannelClient($agentNum,$tipo,&$msj) {
 
     $arrValor = array();
     if (!is_object($pDB->conn) || $pDB->errMsg!="") {
-        $msj = $arrLangModule["Error when connecting to Call Center"];
+        $msj = _tr("Error when connecting to Call Center");
         return false;
     }
 
@@ -1825,7 +1791,7 @@ function getChannelClient($agentNum,$tipo,&$msj) {
 
         // si no hubo error en la consulta del queue
         if(!$resConsulta) {
-            $msj = $arrLangModule["Error query"]." ".$pDB->errMsg;
+            $msj = _tr("Error query")." ".$pDB->errMsg;
         } elseif( is_array($resConsulta[0]) && count($resConsulta[0]) > 0 ) {
             return $resConsulta[0]['channel'];
         }
@@ -1838,13 +1804,13 @@ function getChannelClient($agentNum,$tipo,&$msj) {
 
         // si no hubo error en la consulta del queue
         if( !$resConsulta ) {
-            $msj = $arrLangModule["Error query"]." ".$pDB->errMsg;
+            $msj = _tr("Error query")." ".$pDB->errMsg;
         } elseif( is_array($resConsulta[0]) && count($resConsulta[0]) > 0 ) {
             return $resConsulta[0]['channel'];
         }
     }
 
-    $msj = $arrLangModule["No call"]." ".$pDB->errMsg;
+    $msj = _tr("No call")." ".$pDB->errMsg;
     return false;
 }
 
@@ -1854,7 +1820,6 @@ function getChannelClient($agentNum,$tipo,&$msj) {
 */
 function getTipoLlamada($pDB,&$msj) {
 
-    global $arrLangModule;
     $agentNum = $_SESSION['elastix_agent_user'];
 
     // se hace consulta para saber si hay llamadas entrantes para el agente que esta en $agentNum
@@ -1883,7 +1848,7 @@ function getTipoLlamada($pDB,&$msj) {
         return $arrValor;
     }
 
-    $msj = $arrLangModule["No call"];
+    $msj = _tr("No call");
     return false;
 }
 
@@ -1927,7 +1892,7 @@ function actualizarTablasLlamada($pDB,$extension,$tipo,$id,&$msj) {
             return true;
         }
     }
-    $msj = $arrLangModule["No call"];
+    $msj = _tr("No call");
     return false;
 
 }
@@ -1938,7 +1903,6 @@ function actualizarTablasLlamada($pDB,$extension,$tipo,$id,&$msj) {
 */
 
 function transferirLlamadaCiega($id_extension) {
-    global $arrLangModule;
     global $arrConf;
     $respuesta = new xajaxResponse();
     $agentNum = $_SESSION['elastix_agent_user'];
@@ -1946,7 +1910,7 @@ function transferirLlamadaCiega($id_extension) {
     $resultado= "";
     $pDB = new paloDB($arrConf['cadena_dsn']);
     if (!is_object($pDB->conn) || $pDB->errMsg!="") {
-        $resultado = $arrLangModule["Error when connecting to Call Center"];
+        $resultado = _tr("Error when connecting to Call Center");
     }else {
         // la funcion devuelve en el arreglo el tipo de la llamada (ENTRANTE/SALIENTE) y el id de la llamada
         $arrValor = getTipoLlamada($pDB,$resultado);
@@ -1966,7 +1930,7 @@ function transferirLlamadaCiega($id_extension) {
             $channel = getChannelClient($agentNum,$tipo,$resultado);
             if ($channel) {
                 if($id_extension=="No extension"){
-                    $resultado = $arrLangModule["select extension"];
+                    $resultado = _tr("select extension");
                 } else {
                     // datos para la conexión al asterisk
                     $ip_asterisk = $_SESSION["ip_asterisk"];
@@ -1977,17 +1941,17 @@ function transferirLlamadaCiega($id_extension) {
                     save_log_prueba("Conectando en transferirLlamadaCiega");
                     if (!$astman->connect($ip_asterisk, $user_asterisk, $pass_asterisk)) {
                         save_log_prueba("Error al conectar en transferirLlamadaCiega");
-                        $resultado = $arrLangModule["Error when connecting to Asterisk Manager"];
+                        $resultado = _tr("Error when connecting to Asterisk Manager");
                     }else {
                         $res = $astman->Redirect($channel, "", $extension, "from-internal", "1");
                         if ($res['Response']=='Error') {
-                            $resultado = $arrLangModule["transfer_error"]." ".$res['Message'];
+                            $resultado = _tr("transfer_error")." ".$res['Message'];
                         }else {
                             $resUpdate = actualizarTablasLlamada($pDB,$extension,$tipo,$id_call,$msj);
                             if(!$resUpdate){
                                 $resultado = $msj;
                             }else{
-                                $resultado = $arrLangModule["Success"];
+                                $resultado = _tr("Success");
                             }
                         }
                         save_log_prueba("Desconecta en transferirLlamadaCiega\n");
@@ -2013,7 +1977,6 @@ function transferirLlamadaCiega($id_extension) {
 function crearSelect($arrOp) {
     $cadenaOp = "";
 
-    global $arrLangModule;
     if(!is_array($arrOp)) {
         return false;
     }elseif( count($arrOp)==0 ) {
@@ -2021,7 +1984,7 @@ function crearSelect($arrOp) {
     }else {
         foreach($arrOp as $key=>$value) {
              if ($key=="No extension") {
-                $cadenaOp .= "\n<option value='$value' >{$arrLangModule["select extension"]}</option>";
+                $cadenaOp .= "\n<option value='$value' >"._tr("select extension")."</option>";
             }else {
                 $cadenaOp .= "\n<option value='$value' >$key</option>";
             }
@@ -2057,7 +2020,6 @@ function convertir_extensiones_validas($extensions) {
     Esta funcion implementa la funcion DTFM del Asterisk
 */
 function marcarLlamada($number) {
-    global $arrLangModule;
     global $arrConf;
     $msj = "";
     $resultado = "";
@@ -2065,7 +2027,7 @@ function marcarLlamada($number) {
     $pDB = new paloDB($arrConf['cadena_dsn']);
 
     if (!is_object($pDB->conn) || $pDB->errMsg!="") {
-        $resultado = $arrLangModule["Error when connecting to Call Center"];
+        $resultado = _tr("Error when connecting to Call Center");
     } else {
         // datos para la conexión al asterisk
         $ip_asterisk = $_SESSION["ip_asterisk"];
@@ -2083,13 +2045,13 @@ function marcarLlamada($number) {
                 if($channel) {
                     $astman = new AGI_AsteriskManager();
                     if (!$astman->connect($ip_asterisk, $user_asterisk, $pass_asterisk)) {
-                        $resultado .= $arrLangModule["Error when connecting to Asterisk Manager"];
+                        $resultado .= _tr("Error when connecting to Asterisk Manager");
                     }else {
                         $res = $astman->PlayDTMF($channel,$number);
                         if ($res['Response']=='Error') {
-                            $resultado .= $arrLangModule["Marked Error"]." ".$res['Message'];
+                            $resultado .= _tr("Marked Error")." ".$res['Message'];
                         }else {
-                            $resultado .= $arrLangModule["Success Marked"];
+                            $resultado .= _tr("Success Marked");
                         }
                         $astman->disconnect();
                     }
@@ -2099,15 +2061,15 @@ function marcarLlamada($number) {
             } else {
                 $astman = new AGI_AsteriskManager();
 		if (!$astman->connect($ip_asterisk, $user_asterisk, $pass_asterisk)) {
-		    $resultado .= $arrLangModule["Error when connecting to Asterisk Manager"];
+		    $resultado .= _tr("Error when connecting to Asterisk Manager");
 		}else {
 /**************************Originar Llamadas******************************************************/
 		    $res = $astman->Originate("ZAP/1/$number","8000","from-internal","1",NULL, NULL, NULL, NULL, NULL, NULL, TRUE, NULL);
 
                     if ($res['Response']=='Error') {
-			$resultado .= $arrLangModule["Marked Error"]." ".$res['Message'];
+			$resultado .= _tr("Marked Error")." ".$res['Message'];
 		    }else {
-			$resultado .= $arrLangModule["Success Marked"];
+			$resultado .= _tr("Success Marked");
 		    }
 		    $astman->disconnect();
                 }
@@ -2115,7 +2077,7 @@ function marcarLlamada($number) {
                 $resultado .= $msj;
             }
         } else {
-            $resultado .= $arrLangModule["Please enter a number to mark"];
+            $resultado .= _tr("Please enter a number to mark");
         }
 
     }
@@ -2126,8 +2088,6 @@ function marcarLlamada($number) {
 }
 
 function sacar_hold(){
-        //global $arrLang;
-        //global $arrLangModule;
 
         $respuesta = new xajaxResponse();
 
@@ -2199,20 +2159,18 @@ function encolar_agente($agente,$cola)
     $pass_asterisk = $_SESSION["pass_asterisk"];
 
     $member = "Agent/$agente";
-    global $arrLang;
-    global $arrLangModule;
     save_log_prueba("Conectando en encolar_agente");
     $astman = new AGI_AsteriskManager( );	
 
     if (!$astman->connect($ip_asterisk, $user_asterisk, $pass_asterisk)) {
     save_log_prueba("Error al conectar en encolar_agente");
-        $resultado = $arrLangModule["Error when connecting to Asterisk Manager"];
+        $resultado = _tr("Error when connecting to Asterisk Manager");
     } else { 
         if(!estaAgenteEnCola($agente,$cola))
         {
             $salida = $astman->QueueAdd($cola,$member);
             if($salida['Response']=='Error')
-                return $arrLangModule['Unable to add Agent to queue: No such queue'];
+                return _tr('Unable to add Agent to queue: No such queue');
             else return 'se_encolo';
         }
         else{
@@ -2227,8 +2185,6 @@ function encolar_agente($agente,$cola)
 
 /* funcion que retorna true si un agente esta agregado a la cola */
 function estaAgenteEnCola($numAgente,$cola) {
-    global $arrLang;
-    global $arrLangModule;
 
     // datos para la conexión al asterisk
     $ip_asterisk = $_SESSION["ip_asterisk"];
@@ -2239,7 +2195,7 @@ function estaAgenteEnCola($numAgente,$cola) {
     $astman = new AGI_AsteriskManager();	
     if (!$astman->connect($ip_asterisk, $user_asterisk, $pass_asterisk)) {
     save_log_prueba("Error al conectar en estaAgenteEnCola");
-        $resultado = $arrLangModule["Error when connecting to Asterisk Manager"];
+        $resultado = _tr("Error when connecting to Asterisk Manager");
     } else {
         $strAgentShow = $astman->Command(" queue show $cola");
         save_log_prueba("Desconecta en estaAgenteEnCola\n");
@@ -2271,12 +2227,11 @@ function crea_combo($arreglo_valores, $selected) {
 
 // crea un link a partir de la url y el label que se le envia por parametro
 function crea_link_vtiger($id_contact,$origen) {
-    global $arrLangModule;
     if($id_contact != "" && strtoupper($origen)=="CRM") {
-        $crm_label = $arrLangModule["View Client"];
+        $crm_label = _tr("View Client");
         $crm_url = "/vtigercrm/index.php?action=DetailView&module=Leads&record=$id_contact&parenttab=Sales";
     } else {
-        $crm_label = $arrLangModule["Add Client"];
+        $crm_label = _tr("Add Client");
         $crm_url = "/vtigercrm/index.php?module=Leads&action=EditView&return_action=DetailView&parenttab=Sales";
     }
     $link_crm = "<a href='javascript:window_open($crm_url,\"vtiger\");' class='normal'>$crm_label</a>";
@@ -2303,7 +2258,7 @@ function registrarLogin($agentNum,$datetime_init,&$msj) {
     $pDB = new paloDB($arrConf['cadena_dsn']);
 
     if (!is_object($pDB->conn) || $pDB->errMsg!="") {
-        $resultado = $arrLangModule["Error when connecting to Call Center"];
+        $resultado = _tr("Error when connecting to Call Center");
     } else { 
         $id_agent = getIdAgent($pDB,$agentNum,$msj);
         if(!$id_agent) {
@@ -2333,7 +2288,7 @@ function registrarLogout($agentNum,$datetime_end,&$msj) {
     global $arrConf;
     $pDB = new paloDB($arrConf['cadena_dsn']);
     if (!is_object($pDB->conn) || $pDB->errMsg!="") {
-        $resultado = $arrLangModule["Error when connecting to Call Center"];
+        $resultado = _tr("Error when connecting to Call Center");
     } else { 
         $id_audit = getLastIdLoginAgent($pDB,$agentNum,$msj);
         if(!$id_audit) {
@@ -2407,7 +2362,7 @@ function yaEstaRegistrado($num_agent,$datetime_init,&$msj) {
     global $arrConf;
     $pDB = new paloDB($arrConf['cadena_dsn']);
     if (!is_object($pDB->conn) || $pDB->errMsg!="") {
-        $msj = $arrLangModule["Error when connecting to Call Center"];
+        $msj = _tr("Error when connecting to Call Center");
         return false;
     } else { 
         $SQLConsulta = 
