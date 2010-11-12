@@ -91,7 +91,23 @@ function _moduleContent(&$smarty, $module_name)
     );
     $smarty->assign("type",$arrLangModule['Type']);    
     $smarty->assign("select_type","type"); 
-    $smarty->assign("option_type",$arrConfig['arr_type']); 
+    $smarty->assign("option_type",
+        array(
+        "VALUE" => array (
+                    "LABEL",
+                    "TEXT",
+                    "LIST",
+                    "DATE",
+                    "TEXTAREA"),
+        "NAME"  => array (
+                    $arrLangModule["Type Label"],
+                    $arrLangModule["Type Text"],
+                    $arrLangModule["Type List"],
+                    $arrLangModule["Type Date"],
+                    $arrLangModule["Type Text Area"]),
+        "SELECTED" => "Text",     
+        )
+    ); 
     $smarty->assign("item_list",$arrLangModule['List Item']);    
     $oForm = new paloForm($smarty, $formCampos);     
 // print_r($_SESSION['ayuda']);
