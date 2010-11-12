@@ -49,7 +49,7 @@ function _moduleContent(&$smarty, $module_name){
 
     global $arrConf;
     global $arrLang;
-
+    global $arrLangModule;
     require_once "modules/$module_name/libs/PaloSantoDontCalls.class.php";
     //folder path for custom templates
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);

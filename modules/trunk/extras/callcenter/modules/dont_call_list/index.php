@@ -49,7 +49,7 @@ function _moduleContent(&$smarty, $module_name){
 
     global $arrConf;
     global $arrLang;
-	global $arrLangModule;
+    global $arrLangModule;
     require_once "modules/$module_name/libs/PaloSantoDontCalls.class.php";
     //folder path for custom templates
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
@@ -61,7 +61,6 @@ function _moduleContent(&$smarty, $module_name){
     if(!empty($pDB->errMsg)) {
         $smarty->assign("mb_message", $arrLang["Error when connecting to database"]."<br/>".$pDB->errMsg);
     }
-	$arrLangModule=$arrLangModule;
     $smarty->assign("MODULE_NAME", $arrLangModule["Add Number"]);
     $smarty->assign("label_file", $arrLangModule["Upload File"]);
     $smarty->assign("label_text", $arrLangModule["Add new Number"]);
