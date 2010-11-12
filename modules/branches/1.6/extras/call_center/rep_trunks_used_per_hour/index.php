@@ -249,6 +249,7 @@ function obtener_nuevas_trunks($pDB, $pDB_asterisk)
     return $listaTrunks;
 }
 
+if (!function_exists('getParameter')) {
 function getParameter($parameter)
 {
     if(isset($_POST[$parameter]))
@@ -257,6 +258,7 @@ function getParameter($parameter)
         return $_GET[$parameter];
     else
         return null;
+}
 }
 
 function getAction()
