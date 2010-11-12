@@ -46,6 +46,8 @@ function _moduleContent(&$smarty,$module_name) {
     $Language=get_language();
     $script_dir=dirname($_SERVER['SCRIPT_FILENAME']);
 
+    global $arrLangModule;
+
     include_once("modules/$module_name/lang/en.lang");
     $arrLangModule_file="modules/$module_name/lang/$Language.lang";
     if (file_exists("$script_dir/$arrLangModule_file")) {
