@@ -297,6 +297,12 @@ function load_language_module($module_id, $ruta_base='')
     $arrLang = array_merge($arrLang,$arrLangModule);
 }
 
+function _tr($s)
+{
+    global $arrLang;
+    return isset($arrLang[$s]) ? $arrLang[$s] : $s;
+}
+
 function cargar_menu($db)
 {
    //leer el contenido de la tabla menu y devolver un arreglo con la estructura
