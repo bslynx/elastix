@@ -61,7 +61,6 @@ function _moduleContent(&$smarty, $module_name){
     if(!empty($pDB->errMsg)) {
         $smarty->assign("mb_message", $arrLang["Error when connecting to database"]."<br/>".$pDB->errMsg);
     }
-
     $smarty->assign("MODULE_NAME", $arrLangModule["Add Number"]);
     $smarty->assign("label_file", $arrLangModule["Upload File"]);
     $smarty->assign("label_text", $arrLangModule["Add new Number"]);
