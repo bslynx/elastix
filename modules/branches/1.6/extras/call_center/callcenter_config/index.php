@@ -27,6 +27,31 @@
   +----------------------------------------------------------------------+
   $Id: default.conf.php,v 1.1 2008-09-03 01:09:56 Alex Villacís Lasso Exp $ */
 
+if (!function_exists('_tr')) {
+    function _tr($s)
+    {
+        global $arrLang;
+        return isset($arrLang[$s]) ? $arrLang[$s] : $s;
+    }
+}
+if (!function_exists('load_language_module')) {
+    function load_language_module($module_id, $ruta_base='')
+    {
+        $lang = get_language($ruta_base);
+        include_once $ruta_base."modules/$module_id/lang/en.lang";
+        $lang_file_module = $ruta_base."modules/$module_id/lang/$lang.lang";
+        if ($lang != 'en' && file_exists("$lang_file_module")) {
+            $arrLangEN = $arrLangModule;
+            include_once "$lang_file_module";
+            $arrLangModule = array_merge($arrLangEN, $arrLangModule);
+        }
+
+        global $arrLang;
+        global $arrLangModule;
+        $arrLang = array_merge($arrLang,$arrLangModule);
+    }
+}
+
 function _moduleContent(&$smarty, $module_name)
 {
     global $arrConfig;
@@ -39,20 +64,9 @@ function _moduleContent(&$smarty, $module_name)
     include_once "modules/$module_name/libs/paloSantoConfiguration.class.php";
     include_once "modules/$module_name/configs/default.conf.php";
 
-    // incluir el archivo de idioma de acuerdo al que este seleccionado
-    // si el archivo de idioma no existe incluir el idioma por defecto
-    $lang=get_language();
-    $script_dir=dirname($_SERVER['SCRIPT_FILENAME']);
-    $lang_file="modules/$module_name/lang/$lang.lang";
-
-    if (file_exists("$script_dir/$lang_file"))
-        include_once($lang_file);
-    else
-        include_once("modules/$module_name/lang/en.lang");
+    load_language_module($module_name);
 
     global $arrConf;
-    global $arrLang;
-    global $arrLangModule;
 
     $oDB = new paloDB($arrConfig['cadena_dsn']);
 
@@ -64,22 +78,22 @@ function _moduleContent(&$smarty, $module_name)
     $accion = getAction();
 
     $content = "";
-    $content .= form_Service($oDB, $smarty, $module_name, $local_templates_dir, array_merge($arrLang, $arrLangModule),$arrConfig['pid_dialer']);
-    $content .= form_Configuration($oDB, $smarty, $module_name, $local_templates_dir, array_merge($arrLang, $arrLangModule));
+    $content .= form_Service($oDB, $smarty, $module_name, $local_templates_dir, $arrConfig['pid_dialer']);
+    $content .= form_Configuration($oDB, $smarty, $module_name, $local_templates_dir);
 
     return $content;
 }
 
-function form_Configuration(&$oDB, $smarty, $module_name, $local_templates_dir, $arrLang)
+function form_Configuration(&$oDB, $smarty, $module_name, $local_templates_dir)
 {
     global $arrConfig;
 
-    $arrFormConference = createFieldForm($arrLang);
+    $arrFormConference = createFieldForm();
     $oForm = new paloForm($smarty,$arrFormConference);
 
-    $smarty->assign("SAVE", $arrLang["Save"]);
-    $smarty->assign("TITLE", $arrLang["Configuration"]);
-    $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
+    $smarty->assign("SAVE", _tr("Save"));
+    $smarty->assign("TITLE", _tr("Configuration"));
+    $smarty->assign("REQUIRED_FIELD", _tr("Required field"));
     $smarty->assign("IMG", "images/list.png");
 
     $objConfig =& new PaloSantoConfiguration($oDB);
@@ -136,9 +150,9 @@ function form_Configuration(&$oDB, $smarty, $module_name, $local_templates_dir, 
         $action = getAction();
         if ($action == 'save') {
             if (!$oForm->validateForm($_POST)) {
-                $smarty->assign("mb_title", $arrLang["Validation Error"]);
+                $smarty->assign("mb_title", _tr("Validation Error"));
                 $arrErrores=$oForm->arrErroresValidacion;
-                $strErrorMsg = "<b>{$arrLang['The following fields contain errors']}:</b><br/>";
+                $strErrorMsg = "<b>"._tr('The following fields contain errors').":</b><br/>";
                 if(is_array($arrErrores) && count($arrErrores) > 0){
                     foreach($arrErrores as $k=>$v) {
                         $strErrorMsg .= "$k, ";
@@ -146,9 +160,9 @@ function form_Configuration(&$oDB, $smarty, $module_name, $local_templates_dir, 
                 }
                 $smarty->assign("mb_message", $strErrorMsg);
             } elseif ($_POST['dialer_qos'] < 0 || $_POST['dialer_qos'] >= 100) {
-                $smarty->assign("mb_title", $arrLang["Validation Error"]);
+                $smarty->assign("mb_title", _tr("Validation Error"));
                 $arrErrores=array('Service Percent' => 'Not in range 1..99');
-                $strErrorMsg = "<b>{$arrLang['The following fields contain errors']}:</b><br/>";
+                $strErrorMsg = "<b>"._tr('The following fields contain errors').":</b><br/>";
                 if(is_array($arrErrores) && count($arrErrores) > 0){
                     foreach($arrErrores as $k=>$v) {
                         $strErrorMsg .= "$k, ";
@@ -156,8 +170,8 @@ function form_Configuration(&$oDB, $smarty, $module_name, $local_templates_dir, 
                 }
                 $smarty->assign("mb_message", $strErrorMsg);
             } elseif ($_POST['asterisk_astpass_1'] != $_POST['asterisk_astpass_2']) {
-                $smarty->assign("mb_title", $arrLang["Validation Error"]);
-                $strErrorMsg = $arrLang['Password and confirmation do not match.'];
+                $smarty->assign("mb_title", _tr("Validation Error"));
+                $strErrorMsg = _tr('Password and confirmation do not match.');
                 $smarty->assign("mb_message", $strErrorMsg);
             } else {
                 // Esto asume implementación PDO
@@ -180,15 +194,15 @@ function form_Configuration(&$oDB, $smarty, $module_name, $local_templates_dir, 
                 $bContinuar = $objConfig->SaveConfiguration($config);
                 if (!$bContinuar) {
                     $strErrorMsg = $objConfig->errMsg;
-                    $smarty->assign("mb_title", $arrLang['Internal DB error']);
-                    $strErrorMsg = $arrLang['Could not save changes!'].' '.$strErrorMsg;
+                    $smarty->assign("mb_title", _tr('Internal DB error'));
+                    $strErrorMsg = _tr('Could not save changes!').' '.$strErrorMsg;
                     $smarty->assign("mb_message", $strErrorMsg);
                 }
                 if ($bContinuar) {
                     $bContinuar = $oDB->conn->commit();
                     if (!$bContinuar) {
-                        $smarty->assign("mb_title", $arrLang['Internal DB error']);
-                        $strErrorMsg = $arrLang['Could not commit changes!'];
+                        $smarty->assign("mb_title", _tr('Internal DB error'));
+                        $strErrorMsg = _tr('Could not commit changes!');
                         $smarty->assign("mb_message", $strErrorMsg);
                     }
                 }
@@ -206,31 +220,31 @@ function form_Configuration(&$oDB, $smarty, $module_name, $local_templates_dir, 
     return $contenidoModulo;
 }
 
-function form_Service(&$oDB, $smarty, $module_name, $local_templates_dir, $arrLang, $pd)
+function form_Service(&$oDB, $smarty, $module_name, $local_templates_dir, $pd)
 {
     global $arrConfig;
 
     $objConfig = new paloSantoConfiguration($oDB);
     if (isset($_POST['dialer_action'])) {
-        $objConfig->setStatusDialer(($_POST['dialer_action'] == $arrLang['Start']) ? 1 : 0);
+        $objConfig->setStatusDialer(($_POST['dialer_action'] == _tr('Start')) ? 1 : 0);
     }
     $bDialerActivo = $objConfig->getStatusDialer($pd);
 
-    $smarty->assign('DIALER_STATUS_MESG',$arrLang['Dialer Status']);
-    $smarty->assign('CURRENT_STATUS',$arrLang['Current Status']);
+    $smarty->assign('DIALER_STATUS_MESG',_tr('Dialer Status'));
+    $smarty->assign('CURRENT_STATUS',_tr('Current Status'));
     $smarty->assign('DIALER_STATUS', $bDialerActivo 
-        ? $arrLang['Running'] 
-        : $arrLang['Stopped']);
+        ? _tr('Running') 
+        : _tr('Stopped'));
     $smarty->assign('DIALER_ACTION', $bDialerActivo 
-        ? $arrLang['Stop'] 
-        : $arrLang['Start']);
+        ? _tr('Stop') 
+        : _tr('Start'));
 }
 
-function createFieldForm($arrLang)
+function createFieldForm()
 {
     return array(
         'asterisk_asthost'  =>      array(
-            'LABEL'                     =>  $arrLang['Asterisk Server'],
+            'LABEL'                     =>  _tr('Asterisk Server'),
             'REQUIRED'                  =>  'yes',
             'INPUT_TYPE'                =>  'TEXT',
             'VALIDATION_TYPE'           =>  'text',
@@ -238,7 +252,7 @@ function createFieldForm($arrLang)
             'VALIDATION_EXTRA_PARAM'    =>  '',
         ),
         'asterisk_astuser'  =>      array(
-            'LABEL'                     =>  $arrLang['Asterisk Login'],
+            'LABEL'                     =>  _tr('Asterisk Login'),
             'REQUIRED'                  =>  'no',
             'INPUT_TYPE'                =>  'TEXT',
             'VALIDATION_TYPE'           =>  'text',
@@ -246,7 +260,7 @@ function createFieldForm($arrLang)
             'VALIDATION_EXTRA_PARAM'    =>  '',
         ),
         'asterisk_astpass_1'  =>      array(
-            'LABEL'                     =>  $arrLang['Asterisk Password'],
+            'LABEL'                     =>  _tr('Asterisk Password'),
             'REQUIRED'                  =>  'no',
             'INPUT_TYPE'                =>  'PASSWORD',
             'VALIDATION_TYPE'           =>  'text',
@@ -254,7 +268,7 @@ function createFieldForm($arrLang)
             'VALIDATION_EXTRA_PARAM'    =>  '',
         ),
         'asterisk_astpass_2'  =>      array(
-            'LABEL'                     =>  $arrLang['Asterisk Password (confirm)'],
+            'LABEL'                     =>  _tr('Asterisk Password (confirm)'),
             'REQUIRED'                  =>  'no',
             'INPUT_TYPE'                =>  'PASSWORD',
             'VALIDATION_TYPE'           =>  'text',
@@ -262,7 +276,7 @@ function createFieldForm($arrLang)
             'VALIDATION_EXTRA_PARAM'    =>  '',
         ),
         'asterisk_duracion_sesion'  =>  array(
-            'LABEL'                     =>  $arrLang['AMI Session Duration'],
+            'LABEL'                     =>  _tr('AMI Session Duration'),
             'REQUIRED'                  =>  'yes',
             'INPUT_TYPE'                =>  'TEXT',
             'VALIDATION_TYPE'           =>  'numeric',
@@ -271,7 +285,7 @@ function createFieldForm($arrLang)
             'VALIDATION_EXTRA_PARAM'    =>  '',            
         ),
         'dialer_llamada_corta'  =>  array(
-            'LABEL'                     =>  $arrLang['Short Call Threshold'],
+            'LABEL'                     =>  _tr('Short Call Threshold'),
             'REQUIRED'                  =>  'yes',
             'INPUT_TYPE'                =>  'TEXT',
             'VALIDATION_TYPE'           =>  'ereg',
@@ -279,7 +293,7 @@ function createFieldForm($arrLang)
             'VALIDATION_EXTRA_PARAM'    =>  '^[[:digit:]]+$',
         ),
         'dialer_tiempo_contestar'=> array(
-            'LABEL'                     =>  $arrLang['Answering delay'],
+            'LABEL'                     =>  _tr('Answering delay'),
             'REQUIRED'                  =>  'yes',
             'INPUT_TYPE'                =>  'TEXT',
             'VALIDATION_TYPE'           =>  'ereg',
@@ -287,7 +301,7 @@ function createFieldForm($arrLang)
             'VALIDATION_EXTRA_PARAM'    =>  '^[[:digit:]]+$',
         ),
         'dialer_debug'  =>          array(
-            'LABEL'                     =>  $arrLang['Enable dialer debug'],
+            'LABEL'                     =>  _tr('Enable dialer debug'),
             'REQUIRED'                  =>  'yes',
             'INPUT_TYPE'                =>  'CHECKBOX',
             'VALIDATION_TYPE'           =>  'text',
@@ -295,7 +309,7 @@ function createFieldForm($arrLang)
             'VALIDATION_EXTRA_PARAM'    =>  '',
         ),
         'dialer_allevents'  =>      array(
-            'LABEL'                     =>  $arrLang['Dump all received Asterisk events'],
+            'LABEL'                     =>  _tr('Dump all received Asterisk events'),
             'REQUIRED'                  =>  'yes',
             'INPUT_TYPE'                =>  'CHECKBOX',
             'VALIDATION_TYPE'           =>  'text',
@@ -303,7 +317,7 @@ function createFieldForm($arrLang)
             'VALIDATION_EXTRA_PARAM'    =>  '',
         ),
         'dialer_overcommit'  =>      array(
-            'LABEL'                     =>  $arrLang['Enable overcommit of outgoing calls'],
+            'LABEL'                     =>  _tr('Enable overcommit of outgoing calls'),
             'REQUIRED'                  =>  'yes',
             'INPUT_TYPE'                =>  'CHECKBOX',
             'VALIDATION_TYPE'           =>  'text',
@@ -311,7 +325,7 @@ function createFieldForm($arrLang)
             'VALIDATION_EXTRA_PARAM'    =>  '',
         ),
         'dialer_qos'=> array(
-            'LABEL'                     =>  $arrLang['Service percent'],
+            'LABEL'                     =>  _tr('Service percent'),
             'REQUIRED'                  =>  'yes',
             'INPUT_TYPE'                =>  'TEXT',
             'VALIDATION_TYPE'           =>  'float',
