@@ -273,7 +273,7 @@ function getFormFilter($arrDataTipo, $arrDataEstado, $arrDataQueues)
 
 function graphHistogram($pDB, $smarty, $module_name, $local_templates_dir)
 {
-    global $arrLangModule;	
+    global $arrLangModule;
     global $arrLang;
 
     include ("libs/jpgraph/jpgraph.php");
