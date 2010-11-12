@@ -32,6 +32,10 @@
 	<link rel="stylesheet" href="{$path}themes/{$THEMENAME}/styles.css">
 	<link rel="stylesheet" href="{$path}themes/{$THEMENAME}/help.css">
         <link rel="stylesheet" href="modules/{$MODULE_NAME}/themes/styles.css">
+        <link rel='stylesheet' type='text/css' media='all' href='/libs/js/jscalendar/calendar-win2k-2.css' />
+        <script type='text/javascript' src='/libs/js/jscalendar/calendar_stripped.js'></script>
+        <script type='text/javascript' src='/libs/js/jscalendar/lang/calendar-en.js'></script>
+        <script type='text/javascript' src='/libs/js/jscalendar/calendar-setup_stripped.js'></script>
     </head>
     <body>
 
@@ -78,8 +82,12 @@
 <!--fin radio Programar llamadas-->
 
 <!--fechas-->
-{$fecha_inicio}
-
+          <tr>
+                <td class='letra12' width='15%'>{$txt_fecha_init.LABEL}<span  class='required'>*</span></td>
+                <td  width='30%'>{$txt_fecha_init.INPUT}</td>
+                <td class='letra12' width='15%'>{$txt_fecha_end.LABEL}<span  class='required'>*</span></td>
+                <td width='30%'>{$txt_fecha_end.INPUT}</td>
+          </tr>
 <!--fin fechas-->
 
 <!--hora-->

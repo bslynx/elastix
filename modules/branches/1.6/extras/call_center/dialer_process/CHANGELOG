@@ -1,4 +1,7 @@
-* CallCenter Config: Use methods load_language_module and _tr from Elastix framework. Define them if they do not exist.
+* CallCenter Config, Agent Console (programar_llamadas): Use methods load_language_module and _tr from Elastix framework. Define them if they do not exist.
+* Agent Console (programar_llamadas): restrict call reprogramming interface to
+  requests with a valid Elastix session and authorization to the Agent Console.  
+  Also, clean up form code to use the default Elastix support for date controls.  
 * Form List: fix breakage from i18n unification and remove useless code
 * Agent Console: move around conditional declaration of getParameter so that
   it is available at the moment it is required.
