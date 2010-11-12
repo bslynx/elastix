@@ -291,7 +291,7 @@ function getQueue($pDB, $pDB_asterisk){
     return $arrQueue;
 }
 
-
+if (!function_exists('getParameter')) {
 function getParameter($parameter)
 {
     if(isset($_POST[$parameter]))
@@ -300,6 +300,7 @@ function getParameter($parameter)
         return $_GET[$parameter];
     else
         return null;
+}
 }
 
 function getAction()
