@@ -23,7 +23,7 @@
 </table>
 <table class="tabForm" style="font-size: 16px;" width="100%" >
     <tr class="letra12">
-        <td  align="left" colspan=2;><br /><b style ="color:#E35332; font-weigth:bold;">{$EXTENSION}</b><br /><br /></td>
+        <td  align="left" colspan=2;><br /><b style ="color:#E35332; font-weigth:bold;font-size:15px;">{$EXTENSION}</b><br /><br /></td>
     </tr>
     <tr class="letra12">
         <td align="left" width="200px"><b>{$do_not_disturb.LABEL}:</b></td>
@@ -34,7 +34,7 @@
         <td align="left">{$call_waiting.INPUT}</td>
     </tr>
     <tr class="letra12">
-        <td align="left"><b style="color:blue; font-weigth:bold; text-decoration: underline">Call Forward Configuration</b></td>
+        <td align="left"><b style ="color:#E35332; font-weigth:bold;font-size:12px;font-family:'Lucida Console';">Call Forward Configuration</b></td>
     </tr>
     <tr class="letra12">
         <td align="left"><b>{$call_forward.LABEL}:</b></td>
@@ -49,7 +49,7 @@
         <td align="left">{$call_forward_B.INPUT} {$phone_number_CFB.INPUT}</td>
     </tr>
     <tr class="letra12">
-        <td align="left"><b style="color:blue; font-weigth:bold; text-decoration: underline">Call Monitor Settings</b></td>
+        <td align="left"><b style ="color:#E35332; font-weigth:bold;font-size:12px;font-family:'Lucida Console';">Call Monitor Settings</b></td>
     </tr>
     <tr class="letra12">
         <td align="left"><b>{$record_incoming.LABEL}:</b></td>
