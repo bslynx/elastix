@@ -20,8 +20,17 @@ $smarty->compile_dir =  "$path/var/templates_c/";
 $smarty->config_dir =   "$path/configs/";
 $smarty->cache_dir =    "$path/var/cache/";
 
-
-
+if (!function_exists('getParameter')) {
+function getParameter($parameter)
+{
+    if(isset($_POST[$parameter]))
+        return $_POST[$parameter];
+    else if(isset($_GET[$parameter]))
+        return $_GET[$parameter];
+    else
+        return null;
+}
+}
 
 $html = _moduleContent($smarty, $module_name);
 $smarty->assign("CONTENT", $html);
@@ -703,17 +712,4 @@ function getAction()
     else
         return "cancel";
 }
-
-if (!function_exists('getParameter')) {
-function getParameter($parameter)
-{
-    if(isset($_POST[$parameter]))
-        return $_POST[$parameter];
-    else if(isset($_GET[$parameter]))
-        return $_GET[$parameter];
-    else
-        return null;
-}
-}
-
 ?>
