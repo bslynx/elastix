@@ -199,7 +199,7 @@
                                                     </span>
                                                 </td>
                                             </tr>
-                                            <tr class="letra12 remin" style="{$visibility_alert}">
+                                            <tr class="letra12 remin" height="30px" style="{$visibility_alert}">
                                                 <td align="left"><b>{$recording.LABEL}: <span  class="required">*</span></b></td>
                                                 <td align="left">{$recording.INPUT}&nbsp;&nbsp;
                                                     <div class="new_box_rec" style="display: inline;">
@@ -207,7 +207,7 @@
                                                     </div>
                                                 </td>
                                             </tr>
-                                            <tr class="letra12 remin" style="{$visibility_alert}">
+                                            <tr class="letra12 remin" height="30px" style="{$visibility_alert}">
                                                 <td align="left"><b>{$ReminderTime.LABEL}: <span  class="required">*</span></b></td>
                                                 <td align="left">{$ReminderTime.INPUT}&nbsp;&nbsp;</td>
                                             </tr>
@@ -277,3 +277,6 @@
 <input class="button" type="hidden" name="id" value="{$ID}" id="id" />
 <input class="button" type="hidden" name="share_emails" value="" id="share_emails" />
 <input class="button" type="hidden" name="lblEdit" value="{$LBL_EDIT}" id="lblEdit" />
+<input class="button" type="hidden" name="lblLoading" value="{$LBL_LOADING}" id="lblLoading">
+<input class="button" type="hidden" name="typeen" value="{$START_TYPE}...." id="typeen" />
+<input class="button" type="hidden" name="dateServer" value="{$DATE_SERVER}" id="dateServer" />

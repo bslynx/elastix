@@ -147,5 +147,12 @@ $arrLangModule=array(
 "Here" => "Aqui",
 "ReminderTime" => "Recordar",
 "lblbefore" => "min antes",
+"Loading" => "Cargando",
+"error_Noevent" => "Evento no existe o no esta permitido a su usuario",
+"START_TYPE" => "Comienze a escribir",
+"notification_event" => "Notificaci&oacute;n de Evento",
+"invitation_event" => "Usted ha sido invitado a participar de este evento",
+"noResponseNotification" => "Esta es una notificaci&oacute;n y no debe ser repondida.",
+"copyrightNotification" => "Elastix esta licenciado bajo GPL por PaloSanto Solutions",
 );
 ?>

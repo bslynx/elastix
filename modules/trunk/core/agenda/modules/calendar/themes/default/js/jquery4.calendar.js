@@ -39,10 +39,13 @@ $(document).ready(function() {
 			else $('#loading').hide();
 		},
 		editable: true,
+        //currentTimezone: 'America/Chicago',
+        timeFormat: 'H:mm{ - H:mm}',
+        dateServer: $('#dateServer').val(),
         module: module_name,
         owner: true, // para cuando son usuarios elastix
-        uid: $('#id').val(),
-		events: "index.php?menu="+module_name+"&uid="+$('#id').val()+"&action=get_data&rawmode=yes",
+        //uid: $('#id').val(),
+		events: "index.php?menu="+module_name+"&action=get_data&rawmode=yes",
 		/*events: [
 			{
 				title: 'All Day Event',
@@ -91,21 +94,21 @@ $(document).ready(function() {
 		]*/
 	});
 
-    $('#calendar_invited').fullCalendar({
-        theme: true,
-        header: {
-            left: 'prev,next today create',
-            center: 'title',
-            right: 'month,agendaWeek,agendaDay'
-        },
-        loading: function(bool) {
-            if (bool) $('#loading').show();
-            else $('#loading').hide();
-        },
-        editable: false,
-        owner: false,
-        events: "share_calendar.php?menu="+module_name+"&action=get_data&rawmode=yes",
-        module: module_name,
-    });
+//     $('#calendar_invited').fullCalendar({
+//         theme: true,
+//         header: {
+//             left: 'prev,next today create',
+//             center: 'title',
+//             right: 'month,agendaWeek,agendaDay'
+//         },
+//         loading: function(bool) {
+//             if (bool) $('#loading').show();
+//             else $('#loading').hide();
+//         },
+//         editable: false,
+//         owner: false,
+//         events: "share_calendar.php?menu="+module_name+"&action=get_data&rawmode=yes",
+//         module: module_name,
+//     });
 	
 });

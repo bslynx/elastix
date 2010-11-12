@@ -32,8 +32,9 @@ var defaults = {
     // for elastix
     // if the user is owner of calendar or if is a invited
     owner: true,
+    dateServer : "",
     module_name: "calendar",
-    uid: "",
+    //uid: "",
 
 	// display
 	defaultView: 'month',
@@ -68,7 +69,10 @@ var defaults = {
 		day: 'dddd M/d'
 	},
 	timeFormat: { // for event elements
-		'': 'h(:mm)t' // default
+        // for agendaWeek and agendaDay
+        //agenda: 'H:mm{ - H:mm}', // 15:00 - 16:30
+        // for all other views
+		'': 'h(:mm)t' // default 7p
 	},
 	
 	// locale
@@ -187,10 +191,15 @@ $.fn.fullCalendar = function(options) {
 		}
 		
 		// view managing
-		var date = new Date(),
+        var tmpDate = "";
+        if(options.dateServer == "")
+            options.dateServer = (new Date()).toString();
+
+
+		var date = new Date(options.dateServer),
 			viewName, view, // the current view
-			viewInstances = {};
-			
+			viewInstances = {};  //Fri Nov 12 2010 11:22:15 GMT-0500 (ECT)
+
 		if (options.year != undefined && options.year != date.getFullYear()) {
 			date.setDate(1);
 			date.setMonth(0);
@@ -328,7 +337,7 @@ $.fn.fullCalendar = function(options) {
 			view.rerenderEvents();
 		}
 		
-		// calculate what the height of the content should be
+		// calculate what the height of the content should be the calendar
 		function calculateContentHeight() {
 			if (options.contentHeight) {
 				return options.contentHeight;
@@ -1868,7 +1877,7 @@ function Agenda(element, options, methods) {
 		setOuterWidth(stripeTDs.slice(0, -1), colWidth);
 		setOuterWidth(topTDs.slice(1, -2), colWidth);
 		setOuterWidth(topTDs.slice(-2, -1), contentWidth - axisWidth - colWidth*(colCnt-1));
-		
+
 		bg.css({
 			top: head.find('tr').height(),
 			left: axisWidth,
@@ -2065,7 +2074,7 @@ function Agenda(element, options, methods) {
 				* dis + (rtl ? availWidth - outerWidth : 0);   // rtl
 			seg.top = top;
 			seg.left = left;
-			seg.outerWidth = outerWidth;
+			seg.outerWidth = outerWidth; 
 			seg.outerHeight = bottom - top;
 			/*html +=
 				"<div class='" + className + event.className.join(' ') + "' style='position:absolute;z-index:8;top:" + top + "px;left:" + left + "px'>" +
@@ -2145,8 +2154,10 @@ function Agenda(element, options, methods) {
 		for (i=0; i<segCnt; i++) {
 			seg = segs[i];
 			if (eventElement = seg.element) {
-				eventElement[0].style.width = seg.outerWidth - seg.hsides + 'px';
-				eventElement[0].style.height = (height = seg.outerHeight - seg.vsides - 50) + 'px';
+				eventElement[0].style.width = seg.outerWidth - seg.hsides + 'px';//original
+				//eventElement[0].style.height = (height = seg.outerHeight - seg.vsides - 50) + 'px';//original
+                //eventElement[0].style.width  = seg.outerWidth + 'px';
+                eventElement[0].style.height = (height = seg.outerHeight) + 'px';
 				event = seg.event;
 				if (seg.titleTop != undefined && height - seg.titleTop < 10) {
 					// not enough room for title, put it in the time header

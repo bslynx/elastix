@@ -147,5 +147,12 @@ $arrLangModule=array(
 "Here" => "Here",
 "ReminderTime" => "Reminder",
 "lblbefore" => "min before",
+"Loading" => "Loading",
+"error_Noevent" => "Event does not exits or event is not allowed to your user",
+"START_TYPE" => "Start to type",
+"notification_event" => "Event Notification",
+"invitation_event" => "You have been invited to participate in this event",
+"noResponseNotification" => "This is a notice and should not answered",
+"copyrightNotification" => "Elastix is licensed under GPL by PaloSanto Solutions",
 );
 ?>

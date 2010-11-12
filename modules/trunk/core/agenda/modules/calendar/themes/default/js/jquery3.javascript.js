@@ -3,6 +3,38 @@ var module_name = "calendar";
 $(document).ready(function(){
     $('#divReminder').corner();
     $('#divNotification').corner();
+
+    $('#select2').fcbkcomplete({
+        json_url: "index.php?menu="+module_name+"&action=get_contacts&rawmode=yes&tag=",
+        cache: false,       // si es true se guardara en cache y es false no se guarda en cache
+        cacheJSON: false,  // false se hara cada vez que se presione una tecla una peticion ajax si es true no
+        filter_case: true,
+        filter_hide: true,
+        component: 1,
+        size_block: "100%", //size from list with emails
+        size_type: "61%",
+        firstselected: true,
+        //onremove: "testme",
+        //onselect: "testme",
+        filter_selected: true,
+        newel: true
+    });
+
+//     $('#selectE').fcbkcomplete({
+//         json_url: "index.php?menu="+module_name+"&action=get_emailContact&rawmode=yes&tag=",
+//         cache: true,
+//         filter_case: true,
+//         filter_hide: true,
+//         component: 2,
+//         size_block: "100%", //size from list with emails
+//         size_type: "16.5%",
+//         firstselected: true,
+//         //onremove: "testme",
+//         //onselect: "testme",
+//         filter_selected: true,
+//         newel: true
+//     });
+
     $('#CheckBoxRemi').change(function(){
         var estado;
         if($(this).is(":checked")){
@@ -37,53 +69,24 @@ $(document).ready(function(){
             $('#grilla').attr("style","visibility: collapse;");
         }
     });
-    $('#select2').fcbkcomplete({
-        json_url: "index.php?menu="+module_name+"&action=get_contacts&rawmode=yes&userid=",
-        cache: true,
-        filter_case: true,
-        filter_hide: true,
-        component: 1,
-        size_block: "100%", //size from list with emails
-        size_type: "61%",
-        firstselected: true,
-        //onremove: "testme",
-        //onselect: "testme",
-        filter_selected: true,
-        newel: true
-    });
 
-    $('#selectE').fcbkcomplete({
-        json_url: "index.php?menu="+module_name+"&action=get_emailContact&rawmode=yes&userid=",
-        cache: true,
-        filter_case: true,
-        filter_hide: true,
-        component: 2,
-        size_block: "100%", //size from list with emails
-        size_type: "16.5%",
-        firstselected: true,
-        //onremove: "testme",
-        //onselect: "testme",
-        filter_selected: true,
-        newel: true
-    });
-
-    $('#sent_emails').click(function(){
-        var emails = copyEmailsToSend();
-        emails = emails.replace(/&lt;/gi,"<");
-        emails = emails.replace(/&gt;/gi,">");
-        if(emails=="error_email" || emails==false)
-            connectJSON(emails);
-        else{
-            var order = "menu="+module_name+"&action=share_calendar&emailshare="+emails+"&rawmode=yes";
-            $.post("index.php", order,
-                function(theResponse){
-                    var message = JSONtoString(theResponse);
-                    var sal = message['message'];
-                    alert(sal);
-                    location.reload();
-            });
-        }
-    });
+//     $('#sent_emails').click(function(){
+//         var emails = copyEmailsToSend();
+//         emails = emails.replace(/&lt;/gi,"<");
+//         emails = emails.replace(/&gt;/gi,">");
+//         if(emails=="error_email" || emails==false)
+//             connectJSON(emails);
+//         else{
+//             var order = "menu="+module_name+"&action=share_calendar&emailshare="+emails+"&rawmode=yes";
+//             $.post("index.php", order,
+//                 function(theResponse){
+//                     var message = JSONtoString(theResponse);
+//                     var sal = message['message'];
+//                     alert(sal);
+//                     location.reload();
+//             });
+//         }
+//     });
 
     $('#formNewEvent').submit(
         function(){
@@ -156,6 +159,19 @@ $(document).ready(function(){
     $('.close_box, .cancel').click(function(){
         $('#box').hide();
         $('#title_box').html("");
+        // limpiar la caja de emails
+        $('#lstholder1').children().each(function(){
+            var item = $(this).attr("class");
+            var rel  = $(this).attr("rel");
+            if(item=="bit-box"){
+                $(this).removeAttr("selected");
+                $(this).removeClass("selected");
+                $(this).remove();
+            }
+        });
+        $('#select2').children().each(function(){
+            $(this).remove();
+        });
     });
 
     $('#edit').click(function(){
@@ -204,9 +220,7 @@ $(document).ready(function(){
         var uid               = document.getElementById('id');
                 //disabled all input and select
 		////change reminderTimer
-		$('input[name=ReminderTime]').each(function(){
-			$(this).removeAttr("disabled");
-		});
+        $('#ReminderTime').attr("disabled","disabled");
         $('#add_phone').attr("style","display: inline;");
         $('.new_box_rec').attr("style","display: inline;");
         RemoveAttributeDisable(event_name);
@@ -231,6 +245,7 @@ $(document).ready(function(){
         //RemoveAttributeDisable(chkoldasterisk);
         RemoveAttributeDisable(inputCallTo);
         RemoveAttributeDisable(chkoldnoti);
+        $('#ReminderTime').removeAttr("disabled");
         if(inputCallTo.value == ""){
             getNumExtesion();
         }
@@ -261,9 +276,12 @@ $(document).ready(function(){
 
     $('#delete').click(function(){ //hace un submit sin pasar por el submit validador
         var id_event = $('#id_event').val();
+        var urlImaLoading = "<h1><img src='modules/"+module_name+"/images/busy.gif' /> "+$('#lblLoading').val()+"...</h1>";
+        $.blockUI({ message: urlImaLoading });
         var order = "menu="+module_name+"&action=delete_box&id_event="+id_event+"&rawmode=yes";
         $.post("index.php", order,
                 function(theResponse){
+                    $.unblockUI();
                     var message = JSONtoString(theResponse);
                     var error = message['error_delete_JSON'];
                     var status_error = message['error_delete_status'];
@@ -479,17 +497,25 @@ function obtainEmails(){
     function quitSimbols(cad){
         var i = cad.indexOf("<");
         var j = cad.indexOf(">");
-        var email = cad.substring(i+1,j);
-        var names = cad.substring(0,i-1);
-        var sal = "\""+trim(names)+"\" "+"&lt;"+trim(email)+"&gt;";
-        var format = "\""+"\" "+"&lt;"+"&gt;";
-        if(sal == format){
-            if(validarEmail(cad)){
-                sal = "&lt;"+cad+"&gt;";
-            }else{
+        var email   = cad.substring(i+1,j);
+        var names   = cad.substring(0,i-1);
+        var sal     = "\""+trim(names)+"\" "+"&lt;"+trim(email)+"&gt;";
+        if(names == "" && email != ""){
+            if(validarEmail(email))
+                sal = "&lt;"+email+"&gt;";
+            else
                 return true;
-            }
-        }
+        }else if(names == "" && email == ""){
+                if(validarEmail(cad)){
+                    sal = "&lt;"+cad+"&gt;";
+                }else{
+                    return true;
+                }
+        }else if(validarEmail(email)){
+                   return sal;
+              }
+        else return true;
+
         return sal;
     }
 
@@ -755,8 +781,7 @@ function obtainEmails(){
     }
 
     function getNumExtesion() {
-        var id    = document.getElementById("id").value;
-        var order = 'menu='+module_name+'&action=get_num_ext&userid='+id+'&rawmode=yes';
+        var order = 'menu='+module_name+'&action=get_num_ext&rawmode=yes';
         var message = "";
         $.post("index.php", order,
                 function(theResponse){
@@ -772,6 +797,9 @@ function obtainEmails(){
     }
 // view box detail event
     function getDataAjaxForm(order){
+        // blocking screen
+        var urlImaLoading = "<h1><img src='modules/"+module_name+"/images/busy.gif' /> "+$('#lblLoading').val()+"...</h1>";
+        $.blockUI({ message: urlImaLoading });
         var eje_x = ((screen.width)/2) - 250;
         $('#box').css('top','50%');
         $('#box').css('left',eje_x+"px");
@@ -822,18 +850,7 @@ function obtainEmails(){
                     var description_event = document.getElementsByName('description')[0];
                     var date_ini          = document.getElementById('f-calendar-field-1');
                     var date_end          = document.getElementById('f-calendar-field-2');
-					
-					////change reminderTimer
-					$('input[name=ReminderTime]').each(function(){
-						var valueReminder = $(this).attr("value");
-						if(valueReminder == reminderTimer){
-							$(this).attr("checked","checked");
-						}else{
-							$(this).removeAttr("checked");
-						}
-						$(this).attr("disabled","disabled");
-					});
-					
+
                     //var date_ini_hour1    = document.getElementsByName('hora1')[0];
                     //var date_ini_minute1  = document.getElementsByName('minuto1')[0];
                     //var date_end_hour2    = document.getElementsByName('hora2')[0];
@@ -919,6 +936,14 @@ function obtainEmails(){
                         //fill date end event
                         date_end.value = end;
 
+                        $('#ReminderTime').children().each(function(){
+                            var tmpRem = $(this).val();
+                            if(reminderTimer == tmpRem)
+                                $(this).attr("selected","selected");
+                            else
+                                $(this).removeAttr("selected");
+                        });
+                        $('#ReminderTime').attr("disabled","disabled");
                         //removing all attributes selected and checked
                         //RemoveAttributeSelect(date_ini_hour1);
                         //RemoveAttributeSelect(date_ini_minute1);
@@ -1154,10 +1179,15 @@ function obtainEmails(){
                             $('#CheckBoxNoti').next("label").removeClass("LabelSelected");
                         }
                     }
+                //unblocking
+                $.unblockUI();
             });
     }
 
     function getDataAjaxFormGuest(order){
+        // blocking screen
+        var urlImaLoading = "<h1><img src='modules/"+module_name+"/images/busy.gif' /> "+$('#lblLoading').val()+"...</h1>";
+        $.blockUI({ message: urlImaLoading });
         $('#box').show();
         $('.loading').show();
         $('.remin').attr("style","display:none;");
@@ -1358,10 +1388,15 @@ function obtainEmails(){
 
                     // fill input id hidden
                     id_event_input.value = message['id'];
+                 //unblocking
+                 $.unblockUI();
             });
     }
 
     function displayNewEvent(){
+        // blocking screen
+        var urlImaLoading = "<h1><img src='modules/"+module_name+"/images/busy.gif' /> "+$('#lblLoading').val()+"...</h1>";
+        $.blockUI({ message: urlImaLoading });
         //centrar box
         var eje_x = ((screen.width)/2) - 250;
         $('#box').css('top','50%');
@@ -1373,7 +1408,7 @@ function obtainEmails(){
         $('.remin').attr("style","display:none;");
         $('#grilla').html("");
         $('#notification_email').attr("style","visibility:hidden;");
-        var order = "menu="+module_name+"&action=new_box&rawmode=yes";
+
         $('#title_box').html("");
         $('#box').show();
         $('.loading').show();
@@ -1381,6 +1416,7 @@ function obtainEmails(){
         $('#divNotification').show();
         $('#lblCheckBoxNoti').attr("for","CheckBoxNoti");
         $('#lblCheckBoxRemi').attr("for","CheckBoxRemi");
+        var order = "menu="+module_name+"&action=new_box&rawmode=yes";
 ////// to remove checkbox status in reminder call or notification /////////////////
         RemoveAttributeImageCheck();
 ///////////////////////////////////////////////////////////////////////////////////
@@ -1407,7 +1443,7 @@ function obtainEmails(){
                     var recording_event   = document.getElementsByName('recording')[0];
 //                    var type_repeat_event = document.getElementById('type_repeat');
                     var call_to_event     = document.getElementById('call_to');
-/*                    var chkoldSunday      = document.getElementsByName('chkoldSunday')[0];
+/*                  var chkoldSunday      = document.getElementsByName('chkoldSunday')[0];
                     var chkoldMonday      = document.getElementsByName('chkoldMonday')[0];
                     var chkoldTuesday     = document.getElementsByName('chkoldTuesday')[0];
                     var chkoldWednesday   = document.getElementsByName('chkoldWednesday')[0];
@@ -1437,15 +1473,15 @@ function obtainEmails(){
                     //if(type_repeat_event.firstChild)
                         //type_repeat_event.removeChild(type_repeat_event.firstChild);
 					////change reminderTimer
-					$('input[name=ReminderTime]').each(function(){
+					$('#ReminderTime').children().each(function(){
 						var valueReminder = $(this).attr("value");
 						if(valueReminder == "10"){
-							$(this).attr("checked","checked");
+							$(this).attr("selected","selected");
 						}else{
-							$(this).removeAttr("checked");
+							$(this).removeAttr("selected");
 						}
-						$(this).removeAttr("disabled");
 					});
+                    $('#ReminderTime').removeAttr("disabled");
                     //show buttons for new event
                     $('#new_box').attr("style","display:block;");
                     $('#email_to').attr("style","visibility:hidden;");
@@ -1516,7 +1552,7 @@ function obtainEmails(){
                     //date_end_hour2.value = message['hour'];
                     //date_ini_minute1.value = message['minute'];
                     //date_end_minute2.value = message['minute'];
-                    uid.value = message['uid'];
+             //uid.value = message['uid'];
                     //date_ini_hour1.childNodes[0].setAttribute('selected', 'selected');
                     //date_ini_minute1.childNodes[0].setAttribute('selected', 'selected');
                     //date_end_hour2.childNodes[0].setAttribute('selected', 'selected');
@@ -1525,7 +1561,7 @@ function obtainEmails(){
 //                    repeat_name.childNodes[0].setAttribute('selected', 'selected');
 //                    $('#type_repeat_event').html("");
                     getNumExtesion();
-		    if(recording_event.childNodes[0])
+		            if(recording_event.childNodes[0])
                     	recording_event.childNodes[0].setAttribute('selected', 'selected');
 //                    $('.repeat').attr("style","visibility: hidden;");
                     $('#notification_email').attr("style","visibility: hidden;");
@@ -1575,6 +1611,8 @@ function obtainEmails(){
                             break;
                     }
 */
+                // unblocking
+                $.unblockUI();
             });
     }
 

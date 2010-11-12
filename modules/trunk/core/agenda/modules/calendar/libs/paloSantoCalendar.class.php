@@ -353,8 +353,8 @@ class paloSantoCalendar {
 
     function getContactByTag($db, $tag, $userid)
     {
-        $query = "SELECT  (lower(name)||' '||lower(last_name)||' '||'&lt;'||email||'&gt;') AS caption,id AS value FROM contact WHERE iduser = ?";
-        $data = array($userid);
+        $query = "SELECT  (lower(name)||' '||lower(last_name)||' '||'&lt;'||email||'&gt;') AS caption,id AS value FROM contact WHERE iduser = ? and (name like ? or last_name like ? or email like ?)";
+        $data = array($userid, "%$tag%", "%$tag%", "%$tag%");
         $result = $db->fetchTable($query,true, $data);
         if($result==FALSE){
             $this->errMsg = $this->_DB->errMsg;
@@ -428,7 +428,7 @@ class paloSantoCalendar {
     function getNameUsers($id_user,$db)
     {
         $query = "SELECT name FROM acl_user WHERE id=$id_user";
-		$username = $_SESSION["elastix_user"];
+    	$username = $_SESSION["elastix_user"];
         $result = $db->getFirstRowQuery($query,true);
         if($result != FALSE || $result != "")
             return $result['name'];
@@ -436,7 +436,7 @@ class paloSantoCalendar {
             return $username;
     }
 
-function existPassword($pass){
+    function existPassword($pass){
         $query = "SELECT password FROM share_calendar WHERE password = '$pass'";
         $result = $this->_DB->getFirstRowQuery($query,true);
         if($result==FALSE || $result==null || $result==""){
