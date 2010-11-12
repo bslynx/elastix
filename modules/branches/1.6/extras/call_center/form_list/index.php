@@ -49,7 +49,7 @@ function _moduleContent(&$smarty, $module_name)
         include_once($lang_file);
     else
         include_once("modules/$module_name/lang/en.lang");
-
+    global $arrLangModule;
     require_once "modules/$module_name/libs/paloSantoDataFormList.class.php";
     //folder path for custom templates
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
