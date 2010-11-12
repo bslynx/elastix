@@ -12,15 +12,16 @@
         require_once "modules/$module_name/configs/default.config.php";
         require_once "modules/$module_name/libs/paloSantoDataQueue.class.php";
 
-        $arrLangModuleuage=get_language();
+        $Language=get_language();
         $script_dir=dirname($_SERVER['SCRIPT_FILENAME']);
-        $arrLangModule_file="modules/$module_name/lang/$arrLangModuleuage.lang";
+        $arrLangModule_file="modules/$module_name/lang/$Language.lang";
 
         if (file_exists("$script_dir/$arrLangModule_file")) {
             include_once($arrLangModule_file);
         } else {
             include_once("modules/$module_name/lang/en.lang");
         }
+        global $arrLangModule;
 
         $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
         $templates_dir=(isset($config['templates_dir']))?$config['templates_dir']:'themes';

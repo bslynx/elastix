@@ -4,7 +4,7 @@
 class DataQueue
 {
     var $pDB;
-    var $lang;
+    var $arrLangModule;
     
     /*
         Constructor de la clase, recibe la conexion a la base
@@ -239,14 +239,14 @@ function desactivar_queue($id_queue)
     $pDB = new paloDB($cadena_dsn);
 
     if($pDB->errMsg != "") {
-        $respuesta->addAssign("mb_message","innerHTML",$lang["Error when connecting to database"]."<br/>".$pDB->errMsg);
+        $respuesta->addAssign("mb_message","innerHTML",$arrLangModule["Error when connecting to database"]."<br/>".$pDB->errMsg);
     }
     $oData = new DataQueue($pDB);
     if($oData->activar_queue($id_queue,'I')) {
         $respuesta->addScript("window.open('?menu=queues','_parent')");
     }else {
-        $respuesta->addAssign("mb_title","innerHTML",$lang["Desactivate Error"]."<br/>".$pDB->errMsg);
-        $respuesta->addAssign("mb_message","innerHTML",$lang["Error when desactivating the Queue"]."<br/>".$pDB->errMsg);
+        $respuesta->addAssign("mb_title","innerHTML",$arrLangModule["Desactivate Error"]."<br/>".$pDB->errMsg);
+        $respuesta->addAssign("mb_message","innerHTML",$arrLangModule["Error when desactivating the Queue"]."<br/>".$pDB->errMsg);
     }
     return $respuesta;
 }

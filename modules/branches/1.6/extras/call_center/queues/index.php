@@ -21,8 +21,8 @@
         } else {
             include_once("modules/$module_name/lang/en.lang");
         }
-	global $arrLangModule;	
-	$arrLangModule=$arrLangModule;
+        global $arrLangModule;
+
         $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
         $templates_dir=(isset($config['templates_dir']))?$config['templates_dir']:'themes';
         $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$config['theme'];
