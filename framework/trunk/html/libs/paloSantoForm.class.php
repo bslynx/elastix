@@ -131,7 +131,7 @@ class paloForm
             $listaAttr = array();
             foreach($arrVars['INPUT_EXTRA_PARAM'] as $key => $value) {
                 $listaAttr[] = sprintf(
-                    '%s="$s"', 
+                    '%s="%s"', 
                     htmlentities($key, ENT_COMPAT, 'UTF-8'),
                     htmlentities($value, ENT_COMPAT, 'UTF-8'));
             }
@@ -170,7 +170,7 @@ class paloForm
                             $varName_escaped,
                             isset($arrVars['ROWS']) ? (int)$arrVars['ROWS'] : 3,
                             isset($arrVars['COLS']) ? (int)$arrVars['COLS'] : 20,
-                            _inputExtraParam_a_atributos($arrVals),
+                            _inputExtraParam_a_atributos($arrVars),
                             $varValue_escaped)
                         : $varValue_escaped;
                     break;
@@ -180,7 +180,7 @@ class paloForm
                             '<input type="text" name="%s" value="%s" %s />', 
                             $varName_escaped,
                             $varValue_escaped,
-                            _inputExtraParam_a_atributos($arrVals))
+                            _inputExtraParam_a_atributos($arrVars))
                         : $varValue_escaped;                    
                     break;
                 case "CHECKBOX":
@@ -200,7 +200,7 @@ class paloForm
                             '<input type="password" name="%s" value="%s" %s />', 
                             $varName_escaped,
                             $varValue_escaped,
-                            _inputExtraParam_a_atributos($arrVals))
+                            _inputExtraParam_a_atributos($arrVars))
                         : $varValue_escaped;                    
                     break;
                 case "HIDDEN":
@@ -208,14 +208,14 @@ class paloForm
                         '<input type="hidden" name="%s" value="%s" %s />', 
                         $varName_escaped,
                         $varValue_escaped,
-                        _inputExtraParam_a_atributos($arrVals));                    
+                        _inputExtraParam_a_atributos($arrVars));                    
                     break;
                 case "FILE":
                     $strInput = $bIngresoActivo
                         ? sprintf(
                             '<input type="file" name="%s" %s />', 
                             $varName_escaped,
-                            _inputExtraParam_a_atributos($arrVals))
+                            _inputExtraParam_a_atributos($arrVars))
                         : $varValue_escaped;                    
                     break;
                 case "RADIO":
