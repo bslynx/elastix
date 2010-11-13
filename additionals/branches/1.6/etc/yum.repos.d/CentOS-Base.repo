@@ -18,6 +18,7 @@ mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo
 gpgcheck=1
 gpgkey=http://mirror.centos.org/centos/RPM-GPG-KEY-CentOS-5
 exclude=kernel*
+exclude=redhat-logos
 
 #released updates 
 [updates]
@@ -27,6 +28,7 @@ mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo
 gpgcheck=1
 gpgkey=http://mirror.centos.org/centos/RPM-GPG-KEY-CentOS-5
 exclude=kernel*
+exclude=redhat-logos
 
 #packages used/produced in the build but not released
 [addons]
@@ -36,6 +38,7 @@ mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo
 gpgcheck=1
 gpgkey=http://mirror.centos.org/centos/RPM-GPG-KEY-CentOS-5
 exclude=kernel*
+exclude=redhat-logos
 
 #additional packages that may be useful
 [extras]
@@ -45,6 +48,7 @@ mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo
 gpgcheck=1
 gpgkey=http://mirror.centos.org/centos/RPM-GPG-KEY-CentOS-5
 exclude=kernel*
+exclude=redhat-logos
 
 #additional packages that extend functionality of existing packages
 [centosplus]
