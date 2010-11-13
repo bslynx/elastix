@@ -43,5 +43,6 @@ $arrLangModule=array(
 "Types of files" => "Types of files supported: ",
 "Fax has been sent correctly" => "Fax has been sent correctly",
 "Wrong type of file" => "Wrong type of file",
+"Notification Sucessfull" => "Notification Sucessfull",
 );
 ?>
