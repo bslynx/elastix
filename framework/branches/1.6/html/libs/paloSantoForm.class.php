@@ -122,26 +122,30 @@ class paloForm
            para incluir al final de un widget HTML. Si no existe 
            INPUT_EXTRA_PARAM, o no es un arreglo, se devuelve una cadena vacía
          */
-        function _inputExtraParam_a_atributos(&$arrVars)
-        {
-            if (!isset($arrVars['INPUT_EXTRA_PARAM']) || 
-                !is_array($arrVars['INPUT_EXTRA_PARAM']) || 
-                count($arrVars['INPUT_EXTRA_PARAM']) <= 0)
-                return '';
-            $listaAttr = array();
-            foreach($arrVars['INPUT_EXTRA_PARAM'] as $key => $value) {
-                $listaAttr[] = sprintf(
-                    '%s="%s"', 
-                    htmlentities($key, ENT_COMPAT, 'UTF-8'),
-                    htmlentities($value, ENT_COMPAT, 'UTF-8'));
+        if (!function_exists('_inputExtraParam_a_atributos')) {
+            function _inputExtraParam_a_atributos(&$arrVars)
+            {
+                if (!isset($arrVars['INPUT_EXTRA_PARAM']) || 
+                    !is_array($arrVars['INPUT_EXTRA_PARAM']) || 
+                    count($arrVars['INPUT_EXTRA_PARAM']) <= 0)
+                    return '';
+                $listaAttr = array();
+                foreach($arrVars['INPUT_EXTRA_PARAM'] as $key => $value) {
+                    $listaAttr[] = sprintf(
+                        '%s="%s"', 
+                        htmlentities($key, ENT_COMPAT, 'UTF-8'),
+                        htmlentities($value, ENT_COMPAT, 'UTF-8'));
+                }
+                return implode(' ', $listaAttr);
             }
-            return implode(' ', $listaAttr);
         }
 
         // Función para usar con array_map
-        function _map_htmlentities($s)
-        {
-            return htmlentities($s, ENT_COMPAT, 'UTF-8');
+        if (!function_exists('_map_htmlentities')) {
+            function _map_htmlentities($s)
+            {
+                return htmlentities($s, ENT_COMPAT, 'UTF-8');
+            }
         }
 
         foreach($this->arrFormElements as $varName=>$arrVars) {
