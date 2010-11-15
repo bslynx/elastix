@@ -155,7 +155,7 @@ function report_extension($smarty, $module_name, $local_templates_dir, $arrLang,
 function load_extension($smarty, $module_name, $local_templates_dir, $arrLang, $arrConf, $base_dir, $pDB, $arrAST, $arrAMP)
 {
     $oForm = new paloForm($smarty, array());
-    $html = $oForm->fetchForm("$local_templates_dir/extension.tpl", $arrLang["Extensions Batch"], $_POST);
+    //$html = $oForm->fetchForm("$local_templates_dir/extension.tpl", $arrLang["Extensions Batch"], $_POST);
 
     $arrTmp=array();
     $bMostrarError = false;
