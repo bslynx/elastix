@@ -52,5 +52,13 @@ $arrLangModule=array(
 "(Not in Use)" => "غير فعال",
 "Port" => "درگاه",
 "Configure Echo Cancellers" => "تنظيم برطرف کننده اکو",
+
+"mISDN Driver Installed" => "mISDN Driver Installed",
+"mISDN Driver not Installed" => "mISDN Driver not Installed",
+"Channel detected by DAHDI and not used" => "Channel detected by DAHDI and not used",
+"Channel detected by DAHDI and in use" => "Channel detected by DAHDI and in use",
+"Undetected Channel by DAHDI" => "Undetected Channel by DAHDI",
+"You can set the parameters for these ports here" => "You can set the parameters for these ports here",
+"Port Status" => "Port Status",
 );
 ?>

@@ -816,3 +816,156 @@
     font-size: 11px;
     font-family:Verdana,Arial,Helvetica,sans-serif;
 }
+.fielform  {
+    border-color:#9C9C9C;
+    border-width:thin;
+    color:black;
+    font-family:Verdana,Arial,Helvetica,sans-serif;
+    font-size:12px;
+    /*height:auto;*/
+    height:120px;
+    position:relative;
+    /*width:96%;*/
+    width: 300px;
+}
+
+.fielform2  {
+    border-color:#9C9C9C;
+    border-width:thin;
+    color:black;
+    font-family:Verdana,Arial,Helvetica,sans-serif;
+    font-size:12px;
+    /*height:auto;*/
+    height:80px;
+    position:relative;
+    /*width:96%;*/
+    width: 300px;
+}
+
+#optionsAdvance{
+    color:black;
+    font-family:Verdana,Arial,Helvetica,sans-serif;
+    font-size:12px;
+    /*height:auto;*/
+    height:80px;
+    position:relative;
+    padding-left:25px; 
+    /*width:96%;*/
+    width: 310px;
+}
+
+.fielformSpam{
+    border-color:#9C9C9C;
+    border-width:thin;
+    color:black;
+    font-family:Verdana,Arial,Helvetica,sans-serif;
+    font-size:12px;
+    height:auto;
+    position:relative;
+    width: auto;
+}
+
+.hourglass{
+    border:1px solid #9C9C9C;
+    width:220px;
+}
+
+.sombreado {
+    color:#000000;
+    font-family:Verdana;
+    font-size:12px;
+    font-weight:bold;
+}
+
+.secAdv{
+    padding-top:10px;
+}
+
+.textConf{
+    font-size: 12px; 
+    padding: 20px;
+}
+
+.confSPAN, .close_boxConfSPANS{
+    cursor: pointer;
+}
+
+#boxConfSPANS .b {
+  background:url(../../../../../images/b.png);
+}
+
+#boxConfSPANS .tl {
+  background:url(../../../../../images/tl.png);
+}
+
+#boxConfSPANS .tr {
+  background:url(../../../../../images/tr.png);
+}
+
+#boxConfSPANS .bl {
+  background:url(../../../../../images/bl.png);
+}
+
+#boxConfSPANS .br {
+  background:url(../../../../../images/br.png);
+}
+
+#boxConfSPANS {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 500px;
+  height: 30%;
+  margin-top: -15%;
+  /*margin-left: -19%;*/
+  z-index: 10002;
+  text-align: left;
+}
+
+#boxConfSPANS .popup {
+  position: relative;
+}
+
+#boxConfSPANS table {
+  border-collapse: collapse;
+}
+
+#boxConfSPANS td {
+  border-bottom: 0;
+  padding: 0;
+}
+
+#boxConfSPANS .body {
+  /*padding: 10px;*/
+  padding: 2%;
+  background: #fff;
+  /*width: 370px;*/
+  width: 470px;
+}
+
+#boxConfSPANS .loading {
+  text-align: center;
+}
+
+#boxConfSPANS .image {
+  text-align: center;
+}
+
+#boxConfSPANS img {
+  border: 0;
+  margin: 0;
+}
+
+#boxConfSPANS .footer {
+  border-top: 1px solid #DDDDDD;
+  padding-top: 5px;
+  margin-top: 10px;
+  text-align: right;
+}
+
+#boxConfSPANS .tl, #boxConfSPANS .tr, #boxConfSPANS .bl, #boxConfSPANS .br {
+  height: 10px;
+  width: 10px;
+  overflow: hidden;
+  padding: 0;
+}

@@ -1,7 +1,7 @@
 
 <table width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
     <tr class="moduleTitle">
-        <td class="moduleTitle" valign="middle" colspan='2'>&nbsp;&nbsp;<img src="{$IMG}" border="0" align="absmiddle">&nbsp;&nbsp;{$title}</td>
+        <td class="moduleTitle" valign="middle" colspan='3'>&nbsp;&nbsp;<img src="{$IMG}" border="0" align="absmiddle">&nbsp;&nbsp;{$title}</td>
     </tr>
     <tr class="letra12">
         {if $mode eq 'input'}
@@ -26,7 +26,7 @@
     <input type="hidden" name="idCard" value="{$DESC_ID}" />
 
     <label id="port_desc">{$CARD} # {$ID}: {$TIPO} {$ADICIONAL}</label>
-    <div id="form">
+    <div id="form" style='background-color:yellow'>
     <!--<table border="0" width="40%" cellspacing="0" style="border:1px solid black">-->
         {foreach key=key item=echocancel name=arrPortsEchoInfo from=$arrPortsEcho}
         <tr class="letra12">

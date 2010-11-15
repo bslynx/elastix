@@ -27,9 +27,7 @@
   +----------------------------------------------------------------------+
   */
 
-require_once "libs/paloSantoForm.class.php";
-include_once "libs/paloSantoGrid.class.php";
-include_once "libs/xajax/xajax.inc.php";
+include_once "libs/paloSantoJSON.class.php";
 
 function _moduleContent(&$smarty, $module_name)
 {
@@ -50,23 +48,20 @@ function _moduleContent(&$smarty, $module_name)
     global $arrLangModule;
     $arrConf = array_merge($arrConf,$arrConfModule);
     $arrLang = array_merge($arrLang,$arrLangModule);
-//     print_r($_POST);
+
     require_once "modules/$module_name/libs/PaloSantoHardwareDetection.class.php";
-    
+
     //folder path for custom templates
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
     $templates_dir=(isset($arrConf['templates_dir']))?$arrConf['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
-    
-    $xajax = new xajax();
-    $xajax->registerFunction("hardwareDetect");
-    $xajax->processRequests();
+
 
     //conexion resource
     $pDB = new paloDB($arrConf['dsn_conn_database']);
 
     $action = getAction();
-    $content = "";    
+    $content = "";
 
     switch($action){
         case "config_echo":
@@ -78,12 +73,11 @@ function _moduleContent(&$smarty, $module_name)
         case "setConfig":
             $content = setConfigHardware();
             break;
-        case "setDataCard":
-            $content = setDataCardHardware($pDB);
+        case "detection":
+            $content = hardwareDetect($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
             break;
         default:
-            $content  = $xajax->printJavascript("libs/xajax/");
-            $content .= listPorts($smarty, $module_name, $local_templates_dir, $pDB);
+            $content = listPorts($smarty, $module_name, $local_templates_dir, $pDB);
             break;
     }
     return $content;
@@ -93,7 +87,6 @@ function listPorts($smarty, $module_name, $local_templates_dir, $pDB) {
 
     global $arrLang;
     $oPortsDetails = new PaloSantoHardwareDetection();
-    $oGrid = new paloSantoGrid($smarty); 
     $contenidoModulo = "";
 
     $arrSpanConf = $oPortsDetails->getSpanConfig($pDB);
@@ -111,13 +104,28 @@ function listPorts($smarty, $module_name, $local_templates_dir, $pDB) {
     $smarty->assign("CARD_MISDN",$arrLang['Misdn Card']);
     $smarty->assign("CARD_NO_MOSTRAR",'DAHDI');
     $smarty->assign("PORT_NOT_FOUND",$arrLang['Ports not Founds']);
-    //$smarty->assign("NO_PUERTO",$arrLang['No. Port']);
     $smarty->assign("NO_PUERTO",$arrLang["Port"]." ");
-    $arrPortsDetails = $oPortsDetails->getPorts($pDB);
+    $smarty->assign("Channel_detected_notused",$arrLang['Channel detected by DAHDI and not used']);
+    $smarty->assign("Channel_detected_use",$arrLang['Channel detected by DAHDI and in use']);
+    $smarty->assign("Undetected_Channel",$arrLang['Undetected Channel by DAHDI']);
+    $smarty->assign("SET_PARAMETERS_PORTS",$arrLang['You can set the parameters for these ports here']);
+    $smarty->assign("Status_ports",$arrLang['Port Status']);
+
+    if($oPortsDetails->isInstalled_mISDN()){
+        $smarty->assign("isInstalled_mISDN",true);
+        $smarty->assign("MSG_isInstalled_mISDN",$arrLang['mISDN Driver Installed']);
+    }
+    else{
+        $smarty->assign("isInstalled_mISDN",false);
+        $smarty->assign("MSG_isInstalled_mISDN",$arrLang['mISDN Driver not Installed']);
+    }
 
     $arrMisdnInfo = $oPortsDetails->getMisdnPortInfo();
     if(count($arrMisdnInfo)<=0)
         $arrMisdnInfo = "noMISDN";
+
+
+    $arrPortsDetails = $oPortsDetails->getPorts($pDB);
 
     if(!(is_array($arrPortsDetails) && count($arrPortsDetails) >0)){
         $smarty->assign("CARDS_NOT_FOUNDS",$oPortsDetails->errMsg);
@@ -185,18 +193,19 @@ function llenarTpl($local_templates_dir,$smarty,$arrGrid, $arrData, $arrMisdn)
     return $smarty->fetch($local_templates_dir."/listPorts.tpl");
 }
 
-function hardwareDetect($chk_dahdi_replace,$there_is_sangoma_card, $there_is_misdn_card)
+function hardwareDetect($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
 {
-    global $arrLang;
-    $respuesta = new xajaxResponse();
+    $chk_dahdi_replace     = getParameter("chk_dahdi_replace");
+    $there_is_sangoma_card = getParameter("there_is_sangoma_card");
+    $there_is_misdn_card   = getParameter("there_is_misdn_card");
+
     $oHardwareDetect = new PaloSantoHardwareDetection();
-    $resultado = $oHardwareDetect->hardwareDetection($chk_dahdi_replace,"/etc/asterisk",$there_is_sangoma_card, $there_is_misdn_card);
-    $respuesta->addAlert($resultado);
-    $respuesta->addAssign("relojArena","innerHTML","");
-    $respuesta->addAssign("nombre_paquete","value","");
-    $respuesta->addAssign("estaus_reloj","value","apagado");
-    $respuesta->addScript("document.getElementById('form_dectect').submit();\n");
-    return $respuesta;
+    $resultado  = $oHardwareDetect->hardwareDetection($chk_dahdi_replace,"/etc/asterisk",$there_is_sangoma_card, $there_is_misdn_card);
+
+    $jsonObject = new PaloSantoJSON();
+    $msgResponse['msg'] = $resultado;
+    $jsonObject->set_message($msgResponse);
+    return $jsonObject->createJSON();
 }
 
 ////////////NEW IMPLEMENTATION CODE FOR ECHO CANCELLER////////////////////////////
@@ -238,6 +247,7 @@ function viewFormConfEcho($smarty, $module_name, $local_templates_dir, &$pDB, $a
     $smarty->assign("ID", $dataCard['id_card']);
     $smarty->assign("TIPO", $dataCard['type']);
     $smarty->assign("ADICIONAL", $dataCard['additonal']);
+    $smarty->assign("MODULE_NAME",$module_name);
 
     if(is_array($arrPortsEcho) && count($arrPortsEcho)>1){
         $smarty->assign("arrPortsEcho", $arrPortsEcho);
@@ -293,10 +303,10 @@ function saveNewConfEcho($smarty, $module_name, $local_templates_dir, &$pDB, $ar
             $num = $value['num_port'];
             $type_echo_pas = getParameter("tmpTypeEcho".$num);//para reemplazar
             $type_echo_selected = getParameter("typeecho_".$num);
-            
+
             $data = array(); 
             $data['echocanceller'] = $pDB->DBCAMPO($type_echo_selected);
-            
+
             $pconfEcho->replaceEchoSystemConf($type_echo_pas, $type_echo_selected, $num, $dataCard['type']);
 
             header("Location: ?menu=$module_name&action=report");
@@ -364,8 +374,8 @@ function getAction()
         return "config_echo";
     else if(getParameter("action")=="setConfig")
         return "setConfig";
-    else if(getParameter("action")=="setDataCard")
-        return "setDataCard";
+    else if(getParameter("action")=="detection")
+        return "detection";
     else
         return "report"; //cancel
 }

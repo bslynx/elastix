@@ -36,7 +36,7 @@ $arrLangModule=array(
 "Card" => "Span",
 "Type port" => "Type",
 "No. Port" => "Port #",
-"(In Use)" => "In Use",
+"Detected by Asterisk" => "Detected by Asterisk",
 "Hardware Detecting" => "Detecting Hardware",
 "Hardware Detect" => "Detect New Hardware",
 "Cards undetected on your system, press for detecting hardware detection." => "No cards were detected on your system. Please press the \"Detect New Hardware\" button to detect new hardware.",
@@ -49,10 +49,16 @@ $arrLangModule=array(
 "Detect Sangoma hardware" => "Detect Sangoma hardware",
 "Detect ISDN hardware" => "Detect ISDN hardware",
 "Misdn Card" => "Misdn Card",
-"(Not in Use)" => "Not in Use",
+"Not detected by Asterisk" => "Not detected by Asterisk",
 "Port" => "Port",
 
 "Configure Echo Cancellers" => "Configure Echo Cancellers",
-
+"mISDN Driver Installed" => "mISDN Driver Installed",
+"mISDN Driver not Installed" => "mISDN Driver not Installed",
+"Channel detected by DAHDI and not used" => "Channel detected by DAHDI and not used",
+"Channel detected by DAHDI and in use" => "Channel detected by DAHDI and in use",
+"Undetected Channel by DAHDI" => "Undetected Channel by DAHDI",
+"You can set the parameters for these ports here" => "You can set the parameters for these ports here",
+"Port Status" => "Port Status",
 );
 ?>

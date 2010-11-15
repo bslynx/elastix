@@ -10,9 +10,38 @@ $(document).ready(function(){
         //handle: '#layer1_handle1'
     });
 
+    $('a[id^=confSPAN]').click(function() {
+        var eje_x = ((screen.width)/2) - 250;
+        $('#boxConfSPANS').attr("style","display: block;");
+        $('#boxConfSPANS').css('top','50%');
+        $('#boxConfSPANS').css('left',eje_x+"px");
+        $('#fade_overlay').attr("style","display: block;");
+    });
+
+    $('.close_boxConfSPANS').click(function(){
+        $('#fade_overlay').attr("style","display: none;");
+        $('#boxConfSPANS').attr("style","display: none;");
+    });
+
+    $("#fade_overlay").click(function(){
+        $("#boxRPM").attr("style","display: none;");
+        $("#fade_overlay").attr("style","display: none;");
+        $('#boxConfSPANS').attr("style","display: none;");
+    });
+
+    $('#chkAdvance').change(function() {
+        var estado;
+        if($(this).is(":checked")){
+            $('#optionsAdvance').attr("style","visibility: visible;");
+        }else{
+            $('#optionsAdvance').attr("style","visibility: hidden;");
+        }
+    });
+
     $('#editArea1').click(function() {
         $("#layer1").show(); 
     });
+
     $('#close1').click(function() {
         $("#layer1").hide();
     });
@@ -253,29 +282,6 @@ function saveSpanConfiguration(idSpan){
 }
 
 
-function saveCardSpecification(idCard){
-    var xhr = objAjax();
-    var arrSpanConf = new Array();
-    
-    var manufacturer = document.getElementById("manufacturer_"+idCard);
-    var manufacturer_selected = manufacturer.options[manufacturer.selectedIndex].text;
-
-    var num_serie = document.getElementById("noSerie_"+idCard).value;
-    if(manufacturer_selected=="Otros"){
-        var manufacturer_other = document.getElementById("manufacturer_other_"+idCard).value;
-        xhr.open("POST","index.php?menu=hardware_detector&rawmode=yes&action=setDataCard&idCard="+idCard+"&manufacturer="+manufacturer_other+"&num_serie="+num_serie,true);
-    }else    
-        xhr.open("POST","index.php?menu=hardware_detector&rawmode=yes&action=setDataCard&idCard="+idCard+"&manufacturer="+manufacturer_selected+"&num_serie="+num_serie,true);
-    
-    xhr.onreadystatechange = function()
-    {
-        controllerCardManufacturer(xhr);
-    }
-    xhr.send(null); 
-
-    return;
-}
-
 function controllerDisplayConfig(xhr)
 {
     if(xhr.readyState==4)
@@ -283,26 +289,6 @@ function controllerDisplayConfig(xhr)
         if(xhr.status==200)
         {
             alert("Span configuration saved succesfully");
-        }
-    }
-}
-
-function controllerCardManufacturer(xhr)
-{
-    if(xhr.readyState==4)
-    {
-        if(xhr.status==200)
-        {
-            var idCard = xhr.responseText;
-            alert("Card Manufacturer saved succesfully");
-            var span = document.getElementById("editMan"+idCard);
-            span.removeChild(span.getElementsByTagName("img")[0]);
-               
-            span.innerHTML = "<img class='icon' src='modules/hardware_detector/images/card_registered.gif' />";
-//            imgtag = document.createElement("input");
-//             imgtag.setAttribute("class", "icon");
-//             imgtag.setAttribute("src", "modules/hardware_detector/images/call2.png");
-//             span.appendChild(imgtag);
         }
     }
 }
@@ -349,4 +335,36 @@ function objAjax()
         xmlhttp = new XMLHttpRequest();
     }
     return xmlhttp;
-} 
+}
+
+
+var request_hd = 'apagado';
+function detectar()
+{
+    var nodoReloj            = document.getElementById('relojArena');
+    var chk_dahdi_replace    = document.getElementById('chk_dahdi_replace');
+    var chk_there_is_sangoma = document.getElementById('chk_there_is_sangoma');
+    var chk_misdn_hardware   = document.getElementById('chk_misdn_hardware');
+
+    var arrAction                      = new Array();
+    arrAction["action"]                = "detection";
+    arrAction["rawmode"]               = "yes";
+    arrAction["menu"]                  = "hardware_detector";
+    arrAction["chk_dahdi_replace"]     = chk_dahdi_replace.checked;
+    arrAction["there_is_sangoma_card"] = chk_there_is_sangoma.checked;
+    arrAction["there_is_misdn_card"]   = chk_misdn_hardware.checked;
+
+    if(request_hd=='apagado'){
+        request_hd='prendido';
+        nodoReloj.style.display = "block";
+        request("index.php",arrAction,false,
+            function(arrData,statusResponse,error)
+            {
+                request_hd = 'apagado';
+                alert(arrData["msg"]);
+                nodoReloj.style.display = "none";
+                window.location.reload();
+            }
+        );
+    }
+}

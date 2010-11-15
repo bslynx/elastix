@@ -27,8 +27,8 @@
   +----------------------------------------------------------------------+
   $Id: puetos  */
 
-include_once("/var/www/html/libs/paloSantoDB.class.php");
-include_once("/var/www/html/modules/hardware_detector/libs/paloSantoConfEcho.class.php");
+//include_once("/var/www/html/libs/paloSantoDB.class.php");
+//include_once("/var/www/html/modules/hardware_detector/libs/paloSantoConfEcho.class.php");
 
 class PaloSantoHardwareDetection
 {
@@ -59,13 +59,16 @@ class PaloSantoHardwareDetection
         $data3 = array();
         $exist_data = "no";
         unset($respuesta);
-    exec('lsdahdi',$respuesta,$retorno);
+        exec('lsdahdi',$respuesta,$retorno);
+
         if($retorno==0 && $respuesta!=null && count($respuesta) > 0 && is_array($respuesta)){
             $idTarjeta = 0;
             $count = 0; 
             foreach($respuesta as $key => $linea){
-                $estado = $arrLang['Unknown'];
-                $colorEstado = 'gray';               
+                $estado_asterisk       = $arrLang['Unknown'];
+                $estado_asterisk_color = "gray";
+                $estado_dahdi_image    = "conn_unkown.png";
+
                 if(ereg("^### Span[[:space:]]+([[:digit:]]{1,}): ([[:alnum:]| |-|\/]+)(.*)$",$linea,$regs)){
                    $idTarjeta = $regs[1];
                    $dataCardParam = $this->getCardManufacturerById($pDB, $idTarjeta);
@@ -87,7 +90,6 @@ class PaloSantoHardwareDetection
                    }else{ $data3['num_serie'] = $pDB->DBCAMPO(" ");
                         $exist_data = "no";
                    }
-                   
                    if($dataCardParam['manufacturer']==" " && $dataCardParam['num_serie']==" " && $dataCardParam['id_card']==" "){
                         $data3['id_card']    = $pDB->DBCAMPO($regs[1]); 
                         $this->addCardManufacturer($pDB, $data3);
@@ -99,25 +101,28 @@ class PaloSantoHardwareDetection
                     $data2['additonal']  = $pDB->DBCAMPO($regs[3]);
 
                     $pconfEcho->addCardParameter($data2);
-                    
                 }
                 else if(ereg("[[:space:]]*([[:digit:]]+) ([[:alnum:]]+)[[:space:]]+([[:alnum:]]+)(.*)",$linea,$regs1)){
                     //Estados de las lineas
                    if(eregi("In use.*RED",$regs1[4])){
-                        $estado = $arrLang['(In Use)'];
-                        $colorEstado = '#FF7D7D';
+                        $estado_asterisk       = $arrLang['Detected by Asterisk'];
+                        $estado_asterisk_color = "green";
+                        $estado_dahdi_image    = "conn_alarm.png";
                    }
                    else if(eregi("In use",$regs1[4])){
-                        $estado = $arrLang['(In Use)'];
-                        $colorEstado = '#00CC00';
+                        $estado_asterisk       = $arrLang['Detected by Asterisk'];
+                        $estado_asterisk_color = "green";
+                        $estado_dahdi_image    = "conn_ok.png";
                    }
                    else if(eregi("RED",$regs1[4])){
-                        $estado = $arrLang['(Not in Use)'];
-                        $colorEstado = '#FF7D7D';
+                        $estado_asterisk       = $arrLang['Not detected by Asterisk'];
+                        $estado_asterisk_color = "#FF7D7D";
+                        $estado_dahdi_image    = "conn_alarm.png";
                    }
                    else{
-                        $estado = $arrLang['(Not in Use)'];
-                        $colorEstado = '#00CC00';
+                        $estado_asterisk       = $arrLang['Not detected by Asterisk'];
+                        $estado_asterisk_color = "#FF7D7D";
+                        $estado_dahdi_image    = "conn_ok.png";
                    }
 
                    $tipo = $regs1[2];
@@ -136,7 +141,6 @@ class PaloSantoHardwareDetection
                         $data['echocanceller']   = $pDB->DBCAMPO(trim($arrEcho[0]));
                         $data['id_card']   = $pDB->DBCAMPO($count);
                         $pconfEcho->addEchoCanceller($data);
-                       
                     }else if($regs1[3]!="HDLCFCS"){
                         $data['num_port']       = $pDB->DBCAMPO($regs1[1]);
                         $data['name_port']       = $pDB->DBCAMPO($regs1[2]);
@@ -144,15 +148,16 @@ class PaloSantoHardwareDetection
                         $data['id_card']   = $pDB->DBCAMPO($count);
                         $pconfEcho->addEchoCanceller($data);
                     }
-                   $tarjetas["TARJETA$idTarjeta"]['PUERTOS']["PUERTO$regs1[1]"] = array('LOCALIDAD' =>$regs1[1],'TIPO' => $tipo, 'ADICIONAL' => "$regs1[2] - $regs1[3]", 'ESTADO' => $estado,'COLOR' => $colorEstado);
+                   $tarjetas["TARJETA$idTarjeta"]['PUERTOS']["PUERTO$regs1[1]"] = array('LOCALIDAD' =>$regs1[1],'TIPO' => $tipo, 'ADICIONAL' => "$regs1[2] - $regs1[3]", 'ESTADO_ASTERISK' => $estado_asterisk,'ESTADO_ASTERISK_COLOR' => $estado_asterisk_color,'ESTADO_DAHDI' => $estado_dahdi_image);
 
                 }
                 else if(ereg("[[:space:]]*([[:digit:]]+) ([[:alnum:]]+)",$linea,$regs1)){
                    if($regs1[2] == 'unknown'){
-                        $estado = $arrLang['Unknown'];
-                        $colorEstado = 'gray';
+                        $estado_asterisk       = $arrLang['Unknown'];
+                        $estado_asterisk_color = 'gray';
+                        $estado_dahdi_image    = 'conn_unkown.png';
                    }
-                   $tarjetas["TARJETA$idTarjeta"]['PUERTOS']["PUERTO$regs1[1]"] = array('LOCALIDAD' =>$regs1[1],'TIPO' => "&nbsp;", 'ADICIONAL' => $regs1[2], 'ESTADO' => $estado,'COLOR' => $colorEstado);
+                   $tarjetas["TARJETA$idTarjeta"]['PUERTOS']["PUERTO$regs1[1]"] = array('LOCALIDAD' =>$regs1[1],'TIPO' => "&nbsp;", 'ADICIONAL' => $regs1[2], 'ESTADO_ASTERISK' => $estado_asterisk,'ESTADO_ASTERISK_COLOR' => $estado_asterisk_color,'ESTADO_DAHDI' => $estado_dahdi_image);
                 }
             }
         }
@@ -335,6 +340,14 @@ class PaloSantoHardwareDetection
 
         $result=$pDB->getFirstRowQuery($query, true);
         return $result;
+    }
+
+    function isInstalled_mISDN()
+    {
+        $mISDN_service  = "/usr/sbin/mISDN";
+        $mISDN_portinfo = "/usr/bin/misdnportinfo";
+
+        return file_exists($mISDN_service) && file_exists($mISDN_portinfo);
     }
 
 }
