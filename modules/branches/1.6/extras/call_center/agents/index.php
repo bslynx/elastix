@@ -30,31 +30,41 @@
 require_once("libs/paloSantoGrid.class.php");
 require_once("libs/Agentes.class.php");
 
+if (!function_exists('_tr')) {
+    function _tr($s)
+    {
+        global $arrLang;
+        return isset($arrLang[$s]) ? $arrLang[$s] : $s;
+    }
+}
+if (!function_exists('load_language_module')) {
+    function load_language_module($module_id, $ruta_base='')
+    {
+        $lang = get_language($ruta_base);
+        include_once $ruta_base."modules/$module_id/lang/en.lang";
+        $lang_file_module = $ruta_base."modules/$module_id/lang/$lang.lang";
+        if ($lang != 'en' && file_exists("$lang_file_module")) {
+            $arrLangEN = $arrLangModule;
+            include_once "$lang_file_module";
+            $arrLangModule = array_merge($arrLangEN, $arrLangModule);
+        }
+
+        global $arrLang;
+        global $arrLangModule;
+        $arrLang = array_merge($arrLang,$arrLangModule);
+    }
+}
+
 function _moduleContent(&$smarty, $module_name)
 {
-    #incluir el archivo de idioma de acuerdo al que este seleccionado
-    #si el archivo de idioma no existe incluir el idioma por defecto
-    $lang=get_language();
-    $script_dir=dirname($_SERVER['SCRIPT_FILENAME']);
+    load_language_module($module_name);
 
-    // Include language file for EN, then for local, and merge the two.
-    $arrLangModule = NULL;
-    include_once("modules/$module_name/lang/en.lang");
-    $lang_file="modules/$module_name/lang/$lang.lang";
-    if (file_exists("$script_dir/$lang_file")) {
-        $arrLangModuleEN = $arrLangModule;
-        include_once($lang_file);
-        $arrLangModule = array_merge($arrLangModuleEN, $arrLangModule);
-    }
-    
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
     include_once "modules/agent_console/configs/default.conf.php"; // For asterisk AMI credentials
 
     global $arrConf;
-    global $arrLang;
     global $arrConfig;
-    $arrLang = array_merge($arrLang, $arrLangModule);
 
     //folder path for custom templates
     $base_dir = dirname($_SERVER['SCRIPT_FILENAME']);
@@ -88,7 +98,6 @@ function _moduleContent(&$smarty, $module_name)
 
 function listAgent($pDB, $smarty, $module_name, $local_templates_dir)
 {
-    global $arrLangModule;
     global $arrLang;
     
     $oAgentes = new Agentes($pDB);
@@ -110,7 +119,7 @@ function listAgent($pDB, $smarty, $module_name, $local_templates_dir)
             $infoAgente['name'],
             ))) {
             $smarty->assign(array(
-                'mb_title'      =>  $arrLangModule["Error saving agent in file"],
+                'mb_title'      =>  _tr("Error saving agent in file"),
                 'mb_message'    =>  $oAgentes->errMsg,
             ));
         }
@@ -118,7 +127,7 @@ function listAgent($pDB, $smarty, $module_name, $local_templates_dir)
         // Hay que remover el agente del archivo de configuración de Asterisk
         if (!$oAgentes->deleteAgentFile($_POST['reparar_file'])) {
             $smarty->assign(array(
-                'mb_title'      =>  $arrLangModule["Error when deleting agent in file"],
+                'mb_title'      =>  _tr("Error when deleting agent in file"),
                 'mb_message'    =>  $oAgentes->errMsg,
             ));
         }
@@ -126,7 +135,7 @@ function listAgent($pDB, $smarty, $module_name, $local_templates_dir)
         // Borrar el agente indicado de la base de datos, y del archivo
         if (!$oAgentes->deleteAgent($_POST['agent_number'])) {
             $smarty->assign(array(
-                'mb_title'      =>  $arrLangModule["Error Delete Agent"],
+                'mb_title'      =>  _tr("Error Delete Agent"),
                 'mb_message'    =>  $oAgentes->errMsg,
             ));
         }
@@ -145,10 +154,10 @@ function listAgent($pDB, $smarty, $module_name, $local_templates_dir)
     // Estados posibles del agente
     $sEstadoAgente = 'All';
     $listaEstados = array(
-        "All"       =>  $arrLangModule["All"],
-        "Online"    =>  $arrLangModule["Online"],
-        "Offline"   =>  $arrLangModule["Offline"],
-        "Repair"    =>  $arrLangModule["Repair"],
+        "All"       =>  _tr("All"),
+        "Online"    =>  _tr("Online"),
+        "Offline"   =>  _tr("Offline"),
+        "Repair"    =>  _tr("Repair"),
     );
     if (isset($_GET['cbo_estado'])) $sEstadoAgente = $_GET['cbo_estado'];
     if (isset($_POST['cbo_estado'])) $sEstadoAgente = $_POST['cbo_estado'];
@@ -211,20 +220,20 @@ function listAgent($pDB, $smarty, $module_name, $local_templates_dir)
     
     $arrData = array();
     $sImgVisto = "<img src='modules/$module_name/themes/images/visto.gif' border='0' />";
-    $sImgErrorCC = "<img src='modules/$module_name/themes/images/error_small.png' border='0' title=\"".$arrLangModule["Agent doesn't exist in configuration file"]."\" />";
-    $sImgErrorAst = "<img src='modules/$module_name/themes/images/error_small.png' border='0' title=\"".$arrLangModule["Agent doesn't exist in database"]."\" />";
+    $sImgErrorCC = "<img src='modules/$module_name/themes/images/error_small.png' border='0' title=\""._tr("Agent doesn't exist in configuration file")."\" />";
+    $sImgErrorAst = "<img src='modules/$module_name/themes/images/error_small.png' border='0' title=\""._tr("Agent doesn't exist in database")."\" />";
     $smarty->assign(array(
-        'PREGUNTA_BORRAR_AGENTE_CONF'   =>  $arrLangModule["To rapair is necesary delete agent from configuration file. Do you want to continue?"],
-        'PREGUNTA_AGREGAR_AGENTE_CONF'  =>  $arrLangModule["To rapair is necesary add an agent in configuration file. Do you want to continue?"],
+        'PREGUNTA_BORRAR_AGENTE_CONF'   =>  _tr("To rapair is necesary delete agent from configuration file. Do you want to continue?"),
+        'PREGUNTA_AGREGAR_AGENTE_CONF'  =>  _tr("To rapair is necesary add an agent in configuration file. Do you want to continue?"),
     ));
     foreach ($listaAgentes as $tuplaAgente) {
         $tuplaData = array(
             "<input class=\"button\" type=\"radio\" name=\"agent_number\" value=\"{$tuplaAgente["number"]}\" />",
             NULL,
-            $tuplaAgente['number'],
-            $tuplaAgente['name'],
-            (($tuplaAgente['sync'] != 'CC') ? ($tuplaAgente['online'] ? $arrLangModule["Online"] : $arrLangModule["Offline"]) : '&nbsp;'),
-            "<a href='?menu=agents&amp;action=edit_agent&amp;id_agent=" . $tuplaAgente["number"] . "'>[".$arrLang["Edit"]."]</a>",
+            htmlentities($tuplaAgente['number'], ENT_COMPAT, 'UTF-8'),
+            htmlentities($tuplaAgente['name'], ENT_COMPAT, 'UTF-8'),
+            (($tuplaAgente['sync'] != 'CC') ? ($tuplaAgente['online'] ? _tr("Online") : _tr("Offline")) : '&nbsp;'),
+            "<a href='?menu=agents&amp;action=edit_agent&amp;id_agent=" . $tuplaAgente["number"] . "'>["._tr("Edit")."]</a>",
         );
         switch ($tuplaAgente['sync']) {
         case 'OK':
@@ -234,14 +243,14 @@ function listAgent($pDB, $smarty, $module_name, $local_templates_dir)
             $tuplaData[1] = $sImgErrorAst.
                 "&nbsp;<a href='javascript:preguntar_por_reparacion(\"".
                 $tuplaAgente['number'].
-                "\",\"reparar_file\", pregunta_borrar_agente_conf)'>{$arrLangModule['Repair']}</a>";
+                "\",\"reparar_file\", pregunta_borrar_agente_conf)'>"._tr('Repair')."</a>";
             $tuplaData[5] = '&nbsp;';   // No mostrar opción de editar agente que no está en DB
             break;
         case 'CC':
             $tuplaData[1] = $sImgErrorCC.
                 "&nbsp;<a href='javascript:preguntar_por_reparacion(\"".
                 $tuplaAgente['number'].
-                "\",\"reparar_db\", pregunta_agregar_agente_conf)'>{$arrLangModule['Repair']}</a>";
+                "\",\"reparar_db\", pregunta_agregar_agente_conf)'>"._tr('Repair')."</a>";
             break;
         }
         $arrData[] = $tuplaData;
@@ -249,8 +258,7 @@ function listAgent($pDB, $smarty, $module_name, $local_templates_dir)
 
     $limit = 50;
     $offset = 0;
-    $url = construirURL()."&amp;cbo_estado=$sEstadoAgente";
-    $smarty->assign("url", $url);
+    $url = construirURL(array('menu' => $module_name, 'cbo_estado' => $sEstadoAgente), array('nav', 'start'));
 
     if( is_array($arrData) ) {
         $arrData = array_slice($arrData,$offset);
@@ -285,7 +293,8 @@ function listAgent($pDB, $smarty, $module_name, $local_templates_dir)
     $end = count($arrData);
 
     // Construir el reporte de los agentes activos
-    $arrGrid = array("title"    => $arrLangModule["Agent List"],
+    $arrGrid = array("title"    => _tr("Agent List"),
+                     "url"      => $url,
                      "icon"     => "images/user.png",
                      "width"    => "99%",
                      "start"    => ($total==0) ? 0 : $offset + 1,
@@ -294,35 +303,32 @@ function listAgent($pDB, $smarty, $module_name, $local_templates_dir)
                      "columns"  => array(
                                         0 => array("name"       => '&nbsp;',
                                                     "property1" => ""),
-                                        1 => array("name"       => $arrLangModule["Configure"],
+                                        1 => array("name"       => _tr("Configure"),
                                                     "property1" => ""),
-                                        2 => array("name"       => $arrLangModule["Number"],
+                                        2 => array("name"       => _tr("Number"),
                                                     "property1" => ""),
-                                        3 => array("name"       => $arrLang["Name"],
+                                        3 => array("name"       => _tr("Name"),
                                                     "property1" => ""),
-                                        4 => array("name"       => $arrLang["Status"],
+                                        4 => array("name"       => _tr("Status"),
                                                     "property1" => ""),
-                                        5 => array("name"       => $arrLang["Options"],
+                                        5 => array("name"       => _tr("Options"),
                                                     "property1" => ""),
                                         )
                     );
     $oGrid = new paloSantoGrid($smarty);
     $smarty->assign(array(
-        'LABEL_STATE'           =>  $arrLang['Status'],
-        'LABEL_CREATE_AGENT'    =>  $arrLangModule["New agent"],
+        'LABEL_STATE'           =>  _tr('Status'),
+        'LABEL_CREATE_AGENT'    =>  _tr("New agent"),
         'estados'               =>  $listaEstados,
         'estado_sel'            =>  $sEstadoAgente,
         'MODULE_NAME'           =>  $module_name,
-        'LABEL_WITH_SELECTION'  =>  $arrLangModule['With selection'],
-        'LABEL_DISCONNECT'      =>  $arrLangModule['Disconnect'],
-        'LABEL_DELETE'          =>  $arrLang['Delete'],
-        'MESSAGE_CONTINUE_DELETE' => $arrLang["Are you sure you wish to continue?"],
+        'LABEL_WITH_SELECTION'  =>  _tr('With selection'),
+        'LABEL_DISCONNECT'      =>  _tr('Disconnect'),
+        'LABEL_DELETE'          =>  _tr('Delete'),
+        'MESSAGE_CONTINUE_DELETE' => _tr("Are you sure you wish to continue?"),
     ));
     $oGrid->showFilter($smarty->fetch("$local_templates_dir/filter-list-agents.tpl"));
-    return 
-        "<form id='form_agents'style='margin-bottom:0;' method='POST' action='?menu=agents'>".
-        $oGrid->fetchGrid($arrGrid, $arrData,$arrLang).
-        "</form>";
+    return $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
 }
 
 function newAgent($pDB, $smarty, $module_name, $local_templates_dir)
@@ -347,9 +353,6 @@ function editAgent($pDB, $smarty, $module_name, $local_templates_dir)
 
 function formEditAgent($pDB, $smarty, $module_name, $local_templates_dir, $id_agent)
 {
-    global $arrLang;
-    global $arrLangModule;
-    
     // Si se ha indicado cancelar, volver a listado sin hacer nada más
     if (isset($_POST['cancel'])) {
         Header("Location: ?menu=$module_name");
@@ -400,9 +403,9 @@ function formEditAgent($pDB, $smarty, $module_name, $local_templates_dir, $id_ag
     if ($bDoCreate || $bDoUpdate) {
         if(!$oForm->validateForm($_POST)) {
             // Falla la validación básica del formulario
-            $smarty->assign("mb_title", $arrLang["Validation Error"]);
+            $smarty->assign("mb_title", _tr("Validation Error"));
             $arrErrores = $oForm->arrErroresValidacion;
-            $strErrorMsg = "<b>{$arrLang['The following fields contain errors']}:</b><br>";
+            $strErrorMsg = "<b>"._tr('The following fields contain errors').":</b><br>";
             foreach($arrErrores as $k=>$v) {
                 $strErrorMsg .= "$k, ";
             }
@@ -412,14 +415,14 @@ function formEditAgent($pDB, $smarty, $module_name, $local_templates_dir, $id_ag
             foreach (array('extension', 'password1', 'password2', 'description') as $k)
                 $_POST[$k] = trim($_POST[$k]);
             if ($_POST['password1'] != $_POST['password2'] || ($bDoCreate && $_POST['password1'] == '')) {
-                $smarty->assign("mb_title", $arrLang["Validation Error"]);
-                $smarty->assign("mb_message", $arrLang["The passwords are empty or don't match"]);
+                $smarty->assign("mb_title", _tr("Validation Error"));
+                $smarty->assign("mb_message", _tr("The passwords are empty or don't match"));
             } elseif (!ereg('^[[:digit:]]+$', $_POST['password1'])) {
-                $smarty->assign("mb_title", $arrLang["Validation Error"]);
-                $smarty->assign("mb_message", $arrLangModule["The passwords aren't numeric values"]);
+                $smarty->assign("mb_title", _tr("Validation Error"));
+                $smarty->assign("mb_message", _tr("The passwords aren't numeric values"));
             } elseif (!ereg('^[[:digit:]]+$', $_POST['extension'])) {
-                $smarty->assign("mb_title", $arrLang["Validation Error"]);
-                $smarty->assign("mb_message", $arrLangModule["Error Agent Number"]);
+                $smarty->assign("mb_title", _tr("Validation Error"));
+                $smarty->assign("mb_message", _tr("Error Agent Number"));
             } else {
                 $bExito = TRUE;
                 
@@ -433,11 +436,11 @@ function formEditAgent($pDB, $smarty, $module_name, $local_templates_dir, $id_ag
                 if ($bDoCreate) {
                     $bExito = $oAgentes->addAgent($agente);
                     if (!$bExito) $smarty->assign("mb_message",
-                        "{$arrLangModule["Error Insert Agent"]} ".$oAgentes->errMsg);
+                        ""._tr("Error Insert Agent")." ".$oAgentes->errMsg);
                 } elseif ($bDoUpdate) {
                     $bExito = $oAgentes->editAgent($agente);
                     if (!$bExito) $smarty->assign("mb_message",
-                        "{$arrLangModule["Error Update Agent"]} ".$oAgentes->errMsg);
+                        ""._tr("Error Update Agent")." ".$oAgentes->errMsg);
                 }
                 if ($bExito) header("Location: ?menu=$module_name");
             }
@@ -446,27 +449,24 @@ function formEditAgent($pDB, $smarty, $module_name, $local_templates_dir, $id_ag
 
     $contenidoModulo = $oForm->fetchForm(
         "$local_templates_dir/new.tpl", 
-        is_null($id_agent) ? $arrLangModule["New agent"] : $arrLangModule['Edit agent'].' "'.$_POST['description'].'"',
+        is_null($id_agent) ? _tr("New agent") : _tr('Edit agent').' "'.$_POST['description'].'"',
         $_POST);
     return $contenidoModulo;
 }
 
 function getFormAgent(&$smarty)
 {
-    global $arrLangModule;
-    global $arrLang;
-
-    $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
-    $smarty->assign("CANCEL", $arrLang["Cancel"]);
-    $smarty->assign("APPLY_CHANGES", $arrLang["Apply changes"]);
-    $smarty->assign("SAVE", $arrLang["Save"]);
-    $smarty->assign("EDIT", $arrLang["Edit"]);
-    $smarty->assign("DELETE", $arrLang["Delete"]);
-    $smarty->assign("CONFIRM_CONTINUE", $arrLang["Are you sure you wish to continue?"]);
+    $smarty->assign("REQUIRED_FIELD", _tr("Required field"));
+    $smarty->assign("CANCEL", _tr("Cancel"));
+    $smarty->assign("APPLY_CHANGES", _tr("Apply changes"));
+    $smarty->assign("SAVE", _tr("Save"));
+    $smarty->assign("EDIT", _tr("Edit"));
+    $smarty->assign("DELETE", _tr("Delete"));
+    $smarty->assign("CONFIRM_CONTINUE", _tr("Are you sure you wish to continue?"));
 
     $arrFormElements = array(
         "description" => array(
-            "LABEL"                  => "{$arrLang['Name']}",
+            "LABEL"                  => ""._tr('Name')."",
             "EDITABLE"               => "yes",
             "REQUIRED"               => "yes",
             "INPUT_TYPE"             => "TEXT",
@@ -474,7 +474,7 @@ function getFormAgent(&$smarty)
             "VALIDATION_TYPE"        => "text",
             "VALIDATION_EXTRA_PARAM" => ""),
         "extension"   => array(
-            "LABEL"                  => "{$arrLangModule["Agent Number"]}",
+            "LABEL"                  => ""._tr("Agent Number")."",
             "EDITABLE"               => "yes",
             "REQUIRED"               => "yes",
             "INPUT_TYPE"             => "TEXT",
@@ -482,7 +482,7 @@ function getFormAgent(&$smarty)
             "VALIDATION_TYPE"        => "numeric",
             "VALIDATION_EXTRA_PARAM" => ""),
         "password1"   => array(
-            "LABEL"                  => $arrLang["Password"],
+            "LABEL"                  => _tr("Password"),
             "EDITABLE"               => "yes",
             "REQUIRED"               => "yes",
             "INPUT_TYPE"             => "PASSWORD",
@@ -490,7 +490,7 @@ function getFormAgent(&$smarty)
             "VALIDATION_TYPE"        => "text",
             "VALIDATION_EXTRA_PARAM" => ""),
         "password2"   => array(
-            "LABEL"                  => $arrLang["Retype password"],
+            "LABEL"                  => _tr("Retype password"),
             "EDITABLE"               => "yes",
             "REQUIRED"               => "yes",
             "INPUT_TYPE"             => "PASSWORD",
