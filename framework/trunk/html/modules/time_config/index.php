@@ -213,14 +213,14 @@ function _moduleContent(&$smarty, $module_name)
             $fecha = sprintf('%04d-%02d-%02d %02d:%02d:%02d', 
             	$_POST['ServerDate_Year'], $_POST['ServerDate_Month'], $_POST['ServerDate_Day'],
             	$_POST['ServerDate_Hour'], $_POST['ServerDate_Minute'], $_POST['ServerDate_Second']);
-            $cmd = "/usr/bin/sudo -u root /bin/date -s '$fecha'";
+            $cmd = "/usr/bin/sudo -u root /bin/date -s '$fecha' 2>&1";
             $output=$ret_val="";
             exec($cmd,$output,$ret_val);
 			
 			if ($ret_val == 0) {
 				$smarty->assign('mb_message', _tr('System time changed successfully'));
 			} else {
-				$smarty->assign('mb_message', _tr('System time can not be changed')." - ".$output);
+				$smarty->assign('mb_message', _tr('System time can not be changed')." - <br/>".implode('<br/>', $output));
 			}
 		}
 	}
