@@ -33,21 +33,12 @@ function _moduleContent(&$smarty, $module_name)
     include_once "libs/paloSantoForm.class.php" ;
     include_once "modules/$module_name/configs/default.conf.php";
 
-    //include file language agree to elastix configuration
-    //if file language not exists, then include language by default (en)
-    $lang=get_language();
-    $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
-    $lang_file="modules/$module_name/lang/$lang.lang";
-    if (file_exists("$base_dir/$lang_file")) include_once "$lang_file";
-    else include_once "modules/$module_name/lang/en.lang";
+    load_language_module($module_name);
 
     //global variables
     global $arrConf;
     global $arrConfModule;
-    global $arrLang;
-    global $arrLangModule;
     $arrConf = array_merge($arrConf,$arrConfModule);
-    $arrLang = array_merge($arrLang,$arrLangModule);
     
     //folder path for custom templates
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
@@ -56,13 +47,13 @@ function _moduleContent(&$smarty, $module_name)
     
 	
 
-    $smarty->assign("TIME_TITULO",$arrLang["Date and Time Configuration"]);
-    $smarty->assign("INDEX_HORA_SERVIDOR",$arrLang["Current Datetime"]);
-    $smarty->assign("TIME_NUEVA_FECHA",$arrLang["New Date"]);
-    $smarty->assign("TIME_NUEVA_HORA",$arrLang["New Time"]);
-    $smarty->assign("TIME_NUEVA_ZONA",$arrLang["New Timezone"]);
-    $smarty->assign("INDEX_ACTUALIZAR",$arrLang["Apply changes"]);
-    $smarty->assign("TIME_MSG_1", $arrLang["The change of date and time can concern important  system processes."].'  '.$arrLang["Are you sure you wish to continue?"]);
+    $smarty->assign("TIME_TITULO",_tr("Date and Time Configuration"));
+    $smarty->assign("INDEX_HORA_SERVIDOR",_tr("Current Datetime"));
+    $smarty->assign("TIME_NUEVA_FECHA",_tr("New Date"));
+    $smarty->assign("TIME_NUEVA_HORA",_tr("New Time"));
+    $smarty->assign("TIME_NUEVA_ZONA",_tr("New Timezone"));
+    $smarty->assign("INDEX_ACTUALIZAR",_tr("Apply changes"));
+    $smarty->assign("TIME_MSG_1", _tr("The change of date and time can concern important  system processes.").'  '._tr("Are you sure you wish to continue?"));
 
     $arrForm = array(
     );
@@ -140,13 +131,13 @@ function _moduleContent(&$smarty, $module_name)
 		
 		if (!$bValido) {
 			// TODO: internacionalizar
-			$smarty->assign("mb_message", $arrLang['Date not valid']);
+			$smarty->assign("mb_message", _tr('Date not valid'));
 		} else {
 			if ($sZonaNueva != $sZonaActual) {
 				// Construir la ruta del archivo que hay que copiar a /etc/localtime
 				$sRutaArchivoFuente = '/usr/share/zoneinfo/'.$sZonaNueva;
 				if (!file_exists($sRutaArchivoFuente)) {
-					$smarty->assign('mb_message', "{$arrLang['Unable to locate file']} $sRutaArchivoFuente");
+					$smarty->assign('mb_message', _tr('Unable to locate file')." $sRutaArchivoFuente");
 				} else {
 					$bExitoEscritura = FALSE;
 					$sContenido = NULL;
@@ -154,11 +145,11 @@ function _moduleContent(&$smarty, $module_name)
 					$sOutput = NULL;					
 					exec("/usr/bin/sudo -u root chown asterisk /etc/localtime", $sOutput, $iRetVal);
 					if ($iRetVal != 0) {
-						$smarty->assign('mb_message', $arrLang['Internal has failed']);
+						$smarty->assign('mb_message', _tr('Internal has failed'));
 					} else {
 						$sContenido = file_get_contents($sRutaArchivoFuente);
 						if ($sContenido === FALSE) {
-							$smarty->assign('mb_message', "{$arrLang['Internal reading']} $sRutaArchivoFuente {$arrLang['has failed']}");
+							$smarty->assign('mb_message', _tr('Internal reading')." $sRutaArchivoFuente "._tr('has failed'));
 						} else {
 							$hArchivo = fopen('/etc/localtime', 'w');
 							if ($hArchivo) {
@@ -167,7 +158,7 @@ function _moduleContent(&$smarty, $module_name)
 								exec("/usr/bin/sudo -u root chown root.root /etc/localtime", $sOutput, $iRetVal);
 								$bExitoEscritura = TRUE;
 							} else {
-								$smarty->assign('mb_message', $arrLang['Internal aperture']);
+								$smarty->assign('mb_message', _tr('Internal aperture'));
 								$bExitoEscritura = FALSE;
 							}
 						}
@@ -177,7 +168,7 @@ function _moduleContent(&$smarty, $module_name)
 					if ($bExitoEscritura && file_exists('/var/spool/postfix/etc/localtime')) {
 						exec("/usr/bin/sudo -u root chown asterisk /var/spool/postfix/etc/localtime", $sOutput, $iRetVal);
     					if ($iRetVal != 0) {
-    						$smarty->assign('mb_message', $arrLang['Internal chown']);
+    						$smarty->assign('mb_message', _tr('Internal chown'));
     					} else {
 							$hArchivo = fopen('/var/spool/postfix/etc/localtime', 'w');
 							if ($hArchivo) {
@@ -186,7 +177,7 @@ function _moduleContent(&$smarty, $module_name)
 								exec("/usr/bin/sudo -u root chown root.root /var/spool/postfix/etc/localtime", $sOutput, $iRetVal);
 								$bExitoEscritura = TRUE;
 							} else {
-								$smarty->assign('mb_message', $arrLang['Internal aperture localtime']);
+								$smarty->assign('mb_message', _tr('Internal aperture localtime'));
 								$bExitoEscritura = FALSE;
 							}
 						}
@@ -196,7 +187,7 @@ function _moduleContent(&$smarty, $module_name)
 					if ($bExitoEscritura) {
 						exec("/usr/bin/sudo -u root chown asterisk /etc/sysconfig/clock", $sOutput, $iRetVal);
     					if ($iRetVal != 0) {
-    						$smarty->assign('mb_message', $arrLang['Internal chown clock']);
+    						$smarty->assign('mb_message', _tr('Internal chown clock'));
     					} else {
 							$hArchivo = fopen('/etc/sysconfig/clock', 'w');
 							if ($hArchivo) {
@@ -209,7 +200,7 @@ function _moduleContent(&$smarty, $module_name)
 								$sZonaActual = $sZonaNueva;
 								$bExitoEscritura = TRUE;
 							} else {
-								$smarty->assign('mb_message', $arrLang['Internal aperture clock']);
+								$smarty->assign('mb_message', _tr('Internal aperture clock'));
 								$bExitoEscritura = FALSE;
 							}
     					}
@@ -227,9 +218,9 @@ function _moduleContent(&$smarty, $module_name)
             exec($cmd,$output,$ret_val);
 			
 			if ($ret_val == 0) {
-				$smarty->assign('mb_message', $arrLang['System time changed successfully']);
+				$smarty->assign('mb_message', _tr('System time changed successfully'));
 			} else {
-				$smarty->assign('mb_message', "{$arrLang['System time can not be changed']} - ".$output);
+				$smarty->assign('mb_message', _tr('System time can not be changed')." - ".$output);
 			}
 		}
 	}
@@ -242,7 +233,7 @@ function _moduleContent(&$smarty, $module_name)
     $smarty->assign('LISTA_ZONAS', $listaZonas);
     $smarty->assign('ZONA_ACTUAL', $sZonaActual);
 
-	$sContenido .= $oForm->fetchForm("$local_templates_dir/time.tpl", "{$arrLang['Date and Time Configuration']}", $_POST);
+	$sContenido .= $oForm->fetchForm("$local_templates_dir/time.tpl", _tr('Date and Time Configuration'), $_POST);
 	return $sContenido;
 }
 
