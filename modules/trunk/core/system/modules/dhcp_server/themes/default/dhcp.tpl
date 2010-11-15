@@ -46,7 +46,7 @@
                         </td>
                     </tr>
                     <tr> 
-                        <td width="26%">{$in_lease_time.LABEL} <span  class="required">*</span></td>
+                        <td width="26%"><b>{$in_lease_time.LABEL} </b><span  class="required">*</span></td>
                         <td>{$in_lease_time.INPUT}&nbsp;&nbsp;({$OF_1_TO_50000_SECONDS})</td>
                     </tr>
                     <tr> 

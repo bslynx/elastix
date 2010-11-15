@@ -154,7 +154,7 @@ function createFieldForm($arrLang)
                                                      "INPUT_EXTRA_PARAM"      => array("style" => "width:30px;text-align:center","maxlength" =>"3"),
                                                      "VALIDATION_TYPE"        => "numeric",
                                                      "VALIDATION_EXTRA_PARAM" => ""),
-                             "in_lease_time"=> array("LABEL"                  => "<b>{$arrLang['Time of client refreshment']}:</b>",
+                             "in_lease_time"=> array("LABEL"                  => "{$arrLang['Time of client refreshment']}:",
                                                      "REQUIRED"               => "yes",
                                                      "INPUT_TYPE"             => "TEXT",
                                                      "INPUT_EXTRA_PARAM"      => array("style" => "width:70px;text-align:right","maxlength" =>"5"),
