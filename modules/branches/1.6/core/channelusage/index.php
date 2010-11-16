@@ -27,7 +27,7 @@
   +----------------------------------------------------------------------+
   $Id: index.php,v 1.1.1.1 2007/07/06 21:31:21 gcarrillo Exp $ */
 
-include_once "libs/paloSantoGraph.class.php";
+include_once "libs/paloSantoGraphImage.lib.php";
 
 function _moduleContent(&$smarty, $module_name)
 {
@@ -56,27 +56,22 @@ function _moduleContent(&$smarty, $module_name)
 
     $smarty->assign("REPORT_TITLE",$arrLang["Channels Usage Report"]);
 
-    $img_1 = getImage_Hit($module_name,2);
-    $img_2 = getImage_Hit($module_name,3);
-    $img_3 = getImage_Hit($module_name,4);
-    $img_4 = getImage_Hit($module_name,5);
-    $img_5 = getImage_Hit($module_name,6);
-    $img_6 = getImage_Hit($module_name,7);
-
-    $smarty->assign("img_1", $img_1);
-    $smarty->assign("img_2", $img_2);
-    $smarty->assign("img_3", $img_3);
-    $smarty->assign("img_4", $img_4);
-    $smarty->assign("img_5", $img_5);
-    $smarty->assign("img_6", $img_6);
-
-    return $smarty->fetch("$local_templates_dir/channelusage.tpl");
-}
-
-function getImage_Hit($module_name,$id)
-{
-    $arrParameters = array($id);
-    $oPaloGraph = new paloSantoGraph($module_name,"paloSantoChannelUsage","channelsUsage",$arrParameters,"functionCallback");
-    return $oPaloGraph->getGraph();
+    if (isset($_GET['image'])) {
+        $_GET['image'] = (int)$_GET['image'];
+        displayGraph($module_name, "paloSantoChannelUsage", "channelsUsage",array($_GET['image']),"functionCallback");
+    } else {
+        $listaGraficos = array(
+            'img_1' =>  2,
+            'img_2' =>  3,
+            'img_3' =>  4,
+            'img_4' =>  5,
+            'img_5' =>  6,
+            'img_6' =>  7,
+        );
+        foreach (array_keys($listaGraficos) as $k)
+            $listaGraficos[$k] = "<img alt=\"{$listaGraficos[$k]}\" src=\"?menu=$module_name&amp;image={$listaGraficos[$k]}&rawmode=yes\" />";
+        $smarty->assign($listaGraficos);
+        return $smarty->fetch("$local_templates_dir/channelusage.tpl");
+    }
 }
 ?>
