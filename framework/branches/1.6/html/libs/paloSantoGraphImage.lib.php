@@ -90,7 +90,12 @@ $oPaloClass = new $G_CLASS($dsn);
 $arrParam = $G_PARAMETERS;
 $result = call_user_func_array(array(&$oPaloClass, $G_FUNCTION), $arrParam );
 
+global $globalCB;
+$globalCB = NULL;
+if ($G_FUNCTIONCB != '') $globalCB = array($oPaloClass, $G_FUNCTIONCB);
+
 //------------------- CONTRUCCION DEL ARREGLO PARA X & Y -------------------
+global $xData;
 $xData = array();
 $yData = array();
 if( sizeof($result) != 0 )
@@ -510,14 +515,11 @@ function showError($msj, $G_SIZE = array(400,300) )
 
 function CallBack($value)
 {
-    Global $xData;
-    Global $G_FUNCTIONCB;
-    Global $oPaloClass;
-
-    if( $G_FUNCTIONCB != "" || $G_FUNCTIONCB != null )
-        return $oPaloClass->$G_FUNCTIONCB($xData[$value]);
-
-    return $xData[$value];
+    global $xData;
+    global $globalCB;
+    $v = $xData[$value];
+    if (!is_null($globalCB)) $v = call_user_func($globalCB, $v);
+    return $v;
 }
 
 ?>
