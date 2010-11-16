@@ -176,13 +176,21 @@ class paloSantoFoneBridge {
         global $arrLang;
         global $arrLangModule;
 
-        $fonulatorCommand = "/usr/local/bin/fonulator";
-        if (!file_exists($fonulatorCommand)){
+        $fonulatorCommand = NULL;
+        $pathList = array_filter(
+            array(
+                '/usr/bin/fonulator',       // Para Elastix 2
+                '/usr/local/bin/fonulator', // Para Elastix 1.6 con compilación a mano
+            ), 
+            'file_exists');
+        if (count($pathList) <= 0) {
             $tmpError['head'] = $arrLang['ERROR'];
             $tmpError['body'] = $arrLangModule['Fonulator command does not exists.']." \"$fonulatorCommand\"";
             $this->errMsg = $tmpError;
             return false;
-        } 
+        } else {
+            $fonulatorCommand = $pathList[0];
+        }
 
         //Comando fonulator si existe
         exec("$fonulatorCommand -v $path",$arrConsole,$flagStatus);
@@ -193,7 +201,7 @@ class paloSantoFoneBridge {
         else if(is_array($arrConsole) && count($arrConsole)>1){ //algun error conocido
             //Inicialización de estas variables de error para manejar algun futuro error no validado.
             $tmpError['head'] = $arrLang['ERROR'];
-            $tmpError['body'] = $arrLangModule['In command fonulator']." \"/usr/local/bin/fonulator $path\"";
+            $tmpError['body'] = $arrLangModule['In command fonulator']." \"$fonulatorCommand $path\"";
 
             if(ereg("Bad token in configuration file on line ([[:digit:]]+)",$arrConsole[0],$arrToken)){
                 $tmpError['head'] = $arrLangModule['Bad token in configuration file on line']." {$arrToken[1]}";
@@ -212,7 +220,7 @@ class paloSantoFoneBridge {
         }
         else{ //error desconocido
             $tmpError['head'] = $arrLang['ERROR'];
-            $tmpError['body'] = $arrLangModule['In command fonulator']." \"/usr/local/bin/fonulator $path\"";
+            $tmpError['body'] = $arrLangModule['In command fonulator']." \"$fonulatorCommand $path\"";
             $this->errMsg = $tmpError;
             return false;
         }
