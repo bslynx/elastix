@@ -79,6 +79,12 @@ function _moduleContent(&$smarty, $module_name)
         case 'graph':
             $content = graphLinks($smarty, $module_name, $local_templates_dir);
             break;
+        case 'imageTop10Salientes':
+        case 'imageTop10Entrantes':
+            // The following outputs image data directly and depends on rawmode=yes
+            executeImage($module_name, $accion);
+            $content = '';
+            break;
         default:
             $content = reportReportCall($smarty, $module_name, $local_templates_dir, $pDB_cdr, $pDB_billing, $arrConf, $arrLang);
             break;
@@ -253,38 +259,52 @@ function createFieldForm($arrLang){
 
 function graphLinks($smarty, $module_name, $local_templates_dir)
 {
-    $ext      = $_GET['ext'];
-    $date_ini = $_GET['dini'];
-    $date_end = $_GET['dfin'];
-    $num_in   = $_GET['num_in'];
-    $num_out  = $_GET['num_out'];
+    $getParams = array('ext', 'dini', 'dfin', 'num_in', 'num_out');
+    foreach ($getParams as $k) if (!isset($_GET[$k])) $_GET[$k] = '';
+    $urlEntrantes = construirURL(array(
+        'module'    =>  $module_name,
+        'rawmode'   =>  'yes',
+        'action'    =>  'imageTop10Entrantes',
+        'ext'       =>  $_GET['ext'],
+        'dini'      =>  $_GET['dini'],
+        'dfin'      =>  $_GET['dfin'],
+        'num'       =>  $_GET['num_in'],
+    ), array('num_in', 'num_out'));
+    $urlSalientes = construirURL(array(
+        'module'    =>  $module_name,
+        'rawmode'   =>  'yes',
+        'action'    =>  'imageTop10Salientes',
+        'ext'       =>  $_GET['ext'],
+        'dini'      =>  $_GET['dini'],
+        'dfin'      =>  $_GET['dfin'],
+        'num'       =>  $_GET['num_out'],
+    ), array('num_in', 'num_out'));
+    $sPlantilla = <<<PLANTILLA_GRAPH
+<html>
+<head><title>Top 10</title></head>
+<body>
+<table width='100%' border='0' cellspacing='0' cellpadding='0' align='center'>
+<tr><td align='center'><img alt='imageTop10Entrantes' src='$urlEntrantes' /></td></tr>
+<tr><td align='center'><img alt='imageTop10Salientes' src='$urlSalientes' /></td></tr>
+</table>
+</body>
+</html>
+PLANTILLA_GRAPH;
+    return $sPlantilla;
+}
 
-    $imagen1 = reportTop10Incoming($module_name, $date_ini, $date_end, $ext, $num_in);//PLOT3D
-    $imagen2 = reportTop10Outgoing($module_name, $date_ini, $date_end, $ext, $num_out);//PLOT3D
+function executeImage($module_name, $sImage)
+{
+    require_once "libs/paloSantoGraphImage.lib.php";
     
-    return "<table width='100%' border='0' cellspacing='0' cellpadding='0' align='center'>
-        <tr>
-          <td align='center'>$imagen1</td>
-        </tr>
-        <br/>
-        <tr>
-          <td align='center'>$imagen2</td>
-        </tr>
-      </table>";
-}
+    $arrParameterCallbyGraph = array();
+    $getParams = array('dini', 'dfin', 'ext', 'num');
+    foreach ($getParams as $k) $arrParameterCallbyGraph[] = isset($_GET[$k]) ? $_GET[$k] : '';
 
-function reportTop10Outgoing($module_name, $date_ini_tmp, $date_end_tmp, $ext, $num_out)//PLOT3D
-{
-    $arrParameterCallbyGraph = array($date_ini_tmp, $date_end_tmp, $ext, $num_out);
-    $oPaloGraph = new paloSantoGraph($module_name,"paloSantoReportCall","callbackTop10Salientes",$arrParameterCallbyGraph);
-    return $oPaloGraph->getGraph("../../../");
-}
-
-function reportTop10Incoming($module_name, $date_ini_tmp, $date_end_tmp, $ext, $num_in)//PLOT3D
-{
-    $arrParameterCallbyGraph = array($date_ini_tmp, $date_end_tmp, $ext, $num_in);
-    $oPaloGraph = new paloSantoGraph($module_name,"paloSantoReportCall","callbackTop10Entrantes",$arrParameterCallbyGraph);
-    return $oPaloGraph->getGraph("../../../");
+    if ($sImage == 'imageTop10Entrantes')
+        displayGraph($module_name,"paloSantoReportCall","callbackTop10Entrantes",$arrParameterCallbyGraph);
+    if ($sImage == 'imageTop10Salientes')
+        displayGraph($module_name,"paloSantoReportCall","callbackTop10Salientes",$arrParameterCallbyGraph);
 }
 
 function getParameter($parameter)
@@ -305,6 +325,10 @@ function getAction()
         return "show";
     else if(getParameter("action")=="graph") //Get parameter by GET (command pattern, links)
         return "graph";
+    else if(getParameter("action")=="imageTop10Entrantes") 
+        return "imageTop10Entrantes";
+    else if(getParameter("action")=="imageTop10Salientes") 
+        return "imageTop10Salientes";
     else
         return "report";
 }

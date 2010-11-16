@@ -43,7 +43,7 @@ class paloSantoReportCall {
             $this->errMsg = $this->_DB_cdr->errMsg;
         } else {
             if ($pDB_cdr == '') {
-                $pDB_cdr = generarDSNSistema('asteriskuser', 'asteriskcdrdb', '../');
+                $pDB_cdr = generarDSNSistema('asteriskuser', 'asteriskcdrdb');
             }
 
             $dsn = (string)$pDB_cdr;
