@@ -28,7 +28,7 @@
   $Id: index.php,v 1.2 2007/07/07 22:50:39 admin Exp $ */
 
 //LIBRERIA GRAFICA
-include_once "libs/paloSantoGraph.class.php";
+include_once "libs/paloSantoGraphImage.lib.php";
 require_once "libs/magpierss/rss_fetch.inc"; 
 include_once "libs/paloSantoForm.class.php";
 
@@ -88,6 +88,11 @@ function _moduleContent($smarty, $module_name)
     else if($action=="updateOrder"){
         $ids_applet = getParameter("ids_applet");
         return $oPalo->setApplets_UserOrder($ids_applet);
+    }
+    else if ($action == 'image') {
+        $sImg = getParameter('image');
+        executeImage($module_name, $sImg);
+        return '';
     }
 
 
@@ -762,70 +767,61 @@ function getSystemResource($arrSysInfo, $module_name, $idApplet)
 	return $str;
 }
 
+function executeImage($module_name, $sImg)
+{
+    $listaImgs = array(
+        'CallsMemoryCPU'                                =>  array(null, 'functionCallback'),
+        'ObtenerInfo_CPU_Usage'                         =>  array(null, null),
+        'ObtenerInfo_MemUsage'                          =>  array(null, null),
+        'ObtenerInfo_SwapUsage'                         =>  array(null, null),
+        'ObtenerInfo_Particion'                         =>  array(array('percent'), null),
+    );
+    if (isset($listaImgs[$sImg])) {
+        $arrParameters = array();
+        if (is_array($listaImgs[$sImg][0])) foreach ($listaImgs[$sImg][0] as $k) {
+            $arrParameters[] = isset($_GET[$k]) ? $_GET[$k] : '';
+        }
+        $callback = is_null($listaImgs[$sImg][1]) ? '' : $listaImgs[$sImg][1];
+        displayGraph($module_name, 'paloSantoSysInfo', $sImg, $arrParameters, $callback);
+    }
+}
+
+function genericImage($module_name, $sGraph, $extraParam = array())
+{
+    return sprintf('<img alt="%s", src="%s" />', 
+        $sGraph,
+        construirURL(array_merge(array(
+            'menu'      => $module_name,
+            'action'    =>  'image',
+            'rawmode'   =>  'yes',
+            'image'     =>  $sGraph,
+            ), $extraParam)));    
+}
+
 function getImage_Hit($module_name)
 {
-    $arrParameters = array();
-    //$oPaloGraph = new paloSantoGraph($module_name,"paloSantoSysInfo","prueba",$arrParameters,"functionCallback");
-    $oPaloGraph = new paloSantoGraph($module_name,"paloSantoSysInfo","CallsMemoryCPU",$arrParameters,"functionCallback");
-    return $oPaloGraph->getGraph();
+    return genericImage($module_name, "CallsMemoryCPU");
 }
 
 function getImage_CPU_Usage($module_name)
 {
-    $arrParameters = array();
-    $oPaloGraph = new paloSantoGraph($module_name,"paloSantoSysInfo","ObtenerInfo_CPU_Usage",$arrParameters);
-    return $oPaloGraph->getGraph();
+    return genericImage($module_name, "ObtenerInfo_CPU_Usage");
 }
 
 function getImage_MEM_Usage($module_name)
 {
-    $arrParameters = array();
-    $oPaloGraph = new paloSantoGraph($module_name,"paloSantoSysInfo","ObtenerInfo_MemUsage",$arrParameters);
-    return $oPaloGraph->getGraph();
+    return genericImage($module_name, "ObtenerInfo_MemUsage");
 }
 
 function getImage_Swap_Usage($module_name)
 {
-    $arrParameters = array();
-    $oPaloGraph = new paloSantoGraph($module_name,"paloSantoSysInfo","ObtenerInfo_SwapUsage",$arrParameters);
-    return $oPaloGraph->getGraph();
+    return genericImage($module_name, "ObtenerInfo_SwapUsage");
 }
 
 function getImage_Disc_Usage($module_name, $value)
 {
-    $arrParameters = array($value);
-    $oPaloGraph = new paloSantoGraph($module_name,"paloSantoSysInfo","ObtenerInfo_Particion",$arrParameters);
-    return $oPaloGraph->getGraph();
+    return genericImage($module_name, "ObtenerInfo_Particion", array('percent' => $value));
 }
-
-//////////////////////////funciones para communicaction activity ////////////////////////////
-function getImage_Asterisk_Channel_Calls($module_name,$type)
-{
-	 $oPalo = new paloSantoSysInfo();
-    $arrParameters = array();
-	 $oPalo->getAsterisk_Channels();
-	 if($type=="total")
-    	$oPaloGraph = new paloSantoGraph($module_name,"paloSantoSysInfo","ObtenerInfo_Asterisk_Channel_totalCalls",$arrParameters);
-	 elseif($type=="internals")
-		$oPaloGraph = new paloSantoGraph($module_name,"paloSantoSysInfo","ObtenerInfo_Asterisk_Channel_internalCalls",$arrParameters);
-	 elseif($type=="externals")
-		$oPaloGraph = new paloSantoGraph($module_name,"paloSantoSysInfo","ObtenerInfo_Asterisk_Channel_externalCalls",$arrParameters);
-	 else
-		$oPaloGraph = new paloSantoGraph($module_name,"paloSantoSysInfo","ObtenerInfo_Asterisk_Channel_totalChannels",$arrParameters);
-	 
-    return $oPaloGraph->getGraph();
-}
-
-function getImage_Asterisk_QueueWaiting($module_name)
-{
-	 $oPalo = new paloSantoSysInfo();
-    $arrParameters = array();
-	 $oPalo->getAsterisk_Channels();
-    	$oPaloGraph = new paloSantoGraph($module_name,"paloSantoSysInfo","ObtenerInfo_Asterisk_Channel_totalCalls",$arrParameters);
-	 
-    return $oPaloGraph->getGraph();
-}
-
 
 /*************************************************Funciones del dashboard**************************************************/
 /** Start Implementation ajax*/
