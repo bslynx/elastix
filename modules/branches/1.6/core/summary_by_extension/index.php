@@ -29,9 +29,7 @@
 //include elastix framework
 include_once "libs/paloSantoGrid.class.php";
 include_once "libs/paloSantoForm.class.php";
-include_once "libs/paloSantoGraph.class.php";
 include_once "libs/misc.lib.php";
-include_once "libs/paloSantoGraph.class.php";//lib paloGrapf
 
 function _moduleContent(&$smarty, $module_name)
 {
