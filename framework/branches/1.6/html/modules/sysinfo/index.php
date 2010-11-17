@@ -28,7 +28,7 @@
   $Id: index.php,v 1.2 2007/07/07 22:50:39 admin Exp $ */
 
 //LIBRERIA GRAFICA
-include_once "libs/paloSantoGraph.class.php";
+include_once "libs/paloSantoGraphImage.lib.php";
 
 function _moduleContent($smarty, $module_name)
 {
@@ -58,6 +58,12 @@ function _moduleContent($smarty, $module_name)
     //folder path for custom templates
     $templates_dir=(isset($arrConf['templates_dir']))?$arrConf['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
+
+    // Create actual graphic when requested
+    if (isset($_GET['action']) && $_GET['action'] == 'image' && isset($_GET['image'])) {
+        executeImage($module_name, $_GET['image']);
+        return '';
+    }
 
     $oPalo = new paloSantoSysInfo();
     $arrSysInfo = $oPalo->getSysInfo();
@@ -143,39 +149,59 @@ function buildInfoImage_Discs($arrParticiones, $module_name)
     return $str;
 }
 
+function executeImage($module_name, $sImg)
+{
+    $listaImgs = array(
+        'CallsMemoryCPU'                                =>  array(null, 'functionCallback'),
+        'ObtenerInfo_CPU_Usage'                         =>  array(null, null),
+        'ObtenerInfo_MemUsage'                          =>  array(null, null),
+        'ObtenerInfo_SwapUsage'                         =>  array(null, null),
+        'ObtenerInfo_Particion'                         =>  array(array('percent'), null),
+    );
+    if (isset($listaImgs[$sImg])) {
+        $arrParameters = array();
+        if (is_array($listaImgs[$sImg][0])) foreach ($listaImgs[$sImg][0] as $k) {
+            $arrParameters[] = isset($_GET[$k]) ? $_GET[$k] : '';
+        }
+        $callback = is_null($listaImgs[$sImg][1]) ? '' : $listaImgs[$sImg][1];
+        displayGraph($module_name, 'paloSantoSysInfo', $sImg, $arrParameters, $callback);
+    }
+}
+
+function genericImage($module_name, $sGraph, $extraParam = array())
+{
+    return sprintf('<img alt="%s", src="%s" />', 
+        $sGraph,
+        construirURL(array_merge(array(
+            'menu'      => $module_name,
+            'action'    =>  'image',
+            'rawmode'   =>  'yes',
+            'image'     =>  $sGraph,
+            ), $extraParam)));    
+}
+
 function getImage_Hit($module_name)
 {
-    $arrParameters = array();
-    //$oPaloGraph = new paloSantoGraph($module_name,"paloSantoSysInfo","prueba",$arrParameters,"functionCallback");
-    $oPaloGraph = new paloSantoGraph($module_name,"paloSantoSysInfo","CallsMemoryCPU",$arrParameters,"functionCallback");
-    return $oPaloGraph->getGraph();
+    return genericImage($module_name, "CallsMemoryCPU");
 }
 
 function getImage_CPU_Usage($module_name)
 {
-    $arrParameters = array();
-    $oPaloGraph = new paloSantoGraph($module_name,"paloSantoSysInfo","ObtenerInfo_CPU_Usage",$arrParameters);
-    return $oPaloGraph->getGraph();
+    return genericImage($module_name, "ObtenerInfo_CPU_Usage");
 }
 
 function getImage_MEM_Usage($module_name)
 {
-    $arrParameters = array();
-    $oPaloGraph = new paloSantoGraph($module_name,"paloSantoSysInfo","ObtenerInfo_MemUsage",$arrParameters);
-    return $oPaloGraph->getGraph();
+    return genericImage($module_name, "ObtenerInfo_MemUsage");
 }
 
 function getImage_Swap_Usage($module_name)
 {
-    $arrParameters = array();
-    $oPaloGraph = new paloSantoGraph($module_name,"paloSantoSysInfo","ObtenerInfo_SwapUsage",$arrParameters);
-    return $oPaloGraph->getGraph();
+    return genericImage($module_name, "ObtenerInfo_SwapUsage");
 }
 
 function getImage_Disc_Usage($module_name, $value)
 {
-    $arrParameters = array($value);
-    $oPaloGraph = new paloSantoGraph($module_name,"paloSantoSysInfo","ObtenerInfo_Particion",$arrParameters);
-    return $oPaloGraph->getGraph();
+    return genericImage($module_name, "ObtenerInfo_Particion", array('percent' => $value));
 }
 ?>
