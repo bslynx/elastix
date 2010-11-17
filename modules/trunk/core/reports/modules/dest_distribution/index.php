@@ -61,37 +61,12 @@ function _moduleContent(&$smarty, $module_name)
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
     
 
-    $MAX_SLICES=10;
     $MAX_DAYS=60;
 
-    $pDBSet = new paloDB($arrConf['elastix_dsn']['settings']);
-
-    $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
-    $arrConfig = $pConfig->leer_configuracion(false);
-
-    $dsn     = $arrConfig['AMPDBENGINE']['valor'] . "://" . $arrConfig['AMPDBUSER']['valor'] . ":" . $arrConfig['AMPDBPASS']['valor'] . "@" .
-               $arrConfig['AMPDBHOST']['valor'] . "/asteriskcdrdb";
-    $pDB     = new paloDB($dsn);
-    $oCDR    = new paloSantoCDR($pDB);
-
-    $dsn2     = $arrConfig['AMPDBENGINE']['valor'] . "://" . $arrConfig['AMPDBUSER']['valor'] . ":" . $arrConfig['AMPDBPASS']['valor'] . "@" .
-               $arrConfig['AMPDBHOST']['valor'] . "/asterisk";
-    $pDB2     = new paloDB($dsn2);
-
-    $pDBTrunk = new paloDB($arrConfModule['dsn_conn_database_1']);
     $arrData = array();
     $smarty->assign("menu","dest_distribution");
 
-    $pDBSQLite = new paloDB($arrConfModule['dsn_conn_database_2']);
-    if(!empty($pDBSQLite->errMsg)) {
-        echo "{$arrLang['ERROR']}: $pDB->errMsg <br>";
-    }
-
     $smarty->assign("Filter",$arrLang['Filter']);
-    $pRate = new paloRate($pDBSQLite);
-    if(!empty($pRate->errMsg)) {
-        echo "{$arrLang['ERROR']}: $pRate->errMsg <br>";
-    }
 
 
 
@@ -193,17 +168,79 @@ function _moduleContent(&$smarty, $module_name)
     $type_graph=$value_criteria;
 
   //consulto cuales son los trunks de salida
+
+    $data_graph = leerDatosGrafico($type_graph, $date_start, $date_end);
+    $title_sumary = $data_graph['title_sumary'];
+
+    //contruir la tabla de sumario
+
+    $data=urlencode(base64_encode(serialize($data_graph)));
+    $smarty->assign("data", $data);
+    if (count($data_graph["values"])>0){
+         $mostrarSumario=TRUE;
+        $total_valores=array_sum($data_graph["values"]);
+        $resultados=$data_graph["values"];
+        foreach ($resultados as $pos => $valor){
+             $results[]=array($data_graph['legend'][$pos],
+                              number_format($valor,2),
+                              number_format(($valor/$total_valores)*100,2)
+                             );
+        }
+        if (count($results)>1)
+        $results[]=array("<b>Total<b>",
+                              "<b>".number_format($total_valores,2)."<b>",
+                              "<b>".number_format(100,2)."<b>"
+                             );
+
+        $smarty->assign("Rate_Name", $arrLang["Rate Name"]);
+        $smarty->assign("Title_Criteria", $title_sumary);
+        $smarty->assign("results", $results);
+    }else
+        $mostrarSumario=FALSE;
+    $smarty->assign("mostrarSumario", $mostrarSumario);
+    $smarty->assign("contentFilter", $htmlFilter);
+    $smarty->assign("Destination_Distribution", $arrLang['Destination Distribution']);
+    return $smarty->fetch("file:$local_templates_dir/dest_distribution.tpl");
+}
+
+function leerDatosGrafico($type_graph, $date_start, $date_end)
+{
+    global $arrConf;
+    global $arrConfModule;
+    global $arrLang;
+
+    $MAX_SLICES=10;
+
+    $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
+    $arrConfig = $pConfig->leer_configuracion(false);
+
+    $pDBSQLite = new paloDB($arrConfModule['dsn_conn_database_2']);
+    if(!empty($pDBSQLite->errMsg)) {
+        echo "{$arrLang['ERROR']}: $pDBSQLite->errMsg <br>";
+    }
+    $pRate = new paloRate($pDBSQLite);
+    if(!empty($pRate->errMsg)) {
+        echo "{$arrLang['ERROR']}: $pRate->errMsg <br>";
+    }
+
+    $pDBSet = new paloDB($arrConf['elastix_dsn']['settings']);
+    $pDBTrunk = new paloDB($arrConfModule['dsn_conn_database_1']);
     $oTrunk    = new paloTrunk($pDBTrunk);
+    $grupos = NULL;
     $troncales = $oTrunk->getExtendedTrunksBill($grupos, $arrConfig['ASTETCDIR']['valor'].'/chan_dahdi.conf');//ej array("DAHDI/1","DAHDI/2");
 
+    $dsn     = $arrConfig['AMPDBENGINE']['valor'] . "://" . $arrConfig['AMPDBUSER']['valor'] . ":" . $arrConfig['AMPDBPASS']['valor'] . "@" .
+               $arrConfig['AMPDBHOST']['valor'] . "/asteriskcdrdb";
+    $pDB     = new paloDB($dsn);
+    $oCDR    = new paloSantoCDR($pDB);
     $arrCDR  = $oCDR->obtenerCDRs("", 0, $date_start,$date_end, "", "","ANSWERED","outgoing",$troncales);
-
 
     $total =$arrCDR['NumRecords'][0];
     $num_calls=array();
     $minutos=array();
     $val_charge=array();
     $nombre_rate=array();
+    $title_sumary = NULL;
 
     if ($total>0){
         foreach($arrCDR['Data'] as $cdr) {
@@ -348,37 +385,9 @@ function _moduleContent(&$smarty, $module_name)
      "values"=>$data,
      "legend"=>$nombres_tarifas,
      "title"=>$titulo,
+     "title_sumary"=>$title_sumary,
      );
-
-
-    //contruir la tabla de sumario
-
-    $data=urlencode(base64_encode(serialize($data_graph)));
-    $smarty->assign("data", $data);
-    if (count($data_graph["values"])>0){
-         $mostrarSumario=TRUE;
-        $total_valores=array_sum($data_graph["values"]);
-        $resultados=$data_graph["values"];
-        foreach ($resultados as $pos => $valor){
-             $results[]=array($nombres_tarifas[$pos],
-                              number_format($valor,2),
-                              number_format(($valor/$total_valores)*100,2)
-                             );
-        }
-        if (count($results)>1)
-        $results[]=array("<b>Total<b>",
-                              "<b>".number_format($total_valores,2)."<b>",
-                              "<b>".number_format(100,2)."<b>"
-                             );
-
-        $smarty->assign("Rate_Name", $arrLang["Rate Name"]);
-        $smarty->assign("Title_Criteria", $title_sumary);
-        $smarty->assign("results", $results);
-    }else
-        $mostrarSumario=FALSE;
-    $smarty->assign("mostrarSumario", $mostrarSumario);
-    $smarty->assign("contentFilter", $htmlFilter);
-    $smarty->assign("Destination_Distribution", $arrLang['Destination Distribution']);
-    return $smarty->fetch("file:$local_templates_dir/dest_distribution.tpl");
+    return $data_graph;
 }
+
 ?>
