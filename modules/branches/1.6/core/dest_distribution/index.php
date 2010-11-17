@@ -161,6 +161,11 @@ function _moduleContent(&$smarty, $module_name)
         array('date_start' => date("d M Y"), 'date_end' => date("d M Y"), 'criteria'=>'minutes'));
     }
 
+    if (isset($_GET['action']) && $_GET['action'] == 'image') {
+        ejecutarGrafico($value_criteria, $date_start, $date_end);
+        return '';
+    }
+
 //obtener los datos a mostrar
 
 
@@ -173,9 +178,15 @@ function _moduleContent(&$smarty, $module_name)
     $title_sumary = $data_graph['title_sumary'];
 
     //contruir la tabla de sumario
-
-    $data=urlencode(base64_encode(serialize($data_graph)));
-    $smarty->assign("data", $data);
+    $smarty->assign('URL_GRAPHIC', construirURL(array(
+        'module'    =>  $module_name,
+        'rawmode'   =>  'yes',
+        'action'    =>  'image',
+        'criteria'  =>  $value_criteria,
+        'date_start'=>  date('d M Y', strtotime($date_start)),
+        'date_end'  =>  date('d M Y', strtotime($date_end)),
+    )));
+    
     if (count($data_graph["values"])>0){
          $mostrarSumario=TRUE;
         $total_valores=array_sum($data_graph["values"]);
@@ -388,6 +399,59 @@ function leerDatosGrafico($type_graph, $date_start, $date_end)
      "title_sumary"=>$title_sumary,
      );
     return $data_graph;
+}
+
+function ejecutarGrafico($value_criteria, $date_start, $date_end)
+{
+    $data_graph = leerDatosGrafico($value_criteria, $date_start, $date_end);
+
+    if (count($data_graph["values"])>0){
+    // Create the Pie Graph.
+        $graph = new PieGraph(630, 220,"auto");
+        $graph->SetMarginColor('#fafafa');
+        $graph->SetFrame(true,'#999999');
+
+        $graph->legend->SetFillColor("#fafafa");
+        $graph->legend->SetColor("#444444", "#999999");
+        $graph->legend->SetShadow('gray@0.6',4);
+
+    // Set A title for the plot
+        $graph->title->Set(utf8_decode($data_graph["title"]));
+        $graph->title->SetColor("#444444");
+        $graph->legend->Pos(0.1,0.2);
+
+    // Create 3D pie plot
+        $p1 = new PiePlot3d($data_graph["values"]);
+        $p1->SetCenter(0.4);
+        $p1->SetSize(100);
+
+    // Adjust projection angle
+        $p1->SetAngle(60);
+
+    // Adjsut angle for first slice
+        $p1->SetStartAngle(45);
+
+    // Display the slice values
+        $p1->value->SetColor("black");
+
+    // Add colored edges to the 3D pie
+    // NOTE: You can't have exploded slices with edges!
+        $p1->SetEdge("black");
+
+        $p1->SetLegends($data_graph["legend"]);
+        $graph->Add($p1);
+        $graph->Stroke();
+    }else{
+       //no hay datos - por ahora muestro una imagen en blanco con mensaje no records found
+        header('Content-type: image/png');
+        $titulo=utf8_decode($data_graph["title"]);
+        $im = imagecreate(630, 220);
+        $background_color = imagecolorallocate($im, 255, 255, 255);
+        $text_color = imagecolorallocate($im, 233, 14, 91);
+        imagestring($im, 10, 5, 5, $titulo. "  -  No records found", $text_color);
+        imagepng($im);
+        imagedestroy($im);
+    }
 }
 
 ?>

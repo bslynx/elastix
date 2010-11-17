@@ -13,7 +13,7 @@
     <table width="100%" border="0" cellspacing="0" cellpadding="0" class="tabForm">
       <tr>
 	<td>
-          <p align='center'><img src='images/pie_dist.php?data={$data}'></p>
+          <p align='center'><img alt="Graphic" src="{$URL_GRAPHIC}" /></p>
         </td>
       </tr>
       {if $mostrarSumario}
