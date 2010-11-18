@@ -163,29 +163,38 @@ function endpointConfiguratedShow($smarty, $module_name, $local_templates_dir, $
 
 function buildReport($arrData, $smarty, $module_name, $arrLang, $endpoint_mask)
 {
+    $nav = (isset($_GET['nav']) && $_GET['nav'] != '') 
+        ? $_GET['nav'] 
+        : ((isset($_GET['navpost']) && $_GET['navpost'] != '')
+            ? $_GET['navpost'] : NULL);
+    $start = (isset($_GET['start']) && $_GET['start'] != '') 
+        ? $_GET['start'] 
+        : ((isset($_GET['startpost']) && $_GET['startpost'] != '')
+            ?$_GET['startpost'] : NULL);
+
     $ip = $_SERVER['SERVER_ADDR'];
     $devices = subMask($ip);
     $limit  = 20;
     $total  = count($arrData); 
     $oGrid  = new paloSantoGrid($smarty);
-    $offset = $oGrid->getOffSet($limit,$total,(isset($_GET['nav']))?$_GET['nav']:NULL,(isset($_GET['start']))?$_GET['start']:NULL);
+    $offset = $oGrid->getOffSet($limit,$total,$nav,$start);
     $end    = ($offset+$limit)<=$total ? $offset+$limit : $total;
-    $smarty->assign("url","?menu=".$module_name);
     if($devices<=20){
        $devices = pow(2,(32-$devices));
        $smarty->assign("mb_title",$arrLang['WARNING'].":");
        $smarty->assign("mb_message",$arrLang["It can take several minutes, because your ip address has some devices, "].$devices);
     }
-    
-    $sUrlNavPost = '';
-    if (isset($_GET['start'])) $sUrlNavPost .= '&start='.$_GET['start'];
-    if (isset($_GET['nav'])) $sUrlNavPost .= '&nav='.$_GET['nav'];
-    
+
     if ($total <= $limit)
         $arrDataPorcion = $arrData;
     else $arrDataPorcion = array_slice($arrData, $offset, $limit);
-    
+
     $arrGrid = array("title"    => $arrLang["Endpoint Configurator"],
+        "url"      => array(
+            'menu' => $module_name,
+            'navpost' => $nav,
+            'startpost' => $start,
+            ),
         "icon"     => "images/endpoint.png",
         "width"    => "99%",
         "start"    => ($total==0) ? 0 : $offset + 1,
@@ -210,9 +219,7 @@ function buildReport($arrData, $smarty, $module_name, $arrLang, $endpoint_mask)
     $html_filter = "<input type='submit' name='endpoint_scan' value='{$arrLang['Discover Endpoints in this Network']}' class='button' />";
     $html_filter.= "&nbsp;&nbsp;<input type='text' name='endpoint_mask' value='$endpoint_mask' style='text-align:right; width:90px;' />";
     $oGrid->showFilter($html_filter);
-    $contenidoModulo  = "<form style='margin-bottom:0;' method='POST' action='?menu=$module_name$sUrlNavPost'>";
-    $contenidoModulo .= $oGrid->fetchGrid($arrGrid, $arrDataPorcion,$arrLang);
-    $contenidoModulo .= "</form>";
+    $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrDataPorcion,$arrLang);
     return $contenidoModulo;
 }
 
