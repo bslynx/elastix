@@ -29,5 +29,5 @@
 global $arrConfModule;
 $arrConfModule['module_name'] = 'file_editor';
 $arrConfModule['templates_dir'] = 'themes';
-$arrOtro['etc_asterisk'] = '/etc/asterisk/';
+$arrConfModule['astetcdir'] = '/etc/asterisk/';
 ?>
