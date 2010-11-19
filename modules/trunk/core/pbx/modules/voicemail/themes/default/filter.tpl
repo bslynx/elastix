@@ -1,4 +1,3 @@
-<form method="POST" style="margin-bottom:0;" action="?menu={$menu}">
 <table width="99%" border="0" cellspacing="0" cellpadding="0" align="center">
 <tr>
   <td>
@@ -15,4 +14,4 @@
   </td>
 </tr>
 </table>
-</form>
+

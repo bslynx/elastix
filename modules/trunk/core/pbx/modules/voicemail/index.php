@@ -192,6 +192,10 @@ contenido;
         $esAdministrador = $pACL->isUserAdministratorGroup($user);
         $record = getParameter("name");
         $ext  = getParameter("ext");
+        if (!preg_match("/^[[:digit:]]+$/", $ext)) {
+            Header("HTTP/1.1 404 Not Found");
+            die("<b>404 ".$arrLang["no_file"]."</b>");
+        }
         $record = base64_decode($record);
         $path = "/var/spool/asterisk/voicemail/default";
         $voicemailPath = "$path/$ext/INBOX/".$record;//"$path/$record";
@@ -202,6 +206,7 @@ contenido;
         }
         if(!$esAdministrador){
             if($extension != $ext){
+                Header("HTTP/1.1 404 Not Found");
                  die("<b>404 ".$arrLang["no_extension"]."</b>");
             }
             $voicemailPath = "$path/$extension/INBOX/".$record;
@@ -210,6 +215,7 @@ contenido;
         // See if the file exists
 
             if (!is_file($voicemailPath)) { 
+                Header("HTTP/1.1 404 Not Found");
                 die("<b>404 ".$arrLang["no_file"]."</b>");
             }
         // Gather relevent info about file
@@ -247,12 +253,16 @@ contenido;
                 fpassthru($fp);
             }
         }else{
+            Header("HTTP/1.1 404 Not Found");
             die("<b>404 ".$arrLang["no_file"]."</b>");
         }
         return;
     }
 
     $end = 0;
+
+    $url = array('menu' => $module_name);
+
     //si tiene extension consulto sino, muestro un mensaje de que no tiene asociada extension
     $archivos=array();
     if (!is_null($extension)){
@@ -340,11 +350,8 @@ contenido;
 
         // Construyo el URL base
         if(isset($arrFilterExtraVars) && is_array($arrFilterExtraVars) and count($arrFilterExtraVars)>0) {
-            $url = construirURL($arrFilterExtraVars, array("nav", "start"));
-        } else {
-            $url = construirURL(array(), array("nav", "start")); 
+            $url = array_merge($url, $arrFilterExtraVars);
         }
-        $smarty->assign("url", $url);
         //Fin Paginacion
 
         $arrVoiceData=array_slice($arrData, $offset, $limit);
@@ -354,6 +361,7 @@ contenido;
     }
 
     $arrGrid = array("title"   => $arrLang["Voicemail List"],
+                     "url"     => $url,
                      "icon"    => "images/record.png",
                      "width"   => "99%",
                      "start"   => ($total==0) ? 0 : $offset + 1,
