@@ -113,6 +113,7 @@ function _moduleContent(&$smarty, $module_name)
         header('Content-Type: application/force-download');
     } 
     else {
+        $arrFilterExtraVars = array();
         $arrFormElements = FormElements($arrLang);
 
         $smarty->assign("Filter",$arrLang['Filter']);
@@ -187,12 +188,7 @@ function _moduleContent(&$smarty, $module_name)
         }
     
         // Construyo el URL base
-        if(isset($arrFilterExtraVars) && is_array($arrFilterExtraVars) and count($arrFilterExtraVars)>0) {
-            $url = construirURL($arrFilterExtraVars, array("nav", "start")); 
-        } else {
-            $url = construirURL(array(), array("nav", "start")); 
-        }
-        $smarty->assign("url", $url);
+        $url = $arrFilterExtraVars;
     }    
 
     // Bloque comun
@@ -269,6 +265,7 @@ function _moduleContent(&$smarty, $module_name)
     }
 
     $arrGrid = array("title"    => $arrLang["Billing Report"],
+                     "url"      => $url,
                      "icon"     => "images/user.png",
                      "width"    => "99%",
                      "start"    => ($total==0) ? 0 : $offset + 1,
