@@ -206,8 +206,7 @@ function report_conference($smarty, $module_name, $local_templates_dir, $pDB, $a
 
     $end    = ($offset+$limit)<=$total ? $offset+$limit : $total;
 
-    $url = "?menu=$module_name&conference=".$conference."&filter=$field_pattern";
-    $smarty->assign("url", $url);
+    $url = array('menu' => $module_name, 'conference' => $conference, 'filter' => $field_pattern);    
     //Fin Paginacion
 
     $arrResult =$pConference->ObtainConferences($limit, $offset, $startDate, $endDate, "confDesc", $field_pattern, $conference);
@@ -217,7 +216,7 @@ function report_conference($smarty, $module_name, $local_templates_dir, $pDB, $a
         foreach($arrResult as $key => $conference){
             $arrTmp[0]  = "<input type='checkbox' name='conference_{$conference['bookId']}'  />";
             $arrTmp[1] = $conference['roomNo'];
-            $arrTmp[2] = "<a href='?menu=$module_name&accion=view_conference&conferenceId=".$conference['bookId']."'>{$conference['confDesc']}</a>";
+            $arrTmp[2] = "<a href='?menu=$module_name&accion=view_conference&conferenceId=".$conference['bookId']."'>".htmlentities($conference['confDesc'], ENT_COMPAT, "UTF-8")."</a>";
             $arrTmp[3] = $conference['startTime'];
             $arrTmp[4] = $conference['endTime'];
             if($_POST['conference'] == "Current_Conferences")
@@ -233,6 +232,7 @@ function report_conference($smarty, $module_name, $local_templates_dir, $pDB, $a
     }
 
     $arrGrid = array("title"    => $arrLang["Conference"],
+                        "url"      => $url,
                         "icon"     => "images/conference.png",
                         "width"    => "99%",
                         "start"    => ($total==0) ? 0 : $offset + 1,
@@ -254,7 +254,7 @@ function report_conference($smarty, $module_name, $local_templates_dir, $pDB, $a
                     );
 
     $oGrid->showFilter(trim($htmlFilter));
-    $contenidoModulo = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$oGrid->fetchGrid($arrGrid, $arrData,$arrLang)."</form>";
+    $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
 
     return $contenidoModulo;
 }
