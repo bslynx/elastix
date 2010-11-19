@@ -79,7 +79,6 @@ function listRepositories($smarty, $module_name, $local_templates_dir,$arrConf) 
     $oGrid  = new paloSantoGrid($smarty);
     $offset = $oGrid->getOffSet($limit,$total,(isset($_GET['nav']))?$_GET['nav']:NULL,(isset($_GET['start']))?$_GET['start']:NULL);
     $end    = ($offset+$limit)<=$total ? $offset+$limit : $total;
-    $smarty->assign("url","?menu=".$module_name);
     $arrData = array();
     $version = $oRepositories->obtenerVersionDistro();
     if (is_array($arrRepositorios)) {
@@ -88,12 +87,13 @@ function listRepositories($smarty, $module_name, $local_templates_dir,$arrConf) 
             if($arrRepositorios[$i]['activo'])
                 $activo="checked='checked'";
              $arrData[] = array(
-                            "<input $activo name='repo-".$arrRepositorios[$i]['id']."' type='checkbox'>",
+                            "<input $activo name='repo-".$arrRepositorios[$i]['id']."' type='checkbox' />",
                             str_replace("\$releasever",$version,$arrRepositorios[$i]['name']),);
         }
     }
 
     $arrGrid = array("title"    => $arrLang["Repositories"],
+        "url"      => array('menu' => $module_name),
         "icon"     => "modules/repositories/images/list.png",
         "width"    => "99%",
         "start"    => ($total==0) ? 0 : $offset + 1,
@@ -105,9 +105,7 @@ function listRepositories($smarty, $module_name, $local_templates_dir,$arrConf) 
                                        "property1" => "")));
 
     $oGrid->showFilter( "<input type='submit' name='submit_aceptar' value='{$arrLang['Save/Update']}' class='button' />");
-    $contenidoModulo  = "<form style='margin-bottom:0;' method='POST' action='?menu=$module_name'>";
-    $contenidoModulo .= $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
-    $contenidoModulo .= "</form>";
+    $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
     return $contenidoModulo;
 }
 ?>
