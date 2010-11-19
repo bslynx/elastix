@@ -300,12 +300,9 @@ contenido;
                                     $arrTmp[3] = $arrVoiceMailDes['callerid']['valor'];
                                     $arrTmp[4] = $arrVoiceMailDes['origmailbox']['valor'];
                                     $arrTmp[5] = $arrVoiceMailDes['duration']['valor'].' sec.';
-
-                                    //$pathRecordFile="$voicemailPath/".$regs[1].'.wav';
                                     $pathRecordFile=base64_encode($regs[1].'.wav');
                                     $recordingLink = "<a href='#' onClick=\"javascript:popUp('index.php?menu=$module_name&action=display_record&ext=$directorio&name=$pathRecordFile&rawmode=yes',350,100); return false;\">{$arrLang['Listen']}</a>&nbsp;";
                                     $recordingLink .= "<a href='?menu=$module_name&action=download&ext=$directorio&name=$pathRecordFile&rawmode=yes'>{$arrLang['Download']}</a>";
-
                                     $arrTmp[6] = $recordingLink;
                                     $arrData[] = $arrTmp;
                                 }
@@ -581,4 +578,15 @@ function createFieldFormConfig($arrLang)
     return $arrFields;
 }
 
+if (!function_exists('getParameter')) {
+function getParameter($parameter)
+{
+    if(isset($_POST[$parameter]))
+        return $_POST[$parameter];
+    else if(isset($_GET[$parameter]))
+        return $_GET[$parameter];
+    else
+        return null;
+}
+}
 ?>

@@ -147,7 +147,7 @@ function _moduleContent(&$smarty, $module_name)
             return form_config($smarty, $module_name, $local_templates_dir, $arrLang, $ext, $pDB_ast);
     }
 
-if( getParameter('action') == "display_record"){
+    if( getParameter('action') == "display_record"){
 
         $file = getParameter("name");
         $ext  = getParameter("ext");        
@@ -163,7 +163,7 @@ if( getParameter('action') == "display_record"){
         }
         if(!$esAdministrador){
             if($extension != $ext){
-                 die("<b>404 ".$arrLang["no_file"]." </b>");
+                 die("<b>404 ".$arrLang["no_file"]."</b>");
             }
             $voicemailPath = "$path/$extension/INBOX/".base64_decode($file);
         }
@@ -208,7 +208,7 @@ contenido;
         }
         if (isset($record) && preg_match("/^[[:alpha:]]+[[:digit:]]+\.(wav|WAV|Wav|mp3|gsm)$/",$record)) {
         // See if the file exists
-            
+
             if (!is_file($voicemailPath)) { 
                 die("<b>404 ".$arrLang["no_file"]."</b>");
             }
@@ -578,6 +578,7 @@ function createFieldFormConfig($arrLang)
     return $arrFields;
 }
 
+if (!function_exists('getParameter')) {
 function getParameter($parameter)
 {
     if(isset($_POST[$parameter]))
@@ -586,5 +587,6 @@ function getParameter($parameter)
         return $_GET[$parameter];
     else
         return null;
+}
 }
 ?>
