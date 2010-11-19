@@ -90,6 +90,7 @@ function _moduleContent(&$smarty, $module_name)
         echo "ERROR DE RATE: $pRate->errMsg <br>";
     }
 
+    $url = array('menu' => $module_name);
     if(isset($_GET['exportcsv']) && $_GET['exportcsv']=='yes') {
         $limit = "";
         $offset = 0;
@@ -188,7 +189,7 @@ function _moduleContent(&$smarty, $module_name)
         }
     
         // Construyo el URL base
-        $url = $arrFilterExtraVars;
+        $url = array_merge($url, $arrFilterExtraVars);
     }    
 
     // Bloque comun
