@@ -171,8 +171,6 @@ function report_backup_restore($smarty, $module_name, $local_templates_dir, $arr
 
     $nombre_archivos = Obtener_Backups($dir_backup, $total-$offset, $limit);
 
-    $url = "?menu=$module_name";
-    $smarty->assign("url", $url);
     //Fin Paginacion
 
     $arrData = null;
@@ -193,6 +191,7 @@ function report_backup_restore($smarty, $module_name, $local_templates_dir, $arr
     }
 
     $arrGrid = array("title"    => $arrLang["Backup List"],
+                     "url"      => array('menu' => $module_name),
                      "icon"     => "images/list.png",
                      "width"    => "99%",
                      "start"    => ($total==0) ? 0 : $offset + 1,
@@ -230,7 +229,7 @@ function report_backup_restore($smarty, $module_name, $local_templates_dir, $arr
     $htmlFilter = $smarty->fetch("$local_templates_dir/filter.tpl");
 
     $oGrid->showFilter(trim($htmlFilter));
-    $contenidoModulo = "<form  method='POST' enctype='multipart/form-data' style='margin-bottom:0;' action='?menu=$module_name'>".$oGrid->fetchGrid($arrGrid, $arrData,$arrLang)."</form>";
+    $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
 
     return $contenidoModulo;
 }
@@ -253,8 +252,6 @@ function automatic_backup($smarty, $module_name, $local_templates_dir, $arrLang,
 
     $nombre_archivos = Obtener_Backups($dir_backup, $total-$offset, $limit);
 
-    $url = "?menu=$module_name";
-    $smarty->assign("url", $url);
     //Fin Paginacion
 
     $arrData = null;
@@ -275,6 +272,7 @@ function automatic_backup($smarty, $module_name, $local_templates_dir, $arrLang,
     }
 
     $arrGrid = array("title"    => $arrLang["Backup List"],
+                     "url"      => array('menu' => $module_name),
                      "icon"     => "images/list.png",
                      "width"    => "99%",
                      "start"    => ($total==0) ? 0 : $offset + 1,
@@ -320,7 +318,7 @@ function automatic_backup($smarty, $module_name, $local_templates_dir, $arrLang,
                 $pFTPBackup->insertStatus($time);
             $smarty->assign("mb_message", $arrLang["SUCCESSFUL"]);
         $pFTPBackup->createCronFile($time);
-    $contenidoModulo = "<form  method='POST' enctype='multipart/form-data' style='margin-bottom:0;' action='?menu=$module_name'>".$oGrid->fetchGrid($arrGrid, $arrData,$arrLang)."</form>";
+    $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
 
     return $contenidoModulo;
 }
