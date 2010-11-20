@@ -353,7 +353,7 @@ class paloSantoCalendar {
 
     function getContactByTag($db, $tag, $userid)
     {
-        $query = "SELECT  (lower(name)||' '||lower(last_name)||' '||'&lt;'||email||'&gt;') AS caption,id AS value FROM contact WHERE iduser = ? and (name like ? or last_name like ? or email like ?)";
+        $query = "SELECT  (lower(name)||' '||lower(last_name)||' '||'&lt;'||email||'&gt;') AS caption,id AS value FROM contact WHERE (iduser = ? or status='isPublic') and (name like ? or last_name like ? or email like ?)";
         $data = array($userid, "%$tag%", "%$tag%", "%$tag%");
         $result = $db->fetchTable($query,true, $data);
         if($result==FALSE){
@@ -365,7 +365,7 @@ class paloSantoCalendar {
 
     function getContactByEmail($db, $tag, $userid)
     {
-        $query = "SELECT  email AS caption,id AS value FROM contact WHERE iduser = ?";
+        $query = "SELECT  email AS caption,id AS value FROM contact WHERE (iduser = ? or status='isPublic')";
         $data = array($userid);
         $result = $db->fetchTable($query,true,$data);
         if($result==FALSE){
