@@ -366,8 +366,6 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
 
     $end    = ($offset+$limit)<=$total ? $offset+$limit : $total;
 
-    $url = "?menu=$module_name&filter=$pattern&select_directory_type=$directory_type";
-    $smarty->assign("url", $url);
     //Fin Paginacion
 
     if($directory_type=='external')
@@ -402,6 +400,7 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
     else $name = "";
 
     $arrGrid = array(   "title"    => $arrLang["Address Book"],
+                        "url"      => array('menu' => $module_name, 'filter' => $pattern, 'select_directory_type' => $directory_type),
                         "icon"     => "images/list.png",
                         "width"    => "99%",
                         "start"    => ($total==0) ? 0 : $offset + 1,
@@ -421,7 +420,7 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
                     );
 
     $oGrid->showFilter(trim($htmlFilter));
-    $contenidoModulo = "<form method='post' style='margin-bottom: 0pt;' action='?menu=$module_name'>".$oGrid->fetchGrid($arrGrid, $arrData,$arrLang)."</form>";
+    $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
     return $contenidoModulo;
 }
 
