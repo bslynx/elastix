@@ -139,7 +139,8 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
     $smarty->assign("LOGOUT",    $arrLang['Logout']);
     $smarty->assign("currentyear",date("Y"));
     //$menu= (isset($_GET['menu']))?$_GET['menu']:'';
-    if(isset($_GET['menu'])) $menu=$_GET['menu'];
+    if (isset($_POST['menu'])) $menu = $_POST['menu'];
+    elseif(isset($_GET['menu'])) $menu=$_GET['menu'];
     elseif(empty($menu) and !empty($_SESSION['menu'])) $menu=$_SESSION['menu'];
     else $menu='';
 
