@@ -2,20 +2,15 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   CodificaciÃ³n: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.0                                                  |
+  | Elastix version: 2.0                                           |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
-  | Copyright (c) 2008 Palosanto Solutions S. A.                         |
+  | Copyright (c) 2006 Palosanto Solutions S. A.                         |
   +----------------------------------------------------------------------+
   | Cdla. Nueva Kennedy Calle E 222 y 9na. Este                          |
   | Telfs. 2283-268, 2294-440, 2284-356                                  |
   | Guayaquil - Ecuador                                                  |
-  | http://www.palosanto.com 						                     |
-  |                                                                      |
-  | Translated by: Erwan DESVERGNES - SDCI                               |
-  | erwan.desvergnes@SDCI.fr                                             |
-  |   Revision 1.0-17 by Gregory BOUZINAC - GMixon                       | 
-  | greg@gmixon.com                                                      |
+  | http://www.palosanto.com                                             |
   +----------------------------------------------------------------------+
   | The contents of this file are subject to the General Public License  |
   | (GPL) Version 2 (the "License"); you may not use this file except in |
@@ -29,24 +24,27 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  |                                                                      |
+  | Translate by:Dannarz                                             |
+  | Email: sesshomarurin7@palosanto.com                                                       |
   +----------------------------------------------------------------------+
-  $Id: fr.lang,v 1.8 2008/05/20 00:36:42 bmacias Exp $ */
+  $Id: fr.lang, October 25, 2010, 5:39 pm kleber andres loayza Exp $ */
 global $arrLangModule;
-$arrLangModule=array(
+$arrLangModule=array(  
 "Conference" => "Conf&eacute;rence",
 "State" => "Etat",
 "Past Conferences" => "Conf&eacute;rences Pass&eacute;es",
 "Current Conferences" => "Conf&eacute;rences Actuelles",
 "Future Conferences" => "Conf&eacute;rences Futures",
-"Conference #" => "Conf&eacute;rence No",
-"Conference Name" => "Nom Conf&eacute;rence",
+"Conference #" => "N&deg; de Conf.",
+"Conference Name" => "Nom de la Conf.",
 "Starts" => "D&eacute;but",
 "Ends" => "Fin",
 "Participants" => "Participants",
 "All" => "Tous",
 "New Conference" => "Nouvelle Conf&eacute;rence",
-"Conference Owner" => "Propri&eacute;taire Conf&eacute;rence",
-"Conference Number" => "Num&eacute;ro Conf&eacute;rence",
+"Conference Owner" => "Propri&eacute;taire",
+"Conference Number" => "Num&eacute;ro de Conf.",
 "Moderator PIN" => "PIN Mod&eacute;rateur",
 "Moderator Options" => "Options Mod&eacute;rateur",
 "Announce" => "Annonce",
@@ -65,30 +63,32 @@ $arrLangModule=array(
 "Daily" => "Quotidien",
 "Weekly" => "Hebdomadaire",
 "Bi-weekly" => "Bi-hebdomadaire",
-"Moderator and user PINs must not be equal" => "Les PINs mod&eacute;rateur et utilisateur ne doivent pas &ecirc;tre identique
-",
-"Are you sure you wish to delete conference (es)?" => "Etes vous s&ucirc; de vouloir effacer la(les) conf&eacute;rence (s)?",
+"Moderator and user PINs must not be equal" => "Les PINs mod&eacute;rateur et utilisateur ne doivent pas &ecirc;tre identique",
+"Are you sure you wish to delete conference (es)?" => "&Eacute;tes vous s&ucirc; de vouloir effacer la(les) conf&eacute;rence (s)?",
 "Id" => "Id",
 "CallerId" => "Id Appelant",
 "Mode" => "Mode",
 "Mute" => "Sourdine",
 "Kick" => "Raccrocher",
-"Are you sure you wish to Mute caller (s)?" => "Etes vous s&ucirc;r de vouloir mettre en sourdine l'(les) appelant (s)?",
-"Are you sure you wish to Kick caller (s)?" => "Etes vous s&ucirc;r de vouloir raccrocher l'(les) appelant (s)?",
+"Are you sure you wish to Mute caller (s)?" => "&Eacute;tes vous s&ucirc;r de vouloir mettre en sourdine l'(les) appelant (s)?",
+"Are you sure you wish to Kick caller (s)?" => "&Eacute;tes vous s&ucirc;r de vouloir raccrocher l'(les) appelant (s)?",
 "Muted" => "En Sourdine",
 "UnMuted" => "Sourdine Inactive",
 "Error when connecting to Asterisk Manager" => "Erreur en se connectant au Manager Asterisk",
-"The conference installation is almost done. To complete it please" => "L'installation de conf&eacute;rence est presque termi
-n&eacute;e. Pour la finir veuillez",
+"The conference installation is almost done. To complete it please" => "L'installation de conf&eacute;rence est presque termin&eacute;e. Pour la finir veuillez",
 "Kick All" => "Raccrocher Tous",
 "Invite Caller" => "Inviter Appelant",
 "The device wasn't write" => "Le p&eacute;riph&eacute;rique n'a pas &eacute;t&eacute; &eacute;crit",
 "The device must be numeric" => "Le p&eacute;riph&eacute;rique doit &ecirc;tre num&eacute;rique",
-"The device couldn't be added to the conference" => "Le p&eacute;riph&eacute;rique n'a pas pu &ecirc;tre ajout&eacute; &agrav
-e; la conf&eacute;rence",
+"The device couldn't be added to the conference" => "Le p&eacute;riph&eacute;rique n'a pas pu &ecirc;tre ajout&eacute; &agrave; la conf&eacute;rence",
 "Filter" => "Filtre",
 "Show" => "Afficher",
 "click here" => "cliquer ici",
-'Unselected' => 'Unselected',
+"Duration" => "Dur&eacute;",
+"Status" => "Statut",
+"Update" => "Mise à jour",
+"No Extensions" => "No d'extensions",
+"Unselected" => "D&eacute;s&eacute;lectionn&eacute;",
+
 );
 ?>

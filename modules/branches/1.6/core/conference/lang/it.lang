@@ -85,6 +85,10 @@ $arrLangModule=array(
 "Filter" => "Filtro",
 "Show" => "Visualizza",
 "click here" => "Premi Qui",
+'Duration'=>'Duration',
+'Status'=>'Status',
+'Update'=>'Update',
+'No Extensions'=>'No Extensions',
 'Unselected' => 'Unselected',
 );
 ?>
