@@ -205,7 +205,29 @@ class paloSantoConference {
         if (!$astman->connect("$host", "$user" , "$password")) {
             $this->errMsg = $arrLang["Error when connecting to Asterisk Manager"];
         } else{
-            $parameters = $this->Originate($command_data['device'], $command_data['callerid'], $command_data['room']);
+            /* Para poder pasar el parámetro Data correctamente, se debe usar 
+             * un valor separado por barra vertical (|) en Asterisk 1.4.x y una 
+             * coma en Asterisk 1.6.x. Para es se requiere detectar la versión
+             * de Asterisk. 
+             */
+            // CoreSettings sólo está disponible en asterisk 1.6.x
+            $r = $astman->send_request('CoreSettings');
+            $asteriskVersion = array(1, 4, 0, 0);
+            if ($r['Response'] == 'Success' && isset($r['AsteriskVersion'])) {
+                $asteriskVersion = explode('.', $r['AsteriskVersion']);
+                // CoreSettings reporta la versión de Asterisk
+            } else {
+                // no hay soporte CoreSettings en Asterisk Manager, se asume Asterisk 1.4.x.
+            }
+            $versionMinima = array(1, 6, 0);
+            while (count($versionMinima) < count($asteriskVersion))
+                array_push($versionMinima, 0);
+            while (count($versionMinima) > count($asteriskVersion))
+                array_push($asteriskVersion, 0);
+            $sSeparador = ($asteriskVersion >= $versionMinima) ? ',' : '|';            
+
+            $parameters = $this->Originate($command_data['device'], 
+                $command_data['callerid'], $command_data['room'], $sSeparador);
             $salida = $astman->send_request('Originate', $parameters);
 
             $astman->disconnect();
@@ -216,12 +238,12 @@ class paloSantoConference {
         return false;
     }
 
-    function Originate($channel, $callerid, $data)
+    function Originate($channel, $callerid, $data, $sSep)
     {
         $parameters = array();
         $parameters['Channel'] = "Local/" . $channel;
         $parameters['CallerID'] = $callerid;
-        $parameters['Data'] = $data . "|d";
+        $parameters['Data'] = $data . $sSep . "d";
         $parameters['Context'] = "default";
         $parameters['Application'] = "MeetMe";
         $parameters['Priority'] = 1;
