@@ -31,12 +31,12 @@
   $Id: fr.lang, October 25, 2010, 5:39 pm kleber andres loayza Exp $ */
 global $arrLangModule;
 $arrLangModule=array(  
-"Shutdown" => "Arr&ecirc;t",
+"Shutdown" => "Arrêt",
 "Accept" => "Accepter",
 "Halt" => "Eteindre",
-"Reboot" => "Red&eacute;marrer",
-"Shutdown in progress" => "Arr&ecirc;t en cours",
-"Your system in shutting down now. Please, try again later." => "Op&eacute;ration en cours. Veuillez patienter.",
+"Reboot" => "Redémarrer",
+"Shutdown in progress" => "Arrêt en cours",
+"Your system in shutting down now. Please, try again later." => "Opération en cours. Veuillez patienter.",
 
 );
 ?>

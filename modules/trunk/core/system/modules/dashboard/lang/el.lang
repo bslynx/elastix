@@ -46,7 +46,7 @@ $arrLangModule=array(
 "Mount point" => "Σημείο Τοποθέτησης",
 "No records found" => "Δεν Βρέθηκαν Εγγραφές",
 "It was not possible to obtain information about the graph" => "Δεν ήταν δυνατή η εύρεση πληροφοριών για το γράφημα",
-"% used of"=>"% used of",);
+"% used of"=>"% used of",
 "News"=>"News",
 "prev"=>"prev",
 "next"=>"next",
@@ -139,4 +139,5 @@ $arrLangModule=array(
 "Cards no found" => "Telephony Hardware not found",
 "Bytes" => "Bytes",
 "Unknown" => "Unknown",
+);
 ?>

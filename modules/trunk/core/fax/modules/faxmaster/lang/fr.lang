@@ -35,7 +35,7 @@ $arrLangModule=array(
 "Fax Master Configuration" => "Configuration du gestionnaire des Fax",
 "Value for Fax Master is not valid" => "La valeur pour le gestionnaire n'est pas valide",
 "Fax Master Email" => "Email du gestionnaire",
-"Write the email address which will receive the notifications of received messages, errors and activity summary of the Fax Server" => "Renseignez l'adresse email qui recevra les notifications des fax re&ccedil;us, les erreurs et le sommaire de l'activit&eacute; du serveur de Fax",
+"Write the email address which will receive the notifications of received messages, errors and activity summary of the Fax Server" => "Renseignez l'adresse email qui recevra les notifications des fax reçus, les erreurs et le sommaire de l'activité du serveur de Fax",
 "Error when saving Fax Master" => "Erreur lors de la sauvegarde du gestionnaire des Fax.",
 
 );

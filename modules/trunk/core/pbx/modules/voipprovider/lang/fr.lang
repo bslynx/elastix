@@ -31,7 +31,7 @@
   $Id: fr.lang, October 25, 2010, 5:39 pm kleber andres loayza Exp $ */
 global $arrLangModule;
 $arrLangModule=array(  
-"VoIP Provider" => "Op&eacute;rateur VoIP",
+"VoIP Provider" => "Opérateur VoIP",
 "Username" => "Nom d'utilisateur",
 "Secret" => "Code secret",
 "Configuration" => "Configuration",
@@ -49,10 +49,10 @@ $arrLangModule=array(
 "Sendrpid" => "Sendrpid",
 "Canreinvite" => "Canreinvite",
 "none" => "aucun",
-"General_Setting" => "Param&egrave;tres G&eacute;n&eacute;raux",
-"PEER_Details" => "D&eacute;tailles du Peer",
-"Please select a type of VoIp Provider" => "S'il vous pla&icirc;t. S&eacute;lectionnez un type d'op&eacute;rateur VoIp",
-"Some or someone necesary fields are empty please check and complete" => "Un ou plusieurs champs obligatoire sont vides. V&eacute;rifiez les et compl&eacute;tez les.",
+"General_Setting" => "Paramètres Généraux",
+"PEER_Details" => "Détailles du Peer",
+"Please select a type of VoIp Provider" => "S'il vous plaît. Sélectionnez un type d'opérateur VoIp",
+"Some or someone necesary fields are empty please check and complete" => "Un ou plusieurs champs obligatoire sont vides. Vérifiez les et complétez les.",
 
 );
 ?>

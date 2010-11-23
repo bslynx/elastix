@@ -33,18 +33,18 @@ global $arrLangModule;
 $arrLangModule=array(  
 "Antispam" => "Antispam",
 "Spam Level" => "Niveau des Spam",
-"Enabled" => "Valid&eacute;",
-"Disabled" => "D&eacute;valid&eacute;",
-"Commad failed, try activate spam filter" => "Commande manqu&eacute;, essayez d'activer le filtre.",
-"Failed activate spam filter" => "Activation du filtre antispam manqu&eacute;",
-"Commad failed, try change thoroughness level" => "Commande manqu&eacute; essayez de changer de niveau",
-"Failed change thoroughness level" => "Changement de niveau manqu&eacute;",
-"Failed disactivate spam filter" => "D&eacute;sactivation du filtre antispam manqu&eacute;.",
-"Commad failed, try disactivate spam filter" => "Commande manqu&eacute;, essayez de d&eacute;sactiver le filtre anti-spam",
+"Enabled" => "Validé",
+"Disabled" => "Dévalidé",
+"Commad failed, try activate spam filter" => "Commande manqué, essayez d'activer le filtre.",
+"Failed activate spam filter" => "Activation du filtre antispam manqué",
+"Commad failed, try change thoroughness level" => "Commande manqué essayez de changer de niveau",
+"Failed change thoroughness level" => "Changement de niveau manqué",
+"Failed disactivate spam filter" => "Désactivation du filtre antispam manqué.",
+"Commad failed, try disactivate spam filter" => "Commande manqué, essayez de désactiver le filtre anti-spam",
 "Status" => "Statut",
-"Update" => "Mise &agrave; jour",
+"Update" => "Mise à jour",
 "Error" => "Erreur",
-"Legend" => "<i>Un niveau de 1 attrapera plus de spam, mais aussi augmente la probabilit&eacute; de faux positifs.<br>Un niveau de 10 attrapera moins de spam, mais d&eacute;cro&icirc;t la probabilit&eacute; de faux positifs.</i>",
+"Legend" => "<i>Un niveau de 1 attrapera plus de spam, mais aussi augmente la probabilité de faux positifs.<br>Un niveau de 10 attrapera moins de spam, mais décroît la probabilité de faux positifs.</i>",
 
 );
 ?>

@@ -31,10 +31,10 @@
   $Id: en.lang,v 1.7 2008/02/18 09:49:00 a_villacis Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Search string" =>  "Recherche d'une cha&icirc;ne de carat&egrave;res",
+"Search string" =>  "Recherche d'une chaîne de caratères",
 "Search" => "Recherche",
 "Search next" => "Suivant",
-"offset" => "d&eacute;calage",
+"offset" => "décalage",
 "Asterisk Logs" => "Logs Asterisk",
 "Date"=>"Date",
 "Show"=>"Voir",

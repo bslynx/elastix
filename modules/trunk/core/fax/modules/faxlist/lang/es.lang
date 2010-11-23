@@ -34,7 +34,7 @@ $arrLangModule=array(
 "Secret" => "Secreto",
 "Destination Email" => "Email Destino",
 "Caller ID Name" => "Nombre Caller ID",
-"Caller ID Number" => "N&uacute;mero Caller ID",
+"Caller ID Number" => "Número Caller ID",
 "View Virtual Fax" => "Ver Fax Virtual",
 "Status" => "Estado",
 );

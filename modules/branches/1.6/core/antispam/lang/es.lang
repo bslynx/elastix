@@ -44,6 +44,6 @@ $arrLangModule=array(
 "Status" => "Estado",
 "Update" => "Actualizar",
 "Error" => "Error",
-"Legend" => "<i>En nivel 1 atrapar&aacute; mas spam, pero tambien se incrementar&aacute; la probabilidad de falsos posibles.<br>Un nivel de 10 atrapar&aacute; menos spam, pero decrecer&aacute; la probabilidad de falsos posibles.</i>",
+"Legend" => "<i>En nivel 1 atrapará mas spam, pero tambien se incrementará la probabilidad de falsos posibles.<br>Un nivel de 10 atrapará menos spam, pero decrecerá la probabilidad de falsos posibles.</i>",
 );
 ?>

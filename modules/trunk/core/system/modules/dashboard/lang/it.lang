@@ -45,8 +45,7 @@ $arrLangModule=array(
 "Usage" => "Utilizzo",
 "Mount point" => "Punto di montaggio",
 "No records found" => "Nessun record trovato",
-"It was not possible to obtain information about the graph" => "Non è possibile ottenere 
-informazioni sul grafico",
+"It was not possible to obtain information about the graph" => "Non è possibile ottenere informazioni sul grafico",
 "% used of"=>"% used of",
 "News"=>"News",
 "prev"=>"prev",

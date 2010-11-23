@@ -33,7 +33,7 @@
   $Id: fr.lang,v 1.8 2008/05/20 00:36:42 bmacias Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Start Date" => "P&eacute;riode du",
+"Start Date" => "Période du",
 "End Date" => "Au",
 "Field Name" => "Nom du champ",
 "Field" => "Champ",
@@ -44,15 +44,15 @@ $arrLangModule=array(
 "Destination" => "Destination",
 "Src. Channel" => "Canal Src.",
 "Dst. Channel" => "Canal Dst.",
-"Duration" => "Dur&eacute;e",
+"Duration" => "Durée",
 "Filter" => "Filtre",
-"Are you sure you wish to delete CDR(s) Report(s)?" => "Etes vous s&ucirc;r de vouloir effacer le(s) Rapport(s) CDR?",
+"Are you sure you wish to delete CDR(s) Report(s)?" => "Etes vous sûr de vouloir effacer le(s) Rapport(s) CDR?",
 "Status" => "Statut",
 "ALL" => "Tout",
-"ANSWERED" => "R&eacute;pondu",
-"BUSY" => "Occup&eacute;",
-"FAILED" => "Manqu&eacute;",
-"NO ANSWER" => "Sans r&eacute;ponse",
+"ANSWERED" => "Répondu",
+"BUSY" => "Occupé",
+"FAILED" => "Manqué",
+"NO ANSWER" => "Sans réponse",
 "Delete" => "Effacer les appels de ce Rapport",
 );
 ?>

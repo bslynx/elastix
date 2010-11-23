@@ -39,6 +39,6 @@ $arrLangModule=array(
 "Fax Suject" => "Sujet du Fax",
 "Fax Content" => "Contenu du Fax",
 "Configuration Sending Fax Mail" => "Configuration du Mail pour l'envoi de Fax",
-"Edit Parameters" => "Edition des Param&egrave;tres",
+"Edit Parameters" => "Edition des Paramètres",
 );
 ?>

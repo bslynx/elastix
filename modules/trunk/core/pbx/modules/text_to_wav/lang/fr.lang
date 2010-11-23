@@ -31,16 +31,16 @@
   $Id: fr.lang, October 25, 2010, 5:39 pm kleber andres loayza Exp $ */
 global $arrLangModule;
 $arrLangModule=array(  
-"Generate" => "G&eacute;n&eacute;rer un Fichier Audio",
+"Generate" => "Générer un Fichier Audio",
 "Format" => "Format",
-"Download File" => "T&eacute;l&eacute;charger un fichier",
+"Download File" => "Télécharger un fichier",
 "Text to Wav" => "Text vers Wav",
-"Unabled write file" => "Incampable d'&eacute;crir le fichier",
+"Unabled write file" => "Incampable d'écrir le fichier",
 "Unabled open file" => "Incapable d'ouvrir le fichier",
-"Unabled create file wav" => "Incapable de cr&eacute;er le fichier wav.",
-"Unabled create file gsm" => "Incapable de cr&eacute;er le fichier gsm.",
+"Unabled create file wav" => "Incapable de créer le fichier wav.",
+"Unabled create file gsm" => "Incapable de créer le fichier gsm.",
 "Not exists file" => "Le fichier n'exite pas.",
-"Message" => "Text &agrave; convertir",
+"Message" => "Text à convertir",
 "Back" => "Retour",
 
 );

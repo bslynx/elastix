@@ -31,11 +31,11 @@ $arrLangModule=array(
 "Virtual Fax List" => "Virtuell Fax Lista",
 "Virtual Fax Name" => "Virtuellt Fax Namn",
 "Fax Extension" => "Fax Anknytning",
-"Secret" => "L&ouml;senord",
+"Secret" => "Lösenord",
 "Destination Email" => "Destinations E-Post",
 "Caller ID Name" => "Anrops ID Namn",
 "Caller ID Number" => "Anrops ID Nummer",
-"View Virtual Fax" => "F&ouml;rhandsgranska Virtuell Fax",
+"View Virtual Fax" => "Förhandsgranska Virtuell Fax",
 "Status" => "Status",
 );
 ?>

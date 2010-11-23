@@ -31,8 +31,8 @@
   $Id: fr.lang, October 25, 2010, 5:39 pm kleber andres loayza Exp $ */
 global $arrLangModule;
 $arrLangModule=array(  
-"Network Parameters" => "Param&egrave;tres r&eacute;seau",
-"Device" => "P&eacute;riph&eacute;rique",
+"Network Parameters" => "Paramètres réseau",
+"Device" => "Périphérique",
 "Type" => "Type",
 "IP" => "IP",
 "Mask" => "Masque",
@@ -40,23 +40,23 @@ $arrLangModule=array(
 "HW Info" => "Info HW",
 "Status" => "Statut",
 "Ethernet Interfaces List" => "Liste des interfaces Ethernet",
-"Connected" => "Connect&eacute;",
-"Not Connected" => "Non connect&eacute;",
+"Connected" => "Connecté",
+"Not Connected" => "Non connecté",
 "Edit Interface" => "Modifier Interface",
 "Validation Error" => "Erreur de validation",
 "The following fields contain errors" => "Les champs suivants contiennent des erreurs",
-"Host" => "H&ocirc;te",
+"Host" => "Hôte",
 "Primary DNS" => "DNS primaire",
 "Secondary DNS" => "DNS secondaire",
-"Default Gateway" => "Passerelle par d&eacute;faut",
+"Default Gateway" => "Passerelle par défaut",
 "IP Address" => "Adresse IP",
-"Network Mask" => "Masque de sous r&eacute;seau",
+"Network Mask" => "Masque de sous réseau",
 "Interface Type" => "Type Interface",
 "Save" => "Sauver",
-"Edit Network Parameters" => "Editer les param&egrave;tres r&eacute;seau",
+"Edit Network Parameters" => "Editer les paramètres réseau",
 "Required field" => "Champ requis",
 "Apply changes" => "Appliquer les changements",
-"Are you sure you want to edit network parameters?" => "Etes vous s&ucirc;r de vouloir modifier les param&egrave;tres r&eacute;seau ?",
+"Are you sure you want to edit network parameters?" => "Etes vous sûr de vouloir modifier les paramètres réseau ?",
 
 );
 ?>

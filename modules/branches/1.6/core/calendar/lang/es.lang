@@ -111,8 +111,7 @@ $arrLangModule=array(
 "No end year was given" => "No se dió un año de fin",
 "Your subject was too long" => "El asunto es demasiado largo",
 "characters max" => "caracteres como máximo",
-"The start of the event cannot be after the end of the event" => "El comienzo del evento no puede ser después del fin del eve
-nto",
+"The start of the event cannot be after the end of the event" => "El comienzo del evento no puede ser después del fin del evento",
 "Error processing event" => "Error procesando evento",
 "No changes were made" => "No se hicieron cambios",
 "Date updated" => "Fecha actualizada",
@@ -157,8 +156,7 @@ nto",
 "That year is too far in the future" => "Este año es demasiado lejos en el futuro",
 "To create new recordings click" => "Para crear una nueva grabación, click",
 "Here" => "Aquí",
-"No Recording was given, if no exists you must first create a new recording" => "No se dió una grabación, si no existe primer
-o debe crear una nueva grabación",
+"No Recording was given, if no exists you must first create a new recording" => "No se dió una grabación, si no existe primero debe crear una nueva grabación",
 "Call to" => "Llamar a",
 "To add phone number from address book click" => "Para añadir un número desde la libreta de direcciones, click",
 "Weekly" => "Semanalmete",
@@ -169,7 +167,7 @@ o debe crear una nueva grabación",
 "Recordings" => "Recordings",
 "Error" => "Error",
 "Start Date" => "Fecha Inicio",
-"Validation Error" => "Error de Validaci&oacute;n",
+"Validation Error" => "Error de Validación",
 "Can not create called file" => "No se puede crear el archivo",
 );
 ?>

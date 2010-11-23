@@ -33,7 +33,7 @@ global $arrLangModule;
 $arrLangModule=array(  
 "Applet Admin" => "Gestion des Applets ",
 "Applet" => "Applet",
-"Activated" => "Activ&eacute;",
+"Activated" => "Activé",
 "Dashboard Applet Admin" => "Dashboard Applet Admin",
 
 );

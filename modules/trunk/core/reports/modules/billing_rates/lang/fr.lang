@@ -31,7 +31,7 @@
   $Id: fr.lang, October 25, 2010, 5:39 pm kleber andres loayza Exp $ */
 global $arrLangModule;
 $arrLangModule=array(  
-"Prefix" => "Pr&eacute;fixe",
+"Prefix" => "Préfixe",
 "Rate" => "Tarif",
 "Rate Offset" => "Tarif de Connexion",
 "None" => "None",
@@ -41,11 +41,11 @@ $arrLangModule=array(
 "View Rate" => "Voir les tarifs",
 "View" => "Voir",
 "Rates List" => "Liste des tarifs",
-"Create New Rate" => "Cr&eacute;er un nouveau tarif",
+"Create New Rate" => "Créer un nouveau tarif",
 "Import File" => "Importation de fichier",
 "Trunk" => "Trunk",
 "Name" => "Nom",
-"Are you sure you wish to continue?" => "&Ecirc;tes vous s&ucirc;r de vouloir continuer ?",
+"Are you sure you wish to continue?" => "Êtes vous sûr de vouloir continuer ?",
 
 );
 ?>

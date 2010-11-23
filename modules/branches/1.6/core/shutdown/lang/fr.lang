@@ -33,11 +33,11 @@
   $Id: fr.lang,v 1.8 2008/05/20 00:36:42 bmacias Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Shutdown" => "Arr&ecirc;t",
+"Shutdown" => "Arrêt",
 "Accept" => "Accepter",
 "Halt" => "Eteindre",
-"Reboot" => "Red&eacute;marrer",
-"Shutdown in progress" => "Arr&ecirc;t en progression.",
-"Your system in shutting down now. Please, try again later." => "Votre syst&egrave;me est entrain de red&eacute;marrer. Veuillez essayez plus tard...",
+"Reboot" => "Redémarrer",
+"Shutdown in progress" => "Arrêt en progression.",
+"Your system in shutting down now. Please, try again later." => "Votre système est entrain de redémarrer. Veuillez essayez plus tard...",
 );
 ?>

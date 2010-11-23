@@ -35,6 +35,6 @@ global $arrLangModule;
 $arrLangModule=array(
 "Asterisk-Cli" => "Asterisk-Cli",
 "Command" => "Commande",
-"Execute" => "Ex&eacute;cuter",
+"Execute" => "Exécuter",
 );
 ?>

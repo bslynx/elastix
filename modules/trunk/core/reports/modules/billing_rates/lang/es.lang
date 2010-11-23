@@ -30,7 +30,7 @@ global $arrLangModule;
 $arrLangModule=array(
 "Prefix" => "Prefijo",
 "Rate" => "Tarifa",
-"Rate Offset" => "Tarifa de Conexi&oacute;n",
+"Rate Offset" => "Tarifa de Conexión",
 "None" => "Nadie",
 "(by min)" => " (por min.)",
 "New Rate" => "Nueva Tarifa",
@@ -42,6 +42,6 @@ $arrLangModule=array(
 "Import File" => "Importar Archivo",
 "Trunk" => "Troncal",
 "Name" => "Nombre",
-"Are you sure you wish to continue?" => "¿Est&aacute; seguro que desea continuar?",
+"Are you sure you wish to continue?" => "¿Está seguro que desea continuar?",
 );
 ?>

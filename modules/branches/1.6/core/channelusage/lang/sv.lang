@@ -28,7 +28,7 @@
   $Id: sv.lang,v 0.1 2008/03/25 00:36:42 IFIT DATA - http://www.ifit.se Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Channels Usage Report" => "Kanal anv&auml;ndnings Rapport",
+"Channels Usage Report" => "Kanal användnings Rapport",
 "Simultaneous Channels (Total)" => "Parallella Kanaler (Totalt)",
 "Simultaneous Zap Channels" => "Parallella Zap Kanaler",
 "Simultaneous SIP Channels" => "Parallella SIP Kanaler",

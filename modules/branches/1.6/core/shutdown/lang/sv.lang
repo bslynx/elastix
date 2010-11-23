@@ -28,11 +28,11 @@
   $Id: sv.lang,v 0.1 2008/03/25 00:36:42 IFIT DATA - http://www.ifit.se Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Shutdown" => "St&auml;ng av",
+"Shutdown" => "Stäng av",
 "Accept" => "Acceptera",
 "Halt" => "Halt",
 "Reboot" => "Omstart",
-"Shutdown in progress" => "Avst&auml;ngning p&aring; g&aring;ng",
-"Your system in shutting down now. Please, try again later." => "Ditt system &auml;r p&aring;v&auml;g att st&auml;ngas nu, v&auml;nligen f&ouml;rs&ouml;k senare.",
+"Shutdown in progress" => "Avstängning på gång",
+"Your system in shutting down now. Please, try again later." => "Ditt system är påväg att stängas nu, vänligen försök senare.",
 );
 ?>

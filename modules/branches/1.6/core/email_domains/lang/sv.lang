@@ -29,14 +29,14 @@
 global $arrLangModule;
 $arrLangModule=array(
 "Email" => "E-Post",
-"Domains" => "Dom&auml;ner",
-"Domain" => "Dom&auml;n",
-"Domain name" => "Dom&auml;n namn",
-"Domain List" => "Dom&auml;n Lista",
+"Domains" => "Domäner",
+"Domain" => "Domän",
+"Domain name" => "Domän namn",
+"Domain List" => "Domän Lista",
 "Number of Accounts" => "Antal Konton",
-"Create Domain" => "Skapa Dom&auml;n",
-"New Domain" => "Ny Dom&auml;n",
-"View Domain" => "F&ouml;rhandsgranska dom&auml;n",
-"Edit Domain" => "Redigera Dom&auml;n",
+"Create Domain" => "Skapa Domän",
+"New Domain" => "Ny Domän",
+"View Domain" => "Förhandsgranska domän",
+"Edit Domain" => "Redigera Domän",
 );
 ?>

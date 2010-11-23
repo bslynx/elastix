@@ -29,10 +29,10 @@
 global $arrLangModule;
 $arrLangModule=array(
 "Billing Capable" => "Habilitar para facturar",
-"Default Rate Configuration" => "Configuraci&oacute;n de tarifa por omisi&oacute;n",
-"Default Rate" => "Tarifa por omisi&oacute;n",
-"Default Rate Offset" => "Tarifa de conexi&oacute;n por omisi&oacute;n",
-"Trunk Bill Configuration" => "Configuraci&oacute;n de Troncales para Facturaci&oacute;n",
+"Default Rate Configuration" => "Configuración de tarifa por omisión",
+"Default Rate" => "Tarifa por omisión",
+"Default Rate Offset" => "Tarifa de conexión por omisión",
+"Trunk Bill Configuration" => "Configuración de Troncales para Facturación",
 "Trunk" => "Troncal",
 );
 ?>

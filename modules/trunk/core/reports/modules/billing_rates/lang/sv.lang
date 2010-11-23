@@ -35,13 +35,13 @@ $arrLangModule=array(
 "(by min)" => " (by min)",
 "New Rate" => "Ny Taxa",
 "Edit Rate" => "Redigera Taxa",
-"View Rate" => "F&ouml;rhandsgranska Taxa",
-"View" => "F&ouml;rhandsgranska",
+"View Rate" => "Förhandsgranska Taxa",
+"View" => "Förhandsgranska",
 "Rates List" => "Taxa Lista",
 "Create New Rate" => "Skapa Ny Taxa",
 "Import File" => "Import File",
 "Trunk" => "Trunk",
 "Name" => "Namn",
-"Are you sure you wish to continue?" => "&Auml;r du s&auml;ker p&aring; att du vill forts&auml;tta?",
+"Are you sure you wish to continue?" => "Är du säker på att du vill fortsätta?",
 );
 ?>

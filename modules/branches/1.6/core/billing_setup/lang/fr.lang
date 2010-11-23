@@ -34,9 +34,9 @@
 global $arrLangModule;
 $arrLangModule=array(
 "Billing Capable" => "Facturation possible",
-"Default Rate Configuration" => "Configuration du tarif par d&eacute;faut",
-"Default Rate" => "Tarif par d&eacute;faut",
-"Default Rate Offset" => "Tarif de connexion par d&eacute;faut",
+"Default Rate Configuration" => "Configuration du tarif par défaut",
+"Default Rate" => "Tarif par défaut",
+"Default Rate Offset" => "Tarif de connexion par défaut",
 "Trunk Bill Configuration" => "Configuration des troncs de facturation",
 "Trunk" => "Tronc",
 );

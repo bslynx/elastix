@@ -34,9 +34,9 @@ $arrLangModule=array(
 "Email list" => "Liste d'eMail",
 "New Email list" => "Nouvelle liste d'eMail",
 "Name" => "Nom",
-"Are you sure you wish to delete the email list." => "&Ecirc;tes_vous s&ucirc;r que vous souhaitiez effacer la liste d'eMail ? ",
+"Are you sure you wish to delete the email list." => "Êtes_vous sûr que vous souhaitiez effacer la liste d'eMail ? ",
 "Domain Name" => "Nom de domaine",
-"Select a domain" => "S&eacute;lectionner un domaine",
+"Select a domain" => "Sélectionner un domaine",
 "Password" => "Mot de passe",
 "Password Confirm" => "Comnfirmer le mot de passe.",
 "Email Admin" => "Gestion des eMail",
@@ -46,9 +46,9 @@ $arrLangModule=array(
 "Password Mailman" => "Mot de passe du gestionnaire de mail",
 "Email Member" => "Email Membrer",
 "Email List Members" => "Liste des membre d'eMail",
-"Are you sure you wish to delete the Member." => "&Ecirc;tes_vous s&ucirc;r que vous souhaitiez effacer le Membrer ?",
+"Are you sure you wish to delete the Member." => "Êtes_vous sûr que vous souhaitiez effacer le Membrer ?",
 "Number of Accounts" => "Nombre de comptes.",
-"The Input Password and Password Confirm aren't equals.. Please Try Again" => "Les mots de passe et la confirmation sont diff&eacute;rents. Essayez de nouveau!",
+"The Input Password and Password Confirm aren't equals.. Please Try Again" => "Les mots de passe et la confirmation sont différents. Essayez de nouveau!",
 
 );
 ?>

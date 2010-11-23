@@ -31,7 +31,7 @@ $arrLangModule=array(
 "Filter" => "Filter",
 "Start Date" => "Start Datum",
 "End Date" => "Slut Datum",
-"Destination Distribution" => "M&aring;l Distribution",
+"Destination Distribution" => "Mål Distribution",
 "Criteria" => "Kriteria",
 "Distribution by Time" => "Distribution i Tid",
 "Distribution by Number of Calls" => "Distribution i Antal Samtal",
@@ -43,7 +43,7 @@ $arrLangModule=array(
 "others" => "Andra",
 "Rate Name" => "Taxa Namn",
 "default" => "Standard",
-"Duration in seconds" => "L&auml;ngd i sekunder",
+"Duration in seconds" => "Längd i sekunder",
 "Cost" => "Kostnad",
 );
 ?>

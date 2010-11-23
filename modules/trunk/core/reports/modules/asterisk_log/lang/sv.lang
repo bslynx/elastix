@@ -29,7 +29,7 @@
 global $arrLangModule;
 $arrLangModule=array(
 "Search string" => "Search string",
-"Search" => "S&ouml;k",
+"Search" => "Sök",
 "Search next" => "Search next",
 "offset" => "offset",
 "Asterisk Logs" => "Asterisk Logs",
@@ -37,6 +37,6 @@ $arrLangModule=array(
 "Show" => "Visa",
 "Message" => "Meddelande",
 "Type" => "Typ",
-"Source" => "K&auml;lla",
+"Source" => "Källa",
 );
 ?>

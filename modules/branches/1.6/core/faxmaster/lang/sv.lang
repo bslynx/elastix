@@ -30,9 +30,9 @@ global $arrLangModule;
 $arrLangModule=array(
 "Fax Master" => "Huvud Fax",
 "Fax Master Configuration" => "Huvud Fax Konfiguration",
-"Value for Fax Master is not valid" => "V&auml;rdet f&ouml;r Huvud Fax &auml;r ogiltigt",
+"Value for Fax Master is not valid" => "Värdet för Huvud Fax är ogiltigt",
 "Fax Master Email" => "Huvud Fax E-Post",
-"Write the email address which will receive the notifications of received messages, errors and activity summary of the Fax Server" => "Skriv in E-Post Adressen som skall mottaga information av mottagna meddelanden, fel och summerade aktiviteter fr&aring;n Huvud Fax",
+"Write the email address which will receive the notifications of received messages, errors and activity summary of the Fax Server" => "Skriv in E-Post Adressen som skall mottaga information av mottagna meddelanden, fel och summerade aktiviteter från Huvud Fax",
 "Error when saving Fax Master" => "Error when saving Fax Master",
 );
 ?>

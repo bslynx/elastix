@@ -31,10 +31,10 @@
   $Id: fr.lang, October 25, 2010, 5:39 pm kleber andres loayza Exp $ */
 global $arrLangModule;
 $arrLangModule=array(  
-"Repositories" => "D&eacute;p&ocirc;ts",
+"Repositories" => "Dépôts",
 "Active" => "Actif",
 "Name" => "Nom",
-"Save/Update" => "Sauver / Mettre &agrave; jour",
+"Save/Update" => "Sauver / Mettre à jour",
 
 );
 ?>

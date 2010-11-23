@@ -29,9 +29,9 @@
 global $arrLangModule;
 $arrLangModule=array(
 "Fax Master" => "Fax Master",
-"Fax Master Configuration" => "Configuraci&oacute;n Fax Master",
-"Value for Fax Master is not valid" => "Valor para Fax Master no es v&aacute;lido",
-"Fax Master Email" => "Direcci&oacute;n de correo de FaxMaster",
+"Fax Master Configuration" => "Configuración Fax Master",
+"Value for Fax Master is not valid" => "Valor para Fax Master no es válido",
+"Fax Master Email" => "Dirección de correo de FaxMaster",
 "Write the email address which will receive the notifications of received messages, errors and activity summary of the Fax Server" => "Escriba la dirección de correo electrónico que recibirá las notificaciones de mensajes recibidos, errores y resúmenes de actividad del Servidor de Faxes",
 "Error when saving Fax Master" => "Error cuando guardaba el Fax Maestro",
 );

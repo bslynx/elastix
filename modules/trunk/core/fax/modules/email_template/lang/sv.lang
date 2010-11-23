@@ -29,11 +29,11 @@
 global $arrLangModule;
 $arrLangModule=array(
 "Template Email" => "E-Post Mall",
-"Fax From" => "Fax Fr&aring;n",
-"Fax From Name" => "Fax Fr&aring;n Namn",
-"Fax Suject" => "Fax &Auml;mne",
-"Fax Content" => "Fax Inneh&aring;ll",
-"Configuration Sending Fax Mail" => "Konfiguration f&ouml;r Skicka Fax E-Post",
+"Fax From" => "Fax Från",
+"Fax From Name" => "Fax Från Namn",
+"Fax Suject" => "Fax Ämne",
+"Fax Content" => "Fax Innehåll",
+"Configuration Sending Fax Mail" => "Konfiguration för Skicka Fax E-Post",
 "Edit Parameters" => "Redigera Parametrar",
 );
 ?>

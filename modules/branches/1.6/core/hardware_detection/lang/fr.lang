@@ -31,15 +31,15 @@
   $Id: en.lang,v 1.7 2008/02/18 09:49:00 jvega Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Hardware Detection" => "D&eacute;tection Mat&eacute;riel",
-"Ports not Founds" => "Ports non trouv&eacute;s",
+"Hardware Detection" => "Détection Matériel",
+"Ports not Founds" => "Ports non trouvés",
 "Card" => "Span",
 "Type port" => "Type",
 "No. Port" => "Port No",
 "(In Use)" => "Actif",
-"Hardware Detecting" => "D&eacute;tection Mat&eacute;riel",
-"Hardware Detect" => "D&eacute;tecter Nouveau Mat&eacute;riel",
-"Cards undetected on your system, press for detecting hardware detection." => "Aucune carte n'a &eacute;t&eacute; d&eacute;tect&eacute;e dans votre syst&egrave;me. Veuillez presser le bouton \"D&eacute;tecter Nouveau Mat&eacute;riel\" pour d&eacute;tecter un nouveau mat&eacute;riel.",
+"Hardware Detecting" => "Détection Matériel",
+"Hardware Detect" => "Détecter Nouveau Matériel",
+"Cards undetected on your system, press for detecting hardware detection." => "Aucune carte n'a été détectée dans votre système. Veuillez presser le bouton \"Détecter Nouveau Matériel\" pour détecter un nouveau matériel.",
 "Information" => "Information",
 "Satisfactory Hardware Detection" => "Détection Effectuée",
 "Unknown" => "Inconnu",

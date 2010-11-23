@@ -31,14 +31,14 @@ $arrLangModule=array(
 "Fax Clients" => "Clientes de Fax",
 "Clients allowed to send faxes" => "Clientes permitidos para enviar faxes",
 "No IP entered, you must keep at least the IP 127.0.0.1" => "Ninguna IP ingresada, debe al menos mantener la IP 127.0.0.1",
-"These IPs are allowed to send faxes through Elastix.  You must insert one IP per row.  We recommend keeping localhost and 127.0.0.1  in the configuration because some processes could need them." => "Estas IPs están permitidas para enviar faxes a trav&eacute;s de Elastix.<br>
+"These IPs are allowed to send faxes through Elastix.  You must insert one IP per row.  We recommend keeping localhost and 127.0.0.1  in the configuration because some processes could need them." => "Estas IPs están permitidas para enviar faxes a través de Elastix.<br>
 Debe insertar una IP por fila.  Recomendamos mantener <br> localhost y 127.0.0.1 en la 
-configuraci&oacute;n porque algunos <br> procesos prodr&iacute;an necesitarlos.",
-"Could not read the clients configuration." => "No se pudo leer la configuraci&oacute;n de clientes.",
+configuración porque algunos <br> procesos prodrían necesitarlos.",
+"Could not read the clients configuration." => "No se pudo leer la configuración de clientes.",
 "IP" => "IP",
 "Error" => "Error",
 "Message" => "Mensaje",
-"Configuration updated successfully" => "Configuraci&oacute;n actualizada correctamente",
-"Write error when writing the new configuration." => "Error de escritura al escribir nueva configuraci&oacute;n",
+"Configuration updated successfully" => "Configuración actualizada correctamente",
+"Write error when writing the new configuration." => "Error de escritura al escribir nueva configuración",
 );
 ?>

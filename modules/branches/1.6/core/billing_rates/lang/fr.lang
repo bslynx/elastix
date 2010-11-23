@@ -33,7 +33,7 @@
   $Id: fr.lang,v 1.8 2008/05/20 00:36:42 bmacias Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Prefix" => "Pr&eacute;fixe",
+"Prefix" => "Préfixe",
 "Rate" => "Tarif",
 "Rate Offset" => "Tarif de Connexion",
 "None" => "None",
@@ -43,10 +43,10 @@ $arrLangModule=array(
 "View Rate" => "Voir les tarifs",
 "View" => "Voir",
 "Rates List" => "Liste des tarifs",
-"Create New Rate" => "Cr&eacute;er un nouveau tarif",
+"Create New Rate" => "Créer un nouveau tarif",
 "Import File" => "Importation de fichier",
 "Trunk" => "Tronc",
 "Name" => "Nom",
-"Are you sure you wish to continue?" => "Etes vous s&ucirc;r de vouloir continuer ?",
+"Are you sure you wish to continue?" => "Etes vous sûr de vouloir continuer ?",
 );
 ?>

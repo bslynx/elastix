@@ -39,9 +39,9 @@ $arrLangModule=array(
 "Fax Extension" => "Extension de Fax",
 "Secret" => "Mot de Passe",
 "Caller ID Name" => "Nom d'identification de l'appelant",
-"Caller ID Number" => "Num&eacute;ro d'identification de l'appelant",
+"Caller ID Number" => "Numéro d'identification de l'appelant",
 "Country Code" => "Code Pays",
-"Area Code" => "Code R&eacute;gion",
+"Area Code" => "Code Région",
 
 );
 ?>

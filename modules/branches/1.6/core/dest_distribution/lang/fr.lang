@@ -34,21 +34,21 @@
 global $arrLangModule;
 $arrLangModule=array(
 "Filter" => "Filtre",
-"Start Date" => "P&eacute;riode du",
+"Start Date" => "Période du",
 "End Date" => "Au",
-"Destination Distribution" => "R&eacute;partition par destination",
-"Criteria" => "Crit&egrave;re",
+"Destination Distribution" => "Répartition par destination",
+"Criteria" => "Critère",
 "Distribution by Time" => "Distribution par temps",
 "Distribution by Number of Calls" => "Distribution par nombre d'appels",
 "Distribution by Cost" => "Distribution par coûts",
-"Date Range spans maximum number of days" => "L'intervalle de temps d&eacute;passe le nombre de jours",
+"Date Range spans maximum number of days" => "L'intervalle de temps dépasse le nombre de jours",
 "ERROR" => "ERREUR",
 "Minutes" => "Minutes",
 "Number of Calls" => "Nombre d'appels",
 "others" => "autres",
 "Rate Name" => "Nom du tarif",
-"default" => "d&eacute;faut",
-"Duration in seconds" => "Dur&eacute;e en secondes",
-"Cost" => "Co&ucirc;t",
+"default" => "défaut",
+"Duration in seconds" => "Durée en secondes",
+"Cost" => "Coût",
 );
 ?>
