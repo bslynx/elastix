@@ -103,7 +103,7 @@ function _moduleContent(&$smarty, $module_name)
             $content = newBoxCalendar($arrConf,$arrLang,$pDB);
             break;
         case "delete_box":
-            $content = deleteBoxCalendar($arrConf,$arrLang,$pDB);
+            $content = deleteBoxCalendar($arrConf,$arrLang,$pDB,$module_name);
             break;
         case "download_icals":
             $content = download_icals($arrLang,$pDB,$module_name, $arrConf);
@@ -922,7 +922,7 @@ function newBoxCalendar($arrConf,$arrLang,$pDB){
     return $json->encode($data);
 }
 
-function deleteBoxCalendar($arrConf,$arrLang,$pDB){
+function deleteBoxCalendar($arrConf,$arrLang,$pDB,$module_name){
     $pCalendar = new paloSantoCalendar($pDB);
     $pDBACL    = new paloDB($arrConf['dsn_conn_database1']);
     $pACL      = new paloACL($pDBACL);
@@ -933,6 +933,10 @@ function deleteBoxCalendar($arrConf,$arrLang,$pDB){
     $dir_outgoing = $arrConf['dir_outgoing'];
     $val = false;
     if($data !="" && isset($data)){ // si el evento le pertenece al usuario
+        // Enviar el correo de notificación ANTES de borrar el evento, porque
+        // la generación del iCal requiere que el evento todavía exista.
+        if($data['emails_notification'] != "")
+            sendMails($data, $arrLang,"DELETE",$arrConf,$pDB,$module_name, $id);
         $val = $pCalendar->deleteEvent($id, $id_user);
     }
     if($val == true){
@@ -941,8 +945,7 @@ function deleteBoxCalendar($arrConf,$arrLang,$pDB){
         // eliminacion de archivos .call
         // para este caso el nombre del archivo a eliminar tendra un formato: 
         // event_id_*.call dado que solo se estan registrando eventos diarios.
-        unlink("$dir_outgoing/event_{$id}_*.call");
-        //system("rm -f $dir_outgoing/event_{$id}_*.call");
+        array_map('unlink', glob("$dir_outgoing/event_{$id}_*.call"));
     }
     else{
         $data["error_delete_JSON"] = $arrLang['error_delete'];
