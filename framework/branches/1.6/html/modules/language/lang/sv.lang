@@ -28,8 +28,8 @@
   $Id: sv.lang,v 0.1 2008/03/25 00:36:42 IFIT DATA - http://www.ifit.se Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Select language"=>"V&auml;lj Spr&aring;k",
-"Continue"=>"Forts&auml;tt",
-"You can't change language"=>"Du kan tyv&auml;rr inte byta spr&aring;k",
+"Select language"=>"Välj Språk",
+"Continue"=>"Fortsätt",
+"You can't change language"=>"Du kan tyvärr inte byta språk",
 );
 ?>

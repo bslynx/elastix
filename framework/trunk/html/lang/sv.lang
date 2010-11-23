@@ -28,75 +28,75 @@
   $Id: sv.lang,v 0.1 2008/03/25 00:36:42 IFIT DATA - http://www.ifit.se Exp $ */
 global $arrLang;
 $arrLang=array(
-"Disk usage"=>"Disk anv&auml;ndning",
-"Used space"=>"Anv&auml;ndt utrymme",
+"Disk usage"=>"Disk användning",
+"Used space"=>"Användt utrymme",
 "Free space"=>"Ledigtutrymme",
 "Simultaneous calls, memory and CPU"=>"Parallella samtal, minne och CPU",
 "Sim. calls"=>"Parallella samtal",
-"CPU usage (%)"=>"CPU anv&auml;ndning (%)",
-"Mem. usage (MB)"=>"Minnes. anv&auml;ndning (MB)",
+"CPU usage (%)"=>"CPU användning (%)",
+"Mem. usage (MB)"=>"Minnes. användning (MB)",
 /*System Info*/
 
 "Export"=>"Exportera",
 "Start"=>"Start",
 "End"=>"Slut",
-"Next"=>"N&auml;sta",
-"Previous"=>"F&ouml;reg&aring;ende",
+"Next"=>"Nästa",
+"Previous"=>"Föregående",
 
 "Validation Error"=>"Fel Uppstod Vid Validering",
-"The following fields contain errors"=>"F&ouml;ljande f&auml;lt inneh&aring;ller fel",
+"The following fields contain errors"=>"Följande fält innehåller fel",
 "Save"=>"Spara",
-"Required field"=>"Obligatoriskt f&auml;lt",
-"Apply changes"=>"Till&auml;mpa &auml;ndringar",
+"Required field"=>"Obligatoriskt fält",
+"Apply changes"=>"Tillämpa ändringar",
 "Cancel"=>"Avbryt",
 
 /*Login to Elastix*/
-"Welcome to Elastix"=>"V&auml;lkommen till Elastix",
-"Please enter your username and password"=>"V&auml;nligen skriv in ditt anv&auml;ndarnamn och l&ouml;senord",
-"Username"=>"Anv&auml;ndarnamn",
-"Password"=>"L&ouml;senord",
-"Submit"=>"Till&auml;mpa",
+"Welcome to Elastix"=>"Välkommen till Elastix",
+"Please enter your username and password"=>"Vänligen skriv in ditt användarnamn och lösenord",
+"Username"=>"Användarnamn",
+"Password"=>"Lösenord",
+"Submit"=>"Tillämpa",
 "Login page"=>"Inloggningssidan",
 /*end Login to Elastix*/
 
 /*start User Management*/
 "Group"=>"Grupp",
-"User List"=>"Anv&auml;ndar Lista",
-"The group is wrong"=>"Gruppen &auml;r felaktig",
-"Are you sure you wish to continue?"=>"&Auml;r du s&auml;ker p&aring; att du vill forts&auml;tta?",
+"User List"=>"Användar Lista",
+"The group is wrong"=>"Gruppen är felaktig",
+"Are you sure you wish to continue?"=>"Är du säker på att du vill fortsätta?",
 "Edit"=>"Redigera",
 "Delete"=>"Ta bort",
 "Accept"=>"Acceptera",
-"Group Permission"=>"Grupp r&auml;ttigheter",
+"Group Permission"=>"Grupp rättigheter",
 "Users" => "Users",
-"Directory couldn't be opened"=>"Katalogen kunde inte &ouml;ppnas",
+"Directory couldn't be opened"=>"Katalogen kunde inte öppnas",
 /*start User Management*/
 
 /*start menu*/
 "System"=>"System",
 "System Info"=>"System Information",
-"User Management"=>"Anv&auml;ndarhantering",
-"Menu Administrator"=>"Meny Administrat&ouml;r",
+"User Management"=>"Användarhantering",
+"Menu Administrator"=>"Meny Administratör",
 /*end menu*/
 
 /*Start Language*/
-"Language"=>"Spr&aring;k",
-"Change"=>"&Auml;ndra",
+"Language"=>"Språk",
+"Change"=>"Ändra",
 "Logout"=>"Loggaut",
 /*end Language*/
 
 /*version 0.7*/
 /*start paloSantoValidar.class.php*/
-"Options"=>"Inst&auml;llningar",
-"Empty field"=>"Tomt f&auml;lt",
-"Bad Format"=>"D&aring;ligt format",
-"No option was selected"=>"Du har inte valt n&aring;got val",
-"Octets out of range"=>"Okteter utom r&auml;ckvidd",
+"Options"=>"Inställningar",
+"Empty field"=>"Tomt fält",
+"Bad Format"=>"Dåligt format",
+"No option was selected"=>"Du har inte valt något val",
+"Octets out of range"=>"Okteter utom räckvidd",
 /*end paloSantoValidar.class.php*/
 
 /*version 0.8*/
 /*start user*/
-"View User"=>"F&ouml;rhandsgranska Anv&auml;ndare",
+"View User"=>"Förhandsgranska Användare",
 /*end user*/
 
 /*system - date/time*/
@@ -105,9 +105,9 @@ $arrLang=array(
 
 /*load module*/
 "Load Module" => "Ladda Modul",
-"ID for new module (folder name)" => "ID f&ouml;r ny modul (katalognamn)",
-"Choose Menu" => "V&auml;lj Meny",
-"ID for new menu" => "ID f&ouml;r ny meny",
+"ID for new module (folder name)" => "ID för ny modul (katalognamn)",
+"Choose Menu" => "Välj Meny",
+"ID for new menu" => "ID för ny meny",
 "Menu Name" => "Meny Namn",
 "Defined Menu" => "Definerad Meny",
 "New Menu" => "Ny Meny",
@@ -127,14 +127,14 @@ $arrLang=array(
 /*Module IM*/
 "IM" => "IM",
 "OpenFire" => "OpenFire",
-"The service Openfire No running" => "Openfire tj&auml;nsten aktiv f&ouml;r tillf&auml;llet. Om du vill aktivera det v&auml;nligen ",
+"The service Openfire No running" => "Openfire tjänsten aktiv för tillfället. Om du vill aktivera det vänligen ",
 "Webmin" => "Webmin",
 "The service Webmin No running" => "The Webmin service is not active at this moment. If you want to activate it please ",
 
 /*vTigerCRM*/
 "vTigerCRM" => "vTigerCRM",
-"The vTiger installation is almost done. To complete it please" => "vTiger installationen &auml;r snart klar. F&ouml;r att komplettera ",
-"click here" => "Klicka h&auml;r",
+"The vTiger installation is almost done. To complete it please" => "vTiger installationen är snart klar. För att komplettera ",
+"click here" => "Klicka här",
 
 /*Sugarcrm*/
 "SugarCRM" => "SugarCRM",
@@ -147,7 +147,7 @@ $arrLang=array(
 "About Elastix"=>"Om Elastix",
 "About Elastix2"=>"About us",
 "HELP"=>"Help",
-"About Elastix Content"=>"Elastix skapades under premisserna f&ouml;r att bli ett p&aring;litligt, enkelt att anv&auml;nda web-baserat system,f&ouml;r hantering av kommunikation &ouml;ver IP. Detta Open source programvara startades i Ekuador, och har blivit en l&ouml;sning f&ouml;r implentering av R&ouml;st &ouml;ver IP(VoIP) runt v&auml;rlden.",
+"About Elastix Content"=>"Elastix skapades under premisserna för att bli ett pålitligt, enkelt att använda web-baserat system,för hantering av kommunikation över IP. Detta Open source programvara startades i Ekuador, och har blivit en lösning för implentering av Röst över IP(VoIP) runt världen.",
 "About Elastix Closed"=>"Avsluta",
 /* End About Elastix */
 

@@ -45,7 +45,7 @@ $arrLang=array(
 "Previous"=>"Anterior",
 
 
-"Validation Error"=>"Error de Validaci&oacute;n",
+"Validation Error"=>"Error de Validación",
 "The following fields contain errors"=>"Los siguientes campos contienen errores ",
 "Save"=>"Guardar",
 "Required field"=>"Campo requerido",
@@ -54,11 +54,11 @@ $arrLang=array(
 
 /*Login to Elastix*/
 "Welcome to Elastix"=>"Bienvenido a Elastix",
-"Please enter your username and password"=>"Por favor ingrese su usuario y contrase&ntilde;a",
+"Please enter your username and password"=>"Por favor ingrese su usuario y contraseña",
 "Username"=>"Nombre de Usuario",
-"Password"=>"Contrase&ntilde;a",
+"Password"=>"Contraseña",
 "Submit"=>"Ingresar",
-"Login page"=>"P&aacute;gina de Ingreso",
+"Login page"=>"Página de Ingreso",
 /*end Login to Elastix*/
 
 /*start User Management*/
@@ -69,7 +69,7 @@ $arrLang=array(
 
 
 
-"Are you sure you wish to continue?"=>"¿Est&aacute; seguro que desea continuar?",
+"Are you sure you wish to continue?"=>"¿Está seguro que desea continuar?",
 "Edit"=>"Editar",
 "Delete"=>"Eliminar",
 "Accept"=>"Aceptar",
@@ -80,23 +80,23 @@ $arrLang=array(
 
 /*start menu*/
 "System"=>"Sistema",
-"System Info"=>"Informaci&oacute;n del Sistema",
+"System Info"=>"Información del Sistema",
 "User Management"=>"Administrar Usuarios",
-"Menu Administrator"=>"Administrador de Men&uacute;",
+"Menu Administrator"=>"Administrador de Menú",
 /*end menu*/
 
 /*Start Language*/
 "Language"=>"Idioma",
 "Change"=>"Cambiar",
-"Logout"=>"Cerrar Sesi&oacute;n",
+"Logout"=>"Cerrar Sesión",
 /*end Language*/
 
 /*version 0.7*/
 /*start paloSantoValidar.class.php*/
 "Options"=>"Opciones",
-"Empty field"=>"Campo vac&iacute;o",
+"Empty field"=>"Campo vacío",
 "Bad Format"=>"Formato incorrecto",
-"No option was selected"=>"Opci&oacute;n no seleccionada",
+"No option was selected"=>"Opción no seleccionada",
 "Octets out of range"=>"Octetos fuera de rango",
 /*end paloSantoValidar.class.php*/
 
@@ -111,13 +111,13 @@ $arrLang=array(
 /*end system - date/time*/
 
 /*load module*/
-"Load Module" => "Cargar Men&uacute;",
+"Load Module" => "Cargar Menú",
 "ID for new module (folder name)"  =>  "ID para nuevo modulo (nombre de carpeta)",
-"Choose Menu"  =>  "Seleccione Men&uacute;",
-"ID for new menu"  =>  "ID para nuevo men&uacute;",
-"Menu Name"  =>  "Nombre de Men&uacute;",
-"Defined Menu"  =>  "Men&uacute; definido",
-"New Menu"  =>  "Nuevo Men&uacute;",
+"Choose Menu"  =>  "Seleccione Menú",
+"ID for new menu"  =>  "ID para nuevo menú",
+"Menu Name"  =>  "Nombre de Menú",
+"Defined Menu"  =>  "Menú definido",
+"New Menu"  =>  "Nuevo Menú",
 "Module sucessfully loaded"  =>  "Modulo cargado exitosamente",
 "Folder name doesn't exist in module file"  =>  "Nombre de carpeta no exite en archivo de modulo",
 "Folder configs doesn't exist in module file"  =>  "Carpeta configs no existe en archivo de modulo",

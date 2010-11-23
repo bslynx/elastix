@@ -33,20 +33,18 @@
   $Id: fr.lang,v 1.8 2008/05/20 00:36:42 bmacias Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Create New User" => "Cr&eacute;er un nouvel utilisateur",
+"Create New User" => "Créer un nouvel utilisateur",
 "Name" => "Nom",
 "Login" => "Connexion",
 "Password" => "Mot de passe",
 "Retype password" => "Re-saisissez le mot de passe",
 "New User" => "Nouvel utilisateur",
 "Edit User" => "Editer utilisateur",
-"The passwords are empty or don't match" => "Les mots de passe sont vides ou diff&egrave;rent",
-"The admin user cannot be deleted because is the default Elastix administrator. You can delete any other user." => "L'utilisate
-ur Admin ne peut pas &ecirc;tre supprim&eacute; car c'est l'administrateur par d&eacute;faut de Elastix. Vous pouvez supprime
-r les autres",
+"The passwords are empty or don't match" => "Les mots de passe sont vides ou diffèrent",
+"The admin user cannot be deleted because is the default Elastix administrator. You can delete any other user." => "L'utilisateur Admin ne peut pas être supprimé car c'est l'administrateur par défaut de Elastix. Vous pouvez supprimer les autres",
 "User List" => "Liste des utilisateurs",
 "Real Name" => "Nom",
-"Extension" => "Num&eacute;ro de Poste",
+"Extension" => "Numéro de Poste",
 "(Ex. John Doe)" => "(Ex. John Doe)",
 "Webmail User" => "Utililsateur Webmail",
 "Webmail Domain" => "Domaine Webmail",

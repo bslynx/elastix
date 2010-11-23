@@ -34,15 +34,15 @@
 global $arrLangModule;
 $arrLangModule=array(
 /*System Info*/
-"System Resources"=>"Ressources syst&egrave;me",
+"System Resources"=>"Ressources système",
 "CPU Info"=>"Info CPU",
 "Uptime"=>"Temps de fonctionnement",
 "CPU usage"=>"Utilisation CPU",
-"Memory usage"=>"Utilisation m&eacute;moire",
+"Memory usage"=>"Utilisation mémoire",
 "Swap usage"=>"Utilisation Swap",
 "Hard Drives"=>"Disque dur",
 "Partition Name"=>"Nom de la Partition",
-"Capacity"=>"Capacit&eacute;",
+"Capacity"=>"Capacité",
 "Usage"=>"Utilisation",
 "Mount point"=>"Point de montage",
 "No records found"=>"Aucun enregistrement trouvé",

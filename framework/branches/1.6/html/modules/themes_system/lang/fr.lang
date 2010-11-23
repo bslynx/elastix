@@ -33,7 +33,7 @@
   $Id: fr.lang,v 1.8 2008/05/20 00:36:42 bmacias Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Themes not Found" => "Th&egrave;mes non trouv&eacute;s",
-"The theme could not be updated" => "Le th&egrave;me n'a pas pu &ecirc;tre mis a jour",
+"Themes not Found" => "Thèmes non trouvés",
+"The theme could not be updated" => "Le thème n'a pas pu être mis a jour",
 );
 ?>

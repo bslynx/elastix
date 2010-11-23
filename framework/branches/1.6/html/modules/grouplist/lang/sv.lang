@@ -31,9 +31,9 @@ $arrLangModule=array(
 "Description"=>"Beskrivning",
 "New Group"=>"Ny Grupp",
 "Create New Group"=>"Skapa Ny Grupp",
-"View Group"=>"F&ouml;rhandsgranska Grupp",
+"View Group"=>"Förhandsgranska Grupp",
 "Edit Group"=>"Redigera Grupp",
-"The Group have users assigned. You can delete any group that does not have any users assigned in it."=>"Gruppen har tilldelade anv&auml;ndare. Du kan ta bort alla grupper som saknar tilldelade anv&auml;ndare.",
-"The administrator group cannot be deleted because is the default Elastix Group. You can delete any other group."=>"Administrat&ouml;rs grupen kan inte raderas, f&ouml;r att den &auml;r Standard Elastix Grupp. Du kan ta bort alla andra grupper.",
+"The Group have users assigned. You can delete any group that does not have any users assigned in it."=>"Gruppen har tilldelade användare. Du kan ta bort alla grupper som saknar tilldelade användare.",
+"The administrator group cannot be deleted because is the default Elastix Group. You can delete any other group."=>"Administratörs grupen kan inte raderas, för att den är Standard Elastix Grupp. Du kan ta bort alla andra grupper.",
 );
 ?>

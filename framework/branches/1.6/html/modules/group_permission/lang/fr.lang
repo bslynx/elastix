@@ -39,8 +39,8 @@ $arrLangModule=array(
 "Group" => "Groupe",
 "Group Permission" => "Permission du Groupe",
 "View" => "Voir",
-"Create" => "Cr&eacute;er",
+"Create" => "Créer",
 "Delete" => "Effacer",
-"Update" => "Mise &agrave; jour",
+"Update" => "Mise à jour",
 );
 ?>

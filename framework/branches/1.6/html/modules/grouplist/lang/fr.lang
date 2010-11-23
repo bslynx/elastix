@@ -35,10 +35,10 @@ global $arrLangModule;
 $arrLangModule=array(
 "Description"=>"Description",
 "New Group"=>"Nouveau Groupe",
-"Create New Group"=>"Cr&eacute;er Nouveau Groupe",
+"Create New Group"=>"Créer Nouveau Groupe",
 "View Group"=>"Voir Groupe",
 "Edit Group"=>"Editer Groupe",
-"The Group have users assigned. You can delete any group that does not have any users assigned in it."=>"Le Groupe poss&egrave;de des utilisateurs assign&eacute;s. Vous pouvez effacer n'importe quel groupe n'ayant pas d'utilisateur assign&eacute;.",
-"The administrator group cannot be deleted because is the default Elastix Group. You can delete any other group."=>"Le groupe administrateur ne peut pas &ecirc;tre effac&eacute; car celui ci est le groupe administrateur Elastix par d&eacute;faut. Vous pouvez effacer n'importe quel autre groupe.",
+"The Group have users assigned. You can delete any group that does not have any users assigned in it."=>"Le Groupe possède des utilisateurs assignés. Vous pouvez effacer n'importe quel groupe n'ayant pas d'utilisateur assigné.",
+"The administrator group cannot be deleted because is the default Elastix Group. You can delete any other group."=>"Le groupe administrateur ne peut pas être effacé car celui ci est le groupe administrateur Elastix par défaut. Vous pouvez effacer n'importe quel autre groupe.",
 );
 ?>
