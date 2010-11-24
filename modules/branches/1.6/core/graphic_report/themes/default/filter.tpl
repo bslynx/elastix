@@ -1,5 +1,3 @@
-<BODY onload="show_elements()">
-
 <table width="99%" border="0" cellspacing="0" cellpadding="4" align="center">
     <tr class="moduleTitle">
         <td colspan="5" class="moduleTitle" valign="middle">&nbsp;&nbsp;<img src="images/list.png" border="0" align="absmiddle">&nbsp;&nbsp;{$title}</td>
@@ -8,7 +6,7 @@
         <td width="30%" align="right">{$date_from.LABEL}: <span class="required">*</span></b></td>
         <td width="20%" align="left" nowrap>{$date_from.INPUT} </td>
         <td width="20%" onload="show_elements();">
-            <select id="menu" name="menu" size="1" onClick="show_elements();" >
+            <select id="classify_by" name="classify_by" size="1" onClick="show_elements();" >
                 <option value="Number"{$SELECTED_1} >Extention(Number)</option>
                 <option value="Queue" {$SELECTED_2} >Queue</option>
                 <option value="Trunk" {$SELECTED_3} >Trunk</option>
@@ -55,7 +53,7 @@
 
     function show_elements()
     {
-        var number = document.getElementById('menu');
+        var number = document.getElementById('classify_by');
 
         if( number.value == 'Number' )
         {
@@ -80,4 +78,3 @@
 </script>
 {/literal}
 
-</BODY>

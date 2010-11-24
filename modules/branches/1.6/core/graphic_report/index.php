@@ -200,9 +200,9 @@ function report_Extention($smarty, $module_name, $local_templates_dir, $arrLang,
     $ext2 = $ext;
 
     $option = "";
-    if( isset($_POST["menu"]) ){
-        $option = $_POST["menu"];
-        $smarty->assign("menu",$option);
+    if( isset($_POST["classify_by"]) ){
+        $option = $_POST["classify_by"];
+        $smarty->assign("classify_by",$option);
     }
 
     if( getAction() == "show" ){
@@ -387,6 +387,7 @@ function loadTrunks($pDB_ext)
     return $arrTrunk;
 }
 
+if (!function_exists('getParameter')) {
 function getParameter($parameter)
 {
     if(isset($_POST[$parameter]))
@@ -395,6 +396,7 @@ function getParameter($parameter)
         return $_GET[$parameter];
     else
         return null;
+}
 }
 
 function getAction()
