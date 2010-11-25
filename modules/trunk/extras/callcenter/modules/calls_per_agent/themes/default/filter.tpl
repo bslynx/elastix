@@ -1,4 +1,3 @@
-<form method="POST" style="margin-bottom:0;" action="?menu={$menu}">
 <table width="99%" border="0" cellspacing="0" cellpadding="0" align="center">
 <tr>
   <td>
@@ -14,14 +13,13 @@
         <td width="12%" align="left" nowrap>{$field_name.INPUT}&nbsp;{$field_pattern.INPUT}</td>
         <td width="10%" align="right">{$status.LABEL}</td>
         <td width="12%" align="left" nowrap>{$status.INPUT}</td>
-        <td width="12%" align="center"><input class="button" type="submit" name="filter" value="{$Filter}" ></td>
+        <td width="12%" align="center"><input class="button" type="submit" name="filter" value="{$Filter}" /></td>
       </tr>
       <tr class="letra12">
         <td width="10%" align="right">{$field_pattern_1.LABEL}: </td>
-        <td width="12%" align="left" nowrap>{$field_name_1.INPUT}&nbsp;{$field_pattern_1.INPUT}</td>
+        <td width="12%" align="left" nowrap="nowrap">{$field_name_1.INPUT}&nbsp;{$field_pattern_1.INPUT}</td>
       </tr>
    </table>
   </td>
 </tr>
 </table>
-</form>
