@@ -24,11 +24,11 @@ function desactivateBreak()
         <td align="right" nowrap><span class="letra12"><span  class="required">*</span> {$REQUIRED_FIELD}</span></td>
           {elseif $mode eq 'edit'}
           <input class="button" type="submit" name="apply_changes" value="{$APPLY_CHANGES}" />
-          <input class="button" type="submit" name="cancel" value="{$CANCEL}"></td>
+          <input class="button" type="submit" name="cancel" value="{$CANCEL}" /></td>
           {else}
-          <input class="button" type="submit" name="edit" value="{$EDIT}">
-          <input class="button" type="button" name="desactivar" value="{$DESACTIVATE}"  onClick="if(confirmSubmit('{$CONFIRM_CONTINUE}'))desactivateBreak();">
-          <input class="button" type="button" name="cancel_view" value="{$CANCEL}" onclick="window.open('?menu=break_administrator','_parent');"></td>
+          <input class="button" type="submit" name="edit" value="{$EDIT}" />
+          <input class="button" type="button" name="desactivar" value="{$DESACTIVATE}"  onClick="if(confirmSubmit('{$CONFIRM_CONTINUE}'))desactivateBreak();" />
+          <input class="button" type="button" name="cancel_view" value="{$CANCEL}" onclick="window.open('?menu=break_administrator','_parent');" /></td>
           {/if}          
      </tr>
    </table>
@@ -36,7 +36,7 @@ function desactivateBreak()
 </tr>
 <tr>
   <td>
-    <table width="100%" border="1" cellspacing="0" cellpadding="0" class="tabForm">
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" class="tabForm">
         <tr>
 		<td width="20%">{$nombre.LABEL}: <span  class="required">*</span></td>
 		<td width="80%">{$nombre.INPUT}</td>
