@@ -821,11 +821,10 @@ SQL_LLAMADAS;
         $datosTelefonos = NULL;
 
         // Construir índice para obtener la posición de la llamada, dado su ID
-        $indexCall = array();
+        $datosCampania['BASE']['ID2POS'] = array();
         foreach ($datosCampania['BASE']['DATA'] as $pos => $tuplaTelefono) {
-            $indexCall[$tuplaTelefono[0]] = $pos;
+            $datosCampania['BASE']['ID2POS'][$tuplaTelefono[0]] = $pos;
         }
-        $datosCampania['BASE']['ID2POS'] = $indexCall;
 
         // Leer los datos de los atributos de cada llamada
         $iOffsetAttr = count($datosCampania['BASE']['LABEL']);
@@ -836,36 +835,47 @@ SELECT
     call_attribute.value            AS valor,
     call_attribute.column_number    AS posicion
 FROM calls, call_attribute
-WHERE calls.id_campaign = ? AND calls.id = call_attribute.id_call AND
+WHERE calls.id_campaign = ? AND calls.id = ? AND calls.id = call_attribute.id_call AND
     (calls.status='Success' OR calls.status='Failure' OR calls.status='ShortCall')
 ORDER BY calls.id, call_attribute.column_number
 SQL_ATRIBUTOS;
-        $datosAtributos = $this->_DB->fetchTable($sqlAtributos, TRUE, array($id_campaign));
-        if (!is_array($datosAtributos)) {
-            $this->errMsg = 'Unable to read attribute data - '.$this->_DB->errMsg;
-            $datosCampania = NULL;
-            return $datosCampania;
+        foreach ($datosCampania['BASE']['ID2POS'] as $id_call => $pos) {
+            $datosAtributos = $this->_DB->fetchTable($sqlAtributos, TRUE, array($id_campaign, $id_call));
+            if (!is_array($datosAtributos)) {
+                $this->errMsg = 'Unable to read attribute data - '.$this->_DB->errMsg;
+                $datosCampania = NULL;
+                return $datosCampania;
+            }
+            foreach ($datosAtributos as $tuplaAtributo) {
+                // Se asume que el valor posicion empieza desde 1
+                $iPos = $iOffsetAttr + $tuplaAtributo['posicion'] - 1;
+                $datosCampania['BASE']['LABEL'][$iPos] = $tuplaAtributo['etiqueta'];
+                $datosCampania['BASE']['DATA'][$pos][$iPos] = $tuplaAtributo['valor'];
+            }
         }
-        foreach ($datosAtributos as $tuplaAtributo) {
-            // Se asume que el valor posicion empieza desde 1
-            $iPos = $iOffsetAttr + $tuplaAtributo['posicion'] - 1;
-            $datosCampania['BASE']['LABEL'][$iPos] = $tuplaAtributo['etiqueta'];
-            $datosCampania['BASE']['DATA'][$datosCampania['BASE']['ID2POS'][$tuplaAtributo['id_call']]][$iPos] = $tuplaAtributo['valor'];
-        }
-        $datosAtributos = NULL;
 
         // Leer los datos de los formularios asociados a esta campaña
         $sqlFormularios = <<<SQL_FORMULARIOS
-SELECT 
+(SELECT 
     f.id        AS id_form,
     ff.id       AS id_form_field,
     ff.etiqueta AS campo_nombre,
-    f.nombre    AS formulario_nombre
+    f.nombre    AS formulario_nombre,
+    ff.orden    AS orden
 FROM campaign_form cf, form f, form_field ff
-WHERE cf.id_form = f.id AND f.id = ff.id_form AND ff.tipo <> 'LABEL' AND cf.id_campaign = ?
-ORDER BY f.id, ff.orden ASC;
+WHERE cf.id_form = f.id AND f.id = ff.id_form AND ff.tipo <> 'LABEL' AND cf.id_campaign = ?)
+UNION DISTINCT
+(SELECT DISTINCT
+    f.id        AS id_form,
+    ff.id       AS id_form_field,
+    ff.etiqueta AS campo_nombre,
+    f.nombre    AS formulario_nombre,
+    ff.orden    AS orden
+FROM form f, form_field ff, form_data_recolected fdr, calls c
+WHERE f.id = ff.id_form AND ff.tipo <> 'LABEL' AND fdr.id_form_field = ff.id AND fdr.id_calls = c.id AND c.id_campaign = ?)
+ORDER BY id_form, orden ASC
 SQL_FORMULARIOS;
-        $datosFormularios = $this->_DB->fetchTable($sqlFormularios, FALSE, array($id_campaign));
+        $datosFormularios = $this->_DB->fetchTable($sqlFormularios, FALSE, array($id_campaign, $id_campaign));
         if (!is_array($datosFormularios)) {
             $this->errMsg = 'Unable to read form data - '.$this->_DB->errMsg;
             $datosCampania = NULL;
