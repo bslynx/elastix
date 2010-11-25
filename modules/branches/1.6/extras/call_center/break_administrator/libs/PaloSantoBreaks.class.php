@@ -68,8 +68,6 @@ class PaloSantoBreaks
      */
     function getBreaks($id_break = NULL,$estatus='all')
     {
-        global $arrLang;
-        global $arrLangModule;
         $arr_result = FALSE;
         $where = " 1 ";
         if(!is_null($id_break))
@@ -82,7 +80,7 @@ class PaloSantoBreaks
             $where .=" and status='A' ";
 
         if (!is_null($id_break) && !ereg('^[[:digit:]]+$', "$id_break")) {
-            $this->errMsg = $arrLangModule["Break ID is not valid"];
+            $this->errMsg = _tr("Break ID is not valid");
         } 
         else {
             $this->errMsg = "";
@@ -106,16 +104,13 @@ class PaloSantoBreaks
      */
     function createBreak($sNombre, $sDescripcion)
     {
-        global $arrLang;
-        global $arrLangModule;
-
         $sNombre = trim("$sNombre");
         if ($sNombre == '')
-            $this->errMsg = $arrLangModule["Name Break can't be empty"];
+            $this->errMsg = _tr("Name Break can't be empty");
         else {
             $recordset =& $this->_DB->fetchTable("SELECT * FROM break WHERE name = ".paloDB::DBCAMPO($sNombre));
             if (is_array($recordset) && count($recordset) > 0) 
-                $this->errMsg = $arrLangModule["Name Break already exists"];
+                $this->errMsg = _tr("Name Break already exists");
             else {
                 // Construir y ejecutar la orden de inserción SQL
                 $sPeticionSQL = paloDB::construirInsert(
@@ -147,13 +142,11 @@ class PaloSantoBreaks
      */
     function updateBreak($idBreak, $sNombre, $sDescripcion)
     {
-        global $arrLang;
-        global $arrLangModule;
         $sNombre = trim("$sNombre");
         if ($sNombre == '')
-            $this->errMsg = $arrLangModule["Name Break can't be empty"];
+            $this->errMsg = _tr("Name Break can't be empty");
         else if (!isset($idBreak))
-            $this->errMsg = $arrLangModule["Id Break is empty"];
+            $this->errMsg = _tr("Id Break is empty");
         else {
             // Construir y ejecutar la orden de update SQL
             $sPeticionSQL = paloDB::construirUpdate(
@@ -209,54 +202,23 @@ class PaloSantoBreaks
      */
 function desactivateBreak($idBreak)
 {
-    global $arrLang;
-    global $arrLangModule;
     global $arrConf;
     $respuesta = new xajaxResponse();
     
     // se conecta a la base
     $pDB = new paloDB($arrConf["cadena_dsn"]);
     if(!empty($pDB->errMsg)) {
-        $respuesta->addAssign("mb_message","innerHTML",$arrLang["Error when connecting to database"]."<br/>".$pDB->errMsg);
+        $respuesta->addAssign("mb_message","innerHTML",_tr("Error when connecting to database")."<br/>".$pDB->errMsg);
     }
 
     $oBreaks = new PaloSantoBreaks($pDB);
     if($oBreaks->activateBreak($idBreak,'I'))
         $respuesta->addScript("window.open('?menu=break_administrator','_parent')");
     else{
-        $respuesta->addAssign("mb_title","innerHTML",$arrLangModule["Desactivate Error"]); 
-        $respuesta->addAssign("mb_message","innerHTML",$arrLangModule["Error when desactivating the Break"]); 
+        $respuesta->addAssign("mb_title","innerHTML",_tr("Desactivate Error")); 
+        $respuesta->addAssign("mb_message","innerHTML",_tr("Error when desactivating the Break")); 
     }
     
     return $respuesta;
-}
-
-// Funcion aprte del modulo Break es de prueba
-function generar_insert($campos,$tabla)
-{
-    // se conecta a la base
-    $pDB = new paloDB("sqlite3:////var/www/db/campaign.db");
-    $ss = "";
-    for($i=0; $i < count($campos) - 1;$i++)
-    {
-        $ss .= " ".$campos[$i].", ";
-    }
-    $ss .= " ".$campos[count($campos) - 1]." ";
-    $sPeticionSQL = "SELECT $ss from $tabla";
-
-    $arr_result = $pDB->fetchTable($sPeticionSQL, true);
-//     print_r($arr_result);
-    $string = "";
-    if (is_array($arr_result)) {
-        foreach($arr_result as $key => $value){
-            $valores="";
-            foreach($value as $key2 => $value2){
-                $valores .= "'".$value2."', ";
-            }
-            $valores = substr($valores,0,strlen($valores)-2);
-            $string .= "insert into $tabla($ss) values($valores); <br/>";
-        }
-        print $string;
-    }
 }
 ?>
