@@ -181,6 +181,7 @@ function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, &$
 	            $arrTmp[5] = "<label title='".$value['duration']." seconds' style='color:green'>".SecToHHMMSS( $value['duration'] )."</label>";
 
                 //$file = base64_encode($value['userfield']);
+                $file = $value['uniqueid'];
                 $namefile = basename($value['userfield']);
                 $namefile = str_replace("audio:","",$namefile);
                 switch($namefile[0]){
