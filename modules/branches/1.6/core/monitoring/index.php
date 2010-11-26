@@ -181,8 +181,9 @@ function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, &$
 	            $arrTmp[5] = "<label title='".$value['duration']." seconds' style='color:green'>".SecToHHMMSS( $value['duration'] )."</label>";
 
                 //$file = base64_encode($value['userfield']);
-                $file = $value['uniqueid'];
-                switch($value['userfield'][6]){
+                $namefile = basename($value['userfield']);
+                $namefile = str_replace("audio:","",$namefile);
+                switch($namefile[0]){
                     case "O":
                         $arrTmp[6] = $arrLang["Outgoing"];
                         break;
@@ -266,10 +267,16 @@ function downloadFile($smarty, $module_name, $local_templates_dir, $pDB, $pDBACL
     $path_record = $arrConf['records_dir'];
     if (isset($record) && preg_match("/^[[:digit:]]+\.[[:digit:]]+$/",$record)) {
         $pMonitoring = new paloSantoMonitoring($pDB);
-        $filebyUid = $pMonitoring->getAudioByUniqueId($record);
-        $file = $filebyUid['userfield'];
+        $filebyUid   = $pMonitoring->getAudioByUniqueId($record);
+
+        $file = basename($filebyUid['userfield']);
         $file = str_replace("audio:","",$file);
         $path = $path_record.$file;
+
+        if($file[0] == "q"){// caso de archivos de colas no se tiene el tipo de archivo gsm, wav,etc
+            $arrData  = glob("$path*");
+            $path = isset($arrData[0])?$arrData[0]:$path;
+        }
 
     // See if the file exists
         if (!is_file($path)) { 

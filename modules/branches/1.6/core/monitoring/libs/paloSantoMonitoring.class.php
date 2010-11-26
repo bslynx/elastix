@@ -137,7 +137,7 @@ class paloSantoMonitoring {
         if(isset($extension) & $extension !="")
             $where .= " AND (src='$extension' OR dst='$extension')";
 
-        $query   = "SELECT * FROM cdr WHERE userfield <> '' $where LIMIT $limit OFFSET $offset";
+        $query   = "SELECT * FROM cdr WHERE userfield <> '' $where ORDER BY uniqueid DESC LIMIT $limit OFFSET $offset";
         $result=$this->_DB->fetchTable($query, true);
         if($result==FALSE){
             $this->errMsg = $this->_DB->errMsg;
