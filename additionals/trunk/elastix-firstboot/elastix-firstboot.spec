@@ -86,6 +86,9 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/elastix-firstboot/compat-dbscripts/08-schema-vtiger.sql
 
 %changelog
+- FIXED: Escape ampersand in admin password since the ampersand is a special
+  character for sed. Should fix Elastix bug #598.
+
 * Tue Oct 26 2010 Alex Villacis Lasso <a_villacis@palosanto.com> 2.0.0-14
 - FIXED: Restrict range of special characters accepted as valid in passwords.
   Should fix Elastix bug #462.
