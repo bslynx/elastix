@@ -1,4 +1,3 @@
-<form style='margin-bottom:0;' method='post' action='?menu={$MODULE_NAME}'>
     <table width='100%' border='0'>
         <tr>
             <td align='left'>
@@ -24,6 +23,4 @@
             </td>
         </tr>
     </table>
-</form>
-
 
