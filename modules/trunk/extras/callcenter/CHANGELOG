@@ -1,10 +1,10 @@
 * Break Administrator: remove dead code.
-* CallCenter Config, Agent Console, Agents, Break Administrator, Calls Detail, Calls per Agent, Calls per Hour: Use methods load_language_module and _tr from Elastix framework. Define them if they do not exist.
+* CallCenter Config, Agent Console, Agents, Break Administrator, Calls Detail, Calls per Agent, Calls per Hour, Campaign Out: Use methods load_language_module and _tr from Elastix framework. Define them if they do not exist.
 * Campaigns: improve speed and memory usage of CSV download of completed 
   campaign data by replacing single big SQL query by multiple smaller ones.
   Fixes Elastix bug #600. 
-* Agents, Break Administrator, Calls Detail, Calls per Agent, Calls per Hour: make module aware of url parameter in paloSantoGrid::fetchGrid().
-* Agents, Break Administrator, Calls per Agent, Calls per Hour: remove <form> tags from the filter HTML template. They are not required, since the template already includes a proper <form> tag enclosing the grid.
+* Agents, Break Administrator, Calls Detail, Calls per Agent, Calls per Hour, Campaign Out: make module aware of url parameter in paloSantoGrid::fetchGrid().
+* Agents, Break Administrator, Calls per Agent, Calls per Hour, Campaign Out: remove <form> tags from the filter HTML template. They are not required, since the template already includes a proper <form> tag enclosing the grid.
 * Agent Console (programar_llamadas): restrict call reprogramming interface to
   requests with a valid Elastix session and authorization to the Agent Console.
   Also, clean up form code to use the default Elastix support for date controls.  

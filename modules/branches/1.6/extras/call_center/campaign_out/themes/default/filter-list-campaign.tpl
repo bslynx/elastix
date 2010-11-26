@@ -2,7 +2,7 @@
 <tr>
     <td align="right" class="letra12" width="20%" ><b>{$LABEL_CAMPAIGN_STATE}:</b></td>
     <td>{html_options name=cbo_estado id=cbo_estado options=$estados selected=$estado_sel onchange='submit();'}</td>
-    <td align="right"><a style="text-decoration: none; font-family: Arial,Helvetica,sans-serif; font-style: normal;" href="?menu={$MODULE_NAME}&amp;action=new_campaign"><button>{$LABEL_CREATE_CAMPAIGN}</button></a></td>
+    <td align="right"><a style="text-decoration: none; font-family: Arial,Helvetica,sans-serif; font-style: normal;" href="?menu={$MODULE_NAME}&amp;action=new_campaign"><button class="button">{$LABEL_CREATE_CAMPAIGN}&nbsp;&raquo;</button></a></td>
 </tr>
 <tr>
     <td align="right" class='letra12' width='20%'><b>{$LABEL_WITH_SELECTION}:</b></td>
