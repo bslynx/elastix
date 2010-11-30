@@ -25,13 +25,46 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1 2009-09-29 05:09:50 Oscar Navarrete onavarrete@palosanto.com Exp $ */
-    global $arrConf;
-    global $arrConfModule;
-
-    $arrConfModule['module_name']       = 'voipprovider';
-    $arrConfModule['templates_dir']     = 'themes';
-    $arrConfModule['dsn_conn_database'] = "sqlite3:////var/www/db/trunk.db";
-    $arrConfModule['ACLdb'] = "sqlite3:////var/www/db/acl.db";
-    //ex2: $arrConfModule['dsn_conn_database'] = "mysql://user:password@ip_host_sever_mysql/base_name";
+  $Id: en.lang,v 1.1 2009-09-29 05:09:50 Oscar Navarrete onavarrete@palosanto.com Exp $ */
+global $arrLangModule;
+$arrLangModule=array(
+"VoIP Provider" => "Provedor VoIP",
+"Username" => "Username",
+"Secret" => "Secret",
+"Configuration" => "Configuration",
+"Type" => "Type",
+"Qualify" => "Qualify",
+"Insecure" => "Insecure",
+"Host" => "Host",
+"Fromuser" => "Fromuser",
+"Fromdomain" => "Fromdomain",
+"Dtmfmode" => "Dtmfmode",
+"Disallow" => "Disallow",
+"Context" => "Context",
+"Allow" => "Allow",
+"Trustrpid" => "Trustrpid",
+"Sendrpid" => "Sendrpid",
+"Canreinvite" => "Canreinvite",
+"none" => "none",
+"General_Setting" => "General Setting",
+"PEER_Details" => "PEER Details",
+"Please select a type of VoIp Provider" => "Por favor seleccione un tipo de provedor",
+"Some or someone necesary fields are empty please check and complete" => "Algunos campos son necesarios. Por favor revise y complete",
+"Delete" => "Eliminar",
+"Account Name" => "Nombre de la Cuenta",
+"Edit" => "Editar",
+"New Account" => "Nueva Cuenta",
+"Custom" => "Custom",
+"yes" => "si",
+"no" => "no",
+"Technology" => "Tecnologia",
+"Internal Error" => "Error Interno. Intente de nuevo",
+"Type Trunk" => "Tipo de Troncal",
+"Are you sure you wish to delete the accounts selected." => "Esta seguro que desea eliminar la cuentas seleccionadas.",
+"User is not allowed to do this operation" => "Su usuario no esta permitido hacer esta transacción",
+"Status" => "Estado",
+"ERROR" => "ERROR",
+"Enable" => "Habilitar",
+"Disable" => "Desabilitar",
+);
 ?>

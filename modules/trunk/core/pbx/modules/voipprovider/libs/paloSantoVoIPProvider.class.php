@@ -25,7 +25,7 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: paloSantoVoIPProvider.class.php,v 1.1 2009-09-29 05:09:50 Oscar Navarrete onavarrete@palosanto.com Exp $ */
+  $Id: paloSantoVoIPProvider.class.php,v 1.2 2010-11-29 15:09:50 Eduardo Cueva ecueva@palosanto.com Exp $ */
 require_once "/var/lib/asterisk/agi-bin/phpagi-asmanager.php";
 
 class paloSantoVoIPProvider {
@@ -53,6 +53,59 @@ class paloSantoVoIPProvider {
 
     /*HERE YOUR FUNCTIONS*/
 
+    function getNumVoIPProvider($filter_field, $filter_value)
+    {
+        $where = "";
+        $query   = "SELECT COUNT(*) FROM provider_account";
+        if(isset($filter_value) & $filter_value !=""){
+            if($filter_field=="provider")
+                $where = " pa, provider p WHERE pa.id_provider=p.id AND p.name like $filter_value";
+            else
+                $where = "WHERE $filter_field like $filter_value";
+        }
+
+        $query .= " $where";
+
+        $result=$this->_DB->getFirstRowQuery($query);
+
+        if($result==FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return 0;
+        }
+        return $result[0];
+    }
+
+    function getVoIPProviderData($limit, $offset, $filter_field, $filter_value)
+    {
+        $where = "";
+        $query   = "SELECT
+                            pa.id AS id,
+                            pa.account_name AS account_name,
+                            pa.type_trunk AS type_trunk,
+                            pa.id_provider AS id_provider,
+                            pa.status AS status
+                    FROM
+                        provider_account pa";
+
+        if(isset($filter_value) & $filter_value !=""){
+            if($filter_field=="provider")
+                $where = ", provider p WHERE pa.id_provider=p.id AND p.name like $filter_value";
+            else
+                $where = "WHERE $filter_field like $filter_value";
+        }
+
+        $query .= " $where
+                    LIMIT $limit OFFSET $offset";
+
+        $result=$this->_DB->fetchTable($query, true);
+
+        if($result==FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return array();
+        }
+        return $result;
+    }
+
     function getVoIPProviders()
     {
         $query = "SELECT name FROM provider";
@@ -66,24 +119,113 @@ class paloSantoVoIPProvider {
         return $result;
     }
 
+    function getInfoVoIPProvidersByName($name)
+    {
+        $data = array($name);
+        $query = "SELECT 
+                    a.type        AS type,
+                    a.qualify     AS qualify,
+                    a.insecure    AS insecure,
+                    a.host        AS host,
+                    a.fromuser    AS fromuser,
+                    a.fromdomain  AS fromdomain,
+                    a.dtmfmode    AS dtmfmode,
+                    a.disallow    AS disallow,
+                    a.context     AS context,
+                    a.allow       AS allow,
+                    a.trustrpid   AS trustrpid,
+                    a.sendrpid    AS sendrpid,
+                    a.canreinvite AS canreinvite,
+                    p.type_trunk  AS type_trunk
+                  FROM
+                    provider p,
+                    attribute a
+                  WHERE
+                    p.id = a.id_provider AND
+                    p.name=?";
+        $result=$this->_DB->getFirstRowQuery($query, true, $data);
+
+        if($result==FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return array();
+        }
+        return $result;
+    }
+
+    function getIdVoIPProvidersByName($name)
+    {
+        $data = array($name);
+        $query = "SELECT id,  type_trunk FROM provider WHERE name=?";
+        $result=$this->_DB->getFirstRowQuery($query, true, $data);
+
+        if($result==FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return array();
+        }
+        return $result;
+    }
+
+    function getVoIPProviderAccountById($id)
+    {
+        $query = "SELECT 
+                     id                AS id,
+                     account_name      AS account_name,
+                     username          AS username,
+                     password          AS secret,
+                     type              AS type,
+                     qualify           AS qualify,
+                     insecure          AS insecure,
+                     host              AS host,
+                     fromuser          AS fromuser,
+                     fromdomain        AS fromdomain,
+                     dtmfmode          AS dtmfmode,
+                     disallow          AS disallow,
+                     context           AS context,
+                     allow             AS allow,
+                     trustrpid         AS trustrpid,
+                     sendrpid          AS sendrpid,
+                     canreinvite       AS canreinvite,
+                     type_trunk        AS technology,
+                     id_provider       AS id_provider,
+					 status			   AS status
+                  FROM provider_account WHERE id=?";
+        $data = array($id);
+        $result=$this->_DB->getFirstRowQuery($query,true,$data);
+
+        if($result==FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return null;
+        }
+        return $result;
+    }
+	
+	function getAllAccountsActivates()
+    {
+        $query = "SELECT * FROM provider_account WHERE status='activate'";
+        $result = $this->_DB->fetchTable($query, true);
+        if($result==FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return false;
+        }
+        return $result;
+    }
+
+    function getAllAccounts()
+    {
+        $query = "SELECT * FROM provider_account";
+        $result = $this->_DB->fetchTable($query, true);
+        if($result==FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return false;
+        }
+        return $result;
+    }
+
     function getVoIPProviderById($id)
     {
-        $query = "SELECT * FROM trunk WHERE id=$id";
-
-        $result=$this->_DB->getFirstRowQuery($query,true);
-
-        if($result==FALSE){
-            $this->errMsg = $this->_DB->errMsg;
-            return null;
-        }
-        return $result;
-    }
-
-    function getVoIPProviderByProvider($id)
-    {
-        $query = "SELECT t.name, t.username, t.password, a.* FROM trunk t INNER join attribute a ON t.id=a.id_trunk WHERE t.id_provider=$id";
-
-        $result=$this->_DB->getFirstRowQuery($query,true);
+        $query = "SELECT * FROM provider WHERE id=?";
+        $data = array($id);
+        $result=$this->_DB->getFirstRowQuery($query,true,$data);
 
         if($result==FALSE){
             $this->errMsg = $this->_DB->errMsg;
@@ -92,323 +234,243 @@ class paloSantoVoIPProvider {
         return $result;
     }
 
-    //Mode Xml
-    function getConfigByType($type)
-    {
-        $data="";
-        $textXMLConfig = "";
-        $textXMLConfig .= "<?xml version=\"1.0\"?>\n";
-        $textXMLConfig .= "<configs>\n";
-        $textXMLConfig .= "<attribute>\n";
-        if($type=="Net2Phone") $data = $this->getVoIPProviderByProvider(1);
-        else if($type=="camundaNET") $data = $this->getVoIPProviderByProvider(2);
-        else if($type=="Vitelity") $data = $this->getVoIPProviderByProvider(3);
-        else if($type=="NuFoneIAX") $data = $this->getVoIPProviderByProvider(4);
-        else if($type=="StarVox") $data = $this->getVoIPProviderByProvider(5);
+    function insertAccount($data){
 
-        if(is_array($data) && count($data)>1){
-            if($data['username']!=null) $textXMLConfig .= "<username>{$data['username']}</username>\n";
-            else $textXMLConfig .= "<username> </username>\n";
-
-            if($data['type']!=null) $textXMLConfig .= "<type>{$data['type']}</type>\n";
-            else $textXMLConfig .= "<type> </type>\n";
-
-            if($data['password']!=null) $textXMLConfig .= "<secret>{$data['password']}</secret>\n";
-            else $textXMLConfig .= "<secret> </secret>\n";
-
-            if($data['qualify']!=null) $textXMLConfig .= "<qualify>{$data['qualify']}</qualify>\n";
-            else $textXMLConfig .= "<qualify> </qualify>\n";
-
-            if($data['insecure']!=null) $textXMLConfig .= "<insecure>{$data['insecure']}</insecure>\n";
-            else $textXMLConfig .= "<insecure> </insecure>\n";
-
-            if($data['host']!=null) $textXMLConfig .= "<host>{$data['host']}</host>\n";
-            else $textXMLConfig .= "<host> </host>\n";
-    
-            if($data['fromuser']!=null) $textXMLConfig .= "<fromuser>{$data['fromuser']}</fromuser>\n";
-            else $textXMLConfig .= "<fromuser> </fromuser>\n";
-
-            if($data['fromdomain']!=null) $textXMLConfig .= "<fromdomain>{$data['fromdomain']}</fromdomain>\n";
-            else $textXMLConfig .= "<fromdomain> </fromdomain>\n";
-            
-            if($data['dtmfmode']!=null) $textXMLConfig .= "<dtmfmode>{$data['dtmfmode']}</dtmfmode>\n";
-            else $textXMLConfig .= "<dtmfmode> </dtmfmode>\n";
-
-            if($data['disallow']!=null) $textXMLConfig .= "<disallow>{$data['disallow']}</disallow>\n";
-            else $textXMLConfig .= "<disallow> </disallow>\n";
-
-            if($data['context']!=null) $textXMLConfig .= "<context>{$data['context']}</context>\n";
-            else $textXMLConfig .= "<context> </context>\n";
-
-            if($data['allow']!=null) $textXMLConfig .= "<allow>{$data['allow']}</allow>\n";
-            else $textXMLConfig .= "<allow> </allow>\n";
-
-            if($data['trustrpid']!=null) $textXMLConfig .= "<trustrpid>{$data['trustrpid']}</trustrpid>\n";
-            else $textXMLConfig .= "<trustrpid> </trustrpid>\n";
-
-            if($data['sendrpid']!=null) $textXMLConfig .= "<sendrpid>{$data['sendrpid']}</sendrpid>\n";
-            else $textXMLConfig .= "<sendrpid> </sendrpid>\n";
-
-            if($data['canreinvite']!=null) $textXMLConfig .= "<canreinvite>{$data['canreinvite']}</canreinvite>\n";
-            else $textXMLConfig .= "<canreinvite> </canreinvite>\n";
+        $query = "INSERT INTO provider_account(account_name,username,password,type,qualify,insecure,host,fromuser,fromdomain,dtmfmode,disallow,context,allow,trustrpid,sendrpid,canreinvite,type_trunk,id_provider) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        $result = $this->_DB->genQuery($query, $data);
+        if($result==FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return false;
         }
-        $textXMLConfig .= "</attribute>\n";
-        $textXMLConfig .= "</configs>\n";
-        return $textXMLConfig;
+        return true; 
     }
 
-    function saveChangeFileExtensionAdditional($text) {
-        $fp = fopen('/etc/asterisk/extensions_additional.conf', 'w');
+    function updateAccount($data){
 
-        fwrite($fp, $text);
-        fclose($fp);
-    }
-
-    function saveChangeFileExtensionCustom($text) {
-        $fp = fopen('/etc/asterisk/extensions_custom.conf', 'w');
-
-        fwrite($fp, $text);
-        fclose($fp);
-    }
-
-    function saveChangeFileLocalPrefixes($text) {
-        $fp = fopen('/etc/asterisk/localprefixes.conf', 'a');
-
-        fwrite($fp, $text);
-        fclose($fp);
-    }
-
-    function saveChangeFileSipAdditional($text) {
-        $fp = fopen('/etc/asterisk/sip_additional.conf', 'a');
-
-        fwrite($fp, $text);
-        fclose($fp);
-    }
-
-    function saveChangeFileSipCustom($text) {
-        $fp = fopen('/etc/asterisk/sip_custom.conf', 'a');
-
-        fwrite($fp, $text);
-        fclose($fp);
-    }
-
-    function updateChangeFileSipCustom($text) {
-        //$fp = fopen('/etc/asterisk/sip_additional.conf', 'w');
-        $fp = fopen('/etc/asterisk/sip_custom.conf', 'w');
-
-        fwrite($fp, $text);
-        fclose($fp);
-    }
-
-    function saveChangeFileSipRegistrations($text) {
-        //$fp = fopen('/etc/asterisk/sip_registrations.conf', 'a');
-        $fp = fopen('/etc/asterisk/sip_registrations_custom.conf', 'a');        
-
-        fwrite($fp, $text);
-        fclose($fp);
-    }
-
-    function updateChangeFileSipRegistrations($text) {
-        //$fp = fopen('/etc/asterisk/sip_registrations.conf', 'w');
-        $fp = fopen('/etc/asterisk/sip_registrations_custom.conf', 'w');
-
-        fwrite($fp, $text);
-        fclose($fp);
-    }
-
-    function saveChangeFileIaxAdditional($text) {
-        $fp = fopen('/etc/asterisk/iax_additional.conf', 'a');
-    
-        fwrite($fp, $text);
-        fclose($fp);
-    }
-
-    function saveChangeFileIaxCustom($text) {
-        $fp = fopen('/etc/asterisk/iax_custom.conf', 'a');
-        
-        if(empty($fp) || $fp==null){ 
-            exec("mkdir /etc/asterisk/iax_custom.conf");
-            exec("sudo -u root chown asterisk.asterisk /etc/asterisk/iax_custom.conf");
-            $fp = fopen('/etc/asterisk/iax_custom.conf', 'a');
+        $query  = "UPDATE provider_account SET account_name=?,username=?,password=?,type=?,qualify=?,insecure=?,host=?,fromuser=?,fromdomain=?,dtmfmode=?,disallow=?,context=?,allow=?,trustrpid=?,sendrpid=?,canreinvite=?,type_trunk=?, status=? WHERE id=?";
+        $result = $this->_DB->genQuery($query, $data);
+        if($result==FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return false;
         }
-
-        fwrite($fp, $text);
-        fclose($fp);
+        return true; 
     }
-
-    function updateChangeFileIaxAdditional($text) {
-        $fp = fopen('/etc/asterisk/iax_additional.conf', 'w');
-
-        fwrite($fp, $text);
-        fclose($fp);
-    }
-
-    function updateChangeFileIaxCustom($text) {
-        $fp = fopen('/etc/asterisk/iax_custom.conf', 'w');
-
-        fwrite($fp, $text);
-        fclose($fp);
-    }
-
-    function saveChangeFileIaxRegistrations($text) {
-        //$fp = fopen('/etc/asterisk/iax_registrations.conf', 'a');
-        $fp = fopen('/etc/asterisk/iax_registrations_custom.conf', 'a');
-        
-        if(empty($fp) || $fp==null){ 
-            exec("mkdir /etc/asterisk/iax_registrations_custom.conf");
-            exec("sudo -u root chown asterisk.asterisk /etc/asterisk/iax_registrations_custom.conf");
-            $fp = fopen('/etc/asterisk/iax_registrations_custom.conf', 'a');
+	
+	function changeStatus($id, $status){
+		$data  = array($status, $id);
+		$query = "UPDATE provider_account SET status=? WHERE id=?";
+        $result = $this->_DB->genQuery($query, $data);
+        if($result==FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return false;
         }
+        return true;
+	}
 
-        fwrite($fp, $text);
-        fclose($fp);
+    function deleteAccount($id){
+        $data = array($id);
+        $query = "DELETE FROM provider_account WHERE id=?";
+        $result = $this->_DB->genQuery($query, $data);
+        if($result==FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return false;
+        }
+        return true; 
     }
 
-    function updateChangeFileIaxRegistrations($text) {
-        //$fp = fopen('/etc/asterisk/iax_registrations.conf', 'w');
-        $fp = fopen('/etc/asterisk/iax_registrations_custom.conf', 'w');
 
-        fwrite($fp, $text);
-        fclose($fp);
-    }
+    function setAsteriskFiles($dsn_agi_manager){
 
+        //     /etc/asterisk/extensions_custom.conf          
+        //     /etc/asterisk/localprefixes.conf              
+        //     /etc/asterisk/sip_custom.conf                 
+        //     /etc/asterisk/sip_registrations_custom.conf   
+        //     /etc/asterisk/iax_custom.conf                 
+        //     /etc/asterisk/iax_registrations_custom.conf   
 
-    function AddConfFileExtensionCustom($nameTrunk, $typeTrunk){
-        $FILE='/etc/asterisk/extensions_custom.conf';
-        $text = "";
-        $fp = fopen($FILE,'r');
-        $line_conf1 = "";
-        $line_conf2 = "";
-        $i=0;
-        $is_empty=FALSE;
-        $arrTrunksExtAdd = $this->getIndexTrunkExtenAdd();
-        $arrTrunksExtCust = $this->getIndexTrunkExtenCust();
-        $num_lines = count(file("/etc/asterisk/extensions_custom.conf"));
-        $c=0;
-        if(!empty($arrTrunksExtCust)){
-            if($arrTrunksExtAdd[count($arrTrunksExtAdd)]['index'] > $arrTrunksExtCust[count($arrTrunksExtCust)]['index'])
-                $num_last_trunk = $arrTrunksExtAdd[count($arrTrunksExtAdd)]['index'];
-            else
-                $num_last_trunk = $arrTrunksExtCust[count($arrTrunksExtCust)]['index'];
+		$FILE_IAX_CUSTOM = "/etc/asterisk/iax_custom_voipprovider.conf";
+		$FILE_SIP_CUSTOM = "/etc/asterisk/sip_custom_voipprovider.conf";
+		$FILE_REG_IAX    = "/etc/asterisk/iax_registrations_custom_voipprovider.conf";
+		$FILE_REG_SIP    = "/etc/asterisk/sip_registrations_custom_voipprovider.conf";
+		$FILE_EXT_CUSTOM = "/etc/asterisk/extensions_custom_voipprovider.conf";
+		$FILE_LOCALPREFIX= "/etc/asterisk/localprefixes_voipprovider.conf";
+        // creacion de archivos VoipproviderConf o eliminacion de contenido de archivos
+        $this->createFilesVoipproviderConf();
 
-            $filter1="OUTDISABLE_".$num_last_trunk;
-            foreach($arrTrunksExtCust as $value) {
-                if($value['type']=="SIP" || $value['type']=="IAX2") {
-                    $filter2="from-trunk-".strtolower($value['type'])."-".$value['name'];
-                    $i=1;
-                }else {
-                    $filter2 = " ";/*Falta revisar en el archivo de configuracion 62,3*/
-                    $i=0;
+        // verificacion de includes en archivos principales de asterisk
+        $this->existFilesInclude();
+
+        // Segunda accion: recorrido de todas las cuentas en la base de datos para escribir en archivos
+        $accounts = $this->getAllAccountsActivates();
+        $arrayConfig['globals']      = "[globals]\n";
+        $arrayConfig['from-trunk']   = "";
+        $arrayConfig['sip-custom']   = "";
+        $arrayConfig['sip-register'] = "";
+        $arrayConfig['iax-custom']   = "";
+        $arrayConfig['iax-register'] = "";
+        $textSipReg                  = "";
+        $textIaxReg                  = "";
+
+        if(isset($accounts) && $accounts!=""){
+            $num_nextTrunk = $this->getIndexTrunk() + 1;
+            foreach($accounts as $key => $value){
+                $nameTrunk = $value['account_name'];
+                $typeTrunk = $value['type_trunk'];
+                $username  = $value['username'];
+                $secret    = $value['password'];
+                $host      = $value['host'];
+                $type_provider = "";
+                if(isset($value['id_provider']) || $value['id_provider'] !="")
+                    $type_provider = $this->getVoIPProviderById($value['id_provider']);
+                else
+                    $type_provider['name'] = "custom";
+                $type = $type_provider['name']."_".$nameTrunk;
+                //por cada registro se crearan strings con datos a escribir
+                $arrayConfig = $this->AddConfFileExtensionCustom($nameTrunk, $typeTrunk, $arrayConfig, $num_nextTrunk); // escribe todo el archivo desde cero.
+                //$arrayConfig = $this->addConfFileLocalPrefixes($nameTrunk, $typeTrunk, $arrayConfig, $num_nextTrunk);  // escribe reglas de la troncal
+                // verificando tecnologia
+                if($value['type_trunk']=="SIP"){
+                    $textSipReg .="register=$username:$secret@$host/$username\n\n";
+                    $arrayConfig = $this->addConfFileSipCustom($value, $type, $arrayConfig);
+                }else{
+                    $textIaxReg .="register=$username:$secret@$host\n\n";
+                    $arrayConfig = $this->addConfFileIaxCustom($value, $type, $arrayConfig);
                 }
+                $num_nextTrunk++;
             }
-            $num_nextTrunk = $num_last_trunk + 1;
-
-        }else {
-            $filter1 = "from-internal-custom";
-            $filter2 = " ";/*Falta revisar en el archivo de configuracion 62,3*/
-            $is_empty = TRUE;
-            $num_nextTrunk = $arrTrunksExtAdd[count($arrTrunksExtAdd)]['index']+1;
+            $text = $arrayConfig['globals'].";end of [globals]\n\n".$arrayConfig['from-trunk'];
+            $this->saveFile($FILE_EXT_CUSTOM, "a", $text); // se guarda la configuracion extension_custom_voipprovider.conf
+            //$this->saveFile($FILE_LOCALPREFIX, "a", $text); // se guarda las reglas de las troncales
+		    $this->saveFile($FILE_REG_SIP, "a", $textSipReg);// se guardan la configuracion de sip_registrations_custom_voipprovider
+		    $this->saveFile($FILE_REG_IAX, "a", $textIaxReg);
+            $this->saveFile($FILE_SIP_CUSTOM, "w", $arrayConfig['sip-custom']);
+		    $this->saveFile($FILE_IAX_CUSTOM, "w", $arrayConfig['iax-custom']);
         }
+        // Quita accion: recargar asterisk
+        $this->reloadAsterisk($dsn_agi_manager);
+    }
+
+    function createFilesVoipproviderConf(){
+        $user            = "asterisk";
+        $exte_custom     = "/etc/asterisk/extensions_custom_voipprovider.conf";
+        $local_prefixes  = "/etc/asterisk/localprefixes_voipprovider.conf";
+        $sip_custom      = "/etc/asterisk/sip_custom_voipprovider.conf";
+        $sip_register    = "/etc/asterisk/sip_registrations_custom_voipprovider.conf";
+        $iax_custom      = "/etc/asterisk/iax_custom_voipprovider.conf";
+        $iax_register    = "/etc/asterisk/iax_registrations_custom_voipprovider.conf";
+
+        $this->createFile($exte_custom);
+        chown($exte_custom,$user);
+
+        $this->createFile($local_prefixes);
+        chown($local_prefixes,$user);
+
+        $this->createFile($sip_custom);
+        chown($sip_custom,$user);
+
+        $this->createFile($sip_register);
+        chown($sip_register,$user);
+
+        $this->createFile($iax_custom);
+        chown($iax_custom,$user);
+
+        $this->createFile($iax_register);
+        chown($iax_register,$user);
+    }
+
+    function existFilesInclude()
+    {
+        $FILE='/etc/asterisk/extensions_custom.conf';
+        $includeLine = "#include extensions_custom_voipprovider.conf";
+        $this->writeFilesInclude($FILE, $includeLine);
+
+        $FILE='/etc/asterisk/localprefixes.conf';
+        $includeLine = "#include localprefixes_voipprovider.conf";
+        $this->writeFilesInclude($FILE, $includeLine);
+
+        $FILE='/etc/asterisk/sip_custom.conf';
+        $includeLine = "#include sip_custom_voipprovider.conf";
+        $this->writeFilesInclude($FILE, $includeLine);
+
+        $FILE='/etc/asterisk/sip_registrations_custom.conf';
+        $includeLine = "#include sip_registrations_custom_voipprovider.conf";
+        $this->writeFilesInclude($FILE, $includeLine);
+
+        $FILE='/etc/asterisk/iax_custom.conf';
+        $includeLine = "#include iax_custom_voipprovider.conf";
+        $this->writeFilesInclude($FILE, $includeLine);
+
+        $FILE='/etc/asterisk/iax_registrations_custom.conf';
+        $includeLine = "#include iax_registrations_custom_voipprovider.conf";
+        $this->writeFilesInclude($FILE, $includeLine);
+    }
+
+    function writeFilesInclude($FILE, $includeLine)
+    {
+        $fp = fopen($FILE,'a+');
+        $line = "";
+        $found = false;
         while($line = fgets($fp, filesize($FILE)))
         {
-            if(eregi($filter1, $line) && $is_empty) {
-                $line_conf1 .= "[globals]\n";
-                $line_conf1 .= "OUT_$num_nextTrunk = ".strtoupper($typeTrunk)."/$nameTrunk\n";
-                $line_conf1 .= "OUTPREFIX_$num_nextTrunk =\n";
-                $line_conf1 .= "OUTMAXCHANS_$num_nextTrunk =\n";
-                $line_conf1 .= "OUTCID_$num_nextTrunk =\n";
-                $line_conf1 .= "OUTKEEPCID_$num_nextTrunk = off\n";
-                $line_conf1 .= "OUTFAIL_$num_nextTrunk =\n";
-                $line_conf1 .= "OUTDISABLE_$num_nextTrunk = on\n";//en la 160 tiene on
-                $line_conf1 .= "\n";
-                $line_conf1 .= ";end of [globals]\n\n";
-                $line_conf1 .= $line;
-                $text .= $line_conf1;
-                $c++;
-            }else if(eregi($filter1, $line) && !$is_empty) {
-                $line_conf1 .= "OUT_$num_nextTrunk = ".strtoupper($typeTrunk)."/$nameTrunk\n";
-                $line_conf1 .= "OUTPREFIX_$num_nextTrunk =\n";
-                $line_conf1 .= "OUTMAXCHANS_$num_nextTrunk =\n";
-                $line_conf1 .= "OUTCID_$num_nextTrunk =\n";
-                $line_conf1 .= "OUTKEEPCID_$num_nextTrunk = off\n";
-                $line_conf1 .= "OUTFAIL_$num_nextTrunk =\n";
-                $line_conf1 .= "OUTDISABLE_$num_nextTrunk = on\n";//en la 160 tiene on
-                $line .= $line_conf1;
-                $text .= $line;
-                $c++;
-            }else if(($c==$num_lines-1) && $is_empty) {
-                $line_conf2 .= "\n\n";
-                $line_conf2 .= "[from-trunk-$typeTrunk-$nameTrunk]\n";
-                $line_conf2 .= "include => from-trunk-$typeTrunk-$nameTrunk-custom\n";
-                $line_conf2 .= "exten => _.,1,Set(GROUP()=OUT_$num_nextTrunk)\n";
-                $line_conf2 .= "exten => _.,n,Goto(from-trunk,\${EXTEN},1)\n";
-                $line_conf2 .= "\n";
-                $line_conf2 .= "; end of [from-trunk-$typeTrunk-$nameTrunk]\n";
-                $line .= $line_conf2;
-                $text .= $line;
-                $c++;
-            }else if(eregi($filter2, $line) && !$is_empty) {
-                if($i==3){
-                    $line_conf2 .= "\n\n";
-                    $line_conf2 .= "[from-trunk-$typeTrunk-$nameTrunk]\n";
-                    $line_conf2 .= "include => from-trunk-$typeTrunk-$nameTrunk-custom\n";
-                    $line_conf2 .= "exten => _.,1,Set(GROUP()=OUT_$num_nextTrunk)\n";
-                    $line_conf2 .= "exten => _.,n,Goto(from-trunk,\${EXTEN},1)\n";
-                    $line_conf2 .= "\n";
-                    $line_conf2 .= "; end of [from-trunk-$typeTrunk-$nameTrunk]\n";
-                    $line .= $line_conf2;
-                    $text .= $line;
-                    $c++;
-                }else{
-                    $text .= $line;
-                    $c++;
-                }
-                $i++;
-            }else {
-                $text .= $line;
-                $c++;
+            if(ereg($includeLine, $line)){
+                $found = true;
             }
         }
-        $this->saveChangeFileExtensionCustom($text);
+        if(!$found){
+            $line .= "\n".$includeLine."\n";
+            fwrite($fp,$line);
+        }
         fclose($fp);
     }
 
-
-    //solo guarda las troncales que contienen reglas
-    function addConfFileLocalPrefixes($type_provider)
+    function AddConfFileExtensionCustom($nameTrunk, $typeTrunk, $arrayConfig, $num_nextTrunk)
     {
-        $arrTrunks = $this->getIndexTrunkExtenCust();
-        //if($num == null) $num=1;
-        $text = "";
-        $index = 1;
-        if(is_array($arrTrunks) && count($arrTrunks)>1){
-            for($i=1 ; $i<=count($arrTrunks); $i++){
-                if($arrTrunks[$i]['name'] == $type_provider)
-                    $index=$arrTrunks[$i]['index'];
-            }
-        }
-        //$num_nextTrunk = count($arrTrunks)+1;
-        $text .="\n[trunk-$index]\n";
-        $this->saveChangeFileLocalPrefixes($text);
+        $line_conf1 = "";
+        $line_conf2 = "";
+ 
+        $line_conf1 .= "OUT_$num_nextTrunk = ".strtoupper($typeTrunk)."/$nameTrunk\n";
+        $line_conf1 .= "OUTPREFIX_$num_nextTrunk =\n";
+        $line_conf1 .= "OUTMAXCHANS_$num_nextTrunk =\n";
+        $line_conf1 .= "OUTCID_$num_nextTrunk =\n";
+        $line_conf1 .= "OUTKEEPCID_$num_nextTrunk = off\n";
+        $line_conf1 .= "OUTFAIL_$num_nextTrunk =\n";
+        $line_conf1 .= "OUTDISABLE_$num_nextTrunk = off\n\n";
+
+        $line_conf2 .= "\n";
+        $line_conf2 .= "[from-trunk-$typeTrunk-$nameTrunk]\n";
+        $line_conf2 .= "include => from-trunk-$typeTrunk-$nameTrunk-custom\n";
+        $line_conf2 .= "exten => _.,1,Set(GROUP()=OUT_$num_nextTrunk)\n";
+        $line_conf2 .= "exten => _.,n,Goto(from-trunk,\${EXTEN},1)\n";
+        $line_conf2 .= "; end of [from-trunk-$typeTrunk-$nameTrunk]\n";
+
+        $arrayConfig['globals']    = $arrayConfig['globals'].$line_conf1;
+        $arrayConfig['from-trunk'] = $arrayConfig['from-trunk'].$line_conf2;
+
+        return $arrayConfig;
     }
 
-
-    //function addConfFileSipAdditional($type)
-    function addConfFileSipCustom($type)
+    //solo guarda las troncales que contienen reglas
+    function addConfFileLocalPrefixes($nameTrunk, $typeTrunk, $arrayConfig, $num_nextTrunk)
     {
-        $text = "\n";
-        $text .="[$type]\n";
-        //Peer Detail 
-        if($type=="Net2Phone") $data = $this->getVoIPProviderByProvider(1);
-        else if($type=="camundaNET") $data = $this->getVoIPProviderByProvider(2);
-        else if($type=="Vitelity") $data = $this->getVoIPProviderByProvider(3);
-        else if($type=="StarVox") $data = $this->getVoIPProviderByProvider(5);
 
+
+    }
+
+	function saveFile($FILE, $type_mode, $text)
+	{
+		$fp = fopen($FILE, $type_mode);
+        fwrite($fp, $text);
+        fclose($fp);
+	}
+
+    function addConfFileSipCustom($data, $type, $arrayConfig)
+    {
+        $text ="[$type]\n";
         if($data['username']!=null) $text .= "username={$data['username']}\n";
         if($data['type']!=null) $text .= "type={$data['type']}\n";
         if($data['password']!=null) $text .= "secret={$data['password']}\n";
         if($data['qualify']!=null) $text .= "qualify={$data['qualify']}\n";
-        if($data['insecure']!=null) $text .= "insecure=port,invite\n";//very
+        if($data['insecure']!=null) $text .= "insecure={$data['insecure']}\n";
         if($data['host']!=null) $text .= "host={$data['host']}\n";
         if($data['fromuser']!=null) $text .= "fromuser={$data['fromuser']}\n";
         if($data['fromdomain']!=null) $text .= "fromdomain={$data['fromdomain']}\n";
@@ -418,429 +480,96 @@ class paloSantoVoIPProvider {
         if($data['allow']!=null) $text .= "allow={$data['allow']}\n";
         if($data['trustrpid']!=null) $text .= "trustrpid={$data['trustrpid']}\n";
         if($data['sendrpid']!=null) $text .= "sendrpid={$data['sendrpid']}\n";
-        if($data['canreinvite']!=null) $text .= "canreinvite={$data['canreinvite']}\n\n";
-
-        $this->saveChangeFileSipCustom($text);
-        exec("sudo /etc/rc.d/init.d/asterisk reload");
+        if($data['canreinvite']!=null) $text .= "canreinvite={$data['canreinvite']}\n";
+        $text .= "\n";
+        $arrayConfig['sip-custom'] = $arrayConfig['sip-custom'].$text;
+        return $arrayConfig;
     }
 
-    //function updateFileSipAdditional($type)
-    function updateFileSipCustom($type)
+    function addConfFileIaxCustom($data, $type, $arrayConfig)
     {
-        $FILE='/etc/asterisk/sip_custom.conf';
-        $text_sipadd = "";
-        $find="false";
-        $fp = fopen($FILE,'r');
+        $text ="[$type]\n";
+        if($data['username']!=null) $text .= "username={$data['username']}\n";
+        if($data['type']!=null) $text .= "type={$data['type']}\n";
+        if($data['password']!=null) $text .= "secret={$data['password']}\n";
+        if($data['qualify']!=null) $text .= "qualify={$data['qualify']}\n";
+        if($data['insecure']!=null) $text .= "insecure={$data['insecure']}\n";
+        if($data['host']!=null) $text .= "host={$data['host']}\n";
+        if($data['fromuser']!=null) $text .= "fromuser={$data['fromuser']}\n";
+        if($data['fromdomain']!=null) $text .= "fromdomain={$data['fromdomain']}\n";
+        if($data['dtmfmode']!=null) $text .= "dtmfmode={$data['dtmfmode']}\n";
+        if($data['disallow']!=null) $text .= "disallow={$data['disallow']}\n";
+        if($data['context']!=null) $text .= "context={$data['context']}\n";
+        if($data['allow']!=null) $text .= "allow={$data['allow']}\n";
+        if($data['trustrpid']!=null) $text .= "trustrpid={$data['trustrpid']}\n";
+        if($data['sendrpid']!=null) $text .= "sendrpid={$data['sendrpid']}\n";
+        if($data['canreinvite']!=null) $text .= "canreinvite={$data['canreinvite']}\n";
+        $text .= "\n";
 
-        $arrTrunks = $this->getIndexSipCustom();
-
-        while($line = fgets($fp, filesize($FILE)))
-        {
-        $count=1;
-        $i=0;
-            while($count <= count($arrTrunks)) {
-                if(eregi($type, $line) && $find=="false") {
-                    if($type=="Net2Phone") $data = $this->getVoIPProviderByProvider(1);
-                    else if($type=="camundaNET") $data = $this->getVoIPProviderByProvider(2);
-                    else if($type=="Vitelity") $data = $this->getVoIPProviderByProvider(3);
-                    else if($type=="StarVox") $data = $this->getVoIPProviderByProvider(5);
-                    
-                    $text = "\n";
-                    $text = $line;
-                    if($data['username']!=null) $text .= "username={$data['username']}\n";
-                    if($data['type']!=null) $text .= "type={$data['type']}\n";
-                    if($data['password']!=null) $text .= "secret={$data['password']}\n";
-                    if($data['qualify']!=null) $text .= "qualify={$data['qualify']}\n";
-                    if($data['insecure']!=null) $text .= "insecure=port,invite\n";//very
-                    if($data['host']!=null) $text .= "host={$data['host']}\n";
-                    if($data['fromuser']!=null) $text .= "fromuser={$data['fromuser']}\n";
-                    if($data['fromdomain']!=null) $text .= "fromdomain={$data['fromdomain']}\n";
-                    if($data['dtmfmode']!=null) $text .= "dtmfmode={$data['dtmfmode']}\n";
-                    if($data['disallow']!=null) $text .= "disallow={$data['disallow']}\n";
-                    if($data['context']!=null) $text .= "context={$data['context']}\n";
-                    if($data['allow']!=null) $text .= "allow={$data['allow']}\n";
-                    if($data['trustrpid']!=null) $text .= "trustrpid={$data['trustrpid']}\n";
-                    if($data['sendrpid']!=null) $text .= "sendrpid={$data['sendrpid']}\n";
-                    if($data['canreinvite']!=null) $text .= "canreinvite={$data['canreinvite']}\n";
-                    $text .= "\n\n";
-                    $text_sipadd .=$text;
-                    $i++;
-                    $find = "true";
-                    
-                }else if(!eregi($arrTrunks[$count], $line) && $find=="true") {
-                    $count++;
-                }else {
-                    if($i<1) {
-                        $text_sipadd .= $line;
-                        $find = "false";
-                        $i++;
-                    }
-                    $count++;
-                }
-            }
-        }
-        $this->updateChangeFileSipCustom($text_sipadd);
-        exec("sudo /etc/rc.d/init.d/asterisk reload");
-        fclose($fp);
+        $arrayConfig['iax-custom'] = $arrayConfig['iax-custom'].$text;
+        return $arrayConfig;
     }
 
-
-    function addConfFileIaxCustom($type)
+    function getIndexTrunk()
     {
-        $text = "";
-        $text .="[$type]\n";
-        if($type=="NuFoneIAX"){
-            $data = $this->getVoIPProviderByProvider(4);
-            if($data['username']!=null) $text .= "username={$data['username']}\n";
-            if($data['type']!=null) $text .= "type={$data['type']}\n";
-            if($data['password']!=null) $text .= "secret={$data['password']}\n";
-            if($data['qualify']!=null) $text .= "qualify={$data['qualify']}\n";
-            if($data['insecure']!=null) $text .= "insecure=port,invite\n";//very
-            if($data['host']!=null) $text .= "host={$data['host']}\n";
-            if($data['fromuser']!=null) $text .= "fromuser={$data['fromuser']}\n";
-            if($data['fromdomain']!=null) $text .= "fromdomain={$data['fromdomain']}\n";
-            if($data['dtmfmode']!=null) $text .= "dtmfmode={$data['dtmfmode']}\n";
-            if($data['disallow']!=null) $text .= "disallow={$data['disallow']}\n";
-            if($data['context']!=null) $text .= "context={$data['context']}\n";
-            if($data['allow']!=null) $text .= "allow={$data['allow']}\n";
-            if($data['trustrpid']!=null) $text .= "trustrpid={$data['trustrpid']}\n";
-            if($data['sendrpid']!=null) $text .= "sendrpid={$data['sendrpid']}\n";
-            if($data['canreinvite']!=null) $text .= "canreinvite={$arr_data['canreinvite']}\n";
-            $text .= "\n";
+        $FILE1='/etc/asterisk/extensions_additional.conf';
+        $FILE2='/etc/asterisk/extensions_custom.conf';
+
+        $dataTrunk1 = array();
+        $dataTrunk2 = array();
+        $fp1 = fopen($FILE1,'r');
+        $fp2 = fopen($FILE2,'r');
+
+        // OUT_index = type/name
+        //OUT_4      = SIP/to_sip1.starvox.com
+        $regex = "/^OUT_([[:digit:]]+) =/";
+
+        while($line = fgets($fp1, filesize($FILE1))) {
+            if(preg_match($regex, $line, $arrReg))
+                $dataTrunk1[] = $arrReg[1];
         }
-        $this->saveChangeFileIaxCustom($text);
-        exec("sudo /etc/rc.d/init.d/asterisk reload");
+        fclose($fp1);
+
+        while($line = fgets($fp2, filesize($FILE2))) {
+            if(preg_match($regex, $line, $arrReg))
+                $dataTrunk2[] = $arrReg[1];
+        }
+        fclose($fp2);
+
+        array_push($dataTrunk1,$dataTrunk2);
+        sort($dataTrunk1,SORT_NUMERIC);
+        return array_pop($dataTrunk1);
     }
 
-    function updateFileIaxCustom($type)
+    function createFile($FILE){
+        $fp = fopen($FILE, 'w');
+        fwrite($fp, "");
+        fclose($fp);
+    }
+
+    function reloadAsterisk($dsn_agi_manager)
     {
-        $FILE='/etc/asterisk/iax_custom.conf';
-        $text_iaxadd = "";
-        $fp = fopen($FILE,'r');
-        //$link="none";
-        $find="false";
-        $arrTrunks = $this->getIndexIaxCustom();
-    
-        while($line = fgets($fp, filesize($FILE)))
-        {
-        $count=1;
-        $i=0;
-            while($count <= count($arrTrunks)) {
-                if(eregi($type, $line) && $find=="false"){
-                    if("NuFoneIAX") $data = $this->getVoIPProviderByProvider(4);
-                    $text = "\n";
-                    $text = $line;
-                    if($data['username']!=null) $text .= "username={$data['username']}\n";
-                    if($data['type']!=null) $text .= "type={$data['type']}\n";
-                    if($data['password']!=null) $text .= "secret={$data['password']}\n";
-                    if($data['qualify']!=null) $text .= "qualify={$data['qualify']}\n";
-                    if($data['insecure']!=null) $text .= "insecure=port,invite\n";//very
-                    if($data['host']!=null) $text .= "host={$data['host']}\n";
-                    if($data['fromuser']!=null) $text .= "fromuser={$data['fromuser']}\n";
-                    if($data['fromdomain']!=null) $text .= "fromdomain={$data['fromdomain']}\n";
-                    if($data['dtmfmode']!=null) $text .= "dtmfmode={$data['dtmfmode']}\n";
-                    if($data['disallow']!=null) $text .= "disallow={$data['disallow']}\n";
-                    if($data['context']!=null) $text .= "context={$data['context']}\n";
-                    if($data['allow']!=null) $text .= "allow={$data['allow']}\n";
-                    if($data['trustrpid']!=null) $text .= "trustrpid={$data['trustrpid']}\n";
-                    if($data['sendrpid']!=null) $text .= "sendrpid={$data['sendrpid']}\n";
-                    if($data['canreinvite']!=null) $text .= "canreinvite={$arr_data['canreinvite']}\n";
-                    $text .= "\n";
-                    $text_iaxadd .=$text;
-                    $i++;
-                    $find = "true";
-                }else if(!eregi($arrTrunks[$count], $line) && $find=="true") {
-                    $count++;
-                }else{
-                    if($i<1) {
-                        $text_iaxadd .= $line;
-                        $find = "false";
-                        $i++;
-                    }
-                    $count++;
-                }
+        $arrResult = $this->AsteriskManager_Command($dsn_agi_manager['host'], $dsn_agi_manager['user'], $dsn_agi_manager['password'], "reload");
+    }
+
+    function AsteriskManager_Command($host, $user, $password, $command) {
+        global $arrLang;
+        $astman = new AGI_AsteriskManager( );
+        if (!$astman->connect("$host", "$user" , "$password")) {
+            $this->errMsg = $arrLang["Error when connecting to Asterisk Manager"];
+        } else{
+            $salida = $astman->Command("$command");
+            $astman->disconnect();
+            if (strtoupper($salida["Response"]) != "ERROR") {
+                return split("\n", $salida["data"]);
             }
         }
-        $this->updateChangeFileIaxCustom($text_iaxadd);
-        exec("sudo /etc/rc.d/init.d/asterisk reload");
-        fclose($fp);
-    }
-    
-
-    function addConfFileSipRegistrations($username, $secret, $host)
-    {
-        //$FILE='/etc/asterisk/sip_registrations.conf';
-        $FILE='/etc/asterisk/sip_registrations_custom.conf';
-        $text = "";
-        $fp = fopen($FILE,'r');
-
-        $text .="register=$username:$secret@$host/$username\n";
-        $this->saveChangeFileSipRegistrations($text);
-        fclose($fp);
-    }
-
-    function addConfFileIaxRegistrations($username, $secret, $host)
-    {
-        //$FILE='/etc/asterisk/iax_registrations.conf';
-        $FILE='/etc/asterisk/iax_registrations_custom.conf';
-        $text = "";
-        $fp = fopen($FILE,'r');
-
-        $text .="register=$username:$secret@$host\n";
-        $this->saveChangeFileIaxRegistrations($text);
-        fclose($fp);
-    }
-
-    function updateFileSipRegistrations($username, $secret, $host)
-    {
-        //$FILE='/etc/asterisk/sip_registrations.conf';
-        $FILE='/etc/asterisk/sip_registrations_custom.conf';
-        $text = "";
-        $fp = fopen($FILE,'r');
-        //$text .="\n";
-        while($line = fgets($fp, filesize($FILE)))
-        {
-            if(eregi($host, $line)){
-                $text .="register=$username:$secret@$host/$username\n";
-            }else{
-                $text .= $line;
-            }
-        }
-        $this->updateChangeFileSipRegistrations($text);
-        fclose($fp);
-    }
-
-    function updateFileIaxRegistrations($username, $secret, $host)
-    {
-        //$FILE='/etc/asterisk/iax_registrations.conf';
-        $FILE='/etc/asterisk/iax_registrations_custom.conf';
-        $text = "";
-        $fp = fopen($FILE,'r');
-        //$text .="\n";
-        while($line = fgets($fp, filesize($FILE)))
-        {
-            if(eregi($host, $line)){
-                $text .="register=$username:$secret@$host\n";
-            }else{
-                $text .= $line;
-            }
-        }
-        $this->updateChangeFileIaxRegistrations($text);
-        fclose($fp);
-    }
-
-    function getIndexTrunkExtenAdd()
-    {
-        $FILE='/etc/asterisk/extensions_additional.conf';
-        $count = 0;
-        $last = "";
-        $dataTrunk = array();
-        $fp = fopen($FILE,'r');
-        while($line = fgets($fp, filesize($FILE)))
-        {
-            if(ereg("^([[:alnum:]]+)_([[:digit:]]+)[[:space:]]=[[:space:]]([[:alnum:]]+)/([a-zA-Z_0-9]+)", $line, $arrReg)){
-                if("OUT" == $arrReg[1]){
-                    $count++;
-                    $dataTrunk[$count]['index'] = $arrReg[2];
-                    $dataTrunk[$count]['type'] = $arrReg[3];
-                    $dataTrunk[$count]['name'] = $arrReg[4];
-                }
-            }
-        }
-        fclose($fp);
-        return $dataTrunk;
-    }
-
-    function getIndexTrunkExtenCust()
-    {
-        $FILE='/etc/asterisk/extensions_custom.conf';
-        $count = 0;
-        $last = "";
-        $dataTrunk = array();
-        $fp = fopen($FILE,'r');
-        while($line = fgets($fp, filesize($FILE)))
-        {
-            if(ereg("^([[:alnum:]]+)_([[:digit:]]+)[[:space:]]=[[:space:]]([[:alnum:]]+)/([a-zA-Z_0-9]+)", $line, $arrReg)){
-                if("OUT" == $arrReg[1]){
-                    $count++;
-                    $dataTrunk[$count]['index'] = $arrReg[2];
-                    $dataTrunk[$count]['type'] = $arrReg[3];
-                    $dataTrunk[$count]['name'] = $arrReg[4];
-                }
-            }
-        }
-        fclose($fp);
-        return $dataTrunk;
-    }
-    
-    function getIndexSipCustom()
-    {
-        $dataTrunk = array();
-        $count = 0;
-//         $FILE='/etc/asterisk/sip_additional.conf';
-        $FILE='/etc/asterisk/sip_custom.conf';
-        $fp = fopen($FILE, 'r');
-        while($line = fgets($fp, filesize($FILE)))
-        {
-            if(ereg("([[a-zA-Z_0-9]+])", $line, $arrReg)){//obtengo datos solo dentro de corchetes
-                $count++;
-                if(ereg("([a-zA-Z_0-9]+)", $arrReg[1], $arrSubReg))
-                    $dataTrunk[$count] = $arrSubReg[1];
-            }
-        }
-        fclose($fp);
-        return $dataTrunk;
-    }
-
-    function getIndexIaxCustom()
-    {
-        $dataTrunk = array();
-        $count = 0;
-
-        $FILE='/etc/asterisk/iax_custom.conf';
-        $fp = fopen($FILE, 'r');
-        while($line = fgets($fp, filesize($FILE)))
-        {
-            if(ereg("([[a-zA-Z_0-9]+])", $line, $arrReg)){//obtengo datos solo dentro de corchetes
-                $count++;
-                if(ereg("([a-zA-Z_0-9]+)", $arrReg[1], $arrSubReg))
-                    $dataTrunk[$count] = $arrSubReg[1];
-            }
-        }
-        fclose($fp);
-        return $dataTrunk;
-    }
-
-    function updateTrunkAttribute($data, $where)
-    {
-        $queryUpdate = $this->_DB->construirUpdate('attribute', $data, $where);
-        $result = $this->_DB->genQuery($queryUpdate);
-
-        if($result==FALSE){
-            $this->errMsg = $this->_DB->errMsg;
-            return array();
-        }
-        return $result;
-    }
-
-    function updateTrunkParameter($data, $where)
-    {
-        $queryUpdate = $this->_DB->construirUpdate('trunk', $data, $where);
-        $result = $this->_DB->genQuery($queryUpdate);
-
-        if($result==FALSE){
-            $this->errMsg = $this->_DB->errMsg;
-            return array();
-        }
-        return $result;
-    }
-
-    //Validacion
-    function findTrunkInExtensionCustom($type_provider){
-        //$FILE='/etc/asterisk/extensions_additional.conf';
-        $FILE='/etc/asterisk/extensions_custom.conf';
-        $fp = fopen($FILE,'r');
-        $found = "false";
-        while($line = fgets($fp, filesize($FILE)))
-        {
-            if(ereg($type_provider, $line)){
-                $found = "true";
-            }
-        }
-        fclose($fp);
-        return $found;
-    }
-
-    function findTrunkInLocalPrefixes($type_provider){
-        $FILE='/etc/asterisk/localprefixes.conf';
-        
-        $fp = fopen($FILE,'r');
-        $arrTrunks = $this->getIndexTrunkExtenCust();
-        $num_trunks = count($arrTrunks);
-        //$num_last_trunk = $arrTrunks[$num_trunks]['index'];
-        $index = 0;
-        $found = "false";
-        if(is_array($arrTrunks) && count($arrTrunks)>1){
-            for($i=1 ; $i<=$num_trunks; $i++){
-                if($arrTrunks[$i]['name'] == $type_provider){
-                    $index=$arrTrunks[$i]['index'];
-                }
-            }
-        }
-        $filter = "trunk-".$index;
-        while($line = fgets($fp, filesize($FILE)))
-        {
-            if(eregi($filter, $line)){
-                $found = "true";
-            }
-        }
-        fclose($fp);
-        return $found;
-    }
-
-    function findTrunkInSipCustom($type_provider){
-        //$FILE='/etc/asterisk/sip_additional.conf';
-        $FILE='/etc/asterisk/sip_custom.conf';
-        $fp = fopen($FILE,'r');
-        $found = "false";
-        while($line = fgets($fp, filesize($FILE)))
-        {
-            if(eregi($type_provider, $line)){
-                $found = "true";
-            }
-        }
-        fclose($fp);
-        return $found;
-    }
-
-    function findTrunkInIaxCustom($type_provider){
-        //$FILE='/etc/asterisk/iax_additional.conf';
-        $FILE='/etc/asterisk/iax_custom.conf';
-        $fp = fopen($FILE,'r');
-        $found = "false";
-        while($line = fgets($fp, filesize($FILE)))
-        {
-            if(eregi($type_provider, $line)){
-                $found = "true";
-            }
-        }
-        fclose($fp);
-        return $found;
-    }
-
-    function findTrunkInSipRegistrations($host){
-        //$FILE='/etc/asterisk/sip_registrations.conf';
-        $FILE='/etc/asterisk/sip_registrations_custom.conf';
-        $fp = fopen($FILE,'r');
-        $found = "false";
-        while($line = fgets($fp, filesize($FILE)))
-        {
-            if(eregi($host, $line)){
-                $found = "true";
-            }
-        }
-        fclose($fp);
-        return $found;
-    }
-
-    function findTrunkInIaxRegistrations($host){
-        //$FILE='/etc/asterisk/iax_registrations.conf';
-        $FILE='/etc/asterisk/iax_registrations_custom.conf';
-        $fp = fopen($FILE,'r');
-        $found = "false";
-        while($line = fgets($fp, filesize($FILE)))
-        {
-            if(eregi($host, $line)){
-                $found = "true";
-            }
-        }
-        fclose($fp);
-        return $found;
+        return false;
     }
 
     function validateFormEmpty($arrConfigTrunk){
         $anyone_empty=false;
-        
+
         if($arrConfigTrunk['username']==" " || $arrConfigTrunk['username']==null){
             $anyone_empty=true;
             return $anyone_empty;
