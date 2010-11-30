@@ -288,11 +288,20 @@ class paloSantoGrid {
         $this->smarty->assign("contentFilter", $htmlFilter);
     }
 
-    function calculatePagination($accion, $start)
+    function calculatePagination()
     {
+        $accion = getParameter2("nav");
+        $start  = getParameter2("start");
+
         $this->setOffsetValue($this->getOffSet($this->getLimit(),$this->getTotal(),$accion,$start));
         $this->setEnd(($this->getOffsetValue() + $this->getLimit()) <= $this->getTotal() ? $this->getOffsetValue() + $this->getLimit() : $this->getTotal());
         $this->setStart(($this->getTotal()==0) ? 0 : $this->getOffsetValue() + 1);
+    }
+
+    function calculateOffset()
+    {
+        $this->calculatePagination();
+        return $this->getOffsetValue();
     }
 
     function getOffSet($limit,$total,$accion,$start)
