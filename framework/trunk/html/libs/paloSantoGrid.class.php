@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.5                                                  |
+  | Elastix version 2.0.3                                                |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,49 +25,49 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: paloSantoGrid.class.php,v 1.1.1.1 2007/07/06 21:31:55 gcarrillo Exp $ */
+  $Id: paloSantoGrid.class.php, bmacias@palosanto.com Exp $ */
 global $arrConf;
-require_once "{$arrConf['basePath']}/libs/xajax/xajax.inc.php";
 require_once "{$arrConf['basePath']}/libs/paloSantoPDF.class.php";
 
 
 class paloSantoGrid {
 
+    var $title;
+    var $icon;
+    var $width;
     var $enableExport;
     var $limit;
     var $total;
     var $offset;
+    var $start;
     var $end;
     var $tplFile;
-
-    //Implementation AJAX
-    var $withAjax;
-    var $functionNameAjax;
-    var $prefixAjax;
     var $pagingShow;
     var $nameFile_Export;
+    var $arrHeaders;
+    var $arrData;
+    var $url;
 
     function paloSantoGrid($smarty)
     {
+        $this->title  = "";
+        $this->icon   = "images/list.png";
+        $this->width  = "99%";
         $this->smarty = $smarty;
         $this->enableExport = false;
         $this->offset = 0;
-        $this->end = 0;
-        $this->limit = 0;
-        $this->total = 0;
-        $this->withAjax = 0;
-        $this->functionNameAjax = "";
-        $this->prefixAjax = "xajax_";
+        $this->start  = 0;
+        $this->end    = 0;
+        $this->limit  = 0;
+        $this->total  = 0;
         $this->pagingShow = 1;
-        $this->tplFile = "_common/_list.tpl";
+        $this->tplFile    = "_common/_list.tpl";
         $this->nameFile_Export = "Report-".date("YMd.His");
+        $this->arrHeaders = array();
+        $this->arrData    = array();
+        $this->url        = "";
     }
 
-    function withAjax()
-    {
-        $this->withAjax = 1;
-    }
- 
     function pagingShow($show)
     {
         $this->pagingShow = (int)$show;
@@ -78,13 +78,95 @@ class paloSantoGrid {
         $this->tplFile  = $tplFile;
     }
 
-    function withoutAjax()
+    function getTitle()
     {
-        $this->withAjax = 0;
+        return $this->title;
     }
 
-    function fetchGrid($arrGrid, $arrData,$arrLang=array())
+    function setTitle($title)
     {
+        $this->title = $title;
+    }
+
+    function getIcon()
+    {
+        return $this->icon;
+    }
+
+    function setIcon($icon)
+    {
+        $this->icon = $icon;
+    }
+
+    function getWidth()
+    {
+        return $this->width;
+    }
+
+    function setWidth($width)
+    {
+        $this->width = $width;
+    }
+
+    function setURL($url)
+    {
+        $this->url = $url;
+    }
+
+    function getColumns()
+    {
+        return $this->arrHeaders;
+    }
+
+    function setColumns($arrColumns)
+    {
+        $arrHeaders = array();
+
+        if(is_array($arrColumns) && count($arrColumns)>0){
+            foreach($arrColumns as $k => $column){
+                $arrHeaders[] = array(
+                    "name"      => $column,
+                    "property1" => "");
+            }
+        }
+        $this->arrHeaders = $arrHeaders;
+    }
+
+    function getData()
+    {
+        return $this->arrData;
+    }
+
+    function setData($arrData)
+    {
+        if(is_array($arrData) && count($arrData)>0)
+            $this->arrData = $arrData;
+    }
+
+    function fetchGrid($arrGrid=array(), $arrData=array(), $arrLang=array())
+    {
+        if(isset($arrGrid["title"]))
+            $this->title = $arrGrid["title"];
+        if(isset($arrGrid["icon"]))
+            $this->icon  = $arrGrid["icon"];
+        if(isset($arrGrid["width"]))
+            $this->width = $arrGrid["width"];
+
+        if(isset($arrGrid["start"]))
+            $this->start = $arrGrid["start"];
+        if(isset($arrGrid["end"]))
+            $this->end   = $arrGrid["end"];
+        if(isset($arrGrid["total"]))
+            $this->total = $arrGrid["total"];
+        if(isset($arrGrid["url"]))
+            $this->url   = $arrGrid["url"];
+
+        if(isset($arrGrid["columns"]) && count($arrGrid["columns"]) > 0)
+            $this->arrHeaders = $arrGrid["columns"];
+        if(isset($arrData) && count($arrData) > 0)
+            $this->arrData = $arrData;
+
+
         $export = $this->exportType();
 
         switch($export){
@@ -92,59 +174,53 @@ class paloSantoGrid {
                 $content = $this->fetchGridCSV($arrGrid, $arrData);
                 break;
             case "pdf":
-                $content = $this->fetchGridPDF($arrGrid, $arrData);
+                $content = $this->fetchGridPDF();
                 break;
             case "xls":
-                $content = $this->fetchGridXLS($arrGrid, $arrData);
+                $content = $this->fetchGridXLS();
                 break;
             default: //html
-                $content = $this->fetchGridHTML($arrGrid, $arrData, $arrLang);
+                $content = $this->fetchGridHTML();
                 break;
         }
         return $content;
     }
 
-    function fetchGridCSV($arrGrid, $arrData)
+    function fetchGridCSV($arrGrid=array(), $arrData=array())
     {
+        if(isset($arrGrid["columns"]) && count($arrGrid["columns"]) > 0)
+            $this->arrHeaders = $arrGrid["columns"];
+        if(isset($arrData) && count($arrData) > 0)
+            $this->arrData = $arrData;
+
         header("Cache-Control: private");
         header("Pragma: cache");
         header("Content-Type: application/octec-stream");
         header("Content-disposition: inline; filename={$this->nameFile_Export}.csv");
         header("Content-Type: application/force-download");
 
-        $numColumns=count($arrGrid["columns"]);
-
-        $this->smarty->assign("title", $arrGrid['title']);
-        $this->smarty->assign("icon",  $arrGrid['icon']);
-        $this->smarty->assign("width", $arrGrid['width']);
-
-        $this->smarty->assign("start", $arrGrid['start']);
-        $this->smarty->assign("end",   $arrGrid['end']);
-        $this->smarty->assign("total", $arrGrid['total']);
-
-        $this->smarty->assign("url",   isset($arrGrid['url'])?$arrGrid['url']:'');
-
-        $this->smarty->assign("header",  $arrGrid["columns"]);
-
-        $this->smarty->assign("arrData", $arrData);
+        $numColumns = count($this->getColumns());
         $this->smarty->assign("numColumns", $numColumns);
+        $this->smarty->assign("header",     $this->getColumns());
+        $this->smarty->assign("arrData",    $this->getData());
+
         return $this->smarty->fetch("_common/listcsv.tpl");
     }
 
-    function fetchGridPDF($arrGrid, $arrData)
+    function fetchGridPDF()
     {
-	    $pdf= new paloPDF();
-            $pdf->setOrientation("L");
-            $pdf->setFormat("A3");            
-	    //$pdf->setLogoHeader("themes/elastixwave/images/logo_elastix.gif");
-	    $pdf->setColorHeader(array(5,68,132));
-	    $pdf->setColorHeaderTable(array(227,83,50));
-	    $pdf->setFont("Verdana");
-            $pdf->printTable("{$this->nameFile_Export}.pdf",$arrGrid['title'],$arrGrid['columns'],$arrData);
+        $pdf= new paloPDF();
+        $pdf->setOrientation("L");
+        $pdf->setFormat("A3");            
+        //$pdf->setLogoHeader("themes/elastixwave/images/logo_elastix.gif");
+        $pdf->setColorHeader(array(5,68,132));
+        $pdf->setColorHeaderTable(array(227,83,50));
+        $pdf->setFont("Verdana");
+        $pdf->printTable("{$this->nameFile_Export}.pdf", $this->getTitle(), $this->getColumns(), $this->getData());
         return "";
     }
 
-    function fetchGridXLS($arrGrid, $arrData)
+    function fetchGridXLS()
     {
         //header ("Expires: 0");
         header ("Cache-Control: no-cache, must-revalidate, post-check=0, pre-check=0");
@@ -162,11 +238,13 @@ class paloSantoGrid {
 
         $tmp = $this->xlsBOF();
         # header
-        foreach($arrGrid["columns"] as $i => $header)
+        $headers = $this->getColumns();
+        foreach($headers as $i => $header)
             $tmp .= $this->xlsWriteCell(0,$i,$header["name"]);
 
         #data
-        foreach($arrData as $k => $row) {
+        $data = $this->getData();
+        foreach($data as $k => $row) {
             foreach($row as $i => $cell){
                 $tmp .= $this->xlsWriteCell($k+1,$i,$cell);
             }
@@ -175,47 +253,33 @@ class paloSantoGrid {
         echo $tmp;
     }
 
-    function fetchGridHTML($arrGrid, $arrData,$arrLang=array())
+    function fetchGridHTML($arrLang=array())
     {
-        $this->smarty->assign("withAjax",$this->withAjax);
-        $this->smarty->assign("functionName",$this->prefixAjax.$this->functionNameAjax);
-        /*if($this->pagingShow)
-            $this->smarty->assign("pagingShow",1);
-        else{
-            if($this->total > $this->limit)        
-                $this->smarty->assign("pagingShow",1);
-            else            
-                $this->smarty->assign("pagingShow",0);
-            }*/
         $this->smarty->assign("pagingShow",$this->pagingShow);
 
-        $numColumns=count($arrGrid["columns"]);
-        $this->smarty->assign("title", $arrGrid['title']);
-        $this->smarty->assign("icon",  $arrGrid['icon']);
-        $this->smarty->assign("width", $arrGrid['width']);
+        $this->smarty->assign("title", $this->getTitle());
+        $this->smarty->assign("icon",  $this->getIcon());
+        $this->smarty->assign("width", $this->getWidth());
 
-        $this->smarty->assign("start", $arrGrid['start']);
-        $this->smarty->assign("end",   $arrGrid['end']);
-        $this->smarty->assign("total", $arrGrid['total']);
+        $this->smarty->assign("start", $this->start);
+        $this->smarty->assign("end",   $this->end);
+        $this->smarty->assign("total", $this->total);
 
-        if(isset($arrGrid['url'])) {
-            if (is_array($arrGrid['url']))
-                $this->smarty->assign("url", construirURL($arrGrid['url'], array('nav', 'start')));
-            else $this->smarty->assign("url", $arrGrid['url']);
-        }
+        if(!empty($this->url))
+            $this->smarty->assign("url",   $this->url);
 
-        $this->smarty->assign("header",  $arrGrid["columns"]);
-
-        $this->smarty->assign("arrData", $arrData);
+        $numColumns = count($this->getColumns());
         $this->smarty->assign("numColumns", $numColumns);
+        $this->smarty->assign("header",     $this->getColumns());
+        $this->smarty->assign("arrData",    $this->getData());
 
         $this->smarty->assign("enableExport", $this->enableExport);
+
         //dar el valor a las etiquetas segun el idioma
-        $etiquetas=array('Export','Start','Previous','Next','End');
+        $etiquetas = array('Export','Start','Previous','Next','End');
         foreach ($etiquetas as $etiqueta)
-        {
-            $this->smarty->assign("lbl$etiqueta", (isset($arrLang[$etiqueta])?$arrLang[$etiqueta]:$etiqueta));
-        }
+            $this->smarty->assign("lbl$etiqueta", _tr($etiqueta));
+
         return $this->smarty->fetch($this->tplFile);
     }
 
@@ -228,6 +292,7 @@ class paloSantoGrid {
     {
         $this->setOffsetValue($this->getOffSet($this->getLimit(),$this->getTotal(),$accion,$start));
         $this->setEnd(($this->getOffsetValue() + $this->getLimit()) <= $this->getTotal() ? $this->getOffsetValue() + $this->getLimit() : $this->getTotal());
+        $this->setStart(($this->getTotal()==0) ? 0 : $this->getOffsetValue() + 1);
     }
 
     function getOffSet($limit,$total,$accion,$start)
@@ -273,21 +338,16 @@ class paloSantoGrid {
         $this->offset = $offset;
     }
 
+    function setStart($start)
+    {
+        $this->start = $start;
+    }
+
     function setEnd($end)
     {
         $this->end = $end;
     }
 
-    function setPrefixAjax($prefixAjax)
-    {
-        $this->prefixAjax = $prefixAjax;
-    }
-
-    function setFunctionNameAjax($functionName)
-    {
-        $this->functionNameAjax = $functionName;
-    }
- 
     function getLimit()
     {
         return $this->limit;
