@@ -254,4 +254,48 @@ function getTrunks($oDB)
 	 }
     return false;
 }
+
+/**
+ * Procedimiento para listar todos los grupos de troncales DAHDI que han sido
+ * definidos. Este procedimiento requiere que Asterisk esté en ejecución en el
+ * sistema.
+ *
+ * @return  mixed   Arreglo de la siguiente forma:
+ *  array(0 => array("DAHDI/1", "DAHDI/2", "DAHDI/3"), 1 => array("DAHDI/4", "DAHDI/5", "DAHDI/6"))
+ */
+function getTrunkGroupsDAHDI()
+{
+    require_once '/var/lib/asterisk/agi-bin/phpagi-asmanager.php';
+    require_once 'libs/paloSantoConfig.class.php';
+    
+    // Obtener las credenciales y abrir la conexión Asterisk
+    $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
+    $arrConfig = $pConfig->leer_configuracion(false);
+    $astman = new AGI_AsteriskManager();
+    if (!$astman->connect('localhost', $arrConfig['AMPMGRUSER']['valor'], $arrConfig['AMPMGRPASS']['valor'])) {
+        return NULL;
+    } else {
+        /*
+           Chan Extension  Context         Language   MOH Interpret        Blocked    State     
+              1            from-pstn                  default                         In Service
+              2            from-pstn                  default                         In Service
+              3            from-pstn                  default                         In Service
+              4            from-pstn                  default                         In Service
+        */
+        // Se conoce que los números de grupo van de 0 a 63
+        $grupos = array();
+        for ($iGrupo = 0; $iGrupo < 64; $iGrupo++) {
+            $r = $astman->Command("dahdi show channels group $iGrupo");
+            if (isset($r['data'])) {
+                $lineas = explode("\n", $r['data']);
+                foreach ($lineas as $sLinea) {
+                    if (preg_match('/^\s+(\d+)/', $sLinea, $regs))
+                        $grupos[$iGrupo][] = 'DAHDI/'.$regs[1];
+                }
+            }
+        }
+        $astman->disconnect();        
+        return $grupos;
+    }
+}
 ?>
