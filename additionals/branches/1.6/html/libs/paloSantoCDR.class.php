@@ -248,7 +248,7 @@ class paloSantoCDR
     }
 
     // Función de compatibilidad para código antiguo
-    function Delete_All_CDRs($date_start="", $date_end="", $field_name="", $field_pattern="",$status="ALL",$calltype="",$troncales=NULL)
+    function Delete_All_CDRs($date_start="", $date_end="", $field_name="", $field_pattern="",$status="ALL",$calltype="",$troncales=NULL, $extension="")
     {
         $param = array();
         if (!empty($date_start)) $param['date_start'] = $date_start;
@@ -258,6 +258,7 @@ class paloSantoCDR
         if (!empty($status) && $status != 'ALL') $param['status'] = $status;
         if (!empty($calltype)) $param['calltype'] = $calltype;
         if (!empty($troncales)) $param['troncales'] = $troncales;
+        if (!empty($extension)) $param['extension'] = $extension;
         return $this->borrarCDRs($param);
     }
 }
