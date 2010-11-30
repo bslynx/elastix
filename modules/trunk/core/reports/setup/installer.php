@@ -31,12 +31,12 @@ $DocumentRoot = (isset($_SERVER['argv'][1]))?$_SERVER['argv'][1]:"/var/www/html"
 $DataBaseRoot = "/var/www/db";
 $tmpDir = '/tmp/new_module/reports';  # in this folder the load module extract the package content
 
-if(!file_exists("$DataBaseRoot/trunk.db")){
+/*if(!file_exists("$DataBaseRoot/trunk.db")){
     $cmd_mv    = "mv $tmpDir/setup/trunk.db $DataBaseRoot/";
     $cmd_chown = "chown asterisk.asterisk $DataBaseRoot/trunk.db";
     exec($cmd_mv);
     exec($cmd_chown);
-}
+}*/
 if(!file_exists("$DataBaseRoot/rate.db")){
     $cmd_mv    = "mv $tmpDir/setup/rate.db $DataBaseRoot/";
     $cmd_chown = "chown asterisk.asterisk $DataBaseRoot/rate.db";
