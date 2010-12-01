@@ -122,6 +122,12 @@ function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, &$
     $_DATA = $_POST;
     //begin grid parameters
     $oGrid  = new paloSantoGrid($smarty);
+    $oGrid->setTitle(_tr("Monitoring"));
+    $oGrid->pagingShow(true); // show paging section.
+
+    $oGrid->enableExport();   // enable export.
+    $oGrid->setNameFile_Export(_tr("Monitoring"));
+
     if($esAdministrador)
         $totalMonitoring = $pMonitoring->getNumMonitoring($filter_field, $filter_value, null, $date_initial, $date_final);
     else
@@ -179,12 +185,9 @@ function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, &$
         $total  = $totalMonitoring;
         $oGrid->setLimit($limit);
         $oGrid->setTotal($total);
-        $oGrid->enableExport();   // enable csv export.
-        $oGrid->pagingShow(true); // show paging section.
-
         $offset = $oGrid->calculateOffset();
-        $end    = $oGrid->getEnd();
-        $arrColumns = array(_tr("<input type='submit' onClick=\"return confirmSubmit('"._tr("message_alert")."');\" name='submit_eliminar' value='"._tr("Delete")."' class='button' />"), _tr("Date"), _tr("Time"), _tr("Source"), _tr("Destination"),_tr("Duration"),_tr("Type"),_tr("Message"));
+
+        $arrColumns = array("<input type='submit' onClick=\"return confirmSubmit('"._tr("message_alert")."');\" name='submit_eliminar' value='"._tr("Delete")."' class='button' />", _tr("Date"), _tr("Time"), _tr("Source"), _tr("Destination"),_tr("Duration"),_tr("Type"),_tr("Message"));
         $oGrid->setColumns($arrColumns);
         
         if($esAdministrador)
