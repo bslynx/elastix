@@ -175,11 +175,11 @@ function insertTrunlBill($trunkName, $pDB)
 function getTrunkBills($pDB)
 {
     $query = "SELECT * FROM trunk_bill;";
-    $result = $pDB->genQuery($query, $data);
+    $result = $pDB->genQuery($query);
     if($result==FALSE){
         return false;
     }
-    return true;
+    return $result;
 }
 
 function getTechnology($id, $pDB)
