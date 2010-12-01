@@ -92,7 +92,8 @@ class paloSantoCDR
                 /* Se asume que la lista de troncales es válida, y que todo canal
                    empieza con la troncal correspondiente */
                 if (!function_exists('_construirWhereCDR_troncal2like')) {
-                    function _construirWhereCDR_troncal2like($s) { return $s.'%'; }
+                    // Búsqueda por DAHDI/1 debe ser 'DAHDI/1-%'
+                    function _construirWhereCDR_troncal2like($s) { return $s.'-%'; }
                 }
                 $paramSQL = array_merge($paramSQL, array_map('_construirWhereCDR_troncal2like', $listaTroncales));
                 $condSQL[] = '('.implode(' OR ', array_fill(0, count($listaTroncales), "$sCampo LIKE ?")).')';                
@@ -102,6 +103,7 @@ class paloSantoCDR
                    contenga al menos un caracter alfabético.
                    FIXME: no reconoce troncales enteramente numéricas que parecen teléfonos
                    FIXME: no reconoce troncales si tienen caracteres no alfanuméricos
+                   FIXME: no reconoce troncales custom (¿cómo se las busca?)
                  */
                 $sRegExpTroncal = '^(ZAP/.+|DAHDI/.+|(SIP|IAX|IAX2|H323)/([[:alnum:]]*[[:alpha:]][[:alnum:]]*))-';
                 $condSQL[] = "$sCampo REGEXP '$sRegExpTroncal'";
