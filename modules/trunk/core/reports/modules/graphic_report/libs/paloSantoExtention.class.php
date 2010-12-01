@@ -218,44 +218,65 @@ class paloSantoExtention {
         return $result;
     }
 
-    function loadTrunks($trunk, $min_call, $date_ini, $date_fin)
+    /**
+     * Procedimiento para consultar estadísticas sobre los CDRs de Asterisk, 
+     * clasificados por troncal.
+     *
+     * @param   mixed   $trunk  Nombre de la troncal, o arreglo de troncales.
+     * @param   string  $sTipoReporte   'min' para total de segundos entrantes y
+     *                                  salientes, o 'numcall' para número de 
+     *                                  llamadas entrantes y salientes
+     * @param   string  $sFechaInicial  Fecha de inicio de rango yyyy-mm-dd
+     * @param   string  $sFechaFinal    Fecha de final de rango yyyy-mm-dd
+     *
+     * @result  mixed   NULL en caso de error, o una tupla con 1 elemento que es
+     *                  tupla de 2 valores para (entrante,saliente)
+     */
+    function loadTrunks($trunk, $sTipoReporte, $sFechaInicial, $sFechaFinal)
     {
-        $str = "";
-        if( strlen($date_ini) >= 5 ){
-            if( strlen($date_fin) <= 5 )
-                $str .= " and ( TO_DAYS( DATE(calldate) ) > TO_DAYS( '$date_ini') OR TO_DAYS( DATE(calldate) ) = TO_DAYS( '$date_ini') )";
-            else{
-                $str .= " and ( TO_DAYS( DATE(calldate) ) > TO_DAYS( '$date_ini') OR TO_DAYS( DATE(calldate) ) = TO_DAYS( '$date_ini') )  ";
-                $str .= " and ( TO_DAYS( DATE(calldate) ) < TO_DAYS( '$date_fin') OR TO_DAYS( DATE(calldate) ) = TO_DAYS( '$date_fin') ) ";
-            }
-        }
+        if (!is_array($trunk)) $trunk = array($trunk);
+        $sCondicionSQL_channel = implode(' OR ', array_fill(0, count($trunk), 'channel LIKE ?'));
+        $sCondicionSQL_dstchannel = implode(' OR ', array_fill(0, count($trunk), 'dstchannel LIKE ?'));
 
-        $query = "";
-        if( $min_call == "min" ){// # minutos
-            $query = "SELECT entrante.totIN, saliente.totOut
-                      FROM (SELECT sum(duration) as totIN
-                            FROM cdr
-                            WHERE channel LIKE '%$trunk%' ".$str." ) as entrante,
-                           (SELECT sum(duration) as totOut
-                            FROM cdr
-                            WHERE dstchannel LIKE '%$trunk%' ".$str." ) as saliente ";
+        /* Se asume que la lista de troncales es válida, y que todo canal
+           empieza con la troncal correspondiente */
+        if (!function_exists('loadTrunks_troncal2like')) {
+            // Búsqueda por DAHDI/1 debe ser 'DAHDI/1-%'
+            function loadTrunks_troncal2like($s) { return $s.'-%'; }
         }
-        else{// # llamadas
-            $query = "SELECT entrante.numIN, saliente.numOut
-                      FROM (SELECT count(duration) as numIN
-                            FROM cdr
-                            WHERE channel LIKE '%$trunk%' ".$str." ) as entrante,
-                           (SELECT count(duration) as numOut
-                            FROM cdr
-                            WHERE dstchannel LIKE '%$trunk%' ".$str." ) as saliente ";
+        $paramTrunk = array_map('loadTrunks_troncal2like', $trunk);
+        
+        // Construir la sentencia SQL correspondiente
+        switch ($sTipoReporte) {
+        case 'min':
+            $sPeticionSQL = <<<SQL_LOADTRUNKS_MIN
+SELECT 
+    IFNULL(SUM(IF(($sCondicionSQL_channel), duration, 0)), 0) AS totIn,
+    IFNULL(SUM(IF(($sCondicionSQL_dstchannel), duration, 0)), 0) AS totOut
+FROM cdr
+WHERE calldate >= ? AND calldate <= ?
+SQL_LOADTRUNKS_MIN;
+            $paramSQL = array_merge($paramTrunk, $paramTrunk, array($sFechaInicial.' 00:00:00', $sFechaFinal.' 23:59:59'));
+            break;
+        case 'numcall':
+            $sPeticionSQL = <<<SQL_LOADTRUNKS_NUMCALL
+SELECT 
+    IFNULL(SUM(IF(($sCondicionSQL_channel), 1, 0)), 0) AS numIn,
+    IFNULL(SUM(IF(($sCondicionSQL_dstchannel), 1, 0)), 0) AS numOut
+FROM cdr
+WHERE calldate >= ? AND calldate <= ?
+SQL_LOADTRUNKS_NUMCALL;
+            $paramSQL = array_merge($paramTrunk, $paramTrunk, array($sFechaInicial.' 00:00:00', $sFechaFinal.' 23:59:59'));
+            break;
+        default:
+            $this->errMsg = '(internal) Invalid report type';
+            return NULL;
         }
-
-        $result = $this->_DB->fetchTable($query, false);
-        if( $result == false ){
-            $this->errMsg = $this->_DB->errMsg;
+        $result = $this->_DB->fetchTable($sPeticionSQL, FALSE, $paramSQL);
+        if (!is_array($result)) {
+            $this->errMsg = '(internal) Failed to fetch stats - '.$this->_DB->errMsg;
             return array();
         }
-
         return $result;
     }
 }
