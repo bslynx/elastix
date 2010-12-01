@@ -79,32 +79,30 @@ function _moduleContent(&$smarty, $module_name)
 
     switch($action){
         case 'delete':
-            $content = deleteRecord($smarty, $module_name, $local_templates_dir, $pDB, $pDBACL, $arrConf, $arrLang);
+            $content = deleteRecord($smarty, $module_name, $local_templates_dir, $pDB, $pDBACL, $arrConf);
             break;
         case 'download':
-            $content = downloadFile($smarty, $module_name, $local_templates_dir, $pDB, $pDBACL, $arrConf, $arrLang);
+            $content = downloadFile($smarty, $module_name, $local_templates_dir, $pDB, $pDBACL, $arrConf);
             break;
         case "display_record":
-            $content = display_record($smarty, $module_name, $local_templates_dir, $pDB, $pDBACL, $arrConf, $arrLang);
+            $content = display_record($smarty, $module_name, $local_templates_dir, $pDB, $pDBACL, $arrConf);
             break;
         default:
-            $content = reportMonitoring($smarty, $module_name, $local_templates_dir, $pDB, $pDBACL, $arrConf, $arrLang);
+            $content = reportMonitoring($smarty, $module_name, $local_templates_dir, $pDB, $pDBACL, $arrConf);
             break;
     }
     return $content;
 }
 
-function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, &$pDBACL, $arrConf, $arrLang)
+function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, &$pDBACL, $arrConf)
 {
     $pMonitoring = new paloSantoMonitoring($pDB);
     $pACL = new paloACL($pDBACL);
     $filter_field = getParameter("filter_field");
     $filter_value = getParameter("filter_value");
-    $action = getParameter("nav");
-    $start  = getParameter("start");
-    $as_csv = getParameter("exportcsv");
     $date_ini = getParameter("date_start");
     $date_end = getParameter("date_end");
+    
     $path_record = $arrConf['records_dir'];
     $user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
 
@@ -129,141 +127,145 @@ function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, &$
     else
         $totalMonitoring = $pMonitoring->getNumMonitoring($filter_field, $filter_value, $extension, $date_initial, $date_final);
 
-    $limit  = 20;
-    $total  = $totalMonitoring;
-    $oGrid->setLimit($limit);
-    $oGrid->setTotal($total);
-    $oGrid->enableExport();   // enable csv export.
-    $oGrid->pagingShow(true); // show paging section.
-
-    $oGrid->calculatePagination($action,$start);
-    $offset = $oGrid->getOffsetValue();
-    $end    = $oGrid->getEnd();
-    $url = array(
-        'menu'          =>  $module_name,
-        'filter_field'  =>  $filter_field,
-        'filter_value'  =>  $filter_value,
-        'date_start'    =>  $_POST['date_start'],
-        'date_end'      =>  $_POST['date_end'],
-    );
+    $date_i = $_POST['date_start'];
+    $date_f = $_POST['date_end'];
+    $url = "?menu=$module_name&filter_field=$filter_field&filter_value=$filter_value&date_start=$date_i&date_end=$date_f";
+    $oGrid->setURL($url);
 
     $arrData = null;
-
-    if($esAdministrador)
-        $arrResult =$pMonitoring->getMonitoring($limit, $offset, $filter_field, $filter_value, null, $date_initial, $date_final);
-    else
-        $arrResult =$pMonitoring->getMonitoring($limit, $offset, $filter_field, $filter_value, $extension, $date_initial, $date_final);
-
-    if($user != "admin" & ($extension=="" || is_null($extension))){
-        $smarty->assign("mb_message", "<b>".$arrLang["no_extension"]."</b>");
-    }else{
-
-        if($extension=="" || is_null($extension))
-            $smarty->assign("mb_message", "<b>".$arrLang["no_extension"]."</b>");
-
-        if(is_array($arrResult) && $total>0){
-            $src = "";
-            $dst = "";
+    if($oGrid->isExportAction()){
+        $limit = $totalMonitoring;
+        $offset = 0;
+        
+        $arrColumns = array(_tr("Date"), _tr("Time"), _tr("Source"), _tr("Destination"),_tr("Duration"),_tr("Type"),_tr("File"));
+        $oGrid->setColumns($arrColumns);
+    
+        if($esAdministrador)
+            $arrResult =$pMonitoring->getMonitoring($limit, $offset, $filter_field, $filter_value, null, $date_initial, $date_final);
+        else
+            $arrResult =$pMonitoring->getMonitoring($limit, $offset, $filter_field, $filter_value, $extension, $date_initial, $date_final);
+  
+        if(is_array($arrResult) && $totalMonitoring>0){
             foreach($arrResult as $key => $value){
-                $arrTmp[0] = "<input type='checkbox' name='id_".$value['uniqueid']."' />";
-	            $arrTmp[1] = date('d M Y',strtotime($value['calldate']));
-	            $arrTmp[2] = date('H:i:s',strtotime($value['calldate']));
-                if(!isset($value['src']) || $value['src']=="")
-                    $src = "<font color='gray'>".$arrLang["unknown"]."</font>";
-                else
-                    $src = $value['src'];
-                if(!isset($value['dst']) || $value['dst']=="")
-                    $dst = "<font color='gray'>".$arrLang["unknown"]."</font>";
-                else
-                    $dst = $value['dst'];
-	            $arrTmp[3] = $src;
-	            $arrTmp[4] = $dst;
-	            $arrTmp[5] = "<label title='".$value['duration']." seconds' style='color:green'>".SecToHHMMSS( $value['duration'] )."</label>";
-
-                //$file = base64_encode($value['userfield']);
+                $arrTmp[0] = date('d M Y',strtotime($value['calldate']));
+                $arrTmp[1] = date('H:i:s',strtotime($value['calldate']));
+                $arrTmp[2] = $value['src'];
+                $arrTmp[3] = $value['dst'];
+                $arrTmp[4] = SecToHHMMSS($value['duration']);
                 $file = $value['uniqueid'];
-                $namefile = basename($value['userfield']);
-                $namefile = str_replace("audio:","",$namefile);
-                switch($namefile[0]){
-                    case "O":
-                        $arrTmp[6] = $arrLang["Outgoing"];
-                        break;
-                    case "g":
-                        $arrTmp[6] = $arrLang["Group"];
-                        break;
-                    case "q":
-                        $arrTmp[6] = $arrLang["Queue"];
-                        break;
-                    default :
-                        $arrTmp[6] = $arrLang["Incoming"];
-                        break;
-                }
-                $recordingLink = "<a  href=\"javascript:popUp('index.php?menu=$module_name&action=display_record&id=$file&rawmode=yes',350,100);\">{$arrLang['Listen']}</a>&nbsp;";
-
-                $recordingLink .= "<a href='?menu=$module_name&action=download&id=$file&rawmode=yes' >{$arrLang['Download']}</a>";
-
-	            $arrTmp[7] = $recordingLink;
+                    $namefile = basename($value['userfield']);
+                    $namefile = str_replace("audio:","",$namefile);
+                    switch($namefile[0]){
+                         case "O":
+                              $arrTmp[5] = _tr("Outgoing");
+                         break;
+                         case "g":
+                              $arrTmp[5] = _tr("Group");
+                         break;
+                         case "q":
+                              $arrTmp[5] = _tr("Queue");
+                         break;
+                         default :
+                              $arrTmp[5] = _tr("Incoming");
+                         break;
+                    }
+                $arrTmp[6] = $namefile;
                 $arrData[] = $arrTmp;
             }
         }
     }
+    else{
+        $limit  = 20;
+        $total  = $totalMonitoring;
+        $oGrid->setLimit($limit);
+        $oGrid->setTotal($total);
+        $oGrid->enableExport();   // enable csv export.
+        $oGrid->pagingShow(true); // show paging section.
 
+        $offset = $oGrid->calculateOffset();
+        $end    = $oGrid->getEnd();
+        $arrColumns = array(_tr("<input type='submit' onClick=\"return confirmSubmit('"._tr("message_alert")."');\" name='submit_eliminar' value='"._tr("Delete")."' class='button' />"), _tr("Date"), _tr("Time"), _tr("Source"), _tr("Destination"),_tr("Duration"),_tr("Type"),_tr("Message"));
+        $oGrid->setColumns($arrColumns);
+        
+        if($esAdministrador)
+            $arrResult =$pMonitoring->getMonitoring($limit, $offset, $filter_field, $filter_value, null, $date_initial, $date_final);
+        else
+            $arrResult =$pMonitoring->getMonitoring($limit, $offset, $filter_field, $filter_value, $extension, $date_initial, $date_final);
 
-    $arrGrid = array("title"    => $arrLang["Monitoring"],
-                        "icon"     => "images/record.png",
-                        "width"    => "99%",
-                        "start"    => ($total==0) ? 0 : $offset + 1,
-                        "end"      => $end,
-                        "total"    => $total,
-                        "url"      => $url,
-                        "columns"  => array(
-            0 => array("name"      => "<input type='submit' onClick=\"return confirmSubmit('{$arrLang["message_alert"]}');\" name='submit_eliminar' value='{$arrLang["Delete"]}' class='button' />",
-                                   "property1" => ""),
-			1 => array("name"      => $arrLang["Date"],
-                                   "property1" => ""),
-			2 => array("name"      => $arrLang["Time"],
-                                   "property1" => ""),
-			3 => array("name"      => $arrLang["Source"],
-                                   "property1" => ""),
-			4 => array("name"      => $arrLang["Destination"],
-                                   "property1" => ""),
-			5 => array("name"      => $arrLang["Duration"],
-                                   "property1" => ""),
-			6 => array("name"      => $arrLang["Type"],
-                                   "property1" => ""),
-			7 => array("name"      => $arrLang["Message"],
-                                   "property1" => ""),
-                                        )
-                    );
+        if($user != "admin" & ($extension=="" || is_null($extension))){
+            $smarty->assign("mb_message", "<b>"._tr("no_extension")."</b>");
+        }else{
+
+            if($extension=="" || is_null($extension))
+               $smarty->assign("mb_message", "<b>"._tr("no_extension")."</b>");
+
+            if(is_array($arrResult) && $total>0){
+               $src = "";
+               $dst = "";
+               foreach($arrResult as $key => $value){
+                    $arrTmp[0] = "<input type='checkbox' name='id_".$value['uniqueid']."' />";
+	            $arrTmp[1] = date('d M Y',strtotime($value['calldate']));
+	            $arrTmp[2] = date('H:i:s',strtotime($value['calldate']));
+                    if(!isset($value['src']) || $value['src']=="")
+                        $src = "<font color='gray'>"._tr("unknown")."</font>";
+                    else
+                        $src = $value['src'];
+                    if(!isset($value['dst']) || $value['dst']=="")
+                        $dst = "<font color='gray'>"._tr("unknown")."</font>";
+                    else
+                        $dst = $value['dst'];
+	            $arrTmp[3] = $src;
+	            $arrTmp[4] = $dst;
+	            $arrTmp[5] = "<label title='".$value['duration']." seconds' style='color:green'>".SecToHHMMSS( $value['duration'] )."</label>";
+
+                    //$file = base64_encode($value['userfield']);
+                    $file = $value['uniqueid'];
+                    $namefile = basename($value['userfield']);
+                    $namefile = str_replace("audio:","",$namefile);
+                    switch($namefile[0]){
+                         case "O":
+                              $arrTmp[6] = _tr("Outgoing");
+                         break;
+                         case "g":
+                              $arrTmp[6] = _tr("Group");
+                         break;
+                         case "q":
+                              $arrTmp[6] = _tr("Queue");
+                         break;
+                         default :
+                              $arrTmp[6] = _tr("Incoming");
+                         break;
+                    }
+                    $recordingLink = "<a  href=\"javascript:popUp('index.php?menu=$module_name&action=display_record&id=$file&rawmode=yes',350,100);\">"._tr("Listen")."</a>&nbsp;";
+
+                    $recordingLink .= "<a href='?menu=$module_name&action=download&id=$file&rawmode=yes' >"._tr("Download")."</a>";
+
+	            $arrTmp[7] = $recordingLink;
+                    $arrData[] = $arrTmp;
+                }
+            }
+        }
+    }
+    $oGrid->setData($arrData);
 
     //begin section filter
-    $arrFormFilterMonitoring = createFieldFilter($arrLang);
+    $arrFormFilterMonitoring = createFieldFilter();
     $oFilterForm = new paloForm($smarty, $arrFormFilterMonitoring);
-    $smarty->assign("SHOW", $arrLang["Show"]);
+    $smarty->assign("SHOW", _tr("Show"));
     $smarty->assign("user", $user);
 
     $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl","",$_POST);
     //end section filter
 
-    if($as_csv == 'yes'){
-        $name_csv = "Monitoring_".date("d-M-Y").".csv";
-        header("Cache-Control: private");
-        header("Pragma: cache");
-        header("Content-Type: application/octec-stream");
-        header("Content-disposition: inline; filename={$name_csv}");
-        header("Content-Type: application/force-download");
-        $content = $oGrid->fetchGridCSV($arrGrid, $arrData);
-    }
-    else{
-        $oGrid->showFilter(trim($htmlFilter));
-        $content = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
-    }
+    $oGrid->showFilter(trim($htmlFilter));
+    $content = $oGrid->fetchGrid();
+    
     //end grid parameters
 
     return $content;
 }
 
-function downloadFile($smarty, $module_name, $local_templates_dir, $pDB, $pDBACL, $arrConf, $arrLang){
+function downloadFile($smarty, $module_name, $local_templates_dir, $pDB, $pDBACL, $arrConf){
     $record = getParameter("id");
     $path_record = $arrConf['records_dir'];
     if (isset($record) && preg_match("/^[[:digit:]]+\.[[:digit:]]+$/",$record)) {
@@ -281,7 +283,7 @@ function downloadFile($smarty, $module_name, $local_templates_dir, $pDB, $pDBACL
 
     // See if the file exists
         if (!is_file($path)) { 
-            die("<b>404 ".$arrLang["no_file"]." </b>");
+            die("<b>404 "._tr("no_file")." </b>");
         }
 
     // Gather relevent info about file
@@ -301,7 +303,7 @@ function downloadFile($smarty, $module_name, $local_templates_dir, $pDB, $pDBACL
             case "WAV": $ctype="audio/x-wav"; break;
             case "gsm": $ctype="audio/x-gsm"; break;
             // not downloadable
-            default: die("<b>404 ".$arrLang["no_file"]." </b>"); break ;
+            default: die("<b>404 "._tr("no_file")." </b>"); break ;
         }
 
     // need to check if file is mislabeled or a liar.
@@ -319,11 +321,11 @@ function downloadFile($smarty, $module_name, $local_templates_dir, $pDB, $pDBACL
             fpassthru($fp);
         }
     }else{
-        die("<b>404 ".$arrLang["no_file"]." </b>");
+        die("<b>404 "._tr("no_file")." </b>");
     }
 }
 
-function display_record($smarty, $module_name, $local_templates_dir, $pDB, $pDBACL, $arrConf, $arrLang){
+function display_record($smarty, $module_name, $local_templates_dir, $pDB, $pDBACL, $arrConf){
     $action = getParameter("action");
     $file = getParameter("id");
     $path_record = $arrConf['records_dir'];
@@ -340,7 +342,7 @@ contenido;
         $smarty->display("_common/popup.tpl");
 }
 
-function deleteRecord($smarty, $module_name, $local_templates_dir, &$pDB, &$pDBACL, $arrConf, $arrLang)
+function deleteRecord($smarty, $module_name, $local_templates_dir, &$pDB, &$pDBACL, $arrConf)
 {
     $pMonitoring = new paloSantoMonitoring($pDB);
     $_DATA['date_start'] = isset($date_ini)?$date_ini:date("d M Y");
@@ -361,7 +363,7 @@ function deleteRecord($smarty, $module_name, $local_templates_dir, &$pDB, &$pDBA
         }
     }
     $_POST = $_DATA;
-    $content = reportMonitoring($smarty, $module_name, $local_templates_dir, $pDB, $pDBACL, $arrConf, $arrLang);
+    $content = reportMonitoring($smarty, $module_name, $local_templates_dir, $pDB, $pDBACL, $arrConf);
     return $content;
 }
 
@@ -377,38 +379,38 @@ function SecToHHMMSS($sec)
     return "$HH:$MM:$SS";
 }
 
-function createFieldFilter($arrLang){
+function createFieldFilter(){
     $arrFilter = array(
-	    "src" => $arrLang["Source"],
-	    "dst" => $arrLang["Destination"],
-	    "userfield" => $arrLang["Type"],
+	    "src"       => _tr("Source"),
+	    "dst"       => _tr("Destination"),
+	    "userfield" => _tr("Type"),
                     );
 
     $arrFormElements = array(
-            "date_start"  => array("LABEL"                  => $arrLang["Start_Date"],
+            "date_start"  => array(           "LABEL"                  => _tr("Start_Date"),
                                               "REQUIRED"               => "yes",
                                               "INPUT_TYPE"             => "DATE",
                                               "INPUT_EXTRA_PARAM"      => "",
                                               "VALIDATION_TYPE"        => "ereg",
                                               "VALIDATION_EXTRA_PARAM" => "^[[:digit:]]{1,2}[[:space:]]+[[:alnum:]]{3}[[:space:]]+[[:digit:]]{4}$"),
-            "date_end"    => array("LABEL"                  => $arrLang["End_Date"],
-                                "REQUIRED"               => "yes",
-                                "INPUT_TYPE"             => "DATE",
-                                "INPUT_EXTRA_PARAM"      => "",
-                                "VALIDATION_TYPE"        => "ereg",
-                                "VALIDATION_EXTRA_PARAM" => "^[[:digit:]]{1,2}[[:space:]]+[[:alnum:]]{3}[[:space:]]+[[:digit:]]{4}$"),
-            "filter_field" => array("LABEL"                  => $arrLang["Search"],
-                                    "REQUIRED"               => "no",
-                                    "INPUT_TYPE"             => "SELECT",
-                                    "INPUT_EXTRA_PARAM"      => $arrFilter,
-                                    "VALIDATION_TYPE"        => "text",
-                                    "VALIDATION_EXTRA_PARAM" => ""),
-            "filter_value" => array("LABEL"                  => "",
-                                    "REQUIRED"               => "no",
-                                    "INPUT_TYPE"             => "TEXT",
-                                    "INPUT_EXTRA_PARAM"      => "",
-                                    "VALIDATION_TYPE"        => "text",
-                                    "VALIDATION_EXTRA_PARAM" => ""),
+            "date_end"    => array(           "LABEL"                  => _tr("End_Date"),
+                                              "REQUIRED"               => "yes",
+                                              "INPUT_TYPE"             => "DATE",
+                                              "INPUT_EXTRA_PARAM"      => "",
+                                              "VALIDATION_TYPE"        => "ereg",
+                                              "VALIDATION_EXTRA_PARAM" => "^[[:digit:]]{1,2}[[:space:]]+[[:alnum:]]{3}[[:space:]]+[[:digit:]]{4}$"),
+            "filter_field" => array(          "LABEL"                  => _tr("Search"),
+                                              "REQUIRED"               => "no",
+                                              "INPUT_TYPE"             => "SELECT",
+                                              "INPUT_EXTRA_PARAM"      => $arrFilter,
+                                              "VALIDATION_TYPE"        => "text",
+                                              "VALIDATION_EXTRA_PARAM" => ""),
+            "filter_value" => array(          "LABEL"                  => "",
+                                              "REQUIRED"               => "no",
+                                              "INPUT_TYPE"             => "TEXT",
+                                              "INPUT_EXTRA_PARAM"      => "",
+                                              "VALIDATION_TYPE"        => "text",
+                                              "VALIDATION_EXTRA_PARAM" => ""),
                     );
     return $arrFormElements;
 }
