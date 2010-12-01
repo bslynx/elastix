@@ -185,11 +185,11 @@ function getTrunkBills($pDB)
 function getTechnology($id, $pDB)
 {
     $data   = array($id);
-    $query  = "SELECT type_trunk FROM provider id = ?;";
+    $query  = "SELECT type_trunk FROM provider WHERE id = ?;";
     $result = $pDB->getFirstRowQuery($query,true,$data);
     if($result==FALSE){
         return null;
     }
-    return $result;
+    return $result['type_trunk'];
 }
 ?>
