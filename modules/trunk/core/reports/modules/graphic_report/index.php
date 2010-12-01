@@ -32,6 +32,7 @@ require_once("libs/jpgraph/jpgraph_pie3d.php");
 require_once "libs/jpgraph/jpgraph_line.php";
 require_once "libs/paloSantoDB.class.php";
 require_once "libs/paloSantoSampler.class.php";
+require_once "libs/paloSantoTrunk.class.php";
 
 function _moduleContent(&$smarty, $module_name)
 {
@@ -646,6 +647,17 @@ function grafic_trunk(&$pDB_ast_cdr, &$pDB_ast, $module_name, $trunk, $dti, $dtf
 	require_once "modules/$module_name/libs/paloSantoExtention.class.php";
 	$objPalo_AST_CDR = new paloSantoExtention($pDB_ast_cdr);
 
+    /* Si la troncal pedida es un grupo, se expande el grupo para averiguar las
+       troncales individuales. */
+    $regs = NULL;
+    if (preg_match('!^DAHDI/(g|r)(\d+)$!i', $trunk, $regs)) {
+        $iGrupoTrunk = (int)$regs[2];
+        $gruposTrunk = getTrunkGroupsDAHDI();
+        if (is_array($gruposTrunk) && isset($gruposTrunk[$iGrupoTrunk])) {
+            $trunk = $gruposTrunk[$iGrupoTrunk];
+        }
+    }
+
 	//total minutos de llamadas in y out
 	$arrayTemp = $objPalo_AST_CDR->loadTrunks($trunk, "min", $dti, $dtf);
 	$arrResult = $arrayTemp[0];
@@ -768,6 +780,17 @@ function grafic_trunk2(&$pDB_ast_cdr, &$pDB_ast, $module_name, $trunk, $dti, $dt
 	//
 	require_once "modules/$module_name/libs/paloSantoExtention.class.php";
 	$objPalo_AST_CDR = new paloSantoExtention($pDB_ast_cdr);
+
+    /* Si la troncal pedida es un grupo, se expande el grupo para averiguar las
+       troncales individuales. */
+    $regs = NULL;
+    if (preg_match('!^DAHDI/(g|r)(\d+)$!i', $trunk, $regs)) {
+        $iGrupoTrunk = (int)$regs[2];
+        $gruposTrunk = getTrunkGroupsDAHDI();
+        if (is_array($gruposTrunk) && isset($gruposTrunk[$iGrupoTrunk])) {
+            $trunk = $gruposTrunk[$iGrupoTrunk];
+        }
+    }
 
 	//total minutos de llamadas in y out
 	$arrayTemp = $objPalo_AST_CDR->loadTrunks($trunk, "numcall", $dti, $dtf);
