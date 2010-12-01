@@ -258,7 +258,7 @@ function getTrunks($oDB)
 /**
  * Procedimiento para listar todos los grupos de troncales DAHDI que han sido
  * definidos. Este procedimiento requiere que Asterisk esté en ejecución en el
- * sistema.
+ * sistema y que soporte el comando "dahdi show channels group N".
  *
  * @return  mixed   Arreglo de la siguiente forma:
  *  array(0 => array("DAHDI/1", "DAHDI/2", "DAHDI/3"), 1 => array("DAHDI/4", "DAHDI/5", "DAHDI/6"))
@@ -273,7 +273,8 @@ function getTrunkGroupsDAHDI()
     $arrConfig = $pConfig->leer_configuracion(false);
     $astman = new AGI_AsteriskManager();
     if (!$astman->connect('localhost', $arrConfig['AMPMGRUSER']['valor'], $arrConfig['AMPMGRPASS']['valor'])) {
-        return NULL;
+        // No se puede conectar a AMI, se intenta parsear configuración
+        return $grupos = getTrunkGroupsDAHDI_config();
     } else {
         /*
            Chan Extension  Context         Language   MOH Interpret        Blocked    State     
@@ -284,18 +285,98 @@ function getTrunkGroupsDAHDI()
         */
         // Se conoce que los números de grupo van de 0 a 63
         $grupos = array();
-        for ($iGrupo = 0; $iGrupo < 64; $iGrupo++) {
+        $bSoportado = TRUE; // Se asume que el comando soporta listar por grupos
+        for ($iGrupo = 0; $iGrupo < 64 && $bSoportado; $iGrupo++) {
             $r = $astman->Command("dahdi show channels group $iGrupo");
             if (isset($r['data'])) {
                 $lineas = explode("\n", $r['data']);
                 foreach ($lineas as $sLinea) {
+                    /* Si una línea empieza con Usage, entonces la versión de 
+                       Asterisk no soporta la extensión "group N" del comando
+                       "dahdi show channels" */
+                    if (strpos($sLinea, 'Usage') === 0) {
+                        $bSoportado = FALSE;
+                        break;
+                    }                    
                     if (preg_match('/^\s+(\d+)/', $sLinea, $regs))
                         $grupos[$iGrupo][] = 'DAHDI/'.$regs[1];
                 }
             }
         }
         $astman->disconnect();        
+
+        if (!$bSoportado) {
+            // Comando AMI no soportado, se intenta parsear configuración
+            $grupos = getTrunkGroupsDAHDI_config();
+        }
+
         return $grupos;
     }
+}
+
+/**
+ * Procedimiento para listar todos los grupos de troncales DAHDI que han sido
+ * definidos. Este procedimiento extrae la información requerida de los archivos
+ * de configuración de Asterisk.
+ *
+ * @return  mixed   Arreglo de la siguiente forma:
+ *  array(0 => array("DAHDI/1", "DAHDI/2", "DAHDI/3"), 1 => array("DAHDI/4", "DAHDI/5", "DAHDI/6"))
+ */
+function getTrunkGroupsDAHDI_config()
+{
+    $listaArchivos = array(
+        'chan_dahdi.conf',
+    );
+    $listaVisitada = array();
+    $sDirConfigAsterisk = '/etc/asterisk/';
+
+    $grupos = array();
+    $iGrupo = array();  // Un canal puede pertenecer a múltiples grupos
+    while (count($listaArchivos) > 0) {
+        $sArchivo = array_shift($listaArchivos);
+        array_push($listaVisitada, $sArchivo);
+        $sRuta = $sDirConfigAsterisk.$sArchivo;
+        if (file_exists($sRuta)) {
+            foreach (file($sRuta, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $sLinea) {
+                $regs = NULL;
+                if (preg_match('/^#include\s+(.+\.conf)/', $sLinea, $regs)) {
+                    /* Se ha encontrado un #include. Si no ha sido visto antes,
+                       se agrega al final de la lista de archivos a procesar */
+                    if (!in_array($regs[1], $listaVisitada))
+                        array_push($listaArchivos, $regs[1]);
+                } elseif (preg_match('/^\s*group\s*=\s*(.*)/', $sLinea, $regs)) {
+                    /* Se ha encontrado inicio de grupo: group = a,b,c */
+                    $listaGrupos = preg_split('/[\s,]+/', $regs[1]);
+                    $iGrupo = array();
+                    foreach ($listaGrupos as $i) {
+                        if (preg_match('/^\d+$/', $i)) $iGrupo[] = (int)$i;
+                    }
+                } elseif (preg_match('/^\s*channel\s*=>\s*(\d+)(\-(\d+))?/', $sLinea, $regs)) {
+                    /* Se ha encontrado channel => a[-b]. Se deben colocar los
+                       números de troncal en todos los grupos indicados por 
+                       el arreglo $iGrupo */
+                    $iCanalInicio = $iCanalFinal = (int)$regs[1];
+                    if (isset($regs[3])) $iCanalFinal = (int)$regs[3];
+                    $canales = ($iCanalInicio <= $iCanalFinal) 
+                        ? range((int)$iCanalInicio, (int)$iCanalFinal) 
+                        : array();
+                    
+                    /* Si hay canales, se combinan dentro de todos los grupos */
+                    if (count($canales) > 0) foreach ($iGrupo as $i) {
+                        if (!isset($grupos[$i])) $grupos[$i] = array();
+                        $grupos[$i] = array_merge($grupos[$i], $canales);
+                    }
+                }
+            }
+        }
+    }
+
+    if (!function_exists('getTrunkGroupsDAHDI_config_dahdiformat')) {
+        function getTrunkGroupsDAHDI_config_dahdiformat($i) { return "DAHDI/$i"; }
+        function getTrunkGroupsDAHDI_config_mapdahdiformat($a) {
+            return array_values(array_map('getTrunkGroupsDAHDI_config_dahdiformat', array_unique($a)));
+        }
+    }
+    return array_map('getTrunkGroupsDAHDI_config_mapdahdiformat', $grupos);
 }
 ?>
