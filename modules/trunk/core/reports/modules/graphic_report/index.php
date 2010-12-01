@@ -271,14 +271,14 @@ function report_Extention($smarty, $module_name, $local_templates_dir, $arrLang,
         if($numIn != 0) $VALUE = (int)( 100*( $numIn/$numTot ) );
         else $VALUE = 0;
 
-        $ruta_img = array("?menu={$module_name}&amp;action=grafic&amp;du={$VALUE}%&amp;in={$numIn}&amp;out={$numOut}&amp;ext={$ext2}&amp;tot={$numTot}");
+        $ruta_img = array("?menu={$module_name}&amp;action=grafic&amp;du={$VALUE}%&amp;in={$numIn}&amp;out={$numOut}&amp;ext={$ext2}&amp;tot={$numTot}&amp;rawmode=yes");
     }
     else if($option == "Queue"){
         $smarty->assign("SELECTED_1","");
         $smarty->assign("SELECTED_2","selected");
         $smarty->assign("SELECTED_3","");
 
-        $ruta_img = array("?menu={$module_name}&amp;action=grafic_queue&amp;queue={$ext2}&amp;dti={$date_ini2}&amp;dtf={$date_fin2}");
+        $ruta_img = array("?menu={$module_name}&amp;action=grafic_queue&amp;queue={$ext2}&amp;dti={$date_ini2}&amp;dtf={$date_fin2}&amp;rawmode=yes");
     }
     else if($option == "Trunk"){
         $smarty->assign("SELECTED_1","");
@@ -288,12 +288,12 @@ function report_Extention($smarty, $module_name, $local_templates_dir, $arrLang,
         $trunkT = getParameter("trunks");
         $smarty->assign("trunks", $trunkT);
         $ruta_img  = array(
-            "?menu={$module_name}&amp;action=grafic_trunk&amp;trunk={$trunkT}&amp;dti={$date_ini2}&amp;dtf={$date_fin2}",
-            "?menu={$module_name}&amp;action=grafic_trunk2&amp;trunk={$trunkT}&amp;dti={$date_ini2}&amp;dtf={$date_fin2}");
+            "?menu={$module_name}&amp;action=grafic_trunk&amp;trunk={$trunkT}&amp;dti={$date_ini2}&amp;dtf={$date_fin2}&amp;rawmode=yes",
+            "?menu={$module_name}&amp;action=grafic_trunk2&amp;trunk={$trunkT}&amp;dti={$date_ini2}&amp;dtf={$date_fin2}&amp;rawmode=yes");
 
     }
     else{//default
-        $ruta_img = array("?menu={$module_name}&amp;action=grafic&amp;du=0%&amp;in=0&amp;out=0&amp;ext=0&amp;tot=0");
+        $ruta_img = array("?menu={$module_name}&amp;action=grafic&amp;du=0%&amp;in=0&amp;out=0&amp;ext=0&amp;tot=0&amp;rawmode=yes");
     }
     for ($i = 0; $i < count($ruta_img); $i++) $ruta_img[$i] = "<img src='".$ruta_img[$i]."' border='0'>";
     $smarty->assign("ruta_img",  "<tr class='letra12'><td align='center'>".implode('&nbsp;&nbsp;', $ruta_img).'<td></tr>');
