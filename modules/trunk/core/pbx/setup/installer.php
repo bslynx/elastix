@@ -175,7 +175,7 @@ function insertTrunlBill($trunkName, $pDB)
 function getTrunkBills($pDB)
 {
     $query = "SELECT * FROM trunk_bill;";
-    $result = $pDB->genQuery($query);
+    $result = $pDB->fetchTable($query,true);
     if($result==FALSE){
         return false;
     }
