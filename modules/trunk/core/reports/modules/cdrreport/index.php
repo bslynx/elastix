@@ -77,11 +77,6 @@ function _moduleContent(&$smarty, $module_name)
         "Delete_Warning"    =>  _tr("Are you sure you wish to delete CDR(s) Report(s)?"),
     ));
 
-    
-    
-
-  
-    
     $arrFormElements = array(
         "date_start"  => array("LABEL"                  => _tr("Start Date"),
                             "REQUIRED"               => "yes",
@@ -278,66 +273,6 @@ function _moduleContent(&$smarty, $module_name)
     }
     $oGrid->setData($arrData);
     $smarty->assign("SHOW", _tr("Show"));
-
-/*
-    $arrCDR = $oCDR->obtenerCDRs($limit, $offset, 
-        $paramFiltro['date_start'],
-        $paramFiltro['date_end'],
-        $paramFiltro['field_name'],
-        $paramFiltro['field_pattern'],
-        $paramFiltro['status'],
-        "", NULL, $sExtension);
-    $total = $arrCDR['NumRecords'][0];
-
-    $arrData = array();
-    if (!is_array($arrCDR)) {
-        $smarty->assign(array(
-            'mb_title'      =>  _tr('ERROR'),
-            'mb_message'    =>  $oCDR->errMsg,
-        ));
-    } else {
-        function _formatCDR($cdr) {
-            $iDuracion = $cdr[8];
-            $iSec = $iDuracion % 60; $iDuracion = (int)(($iDuracion - $iSec) / 60);
-            $iMin = $iDuracion % 60; $iDuracion = (int)(($iDuracion - $iMin) / 60);
-            $sTiempo = "{$cdr[8]}s";
-            if ($cdr[8] >= 60) {
-                $sTiempo .= '(';
-                if ($iDuracion > 0) $sTiempo .= " ({$iDuracion}h {$iMin}m {$iSec}s)";
-                elseif ($iMin > 0)  $sTiempo .= " ({$iMin}m {$iSec}s)";
-            }
-            return array($cdr[0], $cdr[1], $cdr[2], $cdr[3], $cdr[9], $cdr[4], $cdr[5], $sTiempo);
-        }
-        $arrData = array_map('_formatCDR', $arrCDR['Data']);
-    }
-
-    $arrGrid = array("title"    => _tr("CDR Report List"),
-                     "url"      => $url,
-                     "icon"     => "images/user.png",
-                     "width"    => "99%",
-                     "start"    => ($total == 0) ? 0 : $offset + 1,
-                     "end"      => ($offset + $limit) <= $total ? $offset + $limit : $total,
-                     "total"    => $total,
-                     "columns"  => array(
-                                         0 => array("name"      => _tr("Date"),
-                                                    "property1" => ""),
-                                         1 => array("name"      => _tr("Source"),
-                                                    "property1" => ""),
-                                         2 => array("name"      => _tr("Destination"),
-                                                    "property1" => ""),
-                                         3 => array("name"      => _tr("Src. Channel"),
-                                                    "property"  => ""),
-                                         4 => array("name"      => _tr("Account Code"),
-                                                    "property"  => ""),
-                                         5 => array("name"      => _tr("Dst. Channel"),
-                                                    "property"  => ""),
-                                         6 => array("name"      => _tr("Status"),
-                                                    "property"  => ""),
-                                         7 => array("name"      => _tr("Duration"),
-                                                    "property"  => ""),
-                                        )
-                    );*/
-
     $oGrid->showFilter($htmlFilter);
     $content = $oGrid->fetchGrid();
     return $content;
