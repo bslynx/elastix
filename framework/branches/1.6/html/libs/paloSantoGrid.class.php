@@ -108,9 +108,12 @@ class paloSantoGrid {
         $this->width = $width;
     }
 
-    function setURL($url)
+    function setURL($arrURL)
     {
-        $this->url = $url;
+        if (is_array($arrURL))
+            $this->url = construirURL($arrURL, array('nav', 'start'));
+        else
+            $this->url = $arrURL;
     }
 
     function getColumns()
@@ -158,8 +161,13 @@ class paloSantoGrid {
             $this->end   = $arrGrid["end"];
         if(isset($arrGrid["total"]))
             $this->total = $arrGrid["total"];
-        if(isset($arrGrid["url"]))
-            $this->url   = $arrGrid["url"];
+
+        if(isset($arrGrid['url'])) {
+            if (is_array($arrGrid['url']))
+                $this->url = construirURL($arrGrid['url'], array('nav', 'start'));
+            else
+                $this->url = $arrGrid["url"];
+        }
 
         if(isset($arrGrid["columns"]) && count($arrGrid["columns"]) > 0)
             $this->arrHeaders = $arrGrid["columns"];
