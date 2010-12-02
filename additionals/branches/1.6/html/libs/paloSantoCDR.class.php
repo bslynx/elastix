@@ -175,11 +175,10 @@ class paloSantoCDR
      *                      calldate, src, dst, channel, dstchannel, disposition, 
      *                      uniqueid, duration, billsec, accountcode
      */
-    function listarCDRs($param, $limit = NULL, $offset = 0)
+    function listarCDRs($param,$limit = NULL, $offset = 0)
     {
         $resultado = array();
         list($sWhere, $paramSQL) = $this->_construirWhereCDR($param);
-
         // Cuenta del total de registros recuperados
         $sPeticionSQL = "SELECT COUNT(*) FROM cdr $sWhere";
         $r = $this->_DB->getFirstRowQuery($sPeticionSQL, FALSE, $paramSQL);
@@ -187,7 +186,9 @@ class paloSantoCDR
             $this->errMsg = '(internal) Failed to count CDRs - '.$this->_DB->errMsg;
             return NULL;
         }
+        //TODO: ESTO DEBERIA SER QUITADO EN UN FUTURO
         $resultado['total'] = $r[0];
+        
         $resultado['cdrs'] = array();
         if ($resultado['total'] <= 0) return $resultado;
 
@@ -205,6 +206,20 @@ class paloSantoCDR
             return NULL;
         }
         return $resultado;
+    }
+
+    function getNumCDR($date_start="", $date_end="", $field_name="", $field_pattern="",$status="ALL",$calltype="",$troncales=NULL, $extension="")
+    {
+        $param = $this->getParam($date_start,$date_end,$field_name,$field_pattern,$status,$calltype,$troncales,$extension);
+        list($sWhere, $paramSQL) = $this->_construirWhereCDR($param);
+        // Cuenta del total de registros recuperados
+        $sPeticionSQL = "SELECT COUNT(*) FROM cdr $sWhere";
+        $r = $this->_DB->getFirstRowQuery($sPeticionSQL, FALSE, $paramSQL);
+        if (!is_array($r)) {
+            $this->errMsg = '(internal) Failed to count CDRs - '.$this->_DB->errMsg;
+            return NULL;
+        }
+        return $r[0];
     }
     
     /**
@@ -228,8 +243,7 @@ class paloSantoCDR
         return $r;
     }
     
-    // Función de compatibilidad para código antiguo
-    function obtenerCDRs($limit, $offset, $date_start="", $date_end="", $field_name="", $field_pattern="",$status="ALL",$calltype="",$troncales=NULL, $extension="")
+    function getParam($date_start="", $date_end="", $field_name="", $field_pattern="",$status="ALL",$calltype="",$troncales=NULL, $extension="")
     {
         $param = array();
         if (!empty($date_start)) $param['date_start'] = $date_start;
@@ -240,6 +254,15 @@ class paloSantoCDR
         if (!empty($calltype)) $param['calltype'] = $calltype;
         if (!empty($troncales)) $param['troncales'] = $troncales;
         if (!empty($extension)) $param['extension'] = $extension;
+        return $param;
+    }
+
+
+
+    // Función de compatibilidad para código antiguo
+    function obtenerCDRs($limit, $offset, $date_start="", $date_end="", $field_name="", $field_pattern="",$status="ALL",$calltype="",$troncales=NULL, $extension="")
+    {
+        $param = $this->getParam($date_start, $date_end, $field_name, $field_pattern,$status,$calltype,$troncales, $extension);
         $r = $this->listarCDRs($param, $limit, $offset);
         return is_array($r) 
             ? array(
