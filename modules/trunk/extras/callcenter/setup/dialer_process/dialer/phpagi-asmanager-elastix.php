@@ -957,11 +957,14 @@
 	 */
 	function database_get($family, $key) {
 		$r = $this->command("database get ".str_replace(" ","/",$family)." ".str_replace(" ","/",$key));
-		if (substr($r["data"],0,6) == "Value:") {
-			return trim(substr($r["data"],6));
-		} else {
-			return false;
-		}
+        $lineas = explode("\r\n", $r["data"]);
+        while (count($lineas) > 0) {
+            if (substr($lineas[0],0,6) == "Value:") {
+                return trim(substr(join("\r\n", $lineas),6));
+            }
+            array_shift($lineas);
+        }
+        return false;
 	}
 	
 	/** Delete an entry from the asterisk database
