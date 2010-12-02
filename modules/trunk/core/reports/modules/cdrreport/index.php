@@ -77,6 +77,11 @@ function _moduleContent(&$smarty, $module_name)
         "Delete_Warning"    =>  _tr("Are you sure you wish to delete CDR(s) Report(s)?"),
     ));
 
+    
+    
+
+  
+    
     $arrFormElements = array(
         "date_start"  => array("LABEL"                  => _tr("Start Date"),
                             "REQUIRED"               => "yes",
@@ -128,7 +133,7 @@ function _moduleContent(&$smarty, $module_name)
         'date_end'      => date("d M Y"),
         'field_name'    => 'dst',
         'field_pattern' => '',
-        'status'        => 'ALL' 
+        'status'        => 'ALL'
     );
     foreach (array_keys($paramFiltro) as $k) {
         if (isset($_GET[$k])) $paramFiltro[$k] = $_GET[$k];
@@ -165,25 +170,116 @@ function _moduleContent(&$smarty, $module_name)
     $paramFiltro['date_end'] = translateDate($paramFiltro['date_end']).' 23:59:59';
 
     // Generación del reporte
-    $oGrid = new paloSantoGrid($smarty);
-    $oGrid->enableExport();
-    if (isset($_GET['exportcsv']) || isset($_GET['exportspreadsheet']) || isset($_GET['exportpdf'])) {
-        $limit = "";
+    
+    $oGrid  = new paloSantoGrid($smarty);
+    $oGrid->setTitle(_tr("CDRReport"));
+    $oGrid->pagingShow(true); // show paging section.
+
+    $oGrid->enableExport();   // enable export.
+    $oGrid->setNameFile_Export(_tr("CDRReport"));
+    $oGrid->setURL($url);
+    
+    $arrData = null;
+
+    $total = $oCDR->getNumCDR($paramFiltro['date_start'],
+            $paramFiltro['date_end'],
+            $paramFiltro['field_name'],
+            $paramFiltro['field_pattern'],
+            $paramFiltro['status'],
+            "", NULL, $sExtension);
+
+    if($oGrid->isExportAction()){
+        $limit = $total;
         $offset = 0;
-    } else {
-        $limit = 50;
-        $arrCDR = $oCDR->obtenerCDRs($limit, 0, 
+        
+        $arrColumns = array(_tr("Date"), _tr("Source"), _tr("Destination"), _tr("Src. Channel"),_tr("Account Code"),_tr("Dst. Channel"),_tr("Status"),_tr("Duration"));
+        $oGrid->setColumns($arrColumns);
+    
+        $arrResult = $oCDR->obtenerCDRs($limit, $offset, 
             $paramFiltro['date_start'],
             $paramFiltro['date_end'],
             $paramFiltro['field_name'],
             $paramFiltro['field_pattern'],
             $paramFiltro['status'],
             "", NULL, $sExtension);
-        $total = $arrCDR['NumRecords'][0];
-        $offset = $oGrid->getOffSet($limit, $total,
-            isset($_GET['nav']) ? $_GET['nav'] : NULL,
-            isset($_GET['start']) ? $_GET['start'] : NULL);
+ 
+        if(is_array($arrResult['Data']) && $total>0){
+            foreach($arrResult['Data'] as $key => $value){
+                $arrTmp[0] = $value[0];
+                $arrTmp[1] = $value[1];
+                $arrTmp[2] = $value[2];
+                $arrTmp[3] = $value[3];
+                $arrTmp[4] = $value[9];
+                $arrTmp[5] = $value[4];
+                $arrTmp[6] = $value[5];
+                $iDuracion = $value[8];
+                $iSec = $iDuracion % 60; $iDuracion = (int)(($iDuracion - $iSec) / 60);
+                $iMin = $iDuracion % 60; $iDuracion = (int)(($iDuracion - $iMin) / 60);
+                $sTiempo = "{$value[8]}s";
+                if ($value[8] >= 60) {
+                      if ($iDuracion > 0) $sTiempo .= " ({$iDuracion}h {$iMin}m {$iSec}s)";
+                      elseif ($iMin > 0)  $sTiempo .= " ({$iMin}m {$iSec}s)";
+                }
+                $arrTmp[7] = $sTiempo;
+                $arrData[] = $arrTmp;
+            }
+        }
+        if (!is_array($arrResult)) {
+        $smarty->assign(array(
+            'mb_title'      =>  _tr('ERROR'),
+            'mb_message'    =>  $oCDR->errMsg,
+        ));
+        }
+    }else {
+        $limit = 20;
+        $oGrid->setLimit($limit);
+        $oGrid->setTotal($total);
+
+        $offset = $oGrid->calculateOffset();
+
+        $arrResult = $oCDR->obtenerCDRs($limit, $offset, 
+            $paramFiltro['date_start'],
+            $paramFiltro['date_end'],
+            $paramFiltro['field_name'],
+            $paramFiltro['field_pattern'],
+            $paramFiltro['status'],
+            "", NULL, $sExtension);
+
+        $arrColumns = array(_tr("Date"), _tr("Source"), _tr("Destination"), _tr("Src. Channel"),_tr("Account Code"),_tr("Dst. Channel"),_tr("Status"),_tr("Duration"));
+        $oGrid->setColumns($arrColumns);
+
+        if(is_array($arrResult['Data']) && $total>0){
+            foreach($arrResult['Data'] as $key => $value){
+                $arrTmp[0] = $value[0];
+                $arrTmp[1] = $value[1];
+                $arrTmp[2] = $value[2];
+                $arrTmp[3] = $value[3];
+                $arrTmp[4] = $value[9];
+                $arrTmp[5] = $value[4];
+                $arrTmp[6] = $value[5];
+                $iDuracion = $value[8];
+                $iSec = $iDuracion % 60; $iDuracion = (int)(($iDuracion - $iSec) / 60);
+                $iMin = $iDuracion % 60; $iDuracion = (int)(($iDuracion - $iMin) / 60);
+                $sTiempo = "{$value[8]}s";
+                if ($value[8] >= 60) {
+                      if ($iDuracion > 0) $sTiempo .= " ({$iDuracion}h {$iMin}m {$iSec}s)";
+                      elseif ($iMin > 0)  $sTiempo .= " ({$iMin}m {$iSec}s)";
+                }
+                $arrTmp[7] = $sTiempo;
+                $arrData[] = $arrTmp;
+            }
+        }
+        if (!is_array($arrResult)) {
+        $smarty->assign(array(
+            'mb_title'      =>  _tr('ERROR'),
+            'mb_message'    =>  $oCDR->errMsg,
+        ));
+        }
     }
+    $oGrid->setData($arrData);
+    $smarty->assign("SHOW", _tr("Show"));
+
+/*
     $arrCDR = $oCDR->obtenerCDRs($limit, $offset, 
         $paramFiltro['date_start'],
         $paramFiltro['date_end'],
@@ -240,10 +336,10 @@ function _moduleContent(&$smarty, $module_name)
                                          7 => array("name"      => _tr("Duration"),
                                                     "property"  => ""),
                                         )
-                    );
+                    );*/
 
     $oGrid->showFilter($htmlFilter);
-    global $arrLang;
-    return $oGrid->fetchGrid($arrGrid, $arrData, $arrLang);
+    $content = $oGrid->fetchGrid();
+    return $content;
 }
 ?>
