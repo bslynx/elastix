@@ -133,9 +133,14 @@ function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, &$
     else
         $totalMonitoring = $pMonitoring->getNumMonitoring($filter_field, $filter_value, $extension, $date_initial, $date_final);
 
-    $date_i = $_POST['date_start'];
-    $date_f = $_POST['date_end'];
-    $url = "?menu=$module_name&filter_field=$filter_field&filter_value=$filter_value&date_start=$date_i&date_end=$date_f";
+    $url = array('menu' => $module_name);
+    $paramFilter = array(
+       'filter_field' => $filter_field,
+       'filter_value' => $filter_value,
+       'date_start'   => $_POST['date_start'],
+       'date_end'     => $_POST['date_end']
+    );
+    $url = array_merge($url, $paramFilter);         
     $oGrid->setURL($url);
 
     $arrData = null;
