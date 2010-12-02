@@ -298,8 +298,8 @@ class paloSantoGrid {
 
     function calculatePagination()
     {
-        $accion = getParameter2("nav");
-        $start  = getParameter2("start");
+        $accion = $this->getParameter2("nav");
+        $start  = $this->getParameter2("start");
 
         $this->setOffsetValue($this->getOffSet($this->getLimit(),$this->getTotal(),$accion,$start));
         $this->setEnd(($this->getOffsetValue() + $this->getLimit()) <= $this->getTotal() ? $this->getOffsetValue() + $this->getLimit() : $this->getTotal());
@@ -387,11 +387,11 @@ class paloSantoGrid {
 
     function exportType()
     {
-        if(getParameter2("exportcsv") == "yes")
+        if($this->getParameter2("exportcsv") == "yes")
             return "csv";
-        else if(getParameter2("exportpdf") == "yes")
+        else if($this->getParameter2("exportpdf") == "yes")
             return "pdf";
-        else if(getParameter2("exportspreadsheet") == "yes")
+        else if($this->getParameter2("exportspreadsheet") == "yes")
             return "xls";
         else
             return "html";
@@ -399,11 +399,11 @@ class paloSantoGrid {
 
     function isExportAction()
     {
-        if(getParameter2("exportcsv") == "yes")
+        if($this->getParameter2("exportcsv") == "yes")
             return true;
-        else if(getParameter2("exportpdf") == "yes")
+        else if($this->getParameter2("exportpdf") == "yes")
             return true;
-        else if(getParameter2("exportspreadsheet") == "yes")
+        else if($this->getParameter2("exportspreadsheet") == "yes")
             return true;
         else
             return false;
