@@ -24,7 +24,7 @@ $(document).ready(function(){
             var arrAction              = new Array();
             arrAction["action"]        = "getInfoProvider";
             arrAction["rawmode"]       = "yes";
-            arrAction["menu"]          = $('#Module_name').val();
+            /*arrAction["menu"]          = $('#Module_name').val();*/
             arrAction["type_provider"] = type_provider;
             request("index.php",arrAction,false,
                 function(arrData,statusResponse,error)
