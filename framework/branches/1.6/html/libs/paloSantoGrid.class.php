@@ -204,7 +204,7 @@ class paloSantoGrid {
         header("Cache-Control: private");
         header("Pragma: cache");
         header("Content-Type: application/octec-stream");
-        header("Content-disposition: inline; filename={$this->nameFile_Export}.csv");
+        header('Content-disposition: inline; filename="'."{$this->nameFile_Export}.csv".'"');
         header("Content-Type: application/force-download");
 
         $numColumns = count($this->getColumns());
@@ -242,7 +242,7 @@ class paloSantoGrid {
         header ("Content-Type: charset=UTF-8");
         header ("Content-Transfer-Encoding: none");
         //header ("Content-Transfer-Encoding: binary");
-        header ("Content-Disposition: attachment; filename={$this->nameFile_Export}.xls");
+        header ('Content-Disposition: attachment; filename="'."{$this->nameFile_Export}.xls".'"');
 
         $tmp = $this->xlsBOF();
         # header
