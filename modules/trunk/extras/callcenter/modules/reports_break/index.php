@@ -88,13 +88,13 @@ function _moduleContent(&$smarty, $module_name)
 
     switch($action){
         default:
-            $content = reportReportsBreak($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLangModule);
+            $content = reportReportsBreak($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLangModule, $arrLang);
             break;
     }
     return $content;
 }
 
-function reportReportsBreak($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLangModule)
+function reportReportsBreak($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLangModule, $arrLang)
 {
     // Obtener rango de fechas de consulta. Si no existe, se asume día de hoy
     $sFechaInicio = date('d M Y');
@@ -126,33 +126,24 @@ function reportReportsBreak($smarty, $module_name, $local_templates_dir, &$pDB, 
         );        
     }
     $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl", "", $arrFilterExtraVars);
-    $smarty->assign("url", construirURL($arrFilterExtraVars));
 
     // Obtener fechas en formato yyyy-mm-dd
     $sFechaInicio = translateDate($arrFilterExtraVars['txt_fecha_init']);
     $sFechaFinal = translateDate($arrFilterExtraVars['txt_fecha_end']);
 
     $mapa = array();    // Columna del break dado su ID
-    $arrColumnas = array(_tr("Agent Number"), _tr("Agent Name"));
 
     $oReportsBreak = new paloSantoReportsBreak($pDB);
     //begin grid parameters
-    $oGrid  = new paloSantoGrid($smarty);
-    $oGrid->setTitle(_tr("Reports Break"));
-    $oGrid->pagingShow(false); 
-
-    $oGrid->enableExport();   // enable export.
-    $oGrid->setNameFile_Export(_tr("Reports Break"));
-
-    $oGrid->setURL(construirURL($arrFilterExtraVars));
+    
     //Si se usa elastix 2.0 entonces se pueden usar las nuevas funcionalidades de la clase paloSantoGrid
-    if(method_exists($oGrid,'isExportAction')){
-        $content = reports_break_Elastix2_0($oGrid,$sFechaInicio,$sFechaFinal,$oReportsBreak,$arrColumnas,$htmlFilter,$smarty);
+    if(method_exists('paloSantoGrid','isExportAction')){
+        $content = reports_break_Elastix2_0($sFechaInicio,$sFechaFinal,$oReportsBreak,$htmlFilter,$smarty,$arrFilterExtraVars);
         return $content;
     }
     //caso contrario (versiones antiguas de asterisk) no se hacen cambios
     else{
-        $content = reports_break_Elastix_old($oGrid,$sFechaInicio,$sFechaFinal,$oReportsBreak,$arrColumnas,$htmlFilter,$smarty,$arrLangModule,$arrLang);
+        $content = reports_break_Elastix_old($sFechaInicio,$sFechaFinal,$oReportsBreak,$htmlFilter,$smarty,$arrLang,$arrFilterExtraVars);
         return $content;
     }
 }
@@ -190,9 +181,19 @@ function getAction()
     return "report"; 
 }
 
-function reports_break_Elastix2_0($oGrid,$sFechaInicio,$sFechaFinal,$oReportsBreak,$arrColumnas,$htmlFilter,$smarty){
+function reports_break_Elastix2_0($sFechaInicio,$sFechaFinal,$oReportsBreak,$htmlFilter,$smarty,$arrFilterExtraVars)
+{
     $arrData = null;
+    $oGrid  = new paloSantoGrid($smarty);
+    $oGrid->setTitle(_tr("Reports Break"));
+    $oGrid->pagingShow(false); 
 
+    $oGrid->enableExport();   // enable export.
+    $oGrid->setNameFile_Export(_tr("Reports Break"));
+
+    $oGrid->setURL(construirURL($arrFilterExtraVars));
+
+    $arrColumnas = array(_tr("Agent Number"), _tr("Agent Name"));
 
     if($oGrid->isExportAction()){
         $datosBreaks = $oReportsBreak->getReportesBreak($sFechaInicio, $sFechaFinal);
@@ -294,11 +295,12 @@ function reports_break_Elastix2_0($oGrid,$sFechaInicio,$sFechaFinal,$oReportsBre
     return $content;
 }
 
-function reports_break_Elastix_old($oGrid,$sFechaInicio,$sFechaFinal,$oReportsBreak,$arrColumnas,$htmlFilter,$smarty,$arrLangModule,$arrLang)
+function reports_break_Elastix_old($sFechaInicio,$sFechaFinal,$oReportsBreak,$htmlFilter,$smarty,$arrLang,$arrFilterExtraVars)
 {
         $bExportarCSV = (isset( $_GET['exportcsv'] ) && $_GET['exportcsv'] == 'yes');
         $datosBreaks = $oReportsBreak->getReportesBreak($sFechaInicio, $sFechaFinal);
         $mapa = array();    // Columna del break dado su ID
+        $smarty->assign("url", construirURL($arrFilterExtraVars));
         $arrColumnas = array(
             array('name'=> _tr('Agent Number'), 'property1'  => '' ),
             array('name'=> _tr('Agent Name'),   'property1'  => '' )
@@ -352,7 +354,7 @@ function reports_break_Elastix_old($oGrid,$sFechaInicio,$sFechaFinal,$oReportsBr
         $total = count($datosBreaks['reporte']) + 1;
         $limit = $total;
     
-        $arrGrid = array("title"    =>  $arrLangModule['Reports Break'],
+        $arrGrid = array("title"    =>  _tr('Reports Break'),
                 "icon"     => "images/list.png",
                 "width"    => "99%",
                 "start"    => ($total==0) ? 0 : $offset + 1,
