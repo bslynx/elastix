@@ -10,6 +10,8 @@ Source0: %{modname}_%{version}-%{release}.tgz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
 Prereq: elastix >= 2.0.0-35
+Requires: asterisk
+Requires: freePBX
 
 %description
 Elastix Call Center
@@ -86,6 +88,9 @@ fi
 /etc/logrotate.d/elastixdialer
 
 %changelog
+* Fri Dec  3 2010 Alex Villacis Lasso <a_villacis@palosanto.com>
+- FIXED: Add Requires for asterisk and freePBX for more modular installation
+
 * Mon Oct 18 2010 Alex Villacis Lasso <a_villacis@palosanto.com> 2.0.0-10
 - Requires: elastix-2.0.0-35 or later, for generic-cloexec
 - Updated version, synchronized with CallCenter 1.5-3.7 (SVN revision 1843)
