@@ -83,6 +83,9 @@ function _moduleContent(&$smarty, $module_name)
         "module_name"   =>  $module_name,
     ));
     
+    // Verificar si se requiere generar archivo CSV
+    $bExportarCSV = (isset( $_GET['exportcsv'] ) && $_GET['exportcsv'] == 'yes');
+    
     // Obtener rango de fechas de consulta. Si no existe, se asume día de hoy
     $sFechaInicio = date('d M Y');
     if (isset($_GET['txt_fecha_init'])) $sFechaInicio = $_GET['txt_fecha_init'];
@@ -95,8 +98,28 @@ function _moduleContent(&$smarty, $module_name)
         "txt_fecha_end"     => $sFechaFinal,
     );
     
-    $arrFormElements = createFieldFilter();
-
+    // Especificación del formulario de validación
+    $arrFormElements = array
+    (
+        "txt_fecha_init"  => array
+        (
+            "LABEL"                     => _tr('Start Date'),
+            "REQUIRED"                  => "yes",
+            "INPUT_TYPE"                => "DATE",
+            "INPUT_EXTRA_PARAM"         => "",
+            "VALIDATION_TYPE"           => "ereg",
+            "VALIDATION_EXTRA_PARAM"    => "^[[:digit:]]{1,2}[[:space:]]+[[:alnum:]]{3}[[:space:]]+[[:digit:]]{4}$"
+        ),
+        "txt_fecha_end"  => array
+        (
+            "LABEL"                     => _tr('End Date'),
+            "REQUIRED"                  => "yes",
+            "INPUT_TYPE"                => "DATE",
+            "INPUT_EXTRA_PARAM"         => "",
+            "VALIDATION_TYPE"           => "ereg",
+            "VALIDATION_EXTRA_PARAM"    => "^[[:digit:]]{1,2}[[:space:]]+[[:alnum:]]{3}[[:space:]]+[[:digit:]]{4}$"
+        ),
+    );
     $oFilterForm = new paloForm($smarty, $arrFormElements);
     
     // Validación de las fechas recogidas
@@ -120,44 +143,28 @@ function _moduleContent(&$smarty, $module_name)
     // Obtener fechas en formato yyyy-mm-dd
     $sFechaInicio = translateDate($arrFilterExtraVars['txt_fecha_init']);
     $sFechaFinal = translateDate($arrFilterExtraVars['txt_fecha_end']);
-    
+
     // Construir la matriz de datos para los breaks de los agentes
     $oReportsBreak = new paloSantoReportsBreak($pDB);
-
-    
-    // Especificación del formulario de validación
+    $datosBreaks = $oReportsBreak->getReportesBreak($sFechaInicio, $sFechaFinal);
     $mapa = array();    // Columna del break dado su ID
     $arrColumnas = array(
         array('name'=> _tr('Agent Number'), 'property1'  => '' ),
         array('name'=> _tr('Agent Name'),   'property1'  => '' )
     );
-    
-    $oGrid  = new paloSantoGrid($smarty);
-    $oGrid->setTitle(_tr("Reports_Break"));
-    $oGrid->pagingShow(false); 
-
-    $oGrid->enableExport();   // enable export.
-    $oGrid->setNameFile_Export(_tr("Reports_Break"));
-
-    if($oGrid->isExportAction()){
-
-        $arrColumns = array(_tr("No. de Agente"), _tr("Nombre Agente"), _tr("Hold"), _tr("Almuerzo"), _tr("Total"));
-        $oGrid->setColumns($arrColumns);
-    
-        $datosBreaks = $oReportsBreak->getReportesBreak($sFechaInicio, $sFechaFinal);
-        $sTagInicio = '';
-        $sTagFinal = '';
-        $filaTotales = array($sTagInicio._tr('Total').$sTagFinal, '');
-        foreach ($datosBreaks['breaks'] as $idBreak => $sNombreBreak) {
-            $mapa[$idBreak] = count($arrColumnas);
-            $arrColumnas[] = array('name' => $sNombreBreak, 'property1'  => '' );
-            $filaTotales[] = 0; // Total de segundos usado por todos los agentes en este break
-        }
-        $mapa['TOTAL'] = count($arrColumnas);
-        $filaTotales[] = 0; // Total de segundos usado por todos los agentes en todos los breaks
-        $arrColumnas[] = array('name' => _tr('Total'), 'property1'  => '' );
-        $arrData = array();
-        foreach ($datosBreaks['reporte'] as $infoAgente) {
+    $sTagInicio = (!$bExportarCSV) ? '<b>': '';
+    $sTagFinal = ($sTagInicio != '') ? '</b>' : '';
+    $filaTotales = array($sTagInicio._tr('Total').$sTagFinal, '');
+    foreach ($datosBreaks['breaks'] as $idBreak => $sNombreBreak) {
+        $mapa[$idBreak] = count($arrColumnas);
+        $arrColumnas[] = array('name' => $sNombreBreak, 'property1'  => '' );
+        $filaTotales[] = 0; // Total de segundos usado por todos los agentes en este break
+    }
+    $mapa['TOTAL'] = count($arrColumnas);
+    $filaTotales[] = 0; // Total de segundos usado por todos los agentes en todos los breaks
+    $arrColumnas[] = array('name' => _tr('Total'), 'property1'  => '' );
+    $arrData = array();
+    foreach ($datosBreaks['reporte'] as $infoAgente) {
         $filaAgente = array(
             $infoAgente['numero_agente'],
             $infoAgente['nombre_agente'],
@@ -171,8 +178,8 @@ function _moduleContent(&$smarty, $module_name)
         
         // Asignar duración del break para este agente y break
         foreach ($infoAgente['breaks'] as $tuplaBreak) {
-            $sTagInicio = '';
-            $sTagFinal = '';
+            $sTagInicio = (!$bExportarCSV && $tuplaBreak['duracion'] > 0) ? '<font color="green">': '';
+            $sTagFinal = ($sTagInicio != '') ? '</font>' : '';
             $filaAgente[$mapa[$tuplaBreak['id_break']]] = $sTagInicio.formatoSegundos($tuplaBreak['duracion']).$sTagFinal;
             $iTotalAgente += $tuplaBreak['duracion'];
             $filaTotales[$mapa[$tuplaBreak['id_break']]] += $tuplaBreak['duracion'];
@@ -183,68 +190,38 @@ function _moduleContent(&$smarty, $module_name)
         $filaAgente[$mapa['TOTAL']] = formatoSegundos($iTotalAgente);
 
         $arrData[] = $filaAgente;
-        }
-        $sTagInicio =  '';
-        $sTagFinal = '';
-        foreach ($mapa as $iPos) $filaTotales[$iPos] = $sTagInicio.formatoSegundos($filaTotales[$iPos]).$sTagFinal;
-        $arrData[] = $filaTotales;
-        
-    } 
-    else {
-        $datosBreaks = $oReportsBreak->getReportesBreak($sFechaInicio, $sFechaFinal);
-        $arrColumns = array(_tr("No. de Agente"), _tr("Nombre Agente"), _tr("Hold"), _tr("Almuerzo"), _tr("Total"));
-        $oGrid->setColumns($arrColumns);
-        $sTagInicio = '<b>';
-        $sTagFinal = ($sTagInicio != '') ? '</b>' : '';
-        $filaTotales = array($sTagInicio._tr('Total').$sTagFinal, '');
-        foreach ($datosBreaks['breaks'] as $idBreak => $sNombreBreak) {
-            $mapa[$idBreak] = count($arrColumnas);
-            $arrColumnas[] = array('name' => $sNombreBreak, 'property1'  => '' );
-            $filaTotales[] = 0; // Total de segundos usado por todos los agentes en este break
-        }
-        $mapa['TOTAL'] = count($arrColumnas);
-        $filaTotales[] = 0; // Total de segundos usado por todos los agentes en todos los breaks
-        $arrColumnas[] = array('name' => _tr('Total'), 'property1'  => '' );
-        $arrData = array();
-        foreach ($datosBreaks['reporte'] as $infoAgente) {
-            $filaAgente = array(
-                $infoAgente['numero_agente'],
-                $infoAgente['nombre_agente'],
-            );
-            $iTotalAgente = 0;  // Total de segundos usados por agente en breaks
-    
-            // Valor inicial de todos los breaks es 0 segundos
-            foreach (array_keys($datosBreaks['breaks']) as $idBreak) {
-                $filaAgente[$mapa[$idBreak]] = '00:00:00';
-            }
-            
-            // Asignar duración del break para este agente y break
-            foreach ($infoAgente['breaks'] as $tuplaBreak) {
-                $sTagInicio = ($tuplaBreak['duracion'] > 0) ? '<font color="green">': '';
-                $sTagFinal = ($sTagInicio != '') ? '</font>' : '';
-                $filaAgente[$mapa[$tuplaBreak['id_break']]] = $sTagInicio.formatoSegundos($tuplaBreak['duracion']).$sTagFinal;
-                $iTotalAgente += $tuplaBreak['duracion'];
-                $filaTotales[$mapa[$tuplaBreak['id_break']]] += $tuplaBreak['duracion'];
-                $filaTotales[$mapa['TOTAL']] += $tuplaBreak['duracion'];
-            }
-    
-            // Total para todos los breaks de este agente
-            $filaAgente[$mapa['TOTAL']] = formatoSegundos($iTotalAgente);
-    
-            $arrData[] = $filaAgente;
-        }
-        $sTagInicio = '<b>';
-        $sTagFinal = ($sTagInicio != '') ? '</b>' : '';
-        foreach ($mapa as $iPos) $filaTotales[$iPos] = $sTagInicio.formatoSegundos($filaTotales[$iPos]).$sTagFinal;
-        $arrData[] = $filaTotales;
     }
-    $oGrid->setData($arrData);
+    $sTagInicio = (!$bExportarCSV) ? '<b>': '';
+    $sTagFinal = ($sTagInicio != '') ? '</b>' : '';
+    foreach ($mapa as $iPos) $filaTotales[$iPos] = $sTagInicio.formatoSegundos($filaTotales[$iPos]).$sTagFinal;
+    $arrData[] = $filaTotales;
 
+    // defino la cabecera del grid
+    $offset = 0;
+    $total = count($datosBreaks['reporte']) + 1;
+    $limit = $total;
+
+    $arrGrid = array("title"    =>  $arrLangModule['Reports Break'],
+	    "icon"     => "images/list.png",
+	    "width"    => "99%",
+	    "start"    => ($total==0) ? 0 : $offset + 1,
+	    "end"      => ($offset+$limit)<=$total ? $offset+$limit : $total,
+	    "total"    => $total,
+	    "columns"  => $arrColumnas
+	    );
+    $oGrid = new paloSantoGrid($smarty);
+    $oGrid->enableExport();
     $oGrid->showFilter($htmlFilter);
- 
-    $smarty->assign("SHOW", _tr("Show"));
-    $content = $oGrid->fetchGrid();
-    return $content;
+    if ($bExportarCSV) {
+        $title = $sFechaInicio."-".$sFechaFinal;
+        header("Cache-Control: private");
+        header("Pragma: cache");
+        header('Content-Type: text/csv; charset=utf-8; header=present');
+        header("Content-disposition: attachment; filename=\"".$title.".csv\"");
+    }
+    return $bExportarCSV 
+        ? $oGrid->fetchGridCSV($arrGrid, $arrData) 
+        : $oGrid->fetchGrid($arrGrid, $arrData, $arrLang);
 }
 
 // Formatear segundos como hora:min:seg
@@ -256,31 +233,4 @@ function formatoSegundos($iSeg)
     $iHora = $iSeg;
     return sprintf('%02d:%02d:%02d', $iHora, $iMinutos, $iSegundos);
 }
-
-function createFieldFilter()
-{
-    $arrFormElements = array
-    (
-        "txt_fecha_init"  => array
-        (
-            "LABEL"                     => _tr('Start Date'),
-            "REQUIRED"                  => "yes",
-            "INPUT_TYPE"                => "DATE",
-            "INPUT_EXTRA_PARAM"         => "",
-            "VALIDATION_TYPE"           => "ereg",
-            "VALIDATION_EXTRA_PARAM"    => "^[[:digit:]]{1,2}[[:space:]]+[[:alnum:]]{3}[[:space:]]+[[:digit:]]{4}$"
-        ),
-        "txt_fecha_end"  => array
-        (
-            "LABEL"                     => _tr('End Date'),
-            "REQUIRED"                  => "yes",
-            "INPUT_TYPE"                => "DATE",
-            "INPUT_EXTRA_PARAM"         => "",
-            "VALIDATION_TYPE"           => "ereg",
-            "VALIDATION_EXTRA_PARAM"    => "^[[:digit:]]{1,2}[[:space:]]+[[:alnum:]]{3}[[:space:]]+[[:digit:]]{4}$"
-        ),
-    );
-    return $arrFormElements;
-}
-
 ?>
