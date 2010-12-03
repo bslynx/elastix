@@ -131,8 +131,6 @@ function reportReportsBreak($smarty, $module_name, $local_templates_dir, &$pDB, 
     $sFechaInicio = translateDate($arrFilterExtraVars['txt_fecha_init']);
     $sFechaFinal = translateDate($arrFilterExtraVars['txt_fecha_end']);
 
-    $mapa = array();    // Columna del break dado su ID
-
     $oReportsBreak = new paloSantoReportsBreak($pDB);
     //begin grid parameters
     
@@ -195,21 +193,23 @@ function reports_break_Elastix2_0($sFechaInicio,$sFechaFinal,$oReportsBreak,$htm
 
     $arrColumnas = array(_tr("Agent Number"), _tr("Agent Name"));
 
-    if($oGrid->isExportAction()){
-        $datosBreaks = $oReportsBreak->getReportesBreak($sFechaInicio, $sFechaFinal);
-
-        $filaTotales = array(_tr('Total'), '');
-        foreach ($datosBreaks['breaks'] as $idBreak => $sNombreBreak) {
-            $mapa[$idBreak] = count($arrColumnas);
-            $arrColumnas[] = $sNombreBreak;
-            $filaTotales[] = 0; // Total de segundos usado por todos los agentes en este break
-        }
-        $mapa['TOTAL'] = count($arrColumnas);
-        $filaTotales[] = 0; // Total de segundos usado por todos los agentes en todos los breaks
-        $arrColumnas[] = _tr('Total');
-        $oGrid->setColumns($arrColumnas);
-        $arrData = array();
-        foreach ($datosBreaks['reporte'] as $infoAgente) {
+    $bExportando = $oGrid->isExportAction();
+    $datosBreaks = $oReportsBreak->getReportesBreak($sFechaInicio, $sFechaFinal);
+    $mapa = array();    // Columna del break dado su ID
+    $sTagInicio = !$bExportando ? '<b>' : '';
+    $sTagFinal = ($sTagInicio != '') ? '</b>' : '';
+    $filaTotales = array($sTagInicio._tr('Total').$sTagFinal, '');
+    foreach ($datosBreaks['breaks'] as $idBreak => $sNombreBreak) {
+        $mapa[$idBreak] = count($arrColumnas);
+        $arrColumnas[] = $sNombreBreak;
+        $filaTotales[] = 0; // Total de segundos usado por todos los agentes en este break
+    }
+    $mapa['TOTAL'] = count($arrColumnas);
+    $filaTotales[] = 0; // Total de segundos usado por todos los agentes en todos los breaks
+    $arrColumnas[] = _tr('Total');
+    $oGrid->setColumns($arrColumnas);
+    $arrData = array();
+    foreach ($datosBreaks['reporte'] as $infoAgente) {
         $filaAgente = array(
             $infoAgente['numero_agente'],
             $infoAgente['nombre_agente'],
@@ -223,7 +223,9 @@ function reports_break_Elastix2_0($sFechaInicio,$sFechaFinal,$oReportsBreak,$htm
         
         // Asignar duración del break para este agente y break
         foreach ($infoAgente['breaks'] as $tuplaBreak) {
-            $filaAgente[$mapa[$tuplaBreak['id_break']]] = formatoSegundos($tuplaBreak['duracion']);
+            $sTagInicio = (!$bExportando && $tuplaBreak['duracion'] > 0) ? '<font color="green">': '';
+            $sTagFinal = ($sTagInicio != '') ? '</font>' : '';
+            $filaAgente[$mapa[$tuplaBreak['id_break']]] = $sTagInicio.formatoSegundos($tuplaBreak['duracion']).$sTagFinal;
             $iTotalAgente += $tuplaBreak['duracion'];
             $filaTotales[$mapa[$tuplaBreak['id_break']]] += $tuplaBreak['duracion'];
             $filaTotales[$mapa['TOTAL']] += $tuplaBreak['duracion'];
@@ -233,59 +235,12 @@ function reports_break_Elastix2_0($sFechaInicio,$sFechaFinal,$oReportsBreak,$htm
         $filaAgente[$mapa['TOTAL']] = formatoSegundos($iTotalAgente);
 
         $arrData[] = $filaAgente;
-        }
-        foreach ($mapa as $iPos) $filaTotales[$iPos] = formatoSegundos($filaTotales[$iPos]);
-        $arrData[] = $filaTotales;
     }
-    else{
-        $datosBreaks = $oReportsBreak->getReportesBreak($sFechaInicio, $sFechaFinal);
-        $sTagInicio = '<b>';
-        $sTagFinal = ($sTagInicio != '') ? '</b>' : '';
-        $filaTotales = array($sTagInicio._tr('Total').$sTagFinal, '');
-        foreach ($datosBreaks['breaks'] as $idBreak => $sNombreBreak) {
-            $mapa[$idBreak] = count($arrColumnas);
-            $arrColumnas[] = $sNombreBreak;
-            $filaTotales[] = 0; // Total de segundos usado por todos los agentes en este break
-        }
-  
-        
-        $mapa['TOTAL'] = count($arrColumnas);
-        $filaTotales[] = 0; // Total de segundos usado por todos los agentes en todos los breaks
-        $arrColumnas[] = _tr('Total');
-        $oGrid->setColumns($arrColumnas);
-        $arrData = array();
-        foreach ($datosBreaks['reporte'] as $infoAgente) {
-            $filaAgente = array(
-                $infoAgente['numero_agente'],
-                $infoAgente['nombre_agente'],
-            );
-            $iTotalAgente = 0;  // Total de segundos usados por agente en breaks
-    
-            // Valor inicial de todos los breaks es 0 segundos
-            foreach (array_keys($datosBreaks['breaks']) as $idBreak) {
-                $filaAgente[$mapa[$idBreak]] = '00:00:00';
-            }
-            
-            // Asignar duración del break para este agente y break
-            foreach ($infoAgente['breaks'] as $tuplaBreak) {
-                $sTagInicio = ($tuplaBreak['duracion'] > 0) ? '<font color="green">': '';
-                $sTagFinal = ($sTagInicio != '') ? '</font>' : '';
-                $filaAgente[$mapa[$tuplaBreak['id_break']]] = $sTagInicio.formatoSegundos($tuplaBreak['duracion']).$sTagFinal;
-                $iTotalAgente += $tuplaBreak['duracion'];
-                $filaTotales[$mapa[$tuplaBreak['id_break']]] += $tuplaBreak['duracion'];
-                $filaTotales[$mapa['TOTAL']] += $tuplaBreak['duracion'];
-            }
-    
-            // Total para todos los breaks de este agente
-            $filaAgente[$mapa['TOTAL']] = formatoSegundos($iTotalAgente);
-    
-            $arrData[] = $filaAgente;
-        }
-        $sTagInicio = '<b>';
-        $sTagFinal = ($sTagInicio != '') ? '</b>' : '';
-        foreach ($mapa as $iPos) $filaTotales[$iPos] = $sTagInicio.formatoSegundos($filaTotales[$iPos]).$sTagFinal;
-        $arrData[] = $filaTotales;
-    }
+    $sTagInicio = !$bExportando ? '<b>' : '';;
+    $sTagFinal = ($sTagInicio != '') ? '</b>' : '';
+    foreach ($mapa as $iPos) $filaTotales[$iPos] = $sTagInicio.formatoSegundos($filaTotales[$iPos]).$sTagFinal;
+    $arrData[] = $filaTotales;
+
     $oGrid->setData($arrData);
 
     $oGrid->showFilter($htmlFilter);
