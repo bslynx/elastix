@@ -86,109 +86,35 @@ function _moduleContent(&$smarty, $module_name)
     $urlVars = array('menu' => $module_name);
     $smarty->assign("menu","calls_detail");
     $smarty->assign("Filter",_tr('Filter'));
-    if(isset($_GET['exportcsv']) && $_GET['exportcsv']=='yes') {
-
-        $limit = "";
-        $offset = 0;
-        if(empty($_GET['date_start'])) {
-            $date_start = date("Y-m-d") . " 00:00:00"; 
-        } else {
-            $date_start = translateDate($_GET['date_start']) . " 00:00:00";
-        }
-        if(empty($_GET['date_end'])) { 
-            $date_end = date("Y-m-d") . " 23:59:59"; 
-        } else {
-            $date_end   = translateDate($_GET['date_end']) . " 23:59:59";
-        }
-         $field_name = array('field_name'    =>  $_GET['field_name'],
-                                'field_name_1'    =>  $_GET['field_name_1']);
-            
-        $field_pattern = array('field_pattern' => $_GET['field_pattern'],
-                                   'field_pattern_1'=> $_GET['field_pattern_1']);
-//         $field_name = $_GET['field_name'];
-//         $field_pattern = $_GET['field_pattern'];
-        header("Cache-Control: private");
-        header("Pragma: cache");
-        header('Content-Type: application/octec-stream');
-        //header('Content-Length: '.strlen($this->buffer));
-        header('Content-disposition: inline; filename="calls_detail.csv"');
-        header('Content-Type: application/force-download');
-        //header('Content-Length: '.strlen($this->buffer));
-        //header('Content-disposition: attachment; filename="'.$name.'"');
-
-    } else {
     
-        $arrFormElements = array("date_start"  => array("LABEL"                  => _tr('Start Date'),
-                                                        "REQUIRED"               => "yes",
-                                                        "INPUT_TYPE"             => "DATE",
-                                                        "INPUT_EXTRA_PARAM"      => "",
-                                                        "VALIDATION_TYPE"        => "ereg",
-                                                        "VALIDATION_EXTRA_PARAM" => "^[[:digit:]]{1,2}[[:space:]]+[[:alnum:]]{3}[[:space:]]+[[:digit:]]{4}$"),
-                                 "date_end"    => array("LABEL"                  => _tr("End Date"),
-                                                        "REQUIRED"               => "yes",
-                                                        "INPUT_TYPE"             => "DATE",
-                                                        "INPUT_EXTRA_PARAM"      => "",
-                                                        "VALIDATION_TYPE"        => "ereg",
-                                                        "VALIDATION_EXTRA_PARAM" => "^[[:digit:]]{1,2}[[:space:]]+[[:alnum:]]{3}[[:space:]]+[[:digit:]]{4}$"),
-                                 "field_name"  => array("LABEL"                  => _tr("Column"),
-                                                        "REQUIRED"               => "no",
-                                                        "INPUT_TYPE"             => "SELECT",
-                                                        "INPUT_EXTRA_PARAM"      => array( "number"=> _tr("No.Agent"),
-                                                                                           "queue"  => _tr("Queue"),
-                                                                                           "type"   => _tr("Type"),
-                                                                                           "phone"  => _tr("Phone")),
-                                                        "VALIDATION_TYPE"        => "ereg",
-                                                        "VALIDATION_EXTRA_PARAM" => "^(number|queue|type|phone)$"),
-                                 "field_pattern" => array("LABEL"                  => _tr("Column"),
-                                                        "REQUIRED"               => "no",
-                                                        "INPUT_TYPE"             => "TEXT",
-                                                        "INPUT_EXTRA_PARAM"      => "",
-                                                        "VALIDATION_TYPE"        => "ereg",
-                                                        "VALIDATION_EXTRA_PARAM" => "^[[:alnum:]@_\.,/\-]+$"),
-
-                                "field_name_1"  => array("LABEL"                  => _tr("Column"),
-                                                        "REQUIRED"               => "no",
-                                                        "INPUT_TYPE"             => "SELECT",
-                                                         "INPUT_EXTRA_PARAM"      => array( "number"=> _tr("No.Agent"),
-                                                                                            "queue"   => _tr("Queue"),
-                                                                                            "type"    => _tr("Type"),
-                                                                                            "phone"   => _tr("Phone")),
-                                                        "VALIDATION_TYPE"        => "ereg",
-                                                        "VALIDATION_EXTRA_PARAM" => "^(number|queue|type|phone)$"),
-                                "field_pattern_1" => array("LABEL"                  => _tr("Column"),
-                                                        "REQUIRED"               => "no",
-                                                        "INPUT_TYPE"             => "TEXT",
-                                                        "INPUT_EXTRA_PARAM"      => "",
-                                                        "VALIDATION_TYPE"        => "ereg",
-                                                        "VALIDATION_EXTRA_PARAM" => "^[[:alnum:]@_\.,/\-]+$"),
-                                 );
+    $arrFormElements = createFieldFilter();
     
-        $oFilterForm = new paloForm($smarty, $arrFormElements);
+    $oFilterForm = new paloForm($smarty, $arrFormElements);
     
-        // Por omision las fechas toman el sgte. valor (la fecha de hoy)
-        $date_start = date("Y-m-d") . " 00:00:00"; 
-        $date_end   = date("Y-m-d") . " 23:59:59";
-        $field_name = "";
-        $field_pattern = ""; 
-    
-        if(isset($_POST['filter'])) {
-            if($oFilterForm->validateForm($_POST)) {
-                // Exito, puedo procesar los datos ahora.
-                $date_start = translateDate($_POST['date_start']) . " 00:00:00"; 
-                $date_end   = translateDate($_POST['date_end']) . " 23:59:59";
+ // Por omision las fechas toman el sgte. valor (la fecha de hoy)
+    $date_start = date("Y-m-d") . " 00:00:00"; 
+    $date_end   = date("Y-m-d") . " 23:59:59";
+    $field_name = "";
+    $field_pattern = ""; 
+    $arrFilterExtraVars = "";
+    if(isset($_POST['filter'])) {
+        if($oFilterForm->validateForm($_POST)) {
+            // Exito, puedo procesar los datos ahora.
+             $date_start = translateDate($_POST['date_start']) . " 00:00:00"; 
+             $date_end   = translateDate($_POST['date_end']) . " 23:59:59";
                 
-                $field_name = array('field_name'    =>  $_POST['field_name'],
-                                'field_name_1'    =>  $_POST['field_name_1']);
+             $field_name = array('field_name'    =>  $_POST['field_name'],
+                                 'field_name_1'    =>  $_POST['field_name_1']);
             
-                $field_pattern = array('field_pattern' => $_POST['field_pattern'],
-                                   'field_pattern_1'=> $_POST['field_pattern_1']);
+             $field_pattern = array('field_pattern' => $_POST['field_pattern'],
+                                    'field_pattern_1'=> $_POST['field_pattern_1']);
 
-                $arrFilterExtraVars = array("date_start" => $_POST['date_start'], 
-                                            "date_end" => $_POST['date_end'], 
-                                            "field_name" => $_POST['field_name'], 
-                                            "field_pattern" => $_POST['field_pattern'],
-                                            "field_name_1" => $_POST['field_name_1'], "field_pattern_1" => $_POST['field_pattern_1']);
-            } else {
+             $arrFilterExtraVars = array("date_start" => $_POST['date_start'], 
+                                         "date_end" => $_POST['date_end'], 
+                                         "field_name" => $_POST['field_name'], 
+                                         "field_pattern" => $_POST['field_pattern'],
+                                         "field_name_1" => $_POST['field_name_1'], "field_pattern_1" => $_POST['field_pattern_1']);
+         } else {
                 // Error
                 $smarty->assign("mb_title", _tr("Validation Error"));
                 $arrErrores=$oFilterForm->arrErroresValidacion;
@@ -198,10 +124,10 @@ function _moduleContent(&$smarty, $module_name)
                 }
                 $strErrorMsg .= "";
                 $smarty->assign("mb_message", $strErrorMsg);
-            }
-            $htmlFilter = $contenidoModulo=$oFilterForm->fetchForm("$local_templates_dir/filter.tpl", "", $_POST);
+           }
+           $htmlFilter = $contenidoModulo=$oFilterForm->fetchForm("$local_templates_dir/filter.tpl", "", $_POST);
     
-        } else if(isset($_GET['date_start']) AND isset($_GET['date_end'])) {
+     } else if(isset($_GET['date_start']) AND isset($_GET['date_end'])) {
             $date_start = translateDate($_GET['date_start']) . " 00:00:00";
             $date_end   = translateDate($_GET['date_end']) . " 23:59:59";
 
@@ -213,11 +139,187 @@ function _moduleContent(&$smarty, $module_name)
 
             $arrFilterExtraVars = array("date_start" => $_GET['date_start'], "date_end" => $_GET['date_end']);
             $htmlFilter = $contenidoModulo=$oFilterForm->fetchForm("$local_templates_dir/filter.tpl", "", $_GET);
-        } else {
+      } else {
             $htmlFilter = $contenidoModulo=$oFilterForm->fetchForm("$local_templates_dir/filter.tpl", "", 
                           array('date_start' => date("d M Y"), 'date_end' => date("d M Y"),'field_name' => 'agent','field_pattern' => '','field_name_1' => 'agent','field_pattern_1' => '' ));
-        }
+      }
+
+      if(method_exists('paloSantoGrid','isExportAction')){
+            $content = calls_detail_Elastix2_0($oCallsDetail, $date_start, $date_end, $field_name, $field_pattern, $smarty, $htmlFilter, $urlVars, $arrFilterExtraVars);
+            return $content;
+      }
+        //caso contrario (versiones antiguas de asterisk) no se hacen cambios
+      else{
+             $content = calls_detail_Elastix_old($oCallsDetail, $date_start, $date_end, $field_name, $field_pattern, $smarty, $htmlFilter, $urlVars, $arrFilterExtraVars, $arrLang);
+             return $content;
+      }
+   
+}
+
+function calls_detail_Elastix2_0($oCallsDetail, $date_start, $date_end, $field_name, $field_pattern, $smarty, $htmlFilter, $urlVars, $arrFilterExtraVars)
+{
+    $arrData = null;
+    $oGrid  = new paloSantoGrid($smarty);
+    $oGrid->setTitle(_tr("Calls Detail"));
+    $oGrid->pagingShow(true); 
+
+    $oGrid->enableExport();   // enable export.
+    $oGrid->setNameFile_Export(_tr("Calls Detail"));
+    $arrCallsDetailTmp  = $oCallsDetail->obtenerCallsDetails(null, 0, $date_start, $date_end, $field_name, $field_pattern);
+    $total =$arrCallsDetailTmp['NumRecords'];
+
+    if(isset($arrFilterExtraVars) && is_array($arrFilterExtraVars) && count($arrFilterExtraVars)>0) {
+            $urlVars = array_merge($urlVars, $arrFilterExtraVars);
+    }
+    $url = construirURL($urlVars, array('nav', 'start'));
+    $oGrid->setURL($url);
+    $sumTotal = "00:00:00";
     
+    if($oGrid->isExportAction()){
+        $offset = 0;
+        $limit = $total;
+        $arrResult  = $oCallsDetail->obtenerCallsDetails(null, $offset, $date_start, $date_end, $field_name, $field_pattern);
+
+        $arrColumns = array(_tr("No.Agent"), _tr("Agent"), _tr("Start Date"), _tr("Start Time"),_tr("End Date"),_tr("End Time"),_tr("Duration"),_tr("Duration Wait"),_tr("Queue"),_tr("Type"),_tr("Phone"),_tr("Transfer"),_tr("Status"));
+        $oGrid->setColumns($arrColumns);
+        if(is_array($arrResult['Data']) && $total>0){
+            foreach($arrResult['Data'] as $key => $value){
+                $arrTmp[0] = $value[0];
+                $arrTmp[1] = htmlentities($value[1], ENT_COMPAT, "UTF-8");
+                $arrTmp[2] = $value[2];
+                $arrTmp[3] = $value[3];
+                $arrTmp[4] = $value[4];
+                $arrTmp[5] = $value[5];
+                $arrTmp[6] = $value[6];
+                $arrTmp[7] = $value[7];
+                $arrTmp[8] = $value[8];
+                $arrTmp[9] = $value[9];
+                $arrTmp[10] = $value[10];
+                $arrTmp[11] = $value[11];
+                if ($value[12]=='abandonada' || $value[12]=='Abandoned')
+                    $arrTmp[12] = _tr('Abandoned') ;
+                elseif ($value[12]== 'terminada' || $value[12]=='Success')
+                    $arrTmp[12] = _tr('Success');
+                elseif ($value[12]=='fin-monitoreo')
+                    $arrTmp[12] = _tr('End Monitor');
+                elseif ($value[12]== 'Failure')
+                    $arrTmp[12] = _tr('Failure');
+                elseif ($value[12]== 'NoAnswer')
+                    $arrTmp[12] = _tr('NoAnswer');
+                elseif ($value[12]== 'OnQueue')
+                    $arrTmp[12] = _tr('OnQueue');
+                elseif ($value[12]=='Placing')
+                    $arrTmp[12] = _tr('Placing');
+                elseif ($value[12]=='Ringing')
+                    $arrTmp[12] = _tr('Ringing');
+                elseif ($value[12]=='ShortCall')
+                    $arrTmp[12] = _tr('ShortCall');
+                $arrData[] = $arrTmp;
+
+                $arrTime = array(array("duration"=>$sumTotal),array("duration"=>$value[6]));
+ 	        $sumTotal = $oCallsDetail->sumarTiempos($arrTime);
+            }
+            $arrTmp[0] = _tr("Total");
+            $arrTmp[1] = $arrTmp[2] = $arrTmp[3] = $arrTmp[4] = $arrTmp[5] = "";
+            $arrTmp[7] = $arrTmp[8] = $arrTmp[9] = $arrTmp[10] = $arrTmp[11] = $arrTmp[12] ="";
+            $arrTmp[6] = $sumTotal;
+            $arrData[] = $arrTmp;
+        }
+    }
+    else{
+        $limit = 20;
+        $oGrid->setLimit($limit);
+        $oGrid->setTotal($total);
+        $offset = $oGrid->calculateOffset();
+
+        $arrResult  = $oCallsDetail->obtenerCallsDetails($limit, $offset, $date_start, $date_end, $field_name, $field_pattern);
+
+        $arrColumns = array(_tr("No.Agent"), _tr("Agent"), _tr("Start Date"), _tr("Start Time"),_tr("End Date"),_tr("End Time"),_tr("Duration"),_tr("Duration Wait"),_tr("Queue"),_tr("Type"),_tr("Phone"),_tr("Transfer"),_tr("Status"));
+        $oGrid->setColumns($arrColumns);
+
+        if(is_array($arrResult['Data']) && $total>0){
+            foreach($arrResult['Data'] as $key => $value){
+                $arrTmp[0] = $value[0];
+                $arrTmp[1] = htmlentities($value[1], ENT_COMPAT, "UTF-8");
+                $arrTmp[2] = $value[2];
+                $arrTmp[3] = $value[3];
+                $arrTmp[4] = $value[4];
+                $arrTmp[5] = $value[5];
+                $arrTmp[6] = $value[6];
+                $arrTmp[7] = $value[7];
+                $arrTmp[8] = $value[8];
+                $arrTmp[9] = $value[9];
+                $arrTmp[10] = $value[10];
+                $arrTmp[11] = $value[11];
+                if ($value[12]=='abandonada' || $value[12]=='Abandoned')
+                    $arrTmp[12] = _tr('Abandoned') ;
+                elseif ($value[12]== 'terminada' || $value[12]=='Success')
+                    $arrTmp[12] = _tr('Success');
+                elseif ($value[12]=='fin-monitoreo')
+                    $arrTmp[12] = _tr('End Monitor');
+                elseif ($value[12]== 'Failure')
+                    $arrTmp[12] = _tr('Failure');
+                elseif ($value[12]== 'NoAnswer')
+                    $arrTmp[12] = _tr('NoAnswer');
+                elseif ($value[12]== 'OnQueue')
+                    $arrTmp[12] = _tr('OnQueue');
+                elseif ($value[12]=='Placing')
+                    $arrTmp[12] = _tr('Placing');
+                elseif ($value[12]=='Ringing')
+                    $arrTmp[12] = _tr('Ringing');
+                elseif ($value[12]=='ShortCall')
+                    $arrTmp[12] = _tr('ShortCall');
+                $arrData[] = $arrTmp;
+
+                $arrTime = array(array("duration"=>$sumTotal),array("duration"=>$value[6]));
+ 	        $sumTotal = $oCallsDetail->sumarTiempos($arrTime);
+            }
+        }
+        $arrTmp[0] = "<b>"._tr("Total")."</b>";
+        $arrTmp[1] = $arrTmp[2] = $arrTmp[3] = $arrTmp[4] = $arrTmp[5] = "";
+        $arrTmp[7] = $arrTmp[8] = $arrTmp[9] = $arrTmp[10] = $arrTmp[11] = $arrTmp[12] ="";
+        $arrTmp[6] = "<b>".$sumTotal."</b>";
+        $arrData[] = $arrTmp;
+    }
+    $oGrid->setData($arrData);
+    $smarty->assign("SHOW", _tr("Show"));
+    $oGrid->showFilter($htmlFilter);
+    $content = $oGrid->fetchGrid();
+    return $content;
+}
+
+function calls_detail_Elastix_old($oCallsDetail, $date_start, $date_end, $field_name, $field_pattern, $smarty, $htmlFilter, $urlVars, $arrFilterExtraVars, $arrLang)
+{
+    if(isset($_GET['exportcsv']) && $_GET['exportcsv']=='yes') {
+           $limit = "";
+           $offset = 0;
+           if(empty($_GET['date_start'])) {
+               $date_start = date("Y-m-d") . " 00:00:00"; 
+           } else {
+               $date_start = translateDate($_GET['date_start']) . " 00:00:00";
+           }
+           if(empty($_GET['date_end'])) { 
+               $date_end = date("Y-m-d") . " 23:59:59"; 
+           } else {
+               $date_end   = translateDate($_GET['date_end']) . " 23:59:59";
+           }
+           $field_name = array('field_name'    =>  $_GET['field_name'],
+                               'field_name_1'    =>  $_GET['field_name_1']);
+                    
+           $field_pattern = array('field_pattern' => $_GET['field_pattern'],
+                                  'field_pattern_1'=> $_GET['field_pattern_1']);
+//         $field_name = $_GET['field_name'];
+//         $field_pattern = $_GET['field_pattern'];
+           header("Cache-Control: private");
+           header("Pragma: cache");
+           header('Content-Type: application/octec-stream');
+           //header('Content-Length: '.strlen($this->buffer));
+           header('Content-disposition: inline; filename="calls_detail.csv"');
+           header('Content-Type: application/force-download');
+           //header('Content-Length: '.strlen($this->buffer));
+           //header('Content-disposition: attachment; filename="'.$name.'"');
+
+      } else {
         // LISTADO
         $offset = 0;
         $arrCallsDetailTmp  = $oCallsDetail->obtenerCallsDetails(null,$offset, $date_start, $date_end, $field_name, $field_pattern);
@@ -252,6 +354,8 @@ function _moduleContent(&$smarty, $module_name)
         }
     
     }    
+    
+    
     $url = construirURL($urlVars, array('nav', 'start'));
 
     // Bloque comun
@@ -351,5 +455,54 @@ function _moduleContent(&$smarty, $module_name)
         $oGrid->showFilter($htmlFilter);
         return $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
     }
+}
+
+function createFieldFilter()
+{
+    $arrFormElements = array("date_start"  => array("LABEL"                  => _tr('Start Date'),
+                                                        "REQUIRED"               => "yes",
+                                                        "INPUT_TYPE"             => "DATE",
+                                                        "INPUT_EXTRA_PARAM"      => "",
+                                                        "VALIDATION_TYPE"        => "ereg",
+                                                        "VALIDATION_EXTRA_PARAM" => "^[[:digit:]]{1,2}[[:space:]]+[[:alnum:]]{3}[[:space:]]+[[:digit:]]{4}$"),
+                                 "date_end"    => array("LABEL"                  => _tr("End Date"),
+                                                        "REQUIRED"               => "yes",
+                                                        "INPUT_TYPE"             => "DATE",
+                                                        "INPUT_EXTRA_PARAM"      => "",
+                                                        "VALIDATION_TYPE"        => "ereg",
+                                                        "VALIDATION_EXTRA_PARAM" => "^[[:digit:]]{1,2}[[:space:]]+[[:alnum:]]{3}[[:space:]]+[[:digit:]]{4}$"),
+                                 "field_name"  => array("LABEL"                  => _tr("Column"),
+                                                        "REQUIRED"               => "no",
+                                                        "INPUT_TYPE"             => "SELECT",
+                                                        "INPUT_EXTRA_PARAM"      => array( "number"=> _tr("No.Agent"),
+                                                                                           "queue"  => _tr("Queue"),
+                                                                                           "type"   => _tr("Type"),
+                                                                                           "phone"  => _tr("Phone")),
+                                                        "VALIDATION_TYPE"        => "ereg",
+                                                        "VALIDATION_EXTRA_PARAM" => "^(number|queue|type|phone)$"),
+                                 "field_pattern" => array("LABEL"                  => _tr("Column"),
+                                                        "REQUIRED"               => "no",
+                                                        "INPUT_TYPE"             => "TEXT",
+                                                        "INPUT_EXTRA_PARAM"      => "",
+                                                        "VALIDATION_TYPE"        => "ereg",
+                                                        "VALIDATION_EXTRA_PARAM" => "^[[:alnum:]@_\.,/\-]+$"),
+
+                                "field_name_1"  => array("LABEL"                  => _tr("Column"),
+                                                        "REQUIRED"               => "no",
+                                                        "INPUT_TYPE"             => "SELECT",
+                                                         "INPUT_EXTRA_PARAM"      => array( "number"=> _tr("No.Agent"),
+                                                                                            "queue"   => _tr("Queue"),
+                                                                                            "type"    => _tr("Type"),
+                                                                                            "phone"   => _tr("Phone")),
+                                                        "VALIDATION_TYPE"        => "ereg",
+                                                        "VALIDATION_EXTRA_PARAM" => "^(number|queue|type|phone)$"),
+                                "field_pattern_1" => array("LABEL"                  => _tr("Column"),
+                                                        "REQUIRED"               => "no",
+                                                        "INPUT_TYPE"             => "TEXT",
+                                                        "INPUT_EXTRA_PARAM"      => "",
+                                                        "VALIDATION_TYPE"        => "ereg",
+                                                        "VALIDATION_EXTRA_PARAM" => "^[[:alnum:]@_\.,/\-]+$"),
+                                 );
+    return $arrFormElements;
 }
 ?>
