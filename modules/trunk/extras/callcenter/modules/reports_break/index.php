@@ -134,15 +134,102 @@ function reportReportsBreak($smarty, $module_name, $local_templates_dir, &$pDB, 
     $oReportsBreak = new paloSantoReportsBreak($pDB);
     //begin grid parameters
     
-    //Si se usa elastix 2.0 entonces se pueden usar las nuevas funcionalidades de la clase paloSantoGrid
-    if(method_exists('paloSantoGrid','isExportAction')){
-        $content = reports_break_Elastix2_0($sFechaInicio,$sFechaFinal,$oReportsBreak,$htmlFilter,$smarty,$arrFilterExtraVars);
-        return $content;
+    $bElastixNuevo = method_exists('paloSantoGrid','isExportAction');
+
+    $oGrid = new paloSantoGrid($smarty);
+    $oGrid->enableExport();   // enable export.
+    $oGrid->showFilter($htmlFilter);
+
+    $arrColumnas = array(
+        _tr('Agent Number'),
+        _tr('Agent Name')
+    );
+    $bExportando = $bElastixNuevo
+        ? $oGrid->isExportAction()
+        : (isset( $_GET['exportcsv'] ) && $_GET['exportcsv'] == 'yes');
+    $datosBreaks = $oReportsBreak->getReportesBreak($sFechaInicio, $sFechaFinal);
+    $mapa = array();    // Columna del break dado su ID
+    $sTagInicio = (!$bExportando) ? '<b>' : '';
+    $sTagFinal = ($sTagInicio != '') ? '</b>' : '';
+    $filaTotales = array($sTagInicio._tr('Total').$sTagFinal, '');
+    foreach ($datosBreaks['breaks'] as $idBreak => $sNombreBreak) {
+        $mapa[$idBreak] = count($arrColumnas);
+        $arrColumnas[] = $sNombreBreak;
+        $filaTotales[] = 0; // Total de segundos usado por todos los agentes en este break
     }
-    //caso contrario (versiones antiguas de asterisk) no se hacen cambios
-    else{
-        $content = reports_break_Elastix_old($sFechaInicio,$sFechaFinal,$oReportsBreak,$htmlFilter,$smarty,$arrLang,$arrFilterExtraVars);
-        return $content;
+    $mapa['TOTAL'] = count($arrColumnas);
+    $filaTotales[] = 0; // Total de segundos usado por todos los agentes en todos los breaks
+    $arrColumnas[] = _tr('Total');
+
+    $arrData = array();
+    foreach ($datosBreaks['reporte'] as $infoAgente) {
+        $filaAgente = array(
+            $infoAgente['numero_agente'],
+            $infoAgente['nombre_agente'],
+        );
+        $iTotalAgente = 0;  // Total de segundos usados por agente en breaks
+
+        // Valor inicial de todos los breaks es 0 segundos
+        foreach (array_keys($datosBreaks['breaks']) as $idBreak) {
+            $filaAgente[$mapa[$idBreak]] = '00:00:00';
+        }
+        
+        // Asignar duración del break para este agente y break
+        foreach ($infoAgente['breaks'] as $tuplaBreak) {
+            $sTagInicio = (!$bExportando && $tuplaBreak['duracion'] > 0) ? '<font color="green">': '';
+            $sTagFinal = ($sTagInicio != '') ? '</font>' : '';
+            $filaAgente[$mapa[$tuplaBreak['id_break']]] = $sTagInicio.formatoSegundos($tuplaBreak['duracion']).$sTagFinal;
+            $iTotalAgente += $tuplaBreak['duracion'];
+            $filaTotales[$mapa[$tuplaBreak['id_break']]] += $tuplaBreak['duracion'];
+            $filaTotales[$mapa['TOTAL']] += $tuplaBreak['duracion'];
+        }
+
+        // Total para todos los breaks de este agente
+        $filaAgente[$mapa['TOTAL']] = formatoSegundos($iTotalAgente);
+
+        $arrData[] = $filaAgente;
+    }
+    $sTagInicio = (!$bExportando) ? '<b>' : '';
+    $sTagFinal = ($sTagInicio != '') ? '</b>' : '';
+    foreach ($mapa as $iPos) $filaTotales[$iPos] = $sTagInicio.formatoSegundos($filaTotales[$iPos]).$sTagFinal;
+    $arrData[] = $filaTotales;
+
+    if ($bElastixNuevo) {
+        $oGrid->setURL(construirURL($arrFilterExtraVars));
+        $oGrid->setData($arrData);
+        $oGrid->setColumns($arrColumnas);
+        $oGrid->setTitle(_tr("Reports Break"));
+        $oGrid->pagingShow(false); 
+        $oGrid->setNameFile_Export(_tr("Reports Break"));
+     
+        $smarty->assign("SHOW", _tr("Show"));
+        return $oGrid->fetchGrid();
+    } else {
+        $url = construirURL($arrFilterExtraVars);
+        $offset = 0;
+        $total = count($datosBreaks['reporte']) + 1;
+        $limit = $total;
+
+        function _map_name($s) { return array('name' => $s); }
+        $arrGrid = array("title"    =>  _tr('Reports Break'),
+                "url"      => $url,
+                "icon"     => "images/list.png",
+                "width"    => "99%",
+                "start"    => ($total==0) ? 0 : $offset + 1,
+                "end"      => ($offset+$limit)<=$total ? $offset+$limit : $total,
+                "total"    => $total,
+                "columns"  => array_map('_map_name', $arrColumnas),
+                );
+        if ($bExportando) {
+            $title = $sFechaInicio."-".$sFechaFinal;
+            header("Cache-Control: private");
+            header("Pragma: cache");
+            header('Content-Type: text/csv; charset=utf-8; header=present');
+            header("Content-disposition: attachment; filename=\"".$title.".csv\"");
+        }
+        return $bExportando 
+            ? $oGrid->fetchGridCSV($arrGrid, $arrData) 
+            : $oGrid->fetchGrid($arrGrid, $arrData, $arrLang);
     }
 }
 
@@ -177,159 +264,6 @@ function createFieldFilter()
 function getAction()
 {
     return "report"; 
-}
-
-function reports_break_Elastix2_0($sFechaInicio,$sFechaFinal,$oReportsBreak,$htmlFilter,$smarty,$arrFilterExtraVars)
-{
-    $arrData = null;
-    $oGrid  = new paloSantoGrid($smarty);
-    $oGrid->setTitle(_tr("Reports Break"));
-    $oGrid->pagingShow(false); 
-
-    $oGrid->enableExport();   // enable export.
-    $oGrid->setNameFile_Export(_tr("Reports Break"));
-
-    $oGrid->setURL(construirURL($arrFilterExtraVars));
-
-    $arrColumnas = array(_tr("Agent Number"), _tr("Agent Name"));
-
-    $bExportando = $oGrid->isExportAction();
-    $datosBreaks = $oReportsBreak->getReportesBreak($sFechaInicio, $sFechaFinal);
-    $mapa = array();    // Columna del break dado su ID
-    $sTagInicio = !$bExportando ? '<b>' : '';
-    $sTagFinal = ($sTagInicio != '') ? '</b>' : '';
-    $filaTotales = array($sTagInicio._tr('Total').$sTagFinal, '');
-    foreach ($datosBreaks['breaks'] as $idBreak => $sNombreBreak) {
-        $mapa[$idBreak] = count($arrColumnas);
-        $arrColumnas[] = $sNombreBreak;
-        $filaTotales[] = 0; // Total de segundos usado por todos los agentes en este break
-    }
-    $mapa['TOTAL'] = count($arrColumnas);
-    $filaTotales[] = 0; // Total de segundos usado por todos los agentes en todos los breaks
-    $arrColumnas[] = _tr('Total');
-    $oGrid->setColumns($arrColumnas);
-    $arrData = array();
-    foreach ($datosBreaks['reporte'] as $infoAgente) {
-        $filaAgente = array(
-            $infoAgente['numero_agente'],
-            $infoAgente['nombre_agente'],
-        );
-        $iTotalAgente = 0;  // Total de segundos usados por agente en breaks
-
-        // Valor inicial de todos los breaks es 0 segundos
-        foreach (array_keys($datosBreaks['breaks']) as $idBreak) {
-            $filaAgente[$mapa[$idBreak]] = '00:00:00';
-        }
-        
-        // Asignar duración del break para este agente y break
-        foreach ($infoAgente['breaks'] as $tuplaBreak) {
-            $sTagInicio = (!$bExportando && $tuplaBreak['duracion'] > 0) ? '<font color="green">': '';
-            $sTagFinal = ($sTagInicio != '') ? '</font>' : '';
-            $filaAgente[$mapa[$tuplaBreak['id_break']]] = $sTagInicio.formatoSegundos($tuplaBreak['duracion']).$sTagFinal;
-            $iTotalAgente += $tuplaBreak['duracion'];
-            $filaTotales[$mapa[$tuplaBreak['id_break']]] += $tuplaBreak['duracion'];
-            $filaTotales[$mapa['TOTAL']] += $tuplaBreak['duracion'];
-        }
-
-        // Total para todos los breaks de este agente
-        $filaAgente[$mapa['TOTAL']] = formatoSegundos($iTotalAgente);
-
-        $arrData[] = $filaAgente;
-    }
-    $sTagInicio = !$bExportando ? '<b>' : '';;
-    $sTagFinal = ($sTagInicio != '') ? '</b>' : '';
-    foreach ($mapa as $iPos) $filaTotales[$iPos] = $sTagInicio.formatoSegundos($filaTotales[$iPos]).$sTagFinal;
-    $arrData[] = $filaTotales;
-
-    $oGrid->setData($arrData);
-
-    $oGrid->showFilter($htmlFilter);
- 
-    $smarty->assign("SHOW", _tr("Show"));
-    $content = $oGrid->fetchGrid();
-    return $content;
-}
-
-function reports_break_Elastix_old($sFechaInicio,$sFechaFinal,$oReportsBreak,$htmlFilter,$smarty,$arrLang,$arrFilterExtraVars)
-{
-        $bExportarCSV = (isset( $_GET['exportcsv'] ) && $_GET['exportcsv'] == 'yes');
-        $datosBreaks = $oReportsBreak->getReportesBreak($sFechaInicio, $sFechaFinal);
-        $mapa = array();    // Columna del break dado su ID
-        $smarty->assign("url", construirURL($arrFilterExtraVars));
-        $arrColumnas = array(
-            array('name'=> _tr('Agent Number'), 'property1'  => '' ),
-            array('name'=> _tr('Agent Name'),   'property1'  => '' )
-        );
-        $sTagInicio = (!$bExportarCSV) ? '<b>': '';
-        $sTagFinal = ($sTagInicio != '') ? '</b>' : '';
-        $filaTotales = array($sTagInicio._tr('Total').$sTagFinal, '');
-        foreach ($datosBreaks['breaks'] as $idBreak => $sNombreBreak) {
-            $mapa[$idBreak] = count($arrColumnas);
-            $arrColumnas[] = array('name' => $sNombreBreak, 'property1'  => '' );
-            $filaTotales[] = 0; // Total de segundos usado por todos los agentes en este break
-        }
-        $mapa['TOTAL'] = count($arrColumnas);
-        $filaTotales[] = 0; // Total de segundos usado por todos los agentes en todos los breaks
-        $arrColumnas[] = array('name' => _tr('Total'), 'property1'  => '' );
-        $arrData = array();
-        foreach ($datosBreaks['reporte'] as $infoAgente) {
-            $filaAgente = array(
-                $infoAgente['numero_agente'],
-                $infoAgente['nombre_agente'],
-            );
-            $iTotalAgente = 0;  // Total de segundos usados por agente en breaks
-    
-            // Valor inicial de todos los breaks es 0 segundos
-            foreach (array_keys($datosBreaks['breaks']) as $idBreak) {
-                $filaAgente[$mapa[$idBreak]] = '00:00:00';
-            }
-            
-            // Asignar duración del break para este agente y break
-            foreach ($infoAgente['breaks'] as $tuplaBreak) {
-                $sTagInicio = (!$bExportarCSV && $tuplaBreak['duracion'] > 0) ? '<font color="green">': '';
-                $sTagFinal = ($sTagInicio != '') ? '</font>' : '';
-                $filaAgente[$mapa[$tuplaBreak['id_break']]] = $sTagInicio.formatoSegundos($tuplaBreak['duracion']).$sTagFinal;
-                $iTotalAgente += $tuplaBreak['duracion'];
-                $filaTotales[$mapa[$tuplaBreak['id_break']]] += $tuplaBreak['duracion'];
-                $filaTotales[$mapa['TOTAL']] += $tuplaBreak['duracion'];
-            }
-    
-            // Total para todos los breaks de este agente
-            $filaAgente[$mapa['TOTAL']] = formatoSegundos($iTotalAgente);
-    
-            $arrData[] = $filaAgente;
-        }
-        $sTagInicio = (!$bExportarCSV) ? '<b>': '';
-        $sTagFinal = ($sTagInicio != '') ? '</b>' : '';
-        foreach ($mapa as $iPos) $filaTotales[$iPos] = $sTagInicio.formatoSegundos($filaTotales[$iPos]).$sTagFinal;
-        $arrData[] = $filaTotales;
-    
-        // defino la cabecera del grid
-        $offset = 0;
-        $total = count($datosBreaks['reporte']) + 1;
-        $limit = $total;
-    
-        $arrGrid = array("title"    =>  _tr('Reports Break'),
-                "icon"     => "images/list.png",
-                "width"    => "99%",
-                "start"    => ($total==0) ? 0 : $offset + 1,
-                "end"      => ($offset+$limit)<=$total ? $offset+$limit : $total,
-                "total"    => $total,
-                "columns"  => $arrColumnas
-                );
-        $oGrid = new paloSantoGrid($smarty);
-        $oGrid->enableExport();
-        $oGrid->showFilter($htmlFilter);
-        if ($bExportarCSV) {
-            $title = $sFechaInicio."-".$sFechaFinal;
-            header("Cache-Control: private");
-            header("Pragma: cache");
-            header('Content-Type: text/csv; charset=utf-8; header=present');
-            header("Content-disposition: attachment; filename=\"".$title.".csv\"");
-        }
-        return $bExportarCSV 
-            ? $oGrid->fetchGridCSV($arrGrid, $arrData) 
-            : $oGrid->fetchGrid($arrGrid, $arrData, $arrLang);
 }
 
 function formatoSegundos($iSeg)
