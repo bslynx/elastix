@@ -35,27 +35,38 @@ include_once "libs/paloSantoGrid.class.php";
 include_once "modules/form_designer/libs/paloSantoDataForm.class.php";
 require_once "libs/xajax/xajax.inc.php";
 
+if (!function_exists('_tr')) {
+    function _tr($s)
+    {
+        global $arrLang;
+        return isset($arrLang[$s]) ? $arrLang[$s] : $s;
+    }
+}
+if (!function_exists('load_language_module')) {
+    function load_language_module($module_id, $ruta_base='')
+    {
+        $lang = get_language($ruta_base);
+        include_once $ruta_base."modules/$module_id/lang/en.lang";
+        $lang_file_module = $ruta_base."modules/$module_id/lang/$lang.lang";
+        if ($lang != 'en' && file_exists("$lang_file_module")) {
+            $arrLangEN = $arrLangModule;
+            include_once "$lang_file_module";
+            $arrLangModule = array_merge($arrLangEN, $arrLangModule);
+        }
 
+        global $arrLang;
+        global $arrLangModule;
+        $arrLang = array_merge($arrLang,$arrLangModule);
+    }
+}
 
 function _moduleContent(&$smarty, $module_name)
 {
-    #incluir el archivo de idioma de acuerdo al que este seleccionado
-    #si el archivo de idioma no existe incluir el idioma por defecto
-    $lang=get_language();
-    $script_dir=dirname($_SERVER['SCRIPT_FILENAME']);
-
-    include_once("modules/$module_name/lang/en.lang");
-    $lang_file="modules/$module_name/lang/$lang.lang";
-    if (file_exists("$script_dir/$lang_file")) {
-        $arrLangModuleEN = $arrLangModule;
-        include_once($lang_file);
-        $arrLangModule = array_merge($arrLangModuleEN, $arrLangModule);
-    }
+    load_language_module($module_name);
 
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
     global $arrConf;
-    global $arrLang;
 
     require_once "modules/$module_name/libs/paloSantoLoginLogout.class.php";
     //folder path for custom templates
@@ -74,11 +85,22 @@ function _moduleContent(&$smarty, $module_name)
     // se conecta a la base
     $pDB = new paloDB($arrConf["cadena_dsn"]);
     if (!is_object($pDB->conn) || $pDB->errMsg!="") {
-        $smarty->assign("mb_message", $arrLangModule["Error when connecting to database"]." ".$pDB->errMsg);
+        $smarty->assign("mb_message", _tr("Error when connecting to database")." ".$pDB->errMsg);
     }
     
     $htmlFilter = "";
-    if(isset($_GET['exportcsv']) && $_GET['exportcsv']=='yes') {
+
+    $bElastixNuevo = method_exists('paloSantoGrid','isExportActionn');
+
+    $oGrid = new paloSantoGrid($smarty);
+
+    $oGrid->showFilter($htmlFilter); 
+
+    $bExportando = $bElastixNuevo
+        ? $oGrid->isExportAction()
+        : (isset( $_GET['exportcsv'] ) && $_GET['exportcsv'] == 'yes');
+
+    if($bExportando) {
 
         if(empty($_GET['txt_fecha_init'])) {
             $fecha_init = date("Y-m-d") . " 00:00:00"; 
@@ -96,12 +118,6 @@ function _moduleContent(&$smarty, $module_name)
                                     "txt_fecha_end" => $fecha_end,
                                      );
 
-        header("Cache-Control: private");
-        header("Pragma: cache");
-        header('Content-Type: application/octec-stream');
-        $title = "\"".$fecha_init."-".$fecha_end.".csv\"";
-        header("Content-disposition: inline; filename={$title}");
-        header('Content-Type: application/force-download');
     }
     
     if(isset($arrFilterExtraVars) && is_array($arrFilterExtraVars) and count($arrFilterExtraVars)>0) {
@@ -110,27 +126,20 @@ function _moduleContent(&$smarty, $module_name)
 	$url = construirURL(); 
     }
 
-    $smarty->assign("url", $url);
     $oGrid = new paloSantoGrid($smarty);
     $arrGrid = array();
     $arrData = array();
 
     //llamamos a funcion que construye la vista
-    $contenidoModulo = listadoLoginLogout($pDB, $smarty, $module_name, $local_templates_dir,$oGrid,$arrGrid,$arrData);
-
-    if(  isset( $_GET['exportcsv'] ) && $_GET['exportcsv']=='yes' ) {
-	return $oGrid->fetchGridCSV($arrGrid, $arrData);
-    }else {
-	$oGrid->showFilter($htmlFilter);
-	return $contenidoModulo;
-    }
+    $contenidoModulo = listadoLoginLogout($pDB, $smarty, $module_name, $local_templates_dir,$oGrid,$arrGrid,$arrData,$bElastixNuevo,$bExportando);
+    return $contenidoModulo;
+    
 }
 
 
 //funcion que construye la vista del reporte
-function listadoLoginLogout($pDB, $smarty, $module_name, $local_templates_dir,&$oGrid,&$arrGrid,&$arrData) {
-    global $arrLang;
-    global $arrLangModule;
+function listadoLoginLogout($pDB, $smarty, $module_name, $local_templates_dir,&$oGrid,&$arrGrid,&$arrData, $bElastixNuevo, $bExportando) 
+{
     $arrData = array();
     $oCalls = new paloSantoLoginLogout($pDB);
     $fecha_init = date("d M Y");
@@ -175,8 +184,8 @@ function listadoLoginLogout($pDB, $smarty, $module_name, $local_templates_dir,&$
                 $arrFecha_end = explode('-',translateDate($fecha_end));
             }else {
                 // si la fecha esta en un formato no valido se envia un mensaje de error
-                $smarty->assign("mb_title", $arrLangModule["Error"]);
-                $smarty->assign("mb_message", $arrLangModule["Debe ingresar una fecha valida"]);
+                $smarty->assign("mb_title", _tr("Error"));
+                $smarty->assign("mb_message", _tr("Debe ingresar una fecha valida"));
             }
 
 
@@ -198,8 +207,8 @@ function listadoLoginLogout($pDB, $smarty, $module_name, $local_templates_dir,&$
                 $arrFecha_end = explode('-',translateDate($fecha_end));
             }else {
                 // si la fecha esta en un formato no valido se envia un mensaje de error
-                $smarty->assign("mb_title", $arrLangModule["Error"]);
-                $smarty->assign("mb_message", $arrLangModule["Debe ingresar una fecha valida"]);
+                $smarty->assign("mb_title", _tr("Error"));
+                $smarty->assign("mb_message", _tr("Debe ingresar una fecha valida"));
             }
 
             $tipo =  $_GET['cbo_tipos'];
@@ -213,30 +222,33 @@ function listadoLoginLogout($pDB, $smarty, $module_name, $local_templates_dir,&$
         elseif(!isset($fecha_init) && !isset($fecha_end)) {
             // si se ha presionado el boton para listar por fechas, y no se ha ingresado una fecha
             // se le muestra al usuario un mensaje de error
-            $smarty->assign("mb_title", $arrLangModule["Error"]);
-            $smarty->assign("mb_message", $arrLangModule["Debe ingresar una fecha inicio/fin"]);
+            $smarty->assign("mb_title", _tr("Error"));
+            $smarty->assign("mb_message", _tr("Debe ingresar una fecha inicio/fin"));
         }
     }
 
-
-
 //para el pagineo
-       // LISTADO
-        $limit =50;
-        $offset = 0;
-
+   // LISTADO
+    $limit =50;
+    $offset = 0;
+    $arrCallsTmp  = $oCalls->getRegistersLoginLogout($tipo,translateDate($fecha_init),translateDate($fecha_end),$limit, $offset);
+    $totalCalls  = $arrCallsTmp['NumRecords'];
+    
+    if($bElastixNuevo){
+        $oGrid->setLimit($limit);
+        $oGrid->setTotal($totalCalls);
+        $offset = $oGrid->calculateOffset();
+     } else {
         // Si se quiere avanzar a la sgte. pagina
         if(isset($_GET['nav']) && $_GET['nav']=="end") {
-            $arrCallsTmp  = $oCalls->getRegistersLoginLogout($tipo,translateDate($fecha_init),translateDate($fecha_end),$limit, $offset);
-            $totalCalls  = $arrCallsTmp['NumRecords'];
             // Mejorar el sgte. bloque.
-            if(($totalCalls%$limit)==0) {
-                $offset = $totalCalls - $limit;
-            } else {
-                $offset = $totalCalls - $totalCalls%$limit;
-            }
+                if(($totalCalls%$limit)==0) {
+                    $offset = $totalCalls - $limit;
+                } else {
+                    $offset = $totalCalls - $totalCalls%$limit;
+                }
+            
         }
-
         // Si se quiere avanzar a la sgte. pagina
         if(isset($_GET['nav']) && $_GET['nav']=="next") {
             $offset = $_GET['start'] + $limit - 1;
@@ -246,17 +258,14 @@ function listadoLoginLogout($pDB, $smarty, $module_name, $local_templates_dir,&$
         if(isset($_GET['nav']) && $_GET['nav']=="previous") {
             $offset = $_GET['start'] - $limit - 1;
         }
+    }
 
-
-
-
-        // Construyo el URL base
-        if(isset($arrFilterExtraVars) && is_array($arrFilterExtraVars) && count($arrFilterExtraVars)>0) {
-            $url = construirURL($arrFilterExtraVars, array("nav", "start")); 
-        } else {
-            $url = construirURL(array(), array("nav", "start")); 
-        }
-        $smarty->assign("url", $url);
+    // Construyo el URL base
+    $url = array('menu' => $module_name);
+    if(isset($arrFilterExtraVars) && is_array($arrFilterExtraVars) && count($arrFilterExtraVars)>0) {
+        $url = array_merge($url, $arrFilterExtraVars);
+    }
+    $url = construirURL($url, array("nav", "start")); 
 
 //fin de pagineo
 
@@ -269,13 +278,15 @@ function listadoLoginLogout($pDB, $smarty, $module_name, $local_templates_dir,&$
     $end = $arrCalls_1['NumRecords'];
 //Llenamos el contenido de las columnas
     $arrTmp    = array();
+    $sTagInicio = (!$bExportando) ? '<b>' : '';
+    $sTagFinal = ($sTagInicio != '') ? '</b>' : '';
 //print_r($arrCalls);
     if (is_array($arrCalls)) {
         foreach($arrCalls['Data'] as $intervalo=>$calls) {
             $arrTmp[0] = $calls['number'];
 	    $arrTmp[1] = $calls['name'];
 	    $arrTmp[2] = $calls['datetime_init'];
-	    $arrTmp[3] = $calls['estado']=='En linea'?"<b>".$calls['datetime_end']."</b>":$calls['datetime_end'];
+	    $arrTmp[3] = $calls['estado']=='En linea'? $sTagInicio.$calls['datetime_end'].$sTagFinal:$calls['datetime_end'];
 	    $arrTmp[4] = $calls['total_sesion'];
 	    $arrTmp[5] = $calls['total_sumas_in_out'];
 	    $arrTmp[6] = number_format($calls['service'],2);
@@ -288,66 +299,35 @@ function listadoLoginLogout($pDB, $smarty, $module_name, $local_templates_dir,&$
             $sumTimeLogin = $oCalls->getSumTime($sumTimeLogin,$arrData[$i][4]);
             $sumTimeCalls = $oCalls->getSumTime($sumTimeCalls,$arrData[$i][5]);
         }
-
-        $arrTmp[0] = "<b>".$arrLangModule["Total"]."</b>";
+        $arrTmp[0] = $sTagInicio._tr("Total").$sTagFinal;
         $arrTmp[1] = "";
         $arrTmp[2] = "";
         $arrTmp[3] = "";
-        $arrTmp[4] = "<b>".$sumTimeLogin."</b>";
-        $arrTmp[5] = "<b>".$sumTimeCalls."</b>";
+        $arrTmp[4] = $sTagInicio.$sumTimeLogin.$sTagFinal;
+        $arrTmp[5] = $sTagInicio.$sumTimeCalls.$sTagFinal;
         $arrTmp[6] = "";
         $arrTmp[7] = "";
         $arrData[] = $arrTmp;
-
     }
-
-//Llenamos las cabeceras
-    $arrGrid = array("title"    => $arrLangModule["Login Logout"],
-        "icon"     => "images/list.png",
-        "width"    => "99%",
-        "start"    => ($end==0) ? 0 : $offset + 1,
-        "end"      => ($offset+$limit)<=$end ? $offset+$limit : $end,
-        "total"    => $end,
-        "columns"  => array(0 => array("name"      => $arrLangModule["Agente"],
-                                       "property1" => ""),
-                            1 => array("name"      => $arrLangModule["Nombre"],
-                                       "property1" => ""),
-                            2 => array("name"      => $arrLangModule["Login"], 
-                                       "property1" => ""),
-                            3 => array("name"      => $arrLangModule["Logout"],
-                                       "property1" => ""),
-                            4 => array("name"      => $arrLangModule["Total Login"],
-                                       "property1" => ""),
-                            5 => array("name"      => $arrLangModule["Tiempo en Llamadas"],
-                                       "property1" => ""),
-                            6 => array("name"      => $arrLangModule["Service(%)"], 
-                                       "property1" => ""),
-                            7 => array("name"      => $arrLangModule["Estado"], 
-                                       "property1" => ""),
-
-                        ));
-
-    //Para el combo de tipos
-    $tipos = array("D"=>$arrLangModule["Detallado"], "G"=>$arrLangModule["General"]);
+    $tipos = array("D"=>_tr("Detallado"), "G"=>_tr("General"));
     $combo_tipos = "<select name='cbo_tipos' id='cbo_tipos' onChange='submit();'>".combo($tipos,$_POST['cbo_tipos'])."</select>";
 
      $oGrid->showFilter( insertarCabeceraCalendario()."
 
-        <form style='margin-bottom:0;' method='POST' action='?menu=$module_name'>
             <table width='100%' border='0'>
                 <tr>
                     <td align='left'>
                         <table>
                         <tr>
                             <td class='letra12'>
-                                {$arrLangModule["Date Init"]}
+                                "._tr("Date Init")."
                                 <span  class='required'>*</span>
                             </td>
                             <td>
                                 ".insertarDateInit($fecha_init_actual)."
                             </td>
                             <td class='letra12'>
-                                {$arrLangModule["Date End"]}
+                                "._tr("Date End")."
                                 <span  class='required'>*</span>
                             </td>
                             <td>
@@ -356,10 +336,10 @@ function listadoLoginLogout($pDB, $smarty, $module_name, $local_templates_dir,&$
                             <td class='letra12'>
                                 &nbsp;
                             </td>
-                            <td class='letra12' align='left'>{$arrLangModule["Tipo"]}</td>
+                            <td class='letra12' align='left'>"._tr("Tipo")."</td>
                             <td>$combo_tipos</td>
                             <td>
-                                <input type='submit' name='submit_fecha' value={$arrLangModule["Find"]} class='button'>
+                                <input type='submit' name='submit_fecha' value="._tr("Find")." class='button'>
                             </td>
                         </tr>
 
@@ -367,12 +347,65 @@ function listadoLoginLogout($pDB, $smarty, $module_name, $local_templates_dir,&$
                     </td>
                 </tr>
             </table>
-        </form>
 
         ");
-    $oGrid->enableExport();
-    $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
-    return $contenidoModulo;
+    $oGrid->enableExport();   // enable export.
+    if($bElastixNuevo){
+        $oGrid->setURL($url);
+        $oGrid->setData($arrData);
+        $arrColumnas = array(_tr("Agente"), _tr("Nombre"), _tr("Login"), _tr("Logout"),_tr("Total Login"),_tr("Tiempo en Llamadas"),_tr("Service(%)"),_tr("Estado"));
+        $oGrid->setColumns($arrColumnas);
+        $oGrid->setTitle(_tr("Login Logout"));
+        $oGrid->pagingShow(true); 
+        $oGrid->setNameFile_Export(_tr("Login Logout"));
+     
+        $smarty->assign("SHOW", _tr("Show"));
+        return $oGrid->fetchGrid();
+     } else {
+            global $arrLang;
+
+            $offset = 0;
+            $total = count($arrCalls['Data']) + 1;
+            $limit = $total;
+            //Llenamos las cabeceras
+            $arrGrid = array("title"    => _tr("Login Logout"),
+                "url"      => $url,
+                "icon"     => "images/list.png",
+                "width"    => "99%",
+                "start"    => ($end==0) ? 0 : $offset + 1,
+                "end"      => ($offset+$limit)<=$end ? $offset+$limit : $end,
+                "total"    => $end,
+                "columns"  => array(0 => array("name"      => _tr("Agente"),
+                                            "property1" => ""),
+                                    1 => array("name"      => _tr("Nombre"),
+                                            "property1" => ""),
+                                    2 => array("name"      => _tr("Login"), 
+                                            "property1" => ""),
+                                    3 => array("name"      => _tr("Logout"),
+                                            "property1" => ""),
+                                    4 => array("name"      => _tr("Total Login"),
+                                            "property1" => ""),
+                                    5 => array("name"      => _tr("Tiempo en Llamadas"),
+                                            "property1" => ""),
+                                    6 => array("name"      => _tr("Service(%)"), 
+                                            "property1" => ""),
+                                    7 => array("name"      => _tr("Estado"), 
+                                            "property1" => ""),
+        
+                                ));
+            if($bExportando){
+                
+                    header("Cache-Control: private");
+                    header("Pragma: cache");
+                    header('Content-Type: application/octec-stream');
+                    $title = "\"".$fecha_init."-".$fecha_end.".csv\"";
+                    header("Content-disposition: inline; filename={$title}");
+                    header('Content-Type: application/force-download');
+             }
+            return $bExportando 
+                ? $oGrid->fetchGridCSV($arrGrid, $arrData) 
+                : $oGrid->fetchGrid($arrGrid, $arrData, $arrLang);
+     }
 }
 
 /*    Esta funcion inserta el codigo necesario para visualizar el control fecha inicio
