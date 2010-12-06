@@ -31,6 +31,14 @@ include_once "libs/paloSantoGrid.class.php";
 include_once "libs/paloSantoForm.class.php";
 include_once "libs/paloSantoTrunk.class.php";//Trunks
 
+if (!function_exists('_tr')) {
+    function _tr($s)
+    {
+        global $arrLang;
+        return isset($arrLang[$s]) ? $arrLang[$s] : $s;
+    }
+}
+
 function _moduleContent(&$smarty, $module_name)
 {
     //include module files
@@ -113,30 +121,45 @@ function reportReportedeTroncalesusadasporHoraeneldia($smarty, $module_name, $lo
     //validacion para que los filtros se queden seteados con el valor correcto, correccion de bug que se estaba dando en caso de pagineo
     $_POST["filter_value"] = $filter_value;
 
-
+/*
     $action = getParameter("nav");
     $start  = getParameter("start");
-    $iscsv  = getParameter("exportcsv");
-
+    $iscsv  = getParameter("exportcsv");*/
+    $bElastixNuevo = method_exists('paloSantoGrid','isExportAction');
     // begin grid parameters
     $oGrid  = new paloSantoGrid($smarty);
     $oGrid->enableExport();
+    $bExportando = $bElastixNuevo
+        ? $oGrid->isExportAction()
+        : (isset( $_GET['exportcsv'] ) && $_GET['exportcsv'] == 'yes');
 
-    $limit  = 30;
-    $offset = $oGrid->getOffsetValue();
+    $limit  = 50;
+    $offset = 0;
 
    // se obtienen los datos que se van a mostrar
     $arrData = null;
-    $arrResult =$pReportedeTroncalesusadasporHoraeneldia->ObtainReportedeTroncalesusadasporHoraeneldia($limit, $offset, $filter_field, $filter_value, $date_from, $date_to);
+    $arrResult =$pReportedeTroncalesusadasporHoraeneldia->ObtainReportedeTroncalesusadasporHoraeneldia($limit, $offset, $filter_field, $filter_value, $date_from, $date_to, $bExportando);
 
     $total = count($arrResult);
     $oGrid->setLimit($limit);
     $oGrid->setTotal($total);
+    
+    if($bElastixNuevo)
+        $offset = $oGrid->calculateOffset();
+    else{
+        $action = getParameter("nav");
+        $start = getParameter("start");
+        $oGrid->calculatePagination($action,$start);
+        $end    = $oGrid->getEnd();
+    }
 
-    $oGrid->calculatePagination($action,$start);
-    $end    = $oGrid->getEnd();
-
-    $url    = "?menu=$module_name&filter_field=$filter_field&filter_value=$filter_value&date_from=$date_from&date_to=$date_to";
+    $url = array(
+            "menu"          => $module_name,
+            "filter_field"  => $filter_field,
+            "filter_value"  => $filter_value,
+            "date_from"     => $date_from,
+            "date_to"       => $date_to);
+    
 
     // se guarda la data en un arreglo que luego es enviado como par�etro para crear el reporte
     if(is_array($arrResult)){
@@ -150,8 +173,32 @@ function reportReportedeTroncalesusadasporHoraeneldia($smarty, $module_name, $lo
             $arrData[] = $arrTmp;
         }
     }
-    // se crea el grid
-    $arrGrid = array("title"    => $arrLang["Reporte de Troncales usadas por Hora en el dia"],
+
+    //begin section filter
+    $arrFormFilterReportedeTroncalesusadasporHoraeneldia = createFieldFilter($arrTrunk);
+    $smarty->assign("SHOW", _tr("Show"));
+    $oFilterForm = new paloForm($smarty, $arrFormFilterReportedeTroncalesusadasporHoraeneldia);
+
+    $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl","",$_POST, $_GET);
+    //end section filter
+    $oGrid->showFilter($htmlFilter);
+    if($bElastixNuevo){
+        $oGrid->setURL($url);
+        $oGrid->setData($arrData);
+        $arrColumnas = array(_tr("Time Period"), _tr("Entered"), _tr("Answered"), _tr("Abandoned"),_tr("In queue"),_tr("Without monitoring"));
+        $oGrid->setColumns($arrColumnas);
+        $oGrid->setTitle(_tr("Reporte de Troncales usadas por hora en el dia"));
+        $oGrid->pagingShow(true); 
+        $oGrid->setNameFile_Export(_tr("Reporte de Troncales usadas por hora en el dia"));
+     
+
+        return $oGrid->fetchGrid();
+     } else {
+            $smarty->assign('url',$url);
+            $offset = 0;
+            $limit = $total + 1;
+            // se crea el grid
+            $arrGrid = array("title"    => _tr("Reporte de Troncales usadas por Hora en el dia"),
                         "icon"     => "images/list.png",
                         "width"    => "99%",
                         "start"    => ($total==0) ? 0 : $offset + 1,
@@ -159,55 +206,39 @@ function reportReportedeTroncalesusadasporHoraeneldia($smarty, $module_name, $lo
                         "total"    => $total,
                         "url"      => $url,
                         "columns"  => array(
-			0 => array("name"      => $arrLang["Time Period "],
+			0 => array("name"      => _tr("Time Period "),
                                    "property1" => ""),
-			1 => array("name"      => $arrLang["Entered"],
+			1 => array("name"      => _tr("Entered"),
                                    "property1" => ""),
-			2 => array("name"      => $arrLang["Answered"],
+			2 => array("name"      => _tr("Answered"),
                                    "property1" => ""),
-			3 => array("name"      => $arrLang["Abandoned"],
+			3 => array("name"      => _tr("Abandoned"),
                                    "property1" => ""),
-			4 => array("name"      => $arrLang["In queue"],
+			4 => array("name"      => _tr("In queue"),
                                    "property1" => ""),
-			5 => array("name"      => $arrLang["Without monitoring "],
+			5 => array("name"      => _tr("Without monitoring "),
                                    "property1" => ""),
                                         )
                     );
-
-    //begin section filter
-    $arrFormFilterReportedeTroncalesusadasporHoraeneldia = createFieldFilter($arrLang, $arrTrunk);
-
-    $oFilterForm = new paloForm($smarty, $arrFormFilterReportedeTroncalesusadasporHoraeneldia);
-    $smarty->assign("SHOW", $arrLang["Show"]);
-
-    $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl","",$_POST, $_GET);
-    //end section filter
-
-    // se pregunta si la acci� es crear un csv con los datos del reporte 
-    if($iscsv != 'yes'){
-        $oGrid->showFilter(trim($htmlFilter));
-        $content = "<form  method='POST' style='margin-bottom:0;' action=$url>".$oGrid->fetchGrid($arrGrid, $arrData,$arrLang)."</form>";
+            if($bExportando){
+                 $fechaActual = date("d M Y");
+                 header("Cache-Control: private");
+                 header("Pragma: cache");
+                 header('Content-Type: application/octec-stream');
+                 $title = "\"".$fechaActual.".csv\"";
+                 header("Content-disposition: inline; filename={$title}");
+                 header('Content-Type: application/force-download');
+            }
+            return $bExportando 
+            ? $oGrid->fetchGridCSV($arrGrid, $arrData) 
+            : $oGrid->fetchGrid($arrGrid, $arrData, $arrLang);
     }
-    else{
-        $fechaActual = date("d M Y");
-        header("Cache-Control: private");
-        header("Pragma: cache");
-        header('Content-Type: application/octec-stream');
-        $title = "\"".$fechaActual.".csv\"";
-        header("Content-disposition: inline; filename={$title}");
-        header('Content-Type: application/force-download');
-	$content = $oGrid->fetchGridCSV($arrGrid, $arrData);
-    }
-    //end grid parameters
-
-    return $content;
 }
-
-
-function createFieldFilter($arrLang, $arrTrunk){
+    
+function createFieldFilter($arrTrunk){
 
     $arrFormElements = array(
-            "filter_field" => array("LABEL"                  => $arrLang["Trunk"],
+            "filter_field" => array("LABEL"                  => _tr("Trunk"),
                                     "REQUIRED"               => "no",
                                     "INPUT_TYPE"             => "text",
                                     "INPUT_EXTRA_PARAM"      => "no",
@@ -221,14 +252,14 @@ function createFieldFilter($arrLang, $arrTrunk){
                                     "VALIDATION_TYPE"        => "",
                                     "VALIDATION_EXTRA_PARAM" => ""),
 
-            "date_from"    => array("LABEL"                  => $arrLang["Start date"],
+            "date_from"    => array("LABEL"                  => _tr("Start date"),
                                     "REQUIRED"               => "yes",
                                     "INPUT_TYPE"             => "DATE",
                                     "INPUT_EXTRA_PARAM"      => "",
                                     "VALIDATION_TYPE"        => "ereg",
                                     "VALIDATION_EXTRA_PARAM" => "^[[:digit:]]{1,2}[[:space:]]+[[:alnum:]]{3}[[:space:]]+[[:digit:]]{4}$"),
 
-            "date_to"      => array("LABEL"                  => $arrLang["End date"],
+            "date_to"      => array("LABEL"                  => _tr("End date"),
                                     "REQUIRED"               => "no",
                                     "INPUT_TYPE"             => "DATE",
                                     "INPUT_EXTRA_PARAM"      => "",
