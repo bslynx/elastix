@@ -37,11 +37,27 @@ require_once "libs/misc.lib.php";
 if (!function_exists('_tr')) {
     function _tr($s)
     {
-        global $arrLangModule;
-        return isset($arrLangModule[$s]) ? $arrLangModule[$s] : $s;
+        global $arrLang;
+        return isset($arrLang[$s]) ? $arrLang[$s] : $s;
     }
 }
+if (!function_exists('load_language_module')) {
+    function load_language_module($module_id, $ruta_base='')
+    {
+        $lang = get_language($ruta_base);
+        include_once $ruta_base."modules/$module_id/lang/en.lang";
+        $lang_file_module = $ruta_base."modules/$module_id/lang/$lang.lang";
+        if ($lang != 'en' && file_exists("$lang_file_module")) {
+            $arrLangEN = $arrLangModule;
+            include_once "$lang_file_module";
+            $arrLangModule = array_merge($arrLangEN, $arrLangModule);
+        }
 
+        global $arrLang;
+        global $arrLangModule;
+        $arrLang = array_merge($arrLang,$arrLangModule);
+    }
+}
 function _moduleContent(&$smarty,$module_name) {
     require_once "modules/$module_name/configs/default.config.php";
     require_once "modules/$module_name/libs/paloSantoReportsCalls.class.php";
@@ -49,26 +65,15 @@ function _moduleContent(&$smarty,$module_name) {
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
     $templates_dir=(isset($config['templates_dir']))?$config['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$config['theme'];
-    // obtengo el idioma actual utilizado en la aplicacion.
-    $Language=get_language();
-    $script_dir=dirname($_SERVER['SCRIPT_FILENAME']);
 
-    global $arrLangModule;
-
-    include_once("modules/$module_name/lang/en.lang");
-    $arrLangModule_file="modules/$module_name/lang/$Language.lang";
-    if (file_exists("$script_dir/$arrLangModule_file")) {
-        $arrLanEN = $arrLangModule;
-        include_once($arrLangModule_file);
-        $arrLangModule = array_merge($arrLanEN, $arrLangModule);
-    }
+    load_language_module($module_name);    
 
     // se crea el objeto conexion a la base de datos
     $pDB = new paloDB($cadena_dsn);
     // valido lacreacion del objeto conexion, presentando un mensaje deerror si es invalido.
 
     $bElastixNuevo = method_exists('paloSantoGrid','isExportAction');
-    $url="";
+    $url = array('menu' => $module_name);
     $htmlFilter="";
     $oGrid = new paloSantoGrid($smarty);
     $bExportando = $bElastixNuevo
@@ -76,8 +81,8 @@ function _moduleContent(&$smarty,$module_name) {
         : (isset( $_GET['exportcsv'] ) && $_GET['exportcsv'] == 'yes');
 
     if (!is_object($pDB->conn) || $pDB->errMsg!="") {
-            $smarty->assign("mb_title", $arrLangModule["Error"]);
-            $smarty->assign("mb_message", $arrLangModule["Error when connecting to database"]." ".$pDB->errMsg);
+            $smarty->assign("mb_title", _tr("Error"));
+            $smarty->assign("mb_message", _tr("Error when connecting to database")." ".$pDB->errMsg);
     // sio el objeto coenxion a la base no tiene problemas, consulto si se han seteado las variables GET.
     }elseif($bExportando) {
         if(empty($_GET['txt_fecha_init'])) {
@@ -98,7 +103,7 @@ function _moduleContent(&$smarty,$module_name) {
         $fecha_actual_init = date("d M Y"); 
         $fecha_actual_end  = date("d M Y");
         // nombre del boton que me permitira enviar los valores del formulario.
-        $smarty->assign("btn_consultar",$arrLangModule['Find']);
+        $smarty->assign("btn_consultar",_tr('Find'));
         // nombre del modulo actual.
         $smarty->assign("module_name",$module_name);
         // creo un objeto paloForm para crear el filtro del formulario.
@@ -121,11 +126,11 @@ function _moduleContent(&$smarty,$module_name) {
             } else {
                 // si la informacion es invalida presento un mensaje de error con la cadena "Error de validacion"
                 // dependiendo del idioma.
-                $smarty->assign("mb_title", $arrLangModule["Validation Error"]);
+                $smarty->assign("mb_title", _tr("Validation Error"));
                 // en este arreglo se guarada los posibles errores de validacion generados.
                 $arrErrores=$oFilterForm->arrErroresValidacion;
                 // cadena que almacena el mensaje de error a mostrarse en la pantalla.
-                $strErrorMsg = "<b>{$arrLangModule['The following fields contain errors']}:</b><br>";
+                $strErrorMsg = "<b>"._tr('The following fields contain errors').":</b><br>";
                 // se recorre el arreglo para revisar todos los errores encontrados en la informacion del formulario
                 foreach($arrErrores as $k=>$v) {
                     // se concatena los mensajes de error encontrados.
@@ -165,21 +170,19 @@ function _moduleContent(&$smarty,$module_name) {
         if(isset($arrFilterExtraVars) && is_array($arrFilterExtraVars) and count($arrFilterExtraVars)>0) {
             // esta url contiene la informacion de lso campos del formulario pasados como GET,
             // a traves de un enlace.
-            //$url = construirURL($arrFilterExtraVars);
-            $url = construirURL($arrFilterExtraVars, array("nav", "start")); 
-        } else {
-            // esta url contiene el nombre del modulo actual.
-            $url = construirURL(array(), array("nav", "start"));
-            //$url = construirURL(); 
+            $url = array_merge($url, $arrFilterExtraVars);
         }
         
     } 
+    $url = construirURL($url, array("nav", "start")); 
+
+
     // creo el objeto $oReportsBreak, que me ayudara a construir el reporte.
     $oReportsCalls  = new paloSantoReportsCalls($pDB);
     // valido la creacion del objeto
     if( !$oReportsCalls ) {
-        $smarty->assign("mb_title", $arrLangModule["Error"]);
-        $smarty->assign("mb_message", $arrLangModule["Error when creating object paloSantoReportsCalls"]);
+        $smarty->assign("mb_title", _tr("Error"));
+        $smarty->assign("mb_message", _tr("Error when creating object paloSantoReportsCalls"));
     }else {
         // creo un arreglo para el grid
         $arrGrid = array();
@@ -187,7 +190,7 @@ function _moduleContent(&$smarty,$module_name) {
         // me retorna un arreglo con la informacion del reporte y ha generado el grid, 
         // el cual es devuelto por referencia.
         $oGrid = new paloSantoGrid($smarty);
-        $contenido = generarReporte($smarty,$fecha_actual_init,$fecha_actual_end,$oReportsCalls,$arrLangModule,$arrGrid,$bElastixNuevo,$bExportando,$oGrid,$url,$htmlFilter);
+        $contenido = generarReporte($smarty,$fecha_actual_init,$fecha_actual_end,$oReportsCalls,$arrGrid,$bElastixNuevo,$bExportando,$oGrid,$url,$htmlFilter);
         // creo el objeto GRID
         // habilito la opcion Export con la que se procedera a exportar la data a un archivo.
 
@@ -201,7 +204,7 @@ function _moduleContent(&$smarty,$module_name) {
     Esta funcion muestra un reporte de llamadas exitosas y abandonadas en un rango de fechas determinado,
     por defecto se toma la fecha actual del sistema.
 */
-function generarReporte($smarty,$fecha_actual_init,$fecha_actual_end,$oReportsCalls,$arrLangModule,&$arrGrid=null,$bElastixNuevo,$bExportando,&$oGrid,$url,$htmlFilter) {
+function generarReporte($smarty,$fecha_actual_init,$fecha_actual_end,$oReportsCalls,&$arrGrid=null,$bElastixNuevo,$bExportando,&$oGrid,$url,$htmlFilter) {
     $fecha_init = translateDate($fecha_actual_init) . " 00:00:00";
     $fecha_end  = translateDate($fecha_actual_end)  . " 23:59:59";
 
@@ -267,7 +270,7 @@ function generarReporte($smarty,$fecha_actual_init,$fecha_actual_end,$oReportsCa
     }
     $sTagInicio = (!$bExportando) ? '<b>' : '';
     $sTagFinal = ($sTagInicio != '') ? '</b>' : '';
-    $arrTmp[0] = $sTagInicio.$arrLangModule["Total"].$sTagFinal;
+    $arrTmp[0] = $sTagInicio._tr("Total").$sTagFinal;
     $arrTmp[1] = $sTagInicio.$sumExitosa.$sTagFinal;
     $arrTmp[2] = $sTagInicio.$sumAbandonada.$sTagFinal;
     $arrTmp[3] = $sTagInicio.$sumWait.$sTagFinal;
@@ -287,49 +290,50 @@ function generarReporte($smarty,$fecha_actual_init,$fecha_actual_end,$oReportsCa
         $smarty->assign("SHOW", _tr("Show"));
         return $oGrid->fetchGrid();
      } else {
+        global $arrLang;
         $offset = 0;
         $total = count($arrQueues) + 1;
         $limit = $total;
-        // asigno la url al template
-        $smarty->assign("url", $url);
+
         $arrGrid = array(
-        "title"    =>  $arrLangModule["List Calls"],
-        "icon"     => "images/list.png",
-        "width"    => "99%",
-        "start"    => ($total==0) ? 0 : $offset + 1,
-        "end"      => ($offset+$limit)<=$total ? $offset+$limit : $total,
-        "total"    => $total,
-        "columns"  => array(
-                            0 => array( 'name'      => $arrLangModule["Queue"],  // aqui se  crea la primera columna 
-                                        'property1' => ''),             // del reporte, y asi con las demas
-                            1 => array( 'name'      => $arrLangModule["Successful"],
-                                        'property1' => ''),
-                            2 => array( 'name'      => $arrLangModule["Left"],
-                                        'property1' => ''),
-                            3 => array( 'name'      => $arrLangModule["Time Hopes"],
-                                        'property1' => ''),
-                            4 => array( 'name'      => $arrLangModule["Total Calls"],
-                                        'property1' => ''),
-                            ),
-    );
-    if($bExportando){
-        // ----------- cabeceras necesarias para enviar la data a un archivo.  ----------- //
-        // para que los datos de un formulario no se pierdan
-        header("Cache-Control: private");
-        // obliga a la pagina a que sea cacheada
-        header("Pragma: cache");
-        // origina de un flujo de datos.
-        header('Content-Type: application/octec-stream');
-        // nombre del archivo del reporte a generarse, en base a la fecha seleccionada del reporte.
-        $title = "\"".$fecha_actual_init." a ".$fecha_actual_end.".csv\"";
-        // hace que la data se guarde en un archivo con el nombre especificado en el parametro filename
-        header("Content-disposition: inline; filename={$title}");
-        // fuerza a que el archivo sea download
-        header('Content-Type: application/force-download');
-    }
-     return $bExportando 
-            ? $oGrid->fetchGridCSV($arrGrid, $arrData) 
-            : $oGrid->fetchGrid($arrGrid, $arrData, $arrLangModule);
+            "title"    =>  _tr("List Calls"),
+            "url"      =>  $url,
+            "icon"     => "images/list.png",
+            "width"    => "99%",
+            "start"    => ($total==0) ? 0 : $offset + 1,
+            "end"      => ($offset+$limit)<=$total ? $offset+$limit : $total,
+            "total"    => $total,
+            "columns"  => array(
+                                0 => array( 'name'      => _tr("Queue"),  // aqui se  crea la primera columna 
+                                            'property1' => ''),             // del reporte, y asi con las demas
+                                1 => array( 'name'      => _tr("Successful"),
+                                            'property1' => ''),
+                                2 => array( 'name'      => _tr("Left"),
+                                            'property1' => ''),
+                                3 => array( 'name'      => _tr("Time Hopes"),
+                                            'property1' => ''),
+                                4 => array( 'name'      => _tr("Total Calls"),
+                                            'property1' => ''),
+                                ),
+        );
+        if($bExportando){
+            // ----------- cabeceras necesarias para enviar la data a un archivo.  ----------- //
+            // para que los datos de un formulario no se pierdan
+            header("Cache-Control: private");
+            // obliga a la pagina a que sea cacheada
+            header("Pragma: cache");
+            // origina de un flujo de datos.
+            header('Content-Type: application/octec-stream');
+            // nombre del archivo del reporte a generarse, en base a la fecha seleccionada del reporte.
+            $title = "\"".$fecha_actual_init." a ".$fecha_actual_end.".csv\"";
+            // hace que la data se guarde en un archivo con el nombre especificado en el parametro filename
+            header("Content-disposition: inline; filename={$title}");
+            // fuerza a que el archivo sea download
+            header('Content-Type: application/force-download');
+        }
+         return $bExportando 
+                ? $oGrid->fetchGridCSV($arrGrid, $arrData) 
+                : $oGrid->fetchGrid($arrGrid, $arrData, $arrLang);
     }
 }
 
