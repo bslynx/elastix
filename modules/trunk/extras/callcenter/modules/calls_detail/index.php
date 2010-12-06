@@ -143,193 +143,28 @@ function _moduleContent(&$smarty, $module_name)
             $htmlFilter = $contenidoModulo=$oFilterForm->fetchForm("$local_templates_dir/filter.tpl", "", 
                           array('date_start' => date("d M Y"), 'date_end' => date("d M Y"),'field_name' => 'agent','field_pattern' => '','field_name_1' => 'agent','field_pattern_1' => '' ));
       }
+        
+      $bElastixNuevo = method_exists('paloSantoGrid','isExportAction');
 
-      if(method_exists('paloSantoGrid','isExportAction')){
-            $content = calls_detail_Elastix2_0($oCallsDetail, $date_start, $date_end, $field_name, $field_pattern, $smarty, $htmlFilter, $urlVars, $arrFilterExtraVars);
-            return $content;
-      }
-        //caso contrario (versiones antiguas de asterisk) no se hacen cambios
-      else{
-             $content = calls_detail_Elastix_old($oCallsDetail, $date_start, $date_end, $field_name, $field_pattern, $smarty, $htmlFilter, $urlVars, $arrFilterExtraVars, $arrLang);
-             return $content;
-      }
-   
-}
+      $oGrid = new paloSantoGrid($smarty);
+      $oGrid->enableExport();   // enable export.
+      $oGrid->showFilter($htmlFilter); 
 
-function calls_detail_Elastix2_0($oCallsDetail, $date_start, $date_end, $field_name, $field_pattern, $smarty, $htmlFilter, $urlVars, $arrFilterExtraVars)
-{
-    $arrData = null;
-    $oGrid  = new paloSantoGrid($smarty);
-    $oGrid->setTitle(_tr("Calls Detail"));
-    $oGrid->pagingShow(true); 
+      $bExportando = $bElastixNuevo
+        ? $oGrid->isExportAction()
+        : (isset( $_GET['exportcsv'] ) && $_GET['exportcsv'] == 'yes');
 
-    $oGrid->enableExport();   // enable export.
-    $oGrid->setNameFile_Export(_tr("Calls Detail"));
-    $arrCallsDetailTmp  = $oCallsDetail->obtenerCallsDetails(null, 0, $date_start, $date_end, $field_name, $field_pattern);
-    $total =$arrCallsDetailTmp['NumRecords'];
-
-    if(isset($arrFilterExtraVars) && is_array($arrFilterExtraVars) && count($arrFilterExtraVars)>0) {
-            $urlVars = array_merge($urlVars, $arrFilterExtraVars);
-    }
-    $url = construirURL($urlVars, array('nav', 'start'));
-    $oGrid->setURL($url);
-    $sumTotal = "00:00:00";
-    
-    if($oGrid->isExportAction()){
-        $offset = 0;
-        $limit = $total;
-        $arrResult  = $oCallsDetail->obtenerCallsDetails(null, $offset, $date_start, $date_end, $field_name, $field_pattern);
-
-        $arrColumns = array(_tr("No.Agent"), _tr("Agent"), _tr("Start Date"), _tr("Start Time"),_tr("End Date"),_tr("End Time"),_tr("Duration"),_tr("Duration Wait"),_tr("Queue"),_tr("Type"),_tr("Phone"),_tr("Transfer"),_tr("Status"));
-        $oGrid->setColumns($arrColumns);
-        if(is_array($arrResult['Data']) && $total>0){
-            foreach($arrResult['Data'] as $key => $value){
-                $arrTmp[0] = $value[0];
-                $arrTmp[1] = htmlentities($value[1], ENT_COMPAT, "UTF-8");
-                $arrTmp[2] = $value[2];
-                $arrTmp[3] = $value[3];
-                $arrTmp[4] = $value[4];
-                $arrTmp[5] = $value[5];
-                $arrTmp[6] = $value[6];
-                $arrTmp[7] = $value[7];
-                $arrTmp[8] = $value[8];
-                $arrTmp[9] = $value[9];
-                $arrTmp[10] = $value[10];
-                $arrTmp[11] = $value[11];
-                if ($value[12]=='abandonada' || $value[12]=='Abandoned')
-                    $arrTmp[12] = _tr('Abandoned') ;
-                elseif ($value[12]== 'terminada' || $value[12]=='Success')
-                    $arrTmp[12] = _tr('Success');
-                elseif ($value[12]=='fin-monitoreo')
-                    $arrTmp[12] = _tr('End Monitor');
-                elseif ($value[12]== 'Failure')
-                    $arrTmp[12] = _tr('Failure');
-                elseif ($value[12]== 'NoAnswer')
-                    $arrTmp[12] = _tr('NoAnswer');
-                elseif ($value[12]== 'OnQueue')
-                    $arrTmp[12] = _tr('OnQueue');
-                elseif ($value[12]=='Placing')
-                    $arrTmp[12] = _tr('Placing');
-                elseif ($value[12]=='Ringing')
-                    $arrTmp[12] = _tr('Ringing');
-                elseif ($value[12]=='ShortCall')
-                    $arrTmp[12] = _tr('ShortCall');
-                $arrData[] = $arrTmp;
-
-                $arrTime = array(array("duration"=>$sumTotal),array("duration"=>$value[6]));
- 	        $sumTotal = $oCallsDetail->sumarTiempos($arrTime);
-            }
-            $arrTmp[0] = _tr("Total");
-            $arrTmp[1] = $arrTmp[2] = $arrTmp[3] = $arrTmp[4] = $arrTmp[5] = "";
-            $arrTmp[7] = $arrTmp[8] = $arrTmp[9] = $arrTmp[10] = $arrTmp[11] = $arrTmp[12] ="";
-            $arrTmp[6] = $sumTotal;
-            $arrData[] = $arrTmp;
-        }
-    }
-    else{
-        $limit = 20;
-        $oGrid->setLimit($limit);
-        $oGrid->setTotal($total);
-        $offset = $oGrid->calculateOffset();
-
-        $arrResult  = $oCallsDetail->obtenerCallsDetails($limit, $offset, $date_start, $date_end, $field_name, $field_pattern);
-
-        $arrColumns = array(_tr("No.Agent"), _tr("Agent"), _tr("Start Date"), _tr("Start Time"),_tr("End Date"),_tr("End Time"),_tr("Duration"),_tr("Duration Wait"),_tr("Queue"),_tr("Type"),_tr("Phone"),_tr("Transfer"),_tr("Status"));
-        $oGrid->setColumns($arrColumns);
-
-        if(is_array($arrResult['Data']) && $total>0){
-            foreach($arrResult['Data'] as $key => $value){
-                $arrTmp[0] = $value[0];
-                $arrTmp[1] = htmlentities($value[1], ENT_COMPAT, "UTF-8");
-                $arrTmp[2] = $value[2];
-                $arrTmp[3] = $value[3];
-                $arrTmp[4] = $value[4];
-                $arrTmp[5] = $value[5];
-                $arrTmp[6] = $value[6];
-                $arrTmp[7] = $value[7];
-                $arrTmp[8] = $value[8];
-                $arrTmp[9] = $value[9];
-                $arrTmp[10] = $value[10];
-                $arrTmp[11] = $value[11];
-                if ($value[12]=='abandonada' || $value[12]=='Abandoned')
-                    $arrTmp[12] = _tr('Abandoned') ;
-                elseif ($value[12]== 'terminada' || $value[12]=='Success')
-                    $arrTmp[12] = _tr('Success');
-                elseif ($value[12]=='fin-monitoreo')
-                    $arrTmp[12] = _tr('End Monitor');
-                elseif ($value[12]== 'Failure')
-                    $arrTmp[12] = _tr('Failure');
-                elseif ($value[12]== 'NoAnswer')
-                    $arrTmp[12] = _tr('NoAnswer');
-                elseif ($value[12]== 'OnQueue')
-                    $arrTmp[12] = _tr('OnQueue');
-                elseif ($value[12]=='Placing')
-                    $arrTmp[12] = _tr('Placing');
-                elseif ($value[12]=='Ringing')
-                    $arrTmp[12] = _tr('Ringing');
-                elseif ($value[12]=='ShortCall')
-                    $arrTmp[12] = _tr('ShortCall');
-                $arrData[] = $arrTmp;
-
-                $arrTime = array(array("duration"=>$sumTotal),array("duration"=>$value[6]));
- 	        $sumTotal = $oCallsDetail->sumarTiempos($arrTime);
-            }
-        }
-        $arrTmp[0] = "<b>"._tr("Total")."</b>";
-        $arrTmp[1] = $arrTmp[2] = $arrTmp[3] = $arrTmp[4] = $arrTmp[5] = "";
-        $arrTmp[7] = $arrTmp[8] = $arrTmp[9] = $arrTmp[10] = $arrTmp[11] = $arrTmp[12] ="";
-        $arrTmp[6] = "<b>".$sumTotal."</b>";
-        $arrData[] = $arrTmp;
-    }
-    $oGrid->setData($arrData);
-    $smarty->assign("SHOW", _tr("Show"));
-    $oGrid->showFilter($htmlFilter);
-    $content = $oGrid->fetchGrid();
-    return $content;
-}
-
-function calls_detail_Elastix_old($oCallsDetail, $date_start, $date_end, $field_name, $field_pattern, $smarty, $htmlFilter, $urlVars, $arrFilterExtraVars, $arrLang)
-{
-    if(isset($_GET['exportcsv']) && $_GET['exportcsv']=='yes') {
-           $limit = "";
-           $offset = 0;
-           if(empty($_GET['date_start'])) {
-               $date_start = date("Y-m-d") . " 00:00:00"; 
-           } else {
-               $date_start = translateDate($_GET['date_start']) . " 00:00:00";
-           }
-           if(empty($_GET['date_end'])) { 
-               $date_end = date("Y-m-d") . " 23:59:59"; 
-           } else {
-               $date_end   = translateDate($_GET['date_end']) . " 23:59:59";
-           }
-           $field_name = array('field_name'    =>  $_GET['field_name'],
-                               'field_name_1'    =>  $_GET['field_name_1']);
-                    
-           $field_pattern = array('field_pattern' => $_GET['field_pattern'],
-                                  'field_pattern_1'=> $_GET['field_pattern_1']);
-//         $field_name = $_GET['field_name'];
-//         $field_pattern = $_GET['field_pattern'];
-           header("Cache-Control: private");
-           header("Pragma: cache");
-           header('Content-Type: application/octec-stream');
-           //header('Content-Length: '.strlen($this->buffer));
-           header('Content-disposition: inline; filename="calls_detail.csv"');
-           header('Content-Type: application/force-download');
-           //header('Content-Length: '.strlen($this->buffer));
-           //header('Content-disposition: attachment; filename="'.$name.'"');
-
+      $offset = 0;
+      $limit = 50;
+      $arrCallsDetailTmp  = $oCallsDetail->obtenerCallsDetails(null, $offset, $date_start, $date_end, $field_name, $field_pattern);
+      $totalCallsDetails =$arrCallsDetailTmp['NumRecords'];
+      if($bElastixNuevo){
+            $oGrid->setLimit($limit);
+            $oGrid->setTotal($totalCallsDetails + 1);
+            $offset = $oGrid->calculateOffset();
       } else {
-        // LISTADO
-        $offset = 0;
-        $arrCallsDetailTmp  = $oCallsDetail->obtenerCallsDetails(null,$offset, $date_start, $date_end, $field_name, $field_pattern);
-    
-        $limit = 50;
-        $offset = 0;
-    
-        // Si se quiere avanzar a la sgte. pagina
+            // Si se quiere avanzar a la sgte. pagina
         if(isset($_GET['nav']) && $_GET['nav']=="end") {
-            $totalCallsDetails  = $arrCallsDetailTmp['NumRecords'];
             // Mejorar el sgte. bloque.
             if(($totalCallsDetails%$limit)==0) {
                 $offset = $totalCallsDetails - $limit;
@@ -347,18 +182,12 @@ function calls_detail_Elastix_old($oCallsDetail, $date_start, $date_end, $field_
         if(isset($_GET['nav']) && $_GET['nav']=="previous") {
             $offset = $_GET['start'] - $limit - 1;
         }
-    
-        // Construyo el URL base
-        if(isset($arrFilterExtraVars) && is_array($arrFilterExtraVars) && count($arrFilterExtraVars)>0) {
-            $urlVars = array_merge($urlVars, $arrFilterExtraVars);
-        }
-    
-    }    
-    
-    
-    $url = construirURL($urlVars, array('nav', 'start'));
+     }
 
-    // Bloque comun
+     if(isset($arrFilterExtraVars) && is_array($arrFilterExtraVars) && count($arrFilterExtraVars)>0) {
+            $urlVars = array_merge($urlVars, $arrFilterExtraVars);
+     }
+
     $arrCallsDetail  = $oCallsDetail->obtenerCallsDetails($limit, $offset, $date_start, $date_end, $field_name, $field_pattern);
 
     $sumTotal = "00:00:00";
@@ -401,14 +230,31 @@ function calls_detail_Elastix_old($oCallsDetail, $date_start, $date_end, $field_
         $arrTime = array(array("duration"=>$sumTotal),array("duration"=>$cdr[6]));
  	$sumTotal = $oCallsDetail->sumarTiempos($arrTime);
     }
-
-     $arrTmp[0] = "<b>"._tr("Total")."</b>";
+     $sTagInicio = (!$bExportando) ? '<b>' : '';
+     $sTagFinal = ($sTagInicio != '') ? '</b>' : '';
+     $arrTmp[0] = $sTagInicio._tr("Total").$sTagFinal;
      $arrTmp[1] = $arrTmp[2] = $arrTmp[3] = $arrTmp[4] = $arrTmp[5] = "";
      $arrTmp[7] = $arrTmp[8] = $arrTmp[9] = $arrTmp[10] = $arrTmp[11] = $arrTmp[12] ="";
-     $arrTmp[6] = "<b>".$sumTotal."</b>";
+     $arrTmp[6] = $sTagInicio.$sumTotal.$sTagFinal;
      $arrData[] = $arrTmp;
 
-    $arrGrid = array("title"    => _tr("Calls Detail"),
+     if($bElastixNuevo){
+        $oGrid->setURL(construirURL($urlVars, array("nav", "start")));
+        $oGrid->setData($arrData);
+        $arrColumnas = array(_tr("No.Agent"), _tr("Agent"), _tr("Start Date"), _tr("Start Time"),_tr("End Date"),_tr("End Time"),_tr("Duration"),_tr("Duration Wait"),_tr("Queue"),_tr("Type"),_tr("Phone"),_tr("Transfer"),_tr("Status"));
+        $oGrid->setColumns($arrColumnas);
+        $oGrid->setTitle(_tr("Calls Detail"));
+        $oGrid->pagingShow(true); 
+        $oGrid->setNameFile_Export(_tr("Calls Detail"));
+     
+        $smarty->assign("SHOW", _tr("Show"));
+        return $oGrid->fetchGrid();
+     } else {
+        $url = construirURL($urlVars, array("nav", "start"));
+        $offset = 0;
+        $total = count($arrCallsDetail['Data']) + 1;
+        $limit = $total;
+        $arrGrid = array("title"    => _tr("Calls Detail"),
                      "url"      => $url,
                      "icon"     => "images/user.png",
                      "width"    => "99%",
@@ -443,18 +289,18 @@ function calls_detail_Elastix_old($oCallsDetail, $date_start, $date_end, $field_
                                          	     "property"	=> ""),
                                         )
                     );
-
-
-    // Creo objeto de grid
-    $oGrid = new paloSantoGrid($smarty);
-    $oGrid->enableExport();
-    
-    if(isset($_GET['exportcsv']) && $_GET['exportcsv']=='yes') {
-        return $oGrid->fetchGridCSV($arrGrid, $arrData);
-    } else {
-        $oGrid->showFilter($htmlFilter);
-        return $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
-    }
+        if($bExportando){
+           header("Cache-Control: private");
+           header("Pragma: cache");
+           header('Content-Type: application/octec-stream');
+           //header('Content-Length: '.strlen($this->buffer));
+           header('Content-disposition: inline; filename="calls_detail.csv"');
+           header('Content-Type: application/force-download');
+        }
+        return $bExportando 
+            ? $oGrid->fetchGridCSV($arrGrid, $arrData) 
+            : $oGrid->fetchGrid($arrGrid, $arrData, $arrLang);
+    }    
 }
 
 function createFieldFilter()
