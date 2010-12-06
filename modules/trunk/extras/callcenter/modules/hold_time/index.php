@@ -35,7 +35,13 @@ include_once "libs/paloSantoGrid.class.php";
 include_once "modules/form_designer/libs/paloSantoDataForm.class.php";
 require_once "libs/xajax/xajax.inc.php";
 
-
+if (!function_exists('_tr')) {
+    function _tr($s)
+    {
+        global $arrLang;
+        return isset($arrLang[$s]) ? $arrLang[$s] : $s;
+    }
+}
 
 function _moduleContent(&$smarty, $module_name)
 {
@@ -84,36 +90,17 @@ function _moduleContent(&$smarty, $module_name)
 
     if (!is_object($pDB->conn) || $pDB->errMsg!="") {
         $smarty->assign("mb_message", $arrLang["Error when connecting to database"]." ".$pDB->errMsg);
-    }elseif(isset($_GET['exportcsv']) && $_GET['exportcsv']=='yes') {
-        $fechaActual = date("d M Y");
-        header("Cache-Control: private");
-        header("Pragma: cache");
-        header('Content-Type: application/octec-stream');
-        $title = "\"".$fechaActual.".csv\"";
-        header("Content-disposition: inline; filename={$title}");
-        header('Content-Type: application/force-download');
     }
-    
-    if(isset($arrFilterExtraVars) && is_array($arrFilterExtraVars) and count($arrFilterExtraVars)>0) {
-	$url = construirURL($arrFilterExtraVars); 
-    } else {
-	$url = construirURL(); 
-    }
-
-    $smarty->assign("url", $url);
+ 
     $oGrid = new paloSantoGrid($smarty);
     $arrGrid = array();
     $arrData = array();
 
     //llamamos a funcion que construye la vista
     $contenidoModulo = listadoHoldTime($pDB, $smarty, $module_name, $local_templates_dir,$oGrid,$arrGrid,$arrData);
-
-    if(  isset( $_GET['exportcsv'] ) && $_GET['exportcsv']=='yes' ) {
-	return $oGrid->fetchGridCSV($arrGrid, $arrData);
-    }else {
-	$oGrid->showFilter($htmlFilter);
-	return $contenidoModulo;
-    }
+    $oGrid->showFilter($htmlFilter); 
+    return $contenidoModulo;            
+    
 }
 
 
@@ -232,33 +219,42 @@ function listadoHoldTime($pDB, $smarty, $module_name, $local_templates_dir,&$oGr
         }
     }
 
-
+      $bElastixNuevo = method_exists('paloSantoGrid','isExportAction');
+      $bExportando = $bElastixNuevo
+        ? $oGrid->isExportAction()
+        : (isset( $_GET['exportcsv'] ) && $_GET['exportcsv'] == 'yes');
 
 //para el pagineo
        // LISTADO
         $limit =50;
         $offset = 0;
-
-        // Si se quiere avanzar a la sgte. pagina
-        if(isset($_GET['nav']) && $_GET['nav']=="end") {
-            $arrCallsTmp  = $oCalls->getHoldTime($tipo,$entrantes, $salientes,translateDate($fecha_init),translateDate($fecha_end), $limit, $offset);
-            $totalCalls  = $arrCallsTmp['NumRecords'];
-            // Mejorar el sgte. bloque.
-            if(($totalCalls%$limit)==0) {
-                $offset = $totalCalls - $limit;
-            } else {
-                $offset = $totalCalls - $totalCalls%$limit;
-            }
-        }
-
-        // Si se quiere avanzar a la sgte. pagina
-        if(isset($_GET['nav']) && $_GET['nav']=="next") {
-            $offset = $_GET['start'] + $limit - 1;
-        }
-
-        // Si se quiere retroceder
-        if(isset($_GET['nav']) && $_GET['nav']=="previous") {
-            $offset = $_GET['start'] - $limit - 1;
+        //numero de registros
+        $arrCallsTmp  = $oCalls->getHoldTime($tipo,$entrantes, $salientes,translateDate($fecha_init),translateDate($fecha_end), $limit, $offset);
+                    $totalCalls  = $arrCallsTmp['NumRecords'];;
+        if($bElastixNuevo){
+                $oGrid->setLimit($limit);
+                $oGrid->setTotal($totalCalls);
+                $offset = $oGrid->calculateOffset();
+        } else {
+                // Si se quiere avanzar a la sgte. pagina
+                if(isset($_GET['nav']) && $_GET['nav']=="end") {  
+                    // Mejorar el sgte. bloque.
+                    if(($totalCalls%$limit)==0) {
+                        $offset = $totalCalls - $limit;
+                    } else {
+                        $offset = $totalCalls - $totalCalls%$limit;
+                    }
+                }
+        
+                // Si se quiere avanzar a la sgte. pagina
+                if(isset($_GET['nav']) && $_GET['nav']=="next") {
+                    $offset = $_GET['start'] + $limit - 1;
+                }
+        
+                // Si se quiere retroceder
+                if(isset($_GET['nav']) && $_GET['nav']=="previous") {
+                    $offset = $_GET['start'] - $limit - 1;
+                }
         }
 
         // Construyo el URL base
@@ -267,20 +263,16 @@ function listadoHoldTime($pDB, $smarty, $module_name, $local_templates_dir,&$oGr
         } else {
             $url = construirURL(array(), array("nav", "start")); 
         }
-        $smarty->assign("url", $url);
 
 //fin de pagineo
 
     //llamamos  a la función que hace la consulta  a la base según los criterios de búsqueda
     $arrCalls = $oCalls->getHoldTime($tipo,$entrantes, $salientes,translateDate($fecha_init),translateDate($fecha_end), $limit, $offset);
-
-    //numero de registros
-    $arrCalls_1 = $oCalls->getHoldTime($tipo,$entrantes, $salientes,translateDate($fecha_init),translateDate($fecha_end), NULL, $offset);
-
-    $end = $arrCalls_1['NumRecords'];
+   
 //Llenamos el contenido de las columnas
     $arrTmp    = array();
-
+    $sTagInicio = (!$bExportando) ? '<b>' : '';
+    $sTagFinal = ($sTagInicio != '') ? '</b>' : '';
     if (is_array($arrCalls)) {
         foreach($arrCalls['Data'] as $calls) {
             $arrTmp[0] = $calls['cola'];
@@ -313,14 +305,14 @@ function listadoHoldTime($pDB, $smarty, $module_name, $local_templates_dir,&$oGr
            $arrData[] = $arrTmp;
         }
 
-        $arrTmp[0] = "<b>".$arrLangModule["Total"]."<b>";
+        $arrTmp[0] = $sTagInicio.$arrLangModule["Total"].$sTagFinal;
 
         for($j=1;$j<=8;$j++){
             $sum = 0;
             for($i=0;$i<count($arrData);$i++){
                 $sum = $sum + $arrData[$i][$j];
             }
-            $arrTmp[$j] = "<b>".$sum."</b>";
+            $arrTmp[$j] = $sTagInicio.$sum.$sTagFinal;
         }
 
         $sumTotalCalls = $maxTimeWait = 0;
@@ -329,44 +321,12 @@ function listadoHoldTime($pDB, $smarty, $module_name, $local_templates_dir,&$oGr
             $sumTotalCalls = $sumTotalCalls + $arrData[$i][10];
         }
 
-        $arrTmp[10] = "<b>".$sumTotalCalls."</b>";
-        $arrTmp[9] = "<b>".$maxTimeWait."</b>";
+        $arrTmp[10] = $sTagInicio.$sumTotalCalls.$sTagFinal;
+        $arrTmp[9] = $sTagInicio.$maxTimeWait.$sTagFinal;
 
         $arrData[] = $arrTmp;
 
     }
-
-//Llenamos las cabeceras
-    $arrGrid = array("title"    => $arrLangModule["Hold Time"],
-        "icon"     => "images/list.png",
-        "width"    => "99%",
-        "start"    => ($end==0) ? 0 : $offset + 1,
-        "end"      => ($offset+$limit)<=$end ? $offset+$limit : $end,
-        "total"    => $end,
-        "columns"  => array(0 => array("name"      => $arrLangModule["Cola"],
-                                       "property1" => ""),
-                            1 => array("name"      => "0 - 10", 
-                                       "property1" => ""),
-                            2 => array("name"      => "11 - 20", 
-                                       "property1" => ""),
-                            3 => array("name"      => "21 - 30", 
-                                       "property1" => ""),
-                            4 => array("name"      => "31 - 40",
-                                       "property1" => ""),
-                            5 => array("name"      => "41 - 50", 
-                                       "property1" => ""),
-                            6 => array("name"      => "51 - 60", 
-                                       "property1" => ""),
-                            7 => array("name"      => "61 >", 
-                                       "property1" => ""),
-                            8 => array("name"      => $arrLangModule["Tiempo Promedio Espera(Seg)"], 
-                                       "property1" => ""),
-
-                            9 => array("name"      => $arrLangModule["Espera Mayor(seg)"], 
-                                       "property1" => ""),
-                            10 => array("name"      => $arrLangModule["Total Calls"], 
-                                       "property1" => ""),
-                        ));
 
     //Para el combo de tipos
     $tipos = array("E"=>$arrLangModule["Ingoing"], "S"=>$arrLangModule["Outgoing"]);
@@ -440,11 +400,69 @@ function listadoHoldTime($pDB, $smarty, $module_name, $local_templates_dir,&$oGr
         </form>
 
         ");
+    
     $oGrid->enableExport();
-    $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
-    return $contenidoModulo;
-}
+    if($bElastixNuevo){
+        $oGrid->setURL($url);
+        $oGrid->setData($arrData);
+        $arrColumnas = array(_tr("Cola"),"0 - 10","11 - 20","21 - 30","31 - 40","41 - 50","51 - 60","61 >",_tr("Tiempo Promedio Espera(Seg)"),_tr("Espera Mayor(seg)"),_tr("Total Calls"));
+        $oGrid->setColumns($arrColumnas);
+        $oGrid->setTitle(_tr("Hold Time"));
+        $oGrid->pagingShow(true); 
+        $oGrid->setNameFile_Export(_tr("Hold Time"));
+     
+        $smarty->assign("SHOW", _tr("Show"));
+        return $oGrid->fetchGrid();
+     } else {
+           $smarty->assign("url", $url);
+           $offset = 0;
+           $limit = $totalCalls;
+            //Llenamos las cabeceras
+           $arrGrid = array("title"    => $arrLangModule["Hold Time"],
+                "icon"     => "images/list.png",
+                "width"    => "99%",
+                "start"    => ($end==0) ? 0 : $offset + 1,
+                "end"      => ($offset+$limit)<=$end ? $offset+$limit : $end,
+                "total"    => $end,
+                "columns"  => array(0 => array("name"      => $arrLangModule["Cola"],
+                                            "property1" => ""),
+                                    1 => array("name"      => "0 - 10", 
+                                            "property1" => ""),
+                                    2 => array("name"      => "11 - 20", 
+                                            "property1" => ""),
+                                    3 => array("name"      => "21 - 30", 
+                                            "property1" => ""),
+                                    4 => array("name"      => "31 - 40",
+                                            "property1" => ""),
+                                    5 => array("name"      => "41 - 50", 
+                                            "property1" => ""),
+                                    6 => array("name"      => "51 - 60", 
+                                            "property1" => ""),
+                                    7 => array("name"      => "61 >", 
+                                            "property1" => ""),
+                                    8 => array("name"      => $arrLangModule["Tiempo Promedio Espera(Seg)"], 
+                                            "property1" => ""),
+        
+                                    9 => array("name"      => $arrLangModule["Espera Mayor(seg)"], 
+                                            "property1" => ""),
+                                    10 => array("name"      => $arrLangModule["Total Calls"], 
+                                            "property1" => ""),
+                                ));
 
+            if($bExportando){
+                $fechaActual = date("d M Y");
+                header("Cache-Control: private");
+                header("Pragma: cache");
+                header('Content-Type: application/octec-stream');
+                $title = "\"".$fechaActual.".csv\"";
+                header("Content-disposition: inline; filename={$title}");
+                header('Content-Type: application/force-download');
+            }
+            return $bExportando 
+            ? $oGrid->fetchGridCSV($arrGrid, $arrData) 
+            : $oGrid->fetchGrid($arrGrid, $arrData, $arrLang);
+        }
+}
 /*    Esta funcion inserta el codigo necesario para visualizar el control fecha inicio
 */
 function insertarDateInit($fecha_init) {
