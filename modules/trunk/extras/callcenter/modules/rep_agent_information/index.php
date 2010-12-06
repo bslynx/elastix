@@ -92,8 +92,11 @@ function _moduleContent(&$smarty, $module_name)
         'module_name'   =>  $module_name,
     ));
 
-    // Verificar si se requiere generar archivo CSV
-    $bExportarCSV = (isset( $_GET['exportcsv'] ) && $_GET['exportcsv'] == 'yes');
+    $bElastixNuevo = method_exists('paloSantoGrid','isExportAction');
+    $oGrid = new paloSantoGrid($smarty);
+    $bExportando = $bElastixNuevo
+        ? $oGrid->isExportAction()
+        : (isset( $_GET['exportcsv'] ) && $_GET['exportcsv'] == 'yes');
 
     // Estas son las colas entrantes disponibles en el sistema
     $arrQueue = leerColasEntrantes($pDB, $pDB_asterisk);
@@ -114,37 +117,7 @@ NO_QUEUE_END;
     // TODO: reemplazar con lista desplegable de agentes en cola elegida
     $sAgenteOmision = $oCallsAgent->obtener_agente();
 
-    $arrFormElements = array(
-        "date_start"  => array(
-            "LABEL"                  => _tr('Start Date'),
-            "REQUIRED"               => "yes",
-            "INPUT_TYPE"             => "DATE",
-            "INPUT_EXTRA_PARAM"      => "",
-            "VALIDATION_TYPE"        => "ereg",
-            "VALIDATION_EXTRA_PARAM" => "^[[:digit:]]{1,2}[[:space:]]+[[:alnum:]]{3}[[:space:]]+[[:digit:]]{4}$"),
-        "date_end"    => array(
-            "LABEL"                  => _tr("End Date"),
-            "REQUIRED"               => "yes",
-            "INPUT_TYPE"             => "DATE",
-            "INPUT_EXTRA_PARAM"      => "",
-            "VALIDATION_TYPE"        => "ereg",
-            "VALIDATION_EXTRA_PARAM" => "^[[:digit:]]{1,2}[[:space:]]+[[:alnum:]]{3}[[:space:]]+[[:digit:]]{4}$"),
-        //COLA
-        "queue" => array(
-            "LABEL"                  => _tr("Queue"),
-            "REQUIRED"               => "no",
-            "INPUT_TYPE"             => "SELECT",
-            "INPUT_EXTRA_PARAM"      => $arrQueue,
-            "VALIDATION_TYPE"        => "ereg",
-            "VALIDATION_EXTRA_PARAM" => "^[[:digit:]]+$"),
-        "agent" => array(
-            "LABEL"                  => _tr("No.Agent"),
-            "REQUIRED"               => "yes",
-            "INPUT_TYPE"             => "TEXT",
-            "INPUT_EXTRA_PARAM"      => "",
-            "VALIDATION_TYPE"        => "ereg",
-            "VALIDATION_EXTRA_PARAM" => "^[[:digit:]]+$"),
-         );
+    $arrFormElements = createFieldFilter($arrQueue);
     $oFilterForm = new paloForm($smarty, $arrFormElements);
 
     // Valores iniciales de las variables
@@ -188,8 +161,8 @@ NO_QUEUE_END;
     $sFechaInicial = translateDate($paramConsulta['date_start']);
     $sFechaFinal = translateDate($paramConsulta['date_end']);
     $r = $oCallsAgent->reportarBreaksAgente($paramConsulta['agent'], $paramConsulta['queue'], $sFechaInicial, $sFechaFinal);
-    $b = $bExportarCSV ? array('','') : array('<b>','</b>');
-    $ub = $bExportarCSV ? array('','') : array('<u><b>','</b></u>');
+    $b = $bExportando ? array('','') : array('<b>','</b>');
+    $ub = $bExportando ? array('','') : array('<u><b>','</b></u>');
 
     $arrData = array();
     if (is_array($r) && count($r) > 0) {
@@ -219,19 +192,19 @@ NO_QUEUE_END;
             $tempTiempos['total_llamadas'] - $tempTiempos['monitoreadas'],
             _tr('Unmonitored'));
         $arrData = array(
-            array($b[0].strtoupper(_tr('Agent name')).$b[1], $r['name']),
-            array($b[0].strtoupper(_tr('Conecction Data')).$b[1],),
-            array(_tr('First Conecction'), $r['primera_conexion']),
-            array(_tr('Last Conecction'), $r['ultima_conexion']),
-            array(_tr('Time Conecction'), formatoSegundos($r['tiempo_conexion'])),
-            array(_tr('Count Conecction'), $r['conteo_conexion']),
-            array($b[0].strtoupper(_tr('Calls Entry')).$b[1],),
-            array(_tr('Count Calls Entry'), $sFormatoMonitoreadas),
-            array(_tr('Calls/h'), number_format($tempTiempos['llamadas_por_hora'], 2)),
-            array(_tr('Time Call Entry'), formatoSegundos($tempTiempos['duracion_llamadas'])),
-            array(_tr('Average Calls Entry'), $tempTiempos['promedio_duracion']."    ("._tr('Monitored only').')'),
-            array($b[0].strtoupper(_tr('Reason No Ready')).$b[1],),
-            array($ub[0].(_tr('Break')).$ub[1], $ub[0].(_tr('Count')).$ub[1], $ub[0].(_tr('Hour')).$ub[1], $ub[0].(_tr('Porcent compare whit time not ready')).$ub[1],),
+            array($b[0].strtoupper(_tr('Agent name')).$b[1], $r['name'],"",""),
+            array($b[0].strtoupper(_tr('Conecction Data')).$b[1],"","",""),
+            array(_tr('First Conecction'), $r['primera_conexion'],"",""),
+            array(_tr('Last Conecction'), $r['ultima_conexion'],"",""),
+            array(_tr('Time Conecction'), formatoSegundos($r['tiempo_conexion']),"",""),
+            array(_tr('Count Conecction'), $r['conteo_conexion'],"",""),
+            array($b[0].strtoupper(_tr('Calls Entry')).$b[1],"","",""),
+            array(_tr('Count Calls Entry'), $sFormatoMonitoreadas,"",""),
+            array(_tr('Calls/h'), number_format($tempTiempos['llamadas_por_hora'], 2),"",""),
+            array(_tr('Time Call Entry'), formatoSegundos($tempTiempos['duracion_llamadas']),"",""),
+            array(_tr('Average Calls Entry'), $tempTiempos['promedio_duracion']."    ("._tr('Monitored only').')',"",""),
+            array($b[0].strtoupper(_tr('Reason No Ready')).$b[1],"","",""),
+            array($ub[0].(_tr('Break')).$ub[1], $ub[0].(_tr('Count')).$ub[1], $ub[0].(_tr('Hour')).$ub[1], $ub[0].(_tr('Porcent compare whit time not ready')).$ub[1]),
         );
 
         $tempBreaks = array();
@@ -264,46 +237,56 @@ NO_QUEUE_END;
     }
 
     // Creo objeto de grid
-    $oGrid = new paloSantoGrid($smarty);
     $oGrid->enableExport();
     $oGrid->showFilter($htmlFilter);
 
     // La definición del grid
-    $total = $end = count($arrData);
-    $offset = 0;
-    $url = construirUrl($paramConsulta);
-    $arrGrid = array(
-        "title"    => _tr("Time conecction of agents"),
-        "icon"     => "images/list.png",
-        "width"    => "99%",
-        "start"    => ($total==0) ? 0 : $offset + 1,
-        "end"      => $end,
-        "total"    => $total,
-        "url"      => $url,
-        "columns"  => array(
-                         0 => array("name"      => "",
-                                    "property" => ""),
-                         1 => array("name"      => "",
-                                    "property" => ""),
-                         2 => array("name"      => "",
-                                    "property" => ""),
-                         3 => array("name"      => "",
-                                    "property" => ""),
-                        )
-    );
-
-    // se pregunta si la acción es crear un csv con los datos del reporte 
-    if(!$bExportarCSV) {
-        return $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
-    } else {
-        $fechaActual = date("d M Y");
-        header("Cache-Control: private");
-        header("Pragma: cache");
-        $title = $fechaActual;
-        header('Content-Type: text/csv; charset=utf-8; header=present');
-        header("Content-disposition: attachment; filename=\"".$title.".csv\"");
-    	return $content = $oGrid->fetchGridCSV($arrGrid, $arrData);
-    }
+    if($bElastixNuevo){
+        $oGrid->setURL(construirURL($paramConsulta));
+        $oGrid->setData($arrData);
+        $arrColumnas = array("","","","");
+        $oGrid->setColumns($arrColumnas);
+        $oGrid->setTitle(_tr("Agent Information"));
+        $oGrid->pagingShow(false); 
+        $oGrid->setNameFile_Export(_tr("Agent Information"));
+     
+        $smarty->assign("SHOW", _tr("Show"));
+        return $oGrid->fetchGrid();
+     } else {
+            $total = $end = count($arrData);
+            $offset = 0;
+            $url = construirUrl($paramConsulta);
+            $arrGrid = array(
+                "title"    => _tr("Time conecction of agents"),
+                "icon"     => "images/list.png",
+                "width"    => "99%",
+                "start"    => ($total==0) ? 0 : $offset + 1,
+                "end"      => $end,
+                "total"    => $total,
+                "url"      => $url,
+                "columns"  => array(
+                                0 => array("name"      => "",
+                                            "property" => ""),
+                                1 => array("name"      => "",
+                                            "property" => ""),
+                                2 => array("name"      => "",
+                                            "property" => ""),
+                                3 => array("name"      => "",
+                                            "property" => ""),
+                                )
+            );
+            if($bExportando){
+                $fechaActual = date("d M Y");
+                header("Cache-Control: private");
+                header("Pragma: cache");
+                $title = $fechaActual;
+                header('Content-Type: text/csv; charset=utf-8; header=present');
+                header("Content-disposition: attachment; filename=\"".$title.".csv\"");
+            }
+           return $bExportando 
+            ? $oGrid->fetchGridCSV($arrGrid, $arrData) 
+            : $oGrid->fetchGrid($arrGrid, $arrData, $arrLang);
+        }        
 }
 
 function leerColasEntrantes($pDB, $pDB_asterisk)
@@ -330,6 +313,42 @@ function formatoSegundos($s)
     $sec = $s % 60; $s = ($s - $sec) / 60;
     $min = $s % 60; $hora = ($s - $min) / 60;
     return sprintf('%02d:%02d:%02d', $hora, $min, $sec);
+}
+
+function createFieldFilter($arrQueue)
+{
+    $arrFormElements = array(
+        "date_start"  => array(
+            "LABEL"                  => _tr('Start Date'),
+            "REQUIRED"               => "yes",
+            "INPUT_TYPE"             => "DATE",
+            "INPUT_EXTRA_PARAM"      => "",
+            "VALIDATION_TYPE"        => "ereg",
+            "VALIDATION_EXTRA_PARAM" => "^[[:digit:]]{1,2}[[:space:]]+[[:alnum:]]{3}[[:space:]]+[[:digit:]]{4}$"),
+        "date_end"    => array(
+            "LABEL"                  => _tr("End Date"),
+            "REQUIRED"               => "yes",
+            "INPUT_TYPE"             => "DATE",
+            "INPUT_EXTRA_PARAM"      => "",
+            "VALIDATION_TYPE"        => "ereg",
+            "VALIDATION_EXTRA_PARAM" => "^[[:digit:]]{1,2}[[:space:]]+[[:alnum:]]{3}[[:space:]]+[[:digit:]]{4}$"),
+        //COLA
+        "queue" => array(
+            "LABEL"                  => _tr("Queue"),
+            "REQUIRED"               => "no",
+            "INPUT_TYPE"             => "SELECT",
+            "INPUT_EXTRA_PARAM"      => $arrQueue,
+            "VALIDATION_TYPE"        => "ereg",
+            "VALIDATION_EXTRA_PARAM" => "^[[:digit:]]+$"),
+        "agent" => array(
+            "LABEL"                  => _tr("No.Agent"),
+            "REQUIRED"               => "yes",
+            "INPUT_TYPE"             => "TEXT",
+            "INPUT_EXTRA_PARAM"      => "",
+            "VALIDATION_TYPE"        => "ereg",
+            "VALIDATION_EXTRA_PARAM" => "^[[:digit:]]+$"),
+         );
+    return $arrFormElements;
 }
 
 ?>
