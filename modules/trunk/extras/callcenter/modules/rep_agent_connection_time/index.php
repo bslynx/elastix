@@ -38,7 +38,23 @@ if (!function_exists('_tr')) {
         return isset($arrLang[$s]) ? $arrLang[$s] : $s;
     }
 }
+if (!function_exists('load_language_module')) {
+    function load_language_module($module_id, $ruta_base='')
+    {
+        $lang = get_language($ruta_base);
+        include_once $ruta_base."modules/$module_id/lang/en.lang";
+        $lang_file_module = $ruta_base."modules/$module_id/lang/$lang.lang";
+        if ($lang != 'en' && file_exists("$lang_file_module")) {
+            $arrLangEN = $arrLangModule;
+            include_once "$lang_file_module";
+            $arrLangModule = array_merge($arrLangEN, $arrLangModule);
+        }
 
+        global $arrLang;
+        global $arrLangModule;
+        $arrLang = array_merge($arrLang,$arrLangModule);
+    }
+}
 function _moduleContent(&$smarty, $module_name)
 {
     //include module files
@@ -46,21 +62,14 @@ function _moduleContent(&$smarty, $module_name)
     include_once "modules/$module_name/libs/paloSantoReporteGeneraldeTiempoConexionAgentesPorDia.class.php";
     include_once "libs/paloSantoConfig.class.php";
 
-    //include file language agree to elastix configuration
-    //if file language not exists, then include language by default (en)
-    $lang=get_language();
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
-    $lang_file="modules/$module_name/lang/$lang.lang";
-    if (file_exists("$base_dir/$lang_file")) include_once "$lang_file";
-    else include_once "modules/$module_name/lang/en.lang";
+
+    load_language_module($module_name);
 
     //global variables
     global $arrConf;
     global $arrConfModule;
-    global $arrLang;
-    global $arrLangModule;
     $arrConf = array_merge($arrConf,$arrConfModule);
-    $arrLang = array_merge($arrLang,$arrLangModule);
 
     //conexion resource
     $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
@@ -85,13 +94,13 @@ function _moduleContent(&$smarty, $module_name)
 
     switch($accion){
         default:
-            $content = reportReporteGeneraldeTiempoConexionAgentesPorDia($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $pDB_asterisk);
+            $content = reportReporteGeneraldeTiempoConexionAgentesPorDia($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $pDB_asterisk);
             break;
     }
     return $content;
 }
 
-function reportReporteGeneraldeTiempoConexionAgentesPorDia($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang, &$pDB_asterisk)
+function reportReporteGeneraldeTiempoConexionAgentesPorDia($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, &$pDB_asterisk)
 {
     $pReporteGeneraldeTiempoConexionAgentesPorDia = new paloSantoReporteGeneraldeTiempoConexionAgentesPorDia($pDB);
 
@@ -204,7 +213,8 @@ function reportReporteGeneraldeTiempoConexionAgentesPorDia($smarty, $module_name
             $oGrid->setNameFile_Export(_tr("Reporte General de Tiempo Conexion Agentes por Dia"));
             return $oGrid->fetchGrid();
         } else {
-            $smarty->assign('url',$url);
+            global $arrLang;
+
             $offset = 0;
             $limit = $total;
             $arrGrid = array("title"    => _tr("Reporte General de Tiempo Conexion Agentes Por Dia"),
@@ -213,7 +223,7 @@ function reportReporteGeneraldeTiempoConexionAgentesPorDia($smarty, $module_name
                         "start"    => ($total==0) ? 0 : $offset + 1,
                         "end"      => $end,
                         "total"    => $total,
-                        "url"      => $url,
+                        "url"      => construirURL($url, array('nav', 'start')),
                         "columns"  => array(
 			0 => array("name"      => _tr("Number Agent"),
                                    "property1" => ""),

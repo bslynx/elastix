@@ -31,6 +31,30 @@ include_once "libs/paloSantoGrid.class.php";
 include_once "libs/paloSantoForm.class.php";
 include_once "libs/paloSantoQueue.class.php";
 
+if (!function_exists('_tr')) {
+    function _tr($s)
+    {
+        global $arrLang;
+        return isset($arrLang[$s]) ? $arrLang[$s] : $s;
+    }
+}
+if (!function_exists('load_language_module')) {
+    function load_language_module($module_id, $ruta_base='')
+    {
+        $lang = get_language($ruta_base);
+        include_once $ruta_base."modules/$module_id/lang/en.lang";
+        $lang_file_module = $ruta_base."modules/$module_id/lang/$lang.lang";
+        if ($lang != 'en' && file_exists("$lang_file_module")) {
+            $arrLangEN = $arrLangModule;
+            include_once "$lang_file_module";
+            $arrLangModule = array_merge($arrLangEN, $arrLangModule);
+        }
+
+        global $arrLang;
+        global $arrLangModule;
+        $arrLang = array_merge($arrLang,$arrLangModule);
+    }
+}
 function _moduleContent(&$smarty, $module_name)
 {
     //include module files
@@ -38,21 +62,14 @@ function _moduleContent(&$smarty, $module_name)
     include_once "modules/$module_name/libs/paloSantoReporteGeneraldeTiempoConexionAgentesPorDia.class.php";
     include_once "libs/paloSantoConfig.class.php";
 
-    //include file language agree to elastix configuration
-    //if file language not exists, then include language by default (en)
-    $lang=get_language();
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
-    $lang_file="modules/$module_name/lang/$lang.lang";
-    if (file_exists("$base_dir/$lang_file")) include_once "$lang_file";
-    else include_once "modules/$module_name/lang/en.lang";
+
+    load_language_module($module_name);
 
     //global variables
     global $arrConf;
     global $arrConfModule;
-    global $arrLang;
-    global $arrLangModule;
     $arrConf = array_merge($arrConf,$arrConfModule);
-    $arrLang = array_merge($arrLang,$arrLangModule);
 
     //conexion resource
     $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
@@ -77,13 +94,13 @@ function _moduleContent(&$smarty, $module_name)
 
     switch($accion){
         default:
-            $content = reportReporteGeneraldeTiempoConexionAgentesPorDia($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $pDB_asterisk);
+            $content = reportReporteGeneraldeTiempoConexionAgentesPorDia($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $pDB_asterisk);
             break;
     }
     return $content;
 }
 
-function reportReporteGeneraldeTiempoConexionAgentesPorDia($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang, &$pDB_asterisk)
+function reportReporteGeneraldeTiempoConexionAgentesPorDia($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, &$pDB_asterisk)
 {
     $pReporteGeneraldeTiempoConexionAgentesPorDia = new paloSantoReporteGeneraldeTiempoConexionAgentesPorDia($pDB);
 
@@ -120,19 +137,21 @@ function reportReporteGeneraldeTiempoConexionAgentesPorDia($smarty, $module_name
 
 //palosanto fin
 
-    $action = getParameter("nav");
-    $start  = getParameter("start");
-    $iscsv  = getParameter("exportcsv");
-
+    
+ 
     //begin grid parameters
+    $bElastixNuevo = method_exists('paloSantoGrid','isExportAction');
     $oGrid  = new paloSantoGrid($smarty);
-
+    
     $oGrid->enableExport();
+    $bExportando = $bElastixNuevo
+        ? $oGrid->isExportAction()
+        : (isset( $_GET['exportcsv'] ) && $_GET['exportcsv'] == 'yes');
 
         //begin section filter
-    $arrFormFilterReporteGeneraldeTiempoConexionAgentesPorDia = createFieldFilter($arrLang, $arrQueue);
+    $arrFormFilterReporteGeneraldeTiempoConexionAgentesPorDia = createFieldFilter($arrQueue);
     $oFilterForm = new paloForm($smarty, $arrFormFilterReporteGeneraldeTiempoConexionAgentesPorDia);
-    $smarty->assign("SHOW", $arrLang["Show"]);
+    $smarty->assign("SHOW", _tr("Show"));
 
     $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl","",$_POST);
     //end section filter
@@ -143,23 +162,40 @@ function reportReporteGeneraldeTiempoConexionAgentesPorDia($smarty, $module_name
     $total  = $totalReporteGeneraldeTiempoConexionAgentesPorDia;
     $oGrid->setLimit($limit);
     $oGrid->setTotal($total);
+    
+    if($bElastixNuevo)
+        $offset = $oGrid->calculateOffset();
+    else{
+        $action = getParameter("nav");
+        $start  = getParameter("start");
+        $oGrid->calculatePagination($action,$start);
+        $offset = $oGrid->getOffsetValue();
+        $end    = $oGrid->getEnd();
+    }
 
-    $oGrid->calculatePagination($action,$start);
-    $offset = $oGrid->getOffsetValue();
-    $end    = $oGrid->getEnd();
-
-    $url    = "?menu=$module_name&filter_field=$filter_field&filter_value=$filter_value&filter_field_tipo=$filter_field_tipo&filter_value_tipo=$filter_value_tipo&date_from=$date_from&date_to=$date_to";
-
+    $url = array(
+            "menu"               => $module_name,
+            "filter_field"       => $filter_field,
+            "filter_value"       => $filter_value,
+            "filter_field_tipo"  => $filter_field_tipo,
+            "filter_value_tipo"  => $filter_value_tipo,
+            "date_from"          => $date_from,
+            "date_to"            => $date_to);
+    
 //palosanto le enviamos la cola
      $arrData = null;
     $arrResult =$pReporteGeneraldeTiempoConexionAgentesPorDia->ObtainReporteGeneraldeTiempoConexionAgentesPorDia($limit, $offset, $filter_field, $filter_value,  $filter_field_tipo, $filter_value_tipo, $date_from, $date_to);
-
+    $oGrid->showFilter($htmlFilter);
+    $sTagInicio = (!$bExportando) ? '<b>' : '';
+    $sTagFinal = ($sTagInicio != '') ? '</b>' : '';
+    $sTagInicio2 = (!$bExportando) ? '<center>' : '';
+    $sTagFinal2 = ($sTagInicio != '') ? '</center>' : '';
     if(is_array($arrResult) && $total>0){
         foreach($arrResult as $key => $value){
 	    $arrTmp[0] = $value['number_agent'];
 	    $arrTmp[1] = $value['name'];
 	    $arrTmp[2] = $value['first_conecction'];
-	    $arrTmp[3] = ($value['last_conecction']=='-'?'<center><b>'.$value['last_conecction'].'</b></center>':$value['last_conecction']);
+	    $arrTmp[3] = ($value['last_conecction']=='-'?$sTagInicio2.$sTagInicio.$value['last_conecction'].$sTagFinal.$sTagFinal2:$value['last_conecction']);
             $arrTmp[4] = $value['tiempo_total_sesion'];
 	    $arrTmp[5] = is_null($value['tiempo_llamadas'])?'0':$value['tiempo_llamadas'];
 	    $arrTmp[6] = number_format($value['porcentaje_servicio'],2);
@@ -167,64 +203,69 @@ function reportReporteGeneraldeTiempoConexionAgentesPorDia($smarty, $module_name
             $arrData[] = $arrTmp;
         }
     }
+        if($bElastixNuevo){
+            $oGrid->setURL($url);
+            $oGrid->setData($arrData);
+            $arrColumnas = array(_tr("Number Agent"), _tr("Agent Name"), _tr("First Conecction"), _tr("Last Conecction"),_tr("Total time of session"),_tr("Time Total Calls"),_tr("Service %"),_tr("Status"));
+            $oGrid->setColumns($arrColumnas);
+            $oGrid->setTitle(_tr("Reporte General de Tiempo Conexion Agentes por Dia"));
+            $oGrid->pagingShow(true); 
+            $oGrid->setNameFile_Export(_tr("Reporte General de Tiempo Conexion Agentes por Dia"));
+            return $oGrid->fetchGrid();
+        } else {
+            global $arrLang;
 
-    $arrGrid = array("title"    => $arrLang["Reporte General de Tiempo Conexion Agentes Por Dia"],
+            $offset = 0;
+            $limit = $total;
+            $arrGrid = array("title"    => _tr("Reporte General de Tiempo Conexion Agentes Por Dia"),
                         "icon"     => "images/list.png",
                         "width"    => "99%",
                         "start"    => ($total==0) ? 0 : $offset + 1,
                         "end"      => $end,
                         "total"    => $total,
-                        "url"      => $url,
+                        "url"      => construirURL($url, array('nav', 'start')),
                         "columns"  => array(
-			0 => array("name"      => $arrLang["Number Agent"],
+			0 => array("name"      => _tr("Number Agent"),
                                    "property1" => ""),
-			1 => array("name"      => $arrLang["Agent Name"],
+			1 => array("name"      => _tr("Agent Name"),
                                    "property1" => ""),
-			2 => array("name"      => $arrLang["First Conecction"],
+			2 => array("name"      => _tr("First Conecction"),
                                    "property1" => ""),
-			3 => array("name"      => $arrLang["Last Conecction"],
+			3 => array("name"      => _tr("Last Conecction"),
                                    "property1" => ""),
-			4 => array("name"      => $arrLang["Total time of session"],
+			4 => array("name"      => _tr("Total time of session"),
                                    "property1" => ""),
-                        5 => array("name"      => $arrLang["Time Total Calls"],
+                        5 => array("name"      => _tr("Time Total Calls"),
                                    "property1" => ""),
-			6 => array("name"      => $arrLang["Service %"],
+			6 => array("name"      => _tr("Service %"),
                                    "property1" => ""),
-			7 => array("name"      => $arrLang["Status"],
+			7 => array("name"      => _tr("Status"),
                                    "property1" => ""),
                                         )
                     );
-
-//palsosanto : para csv
-    // se pregunta si la acci� es crear un csv con los datos del reporte 
-    if($iscsv != 'yes'){
-        $oGrid->showFilter(trim($htmlFilter));
-        $content = "<form  method='POST' style='margin-bottom:0;' action=$url>".$oGrid->fetchGrid($arrGrid, $arrData,$arrLang)."</form>";
-    }
-    else{
-        $fechaActual = date("d M Y");
-        header("Cache-Control: private");
-        header("Pragma: cache");
-        header('Content-Type: application/octec-stream');
-        $title = "\"".$fechaActual.".csv\"";
-        header("Content-disposition: inline; filename={$title}");
-        header('Content-Type: application/force-download');
-	$content = $oGrid->fetchGridCSV($arrGrid, $arrData);
-    }
-    //end grid parameters
-
-    return $content;
+            if($bExportando){
+                    $fechaActual = date("d M Y");
+                    header("Cache-Control: private");
+                    header("Pragma: cache");
+                    header('Content-Type: application/octec-stream');
+                    $title = "\"".$fechaActual.".csv\"";
+                    header("Content-disposition: inline; filename={$title}");
+                    header('Content-Type: application/force-download');
+            }
+            return $bExportando 
+            ? $oGrid->fetchGridCSV($arrGrid, $arrData) 
+            : $oGrid->fetchGrid($arrGrid, $arrData, $arrLang);
+        }
 }
 
-
-function createFieldFilter($arrLang, $arrQueue){
+function createFieldFilter($arrQueue){
     $arrFilter = array(
-	    "general" => $arrLang["General"],
-	    "detallado" => $arrLang["Details"],
+	    "general" => _tr("General"),
+	    "detallado" => _tr("Details"),
                     );
 
     $arrFormElements = array(
-            "filter_field" => array("LABEL"                  => $arrLang["Queue"],
+            "filter_field" => array("LABEL"                  => _tr("Queue"),
                                     "REQUIRED"               => "no",
                                     "INPUT_TYPE"             => "text",
                                     "INPUT_EXTRA_PARAM"      => "no",
@@ -239,7 +280,7 @@ function createFieldFilter($arrLang, $arrQueue){
                                     "VALIDATION_EXTRA_PARAM" => ""),
 
 //palosanto para detallado y general
-            "filter_field_tipo" => array("LABEL"                  => $arrLang["Type"],
+            "filter_field_tipo" => array("LABEL"                  => _tr("Type"),
                                     "REQUIRED"               => "no",
                                     "INPUT_TYPE"             => "text",
                                     "INPUT_EXTRA_PARAM"      => "no",
@@ -255,7 +296,7 @@ function createFieldFilter($arrLang, $arrQueue){
 
 //palosanto fecha
 
-            "date_from"    => array("LABEL"                  => $arrLang["Start date"],
+            "date_from"    => array("LABEL"                  => _tr("Start date"),
                                     "REQUIRED"               => "yes",
                                     "INPUT_TYPE"             => "DATE",
                                     "INPUT_EXTRA_PARAM"      => "",
@@ -263,7 +304,7 @@ function createFieldFilter($arrLang, $arrQueue){
                                     "VALIDATION_EXTRA_PARAM" => "^[[:digit:]]{1,2}[[:space:]]+[[:alnum:]]{3}[[:space:]]+[[:digit:]]{4}$"),
 
 
-            "date_to"      => array("LABEL"                  => $arrLang["End date"],
+            "date_to"      => array("LABEL"                  => _tr("End date"),
                                     "REQUIRED"               => "yes",
                                     "INPUT_TYPE"             => "DATE",
                                     "INPUT_EXTRA_PARAM"      => "",
