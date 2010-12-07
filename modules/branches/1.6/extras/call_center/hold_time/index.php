@@ -1,5 +1,4 @@
 <?php
-//bin/bash: indent: command not found
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
@@ -35,34 +34,37 @@ include_once "libs/paloSantoGrid.class.php";
 include_once "modules/form_designer/libs/paloSantoDataForm.class.php";
 require_once "libs/xajax/xajax.inc.php";
 
+if (!function_exists('_tr')) {
+    function _tr($s)
+    {
+        global $arrLang;
+        return isset($arrLang[$s]) ? $arrLang[$s] : $s;
+    }
+}
+if (!function_exists('load_language_module')) {
+    function load_language_module($module_id, $ruta_base='')
+    {
+        $lang = get_language($ruta_base);
+        include_once $ruta_base."modules/$module_id/lang/en.lang";
+        $lang_file_module = $ruta_base."modules/$module_id/lang/$lang.lang";
+        if ($lang != 'en' && file_exists("$lang_file_module")) {
+            $arrLangEN = $arrLangModule;
+            include_once "$lang_file_module";
+            $arrLangModule = array_merge($arrLangEN, $arrLangModule);
+        }
 
-
+        global $arrLang;
+        global $arrLangModule;
+        $arrLang = array_merge($arrLang,$arrLangModule);
+    }
+}
 function _moduleContent(&$smarty, $module_name)
 {
-    #incluir el archivo de idioma de acuerdo al que este seleccionado
-    #si el archivo de idioma no existe incluir el idioma por defecto
-    $lang=get_language();
-    $script_dir=dirname($_SERVER['SCRIPT_FILENAME']);
-
-/*
-    $lang_file="modules/$module_name/lang/$lang.lang";
-    if (file_exists("$script_dir/$lang_file"))
-        include_once($lang_file);
-    else
-        include_once("modules/$module_name/lang/en.lang");
-*/
-    include_once("modules/$module_name/lang/en.lang");
-    $lang_file="modules/$module_name/lang/$lang.lang";
-    if (file_exists("$script_dir/$lang_file")) {
-        $arrLangModuleEN = $arrLangModule;
-        include_once($lang_file);
-        $arrLangModule = array_merge($arrLangModuleEN, $arrLangModule);
-    }
+    load_language_module($module_name);
 
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
     global $arrConf;
-    global $arrLang;
 
     require_once "modules/$module_name/libs/paloSantoHoldTime.class.php";
     //folder path for custom templates
@@ -83,44 +85,23 @@ function _moduleContent(&$smarty, $module_name)
     $htmlFilter = "";
 
     if (!is_object($pDB->conn) || $pDB->errMsg!="") {
-        $smarty->assign("mb_message", $arrLang["Error when connecting to database"]." ".$pDB->errMsg);
-    }elseif(isset($_GET['exportcsv']) && $_GET['exportcsv']=='yes') {
-        $fechaActual = date("d M Y");
-        header("Cache-Control: private");
-        header("Pragma: cache");
-        header('Content-Type: application/octec-stream');
-        $title = "\"".$fechaActual.".csv\"";
-        header("Content-disposition: inline; filename={$title}");
-        header('Content-Type: application/force-download');
+        $smarty->assign("mb_message", _tr("Error when connecting to database")." ".$pDB->errMsg);
     }
-    
-    if(isset($arrFilterExtraVars) && is_array($arrFilterExtraVars) and count($arrFilterExtraVars)>0) {
-	$url = construirURL($arrFilterExtraVars); 
-    } else {
-	$url = construirURL(); 
-    }
-
-    $smarty->assign("url", $url);
+ 
     $oGrid = new paloSantoGrid($smarty);
     $arrGrid = array();
     $arrData = array();
 
     //llamamos a funcion que construye la vista
     $contenidoModulo = listadoHoldTime($pDB, $smarty, $module_name, $local_templates_dir,$oGrid,$arrGrid,$arrData);
-
-    if(  isset( $_GET['exportcsv'] ) && $_GET['exportcsv']=='yes' ) {
-	return $oGrid->fetchGridCSV($arrGrid, $arrData);
-    }else {
-	$oGrid->showFilter($htmlFilter);
-	return $contenidoModulo;
-    }
+    $oGrid->showFilter($htmlFilter); 
+    return $contenidoModulo;            
+    
 }
 
 
 //funcion que construye la vista del reporte
 function listadoHoldTime($pDB, $smarty, $module_name, $local_templates_dir,&$oGrid,&$arrGrid,&$arrData) {
-    global $arrLang;
-    global $arrLangModule;
     $arrData = array();
     $oCalls = new paloSantoHoldTime($pDB);
     $fecha_init = date("d M Y");
@@ -165,8 +146,8 @@ function listadoHoldTime($pDB, $smarty, $module_name, $local_templates_dir,&$oGr
                 $arrFecha_init = explode('-',translateDate($fecha_init));
             }else {
                 // si la fecha esta en un formato no valido se envia un mensaje de error
-                $smarty->assign("mb_title", $arrLangModule["Error"]);
-                $smarty->assign("mb_message", $arrLangModule["Debe ingresar una fecha valida"]);
+                $smarty->assign("mb_title", _tr("Error"));
+                $smarty->assign("mb_message", _tr("Debe ingresar una fecha valida"));
             }
             // pregunto si es valido el formato de la fecha final
                 if ( ereg( $sValidacion , $_POST['txt_fecha_end'] ) ) {
@@ -176,8 +157,8 @@ function listadoHoldTime($pDB, $smarty, $module_name, $local_templates_dir,&$oGr
                     $arrFecha_end = explode('-',translateDate($fecha_end));
                 }else {
                     // si la fecha esta en un formato no valido se envia un mensaje de error
-                    $smarty->assign("mb_title", $arrLangModule["Error"]);
-                    $smarty->assign("mb_message", $arrLangModule["Debe ingresar una fecha valida"]);
+                    $smarty->assign("mb_title", _tr("Error"));
+                    $smarty->assign("mb_message", _tr("Debe ingresar una fecha valida"));
                 }
 
         //PRUEBA
@@ -197,8 +178,8 @@ function listadoHoldTime($pDB, $smarty, $module_name, $local_templates_dir,&$oGr
                 $arrFecha_init = explode('-',translateDate($fecha_init));
             }else {
                 // si la fecha esta en un formato no valido se envia un mensaje de error
-                $smarty->assign("mb_title", $arrLangModule["Error"]);
-                $smarty->assign("mb_message", $arrLangModule["Debe ingresar una fecha valida"]);
+                $smarty->assign("mb_title", _tr("Error"));
+                $smarty->assign("mb_message", _tr("Debe ingresar una fecha valida"));
             }
             // pregunto si es valido el formato de la fecha final
                 if ( ereg( $sValidacion , $_GET['txt_fecha_end'] ) ) {
@@ -208,8 +189,8 @@ function listadoHoldTime($pDB, $smarty, $module_name, $local_templates_dir,&$oGr
                     $arrFecha_end = explode('-',translateDate($fecha_end));
                 }else {
                     // si la fecha esta en un formato no valido se envia un mensaje de error
-                    $smarty->assign("mb_title", $arrLangModule["Error"]);
-                    $smarty->assign("mb_message", $arrLangModule["Debe ingresar una fecha valida"]);
+                    $smarty->assign("mb_title", _tr("Error"));
+                    $smarty->assign("mb_message", _tr("Debe ingresar una fecha valida"));
                 }
 
             $tipo =  $_GET['cbo_tipos'];
@@ -227,60 +208,64 @@ function listadoHoldTime($pDB, $smarty, $module_name, $local_templates_dir,&$oGr
         elseif(!isset($fecha_init) && !isset($fecha_end)) {
             // si se ha presionado el boton para listar por fechas, y no se ha ingresado una fecha
             // se le muestra al usuario un mensaje de error
-            $smarty->assign("mb_title", $arrLangModule["Error"]);
-            $smarty->assign("mb_message", $arrLangModule["Debe ingresar una fecha inicio/fin"]);
+            $smarty->assign("mb_title", _tr("Error"));
+            $smarty->assign("mb_message", _tr("Debe ingresar una fecha inicio/fin"));
         }
     }
 
-
+      $bElastixNuevo = method_exists('paloSantoGrid','isExportAction');
+      $bExportando = $bElastixNuevo
+        ? $oGrid->isExportAction()
+        : (isset( $_GET['exportcsv'] ) && $_GET['exportcsv'] == 'yes');
 
 //para el pagineo
        // LISTADO
         $limit =50;
         $offset = 0;
-
-        // Si se quiere avanzar a la sgte. pagina
-        if(isset($_GET['nav']) && $_GET['nav']=="end") {
-            $arrCallsTmp  = $oCalls->getHoldTime($tipo,$entrantes, $salientes,translateDate($fecha_init),translateDate($fecha_end), $limit, $offset);
-            $totalCalls  = $arrCallsTmp['NumRecords'];
-            // Mejorar el sgte. bloque.
-            if(($totalCalls%$limit)==0) {
-                $offset = $totalCalls - $limit;
-            } else {
-                $offset = $totalCalls - $totalCalls%$limit;
-            }
-        }
-
-        // Si se quiere avanzar a la sgte. pagina
-        if(isset($_GET['nav']) && $_GET['nav']=="next") {
-            $offset = $_GET['start'] + $limit - 1;
-        }
-
-        // Si se quiere retroceder
-        if(isset($_GET['nav']) && $_GET['nav']=="previous") {
-            $offset = $_GET['start'] - $limit - 1;
+        //numero de registros
+        $arrCallsTmp  = $oCalls->getHoldTime($tipo,$entrantes, $salientes,translateDate($fecha_init),translateDate($fecha_end), $limit, $offset);
+                    $totalCalls  = $arrCallsTmp['NumRecords'];;
+        if($bElastixNuevo){
+                $oGrid->setLimit($limit);
+                $oGrid->setTotal($totalCalls);
+                $offset = $oGrid->calculateOffset();
+        } else {
+                // Si se quiere avanzar a la sgte. pagina
+                if(isset($_GET['nav']) && $_GET['nav']=="end") {  
+                    // Mejorar el sgte. bloque.
+                    if(($totalCalls%$limit)==0) {
+                        $offset = $totalCalls - $limit;
+                    } else {
+                        $offset = $totalCalls - $totalCalls%$limit;
+                    }
+                }
+        
+                // Si se quiere avanzar a la sgte. pagina
+                if(isset($_GET['nav']) && $_GET['nav']=="next") {
+                    $offset = $_GET['start'] + $limit - 1;
+                }
+        
+                // Si se quiere retroceder
+                if(isset($_GET['nav']) && $_GET['nav']=="previous") {
+                    $offset = $_GET['start'] - $limit - 1;
+                }
         }
 
         // Construyo el URL base
-        if(isset($arrFilterExtraVars) && is_array($arrFilterExtraVars) && count($arrFilterExtraVars)>0) {
-            $url = construirURL($arrFilterExtraVars, array("nav", "start")); 
-        } else {
-            $url = construirURL(array(), array("nav", "start")); 
-        }
-        $smarty->assign("url", $url);
+    $url = array('menu' => $module_name);
+    if(isset($arrFilterExtraVars) && is_array($arrFilterExtraVars) && count($arrFilterExtraVars)>0) {
+        $url = array_merge($url, $arrFilterExtraVars);
+    }
 
 //fin de pagineo
 
     //llamamos  a la función que hace la consulta  a la base según los criterios de búsqueda
     $arrCalls = $oCalls->getHoldTime($tipo,$entrantes, $salientes,translateDate($fecha_init),translateDate($fecha_end), $limit, $offset);
-
-    //numero de registros
-    $arrCalls_1 = $oCalls->getHoldTime($tipo,$entrantes, $salientes,translateDate($fecha_init),translateDate($fecha_end), NULL, $offset);
-
-    $end = $arrCalls_1['NumRecords'];
+   
 //Llenamos el contenido de las columnas
     $arrTmp    = array();
-
+    $sTagInicio = (!$bExportando) ? '<b>' : '';
+    $sTagFinal = ($sTagInicio != '') ? '</b>' : '';
     if (is_array($arrCalls)) {
         foreach($arrCalls['Data'] as $calls) {
             $arrTmp[0] = $calls['cola'];
@@ -313,14 +298,14 @@ function listadoHoldTime($pDB, $smarty, $module_name, $local_templates_dir,&$oGr
            $arrData[] = $arrTmp;
         }
 
-        $arrTmp[0] = "<b>".$arrLangModule["Total"]."<b>";
+        $arrTmp[0] = $sTagInicio._tr("Total").$sTagFinal;
 
         for($j=1;$j<=8;$j++){
             $sum = 0;
             for($i=0;$i<count($arrData);$i++){
                 $sum = $sum + $arrData[$i][$j];
             }
-            $arrTmp[$j] = "<b>".$sum."</b>";
+            $arrTmp[$j] = $sTagInicio.$sum.$sTagFinal;
         }
 
         $sumTotalCalls = $maxTimeWait = 0;
@@ -329,81 +314,48 @@ function listadoHoldTime($pDB, $smarty, $module_name, $local_templates_dir,&$oGr
             $sumTotalCalls = $sumTotalCalls + $arrData[$i][10];
         }
 
-        $arrTmp[10] = "<b>".$sumTotalCalls."</b>";
-        $arrTmp[9] = "<b>".$maxTimeWait."</b>";
+        $arrTmp[10] = $sTagInicio.$sumTotalCalls.$sTagFinal;
+        $arrTmp[9] = $sTagInicio.$maxTimeWait.$sTagFinal;
 
         $arrData[] = $arrTmp;
 
     }
 
-//Llenamos las cabeceras
-    $arrGrid = array("title"    => $arrLangModule["Hold Time"],
-        "icon"     => "images/list.png",
-        "width"    => "99%",
-        "start"    => ($end==0) ? 0 : $offset + 1,
-        "end"      => ($offset+$limit)<=$end ? $offset+$limit : $end,
-        "total"    => $end,
-        "columns"  => array(0 => array("name"      => $arrLangModule["Cola"],
-                                       "property1" => ""),
-                            1 => array("name"      => "0 - 10", 
-                                       "property1" => ""),
-                            2 => array("name"      => "11 - 20", 
-                                       "property1" => ""),
-                            3 => array("name"      => "21 - 30", 
-                                       "property1" => ""),
-                            4 => array("name"      => "31 - 40",
-                                       "property1" => ""),
-                            5 => array("name"      => "41 - 50", 
-                                       "property1" => ""),
-                            6 => array("name"      => "51 - 60", 
-                                       "property1" => ""),
-                            7 => array("name"      => "61 >", 
-                                       "property1" => ""),
-                            8 => array("name"      => $arrLangModule["Tiempo Promedio Espera(Seg)"], 
-                                       "property1" => ""),
-
-                            9 => array("name"      => $arrLangModule["Espera Mayor(seg)"], 
-                                       "property1" => ""),
-                            10 => array("name"      => $arrLangModule["Total Calls"], 
-                                       "property1" => ""),
-                        ));
-
     //Para el combo de tipos
-    $tipos = array("E"=>$arrLangModule["Ingoing"], "S"=>$arrLangModule["Outgoing"]);
+    $tipos = array("E"=>_tr("Ingoing"), "S"=>_tr("Outgoing"));
     $combo_tipos = "<select name='cbo_tipos' id='cbo_tipos' onChange='submit();'>".combo($tipos,$_POST['cbo_tipos'])."</select>";
 
     //para el combo de entrantes
     if(isset($_POST['cbo_estado_entrantes'])) $cbo_estado_entrates = $_POST['cbo_estado_entrantes'];
     elseif(isset($_GET['cbo_estado_entrantes'])) $cbo_estado_entrates = $_GET['cbo_estado_entrantes'];
     else $cbo_estado_entrates = 'T';
-    $estados_entrantes = array("T"=>$arrLangModule["Todas"], "E"=>$arrLangModule["Exitosas"],  "A"=>$arrLangModule["Abandonadas"]);
+    $estados_entrantes = array("T"=>_tr("Todas"), "E"=>_tr("Exitosas"),  "A"=>_tr("Abandonadas"));
     $combo_estados_entrantes = "<select name='cbo_estado_entrantes' id='cbo_estado_entrantes' >".combo($estados_entrantes,$cbo_estado_entrates)."</select>";
 
     //para el combo de salientes
     if(isset($_POST['cbo_estado_salientes'])) $cbo_estado_salientes = $_POST['cbo_estado_salientes'];
     elseif(isset($_GET['cbo_estado_salientes'])) $cbo_estado_salientes = $_GET['cbo_estado_salientes'];
     else $cbo_estado_salientes = 'T';
-    $estados_salientes = array("T"=>$arrLangModule["Todas"], "E"=>$arrLangModule["Exitosas"],  "N"=>$arrLangModule["No Realizadas"], "A" => $arrLangModule["Abandonadas"]);
+    $estados_salientes = array("T"=>_tr("Todas"), "E"=>_tr("Exitosas"),  "N"=>_tr("No Realizadas"), "A" => _tr("Abandonadas"));
     $combo_estados_salientes = "<select name='cbo_estado_salientes' id='cbo_estado_salientes' >".combo($estados_salientes,$cbo_estado_salientes)."</select>";
 
     //validamos que combo se cargará segun lo electo en combo TIPO, al principio le seteamos por defecto el de ENTRANTES
-    $td = "<td class='letra12' align='right'>{$arrLangModule["Estado"]}</td><td>$combo_estados_entrantes</td>";
+    $td = "<td class='letra12' align='right'>"._tr("Estado")."</td><td>$combo_estados_entrantes</td>";
     if (isset($_POST['cbo_tipos']) && $_POST['cbo_tipos']=="E")
-        $td = "<td class='letra12' align='left'>{$arrLangModule["Estado"]}</td><td>$combo_estados_entrantes</td>";
+        $td = "<td class='letra12' align='left'>"._tr("Estado")."</td><td>$combo_estados_entrantes</td>";
     elseif (isset($_POST['cbo_tipos']) && $_POST['cbo_tipos']=="S")
-        $td =  "<td class='letra12' align='left'>{$arrLangModule["Estado"]}</td><td>$combo_estados_salientes</td>";
+        $td =  "<td class='letra12' align='left'>"._tr("Estado")."</td><td>$combo_estados_salientes</td>";
 
  
     $oGrid->showFilter( insertarCabeceraCalendario()."
 
-        <form style='margin-bottom:0;' method='POST' action='?menu=$module_name'>
             <table width='100%' border='0'>
                 <tr>
                     <td align='left'>
                         <table>
                         <tr>
                             <td class='letra12'>
-                                {$arrLangModule["Date Init"]}
+                                "._tr("Date Init")."
                                 <span  class='required'>*</span>
                             </td>
                             <td>
@@ -413,7 +365,7 @@ function listadoHoldTime($pDB, $smarty, $module_name, $local_templates_dir,&$oGr
                                 &nbsp;
                             </td>
                             <td class='letra12'>
-                                {$arrLangModule["Date End"]}
+                                "._tr("Date End")."
                                 <span  class='required'>*</span>
                             </td>
                             <td>
@@ -423,28 +375,87 @@ function listadoHoldTime($pDB, $smarty, $module_name, $local_templates_dir,&$oGr
                         </tr>
 
                         <tr>
-                            <td class='letra12' align='left'>{$arrLangModule["Tipo"]}</td>
+                            <td class='letra12' align='left'>"._tr("Tipo")."</td>
                             <td>$combo_tipos</td>
                             <td class='letra12'>
                                 &nbsp;
                             </td>
                             ".$td."
                             <td>
-                                <input type='submit' name='submit_fecha' value={$arrLangModule["Find"]} class='button'>
+                                <input type='submit' name='submit_fecha' value="._tr("Find")." class='button'>
                             </td>
                         </tr>
                         </table>
                     </td>
                 </tr>
             </table>
-        </form>
 
         ");
+    
     $oGrid->enableExport();
-    $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
-    return $contenidoModulo;
-}
+    if($bElastixNuevo){
+        $oGrid->setURL($url);
+        $oGrid->setData($arrData);
+        $arrColumnas = array(_tr("Cola"),"0 - 10","11 - 20","21 - 30","31 - 40","41 - 50","51 - 60","61 >",_tr("Tiempo Promedio Espera(Seg)"),_tr("Espera Mayor(seg)"),_tr("Total Calls"));
+        $oGrid->setColumns($arrColumnas);
+        $oGrid->setTitle(_tr("Hold Time"));
+        $oGrid->pagingShow(true); 
+        $oGrid->setNameFile_Export(_tr("Hold Time"));
+     
+        $smarty->assign("SHOW", _tr("Show"));
+        return $oGrid->fetchGrid();
+     } else {
+           global $arrLang;
 
+           $offset = 0;
+           $limit = $totalCalls;
+            //Llenamos las cabeceras
+           $arrGrid = array("title"    => _tr("Hold Time"),
+                "url"      => construirURL($url, array("nav", "start")),
+                "icon"     => "images/list.png",
+                "width"    => "99%",
+                "start"    => ($end==0) ? 0 : $offset + 1,
+                "end"      => ($offset+$limit)<=$end ? $offset+$limit : $end,
+                "total"    => $end,
+                "columns"  => array(0 => array("name"      => _tr("Cola"),
+                                            "property1" => ""),
+                                    1 => array("name"      => "0 - 10", 
+                                            "property1" => ""),
+                                    2 => array("name"      => "11 - 20", 
+                                            "property1" => ""),
+                                    3 => array("name"      => "21 - 30", 
+                                            "property1" => ""),
+                                    4 => array("name"      => "31 - 40",
+                                            "property1" => ""),
+                                    5 => array("name"      => "41 - 50", 
+                                            "property1" => ""),
+                                    6 => array("name"      => "51 - 60", 
+                                            "property1" => ""),
+                                    7 => array("name"      => "61 >", 
+                                            "property1" => ""),
+                                    8 => array("name"      => _tr("Tiempo Promedio Espera(Seg)"), 
+                                            "property1" => ""),
+        
+                                    9 => array("name"      => _tr("Espera Mayor(seg)"), 
+                                            "property1" => ""),
+                                    10 => array("name"      => _tr("Total Calls"), 
+                                            "property1" => ""),
+                                ));
+
+            if($bExportando){
+                $fechaActual = date("d M Y");
+                header("Cache-Control: private");
+                header("Pragma: cache");
+                header('Content-Type: application/octec-stream');
+                $title = "\"".$fechaActual.".csv\"";
+                header("Content-disposition: inline; filename={$title}");
+                header('Content-Type: application/force-download');
+            }
+            return $bExportando 
+            ? $oGrid->fetchGridCSV($arrGrid, $arrData) 
+            : $oGrid->fetchGrid($arrGrid, $arrData, $arrLang);
+        }
+}
 /*    Esta funcion inserta el codigo necesario para visualizar el control fecha inicio
 */
 function insertarDateInit($fecha_init) {
