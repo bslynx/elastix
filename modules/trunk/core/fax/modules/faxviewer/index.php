@@ -45,12 +45,12 @@ function _moduleContent(&$smarty, $module_name)
     if (file_exists("$base_dir/$lang_file")) include_once "$lang_file";
     else include_once "modules/$module_name/lang/en.lang";
 
-
     //global variables
     global $arrConf;
     global $arrConfModule;
     global $arrLang;
     global $arrLangModule;
+	$_SESSION['module_name_tmp'] = $module_name;
     $arrConf = array_merge($arrConf,$arrConfModule);
     $arrLang = array_merge($arrLang,$arrLangModule);
 
@@ -79,6 +79,9 @@ function _moduleContent(&$smarty, $module_name)
         case "cancel":
             header("Location: ?menu=$module_name");
             break;
+		case "download_faxFile":
+			$contenidoModulo = download_faxFile($smarty, $module_name, $arrLang, $oForm, $local_templates_dir);
+			break;
         default:
             $contenidoModulo=$oForm->fetchForm("$local_templates_dir/visor.tpl", $arrLang["Fax Viewer"],$_POST);
             break;
@@ -169,21 +172,6 @@ function getFormElements( $arrLang )
         );
 }
 
-function getAction()
-{
-    if(getParameter("show")) //Get parameter by POST (submit)
-        return "show";
-    if(getParameter("save"))
-        return "save";
-    else if(getParameter("cancel"))
-        return "cancel";
-    else if(getParameter("action")=="view") //Get parameter by GET (command pattern, links)
-        return "view";
-    else
-        return "report";
-}
-
-
 //IMPLEMENTACION DE VISOR DE FAXES CON XAJAX EN EL MODULO EXTRAS
 function ajax_faxes($arrConf)
 {
@@ -251,7 +239,8 @@ function faxes($company_name,$company_fax,$fecha_fax,$inicio_paginacion,$accion,
 
 function html_faxes($arr_faxes)
 { 
-    global $arrLang;
+    global $arrLang; 
+	$module_name = $_SESSION['module_name_tmp'];
     $fax_folder="";
     $en_proceso="  file in process..";
 	$oFax = new paloFaxVisor();
@@ -284,8 +273,9 @@ function html_faxes($arr_faxes)
             $nodoContenido .= " <td class='table_data'>".$arrLang[$fax['type']]."</td>\n";
             if($fax['type'] == "in" || $fax['type'] == "IN"){
 	     		$fax_folder="/faxes/recvq/";
-                $nodoContenido .= " <td class='table_data'><a href='".$self."/faxes/".$fax['faxpath'].'/fax.pdf'."'".">".$fax['pdf_file']."</a></td>\n";
-            }else{
+                //$nodoContenido .= " <td class='table_data'><a href='".$self."/faxes/".$fax['faxpath'].'/fax.pdf'."'".">".$fax['pdf_file']."</a></td>\n";
+				$nodoContenido .= " <td class='table_data'><a href='?menu=$module_name&action=download&id=".$fax['id']."&rawmode=yes'>".$fax['pdf_file']."</a></td>\n";
+			}else{
                 /*Codigo de validacion de archivo doc13.ps to doc13.ps2 to doc13.pdf */
                 $newfile = $fax['pdf_file'];
 				$tmp_pd = "";
@@ -294,9 +284,10 @@ function html_faxes($arr_faxes)
                     if($newfileTmp != "") //ya existe el archivo y esta completo
                         $newfile = $newfileTmp;
                 }
-		$fax_folder="/faxes/sendq/";
+				$fax_folder="/faxes/sendq/";
                 if(ereg("(\.pdf)",$fax['pdf_file'])){
-$nodoContenido .= " <td class='table_data'><a href='".$self."/faxes/".$fax['faxpath'].'/fax.pdf'."'".">".$newfile."</a></td>\n";
+					//$nodoContenido .= " <td class='table_data'><a href='".$self."/faxes/".$fax['faxpath'].'/fax.pdf'."'".">".$newfile."</a></td>\n";
+					$nodoContenido .= " <td class='table_data'><a href='?menu=$module_name&action=download&id=".$fax['id']."&rawmode=yes'>".$newfile."</a></td>\n";
 				}else
                 	$nodoContenido .= " <td class='table_data'>$newfile</td>\n";
             }			
@@ -385,6 +376,38 @@ function deleteFaxes($csv_files,$company_name,$company_fax,$fecha_fax,$inicio_pa
     return $respuesta;
 }
 
+function download_faxFile($smarty, $module_name, $arrLang, $oForm, $local_templates_dir)
+{
+	$oFax       = new paloFaxVisor(); 
+	$idFax      = getParameter("id");
+	$arrFax     = $oFax->obtener_fax($idFax);
+	$dir_backup = "/var/www/faxes";
+	$file_path  = $arrFax['faxpath']."/fax.pdf";
+	$file_name  = $arrFax['pdf_file'];
+	
+    header("Cache-Control: private");
+    header("Pragma: cache");
+	header('Content-Type: application/octec-stream');
+	header("Content-Length: ".filesize("$dir_backup/$file_path"));  
+    header("Content-disposition: attachment; filename=$file_name");
+	exec("echo '$dir_backup/$file_path' > /tmp/tmp.log");
+	readfile("$dir_backup/$file_path");
+}
 
+function getAction()
+{
+    if(getParameter("show")) //Get parameter by POST (submit)
+        return "show";
+    if(getParameter("save"))
+        return "save";
+    else if(getParameter("cancel"))
+        return "cancel";
+    else if(getParameter("action")=="view") //Get parameter by GET (command pattern, links)
+        return "view";
+	else if(getParameter("action")=="download")
+		return "download_faxFile";
+    else
+        return "report";
+}
 
 ?>

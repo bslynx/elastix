@@ -194,7 +194,7 @@ class paloFaxVisor {
     function updateFileFaxSend($oldfile, $newfile)
     {
         $query  = "UPDATE info_fax_recvq set
-                   pdf_file='$newfile' WHERE pdf_file='$oldfile'";//exec("echo $query > /tmp/bruno.tmp");
+                   pdf_file='$newfile' WHERE pdf_file='$oldfile'";
         $bExito = $this->_db->genQuery($query);
         if (!$bExito) {
             $this->errMsg = $this->_db->errMsg;
