@@ -1,4 +1,5 @@
 * Dialer (phpagi-asmanager): fix broken database_get method
+* Hold Time, Login Logout: remove unused HTML templates 
 * Break Administrator, Hold Time: remove dead code.
 * CallCenter Config, Agent Console, Agents, Break Administrator, Calls Detail, Calls per Agent, Calls per Hour, Campaign Out, Ingoing Calls Success, Login Logout, Agent Information, Agents Connection Time, Trunks Used per Hour, Hold Time: Use methods load_language_module and _tr from Elastix framework. Define them if they do not exist.
 * Campaigns: improve speed and memory usage of CSV download of completed 
