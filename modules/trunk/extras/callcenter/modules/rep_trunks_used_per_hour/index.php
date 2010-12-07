@@ -38,7 +38,23 @@ if (!function_exists('_tr')) {
         return isset($arrLang[$s]) ? $arrLang[$s] : $s;
     }
 }
+if (!function_exists('load_language_module')) {
+    function load_language_module($module_id, $ruta_base='')
+    {
+        $lang = get_language($ruta_base);
+        include_once $ruta_base."modules/$module_id/lang/en.lang";
+        $lang_file_module = $ruta_base."modules/$module_id/lang/$lang.lang";
+        if ($lang != 'en' && file_exists("$lang_file_module")) {
+            $arrLangEN = $arrLangModule;
+            include_once "$lang_file_module";
+            $arrLangModule = array_merge($arrLangEN, $arrLangModule);
+        }
 
+        global $arrLang;
+        global $arrLangModule;
+        $arrLang = array_merge($arrLang,$arrLangModule);
+    }
+}
 function _moduleContent(&$smarty, $module_name)
 {
     //include module files
@@ -46,21 +62,14 @@ function _moduleContent(&$smarty, $module_name)
     include_once "modules/$module_name/libs/paloSantoReportedeTroncalesusadasporHoraeneldia.class.php";
     include_once "libs/paloSantoConfig.class.php";
 
-    //include file language agree to elastix configuration
-    //if file language not exists, then include language by default (en)
-    $lang=get_language();
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
-    $lang_file="modules/$module_name/lang/$lang.lang";
-    if (file_exists("$base_dir/$lang_file")) include_once "$lang_file";
-    else include_once "modules/$module_name/lang/en.lang";
+
+    load_language_module($module_name);
 
     //global variables
     global $arrConf;
     global $arrConfModule;
-    global $arrLang;
-    global $arrLangModule;
     $arrConf = array_merge($arrConf,$arrConfModule);
-    $arrLang = array_merge($arrLang,$arrLangModule);
 
     //folder path for custom templates
     $templates_dir=(isset($arrConf['templates_dir']))?$arrConf['templates_dir']:'themes';
@@ -83,13 +92,13 @@ function _moduleContent(&$smarty, $module_name)
 
     switch($accion){
         default:
-            $content = reportReportedeTroncalesusadasporHoraeneldia($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $pDB_asterisk);
+            $content = reportReportedeTroncalesusadasporHoraeneldia($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $pDB_asterisk);
             break;
     }
     return $content;
 }
 
-function reportReportedeTroncalesusadasporHoraeneldia($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang, &$pDB_asterisk)
+function reportReportedeTroncalesusadasporHoraeneldia($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, &$pDB_asterisk)
 {
     $pReportedeTroncalesusadasporHoraeneldia = new paloSantoReportedeTroncalesusadasporHoraeneldia($pDB);
 
@@ -105,7 +114,7 @@ function reportReportedeTroncalesusadasporHoraeneldia($smarty, $module_name, $lo
     $date_from = getParameter("date_from");
     $date_to = getParameter("date_to");
 
-    // si la fecha no est�seteada en el filtro
+    // si la fecha no está seteada en el filtro
     $_POST["date_from"] = isset($date_from)?$date_from:date("d M Y");
     $_POST["date_to"] = isset($date_to)?$date_to:date("d M Y");
     $date_from = isset($date_from)?date('Y-m-d',strtotime($date_from)):date("Y-m-d");
@@ -121,10 +130,6 @@ function reportReportedeTroncalesusadasporHoraeneldia($smarty, $module_name, $lo
     //validacion para que los filtros se queden seteados con el valor correcto, correccion de bug que se estaba dando en caso de pagineo
     $_POST["filter_value"] = $filter_value;
 
-/*
-    $action = getParameter("nav");
-    $start  = getParameter("start");
-    $iscsv  = getParameter("exportcsv");*/
     $bElastixNuevo = method_exists('paloSantoGrid','isExportAction');
     // begin grid parameters
     $oGrid  = new paloSantoGrid($smarty);
@@ -161,7 +166,7 @@ function reportReportedeTroncalesusadasporHoraeneldia($smarty, $module_name, $lo
             "date_to"       => $date_to);
     
 
-    // se guarda la data en un arreglo que luego es enviado como par�etro para crear el reporte
+    // se guarda la data en un arreglo que luego es enviado como parámetro para crear el reporte
     if(is_array($arrResult)){
         foreach($arrResult as $key => $value){ 
 	    $arrTmp[0] = $value['time_period'];
@@ -185,7 +190,7 @@ function reportReportedeTroncalesusadasporHoraeneldia($smarty, $module_name, $lo
     if($bElastixNuevo){
         $oGrid->setURL($url);
         $oGrid->setData($arrData);
-        $arrColumnas = array(_tr("Time Period"), _tr("Entered"), _tr("Answered"), _tr("Abandoned"),_tr("In queue"),_tr("Without monitoring"));
+        $arrColumnas = array(_tr("Time Period "), _tr("Entered"), _tr("Answered"), _tr("Abandoned"),_tr("In queue"),_tr("Without monitoring "));
         $oGrid->setColumns($arrColumnas);
         $oGrid->setTitle(_tr("Reporte de Troncales usadas por hora en el dia"));
         $oGrid->pagingShow(true); 
@@ -194,7 +199,8 @@ function reportReportedeTroncalesusadasporHoraeneldia($smarty, $module_name, $lo
 
         return $oGrid->fetchGrid();
      } else {
-            $smarty->assign('url',$url);
+            global $arrLang;
+
             $offset = 0;
             $limit = $total + 1;
             // se crea el grid
@@ -204,7 +210,7 @@ function reportReportedeTroncalesusadasporHoraeneldia($smarty, $module_name, $lo
                         "start"    => ($total==0) ? 0 : $offset + 1,
                         "end"      => $end,
                         "total"    => $total,
-                        "url"      => $url,
+                        "url"      => construirURL($url, array('nav', 'start')),
                         "columns"  => array(
 			0 => array("name"      => _tr("Time Period "),
                                    "property1" => ""),

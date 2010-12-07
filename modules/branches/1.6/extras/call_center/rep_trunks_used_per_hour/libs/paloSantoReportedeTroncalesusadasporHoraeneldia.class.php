@@ -50,7 +50,7 @@ class paloSantoReportedeTroncalesusadasporHoraeneldia {
     }
 
     /*HERE YOUR FUNCTIONS*/
-    function ObtainReportedeTroncalesusadasporHoraeneldia($limit, $offset, $filter_field, $filter_value, $date_from, $date_to)
+    function ObtainReportedeTroncalesusadasporHoraeneldia($limit, $offset, $filter_field, $filter_value, $date_from, $date_to, $bExportando)
    {
         //Here your implementation
         $where = "";
@@ -126,14 +126,15 @@ class paloSantoReportedeTroncalesusadasporHoraeneldia {
                     }
                 }
             } // fin del foreach
-
-            $data["total"]['time_period'] = "<b>TOTAL</b>";
+            $sTagInicio = (!$bExportando) ? '<b>' : '';
+            $sTagFinal = ($sTagInicio != '') ? '</b>' : '';
+            $data["total"]['time_period'] = $sTagInicio."TOTAL".$sTagFinal;
             $data["total"]['entered'] = $total["terminada"]+$total["abandonada"]+$total["en-cola"]+ $total["fin-monitoreo"];
-            $data["total"]['entered'] = "<b>".$data["total"]['entered']."</b>";
-            $data["total"]['terminada'] = "<b>".$total["terminada"]."</b>";
-            $data["total"]['abandonada'] = "<b>".$total["abandonada"]."</b>";
-            $data["total"]['en-cola'] = "<b>".$total["en-cola"]."</b>";
-            $data["total"]['fin-monitoreo'] = "<b>".$total["fin-monitoreo"]."</b>";
+            $data["total"]['entered'] = $sTagInicio.$data["total"]['entered'].$sTagFinal;
+            $data["total"]['terminada'] = $sTagInicio.$total["terminada"].$sTagFinal;
+            $data["total"]['abandonada'] = $sTagInicio.$total["abandonada"].$sTagFinal;
+            $data["total"]['en-cola'] = $sTagInicio.$total["en-cola"].$sTagFinal;
+            $data["total"]['fin-monitoreo'] = $sTagInicio.$total["fin-monitoreo"].$sTagFinal;
 
         } else {
             $this->errMsg = $this->_DB->errMsg;
