@@ -40,13 +40,27 @@ if (!function_exists('_tr')) {
         return isset($arrLang[$s]) ? $arrLang[$s] : $s;
     }
 }
+if (!function_exists('load_language_module')) {
+    function load_language_module($module_id, $ruta_base='')
+    {
+        $lang = get_language($ruta_base);
+        include_once $ruta_base."modules/$module_id/lang/en.lang";
+        $lang_file_module = $ruta_base."modules/$module_id/lang/$lang.lang";
+        if ($lang != 'en' && file_exists("$lang_file_module")) {
+            $arrLangEN = $arrLangModule;
+            include_once "$lang_file_module";
+            $arrLangModule = array_merge($arrLangEN, $arrLangModule);
+        }
 
+        global $arrLang;
+        global $arrLangModule;
+        $arrLang = array_merge($arrLang,$arrLangModule);
+    }
+}
 function _moduleContent(&$smarty, $module_name)
 {
     global $arrConf;
     global $arrConfModule;
-    global $arrLang;
-    global $arrLangModule;
 
      //include module files
     include_once "modules/$module_name/configs/default.conf.php";
@@ -59,20 +73,7 @@ function _moduleContent(&$smarty, $module_name)
     $templates_dir = (isset($arrConf['templates_dir']))?$arrConf['templates_dir']:'themes';
     $local_templates_dir = "$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
 
-    // Obtengo el idioma actual utilizado en la aplicacion.
-    $language = get_language();
-    $script_dir = dirname($_SERVER['SCRIPT_FILENAME']);
-
-    // Include language file for EN, then for local, and merge the two.
-    $lang = NULL;
-    include_once("modules/$module_name/lang/en.lang");
-    $lang_file="modules/$module_name/lang/$language.lang";
-    if (file_exists("$script_dir/$lang_file")) {
-        $arrLangModuleEN = $arrLangModule;
-        include_once($lang_file);
-        $arrLangModule = array_merge($arrLangModuleEN, $arrLangModule);
-    }
-    $arrLang = array_merge($arrLang, $arrLangModule);
+    load_language_module($module_name);
 
     //conexion resource
     $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
@@ -89,7 +90,6 @@ function _moduleContent(&$smarty, $module_name)
     // Variables estáticas asignadas vía Smarty
     $smarty->assign(array(
         "Filter"    =>  _tr('Show'),
-        'module_name'   =>  $module_name,
     ));
 
     $bElastixNuevo = method_exists('paloSantoGrid','isExportAction');
@@ -241,6 +241,7 @@ NO_QUEUE_END;
     $oGrid->showFilter($htmlFilter);
 
     // La definición del grid
+    $paramConsulta['menu'] = $module_name;
     if($bElastixNuevo){
         $oGrid->setURL(construirURL($paramConsulta));
         $oGrid->setData($arrData);
@@ -252,41 +253,43 @@ NO_QUEUE_END;
      
         $smarty->assign("SHOW", _tr("Show"));
         return $oGrid->fetchGrid();
-     } else {
-            $total = $end = count($arrData);
-            $offset = 0;
-            $url = construirUrl($paramConsulta);
-            $arrGrid = array(
-                "title"    => _tr("Time conecction of agents"),
-                "icon"     => "images/list.png",
-                "width"    => "99%",
-                "start"    => ($total==0) ? 0 : $offset + 1,
-                "end"      => $end,
-                "total"    => $total,
-                "url"      => $url,
-                "columns"  => array(
-                                0 => array("name"      => "",
-                                            "property" => ""),
-                                1 => array("name"      => "",
-                                            "property" => ""),
-                                2 => array("name"      => "",
-                                            "property" => ""),
-                                3 => array("name"      => "",
-                                            "property" => ""),
-                                )
-            );
-            if($bExportando){
-                $fechaActual = date("d M Y");
-                header("Cache-Control: private");
-                header("Pragma: cache");
-                $title = $fechaActual;
-                header('Content-Type: text/csv; charset=utf-8; header=present');
-                header("Content-disposition: attachment; filename=\"".$title.".csv\"");
-            }
-           return $bExportando 
-            ? $oGrid->fetchGridCSV($arrGrid, $arrData) 
-            : $oGrid->fetchGrid($arrGrid, $arrData, $arrLang);
-        }        
+    } else {
+        global $arrLang;
+
+        $total = $end = count($arrData);
+        $offset = 0;
+        $url = construirUrl($paramConsulta);
+        $arrGrid = array(
+            "title"    => _tr("Time conecction of agents"),
+            "icon"     => "images/list.png",
+            "width"    => "99%",
+            "start"    => ($total==0) ? 0 : $offset + 1,
+            "end"      => $end,
+            "total"    => $total,
+            "url"      => $url,
+            "columns"  => array(
+                            0 => array("name"      => "",
+                                        "property" => ""),
+                            1 => array("name"      => "",
+                                        "property" => ""),
+                            2 => array("name"      => "",
+                                        "property" => ""),
+                            3 => array("name"      => "",
+                                        "property" => ""),
+                            )
+        );
+        if($bExportando){
+            $fechaActual = date("d M Y");
+            header("Cache-Control: private");
+            header("Pragma: cache");
+            $title = $fechaActual;
+            header('Content-Type: text/csv; charset=utf-8; header=present');
+            header("Content-disposition: attachment; filename=\"".$title.".csv\"");
+        }
+       return $bExportando 
+        ? $oGrid->fetchGridCSV($arrGrid, $arrData) 
+        : $oGrid->fetchGrid($arrGrid, $arrData, $arrLang);
+    }        
 }
 
 function leerColasEntrantes($pDB, $pDB_asterisk)
