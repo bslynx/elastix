@@ -3,7 +3,7 @@
 Summary: Elastix Call Center 
 Name:    elastix-callcenter
 Version: 2.0.0
-Release: 10
+Release: 11
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
@@ -88,6 +88,45 @@ fi
 /etc/logrotate.d/elastixdialer
 
 %changelog
+* Tue Dec  7 2010 Alex Villacis Lasso <a_villacis@palosanto.com> 2.0.0-11
+- Updated version, synchronized with CallCenter 1.5-3.8 (SVN revision 2084)
+- From CHANGELOG:
+1.5-3.8 (SVN Revision 2084)
+	- Dialer (phpagi-asmanager): fix broken database_get method
+	- Hold Time, Login Logout: remove unused HTML templates 
+	- Break Administrator, Hold Time: remove dead code.
+	- CallCenter Config, Agent Console, Agents, Break Administrator, Calls Detail,
+	  Calls per Agent, Calls per Hour, Campaign Out, Ingoing Calls Success,
+	  Login Logout, Agent Information, Agents Connection Time, Trunks Used per Hour,
+	  Hold Time: Use methods load_language_module and _tr from Elastix framework.
+	  Define them if they do not exist.
+	- Campaigns: improve speed and memory usage of CSV download of completed 
+	  campaign data by replacing single big SQL query by multiple smaller ones.
+	  Fixes Elastix bug #600. 
+	- Agents, Break Administrator, Calls Detail, Calls per Agent, Calls per Hour,
+	  Campaign Out, Ingoing Calls Success, Login Logout, Agents Connection Time,
+	  Trunks Used per Hour: make module aware of url parameter in
+	  paloSantoGrid::fetchGrid().
+	- Agents, Break Administrator, Calls Detail, Calls per Agent, Calls per Hour,
+	  Campaign Out, Ingoing Calls Success, Login Logout, Agent Information, 
+	  Hold Time: remove <form> tags from the filter HTML template. They are not
+	  required, since the template already includes a proper <form> tag enclosing 
+	  the grid.
+	- Agent Console (programar_llamadas): restrict call reprogramming interface to
+	  requests with a valid Elastix session and authorization to the Agent Console.
+	  Also, clean up form code to use the default Elastix support for date controls.  
+	- Form List: fix breakage from i18n unification and remove useless code
+	- Agent Console: move around conditional declaration of getParameter so that
+	  it is available at the moment it is required.
+	- Dialer: Found probable cause of unexpected delays in outgoing calls. Asterisk
+	  AMI may emit events at any arbitrary frequency. If AMI manages to continuosly 
+	  emit events with less than 1 second delay, the event loop in the dialer will
+	  get stuck processing events (even if not interesting) and never dispatch any
+	  new calls. Fixed by forcing end of event receipt inside wait_response() method 
+	  in phpagi-asmanager-elastix.php. Might fix Elastix bugs #543, #577.
+	- Web interface: cleanup of i18n files to bring them in line with the rest of 
+	  the Elastix code.
+
 * Fri Dec  3 2010 Alex Villacis Lasso <a_villacis@palosanto.com>
 - FIXED: Add Requires for asterisk and freePBX for more modular installation
 

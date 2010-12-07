@@ -1,12 +1,24 @@
+1.5-3.8 (SVN revision 2084)
 * Dialer (phpagi-asmanager): fix broken database_get method
 * Hold Time, Login Logout: remove unused HTML templates 
 * Break Administrator: remove dead code.
-* CallCenter Config, Agent Console, Agents, Break Administrator, Calls Detail, Calls per Agent, Calls per Hour, Campaign Out, Ingoing Calls Success, Login Logout, Agent Information, Agents Connection Time, Trunks Used per Hour, Hold Time: Use methods load_language_module and _tr from Elastix framework. Define them if they do not exist.
+* CallCenter Config, Agent Console, Agents, Break Administrator, Calls Detail, 
+  Calls per Agent, Calls per Hour, Campaign Out, Ingoing Calls Success, 
+  Login Logout, Agent Information, Agents Connection Time, Trunks Used per Hour,
+  Hold Time: Use methods load_language_module and _tr from Elastix framework. 
+  Define them if they do not exist.
 * Campaigns: improve speed and memory usage of CSV download of completed 
   campaign data by replacing single big SQL query by multiple smaller ones.
   Fixes Elastix bug #600. 
-* Agents, Break Administrator, Calls Detail, Calls per Agent, Calls per Hour, Campaign Out, Ingoing Calls Success, Login Logout, Agents Connection Time, Trunks Used per Hour: make module aware of url parameter in paloSantoGrid::fetchGrid().
-* Agents, Break Administrator, Calls Detail, Calls per Agent, Calls per Hour, Campaign Out, Ingoing Calls Success, Login Logout, Agent Information, Hold Time: remove <form> tags from the filter HTML template. They are not required, since the template already includes a proper <form> tag enclosing the grid.
+* Agents, Break Administrator, Calls Detail, Calls per Agent, Calls per Hour,
+  Campaign Out, Ingoing Calls Success, Login Logout, Agents Connection Time,
+  Trunks Used per Hour: make module aware of url parameter in 
+  paloSantoGrid::fetchGrid().
+* Agents, Break Administrator, Calls Detail, Calls per Agent, Calls per Hour,
+  Campaign Out, Ingoing Calls Success, Login Logout, Agent Information, 
+  Hold Time: remove <form> tags from the filter HTML template. They are not 
+  required, since the template already includes a proper <form> tag enclosing 
+  the grid.
 * Agent Console (programar_llamadas): restrict call reprogramming interface to
   requests with a valid Elastix session and authorization to the Agent Console.  
   Also, clean up form code to use the default Elastix support for date controls.  
