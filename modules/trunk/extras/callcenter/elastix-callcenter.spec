@@ -3,7 +3,7 @@
 Summary: Elastix Call Center 
 Name:    elastix-callcenter
 Version: 2.0.0
-Release: 11
+Release: 12
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
@@ -88,6 +88,13 @@ fi
 /etc/logrotate.d/elastixdialer
 
 %changelog
+* Wed Dec  8 2010  Alex Villacis Lasso <a_villacis@palosanto.com> 2.0.0-12
+- Updated version, synchronized with CallCenter 1.5-3.9 (SVN revision 2086)
+- From CHANGELOG:
+1.5-3.9 (SVN revision 2086)
+	- Reports: fix regression introduced by testing existence of incorrect method in
+	  Elastix 2.
+
 * Tue Dec  7 2010 Alex Villacis Lasso <a_villacis@palosanto.com> 2.0.0-11
 - Updated version, synchronized with CallCenter 1.5-3.8 (SVN revision 2084)
 - From CHANGELOG:
