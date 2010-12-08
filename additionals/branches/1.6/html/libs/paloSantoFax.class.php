@@ -121,11 +121,6 @@ class paloFax {
 
         // 4) Escribo el inittab
         $this->_writeInittab($devId);
-
-        // 5) Acciones finales
-        exec("sudo -u root init q");
-        exec("sudo -u root service generic-cloexec iaxmodem restart");
-        exec("sudo -u root service generic-cloexec hylafax restart");
     }
 
     function getFaxList()
@@ -202,19 +197,13 @@ class paloFax {
             exec("sudo -u root chmod 755 $this->dirHylafaxConf");
  
             // Elimino las lineas respectivas en el archivo inittab
-            $this->_deleteLinesFromInittab($idFax); 
+            $this->_deleteLinesFromInittab($devId);
 
             // actualizo DB
             $this->_deleteFaxFromDB($idFax);
 
             // regenero el archivo FaxDispatch
             $this->_writeFaxDispatch();
-
-            // Reinicio los servicios
-            
-            exec("sudo -u root service generic-cloexec  iaxmodem restart");
-            exec("sudo -u root service generic-cloexec hylafax restart");
-            exec("sudo -u root init q");
 
         } else {
             // Error
@@ -279,7 +268,6 @@ class paloFax {
 
 
     }
-
 
     function _getConfigFiles($folder, $filePrefix)
     {
@@ -616,7 +604,6 @@ class paloFax {
         return $arrStatus;
     }
 
-
     function editFaxExtension($idFax,$virtualFaxName, $extNumber, $extSecret, $destinationEmail, $CIDName, $CIDNumber, $devId, $port,$countryCode, $areaCode)
     {
         $errMsg = "";
@@ -635,15 +622,8 @@ class paloFax {
         
         // 4) Modificar el archivo de configuracion de hylafax
         $this->_configureHylafax($devId, $destinationEmail, $CIDNumber, $CIDName, $countryCode, $areaCode);
-        
-        
-        // 5) Acciones finales
-        exec("sudo -u root init q");
-        exec("sudo -u root service generic-cloexec iaxmodem restart");
-        exec("sudo -u root service generic-cloexec hylafax restart");
     }
 
- 
     function _editFaxInDB($idFax, $name, $extension, $secret, $email, $devId, $clidname, $clidnumber, $port,$countryCode, $areaCode) {
         $errMsg="";
         //if ($db = sqlite3_open($this->rutaDB)) {
@@ -668,7 +648,6 @@ class paloFax {
             $errMsg = $sqliteError;
         }*/
     }
-
 
     function getConfigurationSendingFaxMail()
     {
@@ -729,6 +708,12 @@ class paloFax {
             $this->errMsg = $this->_db->errMsg;
         }*/
         return $bExito;
+    }
+
+    function restartFax() {
+        exec("sudo -u root init q");
+        exec("sudo -u root service iaxmodem restart");
+        exec("sudo -u root service hylafax restart");
     }
 }
 ?>
