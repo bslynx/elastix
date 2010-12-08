@@ -90,7 +90,7 @@ function _moduleContent(&$smarty, $module_name)
     
     $htmlFilter = "";
 
-    $bElastixNuevo = method_exists('paloSantoGrid','isExportActionn');
+    $bElastixNuevo = method_exists('paloSantoGrid','setURL');
 
     $oGrid = new paloSantoGrid($smarty);
 

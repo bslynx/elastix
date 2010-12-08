@@ -72,7 +72,7 @@ function _moduleContent(&$smarty,$module_name) {
     $pDB = new paloDB($cadena_dsn);
     // valido lacreacion del objeto conexion, presentando un mensaje deerror si es invalido.
 
-    $bElastixNuevo = method_exists('paloSantoGrid','isExportAction');
+    $bElastixNuevo = method_exists('paloSantoGrid','setURL');
     $url = array('menu' => $module_name);
     $htmlFilter="";
     $oGrid = new paloSantoGrid($smarty);

@@ -213,7 +213,7 @@ function listadoHoldTime($pDB, $smarty, $module_name, $local_templates_dir,&$oGr
         }
     }
 
-      $bElastixNuevo = method_exists('paloSantoGrid','isExportAction');
+      $bElastixNuevo = method_exists('paloSantoGrid','setURL');
       $bExportando = $bElastixNuevo
         ? $oGrid->isExportAction()
         : (isset( $_GET['exportcsv'] ) && $_GET['exportcsv'] == 'yes');

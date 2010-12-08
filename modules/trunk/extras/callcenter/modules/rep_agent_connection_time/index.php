@@ -140,7 +140,7 @@ function reportReporteGeneraldeTiempoConexionAgentesPorDia($smarty, $module_name
     
  
     //begin grid parameters
-    $bElastixNuevo = method_exists('paloSantoGrid','isExportAction');
+    $bElastixNuevo = method_exists('paloSantoGrid','setURL');
     $oGrid  = new paloSantoGrid($smarty);
     
     $oGrid->enableExport();

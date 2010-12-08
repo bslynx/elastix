@@ -1,3 +1,6 @@
+* Reports: fix regression introduced by testing existence of incorrect method in
+  Elastix 2.
+
 1.5-3.8 (SVN revision 2084)
 * Dialer (phpagi-asmanager): fix broken database_get method
 * Hold Time, Login Logout: remove unused HTML templates 

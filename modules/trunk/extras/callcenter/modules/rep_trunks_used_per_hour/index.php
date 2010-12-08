@@ -130,7 +130,7 @@ function reportReportedeTroncalesusadasporHoraeneldia($smarty, $module_name, $lo
     //validacion para que los filtros se queden seteados con el valor correcto, correccion de bug que se estaba dando en caso de pagineo
     $_POST["filter_value"] = $filter_value;
 
-    $bElastixNuevo = method_exists('paloSantoGrid','isExportAction');
+    $bElastixNuevo = method_exists('paloSantoGrid','setURL');
     // begin grid parameters
     $oGrid  = new paloSantoGrid($smarty);
     $oGrid->enableExport();

@@ -146,7 +146,7 @@ function _moduleContent(&$smarty, $module_name)
                           array('date_start' => date("d M Y"), 'date_end' => date("d M Y"),'field_name' => 'agent','field_pattern' => '','field_name_1' => 'agent','field_pattern_1' => ''/*,'status' => 'ALL' */));
         }
         
-        $bElastixNuevo = method_exists('paloSantoGrid','isExportAction');
+        $bElastixNuevo = method_exists('paloSantoGrid','setURL');
 
         $oGrid = new paloSantoGrid($smarty);
         $oGrid->enableExport();   // enable export.
