@@ -78,6 +78,12 @@ if($reminderTimer==1){
 	exec("sqlite3 $DataBaseRoot/calendar.db '$sql'",$arrConsole,$flagStatus);
 }
 
+$color = existDBField("events", "color", "calendar.db", $DataBaseRoot);
+if($color==1){
+	$sql = "ALTER TABLE events ADD COLUMN color VARCHAR(10) DEFAULT '#3366CC'";
+	exec("sqlite3 $DataBaseRoot/calendar.db '$sql'",$arrConsole,$flagStatus);
+}
+
 
 function existDBField($table, $field, $db_name, $DataBaseRoot)
 {
