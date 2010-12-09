@@ -115,7 +115,7 @@ SIP1 User Agent    :Voip Phone 1.0
 SIP1 PRACK         :0
 SIP1 KEEP AUTH     :0
 SIP1 Session Timer :0
-SIP1 DTMF Mode     :0
+SIP1 DTMF Mode     :1
 SIP1 Use Stun      :0
 SIP1 Via Port      :1
 SIP1 Subscribe     :0
@@ -151,7 +151,7 @@ SIP2 User Agent    :Voip Phone 1.0
 SIP2 PRACK         :0
 SIP2 KEEP AUTH     :0
 SIP2 Session Timer :0
-SIP2 DTMF Mode     :0
+SIP2 DTMF Mode     :1
 SIP2 Use Stun      :0
 SIP2 Via Port      :1
 SIP2 Subscribe     :0
@@ -429,7 +429,7 @@ SIP1 User Agent    :Voip Phone 1.0
 SIP1 PRACK         :0
 SIP1 KEEP AUTH     :0
 SIP1 Session Timer :0
-SIP1 DTMF Mode     :0
+SIP1 DTMF Mode     :1
 SIP1 Use Stun      :0
 SIP1 Via Port      :1
 SIP1 Subscribe     :0
