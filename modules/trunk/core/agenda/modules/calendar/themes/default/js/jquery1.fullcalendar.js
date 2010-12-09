@@ -568,6 +568,7 @@ $.fn.fullCalendar = function(options) {
 						}
 						e.title = event.title;
 						e.url = event.url;
+                        e.color = event.color;
 						e.allDay = event.allDay;
 						e.className = event.className;
 						e.editable = event.editable;
@@ -1447,7 +1448,7 @@ function _renderDaySegs(segs, rowCnt, view, minLeft, maxLeft, getRow, dayContent
 			right = seg.isEnd ? dayContentRight(seg.end.getDay()-1) : maxLeft;
 		}
 		html +=
-			"<div class='" + className + event.className.join(' ') + "' style='position:absolute;z-index:8;left:"+left+"px'>" +
+			"<div class='" + className + event.className.join(' ') + "' style='position:absolute;z-index:8;left:"+left+"px;background-color:"+event.color+"'>" +
 				"<a" + (event.url ? " onclick='" + htmlEscape(event.url) + "'" : '') + " >" +
 					(!event.allDay && seg.isStart ?
 						"<span class='fc-event-time'>" +
@@ -2089,7 +2090,7 @@ function Agenda(element, options, methods) {
 				"</div>";*/
 /*****************************modificado para el uso de elastix*****************************/
             html +=
-                "<div class='" + className + event.className.join(' ') + "' style='position:absolute;z-index:8;top:" + top + "px;left:" + left + "px'>" +
+                "<div class='" + className + event.className.join(' ') + "' style='position:absolute;z-index:8;top:" + top + "px;left:" + left + "px;background-color:"+event.color+"'>" +
                     "<a" + (event.url ? " onclick='"+htmlEscape(event.url)+"' href='#'" : '') + ">" +
                         "<span class='fc-event-bg'></span>" +
                         "<span class='fc-event-time'>" + htmlEscape(formatDates(event.start, event.end, view.option('timeFormat'))) + "</span>" +

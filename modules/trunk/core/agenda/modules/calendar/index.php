@@ -241,6 +241,7 @@ function viewCalendar($smarty, $module_name, $local_templates_dir, &$pDB, $arrCo
     $smarty->assign("START_TYPE", $arrLang["START_TYPE"]);
     $smarty->assign("DATE_SERVER", $dateServer);
     $smarty->assign("Here", $arrLang["Here"]);
+    $smarty->assign("Color", $arrLang["Color"]);
 
     $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",$arrLang["Calendar"], $_DATA);
     $content = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name' name='formNewEvent' id='formNewEvent'>".$htmlForm."</form>";
@@ -281,11 +282,14 @@ function saveEvent($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf,
     $remainerTime       = getParameter("ReminderTime");
     $list               = getParameter("emails");
     $recording          = getParameter("recording");
+    $color              = getParameter("colorHex");
     $pCalendar = new paloSantoCalendar($pDB);
     $user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
     $uid = Obtain_UID_From_User($user,$arrConf);
     $pDB3 = new paloDB($arrConf['dsn_conn_database1']);
     $ext = $pCalendar->obtainExtension($pDB3,$uid);
+    if(!preg_match("/^#\w{3,6}$/",$color))
+        $color = "#3366CC";
     if(!isset($repeat) || $repeat == "")
         $repeat = "none";
     if(!isset($each_repeat) || $each_repeat == "")
@@ -365,7 +369,7 @@ function saveEvent($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf,
             if(getParameter("save_edit")){ // si se va modificar un evento existente
                 $dataUp = $pCalendar->getEventById($id, $uid);
                 if($dataUp!="" && isset($dataUp))
-                    $val = $pCalendar->updateEvent($id,$start,$end,$starttime,$event_type,$event,$description,$asterisk_calls,$recording,$call_to,$notification,$notification_email,$endtime,$each_repeat,$checkbox_days, $remainerTime);
+                    $val = $pCalendar->updateEvent($id,$start,$end,$starttime,$event_type,$event,$description,$asterisk_calls,$recording,$call_to,$notification,$notification_email,$endtime,$each_repeat,$checkbox_days, $remainerTime, $color);
                 else    $val = false;
                 if($val == true){
                     if($notification_email != "")
@@ -388,7 +392,7 @@ function saveEvent($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf,
             }
             else{
                 if(getParameter("save_new")){ // si se va a ingresar un nuevo evento
-                    $val = $pCalendar->insertEvent($uid,$start,$end,$starttime,$event_type,$event,$description,$asterisk_calls,$recording,$call_to,$notification,$notification_email,$endtime,$each_repeat,$checkbox_days, $remainerTime);
+                    $val = $pCalendar->insertEvent($uid,$start,$end,$starttime,$event_type,$event,$description,$asterisk_calls,$recording,$call_to,$notification,$notification_email,$endtime,$each_repeat,$checkbox_days, $remainerTime, $color);
                     $id = $pDB->getLastInsertId();
                     if($val == true){
                         if($notification_email != "")
@@ -990,6 +994,7 @@ function getAllDataCalendar($arrLang,&$pDB,$module_name, $arrConf){
                         'start' => $arrDates[$j]['starttime'],
                         'end'   => $arrDates[$j]['endtime'],
                         'allDay'=> false,
+                        'color' => $arrDates[$j]['color'],
                         'url'   => "getDataAjaxForm('menu=".$module_name."&action=view_box&rawmode=yes&id_event=".$arrDates[$j]['id']."');"
                         );
             $arr[$k] = $arr1;
@@ -1037,6 +1042,7 @@ function getDataCalendarByEventId($arrLang,&$pDB,$module_name, $arrConf, $idEven
                         'start' => $arrDates[$j]['starttime'],
                         'end'   => $arrDates[$j]['endtime'],
                         'allDay'=> false,
+                        'color' => $arrDates[$j]['color'],
                         'url'   => "getDataAjaxForm('menu=".$module_name."&action=view_box&rawmode=yes&id_event=".$arrDates[$j]['id']."');"
                         );
             $arr[$k] = $arr1;
@@ -1247,6 +1253,7 @@ function getDataCalendar($arrLang,&$pDB,$module_name,$arrConf){
                         'start' => $arrDates[$j]['starttime'],
                         'end'   => $arrDates[$j]['endtime'],
                         'allDay'=> false,
+                        'color' => $arrDates[$j]['color'],
                         'url'   => "getDataAjaxForm('menu=".$module_name."&action=view_box&rawmode=yes&id_event=".$arrDates[$j]['id']."');"
                         );
             $arr[$k] = $arr1;
@@ -1398,6 +1405,7 @@ function getRepeatDate($each_repeat,$day_repeat,$starttime,$endtime,$j,&$k,&$arr
                         'start' => $start,
                         'end'   => $end,
                         'allDay'=> false,
+                        'color' => $arrDates[$j]['color'],
                         'url'   => "getDataAjaxForm('menu=".$module_name."&action=view_box&rawmode=yes&id_event=".$arrDates[$j]['id']."');"
                         );
                     $last_day_tmp = $start;
@@ -1447,6 +1455,7 @@ function getRepeatDate($each_repeat,$day_repeat,$starttime,$endtime,$j,&$k,&$arr
                         'start' => $start,
                         'end'   => $end,
                         'allDay'=> false,
+                        'color' => $arrDates[$j]['color'],
                         'url'   => "getDataAjaxForm('menu=".$module_name."&action=view_box&rawmode=yes&id_event=".$arrDates[$j]['id']."');"
                         );
                     $arr[$k] = $arr1;

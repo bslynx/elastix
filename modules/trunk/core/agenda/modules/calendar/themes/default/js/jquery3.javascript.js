@@ -4,6 +4,28 @@ $(document).ready(function(){
     $('#divReminder').corner();
     $('#divNotification').corner();
 
+    $('.colorpicker_color div div').click(function(){alert("fff");});
+    $('#colorSelector').ColorPicker({
+        color: '#3366CC',
+        onShow: function (colpkr) {
+            $(colpkr).fadeIn(500);
+            return false;
+        },
+        onHide: function (colpkr) {
+            $(colpkr).fadeOut(500);
+            return false;
+        },
+        //onSubmit: function(hsb, hex, rgb, el) {
+        onSubmit: function(hsb, hex, rgb, el) {
+            $(el).ColorPickerHide();
+        },
+        onChange: function (hsb, hex, rgb) {
+            $('#colorSelector div').css('backgroundColor', '#' + hex);
+            $('#colorHex').val('#' + hex);
+        }
+    });
+
+
     $('#select2').fcbkcomplete({
         json_url: "index.php?menu="+module_name+"&action=get_contacts&rawmode=yes&tag=",
         cache: false,       // si es true se guardara en cache y es false no se guarda en cache
@@ -172,6 +194,9 @@ $(document).ready(function(){
         $('#select2').children().each(function(){
             $(this).remove();
         });
+        $('#colorSelector').ColorPickerSetColor('#3366CC');
+        $('#colorHex').val('#3366CC');
+        $('#colorSelector div').css('backgroundColor', '#3366CC');
     });
 
     $('#edit').click(function(){
@@ -844,6 +869,7 @@ function obtainEmails(){
                     var visibility_noti = message['visibility'];      //visible or not emails_notification
                     var visibility_rep = message['visibility_repeat'];//visible or not days_repeat
 					var reminderTimer = message['reminderTimer']; //reminderTimer
+                    var color = message['color'];
              /***********************      var by DOM      **************************/
                     var title_evt         = document.getElementById('title_box');
                     var event_name        = document.getElementById('event');
@@ -894,6 +920,13 @@ function obtainEmails(){
                         var i = 0; //cont
                         //show buttons for view even
                         $('#view_box').attr("style","display:block;");
+
+
+                        /*Set Color*/
+                        $('#colorSelector').ColorPickerSetColor(color);
+                        $('#colorHex').val(color);
+                        $('#colorSelector div').css('backgroundColor', color);
+                        /*end set Color*/
 
                         //disabled all input and select
                         event_name.setAttribute("disabled","disabled");

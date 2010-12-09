@@ -168,6 +168,7 @@ class paloSantoCalendar {
                     emails_notification, 
                     each_repeat as repeat,
                     days_repeat,
+                    color,
                     eventtype as it_repeat,
 					reminderTimer as reminderTimer,
                     strftime('%H', starttime) hora1, 
@@ -305,9 +306,9 @@ class paloSantoCalendar {
         }else return FALSE;
     }
 
-    function insertEvent($uid,$startdate,$enddate,$starttime,$eventtype,$subject,$description,$asterisk_call,$recording,$call_to,$notification,$email_notification, $endtime, $each_repeat,  $checkbox_days, $reminderTimer){
-        $data = array($uid,$startdate,$enddate,$starttime,$eventtype,$subject,$description,$asterisk_call,$recording,$call_to,$notification,$email_notification,$endtime,$each_repeat,$checkbox_days,$reminderTimer);
-        $query = "INSERT INTO events(uid,startdate,enddate,starttime,eventtype,subject,description,asterisk_call,recording,call_to,notification,emails_notification,endtime,each_repeat,days_repeat,reminderTimer) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    function insertEvent($uid,$startdate,$enddate,$starttime,$eventtype,$subject,$description,$asterisk_call,$recording,$call_to,$notification,$email_notification, $endtime, $each_repeat,  $checkbox_days, $reminderTimer, $color){
+        $data = array($uid,$startdate,$enddate,$starttime,$eventtype,$subject,$description,$asterisk_call,$recording,$call_to,$notification,$email_notification,$endtime,$each_repeat,$checkbox_days,$reminderTimer,$color);
+        $query = "INSERT INTO events(uid,startdate,enddate,starttime,eventtype,subject,description,asterisk_call,recording,call_to,notification,emails_notification,endtime,each_repeat,days_repeat,reminderTimer,color) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
         $result = $this->_DB->genQuery($query, $data);
         if($result==FALSE){
             $this->errMsg = $this->_DB->errMsg;
@@ -316,9 +317,9 @@ class paloSantoCalendar {
         return true; 
     }
 
-    function updateEvent($id_event,$startdate,$enddate,$starttime,$eventtype,$subject,$description,$asterisk_call,$recording,$call_to,$notification,$email_notification, $endtime ,$each_repeat,$checkbox_days,$reminderTimer){
-        $data = array($startdate,$enddate,$starttime,$eventtype,$subject,$description,$asterisk_call,$recording,$call_to,$notification,$email_notification,$endtime,$each_repeat,$checkbox_days,$reminderTimer,$id_event);
-        $query = "UPDATE events SET  startdate=?,enddate=?,starttime=?,eventtype=?,subject=?,description=?,asterisk_call=?,recording=?,call_to=?,notification=?,emails_notification=?,endtime=?,each_repeat=?,days_repeat=?,reminderTimer=? WHERE id=?";
+    function updateEvent($id_event,$startdate,$enddate,$starttime,$eventtype,$subject,$description,$asterisk_call,$recording,$call_to,$notification,$email_notification, $endtime ,$each_repeat,$checkbox_days,$reminderTimer, $color){
+        $data = array($startdate,$enddate,$starttime,$eventtype,$subject,$description,$asterisk_call,$recording,$call_to,$notification,$email_notification,$endtime,$each_repeat,$checkbox_days,$reminderTimer,$color,$id_event);
+        $query = "UPDATE events SET  startdate=?,enddate=?,starttime=?,eventtype=?,subject=?,description=?,asterisk_call=?,recording=?,call_to=?,notification=?,emails_notification=?,endtime=?,each_repeat=?,days_repeat=?,reminderTimer=?,color=? WHERE id=?";
         
         $result = $this->_DB->genQuery($query, $data);
         if($result==FALSE){

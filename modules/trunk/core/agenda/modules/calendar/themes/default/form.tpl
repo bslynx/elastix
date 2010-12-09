@@ -1,10 +1,8 @@
-
 <table width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
     <tr class="moduleTitle">
         <td class="moduleTitle" valign="middle" colspan='2'>&nbsp;&nbsp;<img src="{$IMG}" border="0" align="absmiddle">&nbsp;&nbsp;{$title}</td>
     </tr>
 </table>
-
 <table class="tabForm" style="font-size: 16px;" width="100%">
     <tr>
         <td width="10%" align="left" valign="top" style="font-size:64%;">
@@ -130,6 +128,12 @@
                                                     <!--<td align="left"  width="21%">
                                                         {$hora2.INPUT}&nbsp;<b>:</b>&nbsp;{$minuto2.INPUT}
                                                     </td>-->
+                                                </tr>
+                                                <tr class="letra12">
+                                                    <td align="left"><b>{$Color}: <span  class="required">*</span></b></td>
+                                                    <td align="left">
+                                                        <div id="colorSelector"><div style="background-color: #3366CC"></div></div>
+                                                    </td>
                                                 </tr>
                                                 <!--<tr class="letra12">
                                                     <td align="left"><b>{$it_repeat.LABEL}: <span  class="required">*</span></b></td>
@@ -280,3 +284,4 @@
 <input class="button" type="hidden" name="lblLoading" value="{$LBL_LOADING}" id="lblLoading">
 <input class="button" type="hidden" name="typeen" value="{$START_TYPE}...." id="typeen" />
 <input class="button" type="hidden" name="dateServer" value="{$DATE_SERVER}" id="dateServer" />
+<input class="button" type="hidden" name="colorHex" id="colorHex" value="#3366CC" />

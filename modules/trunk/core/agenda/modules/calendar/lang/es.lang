@@ -154,5 +154,6 @@ $arrLangModule=array(
 "invitation_event" => "Usted ha sido invitado a participar de este evento",
 "noResponseNotification" => "Esta es una notificación y no debe ser repondida.",
 "copyrightNotification" => "Elastix esta licenciado bajo GPL por PaloSanto Solutions",
+"Color" => "Color",
 );
 ?>
