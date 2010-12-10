@@ -71,19 +71,16 @@ if (!function_exists('load_language_module')) {
 
 function _moduleContent(&$smarty, $module_name)
 {
-    //include module files
-    include_once "modules/$module_name/configs/default.conf.php";
-
+    require_once "modules/$module_name/libs/PaloSantoBreaks.class.php";
+    require_once "modules/$module_name/configs/default.conf.php";
     global $arrConf;
 
     load_language_module($module_name);
-    
 
-    require_once "modules/$module_name/libs/PaloSantoBreaks.class.php";
     //folder path for custom templates
-    $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
-    $templates_dir=(isset($arrConfig['templates_dir']))?$arrConfig['templates_dir']:'themes';
-    $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
+    $base_dir = dirname($_SERVER['SCRIPT_FILENAME']);
+    $templates_dir = (isset($arrConfig['templates_dir']))?$arrConfig['templates_dir']:'themes';
+    $local_templates_dir = "$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
 
     // se conecta a la base
     $pDB = new paloDB($arrConf["cadena_dsn"]);
@@ -91,16 +88,154 @@ function _moduleContent(&$smarty, $module_name)
         $smarty->assign("mb_message", _tr("Error when connecting to database")."<br/>".$pDB->errMsg);
     }
 
-    // Definición del formulario de nueva campaña
-    $smarty->assign("REQUIRED_FIELD", _tr("Required field"));
-    $smarty->assign("CANCEL", _tr("Cancel"));
-    $smarty->assign("APPLY_CHANGES", _tr("Apply changes"));
-    $smarty->assign("SAVE", _tr("Save"));
-    $smarty->assign("EDIT", _tr("Edit"));
-    $smarty->assign("DELETE",_tr("Delete"));
-    $smarty->assign("CONFIRM_CONTINUE", _tr("Are you sure you wish to continue?"));
-    $smarty->assign("DESACTIVATE", _tr("Desactivate"));
+    $sAccion = getParameter('action');
+    $smarty->assign(array(
+        'MODULE_NAME'   =>  $module_name,
+        'ACTION'        =>  $sAccion,
+        "CANCEL"        =>  _tr("Cancel"),
+    ));
 
+    switch ($sAccion) {
+    case 'new':
+        $contenidoModulo = nuevoBreak($smarty, $module_name, $pDB, $local_templates_dir);
+        break;
+    case 'edit':
+        $contenidoModulo = editarBreak($smarty, $module_name, $pDB, $local_templates_dir);
+        break;    
+    case 'list':
+    default:
+        $contenidoModulo = listBreaks($smarty, $module_name, $pDB, $local_templates_dir);
+        break;
+    }
+    return $contenidoModulo;
+}
+
+if (!function_exists('getParameter')) {
+function getParameter($parameter)
+{
+    if(isset($_POST[$parameter]))
+        return $_POST[$parameter];
+    else if(isset($_GET[$parameter]))
+        return $_GET[$parameter];
+    else
+        return null;
+}
+}
+
+function listBreaks(&$smarty, $module_name, &$pDB, $local_templates_dir)
+{
+    $oBreaks = new PaloSantoBreaks($pDB);
+
+    // Procesamiento de la activación/desactivación de breaks
+    $r = TRUE;
+    if (isset($_POST['activate']) && isset($_POST['id_break'])) {
+        $r = $oBreaks->activateBreak($_POST['id_break'], 'A');
+        if (!$r) {
+            $smarty->assign("mb_title",_tr('Activate Error'));
+            $smarty->assign("mb_message",_tr('Error when Activating the Break'));
+        }
+    } elseif (isset($_POST['deactivate']) && isset($_POST['id_break'])) {
+        $r = $oBreaks->activateBreak($_POST['id_break'], 'I');
+        if (!$r) {
+            $respuesta->addAssign("mb_title","innerHTML",_tr("Desactivate Error")); 
+            $respuesta->addAssign("mb_message","innerHTML",_tr("Error when desactivating the Break")); 
+        }
+    }
+
+    // Procesamiento de la visualización de breaks
+    $arrBreaks = $oBreaks->getBreaks(); // Todos los breaks en todos los estados
+    if (!is_array($arrBreaks)) {
+        $smarty->assign("mb_title", _tr("ERROR"));
+        $smarty->assign("mb_message", _tr("Failed to fetch breaks")."<br/>".$pDB->errMsg);
+        $arrBreaks = array();
+    }
+    $arrCols = array(
+        "<input type=\"submit\" class=\"button\" name=\"activate\" value=\""._tr('Activate')."\" /> ".
+        "<input type=\"submit\" class=\"button\" name=\"deactivate\" value=\""._tr('Desactivate')."\" />", 
+        _tr("Name Break"), _tr("Description Break"), _tr("Status"), _tr("Options"),);
+    function listBreaks_formatHTML($break, $param)
+    {
+        return array(
+            "<input class=\"input\" type=\"radio\" name=\"id_break\" value=\"{$break['id']}\"/>",
+            htmlentities($break['name'], ENT_COMPAT, "UTF-8"),
+            htmlentities($break['description'], ENT_COMPAT, "UTF-8").'&nbsp;',
+            ($break['status'] == 'A') ? _tr('Active') : _tr('Inactive'),
+            ($break['status'] == 'A')
+                ? "<a href=\"?menu={$param['module_name']}&amp;action=edit&amp;id_break={$break['id']}\">["._tr('Edit Break').']</a>'
+                : '&nbsp;',
+        );
+    }
+    $arrData = array_map('listBreaks_formatHTML',
+        $arrBreaks,
+        array_fill(0, count($arrBreaks), array('module_name' => $module_name)));
+
+    // Construcción de la rejilla de vista
+    function listBreaks_formatCols($x) { return array('name' => $x); }
+    global $arrLang;
+    $end = count($arrBreaks); $start = ($end == 0) ? 0 : 1;
+    $oGrid = new paloSantoGrid($smarty);
+    $oGrid->showFilter("<a href=\"?menu={$module_name}&amp;action=new\"><button class=\"button\">"._tr('Create New Break').'&nbsp;&raquo;</button></a>');
+    return $oGrid->fetchGrid(
+        array(
+            "title"    => _tr("Breaks List"),
+            "url"      => construirURL(array('menu' => $module_name), array('nav', 'start')),
+            "icon"     => "images/list.png",
+            "width"    => "99%",
+            "start"    => ($end==0) ? 0 : 1,
+            "end"      => $end,
+            "total"    => $end,
+            "columns"  => array_map('listBreaks_formatCols', $arrCols),
+        ), 
+        $arrData, $arrLang);
+}
+
+function nuevoBreak(&$smarty, $module_name, $pDB, $local_templates_dir)
+{
+    return mostrarFormularioModificarBreak($smarty, $module_name, $pDB, $local_templates_dir, NULL);
+}
+
+function editarBreak(&$smarty, $module_name, $pDB, $local_templates_dir)
+{
+    $id_break = getParameter('id_break');
+    if (is_null($id_break) || !preg_match('/^\d+$/', $id_break)) {
+        Header("Location: ?menu=$module_name");
+        return '';
+    }
+    return mostrarFormularioModificarBreak($smarty, $module_name, $pDB, $local_templates_dir, $id_break);
+}
+
+function mostrarFormularioModificarBreak(&$smarty, $module_name, $pDB, $local_templates_dir, $id_break)
+{
+    $bNuevoBreak = is_null($id_break);
+
+    $smarty->assign(array(
+        'SAVE'  =>  $bNuevoBreak ? _tr('Save') : _tr('Apply Changes'),
+    ));
+
+    if (isset($_POST['cancel'])) {
+        Header("Location: ?menu=$module_name");
+        return '';
+    }
+
+    // Para modificación, se lee la información del break
+    $oBreaks = new PaloSantoBreaks($pDB);
+    if (!$bNuevoBreak) {
+        $_POST['id_break'] = $id_break;
+        $infoBreak = $oBreaks->getBreaks($id_break);
+        if (!is_array($infoBreak)) {
+            // No se puede recuperar información actual del break
+            $smarty->assign("mb_title", _tr("ERROR"));
+            $smarty->assign("mb_message", $pDB->errMsg);
+        } elseif (count($infoBreak) <= 0) {
+            // El break no se encuentra
+            Header("Location: ?menu=$module_name");
+            return '';
+        } else {
+            // Se asignan los valores a POST a menos que ya se encuentren valores
+            if (!isset($_POST['nombre'])) $_POST['nombre'] = $infoBreak[0]['name'];
+            if (!isset($_POST['descripcion'])) $_POST['descripcion'] = $infoBreak[0]['description'];
+        }
+    }
     $formCampos = array(
         "nombre"    =>    array(
                 "LABEL"                  => _tr("Name Break"),
@@ -120,209 +255,46 @@ function _moduleContent(&$smarty, $module_name)
                 "ROWS"                   => "2",
                 "COLS"                   => "33"
         ),
+        'id_break' => array(
+                'LABEL'                 => 'id_break',
+                'REQUIRED'              => 'no',
+                'INPUT_TYPE'            => 'HIDDEN',
+                "VALIDATION_TYPE"        => "ereg",
+                "VALIDATION_EXTRA_PARAM" => "^[[:digit:]]+$",
+        ),
     );
     $oForm = new paloForm($smarty, $formCampos);
-
-    $xajax = new xajax();
-    $xajax->registerFunction("desactivateBreak");
-    $xajax->processRequests();
-    $smarty->assign("xajax_javascript",$xajax->printJavascript("libs/xajax/"));
-    
-    if (isset($_POST['submit_create_break'])) {
-        $contenidoModulo = newBreak($pDB, $smarty, $module_name, $local_templates_dir, $formCampos, $oForm);
-    } else if (isset($_POST['save'])) {
-        $contenidoModulo = saveBreak($pDB, $smarty, $module_name, $local_templates_dir, $formCampos, $oForm);
-    } else if (isset($_POST['edit'])) {
-        $contenidoModulo = editBreak($pDB, $smarty, $module_name, $local_templates_dir, $formCampos, $oForm);
-    } else if (isset($_POST['apply_changes'])) {
-        $contenidoModulo = updateBreak($pDB, $smarty, $module_name, $local_templates_dir, $formCampos, $oForm);
-    } else if (isset($_GET['id']) && isset($_GET['action']) && $_GET['action']=="view") {
-        $contenidoModulo = viewBreak($pDB, $smarty, $module_name, $local_templates_dir, $formCampos, $oForm);
-    } else if (isset($_GET['id']) && isset($_GET['action']) && $_GET['action']=="activar") {
-        $contenidoModulo = activateBreak($pDB, $smarty, $module_name, $local_templates_dir, $formCampos, $oForm);
-    } else {
-        $contenidoModulo = listBreaks($pDB, $smarty, $module_name, $local_templates_dir);
-    }
-    return $contenidoModulo;
-}
-
-
-function newBreak($pDB, $smarty, $module_name, $local_templates_dir, $formCampos, $oForm) {
-
-    if (!isset($_POST['nombre'])) $_POST['nombre']='';
-    if (!isset($_POST['descripcion'])) $_POST['descripcion']='';
-    $contenidoModulo = $oForm->fetchForm("$local_templates_dir/new.tpl", _tr("New Break"),$_POST);
-    return $contenidoModulo;
-}
-
-function saveBreak($pDB, $smarty, $module_name, $local_templates_dir, $formCampos, $oForm) {
-    if(!$oForm->validateForm($_POST)) {
-        $smarty->assign("mb_title", _tr("Validation Error"));
-        $arrErrores=$oForm->arrErroresValidacion;
-        $strErrorMsg = "<b>"._tr('The following fields contain errors').":</b><br/>";
-        if(is_array($arrErrores) && count($arrErrores) > 0){
-            foreach($arrErrores as $k=>$v) {
-                $strErrorMsg .= "$k, ";
-            }
-        }
-        $strErrorMsg .= "";
-        $smarty->assign("mb_message", $strErrorMsg);
-    } else {
-        $oBreak = new PaloSantoBreaks($pDB);
-        $exito  = $oBreak->createBreak(
-                            $_POST['nombre'],
-                            $_POST['descripcion']);
-
-        if ($exito) {
-            header("Location: ?menu=$module_name");
-        } else {
-            $smarty->assign("mb_title", _tr("Validation Error"));
-            $smarty->assign("mb_message", $oBreak->errMsg);
-        } 
-    }
-
-    $contenidoModulo = $oForm->fetchForm("$local_templates_dir/new.tpl", _tr("New Break"),$_POST);
-    return $contenidoModulo;
-}
-
-function viewBreak($pDB, $smarty, $module_name, $local_templates_dir, $formCampos, $oForm) {
-    $oForm->setViewMode(); // Esto es para activar el modo "preview"
-
-    if (!isset($_GET['id']) || !is_numeric($_GET['id'])) 
-        return false;
-
-    $oBreaks = new PaloSantoBreaks($pDB);
-    $arrBreaks = $oBreaks->getBreaks($_GET['id'],'A');
-    // Conversion de formato
-    $arrTmp['nombre']       = $arrBreaks[0]['name'];
-    if($arrBreaks[0]['description']=="" || $arrBreaks[0]['description']==null)
-        $arrTmp['descripcion'] = "&nbsp;";
-    else
-        $arrTmp['descripcion'] = $arrBreaks[0]['description'];
-
-    $smarty->assign("id_break", $_GET['id']);
-    $contenidoModulo=$oForm->fetchForm("$local_templates_dir/new.tpl", _tr("View Break"), $arrTmp); 
-    return $contenidoModulo;
-}
-
-
-function editBreak($pDB, $smarty, $module_name, $local_templates_dir, $formCampos, $oForm) {
-    // Tengo que recuperar los datos del break
-    $oBreaks = new PaloSantoBreaks($pDB);
-    $arrBreaks = $oBreaks->getBreaks($_GET['id'],'A');
-
-    $arrTmp['nombre']       = $arrBreaks[0]['name'];
-    $arrTmp['descripcion']  = $arrBreaks[0]['description'];
-
-    $oForm = new paloForm($smarty, $formCampos);
     $oForm->setEditMode();
-    $smarty->assign("id_break", $_POST['id_break']);
-    
-    $contenidoModulo=$oForm->fetchForm("$local_templates_dir/new.tpl", _tr('Edit Break')." \"".$arrTmp['nombre']."\"", $arrTmp);
-    return $contenidoModulo;
-}
 
-function updateBreak($pDB, $smarty, $module_name, $local_templates_dir, $formCampos, $oForm) {
-    if(!$oForm->validateForm($_POST)) {
-        $smarty->assign("mb_title", _tr("Validation Error"));
-        $arrErrores=$oForm->arrErroresValidacion;
-        $strErrorMsg = "<b>"._tr('The following fields contain errors').":</b><br/>";
-        if(is_array($arrErrores) && count($arrErrores) > 0){
-            foreach($arrErrores as $k=>$v) {
-                $strErrorMsg .= "$k, ";
-            }
-        }
-        $strErrorMsg .= "";
-        $smarty->assign("mb_message", $strErrorMsg);
-        $oForm->setEditMode();
-    } else {
-        $oBreak = new PaloSantoBreaks($pDB);
-        $exito  = $oBreak->updateBreak(
-                            $_POST['id_break'],
-                            $_POST['nombre'],
-                            $_POST['descripcion']);
-
-        if ($exito) {
-            header("Location: ?menu=$module_name&action=view&id=".$_POST['id_break']);
-        } else {
+    // Procesar los cambios realizados
+    if (isset($_POST['save'])) {
+        if(!$oForm->validateForm($_POST)) {
             $smarty->assign("mb_title", _tr("Validation Error"));
-            $smarty->assign("mb_message", $oBreak->errMsg);
-        } 
-    }
- 
-    $oForm->setEditMode();
-    $smarty->assign("id_break", $_POST['id_break']);
-    $contenidoModulo = $oForm->fetchForm("$local_templates_dir/new.tpl",_tr('Edit Break')." \"".$_POST['nombre']."\"",$_POST);
-    return $contenidoModulo;
-}
-
-function listBreaks($pDB, $smarty, $module_name, $local_templates_dir) {
-    global $arrLang;
-
-    $oBreaks = new PaloSantoBreaks($pDB);
-
-    $arrBreaks = $oBreaks->getBreaks();
-
-    $end = count($arrBreaks);
-
-    $arrData = array();
-    if (is_array($arrBreaks)) {
-        foreach($arrBreaks as $break) {
-            if( strcasecmp($break['name'],'hold') != 0){
-                $arrTmp    = array();
-                $arrTmp[0] = htmlentities($break['name'], ENT_COMPAT, "UTF-8");
-                if($break['description']=="" || $break['description']==null)
-                    $arrTmp[1] = "&nbsp;";
-                else
-                    $arrTmp[1] = htmlentities($break['description'], ENT_COMPAT, "UTF-8");
-    
-                if($break['status']=='I'){
-                    $arrTmp[2] = _tr('Inactive');
-                    $arrTmp[3] = "&nbsp;<a href='?menu=$module_name&action=activar&id=".$break['id']."'>"._tr('Activate')."</a>";
-                }else{
-                    $arrTmp[2] = _tr('Active');
-                    $arrTmp[3] = "&nbsp;<a href='?menu=$module_name&action=view&id=".$break['id']."'>"._tr('View Break')."</a>";
-                } 
-                $arrData[] = $arrTmp;
+            $arrErrores = $oForm->arrErroresValidacion;
+            $strErrorMsg = "<b>"._tr('The following fields contain errors').":</b><br/>";
+            if (is_array($arrErrores) && count($arrErrores) > 0) {
+                $strErrorMsg .= implode(', ', array_keys($arrErrores));
             }
+            $smarty->assign("mb_message", $strErrorMsg);
+        } else {
+            $exito  = $bNuevoBreak
+                ? $oBreaks->createBreak($_POST['nombre'], $_POST['descripcion'])
+                : $oBreaks->updateBreak($id_break, $_POST['nombre'], $_POST['descripcion']);
+
+            if ($exito) {
+                header("Location: ?menu=$module_name");
+            } else {
+                $smarty->assign("mb_title", _tr("Validation Error"));
+                $smarty->assign("mb_message", $oBreak->errMsg);
+            } 
         }
     }
 
-    $arrGrid = array("title"    => _tr("Breaks List"),
-        "url"      => construirURL(array('menu' => $module_name), array('nav', 'start')),
-        "icon"     => "images/list.png",
-        "width"    => "99%",
-        "start"    => ($end==0) ? 0 : 1,
-        "end"      => $end,
-        "total"    => $end,
-        "columns"  => array(0 => array("name"      => _tr("Name Break"),
-                                       "property1" => ""),
-                            1 => array("name"      => _tr("Description Break"), 
-                                       "property1" => ""),
-                            2 => array("name"      => _tr("Status"), 
-                                       "property1" => ""),
-                            3 => array("name"     => _tr("Options"), 
-                                       "property1" => "")));
-
-    $oGrid = new paloSantoGrid($smarty);
-    $oGrid->showFilter("<input type='submit' name='submit_create_break' value='"._tr('Create New Break')."' class='button' />");
-
-    $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
+    // Mostrar el formulario con los valores
+    $contenidoModulo = $oForm->fetchForm(
+        "$local_templates_dir/new.tpl",
+        $bNuevoBreak ? _tr('New Break') : _tr('Edit Break'),
+        $_POST);
     return $contenidoModulo;
-}
-
-function activateBreak($pDB, $smarty, $module_name, $local_templates_dir, $formCampos, $oForm)
-{   
-     if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
-        return false;
-    }
-    $oBreaks = new PaloSantoBreaks($pDB);
-    if($oBreaks->activateBreak($_GET['id'],'A'))
-        header("Location: ?menu=$module_name");
-    else
-    {
-        $smarty->assign("mb_title",_tr('Activate Error'));
-        $smarty->assign("mb_message",_tr('Error when Activating the Break'));
-    }
 }
 ?>

@@ -1,3 +1,9 @@
+* Break Administrator: use parametrized SQL queries instead of string 
+  concatenation. Remove uses of construirInsert and construirUpdate. Make code
+  smaller and add additional parameter validation. Remove unneeded AJAX calls.
+  Expose functionality to activate/deactivate breaks in break listing. Use POST
+  actions exclusively for modifications.
+
 1.5-3.9 (SVN revision 2086)
 * Reports: fix regression introduced by testing existence of incorrect method in
   Elastix 2.

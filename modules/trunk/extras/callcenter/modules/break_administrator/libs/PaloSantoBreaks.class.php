@@ -59,39 +59,37 @@ class PaloSantoBreaks
      * se especifica id, el listado contendrá únicamente el break
      * indicada por el valor. De otro modo, se listarán todas los breaks.
      *
-     * @param int   $id_break    Si != NULL, indica el id del break a recoger
+     * @param int       $id_break    Si != NULL, indica el id del break a recoger
+     * @param string    $estatus    'I' para breaks inactivos, 'A' para activos, 
+     *                              cualquier otra cosa para todos los breaks.
      *
-     * @return array    Listado de breaks en el siguiente formato, o FALSE en caso de error:
+     * @return array    Listado de breaks en el siguiente formato, o FALSE en 
+     *                  caso de error:
      *  array(
      *      array(id,name,description),....,
      *  )
      */
-    function getBreaks($id_break = NULL,$estatus='all')
+    function getBreaks($id_break = NULL, $estatus='all')
     {
-        $arr_result = FALSE;
-        $where = " 1 ";
-        if(!is_null($id_break))
-            $where = "id = $id_break ";
-        if($estatus=='all')
-            $where .=" and 1 ";
-        else if($estatus=='I')
-            $where .=" and status='I' ";
-        else if($estatus=='A')
-            $where .=" and status='A' ";
-
-        if (!is_null($id_break) && !ereg('^[[:digit:]]+$', "$id_break")) {
+        // Validación
+        $this->errMsg = "";
+        if (!is_null($id_break) && !preg_match('/^\d+$/', $id_break)) {
             $this->errMsg = _tr("Break ID is not valid");
-        } 
-        else {
-            $this->errMsg = "";
-            $sPeticionSQL = "SELECT id, name, description,status from break where $where and tipo='B'"; 
-            $arr_result =& $this->_DB->fetchTable($sPeticionSQL, true);
-            if (!is_array($arr_result)) {
-                $arr_result = FALSE;
-                $this->errMsg = $this->_DB->errMsg;
-            }
+            return FALSE;
         }
-        return $arr_result;
+        if (!in_array($estatus, array('I', 'A'))) $estatus = NULL;
+
+        // Construcción de petición y sus parámetros
+        $sPeticionSQL = 'SELECT id, name, description, status FROM break WHERE tipo = ?';
+        $paramSQL = array('B');
+        if (!is_null($id_break)) { $sPeticionSQL .= ' AND id = ?'; $paramSQL[] = $id_break; }
+        if (!is_null($estatus)) { $sPeticionSQL .= ' AND status = ?'; $paramSQL[] = $estatus; }
+        $recordset = $this->_DB->fetchTable($sPeticionSQL, TRUE, $paramSQL);
+        if (!is_array($recordset)) {
+            $this->errMsg = $this->_DB->errMsg;
+            return FALSE;
+        }
+        return $recordset;
     }
 
     /**
@@ -104,31 +102,27 @@ class PaloSantoBreaks
      */
     function createBreak($sNombre, $sDescripcion)
     {
+        $result = FALSE;
         $sNombre = trim("$sNombre");
-        if ($sNombre == '')
+        if ($sNombre == '') {
             $this->errMsg = _tr("Name Break can't be empty");
-        else {
-            $recordset =& $this->_DB->fetchTable("SELECT * FROM break WHERE name = ".paloDB::DBCAMPO($sNombre));
+        } else {
+            $recordset =& $this->_DB->fetchTable(
+                'SELECT * FROM break WHERE name = ?', FALSE, 
+                array($sNombre));
             if (is_array($recordset) && count($recordset) > 0) 
                 $this->errMsg = _tr("Name Break already exists");
             else {
                 // Construir y ejecutar la orden de inserción SQL
-                $sPeticionSQL = paloDB::construirInsert(
-                    "break",
-                    array(
-                        "name"          =>  paloDB::DBCAMPO($sNombre),
-                        "description"   =>  paloDB::DBCAMPO($sDescripcion),
-                    )
-                );
-                $result = $this->_DB->genQuery($sPeticionSQL);
-                if ($result)
-                    return true;
-                else {
-                    $this->errMsg = $this->_DB->errMsg."<br/>$sPeticionSQL";
-                    return false;
+                $result = $this->_DB->genQuery(
+                    'INSERT INTO break (name, description) VALUES (?, ?)',
+                    array($sNombre, $sDescripcion));
+                if (!$result) {
+                    $this->errMsg = _tr('(internal) Failed to insert break').': '.$this->_DB->errMsg;
                 }
             }
-        }   
+        }
+        return $result;
     }   
 
     /**
@@ -142,28 +136,22 @@ class PaloSantoBreaks
      */
     function updateBreak($idBreak, $sNombre, $sDescripcion)
     {
+        $result = FALSE;
         $sNombre = trim("$sNombre");
-        if ($sNombre == '')
+        if ($sNombre == '') {
             $this->errMsg = _tr("Name Break can't be empty");
-        else if (!isset($idBreak))
+        } else if (!preg_match('/^\d+$/', $idBreak)) {
             $this->errMsg = _tr("Id Break is empty");
-        else {
+        } else {
             // Construir y ejecutar la orden de update SQL
-            $sPeticionSQL = paloDB::construirUpdate(
-                "break",
-                array(
-                    "name"          =>  paloDB::DBCAMPO($sNombre),
-                    "description"   =>  paloDB::DBCAMPO($sDescripcion)),
-                "id = $idBreak"
-            );
-            $result = $this->_DB->genQuery($sPeticionSQL);
-            if ($result)
-                return true;
-            else {
-                $this->errMsg = $this->_DB->errMsg."<br/>$sPeticionSQL";
-                return false;
+            $result = $this->_DB->genQuery(
+                'UPDATE break SET name = ?, description = ? WHERE id = ?',
+                array($sNombre, $sDescripcion, $idBreak));            
+            if (!$result) {
+                $this->errMsg = _tr('(internal) Failed to update break').': '.$this->_DB->errMsg;
             }
         } 
+        return $result;
     }
 
      /**
@@ -171,54 +159,28 @@ class PaloSantoBreaks
      * Activo = 'A'   ,  Inactivo = 'I'
      *
      * @param   $idBreak        id del Break
-     * @param   $activate        Activo o Inactivo
+     * @param   $activate        Activo o Inactivo ('A' o 'I')
      * 
      * @return  bool    true or false si actualizo o no el estatus
      */
     function activateBreak($idBreak,$activate)
     {
-         $sPeticionSQL = paloDB::construirUpdate(
-             "break",
-             array("status"       =>  paloDB::DBCAMPO($activate)),
-             " id=$idBreak "
-            );
- 
-        $result = $this->_DB->genQuery($sPeticionSQL);
-        if ($result) 
-            return true;
-        else 
-            $this->errMsg = $this->_DB->errMsg."<br/>$sPeticionSQL";
-        return false;
+        $result = FALSE;
+        if (!in_array($activate, array('A', 'I'))) {
+            $this->errMsg = _tr('Invalid status');
+        } else if (!preg_match('/^\d+$/', $idBreak)) {
+            $this->errMsg = _tr("Id Break is empty");
+        } else {
+            // Construir y ejecutar la orden de update SQL
+            $result = $this->_DB->genQuery(
+                'UPDATE break SET status = ? WHERE id = ?',
+                array($activate, $idBreak));
+            if (!$result) {
+                $this->errMsg = _tr('(internal) Failed to update break').': '.$this->_DB->errMsg;
+            }
+        }
+        return $result;
     } 
 }
 
-//FUNCIONES AJAX
- /**
-     * Procedimiento para desactivar un break
-     *
-     * @param   $idBreak        id del Break
-     * 
-     * @return  xajaxResponse    Respuesta de un requerimineto ajax
-     */
-function desactivateBreak($idBreak)
-{
-    global $arrConf;
-    $respuesta = new xajaxResponse();
-    
-    // se conecta a la base
-    $pDB = new paloDB($arrConf["cadena_dsn"]);
-    if(!empty($pDB->errMsg)) {
-        $respuesta->addAssign("mb_message","innerHTML",_tr("Error when connecting to database")."<br/>".$pDB->errMsg);
-    }
-
-    $oBreaks = new PaloSantoBreaks($pDB);
-    if($oBreaks->activateBreak($idBreak,'I'))
-        $respuesta->addScript("window.open('?menu=break_administrator','_parent')");
-    else{
-        $respuesta->addAssign("mb_title","innerHTML",_tr("Desactivate Error")); 
-        $respuesta->addAssign("mb_message","innerHTML",_tr("Error when desactivating the Break")); 
-    }
-    
-    return $respuesta;
-}
 ?>
