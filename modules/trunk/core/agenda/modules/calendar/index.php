@@ -508,7 +508,7 @@ $msg = "
                  $subject
              </div>   
              <div style='margin-top:20px;'> 
-                 <span style='font-style:italic; font-weight:bolder; font-size: 16px;'>Estimado usuario: </span>   
+                 <span style='font-style:italic; font-weight:bolder; font-size: 16px;'>{$arrLang['Dear User']}: </span>
              </div>   
              <div style='margin-top:20px; margin-bottom:30px;'>
                  {$arrLang['invitation_event']}:

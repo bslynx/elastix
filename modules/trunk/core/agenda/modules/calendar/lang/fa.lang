@@ -161,5 +161,6 @@ $arrLangModule=array(
 "noResponseNotification" => "This is a notice and should not answered",
 "copyrightNotification" => "Elastix is licensed under GPL by PaloSanto Solutions",
 "Color" => "Color",
+"Dear User" => "Dear User",
 );
 ?>
