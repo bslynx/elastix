@@ -271,7 +271,7 @@ class paloForm
                                 ? sprintf('size="%s"', htmlentities($arrVars['SIZE'], ENT_COMPAT, 'UTF-8')) 
                                 : '',
                             (isset($arrVars['ONCHANGE']) && $arrVars['ONCHANGE'] != '') 
-                                ? "onchange='{$arrVars[ONCHANGE]}'" 
+                                ? "onchange='{$arrVars['ONCHANGE']}'" 
                                 : '',
                             implode("\n", $listaOpts));
                     } else {
