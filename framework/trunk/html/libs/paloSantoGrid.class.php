@@ -202,10 +202,9 @@ class paloSantoGrid {
             $this->arrData = $arrData;
 
         header("Cache-Control: private");
-        header("Pragma: cache");
-        header("Content-Type: application/octec-stream");
-        header('Content-disposition: inline; filename="'."{$this->nameFile_Export}.csv".'"');
-        header("Content-Type: application/force-download");
+        header("Pragma: cache");    // Se requiere para HTTPS bajo IE6
+        header('Content-Disposition: attachment; filename="'."{$this->nameFile_Export}.csv".'"');
+        header("Content-Type: text/csv; charset=UTF-8");
 
         $numColumns = count($this->getColumns());
         $this->smarty->assign("numColumns", $numColumns);
@@ -230,19 +229,10 @@ class paloSantoGrid {
 
     function fetchGridXLS()
     {
-        //header ("Expires: 0");
-        header ("Cache-Control: no-cache, must-revalidate, post-check=0, pre-check=0");
-        header ("Pragma: no-cache");
-        //header("Pragma: public");
-        header ("Content-Type: application/force-download");
-        header ("Content-Type: application/vnd.ms-excel;");   // This should work for IE & Opera
-        header ("Content-type: application/x-msexcel");       // This should work for the rest
-        header ("Content-Type: application/octet-stream");
-        header ("Content-Type: application/download");
-        header ("Content-Type: charset=UTF-8");
-        header ("Content-Transfer-Encoding: none");
-        //header ("Content-Transfer-Encoding: binary");
+        header ("Cache-Control: private");
+        header ("Pragma: cache");    // Se requiere para HTTPS bajo IE6
         header ('Content-Disposition: attachment; filename="'."{$this->nameFile_Export}.xls".'"');
+        header ("Content-Type: application/vnd.ms-excel; charset=UTF-8");
 
         $tmp = $this->xlsBOF();
         # header
