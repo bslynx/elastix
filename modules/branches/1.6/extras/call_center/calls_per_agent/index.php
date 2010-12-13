@@ -154,7 +154,10 @@ function _moduleContent(&$smarty, $module_name)
 
         $bExportando = $bElastixNuevo
         ? $oGrid->isExportAction()
-        : (isset( $_GET['exportcsv'] ) && $_GET['exportcsv'] == 'yes');
+        : ( (isset( $_GET['exportcsv'] ) && $_GET['exportcsv'] == 'yes') || 
+            (isset( $_GET['exportspreadsheet'] ) && $_GET['exportspreadsheet'] == 'yes') || 
+            (isset( $_GET['exportpdf'] ) && $_GET['exportpdf'] == 'yes')
+          ) ;
         $offset = 0;
         $limit = 20;
         $arrCallsAgentTmp  = $oCallsAgent->obtenerCallsAgent(null, $offset, $date_start, $date_end, $field_name, $field_pattern/*,$status*/);
@@ -271,7 +274,11 @@ function _moduleContent(&$smarty, $module_name)
                                          	     "property"	=> ""),
                                         )
                     );
-         if($bExportando){
+        if (isset( $_GET['exportpdf'] ) && $_GET['exportpdf'] == 'yes' && method_exists($oGrid, 'fetchGridPDF'))
+            return $oGrid->fetchGridPDF($arrGrid, $arrData);
+        if (isset( $_GET['exportspreadsheet'] ) && $_GET['exportspreadsheet'] == 'yes' && method_exists($oGrid, 'fetchGridXLS'))
+            return $oGrid->fetchGridXLS($arrGrid, $arrData);
+        if($bExportando){
             header("Cache-Control: private");
             header("Pragma: cache");
             header('Content-Type: application/octec-stream'); 
