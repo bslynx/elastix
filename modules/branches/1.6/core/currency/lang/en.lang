@@ -53,5 +53,7 @@ $arrLangModule=array(
 "Yuan chino" => "Chinese Yuan",
 "Rupia bengalí" => "Bangladeshi Rupee",
 "Dólar de Singapur" => "Singapore Dollar",
+"Error" => "Error",
+"Successfully saved" => "Successfully saved",
 );
 ?>

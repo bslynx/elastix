@@ -89,7 +89,6 @@ function formCurrency($smarty, $module_name, $local_templates_dir, &$pDB, $arrCo
     $smarty->assign("SAVE", $arrLang["Save"]);
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
     $smarty->assign("IMG", "images/list.png");
-    
     $_POST['currency'] = $curr;
 
     $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",$arrLang["Currency"], $_POST);
@@ -106,8 +105,7 @@ function saveCurrency($smarty, $module_name, $local_templates_dir, $pDB, $arrCon
     $bandera = $oPalo->SaveOrUpdateCurrency($curr);
 
     if($bandera == true ){
-        
-        $smarty->assign("mb_message", "Guardado exitosamente");
+        $smarty->assign("mb_message", $arrLang["Successfully saved"]);
     }
     else{
         $smarty->assign("mb_title", $arrLang["Error"]);
