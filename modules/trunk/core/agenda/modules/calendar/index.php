@@ -33,6 +33,7 @@ include_once "libs/paloSantoGrid.class.php";
 include_once "libs/paloSantoForm.class.php";
 include_once "libs/paloSantoACL.class.php";
 include_once "libs/paloSantoConfig.class.php";
+include_once "libs/phpmailer/class.phpmailer.php";
 
 function _moduleContent(&$smarty, $module_name)
 {
@@ -446,7 +447,6 @@ function deleteEvent($smarty, $module_name, $local_templates_dir, &$pDB, $arrCon
 }
 
 function sendMails($data, $arrLang, $type, $arrConf,$pDB, $module_name, $idEvent){
-    require_once("/var/spool/hylafax/bin/includes/phpmailer/class.phpmailer.php");
 
     $emails      = $data['emails_notification'];
     $start       = $data['startdate'];
