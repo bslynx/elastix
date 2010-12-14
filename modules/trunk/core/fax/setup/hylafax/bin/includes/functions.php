@@ -146,7 +146,7 @@
                                  $archivo_name="archivo.pdf")
     {
 
-        require_once("phpmailer/class.phpmailer.php");
+        require_once("/var/www/html/libs/phpmailer/class.phpmailer.php");
 	    $mail = new PHPMailer();
 
         $mail->From = $remite;
