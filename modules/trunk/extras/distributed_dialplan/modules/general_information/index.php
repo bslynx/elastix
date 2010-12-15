@@ -68,11 +68,9 @@ function _moduleContent(&$smarty, $module_name)
     $content = "";
 
     switch($accion){
-        
         case "upload":
             $content = uploadGeneralInformation($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
             break;
-        
         default:
             $content = formGeneralInformation($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
             break;
@@ -86,13 +84,12 @@ function uploadGeneralInformation($smarty, $module_name, $local_templates_dir, $
    $pPeersInformation = new paloSantoPeersInformation($pDB);
    $arrForm = createFieldForm($arrLang);
    $oForm = new paloForm($smarty, $arrForm);
-   $pNet = new paloNetwork();  
+   $pNet = new paloNetwork();
    $mac = "";
    $data = array();
    $writting = false;
    $macCertificate = "";
    $root_certicate = "/var/lib/asterisk/keys";
-   
    if(!$oForm->validateForm($_POST)){
         $smarty->assign("mb_title", $arrLang["Validation Error"]);
         $arrErrores=$oForm->arrErroresValidacion;
@@ -105,31 +102,29 @@ function uploadGeneralInformation($smarty, $module_name, $local_templates_dir, $
         $contenidoModulo=$oForm->fetchForm("$local_templates_dir/form.tpl",$arrLang["General Information"], $_POST);
 
    }else{
+        $upload = $_POST['command'];
+        $data['organization'] = $_POST['organization'];
+        $data['locality']     = $_POST['locality'];
+        $data['stateprov']    = $_POST['state'];
+        $data['country']      = $_POST['country'];
+        $data['email']        = $_POST['email'];
+        $data['phone']        = $_POST['phone'];
+        $data['department']   = $_POST['department'];
+        $data['secret']       = $pElastixConnection->genRandomPassword(32, "");
 
-   		$upload = $_POST['command'];   
-   		$data['organization'] = $_POST['organization'];
-   		$data['locality']     = $_POST['locality'];
-   		$data['stateprov']        = $_POST['state'];
-   		$data['country']      = $_POST['country'];
-   		$data['email']        = $_POST['email'];
-   		$data['phone']        = $_POST['phone'];
-   		$data['department']   = $_POST['department'];
-
-
-		if($upload == "1") {
-        	$result = $pElastixConnection->uploadInformation('general', $data);
-        	if(!$result)
-            	return($pDB->errMsg);
+       if($upload == "1") {
+            $result = $pElastixConnection->uploadInformation('general', $data);
+            if(!$result)
+                return($pDB->errMsg);
             else{
-                  
-            }
-   		}else{   
-        	$result = $pElastixConnection->addInformation($data);
-        	if(!$result)
-            	return($pDB->errMsg);
 
-   		}
-       $serverIp = $_SERVER['SERVER_ADDR']; 
+            }
+       }else{
+            $result = $pElastixConnection->addInformation($data);
+            if(!$result)
+                return($pDB->errMsg);
+       }
+       $serverIp = $_SERVER['SERVER_ADDR'];
        $arrEths = $pNet->obtener_interfases_red_fisicas();
        foreach($arrEths as $idEth=>$arrEth)
        {
@@ -141,10 +136,9 @@ function uploadGeneralInformation($smarty, $module_name, $local_templates_dir, $
        $macCertificate .="CER".str_replace(":","",$mac);
        if(!file_exists("$root_certicate/$macCertificate.pub")){
            if($pElastixConnection->updateCertificate($macCertificate))
-                $genCertificate = $pPeersInformation->GenKeyPub($macCertificate);             
+                $genCertificate = $pPeersInformation->GenKeyPub($macCertificate);
        }
    }
-
    $contenidoModulo = formGeneralInformation($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
    return $contenidoModulo;
 
@@ -160,15 +154,14 @@ function formGeneralInformation($smarty, $module_name, $local_templates_dir, &$p
     $smarty->assign("UPLOAD", $arrLang["Upload"]);
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
     $smarty->assign("IMG", "images/list.png");
-    
     $command = "0";
     $arrData = array();//array que se envia al $htmlForm para que muestre siempre los datos
     $datos = array();//array que usuamos para definir si le enviamos $_POST o $arrData a $htmlForm
     $arrDataInfo = $pGeneralInformation->getGeneralInformation();
     if(is_array($arrDataInfo) && count($arrDataInfo)>0)
     {
-    	foreach($arrDataInfo as $key => $datos){
-       	   $arrData['organization'] = $datos['organization'];
+        foreach($arrDataInfo as $key => $datos){
+           $arrData['organization'] = $datos['organization'];
            $arrData['department'] = $datos['department'];
            $arrData['locality'] = $datos['locality'];
            $arrData['state'] = $datos['stateprov'];
@@ -179,12 +172,10 @@ function formGeneralInformation($smarty, $module_name, $local_templates_dir, &$p
         }
         $datos = $arrData;
         $command = "1";
-        
     }else
         $datos = $_POST;
-        
 
-    $smarty->assign("command", $command);        
+    $smarty->assign("command", $command);
     $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",$arrLang["General Information"], $datos);
     $contenidoModulo = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
 

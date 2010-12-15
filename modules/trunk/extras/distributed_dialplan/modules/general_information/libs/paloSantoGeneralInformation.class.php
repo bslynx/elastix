@@ -55,13 +55,13 @@ class paloSantoGeneralInformation {
     {
         $arrTmp = array();
         foreach($data as $key => $value)
-           $arrTmp[$key] = $this->_DB->DBCAMPO($value);                 
+           $arrTmp[$key] = $this->_DB->DBCAMPO($value);
 
         $queryInsert = $this->_DB->construirInsert('general', $arrTmp);
         $result = $this->_DB->genQuery($queryInsert);
         return $result;
     }
-    
+
     function uploadInformation($sTabla, $data)
     {
 
@@ -76,22 +76,19 @@ class paloSantoGeneralInformation {
 
     function updateCertificate($certificate)
     {
-      $tmpCertificate = $this->_DB->DBCAMPO($certificate);    
+      $tmpCertificate = $this->_DB->DBCAMPO($certificate);
       $query = "UPDATE general SET certificate=$tmpCertificate";
       $result = $this->_DB->genQuery($query);
-      if($result==FALSE)
-      {
+      if($result==FALSE){
           $this->errMsg = $this->_DB->errMsg;
           return false;
       }else
           return true;
 
     }
-    
 
     function getGeneralInformation()
     {
-
       $query = "SELECT * FROM general ";
       $result=$this->_DB->fetchTable($query, true);
         if($result==FALSE)
@@ -100,7 +97,6 @@ class paloSantoGeneralInformation {
             return array();
         }
         return $result;
-    
     }
 
      //Funcion que crea el archivo dundi_mappings_custom_elastix.conf
@@ -117,9 +113,12 @@ class paloSantoGeneralInformation {
        $dundi_file = "/etc/asterisk/dundi_mappings_custom_elastix.conf";
        $fh = fopen($dundi_file, "w+");
        if($fh){
-         foreach($arrData as $dundi){
-            foreach($dundi as $key){
-              if(fwrite($fh,"priv => {$key['name']},{$key['number']},IAX2,dundi:\${SECRET}@$ipServer/\${NUMBER},nopartial"."\n") == false){
+        foreach($arrData as $dundi)
+        {
+            foreach($dundi as $key)
+            {
+              if(fwrite($fh,"priv => {$key['name']},{$key['number']},IAX2,dundi:\${SECRET}@$ipServer/\${NUMBER},nopartial"."\n") == false)
+              {
                 $this->errMsg = $arrLang["Unabled write file"];
                 fclose($fh);
                 return false;
@@ -132,10 +131,9 @@ class paloSantoGeneralInformation {
             $this->errMsg = $arrLang["Unabled open file"];
             return false;
         }
-	return true;
-
+        return true;
     }
-   
+
     //Funcion que crea el archivo dundi_general_custom_elastix.conf
     function createFileDGCE($arrInfoGeneral, $mac)
     {
@@ -144,65 +142,42 @@ class paloSantoGeneralInformation {
        $fh = fopen($dundi_file, "w+");
        if($fh){
          foreach($arrInfoGeneral as $key => $value){
-
             if(fwrite($fh, "$key=$value\n") == false){
                 $this->errMsg = $arrLang["Unabled write file"];
                 fclose($fh);
                 return false;
             }
-
          }
          if(fwrite($fh, "entityid=$mac") == false){
                 $this->errMsg = $arrLang["Unabled write file"];
                 fclose($fh);
                 return false;
-            }
+         }
          fclose($fh);
         }
         else{
             $this->errMsg = $arrLang["Unabled open file"];
             return false;
         }
-          
-
        return true;
-        
     }
 
-
-
-    function ObtainNumGeneralInformation()
+    function genRandomPassword($length = 32, $certificate)
     {
-        //Here your implementation
-        $query   = "SELECT COUNT(*) FROM ";
-        /*
-        $result=$this->_DB->getFirstRowQuery($query);
-        if($result==FALSE)
-        {
-            $this->errMsg = $this->_DB->errMsg;
-            return 0;
-        }
-        return $result[0];
-        */
+        $salt = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        $len = strlen($salt);
+        $makepass = '';
+        mt_srand(10000000 * (double) microtime());
 
-        /*THIS LINE SHOULD BE ERASE*/ return 0; /*THIS LINE SHOULD BE ERASE*/
-    }
-
-    function ObtainGeneralInformation($limit, $offset, $field_pattern)
-    {
-        //Here your implementation
-        $query   = "SELECT * FROM ";
-        /*
-        $result=$this->_DB->fetchTable($query, true);
-        if($result==FALSE)
-        {
-            $this->errMsg = $this->_DB->errMsg;
-            return array();
+        for ($i = 0; $i < $length; $i ++) {
+            $makepass .= $salt[mt_rand(0, $len -1)];
         }
+        $makepass .= $certificate;
+        $result = hash('whirlpool', $makepass);
         return $result;
-        */
-
-        /*THIS LINE SHOULD BE ERASE*/ return array(); /*THIS LINE SHOULD BE ERASE*/
     }
+
 }
+
+    
 ?>
