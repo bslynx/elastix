@@ -30,7 +30,7 @@
 include_once "libs/paloSantoGrid.class.php";
 include_once "libs/paloSantoForm.class.php";
 include_once "libs/paloSantoNetwork.class.php";
-
+include_once "libs/paloSantoConfig.class.php";
 
 function _moduleContent(&$smarty, $module_name)
 {
@@ -86,41 +86,49 @@ function _moduleContent(&$smarty, $module_name)
         $_SESSION['exitsKey'] = false;
     ////////
 
+    ////// para uso de comandos en asterisk
+    $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
+    $arrConfig = $pConfig->leer_configuracion(false);
+    $dsn_agi_manager['password'] = $arrConfig['AMPMGRPASS']['valor'];
+    $dsn_agi_manager['host'] = $arrConfig['AMPDBHOST']['valor'];
+    $dsn_agi_manager['user'] = 'admin';
+    /////
+
+
     switch($accion){
 
         case "new_request":
-            $content = formRequest($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+            $content = formRequest($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $dsn_agi_manager);
             break;
-    case "request":
-            $content = sendConnectionRequest($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+        case "request":
+            $content = sendConnectionRequest($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $dsn_agi_manager);
             break;
         case "view":
-            $content = viewPeersInformation($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+            $content = viewPeersInformation($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $dsn_agi_manager);
             break;
         case "delete_peer":
-            $content = deletePeersInformation($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang); 
+            $content = deletePeersInformation($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $dsn_agi_manager); 
             break;
         case "disconnect":
-            $content = disconnectPeersInformation($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang); 
+            $content = disconnectPeersInformation($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $dsn_agi_manager); 
             break;
         case "connect":
-            $content = connectPeersInformation($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang); 
+            $content = connectPeersInformation($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $dsn_agi_manager); 
             break;      
         case "acept_request":
-            $content = AceptPeerRequest($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+            $content = AceptPeerRequest($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $dsn_agi_manager);
             break;
         case "reject_request":
-            $content = rejectPeerRequest($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+            $content = rejectPeerRequest($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $dsn_agi_manager);
             break;
-
         default:
-            $content = reportPeersInformation($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+            $content = reportPeersInformation($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $dsn_agi_manager);
             break;
     }
     return $content;
 }
 
-function disconnectPeersInformation($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang){
+function disconnectPeersInformation($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $dsn_agi_manager){
 
    $pPeersInformation = new paloSantoPeersInformation($pDB);
    $peerId  = $_POST['peerId'];
@@ -134,12 +142,12 @@ function disconnectPeersInformation($smarty, $module_name, $local_templates_dir,
     $connect = socketReject($ip_ask, $local_ip, $action);
 
 
-   $contenidoModulo = reportPeersInformation($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+   $contenidoModulo = reportPeersInformation($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $dsn_agi_manager);
    return $contenidoModulo;
 
 }
 
-function AceptPeerRequest($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang)
+function AceptPeerRequest($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $dsn_agi_manager)
 {
    $root_certicate = "/var/lib/asterisk/keys"; 
    $mac = $_POST['peerMac'];
@@ -182,7 +190,7 @@ function AceptPeerRequest($smarty, $module_name, $local_templates_dir, $pDB, $ar
       if(file_exists("$root_certicate/$macCertificate.pub")){
          $lineas = file("$root_certicate/$macCertificate.pub");
          foreach ($lineas as $linea_num => $linea)
-            $local_key.= htmlspecialchars("$linea"); 
+            $local_key.= htmlspecialchars("$linea");
       }
       $update = $pPeersInformation->UpdateOutKey($macCertificate, $peerId);//mac local
       $action = 2;
@@ -195,27 +203,24 @@ function AceptPeerRequest($smarty, $module_name, $local_templates_dir, $pDB, $ar
             $smarty->assign("mb_message", $arrLang["Your connection has been established"]);
             $idPeer = $pPeersInformation->getIdPeer($mac);
             $parameter = $pPeersInformation->createPeerParameter();
-            $resultParameter = $pPeersInformation->addInformationParameter($parameter,$idPeer['id']);            
-            
+            $resultParameter = $pPeersInformation->addInformationParameter($parameter,$idPeer['id']);
           }
       }else{
             $smarty->assign("mb_title", $arrLang["Message"]);
-            $smarty->assign("mb_message", $arrLang["Unable to establish connection with the host, it does not exist or is trying to connect himself"]);  
+            $smarty->assign("mb_message", $arrLang["Unable to establish connection with the host, it does not exist or is trying to connect himself"]);
           }
   }else{
        $smarty->assign("mb_title", $arrLang["Error"]);
        $smarty->assign("mb_message", $arrLang["You must fill your information General before accepting the request"]);
-        
-  }  
-             
-  $contenidoModulo = reportPeersInformation($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+  }
+
+  $contenidoModulo = reportPeersInformation($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $dsn_agi_manager);
  return $contenidoModulo;
 
 }
 
 function socketConnection($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $local_ip, $ip_ask ,$local_mac, $local_key, $local_company, $comment, $action)
 {
-   
     $pPeersInformation = new paloSantoPeersInformation($pDB);
     $arrFormPeersInformation = createFieldForm($arrLang);
     $oForm = new paloForm($smarty,$arrFormPeersInformation);
@@ -235,12 +240,10 @@ function socketConnection($smarty, $module_name, $local_templates_dir, $pDB, $ar
        while(($r = fread($conexion,2048)) != ""){
             $respuesta .= $r;
        }
-       //echo $var;
        $respuesta = strstr($respuesta,"BEGIN");
-       fclose ($conexion);
+       fclose($conexion);
     }
   return $respuesta;
-
 }
 
 function createHeaderHttp($ip_remote, $file_remote, $dataLenght)
@@ -249,11 +252,10 @@ function createHeaderHttp($ip_remote, $file_remote, $dataLenght)
     $headerRequest .= "Host: $ip_remote\r\n";
     $headerRequest .= "Content-Type: application/x-www-form-urlencoded\r\n";
     $headerRequest .= "Content-Length: $dataLenght\r\n\r\n";
-
     return $headerRequest;
 }
 
-function connectPeersInformation($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang){
+function connectPeersInformation($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $dsn_agi_manager){
 
    $pPeersInformation = new paloSantoPeersInformation($pDB);
    $peerId  = $_GET['peerId'];
@@ -266,12 +268,12 @@ function connectPeersInformation($smarty, $module_name, $local_templates_dir, $p
     $ip_ask = $dataPeer['host'];
     $connect = socketReject($ip_ask, $local_ip, $action);
 
-   $contenidoModulo = reportPeersInformation($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+   $contenidoModulo = reportPeersInformation($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $dsn_agi_manager);
    return $contenidoModulo;
 
 }
 
-function createFile($smarty, $arrLang, $pDB)
+function createFile($smarty, $arrLang, $pDB, $dsn_agi_manager)
 {
    $peers = "";
    $pPeersInformation = new paloSantoPeersInformation($pDB);
@@ -288,23 +290,23 @@ function createFile($smarty, $arrLang, $pDB)
         }
         $arrInfoParameter = $pPeersInformation->ObtainPeersParametersById($id);
         foreach($arrInfoParameter as $infoParameter){
-              $peers.= "{$infoParameter['name']}={$infoParameter['value']}\n";          
+              $peers.= "{$infoParameter['name']}={$infoParameter['value']}\n";
         }
         $peers.= "\n\n";
-     }      
+     }
    }
-      
-   if($pPeersInformation->createFileDPCE($peers, $arrLang)){   
-      if($pPeersInformation->asteriskReload())
+
+   if($pPeersInformation->createFileDPCE($peers, $arrLang)){
+      if($pPeersInformation->reloadAsterisk($dsn_agi_manager))
         return true;
    }else{
-      if($pPeersInformation->asteriskReload())
+      if($pPeersInformation->reloadAsterisk($dsn_agi_manager))
         return false;
    }
  
 }
 
-function viewPeersInformation($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang)
+function viewPeersInformation($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $dsn_agi_manager)
 {
     $pPeersInformation       = new paloSantoPeersInformation($pDB);
     $arrFormPeersInformation = createFieldForm($arrLang);
@@ -328,21 +330,20 @@ function viewPeersInformation($smarty, $module_name, $local_templates_dir, $pDB,
     $smarty->assign("peerId", $idPeer);
 
     $arrDataPeer = $pPeersInformation->ObtainPeersDataById($idPeer);
-    $arrData['mac']    = $arrDataPeer['mac'];
-    $arrData['model']  = $arrDataPeer['model'];
-    $arrData['host']   = $arrDataPeer['host'];
-    $arrData['inkey']  = $arrDataPeer['inkey'];
-    $arrData['outkey'] = $arrDataPeer['outkey'];
+    $arrData['mac']     = $arrDataPeer['mac'];
+    $arrData['model']   = $arrDataPeer['model'];
+    $arrData['host']    = $arrDataPeer['host'];
+    $arrData['inkey']   = $arrDataPeer['inkey'];
+    $arrData['outkey']  = $arrDataPeer['outkey'];
     $arrData['comment'] = $arrDataPeer['comment'];
     $arrData['company'] = $arrDataPeer['company'];
-    if($arrDataPeer['status'] == "Requesting connection" || $arrDataPeer['status'] == "disconnect" || $arrDataPeer['status'] == "request accepted")    
+    if($arrDataPeer['status'] == "Requesting connection" || $arrDataPeer['status'] == "disconnect" || $arrDataPeer['status'] == "request accepted")
        $acept = "no";
 
-    $smarty->assign("OPCION",$acept);   
+    $smarty->assign("OPCION",$acept);
     $smarty->assign("peerMac", $arrData['mac']);
     $smarty->assign("ipAsk", $arrData['host']);
 
-    
     $oForm->setViewMode();
     $htmlForm = $oForm->fetchForm("$local_templates_dir/view_peer.tpl",$arrLang["View Peer"], $arrData);
     $contenidoModulo = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
@@ -351,13 +352,12 @@ function viewPeersInformation($smarty, $module_name, $local_templates_dir, $pDB,
 
 }
 
-function reportPeersInformation($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
+function reportPeersInformation($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang, $dsn_agi_manager)
 {
     $pPeersInformation = new paloSantoPeersInformation($pDB);
     $field_pattern = getParameter("filter");
     $action = getParameter("nav");
     $start  = getParameter("start");
-
 
     //begin grid parameters
     $oGrid  = new paloSantoGrid($smarty);
@@ -372,7 +372,11 @@ function reportPeersInformation($smarty, $module_name, $local_templates_dir, &$p
     $oGrid->calculatePagination($action,$start);
     $offset = $oGrid->getOffsetValue();
     $end    = $oGrid->getEnd();
-    $url    = "?menu=$module_name&filter=$field_pattern";
+
+    $url = array(
+        'menu'    =>  $module_name,
+        'filter'  =>  $field_pattern,
+    );
 
     $arrData = null;
     $arrResult =$pPeersInformation->ObtainPeersInformation($limit, $offset, $field_pattern);
@@ -487,16 +491,17 @@ function reportPeersInformation($smarty, $module_name, $local_templates_dir, &$p
     //end section filter
 
     $oGrid->showFilter(trim($htmlFilter));
-    $contenidoModulo = "<form  method='POST' style='margin-bottom:0;' action=$url>".$oGrid->fetchGrid($arrGrid, $arrData,$arrLang)."</form>";
+
+    $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
     //end grid parameters
 
-   if(!createFile($smarty, $arrLang, $pDB))
+   if(!createFile($smarty, $arrLang, $pDB, $dsn_agi_manager))
         $pPeersInformation->errMsg = $arrLang["Error to create file"];     
 
     return $contenidoModulo;
 }
 
-function rejectPeerRequest($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang)
+function rejectPeerRequest($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $dsn_agi_manager)
 {
     $idPeer = $_POST['peerId']; //id del peer de quien voy a eliminar
     $ip_ask = $_POST['ipAsk'];  //ip de quien voy a eliminar
@@ -513,20 +518,18 @@ function rejectPeerRequest($smarty, $module_name, $local_templates_dir, $pDB, $a
 
           }
       }
- 
-    $content = reportPeersInformation($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
-
+    $content = reportPeersInformation($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $dsn_agi_manager);
     return $content;
 }
 
 function socketReject($ip_ask, $local_ip, $action)
 {
-   
+
     //$port_remote ="80";
     $port_remote ="443";
     $file_remote ="/elastixConnection/request.php";
     $respuesta = "";
-    
+
     $conexion = fsockopen("ssl://".$ip_ask,$port_remote);
     if ($conexion) {
        //echo "Conexion realizada con éxito <br />";
@@ -537,7 +540,6 @@ function socketReject($ip_ask, $local_ip, $action)
        while(($r = fread($conexion,2048)) != ""){
             $respuesta .= $r;
        }
-       //echo $var;
        $respuesta = strstr($respuesta,"BEGIN");
        fclose ($conexion);
     }
@@ -545,7 +547,7 @@ function socketReject($ip_ask, $local_ip, $action)
 
 }
 
-function deletePeersInformation($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang)
+function deletePeersInformation($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $dsn_agi_manager)
 {
     $pPeersInformation = new paloSantoPeersInformation($pDB);
     $local_ip = isset($_SERVER['SERVER_ADDR'])?$_SERVER['SERVER_ADDR']:"";//ip local
@@ -569,12 +571,12 @@ function deletePeersInformation($smarty, $module_name, $local_templates_dir, $pD
                         if(!$resultParameter)
                         return($pDB->errMsg);
                     }
-                }          
+                }
         }
     }
-    $content = reportPeersInformation($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
-   if(!createFile($smarty, $arrLang, $pDB))
-        $pPeersInformation->errMsg = $arrLang["Error to create file"];     
+    $content = reportPeersInformation($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $dsn_agi_manager);
+    if(!createFile($smarty, $arrLang, $pDB, $dsn_agi_manager))
+        $pPeersInformation->errMsg = $arrLang["Error to create file"];
 
     return $content;
 }
@@ -605,15 +607,13 @@ function socketRequest($smarty, $module_name, $local_templates_dir, $pDB, $arrCo
        fclose ($conexion);
     }
   return $respuesta;
-
 }
 
-function sendConnectionRequest($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang)
+function sendConnectionRequest($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $dsn_agi_manager)
 {
 
     $pGeneralInformation = new paloSantoGeneralInformation($pDB);
     $pPeersInformation = new paloSantoPeersInformation($pDB);
-    //$pConnectionRequest = new paloSantoConnectionRequest($pDB);        
     $arrFormPeersInformation = createFieldForm($arrLang);
     $oForm = new paloForm($smarty,$arrFormPeersInformation);
     $pNet = new paloNetwork();
@@ -627,80 +627,79 @@ function sendConnectionRequest($smarty, $module_name, $local_templates_dir, $pDB
 
     $exist_information = $pGeneralInformation->getGeneralInformation();
     if(is_array($exist_information) && count($exist_information)){
-       $company = $exist_information[0]['organization'];
-    $ip_whosent = isset($_SERVER['SERVER_ADDR'])?$_SERVER['SERVER_ADDR']:"";
-    $arrEths = $pNet->obtener_interfases_red_fisicas();
-       foreach($arrEths as $idEth=>$arrEth)
-       {
-          if($arrEth['Inet Addr'] == $ip_whosent);
-            $mac = $arrEths['eth0']['HWaddr'];
-       }
+        $company = $exist_information[0]['organization'];
+        $ip_whosent = isset($_SERVER['SERVER_ADDR'])?$_SERVER['SERVER_ADDR']:"";
+        $arrEths = $pNet->obtener_interfases_red_fisicas();
+        foreach($arrEths as $idEth=>$arrEth)
+        {
+            if($arrEth['Inet Addr'] == $ip_whosent);
+                $mac = $arrEths['eth0']['HWaddr'];
+        }
 
-    $macCertificate .="CER".str_replace(":","",$mac);
-    if(file_exists("$root_certicate/$macCertificate.pub")){
-       $lineas = file("$root_certicate/$macCertificate.pub");
-       foreach ($lineas as $linea_num => $linea)
-            $key_answer.= htmlspecialchars("$linea"); 
-    }
+        $macCertificate .="CER".str_replace(":","",$mac);
+        if(file_exists("$root_certicate/$macCertificate.pub")){
+            $lineas = file("$root_certicate/$macCertificate.pub");
+            foreach ($lineas as $linea_num => $linea)
+                    $key_answer.= htmlspecialchars("$linea"); 
+        }
 
-    $smarty->assign("Request", $arrLang["Request"]);
-    $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
-    $smarty->assign("IMG", "images/list.png");
+        $smarty->assign("Request", $arrLang["Request"]);
+        $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
+        $smarty->assign("IMG", "images/list.png");
 
-    if(!$oForm->validateForm($_POST)){
-       $smarty->assign("mb_title", $arrLang["Validation Error"]);
-       $arrErrores=$oForm->arrErroresValidacion;
-       $strErrorMsg = "<b>{$arrLang['The following fields contain errors']}:</b><br>";
-       foreach($arrErrores as $k=>$v) {
-          $strErrorMsg .= "$k, ";
-       }
-       $strErrorMsg .= "";
-       $smarty->assign("mb_message", $strErrorMsg);
-       $contenidoModulo = formRequest($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
-       return $contenidoModulo;       
-    }else{
-       $ip_remote = isset($_POST['ip'])?$_POST['ip']:"";//Del servidor a conectarse
-       $ip_request = $ip_whosent;//quien lo solicita
-       $company_request = isset($company)?$company:"";
-       $comment_request = isset($_POST['comment_request'])?$_POST['comment_request']:"";
-       $mac_request = $mac;
-       $action = 1;
-       //Verifica si al host que deseamos conectarnos ya existe como peer en nuestra base
-       $existHost =  $pPeersInformation->getHostStatus($ip_remote);
-       //print_r($existHost);
-       if(!$existHost)
-       {
-          $result = socketRequest($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $ip_remote, $ip_request, $company_request, $comment_request,$mac_request, $macCertificate, $key_answer, $action);
-       
-          if(ereg( "^BEGIN[[:space:]](.*)[[:space:]]END", $result, $regs ))
-          {
-              if($regs[1] == "request"){
-                $smarty->assign("mb_title", $arrLang["Message sent"]);
-                $smarty->assign("mb_message", $arrLang["Your connection request has been received"]);
-                $save = addPeerRequest($smarty, $pDB, $arrLang, $macCertificate);
-              }else if($regs[1] == "exist"){
-                $smarty->assign("mb_title", $arrLang["Alert"]);
-                $smarty->assign("mb_message", $arrLang["Currently there is a connection request"]);
-              }
-          }else{
-              $smarty->assign("mb_title", $arrLang["Message"]);
-              $smarty->assign("mb_message", $arrLang["Unable to establish connection with the host, it does not exist or is trying to connect himself"]);  
-          }
-       }else{
-              $smarty->assign("mb_title", $arrLang["Message"]);
-              $smarty->assign("mb_message", $arrLang["You had a request which was rejected earlier, your request has been sent again"]); 
-            }//
-     }    
+        if(!$oForm->validateForm($_POST)){
+            $smarty->assign("mb_title", $arrLang["Validation Error"]);
+            $arrErrores=$oForm->arrErroresValidacion;
+            $strErrorMsg = "<b>{$arrLang['The following fields contain errors']}:</b><br>";
+            foreach($arrErrores as $k=>$v)
+                $strErrorMsg .= "$k, ";
+
+            $strErrorMsg .= "";
+            $smarty->assign("mb_message", $strErrorMsg);
+            $contenidoModulo = formRequest($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $dsn_agi_manager);
+            return $contenidoModulo;
+        }else{
+            $ip_remote = isset($_POST['ip'])?$_POST['ip']:"";//Del servidor a conectarse
+            $ip_request = $ip_whosent;//quien lo solicita
+            $company_request = isset($company)?$company:"";
+            $comment_request = isset($_POST['comment_request'])?$_POST['comment_request']:"";
+            $mac_request = $mac;
+            $action = 1;
+            //Verifica si al host que deseamos conectarnos ya existe como peer en nuestra base
+            $existHost =  $pPeersInformation->getHostStatus($ip_remote);
+            if(!$existHost)
+            {
+                $result = socketRequest($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $ip_remote, $ip_request, $company_request, $comment_request,$mac_request, $macCertificate, $key_answer, $action);
+
+                if(ereg( "^BEGIN[[:space:]](.*)[[:space:]]END", $result, $regs ))
+                {
+                    if($regs[1] == "request"){
+                        $smarty->assign("mb_title", $arrLang["Message sent"]);
+                        $smarty->assign("mb_message", $arrLang["Your connection request has been received"]);
+                        $save = addPeerRequest($smarty, $pDB, $arrLang, $macCertificate);
+                    }else if($regs[1] == "exist"){
+                        $smarty->assign("mb_title", $arrLang["Alert"]);
+                        $smarty->assign("mb_message", $arrLang["Currently there is a connection request"]);
+                    }
+                }else{
+                    $smarty->assign("mb_title", $arrLang["Message"]);
+                    $smarty->assign("mb_message", $arrLang["Unable to establish connection with the host, it does not exist or is trying to connect himself"]);  
+                }
+            }else{
+                $smarty->assign("mb_title", $arrLang["Message"]);
+                $smarty->assign("mb_message", $arrLang["You had a request which was rejected earlier, your request has been sent again"]);
+            }
+        }
     }else{
          $smarty->assign("mb_title", $arrLang["Error"]);
          $smarty->assign("mb_message", $arrLang["You must fill your information General before making the request"]);
-    }  
-        
-    $contenidoModulo = reportPeersInformation($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
-    return $contenidoModulo;     
+    }
+
+    $contenidoModulo = reportPeersInformation($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $dsn_agi_manager);
+    return $contenidoModulo;
 }
 
-function formRequest($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang)
+function formRequest($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $dsn_agi_manager)
 {
     $pPeersInformation = new paloSantoPeersInformation($pDB);
     $arrFormPeersInformation = createFieldForm($arrLang);
@@ -709,7 +708,7 @@ function formRequest($smarty, $module_name, $local_templates_dir, $pDB, $arrConf
     $smarty->assign("Request", $arrLang["Request"]);   
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
     $smarty->assign("IMG", "images/list.png");
-    
+
     $htmlForm = $oForm->fetchForm("$local_templates_dir/request.tpl",$arrLang["Connection Request"], $_POST);
     $contenidoModulo = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
 
@@ -717,7 +716,7 @@ function formRequest($smarty, $module_name, $local_templates_dir, $pDB, $arrConf
 }
 
 function addPeerRequest($smarty, $pDB, $arrLang, $macCertificate)
-{ 
+{
     $pPeersInformation = new paloSantoPeersInformation($pDB);
     $ip_remote = isset($_POST['ip'])?$_POST['ip']:"";
     $mac_remote = "";
@@ -725,15 +724,14 @@ function addPeerRequest($smarty, $pDB, $arrLang, $macCertificate)
     $result = $pPeersInformation->AddServerRequest($ip_remote, $mac_remote, $status, $macCertificate);
     if(!$result)
       return false;
-    else 
-      return true; 
-
+    else
+      return true;
 }
 
 
 
 function createFieldForm($arrLang)
-{    
+{
     $arrFields = array(
             "mac"   => array(      "LABEL"                  => $arrLang["MAC"],
                                             "REQUIRED"               => "yes",
@@ -807,6 +805,7 @@ function createFieldForm($arrLang)
             );
     return $arrFields;
 }
+
 function getAction()
 {
     if(getParameter("show")) //Get parameter by POST (submit)

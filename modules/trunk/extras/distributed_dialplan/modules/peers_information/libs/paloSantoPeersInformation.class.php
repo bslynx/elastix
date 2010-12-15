@@ -26,6 +26,7 @@
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
   $Id: paloSantoPeersInformation.class.php,v 1.1 2008-08-03 11:08:42 Andres Flores aflores@palosanto.com Exp $ */
+require_once "/var/lib/asterisk/agi-bin/phpagi-asmanager.php";
 class paloSantoPeersInformation {
     var $_DB;
     var $errMsg;
@@ -69,35 +70,29 @@ class paloSantoPeersInformation {
            return $macCertificate;
         }else 
            return "No Found";
-      
     }
 
     function  addInfoRequest($mac, $ip, $company, $comment, $certificate,$key)
     {
-        $ip_request = $this->_DB->DBCAMPO($ip);
-        $company_request = $this->_DB->DBCAMPO($company);
-        $comment_request = $this->_DB->DBCAMPO($comment);
-        $mac_request = $this->_DB->DBCAMPO($mac);
-        $certificate_request = $this->_DB->DBCAMPO($certificate);
-        $key_request = $this->_DB->DBCAMPO($key);
 
-        $query = "INSERT INTO peer(mac, model, host, inkey , outkey, status, his_status, key, comment, company)VALUES($mac_request,'symmetric',$ip_request,$certificate_request,'','Requesting connection','waiting response',$key_request,$comment_request, $company_request)";
+        $data = array($mac,$ip,$certificate,$key,$comment,$company);
 
-        $result=$this->_DB->fetchTable($query, true);
+        $query = "INSERT INTO peer(mac, model, host, inkey , outkey, status, his_status, key, comment, company)VALUES(?,'symmetric',?,?,'','Requesting connection','waiting response',?,?,?)";
+
+        $result=$this->_DB->genQuery($query, $data);
         if($result==FALSE)
         {
             $this->errMsg = $this->_DB->errMsg;
             return array();
         }
-        return $result;      
-     
+        return $result;
     }
 
    function UpdateOutKey($certificate ,$peerId)
    {
-      $local_outkey = $this->_DB->DBCAMPO($certificate);
-      $query = "UPDATE peer SET outkey=$local_outkey where id=$peerId";
-      $result=$this->_DB->fetchTable($query, true);
+      $data = array($certificate, $peerId);
+      $query = "UPDATE peer SET outkey=? where id=?";
+      $result=$this->_DB->genQuery($query, $data);
       if($result==FALSE)
       {
           $this->errMsg = $this->_DB->errMsg;
@@ -108,43 +103,44 @@ class paloSantoPeersInformation {
 
    function hostExist($mac)
    {
-      $exist_mac = $this->_DB->DBCAMPO($mac);
-      $query = "SELECT host FROM peer where mac=$exist_mac";
-      $result=$this->_DB->getFirstRowQuery($query, true);
+      $data = array($mac);
+      $query = "SELECT host FROM peer where mac=?";
+      $result=$this->_DB->getFirstRowQuery($query, true, $data);
       if($result==FALSE)
       {
          $this->errMsg = $this->_DB->errMsg;
          return array();
       }
       return $result;
-
    }
-   
 
     function uploadInformationPeer($data, $where)
     {
 
         $arrTmp = array();
         foreach($data as $key => $value)
-           $arrTmp[$key] = $this->_DB->DBCAMPO($value);   
+           $arrTmp[$key] = $this->_DB->DBCAMPO($value);
 
         $queryInsert = $this->_DB->construirUpdate("peer", $arrTmp, "id=$where");
         $result = $this->_DB->genQuery($queryInsert);
         return $result;
     }
 
-	function addInformationParameter($dataParameter, $id)
+    function addInformationParameter($dataParameter, $id)
     {
-       
        $arrTmp = array();
+       $data = array();
        $result = "";
        foreach($dataParameter as $key => $value)
-          $arrTmp[$key] = $this->_DB->DBCAMPO($value); 
-       
+          $arrTmp[$key] = $this->_DB->DBCAMPO($value);
+
        foreach($arrTmp as $name => $value)
        {
-         $queryInsert = "INSERT INTO parameter(name, value, id_peer) VALUES($name, $value, $id)";
-         $result = $this->_DB->genQuery($queryInsert);
+         $data[0] = $name;
+         $data[1] = $value;
+         $data[2] = $id;
+         $queryInsert = "INSERT INTO parameter(name, value, id_peer) VALUES(?, ?, ?)";
+         $result = $this->_DB->genQuery($queryInsert, $data);
          //hay que manejar el error en el caso de que no pueda insertar
 
        }
@@ -153,32 +149,20 @@ class paloSantoPeersInformation {
 
    function createPeerParameter()
    {
-     $dataPeer = array();
      $dataParameter = array();
      //$dataParameter["'precache'"]  = "outbound";
      $dataParameter["'include'"]   = "priv";
      $dataParameter["'permit'"]    = "priv";
      $dataParameter["'quality'"]   = "yes";
      $dataParameter["'order'"]   = "primary";
-     return $dataParameter;  
-
+     return $dataParameter;
    }
 
-   function asteriskReload()
-   { 
-     $root = "/usr/sbin";
-     exec("$root/asterisk -rx 'reload'",$arrReg, $arrFlag);
-     /*if($arrFlag == 0)
-        return true;
-     else
-        return false;*/
-     return true;
-   }
-
-     function obtainForeignKey($idPeer)
+    function obtainForeignKey($idPeer)
     {
-        $query = "SELECT inkey FROM peer WHERE id=$idPeer";
-        $result=$this->_DB->getFirstRowQuery($query, true);
+        $data = array($idPeer);
+        $query = "SELECT inkey FROM peer WHERE id=?";
+        $result=$this->_DB->getFirstRowQuery($query, true, $data);
         if($result==FALSE)
         {
             $this->errMsg = $this->_DB->errMsg;
@@ -191,34 +175,40 @@ class paloSantoPeersInformation {
     {
         // obtain the foreign public key
         $nameKey = $this->obtainForeignKey($idPeer);
-        $root = " /var/lib/asterisk/keys/".$nameKey.'.pub';
-        exec("rm -rf $root");
-        $query = "DELETE FROM peer WHERE id=$idPeer";
-        $result = $this->_DB->genQuery($query);
+        $root = "/var/lib/asterisk/keys/".$nameKey.'.pub';
+        $data = array($idPeer);
+        $fileName = basename($root);
+        $dirFile  = "/var/lib/asterisk/keys/$fileName";
+        if(is_file($dirFile))
+            unlink($dirFile);
+        $query  = "DELETE FROM peer WHERE id=?";
+        $result = $this->_DB->genQuery($query, $data);
         return $result;
     }
 
-	function deleteInformationParameter($idPeer)
+    function deleteInformationParameter($idPeer)
     {
-        $query = "DELETE FROM parameter WHERE id_peer=$idPeer";
-        $result = $this->_DB->genQuery($query);
+        $data = array($idPeer);
+        $query = "DELETE FROM parameter WHERE id_peer=?";
+        $result = $this->_DB->genQuery($query, $data);
         return $result;
     }
 
     function getHostStatus($host)
     {
       $host_remote = $this->_DB->DBCAMPO($host);
-      $query = "SELECT * FROM peer where host=$host_remote and (status='waiting response' or status='request accepted' or status='connected' or status='disconnected' or status='request delete)" ;
-      $result=$this->_DB->getFirstRowQuery($query, true);
+      $data = array($host);
+      $query = "SELECT * FROM peer where host=? and (status='waiting response' or status='request accepted' or status='connected' or status='disconnected' or status='request delete')" ;
+      $result=$this->_DB->getFirstRowQuery($query, true, $data);
       if($result==FALSE)
       {
          $this->errMsg = $this->_DB->errMsg;
          return false;
       }
-      return true;   
+      return true;
     }
 
-	function getIdPeer($MAC=null)
+    function getIdPeer($MAC=null)
     {
       $where = "";
       $tmpMac = "";
@@ -235,10 +225,7 @@ class paloSantoPeersInformation {
          return array();
       }
       return $result;
-      
-    
     }
-
 
     //Funcion que crea el archivo dundi_peers_custom_elastix.conf
     function createFileDPCE($peers,$arrLang)
@@ -255,15 +242,14 @@ class paloSantoPeersInformation {
           $this->errMsg = $arrLang["Unabled open file"];
           return false;
        }
-       return true;        
+       return true;
     }
-
 
     function ObtainNumPeersInformation()
     {
         //Here your implementation
         $query   = "SELECT COUNT(*) FROM peer";
-        
+
         $result=$this->_DB->getFirstRowQuery($query);
         if($result==FALSE)
         {
@@ -277,7 +263,7 @@ class paloSantoPeersInformation {
     {
         //Here your implementation
         $query   = "SELECT * FROM peer";
-        
+
         $result=$this->_DB->fetchTable($query, true);
         if($result==FALSE)
         {
@@ -289,27 +275,28 @@ class paloSantoPeersInformation {
 
     function StatusDisconnect($peerId)
     {
-
-        $query = "UPDATE peer SET status ='disconnected' WHERE id=$peerId";
-        $result=$this->_DB->fetchTable($query, true);
+        $data = array($peerId);
+        $query = "UPDATE peer SET status ='disconnected' WHERE id=?";
+        $result=$this->_DB->genQuery($query, $data);
         if($result==FALSE)
         {
             $this->errMsg = $this->_DB->errMsg;
             return array();
         }
-        return $result;      
+        return $result;
     }
 
     function StatusConnect($peerId)
     {
-        $query = "UPDATE peer SET status ='connected' WHERE id=$peerId";
-        $result=$this->_DB->fetchTable($query, true);
+        $data = array($peerId);
+        $query = "UPDATE peer SET status ='connected' WHERE id=?";
+        $result=$this->_DB->genQuery($query, $data);
         if($result==FALSE)
         {
             $this->errMsg = $this->_DB->errMsg;
             return array();
         }
-        return $result;      
+        return $result;
     }
 
     function hisStatusConnect($ip_answer, $action)
@@ -319,28 +306,25 @@ class paloSantoPeersInformation {
             $his_status = "connected";
         else if($action == 6)
                     $his_status = "disconnected";
-
-        $query = "UPDATE peer SET his_status ='$his_status' WHERE host='$ip_answer'";
-        $result=$this->_DB->fetchTable($query, true);
+        $data   = array($his_status, $ip_answer);
+        $query  = "UPDATE peer SET his_status=? WHERE host=?";
+        $result = $this->_DB->genQuery($query, $data);
         if($result==FALSE)
         {
             $this->errMsg = $this->_DB->errMsg;
             return array();
         }
-        return $result;      
+        return $result;
     }
 
    function UpdateInfoRequest($ip, $mac, $key, $company, $comment)
    {
-     $ip_answer = $this->_DB->DBCAMPO($ip);
-     $mac_answer = $this->_DB->DBCAMPO($mac);
-     $key_answer = $this->_DB->DBCAMPO($key);
-     $company_answer = $this->_DB->DBCAMPO($company);
-     $comment_answer = $this->_DB->DBCAMPO($comment);
      $macCertificate = "CER".str_replace(":","",$mac);
-     $query = "UPDATE peer SET mac=$mac_answer, inkey='$macCertificate', status='request accepted',his_status='disconnected', key=$key_answer, comment=$comment_answer, company=$company_answer where host=$ip_answer and status='waiting response'";
-     
-     $result=$this->_DB->fetchTable($query, true);
+     $data = array($mac, $macCertificate, $key, $comment, $company, $ip);
+
+     $query = "UPDATE peer SET mac=?, inkey=?, status='request accepted',his_status='disconnected', key=?, comment=$comment_answer, company=? where host=? and status='waiting response'";
+
+     $result=$this->_DB->genQuery($query, $data);
         if($result==FALSE)
         {
             $this->errMsg = $this->_DB->errMsg;
@@ -363,9 +347,10 @@ class paloSantoPeersInformation {
                 $his_status = "connection deleted";
            }
       }
-      $query = "UPDATE peer SET status='$status', his_status='$his_status' where host='$ip_answer' and status='waiting response' or status='request accepted' or status='connected' or status='Requesting connection'";
+      $data = array($status, $his_status, $ip_answer);
+      $query = "UPDATE peer SET status=?, his_status=? where host=? and status='waiting response' or status='request accepted' or status='connected' or status='Requesting connection'";
 
-      $result=$this->_DB->fetchTable($query, true);
+      $result=$this->_DB->genQuery($query, $data);
       if($result==FALSE)
       {
           $this->errMsg = $this->_DB->errMsg;
@@ -382,11 +367,10 @@ class paloSantoPeersInformation {
      if($fh){
         if(fwrite($fh, "$key_answer") == false){
            echo "Unabled write file";
-           fclose($fh);           
+           fclose($fh);
          }
      }else
-          echo "Unabled open file";     
-
+           echo "Unabled open file";
    }
 
     function GenKeyPub($company)
@@ -396,16 +380,17 @@ class paloSantoPeersInformation {
       if($arrFlag == 0)
         return true;
       else
-        return false ;
+        return false;
     }
 
  
     function ObtainPeersDataById($id)
     {
         //Here your implementation
-        $query   = "SELECT * FROM peer WHERE id=$id";
-        
-        $result=$this->_DB->getFirstRowQuery($query, true);
+        $data = array($id);
+        $query   = "SELECT * FROM peer WHERE id=?";
+
+        $result=$this->_DB->getFirstRowQuery($query, true, $data);
         if($result==FALSE)
         {
             $this->errMsg = $this->_DB->errMsg;
@@ -417,8 +402,9 @@ class paloSantoPeersInformation {
     function ObtainPeersParametersById($id)
     {
         //Here your implementation
-        $query   = "SELECT name, value FROM parameter WHERE id_peer=$id";
-        $result=$this->_DB->fetchTable($query, true);
+        $data    = array($id);
+        $query   = "SELECT name, value FROM parameter WHERE id_peer=?";
+        $result  = $this->_DB->fetchTable($query, true, $data);
         if($result==FALSE)
         {
             $this->errMsg = $this->_DB->errMsg;
@@ -426,13 +412,12 @@ class paloSantoPeersInformation {
         }
         return $result;
     }
+
    function AddServerRequest($ip, $mac, $status, $certificate)
    {
-      $host_remote = $this->_DB->DBCAMPO($ip);
-      $status_remote = $this->_DB->DBCAMPO($status);
-      $name_certificate_local = $this->_DB->DBCAMPO($certificate);
-      $query = "INSERT INTO peer(mac,model,host,inkey,outkey,status,his_status)VALUES('','symmetric',$host_remote,'',$name_certificate_local,$status_remote,'Requesting connection')";
-      $result=$this->_DB->fetchTable($query, true);
+      $data = array($ip, $certificate, $status);
+      $query = "INSERT INTO peer(mac,model,host,inkey,outkey,status,his_status)VALUES('','symmetric',?,'',?,?,'Requesting connection')";
+      $result=$this->_DB->genQuery($query, $data);
         if($result==FALSE)
         {
             $this->errMsg = $this->_DB->errMsg;
@@ -440,6 +425,26 @@ class paloSantoPeersInformation {
         }
         return $result;
    }
+
+    function reloadAsterisk($dsn_agi_manager)
+    {
+        $arrResult = $this->AsteriskManager_Command($dsn_agi_manager['host'], $dsn_agi_manager['user'], $dsn_agi_manager['password'], "reload");
+    }
+
+    function AsteriskManager_Command($host, $user, $password, $command) {
+        global $arrLang;
+        $astman = new AGI_AsteriskManager( );
+        if (!$astman->connect("$host", "$user" , "$password")) {
+            $this->errMsg = $arrLang["Error when connecting to Asterisk Manager"];
+        } else{
+            $salida = $astman->Command("$command");
+            $astman->disconnect();
+            if (strtoupper($salida["Response"]) != "ERROR") {
+                return split("\n", $salida["data"]);
+            }
+        }
+        return false;
+    }
 
 }
 ?>
