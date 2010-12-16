@@ -56,10 +56,11 @@ echo "ingreso";
      $result = $pRequest->UpdateInfoRequest($ip_answer, $mac_answer, $key_answer, $company_answer, $comment_answer);
      $keyPubServer =  $pRequest->createKeyPubServer($key_answer, $mac_answer);
      $id = $pRequest->getIdPeer($mac_answer);
-     $parameter = $pRequest->createPeerParameter();
-     $resultParameter = $pRequest->addInformationParameter($parameter,$id['id']);
+     if(isset($id['id']) && $id['id'] != ""){
+        $parameter = $pRequest->createPeerParameter();
+        $resultParameter = $pRequest->addInformationParameter($parameter,$id['id']);
+     }
      echo "BEGIN acept END";
-
 }else if($action == 3 || $action == 4){
      $result = $pRequest->UpdateInfoForReject($ip_answer, $action);
      echo "BEGIN reject END";
