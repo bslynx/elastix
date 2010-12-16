@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module>
+  <menulist>
+    <menuitem menuid="my_extension"    desc="My Extension"    parent=""             module="no"  link="" order="11"></menuitem>
+    <menuitem menuid="myex_config"     desc="Settings"        parent="my_extension" module="yes" link="" order="1"></menuitem>
+  </menulist>
+</module>
