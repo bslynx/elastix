@@ -322,7 +322,7 @@ class paloSantoPeersInformation {
      $macCertificate = "CER".str_replace(":","",$mac);
      $data = array($mac, $macCertificate, $key, $comment, $company, $ip);
 
-     $query = "UPDATE peer SET mac=?, inkey=?, status='request accepted',his_status='disconnected', key=?, comment=$comment_answer, company=? where host=? and status='waiting response'";
+     $query = "UPDATE peer SET mac=?, inkey=?, status='request accepted',his_status='disconnected', key=?, comment=?, company=? where host=? and status='waiting response'";
 
      $result=$this->_DB->genQuery($query, $data);
         if($result==FALSE)
@@ -361,9 +361,19 @@ class paloSantoPeersInformation {
    //crea la clave publica del peer del quien esta solicitando la coneccion
    function createKeyPubServer($key_answer, $mac_answer)
    {
+     // verificar el certificado $key_answer
+     if(!preg_match("/^\w{2}:\w{2}:\w{2}:\w{2}:\w{2}:\w{2}$/",$mac_answer)){ //00:16:76:42:78:2F
+        echo "Unabled write file";
+        return;
+     }
+
+     if(!$this->keyIsValid($key_answer))
+        return;
+
      $pub_key = "CER".str_replace(":","",$mac_answer);
- 
-     $fh = fopen("/var/lib/asterisk/keys/$pub_key.pub", "w+");
+     $dir = "/var/lib/asterisk/keys/$pub_key.pub";
+     $fileName = basename($dir);
+     $fh = fopen("/var/lib/asterisk/keys/$fileName", "w+");
      if($fh){
         if(fwrite($fh, "$key_answer") == false){
            echo "Unabled write file";
@@ -381,6 +391,35 @@ class paloSantoPeersInformation {
         return true;
       else
         return false;
+    }
+
+    function keyIsValid($key)
+    {
+        // primero verificar si la primera linea contiene -----BEGIN PUBLIC KEY----- | -----BEGIN RSA PRIVATE KEY-----
+        if(!preg_match("/^(.|\n)*-----BEGIN PUBLIC KEY-----(.|\n)*$/",$key)){
+            echo "No certificate valid";
+            return FALSE;
+        }
+        $tmp = str_replace("-----BEGIN PUBLIC KEY-----", "", $key);
+        // segundo verificar si la segunda linea contiene -----END PUBLIC KEY----- | -----END RSA PRIVATE KEY-----
+        if(!preg_match("/^(.|\n)*-----END PUBLIC KEY-----(.|\n)*$/",$key)){
+            echo "No certificate valid";
+            return FALSE;
+        }
+        $tmp = str_replace("-----END PUBLIC KEY-----", "", $tmp);
+        $tmp = str_replace("\n", "", $tmp);
+        // tercero hacer un decode_base64 de lo que se encuentre entre -----BEGIN PUBLIC KEY----- y -----END PUBLIC KEY-----
+        $tmpDecode = base64_decode($tmp);
+        if($tmpDecode){// cuarto si no hubo error anterior de ese salida del paso 3 hacer un encode_base64
+            $tmpEncode = base64_encode($tmpDecode);// quinto comparar la salida del paso cuatro con $key 
+            if($tmpEncode == $tmp)
+                return TRUE;
+            else
+                return FALSE;
+        }else{ 
+            echo "No certificate valid";
+            return FALSE;
+        }
     }
 
  
