@@ -637,6 +637,7 @@ td.botonoff {
     padding-left: 8px;
     padding-right: 8px;
     border-right: 1px solid #e35332;
+    height: 23px;
 }
 td.botonoff a {
     COLOR: #165797;
@@ -850,6 +851,7 @@ td.botonon {
     padding-bottom: 0px;
     border-right: 1px solid #e35332;
     background-color: #dce7f3;
+    height: 23px;
 /*     background-image:url(images/fondo_boton_2do_on.gif);
     background-repeat: repeat-x;*/
 }
