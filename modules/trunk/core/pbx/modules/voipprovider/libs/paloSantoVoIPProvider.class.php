@@ -109,7 +109,7 @@ class paloSantoVoIPProvider {
 
     function getVoIPProviders()
     {
-        $query = "SELECT name FROM provider";
+        $query = "SELECT name FROM provider order by name";
         $providers = array();
         $result=$this->_DB->fetchTable($query, true);
 
