@@ -66,5 +66,6 @@ $arrLangModule=array(
 "ERROR" => "ERROR",
 "Enable" => "Habilitar",
 "Disable" => "Desabilitar",
+"Outbound CallerID" => "CallerID de salida",
 );
 ?>

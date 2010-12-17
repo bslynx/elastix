@@ -1,6 +1,6 @@
 #header_detail {
     float: left;
-    width:45%;
+    width:310px;
     height:200px;
     margin:20px 20px 0px 20px;
 }
@@ -8,10 +8,8 @@
 #detail {
     float: left;
     width:40%;
-    /*background-color:#DEE4FA;*/
     height:400px;
-    margin:3px 20px 0px 0px;
-   /* margin: 3px 3px 3px 3px;*/
+    margin:20px 20px 0px 0px;
 }
 
 #title {
@@ -20,41 +18,19 @@
 }
 
 .fielform  {
-    border-color:#EE9A49;
+    border-color:#E35332;
     border-width:thin;
     color:black;
     font-family:Verdana,Arial,Helvetica,sans-serif;
     font-size:12px;
     height:auto;
     position:relative;
-    width:80%;
+    width:288px;
 }
 
 .sombreado {
-    /*background:none repeat scroll 0 0 white;*/
-    color:#DCA024;
+    color:#E35332;
     font-family:Verdana;
     font-size:12px;
     font-weight:bold;
 }
-
-/*.icon {
-    width: 17px;
-    height: 17px;
-    padding: 3px 0 0px 3px;
-    border: 0;
-    cursor:pointer;
-}
-
-#port_desc {
-    margin-left:180px;
-    width:260px;
-    font-size:14px;
-    text-align:center;
-    color:blue;
-}
-
-#form {
-    margin-left:80px;
-    width:"40%";
-}*/

@@ -83,7 +83,8 @@ class paloSantoVoIPProvider {
                             pa.account_name AS account_name,
                             pa.type_trunk AS type_trunk,
                             pa.id_provider AS id_provider,
-                            pa.status AS status
+                            pa.status AS status,
+                            pa.callerID AS callerID
                     FROM
                         provider_account pa";
 
@@ -155,7 +156,7 @@ class paloSantoVoIPProvider {
     function getIdVoIPProvidersByName($name)
     {
         $data = array($name);
-        $query = "SELECT id,  type_trunk FROM provider WHERE name=?";
+        $query = "SELECT id, type_trunk FROM provider WHERE name=?";
         $result=$this->_DB->getFirstRowQuery($query, true, $data);
 
         if($result==FALSE){
@@ -172,6 +173,7 @@ class paloSantoVoIPProvider {
                      account_name      AS account_name,
                      username          AS username,
                      password          AS secret,
+                     callerID          AS callerID,
                      type              AS type,
                      qualify           AS qualify,
                      insecure          AS insecure,
@@ -236,7 +238,7 @@ class paloSantoVoIPProvider {
 
     function insertAccount($data){
 
-        $query = "INSERT INTO provider_account(account_name,username,password,type,qualify,insecure,host,fromuser,fromdomain,dtmfmode,disallow,context,allow,trustrpid,sendrpid,canreinvite,type_trunk,id_provider) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        $query = "INSERT INTO provider_account(account_name,username,password,callerID,type,qualify,insecure,host,fromuser,fromdomain,dtmfmode,disallow,context,allow,trustrpid,sendrpid,canreinvite,type_trunk,id_provider) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
         $result = $this->_DB->genQuery($query, $data);
         if($result==FALSE){
             $this->errMsg = $this->_DB->errMsg;
@@ -247,7 +249,7 @@ class paloSantoVoIPProvider {
 
     function updateAccount($data){
 
-        $query  = "UPDATE provider_account SET account_name=?,username=?,password=?,type=?,qualify=?,insecure=?,host=?,fromuser=?,fromdomain=?,dtmfmode=?,disallow=?,context=?,allow=?,trustrpid=?,sendrpid=?,canreinvite=?,type_trunk=?, status=? WHERE id=?";
+        $query  = "UPDATE provider_account SET account_name=?,username=?,password=?,callerID=?,type=?,qualify=?,insecure=?,host=?,fromuser=?,fromdomain=?,dtmfmode=?,disallow=?,context=?,allow=?,trustrpid=?,sendrpid=?,canreinvite=?,type_trunk=?, status=? WHERE id=?";
         $result = $this->_DB->genQuery($query, $data);
         if($result==FALSE){
             $this->errMsg = $this->_DB->errMsg;
@@ -318,6 +320,7 @@ class paloSantoVoIPProvider {
                 $typeTrunk = $value['type_trunk'];
                 $username  = $value['username'];
                 $secret    = $value['password'];
+                $callerID  = $value['callerID'];
                 $host      = $value['host'];
                 $type_provider = "";
                 if(isset($value['id_provider']) || $value['id_provider'] !="")
@@ -326,7 +329,7 @@ class paloSantoVoIPProvider {
                     $type_provider['name'] = "custom";
                 $type = $type_provider['name']."_".$nameTrunk;
                 //por cada registro se crearan strings con datos a escribir
-                $arrayConfig = $this->AddConfFileExtensionCustom($nameTrunk, $typeTrunk, $arrayConfig, $num_nextTrunk); // escribe todo el archivo desde cero.
+                $arrayConfig = $this->AddConfFileExtensionCustom($nameTrunk, $typeTrunk, $arrayConfig, $num_nextTrunk, $callerID); // escribe todo el archivo desde cero.
                 //$arrayConfig = $this->addConfFileLocalPrefixes($nameTrunk, $typeTrunk, $arrayConfig, $num_nextTrunk);  // escribe reglas de la troncal
                 // verificando tecnologia
                 if($value['type_trunk']=="SIP"){
@@ -423,7 +426,7 @@ class paloSantoVoIPProvider {
         fclose($fp);
     }
 
-    function AddConfFileExtensionCustom($nameTrunk, $typeTrunk, $arrayConfig, $num_nextTrunk)
+    function AddConfFileExtensionCustom($nameTrunk, $typeTrunk, $arrayConfig, $num_nextTrunk, $callerID)
     {
         $line_conf1 = "";
         $line_conf2 = "";
@@ -431,10 +434,11 @@ class paloSantoVoIPProvider {
         $line_conf1 .= "OUT_$num_nextTrunk = ".strtoupper($typeTrunk)."/$nameTrunk\n";
         $line_conf1 .= "OUTPREFIX_$num_nextTrunk =\n";
         $line_conf1 .= "OUTMAXCHANS_$num_nextTrunk =\n";
-        $line_conf1 .= "OUTCID_$num_nextTrunk =\n";
+        $line_conf1 .= "OUTCID_$num_nextTrunk = $callerID\n";
         $line_conf1 .= "OUTKEEPCID_$num_nextTrunk = off\n";
         $line_conf1 .= "OUTFAIL_$num_nextTrunk =\n";
-        $line_conf1 .= "OUTDISABLE_$num_nextTrunk = off\n\n";
+        $line_conf1 .= "OUTDISABLE_$num_nextTrunk = off\n";
+        $line_conf1 .= "FORCEDOUTCID_$num_nextTrunk =\n\n";
 
         $line_conf2 .= "\n";
         $line_conf2 .= "[from-trunk-$typeTrunk-$nameTrunk]\n";
@@ -565,28 +569,6 @@ class paloSantoVoIPProvider {
             }
         }
         return false;
-    }
-
-    function validateFormEmpty($arrConfigTrunk){
-        $anyone_empty=false;
-
-        if($arrConfigTrunk['username']==" " || $arrConfigTrunk['username']==null){
-            $anyone_empty=true;
-            return $anyone_empty;
-        }else if($arrConfigTrunk['secret']==" " || $arrConfigTrunk['secret']==null){
-            $anyone_empty=true;
-            return $anyone_empty;
-        }else if($arrConfigTrunk['type']==" " || $arrConfigTrunk['type']==null){
-            $anyone_empty=true;
-            return $anyone_empty;
-        }else if($arrConfigTrunk['host']==" " || $arrConfigTrunk['host']==null){
-            $anyone_empty=true;
-            return $anyone_empty;
-        }else if($arrConfigTrunk['context']==" " || $arrConfigTrunk['context']==null){
-            $anyone_empty=true;
-            return $anyone_empty;
-        }
-        return $anyone_empty;
     }
 }
 ?>

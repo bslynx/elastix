@@ -73,176 +73,38 @@ function _moduleContent(&$smarty, $module_name)
     $content = "";
 
     switch($action){
-        case "save_new":
-            $content = saveNewVoIPProvider($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $dsn_agi_manager);
-            break;
         case "view_new":
-            $content = newFormVoIPProviderAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+            $content = newFormVoIPProviderAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
+            break;
+        case "save_new":
+            $content = saveNewVoIPProvider($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $dsn_agi_manager);
             break;
         case "view_edit":
-            $content = editFormVoIPProviderAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $dsn_agi_manager);
+            $content = editFormVoIPProviderAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $dsn_agi_manager);
             break;
         case "save_edit":
-            $content = editFormVoIPProviderAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $dsn_agi_manager);
+            $content = saveEditVoIPProviderAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $dsn_agi_manager);
             break;
         case "delete":
-            $content = deleteVoIPProviderAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $dsn_agi_manager);
+            $content = deleteVoIPProviderAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $dsn_agi_manager);
             break;
         case "getInfoProvider":
-            $content = getInfoVoIPProviderAccount($module_name, $pDB, $arrConf, $arrLang);
+            $content = getInfoVoIPProviderAccount($module_name, $pDB, $arrConf);
             break;
 		case "activate":
-			$content = activateVoIPProviderAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $dsn_agi_manager);
+			$content = activateVoIPProviderAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $dsn_agi_manager);
             break;
-        default: // view_form
-            $content = viewFormVoIPProvider($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+        default: // report
+            $content = reportVoIPProvider($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
             break;
     }
     return $content;
 }
 
-function viewFormVoIPProvider($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
+function newFormVoIPProviderAccount($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf)
 {
     $pVoIPProvider = new paloSantoVoIPProvider($pDB);
-    $filter_field = getParameter("filter_field");
-    $filter_value = getParameter("filter_value");
-    $action = getParameter("nav");
-    $start  = getParameter("start");
-    $as_csv = getParameter("exportcsv");
-    $filter_valueTMP = $filter_value;
-    $allowSelection = array("provider", "account_name");
-    if(isset($filter_value) & $filter_value !=""){
-        if(!in_array($filter_field, $allowSelection))
-            $filter_field = "provider";
-        $filter_value    = $pDB->DBCAMPO('%'.$filter_value.'%');
-    }
-
-    $url = array(
-        'menu'          =>  $module_name,
-        'filter_field'  =>  $filter_field,
-        'filter_value'  =>  $filter_valueTMP,
-    );
-
-    //begin grid parameters
-    $oGrid  = new paloSantoGrid($smarty);
-    $totalVoipProviders = $pVoIPProvider->getNumVoIPProvider($filter_field, $filter_value);
-
-    $limit  = 20;
-    $total  = $totalVoipProviders;
-    $oGrid->setLimit($limit);
-    $oGrid->setTotal($total);
-    $oGrid->enableExport();   // enable csv export.
-    $oGrid->pagingShow(true); // show paging section.
-    $oGrid->setNameFile_Export("VoIP_Provider");
-
-    $arrData = null;
-    if($oGrid->isExportAction()) {
-        $limit = $total;
-        $offset = 0;
-        $end = 0;
-
-        $arrResult =$pVoIPProvider->getVoIPProviderData($limit, $offset, $filter_field, $filter_value);
-
-        if(is_array($arrResult) && $total>0){
-            foreach($arrResult as $key => $value){
-                $arrTmp[0] = $value['account_name'];
-                if(isset($value['id_provider']) && $value['id_provider'] != ""){
-                    $name = $pVoIPProvider->getVoIPProviderById($value['id_provider']);
-                    $arrTmp[1] = $name['name'];
-                }else
-                    $arrTmp[1] = $arrLang["Custom"];
-                $arrTmp[2] = $value['type_trunk'];
-                if($value['status'] == "activate")
-                    $arrTmp[3] = $arrLang['Enable'];
-                else
-                    $arrTmp[3] = $arrLang['Disable'];
-                $arrData[] = $arrTmp;
-            }
-        }
-
-        $arrColumns  = array(
-            0 => array("name"      => $arrLang["Account Name"],
-                                   "property1" => ""),
-            1 => array("name"      => $arrLang["VoIP Provider"],
-                                   "property1" => ""),
-            2 => array("name"      => $arrLang["Type Trunk"],
-                                   "property1" => ""),
-            3 => array("name"      => $arrLang["Status"],
-                                   "property1" => ""));
-    }
-    else{
-        $oGrid->calculatePagination($action,$start);
-        $offset = $oGrid->getOffsetValue();
-        $end    = $oGrid->getEnd();
-
-        $arrResult =$pVoIPProvider->getVoIPProviderData($limit, $offset, $filter_field, $filter_value);
-
-        if(is_array($arrResult) && $total>0){
-            foreach($arrResult as $key => $value){
-                $arrTmp[0] = "<input type='checkbox' name='account_{$value['id']}'  />";
-                $arrTmp[1] = $value['account_name'];
-                if(isset($value['id_provider']) && $value['id_provider'] != ""){
-                    $name = $pVoIPProvider->getVoIPProviderById($value['id_provider']);
-                    $arrTmp[2] = $name['name'];
-                }else
-                    $arrTmp[2] = $arrLang["Custom"];
-                $arrTmp[3] = $value['type_trunk'];
-                if($value['status'] == "activate")
-                    $arrTmp[4] = "<a href=?menu=$module_name&action=activate&id={$value['id']}>{$arrLang['Disable']}</a>";
-                else
-                    $arrTmp[4] = "<a href=?menu=$module_name&action=activate&id={$value['id']}>{$arrLang['Enable']}</a>";
-                $arrTmp[5] = "<a href=?menu=$module_name&action=view_edit&id={$value['id']}>{$arrLang['Edit']}</a>";
-                $arrData[] = $arrTmp;
-            }
-        }
-
-        $arrColumns  = array(
-            0 => array("name"      => "<input type='submit' name='delete' value='{$arrLang["Delete"]}' class='button' onclick=\" return confirmSubmit('{$arrLang["Are you sure you wish to delete the accounts selected."]}');\" />",
-                                   "property1" => ""),
-            1 => array("name"      => $arrLang["Account Name"],
-                                   "property1" => ""),
-            2 => array("name"      => $arrLang["VoIP Provider"],
-                                   "property1" => ""),
-            3 => array("name"      => $arrLang["Type Trunk"],
-                                   "property1" => ""),
-            4 => array("name"      => $arrLang["Status"],
-                                   "property1" => ""),
-            5 => array("name"      => $arrLang["Edit"],
-                                   "property1" => ""));
-    }
-
-    $arrGrid = array("title"    => $arrLang["VoIP Provider"],
-                        "icon"     => "images/list.png",
-                        "width"    => "99%",
-                        "start"    => ($total==0) ? 0 : $offset + 1,
-                        "end"      => $end,
-                        "total"    => $total,
-                        "url"      => $url,
-                        "columns"  => $arrColumns,
-                    );
-
-
-    //begin section filter
-    $arrFormFilterprueba = createFieldFilter($arrLang);
-    $oFilterForm = new paloForm($smarty, $arrFormFilterprueba);
-    $smarty->assign("SHOW", $arrLang["Show"]);
-    $smarty->assign("NEW_ACCOUNT", $arrLang["New Account"]);
-    $smarty->assign("Module_name", $module_name);
-
-    $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl","",$_POST);
-    //end section filter
-
-    $oGrid->showFilter(trim($htmlFilter));
-    $content = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
-    //end grid parameters
-
-    return $content;
-}
-
-function newFormVoIPProviderAccount($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
-{
-    $pVoIPProvider = new paloSantoVoIPProvider($pDB);
-    $arrFormVoIPProvider = createFieldForm($arrLang, $pVoIPProvider);
+    $arrFormVoIPProvider = createFieldForm($pVoIPProvider);
     $oForm = new paloForm($smarty,$arrFormVoIPProvider);
 
     //begin, Form data persistence to errors and other events.
@@ -265,39 +127,88 @@ function newFormVoIPProviderAccount($smarty, $module_name, $local_templates_dir,
             $_DATA['type_provider_voip'] = $name;
             $_DATA = $dataVoIPProvider;
         }else{
-            $smarty->assign("mb_title", $arrLang["Error get Data"]);
+            $smarty->assign("mb_title", _tr("Error get Data"));
             $smarty->assign("mb_message", $pVoIPProvider->errMsg);
         }
     }
 
-    $smarty->assign("SAVE", $arrLang["Save"]);
-    $smarty->assign("EDIT", $arrLang["Edit"]);
-    $smarty->assign("CANCEL", $arrLang["Cancel"]);
-    $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
+    $smarty->assign("SAVE", _tr("Save"));
+    $smarty->assign("EDIT", _tr("Edit"));
+    $smarty->assign("CANCEL", _tr("Cancel"));
+    $smarty->assign("REQUIRED_FIELD", _tr("Required field"));
     $smarty->assign("IMG", "images/list.png");
-    $smarty->assign("General_Setting", $arrLang["General_Setting"]);
-    $smarty->assign("PEER_Details", $arrLang["PEER_Details"]);
-    $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",$arrLang["VoIP Provider"], $_DATA);
+    $smarty->assign("General_Setting", _tr("General_Setting"));
+    $smarty->assign("PEER_Details", _tr("PEER_Details"));
+    $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",_tr("VoIP Provider"), $_DATA);
     $content = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
 
     return $content;
 }
 
-function editFormVoIPProviderAccount($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang, $dsn_agi_manager)
+function saveNewVoIPProvider($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $dsn_agi_manager)
 {
     $pVoIPProvider = new paloSantoVoIPProvider($pDB);
-    $arrFormVoIPProvider = createFieldForm($arrLang, $pVoIPProvider);
+    $arrFormVoIPProvider = createFieldForm($pVoIPProvider);
+    $oForm = new paloForm($smarty,$arrFormVoIPProvider);
+
+
+    if(!$oForm->validateForm($_POST)) {
+        $strErrorMsg = "<b>"._tr('The following fields contain errors').":</b><br/>";
+        $arrErrores = $oForm->arrErroresValidacion;
+        if(is_array($arrErrores) && count($arrErrores) > 0){
+            foreach($arrErrores as $k=>$v) {
+                $strErrorMsg .= "$k: [$v[mensaje]] <br /> ";
+            }
+        }
+
+        $smarty->assign("mb_title", _tr("Validation Error"));
+        $smarty->assign("mb_message", $strErrorMsg);
+
+        return newFormVoIPProviderAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
+    }else {
+        $type_provider = getParameter('type_provider_voip');
+        $technology    = getParameter("technology");
+        $id_provider   = null;
+        $arrData       = getAllDataPOST();
+
+        if($type_provider!="custom"){
+            $arrProvider = $pVoIPProvider->getIdVoIPProvidersByName($type_provider);
+            if(count($arrProvider)>0){
+                $technology  = $arrProvider['type_trunk'];
+                $id_provider = $arrProvider['id'];
+            }
+        }
+
+        $arrData[] = $technology;
+        $arrData[] = $id_provider;
+
+        if(!$pVoIPProvider->insertAccount($arrData)){
+            $smarty->assign("mb_title", _tr("Validation Error"));
+            $strErrorMsg  = "<b>"._tr('Internal Error')."</b><br/>".$pVoIPProvider->errMsg;
+            $smarty->assign("mb_message", $strErrorMsg);
+            return newFormVoIPProviderAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
+        }
+        else{
+            //escritura en archivos de asterisk
+            $pVoIPProvider->setAsteriskFiles($dsn_agi_manager);
+            return reportVoIPProvider($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
+        }
+    }
+}
+
+function editFormVoIPProviderAccount($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $dsn_agi_manager)
+{
+    $pVoIPProvider = new paloSantoVoIPProvider($pDB);
+    $arrFormVoIPProvider = createFieldForm($pVoIPProvider);
     $oForm = new paloForm($smarty,$arrFormVoIPProvider);
 
     //begin, Form data persistence to errors and other events.
     $action = getParameter("action");
     $id     = getParameter("id");
     $smarty->assign("ID", $id); //persistence id with input hidden in tpl
-    $smarty->assign("Module_name", $module_name);
-    $smarty->assign("General_Setting", $arrLang["General_Setting"]);
-    $smarty->assign("PEER_Details", $arrLang["PEER_Details"]);
+
     $dataVoIPProvider = $pVoIPProvider->getVoIPProviderAccountById($id);
-    $name = $pVoIPProvider->getVoIPProviderById($dataVoIPProvider['id_provider']);
+    $name   = $pVoIPProvider->getVoIPProviderById($dataVoIPProvider['id_provider']);
     $_DATA  = $_POST;
     if($action=="view")
         $oForm->setViewMode();
@@ -310,81 +221,75 @@ function editFormVoIPProviderAccount($smarty, $module_name, $local_templates_dir
             $_DATA = $dataVoIPProvider;
             $_DATA['type_provider_voip'] = $name;
         }else{
-            $smarty->assign("mb_title", $arrLang["Error get Data"]);
+            $smarty->assign("mb_title", _tr("Error get Data"));
             $smarty->assign("mb_message", $pVoIPProvider->errMsg);
         }
     }
 
-    if(getParameter("save_edit")){
-        if($pVoIPProvider->validateFormEmpty($_POST)) {
-            $smarty->assign("mb_title", $arrLang["Validation Error"]);
-            $strErrorMsg  = "<b>{$arrLang['Some or someone necesary fields are empty please check and complete']}</b><br/>";
-            $smarty->assign("mb_message", $strErrorMsg);
-            $_DATA['type_provider_voip'] = $name;
-            $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
-            $smarty->assign("SAVE", $arrLang["Save"]);
-            $smarty->assign("CANCEL", $arrLang["Cancel"]);
-            $smarty->assign("IMG", "images/list.png"); 
-            $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl", $arrLang["VoIP Provider"], $_POST);
-            $contenidoModulo = "<form  method='POST' enctype='multipart/form-data' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
-            //return $contenidoModulo;
-        }else{
-            $type_provider = isset($_DATA['type_provider_voip'])?$_DATA['type_provider_voip']:"";
-            $account_name  = isset($_DATA["account_name"])?$_DATA["account_name"]:"";
-            $username      = isset($_DATA["username"])?$_DATA["username"]:"";
-            $secret        = isset($_DATA["secret"])?$_DATA["username"]:"";
-            $type          = isset($_DATA["type"])?$_DATA["type"]:"";
-            $qualify       = isset($_DATA["qualify"])?$_DATA["qualify"]:"";
-            $insecure      = isset($_DATA["insecure"])?$_DATA["insecure"]:"";
-            $host          = isset($_DATA["host"])?$_DATA["host"]:"";
-            $fromuser      = isset($_DATA["fromuser"])?$_DATA["fromuser"]:"";
-            $fromdomain    = isset($_DATA["fromdomain"])?$_DATA["fromdomain"]:"";
-            $dtmfmode      = isset($_DATA["dtmfmode"])?$_DATA["dtmfmode"]:"";
-            $disallow      = isset($_DATA["disallow"])?$_DATA["disallow"]:"";
-            $context       = isset($_DATA["context"])?$_DATA["context"]:"";
-            $allow         = isset($_DATA["allow"])?$_DATA["allow"]:"";
-            $trustrpid     = isset($_DATA["trustrpid"])?$_DATA["trustrpid"]:"";
-            $sendrpid      = isset($_DATA["sendrpid"])?$_DATA["sendrpid"]:"";
-            $canreinvite   = isset($_DATA["canreinvite"])?$_DATA["canreinvite"]:"";
-            $technology    = isset($_DATA["technology"])?$_DATA["technology"]:"";
-			$statusAct     = isset($_DATA["status"])?$_DATA["status"]:"";
-            if($technology=="")
-                $technology = $dataVoIPProvider['technology'];
-            $data = array($account_name,$username,$secret,$type,$qualify,$insecure,$host,$fromuser,$fromdomain,$dtmfmode,$disallow,$context,$allow,$trustrpid,$sendrpid,$canreinvite,$technology,$statusAct,$id);
-    
-            $status = $pVoIPProvider->updateAccount($data);
-
-            if(!$status){
-                $smarty->assign("mb_title", $arrLang["Validation Error"]);
-                $strErrorMsg  = "<b>{$arrLang['Internal Error']}</b><br/>";
-                $smarty->assign("mb_message", $strErrorMsg);
-                $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
-                $smarty->assign("SAVE", $arrLang["Save"]);
-                $smarty->assign("EDIT", $arrLang["Edit"]);
-                $smarty->assign("CANCEL", $arrLang["Cancel"]);
-                $smarty->assign("IMG", "images/list.png"); 
-                $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl", $arrLang["VoIP Provider"], $_POST);
-                $contenidoModulo = "<form  method='POST' enctype='multipart/form-data' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
-                return $contenidoModulo;
-            }
-            //escritura en archivos de asterisk
-            $pVoIPProvider->setAsteriskFiles($dsn_agi_manager);
-            header("Location: ?menu=$module_name&action=view_form");
-        }
-    }
-
-    $smarty->assign("SAVE", $arrLang["Save"]);
-    $smarty->assign("EDIT", $arrLang["Save"]);
-    $smarty->assign("CANCEL", $arrLang["Cancel"]);
-    $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
+    $smarty->assign("SAVE", _tr("Save"));
+    $smarty->assign("EDIT", _tr("Edit"));
+    $smarty->assign("CANCEL", _tr("Cancel"));
+    $smarty->assign("Module_name", $module_name);
+    $smarty->assign("REQUIRED_FIELD", _tr("Required field"));
     $smarty->assign("IMG", "images/list.png");
-    $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",$arrLang["VoIP Provider"], $_DATA);
+    $smarty->assign("General_Setting", _tr("General_Setting"));
+    $smarty->assign("PEER_Details", _tr("PEER_Details"));
+    $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",_tr("VoIP Provider"), $_DATA);
     $content = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
 
     return $content;
 }
 
-function getInfoVoIPProviderAccount($module_name, &$pDB, $arrConf, $arrLang)
+function saveEditVoIPProviderAccount($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $dsn_agi_manager)
+{
+    $pVoIPProvider = new paloSantoVoIPProvider($pDB);
+    $arrFormVoIPProvider = createFieldForm($pVoIPProvider);
+    $oForm = new paloForm($smarty,$arrFormVoIPProvider);
+
+    if(!$oForm->validateForm($_POST)) {
+        $strErrorMsg = "<b>"._tr('The following fields contain errors').":</b><br/>";
+        $arrErrores = $oForm->arrErroresValidacion;
+        if(is_array($arrErrores) && count($arrErrores) > 0){
+            foreach($arrErrores as $k=>$v) {
+                $strErrorMsg .= "$k: [$v[mensaje]] <br /> ";
+            }
+        }
+
+        $smarty->assign("mb_title", _tr("Validation Error"));
+        $smarty->assign("mb_message", $strErrorMsg);
+        return editFormVoIPProviderAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $dsn_agi_manager);
+    }
+    else{
+        $type_provider = getParameter('type_provider_voip');
+        $technology    = getParameter("technology");
+        $statusAct     = getParameter("status");
+        $id            = getParameter("id");
+        $arrData       = getAllDataPOST();
+
+        if(empty($technology)){
+            $dataVoIPProvider = $pVoIPProvider->getVoIPProviderAccountById($id);
+            $technology       = $dataVoIPProvider['technology'];
+        }
+
+        $arrData[] = $technology;
+        $arrData[] = $statusAct;
+        $arrData[] = $id;
+
+        if(!$pVoIPProvider->updateAccount($arrData)){
+            $smarty->assign("mb_title", _tr("Validation Error"));
+            $strErrorMsg  = "<b>"._tr('Internal Error')."</b><br/>".$pVoIPProvider->errMsg;
+            $smarty->assign("mb_message", $strErrorMsg);
+            return editFormVoIPProviderAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $dsn_agi_manager);
+        }
+        else{
+            //escritura en archivos de asterisk
+            $pVoIPProvider->setAsteriskFiles($dsn_agi_manager);
+            return reportVoIPProvider($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
+        }
+    }
+}
+
+function getInfoVoIPProviderAccount($module_name, &$pDB, $arrConf)
 {
     $jsonObject      = new PaloSantoJSON();
     $pVoIPProvider   = new paloSantoVoIPProvider($pDB);
@@ -417,82 +322,7 @@ function getInfoVoIPProviderAccount($module_name, &$pDB, $arrConf, $arrLang)
     return $jsonObject->createJSON();
 }
 
-function saveNewVoIPProvider($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang, $dsn_agi_manager)
-{
-    $pVoIPProvider = new paloSantoVoIPProvider($pDB);
-    $arrFormVoIPProvider = createFieldForm($arrLang, $pVoIPProvider);
-    $oForm = new paloForm($smarty,$arrFormVoIPProvider);
-
-    if($pVoIPProvider->validateFormEmpty($_POST)) {
-        $smarty->assign("mb_title", $arrLang["Validation Error"]);
-        $strErrorMsg  = "<b>{$arrLang['Some or someone necesary fields are empty please check and complete']}</b><br/>";
-        $smarty->assign("mb_message", $strErrorMsg);
-
-        $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
-        $smarty->assign("SAVE", $arrLang["Save"]);
-        $smarty->assign("CANCEL", $arrLang["Cancel"]);
-        $smarty->assign("IMG", "images/list.png"); 
-
-        $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl", $arrLang["VoIP Provider"], $_POST);
-        $contenidoModulo = "<form  method='POST' enctype='multipart/form-data' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
-        return $contenidoModulo;
-
-    }else {
-        $data_trunk = array();
-        $data_attribute = array();
-
-        $type_provider = isset($_POST['type_provider_voip'])?$_POST['type_provider_voip']:"";
-        $account_name  = isset($_POST["account_name"])?$_POST["account_name"]:"";
-        $username      = isset($_POST["username"])?$_POST["username"]:"";
-        $secret        = isset($_POST["secret"])?$_POST["username"]:"";
-        $type          = isset($_POST["type"])?$_POST["type"]:"";
-        $qualify       = isset($_POST["qualify"])?$_POST["qualify"]:"";
-        $insecure      = isset($_POST["insecure"])?$_POST["insecure"]:"";
-        $host          = isset($_POST["host"])?$_POST["host"]:"";
-        $fromuser      = isset($_POST["fromuser"])?$_POST["fromuser"]:"";
-        $fromdomain    = isset($_POST["fromdomain"])?$_POST["fromdomain"]:"";
-        $dtmfmode      = isset($_POST["dtmfmode"])?$_POST["dtmfmode"]:"";
-        $disallow      = isset($_POST["disallow"])?$_POST["disallow"]:"";
-        $context       = isset($_POST["context"])?$_POST["context"]:"";
-        $allow         = isset($_POST["allow"])?$_POST["allow"]:"";
-        $trustrpid     = isset($_POST["trustrpid"])?$_POST["trustrpid"]:"";
-        $sendrpid      = isset($_POST["sendrpid"])?$_POST["sendrpid"]:"";
-        $canreinvite   = isset($_POST["canreinvite"])?$_POST["canreinvite"]:"";
-        $technology    = isset($_POST["technology"])?$_POST["technology"]:"";
-
-        if($type_provider!="custom"){
-            $id_provider = $pVoIPProvider->getIdVoIPProvidersByName($type_provider);
-            $technology  = $id_provider['type_trunk'];
-        }else{
-            $id_provider = null;
-        }
-
-        $data = array($account_name,$username,$secret,$type,$qualify,$insecure,$host,$fromuser,$fromdomain,$dtmfmode,$disallow,$context,$allow,$trustrpid,$sendrpid,$canreinvite,$technology, $id_provider['id']);
-
-        $status = $pVoIPProvider->insertAccount($data);
-
-        if(!$status){
-            $smarty->assign("mb_title", $arrLang["Validation Error"]);
-            $strErrorMsg  = "<b>{$arrLang['Internal Error']}</b><br/>";
-            $smarty->assign("mb_message", $strErrorMsg);
-            $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
-            $smarty->assign("SAVE", $arrLang["Save"]);
-            $smarty->assign("CANCEL", $arrLang["Cancel"]);
-            $smarty->assign("IMG", "images/list.png"); 
-            $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl", $arrLang["VoIP Provider"], $_POST);
-            $contenidoModulo = "<form  method='POST' enctype='multipart/form-data' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
-            return $contenidoModulo;
-        }
-
-        //escritura en archivos de asterisk
-        $pVoIPProvider->setAsteriskFiles($dsn_agi_manager);
-
-        header("Location: ?menu=$module_name&action=view_form");
-    }
-
-}
-
-function deleteVoIPProviderAccount($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang, $dsn_agi_manager)
+function deleteVoIPProviderAccount($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $dsn_agi_manager)
 {
     $pVoIPProvider = new paloSantoVoIPProvider($pDB);
     $pACL            = new paloACL($arrConf['ACLdb']);
@@ -510,14 +340,14 @@ function deleteVoIPProviderAccount($smarty, $module_name, $local_templates_dir, 
         //escritura en archivos de asterisk
         $pVoIPProvider->setAsteriskFiles($dsn_agi_manager);
     }else{
-        $smarty->assign("mb_title", $arrLang["Validation Error"]);
-        $smarty->assign("mb_message", $arrLang["User is not allowed to do this operation"]);
+        $smarty->assign("mb_title", _tr("Validation Error"));
+        $smarty->assign("mb_message", _tr("User is not allowed to do this operation"));
     }
-    return viewFormVoIPProvider($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+    return reportVoIPProvider($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
 
 }
 
-function activateVoIPProviderAccount($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang, $dsn_agi_manager)
+function activateVoIPProviderAccount($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $dsn_agi_manager)
 {
 	$pVoIPProvider   = new paloSantoVoIPProvider($pDB);
     $pACL            = new paloACL($arrConf['ACLdb']);
@@ -536,40 +366,143 @@ function activateVoIPProviderAccount($smarty, $module_name, $local_templates_dir
 		if($sal){
 			$pVoIPProvider->setAsteriskFiles($dsn_agi_manager);
 		}else{
-			$smarty->assign("mb_title", $arrLang["ERROR"]);
-			$smarty->assign("mb_message", $arrLang["Internal Error"]);
+			$smarty->assign("mb_title", _tr("ERROR"));
+			$smarty->assign("mb_message", _tr("Internal Error"));
 		}
 	}else{
-		$smarty->assign("mb_title", $arrLang["Validation Error"]);
-        $smarty->assign("mb_message", $arrLang["User is not allowed to do this operation"]);
+		$smarty->assign("mb_title", _tr("Validation Error"));
+        $smarty->assign("mb_message", _tr("User is not allowed to do this operation"));
 	}
-	return viewFormVoIPProvider($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+	return reportVoIPProvider($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
 }
 
-function createFieldForm($arrLang, $pVoIPProvider)
+function reportVoIPProvider($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf)
 {
-    $arrProviders = array("custom" => $arrLang["Custom"]);
+    $pVoIPProvider = new paloSantoVoIPProvider($pDB);
+    $filter_field = getParameter("filter_field");
+    $filter_value = getParameter("filter_value");
+    $filter_valueTMP = $filter_value;
+    $allowSelection = array("provider", "account_name");
+    if(isset($filter_value) & $filter_value !=""){
+        if(!in_array($filter_field, $allowSelection))
+            $filter_field = "provider";
+        $filter_value    = $pDB->DBCAMPO('%'.$filter_value.'%');
+    }
+
+    $url = array(
+        'menu'          =>  $module_name,
+        'filter_field'  =>  $filter_field,
+        'filter_value'  =>  $filter_valueTMP,
+    );
+
+    //begin grid parameters
+    $oGrid  = new paloSantoGrid($smarty);
+    $oGrid->enableExport();   // enable csv export.
+    $oGrid->pagingShow(true); // show paging section.
+    $oGrid->setTitle(_tr("VoIP Provider"));
+    $oGrid->setNameFile_Export("VoIP_Provider");
+    $oGrid->setURL($url);
+
+    $totalVoipProviders = $pVoIPProvider->getNumVoIPProvider($filter_field, $filter_value);
+
+    $arrData = null;
+    if($oGrid->isExportAction()) {
+        $limit  = $totalVoipProviders;
+        $offset = 0;
+
+        $arrResult =$pVoIPProvider->getVoIPProviderData($limit, $offset, $filter_field, $filter_value);
+
+        if(is_array($arrResult) && $totalVoipProviders>0){
+            foreach($arrResult as $key => $value){
+                $arrTmp[0] = $value['account_name'];
+                if(isset($value['id_provider']) && $value['id_provider'] != ""){
+                    $name = $pVoIPProvider->getVoIPProviderById($value['id_provider']);
+                    $arrTmp[1] = $name['name'];
+                }else
+                    $arrTmp[1] = _tr("Custom");
+                $arrTmp[2] = $value['callerID'];
+                $arrTmp[3] = $value['type_trunk'];
+                if($value['status'] == "activate")
+                    $arrTmp[4] = _tr('Enable');
+                else
+                    $arrTmp[4] = _tr('Disable');
+                $arrData[] = $arrTmp;
+            }
+        }
+
+        $arrColumns  = array(_tr("Account Name"), _tr("VoIP Provider"), _tr("Outbound CallerID"), _tr("Type Trunk"), _tr("Status"));
+    }
+    else{
+        $limit  = 20;
+        $oGrid->setLimit($limit);
+        $oGrid->setTotal($totalVoipProviders);
+        $offset = $oGrid->calculateOffset();
+
+        $arrResult =$pVoIPProvider->getVoIPProviderData($limit, $offset, $filter_field, $filter_value);
+
+        if(is_array($arrResult) && $totalVoipProviders>0){
+            foreach($arrResult as $key => $value){
+                $arrTmp[0] = "<input type='checkbox' name='account_{$value['id']}'  />";
+                $arrTmp[1] = $value['account_name'];
+                if(isset($value['id_provider']) && $value['id_provider'] != ""){
+                    $name = $pVoIPProvider->getVoIPProviderById($value['id_provider']);
+                    $arrTmp[2] = $name['name'];
+                }else
+                    $arrTmp[2] = _tr("Custom");
+                $arrTmp[3] = $value['callerID'];
+                $arrTmp[4] = $value['type_trunk'];
+                if($value['status'] == "activate")
+                    $arrTmp[5] = "<a href=?menu=$module_name&action=activate&id={$value['id']}>"._tr('Disable')."</a>";
+                else
+                    $arrTmp[5] = "<a href=?menu=$module_name&action=activate&id={$value['id']}>"._tr('Enable')."</a>";
+                $arrTmp[6] = "<a href=?menu=$module_name&action=view_edit&id={$value['id']}>"._tr('Edit')."</a>";
+                $arrData[] = $arrTmp;
+            }
+        }
+
+        $arrColumns  = array("<input type='submit' name='delete' value='"._tr("Delete")."' class='button' onclick=\" return confirmSubmit('"._tr("Are you sure you wish to delete the accounts selected.")."');\" />",
+                             _tr("Account Name"), _tr("VoIP Provider"), _tr("Outbound CallerID"), _tr("Type Trunk"), _tr("Status"), _tr("Edit"));
+    }
+
+    $oGrid->setColumns($arrColumns);
+    $oGrid->setData($arrData);
+
+    //begin section filter
+    $arrFormFilterprueba = createFieldFilter();
+    $oFilterForm = new paloForm($smarty, $arrFormFilterprueba);
+    $smarty->assign("SHOW", _tr("Show"));
+    $smarty->assign("NEW_ACCOUNT", _tr("New Account"));
+    $smarty->assign("Module_name", $module_name);
+
+    $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl","",$_POST);
+    //end section filter
+
+    $oGrid->showFilter(trim($htmlFilter));
+    $content = $oGrid->fetchGrid();
+    //end grid parameters
+
+    return $content;
+}
+
+function createFieldForm($pVoIPProvider)
+{
+    $arrProviders = array("custom" => _tr("Custom"));
     $result = $pVoIPProvider->getVoIPProviders();//Obtiene la lista para ser seteado en el listbox
     foreach($result as $values){
         $arrProviders[$values['name']] = $values['name'];
     }
 
-    $arrSelectForm = array("no" => $arrLang["no"], "yes" => $arrLang["yes"]);
-
-	$arrStatus     = array("activate" => $arrLang["Enable"], "desactivate" => $arrLang["Disable"]);
-	
+    $arrSelectForm = array("no" => _tr("no"), "yes" => _tr("yes"));
+	$arrStatus     = array("activate" => _tr("Enable"), "desactivate" => _tr("Disable"));
     $arrSelectTech = array("SIP" => "SIP", "IAX2" => "IAX2");
-	
 	$arrSelectType = array("friend" => "friend", "peer" => "peer");
 
-    $arrSelectCareInvite = array("no" => $arrLang["no"], "yes" => $arrLang["yes"], "nonat" => "nonat", "update" => "update");
-
+    $arrSelectCareInvite = array("no" => _tr("no"), "yes" => _tr("yes"), "nonat" => "nonat", "update" => "update");
     $arrSelectInsecure   = array("very" => "very", "yes" => "yes", "no" => "no", "invite" => "invite", "port" => "port");
-
-    $arrSelectdtmf = array("rfc2833" => "rfc2833", "inband" => "inband", "info" => "info");
+    $arrSelectdtmf       = array("rfc2833" => "rfc2833", "inband" => "inband", "info" => "info");
 
     $arrFields = array(
-            "type_provider_voip"   => array(      "LABEL"            => $arrLang["VoIP Provider"],
+            "type_provider_voip"   => array(      "LABEL"            => _tr("VoIP Provider"),
                                             "REQUIRED"               => "yes",
                                             "INPUT_TYPE"             => "SELECT",
                                             "INPUT_EXTRA_PARAM"      => $arrProviders,
@@ -577,7 +510,7 @@ function createFieldForm($arrLang, $pVoIPProvider)
                                             "VALIDATION_EXTRA_PARAM" => "",
                                             "EDITABLE"               => "",
                                             ),
-			"status"   => array(      "LABEL"          				 => $arrLang["Status"],
+			"status"   => array(      "LABEL"          				 => _tr("Status"),
                                             "REQUIRED"               => "no",
                                             "INPUT_TYPE"             => "SELECT",
                                             "INPUT_EXTRA_PARAM"      => $arrStatus,
@@ -585,120 +518,127 @@ function createFieldForm($arrLang, $pVoIPProvider)
                                             "VALIDATION_EXTRA_PARAM" => "",
                                             "EDITABLE"               => "",
                                             ),
-            "account_name"   => array(      "LABEL"                  => $arrLang["Account Name"],
+            "account_name"   => array(      "LABEL"                  => _tr("Account Name"),
                                             "REQUIRED"               => "yes",
                                             "INPUT_TYPE"             => "TEXT",
-                                            "INPUT_EXTRA_PARAM"      => array("id" => "account_name", "size" => "30"),
+                                            "INPUT_EXTRA_PARAM"      => array("id" => "account_name", "size" => "20"),
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-            "username"   => array(      "LABEL"                  => $arrLang["Username"],
+            "username"   => array(      "LABEL"                  => _tr("Username"),
                                             "REQUIRED"               => "yes",
                                             "INPUT_TYPE"             => "TEXT",
-                                            "INPUT_EXTRA_PARAM"      => array("id" => "username", "size" => "30"),
+                                            "INPUT_EXTRA_PARAM"      => array("id" => "username", "size" => "20"),
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-            "secret"   => array(      "LABEL"                  => $arrLang["Secret"],
+            "secret"   => array(      "LABEL"                  => _tr("Secret"),
                                             "REQUIRED"               => "yes",
                                             "INPUT_TYPE"             => "TEXT",
-                                            "INPUT_EXTRA_PARAM"      => array("id" => "secret", "size" => "30"),
+                                            "INPUT_EXTRA_PARAM"      => array("id" => "secret", "size" => "20"),
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-            "type"   => array(      "LABEL"                  => $arrLang["Type"],
+            "callerID"   => array(          "LABEL"                  => _tr("Outbound CallerID"),
+                                            "REQUIRED"               => "no",
+                                            "INPUT_TYPE"             => "TEXT",
+                                            "INPUT_EXTRA_PARAM"      => array("id" => "callerID", "size" => "20"),
+                                            "VALIDATION_TYPE"        => "numeric",
+                                            "VALIDATION_EXTRA_PARAM" => ""
+                                            ),
+            "type"   => array(      "LABEL"                  => _tr("Type"),
                                             "REQUIRED"               => "yes",
                                             "INPUT_TYPE"             => "SELECT",
-                                            "INPUT_EXTRA_PARAM"      => $arrSelectType,//array("id" => "type", "size" => "30"),
+                                            "INPUT_EXTRA_PARAM"      => $arrSelectType,
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-            "qualify"   => array(      "LABEL"                  => $arrLang["Qualify"],
+            "qualify"   => array(      "LABEL"                  => _tr("Qualify"),
                                             "REQUIRED"               => "no",
                                             "INPUT_TYPE"             => "SELECT",
                                             "INPUT_EXTRA_PARAM"      => $arrSelectForm,
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-            "insecure"   => array(      "LABEL"                  => $arrLang["Insecure"],
+            "insecure"   => array(      "LABEL"                  => _tr("Insecure"),
                                             "REQUIRED"               => "no",
                                             "INPUT_TYPE"             => "SELECT",
-                                            "INPUT_EXTRA_PARAM"      => $arrSelectInsecure,//array("id" => "insecure", "size" => "30"),
+                                            "INPUT_EXTRA_PARAM"      => $arrSelectInsecure,
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-            "host"   => array(      "LABEL"                  => $arrLang["Host"],
+            "host"   => array(      "LABEL"                  => _tr("Host"),
                                             "REQUIRED"               => "yes",
                                             "INPUT_TYPE"             => "TEXT",
-                                            "INPUT_EXTRA_PARAM"      => array("id" => "host", "size" => "30"),
+                                            "INPUT_EXTRA_PARAM"      => array("id" => "host", "size" => "20"),
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-            "fromuser"   => array(      "LABEL"                  => $arrLang["Fromuser"],
+            "fromuser"   => array(      "LABEL"                  => _tr("Fromuser"),
                                             "REQUIRED"               => "no",
                                             "INPUT_TYPE"             => "TEXT",
-                                            "INPUT_EXTRA_PARAM"      => array("id" => "fromuser", "size" => "30"),
+                                            "INPUT_EXTRA_PARAM"      => array("id" => "fromuser", "size" => "20"),
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-            "fromdomain"   => array(      "LABEL"                  => $arrLang["Fromdomain"],
+            "fromdomain"   => array(      "LABEL"                  => _tr("Fromdomain"),
                                             "REQUIRED"               => "no",
                                             "INPUT_TYPE"             => "TEXT",
-                                            "INPUT_EXTRA_PARAM"      => array("id" => "fromdomain", "size" => "30"),
+                                            "INPUT_EXTRA_PARAM"      => array("id" => "fromdomain", "size" => "20"),
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-            "dtmfmode"   => array(      "LABEL"                  => $arrLang["Dtmfmode"],
+            "dtmfmode"   => array(      "LABEL"                  => _tr("Dtmfmode"),
                                             "REQUIRED"               => "no",
                                             "INPUT_TYPE"             => "SELECT",
-                                            "INPUT_EXTRA_PARAM"      => $arrSelectdtmf,//array("id" => "dtmfmode", "size" => "30"),
+                                            "INPUT_EXTRA_PARAM"      => $arrSelectdtmf,
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-            "disallow"   => array(      "LABEL"                  => $arrLang["Disallow"],
+            "disallow"   => array(      "LABEL"                  => _tr("Disallow"),
                                             "REQUIRED"               => "no",
                                             "INPUT_TYPE"             => "TEXT",
-                                            "INPUT_EXTRA_PARAM"      => array("id" => "disallow", "size" => "30"),
+                                            "INPUT_EXTRA_PARAM"      => array("id" => "disallow", "size" => "20"),
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-            "context"   => array(      "LABEL"                  => $arrLang["Context"],
+            "context"   => array(      "LABEL"                  => _tr("Context"),
                                             "REQUIRED"               => "yes",
                                             "INPUT_TYPE"             => "TEXT",
-                                            "INPUT_EXTRA_PARAM"      => array("id" => "context", "size" => "30"),
+                                            "INPUT_EXTRA_PARAM"      => array("id" => "context", "size" => "20"),
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-            "allow"   => array(      "LABEL"                  => $arrLang["Allow"],
+            "allow"   => array(      "LABEL"                  => _tr("Allow"),
                                             "REQUIRED"               => "no",
                                             "INPUT_TYPE"             => "TEXT",
-                                            "INPUT_EXTRA_PARAM"      => array("id" => "allow", "size" => "30"),
+                                            "INPUT_EXTRA_PARAM"      => array("id" => "allow", "size" => "20"),
                                             "VALIDATION_TYPE"        => "",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-            "trustrpid"   => array(      "LABEL"                  => $arrLang["Trustrpid"],
+            "trustrpid"   => array(      "LABEL"                  => _tr("Trustrpid"),
                                             "REQUIRED"               => "no",
                                             "INPUT_TYPE"             => "SELECT",
                                             "INPUT_EXTRA_PARAM"      => $arrSelectForm,
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-            "sendrpid"   => array(      "LABEL"                  => $arrLang["Sendrpid"],
+            "sendrpid"   => array(      "LABEL"                  => _tr("Sendrpid"),
                                             "REQUIRED"               => "no",
                                             "INPUT_TYPE"             => "SELECT",
                                             "INPUT_EXTRA_PARAM"      => $arrSelectForm,
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-            "canreinvite"   => array(      "LABEL"                  => $arrLang["Canreinvite"],
-                                            "REQUIRED"               => "",
+            "canreinvite"   => array(      "LABEL"                  => _tr("Canreinvite"),
+                                            "REQUIRED"               => "no",
                                             "INPUT_TYPE"             => "SELECT",
                                             "INPUT_EXTRA_PARAM"      => $arrSelectCareInvite,
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-            "technology"   => array(      "LABEL"                  => $arrLang["Technology"],
-                                            "REQUIRED"               => "",
+            "technology"   => array(      "LABEL"                  => _tr("Technology"),
+                                            "REQUIRED"               => "yes",
                                             "INPUT_TYPE"             => "SELECT",
                                             "INPUT_EXTRA_PARAM"      => $arrSelectTech,
                                             "VALIDATION_TYPE"        => "",
@@ -708,14 +648,14 @@ function createFieldForm($arrLang, $pVoIPProvider)
     return $arrFields;
 }
 
-function createFieldFilter($arrLang){
+function createFieldFilter(){
     $arrFilter = array(
-        "account_name" => $arrLang["Account Name"],
-        "provider" => $arrLang["VoIP Provider"],
+        "account_name" => _tr("Account Name"),
+        "provider" => _tr("VoIP Provider"),
                     );
 
     $arrFormElements = array(
-            "filter_field" => array("LABEL"                  => $arrLang["Search"],
+            "filter_field" => array("LABEL"                  => _tr("Search"),
                                     "REQUIRED"               => "no",
                                     "INPUT_TYPE"             => "SELECT",
                                     "INPUT_EXTRA_PARAM"      => $arrFilter,
@@ -731,6 +671,28 @@ function createFieldFilter($arrLang){
     return $arrFormElements;
 }
 
+function getAllDataPOST()
+{
+    $arrData[] = getParameter("account_name");
+    $arrData[] = getParameter("username");
+    $arrData[] = getParameter("secret");
+    $arrData[] = getParameter("callerID");
+    $arrData[] = getParameter("type");
+    $arrData[] = getParameter("qualify");
+    $arrData[] = getParameter("insecure");
+    $arrData[] = getParameter("host");
+    $arrData[] = getParameter("fromuser");
+    $arrData[] = getParameter("fromdomain");
+    $arrData[] = getParameter("dtmfmode");
+    $arrData[] = getParameter("disallow");
+    $arrData[] = getParameter("context");
+    $arrData[] = getParameter("allow");
+    $arrData[] = getParameter("trustrpid");
+    $arrData[] = getParameter("sendrpid");
+    $arrData[] = getParameter("canreinvite");
+
+    return $arrData;
+}
 
 function getAction()
 {
