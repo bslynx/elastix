@@ -71,7 +71,7 @@
                             <td colspan="{$data.start}"></td>
                         {/if}
                         {assign var="data_start" value="`$data.start`"}
-                        <td colspan="{$numColumns-$data.start}" style='background-color:black;height:1px;'></td>
+                        <td colspan="{$numColumns-$data.start}" style='background-color:#AAAAAA;height:1px;'></td>
                     </tr>
                 {else}
                     <tr onMouseOver="this.style.backgroundColor='#f2f2f2';" onMouseOut="this.style.backgroundColor='#ffffff';">
