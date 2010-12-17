@@ -26,6 +26,7 @@
                             <a href="{$url}&exportpdf=yes&rawmode=yes"><img src="images/pdf.png"         border="0" align="absmiddle" title="PDF" /></a>&nbsp;
                         {/if}
                     </td>
+                    <td align="left" id="msg_status"></td>
                     <td align="right">
                     {if $pagingShow}  
                         {if $start<=1}
