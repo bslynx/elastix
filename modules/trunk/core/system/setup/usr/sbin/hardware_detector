@@ -37,6 +37,7 @@
 PATH=/sbin:/usr/local/sbin:$PATH
 export PATH
 
+enable_dahdi_genconf=true
 there_is_sangoma_card=false
 there_is_misdn_card=false
 overwrite_chan_dahdi=false
@@ -71,11 +72,12 @@ Options:
     -t: enable detection of Sangoma cards
     -o: overwrite /etc/asterisk/chan_dahdi.conf instead of preserving it
     -v: verbose output
+    -s: disable dahdi_genconf
 HELP_END
 }
 
 # Process all known command-line options
-while getopts 'hmtvo' arg
+while getopts 'hmtvos' arg
 do
         case "$arg" in
                 h) options_help; exit 0;;
@@ -83,6 +85,7 @@ do
                 t) there_is_sangoma_card=true;;
                 v) null_redirect_verbose="";;
                 o) overwrite_chan_dahdi=true;;
+                s) enable_dahdi_genconf=false;;
                 *) echo >&2 "unknown parameter -$arg, Aborting"; options_help; exit 1;;
         esac
 done
@@ -123,15 +126,28 @@ if [ $? = 0 ] && is_module_loaded "dahdi" ; then
 	eval "/sbin/service dahdi stop  $null_redirect_verbose"
 fi
 
-if [ $? = 0 ] && [ $there_is_misdn_card = false ]; then
+if [ $? = 0 ]; then  #Is mISDN installed?
+        eval "/bin/rpm -q mISDN  $null_redirect_verbos"
+fi
+
+if [ $? = 0 ]; then # is installed.
+    if  [ $there_is_misdn_card = false ]; then
         echo -e "HWDETECT: Stopping and deactivating mISDN service..."
         eval "/sbin/service mISDN stop $null_redirect_verbose"
         eval "/sbin/chkconfig --level 2345 mISDN off $null_redirect_verbose"
+    fi
+else # not installed
+        echo -e "HWDETECT: mISDN drivers is not installed..."
+fi
+
+# Execute dahdi_genconf before stop asterisk, dahdi, wanroute, mISDN
+if [ $? = 0 ] && [ $enable_dahdi_genconf = true ]; then
+        echo -e "HWDETECT: Executing dahdi_genconf modules"
+	eval "/usr/sbin/dahdi_genconf -v modules $null_redirect_verbose"
 fi
 
 # At this step, there should be no telephony modules loaded in the kernel
 if [ -e /proc/dahdi ] ; then
-	echo -e "HWDETECT: Retrying unloading of dahdi modules..."
 	eval "/sbin/service dahdi stop  $null_redirect_verbose"
     if [ -e /proc/dahdi ] ; then
         echo "HWDETECT: WARNING: could not unload all dahdi modules. Hardware detection might not work correctly.";
