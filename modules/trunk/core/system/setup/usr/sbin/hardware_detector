@@ -148,6 +148,7 @@ fi
 
 # At this step, there should be no telephony modules loaded in the kernel
 if [ -e /proc/dahdi ] ; then
+	echo -e "HWDETECT: Retrying unloading of dahdi modules..."
 	eval "/sbin/service dahdi stop  $null_redirect_verbose"
     if [ -e /proc/dahdi ] ; then
         echo "HWDETECT: WARNING: could not unload all dahdi modules. Hardware detection might not work correctly.";
