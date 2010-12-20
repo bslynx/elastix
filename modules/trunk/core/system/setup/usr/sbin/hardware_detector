@@ -127,7 +127,7 @@ if [ $? = 0 ] && is_module_loaded "dahdi" ; then
 fi
 
 if [ $? = 0 ]; then  #Is mISDN installed?
-        eval "/bin/rpm -q mISDN  $null_redirect_verbos"
+        eval "/bin/rpm -q mISDN  $null_redirect_verbose"
 fi
 
 if [ $? = 0 ]; then # is installed.
@@ -140,12 +140,6 @@ else # not installed
         echo -e "HWDETECT: mISDN drivers is not installed..."
 fi
 
-# Execute dahdi_genconf before stop asterisk, dahdi, wanroute, mISDN
-if [ $? = 0 ] && [ $enable_dahdi_genconf = true ]; then
-        echo -e "HWDETECT: Executing dahdi_genconf modules"
-	eval "/usr/sbin/dahdi_genconf -v modules $null_redirect_verbose"
-fi
-
 # At this step, there should be no telephony modules loaded in the kernel
 if [ -e /proc/dahdi ] ; then
 	echo -e "HWDETECT: Retrying unloading of dahdi modules..."
@@ -153,6 +147,12 @@ if [ -e /proc/dahdi ] ; then
     if [ -e /proc/dahdi ] ; then
         echo "HWDETECT: WARNING: could not unload all dahdi modules. Hardware detection might not work correctly.";
     fi
+fi
+
+# Execute dahdi_genconf after stop asterisk, dahdi, wanroute, mISDN
+if [ $? = 0 ] && [ $enable_dahdi_genconf = true ]; then
+	echo -e "HWDETECT: Executing dahdi_genconf modules"
+	eval "/usr/sbin/dahdi_genconf -v modules $null_redirect_verbose"
 fi
 
 # Clean out previous dahdi configuration. TODO: back up configuration instead...
