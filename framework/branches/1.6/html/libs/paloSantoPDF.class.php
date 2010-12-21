@@ -62,7 +62,6 @@ class paloPDF extends FPDF
 	   foreach($data as $row)
 	   {	  
                $this->addpage=$this->CheckPageBreak($this->calculateHeight($row),false);
-	       if($data[count($data)-1][0]!=$row[0]){
 	           if($this->addpage)
                     {   
                         $pageAdd=$this->CheckPageBreak($this->calculateHeight($row),$this->addpage);
@@ -73,7 +72,6 @@ class paloPDF extends FPDF
                         $this->setFormatDatos();
                         $this->SetFillColor(244,244,244);
                     }
-                }
                 $this->Row($row,1,$fill,'J');
                 $fill=!$fill;
             }			
