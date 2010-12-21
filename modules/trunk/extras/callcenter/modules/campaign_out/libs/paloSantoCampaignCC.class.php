@@ -395,7 +395,10 @@ class paloSantoCampaignCC
     		$clavesColumnas = array();
     		while ($tupla = fgetcsv($hArchivo, 2048,",")) {
     			$iNumLinea++;
-    			foreach ($tupla as $k => $v) $tupla[$k] = mb_convert_encoding($tupla[$k], "UTF-8", $sEncoding);
+    			if (function_exists('mb_convert_encoding')) {
+    			    foreach ($tupla as $k => $v)
+    			        $tupla[$k] = mb_convert_encoding($tupla[$k], "UTF-8", $sEncoding);
+    			}
                 $tupla[0] = trim($tupla[0]);
     			if (count($tupla) == 1 && trim($tupla[0]) == '') {
     				// Línea vacía
@@ -434,6 +437,8 @@ class paloSantoCampaignCC
     // Función que intenta adivinar la codificación de caracteres del archivo
     private function _adivinarCharsetArchivo($sFilePath)
     {
+        if (!function_exists('mb_detect_encoding')) return 'UTF-8';
+
         // Agregar a lista para detectar más encodings. ISO-8859-15 debe estar
         // al último porque toda cadena de texto es válida como ISO-8859-15.
         $listaEncodings = array(

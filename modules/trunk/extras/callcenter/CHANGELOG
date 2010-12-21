@@ -1,3 +1,5 @@
+* Campaigns Out: check that multibyte functions exist before trying to use them.
+  Fixes Elastix bug #638.
 * Calls Detail: complete rewrite. Reorganized library methods now use SQL query
   parameters, have more readable code and a cleaner API, allows simultaneous
   filtering by more criteria, no longer requires fetching of all records to find
