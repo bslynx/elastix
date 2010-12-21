@@ -1,3 +1,10 @@
+* Calls Detail: complete rewrite. Reorganized library methods now use SQL query
+  parameters, have more readable code and a cleaner API, allows simultaneous
+  filtering by more criteria, no longer requires fetching of all records to find
+  the total number, and fixes several design flaws. Reorganized interface 
+  replaces the filtering by up to two criteria with a four-criteria filter with
+  drop-down lists for Call Type, Agent, Queues. Should also contain fix for 
+  Elastix bug #638.
 * Reports Break, Calls Detail, Calls per Agent, Hold Time, Login Logout: do not
   add HTML tags on non-HTML exports when using production versions of Elastix
   framework 2.0.

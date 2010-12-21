@@ -36,6 +36,11 @@ $arrLangModule = array(
     "Debe ingresar una fecha valida"    => "You should to enter a valued date",
     'Total'         => 'Total',
     'Filter'        => 'Filter',
+    'Any Type'      => 'Any Type',
+    'All Agents'    => 'All Agents',
+    'All Queues'    => 'All Queues',
+    'Inbound'       => 'Incoming',
+    'Outbound'      => 'Outgoing',
 );
 
 ?>
