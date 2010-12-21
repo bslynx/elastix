@@ -12,6 +12,7 @@ BuildArch: noarch
 Prereq: elastix >= 2.0.0-35
 Requires: asterisk
 Requires: freePBX
+Requires: php-mbstring
 
 %description
 Elastix Call Center
