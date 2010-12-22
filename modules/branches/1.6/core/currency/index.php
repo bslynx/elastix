@@ -169,6 +169,7 @@ function getCurrencys($arrLang)
             "฿"     => "฿ - ".$arrLang["Baht tailandés / balboa panameño"],
             "Bs"    => "Bs - ".$arrLang["Bolívar venezolano"],
             "Bs.F." => "Bs.F. - ".$arrLang["Bolívar fuerte venezolana"],
+            "¢"     => "¢ - ".$arrLang["Colón costarricense"],
             "C$"    => "C$ - ".$arrLang["Córdoba nicaragüense/dólar canadiense"],
             "₫"     => "₫ - ".$arrLang["Dong vietnamita"],
             "EC$"   => "EC$ - ".$arrLang["Dólar del Caribe Oriental"],

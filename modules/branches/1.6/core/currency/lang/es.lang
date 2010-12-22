@@ -55,5 +55,6 @@ $arrLangModule=array(
 "Dólar de Singapur" => "Dólar de Singapur",
 "Error" => "Error",
 "Successfully saved" => "Guardado exitosamente",
+"Colón costarricense" => "Colón costarricense"
 );
 ?>
