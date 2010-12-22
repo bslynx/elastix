@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module>
+  <menulist>
+    <menuitem menuid="security"        desc="Security"                 parent=""            module="no"  link="" order="12"></menuitem>
+    <menuitem menuid="sec_ports"       desc="Services/Network Ports"   parent="security"    module="yes" link="" order="1"></menuitem>
+    <menuitem menuid="sec_rules"       desc="Rulers Filtering"         parent="security"    module="yes" link="" order="2"></menuitem>
+    <menuitem menuid="sec_accessaudit" desc="Access Audit"             parent="security"    module="yes" link="" order="3"></menuitem>
+    <menuitem menuid="sec_weak_keys"   desc="Weak Keys"                parent="security"    module="yes" link="" order="4"></menuitem>
+  </menulist>
+</module>
