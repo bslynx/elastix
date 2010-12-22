@@ -20,7 +20,7 @@ class LogParser_Full
 	private $_hArchivo;
 	private $_sNombreArchivo;
 
-	function LogParser_Full($sRuta = '/var/log/asterisk')
+	function LogParser_Full($sRuta = '/var/log/asterisk', $pattern = 'full')
 	{
 		$this->_pos_Fecha = NULL;
 		$this->_pos_OffsetMsg = NULL;
@@ -35,7 +35,7 @@ class LogParser_Full
 			Se hace uso del hecho de que para N mayor, el archivo es más 
 			antiguo.
 		*/
-		$listaArchivos = glob($sRuta.'/full*');
+		$listaArchivos = glob($sRuta.'/'.$pattern.'*');
 		if (is_array($listaArchivos)) {
 			$listaArchivos = array_reverse($listaArchivos);
 			foreach ($listaArchivos as $sNombreArchivo) {
