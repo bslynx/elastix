@@ -574,32 +574,120 @@ class paloConfig
         }
     }
 
-        function get_archivos_directorio() {
-            //se obtiene el usuario de la carpeta que contiene el archivo
+    function get_archivos_directorio() 
+    {
+        //se obtiene el usuario de la carpeta que contiene el archivo
 
-            if(!file_exists($this->directorio)) {
-                return false;
-            }
-
-            $arr_usuario=posix_getpwuid(fileowner($this->directorio));
-            if(is_array($arr_usuario))
-                $this->usuario_sistema=$arr_usuario['name'];
-
-            $arr_grupo=posix_getgrgid(filegroup($this->directorio));
-            if(is_array($arr_grupo))
-                $this->grupo_sistema=$arr_grupo['name'];
-
-            $usuario_grupo = $this->usuario_sistema.".".$this->grupo_sistema;
-
-            if ($this->privado_chown($this->usuario_proceso, $this->directorio)) {
-
-                $directorio=dir($this->directorio);
-                while ($archivo = $directorio->read()) {
-                    $arr_archivo[] = $archivo;
-                }
-            }
-            $this->privado_chown($usuario_grupo, $this->directorio);
-            return $arr_archivo;
+        if(!file_exists($this->directorio)) {
+            return false;
         }
+
+        $arr_usuario=posix_getpwuid(fileowner($this->directorio));
+        if(is_array($arr_usuario))
+            $this->usuario_sistema=$arr_usuario['name'];
+
+        $arr_grupo=posix_getgrgid(filegroup($this->directorio));
+        if(is_array($arr_grupo))
+            $this->grupo_sistema=$arr_grupo['name'];
+
+        $usuario_grupo = $this->usuario_sistema.".".$this->grupo_sistema;
+
+        if ($this->privado_chown($this->usuario_proceso, $this->directorio)) {
+
+            $directorio=dir($this->directorio);
+            while ($archivo = $directorio->read()) {
+                $arr_archivo[] = $archivo;
+            }
+        }
+        $this->privado_chown($usuario_grupo, $this->directorio);
+        return $arr_archivo;
+    }
+
+    function respaldar_archivo($bckup_file)
+    {
+        $continuar = true;
+        $this->error_msg = "";                  // Anular cualquier error previo
+
+        $usuario_grupo = $this->usuario_proceso.".".$this->usuario_proceso;
+        $usuario_viejo = $this->usuario_sistema.".".$this->grupo_sistema;
+
+        // Se cambia el dueño del directorio especificado temporalmente a nobody.nobody para poder modificarlos
+        if ($this->privado_chown($usuario_grupo, $this->directorio))
+        {
+        if ($continuar)
+        {
+            // Se cambia temporalmente el dueo del archivo, y se lee
+            if ($this->privado_chown($usuario_grupo, $this->directorio."/".$this->archivo))
+            {
+            $continuar=copy($this->directorio."/".$this->archivo,$this->directorio."/".$bckup_file);
+                            if(!$continuar)
+                            $this->error_msg="Error al copiar archivo de respaldo";
+            }
+            else
+            {
+            // Ocurrio un problema al cambiar el permiso del archivo
+                $this->error_msg = "Al cambiar permisos de ".$this->directorio."/".$this->archivo.": ".$this->error_msg;
+                $continuar = false;
+            }
+            }
+
+
+            // Restaurar los permisos de los directorios
+            $this->privado_chown($usuario_viejo, $this->directorio);
+            $this->privado_chown($usuario_viejo, $this->directorio."/".$this->archivo);
+        }
+        else
+        {
+            $this->error_msg = "Al cambiar permisos de directorio ".$this->directorio .": ".$this->error_msg;
+            $continuar = false;
+        }
+        return $continuar;
+    }
+
+    function recuperar_archivo($bckup_file)
+    {
+        $continuar = true;
+        $this->error_msg = "";                  // Anular cualquier error previo
+
+        $usuario_grupo = $this->usuario_proceso.".".$this->usuario_proceso;
+        $usuario_viejo = $this->usuario_sistema.".".$this->grupo_sistema;
+
+                if(!file_exists($this->directorio."/".$bckup_file)){
+                   $this->error_msg="Archivo {$this->directorio}/$bckup_file no existe";
+                   return FALSE;
+                }
+                
+        // Se cambia el dueño del directorio especificado temporalmente a nobody.nobody para poder modificarlos
+        if ($this->privado_chown($usuario_grupo, $this->directorio))
+        {
+           if ($continuar)
+           {
+             // Se cambia temporalmente el dueo del archivo, y se lee
+              if ($this->privado_chown($usuario_grupo, $this->directorio."/".$this->archivo))
+              {
+             $continuar=copy($this->directorio."/".$bckup_file,$this->directorio."/".$this->archivo);
+                            if(!$continuar)
+                               $this->error_msg="Error al restaurar archivo";
+              }
+              else
+              {
+            // Ocurrio un problema al cambiar el permiso del archivo
+            $this->error_msg = "Al cambiar permisos de ".$this->directorio."/".$this->archivo.": ".$this->error_msg;
+            $continuar = false;
+              }
+            }
+
+
+            // Restaurar los permisos de los directorios
+                 $this->privado_chown($usuario_viejo, $this->directorio);   
+         $this->privado_chown($usuario_viejo, $this->directorio."/".$this->archivo);
+        }
+        else
+        {
+           $this->error_msg = "Al cambiar permisos de directorio ".$this->directorio .": ".$this->error_msg;
+           $continuar = false;
+        }
+        return $continuar;
+    } 
 }
 ?>
