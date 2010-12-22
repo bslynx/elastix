@@ -1,0 +1,19 @@
+.fielform  {
+    border-color:#EE9A49;
+    border-width:thin;
+    color:black;
+    font-family:Verdana,Arial,Helvetica,sans-serif;
+    font-size:12px;
+    height:auto;
+    position:relative;
+    width:230px;
+}
+
+.sombreado {
+    /*background:none repeat scroll 0 0 white;*/
+    width:22px;
+    font-size:14pt;
+    color:#E35332;
+    float:left;
+    text-align:right;
+}

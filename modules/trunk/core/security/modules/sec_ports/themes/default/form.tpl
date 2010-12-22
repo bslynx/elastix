@@ -1,0 +1,60 @@
+<table width="99%" border="0" cellspacing="0" cellpadding="4" align="center">
+    <tr class="moduleTitle">
+        <td class="moduleTitle" valign="middle">&nbsp;&nbsp;<img src="{$IMG}" border="0" align="absmiddle">&nbsp;&nbsp;{$title}</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr class="letra12">
+        <td align="left">
+        {if $MODE eq "new"}
+            <input class="button" type="submit" name="save" value="{$SAVE}">&nbsp;
+        {/if}
+        {if $MODE eq "edit"}
+            <input class="button" type="submit" name="save" value="{$SAVE}">&nbsp;
+        {/if}
+        {if $MODE eq "view"}
+            <input class="button" type="submit" name="edit" value="{$EDIT}">&nbsp;
+        {/if}
+            <input class="button" type="submit" name="cancel" value="{$CANCEL}"></td>
+        <td align="right" nowrap><span class="letra12"><span  class="required">*</span> {$REQUIRED_FIELD}</span></td>
+    </tr>
+</table>
+<table class="tabForm" style="font-size: 16px;" width="100%" >
+    <tr class="letra12" id="name">
+        <td align="left" width="8%"><b>{$name.LABEL}: <span  class="required">*</span></b></td>
+        <td align="left">{$name.INPUT}</td>
+    </tr>
+    <tr class="letra12">
+        <td align="left"><b>{$protocol.LABEL}: <span  class="required">*</span></b></td>
+        <td align="left">{$protocol.INPUT}</td>
+    </tr>
+    <tr {$port_style} class="letra12" id="port">
+        <td align="left"><b>{$port.LABEL}: <span  class="required">*</span></b></td>
+        {if $MODE eq "new"}
+        <td align="left">{$port.INPUT}&nbsp;:&nbsp;{$port2.INPUT}</td>
+        {/if}
+        {if $MODE eq "edit"}
+        <td align="left">{$port.INPUT}&nbsp;:&nbsp;{$port2.INPUT}</td>
+        {/if}
+        {if $MODE eq "view"}
+        <td align="left">{$port.INPUT}&nbsp; {if $HAS eq "yes"}:{/if} &nbsp;{$port2.INPUT}</td>
+        {/if}
+    </tr>
+    <tr {$type_style} class="letra12" id="type">
+        <td align="left"><b>{$type.LABEL}: <span  class="required">*</span></b></td>
+        <td align="left">{$type.INPUT}</td>
+    </tr>
+    <tr {$code_style} class="letra12" id="code">
+        <td align="left"><b>{$code.LABEL}: <span  class="required">*</span></b></td>
+        <td align="left">{$code.INPUT}</td>
+    </tr>
+    <tr {$protocol_style} class="letra12" id="protocol_number">
+        <td align="left"><b>{$protocol_number.LABEL}: <span  class="required">*</span></b></td>
+        <td align="left">{$protocol_number.INPUT}</td>
+    </tr>
+    <tr class="letra12">
+        <td align="left"><b>{$comment.LABEL}:</b></td>
+        <td align="left">{$comment.INPUT}</td>
+    </tr>
+</table>
+<input type="hidden" name="mode" value="{$MODE}">
+<input type="hidden" name="idtemp" value="{$IDTEMP}">
