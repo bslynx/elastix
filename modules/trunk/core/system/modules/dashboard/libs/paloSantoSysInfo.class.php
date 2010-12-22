@@ -246,7 +246,7 @@ class paloSantoSysInfo
         $arrSERVICES["OpenFire"]["status_service"] = $this->_existPID_ByFile("/var/run/openfire.pid","openfire");
         $arrSERVICES["OpenFire"]["name_service"]   = "Instant Messaging Service";
 
-        $arrSERVICES["Hylafax"]["status_service"]  = $this->_existPID_ByCMD("hfaxd","hylafax") & $this->_existPID_ByCMD("faxq","hylafax");
+        $arrSERVICES["Hylafax"]["status_service"]  = $this->getStatusHylafax();
         $arrSERVICES["Hylafax"]["name_service"]    = "Fax Service";
 /*
         $arrSERVICES["IAXModem"]["status_service"] = $this->_existPID_ByFile("/var/run/iaxmodem.pid","iaxmodem");
@@ -356,6 +356,19 @@ class paloSantoSysInfo
         }
 
         return "$result[vendor],$result[num_serie]";
+    }
+
+    function getStatusHylafax()
+    {
+        $status_hfaxd = $this->_existPID_ByCMD("hfaxd","hylafax");
+        $status_faxq  = $this->_existPID_ByCMD("faxq","hylafax");
+
+        if($status_hfaxd == "OK" && $status_faxq == "OK")
+            return "OK";
+        elseif($status_hfaxd == "Shutdown" && $status_faxq == "Shutdown")
+            return "Shutdown";
+        elseif($status_hfaxd == "Not_exists" && $status_faxq == "Not_exists")
+            return "Not_exists";
     }
 
     function _existPID_ByFile($filePID, $nameService)
