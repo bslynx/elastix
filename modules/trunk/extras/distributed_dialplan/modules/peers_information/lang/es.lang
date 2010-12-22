@@ -86,5 +86,9 @@ $arrLangModule=array(
 "disconnected" => "desconectado",
 "connection deleted" => "coneccion eliminada",
 "connection rejected" => "coneccion rechazada",
+"Secret" => "Clave Secreta",
+"Error" => "Error",
+"Secret incorrect" => "Clave secreta incorrecta. Por favor vuelva a hacer la petición al servidor de destino",
+"Remote Host Name" => "Servidor Remoto",
 );
 ?>

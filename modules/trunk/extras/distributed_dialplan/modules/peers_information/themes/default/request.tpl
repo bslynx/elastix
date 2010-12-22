@@ -14,6 +14,10 @@
         <td align="left">{$ip.INPUT}</td>
     </tr>
     <tr class="letra12">
+        <td align="left"><b>{$secret.LABEL}: <span  class="required">*</span></b></td>
+        <td align="left">{$secret.INPUT}</td>
+    </tr>
+    <tr class="letra12">
         <td align="left"><b>{$comment_request.LABEL}: <span  class="required">*</span></b></td>
         <td align="left">{$comment_request.INPUT}</td>
     </tr>

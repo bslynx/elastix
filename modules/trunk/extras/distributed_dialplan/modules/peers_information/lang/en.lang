@@ -86,5 +86,9 @@ $arrLangModule=array(
 "disconnected" => "disconnected",
 "connection deleted" => "connection deleted",
 "connection rejected" => "connection rejected",
+"Secret" => "Secret Keyword",
+"Error" => "Error",
+"Secret incorrect" => "Secret incorrect. Please try again to write the correct secret keyword",
+"Remote Host Name" => "Remote Host Name",
 );
 ?>

@@ -167,8 +167,6 @@ function AceptPeerRequest($smarty, $module_name, $local_templates_dir, $pDB, $ar
    if(is_array($exist_information) && count($exist_information)){
       $company = $exist_information[0]['organization'];
       $result = $pPeersInformation->StatusDisconnect($peerId);
-      /*if(!$result)
-            return $pDB->errMsg;*/
       $arrPeerInfo = $pPeersInformation->ObtainPeersInformation();
       if(is_array($arrPeerInfo) && count($arrPeerInfo)>0){
          foreach($arrPeerInfo as $key => $value)
@@ -464,7 +462,7 @@ function reportPeersInformation($smarty, $module_name, $local_templates_dir, &$p
                         "columns"  => array(
             0 => array("name"      => "<input type='submit' name='delete_peer' value='{$arrLang["Delete"]}' class='button' onclick=\" return confirmSubmit('{$arrLang["Are you sure you wish to delete peer (s)?"]}');\" />",
                                                     "property1" => ""),
-            1 => array("name"      => $arrLang["Host Name"],
+            1 => array("name"      => $arrLang["Remote Host Name"],
                                                     "property1" => ""),
             2 => array("name"      => $arrLang["MAC Address"],
                                                     "property1" => ""),
@@ -481,7 +479,7 @@ function reportPeersInformation($smarty, $module_name, $local_templates_dir, &$p
     $oFilterForm = new paloForm($smarty, array());
     $smarty->assign("SHOW", $arrLang["Show"]);
     $smarty->assign("NEW", $arrLang["New Request"]);
-    
+
     //if there is not general information or public and private keys
     $band = $_SESSION['exitsKey'];
     if($band == true)
@@ -496,7 +494,7 @@ function reportPeersInformation($smarty, $module_name, $local_templates_dir, &$p
     //end grid parameters
 
    if(!createFile($smarty, $arrLang, $pDB, $dsn_agi_manager))
-        $pPeersInformation->errMsg = $arrLang["Error to create file"];     
+        $pPeersInformation->errMsg = $arrLang["Error to create file"];
 
     return $contenidoModulo;
 }
@@ -581,7 +579,7 @@ function deletePeersInformation($smarty, $module_name, $local_templates_dir, $pD
     return $content;
 }
 
-function socketRequest($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $ip_remote, $ip_request, $company_request, $comment_request, $mac_request, $certificate, $key, $action)
+function socketRequest($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $ip_remote, $ip_request, $company_request, $comment_request, $mac_request, $certificate, $key, $action, $secret)
 {
 
     $arrFormConnectionRequest = createFieldForm($arrLang);
@@ -594,7 +592,7 @@ function socketRequest($smarty, $module_name, $local_templates_dir, $pDB, $arrCo
     $conexion = fsockopen("ssl://".$ip_remote,$port_remote);
     if ($conexion) {
        //echo "Conexion realizada con éxito <br />";
-       $dataSend="ip_remote=$ip_remote&ip_request=$ip_request&company_request=$company_request&comment_request=$comment_request&mac_request=$mac_request&certificate_request=$certificate&key_request=$key_request&action=$action";
+       $dataSend="ip_remote=$ip_remote&ip_request=$ip_request&company_request=$company_request&comment_request=$comment_request&mac_request=$mac_request&certificate_request=$certificate&key_request=$key_request&secret=$secret&action=$action";
        $dataLenght = strlen($dataSend);
        $headerRequest = createHeaderHttp($ip_remote,$file_remote,$dataLenght);
        //echo "$headerRequest $dataSend";
@@ -623,6 +621,7 @@ function sendConnectionRequest($smarty, $module_name, $local_templates_dir, $pDB
     $macCertificate = "";
     $key_answer = "";
     $company = "";
+    $secret = "";
     $root_certicate = "/var/lib/asterisk/keys";
 
     $exist_information = $pGeneralInformation->getGeneralInformation();
@@ -660,6 +659,7 @@ function sendConnectionRequest($smarty, $module_name, $local_templates_dir, $pDB
             return $contenidoModulo;
         }else{
             $ip_remote = isset($_POST['ip'])?$_POST['ip']:"";//Del servidor a conectarse
+            $secret = isset($_POST['secret'])?$_POST['secret']:"";
             $ip_request = $ip_whosent;//quien lo solicita
             $company_request = isset($company)?$company:"";
             $comment_request = isset($_POST['comment_request'])?$_POST['comment_request']:"";
@@ -669,7 +669,7 @@ function sendConnectionRequest($smarty, $module_name, $local_templates_dir, $pDB
             $existHost =  $pPeersInformation->getHostStatus($ip_remote);
             if(!$existHost)
             {
-                $result = socketRequest($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $ip_remote, $ip_request, $company_request, $comment_request,$mac_request, $macCertificate, $key_answer, $action);
+                $result = socketRequest($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $ip_remote, $ip_request, $company_request, $comment_request,$mac_request, $macCertificate, $key_answer, $action, $secret);
 
                 if(ereg( "^BEGIN[[:space:]](.*)[[:space:]]END", $result, $regs ))
                 {
@@ -681,9 +681,13 @@ function sendConnectionRequest($smarty, $module_name, $local_templates_dir, $pDB
                         $smarty->assign("mb_title", $arrLang["Alert"]);
                         $smarty->assign("mb_message", $arrLang["Currently there is a connection request"]);
                     }
+                    else if($regs[1] == "nosecret"){
+                        $smarty->assign("mb_title", $arrLang["Error"]);
+                        $smarty->assign("mb_message", $arrLang["Secret incorrect"]);
+                    }
                 }else{
                     $smarty->assign("mb_title", $arrLang["Message"]);
-                    $smarty->assign("mb_message", $arrLang["Unable to establish connection with the host, it does not exist or is trying to connect himself"]);  
+                    $smarty->assign("mb_message", $arrLang["Unable to establish connection with the host, it does not exist or is trying to connect himself"]);
                 }
             }else{
                 $smarty->assign("mb_title", $arrLang["Message"]);
@@ -799,6 +803,13 @@ function createFieldForm($arrLang)
                                             "EDITABLE"               => "si",
                                             "COLS"                   => "50",
                                             "ROWS"                   => "4",
+                                            "VALIDATION_EXTRA_PARAM" => ""
+                                            ),
+            "secret"   => array(      "LABEL"                  => $arrLang["Secret"],
+                                            "REQUIRED"               => "yes",
+                                            "INPUT_TYPE"             => "TEXT",
+                                            "INPUT_EXTRA_PARAM"      => "",
+                                            "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
 

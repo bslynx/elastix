@@ -438,6 +438,19 @@ class paloSantoPeersInformation {
         return $result;
     }
 
+    function getSecret()
+    {
+        $query   = "SELECT secret FROM general WHERE id=1";
+
+        $result=$this->_DB->getFirstRowQuery($query, true);
+        if($result==FALSE)
+        {
+            $this->errMsg = $this->_DB->errMsg;
+            return array();
+        }
+        return $result['secret'];
+    }
+
     function ObtainPeersParametersById($id)
     {
         //Here your implementation
