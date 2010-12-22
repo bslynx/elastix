@@ -38,6 +38,8 @@ session_name("elastixSession");
 session_start();
 
 if(isset($_GET['logout']) && $_GET['logout']=='yes') {
+    $user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"unknow";
+    writeLOG("access.log", "AUDIT $user: Logout Successful. Accepted logout for $user from $_SERVER[REMOTE_ADDR].");
     session_destroy();
     session_name("elastixSession");
     session_start();
@@ -78,7 +80,13 @@ if(isset($_POST['submit_login']) and !empty($_POST['input_user'])) {
     if($pACL->authenticateUser($_POST['input_user'], $pass_md5)) {
         $_SESSION['elastix_user'] = $_POST['input_user'];
         $_SESSION['elastix_pass'] = $pass_md5;
+
+        writeLOG("access.log", "AUDIT $_POST[input_user]: Login Successful. Accepted password for $_POST[input_user] from $_SERVER[REMOTE_ADDR].");
     } else {
+        if(!$pACL->getIdUser($_POST['input_user'])) // not exists user?
+            writeLOG("access.log", "AUDIT $_POST[input_user]: Authentication Failure. Invalid user $_POST[input_user] from $_SERVER[REMOTE_ADDR].");
+        else
+            writeLOG("access.log", "AUDIT $_POST[input_user]: Authentication Failure. Failed password for $_POST[input_user] from $_SERVER[REMOTE_ADDR].");
         // Debo hacer algo aquí?
     }
 }

@@ -730,4 +730,17 @@ function generarDSNSistema($sNombreUsuario, $sNombreDB, $ruta_base='')
     return NULL;
 }
 
+function writeLOG($logFILE, $log)
+{
+    $logPATH = "/var/log/elastix"; 
+    $path_of_file = "$logPATH/".$logFILE;
+
+    $fp = fopen($path_of_file, 'a+');
+    if ($fp) {
+        fwrite($fp,date("[M d h:i:s]")." $log\n");
+        fclose($fp);
+    }
+    else
+        echo "The file $logFILE couldn't be opened";
+}
 ?>
