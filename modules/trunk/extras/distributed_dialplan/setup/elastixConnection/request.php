@@ -21,6 +21,7 @@ $mac_request = isset($_POST['mac_request'])?$_POST['mac_request']:"";
 $key_request = isset($_POST['key_request'])?$_POST['key_request']:"";
 $certificate_request = isset($_POST['certificate_request'])?$_POST['certificate_request']:"";
 $action = isset($_POST['action'])?$_POST['action']:0;
+$secret = isset($_POST['secret'])?$_POST['secret']:"";
 
 $ip_ask = isset($_POST['ip_ask'])?$_POST['ip_ask']:"";
 $ip_answer = isset($_POST['ip_answer'])?$_POST['ip_answer']:"";
@@ -31,41 +32,55 @@ $comment_answer = isset($_POST['comment_answer'])?$_POST['comment_answer']:"";
 
 $pRequest = new paloSantoPeersInformation($pDB);
 
-if($ip_request == "" && $company_request == "" && $comment_request == "" && $action == 0)//no hay solicitudes
+if($ip_request == "" && $company_request == "" && $comment_request == "" && $secret == "" && $action == 0)//no hay solicitudes
 {
    echo "BEGIN norequest END";//(server) localmente cuando ingresa al modulo peerInforamtion consulta esto,
                               //al no encontrar requerimientos regresara el comando "norequest"
-}else if($action == 1){
-echo "ingreso";
+}else if($action == 1){// se recibe la peticion la cual se deber verificar la clave si es valida
+     echo "ingreso";
      $pNetwork = new paloNetwork();
      $localmac = "";
      $localhost = isset($_SERVER['SERVER_ADDR'])?$_SERVER['SERVER_ADDR']:"";
-     $arrEths = $pNetwork->obtener_interfases_red_fisicas();
-       foreach($arrEths as $idEth=>$arrEth)
-       {
-          if($arrEth['Inet Addr'] == $localhost);
-            $localmac = $arrEths['eth0']['HWaddr'];
-       }
-     if(!$pRequest->hostExist($mac_request))
-     {
-        $result = $pRequest->addInfoRequest($mac_request, $ip_request, $company_request, $comment_request,$certificate_request,$key_request);
-        echo "BEGIN request END";
+     $localSecret = $pRequest->getSecret();
+     if($localSecret == $secret){
+        $arrEths = $pNetwork->obtener_interfases_red_fisicas();
+        foreach($arrEths as $idEth=>$arrEth)
+        {
+            if($arrEth['Inet Addr'] == $localhost)
+                $localmac = $arrEths['eth0']['HWaddr'];
+        }
+        if(!$pRequest->hostExist($mac_request))
+        {
+            $result = $pRequest->addInfoRequest($mac_request, $ip_request, $company_request, $comment_request,$certificate_request,$key_request);
+            echo "BEGIN request END";
+        }else
+            echo "BEGIN exist END";
      }else
-        echo "BEGIN exist END";
+        echo "BEGIN nosecret END";
 }else if($action == 2){
-     $result = $pRequest->UpdateInfoRequest($ip_answer, $mac_answer, $key_answer, $company_answer, $comment_answer);
-     $keyPubServer =  $pRequest->createKeyPubServer($key_answer, $mac_answer);
      $id = $pRequest->getIdPeer($mac_answer);
      if(isset($id['id']) && $id['id'] != ""){
+        $result = $pRequest->UpdateInfoRequest($ip_answer, $mac_answer, $key_answer, $company_answer, $comment_answer);
+        $keyPubServer =  $pRequest->createKeyPubServer($key_answer, $mac_answer);
         $parameter = $pRequest->createPeerParameter();
         $resultParameter = $pRequest->addInformationParameter($parameter,$id['id']);
+        echo "BEGIN acept END";
      }
-     echo "BEGIN acept END";
+     else
+        echo "BEGIN norequest END";
 }else if($action == 3 || $action == 4){
-     $result = $pRequest->UpdateInfoForReject($ip_answer, $action);
-     echo "BEGIN reject END";
+     $id = $pRequest->getIdPeer($mac_answer);
+     if(isset($id['id']) && $id['id'] != ""){
+        $result = $pRequest->UpdateInfoForReject($ip_answer, $action);
+        echo "BEGIN reject END";
+     }else
+        echo "BEGIN norequest END";
 }else if($action == 5 || $action == 6){
-     $result = $pRequest->hisStatusConnect($ip_answer, $action);
-     echo "BEGIN connected END";
+     $id = $pRequest->getIdPeer($mac_answer);
+     if(isset($id['id']) && $id['id'] != ""){
+        $result = $pRequest->hisStatusConnect($ip_answer, $action);
+        echo "BEGIN connected END";
+     }else
+        echo "BEGIN norequest END";
 }
 ?>
