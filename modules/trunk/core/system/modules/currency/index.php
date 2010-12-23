@@ -176,7 +176,7 @@ function getCurrencys($arrLang)
             "$"     => "$ - ".$arrLang["Dólar/Peso"],
             "¥"     => "¥ - ".$arrLang["Yen"],
             "₪"     => "₪ - ".$arrLang["Sheqel israelí"],
-            "#"     => "# - ".$arrLang["Colón salvadoreño"],
+            "¢"     => "¢ - ".$arrLang["Colón salvadoreño"],
             "元"    => "元 - ".$arrLang["Yuan chino"],
             "৳"    => "৳ - ".$arrLang["Rupia bengalí"],
             "S$"    => "S$ - ".$arrLang["Dólar de Singapur"],
