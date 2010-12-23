@@ -58,7 +58,7 @@ if($ip_request == "" && $company_request == "" && $comment_request == "" && $sec
      }else
         echo "BEGIN nosecret END";
 }else if($action == 2){
-     $id = $pRequest->getIdPeer($mac_answer);
+     $id = $pRequest->getIdPeerbyRemoteHost($ip_answer);
      if(isset($id['id']) && $id['id'] != ""){
         $result = $pRequest->UpdateInfoRequest($ip_answer, $mac_answer, $key_answer, $company_answer, $comment_answer);
         $keyPubServer =  $pRequest->createKeyPubServer($key_answer, $mac_answer);
@@ -69,14 +69,13 @@ if($ip_request == "" && $company_request == "" && $comment_request == "" && $sec
      else
         echo "BEGIN norequest END";
 }else if($action == 3 || $action == 4){
-     $id = $pRequest->getIdPeer($mac_answer);
+     $id = $pRequest->getIdPeerbyRemoteHost($ip_answer);
      if(isset($id['id']) && $id['id'] != ""){
         $result = $pRequest->UpdateInfoForReject($ip_answer, $action);
-        echo "BEGIN reject END";
-     }else
-        echo "BEGIN norequest END";
+     }
+     echo "BEGIN reject END";
 }else if($action == 5 || $action == 6){
-     $id = $pRequest->getIdPeer($mac_answer);
+     $id = $pRequest->getIdPeerbyRemoteHost($ip_answer);
      if(isset($id['id']) && $id['id'] != ""){
         $result = $pRequest->hisStatusConnect($ip_answer, $action);
         echo "BEGIN connected END";
