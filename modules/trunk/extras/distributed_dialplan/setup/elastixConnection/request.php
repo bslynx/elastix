@@ -37,7 +37,6 @@ if($ip_request == "" && $company_request == "" && $comment_request == "" && $sec
    echo "BEGIN norequest END";//(server) localmente cuando ingresa al modulo peerInforamtion consulta esto,
                               //al no encontrar requerimientos regresara el comando "norequest"
 }else if($action == 1){// se recibe la peticion la cual se deber verificar la clave si es valida
-     echo "ingreso";
      $pNetwork = new paloNetwork();
      $localmac = "";
      $localhost = isset($_SERVER['SERVER_ADDR'])?$_SERVER['SERVER_ADDR']:"";
