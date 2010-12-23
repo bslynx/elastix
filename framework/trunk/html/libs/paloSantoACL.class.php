@@ -118,17 +118,9 @@ class paloACL {
             if ($id_user !== FALSE) {
                 $this->errMsg = "Username already exists";
             } elseif ($this->errMsg == "") {
-
-                $sPeticionSQL = paloDB::construirInsert(
-                    "acl_user",
-                    array(
-                        "name"          =>  paloDB::DBCAMPO($username),
-                        "description"   =>  paloDB::DBCAMPO($description),
-                        "md5_password"  =>  paloDB::DBCAMPO($md5_password),
-                        "extension"  =>  paloDB::DBCAMPO($extension)
-                    )
-                );
-                if ($this->_DB->genQuery($sPeticionSQL)) {
+                $sPeticionSQL = "INSERT into acl_user (name,description,md5_password,extension) VALUES (?,?,?,?)";
+                $arrParam = array($username,$description,$md5_password,$extension);
+                if ($this->_DB->genQuery($sPeticionSQL,$arrParam)) {
                     $bExito = TRUE;
                 } else {
                     $this->errMsg = $this->_DB->errMsg;
@@ -182,16 +174,9 @@ class paloACL {
 
                 if ($bContinuar) {
                     // Proseguir con la modificación del usuario
-                    $sPeticionSQL = paloDB::construirUpdate(
-                        "acl_user",
-                        array(
-                            "name"          =>  paloDB::DBCAMPO($username),
-                            "description"   =>  paloDB::DBCAMPO($description),
-                            "extension"   =>  paloDB::DBCAMPO($extension),
-                            ),
-                        array(
-                            "id"  =>  $id_user));
-                    if ($this->_DB->genQuery($sPeticionSQL)) {
+                    $sPeticionSQL = "UPDATE acl_user SET name = ?, description = ?, extension  = ? WHERE id = ?";
+                    $arrParam = array($username,$description,$extension,$id_user);
+                    if ($this->_DB->genQuery($sPeticionSQL,$arrParam)) {
                         $bExito = TRUE;
                     } else {
                         $this->errMsg = $this->_DB->errMsg;
