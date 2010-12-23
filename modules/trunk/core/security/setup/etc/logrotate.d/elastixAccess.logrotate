@@ -1,6 +1,0 @@
-/var/log/elastix/access.log {
-   missingok
-   rotate 5
-   weekly
-   create 0640 asterisk asterisk
-}
