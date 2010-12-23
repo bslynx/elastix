@@ -227,6 +227,19 @@ class paloSantoPeersInformation {
       return $result;
     }
 
+    function getIdPeerbyRemoteHost($host)
+    {
+        $data = array($host);
+        $query = "SELECT id from peer where host=?";
+        $result=$this->_DB->getFirstRowQuery($query, true, $data);
+        if($result==FALSE)
+        {
+            $this->errMsg = $this->_DB->errMsg;
+            return FALSE;
+        }
+        return $result['id'];
+    }
+
     //Funcion que crea el archivo dundi_peers_custom_elastix.conf
     function createFileDPCE($peers,$arrLang)
     {

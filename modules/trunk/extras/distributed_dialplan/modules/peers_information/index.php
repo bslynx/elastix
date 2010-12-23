@@ -139,6 +139,7 @@ function disconnectPeersInformation($smarty, $module_name, $local_templates_dir,
 
     $dataPeer = $pPeersInformation->ObtainPeersDataById($peerId);
     $ip_ask = $dataPeer['host'];
+    $mac_ask = $dataPeer['mac'];
     $connect = socketReject($ip_ask, $local_ip, $action);
 
 
@@ -264,6 +265,7 @@ function connectPeersInformation($smarty, $module_name, $local_templates_dir, $p
 
     $dataPeer = $pPeersInformation->ObtainPeersDataById($peerId);
     $ip_ask = $dataPeer['host'];
+    $mac_ask = $dataPeer['mac'];
     $connect = socketReject($ip_ask, $local_ip, $action);
 
    $contenidoModulo = reportPeersInformation($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $dsn_agi_manager);
@@ -506,6 +508,9 @@ function rejectPeerRequest($smarty, $module_name, $local_templates_dir, $pDB, $a
     $local_ip = isset($_SERVER['SERVER_ADDR'])?$_SERVER['SERVER_ADDR']:"";//ip local
     $action = 3; 
     $pPeersInformation = new paloSantoPeersInformation($pDB);
+    $dataPeer = $pPeersInformation->ObtainPeersDataById($idPeer);
+    //$ip_ask = $dataPeer['host'];
+    $mac_ask = $dataPeer['mac'];
     $reject = socketReject($ip_ask, $local_ip, $action);
     if(ereg( "^BEGIN[[:space:]](.*)[[:space:]]END", $reject, $regs ))
       {
@@ -557,6 +562,7 @@ function deletePeersInformation($smarty, $module_name, $local_templates_dir, $pD
             $tmpID = substr($key, 5);
             $dataPeer = $pPeersInformation->ObtainPeersDataById($tmpID);
             $ip_ask = $dataPeer['host'];
+            $mac_ask = $dataPeer['mac'];
             $delete = socketReject($ip_ask, $local_ip, $action);
                 if(ereg( "^BEGIN[[:space:]](.*)[[:space:]]END", $delete, $regs ))
                 {
