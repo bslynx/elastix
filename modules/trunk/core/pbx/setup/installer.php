@@ -57,7 +57,7 @@ if(!file_exists("$DataBaseRoot/trunk.db")){
 $provider_account = existDBTable("provider_account", "trunk.db", $DataBaseRoot);
 if($provider_account['flagStatus']==0){
     $arrConsole = $provider_account['arrConsole'];
-    $exists = isset($arrConsole[0]) & $arrConsole=='provider_account';
+    $exists = isset($arrConsole[0]) & $arrConsole[0]=='provider_account';
 // antes verificar si hay datos en proveedores configurados sino existen solo se reemplaza la base
     if(!$exists){
         $cmd_mv    = "mv $tmpDir/setup/trunk.db $DataBaseRoot/trunk-pbx.db";
@@ -94,31 +94,32 @@ if($provider_account['flagStatus']==0){
                         t.id_provider = p.id AND 
                         a.id_trunk = t.id;";
         $result = $pDB->fetchTable($query, true);
-        //recorriendo el $result
-        foreach($result as $key => $value)
-        {
-            $data[0]  = $value['account_name'];
-            $data[1]  = $value['username'];
-            $data[2]  = $value['password'];
-            $data[3]  = $value['type'];
-            $data[4]  = $value['qualify'];
-            $data[5]  = $value['insecure'];
-            $data[6]  = $value['host'];
-            $data[7]  = $value['fromuser'];
-            $data[8]  = $value['fromdomain'];
-            $data[9]  = $value['dtmfmode'];
-            $data[10] = $value['disallow'];
-            $data[11] = $value['context'];
-            $data[12] = $value['allow'];
-            $data[13] = $value['trustrpid'];
-            $data[14] = $value['sendrpid'];
-            $data[15] = $value['canreinvite'];
-            $data[16] = getTechnology($value['id_provider'], $pDBNew);
-            $data[17] = $value['id_provider'];
-            if($value['username'] != "" && $value['password'] != "")
-                insertAccount($data, $pDBNew);
-        }
-
+        if(isset($result) & $result != ""){
+			//recorriendo el $result
+			foreach($result as $key => $value)
+			{
+				$data[0]  = $value['account_name'];
+				$data[1]  = $value['username'];
+				$data[2]  = $value['password'];
+				$data[3]  = $value['type'];
+				$data[4]  = $value['qualify'];
+				$data[5]  = $value['insecure'];
+				$data[6]  = $value['host'];
+				$data[7]  = $value['fromuser'];
+				$data[8]  = $value['fromdomain'];
+				$data[9]  = $value['dtmfmode'];
+				$data[10] = $value['disallow'];
+				$data[11] = $value['context'];
+				$data[12] = $value['allow'];
+				$data[13] = $value['trustrpid'];
+				$data[14] = $value['sendrpid'];
+				$data[15] = $value['canreinvite'];
+				$data[16] = getTechnology($value['id_provider'], $pDBNew);
+				$data[17] = $value['id_provider'];
+				if($value['username'] != "" && $value['password'] != "")
+					insertAccount($data, $pDBNew);
+			}
+		}
         // para la tabla trunk_bill
         $query  = "SELECT COUNT(*) AS size FROM trunk_bill;";
         $result = $pDB->getFirstRowQuery($query, true);
