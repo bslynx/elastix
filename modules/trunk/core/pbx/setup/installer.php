@@ -57,7 +57,7 @@ if(!file_exists("$DataBaseRoot/trunk.db")){
 $provider_account = existDBTable("provider_account", "trunk.db", $DataBaseRoot);
 if($provider_account['flagStatus']==0){
     $arrConsole = $provider_account['arrConsole'];
-    $exists = isset($arrConsole[0]) & $arrConsole[0]=='provider_account';
+    $exists = isset($arrConsole) && isset($arrConsole[0])?true:false;
 // antes verificar si hay datos en proveedores configurados sino existen solo se reemplaza la base
     if(!$exists){
         $cmd_mv    = "mv $tmpDir/setup/trunk.db $DataBaseRoot/trunk-pbx.db";
