@@ -1,7 +1,7 @@
 Summary: Elastix First Boot Setup
 Name:    elastix-firstboot
-Version: 2.0.0
-Release: 14
+Version: 2.0.4
+Release: 1
 License: GPL
 Group:   Applications/System
 Source0: %{name}-%{version}.tar.bz2
@@ -85,6 +85,9 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/elastix-firstboot/compat-dbscripts/08-schema-vtiger.sql
 
 %changelog
+* Mon Dec 27 2010 Alex Villacis Lasso <a_villacis@palosanto.com> 2.0.4-1
+- CHANGED: Bump version for release.
+
 * Fri Dec  3 2010 Alex Villacis Lasso <a_villacis@palosanto.com>
 - CHANGED: Remove Prereq: elastix from spec file, since this module does not
   actually use any files from the Elastix framework, and also to remove a 
