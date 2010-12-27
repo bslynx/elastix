@@ -602,7 +602,7 @@ Installing for dependencies:
                     } else {
                         // El siguiente código require el módulo php-xml
                         $repomd = new SimpleXMLElement(file_get_contents($sRutaRepo.'repomd.xml'));
-                        foreach ($repomd->data as &$dataObj) {
+                        foreach ($repomd->data as $dataObj) {
                             if ($dataObj['type'] == 'primary_db') {
                                 $sRutaPrimary = $dataObj->location['href'];
                                 $regs = NULL;
