@@ -59,7 +59,10 @@ function report{NAME_CLASS}($smarty, $module_name, $local_templates_dir, &$pDB, 
     $oGrid->enableExport();   // enable export.
     $oGrid->setNameFile_Export(_tr("{NEW_MODULE_NAME}"));
 
-    $url   = "?menu=$module_name&filter_field=$filter_field&filter_value=$filter_value";
+    $url = array(
+        "menu"         =>  $module_name,
+        "filter_field" =>  $filter_field,
+        "filter_value" =>  $filter_value);
     $oGrid->setURL($url);
 
     $arrColumns = array({ARR_NAME_COLUMNS});
