@@ -39,19 +39,19 @@ function _moduleContent(&$smarty, $module_name)
 
     switch($action){
         case "save_new":
-            $content = saveNew{NAME_CLASS}($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+            $content = saveNew{NAME_CLASS}($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
             break;
         default: // view_form
-            $content = viewForm{NAME_CLASS}($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+            $content = viewForm{NAME_CLASS}($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
             break;
     }
     return $content;
 }
 
-function viewForm{NAME_CLASS}($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
+function viewForm{NAME_CLASS}($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf)
 {
     $p{NAME_CLASS} = new paloSanto{NAME_CLASS}($pDB);
-    $arrForm{NAME_CLASS} = createFieldForm($arrLang);
+    $arrForm{NAME_CLASS} = createFieldForm();
     $oForm = new paloForm($smarty,$arrForm{NAME_CLASS});
 
     //begin, Form data persistence to errors and other events.
@@ -71,40 +71,40 @@ function viewForm{NAME_CLASS}($smarty, $module_name, $local_templates_dir, &$pDB
         if(is_array($data{NAME_CLASS}) & count($data{NAME_CLASS})>0)
             $_DATA = $data{NAME_CLASS};
         else{
-            $smarty->assign("mb_title", $arrLang["Error get Data"]);
+            $smarty->assign("mb_title", _tr("Error get Data"));
             $smarty->assign("mb_message", $p{NAME_CLASS}->errMsg);
         }
     }
 
-    $smarty->assign("SAVE", $arrLang["Save"]);
-    $smarty->assign("EDIT", $arrLang["Edit"]);
-    $smarty->assign("CANCEL", $arrLang["Cancel"]);
-    $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
+    $smarty->assign("SAVE", _tr("Save"));
+    $smarty->assign("EDIT", _tr("Edit"));
+    $smarty->assign("CANCEL", _tr("Cancel"));
+    $smarty->assign("REQUIRED_FIELD", _tr("Required field"));
     $smarty->assign("IMG", "images/list.png");
 
-    $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",$arrLang["{NEW_MODULE_NAME}"], $_DATA);
+    $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",_tr("{NEW_MODULE_NAME}"), $_DATA);
     $content = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
 
     return $content;
 }
 
-function saveNew{NAME_CLASS}($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
+function saveNew{NAME_CLASS}($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf)
 {
     $p{NAME_CLASS} = new paloSanto{NAME_CLASS}($pDB);
-    $arrForm{NAME_CLASS} = createFieldForm($arrLang);
+    $arrForm{NAME_CLASS} = createFieldForm();
     $oForm = new paloForm($smarty,$arrForm{NAME_CLASS});
 
     if(!$oForm->validateForm($_POST)){
         // Validation basic, not empty and VALIDATION_TYPE 
-        $smarty->assign("mb_title", $arrLang["Validation Error"]);
+        $smarty->assign("mb_title", _tr("Validation Error"));
         $arrErrores = $oForm->arrErroresValidacion;
-        $strErrorMsg = "<b>{$arrLang['The following fields contain errors']}:</b><br/>";
+        $strErrorMsg = "<b>"._tr("The following fields contain errors").":</b><br/>";
         if(is_array($arrErrores) && count($arrErrores) > 0){
             foreach($arrErrores as $k=>$v)
                 $strErrorMsg .= "$k, ";
         }
         $smarty->assign("mb_message", $strErrorMsg);
-        $content = viewForm{NAME_CLASS}($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+        $content = viewForm{NAME_CLASS}($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
     }
     else{
         //NO ERROR, HERE IMPLEMENTATION OF SAVE
@@ -113,7 +113,7 @@ function saveNew{NAME_CLASS}($smarty, $module_name, $local_templates_dir, &$pDB,
     return $content;
 }
 
-function createFieldForm($arrLang)
+function createFieldForm()
 {
     $arrOptions = array('val1' => 'Value 1', 'val2' => 'Value 2', 'val3' => 'Value 3');
 

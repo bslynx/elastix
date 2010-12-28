@@ -1,4 +1,4 @@
-            "{NAME_FIELD}"   => array(      "LABEL"                  => $arrLang["{LABEL_FIELD}"],
+            "{NAME_FIELD}"   => array(      "LABEL"                  => _tr("{LABEL_FIELD}"),
                                             "REQUIRED"               => "no",
                                             "INPUT_TYPE"             => "DATE",
                                             "INPUT_EXTRA_PARAM"      => array("TIME" => true, "FORMAT" => "%d %b %Y %H:%M","TIMEFORMAT" => "12"),

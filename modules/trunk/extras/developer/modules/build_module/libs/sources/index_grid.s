@@ -39,46 +39,45 @@ function _moduleContent(&$smarty, $module_name)
 
     switch($action){
         default:
-            $content = report{NAME_CLASS}($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+            $content = report{NAME_CLASS}($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
             break;
     }
     return $content;
 }
 
-function report{NAME_CLASS}($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
+function report{NAME_CLASS}($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf)
 {
     $p{NAME_CLASS} = new paloSanto{NAME_CLASS}($pDB);
     $filter_field = getParameter("filter_field");
     $filter_value = getParameter("filter_value");
-    $action = getParameter("nav");
-    $start  = getParameter("start");
-    $as_csv = getParameter("exportcsv");
 
     //begin grid parameters
     $oGrid  = new paloSantoGrid($smarty);
+    $oGrid->setTitle(_tr("{NEW_MODULE_NAME}"));
     $oGrid->pagingShow(true); // show paging section.
+
     $oGrid->enableExport();   // enable export.
-    $oGrid->setNameFile_Export($arrLang["{NEW_MODULE_NAME}"]);
+    $oGrid->setNameFile_Export(_tr("{NEW_MODULE_NAME}"));
 
     $url   = "?menu=$module_name&filter_field=$filter_field&filter_value=$filter_value";
-    $total = $p{NAME_CLASS}->getNum{NAME_CLASS}($filter_field, $filter_value);
-    $end   = 0;
+    $oGrid->setURL($url);
 
+    $arrColumns = array({ARR_NAME_COLUMNS});
+    $oGrid->setColumns($arrColumns);
+
+    $total   = $p{NAME_CLASS}->getNum{NAME_CLASS}($filter_field, $filter_value);
+    $arrData = null;
     if($oGrid->isExportAction()){
-        $limit  = 1000; // max number of rows.
-        $offset = 0;    // since the start.
+        $limit  = $total; // max number of rows.
+        $offset = 0;      // since the start.
     }
     else{
         $limit  = 20;
         $oGrid->setLimit($limit);
         $oGrid->setTotal($total);
-
-        $oGrid->calculatePagination($action,$start);
-        $offset = $oGrid->getOffsetValue();
-        $end    = $oGrid->getEnd();
+        $offset = $oGrid->calculateOffset();
     }
 
-    $arrData = null;
     $arrResult =$p{NAME_CLASS}->get{NAME_CLASS}($limit, $offset, $filter_field, $filter_value);
 
     if(is_array($arrResult) && $total>0){
@@ -86,41 +85,28 @@ function report{NAME_CLASS}($smarty, $module_name, $local_templates_dir, &$pDB, 
             $arrData[] = $arrTmp;
         }
     }
-
-    $arrGrid = array(   "title"    => $arrLang["{NEW_MODULE_NAME}"],
-                        "icon"     => "images/list.png",
-                        "width"    => "99%",
-                        "start"    => ($total==0) ? 0 : $offset + 1,
-                        "end"      => $end,
-                        "total"    => $total,
-                        "url"      => $url,
-                        "columns"  => array({ARR_NAME_COLUMNS}
-                                        )
-                    );
-
+    $oGrid->setData($arrData);
 
     //begin section filter
-    $arrFormFilter{NAME_CLASS} = createFieldFilter($arrLang);
-    $oFilterForm = new paloForm($smarty, $arrFormFilter{NAME_CLASS});
-    $smarty->assign("SHOW", $arrLang["Show"]);
-
-    $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl","",$_POST);
+    $oFilterForm = new paloForm($smarty, createFieldFilter());
+    $smarty->assign("SHOW", _tr("Show"));
+    $htmlFilter  = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl","",$_POST);
     //end section filter
 
     $oGrid->showFilter(trim($htmlFilter));
-    $content = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
+    $content = $oGrid->fetchGrid();
     //end grid parameters
 
     return $content;
 }
 
 
-function createFieldFilter($arrLang){
+function createFieldFilter(){
     $arrFilter = array({ARR_FILTERS}
                     );
 
     $arrFormElements = array(
-            "filter_field" => array("LABEL"                  => $arrLang["Search"],
+            "filter_field" => array("LABEL"                  => _tr("Search"),
                                     "REQUIRED"               => "no",
                                     "INPUT_TYPE"             => "SELECT",
                                     "INPUT_EXTRA_PARAM"      => $arrFilter,

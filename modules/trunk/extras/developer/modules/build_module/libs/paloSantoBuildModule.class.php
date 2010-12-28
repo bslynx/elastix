@@ -288,10 +288,9 @@ class paloSantoBuildModule {
                     $tmpNameColumn = str_replace(" ","_",strtolower($column));
                     $blockRows .= "\n\t    \$arrTmp[$key] = \$value['$tmpNameColumn'];";
                     //Para crear las lineas de las columnas en el grid.
-                    $blockColumns .= "\n\t\t\t$key => array(\"name\"      => \$arrLang[\"$column\"],
-                                   \"property1\" => \"\"),";
+                    $blockColumns .= "_tr(\"$column\"),";
                     //Para crear las lineas del arreglo para el fitrado o busqueda.
-                    $blockFilters .= "\n\t    \"$tmpNameColumn\" => \$arrLang[\"$column\"],";
+                    $blockFilters .= "\n\t    \"$tmpNameColumn\" => _tr(\"$column\"),";
                 }
                 $content = str_replace("{ARR_DATA_ROWS}",$blockRows,$content);
                 $content = str_replace("{ARR_NAME_COLUMNS}",$blockColumns,$content);
