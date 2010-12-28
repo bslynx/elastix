@@ -1,3 +1,4 @@
+* Agents: use <button> tag to make link appear as a button.
 * Campaigns Out: check that multibyte functions exist before trying to use them.
   Fixes Elastix bug #650.
 * Calls Detail: complete rewrite. Reorganized library methods now use SQL query
