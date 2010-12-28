@@ -312,6 +312,8 @@ class PaloSantoDHCP
 
     function getTemplateFileConfDHCP()
     {
+        exec("/bin/hostname",$arrOutput);
+        $host = $arrOutput[0];
         $template = "ddns-update-style interim;\n".
                     "ignore client-updates;\n\n".
 
@@ -319,8 +321,8 @@ class PaloSantoDHCP
 
 	            "{CONF_GATEWAY}\n\n".
                     "\toption subnet-mask\t\t{MASK_SUBNET_LAN};\n".
-                    "\toption nis-domain\t\t\"asterisk.local\";\n".
-                    "\toption domain-name\t\t\"asterisk.local\";\n".
+                    "\toption nis-domain\t\t\"$host\";\n".
+                    "\toption domain-name\t\t\"$host\";\n".
                     "{CONF_DOMAIN_NAME_SERVER}\n".
                     "\toption time-offset\t\t-18000; # Eastern Standard Time\n".
                     "\toption ntp-servers\t\t{CONF_NTP_SERVERS};\n".
