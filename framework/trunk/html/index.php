@@ -83,10 +83,11 @@ if(isset($_POST['submit_login']) and !empty($_POST['input_user'])) {
 
         writeLOG("access.log", "AUDIT $_POST[input_user]: Login Successful. Accepted password for $_POST[input_user] from $_SERVER[REMOTE_ADDR].");
     } else {
+        $user = urlencode(substr($_POST['input_user'],0,20));
         if(!$pACL->getIdUser($_POST['input_user'])) // not exists user?
-            writeLOG("access.log", "AUDIT $_POST[input_user]: Authentication Failure. Invalid user $_POST[input_user] from $_SERVER[REMOTE_ADDR].");
+            writeLOG("access.log", "AUDIT $user: Authentication Failure. Invalid user $user from $_SERVER[REMOTE_ADDR].");
         else
-            writeLOG("access.log", "AUDIT $_POST[input_user]: Authentication Failure. Failed password for $_POST[input_user] from $_SERVER[REMOTE_ADDR].");
+            writeLOG("access.log", "AUDIT $user: Authentication Failure. Failed password for $user from $_SERVER[REMOTE_ADDR].");
         // Debo hacer algo aquí?
     }
 }
