@@ -725,6 +725,7 @@ class paloSantoRules {
         }
         if ($bValido){
             //Se deben cambiar los permisos del archivo para poder escribirlo
+            exec("sudo -u root touch /etc/sysconfig/iptables");
             exec("sudo -u root /bin/chmod 777 /etc/sysconfig/iptables");
             exec("sudo -u root /sbin/iptables-save > /etc/sysconfig/iptables", $salida, $retorno);
             exec("sudo -u root /bin/chmod 744 /etc/sysconfig/iptables");
