@@ -201,16 +201,17 @@ function reportReportedeTroncalesusadasporHoraeneldia($smarty, $module_name, $lo
      } else {
             global $arrLang;
 
+            $url = construirURL($url, array('nav', 'start'));
             $offset = 0;
             $limit = $total + 1;
             // se crea el grid
             $arrGrid = array("title"    => _tr("Reporte de Troncales usadas por Hora en el dia"),
+                        "url"      => $url,
                         "icon"     => "images/list.png",
                         "width"    => "99%",
                         "start"    => ($total==0) ? 0 : $offset + 1,
                         "end"      => $end,
                         "total"    => $total,
-                        "url"      => construirURL($url, array('nav', 'start')),
                         "columns"  => array(
 			0 => array("name"      => _tr("Time Period "),
                                    "property1" => ""),
@@ -235,9 +236,12 @@ function reportReportedeTroncalesusadasporHoraeneldia($smarty, $module_name, $lo
                  header("Content-disposition: inline; filename={$title}");
                  header('Content-Type: application/force-download');
             }
-            return $bExportando 
-            ? $oGrid->fetchGridCSV($arrGrid, $arrData) 
-            : $oGrid->fetchGrid($arrGrid, $arrData, $arrLang);
+            if ($bExportando)
+                return $oGrid->fetchGridCSV($arrGrid, $arrData);
+            $sContenido = $oGrid->fetchGrid($arrGrid, $arrData, $arrLang);
+            if (strpos($sContenido, '<form') === FALSE)
+                $sContenido = "<form  method=\"POST\" style=\"margin-bottom:0;\" action=\"$url\">$sContenido</form>";
+            return $sContenido;
     }
 }
     

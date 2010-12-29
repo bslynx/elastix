@@ -408,10 +408,13 @@ function listadoLoginLogout($pDB, $smarty, $module_name, $local_templates_dir,&$
                     $title = "\"".$fecha_init."-".$fecha_end.".csv\"";
                     header("Content-disposition: inline; filename={$title}");
                     header('Content-Type: application/force-download');
-             }
-            return $bExportando 
-                ? $oGrid->fetchGridCSV($arrGrid, $arrData) 
-                : $oGrid->fetchGrid($arrGrid, $arrData, $arrLang);
+            }
+            if ($bExportando)
+                return $oGrid->fetchGridCSV($arrGrid, $arrData);
+            $sContenido = $oGrid->fetchGrid($arrGrid, $arrData, $arrLang);
+            if (strpos($sContenido, '<form') === FALSE)
+                $sContenido = "<form  method=\"POST\" style=\"margin-bottom:0;\" action=\"$url\">$sContenido</form>";
+            return $sContenido;
      }
 }
 

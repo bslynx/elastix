@@ -217,13 +217,14 @@ function reportReporteGeneraldeTiempoConexionAgentesPorDia($smarty, $module_name
 
             $offset = 0;
             $limit = $total;
+            $url = construirURL($url, array('nav', 'start'));
             $arrGrid = array("title"    => _tr("Reporte General de Tiempo Conexion Agentes Por Dia"),
                         "icon"     => "images/list.png",
                         "width"    => "99%",
                         "start"    => ($total==0) ? 0 : $offset + 1,
                         "end"      => $end,
                         "total"    => $total,
-                        "url"      => construirURL($url, array('nav', 'start')),
+                        "url"      => $url,
                         "columns"  => array(
 			0 => array("name"      => _tr("Number Agent"),
                                    "property1" => ""),
@@ -252,9 +253,12 @@ function reportReporteGeneraldeTiempoConexionAgentesPorDia($smarty, $module_name
                     header("Content-disposition: inline; filename={$title}");
                     header('Content-Type: application/force-download');
             }
-            return $bExportando 
-            ? $oGrid->fetchGridCSV($arrGrid, $arrData) 
-            : $oGrid->fetchGrid($arrGrid, $arrData, $arrLang);
+            if ($bExportando)
+                return $oGrid->fetchGridCSV($arrGrid, $arrData);
+            $sContenido = $oGrid->fetchGrid($arrGrid, $arrData, $arrLang);
+            if (strpos($sContenido, '<form') === FALSE)
+                $sContenido = "<form  method=\"POST\" style=\"margin-bottom:0;\" action=\"$url\">$sContenido</form>";
+            return $sContenido;
         }
 }
 

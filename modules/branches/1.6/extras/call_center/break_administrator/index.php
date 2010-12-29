@@ -175,10 +175,11 @@ function listBreaks(&$smarty, $module_name, &$pDB, $local_templates_dir)
     $end = count($arrBreaks); $start = ($end == 0) ? 0 : 1;
     $oGrid = new paloSantoGrid($smarty);
     $oGrid->showFilter("<a href=\"?menu={$module_name}&amp;action=new\"><button class=\"button\">"._tr('Create New Break').'&nbsp;&raquo;</button></a>');
-    return $oGrid->fetchGrid(
+    $url = construirURL(array('menu' => $module_name), array('nav', 'start'));
+    $sContenido = $oGrid->fetchGrid(
         array(
             "title"    => _tr("Breaks List"),
-            "url"      => construirURL(array('menu' => $module_name), array('nav', 'start')),
+            "url"      => $url,
             "icon"     => "images/list.png",
             "width"    => "99%",
             "start"    => ($end==0) ? 0 : 1,
@@ -187,6 +188,9 @@ function listBreaks(&$smarty, $module_name, &$pDB, $local_templates_dir)
             "columns"  => array_map('listBreaks_formatCols', $arrCols),
         ), 
         $arrData, $arrLang);
+    if (strpos($sContenido, '<form') === FALSE)
+        $sContenido = "<form  method=\"POST\" style=\"margin-bottom:0;\" action=\"$url\">$sContenido</form>";
+    return $sContenido;
 }
 
 function nuevoBreak(&$smarty, $module_name, $pDB, $local_templates_dir)

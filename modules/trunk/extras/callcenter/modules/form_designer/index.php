@@ -307,7 +307,9 @@ function listadoForm($pDB, $smarty, $module_name, $local_templates_dir) {
         }
     }
 
+    $url = construirUrl(array('menu' => $module_name), array('nav', 'start'));
     $arrGrid = array("title"    => $arrLangModule["Form List"],
+        "url"      => $url,
         "icon"     => "images/list.png",
         "width"    => "99%",
         "start"    => ($end==0) ? 0 : 1,
@@ -326,15 +328,15 @@ function listadoForm($pDB, $smarty, $module_name, $local_templates_dir) {
     $combo_estados = "<select name='cbo_estado' id='cbo_estado' onChange='submit();'>".combo($estados,$_POST['cbo_estado'])."</select>";
     $oGrid = new paloSantoGrid($smarty);
     $oGrid->showFilter(
-              "<form style='margin-bottom:0;' method='POST' action='?menu=$module_name'>" .
               "<table width='100%' border='0'><tr>".
               "<td><input type='submit' name='submit_create_form' value='{$arrLangModule['Create New Form']}' class='button'></td>".
               "<td class='letra12' align='right'><b>".$arrLangModule["Status"].":</b>&nbsp;$combo_estados</td>".
-              "</tr></table>".
-              "</form>");
+              "</tr></table>");
 //print_r($arrData);
-    $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
-    return $contenidoModulo;
+    $sContenido = $oGrid->fetchGrid($arrGrid, $arrData, $arrLang);
+    if (strpos($sContenido, '<form') === FALSE)
+        $sContenido = "<form  method=\"POST\" style=\"margin-bottom:0;\" action=\"$url\">$sContenido</form>";
+    return $sContenido;
 }
 
 function activar_form($pDB, $smarty, $module_name, $local_templates_dir, $formCampos, $oForm)

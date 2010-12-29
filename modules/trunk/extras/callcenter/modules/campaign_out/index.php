@@ -278,8 +278,10 @@ function listCampaign($pDB, $smarty, $module_name, $local_templates_dir)
     ));
     $oGrid = new paloSantoGrid($smarty);
     $oGrid->showFilter($smarty->fetch("$local_templates_dir/filter-list-campaign.tpl"));
-    $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
-    return $contenidoModulo;
+    $sContenido = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
+    if (strpos($sContenido, '<form') === FALSE)
+        $sContenido = "<form  method=\"POST\" style=\"margin-bottom:0;\" action=\"$url\">$sContenido</form>";
+    return $sContenido;
 }
 
 function newCampaign($pDB, $smarty, $module_name, $local_templates_dir)

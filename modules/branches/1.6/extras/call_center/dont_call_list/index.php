@@ -169,7 +169,9 @@ function listCalls($pDB, $smarty, $module_name, $local_templates_dir) {
     $button_delete="<input class='button' type='submit' name='submit_delete'".
                     " value='{$arrLangModule["Remove"]}'>";
 
+    $url = construirURL(array('menu' => $module_name), array('nav', 'start'));
     $arrGrid = array("title"    => $arrLangModule["Phone List"],
+        "url"      => $url,
         "icon"     => "images/list.png",
         "width"    => "99%",
         "start"    => ($end==0) ? 0 : 1,
@@ -186,14 +188,12 @@ function listCalls($pDB, $smarty, $module_name, $local_templates_dir) {
 
     $oGrid = new paloSantoGrid($smarty);
     $oGrid->showFilter(
-        "<input type='submit' name='submit_Add_Call' value='{$arrLangModule['Add']}' class='button'>&nbsp&nbsp&nbsp&nbsp".
-        "<input type='submit' name='submit_Apply' value='{$arrLangModule['Apply']}' class='button'>");
-
-    $abrir_form="<form style='margin-bottom:0;' method='POST' action='?menu=$module_name'>";
-    $cerrar_form="</form>";
-
-    $contenidoModulo = $abrir_form.$oGrid->fetchGrid($arrGrid, $arrData,$arrLang).$cerrar_form;
-    return $contenidoModulo;
+        "<input type='submit' name='submit_Add_Call' value='{$arrLangModule['Add']}' class='button' />&nbsp&nbsp&nbsp&nbsp".
+        "<input type='submit' name='submit_Apply' value='{$arrLangModule['Apply']}' class='button' />");
+    $sContenido = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
+    if (strpos($sContenido, '<form') === FALSE)
+        $sContenido = "<form  method=\"POST\" style=\"margin-bottom:0;\" action=\"$url\">$sContenido</form>";
+    return $sContenido;
 }
 
 function applyList($pDB, $smarty, $module_name, $local_templates_dir, $formCampos, $oForm){

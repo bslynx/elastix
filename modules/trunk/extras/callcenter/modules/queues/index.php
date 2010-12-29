@@ -237,7 +237,9 @@
 
         $arrDataQueues = $oData->getQueues(NULL, $_POST['cbo_estado']);
         $end = count($arrDataQueues);
+        $url = construirUrl(array('menu' => $module_name), array('nav', 'start'));
         $arrGrid = array("title"    => $arrLangModule["Queue List"],
+            'url'      => $url,
             "icon"     => "images/list.png",
             "width"    => "99%",
             "start"    => ($end==0) ? 0 : 1,
@@ -255,12 +257,10 @@
         
         $oGrid = new paloSantoGrid($smarty);
         $oGrid->showFilter(
-                "<form style='margin-bottom:0;' method='POST' action='?menu=$module_name'>" .
                 "<table width='100%' border='0'><tr>".
                 "<td><input type='submit' name='submit_select_queue' value='{$arrLangModule['Select Queue']}' class='button'></td>".
                 "<td class='letra12' align='right'>{$arrLangModule['Status']}&nbsp;$combo_estados </td>".
-                "</tr></table>".
-                "</form>");
+                "</tr></table>");
         $arrData    = array();
         if (is_array($arrDataQueues)) {
             foreach($arrDataQueues as $queue) {
@@ -279,8 +279,10 @@
             }
         }
 
-        $contenido = $oGrid->fetchGrid($arrGrid, $arrData,$arrLangModule);
-        return $contenido;
+        $sContenido = $oGrid->fetchGrid($arrGrid, $arrData, $arrLangModule);
+        if (strpos($sContenido, '<form') === FALSE)
+            $sContenido = "<form  method=\"POST\" style=\"margin-bottom:0;\" action=\"$url\">$sContenido</form>";
+        return $sContenido;
     }
 
     function adaptar_formato_rte($strText) {

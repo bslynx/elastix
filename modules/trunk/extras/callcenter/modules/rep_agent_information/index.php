@@ -286,9 +286,12 @@ NO_QUEUE_END;
             header('Content-Type: text/csv; charset=utf-8; header=present');
             header("Content-disposition: attachment; filename=\"".$title.".csv\"");
         }
-       return $bExportando 
-        ? $oGrid->fetchGridCSV($arrGrid, $arrData) 
-        : $oGrid->fetchGrid($arrGrid, $arrData, $arrLang);
+        if ($bExportando)
+            return $oGrid->fetchGridCSV($arrGrid, $arrData);
+        $sContenido = $oGrid->fetchGrid($arrGrid, $arrData, $arrLang);
+        if (strpos($sContenido, '<form') === FALSE)
+            $sContenido = "<form  method=\"POST\" style=\"margin-bottom:0;\" action=\"$url\">$sContenido</form>";
+        return $sContenido;
     }        
 }
 

@@ -1,3 +1,6 @@
+* Compatibility fix: check if generated HTML for report includes a <form> tag,
+  and add it if not present. Required for compatibility with very old Elastix
+  versions.
 * Agents: use <button> tag to make link appear as a button.
 * Campaigns Out: check that multibyte functions exist before trying to use them.
   Fixes Elastix bug #650.

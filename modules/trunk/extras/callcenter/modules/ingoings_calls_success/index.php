@@ -331,9 +331,12 @@ function generarReporte($smarty,$fecha_actual_init,$fecha_actual_end,$oReportsCa
             // fuerza a que el archivo sea download
             header('Content-Type: application/force-download');
         }
-         return $bExportando 
-                ? $oGrid->fetchGridCSV($arrGrid, $arrData) 
-                : $oGrid->fetchGrid($arrGrid, $arrData, $arrLang);
+        if ($bExportando)
+            return $oGrid->fetchGridCSV($arrGrid, $arrData);
+        $sContenido = $oGrid->fetchGrid($arrGrid, $arrData, $arrLang);
+        if (strpos($sContenido, '<form') === FALSE)
+            $sContenido = "<form  method=\"POST\" style=\"margin-bottom:0;\" action=\"$url\">$sContenido</form>";
+        return $sContenido;
     }
 }
 

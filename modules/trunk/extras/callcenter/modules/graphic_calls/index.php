@@ -184,7 +184,9 @@ function listHistogram($pDB, $smarty, $module_name, $local_templates_dir)
     $oForm = new paloForm($smarty, $formFilter);
 
     //Llenamos las cabeceras
+    $url = construirURL(array('menu' => $module_name), array('nav', 'start'));
     $arrGrid = array("title"    => $arrLangModule["Graphic Calls per hour"],
+        "url"      => $url,
         "icon"     => "images/list.png",
         "width"    => "99%",
         "start"    => 0,
@@ -217,7 +219,17 @@ function listHistogram($pDB, $smarty, $module_name, $local_templates_dir)
         header("Content-disposition: attachment; filename={$title}");
         return $oGrid->fetchGridCSV($arrGrid, $arrData);
     } else {
-        return $oGrid->fetchGrid($arrGrid, $arrData, $arrLang);
+        $bExportando =
+              ( (isset( $_GET['exportcsv'] ) && $_GET['exportcsv'] == 'yes') || 
+                (isset( $_GET['exportspreadsheet'] ) && $_GET['exportspreadsheet'] == 'yes') || 
+                (isset( $_GET['exportpdf'] ) && $_GET['exportpdf'] == 'yes')
+              ) ;
+        $sContenido = $oGrid->fetchGrid($arrGrid, $arrData, $arrLang);
+        if (!$bExportando) {
+            if (strpos($sContenido, '<form') === FALSE)
+                $sContenido = "<form  method=\"POST\" style=\"margin-bottom:0;\" action=\"$url\">$sContenido</form>";
+        }
+        return $sContenido;
     }
 }
 

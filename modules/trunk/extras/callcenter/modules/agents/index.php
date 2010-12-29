@@ -328,7 +328,10 @@ function listAgent($pDB, $smarty, $module_name, $local_templates_dir)
         'MESSAGE_CONTINUE_DELETE' => _tr("Are you sure you wish to continue?"),
     ));
     $oGrid->showFilter($smarty->fetch("$local_templates_dir/filter-list-agents.tpl"));
-    return $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
+    $sContenido = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
+    if (strpos($sContenido, '<form') === FALSE)
+        $sContenido = "<form  method=\"POST\" style=\"margin-bottom:0;\" action=\"$url\">$sContenido</form>";
+    return $sContenido;
 }
 
 function newAgent($pDB, $smarty, $module_name, $local_templates_dir)

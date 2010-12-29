@@ -230,7 +230,17 @@ function listHistogram($pDB, $smarty, $module_name, $local_templates_dir)
         header("Content-disposition: attachment; filename={$title}");
         return $oGrid->fetchGridCSV($arrGrid, $arrData);
     } else {
-        return $oGrid->fetchGrid($arrGrid, $arrData, $arrLang);
+        $bExportando =
+              ( (isset( $_GET['exportcsv'] ) && $_GET['exportcsv'] == 'yes') || 
+                (isset( $_GET['exportspreadsheet'] ) && $_GET['exportspreadsheet'] == 'yes') || 
+                (isset( $_GET['exportpdf'] ) && $_GET['exportpdf'] == 'yes')
+              ) ;
+        $sContenido = $oGrid->fetchGrid($arrGrid, $arrData, $arrLang);
+        if (!$bExportando) {
+            if (strpos($sContenido, '<form') === FALSE)
+                $sContenido = "<form  method=\"POST\" style=\"margin-bottom:0;\" action=\"$url\">$sContenido</form>";
+        }
+        return $sContenido;
     }
 }
 

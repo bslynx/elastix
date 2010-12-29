@@ -285,9 +285,12 @@ function _moduleContent(&$smarty, $module_name)
             header('Content-disposition: inline; filename="calls_per_agent.csv"');
             header('Content-Type: application/force-download');
         }
-        return $bExportando 
-            ? $oGrid->fetchGridCSV($arrGrid, $arrData) 
-            : $oGrid->fetchGrid($arrGrid, $arrData, $arrLang);
+        if ($bExportando)
+            return $oGrid->fetchGridCSV($arrGrid, $arrData);
+        $sContenido = $oGrid->fetchGrid($arrGrid, $arrData, $arrLang);
+        if (strpos($sContenido, '<form') === FALSE)
+            $sContenido = "<form  method=\"POST\" style=\"margin-bottom:0;\" action=\"$url\">$sContenido</form>";
+        return $sContenido;
     }
 }
 
