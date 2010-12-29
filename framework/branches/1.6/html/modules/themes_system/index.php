@@ -28,7 +28,6 @@
   $Id: new_campaign.php $ */
 
 require_once "libs/paloSantoForm.class.php";
-include_once "libs/paloSantoConfig.class.php";
 include_once "libs/paloSantoGrid.class.php";
 
 /*

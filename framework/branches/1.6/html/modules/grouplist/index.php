@@ -30,11 +30,10 @@
 function _moduleContent(&$smarty, $module_name)
 {
     include_once("libs/paloSantoDB.class.php");
-    include_once("libs/paloSantoConfig.class.php");
     include_once("libs/paloSantoGrid.class.php");
     include_once("libs/paloSantoACL.class.php");
     include_once "modules/$module_name/configs/default.conf.php";
-    
+
     //include file language agree to elastix configuration
     //if file language not exists, then include language by default (en)
     $lang=get_language();
@@ -55,19 +54,10 @@ function _moduleContent(&$smarty, $module_name)
     /////conexion a php
     $pDB = new paloDB($arrConf['elastix_dsn']['acl']);
 
-        
     //folder path for custom templates
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
     $templates_dir=(isset($arrConf['templates_dir']))?$arrConf['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
-
-    $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
-    $arrConfig = $pConfig->leer_configuracion(false);
-
-    $dsn = $arrConfig['AMPDBENGINE']['valor'] . "://" . $arrConfig['AMPDBUSER']['valor'] . ":" . $arrConfig['AMPDBPASS']['valor'] . "@" . $arrConfig['AMPDBHOST']['valor'] . "/asterisk";
-    $pDBa     = new paloDB($dsn);
-
-////////////////////
 
     if(!empty($pDB->errMsg)) {
         echo "ERROR DE DB: $pDB->errMsg <br>";
