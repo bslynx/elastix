@@ -63,19 +63,12 @@ if(isset($_SERVER['argv'][1]) & in_array($_SERVER['argv'][1],$arrActions)){
              return executeFiles_SQL_install($arrFiles, $password, $path_folder, $action, $sql_export);
           }
 	      else if($action=="update"){
-     		 $version = isset($_SERVER['argv'][3])?$_SERVER['argv'][3]:false;			 
+     		 $version = isset($_SERVER['argv'][3])?$_SERVER['argv'][3]:false;
 			 if(isset($version) && !empty($version))
-			 { 
-                 echo "Updating since $version\n";
-                 $stringsql=updatedatabase($version,$path_folder);
-                    
-                 $fileupdate="$path_folder/$action/01-updates-database.sql";
-		         file_put_contents($fileupdate,$stringsql);		      
-	             return executeFiles_SQL_update($fileupdate, $password, $action, $sql_export);
-			 } 
+	             return executeFiles_SQL_update($version, $password, $path_folder, $action, $sql_export);
              else
     	         echo "Has not been passed the version to the process of updating.\n";
-             return 0;				
+             return 0;
           }
           else if($action=="delete"){
              echo "Nothing to be done in database. The action $action did have implementation yet.\n";
@@ -104,7 +97,7 @@ function executeFiles_SQL_install($arrFiles, $password, $path_folder, $action, $
 			if($sql_export==false){
             	echo "Executing mysql -uroot -p$password < $path_folder/$action/$file ... \n";
 	            exec("mysql -uroot -p$password < $path_folder/$action/$file",$arrConsole,$flatStatus);
-            
+
     	        echo "RETURN $flatStatus\n";
         	    if($flatStatus != 0){
 	                print_r($arrConsole);
@@ -114,32 +107,52 @@ function executeFiles_SQL_install($arrFiles, $password, $path_folder, $action, $
 		    }
 			else{
 				echo  file_get_contents("$path_folder/$action/$file");
+                return 0;
 			}			
          }
       }
-      echo "Successfull, Action $action database.\n";
-      return 0;
+
+      if($sql_export==false){
+        echo "Successfull, Action $action database.\n";
+        return 0;
+      }
    }
    echo "Nothing to be done in database.\n";
    return 0;
 }
-function executeFiles_SQL_update($fileupdate, $password, $action, $sql_export=false)
+
+function executeFiles_SQL_update($version, $password, $path_folder, $action, $sql_export=false)
 {
-   if($sql_export==false){
-        echo "Executing mysql -uroot -p$password <  $fileupdate... \n";    
-        exec("mysql -uroot -p$password < $fileupdate",$arrConsole,$flatStatus);        
-	    echo "RETURN $flatStatus\n";
-        if($flatStatus != 0){
-	        echo "Error, Action $action database failed.\n";
-		    return 1;
-		}
-	}
-	else{
-		echo file_get_contents("$path_folder/$action/$file");
-	}
-      echo "Successfull, Action $action database.\n";
-      return 0;  
+    $stringsql = updatedatabase($version,$path_folder);
+
+    if(!is_null($stringsql) && !empty($stringsql)){
+        if($sql_export==false){
+            echo "Updating since $version\n";
+            $fileupdate = "$path_folder/$action/01-updates-database.sql";
+            file_put_contents($fileupdate,$stringsql);
+
+            echo "Executing mysql -uroot -p$password <  $fileupdate... \n";
+            exec("mysql -uroot -p$password < $fileupdate",$arrConsole,$flatStatus);
+
+            echo "RETURN $flatStatus\n";
+            if($flatStatus != 0){
+                echo "Error, Action $action database failed.\n";
+                return 1;
+            }
+            else{
+                echo "Successfull, Action $action database.\n";
+                return 0;
+            }
+        }
+        else{
+            echo $stringsql;
+            return 0;
+        }
+    }
+    echo "Nothing to be done in database.\n";
+    return 0;
 }
+
 function esmayor($cadenainteractual,$cadenadada)
 {
      $versionreleasedada=split("-",$cadenadada);     
@@ -222,6 +235,6 @@ function updatedatabase($version_actual,$path_folder)
         $directorio->close();  
         return $cadenareturn;
     }
-    else return "";
+    else return null;
 }
 ?>
