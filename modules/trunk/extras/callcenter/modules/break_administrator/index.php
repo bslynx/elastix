@@ -165,9 +165,11 @@ function listBreaks(&$smarty, $module_name, &$pDB, $local_templates_dir)
                 : '&nbsp;',
         );
     }
-    $arrData = array_map('listBreaks_formatHTML',
-        $arrBreaks,
-        array_fill(0, count($arrBreaks), array('module_name' => $module_name)));
+    $arrData = array();
+    if (count($arrBreaks) > 0)
+        $arrData = array_map('listBreaks_formatHTML',
+            $arrBreaks,
+            array_fill(0, count($arrBreaks), array('module_name' => $module_name)));
 
     // Construcción de la rejilla de vista
     function listBreaks_formatCols($x) { return array('name' => $x); }
