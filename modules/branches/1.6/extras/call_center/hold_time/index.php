@@ -270,6 +270,7 @@ function listadoHoldTime($pDB, $smarty, $module_name, $local_templates_dir,&$oGr
     $sTagInicio = (!$bExportando) ? '<b>' : '';
     $sTagFinal = ($sTagInicio != '') ? '</b>' : '';
     if (is_array($arrCalls)) {
+        $end = $arrCalls['NumRecords'];
         foreach($arrCalls['Data'] as $calls) {
             $arrTmp[0] = $calls['cola'];
             //primeramente enceramos los valores de horas
@@ -413,8 +414,9 @@ function listadoHoldTime($pDB, $smarty, $module_name, $local_templates_dir,&$oGr
            $offset = 0;
            $limit = $totalCalls;
             //Llenamos las cabeceras
+           $url = construirURL($url, array("nav", "start"));
            $arrGrid = array("title"    => _tr("Hold Time"),
-                "url"      => construirURL($url, array("nav", "start")),
+                "url"      => $url,
                 "icon"     => "images/list.png",
                 "width"    => "99%",
                 "start"    => ($end==0) ? 0 : $offset + 1,
