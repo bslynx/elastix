@@ -55,20 +55,23 @@ if(isset($_SERVER['argv'][1]) & in_array($_SERVER['argv'][1],$arrActions)){
       $arrFiles    = scandir("$path_folder/$action");
 
       if(is_array($arrFiles) && count($arrFiles)>0){
-          $confElastix = new paloConfig("/etc","elastix.conf"," = ","[[:space:]]*=[[:space:]]*");
-          $contentFile = $confElastix->leer_configuracion();
-          $password    = $confElastix->privado_get_valor($contentFile,"mysqlrootpwd");
+          $password="";
+          if($sql_export==false){
+              $confElastix = new paloConfig("/etc","elastix.conf"," = ","[[:space:]]*=[[:space:]]*");
+              $contentFile = $confElastix->leer_configuracion();
+              $password    = $confElastix->privado_get_valor($contentFile,"mysqlrootpwd");
+          }
 
           if($action=="install"){
              return executeFiles_SQL_install($arrFiles, $password, $path_folder, $action, $sql_export);
           }
-	      else if($action=="update"){
-     		 $version = isset($_SERVER['argv'][3])?$_SERVER['argv'][3]:false;
-			 if(isset($version) && !empty($version))
-	             return executeFiles_SQL_update($version, $password, $path_folder, $action, $sql_export);
-             else
-    	         echo "Has not been passed the version to the process of updating.\n";
-             return 0;
+	  else if($action=="update"){
+     	      $version = isset($_SERVER['argv'][3])?$_SERVER['argv'][3]:false;
+	      if(isset($version) && !empty($version))
+	          return executeFiles_SQL_update($version, $password, $path_folder, $action, $sql_export);
+              else
+    	          echo "Has not been passed the version to the process of updating.\n";
+              return 0;
           }
           else if($action=="delete"){
              echo "Nothing to be done in database. The action $action did have implementation yet.\n";
@@ -94,28 +97,26 @@ function executeFiles_SQL_install($arrFiles, $password, $path_folder, $action, $
    if(is_array($arrFiles) && count($arrFiles)>0){
       foreach($arrFiles as $k => $file){// must only have sqls files valids.
          if(ereg("\.sql$",$file)){
-			if($sql_export==false){
+	     if($sql_export==false){
             	echo "Executing mysql -uroot -p$password < $path_folder/$action/$file ... \n";
-	            exec("mysql -uroot -p$password < $path_folder/$action/$file",$arrConsole,$flatStatus);
+	        exec("mysql -uroot -p$password < $path_folder/$action/$file",$arrConsole,$flatStatus);
 
     	        echo "RETURN $flatStatus\n";
-        	    if($flatStatus != 0){
-	                print_r($arrConsole);
-	                echo "Error, Action $action database failed.\n";
-				    return 1;
-				}
-		    }
-			else{
-				echo  file_get_contents("$path_folder/$action/$file");
-                return 0;
-			}			
+        	if($flatStatus != 0){
+	            print_r($arrConsole);
+	            echo "Error, Action $action database failed.\n";
+		    return 1;
+		}
+	     }
+	     else{
+	            echo  file_get_contents("$path_folder/$action/$file");
+	     }			
          }
       }
 
-      if($sql_export==false){
-        echo "Successfull, Action $action database.\n";
-        return 0;
-      }
+      if($sql_export==false)
+          echo "Successfull, Action $action database.\n";
+      return 0;
    }
    echo "Nothing to be done in database.\n";
    return 0;
