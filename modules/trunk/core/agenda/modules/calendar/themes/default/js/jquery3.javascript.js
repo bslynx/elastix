@@ -837,7 +837,8 @@ function obtainEmails(){
         $('#notification_email').attr("style","visibility:hidden;");
         $('#title_box').html("");
         $('#box').show();
-        $('.loading').show();
+        //$('.loading').show();
+        $('.loading').hide();
         //$('#divReminder').hide();
         //$('#divNotification').hide();
         $('#lblCheckBoxNoti').attr("for","CheckBoxNoti1");
@@ -1222,7 +1223,8 @@ function obtainEmails(){
         var urlImaLoading = "<h1><img src='modules/"+module_name+"/images/busy.gif' /> "+$('#lblLoading').val()+"...</h1>";
         $.blockUI({ message: urlImaLoading });
         $('#box').show();
-        $('.loading').show();
+        //$('.loading').show();
+        $('.loading').hide();
         $('.remin').attr("style","display:none;");
         $('#notification_email').attr("style","visibility:hidden;");
         $.post("share_calendar.php", order,
@@ -1444,7 +1446,8 @@ function obtainEmails(){
 
         $('#title_box').html("");
         $('#box').show();
-        $('.loading').show();
+        //$('.loading').show();
+        $('.loading').hide();
         $('#divReminder').show();
         $('#divNotification').show();
         $('#lblCheckBoxNoti').attr("for","CheckBoxNoti");
