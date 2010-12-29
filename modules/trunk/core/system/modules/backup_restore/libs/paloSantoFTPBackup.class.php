@@ -96,7 +96,7 @@ class paloSantoFTPBackup {
         $id_ftp=$this->connectFTP($user, $password, $host, $port);
         if($id_ftp == 1 || $id_ftp == 2)    return $id_ftp;
         ftp_chdir($id_ftp, $path);
-        $contents = ftp_nlist($id_ftp, ".");
+        $contents = ftp_nlist($id_ftp, "-la .");
         ftp_quit($id_ftp);
         $new_contents = $this->getOnlyTar($contents);
         if(!$new_contents) return 'empty';
