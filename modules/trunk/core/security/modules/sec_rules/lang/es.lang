@@ -83,6 +83,7 @@ $arrLangModule=array(
 "OUT" => "SALIDA",
 "The rules have been executed in the system" => "Las reglas han sido ejecutadas en el sistema",
 "There have been changes and have not been executed in the system" => "Han habido cambios y no se han ejecutado en el sistema",
-"Cancel" => "Cancelar"
+"Cancel" => "Cancelar",
+"Wrong value for ip" => "Valor inválido para ip"
 );
 ?>

@@ -197,8 +197,8 @@ function createFieldForm($pDB,$arrValues = array())
                                         "REQUIRED"               => "no",
                                         "INPUT_TYPE"             => "TEXT",
                                         "INPUT_EXTRA_PARAM"      => array("style" => "width:90px"),
-                                        "VALIDATION_TYPE"        => "ip",
-                                        "VALIDATION_EXTRA_PARAM" => ""
+                                        "VALIDATION_TYPE"        => "ereg",
+                                        "VALIDATION_EXTRA_PARAM" => "^([[:digit:]]{1,3})\.([[:digit:]]{1,3})\.([[:digit:]]{1,3})\.([[:digit:]]{1,3})$"
                                             ),
             "mask_source"     => array( "LABEL"                  => "mask_source",
                                         "REQUIRED"               => "no",
@@ -211,8 +211,8 @@ function createFieldForm($pDB,$arrValues = array())
                                         "REQUIRED"               => "no",
                                         "INPUT_TYPE"             => "TEXT",
                                         "INPUT_EXTRA_PARAM"      => array("style" => "width:90px"),
-                                        "VALIDATION_TYPE"        => "ip",
-                                        "VALIDATION_EXTRA_PARAM" => ""
+                                        "VALIDATION_TYPE"        => "ereg",
+                                        "VALIDATION_EXTRA_PARAM" => "^([[:digit:]]{1,3})\.([[:digit:]]{1,3})\.([[:digit:]]{1,3})\.([[:digit:]]{1,3})$"
                                             ),
             "mask_destin"     => array( "LABEL"                  => "mask_destiny",
                                         "REQUIRED"               => "no",
@@ -331,10 +331,10 @@ function saveRules($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf)
     //************************************************************************************************************
 
     $arrValues['ip_source'] = getParameter("ip_source");
-    $arrValues['mask_source'] = ($arrValues['ip_source'] == "0.0.0.0") ? "0" : getParameter("mask_source");
+    $arrValues['mask_source'] = getParameter("mask_source");
     $arrValues['ip_destin'] = getParameter("ip_destin");
-    $arrValues['mask_destin'] = ($arrValues['ip_destin'] == "0.0.0.0") ? "0" : getParameter("mask_destin");
-
+    $arrValues['mask_destin'] = getParameter("mask_destin");
+    
     //************************************************************************************************************
     //** PROTOCOL **
     //************************************************************************************************************
@@ -420,7 +420,15 @@ function saveRules($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf)
         $smarty->assign("mb_message", _tr("Wrong Mask"));
         return newRules($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrValues, $state);
     }
-
+    $ipOrigen = explode(".",$arrValues['ip_source']);
+    $ipDestino = explode(".",$arrValues['ip_destin']);
+    if($ipOrigen[0]>255 || $ipOrigen[1]>255 || $ipOrigen[2]>255 || $ipOrigen[3]>255 || $ipDestino[0]>255 || $ipDestino[1]>255 || $ipDestino[2]>255 || $ipDestino[3]>255){
+        $smarty->assign("mb_title", _tr("Validation Error"));
+        $smarty->assign("mb_message", _tr("Wrong value for ip"));
+        return newRules($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrValues, $state);
+    }
+    $arrValues['mask_source'] = ($arrValues['ip_source'] == "0.0.0.0") ? "0" : $arrValues['mask_source'];
+    $arrValues['mask_destin'] = ($arrValues['ip_destin'] == "0.0.0.0") ? "0" : $arrValues['mask_destin'];  
     $oPalo = new paloSantoRules($pDB);
     if($arrValues['ip_source'] != "0.0.0.0" && $arrValues['mask_source'] != "" && $arrValues['ip_source'] != ""){
         $arrValues['ip_source'] = $oPalo->getNetAdress($arrValues['ip_source'],$arrValues['mask_source']);
