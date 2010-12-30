@@ -53,6 +53,6 @@ $arrLangModule=array(
 "unknown" => "ناشناخته",
 "Start_Date" => "Start Date",
 "End_Date" => "End Date",
-
+"delete_file_error" => "At least one of files selected cannot be deleted because it no exists",
 );
 ?>

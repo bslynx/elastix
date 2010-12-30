@@ -48,5 +48,6 @@ $arrLangModule=array(
 "Queue" => "Cola",
 "Group" => "Grupo",
 "unknown" => "Desconocido",
+"delete_file_error" => "At least one of files selected cannot be deleted because it no exists",
 );
 ?>

@@ -79,7 +79,7 @@ function _moduleContent(&$smarty, $module_name)
 
     switch($action){
         case 'delete':
-            $content = deleteRecord($smarty, $module_name, $local_templates_dir, $pDB, $pDBACL, $arrConf);
+            $content = deleteRecord($smarty, $module_name, $local_templates_dir, $pDB, $pDBACL, $arrConf, $arrLang);
             break;
         case 'download':
             $content = downloadFile($smarty, $module_name, $local_templates_dir, $pDB, $pDBACL, $arrConf);
@@ -350,7 +350,7 @@ contenido;
         $smarty->display("_common/popup.tpl");
 }
 
-function deleteRecord($smarty, $module_name, $local_templates_dir, &$pDB, &$pDBACL, $arrConf)
+function deleteRecord($smarty, $module_name, $local_templates_dir, &$pDB, &$pDBACL, $arrConf, $arrLang)
 {
     $pMonitoring = new paloSantoMonitoring($pDB);
     $_DATA['date_start'] = isset($date_ini)?$date_ini:date("d M Y");
@@ -362,11 +362,14 @@ function deleteRecord($smarty, $module_name, $local_templates_dir, &$pDB, &$pDBA
             $ID = substr($key, 3);
             $ID = str_replace("_",".",$ID);
             $recordName = $pMonitoring->getRecordName($ID);
-
-            if($pMonitoring->deleteRecordFile($ID)){
-                $record = substr($recordName,6);
-                $path = $path_record.$record;
-                exec("rm -rf $path");
+            $record = substr($recordName,6);
+            $record = basename($record);
+            $path = $path_record.$record;
+            if(is_file($path)){
+                if($pMonitoring->deleteRecordFile($ID))
+                    unlink($path);
+            }else{
+                $smarty->assign("mb_message", $arrLang['delete_file_error']);
             }
         }
     }

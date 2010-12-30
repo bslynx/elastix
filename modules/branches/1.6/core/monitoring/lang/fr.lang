@@ -53,6 +53,6 @@ $arrLangModule=array(
 "unknown" => "Inconnu",
 "Search" => "Recherche sur",
 "Show" => "Afficher",
-
+"delete_file_error" => "At least one of files selected cannot be deleted because it no exists",
 );
 ?>
