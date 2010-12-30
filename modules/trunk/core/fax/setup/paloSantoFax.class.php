@@ -712,8 +712,8 @@ class paloFax {
 
     function restartFax() {
         exec("sudo -u root init q");
-        exec("sudo -u root service iaxmodem restart");
-        exec("sudo -u root service hylafax restart");
+        exec("sudo -u root service generic-cloexec iaxmodem restart");
+        exec("sudo -u root service generic-cloexec hylafax restart");
     }
 }
 ?>
