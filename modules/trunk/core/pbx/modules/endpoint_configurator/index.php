@@ -258,7 +258,7 @@ function endpointConfiguratedSet($smarty, $module_name, $local_templates_dir, $d
             $tmpEndpoint['name_vendor'] = $_POST["name_vendor_device_$tmpMac"];
             $tmpEndpoint['ip_adress']   = $_POST["ip_adress_endpoint_$tmpMac"];
             $tmpEndpoint['comment']     = "Nada";
-
+      
             //Variables usadas para parametros extras
             $name_model = $paloEndPoint->getModelById($tmpEndpoint['id_model']);
             $arrParametersOld = $paloEndPoint->getParameters($tmpEndpoint['mac_adress']);

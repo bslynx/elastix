@@ -6,6 +6,19 @@
 function PrincipalFileGrandstream($DisplayName, $id_device, $secret, $ipAdressServer)
 {
     $content="
+
+# Firmware Server Path
+P192 = $ipAdressServer
+
+# Config Server Path
+P237 = $ipAdressServer
+
+# Firmware Upgrade. 0 - TFTP Upgrade,  1 - HTTP Upgrade.
+P212 = 0
+
+# Account Name
+P270 = $DisplayName
+
 # SIP Server
 P47 = $ipAdressServer
 
