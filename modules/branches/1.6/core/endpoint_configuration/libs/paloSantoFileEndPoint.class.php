@@ -119,10 +119,10 @@ class PaloSantoFileEndPoint
 
             case 'Grandstream':
         	$contentFileGrandstream = PrincipalFileGrandstream($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer);
-                if($this->createFileConf($this->directory, "gxp".$ArrayData['data']['filename'].".cfg", $contentFileGrandstream)) {
+                if($this->createFileConf($this->directory, "gxp".$ArrayData['data']['filename'], $contentFileGrandstream)) {
 		    exec("sudo -u root chmod o+rx /opt/openfire");
                     //ex: . /tftpboot/GS_CFG_GEN/bin/encode.sh 000945531b3b /tftpboot/gxp_config_1.1.6.46.template.cfg /tftpboot/cfg000945531b3b
-		    exec("/tftpboot/GS_CFG_GEN/bin/encode.sh {$ArrayData['data']['filename']} /tftpboot/gxp{$ArrayData['data']['filename']}.cfg /tftpboot/cfg{$ArrayData['data']['filename']}.cfg",$arrConsole,$flagStatus);
+		    exec("/tftpboot/GS_CFG_GEN/bin/encode.sh {$ArrayData['data']['filename']} /tftpboot/gxp{$ArrayData['data']['filename']} /tftpboot/cfg{$ArrayData['data']['filename']}",$arrConsole,$flagStatus);
 		    exec("sudo -u root chmod o-rx /opt/openfire");
                     if($flagStatus == 0)
 			return true;
@@ -206,8 +206,8 @@ class PaloSantoFileEndPoint
                 break;
 
             case 'Grandstream':
-		if($this->deleteFileConf($this->directory, "cfg".$ArrayData['data']['filename'].".cfg")){
-                    return $this->deleteFileConf($this->directory, "gxp".$ArrayData['data']['filename'].".cfg");
+		if($this->deleteFileConf($this->directory, "cfg".$ArrayData['data']['filename'])){
+                    return $this->deleteFileConf($this->directory, "gxp".$ArrayData['data']['filename']);
                 }else return false;
                 break;
 
