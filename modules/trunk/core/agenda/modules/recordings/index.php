@@ -166,10 +166,17 @@ function save_recording($smarty, $module_name, $local_templates_dir, $arrLang, $
                     exec($comando, $output, $retval);
                     if ($retval!=0) $bExito = false;
                 }
+                if (!preg_match("/^(\w|-|\.|\(|\)|\s)+\.(wav|WAV|Wav|gsm|GSM|Gsm|Wav49|wav49|WAV49)$/",$_FILES['file_record']['name'])) {
+                    $smarty->assign("mb_title", $arrLang['ERROR'].":");
+                    $smarty->assign("mb_message", $arrLang["Possible file upload attack"]." $filename");
+                    $bExito = false;
+                    return form_Recordings($smarty, $module_name, $local_templates_dir, $arrLang);
+                }
                 if($bExito)
                 {
-                    $filename = $_FILES['file_record']['name'];
+                    $filenameTmp = $_FILES['file_record']['name'];
                     $tmp_name = $_FILES['file_record']['tmp_name'];
+                    $filename = basename("$destiny_path/$filenameTmp");
                     if (!move_uploaded_file($tmp_name, "$destiny_path/$filename"))
                     {
                         $smarty->assign("mb_title", $arrLang['ERROR'].":");
