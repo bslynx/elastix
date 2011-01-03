@@ -16,11 +16,87 @@ $(document).ready(function(){
         $('#boxConfSPANS').css('top','50%');
         $('#boxConfSPANS').css('left',eje_x+"px");
         $('#fade_overlay').attr("style","display: block;");
+        $('#idCard').val("");
+        var url = "index.php";
+        var arrParams = new Array();
+        arrParams["action"] = "config_echo";
+        arrParams["cardId"] = $(this).attr('id');
+        arrParams["rawmode"] = "yes";
+        request(url,arrParams,false,
+            function(arrData,statusResponse,error)
+            {
+                var echoNames = arrData["type_echo_names"];
+                var PortsEcho = arrData["arrPortsEcho"];
+                var SpanNum   = arrData["card_id"];
+                var key       = "";
+                var key2      = "";
+                var lastKey2  = "";
+                var html      = "";
+                var noPorts   = $('#labelNoPorts').val();
+                $('#idCard').val(SpanNum);
+                if(PortsEcho.length <= 0){
+                    $('#port_desc').text(noPorts);
+                    $('.viewButton').attr("style","display: none;");
+                }else{
+                    var port_desc = $('#'+arrData["card_id"]).text();
+                    $('#port_desc').text(port_desc);
+                    $('.viewButton').attr("style","display: block;");
+                }
+                $('#config_echo_div').html("");
+                html += "<table align='center' width='80%'>";
+                for(key in PortsEcho){
+                    key2 = "";
+                    lastKey2 = "";
+                    html +=     "<tr><td align='center' style='padding: 5px;'><b>" + key + "</b> " + PortsEcho[key]['name_port'] + "</td>" +
+                                "<td align='center' style='padding: 5px;'><select id='typeecho_" + key + "' name='typeecho_" + key + "'>";
+                    for(key2 in echoNames){
+                        if(PortsEcho[key]['type_echo'] == key2){
+                            html +=      "<option value='" + key2 +"' selected='selected'>" + echoNames[key2] + "</option>";
+                            lastKey2 = key2;
+                        }else{
+                            html +=      "<option value='" + key2 +"'>" + echoNames[key2] + "</option>";
+                        }
+                    }
+                    html +=          "</select>" +
+                                     "<input type='hidden' value='" +lastKey2+ "' id='tmpTypeEcho" + key + "' name='tmpTypeEcho" + key + "' />" +
+                                "</td></tr>";
+                }
+                html += "</table>";
+                $('#config_echo_div').html(html);
+            }
+        );
     });
 
-    $('.close_boxConfSPANS').click(function(){
+    $('.close_boxConfSPANS, #cancel').click(function(){
         $('#fade_overlay').attr("style","display: none;");
         $('#boxConfSPANS').attr("style","display: none;");
+    });
+
+    $('#save_edit').click(function(){
+        // blocking screen
+        var module_name = $('#lblModule').val();
+        var urlImaLoading = "<h1><img src='modules/"+module_name+"/images/busy.gif' /> "+$('#lblSaving').val()+"...</h1>";
+        $.blockUI({ message: urlImaLoading });
+        var values           = getSelectEchoPort();
+        var valuesActual     = getActualEchoPort();
+        var url              = "index.php";
+        var arrParams        = new Array();
+        arrParams["action"]  = "save_echo";
+        arrParams["idCard"]  = $('#idCard').val();
+        arrParams["data"]    = values;
+        arrParams["data2"]   = valuesActual;
+        arrParams["rawmode"] = "yes";
+        request(url,arrParams,false,
+            function(arrData,statusResponse,error)
+            {
+                var message = arrData["msg"];
+                // unblocking
+                $.unblockUI();
+                alert(message);
+                //$('#fade_overlay').attr("style","display: none;");
+                //$('#boxConfSPANS').attr("style","display: none;");
+            }
+        );
     });
 
     $("#fade_overlay").click(function(){
@@ -276,7 +352,7 @@ function saveSpanConfiguration(idSpan){
     {
         controllerDisplayConfig(xhr);
     }
-    xhr.send(null); 
+    xhr.send(null);
 
     return;
 }
@@ -298,7 +374,7 @@ function addTextBox(idCard){
     var arrSpanConf = new Array();
     var manufacturer = document.getElementById("manufacturer_"+idCard);
     var manufacturer_selected = manufacturer.options[manufacturer.selectedIndex].text;
-    
+
     if(manufacturer_selected=="Otros"){
         var select_td = document.getElementById("select_"+idCard);
         inputtag = document.createElement("input");
@@ -367,4 +443,22 @@ function detectar()
             }
         );
     }
+}
+
+//typeecho_1|OSLEC,typeecho_2|OSLEC,typeecho_3|OSLEC,typeecho_4|OSLEC,
+function getSelectEchoPort(){
+    var values = "";
+    $('select[id^=typeecho_] option:selected').each(function(){
+        values += $(this).parent().attr('id')+"|"+$(this).text()+",";
+    });
+    return values;
+}
+
+//tmpTypeEcho1|OSLEC,tmpTypeEcho2|OSLEC,tmpTypeEcho3|OSLEC,tmpTypeEcho4|OSLEC,
+function getActualEchoPort(){
+    var values = "";
+    $('input[id^=tmpTypeEcho]').each(function(){
+        values += $(this).attr('id')+"|"+$(this).val()+",";
+    });
+    return values;
 }

@@ -18,10 +18,8 @@
 }
 
 #port_desc {
-    margin-left:180px;
-    width:260px;
     font-size:14px;
-    text-align:center;
+    padding: 5px 0px 5px 0px;
     color:blue;
 }
 

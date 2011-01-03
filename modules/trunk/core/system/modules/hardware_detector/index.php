@@ -65,16 +65,16 @@ function _moduleContent(&$smarty, $module_name)
 
     switch($action){
         case "config_echo":
-            $content = viewFormConfEcho($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+            $content = viewFormConfEchoCard($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang); // para configurar echo canceler
             break;
         case "save_new":
-            $content = saveNewConfEcho($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+            $content = saveNewConfEchoCard($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang); // save conf echo canceler
             break;
         case "setConfig":
-            $content = setConfigHardware();
+            $content = setConfigHardware(); 
             break;
         case "detection":
-            $content = hardwareDetect($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+            $content = hardwareDetect($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang); // detection button
             break;
         default:
             $content = listPorts($smarty, $module_name, $local_templates_dir, $pDB);
@@ -105,11 +105,25 @@ function listPorts($smarty, $module_name, $local_templates_dir, $pDB) {
     $smarty->assign("CARD_NO_MOSTRAR",'DAHDI');
     $smarty->assign("PORT_NOT_FOUND",$arrLang['Ports not Founds']);
     $smarty->assign("NO_PUERTO",$arrLang["Port"]." ");
-    $smarty->assign("Channel_detected_notused",$arrLang['Channel detected by DAHDI and not used']);
-    $smarty->assign("Channel_detected_use",$arrLang['Channel detected by DAHDI and in use']);
-    $smarty->assign("Undetected_Channel",$arrLang['Undetected Channel by DAHDI']);
+    $smarty->assign("Channel_detected_notused",$arrLang['Channel detected and not used']);
+    $smarty->assign("Channel_detected_use",$arrLang['Channel detected and in use']);
+    $smarty->assign("Undetected_Channel",$arrLang['Undetected Channel']);
     $smarty->assign("SET_PARAMETERS_PORTS",$arrLang['You can set the parameters for these ports here']);
     $smarty->assign("Status_ports",$arrLang['Port Status']);
+    $smarty->assign("SAVE", $arrLang["Save"]);
+    $smarty->assign("EDIT", $arrLang["Edit"]);
+    $smarty->assign("CANCEL", $arrLang["Cancel"]);
+    $smarty->assign("Configuration_Span", $arrLang["Configuration of Span"]);
+    $smarty->assign("Span_Settings", $arrLang["Span Settings"]);
+    $smarty->assign("Advanced", $arrLang["Advanced"]);
+    $smarty->assign("Preferences", $arrLang["Preferences"]);
+    $smarty->assign("Timing_source", $arrLang["Timing source"]);
+    $smarty->assign("Line_build_out", $arrLang["Line build out"]);
+    $smarty->assign("Framing", $arrLang["Framing"]);
+    $smarty->assign("Coding", $arrLang["Coding"]);
+    $smarty->assign("NoPorts",$arrLang["No Ports availables"]);
+    $smarty->assign("LBL_LOADING",$arrLang["Loading SPAN"]);
+    $smarty->assign("LBL_SAVING",$arrLang["Saving configuration"]);
 
     if($oPortsDetails->isInstalled_mISDN()){
         $smarty->assign("isInstalled_mISDN",true);
@@ -209,7 +223,7 @@ function hardwareDetect($smarty, $module_name, $local_templates_dir, &$pDB, $arr
 }
 
 ////////////NEW IMPLEMENTATION CODE FOR ECHO CANCELLER////////////////////////////
-
+/*
 function viewFormConfEcho($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
 {
     $oPortsDetails = new PaloSantoHardwareDetection();
@@ -273,8 +287,43 @@ function viewFormConfEcho($smarty, $module_name, $local_templates_dir, &$pDB, $a
     $content = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
 
     return $content;
-}
+}*/
 
+function viewFormConfEchoCard($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
+{
+    $oPortsDetails = new PaloSantoHardwareDetection();
+    $pconfEcho     = new paloSantoConfEcho($pDB);
+    $card_id       = getParameter("cardId");
+    $card_id       = str_replace("confSPAN","",$card_id);
+    $arrPortsEcho  = $pconfEcho->getEchoCancellerByIdCard($card_id);
+
+    //begin, Form data persistence to errors and other events.
+    $_DATA  = $_POST;
+    $id     = getParameter("id");
+    $card_id = str_replace("confSPAN","",$card_id);
+    $dataCard = $pconfEcho->getCardParameterById($card_id);
+
+    if(is_array($arrPortsEcho) && count($arrPortsEcho)>1){
+        $smarty->assign("arrPortsEcho", $arrPortsEcho);
+        $i=1;
+    }
+
+    $msgResponse['type_echo_names'] = array(
+                              'none'  => 'none',
+                              'OSLEC' => 'OSLEC',
+                              'MG2'   => 'MG2',
+                              'KBL'   => 'KBL',
+                              'SEC2'  => 'SEC2',
+                              'SEC'   => 'SEC');
+    $msgResponse['arrPortsEcho'] = $arrPortsEcho;
+    $jsonObject = new PaloSantoJSON();
+    $msgResponse['card_id'] = $card_id;
+    $msgResponse['msg'] = "";
+    $jsonObject->set_message($msgResponse);
+    return $jsonObject->createJSON();
+
+}
+/*
 function saveNewConfEcho($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
 {
     $pconfEcho = new paloSantoConfEcho($pDB);
@@ -312,6 +361,48 @@ function saveNewConfEcho($smarty, $module_name, $local_templates_dir, &$pDB, $ar
             header("Location: ?menu=$module_name&action=report");
         }
     }
+}
+*/
+
+function saveNewConfEchoCard($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
+{
+    $pconfEcho = new paloSantoConfEcho($pDB);
+
+    $id_card = getParameter("idCard");
+    $type_echo_selected = getParameter("data");
+    $type_echo_actual   = getParameter("data2");
+    $arrPorts           = explode(",",$type_echo_selected);//typeecho_1|OSLEC,typeecho_2|OSLEC,typeecho_3|OSLEC,typeecho_4|OSLEC,
+    $arrPortsActual     = explode(",",$type_echo_actual);//tmpTypeEcho1|OSLEC,tmpTypeEcho2|OSLEC,tmpTypeEcho3|OSLEC,tmpTypeEcho4|OSLEC,
+    $arrEchoPort        = "";
+    $arrEchoPortActual  = "";
+
+    //{"0":"typeecho_1|OSLEC","1":"typeecho_2|OSLEC","2":"typeecho_3|OSLEC","3":"typeecho_4|OSLEC"}
+    for($i=0; $i<count($arrPorts)-1; $i++){
+        $arr = explode("|",$arrPorts[$i]);
+        $arrEchoPort[$arr[0]] = $arr[1];
+    }
+
+    //{"0":"tmpTypeEcho1|OSLEC","1":"tmpTypeEcho2|OSLEC","2":"tmpTypeEcho3|OSLEC","3":"tmpTypeEcho4|OSLEC"}
+    for($i=0; $i<count($arrPortsActual)-1; $i++){
+        $arr = explode("|",$arrPortsActual[$i]);
+        $arrEchoPortActual[$arr[0]] = $arr[1];
+    }
+    $arrPortsEcho = $pconfEcho->getEchoCancellerByIdCard2($id_card);
+    $dataCard = $pconfEcho->getCardParameterById($id_card);
+    foreach($arrPortsEcho as $key => $value){
+        $num = $value['num_port'];
+        $type_echo_pas      = $arrEchoPortActual["tmpTypeEcho".$num]; // antes
+        $type_echo_selected = $arrEchoPort["typeecho_".$num]; // despues
+        $data = array();
+        $data['echocanceller'] = $pDB->DBCAMPO($type_echo_selected);
+        $pconfEcho->updateEchoCancellerCard($id_card, $num, $type_echo_selected);
+        $pconfEcho->replaceEchoSystemConf($type_echo_pas, $type_echo_selected, $num, $dataCard['type']);
+    }
+    $jsonObject = new PaloSantoJSON();
+    $msgResponse['msg']   = $arrLang["Card Configured"];
+    $jsonObject->set_message($msgResponse);
+    return $jsonObject->createJSON();
+
 }
 
 function createFieldForm($arrLang)
@@ -376,6 +467,8 @@ function getAction()
         return "setConfig";
     else if(getParameter("action")=="detection")
         return "detection";
+    else if(getParameter("action")=="save_echo")
+        return "save_new";
     else
         return "report"; //cancel
 }

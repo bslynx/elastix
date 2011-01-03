@@ -353,7 +353,7 @@ class paloSantoConfEcho {
                         $text .= $line;
                     }
                 }
-      
+
             }else{
                 $text .= $line;
             }
@@ -363,12 +363,26 @@ class paloSantoConfEcho {
             $line_concat = "\nechocanceller=".strtolower($typeNew).",".$numport."\n";
             $text .= $line_concat;
         }
-        
+
         $this->saveChangeFileSystemConfig($text);
         fclose($fp);
         //exec("sudo -u root chown -R root.root /etc/dahdi/system.conf");
         exec("sudo -u root service dahdi restart");
     }
+
+    function updateEchoCancellerCard($id_card, $num_port, $echocanceller)
+    {
+        $data   = array($echocanceller, $num_port, $id_card);
+        $query  = "UPDATE echo_canceller SET echocanceller = ? WHERE num_port = ? AND id_card = ? ";
+        $result = $this->_DB->genQuery($query, $data);
+
+        if($result == FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return FALSE;
+        }else
+            return TRUE;
+    }
+
 
 }
 ?>

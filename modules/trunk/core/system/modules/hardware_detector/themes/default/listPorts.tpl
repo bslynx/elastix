@@ -11,7 +11,7 @@
         <td class="filterForm" width="350px" valign="top" align="left" style="padding: 2px 2px 2px 30px;">
             <table border="0">
                 <tr>
-                    <td><input type="checkbox" name="chkAdvance" id="chkAdvance" />&nbsp; <b>Advanced</b></td>
+                    <td><input type="checkbox" name="chkAdvance" id="chkAdvance" />&nbsp; <b>{$Advanced}</b></td>
                 </tr>
                 <tr>
                     <td class="filterForm2 secAdv" id="secAdvance">
@@ -63,15 +63,15 @@
                 <tr>
                     <td>
                         <fieldset class="fielformSpam">
-                            <legend class="sombreado">{$CARD} # {$data.DESC.ID}: {$data.DESC.TIPO} {$data.DESC.ADICIONAL} </legend>
+                            <legend id="{$data.DESC.ID}" class="sombreado">{$CARD} # {$data.DESC.ID}: {$data.DESC.TIPO} {$data.DESC.ADICIONAL} </legend>
                             <table border ='0' align="left" cellspacing="0" cellpadding="3" width="100%">
                                 <tr>
-                                    <!--<td class="textConf" width="25%" style="background-color:#EFEFEF">
+                                    <td class="textConf" width="25%" style="background-color:#EFEFEF">
                                         <div valign="middle">
                                             <div>{$SET_PARAMETERS_PORTS}.</div>
-                                            <div align="center"><a id="confSPAN{$data.DESC.ID}" class="confSPAN">Configurar</a></div>
+                                            <div align="center"><a id="confSPAN{$data.DESC.ID}" class="confSPAN">{$Configuration_Span}</a></div>
                                         </div>
-                                    </td>-->
+                                    </td>
                                     <td width="5px"></td> <!-- Espàcio -->
                                     <td align="right" style="background-color:#EFEFEF">
                                         <table border ='0' align="right" cellspacing="0" cellpadding="0">
@@ -170,28 +170,28 @@
     </div>
     <div id="layer{$cnt}_content">
         <form id="layer{$cnt}_form" method="post" action="">
-            <legend >Span Settings</legend><br />
+            <legend >{$Span_Settings}</legend><br />
             <table>
                 <tr>
-                    <td><label style='font-size: 11px'>Timing source:</label></td>
+                    <td><label style='font-size: 11px'>{$Timing_source}:</label></td>
                     <td><select id='tmsource_{$cnt}' name='tmsource_{$cnt}'>
                     {html_options options=$type_timing_source selected=$data.tmsource}
                     </select></td>
                 </tr>
                 <tr>
-                    <td><label style='font-size: 11px'>Line build out:</label></td>
+                    <td><label style='font-size: 11px'>{$Line_build_out}:</label></td>
                     <td><select id='lnbuildout_{$cnt}' name='lnbuildout_{$cnt}'>
                     {html_options options=$type_lnbuildout selected=$data.lnbuildout}
                     </select></td>
                 </tr>
                 <tr>
-                    <td><label style='font-size: 11px'>Framing:</label></td>
+                    <td><label style='font-size: 11px'>{$Framing}:</label></td>
                     <td><select id='framing_{$cnt}' name='framing_{$cnt}'>
                     {html_options options=$type_framing selected=$data.framing}
                     </select></td>
                 </tr>
                 <tr>
-                    <td><label style='font-size: 11px'>Coding:</label></td>
+                    <td><label style='font-size: 11px'>{$Coding}:</label></td>
                     <td><select id='coding_{$cnt}' name='coding_{$cnt}'>
                     {html_options options=$type_coding selected=$data.coding}
                     </select></td>
@@ -226,12 +226,34 @@
                         <div id="table_boxConfSPANS">
                            <table width="100%" border="1" cellspacing="0" cellpadding="4" align="center">
                                 <tr class="moduleTitle">
-                                    <td class="moduleTitle">&nbsp;&nbsp;Configuration of Span </td>
+                                    <td class="moduleTitle">&nbsp;&nbsp;{$Configuration_Span} </td>
                                 </tr>
                                 <tr>
                                     <td>
-                                        <table id="tableConfSPANS" width="100%" border="1" cellspacing="0" cellpadding="4" align="center">
-
+                                        <table id="tableConfSPANS" width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
+                                            <tr>
+                                                <td>
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
+                                                        <tr class="letra12 viewButton" style="display: none;">
+                                                            <td align="center" style="padding: 5px 5px 5px 5px;">
+                                                                <input class="button" type="button" id="save_edit" name="save_edit" value="{$SAVE}">&nbsp;&nbsp;
+                                                                <input class="button" type="button" id="cancel" name="cancel" value="{$CANCEL}">
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                    <table class="tabForm" style="font-size: 16px;" border="0" width="100%" >
+                                                        <tr>
+                                                            <td align="center">
+                                                                <input type="hidden" name="idCard" id="idCard" value="" />
+                                                                <label id="port_desc">{$CARD} # {$ID}: {$TIPO} {$ADICIONAL}</label>
+                                                                <div id="config_echo_div">
+                                                                    
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
                                         </table>
                                     </td>
                                 </tr>
@@ -254,3 +276,7 @@
         </table>
     </div>
 </div>
+<input class="button" type="hidden" id="labelNoPorts" name="labelNoPorts" value="{$NoPorts}" />
+<input class="button" type="hidden" name="lblLoading" value="{$LBL_LOADING}" id="lblLoading">
+<input class="button" type="hidden" name="lblLoading" value="{$LBL_SAVING}"  id="lblSaving">
+<input class="button" type="hidden" name="lblLoading" value="{$MODULE_NAME}"  id="lblModule">
