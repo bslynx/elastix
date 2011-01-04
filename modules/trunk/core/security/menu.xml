@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module>
   <menulist>
-    <menuitem menuid="security"        desc="Security"      parent=""             module="no"  link="" order="12"></menuitem>
-    <menuitem menuid="sec_firewall"    desc="Firewall"      parent="security"     module="no"  link="" order="1"></menuitem>
-    <menuitem menuid="sec_ports"       desc="Define Ports"  parent="sec_firewall" module="yes" link="" order="11"></menuitem>
-    <menuitem menuid="sec_rules"       desc="Rulers"        parent="sec_firewall" module="yes" link="" order="12"></menuitem>
-    <menuitem menuid="sec_accessaudit" desc="Access Audit"  parent="security"     module="yes" link="" order="2"></menuitem>
-    <menuitem menuid="sec_weak_keys"   desc="Weak Keys"     parent="security"     module="yes" link="" order="3"></menuitem>
+    <menuitem menuid="security"        desc="Security"       parent=""             module="no"  link="" order="12"></menuitem>
+    <menuitem menuid="sec_firewall"    desc="Firewall"       parent="security"     module="no"  link="" order="1"></menuitem>
+    <menuitem menuid="sec_rules"       desc="FireWall Rules" parent="sec_firewall" module="yes" link="" order="11"></menuitem>
+    <menuitem menuid="sec_ports"       desc="Define Ports"   parent="sec_firewall" module="yes" link="" order="12"></menuitem>
+    <menuitem menuid="sec_accessaudit" desc="Access Audit"   parent="security"     module="yes" link="" order="2"></menuitem>
+    <menuitem menuid="sec_weak_keys"   desc="Weak Keys"      parent="security"     module="yes" link="" order="3"></menuitem>
   </menulist>
 </module>

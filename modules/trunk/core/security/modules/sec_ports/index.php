@@ -98,7 +98,7 @@ function reportPuertos($smarty, $module_name, $local_templates_dir, &$pDB, $arrC
     $total  = $totalPuertos;
     $oGrid->setLimit($limit);
     $oGrid->setTotal($total);
-    $oGrid->setTitle(_tr("Port List"));
+    $oGrid->setTitle(_tr("Define Ports"));
     $oGrid->pagingShow(true);
     $offset = $oGrid->calculateOffset();
     /*$url = array(
