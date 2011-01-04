@@ -181,8 +181,9 @@ class paloSantoMonitoring {
     }
 
     function deleteRecordFile($id){
-        $query = "DELETE FROM cdr WHERE uniqueid='$id'";
-        $result = $this->_DB->genQuery($query);
+        $result = $this->_DB->genQuery(
+            'UPDATE cdr SET userfield = ? WHERE uniqueid = ?',
+            array('audio:deleted', $id));
         if($result==FALSE){
             $this->errMsg = $this->_DB->errMsg;
             return null;

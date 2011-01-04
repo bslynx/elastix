@@ -166,7 +166,9 @@ function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, &$
                 $file = $value['uniqueid'];
                     $namefile = basename($value['userfield']);
                     $namefile = str_replace("audio:","",$namefile);
-                    switch($namefile[0]){
+                    if ($namefile == 'deleted') {
+                        $arrTmp[5] = _tr('Deleted');
+                    } else switch($namefile[0]){
                          case "O":
                               $arrTmp[5] = _tr("Outgoing");
                          break;
@@ -230,7 +232,9 @@ function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, &$
                     $file = $value['uniqueid'];
                     $namefile = basename($value['userfield']);
                     $namefile = str_replace("audio:","",$namefile);
-                    switch($namefile[0]){
+                    if ($namefile == 'deleted') {
+                        $arrTmp[6] = _tr('Deleted');
+                    } else switch($namefile[0]){
                          case "O":
                               $arrTmp[6] = _tr("Outgoing");
                          break;
@@ -244,11 +248,14 @@ function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, &$
                               $arrTmp[6] = _tr("Incoming");
                          break;
                     }
-                    $recordingLink = "<a  href=\"javascript:popUp('index.php?menu=$module_name&action=display_record&id=$file&rawmode=yes',350,100);\">"._tr("Listen")."</a>&nbsp;";
+                    if ($namefile != 'deleted') {
+                        $recordingLink = "<a  href=\"javascript:popUp('index.php?menu=$module_name&action=display_record&id=$file&rawmode=yes',350,100);\">"._tr("Listen")."</a>&nbsp;";
 
-                    $recordingLink .= "<a href='?menu=$module_name&action=download&id=$file&rawmode=yes' >"._tr("Download")."</a>";
-
-	            $arrTmp[7] = $recordingLink;
+                        $recordingLink .= "<a href='?menu=$module_name&action=download&id=$file&rawmode=yes' >"._tr("Download")."</a>";
+                    } else {
+                        $recordingLink = '';
+                    }
+                    $arrTmp[7] = $recordingLink;
                     $arrData[] = $arrTmp;
                 }
             }
@@ -290,7 +297,7 @@ function downloadFile($smarty, $module_name, $local_templates_dir, $pDB, $pDBACL
         }
 
     // See if the file exists
-        if (!is_file($path)) { 
+        if ($file == 'deleted' || !is_file($path)) {
             die("<b>404 "._tr("no_file")." </b>");
         }
 
