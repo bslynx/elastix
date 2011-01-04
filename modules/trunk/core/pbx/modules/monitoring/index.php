@@ -353,8 +353,6 @@ contenido;
 function deleteRecord($smarty, $module_name, $local_templates_dir, &$pDB, &$pDBACL, $arrConf, $arrLang)
 {
     $pMonitoring = new paloSantoMonitoring($pDB);
-    $_DATA['date_start'] = isset($date_ini)?$date_ini:date("d M Y");
-    $_DATA['date_end']   = isset($date_end)?$date_end:date("d M Y");
     $path_record = $arrConf['records_dir'];
     foreach($_POST as $key => $values){
         if(substr($key,0,3) == "id_")
@@ -373,7 +371,7 @@ function deleteRecord($smarty, $module_name, $local_templates_dir, &$pDB, &$pDBA
             }
         }
     }
-    $_POST = $_DATA;
+
     $content = reportMonitoring($smarty, $module_name, $local_templates_dir, $pDB, $pDBACL, $arrConf);
     return $content;
 }
