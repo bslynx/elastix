@@ -364,10 +364,12 @@ function deleteRecord($smarty, $module_name, $local_templates_dir, &$pDB, &$pDBA
             $record = basename($record);
             $path = $path_record.$record;
             if(is_file($path)){
+                // Archivo existe. Se borra si se puede actualizar CDR
                 if($pMonitoring->deleteRecordFile($ID))
                     unlink($path);
-            }else{
-                $smarty->assign("mb_message", $arrLang['delete_file_error']);
+            } else {
+                // Archivo no existe. Se actualiza CDR para mantener consistencia
+                $pMonitoring->deleteRecordFile($ID);
             }
         }
     }
