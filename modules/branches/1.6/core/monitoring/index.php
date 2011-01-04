@@ -140,7 +140,7 @@ function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, &$
        'date_start'   => $_POST['date_start'],
        'date_end'     => $_POST['date_end']
     );
-    $url = array_merge($url, $paramFilter);
+    $url = array_merge($url, $paramFilter);         
     $oGrid->setURL($url);
 
     $arrData = null;
@@ -359,7 +359,7 @@ function deleteRecord($smarty, $module_name, $local_templates_dir, &$pDB, &$pDBA
     foreach($_POST as $key => $values){
         if(substr($key,0,3) == "id_")
         {
-			$ID = substr($key, 3);
+            $ID = substr($key, 3);
             $ID = str_replace("_",".",$ID);
             $recordName = $pMonitoring->getRecordName($ID);
             $record = substr($recordName,6);
@@ -370,8 +370,8 @@ function deleteRecord($smarty, $module_name, $local_templates_dir, &$pDB, &$pDBA
                     unlink($path);
             }else{
                 $smarty->assign("mb_message", $arrLang['delete_file_error']);
-            }        
-         }
+            }
+        }
     }
     $_POST = $_DATA;
     $content = reportMonitoring($smarty, $module_name, $local_templates_dir, $pDB, $pDBACL, $arrConf);
@@ -445,6 +445,7 @@ function getAction()
         return "report"; //cancel
 }
 
+if (!function_exists('getParameter')) {
 function getParameter($parameter)
 {
     if(isset($_POST[$parameter]))
@@ -453,5 +454,6 @@ function getParameter($parameter)
         return $_GET[$parameter];
     else
         return null;
+}
 }
 ?>
