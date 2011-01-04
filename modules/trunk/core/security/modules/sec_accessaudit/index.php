@@ -209,8 +209,12 @@ function report_AccessAudit($smarty, $module_name, $local_templates_dir)
     $oGrid->setColumns($arrColumns);
     $oGrid->setData($arrData);
     $oGrid->setStart(($totalBytes==0) ? 0 : 1 + (int)($offset / 128));
-    $oGrid->setEnd((int)($offset / 128) + $iNumLineasPorPagina);
-    $oGrid->setTotal((int)($totalBytes / 128));
+
+    $t = (int)($totalBytes / 128);
+    $e = (int)($offset / 128) + $iNumLineasPorPagina;
+    $e = ($t <= $e)?$t:$e;
+    $oGrid->setEnd($e+1);
+    $oGrid->setTotal($t+1);
 
     $_POST['offset'] = $offset;
 
