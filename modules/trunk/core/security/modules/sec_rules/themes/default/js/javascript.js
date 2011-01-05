@@ -29,6 +29,8 @@ $(document).ready(function(){
     $(".up,.down").click(function(){
         var msg = document.getElementById("msg_status");
         msg.style.color = '#E35332';
+        var adv = document.getElementById("message");
+        var tab = document.getElementById("table_message");    
         var row  = $(this).parents("tr:first");
         var info = $(this).attr("id");
         //alert(info);
@@ -64,8 +66,12 @@ $(document).ready(function(){
                     else if(p1!=""){
                         response = statusResponse.split(':');
                         $("#msg_status").html(response[0]);
-                        $("#message").html(response[1]);
+                       // adv.html(response[1]);
                         setTimeout('$("#msg_status").html("")',300);
+                        adv.style.display = '';
+                        tab.style.border = '1px solid';
+                        tab.style.color = '#AAAAAA';
+                        adv.innerHTML = response[1] + "&nbsp;&nbsp;&nbsp;&nbsp;<input class='button' type='submit' name='exec' value='"+response[2]+"'>";
                         neighborrow = neighborrow.split('_');
                         actualrow = info.split('_');
 

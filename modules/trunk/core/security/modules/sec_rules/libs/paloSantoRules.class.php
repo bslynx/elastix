@@ -802,5 +802,32 @@ class paloSantoRules {
             return false;
         return true;
     }
+
+    function isFirstTime()
+    {
+        $query = "SELECT first_time from tmp_execute";
+        $result = $this->_DB->fetchTable($query, true);
+        if($result == FALSE)
+        {
+            $this->errMsg = $this->_DB->errMsg;
+            return;
+        }
+        $data = $result[0];
+        if($data['first_time'] == 0)
+            return false;
+        return true;
+    }
+
+    function noMoreFirstTime()
+    {
+        $query = "update tmp_execute set first_time = 0";
+        $result = $this->_DB->genQuery($query, true);
+        if($result == FALSE)
+        {
+            $this->errMsg = $this->_DB->errMsg;
+            return false;
+        }
+        return true;
+    }
 }
 ?>

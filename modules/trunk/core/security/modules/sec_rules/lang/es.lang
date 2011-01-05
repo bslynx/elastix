@@ -84,6 +84,11 @@ $arrLangModule=array(
 "The rules have been executed in the system" => "Las reglas han sido ejecutadas en el sistema",
 "There have been changes and have not been executed in the system" => "Han habido cambios y no se han ejecutado en el sistema",
 "Cancel" => "Cancelar",
-"Wrong value for ip" => "Valor inválido para ip"
+"Wrong value for ip" => "Valor inválido para ip",
+"Save Changes" => "Guardar Cambios",
+"FireWall Rules" => "Reglas del Cortafuegos",
+"You have made changes to the definition of firewall rules, for this to take effect in the system press the next button" => "Usted ha realizado cambios en la definición de las reglas de firewall, para que esto haga efecto en el sistema debe presionar el siguiente botón",
+"Your system is a new installation. It is recommended to activate the firewall rules" => "Su sistema es una instalación nueva. Se recomienda activar las reglas de firewall",
+"Activate FireWall" => "Activar Cortafuegos"
 );
 ?>

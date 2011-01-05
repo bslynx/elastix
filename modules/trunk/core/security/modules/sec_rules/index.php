@@ -508,7 +508,7 @@ function reportRules($smarty, $module_name, $local_templates_dir, &$pDB, $arrCon
     $total  = $totalRules;
     $oGrid->setLimit($limit);
     $oGrid->setTotal($total);
-    $oGrid->setTitle(_tr("Rule List"));
+    $oGrid->setTitle(_tr("FireWall Rules"));
     $oGrid->pagingShow(true);
     $offset = $oGrid->calculateOffset();
     $url    = "?menu=$module_name";
@@ -577,12 +577,24 @@ function reportRules($smarty, $module_name, $local_templates_dir, &$pDB, $arrCon
     }
     $oGrid->setData($arrData);
     $smarty->assign("new", _tr("New Rule"));
-    $smarty->assign("exec", _tr("Execute Rules"));
-    if($pRules->isExecutedInSystem())
-        $smarty->assign("executed_in_sys", "");
-    else
-        $smarty->assign("executed_in_sys", _tr("There have been changes and have not been executed in the system"));
-
+    if($pRules->isFirstTime()){
+        $mensaje = _tr("Your system is a new installation. It is recommended to activate the firewall rules");
+        $mensaje2 = _tr("Activate FireWall");
+    }
+    else{
+        $mensaje = _tr("You have made changes to the definition of firewall rules, for this to take effect in the system press the next button");
+        $mensaje2 = _tr("Save Changes");
+    }
+    $smarty->assign("exec", $mensaje2);
+    if($pRules->isExecutedInSystem()){
+        $smarty->assign("BORDER", "");
+        $smarty->assign("DISPLAY", "display:none;");
+    }
+    else{
+        $smarty->assign("executed_in_sys", $mensaje);
+        $smarty->assign("BORDER", "border:1px solid; color:#AAAAAA");
+        $smarty->assign("DISPLAY", "");
+    }
     $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl","",$_POST);
     //end section filter
 
@@ -615,6 +627,7 @@ function execRules($smarty, $module_name, $local_templates_dir, $pDB, $arrConf)
     $smarty->assign("mb_title", "MESSAGE");
     $smarty->assign("mb_message", _tr("The rules have been executed in the system"));
     $pRules->updateExecutedInSystem();
+    $pRules->noMoreFirstTime();
     return reportRules($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
 }
 
@@ -667,11 +680,18 @@ function change($pDB)
         $actual_order = $tmp[2];
         $Exito1 = $pRules->updateOrder($actual_id,$neighbor_order);
         $Exito2 = $pRules->updateOrder($neighbor_id,$actual_order);
+        if($pRules->isFirstTime()){
+            $mensaje = _tr("Your system is a new installation. It is recommended to activate the firewall rules");
+            $mensaje2 = _tr("Activate FireWall");
+        }
+        else{
+            $mensaje = _tr("You have made changes to the definition of firewall rules, for this to take effect in the system press the next button");
+            $mensaje2 = _tr("Save Changes");
+        }
         if($Exito1 && $Exito2)
-            $jsonObject->set_status(_tr("Successful Change").":"._tr("There have been changes and have not been executed in the system")); 
+            $jsonObject->set_status(_tr("Successful Change").":$mensaje:$mensaje2"); 
         else
             $jsonObject->set_error($pRules->errMsg);
-        
     }else
         $jsonObject->set_status(_tr("Invalid Action"));
     return $jsonObject->createJSON();

@@ -85,6 +85,11 @@ $arrLangModule=array(
 "The rules have been executed in the system" => "The rules have been executed in the system",
 "There have been changes and have not been executed in the system" => "There have been changes and have not been executed in the system",
 "Cancel" => "Cancel",
-"Wrong value for ip" => "Wrong value for ip"
+"Wrong value for ip" => "Wrong value for ip",
+"Save Changes" => "Save Changes",
+"FireWall Rules" => "FireWall Rules",
+"You have made changes to the definition of firewall rules, for this to take effect in the system press the next button" => "You have made changes to the definition of firewall rules, for this to take effect in the system press the next button",
+"Your system is a new installation. It is recommended to activate the firewall rules" => "Your system is a new installation. It is recommended to activate the firewall rules",
+"Activate FireWall" => "Activate FireWall"
 );
 ?>
