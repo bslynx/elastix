@@ -499,7 +499,7 @@ function createFieldForm($pVoIPProvider)
 
     $arrSelectCareInvite = array("no" => _tr("no"), "yes" => _tr("yes"), "nonat" => "nonat", "update" => "update");
     $arrSelectInsecure   = array("very" => "very", "yes" => "yes", "no" => "no", "invite" => "invite", "port" => "port");
-    $arrSelectdtmf       = array("rfc2833" => "rfc2833", "inband" => "inband", "info" => "info");
+    $arrSelectdtmf       = array("rfc2833" => "rfc2833", "inband" => "inband", "info" => "info", "auto" => "auto");
 
     $arrFields = array(
             "type_provider_voip"   => array(      "LABEL"            => _tr("VoIP Provider"),
