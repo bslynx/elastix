@@ -32,8 +32,8 @@ $arrLangModule=array(
 "Extension" => "Extension",
 "Description" => "Description",
 "Reason" => "Reason",
-"Same Key" => "Key and extension number are the same",
-"Short Key" => "Key is too short (less than 5 digits length)",
+"Same Key" => "Secret and extension number are the same",
+"Short Key" => "Secret is too short (less than 5 digits length)",
 "Search" => "Search",
 "Show" => "Show",
 "Change Key" => "Change Key",
@@ -52,6 +52,15 @@ $arrLangModule=array(
 "Successful Key Update" => "Successful Key Update",
 "Current Key" => "Current Key",
 "The Current Key is invalid" => "The Current Key is invalid",
-"Cancel" => "Cancel"
+"Cancel" => "Cancel",
+"You are not authorized to enter to that extension" => "You are not authorized to enter to that extension",
+"Weak Secrets" => "Weak Secrets",
+"Current Secret" => "Current Secret",
+"New Secret" => "New Secret",
+"Confirm New Secret" => "Confirm New Secret",
+"The Current Secret is invalid" => "The Current Secret is invalid",
+"The New Secret does not match with the Confirmation Secret" => "The New Secret does not match with the Confirmation Secret",
+"Successful Secret Update" => "Successful Secret Update",
+"Change Secret" => "Change Secret"
 );
 ?>

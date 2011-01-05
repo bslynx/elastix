@@ -18,16 +18,16 @@
                 <td align="left">{$Extension.INPUT}</td>
             </tr>
             <tr style = '{$DISPLAY}' class="letra12">
-                <td align="left"><b>{$Current_Key.LABEL}: <span  class="required">*</span></b></td>
-                <td align="left">{$Current_Key.INPUT}</td>
+                <td align="left"><b>{$Current_Secret.LABEL}: <span  class="required">*</span></b></td>
+                <td align="left">{$Current_Secret.INPUT}</td>
             </tr>
             <tr class="letra12">
-                <td align="left"><b>{$New_Key.LABEL}: <span  class="required">*</span></b></td>
-                <td align="left">{$New_Key.INPUT}</td>
+                <td align="left"><b>{$New_Secret.LABEL}: <span  class="required">*</span></b></td>
+                <td align="left">{$New_Secret.INPUT}</td>
             </tr>
             <tr class="letra12">
-                <td align="left"><b>{$Confirm_New_Key.LABEL}: <span  class="required">*</span></b></td>
-                <td align="left">{$Confirm_New_Key.INPUT}</td>
+                <td align="left"><b>{$Confirm_New_Secret.LABEL}: <span  class="required">*</span></b></td>
+                <td align="left">{$Confirm_New_Secret.INPUT}</td>
             </tr>
     </table>
 </div>

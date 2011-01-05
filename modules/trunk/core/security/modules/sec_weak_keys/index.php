@@ -99,8 +99,8 @@ function reportWeakKeys($smarty, $module_name, $local_templates_dir, &$pDB, $arr
     $pACL = new paloACL($pDB2);
     $oGrid->enableExport();   // enable csv export.
     $oGrid->pagingShow(true); // show paging section.
-    $oGrid->setTitle(_tr("Weak Keys"));
-    $oGrid->setNameFile_Export(_tr("Weak Keys"));
+    $oGrid->setTitle(_tr("Weak Secrets"));
+    $oGrid->setNameFile_Export(_tr("Weak Secrets"));
 
     if($oGrid->isExportAction()){
         $limit = $total;
@@ -129,7 +129,7 @@ function reportWeakKeys($smarty, $module_name, $local_templates_dir, &$pDB, $arr
             $mensaje = getMensaje($value['id'],$value['data']);
             if($mensaje != "OK" && !$bExportation)
                 if($pACL->isUserAdministratorGroup($_SESSION['elastix_user']) || $pACL->getUserExtension($_SESSION['elastix_user'])==$value['id'])
-                    $mensaje.= "&nbsp;<a href='?menu=$module_name&action=change&id=$value[id]'>"._tr("Change Key")."</a>";
+                    $mensaje.= "&nbsp;<a href='?menu=$module_name&action=change&id=$value[id]'>"._tr("Change Secret")."</a>";
             $arrTmp[2] = $mensaje;
             $arrData[] = $arrTmp;
             }
@@ -160,6 +160,12 @@ function editWeakKeys($smarty, $module_name, $local_templates_dir,$arrConf, $pDB
     $pDB2 = new paloDB($arrConf['elastix_dsn']['acl']);
     $pACL = new paloACL($pDB2);
     $pWeakKeys = new paloSantoWeakKeys($pDB);
+    if(!$pACL->isUserAdministratorGroup($_SESSION['elastix_user']))
+        if($pACL->getUserExtension($_SESSION['elastix_user']) != $id){
+            $smarty->assign("mb_title",_tr("Error"));
+            $smarty->assign("mb_message",_tr("You are not authorized to enter to that extension"));
+            return reportWeakKeys($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
+        }
     $arrFormRules = createFieldForm();
     $oForm = new paloForm($smarty,$arrFormRules);
     $smarty->assign("SAVE", _tr("Save"));
@@ -185,7 +191,7 @@ function createFieldForm()
                                         "VALIDATION_EXTRA_PARAM" => "",
                                         "EDITABLE"               => "no",
                                             ),
-            "Current_Key"      => array( "LABEL"                  => _tr("Current Key"),
+            "Current_Secret"   => array( "LABEL"                 => _tr("Current Secret"),
                                         "REQUIRED"               => "no",
                                         "INPUT_TYPE"             => "PASSWORD",
                                         "INPUT_EXTRA_PARAM"      => array("style" => "width:90px"),
@@ -193,7 +199,7 @@ function createFieldForm()
                                         "VALIDATION_EXTRA_PARAM" => "",
                                         "EDITABLE"               => "yes",
                                             ),
-            "New_Key"         => array( "LABEL"                  => _tr("New Key"),
+            "New_Secret"         => array( "LABEL"               => _tr("New Secret"),
                                         "REQUIRED"               => "yes",
                                         "INPUT_TYPE"             => "PASSWORD",
                                         "INPUT_EXTRA_PARAM"      => array("style" => "width:90px"),
@@ -201,7 +207,7 @@ function createFieldForm()
                                         "VALIDATION_EXTRA_PARAM" => "^[[:alnum:]]{5,}$",
                                         "EDITABLE"               => "",
                                             ),
-            "Confirm_New_Key" => array( "LABEL"                  => _tr("Confirm New Key"),
+            "Confirm_New_Secret" => array( "LABEL"               => _tr("Confirm New Secret"),
                                         "REQUIRED"               => "yes",
                                         "INPUT_TYPE"             => "PASSWORD",
                                         "INPUT_EXTRA_PARAM"      => array("style" => "width:90px"),
@@ -217,9 +223,9 @@ function saveNewKey($smarty, $module_name, $local_templates_dir, $pDB, $arrConf,
 {
     $arrFormNew = createFieldForm($pDB);
     $arrValues['id'] = getParameter("Extension");
-    $arrValues['key'] = getParameter("Current_Key");
-    $arrValues['new_key'] = getParameter("New_Key");
-    $confirmation = getParameter("Confirm_New_Key");
+    $arrValues['key'] = getParameter("Current_Secret");
+    $arrValues['new_key'] = getParameter("New_Secret");
+    $confirmation = getParameter("Confirm_New_Secret");
     $pDB2 = new paloDB($arrConf['elastix_dsn']['acl']);
     $pACL = new paloACL($pDB2);
     $oForm = new paloForm($smarty, $arrFormNew);
@@ -242,12 +248,12 @@ function saveNewKey($smarty, $module_name, $local_templates_dir, $pDB, $arrConf,
     if(!$pACL->isUserAdministratorGroup($_SESSION['elastix_user']))
         if($arrValues['key'] != $device['data']){
             $smarty->assign("mb_title", _tr("Error"));
-            $smarty->assign("mb_message", _tr("The Current Key is invalid"));
+            $smarty->assign("mb_message", _tr("The Current Secret is invalid"));
             return editWeakKeys($smarty, $module_name, $local_templates_dir, $arrConf, $pDB, $arrValues['id']);
         }
     if($arrValues['new_key'] != $confirmation){
         $smarty->assign("mb_title", _tr("Error"));
-        $smarty->assign("mb_message", _tr("The New Key does not match with the Confirmation Key"));
+        $smarty->assign("mb_message", _tr("The New Secret does not match with the Confirmation Secret"));
         return editWeakKeys($smarty, $module_name, $local_templates_dir, $arrConf, $pDB, $arrValues['id']);
     }
     $mensaje = getMensaje($arrValues['id'],$arrValues['new_key']);
@@ -269,7 +275,7 @@ function saveNewKey($smarty, $module_name, $local_templates_dir, $pDB, $arrConf,
         return editWeakKeys($smarty, $module_name, $local_templates_dir, $arrConf, $pDB, $arrValues['id']);
     }
     $smarty->assign("mb_title", _tr("Message"));
-    $smarty->assign("mb_message", _tr("Successful Key Update"));
+    $smarty->assign("mb_message", _tr("Successful Secret Update"));
     return  reportWeakKeys($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
 }
 
