@@ -41,8 +41,8 @@ if(!file_exists("$DataBaseRoot/addons.db")){
 exec("sqlite3 $DataBaseRoot/addons.db '.tables addons_cache'",$arrConsole,$flagStatus);
 
 if($flagStatus==0){
-  $exists = isset($arrConsole[0]) & $arrConsole=='addons_cache';
-  if(!$exists){
+  $exists = isset($arrConsole) && isset($arrConsole[0])?true:false;
+  if(!$exists & $arrConsole[0]=='addons_cache'){
         $sql = "CREATE TABLE addons_cache(
                   name_rpm         varchar(20),
                   status           int,
@@ -55,9 +55,14 @@ if($flagStatus==0){
 exec("sqlite3 $DataBaseRoot/addons.db '.tables action_tmp'",$arrConsole,$flagStatus);
 
 if($flagStatus==0){
-  $exists = isset($arrConsole[0]) & $arrConsole=='action_tmp';
-  if(!$exists){
-        $sql = "CREATE TABLE action_tmp (name_rpm varchar(20), action_rpm varchar(20), data_exp varchar(100), user varchar(20));";
+  $exists = isset($arrConsole) && isset($arrConsole[0])?true:false;
+  if(!$exists & $arrConsole[0]=='action_tmp'){
+        $sql = "CREATE TABLE action_tmp (
+					name_rpm varchar(20), 
+					action_rpm varchar(20), 
+					data_exp varchar(100), 
+					user varchar(20)
+				);";
         exec("sqlite3 $DataBaseRoot/addons.db '$sql'",$arrConsole,$flagStatus);
   }
 exit($flagStatus);
