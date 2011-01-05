@@ -23,7 +23,8 @@ CREATE TABLE port(
 );
 CREATE TABLE tmp_execute(
     id                  integer       primary key,
-    exec_in_sys         integer       not null
+    exec_in_sys         integer       not null,
+    first_time          integer       not null
 );
 
 INSERT INTO port(name,protocol,details,comment) VALUES ('HTTP','TCP','80','80');
@@ -64,4 +65,4 @@ INSERT INTO filter(traffic,eth_in,eth_out,ip_source,ip_destiny,protocol,sport,dp
 INSERT INTO filter(traffic,eth_in,eth_out,ip_source,ip_destiny,protocol,sport,dport,icmp_type,number_ip,target,rule_order,activated) VALUES ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0','ALL','','','','','REJECT',19,1);
 INSERT INTO filter(traffic,eth_in,eth_out,ip_source,ip_destiny,protocol,sport,dport,icmp_type,number_ip,target,rule_order,activated) VALUES ('FORWARD','ANY','ANY','0.0.0.0/0','0.0.0.0/0','ALL','','','','','REJECT',20,1);
 
-INSERT INTO tmp_execute(exec_in_sys) VALUES (0);
+INSERT INTO tmp_execute(exec_in_sys,first_time) VALUES (0,1);
