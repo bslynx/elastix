@@ -17,7 +17,7 @@
                 <td align="left" width="11%"><b>{$Extension.LABEL}: </b></td>
                 <td align="left">{$Extension.INPUT}</td>
             </tr>
-            <tr class="letra12">
+            <tr style = '{$DISPLAY}' class="letra12">
                 <td align="left"><b>{$Current_Key.LABEL}: <span  class="required">*</span></b></td>
                 <td align="left">{$Current_Key.INPUT}</td>
             </tr>
