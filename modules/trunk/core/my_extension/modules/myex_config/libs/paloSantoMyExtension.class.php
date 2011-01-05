@@ -81,6 +81,7 @@ class paloSantoMyExtension {
                 $record_type = 'record_out';
             }
 
+            // Se actualiza la tabla correspondiente a la tecnología
             $query1 = "SELECT count(*) exists FROM $technology WHERE id = '$extension' AND keyword = '$record_type';";
             
             $result=$this->_DB->getFirstRowQuery($query1,true);
@@ -105,6 +106,31 @@ class paloSantoMyExtension {
                     return false;
                 }
             }
+            
+            // Se actualiza la tabla users
+            $sPeticion = 'SELECT recording FROM users WHERE extension = ?';
+            $result = $this->_DB->getFirstRowQuery($sPeticion, TRUE, array($extension));
+            if (is_array($result) && isset($result['recording'])) {
+                $regs = NULL;
+                if (preg_match('/^out=(\w+)\|in=(\w+)$/', $result['recording'], $regs)) {
+                    $sValorOut = $regs[1]; $sValorIn = $regs[2];
+                } else {
+                    $sValorOut = $sValorIn = 'Adhoc';
+                }
+                if ($record_type == 'record_in') $sValorIn = $record_value;
+                if ($record_type == 'record_out') $sValorOut = $record_value;
+                $sRecNuevo = "out=$sValorOut|in=$sValorIn";
+                if ($sRecNuevo != $result['recording']) {
+                    $sPeticion = 'UPDATE users SET recording = ? WHERE extension = ?';
+                    $result = $this->_DB->genQuery($sPeticion, array($sRecNuevo, $extension));
+                    if($result==FALSE)
+                    {
+                        $this->errMsg = $this->_DB->errMsg;
+                        return false;
+                    }
+                }
+            }
+            
             return true;
         }
         return false;
