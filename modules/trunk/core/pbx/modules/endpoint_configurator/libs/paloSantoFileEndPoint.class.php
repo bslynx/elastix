@@ -96,8 +96,13 @@ class PaloSantoFileEndPoint
                     if($result) return true;
                     else return false;
                 }
-                else if($ArrayData['data']['model'] == "AT 530"){
-                    $contentFileAtcom = PrincipalFileAtcom530($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer,$ArrayData['data']['filename'], $ArrayData['data']['arrParameters']['versionCfg']);
+                else if($ArrayData['data']['model'] == "AT 530" || $ArrayData['data']['model'] == "AT 620R"){
+                    if(isset($ArrayData['data']['arrParameters']['versionCfg']))
+                        $version = $ArrayData['data']['arrParameters']['versionCfg'];
+                    else
+                        $version = "2.0002";
+                    print_r($ArrayData);
+                    $contentFileAtcom = PrincipalFileAtcom530($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer,$ArrayData['data']['filename'], $version);
                     if($this->createFileConf($this->directory,"atc".$ArrayData['data']['filename'].".cfg", $contentFileAtcom))
                     {
                         $arrComandos = arrAtcom530($this->ipAdressServer, $ArrayData['data']['filename']);
@@ -356,7 +361,7 @@ class PaloSantoFileEndPoint
                 break;
 
             case 'Atcom':
-                if($model == 'AT 530'){
+                if($model == 'AT 530' || $model == 'AT 620R'){
                     if(isset($arrParametersOld['versionCfg']))
                         $arrParametersOld['versionCfg'] = $arrParametersOld['versionCfg'] + 0.0001;
                     else
