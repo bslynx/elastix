@@ -50,10 +50,18 @@ if (PEAR::isError($opt)) {
     $opt = NULL;
 */
 }
+if (file_exists(dirname($argv[0]).'/XMLDialerServer.class.php')) {
+$iRes = main($opt,
+    'Marcador predictivo en PHP',
+    'dialerd',
+    'DialerProcess',
+    'XMLDialerServer');
+} else {
 $iRes = main($opt,
     'Marcador predictivo en PHP',
     'dialerd',
     'DialerProcess');
+}
 exit($iRes);
 
 // Punto de entrada del programa demonio (plantilla)
