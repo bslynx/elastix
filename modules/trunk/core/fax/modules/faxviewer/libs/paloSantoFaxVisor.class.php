@@ -224,7 +224,7 @@ class paloFaxVisor {
     }
 
     function deleteInfoFaxFromPathFile($path_file){
-       $path = "/var/www/html/faxes";
+       $path = "/var/www/faxes";
        $file = "$path/$path_file/fax.pdf";
 
        if(file_exists($file)){
