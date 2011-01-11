@@ -8,6 +8,7 @@ $(document).ready(function() {
 			center: 'title',
 			right: 'month,agendaWeek,agendaDay'
 		},
+        firstDay: 1,
 		eventDrop: function(event, delta, minutes) {//linea 2613
             //event.title   name's events
             //delta         numbers of days to move

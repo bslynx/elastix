@@ -342,7 +342,7 @@ $(document).ready(function(){
     });
 
     $("#datepicker").datepicker({
-        firstDay: 0,
+        firstDay: 1,
         //showOtherMonths: true,
         //yearRange: '2010:2099',
         changeYear: true,
