@@ -32,5 +32,7 @@ $arrLangModule=array(
 "Name" => "Name",
 "New" => "New",
 "Old" => "Old",
+"Participants" => "Participants",
+"Participant" => "Participant"
 );
 ?>

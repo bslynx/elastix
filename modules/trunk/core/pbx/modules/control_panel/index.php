@@ -29,6 +29,7 @@
 //include elastix framework
 include_once "libs/paloSantoGrid.class.php";
 include_once "libs/paloSantoForm.class.php";
+include_once "libs/paloSantoJSON.class.php";
 
 function _moduleContent(&$smarty, $module_name)
 {
@@ -76,7 +77,7 @@ function _moduleContent(&$smarty, $module_name)
             $content = hangupAction($pDB1, $pDB2);
             break;
         case "refresh":
-            $content = refreshAction($pDB1, $pDB2);
+            $content = waitingChanges("refreshAction", $pDB1, $pDB2);
             break;
         case "savechange":
             $content = savechangeAction($pDB1, $pDB2);
@@ -110,12 +111,12 @@ function viewFormControlPanel($smarty, $module_name, $local_templates_dir, &$pDB
 {
     $pControlPanel = new paloSantoControlPanel($pDB1,$pDB2);
     $oForm = new paloForm($smarty,array());
-
     $arrDevices = $pControlPanel->getAllDevicesARRAY();
     $arrAreas = $pControlPanel->getDesignArea();
     $arrQueues  = $pControlPanel->getAllQueuesARRAY2();
-    $arrTrunks  = $pControlPanel->getAllTrunksARRAY();
-
+    $arrDAHDITrunks  = $pControlPanel->getDAHDITrunksARRAY();
+    $arrSIPTrunks = $pControlPanel->getSIPTrunksARRAY();
+    $arrConferences = $pControlPanel->getConferences();
     $smarty->assign("module_name",$module_name);
     $smarty->assign("arrDevicesExten", isset($arrDevices[1])?$arrDevices[1]:null);
     $smarty->assign("arrDevicesArea1", isset($arrDevices[2])?$arrDevices[2]:null);
@@ -126,9 +127,13 @@ function viewFormControlPanel($smarty, $module_name, $local_templates_dir, &$pDB
     $smarty->assign("lengthArea3", isset($arrDevices[3])?count($arrDevices[3]):null);
     $smarty->assign("lengthArea4", isset($arrDevices[4])?count($arrDevices[4]):null);
     $smarty->assign("arrQueues", isset($arrQueues)?$arrQueues:null);
-    $smarty->assign("arrTrunks", $arrTrunks);
+    $smarty->assign("arrTrunks", $arrDAHDITrunks);
     $smarty->assign("lengthQueues", isset($arrQueues)?count($arrQueues):null);
-    $smarty->assign("lengthTrunks", isset($arrTrunks)?count($arrTrunks):null);
+    $smarty->assign("lengthTrunks", isset($arrDAHDITrunks)?count($arrDAHDITrunks):null);
+    $smarty->assign("lengthTrunksSIP", isset($arrSIPTrunks)?count($arrSIPTrunks):null);
+    $smarty->assign("arrTrunksSIP", $arrSIPTrunks);
+    $smarty->assign("arrConferences", $arrConferences);
+    $smarty->assign("lengthConferences", isset($arrConferences)?count($arrConferences):null);
     $i=1;
     foreach($arrAreas as $key => $value){
         $smarty->assign("nameA$i", $value['a.name']);
@@ -152,70 +157,195 @@ function viewFormControlPanel($smarty, $module_name, $local_templates_dir, &$pDB
     return $content;
 }
 
+function waitingChanges($function, &$pDB1, &$pDB2)
+{
+    $executed_time =  2; //en segundos
+    $max_time_wait = 30; //en segundos
+    $data          = null;
+
+    $i = 1;
+    while(($i*$executed_time) <= $max_time_wait){
+        $return = $function($pDB1, $pDB2);
+        $data   = $return['data'];
+
+        //wlog("chat_server/index.php: waitingChanges-$function --> espera número $i, ¿hubo cambio?=$return[there_was_change]");
+        if($return['there_was_change']){
+            break;
+        }
+        $i++;
+        sleep($executed_time); //cada $executed_time estoy revisando si hay algo nuevo....
+    }
+   return $data;
+}
+
 function callAction(&$pDB1, &$pDB2)
 {
+    $jsonObject = new PaloSantoJSON();
     $number_org = getParameter('extStart');
     $number_dst = getParameter('extFinish');
     if (!is_null($number_org) & !is_null($number_dst)){
         $pControlPanel = new paloSantoControlPanel($pDB1,$pDB2);
         $pControlPanel->makeCalled($number_org, $number_dst);
     }
-    return "";
+    $jsonObject->set_message("");
+    return $jsonObject->createJSON();
 }
 
 function voicemailAction(&$pDB1, &$pDB2)
 {
+    $jsonObject = new PaloSantoJSON();
     $number_org = getParameter('extStart');
     if (!is_null($number_org)){
         $pControlPanel = new paloSantoControlPanel($pDB1,$pDB2);
         $number_dst = "*98";
         $pControlPanel->makeCalled($number_org, $number_dst);
     }
-    return "";
+    $jsonObject->set_message("");
+    return $jsonObject->createJSON();
 }
 
 function hangupAction(&$pDB1, &$pDB2)
 {
+    $jsonObject = new PaloSantoJSON();
     $number_org = getParameter('extStart');
     if (!is_null($number_org)){
         $pControlPanel = new paloSantoControlPanel($pDB1,$pDB2);
         $pControlPanel->hangupCalled($number_org);
     }
-    return "";
+    $jsonObject->set_message("");
+    return $jsonObject->createJSON();
 }
 
 function refreshAction(&$pDB1, &$pDB2)
 {
+    $jsonObject = new PaloSantoJSON();
     $pControlPanel = new paloSantoControlPanel($pDB1,$pDB2);
-    return $pControlPanel->getAllDevicesXML();
+    $message = $pControlPanel->getAllDevicesXML();
+    $arrPrev = array();
+    $data = array();
+
+    $session = getChatSession();
+
+    if(isset($session['operator_panel']['prev']))
+        $arrPrev = $session['operator_panel']['prev'];
+    else{
+        $session['operator_panel']['prev'] = $message;
+        putChatSession($session);
+    }
+    $diff = getDifferences($message,$arrPrev);
+    if(count($diff) > 0){
+        $status = true;
+        $i=0;
+        foreach($diff as $key => $value){
+            foreach($value as $key2 => $value2){
+                if($key2 == "activity" || $key2 == "parties"){
+                    $data[$i]['Tipo'] = "Conference";
+                    $data[$i]['key'] = $message[$key]["numconf"];   
+                }/*elseif($key2 == "statusConf"){
+                    $data[$i]['Tipo'] = "Conference";
+                    $data[$i]['key'] = $arrPrev[$key]["numconf"];
+                }*/elseif($key2 == "speak_time"){
+                    if($message[$key]["context"] == "macro-dialout-trunk" && $message[$key]["trunk"] != " "){
+                         $data[$i]['Tipo'] = "Trunk";
+                         $data[$i]['key'] = $message[$key]["user"]."_".$message[$key]["trunk"];
+                    }else{
+                        $data[$i]['Tipo'] = "Extension";
+                        $data[$i]['key'] = $message[$key]["user"];
+                    }
+                }elseif($key2 == "waiting"){
+                    $data[$i]['Tipo'] = "Queue";
+                    $data[$i]['key'] = $message[$key]["queueNumber"];
+                }
+                else{
+                    $data[$i]['Tipo'] = "Extension";
+                    $data[$i]['key'] = $message[$key]["user"];
+                }
+                $data[$i]['data'] = array($key2 => $value2);
+                $i++;
+            }
+            if(isset($arrPrev[$key]["trunk"]) && isset($message[$key]["trunk"]))
+                if($arrPrev[$key]["trunk"] != " " && $message[$key]["trunk"] == " "){
+                    $data[$i]['Tipo'] = "Trunk";
+                    $data[$i]['key'] = $arrPrev[$key]["trunk"];
+                    $data[$i]['data'] = array("statusTrunk" => "off");
+                    $i++;
+                }
+            if(isset($arrPrev[$key]["numconf"]) && isset($message[$key]["numconf"]) && isset($arrPrev[$key]["parties"]))
+                if($arrPrev[$key]["numconf"] != " " && $message[$key]["numconf"] == " " && $arrPrev[$key]["parties"] == "1"." "._tr("Participant")){
+                    $data[$i]['Tipo'] = "Conference";
+                    $data[$i]['key'] = $arrPrev[$key]["numconf"];
+                    $data[$i]['data'] = array("statusConf" => "off");
+                    $i++;
+                }
+        }
+        
+        $jsonObject->set_status("CHANGED");
+        $jsonObject->set_message($data);
+    }
+    else{
+        $status = false;
+        $jsonObject->set_message(array());
+    }
+  // writeLOG("access.log", print_r($data,true));
+    $result = array("there_was_change" => $status, "data" => $jsonObject->createJSON());
+    return $result;
+}
+
+function getDifferences($message,$arrPrev)
+{
+    $result  = array();
+    $session = getChatSession();
+
+    if(count($arrPrev > 0)){
+        foreach($message as $key => $value){
+            $tmp = array_diff($value,$arrPrev[$key]);
+            if(count($tmp)>0)
+                $result[$key] = $tmp;
+        }
+        if(count($result)>0){
+            $session['operator_panel']['prev'] = $message;
+            putChatSession($session);
+        }
+        return $result;
+    }
+    else{
+        $session['operator_panel']['prev'] = $message;
+        putChatSession($session);
+        return $message;
+    }
 }
 
 function savechangeAction(&$pDB1, &$pDB2)
 {
+    $jsonObject = new PaloSantoJSON();
     $number_org = getParameter('extStart');
     $id_area    = getParameter('area');
     //if (!is_null($number_org) & !is_null($id_area)){
         $pControlPanel = new paloSantoControlPanel($pDB1,$pDB2);
         $pControlPanel->saveChangeArea($number_org,$id_area);
     //}
-    return "";
+    $jsonObject->set_message("");
+    return $jsonObject->createJSON();
 }
 
 
 function savechange2Action(&$pDB1, &$pDB2)
 {
+    $jsonObject = new PaloSantoJSON();
     $number_org = getParameter('extStart');
     $number_dst = getParameter('extFinish');
     //if (!is_null($number_org) & !is_null($number_dst)){
         $pControlPanel = new paloSantoControlPanel($pDB1,$pDB2);
         $pControlPanel->saveChangeArea2($number_org,$number_dst);
     //}
-    return "";
+    $jsonObject->set_message("");
+    return $jsonObject->createJSON();
 }
 
 
 function saveresizeAction(&$pDB1, &$pDB2)
 {
+    $jsonObject = new PaloSantoJSON();
     $pControlPanel = new paloSantoControlPanel($pDB1,$pDB2);
     $id_area = getParameter('area');
     $type    = getParameter('type');
@@ -235,37 +365,66 @@ function saveresizeAction(&$pDB1, &$pDB2)
         $pControlPanel->updateResizeArea($height,$width,$num,$id_area);
     else
         $pControlPanel->updateResizeArea2($height,$width,$num,$id_area);
-    return "";
+    return $jsonObject->createJSON();
 }
 
 function loadAreaAction(&$pDB1, &$pDB2)
 {
+    $jsonObject = new PaloSantoJSON();
     $pControlPanel = new paloSantoControlPanel($pDB1,$pDB2);
-    return $pControlPanel->getAllAreasXML();
+    $jsonObject->set_message($pControlPanel->getAllAreasXML());
+    return $jsonObject->createJSON();
 }
 
 function loadArea2Action(&$pDB1, &$pDB2)
 {
-    return "";
+    $jsonObject = new PaloSantoJSON();
+    $jsonObject->set_message("");
+    return $jsonObject->createJSON();
 }
 
 function saveEditAction(&$pDB1, &$pDB2)
 {
+    $jsonObject = new PaloSantoJSON();
     $id_area = getParameter('area');
     $description = getParameter('description');
 
     $pControlPanel = new paloSantoControlPanel($pDB1,$pDB2);
-    return $pControlPanel->updateDescriptionArea($description,$id_area);
+    $jsonObject->set_message($pControlPanel->updateDescriptionArea($description,$id_area));
+    return $jsonObject->createJSON();
 }
 
 function addExttoQueueAction(&$pDB1, &$pDB2)
 {
+    $jsonObject = new PaloSantoJSON();
     $number_org = getParameter('extStart');
     $queue      = getParameter('queue');
 
     $pControlPanel = new paloSantoControlPanel($pDB1,$pDB2);
     $pControlPanel->queueAddMember($queue, $number_org);
-    return "";
+    $jsonObject->set_message("");
+    return $jsonObject->createJSON();
+}
+
+function getChatSession()
+{
+    session_commit();
+    ini_set("session.use_cookies","0");
+    if(session_start()){
+        $tmp = $_SESSION;
+        session_commit();
+    }
+    return $tmp;
+}
+
+function putChatSession($data)//data es un arreglo
+{
+    session_commit();
+    ini_set("session.use_cookies","0");
+    if(session_start()){
+        $_SESSION = $data;
+        session_commit();
+    }
 }
 
 function getAction()

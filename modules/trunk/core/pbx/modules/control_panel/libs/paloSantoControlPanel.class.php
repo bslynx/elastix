@@ -158,17 +158,17 @@ class paloSantoControlPanel {
         global $arrLang;
         $arrDevs   = $this->getAllDevices();
         $arrChan   = $this->showChannels();
+        $arrConferences = $this->getDataConferences();
+        $numconf = " ";
+        $parties = " ";
+        $activity = " ";
         //$arrDesign = $this->getDesign();
-
-        $xmlRecords = "";
+        $arrRecords = null;
         if(is_array($arrDevs) & count($arrDevs)>0){
-            $xmlRecords .= "<?xml version=\"1.0\"?>\n";
-            $xmlRecords .= "<items>\n";
             foreach($arrDevs as $key => $ext_data){
                 if(ereg("^/AMPUSER/([[:digit:]]+)/cidname[[:space:]]+:([[:alnum:]| |-|_|\.]+)$",$ext_data,$arrReg)){
                     $value['user']    = $arrReg[1];
                     $value['cidname'] = $arrReg[2];
-                    
                     $call_dstn = " ";
                     if(isset($arrChan[$value['user']]['dstn'])){
                         $tmp = split("-",$arrChan[$value['user']]['dstn']);
@@ -180,34 +180,74 @@ class paloSantoControlPanel {
                     $context = isset($arrChan[$value['user']]['context'])?$arrChan[$value['user']]['context']:" ";
                     $trunk = " ";
                     if($context=="macro-dialout-trunk"){
+                        if(isset($arrChan[$value['user']]['dstn'])){
+                            $tmp = split("-",$arrChan[$value['user']]['dstn']);
+                            $tmp = split("/",$tmp[0]);
+                            if(isset($tmp[1]))
+                                $trunk = isset($tmp[0])?$tmp[0]."/".$tmp[1]:" ";
+                        }
                         if(isset($arrChan[$value['user']]['data'])){
-                            $tmp = split("/",$arrChan[$value['user']]['data']);
-                            $trunk = isset($tmp[0])?$tmp[0]."/".$tmp[1]:" ";
+                            $tmp = split(",",$arrChan[$value['user']]['data']);
+                            $tmp = split("/",$tmp[0]);
+                            $call_dstn = isset($tmp[2])?$tmp[2]:" ";
                         }
                     }
+                    $numconf = " ";
+                    $parties = " ";
+                    $activity = " ";
+                    $tmp = null;
+                    if(isset($arrChan[$value['user']]['data'])){
+                         $tmp = split(",",$arrChan[$value['user']]['data']);
+                    }
+                    if(isset($tmp))
+                        if(isset($arrConferences[$tmp[0]])){
+                            $numconf = $arrConferences[$tmp[0]]['number'];
+                            if($arrConferences[$tmp[0]]['parties'] > 1)
+                              $parties = $arrConferences[$tmp[0]]['parties']." "._tr("Participants");
+                            else
+                              $parties = $arrConferences[$tmp[0]]['parties']." "._tr("Participant");
+                            $activity = $arrConferences[$tmp[0]]['activity'];
+                        }
                     $arrVM      = $this->mailboxCount($value['user']);
                     $voicemail  = ($arrVM['new']>0)?1:0;
                     $status     = $this->getDeviceRegistry($value['user']);
                     //$area       = isset($arrDesign[$value['user']])?$arrDesign[$value['user']]:1;
-
-                    $xmlRecords .= "  <item_box>\n";
-                    $xmlRecords .= "    <user>{$value['user']}</user>\n";
-                    //$xmlRecords .= "    <short_name>".substr($value['cidname'],0,12)."</short_name>\n";
-                    //$xmlRecords .= "    <full_name>{$value['cidname']}</full_name>\n";
-                    $xmlRecords .= "    <status>$status</status>\n";
-                    $xmlRecords .= "    <voicemail>$voicemail</voicemail>\n";
-                    $xmlRecords .= "    <voicemail_cnt>New $arrVM[new], Old $arrVM[old]</voicemail_cnt>\n";
-                    $xmlRecords .= "    <state_call>$state_call</state_call>\n";
-                    $xmlRecords .= "    <call_dstn>$call_dstn</call_dstn>\n";
-                    $xmlRecords .= "    <speak_time>$speak_time</speak_time>\n";
-                    $xmlRecords .= "    <context>$context</context>\n";
-                    $xmlRecords .= "    <trunk>$trunk</trunk>\n";
-                    $xmlRecords .= "  </item_box>\n";
+                   /* if($numconf != " ")
+                        $statusConf = "on";
+                    else
+                        $statusConf = "off";*/
+                    $arrRecords[]=array("user" => $value['user'], "status" => $status, "voicemail" => $voicemail, "voicemail_cnt" => "New $arrVM[new], Old $arrVM[old]", "state_call" => $state_call,"call_dstn" => $call_dstn, "speak_time" => $speak_time, "context" => $context, "trunk" => $trunk,"numconf" => $numconf, "parties" => $parties, "activity" => $activity);//, "statusConf" => $statusConf);
                 }
             }
-            $xmlRecords .= "</items>\n";
         }
-        return $xmlRecords;
+        $arrqueue = $this->getAllQueuesARRAY2();
+        foreach($arrqueue as $key => $queue){
+            $arrRecords[] = array("queueNumber" => $queue["number"], "waiting" => $queue["queue_wait"]);
+        }
+        return $arrRecords;
+    }
+
+    function getDataConferences()
+    {
+       $parameters = array('Command'=>"meetme list");
+       $data = $this->AsteriskManagerAPI("Command",$parameters,true);
+       $arrConferences = split("\n",$data['data']);
+       $arrConf = array();
+       if(is_array($arrConferences))
+        foreach($arrConferences as $key => $line){
+            if(preg_match_all('/^([[:digit:]]+)[[:space:]]*([[:digit:]]+)[[:space:]]*[[:alnum:]|\/]+[[:space:]]*([[:digit:]|\:]+)/',$line,$matches)){
+                $arrConf[$matches[1][0]]['number'] = $matches[1][0];
+                for($j=0;$j<strlen($matches[2][0]);$j++){                 
+                    if($matches[2][0][$j] != 0){
+                        $parties = substr($matches[2][0],$j);
+                        $arrConf[$matches[1][0]]['parties'] = $parties;
+                        break;
+                    }
+                }
+                $arrConf[$matches[1][0]]['activity'] = $matches[3][0];
+            }
+        }
+        return $arrConf;
     }
 
     function getAllDevices()
@@ -223,8 +263,10 @@ class paloSantoControlPanel {
         $parameters = array('Command'=>"database showkey Registry/$ext");
         $data = $this->AsteriskManagerAPI("Command",$parameters,true);
         $arrData = split("\n",$data['data']);
+       
         $arrData = isset($arrData[1])?$arrData[1]:"";
         $arrData = split("/",$arrData);
+
         return isset($arrData[2])?"on":"off";
     }
 
@@ -365,7 +407,36 @@ class paloSantoControlPanel {
     }
 
 
-    function getAllTrunksARRAY()
+    function getDAHDITrunksARRAY()
+    {
+       /* $result = getTrunks($this->_DB1);
+
+        if($result==FALSE){
+            $this->errMsg = $this->_DB1->errMsg;
+            return array();
+        }
+        $arrTrunk = array();
+        $arrTmp = array();
+        foreach($result as $key => $value)
+            $arrTmp[$value[0]] = $value[1];
+        foreach($arrTmp as $key => $value){
+            $trunk = split("/",$value);
+            if($trunk[0] != "DAHDI")
+                $arrTrunk[] = $value;
+        }*/
+        $parameters = array('Command'=>"dahdi show channels");
+        $result = $this->AsteriskManagerAPI("Command",$parameters,true); 
+        $data = split("\n",$result['data']);
+        if(is_array($data) && count($data)>0)
+          foreach($data as $line){
+            $value = preg_match('/^[[:space:]]*([[:digit:]]+)/',$line,$matches);
+            if($value)
+                $arrTrunk[] = "DAHDI/$matches[1]";
+        }
+        return $arrTrunk;
+    }
+
+    function getSIPTrunksARRAY()
     {
         $result = getTrunks($this->_DB1);
 
@@ -374,9 +445,60 @@ class paloSantoControlPanel {
             return array();
         }
         $arrTrunk = array();
+        $arrTmp = array();
         foreach($result as $key => $value)
-            $arrTrunk[$value[0]] = $value[1];
+            $arrTmp[$value[0]] = $value[1];
+        foreach($arrTmp as $key => $value){
+            $trunk = split("/",$value);
+            if($trunk[0] != "DAHDI")
+                $arrTrunk[] = $value;
+        }
+        foreach($arrTrunk as $key => $value){
+            $tmp = split("/",$value);
+            $arrTrunk[$key] = array();
+            $arrTrunk[$key]['name'] = $value;
+            if($tmp[0] == "SIP")
+                $arrTrunk[$key]['status'] = $this->getTrunkStatus($value,"SIP");
+            elseif($tmp[0] == "IAX2")
+                $arrTrunk[$key]['status'] = $this->getTrunkStatus($value,"IAX2");
+        }
         return $arrTrunk;
+    }
+
+    function getConferences()
+    {
+       $query = "select * from meetme;";
+       $result=$this->_DB1->fetchTable($query, true);
+
+        if($result==FALSE){
+            $this->errMsg = $this->_DB1->errMsg;
+            return array();
+        }
+        return $result;
+    }
+
+    function getTrunkStatus($value,$tech)
+    {
+        if($tech == "SIP")
+            $parameters = array('Command'=>"sip show peers");
+        elseif($tech == "IAX2")
+            $parameters = array('Command'=>"iax2 show peers");
+        $result = $this->AsteriskManagerAPI("Command",$parameters,true); 
+        $data = split("\n",$result['data']);
+        $tmp = split("/",$value);
+        $value = $tmp[1];
+        foreach($data as $key => $line){
+            if(strpos($line,$value) !== false){
+                $tmp = split(" ",$line);
+                foreach($tmp as $key2 => $value2){
+                    if($key2 != 0){
+                        if($value2 == "OK")
+                            return "on";                     
+                    }
+                }
+            } 
+        }
+        return "off";
     }
 
 
@@ -456,7 +578,14 @@ class paloSantoControlPanel {
                 $this->errMsg = $this->_DB2->errMsg;
                 return false;
             }
-        }else{
+            
+            $query3 = "update area set width=$width, no_column=$no_column where id=7";
+            $result=$this->_DB2->genQuery($query3);
+            if($result==FALSE){
+                $this->errMsg = $this->_DB2->errMsg;
+                return false;
+            }
+        }elseif($id_area==6){
             $query1 = "update area set height=$height, width=$width, no_column=$no_column where id=6";
             $result=$this->_DB2->genQuery($query1);
             if($result==FALSE){
@@ -469,7 +598,33 @@ class paloSantoControlPanel {
             if($result==FALSE){
                 $this->errMsg = $this->_DB2->errMsg;
                 return false;
+            }
+            $query3 = "update area set width=$width, no_column=$no_column where id=7";
+            $result=$this->_DB2->genQuery($query3);
+            if($result==FALSE){
+                $this->errMsg = $this->_DB2->errMsg;
+                return false;
             }  
+        }else{
+            $query1 = "update area set height=$height, width=$width, no_column=$no_column where id=7";
+            $result=$this->_DB2->genQuery($query1);
+            if($result==FALSE){
+                $this->errMsg = $this->_DB2->errMsg;
+                return false;
+            }
+    
+            $query2 = "update area set width=$width, no_column=$no_column where id=1";
+            $result=$this->_DB2->genQuery($query2);
+            if($result==FALSE){
+                $this->errMsg = $this->_DB2->errMsg;
+                return false;
+            }
+            $query3 = "update area set width=$width, no_column=$no_column where id=6";
+            $result=$this->_DB2->genQuery($query3);
+            if($result==FALSE){
+                $this->errMsg = $this->_DB2->errMsg;
+                return false;
+            }
         }
 
         return true;

@@ -3,7 +3,6 @@
   jQuery.fn.faq = function(tog) {
   	return this.each(function () {
         var dl = $(this).addClass('faq2')
-	
         //var dt = $('dt', dl).css('cursor', 'pointer').addClass('faqClosed').click(function(e){
         var dt = $('dt', dl).css('cursor', '').addClass('faqClosed').click(function(e){
   			$(this).toggleClass('faqClosed').toggleClass('faqOpen');
@@ -41,12 +40,12 @@
         }).prependTo(dl).clone(true);
 
 		$('<a id="faqtop" style="display:none;"></a>').prependTo(dl);
-
         //if(typeof tog == 'number') $('dt:eq('+tog+')').trigger('click');
         if(typeof 0 == 'number') $('dt:eq('+0+')').trigger('click');
         if(typeof 1 == 'number') $('dt:eq('+1+')').trigger('click');
         if(typeof 2 == 'number') $('dt:eq('+2+')').trigger('click');
         if(typeof 3 == 'number') $('dt:eq('+3+')').trigger('click');
+        if(typeof 4 == 'number') $('dt:eq('+4+')').trigger('click');
   	});
   };
 

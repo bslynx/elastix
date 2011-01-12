@@ -15,6 +15,22 @@
     z-index:997;/**/
 }
 
+.conference_box { 
+    width: 23px;
+    height: 17px;
+    padding: 2px 2px 0 0;
+    border: 0;
+    z-index:997;/**/
+}
+
+.queu_box { 
+    width: 23px;
+    height: 17px;
+    padding: 2px 2px 0 0;
+    border: 0;
+    z-index:997;/**/
+}
+
 .mail_box {
     width: 17px;
     height: 11px;
@@ -43,6 +59,8 @@
     line-height:112%;
 }
 
+
+
 #contentExtension {
     /*padding: 3px 3px 3px 3px;*/
     padding: 0;
@@ -62,6 +80,30 @@
     float: left;
     margin: 0px 0 0 0px;
     background-color:#D0FFD0;
+    width: auto;/*380*/
+    height: auto;/*590*/
+    border: black solid 1px;
+    z-index:5;
+}
+
+#contentTrunksSIP {
+    /*padding: 3px 3px 3px 3px;*/
+    padding: 0;
+    float: left;
+    margin: 0px 0 0 0px;
+    background-color:#D0FFFF;
+    width: auto;/*380*/
+    height: auto;/*590*/
+    border: black solid 1px;
+    z-index:5;
+}
+
+#contentConferences {
+    /*padding: 3px 3px 3px 3px;*/
+    padding: 0;
+    float: left;
+    margin: 0px 0 0 0px;
+    background-color:#DACCCA;
     width: auto;/*380*/
     height: auto;/*590*/
     border: black solid 1px;
@@ -294,6 +336,13 @@ a.tooltipInfo:hover span{
     line-height:112%;
 }
 
+.trunk_boxOff{
+    background-color: #FFEEB8;
+    /*opacity: 0.55;*/
+    /*filter: alpha(opacity=50); */
+    /*z-index:2;*/
+}
+
 #layer1 {
     position: absolute;
     left:200px;
@@ -328,7 +377,6 @@ a.tooltipInfo:hover span{
 }
 
 .layer_handle {
-    background-color:#5588bb;
     padding:2px;
     text-align:center;
     font-weight:bold;

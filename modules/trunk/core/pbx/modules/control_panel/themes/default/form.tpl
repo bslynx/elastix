@@ -100,13 +100,56 @@
             </table>
         </li>
     </div><!--End ContentTrunks -->
+
+    <div id="contentTrunksSIP">
+        <li id="headTrunksSIP">
+        {$descripArea7}
+            <table border ='0' cellspacing="0" cellpadding="0">
+                <tr>
+                    {counter start=0 skip=1 print=false assign=cnt}
+                    {foreach key=truSIP item=trunSIP_info name=arrSIPTrunkInfo from=$arrTrunksSIP}
+                    {math assign="p" equation="ceil($lengthTrunksSIP/$size7)"}
+                    {if $cnt%$p==0}
+                    <td valign='top'>
+                        <table border ='0' cellspacing="0" cellpadding="0">
+                    {/if}
+                            <tr>
+                                <td >
+                                  {if $trunSIP_info.status eq 'on'}
+                                    <div class="trunk_box" id="tru_{$trunSIP_info.name}" >
+                                  {elseif $trunSIP_info.status eq 'off'}
+                                    <div class="trunk_box trunk_boxOff" id="tru_{$trunSIP_info.name}" >
+                                  {/if}
+                                        <div style='float:left;border: black solid 0px'>
+                                            <a class="tooltipInfo" href="#"><img class="infor_box" src="modules/{$module_name}/images/info.png" /><span>{$trunSIP_info.name}&nbsp;</span></a>
+                                        </div>
+                                        <div style='float:left;width:115px;text-align:left;padding-left:4px;' id="trunksSIP">
+                                            &nbsp;<b>{$trunSIP_info.name}</b><br /><span class="monitor">&nbsp;&nbsp;</span><span class="monitor">&nbsp;</span>
+                                        </div>
+                                        <div style='border: black solid 0px'>
+                                            <img id="trun_{$truSIP}" class="phone_boxtrunk" src="modules/{$module_name}/images/icon_trunk2.png" />
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                    {if ($cnt+1)%$p==0  or $smarty.foreach.arrSIPTrunkInfo.last}
+                        </table>
+                    </td>
+                    {/if}
+                    {counter}
+                    {/foreach}
+                </tr>
+            </table>
+        </li>
+    </div><!--End ContentTrunks -->    
+
     </ul>
     </div><!--End Content -->
 
     <dl id="faq">
         <ul id="sortable-list2" class="sortable">
             <li class="state1">
-            <dt id="headArea1">{$descripArea2} -- {$lengthArea2} ext<span id="editArea2">[Edit Name]</span></dt>
+            <dt id="headArea1">{$descripArea2} -- {$lengthArea2} ext<div  style = 'float:right;'><span id="editArea2">[Edit Name]</span></div></dt>
             <dd id="contentArea1">
                 <!--<div id="headArea1">{$descripArea2}  {$lengthArea2} Extensions<span id="editArea2">[Edit Name]</span></div>-->
                 <!--pregunto si la tabla item_box es null o arrExtInfoA1 es vacia de iddevices entonces muestra-->
@@ -116,7 +159,7 @@
                 {elseif $arrDevicesArea1!=null}
                 <!--caso contrario sera una tabla con los devices que esten en dentro de la tabla item_box-->
                 <table border ='0' cellspacing="0" cellpadding="0">
-                    <tr>
+                    <tr><br />
                         {counter start=0 skip=1 print=false assign=cnt}
                         {foreach key=extA1 item=ext_infoA1 name=arrExtInfoA1 from=$arrDevicesArea1}
                         {math assign="p" equation="ceil($lengthArea2/$size2)"}
@@ -159,7 +202,7 @@
             </li>
     
             <li class="state1">
-            <dt id="headArea2">{$descripArea3} -- {$lengthArea3} ext<span id="editArea3">[Edit Name]</span></dt>
+            <dt id="headArea2">{$descripArea3} -- {$lengthArea3} ext<div  style = 'float:right;'><span id="editArea3">[Edit Name]</span></div></dt>
             <dd id="contentArea2">
                 <!--<div id="headArea2">{$descripArea3}  {$lengthArea3} Extensions<span id="editArea3">[Edit Name]</span></div>-->
                 {if $arrDevicesArea2==null}
@@ -167,7 +210,7 @@
                 <div id="subcontent2" class="areaDropSub2"> </div>
                 {elseif $arrDevicesArea2!=null}
                 <table border ='0' cellspacing="0" cellpadding="0">
-                    <tr>
+                    <tr><br />
                         {counter start=0 skip=1 print=false assign=cnt}
                         {foreach key=extA2 item=ext_infoA2 name=arrExtInfoA2 from=$arrDevicesArea2}
                         {math assign="p" equation="ceil($lengthArea3/$size3)"}
@@ -210,7 +253,7 @@
             </li> 
     
             <li class="state1">
-            <dt id="headArea3">{$descripArea4} -- {$lengthArea4} ext<span id="editArea4">[Edit Name]</span></dt>
+            <dt id="headArea3">{$descripArea4} -- {$lengthArea4} ext<div  style = 'float:right;'><span id="editArea4">[Edit Name]</span></div></dt>
             <dd id="contentArea3">
                 <!--<div id="headArea3">{$descripArea4}  {$lengthArea4} Extensions<span id="editArea4">[Edit Name]</span></div>-->
                 {if $arrDevicesArea3==null}
@@ -218,7 +261,7 @@
                 <div id="subcontent2" class="areaDropSub3"> </div>
                 {elseif $arrDevicesArea3!=null}
                 <table border ='0' cellspacing="0" cellpadding="0">
-                    <tr>
+                    <tr><br />
                         {counter start=0 skip=1 print=false assign=cnt}
                         {foreach key=extA3 item=ext_infoA3 name=arrExtInfoA3 from=$arrDevicesArea3}
                         {math assign="p" equation="ceil($lengthArea4/$size4)"}
@@ -261,11 +304,50 @@
             </li>
     
             <li class="state1">
-            <dt id="headQueues">{$descripArea5} </dt>
-            <dd id="contentQueues">
+            <dt id="headConferences">{$descripArea8} </dt>
+            <dd id="contentConferences" >
                 <!--<div id="headQueues">{$descripArea5} </div>-->
                 <table border ='0' cellspacing="0" cellpadding="0">
-                    <tr>
+                    <tr><br />
+                        {counter start=0 skip=1 print=false assign=cnt}
+                        {foreach key=conf item=conf_info name=arrConfInfo from=$arrConferences}
+                        {math assign="p" equation="ceil($lengthConferences/$size8)"}
+                        {if $cnt%$p==0}
+                        <td valign='top'>
+                            <table border ='0' cellspacing="0" cellpadding="0">
+                        {/if}
+                                <tr>
+                                    <td >
+                                        <div class="queue_box" id="conf_{$conf}" >
+                                            <div style='float:left;border: black solid 0px'>
+                                                <a class="tooltipInfo" href="#"><img class="infor_box" src="modules/{$module_name}/images/info.png" /><span>{$conf_info.exten}&nbsp;</span></a>
+                                            </div>
+                                            <div style='float:left;width:115px;text-align:left;padding-left:4px;' id="conference_{$conf_info.exten}">
+                                            <b>{$conf_info.exten}:</b>&nbsp;{$conf_info.description}<br /><span class="monitor">&nbsp;&nbsp;</span><span class="monitor">&nbsp;</span>
+                                           </div>
+                                            <div style='border: black solid 0px'>
+                                                <img id="phone_{$conf_info.exten}" class="conference_box" src="modules/{$module_name}/images/conference.png" />
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                        {if ($cnt+1)%$p==0  or $smarty.foreach.arrConfInfo.last}
+                            </table>
+                        </td>
+                        {/if}
+                        {counter}
+                        {/foreach}
+                    </tr>
+                </table>
+            </dd>
+            </li>
+
+            <li class="state1">
+            <dt id="headQueues">{$descripArea5} </dt>
+            <dd id="contentQueues" >
+                <!--<div id="headQueues">{$descripArea5} </div>-->
+                <table border ='0' cellspacing="0" cellpadding="0">
+                    <tr><br />
                         {counter start=0 skip=1 print=false assign=cnt}
                         {foreach key=que item=queu_info name=arrQueuInfo from=$arrQueues}
                         {math assign="p" equation="ceil($lengthQueues/$size5)"}
@@ -279,11 +361,11 @@
                                             <div style='float:left;border: black solid 0px'>
                                                 <a class="tooltipInfo" href="#"><img class="infor_box" src="modules/{$module_name}/images/info.png" /><span>{$queu_info.members}&nbsp;</span></a>
                                             </div>
-                                            <div style='float:left;width:115px;text-align:left;padding-left:4px;'>
-                                                <b>{$queu_info.number}:</b>&nbsp;{$queu_info.number}<br />calls waiting:<span class="monitor">&nbsp;{$queu_info.queue_wait}&nbsp;</span>
+                                            <div style='float:left;width:115px;text-align:left;padding-left:4px;' id = "queue_{$queu_info.number}">
+                                                <b>{$queu_info.number}:</b>&nbsp;{$queu_info.number}<br />calls waiting:&nbsp;<span class="monitor">{$queu_info.queue_wait}&nbsp;</span>
                                             </div>
                                             <div style='border: black solid 0px'>
-                                                <img id="phone_{$queu_info.number}" class="phone_boxqueue" src="modules/{$module_name}/images/icon_queue.png" />
+                                                <img id="phone_{$queu_info.number}" class="queu_box" src="modules/{$module_name}/images/queue.png" />
                                             </div>
                                         </div>
                                     </td>
@@ -309,76 +391,9 @@
     
 </div> <!--End of the div contentWrap-->
 
-<div id="layer1" class="move">
-    <div class="layer_handle">            
-        <a href="#" id="close1">[ x ]</a>
-        Preferences
-    </div>
-    <div id="layer1_content">
-        <form id="layer1_form" method="post" action="">
-            <legend >Display Settings</legend><br />
-            <table>
-                <tr>
-                    <td><label style='font-size: 11px'>Name:</label></td>
-                    <td><input type="text" id="descrip1" name="descrip1" size="30" maxlength="79"><br /></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td align="right">
-                        <input type="button" value="Save" onclick="saveDescriptionArea1()"/>
-                    </td>
-                </tr>
-            </table>
-        </form>
-    </div>
-</div>
-
-<div id="layer2" class="move">
-    <div class="layer_handle">            
-        <a href="#" id="close2">[ x ]</a>
-        Preferences
-    </div>
-    <div id="layer1_content">
-        <form id="layer1_form" method="post" action="">
-            <legend >Display Settings</legend><br />
-            <table>
-                <tr>
-                    <td><label style='font-size: 11px'>Name:</label></td>
-                    <td><input type="text" id="descrip2" name="descrip2" size="30" maxlength="79"><br /></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td align="right">
-                        <input type="button" value="Save" onclick="saveDescriptionArea2()"/>
-                    </td>
-                </tr>
-            </table>
-        </form>
-    </div>
-</div>
-
-<div id="layer3" class="move">
-    <div class="layer_handle">
-        <a href="#" id="close3">[ x ]</a>
-        Preferences
-    </div>
-    <div id="layer1_content">
-        <form id="layer1_form" method="post" action="">
-            <legend >Display Settings</legend><br />
-            <table>
-                <tr>
-                    <td><label style='font-size: 11px'>Name:</label></td>
-                    <td><input type="text" id="descrip3" name="descrip3" size="30" maxlength="79"><br /></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td align="right">
-                        <input type="button" value="Save" onclick="saveDescriptionArea3()"/>
-                    </td>
-                </tr>
-            </table>
-        </form>
-    </div>
+<div id='layerCM'>
+      <div class='layer_handle' id='closeCM'></div>
+      <div id='layerCM_content'></div>
 </div>
 
 <input type="hidden" id="lengthA2" name="lengthA2" value="{$lengthArea2}"/>
@@ -391,6 +406,8 @@
 <input type="hidden" id="nameArea4" name="nameArea4" value="{$nameA4}"/>
 <input type="hidden" id="nameArea5" name="nameArea5" value="{$nameA5}"/>
 <input type="hidden" id="nameArea6" name="nameArea6" value="{$nameA6}"/>
+<input type="hidden" id="nameArea7" name="nameArea7" value="{$nameA7}"/>
+<input type="hidden" id="nameArea8" name="nameArea8" value="{$nameA8}"/>
 
 <input type="hidden" id="heightA1" name="heightA1" value="{$height1}"/>
 <input type="hidden" id="heightA2" name="heightA2" value="{$height2}"/>
@@ -398,6 +415,8 @@
 <input type="hidden" id="heightA4" name="heightA4" value="{$height4}"/>
 <input type="hidden" id="heightA5" name="heightA5" value="{$height5}"/>
 <input type="hidden" id="heightA6" name="heightA6" value="{$height6}"/>
+<input type="hidden" id="heightA7" name="heightA7" value="{$height7}"/>
+<input type="hidden" id="heightA8" name="heightA8" value="{$height8}"/>
 
 <input type="hidden" id="widthA1" name="widthA1" value="{$width1}"/>
 <input type="hidden" id="widthA2" name="widthA2" value="{$width2}"/>
@@ -405,3 +424,5 @@
 <input type="hidden" id="widthA4" name="widthA4" value="{$width4}"/>
 <input type="hidden" id="widthA5" name="widthA5" value="{$width5}"/>
 <input type="hidden" id="widthA6" name="widthA6" value="{$width6}"/>
+<input type="hidden" id="widthA7" name="widthA7" value="{$width7}"/>
+<input type="hidden" id="widthA8" name="widthA8" value="{$width8}"/>
