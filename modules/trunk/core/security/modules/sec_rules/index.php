@@ -572,7 +572,7 @@ function reportRules($smarty, $module_name, $local_templates_dir, &$pDB, $arrCon
             
             $arrData[] = $arrTmp;
         }
-        $arrData[] = array("ctrl" => "separator_line", "start" => 0);
+    //    $arrData[] = array("ctrl" => "separator_line", "start" => 0);
 
     }
     $oGrid->setData($arrData);

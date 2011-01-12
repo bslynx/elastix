@@ -38,14 +38,22 @@ $(document).ready(function(){
         var changing = "";
         var p1 = "";
         if ($(this).is(".up")) {
-            if(row.prev().attr("class") != "table_title_row"){               
+            if(row.prev().attr("class") != "table_title_row"){
+                if(row.next().attr("class") == "table_navigation_row"){
+                    row.children().attr("class","table_data");
+                    row.prev().children().attr("class","table_data_last_row");              
+                }
                 p1 = row.prev().children().contents();
                 neighborrow = p1.next().attr("id");
                 row.insertBefore(row.prev());
                 changing = "rulerup";
             }
         } else {
-            if(row.next().next().attr("class") != "table_navigation_row"){
+            if(row.next().attr("class") != "table_navigation_row"){
+                if(row.next().next().attr("class") == "table_navigation_row"){
+                    row.children().attr("class","table_data_last_row");
+                    row.next().children().attr("class","table_data"); 
+                }
                 p1 = row.next().children().contents();
                 neighborrow = p1.next().attr("id");
                 row.insertAfter(row.next());
