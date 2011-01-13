@@ -204,7 +204,6 @@ class paloSantoRules {
 
         $ip_s      = ($arrValues['ip_source'] == null)     ? "" : $arrValues['ip_source'];
         $ip_mask_s = ($arrValues['mask_source'] == null)   ? "" : $arrValues['mask_source'];
-        print_r($ip_s."SDA");
         if($ip_s != "")
             if($ip_mask_s != "")
                 $source = $ip_s."/".$ip_mask_s;
@@ -466,6 +465,20 @@ class paloSantoRules {
             return false;
         }
         return $this->updateNotExecutedInSystem();
+    }
+
+    function desactivateAll()
+    {
+        $query = "UPDATE filter SET activated = 0";
+               
+        $result = $this->_DB->genQuery($query);
+
+        if( $result == FALSE )
+        {
+            $this->errMsg = $this->_DB->errMsg;
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -816,6 +829,18 @@ class paloSantoRules {
         if($data['first_time'] == 0)
             return false;
         return true;
+    }
+
+    function setFirstTime()
+    {
+        $query = "update tmp_execute set first_time = 1";
+        $result = $this->_DB->genQuery($query, true);
+        if($result == FALSE)
+        {
+            $this->errMsg = $this->_DB->errMsg;
+            return false;
+        }
+        return $this->updateNotExecutedInSystem();
     }
 
     function noMoreFirstTime()

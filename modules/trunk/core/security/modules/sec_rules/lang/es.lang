@@ -88,7 +88,10 @@ $arrLangModule=array(
 "Save Changes" => "Guardar Cambios",
 "FireWall Rules" => "Reglas del Cortafuegos",
 "You have made changes to the definition of firewall rules, for this to take effect in the system press the next button" => "Usted ha realizado cambios en la definición de las reglas de firewall, para que esto haga efecto en el sistema debe presionar el siguiente botón",
-"Your system is a new installation. It is recommended to activate the firewall rules" => "Su sistema es una instalación nueva. Se recomienda activar las reglas de firewall",
-"Activate FireWall" => "Activar Cortafuegos"
+"The firewall is totally desactivated. It is recommended to activate the firewall rules" => "El cortafuegos está totalmente desactivado. Se recomienda activar las reglas del cortafuegos",
+"Activate FireWall" => "Activar Cortafuegos",
+"Desactivate FireWall" => "Desactivar Cortafuegos",
+"The firewall has been desactivated" => "El Cortafuegos ha sido desactivado",
+"The firewall could not be desactivated" => "El Cortafuegos no pudo ser desactivado"
 );
 ?>

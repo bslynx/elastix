@@ -89,7 +89,10 @@ $arrLangModule=array(
 "Save Changes" => "Save Changes",
 "FireWall Rules" => "FireWall Rules",
 "You have made changes to the definition of firewall rules, for this to take effect in the system press the next button" => "You have made changes to the definition of firewall rules, for this to take effect in the system press the next button",
-"Your system is a new installation. It is recommended to activate the firewall rules" => "Your system is a new installation. It is recommended to activate the firewall rules",
-"Activate FireWall" => "Activate FireWall"
+"The firewall is totally desactivated. It is recommended to activate the firewall rules" => "The firewall is totally desactivated. It is recommended to activate the firewall rules",
+"Activate FireWall" => "Activate FireWall",
+"Desactivate FireWall" => "Desactivate FireWall",
+"The firewall has been desactivated" => "The firewall has been desactivated",
+"The firewall could not be desactivated" => "The firewall could not be desactivated"
 );
 ?>

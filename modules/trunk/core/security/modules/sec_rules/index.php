@@ -70,6 +70,9 @@ function _moduleContent(&$smarty, $module_name)
         case "new":
             $content = newRules($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, array());
             break;
+        case "desactivate":
+            $content = desactivateFirewall($smarty,$module_name,$local_templates_dir,$pDB,$arrConf);
+            break;
         case "save":
             $content = saveRules($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
             break;
@@ -287,7 +290,6 @@ function createFieldForm($pDB,$arrValues = array())
 function saveRules($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf)
 {
     $arrValues = array();
-
     $str_error = "";
     $arrFormNew = createFieldForm($pDB);
     $oForm = new paloForm($smarty, $arrFormNew);
@@ -466,7 +468,7 @@ function saveRules($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf)
 
 function reportRules($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf)
 {
-    
+
     $pRules = new paloSantoRules($pDB);
     $action = getParameter("action");
     $id     = getParameter("id");
@@ -586,8 +588,9 @@ function reportRules($smarty, $module_name, $local_templates_dir, &$pDB, $arrCon
     }
     $oGrid->setData($arrData);
     $smarty->assign("new", _tr("New Rule"));
+    $smarty->assign("desactivate", _tr("Desactivate FireWall"));
     if($first_time){
-        $mensaje = _tr("Your system is a new installation. It is recommended to activate the firewall rules");
+        $mensaje = _tr("The firewall is totally desactivated. It is recommended to activate the firewall rules");
         $mensaje2 = _tr("Activate FireWall");
         $smarty->assign("DISPLAY_BUTTON", "display:none;");
     }
@@ -692,7 +695,7 @@ function change($pDB)
         $Exito1 = $pRules->updateOrder($actual_id,$neighbor_order);
         $Exito2 = $pRules->updateOrder($neighbor_id,$actual_order);
         if($pRules->isFirstTime()){
-            $mensaje = _tr("Your system is a new installation. It is recommended to activate the firewall rules");
+            $mensaje = _tr("The firewall is totally desactivated. It is recommended to activate the firewall rules");
             $mensaje2 = _tr("Activate FireWall");
         }
         else{
@@ -706,6 +709,19 @@ function change($pDB)
     }else
         $jsonObject->set_status(_tr("Invalid Action"));
     return $jsonObject->createJSON();
+}
+
+function desactivateFirewall($smarty,$module_name,$local_templates_dir,$pDB,$arrConf)
+{
+    $pRules = new paloSantoRules($pDB);
+    if($pRules->flushRules() && $pRules->setFirstTime()){
+        $smarty->assign("mb_title", "MESSAGE");
+        $smarty->assign("mb_message", _tr("The firewall has been desactivated"));
+    }else{
+        $smarty->assign("mb_title", "ERROR");
+        $smarty->assign("mb_message", _tr("The firewall could not be desactivated"));
+    }
+    return reportRules($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
 }
 
 
@@ -725,6 +741,8 @@ function getAction()
         return "exec";
     else if(getParameter("action")=="show") //Get parameter by GET (command pattern, links)
         return "show";
+    else if(getParameter("desactivate"))
+        return "desactivate";
     else
         return "report";
 }
