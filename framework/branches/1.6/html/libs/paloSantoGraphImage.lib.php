@@ -58,7 +58,7 @@ $G_MARGIN = array();//margen
 $G_LEYEND_NUM_COLUMN = 1;
 $G_LEYEND_POS = array(0.05, 0.5);//posicion de las leyendas
 $_MSJ_ERROR   = null;//$_MSJ_ERROR   = "Sin mensaje ERROR";
-$_MSJ_NOTHING = null;//$_MSJ_NOTHING = "Sin mensaje NOTHING";
+global $_MSJ_NOTHING;//$_MSJ_NOTHING = "Sin mensaje NOTHING";
 $G_YDATAS     = array();
 $G_ARR_COLOR  = array();
 $G_ARR_FILL_COLOR  = array();
@@ -501,7 +501,7 @@ function showError($msj, $G_SIZE = array(400,300) )
 
     $graph = new CanvasGraph($G_SIZE[0],$G_SIZE[1],"auto");    
 
-    $t1 = new Text( $_MSJ_NOTHING );
+    $t1 = new Text( $titulo );
     $t1->SetBox("white","black",true);
     $t1->ParagraphAlign("center");
     $t1->SetColor("black");
