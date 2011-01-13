@@ -100,7 +100,7 @@ function newRules($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, 
     $smarty->assign("SAVE", _tr("Save"));
     $smarty->assign("CANCEL", _tr("Cancel"));
     $smarty->assign("REQUIRED_FIELD", _tr("Required field"));
-    $smarty->assign("IMG", "images/list.png");
+    $smarty->assign("IMG", "modules/$module_name/images/firewall.png");
     $traffic = isset($arrValues['id_traffic']) ? $arrValues['id_traffic'] : "";
     $select_traffic_1 = ($traffic == "INPUT"  ) ? "selected" : "";
     $select_traffic_2 = ($traffic == "OUTPUT" ) ? "selected" : "";
@@ -510,6 +510,7 @@ function reportRules($smarty, $module_name, $local_templates_dir, &$pDB, $arrCon
     $oGrid->setLimit($limit);
     $oGrid->setTotal($total);
     $oGrid->setTitle(_tr("FireWall Rules"));
+    $oGrid->setIcon("/modules/$module_name/images/firewall.png");
     $oGrid->pagingShow(true);
     $offset = $oGrid->calculateOffset();
     $url    = "?menu=$module_name";
