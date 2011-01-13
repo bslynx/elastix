@@ -474,6 +474,7 @@ function reportRules($smarty, $module_name, $local_templates_dir, &$pDB, $arrCon
     $oFilterForm = new paloForm($smarty,array());
     //begin grid parameters
     $oGrid  = new paloSantoGrid($smarty);
+    $first_time = $pRules->isFirstTime();
     //$oGrid->setTplFile("$local_templates_dir/_list.tpl");
     $totalRules = $pRules->ObtainNumRules();
     $error ="";
@@ -504,7 +505,7 @@ function reportRules($smarty, $module_name, $local_templates_dir, &$pDB, $arrCon
     elseif($action == 'Desactivate'){
         $pRules->setDesactivated($id);
     }
-    $limit  = 20;
+    $limit  = 100;
     $total  = $totalRules;
     $oGrid->setLimit($limit);
     $oGrid->setTotal($total);
@@ -517,12 +518,18 @@ function reportRules($smarty, $module_name, $local_templates_dir, &$pDB, $arrCon
     $arrResult = $pRules->ObtainRules($limit,$offset);
     $button_eliminar = "<input class=\"button\" type=\"submit\" name=\"delete\" value=\""._tr("Delete")."\" ".
                        " onclick=\"return confirmSubmit('"._tr("Are you sure you wish to delete the Rule")."?');\" >";
-    $arrColumns = array($button_eliminar,_tr("Order"),_tr("Traffic"),_tr("Target"),_tr("Interface"),_tr("IP Source"),_tr("IP Destiny"),_tr("Protocol"),_tr("Details"),"","");
+    if($first_time)
+        $arrColumns = array("",_tr("Order"),_tr("Traffic"),_tr("Target"),_tr("Interface"),_tr("IP Source"),_tr("IP Destiny"),_tr("Protocol"),_tr("Details"));
+    else
+        $arrColumns = array($button_eliminar,_tr("Order"),_tr("Traffic"),_tr("Target"),_tr("Interface"),_tr("IP Source"),_tr("IP Destiny"),_tr("Protocol"),_tr("Details"),"","");
     $oGrid->setColumns($arrColumns);
     if(is_array($arrResult) && $total>0){
         foreach($arrResult as $key => $value){
-            $arrTmp[0] = "<input type='checkbox' name='id_".$value['id']."' />";
-            $arrTmp[1] = "<div id='div_$value[id]' style='width: 22px; font-size: 14pt;color:#E35332;float:left;text-align:right'>$value[rule_order] </div>"."<a href='javascript:void(0);' class='up' id='rulerup_$value[id]_$value[rule_order]'>"."<img src='modules/$module_name/images/up.gif' border=0 title='"._tr('Up')."'</a>"."<a href='javascript:void(0);' class='down' id='rulerdown_$value[id]_$value[rule_order]'>"."<img src='modules/$module_name/images/down.gif' border=0 title='"._tr('Down')."'</a>";
+            if(!$first_time)
+                $arrTmp[0] = "<input type='checkbox' name='id_".$value['id']."' />";
+            $arrTmp[1] = "<div id='div_$value[id]' style='width: 22px; font-size: 14pt;color:#E35332;float:left;text-align:right'>$value[rule_order] </div>";
+            if(!$first_time)
+                $arrTmp[1].="<a href='javascript:void(0);' class='up' id='rulerup_$value[id]_$value[rule_order]'>"."<img src='modules/$module_name/images/up.gif' border=0 title='"._tr('Up')."'</a>"."<a href='javascript:void(0);' class='down' id='rulerdown_$value[id]_$value[rule_order]'>"."<img src='modules/$module_name/images/down.gif' border=0 title='"._tr('Down')."'</a>";
             if($value['traffic'] == "INPUT"){
                 $image = "modules/$module_name/images/fw_input.gif";
                 $title = _tr("INPUT");
@@ -558,18 +565,19 @@ function reportRules($smarty, $module_name, $local_templates_dir, &$pDB, $arrCon
             else if($value['protocol'] == "TCP" || $value['protocol'] == "UDP")
                 $arrTmp[8] = _tr("Source Port").": $value[sport]"."<br />"._tr("Destiny Port").": $value[dport]";
             else
-                $arrTmp[8] = "";            
-            if($value['activated'] == 1){
-                $image = "modules/$module_name/images/foco_on.gif";
-                $activated = "Desactivate";
+                $arrTmp[8] = "";
+            if(!$first_time){            
+                if($value['activated'] == 1){
+                    $image = "modules/$module_name/images/foco_on.gif";
+                    $activated = "Desactivate";
+                }
+                else{
+                    $image = "modules/$module_name/images/foco_off.gif";
+                    $activated = "Activate";
+                }
+                $arrTmp[9] = "&nbsp;<a href='?menu=$module_name&action=".$activated."&id=".$value['id']."'>"."<img src='$image' border=0 title='"._tr($activated)."'</a>";
+                $arrTmp[10] = "&nbsp;<a href='?menu=$module_name&action=edit&id=".$value['id']."'>"."<img src='modules/$module_name/images/edit.gif' border=0 title='"._tr('Edit')."'</a>";
             }
-            else{
-                $image = "modules/$module_name/images/foco_off.gif";
-                $activated = "Activate";
-            }
-            $arrTmp[9] = "&nbsp;<a href='?menu=$module_name&action=".$activated."&id=".$value['id']."'>"."<img src='$image' border=0 title='"._tr($activated)."'</a>";
-            $arrTmp[10] = "&nbsp;<a href='?menu=$module_name&action=edit&id=".$value['id']."'>"."<img src='modules/$module_name/images/edit.gif' border=0 title='"._tr('Edit')."'</a>";
-            
             $arrData[] = $arrTmp;
         }
     //    $arrData[] = array("ctrl" => "separator_line", "start" => 0);
@@ -577,13 +585,15 @@ function reportRules($smarty, $module_name, $local_templates_dir, &$pDB, $arrCon
     }
     $oGrid->setData($arrData);
     $smarty->assign("new", _tr("New Rule"));
-    if($pRules->isFirstTime()){
+    if($first_time){
         $mensaje = _tr("Your system is a new installation. It is recommended to activate the firewall rules");
         $mensaje2 = _tr("Activate FireWall");
+        $smarty->assign("DISPLAY_BUTTON", "display:none;");
     }
     else{
         $mensaje = _tr("You have made changes to the definition of firewall rules, for this to take effect in the system press the next button");
         $mensaje2 = _tr("Save Changes");
+        $smarty->assign("DISPLAY_BUTTON", "");
     }
     $smarty->assign("exec", $mensaje2);
     if($pRules->isExecutedInSystem()){
