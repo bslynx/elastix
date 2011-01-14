@@ -27,6 +27,20 @@
   +----------------------------------------------------------------------+
   $Id: index.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
 
+require_once "libs/misc.lib.php";
+
+if(!function_exists("getParameter")){
+    function getParameter($parameter)
+    {
+        if(isset($_POST[$parameter]))
+            return $_POST[$parameter];
+        else if(isset($_GET[$parameter]))
+            return $_GET[$parameter];
+        else
+            return null;
+    }
+}
+
 function _moduleContent(&$smarty, $module_name)
 {
     //include module files
@@ -107,12 +121,24 @@ function _moduleContent(&$smarty, $module_name)
 
 	if (isset($_POST['Actualizar'])) {
 //		print '<pre>';print_r($_POST);print '</pre>';
+             
+        $date = getParameter("date");
+        $date = translateDate($date);
+        $date = split("-",$date);
+        $month = "";
+        $year = "";
+        $day = "";
 
+        if(isset($date[0]) && isset($date[1]) && isset($date[2])){
+            $month = $date[1];
+            $day = $date[2];
+            $year = $date[0];
+        }
 		// Validación básica
 		$listaVars = array(
-			'ServerDate_Year'	=>	'^[[:digit:]]{4}$',
-			'ServerDate_Month'	=>	'^[[:digit:]]{1,2}$',
-			'ServerDate_Day'	=>	'^[[:digit:]]{1,2}$',
+			//'ServerDate_Year'	=>	'^[[:digit:]]{4}$',
+            //'ServerDate_Month'	=>	'^[[:digit:]]{1,2}$',
+			//'ServerDate_Day'	=>	'^[[:digit:]]{1,2}$',
 			'ServerDate_Hour'	=>	'^[[:digit:]]{1,2}$',
 			'ServerDate_Minute'	=>	'^[[:digit:]]{1,2}$',
 			'ServerDate_Second'	=>	'^[[:digit:]]{1,2}$',
@@ -123,7 +149,13 @@ function _moduleContent(&$smarty, $module_name)
 				$bValido = FALSE;
 			}
 		}
-		if ($bValido && !checkdate($_POST['ServerDate_Month'], $_POST['ServerDate_Day'], $_POST['ServerDate_Year'])) $bValido = FALSE;
+        if(!ereg('^[[:digit:]]{4}$',$year))
+            $bValido = FALSE;
+        if(!ereg('^[[:digit:]]{1,2}$',$month))
+            $bValido = FALSE;
+        if(!ereg('^[[:digit:]]{1,2}$',$day))
+            $bValido = FALSE;
+		if ($bValido && !checkdate($month, $day, $year)) $bValido = FALSE;
 		
 		// Validación de zona horaria nueva
 		$sZonaNueva = $_POST['TimeZone'];
@@ -211,7 +243,7 @@ function _moduleContent(&$smarty, $module_name)
 			// Para que funcione esto, se requiere agregar a /etc/sudoers lo siguiente:
 			// asterisk ALL = NOPASSWD: /bin/date
             $fecha = sprintf('%04d-%02d-%02d %02d:%02d:%02d', 
-            	$_POST['ServerDate_Year'], $_POST['ServerDate_Month'], $_POST['ServerDate_Day'],
+            	$year, $month, $day,
             	$_POST['ServerDate_Hour'], $_POST['ServerDate_Minute'], $_POST['ServerDate_Second']);
             $cmd = "/usr/bin/sudo -u root /bin/date -s '$fecha' 2>&1";
             $output=$ret_val="";
@@ -227,12 +259,12 @@ function _moduleContent(&$smarty, $module_name)
     $sContenido = '';
 
 //    $smarty->assign("COMBO_FECHA_HORA",/*$combo_fecha_hora*/ 'gato' );
-    $mes = date("m",time())-1;
+    $mes = date("m",time());
     $smarty->assign("CURRENT_DATETIME", strftime("%Y,$mes,%d,%H,%M,%S",time()));
     $smarty->assign("MES_ACTUAL", ucwords(strftime("%B",time())));
     $smarty->assign('LISTA_ZONAS', $listaZonas);
     $smarty->assign('ZONA_ACTUAL', $sZonaActual);
-
+    $smarty->assign("CURRENT_DATE",strftime("%d %b %Y",time()));
 	$sContenido .= $oForm->fetchForm("$local_templates_dir/time.tpl", _tr('Date and Time Configuration'), $_POST);
 	return $sContenido;
 }

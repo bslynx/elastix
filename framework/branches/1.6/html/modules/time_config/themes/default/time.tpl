@@ -14,7 +14,7 @@ var datestring2=formatear_long2(serv_date2.getDate())+", "+serv_date2.getFullYea
 var timestring2=formatear_long2(serv_date2.getHours())+":"+formatear_long2(serv_date2.getMinutes())+":"+formatear_long2(serv_date2.getSeconds())
 
 document.getElementById("SERVER_TIME").innerHTML=datestring2+" "+timestring2;
-document.getElementById("servertime").innerHTML=datestring2+" "+timestring2;
+//document.getElementById("servertime").innerHTML=datestring2+" "+timestring2;
 }
 {/literal}
 
@@ -44,12 +44,11 @@ setInterval("displaytime2()", 1000);
 
           <tr> 
             <td width="15%"><b>{$INDEX_HORA_SERVIDOR}:</b></td>
-            <td>{$MES_ACTUAL} <span id="SERVER_TIME" align='right'>16, 2006 18:35:09</span></td>
+            <td>{$MES_ACTUAL} <span id="SERVER_TIME" align='right'></span></td>
           </tr>
           <tr>
             <td width="15%"><b>{$TIME_NUEVA_FECHA}:</b></td>
-            <td>{html_select_date prefix="ServerDate_" start_year="2000" end_year="+10" field_order="YMD"}
-            </td>
+            <td><input type="text" name="date" id="datepicker" value="{$CURRENT_DATE}" style = "width: 10em; color: rgb(136, 68, 0); background-color: rgb(250, 250, 250); border: 1px solid rgb(153, 153, 153); text-align: center;" READONLY>
           </tr>
           <tr>
             <td width="15%"><b>{$TIME_NUEVA_HORA}:</b></td>
