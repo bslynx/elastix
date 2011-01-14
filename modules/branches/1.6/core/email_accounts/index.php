@@ -520,7 +520,7 @@ function edit_email_account($pDB,$error)
     if (isset($_POST['password1']) && trim($_POST['password1'])!="")
     {   
         $username=$_POST['username'];
-        $bool=crear_usuario_correo_sistema("",$username,$_POST['password1'],$error,FALSE); //False al final para indicar que no cree virtual
+        $bool=crear_usuario_correo_sistema($username,$username,$_POST['password1'],$error,FALSE); //False al final para indicar que no cree virtual
         if(!$bool){
           $error_pwd=$arrLang["Password could not be changed"];
         }
