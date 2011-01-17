@@ -1,0 +1,21 @@
+.time{
+	width:25%;
+	float:right;
+   /*visibility: hidden;*/
+}
+
+.time2{
+	width:25%;
+	float:left;
+	/*padding-right:1px;*/
+   /*visibility: hidden;*/
+}
+
+#textfield{
+	/*padding-right:1px;*/
+	display:none;
+}
+
+#duration{
+	/*padding-right:1px;*/
+}

@@ -32,6 +32,7 @@
   $Id: ca.lang,v 1.5 2008/02/17 11:45:00 bmacias Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
+"billing_report" => "billing_report",
 "Start Date" => "Data Inici",
 "End Date" => "Data Fi",
 "Field Name" => "Nom del Camp",
@@ -48,5 +49,13 @@ $arrLangModule=array(
 "Duration" => "Duració",
 "Filter" => "Filtrar",
 "Field" => "Camp",
+"Rate Value" => "Rate Value",
+"Trunk" => "Trunk",
+"default" => "default",
+"Unknown" => "Unknown",
+"horas" => "horas",
+"minutos" => "minutos",
+"segundos" => "segundos",
+"Account Code" => "Account Code",
 );
 ?>

@@ -1,8 +1,8 @@
 <?php
-/* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
+  /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.0                                                  |
+  | Elastix version 2.0.0-12                                               |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -24,28 +24,30 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
-  |                                                                      |
-  | Translate by: Bruno Macias                                           |
-  | Email: bmacias@palosanto.com                                         |
   +----------------------------------------------------------------------+
-  $Id: en.lang,v 1.7 2008/02/18 09:49:00 bmacias Exp $ */
+  $Id: en.lang,v 1.1 2010-01-15 01:01:20 Eduardo Cueva ecueva@palosanto.com Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Start Date"=>"Start Date",
-"End Date"=>"End Date",
-"Field Name"=>"Field Name",
-"Channel"=>"Channel",
+"billing_report" => "billing_report",
+"Start_Date"=>"Start Date",
+"End_Date"=>"End Date",
+"Channel" => "Channel",
 "Billing Report"=>"Billing Report",
-"Duration in seconds"=>"Duration in seconds",
-"Cost"=>"Cost",
-"Summary Cost"=>"Summary Cost",
-"Rate Applied"=>"Rate Applied",
-"Date"=>"Date",
-"Source"=>"Source",
-"Destination"=>"Destination",
-"Dst. Channel"=>"Dst. Channel",
-"Duration"=>"Duration",
-"Filter"=>"Filter",
-"Field"=>"Field",
+"Cost" => "Cost",
+"Summary Cost" => "Summary Cost",
+"Rate Applied" => "Rate Applied",
+"Date" => "Date",
+"Source" => "Source",
+"Destination" => "Destination",
+"Dst. Channel" => "Dst. Channel",
+"Duration" => "Duration",
+"Rate Value" => "Rate Value",
+"Trunk" => "Trunk",
+"default" => "default",
+"Unknown" => "Unknown",
+"horas" => "horas",
+"minutos" => "minutos",
+"segundos" => "segundos",
+"Account Code" => "Account Code",
 );
 ?>

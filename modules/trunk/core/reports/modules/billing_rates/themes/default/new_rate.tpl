@@ -1,4 +1,4 @@
-<form method="POST" action="?menu=billing_rates">
+<form method="POST" action="?menu={$module_name}">
 <table width="99%" border="0" cellspacing="0" cellpadding="0" align="center">
 <tr class="moduleTitle">
   <td class="moduleTitle" valign="middle">&nbsp;&nbsp;<img src="images/1x1.gif" border="0" align="absmiddle">&nbsp;&nbsp;{$title}</td>
@@ -8,16 +8,8 @@
     <table width="100%" cellpadding="4" cellspacing="0" border="0">
       <tr>
         <td align="left">
-          {if $mode eq 'input'}
           <input class="button" type="submit" name="submit_save_rate" value="{$SAVE}" >
-          <input class="button" type="submit" name="cancel" value="{$CANCEL}"></td>
-          {elseif $mode eq 'edit'}
-          <input class="button" type="submit" name="submit_apply_changes" value="{$APPLY_CHANGES}" >
-          <input class="button" type="submit" name="cancel" value="{$CANCEL}"></td>
-          {else}
-          <input class="button" type="submit" name="edit" value="{$EDIT}">
-          <input class="button" type="submit" name="delete" value="{$DELETE}"  onClick="return confirmSubmit('{$CONFIRM_CONTINUE}')"></td>
-          {/if}          
+          <input class="button" type="submit" name="cancel" value="{$CANCEL}"></td> 
         <td align="right" nowrap><span class="letra12"><span  class="required">*</span> {$REQUIRED_FIELD}</span></td>
      </tr>
    </table>
@@ -27,19 +19,20 @@
   <td>
     <table width="100%" border="0" cellspacing="0" cellpadding="0" class="tabForm">
       <tr>
-	<td width="15%">{$prefix.LABEL}: <span  class="required">*</span></td>
-	<td width="25%">{$prefix.INPUT}</td>
-	<td>{$rate.LABEL}: <span  class="required">*</span></td>
-	<td>{$rate.INPUT}</td>
+			<td width="15%">{$Prefix.LABEL}: <span  class="required">*</span></td>
+			<td width="25%">{$Prefix.INPUT}</td>
+			<td>{$Rate.LABEL} {$by_min}:<span  class="required">*</span></td>
+			<td><b><a href="index.php?menu=currency" style="text-decoration:none;">{$currency}</a>&nbsp;</b>{$Rate.INPUT}</td>
+			<td>{$Hidden_Digits.LABEL}: <span  class="required">*</span></td>
+			<td>{$Hidden_Digits.INPUT}</td>
       </tr>
       <tr>
-	<td>{$name.LABEL}: <span  class="required">*</span></td>
-	<td>{$name.INPUT}</td>
-
-	<td>{$rate_offset.LABEL}: <span  class="required">*</span></td>
-	<td>{$rate_offset.INPUT}</td>
-        <td>{$trunk.LABEL}: <span  class="required">*</span></td>
-        <td>{$trunk.INPUT}</td>
+			<td>{$Name.LABEL}: <span  class="required">*</span></td>
+			<td>{$Name.INPUT}</td>
+			<td>{$Rate_offset.LABEL}: <span  class="required">*</span></td>
+			<td><b><a href="index.php?menu=currency" style="text-decoration:none;">{$currency}</a>&nbsp;</b>{$Rate_offset.INPUT}</td>
+			<td>{$Trunk.LABEL}: <span  class="required">*</span></td>
+			<td>{$Trunk.INPUT}</td>
       </tr>
     </table>
   </td>

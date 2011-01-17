@@ -28,6 +28,7 @@
   $Id: cn.lang,v 1.6 2007/09/05 00:36:42 gcarrillo Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
+"billing_report" => "billing_report",
 "Start Date" => "开始日期",
 "End Date" => "结束日期",
 "Field Name" => "项目名称",
@@ -44,5 +45,13 @@ $arrLangModule=array(
 "Duration" => "有效期限",
 "Filter" => "过滤器",
 "Field" => "项目",
+"Rate Value" => "Rate Value",
+"Trunk" => "Trunk",
+"default" => "default",
+"Unknown" => "Unknown",
+"horas" => "horas",
+"minutos" => "minutos",
+"segundos" => "segundos",
+"Account Code" => "Account Code",
 );
 ?>

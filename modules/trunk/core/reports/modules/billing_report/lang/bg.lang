@@ -31,6 +31,7 @@
   $Id: bg.lang, October 25, 2010, 6:07 pm kleber andres loayza Exp $ */
 global $arrLangModule;
 $arrLangModule=array(  
+"billing_report" => "billing_report",
 "Start Date" => "Начална Дата",
 "End Date" => "Крайна Дата",
 "Field Name" => "Име на Полето",
@@ -47,6 +48,13 @@ $arrLangModule=array(
 "Duration" => "Продължителност",
 "Filter" => "Филтър",
 "Field" => "По",
-
+"Rate Value" => "Rate Value",
+"Trunk" => "Trunk",
+"default" => "default",
+"Unknown" => "Unknown",
+"horas" => "horas",
+"minutos" => "minutos",
+"segundos" => "segundos",
+"Account Code" => "Account Code",
 );
 ?>

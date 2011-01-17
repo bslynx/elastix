@@ -30,7 +30,8 @@
   +----------------------------------------------------------------------+
   $Id: fr.lang, October 25, 2010, 5:39 pm kleber andres loayza Exp $ */
 global $arrLangModule;
-$arrLangModule=array(  
+$arrLangModule=array( 
+ "billing_report" => "billing_report",
 "Start Date" => "Du",
 "End Date" => "Au",
 "Field Name" => "Nom du champ",
@@ -47,6 +48,14 @@ $arrLangModule=array(
 "Duration" => "Durée",
 "Filter" => "Filtre",
 "Field" => "Champ",
+"Rate Value" => "Rate Value",
+"Trunk" => "Trunk",
+"default" => "default",
+"Unknown" => "Unknown",
+"horas" => "horas",
+"minutos" => "minutos",
+"segundos" => "segundos",
+"Account Code" => "Account Code",
 
 );
 ?>

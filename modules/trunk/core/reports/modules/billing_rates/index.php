@@ -1,8 +1,8 @@
 <?php
-/* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
+  /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.5                                                  |
+  | Elastix version 2.0.0-12                                               |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,17 +25,23 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: index.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
+  $Id: index.php,v 1.1 2010-01-27 02:01:42 Eduardo Cueva ecueva@palosanto.com Exp $ */
+//include elastix framework
+include_once "libs/paloSantoGrid.class.php";
+include_once "libs/paloSantoForm.class.php";
+include_once "libs/paloSantoTrunk.class.php";
+include_once "libs/paloSantoRate.class.php";
+include_once "libs/misc.lib.php";
 
 function _moduleContent(&$smarty, $module_name)
 {
-    include_once "libs/paloSantoGrid.class.php";
-    include_once "libs/paloSantoRate.class.php";
-    include_once "libs/paloSantoTrunk.class.php";
-    
-   //include module files
+    //include module files
     include_once "modules/$module_name/configs/default.conf.php";
-    
+    include_once "modules/$module_name/libs/paloSantoBillingRates.class.php";
+
+
+    //include file language agree to elastix configuration
+    //if file language not exists, then include language by default (en)
     $lang=get_language();
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
     $lang_file="modules/$module_name/lang/$lang.lang";
@@ -50,302 +56,888 @@ function _moduleContent(&$smarty, $module_name)
     $arrConf = array_merge($arrConf,$arrConfModule);
     $arrLang = array_merge($arrLang,$arrLangModule);
 
-
     //folder path for custom templates
-    $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
     $templates_dir=(isset($arrConf['templates_dir']))?$arrConf['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
-    
-    $pDB = new paloDB($arrConf['dsn_conn_database']);
-    $pDBTrunk = new paloDB("sqlite3:///$arrConf[elastix_dbdir]/trunk.db");
-    $oTrunk   = new paloTrunk($pDBTrunk);
-    $arrTrunksBill['None']=$arrLang['None'];
-    foreach ($oTrunk->getTrunksBill() as $trunk) $arrTrunksBill[$trunk]=$trunk;
-    if(!empty($pDB->errMsg)) {
-        echo "ERROR DE DB: $pDB->errMsg <br>";
+
+    //conexion resource
+    $pDB  = new paloDB($arrConf['dsn_conn_database']);   // connection with rate.db
+    $pDB2 = new paloDB($arrConf['dsn_conn_database2']);  // connection with trunk.db
+	$pDB3 = new paloDB($arrConf['dsn_conn_database3']);  // connection with settings.db
+	 
+
+    //actions
+    $action = getAction(); 
+    $content = "";
+    switch($action){
+		case "new_rate":
+			    $content = reportBillingNewRate($smarty, $module_name, $local_templates_dir, $pDB, $pDB2, $pDB3, $arrConf, $arrLang);
+                break;
+		case "import_rate":
+				$content = reportBillingImportRate($smarty, $module_name, $local_templates_dir, $pDB, $pDB2, $pDB3, $arrConf, $arrLang);
+                break;
+        case "view_form":
+			    $content = reportBillingViewRate($smarty, $module_name, $local_templates_dir, $pDB, $pDB2, $pDB3, $arrConf, $arrLang);
+				break;
+        case "edit_form":
+			    $content = reportBillingEditRate($smarty, $module_name, $local_templates_dir, $pDB, $pDB2, $pDB3, $arrConf, $arrLang);
+				break;
+        case "save_new":
+                $content = obtainResultOperationRate($smarty, $module_name, $local_templates_dir, $pDB, $pDB2, $pDB3, $arrConf, $arrLang);
+                break;
+        case "delete":
+                $content = obtainResultOperationRate($smarty, $module_name, $local_templates_dir, $pDB, $pDB2, $pDB3, $arrConf, $arrLang);
+                break;
+        case "save_import":
+                $content = obtainResultOperationRate($smarty, $module_name, $local_templates_dir, $pDB, $pDB2, $pDB3, $arrConf, $arrLang);
+                break;
+        case "save_edit":
+                $content = obtainResultOperationRate($smarty, $module_name, $local_templates_dir, $pDB, $pDB2, $pDB3, $arrConf, $arrLang);
+                break;
+        default:
+            $content = reportBillingRates($smarty, $module_name, $local_templates_dir, $pDB, $pDB2, $pDB3, $arrConf, $arrLang);
+            break;
     }
+    return $content;
+}
 
-    $arrData = array();
-    $pRate = new paloRate($pDB);
-    if(!empty($pRate->errMsg)) {
-        echo "{$arrLang["ERROR"]}: {$arrLang[$pRate->errMsg]} <br>";
-    }
+function reportBillingRates($smarty, $module_name, $local_templates_dir, &$pDB, &$pDB2, &$pDB3, $arrConf, $arrLang)
+{
+    $pBillingRates = new paloSantoBillingRates($pDB);
+    $action = getParameter("nav");
+    $start  = getParameter("start");
+    $as_csv = getParameter("exportcsv");
+    $arrResult  = "";
+    $arrColumns = "";
+	 //obtain parameters from new rates
+	$prefix_new      = getParameter("Prefix");
+	$name_new        = getParameter("Name");
+	$rate_new        = getParameter("Rate");
+	$rate_offset_new = getParameter("Rate_offset");
+	$trunk_new       = getParameter("Trunk");
+	$hidden_digits   = getParameter("Hidden_Digits");
+	$id              = getParameter("id");
+    $edit            = getParameter("edit");
+	 
+	 	 //exists Default rate in rate.db // actualizar los rates por defecto en settings
+	//$pBillingRates->existsDefaultRate($pDB3);
 
-    $arrFormElements = array(
-                             "prefix"       => array("LABEL"                   => $arrLang["Prefix"],
-                                                     "REQUIRED"               => "yes",
-                                                     "INPUT_TYPE"             => "TEXT",
-                                                     "INPUT_EXTRA_PARAM"      => "",
-                                                     "VALIDATION_TYPE"        => "numeric",
-                                                     "VALIDATION_EXTRA_PARAM" => "",
-                                                     "EDITABLE"               => "no"),
-                             "name"         => array("LABEL"                   => $arrLang["Name"],
-                                                     "REQUIRED"               => "yes",
-                                                     "INPUT_TYPE"             => "TEXT",
-                                                     "INPUT_EXTRA_PARAM"      => "",
-                                                     "VALIDATION_TYPE"        => "text",
-                                                     "VALIDATION_EXTRA_PARAM" => ""),
-                             "rate"         => array("LABEL"                   => $arrLang["Rate"].$arrLang['(by min)'],
-                                                     "REQUIRED"               => "yes",
-                                                     "INPUT_TYPE"             => "TEXT",
-                                                     "INPUT_EXTRA_PARAM"      => "",
-                                                     "VALIDATION_TYPE"        => "float",
-                                                     "VALIDATION_EXTRA_PARAM" => ""),
-                             "rate_offset"  => array("LABEL"                   => $arrLang["Rate Offset"],
-                                                     "REQUIRED"               => "yes",
-                                                     "INPUT_TYPE"             => "TEXT",
-                                                     "INPUT_EXTRA_PARAM"      => "",
-                                                     "VALIDATION_TYPE"        => "float",
-                                                     "VALIDATION_EXTRA_PARAM" => ""),
-                             "trunk"        => array("LABEL"                   => $arrLang["Trunk"],
-                                                     "REQUIRED"               => "yes",
-                                                     "INPUT_TYPE"             => "SELECT",
-                                                     "INPUT_EXTRA_PARAM"      => $arrTrunksBill,
-                                                     "VALIDATION_TYPE"        => "text",
-                                                     "VALIDATION_EXTRA_PARAM" => ""),
-                             "importcsv"    => array("LABEL"                   => $arrLang["Import File"],
-                                                     "REQUIRED"               => "yes",
-                                                     "INPUT_TYPE"             => "FILE",
-                                                     "INPUT_EXTRA_PARAM"      => "",
-                                                     "VALIDATION_TYPE"        => "filename",
-                                                     "VALIDATION_EXTRA_PARAM" => "")
-                         );
+	$action = getAction();
 
-    $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
-    $smarty->assign("CANCEL", $arrLang["Cancel"]);
-    $smarty->assign("APPLY_CHANGES", $arrLang["Apply changes"]);
-    $smarty->assign("SAVE", $arrLang["Save"]);
-    $smarty->assign("EDIT", $arrLang["Edit"]);
-    $smarty->assign("DELETE", $arrLang["Delete"]);
-    $smarty->assign("CONFIRM_CONTINUE", $arrLang["Are you sure you wish to continue?"]);
+    //begin grid parameters
+    $oGrid  = new paloSantoGrid($smarty);
+    $totalBillingRates = $pBillingRates->getNumBillingRates();
 
-    if(isset($_POST['rate_offset']) && $_POST['rate_offset']!="" && $_POST['rate_offset']==0) $_POST['rate_offset']='0.0';
-    if(isset($_POST['submit_create_rate'])) {
-         //AGREGAR NUEVA TARIFA
-        include_once("libs/paloSantoForm.class.php");
-        $arrFillUser['prefix']      = '';
-        $arrFillUser['name']        = '';
-        $arrFillUser['rate']        = '';
-        $arrFillUser['rate_offset'] = '';
-        $arrFillUser['trunk']       = '';
-        $oForm = new paloForm($smarty, $arrFormElements);
-        $contenidoModulo=$oForm->fetchForm("$local_templates_dir/new_rate.tpl", $arrLang["New Rate"],$arrFillUser);
+    $url = array(
+        'menu' =>  $module_name,
+    );
+    //$oGrid->enableExport();   // enable csv export.
+    $oGrid->pagingShow(true); // show paging section.
+    $oGrid->setTitle(_tr("Billing Rates"));
+    $oGrid->setNameFile_Export("Billing_Rates");
+    $oGrid->setURL($url);
 
-    } else if(isset($_POST['edit'])) {
-        //EDITAR TARIFA
-        // Tengo que recuperar los datos del rate
-        $arrRate = $pRate->getRates($_POST['id_rate']);
-        $arrFillUser['prefix']      = $arrRate[0][1];
-        $arrFillUser['name']        = $arrRate[0][2];
-        $arrFillUser['rate']        = $arrRate[0][3];
-        $arrFillUser['rate_offset'] = $arrRate[0][4];
-        $arrFillUser['trunk']       = $arrRate[0][5];
 
-        // Implementar
-        include_once("libs/paloSantoForm.class.php");
+    $smarty->assign("module_name", $module_name);
 
-        $oForm = new paloForm($smarty, $arrFormElements);
-        $oForm->setEditMode();
-        $smarty->assign("id_rate", $_POST['id_rate']);
-        $contenidoModulo=$oForm->fetchForm("$local_templates_dir/new_rate.tpl", "{$arrLang['Edit Rate']} \"" . $arrFillUser['name'] . "\"", $arrFillUser);
+    $arrData = null; 
 
-    } else if(isset($_POST['submit_import_rate'])) {
-        include_once("libs/paloSantoForm.class.php");
-
-        $oForm = new paloForm($smarty, $arrFormElements);
-        $contenidoModulo=$oForm->fetchForm("$local_templates_dir/import_rate.tpl", $arrLang["Import File"], $_POST);
-
-    } else if(isset($_POST['submit_import_changes'])) {
-        include_once("libs/paloSantoForm.class.php");
-        $oForm = new paloForm($smarty, $arrFormElements);
-    $pRate = new paloRate($pDB);
-
-    if (is_uploaded_file($_FILES['importcsv']['tmp_name'])) {
-        $contenido_archivo=file($_FILES['importcsv']['tmp_name']);
-        $count=0;
-        foreach ($contenido_archivo as $linea)
-                {
-                                $count++;
-                $rate_val=explode(';',$linea);
-                $record=array('prefix'      => $rate_val[0], 
-                                              'name'        => $rate_val[1],
-                                              'rate'        => $rate_val[2], 
-                                              'rate_offset' => ($rate_val[3]==0?'0.0':$rate_val[3]), 
-                                              'trunk'       => trim($rate_val[4]));
-                             //if no validation error             insert record         or        add error message
-            if($oForm->validateForm($record)) 
-                        {
-                                   if(!$pRate->createRate($rate_val[0],$rate_val[1],$rate_val[2],$rate_val[3],trim($rate_val[4])))
-                                   if(!empty($pRate->errMsg)) $arrErrorMsg['Insert Error'][$count]=$arrLang[$pRate->errMsg];
-                        } else $arrErrorMsg[$arrLang["Validation Error"]][$count]=$oForm->arrErroresValidacion;
+    if($oGrid->isExportAction()) {
+        $limit  = $totalBillingRates;
+        $offset = 0;
+        $arrResult = $pBillingRates->getBillingRates($limit, $offset);
+        if(is_array($arrResult) && $totalBillingRates>0){
+            foreach($arrResult as $key => $value){
+                $arrTmp[0] = (isset($value['prefix'])&$value['prefix']!="")?$value['prefix']:"*";
+                $arrTmp[1] = (isset($value['name'])&$value['name']!="")?$value['name']:"-";
+                $arrTmp[2] = (isset($value['rate'])&$value['rate']!="")?$value['rate']:"-";
+                $arrTmp[3] = (isset($value['rate_offset'])&$value['rate_offset']!="")?$value['rate_offset']:"-";
+                $arrTmp[4] = (isset($value['hided_digits'])&$value['hided_digits']!="")?$value['hided_digits']:"-";
+                $arrTmp[5] = (isset($value['trunk'])&$value['trunk']!="")?$value['trunk']:"*";
+                $arrTmp[6] = (isset($value['fecha_creacion'])&$value['fecha_creacion']!="")?$value['fecha_creacion']:"-";
+                $arrData[] = $arrTmp;
+            }
+        }
+        $arrColumns  = array(_tr("Prefix"), _tr("Name"), _tr("Rate"), _tr("Rate Offset"), _tr("Hidden_Digits"), _tr("Trunk"),_tr("Creation Date"));
+    }else{
+        $limit  = 20;
+        $oGrid->setLimit($limit);
+        $oGrid->setTotal($totalBillingRates);
+        $offset = $oGrid->calculateOffset();
+        $arrResult = $pBillingRates->getBillingRates($limit, $offset);
+        if(is_array($arrResult) && $totalBillingRates>0){
+            foreach($arrResult as $key => $value){
+			    if($value['name']=="Default"){
+				    $default = $arrLang['Default'];
+				    $arrTmp[0] = "<font color='green'>*</font>";
+				    $arrTmp[1] = "<font color='green'>".$default."</font>";
+				    $arrTmp[2] = "<font color='green'>".$value['rate']."</font>";
+				    $arrTmp[3] = "<font color='green'>".$value['rate_offset']."</font>";
+				    $arrTmp[4] = "<font color='green'>".$value['hided_digits']."</font>";
+				    $arrTmp[5] = "<font color='green'>*</font>";
+				    $arrTmp[6] = "<font color='green'>".$value['fecha_creacion']."</font>";
+				    $arrTmp[7] = "<a href='?menu=$module_name&action=view&id=".$value['id']."'>"._tr("View")."</a>";
+			    }else{
+				    $arrTmp[0] = $value['prefix'];
+				    $arrTmp[1] = $value['name'];
+				    $arrTmp[2] = $value['rate'];
+				    $arrTmp[3] = $value['rate_offset'];
+				    $arrTmp[4] = $value['hided_digits'];
+				    $arrTmp[5] = $value['trunk'];
+				    $arrTmp[6] = $value['fecha_creacion'];
+				    $arrTmp[7] = "<a href='?menu=$module_name&action=view&id=".$value['id']."'>"._tr("View")."</a>";
+			    }
+                $arrData[] = $arrTmp;
+            }
         }
 
-                $strErrorMsg='';
-                foreach ($arrErrorMsg as $Error_type => $on_line)
-                {
+        // arreglo de columnas
+        $arrColumns  = array(_tr("Prefix"), _tr("Name"), _tr("Rate"), _tr("Rate Offset"), _tr("Hidden_Digits"), _tr("Trunk"),_tr("Creation Date"),_tr("View"));
+    }
+
+    $oGrid->setColumns($arrColumns);
+    $oGrid->setData($arrData);
+
+    //begin section filter
+    $arrFormFilterBillingRates = createFieldFilter($arrLang);
+    $oFilterForm = new paloForm($smarty, $arrFormFilterBillingRates);
+    $smarty->assign("create_rate", _tr("create_rate"));
+    $smarty->assign("import_rate", _tr("import_rate"));
+    $smarty->assign("by_min",_tr("by_min"));
+    $smarty->assign("Date_close",_tr("Date close"));
+    $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl","",$_POST);
+    //end section filter
+
+    $oGrid->showFilter(trim($htmlFilter));
+    $content = $oGrid->fetchGrid();
+
+    return $content;
+}
+
+function reportBillingNewRate($smarty, $module_name, $local_templates_dir, &$pDB, &$pDB2, &$pDB3, $arrConf, $arrLang){
+	 
+    //begin, Form data persistence to errors and other events.
+    $_DATA  = $_POST;
+	 $pBillingRates = new paloSantoBillingRates($pDB); 
+	 $currency = $pBillingRates->getCurrency($pDB3);
+	 if($currency == null || $currency == ""){
+      $currency = "$";
+	 }
+	 $arrTrunks = $pBillingRates->getTrunks($pDB2); //obtain the trunks for billing
+	 $arrForm = createFormNew($arrLang,$arrTrunks);
+    $oForm = new paloForm($smarty,$arrForm);
+
+	 $smarty->assign("CANCEL", $arrLang["CANCEL"]);
+	 $smarty->assign("SAVE", $arrLang["SAVE"]);
+	 $smarty->assign("REQUIRED_FIELD", $arrLang["REQUIRED_FIELD"]);
+	 $smarty->assign("EDIT", $arrLang["EDIT"]);
+    $smarty->assign("DELETE", $arrLang["DELETE"]);
+	 $smarty->assign("module_name", $module_name);
+    $smarty->assign("currency", $currency);
+    $smarty->assign("by_min",$arrLang["by_min"]);
+    $smarty->assign("Date_close",_tr("Date close"));
+	/*
+        $smarty->assign("mb_message", $arrLang["Error Connection"]);
+*/
+
+    $htmlForm = $oForm->fetchForm("$local_templates_dir/new_rate.tpl",$arrLang["New_rate"], $_DATA);
+    $content  = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
+    return $content;
+
+}
+
+function reportBillingEditRate($smarty, $module_name, $local_templates_dir, &$pDB, &$pDB2, &$pDB3, $arrConf, $arrLang){
+	 //begin, Form data persistence to errors and other events.
+    $_DATA  = $_POST;
+    $id = getParameter("id");
+	 $pBillingRates = new paloSantoBillingRates($pDB); 
+	 $arrData = $pBillingRates->getBillingRatesById($id); //obtain the rate
+	 $arrTrunks = $pBillingRates->getTrunks($pDB2); //obtain the trunks for billing
+	 $arrForm = createEditForm($arrLang,$arrTrunks);
+    $oForm = new paloForm($smarty,$arrForm);
+	 $currency = $pBillingRates->getCurrency($pDB3);
+	 if($currency == null || $currency == ""){
+      $currency = "$";
+	 }
+	 $_DATA['Name'] = $arrData['name'];
+	 $_DATA['Rate'] = $arrData['rate'];
+	 $_DATA['Rate_offset'] = $arrData['rate_offset'];
+	 $_DATA['Hidden_Digits'] = $arrData['hided_digits'];
+	 $_DATA['Trunk'] = $arrData['trunk'];
+
+	 $smarty->assign("CANCEL", $arrLang["CANCEL"]);
+	 $smarty->assign("APPLY_CHANGES", $arrLang["APPLY_CHANGES"]);
+	 $smarty->assign("REQUIRED_FIELD", $arrLang["REQUIRED_FIELD"]);
+	 $smarty->assign("EDIT", $arrLang["EDIT"]);
+	 $smarty->assign("module_name", $module_name);
+	 $smarty->assign("prefix", $arrData['prefix']);
+	 $smarty->assign("rate", $arrData['rate']);
+	 $smarty->assign("creation_date", $arrData['fecha_creacion']);
+	 $smarty->assign("name", $arrData['name']);
+	 $smarty->assign("rate_offset", $arrData['rate_offset']);
+     $smarty->assign("trunk", $arrData['trunk']);
+	 $smarty->assign("currency", $currency);
+     $smarty->assign("by_min",$arrLang["by_min"]);
+     $smarty->assign("Date_close",_tr("Date close"));
+     $smarty->assign("Creation_Date",_tr("Creation Date"));
+     $smarty->assign("History",_tr("Rate History"));
+     $smarty->assign("Status",_tr("Status"));
+     $smarty->assign("Obsolete",_tr("Obsolete"));
+     $smarty->assign("Current",_tr("Current"));
+     $smarty->assign("text_info",_tr("This option allow to create a new rate and keep the history of their rates, or if not only edit the current rate values."));
+     $arrRates = $pBillingRates->getRatesPast($id);
+     $arrRates = setEmptySpaces($arrRates);
+     $smarty->assign("arrRates",$arrRates);
+
+     $htmlForm = $oForm->fetchForm("$local_templates_dir/edit_rate.tpl",$arrLang["Edit Rate"], $_DATA);
+     $content  = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name&id=$id&edit=".$arrData['name']."'>".$htmlForm."</form>";
+     return $content;
+
+}
+
+function reportBillingImportRate($smarty, $module_name, $local_templates_dir, &$pDB, &$pDB2, &$pDB3, $arrConf, $arrLang){
+	$_DATA  = $_POST;
+	$arrForm = createImportForm($arrLang);
+	$oForm = new paloForm($smarty,$arrForm);
+
+	$smarty->assign("CANCEL", $arrLang["CANCEL"]);
+	$smarty->assign("SAVE", $arrLang["SAVE"]);
+	$smarty->assign("REQUIRED_FIELD", $arrLang["REQUIRED_FIELD"]);
+	$smarty->assign("module_name", $module_name);
+    $smarty->assign("by_min",$arrLang["by_min"]);
+    $smarty->assign("alert_import",$arrLang["alert_import"]);
+	$htmlForm = $oForm->fetchForm("$local_templates_dir/import_rate.tpl",$arrLang["import_rate"], $_DATA);
+    $content  = "<form  method='POST' enctype='multipart/form-data' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
+    return $content;
+
+}
+
+function reportBillingViewRate($smarty, $module_name, $local_templates_dir, &$pDB, &$pDB2, &$pDB3, $arrConf, $arrLang){
+    //begin, Form data persistence to errors and other events.
+    $_DATA  = $_POST;
+    $id = getParameter("id");
+	 $pBillingRates = new paloSantoBillingRates($pDB); 
+	 $arrData = $pBillingRates->getBillingRatesById($id); //obtain the rate
+	 $arrForm = createViewForm($arrLang);
+    $oForm = new paloForm($smarty,$arrForm);
+	 $currency = $pBillingRates->getCurrency($pDB3);
+	 if($currency == null || $currency == ""){
+      $currency = "$";
+	 }
+	 if($arrData['trunk'] == null || $arrData['trunk'] == "")
+		$trunk = "*";
+	 else		$trunk = $arrData['trunk'];
+
+	 if($arrData['prefix'] == null || $arrData['prefix'] == "")
+		$prefix = "*";
+	 else		$prefix = $arrData['prefix'];
+	 $smarty->assign("CANCEL", $arrLang["CANCEL"]);
+	 $smarty->assign("SAVE", $arrLang["SAVE"]);
+	 $smarty->assign("REQUIRED_FIELD", $arrLang["REQUIRED_FIELD"]);
+	 $smarty->assign("EDIT", $arrLang["EDIT"]);
+     $smarty->assign("DELETE", $arrLang["DELETE"]);
+	 $smarty->assign("module_name", $module_name);
+	 $smarty->assign("prefix", $prefix);
+	 $smarty->assign("rate", $arrData['rate']);
+	 $smarty->assign("creation_date", $arrData['fecha_creacion']);
+	 $smarty->assign("name", $arrData['name']);
+	 $smarty->assign("rate_offset", $arrData['rate_offset']);
+     $smarty->assign("trunk", $trunk);
+	 $smarty->assign("hidden_digits", $arrData['hided_digits']);
+	 $smarty->assign("CONFIRM_CONTINUE", $arrLang['CONFIRM_CONTINUE']);
+	 $smarty->assign("currency", $currency);
+     $smarty->assign("by_min",$arrLang["by_min"]);
+     $smarty->assign("Date_close",_tr("Date close"));
+
+    $htmlForm = $oForm->fetchForm("$local_templates_dir/view_rate.tpl",$arrLang["View Rate"], $_DATA);
+    $content  = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name&id=$id'>".$htmlForm."</form>";
+    return $content;
+
+}
+
+function obtainResultOperationRate($smarty, $module_name, $local_templates_dir, &$pDB, &$pDB2, &$pDB3, $arrConf, $arrLang){
+    $_DATA  = $_POST;
+    $arrForm = createImportForm($arrLang);
+    $oForm = new paloForm($smarty,$arrForm);
+    $pBillingRates = new paloSantoBillingRates($pDB);
+
+     //obtain parameters from new rates
+     $prefix_new      = getParameter("Prefix");
+     $name_new        = getParameter("Name");
+     $rate_new        = getParameter("Rate");
+     $rate_offset_new = getParameter("Rate_offset");
+     $trunk_new       = getParameter("Trunk");
+     $hidden_digits   = getParameter("Hidden_Digits");
+     $id              = getParameter("id");
+     $edit            = getParameter("edit");
+     $varUpdate       = getParameter("checkUpdate");
+         //exists Default rate in rate.db
+     $pBillingRates->existsDefaultRate($pDB3);
+
+     $action = getAction();
+     //into to create new rate
+     if($action=="save_new"){
+            if($prefix_new!="" && $name_new!="" && $rate_new!="" && $rate_offset_new!=""){
+                $result = create_rate($pBillingRates,$prefix_new,$name_new,$rate_new,$rate_offset_new,$trunk_new,$hidden_digits);
+                if($result == "name"){
+                    $smarty->assign("mb_message", $arrLang["error_name"]);
+                    $content=reportBillingNewRate($smarty, $module_name, $local_templates_dir, $pDB, $pDB2, $pDB3, $arrConf, $arrLang);
+                    return $content;
+                }
+                if($result == "successful"){
+                    $smarty->assign("mb_message", $arrLang["create_new_rate"]);
+                    $content = reportBillingRates($smarty, $module_name, $local_templates_dir, $pDB, $pDB2, $pDB3, $arrConf, $arrLang);
+                    return $content;
+                }
+                if($result == "prefix"){
+                    $smarty->assign("mb_message", $arrLang["error_prefix"]);
+                    $content=reportBillingNewRate($smarty, $module_name, $local_templates_dir, $pDB, $pDB2, $pDB3, $arrConf, $arrLang);
+                    return $content;
+                }
+                if($result == "error"){
+                    $smarty->assign("mb_message", $arrLang["error"]);
+                    $content=reportBillingNewRate($smarty, $module_name, $local_templates_dir, $pDB, $pDB2, $pDB3, $arrConf, $arrLang);
+                    return $content;
+                }
+            }else{
+                //into to create new rate but the field are empty
+                    $smarty->assign("mb_message", $arrLang["Error_new"]);
+                    $content=reportBillingNewRate($smarty, $module_name, $local_templates_dir, $pDB, $pDB2, $pDB3, $arrConf, $arrLang);
+                    return $content;
+            }
+    }
+    //into to delete rate
+    if($action=="delete"){
+         $result = $pBillingRates->deleteRate($id);
+         if($result == true){
+             $smarty->assign("mb_message", $arrLang["deleted"]);
+             $content = reportBillingRates($smarty, $module_name, $local_templates_dir, $pDB, $pDB2, $pDB3, $arrConf, $arrLang);
+             return $content;
+         }
+         else{
+             $smarty->assign("mb_message", $arrLang["deleted_error"]);
+             $content = reportBillingViewRate($smarty, $module_name, $local_templates_dir, $pDB, $pDB2, $pDB3, $arrConf, $arrLang);
+             return $content;
+         }
+     }
+
+     if($action=="save_edit"){
+        //if($edit != 'Default'){
+            if($edit == 'Default'){
+                $trunk_new = isset($trunk_new)?$trunk_new:"";
+                $prefix_new = isset($prefix_new)?$prefix_new:"";
+                $name_new = isset($name_new)?$name_new:"Default";
+            }
+            if($name_new!="" && $rate_new!="" && $rate_offset_new!=""){
+                if($varUpdate == "on"){
+                    $rateOLD = $pBillingRates->getBillingRatesById($id);
+                    $prefix_new = $rateOLD['prefix'];
+                    $pDB->beginTransaction();
+                    $result = update_Last_rates($pBillingRates,$prefix_new,$name_new,$rate_new,$rate_offset_new,$trunk_new,$hidden_digits);// crea el rate nuevo
+                    if($result == "successful"){
+                        $id_new = $pDB->getLastInsertId();
+                        $result = $pBillingRates->updateIdParent($id, $id_new);// actualizamos los hijos anteriores al rate
+                        if($result){
+                            $result = $pBillingRates->deleteRate($id); // cerrando el anterior rate valido
+                            if($name_new == "Default"){
+                                $result = $pBillingRates->updateSettingRate($rate_new,$rate_offset_new, $pDB3);
+                                if($result){
+                                    $pDB->commit();
+                                    $smarty->assign("mb_message", $arrLang["edit_rate"]);
+                                    $content = reportBillingRates($smarty, $module_name, $local_templates_dir, $pDB, $pDB2, $pDB3, $arrConf, $arrLang);
+                                    return $content;
+                                }else{
+                                    $pDB->rollBack();
+                                    $smarty->assign("mb_message", $arrLang["errorUpdateParent"]);
+                                    $content = reportBillingEditRate($smarty, $module_name, $local_templates_dir, $pDB, $pDB2, $pDB3, $arrConf, $arrLang);
+                                    return $content;
+                                }
+                            }else{
+                                $pDB->commit();
+                                $smarty->assign("mb_message", $arrLang["edit_rate"]);
+                                $content = reportBillingRates($smarty, $module_name, $local_templates_dir, $pDB, $pDB2, $pDB3, $arrConf, $arrLang);
+                                return $content;
+                            }
+                        }
+                        $pDB->rollBack();
+                        $smarty->assign("mb_message", $arrLang["errorUpdateParent"]);
+                        $content = reportBillingEditRate($smarty, $module_name, $local_templates_dir, $pDB, $pDB2, $pDB3, $arrConf, $arrLang);
+                        return $content;
+
+                    }
+                    if($result == "error"){
+                        $smarty->assign("mb_message", $arrLang["error"]);
+                        $pDB->rollBack();
+                        $content = reportBillingEditRate($smarty, $module_name, $local_templates_dir, $pDB, $pDB2, $pDB3, $arrConf, $arrLang);
+                        return $content;
+                    }
+                }else{
+                    $pDB->beginTransaction();
+                    $result = edit_rate($pBillingRates,$id,$name_new,$rate_new,$rate_offset_new,$trunk_new,$hidden_digits);
+                    if($result == "prefix"){
+                        $smarty->assign("mb_message", $arrLang["error_prefix"]);
+                        $pDB->rollBack();
+                        $content = reportBillingEditRate($smarty, $module_name, $local_templates_dir, $pDB, $pDB2, $pDB3, $arrConf, $arrLang);
+                        return $content;
+                    }
+                    if($result == "name"){
+                        $smarty->assign("mb_message", $arrLang["error_name"]);
+                        $pDB->rollBack();
+                        $content = reportBillingEditRate($smarty, $module_name, $local_templates_dir, $pDB, $pDB2, $pDB3, $arrConf, $arrLang);
+                        return $content;
+                    }
+                    if($result == "successful"){
+                        if($name_new == "Default"){
+                            $result = $pBillingRates->updateSettingRate($rate_new,$rate_offset_new, $pDB3);
+                            if($result){
+                                $pDB->commit();
+                                $smarty->assign("mb_message", $arrLang["edit_rate"]);
+                                $content = reportBillingRates($smarty, $module_name, $local_templates_dir, $pDB, $pDB2, $pDB3, $arrConf, $arrLang);
+                                return $content;
+                            }else{
+                                $pDB->rollBack();
+                                $smarty->assign("mb_message", $arrLang["errorUpdateParent"]);
+                                $content = reportBillingEditRate($smarty, $module_name, $local_templates_dir, $pDB, $pDB2, $pDB3, $arrConf, $arrLang);
+                                return $content;
+                            }
+                        }else{
+                            $pDB->commit();
+                            $smarty->assign("mb_message", $arrLang["edit_rate"]);
+                            $content = reportBillingRates($smarty, $module_name, $local_templates_dir, $pDB, $pDB2, $pDB3, $arrConf, $arrLang);
+                            return $content;
+                        }
+                    }
+                    if($result == "error"){
+                        $smarty->assign("mb_message", $arrLang["error"]);
+                        $pDB->rollBack();
+                        $content = reportBillingEditRate($smarty, $module_name, $local_templates_dir, $pDB, $pDB2, $pDB3, $arrConf, $arrLang);
+                        return $content;
+                    }
+                }
+            }else{
+                //into to edit rate but the field are empty
+                    $smarty->assign("mb_message", $arrLang["Error_edit"]);
+                    $content = reportBillingEditRate($smarty, $module_name, $local_templates_dir, $pDB, $pDB2, $pDB3, $arrConf, $arrLang);
+                    return $content;
+            }
+        /*}
+        else{
+            if($rate_new!="" && $rate_offset_new!=""){
+                $result =$pBillingRates->updateDefaultRate($rate_new,$rate_offset_new,$hidden_digits);
+                $result2=$pBillingRates->updateSettingRate($rate_new,$rate_offset_new, $pDB3);
+                if($result == true){
+                    $smarty->assign("mb_message", $arrLang["edit_rate"]);
+                    $content = reportBillingRates($smarty, $module_name, $local_templates_dir, $pDB, $pDB2, $pDB3, $arrConf, $arrLang);
+                    return $content;
+                }
+                else{
+                    $smarty->assign("mb_message", $arrLang["error"]);
+                    $content = reportBillingEditRate($smarty, $module_name, $local_templates_dir, $pDB, $pDB2, $pDB3, $arrConf, $arrLang);
+                    return $content;
+                }
+            }else{
+                //into to edit rate but the field are empty
+                $smarty->assign("mb_message", $arrLang["Error_edit"]);
+                $content = reportBillingEditRate($smarty, $module_name, $local_templates_dir, $pDB, $pDB2, $pDB3, $arrConf, $arrLang);
+                return $content;
+            }
+        }*/
+     }
+
+     if($action=="save_import"){
+        $arrErrorMsg = "";
+        if(!eregi('.csv$', $_FILES['importcsv']['name'])){
+            $smarty->assign("mb_message", $arrLang["Invalid_file_extension"]);
+            $content = reportBillingImportRate($smarty, $module_name, $local_templates_dir, $pDB, $pDB2, $pDB3, $arrConf, $arrLang);
+            return $content;
+        }else{
+            if(is_uploaded_file($_FILES['importcsv']['tmp_name']))
+            {
+                $ruta_archivo = "/tmp/".$_FILES['importcsv']['name'];
+                copy($_FILES['importcsv']['tmp_name'], $ruta_archivo);
+
+                $arrTrunks = $pBillingRates->getTrunks($pDB2); //obtain the trunks for billing
+                $arrForm = createFormNew($arrLang, $arrTrunks);
+                $oForm = new paloForm($smarty,$arrForm);
+    
+                $contenido_archivo=file($ruta_archivo);
+                //$count=0;
+                $row = 1;
+                if ($handle = fopen($ruta_archivo, "r")) {
+                    $rate_val = fgetcsv($handle, 1000);
+                    //Linea 1 header ignorada
+                    //Desde linea 2 son datos
+                    while (($rate_val = fgetcsv($handle, 1000)) !== FALSE) {
+                        $record=array('Prefix'        => trim($rate_val[0]),
+                                      'Name'          => trim($rate_val[1]),
+                                      'Rate'          => trim($rate_val[2]),
+                                      'Rate_offset'   => trim(($rate_val[3]==0?'0.0':$rate_val[3])),
+                                      'Hidden_Digits' => trim($rate_val[4]),
+                                      'Trunk'         => trim($rate_val[5]));
+                        if($oForm->validateForm($record)) 
+                        {
+                            $dig = $rate_val[4];
+                            if($rate_val[4]=="")
+                                $dig=0;
+                            $result = create_rate($pBillingRates,trim($rate_val[0]),trim($rate_val[1]),trim($rate_val[2]),trim($rate_val[3]),trim($rate_val[5]),$dig);
+                            if($result == "name"){
+                                $smarty->assign("mb_message", $arrLang["error_name"]);
+                                $content = reportBillingImportRate($smarty, $module_name, $local_templates_dir, $pDB, $pDB2, $pDB3, $arrConf, $arrLang);
+                                return $content;
+                            }
+                            if($result == "successful"){
+                                $smarty->assign("mb_message", $arrLang["create_new_rate"]);
+                                $content = reportBillingRates($smarty, $module_name, $local_templates_dir, $pDB, $pDB2, $pDB3, $arrConf, $arrLang);
+                                return $content;
+                            }
+                            if($result == "prefix"){
+                                $smarty->assign("mb_message", $arrLang["error_prefix"]);
+                                $content = reportBillingImportRate($smarty, $module_name, $local_templates_dir, $pDB, $pDB2, $pDB3, $arrConf, $arrLang);
+                                return $content;
+                            }
+                            if($result == "error"){
+                                $smarty->assign("mb_message", $arrLang["error_CVS"]);
+                                $content = reportBillingImportRate($smarty, $module_name, $local_templates_dir, $pDB, $pDB2, $pDB3, $arrConf, $arrLang);
+                                return $content;
+                            }
+                        }else 
+                            $arrErrorMsg[$arrLang["Validation Error"]][$count]=$oForm->arrErroresValidacion;
+                        }
+                    fclose($handle);
+                }
+                if($arrErrorMsg!=""){
+                    foreach ($arrErrorMsg as $Error_type => $on_line)
+                    {
                         $strErrorMsg.= "<B><font color=\"red\">".$Error_type.":</font></B><BR>";
                         foreach ($on_line as $line=>$error_msg)
                         {
                                 if (is_array($error_msg)) foreach ($error_msg as $k=>$msg)
                                 {
-                                     if (!is_array($msg)) $error_msg=$msg;
-                                     else foreach ($msg as $v) $error_msg= $k." has ".$v;
+                                    if (!is_array($msg)) $error_msg=$msg;
+                                    else foreach ($msg as $v) $error_msg= $k." has ".$v;
                                 }
-                                     $strErrorMsg.= "Error on line: ". $line."  ".$error_msg."<br>";
+                                    $strErrorMsg.= $arrLang["Error on line"].": ". $line."  ".$error_msg."<br>";
                         }
-            $strErrorMsg.='<BR>';
-                }       
-
-    } else $strErrorMsg=$arrLang["File doesn't exist"];
- 
-    if (isset($strErrorMsg)&&$strErrorMsg!="") {
-            $smarty->assign("mb_message", $strErrorMsg);
-            $contenidoModulo=$oForm->fetchForm("$local_templates_dir/import_rate.tpl", $arrLang["New Rate"], $_POST);
-    } else header("Location: ?menu=billing_rates");
-
-    } else if(isset($_POST['submit_save_rate'])) {
-        //GUARDAR NUEVA TARIFA
-        include_once("libs/paloSantoForm.class.php");
-
-        $oForm = new paloForm($smarty, $arrFormElements);
-
-        if($oForm->validateForm($_POST)) {
-            // Exito, puedo procesar los datos ahora.
-            $pRate = new paloRate($pDB);
-
-            //Creo rate
-
-                $pRate->createRate($_POST['prefix'], $_POST['name'], $_POST['rate'], $_POST['rate_offset'], $_POST['trunk']);
-                // Creo la membresia
-                
-                if(!empty($pRate->errMsg)) {
-                    // Ocurrio algun error aqui
-                    $smarty->assign("mb_message", $arrLang["ERROR"].':'. $arrLang[$pRate->errMsg]);
-                    $contenidoModulo=$oForm->fetchForm("$local_templates_dir/new_rate.tpl", $arrLang["New Rate"], $_POST);
-                } else {
-                    header("Location: ?menu=billing_rates");
+                        $strErrorMsg.='<BR>';
+                    }
+                    if($strErrorMsg!=""){
+                        $smarty->assign("mb_message", $strErrorMsg);
+                        $content = reportBillingImportRate($smarty, $module_name, $local_templates_dir, $pDB, $pDB2, $pDB3, $arrConf, $arrLang);
+                        return $content;
+                    }
                 }
-           // }
-        } else {
-            // Error
-            $smarty->assign("mb_title", $arrLang["Validation Error"]);
-            $arrErrores=$oForm->arrErroresValidacion;
-            $strErrorMsg = "<b>{$arrLang['The following fields contain errors']}:</b><br>";
-            foreach($arrErrores as $k=>$v) {
-                $strErrorMsg .= "$k, ";
+            }else{
+                $smarty->assign("mb_message", $arrLang["File_error"]);
+                $content = reportBillingImportRate($smarty, $module_name, $local_templates_dir, $pDB, $pDB2, $pDB3, $arrConf, $arrLang);
+                return $content;
             }
-            $strErrorMsg .= "";
-            $smarty->assign("mb_message", $strErrorMsg);
-            $contenidoModulo=$oForm->fetchForm("$local_templates_dir/new_rate.tpl", $arrLang["New Rate"], $_POST);
         }
+     }
 
-    } else if(isset($_POST['submit_apply_changes'])) {
-        include_once("libs/paloSantoForm.class.php");
+}
 
-        $oForm = new paloForm($smarty, $arrFormElements);
-
-        $oForm->setEditMode();
-        if($oForm->validateForm($_POST)) {
-                //- La updateUser no es la adecuada porque pide el username. Deberia
-                //- hacer una que no pida username en la proxima version
-            $bExito=$pRate->updateRate($_POST['id_rate'],$_POST['rate_prefix'], $_POST['name'], $_POST['rate'], $_POST['rate_offset'],$_POST['trunk']);
-            header("Location: ?menu=billing_rates");
-        } else {
-            // Manejo de Error
-            $smarty->assign("mb_title", $arrLang["Validation Error"]);
-            $arrErrores=$oForm->arrErroresValidacion;
-            $strErrorMsg = "<b>{$arrLang['The following fields contain errors']}:</b><br>";
-            foreach($arrErrores as $k=>$v) {
-                $strErrorMsg .= "$k, ";
-            }
-            $strErrorMsg .= "";
-            $smarty->assign("mb_message", $strErrorMsg);
+function createFieldFilter($arrLang){
+    $arrFormElements = array();
+    return $arrFormElements;
+}
 
 
-            $smarty->assign("id_rate", $_POST['id_rate']);
-            $arrRate = $pRate->getRates($_POST['id_rate']);
-            $_POST['prefix']      = $arrRate[0][1];
-            $contenidoModulo=$oForm->fetchForm("$local_templates_dir/new_rate.tpl", $arrLang["Edit Rate"], $_POST);
-            /////////////////////////////////
-        }
 
-    } else if(isset($_GET['action']) && $_GET['action']=="view") {
+function create_rate($pBillingRates,$prefix_new,$name_new,$rate_new,$rate_offset_new,$trunk_new,$hidden_digits){
+	 //validar que el prefix_new sea un numero y no exista en base
+	 $val = existPrefix($pBillingRates,$prefix_new,$trunk_new);
+     $val2= existName($pBillingRates,$name_new);
+     $date_ini = date("Y-m-d H:i:s");
+     if($val2==true)
+        return "name";
+	 if($val==true)
+	 	return "prefix"; //prefix exist
+	 else{
+		$val = $pBillingRates->createRate($prefix_new,$name_new,$rate_new,$rate_offset_new,$trunk_new,$date_ini,$hidden_digits);
+		if($val == true)    return "successful";
+		else    return "error";
+	 }
+}
 
-        include_once("libs/paloSantoForm.class.php");
+function update_Last_rates($pBillingRates,$prefix_new,$name_new,$rate_new,$rate_offset_new,$trunk_new,$hidden_digits){
+     $date_ini = date("Y-m-d H:i:s");
+     $val = $pBillingRates->createRate($prefix_new,$name_new,$rate_new,$rate_offset_new,$trunk_new,$date_ini,$hidden_digits);
+     if($val == true)    return "successful";
+     else    return "error";
+}
 
-        $oForm = new paloForm($smarty, $arrFormElements);
-
-        //- TODO: Tengo que validar que el id sea valido, si no es valido muestro un mensaje de error
-
-        $oForm->setViewMode(); // Esto es para activar el modo "preview"
-        $arrRate = $pRate->getRates($_GET['id']);
-        // Conversion de formato
-        $arrTmp['prefix']      = $arrRate[0][1];
-        $arrTmp['name']        = $arrRate[0][2];
-        $arrTmp['rate']        = $arrRate[0][3];
-        $arrTmp['rate_offset'] = $arrRate[0][4];
-        $arrTmp['trunk']       = $arrRate[0][5];
-
-        $smarty->assign("id_rate", $_GET['id']);
-        
-        $contenidoModulo=$oForm->fetchForm("$local_templates_dir/new_rate.tpl", $arrLang["View Rate"], $arrTmp); // hay que pasar el arreglo
-
-    } else {
-        //LISTADO DE RATES
-        if (isset($_POST['delete'])) {
-          $pRate->deleteRate($_POST['id_rate']);
-
-        }
-
-        $arrRates = $pRate->getRates();
-        $end = count($arrRates);
-        
-        foreach($arrRates as $rate) {
-            $arrTmp    = array();
-            $arrTmp[0] = $rate[1];
-            $arrTmp[1] = $rate[2];
-            $arrTmp[2] = number_format($rate[3],3);
-            $arrTmp[3] = number_format($rate[4],3);
-			if($rate[5]=="None")
-           		$rate[5]=$arrLang["None"];
-            $arrTmp[4] = $rate[5];
-            $arrTmp[5] = "&nbsp;<a href='?menu=billing_rates&action=view&id=".$rate[0]."'>{$arrLang['View']}</a>";
-            $arrData[] = $arrTmp;
-        }
-        
-        $arrGrid = array("title"    => $arrLang["Rates List"],
-                         "icon"     => "images/list.png",
-                         "width"    => "99%",
-                         "start"    => ($end==0) ? 0 : 1,
-                         "end"      => $end,
-                         "total"    => $end,
-                         "columns"  => array(0 => array("name"      => $arrLang["Prefix"],
-                                                        "property1" => ""),
-                                             1 => array("name"      => $arrLang["Name"], 
-                                                        "property1" => ""),
-                                             2 => array("name"      => $arrLang["Rate"], 
-                                                        "property1" => ""),
-                                             3 => array("name"      => $arrLang["Rate Offset"], 
-                                                        "property1" => ""),
-                                             4 => array("name"      => $arrLang["Trunk"],
-                                                        "property1" => ""),
-                                             5 => array("name"      => $arrLang["View"],
-                                                        "property1" => "")
-                                            )
-                        );
-
-        $oGrid = new paloSantoGrid($smarty);
-        $oGrid->showFilter(
-              "<form style='margin-bottom:0;' method='POST' action='?menu=billing_rates'>" .
-              "<table><TR>".
-              "<TD><input type='submit' name='submit_create_rate' value='{$arrLang['Create New Rate']}' class='button'></TD>".
-              "<TD><input type='submit' name='submit_import_rate' value='{$arrLang['Import File']}' class='button'></TD>".
-              "</TR></table>".
-              "</form>");
-
-        $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
+function edit_rate($pBillingRates,$id,$name_new,$rate_new,$rate_offset_new,$trunk_new,$hidden_digits){
+	
+    $rate_register = $pBillingRates->getBillingRatesById($id);
+    if($trunk_new != $rate_register['trunk']){
+        $val3 = existPrefix($pBillingRates,$rate_register['prefix'],$trunk_new);
+        if($val3 == true)   return "prefix";
     }
+    if($name_new != $rate_register['name']){
+        $val2 = existName($pBillingRates, $name_new);
+        if($val2 == true)   return "name";
+    }
+    $val = $pBillingRates->editRate($id,$name_new,$rate_new,$rate_offset_new,$trunk_new,$hidden_digits);
+    
+	if($val == true)	return "successful";
+	else    return "error";
+}
 
-    return $contenidoModulo;
+// (possible) if exist only one combination of prefix with trunk 
+// (possible) if exist one or more prefix but trunks differents
+// (not possible) if exist two or more combinations of prefix, trunk
+function existPrefix($pBillingRates, $prefix_new, $trunk_new){
+	 $arrRates = $pBillingRates->getBillingALLRates();
+     $prefix_new .=" ";
+	 for($i=0; $i<count($arrRates); $i++){
+		 $prefix = $arrRates[$i]['prefix'];
+         $trunk = $arrRates[$i]['trunk'];
+		 $prefix .= " ";
+		 if($prefix_new == $prefix && $trunk_new == $trunk)
+			return true;
+	 }
+	 return false;
+}
+
+function existName($pBillingRates, $name_new){
+    $arrRates = $pBillingRates->getBillingALLRates();
+    $name = "";
+     for($i=0; $i<count($arrRates); $i++){
+         $name = ($arrRates[$i]['name']);
+         if($name_new == $name)
+            return true;
+     }
+     return false;
+}
+
+function getHiddenDigits(){
+	$arrDigits = "";
+	for($i=0; $i<11; $i++){
+		$arrDigits[$i] = $i;
+	}
+	return $arrDigits;
+}
+
+function createFormNew($arrLang, $arrTrunks){
+
+	$arrDigits = getHiddenDigits();
+
+   $arrFields = array(
+            "Prefix"   => array(      "LABEL"                  => $arrLang["Prefix"],
+                                            "REQUIRED"               => "no",
+                                            "INPUT_TYPE"             => "TEXT",
+                                            "INPUT_EXTRA_PARAM"      => "",
+                                            "VALIDATION_TYPE"        => "text",
+                                            "VALIDATION_EXTRA_PARAM" => ""
+                                            ),
+            "Rate"   => array(      "LABEL"                  => $arrLang["Rate"],
+                                            "REQUIRED"               => "no",
+                                            "INPUT_TYPE"             => "TEXT",
+                                            "INPUT_EXTRA_PARAM"      => "",
+                                            "VALIDATION_TYPE"        => "text",
+                                            "VALIDATION_EXTRA_PARAM" => ""
+                                            ),
+				"Name"   => array(      "LABEL"                  => $arrLang["Name"],
+                                            "REQUIRED"               => "no",
+                                            "INPUT_TYPE"             => "TEXT",
+                                            "INPUT_EXTRA_PARAM"      => "",
+                                            "VALIDATION_TYPE"        => "text",
+                                            "VALIDATION_EXTRA_PARAM" => ""
+                                            ),
+            "Rate_offset"   => array(      "LABEL"                  => $arrLang["Rate_offset"],
+                                            "REQUIRED"               => "no",
+                                            "INPUT_TYPE"             => "TEXT",
+                                            "INPUT_EXTRA_PARAM"      => "",
+                                            "VALIDATION_TYPE"        => "text",
+                                            "VALIDATION_EXTRA_PARAM" => ""
+                                            ),
+				"Trunk" => array("LABEL"                  => $arrLang["Trunk"],
+                                    "REQUIRED"               => "no",
+                                    "INPUT_TYPE"             => "SELECT",
+                                    "INPUT_EXTRA_PARAM"      => $arrTrunks,
+                                    "VALIDATION_TYPE"        => "text",
+                                    "VALIDATION_EXTRA_PARAM" => ""
+														  ),
+				"Hidden_Digits"   => array(      "LABEL"                  => $arrLang["Hidden_Digits"],
+                                            "REQUIRED"               => "no",
+                                            "INPUT_TYPE"             => "SELECT",
+                                            "INPUT_EXTRA_PARAM"      => $arrDigits,
+                                            "VALIDATION_TYPE"        => "text",
+                                            "VALIDATION_EXTRA_PARAM" => ""
+                                            ),
+            );
+    return $arrFields;
+}
+
+function createImportForm($arrLang){
+	$arrFields = array(
+					"importcsv"    => array("LABEL"                  =>	$arrLang["import_rate"],
+													"REQUIRED"               => "yes",
+													"INPUT_TYPE"             => "FILE",
+													"INPUT_EXTRA_PARAM"      => "",
+													"VALIDATION_TYPE"        => "filename",
+													"VALIDATION_EXTRA_PARAM" => ""),
+	);
+   return $arrFields;
+}
+
+function setEmptySpaces($arrRate){
+    for($i=0; $i<count($arrRate); $i++){
+        if($arrRate[$i]['name']=='Default'){
+            $arrRate[$i]['trunk'] = "*";
+            $arrRate[$i]['fecha_cierre'] = isset($arrRate[$i]['fecha_cierre'])?$arrRate[$i]['fecha_cierre']:"-";
+        }else{
+            $arrRate[$i]['fecha_cierre'] = isset($arrRate[$i]['fecha_cierre'])?$arrRate[$i]['fecha_cierre']:"-";
+        }
+    }
+    return $arrRate;
+}
+
+function createEditForm($arrLang,$arrTrunks){
+
+	$arrDigits = getHiddenDigits();
+
+	$arrFields = array(
+				  "Prefix"   => array(      "LABEL"                  => $arrLang["Prefix"],
+                                            "REQUIRED"               => "no",
+                                            "INPUT_TYPE"             => "TEXT",
+                                            "INPUT_EXTRA_PARAM"      => "",
+                                            "VALIDATION_TYPE"        => "text",
+                                            "VALIDATION_EXTRA_PARAM" => ""
+                                            ),
+                    "Rate"   => array(      "LABEL"                  => $arrLang["Rate"],
+                                            "REQUIRED"               => "no",
+                                            "INPUT_TYPE"             => "TEXT",
+                                            "INPUT_EXTRA_PARAM"      => "",
+                                            "VALIDATION_TYPE"        => "text",
+                                            "VALIDATION_EXTRA_PARAM" => ""
+                                            ),
+				    "Name"   => array(      "LABEL"                  => $arrLang["Name"],
+                                            "REQUIRED"               => "no",
+                                            "INPUT_TYPE"             => "TEXT",
+                                            "INPUT_EXTRA_PARAM"      => "",
+                                            "VALIDATION_TYPE"        => "text",
+                                            "VALIDATION_EXTRA_PARAM" => ""
+                                            ),
+             "Rate_offset"   => array(      "LABEL"                  => $arrLang["Rate_offset"],
+                                            "REQUIRED"               => "no",
+                                            "INPUT_TYPE"             => "TEXT",
+                                            "INPUT_EXTRA_PARAM"      => "",
+                                            "VALIDATION_TYPE"        => "text",
+                                            "VALIDATION_EXTRA_PARAM" => ""
+                                            ),
+		   "Hidden_Digits"   => array(      "LABEL"                  => $arrLang["Hidden_Digits"],
+                                            "REQUIRED"               => "no",
+                                            "INPUT_TYPE"             => "SELECT",
+                                            "INPUT_EXTRA_PARAM"      => $arrDigits,
+                                            "VALIDATION_TYPE"        => "text",
+                                            "VALIDATION_EXTRA_PARAM" => ""
+                                            ),
+				"Trunk"     => array(       "LABEL"                  => $arrLang["Trunk"],
+                                            "REQUIRED"               => "no",
+                                            "INPUT_TYPE"             => "SELECT",
+                                            "INPUT_EXTRA_PARAM"      => $arrTrunks,
+                                            "VALIDATION_TYPE"        => "text",
+                                            "VALIDATION_EXTRA_PARAM" => ""
+											),
+            "checkUpdate"   => array(       "LABEL"                  => $arrLang["Keep history of the current rate"],
+                                            "REQUIRED"               => "no",
+                                            "INPUT_TYPE"             => "CHECKBOX",
+                                            "INPUT_EXTRA_PARAM"      => "",
+                                            "VALIDATION_TYPE"        => "",
+                                            "EDITABLE"               => "yes",
+                                            "VALIDATION_EXTRA_PARAM" => ""
+                                                                        ),
+	);
+   return $arrFields;
+}
+
+function createViewForm($arrLang){
+	$arrFields = array(
+					"Prefix"   => array(      "LABEL"                  => $arrLang["Prefix"],
+                                            "REQUIRED"               => "no",
+                                            "INPUT_TYPE"             => "TEXT",
+                                            "INPUT_EXTRA_PARAM"      => "",
+                                            "VALIDATION_TYPE"        => "text",
+                                            "VALIDATION_EXTRA_PARAM" => ""
+                                            ),
+            "Rate"   => array(      "LABEL"                  => $arrLang["Rate"],
+                                            "REQUIRED"               => "no",
+                                            "INPUT_TYPE"             => "TEXT",
+                                            "INPUT_EXTRA_PARAM"      => "",
+                                            "VALIDATION_TYPE"        => "text",
+                                            "VALIDATION_EXTRA_PARAM" => ""
+                                            ),
+				"Name"   => array(      "LABEL"                  => $arrLang["Name"],
+                                            "REQUIRED"               => "no",
+                                            "INPUT_TYPE"             => "TEXT",
+                                            "INPUT_EXTRA_PARAM"      => "",
+                                            "VALIDATION_TYPE"        => "text",
+                                            "VALIDATION_EXTRA_PARAM" => ""
+                                            ),
+            "Rate_offset"   => array(      "LABEL"                  => $arrLang["Rate_offset"],
+                                            "REQUIRED"               => "no",
+                                            "INPUT_TYPE"             => "TEXT",
+                                            "INPUT_EXTRA_PARAM"      => "",
+                                            "VALIDATION_TYPE"        => "text",
+                                            "VALIDATION_EXTRA_PARAM" => ""
+                                            ),
+				"Hidden_Digits"   => array(      "LABEL"                  => $arrLang["Hidden_Digits"],
+                                            "REQUIRED"               => "no",
+                                            "INPUT_TYPE"             => "TEXT",
+                                            "INPUT_EXTRA_PARAM"      => "",
+                                            "VALIDATION_TYPE"        => "text",
+                                            "VALIDATION_EXTRA_PARAM" => ""
+                                            ),
+				"Trunk" => array("LABEL"                  => $arrLang["Trunk"],
+                                    "REQUIRED"               => "no",
+                                    "INPUT_TYPE"             => "TEXT",
+                                    "INPUT_EXTRA_PARAM"      => "",
+                                    "VALIDATION_TYPE"        => "text",
+                                    "VALIDATION_EXTRA_PARAM" => ""
+														  ),
+				"Creation_Date" => array("LABEL"                  => $arrLang["Creation Date"],
+                                    "REQUIRED"               => "no",
+                                    "INPUT_TYPE"             => "TEXT",
+                                    "INPUT_EXTRA_PARAM"      => "",
+                                    "VALIDATION_TYPE"        => "text",
+                                    "VALIDATION_EXTRA_PARAM" => ""
+														  ),
+	);
+   return $arrFields;
+}
+
+// function getParameter($parameter)
+// {
+//     if(isset($_POST[$parameter]))
+//         return $_POST[$parameter];
+//     else if(isset($_GET[$parameter]))
+//         return $_GET[$parameter];
+//     else
+//         return null;
+// }
+
+function getAction()
+{
+    if(getParameter("submit_apply_changes")=="Apply Changes")
+        return "save_edit";
+    else if(getParameter("edit")=="Edit")
+        return "edit_form";
+    else if(getParameter("delete")=="Delete") 
+        return "delete";
+    else if(getParameter("submit_save_rate")=="Save") 
+        return "save_new";
+    else if(getParameter("cancel")=="Cancel") 
+        return "cancel";
+    else if(getParameter("action")=="view")
+        return "view_form";
+    else if(getParameter("submit_import_changes")=="Save")
+        return "save_import";
+	 else if(getParameter("new_rate")=="Create New Rate")
+        return "new_rate";
+	 else if(getParameter("import_rate")=="Import File")
+        return "import_rate";
+    else
+        return "report"; //cancel
 }
 ?>

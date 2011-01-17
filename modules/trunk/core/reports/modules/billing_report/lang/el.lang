@@ -32,6 +32,7 @@
   $Id: el.lang,v 1.6 2008/02/11 11:07:22 bmacias@palosanto.com Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
+"billing_report" => "billing_report",
 "Start Date" => "Ημερομηνία Εκκίνησης",
 "End Date" => "Ημερομηνία Τερματισμού",
 "Field Name" => "Όνομα Πεδίου",
@@ -48,5 +49,13 @@ $arrLangModule=array(
 "Duration" => "Διάρκεια",
 "Filter" => "Φίλτρο",
 "Field" => "Πεδίο",
+"Rate Value" => "Rate Value",
+"Trunk" => "Trunk",
+"default" => "default",
+"Unknown" => "Unknown",
+"horas" => "horas",
+"minutos" => "minutos",
+"segundos" => "segundos",
+"Account Code" => "Account Code",
 );
 ?>

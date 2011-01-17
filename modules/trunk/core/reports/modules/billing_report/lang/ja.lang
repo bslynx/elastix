@@ -31,6 +31,7 @@
  $Id: ja.lang,v 1.6 2008/05/18 20:00:00 ganymean Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
+"billing_report" => "billing_report",
 "Start Date" => "開始日",
 "End Date" => "終了日",
 "Field Name" => "フィールド名",
@@ -47,5 +48,13 @@ $arrLangModule=array(
 "Duration" => "通話時間",
 "Filter" => "抽出条件",
 "Field" => "フィールド",
+"Rate Value" => "Rate Value",
+"Trunk" => "Trunk",
+"default" => "default",
+"Unknown" => "Unknown",
+"horas" => "horas",
+"minutos" => "minutos",
+"segundos" => "segundos",
+"Account Code" => "Account Code",
 );
 ?>

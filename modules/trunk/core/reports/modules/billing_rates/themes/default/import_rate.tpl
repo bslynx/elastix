@@ -1,4 +1,4 @@
-<form method="POST" action="?menu=billing_rates" enctype="multipart/form-data">
+<form method="POST" action="?menu={$module_name}" enctype="multipart/form-data">
 <table width="99%" border="0" cellspacing="0" cellpadding="0" align="center">
 <tr class="moduleTitle">
   <td class="moduleTitle" valign="middle">&nbsp;&nbsp;<img src="images/1x1.gif" border="0" align="absmiddle">&nbsp;&nbsp;{$title}</td>
@@ -20,7 +20,7 @@
     <table width="100%" border="0" cellspacing="0" cellpadding="0" class="tabForm">
       <tr>
 	<td width="10%">{$importcsv.LABEL}: <span  class="required">*</span></td>
-	<td width="90%">{$importcsv.INPUT}</td>
+	<td width="90%">{$importcsv.INPUT}&nbsp;&nbsp;<a class='tooltip' title='{$alert_import}'><img src='modules/{$module_name}/images/img_info.png' width='15' height='15' alt='info' longdesc='Descripcion de Nombre' /></a></td>
       </tr>
     </table>
   </td>

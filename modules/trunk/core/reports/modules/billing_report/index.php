@@ -1,8 +1,8 @@
 <?php
-/* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
+  /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 0.5                                                  |
+  | Elastix version 2.0.0-12                                               |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,22 +25,25 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: index.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
+  $Id: index.php,v 1.1 2010-01-15 01:01:20 Eduardo Cueva ecueva@palosanto.com Exp $ */
+//include elastix framework
+include_once "libs/paloSantoGrid.class.php";
+include_once "libs/paloSantoForm.class.php";
+include_once "libs/paloSantoDB.class.php";
+include_once "libs/paloSantoConfig.class.php";
+include_once "libs/paloSantoCDR.class.php";
+require_once "libs/misc.lib.php";
+include_once "libs/paloSantoRate.class.php";
+include_once "libs/paloSantoTrunk.class.php";
 
 function _moduleContent(&$smarty, $module_name)
 {
-    include_once "libs/paloSantoGrid.class.php";
-    include_once "libs/paloSantoDB.class.php";
-    include_once "libs/paloSantoForm.class.php";
-    include_once "libs/paloSantoConfig.class.php";
-    include_once "libs/paloSantoCDR.class.php";
-    require_once "libs/misc.lib.php";
-    include_once "libs/paloSantoRate.class.php";
-    include_once "libs/paloSantoTrunk.class.php";
-    
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
-   
+    include_once "modules/$module_name/libs/paloSantobilling_report.class.php";
+
+    //include file language agree to elastix configuration
+    //if file language not exists, then include language by default (en)
     $lang=get_language();
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
     $lang_file="modules/$module_name/lang/$lang.lang";
@@ -56,32 +59,26 @@ function _moduleContent(&$smarty, $module_name)
     $arrLang = array_merge($arrLang,$arrLangModule);
 
     //folder path for custom templates
-    $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
     $templates_dir=(isset($arrConf['templates_dir']))?$arrConf['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
-    
+
+    //conexion resource
     $pDBSet = new paloDB($arrConf['elastix_dsn']['settings']);
 
     $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
     $arrConfig = $pConfig->leer_configuracion(false);
-
     $dsn  = $arrConfig['AMPDBENGINE']['valor'] . "://" . $arrConfig['AMPDBUSER']['valor'] . ":" .
             $arrConfig['AMPDBPASS']['valor'] . "@" . $arrConfig['AMPDBHOST']['valor'] . "/asteriskcdrdb";
-    $dsn2 = $arrConfig['AMPDBENGINE']['valor'] . "://" . $arrConfig['AMPDBUSER']['valor'] . ":" .
-            $arrConfig['AMPDBPASS']['valor'] . "@" . $arrConfig['AMPDBHOST']['valor'] . "/asterisk";
-    
-    $pDB     = new paloDB($dsn);
-    $pDB2     = new paloDB($dsn2);
+    $pDB  = new paloDB($dsn);
 
-    $pDBTrunk = new paloDB($arrConfModule['dsn_conn_database_1']);
-
-    $arrData = array();
+    $pDBTrunk = new paloDB($arrConf['dsn_conn_database_1']);
     $total = 0;
     $oCDR    = new paloSantoCDR($pDB);
     $smarty->assign("menu","billing_report");
 
-    $pDBSQLite = new paloDB($arrConfModule['dsn_conn_database_2']);
-    if(!empty($pDBSQLite->errMsg)) {
+    $pDBSQLite = new paloDB($arrConf['dsn_conn_database_2']); //rate
+
+	 if(!empty($pDBSQLite->errMsg)) {
         echo "ERROR DE DB: $pDB->errMsg <br>";
     }
 
@@ -90,268 +87,397 @@ function _moduleContent(&$smarty, $module_name)
         echo "ERROR DE RATE: $pRate->errMsg <br>";
     }
 
-    $url = array('menu' => $module_name);
-    if(isset($_GET['exportcsv']) && $_GET['exportcsv']=='yes') {
-        $limit = "";
+	 $smarty->assign("module",$module_name);
+	 $smarty->assign("horas",$arrLang['horas']);
+	 $smarty->assign("minutos",$arrLang['minutos']);
+	 $smarty->assign("segundos",$arrLang['segundos']);
+
+    //actions
+    $action = getAction();
+    $content = "";
+
+    switch($action){
+        default:
+            $content = reportbilling_report($smarty, $module_name, $local_templates_dir, $pDBSet, $pDB,$pRate,$pDBTrunk,$pDBSQLite,$oCDR, $arrConf, $arrLang, $arrConfig);
+            break;
+    }
+    return $content;
+}
+
+function reportbilling_report($smarty, $module_name, $local_templates_dir, &$pDBSet, &$pDB,&$pRate,&$pDBTrunk,&$pDBSQLite,&$oCDR, $arrConf, $arrLang, $arrConfig)
+{
+    $pbilling_report = new paloSantobilling_report($pDB);
+    $filter_field     = getParameter("filter_field"); //combo
+    $filter_value     = getParameter("filter_value"); //textfield
+    $start_date_tmp   = getParameter("date_start");
+    $end_date_tmp     = getParameter("date_end");
+    $horas            = getParameter("horas");
+    $minutos          = getParameter("minutos");
+    $segundos         = getParameter("segundos");
+    $action           = getParameter("nav");
+    $start            = getParameter("start");
+    $arrColumns = "";
+    $hourToSec = "";
+    $minToSec  = "";
+    $style_time = "";
+    $style_text = "";
+    $filter_value_tmp = "";
+    $time = 0;
+
+    if($filter_field == 'duration'){
+            $filter_value = "";
+            if(isset($horas)){
+                $hourToSec = $horas * 3600;
+                $_POST['horas']  = $horas;
+            }else{
+                $hourToSec = 0;
+                $_POST['horas']  = $hourToSec;
+            }
+
+            if(isset($minutos)){
+                $minToSec = $minutos * 60;
+                $_POST['minutos']  = $minutos;
+            }else{
+                $minToSec = 0;
+                $_POST['minutos']  = $minToSec;
+            }
+
+            if(isset($segundos)){
+                $_POST['segundos'] = $segundos;
+            }else{
+                $segundos = 0;
+                $_POST['segundos'] = $segundos;
+            }
+
+        $time = $hourToSec + $minToSec + $segundos;
+        $_POST['filter_value'] = $filter_value;
+        $style_time = "style='display: block;'";
+        $style_text = "style='display: none;'";
+    }else{
+        $horas = "";
+        $minutos = "";
+        $segundos = "";
+        $_POST['horas']    = $horas;
+        $_POST['minutos']  = $minutos;
+        $_POST['segundos'] = $segundos;
+        $_POST['filter_value'] = $filter_value;
+        if($filter_field == "dst"){
+            if($filter_value != "")
+                $filter_value_tmp = $pDB->DBCAMPO('%'.$filter_value.'%');
+            else
+                $filter_value_tmp = "";
+        }elseif($filter_field == "rate_applied"){
+            if($filter_value != "")
+                $filter_value_tmp = $pDB->DBCAMPO('%'.$filter_value.'%');
+            else
+                $filter_value_tmp = "";
+        }else{
+            if($filter_value != "")
+                $filter_value_tmp = $pDB->DBCAMPO($filter_value);
+            else
+                $filter_value_tmp = "";
+        }
+        $style_time = "style='display: none;'";
+        $style_text = "style='display: block;'";
+    }
+
+    if(isset($start_date_tmp)){
+        $start_date = translateDate($start_date_tmp)." 00:00:00";
+        $_POST['date_start']  = $start_date_tmp;
+    }else{
+        $start_date = date("Y-m-d")." 00:00:00";
+        $_POST['date_start']  = date("d M Y");
+    }
+
+    if(isset($end_date_tmp)){
+        $end_date = translateDate($end_date_tmp)." 23:59:59";
+        $_POST['date_end']  = $end_date_tmp;
+    }else{
+        $end_date = date("Y-m-d")." 23:59:59";
+        $_POST['date_end']  = date("d M Y");
+    }
+
+    $smarty->assign("style_time",$style_time);
+    $smarty->assign("style_text",$style_text);
+
+    //begin grid parameters
+    $oGrid  = new paloSantoGrid($smarty);
+
+    $arrData = array();
+    $arrData = null;
+    $extension = "";
+    $totalbilling_report = $pbilling_report->obtainNumReport($filter_field, $filter_value_tmp, $start_date, $end_date, $pDBSQLite, $time, "ANSWERED", "outgoing");
+
+    $url = array(
+        'menu'          =>  $module_name,
+        'filter_field'  =>  $filter_field,
+        'filter_value'  =>  $filter_value,
+        'date_start'    =>  $start_date_tmp,
+        'date_end'      =>  $end_date_tmp,
+        'horas'         =>  $horas,
+        'minutos'       =>  $minutos,
+        'segundos'      =>  $segundos,
+    );
+    $oGrid->enableExport();   // enable csv export.
+    $oGrid->pagingShow(true); // show paging section.
+    $oGrid->setTitle(_tr("Billing Report"));
+    $oGrid->setNameFile_Export("Billing_Report");
+    $oGrid->setURL($url);
+
+    $arr_rates = $pbilling_report->getRates($pDBSQLite);
+
+    if($oGrid->isExportAction()) {
+        $limit  = $totalbilling_report; 
         $offset = 0;
-        if(empty($_GET['date_start'])) {
-            $date_start = date("Y-m-d") . " 00:00:00"; 
-        } else {
-            $date_start = translateDate($_GET['date_start']) . " 00:00:00";
-        }
-        if(empty($_GET['date_end'])) { 
-            $date_end = date("Y-m-d") . " 23:59:59"; 
-        } else {
-            $date_end   = translateDate($_GET['date_end']) . " 23:59:59";
-        }
-        $field_name = $_GET['field_name'];
-        $field_pattern = $_GET['field_pattern'];
-        $status = $_GET['status'];
-        header("Cache-Control: private");
-        header("Pragma: cache");
-        header('Content-Type: application/octec-stream');
-        header('Content-disposition: inline; filename="billing_report.csv"');
-        header('Content-Type: application/force-download');
-    } 
-    else {
-        $arrFilterExtraVars = array();
-        $arrFormElements = FormElements($arrLang);
+        $arrResult = $pbilling_report->obtainReport($limit, $offset, $filter_field, $filter_value_tmp, $start_date, $end_date, $pDBSQLite, $time, "ANSWERED", "outgoing");
 
-        $smarty->assign("Filter",$arrLang['Filter']);
-        $oFilterForm = new paloForm($smarty, $arrFormElements);
-    
-        // Por omision las fechas toman el sgte. valor (la fecha de hoy)
-        $date_start = date("Y-m-d") . " 00:00:00"; 
-        $date_end   = date("Y-m-d") . " 23:59:59";
-        $field_name = "";
-        $field_pattern = ""; 
-        $status = "ALL"; 
-    
-        if(isset($_POST['filter'])) {
-            if($oFilterForm->validateForm($_POST)) {
-                // Exito, puedo procesar los datos ahora.
-                $date_start = translateDate($_POST['date_start']) . " 00:00:00"; 
-                $date_end   = translateDate($_POST['date_end']) . " 23:59:59";
-                $field_name = $_POST['field_name'];
-                $field_pattern = $_POST['field_pattern'];
-                $arrFilterExtraVars = array("date_start" => $_POST['date_start'], "date_end" => $_POST['date_end'], 
-                                            "field_name" => $_POST['field_name'], "field_pattern" => $_POST['field_pattern'],);
-            } else {
-                // Error
-                $smarty->assign("mb_title", $arrLang["Validation Error"]);
-                $arrErrores=$oFilterForm->arrErroresValidacion;
-                $strErrorMsg = "<b>{$arrLang['The following fields contain errors']}:</b><br>";
-                foreach($arrErrores as $k=>$v) {
-                    $strErrorMsg .= "$k, ";
-                }
-                $strErrorMsg .= "";
-                $smarty->assign("mb_message", $strErrorMsg);
-            }
-            $htmlFilter = $contenidoModulo=$oFilterForm->fetchForm("$local_templates_dir/billing_report.tpl", "", $_POST);
-    
-        } else if(isset($_GET['date_start']) AND isset($_GET['date_end'])) {
-            $date_start = translateDate($_GET['date_start']) . " 00:00:00";
-            $date_end   = translateDate($_GET['date_end']) . " 23:59:59";
-            $field_name = $_GET['field_name'];
-            $field_pattern = $_GET['field_pattern'];
-            $status = $_GET['status'];
-            $arrFilterExtraVars = array("date_start" => $_GET['date_start'], "date_end" => $_GET['date_end']);
-            $htmlFilter = $contenidoModulo=$oFilterForm->fetchForm("$local_templates_dir/billing_report.tpl", "", $_GET);
-        } else {
-            $htmlFilter = $contenidoModulo=$oFilterForm->fetchForm("$local_templates_dir/billing_report.tpl", "", 
-                          array('date_start' => date("d M Y"), 'date_end' => date("d M Y"),'field_name' => 'dst','field_pattern' => '' ));
-        }
-    
-        // LISTADO
-        $limit = 50;
-        $offset = 0;
-    
-        // Si se quiere avanzar a la sgte. pagina
-        if(isset($_GET['nav']) && $_GET['nav']=="end") {
-            $arrCDRTmp  = $oCDR->obtenerCDRs($limit, $offset, $date_start, $date_end, $field_name, $field_pattern,"ANSWERED","outgoing");
-            $totalCDRs  = $arrCDRTmp['NumRecords'][0];
-            // Mejorar el sgte. bloque.
-            if(($totalCDRs%$limit)==0) {
-                $offset = $totalCDRs - $limit;
-            } else {
-                $offset = $totalCDRs - $totalCDRs%$limit;
-            }
-        }
-    
-        // Si se quiere avanzar a la sgte. pagina
-        if(isset($_GET['nav']) && $_GET['nav']=="next") {
-            $offset = $_GET['start'] + $limit - 1;
-        }
-    
-        // Si se quiere retroceder
-        if(isset($_GET['nav']) && $_GET['nav']=="previous") {
-            $offset = $_GET['start'] - $limit - 1;
-        }
-    
-        // Construyo el URL base
-        $url = array_merge($url, $arrFilterExtraVars);
-    }    
+        $arrData = array();
+	    // obteniendo tarifa default
+	    $rates_default = $pbilling_report->getDefaultRate($pDBSQLite);
+	    $rate = $rates_default['rate'];
+	    $sum_cost = 0;
+	    $rate_offset_default = $rates_default['rate_offset'];
+	    if(is_array($arrResult) && $totalbilling_report>0){
+		    foreach($arrResult as $key => $value){
+			    $arrTmp[0] = $value['Date'];
+                $hidden_digits = $value['digits'];
 
-    // Bloque comun
-    //consulto cuales son los trunks de salida
-    $oTrunk    = new paloTrunk($pDBTrunk);
-    $troncales1 = $oTrunk->getExtendedTrunksBill($grupos, $arrConfig['ASTETCDIR']['valor'].'/chan_dahdi.conf');//ej array("DAHDI/1","DAHDI/2");
-    $troncales1 = isset($troncales1)?$troncales1:array();
+                if($value['Rate_applied'] == null)
+                    $rate_applied = $arrLang['default'];
+                else
+                    $rate_applied = $value['Rate_applied'];
+                $arrTmp[1] = $rate_applied;
+                if($value['Rate_value'] == null)
+                    $rate_value = $rate;
+                else
+                    $rate_value = $value['Rate_value'];
+                if($value['Offset'] == null)
+                    $rate_offset = $rate_offset_default;
+                else
+                    $rate_offset = $value['Offset'];
 
-    $troncales2 = $oTrunk->getExtendedTrunksBill($grupos, $arrConfig['ASTETCDIR']['valor'].'/dahdi-channels.conf');//ej array("DAHDI/1","DAHDI/2");
-    $troncales2 = isset($troncales2)?$troncales2:array();
-    $troncales  = array_merge($troncales1,$troncales2);
-    $sum_cost = 0;
-
-    if (is_array($troncales) && count($troncales)>0){
-        $arrCDR  = $oCDR->obtenerCDRs($limit, $offset, $date_start, $date_end, $field_name, $field_pattern,"ANSWERED","outgoing",$troncales);
-
-        $total =$arrCDR['NumRecords'][0];
-
-        foreach($arrCDR['Data'] as $cdr) {
-        //tengo que buscar la tarifa para el numero de telefono
-            if (eregi("^DAHDI/([[:digit:]]+)",$cdr[4],$regs3)) $trunk='DAHDI/g'.$grupos[$regs3[1]];
-            else $trunk=str_replace(strstr($cdr[4],'-'),'',$cdr[4]);
-
-            $numero=$cdr[2];
-            $arrTmp    = array();
-            $arrTmp[0] = $cdr[0];
-            if(isset($_GET['exportcsv']) && $_GET['exportcsv']=='yes'){
-                $arrTmp[2] = ($cdr[1]?$cdr[1]:$arrLang["Unknown"]);
-                $arrTmp[4] = $cdr[4];
-            } else {
-                $arrTmp[2] = "<div title=\"{$arrLang['Channel']}: $cdr[3]\" align=\"left\">".($cdr[1]?$cdr[1]:$arrLang["Unknown"])."</div>";
-                $arrTmp[4] = "<div title=\"{$arrLang['Trunk']}: $trunk\" align=\"left\">$cdr[4]</div>";
-            }
-            $arrTmp[3] = $cdr[2];
-            $arrTmp[5] = Sec2HHMMSS( $cdr[8] );
-            $charge=0;
-            $tarifa=array();
-            $bExito=$pRate->buscarTarifa($numero,$tarifa,$trunk);
-            if (!count($tarifa)>0 && ($bExito)) $bExito=$pRate->buscarTarifa($numero,$tarifa,'None');
-
-            $rate_name="";
-            if (!$bExito)
-            {
-                echo "ERROR DE RATE: $pRate->errMsg <br>";
-            }else
-            {
-
-             //verificar si tiene tarifa
-                if (count($tarifa)>0)
-                {
-                    $bTarifaOmision=FALSE;
-                    foreach ($tarifa as $id_tarifa=>$datos_tarifa)
-                    {
-                        $charge=(($cdr[8]/60)*$datos_tarifa['rate'])+$datos_tarifa['offset'];
-                        $rate_name=$datos_tarifa['name'];
+                if($hidden_digits == 0)
+                    $destination = $value['Destination'];
+                else{
+                    $size_destination = strlen($value['Destination']);
+                    if($hidden_digits < $size_destination){
+                        $hide = getCharsAsterisk($hidden_digits);
+                        $destination = substr($value['Destination'],0,-$hidden_digits).$hide;
                     }
-                }else
-                {
-                    $bTarifaOmision=TRUE;
-                    $rate_name=$arrLang["default"];
-                //no tiene tarifa buscar tarifa por omision
-                //por ahora para probar $1 el minuto
-                    $rate=get_key_settings($pDBSet,"default_rate");
-                    $rate_offset=get_key_settings($pDBSet,"default_rate_offset");
-                    $charge=(($cdr[8]/60)*$rate)+$rate_offset;
+                    else{
+                        $size_destination = strlen($value['Destination']);
+                        $destination = getCharsAsterisk($size_destination);
+                    }
+                }
+
+			    $arrTmp[2] = $rate_value;
+			    $arrTmp[3] = $value['Src'];
+			    $arrTmp[4] = $destination;
+			    $arrTmp[5] = $value['Dst_channel'];
+                $arrTmp[6] = $value['accountcode'];
+			    $arrTmp[7] = $value['duration'];
+
+			    $charge=(($arrTmp[7]/60)*$rate_value)+$rate_offset;
+			    $arrTmp[8] = number_format($charge,3);
+			    $sum_cost  = $sum_cost + $arrTmp[8];
+			    $arrTmp[9] = $sum_cost;
+			    $arrData[] = $arrTmp;
+		    }
+	    }
+        $arrColumns  = array(_tr("Date"), _tr("Rate Applied"), _tr("Rate Value"), _tr("Source"), _tr("Destination"), _tr("Dst. Channel"),_tr("Account Code"),_tr("Duration"),_tr("Cost"),_tr("Summary Cost"));
+    }else{
+        $limit  = 20;
+        $oGrid->setLimit($limit);
+        $oGrid->setTotal($totalbilling_report);
+        $offset = $oGrid->calculateOffset();
+        $arrResult = $pbilling_report->obtainReport($limit, $offset, $filter_field, $filter_value_tmp, $start_date, $end_date, $pDBSQLite, $time, "ANSWERED", "outgoing");
+        $arrData = array();
+        // obteniendo tarifa default
+        $rates_default = $pbilling_report->getDefaultRate($pDBSQLite);
+        $rate = $rates_default['rate'];
+        $sum_cost = 0;
+        $rate_offset_default = $rates_default['rate_offset'];
+        if(is_array($arrResult) && $totalbilling_report>0){
+            foreach($arrResult as $key => $value){
+                $arrTmp[0] = $value['Date'];
+                $hidden_digits = $value['digits'];
+
+                if($value['Rate_applied'] == null){
+                    $arrRateTmp = getRate($arr_rates, $value);
+                    $value['Rate_applied'] = $arrRateTmp['Rate_applied'];
+                    $value['Rate_value'] = $arrRateTmp['Rate_value'];
+                    $value['Offset'] = $arrRateTmp['Offset'];
+                    $hidden_digits = $arrRateTmp['digits'];
+                }
+
+                if($value['Rate_applied'] == null)
+                    $rate_applied = $arrLang['default'];
+                else
+                    $rate_applied = $value['Rate_applied'];
+                $arrTmp[1] = $rate_applied;
+                if($value['Rate_value'] == null)
+                    $rate_value = $rate;
+                else
+                    $rate_value = $value['Rate_value'];
+                if($value['Offset'] == null)
+                    $rate_offset = $rate_offset_default;
+                else
+                    $rate_offset = $value['Offset'];
+
+                if($hidden_digits == 0)
+                    $destination = $value['Destination'];
+                else{
+                    $size_destination = strlen($value['Destination']);
+                    if($hidden_digits < $size_destination){
+                        $hide = getCharsAsterisk($hidden_digits);
+                        $destination = substr($value['Destination'],0,-$hidden_digits).$hide;
+                    }
+                    else{
+                        $size_destination = strlen($value['Destination']);
+                        $destination = getCharsAsterisk($size_destination);
+                    }
+                }
+
+                $arrTmp[2] = $rate_value;
+                $arrTmp[3] = $value['Src'];
+                $arrTmp[4] = $destination;
+                $arrTmp[5] = $value['Dst_channel'];
+                $arrTmp[6] = $value['accountcode'];
+                $arrTmp[7] = $value['duration'];
+
+                $charge=(($arrTmp[7]/60)*$rate_value)+$rate_offset;
+                $arrTmp[8] = number_format($charge,3);
+                $sum_cost  = $sum_cost + $arrTmp[8];
+                $arrTmp[9] = $sum_cost;
+                $arrData[] = $arrTmp;
+            }
+        }
+        $arrColumns  = array(_tr("Date"), _tr("Rate Applied"), _tr("Rate Value"), _tr("Source"), _tr("Destination"), _tr("Dst. Channel"),_tr("Account Code"),_tr("Duration"),_tr("Cost"),_tr("Summary Cost"));
+    }
+
+    $oGrid->setColumns($arrColumns);
+    $oGrid->setData($arrData);
+    //begin section filter
+    $arrFormFilterbilling_report = createFieldFilter($arrLang);
+    $oFilterForm = new paloForm($smarty, $arrFormFilterbilling_report);
+    $smarty->assign("SHOW", _tr("Show"));
+
+    $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl","",$_POST);
+    $oGrid->showFilter(trim($htmlFilter));
+    $content = $oGrid->fetchGrid();
+    return $content;
+}
+
+function getCharsAsterisk($size)
+{
+    $result = "";
+    for($i=0; $i<$size; $i++)
+        $result .= "*";
+    return $result;
+}
+
+function getRate($arr_ratesTmp, $arrRateValue)
+{
+    $arrResult = "";
+    foreach($arr_ratesTmp as $key => $value){
+        // primero comparamos si el registro tiene un rate activo
+        $estado  = $value['estado'];
+        $destino = $arrRateValue['Destination'];
+        $prefix  = $value['prefix'];
+        $arrResult['Rate_applied'] = null;
+        $arrResult['Rate_value'] = null;
+        $arrResult['Offset'] = null;
+        $arrResult['digits'] = 0;
+        if($estado == "activo"){ // es un rate activo
+            //filtrando si se cumple el prefijo
+            $cant = strlen($prefix);
+            if($cant > 0){
+                $val = substr($destino,0,$cant);
+                if($val == $prefix){
+                    $arrResult['Rate_applied'] = $value['name'];
+                    $arrResult['Rate_value'] = $value['rate'];
+                    $arrResult['Offset'] = $value['rate_offset'];
+                    $arrResult['digits'] = $value['hided_digits'];
+                    return $arrResult;
                 }
             }
-            $arrTmp[6] = number_format($charge,3);
-            $sum_cost  = $sum_cost+$arrTmp[6];
-            $arrTmp[7] = $sum_cost;
-            $arrTmp[1] = $rate_name;
-            $arrData[] = $arrTmp;
         }
-    }
 
-    $arrGrid = array("title"    => $arrLang["Billing Report"],
-                     "url"      => $url,
-                     "icon"     => "images/user.png",
-                     "width"    => "99%",
-                     "start"    => ($total==0) ? 0 : $offset + 1,
-                     "end"      => ($offset+$limit)<=$total ? $offset+$limit : $total,
-                     "total"    => $total,
-                     "columns"  => array(0 => array("name"  => $arrLang["Date"],
-                                                    "property1" => ""),
-                                         1 => array("name"  => $arrLang["Rate Applied"],
-                                                    "property"  => ""),
-                                         2 => array("name"  => $arrLang["Source"],
-                                                    "property1" => ""),
-                                         3 => array("name"  => $arrLang["Destination"],
-                                                    "property1" => ""),
-                                         4 => array("name"  => $arrLang["Dst. Channel"],
-                                                    "property"  => ""),
-                                         5 => array("name"  => $arrLang["Duration"]." HH:MM:SS",
-                                                    "property"  => ""),
-                                         6 => array("name"  => $arrLang["Cost"],
-                                                    "property"  => ""),
-                                         7 => array("name"      => $arrLang["Summary Cost"],
-                                                    "property"      => ""))
-                    );
-
-    // Creo objeto de grid
-    $oGrid = new paloSantoGrid($smarty);
-    $oGrid->enableExport();
-    
-    if(isset($_GET['exportcsv']) && $_GET['exportcsv']=='yes') {
-        return $oGrid->fetchGridCSV($arrGrid, $arrData);
-    } else {
-        $oGrid->showFilter($htmlFilter);
-        return $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
     }
+    return $arrResult;
 }
 
-function FormElements($arrLang)
-{
-    return array("date_start"  => array("LABEL"                  => $arrLang["Start Date"],
-                                        "REQUIRED"               => "yes",
-                                        "INPUT_TYPE"             => "DATE",
-                                        "INPUT_EXTRA_PARAM"      => "",
-                                        "VALIDATION_TYPE"        => "ereg",
-                                        "VALIDATION_EXTRA_PARAM" => "^[[:digit:]]{1,2}[[:space:]]+[[:alnum:]]{3}[[:space:]]+[[:digit:]]{4}$"),
-                 "date_end"    => array("LABEL"                  => $arrLang["End Date"],
-                                        "REQUIRED"               => "yes",
-                                        "INPUT_TYPE"             => "DATE",
-                                        "INPUT_EXTRA_PARAM"      => "",
-                                        "VALIDATION_TYPE"        => "ereg",
-                                        "VALIDATION_EXTRA_PARAM" => "^[[:digit:]]{1,2}[[:space:]]+[[:alnum:]]{3}[[:space:]]+[[:digit:]]{4}$"),
-                 "field_name"  => array("LABEL"                  => $arrLang["Field Name"],
-                                        "REQUIRED"               => "no",
-                                        "INPUT_TYPE"             => "SELECT",
-                                        "INPUT_EXTRA_PARAM"      => array( "dst"         => $arrLang["Destination"],
-                                                                           "src"         => $arrLang["Source"],
-                                                                           "dstchannel"  => $arrLang["Dst. Channel"]),
-                                        "VALIDATION_TYPE"        => "ereg",
-                                        "VALIDATION_EXTRA_PARAM" => "^(dst|src|channel|dstchannel)$"),
-                 "field_pattern" => array("LABEL"                  => $arrLang["Field"],
-                                        "REQUIRED"               => "no",
-                                        "INPUT_TYPE"             => "TEXT",
-                                        "INPUT_EXTRA_PARAM"      => "",
-                                        "VALIDATION_TYPE"        => "ereg",
-                                        "VALIDATION_EXTRA_PARAM" => "^[[:alnum:]@_\.,/\-]+$"),
+function createFieldFilter($arrLang){
+    $arrFilter = array(
+        "rate_applied"  => $arrLang["Rate Applied"],
+        "duration"      => $arrLang["Duration"],
+	    "rate_value"    => $arrLang["Rate Value"],
+	    "src"           => $arrLang["Source"],
+	    "dst"           => $arrLang["Destination"],
+	    "dstchannel"    => $arrLang["Dst. Channel"],
+	    "cost"          => $arrLang["Cost"],
+        "accountcode"   => $arrLang["Account Code"],
                     );
+
+    $arrFormElements = array(
+            "filter_field" => array("LABEL"                  => $arrLang["Search"],
+                                    "REQUIRED"               => "no",
+                                    "INPUT_TYPE"             => "SELECT",
+                                    "INPUT_EXTRA_PARAM"      => $arrFilter,
+                                    "VALIDATION_TYPE"        => "text",
+                                    "VALIDATION_EXTRA_PARAM" => ""),
+            "filter_value" => array("LABEL"                  => "",
+                                    "REQUIRED"               => "no",
+                                    "INPUT_TYPE"             => "TEXT",
+                                    "INPUT_EXTRA_PARAM"      => "",
+                                    "VALIDATION_TYPE"        => "text",
+                                    "VALIDATION_EXTRA_PARAM" => ""),
+				"date_start"  => array("LABEL"                  => $arrLang["Start_Date"],
+									"REQUIRED"               => "yes",
+									"INPUT_TYPE"             => "DATE",
+									"INPUT_EXTRA_PARAM"      => "",
+									"VALIDATION_TYPE"        => "ereg",
+									"VALIDATION_EXTRA_PARAM" => "^[[:digit:]]{1,2}[[:space:]]+[[:alnum:]]{3}[[:space:]]+[[:digit:]]{4}$"),
+				"date_end"    => array("LABEL"                  => $arrLang["End_Date"],
+                                   "REQUIRED"               => "yes",
+                                   "INPUT_TYPE"             => "DATE",
+                                   "INPUT_EXTRA_PARAM"      => "",
+                                   "VALIDATION_TYPE"        => "ereg",
+                                   "VALIDATION_EXTRA_PARAM" => "^[[:digit:]]{1,2}[[:space:]]+[[:alnum:]]{3}[[:space:]]+[[:digit:]]{4}$"),
+                "horas"   => array("LABEL"                  => "",
+                                    "REQUIRED"               => "no",
+                                    "INPUT_TYPE"             => "TEXT",
+                                    "INPUT_EXTRA_PARAM"      => array("size" => "2", "maxlength" => "2", "onkeypress" => "return onlyNumbers(event)"),
+                                    "VALIDATION_TYPE"        => "text",),
+                "minutos" => array("LABEL"                  => "",
+                                    "REQUIRED"               => "no",
+                                    "INPUT_TYPE"             => "TEXT",
+                                    "INPUT_EXTRA_PARAM"      => array("size" => "2", "maxlength" => "2", "onkeypress" => "return onlyNumbers(event)"),
+                                    "VALIDATION_TYPE"        => "text",),
+                "segundos" => array("LABEL"                  => "",
+                                    "REQUIRED"               => "no",
+                                    "INPUT_TYPE"             => "TEXT",
+                                    "INPUT_EXTRA_PARAM"      => array("size" => "2", "maxlength" => "2", "onkeypress" => "return onlyNumbers(event)"),
+                                    "VALIDATION_TYPE"        => "text",),
+                    );
+    return $arrFormElements;
 }
 
-function Sec2HHMMSS($sec)
+function getAction()
 {
-    $HH = '00'; $MM = '00'; $SS = '00';
-
-    if($sec >= 3600){ 
-        $HH = (int)($sec/3600);
-        $sec = $sec%3600; 
-        if( $HH < 10 ) $HH = "0$HH";
-    }
-
-    if( $sec >= 60 ){ 
-        $MM = (int)($sec/60);
-        $sec = $sec%60;
-        if( $MM < 10 ) $MM = "0$MM";
-    }
-
-    $SS = $sec;
-    if( $SS < 10 ) $SS = "0$SS";
-
-    return "$HH:$MM:$SS";
+    if(getParameter("save_new")) //Get parameter by POST (submit)
+        return "save_new";
+    else if(getParameter("save_edit"))
+        return "save_edit";
+    else if(getParameter("delete")) 
+        return "delete";
+    else if(getParameter("new_open")) 
+        return "view_form";
+    else if(getParameter("action")=="view")      //Get parameter by GET (command pattern, links)
+        return "view_form";
+    else if(getParameter("action")=="view_edit")
+        return "view_form";
+    else
+        return "report"; //cancel
 }
 ?>

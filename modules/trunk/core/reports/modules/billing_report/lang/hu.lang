@@ -32,6 +32,7 @@
   : hu.lang,v 1.6 2008/01/21 09:51:55 bmacias@palosanto.com Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
+"billing_report" => "billing_report",
 "Start Date" => "Kezdő Dátum",
 "End Date" => "Vég Dátum",
 "Field Name" => "Mező név",
@@ -48,5 +49,13 @@ $arrLangModule=array(
 "Duration" => "Időtartam",
 "Filter" => "Szűrő",
 "Field" => "Mező  ",
+"Rate Value" => "Rate Value",
+"Trunk" => "Trunk",
+"default" => "default",
+"Unknown" => "Unknown",
+"horas" => "horas",
+"minutos" => "minutos",
+"segundos" => "segundos",
+"Account Code" => "Account Code",
 );
 ?>

@@ -28,6 +28,7 @@
   $Id: es.lang,v 1.7 2007/09/05 00:36:42 gcarrillo Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
+"billing_report" => "billing_report",
 "Start Date" => "Fecha Inicio",
 "End Date" => "Fecha Fin",
 "Field Name" => "Nombre del Campo",
@@ -44,5 +45,13 @@ $arrLangModule=array(
 "Duration" => "Duración",
 "Filter" => "Filtrar",
 "Field" => "Campo",
+"Rate Value" => "Rate Value",
+"Trunk" => "Trunk",
+"default" => "default",
+"Unknown" => "Unknown",
+"horas" => "horas",
+"minutos" => "minutos",
+"segundos" => "segundos",
+"Account Code" => "Account Code",
 );
 ?>

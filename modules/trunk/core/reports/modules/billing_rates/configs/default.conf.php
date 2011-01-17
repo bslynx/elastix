@@ -25,10 +25,12 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
+$Id: default.conf.php,v 1.1 2010-01-27 02:01:42 Eduardo Cueva ecueva@palosanto.com Exp $ */
 global $arrConfModule;
 $arrConfModule['module_name'] = 'billing_rates';
-$arrConfModule['templates_dir'] = 'themes';
-$arrConfModule['dsn_conn_database'] = "sqlite3:///$arrConf[elastix_dbdir]/rate.db";
+$arrConfModule['templates_dir']      = 'themes';
+$arrConfModule['dsn_conn_database']  = "sqlite3:///$arrConf[elastix_dbdir]/rate.db";
+$arrConfModule['dsn_conn_database2'] = "sqlite3:///$arrConf[elastix_dbdir]/trunk.db";
+$arrConfModule['dsn_conn_database3'] = "sqlite3:///$arrConf[elastix_dbdir]/settings.db";
 
 ?>
