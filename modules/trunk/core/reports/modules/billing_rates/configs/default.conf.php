@@ -27,6 +27,7 @@
   +----------------------------------------------------------------------+
 $Id: default.conf.php,v 1.1 2010-01-27 02:01:42 Eduardo Cueva ecueva@palosanto.com Exp $ */
 global $arrConfModule;
+global $arrConf;
 $arrConfModule['module_name'] = 'billing_rates';
 $arrConfModule['templates_dir']      = 'themes';
 $arrConfModule['dsn_conn_database']  = "sqlite3:///$arrConf[elastix_dbdir]/rate.db";
