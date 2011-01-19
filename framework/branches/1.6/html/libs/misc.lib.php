@@ -421,7 +421,7 @@ function eliminar_dominio($db,$arrDominio,&$errMsg)
             foreach ($result as $fila){
                 $username = $fila['username'];
                 $bExito=eliminar_cuenta($db,$username,$errMsg);
-                if (!$bExito) 
+                if (!$bExito){
 					$output = $errMsg;
 				}else{
                     $continuar = TRUE;
