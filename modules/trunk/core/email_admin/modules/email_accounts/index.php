@@ -112,7 +112,7 @@ function _moduleContent(&$smarty, $module_name)
     $smarty->assign("DELETE", $arrLang["Delete"]);
     $smarty->assign("CONFIRM_CONTINUE", $arrLang["Are you sure you wish to continue?"]);
     $verListado=TRUE;
-    if(isset($_POST['submit_create_account'])) { 
+    if(isset($_POST['submit_create_account'])) {
          //AGREGAR NUEVA CUENTA
         //ASEGURARSE QUE HAY SELECCIONADO UN DOMINIO
         if ($_POST['domain']>0){
@@ -160,7 +160,7 @@ function _moduleContent(&$smarty, $module_name)
         $oForm = new paloForm($smarty, $arrFormElements);
         $arrDomain= $pEmail->getDomains($_POST['id_domain']);
         $domain_name=$arrDomain[0][1];
-        
+
         $bMostrarForm=FALSE;
         if($oForm->validateForm($_POST)) {
             // Exito, puedo procesar los datos ahora.
@@ -170,15 +170,18 @@ function _moduleContent(&$smarty, $module_name)
                 $smarty->assign("mb_title",$arrLang["Error"]);
                 $smarty->assign("mb_message", $arrLang["The passwords are empty or don't match"]);
                 $bMostrarForm=TRUE;
-
             }else{
+                $pDB->beginTransaction();
                 $bExito=create_email_account($pDB,$domain_name,$error);
                 if (!$bExito){
+                    $pDB->rollBack();
                     $smarty->assign("mb_message", $error);
                     $bMostrarForm=TRUE;
                 }
-                else
+                else{
+                    $pDB->commit();
                     header("Location: ?menu=email_accounts&id_domain=$_POST[id_domain]");
+                }
             }
         } else {
             // Error
@@ -193,7 +196,6 @@ function _moduleContent(&$smarty, $module_name)
             $bMostrarForm=TRUE;
         }
         if ($bMostrarForm){
-              
                $smarty->assign("id_domain", $_POST['id_domain']);
                $smarty->assign("domain_name", "@".$domain_name);
                $contenidoModulo=$oForm->fetchForm("$local_templates_dir/form_account.tpl", $arrLang["New Email Account"], $_POST);
@@ -221,13 +223,17 @@ function _moduleContent(&$smarty, $module_name)
                 $bMostrarForm=TRUE;
 
             }else{
+                $pDB->beginTransaction();
                 $bExito=edit_email_account($pDB,$error);
                 if (!$bExito || ($bExito && !empty($error))){
                     $smarty->assign("mb_message", $error);
                     $bMostrarForm=TRUE;
+                    $pDB->rollBack();
                 }
-                else
+                else{
+                    $pDB->commit();
                     header("Location: ?menu=email_accounts&id_domain=$_POST[id_domain]");
+                }
             }
         } else {
             // Manejo de Error
@@ -244,7 +250,6 @@ function _moduleContent(&$smarty, $module_name)
             /////////////////////////////////
         }
         if ($bMostrarForm){
-              
                $smarty->assign("id_domain", $_POST['id_domain']);
                $smarty->assign("username", $_POST['username']);
                $smarty->assign("account_name_label", $arrLang['Account Name']);
@@ -255,7 +260,6 @@ function _moduleContent(&$smarty, $module_name)
     } else if(isset($_GET['action']) && $_GET['action']=="view") {
         $verListado=FALSE;
         $oForm = new paloForm($smarty, $arrFormElements);
-        
         //- TODO: Tengo que validar que el id sea valido, si no es valido muestro un mensaje de error
 
         $oForm->setViewMode(); // Esto es para activar el modo "preview"
@@ -277,10 +281,16 @@ function _moduleContent(&$smarty, $module_name)
 
     }else if (isset($_POST['delete'])){
         $verListado=FALSE;
+        $pDB->beginTransaction();
         $bExito=eliminar_cuenta($pDB,$_POST['username'],$errMsg);
-          
-        if (!$bExito) $smarty->assign("mb_message", $errMsg);
-        else header("Location: ?menu=email_accounts&id_domain=$_POST[id_domain]");
+        if (!$bExito){
+            $pDB->rollBack();
+            $smarty->assign("mb_message", $errMsg);
+        }
+        else{
+            $pDB->commit();
+            header("Location: ?menu=email_accounts&id_domain=$_POST[id_domain]");
+        }
     }
 
     if ($verListado){
@@ -303,9 +313,7 @@ function _moduleContent(&$smarty, $module_name)
                                                         "INPUT_EXTRA_PARAM"      => $arrDominios,
                                                         "VALIDATION_TYPE"        => "integer",
                                                         "VALIDATION_EXTRA_PARAM" => ""),
-                                 
                                  );
-    
         $oFilterForm = new paloForm($smarty, $arrFormElements);
         $smarty->assign("SHOW", $arrLang["Show"]);
         $smarty->assign("CREATE_ACCOUNT", $arrLang["Create Account"]);
@@ -390,31 +398,35 @@ function create_email_account($pDB,$domain_name,&$errMsg)
         $username=$_POST['address'].'@'.$domain_name;
     else
         $username=$_POST['address'].'.'.$domain_name;
+
     $arrAccount=$pEmail->getAccount($username);
-    
+
     if (is_array($arrAccount) && count($arrAccount)>0 ){
        //YA EXISTE ESA CUENTA
         $errMsg=$arrLang["The e-mail address already exists"].": $_POST[address]@$domain_name";
         return FALSE;
     }
+
     $email=$_POST['address'].'@'.$domain_name;
     //crear la cuenta de usuario en el sistema
 
-    $bExito=crear_usuario_correo_sistema($email,$username,$_POST['password1'],$errMsg);
+    $bExito = crear_usuario_correo_sistema($email,$username,$_POST['password1'],$errMsg);
     if(!$bExito) return FALSE;
     //inserto la cuenta de usuario en la bd
-     $bExito=$pEmail->createAccount($_POST['id_domain'],$username,$_POST['password1'],$_POST['quota']);
+    $bExito = $pEmail->createAccount($_POST['id_domain'],$username,$_POST['password1'],$_POST['quota']);
     if ($bExito){
-        
         //crear el mailbox para la nueva cuenta
-        $bReturn=crear_mailbox_usuario($pDB,$email,$username,$errMsg); 
-    }else{ 
+        $bReturn=crear_mailbox_usuario($pDB,$email,$username,$errMsg);
+    }else{
         //tengo que borrar el usuario creado en el sistema
-        $bReturn=eliminar_usuario_correo_sistema($username,$email,$errMsg);
-        $errMsg= (isset($arrLang[$pEmail->errMsg]))?$arrLang[$pEmail->errMsg]:$pEmail->errMsg;
+        $bReturn = eliminar_usuario_correo_sistema($username,$email,$errMsg);
+        $errMsg = (isset($arrLang[$pEmail->errMsg]))?$arrLang[$pEmail->errMsg]:$pEmail->errMsg;
+        if($bReturn){
+            $bReturn = eliminar_virtual_sistema($email,$errMsg);
+            $errMsg = (isset($arrLang[$pEmail->errMsg]))?$arrLang[$pEmail->errMsg]:$pEmail->errMsg;
+        }
     }
     return $bReturn;
-
 }
 
 
@@ -443,7 +455,6 @@ function crear_mailbox_usuario($db,$email,$username,&$error_msg){
                     $error_msg.="error".$cyr_conn->getMessage()."<br>";
             }
         }
-                    
         //Ahora se tiene que setear el script default de sieve para el usuario (defaultbc)
         /*$daemon = new sieve("localhost","2000", $username, $CYRUS['PASS'], $CYRUS['ADMIN']);
         if ($daemon->sieve_login()){
@@ -456,7 +467,6 @@ function crear_mailbox_usuario($db,$email,$username,&$error_msg){
             }
             else 
                 $error_msg .= "Failure in setting forward<br>";    
-                     
         } 
         else {
             $error_msg.="Sieve: Incorrect Password<br>";
@@ -465,10 +475,19 @@ function crear_mailbox_usuario($db,$email,$username,&$error_msg){
     if($error_msg!=""){
         //Si hay error se trata de borrar la fila ingresada
         $bValido=$pEmail->deleteAccount($username);
-        if(!$bValido) $error_msg=(isset($arrLang[$pEmail->errMsg]))?$arrLang[$pEmail->errMsg]:$pEmail->errMsg;
+        if(!$bValido){
+            $error_msg=(isset($arrLang[$pEmail->errMsg]))?$arrLang[$pEmail->errMsg]:$pEmail->errMsg;
+            return FALSE;
+        }
         //borrar la cuenta del sistema
-        eliminar_usuario_correo_sistema($username,$email,$error_msg);
-        return FALSE;
+        $bReturn = eliminar_usuario_correo_sistema($username,$email,$error_msg);
+        if($bReturn){
+            $bReturn = eliminar_virtual_sistema($email,$errMsg);
+            $errMsg = (isset($arrLang[$pEmail->errMsg]))?$arrLang[$pEmail->errMsg]:$pEmail->errMsg;
+            if(!$bReturn)
+                return FALSE;
+        }else
+            return FALSE;
     }
     else{
         $bValido=$pEmail->createAliasAccount($username,$email);
@@ -477,11 +496,8 @@ function crear_mailbox_usuario($db,$email,$username,&$error_msg){
             return FALSE;
         }
     }
-    return TRUE;         
+    return TRUE;
 }
-
-
-
 
 
 function obtener_quota_usuario($username)
@@ -493,9 +509,7 @@ function obtener_quota_usuario($username)
 
     $quota = $cyr_conn->getquota("user/" . $username);
     $tamano_usado=$arrLang["Could not query used disc space"];
-            
     if(is_array($quota) && count($quota)>0){
-            
         if ($quota['used'] != "NOT-SET"){
             $q_used  = $quota['used'];
             $q_total = $quota['qmax'];
@@ -508,13 +522,10 @@ function obtener_quota_usuario($username)
             }
         } else {
             $tamano_usado=$arrLang["Size is not set"];
-        }      
+        }
     }
     return $tamano_usado;
 }
-
-
-   
 
 
 function edit_email_account($pDB,$error)
@@ -525,11 +536,12 @@ function edit_email_account($pDB,$error)
     $error_pwd='';
     $pEmail = new paloEmail($pDB);
     if (isset($_POST['password1']) && trim($_POST['password1'])!="")
-    {   
+    {
         $username=$_POST['username'];
         $bool=crear_usuario_correo_sistema($username,$username,$_POST['password1'],$error,FALSE); //False al final para indicar que no cree virtual
         if(!$bool){
           $error_pwd=$arrLang["Password could not be changed"];
+          $bExito=FALSE;
         }
     }
     if($_POST['old_quota']!=$_POST['quota']){
@@ -539,10 +551,15 @@ function edit_email_account($pDB,$error)
         if ($bContinuar){
            //actualizar en la base de datos
             $bExito=$pEmail->updateAccount($_POST['username'], $_POST['quota']);
-            if (!$bExito) $error=(isset($arrLang[$pEmail->errMsg]))?$arrLang[$pEmail->errMsg]:$pEmail->errMsg;
-        }else{ $error=$cyr_conn->getMessage();}
+            if (!$bExito){
+                $error=(isset($arrLang[$pEmail->errMsg]))?$arrLang[$pEmail->errMsg]:$pEmail->errMsg;
+                $bExito=FALSE;
+            }
+        }else{
+            $error=$cyr_conn->getMessage();
+            $bExito=FALSE;
+        }
     }
-
     if ($bExito && !empty($error_pwd))
         $error=$error_pwd;
 
