@@ -409,7 +409,7 @@ function construir_valor_nuevo_postfix($valor_anterior,$dominio,$eliminar_domini
 }
 
 function eliminar_dominio($db,$arrDominio,&$errMsg)
-{ 
+{
     $pEmail = new paloEmail($db);
     $total_cuentas=0;
     $output="";
@@ -435,18 +435,20 @@ function eliminar_dominio($db,$arrDominio,&$errMsg)
             foreach ($result as $fila){
                 $username = $fila['username'];
                 $bExito=eliminar_cuenta($db,$username,$errMsg);
-
-                if (!$bExito) $output = $errMsg;
+                if (!$bExito){
+                    $output = $errMsg;
+                }else{
+                    $continuar = TRUE;
+                }
             }
         }
 
-        if($output!=""){
+        if($output!="" & !$continuar){
             $errMsg=$arrLang["Error deleting user accounts from system"].": $output";
             return FALSE;
         }
 
         //uso la clase Email
-
         $bExito=$pEmail->deleteAccountsFromDomain($arrDominio['id_domain']);
         if (!$bExito){
             $errMsg=$arrLang["Error deleting user accounts"].' :'.((isset($arrLang[$pEmail->errMsg]))?$arrLang[$pEmail->errMsg]:$pEmail->errMsg);
@@ -458,9 +460,7 @@ function eliminar_dominio($db,$arrDominio,&$errMsg)
             return FALSE;
         }
 
-
-
-//Se elimina el dominio del archivo main.cf y se recarga la configuracion
+        //Se elimina el dominio del archivo main.cf y se recarga la configuracion
         $continuar=FALSE;
        //Se debe modificar el archivo /etc/postfix/main.cf para borrar el dominio a la variable
        //virtual_mailbox_domains if $configPostfix2=TRUE or mydomain2 if $configPostfix2=FALSE
@@ -479,9 +479,7 @@ function eliminar_dominio($db,$arrDominio,&$errMsg)
                 $continuar=TRUE;
             else
                 $errMsg=$arrLang["main.cf file was updated successfully but when restarting the mail service failed"]." : $retval";
-
        }
-
     }
     return $continuar;
 
@@ -497,7 +495,6 @@ function eliminar_usuario_correo_sistema($username,$email,&$error){
         foreach($output as $linea)
             $error.=$linea."<br>";
     }
-
     if($error!="")
         return FALSE;
     else
@@ -505,9 +502,8 @@ function eliminar_usuario_correo_sistema($username,$email,&$error){
 }
 
 function eliminar_virtual_sistema($email,&$error){
-    $config=new paloConfig("/etc/postfix","virtual","\t","[[:space:]?\t[:space:]?]");     
+    $config=new paloConfig("/etc/postfix","virtual","\t","[[:space:]?\t[:space:]?]");
     $arr_direcciones=$config->leer_configuracion();
-
 
     $eliminado=FALSE;
     foreach($arr_direcciones as $key=>$fila){
@@ -520,6 +516,7 @@ function eliminar_virtual_sistema($email,&$error){
              $eliminado=TRUE;
         }
     }
+
     if($eliminado){
         $bool=$config->escribir_configuracion($arr_direcciones,true);
         if($bool){
@@ -540,11 +537,11 @@ function eliminar_virtual_sistema($email,&$error){
 function crear_usuario_correo_sistema($email,$username,$clave,&$error,$virtual=TRUE){
     $output=array();
     $configPostfix2 = isPostfixToElastix2();
-    if($configPostfix2)
+    if($configPostfix2){
         exec("echo \"$clave\" | sudo -u root /usr/sbin/saslpasswd2 -c $email",$output);
-    else
+    }else{
         exec("echo \"$clave\" | sudo -u root /usr/sbin/saslpasswd2 -c $username -u ".SASL_DOMAIN,$output);
-
+    }
 
     if(is_array($output) && count($output)>0){
         foreach($output as $linea_salida)
@@ -552,31 +549,37 @@ function crear_usuario_correo_sistema($email,$username,$clave,&$error,$virtual=T
     }
 
     if($configPostfix2){
-        if($error!="") 
+        if($error!="")
             return FALSE;
     }else{
-        if($error!="") 
+        if($error!="")
             return FALSE;
-        if($virtual){
-            $bool=crear_virtual_sistema($email,$username,$error);
-            if(!$bool)
-                return FALSE;
-        }
     }
+
+    if($virtual){
+        $bool=crear_virtual_sistema($email,$username,$error);
+        if(!$bool)
+            return FALSE;
+    }
+
     return TRUE;
 }
 
 function crear_virtual_sistema($email,$username,&$error){
     $output=array();
-
+    $configPostfix2 = isPostfixToElastix2();
+    if($configPostfix2){
+        $username = $email;
+    }else{
+        $username.='@'.SASL_DOMAIN;
+    }
     exec("sudo -u root chown asterisk /etc/postfix/virtual");
-    $username.='@'.SASL_DOMAIN;
     exec("echo \"$email \t $username\" >> /etc/postfix/virtual",$output);
 
     if(is_array($output) && count($output)>0){
         foreach($output as $linea)
             $error.=$linea."<br>";
-    }   
+    }
     exec("sudo -u root chown root /etc/postfix/virtual");
 
     exec("sudo -u root postmap /etc/postfix/virtual",$output);
@@ -600,31 +603,35 @@ function eliminar_cuenta($db,$username,$errMsg){
         foreach ($arrAlias as $fila)
             $arr_alias[]=$fila[1];
     }
-    //servira hacerlo como transaccion??????
-    $pEmail->deleteAliasesFromAccount($username);
-    $bExito=$pEmail->deleteAccount($username);
-    if ($bExito){
-        $cyr_conn = new cyradm;
-        $bValido = $cyr_conn->imap_login();
+    $bExito = $pEmail->deleteAliasesFromAccount($username); // elimina los aliases de la base de datos
+    if($bExito){
+        $bExito = $pEmail->deleteAccount($username);
+        if ($bExito){
+            $cyr_conn = new cyradm;
+            $bValido = $cyr_conn->imap_login();
 
-        if ($bValido ===FALSE){
-            $errMsg=$cyr_conn->getMessage();
-            return FALSE;
-        }
-
-        $bValido=$cyr_conn->deletemb("user/".$username);
-        if($bValido===FALSE){
-            $errMsg=$cyr_conn->getMessage();
-            return FALSE;
-        }
-        $cyr_conn->deletemb("user/".$username)."<br>";
-
-        foreach($arr_alias as $alias){
-            if(!eliminar_usuario_correo_sistema($username,$alias,$errMsg)){
+            if ($bValido ===FALSE){
+                $errMsg = $cyr_conn->getMessage();
                 return FALSE;
             }
+
+            $bValido=$cyr_conn->deletemb("user/".$username); // elimina los buzones de entrada
+            if($bValido===FALSE){
+                $errMsg=$cyr_conn->getMessage();
+                return FALSE;
+            }
+            //$cyr_conn->deletemb("user/".$username)."<br>";
+
+            foreach($arr_alias as $alias){
+                if(!eliminar_usuario_correo_sistema($username,$alias,$errMsg)){ // elimina los usuarios del sistema
+                    return FALSE;
+                }
+            }
+            eliminar_virtual_sistema($username,$errMsg); // elimina los alias en /etc/postfix/virtual
+            return TRUE;
         }
-        return TRUE;
+    }else{
+        $bExito = FALSE;
     }
     return $bExito;
 }
