@@ -63,7 +63,7 @@ function _moduleContent(&$smarty, $module_name)
     //if (!file_exists($local_templates_dir))
 
     $pDB = new paloDB($arrConf['dsn_conn_database']);
-
+    $contenidoModulo = "";
     if(!empty($pDB->errMsg)) {
         echo "ERROR DE DB: $pDB->errMsg <br>";
     }
@@ -83,7 +83,6 @@ function _moduleContent(&$smarty, $module_name)
                                                     "INPUT_EXTRA_PARAM"      => "",
                                                     "VALIDATION_TYPE"        => "domain",
                                                     "VALIDATION_EXTRA_PARAM" => ""),
-
                          );
 
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
@@ -95,15 +94,12 @@ function _moduleContent(&$smarty, $module_name)
     $smarty->assign("CONFIRM_CONTINUE", $arrLang["Are you sure you wish to continue?"]);
 
     if(isset($_POST['submit_create_domain'])) { 
-         //AGREGAR NUEVA TARIFA
         include_once("libs/paloSantoForm.class.php");
         $oForm = new paloForm($smarty, $arrFormElements);
 		$formValues['domain_name']='';
         $contenidoModulo=$oForm->fetchForm("$local_templates_dir/form_domain.tpl", $arrLang["New Domain"],$formValues);
 
     } else if(isset($_POST['edit'])) {
-
-        //EDITAR TARIFA
         // Tengo que recuperar los datos del domain
         $arrDomain= $pEmail->getDomains($_POST['id_domain']);
         $arrFillDomain['domain_name']      = $arrDomain[0][1];
@@ -115,21 +111,25 @@ function _moduleContent(&$smarty, $module_name)
         $smarty->assign("id_domain", $_POST['id_domain']);
         $contenidoModulo=$oForm->fetchForm("$local_templates_dir/form_domain.tpl", "{$arrLang['Edit Domain']} \"" . $arrFillDomain['domain_name'] . "\"", $arrFillDomain);
 
-    } else if(isset($_POST['save'])) { 
+    } else if(isset($_POST['save'])) {
         //GUARDAR NUEVA DOMINIO
         include_once("libs/paloSantoForm.class.php");
 
         $oForm = new paloForm($smarty, $arrFormElements);
         if($oForm->validateForm($_POST)) {
             // Exito, puedo procesar los datos ahora.
+            $pDB->beginTransaction();
             $bExito=create_email_domain($pDB,$error);
             if (!$bExito){
+               $pDB->rollBack();
                $smarty->assign("mb_message", $error);
                $contenidoModulo=$oForm->fetchForm("$local_templates_dir/form_domain.tpl", $arrLang["New Domain"], $_POST);
             }
-            else
+            else{
+                $pDB->commit();
                 header("Location: ?menu=email_domains");
-        } else {
+            }
+        }else {
             // Error
             $smarty->assign("mb_title", $arrLang["Validation Error"]);
             $arrErrores=$oForm->arrErroresValidacion;
@@ -149,8 +149,13 @@ function _moduleContent(&$smarty, $module_name)
 
         $oForm->setEditMode();
         if($oForm->validateForm($_POST)) {
-
+            $pDB->beginTransaction();
             $bExito=$pEmail->updateDomain($_POST['id_domain'],$_POST['domain_name']);
+            if(!$bExito){
+                $pDB->rollBack();
+            }else{
+                $pDB->commit();
+            }
             header("Location: ?menu=email_domains");
         } else {
             // Manejo de Error
@@ -162,16 +167,12 @@ function _moduleContent(&$smarty, $module_name)
             }
             $strErrorMsg .= "";
             $smarty->assign("mb_message", $strErrorMsg);
-
-
             $smarty->assign("id_domain", $_POST['id_domain']);
-
             $contenidoModulo=$oForm->fetchForm("$local_templates_dir/form_domain.tpl", $arrLang["Edit Domain"], $_POST);
-            /////////////////////////////////
         }
 
     } else if(isset($_GET['action']) && $_GET['action']=="view") {
-;
+
         include_once("libs/paloSantoForm.class.php");
 
         $oForm = new paloForm($smarty, $arrFormElements);
@@ -181,43 +182,34 @@ function _moduleContent(&$smarty, $module_name)
         $oForm->setViewMode(); // Esto es para activar el modo "preview"
         $arrDomain = $pEmail->getDomains($_GET['id']);
         // Conversion de formato
-        $arrTmp['domain_name']        = $arrDomain[0][1];
-        $arrTmp['id_domain']        = $arrDomain[0][0];
+        $arrTmp['domain_name']  = $arrDomain[0][1];
+        $arrTmp['id_domain']    = $arrDomain[0][0];
 
         if (isset($_POST['delete'])) {
-         // $bExito=$pEmail->deleteDomain($_POST['id_domain']);
+          $pDB->beginTransaction();
           $bExito=eliminar_dominio($pDB,$arrTmp,$errMsg);
-          
-          if (!$bExito) $smarty->assign("mb_message", $errMsg);
-          else header("Location: ?menu=email_domains");
+          if (!$bExito){ 
+            $pDB->rollBack();
+            $smarty->assign("mb_message", $errMsg);
+          }else{
+            $pDB->commit();
+            header("Location: ?menu=email_domains");
+          }
         }
-
         $smarty->assign("id_domain", $_GET['id']);
-        
         $contenidoModulo=$oForm->fetchForm("$local_templates_dir/form_domain.tpl", $arrLang["View Domain"], $arrTmp); // hay que pasar el arreglo
-
-    } 
-
+    }
     else{
-
         //LISTADO DE DOMINIOS
-
-
         $arrDomains = $pEmail->getDomains();
-     //   $arrDomains=array(array(1,"Prueba"));
         $end = count($arrDomains);
-
         foreach($arrDomains as $domain) {
             $arrTmp    = array();
-
             $arrTmp[0] = "&nbsp;<a href='?menu=email_domains&action=view&id=".$domain[0]."'>$domain[1]</a>";
             //obtener el numero de cuentas que posee ese email
             $arrTmp[1] = $pEmail->getNumberOfAccounts($domain[0]);
-
-
             $arrData[] = $arrTmp;
         }
-        
         $arrGrid = array("title"    => $arrLang["Domain List"],
                          "icon"     => "images/list.png",
                          "width"    => "99%",
@@ -251,8 +243,11 @@ function create_email_domain($pDB,&$errMsg)
     $bExito=$pEmail->createDomain($_POST['domain_name']);
     if ($bExito){
         $bReturn=guardar_dominio_sistema($_POST['domain_name'],$errMsg);
-    }else
+        if($bReturn)
+            $bReturn = TRUE;
+    }else{
         $errMsg= (isset($arrLang[$pEmail->errMsg]))?$arrLang[$pEmail->errMsg]:$pEmail->errMsg;
+    }
     return $bReturn;
 
 }
