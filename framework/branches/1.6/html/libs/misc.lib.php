@@ -421,27 +421,20 @@ function eliminar_dominio($db,$arrDominio,&$errMsg)
             foreach ($result as $fila){
                 $username = $fila['username'];
                 $bExito=eliminar_cuenta($db,$username,$errMsg);
-
-                if (!$bExito) $output = $errMsg;
-                /*$cyr_conn->deletemb("user/".$username)."<br>";
-                exec("sudo -u root saslpasswd2 -d $username@".SASL_DOMAIN);
-
-                if($cyr_conn->error_msg!="" && (strpos($cyr_conn->error_msg, "Mailbox does not exist")===false))
-                    $output.=$cyr_conn->error_msg;
-
-                $bValido5=$pEmail->deleteAliasesFromAccount($username);
-                //borrar de virtual
-                $bool=eliminar_virtual_sistema($email,$error);*/
+                if (!$bExito) 
+					$output = $errMsg;
+				}else{
+                    $continuar = TRUE;
+                }
             }
         }
 
-        if($output!=""){
+        if($output!="" & !$continuar){
             $errMsg=$arrLang["Error deleting user accounts from system"].": $output";
             return FALSE;
         }
 
         //uso la clase Email
-
         $bExito=$pEmail->deleteAccountsFromDomain($arrDominio['id_domain']);
         if (!$bExito){
             $errMsg=$arrLang["Error deleting user accounts"].' :'.((isset($arrLang[$pEmail->errMsg]))?$arrLang[$pEmail->errMsg]:$pEmail->errMsg);
@@ -453,9 +446,7 @@ function eliminar_dominio($db,$arrDominio,&$errMsg)
             return FALSE;
         }
 
-
-
-//Se elimina el dominio del archivo main.cf y se recarga la configuracion
+	    //Se elimina el dominio del archivo main.cf y se recarga la configuracion
         $continuar=FALSE;
        //Se debe modificar el archivo /etc/postfix/main.cf para borrar el dominio a la variable
        //mydomain2
@@ -474,9 +465,7 @@ function eliminar_dominio($db,$arrDominio,&$errMsg)
                 $continuar=TRUE;
             else
                 $errMsg=$arrLang["main.cf file was updated successfully but when restarting the mail service failed"]." : $retval";
-
        }
-
     }
     return $continuar;
 
@@ -500,7 +489,6 @@ function eliminar_usuario_correo_sistema($username,$email,&$error){
 function eliminar_virtual_sistema($email,&$error){
     $config=new paloConfig("/etc/postfix","virtual","\t","[[:space:]?\t[:space:]?]");     
     $arr_direcciones=$config->leer_configuracion();
-
 
     $eliminado=FALSE;
     foreach($arr_direcciones as $key=>$fila){
@@ -594,30 +582,35 @@ function eliminar_cuenta($db,$username,$errMsg){
             $arr_alias[]=$fila[1];
     }
     //servira hacerlo como transaccion??????
-    $pEmail->deleteAliasesFromAccount($username);
-    $bExito=$pEmail->deleteAccount($username);
-    if ($bExito){
-        $cyr_conn = new cyradm;
-        $bValido = $cyr_conn->imap_login();
+    $bExito = $pEmail->deleteAliasesFromAccount($username);
+    if($bExito){
+		$bExito = $pEmail->deleteAccount($username);
+		if ($bExito){
+			$cyr_conn = new cyradm;
+			$bValido = $cyr_conn->imap_login();
 
-        if ($bValido ===FALSE){
-            $errMsg=$cyr_conn->getMessage();
-            return FALSE;
-        }
+			if ($bValido ===FALSE){
+				$errMsg = $cyr_conn->getMessage();
+				return FALSE;
+			}
 
-        $bValido=$cyr_conn->deletemb("user/".$username);
-        if($bValido===FALSE){
-            $errMsg=$cyr_conn->getMessage();
-            return FALSE;
-        }
-        $cyr_conn->deletemb("user/".$username)."<br>";
+			$bValido=$cyr_conn->deletemb("user/".$username);
+			if($bValido===FALSE){
+				$errMsg=$cyr_conn->getMessage();
+				return FALSE;
+			}
+			//$cyr_conn->deletemb("user/".$username)."<br>";
 
-        foreach($arr_alias as $alias){
-            if(!eliminar_usuario_correo_sistema($username,$alias,$errMsg)){
-                return FALSE;
-            }
-        }
-        return TRUE;
+			foreach($arr_alias as $alias){
+				if(!eliminar_usuario_correo_sistema($username,$alias,$errMsg)){
+					return FALSE;
+				}
+			}
+
+			return TRUE;
+		}
+	}else{
+        $bExito = FALSE;
     }
     return $bExito;
 }
