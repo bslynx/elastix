@@ -134,21 +134,19 @@ class paloEmail {
         if (!ereg("^[[:digit:]]+$", "$id_domain")) {
             $this->errMsg = "Domain ID is not valid";
         } else {
-            //modificar rate
-                    $sPeticionSQL = paloDB::construirUpdate(
-                        "domain",
-                        array(
-                            "domain_name"          =>  paloDB::DBCAMPO($domain_name)
-
-                         ),
-                        array(
-                            "id"  => $id_domain)
-                        );
-                    if ($this->_DB->genQuery($sPeticionSQL)) {
-                        $bExito = TRUE;
-                    } else {
-                        $this->errMsg = $this->_DB->errMsg;
-                    }
+			$sPeticionSQL = paloDB::construirUpdate(
+				"domain",
+				array(
+					"domain_name"          =>  paloDB::DBCAMPO($domain_name)
+				 ),
+				array(
+					"id"  => $id_domain)
+				);
+			if ($this->_DB->genQuery($sPeticionSQL)) {
+				$bExito = TRUE;
+			} else {
+				$this->errMsg = $this->_DB->errMsg;
+			}
         }
         return $bExito;
     }
@@ -159,6 +157,7 @@ class paloEmail {
         $bExito = TRUE;
         if (!ereg('^[[:digit:]]+$', "$id_domain")) {
             $this->errMsg = "Domain ID is not valid";
+            RETURN FALSE;
         } 
         else {
             $this->errMsg = "";
@@ -169,12 +168,9 @@ class paloEmail {
                 $bExito = FALSE;
                 $this->errMsg = $this->_DB->errMsg;
             }
-            
-
         }
         return $bExito;
     }
-
 
     function getNumberOfAccounts($id_domain){
         $number =0;
@@ -184,10 +180,7 @@ class paloEmail {
         if (is_array($arr_result) && count($arr_result)>0) {
                 $number=$arr_result[0];
         }
-
-
         return $number;
-    
     }
 
 
@@ -196,6 +189,7 @@ class paloEmail {
         $bExito = TRUE;
         if (!ereg('^[[:digit:]]+$', "$id_domain")) {
             $this->errMsg = "Domain ID is not valid";
+            RETURN FALSE;
         } 
         else {
             $this->errMsg = "";
@@ -206,8 +200,6 @@ class paloEmail {
                 $bExito = FALSE;
                 $this->errMsg = $this->_DB->errMsg;
             }
-            
-
         }
         return $bExito;
     }
@@ -217,6 +209,7 @@ class paloEmail {
         $bExito = TRUE;
         if (!ereg('^([a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*)$', "$username")) {
             $this->errMsg = "Username is not valid";
+            $bExito = FALSE;
         }
         else {
             $this->errMsg = "";
@@ -272,11 +265,6 @@ class paloEmail {
         return $arr_result;
     }
 
-
-
-
-
-
     /**
      * Procedimiento para crear una nueva cuenta
      *
@@ -311,6 +299,7 @@ class paloEmail {
         $bExito = TRUE;
         if (!ereg('^([a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*)$', "$username")) {
             $this->errMsg = "Username is not valid";
+            $bExito = FALSE;
         }
         else {
             $this->errMsg = "";
@@ -321,8 +310,6 @@ class paloEmail {
                 $bExito = FALSE;
                 $this->errMsg = $this->_DB->errMsg;
             }
-            
-
         }
         return $bExito;
     }
