@@ -27,11 +27,12 @@
   +----------------------------------------------------------------------+
   $Id: index.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
 
+include_once "libs/paloSantoFax.class.php";
+include_once "libs/paloSantoGrid.class.php";
+include_once "libs/paloSantoJSON.class.php";
+
 function _moduleContent($smarty, $module_name)
 {
-    include_once "libs/paloSantoFax.class.php";
-    include_once "libs/paloSantoGrid.class.php";
-
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
     //include file language agree to elastix configuration
@@ -55,8 +56,15 @@ function _moduleContent($smarty, $module_name)
     $templates_dir=(isset($arrConf['templates_dir']))?$arrConf['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
 
-
-    $contenidoModulo = listFax($smarty, $module_name, $local_templates_dir);
+    $accion = getAction();
+    switch($accion){
+        case "checkFaxStatus":
+            $contenidoModulo = checkFaxStatus("faxListStatus",$smarty, $module_name, $local_templates_dir, $arrConf, $arrLang);
+            break;
+        default:
+            $contenidoModulo = listFax($smarty, $module_name, $local_templates_dir);
+            break;
+    }
     return $contenidoModulo;
 }
 
@@ -72,7 +80,7 @@ function listFax($smarty, $module_name, $local_templates_dir)
  
     foreach($arrFax as $fax) {
         $arrTmp    = array();
-        $arrTmp[0] = "&nbsp;<a href='?menu=faxnew&action=view&id=" . $fax['id'] . "'>" . $fax['name'] . "</a>";
+        $arrTmp[0] = "&nbsp;<a href='?menu=faxnew&action=view&id=".$fax['id']."'>".$fax['name']."</a>";
         $arrTmp[1] = $fax['extension'];
         $arrTmp[2] = $fax['secret'];
         $arrTmp[3] = $fax['email'];
@@ -81,7 +89,11 @@ function listFax($smarty, $module_name, $local_templates_dir)
         $arrTmp[6] = $arrFaxStatus['ttyIAX' . $fax['dev_id']].' on ttyIAX' . $fax['dev_id'];
         $arrData[] = $arrTmp;
     }
-    
+
+    $session = getSession();
+    $session['faxlist']['faxListStatus'] = $arrData;
+    putSession($session);
+
     $arrGrid = array("title"    => $arrLang["Virtual Fax List"],
                      "icon"     => "/modules/$module_name/images/kfaxview.png",
                      "width"    => "99%",
@@ -104,8 +116,103 @@ function listFax($smarty, $module_name, $local_templates_dir)
                                                     "property1" => "")
                                         )
                     );
-    
     $oGrid = new paloSantoGrid($smarty);
     return $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
+}
+
+function checkFaxStatus($function, $smarty, $module_name, $local_templates_dir, $arrConf, $arrLang)
+{
+    $executed_time = 1; //en segundos
+    $max_time_wait = 30; //en segundos
+    $event_flag    = false;
+    $data          = null;
+
+    $i = 1;
+    while(($i*$executed_time) <= $max_time_wait){
+        $return = $function($smarty, $module_name, $local_templates_dir, $arrConf, $arrLang);
+        $data   = $return['data'];
+        if($return['there_was_change']){
+            $event_flag = true;
+            break;
+        }
+        $i++;
+        sleep($executed_time); //cada $executed_time estoy revisando si hay algo nuevo....
+    }
+   return $data;
+}
+
+function faxListStatus($smarty, $module_name, $local_templates_dir, $arrConf, $arrLang)
+{
+    $oFax    = new paloFax();
+    $arrFax  = $oFax->getFaxList();
+    $status  = TRUE;
+    $end = count($arrFax);
+    $arrFaxStatus = $oFax->getFaxStatus();
+    $arrData    = array();
+    foreach($arrFax as $fax) {
+        $arrData[$fax['extension']] = $arrFaxStatus['ttyIAX'.$fax['dev_id']].' on ttyIAX'.$fax['dev_id'];
+    }
+
+    $statusArr    = thereChanges($arrData);
+    if(empty($statusArr))
+        $status = FALSE;
+    $jsonObject = new PaloSantoJSON();
+    if($status){ //este status es true solo cuando el tecnico acepto al customer (al hacer click)
+        //sleep(2); //por si acaso se desincroniza en la tabla customer el campo attended y llenarse los datos de id_chat y id_chat_time
+        $msgResponse["faxes"] = $statusArr;
+        $jsonObject->set_status("CHANGED");
+        $jsonObject->set_message($msgResponse);
+    }else{
+        $jsonObject->set_status("NOCHANGED");
+    }
+
+    return array("there_was_change" => $status,
+                 "data" => $jsonObject->createJSON());
+}
+
+function thereChanges($data){
+    $session = getSession();
+    $arrData = $session['faxlist']['faxListStatus'];
+    $arraResult = array();
+    foreach($arrData as $key => $value){
+        $fax = $value[1];
+        $status = $value[6];
+        if(isset($data[$fax]) & $data[$fax] != $status){
+            $arraResult[$fax] = $data[$fax];
+            $arrData[$key][6] = $data[$fax];
+        }
+    }
+    $session['faxlist']['faxListStatus'] = $arrData;
+    putSession($session);
+    return $arraResult;
+}
+
+function getSession()
+{
+    session_commit();
+    ini_set("session.use_cookies","0");
+    if(session_start()){
+        $tmp = $_SESSION;
+        session_commit();
+    }
+    return $tmp;
+}
+
+function putSession($data)//data es un arreglo
+{
+    session_commit();
+    ini_set("session.use_cookies","0");
+    if(session_start()){
+        $_SESSION = $data;
+        session_commit();
+    }
+}
+
+function getAction()
+{
+    if(getParameter("action")=="checkFaxStatus")
+        return "checkFaxStatus";
+    else
+        return "default";
 }
 ?>
