@@ -128,25 +128,25 @@ class paloSantoEmailRelay {
                    if($arrData['autentification']=="on"){
                         if(!file_exists("/etc/postfix/tls/smtpd.crt"))
                             $this->createCert($arrData['passwordCert'],$arrData['countryCert'],$arrData['provinceCert'],$arrData['localityCert'],$arrData['organizationCert'],$arrData['organizationUnitCert'],$arrData['commonNameCert']);
-                        $arrReplaces['smtpd_tls_auth_only'] = ($activated)?"no":"";
+                        $arrReplaces['smtpd_tls_auth_only'] = ($activated)?"no":"no";
                         $arrReplaces['smtp_use_tls'] = ($activated)?"yes":"no";
                         $arrReplaces['smtpd_use_tls'] = ($activated)?"yes":"no";
                         $arrReplaces['smtp_tls_note_starttls_offer'] = ($activated)?"yes":"no";
                         $arrReplaces['smtp_tls_CAfile'] = ($activated)?"/etc/postfix/tls/cacert.pem":"";
-                        $arrReplaces['smtpd_tls_loglevel'] =($activated)?1:"";
+                        $arrReplaces['smtpd_tls_loglevel'] =($activated)?2:"0";
                         $arrReplaces['smtpd_tls_received_header'] = ($activated)? "yes":"no";
                         $arrReplaces['smtpd_tls_session_cache_timeout'] = ($activated)? "3600s":"";
                         $arrReplaces['tls_random_source'] = ($activated)? "dev:/dev/urandom":"";
                         $arrReplaces['smtp_sasl_security_options'] = ($activated)?"noanonymous":"";
                     }
                     else{
-                        $arrReplaces['smtpd_tls_auth_only'] = "";
+                        $arrReplaces['smtpd_tls_auth_only'] = "no";
                         $arrReplaces['smtp_use_tls'] = "no"; 
                         $arrReplaces['smtpd_use_tls'] = "no";
                         $arrReplaces['smtp_tls_note_starttls_offer'] = "no";
-                        $arrReplaces['smtpd_tls_loglevel'] = "";
+                        $arrReplaces['smtpd_tls_loglevel'] = "2";
                         $arrReplaces['smtpd_tls_received_header'] = "no";
-                        $arrReplaces['smtpd_tls_session_cache_timeout'] = "";
+                        $arrReplaces['smtpd_tls_session_cache_timeout'] = "3600s";
                         $arrReplaces['tls_random_source'] = "";
                         $arrReplaces['smtp_tls_CAfile'] = "";
                     }
@@ -159,11 +159,11 @@ class paloSantoEmailRelay {
                 $arrReplaces['smtp_sasl_password_maps']    = "";
                 $arrReplaces['smtp_sasl_security_options'] = "noplaintext, noanonymous";
                 $arrReplaces['broken_sasl_auth_clients']   = "no";
-                $arrReplaces['smtpd_tls_auth_only'] = "";
+                $arrReplaces['smtpd_tls_auth_only'] = "no";
                 $arrReplaces['smtp_use_tls'] = "no"; 
                 $arrReplaces['smtpd_use_tls'] = "no";
                 $arrReplaces['smtp_tls_note_starttls_offer'] = "no";
-                $arrReplaces['smtpd_tls_loglevel'] = "";
+                $arrReplaces['smtpd_tls_loglevel'] = "0";
                 $arrReplaces['smtpd_tls_received_header'] = "no";
                 $arrReplaces['smtpd_tls_session_cache_timeout'] = "";
                 $arrReplaces['tls_random_source'] = "";
