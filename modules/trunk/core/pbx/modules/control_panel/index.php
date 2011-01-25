@@ -79,6 +79,9 @@ function _moduleContent(&$smarty, $module_name)
         case "refresh":
             $content = waitingChanges("refreshAction", $pDB1, $pDB2);
             break;
+        case "getAllData":
+            $content = getAllDataAction($pDB1, $pDB2);
+            break;
         case "savechange":
             $content = savechangeAction($pDB1, $pDB2);
             break;
@@ -88,11 +91,11 @@ function _moduleContent(&$smarty, $module_name)
         case "saveresize":
             $content = saveresizeAction($pDB1, $pDB2);
             break;
+        case "loadBoxes":
+            $content = loadBoxesAction($pDB1, $pDB2, $module_name);
+            break;
         case "loadArea":
             $content = loadAreaAction($pDB1, $pDB2);
-            break;
-        case "loadArea2":
-            $content = loadArea2Action($pDB1, $pDB2);
             break;
         case "saveEdit":
             $content = saveEditAction($pDB1, $pDB2);
@@ -113,10 +116,15 @@ function viewFormControlPanel($smarty, $module_name, $local_templates_dir, &$pDB
     $oForm = new paloForm($smarty,array());
     $arrDevices = $pControlPanel->getAllDevicesARRAY();
     $arrAreas = $pControlPanel->getDesignArea();
-    $arrQueues  = $pControlPanel->getAllQueuesARRAY2();
-    $arrDAHDITrunks  = $pControlPanel->getDAHDITrunksARRAY();
-    $arrSIPTrunks = $pControlPanel->getSIPTrunksARRAY();
-    $arrConferences = $pControlPanel->getConferences();
+  //  $arrQueues  = $pControlPanel->getAllQueuesARRAY2();
+    //$arrDAHDITrunks  = $pControlPanel->getDAHDITrunksARRAY();
+  //  $arrSIPTrunks = $pControlPanel->getSIPTrunksARRAY();
+  //  $arrConferences = $pControlPanel->getConferences();
+    $session = getSession();
+    if(isset($session['operator_panel'])){
+        unset($session['operator_panel']);
+        putSession($session);
+    }
     $smarty->assign("module_name",$module_name);
     $smarty->assign("arrDevicesExten", isset($arrDevices[1])?$arrDevices[1]:null);
     $smarty->assign("arrDevicesArea1", isset($arrDevices[2])?$arrDevices[2]:null);
@@ -126,14 +134,14 @@ function viewFormControlPanel($smarty, $module_name, $local_templates_dir, &$pDB
     $smarty->assign("lengthArea2", isset($arrDevices[2])?count($arrDevices[2]):null);
     $smarty->assign("lengthArea3", isset($arrDevices[3])?count($arrDevices[3]):null);
     $smarty->assign("lengthArea4", isset($arrDevices[4])?count($arrDevices[4]):null);
-    $smarty->assign("arrQueues", isset($arrQueues)?$arrQueues:null);
-    $smarty->assign("arrTrunks", $arrDAHDITrunks);
+  /*  $smarty->assign("arrQueues", isset($arrQueues)?$arrQueues:null);
+   // $smarty->assign("arrTrunks", $arrDAHDITrunks);
     $smarty->assign("lengthQueues", isset($arrQueues)?count($arrQueues):null);
-    $smarty->assign("lengthTrunks", isset($arrDAHDITrunks)?count($arrDAHDITrunks):null);
-    $smarty->assign("lengthTrunksSIP", isset($arrSIPTrunks)?count($arrSIPTrunks):null);
-    $smarty->assign("arrTrunksSIP", $arrSIPTrunks);
+   // $smarty->assign("lengthTrunks", isset($arrDAHDITrunks)?count($arrDAHDITrunks):null);
+  //  $smarty->assign("lengthTrunksSIP", isset($arrSIPTrunks)?count($arrSIPTrunks):null);
+   // $smarty->assign("arrTrunksSIP", $arrSIPTrunks);
     $smarty->assign("arrConferences", $arrConferences);
-    $smarty->assign("lengthConferences", isset($arrConferences)?count($arrConferences):null);
+    $smarty->assign("lengthConferences", isset($arrConferences)?count($arrConferences):null);*/
     $i=1;
     foreach($arrAreas as $key => $value){
         $smarty->assign("nameA$i", $value['a.name']);
@@ -167,7 +175,6 @@ function waitingChanges($function, &$pDB1, &$pDB2)
     while(($i*$executed_time) <= $max_time_wait){
         $return = $function($pDB1, $pDB2);
         $data   = $return['data'];
-
         //wlog("chat_server/index.php: waitingChanges-$function --> espera número $i, ¿hubo cambio?=$return[there_was_change]");
         if($return['there_was_change']){
             break;
@@ -224,69 +231,138 @@ function refreshAction(&$pDB1, &$pDB2)
     $arrPrev = array();
     $data = array();
 
-    $session = getChatSession();
+    $session = getSession();
 
-    if(isset($session['operator_panel']['prev']))
+    if(isset($session['operator_panel']['prev'])){
         $arrPrev = $session['operator_panel']['prev'];
+    }
     else{
         $session['operator_panel']['prev'] = $message;
-        putChatSession($session);
+        putSession($session);
     }
     $diff = getDifferences($message,$arrPrev);
     if(count($diff) > 0){
-        $status = true;
         $i=0;
         foreach($diff as $key => $value){
             foreach($value as $key2 => $value2){
-                if($key2 == "activity" || $key2 == "parties"){
-                    $data[$i]['Tipo'] = "Conference";
-                    $data[$i]['key'] = $message[$key]["numconf"];   
-                }/*elseif($key2 == "statusConf"){
-                    $data[$i]['Tipo'] = "Conference";
-                    $data[$i]['key'] = $arrPrev[$key]["numconf"];
-                }*/elseif($key2 == "speak_time"){
-                    if($message[$key]["context"] == "macro-dialout-trunk" && $message[$key]["trunk"] != " "){
-                         $data[$i]['Tipo'] = "Trunk";
-                         $data[$i]['key'] = $message[$key]["user"]."_".$message[$key]["trunk"];
-                    }else{
-                        $data[$i]['Tipo'] = "Extension";
-                        $data[$i]['key'] = $message[$key]["user"];
+                if($key2 == "activity"){
+                    if(!isset($session['operator_panel'][$message[$key]["numconf"]])){
+                        $data[$i]['Tipo'] = "conference";
+                        $data[$i]['key'] = $message[$key]["numconf"];
+                        $data[$i]['data'] = array($key2 => $value2);
+                        $i++;
+                        $session = getSession();
+                        $session['operator_panel'][$message[$key]["numconf"]]=array();
+                        putSession($session);
                     }
-                }elseif($key2 == "waiting"){
-                    $data[$i]['Tipo'] = "Queue";
+                }elseif($key2 == "parties"){
+                    $data[$i]['Tipo'] = "conference";
+                    $data[$i]['key'] = $message[$key]["numconf"];
+                    $data[$i]['data'] = array($key2 => $value2);
+                    $i++;
+                }elseif($key2 == "speak_time" && $value2 != " "){
+                if(!isset($session['operator_panel'][$key])){
+                            if($message[$key]["context"] == "macro-dialout-trunk" && $message[$key]["trunk"] != " "){                    
+                                $data[$i]['Tipo'] = "trunk";
+                                $data[$i]['key'] = $message[$key]["user"]."_".$message[$key]["trunk"];
+                                $data[$i]['data'] = array($key2 => $value2);
+                                $i++;   
+                                $session = getSession();
+                                $session['operator_panel'][$key]=array();
+                                putSession($session);  
+                            }elseif($message[$key]["context"] != "macro-dialout-trunk"){
+                                $data[$i]['Tipo'] = "extension";
+                                $data[$i]['key'] = $message[$key]["user"];
+                                $data[$i]['data'] = array($key2 => $value2);
+                                $i++;
+                                $session = getSession();   
+                                $session['operator_panel'][$key]=array();
+                                putSession($session);  
+                            }
+                }
+                }elseif($key2 == "waiting" || $key2 == "queueNumber"){
+                    $data[$i]['Tipo'] = "queue";
                     $data[$i]['key'] = $message[$key]["queueNumber"];
+                    $data[$i]['data'] = array($key2 => $value2);
+                    $i++;
+                }elseif($key2 == "time"){
+                    if($value2 == " "){
+                        $session = getSession();
+                        if(isset($session['operator_panel'][$message[$key]["lotNumber"]])){
+                            unset($session['operator_panel'][$message[$key]["lotNumber"]]);
+                            putSession($session);
+                        }
+                    }
+                    if(!isset($session['operator_panel'][$message[$key]["lotNumber"]])){
+                        $data[$i]['Tipo'] = "parkinglot";
+                        $data[$i]['key'] = $message[$key]["lotNumber"];
+                        $data[$i]['data'] = array($key2 => $value2);
+                        $i++;
+                        if($value2 != " "){
+                            $session = getSession();
+                            $session['operator_panel'][$message[$key]["lotNumber"]] = array();
+                            putSession($session);
+                        }
+                    }
+                }elseif($key2 == "extension" || $key2 == "lotNumber"){
+                    $data[$i]['Tipo'] = "parkinglot";
+                    $data[$i]['key'] = $message[$key]["lotNumber"];
+                    $data[$i]['data'] = array($key2 => $value2);
+                    $i++;
+                }elseif($key2 == "voicemail"){
+                    $data[$i]['Tipo'] = "extension";
+                    $data[$i]['key'] = $message[$key]["user"];
+                    $data[$i]['data'] = array($key2 => $value2."_".$message[$key]["voicemail_cnt"]);
+                    $i++;
                 }
                 else{
-                    $data[$i]['Tipo'] = "Extension";
+                    $session = getSession();
+                    $data[$i]['Tipo'] = "extension";
                     $data[$i]['key'] = $message[$key]["user"];
+                    if($value2 == "Down"){
+                        if(isset($session['operator_panel'][$key])){
+                            unset($session['operator_panel'][$key]);
+                            putSession($session);
+                        }
+                    }
+                    $data[$i]['data'] = array($key2 => $value2);
+                    $i++;
                 }
-                $data[$i]['data'] = array($key2 => $value2);
-                $i++;
             }
             if(isset($arrPrev[$key]["trunk"]) && isset($message[$key]["trunk"]))
                 if($arrPrev[$key]["trunk"] != " " && $message[$key]["trunk"] == " "){
-                    $data[$i]['Tipo'] = "Trunk";
+                    $data[$i]['Tipo'] = "trunk";
                     $data[$i]['key'] = $arrPrev[$key]["trunk"];
                     $data[$i]['data'] = array("statusTrunk" => "off");
                     $i++;
                 }
             if(isset($arrPrev[$key]["numconf"]) && isset($message[$key]["numconf"]) && isset($arrPrev[$key]["parties"]))
                 if($arrPrev[$key]["numconf"] != " " && $message[$key]["numconf"] == " " && $arrPrev[$key]["parties"] == "1"." "._tr("Participant")){
-                    $data[$i]['Tipo'] = "Conference";
+                    $data[$i]['Tipo'] = "conference";
                     $data[$i]['key'] = $arrPrev[$key]["numconf"];
                     $data[$i]['data'] = array("statusConf" => "off");
                     $i++;
+                    $session = getSession();
+                    if(isset($session['operator_panel'][$arrPrev[$key]["numconf"]])){
+                        unset($session['operator_panel'][$arrPrev[$key]["numconf"]]);
+                        putSession($session);
+                    }
                 }
         }
-        
-        $jsonObject->set_status("CHANGED");
-        $jsonObject->set_message($data);
+        if(count($data)>0){
+            $status = true;
+            $jsonObject->set_status("CHANGED");
+            $jsonObject->set_message($data);
+        }
+        else{
+            $status = false;
+            $jsonObject->set_message(array());
+        }
     }
     else{
         $status = false;
         $jsonObject->set_message(array());
     }
-  // writeLOG("access.log", print_r($data,true));
     $result = array("there_was_change" => $status, "data" => $jsonObject->createJSON());
     return $result;
 }
@@ -294,9 +370,8 @@ function refreshAction(&$pDB1, &$pDB2)
 function getDifferences($message,$arrPrev)
 {
     $result  = array();
-    $session = getChatSession();
-
-    if(count($arrPrev > 0)){
+    $session = getSession();
+    if(count($arrPrev) > 0){
         foreach($message as $key => $value){
             $tmp = array_diff($value,$arrPrev[$key]);
             if(count($tmp)>0)
@@ -304,15 +379,83 @@ function getDifferences($message,$arrPrev)
         }
         if(count($result)>0){
             $session['operator_panel']['prev'] = $message;
-            putChatSession($session);
+            putSession($session);
         }
         return $result;
     }
     else{
         $session['operator_panel']['prev'] = $message;
-        putChatSession($session);
+        putSession($session);
         return $message;
     }
+}
+
+function loadBoxesAction(&$pDB1, &$pDB2, $module_name)
+{
+    $jsonObject = new PaloSantoJSON();
+    $pControlPanel = new paloSantoControlPanel($pDB1,$pDB2);
+    $arrDevices = $pControlPanel->getAllDevicesARRAY();
+    $arrQueues  = $pControlPanel->getAllQueuesARRAY2();
+    $arrDAHDITrunks  = $pControlPanel->getDAHDITrunksARRAY();
+    $arrSIPTrunks = $pControlPanel->getSIPTrunksARRAY();
+    $arrParkinglots = $pControlPanel->getParkinglots();
+    $arrAreas = $pControlPanel->getDesignArea();
+    $arrConferences = $pControlPanel->getConferences();
+    foreach($arrAreas as $key => $value){
+        $length[] = $value['a.no_column'];
+    }
+
+     foreach($arrParkinglots as $key => $value){
+        if($value["keyword"] == "numslots")
+            $numslots = $value["data"];
+        elseif($value["keyword"] == "parkext")
+            $parkext = $value["data"];
+    }
+    $arrPark = array();
+    for($i=1;$i<=$numslots;$i++){
+        $ext = $parkext + $i;
+        $arrPark[] = array("id" => $ext, "type" => "parkinglot", "title" => "<b>Parked ($ext)</b>", "info" => $ext, "module_name" => $module_name, "img_name" => "parking.png", "status" => "on", "droppable" => false);
+    }
+    $arrDevices[1] = isset($arrDevices[1])? $arrDevices[1]:array();
+    $arrDevices[2] = isset($arrDevices[2])? $arrDevices[2]:array();
+    $arrDevices[3] = isset($arrDevices[3])? $arrDevices[3]:array();
+    $arrDevices[4] = isset($arrDevices[4])? $arrDevices[4]:array();
+    foreach($arrDevices[1] as $key => $value){
+        $arrExten[] = array("id" => $key, "type" => "extension", "title" => "<b>$key:</b>&nbsp;$value[short_name]", "info" => $value["full_name"], "module_name" => $module_name, "img_name" => "phhonez0.png", "status" => $value["status"], "droppable" => true);
+    }
+    foreach($arrDevices[2] as $key => $value){
+        $arrArea1[] = array("id" => $key, "type" => "area1", "title" => "<b>$key:</b>&nbsp;$value[short_name]", "info" => $value["full_name"], "module_name" => $module_name, "img_name" => "phhonez0.png", "status" => $value["status"], "droppable" => true);
+    }
+    foreach($arrDevices[3] as $key => $value){
+        $arrArea2[] = array("id" => $key, "type" => "area2", "title" => "<b>$key:</b>&nbsp;$value[short_name]", "info" => $value["full_name"], "module_name" => $module_name, "img_name" => "phhonez0.png", "status" => $value["status"], "droppable" => true);
+    }
+    foreach($arrDevices[4] as $key => $value){
+        $arrArea3[] = array("id" => $key, "type" => "area3", "title" => "<b>$key:</b>&nbsp;$value[short_name]", "info" => $value["full_name"], "module_name" => $module_name, "img_name" => "phhonez0.png", "status" => $value["status"], "droppable" => true);
+    }
+    foreach($arrQueues as $key => $value){
+        $arrQue[] = array("id" => $value["number"], "type" => "queue", "title" => "<b>$value[number]:</b>&nbsp;$value[name]", "info" => $value["members"], "module_name" => $module_name, "img_name" => "queue.png", "status" => "on", "droppable" => false);
+    }
+    foreach($arrDAHDITrunks as $key => $value){
+        $arrDAHDI[] = array("id" => $value, "type" => "dahdiTrunk", "title" => "<b>$value</b>", "info" => $value, "module_name" => $module_name, "img_name" => "icon_trunk2.png", "status" => "on", "droppable" => false);
+    }
+    foreach($arrSIPTrunks as $key => $value){
+        $arrSIP[] = array("id" => $value["name"], "type" => "sipTrunk", "title" => "<b>$value[name]</b>", "info" => $value["name"], "module_name" => $module_name, "img_name" => "icon_trunk2.png", "status" => $value["status"], "droppable" => false);
+    }
+    foreach($arrConferences as $key => $value){
+        $arrCon[] = array("id" => $value["exten"], "type" => "conference", "title" => "<b>$value[exten]:</b>&nbsp;$value[description]", "info" => $value["exten"], "module_name" => $module_name, "img_name" => "conference.png", "status" => "on", "droppable" => false);
+    }
+    $arrData[0] = array("length" => ceil(count($arrDevices[1])/$length[0]), "data" => $arrExten);
+    $arrData[1] = array("length" => ceil(count($arrDevices[2])/$length[1]), "data" => $arrArea1);
+    $arrData[2] = array("length" => ceil(count($arrDevices[3])/$length[2]), "data" => $arrArea2);
+    $arrData[3] = array("length" => ceil(count($arrDevices[4])/$length[3]), "data" => $arrArea3);
+    $arrData[4] = array("length" => ceil(count($arrQueues)/$length[4]), "data" => $arrQue);
+    $arrData[5] = array("length" => ceil(count($arrDAHDITrunks)/$length[5]), "data" => $arrDAHDI);
+    $arrData[6] = array("length" => ceil(count($arrSIPTrunks)/$length[6]), "data" => $arrSIP);
+    $arrData[7] = array("length" => ceil(count($arrConferences)/$length[7]), "data" => $arrCon);
+    $arrData[8] = array("length" => ceil($numslots/$length[8]), "data" => $arrPark);
+
+    $jsonObject->set_message($arrData);
+    return $jsonObject->createJSON();
 }
 
 function savechangeAction(&$pDB1, &$pDB2)
@@ -328,6 +471,98 @@ function savechangeAction(&$pDB1, &$pDB2)
     return $jsonObject->createJSON();
 }
 
+function getAllDataAction(&$pDB1, &$pDB2)
+{
+    $jsonObject = new PaloSantoJSON();
+    $pControlPanel = new paloSantoControlPanel($pDB1,$pDB2);
+    $message = $pControlPanel->getAllDevicesXML();
+    $arrPrev = array();
+    $data = array();
+
+    $session = getSession();
+
+    if(isset($session['operator_panel']['prev'])){
+        $arrPrev = $session['operator_panel']['prev'];
+    }
+    else{
+        $session['operator_panel']['prev'] = $message;
+        putSession($session);
+    }
+    $diff = $message;
+    if(count($diff) > 0){
+        $i=0;
+        foreach($diff as $key => $value){
+            foreach($value as $key2 => $value2){
+                if($key2 == "activity"){
+                    if(!isset($session['operator_panel'][$message[$key]["numconf"]])){
+                        $data[$i]['Tipo'] = "conference";
+                        $data[$i]['key'] = $message[$key]["numconf"];
+                        $data[$i]['data'] = array($key2 => $value2);
+                        $i++;
+                        $session = getSession();
+                        $session['operator_panel'][$message[$key]["numconf"]]=array();
+                        putSession($session);
+                    }
+                }elseif($key2 == "parties"){
+                    $data[$i]['Tipo'] = "conference";
+                    $data[$i]['key'] = $message[$key]["numconf"];
+                    $data[$i]['data'] = array($key2 => $value2);
+                    $i++;
+                }elseif($key2 == "speak_time" && $value2 != " "){
+                    if($message[$key]["context"] == "macro-dialout-trunk" && $message[$key]["trunk"] != " "){                    
+                        $data[$i]['Tipo'] = "trunk";
+                        $data[$i]['key'] = $message[$key]["user"]."_".$message[$key]["trunk"];
+                        $data[$i]['data'] = array($key2 => $value2);
+                        $i++;   
+                    }elseif($message[$key]["context"] != "macro-dialout-trunk"){
+                        $data[$i]['Tipo'] = "extension";
+                        $data[$i]['key'] = $message[$key]["user"];
+                        $data[$i]['data'] = array($key2 => $value2);
+                        $i++;
+                    }
+                }elseif($key2 == "waiting" || $key2 == "queueNumber"){
+                    $data[$i]['Tipo'] = "queue";
+                    $data[$i]['key'] = $message[$key]["queueNumber"];
+                    $data[$i]['data'] = array($key2 => $value2);
+                    $i++;
+                }elseif($key2 == "time"){
+                    $data[$i]['Tipo'] = "parkinglot";
+                    $data[$i]['key'] = $message[$key]["lotNumber"];
+                    $data[$i]['data'] = array($key2 => $value2);
+                    $i++;
+                }elseif($key2 == "extension" || $key2 == "lotNumber"){
+                    $data[$i]['Tipo'] = "parkinglot";
+                    $data[$i]['key'] = $message[$key]["lotNumber"];
+                    $data[$i]['data'] = array($key2 => $value2);
+                    $i++;
+                }elseif($key2 == "voicemail"){
+                    $data[$i]['Tipo'] = "extension";
+                    $data[$i]['key'] = $message[$key]["user"];
+                    $data[$i]['data'] = array($key2 => $value2."_".$message[$key]["voicemail_cnt"]);
+                    $i++;
+                }
+                else{
+                    $data[$i]['Tipo'] = "extension";
+                    $data[$i]['key'] = $message[$key]["user"];
+                    $data[$i]['data'] = array($key2 => $value2);
+                    $i++;
+                }
+        }
+    }
+    if(count($data)>0){
+        $jsonObject->set_status("CHANGED");
+        $jsonObject->set_message($data);
+    }
+    else{
+        $jsonObject->set_message(array());
+    }
+    }
+    else{
+        $jsonObject->set_message(array());
+    }
+    writeLOG("access.log", print_r($data,true));
+    return $jsonObject->createJSON();
+}
 
 function savechange2Action(&$pDB1, &$pDB2)
 {
@@ -376,13 +611,6 @@ function loadAreaAction(&$pDB1, &$pDB2)
     return $jsonObject->createJSON();
 }
 
-function loadArea2Action(&$pDB1, &$pDB2)
-{
-    $jsonObject = new PaloSantoJSON();
-    $jsonObject->set_message("");
-    return $jsonObject->createJSON();
-}
-
 function saveEditAction(&$pDB1, &$pDB2)
 {
     $jsonObject = new PaloSantoJSON();
@@ -406,7 +634,7 @@ function addExttoQueueAction(&$pDB1, &$pDB2)
     return $jsonObject->createJSON();
 }
 
-function getChatSession()
+function getSession()
 {
     session_commit();
     ini_set("session.use_cookies","0");
@@ -417,7 +645,7 @@ function getChatSession()
     return $tmp;
 }
 
-function putChatSession($data)//data es un arreglo
+function putSession($data)//data es un arreglo
 {
     session_commit();
     ini_set("session.use_cookies","0");
@@ -443,10 +671,14 @@ function getAction()
         return "view_form";
     else if(getParameter("action")=="call")
         return "call";
+    else if(getParameter("action")=="loadBoxes")
+        return "loadBoxes";
     else if(getParameter("action")=="voicemail")
         return "voicemail";
     else if(getParameter("action")=="hangup")
         return "hangup";
+    else if(getParameter("action")=="getAllData")
+        return "getAllData";
     else if(getParameter("action")=="refresh")
         return "refresh";
     else if(getParameter("action")=="savechange")
@@ -457,8 +689,6 @@ function getAction()
         return "saveresize";
     else if(getParameter("action")=="loadArea")
         return "loadArea";
-    else if(getParameter("action")=="loadArea2")
-        return "loadArea2";
     else if(getParameter("action")=="saveEdit")
         return "saveEdit";
     else if(getParameter("action")=="addExttoQueue")

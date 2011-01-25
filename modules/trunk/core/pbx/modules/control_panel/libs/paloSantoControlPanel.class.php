@@ -75,7 +75,7 @@ class paloSantoControlPanel {
         $astman = new AGI_AsteriskManager();
 
         if (!$astman->connect("$astman_host", "$astman_user" , "$astman_pwrd")) {
-            $this->errMsg = $arrLang["Error when connecting to Asterisk Manager"];
+            $this->errMsg = _tr("Error when connecting to Asterisk Manager");
         } else{
             $salida = $astman->send_request($action, $parameters);
             $astman->disconnect();
@@ -220,6 +220,24 @@ class paloSantoControlPanel {
                 }
             }
         }
+        $arrParkinglots = $this->getParkinglots();
+        $arrParking = $this->getDataParkinglots();
+        foreach($arrParkinglots as $key => $value){
+        if($value["keyword"] == "numslots")
+            $numslots = $value["data"];
+        elseif($value["keyword"] == "parkext")
+            $parkext = $value["data"];
+        }
+        for($i=0;$i<$numslots;$i++){
+            $time = " ";
+            $extension = " ";
+            if(isset($arrParking[$i+1+$parkext])){
+                $time = $arrParking[$i+1+$parkext]["time"];
+                $extension = $arrParking[$i+1+$parkext]["extension"];
+            }
+            $arrRecords[] = array("lotNumber" => $i+1+$parkext, "time" => $time, "extension" => $extension);
+        }
+        
         $arrqueue = $this->getAllQueuesARRAY2();
         foreach($arrqueue as $key => $queue){
             $arrRecords[] = array("queueNumber" => $queue["number"], "waiting" => $queue["queue_wait"]);
@@ -248,6 +266,27 @@ class paloSantoControlPanel {
             }
         }
         return $arrConf;
+    }
+
+    function getDataParkinglots()
+    {
+        $parameters = array('Command'=>"parkedcalls show");
+        $data = $this->AsteriskManagerAPI("Command",$parameters,true);
+        $arrParkinglots = split("\n",$data['data']);
+        $arrParking = array();
+        if(is_array($arrParkinglots))
+            foreach($arrParkinglots as $key => $line){
+                if(preg_match_all('/^([[:digit:]]+)[[:space:]]*([[:alnum:]|\/|\-]+)[[:space:]]*[[:alnum:]|\(|\-]+[[:space:]]*[[:alnum:]]+[[:space:]]*[[:digit:]]+[[:space:]]*[[:alnum:]|\)]+[[:space:]]*([[:digit:]]+)/',$line,$matches)){
+                    $tmp = $matches[2][0];
+                    $tmp = split("/",$tmp);
+                    $tmp = split("-",$tmp[1]);
+                    $arrParking[$matches[1][0]]["extension"] = $tmp[0];
+                    $time = $matches[3][0];
+                    $arrParking[$matches[1][0]]["time"] = $this->Sec2HHMMSS($time);
+                    $arrParking[$matches[1][0]]["parkinglot"] = $matches[1][0];
+                }
+            }
+        return $arrParking;
     }
 
     function getAllDevices()
@@ -477,6 +516,19 @@ class paloSantoControlPanel {
         return $result;
     }
 
+    function getParkinglots()
+    {
+       $query = "select * from parkinglot where keyword = 'parkext' or keyword = 'numslots';";
+       $result=$this->_DB1->fetchTable($query, true);
+
+        if($result==FALSE){
+            $this->errMsg = $this->_DB1->errMsg;
+            return array();
+        }
+        
+        return $result;
+    }
+
     function getTrunkStatus($value,$tech)
     {
         if($tech == "SIP")
@@ -641,9 +693,11 @@ class paloSantoControlPanel {
             $xmlRecords .= "<areas>\n";
             foreach($arrAreas as $key => $area_data){          
                 $xmlRecords .= "  <area_box>\n";
+                $xmlRecords .= "    <id>{$area_data['a.id']}</id>\n";
                 $xmlRecords .= "    <name>{$area_data['a.name']}</name>\n";
                 $xmlRecords .= "    <height>{$area_data['a.height']}</height>\n";
                 $xmlRecords .= "    <width>{$area_data['a.width']}</width>\n";
+                $xmlRecords .= "    <color>{$area_data['a.color']}</color>\n";
                 //$xmlRecords .= "    <description>{$area_data['a.description']}</description>\n";
                 //$xmlRecords .= "    <no_items>{$area_data['no_items']}</no_items>\n";
                 $xmlRecords .= "  </area_box>\n";
@@ -654,7 +708,7 @@ class paloSantoControlPanel {
     } 
 
     function getDesignArea() {
-        $query = "select a.name, a.height, a.width, a.description, a.no_column, count(i.id_area) no_items from area a left join item_box i on a.id=i.id_area group by a.id;";
+        $query = "select a.id, a.name, a.height, a.width, a.description, a.no_column, a.color, count(i.id_area) no_items from area a left join item_box i on a.id=i.id_area group by a.id;";
         $result=$this->_DB2->fetchTable($query, true);
 
         if($result==FALSE){

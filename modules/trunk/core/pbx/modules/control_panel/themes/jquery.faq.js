@@ -46,6 +46,7 @@
         if(typeof 2 == 'number') $('dt:eq('+2+')').trigger('click');
         if(typeof 3 == 'number') $('dt:eq('+3+')').trigger('click');
         if(typeof 4 == 'number') $('dt:eq('+4+')').trigger('click');
+        if(typeof 5 == 'number') $('dt:eq('+5+')').trigger('click');
   	});
   };
 

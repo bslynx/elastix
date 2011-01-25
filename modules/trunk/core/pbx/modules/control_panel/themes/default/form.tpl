@@ -1,6 +1,3 @@
-<link   type="text/css"        href="/libs/js/jquery/css/ui-lightness/jquery-ui-1.7.2.custom.css" rel="stylesheet" />
-<script type="text/javascript" src ="/libs/js/jquery/js/jquery-1.3.2.min.js"></script>
-<script type="text/javascript" src ="/libs/js/jquery/js/jquery-ui-1.7.2.custom.min.js"></script>
 
 <link rel="stylesheet"         href="modules/{$module_name}/themes/faq.css" type="text/css" />
 <script type="text/javascript" src ="/modules/{$module_name}/themes/jquery.faq.js"></script>
@@ -18,126 +15,31 @@
     </div>
 
     <ul id="sortable-list1">
-    <div id="contentExtension">
+    <div id="area_1" class="left_side">
         <li id="headExtension">
         {$descripArea1} 
         <table border ='0' cellspacing="0" cellpadding="0">
-            <tr>
-                {counter start=0 skip=1 print=false assign=cnt}
-                {foreach key=ext item=ext_info name=arrExtInfo from=$arrDevicesExten}
-                {math assign="p" equation="ceil($lengthExten/$size1)"}
-                {if $cnt%$p==0}
-                <td valign='top'>
-                    <table border ='0' cellspacing="0" cellpadding="0">
-                {/if}
-                        <tr>
-                            <td class="areaDrop" id="dev_{$ext}">
-                              {if $ext_info.status eq 'on'}
-                                <div class="item_box" id="ext_{$ext}" >
-                              {elseif $ext_info.status eq 'off'}
-                                <div class="item_box item_boxOff" id="ext_{$ext}" >
-                              {/if}
-                                    <div style='float:left;border: black solid 0px'>
-                                        <a class="tooltipInfo" href="#"><img class="infor_box" src="modules/{$module_name}/images/info.png" /><span>{$ext_info.full_name}&nbsp;</span></a>
-                                    </div>
-                                    <div style='float:left;width:115px;text-align:left;padding-left:4px;'>
-                                        <b>{$ext}:</b>&nbsp;{$ext_info.short_name}<br /><span class="monitor">&nbsp;&nbsp;</span><span class="monitor">&nbsp;</span>
-                                    </div>
-                                    <div style='border: black solid 0px; float:left'>
-                                        {if $ext_info.voicemail eq 1}<a class="Ntooltip" href="#"><img id="mail_{$ext}" class="mail_box" src="modules/{$module_name}/images/mail.png"/><span>{$ext_info.voicemail_cnt}&nbsp;</span></a>{/if}
-                                    </div>
-                                    <div style='border: black solid 0px'>
-                                        <img id="phone_{$ext}" class="phone_box" src="modules/{$module_name}/images/phhonez0.png" />
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                {if ($cnt+1)%$p==0 or $smarty.foreach.arrExtInfo.last}
-                    </table>
-                </td>
-                {/if}
-                {counter}
-                {/foreach}
+            <tr id="tableExtension">
             </tr>
         </table>
         </li>
-    </div><!--End ContentExtensions -->
+    </div>
 
-    <div id="contentTrunks">
+    <div id="area_6" class="left_side">
         <li id="headTrunks">
         {$descripArea6}
             <table border ='0' cellspacing="0" cellpadding="0">
-                <tr>
-                    {counter start=0 skip=1 print=false assign=cnt}
-                    {foreach key=tru item=trun_info name=arrTrunkInfo from=$arrTrunks}
-                    {math assign="p" equation="ceil($lengthTrunks/$size6)"}
-                    {if $cnt%$p==0}
-                    <td valign='top'>
-                        <table border ='0' cellspacing="0" cellpadding="0">
-                    {/if}
-                            <tr>
-                                <td >
-                                    <div class="trunk_box" id="tru_{$trun_info}" >
-                                        <div style='float:left;border: black solid 0px'>
-                                            <a class="tooltipInfo" href="#"><img class="infor_box" src="modules/{$module_name}/images/info.png" /><span>{$trun_info}&nbsp;</span></a>
-                                        </div>
-                                        <div style='float:left;width:115px;text-align:left;padding-left:4px;' id="trunks">
-                                            &nbsp;<b>{$trun_info}</b><br /><span class="monitor">&nbsp;&nbsp;</span><span class="monitor">&nbsp;</span>
-                                        </div>
-                                        <div style='border: black solid 0px'>
-                                            <img id="trun_{$tru}" class="phone_boxtrunk" src="modules/{$module_name}/images/icon_trunk2.png" />
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                    {if ($cnt+1)%$p==0  or $smarty.foreach.arrTrunkInfo.last}
-                        </table>
-                    </td>
-                    {/if}
-                    {counter}
-                    {/foreach}
+                <tr id="tableDAHDITrunks">
                 </tr>
             </table>
         </li>
     </div><!--End ContentTrunks -->
 
-    <div id="contentTrunksSIP">
+    <div id="area_7" class="left_side">
         <li id="headTrunksSIP">
         {$descripArea7}
             <table border ='0' cellspacing="0" cellpadding="0">
-                <tr>
-                    {counter start=0 skip=1 print=false assign=cnt}
-                    {foreach key=truSIP item=trunSIP_info name=arrSIPTrunkInfo from=$arrTrunksSIP}
-                    {math assign="p" equation="ceil($lengthTrunksSIP/$size7)"}
-                    {if $cnt%$p==0}
-                    <td valign='top'>
-                        <table border ='0' cellspacing="0" cellpadding="0">
-                    {/if}
-                            <tr>
-                                <td >
-                                  {if $trunSIP_info.status eq 'on'}
-                                    <div class="trunk_box" id="tru_{$trunSIP_info.name}" >
-                                  {elseif $trunSIP_info.status eq 'off'}
-                                    <div class="trunk_box trunk_boxOff" id="tru_{$trunSIP_info.name}" >
-                                  {/if}
-                                        <div style='float:left;border: black solid 0px'>
-                                            <a class="tooltipInfo" href="#"><img class="infor_box" src="modules/{$module_name}/images/info.png" /><span>{$trunSIP_info.name}&nbsp;</span></a>
-                                        </div>
-                                        <div style='float:left;width:115px;text-align:left;padding-left:4px;' id="trunksSIP">
-                                            &nbsp;<b>{$trunSIP_info.name}</b><br /><span class="monitor">&nbsp;&nbsp;</span><span class="monitor">&nbsp;</span>
-                                        </div>
-                                        <div style='border: black solid 0px'>
-                                            <img id="trun_{$truSIP}" class="phone_boxtrunk" src="modules/{$module_name}/images/icon_trunk2.png" />
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                    {if ($cnt+1)%$p==0  or $smarty.foreach.arrSIPTrunkInfo.last}
-                        </table>
-                    </td>
-                    {/if}
-                    {counter}
-                    {/foreach}
+                <tr id="tableSIPTrunks">
                 </tr>
             </table>
         </li>
@@ -150,193 +52,46 @@
         <ul id="sortable-list2" class="sortable">
             <li class="state1">
             <dt id="headArea1">{$descripArea2} -- {$lengthArea2} ext<div  style = 'float:right;'><span id="editArea2">[Edit Name]</span></div></dt>
-            <dd id="contentArea1">
-                <!--<div id="headArea1">{$descripArea2}  {$lengthArea2} Extensions<span id="editArea2">[Edit Name]</span></div>-->
-                <!--pregunto si la tabla item_box es null o arrExtInfoA1 es vacia de iddevices entonces muestra-->
-                {if $arrDevicesArea1==null}     
-                <div id="subContent1" class="areaDropSub1"> </div>
-                <div id="subcontent2" class="areaDropSub1"> </div> 
-                {elseif $arrDevicesArea1!=null}
-                <!--caso contrario sera una tabla con los devices que esten en dentro de la tabla item_box-->
+            <dd id="area_2" class="right_side">
                 <table border ='0' cellspacing="0" cellpadding="0">
-                    <tr><br />
-                        {counter start=0 skip=1 print=false assign=cnt}
-                        {foreach key=extA1 item=ext_infoA1 name=arrExtInfoA1 from=$arrDevicesArea1}
-                        {math assign="p" equation="ceil($lengthArea2/$size2)"}
-                        {if $cnt%$p==0}
-                        <td valign='top'>
-                            <table border ='0' cellspacing="0" cellpadding="0">
-                        {/if}
-                            <tr>
-                                <td class="areaDrop" id="dev_{$extA1}" >
-                                {if $ext_infoA1.status eq 'on'}
-                                    <div class="item_box" id="ext_{$extA1}" >
-                                {elseif $ext_infoA1.status eq 'off'}
-                                    <div class="item_box item_boxOff" id="ext_{$extA1}" >
-                                {/if}
-                                        <div style='float:left;border: black solid 0px'>
-                                            <a class="tooltipInfo" href="#"><img class="infor_box" src="modules/{$module_name}/images/info.png" /><span>{$ext_infoA1.full_name}&nbsp;</span></a>
-                                        </div>
-                                        <div style='float:left;width:115px;text-align:left;padding-left:4px;'>
-                                            <b>{$extA1}:</b>&nbsp;{$ext_infoA1.short_name}<br /><span class="monitor">{$ext_infoA1.call_dstn}&nbsp;&nbsp;</span><span class="monitor">{$ext_infoA1.speak_time}&nbsp;</span>
-                                        </div>
-                                        <div style='float:left;border: black solid 0px'>
-                                            {if $ext_infoA1.voicemail eq 1}<a class="Ntooltip" href="#"><img id="mail_{$extA1}" class="mail_box" src="modules/{$module_name}/images/mail.png" /><span>{$ext_infoA1.voicemail_cnt}&nbsp;</span></a>{/if}
-                                        </div>
-                                        <div style='border: black solid 0px'>
-                                            <img id="phone_{$extA1}" class="phone_box" src="modules/{$module_name}/images/phhonez0.png" />
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                        {if ($cnt+1)%$p==0  or $smarty.foreach.arrExtInfoA1.last}
-                            </table>
-                        </td>
-                        {/if}
-                        {counter}
-                        {/foreach}
+                    <tr id="tableArea1"><br />
                     </tr>
                 </table>
-                {/if}
             </dd>
             </li>
-    
             <li class="state1">
             <dt id="headArea2">{$descripArea3} -- {$lengthArea3} ext<div  style = 'float:right;'><span id="editArea3">[Edit Name]</span></div></dt>
-            <dd id="contentArea2">
-                <!--<div id="headArea2">{$descripArea3}  {$lengthArea3} Extensions<span id="editArea3">[Edit Name]</span></div>-->
-                {if $arrDevicesArea2==null}
-                <div id="subContent1" class="areaDropSub2"> </div>
-                <div id="subcontent2" class="areaDropSub2"> </div>
-                {elseif $arrDevicesArea2!=null}
+            <dd id="area_3" class="right_side">
                 <table border ='0' cellspacing="0" cellpadding="0">
-                    <tr><br />
-                        {counter start=0 skip=1 print=false assign=cnt}
-                        {foreach key=extA2 item=ext_infoA2 name=arrExtInfoA2 from=$arrDevicesArea2}
-                        {math assign="p" equation="ceil($lengthArea3/$size3)"}
-                        {if $cnt%$p==0}
-                        <td valign='top'>
-                            <table border ='0' cellspacing="0" cellpadding="0">
-                        {/if}
-                            <tr>
-                                <td class="areaDrop" id="dev_{$extA2}">
-                                {if $ext_infoA2.status eq 'on'}
-                                    <div class="item_box" id="ext_{$extA2}" >
-                                {elseif $ext_infoA2.status eq 'off'}
-                                    <div class="item_box item_boxOff" id="ext_{$extA2}" >
-                                {/if}
-                                        <div style='float:left;border: black solid 0px'>
-                                            <a class="tooltipInfo" href="#"><img class="infor_box" src="modules/{$module_name}/images/info.png" /><span>{$ext_infoA2.full_name}&nbsp;</span></a>
-                                        </div>
-                                        <div style='float:left;width:115px;text-align:left;padding-left:4px;'>
-                                            <b>{$extA2}:</b>&nbsp;{$ext_infoA2.short_name}<br /><span class="monitor">{$ext_infoA2.call_dstn}&nbsp;&nbsp;</span><span class="monitor">{$ext_infoA2.speak_time}&nbsp;</span>
-                                        </div>
-                                        <div style='float:left;border: black solid 0px'>
-                                            {if $ext_infoA2.voicemail eq 1}<a class="Ntooltip" href="#"><img id="mail_{$extA2}" class="mail_box" src="modules/{$module_name}/images/mail.png" /><span>{$ext_infoA2.voicemail_cnt}&nbsp;</span></a>{/if}
-                                        </div>
-                                        <div style='border: black solid 0px'>
-                                            <img id="phone_{$extA2}" class="phone_box" src="modules/{$module_name}/images/phhonez0.png" />
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                        {if ($cnt+1)%$p==0  or $smarty.foreach.arrExtInfoA2.last}
-                            </table>
-                        </td>
-                        {/if}
-                        {counter}
-                        {/foreach}
+                    <tr id="tableArea2"><br />
                     </tr>
                 </table>
-                {/if}
             </dd>
             </li> 
-    
             <li class="state1">
             <dt id="headArea3">{$descripArea4} -- {$lengthArea4} ext<div  style = 'float:right;'><span id="editArea4">[Edit Name]</span></div></dt>
-            <dd id="contentArea3">
-                <!--<div id="headArea3">{$descripArea4}  {$lengthArea4} Extensions<span id="editArea4">[Edit Name]</span></div>-->
-                {if $arrDevicesArea3==null}
-                <div id="subContent1" class="areaDropSub3"> </div>
-                <div id="subcontent2" class="areaDropSub3"> </div>
-                {elseif $arrDevicesArea3!=null}
+            <dd id="area_4" class="right_side">
                 <table border ='0' cellspacing="0" cellpadding="0">
-                    <tr><br />
-                        {counter start=0 skip=1 print=false assign=cnt}
-                        {foreach key=extA3 item=ext_infoA3 name=arrExtInfoA3 from=$arrDevicesArea3}
-                        {math assign="p" equation="ceil($lengthArea4/$size4)"}
-                        {if $cnt%$p==0}
-                        <td valign='top'>
-                            <table border ='0' cellspacing="0" cellpadding="0">
-                        {/if}
-                                <tr>
-                                <td class="areaDrop" id="dev_{$extA3}">
-                                {if $ext_infoA3.status eq 'on'}
-                                    <div class="item_box" id="ext_{$extA3}" >
-                                {elseif $ext_infoA3.status eq 'off'}
-                                    <div class="item_box item_boxOff" id="ext_{$extA3}" >
-                                {/if}
-                                        <div style='float:left;border: black solid 0px'>
-                                            <a class="tooltipInfo" href="#"><img class="infor_box" src="modules/{$module_name}/images/info.png" /><span>{$ext_infoA3.full_name}&nbsp;</span></a>
-                                        </div>
-                                        <div style='float:left;width:115px;text-align:left;padding-left:4px;'>
-                                            <b>{$extA3}:</b>&nbsp;{$ext_infoA3.short_name}<br /><span class="monitor">{$ext_infoA3.call_dstn}&nbsp;&nbsp;</span><span class="monitor">{$ext_infoA3.speak_time}&nbsp;</span>
-                                        </div>
-                                        <div style='float:left;border: black solid 0px'>
-                                            {if $ext_infoA3.voicemail eq 1}<a class="Ntooltip" href="#"><img id="mail_{$extA3}" class="mail_box" src="modules/{$module_name}/images/mail.png" /><span>{$ext_infoA3.voicemail_cnt}&nbsp;</span></a>{/if}
-                                        </div>
-                                        <div style='border: black solid 0px'>
-                                            <img id="phone_{$extA3}" class="phone_box" src="modules/{$module_name}/images/phhonez0.png" />
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                        {if ($cnt+1)%$p==0  or $smarty.foreach.arrExtInfoA3.last}
-                            </table>
-                        </td>
-                        {/if}
-                        {counter}
-                        {/foreach}
+                    <tr id="tableArea3"><br />
                     </tr>
                 </table>
-                {/if}
             </dd>
             </li>
-    
             <li class="state1">
             <dt id="headConferences">{$descripArea8} </dt>
-            <dd id="contentConferences" >
-                <!--<div id="headQueues">{$descripArea5} </div>-->
+            <dd id="area_8" class="right_side" >
                 <table border ='0' cellspacing="0" cellpadding="0">
-                    <tr><br />
-                        {counter start=0 skip=1 print=false assign=cnt}
-                        {foreach key=conf item=conf_info name=arrConfInfo from=$arrConferences}
-                        {math assign="p" equation="ceil($lengthConferences/$size8)"}
-                        {if $cnt%$p==0}
-                        <td valign='top'>
-                            <table border ='0' cellspacing="0" cellpadding="0">
-                        {/if}
-                                <tr>
-                                    <td >
-                                        <div class="queue_box" id="conf_{$conf}" >
-                                            <div style='float:left;border: black solid 0px'>
-                                                <a class="tooltipInfo" href="#"><img class="infor_box" src="modules/{$module_name}/images/info.png" /><span>{$conf_info.exten}&nbsp;</span></a>
-                                            </div>
-                                            <div style='float:left;width:115px;text-align:left;padding-left:4px;' id="conference_{$conf_info.exten}">
-                                            <b>{$conf_info.exten}:</b>&nbsp;{$conf_info.description}<br /><span class="monitor">&nbsp;&nbsp;</span><span class="monitor">&nbsp;</span>
-                                           </div>
-                                            <div style='border: black solid 0px'>
-                                                <img id="phone_{$conf_info.exten}" class="conference_box" src="modules/{$module_name}/images/conference.png" />
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                        {if ($cnt+1)%$p==0  or $smarty.foreach.arrConfInfo.last}
-                            </table>
-                        </td>
-                        {/if}
-                        {counter}
-                        {/foreach}
+                    <tr id="tableConferences"><br />
+                    </tr>
+                </table>
+            </dd>
+            </li>
+
+            <li class="state1">
+            <dt id="headParkinglots">{$descripArea9} </dt>
+            <dd id="area_9" class="right_side">
+                <table border ='0' cellspacing="0" cellpadding="0">
+                    <tr id="tableParkinglots"><br />
                     </tr>
                 </table>
             </dd>
@@ -344,47 +99,16 @@
 
             <li class="state1">
             <dt id="headQueues">{$descripArea5} </dt>
-            <dd id="contentQueues" >
-                <!--<div id="headQueues">{$descripArea5} </div>-->
+            <dd id="area_5" class="right_side" >
                 <table border ='0' cellspacing="0" cellpadding="0">
-                    <tr><br />
-                        {counter start=0 skip=1 print=false assign=cnt}
-                        {foreach key=que item=queu_info name=arrQueuInfo from=$arrQueues}
-                        {math assign="p" equation="ceil($lengthQueues/$size5)"}
-                        {if $cnt%$p==0}
-                        <td valign='top'>
-                            <table border ='0' cellspacing="0" cellpadding="0">
-                        {/if}
-                                <tr>
-                                    <td >
-                                        <div class="queue_box" id="que_{$que}" >
-                                            <div style='float:left;border: black solid 0px'>
-                                                <a class="tooltipInfo" href="#"><img class="infor_box" src="modules/{$module_name}/images/info.png" /><span>{$queu_info.members}&nbsp;</span></a>
-                                            </div>
-                                            <div style='float:left;width:115px;text-align:left;padding-left:4px;' id = "queue_{$queu_info.number}">
-                                                <b>{$queu_info.number}:</b>&nbsp;{$queu_info.number}<br />calls waiting:&nbsp;<span class="monitor">{$queu_info.queue_wait}&nbsp;</span>
-                                            </div>
-                                            <div style='border: black solid 0px'>
-                                                <img id="phone_{$queu_info.number}" class="queu_box" src="modules/{$module_name}/images/queue.png" />
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                        {if ($cnt+1)%$p==0  or $smarty.foreach.arrQueuInfo.last}
-                            </table>
-                        </td>
-                        {/if}
-                        {counter}
-                        {/foreach}
+                    <tr id="tableQueues"><br />
                     </tr>
                 </table>
             </dd>
             </li>
         </ul>
-        
         <ul id="sortable-hidden" class="sortable">
             <li class="state2">
-    
             </li>
         </ul>
     </dl>
@@ -408,6 +132,7 @@
 <input type="hidden" id="nameArea6" name="nameArea6" value="{$nameA6}"/>
 <input type="hidden" id="nameArea7" name="nameArea7" value="{$nameA7}"/>
 <input type="hidden" id="nameArea8" name="nameArea8" value="{$nameA8}"/>
+<input type="hidden" id="nameArea9" name="nameArea9" value="{$nameA9}"/>
 
 <input type="hidden" id="heightA1" name="heightA1" value="{$height1}"/>
 <input type="hidden" id="heightA2" name="heightA2" value="{$height2}"/>
@@ -417,6 +142,7 @@
 <input type="hidden" id="heightA6" name="heightA6" value="{$height6}"/>
 <input type="hidden" id="heightA7" name="heightA7" value="{$height7}"/>
 <input type="hidden" id="heightA8" name="heightA8" value="{$height8}"/>
+<input type="hidden" id="heightA9" name="heightA9" value="{$height9}"/>
 
 <input type="hidden" id="widthA1" name="widthA1" value="{$width1}"/>
 <input type="hidden" id="widthA2" name="widthA2" value="{$width2}"/>
@@ -426,3 +152,4 @@
 <input type="hidden" id="widthA6" name="widthA6" value="{$width6}"/>
 <input type="hidden" id="widthA7" name="widthA7" value="{$width7}"/>
 <input type="hidden" id="widthA8" name="widthA8" value="{$width8}"/>
+<input type="hidden" id="widthA9" name="widthA9" value="{$width9}"/>

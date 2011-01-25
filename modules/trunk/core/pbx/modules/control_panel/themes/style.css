@@ -7,109 +7,6 @@
     margin: 0;
 }
 
-.phone_box { 
-    width: 23px;
-    height: 17px;
-    padding: 2px 2px 0 0;
-    border: 0;
-    z-index:997;/**/
-}
-
-.conference_box { 
-    width: 23px;
-    height: 17px;
-    padding: 2px 2px 0 0;
-    border: 0;
-    z-index:997;/**/
-}
-
-.queu_box { 
-    width: 23px;
-    height: 17px;
-    padding: 2px 2px 0 0;
-    border: 0;
-    z-index:997;/**/
-}
-
-.mail_box {
-    width: 17px;
-    height: 11px;
-    padding: 6px 3px 0 0;
-    border: 0;
-}
-
-.infor_box {
-    width: 18px;
-    height: 18px;
-    padding: 0;
-    border: 0;
-}
-
-.item_box{
-    position:relative;
-    -moz-border-radius: 9px 9px 9px 9px;
-    width: 182px;/*178*/
-    height: 24px;/*22*/
-    margin: 1px 1px 1px 1px;
-    padding: 0px 0px 0px 1px;
-    background-color: #fbaa3f;
-    border: black solid 1px;
-    color: black;
-    font-size: 10px;
-    line-height:112%;
-}
-
-
-
-#contentExtension {
-    /*padding: 3px 3px 3px 3px;*/
-    padding: 0;
-    float: left;
-    /*margin: 0px 0 0 1px;*/
-    margin: 0px 0 0 0px;
-    background-color:#DEE4FA;
-    width: auto;/*562*/
-    height: auto;/*590*/
-    border: black solid 1px;
-    z-index:6;/*10*/
-}
-
-#contentTrunks {
-    /*padding: 3px 3px 3px 3px;*/
-    padding: 0;
-    float: left;
-    margin: 0px 0 0 0px;
-    background-color:#D0FFD0;
-    width: auto;/*380*/
-    height: auto;/*590*/
-    border: black solid 1px;
-    z-index:5;
-}
-
-#contentTrunksSIP {
-    /*padding: 3px 3px 3px 3px;*/
-    padding: 0;
-    float: left;
-    margin: 0px 0 0 0px;
-    background-color:#D0FFFF;
-    width: auto;/*380*/
-    height: auto;/*590*/
-    border: black solid 1px;
-    z-index:5;
-}
-
-#contentConferences {
-    /*padding: 3px 3px 3px 3px;*/
-    padding: 0;
-    float: left;
-    margin: 0px 0 0 0px;
-    background-color:#DACCCA;
-    width: auto;/*380*/
-    height: auto;/*590*/
-    border: black solid 1px;
-    z-index:5;
-}
-
 #faq {
     padding: 0px 0px 0px 0px;
     float: left;
@@ -120,16 +17,13 @@
     z-index:-1;
 }
 
-#contentArea1 {
-    /*padding: 1px 1px 1px 1px;*/
+.left_side, .right_side{
     padding: 0px 0px 0px 0px;
     float: left;
     margin: 0;
-    background-color:#FCF9D2;
     width: auto;/*380*/
     height: auto;/*150*/
     border: black solid 1px;
-    /*z-index:0;*//**/
 }
 
 #headArea1 {
@@ -140,16 +34,6 @@
     border-bottom: black solid 0px;
 }
 
-#contentArea2 {
-   /* padding: 1px 1px 1px 1px;*/
-    padding: 0;
-    float: left;
-    margin: 0px 0 0 0px;
-    background-color:#D4DCDC;
-    width: 380px;
-    height: auto;
-    border: black solid 1px;
-}
 
 #headArea2 {
     /*float: left;*/
@@ -159,34 +43,12 @@
     border-bottom: black solid 0px;
 }
 
-#contentArea3 {
-    /*padding: 1px 1px 1px 1px;*/
-    padding: 0;
-    float: left;
-    margin: 0px 0 0 0px;
-    background-color:#E0FFEF;
-    width: 380px;
-    height: auto;
-    border: black solid 1px;
-}
-
 #headArea3 {
     /*float: left;*/
     border-top: black solid 1px;
     border-right: black solid 1px;
     border-left: black solid 1px;
     border-bottom: black solid 0px;
-}
-
-#contentQueues {
-    /*padding: 1px 1px 1px 1px;*/
-    padding: 0;
-    float: left;
-    margin: 0px 0 0 0px;
-    background-color:#FED0CF;
-    width: 380px;
-    height: auto;
-    border: black solid 1px;
 }
 
 #headQueues {
@@ -225,123 +87,6 @@
     color:#FFFFFF;
 }
 
-.monitor {
-    color: blue;
-    font-size: 9px;
-    padding: 5px;
-}
-
-/* ESTILO PARA TOOLTIP EMAIL*/
-a.Ntooltip {
-    position: relative; /* es la posici�n normal */
-    text-decoration: none ; /* forzar sin subrayado */
-}
-
-a.Ntooltip:hover {
-    z-index:999; /* va a estar por encima de todo */
-}
-
-a.Ntooltip span {
-    display: none; /* el elemento va a estar oculto */
-}
-
-a.Ntooltip:hover span {
-    display: block; /* se fuerza a mostrar el bloque */
-    position: absolute; /* se fuerza a que se ubique en un lugar de la pantalla */
-    top:1em; 
-    left:2em; /* donde va a estar */
-    width:80px; /* el ancho por defecto que va a tener */
-    height:20px;
-    padding:10px; /* la separaci�n entre el contenido y los bordes */
-    background-color: #6CF; /* el color de fondo por defecto */
-    border: 1px solid #36F;
-    
-    -moz-border-radius-topleft:12px;
-    -moz-border-radius-topright:12px;
-    -moz-border-radius-bottomleft:12px;
-    -moz-border-radius-bottomright:12px;
-    
-    font-size:11px;
-    color: #000; /* el color de los textos por defecto */
-}
-
-
-/* ESTILO PARA TOOLTIP INFOR*/
-a.tooltipInfo {
-    position: relative; /* es la posicion normal */
-    text-decoration: none ; /* forzar sin subrayado */
-}
-
-a.tooltipInfo:hover {
-    z-index:998; /* va a estar por encima de todo */
-}
-
-a.tooltipInfo span {
-    display: none; /* el elemento va a estar oculto */
-}
-
-a.tooltipInfo:hover span{
-    display: block; /* se fuerza a mostrar el bloque */
-    position: absolute; /* se fuerza a que se ubique en un lugar de la pantalla */
-    top:1em; 
-    left:2em; /* donde va a estar */
-    width:160px; /* el ancho por defecto que va a tener */
-    height:100px;
-    padding:10px; /* la separaci�n entre el contenido y los bordes */
-    background-color: #6CF; /* el color de fondo por defecto */
-    border: 1px solid #36F;
-    
-    -moz-border-radius-topleft:12px;
-    -moz-border-radius-topright:12px;
-    -moz-border-radius-bottomleft:12px;
-    -moz-border-radius-bottomright:12px;
-    
-    font-size:11px;
-    color: #000; /* el color de los textos por defecto */
-    
-}
-
-.item_boxOff{
-    background-color: #FFEEB8;
-    /*opacity: 0.55;*/
-    /*filter: alpha(opacity=50); */
-    /*z-index:2;*/
-}
-
-.queue_box{
-    position:relative;
-    -moz-border-radius: 9px 9px 9px 9px;
-    width: 182px;
-    height: 24px;
-    margin: 1px 1px 1px 1px;
-    padding: 0px 0px 0px 1px;
-    background-color: #fbaa3f;
-    border: black solid 1px;
-    color: black;
-    font-size: 10px;
-    line-height:112%;
-}
-
-.trunk_box{
-    position:relative;
-    -moz-border-radius: 9px 9px 9px 9px;
-    width: 182px;
-    height: 24px;
-    margin: 1px 1px 1px 1px;
-    padding: 0px 0px 0px 1px;
-    background-color: #fbaa3f;
-    border: black solid 1px;
-    color: black;
-    font-size: 10px;
-    line-height:112%;
-}
-
-.trunk_boxOff{
-    background-color: #FFEEB8;
-    /*opacity: 0.55;*/
-    /*filter: alpha(opacity=50); */
-    /*z-index:2;*/
-}
 
 #layer1 {
     position: absolute;
@@ -428,20 +173,6 @@ a.tooltipInfo:hover span{
     cursor: pointer;
 }
 
-.phone_boxtrunk {
-    width: 18px;
-    height: 18px;
-    padding: 2px 2px 0 0;
-    border: 0;
-}
-
-.phone_boxqueue { 
-    width: 21px;
-    height: 14px;
-    padding: 2px 2px 0 0;
-    border: 0;
-}
-
 #content {
     padding: 0px 3px 0px 0px;
     float: left;
@@ -510,4 +241,142 @@ a.tooltipInfo:hover span{
     color: black;
     font-size: 9px;
     padding: 5px;
+}
+
+.img_box { 
+    width: 23px;
+    height: 17px;
+    padding: 2px 2px 0 0;
+    border: 0;
+    z-index:997;
+}
+
+
+
+.mail_box {
+    width: 17px;
+    height: 11px;
+    padding: 6px 3px 0 0;
+    border: 0;
+}
+
+.info_img {
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    border: 0;
+}
+
+.monitor {
+    color: blue;
+    font-size: 9px;
+    padding: 5px;
+}
+
+/* ESTILO PARA TOOLTIP EMAIL*/
+a.Ntooltip {
+    position: relative; /* es la posici�n normal */
+    text-decoration: none ; /* forzar sin subrayado */
+}
+
+a.Ntooltip:hover {
+    z-index:999; /* va a estar por encima de todo */
+}
+
+a.Ntooltip span {
+    display: none; /* el elemento va a estar oculto */
+}
+
+a.Ntooltip:hover span {
+    display: block; /* se fuerza a mostrar el bloque */
+    position: absolute; /* se fuerza a que se ubique en un lugar de la pantalla */
+    top:1em; 
+    left:2em; /* donde va a estar */
+    width:80px; /* el ancho por defecto que va a tener */
+    height:20px;
+    padding:10px; /* la separaci�n entre el contenido y los bordes */
+    background-color: #6CF; /* el color de fondo por defecto */
+    border: 1px solid #36F;
+    
+    -moz-border-radius-topleft:12px;
+    -moz-border-radius-topright:12px;
+    -moz-border-radius-bottomleft:12px;
+    -moz-border-radius-bottomright:12px;
+    
+    font-size:11px;
+    color: #000; /* el color de los textos por defecto */
+}
+
+
+/* ESTILO PARA TOOLTIP INFOR*/
+a.tooltipInfo {
+    position: relative; /* es la posicion normal */
+    text-decoration: none ; /* forzar sin subrayado */
+}
+
+a.tooltipInfo:hover {
+    z-index:998; /* va a estar por encima de todo */
+}
+
+a.tooltipInfo span {
+    display: none; /* el elemento va a estar oculto */
+}
+
+a.tooltipInfo:hover span{
+    display: block; /* se fuerza a mostrar el bloque */
+    position: absolute; /* se fuerza a que se ubique en un lugar de la pantalla */
+    top:1em; 
+    left:2em; /* donde va a estar */
+    width:160px; /* el ancho por defecto que va a tener */
+    height:100px;
+    padding:10px; /* la separaci�n entre el contenido y los bordes */
+    background-color: #6CF; /* el color de fondo por defecto */
+    border: 1px solid #36F;
+    
+    -moz-border-radius-topleft:12px;
+    -moz-border-radius-topright:12px;
+    -moz-border-radius-bottomleft:12px;
+    -moz-border-radius-bottomright:12px;
+    
+    font-size:11px;
+    color: #000; /* el color de los textos por defecto */
+    
+}
+
+
+.box{
+    position:relative;
+    -moz-border-radius: 9px 9px 9px 9px;
+    width: 182px;
+    height: 24px;
+    margin: 1px 1px 1px 1px;
+    padding: 0px 0px 0px 1px;
+    border: black solid 1px;
+    color: black;
+    font-size: 10px;
+    line-height:112%;
+}
+
+.boxOn{
+    background-color: #fbaa3f;
+}
+
+.boxOff{
+    background-color: #FFEEB8;
+}
+
+.box_info{
+    float:left;
+    border: black solid 0px;
+}
+
+.box_description{
+    float:left;
+    width:115px;
+    text-align:left;
+    padding-left:4px;
+}
+
+.box_img2{
+    border: black solid 0px;
 }
