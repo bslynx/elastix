@@ -195,7 +195,7 @@ class paloSantoCDR
         // Los datos de los registros, respetando limit y offset
         $sPeticionSQL = 
             "SELECT calldate, src, dst, channel, dstchannel, disposition, uniqueid, duration, billsec, accountcode ".
-            "FROM cdr $sWhere ORDER BY calldate";
+            "FROM cdr $sWhere ORDER BY calldate DESC";
         if (!empty($limit)) {
             $sPeticionSQL .= " LIMIT ? OFFSET ?";
             array_push($paramSQL, $limit, $offset);
