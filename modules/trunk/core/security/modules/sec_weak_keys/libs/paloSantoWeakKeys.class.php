@@ -127,8 +127,9 @@ class paloSantoWeakKeys {
         $arrParam = "";
         if(isset($filter_field) && $filter_field !="" && $filter_value != ""){
             $where = "devices.id like ?";
-            $arrParam = array("$filter_value%");
-        }
+            $arrParam = array("$filter_value%",$limit,$offset);
+        }else
+             $arrParam = array($limit,$offset);
     /*    $query   = "select dev.*,".
                             "if(id=ext or id=ext1,if(id/1000<10,'$same, $short','$same'),if(id/1000<10,'$short','')) as mensaje ".
                     "from (".
@@ -155,21 +156,46 @@ class paloSantoWeakKeys {
                     "group by id order by id limit $limit offset $offset;";
 */
         //For SIP
-        $query = "select devices.id,description,data from devices,sip where devices.id=sip.id and tech = 'sip' and keyword = 'secret' and $where";
+        $query = "select devices.id,description,data from devices,sip where devices.id=sip.id and tech = 'sip' and keyword = 'secret' and $where LIMIT ? OFFSET ?";
         $result=$this->_DB->fetchTable($query, true, $arrParam);
         if($result==FALSE){
             $this->errMsg = $this->_DB->errMsg;
         }
+        $result2 = array();
+        if(count($result) < $limit){
+            $arrParam = "";
+            $where = "true";
+            if(isset($filter_field) && $filter_field !="" && $filter_value != ""){
+                $where = "devices.id like ?";
+                $arrParam = array("$filter_value%");
+            }
+            $query = "select count(*) from devices where tech = 'sip' and $where";
 
-        //For IAX
-        $query = "select devices.id,description,data from devices,iax where devices.id=iax.id and tech = 'iax2' and keyword = 'secret' and $where";
-        $result2= $this->_DB->fetchTable($query, true);
-        if($result2==FALSE){
-            $this->errMsg = $this->_DB->errMsg;
+            $total=$this->_DB->getFirstRowQuery($query,false,$arrParam);
+            if($total==FALSE){
+                $this->errMsg = $this->_DB->errMsg;
+                return 0;
+            }
+            $totalSIP = $total[0];
+            if($offset <= $totalSIP)
+                $offset = 0;
+            else
+                $offset = $offset-$totalSIP;
+            $limit = $limit - count($result);
+            if(isset($filter_field) && $filter_field !="" && $filter_value != ""){
+                $where = "devices.id like ?";
+                $arrParam = array("$filter_value%",$limit,$offset);
+            }else
+                $arrParam = array($limit,$offset);
+            //For IAX
+            $query = "select devices.id,description,data from devices,iax where devices.id=iax.id and tech = 'iax2' and keyword = 'secret' and $where LIMIT ? OFFSET ?";
+            $result2= $this->_DB->fetchTable($query, true, $arrParam);
+            if($result2==FALSE){
+                $this->errMsg = $this->_DB->errMsg;
+            }
         }
         $final[] = $result;
         $final[] = $result2;
-                   
         return $final;
     }
 

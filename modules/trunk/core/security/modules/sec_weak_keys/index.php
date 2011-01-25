@@ -101,14 +101,13 @@ function reportWeakKeys($smarty, $module_name, $local_templates_dir, &$pDB, $arr
     $oGrid->pagingShow(true); // show paging section.
     $oGrid->setTitle(_tr("Weak Secrets"));
     $oGrid->setNameFile_Export(_tr("Weak Secrets"));
-
     if($oGrid->isExportAction()){
         $limit = $total;
         $offset = 0;
         $bExportation = true;
     }
     else{
-        $limit  = 20;
+        $limit  = 30;
         $oGrid->setLimit($limit);
         $oGrid->setTotal($total);
         $offset = $oGrid->calculateOffset();
