@@ -12,7 +12,8 @@ CREATE TABLE filter(
     number_ip           varchar(25),
     target              varchar(15)   not null,
     rule_order          integer       not null,
-    activated           integer       not null default 1
+    activated           integer       not null default 1,
+    state               varchar(50) 
 );
 CREATE TABLE port(
     id                  integer       primary key,
@@ -62,7 +63,8 @@ INSERT INTO filter(traffic,eth_in,eth_out,ip_source,ip_destiny,protocol,sport,dp
 INSERT INTO filter(traffic,eth_in,eth_out,ip_source,ip_destiny,protocol,sport,dport,icmp_type,number_ip,target,rule_order,activated) VALUES ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0','TCP','ANY','995','','','ACCEPT',16,1);
 INSERT INTO filter(traffic,eth_in,eth_out,ip_source,ip_destiny,protocol,sport,dport,icmp_type,number_ip,target,rule_order,activated) VALUES ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0','TCP','ANY','5222','','','ACCEPT',17,1);
 INSERT INTO filter(traffic,eth_in,eth_out,ip_source,ip_destiny,protocol,sport,dport,icmp_type,number_ip,target,rule_order,activated) VALUES ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0','TCP','ANY','9090','','','ACCEPT',18,1);
-INSERT INTO filter(traffic,eth_in,eth_out,ip_source,ip_destiny,protocol,sport,dport,icmp_type,number_ip,target,rule_order,activated) VALUES ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0','ALL','','','','','REJECT',19,1);
-INSERT INTO filter(traffic,eth_in,eth_out,ip_source,ip_destiny,protocol,sport,dport,icmp_type,number_ip,target,rule_order,activated) VALUES ('FORWARD','ANY','ANY','0.0.0.0/0','0.0.0.0/0','ALL','','','','','REJECT',20,1);
+INSERT INTO filter(traffic,eth_in,eth_out,ip_source,ip_destiny,protocol,sport,dport,icmp_type,number_ip,target,rule_order,activated,state) VALUES ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0','STATE','','','','','ACCEPT',19,1,'Established,Related');
+INSERT INTO filter(traffic,eth_in,eth_out,ip_source,ip_destiny,protocol,sport,dport,icmp_type,number_ip,target,rule_order,activated) VALUES ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0','ALL','','','','','REJECT',20,1);
+INSERT INTO filter(traffic,eth_in,eth_out,ip_source,ip_destiny,protocol,sport,dport,icmp_type,number_ip,target,rule_order,activated) VALUES ('FORWARD','ANY','ANY','0.0.0.0/0','0.0.0.0/0','ALL','','','','','REJECT',21,1);
 
 INSERT INTO tmp_execute(exec_in_sys,first_time) VALUES (0,1);
