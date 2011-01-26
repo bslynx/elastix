@@ -120,8 +120,10 @@ function reportBillingRates($smarty, $module_name, $local_templates_dir, &$pDB, 
     $edit            = getParameter("edit");
 	 
 	 	 //exists Default rate in rate.db // actualizar los rates por defecto en settings
-	//$pBillingRates->existsDefaultRate($pDB3);
-
+    $cant = $pBillingRates->contRates();
+    if(isset($cant['cant']) & $cant['cant'] < 1)
+	    $pBillingRates->existsDefaultRate($pDB3);
+	    
 	$action = getAction();
 
     //begin grid parameters
