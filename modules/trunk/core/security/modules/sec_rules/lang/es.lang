@@ -92,6 +92,10 @@ $arrLangModule=array(
 "Activate FireWall" => "Activar Cortafuegos",
 "Desactivate FireWall" => "Desactivar Cortafuegos",
 "The firewall has been desactivated" => "El Cortafuegos ha sido desactivado",
-"The firewall could not be desactivated" => "El Cortafuegos no pudo ser desactivado"
+"The firewall could not be desactivated" => "El Cortafuegos no pudo ser desactivado",
+"STATE" => "ESTADO",
+"Established" => "Establecido",
+"Related" => "Relacionado",
+"You have to select at least one state" => "Debe seleccionar al menos un estado"
 );
 ?>

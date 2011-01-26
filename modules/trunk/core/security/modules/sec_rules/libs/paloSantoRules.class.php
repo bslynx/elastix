@@ -170,14 +170,14 @@ class paloSantoRules {
         $port_out  = ($arrValues['port_out'] == null)      ? "" : $arrValues['port_out'];
         $type_icmp = ($arrValues['type_icmp'] == null)     ? "" : $arrValues['type_icmp'];
         $id_ip     = ($arrValues['id_ip'] == null)         ? "" : $arrValues['id_ip'];
-
+        $state     =  $arrValues['state'];
         $target    = ($arrValues['target'] == null)        ? "" : $arrValues['target'];
         $Max = $this->getMaxOrder();
         $order = 1 + $Max['lastRule'];
         $query = "INSERT INTO filter(traffic, eth_in, eth_out, ip_source, ip_destiny, protocol, ".
-                                    "sport, dport, icmp_type, number_ip, target, rule_order, activated) ".
-                 "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,1)";
-        $arrParam = array($traffic,$eth_in,$eth_out,$source,$destino,$protocol,$port_in,$port_out,$type_icmp,$id_ip,$target,$order);
+                                    "sport, dport, icmp_type, number_ip, target, rule_order, activated, state) ".
+                 "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,1,?)";
+        $arrParam = array($traffic,$eth_in,$eth_out,$source,$destino,$protocol,$port_in,$port_out,$type_icmp,$id_ip,$target,$order,$state);
         $result = $this->_DB->genQuery($query,$arrParam);
 
         if( $result == FALSE )
@@ -225,11 +225,11 @@ class paloSantoRules {
         $port_out  = ($arrValues['port_out'] == null)      ? "" : $arrValues['port_out'];
         $type_icmp = ($arrValues['type_icmp'] == null)     ? "" : $arrValues['type_icmp'];
         $id_ip     = ($arrValues['id_ip'] == null)         ? "" : $arrValues['id_ip'];
-
+        $state     =  $arrValues['state'];
         $target    = ($arrValues['target'] == null)        ? "" : $arrValues['target'];
         $orden     = ($arrValues['orden'] == null)         ?  0 : $arrValues['orden'];
-        $query = "UPDATE filter SET traffic = ?, eth_in = ?, eth_out = ?, ip_source = ?, ip_destiny = ?, protocol = ?, sport = ?, dport = ?, icmp_type = ?, number_ip = ?, target = ?, rule_order = ? WHERE id = ?";
-        $arrParam = array($traffic,$eth_in,$eth_out,$source,$destino,$protocol,$port_in,$port_out,$type_icmp,$id_ip,$target,$orden,$id);      
+        $query = "UPDATE filter SET traffic = ?, eth_in = ?, eth_out = ?, ip_source = ?, ip_destiny = ?, protocol = ?, sport = ?, dport = ?, icmp_type = ?, number_ip = ?, target = ?, rule_order = ?, state = ? WHERE id = ?";
+        $arrParam = array($traffic,$eth_in,$eth_out,$source,$destino,$protocol,$port_in,$port_out,$type_icmp,$id_ip,$target,$orden,$state,$id);
         $result = $this->_DB->genQuery($query,$arrParam);
 
         if( $result == FALSE )
@@ -605,6 +605,7 @@ class paloSantoRules {
      */ 
     function activateRules($rules,&$error)
     {
+        $i = 1;
         $this->verificar_cadenas_stickgate();
         foreach($rules as $key => $rule){
             if($rule['traffic'] == "INPUT")
@@ -629,6 +630,8 @@ class paloSantoRules {
                 $parameters.= "-p icmp ";
             if($rule['protocol'] == "IP")
                 $parameters.= "-p ip ";
+            if($rule['protocol'] == "STATE")
+                $parameters.= "-m state --state $rule[state]";
             if($rule['eth_in'] != "ANY" && $rule['eth_in'] != "")
                 $parameters.= "-i $rule[eth_in] ";
             if($rule['eth_out'] != "ANY" && $rule['eth_out'] != "")
@@ -642,6 +645,17 @@ class paloSantoRules {
                     return false;
             }else 
                 return false;
+            /*if($i == 18){
+                $comand = "sudo -u root /sbin/iptables -A ELASTIX_INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT";
+                exec($comand,$action,$retorno[$key]);
+                if($retorno[$key] == 0){
+                    $retorno[$key]= $this->iptables_save($error);
+                    if(!$retorno[$key])
+                        return false;
+                }else 
+                    return false;
+                }
+            $i++;*/
         }
         return true;
     }

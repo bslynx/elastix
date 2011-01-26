@@ -93,6 +93,10 @@ $arrLangModule=array(
 "Activate FireWall" => "Activate FireWall",
 "Desactivate FireWall" => "Desactivate FireWall",
 "The firewall has been desactivated" => "The firewall has been desactivated",
-"The firewall could not be desactivated" => "The firewall could not be desactivated"
+"The firewall could not be desactivated" => "The firewall could not be desactivated",
+"STATE" => "STATE",
+"Established" => "Established",
+"Related" => "Related",
+"You have to select at least one state" => "You have to select at least one state"
 );
 ?>

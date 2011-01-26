@@ -64,6 +64,14 @@
                 <td align="left"><b>{$id_ip.LABEL}:</b></td>
                 <td align="left">{$id_ip.INPUT}</td>
             </tr>
+            <tr class="letra12" id="id_established">
+                <td align="left"><b>{$established.LABEL}:</b></td>
+                <td align="left">{$established.INPUT}</td>
+            </tr>
+            <tr class="letra12" id="id_related">
+                <td align="left"><b>{$related.LABEL}:</b></td>
+                <td align="left">{$related.INPUT}</td>
+            </tr>
         </table>
         </fieldset>
     </div>
@@ -79,6 +87,10 @@
             <tr style = "display:none;" class="letra12" id="id">
                 <td align="left"><b>{$id.LABEL}:</b></td>
                 <td align="left">{$id.INPUT}</td>
+            </tr>
+            <tr style = "display:none;" class="letra12" id="state">
+                <td align="left"><b>{$state.LABEL}:</b></td>
+                <td align="left">{$state.INPUT}</td>
             </tr>
             <tr style = "display:none;" class="letra12" id="orden">
                 <td align="left"><b>{$orden.LABEL}:</b></td>

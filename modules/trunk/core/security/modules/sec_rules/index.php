@@ -125,6 +125,23 @@ function newRules($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, 
     $protocol3 = ($protocol == "UDP") ? "selected" : "";
     $protocol4 = ($protocol == "ICMP") ? "selected" : "";
     $protocol5 = ($protocol == "IP") ? "selected" : "";
+    $protocol6 = ($protocol == "STATE") ? "selected" : "";
+   /* $established = false;
+    $related = false;
+    $state = isset($arrValues['state'])? $arrValues['state']:"";
+    if($state == ""){
+        $related = 0;
+        $established = 0;
+    }else{
+        $tmp = split(",",$state);
+        if($tmp[0] == "Established")
+            $established = 1;
+        else
+            $related = 1;
+        if(isset($tmp[1]))
+            $related = 1;
+    }
+    $state = $established." ".$related;*/
     $protocol_html =
         "<select id='id_protocol' name='id_protocol' onClick='showElementByProtocol();' >".
             "<option value='ALL' $protocol1>"._tr("ALL")."</option>".
@@ -132,10 +149,12 @@ function newRules($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, 
             "<option value='UDP' $protocol3>UDP</option>".
             "<option value='ICMP' $protocol4>ICMP</option>".
             "<option value='IP' $protocol5>IP</option>".
+            "<option value='STATE' $protocol6>"._tr("STATE")."</option>".
         "</select>";
 
     $smarty->assign("protocol_html", $protocol_html);
     $smarty->assign("protocol_label", _tr("Protocol"));
+
     //************************************************************************
     $arrValues['ip_source'] = (isset($arrValues['ip_source'])) ? $arrValues['ip_source'] : "0.0.0.0";
     $arrValues['mask_source'] = (isset($arrValues['mask_source'])) ? $arrValues['mask_source'] : "24";
@@ -256,6 +275,22 @@ function createFieldForm($pDB,$arrValues = array())
                                         "VALIDATION_EXTRA_PARAM" => "",
                                         "EDITABLE"               => "yes",
                                             ),
+            "established"     => array( "LABEL"                  => _tr("Established"),
+                                        "REQUIRED"               => "no",
+                                        "INPUT_TYPE"             => "CHECKBOX",
+                                        "INPUT_EXTRA_PARAM"      => "",
+                                        "VALIDATION_TYPE"        => "text",
+                                        "VALIDATION_EXTRA_PARAM" => "",
+                                        "EDITABLE"               => "yes",
+                                            ),
+            "related"         => array( "LABEL"                  => _tr("Related"),
+                                        "REQUIRED"               => "no",
+                                        "INPUT_TYPE"             => "CHECKBOX",
+                                        "INPUT_EXTRA_PARAM"      => "",
+                                        "VALIDATION_TYPE"        => "text",
+                                        "VALIDATION_EXTRA_PARAM" => "",
+                                        "EDITABLE"               => "yes",
+                                            ),
             //REJECT, ACCEPT, DROP
             "target"          => array( "LABEL"                  => _tr("Target"),
                                         "REQUIRED"               => "no",
@@ -275,6 +310,14 @@ function createFieldForm($pDB,$arrValues = array())
                                          "EDITABLE"               => "yes",
                                             ),
             "id"              => array(  "LABEL"                  => "",
+                                         "REQUIRED"               => "no",
+                                         "INPUT_TYPE"             => "TEXT",
+                                         "INPUT_EXTRA_PARAM"      => "",
+                                         "VALIDATION_TYPE"        => "text",
+                                         "VALIDATION_EXTRA_PARAM" => "",
+                                         "EDITABLE"               => "yes",
+                                            ),
+            "state"           => array(  "LABEL"                  => "",
                                          "REQUIRED"               => "no",
                                          "INPUT_TYPE"             => "TEXT",
                                          "INPUT_EXTRA_PARAM"      => "",
@@ -352,11 +395,13 @@ function saveRules($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf)
 
         $arrValues['type_icmp'] = null;
         $arrValues['id_ip'] = null;
+        $arrValues['state'] = "";
     }
     else if( $arrValues['protocol'] == 'ICMP' )
     {
         $arrValues['port_in'] = null;
         $arrValues['port_out'] = null;
+        $arrValues['state'] = "";
 
         $arrValues['type_icmp'] = getParameter("type_icmp");
         if( strlen($arrValues['type_icmp']) == 0 ) $str_error .= ( strlen($str_error) == 0) ? "type" : ", type";
@@ -368,16 +413,38 @@ function saveRules($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf)
         $arrValues['port_in'] = null;
         $arrValues['port_out'] = null;
         $arrValues['type_icmp'] = null;
+        $arrValues['state'] = "";
 
         $arrValues['id_ip'] = getParameter("id_ip");
         if( strlen($arrValues['id_ip']) == 0 ) $str_error .= ( strlen($str_error) == 0) ? "id" : ", id";
     }
+    else if($arrValues['protocol'] == 'STATE'){
+        $arrValues['port_in'] = null;
+        $arrValues['port_out'] = null;
+        $arrValues['type_icmp'] = null;
+        $arrValues['id_ip'] = null;
+        $established = getParameter("established");
+        $related = getParameter("related");
+        if($established == "on"){
+            $arrValues['state'] = "Established";
+            if($related == "on")
+                $arrValues['state'].= ",Related";
+        }
+        else{
+           if($related == "on")
+                $arrValues['state'] = "Related";
+            else{
+                $str_error .= ( strlen($str_error) == 0) ? _tr("You have to select at least one state") : ", "._tr("You have to select at least one state");
+            }
+       }
+    }
     else
     {
-        $arrValues['port_in'] = "*";
-        $arrValues['port_out'] = "*";
-        $arrValues['type_icmp'] = "*";
-        $arrValues['id_ip'] = "*";
+        $arrValues['port_in'] = "";
+        $arrValues['port_out'] = "";
+        $arrValues['type_icmp'] = "";
+        $arrValues['id_ip'] = "";
+        $arrValues['state'] = "";
     }
 
     //************************************************************************************************************
@@ -498,6 +565,7 @@ function reportRules($smarty, $module_name, $local_templates_dir, &$pDB, $arrCon
         $arrValues['id_protocol']=$arrtmp['protocol'];
         $arrValues['target']=$arrtmp['target'];
         $arrValues['orden']=$arrtmp['rule_order'];
+        $arrValues['state']=$arrtmp['state'];
         $arrValues['id']=$id;
         $content = newRules($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrValues, $action);
         return $content;
@@ -567,6 +635,8 @@ function reportRules($smarty, $module_name, $local_templates_dir, &$pDB, $arrCon
                 $arrTmp[8] = _tr("Number Protocol IP").": $value[number_ip]";
             else if($value['protocol'] == "TCP" || $value['protocol'] == "UDP")
                 $arrTmp[8] = _tr("Source Port").": $value[sport]"."<br />"._tr("Destiny Port").": $value[dport]";
+            else if($value['protocol'] == "STATE")
+                $arrTmp[8] = $value['state'];
             else
                 $arrTmp[8] = "";
             if(!$first_time){            

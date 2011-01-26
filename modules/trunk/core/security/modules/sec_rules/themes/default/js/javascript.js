@@ -139,31 +139,79 @@ function showElementByProtocol()
             document.getElementById('id_port_in').style.display = '';
             document.getElementById('id_port_out').style.display = '';
             document.getElementById('id_type_icmp').style.display = 'none';
+            document.getElementById('id_established').style.display = 'none';
+            document.getElementById('id_related').style.display = 'none';
             document.getElementById('id_id_ip').style.display = 'none';
         }
         else if( protoc.value == 'UDP' ){
             document.getElementById('id_port_in').style.display = '';
             document.getElementById('id_port_out').style.display = '';
             document.getElementById('id_type_icmp').style.display = 'none';
+            document.getElementById('id_established').style.display = 'none';
+            document.getElementById('id_related').style.display = 'none';
             document.getElementById('id_id_ip').style.display = 'none';
         }
         else if( protoc.value == 'ICMP' ){
             document.getElementById('id_port_in').style.display = 'none';
             document.getElementById('id_port_out').style.display = 'none';
             document.getElementById('id_type_icmp').style.display = '';
+            document.getElementById('id_established').style.display = 'none';
+            document.getElementById('id_related').style.display = 'none';
             document.getElementById('id_id_ip').style.display = 'none';
         }
         else if( protoc.value == 'IP' ){
             document.getElementById('id_port_in').style.display = 'none';
             document.getElementById('id_port_out').style.display = 'none';
             document.getElementById('id_type_icmp').style.display = 'none';
+            document.getElementById('id_established').style.display = 'none';
+            document.getElementById('id_related').style.display = 'none';
             document.getElementById('id_id_ip').style.display = '';
         }
         else if( protoc.value == 'ALL' ){
             document.getElementById('id_port_in').style.display = 'none';
             document.getElementById('id_port_out').style.display = 'none';
             document.getElementById('id_type_icmp').style.display = 'none';
+            document.getElementById('id_established').style.display = 'none';
+            document.getElementById('id_related').style.display = 'none';
             document.getElementById('id_id_ip').style.display = 'none';
+        }
+        else if( protoc.value == 'STATE' ){
+            document.getElementById('id_port_in').style.display = 'none';
+            document.getElementById('id_port_out').style.display = 'none';
+            document.getElementById('id_type_icmp').style.display = 'none';
+            document.getElementById('id_id_ip').style.display = 'none';
+            var state = document.getElementById('state');
+            var input_ = state.getElementsByTagName('input');
+            var established_check = false;
+            var related_check = false;
+            if(input_[0].value == ""){
+                 established_check = false;
+                 related_check = false;
+            }else{
+                var tmp = input_[0].value.split(",");
+                if(tmp[0]=="Established"){
+                     established_check = true;
+                    if(tmp[1]=="Related")
+                         related_check = true; 
+                }else if(tmp[0]=="Related")
+                        related_check = true;
+            }
+            var established = document.getElementById('id_established');
+            established.style.display = '';
+            var checkbox1 = established.getElementsByTagName("input");
+            checkbox1[0].checked = established_check;
+            if(established_check)
+                document.getElementById('established').value = "on";
+            else
+                document.getElementById('established').value = "off";
+            var related = document.getElementById('id_related');
+            related.style.display = '';
+            var checkbox2 = related.getElementsByTagName("input");
+            checkbox2[0].checked = related_check;
+            if(related_check)
+                document.getElementById('related').value = "on";
+            else
+                document.getElementById('related').value = "off";
         }
     }
 }
