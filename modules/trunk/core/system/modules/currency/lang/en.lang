@@ -37,7 +37,7 @@ $arrLangModule=array(
 "Dong vietnamita" => "Vietnamese Dong",
 "Dólar del Caribe Oriental" => "Dólar del Caribe Oriental",
 "Corona danesa, corona sueca" => "Corona danesa, corona sueca",
-"Libra/Lira" => "Libra/Lira",
+"Lira" => "Lira",
 "Lempira hondureño" => "Lempira hondureño",
 "Quetzal guatemalteco" => "Quetzal guatemalteco",
 "Euro" => "Euro",
@@ -55,6 +55,7 @@ $arrLangModule=array(
 "Dólar de Singapur" => "Singapore Dollar",
 "Error" => "Error",
 "Successfully saved" => "Successfully saved",
-"Colón costarricense" => "Costa Rican Colón"
+"Colón costarricense" => "Costa Rican Colón",
+"GB Sterling" => "Great British Pound"
 );
 ?>
