@@ -410,20 +410,20 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
                 $email = $adress_book['email'];
                 if($adress_book['status']=='isPublic'){
                     if($id_user == $adress_book['iduser']){
-                        $typeContact = "<a href='?menu=$module_name&action=show&id=".$adress_book['id']."'><img alt='public' title='".$arrLang['Public Contact']."' border='0' src='modules/$module_name/images/public_edit.png' /></a>";
+                        $typeContact = "<div><div style='float: left;'><a href='?menu=$module_name&action=show&id=".$adress_book['id']."'><img alt='public' style='padding: 5px;' title='".$arrLang['Public Contact']."' border='0' src='modules/$module_name/images/public_edit.png' /></a></div><div style='padding: 16px 0px 0px 5px; text-align:center;'><span style='visibility: hidden;'>".$arrLang['Public editable']."</span></div></div>";
                         $arrTmp[0]  = "<input type='checkbox' name='contact_{$adress_book['id']}'  />";
                     }else{
-                        $typeContact = "<a href='?menu=$module_name&action=show&id=".$adress_book['id']."'><img alt='public' title='".$arrLang['Public Contact']."' border='0' src='modules/$module_name/images/public.png' /></a";
+                        $typeContact = "<div><div style='float: left;'><a href='?menu=$module_name&action=show&id=".$adress_book['id']."'><img alt='public' style='padding: 5px;' title='".$arrLang['Public Contact']."' border='0' src='modules/$module_name/images/public.png' /></a></div><div style='padding: 16px 0px 0px 5px; text-align:center;'><span style='visibility: hidden;'>".$arrLang['Public not editable']."</span></div></div>";
                         $arrTmp[0]  = "";
                     }
                 }else
-                    $typeContact = "<a href='?menu=$module_name&action=show&id=".$adress_book['id']."'><img alt='private' title='".$arrLang['Private Contact']."' border='0' src='modules/$module_name/images/contact.png' /></a>";
+                    $typeContact = "<div><div style='float: left;'><a href='?menu=$module_name&action=show&id=".$adress_book['id']."'><img alt='private' style='padding: 5px;' title='".$arrLang['Private Contact']."' border='0' src='modules/$module_name/images/contact.png' /></a></div><div style='padding: 16px 0px 0px 5px; text-align:center;'><span style='visibility: hidden;'>".$arrLang['Private']."</span></div></div>";
             }else if(isset($arrMails[$adress_book['id']])){
                 $email = $arrMails[$adress_book['id']];
-                $typeContact = "<img alt='public' title='".$arrLang['Public Contact']."' src='modules/$module_name/images/public.png' />";
+                $typeContact = "<div><div style='float: left;'><img alt='public' title='".$arrLang['Public Contact']."' src='modules/$module_name/images/public.png' /></div><div style='padding: 16px 0px 0px 5px; text-align:center;'><span style='visibility: hidden;'>".$arrLang['Public not editable']."</span></div></div>";
             }else{ 
                 $email = '';
-                $typeContact = "<img alt='public' title='".$arrLang['Public Contact']."' src='modules/$module_name/images/public.png' />";
+                $typeContact = "<div><div style='float: left;'><img alt='public' title='".$arrLang['Public Contact']."' src='modules/$module_name/images/public.png' /></div><div style='padding: 16px 0px 0px 5px; text-align:center;'><span style='visibility: hidden;'>".$arrLang['Public not editable']."</span></div></div>";
             }
 
 

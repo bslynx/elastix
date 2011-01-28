@@ -81,5 +81,8 @@ $arrLangModule=array(
 "Type Contact" => "Tipo de  Contacto",
 "Internal Error" => "Por favor asegurese que los parametros son correctos",
 "Not_allowed_contact" => "Este contacto no existe en su libreta de direcciones",
+"Public editable" => "Público editable",
+"Public not editable" => "Público no editable",
+"Private" => "Privado",
 );
 ?>

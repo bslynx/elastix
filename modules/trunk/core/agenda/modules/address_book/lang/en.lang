@@ -84,5 +84,8 @@ $arrLangModule=array(
 "Type Contact" => "Type Contact",
 "Internal Error" => "Please be sure if the parameters are corrects",
 "Not_allowed_contact" => "This contact don't exist in your Address Book",
+"Public editable" => "Public editable",
+"Public not editable" => "Public not editable",
+"Private" => "Private",
 );
 ?>
