@@ -31,9 +31,5 @@ $DocumentRoot = (isset($_SERVER['argv'][1]))?$_SERVER['argv'][1]:"/var/www/html"
 $BaseRoot = "/var/www/html";
 $tmpDir = '/tmp/new_module/im';  # in this folder the load module extract the package content
 
-$cmd_mv    = "mv $tmpDir/setup/openfireWrapper.php $BaseRoot/";
-$cmd_chown = "chown asterisk.asterisk $BaseRoot/openfireWrapper.php";
-exec($cmd_mv);
-exec($cmd_chown);
 
 ?>

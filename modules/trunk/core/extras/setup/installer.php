@@ -31,14 +31,5 @@ $DocumentRoot = (isset($_SERVER['argv'][1]))?$_SERVER['argv'][1]:"/var/www/html"
 $BaseRoot = "/var/www/html";
 $tmpDir = '/tmp/new_module/extras';  # in this folder the load module extract the package content
 
-$cmd_mv    = "mv $tmpDir/setup/static $BaseRoot/";
-$cmd_chown = "chown -R asterisk.asterisk $BaseRoot/static";
-exec($cmd_mv);
-exec($cmd_chown);
-
-$cmd_mv    = "mv $tmpDir/setup/xmlservices $BaseRoot/";
-$cmd_chown = "chown -R asterisk.asterisk $BaseRoot/xmlservices";
-exec($cmd_mv);
-exec($cmd_chown);
 
 ?>
