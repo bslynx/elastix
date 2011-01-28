@@ -28,7 +28,7 @@
 */
 
 $DocumentRoot = (isset($_SERVER['argv'][1]))?$_SERVER['argv'][1]:"/var/www/html";
-$DataBaseRoot = "/var/www/html";
+$BaseRoot = "/var/www/html";
 $tmpDir = '/tmp/new_module/extras';  # in this folder the load module extract the package content
 
 $cmd_mv    = "mv $tmpDir/setup/static $BaseRoot/";
