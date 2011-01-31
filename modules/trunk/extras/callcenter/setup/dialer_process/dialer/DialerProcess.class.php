@@ -3239,8 +3239,8 @@ INFO_FORMULARIOS;
                     // FIXME: esto asume formato Agent/9000
                     $this->_dialSrv->notificarEvento_AgentUnlinked("Agent/$idAgente", array(
                         'calltype'      =>  'outgoing',
-                        'id_campaign'   =>  $idCampaign,
-                        'id'            =>  $this->_infoLlamadas['llamadas'][$sKey]->id,
+                        'campaign_id'   =>  $idCampaign,
+                        'call_id'       =>  $this->_infoLlamadas['llamadas'][$sKey]->id,
                         'phone'         =>  $this->_infoLlamadas['llamadas'][$sKey]->phone,
                     ));
                     

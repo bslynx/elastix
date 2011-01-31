@@ -743,8 +743,8 @@ class GestorLlamadasEntrantes
                 // Reportar que se ha cerrado la llamada
                 $this->_dialSrv->notificarEvento_AgentUnlinked("Agent/".$tuplaAgente['number'], array(
                     'calltype'      =>  'incoming',
-                    'id_campaign'   =>  $idCampaign,
-                    'id'            =>  $tuplaLlamada['id_call_entry'],
+                    'campaign_id'   =>  $idCampaign,
+                    'call_id'       =>  $tuplaLlamada['id_call_entry'],
                     'phone'         =>  $tuplaAgente['callerid'],
                 ));
             }
