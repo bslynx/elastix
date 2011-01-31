@@ -243,10 +243,16 @@ class XMLDialerConn extends DialerConn
     	$x = new SimpleXMLElement("<response />");
         if (!is_null($idPeticion))
             $x->addAttribute("id", $idPeticion);
-        $failureTag = $x->addChild("failure");
-        $codeTag = $failureTag->addChild("code", $iCodigo);
-        $failureTag->addChild("message", $sMensaje);
+        $this->_agregarRespuestaFallo($x, $iCodigo, $sMensaje);
         return $x;
+    }
+    
+    // Agregar etiqueta failure a la respuesta indicada
+    private function _agregarRespuestaFallo($x, $iCodigo, $sMensaje)
+    {
+        $failureTag = $x->addChild("failure");
+        $failureTag->addChild("code", $iCodigo);
+        $failureTag->addChild("message", $sMensaje);
     } 
     
     // Procedimiento a llamar cuando se finaliza la conexión en cierre normal 
@@ -374,7 +380,7 @@ class XMLDialerConn extends DialerConn
             $xml_status = $xml_loginResponse->addChild('success');
         } else {
         	// Usuario no existe, o clave incorrecta
-            $xml_status = $xml_loginResponse->addChild('failure', 'Invalid username or password');
+            $this->_agregarRespuestaFallo($xml_loginResponse, 401, 'Invalid username or password');
         }
         return $xml_response;
     }
@@ -449,7 +455,9 @@ class XMLDialerConn extends DialerConn
             $xml_loginAgentResponse = $xml_response->addChild('loginagent_response');
 
             $xml_loginAgentResponse->addChild('status', $status);
-            if (!is_null($msg)) $xml_loginAgentResponse->addChild('failure', $msg);
+            if (!is_null($msg)) 
+                $this->_agregarRespuestaFallo($xml_loginAgentResponse, 417, $msg);
+                
             return $xml_response;        	
         }
         }
@@ -673,7 +681,8 @@ LISTA_EXTENSIONES;
             $xml_loginAgentResponse = $xml_response->addChild('logoutagent_response');
 
             $xml_loginAgentResponse->addChild('status', $status);
-            if (!is_null($msg)) $xml_loginAgentResponse->addChild('failure', $msg);
+            if (!is_null($msg))
+                $this->_agregarRespuestaFallo($xml_loginAgentResponse, 417, $msg);                
             return $xml_response;           
         }
         }
@@ -731,7 +740,8 @@ LISTA_EXTENSIONES;
             $xml_loginAgentResponse = $xml_response->addChild('getagentstatus_response');
 
             $xml_loginAgentResponse->addChild('status', $status);
-            if (!is_null($msg)) $xml_loginAgentResponse->addChild('failure', $msg);
+            if (!is_null($msg))
+                $this->_agregarRespuestaFallo($xml_loginAgentResponse, 417, $msg);                
             return $xml_response;           
         }
         }
@@ -771,8 +781,6 @@ LISTA_EXTENSIONES;
         }
 
         return Response_GetAgentStatusResponse('offline', 'Unknown status');
-        
-//        return $this->_generarRespuestaFallo(501, 'Not Implemented');
     }
     
     /**
@@ -848,11 +856,11 @@ LEER_CAMPANIA;
         $tuplaCampania = $this->_dbConn->getRow($sPeticionSQL, array($idCampania), DB_FETCHMODE_ASSOC);
         if (DB::isError($tuplaCampania)) {
             $this->oMainLog->output("ERR: no se puede leer información de la campaña - ".$tuplaCampania->getMessage());
-        	$xml_GetCampaignInfoResponse->addChild('failure', 'Cannot read campaign info');
+            $this->_agregarRespuestaFallo($xml_GetCampaignInfoResponse, 500, 'Cannot read campaign info');
             return $xml_response;
         }
         if (count($tuplaCampania) <= 0) {
-            $xml_GetCampaignInfoResponse->addChild('failure', 'Campaign not found');
+            $this->_agregarRespuestaFallo($xml_GetCampaignInfoResponse, 404, 'Campaign not found');
             return $xml_response;
         }
 
@@ -862,14 +870,14 @@ LEER_CAMPANIA;
             0, array($idCampania));
         if (DB::isError($idxForm)) {
             $this->oMainLog->output("ERR: no se puede leer información de la campaña (formularios) - ".$idxForm->getMessage());
-            $xml_GetCampaignInfoResponse->addChild('failure', 'Cannot read campaign info (forms)');
+            $this->_agregarRespuestaFallo($xml_GetCampaignInfoResponse, 500, 'Cannot read campaign info (forms)');
             return $xml_response;
         }
         
         // Leer los campos asociados a cada formulario
         $listaForm = $this->_leerCamposFormulario($idxForm);
         if (is_null($listaForm)) {
-            $xml_GetCampaignInfoResponse->addChild('failure', 'Cannot read campaign info (formfields)');
+            $this->_agregarRespuestaFallo($xml_GetCampaignInfoResponse, 500, 'Cannot read campaign info (formfields)');
             return $xml_response;
         }
 
@@ -917,11 +925,11 @@ LEER_CAMPANIA;
         $tuplaCampania = $this->_dbConn->getRow($sPeticionSQL, array($idCampania), DB_FETCHMODE_ASSOC);
         if (DB::isError($tuplaCampania)) {
             $this->oMainLog->output("ERR: no se puede leer información de la campaña - ".$tuplaCampania->getMessage());
-            $xml_GetCampaignInfoResponse->addChild('failure', 'Cannot read campaign info');
+            $this->_agregarRespuestaFallo($xml_GetCampaignInfoResponse, 500, 'Cannot read campaign info');
             return $xml_response;
         }
         if (count($tuplaCampania) <= 0) {
-            $xml_GetCampaignInfoResponse->addChild('failure', 'Campaign not found');
+            $this->_agregarRespuestaFallo($xml_GetCampaignInfoResponse, 404, 'Campaign not found');
             return $xml_response;
         }
 
@@ -932,7 +940,7 @@ LEER_CAMPANIA;
         // Leer los campos asociados a cada formulario
         $listaForm = $this->_leerCamposFormulario($idxForm);
         if (is_null($listaForm)) {
-            $xml_GetCampaignInfoResponse->addChild('failure', 'Cannot read campaign info (formfields)');
+            $this->_agregarRespuestaFallo($xml_GetCampaignInfoResponse, 500, 'Cannot read campaign info (formfields)');
             return $xml_response;
         }
 
@@ -1032,11 +1040,11 @@ LEER_CAMPANIA;
         $xml_response = new SimpleXMLElement('<response />');
         $xml_GetCallInfoResponse = $xml_response->addChild('getcallinfo_response');
         if (is_null($infoLlamada)) {
-            $xml_GetCallInfoResponse->addChild('failure', 'Cannot read call info');
+            $this->_agregarRespuestaFallo($xml_GetCallInfoResponse, 500, 'Cannot read call info');
             return $xml_response;
         }
         if (count($infoLlamada) <= 0) {
-            $xml_GetCallInfoResponse->addChild('failure', 'Call not found');
+            $this->_agregarRespuestaFallo($xml_GetCallInfoResponse, 404, 'Call not found');
             return $xml_response;
         }
 
