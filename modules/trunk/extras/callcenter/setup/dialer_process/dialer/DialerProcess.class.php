@@ -2741,7 +2741,7 @@ UPDATE_CALLS_ORIGINATE_RESPONSE;
     {
     	// Leer información de la llamada principal
         $sPeticionSQL = <<<INFO_LLAMADA
-SELECT 'outgoing' AS calltype, id, id_campaign, phone, status, uniqueid, 
+SELECT 'outgoing' AS calltype, id AS call_id, id_campaign AS campaign_id, phone, status, uniqueid, 
     duration, datetime_originate, fecha_llamada AS datetime_originateresponse, 
     datetime_entry_queue AS datetime_join, start_time AS datetime_linkstart, 
     end_time AS datetime_linkend, retries, failure_cause, failure_cause_txt 
@@ -2808,10 +2808,10 @@ INFO_FORMULARIOS;
     {
         // Leer información de la llamada principal
         $sPeticionSQL = <<<INFO_LLAMADA
-SELECT 'incoming' AS calltype, call_entry.id, id_campaign, callerid AS phone, 
-    status, uniqueid, duration, datetime_entry_queue AS datetime_join, 
+SELECT 'incoming' AS calltype, call_entry.id AS call_id, id_campaign AS campaign_id,
+    callerid AS phone, status, uniqueid, duration, datetime_entry_queue AS datetime_join, 
     datetime_init AS datetime_linkstart, datetime_end AS datetime_linkend, 
-    trunk, queue, id_campaign, id_contact
+    trunk, queue, id_contact
 FROM call_entry, queue_call_entry
 WHERE call_entry.id = ? AND call_entry.id_queue_call_entry = queue_call_entry.id
 INFO_LLAMADA;
@@ -2907,7 +2907,7 @@ INFO_ATRIBUTOS;
         }
 
         // Leer información de los datos recogidos vía formularios
-        $idCampaniaTupla = $tuplaLlamada['id_campaign'];
+        $idCampaniaTupla = $tuplaLlamada['campaign_id'];
         $sPeticionSQL = <<<INFO_FORMULARIOS
 SELECT form_field.id_form, form_field.id, form_field.etiqueta AS label, 
     form_data_recolected_entry.value
