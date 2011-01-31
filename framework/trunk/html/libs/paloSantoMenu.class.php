@@ -233,20 +233,22 @@ class paloMenu {
         $childs = $this->getChilds($menu_name);
         if(!$childs){
             $id_resource = $acl->getIdResource($menu_name); // get id Resource
-            $acl->deleteIdGroupPermission($id_resource); // remove group permission
-            $acl->deleteIdResource($id_resource); // remove resource
-            $this->deleteChilds($menu_name); // remove child
-            return $menu_name;
+            $ok1 = $acl->deleteIdGroupPermission($id_resource); // remove group permission
+            $ok2 = $acl->deleteIdResource($id_resource); // remove resource
+            $ok3 = $this->deleteChilds($menu_name); // remove child
+            return ($ok1 and $ok2 and $ok3);
         }
         else{
-            foreach($childs as $key => $value)
-                $this->deleteFather($value['id'],$acl);
+            foreach($childs as $key => $value){
+                $ok = $this->deleteFather($value['id'],$acl);
+                if(!$ok) return false;
+            }
 
             $id_resource = $acl->getIdResource($menu_name); // get id Resource
-            $acl->deleteIdGroupPermission($id_resource); // remove group permission
-            $acl->deleteIdResource($id_resource); // remove resource
-            $this->deleteChilds($menu_name); // remove child*/
-            return $menu_name;
+            $ok1 = $acl->deleteIdGroupPermission($id_resource); // remove group permission
+            $ok2 = $acl->deleteIdResource($id_resource); // remove resource
+            $ok3 = $this->deleteChilds($menu_name); // remove child*/
+            return ($ok1 and $ok2 and $ok3);
         }
     }
 }
