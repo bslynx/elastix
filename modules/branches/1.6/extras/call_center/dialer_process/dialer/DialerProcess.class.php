@@ -2075,7 +2075,7 @@ PETICION_LLAMADAS;
                 if ($params['Response'] == 'Success') {
                     $this->_infoAgentes[$listaECCP[4]] = $this->generarEstadoInicialAgente();
                     $this->_infoAgentes[$listaECCP[4]]['Uniqueid'] = $params['Uniqueid'];
-                    $this->_infoAgentes[$listaECCP[4]]['estado-consola'] = 'logging';
+                    $this->_infoAgentes[$listaECCP[4]]['estado_consola'] = 'logging';
                     if ($this->DEBUG) {
                         $this->oMainLog->output("DEBUG: AgentLogin({$listaECCP[4]}) llamada contestada, esperando clave de agente...");
                     }
@@ -3314,7 +3314,7 @@ INFO_FORMULARIOS;
             }
             return FALSE;
         }
-        $this->_infoAgentes[$sAgente]['estado-consola'] = 'logged-in';
+        $this->_infoAgentes[$sAgente]['estado_consola'] = 'logged-in';
         
         // Escribir la información de auditoría en la base de datos
         $this->_infoAgentes[$sAgente]['id_sesion'] = $this->marcarInicioSesionAgente($sAgente);
