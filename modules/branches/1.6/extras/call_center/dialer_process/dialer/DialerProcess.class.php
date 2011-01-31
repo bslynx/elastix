@@ -28,10 +28,11 @@
   $Id: DialerProcess.class.php,v 1.48 2009/03/26 13:46:58 alex Exp $ */
 require_once('AbstractProcess.class.php');
 require_once 'DB.php';
-require_once "phpagi-asmanager-elastix.php";
-//require_once "predictive.lib.php";
 require_once('Predictivo.class.php');
 require_once('GestorLlamadasEntrantes.class.php');
+
+require_once 'DialerServer.class.php';
+require_once 'AMIClientConn.class.php';
 
 // Número mínimo de muestras para poder confiar en predicciones de marcador
 define('MIN_MUESTRAS', 10);
@@ -93,6 +94,14 @@ class DialerProcess extends AbstractProcess
     
     private $_agentContext = 'llamada_agendada';    // TODO: volver parametrizable
 
+    // Variables para soportar conexiones entrantes ECCP
+    private $_dialSrv = NULL;
+    private $_momentoUltimaRevisionCampanias = 0;
+    /* Lista de agentes indexada por canal de agente (Agent/9000). Para cada
+     * agente se mantienen estado, véase método generarEstadoInicialAgente() 
+     */
+    private $_infoAgentes = array(); 
+
     function inicioPostDemonio($infoConfig, &$oMainLog)
     {
         $bContinuar = TRUE;
@@ -104,6 +113,10 @@ class DialerProcess extends AbstractProcess
         
         // Interpretar la configuración del demonio
         $this->interpretarParametrosConfiguracion($infoConfig);
+
+        // TODO: interfaz y puerto configurables
+        $this->_dialSrv = new DialerServer('tcp://127.0.0.1:20005', $oMainLog);
+        $this->_dialSrv->setDialerProcess($this);
 
         if ($bContinuar) $bContinuar = $this->iniciarConexionBaseDatos();
         $infoConfigDB = $this->leerConfiguracionDesdeDB();
@@ -149,6 +162,8 @@ class DialerProcess extends AbstractProcess
         if ($bContinuar) {
             $this->_oGestorEntrante = new GestorLlamadasEntrantes(
                 $this->_astConn, $this->_dbConn, $this->oMainLog);
+            $this->_oGestorEntrante->setDialerProcess($this);
+            $this->_oGestorEntrante->setDialSrv($this->_dialSrv);
             $this->_oGestorEntrante->DEBUG = $this->DEBUG;
         }
 
@@ -221,6 +236,7 @@ class DialerProcess extends AbstractProcess
         } else {
             $dbConn->setOption('autofree', TRUE);
             $this->_dbConn = $dbConn;
+            $this->_dialSrv->setDbConn($this->_dbConn);
             return TRUE;
         }
     } 
@@ -453,10 +469,8 @@ class DialerProcess extends AbstractProcess
             $this->_astConn->disconnect();
             $this->_astConn = NULL;            
         }
-        $astman = new AGI_AsteriskManager();
+        $astman = new AMIClientConn($this->_dialSrv, $this->oMainLog);
         $this->_momentoUltimaConnAsterisk = time();
-        $astman->setLogger($this->oMainLog);
-        $astman->avoid_reentrancy = TRUE;
 
         $this->oMainLog->output('INFO: Iniciando sesión de control de Asterisk...');
         if (!$astman->connect(
@@ -487,11 +501,16 @@ class DialerProcess extends AbstractProcess
             $astman->add_event_handler('Unlink', array($this, 'OnUnlink'));
             $astman->add_event_handler('Hangup', array($this, 'OnHangup'));
             $astman->add_event_handler('OriginateResponse', array($this, 'OnOriginateResponse'));
-            $astman->SetTimeout(10);
+            $astman->add_event_handler('Agentlogin', array($this, 'OnAgentlogin'));
+            $astman->add_event_handler('Agentlogoff', array($this, 'OnAgentlogoff'));
+
             $this->_astConn = $astman;
             if (!is_null($this->_oGestorEntrante)) { 
                 $this->_oGestorEntrante->setAstConn($this->_astConn);
             }
+            
+            // Informar al servidor de conexiones de la conexión Asterisk
+            $this->_dialSrv->setAstConn($this->_astConn);
             return TRUE;
         }
     }
@@ -525,152 +544,206 @@ class DialerProcess extends AbstractProcess
             }
         }
 
-        $bLlamadasAgregadas = FALSE;
         $iTimestamp = time();
-        $sFecha = date('Y-m-d', $iTimestamp);
-        $sHora = date('H:i:s', $iTimestamp);
-        $sPeticionCampanias = 
-            'SELECT id, name, trunk, context, queue, max_canales, num_completadas, '.
-                'promedio, desviacion, retries, datetime_init, datetime_end, daytime_init, daytime_end '.
-            'FROM campaign '.
-            'WHERE datetime_init <= ? '.
-                'AND datetime_end >= ? '.
-                'AND estatus = "A" '.
-                'AND ('.
-                    '(daytime_init < daytime_end AND daytime_init <= ? AND daytime_end > ?) '.
-                    'OR (daytime_init > daytime_end AND (? < daytime_init OR daytime_end < ?)))';
-        $recordset = $this->_dbConn->query(
-            $sPeticionCampanias, 
-            array($sFecha, $sFecha, $sHora, $sHora, $sHora, $sHora));
-        if (DB::isError($recordset)) {
-            $sMensajeDB = $recordset->getMessage();
-            $this->oMainLog->output("ERR: no se puede leer lista de campañas - $sMensajeDB");
-            if (strstr($sMensajeDB, 'no database selected')) {
-            	// Este es el error genérico que ocurre cuando se invalida la conexión a DB
-                $this->oMainLog->output("WARN: conexión a DB parece ser inválida, se cierra...");
-                if (!is_null($this->_dbConn)) {
-                    $this->_dbConn->disconnect();
-                    $this->_dbConn = NULL;
-                }
-            }
-            usleep(1000000);
-            return TRUE;                
-        } else {
-            // Verificar si se tiene que actualizar la configuración
-            $infoConfigDB = $this->leerConfiguracionDesdeDB();
-            if (!is_null($infoConfigDB)) {
-            	$this->aplicarConfiguracionDB($infoConfigDB);
-            }
-            
-            if (is_null($this->_astConn)) {
-            	$this->iniciarConexionAsterisk();
-            } elseif ($this->_intervaloDesconexion > 0 && time() - $this->_momentoUltimaConnAsterisk >= $this->_intervaloDesconexion) {
-				$this->oMainLog->output("INFO: sesión de Asterisk excede {$this->_intervaloDesconexion} segundos, se desconecta...");
-            	$this->iniciarConexionAsterisk();
-            }
-            if (!$this->_oGestorEntrante->isAstConnValid()) {
-            	// La conexión al Asterisk se perdió en medio de proceso de llamadas 
-                // entrantes.                
-                $this->iniciarConexionAsterisk();
-            }
 
-            if (!is_null($this->_astConn)) {
-                $this->_oGestorEntrante->actualizarCacheAgentes();
-                
-                $listaCampanias = array();
-                while ($infoCampania = $recordset->fetchRow(DB_FETCHMODE_OBJECT)) {
-                    $infoCampania->variancia = NULL;
-                    if (!is_null($infoCampania->desviacion) && is_numeric($infoCampania->desviacion))
-                        $infoCampania->variancia = $infoCampania->desviacion * $infoCampania->desviacion;
-                    $listaCampanias[$infoCampania->id] = $infoCampania;
-                }
+        // Revisar las campañas cada 3 segundos
+        if ($this->_momentoUltimaRevisionCampanias + 3 <= time()) {
+            $this->_momentoUltimaRevisionCampanias = time();
 
-                // Preparar la información a asignar a datos de app en astman
-                if (!is_array($this->_infoLlamadas)) $this->_infoLlamadas = array();
-                if (!isset($this->_infoLlamadas['historial_contestada'])) 
-                    $this->_infoLlamadas['historial_contestada'] = array();
-                $this->_infoLlamadas['campanias'] = $listaCampanias;
-                if (!isset($this->_infoLlamadas['llamadas'])) $this->_infoLlamadas['llamadas'] = array();
-            
-                // Agregar llamadas para todas las campañas activas
-                foreach ($this->_infoLlamadas['campanias'] as $infoCampania) {
-                    $bLlamadasAgregadas = $this->actualizarLlamadasCampania($infoCampania) || $bLlamadasAgregadas;
-                }
-                
-                // Remover del historial de tiempo de contestado, las campañas que ya no
-                // se están monitoreando
-                $listaCampaniasAusentes = array_diff(
-                    array_keys($this->_infoLlamadas['historial_contestada']), 
-                    array_keys($listaCampanias));
-                foreach ($listaCampaniasAusentes as $key) {
-                	unset($this->_infoLlamadas['historial_contestada'][$key]);
-                }
-
-                // Consumir todos los eventos de llamada durante 3 segundos
-                $iMaxEspera = 3;
-                $iTimestampInicioEspera = time();
-                $iEsperaActual = time() - $iTimestampInicioEspera;
-                while ($iEsperaActual <= $iMaxEspera) {
-                    $this->_astConn->SetTimeout(1);
-                    $r = $this->_astConn->wait_response(TRUE, FALSE, $iMaxEspera - $iEsperaActual);
-                    if (is_null($r)) {
-                        // Lo siguiente debería estar interno en AG_AsteriskManager
-                        $metadata = stream_get_meta_data($this->_astConn->socket);
-                        if (is_array($metadata) && !$metadata['timed_out']) {
-                            $this->oMainLog->output("ERR: problema al esperar respuesta de Asterisk (en bucle de espera).");
-                            $this->iniciarConexionAsterisk();
-                            break;
-                        }
+            $sFecha = date('Y-m-d', $iTimestamp);
+            $sHora = date('H:i:s', $iTimestamp);
+            $sPeticionCampanias = 
+                'SELECT id, name, trunk, context, queue, max_canales, num_completadas, '.
+                    'promedio, desviacion, retries, datetime_init, datetime_end, daytime_init, daytime_end '.
+                'FROM campaign '.
+                'WHERE datetime_init <= ? '.
+                    'AND datetime_end >= ? '.
+                    'AND estatus = "A" '.
+                    'AND ('.
+                        '(daytime_init < daytime_end AND daytime_init <= ? AND daytime_end > ?) '.
+                        'OR (daytime_init > daytime_end AND (? < daytime_init OR daytime_end < ?)))';
+            $recordset = $this->_dbConn->query(
+                $sPeticionCampanias, 
+                array($sFecha, $sFecha, $sHora, $sHora, $sHora, $sHora));
+            if (DB::isError($recordset)) {
+                $sMensajeDB = $recordset->getMessage();
+                $this->oMainLog->output("ERR: no se puede leer lista de campañas - $sMensajeDB");
+                if (strstr($sMensajeDB, 'no database selected')) {
+                	// Este es el error genérico que ocurre cuando se invalida la conexión a DB
+                    $this->oMainLog->output("WARN: conexión a DB parece ser inválida, se cierra...");
+                    if (!is_null($this->_dbConn)) {
+                        $this->_dbConn->disconnect();
+                        $this->_dbConn = NULL;
                     }
-                    $iEsperaActual = time() - $iTimestampInicioEspera;
                 }
-                if (!is_null($this->_astConn)) $this->_astConn->SetTimeout(10);
-            } else {
-                $this->oMainLog->output("ERR: no se puede reconectar al Asterisk, esperando...");
                 usleep(1000000);
+                return TRUE;                
+            } else {
+                // Verificar si se tiene que actualizar la configuración
+                $infoConfigDB = $this->leerConfiguracionDesdeDB();
+                if (!is_null($infoConfigDB)) {
+                	$this->aplicarConfiguracionDB($infoConfigDB);
+                }
+                
+                if (is_null($this->_astConn)) {
+                	$this->iniciarConexionAsterisk();
+                } elseif ($this->_intervaloDesconexion > 0 && time() - $this->_momentoUltimaConnAsterisk >= $this->_intervaloDesconexion) {
+    				$this->oMainLog->output("INFO: sesión de Asterisk excede {$this->_intervaloDesconexion} segundos, se desconecta...");
+                	$this->iniciarConexionAsterisk();
+                }
+                if (!$this->_oGestorEntrante->isAstConnValid()) {
+                	// La conexión al Asterisk se perdió en medio de proceso de llamadas 
+                    // entrantes.                
+                    $this->iniciarConexionAsterisk();
+                }
+    
+                if (!is_null($this->_astConn)) {
+                    $this->_oGestorEntrante->actualizarCacheAgentes();
+                    
+                    $listaCampanias = array();
+                    while ($infoCampania = $recordset->fetchRow(DB_FETCHMODE_OBJECT)) {
+                        $infoCampania->variancia = NULL;
+                        if (!is_null($infoCampania->desviacion) && is_numeric($infoCampania->desviacion))
+                            $infoCampania->variancia = $infoCampania->desviacion * $infoCampania->desviacion;
+                        $listaCampanias[$infoCampania->id] = $infoCampania;
+                    }
+    
+                    // Preparar la información a asignar a datos de app en astman
+                    if (!is_array($this->_infoLlamadas)) $this->_infoLlamadas = array();
+                    if (!isset($this->_infoLlamadas['historial_contestada'])) 
+                        $this->_infoLlamadas['historial_contestada'] = array();
+                    $this->_infoLlamadas['campanias'] = $listaCampanias;
+                    if (!isset($this->_infoLlamadas['llamadas'])) $this->_infoLlamadas['llamadas'] = array();
+                
+                    // Agregar llamadas para todas las campañas activas
+                    $bLlamadasAgregadas = FALSE;
+                    foreach ($this->_infoLlamadas['campanias'] as $infoCampania) {
+                        $bLlamadasAgregadas = $this->actualizarLlamadasCampania($infoCampania) || $bLlamadasAgregadas;
+                    }
+                    
+                    // Remover del historial de tiempo de contestado, las campañas que ya no
+                    // se están monitoreando
+                    $listaCampaniasAusentes = array_diff(
+                        array_keys($this->_infoLlamadas['historial_contestada']), 
+                        array_keys($listaCampanias));
+                    foreach ($listaCampaniasAusentes as $key) {
+                    	unset($this->_infoLlamadas['historial_contestada'][$key]);
+                    }
+    
+    /*
+                    // Consumir todos los eventos de llamada durante 3 segundos
+                    $iMaxEspera = 3;
+                    $iTimestampInicioEspera = time();
+                    $iEsperaActual = time() - $iTimestampInicioEspera;
+                    while ($iEsperaActual <= $iMaxEspera) {
+                        $this->_astConn->SetTimeout(1);
+                        $r = $this->_astConn->wait_response(TRUE, FALSE, $iMaxEspera - $iEsperaActual);
+                        if (is_null($r)) {
+                            // Lo siguiente debería estar interno en AG_AsteriskManager
+                            $metadata = stream_get_meta_data($this->_astConn->socket);
+                            if (is_array($metadata) && !$metadata['timed_out']) {
+                                $this->oMainLog->output("ERR: problema al esperar respuesta de Asterisk (en bucle de espera).");
+                                $this->iniciarConexionAsterisk();
+                                break;
+                            }
+                        }
+                        $iEsperaActual = time() - $iTimestampInicioEspera;
+                    }
+                    if (!is_null($this->_astConn)) $this->_astConn->SetTimeout(10);
+    */                
+                } else {
+                    $this->oMainLog->output("ERR: no se puede reconectar al Asterisk, esperando...");
+                }
             }
+    
+            $this->_limpiarLlamadasViejasEspera();
         }
 
-		// Remover llamadas viejas luego de 5 * 60 segundos de espera sin respuesta
-		$listaClaves = array_keys($this->_infoLlamadas['llamadas']);
-		foreach ($listaClaves as $k ) {
-			$tupla = $this->_infoLlamadas['llamadas'][$k];
-			if (is_null($tupla->OriginateEnd)) {
-				$iEspera = time() - $tupla->OriginateStart;
-				if ($iEspera > 5 * 60) {
-					$this->oMainLog->output("ERR:llamada $k espera respuesta desde hace $iEspera segundos, se elimina.");
-	                $idCampania = $this->_infoLlamadas['llamadas'][$k]->id_campaign;
-	                $infoCampania = $this->_leerCampania($idCampania);
-	                if (!is_null($infoCampania)) {
-						// Marcar estado de fallo con esta llamada
-		                $result = $this->_dbConn->query(
-		                    'UPDATE calls SET status = ?, fecha_llamada = ?, start_time = NULL, end_time = NULL '.
-		                        'WHERE id_campaign = ? AND id = ?',
-		                    array('Failure', date('Y-m-d H:i:s'),
-		                        $infoCampania->id, $this->_infoLlamadas['llamadas'][$k]->id));
-		                if (DB::isError($result)) {
-		                    $this->oMainLog->output(
-		                        "ERR: no se puede actualizar llamada con limpieza de llamadas perdidas ".
-		                        "[id_campaign=$infoCampania->id, id=".$this->_infoLlamadas['llamadas'][$k]->id."]".
-		                        $result->getMessage());
-		                }
-	                }
-	                
-	                unset($this->_infoLlamadas['llamadas'][$k]);
-				}
-			}
-		}
+        if (!is_null($this->_astConn)) {
+            /* El procedimiento principal del demonio será llamado sin demora 
+             * repetidas veces mientras devuelva VERDADERO. El bucle estará ocupado
+             * si hay paquetes pendientes por procesar, o si luego de que no hay
+             * paquetes pendientes, se encuentra actividad en los sockets. */
+            $bPendientesProcesados = $this->_dialSrv->procesarPaquetes();
+            if (!$bPendientesProcesados) {
+                if (!$this->_dialSrv->procesarActividad()) {
+                    usleep(100000);
+                }
+            }
+        } else {
+            usleep(1000000);
+        }
 
         // Si se habilita debug, se muestra estado actual de las llamadas
         if ($iTimestamp - $this->_iUltimoDebug > 30) {
         	$this->_iUltimoDebug = $iTimestamp;
             if ($this->DEBUG) {
             	$this->oMainLog->output("DEBUG: estado actual de campañas => ".print_r($this->_infoLlamadas, TRUE));
+                $this->oMainLog->output("DEBUG: estado actual de agentes => ".print_r($this->_infoAgentes, TRUE));
             }
             $this->_listarCurrentCalls();
         }
 
         return TRUE;
+    }
+
+    private function _limpiarLlamadasViejasEspera()
+    {
+        // Remover llamadas viejas luego de 5 * 60 segundos de espera sin respuesta
+        $listaClaves = array_keys($this->_infoLlamadas['llamadas']);
+        foreach ($listaClaves as $k ) {
+            $tupla = $this->_infoLlamadas['llamadas'][$k];
+            if (is_null($tupla->OriginateEnd)) {
+                $iEspera = time() - $tupla->OriginateStart;
+                if ($iEspera > 5 * 60) {
+                    $this->oMainLog->output("ERR:llamada $k espera respuesta desde hace $iEspera segundos, se elimina.");
+                    $idCampania = $this->_infoLlamadas['llamadas'][$k]->id_campaign;
+                    $infoCampania = $this->_leerCampania($idCampania);
+                    if (!is_null($infoCampania)) {
+                        // Marcar estado de fallo con esta llamada
+                        $result = $this->_dbConn->query(
+                            'UPDATE calls SET status = ?, fecha_llamada = ?, start_time = NULL, end_time = NULL '.
+                                'WHERE id_campaign = ? AND id = ?',
+                            array('Failure', date('Y-m-d H:i:s'),
+                                $infoCampania->id, $this->_infoLlamadas['llamadas'][$k]->id));
+                        if (DB::isError($result)) {
+                            $this->oMainLog->output(
+                                "ERR: no se puede actualizar llamada con limpieza de llamadas perdidas ".
+                                "[id_campaign=$infoCampania->id, id=".$this->_infoLlamadas['llamadas'][$k]->id."]".
+                                $result->getMessage());
+                        }
+                    }
+                    
+                    unset($this->_infoLlamadas['llamadas'][$k]);
+                }
+            }
+        }
+    }
+
+    private function generarEstadoInicialAgente()
+    {
+        return array(
+            /*  Estado de la consola. Los valores posibles son 
+                logged-out  No hay agente logoneado
+                logging     Agente intenta autenticarse con la llamada
+                logged-in   Agente fue autenticado y está logoneado en consola
+             */
+            'estado_consola'    =>  'logged-out',
+    
+            /* El número de la extensión interna que se logonea al agente. En estado
+               logout la extensión es NULL 
+             */
+            'extension'         =>  NULL,
+            
+            /* El ID de la sesión de auditoría iniciada para este agente */
+            'id_sesion'         =>  NULL,
+            
+            /* El ID del break en que se encuentre el agente, o NULL si no está en break */
+            'id_break'          =>  NULL,
+            
+            /* El Uniqueid de la llamada que se usó para iniciar el login de agente */
+            'Uniqueid'          =>  NULL,
+        );
     }
 
 
@@ -987,7 +1060,6 @@ PETICION_LLAMADAS_AGENTE;
                             $this->oMainLog->output("DEBUG: (campania $infoCampania->id cola $infoCampania->queue) ".
                                 "Agent/$idAgente debe de ser reservado...");
                         }
-                        // TODO: POSIBLE PUNTO DE REENTRANCIA
                         $resultado = $this->_astConn->QueuePause($infoCampania->queue, "Agent/$idAgente", 'true');
                         if ($this->DEBUG) {
                             $this->oMainLog->output("DEBUG: (campania $infoCampania->id cola $infoCampania->queue) " .
@@ -1072,8 +1144,7 @@ PETICION_LLAMADAS_AGENTE;
                                 "\tCaller ID... ".(isset($datosTrunk['CID']) ? $datosTrunk['CID'] : "(no definido)")."\n".
                                 "\tCadena de marcado $sCanalTrunk");
                         }
-                        // TODO: POSIBLE PUNTO DE REENTRANCIA
-                        $this->_astConn->reentrant_count++; // Acumular eventos en lugar de procesarlos
+
                         $resultado = $this->_astConn->Originate(
                             $sCanalTrunk, 
                             NULL, NULL, NULL,
@@ -1082,7 +1153,7 @@ PETICION_LLAMADAS_AGENTE;
                             $sCadenaVar,
                             NULL, 
                             TRUE, $sKey);
-                        $this->_astConn->reentrant_count--;
+
                         if (!is_array($resultado) || count($resultado) == 0) {
                             $this->oMainLog->output("ERR: problema al enviar Originate a Asterisk");
                             $this->iniciarConexionAsterisk();
@@ -1130,10 +1201,8 @@ PETICION_LLAMADAS_AGENTE;
                             
                             // TODO: Qué hacer con retries si falla la llamada?
                             $this->_infoLlamadas['agentes_reservados'][$idAgente] = 0;
-                            // TODO: POSIBLE PUNTO DE REENTRANCIA
-                            $this->_astConn->reentrant_count++; // Acumular eventos en lugar de procesar
+
                             $resultado = $this->_astConn->QueuePause($infoCampania->queue, $tupla->agent, 'false');
-                            $this->_astConn->reentrant_count--;
                             if ($this->DEBUG) {
                                 $this->oMainLog->output("DEBUG: resultado de QueuePause($infoCampania->queue, $tupla->agent, 'false') : ".
                                     print_r($resultado, TRUE));
@@ -1195,12 +1264,6 @@ PETICION_LLAMADAS_AGENTE;
         if ($iNumLlamadasColocar > $iNumEsperanRespuesta)
             $iNumLlamadasColocar -= $iNumEsperanRespuesta;
         else $iNumLlamadasColocar = 0;
-        
-        if ($this->_astConn->request_err) {
-        	$this->oMainLog->output("ERR: problema al enviar petición a Asterisk durante predicción");
-            $this->iniciarConexionAsterisk();
-            return FALSE;
-        }
 
         if ($iNumLlamadasColocar <= 0) {
             if ($this->DEBUG) {
@@ -1412,8 +1475,7 @@ PETICION_LLAMADAS;
 						"\tCaller ID... ".(isset($datosTrunk['CID']) ? $datosTrunk['CID'] : "(no definido)")."\n".
 						"\tCadena de marcado $sCanalTrunk");
                 }
-                // TODO: POSIBLE PUNTO DE REENTRANCIA
-                $this->_astConn->reentrant_count++; // Acumular eventos en lugar de procesar
+
                 $resultado = $this->_astConn->Originate(
                     $sCanalTrunk, $infoCampania->queue, $infoCampania->context, 1,
                     NULL, NULL, NULL, 
@@ -1421,7 +1483,7 @@ PETICION_LLAMADAS;
                     $sCadenaVar,
                     NULL, 
                     TRUE, $sKey);
-                $this->_astConn->reentrant_count--;
+
                 if (!is_array($resultado) || count($resultado) == 0) {
                 	$this->oMainLog->output("ERR: problema al enviar Originate a Asterisk");
                     $this->iniciarConexionAsterisk();
@@ -2001,6 +2063,38 @@ PETICION_LLAMADAS;
             return FALSE;
         }
         $sKey = $params['ActionID'];
+        
+        // Se revisa si esta es una de las llamadas para logonear un agente estático
+        $listaECCP = explode(':', $sKey);
+        if ($listaECCP[0] == 'ECCP' && $listaECCP[2] == posix_getpid()) {
+        	switch ($listaECCP[3]) {
+            case 'AgentLogin':
+                if ($this->DEBUG) {
+                    $this->oMainLog->output("DEBUG: AgentLogin({$listaECCP[4]}) detectado");
+                }
+                if ($params['Response'] == 'Success') {
+                    $this->_infoAgentes[$listaECCP[4]] = $this->generarEstadoInicialAgente();
+                    $this->_infoAgentes[$listaECCP[4]]['Uniqueid'] = $params['Uniqueid'];
+                    $this->_infoAgentes[$listaECCP[4]]['estado-consola'] = 'logging';
+                    if ($this->DEBUG) {
+                        $this->oMainLog->output("DEBUG: AgentLogin({$listaECCP[4]}) llamada contestada, esperando clave de agente...");
+                    }
+                } else {
+                    if ($this->DEBUG) {
+                        $this->oMainLog->output("DEBUG: AgentLogin({$listaECCP[4]}) llamada ha fallado.");
+                    }
+                    $this->_dialSrv->notificarEvento_AgentLogin($listaECCP[4], NULL, FALSE);
+                }
+                if ($this->DEBUG) $this->oMainLog->output("DEBUG: EXIT OnOriginateResponse");
+                return FALSE;
+            default:
+                $this->oMainLog->output("ERR: OriginateResponse: no se ha implementado soporte ECCP para: {$sKey}");
+                if ($this->DEBUG) $this->oMainLog->output("DEBUG: EXIT OnOriginateResponse");
+                return FALSE;
+        	}
+        }
+
+        // Se revisa si esta es una de las llamadas salientes de las campañas
         if (isset($this->_infoLlamadas['llamadas'][$sKey])) {
             if (!is_null($this->_infoLlamadas['llamadas'][$sKey]->OriginateEnd)) {
                 if ($this->DEBUG) {
@@ -2558,6 +2652,14 @@ UPDATE_CALLS_ORIGINATE_RESPONSE;
                 	$this->oMainLog->output("ERR: $sEvent: no se puede actualizar fecha inicio llamada actual - ".$result->getMessage());
                 }
                 
+                // Leer la información de la llamada, y reportar la conexión
+                $infoLlamada = $this->leerInfoLlamada('outgoing',
+                    $this->_infoLlamadas['llamadas'][$sKey]->id_campaign, 
+                    $this->_infoLlamadas['llamadas'][$sKey]->id);
+                if (!is_null($infoLlamada)) {
+                    $this->_dialSrv->notificarEvento_AgentLinked($sChannel, $sRemChannel, $infoLlamada);
+                }
+                
                 $this->_listarCurrentCalls();
                 
             } else {
@@ -2607,6 +2709,230 @@ UPDATE_CALLS_ORIGINATE_RESPONSE;
             	}
             }
     	}
+    }
+
+    /**
+     * Procedimiento que consulta toda la información de la base de datos sobre
+     * una llamada de campaña. Se usa para el evento agentlinked, así como para 
+     * el requerimiento getcallinfo.
+     * 
+     * @param   string  $sTipoLlamada   Uno de 'incoming', 'outgoing'
+     * @param   integer $idCampania     ID de la campaña, puede ser NULL para incoming
+     * @param   integer $idLlamada      ID de la llamada dentro de la campaña
+     *    
+     */
+    function leerInfoLlamada($sTipoLlamada, $idCampania, $idLlamada)
+    {
+    	switch ($sTipoLlamada) {
+        case 'incoming':
+            return $this->_leerInfoLlamadaIncoming($idCampania, $idLlamada);
+        case 'outgoing':
+            return $this->_leerInfoLlamadaOutgoing($idCampania, $idLlamada);
+        default:
+            return NULL;
+    	}
+    }
+
+    // Leer la información de una llamada saliente. La información incluye lo
+    // almacenado en la tabla calls, más los atributos asociados a la llamada
+    // en la tabla call_attribute, y los datos ya recogidos en las tablas 
+    // form_data_recolected y form_field
+    private function _leerInfoLlamadaOutgoing($idCampania, $idLlamada)
+    {
+    	// Leer información de la llamada principal
+        $sPeticionSQL = <<<INFO_LLAMADA
+SELECT 'outgoing' AS calltype, id, id_campaign, phone, status, uniqueid, 
+    duration, datetime_originate, fecha_llamada AS datetime_originateresponse, 
+    datetime_entry_queue AS datetime_join, start_time AS datetime_linkstart, 
+    end_time AS datetime_linkend, retries, failure_cause, failure_cause_txt 
+FROM calls WHERE id_campaign = ? AND id = ?
+INFO_LLAMADA;
+        $tuplaLlamada = $this->_dbConn->getRow($sPeticionSQL, 
+            array($idCampania, $idLlamada), DB_FETCHMODE_ASSOC);
+        if (DB::isError($tuplaLlamada)) {
+            $this->oMainLog->output("ERR: no se puede leer información de llamada saliente - ".
+                $tuplaLlamada->getMessage());
+        	return NULL;
+        } elseif (count($tuplaLlamada) <= 0) {
+        	// No se encuentra la llamada indicada
+            return array();
+        }
+
+        // Leer información de los atributos de la llamada
+        $sPeticionSQL = <<<INFO_ATRIBUTOS
+SELECT columna AS `label`, value, column_number AS `order`
+FROM call_attribute
+WHERE id_call = ?
+ORDER BY column_number
+INFO_ATRIBUTOS;
+        $tuplaLlamada['call_attributes'] = $this->_dbConn->getAll($sPeticionSQL,
+            array($idLlamada), DB_FETCHMODE_ASSOC);
+        if (DB::isError($tuplaLlamada['call_attributes'])) {
+            $this->oMainLog->output("ERR: no se puede leer atributos de llamada saliente - ".
+                $tuplaLlamada['call_attributes']->getMessage());
+        	return NULL;
+        }
+
+        // Leer información de los datos recogidos vía formularios
+        $sPeticionSQL = <<<INFO_FORMULARIOS
+SELECT form_field.id_form, form_field.id, form_field.etiqueta AS label, 
+    form_data_recolected.value
+FROM form_data_recolected, form_field
+WHERE form_data_recolected.id_calls = ?
+    AND form_data_recolected.id_form_field = form_field.id
+ORDER BY form_field.id_form, form_field.orden
+INFO_FORMULARIOS;
+        $datosFormularios = $this->_dbConn->getAll($sPeticionSQL,
+            array($idLlamada), DB_FETCHMODE_ASSOC);
+        if (DB::isError($datosFormularios)) {
+            $this->oMainLog->output("ERR: no se puede leer datos de formulario de llamada saliente - ".
+                $datosFormularios->getMessage());
+        	return NULL;
+        }
+        $tuplaLlamada['call_survey'] = array();
+        foreach ($datosFormularios as $tuplaFormulario) {
+        	$tuplaLlamada['call_survey'][$tuplaFormulario['id_form']][] = array(
+                'id'    => $tuplaFormulario['id'],
+                'label' => $tuplaFormulario['label'],
+                'value' => $tuplaFormulario['value'],
+            );
+        }
+
+        return $tuplaLlamada;
+    }
+
+    // Leer la información de la llamada entrante. En esta implementación, a
+    // diferencia de las llamadas salientes, las llamadas entrantes tienen un
+    // solo formulario, y su conjunto de atributos es fijo.
+    private function _leerInfoLlamadaIncoming($idCampania, $idLlamada)
+    {
+        // Leer información de la llamada principal
+        $sPeticionSQL = <<<INFO_LLAMADA
+SELECT 'incoming' AS calltype, call_entry.id, id_campaign, callerid AS phone, 
+    status, uniqueid, duration, datetime_entry_queue AS datetime_join, 
+    datetime_init AS datetime_linkstart, datetime_end AS datetime_linkend, 
+    trunk, queue, id_campaign, id_contact
+FROM call_entry, queue_call_entry
+WHERE call_entry.id = ? AND call_entry.id_queue_call_entry = queue_call_entry.id
+INFO_LLAMADA;
+        $tuplaLlamada = $this->_dbConn->getRow($sPeticionSQL, 
+            array($idLlamada), DB_FETCHMODE_ASSOC);
+        if (DB::isError($tuplaLlamada)) {
+            $this->oMainLog->output("ERR: no se puede leer información de llamada entrante - ".
+                $tuplaLlamada->getMessage());
+            return NULL;
+        } elseif (count($tuplaLlamada) <= 0) {
+            // No se encuentra la llamada indicada
+            return array();
+        }
+
+        // Leer información de los atributos de la llamada
+        // TODO: agregar información de múltiples contactos con el mismo teléfono
+        // TODO: expandir cuando se tenga tabla de atributos arbitrarios
+        $idContact = $tuplaLlamada['id_contact'];
+        unset($tuplaLlamada['id_contact']);
+        $tuplaLlamada['call_attributes'] = array();
+        if (!is_null($idContact)) {
+            $sPeticionSQL = <<<INFO_ATRIBUTOS
+SELECT name AS first_name, apellido AS last_name, telefono AS phone, cedula_ruc
+FROM contact WHERE id = ?
+INFO_ATRIBUTOS;
+            $atributosLlamada = $this->_dbConn->getRow($sPeticionSQL,
+                array($idContact), DB_FETCHMODE_ASSOC);
+            if (DB::isError($atributosLlamada)) {
+                $this->oMainLog->output("ERR: no se puede leer atributos de llamada entrante - ".
+                    $atributosLlamada->getMessage());
+                return NULL;
+            }
+            $tuplaLlamada['call_attributes'] = array(
+                array(
+                    'label' =>  'first_name',
+                    'value' =>  $atributosLlamada['first_name'],
+                    'order' =>  1,
+                ),
+                array(
+                    'label' =>  'last_name',
+                    'value' =>  $atributosLlamada['last_name'],
+                    'order' =>  2,
+                ),
+                array(
+                    'label' =>  'phone',
+                    'value' =>  $atributosLlamada['phone'],
+                    'order' =>  3,
+                ),
+                array(
+                    'label' =>  'cedula_ruc',
+                    'value' =>  $atributosLlamada['cedula_ruc'],
+                    'order' =>  4,
+                ),
+            );
+        }
+
+        // Leer información de todos los contactos que coincidan en callerid
+        $tuplaLlamada['matching_contacts'] = array();
+        $sPeticionSQL = <<<INFO_ATRIBUTOS
+SELECT id, name AS first_name, apellido AS last_name, telefono AS phone, cedula_ruc
+FROM contact WHERE telefono = ?
+INFO_ATRIBUTOS;
+        $listaContactos = $this->_dbConn->getAll($sPeticionSQL, 
+            array($tuplaLlamada['phone']), DB_FETCHMODE_ASSOC);
+        if (DB::isError($listaContactos)) {
+            $this->oMainLog->output("ERR: no se puede leer posibles contactos de llamada entrante - ".
+                $listaContactos->getMessage());
+        	return NULL;
+        }
+        foreach ($listaContactos as $tuplaContacto) {
+        	$tuplaLlamada['matching_contacts'][$tuplaContacto['id']] = array(
+                array(
+                    'label' =>  'first_name',
+                    'value' =>  $tuplaContacto['first_name'],
+                    'order' =>  1,
+                ),
+                array(
+                    'label' =>  'last_name',
+                    'value' =>  $tuplaContacto['last_name'],
+                    'order' =>  2,
+                ),
+                array(
+                    'label' =>  'phone',
+                    'value' =>  $tuplaContacto['phone'],
+                    'order' =>  3,
+                ),
+                array(
+                    'label' =>  'cedula_ruc',
+                    'value' =>  $tuplaContacto['cedula_ruc'],
+                    'order' =>  4,
+                ),
+            );
+        }
+
+        // Leer información de los datos recogidos vía formularios
+        $idCampaniaTupla = $tuplaLlamada['id_campaign'];
+        $sPeticionSQL = <<<INFO_FORMULARIOS
+SELECT form_field.id_form, form_field.id, form_field.etiqueta AS label, 
+    form_data_recolected_entry.value
+FROM form_data_recolected_entry, form_field
+WHERE form_data_recolected_entry.id_call_entry = ?
+    AND form_data_recolected_entry.id_form_field = form_field.id
+ORDER BY form_field.id_form, form_field.orden
+INFO_FORMULARIOS;
+        $datosFormularios = $this->_dbConn->getAll($sPeticionSQL,
+            array($idLlamada), DB_FETCHMODE_ASSOC);
+        if (DB::isError($datosFormularios)) {
+            $this->oMainLog->output("ERR: no se puede leer datos de formulario de llamada saliente - ".
+                $datosFormularios->getMessage());
+            return NULL;
+        }
+        $tuplaLlamada['call_survey'] = array();
+        foreach ($datosFormularios as $tuplaFormulario) {
+            $tuplaLlamada['call_survey'][$tuplaFormulario['id_form']][] = array(
+                'id'    => $tuplaFormulario['id'],
+                'label' => $tuplaFormulario['label'],
+                'value' => $tuplaFormulario['value'],
+            );
+        }
+
+        return $tuplaLlamada;
     }
 
     // Callback invocado al llegar el evento Unlink
@@ -2664,6 +2990,28 @@ UPDATE_CALLS_ORIGINATE_RESPONSE;
             $this->oMainLog->output("DEBUG: $sEvent:\nparams => ".print_r($params, TRUE));
         }
 
+        // Verificar si este es un colgado de una llamada para login de agente
+        // estático, que fue contestada pero no se logoneó.
+        if (isset($params['Uniqueid'])) {
+            $sAgente = FALSE;
+            foreach ($this->_infoAgentes as $sKey => $infoAgente) {
+            	if ($infoAgente['Uniqueid'] == $params['Uniqueid']) {
+            		$sAgente = $sKey;
+                    break;
+            	}
+            }
+            if ($sAgente !== FALSE) {
+            	// Agente colgó antes de logonearse con contraseña
+                $this->_dialSrv->notificarEvento_AgentLogin($sAgente, NULL, FALSE);
+                unset($this->_infoAgentes[$sAgente]);
+                if ($this->DEBUG) {
+                    $this->oMainLog->output("DEBUG: AgentLogin($sAgente) cuelga antes de introducir contraseña");
+                    $this->oMainLog->output("DEBUG: EXIT OnHangup");
+                }
+                return FALSE;
+            }
+        }
+
         // Verificar si es una llamada entrante monitoreada. Si lo es, 
         // se termina el procesamiento sin hacer otra cosa
         if ($this->_oGestorEntrante->notificarHangup($params)) {
@@ -2673,7 +3021,8 @@ UPDATE_CALLS_ORIGINATE_RESPONSE;
             }
             return FALSE;
         }
-
+        
+        // Revisar si la llamada es alguna de las llamadas salientes monitoreadas
         $sKey = NULL;
         foreach ($this->_infoLlamadas['llamadas'] as $key => $tupla) {
             if (isset($tupla->Uniqueid)) {
@@ -2885,6 +3234,16 @@ UPDATE_CALLS_ORIGINATE_RESPONSE;
                             }
                         }
                     } while (DB::isError($result) && $bErrorLocked);
+                    
+                    // Notificar que la llamada ha sido colgada
+                    // FIXME: esto asume formato Agent/9000
+                    $this->_dialSrv->notificarEvento_AgentUnlinked("Agent/$idAgente", array(
+                        'calltype'      =>  'outgoing',
+                        'id_campaign'   =>  $idCampaign,
+                        'id'            =>  $this->_infoLlamadas['llamadas'][$sKey]->id,
+                        'phone'         =>  $this->_infoLlamadas['llamadas'][$sKey]->phone,
+                    ));
+                    
                 } /* !$bLlamadaCorta */
             } /* is_null(start_timestamp) */
 
@@ -2938,6 +3297,336 @@ UPDATE_CALLS_ORIGINATE_RESPONSE;
         return FALSE;
     }
 
+    // Callback llamado cuando un agente se logonea a una cola
+    function OnAgentlogin($sEvent, $params, $sServer, $iPort)
+    {
+        if ($this->DEBUG) {
+            $this->oMainLog->output("DEBUG: ENTER OnAgentlogin");
+            $this->oMainLog->output("DEBUG: $sEvent:\nparams => ".print_r($params, TRUE));
+        }
+
+        // Verificar que este evento corresponde a un Agentlogin iniciado por este programa
+        $sAgente = 'Agent/'.$params['Agent'];
+        if (!isset($this->_infoAgentes[$sAgente])) {
+            if ($this->DEBUG) {
+                $this->oMainLog->output("DEBUG: AgentLogin($sAgente) no iniciado por programa, no se hace nada.");
+                $this->oMainLog->output("DEBUG: EXIT OnAgentlogin");
+            }
+            return FALSE;
+        }
+        $this->_infoAgentes[$sAgente]['estado-consola'] = 'logged-in';
+        
+        // Escribir la información de auditoría en la base de datos
+        $this->_infoAgentes[$sAgente]['id_sesion'] = $this->marcarInicioSesionAgente($sAgente);
+
+        if ($this->DEBUG) {
+            $this->oMainLog->output("DEBUG: EXIT OnAgentlogin");
+        }
+        return FALSE;
+    }
+
+    /**
+     * Método de conveniencia para verificar si el agente está en pausa, y 
+     * quitar la pausa en caso de encontrarla.
+     *
+     * @param   string  Canal del agente que se está logoneando: "Agent/9000"
+     *
+     * @return  VERDADERO en éxito, FALSE en error
+     */
+    private function quitarPosiblePausa($sAgente)
+    {
+        if ($this->estadoAgentePausa($sAgente)) {
+            $r = $this->_astConn->QueuePause(NULL, $sAgente, "false");
+            // TODO: funcionó la operación de QueuePause ? $r['Response']
+        }
+        return TRUE;
+    }
+
+    /**
+     * Método para verificar el estado de pausa de un agente.
+     *
+     * @param   string  Canal del agente que se está logoneando: "Agent/9000"
+     *
+     * @return  VERDADERO si está en pausa, FALSE si no, o si agente no existe.
+     */
+    private function estadoAgentePausa($sAgente)
+    {
+        $r = $this->_astConn->Command("queue show");
+        $listaLineas = explode("\n", $r['data']);
+        foreach ($listaLineas as $sLinea) {
+            $regs = NULL;
+            if (preg_match('|^\s*(\w+/\d{2,})|', $sLinea, $regs)) {
+                if ($sAgente == $regs[1]) {
+                    // Se ha localizado el agente
+                    return (strpos($sLinea, "(paused)") !== FALSE);
+                }
+            }
+        }
+        return FALSE; // No se encontró al agente
+    }
+
+    /**
+     * Método para marcar en las tablas de auditoría que el agente ha iniciado
+     * la sesión. Esta implementación verifica si el agente ya ha sido marcado
+     * previamente como que inició la sesión, y sólo marca el inicio si no está
+     * ya marcado antes.
+     *
+     * @param   string  $sAgente    Canal del agente que se verifica sesión
+     *
+     * @return  mixed   NULL en error, o el ID de la auditoría de inicio de sesión
+     */
+    private function marcarInicioSesionAgente($sAgente)
+    {
+        // Si el agente está en pausa, se la quita ahora
+        $this->quitarPosiblePausa($sAgente);
+        
+        // Esto asume formato Agent/9000
+        $sNumAgente = NULL;
+        if (preg_match('|^Agent/(\d+)$|', $sAgente, $regs)) {
+            $sNumAgente = $regs[1];
+        } else {
+            $this->oMainLog->output('ERR: No se ha implementado este tipo de agente - '.$sAgente);
+            return NULL;
+        }
+
+        // Se averigua el ID del agente, dado el número
+        $tupla = $this->_dbConn->getRow(
+            "SELECT id FROM agent WHERE number = ? AND estatus = 'A'", 
+            array($sNumAgente), DB_FETCHMODE_ASSOC);
+        if (DB::isError($tupla)) {
+            $this->oMainLog->output('ERR: (internal) Unable to fetch agent ID - '.$tupla->getMessage());
+            return NULL;
+        } elseif (count($tupla) <= 0) {
+            $this->oMainLog->output('ERR: Invalid or inactive agent: '.$sNumAgente);
+            return NULL;
+        }
+        $idAgente = $tupla['id'];
+
+        // Verificación de sesión activa
+        $sPeticionExiste = <<<SQL_EXISTE_AUDIT
+SELECT id FROM audit
+WHERE id_agent = ? AND datetime_end IS NULL AND duration IS NULL AND id_break IS NULL
+ORDER BY datetime_init DESC
+SQL_EXISTE_AUDIT;
+        $tupla = $this->_dbConn->getRow($sPeticionExiste, array($idAgente), DB_FETCHMODE_ASSOC);
+        if (DB::isError($tupla)) {
+            $this->oMainLog->output('ERR: (internal) Unable to check agent session - '.$tupla->getMessage());
+            return NULL;
+        }
+        
+        // Se indica éxito de inmediato si ya hay una sesión
+        $idAudit = NULL;
+        if (count($tupla) > 0) {
+            $idAudit = $tupla['id'];
+        } else {
+            // Ingreso de sesión del agente
+            $sTimeStamp = date('Y-m-d H:i:s');
+            $r = $this->_dbConn->query(
+                'INSERT INTO audit (id_agent, datetime_init) VALUES (?, ?)', 
+                array($idAgente, $sTimeStamp));
+            if (DB::isError($r)) {
+                $this->oMainLog->output('(internal) Unable to start agent session - '.$r->getMessage());
+                return NULL;
+            }
+    
+            // Se recoge la tupla con el ID de inserción antes de que se sobreescriba
+            $tupla = $this->_dbConn->getRow('SELECT LAST_INSERT_ID()');
+            $idAudit = $tupla[0];
+        }
+
+        // Reportar todas las colas a la que pertenece un agente
+        $listaColas = $this->_listarColasAgente($sAgente);
+
+        // Notificar a todas las conexiones abiertas
+        $this->_dialSrv->notificarEvento_AgentLogin($sAgente, $listaColas, TRUE);
+
+        return $idAudit;
+    }
+    
+    /**
+     * Método para marcar en las tablas de auditoría que el agente ha terminado
+     * su sesión principal y está haciendo logout.
+     *
+     * @param   int     $idAuditSesion  ID de sesión devuelto por marcarInicioSesionAgente()
+     * @param   int     $idAuditBreak   ID del break devuelto por marcarInicioBreakAgente().
+     *                                  Si es NULL, se ignora (no estaba en break).
+     *
+     * @return  bool    VERDADERO en éxito, FALSE en error.
+     */
+    private function marcarFinalSesionAgente($sAgente, $idAuditSesion, $idAuditBreak)
+    {
+        // Quitar posibles pausas sobre el agente
+        $this->quitarPosiblePausa($sAgente);
+        
+        if (!is_null($idAuditBreak))
+            $this->marcarFinalBreakAgente($idAuditBreak);
+        $sTimeStamp = date('Y-m-d H:i:s');
+        $r = $this->_dbConn->query(
+            'UPDATE audit SET datetime_end = ?, duration = TIMEDIFF(?, datetime_init) WHERE id = ?',
+            array($sTimeStamp, $sTimeStamp, $idAuditSesion));
+        if (DB::isError($r)) {
+            $this->oMainLog->output('ERR: (internal) Unable to end agent session - '.$r->getMessage());
+            return FALSE;
+        }
+
+        // Reportar todas las colas a la que pertenece un agente
+        $listaColas = $this->_listarColasAgente($sAgente);
+
+        // Notificar a todas las conexiones abiertas
+        $this->_dialSrv->notificarEvento_AgentLogoff($sAgente, $listaColas);
+
+        return TRUE;
+    }
+    
+    /**
+     * Método para marcar en las tablas de auditoría que el agente ha entrado
+     * en hold o break. 
+     *
+     * @param   string  $sAgente    Número del agente que se verifica sesión
+     * @param   int     $idBreak    ID del break que el agente va a iniciar
+     *
+     * @return  mixed   NULL en error, o el ID de la auditoría de inicio de break
+     */
+    private function marcarInicioBreakAgente($sAgente, $idBreak)
+    {
+        // Esto asume formato Agent/9000
+        $sNumAgente = NULL;
+        if (preg_match('|^Agent/(\d+)$|', $sAgente, $regs)) {
+            $sNumAgente = $regs[1];
+        } else {
+            $this->oMainLog->output('ERR: No se ha implementado este tipo de agente - '.$sAgente);
+            return NULL;
+        }
+
+        // Se averigua el ID del agente, dado el número
+        $tupla = $this->_dbConn->getRow(
+            "SELECT id FROM agent WHERE number = ? AND estatus = 'A'", 
+            array($sNumAgente), DB_FETCHMODE_ASSOC);
+        if (DB::isError($tupla)) {
+            $this->oMainLog->output('ERR: (internal) Unable to fetch agent ID - '.$tupla->getMessage());
+            return NULL;
+        } elseif (count($tupla) <= 0) {
+            $this->oMainLog->output('ERR: Invalid or inactive agent: '.$sAgente);
+            return NULL;
+        }
+        $idAgente = $tupla['id'];
+
+        // Ingreso de sesión del agente
+        $sTimeStamp = date('Y-m-d H:i:s');
+        $r = $this->_dbConn->query(
+            'INSERT INTO audit (id_agent, id_break, datetime_init) VALUES (?, ?, ?)',
+            array($idAgente, $idBreak, $sTimeStamp));
+        if (DB::isError($r)) {
+            $this->oMainLog->output('ERR: (internal) Unable to start agent break - '.$r->getMessage());
+            return NULL;
+        }
+        $tupla = $this->_dbConn->getRow('SELECT LAST_INSERT_ID()');
+        return $tupla[0];
+    }
+    
+    /**
+     * Método para marcar en las tablas de auditoría que el agente ha terminado
+     * su hold o break.
+     *
+     * @param   int     $idAuditBreak   ID del break devuelto por marcarInicioBreakAgente()
+     *
+     * @return  bool    VERDADERO en éxito, FALSE en error.
+     */
+    private function marcarFinalBreakAgente($idAuditBreak)
+    {
+        $sTimeStamp = date('Y-m-d H:i:s');
+        $r = $this->_dbConn->query(
+            'UPDATE audit SET datetime_end = ?, duration = TIMEDIFF(?, datetime_init) WHERE id = ?',
+            array($sTimeStamp, $sTimeStamp, $idAuditBreak));
+        if (DB::isError($r)) {
+            $this->oMainLog->output('ERR: (internal) Unable to end agent break - '.$r->getMessage());
+            return FALSE;
+        }
+        return TRUE;
+    }
+
+    // Método que lista las colas a las cuales está suscrito un agente
+    private function _listarColasAgente($sAgente)
+    {
+    	/* Por ahora se asume que $sAgente es de la forma Agent/9000 y que 
+         * aparece de esta misma manera en el reporte de "queue show" 
+         *  5000 has 0 calls (max unlimited) in 'ringall' strategy (0s holdtime, 0s talktime), W:0, C:0, A:0, SL:0.0% within 60s
+         *     No Members
+         *     No Callers
+         *  
+         *  8001 has 0 calls (max unlimited) in 'ringall' strategy (0s holdtime, 0s talktime), W:0, C:0, A:0, SL:0.0% within 60s
+         *     Members: 
+         *        Agent/9000 (Unavailable) has taken no calls yet
+         *     No Callers
+         *  
+         *  8000 has 0 calls (max unlimited) in 'ringall' strategy (0s holdtime, 0s talktime), W:0, C:0, A:0, SL:0.0% within 60s
+         *     Members: 
+         *        Agent/9000 (Unavailable) has taken no calls yet
+         *     No Callers
+         *
+         */
+        $respuestaCola = $this->_astConn->Command('queue show');
+        if (isset($respuestaCola['data'])) {
+            $listaColas = array();
+            $lineasRespuesta = split("\n", $respuestaCola['data']);
+            $sColaActual = NULL;
+            foreach ($lineasRespuesta as $sLinea) {
+                $regs = NULL;
+                //if (ereg('^([[:digit:]]+)[[:space:]]+has[[:space:]]+[[:digit:]]+[[:space:]]+calls', $sLinea, $regs)) {
+                if (preg_match('/^(\d+) has \d+ calls/', $sLinea, $regs)) {
+                   // Se ha encontrado el inicio de una descripción de cola
+                    $sColaActual = $regs[1];
+                //} elseif (ereg('^[[:space:]]+(Agent/[[:digit:]]+)', $sLinea, $regs)) {
+                } elseif (preg_match('|^\s+(\w+/\d+)|', $sLinea, $regs)) {
+                    if (!is_null($sColaActual) && $sAgente == $regs[1]) {
+                        // Se ha encontrado el agente en una cola en particular
+                        $listaColas[] = $sColaActual;
+                    }
+                }
+            }
+            return $listaColas;
+        } else {
+            $this->oMainLog->output('ERR: lost synch with Asterisk AMI ("queue show" response lacks "data").');
+            return NULL;
+        }
+    }
+
+    function existeSeguimientoAgente($sAgente)
+    {
+    	return isset($this->_infoAgentes[$sAgente]);
+    }
+
+    function OnAgentlogoff($sEvent, $params, $sServer, $iPort)
+    {
+        if ($this->DEBUG) {
+            $this->oMainLog->output("DEBUG: ENTER OnAgentlogoff");
+            $this->oMainLog->output("DEBUG: $sEvent:\nparams => ".print_r($params, TRUE));
+        }
+
+        // Verificar que este evento corresponde a un Agentlogin iniciado por este programa
+        $sAgente = 'Agent/'.$params['Agent'];
+        if (!isset($this->_infoAgentes[$sAgente])) {
+            if ($this->DEBUG) {
+                $this->oMainLog->output("DEBUG: logoff AgentLogin($sAgente) no iniciado por programa, no se hace nada.");
+                $this->oMainLog->output("DEBUG: EXIT OnAgentlogoff");
+            }
+            return FALSE;
+        }
+
+        // Escribir la información de auditoría en la base de datos
+        $this->marcarFinalSesionAgente(
+            $sAgente,
+            $this->_infoAgentes[$sAgente]['id_sesion'],
+            $this->_infoAgentes[$sAgente]['id_break']);
+
+        unset($this->_infoAgentes[$sAgente]);
+
+        if ($this->DEBUG) {
+            $this->oMainLog->output("DEBUG: EXIT OnAgentlogoff");
+        }
+        return FALSE;
+    }
+
     // Callback llamado para todos los eventos no manejados por otro callback
     function OnDefault($sEvent, $params, $sServer, $iPort)
     {
@@ -2963,10 +3652,27 @@ UPDATE_CALLS_ORIGINATE_RESPONSE;
         // Marcar como inválidas las llamadas que sigan en curso
         if (!is_null($this->_oGestorEntrante)) $this->_oGestorEntrante->finalizarLlamadasEnCurso();
 
+        // Deslogonear a todos los agentes que sigan activos
+        foreach ($this->_infoAgentes as $sAgente => $infoAgente) {
+            $regs = NULL;
+            if (preg_match('|^Agent/(\d+)$|', $sAgente, $regs)) {
+                $sNumAgente = $regs[1];
+                $r = $this->_astConn->Agentlogoff($sNumAgente);
+                $this->marcarFinalSesionAgente(
+                    $sAgente,
+                    $infoAgente['id_sesion'],
+                    $infoAgente['id_break']);
+            }
+        }
+
+        // Mandar a cerrar todas las conexiones activas
+        $this->_dialSrv->finalizarServidor();
+/*
         if (!is_null($this->_astConn)) {
         	$this->_astConn->disconnect();
             $this->_astConn = NULL;
         }
+*/
         if (!is_null($this->_dbConn)) {
         	$this->_dbConn->disconnect();
             $this->_dbConn = NULL;

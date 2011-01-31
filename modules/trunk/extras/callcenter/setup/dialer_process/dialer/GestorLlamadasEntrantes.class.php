@@ -46,6 +46,8 @@ class GestorLlamadasEntrantes
 {
     private $_astConn;  // Conexión al Asterisk
     private $_dbConn;   // Conexión a la base de datos
+    private $_dialProc; // Referencia al DialerProcess
+    private $_dialSrv;  // Referencia al DialerServer
     private $_oMainLog; // Objeto de administración de log
 
     private $_timestampCache;   // Momento en que se leyó la info del caché
@@ -74,6 +76,8 @@ class GestorLlamadasEntrantes
         }
         $this->_dbConn = $dbConn;
         $this->_oMainLog = $oLog;
+        $this->_dialProc = NULL;
+        $this->_dialSrv = NULL;
         $this->_timestampCache = NULL;
         $this->_cacheAgentesCola = NULL;
         $this->_cacheColasMonitoreadas = NULL;
@@ -127,9 +131,6 @@ class GestorLlamadasEntrantes
      */
     function setAstConn(&$astman)
     {
-        if (!($astman instanceof AGI_AsteriskManager)) {
-            throw new Exception('Not a subclass of AGI_AsteriskManager!');
-        }
         $this->_astConn = $astman;
     }
 
@@ -140,6 +141,17 @@ class GestorLlamadasEntrantes
     	}
         $this->_dbConn = $dbConn;
     }
+
+    function setDialerProcess($dialProc)
+    {
+        $this->_dialProc = $dialProc;
+    }
+
+    function setDialSrv($dialSrv)
+    {
+        $this->_dialSrv = $dialSrv;
+    }
+
 
     /**
      * Procedimiento que lee la lista de agentes que pertenecen a cada cola, 
@@ -301,13 +313,25 @@ class GestorLlamadasEntrantes
             $sCallerID = '';
             if (isset($eventParams['CallerIDNum'])) $sCallerID = $eventParams['CallerIDNum'];
             if (isset($eventParams['CallerID'])) $sCallerID = $eventParams['CallerID'];
+
+            /* Se consulta el posible contacto en base al caller-id. Si hay 
+             * exactamente un contacto, su ID se usa para la inserción. */
+            $idContact = NULL;
+            $listaIdContactos = $this->_dbConn->getCol(
+                'SELECT id FROM contact WHERE telefono = ?', 0, array($sCallerID));
+            if (DB::isError($listaIdContactos)) {
+            	$this->_oMainLog->output('ERR: no se puede consultar contacto para llamada entrante - '.
+                    $listaIdContactos->getMessage());
+            } elseif (count($listaIdContactos) == 1) {
+            	$idContact = $listaIdContactos[0];
+            }
             
             // Insertar la información de la llamada entrante en el registro
             $idCola = array_search($eventParams['Queue'], $this->_cacheColasMonitoreadas);
             $camposSQL = array(
                 array('id_agent',               'NULL',         null),
                 array('id_queue_call_entry',    '?',            $idCola),
-                array('id_contact',             'NULL',         null),
+                array('id_contact',             (is_null($idContact) ? 'NULL' : '?'), $idContact),
                 array('callerid',               '?',            $sCallerID),
                 array('datetime_entry_queue',   'NOW()',        null),
                 array('datetime_init',          'NULL',         null),
@@ -345,7 +369,6 @@ class GestorLlamadasEntrantes
                     'ERR: no se puede insertar registro de llamada (log) - '.
                     $resultado->getMessage());
             }
-                    
         }
 
         if ($this->DEBUG) $this->_oMainLog->output("DEBUG: EXIT notificarJoin");
@@ -532,6 +555,13 @@ class GestorLlamadasEntrantes
                                     $this->_oMainLog->output(
                                         'ERR: no se puede insertar registro de llamada (actual) - '.
                                         $resultado->getMessage());
+                                } else {
+                                	$infoLlamada = $this->_dialProc->leerInfoLlamada('incoming',
+                                        NULL, $tuplaLlamada->id);
+                                    if (!is_null($infoLlamada)) {
+                                        $this->_dialSrv->notificarEvento_AgentLinked(
+                                            $sNombreAgente, $sRemChannel, $infoLlamada);
+                                    }
                                 }
                             } else {
                             	if ($this->DEBUG) $this->_oMainLog->output('DEBUG: llamada entrante ya consta en registro de llamadas en curso.');
@@ -687,6 +717,37 @@ class GestorLlamadasEntrantes
                     $temp[] = $tupla;
             }
             $this->_mapaUID = $temp;
+            
+            // Consultar la campaña a la que pertenece la llamada
+            $idCampaign = NULL;
+            if ($this->_tieneCampaignEntry) {
+            	$idCampaign = $this->_dbConn->getOne(
+                    'SELECT id_campaign FROM call_entry WHERE id = ?',
+                    array($tuplaLlamada['id_call_entry']));
+                if (DB::isError($idCampaign)) {
+                	$this->_oMainLog->output('ERR: no se puede consultar campaña de llamada: '.$idCampaign->getMessage());
+                    $idCampaign = NULL;
+                }
+            }
+
+            // Consultar callerid y número de agente
+            $tuplaAgente = $this->_dbConn->getRow(
+                'SELECT callerid, number FROM call_entry, agent '.
+                'WHERE call_entry.id = ? AND call_entry.id_agent = agent.id',
+                array($tuplaLlamada['id_call_entry']),
+                DB_FETCHMODE_ASSOC
+            );
+            if (DB::isError($tuplaAgente)) {
+            	$this->_oMainLog->output('ERR: no se puede consultar callerid/agente de llamada: '.$tuplaAgente->getMessage());
+            } else{
+                // Reportar que se ha cerrado la llamada
+                $this->_dialSrv->notificarEvento_AgentUnlinked("Agent/".$tuplaAgente['number'], array(
+                    'calltype'      =>  'incoming',
+                    'id_campaign'   =>  $idCampaign,
+                    'id'            =>  $tuplaLlamada['id_call_entry'],
+                    'phone'         =>  $tuplaAgente['callerid'],
+                ));
+            }
         }
         
         if ($this->DEBUG) $this->_oMainLog->output("DEBUG: EXIT notificarHangup");

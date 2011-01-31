@@ -399,6 +399,15 @@ CREATE TABLE IF NOT EXISTS `current_call_entry` (
   CONSTRAINT `current_call_entry_ibfk_3` FOREIGN KEY (`id_call_entry`) REFERENCES `call_entry` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Table structure for table `eccp_authorized_clients`
+---
+CREATE TABLE IF NOT EXISTS `eccp_authorized_clients` (
+    `id` int(10) unsigned NOT NULL auto_increment,
+    `username` varchar(64) NOT NULL,
+    `md5_password` varchar(32) NOT NULL,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /* Procedimiento que agrega soporte para DNC (DO NOT CALL) y quita la columna agent.queue */
 DELIMITER ++ ;

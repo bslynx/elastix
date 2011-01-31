@@ -36,9 +36,6 @@ class Predictivo
     
     function Predictivo(&$astman)
     {
-        if (!($astman instanceof AGI_AsteriskManager)) {
-        	throw new Exception('Not a subclass of AGI_AsteriskManager!');
-        }
         $this->_estadisticasCola = array();
         $this->_astConn = $astman;
     }
