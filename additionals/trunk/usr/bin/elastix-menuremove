@@ -57,10 +57,20 @@ $oACL = new paloACL($pDBACL);
 
 if(isset($_SERVER['argv'][1])){
     $idmenu = $_SERVER['argv'][1];
-    if($oMenu->deleteFather($idmenu, $oACL))
+    
+    $oMenu->_DB->beginTransaction();
+    $oACL->_DB->beginTransaction();
+ 
+    if($oMenu->deleteFather($idmenu, $oACL)){
+        $oMenu->_DB->commit();
+        $oACL->_DB->commit();
 	echo "The menus have been removed\n";
-    else	
+    }
+    else{
+        $oMenu->_DB->rollBack();
+        $oACL->_DB->rollBack();	
 	echo "Error: The menus haven't been removed\n";
+    }
 }
 else{
     echo "Error: arg not defined. Usage: {$_SERVER['argv'][0]} system\n";
