@@ -183,6 +183,7 @@ function getCurrencys($arrLang)
             "Rp"    => "Rp - ".$arrLang["Rupia indonesia"],
             "Rs"    => "Rs - ".$arrLang["Rupia"],
             "R$"    => "R$ - ".$arrLang["Real brasileño"],
+            "руб"   => "руб - ".$arrLang["Rublo ruso"],
             "A$"    => "A$ - ".$arrLang["Dólar australiano"],
             "$"     => "$ - ".$arrLang["Dólar/Peso"],
             "¥"     => "¥ - ".$arrLang["Yen"],
