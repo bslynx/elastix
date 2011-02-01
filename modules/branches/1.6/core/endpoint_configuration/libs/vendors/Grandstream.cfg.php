@@ -37,7 +37,7 @@ function PrincipalFileGrandstream($DisplayName, $id_device, $secret, $ipAdressSe
     # Display Name (John Doe)
     P407 = $DisplayName";
     }
-    elseif($model == "GXP2120"){
+    elseif($model == "GXP2120" || $model == "GXV3175"){
         $content="
     # Firmware Server Path
     P192 = $ipAdressServer
