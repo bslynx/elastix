@@ -397,13 +397,25 @@ class XMLDialerConn extends DialerConn
      */
     private function Request_Logout($comando)
     {
-        //return $this->_generarRespuestaFallo(501, 'Not Implemented');
         $this->_sUsuarioECCP = NULL;
         $xml_response = new SimpleXMLElement('<response />');
         $xml_loginResponse = $xml_response->addChild('logout_response');
         $xml_status = $xml_loginResponse->addChild('success');
         $this->_bFinalizando = TRUE;
         return $xml_response;
+    }
+    
+    // Función que encapsula la generación de la respuesta
+    private function Response_LoginAgentResponse($status, $msg = NULL)
+    {
+        $xml_response = new SimpleXMLElement('<response />');
+        $xml_loginAgentResponse = $xml_response->addChild('loginagent_response');
+
+        $xml_loginAgentResponse->addChild('status', $status);
+        if (!is_null($msg)) 
+            $this->_agregarRespuestaFallo($xml_loginAgentResponse, 417, $msg);
+            
+        return $xml_response;           
     }
     
     /**
@@ -447,24 +459,8 @@ class XMLDialerConn extends DialerConn
      */
     private function Request_LoginAgent($comando)
     {
-        // Función que encapsula la generación de la respuesta
-        if (!function_exists('Response_LoginAgentResponse')) {
-        function Response_LoginAgentResponse($status, $msg = NULL)
-        {
-            $xml_response = new SimpleXMLElement('<response />');
-            $xml_loginAgentResponse = $xml_response->addChild('loginagent_response');
-
-            $xml_loginAgentResponse->addChild('status', $status);
-            if (!is_null($msg)) 
-                $this->_agregarRespuestaFallo($xml_loginAgentResponse, 417, $msg);
-                
-            return $xml_response;        	
-        }
-        }
-
         if (is_null($this->_sUsuarioECCP))
             return $this->_generarRespuestaFallo(401, 'Unauthorized');
-        //return $this->_generarRespuestaFallo(501, 'Not Implemented');
 
         // Verificar que agente y extensión están presentes
         if (!isset($comando->agent_number) || !isset($comando->extension)) 
@@ -476,9 +472,9 @@ class XMLDialerConn extends DialerConn
         $listaExtensiones = $this->listarExtensiones();
         $listaAgentes = $this->listarAgentes();
         if (!in_array($sAgente, array_keys($listaAgentes))) {
-            return Response_LoginAgentResponse('logged-out', 'Invalid agent number');
+            return $this->Response_LoginAgentResponse('logged-out', 'Invalid agent number');
         } elseif (!in_array($sExtension, array_keys($listaExtensiones))) {
-            return Response_LoginAgentResponse('logged-out', 'Invalid extension number');
+            return $this->Response_LoginAgentResponse('logged-out', 'Invalid extension number');
         }
         
         // Verificar si el número de agente no está ya ocupado por otra extensión
@@ -497,22 +493,22 @@ class XMLDialerConn extends DialerConn
                 
                 if ($regs[1] == $sExtension && $this->_dialProc->existeSeguimientoAgente($sAgente)) {
                     // Ya está logoneado este agente. Se procede directamente a interfaz
-                    return Response_LoginAgentResponse('logged-in');
+                    return $this->Response_LoginAgentResponse('logged-in');
                 } else {
                     // Otra extensión ya ocupa el login del agente indicado, o no se dispone de traza
-                    return Response_LoginAgentResponse('logged-out',
+                    return $this->Response_LoginAgentResponse('logged-out',
                         'Specified agent already connected to extension: '.$regs[1]);
                 }
             } else {
                 // No se reconoce el canal de login
-                return Response_LoginAgentResponse('logged-out',
+                return $this->Response_LoginAgentResponse('logged-out',
                     'Unable to parse extension from channel: '.$sCanalExt);
             }                
         } else {
             // No hay canal de login. Se inicia login a través de Originate
             $r = $this->loginAgente($listaExtensiones[$sExtension], $sAgente);
             $this->oMainLog->output("DEBUG: loginAgente responde: ".print_r($r, 1));
-            return Response_LoginAgentResponse('logging');            
+            return $this->Response_LoginAgentResponse('logging');            
         }
 
     }
@@ -646,6 +642,18 @@ LISTA_EXTENSIONES;
         return $r;
     }
    
+    // Función que encapsula la generación de la respuesta
+    private function Response_LogoutAgentResponse($status, $msg = NULL)
+    {
+        $xml_response = new SimpleXMLElement('<response />');
+        $xml_loginAgentResponse = $xml_response->addChild('logoutagent_response');
+
+        $xml_loginAgentResponse->addChild('status', $status);
+        if (!is_null($msg))
+            $this->_agregarRespuestaFallo($xml_loginAgentResponse, 417, $msg);                
+        return $xml_response;           
+    }
+
     /**
      * Procedimiento que implementa el logoff de un agente estático al estilo
      * Agent/9000.
@@ -673,20 +681,6 @@ LISTA_EXTENSIONES;
      */
     private function Request_LogoutAgent($comando)
     {
-        // Función que encapsula la generación de la respuesta
-        if (!function_exists('Response_LogoutAgentResponse')) {
-        function Response_LogoutAgentResponse($status, $msg = NULL)
-        {
-            $xml_response = new SimpleXMLElement('<response />');
-            $xml_loginAgentResponse = $xml_response->addChild('logoutagent_response');
-
-            $xml_loginAgentResponse->addChild('status', $status);
-            if (!is_null($msg))
-                $this->_agregarRespuestaFallo($xml_loginAgentResponse, 417, $msg);                
-            return $xml_response;           
-        }
-        }
-
         if (is_null($this->_sUsuarioECCP))
             return $this->_generarRespuestaFallo(401, 'Unauthorized');
 
@@ -698,7 +692,7 @@ LISTA_EXTENSIONES;
         // Verificar que el agente sea válido en el sistema
         $listaAgentes = $this->listarAgentes();
         if (!in_array($sAgente, array_keys($listaAgentes))) {
-            return Response_LogoutAgentResponse('logged-out', 'Invalid agent number');
+            return $this->Response_LogoutAgentResponse('logged-out', 'Invalid agent number');
         }
 
         /* Ejecutar Agentlogoff. Esto asume que el agente está de la forma 
@@ -708,11 +702,23 @@ LISTA_EXTENSIONES;
             $sNumAgente = $regs[1];
             $r = $this->_astConn->Agentlogoff($sNumAgente);
             $this->oMainLog->output("DEBUG: Agentlogoff($sNumAgente) -> ".print_r($r, 1));
-            return Response_LogoutAgentResponse('logged-out');
+            return $this->Response_LogoutAgentResponse('logged-out');
         }
 
         // No se ha implementado Agentlogoff para otros tipos de agente
         return $this->_generarRespuestaFallo(501, 'Not Implemented');
+    }
+
+    // Función que encapsula la generación de la respuesta
+    private function Response_GetAgentStatusResponse($status, $msg = NULL)
+    {
+        $xml_response = new SimpleXMLElement('<response />');
+        $xml_loginAgentResponse = $xml_response->addChild('getagentstatus_response');
+
+        $xml_loginAgentResponse->addChild('status', $status);
+        if (!is_null($msg))
+            $this->_agregarRespuestaFallo($xml_loginAgentResponse, 417, $msg);                
+        return $xml_response;           
     }
     
     /**
@@ -732,20 +738,6 @@ LISTA_EXTENSIONES;
      */
     private function Request_GetAgentStatus($comando)
     {
-        // Función que encapsula la generación de la respuesta
-        if (!function_exists('Response_GetAgentStatusResponse')) {
-        function Response_GetAgentStatusResponse($status, $msg = NULL)
-        {
-            $xml_response = new SimpleXMLElement('<response />');
-            $xml_loginAgentResponse = $xml_response->addChild('getagentstatus_response');
-
-            $xml_loginAgentResponse->addChild('status', $status);
-            if (!is_null($msg))
-                $this->_agregarRespuestaFallo($xml_loginAgentResponse, 417, $msg);                
-            return $xml_response;           
-        }
-        }
-
         if (is_null($this->_sUsuarioECCP))
             return $this->_generarRespuestaFallo(401, 'Unauthorized');
         
@@ -756,31 +748,31 @@ LISTA_EXTENSIONES;
 
         // El siguiente código asume formato Agent/9000
         if (!preg_match('|^Agent/(\d+)$|', $sAgente, $regs)) {
-            return Response_GetAgentStatusResponse('offline', 'Invalid agent number');
+            return $this->Response_GetAgentStatusResponse('offline', 'Invalid agent number');
         }
         $sNumAgente = $regs[1];
         $oPredictor = new Predictivo($this->_astConn);
         $estadoCola = $oPredictor->leerEstadoCola(''); // El parámetro vacío lista todas las colas
         if (!isset($estadoCola['members'][$sNumAgente])) {
-            return Response_GetAgentStatusResponse('offline', 'Invalid agent number');
+            return $this->Response_GetAgentStatusResponse('offline', 'Invalid agent number');
         }
                 
         // Reportar los estados conocidos 
         $estadoAgente = $estadoCola['members'][$sNumAgente];
         if (in_array('paused', $estadoAgente['attributes'])) {
-            return Response_GetAgentStatusResponse('paused');
+            return $this->Response_GetAgentStatusResponse('paused');
         }
         if ($estadoAgente['status'] == 'inUse') {
-        	return Response_GetAgentStatusResponse('oncall');
+        	return $this->Response_GetAgentStatusResponse('oncall');
         }
         if ($estadoAgente['status'] == 'canBeCalled') {
-            return Response_GetAgentStatusResponse('online');
+            return $this->Response_GetAgentStatusResponse('online');
         }
         if ($estadoAgente['status'] == 'unAvailable') {
-            return Response_GetAgentStatusResponse('offline');
+            return $this->Response_GetAgentStatusResponse('offline');
         }
 
-        return Response_GetAgentStatusResponse('offline', 'Unknown status');
+        return $this->Response_GetAgentStatusResponse('offline', 'Unknown status');
     }
     
     /**
