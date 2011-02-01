@@ -216,9 +216,11 @@ class XMLDialerConn extends DialerConn
                 case 'getpauses':
                     $response = $this->Request_GetPauses($comando);
                     break;
+/*
                 case 'getcallstatus':
                     $response = $this->Request_GetCallStatus($comando);
                     break;
+*/                    
                 default:
                     $response = $this->_generarRespuestaFallo(501, 'Not Implemented');
                     break;
@@ -1147,14 +1149,14 @@ LEER_CAMPANIA;
             return $this->_generarRespuestaFallo(401, 'Unauthorized');
         return $this->_generarRespuestaFallo(501, 'Not Implemented');
     }
-    
+/*    
     private function Request_GetCallStatus($comando)
     {
         if (is_null($this->_sUsuarioECCP))
             return $this->_generarRespuestaFallo(401, 'Unauthorized');
         return $this->_generarRespuestaFallo(501, 'Not Implemented');
     }
-    
+*/    
     /***************************** EVENTOS *****************************/
     
     function notificarEvento_AgentLogin($sAgente, $listaColas, $bExitoLogin)
