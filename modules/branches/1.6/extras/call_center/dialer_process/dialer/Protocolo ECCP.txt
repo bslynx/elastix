@@ -1083,6 +1083,144 @@ Requerimiento "getcampaignstatus"
 
 Requerimiento "getcallinfo"
 
+Este requerimiento recupera información sobre una llamada específica de una
+campaña. Actualmente sólo se recupera información que se puede leer desde la
+base de datos, y no información sobre la posible llamada en curso.
+
+Atributos o argumentos:
+* campaign_type: Tipo de la campaña, uno de 'incoming' u 'outgoing'
+* campaign_id: ID en la base de datos de la campaña a la que pertenece la 
+  llamada. Este valor es opcional para una llamada entrante, pero es requerido
+  para una llamada saliente.
+* call_id: ID en la base de datos de la llamada que se interroga
+
+Respuesta:
+* agent_number: Agente que ha sido enlazado con la llamada. Este identificador 
+  está de la forma 'Agent/9000'.
+* call_type: Uno de los dos valores 'incoming' u 'outgoing', para indicar si la
+  llamada es entrante o saliente, respectivamente.
+* campaign_id: ID de la base de datos de la campaña, un entero. Este valor es
+  requerido para identificar una llamada saliente. Para una llamada entrante,
+  este valor es opcional, e incluso puede estar omitido, si la llamada entrante
+  no está asociada a una campaña.
+* call_id: ID de la base de datos de la llamada, un entero. Con este ID, y el 
+  valor de call_type (y campaign_id para llamadas salientes), el código cliente
+  puede identificar la llamada a procesar para formularios.
+* phone: El número que fue marcado, o el Caller-ID que fue recibido.
+* status: El estado de la llamada. Usualmente es 'Success' para llamada saliente
+  y 'activa' para llamada entrante.
+* uniqueid: ID interno de Asterisk que identifica a la llamada remota.
+* datetime_originate: (Sólo llamada saliente) Fecha y hora en que se inició el
+  marcado de la llamada.
+* datetime_originateresponse: (Sólo llamada saliente) Fecha y hora en que se
+  recibió respuesta del marcado de la llamada.
+* datetime_join: Fecha y hora en que la llamada ingresó a la cola.
+* datetime_linkstart: Fecha y hora en que la llamada fue enlazada al agente.
+* retries: (Opcional) Número de veces que la llamada ha sido reintentada.
+* trunk: (Sólo llamada entrante) Troncal a través de la cual se recibió la llamada.
+  Por ejemplo: DAHDI/4 o SIP/unatroncal
+* queue: (Sólo llamada entrante) Cola que recibió la llamada
+* call_attributes: (Opcional) Atributos asociados a la llamada en la base de 
+  datos. Esta es una lista que contiene múltiples elementos 'attribute'. Cada
+  elemento attribute tiene los siguientes elementos:
+  * label: Etiqueta de texto asociada al atributo
+  * value: Valor de texto del atributo
+  * order: Orden en que se sugiere que se muestren los atributos
+* matching_contacts: (Opcional, sólo llamada entrante) Lista de contactos cuyo
+  número de teléfono coincide con el Caller-ID de la llamada. Si hay más de un
+  contacto, la interfaz debe usar el requerimiento setcontact para indicar cuál
+  contacto debe asociarse con la llamada recibida. Este elemento es una lista
+  que contiene múltiples elementos 'contact'. Cada elemento contact tiene un
+  atributo 'id' que debe usarse en el requerimiento setcontact. Además cada 
+  contacto tiene múltiples elementos 'attribute'. Cada elemento attribute
+  contiene los siguientes elementos:
+  * label: Etiqueta de texto asociada al atributo del contacto
+  * value: Valor de texto del atributo del contacto
+  * order: Orden en que se sugiere que se muestren los atributos del contacto
+* call_survey: (Opcional) Lista de formularios con los datos recogidos para esta
+  llamada. Este elemento sólo está presente si se ha recogido previamente datos
+  para esta llamada. Este elemento es una lista que contiene múltiples elementos
+  'form'. Cada elemento form tiene un atributo 'id' que debe usarse en el 
+  requerimiento saveformdata. Además cada form tiene múltiples elementos 
+  'field'. Cada elemento field tiene un atributo 'id' que pueden usarse también
+  en el requerimiento saveformdata. El elemento field tiene ademas los 
+  siguientes elementos:
+  * label: Etiqueta del elemento de formulario
+  * value: Valor que fue recogido en el formulario
+
+Ejemplo:
+<request id="8">
+    <getcallinfo>
+        <campaign_type>outgoing</campaign_type>
+        <campaign_id>5</campaign_id>
+        <call_id>25</call_id>
+    </getcallinfo>
+</request>
+
+Respuesta:
+Llamada saliente:
+<response id="8">
+    <getcallinfo_response>
+        <calltype>outgoing</calltype>
+        <call_id>27</call_id>
+        <campaign_id>5</campaign_id>
+        <phone>1065</phone>
+        <status>Success</status>
+        <uniqueid>1296517619.3</uniqueid>
+        <duration>187</duration>
+        <datetime_originate>2011-01-31 18:46:59</datetime_originate>
+        <datetime_originateresponse>2011-01-31 18:47:07</datetime_originateresponse>
+        <datetime_join>2011-01-31 18:47:07</datetime_join>
+        <datetime_linkstart>2011-01-31 18:47:07</datetime_linkstart>
+        <datetime_linkend>2011-01-31 18:50:14</datetime_linkend>
+        <retries>1</retries>
+        <agent_number>Agent/9000</agent_number>
+        <call_attributes>
+            <attribute><label>Nombre</label><value>Zoila</value><order>1</order></attribute>
+            <attribute><label>Apellido</label><value>Chacha</value><order>2</order></attribute>
+            <attribute><label>Campo1</label><value>gato</value><order>3</order></attribute>
+            <attribute><label>Campo2</label><value>perro</value><order>4</order></attribute>
+            <attribute><label>Campo3</label><value>mono</value><order>5</order></attribute>
+        </call_attributes>
+        <call_survey/>
+    </getcallinfo_response>
+</response>
+
+Llamada entrante:
+<response id="8">
+    <getcallinfo_response>
+        <calltype>incoming</calltype>
+        <call_id>8</call_id>
+        <campaign_id>1</campaign_id>
+        <phone>1065</phone>
+        <status>terminada</status>
+        <uniqueid>1296256837.24</uniqueid>
+        <duration>205</duration>
+        <datetime_join>2011-01-28 18:20:38</datetime_join>
+        <datetime_linkstart>2011-01-28 18:20:38</datetime_linkstart>
+        <datetime_linkend>2011-01-28 18:24:03</datetime_linkend>
+        <trunk>SIP/1065</trunk>
+        <queue>8001</queue>
+        <agent_number>Agent/9000</agent_number>
+        <call_attributes>
+            <attribute><label>first_name</label><value>Usuario</value><order>1</order></attribute>
+            <attribute><label>last_name</label><value>Windows</value><order>2</order></attribute>
+            <attribute><label>phone</label><value>1065</value><order>3</order></attribute><attribute>
+            <label>cedula_ruc</label><value>0915172176</value><order>4</order></attribute>
+        </call_attributes>
+        <matching_contacts>
+            <contact id="2">
+                <attribute><label>first_name</label><value>Usuario</value><order>1</order></attribute>
+                <attribute><label>last_name</label><value>Windows</value><order>2</order></attribute>
+                <attribute><label>phone</label><value>1065</value><order>3</order></attribute>
+                <attribute><label>cedula_ruc</label><value>0915172176</value><order>4</order></attribute>
+            </contact>
+        </matching_contacts>
+        <call_survey/>
+    </getcallinfo_response>
+</response>
+
+
 Requerimiento "setcontact"
 
 Requerimiento "saveformdata"
