@@ -96,7 +96,7 @@ class PaloSantoFileEndPoint
                     if($result) return true;
                     else return false;
                 }
-                else if($ArrayData['data']['model'] == "AT 530"){
+                else if($ArrayData['data']['model'] == "AT 530" || $ArrayData['data']['model'] == "AT 620R"){
                     $contentFileAtcom = PrincipalFileAtcom530($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer,$ArrayData['data']['filename'], $ArrayData['data']['arrParameters']['versionCfg']);
                     if($this->createFileConf($this->directory,"atc".$ArrayData['data']['filename'].".cfg", $contentFileAtcom))
                     {
@@ -356,7 +356,7 @@ class PaloSantoFileEndPoint
                 break;
 
             case 'Atcom':
-                if($model == 'AT 530'){
+                if($model == 'AT 530' || $model == 'AT 620R'){
                     if(isset($arrParametersOld['versionCfg']))
                         $arrParametersOld['versionCfg'] = $arrParametersOld['versionCfg'] + 0.0001;
                     else
