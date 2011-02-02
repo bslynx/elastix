@@ -4,12 +4,12 @@
     <menuitem menuid="addons"            desc="Addons"       parent=""       module="no"  link="" order="10"></menuitem>
     <menuitem menuid="addons_avalaibles" desc="Availables"   parent="addons" module="yes" link="" order="1">
       <permissions>
-        <group id="1" name="administrator"></group>
+        <group id="1" name="administrator" desc="total access"></group>
       </permissions>
     </menuitem>
     <menuitem menuid="addons_installed"  desc="Installed"    parent="addons" module="yes" link="" order="2">
       <permissions>
-        <group id="1" name="administrator"></group>
+        <group id="1" name="administrator" desc="total access"></group>
       </permissions>
     </menuitem>
   </menulist>
