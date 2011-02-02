@@ -2,6 +2,10 @@
 <module>
   <menulist>
     <menuitem menuid="im"                 desc="IM"                 parent=""           module="no" link=""                                                   order="6"></menuitem>
-    <menuitem menuid="openfire"           desc="OpenFire"           parent="im"         module="no" link="openfireWrapper.php?IP={NAME_SERVER}&amp;PORT=9090" order="1"></menuitem>
+    <menuitem menuid="openfire"           desc="OpenFire"           parent="im"         module="no" link="openfireWrapper.php?IP={NAME_SERVER}&amp;PORT=9090" order="1">
+        <permissions>
+            <group id="1" name="administrator"></group>
+        </permissions>
+    </menuitem>
   </menulist>
 </module>

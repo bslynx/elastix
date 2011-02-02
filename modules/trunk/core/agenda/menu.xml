@@ -2,8 +2,26 @@
 <module>
   <menulist>
     <menuitem menuid="agenda"       desc="Agenda"       parent=""       module="no"  link="" order="2"></menuitem>
-    <menuitem menuid="calendar"     desc="Calendar"     parent="agenda" module="yes" link="" order="1"></menuitem>
-    <menuitem menuid="address_book" desc="Address Book" parent="agenda" module="yes" link="" order="2"></menuitem>
-    <menuitem menuid="recordings"   desc="Recordings"   parent="agenda" module="yes" link="" order="3"></menuitem>
+    <menuitem menuid="calendar"     desc="Calendar"     parent="agenda" module="yes" link="" order="1">
+        <permissions>
+            <group id="1" name="administrator"></group>
+            <group id="2" name="Operator"></group>
+            <group id="3" name="extension"></group>
+        </permissions>
+    </menuitem>
+    <menuitem menuid="address_book" desc="Address Book" parent="agenda" module="yes" link="" order="2">
+        <permissions>
+            <group id="1" name="administrator"></group>
+            <group id="2" name="Operator"></group>
+            <group id="3" name="extension"></group>
+        </permissions>
+    </menuitem>
+    <menuitem menuid="recordings"   desc="Recordings"   parent="agenda" module="yes" link="" order="3">
+        <permissions>
+            <group id="1" name="administrator"></group>
+            <group id="2" name="Operator"></group>
+            <group id="3" name="extension"></group>
+        </permissions>
+    </menuitem>
   </menulist>
 </module>

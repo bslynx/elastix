@@ -2,6 +2,12 @@
 <module>
   <menulist>
     <menuitem menuid="my_extension"    desc="My Extension"    parent=""             module="no"  link="" order="11"></menuitem>
-    <menuitem menuid="myex_config"     desc="Settings"        parent="my_extension" module="yes" link="" order="1"></menuitem>
+    <menuitem menuid="myex_config"     desc="Settings"        parent="my_extension" module="yes" link="" order="1">
+        <permissions>
+            <group id="1" name="administrator"></group>
+            <group id="2" name="Operator"></group>
+            <group id="3" name="extension"></group>
+        </permissions>
+    </menuitem>
   </menulist>
 </module>
