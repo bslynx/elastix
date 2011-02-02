@@ -2741,11 +2741,14 @@ UPDATE_CALLS_ORIGINATE_RESPONSE;
     {
     	// Leer información de la llamada principal
         $sPeticionSQL = <<<INFO_LLAMADA
-SELECT 'outgoing' AS calltype, id AS call_id, id_campaign AS campaign_id, phone, status, uniqueid, 
+SELECT 'outgoing' AS calltype, calls.id AS call_id, id_campaign AS campaign_id, phone, status, uniqueid, 
     duration, datetime_originate, fecha_llamada AS datetime_originateresponse, 
     datetime_entry_queue AS datetime_join, start_time AS datetime_linkstart, 
-    end_time AS datetime_linkend, retries, failure_cause, failure_cause_txt 
-FROM calls WHERE id_campaign = ? AND id = ?
+    end_time AS datetime_linkend, retries, failure_cause, failure_cause_txt,
+    agent.number AS agent_number 
+FROM (calls) 
+LEFT JOIN agent ON agent.id = calls.id_agent 
+WHERE id_campaign = ? AND calls.id = ?
 INFO_LLAMADA;
         $tuplaLlamada = $this->_dbConn->getRow($sPeticionSQL, 
             array($idCampania, $idLlamada), DB_FETCHMODE_ASSOC);
@@ -2757,6 +2760,8 @@ INFO_LLAMADA;
         	// No se encuentra la llamada indicada
             return array();
         }
+        if (!is_null($tuplaLlamada['agent_number']))
+            $tuplaLlamada['agent_number'] = 'Agent/'.$tuplaLlamada['agent_number'];
 
         // Leer información de los atributos de la llamada
         $sPeticionSQL = <<<INFO_ATRIBUTOS
@@ -2811,8 +2816,9 @@ INFO_FORMULARIOS;
 SELECT 'incoming' AS calltype, call_entry.id AS call_id, id_campaign AS campaign_id,
     callerid AS phone, status, uniqueid, duration, datetime_entry_queue AS datetime_join, 
     datetime_init AS datetime_linkstart, datetime_end AS datetime_linkend, 
-    trunk, queue, id_contact
-FROM call_entry, queue_call_entry
+    trunk, queue, id_contact, agent.number AS agent_number
+FROM (call_entry, queue_call_entry)
+LEFT JOIN agent ON agent.id = call_entry.id_agent
 WHERE call_entry.id = ? AND call_entry.id_queue_call_entry = queue_call_entry.id
 INFO_LLAMADA;
         $tuplaLlamada = $this->_dbConn->getRow($sPeticionSQL, 
@@ -2825,6 +2831,8 @@ INFO_LLAMADA;
             // No se encuentra la llamada indicada
             return array();
         }
+        if (!is_null($tuplaLlamada['agent_number']))
+            $tuplaLlamada['agent_number'] = 'Agent/'.$tuplaLlamada['agent_number'];
 
         // Leer información de los atributos de la llamada
         // TODO: agregar información de múltiples contactos con el mismo teléfono
