@@ -867,15 +867,15 @@ class paloACL {
             $result = $this->_DB->getFirstRowQuery($sPeticionSQL, FALSE);
             if ($result && is_array($result) && count($result)>0) {
                 $extension = $result[0];
-            }else $this->errMsg = $this->_DB->errMs;
+            }else $this->errMsg = $this->_DB->errMsg;
         }
         return $extension;
     }
 
     /**
-     * Procedimiento para obtener la extension de un usuario mediante su username. 
+     * Procedimiento para obtener el is del recurso dado su nombre. 
      *
-     * @param string   $username  Username del usuario
+     * @param string   $resource_name  Nombre del recurso
      *
      * @return string    numero de extension 
      */
@@ -890,7 +890,7 @@ class paloACL {
             $result = $this->_DB->getFirstRowQuery($sPeticionSQL, FALSE);
             if ($result && is_array($result) && count($result)>0) {
                 $id_resource = $result[0];
-            }else $this->errMsg = $this->_DB->errMs;
+            }else $this->errMsg = $this->_DB->errMsg;
         }
         return $id_resource;
     }
@@ -1247,6 +1247,26 @@ class paloACL {
             return false;
         }
         return true;
+    }
+
+     /**
+     * Procedimiento para obtener el nombre del grupo dado un id. 
+     *
+     * @param integer   $idGroup  id del grupo
+     *
+     * @return string    nombre del grupo 
+     */
+    function getGroupNameByid($idGroup)
+    {
+        $groupName = null;
+        $this->errMsg = "";
+        $data = array($idGroup);
+        $sPeticionSQL = "SELECT name FROM acl_group WHERE id = ?";
+        $result = $this->_DB->getFirstRowQuery($sPeticionSQL, FALSE, $data);
+        if ($result && is_array($result) && count($result)>0) {
+            $groupName = $result[0];
+        }else $this->errMsg = $this->_DB->errMsg;
+        return $groupName;
     }
 }
 ?>

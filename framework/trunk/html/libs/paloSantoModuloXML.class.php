@@ -23,6 +23,7 @@
   +----------------------------------------------------------------------+
   $Id: paloSantoModuloXML.class.php,v 1.1 2007/09/05 00:25:25 gcarrillo Exp $
   $Id: paloSantoModuloXML.class.php,v 1.1 2008/05/29 11:25:25 afigueroa Exp $
+  $Id: paloSantoModuloXML.class.php,v 1.1 2011/01/31 10:00:00 ecueva Exp $
 */
 
 
@@ -65,6 +66,22 @@ class ModuloXML
      	    $attLink    = $menuitem->getAttribute("link");
             $attOrder   = $menuitem->getAttribute("order");
 
+            $itemPermission = $menuitem->getElementsByTagName("permissions");
+            $arrGroup = array();
+            if($itemPermission->item(0))
+            {
+                $arrItemGroup   = $itemPermission->item(0)->getElementsByTagName("group");
+                foreach($arrItemGroup as $itemGroup){
+                    $id   = $itemGroup->getAttribute("id");
+                    $name = $itemGroup->getAttribute("name");
+                    $desc = $itemGroup->getAttribute("desc");
+                    $arrTmp['id']   = $id;
+                    $arrTmp['name']    = $name;
+                    $arrTmp['desc'] = $desc;
+                    $arrGroup[] = $arrTmp;
+                }
+            }
+
             $menu[] = array(
                             'menuid'    => $attID,
                             'desc'      => $attDesc,
@@ -72,6 +89,7 @@ class ModuloXML
                             'module'    => $attModule,
                             'link'      => $attLink,
                             'order'     => $attOrder,
+                            'groups'    => $arrGroup,
                         );
         }
 

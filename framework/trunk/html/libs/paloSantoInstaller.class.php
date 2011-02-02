@@ -97,7 +97,8 @@ class Installer
 
 /*****************************************************************************************************/
 
-    function addResourceMembership($oACL,$arrTmp){
+    function addResourceMembership($oACL,$arrTmp, $arrGroup=array()){
+        $oACL->_DB->beginTransaction();
         $bExito = $oACL->createResource($arrTmp['menuid'], $arrTmp['tag']);
         if ($bExito){
             //inserto en acl_group_permission
@@ -106,9 +107,36 @@ class Installer
             $bExito = false;
             if (!is_null($resource_id))
             {
-                $bExito = $oACL->saveGroupPermission(1,array($resource_id));
+                if(is_array($arrGroup) & !empty($arrGroup)){
+                    foreach($arrGroup as $key => $value){
+                        $idGroup   = $value['id'];
+                        $nameGroup = $value['name'];
+                        $descGroup = $value['desc'];
+                        $idGroupTmp = $oACL->getIdGroup($nameGroup);// obtiene el id del grupo dado su nombre
+                        if($idGroupTmp){
+                           $bExito = $oACL->saveGroupPermission($idGroupTmp,array($resource_id));
+                        }else{
+                           if(is_null($oACL->getGroupNameByid($idGroup))){// no existe el grupo
+                                $bExito = $oACL->createGroup($nameGroup, $descGroup);
+                                if(!$bExito){
+                                    $oACL->_DB->rollBack();
+                                    $this->_errMsg = $oACL->errMsg;
+                                    return $bExito;
+                                }
+                                $idGroup = $oACL->_DB->getLastInsertId();
+                           }
+                           $bExito = $oACL->saveGroupPermission($idGroup,array($resource_id));
+                        }
+                    }
+                }else
+                    $bExito = $oACL->saveGroupPermission(1,array($resource_id));
+                if($bExito)
+                    $oACL->_DB->commit();
+                else
+                    $oACL->_DB->rollBack();
             }
-        }
+        }else
+            $oACL->_DB->rollBack();
         $this->_errMsg = $oACL->errMsg;
         return $bExito;
     }
