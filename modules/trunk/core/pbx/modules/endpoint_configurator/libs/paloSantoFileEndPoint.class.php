@@ -101,7 +101,6 @@ class PaloSantoFileEndPoint
                         $version = $ArrayData['data']['arrParameters']['versionCfg'];
                     else
                         $version = "2.0002";
-                    print_r($ArrayData);
                     $contentFileAtcom = PrincipalFileAtcom530($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer,$ArrayData['data']['filename'], $version);
                     if($this->createFileConf($this->directory,"atc".$ArrayData['data']['filename'].".cfg", $contentFileAtcom))
                     {
