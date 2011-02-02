@@ -1,1 +1,4 @@
-Database name: iptables
+[info]
+engine = sqlite3
+dbname = iptables
+path = /var/www/db
