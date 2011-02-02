@@ -1203,8 +1203,8 @@ LEER_CAMPANIA;
 
         $xml_response = new SimpleXMLElement('<event />');
         $xml_agentLinked = $xml_response->addChild('agentlinked');
-        $xml_agentLinked->addChild('agent_number', $sAgente);
-        $xml_agentLinked->addChild('remote_channel', $sRemChannel);
+        $infoLlamada['agent_number'] = $sAgente;
+        $infoLlamada['remote_channel'] = $sRemChannel;
         $this->_construirRespuestaCallInfo($infoLlamada, $xml_agentLinked);
     	
         $s = $xml_response->asXML();
@@ -1217,7 +1217,7 @@ LEER_CAMPANIA;
 
         $xml_response = new SimpleXMLElement('<event />');
         $xml_agentLinked = $xml_response->addChild('agentunlinked');
-        $xml_agentLinked->addChild('agent_number', $sAgente);
+        $infoLlamada['agent_number'] = $sAgente;
         foreach ($infoLlamada as $sKey => $valor) {
         	if (!is_null($valor)) $xml_agentLinked->addChild($sKey, $valor);
         }
