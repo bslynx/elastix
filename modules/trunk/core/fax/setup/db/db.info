@@ -1,0 +1,3 @@
+[fax]
+engine = sqlite3
+path   = /var/www/db
