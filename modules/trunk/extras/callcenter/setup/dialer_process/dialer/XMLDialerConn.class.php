@@ -896,8 +896,9 @@ LEER_CAMPANIA;
         }
 
         // Construir la información de los formularios
+        $xml_Forms = $xml_GetCampaignInfoResponse->addChild('forms');
         foreach ($listaForm as $idForm => $listaCampos) {
-        	$this->_agregarCamposFormulario($xml_GetCampaignInfoResponse, $idForm, $listaCampos);
+        	$this->_agregarCamposFormulario($xml_Forms, $idForm, $listaCampos);
         }
 
         return $xml_response;
@@ -956,8 +957,9 @@ LEER_CAMPANIA;
         }
 
         // Construir la información de los formularios
+        $xml_Forms = $xml_GetCampaignInfoResponse->addChild('forms');
         foreach ($listaForm as $idForm => $listaCampos) {
-            $this->_agregarCamposFormulario($xml_GetCampaignInfoResponse, $idForm, $listaCampos);
+            $this->_agregarCamposFormulario($xml_Forms, $idForm, $listaCampos);
         }
 
         return $xml_response;
@@ -990,6 +992,11 @@ LEER_CAMPANIA;
             $xml_Field->addAttribute('id', $tuplaCampo['id']);
             $xml_Field->addChild('label', $tuplaCampo['label']);
             $xml_Field->addChild('type', $tuplaCampo['type']);
+            
+            // TODO: permitir especificar longitud de la entrada
+            if (!in_array($tuplaCampo['type'], array('LABEL', 'DATE'))) 
+                $xml_Field->addChild('maxsize', 250);
+            
             if ($tuplaCampo['type'] == 'LIST') {
                 // OJO: PRIMERA FORMA ANORMAL!!!
                 // La implementación actual del código de formulario
@@ -998,9 +1005,18 @@ LEER_CAMPANIA;
                     substr($tuplaCampo['value'], strlen($tuplaCampo['value']) - 1, 1) == ',') {
                     $tuplaCampo['value'] = substr($tuplaCampo['value'], 0, strlen($tuplaCampo['value']) - 1);
                 }
+                $xml_Values = $xml_Field->addChild('options');
                 foreach (explode(',', $tuplaCampo['value']) as $sValor) {
-                    $xml_Field->addChild('value', $sValor);
+                    $xml_Values->addChild('value', $sValor);
                 }
+            } else {
+            	// Usar el valor 'value' como valor por omisión. 
+                // TODO: (2011-02-02) soporte de formulario para valor por 
+                // omisión todavía no está implementado en agent_console o en 
+                // definición de formulario en interfaz web
+                $sDefVal = trim($tuplaCampo['value']);
+                if ($sDefVal != '') 
+                    $xml_Field->addChild('default_value', $sDefVal);
             }
         }
     }

@@ -962,20 +962,27 @@ Respuesta:
   actual, el texto almacenado se genera con un widget de edición que agrega
   estilos HTML/CSS en este campo. El cliente debe estar preparado para mostrar
   tales estilos, o de filtrarlos y mostrar únicamente el texto.
-* form: Elemento presente una o más veces. Representa un formulario que se puede
-  usar para recoger información sobre las llamadas asociadas a la campaña. El
-  elemento tiene los siguientes atributos:
-  * id: ID de la base de datos para el formulario. 
-  Además, el elemento contiene uno o más elementos:
-  * field: Campo de entrada de información para este formulario. 
-  Cada elemento field tiene los siguientes atributos:
-  * order: Orden de presentación del campo
-  * id: ID de base de datos del campo de entrada
-  Además cada elemento field contiene a su vez los siguientes elementos:
-  * label: Etiqueta asociada al campo
-  * type: Uno de los siguientes: TEXT TEXTAREA DATE LABEL LIST
-  * value: (Opcional, múltiple): Sólo presente cuando type es LIST. Uno de los
-    múltiples valores que se aceptan como entrada para este campo.
+* forms: Elemento que contiene uno o más elementos 'form'
+  * form: Elemento presente una o más veces. Representa un formulario que se puede
+    usar para recoger información sobre las llamadas asociadas a la campaña. El
+    elemento tiene los siguientes atributos:
+    * id: ID de la base de datos para el formulario. 
+    Además, el elemento contiene uno o más elementos:
+    * field: Campo de entrada de información para este formulario. 
+    Cada elemento field tiene los siguientes atributos:
+    * order: Orden de presentación del campo
+    * id: ID de base de datos del campo de entrada
+    Además cada elemento field contiene a su vez los siguientes elementos:
+    * label: Etiqueta asociada al campo
+    * type: Uno de los siguientes: TEXT TEXTAREA DATE LABEL LIST
+    * maxsize: (Opcional) Especifica la longitud máxima de la entrada, en caracteres
+    * default_value: (Opcional) Un valor por omisión sugerido al cliente que
+      muestra el formulario. ATENCION: este valor debe de ser guardado como 
+      el valor elegido, como si hubiese sido ingresado por el agente.
+    * options: (Opcional): Sólo presente cuando type es LIST. Contiene múltiples
+      elementos 'value'.
+      * value: Uno de los múltiples valores que se aceptan como entrada para 
+        este campo.
 
 Ejemplo:
 <request id="6">
@@ -1001,31 +1008,40 @@ Campaña saliente:
         <maxchan>23</maxchan>
         <status>inactive</status>
         <script>Prueba ...</script>
-        <form id="1">
-            <field order="1" id="1">
-                <label>CampoDeTexto</label>
-                <type>TEXT</type>
-            </field>
-            <field order="2" id="2">
-                <label>CampoDeLista</label>
-                <type>LIST</type>
-                <value>aaa</value>
-                <value>bbb</value>
-                <value>ccc</value>
-            </field>
-            <field order="3" id="3">
-                <label>CampoDeFecha</label>
-                <type>DATE</type>
-            </field>
-            <field order="4" id="4">
-                <label>CampoDeTextarea</label>
-                <type>TEXTAREA</type>
-            </field>
-            <field order="5" id="5">
-                <label>CampoDeEtiqueta</label>
-                <type>LABEL</type>
-            </field>
-        </form>
+        <forms>
+            <form id="1">
+                <field order="1" id="1">
+                    <label>CampoDeTexto</label>
+                    <type>TEXT</type>
+                    <maxsize>250</maxsize>
+                </field>
+                <field order="2" id="2">
+                    <label>CampoDeLista</label>
+                    <type>LIST</type>
+                    <maxsize>250</maxsize>
+                    <options>
+                        <value>aaa</value>
+                        <value>bbb</value>
+                        <value>ccc</value>
+                    </options>
+                </field>
+                <field order="3" id="3">
+                    <label>CampoDeFecha</label>
+                    <type>DATE</type>
+                    <default_value>2011-01-01</default_value>
+                </field>
+                <field order="4" id="4">
+                    <label>CampoDeTextarea</label>
+                    <type>TEXTAREA</type>
+                    <maxsize>250</maxsize>
+                    <default_value>Un texto bien grande</default_value>
+                </field>
+                <field order="5" id="5">
+                    <label>CampoDeEtiqueta</label>
+                    <type>LABEL</type>
+                </field>
+            </form>
+        </forms>
     </getcampaigninfo_response>
 </response>
 
@@ -1041,31 +1057,40 @@ Campaña entrante:
         <queue>8001</queue>
         <status>active</status>
         <script>Gatito lindo</script>
-        <form id="1">
-            <field order="1" id="1">
-                <label>CampoDeTexto</label>
-                <type>TEXT</type>
-            </field>
-            <field order="2" id="2">
-                <label>CampoDeLista</label>
-                <type>LIST</type>
-                <value>aaa</value>
-                <value>bbb</value>
-                <value>ccc</value>
-            </field>
-            <field order="3" id="3">
-                <label>CampoDeFecha</label>
-                <type>DATE</type>
-            </field>
-            <field order="4" id="4">
-                <label>CampoDeTextarea</label>
-                <type>TEXTAREA</type>
-            </field>
-            <field order="5" id="5">
-                <label>CampoDeEtiqueta</label>
-                <type>LABEL</type>
-            </field>
-        </form>
+        <forms>
+            <form id="1">
+                <field order="1" id="1">
+                    <label>CampoDeTexto</label>
+                    <type>TEXT</type>
+                    <maxsize>250</maxsize>
+                </field>
+                <field order="2" id="2">
+                    <label>CampoDeLista</label>
+                    <type>LIST</type>
+                    <maxsize>250</maxsize>
+                    <options>
+                        <value>aaa</value>
+                        <value>bbb</value>
+                        <value>ccc</value>
+                    </options>
+                </field>
+                <field order="3" id="3">
+                    <label>CampoDeFecha</label>
+                    <type>DATE</type>
+                    <default_value>2011-01-01</default_value>
+                </field>
+                <field order="4" id="4">
+                    <label>CampoDeTextarea</label>
+                    <type>TEXTAREA</type>
+                    <maxsize>250</maxsize>
+                    <default_value>Un texto bien grande</default_value>
+                </field>
+                <field order="5" id="5">
+                    <label>CampoDeEtiqueta</label>
+                    <type>LABEL</type>
+                </field>
+            </form>
+        </forms>
     </getcampaigninfo_response>
 </response>
 
