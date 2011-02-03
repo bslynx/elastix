@@ -160,7 +160,7 @@ class Installer
         $GrantSQL = "GRANT SELECT, INSERT, UPDATE, DELETE ON $db_name.* TO ";
         $GrantSQL .= $datos_conexion['user']."@".$datos_conexion['locate']." IDENTIFIED BY '".                          $datos_conexion['password']."'";
         $result = $pDB->genExec($GrantSQL);
-        $comando="mysql --password=".$root_password." --user=root $db_name < $path_script_db";
+        $comando="mysql --password=".escapeshellcmd($root_password)." --user=root $db_name < $path_script_db";
         exec($comando,$output,$retval);
         return $retval;
     }
