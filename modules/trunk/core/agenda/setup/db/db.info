@@ -1,0 +1,7 @@
+[address_book]
+engine = sqlite3
+path   = /var/www/db
+
+[calendar]
+engine = sqlite3
+path   = /var/www/db
