@@ -1,3 +1,5 @@
 [fax]
+installation_force = no
 engine = sqlite3
 path   = /var/www/db
+deletable = yes
