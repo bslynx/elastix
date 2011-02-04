@@ -318,6 +318,22 @@ siguiente manera:
   </failure>
 </response>
 
+o de la siguiente manera:
+
+<response id=identificador>
+  <request_response>
+      <failure>
+        <code>XXX</code>
+        <message>Algun mensaje</message>
+      </failure>
+  </request_response>
+</response>
+
+La diferencia entre los dos métodos es que el primero indica errores de formato
+o de protocolo que ocurren antes del procesamiento específico del requerimiento,
+mientras que el segundo método indica un error dentro del procesamiento
+específico del requerimiento.
+
 Un requerimiento se considera fallido si contiene la etiqueta <failure>. Dentro
 de la etiqueta se almacena un código de error y un mensaje descriptivo. El 
 código de error está vagamente basado en los códigos de error de HTTP, pero no
@@ -1207,7 +1223,26 @@ Llamada saliente:
             <attribute><label>Campo2</label><value>perro</value><order>4</order></attribute>
             <attribute><label>Campo3</label><value>mono</value><order>5</order></attribute>
         </call_attributes>
-        <call_survey/>
+        <call_survey>
+            <form id="1">
+                <field id="1">
+                    <label>CampoDeTexto</label>
+                    <value>Texto de campo de texto</value>
+                </field>
+                <field id="2">
+                    <label>CampoDeLista</label>
+                    <value>bbb</value>
+                </field>
+                <field id="3">
+                    <label>CampoDeFecha</label>
+                    <value>2011-02-01</value>
+                </field>
+                <field id="4">
+                    <label>CampoDeTextarea</label>
+                    <value>Texto de campo de textarea</value>
+                </field>
+            </form>
+        </call_survey>
     </getcallinfo_response>
 </response>
 
@@ -1241,7 +1276,26 @@ Llamada entrante:
                 <attribute><label>cedula_ruc</label><value>0915172176</value><order>4</order></attribute>
             </contact>
         </matching_contacts>
-        <call_survey/>
+        <call_survey>
+            <form id="1">
+                <field id="1">
+                    <label>CampoDeTexto</label>
+                    <value>Texto de campo de texto</value>
+                </field>
+                <field id="2">
+                    <label>CampoDeLista</label>
+                    <value>bbb</value>
+                </field>
+                <field id="3">
+                    <label>CampoDeFecha</label>
+                    <value>2011-02-01</value>
+                </field>
+                <field id="4">
+                    <label>CampoDeTextarea</label>
+                    <value>Texto de campo de textarea</value>
+                </field>
+            </form>
+        </call_survey>
     </getcallinfo_response>
 </response>
 
@@ -1249,6 +1303,98 @@ Llamada entrante:
 Requerimiento "setcontact"
 
 Requerimiento "saveformdata"
+
+Este requerimiento ordena almacenar la información recogida de los formularios,
+y la asocia a una llamada en particular. 
+
+Atributos o argumentos:
+* campaign_type: Tipo de la campaña, uno de 'incoming' u 'outgoing'
+* call_id: ID en la base de datos de la llamada que se almacena
+* forms: Colección de múltiples elementos 'form':
+  * form: Posee el siguiente atributo:
+    * id: ID en la base de datos del formulario a usar. Este valor se puede
+      obtener con las llamadas getcallinfo y getcampaigninfo.
+    Contiene múltiples elementos 'field':
+    * field: Posee el siguiente atributo:
+      * id: ID en la base de datos del campo de formulario a usar. Este valor 
+        se puede obtener con las llamadas getcallinfo y getcampaigninfo.
+      Contiene como texto de la etiqueta el valor a almacenar en la base de datos.
+
+Ejemplo:
+<request id="9">
+    <saveformdata>
+        <campaign_type>outgoing</campaign_type>
+        <call_id>27</call_id>
+        <forms>
+            <form id="1">
+                <field id="1">Texto de campo de texto</field>
+                <field id="2">bbb</field>
+                <field id="3">2011-02-01</field>
+                <field id="4">Texto de campo de textarea</field>
+                <field id="5">xxx</field>
+            </form>
+        </forms>
+    </saveformdata>
+</request>
+
+Respuesta:
+En caso de éxito:
+<response id="9">
+    <saveformdata_response>
+        <success/>
+    </saveformdata_response>
+</response>
+
+En caso de formulario no encontrado:
+<response id="9">
+    <saveformdata_response>
+        <failure>
+            <code>404</code>
+            <message>Form ID not found: 0</message>
+        </failure>
+    </saveformdata_response>
+</response>
+
+En caso de campo no encontrado:
+<response id="9">
+    <saveformdata_response>
+        <failure>
+            <code>404</code>
+            <message>Field ID not found in form: 1 - 0</message>
+        </failure>
+    </saveformdata_response>
+</response>
+
+En caso de valor de texto demasiado grande:
+<response id="9">
+    <saveformdata_response>
+        <failure>
+            <code>413</code>
+            <message>Form value too large: 1 - 4</message>
+        </failure>
+    </saveformdata_response>
+</response>
+
+En caso de valor de campo LIST no permitido:
+<response id="9">
+    <saveformdata_response>
+        <failure>
+            <code>406</code>
+            <message>Value not in list of accepted values: 1 - 2</message>
+        </failure>
+    </saveformdata_response>
+</response>
+
+En caso de formato de fecha inválido para campo DATE:
+<response id="9">
+    <saveformdata_response>
+        <failure>
+            <code>406</code>
+            <message>Date format not acceptable, must be yyyy-mm-dd or yyyy-mm-dd hh:mm:ss: 1 - 3</message>
+        </failure>
+    </saveformdata_response>
+</response>
+Nota: para ayudar a la depuración, se adjunta el ID de formulario y el ID del campo que produjeron el error.
 
 Requerimiento "hold"
 

@@ -357,6 +357,9 @@ class XMLDialerConn extends DialerConn
         if (!isset($comando->username) || !isset($comando->password)) 
             return $this->_generarRespuestaFallo(400, 'Bad request');
         
+        $xml_response = new SimpleXMLElement('<response />');
+        $xml_loginResponse = $xml_response->addChild('login_response');
+
         /* FIXME: No me queda claro de qué manera es más seguro mandar el hash
          * del password, que el password en texto plano, en una conexión sin
          * encriptar, ya que en ambos casos se puede recoger con un sniffer.
@@ -370,19 +373,16 @@ class XMLDialerConn extends DialerConn
         $tupla = $this->_dbConn->getRow($sPeticionSQL, $paramSQL, DB_FETCHMODE_ASSOC);
         if (DB::isError($tupla)) {
             $this->oMainLog->output("ERR: no se puede consultar clave de acceso ECCP: ".$tupla->getMessage());
-        	return $this->_generarRespuestaFallo(503, 'Internal server error');
-        }
-
-        $xml_response = new SimpleXMLElement('<response />');
-        $xml_loginResponse = $xml_response->addChild('login_response');
-
-        if ($tupla['N'] > 0) {
-        	// Usuario autorizado
-            $this->_sUsuarioECCP = $comando->username;
-            $xml_status = $xml_loginResponse->addChild('success');
+            $this->_agregarRespuestaFallo($xml_loginResponse, 503, 'Internal server error');
         } else {
-        	// Usuario no existe, o clave incorrecta
-            $this->_agregarRespuestaFallo($xml_loginResponse, 401, 'Invalid username or password');
+            if ($tupla['N'] > 0) {
+            	// Usuario autorizado
+                $this->_sUsuarioECCP = $comando->username;
+                $xml_status = $xml_loginResponse->addChild('success');
+            } else {
+            	// Usuario no existe, o clave incorrecta
+                $this->_agregarRespuestaFallo($xml_loginResponse, 401, 'Invalid username or password');
+            }
         }
         return $xml_response;
     }
@@ -830,8 +830,6 @@ LISTA_EXTENSIONES;
         default:
             return $this->_generarRespuestaFallo(400, 'Bad request');
         }
-
-        //return $this->_generarRespuestaFallo(501, 'Not Implemented');
     }
     
     private function _leerInfoCampaniaXML_outgoing($idCampania)
@@ -969,14 +967,18 @@ LEER_CAMPANIA;
     {
         $listaForm = array();
         foreach ($idxForm as $idForm) {
-            $listaForm[$idForm] = $this->_dbConn->getAll(
+            $r = $this->_dbConn->getAll(
                 'SELECT id, etiqueta AS label, value, tipo AS type, orden AS `order` '.
                 'FROM form_field WHERE id_form = ? ORDER BY `order`', 
                 array($idForm), DB_FETCHMODE_ASSOC);
-            if (DB::isError($listaForm[$idForm])) {
+            if (DB::isError($r)) {
                 $this->oMainLog->output("ERR: no se puede leer información de la campaña (campos) - ".
-                    $listaForm[$idForm]->getMessage());
+                    $r->getMessage());
             	return NULL;
+            } elseif (count($r) > 0) {
+                $listaForm[$idForm] = array();
+                foreach ($r as $tuplaCampo)
+                    $listaForm[$idForm][$tuplaCampo['id']] = $tuplaCampo;
             }
         }
         return $listaForm;
@@ -1149,7 +1151,124 @@ LEER_CAMPANIA;
     {
         if (is_null($this->_sUsuarioECCP))
             return $this->_generarRespuestaFallo(401, 'Unauthorized');
-        return $this->_generarRespuestaFallo(501, 'Not Implemented');
+
+        // Si no hay un tipo de campaña, se asume saliente
+        $sTipoCampania = 'outgoing';
+        if (isset($comando->campaign_type)) {
+            $sTipoCampania = (string)$comando->campaign_type;
+        }
+        if (!in_array($sTipoCampania, array('incoming', 'outgoing')))
+            return $this->_generarRespuestaFallo(400, 'Bad request');
+
+        // Verificar que id de llamada está presente
+        if (!isset($comando->call_id)) 
+            return $this->_generarRespuestaFallo(400, 'Bad request');
+        $idLlamada = (int)$comando->call_id;
+
+        // Verificar que elemento forms está presente
+        if (!isset($comando->forms)) 
+            return $this->_generarRespuestaFallo(400, 'Bad request');
+        $infoDatos = array();
+        foreach ($comando->forms->form as $xml_form) {
+        	$idForm = (int)$xml_form['id'];
+            
+            // No se permiten IDs duplicados de formulario
+            if (isset($infoDatos[$idForm]))
+                return $this->_generarRespuestaFallo(400, 'Bad request');
+            
+            $infoDatos[$idForm] = array();
+            foreach ($xml_form->field as $xml_field) {
+            	$idField = (int)$xml_field['id'];
+                $infoDatos[$idForm][$idField] = (string)$xml_field;
+            }
+        }
+
+        $xml_response = new SimpleXMLElement('<response />');
+        $xml_saveFormDataResponse = $xml_response->addChild('saveformdata_response');
+
+        // Leer la información del formulario, para validación
+        $infoFormulario = $this->_leerCamposFormulario(array_keys($infoDatos));
+        if (is_null($infoFormulario)) {
+        	$this->_agregarRespuestaFallo($xml_saveFormDataResponse, 500, 'Cannot read form information');
+        } else {
+            $listaSQL = array();
+            
+            /* Validación básica de los valores a guardar, combinada con 
+             * generación de las sentencias SQL para almacenar */
+            $bDatosValidos = TRUE;
+            foreach ($infoDatos as $idForm => $infoDatosForm) {
+        		foreach ($infoDatosForm as $idField => $sValor) {
+        			if (!isset($infoFormulario[$idForm])) {
+                        $bDatosValidos = FALSE;
+                        $this->_agregarRespuestaFallo($xml_saveFormDataResponse, 404, 'Form ID not found: '.$idForm);
+        			} elseif (!isset($infoFormulario[$idForm][$idField])) {
+                        $bDatosValidos = FALSE;
+                        $this->_agregarRespuestaFallo($xml_saveFormDataResponse, 404, 'Field ID not found in form: '.$idForm.' - '.$idField);
+        			}
+                    if (!$bDatosValidos) break;
+
+                    $infoCampo = $infoFormulario[$idForm][$idField];
+                    if ($infoCampo['type'] == 'LABEL') continue; 
+                    
+                    // TODO: extraer máxima longitud de base de datos
+                    if (strlen($sValor) > 250) {
+                    	$bDatosValidos = FALSE;
+                        $this->_agregarRespuestaFallo($xml_saveFormDataResponse, 413, 'Form value too large: '.$idForm.' - '.$idField);
+                    
+                    // Validar que el campo de fecha tenga valor correcto
+                    } elseif ($infoCampo['type'] == 'DATE' && 
+                        !(preg_match('/^\d{4}-\d{2}-\d{2}$/', $sValor) || preg_match('/^\d{4}-\d{2}-\d{2} d{2}:\d{2}:\d{2}$/', $sValor))) {
+                    	$bDatosValidos = FALSE;
+                        $this->_agregarRespuestaFallo($xml_saveFormDataResponse, 406, 
+                            'Date format not acceptable, must be yyyy-mm-dd or yyyy-mm-dd hh:mm:ss: '.$idForm.' - '.$idField);
+                    } else {
+                        if ($infoCampo['type'] == 'LIST') {
+                            // OJO: PRIMERA FORMA ANORMAL!!!
+                            // La implementación actual del código de formulario
+                            // agrega una coma de más al final de la lista
+                            if (strlen($infoCampo['value']) > 0 && 
+                                substr($infoCampo['value'], strlen($infoCampo['value']) - 1, 1) == ',') {
+                                $infoCampo['value'] = substr($infoCampo['value'], 0, strlen($infoCampo['value']) - 1);
+                            }
+                            if (!in_array($sValor, explode(',', $infoCampo['value']))) {
+                            	$bDatosValidos = FALSE;
+                                $this->_agregarRespuestaFallo($xml_saveFormDataResponse, 406, 
+                                    'Value not in list of accepted values: '.$idForm.' - '.$idField);
+                            }
+                        }                     	
+                    }
+                    if (!$bDatosValidos) break;
+                    
+                    // En este punto este valor es válido y se puede generar SQL
+                    $listaSQL[] = array(
+                        ($sTipoCampania == 'incoming') 
+                            ? 'REPLACE INTO form_data_recolected_entry (id_call_entry, id_form_field, value) VALUES (?, ?, ?)'
+                            : 'REPLACE INTO form_data_recolected (id_calls, id_form_field, value) VALUES (?, ?, ?)',
+                        array($idLlamada, $idField, $sValor),                        
+                    );
+        		}
+                if (!$bDatosValidos) break;
+        	}
+            
+            // Se procede a guardar los datos del formulario
+            if ($bDatosValidos) {
+            	foreach ($listaSQL as $infoSQL) {
+            		$r = $this->_dbConn->query($infoSQL[0], $infoSQL[1]);
+                    if (DB::isError($r)) {
+                    	$this->oMainLog->output('ERR: no se puede guardar información de formulario - '.$r->getMessage());
+                        $this->_agregarRespuestaFallo($xml_saveFormDataResponse, 500, 'Unable to save form data');
+                        $bDatosValidos = FALSE;
+                        break;
+                    }
+            	}
+            }
+            
+            if ($bDatosValidos) {
+            	$xml_saveFormDataResponse->addChild('success');
+            }
+        }
+
+        return $xml_response;
     }
     
     private function Request_PauseAgent($comando)
