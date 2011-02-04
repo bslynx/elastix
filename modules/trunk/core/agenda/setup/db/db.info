@@ -1,7 +1,11 @@
-[address_book]
-engine = sqlite3
-path   = /var/www/db
-
 [calendar]
+installation_force = no
 engine = sqlite3
 path   = /var/www/db
+deletable = yes
+
+[address_book]
+installation_force = no
+engine = sqlite3
+path   = /var/www/db
+deletable = yes

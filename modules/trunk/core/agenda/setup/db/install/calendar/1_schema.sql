@@ -1,3 +1,4 @@
+BEGIN TRANSACTION;
 CREATE TABLE events(
        id                    INTEGER PRIMARY KEY,
        uid                   INTEGER,
@@ -18,3 +19,4 @@ CREATE TABLE events(
        reminderTimer         VARCHAR(5),
        color                 VARCHAR(10)      DEFAULT '#3366CC'
 );
+COMMIT;
