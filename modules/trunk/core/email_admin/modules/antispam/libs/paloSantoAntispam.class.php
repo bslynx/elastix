@@ -117,7 +117,13 @@ class paloSantoAntispam {
                 $flatStatus4 = 0;
                 if(!$arrSpamFilter["is_spamfilter"])
                     exec($cmd_two,$arrConsole4,$flatStatus4); 
-                if($flatStatus4 == 0) $return = true;
+                if($flatStatus4 == 0) {
+                    exec("sudo -u root service generic-cloexec spamassassin start",$arrConsole,$flagStatus);
+                    if($flagStatus != 0){
+                        $this->errMsg = $arrLangModule["Commad failed, try activate spam filter"];
+                    }else
+                        $return = true;
+                }
                 else $this->errMsg = $arrLangModule["Commad failed, try activate spam filter"];
             }
             else $this->errMsg = $arrLangModule["Commad failed, try activate spam filter"];
@@ -153,7 +159,13 @@ class paloSantoAntispam {
                 if($flatStatus3 == 0){
                     exec($cmd_thr,$arrConsole4,$flatStatus4); 
                     exec($cmd_two,$arrConsole4,$flatStatus4); 
-                    if($flatStatus4 == 0) $return = true;
+                    if($flatStatus4 == 0){
+                        exec("sudo -u root service generic-cloexec spamassassin stop",$arrConsole,$flagStatus);
+                        if($flagStatus != 0){
+                            $this->errMsg = $arrLangModule["Commad failed, try activate spam filter"];
+                        }else
+                            $return = true;
+                    }
                     else $this->errMsg = $arrLangModule["Commad failed, try disactivate spam filter"];
                 }
                 else $this->errMsg = $arrLangModule["Commad failed, try disactivate spam filter"];
