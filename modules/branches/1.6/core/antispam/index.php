@@ -80,9 +80,10 @@ function updateAntispam($smarty, $module_name, $local_templates_dir, $arrLang, $
 {
     $status = getParameter("status");
     $level  = getParameter("level");
+    $header = getParameter("header");
 
     $objAntispam = new paloSantoAntispam($arrConfModule['path_postfix'], $arrConfModule['path_spamassassin'],$arrConfModule['file_master_cf'], $arrConfModule['file_local_cf']);
-    $isOk = $objAntispam->changeThoroughnessLevel($level);
+    $isOk = $objAntispam->changeFileLocal($level,$header);
     if($isOk === false){
         $smarty->assign("mb_title", $arrLang["Error"]);
         $smarty->assign("mb_message", $objAntispam->errMsg);
@@ -126,7 +127,8 @@ function formAntispam($smarty, $module_name, $local_templates_dir, $arrLang, $ar
         $arrData['status'] = "disactive";
 
     $valueRequiredHits = $objAntispam->getValueRequiredHits();
-    $arrData['level'] = $valueRequiredHits;
+    $arrData['level'] = $valueRequiredHits['level'];
+    $arrData['header'] = $valueRequiredHits['header'];
 
     $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl", "", $arrData);
     $contenidoModulo = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
@@ -146,6 +148,13 @@ function createFieldForm($arrLang, $arrLangModule)
                                             "REQUIRED"               => "no",
                                             "INPUT_TYPE"             => "RADIO",
                                             "INPUT_EXTRA_PARAM"      => $arrStatus,
+                                            "VALIDATION_TYPE"        => "text",
+                                            "VALIDATION_EXTRA_PARAM" => "",
+                                ),
+            "header"            => array(   "LABEL"                  => $arrLang["Rewrite Header"],
+                                            "REQUIRED"               => "no",
+                                            "INPUT_TYPE"             => "TEXT",
+                                            "INPUT_EXTRA_PARAM"      => "",
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => "",
                                 ),
