@@ -1,0 +1,23 @@
+[endpoint]
+installation_force = no
+engine = sqlite3
+path   = /var/www/db
+deletable = yes
+
+[control_panel_design]
+installation_force = no
+engine = sqlite3
+path   = /var/www/db
+deletable = yes
+
+[trunk]
+installation_force = no
+engine = sqlite3
+path   = /var/www/db
+deletable = yes
+
+[meetme]
+installation_force = no
+engine = mysql
+path   = /var/lib/mysql
+deletable = yes
