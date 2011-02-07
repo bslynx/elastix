@@ -47,7 +47,7 @@ $arrLangModule=array(
             Remote SMTP Server = [mailserver.isp.tld]<br />
             Remote SMTP Server = uucphost<br />
             Remote SMTP Server = [an.ip.add.ress]</p>",
-"Autentification" => "Autentification",
+"Autentification" => "Authentication",
 "CertPassword" => "CertPassword",
 "Country" => "Country",
 "Province" => "Province",
@@ -56,7 +56,7 @@ $arrLangModule=array(
 "Organization Deparment" => "Organization Deparment",
 "Common Name" => "Common Name",
 "Invalid file extension.- It must be pem" => "Invalid file extension.- It must be pem",
-"Message Remote Autentification" => "This option allows the autentification with certificates.",
+"Message Remote Autentification" => "This option allows the authentication with certificates.",
 "Message Remote SMTP Cert" => "To enable the certificates option is neccesary to specify the required fields",
 
 );
