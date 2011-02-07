@@ -33,26 +33,6 @@ $DocumentRoot = (isset($_SERVER['argv'][1]))?$_SERVER['argv'][1]:"/var/www/html"
 $DataBaseRoot = "/var/www/db";
 $tmpDir = '/tmp/new_module/pbx';  # in this folder the load module extract the package content
 
-if(!file_exists("$DataBaseRoot/endpoint.db")){
-    $cmd_mv    = "mv $tmpDir/setup/endpoint.db $DataBaseRoot/";
-    $cmd_chown = "chown asterisk.asterisk $DataBaseRoot/endpoint.db";
-    exec($cmd_mv);
-    exec($cmd_chown);
-}
-if(!file_exists("$DataBaseRoot/control_panel_design.db")){
-    $cmd_mv    = "mv $tmpDir/setup/control_panel_design.db $DataBaseRoot/";
-    $cmd_chown = "chown asterisk.asterisk $DataBaseRoot/control_panel_design.db";
-    exec($cmd_mv);
-    exec($cmd_chown);
-}
-if(!file_exists("$DataBaseRoot/trunk.db")){
-    $cmd_mv    = "mv $tmpDir/setup/trunk.db $DataBaseRoot/";
-    $cmd_chown = "chown asterisk.asterisk $DataBaseRoot/trunk.db";
-    exec($cmd_mv);
-    exec($cmd_chown);
-}
-
-
 // creacion de la tabla provider_account
 $provider_account = existDBTable("provider_account", "trunk.db", $DataBaseRoot);
 if($provider_account['flagStatus']==0){
