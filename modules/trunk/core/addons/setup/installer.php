@@ -31,40 +31,5 @@ $DocumentRoot = (isset($_SERVER['argv'][1]))?$_SERVER['argv'][1]:"/var/www/html"
 $DataBaseRoot = "/var/www/db";
 $tmpDir = '/tmp/new_module/addons';  # in this folder the load module extract the package content
 
-if(!file_exists("$DataBaseRoot/addons.db")){
-    $cmd_mv    = "mv $tmpDir/setup/addons.db $DataBaseRoot/";
-    $cmd_chown = "chown asterisk.asterisk $DataBaseRoot/addons.db";
-    exec($cmd_mv);
-    exec($cmd_chown);
-}
 
-exec("sqlite3 $DataBaseRoot/addons.db '.tables addons_cache'",$arrConsole,$flagStatus);
-
-if($flagStatus==0){
-  $exists = isset($arrConsole) && isset($arrConsole[0])?true:false;
-  if(!$exists & $arrConsole[0]=='addons_cache'){
-        $sql = "CREATE TABLE addons_cache(
-                  name_rpm         varchar(20),
-                  status           int,
-                  observation      varchar(100)
-                );";
-        exec("sqlite3 $DataBaseRoot/addons.db '$sql'",$arrConsole,$flagStatus);
-  }
-}
-
-exec("sqlite3 $DataBaseRoot/addons.db '.tables action_tmp'",$arrConsole,$flagStatus);
-
-if($flagStatus==0){
-  $exists = isset($arrConsole) && isset($arrConsole[0])?true:false;
-  if(!$exists & $arrConsole[0]=='action_tmp'){
-        $sql = "CREATE TABLE action_tmp (
-					name_rpm varchar(20), 
-					action_rpm varchar(20), 
-					data_exp varchar(100), 
-					user varchar(20)
-				);";
-        exec("sqlite3 $DataBaseRoot/addons.db '$sql'",$arrConsole,$flagStatus);
-  }
-exit($flagStatus);
-}
 ?>

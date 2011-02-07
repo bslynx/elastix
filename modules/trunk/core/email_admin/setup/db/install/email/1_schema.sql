@@ -1,3 +1,4 @@
+BEGIN TRANSACTION;
 CREATE TABLE accountuser (
         username    varchar(100),
         password    varchar(30),
@@ -36,3 +37,4 @@ CREATE TABLE virtual (
         alias       varchar(255) not null,
         username    varchar(50) not null
 );
+COMMIT;
