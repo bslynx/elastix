@@ -86,16 +86,19 @@ class paloSantoAntispam {
     function getValueRequiredHits()
     {
         // Trato de abrir el archivo de configuracion 
-        $value_required_hits = false;
+        $data = array();
         if($fh = @fopen($this->fileLocal, "r")) {
             while($line_file = fgets($fh, 4096)) {
                 //line to valid:required_hits 5
-                if(ereg("[[:space:]]*required_hits[[:space:]]+([[:digit:]]{0,2})",$line_file,$arrReg)){
-                        $value_required_hits = $arrReg[1];
+                if(preg_match("/[[:space:]]*required_hits[[:space:]]+([[:digit:]]{0,2})/",$line_file,$arrReg)){
+                        $data['level'] = $arrReg[1];
+                }
+                if(preg_match("/[[:space:]]*rewrite_header[[:space:]]+(.*)/",$line_file,$arrReg2)){
+                        $data['header'] = $arrReg2[1];
                 }
             }
         }
-        return $value_required_hits;
+        return $data;
     }
 
     function activateSpamFilter()
@@ -164,24 +167,30 @@ class paloSantoAntispam {
         return $return;
     }
 
-    function changeThoroughnessLevel($level)
+    function changeFileLocal($level,$header)
     {
         global $arrLangModule;
 
-        $cmd ="sed -ie 's/required_hits[[:space:]]\{1,\}[[:digit:]]\{0,2\}/required_hits $level/' {$this->fileLocal}";
-
+        $cmd ="sed -ie 's/required_hits[[:space:]]*[[:digit:]]\{0,2\}/required_hits $level/' {$this->fileLocal}";
+        $cmd_two = "sed -ie 's/[[:space:]]*rewrite_header[[:space:]]*.*/rewrite_header $header/' {$this->fileLocal}";
         exec("sudo -u root chmod 777 {$this->folderSpamassassin}",$arrConsole1,$flatStatus1);
         exec("sudo -u root chmod 777 {$this->fileLocal}",$arrConsole2,$flatStatus2);
 
         if($flatStatus1 == 0 && $flatStatus2 == 0){
             exec($cmd,$arrConsole3,$flatStatus3);
-            exec("sudo -u root chmod 644 {$this->fileLocal}",$arrConsole4,$flatStatus4);
-            exec("sudo -u root chown root.root {$this->fileLocal}",$arrConsole4,$flatStatus4);
-            exec("sudo -u root chmod 755 {$this->folderSpamassassin}",$arrConsole5,$flatStatus5);
-            if($flatStatus3 == 0) return true;
+            if($flatStatus3 == 0){
+                 exec($cmd_two,$arrConsole6,$flatStatus6);
+                 if($flatStatus6 == 0){
+                        exec("sudo -u root chmod 644 {$this->fileLocal}",$arrConsole4,$flatStatus4);
+                        exec("sudo -u root chown root.root {$this->fileLocal}",$arrConsole4,$flatStatus4);
+                        exec("sudo -u root chmod 755 {$this->folderSpamassassin}",$arrConsole5,$flatStatus5);
+                        return true;
+                 }
+                 else $this->errMsg = $arrLangModule["The command failed when attempting to change the header"];
+            }
             else $this->errMsg = $arrLangModule["Commad failed, try change thoroughness level"];
         }
-        else $this->errMsg = $arrLangModule["Failed change thoroughness level"];
+        else $this->errMsg = $arrLangModule["Failed change thoroughness level and header"];
         return false;
     }
 }

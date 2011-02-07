@@ -38,7 +38,7 @@ $arrLangModule=array(
 "Commad failed, try activate spam filter" => "Commande manqué, essayez d'activer le filtre.",
 "Failed activate spam filter" => "Activation du filtre antispam manqué",
 "Commad failed, try change thoroughness level" => "Commande manqué essayez de changer de niveau",
-"Failed change thoroughness level" => "Changement de niveau manqué",
+"Failed change thoroughness level and header" => "Échec de rigueur au niveau du changement et d'en-tête",
 "Failed disactivate spam filter" => "Désactivation du filtre antispam manqué.",
 "Commad failed, try disactivate spam filter" => "Commande manqué, essayez de désactiver le filtre anti-spam",
 "Status" => "Statut",
@@ -52,6 +52,8 @@ $arrLangModule=array(
 "Antispam service is already desactivated" => "Service Antispam est déjà désactivé",
 "Could not make the configuration file" => "Impossible d'établir le fichier de configuration",
 "Could not start the service antispam" => "Impossible de démarrer le service anti-spam",
-"Could not stop the service antispam" => "Impossible d'arrêter le service anti-spam"
+"Could not stop the service antispam" => "Impossible d'arrêter le service anti-spam",
+"Rewrite Header" => "Réécriture d'en-tête",
+"The command failed when attempting to change the header" => "La commande a échoué lors de la tentative de changer l'en-tête"
 );
 ?>

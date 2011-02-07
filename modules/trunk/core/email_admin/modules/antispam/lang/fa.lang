@@ -39,7 +39,7 @@ $arrLangModule=array(
 "Commad failed, try activate spam filter" => "Commad failed, try activate spam filter",
 "Failed activate spam filter" => "خطا در فعال نمودن فيلتر هرزنامه",
 "Commad failed, try change thoroughness level" => "Commad failed, try change thoroughness level",
-"Failed change thoroughness level" => "خطا در تغيير سطح",
+"Failed change thoroughness level and header" => "خطا در تغيير سطح",
 "Failed disactivate spam filter" => "خطا در غير فعال نمودن فيلتر هرزنامه",
 "Commad failed, try disactivate spam filter" => "Commad failed, try disactivate spam filter", 
 "Status" => "وضعيت",
@@ -54,6 +54,8 @@ $arrLangModule=array(
 "Could not give permissions to files" => "Could not give permissions to files",
 "Could not make the configuration file" =>  "Could not make the configuration file",
 "Could not start the service antispam" => "Could not start the service antispam",
-"Could not stop the service antispam" => "Could not stop the service antispam"
+"Could not stop the service antispam" => "Could not stop the service antispam",
+"Rewrite Header" => "Rewrite Header",
+"The command failed when attempting to change the header" => "The command failed when attempting to change the header"
 );
 ?>

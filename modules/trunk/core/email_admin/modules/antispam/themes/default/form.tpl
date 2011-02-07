@@ -14,6 +14,10 @@
         <td align="left">{$status.INPUT}</td>
     </tr>
     <tr class="letra12">
+        <td align="left" width="18%"><b>{$header.LABEL}: </b></td>
+        <td align="left">{$header.INPUT}</td>
+    </tr>
+    <tr class="letra12">
         <td align="left" width="18%"><b>{$level.LABEL}: </b></td>
         <td align="left" width="20%">{$level.INPUT}</td>
         <td align="left">{$LEGEND}</td>
