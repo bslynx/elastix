@@ -241,7 +241,15 @@ function reportbilling_report($smarty, $module_name, $local_templates_dir, &$pDB
 		    foreach($arrResult as $key => $value){
 			    $arrTmp[0] = $value['Date'];
                 $hidden_digits = $value['digits'];
-
+                
+				if($value['Rate_applied'] == null){
+                    $arrRateTmp = getRate($arr_rates, $value);
+                    $value['Rate_applied'] = $arrRateTmp['Rate_applied'];
+                    $value['Rate_value'] = $arrRateTmp['Rate_value'];
+                    $value['Offset'] = $arrRateTmp['Offset'];
+                    $hidden_digits = $arrRateTmp['digits'];
+                }
+                
                 if($value['Rate_applied'] == null)
                     $rate_applied = $arrLang['default'];
                 else
@@ -275,9 +283,18 @@ function reportbilling_report($smarty, $module_name, $local_templates_dir, &$pDB
 			    $arrTmp[4] = $destination;
 			    $arrTmp[5] = $value['Dst_channel'];
                 $arrTmp[6] = $value['accountcode'];
-			    $arrTmp[7] = $value['duration'];
+                
+			    $iDuracion = $value['duration'];
+                $iSec = $iDuracion % 60; $iDuracion = (int)(($iDuracion - $iSec) / 60);
+                $iMin = $iDuracion % 60; $iDuracion = (int)(($iDuracion - $iMin) / 60);
+                $sTiempo = $value['duration']."s";
+                if ($value['duration'] >= 60) {
+                      if ($iDuracion > 0) $sTiempo .= " ({$iDuracion}h {$iMin}m {$iSec}s)";
+                      elseif ($iMin > 0)  $sTiempo .= " ({$iMin}m {$iSec}s)";
+                }
+                $arrTmp[7] = $sTiempo;
 
-			    $charge=(($arrTmp[7]/60)*$rate_value)+$rate_offset;
+			    $charge=(($value['duration']/60)*$rate_value)+$rate_offset;
 			    $arrTmp[8] = number_format($charge,3);
 			    $sum_cost  = $sum_cost + $arrTmp[8];
 			    $arrTmp[9] = $sum_cost;
@@ -343,9 +360,18 @@ function reportbilling_report($smarty, $module_name, $local_templates_dir, &$pDB
                 $arrTmp[4] = $destination;
                 $arrTmp[5] = $value['Dst_channel'];
                 $arrTmp[6] = $value['accountcode'];
-                $arrTmp[7] = $value['duration'];
+                
+                $iDuracion = $value['duration'];
+                $iSec = $iDuracion % 60; $iDuracion = (int)(($iDuracion - $iSec) / 60);
+                $iMin = $iDuracion % 60; $iDuracion = (int)(($iDuracion - $iMin) / 60);
+                $sTiempo = $value['duration']."s";
+                if ($value['duration'] >= 60) {
+                      if ($iDuracion > 0) $sTiempo .= " ({$iDuracion}h {$iMin}m {$iSec}s)";
+                      elseif ($iMin > 0)  $sTiempo .= " ({$iMin}m {$iSec}s)";
+                }
+                $arrTmp[7] = $sTiempo;
 
-                $charge=(($arrTmp[7]/60)*$rate_value)+$rate_offset;
+                $charge=(($value['duration']/60)*$rate_value)+$rate_offset;
                 $arrTmp[8] = number_format($charge,3);
                 $sum_cost  = $sum_cost + $arrTmp[8];
                 $arrTmp[9] = $sum_cost;
