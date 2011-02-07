@@ -45,6 +45,15 @@ $arrLangModule=array(
 "Status" => "وضعيت",
 "Update" => "بروز رساني",
 "Error" => "خطا",
-"Legend" => "<i> سطح يك هرزنامه هاي بيشتري را تشخيص مي دهد، اما امكان اشتباه در آن زياد است. <br> سطح ده هرزنامه هاي كمتري را تشخيص مي دهد ولي امكان اشتباه درآن كمتر است.</i>", 
+"Legend" => "<i> سطح يك هرزنامه هاي بيشتري را تشخيص مي دهد، اما امكان اشتباه در آن زياد است. <br> سطح ده هرزنامه هاي كمتري را تشخيص مي دهد ولي امكان اشتباه درآن كمتر است.</i>",
+"Message" => "Message",
+"Successfully Activated Service Antispam" => "Successfully Activated Service Antispam",
+"Successfully Desactivated Service Antispam" => "Successfully Desactivated Service Antispam",
+"Antispam service is already activated" => "Antispam service is already activated",
+"Antispam service is already desactivated" => "Antispam service is already desactivated",
+"Could not give permissions to files" => "Could not give permissions to files",
+"Could not make the configuration file" =>  "Could not make the configuration file",
+"Could not start the service antispam" => "Could not start the service antispam",
+"Could not stop the service antispam" => "Could not stop the service antispam"
 );
 ?>

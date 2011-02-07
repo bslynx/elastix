@@ -44,7 +44,7 @@ class paloSantoAntispam {
 
     /*HERE YOUR FUNCTIONS*/
 
-    function isActiveSpamFilter()
+    function areFilesConfigurated()
     {
         // Trato de abrir el archivo de configuracion 
         $step_one_config = false;
@@ -70,6 +70,17 @@ class paloSantoAntispam {
             }
         }
         return array("isOk" => $step_one_config && $step_two_config, "is_smtp" => $step_one_config, "is_spamfilter" => $step_two_config);
+    }
+
+    function isActiveSpamFilter()
+    {
+        $step_three_config = false;
+        exec("sudo /sbin/service generic-cloexec spamassassin status",$arrConsole,$flagStatus);
+        if($flagStatus == 0){
+            if(preg_match("/pid/",$arrConsole[0]))
+                $step_three_config = true;
+        }
+        return $step_three_config;
     }
 
     function getValueRequiredHits()
@@ -98,39 +109,41 @@ class paloSantoAntispam {
         $cmd_two  = "echo '#\n#Add by Elastix\n#\nspamfilter unix -       n       n       -       -       pipe\n";
         $cmd_two .= "  flags=Rq user=spamfilter argv=/usr/local/bin/spamfilter.sh -f \${sender} -- \${recipient}' >> {$this->fileMaster}";
 
-        $arrSpamFilter = $this->isActiveSpamFilter();
+        $arrSpamFilter = $this->areFilesConfigurated();
 
         exec("sudo -u root chmod 777 {$this->folderPostfix}",$arrConsole1,$flatStatus1);
         exec("sudo -u root chmod 777 {$this->fileMaster}",$arrConsole2,$flatStatus2);
 
         if($flatStatus1 != 0 || $flatStatus2 != 0){
-            $this->errMsg = $arrLangModule["Failed activate spam filter"];
+            $this->errMsg = $arrLangModule["Could not give permissions to files"];
             return $return;
         }
 
-        if($flatStatus1 == 0 && $flatStatus2 == 0){
-            $flatStatus3 = 0;
-            if(!$arrSpamFilter["is_smtp"])
-                exec($cmd_one,$arrConsole3,$flatStatus3);
+        $flatStatus3 = 0;
+        if(!$arrSpamFilter["is_smtp"])
+            exec($cmd_one,$arrConsole3,$flatStatus3);
 
-            if($flatStatus3 == 0){
-                $flatStatus4 = 0;
-                if(!$arrSpamFilter["is_spamfilter"])
-                    exec($cmd_two,$arrConsole4,$flatStatus4); 
-                if($flatStatus4 == 0) {
-                    exec("sudo -u root service generic-cloexec spamassassin start",$arrConsole,$flagStatus);
-                    if($flagStatus != 0){
-                        $this->errMsg = $arrLangModule["Commad failed, try activate spam filter"];
-                    }else
-                        $return = true;
-                }
-                else $this->errMsg = $arrLangModule["Commad failed, try activate spam filter"];
+        if($flatStatus3 == 0){
+            $flatStatus4 = 0;
+            if(!$arrSpamFilter["is_spamfilter"])
+                exec($cmd_two,$arrConsole4,$flatStatus4); 
+            if($flatStatus4 == 0){
+                    $return = true;
             }
-            else $this->errMsg = $arrLangModule["Commad failed, try activate spam filter"];
+            else $this->errMsg = $arrLangModule["Could not make the configuration file"];
         }
+        else $this->errMsg = $arrLangModule["Could not make the configuration file"];
+        
         exec("sudo -u root chmod 644 {$this->fileMaster}",$arrConsole5,$flatStatus5);
         exec("sudo -u root chmod 755 {$this->folderPostfix}",$arrConsole6,$flatStatus6);
         exec("sudo -u root chown root.root {$this->fileMaster}",$arrConsole5,$flatStatus5);
+
+        exec("sudo /sbin/service generic-cloexec spamassassin start",$arrConsole,$flagStatus);
+        if($flagStatus != 0){
+            $this->errMsg = $arrLangModule["Could not start the service antispam"];
+            $return = false;
+        }else
+            $return = true;
         return $return;
     }
 
@@ -138,43 +151,16 @@ class paloSantoAntispam {
     {
         global $arrLangModule;
         $return = false;
-
-        $cmd_one  = "sed -ie 's/[[:space:]]\{0,\}-o[[:space:]]\{1,\}content_filter=spamfilter:dummy//' {$this->fileMaster}";
-        $cmd_two  = "sed -ie 's/spamfilter unix -       n       n       -       -       pipe//' {$this->fileMaster}";
-        $cmd_thr  = "sed -ie 's/  flags=Rq user=spamfilter argv=\/usr\/local\/bin\/spamfilter.sh -f \${sender} -- \${recipient}//' {$this->fileMaster}";
-
-        $arrSpamFilter = $this->isActiveSpamFilter();
-
-        exec("sudo -u root chmod 777 {$this->folderPostfix}",$arrConsole1,$flatStatus1);
-        exec("sudo -u root chmod 777 {$this->fileMaster}",$arrConsole2,$flatStatus2);
-
-        if($flatStatus1 != 0 || $flatStatus2 != 0){
-            $this->errMsg = $arrLangModule["Failed disactivate spam filter"];
+        $activated = $this->isActiveSpamFilter();
+        if(!$activated){
+            $this->errMsg = $arrLangModule['Antispam service is already desactivated'];
             return $return;
         }
-
-        if($flatStatus1 == 0 && $flatStatus2 == 0){
-            if($arrSpamFilter["is_smtp"] || $arrSpamFilter["is_spamfilter"]){
-                exec($cmd_one,$arrConsole3,$flatStatus3);
-                if($flatStatus3 == 0){
-                    exec($cmd_thr,$arrConsole4,$flatStatus4); 
-                    exec($cmd_two,$arrConsole4,$flatStatus4); 
-                    if($flatStatus4 == 0){
-                        exec("sudo -u root service generic-cloexec spamassassin stop",$arrConsole,$flagStatus);
-                        if($flagStatus != 0){
-                            $this->errMsg = $arrLangModule["Commad failed, try activate spam filter"];
-                        }else
-                            $return = true;
-                    }
-                    else $this->errMsg = $arrLangModule["Commad failed, try disactivate spam filter"];
-                }
-                else $this->errMsg = $arrLangModule["Commad failed, try disactivate spam filter"];
-            }
-        }
-
-        exec("sudo -u root chmod 644 {$this->fileMaster}",$arrConsole5,$flatStatus5);
-        exec("sudo -u root chmod 755 {$this->folderPostfix}",$arrConsole6,$flatStatus6);
-        exec("sudo -u root chown root.root {$this->fileMaster}",$arrConsole5,$flatStatus5);
+        exec("sudo /sbin/service generic-cloexec spamassassin stop",$arrConsole,$flagStatus);
+        if($flagStatus != 0){
+            $this->errMsg = $arrLangModule["Could not stop the service antispam"];
+        }else
+            $return = true;
         return $return;
     }
 

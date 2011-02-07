@@ -45,5 +45,14 @@ $arrLangModule=array(
 "Update" => "Update",
 "Error" => "Error",
 "Legend" => "<i>A level of 1 will catch more spam, but also increase the probability of false positives.<br>A level of 10 will catch less spam, but decrease the probability of false positives.</i>",
+"Message" => "Message",
+"Successfully Activated Service Antispam" => "Successfully Activated Service Antispam",
+"Successfully Desactivated Service Antispam" => "Successfully Desactivated Service Antispam",
+"Antispam service is already activated" => "Antispam service is already activated",
+"Antispam service is already desactivated" => "Antispam service is already desactivated",
+"Could not give permissions to files" => "Could not give permissions to files",
+"Could not make the configuration file" => "Could not make the configuration file",
+"Could not start the service antispam" => "Could not start the service antispam",
+"Could not stop the service antispam" => "Could not stop the service antispam"
 );
 ?>

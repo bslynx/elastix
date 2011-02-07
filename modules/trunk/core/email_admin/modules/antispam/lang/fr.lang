@@ -45,6 +45,13 @@ $arrLangModule=array(
 "Update" => "Mise à jour",
 "Error" => "Erreur",
 "Legend" => "<i>Un niveau de 1 attrapera plus de spam, mais aussi augmente la probabilité de faux positifs.<br>Un niveau de 10 attrapera moins de spam, mais décroît la probabilité de faux positifs.</i>",
-
+"Message" => "Message",
+"Successfully Activated Service Antispam" => "Activé avec succès service",
+"Successfully Desactivated Service Antispam" => "Réussir handicapés Service",
+"Antispam service is already activated" => "Service Antispam est déjà activé",
+"Antispam service is already desactivated" => "Service Antispam est déjà désactivé",
+"Could not make the configuration file" => "Impossible d'établir le fichier de configuration",
+"Could not start the service antispam" => "Impossible de démarrer le service anti-spam",
+"Could not stop the service antispam" => "Impossible d'arrêter le service anti-spam"
 );
 ?>
