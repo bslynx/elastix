@@ -119,8 +119,8 @@ function formAntispam($smarty, $module_name, $local_templates_dir, $arrLang, $ar
 
 
     $objAntispam = new paloSantoAntispam($arrConfModule['path_postfix'], $arrConfModule['path_spamassassin'],$arrConfModule['file_master_cf'], $arrConfModule['file_local_cf']);
-    $arrSpamFilter = $objAntispam->isActiveSpamFilter();
-    if($arrSpamFilter["isOk"])
+    $activated = $objAntispam->isActiveSpamFilter();
+    if($activated)
         $arrData['status'] = "active";
     else
         $arrData['status'] = "disactive";
