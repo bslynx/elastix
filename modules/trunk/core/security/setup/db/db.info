@@ -1,4 +1,5 @@
-[info]
+[iptables]
+installation_force = no
 engine = sqlite3
-dbname = iptables
 path = /var/www/db
+deletable = yes
