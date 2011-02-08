@@ -33,6 +33,8 @@ $arrLangModule=array(
 "Halt" => "Apagar",
 "Reboot" => "Reiniciar",
 "Shutdown in progress" => "Apagado en proceso",
-"Your system in shutting down now. Please, try again later." => "El sistema se está cerrando en este momento.  Por favor, intente nuevamente más tarde",
+"Your system in shutting down now. Please, try again later." => "La señal de apagado ha sido enviada exitosamente",
+"The reboot signal has been sent correctly." => "La señal de reinicio ha sido enviada exitosamente",
+"Continue" => "Continuar"
 );
 ?>

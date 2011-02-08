@@ -38,5 +38,7 @@ $arrLangModule=array(
 "Reboot" => "Επανεκκίνηση",
 "Shutdown in progress" => "Τερματισμός σε εξέλιξη",
 "Your system in shutting down now. Please, try again later." => "Το σύστημα βρίσκετε διαδικασία τερματισμού. Παρακαλώ δοκιμάστε αργότερα.",
+"The reboot signal has been sent correctly." => "The reboot signal has been sent correctly.",
+"Continue" => "Continue"
 );
 ?>

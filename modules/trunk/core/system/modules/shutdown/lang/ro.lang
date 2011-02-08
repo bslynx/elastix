@@ -38,5 +38,7 @@ $arrLangModule=array(
 "Reboot" => "Restartare PC",
 "Shutdown in progress" => "Oprire Sistem in curs...",
 "Your system in shutting down now. Please, try again later." => "Sistemul dumneavoastra se inchide...Incercati mai tarziu",
+"The reboot signal has been sent correctly." => "The reboot signal has been sent correctly.",
+"Continue" => "Continue"
 );
 ?>

@@ -34,5 +34,7 @@ $arrLangModule=array(
 "Reboot" => "Reboot",
 "Shutdown in progress" => "Zatvaranje u toku",
 "Your system in shutting down now. Please, try again later." => "Sistem se trenutno zatvara. Molimo pokusahte kasnije.",
+"The reboot signal has been sent correctly." => "The reboot signal has been sent correctly.",
+"Continue" => "Continue"
 );
 ?>
