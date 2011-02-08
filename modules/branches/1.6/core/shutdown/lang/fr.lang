@@ -39,5 +39,7 @@ $arrLangModule=array(
 "Reboot" => "Redémarrer",
 "Shutdown in progress" => "Arrêt en progression.",
 "Your system in shutting down now. Please, try again later." => "Votre système est entrain de redémarrer. Veuillez essayez plus tard...",
+"The reboot signal has been sent correctly" => "The reboot signal has been sent correctly.",
+"Continue" => "Continue"
 );
 ?>

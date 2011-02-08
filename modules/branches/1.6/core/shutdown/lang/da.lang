@@ -38,5 +38,7 @@ $arrLangModule=array(
 "Reboot" => "Genstart",
 "Shutdown in progress" => "Systemet er ved at lukke ned",
 "Your system in shutting down now. Please, try again later." => "Systemet er ved at lukke ned, prøv venligst senere",
+"The reboot signal has been sent correctly" => "The reboot signal has been sent correctly.",
+"Continue" => "Continue"
 );
 ?>

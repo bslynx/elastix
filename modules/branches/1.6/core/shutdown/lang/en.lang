@@ -36,6 +36,8 @@ $arrLangModule=array(
 "Halt"=>"Halt", //shutdown mode
 "Reboot"=>"Reboot", //shutdown mode
 "Shutdown in progress"=>"Shutdown in progress",
-"Your system in shutting down now. Please, try again later."=>"Your system in shutting down now. Please, try again later.",
+"Your system in shutting down now. Please, try again later."=>"The shutdown signal has been sent correctly",
+"The reboot signal has been sent correctly" => "The reboot signal has been sent correctly.",
+"Continue" => "Continue"
 );
 ?>

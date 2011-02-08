@@ -37,5 +37,7 @@ $arrLangModule=array(
 "Reboot" => "راه اندازی دوباره",
 "Shutdown in progress" => "سیستم در حال خاموش شدن",
 "Your system in shutting down now. Please, try again later." => "سیستم در حال خاموش شدن است لطفا بعدا تلاش کنید",
+"The reboot signal has been sent correctly" => "The reboot signal has been sent correctly.",
+"Continue" => "Continue"
 );
 ?>

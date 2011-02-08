@@ -51,12 +51,13 @@ function _moduleContent(&$smarty, $module_name) {
     
     if(isset($_POST['submit_accept'])) {
         $smarty->assign("SHUTDOWN_PROGRESS", $arrLang["Shutdown in progress"]);
-        $smarty->assign("SHUTDOWN_MSG", $arrLang["Your system in shutting down now. Please, try again later."]);
         $smarty->assign("MSG_LINK", $arrLang["Continue"]);
         if($_POST['shutdown_mode']=='1') {
+            $smarty->assign("SHUTDOWN_MSG", $arrLang["Your system in shutting down now. Please, try again later."]);
             exec("sudo -u root /sbin/shutdown -h now", $salida, $retorno);
             $salida = $smarty->fetch("file:$local_templates_dir/shutdown_in_progress.tpl");
         } else if ($_POST['shutdown_mode']=='2') {
+            $smarty->assign("SHUTDOWN_MSG", $arrLang["The reboot signal has been sent correctly"]);
             exec("sudo -u root /sbin/shutdown -r now", $salida, $retorno);
             $salida = $smarty->fetch("file:$local_templates_dir/shutdown_in_progress.tpl");
         } else {
