@@ -69,7 +69,7 @@
                             <span class="menuguion">*</span>&nbsp;
                             <span><a class="logout" href="javascript:mostrar();">{$ABOUT_ELASTIX2}</a></span>&nbsp;
                             <span class="menuguion">*</span>&nbsp;
-                            <span><a class="logout" href="javascript:openWindow('help/?id_nodo={$idSubMenuSelected}&amp;name_nodo={$nameSubMenuSelected}')">{$HELP}</a></span>&nbsp;
+                            <span><a class="logout" href="javascript:popUp('help/?id_nodo={$idSubMenuSelected}&amp;name_nodo={$nameSubMenuSelected}','1000','460')">{$HELP}</a></span>&nbsp;
                             <span class="menuguion">*</span>&nbsp;
                             <span><a class="logout" href="?logout=yes">{$LOGOUT} (<font color='#c0d0e0'>{$USER_LOGIN}</font>)</a></span>&nbsp;
                         </div>
@@ -95,7 +95,7 @@
                                 </tr>
                             </table>
                         </td>
-                        <td align="right" valign="middle"><a href="javascript:openWindow('help/?id_nodo={$idSubMenuSelected}&amp;name_nodo={$nameSubMenuSelected}')"><img alt=""
+                        <td align="right" valign="middle"><a href="javascript:popUp('help/?id_nodo={$idSubMenuSelected}&amp;name_nodo={$nameSubMenuSelected}','1000','460')"><img alt=""
                             src="themes/{$THEMENAME}/images/help_bottom.gif" border="0" /></a>&nbsp;&nbsp;<a href="javascript:changeMenu()"><img alt=""
                             src="themes/{$THEMENAME}/images/arrow_top.gif" border="0" /></a>&nbsp;&nbsp;</td>
                     </tr>
@@ -109,7 +109,7 @@
     <tr>
       <td><img alt="" src="images/logo_elastix_mini.jpg" border="0" /></td>
       <td align="right" class="letra_gris" valign="middle">{$nameMainMenuSelected} &rarr; {$nameSubMenuSelected} {if !empty($idSubMenu2Selected)} &rarr; {$nameSubMenu2Selected} {/if}
-          &nbsp;&nbsp;<a href="javascript:openWindow('help/?id_nodo={$idSubMenuSelected}&amp;name_nodo={$nameSubMenuSelected}')"><img alt="" src="themes/{$THEMENAME}/images/help_bottom.gif" border="0" 
+          &nbsp;&nbsp;<a href="javascript:popUp('help/?id_nodo={$idSubMenuSelected}&amp;name_nodo={$nameSubMenuSelected}','1000','460')"><img alt="" src="themes/{$THEMENAME}/images/help_bottom.gif" border="0" 
           align="absmiddle" /></a>
           &nbsp;&nbsp;<a href="javascript:changeMenu()"><img alt="" src="themes/{$THEMENAME}/images/arrow_bottom.gif" border="0" align="absmiddle" /></a>&nbsp;&nbsp;
       </td>
