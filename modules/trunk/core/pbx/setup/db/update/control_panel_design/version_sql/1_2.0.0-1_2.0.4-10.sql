@@ -1,5 +1,5 @@
 BEGIN TRANSACTION;
-ALTER TABLE rate ADD COLUMN color VARCHAR(7);
+ALTER TABLE "area" ADD COLUMN color VARCHAR(7);
 UPDATE "area" SET color='#DEE4FA' WHERE id=1; 
 UPDATE "area" SET color='#FCF9D2' WHERE id=2;
 UPDATE "area" SET color='#D4DCDC' WHERE id=3;
