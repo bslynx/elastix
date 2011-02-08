@@ -1,0 +1,1 @@
+UPDATE applet set name = 'Hard Drives' WHERE id = 3;
