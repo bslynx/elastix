@@ -46,7 +46,7 @@ $arrLangModule=array(
 "Internal aperture clock" => "(internal) aperture (w) /etc/sysconfig/clock has failed",
 "has failed" => "has failed",
 "System time changed successfully" => "System time changed successfully",
-"The change of date and time can concern important  system processes." => "The change of date and time can concern important  system processes.",
+"The change of date and time can concern important  system processes." => "Changing the date and time in the system can cause unexpected or inconsistent values in the process whose calculations depend on it.",
 "Can not find file" => "Can not find file",
 /*end system - date/time*/
 );
