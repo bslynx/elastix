@@ -39,8 +39,8 @@ $arrLang=array(
 "Mem. usage (MB)"=>"Uso de Mem. (MB)",
 
 "Export"=>"Exportar",
-"Start"=>"Inicio",
-"End"=>"Fin",
+"Start"=>"Primero",
+"End"=>"Último",
 "Next"=>"Siguiente",
 "Previous"=>"Anterior",
 

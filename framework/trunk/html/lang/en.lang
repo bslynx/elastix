@@ -41,8 +41,8 @@ $arrLang=array(
 "Mem. usage (MB)"=>"Mem. usage (MB)",
 /*end System Info: Libreria jpgraphap*/
 
-"Start"=>"Start",
-"End"=>"End",
+"Start"=>"First",
+"End"=>"Last",
 "Next"=>"Next",
 "Previous"=>"Previous",
 "Export"=>"Export",
