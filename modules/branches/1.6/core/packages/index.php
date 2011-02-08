@@ -100,7 +100,7 @@ function listPackages($smarty, $module_name, $local_templates_dir,$arrConf) {
     if (is_array($arrPaquetes)) {
         for($i=0;$i<count($arrPaquetes);$i++){
             $estado_paquete = $oPackages->estaPaqueteInstalado($arrPaquetes[$i]['name']);
-            $instalar = "<center>{$arrLang['Updated']}</center>";
+            $instalar = $arrLang['Updated'];
             $tmpPaquete = $arrPaquetes[$i]['name'];
             if(!$estado_paquete){
                 $instalar = "<a href='#'  onclick="."installPackage('$tmpPaquete')".">{$arrLang['Install']}</a>";
@@ -111,8 +111,8 @@ function listPackages($smarty, $module_name, $local_templates_dir,$arrConf) {
                             $arrPaquetes[$i]['version'],
                             $arrPaquetes[$i]['release'],
                             $arrPaquetes[$i]['repositorio'],
-                            ($estado_paquete)?$arrLang["Package Installed"]:$arrLang["Package Noninstalled"],
-                            $instalar);
+                            (($estado_paquete)?$arrLang["Package Installed"]:"")." $instalar",
+                            );
         }
     }
 
@@ -133,11 +133,9 @@ function listPackages($smarty, $module_name, $local_templates_dir,$arrConf) {
                                        "property1" => ""),
                             4 => array("name"      => $arrLang["Repositor Place"], 
                                        "property1" => ""),
-                            5 => array("name"     => $arrLang["Package Installed"], 
+                            5 => array("name"     => $arrLang["Status"], 
                                        "property1" => ""),
-                            6 => array("name"      => $arrLang["Options"], 
-                                       "property1" => ""),
-                            7 => array("name"      => $arrLang["Package Delete"], 
+                            6 => array("name"      => $arrLang["Package Delete"], 
                                        "property1" => ""),));
 
     /*Inicion Parte del Filtro*/

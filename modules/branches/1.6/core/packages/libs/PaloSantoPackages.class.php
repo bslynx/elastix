@@ -288,7 +288,8 @@ class PaloSantoPackages
             if (is_array($arr_repositorios) && count($arr_repositorios) > 0) {
                 foreach($arr_repositorios as $key => $repositorio){
                     $total_rep = $this->getPaquetesDelRepositorio($ruta,$repositorio,'', true);
-                    $total += $total_rep[0]['total'];
+                    if(isset($total_rep[0]['total']))
+                        $total += $total_rep[0]['total'];
                 }
             }
             return $total;
