@@ -55,13 +55,15 @@ class paloDB {
             $this->connStatus = FALSE;
         } else {
             $dsninfo = $this->parseDSN($dsn);
-            if($dsninfo['dbsyntax']=='sqlite3'){
+            $engine  = $dsninfo['dbsyntax'];
+
+            if($engine=='sqlite3'){
                 $dsn = "sqlite:".$dsninfo['database'];
-                $this->engine = "sqlite3";
+                $this->engine = $engine;
             }
-            else if($dsninfo['dbsyntax']=='mysql'){
-                $dsn = "mysql:dbname=".$dsninfo['database'].";host=".$dsninfo['hostspec'];
-                $this->engine = "mysql";
+            else if($engine=='mysql' || $$engine=='pgsql'){
+                $dsn = "$engine:dbname=".$dsninfo['database'].";host=".$dsninfo['hostspec'];
+                $this->engine = $engine;
             }
 
             $user       = $dsninfo['username'];
@@ -123,7 +125,7 @@ class paloDB {
                     if($this->conn->query($query))
                         return TRUE;
                     else{
-                        $this->errMsg = "Query Error: $query";
+                        $this->errMsg = "Query Error: $query - ".print_r($this->conn->errorInfo(), 1);
                         return FALSE;
                     }
                 }catch(PDOException $e){
@@ -265,19 +267,29 @@ class paloDB {
      *
      * @param niguno
      *
-     * @return int Valor del id ultimo generado
+     * @return string Valor del id ultimo generado
      */
-    function getLastInsertId()
+    function getLastInsertId($objSequence = NULL)
     {
-        if($this->engine == "mysql"){
-            $id = $this->getFirstRowQuery("select last_insert_id();");
-            if(is_array($id) & count($id)>0) return $id[0];
-            else false;
+        if(is_null($objSequence)){
+            try{
+                $id = $this->conn->lastInsertId();
+                return $id;
+            }
+            catch(PDOException $e){
+                $this->errMsg = "Error al obtener el ultimo id insertado - " . $e->getMessage();
+                return FALSE;
+            } 
         }
-        else if($this->engine == "sqlite3"){
-            $id = $this->getFirstRowQuery("select last_insert_rowid();");
-            if(is_array($id) & count($id)>0) return $id[0];
-            else false;
+        else{
+            try{
+                $id = $this->conn->lastInsertId($objSequence);
+                return $id;
+            }
+            catch(PDOException $e){
+                $this->errMsg = "Error al obtener el ultimo id insertado - " . $e->getMessage();
+                return FALSE;
+            }
         }
     }
 
