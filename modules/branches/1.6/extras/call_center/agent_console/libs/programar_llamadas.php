@@ -127,11 +127,38 @@ function _moduleContent(&$smarty, $module_name)
     $action = getAction();
     $id_campana = $id_call = $num_telefono = "";
     //validamos el di campaña y id call
-    if(isset($_GET['id_campana'])){
-        $id_campana = $_GET['id_campana'];
-    }
     if(isset($_GET['id_call'])){
         $id_call = $_GET['id_call'];
+    }
+
+    /* 2011/02/09 Alex Villacís Lasso:
+       Todo este código es un revuelto. Es necesario reescribir desde el principio
+       esta funcionalidad. Por ahora se requiere únicamente el valor de id_call,
+       y se deducen id_campana, num_telefono y cliente. Esto evita problemas de
+       escape de caracteres especiales en el nombre del cliente.
+       FIXME: se asume que el nombre de cliente está almacenado en 
+       call_attribute.value con call_attribute.column_number igual a 1. Esta
+       suposición se hereda de getDataCampania() en paloSantoAgentConsole.class.php .  
+     */
+    $pDB = getDB();
+    $sPeticionSQL = <<<SQL_DATOS_LLAMADA
+SELECT calls.id_campaign, calls.phone, call_attribute.value
+FROM calls
+LEFT JOIN call_attribute
+    ON call_attribute.id_call = calls.id
+    AND call_attribute.column_number = 1
+WHERE calls.id = ?
+SQL_DATOS_LLAMADA;
+    $tupla = $pDB->getFirstRowQuery($sPeticionSQL, TRUE, array($id_call));
+    if (is_array($tupla) && count($tupla) > 0) {
+        // Se asigna a $_GET para mantener compatibilidad con el resto del código
+        $_GET['id_campana'] = $tupla['id_campaign'];
+        $_GET['num_telefono'] = $tupla['phone'];
+        $_GET['cliente'] = $tupla['value'];
+    }
+
+    if(isset($_GET['id_campana'])){
+        $id_campana = $_GET['id_campana'];
     }
 
     if(isset($_POST['numero'])){

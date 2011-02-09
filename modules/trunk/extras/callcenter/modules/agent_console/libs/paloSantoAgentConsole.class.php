@@ -247,7 +247,7 @@ function notificaLlamada($pestania, $prefijo_objeto, $nueva_llamada, $id_formula
                                 }
 //ECUASISTENCIA: PONEMOS EL LINK DE PROGRAMAR LLAMADAS PARA GENERAR EL POPUP
             $id_campana = $arr_campania["id_campaign"];
-            $respuesta->addAssign("link_programar_llamada","innerHTML","<a href='javascript: popup_llamada(\"modules/agent_console/libs/programar_llamadas.php?num_telefono=$llamada&id_call=$id_call&id_campana=$id_campana&cliente=$cliente\");' class='normal'>"._tr("ProgramCalls")."</a>");
+            $respuesta->addAssign("link_programar_llamada","innerHTML","<a href='javascript: popup_llamada(\"modules/agent_console/libs/programar_llamadas.php?id_call=$id_call\");' class='normal'>"._tr("ProgramCalls")."</a>");
 
 //ECUASISTENCIA FIN 
                             } // fin del if q controla si hay nueva llamada
