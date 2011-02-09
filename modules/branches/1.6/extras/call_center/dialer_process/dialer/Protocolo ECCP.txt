@@ -745,7 +745,7 @@ Listado de requerimientos
 Nota: Para facilitar la legibilidad del presente documento, se presentarán aquí 
 también las "respuestas" a cada requerimiento.
 
-Requierimiento "login"
+Requerimiento "login"
 
 Este requerimiento sirve para autenticar una aplicación cliente y permitirle 
 establecer una sesión de comunicaciones con el servidor. El servidor ECCP no 
@@ -862,6 +862,7 @@ En caso de que no exista el agente:
 </response>
 
 Requerimiento "loginagent"
+
 Este requerimiento inicia la conexión de una extensión, bajo la identidad de un
 agente específico, hacia una cola. En la implementación actual, Asterisk inicia
 una llamada hacia la extensión, la cual al ser contestada, reproduce una 
@@ -1301,6 +1302,52 @@ Llamada entrante:
 
 
 Requerimiento "setcontact"
+
+Este requerimiento ordena asignar el ID de contacto para la llamada entrante, en
+el caso de que existan múltiples contactos cuyo número telefónico coincida con 
+el Caller-ID anunciado para la llamada entrante. No es necesario que la llamada
+esté activa al momento de asignar.
+
+Atributos o argumentos:
+* call_id: ID en la base de datos de la llamada que se asigna su contacto
+* contact_id: ID en la base de datos del contacto a asociar con esta llamada.
+
+Ejemplo:
+
+<request id="10">
+    <setcontact>
+        <call_id>8</call_id>
+        <contact_id>3</contact_id>
+    </setcontact>
+</request>
+
+Respuesta:
+Para caso de éxito:
+<response id="10">
+    <setcontact_response>
+        <success/>
+    </setcontact_response>
+</response>
+
+Para ID de contacto no encontrado:
+<response id="10">
+    <setcontact_response>
+        <failure>
+            <code>404</code>
+            <message>Contact ID not found</message>
+        </failure>
+    </setcontact_response>
+</response>
+
+Para ID de llamada no encontrada:
+<response id="10">
+    <setcontact_response>
+        <failure>
+            <code>404</code>
+            <message>Call ID not found</message>
+        </failure>
+    </setcontact_response>
+</response>
 
 Requerimiento "saveformdata"
 

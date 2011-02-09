@@ -216,6 +216,9 @@ class XMLDialerConn extends DialerConn
                 case 'getpauses':
                     $response = $this->Request_GetPauses($comando);
                     break;
+                case 'setcontact':
+                    $response = $this->Request_SetContact($comando);
+                    break;
 /*
                 case 'getcallstatus':
                     $response = $this->Request_GetCallStatus($comando);
@@ -1110,6 +1113,75 @@ LEER_CAMPANIA;
                 break;
             }
         }
+    }
+
+    private function Request_SetContact($comando)
+    {
+        if (is_null($this->_sUsuarioECCP))
+            return $this->_generarRespuestaFallo(401, 'Unauthorized');
+
+        // Verificar que id de llamada está presente
+        if (!isset($comando->call_id)) 
+            return $this->_generarRespuestaFallo(400, 'Bad request');
+        $idLlamada = (int)$comando->call_id;
+
+        // Verificar que id de contacto está presente
+        if (!isset($comando->contact_id)) 
+            return $this->_generarRespuestaFallo(400, 'Bad request');
+        $idContacto = (int)$comando->contact_id;
+
+        $xml_response = new SimpleXMLElement('<response />');
+        $xml_setContactResponse = $xml_response->addChild('setcontact_response');
+
+        $bExito = TRUE;
+
+        // Verificar que existe realmente la llamada entrante
+        if ($bExito) {
+        	$tupla = $this->_dbConn->getRow(
+                'SELECT COUNT(*) AS N FROM call_entry WHERE id = ?',
+                array($idLlamada),
+                DB_FETCHMODE_ASSOC);
+            if (DB::isError($tupla)) {
+                $this->oMainLog->output('ERR: no se puede consultar ID de llamada - '.$tupla->getMessage());
+            	$this->_agregarRespuestaFallo($xml_setContactResponse, 500, 'Cannot check call ID');
+                $bExito = FALSE;
+            } elseif ($tupla['N'] < 1) {
+                $this->_agregarRespuestaFallo($xml_setContactResponse, 404, 'Call ID not found');
+            	$bExito = FALSE;
+            }
+        }
+        
+        // Verificar que existe realmente el contacto indicado
+        if ($bExito) {
+            $tupla = $this->_dbConn->getRow(
+                'SELECT COUNT(*) AS N FROM contact WHERE id = ?',
+                array($idContacto),
+                DB_FETCHMODE_ASSOC);
+            if (DB::isError($tupla)) {
+                $this->oMainLog->output('ERR: no se puede consultar ID de contacto - '.$tupla->getMessage());
+                $this->_agregarRespuestaFallo($xml_setContactResponse, 500, 'Cannot check contact ID');
+                $bExito = FALSE;
+            } elseif ($tupla['N'] < 1) {
+                $this->_agregarRespuestaFallo($xml_setContactResponse, 404, 'Contact ID not found');
+                $bExito = FALSE;
+            }
+        }
+        
+        if ($bExito) {
+        	$r = $this->_dbConn->query('UPDATE call_entry SET id_contact = ? WHERE id = ?',
+                array($idContacto, $idLlamada));
+            if (DB::isError($r)) {
+                $this->oMainLog->output('ERR: no se puede actualizar ID de contacto - '.$r->getMessage());
+                $this->_agregarRespuestaFallo($xml_setContactResponse, 500, 'Cannot update contact ID for call');
+            	$bExito = FALSE;
+            }
+        }
+
+        if ($bExito) {
+            $xml_setContactResponse->addChild('success');
+        }
+
+        return $xml_response;
     }
     
     private function Request_GetCampaignStatus($comando)
