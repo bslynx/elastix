@@ -61,7 +61,7 @@ class paloDB {
                 $dsn = "sqlite:".$dsninfo['database'];
                 $this->engine = $engine;
             }
-            else if($engine=='mysql' || $$engine=='pgsql'){
+            else if($engine=='mysql' || $engine=='pgsql'){
                 $dsn = "$engine:dbname=".$dsninfo['database'].";host=".$dsninfo['hostspec'];
                 $this->engine = $engine;
             }
