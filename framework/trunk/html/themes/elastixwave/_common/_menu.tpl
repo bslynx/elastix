@@ -220,9 +220,10 @@
 {literal}
 <style type='text/css'>
 #acerca_de{
-    position:absolute; 
+    position:fixed;
+    background-color:#FFFFFF; 
     width:420px;
-    height:175px;
+    height:178px;
     border:1px solid #800000;
     z-index: 10000;
 }
