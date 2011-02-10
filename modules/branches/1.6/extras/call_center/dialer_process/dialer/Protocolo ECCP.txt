@@ -1451,3 +1451,40 @@ Requerimiento "pauseagent"
 
 Requerimiento "getpauses"
 
+Este requerimiento se usa para obtener el listado de las pausas (breaks) que
+el agente puede usar para entrar en una pausa auditada.
+
+Atributos o argumentos:
+Este requerimiento no tiene atributos:
+
+Respuesta:
+* pause: Elemento múltiple. Contiene el siguiente atributo:
+  * id: ID en la base de datos de la pausa
+  Contiene las siguientes etiquetas:
+  * name: Nombre corto de la pausa
+  * status: Estado de la pausa. Puede valer 'A' para activa, 'I' para inactiva.
+    Sólo deben usarse las pausas activas.
+  * type: Tipo de pausa. Actualmente sólo se devuelven las pausas de tipo 'B'
+    (break). La pausa de tipo 'H' (hold) está reservada para uso interno.
+  * description: Descripción larga de la pausa.
+
+Ejemplo:
+<request id="10"><getpauses /></request>
+
+Respuesta:
+<response id="10">
+    <getpauses_response>
+        <pause id="2">
+            <name>Ba&#xF1;o</name>
+            <status>A</status>
+            <type>B</type>
+            <description>Para ir al ba&#xF1;o</description>
+        </pause>
+        <pause id="3">
+            <name>Almuerzo</name>
+            <status>A</status>
+            <type>B</type>
+            <description>Para salir a comer</description>
+        </pause>
+    </getpauses_response>
+</response>

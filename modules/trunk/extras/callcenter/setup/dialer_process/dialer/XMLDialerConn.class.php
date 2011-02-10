@@ -1354,7 +1354,28 @@ LEER_CAMPANIA;
     {
         if (is_null($this->_sUsuarioECCP))
             return $this->_generarRespuestaFallo(401, 'Unauthorized');
-        return $this->_generarRespuestaFallo(501, 'Not Implemented');
+
+        $xml_response = new SimpleXMLElement('<response />');
+        $xml_getPausesResponse = $xml_response->addChild('getpauses_response');
+
+        $recordset = $this->_dbConn->getAll(
+            "SELECT id, name, status, tipo, description FROM break WHERE tipo = 'B' ORDER BY id",
+            NULL, DB_FETCHMODE_ASSOC);
+        if (DB::isError($recordset)) {
+            $this->oMainLog->output('ERR: no se puede leer lista de pausas - '.$recordset->getMessage());
+            $this->_agregarRespuestaFallo($xml_getPausesResponse, 500, 'Unable to fetch active pauses');
+        } else {
+            foreach ($recordset as $tupla) {
+        		$xml_pause = $xml_getPausesResponse->addChild('pause');
+                $xml_pause->addAttribute('id', $tupla['id']);
+                $xml_pause->addChild('name', $tupla['name']);
+                $xml_pause->addChild('status', $tupla['status']);
+                $xml_pause->addChild('type', $tupla['tipo']);
+                $xml_pause->addChild('description', $tupla['description']);
+        	}
+        }
+
+        return $xml_response;
     }
 /*    
     private function Request_GetCallStatus($comando)
