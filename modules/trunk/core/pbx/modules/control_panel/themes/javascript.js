@@ -125,27 +125,27 @@ function actualizar()
                                     }
                                 }
                                 else if(key2 == "call_dstn")
-                                    reloadCallDstn(arrData[key]["key"],arrData[key]["data"][key2]);
+                                     eventCallDstn(arrData[key]["key"],arrData[key]["data"][key2]);
                                 else if(key2 == "status")
-                                     reloadStatus(arrData[key]["key"],arrData[key]["data"][key2]);
+                                     eventStatus(arrData[key]["key"],arrData[key]["data"][key2]);
                                 else if(key2 == "voicemail")
-                                     reloadVoicemail(arrData[key]["key"],arrData[key]["data"][key2]);
+                                     eventVoicemail(arrData[key]["key"],arrData[key]["data"][key2]);
                                 else if(key2 == "state_call")
-                                     reloadStateCall(arrData[key]["key"],arrData[key]["data"][key2]);
+                                     eventStateCall(arrData[key]["key"],arrData[key]["data"][key2]);
                                 else if(key2 == "parties")
-                                     reloadParties(arrData[key]["key"],arrData[key]["data"][key2]);
+                                     eventParties(arrData[key]["key"],arrData[key]["data"][key2]);
                                 else if(key2 == "activity")
                                      arrTime[arrData[key]["key"]] = arrData[key]["Tipo"]+"_"+arrData[key]["data"][key2];//reloadActivity(arrData[key]["key"],arrData[key]["data"][key2]);
                                 else if(key2 == "statusConf")
-                                     reloadStatusConf(arrData[key]["key"],arrData[key]["data"][key2]);
+                                     eventStatusConf(arrData[key]["key"],arrData[key]["data"][key2]);
                                 else if(key2 == "statusTrunk")
-                                     reloadStatusTrunk(arrData[key]["key"],arrData[key]["data"][key2]);
+                                     eventStatusTrunk(arrData[key]["key"],arrData[key]["data"][key2]);
                                 else if(key2 == "waiting")
-                                     reloadWaiting(arrData[key]["key"],arrData[key]["data"][key2]);
+                                     eventWaiting(arrData[key]["key"],arrData[key]["data"][key2]);
                                 else if(key2 == "time")
                                      arrTime[arrData[key]["key"]] = arrData[key]["Tipo"]+"_"+arrData[key]["data"][key2];//reloadTimeParking(arrData[key]["key"],arrData[key]["data"][key2]);
                                 else if(key2 == "extension")
-                                     reloadExtensionParking(arrData[key]["key"],arrData[key]["data"][key2]);
+                                     eventExtensionParking(arrData[key]["key"],arrData[key]["data"][key2]);
                             }
                         }
                         //reloadDevices(arrData);
@@ -175,27 +175,27 @@ function getAllData()
                             }
                         }
                         else if(key2 == "call_dstn")
-                            reloadCallDstn(arrData[key]["key"],arrData[key]["data"][key2]);
+                                eventCallDstn(arrData[key]["key"],arrData[key]["data"][key2]);
                         else if(key2 == "status")
-                                reloadStatus(arrData[key]["key"],arrData[key]["data"][key2]);
+                                eventStatus(arrData[key]["key"],arrData[key]["data"][key2]);
                         else if(key2 == "voicemail")
-                                reloadVoicemail(arrData[key]["key"],arrData[key]["data"][key2]);
+                                eventVoicemail(arrData[key]["key"],arrData[key]["data"][key2]);
                         else if(key2 == "state_call")
-                                reloadStateCall(arrData[key]["key"],arrData[key]["data"][key2]);
+                                eventStateCall(arrData[key]["key"],arrData[key]["data"][key2]);
                         else if(key2 == "parties")
-                                reloadParties(arrData[key]["key"],arrData[key]["data"][key2]);
+                                eventParties(arrData[key]["key"],arrData[key]["data"][key2]);
                         else if(key2 == "activity")
                                 arrTime[arrData[key]["key"]] = arrData[key]["Tipo"]+"_"+arrData[key]["data"][key2];//reloadActivity(arrData[key]["key"],arrData[key]["data"][key2]);
                         else if(key2 == "statusConf")
-                                reloadStatusConf(arrData[key]["key"],arrData[key]["data"][key2]);
+                                eventStatusConf(arrData[key]["key"],arrData[key]["data"][key2]);
                         else if(key2 == "statusTrunk")
-                                reloadStatusTrunk(arrData[key]["key"],arrData[key]["data"][key2]);
+                                eventStatusTrunk(arrData[key]["key"],arrData[key]["data"][key2]);
                         else if(key2 == "waiting")
-                                reloadWaiting(arrData[key]["key"],arrData[key]["data"][key2]);
+                                eventWaiting(arrData[key]["key"],arrData[key]["data"][key2]);
                         else if(key2 == "time")
                                 arrTime[arrData[key]["key"]] = arrData[key]["Tipo"]+"_"+arrData[key]["data"][key2];//reloadTimeParking(arrData[key]["key"],arrData[key]["data"][key2]);
                         else if(key2 == "extension")
-                                reloadExtensionParking(arrData[key]["key"],arrData[key]["data"][key2]);
+                                eventExtensionParking(arrData[key]["key"],arrData[key]["data"][key2]);
                     }
                 }
                 actualizar();
@@ -236,8 +236,8 @@ function drawBoxGeneric(id,type_,title_,info,module_name,img_name,status_,droppa
         var class2 = "class = 'box boxOn'";
     else
         var class2 = "class = 'box boxOff'";
-    var html = "<div "+class+" id = 'dev_"+type_+"_"+id+"'>"+
-                 "<div "+class2+" id='box_"+type_+"_"+id+"' >"+
+    var html = "<div "+class+" id = 'dev_"+id+"'>"+
+                 "<div "+class2+" id='box_"+id+"' >"+
                     "<div class='box_info'>"+
                         "<a class='tooltipInfo' href='#'>"+
                             "<img class='info_img' src='modules/"+module_name+"/images/info.png' />"+
@@ -246,13 +246,13 @@ function drawBoxGeneric(id,type_,title_,info,module_name,img_name,status_,droppa
                     "</div>"+
                     "<div class='box_description'>"+
                         title_+"<br />"+
-                        "<span class='monitor' id='span1_"+type_+"_"+id+"'>&nbsp;&nbsp;</span>"+
-                        "<span class='monitor' id='span2_"+type_+"_"+id+"'>&nbsp;</span>"+
+                        "<span class='monitor' id='span1_"+id+"'>&nbsp;&nbsp;</span>"+
+                        "<span class='monitor' id='span2_"+id+"'>&nbsp;</span>"+
                     "</div>"+
                     "<div class='box_info' id='img1_"+id+"'>"+
                     "</div>"+
                     "<div class='box_img2'>"+
-                        "<img id='img2_"+type_+"_"+id+"' class='img_box' src='modules/"+module_name+"/images/"+img_name+"' />"+
+                        "<img id='img2_"+id+"' class='img_box' src='modules/"+module_name+"/images/"+img_name+"' />"+
                     "</div>"+
                 "</div>";
      return html;
@@ -295,8 +295,8 @@ function drawBoxParkinglot(arrData)
                                 "var arrAction              = new Array();"+
                                     "arrAction['action']    = 'call';"+
                                     "arrAction['rawmode']   = 'yes';"+
-                                    "arrAction['extStart']  =  idStart[2];"+
-                                    "arrAction['extFinish'] =  idFinish[2];"+
+                                    "arrAction['extStart']  =  idStart[1];"+
+                                    "arrAction['extFinish'] =  idFinish[1];"+
                                     "request('index.php',arrAction,false,"+
                                         "function(arrData,statusResponse,error)"+
                                         "{"+
@@ -311,7 +311,7 @@ function drawBoxParkinglot(arrData)
                             "var arrAction              = new Array();"+
                                 "arrAction['action']    = 'hangup';"+
                                 "arrAction['rawmode']   = 'yes';"+
-                                "arrAction['extStart']  =  extStart[2];"+
+                                "arrAction['extStart']  =  extStart[1];"+
                                 "request('index.php',arrAction,false,"+
                                 "function(arrData,statusResponse,error)"+
                                 "{"+
@@ -586,7 +586,7 @@ function recorrerArrTime()
         if(tmp[2])
             var trunk = tmp[2];
         if(tipo == "extension"){
-            reloadSpeakTimeExten(key,time);
+            eventSpeakTimeExten(key,time);
             var tmp2 = time.split(":");
             var seconds = parseInt(tmp2[2],10);
             var minutes = parseInt(tmp2[1],10);
@@ -602,7 +602,7 @@ function recorrerArrTime()
             }
             arrTime[key] = tipo+"_"+formatear_long2(hours)+":"+formatear_long2(minutes)+":"+formatear_long2(seconds);
         }else if(tipo == "trunk"){
-            reloadSpeakTimeTrunk(key+"_"+tmp[2],time);
+            eventSpeakTimeTrunk(key+"_"+tmp[2],time);
             var tmp = time.split(":");
             var seconds = parseInt(tmp[2],10);
             var minutes = parseInt(tmp[1],10);
@@ -618,7 +618,7 @@ function recorrerArrTime()
             }
             arrTime[key] = tipo+"_"+formatear_long2(hours)+":"+formatear_long2(minutes)+":"+formatear_long2(seconds)+"_"+trunk;
         }else if(tipo == "conference"){
-            reloadActivity(key,time);
+            eventActivity(key,time);
             var tmp2 = time.split(":");
             var seconds = parseInt(tmp2[2],10);
             var minutes = parseInt(tmp2[1],10);
@@ -634,7 +634,7 @@ function recorrerArrTime()
             }
             arrTime[key] = tipo+"_"+formatear_long2(hours)+":"+formatear_long2(minutes)+":"+formatear_long2(seconds);
         }else if(tipo == "parkinglot"){
-            reloadTimeParking(key,time);
+            eventTimeParking(key,time);
             if(time != " "){
                 var tmp2 = time.split(":");
                 var seconds = parseInt(tmp2[2],10);
@@ -669,66 +669,68 @@ function drawBoxExtension(arrData)
     $("#tableExtension").append(html);
 }
 
-function reloadExtensionParking(parkingLot, extension){
-    var span = document.getElementById("span1_parkinglot_" + parkingLot);
+function eventExtensionParking(parkingLot, extension){
+    var span = document.getElementById("span1_" + parkingLot);
     if(span){
         span.firstChild.nodeValue = extension;
         if(extension == " "){
-            var span = document.getElementById("span2_parkinglot_" + parkingLot);
+            var span = document.getElementById("span2_" + parkingLot);
             span.firstChild.nodeValue = "";
         }
     }
 }
 
-function reloadTimeParking(parkingLot, time){
-    var span = document.getElementById("span2_parkinglot_" + parkingLot);
+function eventTimeParking(parkingLot, time){
+    var span = document.getElementById("span2_" + parkingLot);
     if(span){
         span.firstChild.nodeValue = time;
     }
 }
 
-function reloadWaiting(queue,waiting){
-     var span = document.getElementById("span1_queue_" + queue);
-     if(span){
-        span.firstChild.nodeValue = waiting;
-     }
+function eventWaiting(queue,waiting){
+     if(waiting!=0){
+        var span = document.getElementById("span1_" + queue);
+        if(span){
+            span.firstChild.nodeValue = waiting;
+        }
+    }
 }
 
-function reloadStatusTrunk(trunk, statusTrunk){
+function eventStatusTrunk(trunk, statusTrunk){
     if(statusTrunk== "off"){
-        var span1 = document.getElementById("span1_trunk_" + trunk);
-        var span2 = document.getElementById("span2_trunk_" + trunk);
+        var span1 = document.getElementById("span1_" + trunk);
+        var span2 = document.getElementById("span2_" + trunk);
         span1.firstChild.nodeValue = "";
         span2.firstChild.nodeValue = "";
     }
 }
 
-function reloadStatusConf(conference, statusConf){
+function eventStatusConf(conference, statusConf){
     if(statusConf == "off"){
         delete arrTime[conference];
-        var span1 = document.getElementById("span1_conference_" + conference);
-        var span2 = document.getElementById("span2_conference_" + conference);
+        var span1 = document.getElementById("span1_" + conference);
+        var span2 = document.getElementById("span2_" + conference);
         span1.firstChild.nodeValue = "";
         span2.firstChild.nodeValue = "";
     }
 }
 
-function reloadActivity(conference, activity){
-    var span = document.getElementById("span2_conference_" + conference);
+function eventActivity(conference, activity){
+    var span = document.getElementById("span2_" + conference);
     if(span){
         span.firstChild.nodeValue = activity;
     }
 }
 
-function reloadParties(conference, parties){
-     var span = document.getElementById("span1_conference_" + conference);
+function eventParties(conference, parties){
+     var span = document.getElementById("span1_" + conference);
      if(span){
         span.firstChild.nodeValue = parties;
     }
 }
 
-function reloadStateCall(exten, state_call){
-    var img = document.getElementById("img2_extension_"+ exten);
+function eventStateCall(exten, state_call){
+    var img = document.getElementById("img2_"+ exten);
     if(img){
         if(state_call=="Ringing"){
                 img.setAttribute("src","modules/control_panel/images/phoneRinging.gif");
@@ -736,8 +738,8 @@ function reloadStateCall(exten, state_call){
                 img.setAttribute("src","modules/control_panel/images/icon_upPhone.png");
         }if(state_call=="Down"){
                 delete arrTime[exten];
-                var span1 = document.getElementById("span1_extension_"+ exten);
-                var span2 = document.getElementById("span2_extension_"+ exten);
+                var span1 = document.getElementById("span1_"+ exten);
+                var span2 = document.getElementById("span2_"+ exten);
                 span1.firstChild.nodeValue = "";
                 span2.firstChild.nodeValue = "";
                 img.setAttribute("src","modules/control_panel/images/phhonez0.png");
@@ -746,7 +748,7 @@ function reloadStateCall(exten, state_call){
 }
 
 
-function reloadVoicemail(exten, voicemail){ 
+function eventVoicemail(exten, voicemail){ 
     var div = document.getElementById("img1_" + exten);
     var tmp = voicemail.split("_");
     if(tmp[0]=="1"){
@@ -756,8 +758,8 @@ function reloadVoicemail(exten, voicemail){
     }
 }
 
-function reloadStatus(exten, status_){
-     var div = document.getElementById("box_extension_" + exten);
+function eventStatus(exten, status_){
+     var div = document.getElementById("box_" + exten);
      if(div){
         if(status_ =='on'){
                 div.setAttribute("class","box boxOn");
@@ -767,27 +769,27 @@ function reloadStatus(exten, status_){
     }
 }
 
-function reloadCallDstn(exten,call_dstn){
-    var span = document.getElementById("span1_extension_" + exten);
+function eventCallDstn(exten,call_dstn){
+    var span = document.getElementById("span1_" + exten);
     if(span){
         span.firstChild.nodeValue = call_dstn;
     }
 }
 
-function reloadSpeakTimeExten(exten,speak_time){
-    var span = document.getElementById("span2_extension_" + exten);
+function eventSpeakTimeExten(exten,speak_time){
+    var span = document.getElementById("span2_" + exten);
     if(span){
         span.firstChild.nodeValue = speak_time;
     }
 }
 
-function reloadSpeakTimeTrunk(exten,speak_time){
+function eventSpeakTimeTrunk(exten,speak_time){
     var tmp = exten.split("_");
-    var span = document.getElementById("span2_extension_" + tmp[0]);
+    var span = document.getElementById("span2_" + tmp[0]);
     if(span){
         span.firstChild.nodeValue = speak_time;
-        var spanTrun1 = document.getElementById("span1_trunk_" + tmp[1]);
-        var spanTrun2 = document.getElementById("span2_trunk_" + tmp[1]);
+        var spanTrun1 = document.getElementById("span1_" + tmp[1]);
+        var spanTrun2 = document.getElementById("span2_" + tmp[1]);
         spanTrun1.innerHTML = tmp[0];
         spanTrun2.innerHTML = speak_time;
     }

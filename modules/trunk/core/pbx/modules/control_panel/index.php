@@ -363,6 +363,7 @@ function refreshAction(&$pDB1, &$pDB2)
         $status = false;
         $jsonObject->set_message(array());
     }
+    //writeLOG("access.log",print_r($data,true));
     $result = array("there_was_change" => $status, "data" => $jsonObject->createJSON());
     return $result;
 }
@@ -560,7 +561,7 @@ function getAllDataAction(&$pDB1, &$pDB2)
     else{
         $jsonObject->set_message(array());
     }
-    writeLOG("access.log", print_r($data,true));
+   // writeLOG("access.log", print_r($data,true));
     return $jsonObject->createJSON();
 }
 

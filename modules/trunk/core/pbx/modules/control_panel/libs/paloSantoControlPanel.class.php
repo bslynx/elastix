@@ -147,10 +147,12 @@ class paloSantoControlPanel {
                         //'callerid' => $tmp[8],
                         'time' => $this->Sec2HHMMSS($tmp[10]),
                         'dstn' => $tmp[11],
+                        'ext' => $tmp[2]
                         //'brigedto' => $tmp[12],
                     );
             }
         }
+ 
         return $arrData;
     }
 
@@ -171,9 +173,15 @@ class paloSantoControlPanel {
                     $value['cidname'] = $arrReg[2];
                     $call_dstn = " ";
                     if(isset($arrChan[$value['user']]['dstn'])){
-                        $tmp = split("-",$arrChan[$value['user']]['dstn']);
-                        $tmp = split("/",$tmp[0]);
-                        $call_dstn = isset($tmp[1])?$tmp[1]:" ";
+                        if($arrChan[$value['user']]['dstn'] == "(None)"){
+                            if(isset($arrChan[$value['user']]['ext']))
+                                $call_dstn = $arrChan[$value['user']]['ext'];
+                        }
+                        else{
+                            $tmp = split("-",$arrChan[$value['user']]['dstn']);
+                            $tmp = split("/",$tmp[0]);
+                            $call_dstn = isset($tmp[1])?$tmp[1]:" ";
+                        }
                     }
                     $state_call = isset($arrChan[$value['user']]['state'])?$arrChan[$value['user']]['state']:"Down";
                     $speak_time = isset($arrChan[$value['user']]['time'])?$arrChan[$value['user']]['time']:" ";
@@ -202,6 +210,7 @@ class paloSantoControlPanel {
                     if(isset($tmp))
                         if(isset($arrConferences[$tmp[0]])){
                             $numconf = $arrConferences[$tmp[0]]['number'];
+                            $call_dstn = $numconf;
                             if($arrConferences[$tmp[0]]['parties'] > 1)
                               $parties = $arrConferences[$tmp[0]]['parties']." "._tr("Participants");
                             else
