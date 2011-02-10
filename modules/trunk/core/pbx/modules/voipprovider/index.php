@@ -644,6 +644,13 @@ function createFieldForm($pVoIPProvider)
                                             "VALIDATION_TYPE"        => "",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
+            "advanced"     => array(      "LABEL"                  => _tr("Advanced"),
+                                            "REQUIRED"               => "no",
+                                            "INPUT_TYPE"             => "CHECKBOX",
+                                            "INPUT_EXTRA_PARAM"      => "",
+                                            "VALIDATION_TYPE"        => "",
+                                            "VALIDATION_EXTRA_PARAM" => ""
+                                            ),
             );
     return $arrFields;
 }

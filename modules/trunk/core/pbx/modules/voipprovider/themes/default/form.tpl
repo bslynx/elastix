@@ -25,6 +25,7 @@
 
 <div class="tabForm" style="font-size: 16px; height: 400px" width="100%">
     <div id="header_detail">
+        <div align = "right" class = "sombreado">{$advanced.LABEL} {$advanced.INPUT}</div>
         <fieldset class="fielform">
             <legend class="sombreado">{$General_Setting}</legend>
             <table border="0" width="100%" cellspacing="0" cellpadding="8" >
@@ -59,7 +60,8 @@
     </div>
 
     <div id="detail">
-        <fieldset class="fielform">
+        <br/>
+        <fieldset class="fielform" id="advanced_options" style = "display:none;">
             <legend class="sombreado">{$PEER_Details}</legend>
             <table border="0" width="100%" id="formContainer" align="center" cellspacing="0" cellpadding="8">
                 <tr class="letra12">

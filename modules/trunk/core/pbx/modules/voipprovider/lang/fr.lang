@@ -50,7 +50,7 @@ $arrLangModule=array(
 "Canreinvite" => "Canreinvite",
 "none" => "aucun",
 "General_Setting" => "Paramètres Généraux",
-"PEER_Details" => "Détailles du Peer",
+"PEER_Details" => "PEER Setting",
 "Please select a type of VoIp Provider" => "S'il vous plaît. Sélectionnez un type d'opérateur VoIp",
 "Some or someone necesary fields are empty please check and complete" => "Un ou plusieurs champs obligatoire sont vides. Vérifiez les et complétez les.",
 "Delete" => "Delete",
@@ -70,5 +70,6 @@ $arrLangModule=array(
 "Enable" => "Enable",
 "Disable" => "Disable",
 "Outbound CallerID" => "Outbound CallerID",
+"Advanced" => "Avancée"
 );
 ?>
