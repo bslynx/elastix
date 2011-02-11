@@ -105,4 +105,12 @@ else{
     echo "Error: File xml not defined. Usage: {$_SERVER['argv'][0]} menu.xml\n";
     return 1;
 }
+
+deleteSmartyCompileFiles();
+function deleteSmartyCompileFiles()
+{
+    $files="/var/www/html/var/templates_c/*.php";
+    foreach(glob($files) as $filename)
+        unlink($filename);
+}
 ?>
