@@ -1449,6 +1449,84 @@ Requerimiento "transfercall"
 
 Requerimiento "pauseagent"
 
+Este requerimiento se usa para poner al agente en pausa debido a un break conocido.
+El ID a usar para el break se obtiene con el requerimiento "getpauses". 
+
+Atributos o argumentos:
+* agent_number: Agente que se va a pausar. Este identificador está de la forma 
+  'Agent/9000'.
+* pause_type: ID de base de datos de la pausa (break) a usar.
+
+Ejemplo:
+<request id="11">
+    <pauseagent>
+        <agent_number>Agent/9000</agent_number>
+        <pause_type>3</pause_type>
+    </pauseagent>
+</request>
+
+Respuesta:
+Para caso de éxito:
+<response id="11">
+    <pauseagent_response>
+        <success/>
+    </pauseagent_response>
+</response>
+
+Para agente que ya está en otro break:
+<response id="11">
+    <pauseagent_response>
+        <failure>   
+            <code>417</code>
+            <message>Agent already in incompatible break</message>
+        </failure>
+    </pauseagent_response>
+</response>
+
+Para break inválido:
+<response id="11">
+    <pauseagent_response>
+        <failure>
+            <code>404</code>
+            <message>Break ID not found or not active</message>
+        </failure>
+    </pauseagent_response>
+</response>
+
+Para agente no encontrado, o no logoneado vía ECCP:
+<response id="11">
+    <pauseagent_response>
+        <failure>
+            <code>404</code>
+            <message>Agent not found or not logged in through ECCP</message>
+        </failure>
+    </pauseagent_response>
+</response>
+
+Requerimiento "unpauseagent"
+
+Este requerimiento se usa para sacar al agente de la pausa en la cual se haya
+puesto previamente con el requerimiento "pauseagent".
+
+Atributos o argumentos:
+* agent_number: Agente que se va a sacar de pausa. Este identificador está de la
+  forma 'Agent/9000'.
+
+Ejemplo:
+<request id="12">
+    <unpauseagent>
+        <agent_number>Agent/9000</agent_number>
+    </unpauseagent>
+</request>
+
+Respuesta:
+Para caso de éxito:
+<response id="12">
+    <unpauseagent_response>
+        <success/>
+    </unpauseagent_response>
+</response>
+
 Requerimiento "getpauses"
 
 Este requerimiento se usa para obtener el listado de las pausas (breaks) que

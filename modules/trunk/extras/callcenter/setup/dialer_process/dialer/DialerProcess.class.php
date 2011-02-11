@@ -3553,6 +3553,93 @@ SQL_EXISTE_AUDIT;
         return TRUE;
     }
 
+    /**
+     * Procedimiento para poner en pausa a un agente y asociar esta pausa a un
+     * break en particular.
+     * 
+     * @param   string  $sAgente    Agente de la forma Agent/9000
+     * @param   int     $idBreak    ID del break a usar para el agente
+     * 
+     * @return  bool    VERDADERO en caso de éxito, FALSO en error.
+     */
+    public function iniciarBreakAgente($sAgente, $idBreak)
+    {
+        // TODO: planear integración con agendamiento de llamadas
+
+    	if (!isset($this->_infoAgentes[$sAgente])) {
+            $this->oMainLog->output('ERR: (internal) al iniciar break: no se hace seguimiento ECCP al agente: '.$sAgente);
+    		return FALSE;
+    	}
+        if ($this->_infoAgentes[$sAgente]['estado_consola'] != 'logged-in') {
+            $this->oMainLog->output('ERR: (internal) al iniciar break: agente no está (todavía) logoneado: '.$sAgente);
+            return FALSE;
+        }
+        if (!is_null($this->_infoAgentes[$sAgente]['id_break']) && 
+            $this->_infoAgentes[$sAgente]['id_break'] != $idBreak) {
+            $this->oMainLog->output('ERR: (internal) al iniciar break: agente ya está en break: '.$sAgente);
+            return FALSE;
+        }
+        
+        // Si el agente ya estaba en el break indicado, se devuelve éxito sin hacer nada más
+        if (!is_null($this->_infoAgentes[$sAgente]['id_break']) && $this->_infoAgentes[$sAgente]['id_break'] == $idBreak)
+            return TRUE;
+        
+        // Ejecutar realmente la pausa del agente indicado en todas las colas
+        $r = $this->_astConn->QueuePause(NULL, $sAgente, 'true');
+        if ($r['Response'] != 'Success') {
+            $this->oMainLog->output('ERR: (internal) no se puede poner al agente en pausa: '.
+                $sAgente.' - '.$r['Message']);
+        	return FALSE;
+        }
+        
+        // Auditoría del inicio del break
+        $idAuditBreak = $this->marcarInicioBreakAgente($sAgente, $idBreak);
+        if (is_null($idAuditBreak)) {
+        	$this->oMainLog->output('ERR: (internal) no se puede auditar el inicio del break, se deshace pausa: '.$sAgente);
+            $r = $this->_astConn->QueuePause(NULL, $sAgente, 'false');
+            return FALSE;
+        }
+        $this->_infoAgentes[$sAgente]['id_break'] = $idAuditBreak;
+        return TRUE;
+    }
+    
+    /**
+     * Procedimiento para quitar de pausa a un agente y terminar el break
+     * 
+     * @param   string  $sAgente    Agente de la forma Agent/9000
+     * 
+     * @return  bool    VERDADERO en caso de éxito, FALSO en error.
+     */
+    public function terminarBreakAgente($sAgente)
+    {
+    	// TODO: planear integración con agendamiento de llamadas
+
+        if (!isset($this->_infoAgentes[$sAgente])) {
+            $this->oMainLog->output('ERR: (internal) al terminar break: no se hace seguimiento ECCP al agente: '.$sAgente);
+            return FALSE;
+        }
+        if ($this->_infoAgentes[$sAgente]['estado_consola'] != 'logged-in') {
+            $this->oMainLog->output('ERR: (internal) al terminar break: agente no está (todavía) logoneado: '.$sAgente);
+            return FALSE;
+        }
+        
+        // Si el agente no estaba en break, se devuelve éxito sin hacer nada
+        if (is_null($this->_infoAgentes[$sAgente]['id_break'])) return TRUE;
+
+        // Ejecutar realmente el retiro de la pausa en todas las colas
+        $r = $this->_astConn->QueuePause(NULL, $sAgente, 'false');
+        if ($r['Response'] != 'Success') {
+            $this->oMainLog->output('ERR: (internal) no se puede sacar al agente de pausa: '.
+                $sAgente.' - '.$r['Message']);
+            return FALSE;
+        }
+
+        // Auditoría del fin del break
+        $this->marcarFinalBreakAgente($this->_infoAgentes[$sAgente]['id_break']);
+        $this->_infoAgentes[$sAgente]['id_break'] = NULL;
+        return TRUE;
+    }
+
     // Método que lista las colas a las cuales está suscrito un agente
     private function _listarColasAgente($sAgente)
     {
@@ -3599,9 +3686,9 @@ SQL_EXISTE_AUDIT;
         }
     }
 
-    function existeSeguimientoAgente($sAgente)
+    function infoSeguimientoAgente($sAgente)
     {
-    	return isset($this->_infoAgentes[$sAgente]);
+    	return isset($this->_infoAgentes[$sAgente]) ? $this->_infoAgentes[$sAgente] : NULL;
     }
 
     function OnAgentlogoff($sEvent, $params, $sServer, $iPort)

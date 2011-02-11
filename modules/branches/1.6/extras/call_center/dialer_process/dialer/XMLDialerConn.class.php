@@ -213,6 +213,9 @@ class XMLDialerConn extends DialerConn
                 case 'pauseagent':
                     $response = $this->Request_PauseAgent($comando);
                     break;
+                case 'unpauseagent':
+                    $response = $this->Request_UnpauseAgent($comando);
+                    break;
                 case 'getpauses':
                     $response = $this->Request_GetPauses($comando);
                     break;
@@ -496,7 +499,8 @@ class XMLDialerConn extends DialerConn
                  * excepción es si el programa ya hace seguimiento del agente
                  * indicado. */
                 
-                if ($regs[1] == $sExtension && $this->_dialProc->existeSeguimientoAgente($sAgente)) {
+                $infoSeguimiento = $this->_dialProc->infoSeguimientoAgente($sAgente);
+                if ($regs[1] == $sExtension && !is_null($infoSeguimiento)) {
                     // Ya está logoneado este agente. Se procede directamente a interfaz
                     return $this->Response_LoginAgentResponse('logged-in');
                 } else {
@@ -1347,9 +1351,108 @@ LEER_CAMPANIA;
     {
         if (is_null($this->_sUsuarioECCP))
             return $this->_generarRespuestaFallo(401, 'Unauthorized');
-        return $this->_generarRespuestaFallo(501, 'Not Implemented');
+
+        // Verificar que agente está presente
+        if (!isset($comando->agent_number)) 
+            return $this->_generarRespuestaFallo(400, 'Bad request');
+        $sAgente = (string)$comando->agent_number;
+
+        // Verificar que ID de break está presente
+        if (!isset($comando->pause_type))
+            return $this->_generarRespuestaFallo(400, 'Bad request');
+        $idBreak = (int)$comando->pause_type;
+
+        $xml_response = new SimpleXMLElement('<response />');
+        $xml_pauseAgentResponse = $xml_response->addChild('pauseagent_response');
+
+        // El siguiente código asume formato Agent/9000
+        if (!preg_match('|^Agent/(\d+)$|', $sAgente, $regs)) {
+            $this->_agregarRespuestaFallo($xml_pauseAgentResponse, 417, 'Invalid agent number');
+            return $xml_response;
+        }
+        $sNumAgente = $regs[1];
+
+        // Verificar si el agente está siendo monitoreado y que no esté en pausa
+        $infoSeguimiento = $this->_dialProc->infoSeguimientoAgente($sAgente);
+        if (is_null($infoSeguimiento)) {
+            $this->_agregarRespuestaFallo($xml_pauseAgentResponse, 404, 'Agent not found or not logged in through ECCP');
+        	return $xml_response;
+        }
+        if ($infoSeguimiento['estado_consola'] != 'logged-in') {
+            $this->_agregarRespuestaFallo($xml_pauseAgentResponse, 417, 'Agent currenty not logged in');
+            return $xml_response;
+        }
+        if (!is_null($infoSeguimiento['id_break']) && 
+            $infoSeguimiento['id_break'] != $idBreak) {
+            $this->_agregarRespuestaFallo($xml_pauseAgentResponse, 417, 'Agent already in incompatible break');
+            return $xml_response;
+        }
+
+        // Verificar si la pausa indicada existe y está activa
+        $tupla = $this->_dbConn->getRow(
+            'SELECT COUNT(*) AS N FROM break WHERE tipo = "B" AND status = "A" AND id = ?',
+            array($idBreak), DB_FETCHMODE_ASSOC);
+        if (DB::isError($tupla)) {
+            $this->oMainLog->output('ERR: no se puede revisar validez de ID de break - '.$tupla->getMessage());
+            $this->_agregarRespuestaFallo($xml_pauseAgentResponse, 500, 'Cannot read break information');
+            return $xml_response;
+        }
+        if ($tupla['N'] <= 0) {
+            $this->_agregarRespuestaFallo($xml_pauseAgentResponse, 404, 'Break ID not found or not active');
+            return $xml_response;
+        }
+
+        // Ejecutar la pausa a través del AMI
+        $bExito = $this->_dialProc->iniciarBreakAgente($sAgente, $idBreak);
+        if (!$bExito) {
+        	$this->_agregarRespuestaFallo($xml_pauseAgentResponse, 500, 'Unable to start agent break');
+        } else {
+        	$xml_pauseAgentResponse->addChild('success');
+        }
+        return $xml_response;
     }
-    
+
+    private function Request_UnpauseAgent($comando)
+    {
+        if (is_null($this->_sUsuarioECCP))
+            return $this->_generarRespuestaFallo(401, 'Unauthorized');
+
+        // Verificar que agente está presente
+        if (!isset($comando->agent_number)) 
+            return $this->_generarRespuestaFallo(400, 'Bad request');
+        $sAgente = (string)$comando->agent_number;
+
+        $xml_response = new SimpleXMLElement('<response />');
+        $xml_unpauseAgentResponse = $xml_response->addChild('unpauseagent_response');
+
+        // El siguiente código asume formato Agent/9000
+        if (!preg_match('|^Agent/(\d+)$|', $sAgente, $regs)) {
+            $this->_agregarRespuestaFallo($xml_unpauseAgentResponse, 417, 'Invalid agent number');
+            return $xml_response;
+        }
+        $sNumAgente = $regs[1];
+
+        // Verificar si el agente está siendo monitoreado y que no esté en pausa
+        $infoSeguimiento = $this->_dialProc->infoSeguimientoAgente($sAgente);
+        if (is_null($infoSeguimiento)) {
+            $this->_agregarRespuestaFallo($xml_unpauseAgentResponse, 404, 'Agent not found or not logged in through ECCP');
+            return $xml_response;
+        }
+        if ($infoSeguimiento['estado_consola'] != 'logged-in') {
+            $this->_agregarRespuestaFallo($xml_unpauseAgentResponse, 417, 'Agent currenty not logged in');
+            return $xml_response;
+        }
+
+        // Ejecutar la pausa a través del AMI
+        $bExito = $this->_dialProc->terminarBreakAgente($sAgente);
+        if (!$bExito) {
+            $this->_agregarRespuestaFallo($xml_unpauseAgentResponse, 500, 'Unable to stop agent break');
+        } else {
+            $xml_unpauseAgentResponse->addChild('success');
+        }
+        return $xml_response;
+    }
+
     private function Request_GetPauses($comando)
     {
         if (is_null($this->_sUsuarioECCP))
