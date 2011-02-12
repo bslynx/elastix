@@ -756,6 +756,11 @@ Atributos o argumentos:
 * username: Nombre de usuario asignado al cliente
 * password: Contraseña correspondiente al nombre de usuario
 
+Respuesta:
+* app_cookie: Cadena de texto arbitraria que se genera como parte del login.
+  El cliente debe de almacenar esta cadena para poder realizar el requerimiento
+  loginagent.
+
 * Encriptación de la clave
 La clave va "encriptada" con MD5. El hash se calcula en base a una semilla, la 
 cual es un secreto compartido entre la aplicación cliente y el servidor. Es 
@@ -785,6 +790,7 @@ En caso de éxito:
 <response id="1">
     <login_response>
         <success/>
+        <app_cookie>35d290884ef77a78cc6c0006b7e1d576</app_cookie>
     </login_response>
 </response>
 

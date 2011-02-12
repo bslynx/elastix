@@ -44,6 +44,7 @@ class XMLDialerConn extends DialerConn
 
     // Estado de la conexión
     private $_sUsuarioECCP  = NULL; // Nombre de usuario para cliente logoneado, o NULL si no logoneado
+    private $_sAppCookie = NULL;    // Cadena a usar como cookie de la aplicación
     private $_bFinalizando = FALSE;
 
     function XMLDialerConn($oMainLog)
@@ -385,6 +386,11 @@ class XMLDialerConn extends DialerConn
             	// Usuario autorizado
                 $this->_sUsuarioECCP = $comando->username;
                 $xml_status = $xml_loginResponse->addChild('success');
+                
+                // Generar una cadena de hash para cookie de aplicación
+                $sAppCookie = md5(posix_getpid().time().mt_rand());
+                $xml_loginResponse->addChild('app_cookie', $sAppCookie);
+                $this->_sAppCookie = $sAppCookie;
             } else {
             	// Usuario no existe, o clave incorrecta
                 $this->_agregarRespuestaFallo($xml_loginResponse, 401, 'Invalid username or password');
@@ -406,6 +412,7 @@ class XMLDialerConn extends DialerConn
     private function Request_Logout($comando)
     {
         $this->_sUsuarioECCP = NULL;
+        $this->_sAppCookie = NULL;
         $xml_response = new SimpleXMLElement('<response />');
         $xml_loginResponse = $xml_response->addChild('logout_response');
         $xml_status = $xml_loginResponse->addChild('success');
