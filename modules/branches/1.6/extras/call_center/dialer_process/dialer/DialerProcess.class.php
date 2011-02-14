@@ -115,7 +115,7 @@ class DialerProcess extends AbstractProcess
         $this->interpretarParametrosConfiguracion($infoConfig);
 
         // TODO: interfaz y puerto configurables
-        $this->_dialSrv = new DialerServer('tcp://127.0.0.1:20005', $oMainLog);
+        $this->_dialSrv = new DialerServer('tcp://0.0.0.0:20005', $oMainLog);
         $this->_dialSrv->setDialerProcess($this);
 
         if ($bContinuar) $bContinuar = $this->iniciarConexionBaseDatos();
