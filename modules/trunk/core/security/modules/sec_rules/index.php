@@ -215,7 +215,7 @@ function createFieldForm($pDB,$arrValues = array())
                                         "VALIDATION_EXTRA_PARAM" => "",
                                         "EDITABLE"               => "yes",
                                             ),
-            "ip_source"       => array( "LABEL"                  => _tr("Source IP"),
+            "ip_source"       => array( "LABEL"                  => _tr("IP Source"),
                                         "REQUIRED"               => "no",
                                         "INPUT_TYPE"             => "TEXT",
                                         "INPUT_EXTRA_PARAM"      => array("style" => "width:90px"),
@@ -229,7 +229,7 @@ function createFieldForm($pDB,$arrValues = array())
                                         "VALIDATION_TYPE"        => "numeric",
                                         "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-            "ip_destin"      => array(  "LABEL"                  => _tr("Destine IP"),
+            "ip_destin"      => array(  "LABEL"                  => _tr("IP Destiny"),
                                         "REQUIRED"               => "no",
                                         "INPUT_TYPE"             => "TEXT",
                                         "INPUT_EXTRA_PARAM"      => array("style" => "width:90px"),

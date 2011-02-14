@@ -17,7 +17,7 @@
         <table style="font-size: 16px;" width="100%" cellspacing="0" cellpadding="8">
             <!--*****************************************-->
             <tr class="letra12">
-                <td align="left" width="40%"><b>{$traffic_label}:</span></b></td>
+                <td align="left" width="50%"><b>{$traffic_label}:</span></b></td>
                 <td align="left">{$traffic_html}</td>
             </tr>
             <tr class="letra12" id="id_interface_in">
@@ -45,7 +45,7 @@
         <table style="font-size: 16px;" width="100%" cellspacing="0" cellpadding="8">
             <!--*****************************************-->
             <tr class="letra12">
-                <td align="left" width="40%"><b>{$protocol_label}:</b></td>
+                <td align="left" width="50%"><b>{$protocol_label}:</b></td>
                 <td align="left">{$protocol_html}</td>
             </tr>
             <tr class="letra12" id="id_port_in">
@@ -81,7 +81,7 @@
         <table style="font-size: 16px;" width="100%" cellspacing="0" cellpadding="8">
             <!--*****************************************-->
            <tr class="letra12" id="id_target">
-                <td align="left" width="40%"><b>{$target.LABEL}:</b></td>
+                <td align="left" width="50%"><b>{$target.LABEL}:</b></td>
                 <td align="left">{$target.INPUT}</td>
             </tr>
             <tr style = "display:none;" class="letra12" id="id">
