@@ -1,1 +1,1 @@
-DROP TABLE meetme;
+DROP DATABASE meetme;
