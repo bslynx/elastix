@@ -110,7 +110,7 @@ function newRules($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, 
     $select_traffic_3 = ($traffic == "FORWARD") ? "selected" : "";
     //************************************************************************
     $traffic_html =
-        "<select id='id_traffic' name='id_traffic' onClick='showElementByTraffic();' >".
+        "<select id='id_traffic' name='id_traffic' onChange='showElementByTraffic();' >".
             "<option value='INPUT'   $select_traffic_1>"._tr("INPUT")."</option>".
             "<option value='OUTPUT'  $select_traffic_2>"._tr("OUTPUT")."</option>".
             "<option value='FORWARD' $select_traffic_3>"._tr("FORWARD")."</option>".
@@ -143,7 +143,7 @@ function newRules($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, 
     }
     $state = $established." ".$related;*/
     $protocol_html =
-        "<select id='id_protocol' name='id_protocol' onClick='showElementByProtocol();' >".
+        "<select id='id_protocol' name='id_protocol' onChange='showElementByProtocol();' >".
             "<option value='ALL' $protocol1>"._tr("ALL")."</option>".
             "<option value='TCP' $protocol2>TCP</option>".
             "<option value='UDP' $protocol3>UDP</option>".
