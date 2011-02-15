@@ -352,11 +352,15 @@ class paloForm
     //       puesto que en ese caso la funcion devolvera true. Es ese el comportamiento esperado?
     function validateForm($arrCollectedVars)
     {
+        $arrCollectedVars = array_merge($arrCollectedVars,$_FILES);
         include_once("libs/paloSantoValidar.class.php");
         $oVal = new PaloValidar();
         foreach($arrCollectedVars as $varName=>$varValue) {
             // Valido si la variable colectada esta en $this->arrFormElements
             if(@array_key_exists($varName, $this->arrFormElements)) {
+                if($this->arrFormElements[$varName]['INPUT_TYPE']=='FILE')
+                    $varValue = $_FILES[$varName]['name'];
+
                 if($this->arrFormElements[$varName]['REQUIRED']=='yes' or ($this->arrFormElements[$varName]['REQUIRED']!='yes' AND !empty($varValue))) {
                     $editable = isset($this->arrFormElements[$varName]['EDITABLE'])?$this->arrFormElements[$varName]['EDITABLE']:"yes";
                     if($this->modo=='input' || ($this->modo=='edit' AND $editable != 'no')) {
