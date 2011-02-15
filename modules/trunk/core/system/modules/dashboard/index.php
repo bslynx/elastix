@@ -111,7 +111,7 @@ function _moduleContent($smarty, $module_name)
     else $app = showApplets_Admin();
     $smarty->assign("APPLET_ADMIN",$app);
 
-    return $smarty->fetch("file:$local_templates_dir/sysinfo.tpl");
+    return $smarty->fetch("file:$local_templates_dir/applets.tpl");
 }
 
 function createApplesTD($arrPaneles, $pDataApplets){
