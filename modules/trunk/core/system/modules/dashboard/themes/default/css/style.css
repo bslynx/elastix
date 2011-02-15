@@ -1,5 +1,3 @@
-
-
 #controls
 {
     float: right;
@@ -307,4 +305,15 @@
     border-color:#999999;
     color:#E35332;
     border-right: 1px solid #aaaaaa;
+}
+
+.ui-sortable-placeholder{
+    border: 1px dotted black;
+    visibility: visible !important;
+    height: 245px !important;
+    background-color:#EEEEEE;
+}
+
+.ui-sortable-placeholder * {
+    visibility: hidden;
 }

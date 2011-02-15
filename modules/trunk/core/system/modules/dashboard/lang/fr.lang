@@ -136,6 +136,6 @@ $arrLangModule=array(
 "Cards no found" => "Carte Téléphonique non trouvée.",
 "Bytes" => "Bytes",
 "Unknown" => "Unknown",
-
+"Loading" => "Loading"
 );
 ?>

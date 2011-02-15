@@ -88,7 +88,7 @@ class paloSantoDataApplets
         $rss = fetch_rss($url);
         $str2 = "";
         if(!empty($rss)){
-            $str2  = "Channel Title: " . $rss->channel['title'] . "<p>";
+            $str2  = "<font color = 'Black'><b>".$rss->channel['title'] . "</b></font><p>";
             $str2 .= "<div id='rss_elastix'>";
             $n = 0;
             if(is_array($rss->items) & count($rss->items)>0){
@@ -265,9 +265,7 @@ class paloSantoDataApplets
                             <div class='typeActivity'></div>
                             <div class='detailText'>"._tr('iax_extensions')." <b>($total_iax_Ext) </b>: <font color='green'>($iax_Ext_ok "._tr('OK').")</font> <font color='red'>($iax_Ext_nok "._tr('NO_OK').")</font></div>
                             <div class='typeActivity'><b>"._tr('Trunks').": </b></div>
-                            <div class='detailText'>"._tr('Trunks')." <b>($total_trunks) </b>: <font color='green'>($total_trunks_ok "._tr('OK').")</font> <font color='red'>($total_trunks_nok "._tr('NO_OK').")</font> </font> <font color='gray'>($total_trunks_unk "._tr('Unknown').")</div>".
-                            //<div class='typeActivity'><b>".$arrLang['Trunks_register'].": </b></div>
-                            //<div class='detailText'>".$arrLang['Trunks_register']." <b>($total_trunks_reg) </b>: <font color='green'>($total_trunks_reg_ok ".$arrLang['OK'].")</font> <font color='red'>($total_trunks_reg_nok ".$arrLang['NO_OK'].")</font></div>
+                            <div class='detailText'>"._tr('Trunks')." <b>($total_trunks) </b>: <font color='green'>($total_trunks_ok "._tr('OK').")</font> <font color='red'>($total_trunks_nok "._tr('NO_OK').")</font> </font> <font color='gray'>($total_trunks_unk "._tr('Unknown').")</font></div>".
                             "<div class='typeActivity'><b>"._tr('Network_traffic').": </b></div>
                             <div class='detailText'>"._tr('Bytes')." <b>(".$rx_bytes."kB/s)</b> <= RX | TX =>  <b>(".$tx_bytes."kB/s)</b></div>
                         </div>
@@ -439,7 +437,8 @@ class paloSantoDataApplets
                         </div>
                     </div>
                     <div class='portlet_content' id = '$code'>
-                        <img class='ima' src='modules/{$this->module_name}/images/loading.gif' border='0' align='absmiddle' />
+                        <img class='ima' src='modules/{$this->module_name}/images/loading.gif' border='0' align='absmiddle' />&nbsp;
+                        "._tr('Loading')."
                     </div>
                 </div>";
     }

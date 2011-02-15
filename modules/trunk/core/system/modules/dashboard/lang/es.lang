@@ -135,5 +135,6 @@ $arrLangModule=array(
 "Cards no found" => "Hardware de telefonía no ha sido encontrado",
 "Bytes" => "Bytes",
 "Unknown" => "Desconocido",
+"Loading" => "Cargando"
 );
 ?>

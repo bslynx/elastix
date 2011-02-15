@@ -63,9 +63,6 @@ function _moduleContent($smarty, $module_name)
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
 
     $oPalo = new paloSantoSysInfo();
-	
-	$smarty->assign("HEADER_LIBS_JQUERY", getHeaderJQuery());
-    $smarty->assign("HEADER_MODULES", "");
     $pDataApplets = new paloSantoDataApplets($module_name,$arrConf);
 
     $action = getParameter("action");
@@ -118,8 +115,8 @@ function _moduleContent($smarty, $module_name)
 }
 
 function createApplesTD($arrPaneles, $pDataApplets){
-	$str1 = "<td id='td_columns1'>";
-	$str2 = "<td id='td_columns2'>";
+	$str1 = "<td id='td_columns1' class='column'>";
+	$str2 = "<td id='td_columns2' class='column'>";
 	$idApplet = "";
 	for($i=0; $i<count($arrPaneles); $i++){
 		$applestUser = $arrPaneles[$i];
@@ -232,16 +229,4 @@ function saveApplets_Admin()
     header("Location: /index.php?menu=$module_name");
 }
 ////////////////////// End Funciones para Applets Admin /////////////////////////////////
-function getHeaderJQuery()
-{
-   return "<script type='text/javascript' src='modules/dashboard/themes/default/js/jquery00.js'></script>
-<script type='text/javascript' src='modules/dashboard/themes/default/js/jquery01-ui.js'></script>
-<script type='text/javascript' src='modules/dashboard/themes/default/js/jquery1.color.js'></script>
-
-<script type='text/javascript' src='modules/dashboard/themes/default/js/jquery3.javascript.js'></script>
-<script type='text/javascript' src='modules/dashboard/themes/default/js/jquery4.interface.js'></script>
-
-<link rel='stylesheet' href='modules/dashboard/themes/default/css/style.css' />
-";
-}
 ?>

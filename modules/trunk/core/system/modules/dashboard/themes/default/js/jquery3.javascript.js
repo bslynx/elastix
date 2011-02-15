@@ -3,6 +3,50 @@ var module_name = "dashboard";
 $(document).ready(
 	function()
 	{
+        $(".column").sortable({
+            connectWith: ".column",
+            forcePlaceholderSize: true,
+            forceHelperSize: true,
+            stop: function() { 
+                    var td_left  = document.getElementById("td_columns1");
+                    var td_right = document.getElementById("td_columns2");
+                    var children_left  = td_left.childNodes;
+                    var children_right = td_right.childNodes;
+                    var ids_applet = "";
+
+                    // Recorro los applet de la izquierda
+                    var j = 1;
+                    for(i=0; i<children_left.length;i++){
+                        if(children_left[i].nodeName == "DIV" || children_left[i].nodeName == "div"){
+                            var id_div = children_left[i].getAttribute("id");
+                            var tmp = id_div.split("-");
+                            if(tmp[0] == "applet"){
+                                var id_applet = tmp[2];
+                                ids_applet = ids_applet + id_applet + ":" + j + ",";
+                                j = j+2;
+                            }
+                        }
+                    }
+
+                    // Recorro los applet de la derecha
+                    j = 2;
+                    for(i=0; i<children_right.length;i++){
+                        if(children_right[i].nodeName == "DIV" || children_right[i].nodeName == "div"){
+                            var id_div = children_right[i].getAttribute("id");
+                            var tmp = id_div.split("-");
+                            if(tmp[0] == "applet"){
+                                var id_applet = tmp[2];
+                                ids_applet = ids_applet + id_applet + ":" + j + ",";
+                                j = j+2;
+                            }
+                        }
+                    }
+
+                    var order = 'menu=' + module_name + '&action=updateOrder&rawmode=yes&ids_applet=' + ids_applet;
+                    $.post("index.php", order,function(theResponse){});
+                }
+        });
+
 		// Toggle Single Portlet
 		$('a.toggle').click(function()
 			{
@@ -63,55 +107,6 @@ $(document).ready(
 			}
 		);
 
-		// Controls Drag + Drop
-		$('#td_columns1,#td_columns2').Sortable(
-			{
-				accept: 'portlet',
-				helperclass: 'sort_placeholder',
-				opacity: 0.7,
-				tolerance: 'intersect',
-                handle: 'div.portlet_topper',
-                onStop: function() {
-                    var td_left  = document.getElementById("td_columns1");
-                    var td_right = document.getElementById("td_columns2");
-                    var children_left  = td_left.childNodes;
-                    var children_right = td_right.childNodes;
-                    var ids_applet = "";
-
-                    // Recorro los applet de la izquierda
-                    var j = 1;
-                    for(i=0; i<children_left.length;i++){
-                        if(children_left[i].nodeName == "DIV" || children_left[i].nodeName == "div"){
-                            var id_div = children_left[i].getAttribute("id");
-                            var tmp = id_div.split("-");
-                            if(tmp[0] == "applet"){
-                                var id_applet = tmp[2];
-                                ids_applet = ids_applet + id_applet + ":" + j + ",";
-                                j = j+2;
-                            }
-                        }
-                    }
-
-                    // Recorro los applet de la derecha
-                    j = 2;
-                    for(i=0; i<children_right.length;i++){
-                        if(children_right[i].nodeName == "DIV" || children_right[i].nodeName == "div"){
-                            var id_div = children_right[i].getAttribute("id");
-                            var tmp = id_div.split("-");
-                            if(tmp[0] == "applet"){
-                                var id_applet = tmp[2];
-                                ids_applet = ids_applet + id_applet + ":" + j + ",";
-                                j = j+2;
-                            }
-                        }
-                    }
-
-                    var order = 'menu=' + module_name + '&action=updateOrder&rawmode=yes&ids_applet=' + ids_applet;
-                    $.post("index.php", order,function(theResponse){});
-                }
-			}
-		);
-
         // Applet admin
         $('a#applet_admin,#close_applet_admin').click(function()
             { // variable statusDivAppletAdmin declarada en tpl applet_admin
@@ -132,23 +127,8 @@ $(document).ready(
                 return false;
             }
         );
-
-        $('#closeCM').click(function() {
-            $("#layerCM").hide();
-        });
-        $('[id=^editMan_],[id^=editMan1_],[id^=editMan2_]').click(function() {
-            var arrID = $(this).attr("id").split("_"); 
-            var a_id_card = arrID[1];
-            alert('SI');
-            if(arrID[0]=="editMan1") openWndMan1(a_id_card);
-            else getDataCard(a_id_card);
-            $("#layerCM").show();
-        });
-        $('#layerCM').draggable();
     }
 );
-
-
 
 function saveRegister(id_card)
 {
@@ -313,4 +293,3 @@ function jfunction(id)
     });
     $('#layerCM').draggable();
 }
-
