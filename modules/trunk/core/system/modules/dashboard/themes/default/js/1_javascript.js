@@ -7,6 +7,7 @@ $(document).ready(
             connectWith: ".column",
             forcePlaceholderSize: true,
             forceHelperSize: true,
+            scroll: false,
             stop: function() { 
                     var td_left  = document.getElementById("td_columns1");
                     var td_right = document.getElementById("td_columns2");

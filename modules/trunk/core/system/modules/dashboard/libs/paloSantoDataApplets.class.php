@@ -85,25 +85,31 @@ class paloSantoDataApplets
         $str = "";
         //$url = "http://sourceforge.net/export/rss2_projnews.php?group_id=161807";
         $url = $RSS;
-        $rss = fetch_rss($url);
-        $str2 = "";
-        if(!empty($rss)){
-            $str2  = "<font color = 'Black'><b>".$rss->channel['title'] . "</b></font><p>";
-            $str2 .= "<div id='rss_elastix'>";
-            $n = 0;
-            if(is_array($rss->items) & count($rss->items)>0){
-                foreach ($rss->items as $item) {
-                        $href  = $item['link'];
-                        $title = $item['title'];
-                        $str2 .= "<div class='scrollEl' align='center'><a href=$href target='_blank'><span>$title</span></a></div>";
-                    $n++;
-                    if($n == 4) break;
-                }
-                $str2 .= "</div>";
-            }
+        $rss = @fetch_rss($url);
+        $message = magpie_error();
+        if(preg_match("/HTTP Error: connection failed/",$message,$match)){
+            $str2 = _tr("Could not get web server information. You may not have internet access or the web server is down");
         }
         else{
-            $str2 = "<span>"._tr('NoConnection')."</span>";
+            $str2 = "";
+            if(!empty($rss)){
+                $str2  = "<font color = 'Black'><b>".$rss->channel['title'] . "</b></font><p>";
+                $str2 .= "<div id='rss_elastix'>";
+                $n = 0;
+                if(is_array($rss->items) & count($rss->items)>0){
+                    foreach ($rss->items as $item) {
+                            $href  = $item['link'];
+                            $title = $item['title'];
+                            $str2 .= "<div class='scrollEl' align='center'><a href=$href target='_blank'><span>$title</span></a></div>";
+                        $n++;
+                        if($n == 4) break;
+                    }
+                    $str2 .= "</div>";
+                }
+            }
+            else{
+                $str2 = "<span>"._tr('No News to display')."</span>";
+            }
         }
         return   "<div id='wrapper'>
                         <div id='vertical'>
