@@ -625,8 +625,8 @@ class paloSantoSysInfo
 
         if($user!= "admin") $user="no_admin";
 
-        $query = "select 
-                    a.code, aau.id aau_id
+        $query = "select
+                    a.code, a.icon, a.name, aau.id aau_id
                   from 
                     activated_applet_by_user aau 
                         inner join 

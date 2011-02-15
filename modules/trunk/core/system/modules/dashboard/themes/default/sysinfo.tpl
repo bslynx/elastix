@@ -19,3 +19,7 @@
 		</td>
 	</tr>
 </table>
+
+<script language="javascript" type = "text/javascript">
+    loadAppletData();
+</script>

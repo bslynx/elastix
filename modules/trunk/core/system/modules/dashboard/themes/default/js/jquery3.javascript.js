@@ -83,8 +83,9 @@ $(document).ready(
                     for(i=0; i<children_left.length;i++){
                         if(children_left[i].nodeName == "DIV" || children_left[i].nodeName == "div"){
                             var id_div = children_left[i].getAttribute("id");
-                            if(id_div.substring(0,6) == "applet"){
-                                var id_applet = id_div.substring(7);
+                            var tmp = id_div.split("-");
+                            if(tmp[0] == "applet"){
+                                var id_applet = tmp[2];
                                 ids_applet = ids_applet + id_applet + ":" + j + ",";
                                 j = j+2;
                             }
@@ -96,8 +97,9 @@ $(document).ready(
                     for(i=0; i<children_right.length;i++){
                         if(children_right[i].nodeName == "DIV" || children_right[i].nodeName == "div"){
                             var id_div = children_right[i].getAttribute("id");
-                            if(id_div.substring(0,6) == "applet"){
-                                var id_applet = id_div.substring(7);
+                            var tmp = id_div.split("-");
+                            if(tmp[0] == "applet"){
+                                var id_applet = tmp[2];
                                 ids_applet = ids_applet + id_applet + ":" + j + ",";
                                 j = j+2;
                             }
@@ -137,14 +139,15 @@ $(document).ready(
         $('[id=^editMan_],[id^=editMan1_],[id^=editMan2_]').click(function() {
             var arrID = $(this).attr("id").split("_"); 
             var a_id_card = arrID[1];
-
+            alert('SI');
             if(arrID[0]=="editMan1") openWndMan1(a_id_card);
             else getDataCard(a_id_card);
             $("#layerCM").show();
         });
         $('#layerCM').draggable();
-	}
+    }
 );
+
 
 
 function saveRegister(id_card)
@@ -248,3 +251,66 @@ function arrowsExpand(){
     imgID.src = "modules/"+module_name+"/images/flecha_up.gif";
   }
 }
+
+function loadAppletData(){
+    var td_left  = document.getElementById("td_columns1");
+    var td_right = document.getElementById("td_columns2");
+    var children_left  = td_left.childNodes;
+    var children_right = td_right.childNodes;
+
+    // Recorro los applet de la izquierda
+    for(i=0; i<children_left.length;i++){
+        if(children_left[i].nodeName == "DIV" || children_left[i].nodeName == "div"){
+            var id_div = children_left[i].getAttribute("id");
+            var tmp = id_div.split("-");
+            if(tmp[0] == "applet"){
+                var arrAction              = new Array();
+                arrAction["action"]    = "loadAppletData";
+                arrAction["rawmode"]   = "yes";
+                arrAction["code"]      = tmp[1];
+                request("index.php",arrAction,false,
+                    function(arrData,statusResponse,error)
+                    {
+  
+                          document.getElementById(arrData["code"]).innerHTML = arrData["data"];
+                    }
+                );
+            }
+        }
+    }
+
+    // Recorro los applet de la derecha
+    for(i=0; i<children_right.length;i++){
+        if(children_right[i].nodeName == "DIV" || children_right[i].nodeName == "div"){
+            var id_div = children_right[i].getAttribute("id");
+            var tmp = id_div.split("-");
+            if(tmp[0] == "applet"){
+                var arrAction              = new Array();
+                arrAction["action"]    = "loadAppletData";
+                arrAction["rawmode"]   = "yes";
+                arrAction["code"]      = tmp[1];
+                request("index.php",arrAction,false,
+                    function(arrData,statusResponse,error)
+                    {
+
+                          document.getElementById(arrData["code"]).innerHTML = arrData["data"];
+                    }
+                );
+            }
+        }
+    }
+}
+
+function jfunction(id)
+{
+    var arrID = id.split("_"); 
+    var a_id_card = arrID[1];
+    if(arrID[0]=="editMan1") openWndMan1(a_id_card);
+    else getDataCard(a_id_card);
+    $("#layerCM").show();
+    $('#closeCM').click(function() {
+            $("#layerCM").hide();
+    });
+    $('#layerCM').draggable();
+}
+
