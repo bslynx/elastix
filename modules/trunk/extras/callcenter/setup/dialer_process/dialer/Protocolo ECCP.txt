@@ -305,6 +305,34 @@ IMPORTANTE: para extensión futura del protocolo, pueden definirse etiquetas y
 atributos adicionales en respuestas definidass. El cliente ECCP DEBE IGNORAR 
 cualquier etiqueta o atributo que no sepa manejar en la respuesta que recibe.
 
+Autenticación
+-------------
+
+Algunos de los métodos listados en este manual ordenan actualizaciones en el 
+estado del sistema que deben ser autorizadas únicamente para un agente en 
+particular. Cuando un método requiere ser autenticado, el método usado es el 
+siguiente: 
+* Cada agente tiene asignada una contraseña conocida por el servidor.
+* El requerimiento "login" de la aplicación, en caso de tener éxito, devuelve
+  un texto aleatorio como contenido del tag "app_cookie". De aquí en adelante
+  a este texto se lo llamará cookie.
+* Todo requerimiento que deba ser autenticado debe tener dos argumentos 
+  obligatorios, agent_number y agent_hash .
+* El parámetro agent_number es el nombre del agente, como "Agent/9000"
+* El parámetro agent_hash es un valor resultante de aplicar el hash MD5 a la
+  concatenación del texto cookie, el nombre del agente, y la contraseña del
+  agente, en este orden. Es decir, para el agente Agent/9000 con contraseña
+  de valor "unaclavesecreta":
+  
+  s = cookie + "Agent/9000" + "unaclavesecreta" 
+  agent_hash <-- MD5(s)
+  
+  ...donde cookie contiene el valor devuelto en app_cookie por el login, y 
+  el signo más (+) indica la operación de concatenación de cadenas.
+
+Todo requerimiento que haga referencia a un argumento agent_hash debe de recibir
+el valor de hash calculado de la manera indicada anteriormente.
+
 Mensajes de error
 -----------------
 
@@ -882,13 +910,15 @@ en la cola
 Atributos o argumentos:
 * agent_number: El número de agente a logonear. Este identificador está de la 
   forma 'Agent/9000'.
+* agent_hash: Hash de autenticación para el agente.
 * extension: El número de extensión a ingresar bajo la identidad del agente.
-* password: (opcional) Clave del agente (no se usa en la implementación actual)
+* password: (opcional) Clave telefónica del agente (no se usa en la implementación actual)
 
 Ejemplo:
 <request id="2">
     <loginagent>
         <agent_number>Agent/9000</agent_number>
+        <agent_hash>XXXXXXXXXXXXXXXXXXXXXXXXX</agent_hash>
         <extension>1064</extension>
     </loginagent>
 </request>
@@ -929,11 +959,13 @@ pertenece. Luego de finalizada la sesión, se emite un evento "agentlogoff".
 Atributos o argumentos:
 * agent_number: El número de agente a logonear. Este identificador está de la 
   forma 'Agent/9000'.
+* agent_hash: Hash de autenticación para el agente.
 
 Ejemplo:
 <request id="3">
     <logoutagent>
         <agent_number>Agent/9000</agent_number>
+        <agent_hash>XXXXXXXXXXXXXXXXXXXXXXXXX</agent_hash>
     </logoutagent>
 </request>
 
@@ -1315,6 +1347,9 @@ el Caller-ID anunciado para la llamada entrante. No es necesario que la llamada
 esté activa al momento de asignar.
 
 Atributos o argumentos:
+* agent_number: Agente que está asignando el contacto. Este identificador está
+  de la forma Agent/9000.
+* agent_hash: Hash de autenticación para el agente.
 * call_id: ID en la base de datos de la llamada que se asigna su contacto
 * contact_id: ID en la base de datos del contacto a asociar con esta llamada.
 
@@ -1322,6 +1357,8 @@ Ejemplo:
 
 <request id="10">
     <setcontact>
+        <agent_number>Agent/9000</agent_number>
+        <agent_hash>XXXXXXXXXXXXXXXXXXXXXXXXX</agent_hash>
         <call_id>8</call_id>
         <contact_id>3</contact_id>
     </setcontact>
@@ -1361,6 +1398,9 @@ Este requerimiento ordena almacenar la información recogida de los formularios,
 y la asocia a una llamada en particular. 
 
 Atributos o argumentos:
+* agent_number: Agente que manda a guardar los datos. Este identificador está 
+  de la forma Agent/9000
+* agent_hash: Hash de autenticación para el agente.
 * campaign_type: Tipo de la campaña, uno de 'incoming' u 'outgoing'
 * call_id: ID en la base de datos de la llamada que se almacena
 * forms: Colección de múltiples elementos 'form':
@@ -1376,6 +1416,8 @@ Atributos o argumentos:
 Ejemplo:
 <request id="9">
     <saveformdata>
+        <agent_number>Agent/9000</agent_number>
+        <agent_hash>XXXXXXXXXXXXXXXXXXXXXXXXX</agent_hash>
         <campaign_type>outgoing</campaign_type>
         <call_id>27</call_id>
         <forms>
@@ -1461,12 +1503,14 @@ El ID a usar para el break se obtiene con el requerimiento "getpauses".
 Atributos o argumentos:
 * agent_number: Agente que se va a pausar. Este identificador está de la forma 
   'Agent/9000'.
+* agent_hash: Hash de autenticación para el agente.
 * pause_type: ID de base de datos de la pausa (break) a usar.
 
 Ejemplo:
 <request id="11">
     <pauseagent>
         <agent_number>Agent/9000</agent_number>
+        <agent_hash>XXXXXXXXXXXXXXXXXXXXXXXXX</agent_hash>
         <pause_type>3</pause_type>
     </pauseagent>
 </request>
@@ -1517,11 +1561,13 @@ puesto previamente con el requerimiento "pauseagent".
 Atributos o argumentos:
 * agent_number: Agente que se va a sacar de pausa. Este identificador está de la
   forma 'Agent/9000'.
+* agent_hash: Hash de autenticación para el agente.
 
 Ejemplo:
 <request id="12">
     <unpauseagent>
         <agent_number>Agent/9000</agent_number>
+        <agent_hash>XXXXXXXXXXXXXXXXXXXXXXXXX</agent_hash>
     </unpauseagent>
 </request>
 

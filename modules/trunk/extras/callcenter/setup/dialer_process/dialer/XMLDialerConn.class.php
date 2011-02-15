@@ -419,16 +419,50 @@ class XMLDialerConn extends DialerConn
         $this->_bFinalizando = TRUE;
         return $xml_response;
     }
+
+    // Revisar si el comando indicado tiene un hash válido. El comando debe de
+    // tener los campos agent_number y agent_hash
+    private function hashValidoAgenteECCP($comando)
+    {
+    	if (!isset($comando->agent_number) || !isset($comando->agent_hash))
+            return FALSE;
+        $sAgente = (string)$comando->agent_number;
+        $sHashCliente = (string)$comando->agent_hash;
+        
+        // El siguiente código asume Agent/9000
+        if (!preg_match('|^Agent/(\d+)$|', $sAgente, $regs)) return FALSE;
+        $sNumAgente = $regs[1];
+        $tuplaAgente = $this->_dbConn->getRow(
+            'SELECT number, eccp_password FROM agent WHERE estatus = "A" AND number = ?',
+            array($sNumAgente), DB_FETCHMODE_ASSOC);
+        if (DB::isError($tuplaAgente)) {
+            $this->oMainLog->output('ERR: no se puede leer clave ECCP para agente - '.$tuplaAgente->getMessage());
+        	return FALSE;
+        }
+        if (count($tuplaAgente) <= 0) {
+            // Agente no se ha encontrado en la base de datos
+        	return FALSE;
+        }
+        $sClaveECCPAgente = $tuplaAgente['eccp_password'];
+        
+        // Para pruebas, se acepta a agente sin password
+        if (is_null($sClaveECCPAgente)) return TRUE;
+        
+        // Calcular el hash que debió haber enviado el cliente
+        $sHashEsperado = md5($this->_sAppCookie.$sAgente.$sClaveECCPAgente);
+        return ($sHashEsperado == $sHashCliente);
+    }
+
     
     // Función que encapsula la generación de la respuesta
-    private function Response_LoginAgentResponse($status, $msg = NULL)
+    private function Response_LoginAgentResponse($status, $iCodigo = NULL, $msg = NULL)
     {
         $xml_response = new SimpleXMLElement('<response />');
         $xml_loginAgentResponse = $xml_response->addChild('loginagent_response');
 
         $xml_loginAgentResponse->addChild('status', $status);
         if (!is_null($msg)) 
-            $this->_agregarRespuestaFallo($xml_loginAgentResponse, 417, $msg);
+            $this->_agregarRespuestaFallo($xml_loginAgentResponse, $iCodigo, $msg);
             
         return $xml_response;           
     }
@@ -487,9 +521,14 @@ class XMLDialerConn extends DialerConn
         $listaExtensiones = $this->listarExtensiones();
         $listaAgentes = $this->listarAgentes();
         if (!in_array($sAgente, array_keys($listaAgentes))) {
-            return $this->Response_LoginAgentResponse('logged-out', 'Invalid agent number');
+            return $this->Response_LoginAgentResponse('logged-out', 404, 'Specified agent not found');
         } elseif (!in_array($sExtension, array_keys($listaExtensiones))) {
-            return $this->Response_LoginAgentResponse('logged-out', 'Invalid extension number');
+            return $this->Response_LoginAgentResponse('logged-out', 404, 'Specified extension not found');
+        }
+        
+        // Verificar el hash del agente
+        if (!$this->hashValidoAgenteECCP($comando)) {
+            return $this->Response_LoginAgentResponse('logged-out', 401, 'Unauthorized agent');
         }
         
         // Verificar si el número de agente no está ya ocupado por otra extensión
@@ -512,12 +551,12 @@ class XMLDialerConn extends DialerConn
                     return $this->Response_LoginAgentResponse('logged-in');
                 } else {
                     // Otra extensión ya ocupa el login del agente indicado, o no se dispone de traza
-                    return $this->Response_LoginAgentResponse('logged-out',
+                    return $this->Response_LoginAgentResponse('logged-out', 409,
                         'Specified agent already connected to extension: '.$regs[1]);
                 }
             } else {
                 // No se reconoce el canal de login
-                return $this->Response_LoginAgentResponse('logged-out',
+                return $this->Response_LoginAgentResponse('logged-out', 500,
                     'Unable to parse extension from channel: '.$sCanalExt);
             }                
         } else {
@@ -659,14 +698,14 @@ LISTA_EXTENSIONES;
     }
    
     // Función que encapsula la generación de la respuesta
-    private function Response_LogoutAgentResponse($status, $msg = NULL)
+    private function Response_LogoutAgentResponse($status, $iCodigo = NULL, $msg = NULL)
     {
         $xml_response = new SimpleXMLElement('<response />');
         $xml_loginAgentResponse = $xml_response->addChild('logoutagent_response');
 
         $xml_loginAgentResponse->addChild('status', $status);
         if (!is_null($msg))
-            $this->_agregarRespuestaFallo($xml_loginAgentResponse, 417, $msg);                
+            $this->_agregarRespuestaFallo($xml_loginAgentResponse, $iCodigo, $msg);                
         return $xml_response;           
     }
 
@@ -708,7 +747,12 @@ LISTA_EXTENSIONES;
         // Verificar que el agente sea válido en el sistema
         $listaAgentes = $this->listarAgentes();
         if (!in_array($sAgente, array_keys($listaAgentes))) {
-            return $this->Response_LogoutAgentResponse('logged-out', 'Invalid agent number');
+            return $this->Response_LogoutAgentResponse('logged-out', 404, 'Specified agent not found');
+        }
+
+        // Verificar el hash del agente
+        if (!$this->hashValidoAgenteECCP($comando)) {
+            return $this->Response_LogoutAgentResponse('logged-out', 401, 'Unauthorized agent');
         }
 
         /* Ejecutar Agentlogoff. Esto asume que el agente está de la forma 
@@ -726,14 +770,14 @@ LISTA_EXTENSIONES;
     }
 
     // Función que encapsula la generación de la respuesta
-    private function Response_GetAgentStatusResponse($status, $msg = NULL)
+    private function Response_GetAgentStatusResponse($status, $iCodigo = NULL, $msg = NULL)
     {
         $xml_response = new SimpleXMLElement('<response />');
         $xml_loginAgentResponse = $xml_response->addChild('getagentstatus_response');
 
         $xml_loginAgentResponse->addChild('status', $status);
         if (!is_null($msg))
-            $this->_agregarRespuestaFallo($xml_loginAgentResponse, 417, $msg);                
+            $this->_agregarRespuestaFallo($xml_loginAgentResponse, $iCodigo, $msg);                
         return $xml_response;           
     }
     
@@ -764,13 +808,13 @@ LISTA_EXTENSIONES;
 
         // El siguiente código asume formato Agent/9000
         if (!preg_match('|^Agent/(\d+)$|', $sAgente, $regs)) {
-            return $this->Response_GetAgentStatusResponse('offline', 'Invalid agent number');
+            return $this->Response_GetAgentStatusResponse('offline', 404, 'Invalid agent number');
         }
         $sNumAgente = $regs[1];
         $oPredictor = new Predictivo($this->_astConn);
         $estadoCola = $oPredictor->leerEstadoCola(''); // El parámetro vacío lista todas las colas
         if (!isset($estadoCola['members'][$sNumAgente])) {
-            return $this->Response_GetAgentStatusResponse('offline', 'Invalid agent number');
+            return $this->Response_GetAgentStatusResponse('offline', 404, 'Invalid agent number');
         }
                 
         // Reportar los estados conocidos 
@@ -788,7 +832,7 @@ LISTA_EXTENSIONES;
             return $this->Response_GetAgentStatusResponse('offline');
         }
 
-        return $this->Response_GetAgentStatusResponse('offline', 'Unknown status');
+        return $this->Response_GetAgentStatusResponse('offline', 500, 'Unknown status');
     }
     
     /**
@@ -1126,6 +1170,34 @@ LEER_CAMPANIA;
         }
     }
 
+    private function leerAgenteLlamada($sTipoCampania, $idLlamada)
+    {
+    	switch ($sTipoCampania) {
+        case 'incoming':
+            $sNumAgente = $this->_dbConn->getOne(
+                'SELECT agent.number FROM call_entry, agent '.
+                'WHERE call_entry.id_agent = agent.id AND call_entry.id = ?', 
+                array($idLlamada));
+            if (DB::isError($sNumAgente)) {
+                $this->oMainLog->output('ERR: no se puede leer agente para llamada entrante - '.$sNumAgente->getMessage());
+            	return NULL;
+            }
+            return is_null($sNumAgente) ? NULL : 'Agent/'.$sNumAgente;
+        case 'outgoing':
+            $sNumAgente = $this->_dbConn->getOne(
+                'SELECT agent.number FROM calls, agent '.
+                'WHERE calls.id_agent = agent.id AND calls.id = ?', 
+                array($idLlamada));
+            if (DB::isError($sNumAgente)) {
+                $this->oMainLog->output('ERR: no se puede leer agente para llamada saliente - '.$sNumAgente->getMessage());
+                return NULL;
+            }
+            return is_null($sNumAgente) ? NULL : 'Agent/'.$sNumAgente;
+        default:
+            return NULL;
+    	}
+    }
+
     private function Request_SetContact($comando)
     {
         if (is_null($this->_sUsuarioECCP))
@@ -1146,6 +1218,14 @@ LEER_CAMPANIA;
 
         $bExito = TRUE;
 
+        // Verificar que el agente está autorizado a realizar operación
+        if ($bExito) {
+            if (!$this->hashValidoAgenteECCP($comando)) {
+                $this->_agregarRespuestaFallo($xml_setContactResponse, 401, 'Unauthorized agent');
+                $bExito = FALSE;
+            }
+        }
+
         // Verificar que existe realmente la llamada entrante
         if ($bExito) {
         	$tupla = $this->_dbConn->getRow(
@@ -1162,6 +1242,15 @@ LEER_CAMPANIA;
             }
         }
         
+        // Verificar que el agente declarado realmente atendió esta llamada
+        if ($bExito) {
+            $sAgenteLlamada = $this->leerAgenteLlamada('incoming', $idLlamada);
+            if (is_null($sAgenteLlamada) || $sAgenteLlamada != (string)$comando->agent_number) {
+                $this->_agregarRespuestaFallo($xml_setContactResponse, 401, 'Unauthorized agent');
+            	$bExito = FALSE;
+            }
+        }
+
         // Verificar que existe realmente el contacto indicado
         if ($bExito) {
             $tupla = $this->_dbConn->getRow(
@@ -1268,6 +1357,19 @@ LEER_CAMPANIA;
 
         $xml_response = new SimpleXMLElement('<response />');
         $xml_saveFormDataResponse = $xml_response->addChild('saveformdata_response');
+
+        // Verificar que el agente está autorizado a realizar operación
+        if (!$this->hashValidoAgenteECCP($comando)) {
+            $this->_agregarRespuestaFallo($xml_saveFormDataResponse, 401, 'Unauthorized agent');
+            return $xml_response;
+        }
+
+        // Verificar que el agente declarado realmente atendió esta llamada
+        $sAgenteLlamada = $this->leerAgenteLlamada($sTipoCampania, $idLlamada);
+        if (is_null($sAgenteLlamada) || $sAgenteLlamada != (string)$comando->agent_number) {
+            $this->_agregarRespuestaFallo($xml_saveFormDataResponse, 401, 'Unauthorized agent');
+            return $xml_response;
+        }
 
         // Leer la información del formulario, para validación
         $infoFormulario = $this->_leerCamposFormulario(array_keys($infoDatos));
@@ -1379,6 +1481,12 @@ LEER_CAMPANIA;
         }
         $sNumAgente = $regs[1];
 
+        // Verificar que el agente está autorizado a realizar operación
+        if (!$this->hashValidoAgenteECCP($comando)) {
+            $this->_agregarRespuestaFallo($xml_pauseAgentResponse, 401, 'Unauthorized agent');
+            return $xml_response;
+        }
+
         // Verificar si el agente está siendo monitoreado y que no esté en pausa
         $infoSeguimiento = $this->_dialProc->infoSeguimientoAgente($sAgente);
         if (is_null($infoSeguimiento)) {
@@ -1438,6 +1546,12 @@ LEER_CAMPANIA;
             return $xml_response;
         }
         $sNumAgente = $regs[1];
+
+        // Verificar que el agente está autorizado a realizar operación
+        if (!$this->hashValidoAgenteECCP($comando)) {
+            $this->_agregarRespuestaFallo($xml_unpauseAgentResponse, 401, 'Unauthorized agent');
+            return $xml_response;
+        }
 
         // Verificar si el agente está siendo monitoreado y que no esté en pausa
         $infoSeguimiento = $this->_dialProc->infoSeguimientoAgente($sAgente);
