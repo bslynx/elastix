@@ -1,0 +1,3 @@
+* Mon Feb 14 2011 Eduardo Cueva <ecueva@palosanto.com> 1.8.1-12beta
+- CHANGED: In spec file using new format to elastix-dbprocess.
+- NEW:     Initial version
