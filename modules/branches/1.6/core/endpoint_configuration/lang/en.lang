@@ -34,11 +34,11 @@ $arrLangModule=array(
 "Endpoint Configuration" => "Endpoint Configuration",
 "Endpoint Scan" => "Endpoint Scan",
 "Display Name" => "Display Name",
-"MAC Adress" => "MAC Adress",
-"Phone Type" => "Phone Type",
-"IP Adress" => "IP Adress",
+"MAC Adress" => "MAC Aderess",
+"Phone Type" => "Phone Model",
+"IP Adress" => "IP Address",
 "Vendor" => "Vendor",
-"User Extension" => "User Extension",
+"User Extension" => "Extension to assign",
 "Set" => "Set",
 "Unset" => "Unset",
 "Are you sure you wish to unset endpoint(s)?" => "Are you sure you wish to unset endpoint(s)?",
@@ -61,5 +61,9 @@ $arrLangModule=array(
 "WARNING" => "WARNING",
 "Status"=>"Status",
 "ERROR" => "ERROR",
+"Current Extension" => "Current Extension",
+"Not Registered" => "Not Registered",
+"MESSAGE" => "MESSAGE",
+"The Extension(s) parameters have been saved. Each checked phone will be configured with the new parameters once it has finished rebooting" => "The Extension(s) parameters have been saved. Each checked phone will be configured with the new parameters once it has finished rebooting"
 );
 ?>

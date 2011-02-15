@@ -126,16 +126,11 @@ function endpointConfiguratedShow($smarty, $module_name, $local_templates_dir, $
                     if($endspoint['configurated']){
                         $unset  = "<input type='checkbox' name='epmac_{$endspoint['mac_adress']}'  />";
                         $report = $paloEndPoint->compareDevicesAsteriskSqlite($endspoint['account']);
-                        if($report!=false)
-                            $status = createStatus(3,$arrLang['UPDATE'].": $report");
-                        else
-                            $status = createStatus(1,$arrLang['Configured without incident.']);
                     }
                     else{
                         $unset  = "";
-                        $status = createStatus(2,$arrLang['Not Set']);
                     }
-
+                    $currentExtension = $paloEndPoint->getExtension($endspoint['ip_adress']);
                     $arrTmp[0] = "<input type='checkbox' name='epmac_{$endspoint['mac_adress']}'  />";
                     $arrTmp[1] = $unset;
                     $arrTmp[2] = $endspoint['mac_adress'];
@@ -143,7 +138,10 @@ function endpointConfiguratedShow($smarty, $module_name, $local_templates_dir, $
                     $arrTmp[4] = $endspoint['name_vendor']." / ".$endspoint['desc_vendor']."&nbsp;<input type='hidden' name='id_vendor_device_{$endspoint['mac_adress']}' value='{$endspoint['id_vendor']}' />&nbsp;<input type='hidden' name='name_vendor_device_{$endspoint['mac_adress']}' value='{$endspoint['name_vendor']}' />";
                     $arrTmp[5] = "<select name='id_model_device_{$endspoint['mac_adress']}' >".combo($paloEndPoint->getAllModelsVendor($endspoint['name_vendor']),$endspoint['model_no'])."</select>";
                     $arrTmp[6] = "<select name='id_device_{$endspoint['mac_adress']}'    >".combo($arrDeviceFreePBX,$endspoint['account'])                                               ."</select>";
-                    $arrTmp[7] = $status;
+                    if($currentExtension != "Not Registered")
+                        $arrTmp[7] = "<font color = 'green'>$currentExtension</font>";
+                    else
+                        $arrTmp[7] = $currentExtension;
                     $arrData[] = $arrTmp;
                 }
                 $_SESSION['elastix_endpoints'] = $arrData; 
@@ -214,7 +212,7 @@ function buildReport($arrData, $smarty, $module_name, $arrLang, $endpoint_mask)
                                        "property1" => ""),
                             6 => array("name"      => $arrLang["User Extension"],
                                        "property1" => ""),
-                            7 => array("name"      => $arrLang["Status"],
+                            7 => array("name"      => $arrLang["Current Extension"],
                                        "property1" => "")));
     $html_filter = "<input type='submit' name='endpoint_scan' value='{$arrLang['Endpoint Scan']}' class='button' />";
     $html_filter.= "&nbsp;&nbsp;<input type='text' name='endpoint_mask' value='$endpoint_mask' style='text-align:right; width:90px;' />";
@@ -289,6 +287,8 @@ function endpointConfiguratedSet($smarty, $module_name, $local_templates_dir, $d
             }
         }
     }
+    $smarty->assign("mb_title", _tr("MESSAGE"));
+    $smarty->assign("mb_message", _tr("The Extension(s) parameters have been saved. Each checked phone will be configured with the new parameters once it has finished rebooting"));
     unset($_SESSION['elastix_endpoints']);
     return endpointConfiguratedShow($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrLang, $arrConf);
 }

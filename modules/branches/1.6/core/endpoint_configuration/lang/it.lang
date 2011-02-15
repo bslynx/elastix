@@ -62,5 +62,9 @@ $arrLangModule=array(
 "WARNING" => "WARNING",
 "Status" => "Status",
 "ERROR" => "ERRORE",
+"Current Extension" => "Current Extension",
+"Not Registered" => "Not Registered",
+"MESSAGE" => "MESSAGE",
+"The Extension(s) parameters have been saved. Each checked phone will be configured with the new parameters once it has finished rebooting" => "The Extension(s) parameters have been saved. Each checked phone will be configured with the new parameters once it has finished rebooting"
 );
 ?>

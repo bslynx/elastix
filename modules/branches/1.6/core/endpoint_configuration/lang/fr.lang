@@ -40,7 +40,7 @@ $arrLangModule=array(
 "Phone Type" => "Type Téléphone",
 "IP Adress" => "Adresse IP",
 "Vendor" => "Vendeur",
-"User Extension" => "Extension Utilisateur",
+"User Extension" => "Extension d'attribuer",
 "Set" => "Définir",
 "Unset" => "Effacer",
 "Are you sure you wish to unset endpoint(s)?" => "Etes vous sûr de vouloir effacer le(s) terminal(aux) ?",
@@ -63,5 +63,9 @@ $arrLangModule=array(
 "WARNING" => "ATTENTION",
 "Status" => "Statut",
 "ERROR" => "ERREUR",
+"Current Extension" => "Current Extension",
+"Not Registered" => "Not Registered",
+"MESSAGE" => "MESSAGE",
+"The Extension(s) parameters have been saved. Each checked phone will be configured with the new parameters once it has finished rebooting" => "The Extension(s) parameters have been saved. Each checked phone will be configured with the new parameters once it has finished rebooting"
 );
 ?>

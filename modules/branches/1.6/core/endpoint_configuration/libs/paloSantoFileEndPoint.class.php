@@ -144,6 +144,13 @@ class PaloSantoFileEndPoint
                 else return false;
 
                 break;
+
+            case 'AudioCodes':
+                $contentAudioCodes = PrincipalFileAudioCodes($ArrayData['data']['id_device'],$ArrayData['data']['secret'],$this->ipAdressServer,$ArrayData['data']['model'],$ArrayData['data']['filename']);
+                if($this->createFileConf($this->directory, $ArrayData['data']['model']."_".$ArrayData['data']['filename'].".cfg", $contentAudioCodes))
+                    return true;
+                else return false;
+            break;
         }
     }
 
@@ -214,6 +221,10 @@ class PaloSantoFileEndPoint
             case 'Zultys':
                 return $this->deleteFileConf("{$this->directory}/{$ArrayData['data']['model']}", strtoupper($ArrayData['data']['filename']).".cfg");
                 break;
+
+            case 'AudioCodes':
+                return $this->deleteFileConf($this->directory, $ArrayData['data']['model']."_".$ArrayData['data']['filename'].".cfg");
+            break;
         }
     }
 
@@ -309,6 +320,12 @@ class PaloSantoFileEndPoint
                 $this->createFileConf($this->directory, "ZIP2x2_common.template.cfg", $contentFileZultys);
                 return true; //no es tan importante la necesidad de estos archivos solo son de ejemplo.
                 break;
+
+            case 'AudioCodes':
+                $contentAudioCodes = templatesFileAudioCodes($this->ipAdressServer);
+                $this->createFileConf($this->directory, "AudioCodes.template", $contentAudioCodes);
+                return true; //no es tan importante la necesidad de estos archivos solo son de ejemplo.
+                break;
         }
     }
 
@@ -371,6 +388,9 @@ class PaloSantoFileEndPoint
                 break;
 
             case 'Zultys':
+                break;
+
+            case 'AudioCodes':
                 break;
         }
 

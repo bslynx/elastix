@@ -28,6 +28,9 @@
   $Id: paloSantoEndPoint.class.php,v 1.1 2008/01/15 10:39:57 bmacias Exp $ */
 
 include_once("libs/paloSantoDB.class.php");
+if (file_exists("/var/lib/asterisk/agi-bin/phpagi-asmanager.php")) {
+require_once "/var/lib/asterisk/agi-bin/phpagi-asmanager.php";
+}
 
 /* Clase que implementa EndPoint Configuracion */
 class paloSantoEndPoint
@@ -430,6 +433,51 @@ class paloSantoEndPoint
 
         $pDB->disconnect();
         return $arrParameters;
+    }
+
+    function getExtension($ip)
+    {
+        $parameters = array('Command'=>"sip show peers");
+        $result = $this->AsteriskManagerAPI("Command",$parameters,true); 
+        $data = split("\n",$result['data']);
+        $extension = "";
+        foreach($data as $key => $line){
+            if(preg_match("/(\d+\/\d+)[[:space:]]*($ip)[[:space:]]*[[:alpha:]]*[[:space:]]*[[:alpha:]]*[[:space:]]*[[:alpha:]]{0,1}[[:space:]]*[[:digit:]]*[[:space:]]*([[:alpha:]]*)/",$line,$match)){
+                if($match[3] == "OK"){
+                    $tmp = split("/",$match[1]);
+                    if($extension == "")
+                        $extension = $tmp[0];
+                    else
+                        $extension = "$extension, $tmp[0]";
+                }else
+                    return $match[3];
+            }
+        }
+        if ($extension == "")
+            $extension = _tr("Not Registered");
+        return $extension;
+    }
+
+    function AsteriskManagerAPI($action, $parameters, $return_data=false) 
+    {
+        global $arrLang;
+        $astman_host = "127.0.0.1";
+        $astman_user = 'admin';
+        $astman_pwrd = "elastix456";
+
+        $astman = new AGI_AsteriskManager();
+
+        if (!$astman->connect("$astman_host", "$astman_user" , "$astman_pwrd")) {
+            $this->errMsg = _tr("Error when connecting to Asterisk Manager");
+        } else{
+            $salida = $astman->send_request($action, $parameters);
+            $astman->disconnect();
+            if (strtoupper($salida["Response"]) != "ERROR") {
+                if($return_data) return $salida;
+                else return split("\n", $salida["Response"]);
+            }else return false;
+        }
+        return false;
     }
 }
 
