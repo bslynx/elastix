@@ -58,5 +58,7 @@ $arrLangModule=array(
 "WARNING" => "Advertencia",
 "Status" => "Estado",
 "ERROR" => "ERROR",
+"Current Extension" => "Extensión Actual",
+"Not Registered" => "No Registrado"
 );
 ?>

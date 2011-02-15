@@ -62,5 +62,7 @@ $arrLangModule=array(
 "Status" => "وضعیت",
 "ERROR" => "خطا",
 "Endpoint Configurator" => "Endpoint Configurator",
+"Current Extension" => "Current Extension",
+"Not Registered" => "Not Registered"
 );
 ?>

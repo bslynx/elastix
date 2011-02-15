@@ -61,5 +61,7 @@ $arrLangModule=array(
 "WARNING" => "WARNING",
 "Status" => "状態",
 "ERROR" => "エラー",
+"Current Extension" => "Current Extension",
+"Not Registered" => "Not Registered"
 );
 ?>
