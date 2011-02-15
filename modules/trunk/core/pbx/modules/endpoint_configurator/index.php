@@ -287,6 +287,8 @@ function endpointConfiguratedSet($smarty, $module_name, $local_templates_dir, $d
             }
         }
     }
+    $smarty->assign("mb_title", _tr("MESSAGE"));
+    $smarty->assign("mb_message", _tr("The Extension(s) parameters have been saved. Each checked phone will be configured with the new parameters once it has finished rebooting"));
     unset($_SESSION['elastix_endpoints']);
     return endpointConfiguratedShow($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrLang, $arrConf);
 }
