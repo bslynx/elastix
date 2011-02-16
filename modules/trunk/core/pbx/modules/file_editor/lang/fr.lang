@@ -48,6 +48,9 @@ $arrLangModule=array(
 "File already exist" => "Le fichier existe déjà",
 "File" => "Fichier",
 "Filter" => "Filtre",
+"Reload Asterisk" => "Reload Asterisk",
+"Asterisk has been reloaded" => "Asterisk has been reloaded",
+"Error when connecting to Asterisk Manager" => "Error when connecting to Asterisk Manager"
 
 );
 ?>

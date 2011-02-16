@@ -48,5 +48,8 @@ $arrLangModule=array(
 "File already exist" => "そのファイルはすでに使用されています",
 "File" => "ファイル",
 "Filter" => "抽出条件",
+"Reload Asterisk" => "Reload Asterisk",
+"Asterisk has been reloaded" => "Asterisk has been reloaded",
+"Error when connecting to Asterisk Manager" => "Error when connecting to Asterisk Manager"
 );
 ?>

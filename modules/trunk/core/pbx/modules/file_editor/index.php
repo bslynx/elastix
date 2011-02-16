@@ -30,6 +30,10 @@ require_once "libs/paloSantoForm.class.php";
 require_once("libs/paloSantoGrid.class.php");
 require_once "libs/misc.lib.php";
 
+if (file_exists("/var/lib/asterisk/agi-bin/phpagi-asmanager.php")) {
+require_once "/var/lib/asterisk/agi-bin/phpagi-asmanager.php";
+}
+
 function _moduleContent(&$smarty, $module_name)
 {
     include_once "modules/$module_name/configs/default.conf.php";
@@ -182,6 +186,18 @@ function modificarArchivo($module_name, $smarty, $local_templates_dir, $sDirecto
     $sNombreArchivo = '';
     $sMensajeStatus = '';
 
+    if(isset($_POST['Reload'])){
+        $parameters = array('Command'=>"module reload");
+        $result = AsteriskManagerAPI("Command",$parameters,true);
+        if($result){
+            $smarty->assign("mb_title", "MESSAGE");
+            $smarty->assign("mb_message", _tr("Asterisk has been reloaded"));
+        }else{
+            $smarty->assign("mb_title", "ERROR");
+            $smarty->assign("mb_message", _tr("Error when connecting to Asterisk Manager")); 
+        }
+    }
+
     if ($sAccion == 'new') {
         $smarty->assign('LABEL_COMPLETADO', '.conf');
         if (isset($_POST['Guardar'])) {
@@ -224,7 +240,6 @@ function modificarArchivo($module_name, $smarty, $local_templates_dir, $sDirecto
                 $sMensajeStatus .= _tr("This file doesn't have permisses to write").'<br/>';
             }
         }
-        
         $sContenido = file_get_contents($sDirectorio.$sNombreArchivo);
         if ($sContenido === FALSE) {
             $sMensajeStatus .= _tr("This file doesn't have permisses to read").'<br/>';
@@ -260,8 +275,30 @@ function modificarArchivo($module_name, $smarty, $local_templates_dir, $sDirecto
     $smarty->assign('url_edit', construirURL(array('menu' => $module_name, 'action' => $sAccion, 'file' => $sNombreArchivo)));
     $smarty->assign('url_back', construirURL(array('menu' => $module_name), array('action', 'file')));
     $smarty->assign('LABEL_SAVE', _tr('Save'));
+    $smarty->assign('RELOAD_ASTERISK', _tr('Reload Asterisk'));
     $smarty->assign('LABEL_BACK', _tr('Back'));
     $smarty->assign('msg_status', $sMensajeStatus);
     return $oForm->fetchForm("$local_templates_dir/file_editor.tpl", _tr("File Editor"), $_POST);
+}
+
+function AsteriskManagerAPI($action, $parameters, $return_data=false) 
+{
+    $astman_host = "127.0.0.1";
+    $astman_user = 'admin';
+    $astman_pwrd = "elastix456";
+
+    $astman = new AGI_AsteriskManager();
+
+    if (!$astman->connect("$astman_host", "$astman_user" , "$astman_pwrd")) {
+        return false;
+    } else{
+        $salida = $astman->send_request($action, $parameters);
+        $astman->disconnect();
+        if (strtoupper($salida["Response"]) != "ERROR") {
+            if($return_data) return $salida;
+            else return split("\n", $salida["Response"]);
+        }else return false;
+    }
+    return false;
 }
 ?>

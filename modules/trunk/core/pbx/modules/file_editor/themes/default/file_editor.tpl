@@ -15,7 +15,8 @@
         <td>
         <a href="{$url_back}"><button class="button">&laquo;&nbsp;{$LABEL_BACK}</button></a>
         <b>{$basename.LABEL}:</b>&nbsp;{$basename.INPUT}{$LABEL_COMPLETADO}&nbsp;&nbsp;
-        <input type="submit" class="button" name="Guardar" value="{$LABEL_SAVE}" />
+        <input type="submit" class="button" name="Guardar" value="{$LABEL_SAVE}" />&nbsp;&nbsp;
+        <input type="submit" class="button" name="Reload"  value="{$RELOAD_ASTERISK}" />
         </td>
     </tr>
     <tr>
