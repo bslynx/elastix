@@ -23,8 +23,10 @@
     </tr>
 </table>
 
-<div class="tabForm" style="font-size: 16px; height: 400px" width="100%">
-    <div id="header_detail">
+
+<table class="tabForm" style="font-size: 16px; height: 400px" width="100%">
+    <tr>
+    <td id="header_detail" valign = 'top'>
         <div align = "right" class = "sombreado">{$advanced.LABEL} {$advanced.INPUT}</div>
         <fieldset class="fielform">
             <legend class="sombreado">{$General_Setting}</legend>
@@ -57,10 +59,9 @@
                 </tr>
             </table>
         </fieldset>
-    </div>
+    </td>
 
-    <div id="detail">
-        <br/>
+    <td id="detail">
         <fieldset class="fielform" id="advanced_options" style = "display:none;">
             <legend class="sombreado">{$PEER_Details}</legend>
             <table border="0" width="100%" id="formContainer" align="center" cellspacing="0" cellpadding="8">
@@ -114,8 +115,11 @@
                 </tr>
             </table>
         </fieldset>
-    </div>
-</div>
+    </td>
+    </tr>
+</table>
+
+
 <input class="button" type="hidden" name="id" value="{$ID}" />
 <input class="button" type="hidden" id="module_name" name="module_name" value="{$Module_name}" />
 
