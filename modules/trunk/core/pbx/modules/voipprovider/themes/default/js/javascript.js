@@ -4,10 +4,12 @@
  */
 
 $(document).ready(function(){
-
-    changeToNet2Phone();
+    if(document.getElementById("account_name"))
+        if(document.getElementById("account_name").value == "")
+            changeToNet2Phone();
     if($('#type_provider_voip').val() == 'custom'){
-      //  document.forms[0].chkoldadvanced.disabled = true;
+        document.getElementById('advanced_options').style.display='';
+        $('input[name=chkoldadvanced]').attr('disabled',true);
         $('#technology').removeAttr("disabled");
     }
     else
