@@ -28,8 +28,8 @@
   $Id: email.conf.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
 
 
-
 $configPostfix2 = isPostfixToElastix2();// in misc.lib.php
+$clave = obtenerClaveCyrusAdmin();
 
 if(!$configPostfix2){
     define("SASL_DOMAIN","example.com");
@@ -39,7 +39,7 @@ $GLOBALS['CYRUS'] = array(
               'HOST'    => "localhost",
               'PORT'    => 143,
               'ADMIN'   => 'cyrus',
-              'PASS'    => 'palosanto'
+              'PASS'    => $clave
               );
 
 $script="require [\"fileinto\",\"vacation\"];\n";

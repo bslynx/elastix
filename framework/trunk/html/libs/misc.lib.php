@@ -511,10 +511,6 @@ function eliminar_virtual_sistema($email,&$error){
              unset($arr_direcciones[$key]);
              $eliminado=TRUE;
         }
-        elseif(ereg("^$email",$fila)){
-             unset($arr_direcciones[$key]);
-             $eliminado=TRUE;
-        }
     }
 
     if($eliminado){
@@ -698,6 +694,25 @@ function getParameter($parameter)
         return $_GET[$parameter];
     else
         return null;
+}
+
+/**
+ * Función para obtener la clave del Cyrus Admin de Elastix.
+ * La clave es obtenida de /etc/elastix.conf
+ *
+ * @param   string  $ruta_base          Ruta base para inclusión de librerías
+ *
+ * @return  mixed   NULL si no se reconoce usuario, o la clave en plaintext
+ */
+function obtenerClaveCyrusAdmin($ruta_base='')
+{
+    require_once $ruta_base.'libs/paloSantoConfig.class.php';
+
+	$pConfig = new paloConfig("/etc", "elastix.conf", "=", "[[:space:]]*=[[:space:]]*");
+	$listaParam = $pConfig->leer_configuracion(FALSE);
+	if (isset($listaParam['cyrususerpwd'])) 
+		return $listaParam['cyrususerpwd']['valor'];
+	else return 'palosanto'; // Compatibility for updates where /etc/elastix.conf is not available
 }
 
 /**
