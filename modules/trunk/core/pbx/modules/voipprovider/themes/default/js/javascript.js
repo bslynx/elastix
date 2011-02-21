@@ -76,8 +76,9 @@ function changeToNet2Phone()
 {
     $("#type_provider_voip option").each(function(){
         var val = $(this).val();
-        if(val == "Net2Phone")
+        if(val == "Net2Phone"){
             $(this).attr('selected',val);
+        }
     });
     changeProvider();
 }

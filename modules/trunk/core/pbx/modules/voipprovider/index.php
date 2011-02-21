@@ -32,11 +32,13 @@ include_once "libs/paloSantoForm.class.php";
 include_once "libs/paloSantoJSON.class.php";
 include_once "libs/paloSantoConfig.class.php";
 
+
 function _moduleContent(&$smarty, $module_name)
 {
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
     include_once "modules/$module_name/libs/paloSantoVoIPProvider.class.php";
+    include_once "modules/$module_name/libs/paloSantoVP.class.php";
     include_once "libs/paloSantoACL.class.php";
 
     //include file language agree to elastix configuration
@@ -62,12 +64,16 @@ function _moduleContent(&$smarty, $module_name)
     //conexion resource
     $pDB = new paloDB($arrConf['dsn_conn_database']);
 
+    $dns = generarDSNSistema('asteriskuser', 'asterisk');
+    $pDB2 = new paloDB($dns);
     $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
-    $arrConfig = $pConfig->leer_configuracion(false);
-    $dsn_agi_manager['password'] = $arrConfig['AMPMGRPASS']['valor'];
-    $dsn_agi_manager['host'] = $arrConfig['AMPDBHOST']['valor'];
-    $dsn_agi_manager['user'] = 'admin';
+    $arrAMP = $pConfig->leer_configuracion(false);
+    $dsn_agi_manager['password'] = $arrAMP['AMPMGRPASS']['valor'];
+    $dsn_agi_manager['host'] = $arrAMP['AMPDBHOST']['valor'];
+    $dsn_agi_manager['user'] = $arrAMP['AMPMGRUSER']['valor'];
 
+    $pConfig2 = new paloConfig($arrAMP['ASTETCDIR']['valor'], "asterisk.conf", "=", "[[:space:]]*=[[:space:]]*");
+    $arrAST  = $pConfig2->leer_configuracion(false);
     //actions
     $action = getAction();
     $content = "";
@@ -77,22 +83,22 @@ function _moduleContent(&$smarty, $module_name)
             $content = newFormVoIPProviderAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
             break;
         case "save_new":
-            $content = saveNewVoIPProvider($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $dsn_agi_manager);
+            $content = saveNewVoIPProvider($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $dsn_agi_manager, $pDB2, $arrAMP, $arrAST);
             break;
         case "view_edit":
             $content = editFormVoIPProviderAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $dsn_agi_manager);
             break;
         case "save_edit":
-            $content = saveEditVoIPProviderAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $dsn_agi_manager);
+            $content = saveEditVoIPProviderAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $dsn_agi_manager, $pDB2, $arrAMP, $arrAST);
             break;
         case "delete":
-            $content = deleteVoIPProviderAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $dsn_agi_manager);
+            $content = deleteVoIPProviderAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $dsn_agi_manager, $pDB2, $arrAMP, $arrAST);
             break;
         case "getInfoProvider":
             $content = getInfoVoIPProviderAccount($module_name, $pDB, $arrConf);
             break;
 		case "activate":
-			$content = activateVoIPProviderAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $dsn_agi_manager);
+			$content = activateVoIPProviderAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $dsn_agi_manager, $pDB2, $arrAMP, $arrAST);
             break;
         default: // report
             $content = reportVoIPProvider($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
@@ -131,7 +137,7 @@ function newFormVoIPProviderAccount($smarty, $module_name, $local_templates_dir,
             $smarty->assign("mb_message", $pVoIPProvider->errMsg);
         }
     }
-
+    
     $smarty->assign("SAVE", _tr("Save"));
     $smarty->assign("EDIT", _tr("Edit"));
     $smarty->assign("CANCEL", _tr("Cancel"));
@@ -145,7 +151,7 @@ function newFormVoIPProviderAccount($smarty, $module_name, $local_templates_dir,
     return $content;
 }
 
-function saveNewVoIPProvider($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $dsn_agi_manager)
+function saveNewVoIPProvider($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $dsn_agi_manager, $pDB2, $arrAMP, $arrAST)
 {
     $pVoIPProvider = new paloSantoVoIPProvider($pDB);
     $arrFormVoIPProvider = createFieldForm($pVoIPProvider);
@@ -181,17 +187,36 @@ function saveNewVoIPProvider($smarty, $module_name, $local_templates_dir, &$pDB,
 
         $arrData[] = $technology;
         $arrData[] = $id_provider;
-
-        if(!$pVoIPProvider->insertAccount($arrData)){
-            $smarty->assign("mb_title", _tr("Validation Error"));
-            $strErrorMsg  = "<b>"._tr('Internal Error')."</b><br/>".$pVoIPProvider->errMsg;
-            $smarty->assign("mb_message", $strErrorMsg);
-            return newFormVoIPProviderAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
+        $pVP       = new paloSantoVP($pDB2);
+        $id_trunk  = $pVP->getIdNextTrunk();
+        $exito = $pVP->saveTrunk($arrData);
+        if($exito){
+            if(!$pVoIPProvider->insertAccount($arrData,$id_trunk)){
+                $smarty->assign("mb_title", _tr("Validation Error"));
+                $strErrorMsg  = "<b>"._tr('Internal Error')."</b><br/>".$pVoIPProvider->errMsg;
+                $smarty->assign("mb_message", $strErrorMsg);
+                return newFormVoIPProviderAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
+            }
+            else{
+                //escritura en archivos de asterisk
+                //$pVoIPProvider->setAsteriskFiles($dsn_agi_manager);
+                $data_connection = array('host' =>  $dsn_agi_manager['host'], 'user' => $dsn_agi_manager['user'], 'password' => $dsn_agi_manager['password']);
+                if($pVP->do_reloadAll($data_connection, $arrAST, $arrAMP)){
+                    $smarty->assign("mb_title", _tr("Message"));
+                    $smarty->assign("mb_message", _tr("The account was created successfully"));
+                }
+                else{
+                    $smarty->assign("mb_title", _tr("ERROR"));
+                    $smarty->assign("mb_message", $pVP->errMsg);
+                }
+                return reportVoIPProvider($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
+            }
         }
         else{
-            //escritura en archivos de asterisk
-            $pVoIPProvider->setAsteriskFiles($dsn_agi_manager);
-            return reportVoIPProvider($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
+            $smarty->assign("mb_title", _tr("Validation Error"));
+            $strErrorMsg  = "<b>"._tr('Internal Error')."</b><br/>".$pVP->errMsg;
+            $smarty->assign("mb_message", $strErrorMsg);
+            return newFormVoIPProviderAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
         }
     }
 }
@@ -205,8 +230,9 @@ function editFormVoIPProviderAccount($smarty, $module_name, $local_templates_dir
     //begin, Form data persistence to errors and other events.
     $action = getParameter("action");
     $id     = getParameter("id");
+    $id_trunk = getParameter("id_trunk");
     $smarty->assign("ID", $id); //persistence id with input hidden in tpl
-
+    $smarty->assign("ID_TRUNK", $id_trunk);
     $dataVoIPProvider = $pVoIPProvider->getVoIPProviderAccountById($id);
     $name   = $pVoIPProvider->getVoIPProviderById($dataVoIPProvider['id_provider']);
     $_DATA  = $_POST;
@@ -240,7 +266,7 @@ function editFormVoIPProviderAccount($smarty, $module_name, $local_templates_dir
     return $content;
 }
 
-function saveEditVoIPProviderAccount($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $dsn_agi_manager)
+function saveEditVoIPProviderAccount($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $dsn_agi_manager, $pDB2, $arrAMP, $arrAST)
 {
     $pVoIPProvider = new paloSantoVoIPProvider($pDB);
     $arrFormVoIPProvider = createFieldForm($pVoIPProvider);
@@ -264,27 +290,43 @@ function saveEditVoIPProviderAccount($smarty, $module_name, $local_templates_dir
         $technology    = getParameter("technology");
         $statusAct     = getParameter("status");
         $id            = getParameter("id");
+        $id_trunk      = getParameter("idTrunk");
         $arrData       = getAllDataPOST();
-
         if(empty($technology)){
             $dataVoIPProvider = $pVoIPProvider->getVoIPProviderAccountById($id);
             $technology       = $dataVoIPProvider['technology'];
         }
-
         $arrData[] = $technology;
         $arrData[] = $statusAct;
         $arrData[] = $id;
-
-        if(!$pVoIPProvider->updateAccount($arrData)){
-            $smarty->assign("mb_title", _tr("Validation Error"));
-            $strErrorMsg  = "<b>"._tr('Internal Error')."</b><br/>".$pVoIPProvider->errMsg;
-            $smarty->assign("mb_message", $strErrorMsg);
-            return editFormVoIPProviderAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $dsn_agi_manager);
+        $pVP       = new paloSantoVP($pDB2);
+        if($pVP->updateTrunk($arrData,$id_trunk)){
+            if(!$pVoIPProvider->updateAccount($arrData)){
+                $smarty->assign("mb_title", _tr("Validation Error"));
+                $strErrorMsg  = "<b>"._tr('Internal Error')."</b><br/>".$pVoIPProvider->errMsg;
+                $smarty->assign("mb_message", $strErrorMsg);
+                return editFormVoIPProviderAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $dsn_agi_manager);
+            }
+            else{
+                //escritura en archivos de asterisk
+                //$pVoIPProvider->setAsteriskFiles($dsn_agi_manager);
+                $data_connection = array('host' =>  $dsn_agi_manager['host'], 'user' => $dsn_agi_manager['user'], 'password' => $dsn_agi_manager['password']);
+                if($pVP->do_reloadAll($data_connection, $arrAST, $arrAMP)){
+                    $smarty->assign("mb_title", _tr("Message"));
+                    $smarty->assign("mb_message", _tr("The account was edited successfully"));
+                }
+                else{
+                    $smarty->assign("mb_title", _tr("ERROR"));
+                    $smarty->assign("mb_message", $pVP->errMsg);
+                }
+                return reportVoIPProvider($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
+            }
         }
         else{
-            //escritura en archivos de asterisk
-            $pVoIPProvider->setAsteriskFiles($dsn_agi_manager);
-            return reportVoIPProvider($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
+            $smarty->assign("mb_title", _tr("Validation Error"));
+            $strErrorMsg  = "<b>"._tr('Internal Error')."</b><br/>".$pVP->errMsg;
+            $smarty->assign("mb_message", $strErrorMsg);
+            return newFormVoIPProviderAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
         }
     }
 }
@@ -322,7 +364,7 @@ function getInfoVoIPProviderAccount($module_name, &$pDB, $arrConf)
     return $jsonObject->createJSON();
 }
 
-function deleteVoIPProviderAccount($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $dsn_agi_manager)
+function deleteVoIPProviderAccount($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $dsn_agi_manager, $pDB2, $arrAMP, $arrAST)
 {
     $pVoIPProvider = new paloSantoVoIPProvider($pDB);
     $pACL            = new paloACL($arrConf['ACLdb']);
@@ -330,15 +372,24 @@ function deleteVoIPProviderAccount($smarty, $module_name, $local_templates_dir, 
     $esAdministrador = $pACL->isUserAdministratorGroup($user);
     if($esAdministrador){
         $result = "";
+        $pVP     = new paloSantoVP($pDB2);
         foreach($_POST as $key => $values){
-            if(substr($key,0,8) == "account_")
-            {
-                $tmpID = substr($key, 8);
-                $pVoIPProvider->deleteAccount($tmpID);
-            }
+            $tmp = explode("_",$key);
+            if($tmp[0] == "account")
+                if($pVP->deleteTrunk($tmp[2]))
+                    $pVoIPProvider->deleteAccount($tmp[1]);
         }
         //escritura en archivos de asterisk
-        $pVoIPProvider->setAsteriskFiles($dsn_agi_manager);
+        //$pVoIPProvider->setAsteriskFiles($dsn_agi_manager);
+        $data_connection = array('host' =>  $dsn_agi_manager['host'], 'user' => $dsn_agi_manager['user'], 'password' => $dsn_agi_manager['password']);
+        if($pVP->do_reloadAll($data_connection, $arrAST, $arrAMP)){
+            $smarty->assign("mb_title", _tr("Message"));
+            $smarty->assign("mb_message", _tr("The account was deleted successfully"));
+        }
+        else{
+            $smarty->assign("mb_title", _tr("ERROR"));
+            $smarty->assign("mb_message", $pVP->errMsg);
+        }
     }else{
         $smarty->assign("mb_title", _tr("Validation Error"));
         $smarty->assign("mb_message", _tr("User is not allowed to do this operation"));
@@ -347,7 +398,7 @@ function deleteVoIPProviderAccount($smarty, $module_name, $local_templates_dir, 
 
 }
 
-function activateVoIPProviderAccount($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $dsn_agi_manager)
+function activateVoIPProviderAccount($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $dsn_agi_manager, $pDB2, $arrAMP, $arrAST)
 {
 	$pVoIPProvider   = new paloSantoVoIPProvider($pDB);
     $pACL            = new paloACL($arrConf['ACLdb']);
@@ -356,15 +407,33 @@ function activateVoIPProviderAccount($smarty, $module_name, $local_templates_dir
     if($esAdministrador){
 		$id      = getParameter("id");
 		$arrData = $pVoIPProvider->getVoIPProviderAccountById($id);
-		$status  = "";
-		if($arrData['status']=="desactivate")
-			$status = "activate";
-		else
-			$status = "desactivate";
-			
+		$status  = "";  
+        $pVP     = new paloSantoVP($pDB2);
+        $id_trunk = getParameter("id_trunk");
+		if($arrData['status']=="desactivate"){
+            if($pVP->disableTrunk($id_trunk,'off'))
+			    $status = "activate";
+            else
+                $status = "desactivate";
+        }
+		else{
+            if($pVP->disableTrunk($id_trunk,'on'))
+			    $status = "desactivate";
+            else
+                $status = "activate";
+        }	
 		$sal = $pVoIPProvider->changeStatus($id, $status);
 		if($sal){
-			$pVoIPProvider->setAsteriskFiles($dsn_agi_manager);
+            $data_connection = array('host' =>  $dsn_agi_manager['host'], 'user' => $dsn_agi_manager['user'], 'password' => $dsn_agi_manager['password']);
+            if($pVP->do_reloadAll($data_connection, $arrAST, $arrAMP)){
+                $smarty->assign("mb_title", _tr("Message"));
+                $smarty->assign("mb_message", _tr("The account was $status successfully"));
+            }
+            else{
+                $smarty->assign("mb_title", _tr("ERROR"));
+                $smarty->assign("mb_message", $pVP->errMsg);
+            }
+			//$pVoIPProvider->setAsteriskFiles($dsn_agi_manager);
 		}else{
 			$smarty->assign("mb_title", _tr("ERROR"));
 			$smarty->assign("mb_message", _tr("Internal Error"));
@@ -442,7 +511,7 @@ function reportVoIPProvider($smarty, $module_name, $local_templates_dir, &$pDB, 
 
         if(is_array($arrResult) && $totalVoipProviders>0){
             foreach($arrResult as $key => $value){
-                $arrTmp[0] = "<input type='checkbox' name='account_{$value['id']}'  />";
+                $arrTmp[0] = "<input type='checkbox' name='account_{$value['id']}_{$value['id_trunk']}'  />";
                 $arrTmp[1] = $value['account_name'];
                 if(isset($value['id_provider']) && $value['id_provider'] != ""){
                     $name = $pVoIPProvider->getVoIPProviderById($value['id_provider']);
@@ -452,10 +521,10 @@ function reportVoIPProvider($smarty, $module_name, $local_templates_dir, &$pDB, 
                 $arrTmp[3] = $value['callerID'];
                 $arrTmp[4] = $value['type_trunk'];
                 if($value['status'] == "activate")
-                    $arrTmp[5] = "<a href=?menu=$module_name&action=activate&id={$value['id']}>"._tr('Disable')."</a>";
+                    $arrTmp[5] = "<a href=?menu=$module_name&action=activate&id={$value['id']}&id_trunk={$value['id_trunk']}>"._tr('Disable')."</a>";
                 else
-                    $arrTmp[5] = "<a href=?menu=$module_name&action=activate&id={$value['id']}>"._tr('Enable')."</a>";
-                $arrTmp[6] = "<a href=?menu=$module_name&action=view_edit&id={$value['id']}>"._tr('Edit')."</a>";
+                    $arrTmp[5] = "<a href=?menu=$module_name&action=activate&id={$value['id']}&id_trunk={$value['id_trunk']}>"._tr('Enable')."</a>";
+                $arrTmp[6] = "<a href=?menu=$module_name&action=view_edit&id={$value['id']}&id_trunk={$value['id_trunk']}>"._tr('Edit')."</a>";
                 $arrData[] = $arrTmp;
             }
         }

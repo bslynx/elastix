@@ -67,6 +67,12 @@ $arrLangModule=array(
 "Enable" => "Enable",
 "Disable" => "Disable",
 "Outbound CallerID" => "Outbound CallerID",
-"Advanced" => "Advanced"
+"Advanced" => "Advanced",
+"The account was created successfully" => "The account was created successfully",
+"Error when connecting to Asterisk Manager" => "Error when connecting to Asterisk Manager",
+"The account was edited successfully" => "The account was edited successfully",
+"The account was deleted successfully" => "The account was deleted successfully",
+"The account was activate successfully" => "The account was activated successfully",
+"The account was desactivate successfully" => "The account was desactivated successfully"
 );
 ?>

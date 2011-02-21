@@ -121,6 +121,7 @@
 
 
 <input class="button" type="hidden" name="id" value="{$ID}" />
+<input class="button" type="hidden" name="idTrunk" value="{$ID_TRUNK}" />
 <input class="button" type="hidden" id="module_name" name="module_name" value="{$Module_name}" />
 
 {if $mode eq 'edit'}

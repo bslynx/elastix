@@ -84,7 +84,8 @@ class paloSantoVoIPProvider {
                             pa.type_trunk AS type_trunk,
                             pa.id_provider AS id_provider,
                             pa.status AS status,
-                            pa.callerID AS callerID
+                            pa.callerID AS callerID,
+                            pa.id_trunk AS id_trunk
                     FROM
                         provider_account pa";
 
@@ -236,10 +237,9 @@ class paloSantoVoIPProvider {
         return $result;
     }
 
-    function insertAccount($data){
-
-        $query = "INSERT INTO provider_account(account_name,username,password,callerID,type,qualify,insecure,host,fromuser,fromdomain,dtmfmode,disallow,context,allow,trustrpid,sendrpid,canreinvite,type_trunk,id_provider) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-        $result = $this->_DB->genQuery($query, $data);
+    function insertAccount($data,$id_trunk){
+        $query = "INSERT INTO provider_account(account_name,username,password,callerID,type,qualify,insecure,host,fromuser,fromdomain,dtmfmode,disallow,context,allow,trustrpid,sendrpid,canreinvite,type_trunk,id_provider,id_trunk) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        $result = $this->_DB->genQuery($query, array_merge($data,array($id_trunk)));
         if($result==FALSE){
             $this->errMsg = $this->_DB->errMsg;
             return false;
