@@ -128,6 +128,18 @@ This screen will now ask for a password for the 'root' account of MySQL.\n\n"
 	fi
 	echo "FLUSH PRIVILEGES;" | mysql -u root -p$MYSQL_PASSWD1
 	echo "mysqlrootpwd=$MYSQL_PASSWD1" > $PASSWD_PATH
+	
+	
+	# ****Add the user cyrus with the command saslpasswd2 ***************
+	echo "$MYSQL_PASSWD1" | /usr/sbin/saslpasswd2 -c cyrus -u example.com
+	ret=$?
+	if [ $? -ne 0 ]; then
+		echo "Unable to set cyrus password for cyrus admin!"
+	    return 1
+	fi
+	echo "cyrususerpwd=$MYSQL_PASSWD1" >> $PASSWD_PATH
+	# *******************************************************************
+	
 	chmod 600 $PASSWD_PATH
 	chown asterisk.asterisk $PASSWD_PATH
 }

@@ -85,6 +85,11 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/elastix-firstboot/compat-dbscripts/08-schema-vtiger.sql
 
 %changelog
+* Mon Jan 21 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-3
+- CHANGED: In elastix-firstboot add new password in elastix.conf for 
+  cyrus admin user, this fixes the bug where any user could connect remotely 
+  to the console using cyrus admin user and password known
+
 * Mon Jan  7 2011 Alex Villacis Lasso <a_villacis@palosanto.com> 2.0.4-2
 - CHANGED: Send output of dialog to file descriptor 3 with --output-fd option.
   This prevents error messages from dialog from messing the password output.
