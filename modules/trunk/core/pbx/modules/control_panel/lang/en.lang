@@ -34,6 +34,7 @@ $arrLangModule=array(
 "Old" => "Old",
 "Participants" => "Participants",
 "Participant" => "Participant",
-"Error when connecting to Asterisk Manager" => "Error when connecting to Asterisk Manager"
+"Error when connecting to Asterisk Manager" => "Error when connecting to Asterisk Manager",
+"Loading" => "Loading"
 );
 ?>

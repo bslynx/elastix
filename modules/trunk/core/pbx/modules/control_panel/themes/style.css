@@ -328,7 +328,7 @@ a.tooltipInfo:hover span{
     top:1em; 
     left:2em; /* donde va a estar */
     width:160px; /* el ancho por defecto que va a tener */
-    height:100px;
+    height:50px;
     padding:10px; /* la separaci�n entre el contenido y los bordes */
     background-color: #6CF; /* el color de fondo por defecto */
     border: 1px solid #36F;

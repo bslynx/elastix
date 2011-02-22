@@ -95,7 +95,7 @@ function _moduleContent(&$smarty, $module_name)
             $content = loadBoxesAction($pDB1, $pDB2, $module_name);
             break;
         case "loadArea":
-            $content = loadAreaAction($pDB1, $pDB2);
+            $content = loadAreaAction($pDB1, $pDB2, $module_name);
             break;
         case "saveEdit":
             $content = saveEditAction($pDB1, $pDB2);
@@ -434,16 +434,16 @@ function loadBoxesAction(&$pDB1, &$pDB2, $module_name)
         $arrArea3[] = array("id" => $key, "type" => "area3", "title" => "<b>$key:</b>&nbsp;$value[short_name]", "info" => $value["full_name"], "module_name" => $module_name, "img_name" => "phhonez0.png", "status" => $value["status"], "droppable" => true);
     }
     foreach($arrQueues as $key => $value){
-        $arrQue[] = array("id" => $value["number"], "type" => "queue", "title" => "<b>$value[number]:</b>&nbsp;$value[name]", "info" => $value["members"], "module_name" => $module_name, "img_name" => "queue.png", "status" => "on", "droppable" => false);
+        $arrQue[] = array("id" => $value["number"], "type" => "queue", "title" => "<b>$value[number]:</b>&nbsp;".substr($value['name'],0,12), "info" => $value["members"], "module_name" => $module_name, "img_name" => "queue.png", "status" => "on", "droppable" => false);
     }
     foreach($arrDAHDITrunks as $key => $value){
         $arrDAHDI[] = array("id" => $value, "type" => "dahdiTrunk", "title" => "<b>$value</b>", "info" => $value, "module_name" => $module_name, "img_name" => "icon_trunk2.png", "status" => "on", "droppable" => false);
     }
     foreach($arrSIPTrunks as $key => $value){
-        $arrSIP[] = array("id" => $value["name"], "type" => "sipTrunk", "title" => "<b>$value[name]</b>", "info" => $value["name"], "module_name" => $module_name, "img_name" => "icon_trunk2.png", "status" => $value["status"], "droppable" => false);
+        $arrSIP[] = array("id" => $value["name"], "type" => "sipTrunk", "title" => "<b>".substr($value['name'],0,12)."</b>", "info" => $value["name"], "module_name" => $module_name, "img_name" => "icon_trunk2.png", "status" => $value["status"], "droppable" => false);
     }
     foreach($arrConferences as $key => $value){
-        $arrCon[] = array("id" => $value["exten"], "type" => "conference", "title" => "<b>$value[exten]:</b>&nbsp;$value[description]", "info" => $value["exten"], "module_name" => $module_name, "img_name" => "conference.png", "status" => "on", "droppable" => false);
+        $arrCon[] = array("id" => $value["exten"], "type" => "conference", "title" => "<b>$value[exten]:</b>&nbsp;".substr($value['description'],0,12), "info" => $value["exten"].": ".$value['description'], "module_name" => $module_name, "img_name" => "conference.png", "status" => "on", "droppable" => false);
     }
     $arrData[0] = array("length" => ceil(count($arrDevices[1])/$length[0]), "data" => $arrExten);
     $arrData[1] = array("length" => ceil(count($arrDevices[2])/$length[1]), "data" => $arrArea1);
@@ -604,11 +604,15 @@ function saveresizeAction(&$pDB1, &$pDB2)
     return $jsonObject->createJSON();
 }
 
-function loadAreaAction(&$pDB1, &$pDB2)
+function loadAreaAction(&$pDB1, &$pDB2, $module_name)
 {
     $jsonObject = new PaloSantoJSON();
     $pControlPanel = new paloSantoControlPanel($pDB1,$pDB2);
-    $jsonObject->set_message($pControlPanel->getAllAreasXML());
+    $message = array();
+    $message['xml'] = $pControlPanel->getAllAreasXML();
+    $message['module_name'] = $module_name;
+    $message['loading'] = _tr('Loading');
+    $jsonObject->set_message($message);
     return $jsonObject->createJSON();
 }
 

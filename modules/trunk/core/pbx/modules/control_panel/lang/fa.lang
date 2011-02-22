@@ -32,5 +32,6 @@ $arrLangModule=array(
 "Name" => "نام",
 "New" => "جديد",
 "Old" => "قديمي",
+"Loading" => "Loading"
 );
 ?>

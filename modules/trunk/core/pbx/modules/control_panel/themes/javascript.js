@@ -321,8 +321,9 @@ function drawBoxParkinglot(arrData)
                         "});"+
                     "});"+
                     "</SCRIPT>";
+    $("#img_Parkinglots").remove();
     $("#tableParkinglots").append(html);
-  
+
 }
 
 function drawBoxArea1(arrData)
@@ -397,8 +398,10 @@ function drawBoxArea1(arrData)
                         "}"+
                     "});"+
                 "</SCRIPT>";
-    if(document.getElementById("tableArea1"))
+    if(document.getElementById("tableArea1")){
+        $("#img_Area1").remove();
         $("#tableArea1").append(html);
+    }
 }
 
 function drawBoxArea2(arrData)
@@ -473,8 +476,10 @@ function drawBoxArea2(arrData)
                     "});"+
                     "});"+ 
                 "</SCRIPT>";
-    if(document.getElementById("tableArea2"))
+    if(document.getElementById("tableArea2")){
+        $("#img_Area2").remove();
         $("#tableArea2").append(html);
+    }
 }
 
 function drawBoxArea3(arrData)
@@ -549,31 +554,35 @@ function drawBoxArea3(arrData)
                         "});"+
                         "});"+
                     "</SCRIPT>";
-        if(document.getElementById("tableArea3"))
+        if(document.getElementById("tableArea3")){
+            $("#img_Area3").remove();
             $("#tableArea3").append(html);
+        }
 }
 
 function drawBoxTrunksDAHDI(arrData, module_name)
 {
     html = drawAreaGeneric(arrData);
-    document.getElementById("tableDAHDITrunks").innerHTML = html;
+    document.getElementById("tableTrunks").innerHTML = html;
 }
 
 function drawBoxTrunksSIP(arrData)
 {
     html = drawAreaGeneric(arrData);
-     document.getElementById("tableSIPTrunks").innerHTML = html;
+     document.getElementById("tableTrunksSIP").innerHTML = html;
 }
 
 function drawBoxConferences(arrData)
 {
     html = drawAreaGeneric(arrData);
+    $("#img_Conferences").remove();
     $("#tableConferences").append(html);
 }
 
 function drawBoxQueues(arrData)
 {
     html = drawAreaGeneric(arrData);
+    $("#img_Queues").remove();
     $("#tableQueues").append(html);
 }
 
@@ -666,6 +675,7 @@ function formatear_long2(val){
 function drawBoxExtension(arrData)
 {
     html = drawAreaGeneric(arrData);
+    $("#img_Extension").remove();
     $("#tableExtension").append(html);
 }
 
@@ -885,12 +895,12 @@ function loadSizeArea()
         request("index.php",arrAction,false,
             function(arrData,statusResponse,error)
             {
-                    loadArea(arrData);
+                    loadArea(arrData['xml'],arrData['module_name'],arrData['loading']);
             }
         );
 }
 
-function loadArea(xmlLoad){
+function loadArea(xmlLoad,module_name,loading){
     parser=new DOMParser();
     xmlDoc=parser.parseFromString(xmlLoad,"text/xml");
 
@@ -910,7 +920,7 @@ function loadArea(xmlLoad){
         area.style.height = heightsize.firstChild.nodeValue+"px";
         area.style.width  = widthsize.firstChild.nodeValue+"px";
         area.style.backgroundColor = color.firstChild.nodeValue;
-
+        document.getElementById("table"+namearea.firstChild.nodeValue).innerHTML = "<div id='img_"+namearea.firstChild.nodeValue+"'><img class='ima' src='modules/"+module_name+"/images/loading.gif' border='0' align='absmiddle' />&nbsp;"+loading+"</div>";
         if(namearea.firstChild.nodeValue=="Extension"){
             var content = document.getElementById("content");
             content.style.width  = widthsize.firstChild.nodeValue+"px";

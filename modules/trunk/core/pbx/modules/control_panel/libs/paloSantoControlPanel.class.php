@@ -784,11 +784,11 @@ class paloSantoControlPanel {
         $parameters = array('Command'=>"queue show");
         $arrQueues = $this->AsteriskManagerAPI("Command",$parameters,true);
         $arrQue = array();
-
-        foreach($arrQueues as $line){
-            if(ereg("^([0-9]+)[[:space:]]*has ([0-9]+)",$line,$arrToken))
-                $arrQue[$arrToken[1]] = $arrToken[2];
-        }
+        if(is_array($arrQueues))
+            foreach($arrQueues as $line){
+                if(ereg("^([0-9]+)[[:space:]]*has ([0-9]+)",$line,$arrToken))
+                    $arrQue[$arrToken[1]] = $arrToken[2];
+            }
         return $arrQue;
     }
 

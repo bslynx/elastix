@@ -29,7 +29,7 @@
         <li id="headTrunks">
         {$descripArea6}
             <table border ='0' cellspacing="0" cellpadding="0">
-                <tr id="tableDAHDITrunks">
+                <tr id="tableTrunks">
                 </tr>
             </table>
         </li>
@@ -39,7 +39,7 @@
         <li id="headTrunksSIP">
         {$descripArea7}
             <table border ='0' cellspacing="0" cellpadding="0">
-                <tr id="tableSIPTrunks">
+                <tr id="tableTrunksSIP">
                 </tr>
             </table>
         </li>
