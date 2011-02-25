@@ -43,7 +43,7 @@
               <div align="right">{$USERNAME}:</div>
           </td>
           <td>
-            <input type="text" name="input_user" style="color:#000000; FONT-FAMILY: verdana, arial, helvetica, sans-serif; FONT-SIZE: 8pt;
+            <input type="text" id="input_user" name="input_user" style="color:#000000; FONT-FAMILY: verdana, arial, helvetica, sans-serif; FONT-SIZE: 8pt;
              font-weight: none; text-decoration: none; background: #fbfeff; border: 1 solid #000000;">
           </td>
         </tr>
@@ -72,5 +72,8 @@
 <br>
 <div align="center" class="copyright"><a href="http://www.elastix.org" target='_blank'>Elastix</a> is licensed under <a href="http://www.opensource.org/licenses/gpl-license.php" target='_blank'>GPL</a> by <a href="http://www.palosanto.com" target='_blank'>PaloSanto Solutions</a>. 2006 - {$currentyear}.</div>
 <br>
+<script type="text/javascript">
+    document.getElementById("input_user").focus();
+</script>
 </body>
 </html>
