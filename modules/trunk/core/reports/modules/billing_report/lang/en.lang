@@ -29,8 +29,8 @@
 global $arrLangModule;
 $arrLangModule=array(
 "billing_report" => "billing_report",
-"Start_Date"=>"Start Date",
-"End_Date"=>"End Date",
+"Start Date"=>"Start Date",
+"End Date"=>"End Date",
 "Channel" => "Channel",
 "Billing Report"=>"Billing Report",
 "Cost" => "Cost",

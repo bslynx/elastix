@@ -921,23 +921,23 @@ function createViewForm($arrLang){
 
 function getAction()
 {
-    if(getParameter("submit_apply_changes")=="Apply Changes")
+    if(getParameter("submit_apply_changes"))
         return "save_edit";
-    else if(getParameter("edit")=="Edit")
+    else if(getParameter("edit"))
         return "edit_form";
-    else if(getParameter("delete")=="Delete") 
+    else if(getParameter("delete")) 
         return "delete";
-    else if(getParameter("submit_save_rate")=="Save") 
+    else if(getParameter("submit_save_rate")) 
         return "save_new";
-    else if(getParameter("cancel")=="Cancel") 
+    else if(getParameter("cancel")) 
         return "cancel";
     else if(getParameter("action")=="view")
         return "view_form";
-    else if(getParameter("submit_import_changes")=="Save")
+    else if(getParameter("submit_import_changes"))
         return "save_import";
-	 else if(getParameter("new_rate")=="Create New Rate")
+	 else if(getParameter("new_rate"))
         return "new_rate";
-	 else if(getParameter("import_rate")=="Import File")
+	 else if(getParameter("import_rate"))
         return "import_rate";
     else
         return "report"; //cancel
