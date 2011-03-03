@@ -214,7 +214,9 @@ This screen will now ask for a password for user 'admin' that will be used for: 
 	sqlite3 /var/www/db/acl.db "UPDATE acl_user SET md5_password = '$MD5HASH' WHERE name = 'admin'"
 	
 	# Set password for A2Billing
-	echo "UPDATE mya2billing.cc_ui_authen SET password = '$FREEPBX_PASSWD1' WHERE login = 'admin';" | mysql -u root -p$MYSQL_PASSWD1
+        WHIRLPOOL=`php -r "echo hash('whirlpool','$FREEPBX_PASSWD1');"`
+        echo "UPDATE mya2billing.cc_ui_authen SET pwd_encoded='$WHIRLPOOL', login='admin' WHERE userid=1;" | mysql -u root -p$MYSQL_PASSWD1
+	#echo "UPDATE mya2billing.cc_ui_authen SET password = '$FREEPBX_PASSWD1' WHERE login = 'admin';" | mysql -u root -p$MYSQL_PASSWD1
 	ret=$?
 	if [ $? -ne 0 ]; then
 	    echo "Unable to set admin password for A2Billing !"
@@ -222,7 +224,7 @@ This screen will now ask for a password for user 'admin' that will be used for: 
 	fi
 	
 	# Remove redundant root login from A2Billing
-	echo "DELETE FROM mya2billing.cc_ui_authen WHERE login = 'root';" | mysql -u root -p$MYSQL_PASSWD1
+	# echo "DELETE FROM mya2billing.cc_ui_authen WHERE login = 'root';" | mysql -u root -p$MYSQL_PASSWD1
 	
 	# Set password for VTiger. This assumes the vtigercrm510 database is already created. 
 	# This procedure works for VTigerCRM 5.1.0
