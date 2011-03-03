@@ -555,12 +555,11 @@ function reportVoIPProvider($smarty, $module_name, $local_templates_dir, &$pDB, 
 
 function createFieldForm($pVoIPProvider)
 {
-    $arrProviders = array("custom" => _tr("Custom"));
     $result = $pVoIPProvider->getVoIPProviders();//Obtiene la lista para ser seteado en el listbox
     foreach($result as $values){
         $arrProviders[$values['name']] = $values['name'];
     }
-
+    $arrProviders["custom"] = _tr("Custom");
     $arrSelectForm = array("no" => _tr("no"), "yes" => _tr("yes"));
 	$arrStatus     = array("activate" => _tr("Enable"), "desactivate" => _tr("Disable"));
     $arrSelectTech = array("SIP" => "SIP", "IAX2" => "IAX2");
