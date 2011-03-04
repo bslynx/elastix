@@ -103,7 +103,7 @@ This script install, update and delete database.
 */
 
 
-if ($argc < 4){
+if ($argc < 2){
    die("Please specify the engine, the action and folder path files sqls.\n Usage: {$_SERVER['argv'][0]} install /usr/share/elastix/.../db/  version sql_export\n");
 }
 
@@ -236,8 +236,12 @@ function executeFiles_SQL_install($data, $dbname, $password, $path_folder, $acti
          }
       }
       if($data['engine'] == "sqlite3"){
-        if(!chown($data['path']."/".$dbname.".db","asterisk")){
+        if(!chown($data['path']."/".$dbname.".db","asterisk")){ 
             echo "Could not change the owner to asterisk to the database $dbname.\n";
+            return 1;
+        }
+        if(!chgrp($data['path']."/".$dbname.".db","asterisk")){ 
+            echo "Could not change the group to asterisk to the database $dbname.\n";
             return 1;
         }
       }
@@ -245,9 +249,10 @@ function executeFiles_SQL_install($data, $dbname, $password, $path_folder, $acti
       if($sql_export==false && ($data['engine'] != "mysql" || $mysqlRunning))
           echo "Successfull, Action $action database $dbname.\n";
       return 0;
+   }else{
+        echo "Nothing to be done in database $dbname.\n";
+        return 0;
    }
-   echo "Nothing to be done in database $dbname.\n";
-   return 0;
 }
 
 function executeFiles_SQL_update($data, $dbname, $version, $password, $path_folder, $action, $sql_export=false)
@@ -287,8 +292,10 @@ function executeFiles_SQL_update($data, $dbname, $version, $password, $path_fold
             return 0;
         }
     }
-    echo "Nothing to be done in database $dbname.\n";
-    return 0;
+    else{
+        echo "Nothing to be done in database $dbname.\n";
+        return 0;
+    }
 }
 
 function executeFiles_SQL_delete($data, $dbname, $password, $path_folder, $action, $sql_export=false)
@@ -349,8 +356,10 @@ function executeFiles_SQL_delete($data, $dbname, $password, $path_folder, $actio
           echo "Successfull, Action $action database $dbname.\n";
       return 0;
     }
-    echo "Nothing to be done in database $dbname.\n";
-    return 0;
+    else{
+        echo "Nothing to be done in database $dbname.\n";
+        return 0;
+    }
 }
 
 function sortArray($arrFiles)
