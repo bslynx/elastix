@@ -193,7 +193,7 @@ function executeFiles_SQL_install($data, $dbname, $password, $path_folder, $acti
    if(is_array($arrFiles) && count($arrFiles)>0){
       if(ismysqlRunning())
          $mysqlRunning = true;
-      elseif($engine == "mysql")
+      elseif($data['engine'] == "mysql")
          echo "Mysql is shutdown.\n";
       foreach($arrFiles as $k => $file){// must only have sqls files valids.
          if(ereg("\.sql$",$file)){
