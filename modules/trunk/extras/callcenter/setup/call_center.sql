@@ -31,6 +31,7 @@ CREATE TABLE IF NOT EXISTS `agent` (
   `name` varchar(250) NOT NULL,
   `password` varchar(250) NOT NULL,
   `estatus` enum('A','I') default 'A',
+  `eccp_password` varchar(128),
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -627,6 +628,34 @@ DELIMITER ; ++
 
 CALL temp_calls_datetime_originate_2010_06_18();
 DROP PROCEDURE IF EXISTS temp_calls_datetime_originate_2010_06_18;
+
+/* Procedimiento para agregar columna que registra clave de agente para ECCP */
+DELIMITER ++ ;
+
+DROP PROCEDURE IF EXISTS temp_agent_eccp_password_2011_02_14 ++
+CREATE PROCEDURE temp_agent_eccp_password_2011_02_14 ()
+    READS SQL DATA
+    MODIFIES SQL DATA
+BEGIN
+    DECLARE l_existe_columna tinyint(1);
+    
+    SET l_existe_columna = 0;
+
+    /* Verificar existencia de columna agent.eccp_password que debe agregarse */
+    SELECT COUNT(*) INTO l_existe_columna 
+    FROM INFORMATION_SCHEMA.COLUMNS 
+    WHERE TABLE_SCHEMA = 'call_center' 
+        AND TABLE_NAME = 'agent' 
+        AND COLUMN_NAME = 'eccp_password';
+    IF l_existe_columna = 0 THEN
+        ALTER TABLE agent ADD COLUMN eccp_password varchar(128) default NULL;
+    END IF;
+END;
+++
+DELIMITER ; ++
+
+CALL temp_agent_eccp_password_2011_02_14();
+DROP PROCEDURE IF EXISTS temp_agent_eccp_password_2011_02_14;
 
 
 /*!40000 ALTER TABLE `queue_call_entry` ENABLE KEYS */;
