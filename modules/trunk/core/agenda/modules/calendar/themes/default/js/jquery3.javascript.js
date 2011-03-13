@@ -92,24 +92,6 @@ $(document).ready(function(){
         }
     });
 
-//     $('#sent_emails').click(function(){
-//         var emails = copyEmailsToSend();
-//         emails = emails.replace(/&lt;/gi,"<");
-//         emails = emails.replace(/&gt;/gi,">");
-//         if(emails=="error_email" || emails==false)
-//             connectJSON(emails);
-//         else{
-//             var order = "menu="+module_name+"&action=share_calendar&emailshare="+emails+"&rawmode=yes";
-//             $.post("index.php", order,
-//                 function(theResponse){
-//                     var message = JSONtoString(theResponse);
-//                     var sal = message['message'];
-//                     alert(sal);
-//                     location.reload();
-//             });
-//         }
-//     });
-
     $('#formNewEvent').submit(
         function(){
             //the event'name is filled
@@ -122,25 +104,11 @@ $(document).ready(function(){
                 connectJSON("error_date");
                 return false;
             }
-            //h1:m1 < h2:m2
-            /*if(!isCorrectTime()){
-                connectJSON("error_hour");
-                return false;
-            }*/
-
             //description is filled
             if(!getStatusDescription()){
                 connectJSON("error_description");
                 return false;
             }
-/*
-            if(getStatusItRepeat()){
-                if(getNumCheckboxDays() == 0){
-                    connectJSON("error_repeat");
-                    return false;
-                }
-            }
-*/
             if(getStatusReminder()){ // si en on => true
                 if(!existRecording()){
                     connectJSON("error_recording");
@@ -150,19 +118,7 @@ $(document).ready(function(){
                     connectJSON("call_to_error");
                     return false;
                 }
-                //asterisk_call_me is check 
-                /*if(!getStatusCallsNotification()){// si en on => true
-                    if(!validCallsTo()){
-                        connectJSON("call_to_error");
-                        return false;
-                    }
-                }else{//on
-                    verifyNumExtesion();/// validar para que no siempre se retorne debido a que siempre va a preguntar si existe o no estension para el usuario
-                    var titles = document.getElementById('label_call');
-                    if(titles.childNodes.length > 0)    return false;
-                }*/
             }
-
             //es valido el contenido de notification_email
             if(getStatusNotification()){
                 var result = obtainEmails();
@@ -220,31 +176,12 @@ $(document).ready(function(){
         var description_event = document.getElementsByName('description')[0];
         var date_ini          = document.getElementById('f-calendar-field-1');
         var date_end          = document.getElementById('f-calendar-field-2');
-        //var date_ini_hour1    = document.getElementsByName('hora1')[0];
-        //var date_ini_minute1  = document.getElementsByName('minuto1')[0];
-        //var date_end_hour2    = document.getElementsByName('hora2')[0];
-        //var date_end_minute2  = document.getElementsByName('minuto2')[0];
-//        var it_repeat_event   = document.getElementsByName('it_repeat')[0];
-//        var repeat_name       = document.getElementsByName('repeat')[0];
         var recording_event   = document.getElementsByName('recording')[0];
-//        var type_repeat_event = document.getElementById('type_repeat');
-        //var call_to_event     = document.getElementById('call_to');
-/*        var chkoldSunday      = document.getElementsByName('chkoldSunday')[0];
-        var chkoldMonday      = document.getElementsByName('chkoldMonday')[0];
-        var chkoldTuesday     = document.getElementsByName('chkoldTuesday')[0];
-        var chkoldWednesday   = document.getElementsByName('chkoldWednesday')[0];
-        var chkoldThursday    = document.getElementsByName('chkoldThursday')[0];
-        var chkoldFriday      = document.getElementsByName('chkoldFriday')[0];
-        var chkoldSaturday    = document.getElementsByName('chkoldSaturday')[0];
-*/
-        //var chkoldasterisk    = document.getElementsByName('chkoldasterisk_call_me')[0];
-        //var inputAsteriskCall = document.getElementById('asterisk_call_me');
         var inputCallTo       = document.getElementById('call_to');
         var chkoldnoti        = document.getElementsByName('chkoldnotification')[0];
         var id_event_input    = document.getElementById('id_event');
         var uid               = document.getElementById('id');
-                //disabled all input and select
-		////change reminderTimer
+
         $('#ReminderTime').attr("disabled","disabled");
         $('#add_phone').attr("style","display: inline;");
         $('.new_box_rec').attr("style","display: inline;");
@@ -252,22 +189,7 @@ $(document).ready(function(){
         RemoveAttributeDisable(description_event);
         RemoveAttributeDisable(date_ini);
         RemoveAttributeDisable(date_end);
-        //RemoveAttributeDisable(date_ini_hour1);
-        //RemoveAttributeDisable(date_ini_minute1);
-        //RemoveAttributeDisable(date_end_hour2);
-        //RemoveAttributeDisable(date_end_minute2);
-//        RemoveAttributeDisable(it_repeat_event);
-//        RemoveAttributeDisable(repeat_name);
         RemoveAttributeDisable(recording_event);
-/*        RemoveAttributeDisable(chkoldSunday);
-        RemoveAttributeDisable(chkoldMonday);
-        RemoveAttributeDisable(chkoldTuesday);
-        RemoveAttributeDisable(chkoldWednesday);
-        RemoveAttributeDisable(chkoldThursday);
-        RemoveAttributeDisable(chkoldFriday);
-        RemoveAttributeDisable(chkoldSaturday);
-*/
-        //RemoveAttributeDisable(chkoldasterisk);
         RemoveAttributeDisable(inputCallTo);
         RemoveAttributeDisable(chkoldnoti);
         $('#ReminderTime').removeAttr("disabled");
@@ -359,131 +281,49 @@ $(document).ready(function(){
             $('#calendar').fullCalendar('changeView', 'agendaDay');
         }
     });
-
-// checkbox notificacion
-    //$('table tr #noti :checkbox').click(
-/*    $('#divNotification').click(
-        function(){
-            notificationcheck();
-            var estado = $('#notification').val();
-            if(estado == 'on'){
-                $('#notification_email').attr("style","visibility: visible;");
-            }
-            else{
-                $('#notification_email').attr("style","visibility: hidden;");
-            }
-    });
-
-// checkbox reminder
-    //$('table tr #remi :checkbox').click(
-    $('#divReminder').click(
-        function(){
-            remindercheck();
-            var estado = $('#reminder').val();
-            if(estado == 'on'){
-                $('.remin').attr("style","visibility: visible;");
-            }
-            else{
-                $('.remin').attr("style","display: none;");
-            }
-    });
-*/
-//  checkbox asterisk_call_me
-    /*$('table tr #asterisk_call :checkbox').click(
-        function(){
-            var estado = $('#asterisk_call_me').val();
-            if(estado == 'off'){
-                //$('#check').show();
-                $('#call_to').val("");
-                $('#label_call').html("");
-                $('#add_phone').show();
-            }
-            else{
-                //$('#check').hide();
-                verifyNumExtesion();
-                $('#add_phone').hide();
-            }
-    });*/
-
 });
 
-function change_year(year)
-{
-    var month  = document.getElementById("month").value;
-    window.open('index.php?menu='+module_name+'&action=report&year='+year.value+'&month='+month,'_self');
-}
-
-function change_month(month)
-{
-    var year   = document.getElementById("year").value;
-     window.open('index.php?menu='+module_name+'&action=report&year='+year+'&month='+month.value,'_self');
-}
-
-function makeactive(tab)
-{
-    document.getElementById("tab_daily").className = "";
-    document.getElementById("tab_weekly").className = "";
-    document.getElementById("tab_monthly").className = "";
-    document.getElementById("tab_"+tab).className = "active";
-
-    var order = 'menu='+module_name+'&action=calendar_'+tab+'&rawmode=yes';
-    $.post("index.php", order, function(theResponse){
-            $("#calendar_content").html(theResponse);
-    });
-}
-
-function testme(item)
-{   if ($.browser.mozilla) 
-    {
-        console.log(item);
+    function popup_phone_number(url_popup){
+        var ancho = 600;
+        var alto = 400;
+        my_window = window.open(url_popup,"my_window","width="+ancho+",height="+alto+",location=yes,status=yes,resizable=yes,scrollbars=yes,fullscreen=no,toolbar=yes");
+        my_window.moveTo((screen.width-ancho)/2,(screen.height-alto)/2);
+        my_window.document.close();
     }
-    else
+
+    function return_phone_number(number, type, id)
     {
-        alert(item);
+        window.opener.document.getElementById("call_to").value = number;
+        window.opener.document.getElementById("phone_type").value = type;
+        window.opener.document.getElementById("phone_id").value = id;
+        window.close();
     }
-}
 
-function popup_phone_number(url_popup){
-    var ancho = 600;
-    var alto = 400;
-    my_window = window.open(url_popup,"my_window","width="+ancho+",height="+alto+",location=yes,status=yes,resizable=yes,scrollbars=yes,fullscreen=no,toolbar=yes");
-    my_window.moveTo((screen.width-ancho)/2,(screen.height-alto)/2);
-    my_window.document.close();
-}
-
-function return_phone_number(number, type, id)
-{
-    window.opener.document.getElementById("call_to").value = number;
-    window.opener.document.getElementById("phone_type").value = type;
-    window.opener.document.getElementById("phone_id").value = id;
-    window.close();
-}
-
-// true => email_no_valid   false => empty field
-function obtainEmails(){
-    //format ("name" <dd@ema.com>, "name2" <ff@ema.com>, )
-    var id_emails = document.getElementById("emails");
-    var total_emails = "";
-    var cad = "";
-    var email = "";
-    var error = "error_email";
-    var lista = document.getElementById("lstholder1");
-    //recorriendo los li el ultimo no es tomado en cuneta ya que es null
-    for(var i = 0; i<lista.childNodes.length-1; i++){
-        cad = lista.childNodes[i].firstChild.nodeValue;
-        email = quitSimbols(cad);
-        if(email==true){
-            id_emails.value = "";
-            return error;
+    // true => email_no_valid   false => empty field
+    function obtainEmails(){
+        //format ("name" <dd@ema.com>, "name2" <ff@ema.com>, )
+        var id_emails = document.getElementById("emails");
+        var total_emails = "";
+        var cad = "";
+        var email = "";
+        var error = "error_email";
+        var lista = document.getElementById("lstholder1");
+        //recorriendo los li el ultimo no es tomado en cuneta ya que es null
+        for(var i = 0; i<lista.childNodes.length-1; i++){
+            cad = lista.childNodes[i].firstChild.nodeValue;
+            email = quitSimbols(cad);
+            if(email==true){
+                id_emails.value = "";
+                return error;
+            }
+            total_emails += email+", ";
         }
-        total_emails += email+", ";
+        total_emails = total_emails + obtainTablesEmails();
+        id_emails.value = total_emails;
+        //obtain emails by table_emails
+        if(total_emails=="")    return false;
+        return total_emails;
     }
-    total_emails = total_emails + obtainTablesEmails();
-    id_emails.value = total_emails;
-    //obtain emails by table_emails
-    if(total_emails=="")    return false;
-    return total_emails;
-}
 
     function copyEmailsToSend(){
         //format ("name" <dd@ema.com>, "name2" <ff@ema.com>, )
@@ -518,7 +358,7 @@ function obtainEmails(){
             return false;
     }
 
-// this function quit the simbols < or > and return only email
+    // this function quit the simbols < or > and return only email
     function quitSimbols(cad){
         var i = cad.indexOf("<");
         var j = cad.indexOf(">");
@@ -557,7 +397,7 @@ function obtainEmails(){
     }
 
 
-// get status of notification checkbox
+    // get status of notification checkbox
     function getStatusNotification(){
         var id = document.getElementById('notification');
         var text_value = id.value;
@@ -566,7 +406,8 @@ function obtainEmails(){
         else
             return false;
     }
-// get status of call me checkbox
+
+    // get status of call me checkbox
     function getStatusCallsNotification(){
         var id = document.getElementById('asterisk_call_me');
         var text_value = id.value;
@@ -575,7 +416,8 @@ function obtainEmails(){
         else
             return false;
     }
-// get status of call me checkbox
+
+    // get status of call me checkbox
     function getStatusReminder(){
         var id = document.getElementById('reminder');
         var text_value = id.value;
@@ -585,7 +427,7 @@ function obtainEmails(){
             return false;
     }
 
-//get num of day checkbox choosen
+    //get num of day checkbox choosen
     function getStatusItRepeat(){
         var txt = $("select[name=it_repeat] option:selected").attr('value');
         if(txt == "each_day" || txt == "each_month")
@@ -594,7 +436,7 @@ function obtainEmails(){
             return false;
     }
 
-//get num of day checkbox choosen
+    //get num of day checkbox choosen
     function getNumCheckboxDays(){
         var count     = 0;
         var sunday    = document.getElementById("Sunday").value;
@@ -670,28 +512,6 @@ function obtainEmails(){
     }
 
     function isCorrectTime(){
-        /*
-        var hora1   = document.getElementsByName('hora1')[0];
-        var minuto1 = document.getElementsByName('minuto1')[0];
-        var hora2   = document.getElementsByName('hora2')[0];
-        var minuto2 = document.getElementsByName('minuto2')[0];
-
-        var indhour1 = hora1.selectedIndex;
-        var valHour1 = hora1.options[indhour1].value;
-
-        var indMinu1 = minuto1.selectedIndex;
-        var valMinu1 = minuto1.options[indMinu1].value;
-
-        var indhour2 = hora2.selectedIndex;
-        var valHour2 = hora2.options[indhour2].value;
-
-        var indMinu2 = minuto2.selectedIndex;
-        var valMinu2 = minuto2.options[indMinu2].value;
-
-        var starttime = valHour1+":"+valMinu1;
-        var endtime   = valHour2+":"+valMinu2;
-        */
-
         var date1 = document.getElementById('f-calendar-field-1').value;
         var date2 = document.getElementById('f-calendar-field-2').value;
         strDate1 = new Date(date1);
@@ -703,7 +523,6 @@ function obtainEmails(){
             return true;
         else 
             return false;
-
     }
 
     function getDatesValid(){
@@ -724,7 +543,7 @@ function obtainEmails(){
         else    return false;
     }
 
-// valid number for asterisk_calls
+    // valid number for asterisk_calls
     function validCallsTo(){
         var id = document.getElementById('call_to');
         var titles = document.getElementById('label_call');
@@ -747,7 +566,7 @@ function obtainEmails(){
         return true;
     }
 
-// implement JSON.stringify serialization
+    // implement JSON.stringify serialization
     function StringtoJSON(obj) {
         var t = typeof (obj);
         if (t != "object" || obj === null) {
@@ -768,14 +587,14 @@ function obtainEmails(){
         }
     }
 
-// implement JSON.parse de-serialization  
+    // implement JSON.parse de-serialization  
     function JSONtoString(str) {
         if (str === "") str = '""';
         eval("var p=" + str + ";");
         return p;
     }
 
-// uso de JSON para obtener el arreglo lang.php
+    // uso de JSON para obtener el arreglo lang.php
     function connectJSON(mensaje_error) {
         var order = 'menu='+module_name+'&action=get_lang&rawmode=yes';
         var message = "";
@@ -820,7 +639,7 @@ function obtainEmails(){
                     }
             });
     }
-// view box detail event
+    // view box detail event
     function getDataAjaxForm(order){
         // blocking screen
         var urlImaLoading = "<h1><img src='modules/"+module_name+"/images/busy.gif' /> "+$('#lblLoading').val()+"...</h1>";
@@ -837,10 +656,6 @@ function obtainEmails(){
         $('#notification_email').attr("style","visibility:hidden;");
         $('#title_box').html("");
         $('#box').show();
-        //$('.loading').show();
-        $('.loading').hide();
-        //$('#divReminder').hide();
-        //$('#divNotification').hide();
         $('#lblCheckBoxNoti').attr("for","CheckBoxNoti1");
         $('#lblCheckBoxRemi').attr("for","CheckBoxRemi1");
 ////// to remove checkbox status in reminder call or notification /////////////////
@@ -849,7 +664,6 @@ function obtainEmails(){
         $.post("index.php", order,
                 function(theResponse){
                     var content = $('#table_box');
-                    $('.loading').hide();
                     var box = $('#box');
                     var message = JSONtoString(theResponse);          //response JSON to array
                     var recording = message['recording'];             //recording name
@@ -857,15 +671,8 @@ function obtainEmails(){
                     var desc_event = message['description'];          //description's event
                     var start = message['date'];                      //start date event
                     var end = message['to'];                          //end date event
-                    //var hour1 = message['hora1'];                     //initial hour date event
-                    //var minute1 = message['minuto1'];                 //initial minute date event
-                    //var hour2 = message['hora2'];                     //end hour date event
-                    //var minute2 = message['minuto2'];                 //end minute date event
-//                    var it_repeat = message['it_repeat'];             //type repeat event(no repeat, week, month)
-//                    var repeat = message['repeat'];                   //num of weeks,months to repeat
                     var title_box = message['title'];                 //title box(view event,edit event)
                     var notificacion = message['notification'];       //notification (on, off)
-                    //var call_to = message['call_to'];                 //number to call
                     var email_noti = message['emails_notification'];  //emails to notify
                     var visibility_noti = message['visibility'];      //visible or not emails_notification
                     var visibility_rep = message['visibility_repeat'];//visible or not days_repeat
@@ -877,33 +684,7 @@ function obtainEmails(){
                     var description_event = document.getElementsByName('description')[0];
                     var date_ini          = document.getElementById('f-calendar-field-1');
                     var date_end          = document.getElementById('f-calendar-field-2');
-
-                    //var date_ini_hour1    = document.getElementsByName('hora1')[0];
-                    //var date_ini_minute1  = document.getElementsByName('minuto1')[0];
-                    //var date_end_hour2    = document.getElementsByName('hora2')[0];
-                    //var date_end_minute2  = document.getElementsByName('minuto2')[0];
-
-//                    var it_repeat_event   = document.getElementsByName('it_repeat')[0];
-//                    var repeat_name       = document.getElementsByName('repeat')[0];
                     var recording_event   = document.getElementsByName('recording')[0];
-//                    var type_repeat_event = document.getElementById('type_repeat');
-/*                    var chkoldSunday      = document.getElementsByName('chkoldSunday')[0];
-                    var chkoldMonday      = document.getElementsByName('chkoldMonday')[0];
-                    var chkoldTuesday     = document.getElementsByName('chkoldTuesday')[0];
-                    var chkoldWednesday   = document.getElementsByName('chkoldWednesday')[0];
-                    var chkoldThursday    = document.getElementsByName('chkoldThursday')[0];
-                    var chkoldFriday      = document.getElementsByName('chkoldFriday')[0];
-                    var chkoldSaturday    = document.getElementsByName('chkoldSaturday')[0];
-                    var inputSunday       = document.getElementById('Sunday');
-                    var inputMonday       = document.getElementById('Monday');
-                    var inputTuesday      = document.getElementById('Tuesday');
-                    var inputWednesday    = document.getElementById('Wednesday');
-                    var inputThursday     = document.getElementById('Thursday');
-                    var inputFriday       = document.getElementById('Friday');
-                    var inputSaturday     = document.getElementById('Saturday');
-*/
-                    //var chkoldasterisk    = document.getElementsByName('chkoldasterisk_call_me')[0];
-                    //var inputAsteriskCall = document.getElementById('asterisk_call_me');
                     var inputCallTo       = document.getElementById('call_to');
                     var chkoldnoti        = document.getElementsByName('chkoldnotification')[0];
                     var chkolremin = document.getElementsByName('chkoldreminder')[0];
@@ -914,14 +695,11 @@ function obtainEmails(){
                     var tabla_grilla      = document.getElementById('grilla');
                     //var emails_noti       = document.getElementById('select2');
              /**********************************************************************/
-/*                    if(type_repeat_event.firstChild)
-                        type_repeat_event.removeChild(type_repeat_event.firstChild);
-*/
+
                     if(title_box == "View Event"){
                         var i = 0; //cont
                         //show buttons for view even
                         $('#view_box').attr("style","display:block;");
-
 
                         /*Set Color*/
                         $('#colorSelector').ColorPickerSetColor(color);
@@ -934,29 +712,12 @@ function obtainEmails(){
                         description_event.setAttribute("disabled","disabled");
                         date_ini.setAttribute("disabled","disabled");
                         date_end.setAttribute("disabled","disabled");
-                        //date_ini_hour1.setAttribute("disabled","disabled");
-                        //date_ini_minute1.setAttribute("disabled","disabled");
-                        //date_end_hour2.setAttribute("disabled","disabled");
-                        //date_end_minute2.setAttribute("disabled","disabled");
-//                        it_repeat_event.setAttribute("disabled","disabled");
-//                        repeat_name.setAttribute("disabled","disabled");
                         recording_event.setAttribute("disabled","disabled");
-/*                        chkoldSunday.setAttribute("disabled","disabled");
-                        chkoldMonday.setAttribute("disabled","disabled");
-                        chkoldTuesday.setAttribute("disabled","disabled");
-                        chkoldWednesday.setAttribute("disabled","disabled");
-                        chkoldThursday.setAttribute("disabled","disabled");
-                        chkoldFriday.setAttribute("disabled","disabled");
-                        chkoldSaturday.setAttribute("disabled","disabled");
-                        chkoldasterisk.setAttribute("disabled","disabled");
-*/
-                        //chkoldasterisk.setAttribute("disabled","disabled");
-                        //inputCallTo.value = "off";
                         chkoldnoti.setAttribute("disabled","disabled");
                         inputCallTo.setAttribute("disabled","disabled");
+
                         // add title
-                        var title_name = document.createTextNode(message['View Event']);
-                        title_evt.appendChild(title_name);
+                        $('#title_box').text(message['View Event']);
 
                         //fill event name
                         event_name.value = event;
@@ -978,33 +739,8 @@ function obtainEmails(){
                                 $(this).removeAttr("selected");
                         });
                         $('#ReminderTime').attr("disabled","disabled");
-                        //removing all attributes selected and checked
-                        //RemoveAttributeSelect(date_ini_hour1);
-                        //RemoveAttributeSelect(date_ini_minute1);
-                        //RemoveAttributeSelect(date_end_hour2);
-                        //RemoveAttributeSelect(date_end_minute2);
-//                        RemoveAttributeSelect(it_repeat_event);
-//                        RemoveAttributeSelect(repeat_name);
-/*                        RemoveAttributeCheck(chkoldSunday);
-                        RemoveAttributeCheck(chkoldMonday);
-                        RemoveAttributeCheck(chkoldTuesday);
-                        RemoveAttributeCheck(chkoldWednesday);
-                        RemoveAttributeCheck(chkoldThursday);
-                        RemoveAttributeCheck(chkoldFriday);
-                        RemoveAttributeCheck(chkoldSaturday);
-*/
-                        //RemoveAttributeCheck(chkoldasterisk);
                         RemoveAttributeCheck(chkoldnoti);
 
-                        //setting input_check
-/*                        inputSunday.value="off";
-                        inputMonday.value="off";
-                        inputTuesday.value="off";
-                        inputWednesday.value="off";
-                        inputThursday.value="off";
-                        inputFriday.value="off";
-                        inputSaturday.value="off";
-*/
                         //fill email_to
                         $('#notification_email').attr("style","visibility:hidden;");
                         $('#email_to').attr("style","visibility:visible;");
@@ -1022,14 +758,14 @@ function obtainEmails(){
                             var td_email_title        = document.createElement("td");
                             var td_contact_title_text = document.createTextNode(message['Contact']);
                             var td_email_title_text   = document.createTextNode(message['Email'])
-    
+
                             // set attributes
                             tr_titles.setAttribute("class","letra12");
                             td_contact_title.setAttribute("style","color:#666666; font-weight:bold;font-size:12px;");
                             td_contact_title.setAttribute("align","center");
                             td_email_title.setAttribute("style","color:#666666; font-weight:bold;font-size:12px;");
                             td_email_title.setAttribute("align","center");
-    
+ 
                             // append tds, trs, textnodes
                             td_email_title.appendChild(td_email_title_text);
                             td_contact_title.appendChild(td_contact_title_text);
@@ -1073,12 +809,12 @@ function obtainEmails(){
                                 img_delete.setAttribute("src",src_img_delete);
                                 img_delete.setAttribute("align","absmiddle");
                                 img_delete.setAttribute("onclick","del_email_tab("+i+");");
-    
+
                                 // create textnode num, contact, email
                                 var td_num_text = document.createTextNode(message[num_email]);
                                 var td_contact_text = document.createTextNode(message[cont_email]);
                                 var td_email_text = document.createTextNode(message[name_email]);
-    
+
                                 // append textnodes num, contact, email, a, img
                                 td_num.appendChild(td_num_text);
                                 td_contact.appendChild(td_contact_text);
@@ -1086,7 +822,7 @@ function obtainEmails(){
                                 a_delete.appendChild(spaces);
                                 a_delete.appendChild(img_delete);
                                 td_delete.appendChild(a_delete);
-    
+
                                 //append td to tr
                                 tr_email.appendChild(td_num);
                                 tr_email.appendChild(td_contact);
@@ -1096,81 +832,6 @@ function obtainEmails(){
                             }
                         }
 
-                        //fill start and end hour
-                        /*for(i = 0; i<date_ini_hour1.childNodes.length; i++){
-                            // to hour1
-                            if(date_ini_hour1.childNodes[i].firstChild.nodeValue == hour1)
-                                date_ini_hour1.childNodes[i].setAttribute('selected', 'selected');
-                            // to hour2
-                            if(date_end_hour2.childNodes[i].firstChild.nodeValue == hour2)
-                                date_end_hour2.childNodes[i].setAttribute('selected', 'selected');
-                        }*/
-
-                        // fill start and end minutes
-/*                        for(i = 0; i<date_ini_minute1.childNodes.length; i++){
-                            // to minute1
-                            if(date_ini_minute1.childNodes[i].firstChild.nodeValue == minute1)
-                                date_ini_minute1.childNodes[i].setAttribute('selected', 'selected');
-                            //to minute2
-                            if(date_end_minute2.childNodes[i].firstChild.nodeValue == minute2)
-                                date_end_minute2.childNodes[i].setAttribute('selected', 'selected');
-                        }
-*/
-                        // fill select it_repeat
-/*                        for(i = 0; i<it_repeat_event.childNodes.length; i++){
-                            if(it_repeat_event.childNodes[i].getAttribute("value") == it_repeat){
-                                it_repeat_event.childNodes[i].setAttribute('selected', 'selected');
-                                if(it_repeat == "none"){
-                                    $('.repeat').attr("style","visibility: hidden;");
-                                    //removing type_repeat_event_name
-                                    if(type_repeat_event.firstChild)
-                                        type_repeat_event.removeChild(type_repeat_event.firstChild);
-                                }else{
-                                    if(it_repeat == "each_day"){
-                                        var text_value_repeat_time = document.createTextNode(message['Weeks']);
-                                        type_repeat_event.appendChild(text_value_repeat_time);
-                                    }else{
-                                        var text_value_repeat_time = document.createTextNode(message['Months']);
-                                        type_repeat_event.appendChild(text_value_repeat_time);
-                                    }
-                                    $('.repeat').attr("style","visibility: visible;");
-                                    for(var j = 0; j<repeat_name.childNodes.length; j++){
-                                        if(repeat_name.childNodes[j].firstChild.nodeValue == repeat)
-                                            repeat_name.childNodes[j].setAttribute('selected', 'selected');
-                                    }
-                                    // put the corrects day
-                                    if(message['Sunday_check']){
-                                        chkoldSunday.setAttribute("checked","checked");
-                                        inputSunday.value="on";
-                                    }
-                                    if(message['Monday_check']){
-                                        chkoldMonday.setAttribute("checked","checked");
-                                        inputMonday.value="on";
-                                    }
-                                    if(message['Tuesday_check']){
-                                        chkoldTuesday.setAttribute("checked","checked");
-                                        inputTuesday.value="on";
-                                    }
-                                    if(message['Wednesday_check']){
-                                        chkoldWednesday.setAttribute("checked","checked");
-                                        inputWednesday.value="on";
-                                    }
-                                    if(message['Thursday_check']){
-                                        chkoldThursday.setAttribute("checked","checked");
-                                        inputThursday.value="on";
-                                    }
-                                    if(message['Friday_check']){
-                                        chkoldFriday.setAttribute("checked","checked");
-                                        inputFriday.value="on";
-                                    }
-                                    if(message['Saturday_check']){
-                                        chkoldSaturday.setAttribute("checked","checked");
-                                        inputSaturday.value="on";
-                                    }
-                                }
-                            }
-                        }
-*/
                         // fill checkbox my extension
                         if(message['call_to'] != ""){ //asterisk_call_me
                             $('#reminder').val('on');
@@ -1179,9 +840,7 @@ function obtainEmails(){
                             $('.remin').attr("style","visibility: visible;");
                             $('#CheckBoxRemi').attr('checked','checked');
                             $('#CheckBoxRemi').next("label").addClass("LabelSelected");
-                        }/*else{
-                            inputAsteriskCall.value = "off";
-                        }*/
+                        }
 
                         // fill input call_to
                         inputCallTo.value = message['call_to'];
@@ -1199,7 +858,6 @@ function obtainEmails(){
                         // fill checkbox notification emails
                         if(message['notification_status'] == "on"){
                             chkoldnoti.setAttribute("checked","checked");
-                            //$('#notification_email').attr("style","visibility:visible;");
                             $('.noti_email').attr("style","visibility:visible;");
                             inputNotification.value = "on";
                             $('#CheckBoxNoti').attr('checked','checked');
@@ -1218,220 +876,7 @@ function obtainEmails(){
             });
     }
 
-    function getDataAjaxFormGuest(order){
-        // blocking screen
-        var urlImaLoading = "<h1><img src='modules/"+module_name+"/images/busy.gif' /> "+$('#lblLoading').val()+"...</h1>";
-        $.blockUI({ message: urlImaLoading });
-        $('#box').show();
-        //$('.loading').show();
-        $('.loading').hide();
-        $('.remin').attr("style","display:none;");
-        $('#notification_email').attr("style","visibility:hidden;");
-        $.post("share_calendar.php", order,
-                function(theResponse){
-                    var content = $('#table_box');
-                    $('.loading').hide();
-                    var message = JSONtoString(theResponse);          //response JSON to array
-                    var event = message['event'];                     //name's event
-                    var desc_event = message['description'];          //description's event
-                    var start = message['date'];                      //start date event
-                    var end = message['to'];                          //end date event
-                    //var hour1 = message['hora1'];                     //initial hour date event
-                    //var minute1 = message['minuto1'];                 //initial minute date event
-                    //var hour2 = message['hora2'];                     //end hour date event
-                    //var minute2 = message['minuto2'];                 //end minute date event
-                    /*var it_repeat = message['it_repeat'];             //type repeat event(no repeat, week, month)
-                    var repeat = message['num_repeat'];                   //num of weeks,months to repeat
-                    */
-             /***********************      var by DOM      **************************/
-                    var title_evt         = document.getElementById('title_box');
-                    var event_name        = document.getElementById('event');
-                    var description_event = document.getElementsByName('description')[0];
-                    var date_ini          = document.getElementById('f-calendar-field-1');
-                    var date_end          = document.getElementById('f-calendar-field-2');
-
-                    //var date_ini_hour1    = document.getElementsByName('hora1')[0];
-                    //var date_ini_minute1  = document.getElementsByName('minuto1')[0];
-                    //var date_end_hour2    = document.getElementsByName('hora2')[0];
-                    //var date_end_minute2  = document.getElementsByName('minuto2')[0];
-
-//                    var it_repeat_event   = document.getElementsByName('it_repeat')[0];
-//                    var repeat_name       = document.getElementsByName('repeat')[0];
-//                    var type_repeat_event = document.getElementById('type_repeat');
-/*                    var chkoldSunday      = document.getElementsByName('chkoldSunday')[0];
-                    var chkoldMonday      = document.getElementsByName('chkoldMonday')[0];
-                    var chkoldTuesday     = document.getElementsByName('chkoldTuesday')[0];
-                    var chkoldWednesday   = document.getElementsByName('chkoldWednesday')[0];
-                    var chkoldThursday    = document.getElementsByName('chkoldThursday')[0];
-                    var chkoldFriday      = document.getElementsByName('chkoldFriday')[0];
-                    var chkoldSaturday    = document.getElementsByName('chkoldSaturday')[0];
-                    var inputSunday       = document.getElementById('Sunday');
-                    var inputMonday       = document.getElementById('Monday');
-                    var inputTuesday      = document.getElementById('Tuesday');
-                    var inputWednesday    = document.getElementById('Wednesday');
-                    var inputThursday     = document.getElementById('Thursday');
-                    var inputFriday       = document.getElementById('Friday');
-                    var inputSaturday     = document.getElementById('Saturday');
-*/
-                    var id                = document.getElementById('id');
-                    var id_event_input    = document.getElementById('id_event');
-                    var tabla_grilla      = document.getElementById('grilla');
-
-             /**********************************************************************/
-/*                    if(type_repeat_event.firstChild)
-                        type_repeat_event.removeChild(type_repeat_event.firstChild);
-*/
-                    var i = 0; //cont
-
-                    //fill event name
-                    event_name.value = event;
-
-                    //fill event description
-                    description_event.value = desc_event;
-
-                    //fill date init event
-                    date_ini.value = start;
-
-                    //fill date end event
-                    date_end.value = end;
-
-                    //disabled all input and select
-                    event_name.setAttribute("disabled","disabled");
-                    description_event.setAttribute("disabled","disabled");
-                    date_ini.setAttribute("disabled","disabled");
-                    date_end.setAttribute("disabled","disabled");
-
-                    //date_ini_hour1.setAttribute("disabled","disabled");
-                    //date_ini_minute1.setAttribute("disabled","disabled");
-                    //date_end_hour2.setAttribute("disabled","disabled");
-                    //date_end_minute2.setAttribute("disabled","disabled");
-
-//                    it_repeat_event.setAttribute("disabled","disabled");
-//                    repeat_name.setAttribute("disabled","disabled");
-/*                    chkoldSunday.setAttribute("disabled","disabled");
-                    chkoldMonday.setAttribute("disabled","disabled");
-                    chkoldTuesday.setAttribute("disabled","disabled");
-                    chkoldWednesday.setAttribute("disabled","disabled");
-                    chkoldThursday.setAttribute("disabled","disabled");
-                    chkoldFriday.setAttribute("disabled","disabled");
-                    chkoldSaturday.setAttribute("disabled","disabled");
-*/
-                    //removing all attributes selected and checked
-                    //RemoveAttributeSelect(date_ini_hour1);
-                    //RemoveAttributeSelect(date_ini_minute1);
-                    //RemoveAttributeSelect(date_end_hour2);
-                    //RemoveAttributeSelect(date_end_minute2);
-//                    RemoveAttributeSelect(it_repeat_event);
-//                    RemoveAttributeSelect(repeat_name);
-/*                    RemoveAttributeCheck(chkoldSunday);
-                    RemoveAttributeCheck(chkoldMonday);
-                    RemoveAttributeCheck(chkoldTuesday);
-                    RemoveAttributeCheck(chkoldWednesday);
-                    RemoveAttributeCheck(chkoldThursday);
-                    RemoveAttributeCheck(chkoldFriday);
-                    RemoveAttributeCheck(chkoldSaturday);
-
-                    //setting input_check
-                    inputSunday.value="off";
-                    inputMonday.value="off";
-                    inputTuesday.value="off";
-                    inputWednesday.value="off";
-                    inputThursday.value="off";
-                    inputFriday.value="off";
-                    inputSaturday.value="off";
-*/
-
-
-                    //fill start and end hour
-                    /*for(i = 0; i<date_ini_hour1.childNodes.length; i++){
-                        // to hour1
-                        if(date_ini_hour1.childNodes[i].firstChild.nodeValue == hour1)
-                            date_ini_hour1.childNodes[i].setAttribute('selected', 'selected');
-                        // to hour2
-                        if(date_end_hour2.childNodes[i].firstChild.nodeValue == hour2)
-                            date_end_hour2.childNodes[i].setAttribute('selected', 'selected');
-                    }
-
-                    // fill start and end minutes
-                    for(i = 0; i<date_ini_minute1.childNodes.length; i++){
-                        // to minute1
-                        if(date_ini_minute1.childNodes[i].firstChild.nodeValue == minute1)
-                            date_ini_minute1.childNodes[i].setAttribute('selected', 'selected');
-                        //to minute2
-                        if(date_end_minute2.childNodes[i].firstChild.nodeValue == minute2)
-                            date_end_minute2.childNodes[i].setAttribute('selected', 'selected');
-                    }*/
-/*
-                    // fill select it_repeat
-                    for(i = 0; i<it_repeat_event.childNodes.length; i++){
-                        if(it_repeat_event.childNodes[i].getAttribute("value") == it_repeat){
-                            it_repeat_event.childNodes[i].setAttribute('selected', 'selected');
-                            if(it_repeat == "none"){
-                                $('.repeat').attr("style","visibility: hidden;");
-                                //removing type_repeat_event_name
-                                if(type_repeat_event.firstChild)
-                                    type_repeat_event.removeChild(type_repeat_event.firstChild);
-                            }else{
-                                if(it_repeat == "each_day"){
-                                    var text_value_repeat_time = document.createTextNode(message['Weeks']);
-                                    type_repeat_event.appendChild(text_value_repeat_time);
-                                }else{
-                                    var text_value_repeat_time = document.createTextNode(message['Months']);
-                                    type_repeat_event.appendChild(text_value_repeat_time);
-                                }
-                                // select repeat(repeat, each week, each month)
-                                $('.repeat').attr("style","visibility: visible;");
-                                for(var j = 0; j<repeat_name.childNodes.length; j++){
-                                    if(repeat_name.childNodes[j].firstChild.nodeValue == repeat)
-                                        repeat_name.childNodes[j].setAttribute('selected', 'selected');
-                                }
-                                // put the corrects day
-                                if(message['Sunday_check']){
-                                    chkoldSunday.setAttribute("checked","checked");
-                                    inputSunday.value="on";
-                                }
-                                if(message['Monday_check']){
-                                    chkoldMonday.setAttribute("checked","checked");
-                                    inputMonday.value="on";
-                                }
-                                if(message['Tuesday_check']){
-                                    chkoldTuesday.setAttribute("checked","checked");
-                                    inputTuesday.value="on";
-                                }
-                                if(message['Wednesday_check']){
-                                    chkoldWednesday.setAttribute("checked","checked");
-                                    inputWednesday.value="on";
-                                }
-                                if(message['Thursday_check']){
-                                    chkoldThursday.setAttribute("checked","checked");
-                                    inputThursday.value="on";
-                                }
-                                if(message['Friday_check']){
-                                    chkoldFriday.setAttribute("checked","checked");
-                                    inputFriday.value="on";
-                                }
-                                if(message['Saturday_check']){
-                                    chkoldSaturday.setAttribute("checked","checked");
-                                    inputSaturday.value="on";
-                                }
-                            }
-                        }
-                    }
-*/
-                    // fill input uid hidden
-                    id.value = message['uid'];
-
-                    // fill input id hidden
-                    id_event_input.value = message['id'];
-                 //unblocking
-                 $.unblockUI();
-            });
-    }
-
     function displayNewEvent(){
-        // blocking screen
-        var urlImaLoading = "<h1><img src='modules/"+module_name+"/images/busy.gif' /> "+$('#lblLoading').val()+"...</h1>";
-        $.blockUI({ message: urlImaLoading });
         //centrar box
         var eje_x = ((screen.width)/2) - 250;
         $('#box').css('top','50%');
@@ -1443,11 +888,7 @@ function obtainEmails(){
         $('.remin').attr("style","display:none;");
         $('#grilla').html("");
         $('#notification_email').attr("style","visibility:hidden;");
-
         $('#title_box').html("");
-        $('#box').show();
-        //$('.loading').show();
-        $('.loading').hide();
         $('#divReminder').show();
         $('#divNotification').show();
         $('#lblCheckBoxNoti').attr("for","CheckBoxNoti");
@@ -1455,11 +896,10 @@ function obtainEmails(){
         var order = "menu="+module_name+"&action=new_box&rawmode=yes";
 ////// to remove checkbox status in reminder call or notification /////////////////
         RemoveAttributeImageCheck();
-///////////////////////////////////////////////////////////////////////////////////
+
         $.post("index.php", order,
                 function(theResponse){
                     var content = $('#table_box');
-                    $('.loading').hide();
                     var box = $('#box');
                     var message = JSONtoString(theResponse);          //response JSON to array
 
@@ -1470,45 +910,17 @@ function obtainEmails(){
                     var description_event = document.getElementsByName('description')[0];
                     var date_ini          = document.getElementById('f-calendar-field-1');
                     var date_end          = document.getElementById('f-calendar-field-2');
-                    //var date_ini_hour1    = document.getElementsByName('hora1')[0];
-                    //var date_ini_minute1  = document.getElementsByName('minuto1')[0];
-                    //var date_end_hour2    = document.getElementsByName('hora2')[0];
-                    //var date_end_minute2  = document.getElementsByName('minuto2')[0];
-//                    var it_repeat_event   = document.getElementsByName('it_repeat')[0];
-//                    var repeat_name       = document.getElementsByName('repeat')[0];
                     var recording_event   = document.getElementsByName('recording')[0];
-//                    var type_repeat_event = document.getElementById('type_repeat');
                     var call_to_event     = document.getElementById('call_to');
-/*                  var chkoldSunday      = document.getElementsByName('chkoldSunday')[0];
-                    var chkoldMonday      = document.getElementsByName('chkoldMonday')[0];
-                    var chkoldTuesday     = document.getElementsByName('chkoldTuesday')[0];
-                    var chkoldWednesday   = document.getElementsByName('chkoldWednesday')[0];
-                    var chkoldThursday    = document.getElementsByName('chkoldThursday')[0];
-                    var chkoldFriday      = document.getElementsByName('chkoldFriday')[0];
-                    var chkoldSaturday    = document.getElementsByName('chkoldSaturday')[0];
-                    var inputSunday       = document.getElementById('Sunday');
-                    var inputMonday       = document.getElementById('Monday');
-                    var inputTuesday      = document.getElementById('Tuesday');
-                    var inputWednesday    = document.getElementById('Wednesday');
-                    var inputThursday     = document.getElementById('Thursday');
-                    var inputFriday       = document.getElementById('Friday');
-                    var inputSaturday     = document.getElementById('Saturday');
-*/
-/*                    var chkoldasterisk    = document.getElementsByName('chkoldasterisk_call_me')[0];
-                    var inputAsteriskCall = document.getElementById('asterisk_call_me');*/
                     var inputCallTo       = document.getElementById('call_to');
                     var chkoldnoti        = document.getElementsByName('chkoldnotification')[0];
                     var inputNotification = document.getElementById('notification');
                     var id_event_input    = document.getElementById('id_event');
                     var uid               = document.getElementById('id');
-                    //var emails_noti       = document.getElementById('select2');
                     var email_to          = document.getElementById('email_to');
              /**********************************************************************/
 
              /****************seteando variables ************************************/
-                    //if(type_repeat_event.firstChild)
-                        //type_repeat_event.removeChild(type_repeat_event.firstChild);
-					////change reminderTimer
 					$('#ReminderTime').children().each(function(){
 						var valueReminder = $(this).attr("value");
 						if(valueReminder == "10"){
@@ -1521,55 +933,15 @@ function obtainEmails(){
                     //show buttons for new event
                     $('#new_box').attr("style","display:block;");
                     $('#email_to').attr("style","visibility:hidden;");
-                    //setting input_check
-                    /*inputSunday.value="off";
-                    inputMonday.value="off";
-                    inputTuesday.value="off";
-                    inputWednesday.value="off";
-                    inputThursday.value="off";
-                    inputFriday.value="off";
-                    inputSaturday.value="off";*/
 
                     //disabled all input and select
                     RemoveAttributeDisable(event_name);
                     RemoveAttributeDisable(description_event);
                     RemoveAttributeDisable(date_ini);
                     RemoveAttributeDisable(date_end);
-                    //RemoveAttributeDisable(date_ini_hour1);
-                    //RemoveAttributeDisable(date_ini_minute1);
-                    //RemoveAttributeDisable(date_end_hour2);
-                    //RemoveAttributeDisable(date_end_minute2);
-//                    RemoveAttributeDisable(it_repeat_event);
-//                    RemoveAttributeDisable(repeat_name);
                     RemoveAttributeDisable(recording_event);
-/*                    RemoveAttributeDisable(chkoldSunday);
-                    RemoveAttributeDisable(chkoldMonday);
-                    RemoveAttributeDisable(chkoldTuesday);
-                    RemoveAttributeDisable(chkoldWednesday);
-                    RemoveAttributeDisable(chkoldThursday);
-                    RemoveAttributeDisable(chkoldFriday);
-                    RemoveAttributeDisable(chkoldSaturday);
-*/
-                    //RemoveAttributeDisable(chkoldasterisk);
                     RemoveAttributeDisable(inputCallTo);
                     RemoveAttributeDisable(chkoldnoti);
-
-                    //removing all attributes selected and checked
-                    //RemoveAttributeSelect(date_ini_hour1);
-                    //RemoveAttributeSelect(date_ini_minute1);
-                    //RemoveAttributeSelect(date_end_hour2);
-                    //RemoveAttributeSelect(date_end_minute2);
-/*                    RemoveAttributeSelect(it_repeat_event);
-                    RemoveAttributeSelect(repeat_name);
-                    RemoveAttributeCheck(chkoldSunday);
-                    RemoveAttributeCheck(chkoldMonday);
-                    RemoveAttributeCheck(chkoldTuesday);
-                    RemoveAttributeCheck(chkoldWednesday);
-                    RemoveAttributeCheck(chkoldThursday);
-                    RemoveAttributeCheck(chkoldFriday);
-                    RemoveAttributeCheck(chkoldSaturday);
-*/
-                    //RemoveAttributeCheck(chkoldasterisk);
                     RemoveAttributeCheck(chkoldnoti);
 
                     // hide the sections email_to
@@ -1578,77 +950,26 @@ function obtainEmails(){
                     //$('#email_to').html("");
 
                     // add title
-                    var title_name = document.createTextNode(message['New_Event']);
-                    title_evt.appendChild(title_name);
+                    $('#title_box').text(message['New_Event']);
+
                     event_name.value="";
                     description_event.value="";
                     date_ini.value = message['now'];
-                    date_end.value = message['now'];
-                    //date_ini_hour1.value = message['hour'];
-                    //date_end_hour2.value = message['hour'];
-                    //date_ini_minute1.value = message['minute'];
-                    //date_end_minute2.value = message['minute'];
-             //uid.value = message['uid'];
-                    //date_ini_hour1.childNodes[0].setAttribute('selected', 'selected');
-                    //date_ini_minute1.childNodes[0].setAttribute('selected', 'selected');
-                    //date_end_hour2.childNodes[0].setAttribute('selected', 'selected');
-                    //date_end_minute2.childNodes[0].setAttribute('selected', 'selected');
-//                    it_repeat_event.childNodes[0].setAttribute('selected', 'selected');
-//                    repeat_name.childNodes[0].setAttribute('selected', 'selected');
-//                    $('#type_repeat_event').html("");
-                    getNumExtesion();
+                    date_end.value = message['after'];
+                    var ext = message['ext'];
+                    if(ext == "empty")
+                        $('#call_to').val("");
+                    else{
+                        $('#call_to').val(ext);
+                    }
 		            if(recording_event.childNodes[0])
                     	recording_event.childNodes[0].setAttribute('selected', 'selected');
-//                    $('.repeat').attr("style","visibility: hidden;");
+
                     $('#notification_email').attr("style","visibility: hidden;");
                     $('#add_phone').attr("style","display: inline;");
                     $('.new_box_rec').attr("style","display: inline;");
                     inputNotification.value = "off";
-                    //inputAsteriskCall.value = "off";
-
-                    //check day
-/*                    if(message['dayLe'] == "Sun"){
-                        chkoldSunday.setAttribute('checked', 'checked');
-                        inputSunday.value = "on";
-                    }
-
-                    switch(message['dayLe']){
-                        case "Sun":
-                            chkoldSunday.setAttribute('checked', 'checked');
-                            inputSunday.value = "on";
-                            break;
-                        case "Mon":
-                            chkoldMonday.setAttribute('checked', 'checked');
-                            inputMonday.value = "on";
-                            break;
-                        case "Tue":
-                            chkoldTuesday.setAttribute('checked', 'checked');
-                            inputTuesday.value = "on";
-                            break;
-                        case "Wed":
-                            chkoldWednesday.setAttribute('checked', 'checked');
-                            inputWednesday.value = "on";
-                            break;
-                        case "Thu":
-                            chkoldThursday.setAttribute('checked', 'checked');
-                            inputThursday.value = "on";
-                            break;
-                        case "Fri":
-                            chkoldFriday.setAttribute('checked', 'checked');
-                            inputFriday.value = "on";
-                            break;
-                        case "Sat":
-                            chkoldSaturday.setAttribute('checked', 'checked');
-                            inputSaturday.value = "on";
-                            break;
-                        default:
-                            chkoldSunday.setAttribute('checked', 'checked');
-                            inputSunday.value = "on";
-                            break;
-                    }
-*/
-                // unblocking
-                $.unblockUI();
+                    $('#box').show();
             });
     }
 

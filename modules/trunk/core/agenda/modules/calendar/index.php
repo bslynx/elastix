@@ -251,7 +251,6 @@ function viewCalendar($smarty, $module_name, $local_templates_dir, &$pDB, $arrCo
 }
 
 function saveEvent($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang){
-    $pCalendar = new paloSantoCalendar($pDB);
 
     $_DATA              = $_POST;
     $action             = getParameter("action");
@@ -916,13 +915,22 @@ function createTmpIcal($arrLang,&$pDB,$module_name, $arrConf, $idEvent){
 
 function newBoxCalendar($arrConf,$arrLang,$pDB){
     $pCalendar = new paloSantoCalendar($pDB);
+    $pDBACL  = new paloDB($arrConf['dsn_conn_database1']);
+    $pACL    = new paloACL($pDBACL);
+    $id_user = $pACL->getIdUser($_SESSION["elastix_user"]);
+    $ext = "";
+    if($id_user){
+        $pDB3 = new paloDB($arrConf['dsn_conn_database1']);
+        $ext = $pCalendar->obtainExtension($pDB3,$id_user);
+        if(empty($ext)) $ext = "empty";
+    }else{
+        $ext = "empty";
+    }
     $json = new Services_JSON();
-    $data['title']     = $arrLang["Add Event"];
     $data['now']       = date("d M Y H:i");// convert times to (d M Y) like (02 Feb 2010)
-    $data['dayLe']     = date("D");
-    $data['hour']      = date("H");
-    $data['minute']    = date("i");
+    $data['after']     = date("d M Y H:i",strtotime("{$data[now]} + 5 minutes"));
     $data['New_Event'] = $arrLang["New_Event"];
+    $data['ext']       = $ext;
     return $json->encode($data);
 }
 
@@ -1366,14 +1374,6 @@ function getContactEmails($arrConf)
         $salida = array();
     }
 
-    /*for($i=0; $i<count($salida); $i++){
-        //$salida[$i]['caption'] = htmlspecialchars_decode($salida[$i]['caption']);
-        $email = $salida[$i]['caption'];
-        $email = str_replace('&lt;',"<",$email);
-        $email = str_replace('&gt;',">",$email);
-        $salida[$i]['caption'] = $email;
-    }*/
-
     // se instancia a JSON
     $json = new Services_JSON();
     return $json->encode($salida);
@@ -1559,38 +1559,6 @@ function createFieldForm($arrLang)
                                             "EDITABLE"               => "si",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-            /*"hora1"   => array(      "LABEL"                  => "",
-                                            "REQUIRED"               => "no",
-                                            "INPUT_TYPE"             => "SELECT",
-                                            "INPUT_EXTRA_PARAM"      => $arrHou,
-                                            "VALIDATION_TYPE"        => "text",
-                                            "VALIDATION_EXTRA_PARAM" => "",
-                                            "EDITABLE"               => "si",
-                                            ),
-            "minuto1"   => array(      "LABEL"                  => "",
-                                            "REQUIRED"               => "no",
-                                            "INPUT_TYPE"             => "SELECT",
-                                            "INPUT_EXTRA_PARAM"      => $arrMin,
-                                            "VALIDATION_TYPE"        => "text",
-                                            "VALIDATION_EXTRA_PARAM" => "",
-                                            "EDITABLE"               => "si",
-                                            ),
-            "hora2"   => array(      "LABEL"                  => "",
-                                            "REQUIRED"               => "no",
-                                            "INPUT_TYPE"             => "SELECT",
-                                            "INPUT_EXTRA_PARAM"      => $arrHou,
-                                            "VALIDATION_TYPE"        => "text",
-                                            "VALIDATION_EXTRA_PARAM" => "",
-                                            "EDITABLE"               => "si",
-                                            ),
-            "minuto2"   => array(      "LABEL"                  => "",
-                                            "REQUIRED"               => "no",
-                                            "INPUT_TYPE"             => "SELECT",
-                                            "INPUT_EXTRA_PARAM"      => $arrMin,
-                                            "VALIDATION_TYPE"        => "text",
-                                            "VALIDATION_EXTRA_PARAM" => "",
-                                            "EDITABLE"               => "si",
-                                            ),*/
             "to"   => array(      "LABEL"                  => $arrLang["To"],
                                             "REQUIRED"               => "no",
                                             "INPUT_TYPE"             => "DATE",
@@ -1633,13 +1601,6 @@ function createFieldForm($arrLang)
                                             "ROWS"                   => "4",
                                             "EDITABLE"               => "si",
                                             ),
-/*            "asterisk_call_me"   => array(      "LABEL"                  => $arrLang["Asterisk Call Me"],
-                                            "REQUIRED"               => "no",
-                                            "INPUT_TYPE"             => "CHECKBOX",
-                                            "INPUT_EXTRA_PARAM"      => "",
-                                            "VALIDATION_TYPE"        => "text",
-                                            "VALIDATION_EXTRA_PARAM" => ""
-                                            ),*/
             "call_to"   => array(      "LABEL"                  => $arrLang["Call to"],
                                             "REQUIRED"               => "no",
                                             "INPUT_TYPE"             => "TEXT",

@@ -94,22 +94,11 @@ $(document).ready(function() {
 			}
 		]*/
 	});
+    /*$('#calendar').fullCalendar({
+        events: $.fullCalendar.gcalFeed(
+            "http://www.google.com/calendar/feeds/j5pecn7mvoj3pv7780nur0fnho%40group.calendar.google.com/public/basic"
+        )
+    });*/
 
-//     $('#calendar_invited').fullCalendar({
-//         theme: true,
-//         header: {
-//             left: 'prev,next today create',
-//             center: 'title',
-//             right: 'month,agendaWeek,agendaDay'
-//         },
-//         loading: function(bool) {
-//             if (bool) $('#loading').show();
-//             else $('#loading').hide();
-//         },
-//         editable: false,
-//         owner: false,
-//         events: "share_calendar.php?menu="+module_name+"&action=get_data&rawmode=yes",
-//         module: module_name,
-//     });
 	
 });
