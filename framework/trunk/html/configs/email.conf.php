@@ -29,7 +29,7 @@
 
 
 $configPostfix2 = isPostfixToElastix2();// in misc.lib.php
-$clave = obtenerClaveCyrusAdmin();
+$clave = obtenerClaveCyrusAdmin("/var/www/html/");
 
 if(!$configPostfix2){
     define("SASL_DOMAIN","example.com");
