@@ -5,10 +5,15 @@
 </header>
 <body>
 <h1>{$node_name}</h1>
-<p align="Justify">La opción "Antispam" del módulo "Email" nos permite configurar
-el nivel de aceptación de los correos, es decir que no sean "Spam"
+<p align="Justify">
+The option "Antispam" from "Email" allow configure the level of
+acceptation of emails that are not "Spam".
+
+* Mark Subject: Mark the Subject of email by the value of text Field
+
+* Spam Capture: Activate Sieve service to send all Spam to the Spam folder by users.
 </p>
-<div><img src="../modules/{$node_id}/images/antispam.jpg" border="0"></div>
+<div><img src="../modules/{$node_id}/images/antispam.png" border="0"></div>
 <div>Figura 1</div><br/><br/>
 </body>
 </html>

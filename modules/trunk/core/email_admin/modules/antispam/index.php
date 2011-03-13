@@ -32,7 +32,9 @@ function _moduleContent(&$smarty, $module_name)
     //include elastix framework
     include_once "libs/paloSantoGrid.class.php";
     include_once "libs/paloSantoForm.class.php";
-
+    include_once "libs/paloSantoConfig.class.php";
+    include_once "configs/email.conf.php";
+    include_once "libs/cyradm.php";
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
     include_once "modules/$module_name/libs/paloSantoAntispam.class.php";
@@ -79,8 +81,10 @@ function _moduleContent(&$smarty, $module_name)
 function updateAntispam($smarty, $module_name, $local_templates_dir, $arrLang, $arrLangModule, $arrConf, $arrConfModule)
 {
     $status = getParameter("status");
-    $level  = getParameter("level");
+    $level  = getParameter("levelnum");
     $header = getParameter("header");
+    $politica = getParameter("politica");
+    $pDB = new paloDB("sqlite3:////var/www/db/email.db");
 
     $objAntispam = new paloSantoAntispam($arrConfModule['path_postfix'], $arrConfModule['path_spamassassin'],$arrConfModule['file_master_cf'], $arrConfModule['file_local_cf']);
     $isOk = $objAntispam->changeFileLocal($level,$header);
@@ -90,7 +94,13 @@ function updateAntispam($smarty, $module_name, $local_templates_dir, $arrLang, $
     }
 
     if($status == "active"){
+        if($politica=="capturar_spam"){
+            $objAntispam->uploadScriptSieve($pDB);
+        }else{
+            $objAntispam->deleteScriptSieve($pDB);
+        }
         $isOk = $objAntispam->activateSpamFilter();
+
         if($isOk === false){
             $smarty->assign("mb_title", $arrLang["Error"]);
             $smarty->assign("mb_message", $objAntispam->errMsg);
@@ -100,7 +110,9 @@ function updateAntispam($smarty, $module_name, $local_templates_dir, $arrLang, $
         }
     }
     else if($status == "disactive"){
+        //$objAntispam->deleteScriptSieve($pDB);
         $isOk = $objAntispam->disactivateSpamFilter();
+
         if($isOk === false){
             $smarty->assign("mb_title", $arrLang["Error"]);
             $smarty->assign("mb_message", $objAntispam->errMsg);
@@ -131,11 +143,20 @@ function formAntispam($smarty, $module_name, $local_templates_dir, $arrLang, $ar
         $arrData['status'] = "active";
     else
         $arrData['status'] = "disactive";
+    exec("sudo -u root chown asterisk.asterisk /etc/cron.d/");
+    if(is_file("/etc/cron.d/checkSpamFolder.cron"))
+        $statusSieve = "on";
+    else
+        $statusSieve = "off";
+    exec("sudo -u root chown root.root /etc/cron.d/");
 
+    $smarty->assign("statusSieve", $statusSieve);
     $valueRequiredHits = $objAntispam->getValueRequiredHits();
-    $arrData['level'] = $valueRequiredHits['level'];
+    $arrData['levelNUM'] = $valueRequiredHits['level'];
     $arrData['header'] = $valueRequiredHits['header'];
-
+    $smarty->assign("levelNUM", $arrData['levelNUM']);
+    $smarty->assign("statusSpam", $arrData['status']);
+    $smarty->assign("level", $arrLang['Level']);
     $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl", "", $arrData);
     $contenidoModulo = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
 
@@ -144,16 +165,14 @@ function formAntispam($smarty, $module_name, $local_templates_dir, $arrLang, $ar
 
 function createFieldForm($arrLang, $arrLangModule)
 {
-    $arrLevel  = array();
-    for($i=1;$i<=10;$i++)
-        $arrLevel[$i]=$i;
-    $arrStatus = array('active' => $arrLangModule['Enabled'], 'disactive' => $arrLangModule['Disabled']);
+
+    $arrPolitics = array('marcar_asusto' => $arrLang['Mark Subject']."...", 'capturar_spam' => $arrLang['Spam Capture']);
 
     $arrFields = array(
             "status"            => array(   "LABEL"                  => $arrLang["Status"],
                                             "REQUIRED"               => "no",
-                                            "INPUT_TYPE"             => "RADIO",
-                                            "INPUT_EXTRA_PARAM"      => $arrStatus,
+                                            "INPUT_TYPE"             => "CHECKBOX",
+                                            "INPUT_EXTRA_PARAM"      => "",
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => "",
                                 ),
@@ -164,10 +183,10 @@ function createFieldForm($arrLang, $arrLangModule)
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => "",
                                 ),
-            "level"             => array(   "LABEL"                  => $arrLangModule["Spam Level"],
+            "politica"          => array(   "LABEL"                  => $arrLang["Politics"],
                                             "REQUIRED"               => "no",
                                             "INPUT_TYPE"             => "SELECT",
-                                            "INPUT_EXTRA_PARAM"      => $arrLevel,
+                                            "INPUT_EXTRA_PARAM"      => $arrPolitics,
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                 ),

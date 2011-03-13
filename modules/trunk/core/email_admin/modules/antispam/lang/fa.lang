@@ -56,6 +56,10 @@ $arrLangModule=array(
 "Could not start the service antispam" => "Could not start the service antispam",
 "Could not stop the service antispam" => "Could not stop the service antispam",
 "Rewrite Header" => "Rewrite Header",
-"The command failed when attempting to change the header" => "The command failed when attempting to change the header"
+"The command failed when attempting to change the header" => "The command failed when attempting to change the header",
+"Level" => "Level",
+"Politics" => "Politics",
+"Spam Capture" => "Spam Capture",
+"Mark Subject" => "Mark Subject",
 );
 ?>

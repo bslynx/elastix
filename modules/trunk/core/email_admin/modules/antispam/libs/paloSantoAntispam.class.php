@@ -27,6 +27,9 @@
   +----------------------------------------------------------------------+
   $Id: default.conf.php,v 1.1 2008-09-01 05:09:57 Bruno Macias <bmacias@palosanto.com> Exp $ */
 
+include_once "/var/www/html/libs/cyradm.php";
+include_once "/var/www/html/modules/antispam/libs/sieve-php.lib.php";
+
 class paloSantoAntispam {
     var $fileMaster;
     var $fileLocal;
@@ -93,7 +96,7 @@ class paloSantoAntispam {
                 if(preg_match("/[[:space:]]*required_hits[[:space:]]+([[:digit:]]{0,2})/",$line_file,$arrReg)){
                         $data['level'] = $arrReg[1];
                 }
-                if(preg_match("/[[:space:]]*rewrite_header[[:space:]]+(.*)/",$line_file,$arrReg2)){
+                if(preg_match("/[[:space:]]*rewrite_header[[:space:]]*Subject[[:space:]]+(.*)/",$line_file,$arrReg2)){
                         $data['header'] = $arrReg2[1];
                 }
             }
@@ -136,7 +139,7 @@ class paloSantoAntispam {
             else $this->errMsg = $arrLangModule["Could not make the configuration file"];
         }
         else $this->errMsg = $arrLangModule["Could not make the configuration file"];
-        
+
         exec("sudo -u root chmod 644 {$this->fileMaster}",$arrConsole5,$flatStatus5);
         exec("sudo -u root chmod 755 {$this->folderPostfix}",$arrConsole6,$flatStatus6);
         exec("sudo -u root chown root.root {$this->fileMaster}",$arrConsole5,$flatStatus5);
@@ -172,7 +175,7 @@ class paloSantoAntispam {
         global $arrLangModule;
 
         $cmd ="sed -ie 's/required_hits[[:space:]]*[[:digit:]]\{0,2\}/required_hits $level/' {$this->fileLocal}";
-        $cmd_two = "sed -ie 's/[[:space:]]*rewrite_header[[:space:]]*.*/rewrite_header $header/' {$this->fileLocal}";
+        $cmd_two = "sed -ie 's/[[:space:]]*rewrite_header[[:space:]]*Subject[[:space:]]*.*/rewrite_header Subject $header/' {$this->fileLocal}";
         exec("sudo -u root chmod 777 {$this->folderSpamassassin}",$arrConsole1,$flatStatus1);
         exec("sudo -u root chmod 777 {$this->fileLocal}",$arrConsole2,$flatStatus2);
 
@@ -193,5 +196,298 @@ class paloSantoAntispam {
         else $this->errMsg = $arrLangModule["Failed change thoroughness level and header"];
         return false;
     }
+/********************************************************************************************************************/
+    //funcion que devuelve todas las cuentas de correos
+    function getEmailList($pDB)
+    {
+        //$pDB = new paloDB("sqlite3:////var/www/db/email.db");
+        $query = "SELECT username, password FROM accountuser";
+        $result=$pDB->fetchTable($query, true);
+
+        if($result==FALSE){
+            $this->errMsg = $pDB->errMsg;
+            return array();
+        }
+        return $result;
+    }
+
+    //funcion que crea la carpeta de Spam dado un email en el servidor IMAP mediante telnet
+    function creacionSpamFolder($email)
+    {
+        global $CYRUS;
+        $cyr_conn = new cyradm;
+        $error_msg = "";
+        $error = $cyr_conn->imap_login();
+        $dataEmail = explode("@",$email);
+        if ($error===FALSE){
+            $error_msg = "IMAP login error: $error <br>";
+        }else{
+            $seperator  = '/';
+            $bValido=$cyr_conn->createmb("user" . $seperator . $dataEmail[0] . $seperator . "Spam@" . $dataEmail[1]);
+            if(!$bValido)
+                $error_msg = "Error creating folder Spam:".$cyr_conn->getMessage()."<br>";
+            else{
+                $bValido=$cyr_conn->command(". subscribe \"user" . $seperator . $dataEmail[0] . $seperator . "Spam@" . $dataEmail[1] ."\"");
+                if(!$bValido)
+                    $error_msg = "error cannot be subscribe the folder Spam for $email:".$cyr_conn->getMessage()."<br>";
+            }
+            $cyr_conn->imap_logout();
+        }
+        return $error_msg;
+    }
+
+    // verifica si una cuenta tiene creada la carpeta spam en su buzon de correo
+    function haveFolderSpam($email)
+    {
+        global $CYRUS;
+        global $arrLang;
+        $cyr_conn = new cyradm();
+        $error = $cyr_conn->imap_login();
+        $dataEmail = explode("@",$email);
+        if ($error===FALSE){
+            $error_msg .= "IMAP login error: $error <br>";
+            return "login error";
+        }else{
+            $dataEmail = explode("@",$email);
+            $pathString = "*".$dataEmail[0]."*";
+            $data = $cyr_conn->GetFolders($pathString);
+            $cyr_conn->imap_logout();
+            for($i=0; $i<count($data); $i++){
+                $value = $data[$i];
+                $domain = str_replace(".","/",$dataEmail[1]);
+                $bool = strpos($value,"Spam@".$domain);
+                if($bool){// tiene carpeta spam
+                    return true;
+                }
+            }
+        }
+        return false;// no tiene carpeta spam
+    }
+
+    // funcion que devuelve la lista de correos que no tienen una carpeta Spam asignada
+    function listEmailSpam($pDB)
+    {
+        $emails = $this->getEmailList($pDB);
+        $data = array();
+        $i = 0;
+        foreach($emails as $key => $value){
+            $account = $value['username'];
+            $bool = $this->haveFolderSpam($account);
+            if($bool === "login error"){
+                return $bool;
+            }
+            if($bool === false)
+                $data[$i] = $account;
+            $i++;
+        }
+        return $data;
+    }
+
+    // activa un script determinado en el servidor
+    function activateScriptSieveByUser($SIEVE, $scriptName)
+    {
+        $sieve=new sieve($SIEVE['HOST'], $SIEVE['PORT'], $SIEVE['USER'], $SIEVE['PASS'], $SIEVE['AUTHUSER'], $SIEVE['AUTHTYPE']);
+        if ($sieve->sieve_login()){
+            if($sieve->sieve_setactivescript($scriptName)){
+                $sieve->sieve_logout();
+                return TRUE;
+            }else{
+                //$sieve->error_raw;
+                //$sieve->error;
+                $sieve->sieve_logout();
+                return FALSE;
+            }
+        }else{
+            return "no connection";
+        }
+    }
+
+
+    // sube un script al servidor
+    function putScriptSieveByUser($SIEVE, $scriptName, $activescript){
+        $sieve=new sieve($SIEVE['HOST'], $SIEVE['PORT'], $SIEVE['USER'], $SIEVE['PASS'], $SIEVE['AUTHUSER'], $SIEVE['AUTHTYPE']);
+        if ($sieve->sieve_login()){
+            if($sieve->sieve_sendscript($scriptName,$activescript)){
+                $sieve->sieve_logout();
+                return TRUE;
+            }else{
+                echo $sieve->error_raw;
+                echo $sieve->error;
+                $sieve->sieve_logout();
+                return FALSE;
+            }
+        }else{
+            return "no connection";
+        }
+    }
+
+    // lista todos los script que esten en el servidor
+    function listScriptSieveByUser($SIEVE){
+        $sieve = new sieve($SIEVE['HOST'], $SIEVE['PORT'], $SIEVE['USER'], $SIEVE['PASS'], $SIEVE['AUTHUSER'], $SIEVE['AUTHTYPE']);
+        $i = 0;
+        $scripts = array();
+        if ($sieve->sieve_login()){
+            $sieve->sieve_listscripts();
+            if(is_array($sieve->response)) {
+                foreach($sieve->response as $result) {
+                    $scripts[$i] = $result;
+                    $i++;
+                }
+            }
+            $sieve->sieve_logout();
+        }else{
+            return "no Conection";
+        }
+        return $scripts;
+    }
+    // descargar un script que este en el servidor(la salida por consola)
+    function getScriptSieveByUser($SIEVE, $scriptName){
+        $sieve=new sieve($SIEVE['HOST'], $SIEVE['PORT'], $SIEVE['USER'], $SIEVE['PASS'], $SIEVE['AUTHUSER'], $SIEVE['AUTHTYPE']);
+        $i = 0;
+        $scripts = array();
+        if ($sieve->sieve_login()){
+            if($sieve->sieve_getscript($scriptName)){
+                if(is_array($sieve->response)) {
+                    foreach($sieve->response as $result) {
+                        $scripts[$i] = $result;
+                        $i++;
+                    }
+                }
+                $sieve->sieve_logout();
+                return TRUE;
+            }else{
+                //$sieve->error_raw;
+                //$sieve->error;
+                $sieve->sieve_logout();
+                return FALSE;
+            }
+        }else{
+            return "no connection";
+        }
+        return $scripts;
+    }
+
+    // elimina un script que este en el servidor
+    function deleteScriptSieveByUser($SIEVE, $scriptName){
+        $sieve=new sieve($SIEVE['HOST'], $SIEVE['PORT'], $SIEVE['USER'], $SIEVE['PASS'], $SIEVE['AUTHUSER'], $SIEVE['AUTHTYPE']);
+        if ($sieve->sieve_login()){
+            if($sieve->sieve_deletescript($scriptName)){
+                $sieve->sieve_logout();
+                return TRUE;
+            }else{
+                //$sieve->error_raw;
+                //$sieve->error;
+                $sieve->sieve_logout();
+                return FALSE;
+            }
+        }else{
+            return "no connection";
+        }
+    }
+
+    // funcion que sube un script y lo activa apar todos los buzones de correo
+    function uploadScriptSieve($pDB){
+        // creando cron
+        $this->createCron();
+        $emails = $this->getEmailList($pDB);
+        //creando carpetas Spam
+        $accounts = $this->listEmailSpam($pDB);
+        $status = "";
+        // si el arreglo es vacio no hace nada
+        if(isset($accounts) & $accounts!=""){// existe alguna cuenta sin esa carpeta
+            foreach($accounts as $key => $value){
+                $status .= $this->creacionSpamFolder($value);
+            }
+        }
+        $content = $this->getContentScript();
+        $fileScript = "/tmp/scriptTest.sieve";
+        $fp = fopen($fileScript,'w');
+        fwrite($fp,$content);
+        fclose($fp);
+        //recorriendo por buzon
+        $SIEVE  = array();
+        $SIEVE['HOST'] = "localhost";
+        $SIEVE['PORT'] = 4190;
+        $SIEVE['USER'] = "";
+        $SIEVE['PASS'] = obtenerClaveCyrusAdmin("/var/www/html/");
+        $SIEVE['AUTHTYPE'] = "PLAIN";
+        $SIEVE['AUTHUSER'] = "cyrus";
+        foreach($emails as $key => $value){
+            $SIEVE['USER'] = $value['username'];
+
+            //$activescript = "if header :contains 'X-Spam-Flag' 'YES' {  discard; }";
+            //$status = $this->putScriptSieveByUser($SIEVE, "scriptTestd", $activescript);
+            exec("echo ".$SIEVE['PASS']." | sieveshell --username=".$SIEVE['USER']." --authname=".$SIEVE['AUTHUSER']." localhost:4190 -e 'put $fileScript'",$flags, $status);
+            /*if($status==="no connection")
+                return "no connection";*/
+            //$this->activateScriptSieveByUser($SIEVE, "scriptTest");
+            exec("echo ".$SIEVE['PASS']." | sieveshell --username=".$SIEVE['USER']." --authname=".$SIEVE['AUTHUSER']." localhost:4190 -e 'activate scriptTest.sieve'");
+        }
+        unlink($fileScript);
+    }
+
+    function deleteScriptSieve($pDB){
+        //eliminando cron
+        $this->deleteCron();
+        $emails = $this->getEmailList($pDB);
+        //creando carpetas Spam
+        $accounts = $this->listEmailSpam($pDB);
+        $status = "";
+        // si el arreglo es vacio no hace nada
+        if(isset($accounts) & $accounts!=""){// existe alguna cuenta sin esa carpeta
+            foreach($accounts as $key => $value){
+                $status .= $this->creacionSpamFolder($value);
+            }
+        }
+        //recorriendo por buzon
+        $SIEVE  = array();
+        $SIEVE['HOST'] = "localhost";
+        $SIEVE['PORT'] = 4190;
+        $SIEVE['USER'] = "";
+        $SIEVE['PASS'] = obtenerClaveCyrusAdmin("/var/www/html/");
+        $SIEVE['AUTHTYPE'] = "PLAIN";
+        $SIEVE['AUTHUSER'] = "cyrus";
+        foreach($emails as $key => $value){
+            $SIEVE['USER'] = $value['username'];
+            //$this->deleteScriptSieveByUser($SIEVE, "scriptTest");
+            exec("echo ".$SIEVE['PASS']." | sieveshell --username=".$SIEVE['USER']." --authname=".$SIEVE['AUTHUSER']." localhost:4190 -e 'delete scriptTest.sieve'");
+        }
+    }
+
+    // funcion que se encarga de crear el cron o escribirlo si ya existe
+    function createCron(){
+        // primero cambiamos los permisos de la carpèta cron.d
+        $FILE = "/etc/cron.d/checkSpamFolder.cron";
+        exec("sudo -u root chown asterisk.asterisk /etc/cron.d/");
+        if(is_file($FILE))
+            exec("sudo -u root chown asterisk.asterisk /etc/cron.d/checkSpamFolder.cron");
+        $line = "59 23 * * *  root /usr/bin/php -q /var/www/checkSpamFolder.php";
+        $fp = fopen($FILE,'w');
+        fwrite($fp,$line);
+        fclose($fp);
+        exec("sudo -u root chown root.root /etc/cron.d/checkSpamFolder.cron");
+        exec("sudo -u root chown root.root /etc/cron.d/");
+    }
+
+    function deleteCron(){
+        $FILE = "/etc/cron.d/checkSpamFolder.cron";
+        exec("sudo -u root chown asterisk.asterisk /etc/cron.d/");
+        if(is_file($FILE)){
+            exec("sudo -u root chown asterisk.asterisk /etc/cron.d/checkSpamFolder.cron");
+            unlink($FILE);
+        }
+        exec("sudo -u root chown root.root /etc/cron.d/");
+    }
+
+    function getContentScript(){
+        $script = "require \"fileinto\";
+if header :contains \"X-Spam-Flag\" \"YES\" {
+  fileinto \"Spam\";
+}elsif header :contains \"X-Spam-Status\" \"Yes\" {
+    fileinto \"Spam\";
+}";
+        return $script;
+    }
+
 }
 ?>
