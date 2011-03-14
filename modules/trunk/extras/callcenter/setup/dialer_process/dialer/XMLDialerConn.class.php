@@ -261,7 +261,7 @@ class XMLDialerConn extends DialerConn
     {
         $failureTag = $x->addChild("failure");
         $failureTag->addChild("code", $iCodigo);
-        $failureTag->addChild("message", $sMensaje);
+        $failureTag->addChild("message", str_replace('&', '&amp;', $sMensaje));
     } 
     
     // Procedimiento a llamar cuando se finaliza la conexión en cierre normal 
@@ -945,17 +945,17 @@ LEER_CAMPANIA;
                  * datos. Para compatibilidad con campañas antiguas, se deshace
                  * la codificación de HTML aquí. */
                 $sValor = html_entity_decode($sValor, ENT_COMPAT, 'UTF-8');
-                $xml_GetCampaignInfoResponse->addChild($sKey, $sValor);
+                $xml_GetCampaignInfoResponse->addChild($sKey, str_replace('&', '&amp;', $sValor));
                 break;
             case 'status':
                 $sValor = $descEstados[$sValor];
-                $xml_GetCampaignInfoResponse->addChild($sKey, $sValor);
+                $xml_GetCampaignInfoResponse->addChild($sKey, str_replace('&', '&amp;', $sValor));
                 break;
             case 'trunk':
                 // Pasar al caso default si el valor no es nulo
                 if (is_null($sValor)) break;
             default:
-                $xml_GetCampaignInfoResponse->addChild($sKey, $sValor);
+                $xml_GetCampaignInfoResponse->addChild($sKey, str_replace('&', '&amp;', $sValor));
                 break;
             }
         }
@@ -1018,13 +1018,13 @@ LEER_CAMPANIA;
                  * datos. Para compatibilidad con campañas antiguas, se deshace
                  * la codificación de HTML aquí. */
                 $sValor = html_entity_decode($sValor, ENT_COMPAT, 'UTF-8');
-                $xml_GetCampaignInfoResponse->addChild($sKey, $sValor);
+                $xml_GetCampaignInfoResponse->addChild($sKey, str_replace('&', '&amp;', $sValor));
                 break;
             case 'status':
                 $sValor = $descEstados[$sValor];
                 // Cae al siguiente caso
             default:
-                $xml_GetCampaignInfoResponse->addChild($sKey, $sValor);
+                $xml_GetCampaignInfoResponse->addChild($sKey, str_replace('&', '&amp;', $sValor));
                 break;
             }
         }
@@ -1067,8 +1067,8 @@ LEER_CAMPANIA;
             $xml_Field = $xml_Form->addChild('field');
             $xml_Field->addAttribute('order', $tuplaCampo['order']);
             $xml_Field->addAttribute('id', $tuplaCampo['id']);
-            $xml_Field->addChild('label', $tuplaCampo['label']);
-            $xml_Field->addChild('type', $tuplaCampo['type']);
+            $xml_Field->addChild('label', str_replace('&', '&amp;', $tuplaCampo['label']));
+            $xml_Field->addChild('type', str_replace('&', '&amp;', $tuplaCampo['type']));
             
             // TODO: permitir especificar longitud de la entrada
             if (!in_array($tuplaCampo['type'], array('LABEL', 'DATE'))) 
@@ -1084,7 +1084,7 @@ LEER_CAMPANIA;
                 }
                 $xml_Values = $xml_Field->addChild('options');
                 foreach (explode(',', $tuplaCampo['value']) as $sValor) {
-                    $xml_Values->addChild('value', $sValor);
+                    $xml_Values->addChild('value', str_replace('&', '&amp;', $sValor));
                 }
             } else {
             	// Usar el valor 'value' como valor por omisión. 
@@ -1093,7 +1093,7 @@ LEER_CAMPANIA;
                 // definición de formulario en interfaz web
                 $sDefVal = trim($tuplaCampo['value']);
                 if ($sDefVal != '') 
-                    $xml_Field->addChild('default_value', $sDefVal);
+                    $xml_Field->addChild('default_value', str_replace('&', '&amp;', $sDefVal));
             }
         }
     }
@@ -1149,9 +1149,9 @@ LEER_CAMPANIA;
                 $xml_callAttrlist = $xml_GetCallInfoResponse->addChild($sKey);
                 foreach ($valor as $tuplaAttr) {
                     $xml_callAttr = $xml_callAttrlist->addChild('attribute');
-                    $xml_callAttr->addChild('label', $tuplaAttr['label']); 
-                    $xml_callAttr->addChild('value', $tuplaAttr['value']);
-                    $xml_callAttr->addChild('order', $tuplaAttr['order']);
+                    $xml_callAttr->addChild('label', str_replace('&', '&amp;', $tuplaAttr['label'])); 
+                    $xml_callAttr->addChild('value', str_replace('&', '&amp;', $tuplaAttr['value']));
+                    $xml_callAttr->addChild('order', str_replace('&', '&amp;', $tuplaAttr['order']));
                 }
                 break;
             case 'matching_contacts':
@@ -1161,9 +1161,9 @@ LEER_CAMPANIA;
                     $xml_callAttrlist->addAttribute('id', $id_contact);
                     foreach ($tuplaContact as $tuplaAttr) {
                         $xml_callAttr = $xml_callAttrlist->addChild('attribute');
-                        $xml_callAttr->addChild('label', $tuplaAttr['label']); 
-                        $xml_callAttr->addChild('value', $tuplaAttr['value']);
-                        $xml_callAttr->addChild('order', $tuplaAttr['order']);
+                        $xml_callAttr->addChild('label', str_replace('&', '&amp;', $tuplaAttr['label'])); 
+                        $xml_callAttr->addChild('value', str_replace('&', '&amp;', $tuplaAttr['value']));
+                        $xml_callAttr->addChild('order', str_replace('&', '&amp;', $tuplaAttr['order']));
                     }
                 }
                 break;
@@ -1175,13 +1175,13 @@ LEER_CAMPANIA;
                     foreach ($valoresForm as $tuplaValor) {
                         $xml_callFormField = $xml_callForm->addChild('field');
                         $xml_callFormField->addAttribute('id', $tuplaValor['id']);
-                        $xml_callFormField->addChild('label', $tuplaValor['label']);
-                        $xml_callFormField->addChild('value', $tuplaValor['value']);
+                        $xml_callFormField->addChild('label', str_replace('&', '&amp;', $tuplaValor['label']));
+                        $xml_callFormField->addChild('value', str_replace('&', '&amp;', $tuplaValor['value']));
                     }
                 }
                 break;
             default:
-                if (!is_null($valor)) $xml_GetCallInfoResponse->addChild($sKey, $valor);
+                if (!is_null($valor)) $xml_GetCallInfoResponse->addChild($sKey, str_replace('&', '&amp;', $valor));
                 break;
             }
         }
@@ -1681,10 +1681,10 @@ LEER_CAMPANIA;
             foreach ($recordset as $tupla) {
         		$xml_pause = $xml_getPausesResponse->addChild('pause');
                 $xml_pause->addAttribute('id', $tupla['id']);
-                $xml_pause->addChild('name', $tupla['name']);
-                $xml_pause->addChild('status', $tupla['status']);
-                $xml_pause->addChild('type', $tupla['tipo']);
-                $xml_pause->addChild('description', $tupla['description']);
+                $xml_pause->addChild('name', str_replace('&', '&amp;', $tupla['name']));
+                $xml_pause->addChild('status', str_replace('&', '&amp;', $tupla['status']));
+                $xml_pause->addChild('type', str_replace('&', '&amp;', $tupla['tipo']));
+                $xml_pause->addChild('description', str_replace('&', '&amp;', $tupla['description']));
         	}
         }
 
@@ -1707,13 +1707,13 @@ LEER_CAMPANIA;
         $xml_agentLoggedIn = $bExitoLogin 
             ? $xml_response->addChild('agentloggedin')
             : $xml_response->addChild('agentfailedlogin');
-        $xml_agentLoggedIn->addChild('agent', $sAgente);
+        $xml_agentLoggedIn->addChild('agent', str_replace('&', '&amp;', $sAgente));
         if ($bExitoLogin) {
             $xml_agentQueues = $xml_agentLoggedIn->addChild('queues');
 
             // Reportar también las colas a las que está suscrito el agente
             if (is_array($listaColas)) foreach ($listaColas as $sCola) {
-            	$xml_agentQueues->addChild('queue', $sCola);
+            	$xml_agentQueues->addChild('queue', str_replace('&', '&amp;', $sCola));
             }
         }
         
@@ -1726,12 +1726,12 @@ LEER_CAMPANIA;
         if (is_null($this->_sUsuarioECCP)) return;
         $xml_response = new SimpleXMLElement('<event />');
         $xml_agentLoggedIn = $xml_response->addChild('agentloggedout');
-        $xml_agentLoggedIn->addChild('agent', $sAgente);
+        $xml_agentLoggedIn->addChild('agent', str_replace('&', '&amp;', $sAgente));
         $xml_agentQueues = $xml_agentLoggedIn->addChild('queues');
 
         // Reportar también las colas a las que está suscrito el agente
         if (is_array($listaColas)) foreach ($listaColas as $sCola) {
-            $xml_agentQueues->addChild('queue', $sCola);
+            $xml_agentQueues->addChild('queue', str_replace('&', '&amp;', $sCola));
         }
         
         $s = $xml_response->asXML();
@@ -1760,7 +1760,7 @@ LEER_CAMPANIA;
         $xml_agentLinked = $xml_response->addChild('agentunlinked');
         $infoLlamada['agent_number'] = $sAgente;
         foreach ($infoLlamada as $sKey => $valor) {
-        	if (!is_null($valor)) $xml_agentLinked->addChild($sKey, $valor);
+        	if (!is_null($valor)) $xml_agentLinked->addChild($sKey, str_replace('&', '&amp;', $valor));
         }
         
         $s = $xml_response->asXML();
