@@ -939,9 +939,18 @@ LEER_CAMPANIA;
         );
         foreach ($tuplaCampania as $sKey => $sValor) {
         	switch ($sKey) {
+            case 'script':
+                /* El control de edición en la creación/modificación del script
+                 * manda a guardar texto con entidades de HTML a la base de 
+                 * datos. Para compatibilidad con campañas antiguas, se deshace
+                 * la codificación de HTML aquí. */
+                $sValor = html_entity_decode($sValor, ENT_COMPAT, 'UTF-8');
+                $xml_GetCampaignInfoResponse->addChild($sKey, $sValor);
+                break;
             case 'status':
                 $sValor = $descEstados[$sValor];
-                // Cae al siguiente caso
+                $xml_GetCampaignInfoResponse->addChild($sKey, $sValor);
+                break;
             case 'trunk':
                 // Pasar al caso default si el valor no es nulo
                 if (is_null($sValor)) break;
@@ -1003,6 +1012,14 @@ LEER_CAMPANIA;
         );
         foreach ($tuplaCampania as $sKey => $sValor) {
             switch ($sKey) {
+            case 'script':
+                /* El control de edición en la creación/modificación del script
+                 * manda a guardar texto con entidades de HTML a la base de 
+                 * datos. Para compatibilidad con campañas antiguas, se deshace
+                 * la codificación de HTML aquí. */
+                $sValor = html_entity_decode($sValor, ENT_COMPAT, 'UTF-8');
+                $xml_GetCampaignInfoResponse->addChild($sKey, $sValor);
+                break;
             case 'status':
                 $sValor = $descEstados[$sValor];
                 // Cae al siguiente caso
