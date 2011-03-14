@@ -1618,3 +1618,60 @@ Respuesta:
         </pause>
     </getpauses_response>
 </response>
+
+Requerimiento "hangup"
+
+Este requerimiento manda a colgar la llamada en curso que está atendiendo el 
+agente. Se requiere que el agente esté logoneado y tenga una llamada activa.
+
+
+Atributos o argumentos:
+* agent_number: Agente que se va a sacar de pausa. Este identificador está de la
+  forma 'Agent/9000'.
+* agent_hash: Hash de autenticación para el agente.
+
+Ejemplo:
+<request id="13">
+    <hangup>
+        <agent_number>Agent/9000</agent_number>
+        <agent_hash>XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX</agent_hash>
+    </hangup>
+</request>
+
+Respuesta:
+Para caso de éxito:
+<response id="13">
+    <hangup_response>
+        <success/>
+    </hangup_response>
+</response>
+
+Para agente inválido:
+<response id="13">
+    <hangup_response>
+        <failure>
+            <code>404</code>
+            <message>Specified agent not found</message>
+        </failure>
+    </hangup_response>
+</response>
+
+Para agente que no está atendiendo llamada, o que no está logoneado:
+<response id="13">
+    <hangup_response>
+        <failure>
+            <code>417</code>
+            <message>Agent not in call</message>
+        </failure>
+    </hangup_response>
+</response>
+
+Para error Asterisk al momento de colgar la llamada:
+<response id="13">
+    <hangup_response>
+        <failure>
+            <code>500</code>
+            <message>Cannot hangup agent call</message>
+        </failure>
+    </hangup_response>
+</response>
