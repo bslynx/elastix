@@ -1493,12 +1493,33 @@ LEER_CAMPANIA;
                     if (!$bDatosValidos) break;
                     
                     // En este punto este valor es válido y se puede generar SQL
-                    $listaSQL[] = array(
-                        ($sTipoCampania == 'incoming') 
-                            ? 'REPLACE INTO form_data_recolected_entry (id_call_entry, id_form_field, value) VALUES (?, ?, ?)'
-                            : 'REPLACE INTO form_data_recolected (id_calls, id_form_field, value) VALUES (?, ?, ?)',
-                        array($idLlamada, $idField, $sValor),                        
-                    );
+                    $iNumReg = $this->_dbConn->getOne(
+                        (($sTipoCampania == 'incoming')
+                            ? 'SELECT COUNT(*) FROM form_data_recolected_entry WHERE id_call_entry = ? AND id_form_field = ?'
+                            : 'SELECT COUNT(*) FROM form_data_recolected WHERE id_calls = ? AND id_form_field = ?'
+                        ), 
+                        array($idLlamada, $idField));
+                    if (DB::isError($iNumReg)) {
+                    	$bDatosValidos = FALSE;
+                        $this->_agregarRespuestaFallo($xml_saveFormDataResponse, 500,
+                            'Unable to check previous form value');
+                    } else {
+                    	if ($iNumReg <= 0) {
+                    		$listaSQL[] = array(
+                                ($sTipoCampania == 'incoming') 
+                                    ? 'INSERT INTO form_data_recolected_entry (id_call_entry, id_form_field, value) VALUES (?, ?, ?)'
+                                    : 'INSERT INTO form_data_recolected (id_calls, id_form_field, value) VALUES (?, ?, ?)',
+                                array($idLlamada, $idField, $sValor),
+                            );
+                    	} else {
+                            $listaSQL[] = array(
+                                ($sTipoCampania == 'incoming') 
+                                    ? 'UPDATE form_data_recolected_entry SET value = ? WHERE id_call_entry = ? AND id_form_field = ?'
+                                    : 'UPDATE form_data_recolected SET value = ? WHERE id_calls = ? AND id_form_field = ?',
+                                array($sValor, $idLlamada, $idField),
+                            );
+                    	}
+                    }
         		}
                 if (!$bDatosValidos) break;
         	}
