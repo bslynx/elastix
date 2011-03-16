@@ -167,7 +167,7 @@ function _moduleContent(&$smarty, $module_name)
     // Generación del reporte
     
     $oGrid  = new paloSantoGrid($smarty);
-    $oGrid->setTitle(_tr("CDRReport"));
+    $oGrid->setTitle(_tr("CDR Report List"));
     $oGrid->pagingShow(true); // show paging section.
 
     $oGrid->enableExport();   // enable export.
