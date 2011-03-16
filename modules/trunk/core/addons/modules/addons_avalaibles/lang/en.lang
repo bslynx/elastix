@@ -28,7 +28,7 @@
   $Id: en.lang,v 1.1 2010-03-08 12:03:02 Bruno Macias bomv.27@gmail.com Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Availables" => "Availables",
+"Availables" => "Available",
 "Name" => "Name",
 "Version" => "Version",
 "Release" => "Release",
