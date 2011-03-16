@@ -45,14 +45,14 @@ $arrLangModule=array(
 "Dst. Channel" => "Cél csatorna",
 "Duration" => "Időtartam",
 "Filter" => "Szűrő",
-"Are you sure you wish to delete CDR(s) Report(s)?" => "Are you sure you wish to delete CDR(s) Report(s)?",
+"Are you sure you wish to delete CDR(s) Report(s)?" => "Are you sure you wish to delete the displayed CDR(s)?",
 "Status" => "Állapot",
 "ALL" => "ALL",
 "ANSWERED" => "ANSWERED",
 "BUSY" => "BUSY",
 "FAILED" => "FAILED",
 "NO ANSWER" => "NO ANSWER",
-"Delete" => "Delete the CDRs in this Report",
+"Delete" => "Delete the displayed CDR(s)",
 "CDR Report" => "CDR Report"
 );
 ?>

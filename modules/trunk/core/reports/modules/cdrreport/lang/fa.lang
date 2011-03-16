@@ -46,14 +46,14 @@ $arrLangModule=array(
 "Dst. Channel" => "کانال مقصد",
 "Duration" => "مدت",
 "Filter" => "فيلتر",
-"Are you sure you wish to delete CDR(s) Report(s)?" => "آیا مطمئن به حذف ریز مکالمات هستید؟",
+"Are you sure you wish to delete CDR(s) Report(s)?" => "Are you sure you wish to delete the displayed CDR(s)?",
 "Status" => "وضعیت",
 "ALL" => "تمامي تماس ها",
 "ANSWERED" => "پاسخ داده شده",
 "BUSY" => "مشغول",
 "FAILED" => "نا موفق",
 "NO ANSWER" => "پاسخ داده نشده",
-"Delete" => "حذف ريز مكالمات",
+"Delete" => "Delete the displayed CDR(s)",
 "CDR Report" => "CDR Report"
 );
 ?>

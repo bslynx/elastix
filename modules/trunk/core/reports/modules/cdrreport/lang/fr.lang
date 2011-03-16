@@ -44,14 +44,14 @@ $arrLangModule=array(
 "Dst. Channel" => "Canal Dst.",
 "Duration" => "Durée",
 "Filter" => "Filtre",
-"Are you sure you wish to delete CDR(s) Report(s)?" => "Êtes vous sûr de vouloir effacer ces données du rapport ?",
+"Are you sure you wish to delete CDR(s) Report(s)?" => "Are you sure you wish to delete the displayed CDR(s)?",
 "Status" => "Statut",
 "ALL" => "Tout",
 "ANSWERED" => "Répondu",
 "BUSY" => "Occupé",
 "FAILED" => "Manqué",
 "NO ANSWER" => "Non répondu",
-"Delete" => "Effacer",
+"Delete" => "Delete the displayed CDR(s)",
 "CDR Report" => "CDR Report"
 );
 ?>
