@@ -35,5 +35,6 @@ $arrLangModule=array(
 "Active" => "فعال",
 "Name" => "نام",
 "Save/Update" => "ذخيره/به روز رساني",
+"Default" => "Default"
 );
 ?>
