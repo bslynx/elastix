@@ -109,6 +109,9 @@ function _moduleContent(&$smarty, $module_name)
         case "download_icals":
             $content = download_icals($arrLang,$pDB,$module_name, $arrConf);
             break;
+        case "get_contacts2":
+            $content = getContactEmails2($arrConf);
+            break;
         case "phone_numbers":
 
             // Include language file for EN, then for local, and merge the two.
@@ -243,6 +246,7 @@ function viewCalendar($smarty, $module_name, $local_templates_dir, &$pDB, $arrCo
     $smarty->assign("DATE_SERVER", $dateServer);
     $smarty->assign("Here", $arrLang["Here"]);
     $smarty->assign("Color", $arrLang["Color"]);
+    $smarty->assign("CreateEvent", $arrLang["Create New Event"]);
 
     $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",$arrLang["Calendar"], $_DATA);
     $content = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name' name='formNewEvent' id='formNewEvent'>".$htmlForm."</form>";
@@ -252,50 +256,42 @@ function viewCalendar($smarty, $module_name, $local_templates_dir, &$pDB, $arrCo
 
 function saveEvent($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang){
 
-    $_DATA              = $_POST;
-    $action             = getParameter("action");
-    $id                 = getParameter("id_event");
-    $event              = getParameter("event");
-    $date_ini           = getParameter("date");
-    $date_end           = getParameter("to");
-    $hora               = date('H',strtotime($date_ini));
-    $minuto             = date('i',strtotime($date_ini));
-    $hora2              = date('H',strtotime($date_end));
-    $minuto2            = date('i',strtotime($date_end));
-    $repeat             = getParameter("it_repeat");
-    $description        = getParameter("description");
-    //$asterisk_calls     = getParameter("asterisk_call_me");  // puede ser on o off
-    $asterisk_calls     = "";
-    $call_to            = getParameter("call_to");
-    $notification       = getParameter("notification");      // puede ser on o off 
-    $notification_email = getParameter("notification_email"); // si es notification==off => no se toma en cuenta esta variable
-    // checkbox days and select repeat each
-    $sunday             = getParameter("Sunday");
-    $monday             = getParameter("Monday");
-    $tuesday            = getParameter("Tuesday");
-    $wednesday          = getParameter("Wednesday");
-    $thursday           = getParameter("Thursday");
-    $friday             = getParameter("Friday");
-    $saturday           = getParameter("Saturday");
-    $each_repeat        = getParameter("repeat");
-    $reminder           = getParameter("reminder");
-    $remainerTime       = getParameter("ReminderTime");
-    $list               = getParameter("emails");
-    $recording          = getParameter("recording");
-    $color              = getParameter("colorHex");
     $pCalendar = new paloSantoCalendar($pDB);
     $user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
     $uid = Obtain_UID_From_User($user,$arrConf);
     $pDB3 = new paloDB($arrConf['dsn_conn_database1']);
     $ext = $pCalendar->obtainExtension($pDB3,$uid);
+    $_DATA              = $_POST;
+
+    $action             = getParameter("action");
+    $id                 = getParameter("id_event");
+    $event              = getParameter("event");
+    $description        = getParameter("description");
+    $date_ini           = getParameter("date");
+    $date_end           = getParameter("to");
+    $color              = getParameter("colorHex");
+    // options call reminder
+    $reminder           = getParameter("reminder"); // puede ser on o off
+    $call_to            = getParameter("call_to"); // elemento Call to
+    $remainerTime       = getParameter("ReminderTime"); // tiempo de recordatorio 10, 20, 30 minutos antes
+    $recording          = getParameter("recording");
+    // options email notification
+    $notification       = getParameter("notification");      // puede ser on o off 
+    $notification_email = getParameter("notification_email"); // si es notification==off => no se toma en cuenta esta variable
+    $list               = getParameter("emails");
+
+    $hora               = date('H',strtotime($date_ini));
+    $minuto             = date('i',strtotime($date_ini));
+    $hora2              = date('H',strtotime($date_end));
+    $minuto2            = date('i',strtotime($date_end));
+    $asterisk_calls     = "";
+    $each_repeat        = 1;
+    $repeat             = "none";
+    $event_type = 0;
+
     if(!preg_match("/^#\w{3,6}$/",$color))
         $color = "#3366CC";
-    if(!isset($repeat) || $repeat == "")
-        $repeat = "none";
-    if(!isset($each_repeat) || $each_repeat == "")
-        $each_repeat = 1;
-    $event_type = 0;
-    $checkbox_days = getCheckDays($sunday,$monday,$tuesday,$wednesday,$thursday,$friday,$saturday);
+
     $start_event   = strtotime($date_ini);
     $end_event     = strtotime($date_end);
     $end_event2    = $end_event;
@@ -335,13 +331,12 @@ function saveEvent($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf,
             $start = date('Y-m-d',$start_event);
             $end   = date('Y-m-d',$end_event);
 
-            if(!isset($checkbox_days) || $checkbox_days==""){
-                $checkbox_days = getConvertDay($start_event);
-            }
+            $checkbox_days = getConvertDay($start_event);
 
             $starttime = date('Y-m-d',$start_event)." ".$hora.":".$minuto;
             $endtime = date('Y-m-d',$end_event2)." ".$hora2.":".$minuto2;
             $day_repeat  = explode(',',$checkbox_days);
+
             $event_type = 1;
             $num_frec   = 0;
 
@@ -455,6 +450,7 @@ function sendMails($data, $arrLang, $type, $arrConf,$pDB, $module_name, $idEvent
     $event       = $data['subject'];
     $description = $data['description'];
     $endtime     = $data['endtime'];
+    $IcalTmp     = "";
 
     $pCalendar = new paloSantoCalendar($pDB);
     $user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
@@ -479,15 +475,15 @@ function sendMails($data, $arrLang, $type, $arrConf,$pDB, $module_name, $idEvent
     $event_type = returnTypeEvent($event_type, $arrLang);
     $val = false;
     if($type != "DELETE"){
-        $dirIcalTmp = "/tmp/icalout.ics";
-        createTmpIcal($arrLang,$pDB,$module_name, $arrConf, $idEvent); // write the file /tmp/icalout.ics
-        $file = fopen($dirIcalTmp, "r");
+        //$dirIcalTmp = "/tmp/icalout.ics";
+        $IcalTmp = createTmpIcal($arrLang,$pDB,$module_name, $arrConf, $idEvent); // write the file /tmp/icalout.ics
+        /*$file = fopen($dirIcalTmp, "r");
         $encoded_attach = "";
         if($file){
             $contenido = fread($file, filesize($dirIcalTmp));
             $encoded_attach = chunk_split(base64_encode($contenido));
             $val = true;
-        }
+        }*/
     }
 
     $startarray = explode(" ",$starttime);
@@ -523,35 +519,48 @@ $msg = "
              <div style='margin-top:10px; margin-left:40px;'>
                  <div style='margin-top:10px; font-style:italic; font-weight:bolder;'>{$arrLang['time']}: </div>
                  <div style='margin:0px 0px 0px 60px'>".$startarray[1]." - ".$endarray[1].".</div>
-             </div>
-             <div style='margin-top:10px; margin-left:40px;'>
+             </div>";
+
+    if($description != "")
+             $msg .= "<div style='margin-top:10px; margin-left:40px;'>
                  <div style='margin-top:10px; font-style:italic; font-weight:bolder;'>{$arrLang['Description']}: </div>
                  <div style='margin:0px 0px 0px 60px'>$description.</div>
-             </div>
-             <div style='margin-top:10px; margin-left:40px;'>
+             </div>";
+
+             $msg .= "<div style='margin-top:10px; margin-left:40px;'>
                  <div style='margin-top:10px; font-style:italic; font-weight:bolder;'>{$arrLang['Organizer']}: </div>
                  <div style='margin:0px 0px 0px 60px'>$user_name.</div>
-             </div>  
+             </div>
              <div style='margin-top:20px; text-align: center; color: #BEBEBE; font-size: 12px;'>   
                  <b>{$arrLang['noResponseNotification']}.</b><br />   
                  <b>{$arrLang['copyrightNotification']}. 2006 - ".date("Y")."</b><br />   
              </div>
          </div>
      </body>
- </html>
-";
+ </html>";
 
-    $mail = new PHPMailer(); 
+
+
+
+//Agregamos al cuerpo del mensaje la iCal
+// $msg .= 'Content-Type: text/calendar;name="meeting.ics";method=REQUEST\n';
+// $msg .= "Content-Transfer-Encoding: 8bit\n\n";
+// $msg .= file_get_contents($dirIcalTmp,true);
+
+
+    $msg = utf8_decode($msg);
+    $mail = new PHPMailer();
     $mail->Host = "localhost";
     $mail->Body = $msg; 
     $mail->IsHTML(true); // El correo se envía como HTML
     $mail->WordWrap = 50;
     $mail->From = $From;
     $mail->FromName = $user_name;
-    if($val){
+    /*if($val){
         $mail->AddAttachment($dirIcalTmp, "icalout.ics");
-    }
-
+    }*/
+    if($IcalTmp != "")
+        $mail->AddStringAttachment($IcalTmp, "icalout.ics", "7bit", "text/calendar; charset=utf-8; method=REQUEST");
     for($i=0; $i<count($arrEmails)-1; $i++){
         $To = $arrEmails[$i];
         $cabecerasIcal = "";
@@ -565,7 +574,7 @@ $msg = "
             $ToSend = $To;
 
         $mail->ClearAddresses();
-        $mail->Subject = $subject; 
+        $mail->Subject = utf8_decode($subject);
         $mail->AddAddress($ToSend, $To);
 
         $mail->Send();
@@ -877,7 +886,6 @@ function createTmpIcal($arrLang,&$pDB,$module_name, $arrConf, $idEvent){
     $pACL      = new paloACL($pDBACL);
     $id_user   = $pACL->getIdUser($_SESSION["elastix_user"]);
     $arr_out   = getDataCalendarByEventId($arrLang,$pDB,$module_name, $arrConf, $idEvent);
-    $tmpFile   = "/tmp/icalout.ics";
     $document_output = "BEGIN:VCALENDAR\nPRODID:-//Elastix Development Department// Elastix 2.0 //EN\nVERSION:2.0\n\n";
     for($i=0; $i<count($arr_out); $i++){
         $start_time = gmdate("Ymd",strtotime($arr_out[$i]['start']))."T".gmdate("Hi",strtotime($arr_out[$i]['start']))."00Z";
@@ -898,19 +906,7 @@ function createTmpIcal($arrLang,&$pDB,$module_name, $arrConf, $idEvent){
         $document_output.= "END:VEVENT\n\n";
     }
     $document_output .= "END:VCALENDAR";
-    $fh = fopen($tmpFile, "w");
-    if($fh){
-        if(fwrite($fh, $document_output) == false){
-            fclose($fh);
-            return false;
-        }else{
-            fclose($fh);
-            return true;
-        }
-    }else{
-        fclose($fh);
-        return false;
-    }
+    return $document_output;
 }
 
 function newBoxCalendar($arrConf,$arrLang,$pDB){
@@ -928,7 +924,7 @@ function newBoxCalendar($arrConf,$arrLang,$pDB){
     }
     $json = new Services_JSON();
     $data['now']       = date("d M Y H:i");// convert times to (d M Y) like (02 Feb 2010)
-    $data['after']     = date("d M Y H:i",strtotime("{$data[now]} + 5 minutes"));
+    $data['after']     = date("d M Y H:i",strtotime($data['now']." + 5 minutes"));
     $data['New_Event'] = $arrLang["New_Event"];
     $data['ext']       = $ext;
     return $json->encode($data);
@@ -1547,7 +1543,7 @@ function createFieldForm($arrLang)
             "event"   => array(      "LABEL"                  => $arrLang["Name"],
                                             "REQUIRED"               => "no",
                                             "INPUT_TYPE"             => "TEXT",
-                                            "INPUT_EXTRA_PARAM"      => array("style" => "width:230px", "id" => "event"),
+                                            "INPUT_EXTRA_PARAM"      => array("style" => "width:274px", "id" => "event"),
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
@@ -1567,38 +1563,14 @@ function createFieldForm($arrLang)
                                             "EDITABLE"               => "si",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-            "hora2"   => array(      "LABEL"                  => "",
-                                            "REQUIRED"               => "no",
-                                            "INPUT_TYPE"             => "SELECT",
-                                            "INPUT_EXTRA_PARAM"      => $arrHou,
-                                            "VALIDATION_TYPE"        => "text",
-                                            "EDITABLE"               => "si",
-                                            "VALIDATION_EXTRA_PARAM" => ""
-                                            ),
-            "minuto2"   => array(      "LABEL"                  => "",
-                                            "REQUIRED"               => "no",
-                                            "INPUT_TYPE"             => "SELECT",
-                                            "INPUT_EXTRA_PARAM"      => $arrMin,
-                                            "VALIDATION_TYPE"        => "text",
-                                            "EDITABLE"               => "si",
-                                            "VALIDATION_EXTRA_PARAM" => ""
-                                            ),
-            "it_repeat"   => array(      "LABEL"                  => $arrLang["It repeat"],
-                                            "REQUIRED"               => "no",
-                                            "INPUT_TYPE"             => "SELECT",
-                                            "INPUT_EXTRA_PARAM"      => $arrRepeat,
-                                            "VALIDATION_TYPE"        => "text",
-                                            "VALIDATION_EXTRA_PARAM" => "",
-                                            "EDITABLE"               => "si",
-                                            ),
             "description"   => array(      "LABEL"                  => $arrLang["Description"],
                                             "REQUIRED"               => "no",
                                             "INPUT_TYPE"             => "TEXTAREA",
-                                            "INPUT_EXTRA_PARAM"      => "",
+                                            "INPUT_EXTRA_PARAM"      => array("style"=>"width: 272px;"),
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => "",
-                                            "COLS"                   => "30",
-                                            "ROWS"                   => "4",
+                                            "COLS"                   => "36px",
+                                            "ROWS"                   => "2",
                                             "EDITABLE"               => "si",
                                             ),
             "call_to"   => array(      "LABEL"                  => $arrLang["Call to"],
@@ -1622,63 +1594,6 @@ function createFieldForm($arrLang)
                                             "INPUT_EXTRA_PARAM"      => "",
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
-                                            ),
-            "Monday"   => array(      "LABEL"                  => $arrLang["Monday"],
-                                            "REQUIRED"               => "no",
-                                            "INPUT_TYPE"             => "CHECKBOX",
-                                            "INPUT_EXTRA_PARAM"      => "",
-                                            "VALIDATION_TYPE"        => "text",
-                                            "VALIDATION_EXTRA_PARAM" => ""
-                                            ),
-            "Tuesday"   => array(      "LABEL"                  => $arrLang["Tuesday"],
-                                            "REQUIRED"               => "no",
-                                            "INPUT_TYPE"             => "CHECKBOX",
-                                            "INPUT_EXTRA_PARAM"      => "",
-                                            "VALIDATION_TYPE"        => "text",
-                                            "VALIDATION_EXTRA_PARAM" => ""
-                                            ),
-            "Wednesday"   => array(      "LABEL"                  => $arrLang["Wednesday"],
-                                            "REQUIRED"               => "no",
-                                            "INPUT_TYPE"             => "CHECKBOX",
-                                            "INPUT_EXTRA_PARAM"      => "",
-                                            "VALIDATION_TYPE"        => "text",
-                                            "VALIDATION_EXTRA_PARAM" => ""
-                                            ),
-            "Thursday"   => array(      "LABEL"                  => $arrLang["Thursday"],
-                                            "REQUIRED"               => "no",
-                                            "INPUT_TYPE"             => "CHECKBOX",
-                                            "INPUT_EXTRA_PARAM"      => "",
-                                            "VALIDATION_TYPE"        => "text",
-                                            "VALIDATION_EXTRA_PARAM" => ""
-                                            ),
-            "Friday"   => array(      "LABEL"                  => $arrLang["Friday"],
-                                            "REQUIRED"               => "no",
-                                            "INPUT_TYPE"             => "CHECKBOX",
-                                            "INPUT_EXTRA_PARAM"      => "",
-                                            "VALIDATION_TYPE"        => "text",
-                                            "VALIDATION_EXTRA_PARAM" => ""
-                                            ),
-            "Saturday"   => array(      "LABEL"                  => $arrLang["Saturday"],
-                                            "REQUIRED"               => "no",
-                                            "INPUT_TYPE"             => "CHECKBOX",
-                                            "INPUT_EXTRA_PARAM"      => "",
-                                            "VALIDATION_TYPE"        => "text",
-                                            "VALIDATION_EXTRA_PARAM" => ""
-                                            ),
-            "Sunday"   => array(        "LABEL"                  => $arrLang["Sunday"],
-                                            "REQUIRED"               => "no",
-                                            "INPUT_TYPE"             => "CHECKBOX",
-                                            "INPUT_EXTRA_PARAM"      => "",
-                                            "VALIDATION_TYPE"        => "text",
-                                            "VALIDATION_EXTRA_PARAM" => ""
-                                            ),
-            "repeat"   => array(         "LABEL"                  => $arrLang["repeat"],
-                                            "REQUIRED"               => "no",
-                                            "INPUT_TYPE"             => "SELECT",
-                                            "INPUT_EXTRA_PARAM"      => $repeat,
-                                            "VALIDATION_TYPE"        => "text",
-                                            "VALIDATION_EXTRA_PARAM" => "",
-                                            "EDITABLE"               => "si",
                                             ),
             "reminder"   => array(      "LABEL"                  => $arrLang["active_foneCall"],
                                             "REQUIRED"               => "no",
@@ -1744,6 +1659,8 @@ function getAction()
         return "phone_numbers";
     else if(getParameter("action")=="download_icals")
         return "download_icals";
+    else if(getParameter("action")=="get_contacts2")
+        return "get_contacts2";
     else
         return "report"; //cancel
 }
@@ -1879,4 +1796,25 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
     return $contenidoModulo;
 }
 
+function getContactEmails2($arrConf)
+{
+    $pDBACL  = new paloDB($arrConf['dsn_conn_database1']);
+    $pACL    = new paloACL($pDBACL);
+    $id_user = $pACL->getIdUser($_SESSION["elastix_user"]);
+    $tag = getParameter('name_startsWith');
+    $salida = array();
+    if(isset($id_user) && $id_user!=""){
+        $pDB  = new paloDB($arrConf['dsn_conn_database']);
+        $pDBAddress = new paloDB($arrConf['dsn_conn_database3']);
+        $pCalendar = new paloSantoCalendar($pDB);
+        $salida = $pCalendar->getContactByTag($pDBAddress, $tag, $id_user);
+        if(!$salida)
+            $salida = array();
+    }
+
+header('Content-Type: application/json');
+    // se instancia a JSON
+    $json = new Services_JSON();
+    return $json->encode($salida);
+}
 ?>

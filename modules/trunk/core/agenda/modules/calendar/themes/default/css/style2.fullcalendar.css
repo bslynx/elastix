@@ -65,7 +65,8 @@ table.fc-header {
 	
 .fc-header-title {
 	margin-top: 0;
-	white-space: nowrap;
+	white-space: nowrap; 
+    margin-bottom: 0px;
 	}
 	
 .fc-header-space {
@@ -85,7 +86,8 @@ table.fc-header {
 
 .fc-header .fc-state-default,
 .fc-header .ui-state-default {
-	margin-bottom: 1em;
+	/*margin-bottom: 1em;*/
+    margin-bottom: 5px;
 	cursor: pointer;
 	}
 	

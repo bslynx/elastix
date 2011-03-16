@@ -345,8 +345,8 @@ z-index:1;
   /*padding: 10px;*/
   padding: 2%;
   background: #fff;
-  /*width: 370px;*/
-  width: 470px;
+  /*width: 470px;*/
+    width: 410px;
 }
 
 #box .loading {
@@ -625,7 +625,6 @@ cursor: pointer;
     display: none;
 }
 
-
-
-
-/*fin de color picker*/
+.spaceTD{
+    height:30px;
+}

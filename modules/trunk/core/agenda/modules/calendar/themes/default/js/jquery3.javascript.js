@@ -4,7 +4,6 @@ $(document).ready(function(){
     $('#divReminder').corner();
     $('#divNotification').corner();
 
-    $('.colorpicker_color div div').click(function(){alert("fff");});
     $('#colorSelector').ColorPicker({
         color: '#3366CC',
         onShow: function (colpkr) {
@@ -24,38 +23,6 @@ $(document).ready(function(){
             $('#colorHex').val('#' + hex);
         }
     });
-
-
-    $('#select2').fcbkcomplete({
-        json_url: "index.php?menu="+module_name+"&action=get_contacts&rawmode=yes&tag=",
-        cache: false,       // si es true se guardara en cache y es false no se guarda en cache
-        cacheJSON: false,  // false se hara cada vez que se presione una tecla una peticion ajax si es true no
-        filter_case: true,
-        filter_hide: true,
-        component: 1,
-        size_block: "100%", //size from list with emails
-        size_type: "61%",
-        firstselected: true,
-        //onremove: "testme",
-        //onselect: "testme",
-        filter_selected: true,
-        newel: true
-    });
-
-//     $('#selectE').fcbkcomplete({
-//         json_url: "index.php?menu="+module_name+"&action=get_emailContact&rawmode=yes&tag=",
-//         cache: true,
-//         filter_case: true,
-//         filter_hide: true,
-//         component: 2,
-//         size_block: "100%", //size from list with emails
-//         size_type: "16.5%",
-//         firstselected: true,
-//         //onremove: "testme",
-//         //onselect: "testme",
-//         filter_selected: true,
-//         newel: true
-//     });
 
     $('#CheckBoxRemi').change(function(){
         var estado;
@@ -80,14 +47,14 @@ $(document).ready(function(){
             var checkChange = document.getElementsByName('chkoldnotification')[0];
             checkChange.setAttribute("checked","checked");
             estado = $('#notification').val("on");
-            $('#notification_email').attr("style","visibility: visible;");
+            $('#notification_email').show();
             $('#grilla').attr("style","visibility: visible;");
         }else{
             $(this).next("label").removeClass("LabelSelected");
             var checkChange = document.getElementsByName('chkoldnotification')[0];
             RemoveAttributeCheck(checkChange);
             estado = $('#notification').val("off");
-            $('#notification_email').attr("style","visibility: hidden;");
+            $('#notification_email').hide();
             $('#grilla').attr("style","visibility: collapse;");
         }
     });
@@ -104,11 +71,7 @@ $(document).ready(function(){
                 connectJSON("error_date");
                 return false;
             }
-            //description is filled
-            if(!getStatusDescription()){
-                connectJSON("error_description");
-                return false;
-            }
+
             if(getStatusReminder()){ // si en on => true
                 if(!existRecording()){
                     connectJSON("error_recording");
@@ -137,19 +100,8 @@ $(document).ready(function(){
     $('.close_box, .cancel').click(function(){
         $('#box').hide();
         $('#title_box').html("");
-        // limpiar la caja de emails
-        $('#lstholder1').children().each(function(){
-            var item = $(this).attr("class");
-            var rel  = $(this).attr("rel");
-            if(item=="bit-box"){
-                $(this).removeAttr("selected");
-                $(this).removeClass("selected");
-                $(this).remove();
-            }
-        });
-        $('#select2').children().each(function(){
-            $(this).remove();
-        });
+        $('#tags').val("");
+        $('#emails').val("");
         $('#colorSelector').ColorPickerSetColor('#3366CC');
         $('#colorHex').val('#3366CC');
         $('#colorSelector div').css('backgroundColor', '#3366CC');
@@ -163,15 +115,15 @@ $(document).ready(function(){
         $('.del_contact').attr("style","visibility:visible;");
         $('#divReminder').show('slow');
         $('#divNotification').show('slow');
-        $('#notification_email').attr("style","visibility:hidden;");
+        $('#notification_email').hide();
         $('#lblCheckBoxNoti').attr("for","CheckBoxNoti");
         $('#lblCheckBoxRemi').attr("for","CheckBoxRemi");
         var title_box = $('#lblEdit').val();
         $('#title_box').html(title_box);
         var estado = $('#notification').val();
-        if(estado == "on")
-            $('#notification_email').attr("style","visibility:visible;");
-
+        if(estado == "on"){
+            $('#notification_email').show();
+        }
         var event_name        = document.getElementById('event');
         var description_event = document.getElementsByName('description')[0];
         var date_ini          = document.getElementById('f-calendar-field-1');
@@ -195,29 +147,6 @@ $(document).ready(function(){
         $('#ReminderTime').removeAttr("disabled");
         if(inputCallTo.value == ""){
             getNumExtesion();
-        }
-    });
-
-    // funcion para cambiar deacuerdo a la seleccion week or month en new event
-    $('select[name=it_repeat]').change(function () {
-        var txt = $("select[name=it_repeat] option:selected").attr('value');
-        if(txt == "each_day" || txt == "each_month"){
-            $('.repeat').attr("style","visibility: visible;");
-            var order = 'menu='+module_name+'&action=get_lang&rawmode=yes';
-            var message = "";
-            $.post("index.php", order,
-                function(theResponse){
-                    message = JSONtoString(theResponse);
-                    var txt = $("select[name=it_repeat] option:selected").attr('value');
-                    if(txt == "each_day")
-                        $('#type_repeat').text(message['Weeks']);
-                    if(txt == "each_month")
-                        $('#type_repeat').text(message['Months']);
-            });
-        }
-        else{
-            $('.repeat').attr("style","visibility: hidden;");
-
         }
     });
 
@@ -246,23 +175,6 @@ $(document).ready(function(){
 
     $('#box').draggable({handle: 'tr.titleBox'}); //, opacity: 0.7
 
-    $('[id^=event_day_]').sortable({
-        connectWith: '.ul_class',
-        opacity: 0.6,
-        receive: function(evt, ui) {
-            var li_id_origen  = $(ui.item).attr("id").split("_")[1]; //id event
-            var ul_id_destine = $(this).attr("id").split("_")[2]; // number of day
-            var year   = document.getElementById("year").value;
-            var month  = document.getElementById("month").value;
-
-            var order = 'menu='+module_name+'&action=save_edit&rawmode=yes&id_event='+li_id_origen+'&day_no='+ul_id_destine+'&month='+month+'&year='+year;
-            $.post("index.php", order, function(theResponse){
-                //$("#contentRight").html(theResponse);
-                alert(theResponse);
-            });
-        }
-    });
-
     $("#datepicker").datepicker({
         firstDay: 1,
         //showOtherMonths: true,
@@ -281,6 +193,60 @@ $(document).ready(function(){
             $('#calendar').fullCalendar('changeView', 'agendaDay');
         }
     });
+
+    function split( val ) {
+        return val.split( /,\s*/ );
+    }
+    function extractLast( term ) {
+        return split( term ).pop();
+    }
+
+    $( "#tags" )
+        // don't navigate away from the field on tab when selecting an item
+        .bind( "keydown", function( event ) {
+            if ( event.keyCode === $.ui.keyCode.TAB &&
+                    $( this ).data( "autocomplete" ).menu.active ) {
+                event.preventDefault();
+            }
+        })
+        .autocomplete({
+            minLength: 0,
+            source: function(request, response){
+                $.ajax({
+                    url: 'index.php?menu='+module_name+'&action=get_contacts2&rawmode=yes',
+                    dataType: "json",
+                    data: {
+                        name_startsWith: extractLast( request.term )
+                    },
+                    success: function( data ) {
+                        response( $.map( data, function( item ) {
+                            return {
+                                label: replaceTagHtml(item.caption),
+                                value: item.value
+                            }
+                        }));
+                    }
+                });
+            },
+            focus: function() {
+                // prevent value inserted on focus
+                return false;
+            },
+            select: function( event, ui ) {
+                var terms = split( this.value );
+                //terms = entityToHtml(terms);
+                // remove the current input
+                terms.pop();
+                // add the selected item
+                terms.push( ui.item.label );
+                // add placeholder to get the comma-and-space at the end
+                terms.push("");
+                this.value = terms.join( ", " );
+                //$('#emails').val(this.value);
+                return false;
+            }
+        });
+
 });
 
     function popup_phone_number(url_popup){
@@ -298,56 +264,20 @@ $(document).ready(function(){
         window.opener.document.getElementById("phone_id").value = id;
         window.close();
     }
-
-    // true => email_no_valid   false => empty field
+        // true => email_no_valid   false => empty field
     function obtainEmails(){
         //format ("name" <dd@ema.com>, "name2" <ff@ema.com>, )
-        var id_emails = document.getElementById("emails");
-        var total_emails = "";
-        var cad = "";
+        var cad = $("#tags").val();
+        var total_emails = quitSimbols(cad);
         var email = "";
         var error = "error_email";
-        var lista = document.getElementById("lstholder1");
-        //recorriendo los li el ultimo no es tomado en cuneta ya que es null
-        for(var i = 0; i<lista.childNodes.length-1; i++){
-            cad = lista.childNodes[i].firstChild.nodeValue;
-            email = quitSimbols(cad);
-            if(email==true){
-                id_emails.value = "";
-                return error;
-            }
-            total_emails += email+", ";
-        }
+        if(total_emails==true)
+            return error;
         total_emails = total_emails + obtainTablesEmails();
-        id_emails.value = total_emails;
         //obtain emails by table_emails
         if(total_emails=="")    return false;
-        return total_emails;
-    }
-
-    function copyEmailsToSend(){
-        //format ("name" <dd@ema.com>, "name2" <ff@ema.com>, )
-        var id_emails = document.getElementById("share_emails");
-        var total_emails = "";
-        var cad = "";
-        var email = "";
-        var error = "error_email";
-        var lista = document.getElementById("lstholder2");
-        //recorriendo los li el ultimo no es tomado en cuneta ya que es null
-        for(var i = 0; i<lista.childNodes.length-1; i++){
-            cad = lista.childNodes[i].firstChild.nodeValue;
-            email = quitSimbols(cad);
-            if(email==true){
-                id_emails.value = "";
-                return error;
-            }
-            total_emails += email+", ";
-        }
-        total_emails = total_emails + obtainTablesEmails();
-        id_emails.value = total_emails;
-        //obtain emails by table_emails
-        if(total_emails=="")    return false;
-        return total_emails;
+        $("#emails").val(total_emails);
+        return true;
     }
 
     function existRecording(){
@@ -358,30 +288,49 @@ $(document).ready(function(){
             return false;
     }
 
-    // this function quit the simbols < or > and return only email
+    // this function remove the simbols < or > and return only email
     function quitSimbols(cad){
-        var i = cad.indexOf("<");
-        var j = cad.indexOf(">");
-        var email   = cad.substring(i+1,j);
-        var names   = cad.substring(0,i-1);
-        var sal     = "\""+trim(names)+"\" "+"&lt;"+trim(email)+"&gt;";
-        if(names == "" && email != ""){
-            if(validarEmail(email))
-                sal = "&lt;"+email+"&gt;";
-            else
-                return true;
-        }else if(names == "" && email == ""){
-                if(validarEmail(cad)){
-                    sal = "&lt;"+cad+"&gt;";
-                }else{
-                    return true;
-                }
-        }else if(validarEmail(email)){
-                   return sal;
-              }
-        else return true;
+        var arr = cad.split(",");
+        var mail = "";
+        var i = 0;
+        var j = 0;
+        var k = 0;
+        var str = "";
+        var strTmp = "";
+        for(var k=0; k<arr.length; k++){
+            mail = trim(arr[k]);
+            i = mail.indexOf("<");
+            j = mail.indexOf(">");
+            email   = mail.substring(i+1,j);
+            names   = mail.substring(0,i-1);
+            strTmp  = "\""+trim(names)+"\" "+"&lt;"+trim(email)+"&gt;, ";
+            if(mail != ""){
+                if(names == "" && email != ""){
+                    if(validarEmail(email))
+                        str += "&lt;"+email+"&gt;, ";
+                    else
+                        return true;
+                }else if(names == "" && email == ""){
+                        if(validarEmail(mail))
+                            str += "&lt;"+mail+"&gt;, ";
+                        else   return true;
+                }else if(validarEmail(email)){
+                            str += strTmp;
+                        }else return true;
+            }
 
-        return sal;
+        }
+        //cad = cad.replace(/</gi, "&lt;");
+        //cad = cad.replace(/>/gi, "&gt;");
+        str = str.replace(/\n/gi, "");
+        return str;
+    }
+    // replace &lt and &gt by <  >
+    function replaceTagHtml(cad){
+        cad = cad.replace(/&lt;&gt;/gi, "");
+        cad = cad.replace(/&lt;/gi, "<");
+        cad = cad.replace(/&gt;/gi, ">");
+        return cad;
     }
 
     function validarEmail(valor) {
@@ -425,81 +374,6 @@ $(document).ready(function(){
             return true;
         else
             return false;
-    }
-
-    //get num of day checkbox choosen
-    function getStatusItRepeat(){
-        var txt = $("select[name=it_repeat] option:selected").attr('value');
-        if(txt == "each_day" || txt == "each_month")
-            return true;
-        else 
-            return false;
-    }
-
-    //get num of day checkbox choosen
-    function getNumCheckboxDays(){
-        var count     = 0;
-        var sunday    = document.getElementById("Sunday").value;
-        var monday    = document.getElementById("Monday").value;
-        var tuesday   = document.getElementById("Tuesday").value;
-        var wednesday = document.getElementById("Wednesday").value;
-        var thursday  = document.getElementById("Thursday").value;
-        var friday    = document.getElementById("Friday").value;
-        var saturday  = document.getElementById("Saturday").value;
-
-        if(sunday == "on")  count ++;
-        if(monday == "on")  count ++;
-        if(tuesday == "on")  count ++;
-        if(wednesday == "on")  count ++;
-        if(thursday == "on")  count ++;
-        if(friday == "on")  count ++;
-        if(saturday == "on")  count ++;
-
-        return count;
-    }
-
-	function getNumMonth(month){
-        var num;
-        month = month.toLowerCase();
-        switch(month){
-            case 'jan':
-                num = "01";
-                break;
-            case 'feb':
-                num = "02";
-                break;
-            case 'mar':
-                num = "03";
-                break;
-            case 'apr':
-                num = "04";
-                break;
-            case 'may':
-                num = "05";
-                break;
-            case 'jun':
-                num = "06";
-                break;
-            case 'jul':
-                num = "07";
-                break;
-            case 'aug':
-                num = "08";
-                break;
-            case 'sep':
-                num = "09";
-                break;
-            case 'oct':
-                num = "10";
-                break;
-            case 'nov':
-                num = "11";
-                break;
-            case 'dec':
-                num = "12";
-                break;
-        }
-        return num;
     }
 
     function getStatusEvent(){
@@ -653,7 +527,7 @@ $(document).ready(function(){
         $('#view_box').attr("style","display:none;");
         $('.remin').attr("style","display:none;");
         $('.noti_email').attr("style","display:none;");
-        $('#notification_email').attr("style","visibility:hidden;");
+        $('#notification_email').hide();
         $('#title_box').html("");
         $('#box').show();
         $('#lblCheckBoxNoti').attr("for","CheckBoxNoti1");
@@ -718,7 +592,7 @@ $(document).ready(function(){
 
                         // add title
                         $('#title_box').text(message['View Event']);
-
+                        $('#desc').show();
                         //fill event name
                         event_name.value = event;
 
@@ -742,7 +616,7 @@ $(document).ready(function(){
                         RemoveAttributeCheck(chkoldnoti);
 
                         //fill email_to
-                        $('#notification_email').attr("style","visibility:hidden;");
+                        $('#notification_email').hide();
                         $('#email_to').attr("style","visibility:visible;");
                         // fill tr and td in table contacts email with DOM
                         var size_emails = message['size_emails'];
@@ -887,12 +761,13 @@ $(document).ready(function(){
         $('#view_box').attr("style","display:none;");
         $('.remin').attr("style","display:none;");
         $('#grilla').html("");
-        $('#notification_email').attr("style","visibility:hidden;");
+        $('#notification_email').hide();
         $('#title_box').html("");
         $('#divReminder').show();
         $('#divNotification').show();
         $('#lblCheckBoxNoti').attr("for","CheckBoxNoti");
         $('#lblCheckBoxRemi').attr("for","CheckBoxRemi");
+        $('#desc').hide();
         var order = "menu="+module_name+"&action=new_box&rawmode=yes";
 ////// to remove checkbox status in reminder call or notification /////////////////
         RemoveAttributeImageCheck();
@@ -945,9 +820,8 @@ $(document).ready(function(){
                     RemoveAttributeCheck(chkoldnoti);
 
                     // hide the sections email_to
-                    $('#notification_email').attr("style","visibility:visible;");
+                    $('#notification_email').hide();
                     $('#email_to').attr("style","display:none;");
-                    //$('#email_to').html("");
 
                     // add title
                     $('#title_box').text(message['New_Event']);
@@ -965,7 +839,6 @@ $(document).ready(function(){
 		            if(recording_event.childNodes[0])
                     	recording_event.childNodes[0].setAttribute('selected', 'selected');
 
-                    $('#notification_email').attr("style","visibility: hidden;");
                     $('#add_phone').attr("style","display: inline;");
                     $('.new_box_rec').attr("style","display: inline;");
                     inputNotification.value = "off";
@@ -995,7 +868,7 @@ $(document).ready(function(){
         $('#reminder').val('off');
         $('#notification').val('off');
         $('.remin').attr("style","display: none;");
-        $('#notification_email').attr("style","visibility: hidden;");
+        $('#notification_email').hide();
         $('#CheckBoxNoti').removeAttr('checked');
         $('#CheckBoxRemi').removeAttr('checked');
         $('#CheckBoxNoti').next("label").removeClass("LabelSelected");

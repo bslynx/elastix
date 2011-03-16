@@ -6,11 +6,18 @@
 <table class="tabForm" style="font-size: 16px;" width="100%">
     <tr>
         <td width="10%" align="left" valign="top" style="font-size:64%;">
+            <div style="margin: 0px 10px 6px 10px;" valign="middle">
+                <div class='fc-button-add ui-state-default  ui-corner-left ui-corner-right' style="height: 25px;" align="center">
+                    <a id='add_news' style='cursor: pointer; margin: 5px 0px 5px 0px; position: relative; top: 4px; font-family: verdana,arial,helvetica,sans-serif; font-size: 14px;' onclick='displayNewEvent();'>
+                        {$CreateEvent}
+                    </a>
+                </div>
+            </div>
             <div id="datepicker"></div>
             <div id="icals" class="ui-datepicker-inline ui-datepicker ui-widget ui-widget-content ui-helper-clearfix ui-corner-all">
                 <div class="ui-datepicker-header ui-widget-header ui-helper-clearfix ui-corner-all title_size">{$Export_Calendar}</div>
                 <div class="content_ical">
-                    <a  href="index.php?menu={$module_name}&action=download_icals&rawmode=yes">
+                    <a href="index.php?menu={$module_name}&action=download_icals&rawmode=yes">
                             <span>{$ical}</span>
                     </a>
                     <div align="center"><span>{$formatIcal}</span></div>
@@ -60,53 +67,30 @@
                                 </tr>
                             </table>
                             <table style="font-size: 16px;" width="99%" border="0">
-                                <tr>
-                                    <td>&nbsp;&nbsp;&nbsp;</td>
+                                <tr class="letra12" height="30px" >
+                                    <td align="left" width="90px"><b>{$event.LABEL}: <span  class="required">*</span></b></td>
+                                    <td align="left">{$event.INPUT}</td>
                                 </tr>
-                                <tr>
-                                    <td align="left" colspan=2>
-                                        <fieldset class="fielform">
-                                            <table style="font-size: 16px;" width="99%" border="0">
-                                                <tr class="letra12">
-                                                    <td align="left" width="23%"><b>{$event.LABEL}: <span  class="required">*</span></b></td>
-                                                    <td align="left">{$event.INPUT}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>&nbsp;&nbsp;&nbsp;</td>
-                                                    <td>&nbsp;&nbsp;&nbsp;</td>
-                                                </tr>
-                                                <tr class="letra12">
-                                                    <td align="left"><b>{$description.LABEL}: <span  class="required">*</span></b></td>
-                                                    <td align="left">{$description.INPUT}</td>
-                                                </tr>
-                                            </table>
-                                        </fieldset>
+                                <tr class="letra12" id="desc" style="display: none;">
+                                    <td align="left"><b>{$description.LABEL}: </b></td>
+                                    <td align="left">{$description.INPUT}</td>
+                                </tr>
+                                <tr class="letra12" height="30px">
+                                    <td align="left" width="90px"><b>{$Start_date}: <span  class="required">*</span></b></td>
+                                    <td align="left">
+                                        {$date.INPUT}
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td align="left" colspan=2 width="50%">
-                                        <fieldset class="fielform">
-                                            <table style="font-size: 16px;" width="85%" border="0">
-                                                <tr class="letra12">
-                                                    <td align="left" width="27%"><b>{$Start_date}: <span  class="required">*</span></b></td>
-                                                    <td align="left">
-                                                        {$date.INPUT}
-                                                    </td>
-                                                </tr>
-                                                <tr class="letra12">
-                                                    <td align="left"><b>{$End_date}: <span  class="required">*</span></b></td>
-                                                    <td align="left">
-                                                        {$to.INPUT}
-                                                    </td>
-                                                </tr>
-                                                <tr class="letra12">
-                                                    <td align="left"><b>{$Color}: <span  class="required">*</span></b></td>
-                                                    <td align="left">
-                                                        <div id="colorSelector"><div style="background-color: #3366CC"></div></div>
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                        </fieldset>
+                                <tr class="letra12">
+                                    <td align="left"><b>{$End_date}: <span  class="required">*</span></b></td>
+                                    <td align="left">
+                                        {$to.INPUT}
+                                    </td>
+                                </tr>
+                                <tr class="letra12">
+                                    <td align="left"><b>{$Color}: <span  class="required">*</span></b></td>
+                                    <td align="left">
+                                        <div id="colorSelector"><div style="background-color: #3366CC"></div></div>
                                     </td>
                                 </tr>
                                 <tr>
@@ -123,7 +107,7 @@
                                     <td align="left" colspan=2>
                                         <table style="font-size: 16px; margin-left:10px;" width="99%" border="0">
                                             <tr class="letra12" style="display: none;"> 
-                                                <td align="left" width="23%"><b>{$reminder.LABEL}: </b></td>
+                                                <td align="left" width="90px"><b>{$reminder.LABEL}: </b></td>
                                                 <td align="left" id="remi">{$reminder.INPUT}</td>
                                             </tr>
                                             <tr class="letra12 remin"  style="{$visibility_alert}">
@@ -166,16 +150,16 @@
                                     <td align="left" colspan=2>
                                         <table style="font-size: 16px; margin-left:10px;" width="99%" border="0">
                                             <tr class="letra12" style="display: none;">
-                                                <td align="left" width="23%"><b>{$notification.LABEL}: </b></td>
+                                                <td align="left" width="90px"><b>{$notification.LABEL}: </b></td>
                                                 <td align="left" id="noti">{$notification.INPUT}</td>
                                             </tr>
-                                            <tr class="letra12" id="notification_email" style="{$visibility}">
-                                                <td align="left" width="25%"><b id="notification_email_label">{$notification_email}: <span  class="required">*</span></b></td>
-                                                <td align="left">
+                                            <tr class="letra12" id="notification_email" style="display: none;">
+                                                <td align="left" colspan="2">
                                                     <div>
-                                                        <select id="select2" name="select2">
-
-                                                        </select>
+                                                        <b id="notification_email_label">{$notification_email}: <span  class="required">*</span></b>
+                                                    </div>
+                                                    <div class="ui-widget">
+                                                        <textarea id="tags" cols="48px" rows="2" style="color: #333333; font-size:12px; width: 352px;"></textarea>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -185,6 +169,7 @@
                                                     </table>
                                                 </td>
                                             </tr>
+                                            <tr>
                                         </table>
                                     </td>
                                 </tr>

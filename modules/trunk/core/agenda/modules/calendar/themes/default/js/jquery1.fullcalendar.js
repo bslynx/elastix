@@ -684,9 +684,9 @@ $.fn.fullCalendar = function(options) {
             //************************** add new for elastix*********************************
             //$('.fc-header-left tr').append("<td><div class='fc-button-search ui-state-default ui-corner-left ui-corner-right'><a id='search' href='#'><image src='/modules/"+module+"/images/Search.png' width='21' height='21' style='border:none;' alt='Search' /></a></div></td>");
             $('.fc-header-left tr').append("<td><span class='fc-header-space'></span></td>");
-            if(addImage == true){
+            /*if(addImage == true){
                 $('.fc-header-left tr').append("<td><div class='fc-button-add ui-state-default  ui-corner-left ui-corner-right'><a id='add_news' style='cursor: pointer;'><image src='/modules/"+module+"/images/Add.png' width='21' height='21'  onclick='displayNewEvent();' style='border:none;' alt='Add' /></a></div></td>");
-            }
+            }*/
             $('.fc-header-left tr').append("<td><span class='fc-header-space'></span></td>");
             //*******************************************************************************
 		}

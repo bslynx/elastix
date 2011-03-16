@@ -160,5 +160,6 @@ $arrLangModule=array(
 "copyrightNotification" => "Elastix is licensed under GPL by PaloSanto Solutions",
 "Color" => "Color",
 "Dear User" => "Dear User",
+"Create New Event" => "Create New Event",
 );
 ?>
