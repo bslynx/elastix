@@ -87,7 +87,7 @@ function listRepositories($smarty, $module_name, $local_templates_dir,$arrConf) 
             if($arrRepositorios[$i]['activo'])
                 $activo="checked='checked'";
              $arrData[] = array(
-                            "<input $activo name='repo-".$arrRepositorios[$i]['id']."' type='checkbox' />",
+                            "<input $activo name='repo-".$arrRepositorios[$i]['id']."' type='checkbox' id='repo-$i' />",
                             str_replace("\$releasever",$version,$arrRepositorios[$i]['name']),);
         }
     }
@@ -104,7 +104,7 @@ function listRepositories($smarty, $module_name, $local_templates_dir,$arrConf) 
                             1 => array("name"      => $arrLang["Name"], 
                                        "property1" => "")));
 
-    $oGrid->showFilter( "<input type='submit' name='submit_aceptar' value='{$arrLang['Save/Update']}' class='button' />");
+    $oGrid->showFilter( "<input type='submit' name='submit_aceptar' value='{$arrLang['Save/Update']}' class='button' /> &nbsp;&nbsp;&nbsp;<input type='button' name='default' value='{$arrLang['Default']}' class='button' onclick='defaultValues($total)' />");
     $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
     return $contenidoModulo;
 }

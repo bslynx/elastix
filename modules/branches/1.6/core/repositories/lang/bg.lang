@@ -35,6 +35,6 @@ $arrLangModule=array(
 "Active" => "Включени",
 "Name" => "Име",
 "Save/Update" => "Запиши/Обнови",
-
+"Default" => "Default"
 );
 ?>
