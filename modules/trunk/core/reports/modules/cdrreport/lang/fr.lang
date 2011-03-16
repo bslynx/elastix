@@ -52,6 +52,6 @@ $arrLangModule=array(
 "FAILED" => "Manqué",
 "NO ANSWER" => "Non répondu",
 "Delete" => "Effacer",
-
+"CDR Report" => "CDR Report"
 );
 ?>

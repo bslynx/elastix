@@ -52,6 +52,7 @@ $arrLangModule=array(
 "FAILED" => "Неуспешен",
 "NO ANSWER" => "Без Отговор",
 "Delete" => "Изтрий",
+"CDR Report" => "CDR Report"
 
 );
 ?>

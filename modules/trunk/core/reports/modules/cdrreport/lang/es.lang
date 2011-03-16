@@ -49,5 +49,6 @@ $arrLangModule=array(
 "FAILED" => "FALLIDO",
 "NO ANSWER" => "NO CONTESTADO",
 "Delete" => "Delete the CDRs in this Report",
+"CDR Report" => "Reporde de CDRs"
 );
 ?>

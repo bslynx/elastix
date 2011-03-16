@@ -54,5 +54,6 @@ $arrLangModule=array(
 "FAILED" => "نا موفق",
 "NO ANSWER" => "پاسخ داده نشده",
 "Delete" => "حذف ريز مكالمات",
+"CDR Report" => "CDR Report"
 );
 ?>
