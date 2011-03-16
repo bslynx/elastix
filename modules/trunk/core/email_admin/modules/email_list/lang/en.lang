@@ -38,11 +38,11 @@ $arrLangModule=array(
 "Select a domain" => "Select a domain",
 "Name" => "Name",
 "Password" => "Password",
-"Password Confirm" => "Password Confirm",
+"Password Confirm" => "Re-type Password",
 "Email Admin" => "Email Admin",
 "Domain" => "Domain",
 "Action" => "Action",
-"Email Mailmam" => "Email Mailmam",
+"Email Mailmam" => "Email Mailman",
 "Password Mailman" => "Password Mailman",
 
 "Email Member" => "Email Member",
