@@ -33,11 +33,11 @@ $arrLangModule=array(
 "End date" => "تاريخ پايان",
 "Extension"=>"داخلي",
 "User name"=>"كاربر",
-"Sec. Outgoing Calls"=>"تماس خروجي به ثانيه",
-"Sec. Incoming Calls"=>"تماس ورودي به ثانيه",
+"Sec. Outgoing Calls"=>"Total time (Outgoing Calls)",
+"Sec. Incoming Calls"=>"Total time (Incoming Calls)",
 "Num. Outgoing Calls"=>"# تماس خروجي",
 "Num. Incoming Calls"=>"# تماس ورودي",
-"Call Details" => "جزئيات بيشتر",
+"Call Details" => "View",
 "Top 10 (Outgoing) ext" => "Top 10 (Outgoing) ext",
 "Top 10 (Incoming) ext" => "Top 10 (Incoming) ext",
 "Filter by" => "فيلتر",
@@ -48,5 +48,6 @@ $arrLangModule=array(
 "calls" => "تماس ها",
 "call" => "تماس",
 "No data to display" => "ديتايي براي نمايش نيست",
+"Details" => "Details"
 );
 ?>

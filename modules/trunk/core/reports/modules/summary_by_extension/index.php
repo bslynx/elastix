@@ -202,7 +202,7 @@ function reportReportCall($smarty, $module_name, $local_templates_dir, &$pDB_cdr
                                "property1" => ""),
                     5 => array("name"      => $leyend_6,
                                "property1" => ""),
-                    6 => array("name"      => "Option",
+                    6 => array("name"      => $arrLang["Details"],
                                "property1" => ""),
                                         )
                     );
