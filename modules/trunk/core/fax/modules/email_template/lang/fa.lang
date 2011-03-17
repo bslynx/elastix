@@ -32,11 +32,11 @@
 global $arrLangModule;
 $arrLangModule=array(
 "Template Email" => "قالب ایمیل",
-"Fax From" => "فرم فکس",
-"Fax From Name" => "نام فرم فکس",
-"Fax Suject" => "موضوع فکس",
-"Fax Content" => "محتوای فکس",
-"Configuration Sending Fax Mail" => "تنظیمات ارسال فکس به ایمیل",
+"Fax From" => "From (Email Address)",
+"Fax From Name" => "From (Name)",
+"Fax Suject" => "Subject",
+"Fax Content" => "Body",
+"Configuration Sending Fax Mail" => "Template for Outgoing FAX's email",
 "Edit Parameters" => "تغییر پارامترها",
 );
 ?>

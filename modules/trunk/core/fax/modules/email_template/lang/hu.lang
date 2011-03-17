@@ -33,11 +33,11 @@
 global $arrLangModule;
 $arrLangModule=array(
 "Template Email" => "Email sablon",
-"Fax From" => "Fax küldő",
-"Fax From Name" => "Fax küldő név",
-"Fax Suject" => "Fax Subject",
-"Fax Content" => "Fax tartalom",
-"Configuration Sending Fax Mail" => "Konfiguráció küldés Fax Levélben",
+"Fax From" => "From (Email Address)",
+"Fax From Name" => "From (Name)",
+"Fax Suject" => "Subject",
+"Fax Content" => "Body",
+"Configuration Sending Fax Mail" => "Template for Outgoing FAX's email",
 "Edit Parameters" => "Paraméterek szerkesztése",
 );
 ?>

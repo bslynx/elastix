@@ -33,11 +33,11 @@
 global $arrLangModule;
 $arrLangModule=array(
 "Template Email" => "Predloška za e-poštu",
-"Fax From" => "Fax od",
-"Fax From Name" => "Fax od naziv",
-"Fax Suject" => "Fax tema",
-"Fax Content" => "Fax sadržaj",
-"Configuration Sending Fax Mail" => "Konfiguracija slanja fax pošte",
+"Fax From" => "From (Email Address)",
+"Fax From Name" => "From (Name)",
+"Fax Suject" => "Subject",
+"Fax Content" => "Body",
+"Configuration Sending Fax Mail" => "Template for Outgoing FAX's email",
 "Edit Parameters" => "Uređenje parametara",
 );
 ?>

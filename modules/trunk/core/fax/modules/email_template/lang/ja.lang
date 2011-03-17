@@ -32,11 +32,11 @@
 global $arrLangModule;
 $arrLangModule=array(
 "Template Email" => "FAX通知メール用テンプレート",
-"Fax From" => "FAX番号",
-"Fax From Name" => "送信者",
-"Fax Suject" => "件名",
-"Fax Content" => "送信内容",
-"Configuration Sending Fax Mail" => "FAX通知メール用テンプレートの設定",
+"Fax From" => "From (Email Address)",
+"Fax From Name" => "From (Name)",
+"Fax Suject" => "Subject",
+"Fax Content" => "Body",
+"Configuration Sending Fax Mail" => "Template for Outgoing FAX's email",
 "Edit Parameters" => "テンプレート内容の編集",
 );
 ?>
