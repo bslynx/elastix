@@ -31,13 +31,13 @@ $arrLangModule=array(
 "Summary by Extension" => "Summary by Extension",
 "Start date" => "Start date",
 "End date" => "End date",
-"Extension"=>"Ext",
+"Extension"=>"Ext.",
 "User name"=>"User",
-"Sec. Outgoing Calls"=>"Sec. Outgoing Calls",
-"Sec. Incoming Calls"=>"Sec. Incoming Calls",
+"Sec. Outgoing Calls"=>"Total time (Outgoing Calls)",
+"Sec. Incoming Calls"=>"Total time (Incoming Calls)",
 "Num. Outgoing Calls"=>"# Outgoing Calls",
 "Num. Incoming Calls"=>"# Incoming Calls",
-"Call Details" => "Call Details",
+"Call Details" => "View",
 "Top 10 (Outgoing) ext" => "Top 10 (Outgoing) ext",
 "Top 10 (Incoming) ext" => "Top 10 (Incoming) ext",
 "Filter by" => "Filter by",
@@ -48,6 +48,6 @@ $arrLangModule=array(
 "calls" => "calls",
 "call" => "call",
 "No data to display" => "No data to display",
-
+"Details" => "Details"
 );
 ?>
