@@ -10,8 +10,8 @@
             <table border="0" cellpadding="0" cellspacing="0" width="100%" class="table_navigation_text">
               <tr>
                 <td align="left" width="295px">
-                    <input type="text" value="" name="addons_search" />
-                    <a href="index.php?menu={$module_name}&amp;action=search">
+                    <input type="text" value="{$ADDONS_SEARCH}" name="addons_search" id="search" onKeyPress="return enterEvent(event,'{$module_name}')"/>
+                    <a href="javascript:void()" onclick="_search('{$module_name}')">
                         <img alt="" src='modules/{$module_name}/images/lupa.png' align='absmiddle' border='0' width='15' height='15' />
                     </a>
                 </td>

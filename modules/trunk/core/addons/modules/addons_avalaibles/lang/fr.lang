@@ -41,13 +41,13 @@ $arrLangModule=array(
 "Search" => "Rechercher",
 "view_details" => "Voir les DÃ©tails",
 "error_downloading" => "Erreur de tÃ©lÃ©chargement",
-"process_installing" => "Il existe déjà un processus d'installation!",
+"process_installing" => "Il existe dï¿½jï¿½ un processus d'installation!",
 "addons_installed" => "Add-on InstallÃ©",
-"error_start_install" => "Erreur au démarrage de l'installation",
+"error_start_install" => "Erreur au dï¿½marrage de l'installation",
 "installing" => "Installation en cours",
-"downloading" => "Démarrage de l'installation",
-"depsolving" => "Resolution des Dépendences",
-"reporefresh" => "Téléchargement de la liste des packets",
+"downloading" => "Dï¿½marrage de l'installation",
+"depsolving" => "Resolution des Dï¿½pendences",
+"reporefresh" => "Tï¿½lï¿½chargement de la liste des packets",
 "Ok" => "OK",
 "Loading" => "Loading",
 "Starting" => "Starting...",
@@ -55,6 +55,6 @@ $arrLangModule=array(
 "There is a facility that awaits confirmation to install NAME, the user who initiated the installation was" => "There is a facility that awaits confirmation to install NAME, the user who initiated the installation was",
 "updating_repo" => "Updating REPO",
 "Status" => "Status",
-
+"Installed" => "Installed"
 );
 ?>

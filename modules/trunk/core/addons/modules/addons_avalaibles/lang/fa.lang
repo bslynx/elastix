@@ -52,5 +52,6 @@ $arrLangModule=array(
 "updating_repo" => "Updating REPO",
 "Status" => "Status",
 "There is a facility that awaits confirmation to install NAME, the user who initiated the installation was" => "There is a facility that awaits confirmation to install NAME, the user who initiated the installation was",
+"Installed" => "Installed"
 );
 ?>

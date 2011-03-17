@@ -64,7 +64,6 @@ function _moduleContent(&$smarty, $module_name)
     //actions
     $action = getAction();
     $content = "";
-
     switch($action) {
         case "install":
             $content = installAddons($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
@@ -186,6 +185,8 @@ function reportAvailables($smarty, $module_name, $local_templates_dir, &$pDB, $a
 {
     $pAvailables   = new paloSantoAddonsModules($pDB);
     $addons_search = getParameter("addons_search");
+    $smarty->assign("ADDONS_SEARCH",$addons_search);
+
     $action = getParameter("nav");
     $start  = getParameter("start");
 
@@ -220,7 +221,6 @@ function reportAvailables($smarty, $module_name, $local_templates_dir, &$pDB, $a
     $offset = $oGrid->getOffsetValue();
     $end    = $oGrid->getEnd();
     $url    = "?menu=$module_name&amp;filter_value=$addons_search";
-
     $arrData = null;
     try {
         $arrResult =$client->getAddonsAvailables("2.0.0", $limit, $offset, "name", $addons_search);
@@ -233,33 +233,29 @@ function reportAvailables($smarty, $module_name, $local_templates_dir, &$pDB, $a
     if(is_array($arrResult) && $total>0){
         $smarty->assign('ETIQUETA_INSTALL', $arrLang['Install']);
         foreach($arrResult as $key => $value){
-            if(!$pAvailables->exitAddons($value)){
-                $smarty->assign(array(
-                    'ETIQUETA_DOWNLOADING'  =>  $arrLang['downloading'],
-                    'URL_IMAGEN_PAQUETE'    =>  "$arrConf[url_images]/$value[name_rpm].jpeg",
-                    'DESCRIPCION_PAQUETE'   =>  $value['description'],
-                    'PAQUETE_RPM'           =>  $value['name_rpm'],
-                    'PAQUETE_NOMBRE'        =>  $value['name'],
-                    'PAQUETE_VERSION'       =>  $value['version'],
-                    'PAQUETE_RELEASE'       =>  $value['release'],
-                    'PAQUETE_CREADOR'       =>  $value['developed_by'],
-                ));
-                $arrTmp[0] = $smarty->fetch("$local_templates_dir/imagen_paquete.tpl");
-                $arrTmp[1] = $smarty->fetch("$local_templates_dir/info_paquete.tpl");
-                //$arrTmp[2] = "<input type='button' value='$arrLang[Install]' class='install' id='$value[name_rpm]' name='installButton' style='visibility: hidden;' />";
-                $arrTmp[2] = "<div id='img_$value[name_rpm]' align='center' >".
-                                "<img alt='' src='modules/addons_avalaibles/images/loading.gif' class='loadingAjax' style='display: block;' />".
-                                "<div id='start_$value[name_rpm]' style='display: none;'>".
-                                    "<div class='text_starting'>$arrLang[Starting]</div>".
-                                    "<div>".
-                                        "<img alt='' src='modules/addons_avalaibles/images/starting.gif' class='startingAjax' />".
-                                    "</div>".
-                                "</div>".
-                                "<input type='button' value='$arrLang[Install]' class='install' id='$value[name_rpm]' name='installButton' style='display: none;' />".
-                            "</div>";
+            $smarty->assign(array(
+                'ETIQUETA_DOWNLOADING'  =>  $arrLang['downloading'],
+                'URL_IMAGEN_PAQUETE'    =>  "$arrConf[url_images]/$value[name_rpm].jpeg",
+                'DESCRIPCION_PAQUETE'   =>  $value['description'],
+                'PAQUETE_RPM'           =>  $value['name_rpm'],
+                'PAQUETE_NOMBRE'        =>  $value['name'],
+                'PAQUETE_VERSION'       =>  $value['version'],
+                'PAQUETE_RELEASE'       =>  $value['release'],
+                'PAQUETE_CREADOR'       =>  $value['developed_by'],
+            ));
+            $arrTmp[0] = $smarty->fetch("$local_templates_dir/imagen_paquete.tpl");
+            $arrTmp[1] = $smarty->fetch("$local_templates_dir/info_paquete.tpl");
+            //$arrTmp[2] = "<input type='button' value='$arrLang[Install]' class='install' id='$value[name_rpm]' name='installButton' style='visibility: hidden;' />";
+            if(!$pAvailables->exitAddons($value))
+                $installed = false;
+            else
+                $installed = true;
+            $arrTmp[2] = buttonInstall($installed,$value["name_rpm"],$arrLang);
+            if(!$installed)
                 $arrTmp[3] = "<div id='status_$value[name_rpm]' class='text_downloading' align='center' >$arrLang[Loading]</div>";
-                $arrData[] = $arrTmp;
-            }
+            else
+                $arrTmp[3] = "<div class='text_downloading' align='center' >$arrLang[Installed]</div>";
+            $arrData[] = $arrTmp;
         }
     }
 
@@ -288,6 +284,24 @@ function reportAvailables($smarty, $module_name, $local_templates_dir, &$pDB, $a
     $content = "<form  method='post' style='margin-bottom:0;' action=\"$url\">".$oGrid->fetchGrid($arrGrid, $arrData,$arrLang)."</form>";
 
     return $content;
+}
+
+function buttonInstall($install, $name_rpm, $arrLang)
+{
+    if(!$install)
+        $html = "<div id='img_$name_rpm' align='center' >".
+                                "<img alt='' src='modules/addons_avalaibles/images/loading.gif' class='loadingAjax' style='display: block;' />".
+                                "<div id='start_$name_rpm' style='display: none;'>".
+                                    "<div class='text_starting'>$arrLang[Starting]</div>".
+                                    "<div>".
+                                        "<img alt='' src='modules/addons_avalaibles/images/starting.gif' class='startingAjax' />".
+                                    "</div>".
+                                "</div>".
+                                "<input type='button' value='$arrLang[Install]' class='install' id='$name_rpm' name='installButton' style='display: none;' />".
+                            "</div>";
+    else
+        $html = "";
+    return $html;
 }
 
 // funcion que ejecuta el demunio YUM para verificar los ultimos rpms a instalar

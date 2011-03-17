@@ -43,6 +43,20 @@ $(document).ready(function(){
     getPackagesCache();
 });
 
+function _search(module_name)
+{
+    var search_ = document.getElementById("search");
+    window.open("index.php?menu="+module_name+"&action=search&addons_search="+search_.value,"_self");
+}
+
+function enterEvent(event,module_name)
+{
+    if(event){
+        if (event.keyCode == 13)
+            _search(module_name);
+    }
+}
+
 function getStatusInstall(name_rpm){
     var data_exp = $('.'+name_rpm).text(); // se recibe los datos q seran insertados en la db
     var order = 'menu='+module_name+'&action=get_status&data_exp='+data_exp+'&rawmode=yes';
