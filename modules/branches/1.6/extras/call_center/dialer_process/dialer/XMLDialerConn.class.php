@@ -199,6 +199,9 @@ class XMLDialerConn extends DialerConn
                 case 'hold':
                     $response = $this->Request_Hold($comando);
                     break;
+                case 'unhold':
+                    $response = $this->Request_Unhold($comando);
+                    break;
                 case 'transfercall':
                     $response = $this->Request_TransferCall($comando);
                     break;
@@ -1373,13 +1376,6 @@ LEER_CAMPANIA;
         return $xml_response;
     }
     
-    private function Request_Hold($comando)
-    {
-        if (is_null($this->_sUsuarioECCP))
-            return $this->_generarRespuestaFallo(401, 'Unauthorized');
-        return $this->_generarRespuestaFallo(501, 'Not Implemented');
-    }
-    
     private function Request_TransferCall($comando)
     {
         if (is_null($this->_sUsuarioECCP))
@@ -1690,6 +1686,142 @@ LEER_CAMPANIA;
 
         return $xml_response;
     }
+
+    private function Request_Hold($comando)
+    {
+        if (is_null($this->_sUsuarioECCP))
+            return $this->_generarRespuestaFallo(401, 'Unauthorized');
+
+        // Verificar que agente está presente
+        if (!isset($comando->agent_number)) 
+            return $this->_generarRespuestaFallo(400, 'Bad request');
+        $sAgente = (string)$comando->agent_number;
+
+        $xml_response = new SimpleXMLElement('<response />');
+        $xml_holdResponse = $xml_response->addChild('hold_response');
+
+        // El siguiente código asume formato Agent/9000
+        if (!preg_match('|^Agent/(\d+)$|', $sAgente, $regs)) {
+            $this->_agregarRespuestaFallo($xml_holdResponse, 417, 'Invalid agent number');
+            return $xml_response;
+        }
+        $sNumAgente = $regs[1];
+
+        // Verificar que el agente está autorizado a realizar operación
+        if (!$this->hashValidoAgenteECCP($comando)) {
+            $this->_agregarRespuestaFallo($xml_holdResponse, 401, 'Unauthorized agent');
+            return $xml_response;
+        }
+
+        // Verificar si el agente está siendo monitoreado
+        $infoSeguimiento = $this->_dialProc->infoSeguimientoAgente($sAgente);
+        if (is_null($infoSeguimiento)) {
+            $this->_agregarRespuestaFallo($xml_holdResponse, 404, 'Agent not found or not logged in through ECCP');
+            return $xml_response;
+        }
+        if ($infoSeguimiento['estado_consola'] != 'logged-in') {
+            $this->_agregarRespuestaFallo($xml_holdResponse, 417, 'Agent currenty not logged in');
+            return $xml_response;
+        }
+
+        /* Verificar si existe una extensión de parqueo. Por omisión el FreePBX
+         * de Elastix NO HABILITA soporte de extensión de parqueo */ 
+        $sExtParqueo = $this->_dialProc->leerConfigExtensionParqueo();
+        if (is_null($sExtParqueo)) {
+            $this->_agregarRespuestaFallo($xml_holdResponse, 500, 'Parked call extension is disabled');
+        	return $xml_response;
+        }
+
+        // Verificar que el agente esté realmente atendiendo una llamada en este momento
+        $oPredictor = new Predictivo($this->_astConn);
+        $estadoCola = $oPredictor->leerEstadoCola(''); // El parámetro vacío lista todas las colas
+        if (!isset($estadoCola['members'][$sNumAgente])) {
+            $this->_agregarRespuestaFallo($xml_holdResponse, 417, 'Agent currenty not logged in');
+            return $xml_response;
+        }
+        if ($estadoCola['members'][$sNumAgente]['status'] != 'inUse') {
+            $this->_agregarRespuestaFallo($xml_holdResponse, 417, 'Agent currenty not handling a call');
+            return $xml_response;
+        }
+                
+        // Ejecutar la pausa a través del AMI
+        $bExito = $this->_dialProc->iniciarHoldAgente($sAgente);
+        if (!$bExito) {
+            $this->_agregarRespuestaFallo($xml_holdResponse, 500, 'Unable to start agent hold');
+        } else {
+            $xml_holdResponse->addChild('success');
+        }
+        return $xml_response;
+    }
+    
+    private function Request_Unhold($comando)
+    {
+        if (is_null($this->_sUsuarioECCP))
+            return $this->_generarRespuestaFallo(401, 'Unauthorized');
+
+        // Verificar que agente está presente
+        if (!isset($comando->agent_number)) 
+            return $this->_generarRespuestaFallo(400, 'Bad request');
+        $sAgente = (string)$comando->agent_number;
+
+        $xml_response = new SimpleXMLElement('<response />');
+        $xml_unholdResponse = $xml_response->addChild('unhold_response');
+
+        // El siguiente código asume formato Agent/9000
+        if (!preg_match('|^Agent/(\d+)$|', $sAgente, $regs)) {
+            $this->_agregarRespuestaFallo($xml_unholdResponse, 417, 'Invalid agent number');
+            return $xml_response;
+        }
+        $sNumAgente = $regs[1];
+
+        // Verificar que el agente está autorizado a realizar operación
+        if (!$this->hashValidoAgenteECCP($comando)) {
+            $this->_agregarRespuestaFallo($xml_unholdResponse, 401, 'Unauthorized agent');
+            return $xml_response;
+        }
+
+        // Verificar si el agente está siendo monitoreado
+        $infoSeguimiento = $this->_dialProc->infoSeguimientoAgente($sAgente);
+        if (is_null($infoSeguimiento)) {
+            $this->_agregarRespuestaFallo($xml_unholdResponse, 404, 'Agent not found or not logged in through ECCP');
+            return $xml_response;
+        }
+        if ($infoSeguimiento['estado_consola'] != 'logged-in') {
+            $this->_agregarRespuestaFallo($xml_unholdResponse, 417, 'Agent currenty not logged in');
+            return $xml_response;
+        }
+
+        /* Verificar si existe una extensión de parqueo. Por omisión el FreePBX
+         * de Elastix NO HABILITA soporte de extensión de parqueo */ 
+        $sExtParqueo = $this->_dialProc->leerConfigExtensionParqueo();
+        if (is_null($sExtParqueo)) {
+            $this->_agregarRespuestaFallo($xml_unholdResponse, 500, 'Parked call extension is disabled');
+            return $xml_response;
+        }
+
+
+        // Verificar que el agente no esté realmente atendiendo una llamada en este momento
+        $oPredictor = new Predictivo($this->_astConn);
+        $estadoCola = $oPredictor->leerEstadoCola(''); // El parámetro vacío lista todas las colas
+        if (!isset($estadoCola['members'][$sNumAgente])) {
+            $this->_agregarRespuestaFallo($xml_unholdResponse, 417, 'Agent currenty not logged in');
+            return $xml_response;
+        }
+        if ($estadoCola['members'][$sNumAgente]['status'] == 'inUse') {
+            $this->_agregarRespuestaFallo($xml_unholdResponse, 417, 'Agent currenty handling a call');
+            return $xml_response;
+        }
+                
+        // Ejecutar la pausa a través del AMI
+        $bExito = $this->_dialProc->terminarHoldAgente($sAgente);
+        if (!$bExito) {
+            $this->_agregarRespuestaFallo($xml_unholdResponse, 500, 'Unable to stop agent hold');
+        } else {
+            $xml_unholdResponse->addChild('success');
+        }
+        return $xml_response;
+    }
+
 /*    
     private function Request_GetCallStatus($comando)
     {

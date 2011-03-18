@@ -1493,6 +1493,137 @@ Nota: para ayudar a la depuración, se adjunta el ID de formulario y el ID del c
 
 Requerimiento "hold"
 
+Este requerimiento se usa para poner una llamada en hold. Internamente se manda
+la llamada a una de las extensiones de parqueo. Al poner la llamada en hold, el
+abonado remoto debería escuchar música en espera, y el agente escucha la música
+de la cola, pero no recibirá más llamadas. 
+
+Atributos o argumentos:
+* agent_number: Agente que se va a pausar. Este identificador está de la forma 
+  'Agent/9000'.
+* agent_hash: Hash de autenticación para el agente.
+
+Ejemplo:
+<request id="11">
+    <hold>
+        <agent_number>Agent/9000</agent_number>
+        <agent_hash>XXXXXXXXXXXXXXXXXXXXXXXXX</agent_hash>
+    </hold>
+</request>
+
+Respuesta:
+Para caso de éxito:
+<response id="11">
+    <hold_response>
+        <success/>
+    </hold_response>
+</response>
+
+Para agente no encontrado, o no logoneado vía ECCP:
+<response id="11">
+    <hold_response>
+        <failure>
+            <code>404</code>
+            <message>Agent not found or not logged in through ECCP</message>
+        </failure>
+    </hold_response>
+</response>
+
+En caso de que FreePBX no haya activado el soporte de parqueo:
+<response id="11">
+    <hold_response>
+        <failure>
+            <code>500</code>
+            <message>Parked call extension is disabled</message>
+        </failure>
+    </hold_response>
+</response>
+
+Para agente que está logoneado pero no está atendiendo una llamada: 
+<response id="11">
+    <hold_response>
+        <failure>
+            <code>417</code>
+            <message>Agent currenty not handling a call</message>
+        </failure>
+    </hold_response>
+</response>
+
+Para error en Asterisk o en base de datos que impide completar:
+<response id="11">
+    <hold_response>
+        <failure>
+            <code>500</code>
+            <message>Unable to start agent hold</message>
+        </failure>
+    </hold_response>
+</response>
+
+Requerimiento "unhold"
+Este requerimiento se usa para recuperar la llamada que se haya mandado a hold,
+y volver a hablar con el abonado.
+
+Atributos o argumentos:
+* agent_number: Agente que se va a pausar. Este identificador está de la forma 
+  'Agent/9000'.
+* agent_hash: Hash de autenticación para el agente.
+
+Ejemplo:
+<request id="11">
+    <unhold>
+        <agent_number>Agent/9000</agent_number>
+        <agent_hash>XXXXXXXXXXXXXXXXXXXXXXXXX</agent_hash>
+    </unhold>
+</request>
+
+Respuesta:
+Para caso de éxito:
+<response id="11">
+    <unhold_response>
+        <success/>
+    </unhold_response>
+</response>
+
+Para agente no encontrado, o no logoneado vía ECCP:
+<response id="11">
+    <unhold_response>
+        <failure>
+            <code>404</code>
+            <message>Agent not found or not logged in through ECCP</message>
+        </failure>
+    </unhold_response>
+</response>
+
+En caso de que FreePBX no haya activado el soporte de parqueo:
+<response id="11">
+    <unhold_response>
+        <failure>
+            <code>500</code>
+            <message>Parked call extension is disabled</message>
+        </failure>
+    </unhold_response>
+</response>
+
+Para agente que ha recibido una llamada mientras estaba en hold: 
+<response id="11">
+    <unhold_response>
+        <failure>
+            <code>417</code>
+            <message>Agent currenty handling a call</message>
+        </failure>
+    </unhold_response>
+</response>
+
+Para error en Asterisk o en base de datos que impide completar:
+<response id="11">
+    <unhold_response>
+        <failure>
+            <code>500</code>
+            <message>Unable to stop agent hold</message>
+        </failure>
+    </unhold_response>
+</response>
+
 Requerimiento "transfercall"
 
 Requerimiento "pauseagent"

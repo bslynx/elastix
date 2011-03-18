@@ -743,6 +743,13 @@ class DialerProcess extends AbstractProcess
             
             /* El Uniqueid de la llamada que se usó para iniciar el login de agente */
             'Uniqueid'          =>  NULL,
+            
+            /* Info del hold en que se encuentra el agente, o NULL si no está en hold */
+            'info_hold'         =>  NULL,
+
+            /* Cuenta de pausas del agente. El agente debe estar pausado si 
+             * distinto de cero. Por ahora se usa para break y para hold. */
+            'num_pausas'        =>  0,
         );
     }
 
@@ -1167,6 +1174,7 @@ PETICION_LLAMADAS_AGENTE;
                             $listaLlamadas[$sKey]->OriginateEnd = NULL;
                             $listaLlamadas[$sKey]->Channel = NULL;
                             $listaLlamadas[$sKey]->PendingEvents = NULL;
+                            $listaLlamadas[$sKey]->OnHold = FALSE;
     
                             // Para llamadas por plan de marcado, se requiere guardar la 
                             // cadena de marcado para poder identificar los eventos Join
@@ -1498,6 +1506,7 @@ PETICION_LLAMADAS;
                     $listaLlamadas[$sKey]->OriginateEnd = NULL;
                     $listaLlamadas[$sKey]->agent = NULL;    // Por esta ruta de código, la llamada no es agendada a agente.
                     $listaLlamadas[$sKey]->Channel = NULL;
+                    $listaLlamadas[$sKey]->OnHold = FALSE;
 
                     // Para llamadas por plan de marcado, se requiere guardar la 
                     // cadena de marcado para poder identificar los eventos Join
@@ -2087,6 +2096,11 @@ PETICION_LLAMADAS;
                 }
                 if ($this->DEBUG) $this->oMainLog->output("DEBUG: EXIT OnOriginateResponse");
                 return FALSE;
+            case 'RedirectFromHold':
+                /* Por ahora se ignora el OriginateResponse resultante del Originate
+                 * para regresar de HOLD */
+                if ($this->DEBUG) $this->oMainLog->output("DEBUG: EXIT OnOriginateResponse");
+                return FALSE;
             default:
                 $this->oMainLog->output("ERR: OriginateResponse: no se ha implementado soporte ECCP para: {$sKey}");
                 if ($this->DEBUG) $this->oMainLog->output("DEBUG: EXIT OnOriginateResponse");
@@ -2439,6 +2453,30 @@ UPDATE_CALLS_ORIGINATE_RESPONSE;
             }
         }
 
+        $sNuevo_Uniqueid = NULL;
+        if (is_null($sKey)) {
+        	/* Si no se tiene clave, todavía puede ser llamada dialplan que 
+             * regresa de HOLD. Entonces OnHold es VERDADERO y ActualChannel
+             * coincide con alguno de Channel1 o Channel2 */
+            foreach ($this->_infoLlamadas['llamadas'] as $key => $tupla) {
+            	if ($tupla->OnHold) {
+            		// Se toma el UniqueID contrario al canal pasado.
+                    if ($tupla->ActualChannel == $params["Channel1"]) {
+                    	$sKey = $key;
+                        $sNuevo_Uniqueid = $params["Uniqueid2"];
+                    }
+                    if ($tupla->ActualChannel == $params["Channel2"]) {
+                        $sKey = $key;
+                        $sNuevo_Uniqueid = $params["Uniqueid1"];
+                    }
+                    if ($this->DEBUG && !is_null($sKey)) {
+                        $this->oMainLog->output("DEBUG: identificada llamada $tupla->ActualChannel que regresa de HOLD, antiguo Uniqueid es $tupla->Uniqueid");                    	
+                    }
+            	}
+                if (!is_null($sKey)) break;
+            }
+        }
+
         if (!is_null($sKey) && 
             is_null($this->_infoLlamadas['llamadas'][$sKey]->OriginateEnd) && 
             is_array($this->_infoLlamadas['llamadas'][$sKey]->PendingEvents)) {
@@ -2508,6 +2546,30 @@ UPDATE_CALLS_ORIGINATE_RESPONSE;
                 if (DB::isError($result)) {
                     $this->oMainLog->output("ERR: $sEvent: no se puede actualizar estado de llamada actual a HOLD - ".$result->getMessage());
                 }
+                
+                // Verificar si también se debe actualizar el Uniqueid en calls y current_calls
+                $this->_infoLlamadas['llamadas'][$sKey]->OnHold = FALSE;
+                if (!is_null($sNuevo_Uniqueid)) {
+                    $result = $this->_dbConn->query(
+                        'UPDATE current_calls SET Uniqueid = ? WHERE Uniqueid = ?',
+                        array($sNuevo_Uniqueid, $tupla->Uniqueid));
+                    if (DB::isError($result)) {
+                        $this->oMainLog->output("ERR: $sEvent: no se puede actualizar Uniqueid en current_calls - ".$result->getMessage());
+                    }
+                    
+                    $result = $this->_dbConn->query(
+                        'UPDATE calls SET uniqueid = ? WHERE id = ?',
+                        array($sNuevo_Uniqueid, $this->_infoLlamadas['llamadas'][$sKey]->id));
+                    if (DB::isError($result)) {
+                        $this->oMainLog->output("ERR: $sEvent: no se puede actualizar Uniqueid en calls - ".$result->getMessage());
+                    }
+                    
+                    $tupla->Uniqueid = $sNuevo_Uniqueid;
+                    if ($this->DEBUG) {
+                        $this->oMainLog->output("DEBUG: llamada que regresa de HOLD, nuevo Uniqueid es $tupla->Uniqueid");                     
+                    }
+                }
+                
                 $sKey = NULL;
 
 
@@ -2569,6 +2631,18 @@ UPDATE_CALLS_ORIGINATE_RESPONSE;
 
                 if ($this->DEBUG) {
                 	$this->oMainLog->output("DEBUG: $sEvent: llamada $sKey asignada a agente $sAgentNum");
+                }
+
+                /* Se consulta el canal físico que está hablando con el agente,
+                 * para poder usarlo al mandar la llamada a hold, y para reconocer
+                 * la llamada que hay que recoger de vuelta. */
+                $oPredictor = new Predictivo($this->_astConn);
+                $estadoCola = $oPredictor->leerEstadoCola(''); // El parámetro vacío lista todas las colas
+                if (isset($estadoCola['members'][$sAgentNum]) && 
+                    isset($estadoCola['members'][$sAgentNum]['clientchannel'])) {
+                	$this->_infoLlamadas['llamadas'][$sKey]->ActualChannel = $estadoCola['members'][$sAgentNum]['clientchannel']; 
+                } else {
+                	$this->_infoLlamadas['llamadas'][$sKey]->ActualChannel = NULL;
                 }
                 
                 // Inserción de la llamada nueva
@@ -3040,7 +3114,67 @@ INFO_FORMULARIOS;
             }
         }
 
+        /* Si no se encuentra la llamada, es posible que se haya recibido Hangup del canal
+         * de una llamada que se ha enviado a HOLD, y que ya ha expirado su espera y debe
+         * finalizarse. Entonces OnHold será verdadero, y Channel coincidirá con el 
+         * ActualChannel de una de las llamadas. Además debe de localizarse el agente ECCP
+         * que mandó a HOLD la llamada y quitarle la pausa. */
+        if (is_null($sKey)) {
+        	foreach ($this->_infoLlamadas['llamadas'] as $key => $tupla) {
+                if ($tupla->OnHold && $tupla->ActualChannel == $params['Channel']) {
+                    $sKey = $key;
+
+                    if ($this->DEBUG) {
+                    	$this->oMainLog->output('DEBUG: hangup de canal correspondiente a HOLD huérfano: '.
+                            $sKey.' => '.print_r($this->_infoLlamadas['llamadas'][$sKey], 1));
+                    }
+                    $this->_infoLlamadas['llamadas'][$sKey]->OnHold = FALSE;
+
+                    // Se busca el agente ECCP que haya puesto en HOLD la llamada
+                    foreach (array_keys($this->_infoAgentes) as $sAgente) {
+                        if (!is_null($this->_infoAgentes[$sAgente]['info_hold']) &&
+                            $this->_infoAgentes[$sAgente]['info_hold']['ActualChannel'] == $params['Channel'] &&
+                            $this->_infoAgentes[$sAgente]['info_hold']['tabla'] == 'current_calls') {
+
+                            if ($this->DEBUG) {
+                            	$this->oMainLog->output('DEBUG: llamada fue puesta en HOLD por '.$sAgente.
+                                    ', se termina pausa y auditoría de HOLD.');
+                            }
+
+                            // Ejecutar realmente el retiro de la pausa en todas las colas
+                            $this->_quitarPausaAgente($sAgente);
+
+                            // Restaurar Success en lugar de OnHold para estado de llamada
+                            $sPeticionSQL = 'UPDATE calls SET status = ? WHERE id = ? and status = ?';
+                            $r = $this->_dbConn->query($sPeticionSQL, 
+                                array('Success', $this->_infoAgentes[$sAgente]['info_hold']['id_call'], 'OnHold'));
+                            if (DB::isError($r)) {
+                                $this->oMainLog->output('ERR: al terminar hold: no se puede marcar la llamada como fuera de hold - '.$r->getMessage());
+                            }
+
+                            // Auditoría del fin del hold
+                            $this->marcarFinalBreakAgente($this->_infoAgentes[$sAgente]['info_hold']['id_hold']);
+                            $this->_infoAgentes[$sAgente]['info_hold'] = NULL;
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+
         if (!is_null($sKey)) {
+
+            // Revisar si la llamada es una llamada vía dialplan que se está mandando a HOLD 
+            if ($this->_infoLlamadas['llamadas'][$sKey]->OnHold && 
+                $params['Uniqueid'] == $this->_infoLlamadas['llamadas'][$sKey]->Uniqueid) {
+            	if ($this->DEBUG) {
+                    $this->oMainLog->output('DEBUG: se ignora Hangup para llamada que se envía a HOLD: '.
+                        $sKey.' => '.print_r($this->_infoLlamadas['llamadas'][$sKey], 1));
+            	}
+                return FALSE;
+            }
+
             $this->_infoLlamadas['llamadas'][$sKey]->end_timestamp = time();
             
             if ($this->DEBUG) {
@@ -3553,6 +3687,35 @@ SQL_EXISTE_AUDIT;
         return TRUE;
     }
 
+    private function _agregarPausaAgente($sAgente)
+    {
+        if ($this->_infoAgentes[$sAgente]['num_pausas'] == 0) {
+            $r = $this->_astConn->QueuePause(NULL, $sAgente, 'true');
+            if ($r['Response'] != 'Success') {
+                $this->oMainLog->output('ERR: (internal) no se puede poner al agente en pausa: '.
+                    $sAgente.' - '.$r['Message']);
+                return FALSE;
+            }
+        }
+        $this->_infoAgentes[$sAgente]['num_pausas']++;
+        return TRUE;
+    }
+
+    private function _quitarPausaAgente($sAgente)
+    {
+        $this->_infoAgentes[$sAgente]['num_pausas']--;
+        if ($this->_infoAgentes[$sAgente]['num_pausas'] <= 0) {
+            $this->_infoAgentes[$sAgente]['num_pausas'] = 0;
+            $r = $this->_astConn->QueuePause(NULL, $sAgente, 'false');
+            if ($r['Response'] != 'Success') {
+                $this->oMainLog->output('ERR: (internal) no se puede sacar al agente de pausa: '.
+                    $sAgente.' - '.$r['Message']);
+                return FALSE;
+            }
+        }
+        return TRUE;
+    }
+
     /**
      * Procedimiento para poner en pausa a un agente y asociar esta pausa a un
      * break en particular.
@@ -3585,12 +3748,7 @@ SQL_EXISTE_AUDIT;
             return TRUE;
         
         // Ejecutar realmente la pausa del agente indicado en todas las colas
-        $r = $this->_astConn->QueuePause(NULL, $sAgente, 'true');
-        if ($r['Response'] != 'Success') {
-            $this->oMainLog->output('ERR: (internal) no se puede poner al agente en pausa: '.
-                $sAgente.' - '.$r['Message']);
-        	return FALSE;
-        }
+        if (!$this->_agregarPausaAgente($sAgente)) return FALSE;
         
         // Auditoría del inicio del break
         $idAuditBreak = $this->marcarInicioBreakAgente($sAgente, $idBreak);
@@ -3627,16 +3785,341 @@ SQL_EXISTE_AUDIT;
         if (is_null($this->_infoAgentes[$sAgente]['id_break'])) return TRUE;
 
         // Ejecutar realmente el retiro de la pausa en todas las colas
-        $r = $this->_astConn->QueuePause(NULL, $sAgente, 'false');
-        if ($r['Response'] != 'Success') {
-            $this->oMainLog->output('ERR: (internal) no se puede sacar al agente de pausa: '.
-                $sAgente.' - '.$r['Message']);
-            return FALSE;
-        }
+        if (!$this->_quitarPausaAgente($sAgente)) return FALSE;
 
         // Auditoría del fin del break
         $this->marcarFinalBreakAgente($this->_infoAgentes[$sAgente]['id_break']);
         $this->_infoAgentes[$sAgente]['id_break'] = NULL;
+        return TRUE;
+    }
+
+    // Leer el estado de /etc/asterisk/features_general_additional.conf y obtener la
+    // extensión de parqueo configurada. Devuelve NULL en caso de error o si la 
+    // característica de extensión de parqueo no está configurada, o la extensión
+    // numérica en caso contrario.
+    public function leerConfigExtensionParqueo()
+    {
+        $sNombreArchivo = '/etc/asterisk/features_general_additional.conf';
+        if (!file_exists($sNombreArchivo)) {
+            $this->oMainLog->output("WARN: $sNombreArchivo no se encuentra.");
+            return NULL;
+        }
+        if (!is_readable($sNombreArchivo)) {
+            $this->oMainLog->output("WARN: $sNombreArchivo no puede leerse por usuario de marcador.");
+            return NULL;            
+        }
+        $infoConfig = parse_ini_file($sNombreArchivo, TRUE);
+        if (is_array($infoConfig)) {
+            $sExtensionParqueo = isset($infoConfig['parkext']) ? $infoConfig['parkext'] : '';
+            return (preg_match('/^\d+$/', $sExtensionParqueo)) ? $sExtensionParqueo : NULL;
+        } else {
+            $this->oMainLog->output("ERR: $sNombreArchivo no puede parsearse correctamente.");          
+        }
+        return NULL;
+    }
+
+    public function iniciarHoldAgente($sAgente)
+    {
+        // Esto asume formato Agent/9000
+        $sNumAgente = NULL;
+        if (preg_match('|^Agent/(\d+)$|', $sAgente, $regs)) {
+            $sNumAgente = $regs[1];
+        } else {
+            $this->oMainLog->output('ERR: No se ha implementado este tipo de agente - '.$sAgente);
+            return FALSE;
+        }
+
+        if (!isset($this->_infoAgentes[$sAgente])) {
+            $this->oMainLog->output('ERR: (internal) al iniciar hold: no se hace seguimiento ECCP al agente: '.$sAgente);
+            return FALSE;
+        }
+        if ($this->_infoAgentes[$sAgente]['estado_consola'] != 'logged-in') {
+            $this->oMainLog->output('ERR: (internal) al iniciar hold: agente no está (todavía) logoneado: '.$sAgente);
+            return FALSE;
+        }
+
+        /* Verificar en el archivo features_general_additional.conf si la 
+         * funcionalidad de parqueo está habilitada. Se considera que está
+         * habilitada si existe la clave parkext . Esto indica además la 
+         * extensión de parqueo. */
+        $sExtParqueo = $this->leerConfigExtensionParqueo();
+        if (is_null($sExtParqueo)) {
+            $this->oMainLog->output('ERR: al iniciar hold: funcionalidad de hold no está activa');
+        	return FALSE;
+        }
+         
+        // Si el agente ya estaba en hold, se debería validar si la llamada sigue activa 
+        if (!is_null($this->_infoAgentes[$sAgente]['info_hold'])) {
+            $sExtLlamadaParqueada = $this->_buscarExtensionParqueo(
+                $this->_infoAgentes[$sAgente]['info_hold']['ActualChannel']);
+            if (!is_null($sExtLlamadaParqueada)) {
+                // La llamada sigue en hold. No se requiere hacer nada
+                return TRUE;
+            } else {
+                // El abonado se cansó de esperar y ha colgado. Se termina el
+                // hold anterior y se marca en la base de datos.
+                $this->marcarFinalBreakAgente($this->_infoAgentes[$sAgente]['info_hold']['id_hold']);
+                $this->_infoAgentes[$sAgente]['info_hold'] = NULL;
+                
+                // TODO: evento OnHangup debería revisar info_hold de todos los
+                // agentes para eliminar los holds y pausas de las llamadas que
+                // han colgado.
+            }
+        }
+
+        // Obtener el ID del break que corresponde al hold
+        $idHold = $this->_dbConn->getOne('SELECT id FROM break WHERE tipo = "H" AND status = "A"');
+        if (DB::isError($idHold)) {
+            $this->oMainLog->output('ERR: al iniciar hold: no se puede leer ID de hold para auditoría - '.$idHold->getMessage());
+        	return FALSE;
+        } elseif (is_null($idHold)) {
+            $this->oMainLog->output('ERR: al iniciar hold: no se puede leer ID de hold para auditoría - no hay hold válido y activo');
+            return FALSE;
+        }
+        
+        /* Leer de la base de datos el canal que está conversando con el agente.
+         * También debe de obtenerse el ID del registro en la tabla de 
+         * current_calls o current_call_entry, según la que se descubra primero.
+         */
+        // Verificar si llamada es entrante...
+        $tuplaLlamada = $this->_dbConn->getRow(
+            'SELECT current_call_entry.id AS id_current_call, id_call_entry AS id_call, ChannelClient '.
+            'FROM current_call_entry, agent '.
+            'WHERE current_call_entry.id_agent = agent.id '.
+                'AND agent.estatus = "A" AND agent.number = ?',
+            array($sNumAgente), DB_FETCHMODE_ASSOC);
+        if (DB::isError($tuplaLlamada)) {
+            $this->oMainLog->output('ERR: al iniciar hold: no se puede verificar llamada entrante - '.
+                $tuplaLlamada->getMessage());
+        	return FALSE;
+        } elseif (count($tuplaLlamada) > 0) {
+        	// Llamada es entrante
+            $tuplaLlamada['tabla'] = 'current_call_entry';
+        } else {
+        	// Verificar si llamada es saliente...
+            $tuplaLlamada = $this->_dbConn->getRow(
+                'SELECT id AS id_current_call, id_call, ChannelClient '.
+                'FROM current_calls WHERE agentnum = ?',
+                array($sNumAgente), DB_FETCHMODE_ASSOC);
+            if (DB::isError($tuplaLlamada)) {
+                $this->oMainLog->output('ERR: al iniciar hold: no se puede verificar llamada saliente - '.
+                    $tuplaLlamada->getMessage());
+                return FALSE;
+            } elseif (count($tuplaLlamada) > 0) {
+                // Llamada es saliente
+                $tuplaLlamada['tabla'] = 'current_calls';
+            } else {
+                $this->oMainLog->output('WARN: al iniciar hold: el siguiente agente no está atendiendo llamada: '.$sAgente);
+                return FALSE;
+            }
+        }
+        
+        /* Los canales de tipo Local/XXX@from-internal no sirven para realizar
+         * redirección a hold. Se debe de averiguar el verdadero canal que 
+         * aparece en el reporte de "agent show" */
+        $oPredictor = new Predictivo($this->_astConn);
+        $estadoCola = $oPredictor->leerEstadoCola(''); // El parámetro vacío lista todas las colas
+        if (!isset($estadoCola['members'][$sNumAgente])) {
+            $this->oMainLog->output('ERR: (internal) al iniciar hold: agente no se encuentra: '.$sAgente);
+            return FALSE;
+        }
+        if ($estadoCola['members'][$sNumAgente]['status'] != 'inUse') {
+            $this->oMainLog->output('ERR: (internal) al iniciar hold: agente no está atendiendo llamada: '.$sAgente);
+            return FALSE;
+        }
+        if (!isset($estadoCola['members'][$sNumAgente]['clientchannel'])) {
+            $this->oMainLog->output('ERR: (internal) al iniciar hold: no se puede identificar canal remoto para agente: '.$sAgente);
+        	return FALSE;
+        }
+        $tuplaLlamada['ActualChannel'] = $estadoCola['members'][$sNumAgente]['clientchannel'];
+         
+        
+        // En este punto, $tuplaLlamada tiene la información para iniciar hold
+        
+        // Ejecutar realmente la pausa del agente indicado en todas las colas
+        if (!$this->_agregarPausaAgente($sAgente)) return FALSE;
+
+        /* Marcar la llamada para hold, para compatibilidad con el código de
+         * hold del evento OnHangup. Esta actualización debe ser visible cuando
+         * se reciba el evento Hangup resultante de la redirección hold. */
+        $sPeticionSQLMarcado = 'UPDATE '.$tuplaLlamada['tabla'].' SET hold = ? WHERE id = ?';
+        $r = $this->_dbConn->query($sPeticionSQLMarcado, array('S', $tuplaLlamada['id_current_call']));
+        if (DB::isError($r)) {
+            $this->oMainLog->output('ERR: al iniciar hold: no se puede marcar la llamada como hold (1) - '.$r->getMessage());
+        	return FALSE;
+        }
+        if ($tuplaLlamada['tabla'] == 'current_calls') {
+            $sPeticionSQLEstado = 'UPDATE calls set status = ? WHERE id = ?';
+            $r = $this->_dbConn->query($sPeticionSQLEstado, array('OnHold', $tuplaLlamada['id_call']));
+            if (DB::isError($r)) {
+                $this->oMainLog->output('ERR: al iniciar hold: no se puede marcar la llamada como hold (2) - '.$r->getMessage());
+                return FALSE;
+            }
+        } else {
+        	// TODO: ¿Qué estado se asigna a las llamadas entrantes?
+        }
+        
+        // Ejecutar realmente la redirección al hold
+        $r = $this->_astConn->Redirect(
+            $tuplaLlamada['ActualChannel'], // channel 
+            '',                             // extrachannel
+            $sExtParqueo,                   // exten
+            'from-internal',                // context
+            1);                             // priority
+        if ($r['Response'] != 'Success') {
+        	$this->oMainLog->output('ERR: al iniciar hold: no se puede ejecutar hold - '.$r['Message']);
+            $r = $this->_dbConn->query($sPeticionSQLMarcado, array('N', $tuplaLlamada['id_current_call']));
+            $r = $this->_dbConn->query($sPeticionSQLEstado, array('Success', $tuplaLlamada['id_call']));
+            $this->_quitarPausaAgente($sAgente);
+            return FALSE;
+        }
+        
+        // Auditoría del inicio del hold
+        $idAuditHold = $this->marcarInicioBreakAgente($sAgente, $idHold);
+        if (is_null($idAuditHold)) {
+            $this->oMainLog->output('ERR: (internal) no se puede auditar el inicio del hold: '.$sAgente);
+            return FALSE;
+        }
+        $tuplaLlamada['id_hold'] = $idAuditHold;
+        $this->_infoAgentes[$sAgente]['info_hold'] = $tuplaLlamada;
+        
+        // Se marca la llamada correspondiente al canal para hold
+        foreach (array_keys($this->_infoLlamadas['llamadas']) as $sKey) {
+        	if ($this->_infoLlamadas['llamadas'][$sKey]->ActualChannel == $tuplaLlamada['ActualChannel']) {
+                $this->_infoLlamadas['llamadas'][$sKey]->OnHold = TRUE;
+                
+                if ($this->DEBUG) {
+                	$this->oMainLog->output('DEBUG: la siguiente llamada será puesta en HOLD vía ECCP: '.
+                        $sKey.' => '.
+                        print_r($this->_infoLlamadas['llamadas'][$sKey], 1));
+                }
+            }
+        }
+        
+        return TRUE;
+    }
+    
+    // Ejecutar el comando adecuado según la versión de Asterisk para listar
+    // las extensiones de llamadas parqueadas. Se devuelve el número de 
+    // extensión que contiene el canal que se ha pasado como parámetro, o NULL
+    // si ha ocurrido un problema o si no se encuentra el canal.
+    private function _buscarExtensionParqueo($sCanal)
+    {
+        $versionMinima = array(1, 6, 0);
+        while (count($versionMinima) < count($this->_asteriskVersion))
+            array_push($versionMinima, 0);
+        while (count($versionMinima) > count($this->_asteriskVersion))
+            array_push($this->_asteriskVersion, 0);
+        $sComandoParqueo = ($this->_asteriskVersion >= $versionMinima) 
+            ? 'parkedcalls show' 
+            : 'show parkedcalls';
+        $r = $this->_astConn->Command($sComandoParqueo);
+        if (!isset($r['data'])) return NULL;
+
+/*
+Privilege: Command
+ Num                   Channel (Context         Extension    Pri ) Timeout 
+*** Parking lot: default
+71                 SIP/1065-00000014 (from-internal   s            1   )     38s
+---
+1 parked call in total.
+ */
+        $lineas = split("\n", $r['data']); $regs = NULL;
+        foreach ($lineas as $sLinea) {
+            if (preg_match('/^\s*(\d{2,})\s*(\S+)/', $sLinea, $regs)) {
+            	if ($regs[2] == $sCanal) return $regs[1];
+            }
+        }
+        return NULL;
+    }
+
+    public function terminarHoldAgente($sAgente)
+    {
+        // Esto asume formato Agent/9000
+        $sNumAgente = NULL;
+        if (preg_match('|^Agent/(\d+)$|', $sAgente, $regs)) {
+            $sNumAgente = $regs[1];
+        } else {
+            $this->oMainLog->output('ERR: No se ha implementado este tipo de agente - '.$sAgente);
+            return FALSE;
+        }
+
+        if (!isset($this->_infoAgentes[$sAgente])) {
+            $this->oMainLog->output('ERR: (internal) al terminar hold: no se hace seguimiento ECCP al agente: '.$sAgente);
+            return FALSE;
+        }
+        if ($this->_infoAgentes[$sAgente]['estado_consola'] != 'logged-in') {
+            $this->oMainLog->output('ERR: (internal) al terminar hold: agente no está (todavía) logoneado: '.$sAgente);
+            return FALSE;
+        }
+
+        // Si el agente no estaba en hold, se devuelve éxito sin hacer nada más
+        if (is_null($this->_infoAgentes[$sAgente]['info_hold'])) {
+            return TRUE;
+        }
+        
+        /* Verificar en el archivo features_general_additional.conf si la 
+         * funcionalidad de parqueo está habilitada. Se considera que está
+         * habilitada si existe la clave parkext . Esto indica además la 
+         * extensión de parqueo. */
+        $sExtParqueo = $this->leerConfigExtensionParqueo();
+        if (is_null($sExtParqueo)) {
+            $this->oMainLog->output('ERR: al terminar hold: funcionalidad de hold no está activa');
+            return FALSE;
+        }
+
+    	/* ID de hold está en $this->_infoAgentes[$sAgente]['info_hold']['id_hold'] .
+         * Según $this->_infoAgentes[$sAgente]['info_hold']['tabla'], es current_calls
+         * para llamada saliente, current_call_entry para llamada entrante.
+         * El ID de la llamada actual de current_call está en 
+         * $this->_infoAgentes[$sAgente]['info_hold']['id_current_call'] .
+         * Canal de break está en $this->_infoAgentes[$sAgente]['info_hold']['ChannelClient']
+         * y debe de coincidir con canal recuperado por el comando parkedcalls show.
+         */
+        $sExtLlamadaParqueada = $this->_buscarExtensionParqueo(
+            $this->_infoAgentes[$sAgente]['info_hold']['ActualChannel']);
+        if (!is_null($sExtLlamadaParqueada)) {
+        	$sActionID = 'ECCP:1.0:'.posix_getpid().':RedirectFromHold';
+            if ($this->DEBUG) {
+        		$this->oMainLog->output("DEBUG: intentando recuperar llamada:\n".
+                    "\tChannel      =>  $sAgente\n".
+                    "\tExten        =>  $sExtLlamadaParqueada\n".
+                    "\tContext      =>  from-internal\n".
+                    "\tActionID     =>  $sActionID");
+        	}
+            
+            // Sacar la llamada del parqueo y redirigirla al agente pausado
+            $r = $this->_astConn->Originate(
+                $sAgente,               // channel
+                $sExtLlamadaParqueada,  // extension
+                'from-internal',        // context
+                '1',                    // priority
+                NULL, NULL, NULL, NULL, NULL, NULL,
+                TRUE,                   // async
+                $sActionID
+                );
+            if ($r['Response'] != 'Success') {
+            	$this->oMainLog->output('ERR: al terminar hold: no se puede retomar llamada - '.$r['Message']);
+            }
+            if ($this->DEBUG) {
+            	$this->oMainLog->output('DEBUG: Originate para recuperar llamada devuelve: '.print_r($r));
+            }
+        }
+
+        // Ejecutar realmente el retiro de la pausa en todas las colas
+        if (!$this->_quitarPausaAgente($sAgente)) return FALSE;
+
+        // Marcar la llamada como sacada de hold en la base de datos
+        $sPeticionSQLMarcado = 'UPDATE '.$this->_infoAgentes[$sAgente]['info_hold']['tabla'].' SET hold = ? WHERE id = ?';
+        $r = $this->_dbConn->query($sPeticionSQLMarcado, array('N', $this->_infoAgentes[$sAgente]['info_hold']['id_current_call']));
+        if (DB::isError($r)) {
+            $this->oMainLog->output('ERR: al terminar hold: no se puede marcar la llamada como fuera de hold - '.$r->getMessage());
+            //return FALSE;
+        }
+
+        // Auditoría del fin del hold
+        $this->marcarFinalBreakAgente($this->_infoAgentes[$sAgente]['info_hold']['id_hold']);
+        $this->_infoAgentes[$sAgente]['info_hold'] = NULL;
         return TRUE;
     }
 
@@ -3709,6 +4192,10 @@ SQL_EXISTE_AUDIT;
         }
 
         // Escribir la información de auditoría en la base de datos
+        if (!is_null($this->_infoAgentes[$sAgente]['info_hold'])) {
+            // TODO: ¿Qué ocurre con la posible llamada parqueada?
+            $this->marcarFinalBreakAgente($this->_infoAgentes[$sAgente]['info_hold']['id_hold']);
+        }
         $this->marcarFinalSesionAgente(
             $sAgente,
             $this->_infoAgentes[$sAgente]['id_sesion'],
