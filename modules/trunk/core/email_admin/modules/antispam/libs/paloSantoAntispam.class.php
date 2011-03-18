@@ -225,11 +225,11 @@ class paloSantoAntispam {
             $seperator  = '/';
             $bValido=$cyr_conn->createmb("user" . $seperator . $dataEmail[0] . $seperator . "Spam@" . $dataEmail[1]);
             if(!$bValido)
-                $error_msg = "Error creating folder Spam:".$cyr_conn->getMessage()."<br>";
+                $error_msg = "Error creating Spam folder:".$cyr_conn->getMessage()."<br>";
             else{
                 $bValido=$cyr_conn->command(". subscribe \"user" . $seperator . $dataEmail[0] . $seperator . "Spam@" . $dataEmail[1] ."\"");
                 if(!$bValido)
-                    $error_msg = "error cannot be subscribe the folder Spam for $email:".$cyr_conn->getMessage()."<br>";
+                    $error_msg = "error cannot be subscribe the Spam folder for $email:".$cyr_conn->getMessage()."<br>";
             }
             $cyr_conn->imap_logout();
         }
@@ -487,6 +487,36 @@ if header :contains \"X-Spam-Flag\" \"YES\" {
     fileinto \"Spam\";
 }";
         return $script;
+    }
+
+    //funcion que crea la carpeta de Spam dado un email en el servidor IMAP mediante telnet
+    function deleteSpamMessages($email)
+    {
+        global $CYRUS;
+        $cyr_conn = new cyradm;
+        $error_msg = "";
+        $error = $cyr_conn->imap_login();
+        $dataEmail = explode("@",$email);
+        if ($error===FALSE){
+            $error_msg = "IMAP login error: $error <br>";
+        }else{
+            $seperator  = '/';
+            $bValido=$cyr_conn->command(". select \"user" . $seperator . $dataEmail[0] . $seperator . "Spam@" . $dataEmail[1] ."\"");
+            if(!$bValido)
+                $error_msg = "Error selected Spam folder:".$cyr_conn->getMessage()."<br>";
+            else{
+                $bValido=$cyr_conn->command(". store 1:* +flags \Deleted");
+                if(!$bValido)
+                    $error_msg = "error cannot be added flags Deleted to the messages of Spam folder for $email:".$cyr_conn->getMessage()."<br>";
+                else{
+                    $bValido=$cyr_conn->command(". expunge");
+                    if(!$bValido)
+                        $error_msg = "error cannot be deleted the messages of Spam folder for $email:".$cyr_conn->getMessage()."<br>";
+                }
+            }
+            $cyr_conn->imap_logout();
+        }
+        return $error_msg;
     }
 
 }
