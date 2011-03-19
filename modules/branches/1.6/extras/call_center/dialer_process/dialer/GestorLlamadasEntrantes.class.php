@@ -48,7 +48,7 @@ class GestorLlamadasEntrantes
     private $_dbConn;   // Conexión a la base de datos
     private $_dialProc; // Referencia al DialerProcess
     private $_dialSrv;  // Referencia al DialerServer
-    private $_oMainLog; // Objeto de administración de log
+    private $oMainLog; // Objeto de administración de log
 
     private $_timestampCache;   // Momento en que se leyó la info del caché
     private $_cacheAgentesCola; // Cache de a qué cola pertenece cada agente
@@ -75,7 +75,7 @@ class GestorLlamadasEntrantes
         	throw new Exception('Not a subclass of AppLogger!');
         }
         $this->_dbConn = $dbConn;
-        $this->_oMainLog = $oLog;
+        $this->oMainLog = $oLog;
         $this->_dialProc = NULL;
         $this->_dialSrv = NULL;
         $this->_timestampCache = NULL;
@@ -179,7 +179,7 @@ class GestorLlamadasEntrantes
         if (!DB::isError($lista)) {
         	$this->_cacheColasMonitoreadas = $lista;
         } else {
-        	$this->_oMainLog->output('ERR: no se puede leer lista de colas - '.$lista->getMessage());
+        	$this->oMainLog->output('ERR: no se puede leer lista de colas - '.$lista->getMessage());
         }
     }
     
@@ -191,8 +191,8 @@ class GestorLlamadasEntrantes
         $listaAgentes = NULL;
 
         if (is_null($this->_astConn)) {
-        	$this->_oMainLog->output('ERR: ya no se dispone de una conexión válida al Asterisk.');
-            $this->_oMainLog->output('ERR: se requiere que se indique una conexión nueva.');
+        	$this->oMainLog->output('ERR: ya no se dispone de una conexión válida al Asterisk.');
+            $this->oMainLog->output('ERR: se requiere que se indique una conexión nueva.');
         } else {
         	// Leer la información de todas las colas...
             $respuestaCola = $this->_astConn->Command('queue show');
@@ -217,7 +217,7 @@ class GestorLlamadasEntrantes
                     }
                     $this->_cacheAgentesCola = $listaAgentes;
                 } else {
-                	$this->_oMainLog->output('ERR: lost synch with Asterisk AMI ("queue show" response lacks "data").');
+                	$this->oMainLog->output('ERR: lost synch with Asterisk AMI ("queue show" response lacks "data").');
                 }
             } else {
                 /* Al gestor de llamadas entrantes no le compete reiniciar la 
@@ -226,8 +226,8 @@ class GestorLlamadasEntrantes
                  * esperar a que el objeto llamador actualice una nueva conexión
                  * a usar en lugar de la que se ha desechado.
                  */             
-                $this->_oMainLog->output('ERR: no se puede enviar petición de listado de colas al Asterisk, se elimina referencia a conexión!');
-                $this->_oMainLog->output('ERR: cache de agentes en colas puede estar desfasado.');
+                $this->oMainLog->output('ERR: no se puede enviar petición de listado de colas al Asterisk, se elimina referencia a conexión!');
+                $this->oMainLog->output('ERR: cache de agentes en colas puede estar desfasado.');
                 $this->_astConn = NULL;
             }
         }
@@ -247,7 +247,7 @@ class GestorLlamadasEntrantes
      */
     function notificarJoin($eventParams)
     {
-        if ($this->DEBUG) $this->_oMainLog->output("DEBUG: ENTER notificarJoin");
+        if ($this->DEBUG) $this->oMainLog->output("DEBUG: ENTER notificarJoin");
         
         $bLlamadaManejada = FALSE;
 
@@ -280,9 +280,9 @@ class GestorLlamadasEntrantes
 	                array($eventParams['Queue'], $sFecha, $sFecha, $sHora, $sHora, $sHora, $sHora));            
 	            // ATENCION: $idCampania puede ser nulo
 	            if (DB::isError($idCampania)) {
-	                $this->_oMainLog->output("ERR: no se puede consultar posible campaña para llamada entrante - ".
+	                $this->oMainLog->output("ERR: no se puede consultar posible campaña para llamada entrante - ".
 	                    $idCampania->getMessage());
-	                $this->_oMainLog->output('DEBUG: '.print_r($idCampania, 1));
+	                $this->oMainLog->output('DEBUG: '.print_r($idCampania, 1));
 	                $idCampania = NULL;
 	            }
 			}
@@ -290,15 +290,15 @@ class GestorLlamadasEntrantes
             $sTrunkLlamada = '';
             if ($this->_tieneTrunk) {
                 if ($this->DEBUG) {
-                    $this->_oMainLog->output('DEBUG: OnJoin: se tiene Channel='.$eventParams['Channel']);
+                    $this->oMainLog->output('DEBUG: OnJoin: se tiene Channel='.$eventParams['Channel']);
                 }
                 $regs = NULL;
                 if (!ereg('^(.+)-[0-9a-fA-F]+$', $eventParams['Channel'], $regs)) {
-                	$this->_oMainLog->output('ERR: no se puede extraer trunk a partir de Channel='.$eventParams['Channel']);
+                	$this->oMainLog->output('ERR: no se puede extraer trunk a partir de Channel='.$eventParams['Channel']);
                 } else {
                 	$sTrunkLlamada = $regs[1];
                     if ($this->DEBUG) {
-                        $this->_oMainLog->output('DEBUG: OnJoin: se tiene trunk='.$sTrunkLlamada);
+                        $this->oMainLog->output('DEBUG: OnJoin: se tiene trunk='.$sTrunkLlamada);
                     }
                 }
             }
@@ -320,7 +320,7 @@ class GestorLlamadasEntrantes
             $listaIdContactos = $this->_dbConn->getCol(
                 'SELECT id FROM contact WHERE telefono = ?', 0, array($sCallerID));
             if (DB::isError($listaIdContactos)) {
-            	$this->_oMainLog->output('ERR: no se puede consultar contacto para llamada entrante - '.
+            	$this->oMainLog->output('ERR: no se puede consultar contacto para llamada entrante - '.
                     $listaIdContactos->getMessage());
             } elseif (count($listaIdContactos) == 1) {
             	$idContact = $listaIdContactos[0];
@@ -357,7 +357,7 @@ class GestorLlamadasEntrantes
             }
             $sQueryInsert = sprintf('INSERT INTO call_entry (%s) VALUES (%s)', $sListaCampos, $sListaValores);
             if ($this->DEBUG) {
-            	$this->_oMainLog->output('DEBUG: OnJoin: a punto de ejecutar ['.
+            	$this->oMainLog->output('DEBUG: OnJoin: a punto de ejecutar ['.
                     $sQueryInsert.'] con valores ['.join($queryParams, ',').']...');
             }
             
@@ -365,13 +365,13 @@ class GestorLlamadasEntrantes
                 $sQueryInsert, 
                 $queryParams);
             if (DB::isError($resultado)) {
-                $this->_oMainLog->output(
+                $this->oMainLog->output(
                     'ERR: no se puede insertar registro de llamada (log) - '.
                     $resultado->getMessage());
             }
         }
 
-        if ($this->DEBUG) $this->_oMainLog->output("DEBUG: EXIT notificarJoin");
+        if ($this->DEBUG) $this->oMainLog->output("DEBUG: EXIT notificarJoin");
         return $bLlamadaManejada;    	
     }
     
@@ -390,7 +390,7 @@ class GestorLlamadasEntrantes
      */
     function notificarLink($eventParams)
     {
-        if ($this->DEBUG) $this->_oMainLog->output("DEBUG: ENTER notificarLink");
+        if ($this->DEBUG) $this->oMainLog->output("DEBUG: ENTER notificarLink");
         $bLlamadaManejada = FALSE;
 
         // Asegurarse de que el caché está fresco
@@ -421,7 +421,7 @@ class GestorLlamadasEntrantes
             $sKey_CallerID = 'CallerID1';
             $sKey_Uniqueid_Agente = 'Uniqueid2';
         } elseif ($this->DEBUG) {
-            $this->_oMainLog->output("DEBUG: no se encuentra un agente llamado ".
+            $this->oMainLog->output("DEBUG: no se encuentra un agente llamado ".
                 "$eventParams[Channel1] ni uno llamado $eventParams[Channel2] en cache de agentes : ".
                 print_r($this->_cacheAgentesCola, TRUE));
         }
@@ -434,19 +434,19 @@ class GestorLlamadasEntrantes
                     'AND (current_call_entry.uniqueid = ? OR current_call_entry.uniqueid = ?)', 
                 array($eventParams['Uniqueid1'], $eventParams['Uniqueid2']));
         if (DB::isError($idCallEntry)) {
-        	$this->_oMainLog->output("ERR: no se puede consultar estado HOLD en llamadas entrantes - ".
+        	$this->oMainLog->output("ERR: no se puede consultar estado HOLD en llamadas entrantes - ".
                 $idCallEntry->getMessage());
         } elseif (!is_null($idCallEntry)) {
             /* La llamada ha sido ya ingresada en current_calls, y se omite 
              * procesamiento futuro. */
-            $this->_oMainLog->output("DEBUG: notificarLink(): llamada ".
+            $this->oMainLog->output("DEBUG: notificarLink(): llamada ".
                 $eventParams['Uniqueid1'].'/'.$eventParams['Uniqueid2'].
                 " regresa de HOLD, se omite procesamiento futuro.");
         	$result =& $this->_dbConn->query(
                 'UPDATE call_entry SET status = "activa" WHERE id = ?',
                 array($idCallEntry));
             if (DB::isError($result)) {
-            	$this->_oMainLog->output(
+            	$this->oMainLog->output(
                     "ERR: no se puede actualizar estado de llamada entrante (hold->activa) - ".
                     $result->getMessage());
             }
@@ -474,7 +474,7 @@ class GestorLlamadasEntrantes
                     	if (in_array($sColaMonitoreada, $listaColasCandidatas)) $listaIdCola[] = $keyCola;
                     }
                     if (count($listaIdCola) == 0) {
-                    	$this->_oMainLog->output(
+                    	$this->oMainLog->output(
                     		"BUG: se supone que hay al menos una cola candidada, pero no hay índices:\n".
                     			print_r($this->_cacheColasMonitoreadas, TRUE)."\n".
                     			print_r($listaColasCandidatas, TRUE));
@@ -487,12 +487,12 @@ class GestorLlamadasEntrantes
                         array($eventParams[$sKey_Uniqueid]),
                         DB_FETCHMODE_OBJECT);
                     if (DB::isError($tuplaLlamada)) {
-                        $this->_oMainLog->output(
+                        $this->oMainLog->output(
                             'ERR: no se puede leer registro de llamada (log) - '.
                             $tuplaLlamada->getMessage());
                     } elseif (is_null($tuplaLlamada)) {
                         if ($this->DEBUG) {
-                            $this->_oMainLog->output(
+                            $this->oMainLog->output(
                                 "WARN: no se encuentra registro de llamada {$eventParams[$sKey_Uniqueid]} (log) - se asume agente pertenece a más de una cola.");
                         }
                         $bLlamadaManejada = FALSE;
@@ -511,13 +511,13 @@ class GestorLlamadasEntrantes
                     	if (in_array($tuplaLlamada->id_queue_call_entry, $listaIdCola))
                     		$idCola = $tuplaLlamada->id_queue_call_entry;
                     	if ($tuplaLlamada->id_queue_call_entry != $idCola) {
-                            $this->_oMainLog->output(
+                            $this->oMainLog->output(
                                 "ERR: registro de llamada {$tuplaLlamada->id} ".
                                 "uniqueid={$eventParams[$sKey_Uniqueid]} indica ".
                                 "ID de cola {$tuplaLlamada->id_queue_call_entry} vs. $idCola!");                    		
                     	}
                         if ($this->DEBUG && $tuplaLlamada->callerid != $eventParams[$sKey_CallerID]) {
-                            $this->_oMainLog->output(
+                            $this->oMainLog->output(
                                 "ERR: registro de llamada {$tuplaLlamada->id} ".
                                 "uniqueid={$eventParams[$sKey_Uniqueid]} indica ".
                                 "callerid {$tuplaLlamada->callerid} vs. {$eventParams[$sKey_CallerID]}!");                            
@@ -539,7 +539,7 @@ class GestorLlamadasEntrantes
                                 'SELECT COUNT(*) FROM current_call_entry WHERE uniqueid = ?',
                                 array($eventParams[$sKey_Uniqueid]));
                             if (DB::isError($cuentaLlamada)) {
-                            	$this->_oMainLog->output(
+                            	$this->oMainLog->output(
                                     'ERR: no se puede verificar duplicidad de registro de llamada (actual) - '.
                                     $cuentaLlamada->getMessage());
                                 $cuentaLlamada = 0;
@@ -552,7 +552,7 @@ class GestorLlamadasEntrantes
                                     array($idAgente, $idCola, $tuplaLlamada->id, $eventParams[$sKey_CallerID], 
                                         $eventParams[$sKey_Uniqueid], $sRemChannel));
                                 if (DB::isError($resultado)) {
-                                    $this->_oMainLog->output(
+                                    $this->oMainLog->output(
                                         'ERR: no se puede insertar registro de llamada (actual) - '.
                                         $resultado->getMessage());
                                 } else {
@@ -564,27 +564,27 @@ class GestorLlamadasEntrantes
                                     }
                                 }
                             } else {
-                            	if ($this->DEBUG) $this->_oMainLog->output('DEBUG: llamada entrante ya consta en registro de llamadas en curso.');
+                            	if ($this->DEBUG) $this->oMainLog->output('DEBUG: llamada entrante ya consta en registro de llamadas en curso.');
                             }
                         } else {
-                            $this->_oMainLog->output(
+                            $this->oMainLog->output(
                                 'ERR: no se puede actualizar registro de llamada (log) - '.
                                 $resultado->getMessage());
                         }
                     }
                 } else if (DB::isError($idAgente)) {
-                	$this->_oMainLog->output(
+                	$this->oMainLog->output(
                         'ERR: no se puede leer lista de agentes activos - '.
                         $idAgente->getMessage());
                 }
             } elseif ($this->DEBUG) {
-                $this->_oMainLog->output("DEBUG: cola(s) candidata(s) [".(join($listaColasCandidatas, ' '))."] no se ".
+                $this->oMainLog->output("DEBUG: cola(s) candidata(s) [".(join($listaColasCandidatas, ' '))."] no se ".
                     "encuentra en cache de colas monitoreadas: ".
                     print_r($this->_cacheColasMonitoreadas, TRUE));
             }
         }
         
-        if ($this->DEBUG) $this->_oMainLog->output("DEBUG: EXIT notificarLink");
+        if ($this->DEBUG) $this->oMainLog->output("DEBUG: EXIT notificarLink");
         return $bLlamadaManejada;
     }
     
@@ -599,7 +599,7 @@ class GestorLlamadasEntrantes
      */    
     function notificarHangup($eventParams)
     {
-        if ($this->DEBUG) $this->_oMainLog->output("DEBUG: ENTER notificarHangup");
+        if ($this->DEBUG) $this->oMainLog->output("DEBUG: ENTER notificarHangup");
         $bLlamadaManejada = FALSE;
         $tuplaLlamada = NULL;
 
@@ -609,7 +609,7 @@ class GestorLlamadasEntrantes
             array($eventParams['Uniqueid']),
             DB_FETCHMODE_ASSOC);
         if (DB::isError($tuplaLlamada)) {
-            $this->_oMainLog->output(
+            $this->oMainLog->output(
                 'ERR: no se puede buscar registro de llamada (actual) - '.
                 $tuplaLlamada->getMessage());
             $tuplaLlamada = NULL;                	
@@ -628,7 +628,7 @@ class GestorLlamadasEntrantes
                 array($eventParams['Uniqueid']),
                 DB_FETCHMODE_ASSOC);
             if (DB::isError($tuplaLlamada)) {
-                $this->_oMainLog->output(
+                $this->oMainLog->output(
                     'ERR: no se puede buscar registro de llamada (actual) - '.
                     $tuplaLlamada->getMessage());
                 $tuplaLlamada = NULL;                   
@@ -651,7 +651,7 @@ class GestorLlamadasEntrantes
                         array($this->_mapaUID[$i]['CID']),
                         DB_FETCHMODE_ASSOC);
                     if (DB::isError($tuplaLlamada)) {
-                        $this->_oMainLog->output(
+                        $this->oMainLog->output(
                             'ERR: no se puede buscar registro de llamada (actual) - '.
                             $tuplaLlamada->getMessage());
                         $tuplaLlamada = NULL;                   
@@ -669,12 +669,12 @@ class GestorLlamadasEntrantes
                  * sobre la llamada, pero no debe de considerarse como el cierre de
                  * la llamada.
                  */
-            	$this->_oMainLog->output("DEBUG: notificarUnlink - llamada ha sido puesta en HOLD en vez de colgada.");
+            	$this->oMainLog->output("DEBUG: notificarUnlink - llamada ha sido puesta en HOLD en vez de colgada.");
                 $result =& $this->_dbConn->query(
                     "UPDATE call_entry SET status = 'hold' WHERE id = ?",
                     array($tuplaLlamada['id_call_entry']));
                 if (DB::isError($result)) {
-                    $this->_oMainLog->output(
+                    $this->oMainLog->output(
                         'ERR: no se puede actualizar registro de llamada en HOLD (log) - '.
                         $result->getMessage());
                 }
@@ -688,7 +688,7 @@ class GestorLlamadasEntrantes
                     'DELETE FROM current_call_entry WHERE id = ?',
                     array($tuplaLlamada['id']));            
                 if (DB::isError($result)) {
-                    $this->_oMainLog->output(
+                    $this->oMainLog->output(
                         'ERR: no se puede remover registro de llamada (actual) - '.
                         $result->getMessage());
                 }
@@ -705,7 +705,7 @@ class GestorLlamadasEntrantes
                 'WHERE id = ?',
                 array($tuplaLlamada['id_call_entry']));
             if (DB::isError($result)) {
-                $this->_oMainLog->output(
+                $this->oMainLog->output(
                     'ERR: no se puede actualizar registro de llamada (log) - '.
                     $result->getMessage());
             }
@@ -725,7 +725,7 @@ class GestorLlamadasEntrantes
                     'SELECT id_campaign FROM call_entry WHERE id = ?',
                     array($tuplaLlamada['id_call_entry']));
                 if (DB::isError($idCampaign)) {
-                	$this->_oMainLog->output('ERR: no se puede consultar campaña de llamada: '.$idCampaign->getMessage());
+                	$this->oMainLog->output('ERR: no se puede consultar campaña de llamada: '.$idCampaign->getMessage());
                     $idCampaign = NULL;
                 }
             }
@@ -738,7 +738,7 @@ class GestorLlamadasEntrantes
                 DB_FETCHMODE_ASSOC
             );
             if (DB::isError($tuplaAgente)) {
-            	$this->_oMainLog->output('ERR: no se puede consultar callerid/agente de llamada: '.$tuplaAgente->getMessage());
+            	$this->oMainLog->output('ERR: no se puede consultar callerid/agente de llamada: '.$tuplaAgente->getMessage());
             } else{
                 // Reportar que se ha cerrado la llamada
                 $this->_dialSrv->notificarEvento_AgentUnlinked("Agent/".$tuplaAgente['number'], array(
@@ -750,7 +750,7 @@ class GestorLlamadasEntrantes
             }
         }
         
-        if ($this->DEBUG) $this->_oMainLog->output("DEBUG: EXIT notificarHangup");
+        if ($this->DEBUG) $this->oMainLog->output("DEBUG: EXIT notificarHangup");
         return $bLlamadaManejada;
     }
     
@@ -768,7 +768,7 @@ class GestorLlamadasEntrantes
         // Remover rastro de llamadas en la lista de llamadas actuales
         $result =& $this->_dbConn->query('DELETE FROM current_call_entry');
         if (DB::isError($result)) {
-            $this->_oMainLog->output(
+            $this->oMainLog->output(
                 'ERR: no se puede limpiar registro de llamada (actual) - '.
                 $result->getMessage());
         }
@@ -777,7 +777,7 @@ class GestorLlamadasEntrantes
         $result =& $this->_dbConn->query(
             "UPDATE call_entry SET status = 'fin-monitoreo' WHERE datetime_end IS NULL");                   
         if (DB::isError($result)) {
-            $this->_oMainLog->output(
+            $this->oMainLog->output(
                 'ERR: no se puede marcar registro de llamada (log) - '.
                 $result->getMessage());
         }
