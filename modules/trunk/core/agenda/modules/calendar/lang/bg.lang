@@ -216,7 +216,7 @@ $arrLangModule=array(
 "Email" => "E-mail",
 "Contact" => "Contact",
 "Export_Calendar" => "Export Calendar",
-"error_recording" => "No Recording. Please create a new recording",
+"error_recording" => "Please add text to speech",
 "Organizer" => "Organizer",
 "Confirm_event" => "Confirm Event",
 "Confirm" => "Confirm",
@@ -253,5 +253,9 @@ $arrLangModule=array(
 "Color" => "Color",
 "Dear User" => "Dear User",
 "Create New Event" => "Create New Event",
+"Text to Speech" => "Text to Speech",
+"Search in Address Book" => "Search in Address Book",
+"Listen" => "Listen",
+"Festival is not up" => "Festival is not up",
 );
 ?>

@@ -112,6 +112,9 @@ function _moduleContent(&$smarty, $module_name)
         case "get_contacts2":
             $content = getContactEmails2($arrConf);
             break;
+        case "getTextToSpeach":
+            $content = getTextToSpeach($arrLang,$pDB);
+            break;
         case "phone_numbers":
 
             // Include language file for EN, then for local, and merge the two.
@@ -172,7 +175,6 @@ function viewCalendar($smarty, $module_name, $local_templates_dir, &$pDB, $arrCo
     $mess = getParameter("month");
     $_DATA['year']  = isset($anio)?$anio:date("Y");
     $_DATA['month'] = isset($mess)?$mess:date("n");
-
     $_DATA['ReminderTime'] = isset($_DATA['ReminderTime'])?$_DATA['ReminderTime']:"10";
     $date_ini = getParameter("date");
     $date_end = getParameter("to");
@@ -189,13 +191,17 @@ function viewCalendar($smarty, $module_name, $local_templates_dir, &$pDB, $arrCo
     $visibility_alert  = "display: none;";
     $repeat_date = "";
 
+    $festival = $pCalendar->festivalUp(); // verifica si esta levantado el festival
+    if(!$festival){
+        $smarty->assign("mb_message", $arrLang['Festival is not up']);
+    }
     $today       = date("D");
     $dateServer  = gmdate("D M d Y H:i:s TO (e)");//Fri Nov 12 2010 00:00:00 GMT-0500 (ECT)
     $icalFile = $arrLang["Download"]." ".$_SESSION["elastix_user"]." ".$arrLang["Calendar"];
     $smarty->assign("repeat_date", $repeat_date);
     $smarty->assign("visibility", $visibility);
     $smarty->assign("visibility_repeat", $visibility_repeat);
-    $smarty->assign("add_phone",$arrLang["add_phone"]);
+    $smarty->assign("add_phone",$arrLang["Search in Address Book"]);
     $smarty->assign("SAVE", $arrLang["Save"]);
     $smarty->assign("EDIT", $arrLang["Edit"]);
     $smarty->assign("DELETE", $arrLang["Delete"]);
@@ -247,6 +253,7 @@ function viewCalendar($smarty, $module_name, $local_templates_dir, &$pDB, $arrCo
     $smarty->assign("Here", $arrLang["Here"]);
     $smarty->assign("Color", $arrLang["Color"]);
     $smarty->assign("CreateEvent", $arrLang["Create New Event"]);
+    $smarty->assign("Listen", $arrLang["Listen"]);
 
     $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",$arrLang["Calendar"], $_DATA);
     $content = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name' name='formNewEvent' id='formNewEvent'>".$htmlForm."</form>";
@@ -274,7 +281,7 @@ function saveEvent($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf,
     $reminder           = getParameter("reminder"); // puede ser on o off
     $call_to            = getParameter("call_to"); // elemento Call to
     $remainerTime       = getParameter("ReminderTime"); // tiempo de recordatorio 10, 20, 30 minutos antes
-    $recording          = getParameter("recording");
+    $recording          = getParameter("tts");
     // options email notification
     $notification       = getParameter("notification");      // puede ser on o off 
     $notification_email = getParameter("notification_email"); // si es notification==off => no se toma en cuenta esta variable
@@ -979,6 +986,17 @@ function getNumExtesion($arrConf,&$pDB,$arrLang){
     return $json->encode($arr);
 }
 
+function getTextToSpeach($arrLang,&$pDB)
+{
+    $data = array();
+    $json = new Services_JSON();
+    $pCalendar = new paloSantoCalendar($pDB);
+    $number    = getParameter('call_to');
+    $text      = getParameter('tts');
+    $pCalendar->makeCalled($number, $number, $text);
+    return $json->encode($data);
+}
+
 function getAllDataCalendar($arrLang,&$pDB,$module_name, $arrConf){
     $pCalendar = new paloSantoCalendar($pDB);
     $user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
@@ -1172,6 +1190,15 @@ function createAudioFiles($asterisk_call,$ext,$call_to,$pDB,$id_event,$arrLang,$
         //Obtener datos sobre quien esta usando el sistema
         //Channel, description, extension
         $result = $pCalendar->Obtain_Protocol($ext);
+        if($call_to!="")
+            $result['number'] = $call_to;
+        else
+            $result['number'] = $result['id'];
+    }
+    /*if($asterisk_call=="on"){
+        //Obtener datos sobre quien esta usando el sistema
+        //Channel, description, extension
+        $result = $pCalendar->Obtain_Protocol($ext);
         $result['number'] = $result['id'];
     }
     else{
@@ -1180,10 +1207,10 @@ function createAudioFiles($asterisk_call,$ext,$call_to,$pDB,$id_event,$arrLang,$
             $result['number'] = $call_to;
         }else
             return;
-    }
+    }*/
 
     if($result!=FALSE){
-        $sContenido =   //"Channel: $sTrunk/$tuplaTelf[phone]\n".
+        /*$sContenido =   //"Channel: $sTrunk/$tuplaTelf[phone]\n".
                         //"Channel: {$result['dial']}\n".
                         "Channel: Local/{$result['number']}@from-internal\n".
                         "CallerID: Calendar Event <{$result['id']}>\n".
@@ -1195,6 +1222,18 @@ function createAudioFiles($asterisk_call,$ext,$call_to,$pDB,$id_event,$arrLang,$
                         "Priority: 1\n".
                         "Set: FILE_CALL=custom/{$result['id']}/$recording\n".
                         "Set: ID_EVENT_CALL=$id_event\n";
+        */
+        $sContenido =   //"Channel: $sTrunk/$tuplaTelf[phone]\n".
+                        //"Channel: {$result['dial']}\n".
+                        "Channel: Local/{$result['number']}@from-internal\n".
+                        "CallerID: Calendar Event <{$result['id']}>\n".
+                        "MaxRetries: $iRetries\n".
+                        "RetryTime: 60\n".
+                        "WaitTime: 30\n".
+                        "Context: festival-event\n".
+                        "Extension: {$result['number']}\n".
+                        "Priority: 1\n".
+                        "Set: TTS=$recording\n";
     }
 
     if($sContenido!=""){
@@ -1535,7 +1574,7 @@ function createFieldForm($arrLang)
         $repeat[$i] = $i;
 
     $pCalendar = new paloSantoCalendar($pDB);
-    $arrRecording = $pCalendar->Obtain_Recordings_Current_User();
+    //$arrRecording = $pCalendar->Obtain_Recordings_Current_User();
     $lblTime = $arrLang["lblbefore"];
     $arrRadio = array('10' => '10'.$lblTime, '30' => '30'.$lblTime, '60' => '60'.$lblTime);
 
@@ -1580,12 +1619,14 @@ function createFieldForm($arrLang)
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-            "recording"   => array(         "LABEL"                  => $arrLang["Recording"],
+            "tts"   => array(         "LABEL"                  => $arrLang["Text to Speech"],
                                             "REQUIRED"               => "no",
-                                            "INPUT_TYPE"             => "SELECT",
-                                            "INPUT_EXTRA_PARAM"      => $arrRecording,
+                                            "INPUT_TYPE"             => "TEXTAREA",
+                                            "INPUT_EXTRA_PARAM"      => array("style"=>"width: 352px;", "maxlength"=>"140"),
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => "",
+                                            "COLS"                   => "48px",
+                                            "ROWS"                   => "2",
                                             "EDITABLE"               => "si",
                                             ),
             "notification"   => array(      "LABEL"                  => $arrLang["notification"],
@@ -1661,6 +1702,8 @@ function getAction()
         return "download_icals";
     else if(getParameter("action")=="get_contacts2")
         return "get_contacts2";
+    else if(getParameter("action")=="getTextToSpeach")
+        return "getTextToSpeach";
     else
         return "report"; //cancel
 }

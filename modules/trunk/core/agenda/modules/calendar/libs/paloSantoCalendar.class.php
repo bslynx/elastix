@@ -26,6 +26,9 @@
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
   $Id: paloSantoCalendar.class.php,v 1.1 2010-01-05 11:01:26 Bruno Macias V. bmacias@elastix.org Exp $ */
+if (file_exists("/var/lib/asterisk/agi-bin/phpagi-asmanager.php")) {
+require_once "/var/lib/asterisk/agi-bin/phpagi-asmanager.php";
+}
 class paloSantoCalendar {
     var $_DB;
     var $errMsg;
@@ -475,6 +478,85 @@ class paloSantoCalendar {
         $idUser = $_SESSION["elastix_userFromUid"];
         $name = $pACL->getNameFromIdUser($idUser);
         return $name;
+    }
+
+    /*************************************************  new  ***************************************************************/
+
+    function AsteriskManagerAPI($action, $parameters, $return_data=false) 
+    {
+        global $arrLang;
+        $astman_host = "127.0.0.1";
+        $astman_user = 'admin';
+        $astman_pwrd = "elastix456";
+
+        $astman = new AGI_AsteriskManager();
+
+        if (!$astman->connect("$astman_host", "$astman_user" , "$astman_pwrd")) {
+            $this->errMsg = _tr("Error when connecting to Asterisk Manager");
+        } else{
+            $salida = $astman->send_request($action, $parameters);
+            $astman->disconnect();
+            if (strtoupper($salida["Response"]) != "ERROR") {
+                if($return_data) return $salida;
+                else return split("\n", $salida["Response"]);
+            }else return false;
+        }
+        return false;
+    }
+
+    function makeCalled($number_org, $number_dst, $textToSpeach)
+    {
+        $dataExt    = $this->getDataExt($number_org);
+        $variables  = "TTS=".$textToSpeach;
+        $parameters = $this->Originate($number_org, $number_dst, $dataExt['dial'], $dataExt['cidname'], "festival-event", $variables);
+
+        return $this->AsteriskManagerAPI("Originate",$parameters);
+    }
+
+    function Originate($origen, $destino, $channel="", $description="", $context="", $variables="")
+    {
+        $parameters = array();
+        $parameters['Channel']      = $channel;
+        $parameters['CallerID']     = "$description <$origen>";
+        $parameters['Exten']        = $destino;
+        $parameters['Context']      = $context;
+        $parameters['Priority']     = 1;
+        $parameters['Application']  = "";
+        $parameters['Data']         = "";
+        $parameters['Variable']     = $variables;
+
+        return $parameters;
+    }
+
+    function getDataExt($ext)
+    {
+        $parameters = array('Command'=>"database show AMPUSER $ext/cidname");
+        $data = $this->AsteriskManagerAPI("Command",$parameters,true);
+        $arrData = split("\n",$data['data']);
+        $arrData = isset($arrData[1])?$arrData[1]:"";
+        $arrData = split(":",$arrData);
+        $salida['cidname'] = isset($arrData[1])?trim($arrData[1]):"";
+
+        $parameters = array('Command'=>"database show DEVICE  $ext/dial");
+        $data = $this->AsteriskManagerAPI("Command",$parameters,true);
+        $arrData = split("\n",$data['data']);
+        $arrData = isset($arrData[1])?$arrData[1]:"";
+        $arrData = split(":",$arrData);
+        $salida['dial'] = isset($arrData[1])?trim($arrData[1]):"";
+
+        return $salida;
+    }
+
+    function festivalUp()
+    {
+        exec("ps aux | grep 'festival_server'", $flag, $status);
+        if($status == 0){
+            if(count($flag) <= 1){
+                //exec("festival_server &", $flags, $status2);
+                return false;
+            }
+        }
+        return true;
     }
 }
 ?>

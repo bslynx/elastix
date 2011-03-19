@@ -123,7 +123,7 @@ $arrLangModule=array(
 "Email" => "ايميل",
 "Contact" => "تماس",
 "Export_Calendar" => "تقويم صادره",
-"error_recording" => "فايل صوتي وجود ندارد. لطفايک فايل صوتي جديد ايجاد کنيد",
+"error_recording" => "Please add text to speech",
 "Can not create called file" => "فايل تماس هاي گرفته شده نمي تواند ايجاد شود",
 "Organizer" => "سازمان دهنده",
 "Confirm_event" => "تائيد رويداد",
@@ -163,5 +163,9 @@ $arrLangModule=array(
 "Color" => "Color",
 "Dear User" => "Dear User",
 "Create New Event" => "Create New Event",
+"Text to Speech" => "Text to Speech",
+"Search in Address Book" => "Search in Address Book",
+"Listen" => "Listen",
+"Festival is not up" => "Festival is not up",
 );
 ?>

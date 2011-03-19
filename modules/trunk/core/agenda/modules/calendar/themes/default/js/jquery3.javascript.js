@@ -3,7 +3,7 @@ var module_name = "calendar";
 $(document).ready(function(){
     $('#divReminder').corner();
     $('#divNotification').corner();
-
+    textarea();
     $('#colorSelector').ColorPicker({
         color: '#3366CC',
         onShow: function (colpkr) {
@@ -128,7 +128,7 @@ $(document).ready(function(){
         var description_event = document.getElementsByName('description')[0];
         var date_ini          = document.getElementById('f-calendar-field-1');
         var date_end          = document.getElementById('f-calendar-field-2');
-        var recording_event   = document.getElementsByName('recording')[0];
+        var tts               = document.getElementsByName('tts')[0];
         var inputCallTo       = document.getElementById('call_to');
         var chkoldnoti        = document.getElementsByName('chkoldnotification')[0];
         var id_event_input    = document.getElementById('id_event');
@@ -136,12 +136,11 @@ $(document).ready(function(){
 
         $('#ReminderTime').attr("disabled","disabled");
         $('#add_phone').attr("style","display: inline;");
-        $('.new_box_rec').attr("style","display: inline;");
         RemoveAttributeDisable(event_name);
         RemoveAttributeDisable(description_event);
         RemoveAttributeDisable(date_ini);
         RemoveAttributeDisable(date_end);
-        RemoveAttributeDisable(recording_event);
+        RemoveAttributeDisable(tts);
         RemoveAttributeDisable(inputCallTo);
         RemoveAttributeDisable(chkoldnoti);
         $('#ReminderTime').removeAttr("disabled");
@@ -194,13 +193,6 @@ $(document).ready(function(){
         }
     });
 
-    function split( val ) {
-        return val.split( /,\s*/ );
-    }
-    function extractLast( term ) {
-        return split( term ).pop();
-    }
-
     $( "#tags" )
         // don't navigate away from the field on tab when selecting an item
         .bind( "keydown", function( event ) {
@@ -247,7 +239,73 @@ $(document).ready(function(){
             }
         });
 
+    $('#add_news').hover(
+        function () {
+            $('#btnNewEvent').addClass("ui-state-hover");
+        },
+        function () {
+            $('#btnNewEvent').removeClass("ui-state-hover");
+        }
+    );
+
+    $('textarea[name=tts]').keyup(function(){
+        var count = $(this).val().length;
+        var available = 140 - count;
+        if(available < 0){
+            $('.counter').addClass("countExceeded");
+        }else{
+            $('.counter').removeClass("countExceeded");
+        }
+        $('.counter').text(available);
+    });
+
+    $('textarea[name=tts]').change(function(){
+        var count = $(this).val().length;
+        var available = 140 - count;
+        if(available < 0){
+            $('.counter').addClass("countExceeded");
+        }else{
+            $('.counter').removeClass("countExceeded");
+        }
+        $('.counter').text(available);
+    });
+
+    $('#listenTTS').click(function(){
+        var number = $('#call_to').val();
+        var tts    = $('textarea[name=tts]').val();
+        var order  = "action=getTextToSpeach&call_to="+number+"&tts="+tts+"&rawmode=yes";
+        if(isInteger(number)){
+            if(tts != ""){
+                $.post("index.php", order,function(){
+                    //var message = JSONtoString(theResponse); 
+                });
+            }else{
+                connectJSON("error_recording");
+            }
+        }else{
+            connectJSON("call_to_error");
+        }
+    });
 });
+
+
+    function textarea(){
+        var maximos = new Array ();
+        $('textarea[name=tts]').attr("maxlength", function (i) {
+            if (maximos[i] = this.getAttribute('maxlength')) {
+                $(this).keypress(function(event) {
+                    return ((event.which == 8) ||(event.which == 9) || (this.value.length < maximos[i]));// 8 == borrar, 9 == tabulador
+                })
+            }
+        });
+    }
+
+    function split( val ) {
+        return val.split( /,\s*/ );
+    }
+    function extractLast( term ) {
+        return split( term ).pop();
+    }
 
     function popup_phone_number(url_popup){
         var ancho = 600;
@@ -281,8 +339,8 @@ $(document).ready(function(){
     }
 
     function existRecording(){
-        var recording = document.getElementsByName("recording")[0];
-        if(recording.childNodes.length > 0)
+        var recording = document.getElementsByName("tts")[0];
+        if(recording.value != "")
             return true;
         else 
             return false;
@@ -537,37 +595,36 @@ $(document).ready(function(){
 ///////////////////////////////////////////////////////////////////////////////////
         $.post("index.php", order,
                 function(theResponse){
-                    var content = $('#table_box');
-                    var box = $('#box');
-                    var message = JSONtoString(theResponse);          //response JSON to array
-                    var recording = message['recording'];             //recording name
-                    var event = message['event'];                     //name's event
-                    var desc_event = message['description'];          //description's event
-                    var start = message['date'];                      //start date event
-                    var end = message['to'];                          //end date event
-                    var title_box = message['title'];                 //title box(view event,edit event)
-                    var notificacion = message['notification'];       //notification (on, off)
-                    var email_noti = message['emails_notification'];  //emails to notify
-                    var visibility_noti = message['visibility'];      //visible or not emails_notification
-                    var visibility_rep = message['visibility_repeat'];//visible or not days_repeat
-					var reminderTimer = message['reminderTimer']; //reminderTimer
-                    var color = message['color'];
+                    var content           = $('#table_box');
+                    var box               = $('#box');
+                    var message           = JSONtoString(theResponse);          //response JSON to array
+                    var tts_msg           = message['recording'];                //recording name
+                    var event             = message['event'];                     //name's event
+                    var desc_event        = message['description'];          //description's event
+                    var start             = message['date'];                      //start date event
+                    var end               = message['to'];                          //end date event
+                    var title_box         = message['title'];                 //title box(view event,edit event)
+                    var notificacion      = message['notification'];       //notification (on, off)
+                    var email_noti        = message['emails_notification'];  //emails to notify
+                    var visibility_noti   = message['visibility'];      //visible or not emails_notification
+                    var visibility_rep    = message['visibility_repeat'];//visible or not days_repeat
+					var reminderTimer     = message['reminderTimer']; //reminderTimer
+                    var color             = message['color'];
              /***********************      var by DOM      **************************/
                     var title_evt         = document.getElementById('title_box');
                     var event_name        = document.getElementById('event');
                     var description_event = document.getElementsByName('description')[0];
                     var date_ini          = document.getElementById('f-calendar-field-1');
                     var date_end          = document.getElementById('f-calendar-field-2');
-                    var recording_event   = document.getElementsByName('recording')[0];
+                    var tts               = document.getElementsByName('tts')[0];
                     var inputCallTo       = document.getElementById('call_to');
                     var chkoldnoti        = document.getElementsByName('chkoldnotification')[0];
-                    var chkolremin = document.getElementsByName('chkoldreminder')[0];
+                    var chkolremin        = document.getElementsByName('chkoldreminder')[0];
                     var inputNotification = document.getElementById('notification');
                     var id                = document.getElementById('id');
                     var id_event_input    = document.getElementById('id_event');
                     var email_to          = document.getElementById('email_to');
                     var tabla_grilla      = document.getElementById('grilla');
-                    //var emails_noti       = document.getElementById('select2');
              /**********************************************************************/
 
                     if(title_box == "View Event"){
@@ -586,7 +643,7 @@ $(document).ready(function(){
                         description_event.setAttribute("disabled","disabled");
                         date_ini.setAttribute("disabled","disabled");
                         date_end.setAttribute("disabled","disabled");
-                        recording_event.setAttribute("disabled","disabled");
+                        tts.setAttribute("disabled","disabled");
                         chkoldnoti.setAttribute("disabled","disabled");
                         inputCallTo.setAttribute("disabled","disabled");
 
@@ -709,8 +766,8 @@ $(document).ready(function(){
                         // fill checkbox my extension
                         if(message['call_to'] != ""){ //asterisk_call_me
                             $('#reminder').val('on');
+                            tts.value = tts_msg;
                             chkolremin.setAttribute("checked","checked");
-                            //inputAsteriskCall.value = "on";
                             $('.remin').attr("style","visibility: visible;");
                             $('#CheckBoxRemi').attr('checked','checked');
                             $('#CheckBoxRemi').next("label").addClass("LabelSelected");
@@ -727,7 +784,7 @@ $(document).ready(function(){
 
                         // hide the messages
                         $('#add_phone').attr("style","display: none;");
-                        $('.new_box_rec').attr("style","display: none;");
+                        //$('.new_box_rec').attr("style","display: none;");
 
                         // fill checkbox notification emails
                         if(message['notification_status'] == "on"){
@@ -785,7 +842,7 @@ $(document).ready(function(){
                     var description_event = document.getElementsByName('description')[0];
                     var date_ini          = document.getElementById('f-calendar-field-1');
                     var date_end          = document.getElementById('f-calendar-field-2');
-                    var recording_event   = document.getElementsByName('recording')[0];
+                    var tts               = document.getElementsByName('tts')[0];
                     var call_to_event     = document.getElementById('call_to');
                     var inputCallTo       = document.getElementById('call_to');
                     var chkoldnoti        = document.getElementsByName('chkoldnotification')[0];
@@ -814,7 +871,7 @@ $(document).ready(function(){
                     RemoveAttributeDisable(description_event);
                     RemoveAttributeDisable(date_ini);
                     RemoveAttributeDisable(date_end);
-                    RemoveAttributeDisable(recording_event);
+                    RemoveAttributeDisable(tts);
                     RemoveAttributeDisable(inputCallTo);
                     RemoveAttributeDisable(chkoldnoti);
                     RemoveAttributeCheck(chkoldnoti);
@@ -836,11 +893,9 @@ $(document).ready(function(){
                     else{
                         $('#call_to').val(ext);
                     }
-		            if(recording_event.childNodes[0])
-                    	recording_event.childNodes[0].setAttribute('selected', 'selected');
 
                     $('#add_phone').attr("style","display: inline;");
-                    $('.new_box_rec').attr("style","display: inline;");
+                    //$('.new_box_rec').attr("style","display: inline;");
                     inputNotification.value = "off";
                     $('#box').show();
             });

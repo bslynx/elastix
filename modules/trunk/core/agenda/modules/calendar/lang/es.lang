@@ -118,7 +118,7 @@ $arrLangModule=array(
 "Email" => "E-mail",
 "Contact" => "Contacto",
 "Export_Calendar" => "Exportar Calendario",
-"error_recording" => "No hay grabaciones. Por Favor cree una nueva",
+"error_recording" => "Por favor agrege el texto a convertir en audio",
 "Can not create called file" => "No se puede crear archivos de llamadas",
 "Organizer" => "Organizar",
 "Confirm_event" => "Confirmar Evento",
@@ -157,5 +157,9 @@ $arrLangModule=array(
 "Color" => "Color",
 "Dear User" => "Estimado Usuario",
 "Create New Event" => "Crear Nuevo Evento",
+"Text to Speech" => "Texto a voz",
+"Search in Address Book" => "Buscar en Libreta de direcciones",
+"Listen" => "Escuchar",
+"Festival is not up" => "Festival no esta encendido",
 );
 ?>

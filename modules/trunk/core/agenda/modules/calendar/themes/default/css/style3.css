@@ -628,3 +628,22 @@ cursor: pointer;
 .spaceTD{
     height:30px;
 }
+
+#add_news{
+    cursor: pointer; 
+    margin: 5px 0px 5px 0px; 
+    position: relative; 
+    top: 4px; 
+    font-family: verdana,arial,helvetica,sans-serif; 
+    font-size: 14px;
+}
+
+.counter{
+    position: relative;
+    top: -3px;
+    right: 32px;
+}
+
+.countExceeded{
+    color:#e00;
+}

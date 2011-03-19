@@ -7,8 +7,8 @@
     <tr>
         <td width="10%" align="left" valign="top" style="font-size:64%;">
             <div style="margin: 0px 10px 6px 10px;" valign="middle">
-                <div class='fc-button-add ui-state-default  ui-corner-left ui-corner-right' style="height: 25px;" align="center">
-                    <a id='add_news' style='cursor: pointer; margin: 5px 0px 5px 0px; position: relative; top: 4px; font-family: verdana,arial,helvetica,sans-serif; font-size: 14px;' onclick='displayNewEvent();'>
+                <div class='fc-button-add ui-state-default  ui-corner-left ui-corner-right' id="btnNewEvent" style="height: 25px;" align="center">
+                    <a id='add_news' onclick='displayNewEvent();'>
                         {$CreateEvent}
                     </a>
                 </div>
@@ -69,32 +69,26 @@
                             <table style="font-size: 16px;" width="99%" border="0">
                                 <tr class="letra12" height="30px" >
                                     <td align="left" width="90px"><b>{$event.LABEL}: <span  class="required">*</span></b></td>
-                                    <td align="left">{$event.INPUT}</td>
+                                    <td align="left" colspan="3">{$event.INPUT}</td>
                                 </tr>
                                 <tr class="letra12" id="desc" style="display: none;">
                                     <td align="left"><b>{$description.LABEL}: </b></td>
-                                    <td align="left">{$description.INPUT}</td>
+                                    <td align="left" colspan="3">{$description.INPUT}</td>
                                 </tr>
                                 <tr class="letra12" height="30px">
                                     <td align="left" width="90px"><b>{$Start_date}: <span  class="required">*</span></b></td>
-                                    <td align="left">
-                                        {$date.INPUT}
-                                    </td>
-                                </tr>
-                                <tr class="letra12">
-                                    <td align="left"><b>{$End_date}: <span  class="required">*</span></b></td>
-                                    <td align="left">
-                                        {$to.INPUT}
-                                    </td>
-                                </tr>
-                                <tr class="letra12">
-                                    <td align="left"><b>{$Color}: <span  class="required">*</span></b></td>
+                                    <td align="left" width="175px">{$date.INPUT}</td>
+                                    <td align="left"><b>{$Color}:</b></td>
                                     <td align="left">
                                         <div id="colorSelector"><div style="background-color: #3366CC"></div></div>
                                     </td>
                                 </tr>
+                                <tr class="letra12">
+                                    <td align="left" width="90px"><b>{$End_date}: <span  class="required">*</span></b></td>
+                                    <td align="left" width="175px" colspan="3">{$to.INPUT}</td>
+                                </tr>
                                 <tr>
-                                    <td align="left" colspan=2>
+                                    <td align="left" colspan="4">
                                         <div class="divCorners" style="-moz-border-radius: 10px 10px 10px 10px;" id="divReminder">
                                             <div class="sombreado">
                                                 <input id="CheckBoxRemi" type="checkbox" class="CheckBoxClass"/>
@@ -104,7 +98,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td align="left" colspan=2>
+                                    <td align="left" colspan="4">
                                         <table style="font-size: 16px; margin-left:10px;" width="99%" border="0">
                                             <tr class="letra12" style="display: none;"> 
                                                 <td align="left" width="90px"><b>{$reminder.LABEL}: </b></td>
@@ -117,27 +111,43 @@
                                                 <td align="left"><b>{$call_to.LABEL}: <span  class="required">*</span></b></td>
                                                 <td align="left">{$call_to.INPUT}&nbsp;&nbsp;
                                                     <span id="add_phone">
-                                                            {$add_phone}<a href="javascript: popup_phone_number('?menu={$module_name}&amp;action=phone_numbers&amp;rawmode=yes');"> {$Here}</a>
+                                                            <a href="javascript: popup_phone_number('?menu={$module_name}&amp;action=phone_numbers&amp;rawmode=yes');">{$add_phone}</a>
                                                     </span>
-                                                </td>
-                                            </tr>
-                                            <tr class="letra12 remin" height="30px" style="{$visibility_alert}">
-                                                <td align="left"><b>{$recording.LABEL}: <span  class="required">*</span></b></td>
-                                                <td align="left">{$recording.INPUT}&nbsp;&nbsp;
-                                                    <div class="new_box_rec" style="display: inline;">
-                                                        {$new_recording}
-                                                    </div>
                                                 </td>
                                             </tr>
                                             <tr class="letra12 remin" height="30px" style="{$visibility_alert}">
                                                 <td align="left"><b>{$ReminderTime.LABEL}: <span  class="required">*</span></b></td>
                                                 <td align="left">{$ReminderTime.INPUT}&nbsp;&nbsp;</td>
                                             </tr>
+                                            <!--<tr class="letra12 remin" height="30px" style="{$visibility_alert}">
+                                                <td align="left"><b>{$recording.LABEL}: <span  class="required">*</span></b></td>
+                                                <td align="left">{$recording.INPUT}&nbsp;&nbsp;
+                                                    <div class="new_box_rec" style="display: inline;">
+                                                        {$new_recording}
+                                                    </div>
+                                                </td>
+                                            </tr>-->
+                                            <tr class="letra12 remin" height="30px" style="{$visibility_alert}">
+                                                <td align="left" colspan="2" height="80px">
+                                                    <div>
+                                                        <div style="float: left;">
+                                                            <b>{$tts.LABEL}: <span  class="required">*</span>&nbsp;&nbsp;&nbsp;</b>
+                                                        </div>
+                                                        <div align="right">
+                                                            <b><span class="counter">140</span></b>
+                                                            <a id="listenTTS" style="cursor: pointer;">
+                                                                <img src="modules/{$module_name}/images/speaker.png" style="position: relative; right: 30px;" alt="{$Listen}"/>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                    <div>{$tts.INPUT}&nbsp;&nbsp;</div>
+                                                </td>
+                                            </tr>
                                         </table>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td align="left" colspan=2>
+                                    <td align="left" colspan="4">
                                         <div class="divCorners" style="-moz-border-radius: 10px 10px 10px 10px;" id="divNotification">
                                             <div class="sombreado">
                                                 <input id="CheckBoxNoti" type="checkbox" class="CheckBoxClass"/>
@@ -147,7 +157,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td align="left" colspan=2>
+                                    <td align="left" colspan="4">
                                         <table style="font-size: 16px; margin-left:10px;" width="99%" border="0">
                                             <tr class="letra12" style="display: none;">
                                                 <td align="left" width="90px"><b>{$notification.LABEL}: </b></td>
