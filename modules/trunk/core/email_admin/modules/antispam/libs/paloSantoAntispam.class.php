@@ -386,9 +386,9 @@ class paloSantoAntispam {
     }
 
     // funcion que sube un script y lo activa apar todos los buzones de correo
-    function uploadScriptSieve($pDB){
+    function uploadScriptSieve($pDB, $time_spam){
         // creando cron
-        $this->createCron();
+        $this->createCron($time_spam);
         $emails = $this->getEmailList($pDB);
         //creando carpetas Spam
         $accounts = $this->listEmailSpam($pDB);
@@ -455,13 +455,22 @@ class paloSantoAntispam {
     }
 
     // funcion que se encarga de crear el cron o escribirlo si ya existe
-    function createCron(){
+    function createCron($time_spam){
         // primero cambiamos los permisos de la carpèta cron.d
+        $time = "30"; 
+        if($time_spam == "one_week")
+            $time = "7";
+        else if($time_spam == "two_week")
+            $time = "14";
+        else
+            $time = "30";
+
         $FILE = "/etc/cron.d/checkSpamFolder.cron";
         exec("sudo -u root chown asterisk.asterisk /etc/cron.d/");
         if(is_file($FILE))
             exec("sudo -u root chown asterisk.asterisk /etc/cron.d/checkSpamFolder.cron");
-        $line = "59 23 * * *  root /usr/bin/php -q /var/www/checkSpamFolder.php";
+        $line  = "59 23 * * *  root /usr/bin/php -q /var/www/checkSpamFolder.php\n";
+        $line .= "59 23 * * *  root /usr/bin/php -q /var/www/deleteSpam.php $time\n";
         $fp = fopen($FILE,'w');
         fwrite($fp,$line);
         fclose($fp);
@@ -489,8 +498,8 @@ if header :contains \"X-Spam-Flag\" \"YES\" {
         return $script;
     }
 
-    //funcion que crea la carpeta de Spam dado un email en el servidor IMAP mediante telnet
-    function deleteSpamMessages($email)
+    //funcion que crea la carpeta de Spam dado un email en el servidor IMAP mediante telnet, y la fecha desde donde no va a borrar los mensajes
+    function deleteSpamMessages($email, $dateSince)
     {
         global $CYRUS;
         $cyr_conn = new cyradm;
@@ -505,18 +514,53 @@ if header :contains \"X-Spam-Flag\" \"YES\" {
             if(!$bValido)
                 $error_msg = "Error selected Spam folder:".$cyr_conn->getMessage()."<br>";
             else{
-                $bValido=$cyr_conn->command(". store 1:* +flags \Deleted");
+                $bValido=$cyr_conn->command(". SEARCH NOT SINCE $dateSince"); // busca los email que no empiecen desde la fecha dada
                 if(!$bValido)
                     $error_msg = "error cannot be added flags Deleted to the messages of Spam folder for $email:".$cyr_conn->getMessage()."<br>";
                 else{
-                    $bValido=$cyr_conn->command(". expunge");
-                    if(!$bValido)
-                        $error_msg = "error cannot be deleted the messages of Spam folder for $email:".$cyr_conn->getMessage()."<br>";
+                    $sal  = explode("SEARCH", $bValido[0]);
+                    $uids = trim($sal[1]); //ids de mensajes
+                    if($uids != ""){
+                        //$bValido=$cyr_conn->command(". store 1:* +flags \Deleted");
+                        $bValido=$cyr_conn->command(". store $uids +flags \Deleted"); // messages $uids = 1 2 4 5 7 8
+                        if(!$bValido)
+                            $error_msg = "error cannot be deleted the messages of Spam folder for $email:".$cyr_conn->getMessage()."<br>";
+                        else{
+                            $bValido=$cyr_conn->command(". expunge");
+                            if(!$bValido)
+                                $error_msg = "error cannot be deleted the messages of Spam folder for $email:".$cyr_conn->getMessage()."<br>";
+                            else{
+                                $bValido=$cyr_conn->command(". noop");
+                                if(!$bValido)
+                                    $error_msg = "error cannot be deleted the messages of Spam folder for $email:".$cyr_conn->getMessage()."<br>";
+                            }
+                        }
+                    }
                 }
             }
             $cyr_conn->imap_logout();
         }
         return $error_msg;
+    }
+
+    function getTimeDeleteSpam(){
+        $FILE = "/etc/cron.d/checkSpamFolder.cron";
+        exec("sudo -u root chown asterisk.asterisk /etc/cron.d/");
+        $value = "";
+        if(is_file($FILE)){
+            $strFile = file_get_contents($FILE, true);
+            exec("sed -n '2p' $FILE", $flags, $status);
+            if($status == 0){
+                $line = $flags[0];
+                $cont = explode("deleteSpam.php", $line);
+                $value = trim($cont[1]);
+                if($value == "7")  $value = "one_week";
+                if($value == "14") $value = "two_week";
+                if($value == "30") $value = "one_month";
+            }
+        }
+        exec("sudo -u root chown root.root /etc/cron.d/");
+        return $value;
     }
 
 }

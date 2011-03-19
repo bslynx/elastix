@@ -60,5 +60,9 @@ $arrLangModule=array(
 "Politics" => "Politics",
 "Spam Capture" => "Spam Capture",
 "Mark Subject" => "Mark Subject",
+"Empty Spam Folders" => "Empty Spam Folders",
+"Delete Spam for more than one week" => "Delete Spam for more than one week",
+"Delete Spam for more than two week" => "Delete Spam for more than two week",
+"Delete Spam for more than one month" => "Delete Spam for more than one month",
 );
 ?>

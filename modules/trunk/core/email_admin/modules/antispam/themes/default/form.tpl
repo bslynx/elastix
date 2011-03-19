@@ -26,9 +26,9 @@
         </td>
         <td align="left">{$LEGEND}</td>
     </tr>
-    <tr class="letra12">
+    <tr class="letra12" height="30px">
         <td align="left" width="18%"><b>{$politica.LABEL}: </b></td>
-        <td align="left" colspan="2">{$politica.INPUT} &nbsp;&nbsp;{$header.INPUT}</td>
+        <td align="left" colspan="2">{$politica.INPUT} &nbsp;&nbsp;{$header.INPUT} &nbsp;&nbsp;{$time_spam.INPUT}</td>
     </tr>
 </table>
 

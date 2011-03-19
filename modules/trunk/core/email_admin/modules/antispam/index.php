@@ -80,11 +80,12 @@ function _moduleContent(&$smarty, $module_name)
 
 function updateAntispam($smarty, $module_name, $local_templates_dir, $arrLang, $arrLangModule, $arrConf, $arrConfModule)
 {
-    $status = getParameter("status");
-    $level  = getParameter("levelnum");
-    $header = getParameter("header");
-    $politica = getParameter("politica");
-    $pDB = new paloDB("sqlite3:////var/www/db/email.db");
+    $status    = getParameter("status");
+    $level     = getParameter("levelnum");
+    $header    = getParameter("header");
+    $time_spam = getParameter("time_spam");
+    $politica  = getParameter("politica");
+    $pDB       = new paloDB("sqlite3:////var/www/db/email.db");
 
     $objAntispam = new paloSantoAntispam($arrConfModule['path_postfix'], $arrConfModule['path_spamassassin'],$arrConfModule['file_master_cf'], $arrConfModule['file_local_cf']);
     $isOk = $objAntispam->changeFileLocal($level,$header);
@@ -95,7 +96,7 @@ function updateAntispam($smarty, $module_name, $local_templates_dir, $arrLang, $
 
     if($status == "active"){
         if($politica=="capturar_spam"){
-            $objAntispam->uploadScriptSieve($pDB);
+            $objAntispam->uploadScriptSieve($pDB, $time_spam);
         }else{
             $objAntispam->deleteScriptSieve($pDB);
         }
@@ -150,6 +151,10 @@ function formAntispam($smarty, $module_name, $local_templates_dir, $arrLang, $ar
         $statusSieve = "off";
     exec("sudo -u root chown root.root /etc/cron.d/");
 
+    $val = $objAntispam->getTimeDeleteSpam();
+    if($val != "")
+        $arrData['time_spam'] = $val;
+
     $smarty->assign("statusSieve", $statusSieve);
     $valueRequiredHits = $objAntispam->getValueRequiredHits();
     $arrData['levelNUM'] = $valueRequiredHits['level'];
@@ -166,7 +171,8 @@ function formAntispam($smarty, $module_name, $local_templates_dir, $arrLang, $ar
 function createFieldForm($arrLang, $arrLangModule)
 {
 
-    $arrPolitics = array('marcar_asusto' => $arrLang['Mark Subject']."...", 'capturar_spam' => $arrLang['Spam Capture']);
+    $arrPolitics    = array('marcar_asusto' => $arrLang['Mark Subject']."...", 'capturar_spam' => $arrLang['Spam Capture']);
+    $arrSpamFolders = array("one_week"=>_tr("Delete Spam for more than one week"), "two_week"=>_tr("Delete Spam for more than two week"), "one_month"=>_tr("Delete Spam for more than one month"));
 
     $arrFields = array(
             "status"            => array(   "LABEL"                  => $arrLang["Status"],
@@ -187,6 +193,13 @@ function createFieldForm($arrLang, $arrLangModule)
                                             "REQUIRED"               => "no",
                                             "INPUT_TYPE"             => "SELECT",
                                             "INPUT_EXTRA_PARAM"      => $arrPolitics,
+                                            "VALIDATION_TYPE"        => "text",
+                                            "VALIDATION_EXTRA_PARAM" => ""
+                                ),
+            "time_spam"          => array(   "LABEL"                  => _tr("Empty Spam Folders"),
+                                            "REQUIRED"               => "no",
+                                            "INPUT_TYPE"             => "SELECT",
+                                            "INPUT_EXTRA_PARAM"      => $arrSpamFolders,
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                 ),

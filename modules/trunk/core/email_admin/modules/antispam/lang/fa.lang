@@ -35,7 +35,6 @@ $arrLangModule=array(
 "Spam Level" =>"سطح هرز نامه",
 "Enabled" => "فعال",
 "Disabled" => "غير فعال",
-
 "Commad failed, try activate spam filter" => "Commad failed, try activate spam filter",
 "Failed activate spam filter" => "خطا در فعال نمودن فيلتر هرزنامه",
 "Commad failed, try change thoroughness level" => "Commad failed, try change thoroughness level",
@@ -61,5 +60,9 @@ $arrLangModule=array(
 "Politics" => "Politics",
 "Spam Capture" => "Spam Capture",
 "Mark Subject" => "Mark Subject",
+"Empty Spam Folders" => "Empty Spam Folders",
+"Delete Spam for more than one week" => "Delete Spam for more than one week",
+"Delete Spam for more than two week" => "Delete Spam for more than two week",
+"Delete Spam for more than one month" => "Delete Spam for more than one month",
 );
 ?>

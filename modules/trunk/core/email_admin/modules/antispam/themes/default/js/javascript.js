@@ -27,10 +27,10 @@ $(document).ready(function (){
     $("#politica").change(function(){
         var opcion = $("#politica option:selected").val();
         if(opcion == "capturar_spam"){
-            //$("input[name=header]").attr("style","visibility: hidden;");
+             $('#time_spam').show();
             $("input[name=header]").hide();
         }else{
-            //$("input[name=header]").attr("style","visibility: visible;");
+            $('#time_spam').hide();
             $("input[name=header]").show();
         }
     });
@@ -60,7 +60,7 @@ function verifySieve()
             else
                 $(this).removeAttr("selected");
         });
-        //$("input[name=header]").attr("style","visibility: hidden;");
+        $('#time_spam').show();
         $("input[name=header]").hide();
     }else{
         $("#politica option").each(function(){
@@ -70,7 +70,7 @@ function verifySieve()
             else
                 $(this).removeAttr("selected");
         });
-        //$("input[name=header]").attr("style","visibility: visible;");
+        $('#time_spam').hide();
         $("input[name=header]").show();
     }
 }
