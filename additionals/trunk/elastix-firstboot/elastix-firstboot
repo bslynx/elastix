@@ -137,6 +137,8 @@ This screen will now ask for a password for the 'root' account of MySQL.\n\n"
 		echo "Unable to set cyrus password for cyrus admin!"
 	    return 1
 	fi
+	# Cambiar permisos del archivo /etc/sasldb2 a 644 
+	chmod 644 /etc/sasldb2
 	echo "cyrususerpwd=$MYSQL_PASSWD1" >> $PASSWD_PATH
 	# *******************************************************************
 	

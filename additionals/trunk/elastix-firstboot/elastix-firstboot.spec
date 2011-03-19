@@ -1,7 +1,7 @@
 Summary: Elastix First Boot Setup
 Name:    elastix-firstboot
 Version: 2.0.4
-Release: 3
+Release: 5
 License: GPL
 Group:   Applications/System
 Source0: %{name}-%{version}.tar.bz2
@@ -85,6 +85,14 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/elastix-firstboot/compat-dbscripts/08-schema-vtiger.sql
 
 %changelog
+* Sat Mar 19 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-5
+- CHANGED: Change permissions of "/etc/sasldb2" after to execute
+  "saslpasswd2 -c cyrus -u example.com" to create user cyrus admin
+
+* Thu Mar 03 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-4
+- CHANGED: File elastix-firstboot was modified because the logic 
+  changed due to a2billing password
+
 * Wed Mar 02 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-3
 - CHANGED: In elastix-firstboot add new password in elastix.conf for 
   cyrus admin user, this fixes the bug where any user could connect remotely 
