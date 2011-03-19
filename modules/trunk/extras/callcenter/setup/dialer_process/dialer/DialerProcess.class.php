@@ -4232,7 +4232,7 @@ Privilege: Command
     function limpiezaDemonio($signum)
     {
         // Marcar como inválidas las llamadas que sigan en curso
-        if (!is_null($this->_oGestorEntrante)) $this->_oGestorEntrante->finalizarLlamadasEnCurso();
+        if (!is_null($this->_oGestorEntrante)) $this->_oGestorEntrante->finalizarLlamadasEntrantesEnCurso();
 
         // Deslogonear a todos los agentes que sigan activos
         foreach ($this->_infoAgentes as $sAgente => $infoAgente) {

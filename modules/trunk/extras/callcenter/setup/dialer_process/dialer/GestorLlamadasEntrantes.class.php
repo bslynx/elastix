@@ -106,7 +106,7 @@ class GestorLlamadasEntrantes
         $this->actualizarCacheAgentes();
         
         // Limpiar los datos de las llamadas que no se alcanzaron a marcar término
-        $this->finalizarLlamadasEnCurso();
+        $this->finalizarLlamadasEntrantesEnCurso();
     }
 
     /**
@@ -763,7 +763,7 @@ class GestorLlamadasEntrantes
      * 
      * @return void
      */
-    function finalizarLlamadasEnCurso()
+    function finalizarLlamadasEntrantesEnCurso()
     {
         // Remover rastro de llamadas en la lista de llamadas actuales
         $result =& $this->_dbConn->query('DELETE FROM current_call_entry');
