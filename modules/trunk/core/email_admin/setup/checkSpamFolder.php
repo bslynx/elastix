@@ -47,7 +47,7 @@
                 $script = $objAntispam->listScriptSieveByUser($SIEVE);
                 if(isset($script) & $script!="" & $script!="no Conection"){
                     $fileSieve = isset($script[0])?$script[0]:"";
-                    if($fileSieve == ""){echo "\n".$value2["username"]."\n";
+                    if($fileSieve == ""){
                         exec("echo ".$SIEVE['AUTHPASS']." | sieveshell --username=".$SIEVE['USER']." --authname=cyrus localhost:4190 -e 'put $fileScript'",$flags, $status);
                         exec("echo ".$SIEVE['AUTHPASS']." | sieveshell --username=".$SIEVE['USER']." --authname=cyrus localhost:4190 -e 'activate scriptTest.sieve'");
                     }
