@@ -52,7 +52,7 @@ $arrLangModule=array(
 "FAILED" => "Неуспешен",
 "NO ANSWER" => "Без Отговор",
 "Delete" => "Delete the displayed CDR(s)",
-"CDR Report" => "CDR Report"
-
+"CDR Report" => "CDR Report",
+"Please End Date must be greater than Start Date" => "Please End Date must be greater than Start Date",
 );
 ?>

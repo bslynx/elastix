@@ -147,17 +147,29 @@ function _moduleContent(&$smarty, $module_name)
 
     // Ejecutar el borrado, si se ha validado.
     if (isset($_POST['delete'])) {
-        $r = $oCDR->Delete_All_CDRs(
-            $paramFiltro['date_start'],
-            $paramFiltro['date_end'],
-            $paramFiltro['field_name'],
-            $paramFiltro['field_pattern'],
-            $paramFiltro['status'],
-            "", NULL, $sExtension);
-        if (!$r) $smarty->assign(array(
-            'mb_title'      =>  _tr('ERROR'),
-            'mb_message'    =>  $oCDR->errMsg,
-        ));
+        $date_ini = date("d M Y", strtotime($paramFiltro['date_start']));
+        $date_end = date("d M Y", strtotime($paramFiltro['date_end']));
+        if($date_ini <= $date_end){
+            $filter_name    = $paramFiltro['field_name'];
+            $filter_pattern = $paramFiltro['field_pattern'];
+            $statusDel      = $paramFiltro['status'];
+            $r = $oCDR->Delete_All_CDRs(
+                $date_ini,
+                $date_end,
+                $filter_name,
+                $filter_pattern,
+                $statusDel,
+                "", NULL, $sExtension);
+            if (!$r) $smarty->assign(array(
+                'mb_title'      =>  _tr('ERROR'),
+                'mb_message'    =>  $oCDR->errMsg,
+            ));
+        }else{
+            $smarty->assign(array(
+                'mb_title'      =>  _tr('ERROR'),
+                'mb_message'    =>  _tr("Please End Date must be greater than Start Date"),
+            ));
+        }
     }
     
     $url = array_merge($url, $paramFiltro);

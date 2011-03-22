@@ -52,6 +52,7 @@ $arrLangModule=array(
 "FAILED" => "Manqué",
 "NO ANSWER" => "Non répondu",
 "Delete" => "Delete the displayed CDR(s)",
-"CDR Report" => "CDR Report"
+"CDR Report" => "CDR Report",
+"Please End Date must be greater than Start Date" => "Please End Date must be greater than Start Date",
 );
 ?>
