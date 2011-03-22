@@ -108,8 +108,19 @@ class paloSantoFTPBackup {
         $j = 0;
         for($i=0 ; $i<count($contents); $i++){
             $band=strpos($contents[$i],".tar");
+            $content = explode(" ",$contents[$i]);
+            $size = count($content);
+            $file = "";
+            if($size > 1 && is_array($content)){
+                $file = $content[$size-1];
+            }else{
+                $file = $content[$size];
+            }
             if($band != false){
-                $new_list[$j] = $contents[$i];
+                if($file=="")
+                    $new_list[$j] = $contents[$i];
+                else
+                    $new_list[$j] = $file;
                 $j++;
             }
         }

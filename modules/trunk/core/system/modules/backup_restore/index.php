@@ -2018,13 +2018,16 @@ function viewFormFTPBackup($smarty, $module_name, $local_templates_dir, &$pDB, $
     $arrFormFTPBackup = createFieldForm($arrLang);
     $oForm = new paloForm($smarty,$arrFormFTPBackup);
     global $arrConfModule;
-    
+    $band = 0;
     //begin, Form data persistence to errors and other events.
     $_DATA  = $_POST;
     $action = getParameter("action");
-    if(!$action)
+    if(!$action){
         $_DATA = $pFTPBackup->getFTPBackupById(1);
-    if(!(is_array($_DATA) & count($_DATA)>0)){
+        $band = 0;
+    }
+
+    if(!(isset($_DATA) & $_DATA!="" & count($_DATA)>0)){
         $_DATA = $pFTPBackup->getFTPBackupById(1);
         if(!(is_array($_DATA) & count($_DATA)>0)){
             $_DATA['server'] = "";
@@ -2032,6 +2035,7 @@ function viewFormFTPBackup($smarty, $module_name, $local_templates_dir, &$pDB, $
             $_DATA['user'] = "";
             $_DATA['password'] = "";
             $_DATA['pathServer'] = "/";
+            $band = 1;
         }
     }
    
@@ -2048,11 +2052,16 @@ function viewFormFTPBackup($smarty, $module_name, $local_templates_dir, &$pDB, $
     $array_new = $pFTPBackup->obtainFiles($dir);
     $content_remote = "";
     $content_local = "";
+    $files_names = "";
     for($i=0; $i<count($array_new); $i++)
-         $content_local .= "<li class='ui-state-default' id="."'inn_"."$array_new[$i]'><b class='item'>{$array_new[$i]}</b></li>";
+        $content_local .= "<li class='ui-state-default' id="."'inn_"."$array_new[$i]'><b class='item'>{$array_new[$i]}</b></li>";
 
-    $files_names = $pFTPBackup->getExternalNames($_DATA['user'], $_DATA['password'], $_DATA['server'], $_DATA['port'], $_DATA['pathServer'], $smarty);
-    if($files_names == 1)   //echo $arrLang["Error to connect"];
+    if($band == 0){
+        $files_names = $pFTPBackup->getExternalNames($_DATA['user'], $_DATA['password'], $_DATA['server'], $_DATA['port'], $_DATA['pathServer'], $smarty);
+    }else{
+        $files_names = 'empty';
+    }
+    if($files_names == 1)
         $smarty->assign("mb_message", $arrLang["Error Connection"]);
     else if($files_names == 2)
         $smarty->assign("mb_message", $arrLang["Error user_password"]);
