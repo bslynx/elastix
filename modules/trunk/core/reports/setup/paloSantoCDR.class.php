@@ -236,7 +236,7 @@ class paloSantoCDR
 
         // Borrado de los registros seleccionados
         $sPeticionSQL = "DELETE FROM cdr $sWhere";
-        $r = $this->_DB->genQuery($sPeticionSQL);
+        $r = $this->_DB->genQuery($sPeticionSQL, $paramSQL);
         if (!$r) {
             $this->errMsg = '(internal) Failed to delete CDRs - '.$this->_DB->errMsg;
         }
