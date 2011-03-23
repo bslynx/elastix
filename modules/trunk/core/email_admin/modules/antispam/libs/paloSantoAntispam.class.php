@@ -211,6 +211,18 @@ class paloSantoAntispam {
         return $result;
     }
 
+    function getPassByEmail($email){
+        $pDB = new paloDB("sqlite3:////var/www/db/email.db");
+        $data = array($email);
+        $query = "SELECT password FROM accountuser WHERE username = ?";
+        $result=$pDB->getFirstRowQuery($query, true, $data);
+        if($result==FALSE){
+            $this->errMsg = $pDB->errMsg;
+            return array();
+        }
+        return $result['password'];
+    }
+
     //funcion que crea la carpeta de Spam dado un email en el servidor IMAP mediante telnet
     function creacionSpamFolder($email)
     {
@@ -226,10 +238,11 @@ class paloSantoAntispam {
             $bValido=$cyr_conn->createmb("user" . $seperator . $dataEmail[0] . $seperator . "Spam@" . $dataEmail[1]);
             if(!$bValido)
                 $error_msg = "Error creating Spam folder:".$cyr_conn->getMessage()."<br>";
-            else{
-                $bValido=$cyr_conn->command(". subscribe \"user" . $seperator . $dataEmail[0] . $seperator . "Spam@" . $dataEmail[1] ."\"");
-                if(!$bValido)
-                    $error_msg = "error cannot be subscribe the Spam folder for $email:".$cyr_conn->getMessage()."<br>";
+            else{// subscribe folder Spam
+                //$bValido=$cyr_conn->command(". subscribe \"user" . $seperator . $dataEmail[0] . $seperator . "Spam@" . $dataEmail[1] ."\"");
+                //$bValido=$cyr_conn->command(". noop");
+                $pass = $this->getPassByEmail($email);
+                $bValido=$this->subscribeSpamFolder($email, $pass);// subscribe la carpeta Spam dado el usuario ya que desde el cyrus se hace la suscripcion pero no en el rouncube no aparece dicho cambio.
             }
             $cyr_conn->imap_logout();
         }
@@ -311,8 +324,8 @@ class paloSantoAntispam {
                 $sieve->sieve_logout();
                 return TRUE;
             }else{
-                echo $sieve->error_raw;
-                echo $sieve->error;
+                //echo $sieve->error_raw;
+                //echo $sieve->error;
                 $sieve->sieve_logout();
                 return FALSE;
             }
@@ -404,6 +417,7 @@ class paloSantoAntispam {
         $fp = fopen($fileScript,'w');
         fwrite($fp,$content);
         fclose($fp);
+
         //recorriendo por buzon
         $SIEVE  = array();
         $SIEVE['HOST'] = "localhost";
@@ -423,7 +437,8 @@ class paloSantoAntispam {
             //$this->activateScriptSieveByUser($SIEVE, "scriptTest");
             exec("echo ".$SIEVE['PASS']." | sieveshell --username=".$SIEVE['USER']." --authname=".$SIEVE['AUTHUSER']." localhost:4190 -e 'activate scriptTest.sieve'");
         }
-        unlink($fileScript);
+        if(is_file($fileScript))
+            unlink($fileScript);
     }
 
     function deleteScriptSieve($pDB){
@@ -561,6 +576,27 @@ if header :contains \"X-Spam-Flag\" \"YES\" {
         }
         exec("sudo -u root chown root.root /etc/cron.d/");
         return $value;
+    }
+
+
+    function subscribeSpamFolder($email, $pass){
+        global $CYRUS;
+        $cyr_conn = new cyradm;
+        $cyr_conn->admin = $email;
+        $cyr_conn->pass = $pass;
+        if($pass != ""){
+            $error_msg = "";
+            $error = $cyr_conn->imap_login();
+            if ($error===FALSE){
+                $error_msg = "IMAP login error: $error <br>";
+            }else{
+                $bValido=$cyr_conn->command(". subscribe Spam");
+                if(!$bValido)
+                    $error_msg = "Error subscribe Spam folder:".$cyr_conn->getMessage()."<br>";
+                $cyr_conn->imap_logout();
+            }
+            return $error_msg;
+        }
     }
 
 }
