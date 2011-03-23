@@ -234,7 +234,17 @@ class paloNetwork
                               "regexp"=>"[[:blank:]]*=[[:blank:]]*","reemplazos"=>array("HOSTNAME"=>$hostname, "GATEWAY" => $config_red["gateway_ip"]));
           
         $this->establecerDefaultGateway($config_red["gateway_ip"]);
- 
+/**********************************************************************************************************************************/
+        $arrEths = $this->obtener_interfases_red_fisicas();
+        exec("sudo -u root chown asterisk.asterisk /etc/sysconfig/network-scripts", $flag, $status);
+        foreach($arrEths as $idEth=>$arrEth){
+            exec("sudo -u root chown asterisk.asterisk /etc/sysconfig/network-scripts/ifcfg-$idEth", $flag, $status);
+            exec("sed -i '/GATEWAY/d' /etc/sysconfig/network-scripts/ifcfg-$idEth");
+            exec("sudo -u root chown root.root /etc/sysconfig/network-scripts/ifcfg-$idEth", $flag, $status);
+        }
+        exec("sudo -u root chown root.root /etc/sysconfig/network-scripts/", $flag, $status);
+/**************************************************************************************************************************************/
+
         //para setear los dns en /etc/resolv.conf--------------------------------------------------------------
         $dns_ip_1 =$config_red['dns_ip_1'];
         $dns_ip_2 =$config_red['dns_ip_2'];
