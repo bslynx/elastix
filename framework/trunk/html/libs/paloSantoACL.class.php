@@ -1070,28 +1070,64 @@ class paloACL {
     function getNumResources($filter_resource)
     {
         $query = "SELECT count(id) ".
-                 "FROM acl_resource ".
-                 "WHERE description LIKE '$filter_resource%' ";
-
-        $result = $this->_DB->getFirstRowQuery($query, FALSE);
+                 "FROM acl_resource ";
+        if(!is_array($filter_resource)){
+            $query .= "WHERE description LIKE ?";
+            $arrParam = array("%$filter_resource%");
+        }else{
+            $query .= "WHERE ";
+            $i=1;
+            $arrParam = array();
+            foreach($filter_resource as $key=>$value){
+                if($i==count($filter_resource)){
+                    $query .= "description LIKE ?";
+                    $arrParam[] = "%$value%";
+                }
+                else{
+                    $query .= "description = ? or ";
+                    $arrParam[] = $value;
+                }
+                $i++;
+            }
+        }
+        $result = $this->_DB->getFirstRowQuery($query, FALSE, $arrParam);
 
         if( $result == false )
         {
             $this->errMsg = $this->_DB->errMsg;
             return 0;
         }
-
         return $result[0];
     }
 
     function getListResources($limit, $offset, $filter_resource)
     {
         $query = "SELECT id, name, description ".
-                 "FROM acl_resource ".
-                 "WHERE description LIKE '$filter_resource%' ".
-                 "LIMIT $limit OFFSET $offset ";
+                 "FROM acl_resource ";
+        $arrParam = array();
 
-        $result = $this->_DB->fetchTable($query, true);
+        if(!is_array($filter_resource)){
+            $query .= "WHERE description LIKE ? ";
+            $arrParam[] = "%$filter_resource%";
+        }else{
+            $query .= "WHERE ";
+            $i=1;
+            foreach($filter_resource as $key=>$value){
+                if($i==count($filter_resource)){
+                    $query .= "description LIKE ? ";
+                    $arrParam[] = "%$value%";
+                }
+                else{
+                    $query .= "description = ? or ";
+                    $arrParam[] = $value;
+                }
+                $i++;
+            }
+        }
+        $query .= "LIMIT ? OFFSET ?";
+        $arrParam[] = $limit;
+        $arrParam[] = $offset;
+        $result = $this->_DB->fetchTable($query, true, $arrParam);
 
         if( $result == false )
         {
