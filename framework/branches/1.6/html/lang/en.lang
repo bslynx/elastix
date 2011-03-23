@@ -48,9 +48,9 @@ $arrLang=array(
 "Export"=>"Export",
 
 "Group" => "Group",
-"administrator" => "administrator",
+"administrator" => "Administrator",
 "operator" => "operator",
-"extension" => "extension",
+"extension" => "Extension",
 
 
 "Group List" => "Group List",
