@@ -316,14 +316,23 @@ function reportGroupPermission($smarty, $module_name, $local_templates_dir, &$pD
 
     //begin grid parameters
     $oGrid  = new paloSantoGrid($smarty);
-	$parameter_to_find = "";
-	foreach($arrLang as $key=>$value){
-		if(strtolower(trim($value))==strtolower(trim($filter_resource))){
-			$parameter_to_find = $key;
-		}	
-	}
-    
-    $totalGroupPermission = $pGroupPermission->ObtainNumResouces($parameter_to_find);
+	$parameter_to_find = array();
+    foreach($arrLang as $key=>$value){
+        $langValue    = strtolower(trim($value));
+        $filter_value = strtolower(trim($filter_resource));
+        if($filter_value!=""){
+            if(preg_match("/^[[:alnum:]| ]*$/",$filter_value))
+                if(preg_match("/$filter_value/",$langValue))
+                    $parameter_to_find[] = $key;
+        }
+    }
+
+    $parameter_to_find[] = $filter_resource;
+
+    if(empty($parameter_to_find))
+        $totalGroupPermission = $pGroupPermission->ObtainNumResouces($filter_resource);
+    else
+        $totalGroupPermission = $pGroupPermission->ObtainNumResouces($parameter_to_find);
 
     $limit  = 25;
     $total  = $totalGroupPermission;
@@ -340,7 +349,7 @@ function reportGroupPermission($smarty, $module_name, $local_templates_dir, &$pD
     );
 
     $arrData = null;
-    if($parameter_to_find == "")
+    if(empty($parameter_to_find))
 		$arrResult = $pGroupPermission->ObtainResources($limit, $offset, $filter_resource);
 	else
     	$arrResult = $pGroupPermission->ObtainResources($limit, $offset, $parameter_to_find);
