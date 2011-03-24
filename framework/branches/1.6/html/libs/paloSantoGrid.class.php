@@ -111,7 +111,7 @@ class paloSantoGrid {
     function setURL($arrURL)
     {
         if (is_array($arrURL))
-            $this->url = construirURL($arrURL, array('nav', 'start'));
+            $this->url = construirURL($arrURL, array('nav', 'start', 'logout'));
         else
             $this->url = $arrURL;
     }
@@ -164,7 +164,7 @@ class paloSantoGrid {
 
         if(isset($arrGrid['url'])) {
             if (is_array($arrGrid['url']))
-                $this->url = construirURL($arrGrid['url'], array('nav', 'start'));
+                $this->url = construirURL($arrGrid['url'], array('nav', 'start', 'logout'));
             else
                 $this->url = $arrGrid["url"];
         }

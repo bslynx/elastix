@@ -43,6 +43,8 @@ if(isset($_GET['logout']) && $_GET['logout']=='yes') {
     session_destroy();
     session_name("elastixSession");
     session_start();
+    header("Location: index.php");
+    exit;
 }
 //cargar el archivo de idioma
 //$lang=isset($arrConf['language'])?$arrConf['language']:"en";
@@ -82,6 +84,8 @@ if(isset($_POST['submit_login']) and !empty($_POST['input_user'])) {
         $_SESSION['elastix_pass'] = $pass_md5;
 
         writeLOG("access.log", "AUDIT $_POST[input_user]: Web Interface login successful. Accepted password for $_POST[input_user] from $_SERVER[REMOTE_ADDR].");
+        header("Location: index.php");
+        exit;
     } else {
         $user = urlencode(substr($_POST['input_user'],0,20));
         if(!$pACL->getIdUser($_POST['input_user'])) // not exists user?
