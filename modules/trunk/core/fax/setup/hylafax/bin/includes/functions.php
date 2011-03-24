@@ -76,7 +76,7 @@
         $arrData['remitente']="Fax Elastix";
         $arrData['subject']="Fax $namePDF";
         $arrData['content']="Fax $namePDF of $companyNameFrom - $companyNumberFrom";
-
+        $id_pdf = explode(".",$namePDF);
         $sql  = "SELECT remite,remitente,subject,content ".
                 "FROM configuration_fax_mail ".
                 "WHERE id=1";
@@ -86,12 +86,12 @@
             $arrData['remitente'] = utf8_decode($tupla->remitente);
 
             $arrData['subject'] = $tupla->subject;
-            $arrData['subject'] = str_replace("{NAME_PDF}",$namePDF,$arrData['subject']);
+            $arrData['subject'] = str_replace("{NAME_PDF}",$id_pdf[0],$arrData['subject']);
             $arrData['subject'] = str_replace("{COMPANY_NAME_FROM}",$companyNameFrom,$arrData['subject']);
             $arrData['subject'] = utf8_decode(str_replace("{COMPANY_NUMBER_FROM}",$companyNumberFrom,$arrData['subject']));
 
             $arrData['content'] = $tupla->content;
-            $arrData['content'] = str_replace("{NAME_PDF}",$namePDF,$arrData['content']);
+            $arrData['content'] = str_replace("{NAME_PDF}",$id_pdf[0],$arrData['content']);
             $arrData['content'] = str_replace("{COMPANY_NAME_FROM}",$companyNameFrom,$arrData['content']);
             $arrData['content'] = utf8_decode(str_replace("{COMPANY_NUMBER_FROM}",$companyNumberFrom,$arrData['content']));
         }

@@ -48,6 +48,7 @@ CREATE TABLE configuration_fax_mail
   content    varchar(255)
 );
 
-INSERT INTO "configuration_fax_mail" VALUES(1, 'elastix@example.com', 'Fax Elastix', 'Fax attached Nº {NAME_PDF}', 'Fax sent from "{COMPANY_NAME_FROM}". The phone number is {COMPANY_NUMBER_FROM}.
-This email has a fax attached {NAME_PDF}.');
+INSERT INTO "configuration_fax_mail" VALUES(1, 'elastix@example.com', 'Fax Elastix', 'Fax attached (ID: {NAME_PDF})', 'Fax sent from "{COMPANY_NAME_FROM}". The phone number is {COMPANY_NUMBER_FROM}.
+This email has a fax attached with ID {NAME_PDF}.');
+
 COMMIT;
