@@ -126,20 +126,18 @@ class paloSantoEmailRelay {
                 $arrReplaces['smtp_sasl_security_options'] = ($activated)?"":"noplaintext, noanonymous"; //default noplaintext, noanonymous
                 $arrReplaces['broken_sasl_auth_clients']   = ($activated)?"yes":"no";// default no
                    if($arrData['autentification']=="on"){
-                        if(!file_exists("/etc/postfix/tls/smtpd.crt"))
-                            $this->createCert($arrData['passwordCert'],$arrData['countryCert'],$arrData['provinceCert'],$arrData['localityCert'],$arrData['organizationCert'],$arrData['organizationUnitCert'],$arrData['commonNameCert']);
+                        $this->createCert();
                         $arrReplaces['smtpd_tls_auth_only'] = ($activated)?"no":"no";
                         $arrReplaces['smtp_use_tls'] = ($activated)?"yes":"no";
                         $arrReplaces['smtpd_use_tls'] = ($activated)?"yes":"no";
                         $arrReplaces['smtp_tls_note_starttls_offer'] = ($activated)?"yes":"no";
-                        $arrReplaces['smtp_tls_CAfile'] = ($activated)?"/etc/postfix/tls/cacert.pem":"";
+                        $arrReplaces['smtp_tls_CAfile'] = ($activated)?"/etc/postfix/tls/tlscer.crt":"";
                         $arrReplaces['smtpd_tls_loglevel'] =($activated)?2:"0";
                         $arrReplaces['smtpd_tls_received_header'] = ($activated)? "yes":"no";
                         $arrReplaces['smtpd_tls_session_cache_timeout'] = ($activated)? "3600s":"";
                         $arrReplaces['tls_random_source'] = ($activated)? "dev:/dev/urandom":"";
                         $arrReplaces['smtp_sasl_security_options'] = ($activated)?"noanonymous":"";
-                    }
-                    else{
+                    }else{
                         $arrReplaces['smtpd_tls_auth_only'] = "no";
                         $arrReplaces['smtp_use_tls'] = "no"; 
                         $arrReplaces['smtpd_use_tls'] = "no";
@@ -151,7 +149,7 @@ class paloSantoEmailRelay {
                         $arrReplaces['smtp_tls_CAfile'] = "";
                     }
                 $this->createSASL();
-                $data = ($activated)?"$arrData[relayhost] $arrData[user]:$arrData[password]":"";
+                $data = ($activated)?"$arrData[relayhost]:$arrData[port] $arrData[user]:$arrData[password]":"";
                 $this->writeSASL($data);
             }
             else{
@@ -231,17 +229,13 @@ class paloSantoEmailRelay {
         exec("sudo -u root chown -R root.root /etc/postfix/");
     }
 
-    function createCert($password, $countryName, $ProvinceName, $localityName, $organizationName, $organizationalUnitName, $commonName){
+    function createCert(){
         exec("postfix reload");
         exec("sudo -u root chown -R asterisk.asterisk /etc/postfix/");
-        exec("mkdir /etc/postfix/tls");
-        exec("openssl genrsa -des3 -rand /etc/hosts -passout pass:$password -out /etc/postfix/tls/smtpd.key 1024");
-        exec("chmod 600 smtpd.key");
-        exec("openssl req -new -key /etc/postfix/tls/smtpd.key -passin pass:$password -out /etc/postfix/tls/smtpd.csr -subj '/C=$countryName/ST=$ProvinceName/L=$localityName/O=$organizationName/OU=$organizationalUnitName/CN=$commonName'");
-        exec("openssl x509 -req -days 3650 -in /etc/postfix/tls/smtpd.csr -signkey /etc/postfix/tls/smtpd.key -passin pass:$password -out /etc/postfix/tls/smtpd.crt");
-        exec("openssl rsa -in /etc/postfix/tls/smtpd.key -passin pass:$password /etc/postfix/tls/smtpd.key.unencrypted");
-        exec("mv -f /etc/postfix/tls/smtpd.key.unencrypted /etc/postfix/tls/smtpd.key");
-        exec("openssl req -new -x509 -extensions v3_ca -keyout /etc/postfix/tls/cakey.pem -passout pass:$password -out /etc/postfix/tls/cacert.pem -days 3650 -subj '/C=$countryName/ST=$ProvinceName/L=$localityName/O=$organizationName/OU=$organizationalUnitName/CN=$commonName'");
+        if(!is_file("/etc/postfix/tls/tlscer.crt")){
+            exec("mkdir /etc/postfix/tls");
+            exec("/etc/pki/tls/certs/make-dummy-cert /etc/postfix/tls/tlscer.crt");
+        }
         exec("sudo -u root chown -R root.root /etc/postfix/");
     }
 
@@ -249,7 +243,8 @@ class paloSantoEmailRelay {
     {
         exec("sudo -u root chown -R asterisk.asterisk /etc/postfix/");
         exec("echo '$data' > /etc/postfix/sasl/passwd");
-        exec("postmap /etc/postfix/sasl/passwd");
+        exec("postmap hash:/etc/postfix/sasl/passwd");
+        exec("rm -rf /etc/postfix/sasl/passwd");
         exec("sudo -u root chown -R root.root /etc/postfix/");
     }
 

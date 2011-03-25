@@ -58,6 +58,9 @@ $arrLangModule=array(
 "Invalid file extension.- It must be pem" => "Invalid file extension.- It must be pem",
 "Message Remote Autentification" => "This option allows the authentication with certificates.",
 "Message Remote SMTP Cert" => "To enable the certificates option is neccesary to specify the required fields",
-
+"OTHER" => "OTHER",
+"SMTP Server" => "SMTP Server",
+"Domain" => "Domain",
+"TLS Enable" => "TLS Enable",
 );
 ?>

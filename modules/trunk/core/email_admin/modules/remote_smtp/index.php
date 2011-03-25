@@ -107,9 +107,9 @@ function viewFormEmailRelay($smarty, $module_name, $local_templates_dir, &$pDB, 
     $pEmailRelay = new paloSantoEmailRelay($pDB);
 
     if(isset($_POST) && count($_POST) > 0)
-        $_DATA  = $_POST;
+        $_DATA = $_POST;
     else
-        $_DATA       = $pEmailRelay->getMainConfigByAll();
+        $_DATA = $pEmailRelay->getMainConfigByAll();
 
     $activated = $pEmailRelay->getStatus();
     if($activated){
@@ -134,10 +134,6 @@ function viewFormEmailRelay($smarty, $module_name, $local_templates_dir, &$pDB, 
     $smarty->assign("MSG_REMOTE_AUT",$arrLang['Message Remote Autentification']);
     $smarty->assign("IMG", "images/list.png");
 
-
-    if(getParameter('autentification')=="on"){
-    
-    }
     $arrFormEmailRelay = createFieldForm($arrLang);
     $oForm = new paloForm($smarty,$arrFormEmailRelay);
     $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",$arrLang["Remote SMTP Delivery"], $_DATA);
@@ -162,39 +158,24 @@ function saveNewEmailRelay($smarty, $module_name, $local_templates_dir, &$pDB, $
         $smarty->assign("mb_message", $strErrorMsg);
     }
     else{
-        //$arrData['myhostname'] = rtrim(getParameter('myhostname'));
-        $arrData['relayhost']  = rtrim(getParameter('relayhost'));
-        $arrData['port']       = rtrim(getParameter('port'));
-        $arrData['user']       = rtrim(getParameter('user'));
-        $arrData['password']   = rtrim(getParameter('password'));
-        $arrData['status']     = rtrim(getParameter('status'));
+        $arrData['relayhost']       = rtrim(getParameter('relayhost'));
+        $arrData['port']            = rtrim(getParameter('port'));
+        $arrData['user']            = rtrim(getParameter('user'));
+        $arrData['password']        = rtrim(getParameter('password'));
+        $arrData['status']          = rtrim(getParameter('status'));
         $arrData['autentification'] = getParameter('autentification');
-        $arrData['passwordCert'] = getParameter('passwordCert');
-        $arrData['countryCert'] = getParameter('countryCert');
-        $arrData['provinceCert'] = getParameter('provinceCert');
-        $arrData['localityCert'] = getParameter('localityCert');
-        $arrData['organizationCert'] = getParameter('organizationCert');
-        $arrData['organizationUnitCert'] = getParameter('organizationUnitCert');
-        $arrData['commonNameCert'] = getParameter('commonNameCert');
 
         $pEmailRelay = new paloSantoEmailRelay($pDB);
         $ok=false;
         if($arrData['autentification']=="on"){
-            if($arrData['passwordCert'] =="" || $arrData['countryCert']=="" || $arrData['provinceCert']=="" || $arrData['localityCert']=="" ||     $arrData['organizationCert']=="" || $arrData['organizationUnitCert']=="" || $arrData['commonNameCert']=="")
-            {
-                    $smarty->assign("mb_title", $arrLang["ERROR"]);
-                    $smarty->assign("mb_message", $arrLang["Message Remote SMTP Cert"]);
+            $ok = $pEmailRelay->processUpdateConfiguration($arrData);
+            if($ok){
+                $smarty->assign("mb_title", $arrLang["Result transaction"]);
+                $smarty->assign("mb_message", $arrLang["Configured successful"]);
             }
-            else{
-                $ok = $pEmailRelay->processUpdateConfiguration($arrData);
-                if($ok){
-                    $smarty->assign("mb_title", $arrLang["Result transaction"]);
-                    $smarty->assign("mb_message", $arrLang["Configured successful"]);
-                }
-                else {
-                    $smarty->assign("mb_title", $arrLang["ERROR"]);
-                    $smarty->assign("mb_message", $pEmailRelay->errMsg);
-                }
+            else {
+                $smarty->assign("mb_title", $arrLang["ERROR"]);
+                $smarty->assign("mb_message", $pEmailRelay->errMsg);
             }
         }else{
             $ok = $pEmailRelay->processUpdateConfiguration($arrData);
@@ -205,7 +186,7 @@ function saveNewEmailRelay($smarty, $module_name, $local_templates_dir, &$pDB, $
             else{
                 $smarty->assign("mb_title", $arrLang["ERROR"]);
                 $smarty->assign("mb_message", $pEmailRelay->errMsg);
-            }        
+            }
         }
     }
         $content= viewFormEmailRelay($smarty,$module_name,$local_templates_dir,$pDB,$arrConf,$arrLang);
@@ -214,15 +195,19 @@ function saveNewEmailRelay($smarty, $module_name, $local_templates_dir, &$pDB, $
 
 function createFieldForm($arrLang)
 {
+
+    $arrServers = array("custom"=>_tr("OTHER"), "smtp.gmail.com"=>"GMAIL", "smtp.live.com"=>"HOTMAIL", "smtp.mail.yahoo.com" => "YAHOO");
+
     $arrFields = array(
-            /*"myhostname"   => array(        "LABEL"                  => $arrLang["Host Name"],
-                                            "REQUIRED"               => "no",
-                                            "INPUT_TYPE"             => "TEXT",
-                                            "INPUT_EXTRA_PARAM"      => "",
-                                            "VALIDATION_TYPE"        => "text",
+
+            "SMTP_Server"    => array(      "LABEL"                  => $arrLang["SMTP Server"],
+                                            "REQUIRED"               => "yes",
+                                            "INPUT_TYPE"             => "SELECT",
+                                            "INPUT_EXTRA_PARAM"      => $arrServers,
+                                            "VALIDATION_TYPE"        => "",
                                             "VALIDATION_EXTRA_PARAM" => ""
-                                            ),*/
-            "relayhost"    => array(        "LABEL"                  => $arrLang["Remote SMTP Server"],
+                                            ),
+            "relayhost"    => array(        "LABEL"                  => $arrLang["Domain"],
                                             "REQUIRED"               => "yes",
                                             "INPUT_TYPE"             => "TEXT",
                                             "INPUT_EXTRA_PARAM"      => "",
@@ -250,58 +235,9 @@ function createFieldForm($arrLang)
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-            "autentification"   => array(      "LABEL"                  => $arrLang["Autentification"],
+            "autentification"   => array(      "LABEL"                  => $arrLang["TLS Enable"],
                                             "REQUIRED"               => "no",
                                             "INPUT_TYPE"             => "CHECKBOX",
-                                            "INPUT_EXTRA_PARAM"      => "id=hola",
-                                            "VALIDATION_TYPE"        => "text",
-                                            "VALIDATION_EXTRA_PARAM" => ""
-                                            ),
-            "passwordCert"     => array(        "LABEL"                  => $arrLang["CertPassword"],
-                                            "REQUIRED"               => "no",
-                                            "INPUT_TYPE"             => "PASSWORD",
-                                            "INPUT_EXTRA_PARAM"      => "",
-                                            "VALIDATION_TYPE"        => "text",
-                                            "VALIDATION_EXTRA_PARAM" => ""
-                                            ),
-            "countryCert"         => array(        "LABEL"                  => $arrLang["Country"],
-                                            "REQUIRED"               => "no",
-                                            "INPUT_TYPE"             => "TEXT",
-                                            "INPUT_EXTRA_PARAM"      => "",
-                                            "VALIDATION_TYPE"        => "text",
-                                            "VALIDATION_EXTRA_PARAM" => ""
-                                            ),
-            "provinceCert"         => array(        "LABEL"                  => $arrLang["Province"],
-                                            "REQUIRED"               => "no",
-                                            "INPUT_TYPE"             => "TEXT",
-                                            "INPUT_EXTRA_PARAM"      => "",
-                                            "VALIDATION_TYPE"        => "text",
-                                            "VALIDATION_EXTRA_PARAM" => ""
-                                            ),
-            "localityCert"         => array(        "LABEL"                  => $arrLang["Locality"],
-                                            "REQUIRED"               => "no",
-                                            "INPUT_TYPE"             => "TEXT",
-                                            "INPUT_EXTRA_PARAM"      => "",
-                                            "VALIDATION_TYPE"        => "text",
-                                            "VALIDATION_EXTRA_PARAM" => ""
-                                            ),
-            "organizationCert"         => array(        "LABEL"                  => $arrLang["Organization"],
-                                            "REQUIRED"               => "no",
-                                            "INPUT_TYPE"             => "TEXT",
-                                            "INPUT_EXTRA_PARAM"      => "",
-                                            "VALIDATION_TYPE"        => "text",
-                                            "VALIDATION_EXTRA_PARAM" => ""
-                                            ),
-            "organizationUnitCert"         => array(        "LABEL"                  => $arrLang["Organization Deparment"],
-                                            "REQUIRED"               => "no",
-                                            "INPUT_TYPE"             => "TEXT",
-                                            "INPUT_EXTRA_PARAM"      => "",
-                                            "VALIDATION_TYPE"        => "text",
-                                            "VALIDATION_EXTRA_PARAM" => ""
-                                            ),
-            "commonNameCert"         => array(        "LABEL"                  => $arrLang["Common Name"],
-                                            "REQUIRED"               => "no",
-                                            "INPUT_TYPE"             => "TEXT",
                                             "INPUT_EXTRA_PARAM"      => "",
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
