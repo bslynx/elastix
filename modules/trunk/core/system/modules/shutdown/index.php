@@ -65,7 +65,6 @@ function _moduleContent(&$smarty, $module_name) {
 
     } else {
         $smarty->assign("SHUTDOWN", $arrLang["Shutdown"]);
-        $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
         $smarty->assign("ACCEPT", $arrLang["Accept"]);
         $smarty->assign("CONFIRM_CONTINUE", $arrLang["Are you sure you wish to continue?"]);
         $smarty->assign("HALT", $arrLang["Halt"]);
