@@ -157,11 +157,7 @@ $arrLang=array(
 "About Elastix"=>"Acerca de Elastix",
 "About Elastix2"=>"About us",
 "HELP"=>"Help",
-"About Elastix Content"=>"Elastix fue creado bajo la premisa de ser un sistema de manejo para
-comunicaciones basadas en IP que sea accesible desde el Web, confiable y
-fácil de usar. Este software de código abierto iniciado en Ecuador se ha
-convertido en la solución preferida para implementaciones de Voz sobre IP
-alrededor del mundo.",
+"About Elastix Content"=>"Elastix es una Solución de Comunicaciones Unificadas confiable y fácil de utilizar. Este software de código abierto basado en web se ha convertido en la solución predilecta para las implementaciones de Comunicaciones sobre IP en todo el mundo.",
 "About Elastix Closed"=>"Cerrar",
 /* End About Elastix */
 
