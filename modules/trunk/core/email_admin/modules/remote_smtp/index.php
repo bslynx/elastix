@@ -103,6 +103,8 @@ function viewFormEmailRelay($smarty, $module_name, $local_templates_dir, &$pDB, 
     $smarty->assign("MSG_REMOTE_SMTP",$arrLang['Message Remote SMTP Server']);
     $smarty->assign("MSG_REMOTE_AUT",$arrLang['Message Remote Autentification']);
     $smarty->assign("IMG", "images/list.png");
+    $smarty->assign("Example",$arrLang["Ex"]);
+    $smarty->assign("lbldomain",$arrLang["Domain"]);
 
     $arrFormEmailRelay = createFieldForm($arrLang);
     $oForm = new paloForm($smarty,$arrFormEmailRelay);
@@ -200,14 +202,14 @@ function createFieldForm($arrLang)
                                             "VALIDATION_TYPE"        => "numeric",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-            "user"         => array(        "LABEL"                  => $arrLang["User (Email Account)"],
+            "user"         => array(        "LABEL"                  => $arrLang["Username"],
                                             "REQUIRED"               => "no",
                                             "INPUT_TYPE"             => "TEXT",
                                             "INPUT_EXTRA_PARAM"      => "",
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-            "password"     => array(        "LABEL"                  => $arrLang["Password (Email Account)"],
+            "password"     => array(        "LABEL"                  => $arrLang["Password"],
                                             "REQUIRED"               => "no",
                                             "INPUT_TYPE"             => "PASSWORD",
                                             "INPUT_EXTRA_PARAM"      => "",

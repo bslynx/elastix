@@ -32,8 +32,8 @@ $arrLangModule=array(
 "Remote SMTP Delivery" => "SMTP تحويل از راه دور از طريق پروتکل",
 "Remote SMTP Server" => "SMTP سرور کنترل از راه دور",
 "Port" => "درگاه",
-"User (Email Account)" => "کاربر(حساب ايميل)",
-"Password (Email Account)" => "پسورد(حساب ايميل)",
+"Username" => "Username",
+"Password" => "Password",
 "Enable" => "فعال سازي",
 "Disable" => "غيرفعال سازي",
 "Enabled" => "فعال سازي شده",
@@ -54,5 +54,6 @@ $arrLangModule=array(
 "SMTP Server" => "SMTP Server",
 "Domain" => "Domain",
 "TLS Enable" => "TLS Enable",
+"Example" => "Example",
 );
 ?>

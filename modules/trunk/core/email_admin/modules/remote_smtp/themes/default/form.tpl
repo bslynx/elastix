@@ -11,7 +11,7 @@
 </table>
 <table class="tabForm" style="font-size: 16px;" cellspacing="0" cellpadding="0" width="100%" >
     <tr class="letra12">
-        <td align="left" width="16%"><b>{$status.LABEL}:</b></td>
+        <td align="left" width="9%"><b>{$status.LABEL}:</b></td>
         <td align="left" width="34%">{$status.INPUT}</td>
         <td rowspan='5' width="40%">{$MSG_REMOTE_SMTP}</td>
         <td rowspan="5" width="10%">&nbsp;</td>
@@ -30,7 +30,7 @@
     </tr>
     <tr class="letra12">
         <td align="left"><b>{$user.LABEL}:</b></td>
-        <td align="left">{$user.INPUT}</td>
+        <td align="left">{$user.INPUT} &nbsp;&nbsp;&nbsp;&nbsp;({$Example}. <span id="example"></span>)</td>
     </tr>
     <tr class="letra12">
         <td align="left"><b>{$password.LABEL}:</b></td>
@@ -41,3 +41,5 @@
         <td align="left">{$autentification.INPUT}{$MSG_REMOTE_AUT}</td>
     </tr>
 </table>
+
+<input type="hidden" name="lbldomain" id="lbldomain" value="{$lbldomain}"/>

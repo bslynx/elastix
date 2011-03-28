@@ -23,6 +23,8 @@ $(document).ready(function(){
 
     $('#SMTP_Server').change(function(){
         var server = $('#SMTP_Server option:selected').text();
+        var example = "";
+
         if(server=="GMAIL" || server=="HOTMAIL"){
             $('input[name=chkoldautentification]').attr("checked", "checked");
             $('#autentification').val("on");
@@ -30,6 +32,11 @@ $(document).ready(function(){
             $('input[name=chkoldautentification]').removeAttr("checked");
             $('#autentification').val("off");
         }
+        if(server=="GMAIL" || server=="HOTMAIL" || server=="YAHOO")
+            example = "example@"+server.toLowerCase()+".com";
+        else
+            example = "example@domain.com";
+        $('#example').text(example);
     });
 });
 
@@ -46,9 +53,11 @@ function setSelectedDomain(){
         if(/smtp\.live\.com/.test(dominio))
             server = "HOTMAIL";
 
-        if(relay==server)
+        if(relay==server){
+            var example = "example@"+server.toLowerCase()+".com";
             $(this).attr("selected", "selected");
-        else
+            $('#example').text(example);
+        }else
             $(this).removeAttr("selected");
 
     });

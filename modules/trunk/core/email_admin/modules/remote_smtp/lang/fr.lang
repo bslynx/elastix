@@ -35,8 +35,8 @@ $arrLangModule=array(
 "Remote SMTP Delivery" => "SMTP Distant",
 "Remote SMTP Server" => "Serveur SMTP distant",
 "Port" => "Port",
-"User (Email Account)" => "Utilisateur (Compte eMail)",
-"Password (Email Account)" => "Mot de passe (Compte eMail)",
+"Username" => "Utilisateur",
+"Password" => "Mot de passe",
 "Autentification" => "Authentication",
 "Enable" => "Enable",
 "Disable" => "Disable",
@@ -57,5 +57,6 @@ $arrLangModule=array(
 "SMTP Server" => "SMTP Server",
 "Domain" => "Domain",
 "TLS Enable" => "TLS Enable",
+"Example" => "Example",
 );
 ?>
