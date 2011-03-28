@@ -4,27 +4,21 @@
     </tr>
     <tr class="letra12">
         <td>
-            <input class="button" name="in_actualizar_conf" value="{$CONFIGURATION_UPDATE}" type="submit" />&nbsp;&nbsp;
-            <input type="hidden"  value="{$ACTIVATED}" name="status" />
-            {if $ACTIVATED_BUTTON}
-                <input class="button" name="enabled"   value="{$ENABLE}"  type="submit" />
-            {else}
-                <input class="button" name="disabled"  value="{$DISABLE}" type="submit" />
-            {/if}
+            <input class="button" name="save" value="{$CONFIGURATION_UPDATE}" type="submit" />&nbsp;&nbsp;
         </td>
         <td align="right" nowrap><span class="letra12"><span  class="required">*</span> {$REQUIRED_FIELD}</span></td>
     </tr>
 </table>
 <table class="tabForm" style="font-size: 16px;" cellspacing="0" cellpadding="0" width="100%" >
     <tr class="letra12">
-        <td align="left" width="16%"><b>{$STATUS}:</b></td>
-        <td align="left" width="34%"><b>{$STATUS_VALUE}</b></td>
+        <td align="left" width="16%"><b>{$status.LABEL}:</b></td>
+        <td align="left" width="34%">{$status.INPUT}</td>
         <td rowspan='5' width="40%">{$MSG_REMOTE_SMTP}</td>
-        <td rowspan="5" width="10%"></td>
+        <td rowspan="5" width="10%">&nbsp;</td>
     </tr>
     <tr class="letra12">
         <td align="left"><b>{$SMTP_Server.LABEL}:</b></td>
-        <td align="left"> {$SMTP_Server.INPUT}</td>
+        <td align="left">{$SMTP_Server.INPUT}</td>
     </tr>
     <tr class="letra12">
         <td align="left"><b>{$relayhost.LABEL}: <span class="required">*</span></b></td>

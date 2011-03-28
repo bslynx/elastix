@@ -115,28 +115,28 @@ class paloSantoEmailRelay {
         if(is_array($arrData) && count($arrData)>0){
             $activated = $arrData['status'];
 
-            $arrReplaces['relayhost'] = ($activated)?$arrData['relayhost']:"";
+            $arrReplaces['relayhost'] = ($activated == "on")?$arrData['relayhost']:"";
 
             if($arrData['port']!="")
-                $arrReplaces['relayhost'] = ($activated)?"$arrData[relayhost]:$arrData[port]":"";
+                $arrReplaces['relayhost'] = ($activated == "on")?"$arrData[relayhost]:$arrData[port]":"";
 
             if($arrData['user'] && $arrData['password']){
-                $arrReplaces['smtp_sasl_auth_enable']      = ($activated)?"yes":"no"; // default no
-                $arrReplaces['smtp_sasl_password_maps']    = ($activated)?"hash:/etc/postfix/sasl/passwd":""; // default ""
-                $arrReplaces['smtp_sasl_security_options'] = ($activated)?"":"noplaintext, noanonymous"; //default noplaintext, noanonymous
-                $arrReplaces['broken_sasl_auth_clients']   = ($activated)?"yes":"no";// default no
+                $arrReplaces['smtp_sasl_auth_enable']      = ($activated =="on")?"yes":"no"; // default no
+                $arrReplaces['smtp_sasl_password_maps']    = ($activated =="on")?"hash:/etc/postfix/sasl/passwd":""; // default ""
+                $arrReplaces['smtp_sasl_security_options'] = ($activated =="on")?"":"noplaintext, noanonymous"; //default noplaintext, noanonymous
+                $arrReplaces['broken_sasl_auth_clients']   = ($activated =="on")?"yes":"no";// default no
                    if($arrData['autentification']=="on"){
                         $this->createCert();
-                        $arrReplaces['smtpd_tls_auth_only'] = ($activated)?"no":"no";
-                        $arrReplaces['smtp_use_tls'] = ($activated)?"yes":"no";
-                        $arrReplaces['smtpd_use_tls'] = ($activated)?"yes":"no";
-                        $arrReplaces['smtp_tls_note_starttls_offer'] = ($activated)?"yes":"no";
-                        $arrReplaces['smtp_tls_CAfile'] = ($activated)?"/etc/postfix/tls/tlscer.crt":"";
-                        $arrReplaces['smtpd_tls_loglevel'] =($activated)?2:"0";
-                        $arrReplaces['smtpd_tls_received_header'] = ($activated)? "yes":"no";
-                        $arrReplaces['smtpd_tls_session_cache_timeout'] = ($activated)? "3600s":"";
-                        $arrReplaces['tls_random_source'] = ($activated)? "dev:/dev/urandom":"";
-                        $arrReplaces['smtp_sasl_security_options'] = ($activated)?"noanonymous":"";
+                        $arrReplaces['smtpd_tls_auth_only'] = ($activated =="on")?"no":"no";
+                        $arrReplaces['smtp_use_tls'] = ($activated =="on")?"yes":"no";
+                        $arrReplaces['smtpd_use_tls'] = ($activated =="on")?"yes":"no";
+                        $arrReplaces['smtp_tls_note_starttls_offer'] = ($activated =="on")?"yes":"no";
+                        $arrReplaces['smtp_tls_CAfile'] = ($activated =="on")?"/etc/postfix/tls/tlscer.crt":"";
+                        $arrReplaces['smtpd_tls_loglevel'] =($activated =="on")?2:"0";
+                        $arrReplaces['smtpd_tls_received_header'] = ($activated =="on")? "yes":"no";
+                        $arrReplaces['smtpd_tls_session_cache_timeout'] = ($activated =="on")? "3600s":"";
+                        $arrReplaces['tls_random_source'] = ($activated =="on")? "dev:/dev/urandom":"";
+                        $arrReplaces['smtp_sasl_security_options'] = ($activated =="on")?"noanonymous":"";
                     }else{
                         $arrReplaces['smtpd_tls_auth_only'] = "no";
                         $arrReplaces['smtp_use_tls'] = "no"; 
@@ -149,7 +149,7 @@ class paloSantoEmailRelay {
                         $arrReplaces['smtp_tls_CAfile'] = "";
                     }
                 $this->createSASL();
-                $data = ($activated)?"$arrData[relayhost]:$arrData[port] $arrData[user]:$arrData[password]":"";
+                $data = ($activated =="on")?"$arrData[relayhost]:$arrData[port] $arrData[user]:$arrData[password]":"";
                 $this->writeSASL($data);
             }
             else{

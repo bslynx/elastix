@@ -33,8 +33,6 @@ include_once "libs/paloSantoConfig.class.php";
 
 function _moduleContent(&$smarty, $module_name)
 {
-    $smarty->assign("NewMaincf", 1);
-    $smarty->assign("Modified", 0);
 
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
@@ -68,38 +66,14 @@ function _moduleContent(&$smarty, $module_name)
     $content = "";
 
     switch($action){
-        case "in_actualizar_conf":
+        case "save_config":
             $content = saveNewEmailRelay($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
-            break;
-        case "enabled":
-            $content = enabledEmailRelay($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
-            break;
-        case "disabled":
-            $content = disabledEmailRelay($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
             break;
         default: // view_form
             $content = viewFormEmailRelay($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
             break;
     }
     return $content;
-}
-
-function enabledEmailRelay($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
-{
-    $pEmailRelay = new paloSantoEmailRelay($pDB);
-    $pEmailRelay->setStatus(1);
-    $_POST['status'] = 1;
-
-    return saveNewEmailRelay($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
-}
-
-function disabledEmailRelay($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
-{
-    $pEmailRelay = new paloSantoEmailRelay($pDB);
-    $pEmailRelay->setStatus(0);
-    $_POST['status'] = 0;
-
-    return saveNewEmailRelay($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
 }
 
 function viewFormEmailRelay($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
@@ -112,18 +86,14 @@ function viewFormEmailRelay($smarty, $module_name, $local_templates_dir, &$pDB, 
         $_DATA = $pEmailRelay->getMainConfigByAll();
 
     $activated = $pEmailRelay->getStatus();
-    if($activated){
-        $smarty->assign("STATUS_VALUE","<font color='#00AA00'>{$arrLang['Enabled']}</font>");
-        $smarty->assign("ACTIVATED_BUTTON",0);
-        $smarty->assign("ACTIVATED",$activated);
+    if($activated==="on"){
+        $_DATA['status'] = "on";
     }
     else{
-        $smarty->assign("STATUS_VALUE","<font color='#FF0000'>{$arrLang['Disabled']}</font>");
-        $smarty->assign("ACTIVATED_BUTTON",1);
-        $smarty->assign("ACTIVATED",$activated);
+        $_DATA['status'] = "off";
     }
 
-    $smarty->assign("CONFIGURATION_UPDATE",$arrLang['Save/Update']);
+    $smarty->assign("CONFIGURATION_UPDATE",$arrLang['Save']);
     $smarty->assign("ENABLED", $arrLang["Enabled"]);
     $smarty->assign("DISABLED", $arrLang["Disabled"]);
 	$smarty->assign("ENABLE", $arrLang["Enable"]);
@@ -137,7 +107,7 @@ function viewFormEmailRelay($smarty, $module_name, $local_templates_dir, &$pDB, 
     $arrFormEmailRelay = createFieldForm($arrLang);
     $oForm = new paloForm($smarty,$arrFormEmailRelay);
     $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",$arrLang["Remote SMTP Delivery"], $_DATA);
-    return "<form method='POST' style='margin-bottom:0;'enctype='multipart/form-data' action='?menu=$module_name'>".$htmlForm."</form>";
+    return "<form method='POST' style='margin-bottom:0; action='?menu=$module_name'>".$htmlForm."</form>";
 }
 
 function saveNewEmailRelay($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
@@ -158,6 +128,8 @@ function saveNewEmailRelay($smarty, $module_name, $local_templates_dir, &$pDB, $
         $smarty->assign("mb_message", $strErrorMsg);
     }
     else{
+        $pEmailRelay = new paloSantoEmailRelay($pDB);
+
         $arrData['relayhost']       = rtrim(getParameter('relayhost'));
         $arrData['port']            = rtrim(getParameter('port'));
         $arrData['user']            = rtrim(getParameter('user'));
@@ -165,7 +137,8 @@ function saveNewEmailRelay($smarty, $module_name, $local_templates_dir, &$pDB, $
         $arrData['status']          = rtrim(getParameter('status'));
         $arrData['autentification'] = getParameter('autentification');
 
-        $pEmailRelay = new paloSantoEmailRelay($pDB);
+        $pEmailRelay->setStatus($arrData['status']);
+
         $ok=false;
         if($arrData['autentification']=="on"){
             $ok = $pEmailRelay->processUpdateConfiguration($arrData);
@@ -199,7 +172,13 @@ function createFieldForm($arrLang)
     $arrServers = array("custom"=>_tr("OTHER"), "smtp.gmail.com"=>"GMAIL", "smtp.live.com"=>"HOTMAIL", "smtp.mail.yahoo.com" => "YAHOO");
 
     $arrFields = array(
-
+            "status"   => array(      "LABEL"                  => $arrLang["Status"],
+                                            "REQUIRED"               => "yes",
+                                            "INPUT_TYPE"             => "CHECKBOX",
+                                            "INPUT_EXTRA_PARAM"      => array("id"=>"status"),
+                                            "VALIDATION_TYPE"        => "text",
+                                            "VALIDATION_EXTRA_PARAM" => ""
+                                            ),
             "SMTP_Server"    => array(      "LABEL"                  => $arrLang["SMTP Server"],
                                             "REQUIRED"               => "yes",
                                             "INPUT_TYPE"             => "SELECT",
@@ -215,7 +194,7 @@ function createFieldForm($arrLang)
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
             "port"         => array(        "LABEL"                  => $arrLang["Port"],
-                                            "REQUIRED"               => "no",
+                                            "REQUIRED"               => "yes",
                                             "INPUT_TYPE"             => "TEXT",
                                             "INPUT_EXTRA_PARAM"      => "",
                                             "VALIDATION_TYPE"        => "numeric",
@@ -235,7 +214,7 @@ function createFieldForm($arrLang)
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-            "autentification"   => array(      "LABEL"                  => $arrLang["TLS Enable"],
+            "autentification"   => array(   "LABEL"                  => $arrLang["TLS Enable"],
                                             "REQUIRED"               => "no",
                                             "INPUT_TYPE"             => "CHECKBOX",
                                             "INPUT_EXTRA_PARAM"      => "",
@@ -248,12 +227,8 @@ function createFieldForm($arrLang)
 
 function getAction()
 {
-    if(getParameter("in_actualizar_conf"))
-        return "in_actualizar_conf";
-    else if(getParameter("enabled"))
-        return "enabled";
-    else if(getParameter("disabled"))
-        return "disabled";
+    if(getParameter("save"))
+        return "save_config";
     else
         return "report"; //cancel
 }
