@@ -9,7 +9,6 @@
       <tr>
         <td align="left">
           <input class="button" type="submit" name="submit_accept" value="{$ACCEPT}" onClick="return confirmSubmit('{$CONFIRM_CONTINUE}')">
-        <td align="right" nowrap><span class="letra12"><span  class="required">*</span> {$REQUIRED_FIELD}</span></td>
      </tr>
    </table>
   </td>
