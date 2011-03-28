@@ -132,7 +132,7 @@ function formAntispam($smarty, $module_name, $local_templates_dir, $arrLang, $ar
     $oForm = new paloForm($smarty,$arrFormConference);
 
     $smarty->assign("LEGEND", $arrLang["Legend"]);
-    $smarty->assign("UPDATE", $arrLang["Update"]);
+    $smarty->assign("UPDATE", $arrLang["Save"]);
     $smarty->assign("TITLE", $arrLangModule["Antispam"]);
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
     $smarty->assign("IMG", "images/list.png");
