@@ -590,6 +590,8 @@ $(document).ready(function(){
         $('#box').show();
         $('#lblCheckBoxNoti').attr("for","CheckBoxNoti1");
         $('#lblCheckBoxRemi').attr("for","CheckBoxRemi1");
+        $('.counter').text("140");
+        $('textarea[name=tts]').val("");
 ////// to remove checkbox status in reminder call or notification /////////////////
         RemoveAttributeImageCheck();
 ///////////////////////////////////////////////////////////////////////////////////
@@ -767,6 +769,9 @@ $(document).ready(function(){
                         if(message['call_to'] != ""){ //asterisk_call_me
                             $('#reminder').val('on');
                             tts.value = tts_msg;
+                            var count = tts_msg.length;
+                            var available = 140 - count;
+                            $('.counter').text(available);
                             chkolremin.setAttribute("checked","checked");
                             $('.remin').attr("style","visibility: visible;");
                             $('#CheckBoxRemi').attr('checked','checked');
@@ -825,6 +830,8 @@ $(document).ready(function(){
         $('#lblCheckBoxNoti').attr("for","CheckBoxNoti");
         $('#lblCheckBoxRemi').attr("for","CheckBoxRemi");
         $('#desc').hide();
+        $('.counter').text("140");
+        $('textarea[name=tts]').val("");
         var order = "menu="+module_name+"&action=new_box&rawmode=yes";
 ////// to remove checkbox status in reminder call or notification /////////////////
         RemoveAttributeImageCheck();
