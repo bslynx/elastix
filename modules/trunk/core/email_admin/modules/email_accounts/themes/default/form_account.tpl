@@ -30,20 +30,20 @@
     <table width="100%" border="0" cellspacing="0" cellpadding="0" class="tabForm">
       <tr>
         {if $mode eq 'input'}
-	<td width="15%">{$address.LABEL}: <span  class="required">*</span></td>
-	<td width="35%">{$address.INPUT}{$domain_name}</td>
+	        <td width="15%">{$address.LABEL}: <span  class="required">*</span></td>
+	        <td width="35%">{$address.INPUT}{$domain_name}</td>
         {else}
-	<td width="15%">{$account_name_label}: <span  class="required">*</span></td>
-	<td width="35%">{$username}</td>
+	        <td width="15%">{$account_name_label}: <span  class="required">*</span></td>
+	        <td width="35%">{$username}</td>
         {/if}
-	<td width="20%">{$password1.LABEL}: <span  class="required">*</span></td>
-	<td width="30%">{$password1.INPUT}</td>
+            <td width="15%">{$quota.LABEL}: <span  class="required">*</span></td>
+            <td width="35%">{$quota.INPUT}{if $mode eq 'edit'}<input type="hidden" name="old_quota" value="{$old_quota}">{/if}</td>
       </tr>
       <tr>
-	<td width="15%">{$quota.LABEL}: <span  class="required">*</span></td>
-	<td width="35%">{$quota.INPUT}{if $mode eq 'edit'}<input type="hidden" name="old_quota" value="{$old_quota}">{/if}</td>
-	<td width="20%">{$password2.LABEL}: <span class="required">*</span></td>
-	<td width="30%">{$password2.INPUT}</td>
+	        <td width="20%">{$password1.LABEL}: <span  class="required">*</span></td>
+            <td width="30%">{$password1.INPUT}</td>
+	        <td width="20%">{$password2.LABEL}: <span class="required">*</span></td>
+	        <td width="30%">{$password2.INPUT}</td>
       </tr>
     </table>
     </td>
