@@ -279,7 +279,7 @@ contenido;
                 }
             }
         }else $directorios[] = $extension;
-
+if($esAdministrador)
         $arrData = array();
         foreach($directorios as $directorio)
         {
@@ -478,8 +478,11 @@ function save_config($smarty, $module_name, $local_templates_dir, $arrLang, $ext
 
     if( $bandera == true )
         return true;
-    else
+    else{
+        $smarty->assign("mb_title", "Error");
+        $smarty->assign("mb_message", $paloVoice->errMsg);
         return false;
+    }
 }
 
 function borrarVoicemails()

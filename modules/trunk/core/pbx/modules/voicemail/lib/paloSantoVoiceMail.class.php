@@ -59,9 +59,12 @@ class paloSantoVoiceMail {
                                 $VM_EmailAttachment, $VM_Play_CID, $VM_Play_Envelope, $VM_Delete_Vmail, $option)
     {
         $path = "/etc/asterisk/voicemail.conf";
-
-        exec("sed -ie '/^$Ext =>/d' $path");
-
+        if(file_exists($path))
+             exec("sed -ie '/^$Ext =>/d' $path");
+        else{
+           $this->errMsg = "File $path does not exist";
+           return false;
+        }
         if( $option == 1 ){ //se modifica
             if($VM_Options!="") $VM_Options .= "|";
             if($VM_EmailAttachment!='yes') $VM_EmailAttachment = 'no';
