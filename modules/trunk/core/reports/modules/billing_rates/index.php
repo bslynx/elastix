@@ -117,7 +117,7 @@ function reportBillingRates($smarty, $module_name, $local_templates_dir, &$pDB, 
 	$trunk_new       = getParameter("Trunk");
 	$hidden_digits   = getParameter("Hidden_Digits");
 	$id              = getParameter("id");
-    $edit            = getParameter("edit");
+
 	 
 	 	 //exists Default rate in rate.db // actualizar los rates por defecto en settings
     $cant = $pBillingRates->contRates();
@@ -292,9 +292,9 @@ function reportBillingEditRate($smarty, $module_name, $local_templates_dir, &$pD
      $smarty->assign("arrRates",$arrRates);
 
      $htmlForm = $oForm->fetchForm("$local_templates_dir/edit_rate.tpl",$arrLang["Edit Rate"], $_DATA);
-     $content  = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name&id=$id&edit=".$arrData['name']."'>".$htmlForm."</form>";
+     $content  = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name&id=$id&namerate=".$arrData['name']."'>".$htmlForm."</form>";
      return $content;
-
+//
 }
 
 function reportBillingImportRate($smarty, $module_name, $local_templates_dir, &$pDB, &$pDB2, &$pDB3, $arrConf, $arrLang){
@@ -371,7 +371,7 @@ function obtainResultOperationRate($smarty, $module_name, $local_templates_dir, 
      $trunk_new       = getParameter("Trunk");
      $hidden_digits   = getParameter("Hidden_Digits");
      $id              = getParameter("id");
-     $edit            = getParameter("edit");
+     $edit            = getParameter("namerate");
      $varUpdate       = getParameter("checkUpdate");
          //exists Default rate in rate.db
      $pBillingRates->existsDefaultRate($pDB3);

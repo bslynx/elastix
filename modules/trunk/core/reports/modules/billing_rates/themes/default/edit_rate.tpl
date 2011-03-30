@@ -9,7 +9,7 @@
       <tr>
         <td align="left">
           <input class="button" type="submit" name="submit_apply_changes" value="{$APPLY_CHANGES}" >
-          <input class="button" type="submit" name="cancel" value="{$CANCEL}"></td>
+          <input class="button" type="submit" name="cancel" value="{$CANCEL}" ></td>
         <td align="right" nowrap><span class="letra12"><span  class="required">*</span> {$REQUIRED_FIELD}</span></td>
      </tr>
    </table>
