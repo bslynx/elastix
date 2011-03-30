@@ -67,7 +67,7 @@ function _moduleContent(&$smarty, $module_name)
 
     switch($accion){
         case "apply":
-            $content = applyGroupPermission($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+            $content = applyGroupPermission($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $lang, $arrLang);
             break;
         default:
             $content = reportGroupPermission($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $lang, $arrLang);
@@ -76,7 +76,7 @@ function _moduleContent(&$smarty, $module_name)
     return $content;
 }
 
-function applyGroupPermission($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
+function applyGroupPermission($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $lang, $arrLang)
 {
     $pGroupPermission = new paloSantoGroupPermission();
 
@@ -118,7 +118,6 @@ function applyGroupPermission($smarty, $module_name, $local_templates_dir, &$pDB
         if( in_array( $resource["name"], $listaPermisosNuevos) )    $listaPermisosNuevosGrupo[]   = $resource["id"];
         if( in_array( $resource["name"], $listaPermisosAusentes) )  $listaPermisosAusentesGrupo[] = $resource["id"];
     }
-
     if( count($listaPermisosAusentesGrupo) > 0 ){
         $bExito = $pGroupPermission->deleteGroupPermissions("access", $idGroup, $listaPermisosAusentesGrupo);
         if (!$bExito)
@@ -130,18 +129,18 @@ function applyGroupPermission($smarty, $module_name, $local_templates_dir, &$pDB
         if (!$bExito)
             $msgError = "ERROR";
     }
-
     if (!empty($msgError))
             $smarty->assign("mb_message", $msgError);
+
+//TODO: Las acciones de view, delete, create y update no existen en la base de datos en la tabla acl_action (sólo está la acción access), por lo tanto se generaba un error al no existir dichas acciones. Queda para un futuro la implementación de estas acciones.
 
     //****************************************************************************************************
     // ACTION -> view
     //****************************************************************************************************
-
+/*
     //permisos recursos seleccionados en el grid
     // Array ( [0] => build_module [1] => delete_module [2] => language_admin ...
     $selectedViews = isset($_POST['viewPermission']) ? array_keys($_POST['viewPermission']) : array();
-
     if( $isAdministrator ){
         $selectedViews[] = "usermgr";
         $selectedViews[] = "grouplist";
@@ -156,7 +155,7 @@ function applyGroupPermission($smarty, $module_name, $local_templates_dir, &$pDB
     $listaPermisosNuevosGrupo = array();
     $listaPermisosAusentesGrupo = array();
 
-    foreach($arrResources as $resource) {
+    foreach($arrResources as $resource) { print_r("<br/>".$resource["name"]);
         if( in_array( $resource["name"], $listaPermisosNuevos) )    $listaPermisosNuevosGrupo[]   = $resource["id"];
         if( in_array( $resource["name"], $listaPermisosAusentes) )  $listaPermisosAusentesGrupo[] = $resource["id"];
     }
@@ -166,7 +165,7 @@ function applyGroupPermission($smarty, $module_name, $local_templates_dir, &$pDB
         if (!$bExito)
             $msgError = "ERROR";
     }
-
+print_r($listaPermisosNuevosGrupo);
     if( count($listaPermisosNuevosGrupo) > 0 ){
         $bExito = $pGroupPermission->saveGroupPermissions("view", $idGroup, $listaPermisosNuevosGrupo);
         if (!$bExito)
@@ -292,11 +291,11 @@ function applyGroupPermission($smarty, $module_name, $local_templates_dir, &$pDB
             $msgError = "ERROR";
     }
     if (!empty($msgError))
-            $smarty->assign("mb_message", $msgError);
+            $smarty->assign("mb_message", $msgError);*/
 
     //borra los menus q tiene de permisos que estan guardados en la session, el index.php principal (html) volvera a generar esta arreglo de permisos.
-    unset($_SESSION['elastix_user_permission']); 
-    return reportGroupPermission($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, true, $action_apply, $start_apply);
+    unset($_SESSION['elastix_user_permission']);
+    return reportGroupPermission($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $lang, $arrLang, true, $action_apply, $start_apply);
 }
 
 function reportGroupPermission($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $lang, $arrLang, $wasSaved = false, $value_action = "", $value_start = 0)
