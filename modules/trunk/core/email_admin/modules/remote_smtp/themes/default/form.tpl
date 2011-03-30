@@ -30,7 +30,7 @@
     </tr>
     <tr class="letra12">
         <td align="left"><b>{$user.LABEL}:</b></td>
-        <td align="left">{$user.INPUT} &nbsp;&nbsp;&nbsp;&nbsp;({$Example}. <span id="example"></span>)</td>
+        <td align="left">{$user.INPUT} &nbsp;&nbsp;&nbsp;&nbsp;({$Example}. <span id="example">example@domain.com</span>)</td>
     </tr>
     <tr class="letra12">
         <td align="left"><b>{$password.LABEL}:</b></td>
