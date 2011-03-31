@@ -1,7 +1,7 @@
 Summary: Elastix First Boot Setup
 Name:    elastix-firstboot
 Version: 2.0.4
-Release: 5
+Release: 6
 License: GPL
 Group:   Applications/System
 Source0: %{name}-%{version}.tar.bz2
@@ -44,9 +44,7 @@ chkconfig --level 2345 elastix-firstboot on
 if [ ! -d /var/lib/mysql/asteriskcdrdb ] ; then
 	cp /usr/share/elastix-firstboot/compat-dbscripts/01-asteriskcdrdb.sql /usr/share/elastix-firstboot/compat-dbscripts/02-asteriskuser-password.sql /var/spool/elastix-mysqldbscripts/
 fi
-if [ ! -d /var/lib/mysql/mya2billing ] ; then
-	cp /usr/share/elastix-firstboot/compat-dbscripts/03-mya2billing.sql /usr/share/elastix-firstboot/compat-dbscripts/04-a2billinguser-password.sql /var/spool/elastix-mysqldbscripts/
-fi
+
 if [ ! -d /var/lib/mysql/vtigercrm510 ] ; then
 	cp /usr/share/elastix-firstboot/compat-dbscripts/08-schema-vtiger.sql /var/spool/elastix-mysqldbscripts/
 fi
@@ -80,13 +78,20 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_localstatedir}/spool/elastix-mysqldbscripts/
 /usr/share/elastix-firstboot/compat-dbscripts/01-asteriskcdrdb.sql
 /usr/share/elastix-firstboot/compat-dbscripts/02-asteriskuser-password.sql
-/usr/share/elastix-firstboot/compat-dbscripts/03-mya2billing.sql
-/usr/share/elastix-firstboot/compat-dbscripts/04-a2billinguser-password.sql
 /usr/share/elastix-firstboot/compat-dbscripts/08-schema-vtiger.sql
 
 %changelog
+* Thu Mar 31 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-6
+- ADD:     elastix-firsboot, Add comment to show the possible 
+  bug in the future when the process to execute scripts throw 
+  an error of sql this error don't permit to execute the next
+  step and ask the admin web passwords. SVN Rev[2476]
+- DELETED: Additional - elastix-firstboot, script mya2billing 
+  was deleted because is not necessary, elastixdbprocess 
+  administration databases. SVN Rev[2475]
+
 * Sat Mar 19 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-5
-- CHANGED: Change permissions of "/etc/sasldb2" after to execute
+- CHANGED: Change permissions of "/etc/sasldb2" after to execute 
   "saslpasswd2 -c cyrus -u example.com" to create user cyrus admin
 
 * Thu Mar 03 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-4
