@@ -65,12 +65,13 @@ elastix_mysql_init(){
 			mysql -u root -p$elastix_root_password < $dbscript
 			ret=$?
 		fi
-        if [ $ret -ne 0 ] ; then
-            	return $ret
+                if [ $ret -ne 0 ] ; then
+                        # TODO: When exists a sql error on some script, the second process for web passwors isn't showed.
+            		return $ret
 		else
 			# Remove just-executed script
 			rm -f $dbscript
-       	fi
+       	        fi
 	done
 
 	if [ $FIRSTBOOT -ne 0 ] ; then
