@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module>
   <menulist>
-    <menuitem menuid='a2b'          desc='Calling Cards' parent='extras' module='no' link=''                   order='2'>
+    <menuitem menuid='a2b'          desc='Calling Cards' parent='extras' module='yes' link=''                  order='2'>
 		<permissions>
             <group id="1" name="administrator" desc="total access"></group>
 		</permissions>
