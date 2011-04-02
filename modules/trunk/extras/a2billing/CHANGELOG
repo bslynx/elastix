@@ -1,3 +1,8 @@
+%changelog
+* Sat Apr 02 2011 Eduardo Cueva <ecueva@palosanto.com> 1.8.1-15
+- FIXED: a2billing menus.xml, bad definition type menu a2b, it 
+  most be module. SVN Rev[2484]
+
 * Sat Apr 02 2011 Bruno Macias <bmacias@palosanto.com> 1.8.1-14
 - FIXED: a2billing - database, It isn't installed because logic part
   when mysql service not run not defined.

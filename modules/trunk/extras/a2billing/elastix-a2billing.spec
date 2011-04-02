@@ -2,7 +2,7 @@
 Summary: Package that installs A2Billing.
 Name: elastix-%{modname}
 Version: 1.8.1
-Release: 14
+Release: 15
 License: GPL
 Group: Applications/System
 Source0: %{modname}_%{version}.tar.gz
@@ -213,7 +213,11 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) /etc/a2billing.conf
 
 %changelog
-* Apr Apr 02 2011 Bruno Macias <bmacias@palosanto.com> 1.8.1-14
+* Sat Apr 02 2011 Eduardo Cueva <ecueva@palosanto.com> 1.8.1-15
+- FIXED: a2billing menus.xml, bad definition type menu a2b, it
+  most be module. SVN Rev[2484]
+
+* Sat Apr 02 2011 Bruno Macias <bmacias@palosanto.com> 1.8.1-14
 - FIXED: a2billing - database, It isn't installed because logic part 
   when mysql service not run not defined.
 
