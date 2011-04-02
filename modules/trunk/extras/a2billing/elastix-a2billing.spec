@@ -2,12 +2,13 @@
 Summary: Package that installs A2Billing.
 Name: elastix-%{modname}
 Version: 1.8.1
-Release: 12beta
+Release: 14
 License: GPL
 Group: Applications/System
 Source0: %{modname}_%{version}.tar.gz
 #Source1: changeencodepass.php
 #Source2: a2billing.cron
+#Source1: %{modname}_%{version}-13beta.tgz
 Source1: %{modname}_%{version}-%{release}.tgz
 #Source3: a2billing-db.tar.gz
 Patch0:  elastix-a2billing-1.8.1.patch
@@ -121,6 +122,7 @@ touch $RPM_BUILD_ROOT/var/log/a2billing_agi.log
 
 
 %pre
+mkdir -p /usr/share/a2billing/
 touch /usr/share/a2billing/version_a2billing.info
 if [ $1 -eq 2 ]; then   
     rpm -q --queryformat='%{VERSION}-%{RELEASE}' elastix-a2billing > /usr/share/a2billing/version_a2billing.info
@@ -164,24 +166,26 @@ is_mysqld_run=$?
 
 if [ $1 -eq 1 ]; then #install
   # The installer database
-  if [ ! -d "/var/lib/mysql/mya2billing" ]; then #no existe la base
-    if [ $is_mysqld_run -eq 0 ]; then # la base de datos esta corriendo
-       echo "The service mysqld is running."        
-       elastix-dbprocess "install" "$LOAD_LOC/setup/db"
-       php /usr/share/a2billing/setup/changeencodepass.php #se cambia las contraseñas de los usuarios a la codificacion definida 
-    fi
+  elastix-dbprocess "install" "$LOAD_LOC/setup/db"
+  if [ $is_mysqld_run -eq 0 ]; then # la base de datos esta corriendo
+      php /usr/share/a2billing/setup/changeencodepass.php #se cambia las contraseñas de los usuarios a la codificacion definida 
+  else
+      echo "Service MySQL is stop. A2billing database wasn't installed,"
+      echo "please execute php \"/usr/share/a2billing/setup/changeencodepass.php\""
+      echo "after mya2billing database have been installed."
   fi
 elif [ $1 -eq 2 ]; then #update
   # The installer database
-    if [  -d "/var/lib/mysql/mya2billing" ]; then #existe la base        
-       #se coloca changeencodepass.php mas abajo debido a que es mejor ejecutar el script de sql cuando este corriendo el mysql            
-       #Si mysql esta apagado hay problemas de que no se pueda realizar de forma correcta la transaccion sql        
-       if [ $is_mysqld_run -eq 0 ]; then # la base de datos esta corriendo                 
-          echo "The service mysqld is running."
-          elastix-dbprocess "update" "$LOAD_LOC/setup/db" "$versiona2billing"
-          php /usr/share/a2billing/setup/changeencodepass.php #se cambia las contraseñas de los usuarios a la codificacion definida
-       fi
-    fi
+  elastix-dbprocess "update" "$LOAD_LOC/setup/db" "$versiona2billing"
+  #se coloca changeencodepass.php mas abajo debido a que es mejor ejecutar el script de sql cuando este corriendo el mysql            
+  #Si mysql esta apagado hay problemas de que no se pueda realizar de forma correcta la transaccion sql        
+  if [ $is_mysqld_run -eq 0 ]; then # la base de datos esta corriendo                 
+      php /usr/share/a2billing/setup/changeencodepass.php #se cambia las contraseñas de los usuarios a la codificacion definida
+  else
+      echo "Service MySQL is stop. A2billing database wasn't installed," 
+      echo "please execute php \"/usr/share/a2billing/setup/changeencodepass.php\"" 
+      echo "after mya2billing database have been installed."
+  fi
 fi
 
 %preun
@@ -209,6 +213,15 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) /etc/a2billing.conf
 
 %changelog
+* Apr Apr 02 2011 Bruno Macias <bmacias@palosanto.com> 1.8.1-14
+- FIXED: a2billing - database, It isn't installed because logic part 
+  when mysql service not run not defined.
+
+* Thu Mar 31 2011 Eduardo Cueva <ecueva@palosanto.com> 1.8.1-13beta
+- CHANGED: a2billing - database, Script sql of installation was 
+  improved, the change was to define the correct user by
+  mya2billing db. SVN Rev[2476]
+
 * Mon Feb 14 2011 Eduardo Cueva <ecueva@palosanto.com> 1.8.1-12beta
 - CHANGED: In spec file using new format to elastix-dbprocess.
 
@@ -225,21 +238,25 @@ rm -rf $RPM_BUILD_ROOT
 
 * Sat Oct 16 2010 Kleber Loayza <andresloa@palosanto.com> 1.8.1-8beta
 - ADDED :  The new is that i put symlinks for that the file a2billing.php,a2billing_monitoring.php, can be seen in the directory: /         /var/lib/asterisk/agi-bin/
+
 * Thu Oct 14 2010 Kleber Loayza <andresloa@palosanto.com> 1.8.1-7beta
 - ADDED : The new is that i put symlinks for that the folder admin,customer,agent, common, can be seen in the directory: /var/www/html/
+
 * Thu Oct 14 2010 Kleber Loayza <andresloa@palosanto.com> 1.8.1-6beta
 - FIXED : The change was that the file log now this are created in the install part with their Permissions respectly. 
+
 * Thu Oct 14 2010 Bruno Macias <bmacias@palosanto.com> 1.8.1-5beta
 - ADDED : Prered elastix 2.0.0-42
 
 * Thu Oct 14 2010 Kleber Loayza <andresloa@palosanto.com> 1.8.1-4beta
 - FIXED: the change was that before a file was done with "echo" and put it on the spool direction, but now it creates a file called filecron.cron and copies it to the install
+
 * Mon Oct 11 2010 Kleber Loayza <andresloa@palosanto.com> 1.8.1-3beta
 - FIXED: The update that I did since I did the 1.4.0 version, and as the elastix this since version 1.3.0, so I had to add the updates since version 1.3.0
    to version 1.4.0.
+
 * Fri Oct 08 2010 Kleber Loayza <andresloa@palosanto.com> 1.8.1-2beta
 - FIXED: the route was added in the function: generarDSNSistema ('root', 'mya2billing'), the function now is: generarDSNSistema ('root', 'mya2billing', "$ libsPath /"), which this return the user's password.
-
 
 * Fri Oct 02 2010 Kleber Loayza <andresloa@palosanto.com> 1.8.1-1beta
 - Update a2billing version to 1.8.1.

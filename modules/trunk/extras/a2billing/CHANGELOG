@@ -1,3 +1,13 @@
+* Sat Apr 02 2011 Bruno Macias <bmacias@palosanto.com> 1.8.1-14
+- FIXED: a2billing - database, It isn't installed because logic part
+  when mysql service not run not defined.
+
+* Thu Mar 31 2011 Eduardo Cueva <ecueva@palosanto.com> 1.8.1-13beta
+- CHANGED: a2billing - database, Script sql of installation was
+  improved, the change was to define the correct user by
+  mya2billing db. SVN Rev[2476]
+
+
 * Mon Feb 14 2011 Eduardo Cueva <ecueva@palosanto.com> 1.8.1-12beta
 - CHANGED: In spec file using new format to elastix-dbprocess.
 - NEW:     Initial version
