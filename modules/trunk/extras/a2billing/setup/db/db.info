@@ -1,5 +1,5 @@
 [mya2billing]
-installation_force = no
+ignore_backup = no
 engine = mysql
 path   = /var/lib/mysql
 deletable = yes
