@@ -130,7 +130,6 @@ This screen will now ask for a password for the 'root' account of MySQL.\n\n"
 	echo "FLUSH PRIVILEGES;" | mysql -u root -p$MYSQL_PASSWD1
 	echo "mysqlrootpwd=$MYSQL_PASSWD1" > $PASSWD_PATH
 	
-	
 	# ****Add the user cyrus with the command saslpasswd2 ***************
 	echo "$MYSQL_PASSWD1" | /usr/sbin/saslpasswd2 -c cyrus -u example.com
 	ret=$?
@@ -138,6 +137,10 @@ This screen will now ask for a password for the 'root' account of MySQL.\n\n"
 		echo "Unable to set cyrus password for cyrus admin!"
 	    return 1
 	fi
+
+        #TODO: Se define a localhost primero (temporal), para evitar conflicto con autenticación del cyradm -u cyrus localhost
+        sed -ie 's/127.0.0.1/127.0.0.1\tlocalhost/'  /etc/hosts
+
 	# Cambiar permisos del archivo /etc/sasldb2 a 644 
 	chmod 644 /etc/sasldb2
 	echo "cyrususerpwd=$MYSQL_PASSWD1" >> $PASSWD_PATH
