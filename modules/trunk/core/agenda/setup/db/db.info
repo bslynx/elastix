@@ -1,11 +1,11 @@
 [calendar]
-installation_force = no
+ignore_backup = no
 engine = sqlite3
 path   = /var/www/db
 deletable = yes
 
 [address_book]
-installation_force = no
+ignore_backup = no
 engine = sqlite3
 path   = /var/www/db
 deletable = yes
