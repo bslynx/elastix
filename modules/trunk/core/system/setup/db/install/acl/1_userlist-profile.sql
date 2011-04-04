@@ -1,14 +1,14 @@
 BEGIN TRANSACTION;
-CREATE TABLE acl_profile_properties
+CREATE TABLE IF NOT EXISTS acl_profile_properties
 (
        id_profile   INTEGER NOT NULL,
        property varchar(32) NOT NULL,
        value varchar(256),
-       
+
        PRIMARY KEY (id_profile, property),
        FOREIGN KEY (id_profile) REFERENCES acl_user_profile (id_profile)
 );
-CREATE TABLE acl_user_profile
+CREATE TABLE IF NOT EXISTS acl_user_profile
 (
        id_profile   INTEGER NOT NULL,
        id_user INTEGER NOT NULL,

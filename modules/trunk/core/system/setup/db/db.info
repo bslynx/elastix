@@ -1,29 +1,29 @@
 [dashboard]
-installation_force = no
+ignore_backup = no
 engine = sqlite3
 path = /var/www/db
 deletable = yes
 
 [FTP]
-installation_force = no
+ignore_backup = no
 engine = sqlite3
 path = /var/www/db
 deletable = yes
 
 [hardware_detector]
-installation_force = no
+ignore_backup = no
 engine = sqlite3
 path = /var/www/db
 deletable = yes
 
 [network]
-installation_force = no
+ignore_backup = no
 engine = sqlite3
 path = /var/www/db
 deletable = yes
 
 [acl]
-installation_force = yes
+ignore_backup = yes
 engine = sqlite3
 path = /var/www/db
 deletable = no
