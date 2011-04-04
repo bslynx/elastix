@@ -15,7 +15,7 @@
     </div>
 
     <ul id="sortable-list1">
-    <div id="area_1" class="left_side">
+    <div id="area_1" class="left_side boxDrop">
         <li id="headExtension">
         {$descripArea1} 
         <table border ='0' cellspacing="0" cellpadding="0">
@@ -52,7 +52,7 @@
         <ul id="sortable-list2" class="sortable">
             <li class="state1">
             <dt id="headArea1">{$descripArea2} -- {$lengthArea2} ext<div  style = 'float:right;'><span id="editArea2">[Edit Name]</span></div></dt>
-            <dd id="area_2" class="right_side">
+            <dd id="area_2" class="right_side boxDrop">
                 <table border ='0' cellspacing="0" cellpadding="0">
                     <tr id="tableArea1"><br />
                     </tr>
@@ -61,7 +61,7 @@
             </li>
             <li class="state1">
             <dt id="headArea2">{$descripArea3} -- {$lengthArea3} ext<div  style = 'float:right;'><span id="editArea3">[Edit Name]</span></div></dt>
-            <dd id="area_3" class="right_side">
+            <dd id="area_3" class="right_side boxDrop">
                 <table border ='0' cellspacing="0" cellpadding="0">
                     <tr id="tableArea2"><br />
                     </tr>
@@ -70,7 +70,7 @@
             </li> 
             <li class="state1">
             <dt id="headArea3">{$descripArea4} -- {$lengthArea4} ext<div  style = 'float:right;'><span id="editArea4">[Edit Name]</span></div></dt>
-            <dd id="area_4" class="right_side">
+            <dd id="area_4" class="right_side boxDrop">
                 <table border ='0' cellspacing="0" cellpadding="0">
                     <tr id="tableArea3"><br />
                     </tr>

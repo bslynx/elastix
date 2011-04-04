@@ -527,6 +527,25 @@ function drawBoxArea3(arrData)
                                     ");"+
                             "}"+
                         "});"+
+                        "$('.boxDrop').droppable({"+
+                            "accept: '.box',"+//#lista_local
+                            "drop: function(event, ui) {"+
+                                "$(this).append($(ui.draggable));"+
+                                "var idStart = ($(ui.draggable).attr('id')).split('_');"+
+                                "var idArea = ($(this).attr('id')).split('_');"+
+                                "var arrAction              = new Array();"+
+                                    "arrAction['action']    = 'savechange';"+
+                                    "arrAction['rawmode']   = 'yes';"+
+                                    "arrAction['extStart']  =  idStart[1];"+
+                                    "arrAction['area']      =  idArea[1];"+
+                                    "request('index.php',arrAction,false,"+
+                                        "function(arrData,statusResponse,error)"+
+                                        "{"+
+                                                "$('#contentRight').html(arrData);"+
+                                        "}"+
+                                    ");"+
+                            "}"+
+                        "});"+
                         "$('.mail_box').droppable({"+
                             "over: function(event, ui)"+
                             "{"+
