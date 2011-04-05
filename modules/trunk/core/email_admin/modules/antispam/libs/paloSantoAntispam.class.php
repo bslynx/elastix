@@ -144,7 +144,7 @@ class paloSantoAntispam {
         exec("sudo -u root chmod 755 {$this->folderPostfix}",$arrConsole6,$flatStatus6);
         exec("sudo -u root chown root.root {$this->fileMaster}",$arrConsole5,$flatStatus5);
 
-        exec("sudo /sbin/service generic-cloexec spamassassin start",$arrConsole,$flagStatus);
+        exec("sudo /sbin/service generic-cloexec spamassassin restart",$arrConsole,$flagStatus);
         if($flagStatus != 0){
             $this->errMsg = $arrLangModule["Could not start the service antispam"];
             $return = false;
