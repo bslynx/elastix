@@ -29,7 +29,7 @@
   <td>
     <table width="100%" border="0" cellspacing="0" cellpadding="0" class="tabForm">
       <tr>
-	<td width="20%">{$name.LABEL}:</td>
+	<td width="20%">{$name.LABEL}: <span  class="required">*</span></td>
 	<td width="30%">{$name.INPUT}</td>
 	<td width="25%">{$description.LABEL}:</td>
 	<td width="25%">{$description.INPUT}</td>
@@ -62,8 +62,6 @@
       <tr>
         <td>{$webmailpassword1.LABEL}: </td>
         <td>{$webmailpassword1.INPUT}</td>
-        <td>{$webmailpassword2.LABEL}: </td>
-        <td>{$webmailpassword2.INPUT}</td>
       </tr>
     </table>
   </td>
