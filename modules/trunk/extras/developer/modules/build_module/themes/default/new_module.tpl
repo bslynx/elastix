@@ -108,7 +108,7 @@
        <tr class="letra12">
         <td width="10%" align="left"><b>{$module_type}: <span  class="required">*</span></b></td>
         <td width="5%" align="left">
-            <select id='module_type' name='module_type' onclick="show_field_to_create()">
+            <select id='module_type' name='module_type' onchange="show_field_to_create()">
                 <option value='form' >{$type_form}</option>
                 <option value='grid' >{$type_grid}</option>
                 <option value='framed' >{$type_framed}</option>
