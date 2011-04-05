@@ -174,12 +174,6 @@ function _moduleContent(&$smarty, $module_name)
                                                     "INPUT_EXTRA_PARAM"      => "",
                                                     "VALIDATION_TYPE"        => "text",
                                                     "VALIDATION_EXTRA_PARAM" => ""),
-                             "webmailpassword2"   => array("LABEL"                  => $arrLang["Retype Webmail password"],
-                                                    "REQUIRED"               => "no",
-                                                    "INPUT_TYPE"             => "PASSWORD",
-                                                    "INPUT_EXTRA_PARAM"      => "",
-                                                    "VALIDATION_TYPE"        => "text",
-                                                    "VALIDATION_EXTRA_PARAM" => ""),
                              "webmailuser"       => array("LABEL"                  => $arrLang["Webmail User"],
                                                     "REQUIRED"               => "no",
                                                     "INPUT_TYPE"             => "TEXT",
@@ -247,7 +241,7 @@ function _moduleContent(&$smarty, $module_name)
         $listaPropiedades = leerPropiedadesWebmail($pDB, $smarty, $_POST['id_user']);
         if (isset($listaPropiedades['login'])) $arrFillUser['webmailuser'] = $listaPropiedades['login'];
         if (isset($listaPropiedades['domain'])) $arrFillUser['webmaildomain'] = $listaPropiedades['domain'];
-        if (isset($listaPropiedades['password'])) $arrFillUser['webmailpassword1'] = $arrFillUser['webmailpassword2'] = $listaPropiedades['password'];
+        if (isset($listaPropiedades['password'])) $arrFillUser['webmailpassword1'] = $listaPropiedades['password'];
         //if (isset($listaPropiedades['imapsvr'])) $arrFillUser['webmailimapsvr'] = $listaPropiedades['imapsvr'];
 
         $oForm->setEditMode();
@@ -264,9 +258,7 @@ function _moduleContent(&$smarty, $module_name)
             // Exito, puedo procesar los datos ahora.
             $pACL = new paloACL($pDB);
 
-            if((empty($_POST['password1']) or ($_POST['password1']!=$_POST['password2'])) 
-                ||
-                (!empty($_POST['webmailpassword1']) && ($_POST['webmailpassword1']!=$_POST['webmailpassword2']))) {
+            if((empty($_POST['password1']) or ($_POST['password1']!=$_POST['password2']))) {
                 // Error claves
                 $smarty->assign("mb_message", $arrLang["The passwords are empty or don't match"]);
                 $contenidoModulo=$oForm->fetchForm("$local_templates_dir/new.tpl", $arrLang["New User"], $_POST);
@@ -342,9 +334,7 @@ function _moduleContent(&$smarty, $module_name)
         $oForm->setEditMode();
         if($oForm->validateForm($_POST)) {
             
-            if((!empty($_POST['password1']) && ($_POST['password1']!=$_POST['password2'])) 
-                ||
-                (!empty($_POST['webmailpassword1']) && ($_POST['webmailpassword1']!=$_POST['webmailpassword2']))) {
+            if((!empty($_POST['password1']) && ($_POST['password1']!=$_POST['password2']))) {
                 // Error claves
                 $smarty->assign("mb_title", $arrLang["Validation Error"]);
                 $smarty->assign("mb_message", $arrLang["The passwords are empty or don't match"]);
@@ -356,7 +346,7 @@ function _moduleContent(&$smarty, $module_name)
 
                 if (isset($listaPropiedades['login'])) $arrFillUser['webmailuser'] = $listaPropiedades['login'];
                 if (isset($listaPropiedades['domain'])) $arrFillUser['webmaildomain'] = $listaPropiedades['domain'];
-                if (isset($listaPropiedades['password'])) $arrFillUser['webmailpassword1'] = $arrFillUser['webmailpassword2'] = $listaPropiedades['password'];
+                if (isset($listaPropiedades['password'])) $arrFillUser['webmailpassword1'] = $listaPropiedades['password'];
         
                 $contenidoModulo=$oForm->fetchForm("$local_templates_dir/new.tpl", $arrLang["Edit User"], $arrFillUser);
             } else {
@@ -426,7 +416,7 @@ function _moduleContent(&$smarty, $module_name)
             $arrFillUser['name']        = $username;
             $arrFillUser['group']       = $_POST['group'];
             $arrFillUser['extension']   = $_POST['extension'];
-            foreach (array('webmailuser', 'webmaildomain', 'webmailpassword1', 'webmailpassword2') as $key) 
+            foreach (array('webmailuser', 'webmaildomain', 'webmailpassword1') as $key) 
                 $arrFillUser[$key] = $_POST[$key];
             $smarty->assign("id_user", $_POST['id_user']);
             $contenidoModulo=$oForm->fetchForm("$local_templates_dir/new.tpl", $arrLang["Edit User"], $arrFillUser);
@@ -465,7 +455,7 @@ function _moduleContent(&$smarty, $module_name)
         $listaPropiedades = leerPropiedadesWebmail($pDB, $smarty, $_GET['id']);
         if (isset($listaPropiedades['login'])) $arrTmp['webmailuser'] = $listaPropiedades['login'];
         if (isset($listaPropiedades['domain'])) $arrTmp['webmaildomain'] = $listaPropiedades['domain'];
-        if (isset($listaPropiedades['password'])) $arrTmp['webmailpassword1'] = $arrTmp['webmailpassword2'] = '****';
+        if (isset($listaPropiedades['password'])) $arrTmp['webmailpassword1'] = '****';
         //if (isset($listaPropiedades['imapsvr'])) $arrTmp['webmailimapsvr'] = $listaPropiedades['imapsvr'];
 
         $smarty->assign("id_user", $_GET['id']);
