@@ -8,11 +8,6 @@
             <group id="1" name="administrator" desc="total access"></group>
         </permissions>
     </menuitem>
-	<menuitem menuid="a2b"                desc="Calling Cards"      parent="extras"     module="no" link="a2billing"                            order="2">
-        <permissions>
-            <group id="1" name="administrator" desc="total access"></group>
-        </permissions>
-    </menuitem>
 	<menuitem menuid="downloads"          desc="Downloads"          parent="extras"     module="no" link=""                                     order="3">
         <permissions>
             <group id="1" name="administrator" desc="total access"></group>
