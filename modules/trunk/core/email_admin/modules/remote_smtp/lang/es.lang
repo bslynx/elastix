@@ -54,6 +54,6 @@ $arrLangModule=array(
 "SMTP Server" => "Servidor SMTP",
 "Domain" => "Dominio",
 "TLS Enable" => "Habilitar TLS",
-"Example" => "Example",
+"Ex" => "Ej",
 );
 ?>
