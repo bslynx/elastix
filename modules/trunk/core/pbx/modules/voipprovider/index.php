@@ -176,7 +176,7 @@ function saveNewVoIPProvider($smarty, $module_name, $local_templates_dir, &$pDB,
         $technology    = getParameter("technology");
         $id_provider   = null;
         $arrData       = getAllDataPOST();
-
+     
         if($type_provider!="custom"){
             $arrProvider = $pVoIPProvider->getIdVoIPProvidersByName($type_provider);
             if(count($arrProvider)>0){
@@ -187,10 +187,13 @@ function saveNewVoIPProvider($smarty, $module_name, $local_templates_dir, &$pDB,
 
         $arrData[] = $technology;
         $arrData[] = $id_provider;
+            
         $pVP       = new paloSantoVP($pDB2);
         $id_trunk  = $pVP->getIdNextTrunk();
+
         $exito = $pVP->saveTrunk($arrData);
         if($exito){
+
             if(!$pVoIPProvider->insertAccount($arrData,$id_trunk)){
                 $smarty->assign("mb_title", _tr("Validation Error"));
                 $strErrorMsg  = "<b>"._tr('Internal Error')."</b><br/>".$pVoIPProvider->errMsg;
@@ -765,7 +768,6 @@ function getAllDataPOST()
     $arrData[] = getParameter("trustrpid");
     $arrData[] = getParameter("sendrpid");
     $arrData[] = getParameter("canreinvite");
-
     return $arrData;
 }
 

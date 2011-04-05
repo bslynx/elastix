@@ -71,7 +71,6 @@ class paloSantoVP {
             return false;
         }
         $arrDataTech = $this->getDataTech($data);
-
         $query = "insert into $tech (id,keyword,data,flags) values (?,?,?,?)";
         foreach($arrDataTech as $key => $value){
             $arrParam = array("tr-peer-$id",$key,$value['data'],$value['flag']);

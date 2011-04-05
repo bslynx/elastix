@@ -49,26 +49,42 @@ function changeProvider()
         request("index.php",arrAction,false,
             function(arrData,statusResponse,error)
             {
-                $('#type').val(arrData["type"]);
-                $('#qualify').val(arrData["qualify"]);
-                $('#insecure').val(arrData["insecure"]);
+                var typePeer = arrData["type"] ? arrData["type"] : "friend";
+                var qualify  = arrData["qualify"] ? arrData["qualify"] : "no";
+                var insecure = arrData["insecure"] ? arrData["insecure"] : "very";
+                var dtmfmode = arrData["dtmfmode"] ? arrData["dtmfmode"] : "rfc2833";
+                var technology = arrData["type_trunk"] ? arrData["type_trunk"] : "SIP";
+                var canreinvite = arrData["canreinvite"] ? arrData["canreinvite"] : "no";
+                var sendrpid    = arrData["sendrpid"] ? arrData["sendrpid"] : "no";
+                var trustrpid   = arrData["trustrpid"] ? arrData["trustrpid"] : "no";
+                $('#type').val(typePeer);
+                $('#qualify').val(qualify);
+                $('#insecure').val(insecure);
                 $('#host').val(arrData["host"]);
                 $('#fromuser').val(arrData["fromuser"]);
                 $('#fromdomain').val(arrData["fromdomain"]);
-                $('#dtmfmode').val(arrData["dtmfmode"]);
+                $('#dtmfmode').val(dtmfmode);
                 $('#disallow').val(arrData["disallow"]);
                 $('#context').val(arrData["context"]);
                 $('#allow').val(arrData["allow"]);
-                $('#trustrpid').val(arrData["trustrpid"]);
-                $('#sendrpid').val(arrData["sendrpid"]);
-                $('#canreinvite').val(arrData["canreinvite"]);
-                $('#technology').val(arrData["type_trunk"]);
+                $('#trustrpid').val(trustrpid);
+                $('#sendrpid').val(sendrpid);
+                $('#canreinvite').val(canreinvite);
+                $('#technology').val(technology);
                 $('#technology').attr("disabled","disabled");
             }
         );
     }else{
         $('input[name=chkoldadvanced]').attr('disabled',true);
         document.getElementById('advanced_options').style.display='';
+        $('#type').val("friend");
+        $('#qualify').val("no");
+        $('#insecure').val("very");
+        $('#dtmfmode').val("rfc2833");
+        $('#technology').val("SIP");
+        $('#canreinvite').val("no");
+        $('#sendrpid').val("no");
+        $('#trustrpid').val("no");
     }
 }
 
