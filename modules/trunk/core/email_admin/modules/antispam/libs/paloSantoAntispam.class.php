@@ -504,12 +504,21 @@ class paloSantoAntispam {
     }
 
     function getContentScript(){
-        $script = "require \"fileinto\";
-if header :contains \"X-Spam-Flag\" \"YES\" {
-  fileinto \"Spam\";
-}elsif header :contains \"X-Spam-Status\" \"Yes\" {
-    fileinto \"Spam\";
-}";
+        $script = <<<SCRIPT
+require "fileinto";
+if exists "X-Spam-Flag" {
+    if header :is "X-Spam-Flag" "YES" {
+        fileinto "Spam";
+        stop;
+    }
+}
+if exists "X-Spam-Status" {
+    if header :contains "X-Spam-Status" "Yes," {
+        fileinto "Spam";
+        stop;
+    }
+}
+SCRIPT;
         return $script;
     }
 
