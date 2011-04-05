@@ -95,7 +95,7 @@
      </table>
     </td>
    </tr>
-</table
+</table>
 <br/>
 <table width="99%" border="0" cellspacing="0" cellpadding="0" align="center">
   <tr class="moduleTitle">
