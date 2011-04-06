@@ -54,6 +54,11 @@ $arrLangModule=array(
 "SMTP Server" => "SMTP Server",
 "Domain" => "Domain",
 "TLS Enable" => "TLS Enable",
-"Example" => "Example",
+"Ex" => "Ex",
+"Failed to connect to server" => "Failed to connect to server",
+"Failed to send hello command" => "Failed to send hello command",
+"Failed to start TLS" => "Failed to start TLS",
+"Authenticate not accepted from server" => "Authenticate not accepted from server",
+"Authenticate Error, TLS must be activated" => "Authenticate Error, TLS must be activated",
 );
 ?>

@@ -55,5 +55,10 @@ $arrLangModule=array(
 "Domain" => "Dominio",
 "TLS Enable" => "Habilitar TLS",
 "Ex" => "Ej",
+"Failed to connect to server" => "Falló la conección con el servidor",
+"Failed to send hello command" => "Falló al enviar el comando HELLO",
+"Failed to start TLS" => "Falló al inciar TLS",
+"Authenticate not accepted from server" => "Autenticación no aceptada desde el servidor",
+"Authenticate Error, TLS must be activated" => "Error de autenticación, TLS debe estar activado",
 );
 ?>

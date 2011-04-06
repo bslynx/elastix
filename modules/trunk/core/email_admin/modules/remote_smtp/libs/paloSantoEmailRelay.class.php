@@ -129,22 +129,18 @@ class paloSantoEmailRelay {
                         $this->createCert();
                         $arrReplaces['smtpd_tls_auth_only'] = ($activated =="on")?"no":"no";
                         $arrReplaces['smtp_use_tls'] = ($activated =="on")?"yes":"no";
-                        $arrReplaces['smtpd_use_tls'] = ($activated =="on")?"yes":"no";
                         $arrReplaces['smtp_tls_note_starttls_offer'] = ($activated =="on")?"yes":"no";
                         $arrReplaces['smtp_tls_CAfile'] = ($activated =="on")?"/etc/postfix/tls/tlscer.crt":"";
                         $arrReplaces['smtpd_tls_loglevel'] =($activated =="on")?2:"0";
                         $arrReplaces['smtpd_tls_received_header'] = ($activated =="on")? "yes":"no";
-                        $arrReplaces['smtpd_tls_session_cache_timeout'] = ($activated =="on")? "3600s":"";
                         $arrReplaces['tls_random_source'] = ($activated =="on")? "dev:/dev/urandom":"";
                         $arrReplaces['smtp_sasl_security_options'] = ($activated =="on")?"noanonymous":"";
                     }else{
                         $arrReplaces['smtpd_tls_auth_only'] = "no";
                         $arrReplaces['smtp_use_tls'] = "no"; 
-                        $arrReplaces['smtpd_use_tls'] = "no";
                         $arrReplaces['smtp_tls_note_starttls_offer'] = "no";
                         $arrReplaces['smtpd_tls_loglevel'] = "2";
                         $arrReplaces['smtpd_tls_received_header'] = "no";
-                        $arrReplaces['smtpd_tls_session_cache_timeout'] = "3600s";
                         $arrReplaces['tls_random_source'] = "";
                         $arrReplaces['smtp_tls_CAfile'] = "";
                     }
@@ -156,14 +152,12 @@ class paloSantoEmailRelay {
                 $arrReplaces['smtp_sasl_auth_enable']      = "no";
                 $arrReplaces['smtp_sasl_password_maps']    = "";
                 $arrReplaces['smtp_sasl_security_options'] = "noplaintext, noanonymous";
-                $arrReplaces['broken_sasl_auth_clients']   = "no";
+                $arrReplaces['broken_sasl_auth_clients']   = "yes";
                 $arrReplaces['smtpd_tls_auth_only'] = "no";
                 $arrReplaces['smtp_use_tls'] = "no"; 
-                $arrReplaces['smtpd_use_tls'] = "no";
                 $arrReplaces['smtp_tls_note_starttls_offer'] = "no";
                 $arrReplaces['smtpd_tls_loglevel'] = "0";
                 $arrReplaces['smtpd_tls_received_header'] = "no";
-                $arrReplaces['smtpd_tls_session_cache_timeout'] = "";
                 $arrReplaces['tls_random_source'] = "";
                 $arrReplaces['smtp_tls_CAfile'] = "";
                 $this->createSASL();
@@ -252,6 +246,39 @@ class paloSantoEmailRelay {
         //se ejecuta de esa forma porque es usuario asterisk el que corre el programa de elastix
         exec("sudo /sbin/service generic-cloexec saslauthd restart");
         exec("sudo /sbin/service generic-cloexec postfix restart");
+    }
+
+    function checkSMTP($smtp_server, $smtp_port=25, $username, $password, $auth_enabled=false, $tls_enabled=true)
+    {
+        require_once("libs/phpmailer/class.smtp.php");
+
+        $smtp = new SMTP();
+        $smtp->Connect($smtp_server,$smtp_port);
+
+        if(!$smtp->Connected()){
+            return array("ERROR" => "Failed to connect to server", "SMTP_ERROR" => $smtp->getError());
+        }
+
+        if(!$smtp->Hello()){
+            return array("ERROR" => "Failed to send hello command", "SMTP_ERROR" => $smtp->getError());
+        }
+
+        if($tls_enabled){
+            if(!$smtp->StartTLS())
+                return array("ERROR" => "Failed to start TLS", "SMTP_ERROR" => $smtp->getError());
+        }
+
+        if($auth_enabled){
+            if(!$smtp->Authenticate($username,$password)){
+                $error = $smtp->getError();
+                if(preg_match("/STARTTLS/",$error['smtp_msg']))
+                    return array("ERROR" => "Authenticate Error, TLS must be activated", "SMTP_ERROR" => $smtp->getError());
+                else
+                    return array("ERROR" => "Authenticate not accepted from server", "SMTP_ERROR" => $smtp->getError());
+            }
+        }
+
+        return true;
     }
 }
 ?>

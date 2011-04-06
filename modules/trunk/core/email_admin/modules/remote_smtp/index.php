@@ -139,8 +139,19 @@ function saveNewEmailRelay($smarty, $module_name, $local_templates_dir, &$pDB, $
         $arrData['status']          = rtrim(getParameter('status'));
         $arrData['autentification'] = getParameter('autentification');
 
-        $pEmailRelay->setStatus($arrData['status']);
+        $tls_enabled  = ($arrData['autentification']=="on")?true:false;
+        $auth_enabled = ($arrData['user']!="" && $arrData['password']!="");
+        $isOK = $pEmailRelay->checkSMTP($arrData['relayhost'] , $arrData['port'], $arrData['user'], $arrData['password'], $auth_enabled, $tls_enabled);
 
+        if(is_array($isOK)){ //hay errores al tratar de verificar datos
+            $errors = $isOK["ERROR"];
+            $smarty->assign("mb_title", $arrLang["ERROR"]);
+            $smarty->assign("mb_message", _tr($errors));
+            $content= viewFormEmailRelay($smarty,$module_name,$local_templates_dir,$pDB,$arrConf,$arrLang);
+            return $content;
+        }
+
+        $pEmailRelay->setStatus($arrData['status']);
         $ok=false;
         if($arrData['autentification']=="on"){
             $ok = $pEmailRelay->processUpdateConfiguration($arrData);
