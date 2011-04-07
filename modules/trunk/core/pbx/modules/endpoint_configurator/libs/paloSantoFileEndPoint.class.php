@@ -25,7 +25,11 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: paloSantoFileEndPoint.class.php,v 1.1 2008/01/22 15:05:57 afigueroa Exp $ */
+  $Id: paloSantoFileEndPoint.class.php,v 1.1 2008/01/22 15:05:57 asantos@palosanto.com Alberto Santos Exp $ */
+
+if (file_exists("/var/lib/asterisk/agi-bin/phpagi-asmanager.php")) {
+require_once "/var/lib/asterisk/agi-bin/phpagi-asmanager.php";
+}
 
 class PaloSantoFileEndPoint
 {
@@ -36,6 +40,27 @@ class PaloSantoFileEndPoint
     function PaloSantoFileEndPoint($dir){
         $this->directory = $dir;
         $this->ipAdressServer = $_SERVER['SERVER_ADDR'];
+    }
+
+    function AsteriskManagerAPI($action, $parameters, $return_data=false) 
+    {
+        $astman_host = "127.0.0.1";
+        $astman_user = 'admin';
+        $astman_pwrd = "elastix456";
+
+        $astman = new AGI_AsteriskManager();
+
+        if (!$astman->connect("$astman_host", "$astman_user" , "$astman_pwrd")) {
+            $this->errMsg = _tr("Error when connecting to Asterisk Manager");
+        } else{
+            $salida = $astman->send_request($action, $parameters);
+            $astman->disconnect();
+            if (strtoupper($salida["Response"]) != "ERROR") {
+                if($return_data) return $salida;
+                else return split("\n", $salida["Response"]);
+            }else return false;
+        }
+        return false;
     }
 
     /*
@@ -155,6 +180,20 @@ class PaloSantoFileEndPoint
                     return true;
                 else return false;
             break;
+
+            case 'Yealink':
+               if($ArrayData['data']['model'] == "T20" || $ArrayData['data']['model'] == "T22" || $ArrayData['data']['model'] == "T26" || $ArrayData['data']['model'] == "T28" ){
+                    $contentFileYealink =PrincipalFileYealink($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer);
+                        if($this->createFileConf($this->directory, $ArrayData['data']['filename'].".cfg", $contentFileYealink)){
+                            $parameters  = array('Command'=>'sip notify reboot-yealink '.$ArrayData['data']['ip_endpoint']);
+                            $result      = $this->AsteriskManagerAPI('Command',$parameters);
+                            if(!$result)
+                                return false;
+                            return true;
+                        }
+                        return false;
+                }
+                break;
         }
     }
 
@@ -165,7 +204,6 @@ class PaloSantoFileEndPoint
     function createFileConf($tftpBootPath, $nameFileConf, $contentConf)
     {
         global $arrLang;
-
         if(!is_dir($tftpBootPath)) mkdir($tftpBootPath,0755,true);
 
         if (file_exists("$tftpBootPath/$nameFileConf") && !is_writable("$tftpBootPath/$nameFileConf")) {
@@ -228,6 +266,10 @@ class PaloSantoFileEndPoint
 
             case 'AudioCodes':
                 return $this->deleteFileConf($this->directory, $ArrayData['data']['model']."_".$ArrayData['data']['filename'].".cfg");
+            break;
+
+            case 'Yealink':
+                return $this->deleteFileConf($this->directory, $ArrayData['data']['filename'].".cfg");
             break;
         }
     }
@@ -329,6 +371,13 @@ class PaloSantoFileEndPoint
                 $this->createFileConf($this->directory, "AudioCodes.template", $contentAudioCodes);
                 return true; //no es tan importante la necesidad de estos archivos solo son de ejemplo.
                 break;
+
+            case 'Yealink':
+                //Creando archivos de ejemplo.
+                $contentFileYealink = templatesFileYealink($this->ipAdressServer);
+                $this->createFileConf($this->directory, "y000000000000.cfg", $contentFileYealink);
+                return true; //no es tan importante la necesidad de estos archivos solo son de ejemplo.
+                break;
         }
     }
 
@@ -394,6 +443,9 @@ class PaloSantoFileEndPoint
                 break;
 
             case 'AudioCodes':
+                break;
+
+            case 'Yealink':
                 break;
         }
 
