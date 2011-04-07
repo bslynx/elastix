@@ -183,7 +183,7 @@
     position:fixed;
     background-color:#FFFFFF; 
     width:440px;
-    height:200px;
+    height:205px;
     border:1px solid #800000;
 }
 </style>
