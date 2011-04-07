@@ -708,8 +708,12 @@ function execRules($smarty, $module_name, $local_templates_dir, $pDB, $arrConf)
             $smarty->assign("mb_message", $error);
         return reportRules($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
     }
+    if($pRules->isFirstTime())
+        $message = _tr("The firewall has been activated");
+    else
+        $message = _tr("The rules have been executed in the system");
     $smarty->assign("mb_title", "MESSAGE");
-    $smarty->assign("mb_message", _tr("The rules have been executed in the system"));
+    $smarty->assign("mb_message", $message);
     $pRules->updateExecutedInSystem();
     $pRules->noMoreFirstTime();
     return reportRules($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
