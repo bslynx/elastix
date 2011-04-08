@@ -182,7 +182,7 @@ class PaloSantoFileEndPoint
             break;
 
             case 'Yealink':
-               if($ArrayData['data']['model'] == "T20" || $ArrayData['data']['model'] == "T22" || $ArrayData['data']['model'] == "T26" || $ArrayData['data']['model'] == "T28" ){
+               if($ArrayData['data']['model'] == "SIP-T20/T20P" || $ArrayData['data']['model'] == "SIP-T22/T22P" || $ArrayData['data']['model'] == "SIP-T26/T26P" || $ArrayData['data']['model'] == "SIP-T28/T28P" ){
                     $contentFileYealink =PrincipalFileYealink($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer);
                         if($this->createFileConf($this->directory, $ArrayData['data']['filename'].".cfg", $contentFileYealink)){
                             $parameters  = array('Command'=>'sip notify reboot-yealink '.$ArrayData['data']['ip_endpoint']);
