@@ -2,10 +2,10 @@ INSERT INTO vendor (name,description) VALUES('Yealink','Yealink');
 
 INSERT INTO mac (id_vendor,value,description) VALUES(13,'00:15:65','Yealink');
 
-INSERT INTO model (name,description,id_vendor) VALUES('T20','T20',13);
+INSERT INTO model (name,description,id_vendor) VALUES('SIP-T20/T20P','SIP-T20P',13);
 
-INSERT INTO model (name,description,id_vendor) VALUES('T22','T22',13);
+INSERT INTO model (name,description,id_vendor) VALUES('SIP-T22/T22P','SIP-T22P',13);
 
-INSERT INTO model (name,description,id_vendor) VALUES('T26','T26',13);
+INSERT INTO model (name,description,id_vendor) VALUES('SIP-T26/T26P','SIP-T26P',13);
 
-INSERT INTO model (name,description,id_vendor) VALUES('T28','T28',13);
+INSERT INTO model (name,description,id_vendor) VALUES('SIP-T28/T28P','SIP-T28P',13);
