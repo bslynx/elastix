@@ -50,7 +50,7 @@ class PaloSantoHardwareDetection
         $tarjetas = array();
 
         unset($respuesta);
-    exec('lsdahdi',$respuesta,$retorno);
+    exec('/usr/sbin/lsdahdi',$respuesta,$retorno);
         if($retorno==0 && $respuesta!=null && count($respuesta) > 0 && is_array($respuesta)){
             $idTarjeta = 0;
             foreach($respuesta as $key => $linea){
