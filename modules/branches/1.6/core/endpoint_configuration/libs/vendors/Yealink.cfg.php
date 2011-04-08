@@ -13,6 +13,7 @@ DisplayName = $DisplayName
 UserName = $id_device
 AuthName = $id_device
 password = $secret
+SIPServerHost = $ipAdressServer
 
 [ autoprovision ]
 path = /yealink/config/Setting/autop.cfg
