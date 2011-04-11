@@ -34,7 +34,7 @@
 #   /etc/asterisk/dahdi-channels.conf
 # In addition, this script may optionally configure mISDN support.
 
-PATH=/sbin:/usr/local/sbin:$PATH
+PATH=/sbin:/usr/sbin:/usr/local/sbin:$PATH
 export PATH
 
 there_is_sangoma_card=false
