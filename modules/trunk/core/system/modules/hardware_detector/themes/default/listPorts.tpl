@@ -8,7 +8,7 @@
         </td>
     </tr>
     <tr class="filterForm">
-        <td class="filterForm" width="350px" valign="top" align="left" style="padding: 2px 2px 2px 30px;">
+        <td class="filterForm" width="450px" valign="top" align="left" style="padding: 2px 2px 2px 30px;">
             <table border="0">
                 <tr>
                     <td><input type="checkbox" name="chkAdvance" id="chkAdvance" />&nbsp; <b>{$Advanced}</b></td>
@@ -50,6 +50,14 @@
                         <td><img src='modules/{$MODULE_NAME}/images/conn_unkown_icon.png' align='absmiddle' /></td>
                         <td>{$Undetected_Channel}</td>
                     </tr>
+                    <tr>
+                        <td align="center"><img src='modules/{$MODULE_NAME}/images/conn_empty_icon.png' align='absmiddle' /></td>
+                        <td>{$CHANNELS_EMPTY}</td>
+                    </tr>
+                    <tr>
+                        <td align="center"><b>HC</b></td>
+                        <td>{$HARDWARE_CONTROL}</td>
+                    </tr>
                 </table>
             </fieldset>
         </td>
@@ -75,24 +83,6 @@
                                     <td width="5px"></td> <!-- Espàcio -->
                                     <td align="right" style="background-color:#EFEFEF">
                                         <table border ='0' align="right" cellspacing="0" cellpadding="0">
-<!--                                            <tr>
-                                                <td style='border: 1px #CCCCCC solid; font-size:12px;' align='left' class="moduleTitle">{$CARD} # {$data.DESC.ID}: {$data.DESC.TIPO} {$data.DESC.ADICIONAL} </td>-->
-
-
-
-
-                            <!--
-                                                {if $data.DESC.MANUFACTURER eq 'yes'}
-                                                <td style='border: 1px #CCCCCC solid; width:30px;' align="center"> <span id="editMan{$data.DESC.ID}"> <img class="icon" src="modules/hardware_detector/images/card_registered.gif" /> </span> </td>
-                                                {elseif $data.DESC.MANUFACTURER  eq 'no'}
-                                                <td style='border: 1px #CCCCCC solid; width:30px;' align="center"> <span id="editMan{$data.DESC.ID}"> <img class="icon" src="modules/hardware_detector/images/card_no_registered.gif" /> </span> </td>
-                                                {/if}
-                            -->
-
-
-                                               <!-- <td style='border: 1px #CCCCCC solid; width:30px;'> <span id="editArea{$data.DESC.ID}"> <img class="icon" src="modules/hardware_detector/images/icon1.png" /> </span> </td>
-                                                <td style='border: 1px #CCCCCC solid; width:30px;'><a href='?menu=hardware_detector&action=config_echo&cardId={$data.DESC.ID}'><img class="icon" src="modules/hardware_detector/images/icon_configecho.png" title="Config echo Canceller"/></a></td>
-                                            </tr>-->
                                             <tr> 
                                                 <td colspan="4">
                                                 <table border ='0' align="center" cellspacing="0" cellpadding="0" class="table_title_row">
@@ -104,8 +94,8 @@
                                                                 {/if}
                                                                         <td>
                                                                             <table style='border:1px #CCCCCC solid;padding:1px;background-color:white;' border='0' callpadding='0' cellspacing='0' onMouseOver="this.style.backgroundColor='#f2f2f2';" onMouseOut="this.style.backgroundColor='#ffffff';">
-                                                                                <tr><td  align='center' style='font-size:11px;background-image:url(modules/hardware_detector/images/{$puerto.ESTADO_DAHDI});height:64px;width:68px;background-repeat:no-repeat;vertical-align:top'><p>{$puerto.LOCALIDAD} {$puerto.TIPO}</p></td></tr>
-                                                                                <tr><td  align='center' style='font-size:11px;color:{$puerto.ESTADO_ASTERISK_COLOR}'>{$puerto.ESTADO_ASTERISK}</td></tr>
+                                                                                <tr><td  align='center' style='font-size:11px;background-image:url(modules/hardware_detector/images/{$puerto.ESTADO_DAHDI});height:64px;width:68px;background-repeat:no-repeat;vertical-align:top'><p>{$puerto.TIPO}<br />{$puerto.LOCALIDAD} </p></td></tr>
+                                                                                <tr><td  align='center' style='height:28px;font-size:11px;color:{$puerto.ESTADO_ASTERISK_COLOR}'>{$puerto.ESTADO_ASTERISK}</td></tr>
                                                                             </table>
                                                                         </td>
                                                                 {if ($cnt+1)%12==0}

@@ -94,36 +94,38 @@ function listPorts($smarty, $module_name, $local_templates_dir, $pDB) {
     $smarty->assign("arrSpanConf",$arrSpanConf);
     $smarty->assign("arrCardManufacturer",$arrCardManufacturer);
 
-    $smarty->assign("HARDWARE_DETECT",$arrLang['Hardware Detect']);
-    $smarty->assign("CHAN_DAHDI_REPLACE",$arrLang['Replace file chan_dahdi.conf']);
-    $smarty->assign("DETECT_SANGOMA", $arrLang['Detect Sangoma hardware']);
-    $smarty->assign("DETECT_mISDN", $arrLang['Detect ISDN hardware']);
+    $smarty->assign("HARDWARE_DETECT",_tr('Hardware Detect'));
+    $smarty->assign("CHAN_DAHDI_REPLACE",_tr('Replace file chan_dahdi.conf'));
+    $smarty->assign("DETECT_SANGOMA", _tr('Detect Sangoma hardware'));
+    $smarty->assign("DETECT_mISDN", _tr('Detect ISDN hardware'));
     $smarty->assign("MODULE_NAME",$module_name);
-    $smarty->assign("detectandoHardware",$arrLang['Hardware Detecting']);
-    $smarty->assign("CARD",$arrLang['Card']);
-    $smarty->assign("CARD_MISDN",$arrLang['Misdn Card']);
+    $smarty->assign("detectandoHardware",_tr('Hardware Detecting'));
+    $smarty->assign("CARD",_tr('Card'));
+    $smarty->assign("CARD_MISDN",_tr('Misdn Card'));
     $smarty->assign("CARD_NO_MOSTRAR",'DAHDI');
-    $smarty->assign("PORT_NOT_FOUND",$arrLang['Ports not Founds']);
-    $smarty->assign("NO_PUERTO",$arrLang["Port"]." ");
-    $smarty->assign("Channel_detected_notused",$arrLang['Channel detected and not used']);
-    $smarty->assign("Channel_detected_use",$arrLang['Channel detected and in use']);
-    $smarty->assign("Undetected_Channel",$arrLang['Undetected Channel']);
-    $smarty->assign("SET_PARAMETERS_PORTS",$arrLang['You can set the parameters for these ports here']);
-    $smarty->assign("Status_ports",$arrLang['Port Status']);
-    $smarty->assign("SAVE", $arrLang["Save"]);
-    $smarty->assign("EDIT", $arrLang["Edit"]);
-    $smarty->assign("CANCEL", $arrLang["Cancel"]);
-    $smarty->assign("Configuration_Span", $arrLang["Configuration of Span"]);
-    $smarty->assign("Span_Settings", $arrLang["Span Settings"]);
-    $smarty->assign("Advanced", $arrLang["Advanced"]);
-    $smarty->assign("Preferences", $arrLang["Preferences"]);
-    $smarty->assign("Timing_source", $arrLang["Timing source"]);
-    $smarty->assign("Line_build_out", $arrLang["Line build out"]);
-    $smarty->assign("Framing", $arrLang["Framing"]);
-    $smarty->assign("Coding", $arrLang["Coding"]);
-    $smarty->assign("NoPorts",$arrLang["No Ports availables"]);
-    $smarty->assign("LBL_LOADING",$arrLang["Loading SPAN"]);
-    $smarty->assign("LBL_SAVING",$arrLang["Saving configuration"]);
+    $smarty->assign("PORT_NOT_FOUND",_tr('Ports not Founds'));
+    $smarty->assign("NO_PUERTO",_tr("Port")." ");
+    $smarty->assign("Channel_detected_notused",_tr('Channel detected and not used'));
+    $smarty->assign("Channel_detected_use",_tr('Channel detected and in use'));
+    $smarty->assign("Undetected_Channel",_tr('Undetected Channel'));
+    $smarty->assign("SET_PARAMETERS_PORTS",_tr('You can set the parameters for these ports here'));
+    $smarty->assign("Status_ports",_tr('Port Status'));
+    $smarty->assign("SAVE", _tr("Save"));
+    $smarty->assign("EDIT", _tr("Edit"));
+    $smarty->assign("CANCEL", _tr("Cancel"));
+    $smarty->assign("Configuration_Span", _tr("Configuration of Span"));
+    $smarty->assign("Span_Settings", _tr("Span Settings"));
+    $smarty->assign("Advanced", _tr("Advanced"));
+    $smarty->assign("Preferences", _tr("Preferences"));
+    $smarty->assign("Timing_source", _tr("Timing source"));
+    $smarty->assign("Line_build_out", _tr("Line build out"));
+    $smarty->assign("Framing", _tr("Framing"));
+    $smarty->assign("Coding", _tr("Coding"));
+    $smarty->assign("NoPorts",_tr("No Ports availables"));
+    $smarty->assign("LBL_LOADING",_tr("Loading SPAN"));
+    $smarty->assign("LBL_SAVING",_tr("Saving configuration"));
+    $smarty->assign("HARDWARE_CONTROL",_tr("Hardware Control"));
+    $smarty->assign("CHANNELS_EMPTY",_tr("Channel Empty"));
 
     if($oPortsDetails->isInstalled_mISDN()){
         $smarty->assign("isInstalled_mISDN",true);
@@ -222,72 +224,6 @@ function hardwareDetect($smarty, $module_name, $local_templates_dir, &$pDB, $arr
     return $jsonObject->createJSON();
 }
 
-////////////NEW IMPLEMENTATION CODE FOR ECHO CANCELLER////////////////////////////
-/*
-function viewFormConfEcho($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
-{
-    $oPortsDetails = new PaloSantoHardwareDetection();
-    $pconfEcho = new paloSantoConfEcho($pDB);
-    $card_id     = getParameter("cardId");
-    $arrPortsEcho = $pconfEcho->getEchoCancellerByIdCard($card_id);
-
-    $arrFormprueba = createFieldForm($arrLang);
-    $oForm = new paloForm($smarty,$arrFormprueba);
-
-    //begin, Form data persistence to errors and other events.
-    $_DATA  = $_POST;
-    $action = getParameter("action");
-    $id     = getParameter("id");
-    
-    if($action=="view")
-        $oForm->setViewMode();
-    else if($action=="view_edit" || getParameter("save_edit"))
-        $oForm->setEditMode();
-
-    if($action=="view" || $action=="view_edit"){ // the action is to view or view_edit.
-        $dataprueba = $pconfEcho->getpruebaById($id);
-
-        if(is_array($dataprueba) & count($dataprueba)>0)
-            $_DATA = $dataprueba;
-        else{
-            $smarty->assign("mb_title", $arrLang["Error get Data"]);
-            $smarty->assign("mb_message", $pconfEcho->errMsg);
-        }
-    }
-    
-    $smarty->assign("DESC_ID", $card_id);
-
-    $dataCard = $pconfEcho->getCardParameterById($card_id);
-    $smarty->assign("ID", $dataCard['id_card']);
-    $smarty->assign("TIPO", $dataCard['type']);
-    $smarty->assign("ADICIONAL", $dataCard['additonal']);
-    $smarty->assign("MODULE_NAME",$module_name);
-
-    if(is_array($arrPortsEcho) && count($arrPortsEcho)>1){
-        $smarty->assign("arrPortsEcho", $arrPortsEcho);
-        $i=1;
-    }
-
-    $smarty->assign('type_echo_names', array(
-                              'none' => 'none',
-                              'OSLEC' => 'OSLEC',
-                              'MG2' => 'MG2',
-                              'KBL' => 'KBL',
-                              'SEC2' => 'SEC2',
-                              'SEC' => 'SEC'));
-    //$smarty->assign('typeecho_id', 1001);
-
-    $smarty->assign("SAVE", $arrLang["Save"]);
-    $smarty->assign("EDIT", $arrLang["Edit"]);
-    $smarty->assign("CANCEL", $arrLang["Cancel"]);
-    $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
-    $smarty->assign("IMG", "images/list.png");
-
-    $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",$arrLang["Configure Echo Cancellers"], $_DATA);
-    $content = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
-
-    return $content;
-}*/
 
 function viewFormConfEchoCard($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
 {
@@ -323,46 +259,6 @@ function viewFormConfEchoCard($smarty, $module_name, $local_templates_dir, &$pDB
     return $jsonObject->createJSON();
 
 }
-/*
-function saveNewConfEcho($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
-{
-    $pconfEcho = new paloSantoConfEcho($pDB);
-    $arrFormprueba = createFieldForm($arrLang);
-    $oForm = new paloForm($smarty,$arrFormprueba);
-
-    if(!$oForm->validateForm($_POST)){
-        // Validation basic, not empty and VALIDATION_TYPE 
-        $smarty->assign("mb_title", $arrLang["Validation Error"]);
-        $arrErrores = $oForm->arrErroresValidacion;
-        $strErrorMsg = "<b>{$arrLang['The following fields contain errors']}:</b><br/>";
-        if(is_array($arrErrores) && count($arrErrores) > 0){
-            foreach($arrErrores as $k=>$v)
-                $strErrorMsg .= "$k, ";
-        }
-        $smarty->assign("mb_message", $strErrorMsg);
-        $content = viewFormConfEcho($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
-        return $content;
-    }
-    else{
-        $id_card = getParameter("idCard");
-
-        $arrPortsEcho = $pconfEcho->getEchoCancellerByIdCard2($id_card);
-        $dataCard = $pconfEcho->getCardParameterById($id_card);
-        foreach($arrPortsEcho as $key => $value){
-            $num = $value['num_port'];
-            $type_echo_pas = getParameter("tmpTypeEcho".$num);//para reemplazar
-            $type_echo_selected = getParameter("typeecho_".$num);
-
-            $data = array(); 
-            $data['echocanceller'] = $pDB->DBCAMPO($type_echo_selected);
-
-            $pconfEcho->replaceEchoSystemConf($type_echo_pas, $type_echo_selected, $num, $dataCard['type']);
-
-            header("Location: ?menu=$module_name&action=report");
-        }
-    }
-}
-*/
 
 function saveNewConfEchoCard($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
 {

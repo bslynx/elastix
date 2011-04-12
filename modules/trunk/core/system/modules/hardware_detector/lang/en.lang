@@ -71,5 +71,7 @@ $arrLangModule=array(
 "Card Configured" => "Card Configured",
 "Loading SPAN" => "Loading SPAN",
 "Saving configuration" => "Saving configuration",
+"Hardware Control" => "Hardware Control",
+"Channel Empty" => "Channel Empty",
 );
 ?>

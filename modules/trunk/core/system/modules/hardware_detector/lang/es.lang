@@ -71,5 +71,9 @@ $arrLangModule=array(
 "Card Configured" => "Tarjeta Configurada",
 "Loading SPAN" => "Cargar SPAN",
 "Saving configuration" => "Configuración guardada",
+"Detected by Asterisk" => "Detectado por Asterisk",
+"Not detected by Asterisk" => "No detectado por Asterisk",
+"Hardware Control" => "Control de Hardware",
+"Channel Empty" => "Canal Vacío",
 );
 ?>

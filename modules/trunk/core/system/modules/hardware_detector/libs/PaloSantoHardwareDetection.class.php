@@ -65,10 +65,9 @@ class PaloSantoHardwareDetection
             $idTarjeta = 0;
             $count = 0; 
             foreach($respuesta as $key => $linea){
-                $estado_asterisk       = $arrLang['Unknown'];
+                $estado_asterisk       = _tr('Unknown');
                 $estado_asterisk_color = "gray";
                 $estado_dahdi_image    = "conn_unkown.png";
-
                 if(ereg("^### Span[[:space:]]+([[:digit:]]{1,}): ([[:alnum:]| |-|\/]+)(.*)$",$linea,$regs)){
                    $idTarjeta = $regs[1];
                    $dataCardParam = $this->getCardManufacturerById($pDB, $idTarjeta);
@@ -102,25 +101,36 @@ class PaloSantoHardwareDetection
 
                     $pconfEcho->addCardParameter($data2);
                 }
-                else if(ereg("[[:space:]]*([[:digit:]]+) ([[:alnum:]]+)[[:space:]]+([[:alnum:]]+)(.*)",$linea,$regs1)){
+                else if(ereg("[[:space:]]*([[:digit:]]+) ([[:alnum:]_]+)[[:space:]]+([[:alnum:]]+)(.*)",$linea,$regs1)){
                     //Estados de las lineas
-                   if(eregi("In use.*RED",$regs1[4])){
-                        $estado_asterisk       = $arrLang['Detected by Asterisk'];
+                   if(eregi("Hardware-assisted",$regs1[3].$regs1[4])){
+                        if(eregi("In use",$regs1[4])){
+                            $estado_asterisk       = _tr('Detected by Asterisk');
+                            $estado_asterisk_color = "green";
+                            $estado_dahdi_image    = "conn_ok_HC.png";
+                        }else{
+                            $estado_asterisk       = _tr('Detected by Asterisk');
+                            $estado_asterisk_color = "#FF7D7D";
+                            $estado_dahdi_image    = "conn_alarm_HC.png";
+                        }
+                   }
+                   else if(eregi("In use.*RED",$regs1[4])){
+                        $estado_asterisk       = _tr('Detected by Asterisk');
                         $estado_asterisk_color = "green";
                         $estado_dahdi_image    = "conn_alarm.png";
                    }
                    else if(eregi("In use",$regs1[4])){
-                        $estado_asterisk       = $arrLang['Detected by Asterisk'];
+                        $estado_asterisk       = _tr('Detected by Asterisk');
                         $estado_asterisk_color = "green";
                         $estado_dahdi_image    = "conn_ok.png";
                    }
                    else if(eregi("RED",$regs1[4])){
-                        $estado_asterisk       = $arrLang['Not detected by Asterisk'];
+                        $estado_asterisk       = _tr('Not detected by Asterisk');
                         $estado_asterisk_color = "#FF7D7D";
                         $estado_dahdi_image    = "conn_alarm.png";
                    }
                    else{
-                        $estado_asterisk       = $arrLang['Not detected by Asterisk'];
+                        $estado_asterisk       = _tr('Not detected by Asterisk');
                         $estado_asterisk_color = "#FF7D7D";
                         $estado_dahdi_image    = "conn_ok.png";
                    }
@@ -153,9 +163,13 @@ class PaloSantoHardwareDetection
                 }
                 else if(ereg("[[:space:]]*([[:digit:]]+) ([[:alnum:]]+)",$linea,$regs1)){
                    if($regs1[2] == 'unknown'){
-                        $estado_asterisk       = $arrLang['Unknown'];
+                        $estado_asterisk       = _tr('Unknown');
                         $estado_asterisk_color = 'gray';
                         $estado_dahdi_image    = 'conn_unkown.png';
+                   }else if(eregi("EMPTY",$regs1[2])){
+                        $estado_asterisk       = _tr('Channel Empty');
+                        $estado_asterisk_color = 'gray';
+                        $estado_dahdi_image    = 'conn_empty.png';
                    }
                    $tarjetas["TARJETA$idTarjeta"]['PUERTOS']["PUERTO$regs1[1]"] = array('LOCALIDAD' =>$regs1[1],'TIPO' => "&nbsp;", 'ADICIONAL' => $regs1[2], 'ESTADO_ASTERISK' => $estado_asterisk,'ESTADO_ASTERISK_COLOR' => $estado_asterisk_color,'ESTADO_DAHDI' => $estado_dahdi_image);
                 }
@@ -163,14 +177,14 @@ class PaloSantoHardwareDetection
         }
 
         if(count($tarjetas)<=0){ //si no hay tarjetas instaladas
-            $this->errMsg = $arrLang["Cards undetected on your system, press for detecting hardware detection."];
+            $this->errMsg = _tr("Cards undetected on your system, press for detecting hardware detection.");
             $tarjetas = array();
         }
         if(count($tarjetas)==1){ //si aparace la tarjeta por default ZTDUMMY
             $valor = $tarjetas["TARJETA1"]['DESC']['TIPO'];
             if(eregi("^DAHDI_DUMMY/1", $valor))
             {
-                $this->errMsg = $arrLang["Cards undetected on your system, press for detecting hardware detection."];
+                $this->errMsg = _tr("Cards undetected on your system, press for detecting hardware detection.");
                 $tarjetas = array();
             }
         }
@@ -190,7 +204,7 @@ class PaloSantoHardwareDetection
     {
         global $arrLang;
         $there_is_other_card= "";
-        $message = $arrLang["Satisfactory Hardware Detection"];
+        $message = _tr("Satisfactory Hardware Detection");
         $there_is_other_card  ="";
         $overwrite_chan_dahdi ="";
 
