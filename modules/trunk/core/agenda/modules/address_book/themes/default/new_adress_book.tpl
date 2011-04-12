@@ -31,7 +31,7 @@
                 <tr id="tr_new_contact">
                     <td width="310px" align="center">
             {if $ShowImg}
-                        <img alt="image" src="index.php?menu={$MODULE_NAME}&action=getImage&idPhoto={$idPhoto}&rawmode=yes"/>
+                        <img alt="image" src="index.php?menu={$MODULE_NAME}&action=getImage&idPhoto={$idPhoto}&thumbnail=no&rawmode=yes"/>
             {else}
                         <img alt="image" src="modules/{$MODULE_NAME}/images/Icon-user.png"/>
             {/if}
