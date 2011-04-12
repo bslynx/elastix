@@ -457,6 +457,19 @@ class paloSantoEndPoint
         return $extension;
     }
 
+    function getDescription($vendor)
+    {
+        $query = "Select description from vendor where name=?";
+        $arrParameters = array($vendor);
+        $pDB = $this->connectDataBase("sqlite","endpoint");
+        if($pDB==false)
+            return false;
+        $result = $pDB->getFirstRowQuery($query,true,$arrParameters);
+        if(!$result)
+            return "";
+        return $result['description'];
+    }
+
     function AsteriskManagerAPI($action, $parameters, $return_data=false) 
     {
         global $arrLang;

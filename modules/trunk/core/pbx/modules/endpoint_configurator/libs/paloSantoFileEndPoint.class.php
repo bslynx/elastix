@@ -185,13 +185,23 @@ class PaloSantoFileEndPoint
                if($ArrayData['data']['model'] == "SIP-T20/T20P" || $ArrayData['data']['model'] == "SIP-T22/T22P" || $ArrayData['data']['model'] == "SIP-T26/T26P" || $ArrayData['data']['model'] == "SIP-T28/T28P" ){
                     $contentFileYealink =PrincipalFileYealink($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer);
                         if($this->createFileConf($this->directory, $ArrayData['data']['filename'].".cfg", $contentFileYealink)){
-                            $parameters  = array('Command'=>'sip notify reboot-yealink '.$ArrayData['data']['ip_endpoint']);
+                            return true;
+                        }
+                        return false;
+                }
+                break;
+
+            case 'LG-ERICSSON':
+                if($ArrayData['data']['model'] == "IP8802A"){
+                    $contentFileLG_Ericsson = PrincipalFileLG_IP8802A($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'], $this->ipAdressServer);
+                    if($this->createFileConf($this->directory, $ArrayData['data']['filename'], $contentFileLG_Ericsson)){
+                        $parameters  = array('Command'=>'sip notify reboot-yealink '.$ArrayData['data']['ip_endpoint']);
                             $result      = $this->AsteriskManagerAPI('Command',$parameters);
                             if(!$result)
                                 return false;
                             return true;
-                        }
-                        return false;
+                    }
+                    return false;
                 }
                 break;
         }
@@ -270,6 +280,10 @@ class PaloSantoFileEndPoint
 
             case 'Yealink':
                 return $this->deleteFileConf($this->directory, $ArrayData['data']['filename'].".cfg");
+            break;
+
+            case 'LG-ERICSSON':
+                return $this->deleteFileConf($this->directory, $ArrayData['data']['filename']);
             break;
         }
     }
@@ -378,6 +392,12 @@ class PaloSantoFileEndPoint
                 $this->createFileConf($this->directory, "y000000000000.cfg", $contentFileYealink);
                 return true; //no es tan importante la necesidad de estos archivos solo son de ejemplo.
                 break;
+
+            case 'LG-ERICSSON':
+                $contentFileLG_Ericsson = templatesFileLG_Ericsson($this->ipAdressServer);
+                $this->createFileConf($this->directory, "l000000000000", $contentFileLG_Ericsson);
+                return true;
+                break;
         }
     }
 
@@ -446,6 +466,9 @@ class PaloSantoFileEndPoint
                 break;
 
             case 'Yealink':
+                break;
+
+            case 'LG-ERICSSON':
                 break;
         }
 
