@@ -130,6 +130,8 @@ function endpointConfiguratedShow($smarty, $module_name, $local_templates_dir, $
                     else{
                         $unset  = "";
                     }
+                    if($endspoint['desc_vendor'] == "Unknown")
+                        $endspoint['desc_vendor'] = $paloEndPoint->getDescription($endspoint['name_vendor']);
                     $currentExtension = $paloEndPoint->getExtension($endspoint['ip_adress']);
                     $arrTmp[0] = "<input type='checkbox' name='epmac_{$endspoint['mac_adress']}'  />";
                     $arrTmp[1] = $unset;
