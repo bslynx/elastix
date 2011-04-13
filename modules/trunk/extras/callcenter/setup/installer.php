@@ -69,6 +69,9 @@ if (file_exists($path_script_db))
     crearColumnaSiNoExiste($pDB, 'call_center', 'calls', 
         'datetime_originate', 
         "ADD COLUMN datetime_originate datetime default NULL");
+    crearColumnaSiNoExiste($pDB, 'call_center', 'agent', 
+        'eccp_password', 
+        "ADD COLUMN eccp_password varchar(128) default NULL");
     $pDB->disconnect();
 }
 
