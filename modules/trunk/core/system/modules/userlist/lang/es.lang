@@ -48,5 +48,6 @@ $arrLangModule=array(
 "Mail Profile" => "Perfil de Mail",
 "No extension associated" => "La extensión no ha sido asociada",
 "userNoAllowed" => "El usuario no está autorizado a realizar esta acción",
+"You are not authorized to access to information of that user" => "Usted no está autorizada a acceder a la información de ese usuario"
 );
 ?>
