@@ -40,6 +40,7 @@ function _moduleContent($smarty, $module_name)
     include_once "modules/$module_name/libs/paloSantoSysInfo.class.php";
     include_once "modules/$module_name/libs/paloSantoDashboard.class.php";
     include_once "modules/$module_name/configs/default.conf.php";
+    include_once "modules/applet_admin/libs/paloSantoAppletAdmin.class.php";
 
     //include file language agree to elastix configuration
     //if file language not exists, then include language by default (en)
@@ -98,8 +99,16 @@ function _moduleContent($smarty, $module_name)
             break;
     }
 
-
-    $arrPaneles = $oPalo->getAppletsActivated($_SESSION["elastix_user"]);
+    $session = getSession();
+    $arrPaneles = $oPalo->getAppletsActivated($session['elastix_user']);
+    if(is_array($arrPaneles) && count($arrPaneles) == 0){
+        $result = $oPalo->setDefaultActivatedAppletsByUser($session['elastix_user']);
+        if(!$result){
+            $smarty->assign("mb_title", $arrLang["ERROR"]);
+            $smarty->assign("mb_message", $oPalo->errMsg);
+        }
+        $arrPaneles = $oPalo->getAppletsActivated($session['elastix_user']);
+    }
     $AppletsPanels = createApplesTD($arrPaneles, $pDataApplets);
 
     $smarty->assign("module_name",  $module_name);
@@ -173,6 +182,17 @@ function executeImage($module_name, $sImg)
     }
 }
 
+function getSession()
+{
+    session_commit();
+    ini_set("session.use_cookies","0");
+    if(session_start()){
+        $tmp = $_SESSION;
+        session_commit();
+    }
+    return $tmp;
+}
+
 
 ////////////////////// Begin Funciones para Applets Admin /////////////////////////////////
 function showApplets_Admin()
@@ -182,7 +202,7 @@ function showApplets_Admin()
     global $arrConf;
     $module_name = "dashboard"; //$_SESSION["menu"];
 
-    $oPalo = new paloSantoSysInfo();
+    $oPalo = new paloSantoAppletAdmin();
     $oForm = new paloForm($smarty,array());
 
     $arrApplets = $oPalo->getApplets_User($_SESSION["elastix_user"]);
@@ -218,7 +238,7 @@ function saveApplets_Admin()
         }
     }
 
-    $oPalo = new paloSantoSysInfo();
+    $oPalo = new paloSantoAppletAdmin();
     $ok = $oPalo->setApplets_User($arrIDs_DAU, $_SESSION["elastix_user"]);
 
     if(!$ok){

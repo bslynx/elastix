@@ -622,8 +622,12 @@ class paloSantoSysInfo
         $dsn = "sqlite3:///$arrConf[elastix_dbdir]/dashboard.db";
         $pDB  = new paloDB($dsn);
         $arrApplets = array();
-
-        if($user!= "admin") $user="no_admin";
+        $pDB2 = new paloDB($arrConf['elastix_dsn']['acl']);
+        $pACL = new paloACL($pDB2);
+        if($pACL->isUserAdministratorGroup($user))
+            $typeUser = "admin";
+        else
+            $typeUser = "no_admin";
 
         $query = "select
                     a.code, a.icon, a.name, aau.id aau_id
@@ -634,11 +638,11 @@ class paloSantoSysInfo
                         inner join 
                     applet a on dau.id_applet=a.id 
                   where 
-                    dau.username='$user' 
+                    dau.username=? and aau.username=?
                   order 
                     by aau.order_no asc";
 
-        $result=$pDB->fetchTable($query,true);
+        $result=$pDB->fetchTable($query,true,array($typeUser,$user));
 
         if($result==FALSE){
             $this->errMsg = $pDB->errMsg; 
@@ -646,71 +650,6 @@ class paloSantoSysInfo
         }
 
         return $result;
-    }
-
-    function getApplets_User($user)
-    {
-        global $arrConf;
-        $dsn = "sqlite3:///$arrConf[elastix_dbdir]/dashboard.db";
-        $pDB  = new paloDB($dsn);
-        if($user!= "admin") $user="no_admin";
-
-        $query = "select 
-                    dau.id, a.name, ifnull(aau.id,0) activated, ifnull(aau.order_no,0) order_no
-                  from 
-                    applet a 
-                        inner join 
-                    default_applet_by_user dau on a.id=dau.id_applet 
-                        left join 
-                    activated_applet_by_user aau on dau.id = aau.id_dabu 
-                  where 
-                    dau.username='$user' 
-                  order by dau.id asc;";
-
-        $result=$pDB->fetchTable($query, true);
-
-        if($result==FALSE){
-            $this->errMsg = $pDB->errMsg;
-            return array();
-        } 
-        return $result;
-    }
-
-    function setApplets_User($arrIDs_DAU, $user)
-    {
-        global $arrConf;
-        $dsn = "sqlite3:///$arrConf[elastix_dbdir]/dashboard.db";
-        $pDB  = new paloDB($dsn);
-
-        if(is_array($arrIDs_DAU) & count($arrIDs_DAU)>0){
-            if($user!= "admin") $user="no_admin";
-
-            $pDB->beginTransaction();
-            // Parte 1: Elimino todas las actuales
-            $query1 = " delete from activated_applet_by_user 
-                        where id_dabu in (select id from default_applet_by_user where username='$user')";
-            $result1=$pDB->genQuery($query1);
-
-            if($result1==FALSE){
-                $this->errMsg = $pDB->errMsg;
-                $pDB->rollBack();
-                return false;
-            }
-
-            // Parte 2: Inserto todas las checked
-            foreach($arrIDs_DAU as $key => $value){
-                $query2 = "insert into activated_applet_by_user (id_dabu, order_no) values ($value,".($key+1).")";
-                $result2=$pDB->genQuery($query2);
-
-                    if($result2==FALSE){
-                        $this->errMsg = $pDB->errMsg;
-                        $pDB->rollBack();
-                        return false;
-                    }
-            }
-            $pDB->commit();
-        }
-        return true;
     }
 
     function setApplets_UserOrder($ids_applet)
@@ -737,6 +676,29 @@ class paloSantoSysInfo
             }
         }
         return false;
+    }
+
+    function setDefaultActivatedAppletsByUser($user)
+    {
+        global $arrConf;
+        $dsn = "sqlite3:///$arrConf[elastix_dbdir]/dashboard.db";
+        $pDB = new paloDB($dsn);
+        $pDB2 = new paloDB($arrConf['elastix_dsn']['acl']);
+        $pACL = new paloACL($pDB2);
+        if($pACL->isUserAdministratorGroup($user))
+            $id_dabu = 1;
+        else
+            $id_dabu = 13;
+        for($i=1;$i<=6;$i++){
+            $query  = "insert into activated_applet_by_user (id_dabu,order_no,username) values (?,?,?)";
+            $result = $pDB->genQuery($query,array($id_dabu,$i,$user));
+            if($result==FALSE){
+                $this->errMsg = $pDB->errMsg;
+                return false;
+            }
+            $id_dabu++;
+        }
+        return true;
     }
 }
 ?>

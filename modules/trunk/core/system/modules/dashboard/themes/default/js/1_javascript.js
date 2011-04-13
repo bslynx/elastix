@@ -252,7 +252,6 @@ function loadAppletData(){
                 request("index.php",arrAction,false,
                     function(arrData,statusResponse,error)
                     {
-  
                           document.getElementById(arrData["code"]).innerHTML = arrData["data"];
                     }
                 );
@@ -273,7 +272,6 @@ function loadAppletData(){
                 request("index.php",arrAction,false,
                     function(arrData,statusResponse,error)
                     {
-
                           document.getElementById(arrData["code"]).innerHTML = arrData["data"];
                     }
                 );
