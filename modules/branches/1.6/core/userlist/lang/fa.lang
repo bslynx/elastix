@@ -51,5 +51,6 @@ $arrLangModule=array(
 "Mail Profile" => "پروفایل ایمیل",
 "No extension associated" => "No extension associated",
 "userNoAllowed" => "User is not allowed to do this action",
+"You are not authorized to access to information of that user" => "You are not authorized to access to information of that user"
 );
 ?>
