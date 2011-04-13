@@ -3,7 +3,7 @@
 Summary: Elastix Module Reports 
 Name:    elastix-reports
 Version: 2.0.4
-Release: 8
+Release: 9
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
@@ -91,6 +91,10 @@ fi
 /usr/share/elastix/module_installer/*
 
 %changelog
+* Tue Apr 05 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-9
+- CHANGED:  Reports - Billing reports: Changes in styles and 
+  tpl. SVN Rev[2506]
+
 * Wed Mar 30 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-8
 - FIXED:  Reports - Email: Button cancel don't work in action 
   edit due to on URL put parameter "edit" where that parameter 

@@ -3,11 +3,11 @@
 Summary: Elastix Module PBX 
 Name:    elastix-%{modname}
 Version: 2.0.4
-Release: 17
+Release: 20
 License: GPL
 Group:   Applications/System
-#Source0: %{modname}_%{version}-%{release}.tgz
-Source0: %{modname}_%{version}-16.tgz
+Source0: %{modname}_%{version}-%{release}.tgz
+#Source0: %{modname}_%{version}-16.tgz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
 Prereq: elastix >= 2.0.4-10
@@ -224,6 +224,26 @@ fi
 /usr/share/elastix/tftp
 
 %changelog
+* Wed Apr 13 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-20
+- FIXED: pbx - extension_batch: Removed download_csv.php, this file 
+  was removed in commit 1550 but this file was put in this package 
+  by error in the rpm version 2.0.4-19.
+- ADDED: module endpoint_configurator, added the vendor LG-ERICSSON 
+  and the model IP8802A. SVN Rev[2536][2537]
+- CHANGED: module endpoint_configurator, changed model names for 
+  phones Yealink. SVN Rev[2527][2529][2530]
+- ADDED: module endpoint_configurator, added support for 
+  phones Yealink models T20, T22, T26 and T28. SVN Rev[2518][2519]
+
+* Tue Apr 04 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-19
+- FIXED: module voipprovider, undefined data was set to the 
+  combo box. Added a validation for default values in case of 
+  an undefined data. SVN Rev[2507]
+
+* Mon Apr 04 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-18
+- FIXED: module control_panel, when the area is empty, a box 
+  can not be dropped. Now it can. SVN Rev[2498]
+
 * Thu Mar 31 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-17
 - FIXED: Error to install databases of sqlite in "process of 
   installation" because in spec file when mysql is down this 

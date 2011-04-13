@@ -3,7 +3,7 @@
 Summary: Elastix Conference Room 
 Name:    elastix-conferenceroom
 Version: 0.0.0
-Release: 12
+Release: 13
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
@@ -37,9 +37,14 @@ mv setup/themes/ $RPM_BUILD_ROOT/var/www/html/
 
 # The following folder should contain all the data that is required by the installer,
 # that cannot be handled by RPM.
-mkdir -p $RPM_BUILD_ROOT/usr/share/elastix/module_installer/%{name}-%{version}-%{release}
-mv setup/ $RPM_BUILD_ROOT/usr/share/elastix/module_installer/%{name}-%{version}-%{release}/
+mkdir -p    $RPM_BUILD_ROOT/usr/share/elastix/module_installer/%{name}-%{version}-%{release}
+mv setup/   $RPM_BUILD_ROOT/usr/share/elastix/module_installer/%{name}-%{version}-%{release}/
 mv menu.xml $RPM_BUILD_ROOT/usr/share/elastix/module_installer/%{name}-%{version}-%{release}/
+
+# FIXED BUG process update rpm, database conference was deleted.
+mkdir -p    $RPM_BUILD_ROOT/var/www/db/
+touch       $RPM_BUILD_ROOT/var/www/db/conferencia.db
+
 
 %pre
 mkdir -p /usr/share/elastix/module_installer/%{name}-%{version}-%{release}/
@@ -60,8 +65,19 @@ preversion=`cat $pathModule/preversion_%{modname}.info`
 
 if [ $1 -eq 1 ]; then #install
   # The installer database
+    rm -rf /var/www/db/conferencia.db
     elastix-dbprocess "install" "$pathModule/setup/db"
 elif [ $1 -eq 2 ]; then #update
+    if [ "$preversion" = "0.0.0-12" ]; then
+       if [ -f "/var/www/db/conferencia.db.rpmsave" ]; then
+           echo "Restoring database conferencia.db"
+           if [ -f "/var/www/db/conferencia.db" ]; then
+               mv /var/www/db/conferencia.db /var/www/db/conferencia.db.bck
+           fi
+           mv /var/www/db/conferencia.db.rpmsave /var/www/db/conferencia.db
+           chown asterisk.asterisk /var/www/db/conferencia.db
+       fi
+    fi
     elastix-dbprocess "update"  "$pathModule/setup/db" "$preversion"
 fi
 
@@ -91,8 +107,15 @@ fi
 %defattr(-, asterisk, asterisk)
 %{_localstatedir}/www/html/*
 /usr/share/elastix/module_installer/*
+%config(noreplace) /var/www/db/conferencia.db
 
 %changelog
+* Fri Apr 08 2011 Bruno Macias <bmacias@palosanto.com> 0.0.0-13
+- FIXED: Bug database conference.db, When process update database
+   was deleted or rename as confenrece.db.rpmsave because now database 
+   process is administration by elatix-dbprocess. Section config in this
+   spec rename database by not exits file conference.db in main source.
+
 * Wed Mar 30 2011 Eduardo Cueva <ecueva@palosanto.com> 0.0.0-12
 - CHANGED: module elastix-conferenceroom, changed to the new 
   methodology for installing, updating and deleting databases by

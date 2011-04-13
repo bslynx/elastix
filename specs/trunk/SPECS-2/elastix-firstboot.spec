@@ -1,7 +1,7 @@
 Summary: Elastix First Boot Setup
 Name:    elastix-firstboot
 Version: 2.0.4
-Release: 6
+Release: 7
 License: GPL
 Group:   Applications/System
 Source0: %{name}-%{version}.tar.bz2
@@ -81,6 +81,11 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/elastix-firstboot/compat-dbscripts/08-schema-vtiger.sql
 
 %changelog
+* Mon Apr 04 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-7
+- FIXED: elastix-firstboot, Defined a temporal solution to add
+  localhost first in /etc/hosts, That solution is for cyrus admin 
+  authenticatication. SVN Rev[2497]
+
 * Thu Mar 31 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-6
 - ADD:     elastix-firsboot, Add comment to show the possible 
   bug in the future when the process to execute scripts throw 

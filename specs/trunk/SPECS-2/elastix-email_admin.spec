@@ -3,7 +3,7 @@
 Summary: Elastix Module Email 
 Name:    elastix-%{modname}
 Version: 2.0.4
-Release: 10
+Release: 12
 License: GPL
 Group:   Applications/System
 #Source0: %{modname}_%{version}-4.tgz
@@ -168,6 +168,22 @@ fi
 
 
 %changelog
+* Wed Apr 06 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0-4-12
+- FIXED:   email_admin - remote_smtp:  Fixed the event to add a 
+  relay smtp host where if the host needs a certificate ,this 
+  allow to send emails through but the mail server cannot 
+  receive mails. SVN Rev[2517]
+
+* Tue Apr 05 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-11
+- CHANGED:  email_admin - antispam: Changes translation lang 
+  files. SVN Rev[2509]
+- FIXED: Module Remote SMTP, bad definition language Ex. 
+  SVN Rev[2505]
+- CHANGED: Email - Antispam: Changed sieve script to improve
+  Spam filtering. SVN Rev[2503]
+- CHANGED: Module antispam, replace "start service" to 
+  "restart service". SVN Rev[2500]
+
 * Tue Mar 29 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-10
 - CHANGED: Fixed usability bug:
   "http://bugs.elastix.org/view.php?id=799" where password fields 
@@ -202,15 +218,15 @@ fi
 - CHANGED: In spec file move files to execute the action to
   to remove Spam and create Spam folders per email accounts.
 - CHANGED: In spec file change prereq elastix >= 2.0.4-13
-- CHANGED: email_admin - antispam:  Add Help in module antispam
-  and  functionality of delete emails of Spam per email account.
-  SVN Rev[2441]
-- CHANGED: misspell the word mailman, changed from mailmam to 
-  mailman.  SVN Rev[2409]
+- CHANGED: email_admin - antispam:  Added Help  entry of 
+  the Antispam module and the automatic periodic deletion 
+  of messages inside each account's Spam folder. SVN Rev[2441]
+- CHANGED: Misspelling of the word mailman, changed from 
+  mailmam to mailman.  SVN Rev[2409]
 - CHANGED:  New functionality of Antispam.
-        - Create of Spam folder by users
-        - Better filter of Spam by Sieve Service
-        - Better performance
+        - Automatically create Spam folder to each email account
+        - Improved Spam filtering through the use of Sieve Service
+        - Improved performance
   SVN Rev[2396] 
 
 * Tue Mar 01 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-6

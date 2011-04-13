@@ -2,7 +2,7 @@ Summary: Elastix is a Web based software to administrate a PBX based in open sou
 Name: elastix
 Vendor: Palosanto Solutions S.A.
 Version: 2.0.4
-Release: 17 
+Release: 18 
 License: GPL
 Group: Applications/System
 Source: elastix_%{version}-%{release}.tgz
@@ -232,6 +232,11 @@ rm -rf $RPM_BUILD_ROOT
 /bin/asterisk.reload
 
 %changelog
+* Mon Apr 05 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-18
+- CHANGED:  Framework - images: Resize the image  
+  x-lite-4-lrg.jpg because this was too big compared with the 
+  others. SVN Rev[2501]
+
 * Fri Apr 01 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-17
 - FIXED: additionals - elastix-dbprocess :  Add validation to 
   know if mysql is running or not in a process to install when 

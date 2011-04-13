@@ -3,7 +3,7 @@
 Summary: Elastix Extras 
 Name:    elastix-%{modname}
 Version: 2.0.4
-Release: 2
+Release: 3
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
@@ -62,6 +62,10 @@ fi
 /usr/share/elastix/module_installer/*
 
 %changelog
+* Tue Apr 05 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-3
+- FIXED: a2b menus in extras/menu.xml, deleted It is not usefull.
+  SVN Rev[2499]
+
 * Tue Mar 29 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-2
 - CHANGED: the information showed ih those static files had 
   some changes according to the bug #779. SVN Rev[2406]

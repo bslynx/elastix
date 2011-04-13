@@ -3,7 +3,7 @@
 Summary: Elastix Module Developer 
 Name:    elastix-%{modname}
 Version: 2.0.4
-Release: 1
+Release: 2
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
@@ -62,6 +62,9 @@ fi
 /usr/share/elastix/module_installer/*
 
 %changelog
+* Tue Apr 05 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-2
+- CHANGED: module build_module, missed tag >. SVN Rev[2513]
+
 * Tue Dec 28 2010 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-1
 - CHANGED: Module Developer, change format URL to be a array,
   this in the case of modules type of grid. SVN Rev[2164]

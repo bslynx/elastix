@@ -3,7 +3,7 @@
 Summary: Elastix Module System 
 Name:    elastix-%{modname}
 Version: 2.0.4
-Release: 9 
+Release: 11 
 License: GPL
 Group:   Applications/System
 #Source0: %{modname}_%{version}-6.tgz
@@ -117,6 +117,31 @@ fi
 %config(noreplace) /etc/dahdi/genconf_parameters
 
 %changelog
+* Tue Apr 12 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-11
+- FIXED:     System - hardware_detector:  Fixed bug where to 
+  install a mISDN hardware this required to do a yum install
+  mISDN but this process do not have misdnportinfo file which 
+  is in the mISDNuser package and mISDN not required mISDNuser 
+  but mISDNuser required mISDN. SVN Rev[2535]
+- CHANGED:   System - Hardware_detector:  New icons and images
+  to improve the style of hardware detector module. SVN Rev[2534]
+  FIXED:     System - Hardware_detector:  Fixed bug where 
+  channels of "Channelbank Xorcom" don't show correctly the 
+  states of Spans(channels). For more details:  
+  http://bugs.elastix.org/view.php?id=808. SVN Rev[2534]
+- FIXED: fix broken wanpipe hardware detection by adding /usr/sbin
+  to path in hardware_detector. Otherwise the command 
+  /usr/sbin/wanrouter is not found. SVN Rev[2533]
+
+* Tue Apr 05 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-10
+- CHANGED: module userlist, eliminated the field Retype Webmail 
+  Password. SVN Rev[2515]
+- CHANGED: module hardware_detector, changed the words 
+  "Channel detected and not used" to 
+  "Channel detected and not in service" and 
+  "Channel detected and in use" to 
+  "Channel detected and in service". SVN Rev[2510]
+
 * Tue Mar 29 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-9
 - CHANGED: module shutdown, unnecessary word "Required field". 
   That word is not longer showed. SVN Rev[2462]
