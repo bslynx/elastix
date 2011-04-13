@@ -402,7 +402,7 @@ CREATE TABLE IF NOT EXISTS `current_call_entry` (
 
 --
 -- Table structure for table `eccp_authorized_clients`
----
+--
 CREATE TABLE IF NOT EXISTS `eccp_authorized_clients` (
     `id` int(10) unsigned NOT NULL auto_increment,
     `username` varchar(64) NOT NULL,
