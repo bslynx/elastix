@@ -115,11 +115,16 @@ function saveApplets_Admin()
     }
 
     $pAppletAdmin = new paloSantoAppletAdmin();
-    $ok = $pAppletAdmin->setApplets_User($arrIDs_DAU, $_SESSION["elastix_user"]);
-
-    if(!$ok){
-        $smarty->assign("mb_title", $arrLang["Validation Error"]);
-        $smarty->assign("mb_message", $pAppletAdmin->errMsg);
+    if(count($arrIDs_DAU)==0){
+        $smarty->assign("mb_title", $arrLang["ERROR"]);
+        $smarty->assign("mb_message", $arrLang["You must have at least one applet activated"]);
+    }
+    else{
+        $ok = $pAppletAdmin->setApplets_User($arrIDs_DAU, $_SESSION["elastix_user"]);
+        if(!$ok){
+            $smarty->assign("mb_title", $arrLang["Validation Error"]);
+            $smarty->assign("mb_message", $pAppletAdmin->errMsg);
+        }
     }
     return showApplets_Admin();
 }

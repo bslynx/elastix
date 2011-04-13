@@ -26,6 +26,7 @@
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
   $Id: paloSantoprueba_applets.class.php,v 1.1 2009-12-28 06:12:49 Bruno bomv.27 Exp $ */
+
 class paloSantoAppletAdmin {
     var $errMsg;
 
@@ -38,21 +39,45 @@ class paloSantoAppletAdmin {
         global $arrConf;
         $dsn = "sqlite3:///$arrConf[elastix_dbdir]/dashboard.db";
         $pDB  = new paloDB($dsn);
-        if($user!= "admin") $user="no_admin";
+        $pDB2 = new paloDB($arrConf['elastix_dsn']['acl']);
+        $pACL = new paloACL($pDB2);
 
-        $query = "select 
-                    dau.id, a.name, ifnull(aau.id,0) activated, ifnull(aau.order_no,0) order_no
-                  from 
-                    applet a 
-                        inner join 
-                    default_applet_by_user dau on a.id=dau.id_applet 
-                        left join 
-                    activated_applet_by_user aau on dau.id = aau.id_dabu 
-                  where 
-                    dau.username='$user' 
-                  order by dau.id asc;";
+        if($pACL->isUserAdministratorGroup($user))
+            $typeUser = "admin";
+        else
+            $typeUser = "no_admin";
 
-        $result=$pDB->fetchTable($query, true);
+        $query = "
+                select
+                    t1.id id,
+                    t1.name name,
+                    ifnull(t2.activated,0) activated,
+                    ifnull(t2.order_no,0) order_no
+                from
+                    (select
+                        dau.id id,
+                        a.name name
+                     from
+                        applet a
+                            inner join
+                        default_applet_by_user dau on a.id=dau.id_applet
+                    where
+                        dau.username=?) t1
+                left join
+                    (select
+                        aau.id_dabu id_dabu,
+                        aau.id activated,
+                        aau.order_no order_no
+                     from
+                        activated_applet_by_user aau
+                     where
+                        aau.username=?) t2
+                on
+                    t1.id=t2.id_dabu
+                order by
+                    t1.id asc;";
+
+        $result=$pDB->fetchTable($query, true,array($typeUser,$user));
 
         if($result==FALSE){
             $this->errMsg = $pDB->errMsg;
@@ -68,13 +93,19 @@ class paloSantoAppletAdmin {
         $pDB  = new paloDB($dsn);
 
         if(is_array($arrIDs_DAU) & count($arrIDs_DAU)>0){
-            if($user!= "admin") $user="no_admin";
+            $pDB2 = new paloDB($arrConf['elastix_dsn']['acl']);
+            $pACL = new paloACL($pDB2);
+
+            if($pACL->isUserAdministratorGroup($user))
+                $typeUser = "admin";
+            else
+                $typeUser = "no_admin";
 
             $pDB->beginTransaction();
             // Parte 1: Elimino todas las actuales
             $query1 = " delete from activated_applet_by_user 
-                        where id_dabu in (select id from default_applet_by_user where username='$user')";
-            $result1=$pDB->genQuery($query1);
+                        where username=? and id_dabu in (select id from default_applet_by_user where username=?)";
+            $result1=$pDB->genQuery($query1,array($user,$typeUser));
 
             if($result1==FALSE){
                 $this->errMsg = $pDB->errMsg;
@@ -84,8 +115,8 @@ class paloSantoAppletAdmin {
 
             // Parte 2: Inserto todas las checked
             foreach($arrIDs_DAU as $key => $value){
-                $query2 = "insert into activated_applet_by_user (id_dabu, order_no) values ($value,".($key+1).")";
-                $result2=$pDB->genQuery($query2);
+                $query2 = "insert into activated_applet_by_user (id_dabu, order_no, username) values (?,?,?)";
+                $result2=$pDB->genQuery($query2,array($value,$key+1,$user));
 
                     if($result2==FALSE){
                         $this->errMsg = $pDB->errMsg;
