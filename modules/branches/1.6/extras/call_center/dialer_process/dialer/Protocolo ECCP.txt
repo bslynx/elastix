@@ -1,146 +1,38 @@
 Protocolo ECCP v0.1
 -------------------
-Revisión 3.
+Revisión 4
 Estatus: Alfa
-
-Autores:
-Edgar Landívar
-Alex Villacís
-Bruno Macías
-
-Agradecimiento especial al Ing. Marcelo Loor por sus valiosos comentarios
-Copyright 2010, 2011 – PaloSanto Solutions
 
 Objetivo
 --------
 El protocolo ECCP es un protocolo basado en XML cuya finalidad es la de proveer 
-de un API de comunicaciones a través de la red para que aplicaciones externas
+de un API de comunicaciones a través de un puerto TCP para que aplicaciones externas
 puedan comunicarse con el motor de call center que provee Elastix.
 
-La carencia de un mecanismo de comunicación entre el servidor (motor de call 
-center) y las aplicaciones cliente, que permitiera la transmisión de eventos 
-asincrónicos, fue una de las motivaciones para la creación del ECCP.
-
-En el antiguo esquema una aplicación cliente debía enviar peticiones periódicas 
-al servidor para enterarse de la ocurrencia de ciertos eventos.
+La carencia de un mecanismo de comunicación entre el motor de call center y las 
+aplicaciones cliente, que permita la transmisión de eventos asincrónicos, fue una 
+de las motivaciones para la creación del ECCP. Antes del ECCP una aplicación cliente 
+debía enviar peticiones periódicas al servidor para enterarse de la ocurrencia de 
+eventos asincrónicos.
 
 Por otro lado, era necesario una estandarización del protocolo de comunicaciones
-con el motor de call center con miras a permitir escalabilidad y organización,
-minimizando la reescritura de las aplicaciones clientes cuando se introduzcan 
-cambios en el protocolo.
-
-Antecedentes
-------------
-
-El módulo de Call Center de Elastix fue originalmente un sistema para 
-administrar y ejecutar automáticamente las llamadas salientes de un cliente
-que poseía un centro de llamados como parte de su sistema de mercadeo. Desde el
-principio fue necesario dividir el sistema en una parte que se encarga de la
-interfaz web (de aquí en adelante llamada la Consola de Agente, o simplemente
-la Consola), y un servicio residente en memoria, que se encarga de originar las
-llamadas cuando se cumplen los horarios de la campaña (de aquí en adelante
-conocido como el Marcador). El desarrollo del Marcador fue asignado a mi 
-persona, y el desarrollo de la Consola, así como el diseño de la base de datos,
-fue asignado a otra persona del equipo. Debido a limitaciones en conocimientos
-de técnicas de interacción entre programas, se decidió que el Marcador y la
-Consola debían de interactuar a través de la base de datos, de la siguiente
-manera:
-
-* Se crean dos tablas en la base de datos: current_calls y current_call_entry.
-* El marcador inicia las llamadas salientes, y cuando se conoce cuál agente fue
-  asignado a la llamada originada, se escribe un registro en la tabla 
-  current_calls con la información de la asociación.
-* Adicionalmente, para cada cola monitoreada para llamadas entrantes, si una 
-  llamada resulta asignada a un agente, se escribe un registro en la tabla
-  current_call_entry con la información de la asociación.
-* Al desconectarse la llamada monitoreada, su correspondiente registro se borra
-  de la tabla current_calls o current_call_entry.
-* La Consola, por medio de Javascript, hace una petición al servidor Elastix,
-  cada 4 segundos, para revisar las tablas current_calls y current_call_entry.
-* Si se encuentra en alguna de las tablas un registro para el agente logoneado
-  en la Consola, se lee la información adicional de la base de datos. Con esta
-  información se muestra el formulario, el script de la campaña, y la 
-  información del contacto, si existe. Mientras tanto, la Consola sigue enviando
-  peticiones cada 4 segundos para detectar el fin de la llamada.
-* Al desaparecer el registro de la tabla correspondiente, la Consola asume que 
-  la llamada ha terminado, y vuelve a poner la interfaz en el estado libre, 
-  hasta que entre la siguiente llamada.
-
-Luego de tener implementado el modelo de interacción descrito arriba, se decidió
-publicar el módulo como un plugin de Elastix. Al ser usado por clientes de todo
-el mundo, con grandes centros telefónicos, se hicieron evidentes las siguientes
-limitaciones:
-
-* Gran parte del tiempo, el estado del agente no cambia. O el agente está 
-  ocupado atendiendo una llamada, o está libre esperando la siguiente llamada.
-  Por lo tanto, la mayoría de las veces, la Consola recibe una respuesta que 
-  deja a la interfaz web sin cambio alguno con respecto a la última vez que se
-  hizo la petición. Entonces muchas de las peticiones resulta innecesarias.
-* Cada petición que se realiza consume ancho de banda. En una LAN, el problema
-  no es muy evidente, pero resulta más obvio si el servidor Elastix está en el 
-  Internet y la conexión es de poco ancho de banda.
-* Cada petición que se realiza consume esfuerzo de CPU en el servicio Web, para
-  contestarla, lo cual agrega carga en el CPU. Esta carga es incluso mayor 
-  porque Elastix usa HTTPS por omisión, y se agrega procesamiento de CPU para
-  desencriptar la petición y encriptar la respuesta.
-* Cada petición que se realiza involucra varias consultas a la base de datos,
-  para determinar (usualmente) que nada ha cambiado. Esto también involucra
-  esfuerzo de CPU en el proceso de base de datos.
-* Los puntos anteriores crecen linealmente con cada agente nuevo que se añade al
-  sistema. El número de agentes no puede crecer indefinidamente, porque el 
-  esfuerzo consumirá eventualmente toda la capacidad de CPU disponible.
-* El intervalo de 4 segundos entre cada petición introduce una latencia de hasta
-  4 segundos desde el momento en que el estado del agente cambia (libre a 
-  ocupado o viceversa), y el momento en que la interfaz de la Consola cambia 
-  para reflejar el nuevo estado del agente. Si se intentara reducir el intervalo
-  de verificación para reducir la latencia, se empeoran todos los puntos 
-  anteriores, multiplicado por el número de agentes simultáneos.
-* Algunas validaciones críticas (auditoría de breaks) están implementadas en el
-  código que se ejecuta como parte de las peticiones periódicas. Si el navegador
-  es cerrado sin hacer un logout, o si termina anormalmente, o si se pierde la
-  conexión a la máquina, la base de datos puede quedar en un estado inconsistente.
-  Véase los bugs de Elastix: #494
-
-Adicionalmente, la Consola debe de incluir en su consulta periódica la 
-verificación de si el agente está logoneado en la cola, o si sigue logoneado.
-El estado de logoneo del agente puede cambiar de forma asíncrona, sin mediar
-acción alguna por parte de la Consola o el Marcador. Si el agente se 
-deslogoneara de la cola mientras la Consola lo mostraba como libre, debe de 
-redirigirse automáticamente al diálogo de ingreso al sistema de CallCenter.
-Actualmente, para realizar la consulta de si el agente está logoneado, la 
-Consola requiere abrir una conexión al AMI de Asterisk y ejecutar la consulta.
-Este esfuerzo involucra carga al Asterisk, cada 4 segundos, y multiplicada por
-el número de agentes simultáneos.
-
-La arquitectura de usar las tablas para coordinar entre el Marcador y la Consola
-es un ejemplo de Base-de-Datos-como-RPC, lo que es un anti-patrón conocido, y
-causante de las limitaciones descritas arriba. Debido a que el Marcador mantiene
-una conexión persistente al AMI de Asterisk, y además monitorea los agentes 
-al ser asignados llamadas, el Marcador está en la posición adecuada para poder
-avisar si un agente está logoneado, y que se le ha asignado una llamada o que
-la llamada ha terminado. Pero se requiere comunicarlo con un mecanismo que 
-permita esperar un evento sin preguntas constantes. El mecanismo más conveniente
-de implementar es un socket de escucha abierto por el Marcador para avisar 
-eventos.    
-
-
+con el motor de call center con miras a permitir escalabilidad y organización.
 
 Convenciones usadas en este documento
 -------------------------------------
+En la mayor parte de este documento, cuando se refiera a “atributos” y “elementos”, 
+estos términos estarán relacionados con su definición dentro del lenguaje XML.
 
-En la mayor parte de este documento, cuando se refiera a “atributos” y 
-“elementos”, estos términos estarán relacionados con su definición dentro del 
-lenguaje XML.
+Cuando se mencione la palabra servidor (a secas) se estará haciendo referencia al 
+servidor de call center, que viene junto con el módulo de call center de Elastix. 
+Este programa también recibe el nombre de “dialerd”.
 
-Cuando se mencione la palabra servidor (a secas) por omisión se estará haciendo
-referencia al servidor de call center, que viene junto con el módulo de call 
-center de Elastix. Este programa también recibe el nombre de “dialerd”.
-
-Formato de fechas y horas:
-Toda fecha tendrá formato yyyy­-mm­-dd y todo hora tendrá formato hh:mm:ss. La zona
+Toda fecha tendrá formato yyyy-mm-dd y todo hora tendrá formato hh:mm:ss. La zona
 horaria con la que se opera es siempre la que se ha configurado en el servidor
 que ejecuta el programa dialerd. 
 
+La palabra 'CallCenter' (sensitiva a mayusculas) se utilizará para referirse
+al módulo CallCenter de Elastix.
 
 Arquitectura
 ------------
@@ -195,14 +87,15 @@ Para el servidor cada consola de agente es vista como una aplicación cliente.
 
 Como vemos en el ejemplo anterior el servidor ha iniciado 3 sesiones, una para 
 cada aplicación cliente, que en este caso vendría a ser cada consola de agente.
-Este esquema es más sencillo de implementar.
+Este esquema es el más sencillo de implementar.
 
 Escenario 2: Consolas de agente que se conectan mediante una aplicación cliente
 intermediaria.
 
 Aquí la aplicación cliente intermediaria se encarga de gestionar el ingreso de 
-varios agentes. En este escenario, para el servidor la aplicación cliente 
-intermediaria es vista como una aplicación cliente, las consolas de agente no.
+varios agentes. En este escenario, desde el punto de vista del servidor, la
+aplicación cliente intermediaria es vista como una aplicación cliente, mientras
+que las consolas de agente no.
 
                                                 --------------------------------
                                         /-------| Consola de agente (agente 1) |
@@ -214,32 +107,26 @@ intermediaria es vista como una aplicación cliente, las consolas de agente no.
                                         \-------| Consola de agente (agente 3) |
                                                 --------------------------------
 
-Como vemos en el ejemplo anterior el servidor ha iniciado UNA SOLA SESION en 
-lugar de tres. Además, para el servidor la aplicación cliente es la aplicación 
-intermediara, más no las consolas de agente.
+Como vemos en el ejemplo anterior, el servidor ha iniciado UNA SOLA SESION en 
+lugar de tres. 
 
-En un futuro podremos referirnos a esta aplicación intermediara como *servidor 
-de concurrencia*. Un servidor de concurrencia es útil en varios sentidos. Uno de
+En un futuro nos referirnos a esta aplicación intermediara como *servidor de 
+concurrencia*. Un servidor de concurrencia es útil en varios sentidos. Uno de
 ellos es que se liberan recursos del servidor Elastix, pues el servidor de 
-concurrencia puede estar instalado inclusive en un equipo remoto. El servidor
-Elastix ya no tiene que encargarse de gestionar las sesiones para las 
-aplicaciones clientes.
+concurrencia puede estar instalado en un equipo remoto. El servidor Elastix ya 
+no tiene que encargarse de gestionar las sesiones para las aplicaciones 'cliente'.
 
-La aplicación intermedia también podría servir de caché para descongestionar los
-requerimientos al servidor Elastix. Por ejemplo, podría hacer caché de 
-información de las campañas.
+El servidor de concurrencia también puede servir de servidor de caché para 
+descongestionar los requerimientos al servidor Elastix. Por ejemplo, podría hacer 
+caché de información de las campañas. 
 
 Consideraciones de seguridad
 ----------------------------
-La presente versión del protocolo no soporta TLS. Sin embargo, se contempla el 
-soporte de este protocolo en versiones futuras.
-
 Para mantener cierto control sobre las aplicaciones cliente que se conectan al 
 servidor, este último mantendrá un registro de IPs autorizadas para conectarse.
 En caso de que un cliente intente conectarse desde una dirección IP no 
 autorizada, el servidor simplemente cerrará la conección con un mensaje 
 “Connection refuesed” y escribirá un mensaje de error en el log respectivo.
-
 
 Tipos de paquetes
 -----------------
@@ -253,7 +140,6 @@ son definidas a continuación.
 
 Evento
 ------
-
 Un evento es generado por un acontecimiento asincrónico ocurrido en el Servidor.
 A continuación su sintáxis básica:
 <event>
@@ -268,17 +154,14 @@ etiqueta o atributo que no sepa manejar en el evento que recibe.
 
 Requerimiento
 -------------
-
 Un requerimiento es un mensaje enviado por la aplicación cliente hacia el 
 servidor. El servidor contestará este mensaje con la respuesta apropiada.
 
-Identificador del requerimiento
--------------------------------
 En el requerimiento se incluye un atributo llamado id. Este id no es otra cosa
 que una cadena de caracteres que sirve para poder identificar la respuesta. De 
 este modo se minimiza la posibilidad de que ocurran problemas ocasionados por
 condiciones de carrera. El identificador consta de dos partes unidas por un 
-punto: la primera parte está constituida por el timestamp unix y la segunda 
+punto: la primera parte está constituida por el timestamp UNIX y la segunda 
 parte está compuesta de un entero aleatorio de 6 caracteres.
 Un ejemplo de identificador es el siguiente:
 
@@ -292,7 +175,6 @@ A continuación de un ejemplo de un requerimiento:
 
 Respuesta
 ---------
-
 Un requerimiento puede producir una o varias respuestas. Las respuestas se 
 relacionan con los requerimientos a través del identificador del requerimiento.
 A continuación su sintaxis básica:
@@ -305,13 +187,12 @@ IMPORTANTE: para extensión futura del protocolo, pueden definirse etiquetas y
 atributos adicionales en respuestas definidass. El cliente ECCP DEBE IGNORAR 
 cualquier etiqueta o atributo que no sepa manejar en la respuesta que recibe.
 
-Autenticación
--------------
-
-Algunos de los métodos listados en este manual ordenan actualizaciones en el 
-estado del sistema que deben ser autorizadas únicamente para un agente en 
-particular. Cuando un método requiere ser autenticado, el método usado es el 
-siguiente: 
+Autenticación de Requerimientos
+-------------------------------
+Algunos de los Requerimientos listados en este manual ordenan actualizaciones en 
+el estado del sistema que deben ser autorizadas únicamente para un agente en 
+particular. Cuando un Requerimiento requiere ser autenticado, el método usado es 
+el siguiente: 
 * Cada agente tiene asignada una contraseña conocida por el servidor.
 * El requerimiento "login" de la aplicación, en caso de tener éxito, devuelve
   un texto aleatorio como contenido del tag "app_cookie". De aquí en adelante
@@ -335,7 +216,6 @@ el valor de hash calculado de la manera indicada anteriormente.
 
 Mensajes de error
 -----------------
-
 Los requerimientos definidos en este documento pueden reportar errores de la 
 siguiente manera:
 
@@ -379,9 +259,10 @@ Código de error     Significado
 Casos comunes de errores
 ------------------------
 
-Respuestas a requerimientos sin previo inicio de sesión
--------------------------------------------------------
+Respuestas a requerimientos sin previo inicio de sesión:
+
 En caso de requerimientos sin previo inicio de sesión, el servidor responderá así:
+
 <response id=identificador>
   <failure>
     <code>401</code>
@@ -389,21 +270,21 @@ En caso de requerimientos sin previo inicio de sesión, el servidor responderá 
   </failure>
 </response>
 
-Respuestas a requerimientos mal formateados
--------------------------------------------
+Respuestas a requerimientos mal formateados:
+
 En caso de que el servidor no pueda entender algún requerimiento, responderá así:
+
 <response>
   <failure>
     <code>400</code>
     <message>Bad request</message>
   </failure>
 </response>
-Como se puede observar, el atributo id no se incluye.
 
+Como se puede observar, el atributo id no se incluye.
 
 Modelo de funcionamiento de CallCenter
 --------------------------------------
-
 A continuación se describe el modelo de funcionamiento del sistema CallCenter.
 Esta explicación proporciona una referencia para comprender los tipos de 
 requerimientos que son necesarios en el protocolo ECCP, así como los parámetros
@@ -429,16 +310,16 @@ del documento, un agente se lo identifica con la cadena de canal: Agent/9000.
 Un mismo agente puede pertenecer a múltiples colas.
 
 Para que una extensión haga uso de un agente estático, debe de completar el 
-procedimiento de login a la cola. En Elastix, se ha configurado el número *8888
+procedimiento de 'login' a la cola. En Elastix, se ha configurado el número *8888
 como login de cola arbitraria. Al marcar este número, la extensión oye una 
 grabación para ingresar el número de agente que se va a usar. Luego de digitado,
 se reproduce otra grabación para que ingrese la contraseña del agente. Si se
 digita correctamente la contraseña, la extensión ingresa a la cola como un 
 agente, y la extensión reproduce música de espera hasta que se le asigne una
 llamada. Para finalizar el login a la cola, se cuelga la extensión, o se ejecuta
-el método Agentlogoff del AMI indicando el canal Agent/XXXX a deslogonear. Al 
-realizar login y logout a través del CallCenter, el sistema lleva la auditoría
-de cuánto tiempo ha estado logoneado cada agente.
+el método Agentlogoff del AMI indicando el canal Agent/XXXX que desea terminar
+la sesión. Al realizar login y logout a través del CallCenter, el sistema lleva 
+la auditoría de cuánto tiempo ha estado logoneado cada agente.
 
 El CallCenter soporta dos modos principales de operación: campañas salientes y
 campañas entrantes. Una campaña tiene asociada una cola, a través de la cual
@@ -481,9 +362,6 @@ se los llama "breaks". Cuando un agente debe ingresar a un break, se selecciona
 desde la interfaz el tipo de break que debe de usar. Luego, al terminar el break
 el agente lo indica a través de la interfaz, y empieza a recibir llamadas otra
 vez.
-
-TODO: explicar transferencia de llamadas
-TODO: explicar agendamiento de llamadas
 
 Listado de eventos
 ------------------
@@ -769,7 +647,6 @@ Ejemplo:
 
 Listado de requerimientos
 -------------------------
-
 Nota: Para facilitar la legibilidad del presente documento, se presentarán aquí 
 también las "respuestas" a cada requerimiento.
 
