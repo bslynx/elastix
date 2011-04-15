@@ -62,6 +62,11 @@
             <group id="1" name="administrator" desc="total access"></group>
         </permissions>
     </menuitem>
+    <menuitem menuid="festival"            desc="Festival"             parent="tools"     module="yes" link=""      order="84">
+      <permissions>
+        <group id="1" name="administrator" desc="total access"></group>
+      </permissions>
+    </menuitem>
     <menuitem menuid="fop"                    desc="Flash Operator Panel"    parent="pbxconfig" module="no"  link="panel" order="9">
         <permissions>
             <group id="1" name="administrator" desc="total access"></group>
