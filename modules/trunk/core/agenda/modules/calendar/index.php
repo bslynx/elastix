@@ -1230,9 +1230,11 @@ function createAudioFiles($asterisk_call,$ext,$call_to,$pDB,$id_event,$arrLang,$
                         "MaxRetries: $iRetries\n".
                         "RetryTime: 60\n".
                         "WaitTime: 30\n".
-                        "Context: festival-event\n".
+                        //"Context: festival-event\n".
+                        "Application: Festival\n".
                         "Extension: {$result['number']}\n".
                         "Priority: 1\n".
+                        "Data: $recording\n".
                         "Set: TTS=$recording\n";
     }
 

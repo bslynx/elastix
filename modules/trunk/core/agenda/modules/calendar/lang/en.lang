@@ -160,6 +160,6 @@ $arrLangModule=array(
 "Text to Speech" => "Text to Speech",
 "Search in Address Book" => "Search in Address Book",
 "Listen" => "Listen",
-"Festival is not up" => "Festival is not up",
+"Festival is not up" => "Festival is not up. For activate Festival you can do it from the menu PBX->Tools->Festival",
 );
 ?>
