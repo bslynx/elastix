@@ -663,6 +663,43 @@ function checkbox($id_name, $checked='off', $disable='off')
 }
 
 /**
+* Funcion que sirve para obtener los valores de los parametros de los campos en los
+* formularios, Esta funcion verifiva si el parametro viene por POST y si no lo encuentra
+* trata de buscar por GET para poder retornar algun valor, si el parametro ha consultar no
+* no esta en request retorna null.
+*
+* Ejemplo: $nombre = getParameter('nombre');
+*/
+function getParameter($parameter)
+{
+    if(isset($_POST[$parameter]))
+        return $_POST[$parameter];
+    else if(isset($_GET[$parameter]))
+        return $_GET[$parameter];
+    else
+        return null;
+}
+
+/**
+ * Función para obtener la clave del Cyrus Admin de Elastix.
+ * La clave es obtenida de /etc/elastix.conf
+ *
+ * @param   string  $ruta_base          Ruta base para inclusión de librerías
+ *
+ * @return  mixed   NULL si no se reconoce usuario, o la clave en plaintext
+ */
+function obtenerClaveCyrusAdmin($ruta_base='')
+{
+    require_once $ruta_base.'libs/paloSantoConfig.class.php';
+
+	$pConfig = new paloConfig("/etc", "elastix.conf", "=", "[[:space:]]*=[[:space:]]*");
+	$listaParam = $pConfig->leer_configuracion(FALSE);
+	if (isset($listaParam['cyrususerpwd'])) 
+		return $listaParam['cyrususerpwd']['valor'];
+	else return 'palosanto'; // Compatibility for updates where /etc/elastix.conf is not available
+}
+
+/**
  * Función para obtener la clave MySQL de usuarios bien conocidos de Elastix.
  * Los usuarios conocidos hasta ahora son 'root' (sacada de /etc/elastix.conf)
  * y 'asteriskuser' (sacada de /etc/amportal.conf)
