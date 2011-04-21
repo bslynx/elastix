@@ -266,16 +266,6 @@ function form_Recordings($smarty, $module_name, $local_templates_dir, $arrLang)
     return $contenidoModulo;
 }
 
-function getParameter($parameter)
-{
-    if(isset($_POST[$parameter]))
-        return $_POST[$parameter];
-    else if(isset($_GET[$parameter]))
-        return $_GET[$parameter];
-    else
-        return null;
-}
-
 function getAction()
 {
     if(getParameter("record"))

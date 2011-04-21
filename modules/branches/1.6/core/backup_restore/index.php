@@ -1622,15 +1622,4 @@ function crear_mailbox_usuario($email,$username,$quota,&$error_msg){
 
     return TRUE;
 }
-
-function getParameter($parameter)
-{
-    if(isset($_POST[$parameter]))
-        return $_POST[$parameter];
-    else if(isset($_GET[$parameter]))
-        return $_GET[$parameter];
-    else
-        return null;
-}
-
 ?>
