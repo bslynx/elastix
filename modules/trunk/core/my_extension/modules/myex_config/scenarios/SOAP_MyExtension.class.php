@@ -28,7 +28,7 @@
   $Id: SOAP_MyExtension.class.php,v 1.0 2011-03-31 13:10:00 Alberto Santos F.  asantos@palosanto.com Exp $*/
 
 $root = $_SERVER["DOCUMENT_ROOT"];
-require_once("$root/modules/myex_config/libs/puntosF_MyExtension.class.php");
+require_once("$root/modules/myex_config/libs/core.class.php");
 
 class SOAP_MyExtension extends puntosF_MyExtension
 {
