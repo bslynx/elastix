@@ -28,7 +28,7 @@
   $Id: SOAP_Fax.class.php,v 1.0 2011-03-31 13:00:00 Alberto Santos F.  asantos@palosanto.com Exp $*/
 
 $root = $_SERVER["DOCUMENT_ROOT"];
-require_once("$root/modules/faxviewer/libs/puntosF_Fax.class.php");
+require_once("$root/modules/faxviewer/libs/core.class.php");
 
 class SOAP_Fax extends puntosF_Fax
 {
