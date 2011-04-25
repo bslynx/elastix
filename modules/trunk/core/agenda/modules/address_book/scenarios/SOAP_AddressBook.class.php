@@ -30,7 +30,7 @@
 $root = $_SERVER["DOCUMENT_ROOT"];
 require_once("$root/modules/address_book/libs/core.class.php");
 
-class SOAP_AddressBook extends puntosF_AddressBook
+class SOAP_AddressBook extends core_AddressBook
 {
     /**
      * SOAP Server Object
@@ -46,7 +46,7 @@ class SOAP_AddressBook extends puntosF_AddressBook
      */
     public function SOAP_AddressBook($objSOAPServer)
     {
-        parent::puntosF_AddressBook();
+        parent::core_AddressBook();
         $this->objSOAPServer = $objSOAPServer;
     }
 

@@ -42,7 +42,7 @@ if (file_exists("/var/lib/asterisk/agi-bin/phpagi-asmanager.php")) {
 
 $arrConf = array_merge($arrConf,$arrConfModule);
 
-class puntosF_AddressBook
+class core_AddressBook
 {
     /**
      * Description error message
@@ -83,7 +83,7 @@ class puntosF_AddressBook
      * Constructor
      *
      */
-    public function puntosF_AddressBook()
+    public function core_AddressBook()
     {
         $this->_id_user = NULL;
         $this->_pACL = NULL;
