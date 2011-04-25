@@ -28,7 +28,7 @@
   $Id: SOAP_AddressBook.class.php,v 1.0 2011-03-31 11:50:00 Alberto Santos F.  asantos@palosanto.com Exp $*/
 
 $root = $_SERVER["DOCUMENT_ROOT"];
-require_once("$root/modules/address_book/libs/puntosF_AddressBook.class.php");
+require_once("$root/modules/address_book/libs/core.class.php");
 
 class SOAP_AddressBook extends puntosF_AddressBook
 {
