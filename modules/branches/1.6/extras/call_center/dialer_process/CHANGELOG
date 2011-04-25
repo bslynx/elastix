@@ -1,4 +1,6 @@
 1.5-4.0 (SVN revision 2550)
+* Agent Console: When programming a call, the shadow call should inherit 
+  all call attributes from the original call. Merge fix from Elastix forums.
 * Dialer (ECCP): Alpha-level support for Elastix Call Center Protocol
 * Agent Console: When programming calls, do not send campaign ID, phone number,
   and client name through the URL. Instead, just send the call ID and read the

@@ -550,10 +550,44 @@ function agregar(&$smarty, $id_campana,  $id_call, $fecha_init_actual,$fecha_end
                         $sQuery_ultimo_id= "SELECT LAST_INSERT_ID() id";
                         $result_ultimo_id = $pDB->fetchTable($sQuery_ultimo_id,true);
                         $id_ultimo = $result_ultimo_id[0]['id'];
+                        
+                        
+                        
+                        //I ADD COMMENT TO THE FOLLOWING TWO LINES (ORIGINAL CODE)
+                        //Y debe insertarse en call_attribute con el nombre dado en el textbox Name
+                        //$insert_call_attribute = "INSERT into call_attribute (id_call, columna, value, column_number) VALUES ($id_ultimo, 0, '$_POST[cliente]', 1) ";
+                        //$result_insert_persona = $pDB->genQuery($insert_call_attribute);
 
-//                         Y debe insertarse en call_attribute con el nombre dado en el textbox Name
-                        $insert_call_attribute = "INSERT into call_attribute (id_call, columna, value, column_number) VALUES ($id_ultimo, 0, '$_POST[cliente]', 1) ";
-                        $result_insert_persona = $pDB->genQuery($insert_call_attribute);
+
+                        //THIS CODE IS NECESSARY TO COPY THE DATA OF CUSTOMER WHEN AGENT MADE A PROGRAMMING CALL
+                        $query_data_to_copy = "SELECT * FROM call_attribute WHERE id_call='$id_call_'";
+                        $rs_data_to_copy = $pDB->fetchTable($query_data_to_copy,true);
+                        $row_number = count($rs_data_to_copy);
+                        
+                        foreach ($rs_data_to_copy AS $riga_posizione => $array_valori){
+                             $column_number = $array_valori['column_number'];
+                             $value = $array_valori['value'];
+                             $columna = $array_valori['columna'];
+                             $insert_call_attribute = "INSERT into call_attribute (id_call, columna, value, column_number) VALUES ($id_ultimo, '$columna', '$value', '$column_number') ";
+                             $result_insert_persona = $pDB->genQuery($insert_call_attribute);                           
+                        }
+
+                        
+                        //DECOMMENT THIS TO COPY ALSO THE DATA FROM FORM
+                        /*
+                        $query_form_to_copy = "SELECT * FROM form_data_recolected WHERE id_calls='$id_call_'";
+                        $rs_form_to_copy = $pDB->fetchTable($query_form_to_copy,true);
+                        $row_number = count($rs_form_to_copy);
+                        
+                        foreach ($rs_form_to_copy AS $riga_posizione => $array_valori){
+                             $id_form_field = $array_valori['id_form_field'];
+                             $value = $array_valori['value'];
+                             $insert_form_attribute = "INSERT into form_data_recolected (id_calls, id_form_field, value) VALUES ($id_ultimo, '$id_form_field', '$value') ";
+                             $result_insert_form_attribute = $pDB->genQuery($insert_form_attribute);                            
+                        }
+                        */
+                                              
+
                     }
                 }
                 else{
