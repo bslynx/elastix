@@ -40,7 +40,7 @@ require_once(ROOT."/libs/paloSantoDB.class.php");
 
 $arrConf = array_merge($arrConf,$arrConfModule);
 
-class puntosF_Calendar
+class core_Calendar
 {
     /**
      * Description error message
@@ -74,7 +74,7 @@ class puntosF_Calendar
      * Constructor
      *
      */
-    public function puntosF_Calendar()
+    public function core_Calendar()
     {
         $this->_dbCache = array();
         $this->_id_user = NULL;

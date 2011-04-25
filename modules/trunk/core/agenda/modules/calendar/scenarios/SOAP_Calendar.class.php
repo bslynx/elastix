@@ -30,7 +30,7 @@
 $root = $_SERVER["DOCUMENT_ROOT"];
 require_once("$root/modules/calendar/libs/core.class.php");
 
-class SOAP_Calendar extends puntosF_Calendar
+class SOAP_Calendar extends core_Calendar
 {
     /**
      * SOAP Server Object
@@ -46,7 +46,7 @@ class SOAP_Calendar extends puntosF_Calendar
      */
     public function SOAP_Calendar($objSOAPServer)
     {
-         parent::puntosF_Calendar();
+         parent::core_Calendar();
          $this->objSOAPServer = $objSOAPServer;
     }
 
