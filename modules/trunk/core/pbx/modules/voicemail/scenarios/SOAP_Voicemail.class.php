@@ -28,7 +28,7 @@
   $Id: SOAP_Voicemail.class.php,v 1.0 2011-03-31 13:20:00 Alberto Santos F.  asantos@palosanto.com Exp $*/
 
 $root = $_SERVER["DOCUMENT_ROOT"];
-require_once("$root/modules/voicemail/lib/puntosF_Voicemail.class.php");
+require_once("$root/modules/voicemail/lib/core.class.php");
 
 class SOAP_Voicemail extends puntosF_Voicemail
 {
