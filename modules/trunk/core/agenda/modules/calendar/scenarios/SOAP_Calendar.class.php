@@ -28,7 +28,7 @@
   $Id: SOAP_Calendar.class.php,v 1.0 2011-03-31 12:30:00 Alberto Santos F.  asantos@palosanto.com Exp $*/
 
 $root = $_SERVER["DOCUMENT_ROOT"];
-require_once("$root/modules/calendar/libs/puntosF_Calendar.class.php");
+require_once("$root/modules/calendar/libs/core.class.php");
 
 class SOAP_Calendar extends puntosF_Calendar
 {

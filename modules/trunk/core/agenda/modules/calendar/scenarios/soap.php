@@ -2,7 +2,7 @@
 
 $root = $_SERVER["DOCUMENT_ROOT"];
 require_once("$root/libs/SOAPhandler.class.php");
-require_once("SOAP_Calendar.class.php");
+require_once("$root/modules/calendar/scenarios/SOAP_Calendar.class.php");
 
 $SOAPhandler = new SOAPhandler("SOAP_Calendar");
 
