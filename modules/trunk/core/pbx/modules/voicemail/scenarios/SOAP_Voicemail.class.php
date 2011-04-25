@@ -30,7 +30,7 @@
 $root = $_SERVER["DOCUMENT_ROOT"];
 require_once("$root/modules/voicemail/lib/core.class.php");
 
-class SOAP_Voicemail extends puntosF_Voicemail
+class SOAP_Voicemail extends core_Voicemail
 {
     /**
      * SOAP Server Object
@@ -46,7 +46,7 @@ class SOAP_Voicemail extends puntosF_Voicemail
      */
     public function SOAP_Voicemail($objSOAPServer)
     {
-        parent::puntosF_Voicemail();
+        parent::core_Voicemail();
         $this->objSOAPServer = $objSOAPServer;
     }
 

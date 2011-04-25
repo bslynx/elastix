@@ -35,7 +35,7 @@ require_once("$root/libs/paloSantoDB.class.php");
 require_once("$root/libs/paloSantoACL.class.php");
 require_once("$root/modules/voicemail/lib/paloSantoVoiceMail.class.php");
 
-class puntosF_Voicemail
+class core_Voicemail
 {
     /**
      * Description error message
@@ -76,7 +76,7 @@ class puntosF_Voicemail
      * Constructor
      *
      */
-    public function puntosF_Voicemail()
+    public function core_Voicemail()
     {
         $this->errMsg   = NULL;
         $this->_id_user = NULL;
