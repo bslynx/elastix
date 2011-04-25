@@ -316,7 +316,6 @@ class puntosF_CDR
         // Cuenta de registros que cumplen con las condiciones
         $pDB_AstCDR = $this->_getDB($this->_astcdrDSN);
         $sql = 'SELECT COUNT(*) '.$sFromWhere;
-        writeLOG("access.log",print_r($this->_astcdrDSN,true));
         $tupla = $pDB_AstCDR->getFirstRowQuery($sql, FALSE, $paramSQL);
         if (!is_array($tupla)) {
             $this->errMsg["fc"] = 'DBERROR';

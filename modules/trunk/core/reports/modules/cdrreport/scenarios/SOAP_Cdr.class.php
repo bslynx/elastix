@@ -28,7 +28,7 @@
   $Id: SOAP_Cdr.class.php,v 1.0 2011-03-31 12:50:00 Alberto Santos F.  asantos@palosanto.com Exp $*/
 
 $root = $_SERVER["DOCUMENT_ROOT"];
-require_once("$root/modules/cdrreport/libs/puntosF_CDR.class.php");
+require_once("$root/modules/cdrreport/libs/core.class.php");
 
 class SOAP_Cdr extends puntosF_CDR
 {
