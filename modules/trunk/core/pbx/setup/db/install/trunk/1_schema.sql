@@ -26,7 +26,7 @@ INSERT INTO "attribute" VALUES(6, 'peer', 'yes', 'very', 'freephonie.net', '', '
 INSERT INTO "attribute" VALUES(7, 'peer', 'yes', 'very', 'sip.ovh.net', '', 'sip.ovh.net', 'auto', 'all', 'from-trunk', 'alaw', '', '', 'no', 7);
 INSERT INTO "attribute" VALUES(8, 'peer', 'yes', '', 'sip.voipdiscount.com', '', '', 'rfc2833', 'all', 'from-trunk', 'alaw', '', '', 'no', 8);
 INSERT INTO "attribute" VALUES(9, 'peer', 'yes', 'very', 'gateway.circuitid.com', NULL, NULL, 'rfc2833', 'all', 'from-pstn', 'alaw&ulaw&gsm', 'no', 'no', 'no', 9);
-INSERT INTO "attribute" VALUES(10, 'friend', 'yes', 'very', 'sip.vozelia.com', NULL, NULL, 'auto', 'all', 'from-pstn', 'alaw&ulaw&gsm', 'no', 'no', 'no', 10);
+
 CREATE TABLE provider
 (
        id                INTEGER    PRIMARY KEY,
@@ -43,7 +43,7 @@ INSERT INTO "provider" VALUES(6, 'Freephonie', 'freephonie.net', 'SIP', 'trunk t
 INSERT INTO "provider" VALUES(7, 'OVH', 'sip.ovh.net', 'SIP', 'trunk type SIP');
 INSERT INTO "provider" VALUES(8, 'VoIPDiscount', 'sip.voipdiscount.com', 'SIP', 'trunk type SIP');
 INSERT INTO "provider" VALUES(9, 'CircuitID', '', 'SIP', 'trunk type SIP');
-INSERT INTO "provider" VALUES(10, 'Vozelia', '', 'SIP', 'trunk type SIP');
+
 CREATE TABLE trunk_bill
 (
        trunk             VARCHAR(50)
