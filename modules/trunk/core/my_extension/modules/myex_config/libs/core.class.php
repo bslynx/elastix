@@ -36,7 +36,7 @@ require_once("$root/libs/paloSantoACL.class.php");
 require_once("$root/modules/myex_config/libs/paloSantoMyExtension.class.php");
 
 
-class puntosF_MyExtension
+class core_MyExtension
 {
     /**
      * Object paloACL
@@ -70,7 +70,7 @@ class puntosF_MyExtension
      * Constructor
      *
      */
-    public function puntosF_MyExtension()
+    public function core_MyExtension()
     {
         $this->_pACL    = NULL;
         $this->_dbCache = array();

@@ -30,7 +30,7 @@
 $root = $_SERVER["DOCUMENT_ROOT"];
 require_once("$root/modules/myex_config/libs/core.class.php");
 
-class SOAP_MyExtension extends puntosF_MyExtension
+class SOAP_MyExtension extends core_MyExtension
 {
     /**
      * SOAP Server Object
@@ -46,7 +46,7 @@ class SOAP_MyExtension extends puntosF_MyExtension
      */
     public function SOAP_MyExtension($objSOAPServer)
     {
-        parent::puntosF_MyExtension();
+        parent::core_MyExtension();
         $this->objSOAPServer = $objSOAPServer;
     }
 
