@@ -30,7 +30,7 @@
 $root = $_SERVER["DOCUMENT_ROOT"];
 require_once("$root/modules/faxviewer/libs/core.class.php");
 
-class SOAP_Fax extends puntosF_Fax
+class SOAP_Fax extends core_Fax
 {
     /**
      * SOAP Server Object
@@ -46,7 +46,7 @@ class SOAP_Fax extends puntosF_Fax
      */
     public function SOAP_Fax($objSOAPServer)
     {
-         parent::puntosF_Fax();
+         parent::core_Fax();
          $this->objSOAPServer = $objSOAPServer;
     }
 

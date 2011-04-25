@@ -36,7 +36,7 @@ require_once("$root/libs/paloSantoACL.class.php");
 require_once("$root/modules/faxviewer/libs/paloSantoFaxVisor.class.php");
 
 
-class puntosF_Fax
+class core_Fax
 {
     /**
      * Description error message
@@ -70,7 +70,7 @@ class puntosF_Fax
      * Constructor
      *
      */
-    public function puntosF_Fax()
+    public function core_Fax()
     {
         $this->_pACL    = NULL;
         $this->_id_user = NULL;
