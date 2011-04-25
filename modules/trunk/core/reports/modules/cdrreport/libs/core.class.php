@@ -37,7 +37,7 @@ require_once("$root/libs/paloSantoACL.class.php");
 require_once("$root/libs/paloSantoConfig.class.php");
 
 
-class puntosF_CDR
+class core_CDR
 {
     /**
      * Description error message
@@ -78,7 +78,7 @@ class puntosF_CDR
      * Constructor
      *
      */
-    public function puntosF_CDR()
+    public function core_CDR()
     {
         $this->_dbCache   = array();
         $this->_pACL      = NULL;

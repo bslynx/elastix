@@ -30,7 +30,7 @@
 $root = $_SERVER["DOCUMENT_ROOT"];
 require_once("$root/modules/cdrreport/libs/core.class.php");
 
-class SOAP_Cdr extends puntosF_CDR
+class SOAP_Cdr extends core_CDR
 {
     /**
      * SOAP Server Object
@@ -46,7 +46,7 @@ class SOAP_Cdr extends puntosF_CDR
      */
     public function SOAP_Cdr($objSOAPServer)
     {
-         parent::puntosF_CDR();
+         parent::core_CDR();
          $this->objSOAPServer = $objSOAPServer;
     }
 
