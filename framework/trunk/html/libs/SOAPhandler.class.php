@@ -25,7 +25,7 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: SOAP_Voicemail.class.php,v 1.0 2011-03-31 14:33:00 Alberto Santos F.  asantos@palosanto.com Exp $*/
+  $Id: SOAPhandler.class.php,v 1.0 2011-03-31 14:33:00 Alberto Santos F.  asantos@palosanto.com Exp $*/
 
 $document_root = $_SERVER["DOCUMENT_ROOT"];
 require_once("$document_root/libs/misc.lib.php");
