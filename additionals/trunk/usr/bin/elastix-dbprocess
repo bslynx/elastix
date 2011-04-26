@@ -158,9 +158,8 @@ function createSQLFile($action, $path_folder, $dbName, $engine, $sql_export, $pa
 {
     $stringSQL = "";
     $successfull = true;
-    if(databaseExists($engine,$dbName) && $action == "install" && $sql_export == false && !(bool)$ignore_backup){
+    if(databaseExists($engine,$dbName) && $action == "install" && $sql_export == false && !(bool)$ignore_backup)
         $successfull = renameDatabase($engine,$dbName,$password,$path_folder);
-
     switch($action){
         case "install":
         case "delete":
