@@ -647,3 +647,7 @@ cursor: pointer;
 .countExceeded{
     color:#e00;
 }
+
+#ui-datepicker-div{
+    display: none;
+}
