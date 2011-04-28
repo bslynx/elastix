@@ -475,6 +475,7 @@ class paloSantoControlPanel {
         $parameters = array('Command'=>"dahdi show channels");
         $result = $this->AsteriskManagerAPI("Command",$parameters,true); 
         $data = split("\n",$result['data']);
+	$arrTrunk = array();
         if(is_array($data) && count($data)>0)
           foreach($data as $line){
             $value = preg_match('/^[[:space:]]*([[:digit:]]+)/',$line,$matches);
@@ -600,7 +601,6 @@ class paloSantoControlPanel {
     function saveChangeArea2($id_device1, $id_device2)
     {
         $query = "select id_area, count(*) existe from item_box where id_device=$id_device2";
-        
         $result=$this->_DB2->getFirstRowQuery($query,true);
         if($result['existe']==1){
             $id_area = $result['id_area'];

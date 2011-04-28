@@ -405,14 +405,22 @@ function loadBoxesAction(&$pDB1, &$pDB2, $module_name)
     foreach($arrAreas as $key => $value){
         $length[] = $value['a.no_column'];
     }
-
-     foreach($arrParkinglots as $key => $value){
+    $numslots = 0;
+    foreach($arrParkinglots as $key => $value){
         if($value["keyword"] == "numslots")
             $numslots = $value["data"];
         elseif($value["keyword"] == "parkext")
             $parkext = $value["data"];
     }
-    $arrPark = array();
+    $arrPark  = array();
+    $arrExten = array();
+    $arrArea1 = array();
+    $arrArea2 = array();
+    $arrArea3 = array();
+    $arrQue   = array();
+    $arrDAHDI = array();
+    $arrSIP   = array();
+    $arrCon   = array();
     for($i=1;$i<=$numslots;$i++){
         $ext = $parkext + $i;
         $arrPark[] = array("id" => $ext, "type" => "parkinglot", "title" => "<b>Parked ($ext)</b>", "info" => $ext, "module_name" => $module_name, "img_name" => "parking.png", "status" => "on", "droppable" => false);
