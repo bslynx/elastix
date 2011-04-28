@@ -280,7 +280,7 @@ class core_MyExtension
             return false;
         }
         if(($recordIncoming == "Always" || $recordIncoming == "Never" || $recordIncoming == "Adhoc") && ($recordOutgoing == "Always" || $recordOutgoing == "Never" || $recordOutgoing == "Adhoc"))
-            $statusRecording = $pMyExtension->setRecordSettings($extension,$request->recordIncoming,$request->recordOutgoing);
+            $statusRecording = $pMyExtension->setRecordSettings($extension,$recordIncoming,$recordOutgoing);
         else{
             $this->errMsg["fc"] = 'ERROR';
             $this->errMsg["fm"] = 'Parameter Error';
