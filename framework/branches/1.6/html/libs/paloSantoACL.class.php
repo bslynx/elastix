@@ -908,7 +908,8 @@ class paloACL {
         $idUser = $this->getIdUser($username);
         if($idUser){
             $arrGroup = $this->getMembership($idUser);
-            $is = array_key_exists('administrator',$arrGroup);
+            //$is = array_key_exists('administrator',$arrGroup);
+	    $is = array_search('1', $arrGroup);
         }
         return $is;
     }
