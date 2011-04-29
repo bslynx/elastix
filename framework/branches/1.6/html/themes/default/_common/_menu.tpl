@@ -123,6 +123,7 @@
     width:440px;
     height:200px;
     border:1px solid #800000;
+    z-index: 10000;
 }
 </style>
 <script type='text/javascript'>
