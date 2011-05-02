@@ -54,6 +54,15 @@ class paloSantoCDR
         $condSQL = array();
         $paramSQL = array();
 
+        if (!is_array($param)) {
+        	$this->errMsg = '(internal) invalid parameter array';
+            return NULL;
+        }
+        if (!function_exists('_construirWhereCDR_notempty')) {
+        	function _construirWhereCDR_notempty($x) { return !empty($x); }
+        }
+        $param = array_filter($param, '_construirWhereCDR_notempty');
+
         // Fecha y hora de inicio y final del rango
         $sRegFecha = '/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/';
         if (isset($param['date_start'])) {
@@ -76,7 +85,7 @@ class paloSantoCDR
         }
         
         // Estado de la llamada
-        if (isset($param['status'])) {
+        if (isset($param['status']) && $param['status'] != 'ALL') {
             $condSQL[] = 'disposition = ?';
             $paramSQL[] = $param['status'];
         }
