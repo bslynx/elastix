@@ -28,7 +28,7 @@
   | Translate by:Chavdar Iliev                                             |
   | Email: chavdar_75@yahoo.com                                                       |
   +----------------------------------------------------------------------+
-  $Id: bg.lang, October 25, 2010, 6:10 pm kleber andres loayza Exp $ */
+  $Id: bg.lang, October 25, 2010, 6:07 pm kleber andres loayza Exp $ */
 global $arrLangModule;
 $arrLangModule=array(  
 "Start Date" => "Начална Дата",
@@ -52,6 +52,7 @@ $arrLangModule=array(
 "FAILED" => "Неуспешен",
 "NO ANSWER" => "Без Отговор",
 "Delete" => "Delete the displayed CDR(s)",
-
+"CDR Report" => "CDR Report",
+"Please End Date must be greater than Start Date" => "Please End Date must be greater than Start Date",
 );
 ?>

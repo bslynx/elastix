@@ -2,20 +2,15 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.0                                                  |
+  | Elastix version: 1.6                                           |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
-  | Copyright (c) 2008 Palosanto Solutions S. A.                         |
+  | Copyright (c) 2006 Palosanto Solutions S. A.                         |
   +----------------------------------------------------------------------+
   | Cdla. Nueva Kennedy Calle E 222 y 9na. Este                          |
   | Telfs. 2283-268, 2294-440, 2284-356                                  |
   | Guayaquil - Ecuador                                                  |
-  | http://www.palosanto.com 						                     |
-  |                                                                      |
-  | Translated by: Erwan DESVERGNES - SDCI                               |
-  | erwan.desvergnes@SDCI.fr                                             |
-  |   Revision 1.0-17 by Gregory BOUZINAC - GMixon                       | 
-  | greg@gmixon.com                                                      |
+  | http://www.palosanto.com                                             |
   +----------------------------------------------------------------------+
   | The contents of this file are subject to the General Public License  |
   | (GPL) Version 2 (the "License"); you may not use this file except in |
@@ -29,16 +24,19 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  |                                                                      |
+  | Translate by:Dannarz                                             |
+  | Email: sesshomarurin7@palosanto.com                                                       |
   +----------------------------------------------------------------------+
-  $Id: fr.lang,v 1.8 2008/05/20 00:36:42 bmacias Exp $ */
+  $Id: fr.lang, October 25, 2010, 5:39 pm kleber andres loayza Exp $ */
 global $arrLangModule;
-$arrLangModule=array(
-"Start Date" => "Période du",
+$arrLangModule=array(  
+"Start Date" => "Du",
 "End Date" => "Au",
 "Field Name" => "Nom du champ",
 "Field" => "Champ",
-"CDR Report List" => "Rapports d'Appels",
-"Account Code" => "Code Compte",
+"CDR Report List" => "Rapport d'appels",
+"Account Code" => "Centre de coûts",
 "Date" => "Date",
 "Source" => "Source",
 "Destination" => "Destination",
@@ -52,7 +50,9 @@ $arrLangModule=array(
 "ANSWERED" => "Répondu",
 "BUSY" => "Occupé",
 "FAILED" => "Manqué",
-"NO ANSWER" => "Sans réponse",
+"NO ANSWER" => "Non répondu",
 "Delete" => "Delete the displayed CDR(s)",
+"CDR Report" => "CDR Report",
+"Please End Date must be greater than Start Date" => "Please End Date must be greater than Start Date",
 );
 ?>

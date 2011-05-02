@@ -154,8 +154,8 @@ function _moduleContent(&$smarty, $module_name)
             $filter_pattern = $paramFiltro['field_pattern'];
             $statusDel      = $paramFiltro['status'];
             $r = $oCDR->Delete_All_CDRs(
-                $date_ini,
-                $date_end,
+                translateDate($paramFiltro['date_start']).' 00:00:00',
+                translateDate($paramFiltro['date_end']).' 23:59:59',
                 $filter_name,
                 $filter_pattern,
                 $statusDel,

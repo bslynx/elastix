@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.0                                                  |
+  | Elastix version 1.6                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,6 +25,8 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   |                                                                      |
+
+
   | Translate by: Haamed Kouhfallah                                      |
   | Email: haamed@cytco.net                                              |                                                                    |
   +----------------------------------------------------------------------+
@@ -35,22 +37,24 @@ $arrLangModule=array(
 "End Date" => "تاریخ پایان",
 "Field Name" => "نام فیلد",
 "Field" => "فیلد ",
-"CDR Report List" => "CDR Report",
+"CDR Report List" => "گزارش ریز مکالمات",
 "Account Code" => "کد حساب",
 "Date" => "تاریخ",
-"Source" => "منبع ",
+"Source" => "مبداء",
 "Destination" => "مقصد",
-"Src. Channel" => "کانال منبع",
+"Src. Channel" => "كانال مبداء",
 "Dst. Channel" => "کانال مقصد",
 "Duration" => "مدت",
-"Filter" => "فیلتر",
+"Filter" => "فيلتر",
 "Are you sure you wish to delete CDR(s) Report(s)?" => "Are you sure you wish to delete the displayed CDR(s)?",
 "Status" => "وضعیت",
-"ALL" => "ALL",
-"ANSWERED" => "ANSWERED",
-"BUSY" => "BUSY",
-"FAILED" => "FAILED",
-"NO ANSWER" => "NO ANSWER",
+"ALL" => "تمامي تماس ها",
+"ANSWERED" => "پاسخ داده شده",
+"BUSY" => "مشغول",
+"FAILED" => "نا موفق",
+"NO ANSWER" => "پاسخ داده نشده",
 "Delete" => "Delete the displayed CDR(s)",
+"CDR Report" => "CDR Report",
+"Please End Date must be greater than Start Date" => "Please End Date must be greater than Start Date",
 );
 ?>
