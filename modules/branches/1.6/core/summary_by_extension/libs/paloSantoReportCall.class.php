@@ -273,7 +273,7 @@ class paloSantoReportCall {
                 //NECESARIOS
                 'TITLE'   => $this->arrLang['Top 10 (Outgoing) ext']." ".$ext,
                 'TYPE'    => 'plot3d',
-                'SIZE'    => "550,250", 
+                'SIZE'    => "700,250", 
                 'MARGIN'  => "5,70,15,20",
             ),
 
@@ -398,7 +398,7 @@ class paloSantoReportCall {
                 //NECESARIOS
                 'TITLE'   => $this->arrLang['Top 10 (Incoming) ext']." ".$ext,
                 'TYPE'    => 'plot3d',
-                'SIZE'    => "550,250", 
+                'SIZE'    => "700,250", 
                 'MARGIN'  => "5,70,15,20",
             ),
 
