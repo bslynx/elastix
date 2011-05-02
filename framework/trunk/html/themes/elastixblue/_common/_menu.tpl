@@ -128,7 +128,7 @@
 <div id="miniMenu" style="display: none;">
   <table cellspacing="0" cellpadding="0" width="100%" class="menumini">
     <tr>
-      <td><img src="images/logo_elastix_mini.jpg" border="0"></td>
+      <td><img src="images/logo_elastix_new_mini.png" border="0"></td>
       <td align="right" class="letra_gris" valign="middle">{$nameMainMenuSelected} &rarr; {$nameSubMenuSelected} {if !empty($idSubMenu2Selected)} &rarr; {$nameSubMenu2Selected} {/if}
           &nbsp;&nbsp;<a href="javascript:popUp('help/?id_nodo={$idSubMenuSelected}&name_nodo={$nameSubMenuSelected}','1000','460')"><img src="themes/{$THEMENAME}/images/help_bottom.gif" border="0" 
           align="absmiddle"></a>
