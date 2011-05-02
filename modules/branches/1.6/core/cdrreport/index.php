@@ -145,21 +145,18 @@ function _moduleContent(&$smarty, $module_name)
         unset($_POST['delete']);    // Se aborta el intento de borrar CDRs, si había uno.
     }
 
+    // Tradudir fechas a formato ISO para comparación y para API de CDRs.
+    $url = array_merge($url, $paramFiltro);
+    $paramFiltro['date_start'] = translateDate($paramFiltro['date_start']).' 00:00:00';
+    $paramFiltro['date_end'] = translateDate($paramFiltro['date_end']).' 23:59:59';
+
+    // Valores de filtrado que no se seleccionan mediante filtro
+    if ($sExtension != '') $paramFiltro['extension'] = $sExtension;
+
     // Ejecutar el borrado, si se ha validado.
     if (isset($_POST['delete'])) {
-        $date_ini = date("d M Y", strtotime($paramFiltro['date_start']));
-        $date_end = date("d M Y", strtotime($paramFiltro['date_end']));
-        if($date_ini <= $date_end){
-            $filter_name    = $paramFiltro['field_name'];
-            $filter_pattern = $paramFiltro['field_pattern'];
-            $statusDel      = $paramFiltro['status'];
-            $r = $oCDR->Delete_All_CDRs(
-                translateDate($paramFiltro['date_start']).' 00:00:00',
-                translateDate($paramFiltro['date_end']).' 23:59:59',
-                $filter_name,
-                $filter_pattern,
-                $statusDel,
-                "", NULL, $sExtension);
+        if($paramFiltro['date_start'] <= $paramFiltro['date_end']){
+            $r = $oCDR->borrarCDRs($paramFiltro);
             if (!$r) $smarty->assign(array(
                 'mb_title'      =>  _tr('ERROR'),
                 'mb_message'    =>  $oCDR->errMsg,
@@ -172,10 +169,6 @@ function _moduleContent(&$smarty, $module_name)
         }
     }
     
-    $url = array_merge($url, $paramFiltro);
-    $paramFiltro['date_start'] = translateDate($paramFiltro['date_start']).' 00:00:00';
-    $paramFiltro['date_end'] = translateDate($paramFiltro['date_end']).' 23:59:59';
-
     // Generación del reporte
     
     $oGrid  = new paloSantoGrid($smarty);
@@ -188,12 +181,7 @@ function _moduleContent(&$smarty, $module_name)
     
     $arrData = null;
 
-    $total = $oCDR->getNumCDR($paramFiltro['date_start'],
-            $paramFiltro['date_end'],
-            $paramFiltro['field_name'],
-            $paramFiltro['field_pattern'],
-            $paramFiltro['status'],
-            "", NULL, $sExtension);
+    $total = $oCDR->contarCDRs($paramFiltro);
 
     if($oGrid->isExportAction()){
         $limit = $total;
@@ -202,16 +190,10 @@ function _moduleContent(&$smarty, $module_name)
         $arrColumns = array(_tr("Date"), _tr("Source"), _tr("Destination"), _tr("Src. Channel"),_tr("Account Code"),_tr("Dst. Channel"),_tr("Status"),_tr("Duration"));
         $oGrid->setColumns($arrColumns);
     
-        $arrResult = $oCDR->obtenerCDRs($limit, $offset, 
-            $paramFiltro['date_start'],
-            $paramFiltro['date_end'],
-            $paramFiltro['field_name'],
-            $paramFiltro['field_pattern'],
-            $paramFiltro['status'],
-            "", NULL, $sExtension);
+        $arrResult = $oCDR->listarCDRs($paramFiltro, $limit, $offset);
  
-        if(is_array($arrResult['Data']) && $total>0){
-            foreach($arrResult['Data'] as $key => $value){
+        if(is_array($arrResult['cdrs']) && $total>0){
+            foreach($arrResult['cdrs'] as $key => $value){
                 $arrTmp[0] = $value[0];
                 $arrTmp[1] = $value[1];
                 $arrTmp[2] = $value[2];
@@ -244,19 +226,13 @@ function _moduleContent(&$smarty, $module_name)
 
         $offset = $oGrid->calculateOffset();
 
-        $arrResult = $oCDR->obtenerCDRs($limit, $offset, 
-            $paramFiltro['date_start'],
-            $paramFiltro['date_end'],
-            $paramFiltro['field_name'],
-            $paramFiltro['field_pattern'],
-            $paramFiltro['status'],
-            "", NULL, $sExtension);
+        $arrResult = $oCDR->listarCDRs($paramFiltro, $limit, $offset);
 
         $arrColumns = array(_tr("Date"), _tr("Source"), _tr("Destination"), _tr("Src. Channel"),_tr("Account Code"),_tr("Dst. Channel"),_tr("Status"),_tr("Duration"));
         $oGrid->setColumns($arrColumns);
 
-        if(is_array($arrResult['Data']) && $total>0){
-            foreach($arrResult['Data'] as $key => $value){
+        if(is_array($arrResult['cdrs']) && $total>0){
+            foreach($arrResult['cdrs'] as $key => $value){
                 $arrTmp[0] = $value[0];
                 $arrTmp[1] = $value[1];
                 $arrTmp[2] = $value[2];
