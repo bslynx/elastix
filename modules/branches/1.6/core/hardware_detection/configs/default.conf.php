@@ -29,5 +29,5 @@
 global $arrConfModule;
 $arrConfModule['module_name'] = 'hardware_detection';
 $arrConfModule['templates_dir'] = 'themes';
-
+$arrConfModule['dsn_conn_database'] = "sqlite3:////var/www/db/hardware_detector.db";
 ?>

@@ -240,7 +240,6 @@ function modificarArchivo($module_name, $smarty, $local_templates_dir, $sDirecto
                 $sMensajeStatus .= _tr("This file doesn't have permisses to write").'<br/>';
             }
         }
-        
         $sContenido = file_get_contents($sDirectorio.$sNombreArchivo);
         if ($sContenido === FALSE) {
             $sMensajeStatus .= _tr("This file doesn't have permisses to read").'<br/>';
@@ -276,6 +275,7 @@ function modificarArchivo($module_name, $smarty, $local_templates_dir, $sDirecto
     $smarty->assign('url_edit', construirURL(array('menu' => $module_name, 'action' => $sAccion, 'file' => $sNombreArchivo)));
     $smarty->assign('url_back', construirURL(array('menu' => $module_name), array('action', 'file')));
     $smarty->assign('LABEL_SAVE', _tr('Save'));
+    $smarty->assign('RELOAD_ASTERISK', _tr('Reload Asterisk'));
     $smarty->assign('LABEL_BACK', _tr('Back'));
     $smarty->assign('msg_status', $sMensajeStatus);
     return $oForm->fetchForm("$local_templates_dir/file_editor.tpl", _tr("File Editor"), $_POST);

@@ -52,7 +52,7 @@
                 "LABEL"                  => "Today",
                 "REQUIRED"               => "yes",
                 "INPUT_TYPE"             => "DATE",
-                "INPUT_EXTRA_PARAM"      => array("TIME" => true, "FORMAT" => "'%d %b %Y' %H:%M","TIMEFORMAT" => "12"),
+                "INPUT_EXTRA_PARAM"      => array("TIME" => true, "FORMAT" => "'%d %b %Y' %H:%M","TIMEFORMAT" => "12", "FIRSTDAY" => 1),
                 "VALIDATION_TYPE"        => '',
                 "EDITABLE"               => "yes",
                 "VALIDATION_EXTRA_PARAM" => '')
@@ -293,6 +293,7 @@ class paloForm
                         $time = false;
                         $format = '%d %b %Y';
                         $timeformat = '12';
+                        $firstDay = 1;
                         if(is_array($arrVars['INPUT_EXTRA_PARAM']) && count($arrVars['INPUT_EXTRA_PARAM'])>0) {
                             foreach($arrVars['INPUT_EXTRA_PARAM'] as $key => $value){
                                 if($key=='TIME')
@@ -301,13 +302,15 @@ class paloForm
                                     $format = $value;
                                 if($key=='TIMEFORMAT')
                                     $timeformat = $value;
+                                if($key=='FIRSTDAY')
+                                    $firstDay = $value;
                             }
                         }
                         $oCal = new DHTML_Calendar("/libs/js/jscalendar/", "en", "calendar-win2k-2", $time);
                         $this->smarty->assign("HEADER", $oCal->load_files());
 
                         $strInput .= $oCal->make_input_field(
-                                        array('firstDay'       => 1, // show Monday first
+                                        array('firstDay'       => $firstDay, // show Monday=1 first by default or Sunday=7
                                               'showsTime'      => true,
                                               'showOthers'     => true,
                                               'ifFormat'       => $format,
@@ -349,11 +352,15 @@ class paloForm
     //       puesto que en ese caso la funcion devolvera true. Es ese el comportamiento esperado?
     function validateForm($arrCollectedVars)
     {
+        $arrCollectedVars = array_merge($arrCollectedVars,$_FILES);
         include_once("libs/paloSantoValidar.class.php");
         $oVal = new PaloValidar();
         foreach($arrCollectedVars as $varName=>$varValue) {
             // Valido si la variable colectada esta en $this->arrFormElements
             if(@array_key_exists($varName, $this->arrFormElements)) {
+                if($this->arrFormElements[$varName]['INPUT_TYPE']=='FILE')
+                    $varValue = $_FILES[$varName]['name'];
+
                 if($this->arrFormElements[$varName]['REQUIRED']=='yes' or ($this->arrFormElements[$varName]['REQUIRED']!='yes' AND !empty($varValue))) {
                     $editable = isset($this->arrFormElements[$varName]['EDITABLE'])?$this->arrFormElements[$varName]['EDITABLE']:"yes";
                     if($this->modo=='input' || ($this->modo=='edit' AND $editable != 'no')) {

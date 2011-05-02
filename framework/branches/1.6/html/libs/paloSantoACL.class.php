@@ -867,15 +867,15 @@ class paloACL {
             $result = $this->_DB->getFirstRowQuery($sPeticionSQL, FALSE);
             if ($result && is_array($result) && count($result)>0) {
                 $extension = $result[0];
-            }else $this->errMsg = $this->_DB->errMs;
+            }else $this->errMsg = $this->_DB->errMsg;
         }
         return $extension;
     }
 
     /**
-     * Procedimiento para obtener la extension de un usuario mediante su username. 
+     * Procedimiento para obtener el is del recurso dado su nombre. 
      *
-     * @param string   $username  Username del usuario
+     * @param string   $resource_name  Nombre del recurso
      *
      * @return string    numero de extension 
      */
@@ -890,7 +890,7 @@ class paloACL {
             $result = $this->_DB->getFirstRowQuery($sPeticionSQL, FALSE);
             if ($result && is_array($result) && count($result)>0) {
                 $id_resource = $result[0];
-            }else $this->errMsg = $this->_DB->errMs;
+            }else $this->errMsg = $this->_DB->errMsg;
         }
         return $id_resource;
     }
@@ -909,7 +909,7 @@ class paloACL {
         if($idUser){
             $arrGroup = $this->getMembership($idUser);
             //$is = array_key_exists('administrator',$arrGroup);
-	    $is = array_search('1', $arrGroup);
+            $is = array_search('1', $arrGroup);
         }
         return $is;
     }
@@ -1222,6 +1222,87 @@ class paloACL {
             }
         }
         return $bExito;
+    }
+ /**
+     * Procedimiento para obtener el id del recurso mediante su nameid. 
+     *
+     * @param string   $username  
+     *
+     * @return integer    id 
+     *******************************************************************/
+    function getIdResource($resource_name)
+    {
+        $id_resource = null;
+        if (!ereg('^([-_[:alnum:]]+[[a-z0-9\-_]+]*)$', "$resource_name")) {
+            $this->errMsg = "Resource Name is not valid";
+        } else {
+            $this->errMsg = "";
+            $sPeticionSQL = "SELECT id FROM acl_resource WHERE name = '$resource_name'";
+            $result = $this->_DB->getFirstRowQuery($sPeticionSQL, FALSE);
+            if ($result && is_array($result) && count($result)>0) {
+                $id_resource = $result[0];
+                return $id_resource;
+            }else $this->errMsg = $this->_DB->errMsg;
+        }
+        return 0;
+    }
+
+    /**
+     * Procedimiento para eliminar el recurso dado su id. 
+     *
+     * @param integer   $idresource
+     *
+     * @return bool     si es verdadero entonces se elimino bien
+     ******************************************************************/
+    function deleteIdResource($idresource)
+    {
+        $this->errMsg = "";
+        $sPeticionSQL = "DELETE FROM acl_resource WHERE id = $idresource";
+        $result = $this->_DB->genQuery($sPeticionSQL);
+        if($result==FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Procedimiento para eliminar los permisos de un grupo
+     *
+     * @param integer    $idresource  es el id del recurso
+     *
+     * @return bool    si es verdadero entonces se elimino bien
+     **************************************************************/
+    function deleteIdGroupPermission($idresource)
+    {
+        $id_resource = null;
+        $sPeticionSQL = "DELETE FROM acl_group_permission WHERE id_resource = $idresource";
+        $result = $this->_DB->genQuery($sPeticionSQL);
+        if($result==FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return false;
+        }
+        return true;
+    }
+
+     /**
+     * Procedimiento para obtener el nombre del grupo dado un id. 
+     *
+     * @param integer   $idGroup  id del grupo
+     *
+     * @return string    nombre del grupo 
+     */
+    function getGroupNameByid($idGroup)
+    {
+        $groupName = null;
+        $this->errMsg = "";
+        $data = array($idGroup);
+        $sPeticionSQL = "SELECT name FROM acl_group WHERE id = ?";
+        $result = $this->_DB->getFirstRowQuery($sPeticionSQL, FALSE, $data);
+        if ($result && is_array($result) && count($result)>0) {
+            $groupName = $result[0];
+        }else $this->errMsg = $this->_DB->errMsg;
+        return $groupName;
     }
 }
 ?>

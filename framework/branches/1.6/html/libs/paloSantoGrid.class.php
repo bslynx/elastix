@@ -288,8 +288,8 @@ class paloSantoGrid {
 
     function calculatePagination()
     {
-        $accion = $this->getParameter2("nav");
-        $start  = $this->getParameter2("start");
+        $accion = getParameter("nav");
+        $start  = getParameter("start");
 
         $this->setOffsetValue($this->getOffSet($this->getLimit(),$this->getTotal(),$accion,$start));
         $this->setEnd(($this->getOffsetValue() + $this->getLimit()) <= $this->getTotal() ? $this->getOffsetValue() + $this->getLimit() : $this->getTotal());
@@ -377,11 +377,11 @@ class paloSantoGrid {
 
     function exportType()
     {
-        if($this->getParameter2("exportcsv") == "yes")
+        if(getParameter("exportcsv") == "yes")
             return "csv";
-        else if($this->getParameter2("exportpdf") == "yes")
+        else if(getParameter("exportpdf") == "yes")
             return "pdf";
-        else if($this->getParameter2("exportspreadsheet") == "yes")
+        else if(getParameter("exportspreadsheet") == "yes")
             return "xls";
         else
             return "html";
@@ -389,11 +389,11 @@ class paloSantoGrid {
 
     function isExportAction()
     {
-        if($this->getParameter2("exportcsv") == "yes")
+        if(getParameter("exportcsv") == "yes")
             return true;
-        else if($this->getParameter2("exportpdf") == "yes")
+        else if(getParameter("exportpdf") == "yes")
             return true;
-        else if($this->getParameter2("exportspreadsheet") == "yes")
+        else if(getParameter("exportspreadsheet") == "yes")
             return true;
         else
             return false;
@@ -438,16 +438,6 @@ class paloSantoGrid {
             return $this->xlsWriteNumber($Row, $Col, $Value);
         else
             return $this->xlsWriteLabel($Row, $Col, $Value);
-    }
-
-    function getParameter2($parameter)
-    {
-        if(isset($_POST[$parameter]))
-            return $_POST[$parameter];
-        else if(isset($_GET[$parameter]))
-            return $_GET[$parameter];
-        else
-            return null;
     }
 }
 ?>

@@ -31,7 +31,7 @@
   $Id: en.lang,v 1.7 2008/02/18 09:49:00 jvega Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Hardware Detection" => "Detección de Hardware",
+"Hardware Detector" => "Detector de Hardware",
 "Ports not Founds" => "Puertos no Encontrados",
 "Card" => "Span",
 "Type port" => "Tipo",
@@ -51,5 +51,29 @@ $arrLangModule=array(
 "(Not in Use)" => "Sin uso",
 "Misdn Card" => "Tarjeta Misdn",
 "Port" => "Puerto",
+"Configure Echo Cancellers" => "Configurar Cancelador de eco",
+"mISDN Driver Installed" => "Driver mISDNuser Instalado",
+"mISDN Driver not Installed" => "Driver mISDNuser no Instalado",
+"Channel detected and not used" => "Canal detectado y fuera de servicio",
+"Channel detected and in use" => "Canal detectado y en servicio",
+"Undetected Channel" => "Canal no detectado",
+"You can set the parameters for these ports here" => "Aquí puedes configurar los parámetros para estos puertos",
+"Port Status" => "Estado de puertos",
+"Configuration of Span" => "Configuratión de Span",
+"Span Settings" => "Configuración de Span",
+"Advanced" => "Avanzado",
+"Preferences" => "Preferencias",
+"Timing source" => "Timing source",
+"Line build out" => "Line build out",
+"Framing" => "Framing",
+"Coding" => "Coding",
+"No Ports availables" => "No hay puertos disponibles",
+"Card Configured" => "Tarjeta Configurada",
+"Loading SPAN" => "Cargar SPAN",
+"Saving configuration" => "Configuración guardada",
+"Detected by Asterisk" => "Detectado por Asterisk",
+"Not detected by Asterisk" => "No detectado por Asterisk",
+"Hardware Control" => "Control de Hardware",
+"Channel Empty" => "Canal Vacío",
 );
 ?>

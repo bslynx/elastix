@@ -108,16 +108,31 @@ class paloMenu {
                 $bExito = FALSE;
                 $this->errMsg = "Menu already exists";
             }else{
-                $sPeticionSQL = paloDB::construirInsert(
-                    "menu",
+		if($order!=-1){
+                  $sPeticionSQL = paloDB::construirInsert("menu",
                     array(
                         "id"        =>  paloDB::DBCAMPO($id),
                         "Name"      =>  paloDB::DBCAMPO($name),
                         "Type"      =>  paloDB::DBCAMPO($type),
                         "Link"      =>  paloDB::DBCAMPO($link),
                         "IdParent"  =>  paloDB::DBCAMPO($id_parent),
-                    )
-                );
+                        "order_no"  =>  paloDB::DBCAMPO($order),
+                      )
+                    );
+
+                }
+                else{
+                  $sPeticionSQL = paloDB::construirInsert("menu",
+                    array(
+                        "id"        =>  paloDB::DBCAMPO($id),
+                        "Name"      =>  paloDB::DBCAMPO($name),
+                        "Type"      =>  paloDB::DBCAMPO($type),
+                        "Link"      =>  paloDB::DBCAMPO($link),
+                        "IdParent"  =>  paloDB::DBCAMPO($id_parent),
+                      )
+                    );
+                }
+
                 if ($this->_DB->genQuery($sPeticionSQL)) {
                     $bExito = TRUE;
                 } else {
@@ -128,6 +143,35 @@ class paloMenu {
 
         return $bExito;
     }
+    
+    /*********************************************************************************************/
+    function updateItemMenu($id, $name, $id_parent, $type='module', $link='', $order=-1){
+        $bExito = FALSE;
+        if ($id == "" && $name == "") {
+            $this->errMsg = "ID and module name can't be empty";
+        }else{
+            $query = "";
+            if($order != -1){
+                $query = "UPDATE menu SET ".
+                    "Name='$name', IdParent='$id_parent', Link='$link', Type='$type', order_no='$order'".
+                    " WHERE id = '$id'";
+            }else{
+                $query = "UPDATE menu SET ".
+                    "Name='$name', IdParent='$id_parent', Link='$link', Type='$type'".
+                    " WHERE id = '$id'";
+            }
+            $result=$this->_DB->genQuery($query);
+            if($result==FALSE){
+                $this->errMsg = $this->_DB->errMsg;
+                return 0;
+            }
+            return 1;
+        }
+    }
+
+
+
+/**********************************************************************************************/
 
     function existeMenu($id_menu){
         $bExiste=false;
@@ -138,8 +182,74 @@ class paloMenu {
         {
             $bExiste=true;
         }
+        return $bExiste;
     }
 
+ /**
+     * This function is for obtaining all the submenu from menu 
+     *
+     * @param string    $menu_name   The name of the main menu or menu father       
+     *
+     * @return array    $result      An array of children or submenu where the father or main menu is $menu_name
+     */
+   function getChilds($menu_name){
+        $query   = "SELECT * FROM menu where IdParent='$menu_name'";
+        $result=$this->_DB->fetchTable($query, true);
+        if($result==FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return 0;
+        }
+        return $result;
+   }
 
+ /**
+     * This function delete a specific menu from database 
+     *
+     * @param string    $menu_name   The name of the main menu or menu father       
+     *  
+     * @return int      An integer where such integer let us know if the menu was or not was removed from database
+     */
+
+    function deleteChilds($menu_name){
+        $query   = "DELETE FROM menu where Id='$menu_name'";
+        $result=$this->_DB->genQuery($query);
+        if($result==FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return 0;
+        }
+        return 1;
+    }
+
+/**
+     * This function is a recursive function. The input is the name of main menu or father menu which will be removed from database with all children and the children of its children 
+     *
+     * @param string    $menu_name   The name of the main menu or menu father       
+     * @param object    $acl   		 The class object ACL
+     *  
+     * @return $menu_name   The menu which will be removed
+     */
+
+    function deleteFather($menu_name,&$acl){
+        $childs = $this->getChilds($menu_name);
+        if(!$childs){
+            $id_resource = $acl->getIdResource($menu_name); // get id Resource
+            $ok1 = $acl->deleteIdGroupPermission($id_resource); // remove group permission
+            $ok2 = $acl->deleteIdResource($id_resource); // remove resource
+            $ok3 = $this->deleteChilds($menu_name); // remove child
+            return ($ok1 and $ok2 and $ok3);
+        }
+        else{
+            foreach($childs as $key => $value){
+                $ok = $this->deleteFather($value['id'],$acl);
+                if(!$ok) return false;
+            }
+
+            $id_resource = $acl->getIdResource($menu_name); // get id Resource
+            $ok1 = $acl->deleteIdGroupPermission($id_resource); // remove group permission
+            $ok2 = $acl->deleteIdResource($id_resource); // remove resource
+            $ok3 = $this->deleteChilds($menu_name); // remove child*/
+            return ($ok1 and $ok2 and $ok3);
+        }
+    }
 }
 ?>
