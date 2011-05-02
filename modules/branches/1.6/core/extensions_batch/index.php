@@ -185,7 +185,7 @@ function load_extension_from_csv($smarty, $arrLang, $ruta_archivo, $base_dir, $p
     $data_connection = array('host' => "127.0.0.1", 'user' => "admin", 'password' => "elastix456");
 
     $result = isValidCSV($arrLang, $ruta_archivo, $arrayColumnas);
-    if($result != true){
+    if($result != "valided"){
         $smarty->assign("mb_message", $result);
         return;
     }
@@ -217,8 +217,12 @@ function load_extension_from_csv($smarty, $arrLang, $ruta_archivo, $base_dir, $p
                 $VM_Play_Envelope   = isset($arrayColumnas[13])?$tupla[$arrayColumnas[13]]:"";
                 $VM_Delete_Vmail    = isset($arrayColumnas[14])?$tupla[$arrayColumnas[14]]:"";
                 $Context            = isset($arrayColumnas[15])?$tupla[$arrayColumnas[15]]:"from-internal";
-		$Ext=trim($Ext);
-		$Secret=trim($Secret);
+
+//////////////////////////////////////////////////////////////////////////////////
+                // validando para que coja las comillas
+                $Outbound_CID = ereg_replace('“', "\"", $Outbound_CID);
+                $Outbound_CID = ereg_replace('”', "\"", $Outbound_CID);
+//////////////////////////////////////////////////////////////////////////////////
                 //Paso 1: creando en la tabla sip
                 if(!$pLoadExtension->createSipDevices($Ext,$Secret,$VoiceMail,$Context))
                 {
@@ -240,21 +244,28 @@ function load_extension_from_csv($smarty, $arrLang, $ruta_archivo, $base_dir, $p
                         $VM_Play_Envelope, $VM_Delete_Vmail)
                       )
                         $Messages .= "Ext: $Ext - ". $arrLang["Error updating Voicemail"]."<br />";
-
+                    
                     //Paso 5: Configurando el call waiting
                     if(!$pLoadExtension->processCallWaiting($Call_Waiting,$Ext))
                         $Messages .= "Ext: $Ext - ". $arrLang["Error processing CallWaiting"]."<br />";
 
-                    if(!$pLoadExtension->putDataBaseFamily($data_connection, $Ext, "sip", $Name, $VoiceMail))
+                    $outboundcid = ereg_replace("\"", "'", $Outbound_CID);
+                    $outboundcid = ereg_replace("\"", "'", $outboundcid);
+                    $outboundcid = ereg_replace(" ", "", $outboundcid);
+                    if(!$pLoadExtension->putDataBaseFamily($data_connection, $Ext, "sip", $Name, $VoiceMail, $outboundcid))
                         $Messages .= "Ext: $Ext - ". $arrLang["Error processing Database Family"]."<br />";
                     $cont++;
                 }
+                ////////////////////////////////////////////////////////////////////////
+                //Paso 7: Escribiendo en tabla incoming
+                if(!$pLoadExtension->createDirect_DID($Ext,$Direct_DID))
+                    $Messages .= "Ext: $Ext - ". $arrLang["Error to insert or update Direct DID"]."<br />";
+                /////////////////////////////////////////////////////////////////////////
             }
         }
         //Paso 6: Realizo reload
         if(!$pLoadExtension->do_reloadAll($data_connection, $arrAST, $arrAMP))
             $Messages .= $pLoadExtension->errMsg;
-
         $Messages .= $arrLang["Total extension updated"].": $cont<br />";
         $smarty->assign("mb_message", $Messages);
     }
@@ -299,16 +310,16 @@ function isValidCSV($arrLang, $sFilePath, &$arrayColumnas){
                     if(is_array($tupla) && count($tupla)>=3)
                     {
                         $Ext = $tupla[$arrayColumnas[1]];
-                        if(trim($Ext) != '')
+                        if($Ext != '')
                             $arrExt[] = array("ext" => $Ext);
                         else return $arrLang["Can't exist a extension empty. Line"].": $count. - ". $arrLang["Please read the lines in the footer"];
 
                         $Secret       = $tupla[$arrayColumnas[5]];
-                        if(trim($Secret) =='')
+                        if($Secret == '')
                             return $arrLang["Can't exist a secret empty. Line"].": $count. - ". $arrLang["Please read the lines in the footer"];
 
                         $Display      = $tupla[$arrayColumnas[0]];
-                        if(trim($Display) == '')
+                        if($Display == '')
                             return $arrLang["Can't exist a display name empty. Line"].": $count. - ". $arrLang["Please read the lines in the footer"];
                     }
                     $count++;
@@ -323,7 +334,7 @@ function isValidCSV($arrLang, $sFilePath, &$arrayColumnas){
                             }
                         }
                     }
-                    return true;
+                    return "valided";
                 }
             }else return $arrLang["Verify the header"] ." - ". $arrLang["At minimum there must be the columns"].": \"Display Name\", \"User Extension\", \"Secret\"";
         }
@@ -382,9 +393,13 @@ function backup_extensions($pDB)
     $pLoadExtension = new paloSantoLoadExtension($pDB);
     $arrResult = $pLoadExtension->queryExtensions();
 
-    if(!$arrResult)
-        return $arrLang["There aren't extensions"];
-    else{
+    if(!$arrResult){
+
+	$csv .= "\"Display Name\",\"User Extension\",\"Direct DID\",\"Outbound CID\",\"Call Waiting\",".
+                "\"Secret\",\"Voicemail Status\",\"Voicemail Password\",\"VM Email Address\",".
+                "\"VM Pager Email Address\",\"VM Options\",\"VM Email Attachment\",".
+                "\"VM Play CID\",\"VM Play Envelope\",\"VM Delete Vmail\",\"Context\"\n";
+    }else{
         //cabecera
         $csv .= "\"Display Name\",\"User Extension\",\"Direct DID\",\"Outbound CID\",\"Call Waiting\",".
                 "\"Secret\",\"Voicemail Status\",\"Voicemail Password\",\"VM Email Address\",".
@@ -392,6 +407,12 @@ function backup_extensions($pDB)
                 "\"VM Play CID\",\"VM Play Envelope\",\"VM Delete Vmail\",\"Context\"\n";
         foreach($arrResult as $key => $extension)
         {
+
+//////////////////////////////////////////////////////////////////////////////////
+        // validando para que coja las comillas
+            $extension['outboundcid'] = ereg_replace("\"",'“',$extension['outboundcid']);
+            $extension['outboundcid'] = ereg_replace("\"",'”', $extension['outboundcid']);
+//////////////////////////////////////////////////////////////////////////////////
             $csv .= "\"{$extension['name']}\",\"{$extension['extension']}\",\"{$extension['directdid']}\",\"{$extension['outboundcid']}\",".
                     "\"{$extension['callwaiting']}\",\"{$extension['secret']}\",\"{$extension['voicemail']}\",".
                     "\"{$extension['vm_secret']}\",\"{$extension['email_address']}\",\"{$extension['pager_email_address']}\",".

@@ -193,6 +193,53 @@ class paloSantoLoadExtension {
             return false;
         }
     }
+//////////////////////////////////////////////////////////////////////////////////////
+    function queryDIDByExt($extension){
+        $sql = "select destination, description, extension from incoming where destination like '%$extension%'";
+
+        $result = $this->_DB->getFirstRowQuery($sql, true);
+
+        if(!$result || $result == null)
+        {
+            $this->errMsg = $this->_DB->errMsg;
+            return "";
+        }
+        if($result["extension"] != "" && $result["extension"] != null)
+            return $result["extension"];
+        if($result["description"] != "" && $result["description"] != null)
+            return $result["description"];
+        return "";
+    }
+
+    function createDirect_DID($Ext,$Direct_DID)
+    {
+
+        $sql = "select count(*) from incoming where destination like '%$Ext%';";
+        $result = $this->_DB->getFirstRowQuery($sql);
+        if(is_array($result) && count($result)>0)
+        {
+            if($result[0]>0)
+            {
+                $sql =
+                    "update incoming set extension='$Direct_DID', description='$Direct_DID', destination='from-did-direct,$Ext,1'
+                     where destination like '%$Ext%' limit 1;";
+            }else{
+                $sql =
+                    "insert into incoming (cidnum,extension,description,destination, privacyman, alertinfo, ringing, grppre, delay_answer, pricid) 
+                    values ('',
+                        '$Direct_DID','$Direct_DID','from-did-direct,$Ext,1',0,'','','',0,'');";
+            }
+            if(!$this->_DB->genQuery($sql))
+            {
+                $this->errMsg = $this->_DB->errMsg;
+                return false;
+            }
+            return true;
+        }else{
+            $this->errMsg = $this->_DB->errMsg;
+            return false;
+        }
+    }
 
     function queryExtensions()
     {
@@ -220,7 +267,7 @@ class paloSantoLoadExtension {
             //Extension
             foreach($result as $key => $extension){
                 $extension['callwaiting']=isset($arrCW[$extension['extension']]) ? $arrCW[$extension['extension']] : 'DISABLED';
-                $extension['directdid'] = "";
+                $extension['directdid'] = $this->queryDIDByExt($extension['extension']);
                 $extension['voicemail'] = 'disable';
                 $extension['vm_secret'] = '';
                 $extension['email_address'] = '';
@@ -252,7 +299,7 @@ class paloSantoLoadExtension {
         }
         return $arrExtensions;
     }
-
+////////////////////////////////////////////////////////////////////////////////////////////
     function writeFileVoiceMail($Ext,$Name,$VoiceMail,$VoiceMail_PW,$VM_Email_Address,
             $VM_Pager_Email_Addr, $VM_Options, $VM_EmailAttachment, $VM_Play_CID,
             $VM_Play_Envelope, $VM_Delete_Vmail)
@@ -371,7 +418,7 @@ class paloSantoLoadExtension {
         return false;
     }
 
-    function putDataBaseFamily($data_connection, $Ext, $tech, $Name, $VoiceMail)
+    function putDataBaseFamily($data_connection, $Ext, $tech, $Name, $VoiceMail, $Outbound_CID)
     {
 	if(eregi("^enable",$VoiceMail)) 	 
             $voicemail = "default"; 	 
@@ -388,7 +435,7 @@ class paloSantoLoadExtension {
                 "database put AMPUSER $Ext/cidnum  $Ext",
                 "database put AMPUSER $Ext/device  $Ext",
                 "database put AMPUSER $Ext/noanswer",
-                "database put AMPUSER $Ext/outboundcid",
+                "database put AMPUSER $Ext/outboundcid $Outbound_CID",
                 "database put AMPUSER $Ext/password",
                 "database put AMPUSER $Ext/recording  out=Adhoc|in=Adhoc",
                 "database put AMPUSER $Ext/ringtimer 0",

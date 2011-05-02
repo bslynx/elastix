@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificacion: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.1                                                  |
+  | Elastix version 1.6                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -75,5 +75,6 @@ $arrLangModule=array(
 "File" => "File to Upload (*.csv)",
 "Message" => "Mesaje",
 "Save" => "Upload CVS File",
+"Error to insert or update Direct DID" => "Error to insert or update Direct DID",
 );
 ?>

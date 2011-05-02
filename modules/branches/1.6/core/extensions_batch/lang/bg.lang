@@ -28,7 +28,7 @@
   | Translate by:Chavdar Iliev                                             |
   | Email: chavdar_75@yahoo.com                                                       |
   +----------------------------------------------------------------------+
-  $Id: bg.lang, October 25, 2010, 6:10 pm kleber andres loayza Exp $ */
+  $Id: bg.lang, October 25, 2010, 6:07 pm kleber andres loayza Exp $ */
 global $arrLangModule;
 $arrLangModule=array(  
 "Extensions Batch" => "Групиране Вътрешни Номера",
@@ -74,6 +74,7 @@ $arrLangModule=array(
 "File" => "Файл за Качване (*.csv)",
 "Message" => "Съобщение",
 "Save" => "Качи CSV Файл",
+"Error to insert or update Direct DID" => "Error to insert or update Direct DID",
 
 );
 ?>
