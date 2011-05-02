@@ -14,7 +14,7 @@
           {else}
           <input class="button" type="submit" name="edit" value="{$EDIT_PARAMETERS}"></td>
           {/if}          
-        <td align="right" nowrap><span class="letra12"><span  class="required">*</span> {$REQUIRED_FIELD}</span></td>
+        <td align="right" nowrap> {if $mode eq 'input'} <span class="letra12"> <span  class="required">*</span> {$REQUIRED_FIELD}</span> {/if}</td>
      </tr>
    </table>
   </td>
@@ -23,13 +23,13 @@
   <td>
     <table width="100%" border="0" cellspacing="0" cellpadding="0" class="tabForm">
       <tr>
-	<td width="15%">{$host.LABEL}: <span  class="required">*</span></td>
+	<td width="15%">{$host.LABEL}: {if $mode eq 'input'} <span  class="required">*</span> {/if}</td>
 	<td width="35%">{$host.INPUT}</td>
-	<td width="20%">{$dns1.LABEL}: <span  class="required">*</span></td>
+	<td width="20%">{$dns1.LABEL}: {if $mode eq 'input'} <span  class="required">*</span> {/if}</td>
 	<td width="30%">{$dns1.INPUT}</td>
       </tr>
       <tr>
-	<td>{$gateway.LABEL}: <span  class="required">*</span></td>
+	<td>{$gateway.LABEL}: {if $mode eq 'input'} <span  class="required">*</span> {/if}</td>
 	<td>{$gateway.INPUT}</td>
 	<td width="20%">{$dns2.LABEL}: </td>
 	<td width="30%">{$dns2.INPUT}</td>
