@@ -56,13 +56,23 @@ class paloSantoCDR
 
         // Fecha y hora de inicio y final del rango
         $sRegFecha = '/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/';
-        if (isset($param['date_start']) && preg_match($sRegFecha, $param['date_start'])) {
-            $condSQL[] = 'calldate >= ?';
-            $paramSQL[] = $param['date_start'];
+        if (isset($param['date_start'])) {
+            if (preg_match($sRegFecha, $param['date_start'])) {
+                $condSQL[] = 'calldate >= ?';
+                $paramSQL[] = $param['date_start'];
+            } else {
+                $this->errMsg = '(internal) Invalid start date, must be yyyy-mm-dd hh:mm:ss';
+            	return NULL;
+            }
         }
-        if (isset($param['date_end']) && preg_match($sRegFecha, $param['date_end'])) {
-            $condSQL[] = 'calldate <= ?';
-            $paramSQL[] = $param['date_end'];
+        if (isset($param['date_end'])) {
+            if (preg_match($sRegFecha, $param['date_end'])) {
+                $condSQL[] = 'calldate <= ?';
+                $paramSQL[] = $param['date_end'];
+            } else {
+                $this->errMsg = '(internal) Invalid end date, must be yyyy-mm-dd hh:mm:ss';
+                return NULL;
+            }
         }
         
         // Estado de la llamada
@@ -185,6 +195,7 @@ class paloSantoCDR
     {
         $resultado = array();
         list($sWhere, $paramSQL) = $this->_construirWhereCDR($param);
+        if (is_null($sWhere)) return NULL;
         // Cuenta del total de registros recuperados
         $sPeticionSQL = 
             'SELECT COUNT(*) FROM cdr '.
@@ -234,6 +245,7 @@ class paloSantoCDR
     function contarCDRs($param)
     {
         list($sWhere, $paramSQL) = $this->_construirWhereCDR($param);
+        if (is_null($sWhere)) return NULL;
 
         // Cuenta del total de registros recuperados
         $sPeticionSQL = 
@@ -267,6 +279,7 @@ class paloSantoCDR
     function borrarCDRs($param)
     {
         list($sWhere, $paramSQL) = $this->_construirWhereCDR($param);
+        if (is_null($sWhere)) return NULL;
 
         // Borrado de los registros seleccionados
         $sPeticionSQL = 
@@ -275,8 +288,6 @@ class paloSantoCDR
                 'ON asteriskcdrdb.cdr.dst = asterisk.ringgroups.grpnum '.
             $sWhere;
         $r = $this->_DB->genQuery($sPeticionSQL, $paramSQL);
-print_r($param);
-print $sPeticionSQL; print_r($paramSQL);        
         if (!$r) {
             $this->errMsg = '(internal) Failed to delete CDRs - '.$this->_DB->errMsg;
         }
