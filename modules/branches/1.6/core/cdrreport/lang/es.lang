@@ -49,7 +49,7 @@ $arrLangModule=array(
 "FAILED" => "FALLIDO",
 "NO ANSWER" => "NO CONTESTADO",
 "Delete" => "Eliminar el(los) CDR(s) mostrado(s)",
-"CDR Report" => "Reporde de CDRs",
+"CDR Report" => "Reporte de CDRs",
 "Please End Date must be greater than Start Date" => "Por favor la fecha final debe ser mayor a la fecha final",
 );
 ?>
