@@ -76,6 +76,12 @@ class paloSantoCDR
             $condSQL[] = '(src = ? OR dst = ?)';
             array_push($paramSQL, $param['extension'], $param['extension']);
         }
+
+        // Grupo de timbrado
+        if (isset($param['ringgroup'])) {
+        	$condSQL[] = 'grpnum = ?';
+            $paramSQL[] = $param['ringgroup'];
+        }
         
         // Dirección de la llamada
         if (isset($param['calltype']) && 
@@ -180,7 +186,11 @@ class paloSantoCDR
         $resultado = array();
         list($sWhere, $paramSQL) = $this->_construirWhereCDR($param);
         // Cuenta del total de registros recuperados
-        $sPeticionSQL = "SELECT COUNT(*) FROM cdr $sWhere";
+        $sPeticionSQL = 
+            'SELECT COUNT(*) FROM cdr '.
+            'LEFT JOIN asterisk.ringgroups '.
+                'ON asteriskcdrdb.cdr.dst = asterisk.ringgroups.grpnum '.
+            $sWhere;
         $r = $this->_DB->getFirstRowQuery($sPeticionSQL, FALSE, $paramSQL);
         if (!is_array($r)) {
             $this->errMsg = '(internal) Failed to count CDRs - '.$this->_DB->errMsg;
@@ -194,8 +204,13 @@ class paloSantoCDR
 
         // Los datos de los registros, respetando limit y offset
         $sPeticionSQL = 
-            "SELECT calldate, src, dst, channel, dstchannel, disposition, uniqueid, duration, billsec, accountcode ".
-            "FROM cdr $sWhere ORDER BY calldate DESC";
+            'SELECT calldate, src, dst, channel, dstchannel, disposition, '.
+                'uniqueid, duration, billsec, accountcode, grpnum, description '.
+            'FROM cdr '.
+            'LEFT JOIN asterisk.ringgroups '.
+                'ON asteriskcdrdb.cdr.dst = asterisk.ringgroups.grpnum '.
+            $sWhere.
+            ' ORDER BY calldate DESC';
         if (!empty($limit)) {
             $sPeticionSQL .= " LIMIT ? OFFSET ?";
             array_push($paramSQL, $limit, $offset);
@@ -221,7 +236,11 @@ class paloSantoCDR
         list($sWhere, $paramSQL) = $this->_construirWhereCDR($param);
 
         // Cuenta del total de registros recuperados
-        $sPeticionSQL = "SELECT COUNT(*) FROM cdr $sWhere";
+        $sPeticionSQL = 
+            'SELECT COUNT(*) FROM cdr '.
+            'LEFT JOIN asterisk.ringgroups '.
+                'ON asteriskcdrdb.cdr.dst = asterisk.ringgroups.grpnum '.
+            $sWhere;
         $r = $this->_DB->getFirstRowQuery($sPeticionSQL, FALSE, $paramSQL);
         if (!is_array($r)) {
             $this->errMsg = '(internal) Failed to count CDRs - '.$this->_DB->errMsg;
@@ -250,8 +269,14 @@ class paloSantoCDR
         list($sWhere, $paramSQL) = $this->_construirWhereCDR($param);
 
         // Borrado de los registros seleccionados
-        $sPeticionSQL = "DELETE FROM cdr $sWhere";
+        $sPeticionSQL = 
+            'DELETE cdr FROM cdr '.
+            'LEFT JOIN asterisk.ringgroups '.
+                'ON asteriskcdrdb.cdr.dst = asterisk.ringgroups.grpnum '.
+            $sWhere;
         $r = $this->_DB->genQuery($sPeticionSQL, $paramSQL);
+print_r($param);
+print $sPeticionSQL; print_r($paramSQL);        
         if (!$r) {
             $this->errMsg = '(internal) Failed to delete CDRs - '.$this->_DB->errMsg;
         }
