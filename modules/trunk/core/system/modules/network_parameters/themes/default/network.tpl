@@ -14,7 +14,7 @@
           {else}
           <input class="button" type="submit" name="edit" value="{$EDIT_PARAMETERS}"></td>
           {/if}          
-        <td align="right" nowrap><span class="letra12"> {if $mode eq 'input'} <span  class="required">*</span> {$REQUIRED_FIELD}</span> {/if}</td>
+        <td align="right" nowrap> {if $mode eq 'input'} <span class="letra12"> <span  class="required">*</span> {$REQUIRED_FIELD}</span> {/if}</td>
      </tr>
    </table>
   </td>
