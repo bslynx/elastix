@@ -29,11 +29,11 @@
 global $arrLangModule;
 $arrLangModule=array(
 "Template Email" => "Plantilla de Correo",
-"Fax From" => "Fax Remite",
-"Fax From Name" => "Fax Remitente",
-"Fax Suject" => "Fax Asunto",
-"Fax Content" => "Fax Contenido",
-"Configuration Sending Fax Mail" => "Configuracion de Envio de Fax a Correo",
+"Fax From" => "Remitente (Dirección de Correo)",
+"Fax From Name" => "Remitente (Nombre)",
+"Fax Suject" => "Asunto",
+"Fax Content" => "Cuerpo",
+"Configuration Sending Fax Mail" => "Plantilla para email de fax saliente",
 "Edit Parameters" => "Editar Parametros",
 );
 ?>

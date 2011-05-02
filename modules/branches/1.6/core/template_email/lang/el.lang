@@ -37,7 +37,7 @@ $arrLangModule=array(
 "Fax From Name" => "Fax από Όνομα",
 "Fax Suject" => "Θέμα Fax",
 "Fax Content" => "Περιεχόμενο Fax",
-"Configuration Sending Fax Mail" => "Configuration Sending Fax Mail",
+"Configuration Sending Fax Mail" => "Template for Outgoing FAX's email",
 "Edit Parameters" => "Επεξεργασία παραμέτρων",
 );
 ?>
