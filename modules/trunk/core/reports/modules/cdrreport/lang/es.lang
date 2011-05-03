@@ -51,5 +51,7 @@ $arrLangModule=array(
 "Delete" => "Eliminar el(los) CDR(s) mostrado(s)",
 "CDR Report" => "Reporte de CDRs",
 "Please End Date must be greater than Start Date" => "Por favor la fecha final debe ser mayor a la fecha final",
+"Ring Group"=>"Grupo de Timbrado",
+"(Any ringgroup)"=>"(cualquier grupo)",
 );
 ?>

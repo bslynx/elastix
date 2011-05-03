@@ -16,6 +16,10 @@
         <td width="10%" align="right">{$status.LABEL}: </td>
         <td width="10%" align="left" nowrap>{$status.INPUT}</td>
       </tr>
+      <tr class="letra12">
+        <td width="10%" align="right">{$ringgroup.LABEL}: </td>
+        <td width="10%" align="left" nowrap>{$ringgroup.INPUT}</td>
+      </tr>
    </table>
   </td>
 </tr>

@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.6                                                  |
+  | Elastix version 1.0                                                  |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -54,5 +54,7 @@ $arrLangModule=array(
 "Delete" => "Delete the displayed CDR(s)",
 "CDR Report" => "CDR Report",
 "Please End Date must be greater than Start Date" => "Please End Date must be greater than Start Date",
+"Ring Group"=>"Ring Group",
+"(Any ringgroup)"=>"(Any ringgroup)",
 );
 ?>

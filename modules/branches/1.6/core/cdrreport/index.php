@@ -36,6 +36,8 @@ require_once "libs/misc.lib.php";
 
 function _moduleContent(&$smarty, $module_name)
 {
+    require_once "modules/$module_name/libs/ringgroup.php";
+
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
 
@@ -54,6 +56,13 @@ function _moduleContent(&$smarty, $module_name)
     $dsn = generarDSNSistema('asteriskuser', 'asteriskcdrdb');
     $pDB     = new paloDB($dsn);
     $oCDR    = new paloSantoCDR($pDB);
+
+    // DSN para consulta de ringgroups
+    $dsn_asterisk = generarDSNSistema('asteriskuser', 'asterisk');
+    $pDB_asterisk=new paloDB($dsn_asterisk);
+    $oRG    = new RingGroup($pDB_asterisk);
+    $dataRG = $oRG->getRingGroup();
+    $dataRG[''] = _tr('(Any ringgroup)');
 
     $pDBACL = new paloDB($arrConf['elastix_dsn']['acl']);
     if (!empty($pDBACL->errMsg)) {
@@ -117,6 +126,12 @@ function _moduleContent(&$smarty, $module_name)
                                                         "NO ANSWER "  => _tr("NO ANSWER")),
                             "VALIDATION_TYPE"        => "text",
                             "VALIDATION_EXTRA_PARAM" => ""),
+        "ringgroup"  => array("LABEL"                  => _tr("Ring Group"),
+                            "REQUIRED"               => "no",
+                            "INPUT_TYPE"             => "SELECT",
+                            "INPUT_EXTRA_PARAM"      => $dataRG ,
+                            "VALIDATION_TYPE"        => "text",
+                            "VALIDATION_EXTRA_PARAM" => ""),
         );
 
     $oFilterForm = new paloForm($smarty, $arrFormElements);
@@ -128,7 +143,8 @@ function _moduleContent(&$smarty, $module_name)
         'date_end'      => date("d M Y"),
         'field_name'    => 'dst',
         'field_pattern' => '',
-        'status'        => 'ALL'
+        'status'        => 'ALL',
+        'ringgroup'     =>  '',
     );
     foreach (array_keys($paramFiltro) as $k) {
         if (isset($_GET[$k])) $paramFiltro[$k] = $_GET[$k];
@@ -187,7 +203,7 @@ function _moduleContent(&$smarty, $module_name)
         $limit = $total;
         $offset = 0;
         
-        $arrColumns = array(_tr("Date"), _tr("Source"), _tr("Destination"), _tr("Src. Channel"),_tr("Account Code"),_tr("Dst. Channel"),_tr("Status"),_tr("Duration"));
+        $arrColumns = array(_tr("Date"), _tr("Source"), _tr("Ring Group"), _tr("Destination"), _tr("Src. Channel"),_tr("Account Code"),_tr("Dst. Channel"),_tr("Status"),_tr("Duration"));
         $oGrid->setColumns($arrColumns);
     
         $arrResult = $oCDR->listarCDRs($paramFiltro, $limit, $offset);
@@ -196,11 +212,12 @@ function _moduleContent(&$smarty, $module_name)
             foreach($arrResult['cdrs'] as $key => $value){
                 $arrTmp[0] = $value[0];
                 $arrTmp[1] = $value[1];
-                $arrTmp[2] = $value[2];
-                $arrTmp[3] = $value[3];
-                $arrTmp[4] = $value[9];
-                $arrTmp[5] = $value[4];
-                $arrTmp[6] = $value[5];
+                $arrTmp[2] = $value[11];
+                $arrTmp[3] = $value[2];
+                $arrTmp[4] = $value[3];
+                $arrTmp[5] = $value[9];
+                $arrTmp[6] = $value[4];
+                $arrTmp[7] = $value[5];
                 $iDuracion = $value[8];
                 $iSec = $iDuracion % 60; $iDuracion = (int)(($iDuracion - $iSec) / 60);
                 $iMin = $iDuracion % 60; $iDuracion = (int)(($iDuracion - $iMin) / 60);
@@ -209,7 +226,7 @@ function _moduleContent(&$smarty, $module_name)
                       if ($iDuracion > 0) $sTiempo .= " ({$iDuracion}h {$iMin}m {$iSec}s)";
                       elseif ($iMin > 0)  $sTiempo .= " ({$iMin}m {$iSec}s)";
                 }
-                $arrTmp[7] = $sTiempo;
+                $arrTmp[8] = $sTiempo;
                 $arrData[] = $arrTmp;
             }
         }
@@ -228,18 +245,19 @@ function _moduleContent(&$smarty, $module_name)
 
         $arrResult = $oCDR->listarCDRs($paramFiltro, $limit, $offset);
 
-        $arrColumns = array(_tr("Date"), _tr("Source"), _tr("Destination"), _tr("Src. Channel"),_tr("Account Code"),_tr("Dst. Channel"),_tr("Status"),_tr("Duration"));
+        $arrColumns = array(_tr("Date"), _tr("Source"), _tr("Ring Group"), _tr("Destination"), _tr("Src. Channel"),_tr("Account Code"),_tr("Dst. Channel"),_tr("Status"),_tr("Duration"));
         $oGrid->setColumns($arrColumns);
 
         if(is_array($arrResult['cdrs']) && $total>0){
             foreach($arrResult['cdrs'] as $key => $value){
                 $arrTmp[0] = $value[0];
                 $arrTmp[1] = $value[1];
-                $arrTmp[2] = $value[2];
-                $arrTmp[3] = $value[3];
-                $arrTmp[4] = $value[9];
-                $arrTmp[5] = $value[4];
-                $arrTmp[6] = $value[5];
+                $arrTmp[2] = $value[11];
+                $arrTmp[3] = $value[2];
+                $arrTmp[4] = $value[3];
+                $arrTmp[5] = $value[9];
+                $arrTmp[6] = $value[4];
+                $arrTmp[7] = $value[5];
                 $iDuracion = $value[8];
                 $iSec = $iDuracion % 60; $iDuracion = (int)(($iDuracion - $iSec) / 60);
                 $iMin = $iDuracion % 60; $iDuracion = (int)(($iDuracion - $iMin) / 60);
@@ -248,7 +266,7 @@ function _moduleContent(&$smarty, $module_name)
                       if ($iDuracion > 0) $sTiempo .= " ({$iDuracion}h {$iMin}m {$iSec}s)";
                       elseif ($iMin > 0)  $sTiempo .= " ({$iMin}m {$iSec}s)";
                 }
-                $arrTmp[7] = $sTiempo;
+                $arrTmp[8] = $sTiempo;
                 $arrData[] = $arrTmp;
             }
         }
