@@ -1,3 +1,5 @@
+* Agent Console: Remove reference to nonexistent javascript ManejadorCierre()
+
 1.5-4.0 (SVN revision 2550)
 * Agent Console: When programming a call, the shadow call should inherit 
   all call attributes from the original call. Merge fix from Elastix forums.
