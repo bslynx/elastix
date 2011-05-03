@@ -28,5 +28,5 @@ $GSCMD = "$GS -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -s
 $FAXINFO       = "/usr/sbin/faxinfo";
 
 //ruta de los faxes en elastix
-$faxes_path = "/var/www/html/faxes";
+$faxes_path = "/var/www/faxes";
 ?>
