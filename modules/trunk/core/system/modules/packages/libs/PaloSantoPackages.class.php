@@ -67,11 +67,10 @@ class PaloSantoPackages
         return($paquetes);
     }
 
-    function getAllPackages($ruta,$filtro="", $offset, $limit)
+    function getAllPackages($ruta,$filtro="")
     {
         if($filtro!="")
             $filtro = " where name like '%$filtro%'";
-        $filtro .= " LIMIT $limit OFFSET $offset";
 
         $arr_repositorios = $this->getRepositorios($ruta); 
         $arrRepositoriosPaquetes = array(); 
@@ -123,10 +122,9 @@ class PaloSantoPackages
             }
 
             if($contar)
-                $sQuery  = "select count(*) as total from packages";
+                $sQuery  = "select count(*) as total from packages $filtro";
             else
                 $sQuery  = "select name,summary,version,release,'$repositorio' repositorio from packages $filtro";
-
             $arr_paquetes = $pDB->fetchTable($sQuery,true);
 
             $pDB->disconnect();
@@ -279,28 +277,47 @@ class PaloSantoPackages
         return $respuesta;
     }
 
-    function ObtenerTotalPaquetes($submitInstalado, $ruta)
+    function ObtenerTotalPaquetes($submitInstalado, $ruta, $filtro)
     {
         if($submitInstalado == "all")
         {
+	    if($filtro != "")
+	      $filtro = " where name like '%$filtro%'";
             $total = 0;
             $arr_repositorios = $this->getRepositorios($ruta);
-            $arrRepositoriosPaquetes = array();
             if (is_array($arr_repositorios) && count($arr_repositorios) > 0) {
                 foreach($arr_repositorios as $key => $repositorio){
-                    $total_rep = $this->getPaquetesDelRepositorio($ruta,$repositorio,'', true);
-                    if(isset($total_rep[0]['total']))
-                        $total += $total_rep[0]['total'];
+                    $arr_paquetes = $this->getPaquetesDelRepositorio($ruta,$repositorio,$filtro,true);
+                    if(isset($arr_paquetes[0]['total']))
+			$total += $arr_paquetes[0]['total'];
                 }
             }
             return $total;
         }
         else{
-            $comando="rpm -qa | grep -c .";
+	    if($filtro != "")
+	      $comando="rpm -qa | grep $filtro | grep -c .";
+	    else
+	      $comando="rpm -qa | grep -c .";
             exec($comando,$output,$retval);
             if ($retval!=0) return 0;
             return $output[0];
         }
+    }
+
+    function getDataPagination($arrData,$limit,$offset)
+    {
+	$arrResult = array();
+	$limitInferior = $offset;
+	$limitSuperior = $offset + $limit - 1;
+	foreach($arrData as $key => $value){
+	    if($key > $limitSuperior)
+		break;
+	    if($key >= $limitInferior && $key <= $limitSuperior){
+		$arrResult[]=$arrData[$key];
+	    }
+	}
+	return $arrResult;
     }
 }
 ?>

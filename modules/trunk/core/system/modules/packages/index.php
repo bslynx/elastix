@@ -74,7 +74,7 @@ function listPackages($smarty, $module_name, $local_templates_dir,$arrConf) {
     $submitInstalado = getParametro('submitInstalado');
     $nombre_paquete = getParametro('nombre_paquete');
 
-    $total_paquetes = $oPackages->ObtenerTotalPaquetes($submitInstalado, $arrConf['ruta_yum']);
+    $total_paquetes = $oPackages->ObtenerTotalPaquetes($submitInstalado, $arrConf['ruta_yum'], $nombre_paquete);
 
     $limit = 50;
     $total = $total_paquetes;
@@ -84,7 +84,8 @@ function listPackages($smarty, $module_name, $local_templates_dir,$arrConf) {
 
 
     if($submitInstalado =='all'){
-        $arrPaquetes = $oPackages->getAllPackages($arrConf['ruta_yum'],$nombre_paquete, $offset, $limit);
+        $arrPaquetes = $oPackages->getAllPackages($arrConf['ruta_yum'],$nombre_paquete);
+	$arrPaquetes = $oPackages->getDataPagination($arrPaquetes,$limit,$offset);
     }
     else{  //si no hay post por default los instalados
         $arrPaquetes = $oPackages->getPackagesInstalados($arrConf['ruta_yum'],$nombre_paquete, $offset, $limit, $total);
@@ -115,7 +116,6 @@ function listPackages($smarty, $module_name, $local_templates_dir,$arrConf) {
                             );
         }
     }
-
     $arrGrid = array("title"    => $arrLang["Packages"],
         "icon"     => "images/list.png",
         "width"    => "99%",
