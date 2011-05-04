@@ -1,3 +1,5 @@
+* Agent Console: When attempting to hang an incoming call, do not expose SQL on
+  empty recordset. Fixes Elastix bug #841.
 * Agent Console: Remove reference to nonexistent javascript ManejadorCierre()
 
 1.5-4.0 (SVN revision 2550)

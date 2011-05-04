@@ -551,8 +551,10 @@ function colgarLlamadaEntrante() {
     if (is_array($arr_llamada) && count($arr_llamada)>0) {
         $channel = "Agent/$agentnum";
         finalizar_llamada_asterisk($channel, $resultado);
+    } elseif (count($arr_llamada) <= 0) {
+        $resultado = _tr('Agent not tracking a call, or invalid/inactive agent').': Agent/'.$agentnum;
     } else {
-        $resultado = $sQuery;
+        $resultado = _tr('Could not query agent for incoming call').': '.$pDB->errMsg;
     }
 
     //instanciamos el objeto para generar la respuesta con ajax
