@@ -1,3 +1,4 @@
+* Agents: remove hardcoded HTML escapings in Spanish translation
 * Agent Console: When attempting to hang an incoming call, do not expose SQL on
   empty recordset. Fixes Elastix bug #841.
 * Agent Console: Remove reference to nonexistent javascript ManejadorCierre()
