@@ -270,7 +270,7 @@ class paloSantoDataApplets
                             <div class='detailText'>"._tr('sip_extensions')." <b>($total_sip_Ext) </b>: <font color='green'>($sip_Ext_ok "._tr('OK').")</font> <font color='red'>($sip_Ext_nok "._tr('NO_OK').")</font></div>
                             <div class='typeActivity'></div>
                             <div class='detailText'>"._tr('iax_extensions')." <b>($total_iax_Ext) </b>: <font color='green'>($iax_Ext_ok "._tr('OK').")</font> <font color='red'>($iax_Ext_nok "._tr('NO_OK').")</font></div>
-                            <div class='typeActivity'><b>"._tr('Trunks').": </b></div>
+                            <div class='typeActivity'><b>"._tr('Trunks')." (SIP/IAX): </b></div>
                             <div class='detailText'>"._tr('Trunks')." <b>($total_trunks) </b>: <font color='green'>($total_trunks_ok "._tr('OK').")</font> <font color='red'>($total_trunks_nok "._tr('NO_OK').")</font> </font> <font color='gray'>($total_trunks_unk "._tr('Unknown').")</font></div>".
                             "<div class='typeActivity'><b>"._tr('Network_traffic').": </b></div>
                             <div class='detailText'>"._tr('Bytes')." <b>(".$rx_bytes."kB/s)</b> <= RX | TX =>  <b>(".$tx_bytes."kB/s)</b></div>

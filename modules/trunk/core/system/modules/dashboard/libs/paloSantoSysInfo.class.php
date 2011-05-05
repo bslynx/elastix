@@ -432,23 +432,28 @@ class paloSantoSysInfo
         $arrSIPs = $this->AsteriskManager_Command("sip show peers");
         if(is_array($arrSIPs) & count($arrSIPs)>0){
             foreach($arrSIPs as $key => $line){
+
                 //ex: Name/username              Host            Dyn Nat ACL Port     Status
                 //    412/412                    192.168.1.82     D   N   A  5060     OK (17 ms)
-                if(eregi("^(([[:alnum:]_.-]*)[[:alnum:]_.-/]*)[[:space:]]*([[:alnum:]\.\(\)]+)[[:space:]]*([a-zA-Z]*)[[:space:]]*([a-zA-Z]*)[[:space:]]*([a-zA-Z]*)[[:space:]]*([0-9]+)[[:space:]]*([[:alnum:]\ \(\)]+)$",$line,$arrToken)){
-                    if(eregi("OK",$arrToken[8])){ // estado OK
-                        if(in_array($arrToken[2],$arrTrunks)) // es una troncal?, registrada
+		if(preg_match('/^[[:space:]]*([^[:space:]]+)[[:space:]]+([^[:space:]]+)[[:space:]]+[[:alpha:]]*[[:space:]]*[[:alpha:]]*[[:space:]]*[[:alpha:]]*[[:space:]]*([[:digit:]]+)[[:space:]]+([[:alpha:]]+)/',$line,$arrToken)){
+                    if(eregi("OK",$arrToken[4])){
+			// estado OK
+			$name = explode("/",$arrToken[1]);
+                        if(in_array($name[0],$arrTrunks)) // es una troncal?, registrada
                             $arrActivity["sip"]["trunk"]["ok"]++;
                         else
                             $arrActivity["sip"]["ext"]["ok"]++;
                     }
-                    else if(eregi("Unmonitored ",$arrToken[8])){ // estado desconocido, un caso es cuando no esta definido el parametro quality=yes
-                        if(in_array($arrToken[2],$arrTrunks)) // es una troncal?, registrada
+                    else if(eregi("Unmonitored ",$arrToken[4])){ // estado desconocido, un caso es cuando no esta definido el parametro quality=yes
+			$name = explode("/",$arrToken[1]);
+                        if(in_array($name[0],$arrTrunks)) // es una troncal?, registrada
                             $arrActivity["sip"]["trunk"]["unknown"]++;
                         else
                             $arrActivity["sip"]["ext"]["ok"]++;
                     }
                     else{
-                        if(in_array($arrToken[2],$arrTrunks)) // es una troncal?, no registrada
+			$name = explode("/",$arrToken[1]);
+                        if(in_array($name[0],$arrTrunks)) // es una troncal?, no registrada
                             $arrActivity["sip"]["trunk"]["no_ok"]++;
                         else
                             $arrActivity["sip"]["ext"]["no_ok"]++;
@@ -463,21 +468,24 @@ class paloSantoSysInfo
             foreach($arrIAXs as $key => $line){
                 //ex: Name/Username    Host                 Mask             Port          Status
                 //    512              127.0.0.1       (D)  255.255.255.255  40002         OK (3 ms)
-                if(eregi("^(([[:alnum:]_.-]*)[[:alnum:]_.-/]*)[[:space:]]*([[:alnum:]\.\(\)]+)[[:space:]]*([a-zA-Z\(\)]*)[[:space:]]*([[:alnum:]\.\(\)]+)[[:space:]]*([0-9]+)[[:space:]]*([[:alnum:]\ \(\)]+)$",$line,$arrToken)){
-                    if(eregi("OK",$arrToken[7])){ // estado OK
-                        if(in_array($arrToken[2],$arrTrunks)) // es una troncal?, registrada
+                if(preg_match('/^[[:space:]]*([^[:space:]]+)[[:space:]]+([^[:space:]]+)[[:space:]]+[^[:space:]]+[[:space:]]+[^[:space:]]+[[:space:]]+[[:digit:]]+[[:space:]]+([[:alpha:]]+)/',$line,$arrToken)){
+                    if(eregi("OK",$arrToken[3])){ // estado OK
+			$name = explode("/",$arrToken[1]);
+                        if(in_array($name[0],$arrTrunks)) // es una troncal?, registrada
                             $arrActivity["iax"]["trunk"]["ok"]++;
                         else
                             $arrActivity["iax"]["ext"]["ok"]++;
                     }
-                    else if(eregi("Unmonitored ",$arrToken[7])){ // estado desconocido, un caso es cuando no esta definido el parametro quality=yes
-                        if(in_array($arrToken[2],$arrTrunks)) // es una troncal?, registrada
+                    else if(eregi("Unmonitored ",$arrToken[3])){ // estado desconocido, un caso es cuando no esta definido el parametro quality=yes
+			$name = explode("/",$arrToken[1]);
+                        if(in_array($name[0],$arrTrunks)) // es una troncal?, registrada
                             $arrActivity["iax"]["trunk"]["unknown"]++;
                         else
                             $arrActivity["iax"]["ext"]["ok"]++;
                     }
                     else{
-                        if(in_array($arrToken[2],$arrTrunks)) // es una troncal?, no registrada
+			$name = explode("/",$arrToken[1]);
+                        if(in_array($name[0],$arrTrunks)) // es una troncal?, no registrada
                             $arrActivity["iax"]["trunk"]["no_ok"]++;
                         else
                             $arrActivity["iax"]["ext"]["no_ok"]++;
