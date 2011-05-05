@@ -63,5 +63,8 @@ $arrLangModule=array(
 'Disconnect' => 'Desconectar',
 "The passwords aren't numeric values" => "Las contraseñas no son valores numéricos",
 "The passwords are empty or don't match" => "Las contraseñas están vacías o no coinciden",
+"ECCP Password" => "Contraseña ECCP",
+"Retype ECCP password" => "Repita contraseña ECCP",
+"ECCP passwords don't match" => "Contraseñas ECCP no coinciden",
 );
 ?>

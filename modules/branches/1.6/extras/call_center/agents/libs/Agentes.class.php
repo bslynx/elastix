@@ -65,21 +65,33 @@ class Agentes
         $this->AGENT_FILE=$file;
     }
 
+    /**
+     * Procedimiento para consultar los agentes estáticos que existen en la
+     * base de datos de CallCenter. Opcionalmente, se puede consultar un solo
+     * agente específico.
+     * 
+     * @param   int     $id     Número de agente asignado
+     * 
+     * @return  NULL en caso de error
+     *          Si $id es NULL, devuelve una matriz de las columnas conocidas:
+     *              id number name password estatus eccp_password
+     *          Si $id no es NULL y agente existe, se devuelve una sola tupla
+     *          con la estructura de las columnas indicada anteriormente.
+     *          Si $id no es NULL y agente no existe, se devuelve arreglo vacío.  
+     */
     function getAgents($id=null)
     {
         // CONSULTA DE LA BASE DE DATOS LA INFORMACIÓN DE LOS AGENTES
-        $qorder = '';
-        if (is_null($id)) {
-            $where = "";            
-            $qorder = "ORDER BY `agent`.`number` ASC";
-        } else {
-            $where = " and number=$id";
+        $paramQuery = array(); $where = array("estatus = 'A'"); $sWhere = '';
+        if (!is_null($id)) {
+        	$paramQuery[] = $id;
+            $where[] = 'number = ?';
         }
-
-        $sQuery = "SELECT * FROM agent WHERE estatus='A' $where $qorder";
-
-        $arr_result = array();
-        $arr_result =& $this->_DB->fetchTable($sQuery, true);
+        if (count($where) > 0) $sWhere = 'WHERE '.join(' AND ', $where);
+        $sQuery = 
+            "SELECT id, number, name, password, estatus, eccp_password ".
+            "FROM agent $sWhere ORDER BY number";
+        $arr_result =& $this->_DB->fetchTable($sQuery, true, $paramQuery);
         if (is_array($arr_result)) {
             if (is_null($id) || count($arr_result) <= 0) {
                 return $arr_result;
@@ -109,6 +121,18 @@ class Agentes
         return array_keys($this->arrAgents);
     }
 
+    /**
+     * Procedimiento para agregar un nuevo agente estático a la base de datos
+     * de CallCenter y al archivo agents.conf de Asterisk.
+     * 
+     * @param   array   $agent  Información del agente con las posiciones:
+     *                  0   =>  Número del agente a crear
+     *                  1   =>  Contraseña telefónica del agente
+     *                  2   =>  Nombre descriptivo del agente
+     *                  3   =>  Contraseña para login de ECCP
+     * 
+     * @return  bool    VERDADERO si se inserta correctamente agente, FALSO si no.
+     */
     function addAgent($agent)
     {
         if (!is_array($agent) || count($agent) < 3) {
@@ -121,19 +145,16 @@ class Agentes
             $this->errMsg = 'Agent already exists';
             return FALSE;
         }
+        
+        // Asumir ninguna contraseña de ECCP (agente no será usable por ECCP)
+        if (!isset($agent[3]) || $agent[3] == '') $agent[3] = NULL;
 
         // GRABAR EN BASE DE DATOS
-
-        $sPeticionSQL = paloDB::construirInsert(
-            "agent",
-            array(
-            "number"          =>  paloDB::DBCAMPO($agent[0]),
-            "name"   =>  paloDB::DBCAMPO($agent[2]),
-            "password"       =>  paloDB::DBCAMPO($agent[1]),
-            )
-        );
+        $sPeticionSQL = 'INSERT INTO agent (number, password, name, eccp_password) VALUES (?, ?, ?, ?)';
+        $paramSQL = array($agent[0], $agent[1], $agent[2], $agent[3]);
+        
         $this->_DB->genQuery("SET AUTOCOMMIT = 0");
-        $result = $this->_DB->genQuery($sPeticionSQL);
+        $result = $this->_DB->genQuery($sPeticionSQL, $paramSQL);
 
         if (!$result) {
             $this->errMsg = $this->_DB->errMsg;
@@ -152,6 +173,18 @@ class Agentes
         return $resp; 
     }
 
+    /**
+     * Procedimiento para modificar un agente estático exitente en la base de
+     * datos de CallCenter y en el archivo agents.conf de Asterisk.
+     * 
+     * @param   array   $agent  Información del agente con las posiciones:
+     *                  0   =>  Número del agente a crear
+     *                  1   =>  Contraseña telefónica del agente
+     *                  2   =>  Nombre descriptivo del agente
+     *                  3   =>  Contraseña para login de ECCP
+     * 
+     * @return  bool    VERDADERO si se inserta correctamente agente, FALSO si no.
+     */
     function editAgent($agent)
     {
         if (!is_array($agent) || count($agent) < 3) {
@@ -159,18 +192,14 @@ class Agentes
             return FALSE;
         }
 
-        // EDITAR EN BASE DE DATOS
+        // Asumir ninguna contraseña de ECCP (agente no será usable por ECCP)
+        if (!isset($agent[3]) || $agent[3] == '') $agent[3] = NULL;
 
-        $sPeticionSQL = paloDB::construirUpdate(
-            "agent",
-            array(
-                "name"   =>  paloDB::DBCAMPO($agent[2]),
-                "password"       =>  paloDB::DBCAMPO($agent[1]),
-            ),
-            "number=".$agent[0]
-        );
+        // EDITAR EN BASE DE DATOS
+        $sPeticionSQL = 'UPDATE agent SET password = ?, name = ?, eccp_password = ? WHERE number = ?';
+        $paramSQL = array($agent[1], $agent[2], $agent[3], $agent[0]);
         $this->_DB->genQuery("SET AUTOCOMMIT = 0");
-        $result = $this->_DB->genQuery($sPeticionSQL);
+        $result = $this->_DB->genQuery($sPeticionSQL, $paramSQL);
         if (!$result) {
             $this->errMsg = $this->_DB->errMsg;
             $this->_DB->genQuery("ROLLBACK");
@@ -251,6 +280,19 @@ class Agentes
         return $resp;
     }
 
+    /**
+     * Procedimiento para agregar un agente estático al archivo agents.conf y
+     * reiniciar Asterisk para que lea los cambios de agentes.
+     * 
+     * @param   array   $agent  Información del agente. Se recogen los valores:
+     *                  0   =>  Número del agente
+     *                  1   =>  Contraseña telefónica del agente
+     *                  2   =>  Nombre descriptivo del agente
+     *                  Otras claves o posiciones se ignoran.
+     * 
+     * @return  VERDADERO si se puede escribir el archivo y reiniciar Asterisk,
+     *          FALSO si ocurre algún error.
+     */
     function addAgentFile($agent)
     {
         if (!is_array($agent) || count($agent) < 3) {
@@ -271,7 +313,7 @@ class Agentes
         {
             $regs = NULL;
             if (ereg('^[[:space:]]*agent[[:space:]]*=>[[:space:]]*([[:digit:]]+),', $sLinea, $regs) &&
-                $regs[1] == $agent) {
+                $regs[1] == $agent[0]) {
                 $this->errMsg = "Agent number already exists.";
                 fclose($open);
                 return false;

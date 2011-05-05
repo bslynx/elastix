@@ -384,12 +384,16 @@ function formEditAgent($pDB, $smarty, $module_name, $local_templates_dir, $id_ag
         if (!isset($_POST['description']))  $_POST['description'] = '';
         if (!isset($_POST['password1']))    $_POST['password1'] = '';
         if (!isset($_POST['password2']))    $_POST['password2'] = '';
+        if (!isset($_POST['eccpwd1']))      $_POST['eccpwd1'] = '';
+        if (!isset($_POST['eccpwd2']))      $_POST['eccpwd'] = '';
     } else {
         // Modificación de agente existente
         if (!isset($_POST['extension']))    $_POST['extension'] = $arrAgente['number'];
         if (!isset($_POST['description']))  $_POST['description'] = $arrAgente['name'];
         if (!isset($_POST['password1']))    $_POST['password1'] = $arrAgente['password'];
         if (!isset($_POST['password2']))    $_POST['password2'] = $arrAgente['password'];
+        if (!isset($_POST['eccpwd1']))      $_POST['eccpwd1'] = $arrAgente['eccp_password'];
+        if (!isset($_POST['eccpwd2']))      $_POST['eccpwd'] = $arrAgente['eccp_password'];
         
         // Volver opcional el cambio de clave de acceso
         $arrFormElements['password1']['REQUIRED'] = 'no';
@@ -415,11 +419,14 @@ function formEditAgent($pDB, $smarty, $module_name, $local_templates_dir, $id_ag
             $strErrorMsg .= "";
             $smarty->assign("mb_message", $strErrorMsg);
         } else {
-            foreach (array('extension', 'password1', 'password2', 'description') as $k)
+            foreach (array('extension', 'password1', 'password2', 'description', 'eccpwd1', 'eccpwd2') as $k)
                 $_POST[$k] = trim($_POST[$k]);
             if ($_POST['password1'] != $_POST['password2'] || ($bDoCreate && $_POST['password1'] == '')) {
                 $smarty->assign("mb_title", _tr("Validation Error"));
                 $smarty->assign("mb_message", _tr("The passwords are empty or don't match"));
+            } elseif ($_POST['eccpwd1'] != $_POST['eccpwd2']) {
+                $smarty->assign("mb_title", _tr("Validation Error"));
+                $smarty->assign("mb_message", _tr("ECCP passwords don't match"));
             } elseif (!ereg('^[[:digit:]]+$', $_POST['password1'])) {
                 $smarty->assign("mb_title", _tr("Validation Error"));
                 $smarty->assign("mb_message", _tr("The passwords aren't numeric values"));
@@ -435,6 +442,7 @@ function formEditAgent($pDB, $smarty, $module_name, $local_templates_dir, $id_ag
                     0 => $_POST['extension'],
                     1 => $_POST['password1'],
                     2 => $_POST['description'],
+                    3 => $_POST['eccpwd1'],
                 );
                 if ($bDoCreate) {
                     $bExito = $oAgentes->addAgent($agente);
@@ -496,6 +504,22 @@ function getFormAgent(&$smarty)
             "LABEL"                  => _tr("Retype password"),
             "EDITABLE"               => "yes",
             "REQUIRED"               => "yes",
+            "INPUT_TYPE"             => "PASSWORD",
+            "INPUT_EXTRA_PARAM"      => "",
+            "VALIDATION_TYPE"        => "text",
+            "VALIDATION_EXTRA_PARAM" => ""),
+        "eccpwd1"   => array(
+            "LABEL"                  => _tr("ECCP Password"),
+            "EDITABLE"               => "yes",
+            "REQUIRED"               => "no",
+            "INPUT_TYPE"             => "PASSWORD",
+            "INPUT_EXTRA_PARAM"      => "",
+            "VALIDATION_TYPE"        => "text",
+            "VALIDATION_EXTRA_PARAM" => ""),
+        "eccpwd2"   => array(
+            "LABEL"                  => _tr("Retype ECCP password"),
+            "EDITABLE"               => "yes",
+            "REQUIRED"               => "no",
             "INPUT_TYPE"             => "PASSWORD",
             "INPUT_EXTRA_PARAM"      => "",
             "VALIDATION_TYPE"        => "text",

@@ -41,6 +41,12 @@
 	<td width="20%">{$password2.LABEL}: <span class="required">*</span></td>
 	<td width="30%">{$password2.INPUT}</td>
       </tr>
+      <tr>
+    <td width="20%">{$eccpwd1.LABEL}:</td>
+    <td width="30%">{$eccpwd1.INPUT}</td>
+    <td width="20%">{$eccpwd2.LABEL}:</td>
+    <td width="30%">{$eccpwd2.INPUT}</td>
+      </tr>
 {/if}
     </table>
   </td>
