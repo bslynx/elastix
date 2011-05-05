@@ -96,7 +96,7 @@ function viewFormEmailRelay($smarty, $module_name, $local_templates_dir, &$pDB, 
     $smarty->assign("CONFIGURATION_UPDATE",$arrLang['Save']);
     $smarty->assign("ENABLED", $arrLang["Enabled"]);
     $smarty->assign("DISABLED", $arrLang["Disabled"]);
-	$smarty->assign("ENABLE", $arrLang["Enable"]);
+    $smarty->assign("ENABLE", $arrLang["Enable"]);
     $smarty->assign("DISABLE", $arrLang["Disable"]);
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
     $smarty->assign("STATUS",$arrLang['Status']);
@@ -139,6 +139,22 @@ function saveNewEmailRelay($smarty, $module_name, $local_templates_dir, &$pDB, $
         $arrData['status']          = rtrim(getParameter('status'));
         $arrData['autentification'] = getParameter('autentification');
 
+	$SMTP_Server = rtrim(getParameter('SMTP_Server'));
+	if($SMTP_Server != "custom"){
+	    if($arrData['user'] == "" || $arrData['password'] == ""){
+		$varErrors = ""; 
+		if($arrData['user'] == "")
+		    $varErrors = _tr("Username").", ";
+		if($arrData['password'] == "")
+		    $varErrors .= " "._tr("Password");
+
+		$strErrorMsg = "<b>{$arrLang['The following fields contain errors']}:</b><br/> ".$varErrors;
+		$smarty->assign("mb_message", $strErrorMsg);
+		$content = viewFormEmailRelay($smarty,$module_name,$local_templates_dir,$pDB,$arrConf,$arrLang);
+		return $content;
+	    }
+	}
+
         $tls_enabled  = ($arrData['autentification']=="on")?true:false;
         $auth_enabled = ($arrData['user']!="" && $arrData['password']!="");
         $isOK = $pEmailRelay->checkSMTP($arrData['relayhost'] , $arrData['port'], $arrData['user'], $arrData['password'], $auth_enabled, $tls_enabled);
@@ -175,8 +191,8 @@ function saveNewEmailRelay($smarty, $module_name, $local_templates_dir, &$pDB, $
             }
         }
     }
-        $content= viewFormEmailRelay($smarty,$module_name,$local_templates_dir,$pDB,$arrConf,$arrLang);
-        return $content;
+    $content= viewFormEmailRelay($smarty,$module_name,$local_templates_dir,$pDB,$arrConf,$arrLang);
+    return $content;
 }
 
 function createFieldForm($arrLang)

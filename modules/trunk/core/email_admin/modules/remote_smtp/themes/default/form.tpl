@@ -29,15 +29,15 @@
         <td align="left">{$port.INPUT}</td>
     </tr>
     <tr class="letra12">
-        <td align="left"><b>{$user.LABEL}:</b></td>
+        <td align="left"><b>{$user.LABEL}: <span class="required validpass">*</span></b></td>
         <td align="left">{$user.INPUT} &nbsp;&nbsp;&nbsp;&nbsp;({$Example}. <span id="example">example@domain.com</span>)</td>
     </tr>
     <tr class="letra12">
-        <td align="left"><b>{$password.LABEL}:</b></td>
+        <td align="left"><b>{$password.LABEL}: <span class="required validpass">*</span></b></td>
         <td align="left">{$password.INPUT}</td>
     </tr>
     <tr class="letra12">
-        <td align="left"><b>{$autentification.LABEL}:</b></td>
+        <td align="left"><b>{$autentification.LABEL}: </b></td>
         <td align="left">{$autentification.INPUT}{$MSG_REMOTE_AUT}</td>
     </tr>
 </table>

@@ -32,10 +32,13 @@ $(document).ready(function(){
             $('input[name=chkoldautentification]').removeAttr("checked");
             $('#autentification').val("off");
         }
-        if(server=="GMAIL" || server=="HOTMAIL" || server=="YAHOO")
+        if(server=="GMAIL" || server=="HOTMAIL" || server=="YAHOO"){
             example = "example@"+server.toLowerCase()+".com";
-        else
+	    $('.validpass').show();
+	}else{
             example = "example@domain.com";
+	    $('.validpass').hide();
+	}
         $('#example').text(example);
     });
 });
@@ -57,10 +60,17 @@ function setSelectedDomain(){
             var example = "example@"+server.toLowerCase()+".com";
             $(this).attr("selected", "selected");
             $('#example').text(example);
-        }else
+        }else{
             $(this).removeAttr("selected");
-
+	}
     });
+    
+    var server = $('#SMTP_Server option:selected').val();
+    if(server=="custom")
+	$('.validpass').hide();
+    else
+	$('.validpass').show();
+    
 }
 
 // cambia el estado del hidden "status" de on a off
