@@ -65,6 +65,9 @@ chkconfig --level 2345 elastixdialer off
 # Fix incorrect permissions left by earlier versions of RPM
 chown -R asterisk.asterisk /opt/elastix/dialer
 
+# To update smarty (tpl updates)
+rm -rf /var/www/html/var/templates_c/*
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -89,6 +92,41 @@ fi
 /etc/logrotate.d/elastixdialer
 
 %changelog
+* Mon May  9 2011 Alex Villacis Lasso <a_villacis@palosanto.com>
+- Update trunk version of specfile
+- Clear smarty cache on install/update.
+
+* Thu Apr 14 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.0-14
+- Changed the documentation of ECCP.
+
+* Wed Apr 13 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.0-13
+- Agent Console: When programming calls, do not send campaign ID, phone number,
+  and client name through the URL. Instead, just send the call ID and read the
+  other values from the database. This sidesteps character escaping issues.
+- Hold Time: fix warning on old code path for paging
+- Break Administrator: fix warning on array_fill() when no breaks are defined.
+- Compatibility fix: check if generated HTML for report includes a <form> tag,
+  and add it if not present. Required for compatibility with very old Elastix
+  versions. Should fix Elastix bug #662
+- Agents: use <button> tag to make link appear as a button.
+- Campaigns Out: check that multibyte functions exist before trying to use them.
+  Fixes Elastix bug #650.
+- Calls Detail: complete rewrite. Reorganized library methods now use SQL query
+  parameters, have more readable code and a cleaner API, allows simultaneous
+  filtering by more criteria, no longer requires fetching of all records to find
+  the total number, and fixes several design flaws. Reorganized interface 
+  replaces the filtering by up to two criteria with a four-criteria filter with
+  drop-down lists for Call Type, Agent, Queues. Should also contain fix for 
+  Elastix bug #638.
+- Reports Break, Calls Detail, Calls per Agent, Hold Time, Login Logout: do not
+  add HTML tags on non-HTML exports when using production versions of Elastix
+  framework 2.0.
+- Break Administrator: use parametrized SQL queries instead of string 
+  concatenation. Remove uses of construirInsert and construirUpdate. Make code
+  smaller and add additional parameter validation. Remove unneeded AJAX calls.
+  Expose functionality to activate/deactivate breaks in break listing. Use POST
+  actions exclusively for modifications.
+
 * Wed Dec  8 2010  Alex Villacis Lasso <a_villacis@palosanto.com> 2.0.0-12
 - Updated version, synchronized with CallCenter 1.5-3.9 (SVN revision 2086)
 - From CHANGELOG:
