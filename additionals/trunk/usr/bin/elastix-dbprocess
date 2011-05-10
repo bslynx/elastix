@@ -205,7 +205,7 @@ function renameDatabase($engine, $dbName, $password, $path_folder)
     $dbNewName = $dbName."_$date";
     echo "Database $dbName already exist. Renaming to $dbNewName\n";
     if($engine == "sqlite3")
-        return rename("/var/www/db/$dbName","/var/www/db/$dbNewName");
+        return rename("/var/www/db/$dbName.db","/var/www/db/$dbNewName");
     if($engine == "mysql"){
         if(ismysqlRunning()){
             $file    = fopen("$path_folder/$dbNewName.dump","w");
@@ -291,12 +291,12 @@ function executeSQL($data, $path_folder, $sql_export, $dbName, $action, $passwor
                 return false;
             }
 	    if($data["engine"]=="sqlite3"){
-		if(!chown($data['path']."/".$dbname.".db","asterisk")){
-		    echo "Could not change the owner to asterisk to the database $dbname.\n";
+		if(!chown($data['path']."/".$dbName.".db","asterisk")){
+		    echo "Could not change the owner to asterisk to the database $dbName.\n";
 		    return false;
 		}
-		if(!chgrp($data['path']."/".$dbname.".db","asterisk")){
-		    echo "Could not change the group to asterisk to the database $dbname.\n";
+		if(!chgrp($data['path']."/".$dbName.".db","asterisk")){
+		    echo "Could not change the group to asterisk to the database $dbName.\n";
 		    return false;
 		} 
 	    }
