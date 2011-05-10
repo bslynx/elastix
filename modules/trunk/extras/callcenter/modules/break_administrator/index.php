@@ -176,7 +176,7 @@ function listBreaks(&$smarty, $module_name, &$pDB, $local_templates_dir)
     global $arrLang;
     $end = count($arrBreaks); $start = ($end == 0) ? 0 : 1;
     $oGrid = new paloSantoGrid($smarty);
-    $oGrid->showFilter("<a href=\"?menu={$module_name}&amp;action=new\"><button class=\"button\">"._tr('Create New Break').'&nbsp;&raquo;</button></a>');
+    $oGrid->showFilter("<a href=\"?menu={$module_name}&amp;action=new\"><b>"._tr('Create New Break').'&nbsp;&raquo;</b></a>');
     $url = construirURL(array('menu' => $module_name), array('nav', 'start'));
     $sContenido = $oGrid->fetchGrid(
         array(

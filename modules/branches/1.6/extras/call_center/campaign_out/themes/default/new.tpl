@@ -78,8 +78,8 @@ var rte_script = new richTextEditor('rte_script');
 		<td align='right' valign='top'>
 			{$formulario.LABEL}: <span  class="required">*</span>
 			<br><br>
-			<a style="text-decoration: none; font-family: Arial,Helvetica,sans-serif; font-style: normal;" href="?menu=form_designer">
-			<button>{$label_manage_forms}</button>
+			<a href="?menu=form_designer">
+			<b>{$label_manage_forms}</b>
 			</a><br><br><hr>			
 		</td>
           <td  colspan='2'>
@@ -104,8 +104,8 @@ var rte_script = new richTextEditor('rte_script');
 	  </tr>
       <tr  height='30'>
 		<td align='right'>{$trunk.LABEL}: <span  class="required">*</span><br><br>
-		<a style="text-decoration: none; font-family: Arial,Helvetica,sans-serif; font-style: normal;" href="?menu=pbxconfig&amp;display=trunks">
-		<button>{$label_manage_trunks}</button></a><br><hr>
+		<a href="?menu=pbxconfig&amp;display=trunks">
+		<b>{$label_manage_trunks}</b></a><br><hr>
 		</td>
 		<td valign="top" colspan='2'>{$trunk.INPUT}{if $label_manage_trunks}&nbsp;{/if}</td>
       </tr>
@@ -119,8 +119,8 @@ var rte_script = new richTextEditor('rte_script');
       </tr>
       <tr height='30'>
 		<td align='right'>{$queue.LABEL}: <span  class="required">*</span><br><br>
-		<a style="text-decoration: none; font-family: Arial,Helvetica,sans-serif; font-style: normal;" href="?menu=pbxconfig&amp;display=queues">
-		<button>{$label_manage_queues}</button></a><br><hr>
+		<a href="?menu=pbxconfig&amp;display=queues">
+		<b>{$label_manage_queues}</b></a><br><hr>
 		</td>
 		<td valign="top" colspan='2'>{$queue.INPUT}{if $label_manage_queues}&nbsp;{/if}</td>
       </tr>

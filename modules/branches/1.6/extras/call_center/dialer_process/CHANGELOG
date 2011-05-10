@@ -1,3 +1,6 @@
+* Agents, Break Administrator, Campaigns Out: undo use of <button> inside of <a>
+  as this combination does not work as intended in Firefox 4.0.1. Fixes Elastix
+  bug #864.
 * Agents: implement setting and changing optional ECCP password for agent
 * Agents: remove hardcoded HTML escapings in Spanish translation
 * Agent Console: When attempting to hang an incoming call, do not expose SQL on
