@@ -868,5 +868,31 @@ class paloSantoRules {
         }
         return true;
     }
+
+    function getPreviousRule($actual_order)
+    {
+	$previous_order = $actual_order - 1;
+	$query = "select * from filter where rule_order=?";
+	$arrParam = array($previous_order);
+	$result = $this->_DB->fetchTable($query, true, $arrParam);
+	if($result == FALSE){
+	    $this->errMsg = $this->_DB->errMsg;
+            return null;
+	}
+	return $result[0];
+    }
+
+    function getNextRule($actual_order)
+    {
+	$next_order = $actual_order + 1;
+	$query = "select * from filter where rule_order=?";
+	$arrParam = array($next_order);
+	$result = $this->_DB->fetchTable($query, true, $arrParam);
+	if($result == FALSE){
+	    $this->errMsg = $this->_DB->errMsg;
+            return null;
+	}
+	return (isset($result[0]))?$result[0]:array();
+    }
 }
 ?>

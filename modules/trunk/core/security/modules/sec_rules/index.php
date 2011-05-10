@@ -82,6 +82,9 @@ function _moduleContent(&$smarty, $module_name)
         case "change":
             $content = change($pDB);
             break;
+	case "changeOtherPage":
+	    $content = changeOtherPage($pDB, $module_name);
+	    break;
         case "exec":
             $content = execRules($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
             break;
@@ -489,6 +492,9 @@ function saveRules($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf)
         $smarty->assign("mb_message", _tr("Wrong Mask"));
         return newRules($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrValues, $state);
     }
+
+    $arrValues['ip_source'] = ($arrValues['ip_source'] == "")? "0.0.0.0" : $arrValues['ip_source'];
+    $arrValues['ip_destin'] = ($arrValues['ip_destin'] == "")? "0.0.0.0" : $arrValues['ip_destin'];
     $ipOrigen = explode(".",$arrValues['ip_source']);
     $ipDestino = explode(".",$arrValues['ip_destin']);
     if($ipOrigen[0]>255 || $ipOrigen[1]>255 || $ipOrigen[2]>255 || $ipOrigen[3]>255 || $ipDestino[0]>255 || $ipDestino[1]>255 || $ipDestino[2]>255 || $ipDestino[3]>255){
@@ -575,7 +581,7 @@ function reportRules($smarty, $module_name, $local_templates_dir, &$pDB, $arrCon
     elseif($action == 'Desactivate'){
         $pRules->setDesactivated($id);
     }
-    $limit  = 100;
+    $limit  = 30;
     $total  = $totalRules;
     $oGrid->setLimit($limit);
     $oGrid->setTotal($total);
@@ -587,6 +593,16 @@ function reportRules($smarty, $module_name, $local_templates_dir, &$pDB, $arrCon
     $oGrid->setURL($url);
     $arrData = null;
     $arrResult = $pRules->ObtainRules($limit,$offset);
+    $start  = getParameter("start");
+    $accion = getParameter("nav");
+    if($accion == "end"){
+	if(($total%$limit)==0)
+	  $start = $total - 2*$limit + 1;
+	else
+	  $start = $total - $total%$limit - $limit + 1;
+    }elseif($accion == "previous"){
+	$start = $start - 2*$limit;
+    }
     $button_eliminar = "<input class=\"button\" type=\"submit\" name=\"delete\" value=\""._tr("Delete")."\" ".
                        " onclick=\"return confirmSubmit('"._tr("Are you sure you wish to delete the Rule")."?');\" >";
     if($first_time)
@@ -614,10 +630,10 @@ function reportRules($smarty, $module_name, $local_templates_dir, &$pDB, $arrCon
                 $title = _tr("FORWARD");
                 $arrTmp[4] = _tr("IN").":  $value[eth_in]<br />"._tr("OUT").": $value[eth_out]";
             }
-	        $arrTmp[2] = "&nbsp;<a>"."<img src='$image' border=0 title='"._tr($title)."'</a>";
-	        if($value['target'] == "ACCEPT"){
-                $image = "modules/$module_name/images/target_accept.gif";
-                $title = _tr("ACCEPT");
+	    $arrTmp[2] = "<a><img src='$image' border=0 title='"._tr($title)."'</a>";
+	    if($value['target'] == "ACCEPT"){
+	    $image = "modules/$module_name/images/target_accept.gif";
+	    $title = _tr("ACCEPT");
             }elseif($value['target'] == "DROP"){
                 $image = "modules/$module_name/images/target_drop.gif";
                 $title = _tr("DROP");
@@ -625,7 +641,7 @@ function reportRules($smarty, $module_name, $local_templates_dir, &$pDB, $arrCon
                 $image = "modules/$module_name/images/target_drop.gif";
                 $title = _tr("REJECT");
             }
-            $arrTmp[3] = "&nbsp;<a>"."<img src='$image' border=0 title='"._tr($title)."'</a>";
+            $arrTmp[3] = "<a><img src='$image' border=0 title='"._tr($title)."'</a>";
             $arrTmp[5] = $value['ip_source'];
             $arrTmp[6] = $value['ip_destiny'];
             $arrTmp[7] = $value['protocol'];
@@ -648,8 +664,12 @@ function reportRules($smarty, $module_name, $local_templates_dir, &$pDB, $arrCon
                     $image = "modules/$module_name/images/foco_off.gif";
                     $activated = "Activate";
                 }
-                $arrTmp[9] = "&nbsp;<a href='?menu=$module_name&action=".$activated."&id=".$value['id']."'>"."<img src='$image' border=0 title='"._tr($activated)."'</a>";
-                $arrTmp[10] = "&nbsp;<a href='?menu=$module_name&action=edit&id=".$value['id']."'>"."<img src='modules/$module_name/images/edit.gif' border=0 title='"._tr('Edit')."'</a>";
+		
+		if($offset!=0)
+		    $arrTmp[9] = "<a href='?menu=$module_name&action=".$activated."&id=".$value['id']."&nav=next&start=$start'>"."<img src='$image' border=0 title='"._tr($activated)."'</a>";
+		else
+		    $arrTmp[9] = "<a href='?menu=$module_name&action=".$activated."&id=".$value['id']."'>"."<img src='$image' border=0 title='"._tr($activated)."'</a>";
+                $arrTmp[10] = "<a href='?menu=$module_name&action=edit&id=".$value['id']."'>"."<img src='modules/$module_name/images/edit.gif' border=0 title='"._tr('Edit')."'</a>";
             }
             $arrData[] = $arrTmp;
         }
@@ -785,6 +805,94 @@ function change($pDB)
     return $jsonObject->createJSON();
 }
 
+function changeOtherPage($pDB, $module_name)
+{
+    $jsonObject = new PaloSantoJSON();
+    $pRules = new paloSantoRules($pDB);
+    $direction = getParameter("direction");
+    $actualrow = getParameter("actualrow");
+    $tmp = explode("_",$actualrow);
+    $actual_id = $tmp[1];
+    $actual_order = $tmp[2];
+    $correct = false;
+    if($direction == "up"){
+	if($actual_order != 1){
+	    $correct = true;
+	    $rule = $pRules->getPreviousRule($actual_order);
+	}
+    }else{
+	$rule = $pRules->getNextRule($actual_order);
+	if(count($rule)!=0)
+	    $correct = true;
+    }
+    if($correct){
+	if(is_array($rule)){
+	    $Exito1 = $pRules->updateOrder($actual_id,$rule["rule_order"]);
+	    $Exito2 = $pRules->updateOrder($rule["id"],$actual_order);
+	    $mensaje = _tr("You have made changes to the definition of firewall rules, for this to take effect in the system press the next button");
+            $mensaje2 = _tr("Save Changes");
+	    if($Exito1 && $Exito2){
+		$jsonObject->set_status(_tr("Successful Change").":$mensaje:$mensaje2");
+		$arrayResult["id"] = $rule["id"];
+		if($rule['traffic'] == "INPUT"){
+		    $arrayResult["traffic"]["image"] = "modules/$module_name/images/fw_input.gif";
+		    $arrayResult["traffic"]["title"] = _tr("INPUT");
+		    $arrayResult["interface"] = _tr("IN").": $rule[eth_in]";
+		}elseif($rule['traffic'] == "OUTPUT"){
+		    $arrayResult["traffic"]["image"] = "modules/$module_name/images/fw_output.gif";
+		    $arrayResult["traffic"]["title"] = _tr("OUTPUT");
+		    $arrayResult["interface"] = _tr("OUT").": $rule[eth_out]";
+		}else{
+		    $arrayResult["traffic"]["image"] = "modules/$module_name/images/fw_forward.gif";
+		    $arrayResult["traffic"]["title"] = _tr("FORWARD");
+		    $arrayResult["interface"] = _tr("IN").":  $rule[eth_in]<br />"._tr("OUT").": $rule[eth_out]";
+		}
+		if($rule['target'] == "ACCEPT"){
+		    $arrayResult["target"]["image"] = "modules/$module_name/images/target_accept.gif";
+		    $arrayResult["target"]["title"] = _tr("ACCEPT");
+		}elseif($rule['target'] == "DROP"){
+		    $arrayResult["target"]["image"] = "modules/$module_name/images/target_drop.gif";
+		    $arrayResult["target"]["title"] = _tr("DROP");
+		}else{
+		    $arrayResult["target"]["image"] = "modules/$module_name/images/target_drop.gif";
+		    $arrayResult["target"]["title"] = _tr("REJECT");
+		}
+		$arrayResult["ipSource"]  = $rule["ip_source"];
+		$arrayResult["ipDestiny"] = $rule["ip_destiny"];
+		$arrayResult["protocol"]  = $rule["protocol"];
+		if($rule['protocol'] == "ICMP")
+		    $arrayResult["details"] = _tr("Type").": $rule[icmp_type]";
+		else if($rule['protocol'] == "IP")
+		    $arrayResult["details"] = _tr("Number Protocol IP").": $rule[number_ip]";
+		else if($rule['protocol'] == "TCP" || $rule['protocol'] == "UDP")
+		    $arrayResult["details"] = _tr("Source Port").": $rule[sport]"."<br />"._tr("Destiny Port").": $rule[dport]";
+		else if($rule['protocol'] == "STATE")
+		    $arrayResult["details"] = $rule['state'];
+		else
+		    $arrayResult["details"] = "";
+		if($rule['activated'] == 1){
+                    $image = "modules/$module_name/images/foco_on.gif";
+                    $activated = "Desactivate";
+                }
+                else{
+                    $image = "modules/$module_name/images/foco_off.gif";
+                    $activated = "Activate";
+                }
+		$arrayResult["activate"] =  "<a href='?menu=$module_name&action=".$activated."&id=".$rule['id']."'>"."<img src='$image' border=0 title='"._tr($activated)."'</a>";
+		$arrayResult["edit"] = "<a href='?menu=$module_name&action=edit&id=".$rule['id']."'>"."<img src='modules/$module_name/images/edit.gif' border=0 title='"._tr('Edit')."'</a>";
+		$jsonObject->set_message($arrayResult);
+	    }
+	    else
+		$jsonObject->set_error($pRules->errMsg);
+	}
+	else
+	    $jsonObject->set_error($pRules->errMsg);
+    }
+    else
+	$jsonObject->set_status(_tr("Invalid Action"));
+    return $jsonObject->createJSON();
+}
+
 function desactivateFirewall($smarty,$module_name,$local_templates_dir,$pDB,$arrConf)
 {
     $pRules = new paloSantoRules($pDB);
@@ -809,6 +917,8 @@ function getAction()
         return "getPorts";
     else if(getParameter("action") == "change")
         return "change";
+    else if(getParameter("action") == "changeOtherPage")
+        return "changeOtherPage";
     else if(getParameter("delete"))
         return "delete";
     else if(getParameter("exec"))
