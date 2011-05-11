@@ -15,6 +15,14 @@ AuthName = $id_device
 password = $secret
 SIPServerHost = $ipAdressServer
 
+[ account ]
+path=/yealink/config/voip/sipAccount1.cfg
+Enable = 0
+
+[ account ]
+path=/yealink/config/voip/sipAccount2.cfg
+Enable = 0
+
 [ autoprovision ]
 path = /yealink/config/Setting/autop.cfg
 server_type = tftp
