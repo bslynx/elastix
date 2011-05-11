@@ -235,7 +235,7 @@ function endpointConfiguratedSet($smarty, $module_name, $local_templates_dir, $d
     $paloFileEndPoint = new PaloSantoFileEndPoint($arrConf["tftpboot_path"]);
     $arrFindVendor    = array(); //variable de ayuda, para llamar solo una vez la funcion createFilesGlobal de cada vendor
 
-    $valid = validateParameterEndpoint($_POST,$dsnAsterisk,$dsnSqlite);
+    $valid = validateParameterEndpoint($_POST, $module_name,$dsnAsterisk,$dsnSqlite);
     if($valid!=false){
         $smarty->assign("mb_title",$arrLang['ERROR'].":");
         $smarty->assign("mb_message",$valid);
@@ -295,19 +295,42 @@ function endpointConfiguratedSet($smarty, $module_name, $local_templates_dir, $d
     return endpointConfiguratedShow($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrLang, $arrConf);
 }
 
-function validateParameterEndpoint($arrParameters, $dsnAsterisk, $dsnSqlite)
+function validateParameterEndpoint($arrParameters, $module_name, $dsnAsterisk, $dsnSqlite)
 {
+    // Listar todos los proveedores disponibles
+    $base_dir = dirname($_SERVER['SCRIPT_FILENAME']);
+    $sVendorCfgDir = "$base_dir/modules/$module_name/libs/vendors";
+    if (!is_dir($sVendorCfgDir)) {
+        return _tr('Vendor configuration directory not found!');
+    }
+    $h = opendir($sVendorCfgDir);
+    $vendorList = array();
+    while (($s = readdir($h)) !== false) {
+        $regs = NULL;
+        if (preg_match('/^(.+)\.cfg\.php/', $s, $regs)) $vendorList[] = $regs[1];
+    }
+    closedir($h);
+
     $paloEndPoint = new paloSantoEndPoint($dsnAsterisk,$dsnSqlite);
     $arrDeviceFreePBX = $paloEndPoint->getDeviceFreePBX();
     $error = false;
     foreach($arrParameters as $key => $values){
         if(substr($key,0,6) == "epmac_"){ //encontre una mac seleccionada entoces por forma empirica con ayuda del mac_adress obtego los parametros q se relacionan con esa mac.
             $tmpMac    = substr($key,6);
+
+            // Revisar que la subcadena sea realmente una dirección MAC
+            if (!preg_match('/^((([[:xdigit:]]){2}:){5}([[:xdigit:]]){2})$/i', $tmpMac))
+                $error .= "Invalid MAC address for endpoint<br />";
+            
             $tmpDevice = $arrParameters["id_device_$tmpMac"];
             $tmpModel  = $arrParameters["id_model_device_$tmpMac"];
             $tmpVendor = $arrParameters["name_vendor_device_$tmpMac"];
             if($tmpDevice == "unselected" || $tmpDevice == "no_device" || $tmpModel == "unselected") //el primero que encuentre sin seleccionar mantiene el error
                 $error .= "The mac adress $tmpMac unselected Phone Type or User Extension. <br />";
+
+            // Revisar que el vendedor es uno de los vendedores conocidos
+            if (!in_array($tmpVendor, $vendorList))
+                $error .= "Invalid or unsupported vendor<br />";
 
             //PASO 2: Recorro el arreglo de la sesion para modificar y mantener los valores q el usuario ha decidido elegir asi cuando halla un error los datos persisten.
             if(isset($_SESSION['elastix_endpoints'])){
