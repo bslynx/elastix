@@ -77,7 +77,7 @@ function _moduleContent(&$smarty, $module_name)
     //actions
     $action = getAction();
     $content = "";
-
+    deleteNonExistentTrunks($pDB,$pDB2,$smarty);
     switch($action){
         case "view_new":
             $content = newFormVoIPProviderAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
@@ -190,7 +190,6 @@ function saveNewVoIPProvider($smarty, $module_name, $local_templates_dir, &$pDB,
             
         $pVP       = new paloSantoVP($pDB2);
         $id_trunk  = $pVP->getIdNextTrunk();
-
         $exito = $pVP->saveTrunk($arrData);
         if($exito){
 
@@ -216,7 +215,7 @@ function saveNewVoIPProvider($smarty, $module_name, $local_templates_dir, &$pDB,
             }
         }
         else{
-            $smarty->assign("mb_title", _tr("Validation Error"));
+            $smarty->assign("mb_title", _tr("ERROR"));
             $strErrorMsg  = "<b>"._tr('Internal Error')."</b><br/>".$pVP->errMsg;
             $smarty->assign("mb_message", $strErrorMsg);
             return newFormVoIPProviderAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
@@ -403,30 +402,30 @@ function deleteVoIPProviderAccount($smarty, $module_name, $local_templates_dir, 
 
 function activateVoIPProviderAccount($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $dsn_agi_manager, $pDB2, $arrAMP, $arrAST)
 {
-	$pVoIPProvider   = new paloSantoVoIPProvider($pDB);
+    $pVoIPProvider   = new paloSantoVoIPProvider($pDB);
     $pACL            = new paloACL($arrConf['ACLdb']);
     $user            = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
     $esAdministrador = $pACL->isUserAdministratorGroup($user);
     if($esAdministrador){
-		$id      = getParameter("id");
-		$arrData = $pVoIPProvider->getVoIPProviderAccountById($id);
-		$status  = "";  
+	$id      = getParameter("id");
+	$arrData = $pVoIPProvider->getVoIPProviderAccountById($id);
+	$status  = "";  
         $pVP     = new paloSantoVP($pDB2);
         $id_trunk = getParameter("id_trunk");
-		if($arrData['status']=="desactivate"){
-            if($pVP->disableTrunk($id_trunk,'off'))
-			    $status = "activate";
-            else
-                $status = "desactivate";
+	if($arrData['status']=="desactivate"){
+	    if($pVP->disableTrunk($id_trunk,'off'))
+		$status = "activate";
+	    else
+		$status = "desactivate";
         }
-		else{
+	else{
             if($pVP->disableTrunk($id_trunk,'on'))
-			    $status = "desactivate";
+		$status = "desactivate";
             else
                 $status = "activate";
         }	
-		$sal = $pVoIPProvider->changeStatus($id, $status);
-		if($sal){
+	$sal = $pVoIPProvider->changeStatus($id, $status);
+	if($sal){
             $data_connection = array('host' =>  $dsn_agi_manager['host'], 'user' => $dsn_agi_manager['user'], 'password' => $dsn_agi_manager['password']);
             if($pVP->do_reloadAll($data_connection, $arrAST, $arrAMP)){
                 $smarty->assign("mb_title", _tr("Message"));
@@ -437,15 +436,15 @@ function activateVoIPProviderAccount($smarty, $module_name, $local_templates_dir
                 $smarty->assign("mb_message", $pVP->errMsg);
             }
 			//$pVoIPProvider->setAsteriskFiles($dsn_agi_manager);
-		}else{
-			$smarty->assign("mb_title", _tr("ERROR"));
-			$smarty->assign("mb_message", _tr("Internal Error"));
-		}
 	}else{
-		$smarty->assign("mb_title", _tr("Validation Error"));
-        $smarty->assign("mb_message", _tr("User is not allowed to do this operation"));
+	    $smarty->assign("mb_title", _tr("ERROR"));
+	    $smarty->assign("mb_message", _tr("Internal Error"));
 	}
-	return reportVoIPProvider($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
+    }else{
+	$smarty->assign("mb_title", _tr("Validation Error"));
+        $smarty->assign("mb_message", _tr("User is not allowed to do this operation"));
+    }
+    return reportVoIPProvider($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
 }
 
 function reportVoIPProvider($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf)
@@ -747,6 +746,25 @@ function createFieldFilter(){
                                     "VALIDATION_EXTRA_PARAM" => ""),
                     );
     return $arrFormElements;
+}
+
+function deleteNonExistentTrunks(&$pDB, $pDB2, $smarty)
+{
+    $pVoIPProvider = new paloSantoVoIPProvider($pDB);
+    $pVP    	   = new paloSantoVP($pDB2);
+    $trunks 	   = $pVoIPProvider->getAllTrunks();
+    if(is_array($trunks) && count($trunks)>0){
+	foreach($trunks as $trunk){
+	    $exist = $pVP->trunkExists($trunk['id_trunk']);
+	    if(!isset($exist)){
+		 $smarty->assign("mb_title", _tr("ERROR"));
+		 $smarty->assign("mb_message", $pVP->errMsg);
+		 break;
+	    }
+	    elseif(!$exist)
+		 $pVoIPProvider->deleteAccount($trunk['id']);
+	}
+    }
 }
 
 function getAllDataPOST()

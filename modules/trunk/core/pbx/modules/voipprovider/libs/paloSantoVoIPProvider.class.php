@@ -108,6 +108,17 @@ class paloSantoVoIPProvider {
         return $result;
     }
 
+    function getAllTrunks()
+    {
+	$query = "select id,id_trunk from provider_account";
+	$result = $this->_DB->fetchTable($query,true);
+	if($result==FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return array();
+        }
+	return $result;
+    }
+
     function getVoIPProviders()
     {
         $query = "SELECT name FROM provider order by orden";

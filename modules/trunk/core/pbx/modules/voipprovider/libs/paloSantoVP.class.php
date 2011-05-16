@@ -230,6 +230,20 @@ class paloSantoVP {
         return true; 
     }
 
+    function trunkExists($id_trunk)
+    {
+	$arrParam = array($id_trunk);
+	$query = "select * from trunks where trunkid = ?";
+	$result = $this->_DB->fetchTable($query, true, $arrParam);
+	if($result===FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return null;
+        }
+	if(count($result)==0)
+	    return false;
+	return true;
+    }
+
     function deleteTrunk($id_trunk)
     {
         $tech = $this->getTechbyId($id_trunk);
