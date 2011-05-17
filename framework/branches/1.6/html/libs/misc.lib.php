@@ -379,16 +379,17 @@ function combo($arreglo_valores, $selected) {
 function checkbox($id_name, $checked='off', $disable='off')
 {
     $check = $disab = "";
+    $id_name_fixed  = str_replace("-","_",$id_name);
 
     if(!($checked=='off'))
         $check = "checked=\"checked\"";
     if(!($disable=='off'))
         $disab = "disabled=\"disabled\"";
 
-    $checkbox  = "<input type=\"checkbox\" name=\"chkold{$id_name}\" $check $disab onclick=\"javascript:{$id_name}check();\" /> 
+    $checkbox  = "<input type=\"checkbox\" name=\"chkold{$id_name}\" $check $disab onclick=\"javascript:{$id_name_fixed}check();\" /> 
                   <input type=\"hidden\"   name=\"{$id_name}\" id=\"{$id_name}\"   value=\"{$checked}\" />
                   <script type=\"text/javascript\">
-                    function {$id_name}check(){
+                    function {$id_name_fixed}check(){
                         var node = document.getElementById('$id_name');
                         if(node.value == 'on')
                             node.value = 'off';
