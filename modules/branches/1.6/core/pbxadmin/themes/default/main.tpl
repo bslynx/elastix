@@ -1,8 +1,6 @@
 <table cellspacing="0" cellpadding="0" border="0" width="100%">
   <tr>
     <td valign="top" width="220"><div id="nav"><ul>
-    <li>{$Option}</li>
-    <li><a href="/admin/" target="_blank">{$Unembedded_freePBX}</a></li>
     <li>{$Basic}</li>
     <li><a href="/?menu=pbxconfig&amp;display=extensions"  >{$Extensions}</a></li>
     <li><a href="/?menu=pbxconfig&amp;display=featurecodeadmin"  >{$Feature_Codes}</a></li>
@@ -39,6 +37,8 @@
     <li>{$Remote_Access}</li>
     <li><a href="/?menu=pbxconfig&amp;display=callback"  >{$Callback}</a></li>
     <li><a href="/?menu=pbxconfig&amp;display=disa"  >{$DISA}</a></li>
+    <li>{$Option}</li>
+    <li><a href="/admin/"  class="info" target="_blank">{$Unembedded_freePBX} <span style='margin-left:2.7cm; width:300px'>{$INFO}</span></a></li>
 </ul></div></td>
 <td valign="top">{$htmlFPBX}</td>
 </tr>
