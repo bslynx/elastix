@@ -1,7 +1,7 @@
 Summary: Elastix First Boot Setup
 Name:    elastix-firstboot
 Version: 2.0.4
-Release: 6
+Release: 7
 License: GPL
 Group:   Applications/System
 Source0: %{name}-%{version}.tar.bz2
@@ -81,6 +81,16 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/elastix-firstboot/compat-dbscripts/08-schema-vtiger.sql
 
 %changelog
+* Tue May 17 2011 Alberto Santos <asantos@palosanto.com> 2.0.4-7
+- FIXED: elastix-firstboot, an error occurred when the password
+  of root or mysql have spaces. Now the password can have spaces
+  also.
+  SVN Rev[2641]
+- FIXED: elastix-firstboot, a temporal solution was defined by
+  adding localhost first in the file /etc/hosts, this solution
+  is for the cyrus admin can authenticate.
+  SVN Rev[2497]
+
 * Thu Mar 31 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-6
 - ADD:     elastix-firsboot, Add comment to show the possible 
   bug in the future when the process to execute scripts throw 
