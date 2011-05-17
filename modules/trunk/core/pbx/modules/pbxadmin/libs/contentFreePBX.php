@@ -65,7 +65,7 @@
 	$bodyParams = @$smarty->fetch("BODYPARAMS");
 	$bodyParams .= "onload='body_loaded();'";
 	$smarty->assign("BODYPARAMS", $bodyParams);
-
+	
 	$_SESSION["AMP_user"]=NULL;
 	/* benchmark */
 	function microtime_float() { list($usec,$sec) = explode(' ',microtime()); return ((float)$usec+(float)$sec); }
@@ -504,6 +504,7 @@
 
 	    $salida .= "<table border=0 cellpadding=2 cellspacing=0 align='center' width='100%'><tr bgcolor='#f6bbbb'><td align='center'><a href='$URL_RELOAD'>Apply Configuration Changes Here</a></td></tr></table>";
 	}
+
 	if($withList){
 	    $smarty->assign("Option", _tr('Option'));
 	    $smarty->assign("Unembedded_freePBX", _tr('Unembedded freePBX'));
@@ -542,11 +543,13 @@
 	    $smarty->assign("Time_Groups", _tr('Time Groups'));
 	    $smarty->assign("Languages", _tr('Languages'));
 	    $smarty->assign("VoiceMail_Blasting", _tr('VoiceMail Blasting'));
-	}
 
-	$smarty->assign("htmlFPBX", $htmlFPBX);
+	    $smarty->assign("INFO", _tr("Warning: Updating FreePBX through its web interface will cause it to install versions that may have not yet been properly integrated with Elastix. To avoid conflicts, it is always recommended to search/install updates only through the linux command \"yum update freePBX\"."));
+	}
+        $smarty->assign("htmlFPBX", $htmlFPBX);
 	$salida .= $smarty->fetch("$local_templates_dir/main.tpl");
 	return $salida;
+
     }
 
 ?>
