@@ -62,7 +62,7 @@ elastix_mysql_init(){
 	for dbscript in /var/spool/elastix-mysqldbscripts/*.sql ; do
 		if [ -e $dbscript ]; then
 			echo "Applying MySQL script $dbscript ..."
-			mysql -u root -p$elastix_root_password < $dbscript
+			mysql -u root "-p$elastix_root_password" < $dbscript
 			ret=$?
 		fi
                 if [ $ret -ne 0 ] ; then
@@ -121,13 +121,13 @@ This screen will now ask for a password for the 'root' account of MySQL.\n\n"
 	    return 1
 	fi
 	
-	echo "UPDATE mysql.user SET Password=PASSWORD('$MYSQL_PASSWD1') WHERE User='root';" | mysql -u root -p$MYSQL_PASSWD1
+	echo "UPDATE mysql.user SET Password=PASSWORD('$MYSQL_PASSWD1') WHERE User='root';" | mysql -u root "-p$MYSQL_PASSWD1"
 	ret=$?
 	if [ $? -ne 0 ]; then
 	    echo "Unable to set root password (2) for MySQL - password already set or server not running!"
 	    return 1
 	fi
-	echo "FLUSH PRIVILEGES;" | mysql -u root -p$MYSQL_PASSWD1
+	echo "FLUSH PRIVILEGES;" | mysql -u root "-p$MYSQL_PASSWD1"
 	echo "mysqlrootpwd=$MYSQL_PASSWD1" > $PASSWD_PATH
 	
 	# ****Add the user cyrus with the command saslpasswd2 ***************
@@ -187,7 +187,7 @@ This screen will now ask for a password for user 'admin' that will be used for: 
 	done
 	rm -f $OPTFILE
 	
-	echo "UPDATE asterisk.ampusers SET password_sha1=sha1('$FREEPBX_PASSWD1') WHERE username = 'admin';" | mysql -u root -p$MYSQL_PASSWD1
+	echo "UPDATE asterisk.ampusers SET password_sha1=sha1('$FREEPBX_PASSWD1') WHERE username = 'admin';" | mysql -u root "-p$MYSQL_PASSWD1"
 	ret=$?
 	if [ $? -ne 0 ]; then
 	    echo "Unable to set admin password for FreePBX !"
@@ -195,7 +195,7 @@ This screen will now ask for a password for user 'admin' that will be used for: 
 	fi
 	
 	# Use the same password for freePBX login and for updating /etc/amportal.conf
-	echo "GRANT USAGE ON *.* TO 'asteriskuser'@'localhost' IDENTIFIED BY '$FREEPBX_PASSWD1'" | mysql -u root -p$MYSQL_PASSWD1
+	echo "GRANT USAGE ON *.* TO 'asteriskuser'@'localhost' IDENTIFIED BY '$FREEPBX_PASSWD1'" | mysql -u root "-p$MYSQL_PASSWD1"
 	ret=$?
 	if [ $? -ne 0 ]; then
 	    echo "Unable to set database password for FreePBX !"
@@ -221,7 +221,7 @@ This screen will now ask for a password for user 'admin' that will be used for: 
 	
 	# Set password for A2Billing
         WHIRLPOOL=`php -r "echo hash('whirlpool','$FREEPBX_PASSWD1');"`
-        echo "UPDATE mya2billing.cc_ui_authen SET pwd_encoded='$WHIRLPOOL', login='admin' WHERE userid=1;" | mysql -u root -p$MYSQL_PASSWD1
+        echo "UPDATE mya2billing.cc_ui_authen SET pwd_encoded='$WHIRLPOOL', login='admin' WHERE userid=1;" | mysql -u root "-p$MYSQL_PASSWD1"
 	#echo "UPDATE mya2billing.cc_ui_authen SET password = '$FREEPBX_PASSWD1' WHERE login = 'admin';" | mysql -u root -p$MYSQL_PASSWD1
 	ret=$?
 	if [ $? -ne 0 ]; then
@@ -234,7 +234,7 @@ This screen will now ask for a password for user 'admin' that will be used for: 
 	
 	# Set password for VTiger. This assumes the vtigercrm510 database is already created. 
 	# This procedure works for VTigerCRM 5.1.0
-	echo "UPDATE vtigercrm510.vtiger_users SET user_password = ENCRYPT('$FREEPBX_PASSWD1', CONCAT('\$1\$', SUBSTRING('admin' FROM 1 FOR 2), '\$')), user_hash = md5('$FREEPBX_PASSWD1') WHERE user_name = 'admin'" | mysql -u root -p$MYSQL_PASSWD1
+	echo "UPDATE vtigercrm510.vtiger_users SET user_password = ENCRYPT('$FREEPBX_PASSWD1', CONCAT('\$1\$', SUBSTRING('admin' FROM 1 FOR 2), '\$')), user_hash = md5('$FREEPBX_PASSWD1') WHERE user_name = 'admin'" | mysql -u root "-p$MYSQL_PASSWD1"
 	ret=$?
 	if [ $? -ne 0 ]; then
 	    echo "Unable to set admin password for VTiger !"
