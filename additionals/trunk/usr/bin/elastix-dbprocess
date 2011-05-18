@@ -217,19 +217,19 @@ function renameDatabase($engine, $dbName, $password, $path_folder)
                 echo "Could not create the file $path_folder/$dbNewName.dump The rename action was aborted";
                 return false;
             }
-            $command = "mysqldump -uroot -p$password $dbName >> $path_folder/$dbNewName.dump";
+            $command = "mysqldump -uroot \"-p$password\" $dbName >> $path_folder/$dbNewName.dump";
             exec($command,$arrConsole,$status);
             if($status != 0){
                 echo "Could not create a dump file for database $dbName";
                 return false;
             }
-            $command = "mysql -uroot -p$password < $path_folder/$dbNewName.dump";
+            $command = "mysql -uroot \"-p$password\" < $path_folder/$dbNewName.dump";
             exec($command,$arrConsole,$status);
             if($status != 0){
                 echo "Could not rename the database $dbName";
                 return false;
             }
-            $command = "mysql -uroot -p$password -e 'DROP DATABASE $dbName'";
+            $command = "mysql -uroot \"-p$password\" -e 'DROP DATABASE $dbName'";
             exec($command,$arrConsole,$status);
             if($status != 0){
                 echo "Could not drop database $dbName";
@@ -282,7 +282,7 @@ function executeSQL($data, $path_folder, $sql_export, $dbName, $action, $passwor
             if($data["engine"]=="sqlite3")
                 $command = "sqlite3 $data[path]/$dbName.db '.read $path_folder/1_sqlFile.sql'";
             if($data["engine"]=="mysql")
-                $command = "mysql -uroot -p$password < $path_folder/1_sqlFile.sql";
+                $command = "mysql -uroot \"-p$password\" < $path_folder/1_sqlFile.sql";
             echo "Executing $command ... \n";
             exec($command,$arrConsole,$status);
             echo "RETURN $status\n";
