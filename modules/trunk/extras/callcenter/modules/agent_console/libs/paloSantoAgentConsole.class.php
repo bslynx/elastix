@@ -587,7 +587,7 @@ function finalizar_llamada_asterisk($channel, &$resultado) {
         } else {
             $arr_resultado = $astman->Hangup($channel);
             if ($arr_resultado["Response"] != "Success") {
-                $resultado = $arr_resultado["Response"]." - ".$arr_resultado["Message"];
+                $resultado = $arr_resultado["Response"]." - ".$arr_resultado["Message"].' : '.$channel;
             }
             save_log_prueba("Desconecta en finalizar_llamada_asterisk\n");
             $astman->disconnect();
@@ -844,6 +844,7 @@ function get_break_hold($pDB) {
 */
 function pausar_llamadas($id_break)
 {
+    $resultado = '';
     $respuesta = new xajaxResponse();
     $agentnum = $_SESSION['elastix_agent_user'];
 
@@ -866,32 +867,44 @@ function pausar_llamadas($id_break)
         if (!estaAgenteEnPausa($astman, $agentnum)) {
             //$salida = $astman->QueuePause(null,$member,"true");
             $salida = QueuePause($astman, null,$member,"true");
-            $resultado = $salida['Message'];
-            $_SESSION['elastix_agent_break']=$id_break;
-            $_SESSION['elastix_agent_soloUnaVez']=null;
-            /*$id_audit = auditoria_break_insert($id_break,$agentnum); SE CAMBIO LA IMPLEMENTACION AL INSERTAR  A NOTIFICA LLAMADA POR RAZONES DE EXACTITUD EN EL TIEMPO DE INICIO DE BREAK
-            if($id_audit!=null)
-                $_SESSION['elastix_agent_audit']=$id_audit;*/
-            $name_pausa = _tr("UnBreak");
-            $style = 'boton_unbreak';
-            $respuesta->addScript("document.getElementById('div_list').style.display ='none'; \n");
+            if ($salida['Response'] != 'Success') {
+                $resultado = _tr('Unable to pause agent ').$member.': '.$salida['Message'];
+            } else {
+                $_SESSION['elastix_agent_break']=$id_break;
+                $_SESSION['elastix_agent_soloUnaVez']=null;
+                /*$id_audit = auditoria_break_insert($id_break,$agentnum); SE CAMBIO LA IMPLEMENTACION AL INSERTAR  A NOTIFICA LLAMADA POR RAZONES DE EXACTITUD EN EL TIEMPO DE INICIO DE BREAK
+                if($id_audit!=null)
+                    $_SESSION['elastix_agent_audit']=$id_audit;*/
+                $name_pausa = _tr("UnBreak");
+                $style = 'boton_unbreak';
+                $respuesta->addScript("document.getElementById('div_list').style.display ='none'; \n");
+            }
         } else {
             //$salida = $astman->QueuePause(null,$member,"false");
             $salida = QueuePause($astman, null,$member,"false");
-            $resultado = $salida['Message'];
-            if(!auditoria_break_update($_SESSION['elastix_agent_audit'])){
-                $smarty->assign("mb_title", _tr("Audit Error"));
-                $smarty->assign("mb_message", _tr('Audit of break could not be inserted'));
-            }    
-            $_SESSION['elastix_agent_audit'] = null;
-            $_SESSION['elastix_agent_break'] = null;
-            $_SESSION['elastix_agent_soloUnaVez']=null;
-            $name_pausa = _tr("Break");
-            $respuesta->addScript("estado_cronometro('unBreak',null);\n");
-            $style = 'boton_break';
+            if ($salida['Response'] != 'Success') {
+                $resultado = _tr('Unable to unpause agent ').$member.': '.$salida['Message'];
+            } else {
+                if(!auditoria_break_update($_SESSION['elastix_agent_audit'])){
+                    $smarty->assign("mb_title", _tr("Audit Error"));
+                    $smarty->assign("mb_message", _tr('Audit of break could not be inserted'));
+                }    
+                $_SESSION['elastix_agent_audit'] = null;
+                $_SESSION['elastix_agent_break'] = null;
+                $_SESSION['elastix_agent_soloUnaVez']=null;
+                $name_pausa = _tr("Break");
+                $respuesta->addScript("estado_cronometro('unBreak',null);\n");
+                $style = 'boton_break';
+            }
         }
-        $respuesta->addScript("document.getElementById('pause').value='".$name_pausa."'; \n");
-        $respuesta->addScript("document.getElementById('pause').className='".$style."'; \n");
+
+        // si hay texto en resultado se lo muestra porque de seguro es la descripción de algun error
+        if ($resultado != "") {
+            $respuesta->addAssign("mensajes_informacion","innerHTML",$resultado);
+        } else {
+            $respuesta->addScript("document.getElementById('pause').value='".$name_pausa."'; \n");
+            $respuesta->addScript("document.getElementById('pause').className='".$style."'; \n");
+        }
         save_log_prueba("Desconecta en pausar_llamadas\n");
         $astman->disconnect();
     }

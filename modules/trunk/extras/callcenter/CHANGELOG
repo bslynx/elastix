@@ -1,3 +1,5 @@
+* Agent Console: display error diagnostic messages when pause/unpause fails. 
+  Also display attempted hangup channel when Hangup operation failed.
 * Agents, Break Administrator, Campaigns Out: undo use of <button> inside of <a>
   as this combination does not work as intended in Firefox 4.0.1. Fixes Elastix
   bug #864.
