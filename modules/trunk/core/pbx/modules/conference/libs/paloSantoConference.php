@@ -192,7 +192,7 @@ class paloSantoConference {
             $salida = $astman->Command("$command");
             $astman->disconnect();
             if (strtoupper($salida["Response"]) != "ERROR") {
-                return split("\n", $salida["data"]);
+                return explode("\n", $salida["data"]);
             }
         }
         return false;
@@ -232,7 +232,7 @@ class paloSantoConference {
 
             $astman->disconnect();
             if (strtoupper($salida["Response"]) != "ERROR") {
-                return split("\n", $salida["Response"]);
+                return explode("\n", $salida["Response"]);
             }else return false;
         }
         return false;

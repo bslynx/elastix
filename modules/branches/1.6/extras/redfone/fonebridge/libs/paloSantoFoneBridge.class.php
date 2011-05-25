@@ -128,7 +128,7 @@ class paloSantoFoneBridge {
                 else if(ereg("server[ |=]*(.*)", $tupla, $regs))
                     $arrValores['server_mac'] = $regs[1];
                 else if(ereg("^[[:space:]]*priorities[ |=]*(.*)", $tupla, $regs)){
-                    $arrPriorities = split(",",$regs[1]);
+                    $arrPriorities = explode(",",$regs[1]);
                     $arrValores['priority1'] = $arrPriorities[0];
                     $arrValores['priority2'] = $arrPriorities[1];
                     $arrValores['priority3'] = $arrPriorities[2];

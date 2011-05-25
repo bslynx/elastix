@@ -136,7 +136,7 @@ function newRules($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, 
         $related = 0;
         $established = 0;
     }else{
-        $tmp = split(",",$state);
+        $tmp = explode(",",$state);
         if($tmp[0] == "Established")
             $established = 1;
         else

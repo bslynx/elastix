@@ -276,7 +276,7 @@
         // create the final PDF
 	if (isset($files_attach)) {
 		$files_attach = trim($files_attach);
-		$cnt = split(" ", $files_attach);
+		$cnt = explode(" ", $files_attach);
 		
 		if (count($cnt) > 1) {		// if multiple PDFs, combine them
 			faxes_log("convert final > convirtiendo....");

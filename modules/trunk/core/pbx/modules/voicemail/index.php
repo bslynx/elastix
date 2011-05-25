@@ -495,7 +495,7 @@ function borrarVoicemails()
     if(is_array($_POST) && count($_POST) > 0){
         foreach($_POST as $name => $on){
             if(substr($name,0,4)=='voc-'){
-                $arrData = split(",", $name);
+                $arrData = explode(",", $name);
                 $file = substr($arrData[0],4);
                 $voicemailPath = "$path/{$arrData[1]}/$folder";
                 $pos = strrpos($file, '_');

@@ -142,7 +142,7 @@ class paloSantoFTPBackup {
         $array = array();
         $names ="";
         foreach ($files as $ima)
-            $names[]=array_pop(split("/",$ima));
+            $names[]=array_pop(explode("/",$ima));
         if(!$names) return $array;
         return $names;
     }

@@ -815,7 +815,7 @@ function get_extension_parqueo($astman, $channel) {
     $hardware = $_SESSION["hardware"];
     //$hardware = "SIP|IAX|ZAP|H323|OH323";
     $salida = $astman->Command("show parkedcalls");
-    $arrParkedCall = split("\n", $salida['data']);
+    $arrParkedCall = explode("\n", $salida['data']);
 
 //$ext_parqueada = "no entro al foreach";
     foreach($arrParkedCall as $linea){
@@ -1584,7 +1584,7 @@ function estaAgenteConectado($numAgente,$extn, & $mensaje, &$no_queue, $cont_vec
         save_log_prueba("Desconecta en estaAgenteConectado\n");
         $astman->disconnect();
         if ($strAgentShow["Response"] != "Error") {
-            $arrAgentShow = split("\n", $strAgentShow['data']);
+            $arrAgentShow = explode("\n", $strAgentShow['data']);
             if (is_array($arrAgentShow) && count($arrAgentShow)>0) {
                 foreach($arrAgentShow as $line) {
                     if(ereg("^[[:space:]]*([[:digit:]]{2,})", $line, $arrReg1)) {
@@ -1642,7 +1642,7 @@ function estaAgenteEnPausa($astman, $numAgente) {
     }
     $arrAgentShow=array();
     if (is_array($strAgentShow))
-        $arrAgentShow = split("\n", $strAgentShow['data']);
+        $arrAgentShow = explode("\n", $strAgentShow['data']);
 
     foreach($arrAgentShow as $line) {
         if(ereg("[[:alnum:]]*/([[:digit:]]{2,})", $line, $arrReg1)) {
@@ -2217,7 +2217,7 @@ function estaAgenteEnCola($numAgente,$cola) {
         $astman->disconnect();
         $arrAgentShow=array();
         if (is_array($strAgentShow))
-            $arrAgentShow = split("\n", $strAgentShow['data']);
+            $arrAgentShow = explode("\n", $strAgentShow['data']);
 
         foreach($arrAgentShow as $line) {
             if(ereg("[[:alnum:]]*/([[:digit:]]{2,})", $line, $arrReg1)) {

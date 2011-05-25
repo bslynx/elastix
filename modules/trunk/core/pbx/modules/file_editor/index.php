@@ -296,7 +296,7 @@ function AsteriskManagerAPI($action, $parameters, $return_data=false)
         $astman->disconnect();
         if (strtoupper($salida["Response"]) != "ERROR") {
             if($return_data) return $salida;
-            else return split("\n", $salida["Response"]);
+            else return explode("\n", $salida["Response"]);
         }else return false;
     }
     return false;

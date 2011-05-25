@@ -115,7 +115,7 @@ class paloSantoRecordings {
 
             $astman->disconnect();
             if (strtoupper($salida["Response"]) != "ERROR") {
-                return split("\n", $salida["Response"]);
+                return explode("\n", $salida["Response"]);
             }else return false;
         }
         return false;

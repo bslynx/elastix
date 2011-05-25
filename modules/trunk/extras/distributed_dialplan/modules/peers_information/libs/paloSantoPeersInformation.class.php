@@ -505,7 +505,7 @@ class paloSantoPeersInformation {
             $salida = $astman->Command("$command");
             $astman->disconnect();
             if (strtoupper($salida["Response"]) != "ERROR") {
-                return split("\n", $salida["data"]);
+                return explode("\n", $salida["data"]);
             }
         }
         return false;

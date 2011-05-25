@@ -210,7 +210,7 @@ class Predictivo
         if (is_array($respuestaListaAgentes) && is_array($respuestaCola)) {
 
         	// Averiguar qué canal (si alguno) usa cada agente
-            $lineasRespuesta = split("\n", $respuestaListaAgentes['data']);
+            $lineasRespuesta = explode("\n", $respuestaListaAgentes['data']);
             $tiempoAgente = array();
             foreach ($lineasRespuesta as $sLinea) {
             	$regs = NULL;
@@ -224,7 +224,7 @@ class Predictivo
                         // Para el canal, averiguar el momento de inicio de llamada
                         $respuestaCanal = $this->_astConn->Command("core show channel $sCanalAgente");
                         if (!is_array($respuestaCanal)) return NULL;
-                        $lineasCanal = split("\n", $respuestaCanal['data']);
+                        $lineasCanal = explode("\n", $respuestaCanal['data']);
                         foreach ($lineasCanal as $sLineaCanal) {
                         	$regs = NULL;
                             if (ereg('level [[:digit:]]+: start=(.*)', $sLineaCanal, $regs)) {
@@ -250,7 +250,7 @@ class Predictivo
             );
             
             // Parsear la salida de la lista de colas
-            $lineasRespuesta = split("\n", $respuestaCola['data']);
+            $lineasRespuesta = explode("\n", $respuestaCola['data']);
             $sSeccionActual = NULL;
             foreach ($lineasRespuesta as $sLinea) {
                 if (ereg("^[[:space:]]*Members:", $sLinea)) {

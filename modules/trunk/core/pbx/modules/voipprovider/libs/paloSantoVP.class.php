@@ -333,7 +333,7 @@ class paloSantoVP {
             $astman->disconnect();
             $salida["Response"] = isset($salida["Response"])?$salida["Response"]:"";
             if (strtoupper($salida["Response"]) != "ERROR") {
-                return split("\n", $salida["Response"]);
+                return explode("\n", $salida["Response"]);
             }else return false;
         }
         return false;

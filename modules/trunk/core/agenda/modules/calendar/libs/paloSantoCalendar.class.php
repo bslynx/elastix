@@ -498,7 +498,7 @@ class paloSantoCalendar {
             $astman->disconnect();
             if (strtoupper($salida["Response"]) != "ERROR") {
                 if($return_data) return $salida;
-                else return split("\n", $salida["Response"]);
+                else return explode("\n", $salida["Response"]);
             }else return false;
         }
         return false;
@@ -533,16 +533,16 @@ class paloSantoCalendar {
     {
         $parameters = array('Command'=>"database show AMPUSER $ext/cidname");
         $data = $this->AsteriskManagerAPI("Command",$parameters,true);
-        $arrData = split("\n",$data['data']);
+        $arrData = explode("\n",$data['data']);
         $arrData = isset($arrData[1])?$arrData[1]:"";
-        $arrData = split(":",$arrData);
+        $arrData = explode(":",$arrData);
         $salida['cidname'] = isset($arrData[1])?trim($arrData[1]):"";
 
         $parameters = array('Command'=>"database show DEVICE  $ext/dial");
         $data = $this->AsteriskManagerAPI("Command",$parameters,true);
-        $arrData = split("\n",$data['data']);
+        $arrData = explode("\n",$data['data']);
         $arrData = isset($arrData[1])?$arrData[1]:"";
-        $arrData = split(":",$arrData);
+        $arrData = explode(":",$arrData);
         $salida['dial'] = isset($arrData[1])?trim($arrData[1]):"";
 
         return $salida;

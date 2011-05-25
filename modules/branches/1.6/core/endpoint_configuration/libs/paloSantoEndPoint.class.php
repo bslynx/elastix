@@ -439,12 +439,12 @@ class paloSantoEndPoint
     {
         $parameters = array('Command'=>"sip show peers");
         $result = $this->AsteriskManagerAPI("Command",$parameters,true); 
-        $data = split("\n",$result['data']);
+        $data = explode("\n",$result['data']);
         $extension = "";
         foreach($data as $key => $line){
             if(preg_match("/(\d+\/\d+)[[:space:]]*($ip)[[:space:]]*[[:alpha:]]*[[:space:]]*[[:alpha:]]*[[:space:]]*[[:alpha:]]{0,1}[[:space:]]*[[:digit:]]*[[:space:]]*([[:alpha:]]*)/",$line,$match)){
                 if($match[3] == "OK"){
-                    $tmp = split("/",$match[1]);
+                    $tmp = explode("/",$match[1]);
                     if($extension == "")
                         $extension = $tmp[0];
                     else
@@ -487,7 +487,7 @@ class paloSantoEndPoint
             $astman->disconnect();
             if (strtoupper($salida["Response"]) != "ERROR") {
                 if($return_data) return $salida;
-                else return split("\n", $salida["Response"]);
+                else return explode("\n", $salida["Response"]);
             }else return false;
         }
         return false;

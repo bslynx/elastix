@@ -198,7 +198,7 @@ class paloSantoBuildModule {
         if(is_array($arrForm) && count($arrForm) >0){
             $tmpLanguage = "\"$new_module_name\" => \"$new_module_name\",";
             foreach($arrForm as $key => $names){
-                $arrName = split("/",$names);
+                $arrName = explode("/",$names);
                 $tmpLanguage .= "\n\"$arrName[0]\" => \"$arrName[0]\",";
             }
         }
@@ -299,7 +299,7 @@ class paloSantoBuildModule {
         }else{
              if(is_array($arrForm) && count($arrForm) >0){
                     foreach($arrForm as $key => $value){
-                        $field = split("/",$value);
+                        $field = explode("/",$value);
                         if(file_exists("$ruta/$this_module_name/libs/sources/fields_form/$field[1].s")){
                             $file_form = "$ruta/$this_module_name/libs/sources/fields_form/$field[1].s";
                                 if (!$gestor_form = fopen($file_form, 'r')) {
@@ -351,7 +351,7 @@ class paloSantoBuildModule {
 		               	$file_form = "$ruta/$this_module_name/libs/sources/fields_form/fields_form.tpl";					
 
                 foreach($arrForm as $key => $value){
-                        $field = split("/",$value);
+                        $field = explode("/",$value);
                         if (!$gestor_form = fopen($file_form, 'r')) {
                             $this->errMsg = $arrLang["It isn't possible to open file FORM for reading"]. ": $file";
                             return false;

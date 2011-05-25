@@ -226,7 +226,7 @@ class cyradm
                             $ret["qmax"] = "NOT-SET";
                     } else {
                             $realoutput = str_replace(")", "", $output[0]);
-                            $tok_list = split(" ", $realoutput);
+                            $tok_list = explode(" ", $realoutput);
                             $si_used = sizeof($tok_list) - 2;
                             $si_max = sizeof($tok_list) - 1;
                             $ret["used"] = str_replace(")", "", $tok_list[$si_used]);
@@ -321,7 +321,7 @@ class cyradm
                 for ($i=0; $i < count($find_out); $i++) {
 
                         if (strcmp($find_out[$i],$username)!=0) {
-                                $split_res = split("$username",$find_out[$i]);
+                                $split_res = explode("$username",$find_out[$i]);
                                 $split_res[1] = str_replace("/",".",$split_res[1]);
                                 $this->renamemb((str_replace("/",".",$find_out[$i])), ("$to_mb_name"."$split_res[1]"));
                                 if ($owner) {
@@ -428,7 +428,7 @@ class cyradm
                 $output = $this->command(". list \"$username\" *");
 
                 for ($i=0; $i < count($output); $i++) {
-                        $splitfolder=split("\"",$output[$i]);
+                        $splitfolder=explode("\"",$output[$i]);
                         $output[$i]=str_replace(".","/",$splitfolder[3]);
                 }
                 return $output;
@@ -436,15 +436,15 @@ class cyradm
 
         function EGetFolders($username)
         {
-                $lastfolder=split("/",$username);
+                $lastfolder=explode("/",$username);
                 $position=count($lastfolder)-1;
                 $last=$lastfolder[$position];
                 $username=str_replace("/",".",$username);
                 $output = $this->command(". list \"$username\" *");
 
                 for ($i=0; $i < count($output); $i++) {
-                        $splitfolder=split("\"",$output[$i]);
-                        $currentfolder=split("\.",$splitfolder[3]);
+                        $splitfolder=explode("\"",$output[$i]);
+                        $currentfolder=explode("\.",$splitfolder[3]);
                         $current=$currentfolder[$position];
                         // echo "<br>FOLDER:($) CURRENTFOLDER:($splitfolder[3]) CURRENT:($current) LAST:($last) POSITION:($position)<br>";
                         if (strcmp($current,$last)==0){
@@ -493,7 +493,7 @@ class cyradm
                 $this->imap_logout();
                 $j = $prev = 0;
                 for ($i=0; $i < count($output); $i++) {
-                        $username = split("/", $output[$i], -1);
+                        $username = explode("/", $output[$i], -1);
                         $this->debug("(" . $username[1] . "\n" . $users[$prev]);
                         if ((isset($username)) && (isset($users))) {
                                 if (strcmp($username[1], $users[$prev])) {
@@ -516,7 +516,7 @@ class cyradm
                 $this->imap_logout();
                 $j = $prev = 0;
                 for ($i=0; $i < count($output); $i++) {
-                        $username = split("/", $output[$i], -1);
+                        $username = explode("/", $output[$i], -1);
                       //  $this->debug("(" . $username[1] . "\n" . $users[$prev]);
                         if ((isset($username)) && (isset($users))) {
                            if ($prev!=0){
@@ -543,7 +543,7 @@ class cyradm
                 $output = $this->command(". list \"$username\" *");
 
                 for ($i=0; $i < count($output); $i++) {
-                        $splitfolder=split("\"",$output[$i]);
+                        $splitfolder=explode("\"",$output[$i]);
                         $output[$i]=$splitfolder[3];
                 }
                 return $output;

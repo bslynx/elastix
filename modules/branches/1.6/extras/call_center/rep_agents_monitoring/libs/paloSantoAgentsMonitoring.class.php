@@ -227,8 +227,8 @@ class paloSantoAgentsMonitoring {
 
                 $id_queue_agent = $data_calls["id_queue"]."-".$data_calls["id_agent"];
                 if (isset($calls_no_terminadas[$id_queue_agent])) {
-                    $hora1 = split(":",$data_calls["total_talk_time"]);
-                    $hora2 = split(":",$calls_no_terminadas[$id_queue_agent]["total_talk_time"]);
+                    $hora1 = explode(":",$data_calls["total_talk_time"]);
+                    $hora2 = explode(":",$calls_no_terminadas[$id_queue_agent]["total_talk_time"]);
                     $sum_hora = date("H:i:s", mktime ($hora1[0]+$hora2[0],$hora1[1]+$hora2[1],$hora1[2]+$hora2[2],6,14,2005));
                     $data_calls["total_talk_time"] = $sum_hora;//." - ".$data_calls["total_talk_time"]." - ".$calls_no_terminadas[$data_calls["id_agent"]]["total_talk_time"];
                 }
@@ -244,8 +244,8 @@ class paloSantoAgentsMonitoring {
             foreach($result_audit as $key=>$data_audit){
 
                 if (isset($audit_no_terminado[$data_audit["id_agent"]])) {
-                    $arr_hora1 = split(":",$audit_no_terminado[$data_audit["id_agent"]]["total_login_time"]);
-                    $arr_hora2 = split(":",$data_audit["total_login_time"]);
+                    $arr_hora1 = explode(":",$audit_no_terminado[$data_audit["id_agent"]]["total_login_time"]);
+                    $arr_hora2 = explode(":",$data_audit["total_login_time"]);
                     if (is_array($arr_hora1) && count($arr_hora1)==3) {
                         $hora["hora"] = $arr_hora1[0] + $arr_hora2[0];
                         $hora["min"] = $arr_hora1[1] + $arr_hora2[1];
@@ -325,7 +325,7 @@ echo "</pre>";*/
                 if(isset($data_call["total_calls"])) {
                     $totales["total_calls"] = $totales["total_calls"]+$data_call["total_calls"];
                 }
-                $hora_login = split(":",$data_call["total_login_time"]);
+                $hora_login = explode(":",$data_call["total_login_time"]);
                 if (is_array($hora_login) && count($hora_login)==3) {
                     if (isset($totales["total_login_time"]['hora'])) {
                         $totales["total_login_time"]['hora'] += $hora_login[0];
@@ -339,7 +339,7 @@ echo "</pre>";*/
                 }
 
                 if (isset($data_call["total_talk_time"])){
-                    $hora_talk = split(":",$data_call["total_talk_time"]);
+                    $hora_talk = explode(":",$data_call["total_talk_time"]);
                     if (is_array($hora_talk) && count($hora_talk)==3) {
                         if (isset($totales["total_talk_time"]['hora'])) {
                             $totales["total_talk_time"]['hora'] += $hora_talk[0];

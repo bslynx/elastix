@@ -208,7 +208,7 @@ a array with the field "total" containing the total of records.
     {
         exec("/usr/sbin/asterisk -rx 'core show channels concise' | grep ^$channel",$arrConsole,$flagStatus);
         if($flagStatus == 0){
-            $arrData = split("!",$arrConsole[0]);
+            $arrData = explode("!",$arrConsole[0]);
             $command_data['origen']  = $origen;
             $command_data['destino'] = $destino;
             $command_data['channel'] = $arrData[11]; // $arrData[0] tiene mi canal de conversa, $arrData[11] tiene el canal con quies estoy conversando
@@ -229,7 +229,7 @@ a array with the field "total" containing the total of records.
 
             $astman->disconnect();
             if (strtoupper($salida["Response"]) != "ERROR") {
-                return split("\n", $salida["Response"]);
+                return explode("\n", $salida["Response"]);
             }else return false;
         }
         return false;
@@ -248,7 +248,7 @@ a array with the field "total" containing the total of records.
 
             $astman->disconnect();
             if (strtoupper($salida["Response"]) != "ERROR") {
-                return split("\n", $salida["Response"]);
+                return explode("\n", $salida["Response"]);
             }else return false;
         }
         return false;
@@ -331,7 +331,7 @@ a array with the field "total" containing the total of records.
         {
             if(eregi("([[:alnum:]]*) => ",$line, $regs))
             {
-                $arrVal = split(",", $line);
+                $arrVal = explode(",", $line);
                 $result[$regs[1]] = $arrVal[2];
             }
         }

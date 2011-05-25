@@ -81,7 +81,7 @@ class paloSantoControlPanel {
             $astman->disconnect();
             if (strtoupper($salida["Response"]) != "ERROR") {
                 if($return_data) return $salida;
-                else return split("\n", $salida["Response"]);
+                else return explode("\n", $salida["Response"]);
             }else return false;
         }
         return false;
@@ -103,8 +103,8 @@ class paloSantoControlPanel {
 
                     $call_dstn = " ";
                     if(isset($arrChan[$value['user']]['dstn'])){
-                        $tmp = split("-",$arrChan[$value['user']]['dstn']);
-                        $tmp = split("/",$tmp[0]);
+                        $tmp = explode("-",$arrChan[$value['user']]['dstn']);
+                        $tmp = explode("/",$tmp[0]);
                         $call_dstn = isset($tmp[1])?$tmp[1]:" ";
                     }
                     $speak_time = isset($arrChan[$value['user']]['time'])?$arrChan[$value['user']]['time']:" ";
@@ -133,12 +133,12 @@ class paloSantoControlPanel {
         //$parameters  = array('Command'=>'core show channels verbose');
         $parameters  = array('Command'=>'core show channels concise');
         $data        = $this->AsteriskManagerAPI('Command',$parameters,true);
-        $arrChannels = split("\n",$data['data']);
+        $arrChannels = explode("\n",$data['data']);
         $arrData     = null;
 
         if(is_array($arrChannels) & count($arrChannels)>0){
             foreach($arrChannels as $key => $line){
-                $tmp = split("!",$line);
+                $tmp = explode("!",$line);
                 if(count($tmp) > 10)
                     $arrData[$tmp[7]] = array(
                         'context' => $tmp[1],//para ver si es macro-dialout-trunk
@@ -178,8 +178,8 @@ class paloSantoControlPanel {
                                 $call_dstn = $arrChan[$value['user']]['ext'];
                         }
                         else{
-                            $tmp = split("-",$arrChan[$value['user']]['dstn']);
-                            $tmp = split("/",$tmp[0]);
+                            $tmp = explode("-",$arrChan[$value['user']]['dstn']);
+                            $tmp = explode("/",$tmp[0]);
                             $call_dstn = isset($tmp[1])?$tmp[1]:" ";
                         }
                     }
@@ -189,14 +189,14 @@ class paloSantoControlPanel {
                     $trunk = " ";
                     if($context=="macro-dialout-trunk"){
                         if(isset($arrChan[$value['user']]['dstn'])){
-                            $tmp = split("-",$arrChan[$value['user']]['dstn']);
-                            $tmp = split("/",$tmp[0]);
+                            $tmp = explode("-",$arrChan[$value['user']]['dstn']);
+                            $tmp = explode("/",$tmp[0]);
                             if(isset($tmp[1]))
                                 $trunk = isset($tmp[0])?$tmp[0]."/".$tmp[1]:" ";
                         }
                         if(isset($arrChan[$value['user']]['data'])){
-                            $tmp = split(",",$arrChan[$value['user']]['data']);
-                            $tmp = split("/",$tmp[0]);
+                            $tmp = explode(",",$arrChan[$value['user']]['data']);
+                            $tmp = explode("/",$tmp[0]);
                             $call_dstn = isset($tmp[2])?$tmp[2]:" ";
                         }
                     }
@@ -205,7 +205,7 @@ class paloSantoControlPanel {
                     $activity = " ";
                     $tmp = null;
                     if(isset($arrChan[$value['user']]['data'])){
-                         $tmp = split(",",$arrChan[$value['user']]['data']);
+                         $tmp = explode(",",$arrChan[$value['user']]['data']);
                     }
                     if(isset($tmp))
                         if(isset($arrConferences[$tmp[0]])){
@@ -258,7 +258,7 @@ class paloSantoControlPanel {
     {
        $parameters = array('Command'=>"meetme list");
        $data = $this->AsteriskManagerAPI("Command",$parameters,true);
-       $arrConferences = split("\n",$data['data']);
+       $arrConferences = explode("\n",$data['data']);
        $arrConf = array();
        if(is_array($arrConferences))
         foreach($arrConferences as $key => $line){
@@ -281,14 +281,14 @@ class paloSantoControlPanel {
     {
         $parameters = array('Command'=>"parkedcalls show");
         $data = $this->AsteriskManagerAPI("Command",$parameters,true);
-        $arrParkinglots = split("\n",$data['data']);
+        $arrParkinglots = explode("\n",$data['data']);
         $arrParking = array();
         if(is_array($arrParkinglots))
             foreach($arrParkinglots as $key => $line){
                 if(preg_match_all('/^([[:digit:]]+)[[:space:]]*([[:alnum:]|\/|\-]+)[[:space:]]*[[:alnum:]|\(|\-]+[[:space:]]*[[:alnum:]]+[[:space:]]*[[:digit:]]+[[:space:]]*[[:alnum:]|\)]+[[:space:]]*([[:digit:]]+)/',$line,$matches)){
                     $tmp = $matches[2][0];
-                    $tmp = split("/",$tmp);
-                    $tmp = split("-",$tmp[1]);
+                    $tmp = explode("/",$tmp);
+                    $tmp = explode("-",$tmp[1]);
                     $arrParking[$matches[1][0]]["extension"] = $tmp[0];
                     $time = $matches[3][0];
                     $arrParking[$matches[1][0]]["time"] = $this->Sec2HHMMSS($time);
@@ -302,7 +302,7 @@ class paloSantoControlPanel {
     {
         $parameters = array('Command'=>"database showkey cidname");
         $data = $this->AsteriskManagerAPI("Command",$parameters,true);
-        $arrDevice = split("\n",$data['data']);
+        $arrDevice = explode("\n",$data['data']);
         return $arrDevice;
     }
 
@@ -310,10 +310,10 @@ class paloSantoControlPanel {
     {
         $parameters = array('Command'=>"database showkey Registry/$ext");
         $data = $this->AsteriskManagerAPI("Command",$parameters,true);
-        $arrData = split("\n",$data['data']);
+        $arrData = explode("\n",$data['data']);
        
         $arrData = isset($arrData[1])?$arrData[1]:"";
-        $arrData = split("/",$arrData);
+        $arrData = explode("/",$arrData);
 
         return isset($arrData[2])?"on":"off";
     }
@@ -323,16 +323,16 @@ class paloSantoControlPanel {
     {
         $parameters = array('Command'=>"database show AMPUSER $ext/cidname");
         $data = $this->AsteriskManagerAPI("Command",$parameters,true);
-        $arrData = split("\n",$data['data']);
+        $arrData = explode("\n",$data['data']);
         $arrData = isset($arrData[1])?$arrData[1]:"";
-        $arrData = split(":",$arrData);
+        $arrData = explode(":",$arrData);
         $salida['cidname'] = isset($arrData[1])?trim($arrData[1]):"";
 
         $parameters = array('Command'=>"database show DEVICE  $ext/dial");
         $data = $this->AsteriskManagerAPI("Command",$parameters,true);
-        $arrData = split("\n",$data['data']);
+        $arrData = explode("\n",$data['data']);
         $arrData = isset($arrData[1])?$arrData[1]:"";
-        $arrData = split(":",$arrData);
+        $arrData = explode(":",$arrData);
         $salida['dial'] = isset($arrData[1])?trim($arrData[1]):"";
 
         return $salida;
@@ -364,12 +364,12 @@ class paloSantoControlPanel {
     {       
         $parameters  = array('Command'=>'core show channels concise');
         $data        = $this->AsteriskManagerAPI('Command',$parameters,true);
-        $arrChannels = split("\n",$data['data']);
+        $arrChannels = explode("\n",$data['data']);
 
         if(is_array($arrChannels) & count($arrChannels)>0){
             $arrDataExt = $this->getDataExt($ext);
             foreach($arrChannels as $key => $line){
-                $tmp = split("!",$line);
+                $tmp = explode("!",$line);
                 if(count($tmp) > 10){                    
                     if(ereg($arrDataExt['dial'],$tmp[0]))
                         return $tmp[0];
@@ -450,7 +450,7 @@ class paloSantoControlPanel {
         $arrQueueMembers = array();
         $parameters = array('Command'=>"queue show");
         $data = $this->AsteriskManagerAPI("Command",$parameters,true);
-        $arrQueueMembers = split("\n",$data['data']);
+        $arrQueueMembers = explode("\n",$data['data']);
         return $arrQueueMembers;
     }
 
@@ -468,13 +468,13 @@ class paloSantoControlPanel {
         foreach($result as $key => $value)
             $arrTmp[$value[0]] = $value[1];
         foreach($arrTmp as $key => $value){
-            $trunk = split("/",$value);
+            $trunk = explode("/",$value);
             if($trunk[0] != "DAHDI")
                 $arrTrunk[] = $value;
         }*/
         $parameters = array('Command'=>"dahdi show channels");
         $result = $this->AsteriskManagerAPI("Command",$parameters,true); 
-        $data = split("\n",$result['data']);
+        $data = explode("\n",$result['data']);
 	$arrTrunk = array();
         if(is_array($data) && count($data)>0)
           foreach($data as $line){
@@ -498,12 +498,12 @@ class paloSantoControlPanel {
         foreach($result as $key => $value)
             $arrTmp[$value[0]] = $value[1];
         foreach($arrTmp as $key => $value){
-            $trunk = split("/",$value);
+            $trunk = explode("/",$value);
             if($trunk[0] != "DAHDI")
                 $arrTrunk[] = $value;
         }
         foreach($arrTrunk as $key => $value){
-            $tmp = split("/",$value);
+            $tmp = explode("/",$value);
             $arrTrunk[$key] = array();
             $arrTrunk[$key]['name'] = $value;
             if($tmp[0] == "SIP")
@@ -546,12 +546,12 @@ class paloSantoControlPanel {
         elseif($tech == "IAX2")
             $parameters = array('Command'=>"iax2 show peers");
         $result = $this->AsteriskManagerAPI("Command",$parameters,true); 
-        $data = split("\n",$result['data']);
-        $tmp = split("/",$value);
+        $data = explode("\n",$result['data']);
+        $tmp = explode("/",$value);
         $value = $tmp[1];
         foreach($data as $key => $line){
             if(strpos($line,$value) !== false){
-                $tmp = split(" ",$line);
+                $tmp = explode(" ",$line);
                 foreach($tmp as $key2 => $value2){
                     if($key2 != 0){
                         if($value2 == "OK")

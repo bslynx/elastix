@@ -408,15 +408,15 @@ function formEditCampaign($pDB, $smarty, $module_name, $local_templates_dir, $id
                 $_POST['reintentos'] = 5;
             if (!isset($_POST['rte_script'])) $_POST['rte_script'] = '';
             if (!isset($_POST['values_form'])) $_POST['values_form'] = '';
-            //$_POST['formulario']= split(",", $_POST['values_form']);
-            $values_form = split(",", $_POST['values_form']);
+            //$_POST['formulario']= explode(",", $_POST['values_form']);
+            $values_form = explode(",", $_POST['values_form']);
 
         } else {
             if (!isset($_POST['nombre']))       $_POST['nombre']       = $arrCampaign[0]['name'];
             if (!isset($_POST['fecha_ini']))    $_POST['fecha_ini']    = date('d M Y',strtotime($arrCampaign[0]['datetime_init']));
             if (!isset($_POST['fecha_fin']))    $_POST['fecha_fin']    = date('d M Y',strtotime($arrCampaign[0]['datetime_end']));
-            $arrDateTimeInit = split(":",$arrCampaign[0]['daytime_init']);
-            $arrDateTimeEnd  = split(":",$arrCampaign[0]['daytime_end']);
+            $arrDateTimeInit = explode(":",$arrCampaign[0]['daytime_init']);
+            $arrDateTimeEnd  = explode(":",$arrCampaign[0]['daytime_end']);
             if (!isset($_POST['hora_ini_HH']))  $_POST['hora_ini_HH']  = isset($arrDateTimeInit[0])?$arrDateTimeInit[0]:"00";
             if (!isset($_POST['hora_ini_MM']))  $_POST['hora_ini_MM']  = isset($arrDateTimeInit[1])?$arrDateTimeInit[1]:"00";
             if (!isset($_POST['hora_fin_HH']))  $_POST['hora_fin_HH']  = isset($arrDateTimeEnd[0])?$arrDateTimeEnd[0]:"00";
@@ -433,7 +433,7 @@ function formEditCampaign($pDB, $smarty, $module_name, $local_templates_dir, $id
             if (!isset($_POST['values_form'])) {
                 $values_form = $oCamp->obtenerCampaignForm($id_campaign);
             } else {
-                $values_form = split(",", $_POST['values_form']);
+                $values_form = explode(",", $_POST['values_form']);
             }
         }
 

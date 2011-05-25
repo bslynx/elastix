@@ -332,7 +332,7 @@ class paloSantoRules {
     {
         $str = shell_exec("/sbin/ifconfig");
     
-        $arrIfconfig = split("\n", $str);
+        $arrIfconfig = explode("\n", $str);
     
         $arrModelosInterfasesRed = $this->obtener_modelos_interfases_red();
     
@@ -410,7 +410,7 @@ class paloSantoRules {
         $arrSalida=array();
         $str = shell_exec("/bin/dmesg");
     
-        $arrLineasDmesg = split("\n", $str);
+        $arrLineasDmesg = explode("\n", $str);
     
         foreach($arrLineasDmesg as $lineaDmesg) {
             //if(ereg("^(eth[[:digit:]]{1,3})", $lineaDmesg, $arrReg)) {

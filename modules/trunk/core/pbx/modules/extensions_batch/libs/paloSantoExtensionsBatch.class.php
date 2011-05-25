@@ -335,7 +335,7 @@ class paloSantoLoadExtension {
         else{
             $salida = $astman->command("database show CW");
             if (strtoupper($salida["Response"]) != "ERROR") {
-                return split("\n", $salida["data"]);
+                return explode("\n", $salida["data"]);
             }else return false;
         }
 
@@ -412,7 +412,7 @@ class paloSantoLoadExtension {
             $astman->disconnect();
             $salida["Response"] = isset($salida["Response"])?$salida["Response"]:"";
             if (strtoupper($salida["Response"]) != "ERROR") {
-                return split("\n", $salida["Response"]);
+                return explode("\n", $salida["Response"]);
             }else return false;
         }
         return false;

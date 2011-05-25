@@ -598,7 +598,7 @@ class paloSantoSysInfo
 
         if(is_array($arrTrunks) & count($arrTrunks)>0){
             foreach($arrTrunks as $key => $trunk){
-                $tmp = split("/",$trunk[1]);
+                $tmp = explode("/",$trunk[1]);
                 $trunks[] = $tmp[1];
             }
         }
@@ -617,8 +617,8 @@ class paloSantoSysInfo
             $astman->disconnect();
             $salida["Response"] = isset($salida["Response"])?$salida["Response"]:"";
             if (strtoupper($salida["Response"]) != "ERROR") {
-                if($return_data) return split("\n",$salida["data"]);
-                else return split("\n", $salida["Response"]);
+                if($return_data) return explode("\n",$salida["data"]);
+                else return explode("\n", $salida["Response"]);
             }else return false;
         }
         return false;
@@ -668,10 +668,10 @@ class paloSantoSysInfo
 
         if(isset($ids_applet)){
 
-            $tmp1 = split(",",$ids_applet);
+            $tmp1 = explode(",",$ids_applet);
             foreach($tmp1 as $value){
                 if($value != ""){
-                    list($aau_id,$order_no) = split(":",$value);
+                    list($aau_id,$order_no) = explode(":",$value);
 
                     $query = "update activated_applet_by_user set order_no=$order_no where id=$aau_id";
                     $result=$pDB->genQuery($query);

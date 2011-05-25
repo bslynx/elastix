@@ -120,13 +120,13 @@ class sieve {
     unset($this->error_raw);
 
     $this->line=fgets($this->fp,1024);
-    $this->token = split(" ", $this->line, 2);
+    $this->token = explode(" ", $this->line, 2);
 
     if($this->token[0] == "NO"){
         /* we need to try and extract the error code from here.  There are two possibilites: one, that it will take the form of:
            NO ("yyyyy") "zzzzzzz" or, two, NO {yyyyy} "zzzzzzzzzzz" */
         $this->x = 0;
-        list($this->ltoken, $this->mtoken, $this->rtoken) = split(" ", $this->line." ", 3);
+        list($this->ltoken, $this->mtoken, $this->rtoken) = explode(" ", $this->line." ", 3);
         if($this->mtoken[0] == "{"){
             while($this->mtoken[$this->x] != "}" or $this->err_len < 1){
                 $this->err_len = substr($this->mtoken, 1, $this->x);
@@ -390,7 +390,7 @@ class sieve {
               else
                   $this->cap_type="auth";            
 
-              $this->modules = split(" ", $this->item[1]);
+              $this->modules = explode(" ", $this->item[1]);
               if(is_array($this->modules)){
                   foreach($this->modules as $this->module)
                       $this->capabilities[$this->cap_type][$this->module]=true;
@@ -424,7 +424,7 @@ class sieve {
         $this->modules = substr($this->item[1], strpos($this->item[1], "{"),strlen($this->item[1])-1);
 
         //then split again at the ", " stuff.
-        $this->modules = split($this->modules, ", ");
+        $this->modules = explode($this->modules, ", ");
  
         //fill up our $this->modules property
         if(is_array($this->modules)){
@@ -783,7 +783,7 @@ class sieve {
               else
                   $this->cap_type="auth";            
 
-              $this->modules = split(" ", $this->item[1]);
+              $this->modules = explode(" ", $this->item[1]);
               if(is_array($this->modules)){
                   foreach($this->modules as $this->module)
                       $this->capabilities[$this->cap_type][$this->module]=true;
@@ -813,7 +813,7 @@ class sieve {
         $this->modules = substr($this->item[1], strpos($this->item[1], "{"),strlen($this->item[1])-1);
 
         //then split again at the ", " stuff.
-        $this->modules = split($this->modules, ", ");
+        $this->modules = explode($this->modules, ", ");
  
         //fill up our $this->modules property
         if(is_array($this->modules)){

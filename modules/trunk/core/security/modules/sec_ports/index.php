@@ -217,7 +217,7 @@ function NewViewPuerto($smarty, $module_name, $local_templates_dir, &$pDB, $arrC
 
         if($result['protocol'] == "TCP" || $result['protocol'] == "UDP"){
             $hasGuion = 'yes';
-            $arrPort = split(':', $result['details'] );
+            $arrPort = explode(':', $result['details'] );
             $_POST['port'] = $arrPort[0];
             $_POST['port2'] = isset( $arrPort[1] ) ? $arrPort[1] : '';
             $smarty->assign("type_style", "style = 'display:none;'");
@@ -257,7 +257,7 @@ function NewViewPuerto($smarty, $module_name, $local_templates_dir, &$pDB, $arrC
  
         if($result['protocol'] == "TCP" || $result['protocol'] == "UDP"){
             $hasGuion = 'yes';
-            $arrPort = split(':', $result['details'] );
+            $arrPort = explode(':', $result['details'] );
             $_POST['port'] = $arrPort[0];
             $_POST['port2'] = isset( $arrPort[1] ) ? $arrPort[1] : '';
             $smarty->assign("type_style", "style = 'display:none;'");
