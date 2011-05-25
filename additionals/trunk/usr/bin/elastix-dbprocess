@@ -357,7 +357,7 @@ function sortArray($arrFiles)
     $arrSort = array();
     foreach($arrFiles as $key => $file){
         if($file[0]!="."){
-            $tmp = split("_",$file);
+            $tmp = explode("_",$file);
             if(isset($tmp[0]) && isset($tmp[1]))
                 $arrSort[$tmp[0]] = $file;
         }
@@ -496,8 +496,8 @@ function getSQLUpdateString($version_actual,$path_folder,$action,$dbname)
                 {
                     if($file[strlen($file)-1]!="~" &&  $file[0]!="." && $extension == "sql")
                     {
-                        list($id,$before,$current)=split('_',$file);
-                        list($current)=split('.sql',$current);
+                        list($id,$before,$current)=explode('_',$file);
+                        list($current)=explode('.sql',$current);
                         $arrversion=array("id"=>$id,"before"=>$before,"current"=>$current,"namefile"=>$file);
                         $cadenareturn .= imprimirArreglo($arrversion, $dbname, $version_actual,$path_folder);
                     }

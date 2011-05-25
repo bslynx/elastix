@@ -79,7 +79,7 @@ function getTotalFiles($file, $path)
     $list_final = "";    
     $line = `grep '^!' /var/spool/hylafax/doneq/$file`;
     faxes_log("files > grep '^!' /var/spool/hylafax/doneq/$file");
-    $total_files = split("\n",$line);    
+    $total_files = explode("\n",$line);    
     $arrFiles2Convert = array();//array con \n como elemento, tengo que depurarlo
     for ($i = 0; $i < count($total_files); $i++){
         if(eregi("docq/(doc[[:digit:]]+.ps)",$total_files[$i],$arrReg) || eregi("docq/(doc[[:digit:]]+.tif)",$total_files[$i],$arrReg) || eregi("docq/(doc[[:digit:]]+.pdf)",$total_files[$i],$arrReg)){

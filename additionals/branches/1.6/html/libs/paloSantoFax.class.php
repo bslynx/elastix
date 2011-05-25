@@ -596,7 +596,7 @@ class paloFax {
 
         foreach($arrOutCmd as $linea) {
             if(ereg("^Modem (ttyIAX[[:digit:]]{1,3})", $linea, $arrReg)) {
-                list($modem, $status) = split(":", $linea);
+                list($modem, $status) = explode(":", $linea);
                 $arrStatus[$arrReg[1]] = $status; 
             }
         }
