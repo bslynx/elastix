@@ -113,11 +113,11 @@ if( sizeof($result) != 0 )
                 else if( $key == 'LABEL_Y' )       $G_LABEL[1]  = $values;
                 else if( $key == 'TITLE' )         $G_TITLE  = $values;
                 else if( $key == 'TYPE' )          $G_TYPE   = $values;
-                else if( $key == 'SIZE' )          $G_SIZE   = split(',', $values);
-                else if( $key == 'MARGIN' )        $G_MARGIN = split(',', $values);
+                else if( $key == 'SIZE' )          $G_SIZE   = explode(',', $values);
+                else if( $key == 'MARGIN' )        $G_MARGIN = explode(',', $values);
                 else if( $key == 'COLOR' )         $G_COLOR   = $values;
                 //NO NECESARIAS
-                else if( $key == 'POS_LEYEND' )     $G_LEYEND_POS = split(',', $values);
+                else if( $key == 'POS_LEYEND' )     $G_LEYEND_POS = explode(',', $values);
                 else if( $key == 'NUM_COL_LEYEND' ) $G_LEYEND_NUM_COLUMN = $values;
                 else if( $key == 'SHADOW' )         $G_SHADOW = $values;
                 

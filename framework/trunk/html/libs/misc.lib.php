@@ -110,7 +110,7 @@ function obtener_info_de_sistema()
         if(ereg("up[[:space:]]+([[:digit:]]+ days?,)?(([[:space:]]*[[:digit:]]{1,2}:[[:digit:]]{1,2}),?)?([[:space:]]*[[:digit:]]+ min)?",
                 $arrExec[0],$arrReg)) {
             if(!empty($arrReg[3]) and empty($arrReg[4])) {
-                list($uptime_horas, $uptime_minutos) = split(":", $arrReg[3]);
+                list($uptime_horas, $uptime_minutos) = explode(":", $arrReg[3]);
                 $arrInfo["SysUptime"]=$arrReg[1] . " $uptime_horas hour(s), $uptime_minutos minute(s)";
             } else if (empty($arrReg[3]) and !empty($arrReg[4])) {
                 // Esto lo dejo asi

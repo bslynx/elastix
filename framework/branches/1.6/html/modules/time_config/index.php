@@ -124,7 +124,7 @@ function _moduleContent(&$smarty, $module_name)
              
         $date = getParameter("date");
         $date = translateDate($date);
-        $date = split("-",$date);
+        $date = explode("-",$date);
         $month = "";
         $year = "";
         $day = "";
