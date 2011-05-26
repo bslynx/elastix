@@ -127,7 +127,7 @@ class paloSantoAddonsModules {
         $salida = NULL;
         $status = $this->statusAddon($arrConf);
         if($status!=null){
-            $arrStatus = explode("\n",$status);
+            $arrStatus = split("\n",$status);
             $porcent_total_all = 0;
             $porcent_downl_all = 0;
             $salida = array(
@@ -135,7 +135,7 @@ class paloSantoAddonsModules {
                 'warnmsg' => array(),
             );
             foreach($arrStatus as $k => $line){
-                $arrLine = explode(" ",$line);
+                $arrLine = split(" ",$line);
                 if ($arrLine[0] == 'errmsg') {
                     array_shift($arrLine);
                     $salida['errmsg'][] = implode(' ', $arrLine);
@@ -275,6 +275,18 @@ class paloSantoAddonsModules {
         }
         return true; 
     }
+    
+    function updateAddons($name,$name_rpm,$version,$release, $id)
+    {
+    	$data = array($name,$name_rpm,$version,$release, $id);
+        $query = "UPDATE addons set name = ? ,name_rpm = ?,version = ?,release = ? WHERE id = ?"; 
+        $result = $this->_DB->genQuery($query, $data);
+        if($result==FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return false;
+        }
+        return true; 
+    }
 
     /**
      * Procedimiento que verifica si un RPM de addon, descrito por $arrAddon,
@@ -293,14 +305,25 @@ class paloSantoAddonsModules {
     {
 
         $rpm = $this->rpms_Installed($arrAddon['name_rpm']);
+		$version = $arrAddon['version']."-".$arrAddon['release'];
 
         // EXISTE EN EL SISTEMA
         if($rpm[$arrAddon['name_rpm']]){ //esta instalado en el sistema
-            $query  = "SELECT id FROM addons WHERE name_rpm='$arrAddon[name_rpm]'";
+            $query  = "SELECT id, version, release FROM addons WHERE name_rpm='$arrAddon[name_rpm]'";
             $result = $this->_DB->getFirstRowQuery($query,true);
-            if(is_array($result) && count($result) > 0)//existe, en la base
-                return true; // esta instalado ...
-            else{ //no existe en la base, hay que insertarlo, xq si esta instalado en el sistema
+            $versionInstalled = $result['version']."-".$result['release'];
+            if(is_array($result) && count($result) > 0){//existe, en la base
+                if($version===$versionInstalled)
+                	return true; // esta instalado ...
+                else{
+            		if($this->updateAddons($arrAddon['name'],$arrAddon['name_rpm'],$arrAddon['version'],$arrAddon['release'],$result['id']))
+                    	return true;
+                	else{
+                    	$this->errMsg = "Error esta actualizando en el sistema, pero no esta en la base, hay que actualizar en registro en la base";
+                    	return true;
+                	}
+                }
+            }else{ //no existe en la base, hay que insertarlo, xq si esta instalado en el sistema
                 if($this->insertAddons($arrAddon['name'],$arrAddon['name_rpm'],$arrAddon['version'],$arrAddon['release']))
                     return true;
                 else{
@@ -311,7 +334,7 @@ class paloSantoAddonsModules {
         }
         // NO EXISTE EN EL SISTEMA
         else{
-            $query  = "SELECT id FROM addons WHERE name_rpm='$arrAddon[name_rpm]'";
+            $query  = "SELECT id, version, release FROM addons WHERE name_rpm='$arrAddon[name_rpm]'";
             $result = $this->_DB->getFirstRowQuery($query,true);
             if(is_array($result) && count($result) > 0){//existe, en la base
                 $query  = "DELETE FROM addons WHERE name_rpm='$arrAddon[name_rpm]'";
@@ -340,6 +363,35 @@ class paloSantoAddonsModules {
         }
         return $sal;
     }
+    
+    function idUpgraded($arrAddon)
+    {
+    	$rpm = $this->rpms_Installed($arrAddon['name_rpm']);
+		$version = $arrAddon['name_rpm']."-".$arrAddon['version']."-".$arrAddon['release'];
+		$result = array();
+		if($rpm[$arrAddon['name_rpm']]){
+			$exito = "";
+			$name_rpm = $arrAddon['name_rpm'];
+			$arrConsole = array();
+			exec("rpm -q $name_rpm ",$arrConsole,$exito);
+            $versionInstalled = trim($arrConsole[0]);
+            exec("echo '$version===$versionInstalled' > /tmp/diff");
+			if($version===$versionInstalled){
+				$result['status'] = false;
+				$result['old_version'] = $versionInstalled;
+				$result['new_version'] = $version;
+    			return $result;
+			}else{
+				$result['status'] = true;
+				$result['old_version'] = $versionInstalled;
+				$result['new_version'] = $version;
+    			return $result;
+			}
+    	}else{
+    		$result['status'] = false;
+    		return $result;
+    	}
+    }
 
     function updateInDB($arrAddons)
     {
@@ -360,7 +412,7 @@ class paloSantoAddonsModules {
         $rpms = null;
 
         if(!empty($addons)){
-            $arrAddons = explode(" ",$addons);
+            $arrAddons = split(" ",$addons);
             foreach($arrAddons as $rpm){
                 exec("rpm -q $rpm",$arrConsole,$exito);
                 $rpms[$rpm] = $exito?"0":"1";
@@ -458,6 +510,30 @@ class paloSantoAddonsModules {
             return true;
         }
         return false;
+    }
+
+    function getSID()
+    {
+		if(file_exists("/etc/elastix.key")){
+			$key = file_get_contents("/etc/elastix.key");
+			$key = trim($key);
+			return empty($key)?null:$key;
+		}
+		return null;
+    }
+    
+    function getAddonByName($rpm_name)
+    {
+    	$data = array($rpm_name);
+        $query = "SELECT * FROM addons WHERE name_rpm = ?";
+
+        $result=$this->_DB->getFirstRowQuery($query,true, $data);
+
+        if($result==FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return array();
+        }
+        return $result;
     }
 }
 ?>

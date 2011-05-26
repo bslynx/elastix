@@ -34,8 +34,8 @@ function _moduleContent(&$smarty, $module_name)
 {
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
-    include_once "modules/addons_installed/libs/paloSantoAddonsModules.class.php";
-    include_once "modules/addons_installed/libs/JSON.php";
+    include_once "modules/$module_name/libs/paloSantoAddonsModules.class.php";
+    include_once "modules/$module_name/libs/JSON.php";
     $smarty->assign('MODULE_NAME', $module_name);
 
     //include file language agree to elastix configuration
