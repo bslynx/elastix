@@ -1,15 +1,17 @@
+
 <table width="{$width}" align="center" border="0" cellpadding="0" cellspacing="0">
   <tr class="moduleTitle">
     <td class="moduleTitle" valign="middle">&nbsp;&nbsp;<img alt="" src="{$icon}" border="0" align="absmiddle" />&nbsp;&nbsp;{$title}</td>
+	<td width="10%" align="right">{$filter_field.INPUT}</td>
   </tr>
   <tr>
-    <td>
+    <td colspan="2">
       <table class="table_data" align="center" border="0" cellspacing="0" cellpadding="0" width="100%">
-        <tr class="table_navigation_row">
-          <td colspan="{$numColumns}" class="table_navigation_row">
+        <tr class="table_navigation_row_up_addon">
+          <td colspan="2" class="table_navigation_row">
             <table border="0" cellpadding="0" cellspacing="0" width="100%" class="table_navigation_text">
               <tr>
-                <td align="left" width="295px">
+                <td align="left" width="200px">
                     <input type="text" value="{$ADDONS_SEARCH}" name="addons_search" id="search" onKeyPress="return enterEvent(event,'{$module_name}')"/>
                     <a href="javascript:void()" onclick="_search('{$module_name}')">
                         <img alt="" src='modules/{$module_name}/images/lupa.png' align='absmiddle' border='0' width='15' height='15' />
@@ -50,31 +52,35 @@
             </table>
           </td>
         </tr>
+	{counter start=0 skip=1 print=false assign=cnt}
         {foreach from=$arrData key=k item=data name=filas}
-        <tr style="background-color:#fafafa;" class="backgroundTable">
-          {if $smarty.foreach.filas.last}
-            {section name=columnNum loop=$numColumns start=0 step=1}
-                <td class="table_data_last_row">
-                    {if $data[$smarty.section.columnNum.index] eq ''}&nbsp;{/if}
-                    {$data[$smarty.section.columnNum.index]}
-                </td>
-            {/section}
-          {else}
-            {section name=columnNum loop=$numColumns start=0 step=1}
-                {if $smarty.section.columnNum.index>1}
-                <td class="table_data" width="16%">
-                {else}
-                <td class="table_data">
-                {/if}
-                    {if $data[$smarty.section.columnNum.index] eq ''}&nbsp;{/if}
-                    {$data[$smarty.section.columnNum.index]}
-                </td>
-            {/section}
-          {/if}
-        </tr>
+        	{*{if $data[0] eq $instalados || $data[0] eq $no_instalados}*}
+		  <!--<tr style="background-color:#fafafa;" class="backgroundTableTitle">
+			<td class="table_dataAddonTitle" colspan="2">{$data[0]}</td>
+		      </tr>-->
+	  	{*{else}*}
+		  {if $cnt%2==0}
+      	  <tr style="background-color:#fafafa;" class="backgroundTable">
+	    		{/if}
+	      {if $data[0] eq 'relleno'}
+		  <td class="table_data" width="50%">
+			&nbsp;&nbsp;
+		  </td>
+	      {else}
+		{if $data[0] neq ''}
+		  <td class="table_data" width="50%">
+		      {$data[0]}
+		  </td>	    
+		{/if}
+	      {/if}
+	    {if ($cnt+1)%2==0}
+	      </tr>
+	    {/if}
+	    {counter}
+	  {*{/if}*}
         {/foreach}
-        <tr class="table_navigation_row">
-          <td colspan="{$numColumns}" class="table_navigation_row">
+        <tr class="table_navigation_row_down_addon">
+          <td colspan="2" class="table_navigation_row_down_addon">
             <table border="0" cellpadding="0" cellspacing="0" width="100%" class="table_navigation_text">
               <tr>
                 <td align="left">&nbsp;</td>
@@ -117,3 +123,15 @@
 </table>
 <input type="hidden" name="installing" id="installing" value="0" />
 <input type="text" style="display:none;" name="action_install" id="action_install" value="none" />
+<input type="hidden" name="link_tmp" id="link_tmp" value="" />
+<input type="hidden" name="textDownloading" id="textDownloading" value="{$textDownloading}" />
+<input type="hidden" name="textRemoving" id="textRemoving" value="{$textRemoving}" />
+<input type="hidden" name="textInstalling" id="textInstalling" value="{$textInstalling}" />
+<input type="hidden" name="uninstallText" id="uninstallText" value="{$uninstall}" />
+<input type="hidden" name="installText" id="installText" value="{$install}" />
+<input type="hidden" name="tryItText" id="tryItText" value="{$tryItText}" />
+<input type="hidden" name="tryItAction" id="tryItAction" value="" />
+<input type="hidden" name="uninstallRpm" id="uninstallRpm" value="" />
+<input type="hidden" name="actionToDo" id="actionToDo" value="" />
+<input type="hidden" name="textDaemonOff" id="textDaemonOff" value="{$daemonOff}" />
+<input type="hidden" name="textObservation" id="textObservation" value="{$textObservation}" />

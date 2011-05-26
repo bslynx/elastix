@@ -51,6 +51,7 @@ function _moduleContent(&$smarty, $module_name)
     global $arrConfModule;
     global $arrLang;
     global $arrLangModule;
+    $arrLangJS = $arrLangModule;
     $arrConf = array_merge($arrConf,$arrConfModule);
     $arrLang = array_merge($arrLang,$arrLangModule);
 
@@ -72,7 +73,7 @@ function _moduleContent(&$smarty, $module_name)
             $content = getStatus($pDB, $arrConf, $arrLang);
             break;
         case "get_lang":
-            $content = getLang($arrLang);
+            $content = getLang($arrLangJS);
             break;
         case "confirm":
             $content = getConfirm($pDB, $arrConf, $arrLang);
@@ -83,6 +84,27 @@ function _moduleContent(&$smarty, $module_name)
         case "getStatusCache":
             $content = getStatusCache($pDB, $arrConf, $arrLang);
             break;
+		case "getServerKey":
+		    $content = getServerKey($pDB);
+	        break;
+		case "progressbar":
+            $content = getProgressBar($smarty, $module_name, $pDB, $arrConf, $arrLang);
+            break;
+        case "check_update":
+            $content = checkUpdates($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+            break;
+        case "update":
+            $content = updateAddons($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+            break;
+        case "remove":
+            $content = removeAddons($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+            break;
+        case "getconfirmAddons":
+            $content = getconfirmAddons($module_name, $pDB, $arrConf, $arrLang);
+            break;
+        case "toDoclearAddon":
+        	$content = toDoclearAddon($module_name, $pDB, $arrConf, $arrLang);
+        	break;
         default:
             $content = reportAvailables($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
             break;
@@ -96,25 +118,36 @@ function installAddons($smarty, $module_name, $local_templates_dir, &$pDB, $arrC
     $data_exp = getParameter("data_exp");
     $pAddonsModules = new paloSantoAddonsModules($pDB);
     $arrSal['response'] = false;
+    $json = new Services_JSON();
     //$_SESSION['elastix_addons']['data_install'] = $data_exp;
 
     $arrStatus = $pAddonsModules->getStatus($arrConf);
-
+    $arrSal['name_rpm'] = $name_rpm;
+    if(!isset($arrStatus) & $arrStatus==""){
+    	$arrSal['error'] = "no_daemon";
+    	$arrSal['name_rpm'] = $name_rpm;
+    	return $json->encode($arrSal);
+    }
+    
     if($arrStatus['action'] == "none" && $arrStatus['status'] == "idle"){
         $salida = $pAddonsModules->addAddon($arrConf, $name_rpm);
+        $arrSal['name_rpm'] = $name_rpm;
         if(ereg("OK Processing",$salida)){
             $arrStatus = $pAddonsModules->getStatus($arrConf);
             if($arrStatus['status'] != "error"){
                 $arrSal['response'] = "OK";
-                $arrSal['name_rpm'] = $name_rpm;
                 $pAddonsModules->clearActionTMP(); //TODO: falta validar
                 $pAddonsModules->setActionTMP($name_rpm, 'install', $data_exp);
             }
-            else
+            else{
                 $arrSal['response'] = "error";
+                setValueSessionNull($pAddonsModules);
+            }
         }
-        else
+        else{
             $arrSal['response'] = "error";
+            setValueSessionNull($pAddonsModules);
+        }
     }
     else{
         if($pAddonsModules->existsActionTMP()){
@@ -125,11 +158,13 @@ function installAddons($smarty, $module_name, $local_templates_dir, &$pDB, $arrC
             $arrDataTMP = $pAddonsModules->getActionTMP();
             $arrSal['name_rpm'] = $arrDataTMP['name_rpm'];
         }
-        else
+        else{
             $arrSal['response'] = "error";
+            setValueSessionNull($pAddonsModules);
+        }
     }
     $arrSal['installing'] = $arrLang['installing'];
-    $json = new Services_JSON();
+
     return $json->encode($arrSal);
 }
 
@@ -141,6 +176,12 @@ function getStatus($pDB, $arrConf, $arrLang){
 
     $json = new Services_JSON();
     $arrSal['response'] = false;
+    exec("echo 'values: ".print_r($arrStatus,true)."' > /tmp/diff");
+    if(!isset($arrStatus) & $arrStatus==""){
+    	$arrSal['error'] = "no_daemon";
+    	return $json->encode($arrSal);
+    }
+    
     if($arrStatus['action'] == "confirm"){
         $salida = $pAddonsModules->confirmAddon($arrConf);
         if(ereg("OK Starting transaction...",$salida)){
@@ -150,10 +191,23 @@ function getStatus($pDB, $arrConf, $arrLang){
             $arrSal['view_details'] = $arrLang['view_details'];
             //$_SESSION['elastix_addons']['data_install'] = $datatoInsert;
         }
-        else
+        else{
             $arrSal['response'] = "error";
+            setValueSessionNull($pAddonsModules);
+            $arrSal['errmsg'] = $arrStatus['errmsg'][0];
+            $arr_exp = explode("|",$datatoInsert);
+            $arrSal['name_rpm'] = $arr_exp[1];
+        }
     }
     else{
+    	if($arrStatus['status'] == "error"){
+    		$arrSal['response'] = "error";
+            setValueSessionNull($pAddonsModules);
+            $arrSal['errmsg'] = $arrStatus['errmsg'][0];
+            $arr_exp = explode("|",$datatoInsert);
+            $arrSal['name_rpm'] = $arr_exp[1];
+            return $json->encode($arrSal);
+    	}
         if($arrStatus['action'] == "reporefresh")
             $arrSal['status_action'] = $arrLang['Status'].": ".$arrLang['reporefresh'];
         if($arrStatus['action'] == "depsolving")
@@ -165,6 +219,34 @@ function getStatus($pDB, $arrConf, $arrLang){
         $arrSal['name_rpm'] = $arrDataTMP['name_rpm'];
     }
     return $json->encode($arrSal);
+}
+
+/**
+ * Parametros y valores que se reciben de "getStatus" en un proceso de:
+ * 
+ * 		Instalacion: 
+ * 			action: confirm 
+ * 		Elimininacion:
+ * 		Actualizacion:
+ * 
+ * */
+function isProcessInstallations($pDB, $arrConf)
+{
+	$pAddonsModules = new paloSantoAddonsModules($pDB);
+    $arrSal = array("statusInstall"=>"nothing","rpm_installed"=>"nothing","processToDo"=>"nothing");
+    $arrStatus = $pAddonsModules->getStatus($arrConf);
+	$arrSal['data_cache'] = array();
+    if($pAddonsModules->existsActionTMP()){
+        if($arrStatus['action'] == "confirm")
+            $arrSal['statusInstall'] = "status_confirm";
+        else
+            $arrSal['statusInstall'] = "there_install"; //retornar que existe una instalacion
+        if(is_array($arrStatus['package']))
+        	$arrSal['processToDo'] = $arrStatus['package'][0]['action'];
+        $arrDataTMP = $pAddonsModules->getActionTMP();
+        $arrSal['rpm_installing'] = $arrDataTMP['name_rpm'];
+    }
+	return $arrSal;
 }
 
 function getLang($arrLang){
@@ -186,10 +268,10 @@ function reportAvailables($smarty, $module_name, $local_templates_dir, &$pDB, $a
     $pAvailables   = new paloSantoAddonsModules($pDB);
     $addons_search = getParameter("addons_search");
     $smarty->assign("ADDONS_SEARCH",$addons_search);
-
     $action = getParameter("nav");
     $start  = getParameter("start");
-
+    $filter_field = getParameter("filter_field");
+    $sid    = $pAvailables->getSID();
     $module_name2 = "addons_installed";
 
     ini_set("soap.wsdl_cache_enabled", "0");
@@ -204,13 +286,13 @@ function reportAvailables($smarty, $module_name, $local_templates_dir, &$pDB, $a
     //begin grid parameters
     $oGrid  = new paloSantoGrid($smarty);
     try {
-        $totalAvailables = $client->getNumAddonsAvailables("2.0.0", "name", $addons_search);
+        $totalAvailables = $client->getNumAddonsAvailables("2.0.4", "name", $addons_search, $filter_field);
     } catch (SoapFault $e) {
         $smarty->assign("mb_title", $arrLang["ERROR"].": ");
         $smarty->assign("mb_message",$arrLang["The system can not connect to the Web Service resource. Please check your Internet connection."]);
         return ;
     }
-    $limit  = 20;
+    $limit  = 10;
     $total  = $totalAvailables;
     $oGrid->setLimit($limit);
     $oGrid->setTotal($total);
@@ -220,45 +302,149 @@ function reportAvailables($smarty, $module_name, $local_templates_dir, &$pDB, $a
     $oGrid->calculatePagination($action,$start);
     $offset = $oGrid->getOffsetValue();
     $end    = $oGrid->getEnd();
+    $_POST['filter_field'] = isset($filter_field)?$filter_field:"all";
     $url    = "?menu=$module_name&amp;filter_value=$addons_search";
     $arrData = null;
     try {
-        $arrResult =$client->getAddonsAvailables("2.0.0", $limit, $offset, "name", $addons_search);
+        $arrResult =$client->getAddonsAvailables("2.0.4", $limit, $offset, "name", $addons_search, $sid, $filter_field);
     } catch (SoapFault $e) {
         $smarty->assign("mb_title", $arrLang["ERROR"].": ");
         $smarty->assign("mb_message",$arrLang["The system can not connect to the Web Service resource. Please check your Internet connection."]);
         return ;
     }
 
+    $serverKey = $pAvailables->getSID();
+    if(isset($serverKey) & $serverKey != "")
+		$serverKey = "&serverkey=$serverKey";
+    else
+		$serverKey = "";
+
+	/*$addonsInstalled[]   = _tr("Installed");
+	$addonsNoInstalled[] = _tr("Availables");
+	$smarty->assign('instalados', _tr("Installed"));
+	$smarty->assign('no_instalados', _tr("Availables"));
+	$addonsToShow        = array();*/
+	$addonsInstalled[]   = array();
+	$addonsNoInstalled[] = array();
+
     if(is_array($arrResult) && $total>0){
         $smarty->assign('ETIQUETA_INSTALL', $arrLang['Install']);
-        foreach($arrResult as $key => $value){
-            $smarty->assign(array(
-                'ETIQUETA_DOWNLOADING'  =>  $arrLang['downloading'],
-                'URL_IMAGEN_PAQUETE'    =>  "$arrConf[url_images]/$value[name_rpm].jpeg",
-                'DESCRIPCION_PAQUETE'   =>  $value['description'],
-                'PAQUETE_RPM'           =>  $value['name_rpm'],
-                'PAQUETE_NOMBRE'        =>  $value['name'],
-                'PAQUETE_VERSION'       =>  $value['version'],
-                'PAQUETE_RELEASE'       =>  $value['release'],
-                'PAQUETE_CREADOR'       =>  $value['developed_by'],
-            ));
-            $arrTmp[0] = $smarty->fetch("$local_templates_dir/imagen_paquete.tpl");
-            $arrTmp[1] = $smarty->fetch("$local_templates_dir/info_paquete.tpl");
-            //$arrTmp[2] = "<input type='button' value='$arrLang[Install]' class='install' id='$value[name_rpm]' name='installButton' style='visibility: hidden;' />";
-            if(!$pAvailables->exitAddons($value))
+        
+        /*foreach($arrResult as $key => $value){
+        	
+        	$versionToInstall = $value['version']."-".$value['release'];
+        	
+			if(!$pAvailables->exitAddons($value)){// no instalado
+				$addonsNoInstalled[] = $value;
+			}else{//instalados
+				$addonsInstalled[] = $value;
+			}
+        	
+        }*/
+        
+		/*if(count($addonsInstalled)==1){
+			$addonsInstalled[]   = _tr("No addon installed");
+
+		}
+		if(count($addonsNoInstalled)==1){
+			$addonsNoInstalled[] = _tr("No addons availables");
+		}*/
+
+		/*//TODO: Mejorar que pasa si los arreglos estan vacios
+		if((count($addonsInstalled)-1)%2!=0)
+		  $addonsInstalled[] = "relleno";
+		
+		if((count($addonsNoInstalled)-1)%2!=0)
+		  $addonsNoInstalled[] = "relleno";*/
+	
+	if((count($arrResult))%2!=0)
+		  $arrResult[] = "relleno";
+        //$addonsToShow = array_merge($addonsInstalled,$addonsNoInstalled);
+        $addonsToShow = $arrResult;
+        foreach($addonsToShow as $key => $value){
+        	if(is_string($value) && ($value=="relleno" || $value==_tr("Installed") || $value==_tr("Availables")))
+				$arrTmp[0]=$value;
+			else{
+				$versionToInstall = $value['version']."-".$value['release'];
+        	        	                
+	    	$action = "";
+
+	    	$upgrade = $pAvailables->idUpgraded($value);
+	    	
+        	if(!$pAvailables->exitAddons($value)){
+        		$action = "Install";
                 $installed = false;
-            else
+        	}else{
+        		$action = "Uninstall";
                 $installed = true;
-            $arrTmp[2] = buttonInstall($installed,$value["name_rpm"],$arrLang);
-            if(!$installed)
-                $arrTmp[3] = "<div id='status_$value[name_rpm]' class='text_downloading' align='center' >$arrLang[Loading]</div>";
-            else
-                $arrTmp[3] = "<div class='text_downloading' align='center' >$arrLang[Installed]</div>";
+        	}
+
+			
+        	/*if($installed){
+        		$smarty->assign(array(
+	                'ETIQUETA_DOWNLOADING'  =>  $arrLang['downloading'],
+	                'URL_IMAGEN_PAQUETE'    =>  "$arrConf[url_images]/$value[name_rpm].jpeg",
+	                'DESCRIPCION_PAQUETE'   =>  $value['description'],
+	                'PAQUETE_RPM'           =>  $value['name_rpm'],
+	                'PAQUETE_NOMBRE'        =>  $arrAddonsDB['name'],
+	                'PAQUETE_VERSION'       =>  $arrAddonsDB['version'],
+	                'PAQUETE_RELEASE'       =>  $arrAddonsDB['release'],
+	                'PAQUETE_CREADOR'       =>  $value['developed_by'],
+					'URL_BUY'				=>  $value['url_marketplace'].$serverKey."&referer=",
+	            ));
+        	}else{*/
+	        	$smarty->assign(array(
+	                'ETIQUETA_DOWNLOADING'  =>  $arrLang['downloading'],
+	                'URL_IMAGEN_PAQUETE'    =>  "$arrConf[url_images]/$value[name_rpm].jpeg",
+	                'DESCRIPCION_PAQUETE'   =>  $value['description'],
+	                'PAQUETE_RPM'           =>  $value['name_rpm'],
+	                'PAQUETE_NOMBRE'        =>  $value['name'],
+	                'PAQUETE_VERSION'       =>  $value['version'],
+	                'PAQUETE_RELEASE'       =>  $value['release'],
+	                'PAQUETE_CREADOR'       =>  $value['developed_by'],
+					'URL_BUY'				=>  $value['url_marketplace'].$serverKey."&referer=",
+	            ));
+        	//}
+        	                
+	    	$button = "";
+	    	$comprado = true;
+	    	//comercial no instalado, no comprado
+	    	if(($value["is_commercial"]==1 && $value["fecha_compra"]==0 && !$installed)){// fecha_compra = 0 significa que no esta comprado aun este addons
+				$action = "buy";
+				$comprado = false;
+				$button = buttonInstall($installed,$value["name_rpm"],$arrLang,$action, $serverKey,$value['url_marketplace'],$installed, $comprado);
+	    	}else if($value["is_commercial"]==1 && $value["fecha_compra"]==0 && $installed){// comercial instalado, no comprado
+	    		$action = "buy";
+	    		$comprado = false;
+	    		$button = buttonUnInstall($value["name_rpm"],$arrLang,$action, $serverKey, $versionToInstall, $pAvailables, $value['name'], $installed, $comprado, $upgrade);
+	    	}else{
+				$action = "Install";
+				$comprado = true;
+				if($installed) // new
+					$button = buttonUnInstall($value["name_rpm"],$arrLang,"Uninstall", $serverKey, $versionToInstall, $pAvailables, $value['name'], $installed, $comprado, $upgrade);
+	    		else //new
+					$button = buttonInstall($installed,$value["name_rpm"],$arrLang,$action, $serverKey,$value['url_marketplace'],$installed, $comprado);
+	    	}
+		
+	    	/*if($installed){ // new
+				$button = buttonUnInstall($value["name_rpm"],$arrLang,"Uninstall", $serverKey, $versionToInstall, $pAvailables, $value['name'], $installed, $comprado);
+				
+	    	}else //new
+				$button = buttonInstall($installed,$value["name_rpm"],$arrLang,$action, $serverKey,$value['url_marketplace'],$installed, $comprado);
+			*/
+	    	$smarty->assign("ACTION_INSTALL", $button);
+
+			/* nueva logica de diseño. agregado 10/5/2011 ecueva */
+			$imgPack   = "<div style='float: left; width: 177px; height: 95px; text-align: center;'>".$smarty->fetch("$local_templates_dir/imagen_paquete.tpl")."</div>";
+			$infoPack  = "<div style='width: 93%'>".$smarty->fetch("$local_templates_dir/info_paquete.tpl")."</div>";
+
+
+			// son dos columnas donde cada columna tendra tres divs
+			$arrTmp[0] = $imgPack.$infoPack;
+	    }
             $arrData[] = $arrTmp;
         }
     }
-
 
     $arrGrid = array("title"    => $arrLang["Availables"],
                         "icon"     => "images/list.png",
@@ -273,46 +459,151 @@ function reportAvailables($smarty, $module_name, $local_templates_dir, &$pDB, $a
             1 => array("name"      => "",
                                    "property1" => ""),
             2 => array("name"      => "",
-                                   "property1" => ""),
-            3 => array("name"      => "",
                                    "property1" => ""))
                     );
 
     $smarty->assign("Search", $arrLang["Search"]);
     $smarty->assign("module_name", $module_name);
-
+    $smarty->assign("uninstall", _tr("Uninstall"));
+    $smarty->assign("install", _tr("Install"));
+	$smarty->assign("textDownloading", _tr("Starting"));
+	$smarty->assign("textRemoving", _tr("Removing"));
+	$smarty->assign("textInstalling", _tr("Installing"));
+	$smarty->assign("daemonOff", _tr("no_daemon"));
+	$smarty->assign("search", _tr("Search"));
+	$smarty->assign("tryItText", _tr("Try it"));
+	$smarty->assign("textObservation", _tr("Please need to enable Centos repo, Elastix, Extra or others for the proper functioning, Detail of errors: "));
+	
+	$oFilterForm = new paloForm($smarty, createFieldFilter());
     $content = "<form  method='post' style='margin-bottom:0;' action=\"$url\">".$oGrid->fetchGrid($arrGrid, $arrData,$arrLang)."</form>";
-
+	$htmlFilter  = $oFilterForm->fetchForm($content,"",$_POST);
+	$oGrid->showFilter(trim($htmlFilter));
+    $content = $oGrid->fetchGrid();
+	
     return $content;
 }
 
-function buttonInstall($install, $name_rpm, $arrLang)
+function buttonInstall($install, $name_rpm, $arrLang, $action, $serverKey,$url_marketplace,$installed, $comprado)
 {
-    if(!$install)
-        $html = "<div id='img_$name_rpm' align='center' >".
-                                "<img alt='' src='modules/addons_avalaibles/images/loading.gif' class='loadingAjax' style='display: block;' />".
-                                "<div id='start_$name_rpm' style='display: none;'>".
-                                    "<div class='text_starting'>$arrLang[Starting]</div>".
-                                    "<div>".
-                                        "<img alt='' src='modules/addons_avalaibles/images/starting.gif' class='startingAjax' />".
-                                    "</div>".
-                                "</div>".
-                                "<input type='button' value='$arrLang[Install]' class='install' id='$name_rpm' name='installButton' style='display: none;' />".
-                            "</div>";
-    else
+    $action = (isset($action) & $action !="")?$action:"Install";
+    $url_marketplace = $url_marketplace.$serverKey;
+    if(!$install){
+		if($action == "buy"){//es comercial
+		    $actionClase = "";
+		    if($serverKey == "")
+				$actionClase = "registrationServer";
+		    else{
+				$actionClase = "buy";
+				if(!$comprado)
+					$tryIt = "<input type='button' value='"._tr("Try it")."' class='install' id='$name_rpm' name='tryButton' style='display: none;' />";
+		    }
+			
+		    $html = "<div id='img_$name_rpm' align='center' >".
+						"<img alt='' src='modules/addons_avalaibles/images/loading.gif' class='loadingAjax' style='display: block;' />".
+						"<div id='start_$name_rpm' style='display: none;'>".
+				    		"<div class='text_starting' align='right'>$arrLang[Starting]</div>".
+				    		"<div>".
+								"<img alt='' src='modules/addons_avalaibles/images/starting.gif' class='startingAjax' align='right' />".
+				    		"</div>".
+						"</div>".
+						"<div>".
+							"<div style='float: right; padding-right: 2px;'>$tryIt</div>". // install
+							"<div style='float: right; padding-right: 2px;'></div>". // update
+							"<div style='float: right; padding-right: 2px;' >".// buy
+								"<input type='button' value='"._tr($action)."' class='$actionClase' id='".$name_rpm."_buy' name='buyButton' style='display: none;' />".
+							"</div>".
+						"</div>".
+			    	"</div>";
+		}else{// no es comercial
+		    $html = "<div id='img_$name_rpm' align='center' >".
+						"<img alt='' src='modules/addons_avalaibles/images/loading.gif' class='loadingAjax' style='display: block;' />".
+						"<div id='start_$name_rpm' style='display: none;'>".
+				    		"<div class='text_starting' align='right'>$arrLang[Starting]</div>".
+				    		"<div>".
+								"<img alt='' src='modules/addons_avalaibles/images/starting.gif' class='startingAjax' align='right' />".
+				    		"</div>".
+						"</div>".
+						"<div>".
+							"<div style='float: right; padding-right: 2px;' >". // install
+								"<input type='button' value='"._tr($action)."' class='install' id='$name_rpm' name='installButton' style='display: none;' />".
+							"</div>".
+							"<div style='float: right; padding-right: 2px;'></div>". // update
+							"<div style='float: right; padding-right: 2px;'></div>". // buy
+						"</div>".
+			    	"</div>";
+		}
+    }else
         $html = "";
     return $html;
 }
 
+function buttonUnInstall($name_rpm, $arrLang, $action, $serverKey, $versionToInstall, $pAvailables, $packageName, $installed, $comprado, $upgrade)
+{
+	// verificando si existe actualizacion
+	$action = (isset($action) & $action !="")?$action:"Uninstall";
+	$actionClase = $action;
+	$arrAddon = $pAvailables->getAddonByName($name_rpm);
+	$update = "";
+	$buy = "";
+	
+	if($upgrade['status']){ // comparando si las versiones son iguales
+		$versionInstalled = str_replace("$name_rpm-","",$upgrade['old_version']);
+		$versionToInstall = str_replace("$name_rpm-","",$upgrade['new_version']);
+		$title = "<b>"._tr("Current version").":</b> $packageName v$versionInstalled <br /><b>"._tr("Upgrade version").":</b> $packageName v$versionToInstall";
+		$update = "<input type='button' value='"._tr("Upgrade")."' onclick='updateAddon(\"$name_rpm\");' class='updateAddon' title='$title' class='ttip' style='display: none;' />";
+	}else
+    	$update = "&nbsp;";
+    	
+    if($action=="buy"){
+    	$buy = "<input type='button' value='"._tr($action)."' class='$actionClase' id='".$name_rpm."_buy' name='buyButton' style='display: none;' />";
+    }else
+    	$buy = "&nbsp;";
+    
+    $html = "<div id='img_$name_rpm' align='center' >".
+				"<img alt='' src='modules/addons_avalaibles/images/loading.gif' class='loadingAjax' style='display: block;' />".
+				"<div id='start_$name_rpm' style='display: none;'>".
+		    		"<div class='text_starting' align='right'>$arrLang[Removing]</div>".
+		    		"<div>".
+						"<img alt='' src='modules/addons_avalaibles/images/starting.gif' class='startingAjax' align='right' />".
+		    		"</div>".
+				"</div>".
+				"<div>".
+					"<div style='float: right; padding-right: 2px;' >". // uninstall
+						"<input type='button' value='"._tr("Uninstall")."' class='uninstall' id='$name_rpm' onclick='removeAddon(\"$name_rpm\");' name='uninstallButton' style='display: none;' />".
+					"</div>".
+					"<div style='float: right; padding-right: 2px;'>$update</div>". // update
+					"<div style='float: right; padding-right: 2px;'>$buy</div>". // buy
+				"</div>".
+	    	"</div>";
+
+    return $html;
+}
+
+function quitSpecialCharacters($str)
+{
+	if(strpos($str,".")){
+		$str = str_replace(".","|",$str);
+	}	
+	return $str;
+}
+
+
 // funcion que ejecuta el demunio YUM para verificar los ultimos rpms a instalar
 function getPackagesCache($arrConf, &$pDB, $arrLang){
 
+    try{
     $client = new SoapClient($arrConf['url_webservice']);
-    $packages = $client->getAllAddons("2.0.0");
+    $packages = $client->getAllAddons("2.0.4");
 
     $pAddonsModules = new paloSantoAddonsModules($pDB);
 
     $arrStatus = $pAddonsModules->getStatus($arrConf);
+    
+    if(!isset($arrStatus) & $arrStatus==""){
+    	$arrSal['error'] = "no_daemon";
+    	setValueSessionNull($pAddonsModules);
+    	return $arrSal;
+    }
 
     if(isset($arrStatus['action']) && ($arrStatus['action'] == "none" && $arrStatus['status'] == "idle")){
         //$salida = $pAddonsModules->addAddon($arrConf, $packages);
@@ -322,11 +613,14 @@ function getPackagesCache($arrConf, &$pDB, $arrLang){
             if($arrStatus['status'] != "error"){
                 $arrSal['response'] = "OK";
             }
-            else
+            else{
+            	setValueSessionNull($pAddonsModules);
                 $arrSal['response'] = "error";
                 $arrSal['data_cache'] = array();
+            }
         }
         else {
+        	setValueSessionNull($pAddonsModules);
             $arrSal['response'] = "error";
             $arrSal['data_cache'] = array();
         }
@@ -347,16 +641,20 @@ function getPackagesCache($arrConf, &$pDB, $arrLang){
                $arrSal['msg'] = $tmp[0]."version $tmp[2]-$tmp[3]";
             }
         }
-        else if($arrStatus['status'] == "error")
+        else if($arrStatus['status'] == "error"){
             $arrSal['response'] = "error";
-        else
+            setValueSessionNull($pAddonsModules);
+        }else
             $arrSal['response'] = "OK";
     }
 
     $arrSal['status_action'] = $arrLang['Status'].": ".$arrStatus['status'];
-    //$json = new Services_JSON();
-    //return $json->encode($arrSal);
+
     return $arrSal;
+   }
+   catch(SoapFault $e){
+      return $e->__toString();
+   }
 }
 
 // funcion que verifica si y se hizo la descarga en cache de los rpm anstes de instalar
@@ -367,12 +665,16 @@ function getStatusCache(&$pDB, $arrConf, $arrLang){
     $json = new Services_JSON();
 
     //if($arrStatus['action'] == "confirm"){
+    if(!isset($arrStatus) & $arrStatus==""){
+    	$arrSal['error'] = "no_daemon";
+    	return $arrSal;
+    }
     if($arrStatus['action'] == "none" & $arrStatus['status'] == "idle"){ // if testadd ya realizado la descaraga en cache
         //$salida = $pAddonsModules->clearAddon($arrConf);
         //if(ereg("OK",$salida)){
             $arrSal['response'] = "OK";
             $client = new SoapClient($arrConf['url_webservice']);
-            $packages = $client->getAllAddons("2.0.0");
+            $packages = $client->getAllAddons("2.0.4");
 
             $arr_packages = explode(" ",$packages);
             $arr_RPMs = array();
@@ -394,6 +696,7 @@ function getStatusCache(&$pDB, $arrConf, $arrLang){
     } else {
         // Ha ocurrido un error 
         $pAddonsModules->clearAddon($arrConf);
+        setValueSessionNull($pAddonsModules);
         $arrSal['response'] = "error";
         
         // Separar los mensajes que referencian a un paquete objetivo
@@ -406,7 +709,7 @@ function getStatusCache(&$pDB, $arrConf, $arrLang){
         }
 
         $client = new SoapClient($arrConf['url_webservice']);
-        $packages = $client->getAllAddons("2.0.0");
+        $packages = $client->getAllAddons("2.0.4");
 
         $arr_packages = explode(" ",$packages);
         $arr_RPMs = array();
@@ -430,12 +733,15 @@ function getStatusCache(&$pDB, $arrConf, $arrLang){
 function getStatusUpdateCache($arrConf, &$pDB, $arrLang){
     $pAddonsModules = new paloSantoAddonsModules($pDB);
     $json = new Services_JSON();
+    $arrInstall = isProcessInstallations($pDB, $arrConf);
+    //$arrInstall = array();
     if(isset($_SESSION['elastix_addons']['last_update'])){
         $timeLast = $_SESSION['elastix_addons']['last_update'];
         $timeNew = time();
         if(($timeNew - $timeLast) > 7200){ //si es mayor a 5 minutos al fina1 son 2h -> 7200
             $_SESSION['elastix_addons']['last_update'] = $timeNew;
             $arrSal = getPackagesCache($arrConf, $pDB, $arrLang);
+            $arrSal = array_merge($arrInstall,$arrSal);
             return $json->encode($arrSal);
         }
         else{ // no se actualiza.... se toma esta en cache
@@ -444,19 +750,259 @@ function getStatusUpdateCache($arrConf, &$pDB, $arrLang){
             if(is_array($arrData) && count($arrData) > 0){
                 $arrSal['data_cache'] = $arrData;
                 $arrSal['status_action'] = "";
+                $arrSal = array_merge($arrInstall,$arrSal);
                 return $json->encode($arrSal);
             }
             else{ // La session existe pero no hay cache local de los addons
                 $_SESSION['elastix_addons']['last_update'] = time();
                 $arrSal = getPackagesCache($arrConf, $pDB, $arrLang);
+                $arrSal = array_merge($arrInstall,$arrSal);
                 return $json->encode($arrSal);
             }
         }
     }else{
         $_SESSION['elastix_addons']['last_update'] = time();
         $arrSal = getPackagesCache($arrConf, $pDB, $arrLang);
+        $arrSal = array_merge($arrInstall,$arrSal);
         return $json->encode($arrSal);
     }
+}
+
+
+function getServerKey($pDB)
+{
+    $pAddonsModules = new paloSantoAddonsModules($pDB);
+    $json = new Services_JSON();
+    $serverKey = $pAddonsModules->getSID();
+    $arrSal["serverKey"] = $serverKey;
+    return $json->encode($arrSal);
+}
+
+
+/***funciones de addons_installed***/
+function getProgressBar($smarty, $module_name, $pDB, $arrConf, $arrLang){
+    $pAddonsModules = new paloSantoAddonsModules($pDB);
+    $arrStatus = $pAddonsModules->getStatus($arrConf);
+
+
+    if($pAddonsModules->existsActionTMP()) {
+        $valueActual = "none";
+        $valueTotal = "0";
+        if(isset($arrStatus['package']))
+            $valueActual = $arrStatus['package'];
+        if(isset($arrStatus['porcent_total_ins']))
+            $valueTotal = $arrStatus['porcent_total_ins'];
+
+        $arr['valueActual'] = $valueActual;
+        $arr['valueTotal']  = $valueTotal;
+        $arr['status']  = "progress";
+        $arr['action']  = $arrStatus['action'];
+        $arr['process_installed'] = $arrLang['process_installed'];
+        if($arrStatus['status'] == "idle" && $arrStatus['action'] == "none"){
+            $arrDataTMP = $pAddonsModules->getActionTMP();
+            $data_exp = $arrDataTMP['data_exp'];
+            if(isset($data_exp) && $data_exp != ""){
+                $arrDataInsert = explode("|",$data_exp);
+                $pAddonsModules->insertAddons($arrDataInsert[0],$arrDataInsert[1],$arrDataInsert[2],$arrDataInsert[3]);
+            }
+            $pAddonsModules->clearActionTMP();
+            $arr['status'] = "finished";
+            $arr['response'] = "OK";
+            //limpiar las variables de session del permiso de usuario 
+            unset($_SESSION['elastix_user_permission']);
+            // Refrescar el estado de actualización
+            $addons_installed = $pAddonsModules->getCheckAddonsInstalled();
+
+            try {
+                $client = new SoapClient($arrConf['url_webservice']);
+                $arrAddons = $client->getCheckAddonsUpdate($addons_installed);
+                $arrAddons = explode(",",$arrAddons);
+                $pAddonsModules->updateInDB($arrAddons);
+            } catch (SoapFault $e) {
+                $smarty->assign("mb_title", $arrLang["ERROR"].": ");
+                $smarty->assign("mb_message",$arrLang["The system can not connect to the Web Service resource. Please check your Internet connection."]);
+            }
+        }else if($arrStatus['status'] == "error"){
+        	$arr['response'] = "error";
+            setValueSessionNull($pAddonsModules);
+            $arr['errmsg'] = trim($arrStatus['errmsg'][0]);
+        }
+        sleep(4);
+    }
+    else {
+        $arr['status'] = "not_install";
+        $arr['response'] = "not_install";
+    }
+
+    $json = new Services_JSON();
+    return $json->encode($arr);
+}
+
+function checkUpdates($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
+{
+    $pAddonsModules = new paloSantoAddonsModules($pDB);
+    $addons_installed = $pAddonsModules->getCheckAddonsInstalled();
+
+    ini_set("soap.wsdl_cache_enabled", "0");
+    $client = new SoapClient($arrConf['url_webservice']);
+    $arrAddons = $client->getCheckAddonsUpdate($addons_installed);
+
+    //se deben mostrar los links de updates para mostrar
+    $arrAddons = explode(",",$arrAddons);
+    $pAddonsModules->updateInDB($arrAddons);
+
+    return viewFormAddonsModules($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+}
+
+
+function updateAddons($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
+{
+    $name_rpm = getParameter("name_rpm");
+    $data_exp = getParameter("data_exp");
+    $pAddonsModules = new paloSantoAddonsModules($pDB);
+    $json = new Services_JSON();
+    $arrSal['response'] = false;
+    $_SESSION['elastix_addons']['data_install'] = $data_exp;
+
+    $arrStatus = $pAddonsModules->getStatus($arrConf);
+    $arrSal['name_rpm'] = $name_rpm;
+    if(!isset($arrStatus) & $arrStatus==""){
+    	$arrSal['error'] = "no_daemon";
+    	$arrSal['name_rpm'] = $name_rpm;
+    	return $json->encode($arrSal);
+    }
+    if($arrStatus['action'] == "none" && $arrStatus['status'] == "idle"){
+        $salida = $pAddonsModules->updateAddon($arrConf, $name_rpm);
+
+        if(ereg("OK Processing",$salida)){
+            $arrStatus = $pAddonsModules->getStatus($arrConf);
+            if($arrStatus['status'] != "error"){
+                $arrSal['response'] = "OK";
+                $_SESSION['elastix_addons']['name_rpm'] = $name_rpm;
+                $_SESSION['elastix_addons']['action_rpm'] = 'update';
+            }
+            else{
+            	setValueSessionNull($pAddonsModules);
+                $arrSal['response'] = "error";
+            }
+        }
+        else{
+        	setValueSessionNull($pAddonsModules);
+            $arrSal['response'] = "error";
+        }
+    }
+    else{
+        $arrSal['response'] = "there_install"; //retornar que existe una instalacion
+        $arrSal['name_rpm'] = $_SESSION['elastix_addons']['name_rpm'];
+    }
+    $arrSal['installing'] = $arrLang['installing'];
+
+    return $json->encode($arrSal);
+}
+
+function removeAddons($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
+{
+    $name_rpm = getParameter("name_rpm");
+    $pAddonsModules = new paloSantoAddonsModules($pDB);
+    $json = new Services_JSON();
+    $arrSal['response'] = false;
+    $_SESSION['elastix_addons']['data_install'] = '';
+
+    $arrStatus = $pAddonsModules->getStatus($arrConf);
+    $arrSal['name_rpm'] = $name_rpm;
+    if(!isset($arrStatus) & $arrStatus==""){
+    	$arrSal['error'] = "no_daemon";
+    	$arrSal['name_rpm'] = $name_rpm;
+    	return $json->encode($arrSal);
+    }
+    
+    if($arrStatus['action'] == "none" && $arrStatus['status'] == "idle"){
+        $salida = $pAddonsModules->removeAddon($arrConf, $name_rpm);
+        if(ereg("OK Processing",$salida)){
+            $arrStatus = $pAddonsModules->getStatus($arrConf);
+            if($arrStatus['status'] != "error"){
+                $arrSal['response'] = "OK";
+                $_SESSION['elastix_addons']['name_rpm'] = $name_rpm;
+                $_SESSION['elastix_addons']['action_rpm'] = 'remove';
+            }
+            else{
+            	setValueSessionNull($pAddonsModules);
+                $arrSal['response'] = "error";
+            }
+        }
+        else{
+        	setValueSessionNull($pAddonsModules);
+            $arrSal['response'] = "error";
+        }
+    }
+    else{
+        $arrSal['response'] = "there_install"; //retornar que existe una instalacion
+        $arrSal['name_rpm'] = $_SESSION['elastix_addons']['name_rpm'];
+    }
+    $arrSal['installing'] = _tr('removing');
+
+    return $json->encode($arrSal);
+}
+
+function getconfirmAddons($module_name, &$pDB, $arrConf, $arrLang){
+    $pAddonsModules = new paloSantoAddonsModules($pDB);
+    $json = new Services_JSON();
+    $arrStatus = $pAddonsModules->getStatus($arrConf);
+	$warnmsg = isset($arrStatus["warnmsg"][0])?$arrStatus["warnmsg"][0]:"";
+    if($warnmsg == "No packages to install or update" ){
+    	$result = $pAddonsModules->clearAddon($arrConf);
+    	$arrStatus["clear"] = trim($result);
+    }
+    	
+    if ($arrStatus['status'] == 'idle' && $arrStatus['action'] == 'confirm') {
+        $sRespuesta = $pAddonsModules->confirmAddon($arrConf);
+        if (preg_match('/^OK /', $sRespuesta)) {
+            $arrStatus['response'] = 'OK';
+        }
+    } else {
+        // Todavía está resolviendo dependencias...
+        sleep(4);
+    }
+    
+
+//    $arr['status'] = $arrStatus;
+
+    return $json->encode($arrStatus);
+}
+
+function toDoclearAddon($module_name, &$pDB, $arrConf, $arrLang){
+	$pAddonsModules = new paloSantoAddonsModules($pDB);
+	$result = $pAddonsModules->clearAddon($arrConf);
+	$json = new Services_JSON();
+	$arrResult['response'] = trim($result);
+	setValueSessionNull($pAddonsModules);
+	return $json->encode($arrResult);
+}
+
+function setValueSessionNull($pAddonsModules)
+{
+	$_SESSION['elastix_addons']['data_install'] = "";
+	$_SESSION['elastix_addons']['name_rpm'] = "";
+	$_SESSION['elastix_addons']['action_rpm'] = "";	
+	$pAddonsModules->clearActionTMP();
+}
+
+function createFieldFilter(){
+    $arrFilter = array(
+            "all" => _tr("All"),
+            "commercial" => _tr("Commercial"),
+            "noncommercial" => _tr("NonCommercial"),
+                    );
+
+    $arrFormElements = array(
+            "filter_field" => array("LABEL"                  => _tr("Search"),
+                                    "REQUIRED"               => "no",
+                                    "INPUT_TYPE"             => "SELECT",
+                                    "INPUT_EXTRA_PARAM"      => $arrFilter,
+                                    "VALIDATION_TYPE"        => "text",
+                                    "VALIDATION_EXTRA_PARAM" => ""),
+                    );
+    return $arrFormElements;
 }
 
 
@@ -475,6 +1021,22 @@ function getAction()
         return "getPackages";
     else if(getParameter("action")=="getStatusCache")
         return "getStatusCache";
+    else if(getParameter("action")=="getServerKey")
+		return "getServerKey";
+    else if(getParameter("action")=="progressbar")
+        return "progressbar";
+    else if(getParameter("action")=="get_statusBar")
+        return "progressbar";
+    else if(getParameter("action")=="getconfirmAddons")
+        return "getconfirmAddons";
+    else if(getParameter("action")=="update")
+        return "update";
+    else if(getParameter("action")=="remove")
+        return "remove";
+    else if(getParameter("check_update"))
+        return "check_update";
+    else if(getParameter("action")=="toDoclearAddon")
+    	return "toDoclearAddon";
     else
         return "report"; //cancel
 }

@@ -2,12 +2,7 @@
 <module>
   <menulist>
     <menuitem menuid="addons"            desc="Addons"       parent=""       module="no"  link="" order="10"></menuitem>
-    <menuitem menuid="addons_avalaibles" desc="Available"   parent="addons" module="yes" link="" order="1">
-      <permissions>
-        <group id="1" name="administrator" desc="total access"></group>
-      </permissions>
-    </menuitem>
-    <menuitem menuid="addons_installed"  desc="Installed"    parent="addons" module="yes" link="" order="2">
+    <menuitem menuid="addons_avalaibles" desc="Addons"       parent="addons" module="yes" link="" order="1">
       <permissions>
         <group id="1" name="administrator" desc="total access"></group>
       </permissions>
