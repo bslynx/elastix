@@ -127,7 +127,7 @@ class paloSantoAddonsModules {
         $salida = NULL;
         $status = $this->statusAddon($arrConf);
         if($status!=null){
-            $arrStatus = split("\n",$status);
+            $arrStatus = explode("\n",$status);
             $porcent_total_all = 0;
             $porcent_downl_all = 0;
             $salida = array(
@@ -135,7 +135,7 @@ class paloSantoAddonsModules {
                 'warnmsg' => array(),
             );
             foreach($arrStatus as $k => $line){
-                $arrLine = split(" ",$line);
+                $arrLine = explode(" ",$line);
                 if ($arrLine[0] == 'errmsg') {
                     array_shift($arrLine);
                     $salida['errmsg'][] = implode(' ', $arrLine);
@@ -412,7 +412,7 @@ class paloSantoAddonsModules {
         $rpms = null;
 
         if(!empty($addons)){
-            $arrAddons = split(" ",$addons);
+            $arrAddons = explode(" ",$addons);
             foreach($arrAddons as $rpm){
                 exec("rpm -q $rpm",$arrConsole,$exito);
                 $rpms[$rpm] = $exito?"0":"1";
