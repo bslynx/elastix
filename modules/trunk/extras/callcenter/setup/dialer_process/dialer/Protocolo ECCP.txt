@@ -748,18 +748,37 @@ Ejemplo:
 </request>
 
 Respuesta:
-En caso de que existe el agente:
+En caso de que existe el agente, y no está logoneado:
 <response id="4">
     <getagentstatus_response>
         <status>offline</status>
     </getagentstatus_response>
 </response>
 
+En caso de que existe el agente, y está logoneado y ocioso:
+<response id="4">
+    <getagentstatus_response>
+        <status>online</status>
+        <channel>SIP/1064-00000001</channel>
+        <extension>1064</extension>
+    </getagentstatus_response>
+</response>
+
+
 El elemento "status" tiene uno de los siguientes posibles valores:
 * offline: Agente no ha iniciado sesión en la cola
 * online: Agente ha iniciado sesión, y está ocioso
 * oncall: Agente ha iniciado sesión, y está atendiendo una llamada
 * paused: Agente ha iniciado sesión, y está pausado (en break)
+
+El elemento "channel" contiene el canal de Asterisk usado para el login del 
+agente. El elemento "extension" contiene la extensión (derivada del canal) usada
+para el login del agente. Si los elementos "channel" y "extension" están 
+ausentes con "status" igual a "offline", el agente está deslogoneado. Si están
+presentes con "status" igual a "offline", el agente está en proceso de ingresar
+la contraseña de ingreso a la cola, a través del canal y extensión indicados.
+En todos los otros valores de "status", los elementos "channel" y "extension"
+están siempre presentes.
 
 En caso de que no exista el agente:
 <response id="4">

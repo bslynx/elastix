@@ -102,6 +102,9 @@ class DialerProcess extends AbstractProcess
      */
     private $_infoAgentes = array(); 
 
+    // Lista de intentos de login de agente. TODO: estudiar combinación con _infoAgentes
+    private $_intentoLoginAgente = array();
+
     function inicioPostDemonio($infoConfig, &$oMainLog)
     {
         $bContinuar = TRUE;
@@ -2081,6 +2084,7 @@ PETICION_LLAMADAS;
                 if ($this->DEBUG) {
                     $this->oMainLog->output("DEBUG: AgentLogin({$listaECCP[4]}) detectado");
                 }
+                $this->quitarIntentoLoginAgente($listaECCP[4]);
                 if ($params['Response'] == 'Success') {
                     $this->_infoAgentes[$listaECCP[4]] = $this->generarEstadoInicialAgente();
                     $this->_infoAgentes[$listaECCP[4]]['Uniqueid'] = $params['Uniqueid'];
@@ -3439,6 +3443,23 @@ INFO_FORMULARIOS;
         return FALSE;
     }
 
+    // Función para llevar la cuenta de un intento de login vía Originate
+    function agregarIntentoLoginAgente($sAgente, $sExtension)
+    {
+        $this->_intentoLoginAgente[$sAgente] = $sExtension;
+    }
+    
+    function quitarIntentoLoginAgente($sAgente)
+    {
+    	unset($this->_intentoLoginAgente[$sAgente]);
+    }
+
+    function obtenerIntentoLoginAgente($sAgente)
+    {
+        return isset($this->_intentoLoginAgente[$sAgente]) 
+            ? $this->_intentoLoginAgente[$sAgente] : NULL;
+    }
+
     // Callback llamado cuando un agente se logonea a una cola
     function OnAgentlogin($sEvent, $params, $sServer, $iPort)
     {
@@ -4024,7 +4045,7 @@ Privilege: Command
 ---
 1 parked call in total.
  */
-        $lineas = explode("\n", $r['data']); $regs = NULL;
+        $lineas = split("\n", $r['data']); $regs = NULL;
         foreach ($lineas as $sLinea) {
             if (preg_match('/^\s*(\d{2,})\s*(\S+)/', $sLinea, $regs)) {
             	if ($regs[2] == $sCanal) return $regs[1];
@@ -4146,7 +4167,7 @@ Privilege: Command
         $respuestaCola = $this->_astConn->Command('queue show');
         if (isset($respuestaCola['data'])) {
             $listaColas = array();
-            $lineasRespuesta = explode("\n", $respuestaCola['data']);
+            $lineasRespuesta = split("\n", $respuestaCola['data']);
             $sColaActual = NULL;
             foreach ($lineasRespuesta as $sLinea) {
                 $regs = NULL;

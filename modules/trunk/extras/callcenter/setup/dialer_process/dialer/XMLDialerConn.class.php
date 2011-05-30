@@ -697,6 +697,8 @@ LISTA_EXTENSIONES;
             TRUE,               // async
             'ECCP:1.0:'.posix_getpid().':AgentLogin:'.$sAgente     // action-id
             );
+        if ($r['Response'] == 'Success')
+            $this->_dialProc->agregarIntentoLoginAgente($sAgente, $sExtension);
         return $r;
     }
    
@@ -772,18 +774,6 @@ LISTA_EXTENSIONES;
         return $this->_generarRespuestaFallo(501, 'Not Implemented');
     }
 
-    // Función que encapsula la generación de la respuesta
-    private function Response_GetAgentStatusResponse($status, $iCodigo = NULL, $msg = NULL)
-    {
-        $xml_response = new SimpleXMLElement('<response />');
-        $xml_loginAgentResponse = $xml_response->addChild('getagentstatus_response');
-
-        $xml_loginAgentResponse->addChild('status', $status);
-        if (!is_null($msg))
-            $this->_agregarRespuestaFallo($xml_loginAgentResponse, $iCodigo, $msg);                
-        return $xml_response;           
-    }
-    
     /**
      * Procedimiento que implementa la verificación del estado de un agente 
      * estático al estilo Agent/9000.
@@ -796,6 +786,8 @@ LISTA_EXTENSIONES;
      * @return  object  Respuesta codificada como un SimpleXMLObject
      *      <getagentstatus_response>
      *          <status>offline|online|oncall|paused</status>
+     *          <channel>SIP/1064-000000001</channel>
+     *          <extension>1064<extension/>
      *          <failure>mensaje</failure>
      *      </getagentstatus_response>
      */
@@ -809,33 +801,61 @@ LISTA_EXTENSIONES;
             return $this->_generarRespuestaFallo(400, 'Bad request');
         $sAgente = (string)$comando->agent_number;
 
+        $xml_response = new SimpleXMLElement('<response />');
+        $xml_getAgentStatusResponse = $xml_response->addChild('getagentstatus_response');
+
         // El siguiente código asume formato Agent/9000
         if (!preg_match('|^Agent/(\d+)$|', $sAgente, $regs)) {
-            return $this->Response_GetAgentStatusResponse('offline', 404, 'Invalid agent number');
+            $xml_getAgentStatusResponse->addChild('status', 'offline');
+            $this->_agregarRespuestaFallo($xml_getAgentStatusResponse, 404, 'Invalid agent number');
+            return $xml_response;
         }
         $sNumAgente = $regs[1];
         $oPredictor = new Predictivo($this->_astConn);
         $estadoCola = $oPredictor->leerEstadoCola(''); // El parámetro vacío lista todas las colas
         if (!isset($estadoCola['members'][$sNumAgente])) {
-            return $this->Response_GetAgentStatusResponse('offline', 404, 'Invalid agent number');
-        }
-                
-        // Reportar los estados conocidos 
-        $estadoAgente = $estadoCola['members'][$sNumAgente];
-        if (in_array('paused', $estadoAgente['attributes'])) {
-            return $this->Response_GetAgentStatusResponse('paused');
-        }
-        if ($estadoAgente['status'] == 'inUse') {
-        	return $this->Response_GetAgentStatusResponse('oncall');
-        }
-        if ($estadoAgente['status'] == 'canBeCalled') {
-            return $this->Response_GetAgentStatusResponse('online');
-        }
-        if ($estadoAgente['status'] == 'unAvailable') {
-            return $this->Response_GetAgentStatusResponse('offline');
+            $xml_getAgentStatusResponse->addChild('status', 'offline');
+            $this->_agregarRespuestaFallo($xml_getAgentStatusResponse, 404, 'Invalid agent number');
+            return $xml_response;
         }
 
-        return $this->Response_GetAgentStatusResponse('offline', 500, 'Unknown status');
+        // Canal que hizo el logoneo hacia la cola
+        $sCanalExt = $this->obtenerCanalLoginAgente($sAgente);
+        if (is_null($sCanalExt))
+            $sCanalExt = $this->_dialProc->obtenerIntentoLoginAgente($sAgente);
+        $sExtension = NULL;
+        if (!is_null($sCanalExt)) {
+            // Hay un canal de login. Se separa la extensión que hizo el login
+            $sRegexp = "|^\w+/(\\d+)-?|"; $regs = NULL;
+            if (preg_match($sRegexp, $sCanalExt, $regs)) {
+                $sExtension = $regs[1];
+            }
+        }
+
+        // Reportar los estados conocidos 
+        $estadoAgente = $estadoCola['members'][$sNumAgente];
+        $bEstadoConocido = FALSE;
+        if (in_array('paused', $estadoAgente['attributes'])) {
+            $xml_getAgentStatusResponse->addChild('status', 'paused');
+            $bEstadoConocido = TRUE;
+        } elseif ($estadoAgente['status'] == 'inUse') {
+            $xml_getAgentStatusResponse->addChild('status', 'oncall');
+            $bEstadoConocido = TRUE;
+        } elseif ($estadoAgente['status'] == 'canBeCalled') {
+            $xml_getAgentStatusResponse->addChild('status', 'online');
+            $bEstadoConocido = TRUE;
+        } elseif ($estadoAgente['status'] == 'unAvailable') {
+            $xml_getAgentStatusResponse->addChild('status', 'offline');
+            $bEstadoConocido = TRUE;
+        }
+        if ($bEstadoConocido) {
+        	if (!is_null($sCanalExt)) $xml_getAgentStatusResponse->addChild('channel', $sCanalExt);
+            if (!is_null($sExtension)) $xml_getAgentStatusResponse->addChild('extension', $sExtension);
+        } else {
+            $xml_getAgentStatusResponse->addChild('status', 'offline');
+            $this->_agregarRespuestaFallo($xml_getAgentStatusResponse, 500, 'Unknown status');
+        }
+        return $xml_response;
     }
     
     /**
