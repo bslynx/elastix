@@ -81,7 +81,7 @@ class paloSantoRegistration {
 	    	$serverKey = "";
 	    	
     	ini_set("soap.wsdl_cache_enabled", "0");
-    	$url_webservices = "https://192.168.3.253/modules/installations/webservice/registerWSDL.wsdl";
+    	$url_webservices = "https://webservice.elastix.org/modules/installations/webservice/registerWSDL.wsdl";
 	    try {
         	$client  = new SoapClient($url_webservices);
         	$content = $client->getDataServerRegistration($serverKey);
@@ -117,7 +117,7 @@ class paloSantoRegistration {
     function sendDataWebService($data)
     {
         ini_set("soap.wsdl_cache_enabled", "0");
-        $url_webservices = "https://192.168.3.253/modules/installations/webservice/registerWSDL.wsdl";
+        $url_webservices = "https://webservice.elastix.org/modules/installations/webservice/registerWSDL.wsdl";
         try {
         	$client  = new SoapClient($url_webservices);
            	$content = $client->saveInstallation($data);
