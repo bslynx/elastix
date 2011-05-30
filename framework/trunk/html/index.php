@@ -145,6 +145,18 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
     $oPn = new paloSantoNavigation($arrConf, $arrMenuFiltered, $smarty);
 
     $smarty->assign("THEMENAME", $arrConf['mainTheme']);
+
+    /*agregado para register*/
+    
+    $smarty->assign("Register", _tr("Register"));
+    $smarty->assign("Registered", _tr("Registered"));
+    if(!is_file("/etc/elastix.key")){
+    	$smarty->assign("ColorRegister", "#FF0000"); 
+    }else{
+    	$smarty->assign("ColorRegister", "#008800");
+    }
+    /*agregado para register*/
+
     $smarty->assign("md_message_title",$arrLang['md_message_title']);
     $smarty->assign("currentyear",date("Y"));
 	if($arrConf['mainTheme']=="elastixwave"){

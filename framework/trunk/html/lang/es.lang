@@ -183,5 +183,7 @@ $arrLang=array(
 "VersionPackage" => "Detalles de las versiones de los paquetes",
 "textMode" => "Modo Texto",
 "htmlMode" => "Modo Html",
+"Register" => "Registro",
+"Registered" => "Registrado",
 );
 ?>

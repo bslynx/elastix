@@ -168,6 +168,125 @@ function hide_message_error(){
     document.getElementById("message_error").style.display = 'none';
 }
 
+/*********************** new begin* *******************************/
+function showPopupElastix(id,titles,widths,heights){
+    //var arrAction              = new Array();
+    //arrAction["action"]        = "registration";
+    //arrAction["rawmode"]       = "yes";
+    var arrAction = "action=registration&rawmode=yes";
+    $.post("register.php",arrAction,
+        function(arrData,statusResponse,error)
+        {
+            jBoxPopupAero(id ,titles, widths, heights, arrData);
+        }
+    );
+}
+
+function jBoxPopupAero(id ,titulo, ancho, alto, html){
+    var div = "<div id='"+id+"' style='position: absolute;'></div>";
+    $('#PopupElastix').append(div);
+    $('body').data(id , null);
+    $("#"+id).html(html);
+
+    $("#"+id).AeroWindow({
+        WindowTitle:          titulo,
+        //WindowDesktopIconFile:
+        WindowDesktopIcon:    false,
+        WindowPositionTop:    'center',
+        WindowPositionLeft:   'center',
+        WindowWidth:          ancho,
+        WindowHeight:         alto,
+        WindowAnimation:      'easeOutCubic'
+    });
+}
+
+function registration(){
+    var contactName = $('#contactNameReg').val();
+    var email       = $('#emailReg').val();
+    var phone       = $('#phoneReg').val();
+    var company     = $('#companyReg').val();
+    var address     = $('#addressReg').val();
+    var city        = $('#cityReg').val();
+    var country     = $('#countryReg option:selected').val();
+    var idPartner   = $('#idPartnerReg').val();
+
+    error = false;
+    txtError = "Please fill the correct values in fields: \n";
+    if(!(/^[A-Za-z\_\-\.\s\xF1\xD1]+$/.test(contactName)) || contactName == ""){ /*solo letras*/
+        error = true;
+        txtError += "* Contact Name: Only text \n";
+    }
+    if(!(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) || email == ""){ /*solo email*/
+        error = true;
+        txtError += "* Email: Only format email \n";
+    }
+    if(!(/^\w+$/.test(phone)) || phone == ""){ /*numeros y letras*/
+        error = true;
+        txtError += "* Phone: text or number \n";
+    }
+    if(!(/^[A-Za-z\_\-\.\s\xF1\xD1]+$/.test(company)) || company == ""){
+        error = true;
+        txtError += "* Company: text \n";
+    }
+    /*if(!(/^[A-Za-z\_\-\.\s\xF1\xD1]+$/.test(address)) || address == ""){
+        error = true;
+        txtError += "* Address: text \n";
+    }*/
+    if(!(/^[A-Za-z\_\-\.\s\xF1\xD1]+$/.test(city)) || city == ""){
+        error = true;
+        txtError += "* City: text \n";
+    }
+    if(country == "" || country == "none"){
+        error = true;
+        txtError += "* Country: Selected a country \n";
+    }
+    /*if(idPartner == ""){
+        error = true;
+        txtError += "* Id Partner: text \n";
+    }*/
+    if(error)
+        alert(txtError);
+    else{
+	$('#tdButtons').hide();
+        $('#tdloaWeb').attr("style", "padding-left: 5px; display: block;");
+        var arrAction = "action=saveregister&contactNameReg="+contactName+"&emailReg="+email+"&phoneReg="+phone+"&companyReg="+company+"&addressReg="+address+"&cityReg="+city+"&countryReg="+country+"&idPartnerReg="+idPartner+"&rawmode=yes";
+        $.post("register.php",arrAction,
+            function(arrData,statusResponse,error)
+            {
+		var response = JSONRPMtoString(arrData);
+                alert(response["message"]["respuesta"]);
+		if(response["message"]["estado"]=="TRUE"){
+		    $('#registrar').hide();
+		    getElastixKey();
+		}else{
+		    $('#tdButtons').show();
+		    $('#tdloaWeb').attr("style", "padding-left: 5px; display: none;");
+		}
+            }
+        );
+    }
+}
+
+function getElastixKey(){
+    var arrAction = "action=getServerKey&rawmode=yes&menu=addons";
+    $.post("index.php",arrAction,
+	function(arrData,statusResponse,error)
+	{
+	    var message = JSONRPMtoString(arrData);
+	    var serverKey = message["serverKey"];
+	    if(serverKey && serverKey != ""){
+		var link = $('#link_tmp').val();
+		if(link && link !=""){
+		    link += serverKey;
+		    window.open(link);
+		}
+	    }
+	}
+    );
+}
+
+/************************************ new end ******************************************/
+
 $(document).ready(function(){
     $(".close_image_box").click(function(){
             $("#boxRPM").attr("style","display: none;");

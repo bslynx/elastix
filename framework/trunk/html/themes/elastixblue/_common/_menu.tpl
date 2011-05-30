@@ -91,6 +91,7 @@
                     </table> 
                 </div>
             </td>
+	    <td class="menuaftertab" align="right"><span><a style="color: {$ColorRegister}; cursor: pointer; font-weight: bold; font-size: 13px;" onclick="showPopupElastix('registrar','{$Register}',538,345)">{$Registered}</a></span>&nbsp;&nbsp;&nbsp;&nbsp;</td>
             <td class="menuaftertab" width="40%" align="right">&nbsp;<a class="logout" id="viewDetailsRPMs">{$VersionDetails}</a></td>
             <td class="menuaftertab" width="40%" align="right">&nbsp;<a href="javascript:mostrar();">{$ABOUT_ELASTIX}</a></td>
             <td class="menuaftertab" width="20%" align="right">&nbsp;<a href="?logout=yes">{$LOGOUT}</a></td>
@@ -214,6 +215,9 @@
     </td>
     {/if}
 <!-- Va al tpl index.tlp-->
+
+<div id="PopupElastix" style="position: absolute; top: 0px; left: 0px;">
+</div>
 
 {literal}
 <style type='text/css'>

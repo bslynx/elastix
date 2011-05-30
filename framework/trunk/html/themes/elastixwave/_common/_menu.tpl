@@ -65,6 +65,7 @@
                 <td width="30%" nowrap="nowrap">
                     <div id="menu_float" class="background">
                         <div id="logout_in">
+			    <span><a style="color: {$ColorRegister}; cursor: pointer; font-weight: bold; font-size: 13px;" onclick="showPopupElastix('registrar','{$Register}',538,345)">{$Registered}</a></span>&nbsp;&nbsp;&nbsp;&nbsp;
                             <span><a class="logout" id="viewDetailsRPMs">{$VersionDetails}</a></span>&nbsp;
                             <span class="menuguion">*</span>&nbsp;
                             <span><a class="logout" href="javascript:mostrar();">{$ABOUT_ELASTIX2}</a></span>&nbsp;
@@ -216,6 +217,9 @@
     </td>
     {/if}
 <!-- Va al tpl index.tlp-->
+
+<div id="PopupElastix" style="position: absolute; top: 0px; left: 0px;">
+</div>
 
 {literal}
 <style type='text/css'>
