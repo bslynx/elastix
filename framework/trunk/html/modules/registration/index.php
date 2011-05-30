@@ -113,7 +113,15 @@ function viewFormRegister($smarty, $module_name, $local_templates_dir, $pDB, $ar
 				$htmlForm = $oForm->fetchForm("$local_templates_dir/_registration.tpl","", "");
 			else
 				$htmlForm = $oForm->fetchForm("$local_templates_dir/_registration.tpl","", $arrDB);
-		}else{
+		}else if($_DATA === "FALSE"){
+			$smarty->assign("displayError", "display: none;");
+			$arrDB = $pRegister->getDataRegister();
+			if(!isset($arrDB) || $arrDB=="")
+				$htmlForm = $oForm->fetchForm("$local_templates_dir/_registration.tpl","", "");
+			else
+				$htmlForm = $oForm->fetchForm("$local_templates_dir/_registration.tpl","", $arrDB);
+		}
+		else{
 			$smarty->assign("displayError", "display: none;");	
 			$htmlForm = $oForm->fetchForm("$local_templates_dir/_registration.tpl","", $_DATA);
 		}
