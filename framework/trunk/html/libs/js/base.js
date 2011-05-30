@@ -254,6 +254,8 @@ function registration(){
             function(arrData,statusResponse,error)
             {
 		var response = JSONRPMtoString(arrData);
+		var registerText   = $('#lblRegisterCm').val();
+		var registeredText = $('#lblRegisteredCm').val();
                 alert(response["message"]["respuesta"]);
 		if(response["message"]["estado"]=="TRUE"){
 		    $('#registrar').hide();
