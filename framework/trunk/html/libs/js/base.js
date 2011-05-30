@@ -257,9 +257,13 @@ function registration(){
                 alert(response["message"]["respuesta"]);
 		if(response["message"]["estado"]=="TRUE"){
 		    $('#registrar').hide();
+		    $('.register_link').css('color','#008800');
+		    $('.register_link').text(registeredText);
 		    getElastixKey();
 		}else{
 		    $('#tdButtons').show();
+		    $('.register_link').css('color','#FF0000');
+		    $('.register_link').text(registerText);
 		    $('#tdloaWeb').attr("style", "padding-left: 5px; display: none;");
 		}
             }
