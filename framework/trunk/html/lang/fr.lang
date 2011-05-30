@@ -225,6 +225,7 @@ En Wav",
 "VersionPackage" => "Details of package versions",
 "textMode" => "Text Mode",
 "htmlMode" => "Html Mode",
-
+"Register" => "Register",
+"Registered" => "Registered",
 );
 ?>
