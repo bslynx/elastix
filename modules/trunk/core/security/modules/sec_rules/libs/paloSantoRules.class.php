@@ -621,10 +621,11 @@ class paloSantoRules {
             if($rule['ip_source']!= "0.0.0.0/0" && $rule['ip_source'] != "")
                 $parameters.= "-s $rule[ip_source] ";
             if($rule['protocol'] == "TCP" || $rule['protocol'] == "UDP"){
+		$parameters.= "-p $rule[protocol] ";
                 if($rule['sport'] != "ANY")
-                    $parameters.= "-p $rule[protocol] --sport $rule[sport] ";
+                    $parameters.= "--sport $rule[sport] ";
                 if($rule['dport'] != "ANY")
-                    $parameters.= "-p $rule[protocol] --dport $rule[dport] ";
+                    $parameters.= "--dport $rule[dport] ";
             }
             if($rule['protocol'] == "ICMP")
                 $parameters.= "-p icmp ";
