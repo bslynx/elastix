@@ -74,10 +74,7 @@ function _moduleContent(&$smarty, $module_name)
     $dsn_agi_manager['user'] = 'admin';
 
     //solo para obtener los devices (extensiones) creadas.
-    $dsnAsterisk = $arrConfig['AMPDBENGINE']['valor']."://".
-                   $arrConfig['AMPDBUSER']['valor']. ":".
-                   $arrConfig['AMPDBPASS']['valor']. "@".
-                   $arrConfig['AMPDBHOST']['valor']."/asterisk";
+    $dsnAsterisk = generarDSNSistema('asteriskuser', 'asterisk');
     $pDB = new paloDB($arrConf['dsn_conn_database']); // address_book
     $pDB_2 = new paloDB($arrConf['dsn_conn_database2']); // acl
     

@@ -32,7 +32,6 @@ require_once("$root/libs/misc.lib.php");
 require_once("$root/configs/default.conf.php");
 require_once("$root/modules/address_book/libs/paloSantoAdressBook.class.php");
 require_once("$root/modules/address_book/configs/default.conf.php");
-require_once("$root/libs/paloSantoConfig.class.php");
 require_once("$root/libs/paloSantoACL.class.php");
 require_once("$root/libs/paloSantoDB.class.php");
 
@@ -89,13 +88,7 @@ class core_AddressBook
         $this->_pACL = NULL;
         $this->errMsg = NULL;
         $this->_dbCache = array();
-        $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
-        $ampConf = $pConfig->leer_configuracion(false);
-        $this->_astDSN = 
-            $ampConf['AMPDBENGINE']['valor']."://".
-            $ampConf['AMPDBUSER']['valor']. ":".
-            $ampConf['AMPDBPASS']['valor']. "@".
-            $ampConf['AMPDBHOST']['valor']."/asterisk";
+        $this->_astDSN = generarDSNSistema('asteriskuser', 'asterisk', $_SERVER['DOCUMENT_ROOT'].'/');
     }
 
     /**
