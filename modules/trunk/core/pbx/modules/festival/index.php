@@ -109,7 +109,7 @@ function changeStatusFestival($smarty, $module_name, $local_templates_dir, $arrC
                 $smarty->assign("mb_message", $pFestival->getError());
                 return viewFormFestival($smarty, $module_name, $local_templates_dir, $arrConf);
             }
-            $message = _tr("The file /usr/share/elastix/elastix.scm was modified").". ";
+            $message = _tr("The file /usr/share/festival/festival.scm was modified").". ";
         }
         if($pFestival->isFestivalActivated()){
             $smarty->assign("mb_title",_tr("ERROR"));

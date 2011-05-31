@@ -38,7 +38,7 @@ $arrLangModule=array(
 "Festival has been successfully activated" => "Festival has been successfully activated",
 "Festival could not be activated" => "Festival could not be activated",
 "Festival is already deactivated" => "Festival is already deactivated",
-"The file /usr/share/elastix/elastix.scm was modified" => "The file /usr/share/elastix/elastix.scm was modified",
+"The file /usr/share/festival/festival.scm was modified" => "The file /usr/share/festival/festival.scm was modified",
 "Festival has been successfully deactivated" => "Festival has been successfully deactivated",
 "Festival could not be deactivated" => "Festival could not be deactivated"
 );
