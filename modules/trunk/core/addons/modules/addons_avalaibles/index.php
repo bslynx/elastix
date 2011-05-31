@@ -84,10 +84,10 @@ function _moduleContent(&$smarty, $module_name)
         case "getStatusCache":
             $content = getStatusCache($pDB, $arrConf, $arrLang);
             break;
-		case "getServerKey":
-		    $content = getServerKey($pDB);
-	        break;
-		case "progressbar":
+	case "getServerKey":
+	    $content = getServerKey($pDB);
+	    break;
+	case "progressbar":
             $content = getProgressBar($smarty, $module_name, $pDB, $arrConf, $arrLang);
             break;
         case "check_update":
@@ -176,7 +176,7 @@ function getStatus($pDB, $arrConf, $arrLang){
 
     $json = new Services_JSON();
     $arrSal['response'] = false;
-    exec("echo 'values: ".print_r($arrStatus,true)."' > /tmp/diff");
+
     if(!isset($arrStatus) & $arrStatus==""){
     	$arrSal['error'] = "no_daemon";
     	return $json->encode($arrSal);
@@ -315,9 +315,9 @@ function reportAvailables($smarty, $module_name, $local_templates_dir, &$pDB, $a
 
     $serverKey = $pAvailables->getSID();
     if(isset($serverKey) & $serverKey != "")
-		$serverKey = "&serverkey=$serverKey";
+	$serverKey = "&serverkey=$serverKey";
     else
-		$serverKey = "";
+	$serverKey = "";
 
 	/*$addonsInstalled[]   = _tr("Installed");
 	$addonsNoInstalled[] = _tr("Availables");
@@ -332,30 +332,30 @@ function reportAvailables($smarty, $module_name, $local_templates_dir, &$pDB, $a
         
         /*foreach($arrResult as $key => $value){
         	
-        	$versionToInstall = $value['version']."-".$value['release'];
+	  $versionToInstall = $value['version']."-".$value['release'];
         	
-			if(!$pAvailables->exitAddons($value)){// no instalado
-				$addonsNoInstalled[] = $value;
-			}else{//instalados
-				$addonsInstalled[] = $value;
-			}
+	  if(!$pAvailables->exitAddons($value)){// no instalado
+	      $addonsNoInstalled[] = $value;
+	  }else{//instalados
+	      $addonsInstalled[] = $value;
+	  }
         	
         }*/
         
-		/*if(count($addonsInstalled)==1){
-			$addonsInstalled[]   = _tr("No addon installed");
+	/*if(count($addonsInstalled)==1){
+	    $addonsInstalled[]   = _tr("No addon installed");
 
-		}
-		if(count($addonsNoInstalled)==1){
-			$addonsNoInstalled[] = _tr("No addons availables");
-		}*/
+	}
+	if(count($addonsNoInstalled)==1){
+	    $addonsNoInstalled[] = _tr("No addons availables");
+	}*/
 
-		/*//TODO: Mejorar que pasa si los arreglos estan vacios
-		if((count($addonsInstalled)-1)%2!=0)
-		  $addonsInstalled[] = "relleno";
-		
-		if((count($addonsNoInstalled)-1)%2!=0)
-		  $addonsNoInstalled[] = "relleno";*/
+	/*//TODO: Mejorar que pasa si los arreglos estan vacios
+	if((count($addonsInstalled)-1)%2!=0)
+	  $addonsInstalled[] = "relleno";
+	
+	if((count($addonsNoInstalled)-1)%2!=0)
+	  $addonsNoInstalled[] = "relleno";*/
 	
 	if((count($arrResult))%2!=0)
 		  $arrResult[] = "relleno";
@@ -466,18 +466,18 @@ function reportAvailables($smarty, $module_name, $local_templates_dir, &$pDB, $a
     $smarty->assign("module_name", $module_name);
     $smarty->assign("uninstall", _tr("Uninstall"));
     $smarty->assign("install", _tr("Install"));
-	$smarty->assign("textDownloading", _tr("Starting"));
-	$smarty->assign("textRemoving", _tr("Removing"));
-	$smarty->assign("textInstalling", _tr("Installing"));
-	$smarty->assign("daemonOff", _tr("no_daemon"));
-	$smarty->assign("search", _tr("Search"));
-	$smarty->assign("tryItText", _tr("Try it"));
-	$smarty->assign("textObservation", _tr("Please need to enable Centos repo, Elastix, Extra or others for the proper functioning, Detail of errors: "));
+    $smarty->assign("textDownloading", _tr("Starting"));
+    $smarty->assign("textRemoving", _tr("Removing"));
+    $smarty->assign("textInstalling", _tr("Installing"));
+    $smarty->assign("daemonOff", _tr("no_daemon"));
+    $smarty->assign("search", _tr("Search"));
+    $smarty->assign("tryItText", _tr("Try it"));
+    $smarty->assign("textObservation", _tr("Please need to enable Centos repo, Elastix, Extra or others for the proper functioning, Detail of errors: "));
 	
-	$oFilterForm = new paloForm($smarty, createFieldFilter());
+    $oFilterForm = new paloForm($smarty, createFieldFilter());
     $content = "<form  method='post' style='margin-bottom:0;' action=\"$url\">".$oGrid->fetchGrid($arrGrid, $arrData,$arrLang)."</form>";
-	$htmlFilter  = $oFilterForm->fetchForm($content,"",$_POST);
-	$oGrid->showFilter(trim($htmlFilter));
+    $htmlFilter  = $oFilterForm->fetchForm($content,"",$_POST);
+    $oGrid->showFilter(trim($htmlFilter));
     $content = $oGrid->fetchGrid();
 	
     return $content;
@@ -490,13 +490,14 @@ function buttonInstall($install, $name_rpm, $arrLang, $action, $serverKey,$url_m
     if(!$install){
 		if($action == "buy"){//es comercial
 		    $actionClase = "";
+		    $tryIt = "";
 		    if($serverKey == "")
 				$actionClase = "registrationServer";
 		    else{
 				$actionClase = "buy";
-				if(!$comprado)
-					$tryIt = "<input type='button' value='"._tr("Try it")."' class='install' id='$name_rpm' name='tryButton' style='display: none;' />";
 		    }
+		    if(!$comprado)
+			$tryIt = "<input type='button' value='"._tr("Try it")."' class='install' id='$name_rpm' name='tryButton' style='display: none;' />";
 			
 		    $html = "<div id='img_$name_rpm' align='center' >".
 						"<img alt='' src='modules/addons_avalaibles/images/loading.gif' class='loadingAjax' style='display: block;' />".
@@ -510,7 +511,7 @@ function buttonInstall($install, $name_rpm, $arrLang, $action, $serverKey,$url_m
 							"<div style='float: right; padding-right: 2px;'>$tryIt</div>". // install
 							"<div style='float: right; padding-right: 2px;'></div>". // update
 							"<div style='float: right; padding-right: 2px;' >".// buy
-								"<input type='button' value='"._tr($action)."' class='$actionClase' id='".$name_rpm."_buy' name='buyButton' style='display: none;' />".
+								"<input type='button' value='"._tr("Buy")."' class='$actionClase' id='".$name_rpm."_buy' name='buyButton' style='display: none;' />".
 							"</div>".
 						"</div>".
 			    	"</div>";
@@ -738,7 +739,9 @@ function getStatusUpdateCache($arrConf, &$pDB, $arrLang){
     if(isset($_SESSION['elastix_addons']['last_update'])){
         $timeLast = $_SESSION['elastix_addons']['last_update'];
         $timeNew = time();
-        if(($timeNew - $timeLast) > 7200){ //si es mayor a 5 minutos al fina1 son 2h -> 7200
+	$arrStatus = $pAddonsModules->getStatus($arrConf);
+	$actionStatus = $arrStatus['action'];
+        if(($timeNew - $timeLast) > 7200 || $actionStatus == "reporefresh" || $actionStatus == "depsolving"){ //si es mayor a 5 minutos al fina1 son 2h -> 7200
             $_SESSION['elastix_addons']['last_update'] = $timeNew;
             $arrSal = getPackagesCache($arrConf, $pDB, $arrLang);
             $arrSal = array_merge($arrInstall,$arrSal);
