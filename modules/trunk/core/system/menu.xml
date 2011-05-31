@@ -83,6 +83,11 @@
             <group id="1" name="administrator" desc="total access"></group>
         </permissions>
     </menuitem>
+    <menuitem menuid="time_config"          desc="Date/Time"          parent="preferences" module="yes" link="" order="102">
+       <permissions>
+            <group id="1" name="administrator" desc="total access"></group>
+       </permissions>
+    </menuitem>
     <menuitem menuid="currency"             desc="Currency"           parent="preferences" module="yes" link="" order="104">
         <permissions>
             <group id="1" name="administrator" desc="total access"></group>
