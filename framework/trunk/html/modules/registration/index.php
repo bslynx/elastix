@@ -182,35 +182,30 @@ function saveRegister($smarty, $module_name, $local_templates_dir, $pDB, $arrCon
 		$rsa_key = "";
 		if(!is_file("/etc/elastix.key")){
 		    // saving to web service
-		    exec("sudo -u root chown asterisk.asterisk /etc/ssh");
-		    exec("sudo -u root chown asterisk.asterisk /etc/ssh/ssh_host_rsa_key.pub");
 		    $rsa_key = file_get_contents('/etc/ssh/ssh_host_rsa_key.pub');
-		    exec("sudo -u root chown root.root /etc/ssh/ssh_host_rsa_key.pub");
-		    exec("sudo -u root chown root.root /etc/ssh");
 		}else{
 		    $rsa_key = file_get_contents("/etc/elastix.key");
-		    $rsa_key = trim($rsa_key);
 		}
-
+	$rsa_key = trim($rsa_key);
         $datas = array($contact_name, $email, $phone, $company, $address, $city, $country, $idPartner, $rsa_key);
         $band = $pRegister->sendDataWebService($datas);
         if($band==="FALSE" || $band==null){
-	    	$pDB->rollBack();
-	    	$msgResponse['status']  = "FALSE";
-	   		$msgResponse['message'] = _tr("Your information cannot be saved. Please try again.");
-	    	$jsonObject->set_message($msgResponse);
-	    	return $jsonObject->createJSON();
+	    $pDB->rollBack();
+	    $msgResponse['status']  = "FALSE";
+	    $msgResponse['message'] = _tr("Your information cannot be saved. Please try again.");
+	    $jsonObject->set_message($msgResponse);
+	    return $jsonObject->createJSON();
         }else{
-	    	exec("sudo -u root chown asterisk.asterisk /etc");
-	    	exec("echo '$band' > /etc/elastix.key");
-	    	chmod("/etc/elastix.key",0600);
-	    	exec("sudo -u root chown root.root /etc");
-	    	$pDB->commit();
-	    	$msgResponse['estado']  = "TRUE";
-	    	$msgResponse['respuesta'] = _tr("Your information has been saved.");
-	    	$jsonObject->set_message($msgResponse);
-	    	return $jsonObject->createJSON();
-		}
+	    exec("sudo -u root chown asterisk.asterisk /etc");
+	    exec("echo '$band' > /etc/elastix.key");
+	    chmod("/etc/elastix.key",0600);
+	    exec("sudo -u root chown root.root /etc");
+	    $pDB->commit();
+	    $msgResponse['estado']  = "TRUE";
+	    $msgResponse['respuesta'] = _tr("Your information has been saved.");
+	    $jsonObject->set_message($msgResponse);
+	    return $jsonObject->createJSON();
+	}
     }else{
         return "false";
     }
