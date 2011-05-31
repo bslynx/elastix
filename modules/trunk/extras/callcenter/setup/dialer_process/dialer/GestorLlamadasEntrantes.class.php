@@ -199,7 +199,7 @@ class GestorLlamadasEntrantes
             if (is_array($respuestaCola)) {
                 if (isset($respuestaCola['data'])) {
                     $listaAgentes = array();
-                    $lineasRespuesta = split("\n", $respuestaCola['data']);
+                    $lineasRespuesta = explode("\n", $respuestaCola['data']);
                     $sColaActual = NULL;
                     foreach ($lineasRespuesta as $sLinea) {
                     	$regs = NULL;

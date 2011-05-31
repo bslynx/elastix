@@ -143,9 +143,9 @@ class PaloSantoHardwareDetection
                         $tipo ='FXS';
                    else
                         $tipo = "PRI/BRI";*/
-                    $dataType=split('[:]',$regs1[4],2);
+                    $dataType=preg_split('/[:]/',$regs1[4],2);
                     if(count($dataType)>1){
-                        $arrEcho=split('[)]',$dataType[1],2);
+                        $arrEcho=preg_split('/[)]/',$dataType[1],2);
                         $data['num_port']       = $pDB->DBCAMPO($regs1[1]);
                         $data['name_port']       = $pDB->DBCAMPO($regs1[2]);
                         $data['echocanceller']   = $pDB->DBCAMPO(trim($arrEcho[0]));
@@ -250,7 +250,7 @@ class PaloSantoHardwareDetection
         {
             if(ereg("^([a-z=0-9]+),([[:digit:]]+),([[:digit:]]+),([[:alnum:]]+),([[:alnum:]]+),([[:alnum:]]+)", $line, $arrReg) || ereg("^([a-z=0-9]+),([[:digit:]]+),([[:digit:]]+),([[:alnum:]]+),([[:alnum:]]+)", $line, $arrReg)){
                 $count++;
-                $span = split('[=]',$arrReg[1]);
+                $span = preg_split('/[=]/',$arrReg[1]);
                 $data['span_num']    = $pDB->DBCAMPO(trim($span[1]));
                 $dataSpans[$count]['tmsource'] = trim($arrReg[2]);
                 $data['timing_source']    = $pDB->DBCAMPO(trim($arrReg[2]));
@@ -288,7 +288,7 @@ class PaloSantoHardwareDetection
         while($line = fgets($fp, filesize($FILE)))
         {
             if(ereg("^([a-z=0-9]+),([[:digit:]]+),([[:digit:]]+),([[:alnum:]]+),([[:alnum:]]+),([[:alnum:]]+)", $line, $arrReg) || ereg("^([a-z=0-9]+),([[:digit:]]+),([[:digit:]]+),([[:alnum:]]+),([[:alnum:]]+)", $line, $arrReg)){
-                $data = split('[=]',$arrReg[1]);
+                $data = preg_split('/[=]/',$arrReg[1]);
                 if($data[1]==$idSpan){
                     if(!empty($arrReg[6])) $text .=$arrReg[1].",".$arrSpanConfig['tmsource'].",".$arrSpanConfig['lnbuildout'].",".$arrSpanConfig['framing'].",".$arrSpanConfig['coding'].",".$arrReg[6]."\n";
                     else $text .=$arrReg[1].",".$arrSpanConfig['tmsource'].",".$arrSpanConfig['lnbuildout'].",".$arrSpanConfig['framing'].",".$arrSpanConfig['coding']."\n";

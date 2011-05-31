@@ -250,7 +250,7 @@ class paloSantoEmaillist {
         while($line = fgets($fp, filesize($FILE)))
         {
        if(eregi("POSTFIX_STYLE_VIRTUAL_DOMAINS =", $line)){
-        $data = split('[=]',$line);
+        $data = preg_split('/[=]/',$line);
         if(trim($data[0])=='POSTFIX_STYLE_VIRTUAL_DOMAINS'){
           $text .= "POSTFIX_STYLE_VIRTUAL_DOMAINS = ['$domainName']\n";
         }else
@@ -361,7 +361,7 @@ class paloSantoEmaillist {
         while(!feof($fh))
         {
             $linea = fgets($fh);
-            $datos=split('[=]',$linea);
+            $datos=preg_split('/[=]/',$linea);
 
             if(count($datos)>1)
             {

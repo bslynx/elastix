@@ -4045,7 +4045,7 @@ Privilege: Command
 ---
 1 parked call in total.
  */
-        $lineas = split("\n", $r['data']); $regs = NULL;
+        $lineas = explode("\n", $r['data']); $regs = NULL;
         foreach ($lineas as $sLinea) {
             if (preg_match('/^\s*(\d{2,})\s*(\S+)/', $sLinea, $regs)) {
             	if ($regs[2] == $sCanal) return $regs[1];
@@ -4167,7 +4167,7 @@ Privilege: Command
         $respuestaCola = $this->_astConn->Command('queue show');
         if (isset($respuestaCola['data'])) {
             $listaColas = array();
-            $lineasRespuesta = split("\n", $respuestaCola['data']);
+            $lineasRespuesta = explode("\n", $respuestaCola['data']);
             $sColaActual = NULL;
             foreach ($lineasRespuesta as $sLinea) {
                 $regs = NULL;

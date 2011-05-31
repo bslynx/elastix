@@ -488,7 +488,7 @@ class stick_sysmanip
 function reemplazar_nombres_lista($lista_hosts, $arreglo_reemplazo)
 {
    // Reemplazar la cadena de hosts con su representacion arreglo
-   $lista_hosts = split("[[:blank:]]+", $lista_hosts);
+   $lista_hosts = preg_split("/[[:blank:]]+/", $lista_hosts);
    // Para cada uno de los hosts, se prueba cada uno de los reemplazos en $arreglo_reemplazo
        foreach ($lista_hosts as $indice => $nombre_host)
        {
@@ -508,7 +508,7 @@ function reemplazar_nombres_lista($lista_hosts, $arreglo_reemplazo)
 function asegurar_existe_nombre_host($lista_hosts, $nombre)
 {
   // Reemplazar la cadena de hosts con su representacion arreglo
-  $lista_hosts = split("[[:blank:]]+", $lista_hosts);
+  $lista_hosts = preg_split("/[[:blank:]]+/", $lista_hosts);
     if (!in_array($nombre, $lista_hosts)) $lista_hosts[] = $nombre;
   return implode(" ", $lista_hosts);
 }

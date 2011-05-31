@@ -159,15 +159,15 @@ class paloSantoConfEcho {
             $getin="false";
             $find="false";
             if(eregi("echocanceller", $line)){
-                $arrLine = split('[,]',$line);
-                $arrRang = split('[-]',trim($arrLine[1]));//new
+                $arrLine = preg_split('/[,]/',$line);
+                $arrRang = preg_split('/[-]/',trim($arrLine[1]));//new
 
                 if(count($arrLine)>2){
                     $arrRang=array();
                     for($i=0 ; $i< count($arrLine); $i++){
-                        $arrRang[$i] = split('[-]',trim($arrLine[$i]));
+                        $arrRang[$i] = preg_split('/[-]/',trim($arrLine[$i]));
                     }
-                    $lineConf =  split('[=]',$arrRang['0'][0]);
+                    $lineConf =  preg_split('/[=]/',$arrRang['0'][0]);
 
                     if($typePass=="none" && $typeNew!="none"){
                         $min = $numport-1;
@@ -248,9 +248,9 @@ class paloSantoConfEcho {
                 }else if(count($arrRang)==2){//nuevo
                     $arrRang=array();
                     for($i=0 ; $i< count($arrLine); $i++){
-                        $arrRang[$i] = split('[-]',trim($arrLine[$i]));
+                        $arrRang[$i] = preg_split('/[-]/',trim($arrLine[$i]));
                     }
-                    $lineConf =  split('[=]',$arrRang['0'][0]);
+                    $lineConf =  preg_split('/[=]/',$arrRang['0'][0]);
 
                     if($typePass=="none" && $typeNew!="none"){
                         $min = $numport-1;
