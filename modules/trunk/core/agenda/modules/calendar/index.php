@@ -32,7 +32,6 @@
 include_once "libs/paloSantoGrid.class.php";
 include_once "libs/paloSantoForm.class.php";
 include_once "libs/paloSantoACL.class.php";
-include_once "libs/paloSantoConfig.class.php";
 include_once "libs/phpmailer/class.phpmailer.php";
 
 function _moduleContent(&$smarty, $module_name)
@@ -128,13 +127,8 @@ function _moduleContent(&$smarty, $module_name)
             }
             $arrLang = array_merge($arrLang, $arrLangModule);
 
-            $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
-            $arrConfigAsterisk = $pConfig->leer_configuracion(false);
 	        //solo para obtener los devices (extensiones) creadas.
-            $dsnAsterisk = $arrConfigAsterisk['AMPDBENGINE']['valor']."://".
-                           $arrConfigAsterisk['AMPDBUSER']['valor']. ":".
-                           $arrConfigAsterisk['AMPDBPASS']['valor']. "@".
-                           $arrConfigAsterisk['AMPDBHOST']['valor']."/asterisk";
+            $dsnAsterisk = generarDSNSistema('asteriskuser', 'asterisk');                           
             $pDB_addressbook = new paloDB($arrConf['dsn_conn_database3']);
             $pDB_acl = new paloDB($arrConf['dsn_conn_database1']);
             $html = report_adress_book($smarty, $module_name, $local_templates_dir, $pDB_addressbook, $pDB_acl, $arrLang, $dsnAsterisk);

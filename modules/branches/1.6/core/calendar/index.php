@@ -80,7 +80,6 @@ function _moduleContent(&$smarty, $module_name)
     if (isset($_GET['action']) && $_GET['action'] == 'phone_numbers') {
         include_once "libs/paloSantoForm.class.php";
         include_once "modules/address_book/libs/paloSantoAdressBook.class.php";
-        include_once "libs/paloSantoConfig.class.php";
         include_once "libs/paloSantoGrid.class.php";
 
         // Include language file for EN, then for local, and merge the two.
@@ -95,14 +94,8 @@ function _moduleContent(&$smarty, $module_name)
         $arrLang = array_merge($arrLang, $arrLangModule);
 
 
-        $pConfig = new paloConfig("/etc", "amportal.conf", "=", "[[:space:]]*=[[:space:]]*");
-        $arrConfig = $pConfig->leer_configuracion(false);
-    
         //solo para obtener los devices (extensiones) creadas.
-        $dsnAsterisk = $arrConfig['AMPDBENGINE']['valor']."://".
-                       $arrConfig['AMPDBUSER']['valor']. ":".
-                       $arrConfig['AMPDBPASS']['valor']. "@".
-                       $arrConfig['AMPDBHOST']['valor']."/asterisk";
+        $dsnAsterisk = generarDSNSistema('asteriskuser', 'asterisk');                           
 
         $pDB = new paloDB("sqlite3:///$arrConf[elastix_dbdir]/address_book.db");
         $html = report_adress_book($smarty,$module_name, $local_templates_dir, $pDB, $arrLang, $arrConf, $dsnAsterisk);
