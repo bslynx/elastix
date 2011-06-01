@@ -82,7 +82,7 @@ class PaloValidar
                         $this->arrErrores[$nombre_variable]['mensaje'] = PALOVALIDAR_MSG_ERROR_1;
                     }
                 } else {
-                    if(!ereg($parametro_extra, $variable)) {
+                    if(!preg_match("/".$parametro_extra."/", $variable)) {
                         if($nombre_variable!="just_test") {
                             $this->arrErrores[$nombre_variable]['mensaje'] = PALOVALIDAR_MSG_ERROR_2;
                         }
@@ -152,7 +152,7 @@ class PaloValidar
                 if($this->estaVacio($variable)) {
                     $this->arrErrores[$nombre_variable]['mensaje'] = PALOVALIDAR_MSG_ERROR_1;
                 } else {
-                    if(!ereg("^([[:digit:]]{1,3})\.([[:digit:]]{1,3})\.([[:digit:]]{1,3})\.([[:digit:]]{1,3})$",
+                    if(!preg_match("/^([[:digit:]]{1,3})\.([[:digit:]]{1,3})\.([[:digit:]]{1,3})\.([[:digit:]]{1,3})$/",
                               $variable, $arrReg)) {
                         if($nombre_variable!="just_test") {
                             $this->arrErrores[$nombre_variable]['mensaje'] = PALOVALIDAR_MSG_ERROR_2;
@@ -173,7 +173,7 @@ class PaloValidar
                 if($this->estaVacio($variable)) {
                     $this->arrErrores[$nombre_variable]['mensaje'] = PALOVALIDAR_MSG_ERROR_1;
                 } else {
-                    if(!ereg("^([[:digit:]]{1,3})\.([[:digit:]]{1,3})\.([[:digit:]]{1,3})\.([[:digit:]]{1,3})$",
+                    if(!preg_match("/^([[:digit:]]{1,3})\.([[:digit:]]{1,3})\.([[:digit:]]{1,3})\.([[:digit:]]{1,3})$/",
                               $variable, $arrReg)) {
                         if($nombre_variable!="just_test") {
                             $this->arrErrores[$nombre_variable]['mensaje'] = PALOVALIDAR_MSG_ERROR_2;
@@ -194,7 +194,7 @@ class PaloValidar
                 if($this->estaVacio($variable)) {
                     $this->arrErrores[$nombre_variable]['mensaje'] = PALOVALIDAR_MSG_ERROR_1;
                 } else {
-                    if(!ereg("^([[:digit:]]{1,3})\.([[:digit:]]{1,3})\.([[:digit:]]{1,3})\.([[:digit:]]{1,3})/([[:digit:]]{1,2})$", $variable, $arrReg)) {
+                    if(!preg_match("/^([[:digit:]]{1,3})\.([[:digit:]]{1,3})\.([[:digit:]]{1,3})\.([[:digit:]]{1,3})\/([[:digit:]]{1,2})$/", $variable, $arrReg)) {
                         if($nombre_variable!="just_test") {
                             $this->arrErrores[$nombre_variable]['mensaje'] = PALOVALIDAR_MSG_ERROR_2;
                         }
@@ -295,7 +295,7 @@ class PaloValidar
                         $this->arrErrores[$nombre_variable]['mensaje'] = PALOVALIDAR_MSG_ERROR_1;
                     }
                 } else {
-                    if(!ereg("^[a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*@[a-z0-9]+([\._\-]?[a-z0-9]+)*(\.[a-z0-9]{2,4})+$", $variable)) {
+                    if(!preg_match("/^[a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*@[a-z0-9]+([\._\-]?[a-z0-9]+)*(\.[a-z0-9]{2,4})+$/", $variable)) {
                         if($nombre_variable!="just_test") {
                             $this->arrErrores[$nombre_variable]['mensaje'] = PALOVALIDAR_MSG_ERROR_2;
                         }

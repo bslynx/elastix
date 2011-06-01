@@ -63,7 +63,7 @@ function construir_valor_nuevo_postfix($valor_anterior,$dominio,$eliminar_domini
         $valor_nuevo="$elemento";
     }
     else{
-        if(ereg("^(.*)$",$valor_anterior,$regs)){
+        if(preg_match("/^(.*)$/",$valor_anterior,$regs)){
             $arr_valores=explode(',',$regs[1]);
             if(!$eliminar_dominio)
                 $arr_valores[]="$dominio";
@@ -178,7 +178,7 @@ function eliminar_virtual_sistema($email,&$error){
              unset($arr_direcciones[$key]);
              $eliminado=TRUE;
         }
-        elseif(ereg("^$email",$fila)){
+        elseif(preg_match("/^$email/",$fila)){
              unset($arr_direcciones[$key]);
              $eliminado=TRUE;
         }

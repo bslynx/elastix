@@ -79,7 +79,7 @@ class paloACL {
     function getUsers($id_user = NULL)
     {
         $arr_result = FALSE;
-        if (!is_null($id_user) && !ereg('^[[:digit:]]+$', "$id_user")) {
+        if (!is_null($id_user) && !preg_match('/^[[:digit:]]+$/', "$id_user")) {
             $this->errMsg = "User ID is not numeric";
         } else {
             $this->errMsg = "";
@@ -146,7 +146,7 @@ class paloACL {
         $bExito = FALSE;
         if ($username == "") {
             $this->errMsg = "UserName can't be empty";
-        } else if (!ereg("^[[:digit:]]+$", "$id_user")) {
+        } else if (!preg_match("/^[[:digit:]]+$/", "$id_user")) {
             $this->errMsg = "User ID is not numeric";
         } else {
             if ( !$description ) $description = $username;
@@ -198,9 +198,9 @@ class paloACL {
     function changePassword($id_user, $md5_password)
     {
         $bExito = FALSE;
-        if (!ereg("^[[:digit:]]+$", "$id_user")) {
+        if (!preg_match("/^[[:digit:]]+$/", "$id_user")) {
             $this->errMsg = "User ID is not numeric";
-        } else if (!ereg("^[[:digit:]a-f]{32}$", $md5_password)) {
+        } else if (!preg_match("/^[[:digit:]a-f]{32}$/", $md5_password)) {
             $this->errMsg = "Password is not a valid MD5 hash";
         } else {
              if ($this->errMsg == "") {
@@ -230,7 +230,7 @@ class paloACL {
     function deleteUser($id_user)
     {
         $bExito = FALSE;
-        if (!ereg('^[[:digit:]]+$', "$id_user")) {
+        if (!preg_match('/^[[:digit:]]+$/', "$id_user")) {
             $this->errMsg = "User ID is not numeric";
         } else {
             $this->errMsg = "";
@@ -288,7 +288,7 @@ class paloACL {
     function getGroups($id_group = NULL)
     {
         $arr_result = FALSE;
-        if (!is_null($id_group) && !ereg('^[[:digit:]]+$', "$id_group")) {
+        if (!is_null($id_group) && !preg_match('/^[[:digit:]]+$/', "$id_group")) {
             $this->errMsg = "Group ID is not numeric";
         } else {
             $this->errMsg = "";
@@ -319,7 +319,7 @@ class paloACL {
     function getMembership($id_user)
     {
         $arr_resultado = NULL;
-        if (!is_null($id_user) && !ereg('^[[:digit:]]+$', "$id_user")) {
+        if (!is_null($id_user) && !preg_match('/^[[:digit:]]+$/', "$id_user")) {
             $this->errMsg = "User ID is not numeric";
         } else {
             $this->errMsg = "";
@@ -419,9 +419,9 @@ class paloACL {
     {
         $bExito = FALSE;
 
-        if (!ereg('^[[:digit:]]+$', "$id_user")) {
+        if (!preg_match('/^[[:digit:]]+$/', "$id_user")) {
             $this->errMsg = "User ID is not numeric";
-        } else if (!ereg('^[[:digit:]]+$', "$id_group")) {
+        } else if (!preg_match('/^[[:digit:]]+$/', "$id_group")) {
             $this->errMsg = "Group ID is not numeric";
         } else {
             $sql = "DELETE FROM acl_membership WHERE id_user = '$id_user' AND id_group = '$id_group'";
@@ -448,7 +448,7 @@ class paloACL {
     function getActions($id_action = NULL)
     {
         $arr_result = FALSE;
-        if (!is_null($id_action) && !ereg('^[[:digit:]]+$', "$id_action")) {
+        if (!is_null($id_action) && !preg_match('/^[[:digit:]]+$/', "$id_action")) {
             $this->errMsg = "Action ID is not numeric";
         } else {
             $this->errMsg = "";
@@ -543,7 +543,7 @@ class paloACL {
     function getResources($id_rsrc = NULL)
     {
         $arr_result = FALSE;
-        if (!is_null($id_rsrc) && !ereg('^[[:digit:]]+$', "$id_rsrc")) {
+        if (!is_null($id_rsrc) && !preg_match('/^[[:digit:]]+$/', "$id_rsrc")) {
             $this->errMsg = "Resource ID is not numeric";
         } else {
             $this->errMsg = "";
@@ -640,7 +640,7 @@ class paloACL {
     function getUserPermissions($id_user)
     {
          $arr_resultado = array();
-        if (!ereg('^[[:digit:]]+$', "$id_user")) {
+        if (!preg_match('/^[[:digit:]]+$/', "$id_user")) {
             $this->errMsg = "User ID is not numeric";
         } else {
             $sql =
@@ -677,7 +677,7 @@ class paloACL {
     function getGroupPermissions($id_group)
     {
         $arr_resultado = NULL;
-        if (!ereg('^[[:digit:]]+$', "$id_group")) {
+        if (!preg_match('/^[[:digit:]]+$/', "$id_group")) {
             $this->errMsg = "Group ID is not numeric";
         } else {
             $sPeticionSQL =
@@ -711,7 +711,7 @@ class paloACL {
     {
         $arr_priv = NULL;
         
-        if (!ereg('^[[:digit:]]+$', "$id_user")) {
+        if (!preg_match('/^[[:digit:]]+$/', "$id_user")) {
             $this->errMsg = "User ID is not numeric";
         } else {
             $listaUsuarios = $this->getUsers($id_user);
@@ -786,10 +786,10 @@ class paloACL {
             if($user == "" or $pass == "") {
                 $this->errMsg = PALOACL_MSG_ERROR_1;
                 return FALSE;
-            } else if (!ereg("^[[:alnum:]\.\\-_]+$", $user)) {
+            } else if (!preg_match("/^[[:alnum:]\.\\-_]+$/", $user)) {
                 $this->errMsg = PALOACL_MSG_ERROR_2;
                 return FALSE;
-            } else if (!ereg("^[[:alnum:]]{32}$", $pass)) {
+            } else if (!preg_match("/^[[:alnum:]]{32}$/", $pass)) {
                 $this->errMsg = PALOACL_MSG_ERROR_3;
                 return FALSE;
             }
@@ -808,7 +808,7 @@ class paloACL {
     function saveGroupPermission($idGroup, $resources)
     {
         $bExito=FALSE;
-        if (!ereg('^[[:digit:]]+$', "$idGroup")) {
+        if (!preg_match('/^[[:digit:]]+$/', "$idGroup")) {
             $this->errMsg = "Group ID is not valid";
         } else {
             foreach ($resources as $resource){
@@ -830,7 +830,7 @@ class paloACL {
     function deleteGroupPermission($idGroup,$resources)
     {
         $bExito=FALSE;
-        if (!ereg('^[[:digit:]]+$', "$idGroup")) {
+        if (!preg_match('/^[[:digit:]]+$/', "$idGroup")) {
             $this->errMsg = "Group ID is not valid";
         } else {
             foreach ($resources as $resource){
@@ -859,7 +859,7 @@ class paloACL {
     function getUserExtension($username)
     {
         $extension = null;
-        if (!is_null($username) && !ereg('^[[:alnum:]]+$', "$username")) {
+        if (!is_null($username) && !preg_match('/^[[:alnum:]]+$/', "$username")) {
             $this->errMsg = "Username is not valid";
         } else {
             $this->errMsg = "";
@@ -882,7 +882,7 @@ class paloACL {
     function getResourceId($resource_name)
     {
         $id_resource = null;
-        if (!ereg('^([-_[:alnum:]]+[[a-z0-9\-_]+]*)$', "$resource_name")) {
+        if (!preg_match('/^([-_[:alnum:]]+[[a-z0-9\-_]+]*)$/', "$resource_name")) {
             $this->errMsg = "Resource Name is not valid";
         } else {
             $this->errMsg = "";
@@ -969,7 +969,7 @@ class paloACL {
         $bExito = FALSE;
         if ($group == "") {
             $this->errMsg = "Group can't be empty";
-        } else if (!ereg("^[[:digit:]]+$", "$id_group")) {
+        } else if (!preg_match("/^[[:digit:]]+$/", "$id_group")) {
             $this->errMsg = "Group ID is not numeric";
         } else {
             if ( !$description ) $description = $group;
@@ -1026,7 +1026,7 @@ class paloACL {
     function deleteGroup($id_group)
     {
         $bExito = FALSE;
-        if (!ereg('^[[:digit:]]+$', "$id_group")) {
+        if (!preg_match('/^[[:digit:]]+$/', "$id_group")) {
             $this->errMsg = "Group ID is not numeric";
         } else {
             $this->errMsg = "";
@@ -1050,7 +1050,7 @@ class paloACL {
     function HaveUsersTheGroup($id_group)
     {
         $Haveusers = TRUE;
-        if (!is_null($id_group) && !ereg('^[[:digit:]]+$', "$id_group")) {
+        if (!is_null($id_group) && !preg_match('/^[[:digit:]]+$/', "$id_group")) {
             $this->errMsg = "Group ID is not numeric";
         } else {
             $sPeticionSQL = "SELECT count(*) FROM acl_membership WHERE id_group = $id_group";
@@ -1180,7 +1180,7 @@ class paloACL {
     function saveGroupPermissions($action, $idGroup, $resources)
     {
         $bExito = FALSE;
-        if (!ereg('^[[:digit:]]+$', "$idGroup"))
+        if (!preg_match('/^[[:digit:]]+$/', "$idGroup"))
             $this->errMsg = "Group ID is not valid";
         else
         {
@@ -1203,7 +1203,7 @@ class paloACL {
     function deleteGroupPermissions($action, $idGroup, $resources)
     {
         $bExito = FALSE;
-        if (!ereg('^[[:digit:]]+$', "$idGroup"))
+        if (!preg_match('/^[[:digit:]]+$/', "$idGroup"))
             $this->errMsg = "Group ID is not valid";
         else
         {
@@ -1233,7 +1233,7 @@ class paloACL {
     function getIdResource($resource_name)
     {
         $id_resource = null;
-        if (!ereg('^([-_[:alnum:]]+[[a-z0-9\-_]+]*)$', "$resource_name")) {
+        if (!preg_match('/^([-_[:alnum:]]+[[a-z0-9\-_]+]*)$/', "$resource_name")) {
             $this->errMsg = "Resource Name is not valid";
         } else {
             $this->errMsg = "";

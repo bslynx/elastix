@@ -119,7 +119,7 @@ function buildInfoImage_Discs($arrParticiones, $module_name)
     $str = ""; $val = null;
     foreach( $arrParticiones as $key => $particion )
     {
-        $val_1 = ( ereg("^([[:digit:]]{1,2}(\.[[:digit:]]{1,4})?)%$", trim($particion['uso_porcentaje']), $arrReg) )
+        $val_1 = ( preg_match("/^([[:digit:]]{1,2}(\.[[:digit:]]{1,4})?)%$/", trim($particion['uso_porcentaje']), $arrReg) )
                  ? $arrReg[1]: NULL;
         $val_2 = number_format($particion['num_bloques_total'] / 1024 / 1024, 2);
 

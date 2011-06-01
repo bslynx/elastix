@@ -335,7 +335,7 @@ class paloConfig
 				    $linea_leida = chop($linea_leida);
 				    // Si la linea leida del archivo coincide con la expresion regular, se asigna
 				    // el arreglo de las expresiones encontradas.
-					if (ereg("^([[:alnum:]._]+)($separador)(.*)$", $linea_leida, $tupla)) {
+					if (preg_match("/^([[:alnum:]._]+)($separador)(.*)$/", $linea_leida, $tupla)) {
 					    $linea_leida = array();
 					    $linea_leida["clave"] = $tupla[1];
 					    $linea_leida["valor"] = $tupla[3];
@@ -343,14 +343,14 @@ class paloConfig
                         $linea_leida["comentario"]="";
                         $bEsClave = true;
                     // Comienza con $ o @
-				    } elseif(ereg("^([\$|\@].*)($separador)([^;]+)(;.*)$",$linea_leida,$tupla)) {
+				    } elseif(preg_match("/^([\$|\@].*)($separador)([^;]+)(;.*)$/",$linea_leida,$tupla)) {
                         $linea_leida = array();
                         $linea_leida["clave"] = $tupla[1];
                         $linea_leida["valor"] = $tupla[3];
                         $linea_leida["separador"]=$tupla[2];
                         $linea_leida["comentario"]=$tupla[4]; 
                         $bEsClave = true;
-                    } elseif(ereg("^([[:alnum:]._\-\@]+)($separador)(.*)$",$linea_leida,$tupla)) {
+                    } elseif(preg_match("/^([[:alnum:]._\-\@]+)($separador)(.*)$/",$linea_leida,$tupla)) {
                         $linea_leida= array();
                         $linea_leida["clave"] = $tupla[1];
                         $linea_leida["valor"] = $tupla[3];
@@ -436,13 +436,12 @@ class paloConfig
 	function privado_set_valor(&$lista, $clave, $valor, $saltar = 0)
 	{
 	    $posicion = $this->privado_indice_clave($lista, $clave, $saltar);
-
 		if (is_null($posicion)) {
 			$tupla["clave"] = $clave;
 			$tupla["valor"] = $valor;
             $tupla["separador"]=$this->separador; //en caso que no exista en el archivo de configuracion se creara al final
             //Si la clave tiene signo $ o @ se asume que es un script de perl y se pone ; al final
-            if(ereg("[\$@]",$tupla["clave"])) {
+            if(preg_match("/[\$@]/",$tupla["clave"])) {
                 $tupla["comentario"]=";";
             } else {
                 $tupla["comentario"]="";

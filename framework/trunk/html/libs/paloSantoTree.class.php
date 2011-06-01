@@ -353,7 +353,7 @@ class paloTree {
       while($file=readdir($dir)){
          $path=$directorio."/".$file;   
       
-         if(is_readable($path) && $file!="." && $file!=".." && !ereg("~",$file) && !ereg("^\.*$",$file) && !eregi("CVS",$file)){
+         if(is_readable($path) && $file!="." && $file!=".." && !preg_match("/~/",$file) && !preg_match("/^\.*$/",$file) && !eregi("CVS",$file)){
             if(is_dir($path) )
                $tipo="C";  
             else

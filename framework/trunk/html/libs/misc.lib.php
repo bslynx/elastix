@@ -45,22 +45,22 @@ function obtener_info_de_sistema()
     if($fh=fopen("/proc/meminfo", "r")) {
         while($linea=fgets($fh, "4048")) {
             // Aqui parseo algunos parametros
-            if(ereg("^MemTotal:[[:space:]]+([[:digit:]]+) kB", $linea, $arrReg)) {
+            if(preg_match("/^MemTotal:[[:space:]]+([[:digit:]]+) kB/", $linea, $arrReg)) {
                 $arrInfo["MemTotal"]=trim($arrReg[1]);
             }
-            if(ereg("^MemFree:[[:space:]]+([[:digit:]]+) kB", $linea, $arrReg)) {
+            if(preg_match("/^MemFree:[[:space:]]+([[:digit:]]+) kB/", $linea, $arrReg)) {
                 $arrInfo["MemFree"]=trim($arrReg[1]);
             }
-            if(ereg("^Buffers:[[:space:]]+([[:digit:]]+) kB", $linea, $arrReg)) {
+            if(preg_match("/^Buffers:[[:space:]]+([[:digit:]]+) kB/", $linea, $arrReg)) {
                 $arrInfo["MemBuffers"]=trim($arrReg[1]);
             }
-            if(ereg("^SwapTotal:[[:space:]]+([[:digit:]]+) kB", $linea, $arrReg)) {
+            if(preg_match("/^SwapTotal:[[:space:]]+([[:digit:]]+) kB/", $linea, $arrReg)) {
                 $arrInfo["SwapTotal"]=trim($arrReg[1]);
             }
-            if(ereg("^SwapFree:[[:space:]]+([[:digit:]]+) kB", $linea, $arrReg)) {
+            if(preg_match("/^SwapFree:[[:space:]]+([[:digit:]]+) kB/", $linea, $arrReg)) {
                 $arrInfo["SwapFree"]=trim($arrReg[1]);
             }
-            if(ereg("^Cached:[[:space:]]+([[:digit:]]+) kB", $linea, $arrReg)) {
+            if(preg_match("/^Cached:[[:space:]]+([[:digit:]]+) kB/", $linea, $arrReg)) {
                 $arrInfo["Cached"]=trim($arrReg[1]);
             }
         }
@@ -70,13 +70,13 @@ function obtener_info_de_sistema()
     if($fh=fopen("/proc/cpuinfo", "r")) {
         while($linea=fgets($fh, "4048")) {
             // Aqui parseo algunos parametros
-            if(ereg("^model name[[:space:]]+:[[:space:]]+(.*)$", $linea, $arrReg)) {
+            if(preg_match("/^model name[[:space:]]+:[[:space:]]+(.*)$/", $linea, $arrReg)) {
                 $arrInfo["CpuModel"]=trim($arrReg[1]);
             }
-            if(ereg("^vendor_id[[:space:]]+:[[:space:]]+(.*)$", $linea, $arrReg)) {
+            if(preg_match("/^vendor_id[[:space:]]+:[[:space:]]+(.*)$/", $linea, $arrReg)) {
                 $arrInfo["CpuVendor"]=trim($arrReg[1]);
             }
-            if(ereg("^cpu MHz[[:space:]]+:[[:space:]]+(.*)$", $linea, $arrReg)) {
+            if(preg_match("/^cpu MHz[[:space:]]+:[[:space:]]+(.*)$/", $linea, $arrReg)) {
                 $arrInfo["CpuMHz"]=trim($arrReg[1]);
             }
         }
@@ -86,9 +86,9 @@ function obtener_info_de_sistema()
 
     if($fh=fopen("/proc/stat", "r")) {
         while($linea=fgets($fh, "4048")) {
-            if(ereg("^cpu[[:space:]]+([[:digit:]]+)[[:space:]]+([[:digit:]]+)[[:space:]]+([[:digit:]]+)" .
+            if(preg_match("/^cpu[[:space:]]+([[:digit:]]+)[[:space:]]+([[:digit:]]+)[[:space:]]+([[:digit:]]+)" .
                     "[[:space:]]+([[:digit:]]+)[[:space:]]+([[:digit:]]+)[[:space:]]+([[:digit:]]+)" .
-                    "[[:space:]]+([[:digit:]]+)[[:space:]]?", $linea, $arrReg)) {
+                    "[[:space:]]+([[:digit:]]+)[[:space:]]?/", $linea, $arrReg)) {
                 $cpuActivo=$arrReg[1]+$arrReg[2]+$arrReg[3]+$arrReg[5]+$arrReg[6]+$arrReg[7];
                 $cpuTotal=$cpuActivo+$arrReg[4];
                 if($cpuTotal>0 and $cpuActivo>=0) {
@@ -107,7 +107,7 @@ function obtener_info_de_sistema()
 
     if($varExec=="0") {
         //if(ereg(" up[[:space:]]+([[:digit:]]+ days,)?([[:space:]]+[[:digit:]]{2}:[[:digit:]]{2}), ", $arrExec[0], $arrReg)) {
-        if(ereg("up[[:space:]]+([[:digit:]]+ days?,)?(([[:space:]]*[[:digit:]]{1,2}:[[:digit:]]{1,2}),?)?([[:space:]]*[[:digit:]]+ min)?",
+        if(preg_match("/up[[:space:]]+([[:digit:]]+ days?,)?(([[:space:]]*[[:digit:]]{1,2}:[[:digit:]]{1,2}),?)?([[:space:]]*[[:digit:]]+ min)?/",
                 $arrExec[0],$arrReg)) {
             if(!empty($arrReg[3]) and empty($arrReg[4])) {
                 list($uptime_horas, $uptime_minutos) = explode(":", $arrReg[3]);
@@ -131,8 +131,8 @@ function obtener_info_de_sistema()
 
     if($varExec=="0") {
         foreach($arrExec as $lineaParticion) {
-            if(ereg("^([/-_\.[:alnum:]|-]+)[[:space:]]+([[:digit:]]+)[[:space:]]+([[:digit:]]+)[[:space:]]+([[:digit:]]+)" .
-                    "[[:space:]]+([[:digit:]]{1,2}%)[[:space:]]+([/-_\.[:alnum:]]+)$", $lineaParticion, $arrReg)) {
+            if(preg_match("/^([\/-_\.[:alnum:]|-]+)[[:space:]]+([[:digit:]]+)[[:space:]]+([[:digit:]]+)[[:space:]]+([[:digit:]]+)" .
+                    "[[:space:]]+([[:digit:]]{1,2}%)[[:space:]]+([\/-_\.[:alnum:]]+)$/", $lineaParticion, $arrReg)) {
                 $arrTmp="";
                 $arrTmp["fichero"]=$arrReg[1];
                 $arrTmp["num_bloques_total"]=$arrReg[2];
@@ -188,7 +188,7 @@ function construirURL($arrVars=array(), $arrExcluir=array())
 // Translate a date in format 9 Dec 2006
 function translateDate($dateOrig)
 {
-    if(ereg("([[:digit:]]{1,2})[[:space:]]+([[:alnum:]]{3})[[:space:]]+([[:digit:]]{4})", $dateOrig, $arrReg)) {
+    if(preg_match("/([[:digit:]]{1,2})[[:space:]]+([[:alnum:]]{3})[[:space:]]+([[:digit:]]{4})/", $dateOrig, $arrReg)) {
         if($arrReg[2]=="Jan")      $numMonth = "01";
         else if($arrReg[2]=="Feb") $numMonth = "02";
         else if($arrReg[2]=="Mar") $numMonth = "03";
