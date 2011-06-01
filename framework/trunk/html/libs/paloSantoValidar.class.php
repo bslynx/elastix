@@ -82,7 +82,7 @@ class PaloValidar
                         $this->arrErrores[$nombre_variable]['mensaje'] = PALOVALIDAR_MSG_ERROR_1;
                     }
                 } else {
-                    if(!preg_match("/".$parametro_extra."/", $variable)) {
+                    if(!ereg($parametro_extra, $variable)) {
                         if($nombre_variable!="just_test") {
                             $this->arrErrores[$nombre_variable]['mensaje'] = PALOVALIDAR_MSG_ERROR_2;
                         }
