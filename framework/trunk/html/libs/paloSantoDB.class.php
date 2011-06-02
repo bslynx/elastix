@@ -247,12 +247,13 @@ class paloDB {
                 } 
             } else {
                 try{
-                    if($this->conn->exec($query))
-                        return TRUE;
-                    else{
-                        $this->errMsg = "Query Error: $query";
-                        return FALSE;
-                    }
+                    if($this->conn->exec($query)===FALSE){
+			$this->errMsg = "Query Error: $query";
+			return FALSE;
+		    }
+		    else{
+			return TRUE;
+		    }
                 }catch(PDOException $e){
                     $this->errMsg = "Error de conexion a la base de datos - " . $e->getMessage();
                     return FALSE;
