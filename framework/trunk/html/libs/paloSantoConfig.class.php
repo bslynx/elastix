@@ -321,7 +321,7 @@ class paloConfig
 		Se devuelve null en caso de fracaso, y se asigna un valor al texto $this->errMsg.
 	*/
 
-	function privado_leer_claves_archivo($ruta, $separador = "[[:blank:]]*=[[:blank:]]*", $bComentarios=true)
+	private function privado_leer_claves_archivo($ruta, $separador = "[[:blank:]]*=[[:blank:]]*", $bComentarios=true)
 	{
         $bEsClave = false;
 	    $lista_claves = null;
@@ -383,7 +383,7 @@ class paloConfig
 		privado_leer_claves_archivo(),
 	*/
 
-	function privado_escribir_claves_archivo($ruta, $lista_claves, $separador = "=")
+	private function privado_escribir_claves_archivo($ruta, $lista_claves, $separador = "=")
 	{	
 	    $exito = false;
 	    $archivo = fopen($ruta, "w");
@@ -406,7 +406,7 @@ class paloConfig
 	    return $exito;
     }
 
-	function privado_indice_clave(&$lista, $clave, $saltar = 0)
+	private function privado_indice_clave(&$lista, $clave, $saltar = 0)
 	{
 	    $posicion = null;
 	    $i = 0;
@@ -433,7 +433,7 @@ class paloConfig
         }
     }
 
-	function privado_set_valor(&$lista, $clave, $valor, $saltar = 0)
+	private function privado_set_valor(&$lista, $clave, $valor, $saltar = 0)
 	{
 	    $posicion = $this->privado_indice_clave($lista, $clave, $saltar);
 		if (is_null($posicion)) {
