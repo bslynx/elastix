@@ -454,6 +454,7 @@ class paloConfig
         }
     }
 
+/*
     function crear_directorio($nombre_nuevo_directorio, $borrar_archivos, $respaldar, &$directorio_respaldo)
     {
         $nuevo_directorio = $this->directorio."/".$nombre_nuevo_directorio;
@@ -518,6 +519,7 @@ class paloConfig
         //echo "<script>alert('en crear dir 3');</script>";
         return true;
     }
+*/
 
     function crear_archivo($arr_reemplazos,$overwrite=FALSE) 
     {
