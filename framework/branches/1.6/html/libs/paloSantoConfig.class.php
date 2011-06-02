@@ -574,7 +574,6 @@ class paloConfig
             //echo "<script>alert(':(');</script>";
         }
     }
-*/
 
     function get_archivos_directorio() 
     {
@@ -604,6 +603,7 @@ class paloConfig
         $this->privado_chown($usuario_grupo, $this->directorio);
         return $arr_archivo;
     }
+*/
 
     function respaldar_archivo($bckup_file)
     {
