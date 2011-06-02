@@ -559,7 +559,6 @@ class paloConfig
             return false;
         }
     }
-*/
 
     function establece_permisos($usuario, $grupo, $directorio) 
     {
@@ -575,6 +574,7 @@ class paloConfig
             //echo "<script>alert(':(');</script>";
         }
     }
+*/
 
     function get_archivos_directorio() 
     {
