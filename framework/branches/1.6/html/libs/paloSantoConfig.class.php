@@ -519,7 +519,6 @@ class paloConfig
         //echo "<script>alert('en crear dir 3');</script>";
         return true;
     }
-*/
 
     function crear_archivo($arr_reemplazos,$overwrite=FALSE) 
     {
@@ -560,6 +559,7 @@ class paloConfig
             return false;
         }
     }
+*/
 
     function establece_permisos($usuario, $grupo, $directorio) 
     {
