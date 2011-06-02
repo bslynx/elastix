@@ -290,7 +290,7 @@ class paloConfig
 		devuelve VERDADERO si el comando se ejecuta correctamente, FALSO si no.
 	 */
 
-    function privado_chown($usuario, $ruta)
+    private function privado_chown($usuario, $ruta)
     {   
         //echo "chown $usuario $ruta<br>";
         $cmd_chown = escapeshellcmd("sudo -u root chown $usuario $ruta");
