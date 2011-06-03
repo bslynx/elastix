@@ -279,7 +279,7 @@ class paloFax {
     
         if($handle = opendir($folder)) {
             while (false !== ($file = readdir($handle))) {
-                if(ereg("^(iaxmodem-cfg\.ttyIAX([[:digit:]]+))", $file, $arrReg)) {
+                if(preg_match("/^(iaxmodem-cfg\.ttyIAX([[:digit:]]+))/", $file, $arrReg)) {
                     $arrSalida[$arrReg[1]] = $arrReg[2];
                 }
             }
@@ -392,11 +392,11 @@ class paloFax {
 
         if($handle = opendir($this->dirIaxmodemConf)) {
             while (false !== ($file = readdir($handle))) {
-                if(ereg("^iaxmodem-cfg\.ttyIAX([[:digit:]]+)", $file)) {
+                if(preg_match("/^iaxmodem-cfg\.ttyIAX([[:digit:]]+)/", $file)) {
                     // Abro el archivo $file
                     if($fh=@fopen("$this->dirIaxmodemConf/$file", "r")) {
                         while($linea=fgets($fh, 10240)) {
-                            if(ereg("^port[[:space:]]+([[:digit:]]+)", $linea, $arrReg)) {
+                            if(preg_match("/^port[[:space:]]+([[:digit:]]+)/", $linea, $arrReg)) {
                                 $arrPorts[] = $arrReg[1];
                             }
                         }
@@ -455,7 +455,7 @@ class paloFax {
                 $linea = fgets($fh, 10240);
                 $contenidoInittab .= $linea;
 
-                if(ereg("^$strBloque", $linea)) {
+                if(preg_match("/^$strBloque/", $linea)) {
                     $contenidoInittab .= $strNuevasLineas;                    
                     $bloqueEncontrado  = true;
                 }
@@ -492,7 +492,7 @@ class paloFax {
             while(!feof($fh)) {
                 $linea = fgets($fh, 10240);
 
-                if(!(ereg("^(iax|fx)[[:alnum:]]{1,2}:2345:respawn", $linea) and ereg("ttyIAX$devId", $linea))) {
+                if(!(preg_match("/^(iax|fx)[[:alnum:]]{1,2}:2345:respawn/", $linea) and preg_match("/ttyIAX$devId/", $linea))) {
                     $contenidoInittab .= $linea;
                 }
             }
@@ -595,7 +595,7 @@ class paloFax {
         exec("/usr/bin/faxstat", $arrOutCmd);
 
         foreach($arrOutCmd as $linea) {
-            if(ereg("^Modem (ttyIAX[[:digit:]]{1,3})", $linea, $arrReg)) {
+            if(preg_match("/^Modem (ttyIAX[[:digit:]]{1,3})/", $linea, $arrReg)) {
                 list($modem, $status) = explode(":", $linea);
                 $arrStatus[$arrReg[1]] = $status; 
             }

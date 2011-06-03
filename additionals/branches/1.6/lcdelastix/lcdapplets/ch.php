@@ -20,7 +20,7 @@ foreach($arrSalida as $linea) {
         $counter_channels_h323++;
     } else if(eregi("Local", $linea)) {
         $counter_channels_local++;
-    } else if(ereg("^([[:digit:]]+)[[:space:]]+active calls?", $linea, $arrReg)) {
+    } else if(preg_match("/^([[:digit:]]+)[[:space:]]+active calls?/", $linea, $arrReg)) {
         $simCalls = $arrReg[1];
     }
 }

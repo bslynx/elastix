@@ -49,7 +49,7 @@ class ElastixDisplay
 
 		// connect LCDproc 0.5.2 protocol 0.3 lcd wid 20 hgt 4 cellwid 6 cellhgt 8
 		$regs = NULL;
-		if (!ereg('^connect LCDproc .* wid ([[:digit:]]+) hgt ([[:digit:]]+)', $connStr, $regs)) {
+		if (!preg_match('/^connect LCDproc .* wid ([[:digit:]]+) hgt ([[:digit:]]+)/', $connStr, $regs)) {
 			throw new Exception('ProtocolError: No se reconoce cadena de conexión: '.$connStr);
 		}
 		$scrWidth = $regs[1];
@@ -90,7 +90,7 @@ class ElastixDisplay
 	{
 		$bTimeout = FALSE;
 		$line = "";
-		while(!$bTimeout && !feof($this->_fp) and !ereg("\n", $line)) {
+		while(!$bTimeout && !feof($this->_fp) and !preg_match("/\n/", $line)) {
 		    $s = fgets($this->_fp, 1024);
 		    if ($s === FALSE) {
 		    	$metadata = stream_get_meta_data($this->_fp);
@@ -121,7 +121,7 @@ class ElastixDisplay
 		if ($bTimeout && isset($menu['autorefresh']) && $menu['autorefresh']) {
 			$this->mostrarItem($menu, $this->_posMenu[count($this->_posMenu) - 1]);
 		} elseif (!$bTimeout) {
-			if (ereg('^key ([[:alnum:]]+)', $line, $regs)) {
+			if (preg_match('/^key ([[:alnum:]]+)/', $line, $regs)) {
 
 				switch ($regs[1]) {
 				case 'Up':
@@ -231,7 +231,7 @@ class ElastixDisplay
 		$salida = "";
 		if (FALSE === fwrite($this->_fp, "$comando\n"))
 			throw new Exception('IO Error');
-		while(!feof($this->_fp) and !ereg("\n", $salida)) {
+		while(!feof($this->_fp) and !preg_match("/\n/", $salida)) {
 			$s = fgets($this->_fp, 1024);
 			if ($s === FALSE) throw new Exception('IO Error');
 		    $salida .= $s;
@@ -239,7 +239,7 @@ class ElastixDisplay
 			// Lo siguiente es necesario porque es posible que se reporte
 			// un evento ANTES de recibir la línea que indica éxito o no
 		    $regs = NULL;
-		    if (ereg("^(key [[:alnum:]]+\n)(.*)$", $salida, $regs)) {
+		    if (preg_match("/^(key [[:alnum:]]+\n)(.*)$/", $salida, $regs)) {
 		    	$salida = $regs[2];
 		    }
 		}

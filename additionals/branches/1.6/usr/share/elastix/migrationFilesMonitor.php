@@ -65,17 +65,17 @@ function actualizarbasedatos($archivo,$pDBcdrdb){
     $nombrearchivo="audio:{$archivo}";
     $query="update cdr set userfield='$nombrearchivo' ";
            // 1246577053.5428.wav
-           if(ereg("^($uniqueid)\.[wav|WAV|gsm]",$archivo,$regs))
+           if(preg_match("/^($uniqueid)\.[wav|WAV|gsm]/",$archivo,$regs))
            {
                     validaract($pDBcdrdb,$query,$regs[1],$archivo);
            } 
            //20090828-173404-1251498844.22224.wav
-           else if(ereg("^$number-$number-($uniqueid)\.[wav|WAV|gsm]",$archivo,$regs))
+           else if(preg_match("/^$number-$number-($uniqueid)\.[wav|WAV|gsm]/",$archivo,$regs))
            {
                     validaract($pDBcdrdb,$query,$regs[1],$archivo);
            }
            //IN-408-????-????.wav 
-           else if (ereg("^IN-($number)-($number)-($number)\.[wav|WAV|gsm]",$archivo,$regs))//2
+           else if (preg_match("/^IN-($number)-($number)-($number)\.[wav|WAV|gsm]/",$archivo,$regs))//2
            {
                 $fecha=substr($regs[2], 0, 4).'-'.substr($regs[2], 4, 2).'-'.substr($regs[2], 6, 2);
                 $hora=substr($regs[3], 0, 2).':'.substr($regs[3], 2, 2).':'.substr($regs[3], 4, 2);
@@ -85,34 +85,34 @@ function actualizarbasedatos($archivo,$pDBcdrdb){
                     ejecutaractualizacion($pDBcdrdb,$query,$archivo);
            }
             //IN-104-1208782232.2382.wav
-           else if (ereg("^IN-$number-($number(\.$number)*)\.[wav|WAV|gsm]",$archivo,$regs))//3
+           else if (preg_match("/^IN-$number-($number(\.$number)*)\.[wav|WAV|gsm]/",$archivo,$regs))//3
            {        
                 //TODO: Esta validación esta bajo pruebas, es posible que no funcione  
                 validaract($pDBcdrdb,$query,$regs[1],$archivo);
                 
            }
            //g1-1207292249.1473.wav             
-           else if (ereg("^g$number-($uniqueid)\.[wav|WAV|gsm]",$archivo,$regs))//4
+           else if (preg_match("/^g$number-($uniqueid)\.[wav|WAV|gsm]/",$archivo,$regs))//4
            {          
                 validaract($pDBcdrdb,$query,$regs[1],$archivo);
            }
            //g121-20070828-162421-1188336241.1610.wav
-           else if (ereg("^g$number-$number-$number-($uniqueid)\.[wav|WAV|gsm]",$archivo,$regs))//5
+           else if (preg_match("/^g$number-$number-$number-($uniqueid)\.[wav|WAV|gsm]/",$archivo,$regs))//5
            {             
                 validaract($pDBcdrdb,$query,$regs[1],$archivo);
            }
            //OUT-104-1208782232.2382.wav 
-           else if (ereg("^OUT-$number-($number(\.$number)*)\.[wav|WAV|gsm]",$archivo,$regs))//6
+           else if (preg_match("/^OUT-$number-($number(\.$number)*)\.[wav|WAV|gsm]/",$archivo,$regs))//6
            {             
                 validaract($pDBcdrdb,$query,$regs[1],$archivo);                
            }
            //OUT405-20080620-095526-1213973725.84.wav
-           else if (ereg("^OUT$number-$number-$number-($uniqueid)\.[wav|WAV|gsm]",$archivo,$regs))//7
+           else if (preg_match("/^OUT$number-$number-$number-($uniqueid)\.[wav|WAV|gsm]/",$archivo,$regs))//7
            {    
                 validaract($pDBcdrdb,$query,$regs[1],$archivo);
            }
            //OUT408-???-???-
-           else if (ereg("^OUT($number)-[(.+)|\-]*($number)-($number)\.[wav|WAV|gsm]",$archivo,$regs))//8
+           else if (preg_match("/^OUT($number)-[(.+)|\-]*($number)-($number)\.[wav|WAV|gsm]/",$archivo,$regs))//8
            {          
                 $fecha=substr($regs[2], 0, 4).'-'.substr($regs[2], 4, 2).'-'.substr($regs[2], 6, 2);
                 $hora=substr($regs[3], 0, 2).':'.substr($regs[3], 2, 2).':'.substr($regs[3], 4, 2);
@@ -122,17 +122,17 @@ function actualizarbasedatos($archivo,$pDBcdrdb){
                 ejecutaractualizacion($pDBcdrdb,$query,$archivo);
            }
            //q7000-20080411-180242-1207954962.473.wav
-           else if(ereg("^q$number-$number-$number-($uniqueid)\.[wav|WAV|gsm]",$archivo,$regs))//9
+           else if(preg_match("/^q$number-$number-$number-($uniqueid)\.[wav|WAV|gsm]/",$archivo,$regs))//9
            {          
                 validaract($pDBcdrdb,$query,$regs[1],$archivo);
            }
            //q7000-20080411-162833-1207949313.9-in.wav
-           else if(ereg("^q$number-$number-$number-($uniqueid)-in\.[wav|WAV|gsm]",$archivo,$regs))//10
+           else if(preg_match("/^q$number-$number-$number-($uniqueid)-in\.[wav|WAV|gsm]/",$archivo,$regs))//10
            {                
                 validaract($pDBcdrdb,$query,$regs[1],$archivo);
            }
            //q7000-20080411-162833-1207949313.9-out.wav
-           else if(ereg("^q$number-$number-$number-($uniqueid)-out\.[wav|WAV|gsm]",$archivo,$regs))//11
+           else if(preg_match("/^q$number-$number-$number-($uniqueid)-out\.[wav|WAV|gsm]/",$archivo,$regs))//11
            {                
                 validaract($pDBcdrdb,$query,$regs[1],$archivo);
            }

@@ -73,7 +73,7 @@ class paloRate {
     function getRates($id_rate = NULL)
     {
         $arr_result = FALSE;
-        if (!is_null($id_rate) && !ereg('^[[:digit:]]+$', "$id_rate")) {
+        if (!is_null($id_rate) && !preg_match('/^[[:digit:]]+$/', "$id_rate")) {
             $this->errMsg = "Rate ID is not valid";
         } 
         else {
@@ -150,7 +150,7 @@ class paloRate {
     function updateRate($id_rate, $prefix, $name, $rate, $rate_offset ,$trunk)
     {
         $bExito = FALSE;
-        if (!ereg("^[[:digit:]]+$", "$id_rate")) {
+        if (!preg_match("/^[[:digit:]]+$/", "$id_rate")) {
             $this->errMsg = "Rate ID is not valid";
         } else {
             //modificar rate
@@ -178,7 +178,7 @@ class paloRate {
     function deleteRate($id_rate)
     {
         $bExito = FALSE;
-        if (!ereg('^[[:digit:]]+$', "$id_rate")) {
+        if (!preg_match('/^[[:digit:]]+$/', "$id_rate")) {
             $this->errMsg = "Rate ID is not valid";
         } 
         else {

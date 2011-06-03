@@ -4,7 +4,7 @@
 exec("grep -iE \"[[:space:]]*function\" libs/*", $arrOutput);
 
 foreach($arrOutput as $linea) {
-	if(ereg("[[:space:]]*function[[:space:]]+(&[[:space:]]+)?([[:alnum:]_]+)([[:space:]])?\(", $linea, $arrReg)) {
+	if(preg_match("/[[:space:]]*function[[:space:]]+(&[[:space:]]+)?([[:alnum:]_]+)([[:space:]])?\(/", $linea, $arrReg)) {
 		$arrNombreFunciones[] = $arrReg[2];
 	}
 }
@@ -29,7 +29,7 @@ function funcionEstaSiendoUsada($nombreFuncion)
 
 	if($retVar==0) {
 		foreach($arrOutput as $linea) {
-			if(!ereg("function", $linea) and ereg($nombreFuncion, $linea)) {
+			if(!preg_match("/function/", $linea) and preg_match("/$nombreFuncion/", $linea)) {
 				//echo "La funcion $nombreFuncion se encontro en el archivo $linea\n";
 				return true;
 				break;

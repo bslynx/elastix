@@ -73,7 +73,7 @@ class paloEmail {
     function getDomains($id_domain = NULL)
     {
         $arr_result = FALSE;
-        if (!is_null($id_domain) && !ereg('^[[:digit:]]+$', "$id_domain")) {
+        if (!is_null($id_domain) && !preg_match('/^[[:digit:]]+$/', "$id_domain")) {
             $this->errMsg = "Domain ID is not valid";
         } 
         else {
@@ -131,7 +131,7 @@ class paloEmail {
     function updateDomain($id_domain, $domain_name)
     {
         $bExito = FALSE;
-        if (!ereg("^[[:digit:]]+$", "$id_domain")) {
+        if (!preg_match("/^[[:digit:]]+$/", "$id_domain")) {
             $this->errMsg = "Domain ID is not valid";
         } else {
 			$sPeticionSQL = paloDB::construirUpdate(
@@ -155,7 +155,7 @@ class paloEmail {
     function deleteDomain($id_domain)
     {
         $bExito = TRUE;
-        if (!ereg('^[[:digit:]]+$', "$id_domain")) {
+        if (!preg_match('/^[[:digit:]]+$/', "$id_domain")) {
             $this->errMsg = "Domain ID is not valid";
             RETURN FALSE;
         } 
@@ -187,7 +187,7 @@ class paloEmail {
     function deleteAccountsFromDomain($id_domain)
     {
         $bExito = TRUE;
-        if (!ereg('^[[:digit:]]+$', "$id_domain")) {
+        if (!preg_match('/^[[:digit:]]+$/', "$id_domain")) {
             $this->errMsg = "Domain ID is not valid";
             RETURN FALSE;
         } 
@@ -207,7 +207,7 @@ class paloEmail {
     function deleteAliasesFromAccount($username)
     {
         $bExito = TRUE;
-        if (!ereg('^([a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*)$', "$username")) {
+        if (!preg_match('/^([a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*)$/', "$username")) {
             $this->errMsg = "Username is not valid";
             $bExito = FALSE;
         }
@@ -228,7 +228,7 @@ class paloEmail {
     function getAccount($username)
     {
         $arr_result = FALSE;
-        if (!is_null($username) && !ereg('^([a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*)$', "$username")) {
+        if (!is_null($username) && !preg_match('/^([a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*)$/', "$username")) {
             $this->errMsg = "Username is not valid";
         } 
         else {
@@ -248,7 +248,7 @@ class paloEmail {
     function getAccountsByDomain($id_domain)
     {
         $arr_result = FALSE;
-        if (!ereg("^[[:digit:]]+$", "$id_domain")) {
+        if (!preg_match("/^[[:digit:]]+$/", "$id_domain")) {
             $this->errMsg = "Domain ID is not valid";
         } 
         else {
@@ -297,7 +297,7 @@ class paloEmail {
     function deleteAccount($username)
     {
         $bExito = TRUE;
-        if (!ereg('^([a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*)$', "$username")) {
+        if (!preg_match('/^([a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*)$/', "$username")) {
             $this->errMsg = "Username is not valid";
             $bExito = FALSE;
         }
@@ -337,7 +337,7 @@ class paloEmail {
     function getAliasAccount($username)
     {
         $arr_result = FALSE;
-        if (!is_null($username) && !ereg('^([a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*)$', "$username")) {
+        if (!is_null($username) && !preg_match('/^([a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*)$/', "$username")) {
             $this->errMsg = "Username is not valid";
         } 
         else {
@@ -358,7 +358,7 @@ class paloEmail {
     function updateAccount($username, $quota)
     {
         $bExito = FALSE;
-        if (!is_null($username) && !ereg('^([a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*)$', "$username")) {
+        if (!is_null($username) && !preg_match('/^([a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*)$/', "$username")) {
             $this->errMsg = "Username is not valid";
         }  else {
             //modificar cuenta
