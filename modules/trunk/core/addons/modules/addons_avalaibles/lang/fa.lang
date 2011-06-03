@@ -38,7 +38,9 @@ $arrLangModule=array(
 "Search" => "جستجو",
 "view_details" => "نمايش جزئيات",
 "error_downloading" => "خطا در دانلود",
-"process_installing" => "از قبل فرآيندي در حال نصب وجود دارد",
+"process_installing" => "An addon is being installed.",
+"process_removing" => "An addon is being removed.",
+"process_updating" => "An addon is being updated.",
 "addons_installed" => "افزونه ها نصب شده",
 "error_start_install" => "خطا در شروع نصب",
 "error_start_remove" => "Error start to remove",
@@ -75,7 +77,6 @@ $arrLangModule=array(
 "removing" => "removing",
 "removed" => "removed",
 "waiting" => "waiting",
-"view_details" => "View Details",
 "process_installed" => "process_installed",
 "name" => "Name",
 "version" => "Version",
@@ -95,5 +96,8 @@ $arrLangModule=array(
 "Upgrade version" => "Upgrade version",
 "Upgrade" => "Upgrade",
 "Try it" => "Try it",
+"Error(Details)" => "Error(Details)",
+"ErrorToOperation" => "Sorry, There is an operation",
+"on" => "on",
 );
 ?>

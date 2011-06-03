@@ -103,8 +103,11 @@ function _moduleContent(&$smarty, $module_name)
             $content = getconfirmAddons($module_name, $pDB, $arrConf, $arrLang);
             break;
         case "toDoclearAddon":
-        	$content = toDoclearAddon($module_name, $pDB, $arrConf, $arrLang);
-        	break;
+	    $content = toDoclearAddon($module_name, $pDB, $arrConf, $arrLang);
+	    break;
+	case "currentProcess":
+	    $content = currentProcess($pDB, $arrConf, $arrLang);
+	    break;
         default:
             $content = reportAvailables($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
             break;
@@ -157,6 +160,7 @@ function installAddons($smarty, $module_name, $local_templates_dir, &$pDB, $arrC
                 $arrSal['response'] = "there_install"; //retornar que existe una instalacion
             $arrDataTMP = $pAddonsModules->getActionTMP();
             $arrSal['name_rpm'] = $arrDataTMP['name_rpm'];
+	    $arrSal['msg_error'] = _tr("ErrorToOperation")."'".$arrDataTMP['action_rpm']."' "._tr("on")." ".$arrSal['name_rpm'];
         }
         else{
             $arrSal['response'] = "error";
@@ -232,10 +236,14 @@ function getStatus($pDB, $arrConf, $arrLang){
  * */
 function isProcessInstallations($pDB, $arrConf)
 {
-	$pAddonsModules = new paloSantoAddonsModules($pDB);
+    $pAddonsModules = new paloSantoAddonsModules($pDB);
     $arrSal = array("statusInstall"=>"nothing","rpm_installed"=>"nothing","processToDo"=>"nothing");
     $arrStatus = $pAddonsModules->getStatus($arrConf);
-	$arrSal['data_cache'] = array();
+
+    if($arrStatus['action'] == "none" && ($arrStatus['status'] == "idle" || $arrStatus['status'] == "error"))
+	setValueSessionNull($pAddonsModules);
+
+    $arrSal['data_cache'] = array();
     if($pAddonsModules->existsActionTMP()){
         if($arrStatus['action'] == "confirm")
             $arrSal['statusInstall'] = "status_confirm";
@@ -252,6 +260,24 @@ function isProcessInstallations($pDB, $arrConf)
 function getLang($arrLang){
     $json = new Services_JSON();
     return $json->encode($arrLang);
+}
+
+function currentProcess($pDB, $arrConf, $arrLang){
+    $pAddonsModules = new paloSantoAddonsModules($pDB);
+    $json = new Services_JSON();
+    $arrDataTMP = $pAddonsModules->getActionTMP();
+    $action  = $arrDataTMP['action_rpm'];
+    $dataExp = $arrDataTMP['data_exp'];
+    $addon = explode("|",$dataExp);
+    if($action=="install")
+	$action = _tr("Install");
+    else if($action=="update")
+	$action = _tr("Upgrade");
+    else if($action=="remove")
+	$action = _tr("Uninstall");
+    $arrSal['message']  = _tr("ErrorToOperation")." \"".$action."\" "._tr("on")." \"".$addon[0]." v".$addon[2]."-".$addon[3]."\"";
+    $arrSal['name_rpm'] = $arrDataTMP['name_rpm'];
+    return $json->encode($arrSal);
 }
 
 function getConfirm($pDB, $arrConf, $arrLang){
@@ -278,8 +304,8 @@ function reportAvailables($smarty, $module_name, $local_templates_dir, &$pDB, $a
     try {
         $client = new SoapClient($arrConf['url_webservice']);
     } catch (SoapFault $e) {
-        $smarty->assign("mb_title", $arrLang["ERROR"].": ");
-        $smarty->assign("mb_message",$arrLang["The system can not connect to the Web Service resource. Please check your Internet connection."]);
+        $smarty->assign("mb_title", _tr("ERROR").": ");
+        $smarty->assign("mb_message",_tr("The system can not connect to the Web Service resource. Please check your Internet connection."));
         return ;
     }
 
@@ -319,128 +345,72 @@ function reportAvailables($smarty, $module_name, $local_templates_dir, &$pDB, $a
     else
 	$serverKey = "";
 
-	/*$addonsInstalled[]   = _tr("Installed");
-	$addonsNoInstalled[] = _tr("Availables");
-	$smarty->assign('instalados', _tr("Installed"));
-	$smarty->assign('no_instalados', _tr("Availables"));
-	$addonsToShow        = array();*/
-	$addonsInstalled[]   = array();
-	$addonsNoInstalled[] = array();
+    $addonsInstalled[]   = array();
+    $addonsNoInstalled[] = array();
 
     if(is_array($arrResult) && $total>0){
         $smarty->assign('ETIQUETA_INSTALL', $arrLang['Install']);
         
-        /*foreach($arrResult as $key => $value){
-        	
-	  $versionToInstall = $value['version']."-".$value['release'];
-        	
-	  if(!$pAvailables->exitAddons($value)){// no instalado
-	      $addonsNoInstalled[] = $value;
-	  }else{//instalados
-	      $addonsInstalled[] = $value;
-	  }
-        	
-        }*/
-        
-	/*if(count($addonsInstalled)==1){
-	    $addonsInstalled[]   = _tr("No addon installed");
-
-	}
-	if(count($addonsNoInstalled)==1){
-	    $addonsNoInstalled[] = _tr("No addons availables");
-	}*/
-
-	/*//TODO: Mejorar que pasa si los arreglos estan vacios
-	if((count($addonsInstalled)-1)%2!=0)
-	  $addonsInstalled[] = "relleno";
-	
-	if((count($addonsNoInstalled)-1)%2!=0)
-	  $addonsNoInstalled[] = "relleno";*/
+      
 	
 	if((count($arrResult))%2!=0)
 		  $arrResult[] = "relleno";
-        //$addonsToShow = array_merge($addonsInstalled,$addonsNoInstalled);
+
         $addonsToShow = $arrResult;
         foreach($addonsToShow as $key => $value){
-        	if(is_string($value) && ($value=="relleno" || $value==_tr("Installed") || $value==_tr("Availables")))
-				$arrTmp[0]=$value;
-			else{
-				$versionToInstall = $value['version']."-".$value['release'];
-        	        	                
-	    	$action = "";
-
-	    	$upgrade = $pAvailables->idUpgraded($value);
-	    	
+	    if(is_string($value) && ($value=="relleno" || $value==_tr("Installed") || $value==_tr("Availables")))
+		$arrTmp[0]=$value;
+	    else{
+		$versionToInstall = $value['version']."-".$value['release'];                
+		$action = "";
+		$upgrade = $pAvailables->idUpgraded($value);
         	if(!$pAvailables->exitAddons($value)){
-        		$action = "Install";
-                $installed = false;
+		    $action = "Install";
+		    $installed = false;
         	}else{
-        		$action = "Uninstall";
-                $installed = true;
+		    $action = "Uninstall";
+		    $installed = true;
         	}
 
-			
-        	/*if($installed){
-        		$smarty->assign(array(
-	                'ETIQUETA_DOWNLOADING'  =>  $arrLang['downloading'],
-	                'URL_IMAGEN_PAQUETE'    =>  "$arrConf[url_images]/$value[name_rpm].jpeg",
-	                'DESCRIPCION_PAQUETE'   =>  $value['description'],
-	                'PAQUETE_RPM'           =>  $value['name_rpm'],
-	                'PAQUETE_NOMBRE'        =>  $arrAddonsDB['name'],
-	                'PAQUETE_VERSION'       =>  $arrAddonsDB['version'],
-	                'PAQUETE_RELEASE'       =>  $arrAddonsDB['release'],
-	                'PAQUETE_CREADOR'       =>  $value['developed_by'],
-					'URL_BUY'				=>  $value['url_marketplace'].$serverKey."&referer=",
-	            ));
-        	}else{*/
-	        	$smarty->assign(array(
-	                'ETIQUETA_DOWNLOADING'  =>  $arrLang['downloading'],
-	                'URL_IMAGEN_PAQUETE'    =>  "$arrConf[url_images]/$value[name_rpm].jpeg",
-	                'DESCRIPCION_PAQUETE'   =>  $value['description'],
-	                'PAQUETE_RPM'           =>  $value['name_rpm'],
-	                'PAQUETE_NOMBRE'        =>  $value['name'],
-	                'PAQUETE_VERSION'       =>  $value['version'],
-	                'PAQUETE_RELEASE'       =>  $value['release'],
-	                'PAQUETE_CREADOR'       =>  $value['developed_by'],
-					'URL_BUY'				=>  $value['url_marketplace'].$serverKey."&referer=",
-	            ));
-        	//}
+		$smarty->assign(array(
+		    'ETIQUETA_DOWNLOADING'  =>  $arrLang['downloading'],
+		    'URL_IMAGEN_PAQUETE'    =>  "$arrConf[url_images]/$value[name_rpm].jpeg",
+		    'DESCRIPCION_PAQUETE'   =>  $value['description'],
+		    'PAQUETE_RPM'           =>  $value['name_rpm'],
+		    'PAQUETE_NOMBRE'        =>  $value['name'],
+		    'PAQUETE_VERSION'       =>  $value['version'],
+		    'PAQUETE_RELEASE'       =>  $value['release'],
+		    'PAQUETE_CREADOR'       =>  $value['developed_by'],
+		    'URL_BUY'		=>  $value['url_marketplace'].$serverKey."&referer=",
+		));
         	                
-	    	$button = "";
-	    	$comprado = true;
-	    	//comercial no instalado, no comprado
-	    	if(($value["is_commercial"]==1 && $value["fecha_compra"]==0 && !$installed)){// fecha_compra = 0 significa que no esta comprado aun este addons
-				$action = "buy";
-				$comprado = false;
-				$button = buttonInstall($installed,$value["name_rpm"],$arrLang,$action, $serverKey,$value['url_marketplace'],$installed, $comprado);
-	    	}else if($value["is_commercial"]==1 && $value["fecha_compra"]==0 && $installed){// comercial instalado, no comprado
-	    		$action = "buy";
-	    		$comprado = false;
-	    		$button = buttonUnInstall($value["name_rpm"],$arrLang,$action, $serverKey, $versionToInstall, $pAvailables, $value['name'], $installed, $comprado, $upgrade);
-	    	}else{
-				$action = "Install";
-				$comprado = true;
-				if($installed) // new
-					$button = buttonUnInstall($value["name_rpm"],$arrLang,"Uninstall", $serverKey, $versionToInstall, $pAvailables, $value['name'], $installed, $comprado, $upgrade);
-	    		else //new
-					$button = buttonInstall($installed,$value["name_rpm"],$arrLang,$action, $serverKey,$value['url_marketplace'],$installed, $comprado);
-	    	}
-		
-	    	/*if($installed){ // new
-				$button = buttonUnInstall($value["name_rpm"],$arrLang,"Uninstall", $serverKey, $versionToInstall, $pAvailables, $value['name'], $installed, $comprado);
-				
-	    	}else //new
-				$button = buttonInstall($installed,$value["name_rpm"],$arrLang,$action, $serverKey,$value['url_marketplace'],$installed, $comprado);
-			*/
-	    	$smarty->assign("ACTION_INSTALL", $button);
+		$button = "";
+		$comprado = true;
+		//comercial no instalado, no comprado
+		if(($value["is_commercial"]==1 && $value["fecha_compra"]==0 && !$installed)){// fecha_compra = 0 significa que no esta comprado aun este addons
+		    $action = "buy";
+		    $comprado = false;
+		    $button = buttonInstall($installed,$value["name_rpm"],$arrLang,$action, $serverKey,$value['url_marketplace'],$installed, $comprado);
+		}else if($value["is_commercial"]==1 && $value["fecha_compra"]==0 && $installed){// comercial instalado, no comprado
+		    $action = "buy";
+		    $comprado = false;
+		    $button = buttonUnInstall($value["name_rpm"],$arrLang,$action, $serverKey, $versionToInstall, $pAvailables, $value['name'], $installed, $comprado, $upgrade);
+		}else{
+		    $action = "Install";
+		    $comprado = true;
+		    if($installed) // new
+			$button = buttonUnInstall($value["name_rpm"],$arrLang,"Uninstall", $serverKey, $versionToInstall, $pAvailables, $value['name'], $installed, $comprado, $upgrade);
+		    else //new
+			$button = buttonInstall($installed,$value["name_rpm"],$arrLang,$action, $serverKey,$value['url_marketplace'],$installed, $comprado);
+		}
 
-			/* nueva logica de diseño. agregado 10/5/2011 ecueva */
-			$imgPack   = "<div style='float: left; width: 177px; height: 95px; text-align: center;'>".$smarty->fetch("$local_templates_dir/imagen_paquete.tpl")."</div>";
-			$infoPack  = "<div style='width: 93%'>".$smarty->fetch("$local_templates_dir/info_paquete.tpl")."</div>";
+		$smarty->assign("ACTION_INSTALL", $button);
 
+		$imgPack   = "<div style='float: left; width: 177px; height: 95px; text-align: center;'>".$smarty->fetch("$local_templates_dir/imagen_paquete.tpl")."</div>";
+		$infoPack  = "<div style='width: 93%'>".$smarty->fetch("$local_templates_dir/info_paquete.tpl")."</div>";
 
-			// son dos columnas donde cada columna tendra tres divs
-			$arrTmp[0] = $imgPack.$infoPack;
+		// son dos columnas donde cada columna tendra tres divs
+		$arrTmp[0] = $imgPack.$infoPack;
 	    }
             $arrData[] = $arrTmp;
         }
@@ -454,7 +424,7 @@ function reportAvailables($smarty, $module_name, $local_templates_dir, &$pDB, $a
                         "total"    => $total,
                         "url"      => $url,
                         "columns"  => array(
-			0 => array("name"      => "",
+	    0 => array("name"      => "",
                                    "property1" => ""),
             1 => array("name"      => "",
                                    "property1" => ""),
@@ -462,7 +432,7 @@ function reportAvailables($smarty, $module_name, $local_templates_dir, &$pDB, $a
                                    "property1" => ""))
                     );
 
-    $smarty->assign("Search", $arrLang["Search"]);
+    $smarty->assign("Search", _tr("Search"));
     $smarty->assign("module_name", $module_name);
     $smarty->assign("uninstall", _tr("Uninstall"));
     $smarty->assign("install", _tr("Install"));
@@ -473,13 +443,13 @@ function reportAvailables($smarty, $module_name, $local_templates_dir, &$pDB, $a
     $smarty->assign("search", _tr("Search"));
     $smarty->assign("tryItText", _tr("Try it"));
     $smarty->assign("textObservation", _tr("Please need to enable Centos repo, Elastix, Extra or others for the proper functioning, Detail of errors: "));
-	
+    $smarty->assign("error_details", _tr("Error(Details)"));
     $oFilterForm = new paloForm($smarty, createFieldFilter());
     $content = "<form  method='post' style='margin-bottom:0;' action=\"$url\">".$oGrid->fetchGrid($arrGrid, $arrData,$arrLang)."</form>";
     $htmlFilter  = $oFilterForm->fetchForm($content,"",$_POST);
     $oGrid->showFilter(trim($htmlFilter));
     $content = $oGrid->fetchGrid();
-	
+
     return $content;
 }
 
@@ -488,50 +458,50 @@ function buttonInstall($install, $name_rpm, $arrLang, $action, $serverKey,$url_m
     $action = (isset($action) & $action !="")?$action:"Install";
     $url_marketplace = $url_marketplace.$serverKey;
     if(!$install){
-		if($action == "buy"){//es comercial
-		    $actionClase = "";
-		    $tryIt = "";
-		    if($serverKey == "")
-				$actionClase = "registrationServer";
-		    else{
-				$actionClase = "buy";
-		    }
-		    if(!$comprado)
-			$tryIt = "<input type='button' value='"._tr("Try it")."' class='install' id='$name_rpm' name='tryButton' style='display: none;' />";
+	if($action == "buy"){//es comercial
+	    $actionClase = "";
+	    $tryIt = "";
+	    if($serverKey == "")
+		$actionClase = "registrationServer";
+	    else{
+		$actionClase = "buy";
+	    }
+	    if(!$comprado)
+		$tryIt = "<input type='button' value='"._tr("Try it")."' class='install' id='$name_rpm' name='tryButton' style='display: none;' />";
 			
-		    $html = "<div id='img_$name_rpm' align='center' >".
-						"<img alt='' src='modules/addons_avalaibles/images/loading.gif' class='loadingAjax' style='display: block;' />".
-						"<div id='start_$name_rpm' style='display: none;'>".
-				    		"<div class='text_starting' align='right'>$arrLang[Starting]</div>".
-				    		"<div>".
-								"<img alt='' src='modules/addons_avalaibles/images/starting.gif' class='startingAjax' align='right' />".
-				    		"</div>".
-						"</div>".
-						"<div>".
-							"<div style='float: right; padding-right: 2px;'>$tryIt</div>". // install
-							"<div style='float: right; padding-right: 2px;'></div>". // update
-							"<div style='float: right; padding-right: 2px;' >".// buy
-								"<input type='button' value='"._tr("Buy")."' class='$actionClase' id='".$name_rpm."_buy' name='buyButton' style='display: none;' />".
-							"</div>".
-						"</div>".
-			    	"</div>";
-		}else{// no es comercial
-		    $html = "<div id='img_$name_rpm' align='center' >".
-						"<img alt='' src='modules/addons_avalaibles/images/loading.gif' class='loadingAjax' style='display: block;' />".
-						"<div id='start_$name_rpm' style='display: none;'>".
-				    		"<div class='text_starting' align='right'>$arrLang[Starting]</div>".
-				    		"<div>".
-								"<img alt='' src='modules/addons_avalaibles/images/starting.gif' class='startingAjax' align='right' />".
-				    		"</div>".
-						"</div>".
-						"<div>".
-							"<div style='float: right; padding-right: 2px;' >". // install
-								"<input type='button' value='"._tr($action)."' class='install' id='$name_rpm' name='installButton' style='display: none;' />".
-							"</div>".
-							"<div style='float: right; padding-right: 2px;'></div>". // update
-							"<div style='float: right; padding-right: 2px;'></div>". // buy
-						"</div>".
-			    	"</div>";
+	    $html = "<div id='img_$name_rpm' align='center' >".
+			"<img alt='' src='modules/addons_avalaibles/images/loading.gif' class='loadingAjax' style='display: block;' />".
+			"<div id='start_$name_rpm' style='display: none;'>".
+			"<div class='text_starting' align='right'>$arrLang[Starting]</div>".
+			"<div>".
+			    "<img alt='' src='modules/addons_avalaibles/images/starting.gif' class='startingAjax' align='right' />".
+			"</div>".
+			"</div>".
+			"<div>".
+			    "<div style='float: right; padding-right: 2px;'>$tryIt</div>". // install
+			    "<div style='float: right; padding-right: 2px;'></div>". // update
+			    "<div style='float: right; padding-right: 2px;' >".// buy
+				    "<input type='button' value='"._tr("Buy")."' class='$actionClase' id='".$name_rpm."_buy' name='buyButton' style='display: none;' />".
+			    "</div>".
+			"</div>".
+		      "</div>";
+	}else{// no es comercial
+	    $html = "<div id='img_$name_rpm' align='center' >".
+			"<img alt='' src='modules/addons_avalaibles/images/loading.gif' class='loadingAjax' style='display: block;' />".
+			"<div id='start_$name_rpm' style='display: none;'>".
+			"<div class='text_starting' align='right'>$arrLang[Starting]</div>".
+			"<div>".
+			    "<img alt='' src='modules/addons_avalaibles/images/starting.gif' class='startingAjax' align='right' />".
+			"</div>".
+			"</div>".
+			"<div>".
+			    "<div style='float: right; padding-right: 2px;' >". // install
+				    "<input type='button' value='"._tr($action)."' class='install' id='$name_rpm' name='installButton' style='display: none;' />".
+			    "</div>".
+			    "<div style='float: right; padding-right: 2px;'></div>". // update
+			    "<div style='float: right; padding-right: 2px;'></div>". // buy
+			"</div>".
+		      "</div>";
 		}
     }else
         $html = "";
@@ -540,52 +510,51 @@ function buttonInstall($install, $name_rpm, $arrLang, $action, $serverKey,$url_m
 
 function buttonUnInstall($name_rpm, $arrLang, $action, $serverKey, $versionToInstall, $pAvailables, $packageName, $installed, $comprado, $upgrade)
 {
-	// verificando si existe actualizacion
-	$action = (isset($action) & $action !="")?$action:"Uninstall";
-	$actionClase = $action;
-	$arrAddon = $pAvailables->getAddonByName($name_rpm);
-	$update = "";
-	$buy = "";
-	
-	if($upgrade['status']){ // comparando si las versiones son iguales
-		$versionInstalled = str_replace("$name_rpm-","",$upgrade['old_version']);
-		$versionToInstall = str_replace("$name_rpm-","",$upgrade['new_version']);
-		$title = "<b>"._tr("Current version").":</b> $packageName v$versionInstalled <br /><b>"._tr("Upgrade version").":</b> $packageName v$versionToInstall";
-		$update = "<input type='button' value='"._tr("Upgrade")."' onclick='updateAddon(\"$name_rpm\");' class='updateAddon' title='$title' class='ttip' style='display: none;' />";
-	}else
-    	$update = "&nbsp;";
-    	
+    // verificando si existe actualizacion
+    $action = (isset($action) & $action !="")?$action:"Uninstall";
+    $actionClase = $action;
+    $arrAddon = $pAvailables->getAddonByName($name_rpm);
+    $update = "";
+    $buy = "";
+    
+    if($upgrade['status']){ // comparando si las versiones son iguales
+	$versionInstalled = str_replace("$name_rpm-","",$upgrade['old_version']);
+	$versionToInstall = str_replace("$name_rpm-","",$upgrade['new_version']);
+	$title = "<b>"._tr("Current version").":</b> $packageName v$versionInstalled <br /><b>"._tr("Upgrade version").":</b> $packageName v$versionToInstall";
+	$update = "<input type='button' value='"._tr("Upgrade")."' onclick='updateAddon(\"$name_rpm\");' class='updateAddon' title='$title' class='ttip' style='display: none;' />";
+    }else
+	$update = "&nbsp;";
+
     if($action=="buy"){
-    	$buy = "<input type='button' value='"._tr($action)."' class='$actionClase' id='".$name_rpm."_buy' name='buyButton' style='display: none;' />";
+	$buy = "<input type='button' value='"._tr("Buy")."' class='$actionClase' id='".$name_rpm."_buy' name='buyButton' style='display: none;' />";
     }else
     	$buy = "&nbsp;";
     
     $html = "<div id='img_$name_rpm' align='center' >".
-				"<img alt='' src='modules/addons_avalaibles/images/loading.gif' class='loadingAjax' style='display: block;' />".
-				"<div id='start_$name_rpm' style='display: none;'>".
-		    		"<div class='text_starting' align='right'>$arrLang[Removing]</div>".
-		    		"<div>".
-						"<img alt='' src='modules/addons_avalaibles/images/starting.gif' class='startingAjax' align='right' />".
-		    		"</div>".
-				"</div>".
-				"<div>".
-					"<div style='float: right; padding-right: 2px;' >". // uninstall
-						"<input type='button' value='"._tr("Uninstall")."' class='uninstall' id='$name_rpm' onclick='removeAddon(\"$name_rpm\");' name='uninstallButton' style='display: none;' />".
-					"</div>".
-					"<div style='float: right; padding-right: 2px;'>$update</div>". // update
-					"<div style='float: right; padding-right: 2px;'>$buy</div>". // buy
-				"</div>".
-	    	"</div>";
-
+		"<img alt='' src='modules/addons_avalaibles/images/loading.gif' class='loadingAjax' style='display: block;' />".
+		"<div id='start_$name_rpm' style='display: none;'>".
+		"<div class='text_starting' align='right'>$arrLang[Removing]</div>".
+		"<div>".
+		    "<img alt='' src='modules/addons_avalaibles/images/starting.gif' class='startingAjax' align='right' />".
+		"</div>".
+		"</div>".
+		"<div>".
+		    "<div style='float: right; padding-right: 2px;' >". // uninstall
+			    "<input type='button' value='"._tr("Uninstall")."' class='uninstall' id='$name_rpm' onclick='removeAddon(\"$name_rpm\");' name='uninstallButton' style='display: none;' />".
+		    "</div>".
+		    "<div style='float: right; padding-right: 2px;'>$update</div>". // update
+		    "<div style='float: right; padding-right: 2px;'>$buy</div>". // buy
+		"</div>".
+	    "</div>";
     return $html;
 }
 
 function quitSpecialCharacters($str)
 {
-	if(strpos($str,".")){
-		$str = str_replace(".","|",$str);
-	}	
-	return $str;
+    if(strpos($str,".")){
+	$str = str_replace(".","|",$str);
+    }
+    return $str;
 }
 
 
@@ -638,8 +607,9 @@ function getPackagesCache($arrConf, &$pDB, $arrLang){
                 $arrSal['msg'] = str_replace("NAME",$tmp[0]." version: $tmp[2]-$tmp[3]",$arrSal['msg']);
             }
             else{
-               $arrSal['response'] = "there_install"; //retornar que existe una instalacion
-               $arrSal['msg'] = $tmp[0]."version $tmp[2]-$tmp[3]";
+		$arrSal['response'] = "there_install"; //retornar que existe una instalacion
+		$arrSal['msg_error'] = _tr("ErrorToOperation")." '".$arrDataTMP['action_rpm']."' "._tr("on")." ".$arrSal['name_rpm'];
+		$arrSal['msg'] = $tmp[0]."version $tmp[2]-$tmp[3]";
             }
         }
         else if($arrStatus['status'] == "error"){
@@ -741,7 +711,8 @@ function getStatusUpdateCache($arrConf, &$pDB, $arrLang){
         $timeNew = time();
 	$arrStatus = $pAddonsModules->getStatus($arrConf);
 	$actionStatus = $arrStatus['action'];
-        if(($timeNew - $timeLast) > 7200 || $actionStatus == "reporefresh" || $actionStatus == "depsolving"){ //si es mayor a 5 minutos al fina1 son 2h -> 7200
+	$statusProc   = $arrStatus['status'];
+        if(($timeNew - $timeLast) > 7200 || $actionStatus == "reporefresh" || $actionStatus == "depsolving" || $statusProc == "busy"){ //si es mayor a 5 minutos al fina1 son 2h -> 7200
             $_SESSION['elastix_addons']['last_update'] = $timeNew;
             $arrSal = getPackagesCache($arrConf, $pDB, $arrLang);
             $arrSal = array_merge($arrInstall,$arrSal);
@@ -883,6 +854,8 @@ function updateAddons($smarty, $module_name, $local_templates_dir, &$pDB, $arrCo
                 $arrSal['response'] = "OK";
                 $_SESSION['elastix_addons']['name_rpm'] = $name_rpm;
                 $_SESSION['elastix_addons']['action_rpm'] = 'update';
+		$pAddonsModules->clearActionTMP();
+		$pAddonsModules->setActionTMP($name_rpm, 'update', $data_exp);
             }
             else{
             	setValueSessionNull($pAddonsModules);
@@ -895,8 +868,10 @@ function updateAddons($smarty, $module_name, $local_templates_dir, &$pDB, $arrCo
         }
     }
     else{
+	$arrDataTMP = $pAddonsModules->getActionTMP();
+	$arrSal['name_rpm'] = $arrDataTMP['name_rpm'];
         $arrSal['response'] = "there_install"; //retornar que existe una instalacion
-        $arrSal['name_rpm'] = $_SESSION['elastix_addons']['name_rpm'];
+	$arrSal['msg_error'] = _tr("ErrorToOperation")."'".$arrDataTMP['action_rpm']."' "._tr("on")." ".$arrSal['name_rpm'];
     }
     $arrSal['installing'] = $arrLang['installing'];
 
@@ -906,6 +881,7 @@ function updateAddons($smarty, $module_name, $local_templates_dir, &$pDB, $arrCo
 function removeAddons($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
 {
     $name_rpm = getParameter("name_rpm");
+    $data_exp = getParameter("data_exp");
     $pAddonsModules = new paloSantoAddonsModules($pDB);
     $json = new Services_JSON();
     $arrSal['response'] = false;
@@ -927,6 +903,8 @@ function removeAddons($smarty, $module_name, $local_templates_dir, &$pDB, $arrCo
                 $arrSal['response'] = "OK";
                 $_SESSION['elastix_addons']['name_rpm'] = $name_rpm;
                 $_SESSION['elastix_addons']['action_rpm'] = 'remove';
+		$pAddonsModules->clearActionTMP();
+		$pAddonsModules->setActionTMP($name_rpm, 'remove', $data_exp);
             }
             else{
             	setValueSessionNull($pAddonsModules);
@@ -939,8 +917,10 @@ function removeAddons($smarty, $module_name, $local_templates_dir, &$pDB, $arrCo
         }
     }
     else{
+	$arrDataTMP = $pAddonsModules->getActionTMP();
+	$arrSal['name_rpm'] = $arrDataTMP['name_rpm'];
         $arrSal['response'] = "there_install"; //retornar que existe una instalacion
-        $arrSal['name_rpm'] = $_SESSION['elastix_addons']['name_rpm'];
+	$arrSal['msg_error'] = _tr("ErrorToOperation")."'".$arrDataTMP['action_rpm']."' "._tr("on")." ".$arrSal['name_rpm'];
     }
     $arrSal['installing'] = _tr('removing');
 
@@ -977,6 +957,7 @@ function toDoclearAddon($module_name, &$pDB, $arrConf, $arrLang){
 	$pAddonsModules = new paloSantoAddonsModules($pDB);
 	$result = $pAddonsModules->clearAddon($arrConf);
 	$json = new Services_JSON();
+	// validar
 	$arrResult['response'] = trim($result);
 	setValueSessionNull($pAddonsModules);
 	return $json->encode($arrResult);
@@ -1040,6 +1021,8 @@ function getAction()
         return "check_update";
     else if(getParameter("action")=="toDoclearAddon")
     	return "toDoclearAddon";
+    else if(getParameter("action")=="currentProcess")
+	return "currentProcess";
     else
         return "report"; //cancel
 }

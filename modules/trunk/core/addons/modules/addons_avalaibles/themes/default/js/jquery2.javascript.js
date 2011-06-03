@@ -1,6 +1,7 @@
 var module_name   = "addons_avalaibles";
 var module_name2  = "addons_installed";
 var percentValues = new Array();
+var arrayLang     = null;
 var refer = document.URL;
 
 var there_install = false;
@@ -16,11 +17,11 @@ $(document).ready(function(){
     
     // nuevo para la compra de addons
     $('.buy').click(function(){
-		var nameRpm = $(this).attr("id");
-		nameRpm = nameRpm.replace(/_buy/g,"");
-		var idRpmName = "[id='"+nameRpm+"_link']";
-		var link = $(idRpmName).val();
-		window.open(link+refer);
+	var nameRpm = $(this).attr("id");
+	nameRpm = nameRpm.replace(/_buy/g,"");
+	var idRpmName = "[id='"+nameRpm+"_link']";
+	var link = $(idRpmName).val();
+	window.open(link+refer);
     });
     
     $('.registrationServer').click(function(){
@@ -31,14 +32,14 @@ $(document).ready(function(){
         $.post("index.php",arrAction,
             function(arrData,statusResponse,error)
             {
-				var message = JSONtoString(arrData);
-				var serverKey = message["serverKey"];
-				if(serverKey)
-				    window.open(link+"&serverkey="+serverKey);
-				else{
-				    $('#link_tmp').val(link+"&serverkey=");
-				    showPopupElastix('registrar','Register',600,400);
-				}
+		var message = JSONtoString(arrData);
+		var serverKey = message["serverKey"];
+		if(serverKey)
+		    window.open(link+"&serverkey="+serverKey);
+		else{
+		    $('#link_tmp').val(link+"&serverkey=");
+		    showPopupElastix('registrar','Register',600,400);
+		}
             }
         );
     });
@@ -55,77 +56,80 @@ $(document).ready(function(){
 
 function installAddon(name_rpm)
 {
-	  //$("#msg_status").html(" ");
-
-	  document.getElementById("msg_status").innerHTML = " ";
+      document.getElementById("msg_status").innerHTML = " ";
       if(!there_install){
-    	  var idRpmName = "[id='"+name_rpm+"']";
-    	  var startId = "[id='start_"+name_rpm+"']";
-    	  var idRpmNameBuy = "[id='"+name_rpm+"_buy']";
-    	  $(idRpmNameBuy).hide();
+	  var idRpmName = "[id='"+name_rpm+"']";
+	  var startId = "[id='start_"+name_rpm+"']";
+	  var idRpmNameBuy = "[id='"+name_rpm+"_buy']";
+	  $(idRpmNameBuy).hide();
+	  $(idRpmName).parent().parent().children(':first-child').children(':first-child').attr("style","display: none;");//oculta el loading
+	  $(idRpmName).hide();//oculto el boton install
+	  $(startId).attr("style","display: block;"); // muestra el gif de empezar a instalar
+
+	  $('#progressBarTotal').remove(); // se remueve todos los elemento de progressbar que tenga como id progressBarTotal
+	  $('#percent_loaded').remove();
+	  var classRpm = "input[class='"+name_rpm+"']";
+	  var data_exp = $(classRpm).val();
+	  var order = 'menu='+module_name+'&name_rpm='+name_rpm+'&action=install&data_exp='+data_exp+'&rawmode=yes';
+	  $.post('index.php',order,function(theResponse){
+	      var message = JSONtoString(theResponse);
+	      var name_rpm = message['name_rpm'];
+	      var idRpmName = "[id='"+name_rpm+"']";
+	      var idRpmNameBuy = "[id='"+name_rpm+"_buy']";
+	      var startId = "[id='start_"+name_rpm+"']";
+	      var nameAddons    = $(idRpmName).parent().parent().parent().parent().parent().children(':first-child').children(':first-child').text();
+	      var versionAddons = $(idRpmName).parent().parent().parent().parent().parent().children(':first-child').children(':nth-child(2)').text();
+	      if(message['error'] == "no_daemon"){
+		  there_install = false;
 		  $(idRpmName).parent().parent().children(':first-child').children(':first-child').attr("style","display: none;");//oculta el loading
-		  $(idRpmName).hide();//oculto el boton install
-		  $(startId).attr("style","display: block;"); // muestra el gif de empezar a instalar
-		  
-		  $('#progressBarTotal').remove(); // se remueve todos los elemento de progressbar que tenga como id progressBarTotal
-		  $('#percent_loaded').remove();
-		  var classRpm = "input[class='"+name_rpm+"']";
-		  var data_exp = $(classRpm).val();
-		  var order = 'menu='+module_name+'&name_rpm='+name_rpm+'&action=install&data_exp='+data_exp+'&rawmode=yes';
-		  $.post('index.php',order,function(theResponse){
-			  var message = JSONtoString(theResponse);
-			  var name_rpm = message['name_rpm'];
-			  var idRpmName = "[id='"+name_rpm+"']";
-			  var idRpmNameBuy = "[id='"+name_rpm+"_buy']";
-	    	  var startId = "[id='start_"+name_rpm+"']";
-        	  var nameAddons    = $(idRpmName).parent().parent().parent().parent().parent().children(':first-child').children(':first-child').text();
-        	  var versionAddons = $(idRpmName).parent().parent().parent().parent().parent().children(':first-child').children(':nth-child(2)').text();
-              if(message['error'] == "no_daemon"){
-              	there_install = false;
-              	$(idRpmName).parent().parent().children(':first-child').children(':first-child').attr("style","display: none;");//oculta el loading
-              	$(idRpmName).hide();//oculto el boton install
-              	$(startId).attr("style","display: none;"); // muestra el gif de empezar a instalar
-              	connectJSON("no_daemon");
-            	var textDaemonOff = $('#textDaemonOff').val();
-            	showPogressMessage(textDaemonOff);
-              	return;
-              }
-              
-			  if(message['response'] == "there_install"){ //si existe una instalacion en progreso
-			      there_install = true;
-			      connectJSON("process_installing");
-			      /**** nueva implementacion ****/
-			      // se muestra la barra de progreso de la instalacion
-			      // se remueve el ultimo hijo y se añade el progressbar al final
-			      $(startId).html(" ");
-			      var progressbar  = "<div align='right'><div id='progressBarTotal' style='width: 100px;'></div><div id='percent_loaded'><span id='percentTotal' style='position: relative; top: -18px; right: 38px;'>0%</span></div></div>";
-			      $(startId).html(progressbar);
-			      $(idRpmNameBuy).hide();
-			      $("[id^=progressBar]").progressbar({value: 0});
-			      getPercent();
-			      /**** nueva implementacion ****/
-			  }
-			  else if(message['response'] == "OK"){ // listo para instalar
-				  var textDownloading = $("#textDownloading").val();
-				  textDownloading = textDownloading.replace(/\./g,"");
-				  showPogressMessage("Status: "+textDownloading+" "+nameAddons+" "+versionAddons);
-				  $(idRpmNameBuy).hide();
-			      there_install = true;
-			      name_rpm = message['name_rpm'];
-			      getStatusInstall(name_rpm);
-			  }
-			  else if(message['response'] == "error"){ // error no install
-			      there_install = false;
-			      $(idRpmNameBuy).show();
-			      $(idRpmName).attr("style","display: block;");
-				  $(startId).attr("style","display: none;");
-				  document.getElementById("msg_status").innerHTML = " ";
-			      connectJSON("error_start_install");
-			  }
-		  });
+		  $(idRpmName).show();//muestro el boton install
+		  $(startId).attr("style","display: none;"); // oculta el gif de empezar a instalar
+		  if(arrayLang)
+		      alert(arrayLang['no_daemon']);
+		  else
+		      connectJSON("no_daemon");
+		  var textDaemonOff = $('#textDaemonOff').val();
+		  showPogressMessage(textDaemonOff);
+		  return;
+	      }
+	      if(message['response'] == "there_install"){ //si existe una instalacion en progreso
+		  there_install = true;
+		  currentProcess();
+		  /**** nueva implementacion ****/
+		  // se muestra la barra de progreso de la instalacion
+		  // se remueve el ultimo hijo y se añade el progressbar al final
+		  $(startId).html(" ");
+		  var progressbar  = "<div align='right'><div id='progressBarTotal' style='width: 100px;'></div><div id='percent_loaded'><span id='percentTotal' style='position: relative; top: -18px; right: 38px;'>0%</span></div></div>";
+		  $(startId).html(progressbar);
+		  $(idRpmNameBuy).hide();
+		  $("[id^=progressBar]").progressbar({value: 0});
+		  getPercent();
+		  /**** nueva implementacion ****/
+	      }
+	      else if(message['response'] == "OK"){ // listo para instalar
+		      var textDownloading = $("#textDownloading").val();
+		      textDownloading = textDownloading.replace(/\./g,"");
+		      showPogressMessage("Status: "+textDownloading+" "+nameAddons+" "+versionAddons);
+		      $(idRpmNameBuy).hide();
+		  there_install = true;
+		  name_rpm = message['name_rpm'];
+		  getStatusInstall(name_rpm);
+	      }
+	      else if(message['response'] == "error"){ // error no install
+		  there_install = false;
+		  $(idRpmNameBuy).show();
+		  $(idRpmName).attr("style","display: block;");
+		  $(startId).attr("style","display: none;");
+		  document.getElementById("msg_status").innerHTML = " ";
+		  if(arrayLang)
+		      alert(arrayLang['error_start_install']);
+		  else
+		      connectJSON("error_start_install");
+	      }
+	  });
       }
       else
-	  connectJSON("process_installing");
+	  currentProcess();
 }
       
 function _search(module_name)
@@ -269,7 +273,10 @@ function getPackagesCache(){
             showPogressMessage(message['status_action']);
             if(message['error'] == "no_daemon"){
             	there_install = false;
-            	connectJSON("no_daemon");
+		if(arrayLang)
+		    alert(arrayLang['no_daemon']);
+		else
+		    connectJSON("no_daemon");
             	var textDaemonOff = $('#textDaemonOff').val();
             	showPogressMessage(textDaemonOff);
             }
@@ -313,6 +320,7 @@ function getPackagesCache(){
             			there_install = false;
             			var arr_data = message['data_cache'];
                         var link_img = "modules/"+module_name+"/images/warning.png";
+			var errorDetails = $("#errorDetails").val();
                         for(var i=0; i<arr_data.length; i++){
                             var rpm_name = arr_data[i]["name_rpm"];
                             var status = arr_data[i]["status"];
@@ -334,7 +342,7 @@ function getPackagesCache(){
                                 $(idRpmName).parent().parent().parent().children(':first-child').hide();
                                 var styleSeleRpm = $(idRpmName).attr("style");
                             	if(observation!="OK")
-                            		$(idRpmName).parent().parent().parent().append("<a class='text_alert ttip' title='"+textObservation+" "+observation+"' style='float: right;'>Error(Details)</a>");
+                            		$(idRpmName).parent().parent().parent().append("<a class='text_alert ttip' title='"+textObservation+" "+observation+"' style='float: right;'>"+errorDetails+"</a>");
                             }
                         }
                         $(".updateAddon").show();
@@ -359,11 +367,15 @@ function getPackagesCache(){
                 there_install = false;
                 showPogressMessage("Status: "+response['response']);
                 clearAddons();
-                connectJSON("error_start_install");
+		if(arrayLang)
+		    alert(arrayLang['error_start_install']);
+		else
+		    connectJSON("error_start_install");
             }else if(message['response'] == "noFillDataCache"){// ya esta actualizada la data
                 there_install = false;
                 var arr_data = message['data_cache'];
                 var link_img = "modules/"+module_name+"/images/warning.png";
+		var errorDetails = $("#errorDetails").val();
                 //elastix-developer id
                 //status_elastix-developer id
                 for(var i=0; i<arr_data.length; i++){
@@ -396,7 +408,7 @@ function getPackagesCache(){
                         $(idRpmName).parent().parent().parent().children(':first-child').hide();
                         var styleSeleRpm = $(idRpmName).attr("style");
                     	if(observation!="OK")
-                    		$(idRpmName).parent().parent().parent().append("<a class='text_alert ttip' title='"+textObservation+" "+observation+"' style='float: right;'>Error(Details)</a>");
+                    		$(idRpmName).parent().parent().parent().append("<a class='text_alert ttip' title='"+textObservation+" "+observation+"' style='float: right;'>"+errorDetails+"</a>");
                     }
                 }
                 $(".updateAddon").attr("style", "display: block;");
@@ -457,35 +469,28 @@ function changeStatusButtonInstall(response){
     }else{
         var arr_data = response['data_cache'];
         var link_img = "modules/"+module_name+"/images/warning.png";
-
+	var errorDetails = $("#errorDetails").val();
         for(var i=0; i<arr_data.length; i++){
             var rpm_name = arr_data[i]["name_rpm"];
             var status = arr_data[i]["status"];
             var observation = arr_data[i]["observation"];
             var textObservation = $("#textObservation").val();
             var idRpmNameBuy = "[id='"+rpm_name+"_buy']";
-            //var id_status = "status_"+rpm_name;
             var idRpmName = "[id='"+rpm_name+"']";
             if(document.getElementById(rpm_name)){
                 if(status == "1"){ // se muestra el boton de instalar
                     $(idRpmName).show();// se muestra el boton install o try 
                     $(idRpmNameBuy).show(); // se muestra el boton buy
                     $(idRpmName).parent().parent().parent().children(':first-child').hide(); // se oculta el loading
-                    // cambiando la clase
-                    //$("#status_"+rpm_name).attr("class","text_install");
                 }else{ // se debe mostrar el error como descripcion
                     // cambiando el loading por img error
                     $(idRpmName).parent().parent().parent().children(':first-child').attr('src',link_img);
-                    //$("#status_"+rpm_name).attr("class","text_alert");
                 }
-                // cambiando la observacion
-                //$("#status_"+rpm_name).text(observation);
-			    //agregado para que solo exista una sola columna
-			    $(idRpmName).parent().parent().parent().children(':first-child').hide();
-		    	if(observation!="OK")
-		    		$(idRpmName).parent().parent().parent().append("<a class='text_alert ttip' style='float: right;' title='"+textObservation+" "+observation+"'>Error(Details)</a>");
-			    //$("#msg_status").html(" ");
-			    document.getElementById("msg_status").innerHTML = " ";
+		//agregado para que solo exista una sola columna
+		$(idRpmName).parent().parent().parent().children(':first-child').hide();
+		if(observation!="OK")
+		    $(idRpmName).parent().parent().parent().append("<a class='text_alert ttip' style='float: right;' title='"+textObservation+" "+observation+"'>"+errorDetails+"</a>");
+		document.getElementById("msg_status").innerHTML = " ";
             }
         }
         $(".updateAddon").attr("style", "display: block;");
@@ -517,32 +522,32 @@ function getPercent()
             process(response);
             if(response['status']=="finished" || response['status']=="not_install"){
                 var idParent = $('#progressBarTotal').parent().parent().attr("id"); // padre start_nameRPM
-				$('#progressBarTotal').parent().parent().html(" "); // se blanquea a los hijos de start_nameRPM
-				there_install = false;
-				var textRemoving = $("#textRemoving").val();
-				var idChild = $("#"+idParent).next().children(':first-child').children(':first-child').attr("id");
-				if(idParent)
-					idChild = idParent.replace(/start_/g,"");
-				var idRpmName = "[id='"+idChild+"']";
-				var idRpmNameBuy = "[id='"+idChild+"_buy']";
-			    var startId = "[id='start_"+idChild+"']";
-				$("#"+idParent).html(" ");
-				$("#"+idParent).append("<div class='text_starting' align='right'>"+textRemoving+"</div><div><img class='startingAjax' src='modules/addons_avalaibles/images/starting.gif' alt='' align='right'></div>");
-				$("#"+idParent).attr("style", "display: none;");
-				var textUninstall = $("#uninstallText").val();
-				$(idRpmName).remove();
-				$("#"+idParent).next().children(':first-child').html("<input type='button' style='display: block;' name='uninstallButton' id='"+idChild+"' class='uninstall' value='"+textUninstall+"'  />");
-				$(idRpmNameBuy).show();
-				var idRef = document.getElementById(idChild);
-				if(idRef)
-					idRef.setAttribute("onclick","removeAddon('"+idChild+"');");
-				$(idRpmName).parent().next().children(':first-child').hide(); // icono de actualizacion
-				$(idRpmName).parent().show();
-				$(idRpmName).show();
-				document.getElementById("msg_status").innerHTML = " ";
-				$('#uninstallRpm').val("");
-				//$("#msg_status").html(" ");
-				clearAddons();// hacer un clear en el servidor
+		$('#progressBarTotal').parent().parent().html(" "); // se blanquea a los hijos de start_nameRPM
+		there_install = false;
+		var textRemoving = $("#textRemoving").val();
+		var idChild = $("#"+idParent).next().children(':first-child').children(':first-child').attr("id");
+		if(idParent)
+		    idChild = idParent.replace(/start_/g,"");
+		var idRpmName = "[id='"+idChild+"']";
+		var idRpmNameBuy = "[id='"+idChild+"_buy']";
+		var startId = "[id='start_"+idChild+"']";
+		$("#"+idParent).html(" ");
+		$("#"+idParent).append("<div class='text_starting' align='right'>"+textRemoving+"</div><div><img class='startingAjax' src='modules/addons_avalaibles/images/starting.gif' alt='' align='right'></div>");
+		$("#"+idParent).attr("style", "display: none;");
+		var textUninstall = $("#uninstallText").val();
+		$(idRpmName).remove();
+		$("#"+idParent).next().children(':first-child').html("<input type='button' style='display: block;' name='uninstallButton' id='"+idChild+"' class='uninstall' value='"+textUninstall+"'  />");
+		$(idRpmNameBuy).show();
+		var idRef = document.getElementById(idChild);
+		if(idRef)
+		    idRef.setAttribute("onclick","removeAddon('"+idChild+"');");
+		$(idRpmName).parent().next().children(':first-child').hide(); // icono de actualizacion
+		$(idRpmName).parent().show();
+		$(idRpmName).show();
+		document.getElementById("msg_status").innerHTML = " ";
+		$('#uninstallRpm').val("");
+		//$("#msg_status").html(" ");
+		clearAddons();// hacer un clear en el servidor
             }
             else if(response['status']=="not_install"){
                 // nada que hacer
@@ -553,23 +558,23 @@ function getPercent()
             	var errmsg = response['errmsg'];
             	showPogressMessage("Status: "+response['response']+" - "+errmsg);
             	var idParent = $('#progressBarTotal').parent().parent().attr("id"); // padre start_nameRPM
-				$('#progressBarTotal').parent().parent().html(" "); // se blanquea a los hijos de start_nameRPM
-				var textInstalling = $("#textInstalling").val();
-				var idChild = $("#"+idParent).next().children(':first-child').children(':first-child').attr("id");
-				if(idParent)
-					idChild = idParent.replace(/start_/g,"");
-				var idRpmName = "[id='"+idChild+"']";
-				var idRpmNameBuy = "[id='"+idChild+"_buy']";
-			    var startId = "[id='start_"+idChild+"']";
-				$("#"+idParent).html(" ");
-				$("#"+idParent).append("<div class='text_starting' align='right'>"+textInstalling+"</div><div><img class='startingAjax' src='modules/addons_avalaibles/images/starting.gif' alt='' align='right'></div>");
-				$("#"+idParent).attr("style", "display: none;");
-				$(idRpmName).show();
-				$(idRpmNameBuy).show();
-				var idRef = document.getElementById(idChild);
-				$(idRpmName).parent().next().children(':first-child').hide(); // icono de actualizacion
-				$(idRpmName).parent().show();
-				$(idRpmName).show();
+		$('#progressBarTotal').parent().parent().html(" "); // se blanquea a los hijos de start_nameRPM
+		var textInstalling = $("#textInstalling").val();
+		var idChild = $("#"+idParent).next().children(':first-child').children(':first-child').attr("id");
+		if(idParent)
+		    idChild = idParent.replace(/start_/g,"");
+		var idRpmName = "[id='"+idChild+"']";
+		var idRpmNameBuy = "[id='"+idChild+"_buy']";
+		var startId = "[id='start_"+idChild+"']";
+		$("#"+idParent).html(" ");
+		$("#"+idParent).append("<div class='text_starting' align='right'>"+textInstalling+"</div><div><img class='startingAjax' src='modules/addons_avalaibles/images/starting.gif' alt='' align='right'></div>");
+		$("#"+idParent).attr("style", "display: none;");
+		$(idRpmName).show();
+		$(idRpmNameBuy).show();
+		var idRef = document.getElementById(idChild);
+		$(idRpmName).parent().next().children(':first-child').hide(); // icono de actualizacion
+		$(idRpmName).parent().show();
+		$(idRpmName).show();
             	clearAddons();
             }
             else {
@@ -646,115 +651,145 @@ function process(response)
 
 function updateAddon(name_rpm)
 {
-	var classRpm = "input[class='"+name_rpm+"']";
-	var data_exp = $(classRpm).val();
+    var classRpm = "input[class='"+name_rpm+"']";
+    var data_exp = $(classRpm).val();
     var order = 'menu='+module_name+'&name_rpm='+name_rpm+'&action=update&data_exp='+data_exp+'&rawmode=yes';
     $('#actionToDo').val("");
     $('#uninstallRpm').val(name_rpm);
     document.getElementById("msg_status").innerHTML = " ";
     if(!there_install){
-		there_install = true;
-		$.post('index.php',order,function(theResponse){
-			var message = JSONtoString(theResponse);
-			var name_rpm = message['name_rpm'];
-			var idRpmName = "[id='"+name_rpm+"']";
-			var idRpmNameBuy = "[id='"+name_rpm+"_buy']";
-			var startId = "[id='start_"+name_rpm+"']";
+	there_install = true;
+	$.post('index.php',order,function(theResponse){
+	    var message = JSONtoString(theResponse);
+	    var name_rpm = message['name_rpm'];
+	    var idRpmName = "[id='"+name_rpm+"']";
+	    var idRpmNameBuy = "[id='"+name_rpm+"_buy']";
+	    var startId = "[id='start_"+name_rpm+"']";
       	    var nameAddons    = $(idRpmName).parent().parent().parent().parent().parent().children(':first-child').children(':first-child').text();
     	    var versionAddons = $(idRpmName).parent().parent().parent().parent().parent().children(':first-child').children(':nth-child(2)').text();
             if(message['error'] == "no_daemon"){
-              	there_install = false;
-              	connectJSON("no_daemon");                	
-              	var textDaemonOff = $('#textDaemonOff').val();
-            	showPogressMessage(textDaemonOff);
-            	$(idRpmName).parent().next().show();
-            	$(idRpmNameBuy).show();
-            	$(startId).hide();
-            	clearAddons();
-            	$('#uninstallRpm').val("");
-            	$('#actionToDo').val("");
-              	return;
-              }
-			if(message['response'] == "OK"){
-				var textDownloading = $("#textDownloading").val();
-				$(startId).children(':first-child').text(textDownloading);
-				textDownloading = textDownloading.replace(/\./g,"");
-				showPogressMessage(textDownloading+" "+nameAddons+" "+versionAddons);
-				$('#actionToDo').val("update");
-			    $(idRpmName).hide(); // ocultando el boton uninstall/install
-			    $(idRpmName).parent().next().children(':first-child').hide(); //ocultando el boton upgrade
-			    $(idRpmNameBuy).hide(); //ocultando el boton buy
-			    $(startId).show(); // mostrando la barra de instalacion
-			    confirmOperation();
-			}else if(message['response'] == "error"){
-				document.getElementById("msg_status").innerHTML = " ";
-				there_install = false;
-				$('#uninstallRpm').val("");
-				$(idRpmName).parent().next().show();
-				$(idRpmNameBuy).show();
-				$(startId).hide();
-				clearAddons();
-				$('#actionToDo').val("");
-				$('#uninstallRpm').val("");
-			    connectJSON("error_start_update");
-			}
-		});
+		there_install = false;
+		if(arrayLang)
+		    alert(arrayLang['no_daemon']);
+		else
+		    connectJSON("no_daemon");                	
+		var textDaemonOff = $('#textDaemonOff').val();
+		showPogressMessage(textDaemonOff);
+		$(idRpmName).parent().next().show();
+		$(idRpmNameBuy).show();
+		$(startId).hide();
+		clearAddons();
+		$('#uninstallRpm').val("");
+		$('#actionToDo').val("");
+		return;
+             }
+	    if(message['response'] == "OK"){
+		var textDownloading = $("#textDownloading").val();
+		$(startId).children(':first-child').text(textDownloading);
+		textDownloading = textDownloading.replace(/\./g,"");
+		showPogressMessage(textDownloading+" "+nameAddons+" "+versionAddons);
+		$('#actionToDo').val("update");
+		$(idRpmName).hide(); // ocultando el boton uninstall/install
+		$(idRpmName).parent().next().children(':first-child').hide(); //ocultando el boton upgrade
+		$(idRpmNameBuy).hide(); //ocultando el boton buy
+		$(startId).show(); // mostrando la barra de instalacion
+		confirmOperation();
+	    }else if(message['response'] == "error"){
+		document.getElementById("msg_status").innerHTML = " ";
+		there_install = false;
+		$('#uninstallRpm').val("");
+		$(idRpmName).parent().next().show();
+		$(idRpmNameBuy).show();
+		$(startId).hide();
+		clearAddons();
+		$('#actionToDo').val("");
+		$('#uninstallRpm').val("");
+		if(arrayLang)
+		    alert(arrayLang['error_start_update']);
+		else
+		    connectJSON("error_start_update");
+	    }else if(message['response'] == "there_install"){
+		document.getElementById("msg_status").innerHTML = " ";
+		there_install = false;
+		$('#uninstallRpm').val("");
+		$(idRpmName).parent().next().show();
+		$(idRpmNameBuy).show();
+		$(startId).hide();
+		$('#actionToDo').val("");
+		$('#uninstallRpm').val("");
+		alert(message['msg_error']);
+	    }
+	});
     }else
-    	connectJSON("process_updating");
+	currentProcess();
 }
 
 function removeAddon(name_rpm)
 {
-    var order = 'menu='+module_name+'&name_rpm='+name_rpm+'&action=remove&rawmode=yes';
+    var classRpm = "input[class='"+name_rpm+"']";
+    var data_exp = $(classRpm).val();
+    var order = 'menu='+module_name+'&name_rpm='+name_rpm+'&action=remove&data_exp='+data_exp+'&rawmode=yes';
     $('#actionToDo').val("");
-    //$("#msg_status").html(" ");
     document.getElementById("msg_status").innerHTML = " ";
     if(!there_install){
-		there_install = true;
-		$('#uninstallRpm').val(name_rpm);
-		$.post('index.php',order,function(theResponse){
-			var message = JSONtoString(theResponse);
-			var name_rpm = message['name_rpm'];
-			var idRpmName = "[id='"+name_rpm+"']";
-      	    var nameAddons    = $(idRpmName).parent().parent().parent().parent().parent().children(':first-child').children(':first-child').text();
-    	    var versionAddons = $(idRpmName).parent().parent().parent().parent().parent().children(':first-child').children(':nth-child(2)').text();
+	there_install = true;
+	$('#uninstallRpm').val(name_rpm);
+	$.post('index.php',order,function(theResponse){
+	    var message = JSONtoString(theResponse);
+	    var name_rpm = message['name_rpm'];
+	    var idRpmName = "[id='"+name_rpm+"']";
+	    var nameAddons    = $(idRpmName).parent().parent().parent().parent().parent().children(':first-child').children(':first-child').text();
+	    var versionAddons = $(idRpmName).parent().parent().parent().parent().parent().children(':first-child').children(':nth-child(2)').text();
             if(message['error'] == "no_daemon"){
-              	there_install = false;
-              	var rpmName = $('#uninstallRpm').val();
-			    var idRpmNameBuy = "[id='"+rpmName+"_buy']";
-			    $(idRpmNameBuy).show();
-              	$('#uninstallRpm').val("");
-              	var textDaemonOff = $('#textDaemonOff').val();
-            	showPogressMessage(textDaemonOff);
-            	connectJSON("no_daemon");
-              	return;
-              }
-			if(message['response'] == "OK"){
-	        	var textRemoving = $("#textRemoving").val();
-	        	textRemoving = textRemoving.replace(/\./g,"");
-				showPogressMessage(textRemoving+" "+nameAddons+" "+versionAddons);
-				$('#actionToDo').val("remove");
-			    var rpmName = $('#uninstallRpm').val();
-			    var idRpmName = "[id='"+name_rpm+"']";
-			    var idRpmNameBuy = "[id='"+name_rpm+"_buy']";
-			    var startId = "[id='start_"+name_rpm+"']";
-			    $(idRpmName).hide(); // ocultando el boton uninstall/install
-			    $(idRpmName).parent().next().children(':first-child').hide(); //ocultando el boton upgrade
-			    $(idRpmNameBuy).hide(); //ocultando el boton buy
-			    $(startId).show(); // mostrando la barra de instalacion
-			    confirmOperation();
-			}else if(message['response'] == "error"){
-			    there_install = false;
-			    var rpmName = $('#uninstallRpm').val();
-			    var idRpmNameBuy = "[id='"+rpmName+"_buy']";
-			    $(idRpmNameBuy).show();
-			    $('#uninstallRpm').val("");
-			    clearAddons();
-			    connectJSON("error_start_remove");
-			}
-		});
-    }else
-	connectJSON("process_removing");
+		there_install = false;
+		var rpmName = $('#uninstallRpm').val();
+		var idRpmNameBuy = "[id='"+rpmName+"_buy']";
+		$(idRpmNameBuy).show();
+		$('#uninstallRpm').val("");
+		var textDaemonOff = $('#textDaemonOff').val();
+		showPogressMessage(textDaemonOff);
+		if(arrayLang)
+		    alert(arrayLang['no_daemon']);
+		else
+		    connectJSON("no_daemon");
+		return;
+            }
+	    if(message['response'] == "OK"){
+		var textRemoving = $("#textRemoving").val();
+	        textRemoving = textRemoving.replace(/\./g,"");
+		showPogressMessage(textRemoving+" "+nameAddons+" "+versionAddons);
+		$('#actionToDo').val("remove");
+		var rpmName = $('#uninstallRpm').val();
+		var idRpmName = "[id='"+name_rpm+"']";
+		var idRpmNameBuy = "[id='"+name_rpm+"_buy']";
+		var startId = "[id='start_"+name_rpm+"']";
+		$(idRpmName).hide(); // ocultando el boton uninstall/install
+		$(idRpmName).parent().next().children(':first-child').hide(); //ocultando el boton upgrade
+		$(idRpmNameBuy).hide(); //ocultando el boton buy
+		$(startId).show(); // mostrando la barra de instalacion
+		confirmOperation();
+	    }else if(message['response'] == "error"){
+		there_install = false;
+		var rpmName = $('#uninstallRpm').val();
+		var idRpmNameBuy = "[id='"+rpmName+"_buy']";
+		$(idRpmNameBuy).show();
+		$('#uninstallRpm').val("");
+		clearAddons();
+		if(arrayLang)
+		    alert(arrayLang['error_start_remove']);
+		else
+		    connectJSON("error_start_remove");
+	    }else if(message['response'] == "there_install"){
+		there_install = false;
+		var idRpmNameBuy = "[id='"+rpmName+"_buy']";
+		$(idRpmNameBuy).show();
+		alert(message['msg_error']);
+	    }
+	});
+    }else{
+	currentProcess();
+	
+    }
 }
 
 function confirmOperation(){
@@ -766,51 +801,51 @@ function confirmOperation(){
             var resp = response['response'];
             var action = response['action'];
             if(resp == "OK"){
-				if(action == "confirm"){// se muestra el progressbar
-				    var rpmName = $('#uninstallRpm').val();
-				    var idRpmName = "[id='"+rpmName+"']";
-				    var startId = "[id='start_"+rpmName+"']";
-				    $(startId).html(" ");
-				    var progressbar  = "<div align='right'><div id='progressBarTotal' style='width: 100px;'></div><div id='percent_loaded'><span id='percentTotal' style='position: relative; top: -18px; right: 38px;'>0%</span></div></div>";
-				    $(startId).html(progressbar);
-				    $("[id^=progressBar]").progressbar({value: 0});
-				}
+		if(action == "confirm"){// se muestra el progressbar
+		    var rpmName = $('#uninstallRpm').val();
+		    var idRpmName = "[id='"+rpmName+"']";
+		    var startId = "[id='start_"+rpmName+"']";
+		    $(startId).html(" ");
+		    var progressbar  = "<div align='right'><div id='progressBarTotal' style='width: 100px;'></div><div id='percent_loaded'><span id='percentTotal' style='position: relative; top: -18px; right: 38px;'>0%</span></div></div>";
+		    $(startId).html(progressbar);
+		    $("[id^=progressBar]").progressbar({value: 0});
+		}
                 getStatusInstallAddonProgress();
             }else{
-            	if(response["clear"]){
-            		var rpmName = $('#uninstallRpm').val();
-            		var idRpmName = "[id='"+rpmName+"']";
-            		var startId = "[id='start_"+rpmName+"']";
-        			there_install = false;
-        			//$("#msg_status").html(" ");
-        			document.getElementById("msg_status").innerHTML = " ";
-        			var warmsg = response['warnmsg'][0];
-        			if(warmsg)
-        				showPogressMessage("Status: warnmsg - "+warmsg+" to "+rpmName);
-        			// mostrando los botones 
-        			$(idRpmName).show(); // mostrando el boton uninstall/install
-        			$(idRpmName).parent().next().children(':first-child').show(); // mostrando el boton upgrade
-        			$(idRpmName).parent().next().next().children(':first-child').show(); // mostrando el boton buy
-        			$(idRpmName).show(); // mostrando el boton uninstall
-        			$(startId).hide(); // ocultando la barra de instalacion
-        			$('#uninstallRpm').val("");
-        			clearAddons();
-        			return;
-            	}
-                confirmOperation();
+		if(response["clear"]){
+		    var rpmName = $('#uninstallRpm').val();
+		    var idRpmName = "[id='"+rpmName+"']";
+		    var startId = "[id='start_"+rpmName+"']";
+		    there_install = false;
+		    //$("#msg_status").html(" ");
+		    document.getElementById("msg_status").innerHTML = " ";
+		    var warmsg = response['warnmsg'][0];
+		    if(warmsg)
+			showPogressMessage("Status: warnmsg - "+warmsg+" to "+rpmName);
+		    // mostrando los botones 
+		    $(idRpmName).show(); // mostrando el boton uninstall/install
+		    $(idRpmName).parent().next().children(':first-child').show(); // mostrando el boton upgrade
+		    $(idRpmName).parent().next().next().children(':first-child').show(); // mostrando el boton buy
+		    $(idRpmName).show(); // mostrando el boton uninstall
+		    $(startId).hide(); // ocultando la barra de instalacion
+		    $('#uninstallRpm').val("");
+		    clearAddons();
+		    return;
+		}
+		confirmOperation();
             }
     });
 }
 
 function clearAddons()
 {
-	var link = 'menu='+module_name+'&action=toDoclearAddon&rawmode=yes';
-	$.post("index.php", link, 
-		function(theResponse){
-			response = JSONtoString(theResponse);
-			//if(response['response'] == "OK")
-			there_install = false;
-	});
+    var link = 'menu='+module_name+'&action=toDoclearAddon&rawmode=yes';
+    $.post("index.php", link,
+	function(theResponse){
+	    response = JSONtoString(theResponse);
+	    //if(response['response'] == "OK")
+	    there_install = false;
+    });
 }
 
 function getStatusInstallAddonProgress(){ 
@@ -970,24 +1005,36 @@ function connectJSON(mensaje_error) {
     var order = 'menu='+module_name+'&action=get_lang&rawmode=yes';
     var message = "";
     $.post("index.php", order,
-            function(theResponse){
-                message = JSONtoString(theResponse);
-                alert(message[mensaje_error]);
+	function(theResponse){
+	    message = JSONtoString(theResponse);
+	    arrayLang = message;
+	    alert(message[mensaje_error]);
+    });
+}
+
+//uso de JSON para obtener el arreglo lang.php
+function currentProcess() {
+    var order = 'menu='+module_name+'&action=currentProcess&rawmode=yes';
+    var message = "";
+    $.post("index.php", order,
+	function(theResponse){
+	    message = JSONtoString(theResponse);
+	    alert(message['message']);
     });
 }
 
 function quitCharacterSpecial(str)
 {
-	if(/\./.test(str)){
-		str = str.replace(/\./g,"!");
-	}
-	return str;
+    if(/\./.test(str)){
+	    str = str.replace(/\./g,"!");
+    }
+    return str;
 }
 
 function putCharacterSpecial(str)
 {
-	if(/\!/.test(str)){
-		str = str.replace(/!/g,".");
-	}
-	return str;
+    if(/\!/.test(str)){
+	    str = str.replace(/!/g,".");
+    }
+    return str;
 }

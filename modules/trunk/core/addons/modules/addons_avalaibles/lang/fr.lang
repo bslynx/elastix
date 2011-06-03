@@ -41,7 +41,9 @@ $arrLangModule=array(
 "Search" => "Rechercher",
 "view_details" => "Voir les Détails",
 "error_downloading" => "Erreur de téléchargement",
-"process_installing" => "Il existe d�j� un processus d'installation!",
+"process_installing" => "An addon is being installed.",
+"process_removing" => "An addon is being removed.",
+"process_updating" => "An addon is being updated.",
 "addons_installed" => "Add-on Installé",
 "error_start_install" => "Erreur au d�marrage de l'installation",
 "error_start_remove" => "Error start to remove",
@@ -78,7 +80,6 @@ $arrLangModule=array(
 "removing" => "removing",
 "removed" => "removed",
 "waiting" => "waiting",
-"view_details" => "View Details",
 "process_installed" => "process_installed",
 "name" => "Name",
 "version" => "Version",
@@ -98,5 +99,8 @@ $arrLangModule=array(
 "Upgrade version" => "Upgrade version",
 "Upgrade" => "Upgrade",
 "Try it" => "Try it",
+"Error(Details)" => "Error(Details)",
+"ErrorToOperation" => "Sorry, There is an operation",
+"on" => "on",
 );
 ?>
