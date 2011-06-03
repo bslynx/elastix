@@ -58,7 +58,7 @@ $tabla_fin ="          </td>
 exec("sudo /sbin/service openfire status", $arrSalida, $var);
 $statusOpenfire = 'on';
 foreach($arrSalida as $linea) { //obtengo el estado de openfire
-    if(ereg("not running", $linea)) {
+    if(preg_match("/not running/", $linea)) {
         $statusOpenfire = 'off';
         break;
     }

@@ -49,7 +49,7 @@ class paloNetwork
             //if(ereg("^(eth[[:digit:]]{1,3})", $lineaDmesg, $arrReg)) {
             //    echo $lineaDmesg;
             //}
-            if(ereg("^(eth[[:digit:]]{1,3}):[[:space:]]+(.*)$", $lineaDmesg, $arrReg) and ereg(" at ", $lineaDmesg)) {
+            if(preg_match("/^(eth[[:digit:]]{1,3}):[[:space:]]+(.*)$/", $lineaDmesg, $arrReg) and preg_match("/ at /", $lineaDmesg)) {
                 $arrSalida[$arrReg[1]] = $arrReg[2];
             }
         }
@@ -70,7 +70,7 @@ class paloNetwork
             if($fh = fopen($fileIf, "r")) {
                 while(!feof($fh)) {
                     $lineaIfcfg = fgets($fh, 4048);
-                    if(ereg("^BOOTPROTO[[:space:]]*=[[:space:]]*dhcp", $lineaIfcfg)) {
+                    if(preg_match("/^BOOTPROTO[[:space:]]*=[[:space:]]*dhcp/", $lineaIfcfg)) {
                         $type = "dhcp";
                     }
                 }
@@ -96,7 +96,7 @@ class paloNetwork
     
             unset($arrReg);
     
-            if(ereg("^eth(([[:digit:]]{1,3})(:([[:digit:]]{1,3}))?)[[:space:]]+", $lineaIfconfig, $arrReg)) {
+            if(preg_match("/^eth(([[:digit:]]{1,3})(:([[:digit:]]{1,3}))?)[[:space:]]+/", $lineaIfconfig, $arrReg)) {
                 $interfaseActual = "eth" . $arrReg[1];
                 $nombreInterfase = "Ethernet $arrReg[2]";
                 if(!empty($arrReg[3])) {
@@ -108,7 +108,7 @@ class paloNetwork
                 $arrIf[$interfaseActual]["Type"] = $this->obtener_tipo_interfase($interfaseActual);
             }
     
-            if(ereg("^(lo)[[:space:]]+", $lineaIfconfig, $arrReg)) {
+            if(preg_match("/^(lo)[[:space:]]+/", $lineaIfconfig, $arrReg)) {
                     $interfaseActual = $arrReg[1];
                     $arrIf[$interfaseActual]["Name"] = "Loopback";
             }
@@ -116,39 +116,39 @@ class paloNetwork
             // debo tambien poder determinar cuando se termina una segmento de interfase
             // no solo cuando comienza como se hace en los dos parrafos anteriores
     	
-            if(ereg("HWaddr ([ABCDEF[:digit:]]{2}:[ABCDEF[:digit:]]{2}:[ABCDEF[:digit:]]{2}:" .
-                    "[ABCDEF[:digit:]]{2}:[ABCDEF[:digit:]]{2}:[ABCDEF[:digit:]]{2})", $lineaIfconfig, $arrReg)) {
+            if(preg_match("/HWaddr ([ABCDEF[:digit:]]{2}:[ABCDEF[:digit:]]{2}:[ABCDEF[:digit:]]{2}:" .
+                    "[ABCDEF[:digit:]]{2}:[ABCDEF[:digit:]]{2}:[ABCDEF[:digit:]]{2})/", $lineaIfconfig, $arrReg)) {
                     $arrIf[$interfaseActual]["HWaddr"] = $arrReg[1];
             }
     
-            if(ereg("^[[:space:]]+inet addr:([[:digit:]]{1,3}\.[[:digit:]]{1,3}\.[[:digit:]]{1,3}\.[[:digit:]]{1,3})",
+            if(preg_match("/^[[:space:]]+inet addr:([[:digit:]]{1,3}\.[[:digit:]]{1,3}\.[[:digit:]]{1,3}\.[[:digit:]]{1,3})/",
             $lineaIfconfig, $arrReg)) {
                     $arrIf[$interfaseActual]["Inet Addr"] = $arrReg[1];
             }
     
-            if(ereg("[[:space:]]+Mask:([[:digit:]]{1,3}\.[[:digit:]]{1,3}\.[[:digit:]]{1,3}\.[[:digit:]]{1,3})$",
+            if(preg_match("/[[:space:]]+Mask:([[:digit:]]{1,3}\.[[:digit:]]{1,3}\.[[:digit:]]{1,3}\.[[:digit:]]{1,3})$/",
             $lineaIfconfig, $arrReg)) {
                     $arrIf[$interfaseActual]["Mask"] = $arrReg[1];
             }
     
             // TODO: El siguiente patron de matching es muy simple, cambiar
-            if(ereg(" RUNNING ", $lineaIfconfig, $arrReg)) {
+            if(preg_match("/ RUNNING /", $lineaIfconfig, $arrReg)) {
                     $arrIf[$interfaseActual]["Running"] = "Yes";
             }
     
-            if(ereg("^[[:space:]]+RX packets:([[:digit:]]{1,20})", $lineaIfconfig, $arrReg)) {
+            if(preg_match("/^[[:space:]]+RX packets:([[:digit:]]{1,20})/", $lineaIfconfig, $arrReg)) {
                     $arrIf[$interfaseActual]["RX packets"] = $arrReg[1];
             }
     
-            if(ereg("^[[:space:]]+RX bytes:([[:digit:]]{1,20})", $lineaIfconfig, $arrReg)) {
+            if(preg_match("/^[[:space:]]+RX bytes:([[:digit:]]{1,20})/", $lineaIfconfig, $arrReg)) {
                     $arrIf[$interfaseActual]["RX bytes"] = $arrReg[1];
             }
     
-            if(ereg("^[[:space:]]+TX packets:([[:digit:]]{1,20})", $lineaIfconfig, $arrReg)) {
+            if(preg_match("/^[[:space:]]+TX packets:([[:digit:]]{1,20})/", $lineaIfconfig, $arrReg)) {
                     $arrIf[$interfaseActual]["TX packets"] = $arrReg[1];
             }
     
-            if(ereg("[[:space:]]+TX bytes:([[:digit:]]{1,20})", $lineaIfconfig, $arrReg)) {
+            if(preg_match("/[[:space:]]+TX bytes:([[:digit:]]{1,20})/", $lineaIfconfig, $arrReg)) {
                     $arrIf[$interfaseActual]["TX bytes"] = $arrReg[1];
             }
     
@@ -167,7 +167,7 @@ class paloNetwork
         // Selecciono solo las interfases de red fisicas
         $arrInterfasesRed=array();
         foreach($arrInterfasesRedPreliminar as $nombreReal => $arrData) {
-        if(ereg("^eth[[:digit:]]{1,3}$", $nombreReal)) {
+        if(preg_match("/^eth[[:digit:]]{1,3}$/", $nombreReal)) {
                 $arrInterfasesRed[$nombreReal]=$arrData;
             }
         }
@@ -184,7 +184,7 @@ class paloNetwork
         if($fh=fopen($archivoResolv, "r")) {
             while(!feof($fh)) {
                 $linea = fgets($fh, 4048); 
-                if(ereg("^nameserver[[:space:]]+(.*)$", $linea, $arrReg)) {
+                if(preg_match("/^nameserver[[:space:]]+(.*)$/", $linea, $arrReg)) {
                     $arrResult['dns'][] = $arrReg[1];
                 }                
             } 
@@ -201,7 +201,7 @@ class paloNetwork
         exec("/sbin/route -n", $arrOutput);
         if(is_array($arrOutput)) {
             foreach($arrOutput as $linea) {
-                if(ereg("^0.0.0.0[[:space:]]+(([[:digit:]]{1,3})\.([[:digit:]]{1,3})\.([[:digit:]]{1,3})\.([[:digit:]]{1,3}))", $linea, $arrReg)) {
+                if(preg_match("/^0.0.0.0[[:space:]]+(([[:digit:]]{1,3})\.([[:digit:]]{1,3})\.([[:digit:]]{1,3})\.([[:digit:]]{1,3}))/", $linea, $arrReg)) {
                     $arrResult['gateway'] = $arrReg[1];
                 }
             }
@@ -321,7 +321,7 @@ class paloNetwork
         exec("/sbin/route -n", $arrOutput);
         if(is_array($arrOutput)) {
             foreach($arrOutput as $linea) {
-                if(ereg("^0.0.0.0[[:space:]]+(([[:digit:]]{1,3})\.([[:digit:]]{1,3})\.([[:digit:]]{1,3})\.([[:digit:]]{1,3}))", $linea, $arrReg)) {
+                if(preg_match("/^0.0.0.0[[:space:]]+(([[:digit:]]{1,3})\.([[:digit:]]{1,3})\.([[:digit:]]{1,3})\.([[:digit:]]{1,3}))/", $linea, $arrReg)) {
                     $ipCurrentDefaultGateway = $arrReg[1];
                     break;
                 }

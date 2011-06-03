@@ -158,7 +158,7 @@ class paloTrunk {
        if (file_exists($chan_dahdi_file)){
            $contenido_archivo=file($chan_dahdi_file);
            foreach ($contenido_archivo as $linea){
-               if (ereg("^(group|channel[[:space:]]*)=([[:space:]]*.*)",$linea,$regs)){
+               if (preg_match("/^(group|channel[[:space:]]*)=([[:space:]]*.*)/",$linea,$regs)){
                    $regs_key=trim($regs[1]);
                    $regs_value=trim($regs[2]);
                    if ($regs_key=="group") $ultGrupo=$regs_value;
@@ -187,7 +187,7 @@ class paloTrunk {
            // Sólo los grupos de puertos DAHDI pueden tener un precio
            //if (substr($tupla[1], 0, 5) == 'DAHDI' && $tupla[1]{4} != 'g') continue;  
 
-           if (ereg("^DAHDI/g([[:digit:]]+)",$trunkBill,$regs2))
+           if (preg_match("/^DAHDI\/g([[:digit:]]+)/",$trunkBill,$regs2))
            {
                $id_group=$regs2[1];
                if (isset($canales[$id_group])){
