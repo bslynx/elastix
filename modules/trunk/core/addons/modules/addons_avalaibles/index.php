@@ -445,10 +445,10 @@ function reportAvailables($smarty, $module_name, $local_templates_dir, &$pDB, $a
     $smarty->assign("textObservation", _tr("Please need to enable Centos repo, Elastix, Extra or others for the proper functioning, Detail of errors: "));
     $smarty->assign("error_details", _tr("Error(Details)"));
     $oFilterForm = new paloForm($smarty, createFieldFilter());
-    $content = "<form  method='post' style='margin-bottom:0;' action=\"$url\">".$oGrid->fetchGrid($arrGrid, $arrData,$arrLang)."</form>";
-    $htmlFilter  = $oFilterForm->fetchForm($content,"",$_POST);
+    
+    $htmlFilter  = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl","",$_POST);
     $oGrid->showFilter(trim($htmlFilter));
-    $content = $oGrid->fetchGrid();
+    $content = $oGrid->fetchGrid($arrGrid, $arrData, $arrLang);
 
     return $content;
 }
