@@ -618,7 +618,7 @@ function process(response)
         	return;
         }
     }
-    showPopupSecondBars('barsDetails','Bars Details',538,345);
+    //showPopupSecondBars('barsDetails','Bars Details',538,345);
     // if exists a process install in progress
     if(valueActual != "none"){
         // obtain each package by Actual progressbar 
@@ -729,7 +729,7 @@ function removeAddon(name_rpm)
     var classRpm = "input[class='"+name_rpm+"']";
     var data_exp = $(classRpm).val();
     var order = 'menu='+module_name+'&name_rpm='+name_rpm+'&action=remove&data_exp='+data_exp+'&rawmode=yes';
-    $('#actionToDo').val("");
+    $('#actionToDo').val(" ");
     document.getElementById("msg_status").innerHTML = " ";
     if(!there_install){
 	there_install = true;
@@ -806,7 +806,7 @@ function confirmOperation(){
 		    var idRpmName = "[id='"+rpmName+"']";
 		    var startId = "[id='start_"+rpmName+"']";
 		    $(startId).html(" ");
-		    var progressbar  = "<div align='right'><div id='progressBarTotal' style='width: 100px;'></div><div id='percent_loaded'><span id='percentTotal' style='position: relative; top: -18px; right: 38px;'>0%</span></div></div>";
+		    var progressbar  = "<div align='right'><div id='progressBarTotal' style='width: 100px; height: 1.5em;'></div><div id='percent_loaded'><span id='percentTotal' style='position: relative; top: -15px; right: 38px;'>0%</span></div></div>";
 		    $(startId).html(progressbar);
 		    $("[id^=progressBar]").progressbar({value: 0});
 		}
@@ -829,6 +829,7 @@ function confirmOperation(){
 		    $(idRpmName).show(); // mostrando el boton uninstall
 		    $(startId).hide(); // ocultando la barra de instalacion
 		    $('#uninstallRpm').val("");
+		    $('#actionToDo').val(" ");
 		    clearAddons();
 		    return;
 		}
@@ -855,117 +856,107 @@ function getStatusInstallAddonProgress(){
         function(theResponse){
             var response = JSONtoString(theResponse);
             var resp = response['response'];
+	    var statusGet = response['status'];
             var process_installed = response['process_installed'];
             var toDo = $('#actionToDo').val();
-        	var idChild = $('#uninstallRpm').val();
-        	var idRpmName = "[id='"+idChild+"']";
-        	var idRpmNameBuy = "[id='"+idChild+"_buy']";
-		    var startId = "[id='start_"+idChild+"']";
-        	var idParent = $(idRpmName).parent().parent().parent().attr("id");
-        	var textInstall = $("#installText").val();
-        	var textDownloading = $("#textDownloading").val();
-        	var textRemoving = $("#textRemoving").val();
-        	var textUninstall = $("#uninstallText").val();
-        	$('.loadingAjax').hide();
-            if(resp == "OK"){
+	    var idChild = $('#uninstallRpm').val();
+	    var idRpmName = "[id='"+idChild+"']";
+	    var idRpmNameBuy = "[id='"+idChild+"_buy']";
+	    var startId = "[id='start_"+idChild+"']";
+	    var idParent = $(idRpmName).parent().parent().parent().attr("id");
+	    var textInstall = $("#installText").val();
+	    var textDownloading = $("#textDownloading").val();
+	    var textRemoving = $("#textRemoving").val();
+	    var textUninstall = $("#uninstallText").val();
+	    $('.loadingAjax').hide();
+            /*if(resp == "OK"){
                 return;
-            }else if (resp == "not_install") {
-            	//$("#msg_status").html(" ");
+            }else */
+	    if (resp == "not_install") {
             	document.getElementById("msg_status").innerHTML = " ";
             	if(toDo == "remove"){
-            		$(idRpmName).remove();
-                	$(startId).html(" ");
-                	$(startId).append("<div class='text_starting' align='right'>"+textDownloading+"</div><div><img class='startingAjax' src='modules/addons_avalaibles/images/starting.gif' alt='' align='right'></div>");
-                	$(startId).attr("style", "display: none;");
-                	if(document.getElementById(idChild+"_buy"))
-                		textInstall = $("#tryItText").val();
-                	$("#"+idParent).children(':last-child').children(':first-child').append("<input type='button' style='display: block;' name='installButton' id='"+idChild+"' class='install' value='"+textInstall+"'  />");
-                	//$(idRpmName).attr("onclick","installAddon('"+idChild+"');");
-                	var idRef = document.getElementById(idChild);
-                	if(idRef)
-                		idRef.setAttribute("onclick","installAddon('"+idChild+"');");
-                	$(idRpmName).parent().next().hide(); // icono de actualizacion
-    			    $(idRpmNameBuy).show();
+		    $(idRpmName).remove();
+		    $(startId).html(" ");
+		    $(startId).append("<div class='text_starting' align='right'>"+textDownloading+"</div><div><img class='startingAjax' src='modules/addons_avalaibles/images/starting.gif' alt='' align='right'></div>");
+		    $(startId).attr("style", "display: none;");
+		    if(document.getElementById(idChild+"_buy"))
+			textInstall = $("#tryItText").val();
+		    $("#"+idParent).children(':last-child').children(':first-child').append("<input type='button' style='display: block;' name='installButton' id='"+idChild+"' class='install' value='"+textInstall+"'  />");
+
+		    var idRef = document.getElementById(idChild);
+		    if(idRef)
+			idRef.setAttribute("onclick","installAddon('"+idChild+"');");
+		    $(idRpmName).parent().next().hide(); // icono de actualizacion
+			$(idRpmNameBuy).show();
             	}else if(toDo == "installing"){
-            		$(idRpmName).remove();
-                	$(startId).html(" ");
-                	$(startId).append("<div class='text_starting' align='right'>"+textRemoving+"</div><div><img class='startingAjax' src='modules/addons_avalaibles/images/starting.gif' alt='' align='right'></div>");
-                	$(startId).attr("style", "display: none;");
-                	$("#"+idParent).children(':last-child').children(':first-child').append("<input type='button' style='display: block;' name='uninstallButton' id='"+idChild+"' class='uninstall' value='"+textUninstall+"'  />");
-                	//$(idRpmName).attr("onclick","installAddon('"+idChild+"');");
-                	var idRef = document.getElementById(idChild);
-                	if(idRef)
-                		idRef.setAttribute("onclick","removeAddon('"+idChild+"');");                	
-                	$(idRpmNameBuy).show();
-            	}else{
-                	$(idRpmName).remove();
-                	$(startId).html(" ");
-                	$(startId).append("<div class='text_starting' align='right'>"+textRemoving+"</div><div><img class='startingAjax' src='modules/addons_avalaibles/images/starting.gif' alt='' align='right'></div>");
-                	$(startId).attr("style", "display: none;");
-                	$("#"+idParent).children(':last-child').children(':first-child').append("<input type='button' style='display: block;' name='uninstallButton' id='"+idChild+"' class='uninstall' value='"+textUninstall+"'  />");
-                	//$(idRpmName).attr("onclick","installAddon('"+idChild+"');");
-                	var idRef = document.getElementById(idChild);
-                	if(idRef)
-                		idRef.setAttribute("onclick","removeAddon('"+idChild+"');");
-                	$(idRpmName).parent().next().hide();// icono de actualizacion
-                	$(idRpmNameBuy).show();
+		    $(idRpmName).remove();
+		    $(startId).html(" ");
+		    $(startId).append("<div class='text_starting' align='right'>"+textRemoving+"</div><div><img class='startingAjax' src='modules/addons_avalaibles/images/starting.gif' alt='' align='right'></div>");
+		    $(startId).attr("style", "display: none;");
+		    $("#"+idParent).children(':last-child').children(':first-child').append("<input type='button' style='display: block;' name='uninstallButton' id='"+idChild+"' class='uninstall' value='"+textUninstall+"'  />");
+		    //$(idRpmName).attr("onclick","installAddon('"+idChild+"');");
+		    var idRef = document.getElementById(idChild);
+		    if(idRef)
+			    idRef.setAttribute("onclick","removeAddon('"+idChild+"');");
+		    $(idRpmNameBuy).show();
+		}else{
+		    $(idRpmName).remove();
+		    $(startId).html(" ");
+		    $(startId).append("<div class='text_starting' align='right'>"+textRemoving+"</div><div><img class='startingAjax' src='modules/addons_avalaibles/images/starting.gif' alt='' align='right'></div>");
+		    $(startId).attr("style", "display: none;");
+		    $("#"+idParent).children(':last-child').children(':first-child').append("<input type='button' style='display: block;' name='uninstallButton' id='"+idChild+"' class='uninstall' value='"+textUninstall+"'  />");
+		    //$(idRpmName).attr("onclick","installAddon('"+idChild+"');");
+		    var idRef = document.getElementById(idChild);
+		    if(idRef)
+			idRef.setAttribute("onclick","removeAddon('"+idChild+"');");
+		    $(idRpmName).parent().next().hide();// icono de actualizacion
+		    $(idRpmNameBuy).show();
             	}
             	there_install = false;
-            	$('#actionToDo').val("");
-            	$('#uninstallRpm').val("");
+            	$('#actionToDo').val(" ");
+            	$('#uninstallRpm').val(" ");
             	clearAddons();// hacer un clear en el servidor
             }else {
-            	/****  Agregado viernes 20 de mayo  ****/
             	if(process_installed == "process_installed" & toDo == "installing"){
-            		// se debe mostrar los progressbar
-	           		 var textInstalling = $('#textInstalling').val();
-	       		     textInstalling = textInstalling.replace(/\./g,"");
-	       			 var nameAddons    = $(idRpmName).parent().parent().parent().parent().parent().children(':first-child').children(':first-child').text();
-	       			 var versionAddons = $(idRpmName).parent().parent().parent().parent().parent().children(':first-child').children(':nth-child(2)').text();
-	       			 showPogressMessage("Status: "+textInstalling+" "+nameAddons+" "+versionAddons);
-	       			 $(startId).html(" ");
-	       			 if(!document.getElementById("progressBarTotal")){
-	       				 var progressbar  = "<div align='right'><div id='progressBarTotal' style='width: 100px; height: 1.5em;'></div><div id='percent_loaded'><span id='percentTotal' style='position: relative; top: -15px; right: 38px;'>0%</span></div></div>";
-		       			 $(startId).html(progressbar);
-		       			 var valueActual = "none";
-		       		 	 //$('.linkDetailBars a').attr("onclick", "showPopupSecondBars('barsDetails','Bars Details',538,345);");
-		       			 $("[id^=progressBar]").progressbar({value: 0});
-		       			 $(idRpmName).parent().next().hide();// icono de actualizacion
-	       			 }
-	       			 $(idRpmName).parent().parent().parent().children(':first-child').hide(); // ocultando el loading del rpm que se esta instalando
-                	 $(idRpmName).hide(); // ocultando el boton install/remove del rpm que se esta instalado
-                	 $(startId).show();
-	       			 getPercent();
-	       			 /*var html = "<div id='progressBarActual0'></div>";
-	       			 $('#PopupElastix').html(html);
-	       			 $('#progressBarActual0').progressbar('value', 60);*/
+		    // se debe mostrar los progressbar
+		    var textInstalling = $('#textInstalling').val();
+		    textInstalling = textInstalling.replace(/\./g,"");
+		    var nameAddons    = $(idRpmName).parent().parent().parent().parent().parent().children(':first-child').children(':first-child').text();
+		    var versionAddons = $(idRpmName).parent().parent().parent().parent().parent().children(':first-child').children(':nth-child(2)').text();
+		    showPogressMessage("Status: "+textInstalling+" "+nameAddons+" "+versionAddons);
+		    $(startId).html(" ");
+		    if(!document.getElementById("progressBarTotal")){
+			var progressbar  = "<div align='right'><div id='progressBarTotal' style='width: 100px; height: 1.5em;'></div><div id='percent_loaded'><span id='percentTotal' style='position: relative; top: -15px; right: 38px;'>0%</span></div></div>";
+			$(startId).html(progressbar);
+			var valueActual = "none";
+			$("[id^=progressBar]").progressbar({value: 0});
+			$(idRpmName).parent().next().hide();// icono de actualizacion
+		    }
+		    $(idRpmName).parent().parent().parent().children(':first-child').hide(); // ocultando el loading del rpm que se esta instalando
+		    $(idRpmName).hide(); // ocultando el boton install/remove del rpm que se esta instalado
+		    $(startId).show();
+		    //getPercent();
             	}
             	if(process_installed == "process_installed" & toDo == "remove"){
-            		// se debe mostrar los progressbar
-	           		 var textRemoving = $('#textRemoving').val();
-	           		 textRemoving = textRemoving.replace(/\./g,"");
-	       			 var nameAddons    = $(idRpmName).parent().parent().parent().parent().parent().children(':first-child').children(':first-child').text();
-	       			 var versionAddons = $(idRpmName).parent().parent().parent().parent().parent().children(':first-child').children(':nth-child(2)').text();
-	       			 showPogressMessage("Status: "+textRemoving+" "+nameAddons+" "+versionAddons);
-	       			 $(startId).html(" ");
-	       			 if(!document.getElementById("progressBarTotal")){
-	       				 var progressbar  = "<div align='right'><div id='progressBarTotal' style='width: 100px; height: 1.5em;'></div><div id='percent_loaded'><span id='percentTotal' style='position: relative; top: -15px; right: 38px;'>0%</span></div></div>";
-		       			 $(startId).html(progressbar);
-		       			 var valueActual = "none";
-		       		 	 //$('.linkDetailBars a').attr("onclick", "showPopupSecondBars('barsDetails','Bars Details',538,345);");
-		       			 $("[id^=progressBar]").progressbar({value: 0});
-		       			 $(idRpmName).parent().next().hide();// icono de actualizacion
-	       			 }
-	       			 $(idRpmName).parent().parent().parent().children(':first-child').hide(); // ocultando el loading del rpm que se esta instalando
-                	 $(idRpmName).hide(); // ocultando el boton install/remove del rpm que se esta instalado
-                	 $(startId).show();
-	       			 getPercent();
-	       			 /*var html = "<div id='progressBarActual0'></div>";
-	       			 $('#PopupElastix').html(html);
-	       			 $('#progressBarActual0').progressbar('value', 60);*/
+		    // se debe mostrar los progressbar
+		    var textRemoving = $('#textRemoving').val();
+		    textRemoving = textRemoving.replace(/\./g,"");
+		    var nameAddons = $(idRpmName).parent().parent().parent().parent().parent().children(':first-child').children(':first-child').text();
+		    var versionAddons = $(idRpmName).parent().parent().parent().parent().parent().children(':first-child').children(':nth-child(2)').text();
+		    showPogressMessage("Status: "+textRemoving+" "+nameAddons+" "+versionAddons);
+		    $(startId).html(" ");
+		    if(!document.getElementById("progressBarTotal")){
+			var progressbar  = "<div align='right'><div id='progressBarTotal' style='width: 100px; height: 1.5em;'></div><div id='percent_loaded'><span id='percentTotal' style='position: relative; top: -15px; right: 38px;'>0%</span></div></div>";
+			$(startId).html(progressbar);
+			var valueActual = "none";
+			$("[id^=progressBar]").progressbar({value: 0});
+			$(idRpmName).parent().next().hide();// icono de actualizacion
+		    }
+		    $(idRpmName).parent().parent().parent().children(':first-child').hide(); // ocultando el loading del rpm que se esta instalando
+		    $(idRpmName).hide(); // ocultando el boton install/remove del rpm que se esta instalado
+		    $(startId).show();
+		    //getPercent();
             	}
-            	
-            	/****  Agregado viernes 20 de mayo  ****/
             	process(response);
                 getStatusInstallAddonProgress();
             }

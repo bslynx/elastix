@@ -520,7 +520,8 @@ function buttonUnInstall($name_rpm, $arrLang, $action, $serverKey, $versionToIns
     if($upgrade['status']){ // comparando si las versiones son iguales
 	$versionInstalled = str_replace("$name_rpm-","",$upgrade['old_version']);
 	$versionToInstall = str_replace("$name_rpm-","",$upgrade['new_version']);
-	$title = "<b>"._tr("Current version").":</b> $packageName v$versionInstalled <br /><b>"._tr("Upgrade version").":</b> $packageName v$versionToInstall";
+	//$title = "<b>"._tr("Current version").":</b> $packageName v$versionInstalled <br /><b>"._tr("Upgrade version").":</b> $packageName v$versionToInstall";
+	$title = "<b>"._tr("Current version").":</b> $packageName v$versionInstalled <b><br />"._tr("Upgrade version").":</b> $packageName v$versionToInstall";
 	$update = "<input type='button' value='"._tr("Upgrade")."' onclick='updateAddon(\"$name_rpm\");' class='updateAddon' title='$title' class='ttip' style='display: none;' />";
     }else
 	$update = "&nbsp;";
@@ -954,13 +955,21 @@ function getconfirmAddons($module_name, &$pDB, $arrConf, $arrLang){
 }
 
 function toDoclearAddon($module_name, &$pDB, $arrConf, $arrLang){
-	$pAddonsModules = new paloSantoAddonsModules($pDB);
+    $pAddonsModules = new paloSantoAddonsModules($pDB);
+    $json = new Services_JSON();
+    $result = "NO_OK";
+    $cont = 0;
+    while($cont < 5 && $result != "OK"){
 	$result = $pAddonsModules->clearAddon($arrConf);
-	$json = new Services_JSON();
-	// validar
-	$arrResult['response'] = trim($result);
-	setValueSessionNull($pAddonsModules);
-	return $json->encode($arrResult);
+	$result = trim($result);
+	if($result == "OK"){
+	    setValueSessionNull($pAddonsModules);
+	}
+	$cont++;
+	sleep(2);
+    }
+    $arrResult['response'] = trim($result);
+    return $json->encode($arrResult);
 }
 
 function setValueSessionNull($pAddonsModules)
@@ -1006,7 +1015,7 @@ function getAction()
     else if(getParameter("action")=="getStatusCache")
         return "getStatusCache";
     else if(getParameter("action")=="getServerKey")
-		return "getServerKey";
+	return "getServerKey";
     else if(getParameter("action")=="progressbar")
         return "progressbar";
     else if(getParameter("action")=="get_statusBar")
