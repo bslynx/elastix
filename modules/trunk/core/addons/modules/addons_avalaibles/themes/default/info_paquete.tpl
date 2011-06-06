@@ -1,6 +1,6 @@
 <div class="divTD">
     <div style="padding-bottom: 5px;">
-	<div style="float: left; width: 40%;">
+	<div style="float: left; width: 41%;">
 	    <b class="title_package">{$PAQUETE_NOMBRE}</b><span class="title_version">&nbsp;v{$PAQUETE_VERSION}-{$PAQUETE_RELEASE}</span><br/>
 	</div>
 	<div style="height: 30px;">
