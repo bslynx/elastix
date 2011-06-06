@@ -136,12 +136,10 @@ function _moduleContent(&$smarty, $module_name)
             $arrNetConf['dns_ip_1'] = $_POST['dns1'];
             $arrNetConf['dns_ip_2'] = $_POST['dns2'];
             $arrNetConf['gateway_ip'] = $_POST['gateway'];
-            modificar_archivo_hosts();
             $pNet->escribir_configuracion_red_sistema($arrNetConf);
             if(!empty($pNet->errMsg)) {
                 echo $pNet->errMsg;
             } else {
-                modificar_archivos_mail($error);
                 header("Location: index.php?menu=network");
             }
         } else {
@@ -278,49 +276,5 @@ function _moduleContent(&$smarty, $module_name)
     }
 
     return $strReturn;
-}
-function modificar_archivos_mail(&$error){
-    include_once("libs/paloSantoConfig.class.php");
-    global $arrLang;
-    $bValido=TRUE;
-    if(ereg("[^\.]*\.(.*)$",$_POST['host'],$matches))
-       $dominio=$matches[1];
-
-    //Luego se modifica el archivo main.cf
-    $conf_file=new paloConfig("/etc/postfix","main.cf"," = ","[[:space:]]*=[[:space:]]*");
-    $contenido=$conf_file->leer_configuracion();
-    $arr_reemplazos=array('mydomain'=>$dominio,
-                          'myhostname'=>$_POST['host']);
-    $bool=$conf_file->escribir_configuracion($arr_reemplazos);
-
-    if($bool){
-       //Se debe reiniciar el servicio postfix
-        $cmd_restart = escapeshellcmd("sudo -u root service generic-cloexec postfix restart");
-        $output="";
-        exec($cmd_restart,$output);
-            if(is_array($output) && isset($output[1])){
-                $linea=$output[1];
-                if(!eregi("OK",$linea)){
-                    $error.="$arrLang[Error]: $linea";
-                    $bValido*=FALSE;
-                }
-            }
-    }
-
-    return $bValido;
-
-}
-
-function modificar_archivo_hosts(){
-    include_once("libs/paloSantoConfig.class.php");
-    $bValido=TRUE;
-
-//Luego se modifica el archivo main.cf
-    $conf_file=new paloConfig("/etc","hosts","\t","[[:space:]]*");
-    $contenido=$conf_file->leer_configuracion();
-    $arr_reemplazos=array('127.0.0.1'=> "localhost ".$_POST['host'].' localhost.localdomain');
-    $bValido=$conf_file->escribir_configuracion($arr_reemplazos);
-
-    return $bValido;
 }
 ?>

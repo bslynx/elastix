@@ -209,154 +209,66 @@ class paloNetwork
         return $arrResult;
     }
 
-    /*  Procedimiento para escribir la configuracin de red del sistema en los archivos de configuracin, a partir
-        del arreglo indicado en el par�etro. El arreglo indicado en el par�etro debe de tener los siguientes
-        elementos:
-            $arreglo["host"]        Nombre simbolico del sistema
-            $arreglo["dns_ip_1"]    DNS primario de la maquina
-            $arreglo["dns_ip_2"]    DNS secundario de la maquina
-            $arreglo["gateway_ip"]  IP del gateway asociado a la interfaz externa
-        La funcin devuelve VERDADERO en caso de �ito, FALSO en caso de error.
-    */
-    function escribir_configuracion_red_sistema($config_red) 
-    {     
-        $this->errMsg = ""; 
-        $bValido=TRUE;
-        $msg="";
-     
-        include_once("paloSantoConfig.class.php");
-       
-        exec("sudo -u root hostname " . $config_red['host']);
- 
-        //para modificar el archivo /etc/sysconfig/network-----------------------------------------------------
-        $hostname=$config_red['host']; 
-        $arr_archivos[]=array("dir"=>"/etc/sysconfig","file"=>"network","separador"=>"=",
-                              "regexp"=>"[[:blank:]]*=[[:blank:]]*","reemplazos"=>array("HOSTNAME"=>$hostname, "GATEWAY" => $config_red["gateway_ip"]));
-          
-        $this->establecerDefaultGateway($config_red["gateway_ip"]);
-/**********************************************************************************************************************************/
-        $arrEths = $this->obtener_interfases_red_fisicas();
-        exec("sudo -u root chown asterisk.asterisk /etc/sysconfig/network-scripts", $flag, $status);
-        foreach($arrEths as $idEth=>$arrEth){
-            exec("sudo -u root chown asterisk.asterisk /etc/sysconfig/network-scripts/ifcfg-$idEth", $flag, $status);
-            exec("sed -i '/GATEWAY/d' /etc/sysconfig/network-scripts/ifcfg-$idEth");
-            exec("sudo -u root chown root.root /etc/sysconfig/network-scripts/ifcfg-$idEth", $flag, $status);
+    /**
+     * Procedimiento para escribir la configuracin de red del sistema en los 
+     * archivos de configuración, a partir del arreglo indicado en el parámetro.
+     * El arreglo indicado en el parámetro debe de tener los siguientes
+     * elementos:
+     *      $arreglo["host"]        Nombre simbolico del sistema
+     *      $arreglo["dns_ip_1"]    DNS primario de la maquina
+     *      $arreglo["dns_ip_2"]    DNS secundario de la maquina
+     *      $arreglo["gateway_ip"]  IP del gateway asociado a la interfaz externa
+     *  La función devuelve VERDADERO en caso de éxito, FALSO en caso de error.
+     * 
+     * @param   mixed   $config_red Nueva configuración deseada de la red
+     * 
+     * @return  bool    VERDADERO en éxito, FALSO en error
+     */
+    function escribir_configuracion_red_sistema($config_red)
+    {
+        $this->errMsg = '';
+    	$sComando = '/usr/bin/elastix-helper netconfig --genconf'.
+            ' --host '.escapeshellcmd($config_red['host']).
+            ' --gateway '.escapeshellcmd($config_red['gateway_ip']).
+            ' --dns1 '.escapeshellcmd($config_red['dns_ip_1']).
+            ' --dns2 '.escapeshellcmd($config_red['dns_ip_2']).
+            ' 2>&1';
+        $output = $ret = NULL;
+        exec($sComando, $output, $ret);
+        if ($ret != 0) {
+            $this->errMsg = implode('', $output);
+        	return FALSE;
         }
-        exec("sudo -u root chown root.root /etc/sysconfig/network-scripts/", $flag, $status);
-/**************************************************************************************************************************************/
-
-        //para setear los dns en /etc/resolv.conf--------------------------------------------------------------
-        $dns_ip_1 =$config_red['dns_ip_1'];
-        $dns_ip_2 =$config_red['dns_ip_2'];
-        $arr_resolv[]="nameserver $dns_ip_1";
-//        if($dns_ip_2!="" && !is_null($dns_ip_2) && ip_validation($dns_ip_2,$msg)){
-        if($dns_ip_2!="" && !is_null($dns_ip_2)){
-            $arr_resolv[]="nameserver $dns_ip_2";
-        }
-               
-        $arr_archivos[]=array("dir"=>"/etc","file"=>"resolv.conf","separador"=>" ",
-                              "regexp"=>"[[:blank:]]*","reemplazos"=>$arr_resolv,"overwrite"=>TRUE);
-            
-        foreach($arr_archivos as $archivo) {
-            $overwrite=FALSE;  //Si esta true escribe las lineas de arr_reemplazos directamente en el archivo, sin buscar las claves
-            $oConf = new paloConfig($archivo['dir'],$archivo['file'],$archivo['separador'],$archivo['regexp']);
-                       
-            if(array_key_exists("overwrite",$archivo) && $archivo['overwrite']==TRUE) {
-                $overwrite=TRUE;
-            }
-            $bool = $oConf->escribir_configuracion($archivo['reemplazos'], $overwrite);
-            $bValido*=$bool;
-        
-            if(!$bool){
-                $this->errMsg = $oConf->errMsg;
-                break;
-            }
-        }
-                      
-        if ($bValido) {
-            $comando = "sudo -u root service generic-cloexec network restart";
-            $mensaje = `$comando 2>&1`;
-        }
-                 
-        return $bValido;
+        return TRUE;
     }
 
+    /**
+     * Procedimiento para escribir la configuración de red de una interfaz
+     * Ethernet específica.
+     * 
+     * @param   string  $dev    Dispositivo de red a modificar: eth0
+     * @param   string  $tipo   Una de las cadenas: static dhcp
+     * @param   string  $ip     (opcional)  IP a asignar en caso static
+     * @param   string  $mask   (opcional)  Máscara a asignar en caso static
+     * 
+     * @return  bool    VERDADERO en éxito, FALSO en error
+     */
     function escribirConfiguracionInterfaseRed($dev, $tipo, $ip="", $mask="")
     {
-        //para modificar el archivo /etc/sysconfig/network-scripts/ifcfg-eth?
-        $archivoEth = "ifcfg-$dev";
-
-        if($tipo=="dhcp") {
-            $arrReemplazos=array("DEVICE"=>$dev, "BOOTPROTO"=>"dhcp", "ONBOOT"=>"yes", 
-                                 "TYPE"=>"Ethernet", "IPADDR"=>"", "NETMASK"=>"", "NOZEROCONF"=>"yes");
-        } else if($tipo=="static") {
-
-            $broadcast = $this->construir_ip_broadcast($ip, $mask);
-            $network   = $this->construir_ip_red($ip, $mask);
-            $arrReemplazos=array("DEVICE"=>$dev, "BOOTPROTO"=>"static", "ONBOOT"=>"yes", "TYPE"=>"Ethernet", "IPADDR"=>$ip, 
-                                  "NETMASK"=>$mask, "BROADCAST"=>$broadcast, "NETWORK"=>$network, "NOZEROCONF"=>"yes");            
-        } else {
-            // No hago nada?
+        $this->errMsg = '';
+        $sComando = '/usr/bin/elastix-helper netconfig --ifconf'.
+            ' --device '.escapeshellcmd($dev).
+            ' --bootproto '.escapeshellcmd($tipo).
+            (($ip == '') ? '' : ' --ipaddr '.escapeshellcmd($ip)).
+            (($mask == '') ? '' : ' --netmask '.escapeshellcmd($mask)).
+            ' 2>&1';
+        $output = $ret = NULL;
+        exec($sComando, $output, $ret);
+        if ($ret != 0) {
+            $this->errMsg = implode('', $output);
+            return FALSE;
         }
-
-        include_once("paloSantoConfig.class.php");        
-        $oConf = new paloConfig("/etc/sysconfig/network-scripts", $archivoEth, "=", "[[:blank:]]*=[[:blank:]]*");
-        $oConf->escribir_configuracion($arrReemplazos, false);
-
-        exec("sudo -u root service generic-cloexec network restart");
-
-        // Luego de escribir la configuracion hay que hacer un ifconfig?
-        return true;
-    }
-
-    // Esta funcion establece un nuevo default gateway
-    function establecerDefaultGateway($ipGateway)
-    {
-
-        $ipCurrentDefaultGateway = "";
-
-        // Verificar que sea un IP el $ipGateway
-
-        // Primero obtengo el default gateway
-        exec("/sbin/route -n", $arrOutput);
-        if(is_array($arrOutput)) {
-            foreach($arrOutput as $linea) {
-                if(preg_match("/^0.0.0.0[[:space:]]+(([[:digit:]]{1,3})\.([[:digit:]]{1,3})\.([[:digit:]]{1,3})\.([[:digit:]]{1,3}))/", $linea, $arrReg)) {
-                    $ipCurrentDefaultGateway = $arrReg[1];
-                    break;
-                }
-            }
-        }
-
-        // TODO: Validar que tambien sea un IP
-        if(!empty($ipCurrentDefaultGateway)) {
-            // Elimino el default gateway actual
-            exec("sudo -u root route del -net default gw $ipCurrentDefaultGateway", $arrOutput, $varOutput);
-            if($varOutput!=0) {
-                // No se pudo eliminar el default gateway actual
-                // No impido que la rutina prosiga porque puede ser que no exista y esto
-                // no impide que pueda agregar el nuevo
-            }
-        }
-
-        exec("sudo -u root route add -net default gw $ipGateway", $arrOutput, $varOutput);
-
-    }
-
-    function construir_ip_broadcast($ip, $mascara) 
-    {
-        $ip = explode(".", $ip);
-        $mascara = explode(".", $mascara);
-        for ($i = 0; $i < 4; $i++) $ip[$i] = ((int)$ip[$i]) | (~((int)$mascara[$i])& 0xFF);
-        return implode(".", $ip); 
-    } 
-
-    function construir_ip_red($ip, $mascara) 
-    {    
-        $ip = explode(".", $ip);
-        $mascara = explode(".", $mascara);
-        for ($i = 0; $i < 4; $i++) $ip[$i] = (int)$ip[$i] & (int)$mascara[$i];    
-        return implode(".", $ip); 
+        return TRUE;
     }
 }
 ?>
