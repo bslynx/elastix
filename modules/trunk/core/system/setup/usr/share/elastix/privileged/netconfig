@@ -173,7 +173,6 @@ function setDefaultGateway($sGateway)
     foreach ($interfaces as $sInterface) {
         $sArchivo = '/etc/sysconfig/network-scripts/ifcfg-'.$sInterface;
         if (file_exists($sArchivo)) {
-            //exec("sed -i '/GATEWAY/d' /etc/sysconfig/network-scripts/ifcfg-".$sInterface);
             $bClavePresente = FALSE;
             $contenidoNuevo = array();
             foreach (file($sArchivo) as $sLinea) {
@@ -185,7 +184,7 @@ function setDefaultGateway($sGateway)
         }
     }
     
-    // In /etc/sysconfig/network replace GATEWAY only if present
+    // In /etc/sysconfig/network replace GATEWAY or add it if absent
     $bClavePresente = FALSE;
     $contenidoNuevo = array();
     foreach (file('/etc/sysconfig/network') as $sLinea) {
@@ -197,7 +196,8 @@ function setDefaultGateway($sGateway)
         }
             
     }
-    if ($bClavePresente) file_put_contents('/etc/sysconfig/network', $contenidoNuevo);
+    if (!$bClavePresente) $contenidoNuevo[] = "GATEWAY=$sGateway\n";
+    file_put_contents('/etc/sysconfig/network', $contenidoNuevo);
 	
     // Set default gateway with route commands
     $output = NULL; $sOldGateway = NULL;
@@ -229,7 +229,7 @@ function listEthernetInterfaces()
 // Set the hostname for the machine to the specified string
 function setHostname($sHostname)
 {
-    // In /etc/sysconfig/network, replace HOSTNAME only if present
+    // In /etc/sysconfig/network, replace HOSTNAME or add it if absent
     $bClavePresente = FALSE;
     $contenidoNuevo = array();
     foreach (file('/etc/sysconfig/network') as $sLinea) {
@@ -240,7 +240,8 @@ function setHostname($sHostname)
             $contenidoNuevo[] = $sLinea;
         }            
     }
-    if ($bClavePresente) file_put_contents('/etc/sysconfig/network', $contenidoNuevo);
+    if (!$bClavePresente) $contenidoNuevo[] = "HOSTNAME=$sHostname\n";
+    file_put_contents('/etc/sysconfig/network', $contenidoNuevo);
 
     // In /etc/hosts, replace hostname for 127.0.0.1
     $bClavePresente = FALSE;
@@ -261,21 +262,24 @@ function setHostname($sHostname)
     // Set the hostname for the current session
 	exec("/bin/hostname $sHostname");
 
-    // In /etc/postfix/main.cf, replace myhostname and mydomain only if present
-    $bClavePresente = FALSE;
+    // In /etc/postfix/main.cf, replace myhostname and mydomain or add if absent
+    $bClavePresente = array();
+    $bClavePresente['myhostname'] = $bClavePresente['mydomain'] = FALSE;
     $contenidoNuevo = array();
     foreach (file('/etc/postfix/main.cf') as $sLinea) {
         if (preg_match('/^myhostname\s*=/', $sLinea)) {
-            $bClavePresente = TRUE;
+            $bClavePresente['myhostname'] = TRUE;
             $contenidoNuevo[] = "myhostname = $sHostname\n";
         } elseif (preg_match('/^mydomain\s*=/', $sLinea)) {
-            $bClavePresente = TRUE;
+            $bClavePresente['mydomain'] = TRUE;
             $contenidoNuevo[] = "mydomain = $sDomain\n";
         } else {
             $contenidoNuevo[] = $sLinea;
         }            
     }
-    if ($bClavePresente) file_put_contents('/etc/postfix/main.cf', $contenidoNuevo);
+    if (!$bClavePresente['myhostname']) $contenidoNuevo[] = "myhostname = $sHostname\n";
+    if (!$bClavePresente['mydomain']) $contenidoNuevo[] = "mydomain = $sDomain\n";
+    file_put_contents('/etc/postfix/main.cf', $contenidoNuevo);
 }
 
 // Set DNS servers in /etc/resolv.conf. DNS 1 is mandatory. DNS 2 is optional
