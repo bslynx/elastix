@@ -242,6 +242,19 @@ function setHostname($sHostname)
     }
     if ($bClavePresente) file_put_contents('/etc/sysconfig/network', $contenidoNuevo);
 
+    // In /etc/hosts, replace hostname for 127.0.0.1
+    $bClavePresente = FALSE;
+    $contenidoNuevo = array();
+    foreach (file('/etc/hosts') as $sLinea) {
+        if (preg_match('/^127\.0\.0\.1\s+/', $sLinea)) {
+            $bClavePresente = TRUE;
+            $contenidoNuevo[] = "127.0.0.1\tlocalhost $sHostname localhost.localdomain\n";
+        } else {
+            $contenidoNuevo[] = $sLinea;
+        }            
+    }
+    if ($bClavePresente) file_put_contents('/etc/hosts', $contenidoNuevo);
+
     // Figure out a domain for the hostname
     $sDomain = array_pop(explode('.', $sHostname, 2));
 
