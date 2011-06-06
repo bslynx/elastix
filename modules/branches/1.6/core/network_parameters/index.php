@@ -156,7 +156,7 @@ function _moduleContent(&$smarty, $module_name)
             $smarty->assign("mb_message", $strErrorMsg);
             $smarty->assign("CANCEL", $arrLang["Cancel"]);
             $smarty->assign("SAVE", $arrLang["Save"]);
-            $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
+            $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);    
             $strReturn=$oForm->fetchForm("$local_templates_dir/network.tpl", $arrLang["Network Parameters"], $_POST);
         }
 
@@ -213,7 +213,6 @@ function _moduleContent(&$smarty, $module_name)
         $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
         $smarty->assign("EDIT_PARAMETERS", $arrLang["Edit Network Parameters"]);
         $smarty->assign("CONFIRM_EDIT", $arrLang["Are you sure you want to edit network parameters?"]);
-
         $strReturn = $oForm->fetchForm("$local_templates_dir/network_edit_interfase.tpl", "{$arrLang['Edit Interface']} \"" . $arrEth['Name'] . "\"", $arrInterfaseData);
     } else {
         // SECCION NETWORK PARAMETERS

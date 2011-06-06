@@ -29,7 +29,7 @@
 	<td width="30%">{$dns1.INPUT}</td>
       </tr>
       <tr>
-	<td>{$gateway.LABEL}: {if $mode eq 'input'} <span  class="required">*</span> {/if}</td>
+	<td>{$gateway.LABEL}: {if $mode eq 'input'} <span  class="required">*</span>{/if}</td>
 	<td>{$gateway.INPUT}</td>
 	<td width="20%">{$dns2.LABEL}: </td>
 	<td width="30%">{$dns2.INPUT}</td>
