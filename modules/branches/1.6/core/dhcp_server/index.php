@@ -37,7 +37,6 @@ function _moduleContent(&$smarty, $module_name)
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
     include_once "modules/$module_name/libs/paloSantoDHCP.class.php";
-    include_once "modules/$module_name/libs/sysmanip.lib.php";
 
     $lang=get_language();
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
@@ -391,14 +390,10 @@ function serviceUpdateDHCP($smarty, $module_name, $local_templates_dir, $pDB, &$
     //si las IPs son válidas continuo validando si concuerdan con alguna interfaz
     //obtener las interfaces del sistema y verificar que el rango de ips pertenecen a alguna de las interfases
  
-    // Calculos previos -- necesitare mas adelante la configuracion de la tarjeta de red lan
-    // VOY A NECESITAR ESTA INFO MAS ADELANTE
-    $sysmanip = new stick_sysmanip();
-    $configuracion_de_red_actual = $sysmanip->leer_configuracion_red_sistema();
-
     $paloNet = new paloNetwork();
     $paloDHCP = new PaloSantoDHCP($pDB);
     $interfazEncontrada=FALSE;
+    $configuracion_de_red_actual = array();
 
     if($continuar){
         $interfases=$paloNet->obtener_interfases_red();
