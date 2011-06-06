@@ -442,10 +442,12 @@ function serviceUpdateDHCP($smarty, $module_name, $local_templates_dir, $pDB, &$
     if($ip_wins!="...") $val->validar("WINS",  $ip_wins,"ip");
     if($ip_gw !="..."){
         if ($val->validar("Gateway",$ip_gw,"ip")){
-            $IPSubnet   = $paloDHCP->calcularIpSubred($configuracion_de_red_actual["lan_ip"],$configuracion_de_red_actual["lan_mask"]);
-            $IpSubredGw = $paloDHCP->calcularIpSubred($ip_gw, $configuracion_de_red_actual["lan_mask"]);
-            if($IpSubredGw!=$IPSubnet)
-                $val->arrErrores['Gateway']['mensaje'] = $arrLang["Gateway is outside the LAN network"];
+            if ($interfazEncontrada) { 
+                $IPSubnet   = $paloDHCP->calcularIpSubred($configuracion_de_red_actual["lan_ip"],$configuracion_de_red_actual["lan_mask"]);
+                $IpSubredGw = $paloDHCP->calcularIpSubred($ip_gw, $configuracion_de_red_actual["lan_mask"]);
+                if($IpSubredGw!=$IPSubnet)
+                    $val->arrErrores['Gateway']['mensaje'] = $arrLang["Gateway is outside the LAN network"];
+            }
         }
     }
     $val->validar($arrLang['Time of client refreshment'], $in_lease_time, "numeric");

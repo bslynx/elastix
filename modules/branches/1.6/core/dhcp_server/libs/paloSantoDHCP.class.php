@@ -177,7 +177,7 @@ class PaloSantoDHCP
         //y voy a suponer que si EXISTE el servicio esta corriendo, caso contrario NO.
 
         //vemos si se esta ejecutando el servicio dhcp
-        $out=`sudo /sbin/service dhcpd status`;
+        $out=`/sbin/service dhcpd status`;
 
         if(file_exists("/var/run/dhcpd.pid") && eregi("pid",$out))
             return "active"; 
@@ -284,7 +284,7 @@ class PaloSantoDHCP
         }
     }
 
-    function createContentConfDHCP($arrAttributes)
+    private function createContentConfDHCP($arrAttributes)
     {
         $tpl = $this->getTemplateFileConfDHCP();
         if($arrAttributes['ip_gw'] != "...")$lineas_gw  = "\toption routers\t\t\t{$arrAttributes['ip_gw']};\n";		
@@ -310,7 +310,7 @@ class PaloSantoDHCP
         return $tpl;
     }
 
-    function getTemplateFileConfDHCP()
+    private function getTemplateFileConfDHCP()
     {
         exec("/bin/hostname",$arrOutput);
         $host = $arrOutput[0];
