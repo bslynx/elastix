@@ -187,29 +187,28 @@ class PaloSantoDHCP
 
     function startServiceDHCP()
     {
-        $flag = false;
-        if(!file_exists("/var/run/dhcpd.pid")) {
-            $out = `sudo /sbin/service generic-cloexec dhcpd start`;
-            if(eregi("OK",$out)){
-                exec("sudo -u root chkconfig --level 235 dhcpd on",$arrConsole,$flagStatus);
-                $flag = ($flagStatus)?false:true;
-            }
+        $this->errMsg = '';
+        $sComando = '/usr/bin/elastix-helper dhcpconfig --start 2>&1';
+        $output = $ret = NULL;
+        exec($sComando, $output, $ret);
+        if ($ret != 0) {
+            $this->errMsg = implode('', $output);
+            return FALSE;
         }
-        return $flag;
+        return TRUE;
     }
 
     function stopServiceDHCP()
     {
-        $flag = false;
-        // Intentar terminar el servicio
-        if(file_exists("/var/run/dhcpd.pid")) {
-            $out = `sudo /sbin/service dhcpd stop`;
-            if(eregi("OK",$out)){
-                exec("sudo -u root chkconfig --level 235 dhcpd off",$arrConsole,$flagStatus);
-                $flag = ($flagStatus)?false:true;
-            }
+        $this->errMsg = '';
+        $sComando = '/usr/bin/elastix-helper dhcpconfig --stop 2>&1';
+        $output = $ret = NULL;
+        exec($sComando, $output, $ret);
+        if ($ret != 0) {
+            $this->errMsg = implode('', $output);
+            return FALSE;
         }
-        return $flag;
+        return TRUE;
     }
 
     function calcularIpSubred($ipCualquiera, $mascaraRed)
@@ -241,125 +240,24 @@ class PaloSantoDHCP
                 $ip_fin,
                 $in_lease_time)
     {
-        //PASO 1: PREPARO EL ARREGLOS DE ATRIBUTOS PARA CREAR EL CONTENIDO DEL ARCHIVO.
-        $arrAttributes['ip_gw']         = $ip_gw;
-        $arrAttributes['ip_gw_nm']      = $ip_gw_nm;
-        $arrAttributes['ip_wins']       = $ip_wins;
-        $arrAttributes['ip_dns1']       = $ip_dns1;
-        $arrAttributes['ip_dns2']       = $ip_dns2;
-        $arrAttributes['IPSubnet']      = $IPSubnet; 
-        $arrAttributes['lan_mask']      = $conf_red_actual['lan_mask']; 
-        $arrAttributes['lan_ip']        = $conf_red_actual['lan_ip']; 
-        $arrAttributes['ip_ini']        = $ip_ini;
-        $arrAttributes['ip_fin']        = $ip_fin;
-        $arrAttributes['in_lease_time'] = $in_lease_time;
-
-        //PASO 2: CREO EL CONTENIDO DEL ARCHIVO
-        $contentFileDHCP = $this->createContentConfDHCP($arrAttributes);
-        exec("sudo -u root chown asterisk:asterisk ".$this->pathFileConfDHCP,$arrConsole,$flagStatus1);
-        exec("sudo -u root chmod 666 ".$this->pathFileConfDHCP,$arrConsole,$flagStatus2);
-
-        //PASO 3: SOBREESCRIBO EL ARCHIVO DE CONFIGURACION
-        if($flagStatus1==0 && $flagStatus2==0){
-            if($fh_dhcpd = @fopen($this->pathFileConfDHCP, "w")) {
-                fwrite($fh_dhcpd, $contentFileDHCP);
-                fclose($fh_dhcpd);
-            }
-            else{
-                $this->errMsg = $arrLang["Failed to update the file configuration"].": ".$this->pathFileConfDHCP; 
-                return false;
-            }
-        } 
-        else{ 
-            $this->errMsg = $arrLang["Failed to update the file configuration"].": ".$this->pathFileConfDHCP; 
-            return false;
+        // $ip_gw_nm $IPSubnet $conf_red_actual no se usan
+        $this->errMsg = '';
+        $sComando = '/usr/bin/elastix-helper dhcpconfig --config'.
+            ' --ip-start '.escapeshellcmd($ip_ini).
+            ' --ip-end '.escapeshellcmd($ip_fin).
+            ' --lease-time '.escapeshellcmd($in_lease_time).
+            (($ip_gw != '...') ? ' --gateway '.escapeshellcmd($ip_gw) : '').
+            (($ip_wins != '...') ? ' --wins '.escapeshellcmd($ip_wins) : '').
+            (($ip_dns1 != '...') ? ' --dns1 '.escapeshellcmd($ip_dns1) : '').
+            (($ip_dns2 != '...') ? ' --dns2 '.escapeshellcmd($ip_dns2) : '').
+            ' 2>&1';
+        $output = $ret = NULL;
+        exec($sComando, $output, $ret);
+        if ($ret != 0) {
+            $this->errMsg = implode('', $output);
+            return FALSE;
         }
-        exec("sudo -u root chown root:root ".$this->pathFileConfDHCP,$arrConsole,$flagStatus1);
-        exec("sudo -u root chmod 644 ".$this->pathFileConfDHCP,$arrConsole,$flagStatus2);
-        if($flagStatus1==0 && $flagStatus2==0) 
-            return true;
-        else{ 
-            $this->errMsg = $arrLang['The update was successful, but was unable to reestablish the permissions of the file dhcp.conf']; 
-            return false;
-        }
-    }
-
-    private function createContentConfDHCP($arrAttributes)
-    {
-        $tpl = $this->getTemplateFileConfDHCP();
-        if($arrAttributes['ip_gw'] != "...")$lineas_gw  = "\toption routers\t\t\t{$arrAttributes['ip_gw']};\n";		
-	$tpl = str_replace("{CONF_GATEWAY}",        $lineas_gw,   $tpl);
-        $tpl = str_replace("{CONF_GATEWAY_NETMASK}",$arrAttributes['ip_gw_nm'],$tpl); 
-
-        if($arrAttributes['ip_wins']!="...") $tpl = str_replace("{CONF_WINS}","\toption netbios-name-servers\t{$arrAttributes['ip_wins']};\n",$tpl);
-        else $tpl = str_replace("{CONF_WINS}","",$tpl);
-
-        $tpl = str_replace("{IP_SUBNET_LAN}",   $arrAttributes['IPSubnet'],$tpl); // El $IPSubnet lo obtuve mas arriba
-        $tpl = str_replace("{MASK_SUBNET_LAN}", $arrAttributes['lan_mask'],$tpl);
-        // Fin del calculo de la subnet lan
-
-        if($arrAttributes['ip_dns1']!="...") $lineas_dns  = "\toption domain-name-servers\t{$arrAttributes['ip_dns1']};\n";        
-        if($arrAttributes['ip_dns2']!="...") $lineas_dns .= "\toption domain-name-servers\t{$arrAttributes['ip_dns2']};\n";
-
-        $tpl = str_replace("{CONF_DOMAIN_NAME_SERVER}",$lineas_dns,                    $tpl);
-        $tpl = str_replace("{CONF_NTP_SERVERS}",       $arrAttributes['lan_ip'],       $tpl);
-        $tpl = str_replace("{CONF_TFTP_SERVER_NAME}",  $arrAttributes['lan_ip'],       $tpl);
-        $tpl = str_replace("{CONF_IP_INICIO}",         $arrAttributes['ip_ini'],       $tpl);
-        $tpl = str_replace("{CONF_IP_FIN}",            $arrAttributes['ip_fin'],       $tpl);
-        $tpl = str_replace("{CONF_LEASE_TIME}",        $arrAttributes['in_lease_time'],$tpl);
-        return $tpl;
-    }
-
-    private function getTemplateFileConfDHCP()
-    {
-        exec("/bin/hostname",$arrOutput);
-        $host = $arrOutput[0];
-        $template = "ddns-update-style interim;\n".
-                    "ignore client-updates;\n\n".
-
-                    "subnet {IP_SUBNET_LAN} netmask {MASK_SUBNET_LAN} {\n".
-
-	            "{CONF_GATEWAY}\n\n".
-                    "\toption subnet-mask\t\t{MASK_SUBNET_LAN};\n".
-                    "\toption nis-domain\t\t\"$host\";\n".
-                    "\toption domain-name\t\t\"$host\";\n".
-                    "{CONF_DOMAIN_NAME_SERVER}\n".
-                    "\toption time-offset\t\t-18000; # Eastern Standard Time\n".
-                    "\toption ntp-servers\t\t{CONF_NTP_SERVERS};\n".
-                    "\toption tftp-server-name\t\t\"tftp://{CONF_TFTP_SERVER_NAME}\";\n".
-                    "{CONF_WINS}\n\n".
-
-	            "\trange dynamic-bootp {CONF_IP_INICIO} {CONF_IP_FIN};\n".
-	            "\tdefault-lease-time {CONF_LEASE_TIME};\n".
-	            "\tmax-lease-time 50000;\n".
-                    "}";
-        return $template;
-    }
-
-    function restartServiceDHCP()
-    { 
-        // Reinicio el servicio, si es que esto aplica
-        // Hay 3 casos
-        $dhcp_status = $this->getStatusServiceDHCP();
-        if(file_exists("/var/run/dhcpd.pid") and $dhcp_status=='active') {
-            exec("sudo -u root /sbin/service generic-cloexec dhcpd restart",$arrConsole,$flagReturn1);
-            exec("sudo -u root chkconfig --level 235 dhcpd on",$arrConsole,$flagReturn2);
-            return (($flagReturn1)?false:true) and (($flagReturn2)?false:true);
-        } 
-        else if (file_exists("/var/run/dhcpd.pid") and $dhcp_status=='desactive') {
-            exec("sudo -u root /sbin/service dhcpd stop",$arrConsole,$flagReturn1);
-            exec("sudo -u root chkconfig --level 235 dhcpd off",$arrConsole,$flagReturn2);
-            return (($flagReturn1)?false:true) and (($flagReturn2)?false:true);
-        } 
-        else if (!file_exists("/var/run/dhcpd.pid") and $dhcp_status=='active') {
-            exec("sudo -u root /sbin/service generic-cloexec dhcpd start",$arrConsole,$flagReturn1);
-            exec("sudo -u root chkconfig --level 235 dhcpd on",$arrConsole,$flagReturn2);
-            return (($flagReturn1)?false:true) and (($flagReturn2)?false:true);
-        } 
-        else {
-            exec("sudo -u root chkconfig --level 235 dhcpd off",$arrConsole,$flagReturn2);
-            return ($flagReturn2)?false:true;
-        }
+        return TRUE;
     }
 }
 ?>

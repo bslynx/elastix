@@ -474,7 +474,6 @@ function serviceUpdateDHCP($smarty, $module_name, $local_templates_dir, $pDB, &$
             $smarty->assign("mb_message",$paloDHCP->errMsg); 
             $huboError=true;
         }
-        //$paloDHCP->restartServiceDHCP(); Aun no probado.
     }
 
     if($huboError){
