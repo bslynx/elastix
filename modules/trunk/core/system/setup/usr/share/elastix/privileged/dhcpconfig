@@ -1,0 +1,263 @@
+#!/usr/bin/php
+<?php
+/*
+  vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
+  Codificación: UTF-8
+  +----------------------------------------------------------------------+
+  | Copyright (c) 1997-2003 Palosanto Solutions S. A.                    |
+  +----------------------------------------------------------------------+
+  | Cdla. Nueva Kennedy Calle E 222 y 9na. Este                          |
+  | Telfs. 2283-268, 2294-440, 2284-356                                  |
+  | Guayaquil - Ecuador                                                  |
+  +----------------------------------------------------------------------+
+  | Este archivo fuente está sujeto a las políticas de licenciamiento    |
+  | de Palosanto Solutions S. A. y no está disponible públicamente.      |
+  | El acceso a este documento está restringido según lo estipulado      |
+  | en los acuerdos de confidencialidad los cuales son parte de las      |
+  | políticas internas de Palosanto Solutions S. A.                      |
+  | Si Ud. está viendo este archivo y no tiene autorización explícita    |
+  | de hacerlo, comuníquese con nosotros, podría estar infringiendo      |
+  | la ley sin saberlo.                                                  |
+  +----------------------------------------------------------------------+
+  | Autores: Alex Villacís Lasso <a_villacis@palosanto.com>              |
+  +----------------------------------------------------------------------+
+  $Id: dhcpconfig.php,v 1.1 2007/01/09 23:49:36 alex Exp $
+*/
+require_once 'Console/Getopt.php';
+
+// Parse command-line options
+$opt = Console_Getopt::getopt($argv, '', array(
+    'config',   // Configurate DHCP options
+    'start',    // Start DHCP service and mark as autostart
+    'stop',     // Stop DHCP service and remove from autostart
+    //'restart',  // Restart DHCP service
+    
+    // DHCP configuration options
+    'ip-start=',    // Start of IP range
+    'ip-end=',      // End of IP range
+    'lease-time=',  // Lease time 
+    'dns1=',        // DNS 1 (optional)
+    'dns2=',        // DNS 2 (optional)
+    'gateway=',     // Network gateway (optional)
+    'wins=',        // New hostname (optional)
+));
+if (PEAR::isError($opt)) error_exit($opt->getMessage()."\n");
+validateOptions($opt);
+foreach ($opt[0] as $option) switch ($option[0]) {
+case '--config':
+    exit(action_configuration($opt) ? 0 : 1);
+case '--start':
+    exit(action_start($opt) ? 0 : 1);
+case '--stop':
+    exit(action_stop($opt) ? 0 : 1);
+}
+error_exit("No action specified (--config or --start or --stop)\n");
+
+function error_exit($sMsg, $errorcode = 1)
+{
+    fwrite(STDERR, $sMsg);
+    exit($errorcode);
+}
+
+// Parse and validate known command-line options
+function validateOptions($opt)
+{
+    foreach ($opt[0] as $option) switch ($option[0]) {
+    case '--lease-time':
+        if (!ctype_digit($option[1]))
+            error_exit('Option '.$option[0].": Invalid lease time\n");
+        break;
+    case '--dns1':
+    case '--dns2':
+    case '--gateway':
+    case '--wins':
+    case '--ip-start':
+    case '--ip-end':
+        $regs = NULL;
+        if (!preg_match('/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/', $option[1], $regs))
+            error_exit('Option '.$option[0].": Invalid IP address\n");
+        for ($i = 1; $i <= 4; $i++) if ($regs[$i] > 255)
+            error_exit('Option '.$option[0].": Invalid IP address\n");
+        break;
+    }
+}
+
+// Execute DNS configuration. Returns TRUE on success
+function action_configuration($opt)
+{
+    $bExito = TRUE;
+
+	$sIpStart = $sIpEnd = $iLeaseTime = $sGateway = $sDNS1 = $sDNS2 = $sWINS = NULL;
+    foreach ($opt[0] as $option) switch ($option[0]) {
+    case '--ip-start':
+        $sIpStart = $option[1];
+        break;
+    case '--ip-end':
+        $sIpEnd = $option[1];
+        break;
+    case '--lease-time':
+        $iLeaseTime = $option[1];
+        break;
+    case '--gateway':
+        $sGateway = $option[1];
+        break;
+    case '--dns1':
+        $sDNS1 = $option[1];
+        break;
+    case '--dns2':
+        $sDNS2 = $option[1];
+        break;
+    case '--wins':
+        $sWINS = $option[1];
+        break;
+    }
+    
+    // Check required parameters
+    if ($bExito && is_null($sIpStart)) {
+        $bExito = FALSE;
+        fprintf(STDERR, "ERR: start of IP range must be specified\n");
+    }
+    if ($bExito && is_null($sIpEnd)) {
+        $bExito = FALSE;
+        fprintf(STDERR, "ERR: end of IP range must be specified\n");
+    }
+    if ($bExito && is_null($iLeaseTime)) {
+        $bExito = FALSE;
+        fprintf(STDERR, "ERR: lease time must be specified\n");
+    }
+    if (is_null($sDNS1) && !is_null($sDNS2)) {
+        $bExito = FALSE;
+        fprintf(STDERR, "ERR: DNS 2 requires DNS 1 to be set\n");
+    }
+
+    if ($bExito) {
+        // Fix reversed start and end
+        if ((explode(".", $sIpStart) > explode(".", $sIpEnd))) {
+        	$t = $sIpStart; $sIpStart = $sIpEnd; $sIpEnd = $t;
+        }
+
+        // Optional and derived parameters
+        $sConfigWINS = $sConfigDNS = $sConfigGateway = '';
+        if (!is_null($sGateway))
+            $sConfigGateway = "\toption routers\t\t\t{$sGateway};\n";
+        if (!is_null($sWINS))
+            $sConfigWINS = "\toption netbios-name-servers\t{$sWINS};\n";
+        if (!is_null($sDNS1))
+            $sConfigDNS .= "\toption domain-name-servers\t{$sDNS1};\n";;
+        if (!is_null($sDNS2))
+            $sConfigDNS .= "\toption domain-name-servers\t{$sDNS2};\n";;
+
+        // Get timezone offset
+        $sTimezoneOffset = date("Z");
+        $sTimezoneName = date_default_timezone_get();
+
+        // Find out hostname
+        $output = NULL;
+        exec('/bin/hostname', $output);
+        $sHostname = $output[0];
+
+        // Figure out a domain for the hostname
+        $sDomain = array_pop(explode('.', $sHostname, 2));
+        
+        /* There might be multiple interfaces on the machine. The configuration
+         * file must be built with the subnet/mask information of the interface
+         * that contains the required IP range */
+        $sIpAddress = $sNetwork = $sNetmask = NULL;
+        foreach (listIpAddresses() as $addrInfo) {
+        	$sNetwork_start = construir_ip_red($sIpStart, $addrInfo['netmask']);
+            $sNetwork_end   = construir_ip_red($sIpEnd, $addrInfo['netmask']);
+            if ($addrInfo['network'] == $sNetwork_start && $addrInfo['network'] == $sNetwork_end) {
+                $sNetwork = $addrInfo['network'];
+                $sNetmask = $addrInfo['netmask'];
+                $sIpAddress = $addrInfo['ipaddr'];
+            	break;
+            }
+        }
+        if (is_null($sIpAddress)) {
+        	$bExito = FALSE;
+            fprintf(STDERR, "ERR: start or end IPs are outside range on all configured interfaces\n");
+        } else {
+            $sPlantilla = <<<PLANTILLA_DHCP
+ddns-update-style interim;
+ignore client-updates;
+
+subnet $sNetwork netmask $sNetmask {
+$sConfigGateway
+
+	option subnet-mask		$sNetmask;
+	option nis-domain		"$sDomain";
+	option domain-name		"$sDomain";
+$sConfigDNS
+	option time-offset		$sTimezoneOffset; # $sTimezoneName
+	option ntp-servers		$sIpAddress;
+	option tftp-server-name		"tftp://$sIpAddress";
+$sConfigWINS
+
+	range dynamic-bootp $sIpStart $sIpEnd;
+	default-lease-time $iLeaseTime;
+	max-lease-time 50000;
+}
+PLANTILLA_DHCP;
+            file_put_contents('/etc/dhcpd.conf', $sPlantilla);
+        }
+    }
+    return $bExito;
+}
+
+// List IPv4/Netmask for all Ethernet interfaces
+function listIpAddresses()
+{
+    $iflist = array(); $if = NULL;
+    $output = NULL;
+    exec('/sbin/ifconfig', $output);
+	foreach ($output as $s) {
+        $regs = NULL;
+		if (preg_match('/^(eth\d+)\s+/', $s, $regs)) {
+			$if = $regs[1];
+		} elseif (preg_match('/\s+inet addr:(\S+)\s+Bcast:(\S+)\s+Mask:(\S+)/', $s, $regs)) {
+			if (!is_null($if) && !isset($iflist[$if])) { 
+                $iflist[$if] = array(
+                    'ipaddr'    =>  $regs[1],
+                    'broadcast' =>  $regs[2],
+                    'netmask'   =>  $regs[3],
+                    'network'   =>  construir_ip_red($regs[1], $regs[3]),
+                );
+            }
+		}
+	}
+    return $iflist;
+}
+
+function construir_ip_red($ip, $mascara) 
+{    
+    $ip = explode(".", $ip);
+    $mascara = explode(".", $mascara);
+    for ($i = 0; $i < 4; $i++) $ip[$i] = (int)$ip[$i] & (int)$mascara[$i];    
+    return implode(".", $ip); 
+}
+
+// Starts DHCP and marks it for autostart. Returns TRUE on success.
+function action_start($opt)
+{
+    $output = $ret = NULL;
+	if (!file_exists('/var/run/dhcpd.pid')) {
+		exec('/sbin/service dhcpd start', $output, $ret);
+        if ($ret != 0) return FALSE;
+	}
+    exec('/sbin/chkconfig --level 235 dhcpd on', $output, $ret);
+    return ($ret == 0);
+}
+
+// Stops DHCP and removes it from autostart. Returns TRUE on success
+function action_stop($opt)
+{
+    $output = $ret = NULL;
+    if (file_exists('/var/run/dhcpd.pid')) {
+        exec('/sbin/service dhcpd stop', $output, $ret);
+        if ($ret != 0) return FALSE;
+    }
+    exec('/sbin/chkconfig --level 235 dhcpd off', $output, $ret);
+    return ($ret == 0);
+}
+
+?>
