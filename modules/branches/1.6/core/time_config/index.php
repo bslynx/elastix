@@ -121,7 +121,7 @@ function _moduleContent(&$smarty, $module_name)
 
 	if (isset($_POST['Actualizar'])) {
 //		print '<pre>';print_r($_POST);print '</pre>';
-             
+
         $date = getParameter("date");
         $date = translateDate($date);
         $date = explode("-",$date);
@@ -136,9 +136,9 @@ function _moduleContent(&$smarty, $module_name)
         }
 		// Validación básica
 		$listaVars = array(
-			//'ServerDate_Year'	=>	'^[[:digit:]]{4}$',
-            //'ServerDate_Month'	=>	'^[[:digit:]]{1,2}$',
-			//'ServerDate_Day'	=>	'^[[:digit:]]{1,2}$',
+	//		'ServerDate_Year'	=>	'^[[:digit:]]{4}$',
+	//		'ServerDate_Month'	=>	'^[[:digit:]]{1,2}$',
+	//		'ServerDate_Day'	=>	'^[[:digit:]]{1,2}$',
 			'ServerDate_Hour'	=>	'^[[:digit:]]{1,2}$',
 			'ServerDate_Minute'	=>	'^[[:digit:]]{1,2}$',
 			'ServerDate_Second'	=>	'^[[:digit:]]{1,2}$',
@@ -156,11 +156,11 @@ function _moduleContent(&$smarty, $module_name)
         if(!ereg('^[[:digit:]]{1,2}$',$day))
             $bValido = FALSE;
 		if ($bValido && !checkdate($month, $day, $year)) $bValido = FALSE;
-		
+
 		// Validación de zona horaria nueva
 		$sZonaNueva = $_POST['TimeZone'];
 		if (!in_array($sZonaNueva, $listaZonas)) $sZonaNueva = $sZonaActual;
-		
+
 		if (!$bValido) {
 			// TODO: internacionalizar
 			$smarty->assign("mb_message", _tr('Date not valid'));
@@ -243,8 +243,7 @@ function _moduleContent(&$smarty, $module_name)
 			// Para que funcione esto, se requiere agregar a /etc/sudoers lo siguiente:
 			// asterisk ALL = NOPASSWD: /bin/date
             $fecha = sprintf('%04d-%02d-%02d %02d:%02d:%02d', 
-            	$year, $month, $day,
-            	$_POST['ServerDate_Hour'], $_POST['ServerDate_Minute'], $_POST['ServerDate_Second']);
+            	$year, $month, $day, $_POST['ServerDate_Hour'], $_POST['ServerDate_Minute'], $_POST['ServerDate_Second']);
             $cmd = "/usr/bin/sudo -u root /bin/date -s '$fecha' 2>&1";
             $output=$ret_val="";
             exec($cmd,$output,$ret_val);
@@ -260,6 +259,7 @@ function _moduleContent(&$smarty, $module_name)
 
 //    $smarty->assign("COMBO_FECHA_HORA",/*$combo_fecha_hora*/ 'gato' );
     $mes = date("m",time());
+
     $smarty->assign("CURRENT_DATETIME", strftime("%Y,$mes,%d,%H,%M,%S",time()));
     $smarty->assign("MES_ACTUAL", ucwords(strftime("%B",time())));
     $smarty->assign('LISTA_ZONAS', $listaZonas);

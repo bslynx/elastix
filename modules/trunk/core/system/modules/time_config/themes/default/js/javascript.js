@@ -5,5 +5,4 @@ $(document).ready(function(){
             changeYear: true,
             dateFormat:'dd M yy'
      });
-    //document.getElementById("datepicker").value = document.getElementById("date_hiden").value;
 });

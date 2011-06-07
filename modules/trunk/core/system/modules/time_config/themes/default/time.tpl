@@ -47,10 +47,8 @@ setInterval("displaytime2()", 1000);
             <td>{$MES_ACTUAL} <span id="SERVER_TIME" align='right'></span></td>
           </tr>
           <tr>
-            <td width="15%"><b>{$TIME_NUEVA_FECHA}:</b></td>         
+            <td width="15%"><b>{$TIME_NUEVA_FECHA}:</b></td>
             <td><input type="text" name="date" id="datepicker" value="{$CURRENT_DATE}" style = "width: 10em; color: rgb(136, 68, 0); background-color: rgb(250, 250, 250); border: 1px solid rgb(153, 153, 153); text-align: center;" READONLY>
-          <!--  <td>{html_select_date prefix="ServerDate_" start_year="2000" end_year="+10" field_order="YMD"}
-            </td>-->
           </tr>
           <tr>
             <td width="15%"><b>{$TIME_NUEVA_HORA}:</b></td>

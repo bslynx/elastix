@@ -29,6 +29,18 @@
 
 require_once "libs/misc.lib.php";
 
+if(!function_exists("getParameter")){
+    function getParameter($parameter)
+    {
+        if(isset($_POST[$parameter]))
+            return $_POST[$parameter];
+        else if(isset($_GET[$parameter]))
+            return $_GET[$parameter];
+        else
+            return null;
+    }
+}
+
 function _moduleContent(&$smarty, $module_name)
 {
     //include module files
@@ -109,6 +121,7 @@ function _moduleContent(&$smarty, $module_name)
 
 	if (isset($_POST['Actualizar'])) {
 //		print '<pre>';print_r($_POST);print '</pre>';
+
         $date = getParameter("date");
         $date = translateDate($date);
         $date = explode("-",$date);
@@ -142,7 +155,8 @@ function _moduleContent(&$smarty, $module_name)
             $bValido = FALSE;
         if(!ereg('^[[:digit:]]{1,2}$',$day))
             $bValido = FALSE;
-		if (!checkdate($month, $day, $year)) $bValido = FALSE;
+		if ($bValido && !checkdate($month, $day, $year)) $bValido = FALSE;
+
 		// Validación de zona horaria nueva
 		$sZonaNueva = $_POST['TimeZone'];
 		if (!in_array($sZonaNueva, $listaZonas)) $sZonaNueva = $sZonaActual;
