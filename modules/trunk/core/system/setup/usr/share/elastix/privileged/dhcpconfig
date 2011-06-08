@@ -131,53 +131,65 @@ function action_configuration($opt)
     }
 
     if ($bExito) {
-        // Fix reversed start and end
-        if ((explode(".", $sIpStart) > explode(".", $sIpEnd))) {
-        	$t = $sIpStart; $sIpStart = $sIpEnd; $sIpEnd = $t;
+        $bExito = configureDHCP($sIpStart, $sIpEnd, $iLeaseTime, $sGateway, 
+            $sDNS1, $sDNS2, $sWINS);
+    }
+    return $bExito;
+}
+
+// Write out DHCP configuration from requested parameters. Return TRUE on success
+function configureDHCP($sIpStart, $sIpEnd, $iLeaseTime, $sGateway = NULL, 
+    $sDNS1 = NULL, $sDNS2 = NULL, $sWINS = NULL)
+{
+    $bExito = TRUE;
+
+    // Fix reversed start and end
+    if ((explode(".", $sIpStart) > explode(".", $sIpEnd))) {
+        $t = $sIpStart; $sIpStart = $sIpEnd; $sIpEnd = $t;
+    }
+
+    // Optional and derived parameters
+    $sConfigWINS = $sConfigDNS = $sConfigGateway = '';
+    if (!is_null($sGateway))
+        $sConfigGateway = "\toption routers\t\t\t{$sGateway};\n";
+    if (!is_null($sWINS))
+        $sConfigWINS = "\toption netbios-name-servers\t{$sWINS};\n";
+    if (!is_null($sDNS1))
+        $sConfigDNS .= "\toption domain-name-servers\t{$sDNS1};\n";;
+    if (!is_null($sDNS2))
+        $sConfigDNS .= "\toption domain-name-servers\t{$sDNS2};\n";;
+
+    // Get timezone offset
+    $sTimezoneOffset = date("Z");
+    $sTimezoneName = date_default_timezone_get();
+
+    // Find out hostname
+    $output = NULL;
+    exec('/bin/hostname', $output);
+    $sHostname = $output[0];
+
+    // Figure out a domain for the hostname
+    $sDomain = array_pop(explode('.', $sHostname, 2));
+    
+    /* There might be multiple interfaces on the machine. The configuration
+     * file must be built with the subnet/mask information of the interface
+     * that contains the required IP range */
+    $sIpAddress = $sNetwork = $sNetmask = NULL;
+    foreach (listIpAddresses() as $addrInfo) {
+        $sNetwork_start = construir_ip_red($sIpStart, $addrInfo['netmask']);
+        $sNetwork_end   = construir_ip_red($sIpEnd, $addrInfo['netmask']);
+        if ($addrInfo['network'] == $sNetwork_start && $addrInfo['network'] == $sNetwork_end) {
+            $sNetwork = $addrInfo['network'];
+            $sNetmask = $addrInfo['netmask'];
+            $sIpAddress = $addrInfo['ipaddr'];
+            break;
         }
-
-        // Optional and derived parameters
-        $sConfigWINS = $sConfigDNS = $sConfigGateway = '';
-        if (!is_null($sGateway))
-            $sConfigGateway = "\toption routers\t\t\t{$sGateway};\n";
-        if (!is_null($sWINS))
-            $sConfigWINS = "\toption netbios-name-servers\t{$sWINS};\n";
-        if (!is_null($sDNS1))
-            $sConfigDNS .= "\toption domain-name-servers\t{$sDNS1};\n";;
-        if (!is_null($sDNS2))
-            $sConfigDNS .= "\toption domain-name-servers\t{$sDNS2};\n";;
-
-        // Get timezone offset
-        $sTimezoneOffset = date("Z");
-        $sTimezoneName = date_default_timezone_get();
-
-        // Find out hostname
-        $output = NULL;
-        exec('/bin/hostname', $output);
-        $sHostname = $output[0];
-
-        // Figure out a domain for the hostname
-        $sDomain = array_pop(explode('.', $sHostname, 2));
-        
-        /* There might be multiple interfaces on the machine. The configuration
-         * file must be built with the subnet/mask information of the interface
-         * that contains the required IP range */
-        $sIpAddress = $sNetwork = $sNetmask = NULL;
-        foreach (listIpAddresses() as $addrInfo) {
-        	$sNetwork_start = construir_ip_red($sIpStart, $addrInfo['netmask']);
-            $sNetwork_end   = construir_ip_red($sIpEnd, $addrInfo['netmask']);
-            if ($addrInfo['network'] == $sNetwork_start && $addrInfo['network'] == $sNetwork_end) {
-                $sNetwork = $addrInfo['network'];
-                $sNetmask = $addrInfo['netmask'];
-                $sIpAddress = $addrInfo['ipaddr'];
-            	break;
-            }
-        }
-        if (is_null($sIpAddress)) {
-        	$bExito = FALSE;
-            fprintf(STDERR, "ERR: start or end IPs are outside range on all configured interfaces\n");
-        } else {
-            $sPlantilla = <<<PLANTILLA_DHCP
+    }
+    if (is_null($sIpAddress)) {
+        $bExito = FALSE;
+        fprintf(STDERR, "ERR: start or end IPs are outside range on all configured interfaces\n");
+    } else {
+        $sPlantilla = <<<PLANTILLA_DHCP
 ddns-update-style interim;
 ignore client-updates;
 
@@ -198,9 +210,9 @@ $sConfigWINS
 	max-lease-time 50000;
 }
 PLANTILLA_DHCP;
-            file_put_contents('/etc/dhcpd.conf', $sPlantilla);
-        }
+        file_put_contents('/etc/dhcpd.conf', $sPlantilla);
     }
+
     return $bExito;
 }
 
