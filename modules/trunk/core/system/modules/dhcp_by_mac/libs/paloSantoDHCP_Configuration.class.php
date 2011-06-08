@@ -87,16 +87,7 @@ class paloSantoDHCP_Configuration {
         return $result;
     }
 
-    function addChangeFileDHCP_Conf($text) {
-        exec("sudo chown asterisk.asterisk /etc/dhcpd.conf");
-        $fp = fopen('/etc/dhcpd.conf', 'a');
-
-        fwrite($fp, $text);
-        exec("sudo -u root chown root.root /etc/dhcpd.conf");
-        fclose($fp);
-    }
-
-    function updateChangeFileDHCP_Conf($text) {
+    private function updateChangeFileDHCP_Conf($text) {
         exec("sudo chown asterisk.asterisk /etc/dhcpd.conf");
         $fp = fopen('/etc/dhcpd.conf', 'w');
         
@@ -105,7 +96,7 @@ class paloSantoDHCP_Configuration {
         fclose($fp);
     }
 
-    function addDhcpConfigDB($data) {
+    private function addDhcpConfigDB($data) {
         $queryInsert = $this->_DB->construirInsert('dhcp_conf', $data);
         $result = $this->_DB->genQuery($queryInsert);
 
