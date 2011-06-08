@@ -166,93 +166,32 @@ function _moduleContent(&$smarty, $module_name)
 			$smarty->assign("mb_message", _tr('Date not valid'));
 		} else {
 			if ($sZonaNueva != $sZonaActual) {
-				// Construir la ruta del archivo que hay que copiar a /etc/localtime
-				$sRutaArchivoFuente = '/usr/share/zoneinfo/'.$sZonaNueva;
-				if (!file_exists($sRutaArchivoFuente)) {
-					$smarty->assign('mb_message', _tr('Unable to locate file')." $sRutaArchivoFuente");
-				} else {
-					$bExitoEscritura = FALSE;
-					$sContenido = NULL;
-					$iRetVal = NULL;
-					$sOutput = NULL;					
-					exec("/usr/bin/sudo -u root chown asterisk /etc/localtime", $sOutput, $iRetVal);
-					if ($iRetVal != 0) {
-						$smarty->assign('mb_message', _tr('Internal has failed'));
-					} else {
-						$sContenido = file_get_contents($sRutaArchivoFuente);
-						if ($sContenido === FALSE) {
-							$smarty->assign('mb_message', _tr('Internal reading')." $sRutaArchivoFuente "._tr('has failed'));
-						} else {
-							$hArchivo = fopen('/etc/localtime', 'w');
-							if ($hArchivo) {
-								fwrite($hArchivo, $sContenido);
-								fclose($hArchivo);
-								exec("/usr/bin/sudo -u root chown root.root /etc/localtime", $sOutput, $iRetVal);
-								$bExitoEscritura = TRUE;
-							} else {
-								$smarty->assign('mb_message', _tr('Internal aperture'));
-								$bExitoEscritura = FALSE;
-							}
-						}
-					}
-					
-					// Escribir /var/spool/postfix/etc/localtime si es necesario
-					if ($bExitoEscritura && file_exists('/var/spool/postfix/etc/localtime')) {
-						exec("/usr/bin/sudo -u root chown asterisk /var/spool/postfix/etc/localtime", $sOutput, $iRetVal);
-    					if ($iRetVal != 0) {
-    						$smarty->assign('mb_message', _tr('Internal chown'));
-    					} else {
-							$hArchivo = fopen('/var/spool/postfix/etc/localtime', 'w');
-							if ($hArchivo) {
-								fwrite($hArchivo, $sContenido);	// Depende de haber leído previamente en código de arriba!
-								fclose($hArchivo);
-								exec("/usr/bin/sudo -u root chown root.root /var/spool/postfix/etc/localtime", $sOutput, $iRetVal);
-								$bExitoEscritura = TRUE;
-							} else {
-								$smarty->assign('mb_message', _tr('Internal aperture localtime'));
-								$bExitoEscritura = FALSE;
-							}
-						}
-					}
-					
-					// Actualizar /etc/sysconfig/clock
-					if ($bExitoEscritura) {
-						exec("/usr/bin/sudo -u root chown asterisk /etc/sysconfig/clock", $sOutput, $iRetVal);
-    					if ($iRetVal != 0) {
-    						$smarty->assign('mb_message', _tr('Internal chown clock'));
-    					} else {
-							$hArchivo = fopen('/etc/sysconfig/clock', 'w');
-							if ($hArchivo) {
-								foreach ($infoZona as $s) {
-									fputs($hArchivo, $s);
-								}
-								fputs($hArchivo, "ZONE=\"$sZonaNueva\"\n");
-								fclose($hArchivo);
-								exec("/usr/bin/sudo -u root chown root.root /etc/sysconfig/clock", $sOutput, $iRetVal);
-								$sZonaActual = $sZonaNueva;
-								$bExitoEscritura = TRUE;
-							} else {
-								$smarty->assign('mb_message', _tr('Internal aperture clock'));
-								$bExitoEscritura = FALSE;
-							}
-    					}
-					}
-				}
+                $sComando = '/usr/bin/elastix-helper dateconfig'.
+                    ' --timezone '.$sZonaNueva.
+                    ' 2>&1';
+                $output = $ret = NULL;
+                exec($sComando, $output, $ret);
+                if ($ret != 0) {
+                	$smarty->assign('mb_message', _tr('Failed to change timezone').' - '.implode('<br/>', $output));
+                    $bValido = FALSE;
+                }
 			}
 
-			// Para que funcione esto, se requiere agregar a /etc/sudoers lo siguiente:
-			// asterisk ALL = NOPASSWD: /bin/date
-            $fecha = sprintf('%04d-%02d-%02d %02d:%02d:%02d', 
-            	$year, $month, $day, $_POST['ServerDate_Hour'], $_POST['ServerDate_Minute'], $_POST['ServerDate_Second']);
-            $cmd = "/usr/bin/sudo -u root /bin/date -s '$fecha' 2>&1";
-            $output=$ret_val="";
-            exec($cmd,$output,$ret_val);
-			
-			if ($ret_val == 0) {
-				$smarty->assign('mb_message', _tr('System time changed successfully'));
-			} else {
-				$smarty->assign('mb_message', _tr('System time can not be changed')." - <br/>".implode('<br/>', $output));
-			}
+            if ($bValido) {
+                $sZonaActual = $sZonaNueva;
+                
+                $fecha = sprintf('%04d-%02d-%02d %02d:%02d:%02d', 
+                	$year, $month, $day, $_POST['ServerDate_Hour'], $_POST['ServerDate_Minute'], $_POST['ServerDate_Second']);
+                $cmd = "/usr/bin/elastix-helper dateconfig --datetime '$fecha' 2>&1";
+                $output=$ret_val="";
+                exec($cmd,$output,$ret_val);
+    			
+    			if ($ret_val == 0) {
+    				$smarty->assign('mb_message', _tr('System time changed successfully'));
+    			} else {
+    				$smarty->assign('mb_message', _tr('System time can not be changed')." - <br/>".implode('<br/>', $output));
+    			}
+            }
 		}
 	}
     $sContenido = '';
