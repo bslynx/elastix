@@ -36,21 +36,13 @@ function _moduleContent(&$smarty, $module_name)
     include_once "modules/$module_name/configs/default.conf.php";
     include_once "modules/$module_name/libs/paloSantoDHCP_Configuration.class.php";
 
-    //include file language agree to elastix configuration
-    //if file language not exists, then include language by default (en)
-    $lang=get_language();
-    $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
-    $lang_file="modules/$module_name/lang/$lang.lang";
-    if (file_exists("$base_dir/$lang_file")) include_once "$lang_file";
-    else include_once "modules/$module_name/lang/en.lang";
+    load_language_module($module_name);
+    $base_dir = dirname($_SERVER['SCRIPT_FILENAME']);
 
     //global variables
     global $arrConf;
     global $arrConfModule;
-    global $arrLang;
-    global $arrLangModule;
     $arrConf = array_merge($arrConf,$arrConfModule);
-    $arrLang = array_merge($arrLang,$arrLangModule);
 
     //folder path for custom templates
     $templates_dir=(isset($arrConf['templates_dir']))?$arrConf['templates_dir']:'themes';
@@ -65,31 +57,31 @@ function _moduleContent(&$smarty, $module_name)
 
     switch($accion){
         case "new_dhcpconft":
-            $content = viewFormDHCP_Configuration($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $edit="false");
+            $content = viewFormDHCP_Configuration($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $edit="false");
             break;
         case "view_dhcpconf":
-            $content = viewFormDHCP_Configuration($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $edit="false");
+            $content = viewFormDHCP_Configuration($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $edit="false");
             break;
         case "edit_dhcpconf":
-            $content = viewFormDHCP_Configuration($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $edit="true");
+            $content = viewFormDHCP_Configuration($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $edit="true");
             break;
         case "update_dhacp":
-            $content = saveDHCP_Configuration($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, true);
+            $content = saveDHCP_Configuration($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, true);
             break;
         case "save_dhcp":
-            $content = saveDHCP_Configuration($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+            $content = saveDHCP_Configuration($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
             break;
         case "delete_dhcpConf":
-            $content = deleteDHCP_Configuration($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+            $content = deleteDHCP_Configuration($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
             break;
         default:
-            $content = reportDHCP_Configuration($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+            $content = reportDHCP_Configuration($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
             break;
     }
     return $content;
 }
 
-function reportDHCP_Configuration($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
+function reportDHCP_Configuration($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf)
 {
     $pDHCP_Configuration = new paloSantoDHCP_Configuration($pDB);
     $filter_field = getParameter("filter_field");
@@ -97,11 +89,9 @@ function reportDHCP_Configuration($smarty, $module_name, $local_templates_dir, &
     $action = getParameter("nav");
     $start  = getParameter("start");
     
-    $arrPrueba = $pDHCP_Configuration->saveFileDhcpConfig($pDB);
-
     //begin grid parameters
     $oGrid  = new paloSantoGrid($smarty);
-    $totalDHCP_Configuration = $pDHCP_Configuration->ObtainNumDHCP_Configuration($filter_field, $filter_value);
+    $totalDHCP_Configuration = $pDHCP_Configuration->contarIpFijas($filter_field, $filter_value);
 
     $limit  = 20;
     $total  = $totalDHCP_Configuration;
@@ -111,10 +101,9 @@ function reportDHCP_Configuration($smarty, $module_name, $local_templates_dir, &
     $oGrid->calculatePagination($action,$start);
     $offset = $oGrid->getOffsetValue();
     $end    = $oGrid->getEnd();
-    $url    = "?menu=$module_name&filter_field=$filter_field&filter_value=$filter_value";
 
     $arrData = null;
-    $arrResult =$pDHCP_Configuration->ObtainDHCP_Configuration($limit, $offset, $filter_field, $filter_value);
+    $arrResult = $pDHCP_Configuration->leerIPsFijas($limit, $offset, $filter_field, $filter_value);
 
     if(is_array($arrResult) && $total>0){
         foreach($arrResult as $key => $value){ 
@@ -126,53 +115,53 @@ function reportDHCP_Configuration($smarty, $module_name, $local_templates_dir, &
         }
     }
 
-    $buttonDelete = "<input type='submit' name='delete_dhcpConf' value='{$arrLang["Delete"]}' class='button' onclick=\" return confirmSubmit('{$arrLang["Are you sure you wish to delete the DHCP configuration."]}');\" />";
+    $buttonDelete = "<input type='submit' name='delete_dhcpConf' value='"._tr('Delete')."' class='button' onclick=\" return confirmSubmit('"._tr('Are you sure you wish to delete the DHCP configuration.')."');\" />";
 
-    $arrGrid = array("title"    => $arrLang["Assign IP Address to Host"],
+    $arrGrid = array("title"    => _tr('Assign IP Address to Host'),
                         "icon"     => "images/list.png",
                         "width"    => "99%",
                         "start"    => ($total==0) ? 0 : $offset + 1,
                         "end"      => $end,
                         "total"    => $total,
-                        "url"      => $url,
+                        "url"      => array('menu' => $module_name, 'filter_field' => $filter_field, 'filter_value' => $filter_value),
                         "columns"  => array(
                 0 => array("name"      => $buttonDelete,
                                     "property1" => ""),
-                1 => array("name"      => $arrLang["Host Name"],
+                1 => array("name"      => _tr('Host Name'),
                                     "property1" => ""),
-                2 => array("name"      => $arrLang["IP Address"],
+                2 => array("name"      => _tr('IP Address'),
                                     "property1" => ""),
-                3 => array("name"      => $arrLang["MAC Address"],
+                3 => array("name"      => _tr('MAC Address'),
                                     "property1" => ""),
                             )
                     );
 
     //begin section filter
-    $arrFormFilterDHCP_Configuration = createFieldFilter($arrLang);
+    $arrFormFilterDHCP_Configuration = createFieldFilter();
     $oFilterForm = new paloForm($smarty, $arrFormFilterDHCP_Configuration);
-    $smarty->assign("SHOW", $arrLang["Show"]);
-    $smarty->assign("NEW_DHCPCONF", $arrLang["Assign IP Address"]);
+    $smarty->assign("SHOW", _tr('Show'));
+    $smarty->assign("NEW_DHCPCONF", _tr('Assign IP Address'));
 
     $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl","",$_POST);
     //end section filter
 
     $oGrid->showFilter(trim($htmlFilter));
-    $contenidoModulo = "<form  method='POST' style='margin-bottom:0;' action=$url>".$oGrid->fetchGrid($arrGrid, $arrData,$arrLang)."</form>";
+    $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData);
     //end grid parameters
 
     return $contenidoModulo;
 }
 
 
-function createFieldFilter($arrLang){
+function createFieldFilter(){
     $arrFilter = array(
-        "hostname" => $arrLang["Host Name"],
-        "ipaddress" => $arrLang["IP Address"],
-        "macaddress" => $arrLang["MAC Address"],
+        "hostname" => _tr('Host Name'),
+        "ipaddress" => _tr('IP Address'),
+        "macaddress" => _tr('MAC Address'),
                     );
 
     $arrFormElements = array(
-            "filter_field" => array("LABEL"                  => $arrLang["Search"],
+            "filter_field" => array("LABEL"                  => _tr('Search'),
                                     "REQUIRED"               => "no",
                                     "INPUT_TYPE"             => "SELECT",
                                     "INPUT_EXTRA_PARAM"      => $arrFilter,
@@ -189,11 +178,11 @@ function createFieldFilter($arrLang){
 }
 
 
-function viewFormDHCP_Configuration($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang, $edit="true")
+function viewFormDHCP_Configuration($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $edit="true")
 {
     $pDHCP_Configuration = new paloSantoDHCP_Configuration($pDB);
 
-    $arrFormDHCP_Configuration = createFieldForm($arrLang);
+    $arrFormDHCP_Configuration = createFieldForm();
     $oForm = new paloForm($smarty,$arrFormDHCP_Configuration);
     
     //begin, Form data persistence to errors and other events.
@@ -210,41 +199,49 @@ function viewFormDHCP_Configuration($smarty, $module_name, $local_templates_dir,
 
     //end, Form data persistence to errors and other events.
     if($action=="view_dhcpconf" || $edit=="true"){ // the action is to view or view_edit.
-        $dataDhcpConfig = $pDHCP_Configuration->getDhcpConfigById($id);
+        $dataDhcpConfig = $pDHCP_Configuration->leerInfoIPFija($id);
         if(is_array($dataDhcpConfig) & count($dataDhcpConfig)>0)
             $_DATA = $dataDhcpConfig;
         else{
-            $smarty->assign("mb_title", $arrLang["Error get Data"]);
+            $smarty->assign("mb_title", _tr('Error get Data'));
             $smarty->assign("mb_message", $pDHCP_Configuration->errMsg);
         }
     }
 
-    $smarty->assign("SAVE", $arrLang["Save"]);
-    $smarty->assign("EDIT", $arrLang["Edit"]);
-    $smarty->assign("CANCEL", $arrLang["Cancel"]);
-    $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
+    $smarty->assign("SAVE", _tr('Save'));
+    $smarty->assign("EDIT", _tr('Edit'));
+    $smarty->assign("CANCEL", _tr('Cancel'));
+    $smarty->assign("REQUIRED_FIELD", _tr('Required field'));
     $smarty->assign("IMG", "images/list.png");
-    $smarty->assign("HOST_NAME", $arrLang["ex_hostname"]);
-    $smarty->assign("IP_ADDRESS", $arrLang["ex_ipaddress"]);
-    $smarty->assign("MAC_ADDRESS", $arrLang["ex_mac_address"]);
+    $smarty->assign("HOST_NAME", _tr('ex_hostname'));
+    $smarty->assign("IP_ADDRESS", _tr('ex_ipaddress'));
+    $smarty->assign("MAC_ADDRESS", _tr('ex_mac_address'));
 
-    $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",$arrLang["Assign IP Address to Host"], $_DATA);
+    $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",_tr('Assign IP Address to Host'), $_DATA);
     $content = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
 
     return $content;
 }
 
 
-function saveDHCP_Configuration($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang, $update=FALSE){
+function saveDHCP_Configuration($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $update=FALSE){
     $pDHCP_Configuration = new paloSantoDHCP_Configuration($pDB);
-    $arrFormDHCP_Configuration = createFieldForm($arrLang);
-    $oForm = new paloForm($smarty,$arrFormDHCP_Configuration);   
+    $arrFormDHCP_Configuration = createFieldForm();
+    $oForm = new paloForm($smarty,$arrFormDHCP_Configuration);
+    if ($update) $oForm->setEditMode();   
 
+    $smarty->assign("REQUIRED_FIELD", _tr('Required field'));
+    $smarty->assign("SAVE", _tr('Save'));
+    $smarty->assign("EDIT", _tr('Edit'));
+    $smarty->assign("CANCEL", _tr('Cancel'));
+    $smarty->assign("IMG", "images/list.png");
+    $smarty->assign("ID", getParameter('id'));
+    
     if(!$oForm->validateForm($_POST)) {
         // Falla la validación básica del formulario
-        $smarty->assign("mb_title", $arrLang["Validation Error"]);
+        $smarty->assign("mb_title", _tr('Validation Error'));
         $arrErrores = $oForm->arrErroresValidacion;
-        $strErrorMsg = "<b>{$arrLang['The following fields contain errors']}:</b><br/>";
+        $strErrorMsg = "<b>"._tr('The following fields contain errors').":</b><br/>";
         if(is_array($arrErrores) && count($arrErrores) > 0){
             foreach($arrErrores as $k=>$v) {
                 $strErrorMsg .= "$k, ";
@@ -252,40 +249,13 @@ function saveDHCP_Configuration($smarty, $module_name, $local_templates_dir, &$p
         }
         $smarty->assign("mb_message", $strErrorMsg);
 
-        $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
-        $smarty->assign("SAVE", $arrLang["Save"]);
-        $smarty->assign("CANCEL", $arrLang["Cancel"]);
-        $smarty->assign("IMG", "images/list.png");
-
-        $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl", $arrLang["DHCP Configuration"], $_POST);
+        $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl", _tr('Assign IP Address to Host'), $_POST);
         $contenidoModulo = "<form  method='POST' enctype='multipart/form-data' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
         return $contenidoModulo;
-
-    }else if($pDHCP_Configuration->valitadeDuplicateDhcpConfig2($_POST) && !$update) {
-        $arrDuplicates = $pDHCP_Configuration->getDuplicateDhcpConfig($_POST);
-        $smarty->assign("mb_title", $arrLang["Validation Error"]);
-        $strErrorMsg = "<b>{$arrLang['The following fields are duplicates or already exists']}:</b><br/>";
-  
-        if(is_array($arrDuplicates) && count($arrDuplicates) > 0){
-            foreach($arrDuplicates as $k=>$v) {
-                if($v) $strErrorMsg .= "$k, ";
-            }
-        }
-        $smarty->assign("mb_message", $strErrorMsg);
-
-        $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
-        $smarty->assign("SAVE", $arrLang["Save"]);
-        $smarty->assign("CANCEL", $arrLang["Cancel"]);
-        $smarty->assign("IMG", "images/list.png");        
-
-        $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl", $arrLang["DHCP Configuration"], $_POST);
-        $contenidoModulo = "<form  method='POST' enctype='multipart/form-data' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
-        return $contenidoModulo;
-
     }else {
         $arrDhcpPost = array();
         $hostname = getParameter("hostname");
-        if(ereg("([a-zA-Z]+)[[:space:]]([a-zA-Z]+)", $hostname, $arrReg))
+        if(preg_match("/^([a-zA-Z]+)[[:space:]]+([a-zA-Z]+)$/", $hostname, $arrReg))
             $arrDhcpPost['hostname'] = $arrReg[1]."_".$arrReg[2];
         else $arrDhcpPost['hostname'] = getParameter("hostname");
 
@@ -294,42 +264,51 @@ function saveDHCP_Configuration($smarty, $module_name, $local_templates_dir, &$p
         
         if($update){
             $id = getParameter("id");
-            $arrDhcpDB = $pDHCP_Configuration->getDhcpConfigById($id);
-            $pDHCP_Configuration->updateFileDhcpConfig($arrDhcpPost, $arrDhcpDB);
+            $r = $pDHCP_Configuration->actualizarIpFija($id, $arrDhcpPost['hostname'], $arrDhcpPost['ipaddress'], $arrDhcpPost['macaddress']);
         }else{
-            $numDhcpConf = $pDHCP_Configuration->ObtainNumDHCP_Configuration("", "");
-            $pDHCP_Configuration->addNewDhcpConfig($arrDhcpPost, $numDhcpConf);
+            $r = $pDHCP_Configuration->insertarIpFija($arrDhcpPost['hostname'], $arrDhcpPost['ipaddress'], $arrDhcpPost['macaddress']);
         }
+        if (!$r) {
+            $smarty->assign("mb_message", $pDHCP_Configuration->errMsg);
     
-        header("Location: ?menu=$module_name&action=show");
+            $smarty->assign("REQUIRED_FIELD", _tr('Required field'));
+            $smarty->assign("SAVE", _tr('Save'));
+            $smarty->assign("CANCEL", _tr('Cancel'));
+            $smarty->assign("IMG", "images/list.png");
+    
+            $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl", _tr('Assign IP Address to Host'), $_POST);
+            $contenidoModulo = "<form  method='POST' enctype='multipart/form-data' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
+            return $contenidoModulo;
+        } else {
+            header("Location: ?menu=$module_name&action=show");
+        }
     }
 }
 
-function deleteDHCP_Configuration($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang){
+function deleteDHCP_Configuration($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf){
     $pDHCP_Configuration = new paloSantoDHCP_Configuration($pDB);
     foreach($_POST as $key => $values){
         if(substr($key,0,11) == "DhcpConfID_")
         {
             $dhcpConfId = substr($key, 11);
-            $arrDhcpDB = $pDHCP_Configuration->getDhcpConfigById($dhcpConfId);
-            $pDHCP_Configuration->deleteDhcpConfig($arrDhcpDB);
+            $pDHCP_Configuration->borrarIpFija($dhcpConfId);
         }
     }
 
     header("Location: ?menu=$module_name&action=show");
 }
 
-function createFieldForm($arrLang)
+function createFieldForm()
 {
     $arrFields = array(
-            "hostname"   => array(      "LABEL"                  => $arrLang["Host Name"],
+            "hostname"   => array(      "LABEL"                  => _tr('Host Name'),
                                             "REQUIRED"               => "yes",
                                             "INPUT_TYPE"             => "TEXT",
                                             "INPUT_EXTRA_PARAM"      => array("style" => "width:200px","maxlength" =>"200"),
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-            "ipaddress"   => array(      "LABEL"                  => $arrLang["IP Address"],
+            "ipaddress"   => array(      "LABEL"                  => _tr('IP Address'),
                                             "REQUIRED"               => "yes",
                                             "INPUT_TYPE"             => "TEXT",
                                             "INPUT_EXTRA_PARAM"      => array("style" => "width:200px","maxlength" =>"200"),
@@ -337,7 +316,7 @@ function createFieldForm($arrLang)
                                             //"VALIDATION_EXTRA_PARAM" => "([0-9]){1,3}.([0-9]+){1,3}.([0-9]+){1,3}.([0-9]+){1,3}$"
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-            "macaddress"   => array(      "LABEL"                  => $arrLang["MAC Address"],
+            "macaddress"   => array(      "LABEL"                  => _tr('MAC Address'),
                                             "REQUIRED"               => "yes",
                                             "INPUT_TYPE"             => "TEXT",
                                             "INPUT_EXTRA_PARAM"      => array("style" => "width:200px","maxlength" =>"200"),

@@ -28,24 +28,24 @@
   $Id: en.lang,v 1.1 2009-11-12 04:11:04 Oscar Navarrete onavarrete.palosanto.com Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Assign IP Address to Host" => "Assign IP Address to Host",
-"Host Name" => "Host Name",
-"IP Address" => "IP Address",
-"MAC Address" => "MAC Address",
+"Assign IP Address to Host" => "Asignar dirección IP a host",
+"Host Name" => "Nombre de Host",
+"IP Address" => "Dirección IP",
+"MAC Address" => "Dirección MAC",
 
-"Hostname" => "Hostname",
-"Assign IP Address" => "Assign IP Address",
+"Hostname" => "Nombre de host",
+"Assign IP Address" => "Asignar dirección IP",
 "View edit" => "View edit",
 
-"Are you sure you wish to delete the DHCP configuration." => "Are you sure you wish to delete the DHCP configuration.",
+"Are you sure you wish to delete the DHCP configuration." => "¿Está usted seguro de borrar la configuración DHCP?",
 "The name of hostname is duplicated please changes to another name" => "The name of hostname is duplicated please changes to another name",
 "The following fields are duplicates or already exists" => "The following fields are duplicates or already exists",
-"ex_hostname" => "(ex. myhostname)",
-"ex_ipaddress" => "(ex. 127.0.0.1)",
-"ex_mac_address" => "(ex. AA:BB:CC:DD:EE:FF)",
-'Invalid hostname' => 'Invalid hostname',
-'Invalid IP address' => 'Invalid IP address',
-'Invalid MAC address' => 'Invalid MAC address',
-'Duplicate IP or MAC' => 'Duplicate IP or MAC',
+"ex_hostname" => "(p.ej. myhostname)",
+"ex_ipaddress" => "(p.ej. 127.0.0.1)",
+"ex_mac_address" => "(p.ej. AA:BB:CC:DD:EE:FF)",
+'Invalid hostname' => 'Nombre de host no es válido',
+'Invalid IP address' => 'Dirección IP no es válida',
+'Invalid MAC address' => 'Dirección MAC no es válida',
+'Duplicate IP or MAC' => 'IP o MAC están ya duplicados',
 );
 ?>

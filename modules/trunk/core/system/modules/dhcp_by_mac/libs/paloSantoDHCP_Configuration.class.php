@@ -26,8 +26,9 @@
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
   $Id: paloSantoDHCP_Configuration.class.php,v 1.1 2009-11-12 04:11:04 Oscar Navarrete onavarrete.palosanto.com Exp $ */
-class paloSantoDHCP_Configuration {
-    var $_DB;
+class paloSantoDHCP_Configuration
+{
+	private $_DB;
     var $errMsg;
 
     function paloSantoDHCP_Configuration(&$pDB)
@@ -49,279 +50,219 @@ class paloSantoDHCP_Configuration {
         }
     }
 
-    /*HERE YOUR FUNCTIONS*/
+    /**
+     * Procedimiento para contar el número de IPs fijas que se guardan en la 
+     * base de datos.
+     * 
+     * @param   string  $filter_field   (opcional) Nombre del campo, uno de 
+     *                                  hostname, ipaddress, macaddress
+     * @param   string  $filter_value   (opcional) Prefijo por el cual filtrar
+     * 
+     * @return  FALSE en caso de error, o número de IPs que coinciden
+     */
+    function contarIpFijas($filter_field = '', $filter_value = '')
+    {    	
+        if (!in_array($filter_field, array('hostname', 'ipaddress', 'macaddress')))
+            $filter_field = '';
+        $sPeticionSQL = 'SELECT COUNT(*) FROM dhcp_conf';
+        $paramSQL = array();
+        if ($filter_field != '') {
+        	$sPeticionSQL .= " WHERE $filter_field LIKE ?";
+            $paramSQL[] = $filter_value.'%';
+        }
+        $result = $this->_DB->getFirstRowQuery($sPeticionSQL, FALSE, $paramSQL);
 
-    function ObtainNumDHCP_Configuration($filter_field, $filter_value)
-    {
-        //Here your implementation
-        $where = "";
-        if(isset($filter_field) & $filter_field !="")
-            $where = "where $filter_field like '$filter_value%'";
-
-        $query   = "SELECT COUNT(*) FROM dhcp_conf $where";
-
-        $result=$this->_DB->getFirstRowQuery($query);
-
-        if($result==FALSE){
+        if($result === FALSE){
             $this->errMsg = $this->_DB->errMsg;
-            return 0;
+            return FALSE;
         }
         return $result[0];
     }
-
-    function ObtainDHCP_Configuration($limit, $offset, $filter_field, $filter_value)
-    {
-        //Here your implementation
-        $where = "";
-        if(isset($filter_field) & $filter_field !="")
-            $where = "where $filter_field like '$filter_value%'";
-
-        $query = "SELECT * FROM dhcp_conf $where LIMIT $limit OFFSET $offset";
-
-        $result=$this->_DB->fetchTable($query, true);
-
-        if($result==FALSE){
-            $this->errMsg = $this->_DB->errMsg;
-            return array();
-        }
-        return $result;
-    }
-
-    private function updateChangeFileDHCP_Conf($text) {
-        exec("sudo chown asterisk.asterisk /etc/dhcpd.conf");
-        $fp = fopen('/etc/dhcpd.conf', 'w');
-        
-        fwrite($fp, $text);
-        exec("sudo -u root chown root.root /etc/dhcpd.conf");
-        fclose($fp);
-    }
-
-    private function addDhcpConfigDB($data) {
-        $queryInsert = $this->_DB->construirInsert('dhcp_conf', $data);
-        $result = $this->_DB->genQuery($queryInsert);
-
-        return $result;
-    }
-
-    function saveFileDhcpConfig($pDB){
-        //exec("sudo chown asterisk.asterisk /etc/dhcpd.conf");
-        $FILE='/etc/dhcpd.conf';
-        $query = "DELETE FROM dhcp_conf";
-        $this->_DB->genQuery($query);
-        $count = 1;
-        $i = 0;
-        $data = array();
-        $fp = fopen($FILE, 'r');
-
-        while($line = fgets($fp, filesize($FILE)))
-        {
-            if(eregi("host", $line)) {
-                if(ereg("^[[:space:]]*([a-z]+)[[:space:]]([a-zA-Z0-9_]+)", $line, $arrReg)){
-                    $data['hostname'] = $pDB->DBCAMPO($arrReg[2]);
-                }else $data['hostname'] = "";
-                $i++;
-            }elseif(eregi("hardware", $line)) {
-                if(ereg("^[[:space:]]*([a-z]+)[[:space:]]([a-z]+)[[:space:]]([a-zA-Z0-9:]+)", $line, $arrReg)){
-                    $data['macaddress'] = $pDB->DBCAMPO($arrReg[3]);
-                }else $data['macaddress'] = "";
-                $i++;
-            }elseif(eregi("fixed", $line)) {
-                if(ereg("^[[:space:]]*([a-z-]+)[[:space:]]([0-9.]+)", $line, $arrReg)){
-                    $data['ipaddress'] = $pDB->DBCAMPO($arrReg[2]);
-                }else $data['ipaddress'] = "";
-                //$count++;
-                $i++;
-            }
-            if($i==3){
-                $result = $this->addDhcpConfigDB($data);
-                if($result == false){
-                    $this->errMsg = $this->_DB->errMsg;
-                    return false;
-                }
-                $data = array();
-                $i=0;
-            }
-        }
-        //exec("sudo -u root chown root.root /etc/dhcpd.conf");
-        fclose($fp);
-        return $data;
-    }
-
-
-    function updateFileDhcpConfig($arrDhcpPost, $arrDhcpDB){
-        $FILE='/etc/dhcpd.conf';
-        $text = "";
-        $fp = fopen($FILE,'r');
-
-        $found_host="false";
-        $found_hardware="false";
-        $found_fixed="false";
-        while($line = fgets($fp, filesize($FILE)))
-        {
-            if(eregi("host", $line) && $found_host=="false"){
-                $line_mod = str_ireplace($arrDhcpDB['hostname'], $arrDhcpPost['hostname'], $line);
-                if($line!=$line_mod){
-                    $found_host="true";
-                    $text .= $line_mod;
-                }else
-                    $text .= $line;
-                
-            }elseif(eregi("hardware", $line) && $found_hardware=="false"){
-                $line_mod = str_ireplace($arrDhcpDB['macaddress'], $arrDhcpPost['macaddress'], $line);
-                if($line!=$line_mod){
-                    $found_hardware="true";
-                    $text .= $line_mod;
-                }else
-                    $text .= $line;
-                
-            }elseif(eregi("fixed", $line) && $found_fixed=="false"){
-                $line_mod = str_ireplace($arrDhcpDB['ipaddress'], $arrDhcpPost['ipaddress'], $line);
-                if($line!=$line_mod){
-                    $found_fixed="true";
-                    $text .= $line_mod;
-                }else
-                    $text .= $line;
-                
-            }else
-                $text .= $line;
-        }
-        $this->updateChangeFileDHCP_Conf($text);
-        fclose($fp);
-    }
-
-    function addNewDhcpConfig($arrDhcpPost, $numDhcpConf){
-        $FILE='/etc/dhcpd.conf';
-        $text = "";
-        $fp = fopen($FILE,'r');
-        $text_added = "        }";
-        
-        $text_added .="\n";
-        $text_added .="        host ".$arrDhcpPost['hostname']." {\n";
-        $text_added .="                hardware ethernet ".$arrDhcpPost['macaddress'].";\n";
-        $text_added .="                fixed-address ".$arrDhcpPost['ipaddress'].";\n";
-        
-        $count = 0;
-        while($line = fgets($fp, filesize($FILE)))
-        {
-            if(eregi("host", $line)){
-                $count++;
-                $text .= $line;
-            }else if(eregi("fixed", $line) && $count==$numDhcpConf) {
-                $line .= $text_added;
-                $text .= $line;
-            }else {
-                $text .= $line;
-            }
-        }
-        $this->updateChangeFileDHCP_Conf($text);
-        fclose($fp);
-    }
-
     
-    function getDuplicateDhcpConfig($arrDhcpPost){
-        $FILE='/etc/dhcpd.conf';
-        $fp = fopen($FILE,'r');
-        $arrValidate = array();
-//         $arrValidate['hostname']=false;
-        $arrValidate['macaddress']=false;
-        $arrValidate['ipaddress']=false; 
-        $count = 0;
-        while($line = fgets($fp, filesize($FILE)))
-        {
-            /*if(eregi("host", $line)) {
-                if(eregi($arrDhcpPost['hostname'], $line)) $arrValidate['hostname']=true;
-                $count++;
-            }else */if(eregi("hardware", $line)) { 
-                if(eregi($arrDhcpPost['macaddress'], $line)) $arrValidate['macaddress']=true;
-                $count++;
-            }else if(eregi("fixed", $line)) { 
-                if(eregi($arrDhcpPost['ipaddress'], $line)) $arrValidate['ipaddress']=true;
-                $count++;
-            }
-
-            //if($count==3){
-            if($count==2){
-                //if($arrValidate['hostname'] || $arrValidate['macaddress'] || $arrValidate['ipaddress']) break;
-                if($arrValidate['macaddress'] || $arrValidate['ipaddress']) break;
-                $count=0;
-            }
+    /**
+     * Procedimiento para leer las IPs fijas que se guardan en la base de datos.
+     * 
+     * @param   int     $limit          Número máximo de registros a devolver
+     * @param   int     $offset         (opcional) Desde qué registro devolver
+     * @param   string  $filter_field   (opcional) Nombre del campo, uno de 
+     *                                  hostname, ipaddress, macaddress
+     * @param   string  $filter_value   (opcional) Prefijo por el cual filtrar
+     *
+     * @return  mixed   NULL en caso de error, o lista de tupla con los 
+     *                  siguientes campos: id hostname ipaddress macaddress
+     */
+    function leerIPsFijas($limit, $offset = 0, $filter_field = '', $filter_value = '')
+    {    	
+        if (!in_array($filter_field, array('hostname', 'ipaddress', 'macaddress')))
+            $filter_field = '';
+        $sPeticionSQL = 'SELECT id, hostname, ipaddress, macaddress FROM dhcp_conf';
+        $paramSQL = array();
+        if ($filter_field != '') {
+            $sPeticionSQL .= " WHERE $filter_field LIKE ?";
+            $paramSQL[] = $filter_value.'%';
         }
-        fclose($fp);
-        return $arrValidate;
-    }
+        $sPeticionSQL .= ' ORDER BY hostname LIMIT ? OFFSET ?';
+        $paramSQL[] = (int)$limit; $paramSQL[] = (int)$offset;
+        $result = $this->_DB->fetchTable($sPeticionSQL, TRUE, $paramSQL);
 
-    function valitadeDuplicateDhcpConfig2($arrDhcpPost){
-        $FILE='/etc/dhcpd.conf';
-        $fp = fopen($FILE,'r');
-        $exist_anyone=false;
-
-        while($line = fgets($fp, filesize($FILE)))
-        {
-            /*if(eregi("host", $line) && eregi($arrDhcpPost['hostname'], $line)) {
-                $exist_anyone=true;
-                break;
-            }*/if(eregi("hardware", $line) && eregi($arrDhcpPost['macaddress'], $line)) {
-                $exist_anyone=true;
-                break;
-            }if(eregi("fixed", $line) && eregi($arrDhcpPost['ipaddress'], $line)) {
-                $exist_anyone=true;
-                break;
-            }
+        if($result === FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return NULL;
         }
-        fclose($fp);
-        return $exist_anyone;
-    }
-
-    function deleteDhcpConfig($arrDhcpDB){
-        $FILE='/etc/dhcpd.conf';
-        $text = "";
-        $fp = fopen($FILE,'r');
-        $count = 0;        
-
-        while($line = fgets($fp, filesize($FILE)))
-        {
-            if(eregi("host", $line)) {
-                if(ereg("^[[:space:]]*([a-z]+)[[:space:]]([a-zA-Z0-9_]+)", $line, $arrReg)){
-                    if($arrDhcpDB['hostname'] == $arrReg[2])
-                        $count++;
-                    else $text .= $line;
-                }
-            }elseif(eregi("hardware", $line)) {
-                if(ereg("^[[:space:]]*([a-z]+)[[:space:]]([a-z]+)[[:space:]]([a-zA-Z0-9:]+)", $line, $arrReg)){
-                    if($arrDhcpDB['macaddress'] == $arrReg[3])
-                        $count++;
-                    else $text .= $line;
-                }
-            }elseif(eregi("fixed", $line)) {
-                if(ereg("^[[:space:]]*([a-z-]+)[[:space:]]([0-9.]+)", $line, $arrReg)){
-                    if($arrDhcpDB['ipaddress'] == $arrReg[2])
-                        $count++;
-                    else $text .= $line;
-                }
-                
-            }elseif($count==3) {
-                $count=0;
-            }else {
-                $text .= $line;
-            }
-        }
-        $this->updateChangeFileDHCP_Conf($text);
-        fclose($fp);
-    }
-
-    function getDhcpConfigById($id)
-    {
-        $query   = "SELECT * FROM dhcp_conf ";
-        $strWhere = "id=$id";
-
-        // Clausula WHERE aqui
-        if(!empty($strWhere)) $query .= "WHERE $strWhere ";
-
-        $result=$this->_DB->getFirstRowQuery($query, true);
         return $result;
     }
 
+    /**
+     * Procedimiento para leer la información de una sola IP fija
+     *
+     * @param   int     $id         ID en base de datos del registro
+     *  
+     * @return  mixed   NULL en caso de error, o tupla con los siguientes 
+     *                  campos: id hostname ipaddress macaddress
+     */
+    function leerInfoIPFija($id)
+    {
+    	$result = $this->_DB->getFirstRowQuery(
+            'SELECT id, hostname, ipaddress, macaddress FROM dhcp_conf WHERE id = ?', 
+            TRUE, array($id));
+        if($result === FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return NULL;
+        }
+        return $result;
+    }
+    
+    /**
+     * Procedimiento para insertar una nueva IP fija en la base de datos
+     * 
+     * @param   string  $hostname   Nombre de host para el registro
+     * @param   string  $ipaddress  Dirección IPv4 a asignar para el registro
+     * @param   string  $macaddress Dirección MAC para el registro
+     * 
+     * @return  bool    VERDADERO en éxito, FALSO en error
+     */
+    function insertarIpFija($hostname, $ipaddress, $macaddress)
+    {
+        // Verificar que parámetros son válidos
+        if (!preg_match('/^([[:alnum:]-]+)$/', $hostname)) {
+            $this->errMsg = _tr('Invalid hostname');
+        	return FALSE;
+        }
+        if (!preg_match('/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/', $ipaddress)) {
+            $this->errMsg = _tr('Invalid IP address');
+        	return FALSE;
+        }
+        if (!preg_match('/^[[:xdigit:]]{2}(:[[:xdigit:]]{2}){5}$/', $macaddress)) {
+            $this->errMsg = _tr('Invalid MAC address');
+            return FALSE;
+        }
+        
+        // Verificar que no existen duplicado de MAC o IP en base de datos
+        $result = $this->_DB->getFirstRowQuery(
+            'SELECT COUNT(*) FROM dhcp_conf WHERE ipaddress = ? OR macaddress = ?', 
+            FALSE, array($ipaddress, $macaddress));
+        if($result === FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return FALSE;
+        }
+        if ($result[0] > 0) {
+            $this->errMsg = _tr('Duplicate IP or MAC');
+        	return FALSE;
+        }
+        
+        // Insertar y refrescar configuración
+        $result = $this->_DB->genQuery(
+            'INSERT INTO dhcp_conf (hostname, ipaddress, macaddress) VALUES (?, ?, ?)',
+            array($hostname, $ipaddress, $macaddress));
+        if (!$result) {
+            $this->errMsg = $this->_DB->errMsg;
+        	return FALSE;
+        }
+        return $this->_actualizarConfiguracionDHCP();
+    }
+    
+    /**
+     * Procedimiento para actualizar una IP fija existente en la base de datos
+     *
+     * @param   int     $id         ID en base de datos del registro 
+     * @param   string  $hostname   Nombre de host para el registro
+     * @param   string  $ipaddress  Dirección IPv4 a asignar para el registro
+     * @param   string  $macaddress Dirección MAC para el registro
+     * 
+     * @return  bool    VERDADERO en éxito, FALSO en error
+     */
+    function actualizarIpFija($id, $hostname, $ipaddress, $macaddress)
+    {    	
+        // Verificar que parámetros son válidos
+        if (!preg_match('/^([[:alnum:]-]+)$/', $hostname)) {
+            $this->errMsg = _tr('Invalid hostname');
+            return FALSE;
+        }
+        if (!preg_match('/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/', $ipaddress)) {
+            $this->errMsg = _tr('Invalid IP address');
+            return FALSE;
+        }
+        if (!preg_match('/^[[:xdigit:]]{2}(:[[:xdigit:]]{2}){5}$/', $macaddress)) {
+            $this->errMsg = _tr('Invalid MAC address');
+            return FALSE;
+        }
+        
+        // Verificar que no existen duplicado de MAC o IP en base de datos
+        $result = $this->_DB->getFirstRowQuery(
+            'SELECT COUNT(*) FROM dhcp_conf WHERE id <> ? AND (ipaddress = ? OR macaddress = ?)', 
+            FALSE, array($id, $ipaddress, $macaddress));
+        if($result === FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return FALSE;
+        }
+        if ($result[0] > 0) {
+            $this->errMsg = _tr('Duplicate IP or MAC');
+            return FALSE;
+        }
+        
+        // Modificar y refrescar configuración
+        $result = $this->_DB->genQuery(
+            'UPDATE dhcp_conf SET hostname = ?, ipaddress = ?, macaddress = ? WHERE id = ?',
+            array($hostname, $ipaddress, $macaddress, $id));
+        if (!$result) {
+            $this->errMsg = $this->_DB->errMsg;
+            return FALSE;
+        }
+        return $this->_actualizarConfiguracionDHCP();
+    }
+    
+    /**
+     * Procedimiento para eliminar una IP fija existente de la base de datos
+     *
+     * @param   int     $id         ID en base de datos del registro 
+     * 
+     * @return  bool    VERDADERO en éxito, FALSO en error
+     */
+    function borrarIpFija($id)
+    {
+        // Borrar y refrescar configuración
+        $result = $this->_DB->genQuery(
+            'DELETE FROM dhcp_conf WHERE id = ?',
+            array($id));
+        if (!$result) {
+            $this->errMsg = $this->_DB->errMsg;
+            return FALSE;
+        }
+        return $this->_actualizarConfiguracionDHCP();
+    }
+    
+    // Llamar al programa privilegiado
+    private function _actualizarConfiguracionDHCP()
+    {
+        $this->errMsg = '';
+        $sComando = '/usr/bin/elastix-helper dhcpconfig --refresh 2>&1';
+        $output = $ret = NULL;
+        exec($sComando, $output, $ret);
+        if ($ret != 0) {
+            $this->errMsg = implode('', $output);
+            return FALSE;
+        }
+        return TRUE;
+    }
 }
-
-
 ?>
