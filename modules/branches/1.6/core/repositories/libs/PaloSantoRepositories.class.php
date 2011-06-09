@@ -56,14 +56,19 @@ class PaloSantoRepositories
 
     function setRepositorios($ruta,$arrReposActivos)
     {
-        $arrArchivosRepo = $this->getArchivosRepo($ruta);
-        $repositorios = array();
-        foreach($arrArchivosRepo as $key => $archivoRepo){
-            $this->replaceFileRepo($ruta,$archivoRepo,$arrReposActivos);
+        $sComando = '/usr/bin/elastix-helper repoconfig '.
+            implode(' ', array_map('escapeshellarg', $arrReposActivos)).
+            ' 2>&1';
+        $output = $ret = NULL;
+        exec($sComando, $output, $ret);
+        if ($ret != 0) {
+            $this->errMsg = implode('', $output);
+            return FALSE;
         }
+        return TRUE;
     }
 
-    function getArchivosRepo($dir='/etc/yum.repos.d/')
+    private function getArchivosRepo($dir='/etc/yum.repos.d/')
     {
         global $arrLang;
         $arr_repositorios  = scandir($dir);
@@ -81,106 +86,29 @@ class PaloSantoRepositories
     }
 
 
-    function scanFileRepo($ruta,$file)
+    private function scanFileRepo($ruta,$file)
     {
         $repositorios = array();
-        $indice = -1;
-        if($report_handle = fopen($ruta.$file, "r")){
-            $bandera = 'nofoundRepo';
-
-            while(!feof($report_handle)){
-                $linea = trim(fgets($report_handle,1024)); 
-                if(substr($linea,0,1)!='#'){ //para ignorar los comentarios
-                    if(ereg("^\[?(.+)\]",$linea,$reg1)){//se busca [repo] 
-                        $indice++;
-                        $bandera = 'foundRepo'; //sirve para indicar que encontre un repositorio, y en la proxima iteracion esta el nombre completo del repositorio, esto se hace en el proximo if(...)
-                    }
-                    else if($bandera=='foundRepo'){ 
-                        if(ereg("^name=",$linea,$reg2)){
-                            $name = substr($linea,5);
-                            $repositorios[$indice] = array('id' => $reg1[1],'name' => $name, 'file' => $file, 'activo' => '1'); //activo esta setedo temporalmente para que despues sea seteado
-                        }
-                        else if(ereg("^enabled=([[:digit:]]{1,})",$linea,$reg3)){
-                            if($repositorios[$indice]['id']==$reg1[1]){ //aseguro que es el repositorio
-                                $repositorios[$indice]['activo']=$reg3[1]; //cambio su estatus
-                                $bandera = 'nofoundRepo';
-                            }
-                        }
-                    }
-                }
+        $indice = NULL;
+        foreach (file($ruta.$file) as $linea) {
+            $regs = NULL;
+            if (preg_match('/^\[(\S+)\]/', $linea, $regs)) {
+                $indice = count($repositorios);
+                $repositorios[$indice] = array(
+                    'id'        =>  $regs[1],
+                    'name'      =>  NULL,
+                    'file'      =>  $file,
+                    'activo'    =>  '1',
+                );
+            } elseif (preg_match('/^enabled\s*=\s*(\d+)/', $linea, $regs) && !is_null($indice)) {
+                $repositorios[$indice]['activo'] = $regs[1];
+            } elseif (preg_match('/^name\s*=\s*(.+\S)\s*$/', $linea, $regs) && !is_null($indice)) {
+                $repositorios[$indice]['name'] = $regs[1];
             }
+       	
         }
-        fclose($report_handle);
         return $repositorios;
     } 
-
-    function replaceFileRepo($ruta,$file,$arrReposActivos=array("elastix","base","elastix-beta"))
-    {
-        $indice = -1;
-        unset($arrLine);
-
-        if($report_handle = fopen($ruta.$file, "r")){
-            while(!feof($report_handle))
-                $arrLine[] = rtrim(fgets($report_handle,2048));
- 
-        }
-
-        $keyGpgcheck = -1;
-        $repoTmp = $repo = "";
-        $encontradoEnabled = false; 
-        if(is_array($arrLine) && count($arrLine) > 0){
-            foreach($arrLine as $key => $line){
-                if(substr($line,0,1)!='#' && $line!=""){ //para ignorar los comentarios
-                    if(ereg("^\[?(.+)\]",$line,$repo)){//lo encontre
-                        //$repo != $repoTmp... significa q canbio de repositorio
-                        if($repo[1] != $repoTmp && !$encontradoEnabled && $keyGpgcheck!=-1){
-                            $arrLine[$keyGpgcheck] = $arrLine[$keyGpgcheck]."\nenabled=".$this->activarRepo($arrReposActivos,$repoTmp);
-                            $keyGpgcheck = -1;
-                        }
-                        $encontradoEnabled = false;
-                        $repoTmp = $repo[1]; 
-                    }
-                    else if(ereg("^gpgcheck=[[:digit:]]{1,}",$line)){ //aparentemente esta linea siempre estara en cada repositorio
-                        $keyGpgcheck = $key;
-                    }
-                    else if(ereg("^enabled=[[:digit:]]{1,}",$line)){
-                        $encontradoEnabled = true;
-                        $keyGpgcheck = -1;
-                        $arrLine[$key]="enabled=".$this->activarRepo($arrReposActivos,$repoTmp);
-                    } 
-                }
-            }
-        }
-
-        //quitando las ultimas lineas en blanco
-        for($i=count($arrLine)-1;$i>=0;$i--){
-            if($arrLine[$i]=="")
-                array_pop($arrLine);
-            else
-                break;
-        }
-
-        //Update del archivo
-        exec("sudo -u root chmod 777 ".$ruta.$file);
-        if($report_handle = fopen($ruta.$file, "w")){
-            if(is_array($arrLine) && count($arrLine) > 0){
-                foreach($arrLine as $key => $line){
-                    fputs($report_handle,$line."\n");
-                }
-            }
-        }
-        fclose($report_handle);
-        exec("sudo -u root chmod 644 ".$ruta.$file);
-    } 
-
-    function activarRepo($arrReposActivos,$repo)
-    {
-        foreach($arrReposActivos as $key => $value){//si esta para ser modificado, lo modifico su enabled si no se entiende que quiere q se desactive
-            if($value==$repo)
-                return 1;
-        }
-        return 0;
-    }
 
     function obtenerVersionDistro()
     {
