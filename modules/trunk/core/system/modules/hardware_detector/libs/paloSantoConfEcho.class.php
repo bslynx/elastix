@@ -123,7 +123,7 @@ class paloSantoConfEcho {
         return $result;
         
     }
-
+/*
     function readFileSystemConfig()
     {
         $myFile='/etc/dahdi/system.conf';
@@ -131,8 +131,8 @@ class paloSantoConfEcho {
 
         return $fh;
     }
-
-    function saveChangeFileSystemConfig($text)
+*/
+    private function saveChangeFileSystemConfig($text)
     {
         exec("sudo -u root chown asterisk.asterisk /etc/dahdi/system.conf");
         $fp = fopen('/etc/dahdi/system.conf', 'w');

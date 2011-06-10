@@ -228,7 +228,7 @@ class PaloSantoHardwareDetection
 
     /////////////////////////NEW FUNCTIONS/////////////////////////
 
-    function addSpanParameter($data, $pDB)
+    private function addSpanParameter($data, $pDB)
     {
         $queryInsert = $pDB->construirInsert('span_parameter', $data);
         $result = $pDB->genQuery($queryInsert);
@@ -269,7 +269,7 @@ class PaloSantoHardwareDetection
         return $dataSpans;
     }
 
-    function updateChangeFileSystemConf($text) {
+    private function updateChangeFileSystemConf($text) {
         exec("sudo -u root chown asterisk.asterisk /etc/dahdi/system.conf");
         $fp = fopen('/etc/dahdi/system.conf', 'w');
 
@@ -299,7 +299,6 @@ class PaloSantoHardwareDetection
                 $text .= $line;
         }
         $this->updateChangeFileSystemConf($text);
-        //exec("sudo -u root service dahdi restart");
         fclose($fp);
     }
 
@@ -314,7 +313,7 @@ class PaloSantoHardwareDetection
     }
 
 
-    function addCardManufacturer($pDB, $data)
+    private function addCardManufacturer($pDB, $data)
     {
         $queryInsert = $pDB->construirInsert('card_parameter', $data);
         $result = $pDB->genQuery($queryInsert);
@@ -335,7 +334,7 @@ class PaloSantoHardwareDetection
         return $result;
     }
 
-    function deleteCardManufacturer($pDB, $idCard){
+    private function deleteCardManufacturer($pDB, $idCard){
         $query = "DELETE FROM card_parameter";
         
         $strWhere = "id_card=$idCard";
@@ -345,7 +344,7 @@ class PaloSantoHardwareDetection
         $result = $pDB->genQuery($query);
     }
 
-    function getCardManufacturerById($pDB, $idCard){
+    private function getCardManufacturerById($pDB, $idCard){
         $query   = "SELECT manufacturer, num_serie FROM card_parameter ";
         $strWhere = "id_card=$idCard";
 
