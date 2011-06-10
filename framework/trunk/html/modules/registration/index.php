@@ -61,7 +61,7 @@ function _moduleContent(&$smarty, $module_name)
     //conexion resource
     $pDB = new paloDB($arrConf['dsn_conn_database']);
     $pDBACL = new paloDB($arrConf['elastix_dsn']['acl']);
-// dos bases de datos setting.db and register.db 
+// dos bases de datos setting.db and register.db
     //actions
     $action = getAction();
     $content = "";
@@ -87,46 +87,54 @@ function viewFormRegister($smarty, $module_name, $local_templates_dir, $pDB, $ar
     $_DATA  = $_POST;
     $action = getParameter("action");
     $id     = getParameter("id");
+    $serverKey = "";
+    $registered = "";
     $smarty->assign("ID", $id); //persistence id with input hidden in tpl
+    $smarty->assign("identitykeylbl", _tr("Your Server ID"));
     $smarty->assign("registration", $arrLang["registration"]);
     $smarty->assign("alert_message", $arrLang["alert_message"]);
-    //$smarty->assign("Activate_registration", $arrLang["Activate registration"]);
     $smarty->assign("Cancel", $arrLang["Cancel"]);
-    //$smarty->assign("displayError", "display: none;");	
     $smarty->assign("module_name", $module_name);
     $smarty->assign("sending", $arrLang["Save information and sending data"]);
     $smarty->assign("errorMsg", _tr("Connection error. Please check your internet connection."));
     $user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
     if(!is_file("/etc/elastix.key")){
-		$smarty->assign("Activate_registration", $arrLang["Activate registration"]);
+	$smarty->assign("Activate_registration", $arrLang["Activate registration"]);
+	$serverKey = trim($_DATA['identitykeyReg']);
+	$smarty->assign("identitykey", $serverKey);
+	$registered = "registered";
     }else{
-		$smarty->assign("Activate_registration", $arrLang["Update Information"]);
+	$smarty->assign("Activate_registration", $arrLang["Update Information"]);
     }
-
+    $smarty->assign("registered", $registered);
     if($user=="admin"){
-		$_DATA = $pRegister->getDataServerRegistration();
-		if($_DATA === null){
-			$smarty->assign("displayError", "display: block;");	
-			$arrDB = $pRegister->getDataRegister();
-			$smarty->assign("showActivate", "disactivate");
-			if(!isset($arrDB) || $arrDB=="")
-				$htmlForm = $oForm->fetchForm("$local_templates_dir/_registration.tpl","", "");
-			else
-				$htmlForm = $oForm->fetchForm("$local_templates_dir/_registration.tpl","", $arrDB);
-		}else if($_DATA === "FALSE"){
-			$smarty->assign("displayError", "display: none;");
-			$arrDB = $pRegister->getDataRegister();
-			if(!isset($arrDB) || $arrDB=="")
-				$htmlForm = $oForm->fetchForm("$local_templates_dir/_registration.tpl","", "");
-			else
-				$htmlForm = $oForm->fetchForm("$local_templates_dir/_registration.tpl","", $arrDB);
-		}
-		else{
-			$smarty->assign("displayError", "display: none;");	
-			$htmlForm = $oForm->fetchForm("$local_templates_dir/_registration.tpl","", $_DATA);
-		}
-	}else
-		$htmlForm = "<div align='center' style='font-weight: bolder;'>"._tr("Not user allowed to access this content")."</div>";
+	$_DATA = $pRegister->getDataServerRegistration();
+	if($_DATA === null){
+	    $smarty->assign("displayError", "display: block;");
+	    $arrDB = $pRegister->getDataRegister();
+	    $smarty->assign("showActivate", "disactivate");
+	    if(!isset($arrDB) || $arrDB=="")
+		$htmlForm = $oForm->fetchForm("$local_templates_dir/_registration.tpl","", "");
+	    else
+		$htmlForm = $oForm->fetchForm("$local_templates_dir/_registration.tpl","", $arrDB);
+	}else if($_DATA === "FALSE"){
+	    $smarty->assign("displayError", "display: none;");
+	    $arrDB = $pRegister->getDataRegister();
+	    if(!isset($arrDB) || $arrDB=="")
+		$htmlForm = $oForm->fetchForm("$local_templates_dir/_registration.tpl","", "");
+	    else
+		$htmlForm = $oForm->fetchForm("$local_templates_dir/_registration.tpl","", $arrDB);
+	}
+	else{
+	    $registered = "registered";
+	    $serverKey = trim($_DATA['identitykeyReg']);
+	    $smarty->assign("registered", $registered);
+	    $smarty->assign("identitykey", $serverKey);
+	    $smarty->assign("displayError", "display: none;");
+	    $htmlForm = $oForm->fetchForm("$local_templates_dir/_registration.tpl","", $_DATA);
+	}
+    }else
+	$htmlForm = "<div align='center' style='font-weight: bolder;'>"._tr("Not user allowed to access this content")."</div>";
     return $htmlForm;
 }
 
@@ -179,13 +187,13 @@ function saveRegister($smarty, $module_name, $local_templates_dir, $pDB, $arrCon
     }
        // return $pRegister->errMsg;
 	if($status){
-		$rsa_key = "";
-		if(!is_file("/etc/elastix.key")){
-		    // saving to web service
-		    $rsa_key = file_get_contents('/etc/ssh/ssh_host_rsa_key.pub');
-		}else{
-		    $rsa_key = file_get_contents("/etc/elastix.key");
-		}
+	    $rsa_key = "";
+	    if(!is_file("/etc/elastix.key")){
+		// saving to web service
+		$rsa_key = file_get_contents('/etc/ssh/ssh_host_rsa_key.pub');
+	    }else{
+		$rsa_key = file_get_contents("/etc/elastix.key");
+	    }
 	$rsa_key = trim($rsa_key);
         $datas = array($contact_name, $email, $phone, $company, $address, $city, $country, $idPartner, $rsa_key);
         $band = $pRegister->sendDataWebService($datas);

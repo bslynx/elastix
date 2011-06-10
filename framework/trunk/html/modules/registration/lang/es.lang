@@ -46,5 +46,6 @@ $arrLangModule=array(
 "Your information cannot be saved. Please try again." => "Su información no pudo ser guardada. Por favor intente de nuevo.",
 "Your information has been saved." => "Su información ha sido guardada.",
 "Connection error. Please check your internet connection." => "Error de Conexión. Por favor revise su conexión de internet.",
+"Your Server ID" => "Su ID de Servidor",
 );
 ?>
