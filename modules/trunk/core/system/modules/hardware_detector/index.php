@@ -147,7 +147,7 @@ function listPorts($smarty, $module_name, $local_templates_dir, $pDB) {
         $smarty->assign("CARDS_NOT_FOUNDS",$oPortsDetails->errMsg);
     }
     $arrGrid = array("title"    => $arrLang['Hardware Detector'],
-            "icon"     => "images/pci.png",
+            "icon"     => "modules/$module_name/images/pci.png",
             "width"    => "100%"
             );
     $contenidoModulo .= llenarTpl($local_templates_dir,$smarty,$arrGrid, $arrPortsDetails, $arrMisdnInfo);    

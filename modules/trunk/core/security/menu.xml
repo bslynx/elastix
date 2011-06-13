@@ -27,5 +27,10 @@
             <group id="1" name="administrator" desc="total access"></group>
         </permissions>
     </menuitem>
+    <menuitem menuid="change_password"   desc="Advanced Security Settings"      parent="security"     module="yes" link="" order="4">
+        <permissions>
+            <group id="1" name="administrator" desc="total access"></group>
+        </permissions>
+    </menuitem>
   </menulist>
 </module>
