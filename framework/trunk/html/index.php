@@ -39,7 +39,7 @@ session_start();
 
 if(isset($_GET['logout']) && $_GET['logout']=='yes') {
     $user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"unknown";
-    writeLOG("access.log", "AUDIT $user: Web Interface logout successful. Accepted logout for $user from $_SERVER[REMOTE_ADDR].");
+    writeLOG("audit.log", "LOGOUT $user: Web Interface logout successful. Accepted logout for $user from $_SERVER[REMOTE_ADDR].");
     session_destroy();
     session_name("elastixSession");
     session_start();
@@ -83,14 +83,14 @@ if(isset($_POST['submit_login']) and !empty($_POST['input_user'])) {
         $_SESSION['elastix_user'] = $_POST['input_user'];
         $_SESSION['elastix_pass'] = $pass_md5;
          header("Location: index.php");
-        writeLOG("access.log", "AUDIT $_POST[input_user]: Web Interface login successful. Accepted password for $_POST[input_user] from $_SERVER[REMOTE_ADDR].");
+        writeLOG("audit.log", "LOGIN $_POST[input_user]: Web Interface login successful. Accepted password for $_POST[input_user] from $_SERVER[REMOTE_ADDR].");
         exit;
     } else {
         $user = urlencode(substr($_POST['input_user'],0,20));
         if(!$pACL->getIdUser($_POST['input_user'])) // not exists user?
-            writeLOG("access.log", "AUDIT $user: Authentication Failure to Web Interface login. Invalid user $user from $_SERVER[REMOTE_ADDR].");
+            writeLOG("audit.log", "LOGIN $user: Authentication Failure to Web Interface login. Invalid user $user from $_SERVER[REMOTE_ADDR].");
         else
-            writeLOG("access.log", "AUDIT $user: Authentication Failure to Web Interface login. Failed password for $user from $_SERVER[REMOTE_ADDR].");
+            writeLOG("audit.log", "LOGIN $user: Authentication Failure to Web Interface login. Failed password for $user from $_SERVER[REMOTE_ADDR].");
         // Debo hacer algo aquí?
     }
 }

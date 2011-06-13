@@ -167,6 +167,14 @@ class paloSantoNavigation {
         $this->smarty->assign("nameSubMenuSelected",  $arrSubMenu[$currSubMenu]['Name']);
         $this->smarty->assign("nameSubMenu2Selected",  $arrSubMenu2[$currSubMenu2]['Name']);
 
+	if(isset($_GET) && count($_GET) == 1 && isset($_GET['menu'])){
+	  $navigation  = $arrMainMenu[$currMainMenu]['Name']." >> ".$arrSubMenu[$currSubMenu]['Name'];
+	  $navigation .= isset($arrSubMenu2[$currSubMenu2])?" >> ".$arrSubMenu2[$currSubMenu2]['Name']:"";
+
+	  $user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"unknown";
+	  writeLOG("audit.log","NAVIGATION $user: User $user visited \"{$navigation}\" from $_SERVER[REMOTE_ADDR].");
+	}
+
         /*************** Submenus para template elastix wine ********************/
         $arrMenuTotal = array();
         foreach($arrMainMenu as $key => $valor)
