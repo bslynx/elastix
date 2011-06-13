@@ -36,7 +36,7 @@ class paloSantoAccessaudit{
 
     function paloSantoAccessaudit()
     {
-        $this->astLog = new LogParser_Full("/var/log/elastix","access");
+        $this->astLog = new LogParser_Full("/var/log/elastix","audit");
     }
 
     function ObtainNumAccessLogs($sFecha)

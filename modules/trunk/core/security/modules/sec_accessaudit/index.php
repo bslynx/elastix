@@ -95,7 +95,7 @@ function report_AccessAudit($smarty, $module_name, $local_templates_dir)
     $oFilterForm = new paloForm($smarty, $arrFormElements);
 
     $oGrid  = new paloSantoGrid($smarty);
-    $oGrid->setTitle(_tr("Access audit"));
+    $oGrid->setTitle(_tr("Audit"));
     $oGrid->pagingShow(true); // show paging section.
     $oGrid->enableExport();   // enable export.
     $oGrid->setNameFile_Export(_tr("Access audit"));

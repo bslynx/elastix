@@ -28,7 +28,7 @@
   $Id: en.lang,v 1.1 2010-12-18 05:12:07 Bruno Macias bmacias@palosanto.com Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Access Audit" => "Access Audit",
+"Audit" => "Audit",
 "Date" => "Date",
 "Type" => "Type",
 "User" => "User",
