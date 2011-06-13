@@ -1,4 +1,4 @@
-/var/log/elastix/access.log {
+/var/log/elastix/audit.log {
    missingok
    rotate 5
    weekly
