@@ -180,10 +180,10 @@ function createSQLFile($action, $path_folder, $dbName, $engine, $sql_export, $pa
                 $stringSQL .= getSQLUpdateString("0.0.0-0",$path_folder,"update",$dbName);
             break;
         case "update":
-            if(preg_match("/^\d+\.\d+\.\d+\-\d*[alfa|beta|rc]*$/",$version))
+            if(preg_match("/^\d+(\.\d+){0,2}(\-\d*((alfa|beta|rc)?|(\.\d+){0,2}))?$/",$version)) 
                 $stringSQL = getSQLUpdateString($version,$path_folder,$action,$dbName);
             else
-                echo "Wrong format for version, must be x.x.x-x[alfa|beta|rc]\n";
+                echo "Wrong format for version x.x.x.x..x.x.x.\n";
             break;
     }
     file_put_contents("$path_folder/1_sqlFile.sql",$stringSQL);
@@ -379,6 +379,40 @@ function esmayor($versionRelease,$version)
     $version             = explode("-",$version);
     $versionReleaseStart = explode(".",$versionRelease[0]);
     $versionStart        = explode(".",$version[0]);
+    $result = compareVersion($versionReleaseStart,$versionStart);
+    if(isset($result))
+	return $result;
+    preg_match("/^(\d*)([alfa|beta|rc]*)$/",$versionRelease[1],$matchVersionRelease);
+    preg_match("/^(\d*)([alfa|beta|rc]*)$/",$version[1],$matchVersion);
+    if(isset($matchVersionRelease[2])){ // Formato tipico para elastix
+	if(intval($matchVersionRelease[1]) > intval($matchVersion[1]))
+	    return true;
+	if(intval($matchVersionRelease[1]) < intval($matchVersion[1]))
+	    return false;
+	if(cursor($matchVersionRelease[2]) > cursor($matchVersion[2]))
+	    return true;
+	return false;
+    }
+    else{ //Formato x.x.x-x.x.x (Creado especialmente para fop2)
+	$versionReleaseStart = explode(".",$versionRelease[1]);
+	$versionStart        = explode(".",$version[1]);
+	$result = compareVersion($versionReleaseStart,$versionStart);
+	if(isset($result))
+	    return $result;
+	return false;
+    }
+}
+
+function compareVersion($versionReleaseStart,$versionStart)
+{
+    if(!isset($versionReleaseStart[1]))
+	$versionReleaseStart[1] = 0;
+    if(!isset($versionReleaseStart[2]))
+	$versionReleaseStart[2] = 0;
+    if(!isset($versionStart[1]))
+	$versionStart[1] = 0;
+    if(!isset($versionStart[2]))
+	$versionStart[2] = 0;
     if(intval($versionReleaseStart[0]) > intval($versionStart[0]))
         return true;
     if(intval($versionReleaseStart[0]) < intval($versionStart[0]))
@@ -391,15 +425,7 @@ function esmayor($versionRelease,$version)
         return true;
     if(intval($versionReleaseStart[2]) < intval($versionStart[2]))
         return false;
-    preg_match("/^(\d*)([alfa|beta|rc]*)$/",$versionRelease[1],$matchVersionRelease);
-    preg_match("/^(\d*)([alfa|beta|rc]*)$/",$version[1],$matchVersion);
-    if(intval($matchVersionRelease[1]) > intval($matchVersion[1]))
-        return true;
-    if(intval($matchVersionRelease[1]) < intval($matchVersion[1]))
-        return false;
-    if(cursor($matchVersionRelease[2]) > cursor($matchVersion[2]))
-        return true;
-    return false;
+    return null;
 }
 
 /**
