@@ -29,7 +29,7 @@
     global $arrConf;
     global $arrConfModule;
 
-    $arrConfModule['module_name']                 = 'change_password';
+    $arrConfModule['module_name']                 = 'sec_advanced_settings';
     $arrConfModule['templates_dir']               = 'themes';
     $arrConfModule['dsn_conn_database']           = generarDSNSistema('root','asterisk','/var/www/html/');
     $arrConfModule['arr_conf_file'] 	          = array( array("name"=>"amportal.conf",  "pass_name"=>"AMPDBPASS", "path"=>"/etc/"),
