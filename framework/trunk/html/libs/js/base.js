@@ -300,9 +300,27 @@ function getDataWebServer()
 		    $('#identitykey').text(response['message']['identitykeyReg']);
 		}else{
 		    if(response['error'] != "no registrado"){
+			$('#btnAct').show();
 			$('.tdIdServer').hide();
 			$('#msnTextErr').show();
 			$('#msnTextErr').text(response['error']);
+			if(response['message']['contactNameReg'])
+			    $('#contactNameReg').val(response['message']['contactNameReg']);
+			if(response['message']['emailReg'])
+			    $('#emailReg').val(response['message']['emailReg']);
+			if(response['message']['phoneReg'])
+			    $('#phoneReg').val(response['message']['phoneReg']);
+			if(response['message']['companyReg'])
+			    $('#companyReg').val(response['message']['companyReg']);
+			if(response['message']['addressReg'])
+			    $('#addressReg').val(response['message']['addressReg']);
+			if(response['message']['cityReg'])
+			    $('#cityReg').val(response['message']['cityReg']);
+			if(response['message']['countryReg'])
+			    $('#countryReg').val(response['message']['countryReg']);
+			if(response['message']['identitykeyReg'])
+			    $('#identitykey').text(response['message']['identitykeyReg']);
+
 		    }
 		}
 	    }
