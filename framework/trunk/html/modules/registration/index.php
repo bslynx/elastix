@@ -90,8 +90,6 @@ function viewFormRegister($smarty, $module_name, $local_templates_dir, $pDB, $ar
     $_DATA  = $_POST;
     $action = getParameter("action");
     $id     = getParameter("id");
-    $serverKey  = "";
-    $elastixFileKey = false;
     $registered = "";
     $smarty->assign("ID", $id); //persistence id with input hidden in tpl
     $smarty->assign("identitykeylbl", _tr("Your Server ID"));
@@ -109,17 +107,11 @@ function viewFormRegister($smarty, $module_name, $local_templates_dir, $pDB, $ar
     }else{
 	$registered = "registered";
 	$smarty->assign("Activate_registration", $arrLang["Update Information"]);
-	$elastixFileKey = true;
     }
     $smarty->assign("registered", $registered);
     $smarty->assign("displayError", "display: none;");
     if($user=="admin"){
-	if($elastixFileKey){
-	    $htmlForm = $oForm->fetchForm("$local_templates_dir/_registration.tpl","", "");
-	}else{
-	    
-	    $htmlForm = $oForm->fetchForm("$local_templates_dir/_registration.tpl","", "");
-	}
+	$htmlForm = $oForm->fetchForm("$local_templates_dir/_registration.tpl","", "");
     }else
 	$htmlForm = "<div align='center' style='font-weight: bolder;'>"._tr("Not user allowed to access this content")."</div>";
     return $htmlForm;
