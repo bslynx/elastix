@@ -70,6 +70,9 @@ function _moduleContent(&$smarty, $module_name)
         case "save":
             $content = saveRegister($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang,$pDBACL);
             break;
+	case "getDataRegisterServer":
+	    $content = getDataRegistration($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang,$pDBACL);
+	    break;
         default: // view_form
             $content = viewFormRegister($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang,$pDBACL);
             break;
@@ -87,7 +90,8 @@ function viewFormRegister($smarty, $module_name, $local_templates_dir, $pDB, $ar
     $_DATA  = $_POST;
     $action = getParameter("action");
     $id     = getParameter("id");
-    $serverKey = "";
+    $serverKey  = "";
+    $elastixFileKey = false;
     $registered = "";
     $smarty->assign("ID", $id); //persistence id with input hidden in tpl
     $smarty->assign("identitykeylbl", _tr("Your Server ID"));
@@ -96,42 +100,25 @@ function viewFormRegister($smarty, $module_name, $local_templates_dir, $pDB, $ar
     $smarty->assign("Cancel", $arrLang["Cancel"]);
     $smarty->assign("module_name", $module_name);
     $smarty->assign("sending", $arrLang["Save information and sending data"]);
-    $smarty->assign("errorMsg", _tr("Connection error. Please check your internet connection."));
+    $smarty->assign("errorMsg", _tr("Impossible connect to Elastix Web services. Please check your internet connection."));
+    $smarty->assign("getinfo", _tr("Getting infomation from Elastix Web Services."));
     $user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
+    
     if(!is_file("/etc/elastix.key")){
 	$smarty->assign("Activate_registration", $arrLang["Activate registration"]);
-	$serverKey = trim($_DATA['identitykeyReg']);
-	$smarty->assign("identitykey", $serverKey);
-	$registered = "registered";
     }else{
+	$registered = "registered";
 	$smarty->assign("Activate_registration", $arrLang["Update Information"]);
+	$elastixFileKey = true;
     }
     $smarty->assign("registered", $registered);
+    $smarty->assign("displayError", "display: none;");
     if($user=="admin"){
-	$_DATA = $pRegister->getDataServerRegistration();
-	if($_DATA === null){
-	    $smarty->assign("displayError", "display: block;");
-	    $arrDB = $pRegister->getDataRegister();
-	    $smarty->assign("showActivate", "disactivate");
-	    if(!isset($arrDB) || $arrDB=="")
-		$htmlForm = $oForm->fetchForm("$local_templates_dir/_registration.tpl","", "");
-	    else
-		$htmlForm = $oForm->fetchForm("$local_templates_dir/_registration.tpl","", $arrDB);
-	}else if($_DATA === "FALSE"){
-	    $smarty->assign("displayError", "display: none;");
-	    $arrDB = $pRegister->getDataRegister();
-	    if(!isset($arrDB) || $arrDB=="")
-		$htmlForm = $oForm->fetchForm("$local_templates_dir/_registration.tpl","", "");
-	    else
-		$htmlForm = $oForm->fetchForm("$local_templates_dir/_registration.tpl","", $arrDB);
-	}
-	else{
-	    $registered = "registered";
-	    $serverKey = trim($_DATA['identitykeyReg']);
-	    $smarty->assign("registered", $registered);
-	    $smarty->assign("identitykey", $serverKey);
-	    $smarty->assign("displayError", "display: none;");
-	    $htmlForm = $oForm->fetchForm("$local_templates_dir/_registration.tpl","", $_DATA);
+	if($elastixFileKey){
+	    $htmlForm = $oForm->fetchForm("$local_templates_dir/_registration.tpl","", "");
+	}else{
+	    
+	    $htmlForm = $oForm->fetchForm("$local_templates_dir/_registration.tpl","", "");
 	}
     }else
 	$htmlForm = "<div align='center' style='font-weight: bolder;'>"._tr("Not user allowed to access this content")."</div>";
@@ -186,24 +173,30 @@ function saveRegister($smarty, $module_name, $local_templates_dir, $pDB, $arrCon
         $status = $pRegister->insertDataRegister($data);
     }
        // return $pRegister->errMsg;
-	if($status){
-	    $rsa_key = "";
-	    if(!is_file("/etc/elastix.key")){
-		// saving to web service
-		$rsa_key = file_get_contents('/etc/ssh/ssh_host_rsa_key.pub');
-	    }else{
-		$rsa_key = file_get_contents("/etc/elastix.key");
-	    }
+    if($status){
+	$rsa_key = "";
+	if(!is_file("/etc/elastix.key")){
+	    // saving to web service
+	    $rsa_key = file_get_contents('/etc/ssh/ssh_host_rsa_key.pub');
+	}else{
+	    $rsa_key = file_get_contents("/etc/elastix.key");
+	}
 	$rsa_key = trim($rsa_key);
         $datas = array($contact_name, $email, $phone, $company, $address, $city, $country, $idPartner, $rsa_key);
         $band = $pRegister->sendDataWebService($datas);
-        if($band==="FALSE" || $band==null){
+        if($band==null){
+	    $pDB->rollBack();
+	    $msgResponse['status']  = "FALSE";
+	    $msgResponse['message'] = _tr("Impossible connect to Elastix Web services. Please check your internet connection.");
+	    $jsonObject->set_message($msgResponse);
+	    return $jsonObject->createJSON();
+        }elseif($band==="FALSE"){
 	    $pDB->rollBack();
 	    $msgResponse['status']  = "FALSE";
 	    $msgResponse['message'] = _tr("Your information cannot be saved. Please try again.");
 	    $jsonObject->set_message($msgResponse);
 	    return $jsonObject->createJSON();
-        }else{
+	}else{
 	    exec("sudo -u root chown asterisk.asterisk /etc");
 	    exec("echo '$band' > /etc/elastix.key");
 	    chmod("/etc/elastix.key",0600);
@@ -217,6 +210,33 @@ function saveRegister($smarty, $module_name, $local_templates_dir, $pDB, $arrCon
     }else{
         return "false";
     }
+}
+
+function getDataRegistration($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang,$pDBACL)
+{
+    $pRegister   = new paloSantoRegistration($pDB);
+    $jsonObject   = new PaloSantoJSON();
+    if(is_file("/etc/elastix.key")){
+	$_DATA = $pRegister->getDataServerRegistration();
+	if($_DATA === null){ // no se puede conectar al web service o existe un problema de red
+	    $jsonObject->set_error(_tr("Impossible connect to Elastix Web services. Please check your internet connection."));
+	    $jsonObject->set_status("error");
+	    $jsonObject->set_message($_DATA);
+	}elseif($_DATA === "FALSE"){ // su elastix no esta registrado, el idServer enviado no existe en la base de datos
+	    $_DATA = $pRegister->getDataRegister();
+	    $jsonObject->set_error(_tr("Your Server ID is not valid. Please update your information to generate a new Server ID."));
+	    $jsonObject->set_status("error");
+	    $jsonObject->set_message($_DATA);
+	}else{
+	    $jsonObject->set_message($_DATA);
+	}
+    }else{// elastix no registrado
+	$jsonObject->set_error("no registrado");
+	$jsonObject->set_status("error");
+	$jsonObject->set_message("empty");
+    }
+    return $jsonObject->createJSON();
+
 }
 
 function createFieldForm($arrLang)
@@ -566,6 +586,8 @@ function getAction()
         return "save_new";
     else if(getParameter("action")=="saveregister")
         return "save";
+    else if(getParameter("action")=="getDataRegisterServer")
+        return "getDataRegisterServer";
     else
         return "report"; //cancel
 }

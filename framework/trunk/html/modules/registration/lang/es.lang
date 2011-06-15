@@ -45,7 +45,9 @@ $arrLangModule=array(
 "Not user allowed to access this content" => "Usuario no autorizado para acceder a este contenido",
 "Your information cannot be saved. Please try again." => "Su información no pudo ser guardada. Por favor intente de nuevo.",
 "Your information has been saved." => "Su información ha sido guardada.",
-"Connection error. Please check your internet connection." => "Error de Conexión. Por favor revise su conexión de internet.",
+"Impossible connect to Elastix Web services. Please check your internet connection." => "Imposible conectarse a Elastix Web Services. Por favor revise su conexión de internet.",
 "Your Server ID" => "Su ID de Servidor",
+"Getting infomation from Elastix Web Services." => "Obteniendo información desde Elastix Web Services.",
+"Your Server ID is not valid. Please update your information to generate a new Server ID." => "Su ID de Servidor no es válida. Por favor actualice su información para generar un nuevo Id de Servidor.",
 );
 ?>

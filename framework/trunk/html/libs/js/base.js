@@ -198,6 +198,7 @@ function jBoxPopupAero(id ,titulo, ancho, alto, html){
         WindowHeight:         alto,
         WindowAnimation:      'easeOutCubic'
     });
+    getDataWebServer();
 }
 
 function registration(){
@@ -271,6 +272,42 @@ function registration(){
             }
         );
     }
+}
+
+function getDataWebServer()
+{
+    var arrAction = "action=getDataRegisterServer&rawmode=yes";
+    $('#btnAct').hide();
+    $('.tdIdServer').hide();
+    $.post("register.php",arrAction,
+	function(arrData,statusResponse,error)
+	{
+	    $('#getinfo').hide();
+	    if(arrData != null){
+		var response = JSONRPMtoString(arrData);
+		var status = response['statusResponse'];
+		if(status == "OK"){
+		    $('#btnAct').show();
+		    $('.tdIdServer').show();
+		    $('#msnTextErr').hide();
+		    $('#contactNameReg').val(response['message']['contactNameReg']);
+		    $('#emailReg').val(response['message']['emailReg']);
+		    $('#phoneReg').val(response['message']['phoneReg']);
+		    $('#companyReg').val(response['message']['companyReg']);
+		    $('#addressReg').val(response['message']['addressReg']);
+		    $('#cityReg').val(response['message']['cityReg']);
+		    $('#countryReg').val(response['message']['countryReg']);
+		    $('#identitykey').text(response['message']['identitykeyReg']);
+		}else{
+		    if(response['error'] != "no registrado"){
+			$('.tdIdServer').hide();
+			$('#msnTextErr').show();
+			$('#msnTextErr').text(response['error']);
+		    }
+		}
+	    }
+	}
+    );
 }
 
 function getElastixKey(){
