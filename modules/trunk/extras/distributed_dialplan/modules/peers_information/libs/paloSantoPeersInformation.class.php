@@ -131,10 +131,8 @@ class paloSantoPeersInformation {
        $arrTmp = array();
        $data = array();
        $result = "";
-       foreach($dataParameter as $key => $value)
-          $arrTmp[$key] = $this->_DB->DBCAMPO($value);
 
-       foreach($arrTmp as $name => $value)
+       foreach($dataParameter as $name => $value)
        {
          $data[0] = $name;
          $data[1] = $value;
@@ -151,10 +149,10 @@ class paloSantoPeersInformation {
    {
      $dataParameter = array();
      //$dataParameter["'precache'"]  = "outbound";
-     $dataParameter["'include'"]   = "priv";
-     $dataParameter["'permit'"]    = "priv";
-     $dataParameter["'quality'"]   = "yes";
-     $dataParameter["'order'"]   = "primary";
+     $dataParameter["include"]   = "priv";
+     $dataParameter["permit"]    = "priv";
+     $dataParameter["quality"]   = "yes";
+     $dataParameter["order"]     = "primary";
      return $dataParameter;
    }
 
