@@ -258,16 +258,18 @@ class ElastixInstallerProcess extends AbstractProcess
                 $bActivo = $this->_actualizarEstadoYumShell();
                 if (!$bActivo) {
                     $this->_finalizarYumShell();
-                    $this->_estadoPaquete = array(
-                        'status'    =>  'idle',
-                        'action'    =>  'none',
-                        'testonly'  =>  FALSE,
-
-                        'progreso'  =>  array(),
-                        'instalado' =>  array(),
-                        'errores'   =>  array(),
-                        'warning'   =>  array(),
-                    );
+                    if ($this->_estadoPaquete['status'] != 'error') {
+                        $this->_estadoPaquete = array(
+                            'status'    =>  'idle',
+                            'action'    =>  'none',
+                            'testonly'  =>  FALSE,
+    
+                            'progreso'  =>  array(),
+                            'instalado' =>  array(),
+                            'errores'   =>  array(),
+                            'warning'   =>  array(),
+                        );
+                    }
                 }
             }
             if (is_resource($this->_procYum) && in_array($this->_procPipes[2], $listoLeer)) {
@@ -723,6 +725,7 @@ Installing for dependencies:
         $sComando = "ts list\ninstall ".implode(' ', $listaArgs)."\nts solve\nts list\n";
         if (!$this->_asegurarYumShellIniciado())
             return "ERR Unable to start Yum Shell\n";
+        $this->_activarCapturaStderr();
         fwrite($this->_procPipes[0], $sComando);
         return "OK Processing\n";
     }
@@ -746,6 +749,7 @@ Installing for dependencies:
         $sComando = "ts list\ninstall ".implode(' ', $listaArgs)."\nts solve\nts list\n";
         if (!$this->_asegurarYumShellIniciado())
             return "ERR Unable to start Yum Shell\n";
+        $this->_activarCapturaStderr();
         fwrite($this->_procPipes[0], $sComando);
         return "OK Processing\n";
     }
@@ -950,6 +954,7 @@ Installing for dependencies:
                 $pos = strpos($this->_sContenido, "Transaction Summary");
                 if ($pos !== FALSE) {
                     $this->_estadoPaquete['action'] = 'depsolving';
+                    $this->_inactivarCapturaStderr();
                 }
                 break;
             case 'depsolving':
@@ -1288,6 +1293,28 @@ Installing for dependencies:
         $this->oMainLog->output("yum(stderr): $s");
         
         if ($this->_bCapturarStderr) switch ($this->_estadoPaquete['action']) {
+        case 'reporefresh':
+            // Buscar si yum ha terminado de resolver dependencias por errores
+            $lineas = explode("\n", $this->_stderrBuf);
+            $bDownloadError = FALSE;
+            foreach ($lineas as $sLinea) {
+                if (0 === strpos($sLinea, 'Error: ')) {
+                    $this->oMainLog->output('DEBUG: reporefresh con error');
+                    $bDownloadError = TRUE;
+                    $this->_estadoPaquete['status'] = 'error';
+                    $this->_estadoPaquete['action'] = 'none';
+                    $this->_estadoPaquete['progreso'] = array();
+                    $this->_estadoPaquete['errores'] = array();
+                    $this->_estadoPaquete['warning'] = array();
+
+                    // Esto asume que el contenido luego del mensaje no está fragmentado
+                    $this->_inactivarCapturaStderr();
+                    $this->_estadoPaquete['errores'][] = $sLinea;
+                } elseif ($bDownloadError) {
+                    if (trim($sLinea) != '') $this->_estadoPaquete['errores'][] = $sLinea;
+                }
+            }
+            break;
         case 'downloading':
             // Buscar si yum ha terminado de descargar por errores
             $lineas = explode("\n", $this->_stderrBuf);
