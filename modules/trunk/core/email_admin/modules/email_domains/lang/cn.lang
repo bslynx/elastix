@@ -38,5 +38,7 @@ $arrLangModule=array(
 "New Domain"=>"新建域",
 "View Domain"=>"查看域",
 "Edit Domain"=>"编辑域",
+"Domain has been deleted" => "Domain has been deleted",
+"Domain has been created" => "Domain has been created",
 );
 ?>

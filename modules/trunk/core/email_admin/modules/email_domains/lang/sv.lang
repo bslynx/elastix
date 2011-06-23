@@ -38,5 +38,7 @@ $arrLangModule=array(
 "New Domain" => "Ny Domän",
 "View Domain" => "Förhandsgranska domän",
 "Edit Domain" => "Redigera Domän",
+"Domain has been deleted" => "Domain has been deleted",
+"Domain has been created" => "Domain has been created",
 );
 ?>

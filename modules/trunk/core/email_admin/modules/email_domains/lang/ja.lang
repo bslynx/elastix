@@ -41,5 +41,7 @@ $arrLangModule=array(
 "New Domain"=>"新規ドメイン",
 "View Domain"=>"ドメインの参照",
 "Edit Domain"=>"ドメインの編集",
+"Domain has been deleted" => "Domain has been deleted",
+"Domain has been created" => "Domain has been created",
 );
 ?>

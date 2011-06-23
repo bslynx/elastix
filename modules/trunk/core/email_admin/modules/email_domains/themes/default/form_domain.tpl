@@ -16,7 +16,8 @@
           <input class="button" type="submit" name="cancel" value="{$CANCEL}"></td>
           {else}
          {* <input class="button" type="submit" name="edit" value="{$EDIT}"> *}
-          <input class="button" type="submit" name="delete" value="{$DELETE}"  onClick="return confirmSubmit('{$CONFIRM_CONTINUE}')"></td>
+          <input class="button" type="submit" name="delete" value="{$DELETE}"  onClick="return confirmSubmit('{$CONFIRM_CONTINUE}')">
+	  <input class="button" type="submit" name="cancel" value="{$CANCEL}"></td>
           {/if}          
         <td align="right" nowrap><span class="letra12"><span  class="required">*</span> {$REQUIRED_FIELD}</span></td>
      </tr>
