@@ -27,7 +27,6 @@
   +----------------------------------------------------------------------+
   $Id: misc.lib.php,v 1.3 2007/08/10 01:32:51 gcarrillo Exp $ */
 
-include_once("email_functions.lib.php");
 
 function recoger_valor($key, &$_GET, &$_POST, $default = NULL) {
     if (isset($_POST[$key])) return $_POST[$key];
