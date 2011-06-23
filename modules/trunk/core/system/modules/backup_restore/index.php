@@ -670,7 +670,7 @@ function Array_Options($arrLang, $disabled="")
 function process_each_backup($arrSelectedOptions,$ruta_respaldo,&$arrBackupOptions)
 {
     global $arrConf;
-
+    
     foreach ($arrSelectedOptions as $option)
     {
         $bExito=true;
@@ -828,10 +828,23 @@ function process_each_backup($arrSelectedOptions,$ruta_respaldo,&$arrBackupOptio
                                 );
                 if(!respaldar_carpeta($arrInfoRespaldo,$ruta_respaldo,$error))
                     $bExito = false;
-                //cambio de nuevo a cyrus
-                $comando="sudo -u root /bin/chown cyrus:mail /var/spool/imap -R";
-                exec($comando,$output,$retval);
+
+/*
+		$folderDomain = "domain"; //"user" if elastix 1.6
+		$arrInfoRespaldo2 = array(  'folder_path'               =>  "/var/lib/imap",
+                                            'folder_name'               =>  $folderDomain,
+                                            'nombre_archivo_respaldo'   =>  "var.lib.imap.$folderDomain.tgz"
+                                );
+                if(!respaldar_carpeta($arrInfoRespaldo2,$ruta_respaldo,$error))
+                    $bExito = false;
+*/
             }
+/* para hacer un backup del cyrus
+	    exec("sudo -u cyrus  /usr/lib/cyrus-imapd/ctl_mboxlist -d > $ruta_respaldo/mailboxes.db",$output,$retval);
+	    if ($retval!=0) $bExito = false;
+*/
+	    $comando="sudo -u root /bin/chown cyrus:mail /var/spool/imap -R";
+	    exec($comando,$output,$retval);
             break;
 
         case "ep_db":
@@ -851,10 +864,10 @@ function process_each_backup($arrSelectedOptions,$ruta_respaldo,&$arrBackupOptio
             else{
                 if(!respaldar_carpeta($arrInfoRespaldo,$ruta_respaldo,$error))
                     $bExito = false;
-                //cambio de nuevo a root
-                $comando="sudo -u root /bin/chown root:root /tftpboot";
-                exec($comando,$output,$retval);
             }
+	    //cambio de nuevo a root
+	    $comando="sudo -u root /bin/chown root:root /tftpboot";
+	    exec($comando,$output,$retval);
             break;
 
         case "sugar_db":
@@ -1101,7 +1114,6 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
 {
     global $arrConf;
     $error="";
-    
     $root_password = obtenerClaveConocidaMySQL('root');
     
     foreach ($arrSelectedOptions as $option)
@@ -1399,6 +1411,8 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
         case "em_db":
             //Primero eliminar todos los dominios existentes
             $pDB = new paloDB("sqlite3:///$arrConf[elastix_dbdir]/email.db");
+	    $pEmail = new paloEmail($pDB);
+	    $virtual = FALSE;
             if(!empty($pDB->errMsg)) {
                 echo "ERROR DE DB: $pDB->errMsg <br>";
             }
@@ -1408,7 +1422,7 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
             {
                 $arrTmp['domain_name']  = $valor[1];
                 $arrTmp['id_domain']    = $valor[0];
-                $bExito = eliminar_dominio($pDB,$arrTmp,$errMsg);
+                $bExito = $pEmail->eliminar_dominio($pDB,$arrTmp,$errMsg,$virtual);
             }
 
             $archivo = "roundcubedb";
@@ -1455,6 +1469,7 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
 
             $comando="tar cvfz /var/spool/imap.tgz /var/spool/imap/";
             exec($comando, $output, $retval);
+
             if ($retval!=0) $bExito = false;
             else{
                 $comando="rm -rf /var/spool/imap/*";
@@ -1902,6 +1917,7 @@ function crear_cuentas_fax($ruta_base_fax_respaldo,$base_fax)
 function crear_cuentas_email($ruta_base_email_respaldo,$base_email)
 {
     $bExito=true;
+    $virtual = FALSE;
     $result=array();
     $pDB = new paloDB("sqlite3:///$ruta_base_email_respaldo");
     if (!empty($pDB->errMsg)) {
@@ -1910,6 +1926,7 @@ function crear_cuentas_email($ruta_base_email_respaldo,$base_email)
     else{
         #borrar las cuentas de dominos y el domino $arrConf[elastix_dbdir]
         $pDBorig = new paloDB("sqlite3:///$base_email");
+	$pEmail  = new paloEmail($pDBorig);
         if (!empty($pDBorig->errMsg)) {
             echo "DB ERROR: $pDBorig->errMsg \n";
         }
@@ -1920,7 +1937,7 @@ function crear_cuentas_email($ruta_base_email_respaldo,$base_email)
                 foreach($result as $key => $value){
                     $arrTmp['id_domain']= $value['id'];
                     $arrTmp['domain_name']= $value['domain_name'];
-                    $bExito=eliminar_dominio($pDBorig,$arrTmp,$errMsg);
+                    $bExito = $pEmail->eliminar_dominio($pDBorig,$arrTmp,$errMsg,$virtual);
                 }
             }
 
@@ -1933,7 +1950,7 @@ function crear_cuentas_email($ruta_base_email_respaldo,$base_email)
                 {
                     foreach ($result as $infoDominio)
                     {
-                        guardar_dominio_sistema($infoDominio['domain_name'],$errMsg);
+                        $pEmail->guardar_dominio_sistema($infoDominio['domain_name'],$errMsg);
                     }
                     #crear las cuentas
                     $sQuery="SELECT a.*,d.domain_name from accountuser as a,domain as d where d.id=a.id_domain";
@@ -1948,15 +1965,15 @@ function crear_cuentas_email($ruta_base_email_respaldo,$base_email)
                             {
                                 $email=$regs[1].'@'.$infoCuenta['domain_name'];
                                 $password=$infoCuenta['password'];
-                                $bExito=crear_usuario_correo_sistema($email,$username,$password,$errMsg);
+                                $bExito = $pEmail->crear_usuario_correo_sistema($email,$username,$password,$errMsg,$virtual);
                                 if ($bExito){
                                     //crear el mailbox para la nueva cuenta
                                     $bReturn=crear_mailbox_usuario($email,$username,$quota,$errMsg);
                                     if(!$bReturn)
-                                        $bReturn=eliminar_usuario_correo_sistema($username,$email,$errMsg);
+                                        $bReturn = $pEmail->eliminar_usuario_correo_sistema($username,$email,$errMsg);
                                 }else{
                                     //tengo que borrar el usuario creado en el sistema
-                                    $bReturn=eliminar_usuario_correo_sistema($username,$email,$errMsg);
+                                    $bReturn = $pEmail->eliminar_usuario_correo_sistema($username,$email,$errMsg);
                                 }
                             }
                         }
