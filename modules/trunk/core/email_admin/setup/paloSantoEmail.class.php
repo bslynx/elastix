@@ -29,8 +29,12 @@
 
 if (isset($arrConf['basePath'])) {
     include_once($arrConf['basePath'] . "/libs/paloSantoDB.class.php");
+    include_once($arrConf['basePath'] . "/libs/paloSantoConfig.class.php");
+    include_once($arrConf['basePath'] . "/libs/misc.lib.php");
 } else {
     include_once("libs/paloSantoDB.class.php");
+    include_once("libs/paloSantoConfig.class.php");
+    include_once("libs/misc.lib.php");
 }
 
 class paloEmail {
@@ -73,7 +77,7 @@ class paloEmail {
     function getDomains($id_domain = NULL)
     {
         $arr_result = FALSE;
-        if (!is_null($id_domain) && !preg_match('/^[[:digit:]]+$/', "$id_domain")) {
+        if (!is_null($id_domain) && !ereg('^[[:digit:]]+$', "$id_domain")) {
             $this->errMsg = "Domain ID is not valid";
         } 
         else {
@@ -122,8 +126,6 @@ class paloEmail {
                     $this->errMsg = $this->_DB->errMsg;
                 }
             }
-
-
         return $bExito;
     }
 
@@ -131,7 +133,7 @@ class paloEmail {
     function updateDomain($id_domain, $domain_name)
     {
         $bExito = FALSE;
-        if (!preg_match("/^[[:digit:]]+$/", "$id_domain")) {
+        if (!ereg("^[[:digit:]]+$", "$id_domain")) {
             $this->errMsg = "Domain ID is not valid";
         } else {
             $sPeticionSQL = paloDB::construirUpdate(
@@ -155,7 +157,7 @@ class paloEmail {
     function deleteDomain($id_domain)
     {
         $bExito = TRUE;
-        if (!preg_match('/^[[:digit:]]+$/', "$id_domain")) {
+        if (!ereg('^[[:digit:]]+$', "$id_domain")) {
             $this->errMsg = "Domain ID is not valid";
             RETURN FALSE;
         } 
@@ -187,7 +189,7 @@ class paloEmail {
     function deleteAccountsFromDomain($id_domain)
     {
         $bExito = TRUE;
-        if (!preg_match('/^[[:digit:]]+$/', "$id_domain")) {
+        if (!ereg('^[[:digit:]]+$', "$id_domain")) {
             $this->errMsg = "Domain ID is not valid";
             RETURN FALSE;
         } 
@@ -210,10 +212,10 @@ class paloEmail {
         $configPostfix2 = isPostfixToElastix2();// in misc.lib.php
         $regularExpresion = "";
         if($configPostfix2)
-           $regularExpresion = '/^[a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*@[a-z0-9]+([\._\-]?[a-z0-9]+)*(\.[a-z0-9]{2,6})+$/';
+           $regularExpresion = '^[a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*@[a-z0-9]+([\._\-]?[a-z0-9]+)*(\.[a-z0-9]{2,6})+$';
         else
-           $regularExpresion = '/^([a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*)$/';
-        if (!preg_match($regularExpresion, "$username")) {
+           $regularExpresion = '^([a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*)$';
+        if (!ereg($regularExpresion, "$username")) {
             $this->errMsg = "Username is not valid";
             $bExito = FALSE;
         }
@@ -237,10 +239,10 @@ class paloEmail {
         $configPostfix2 = isPostfixToElastix2();// in misc.lib.php
         $regularExpresion = "";
         if($configPostfix2)
-           $regularExpresion = '/^[a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*@[a-z0-9]+([\._\-]?[a-z0-9]+)*(\.[a-z0-9]{2,6})+$/';
+           $regularExpresion = '^[a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*@[a-z0-9]+([\._\-]?[a-z0-9]+)*(\.[a-z0-9]{2,6})+$';
         else
-           $regularExpresion = '/^([a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*)$/';
-        if (!is_null($username) && !preg_match($regularExpresion, "$username")) {
+           $regularExpresion = '^([a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*)$';
+        if (!is_null($username) && !ereg($regularExpresion, "$username")) {
             $this->errMsg = "Username is not valid";
         } 
         else {
@@ -260,7 +262,7 @@ class paloEmail {
     function getAccountsByDomain($id_domain)
     {
         $arr_result = FALSE;
-        if (!preg_match("/^[[:digit:]]+$/", "$id_domain")) {
+        if (!ereg("^[[:digit:]]+$", "$id_domain")) {
             $this->errMsg = "Domain ID is not valid";
         } 
         else {
@@ -312,10 +314,10 @@ class paloEmail {
         $configPostfix2 = isPostfixToElastix2();// in misc.lib.php
         $regularExpresion = "";
         if($configPostfix2)
-           $regularExpresion = '/^[a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*@[a-z0-9]+([\._\-]?[a-z0-9]+)*(\.[a-z0-9]{2,6})+$/';
+           $regularExpresion = '^[a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*@[a-z0-9]+([\._\-]?[a-z0-9]+)*(\.[a-z0-9]{2,6})+$';
         else
-           $regularExpresion = '/^([a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*)$/';
-        if (!preg_match($regularExpresion, "$username")) {
+           $regularExpresion = '^([a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*)$';
+        if (!ereg($regularExpresion, "$username")) {
             $this->errMsg = "Username is not valid";
             $bExito = FALSE;
         }
@@ -359,11 +361,11 @@ class paloEmail {
         $regularExpresion = "";
 
         if($configPostfix2)
-           $regularExpresion = '/^[a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*@[a-z0-9]+([\._\-]?[a-z0-9]+)*(\.[a-z0-9]{2,6})+$/';
+           $regularExpresion = '^[a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*@[a-z0-9]+([\._\-]?[a-z0-9]+)*(\.[a-z0-9]{2,6})+$';
         else
-           $regularExpresion = '/^([a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*)$/';
+           $regularExpresion = '^([a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*)$';
 
-        if (!is_null($username) && !preg_match($regularExpresion, "$username")) {
+        if (!is_null($username) && !ereg($regularExpresion, "$username")) {
             $this->errMsg = "Username is not valid";
         } 
         else {
@@ -388,11 +390,11 @@ class paloEmail {
         $regularExpresion = "";
 
         if($configPostfix2)
-           $regularExpresion = '/^[a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*@[a-z0-9]+([\._\-]?[a-z0-9]+)*(\.[a-z0-9]{2,6})+$/';
+           $regularExpresion = '^[a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*@[a-z0-9]+([\._\-]?[a-z0-9]+)*(\.[a-z0-9]{2,6})+$';
         else
-           $regularExpresion = '/^([a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*)$/';
+           $regularExpresion = '^([a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*)$';
 
-        if (!is_null($username) && !preg_match($regularExpresion, "$username")) {
+        if (!is_null($username) && !ereg($regularExpresion, "$username")) {
             $this->errMsg = "Username is not valid";
         }  else {
             //modificar cuenta
@@ -413,5 +415,295 @@ class paloEmail {
         }
         return $bExito;
     }
+
+
+    //***** new functions from email_functions.lib.php ***************************************************************/
+
+    function guardar_dominio_sistema($domain_name,&$errMsg)
+    {
+	$continuar=FALSE;
+	global $arrLang;
+	$configPostfix2 = isPostfixToElastix2();
+	$param1 = ""; // virtual_mailbox_domains or mydomain2
+	//Se debe modificar el archivo /etc/postfix/main.cf para agregar el dominio a la variable
+	//virtual_mailbox_domains if $configPostfix2=TRUE or mydomain2 if $configPostfix2=FALSE
+	if($configPostfix2)
+	    $param1 = "virtual_mailbox_domains";
+	else
+	    $param1 = "mydomain2";
+	$conf_file = new paloConfig("/etc/postfix","main.cf"," = ","[[:space:]]*=[[:space:]]*");
+	$contenido = $conf_file->leer_configuracion();
+	$valor_anterior = $conf_file->privado_get_valor($contenido,$param1);
+	$valor_nuevo =$this->construir_valor_nuevo_postfix($valor_anterior,$domain_name);
+	$arr_reemplazos = array("$param1"=>$valor_nuevo);
+	$bValido = $conf_file->escribir_configuracion($arr_reemplazos);
+	if($bValido){
+	    //Se deben recargar la configuracion de postfix
+	    $retval = $output = "";
+	    exec("sudo -u root postfix reload",$output,$retval);
+	    if($retval == 0)
+		$continuar = TRUE;
+	    else
+		$errMsg = $arrLang["main.cf file was updated successfully but when restarting the mail service failed"];
+	}
+	return $continuar;
+    }
+
+
+    function construir_valor_nuevo_postfix($valor_anterior,$dominio,$eliminar_dominio=FALSE){
+	$valor_nuevo=$valor_anterior;
+
+	if(is_null($valor_anterior)){
+	    $elemento=(!$eliminar_dominio)?"$dominio":"";
+	    $valor_nuevo="$elemento";
+	}
+	else{
+	    if(ereg("^(.*)$",$valor_anterior,$regs)){
+		$arr_valores=explode(',',$regs[1]);
+		if(!$eliminar_dominio)
+		    $arr_valores[]="$dominio";
+
+		$valor_nuevo="";
+		for($i=0;$i<count($arr_valores);$i++){
+		    $valor_nuevo.=$arr_valores[$i];
+		    if($i<(count($arr_valores)-1))
+			$valor_nuevo.=",";
+		}
+
+		if($eliminar_dominio==TRUE){
+		    $valor_nuevo=str_replace(",$dominio","",$valor_nuevo);
+		}
+	    }
+	}
+	return $valor_nuevo;
+    }
+
+    function eliminar_dominio($db,$arrDominio,&$errMsg, $virtual=TRUE)
+    {
+
+	$total_cuentas=0;
+	$output="";
+	$configPostfix2 = isPostfixToElastix2();
+	$param1 = "";
+
+	global $CYRUS;
+	global $arrLang;
+	$cyr_conn = new cyradm;
+	$continuar = $cyr_conn->imap_login();
+
+	if($configPostfix2)
+	    $param1 = "virtual_mailbox_domains";
+	else
+	    $param1 = "mydomain2";
+
+	  # First Delete all stuff related to the domain from the database
+	if ($continuar){
+	    $query1 = "SELECT * FROM accountuser WHERE id_domain='$arrDominio[id_domain]' order by username";
+	    $result=$db->fetchTable($query1,TRUE);
+
+	    if(is_array($result) && count($result)>0){
+		foreach ($result as $fila){
+		    $username = $fila['username'];
+		    $bExito = $this->eliminar_cuenta($db,$username,$errMsg, $virtual);
+		    if (!$bExito){
+			$output = $errMsg;
+		    }else{
+			$continuar = TRUE;
+		    }
+		}
+	    }
+
+	    if($output!="" & !$continuar){
+		$errMsg=$arrLang["Error deleting user accounts from system"].": $output";
+		return FALSE;
+	    }
+
+	    //uso la clase Email
+	    $bExito = $this->deleteAccountsFromDomain($arrDominio['id_domain']);
+	    if (!$bExito){
+		$errMsg = $arrLang["Error deleting user accounts"].' :'.((isset($arrLang[$this->errMsg]))?$arrLang[$this->errMsg]:$this->errMsg);
+		return FALSE;
+	    }
+
+	    $bExito = $this->deleteDomain($arrDominio['id_domain']);
+	    if (!$bExito){
+		$errMsg = $arrLang["Error deleting record from table domain"].' :'.((isset($arrLang[$this->errMsg]))?$arrLang[$this->errMsg]:$this->errMsg);
+		return FALSE;
+	    }
+
+	    //Se elimina el dominio del archivo main.cf y se recarga la configuracion
+	    $continuar=FALSE;
+	    //Se debe modificar el archivo /etc/postfix/main.cf para borrar el dominio a la variable
+	    //virtual_mailbox_domains if $configPostfix2=TRUE or mydomain2 if $configPostfix2=FALSE
+	    $conf_file=new paloConfig("/etc/postfix","main.cf"," = ","[[:space:]]*=[[:space:]]*");
+	    $contenido=$conf_file->leer_configuracion();
+	    $valor_anterior=$conf_file->privado_get_valor($contenido,$param1);
+	    $valor_nuevo=$this->construir_valor_nuevo_postfix($valor_anterior,$arrDominio['domain_name'],TRUE);
+	    $arr_reemplazos=array("$param1"=>$valor_nuevo);
+	    $bValido=$conf_file->escribir_configuracion($arr_reemplazos);
+
+	    if($bValido){
+	      //Se deben recargar la configuracion de postfix
+		$retval=$output="";
+		exec("sudo -u root postfix reload",$output,$retval);
+		if($retval==0)
+		    $continuar=TRUE;
+		else
+		    $errMsg=$arrLang["main.cf file was updated successfully but when restarting the mail service failed"]." : $retval";
+	    }
+	}
+	return $continuar;
+
+    }
+    function eliminar_usuario_correo_sistema($username,$email,&$error){
+	$output=array();
+	$configPostfix2 = isPostfixToElastix2();
+	if($configPostfix2)
+	    exec("sudo -u root /usr/sbin/saslpasswd2 -d $email",$output);
+	else
+	    exec("sudo -u root /usr/sbin/saslpasswd2 -d $username@".SASL_DOMAIN,$output);
+	if(is_array($output) && count($output)>0){
+	    foreach($output as $linea)
+		$error.=$linea."<br>";
+	}
+	if($error!="")
+	    return FALSE;
+	else
+	    return TRUE;
+    }
+
+    function eliminar_virtual_sistema($email,&$error){
+	$config=new paloConfig("/etc/postfix","virtual","\t","[[:space:]?\t[:space:]?]");
+	$arr_direcciones=$config->leer_configuracion();
+
+	$eliminado=FALSE;
+	foreach($arr_direcciones as $key=>$fila){
+	    if(isset($fila['clave']) && $fila['clave']==$email){
+		unset($arr_direcciones[$key]);
+		$eliminado=TRUE;
+	    }
+	}
+
+	if($eliminado){
+	    $bool=$config->escribir_configuracion($arr_direcciones,true);
+	    if($bool){
+		exec("sudo -u root postmap /etc/postfix/virtual",$output);
+		if(is_array($output) && count($output)>0)
+		    foreach($output as $linea)
+			$error.=$linea."<br>";
+	    }
+	    else{
+		$error.=$config->getMessage();
+		return FALSE;
+	    }
+	}
+
+	return TRUE;
+    }
+
+    function crear_usuario_correo_sistema($email,$username,$clave,&$error,$virtual=TRUE){
+	$output=array();
+	$configPostfix2 = isPostfixToElastix2();
+	if($configPostfix2){
+	    exec("echo \"$clave\" | sudo -u root /usr/sbin/saslpasswd2 -c $email",$output);
+	}else{
+	    exec("echo \"$clave\" | sudo -u root /usr/sbin/saslpasswd2 -c $username -u ".SASL_DOMAIN,$output);
+	}
+
+	if(is_array($output) && count($output)>0){
+	    foreach($output as $linea_salida)
+		$error.=$linea_salida."<br>";
+	}
+
+	if($configPostfix2){
+	    if($error!="")
+		return FALSE;
+	}else{
+	    if($error!="")
+		return FALSE;
+	}
+
+	// escribir aliases
+	if($virtual){
+	    $bool=$this->crear_virtual_sistema($email,$username,$error);
+	    if(!$bool)
+		return FALSE;
+	}
+
+	return TRUE;
+    }
+
+    function crear_virtual_sistema($email,$username,&$error){
+	$output=array();
+	$configPostfix2 = isPostfixToElastix2();
+	if($configPostfix2){
+	    $username = $email;
+	}else{
+	    $username.='@'.SASL_DOMAIN;
+	}
+	exec("sudo -u root chown asterisk /etc/postfix/virtual");
+	exec("echo \"$email \t $username\" >> /etc/postfix/virtual",$output);
+
+	if(is_array($output) && count($output)>0){
+	    foreach($output as $linea)
+		$error.=$linea."<br>";
+	}
+	exec("sudo -u root chown root /etc/postfix/virtual");
+
+	exec("sudo -u root postmap /etc/postfix/virtual",$output);
+	if(is_array($output) && count($output)>0){
+	    foreach($output as $linea)
+		$error.=$linea."<br>";
+	}
+	if($error!="")
+	    return FALSE;
+	else
+	    return TRUE;
+    }
+
+    function eliminar_cuenta($db,$username,$errMsg, $virtual=TRUE){
+	global $CYRUS;
+	$arr_alias=array();
+
+	//primero se obtienen las direcciones de mail del usuario (virtuales)
+	$arrAlias = $this->getAliasAccount($username);
+	if (is_array($arrAlias)){
+	    foreach ($arrAlias as $fila)
+		$arr_alias[]=$fila[1];
+	}
+	$bExito = $this->deleteAliasesFromAccount($username); // elimina los aliases de la base de datos
+	if($bExito){
+	    $bExito = $this->deleteAccount($username);
+	    if ($bExito){
+		$cyr_conn = new cyradm;
+		$bValido = $cyr_conn->imap_login();
+
+		if ($bValido ===FALSE){
+		    $errMsg = $cyr_conn->getMessage();
+		    return FALSE;
+		}
+
+		$bValido=$cyr_conn->deletemb("user/".$username); // elimina los buzones de entrada
+		if($bValido===FALSE){
+		    $errMsg=$cyr_conn->getMessage();
+		    return FALSE;
+		}
+		//$cyr_conn->deletemb("user/".$username)."<br>";
+
+		foreach($arr_alias as $alias){
+		    if(!$this->eliminar_usuario_correo_sistema($username,$alias,$errMsg)){ // elimina los usuarios del sistema
+			return FALSE;
+		    }
+		}
+		if($virtual)
+		    $this->eliminar_virtual_sistema($username,$errMsg); // elimina los alias en /etc/postfix/virtual
+		return TRUE;
+	    }
+	}else{
+	    $bExito = FALSE;
+	}
+	return $bExito;
+    }
+
 }
 ?>
