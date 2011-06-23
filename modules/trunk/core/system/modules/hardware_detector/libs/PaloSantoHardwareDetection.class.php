@@ -228,44 +228,68 @@ class PaloSantoHardwareDetection
 
     /////////////////////////NEW FUNCTIONS/////////////////////////
 
-    private function addSpanParameter($data, $pDB)
-    {
-        $queryInsert = $pDB->construirInsert('span_parameter', $data);
-        $result = $pDB->genQuery($queryInsert);
-
-        return $result;
-    }
-
+    /**
+     * Procedimiento que combina la transferencia de spans digitales, y la 
+     * recuperación de los datos transferidos.
+     * 
+     * @param   object  $pDB    Conexión a la base hardware_detector.db
+     * 
+     * @return  NULL en caso de error, o lista indexada por span_num:
+     *          id_card span_num tmsource linebuildout framing coding
+     */
     function getSpanConfig($pDB)
     {
-        $query = "DELETE FROM span_parameter";
-        //$result = $this->_DB->genQuery($query);
-        $result = $pDB->genQuery($query);
-    
-        $FILE='/etc/dahdi/system.conf';
-        $count = 0;
-        $dataSpans = array();
-        $fp = fopen($FILE,'r');
-        while($line = fgets($fp, filesize($FILE)))
-        {
-            if(ereg("^([a-z=0-9]+),([[:digit:]]+),([[:digit:]]+),([[:alnum:]]+),([[:alnum:]]+),([[:alnum:]]+)", $line, $arrReg) || ereg("^([a-z=0-9]+),([[:digit:]]+),([[:digit:]]+),([[:alnum:]]+),([[:alnum:]]+)", $line, $arrReg)){
-                $count++;
-                $span = preg_split('/[=]/',$arrReg[1]);
-                $data['span_num']    = $pDB->DBCAMPO(trim($span[1]));
-                $dataSpans[$count]['tmsource'] = trim($arrReg[2]);
-                $data['timing_source']    = $pDB->DBCAMPO(trim($arrReg[2]));
-                $dataSpans[$count]['lnbuildout'] = trim($arrReg[3]);
-                $data['linebuildout']    = $pDB->DBCAMPO(trim($arrReg[2]));
-                $dataSpans[$count]['framing'] = trim($arrReg[4]);
-                $data['framing']    = $pDB->DBCAMPO(trim($arrReg[4]));
-                $dataSpans[$count]['coding'] = trim($arrReg[5]);
-                $data['coding']    = $pDB->DBCAMPO(trim($arrReg[5]));
-                $data['id_card']   = $pDB->DBCAMPO(trim($span[1]));
-            
-                $this->addSpanParameter($data, $pDB);
+        $this->transferirSpanConfig($pDB);
+        return $this->leerSpanConfig($pDB);
+    }
+
+    /**
+     * Procedimiento que transfiere la información de los spans digitales desde
+     * el archivo /etc/dahdi/system.conf hacia la tabla span_parameter. 
+     * 
+     * @param   object  $pDB    Conexión a la base hardware_detector.db
+     * 
+     * @return  void
+     */
+    function transferirSpanConfig($pDB)
+    {
+        $pDB->genQuery('DELETE FROM span_parameter');
+        foreach (file('/etc/dahdi/system.conf') as $sLinea) {
+            // TODO: preserve and restore 'crc4' and 'yellow' parameters
+            // TODO: cross-check id_card with table 'card'
+            $regs = NULL;
+            if (preg_match('/^span=(\d+),(\d+),(\d+),(\w+),(\w+)/', $sLinea, $regs)) {
+                $pDB->genQuery(
+                    'INSERT INTO span_parameter (id_card, span_num, timing_source, linebuildout, framing, coding) '.
+                    'VALUES (?, ?, ?, ?, ?, ?)', 
+                    array($regs[1], $regs[1], $regs[2], $regs[3], $regs[4], $regs[5]));
             }
         }
-        fclose($fp);
+    }
+    
+    /**
+     * Procedimiento que lee la información de la tabla de spans digitales que
+     * ha sido previamente llenada por transferirSpanConfig()
+     * 
+     * @param   object  $pDB    Conexión a la base hardware_detector.db
+     * 
+     * @return  NULL en caso de error, o lista indexada por span_num:
+     *          id_card span_num tmsource linebuildout framing coding
+     */
+    function leerSpanConfig($pDB)
+    {
+    	$r = $pDB->fetchTable(
+            'SELECT id_card, span_num, timing_source AS tmsource, ' .
+                'linebuildout AS lnbuildout, framing, coding ' .
+            'FROM span_parameter ORDER BY span_num', TRUE);
+        if (!is_array($r)) {
+            $this->errMsg = $pDB->errMsg;
+            return NULL;
+        }
+        $dataSpans = array();
+        foreach ($r as $tupla) {
+        	$dataSpans[$tupla['span_num']] = $tupla;
+        }
         return $dataSpans;
     }
 
