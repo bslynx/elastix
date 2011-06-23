@@ -56,5 +56,8 @@ $arrLangModule=array(
 "Could not query used disc space" => "خطا در هنگام بررسي فضاي مورد استفاده",
 "The passwords are empty or don't match" => "پسوردي وارد نشد يا يكسان نيست",
 "The passwords don't match" => "پسورد يكسان نيست",
+"Changes Applied successfully" => "Changes Applied successfully",
+"Error appliying changes" => "Error appliying changes",
+"Account deleted successfully" => "Account deleted successfully",
 );
 ?>

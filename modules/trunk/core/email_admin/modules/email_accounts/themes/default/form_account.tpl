@@ -14,11 +14,10 @@
           {elseif $mode eq 'edit'}
           <input class="button" type="submit" name="apply_changes" value="{$APPLY_CHANGES}">
           <input class="button" type="submit" name="cancel" value="{$CANCEL}"></td>
-          <input type="hidden" name="username" value="{$username}">
           {else}
           <input class="button" type="submit" name="edit" value="{$EDIT}"> 
-          <input class="button" type="submit" name="delete" value="{$DELETE}"  onClick="return confirmSubmit('{$CONFIRM_CONTINUE}')"></td>
-          <input type="hidden" name="username" value="{$username}">
+          <input class="button" type="submit" name="delete" value="{$DELETE}"  onClick="return confirmSubmit('{$CONFIRM_CONTINUE}')">
+	  <input class="button" type="submit" name="cancel" value="{$CANCEL}"></td>
           {/if}          
         <td align="right" nowrap><span class="letra12"><span  class="required">*</span> {$REQUIRED_FIELD}</span></td>
      </tr>
@@ -37,7 +36,7 @@
 	        <td width="35%">{$username}</td>
         {/if}
             <td width="15%">{$quota.LABEL}: <span  class="required">*</span></td>
-            <td width="35%">{$quota.INPUT}{if $mode eq 'edit'}<input type="hidden" name="old_quota" value="{$old_quota}">{/if}</td>
+            <td width="35%">{$quota.INPUT}</td>
       </tr>
       <tr>
 	        <td width="20%">{$password1.LABEL}: <span  class="required">*</span></td>
@@ -51,4 +50,7 @@
 </table>
 <input type="hidden" name="id_domain" value="{$id_domain}">
 <input type="hidden" name="domain" value="{$id_domain}">
+<input type="hidden" name="username" value="{$username}">
+<input type="hidden" name="old_quota" value="{$old_quota}">
+<input type="hidden" name="domain_name" value="{$domainName}">
 </form>
