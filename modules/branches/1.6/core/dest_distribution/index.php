@@ -37,7 +37,8 @@ function _moduleContent(&$smarty, $module_name)
     require_once "libs/misc.lib.php";
     include_once "libs/paloSantoRate.class.php";
     include_once "libs/paloSantoTrunk.class.php";
-    
+    include_once "libs/paloSantoGraphImage.lib.php";    
+
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
     
