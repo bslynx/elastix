@@ -145,6 +145,10 @@ class SOAPhandler
             $this->errorMSG["cn"] = get_class($this);
             return false;
         }
+        else{
+            $name = explode("_",$this->className);
+            $this->wsdlName = $name[1];
+        }
 
         if ($_SERVER['REQUEST_METHOD'] == 'GET' && array_search('wsdl', array_map('strtolower', array_keys($_GET))) !== FALSE) {
             $objWSDL = new WSDLcreator($this->wsdlName,$this->targetNamespace,$this->soapAddress);
