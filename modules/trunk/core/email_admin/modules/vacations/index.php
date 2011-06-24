@@ -372,7 +372,7 @@ function createFieldForm($arrLang)
 {
 
     $arrFields = array(
-            "email"   => array(      "LABEL"                  => $arrLang["email address"],
+            "email"   => array(      "LABEL"                  => $arrLang["Email Address"],
                                             "REQUIRED"               => "yes",
                                             "INPUT_TYPE"             => "TEXT",
                                             "INPUT_EXTRA_PARAM"      => array("id"=>"email","readonly"=>"readonly","style"=>"width: 200px;"),

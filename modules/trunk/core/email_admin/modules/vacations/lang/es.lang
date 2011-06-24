@@ -29,7 +29,7 @@
 global $arrLangModule;
 $arrLangModule=array(
 "Vacations" => "Vacaciones",
-"email address" => "correo electrónico",
+"Email Address" => "Correo Electrónico",
 "Subject" => "Asunto",
 "Body" => "Mensaje",
 "Operation cannot be done. Please try Again." => "Operación no pudo ser realizada. Por favor vuelva a intentar.",
