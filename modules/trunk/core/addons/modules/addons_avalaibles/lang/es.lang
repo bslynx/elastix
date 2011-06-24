@@ -97,5 +97,6 @@ $arrLangModule=array(
 "Error(Details)" => "Error(Detalles)",
 "ErrorToOperation" => "Lo sentimos, Existe una operación",
 "on" => "sobre",
+"Initializing Download" => "Inicializando Descarga",
 );
 ?> 

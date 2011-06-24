@@ -444,6 +444,7 @@ function reportAvailables($smarty, $module_name, $local_templates_dir, &$pDB, $a
     $smarty->assign("tryItText", _tr("Try it"));
     $smarty->assign("textObservation", _tr("Please need to enable Centos repo, Elastix, Extra or others for the proper functioning, Detail of errors: "));
     $smarty->assign("error_details", _tr("Error(Details)"));
+    $smarty->assign("iniDownloading",_tr("Initializing Download"));
     $oFilterForm = new paloForm($smarty, createFieldFilter());
     
     $htmlFilter  = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl","",$_POST);

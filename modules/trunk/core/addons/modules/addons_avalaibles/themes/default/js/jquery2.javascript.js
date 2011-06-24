@@ -107,7 +107,7 @@ function installAddon(name_rpm)
 		  /**** nueva implementacion ****/
 	      }
 	      else if(message['response'] == "OK"){ // listo para instalar
-		      var textDownloading = $("#textDownloading").val();
+		      var textDownloading = $("#iniDownloading").val();
 		      textDownloading = textDownloading.replace(/\./g,"");
 		      showPogressMessage("Status: "+textDownloading+" "+nameAddons+" "+versionAddons);
 		      $(idRpmNameBuy).hide();
@@ -162,7 +162,8 @@ function getStatusInstall(name_rpm){
             var idRpmName = "[id='"+name_rpm+"']";
             var idRpmNameBuy = "[id='"+name_rpm+"_buy']";
             var startId = "[id='start_"+name_rpm+"']";
-            var textInstalling = $('#textInstalling').val();
+	    var textIniDownloading = $('#iniDownloading').val();
+            var textInstalling = $('#textDownloading').val();
             textInstalling = textInstalling.replace(/\./g,"");
       	    var nameAddons    = $(idRpmName).parent().parent().parent().parent().parent().children(':first-child').children(':first-child').text();
     	    var versionAddons = $(idRpmName).parent().parent().parent().parent().parent().children(':first-child').children(':nth-child(2)').text();
@@ -180,7 +181,7 @@ function getStatusInstall(name_rpm){
             	showPogressMessage("Status: "+resp+" - "+errmsg);
             	clearAddons();
             }else{
-           		showPogressMessage("Status: "+textInstalling+" "+nameAddons+" "+versionAddons);
+           		showPogressMessage("Status: "+textIniDownloading+" "+nameAddons+" "+versionAddons);
                 getStatusInstall(name_rpm);
             }
     });
@@ -201,7 +202,7 @@ function changeStatus(name_rpm, view_details ){
     /**** nueva implementacion ****/
 	// se muestra la barra de progreso de la instalacion
 	// se remueve el ultimo hijo y se añade el progressbar al final
-    var textInstalling = $('#textInstalling').val();
+    var textInstalling = $('#textDownloading').val();
     textInstalling = textInstalling.replace(/\./g,"");
 	var nameAddons    = $(idRpmName).parent().parent().parent().parent().parent().children(':first-child').children(':first-child').text();
 	var versionAddons = $(idRpmName).parent().parent().parent().parent().parent().children(':first-child').children(':nth-child(2)').text();
@@ -602,10 +603,10 @@ function process(response)
 {
     var valueActual = response['valueActual'];
     var valueTotal  = response['valueTotal'];
-	if(parseInt(valueTotal)>0){
-		$('#progressBarTotal').progressbar('value', parseInt(valueTotal));
-		$('#percentTotal').text(valueTotal+"%");
-	}
+    if(parseInt(valueTotal)>0){
+	    $('#progressBarTotal').progressbar('value', parseInt(valueTotal));
+	    $('#percentTotal').text(valueTotal+"%");
+    }
     // if no preocess to install
 	if (response['status'] == "not_install")
 		return;
@@ -613,11 +614,24 @@ function process(response)
     if(response['action'] != "none") {
         var ctl_percent = document.getElementById('percentTotal');
         if (ctl_percent != null) {
-        	ctl_percent.firstChild.nodeValue=valueTotal+"%";
-        } else {
-        	return;
+	    ctl_percent.firstChild.nodeValue=valueTotal+"%";
+	}else {
+	    return;
         }
     }
+
+    if(parseInt(valueTotal)>95 && response['valueActual'][0]['action']=="install"){//muestra el mensaje apropiado instalacion
+	var idParent = $('#progressBarTotal').parent().parent().attr("id");
+	var idChild = $("#"+idParent).next().children(':first-child').children(':first-child').attr("id");
+	var textInstalling = $('#textInstalling').val();
+	textInstalling = textInstalling.replace(/\./g,"");
+	if(idChild){
+	    var nameAddons    = $('#'+idChild).parent().parent().parent().parent().parent().children(':first-child').children(':first-child').text();
+	    var versionAddons = $('#'+idChild).parent().parent().parent().parent().parent().children(':first-child').children(':nth-child(2)').text();
+	    showPogressMessage("Status: "+textInstalling+" "+nameAddons+" "+versionAddons);
+	}
+    }
+
     //showPopupSecondBars('barsDetails','Bars Details',538,345);
     // if exists a process install in progress
     if(valueActual != "none"){
@@ -682,7 +696,7 @@ function updateAddon(name_rpm)
 		$('#uninstallRpm').val("");
 		$('#actionToDo').val("");
 		return;
-             }
+            }
 	    if(message['response'] == "OK"){
 		var textDownloading = $("#textDownloading").val();
 		$(startId).children(':first-child').text(textDownloading);
@@ -919,7 +933,7 @@ function getStatusInstallAddonProgress(){
             }else {
             	if(process_installed == "process_installed" & toDo == "installing"){
 		    // se debe mostrar los progressbar
-		    var textInstalling = $('#textInstalling').val();
+		    var textInstalling = $('#textDownloading').val();
 		    textInstalling = textInstalling.replace(/\./g,"");
 		    var nameAddons    = $(idRpmName).parent().parent().parent().parent().parent().children(':first-child').children(':first-child').text();
 		    var versionAddons = $(idRpmName).parent().parent().parent().parent().parent().children(':first-child').children(':nth-child(2)').text();

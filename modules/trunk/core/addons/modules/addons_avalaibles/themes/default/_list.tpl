@@ -136,3 +136,4 @@
 <input type="hidden" name="textDaemonOff" id="textDaemonOff" value="{$daemonOff}" />
 <input type="hidden" name="textObservation" id="textObservation" value="{$textObservation}" />
 <input type="hidden" name="errorDetails" id="errorDetails" value="{$error_details}" />
+<input type="hidden" name="iniDownloading" id="iniDownloading" value="{$iniDownloading}" />
