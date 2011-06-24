@@ -25,12 +25,12 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: SOAP_Cdr.class.php,v 1.0 2011-03-31 12:50:00 Alberto Santos F.  asantos@palosanto.com Exp $*/
+  $Id: SOAP_CDR.class.php,v 1.0 2011-03-31 12:50:00 Alberto Santos F.  asantos@palosanto.com Exp $*/
 
 $root = $_SERVER["DOCUMENT_ROOT"];
 require_once("$root/modules/cdrreport/libs/core.class.php");
 
-class SOAP_Cdr extends core_CDR
+class SOAP_CDR extends core_CDR
 {
     /**
      * SOAP Server Object
@@ -44,7 +44,7 @@ class SOAP_Cdr extends core_CDR
      *
      * @param  object   $objSOAPServer     SOAP Server Object
      */
-    public function SOAP_Cdr($objSOAPServer)
+    public function SOAP_CDR($objSOAPServer)
     {
          parent::core_CDR();
          $this->objSOAPServer = $objSOAPServer;
