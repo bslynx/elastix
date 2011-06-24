@@ -111,8 +111,8 @@ function viewFormVacations($smarty, $module_name, $local_templates_dir, &$pDB, &
 	    $_DATA['body'] = $rowsVacations['body'];
 	    $id = $rowsVacations['id'];
 	}else{
-	    $_DATA['subject'] = _tr("Auto-Reply: I'm on vacation.");
-	    $_DATA['body'] = _tr("Sorry, I'm taking my vacations. I will attend to your request when i'm back.\n\n----\nBest Regards.");
+	    $_DATA['subject'] = _tr("Auto-Reply: Out of the office");
+	    $_DATA['body'] = _tr("I'm sorry I am currently out on vacations, your email will be replied as soon as I get back to the office.\n\n----\nBest Regards.");
 	}
     }
     $smarty->assign("ID", $id); //persistence id with input hidden in tpl
@@ -334,9 +334,9 @@ function showAllEmails($smarty, $module_name, $local_templates_dir, &$pDB, &$pDB
 		  else
 		      $arrTmp[1] = _tr("no");
 		  if(!isset($value['subject']) || $value['subject'] == "")
-		      $value['subject'] = _tr("Auto-Reply: I'm on vacation.");
+		      $value['subject'] = _tr("Auto-Reply: Out of the office");
 		  if(!isset($value['body']) || $value['body'] == "")
-		      $value['body'] = _tr("Sorry, I'm taking my vacations. I will attend to your request when i'm back.\n\n----\nBest Regards.");
+		      $value['body'] = _tr("I'm sorry I am currently out on vacations, your email will be replied as soon as I get back to the office.\n\n----\nBest Regards.");
 		  $arrTmp[2] = "&nbsp;<div style='display: none;'>".$value['subject']."</div>";
 		  $arrTmp[3] = "&nbsp;<div style='display: none;'>".$value['body']."</div>";
 		  $arrTmp[4] = "&nbsp;<div style='display: none;'>".$value['vacation']."</div>";
@@ -372,21 +372,21 @@ function createFieldForm($arrLang)
 {
 
     $arrFields = array(
-            "email"   => array(      "LABEL"                  => $arrLang["email"],
+            "email"   => array(      "LABEL"                  => $arrLang["email address"],
                                             "REQUIRED"               => "yes",
                                             "INPUT_TYPE"             => "TEXT",
                                             "INPUT_EXTRA_PARAM"      => array("id"=>"email","readonly"=>"readonly","style"=>"width: 200px;"),
                                             "VALIDATION_TYPE"        => "email",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-            "subject"   => array(      "LABEL"                  => $arrLang["subject"],
+            "subject"   => array(      "LABEL"                  => $arrLang["Subject"],
                                             "REQUIRED"               => "yes",
                                             "INPUT_TYPE"             => "TEXT",
                                             "INPUT_EXTRA_PARAM"      => array("id"=>"subject", "style" => "width: 370px;"),
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-            "body"   => array(      "LABEL"                  => $arrLang["body"],
+            "body"   => array(      "LABEL"                  => $arrLang["Body"],
                                             "REQUIRED"               => "yes",
                                             "INPUT_TYPE"             => "TEXTAREA",
                                             "INPUT_EXTRA_PARAM"      => array("id"=>"body","style"=>"width: 368px;"),

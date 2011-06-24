@@ -29,9 +29,9 @@
 global $arrLangModule;
 $arrLangModule=array(
 "Vacations" => "Vacations",
-"email" => "email",
-"subject" => "subject",
-"body" => "body",
+"email address" => "email address",
+"Subject" => "Subject",
+"Body" => "Body",
 "Operation cannot be done. Please try Again." => "Operation cannot be done. Please try Again.",
 "Operation have been succesful." => "Operation have been succesful.",
 "Succesful" => "Succesful",
@@ -53,8 +53,8 @@ $arrLangModule=array(
 "Email is not correct. Please write the email assigned to your elastix account." => "Email is not correct. Please write the email assigned to your elastix account.",
 "Emails Account" => "Emails Account",
 "Vacations Activated" => "Vacations Activated",
-"Auto-Reply: I'm on vacation." => "Auto-Reply: I'm on vacation.",
-"Sorry, I'm taking my vacations. I will attend to your request when i'm back.\n\n----\nBest Regards." => "Sorry, I'm taking my vacations. I will attend to your request when i'm back.\n\n----\nBest Regards.",
+"Auto-Reply: Out of the office" => "Auto-Reply: Out of the office",
+"I'm sorry I am currently out on vacations, your email will be replied as soon as I get back to the office.\n\n----\nBest Regards." => "I'm sorry I am currently out on vacations, your email will be replied as soon as I get back to the office.\n\n----\nBest Regards.",
 "yes" => "yes",
 "no" => "no",
 );

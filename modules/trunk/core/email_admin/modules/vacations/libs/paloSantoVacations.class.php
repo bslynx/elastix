@@ -63,10 +63,10 @@ class paloSantoVacations {
 		$filter_field = "v.$filter_field";
 	    }
 	    if($filter_field == "v.vacation" && strtolower($filter_value) == $arrLang["no"]){
-		$where = " WHERE $filter_field ISNULL OR $filter_field like ? ";//'$filter_value%' ";
+		$where = " WHERE $filter_field ISNULL OR $filter_field like ? ";
 		$filter_value = "no";
 	    }else{
-		$where = " WHERE $filter_field like ? ";//'$filter_value%' ";
+		$where = " WHERE $filter_field like ? ";
 		if(strtolower($filter_value) === $arrLang["yes"])
 		    $filter_value = "yes";
 	    }
@@ -101,10 +101,10 @@ class paloSantoVacations {
 		$filter_field = "v.$filter_field";
 	    }
 	    if($filter_field === "v.vacation" && strtolower($filter_value) === $arrLang["no"]){
-		$where = " WHERE $filter_field ISNULL OR $filter_field like ? ";//'$filter_value%' ";
+		$where = " WHERE $filter_field ISNULL OR $filter_field like ? ";
 		$filter_value = "no";
 	    }else{
-		$where = " WHERE $filter_field like ? ";//'$filter_value%' ";
+		$where = " WHERE $filter_field like ? ";
 		if(strtolower($filter_value) === $arrLang["yes"])
 		    $filter_value = "yes";
 	    }
@@ -121,7 +121,6 @@ class paloSantoVacations {
 		   $where
 		   ORDER BY a.username
 		   LIMIT $limit OFFSET $offset";
-//exec("echo ' $filter_field $filter_value ".print_r($arrParam,true)." $query' > /tmp/diff");
         $result=$this->_DB->fetchTable($query, true, $arrParam);
 
         if($result==FALSE){
@@ -151,7 +150,7 @@ class paloSantoVacations {
     /* - $subject:      titulo del mensaje que se envia como respuesta
     /* - $body:         cuerpo o contenido del mensaje que se enviara
     /* - $objAntispam   objeto Antispam
-    /* - $spamCapture   boleano que indica si estra activo el eveto de captura de spam
+    /* - $spamCapture   boleano que indica si esta activo el eveto de captura de spam
     /*
     /*********************************************************************************/
     function uploadVacationScript($email, $subject, $body, $objAntispam, $spamCapture, $arrLang){
@@ -203,7 +202,7 @@ class paloSantoVacations {
     /* Funcion para eliminar un script de vacaciones dado los siguientes parametros:
     /* - $email:        cuenta de email a la cual se subira el script de vacaciones
     /* - $objAntispam   objeto Antispam
-    /* - $spamCapture   boleano que indica si estra activo el eveto de captura de spam
+    /* - $spamCapture   boleano que indica si esta activo el eveto de captura de spam
     /*
     /*********************************************************************************/
     function deleteVacationScript($email, $objAntispam, $spamCapture, $arrLang){

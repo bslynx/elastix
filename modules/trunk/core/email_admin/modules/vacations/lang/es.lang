@@ -29,9 +29,9 @@
 global $arrLangModule;
 $arrLangModule=array(
 "Vacations" => "Vacaciones",
-"email" => "email",
-"subject" => "asunto",
-"body" => "mensaje",
+"email address" => "correo electrónico",
+"Subject" => "Asunto",
+"Body" => "Mensaje",
 "Operation cannot be done. Please try Again." => "Operación no pudo ser realizada. Por favor vuelva a intentar.",
 "Operation have been succesful." => "Operación ha sido un éxito.",
 "Succesful" => "Éxito",
@@ -53,8 +53,8 @@ $arrLangModule=array(
 "Email is not correct. Please write the email assigned to your elastix account." => "Email no es correcto. Por favor escriba el email adignado a su cuenta de elastix.",
 "Emails Account" => "Cuentas de Emails",
 "Vacations Activated" => "Vacaciones Activada",
-"Auto-Reply: I'm on vacation." => "Auto-Respuesta: Estoy en mis vacaciones.",
-"Sorry, I'm taking my vacations. I will attend to your request when i'm back.\n\n----\nBest Regards." => "Lo siento, Estoy tomando mis vacaciones. Atenderé su requerimiento cuando este de vuelta.\n\n----\nSaludos.",
+"Auto-Reply: Out of the office" => "Auto-Respuesta: Fuera de la Oficina",
+"I'm sorry I am currently out on vacations, your email will be replied as soon as I get back to the office.\n\n----\nBest Regards." => "Lo siento en estos momentos me encuentro fuera de la oficina por vacaciones, su email será respondido inmediatamente esté de regreso.\n\n----\nSaludos.",
 "yes" => "si",
 "no" => "no",
 );
