@@ -6,6 +6,7 @@ $(document).ready(function(){
         var valor = $('#id_protocol option:selected').val();
         var arrAction              = new Array();
             arrAction["action"]    = "getPorts";
+	    arrAction["menu"]	   = "sec_rules";
             arrAction["rawmode"]   = "yes";
             arrAction["protocol"]  =  valor;
             request("index.php",arrAction,false,
@@ -74,6 +75,7 @@ $(document).ready(function(){
 	if(!changeToOtherPage){
 	    var arrAction                    = new Array();
 		arrAction["action"]          = "change";
+		arrAction["menu"]	     = "sec_rules";
 		arrAction["rawmode"]         = "yes";
 		arrAction["neighborrow"]     = neighborrow;
 		arrAction["actualrow"]       = info;
@@ -120,6 +122,7 @@ $(document).ready(function(){
 	else{
 	    var arrAction                = new Array();
 		arrAction["action"]      = "changeOtherPage";
+		arrAction["menu"]	 = "sec_rules";
 		arrAction["direction"]	 = direction;
 		arrAction["rawmode"]     = "yes";
 		arrAction["actualrow"]   = info;
