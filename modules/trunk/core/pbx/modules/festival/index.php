@@ -117,6 +117,7 @@ function changeStatusFestival($smarty, $module_name, $local_templates_dir, $arrC
             return viewFormFestival($smarty, $module_name, $local_templates_dir, $arrConf);
         }
         if($pFestival->activateFestival()){
+	    sleep(2); //Se estima un máximo de 2 segundos en que puede llegar a demorar el levantar el servicio festival
             $message .= _tr("Festival has been successfully activated");
             $smarty->assign("mb_title",_tr("Message"));
             $smarty->assign("mb_message", $message);
@@ -134,6 +135,7 @@ function changeStatusFestival($smarty, $module_name, $local_templates_dir, $arrC
             return viewFormFestival($smarty, $module_name, $local_templates_dir, $arrConf);
         }
         if($pFestival->deactivateFestival()){
+	    sleep(1); //Se estima un máximo de 1 segundo en que puede llegar a demorar en detener el servicio festival
             $smarty->assign("mb_title",_tr("Message"));
             $smarty->assign("mb_message", _tr("Festival has been successfully deactivated"));
         }
