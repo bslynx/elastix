@@ -14,6 +14,7 @@ $(document).ready(function (){
 		//GUARDAR EL ESTADO DEL "ENABLE FRONT-END FREEPBX"
 		var arrAction = new Array();
 		arrAction["action"]              = "update_status_fpbx_frontend";
+		arrAction["menu"]	   	 = "sec_advanced_settings";
 		arrAction["rawmode"]             = "yes";
 		arrAction["new_status_fpbx_frontend"] = value_fpbx_frontend;
 		request("index.php",arrAction,false,
