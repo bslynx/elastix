@@ -49,22 +49,24 @@ class PaloSantoPackages
         global $arrLang;
         unset($respuesta);
         $paquetes = array(); 
-        if($filtro!="")
-            $filtro = " | grep $filtro";
-        $offset_inv = $total-$offset;
-        $comando = "rpm -qa --queryformat '%{NAME}|%{SUMMARY}|%{VERSION}|%{RELEASE}\n' $filtro | tail -n $offset_inv | head -n $limit";
+//        $offset_inv = $total-$offset;
+	if($filtro!="")
+	  $filtroGrep = "| grep $filtro";
+        $comando = "rpm -qa --queryformat '%{NAME}|%{SUMMARY}|%{VERSION}|%{RELEASE}\n' $filtroGrep";// | tail -n $offset_inv | head -n $limit";
         exec($comando,$respuesta,$retorno);
 
          if($retorno==0 && $respuesta!=null && count($respuesta) > 0 && is_array($respuesta)){
             foreach($respuesta as $key => $paqueteLinea){
                 $paquete = explode("|",$paqueteLinea);
-                $repositorio = $this->buscarRepositorioDelPaquete($ruta,$paquete[0],$paquete[2],$paquete[3], $offset, $limit);
-                $paquetes[] = array("name" =>$paquete[0],"summary" =>$paquete[1],"version" =>$paquete[2],"release" =>$paquete[3],'repositorio' => $repositorio);
+		if(preg_match("/$filtro/",$paquete[0]) || $filtro == ""){
+		    $repositorio = $this->buscarRepositorioDelPaquete($ruta,$paquete[0],$paquete[2],$paquete[3], $offset, $limit);
+		    $paquetes[] = array("name" =>$paquete[0],"summary" =>$paquete[1],"version" =>$paquete[2],"release" =>$paquete[3],'repositorio' => $repositorio);
+		}
             }
          }
          else 
              $this->errMsg = $arrLang["Packages not Founds"];
-        return($paquetes);
+        return $this->getDataPagination($paquetes,$limit,$offset);
     }
 
     function getAllPackages($ruta,$filtro="")
@@ -296,7 +298,7 @@ class PaloSantoPackages
         }
         else{
 	    if($filtro != "")
-	      $comando="rpm -qa | grep $filtro | grep -c .";
+	      $comando="rpm -qa --queryformat '%{NAME}\n' | grep $filtro | grep -c .";
 	    else
 	      $comando="rpm -qa | grep -c .";
             exec($comando,$output,$retval);
