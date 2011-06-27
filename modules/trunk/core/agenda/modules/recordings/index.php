@@ -93,7 +93,6 @@ function save_recording($smarty, $module_name, $local_templates_dir, $arrLang, $
     $extension = $pRecording->Obtain_Extension_Current_User($arrConf);
     if(!$extension)
     {
-        $smarty->assign("mb_title", $arrLang['ERROR'].":");
         $smarty->assign("mb_message", $arrLang["You don't have extension number associated with user"]);
         return form_Recordings($smarty, $module_name, $local_templates_dir, $arrLang);
     }

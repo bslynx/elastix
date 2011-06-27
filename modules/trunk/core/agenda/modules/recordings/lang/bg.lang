@@ -42,7 +42,7 @@ $arrLangModule=array(
 "Destiny directory couldn't be created" => "Желаната директория не може да бъде създадена",
 "File Upload" => "Добавяне на Файл",
 "ERROR" => "ГРЕШКА",
-"You don't have extension number associated with user" => "Вие нямате вътрешен номер свързан с потребителя",
+"You don't have extension number associated with user" => "There is no extension number associated with the current user. To associate one please edit your user by going to <a href='?menu=userlist'>System->User Management->Users</a>",
 "The call couldn't be realized" => "Обаждането не може да бъде осъществено",
 "Error copying the file" => "Грешка при копиране на файл",
 "Message" => "Съобщение",
