@@ -504,7 +504,7 @@ function writeLOG($logFILE, $log)
 
     $fp = fopen($path_of_file, 'a+');
     if ($fp) {
-        fwrite($fp,date("[M d h:i:s]")." $log\n");
+        fwrite($fp,date("[M d H:i:s]")." $log\n");
         fclose($fp);
     }
     else
