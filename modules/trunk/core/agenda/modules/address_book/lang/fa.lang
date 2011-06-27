@@ -66,7 +66,7 @@ $arrLangModule=array(
 "At minimum there must be the columns" => "باید حداقل چند ستون وجود داشته باشد",
 "Incomplete Columns" => "ستون ها ناقص",
 "The file is incorrect or empty" => "فایل اشتباه یا خالی است",
-"You don't have extension number associated with user" => "شما شماره داخلی وابسته به کاربر ندارید",
+"You don't have extension number associated with user" => "There is no extension number associated with the current user. To associate one please edit your user by going to <a href='?menu=userlist'>System->User Management->Users</a>",
 "ERROR" => "خطا",
 "Transfer" => "Transfer",
 "The transfer couldn't be realized, maybe you don't have any conversation now." => "The transfer couldn't be realized, maybe you don't have any conversation now.",

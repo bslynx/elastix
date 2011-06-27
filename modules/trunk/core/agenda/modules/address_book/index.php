@@ -922,7 +922,6 @@ function call2phone($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $
                 }
             }
             else {
-                $smarty->assign("mb_title", $arrLang["Validation Error"]);
                 $smarty->assign("mb_message", $arrLang["You don't have extension number associated with user"]);
             }
         }
@@ -981,7 +980,6 @@ function transferCALL($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2,
                 }
             }
             else {
-                $smarty->assign("mb_title", $arrLang["Validation Error"]);
                 $smarty->assign("mb_message", $arrLang["You don't have extension number associated with user"]);
             }
         }
