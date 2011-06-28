@@ -120,7 +120,10 @@ function report_AccessAudit($smarty, $module_name, $local_templates_dir)
      */
     $inicioRango = $iOffsetVerdadero - 5 * $iEstimadoBytesPagina;
     if ($inicioRango < 0) $inicioRango = 0;
-    $arrResult =$pAccessLogs->ObtainAccessLogs(10 * $iEstimadoBytesPagina, $inicioRango, $field_pattern, NULL, $isExport);
+    if($isExport)
+	$arrResult =$pAccessLogs->ObtainAccessLogs($totalBytes, 0, $field_pattern, NULL, $isExport);
+    else
+	$arrResult =$pAccessLogs->ObtainAccessLogs(10 * $iEstimadoBytesPagina, $inicioRango, $field_pattern, NULL, $isExport);
     
     /* Localizar la línea del offset verdadero, así como los offsets de las páginas previa y siguiente */
     for ($iPos = 0; $iPos < count($arrResult); $iPos++) {
@@ -143,7 +146,11 @@ function report_AccessAudit($smarty, $module_name, $local_templates_dir)
         /* Caso especial: se debe tomar la última sección del log */
         $inicioRango = $totalBytes - 5 * $iEstimadoBytesPagina;
         if ($inicioRango < 0) $inicioRango = 0;
-        $arrResult =$pAccessLogs->ObtainAccessLogs(10 * $iEstimadoBytesPagina, $inicioRango, $field_pattern, NULL, $isExport);
+	if($isExport)
+	    $arrResult =$pAccessLogs->ObtainAccessLogs($totalBytes, 0, $field_pattern,
+	    (($busqueda != '') ? $busqueda : NULL), $isExport);
+	else
+	    $arrResult =$pAccessLogs->ObtainAccessLogs(10 * $iEstimadoBytesPagina, $inicioRango, $field_pattern, NULL, $isExport);
         if (count($arrResult) <= $iNumLineasPorPagina)
             $offset = $arrResult[0]['offset'];
         else $offset = $arrResult[count($arrResult) - $iNumLineasPorPagina]['offset'];
@@ -190,9 +197,14 @@ function report_AccessAudit($smarty, $module_name, $local_templates_dir)
     $oGrid->setURL($url);
     //Fin Paginacion
 
-    $arrResult =$pAccessLogs->ObtainAccessLogs(10 * $iEstimadoBytesPagina, $offset, $field_pattern,
+    if($isExport)
+	$arrResult =$pAccessLogs->ObtainAccessLogs($totalBytes, 0, $field_pattern,
         (($busqueda != '') ? $busqueda : NULL), $isExport);
-    $arrResult = array_slice($arrResult, 0, $iNumLineasPorPagina);
+    else
+	$arrResult =$pAccessLogs->ObtainAccessLogs(10 * $iEstimadoBytesPagina, $offset, $field_pattern,
+        (($busqueda != '') ? $busqueda : NULL), $isExport);
+    if(!$isExport)
+	$arrResult = array_slice($arrResult, 0, $iNumLineasPorPagina);
 
     $arrData = null;
     if(is_array($arrResult) && $totalBytes>0){
