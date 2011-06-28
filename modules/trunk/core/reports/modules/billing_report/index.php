@@ -116,6 +116,7 @@ function reportbilling_report($smarty, $module_name, $local_templates_dir, &$pDB
     $segundos         = getParameter("segundos");
     $action           = getParameter("nav");
     $start            = getParameter("start");
+
     $arrColumns = "";
     $hourToSec = "";
     $minToSec  = "";
@@ -212,8 +213,8 @@ function reportbilling_report($smarty, $module_name, $local_templates_dir, &$pDB
         'menu'          =>  $module_name,
         'filter_field'  =>  $filter_field,
         'filter_value'  =>  $filter_value,
-        'date_start'    =>  $start_date_tmp,
-        'date_end'      =>  $end_date_tmp,
+        'date_start'    =>  $_POST['date_start'],
+        'date_end'      =>  $_POST['date_end'],
         'horas'         =>  $horas,
         'minutos'       =>  $minutos,
         'segundos'      =>  $segundos,
