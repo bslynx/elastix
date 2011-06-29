@@ -48,14 +48,14 @@ class PaloSantoPackages
     {
         global $arrLang;
         unset($respuesta);
-        $paquetes = array(); 
-//        $offset_inv = $total-$offset;
-	if($filtro!="")
-	  $filtroGrep = "| grep $filtro";
-        $comando = "rpm -qa --queryformat '%{NAME}|%{SUMMARY}|%{VERSION}|%{RELEASE}\n' $filtroGrep";// | tail -n $offset_inv | head -n $limit";
+        $paquetes = array();
+        $filtroGrep = ""; 
+	    if($filtro!="")
+	        $filtroGrep = "| grep $filtro";
+        $comando = "rpm -qa --queryformat '%{NAME}|%{SUMMARY}|%{VERSION}|%{RELEASE}\n' $filtroGrep";
         exec($comando,$respuesta,$retorno);
 
-         if($retorno==0 && $respuesta!=null && count($respuesta) > 0 && is_array($respuesta)){
+        if($retorno==0 && $respuesta!=null && count($respuesta) > 0 && is_array($respuesta)){
             foreach($respuesta as $key => $paqueteLinea){
                 $paquete = explode("|",$paqueteLinea);
 		if(preg_match("/$filtro/",$paquete[0]) || $filtro == ""){
