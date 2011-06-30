@@ -450,7 +450,7 @@ if( sizeof($G_YDATAS) >= 1 )
     }
 }
 else{
-    showError('nothing', $G_SIZE);
+    showError('nothing', $G_SIZE, $G_TITLE);
 }
 
 }
@@ -489,17 +489,24 @@ function checkAttributes(/*$arrLang*/$G_TITLE,$G_TYPE,$G_LABEL_Y,$_MSJ_ERROR,$_M
     return $str;
 }
 
-function showError($msj, $G_SIZE = array(400,300) )
+function showError($msj, $G_SIZE = array(400,300), $G_TITLE = "")
 {
+    $graph = new CanvasGraph($G_SIZE[0],$G_SIZE[1],"auto");
+
     if($msj == 'nothing'){
         Global $_MSJ_NOTHING;
         $titulo = utf8_decode($_MSJ_NOTHING);
+        $title = new Text($G_TITLE);
+        $title->ParagraphAlign('center');
+        $title->SetFont(FF_FONT2,FS_BOLD);
+        $title->SetMargin(3);
+        $title->SetAlign('center');
+        $title->Center(0,$G_SIZE[0],$G_SIZE[1]/2);
+        $graph->AddText($title);
     }
     else{
         $titulo = utf8_decode($msj);
     }
-
-    $graph = new CanvasGraph($G_SIZE[0],$G_SIZE[1],"auto");    
 
     $t1 = new Text( $titulo );
     $t1->SetBox("white","black",true);
