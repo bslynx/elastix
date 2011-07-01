@@ -71,7 +71,7 @@ function _moduleContent(&$smarty, $module_name)
             $content = saveNewConfEchoCard($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang); // save conf echo canceler
             break;
         case "setConfig":
-            $content = setConfigHardware(); 
+            $content = setConfigHardware($pDB); 
             break;
         case "detection":
             $content = hardwareDetect($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang); // detection button
@@ -248,7 +248,7 @@ function viewFormConfEchoCard($smarty, $module_name, $local_templates_dir, &$pDB
                               'none'  => 'none',
                               'OSLEC' => 'OSLEC',
                               'MG2'   => 'MG2',
-                              'KBL'   => 'KBL',
+                              'KB1'   => 'KB1',
                               'SEC2'  => 'SEC2',
                               'SEC'   => 'SEC');
     $msgResponse['arrPortsEcho'] = $arrPortsEcho;
@@ -292,8 +292,8 @@ function saveNewConfEchoCard($smarty, $module_name, $local_templates_dir, &$pDB,
         $data = array();
         $data['echocanceller'] = $pDB->DBCAMPO($type_echo_selected);
         $pconfEcho->updateEchoCancellerCard($id_card, $num, $type_echo_selected);
-        $pconfEcho->replaceEchoSystemConf($type_echo_pas, $type_echo_selected, $num, $dataCard['type']);
     }
+    $pconfEcho->refreshDahdiConfiguration();
     $jsonObject = new PaloSantoJSON();
     $msgResponse['msg']   = $arrLang["Card Configured"];
     $jsonObject->set_message($msgResponse);
@@ -303,7 +303,7 @@ function saveNewConfEchoCard($smarty, $module_name, $local_templates_dir, &$pDB,
 
 function createFieldForm($arrLang)
 {
-    $arrTypeEcho = array('none' => 'none', 'OSLEC' => 'OSLEC', 'MG2' => 'MG2', 'KBL' => 'KBL', 'SEC2' => 'SEC2', 'SEC' => 'SEC');
+    $arrTypeEcho = array('none' => 'none', 'OSLEC' => 'OSLEC', 'MG2' => 'MG2', 'KB1' => 'KB1', 'SEC2' => 'SEC2', 'SEC' => 'SEC');
 
     $arrFields = array(
         "0"   => array(         "LABEL"                  => "",
@@ -319,17 +319,18 @@ function createFieldForm($arrLang)
     return $arrFields;
 }
 
-function setConfigHardware(){
-    $arrSpanConf = array();
-    $idSpan = getParameter("idSpan");
-    $arrSpanConf['tmsource']   = getParameter("tmsource");
-    $arrSpanConf['lnbuildout'] = getParameter("lnbuildout");
-    $arrSpanConf['framing']    = getParameter("framing");
-    $arrSpanConf['coding']     = getParameter("coding");
-
+function setConfigHardware(&$pDB)
+{
     $oPortsDetails = new PaloSantoHardwareDetection();
-    $oPortsDetails->updateFileSipCustom($idSpan, $arrSpanConf);
-    return "";
+    $oPortsDetails->guardarSpanConfig(
+        $pDB,
+        getParameter("idSpan"), 
+        getParameter("tmsource"),
+        getParameter("lnbuildout"),
+        getParameter("framing"),
+        getParameter("coding"));
+    $oPortsDetails->refreshDahdiConfiguration();
+    return "";    
 }
 
 function setDataCardHardware(&$pDB){

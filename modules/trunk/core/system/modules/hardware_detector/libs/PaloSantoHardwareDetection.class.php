@@ -293,37 +293,61 @@ class PaloSantoHardwareDetection
         return $dataSpans;
     }
 
-    private function updateChangeFileSystemConf($text) {
-        exec("sudo -u root chown asterisk.asterisk /etc/dahdi/system.conf");
-        $fp = fopen('/etc/dahdi/system.conf', 'w');
-
-        fwrite($fp, $text);
-        fclose($fp);
-        exec("sudo -u root chown root.root /etc/dahdi/system.conf");
+    /**
+     * Procedimiento que guarda para el span indicado, la configuración de span
+     * Luego se debe llamar refreshDahdiConfiguration() para aplicar cambios 
+     * 
+     * @param int       $idSpan     ID del span que se va a modificar
+     * @param int       $tmsource   0 si es master, o prioridad de esclavo 1..N
+     * @param int       $lnbuildout Longitud del cable 0..7
+     * @param string    $framing    d4 esf cas ccs
+     * @param string    $coding     ami b8zs hdb3
+     * 
+     * @return  bool    VERDADERO para éxito, FALSO para error
+     */
+    function guardarSpanConfig($pDB, $idSpan, $tmsource, $lnbuildout, $framing, $coding)
+    {
+    	$idSpan = (int)$idSpan;
+        $tmsource = (int)$tmsource;
+        $lnbuildout = (int)$lnbuildout;
+        if (!in_array($framing, array('d4', 'esf', 'cas', 'ccs'))) {
+            $this->errMsg = _tr('Invalid framing');
+        	return FALSE;
+        }
+        if (!in_array($coding, array('ami', 'b8zs', 'hdb3'))) {
+            $this->errMsg = _tr('Invalid coding');
+            return FALSE;
+        }
+        $r = $pDB->genQuery(
+            'UPDATE span_parameter SET timing_source = ?, linebuildout = ?, ' .
+                'framing = ?, coding = ? ' .
+            'WHERE span_num = ?', 
+            array($tmsource, $lnbuildout, $framing, $coding, $idSpan));
+        if (!$r) {
+            $this->errMsg = $pDB->errMsg;
+            return FALSE;
+        }
+        return TRUE;
     }
 
-    function updateFileSipCustom($idSpan, $arrSpanConfig)
+    /**
+     * Procedimiento que llama al ayudante dahdiconfig para que modifique la
+     * información de spans y de cancelador de eco para que se ajuste a lo 
+     * almacenado en la base de datos.
+     * 
+     * @return bool VERDADERO en caso de éxito, FALSO en error
+     */
+    function refreshDahdiConfiguration()
     {
-        $FILE='/etc/dahdi/system.conf';
-        $text = "";
-        $find="false";
-        $fp = fopen($FILE,'r');
-
-        while($line = fgets($fp, filesize($FILE)))
-        {
-            if(ereg("^([a-z=0-9]+),([[:digit:]]+),([[:digit:]]+),([[:alnum:]]+),([[:alnum:]]+),([[:alnum:]]+)", $line, $arrReg) || ereg("^([a-z=0-9]+),([[:digit:]]+),([[:digit:]]+),([[:alnum:]]+),([[:alnum:]]+)", $line, $arrReg)){
-                $data = preg_split('/[=]/',$arrReg[1]);
-                if($data[1]==$idSpan){
-                    if(!empty($arrReg[6])) $text .=$arrReg[1].",".$arrSpanConfig['tmsource'].",".$arrSpanConfig['lnbuildout'].",".$arrSpanConfig['framing'].",".$arrSpanConfig['coding'].",".$arrReg[6]."\n";
-                    else $text .=$arrReg[1].",".$arrSpanConfig['tmsource'].",".$arrSpanConfig['lnbuildout'].",".$arrSpanConfig['framing'].",".$arrSpanConfig['coding']."\n";
-                    
-                }else
-                    $text .= $line;
-            }else
-                $text .= $line;
+        $this->errMsg = '';
+        $sComando = '/usr/bin/elastix-helper dahdiconfig --refresh 2>&1';
+        $output = $ret = NULL;
+        exec($sComando, $output, $ret);
+        if ($ret != 0) {
+            $this->errMsg = implode('', $output);
+            return FALSE;
         }
-        $this->updateChangeFileSystemConf($text);
-        fclose($fp);
+        return TRUE;
     }
 
     //FUNCIONES DE CARD MANUFACTURER//
