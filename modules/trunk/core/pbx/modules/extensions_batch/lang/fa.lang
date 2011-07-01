@@ -37,7 +37,7 @@ $arrLangModule=array(
 "Invalid file extension.- It must be csv" => "خطا در قالب فایل، فایل باید با قالب csv باشد",
 "Possible file upload attack. Filename" => "احتمال خطا در ارسال . نام فایل",
 "Error" => "خطا",
-"Error updating Sip" => "خطا در به روزآوری کاربران",
+"Error updating Tech" => "Error updating Tech",
 "Error updating Users" => "خطا در به روز رسانی کاربران",
 "Error updating Devices" => "خطا در به روزآوری تلفن ها",
 "Error updating Voicemail" => "خطا در به روز رسانی صندوق صوتی",
@@ -54,7 +54,7 @@ $arrLangModule=array(
 "Can't exist a secret empty. Line" => "رمز نمی تواند خالی باشد، خط",
 "Can't exist a display name empty. Line" => "نام داخلی نمی تواند خالی باشد، خط",
 "Please read the lines in the footer" => "لطفا خطوط پایین صفحه را بررسی کنید",
-"Header File Extensions Batch" =>"The first line must contains the name (or title) of the columns, and the file must have at minimum three columns: Display Name, User Extension, Secret. For more information about all the parameters supported, please read the online embedded help.",
+"Header File Extensions Batch" =>"The first line must contains the name (or title) of the columns, and the file must have at minimum four columns: Display Name, User Extension, Secret, Tech. For more information about all the parameters supported, please read the online embedded help.",
 "About Update Extensions Batch" => "اگر فایل حاوی داخلی هایی باشد که قبلا ایجاد شده اند، آنها به روز خواهند شد",
 "There aren't extensions" => "داخلی ها وجود ندارند",
 "Download Extensions" => "Download the current extensions in CSV format",
@@ -75,5 +75,8 @@ $arrLangModule=array(
 "Message" => "پیام ",
 "Save" => "Upload CVS File",
 "Error to insert or update Direct DID" => "Error to insert or update Direct DID",
+"Can't exist a technology empty. Line" => "Can't exist a technology empty. Line",
+"has a wrong tech in line" => "has a wrong tech in line",
+"Tech must be sip or iax" => "Tech must be sip or iax"
 );
 ?>

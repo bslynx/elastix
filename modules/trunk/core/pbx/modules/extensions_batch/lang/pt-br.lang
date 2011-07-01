@@ -38,7 +38,7 @@ $arrLangModule=array(
 "Invalid file extension.- It must be csv" => "Extensão inválida de arquivo. Deve ser um arquivo .csv",
 "Possible file upload attack. Filename" => "Possível ataque de upload. No arquivo",
 "Error" => "Erro",
-"Error updating Sip" => "Erro ao atualizar Sip",
+"Error updating Tech" => "Erro ao atualizar Tech",
 "Error updating Users" => "Erro ao atualizar Usuários",
 "Error updating Devices" => "Erro ao atualizar Dispositivos",
 "Error updating Voicemail" => "Erro ao atualizar Voicemail",
@@ -55,7 +55,7 @@ $arrLangModule=array(
 "Can't exist a secret empty. Line" => "O campo de senha não pode estar vazio. Linha",
 "Can't exist a display name empty. Line" => "O campo de nome não pode estar vazio. Linha",
 "Please read the lines in the footer" => "Por favor leia as linhas no rodapé",
-"Header File Extensions Batch" => "The first line must contains the name (or title) of the columns, and the file must have at minimum three columns: Display Name, User Extension, Secret. For more information about all the parameters supported, please read the online embedded help.",
+"Header File Extensions Batch" => "The first line must contains the name (or title) of the columns, and the file must have at minimum four columns: Display Name, User Extension, Secret, Tech. For more information about all the parameters supported, please read the online embedded help.",
 "About Update Extensions Batch" => "Se você carregar um arquivo com ramais que já existem, esses ramais serão atualizados",
 "There aren't extensions" => "Não são ramais",
 "Download Extensions" => "Download the current extensions in CSV format",
@@ -76,5 +76,8 @@ $arrLangModule=array(
 "Message" => "Mensagem",
 "Save" => "Upload CVS File",
 "Error to insert or update Direct DID" => "Error to insert or update Direct DID",
+"Can't exist a technology empty. Line" => "Can't exist a technology empty. Line",
+"has a wrong tech in line" => "has a wrong tech in line",
+"Tech must be sip or iax" => "Tech must be sip or iax"
 );
 ?>

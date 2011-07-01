@@ -118,10 +118,10 @@ function delete_all_extention(&$smarty, $module_name, $local_templates_dir, $arr
     $arrSipExtension = array();
 
     $data_connection = array('host' => "127.0.0.1", 'user' => "admin", 'password' => "elastix456");
-    $arrData = $oPalo->getExtensionSip();
+    $arrData = $oPalo->getExtensions();
     foreach($arrData as $key => $value)
-      $arrSipExtension[] = $value;
-    if($oPalo->deleteTreeSip($data_connection, $arrAST, $arrAMP, $arrSipExtension)){
+      $arrExtension[] = $value;
+    if($oPalo->deleteTree($data_connection, $arrAST, $arrAMP, $arrExtension)){
 		if($oPalo->deleteAllExtension())
         {
 			if($oPalo->do_reloadAll($data_connection, $arrAST, $arrAMP))
@@ -217,16 +217,16 @@ function load_extension_from_csv($smarty, $arrLang, $ruta_archivo, $base_dir, $p
                 $VM_Play_Envelope   = isset($arrayColumnas[13])?$tupla[$arrayColumnas[13]]:"";
                 $VM_Delete_Vmail    = isset($arrayColumnas[14])?$tupla[$arrayColumnas[14]]:"";
                 $Context            = isset($arrayColumnas[15])?$tupla[$arrayColumnas[15]]:"from-internal";
-
+		$Tech               = strtolower($tupla[$arrayColumnas[16]]);
 //////////////////////////////////////////////////////////////////////////////////
                 // validando para que coja las comillas
                 $Outbound_CID = ereg_replace('“', "\"", $Outbound_CID);
                 $Outbound_CID = ereg_replace('”', "\"", $Outbound_CID);
 //////////////////////////////////////////////////////////////////////////////////
                 //Paso 1: creando en la tabla sip
-                if(!$pLoadExtension->createSipDevices($Ext,$Secret,$VoiceMail,$Context))
+                if(!$pLoadExtension->createTechDevices($Ext,$Secret,$VoiceMail,$Context,$Tech))
                 {
-                    $Messages .= "Ext: $Ext - ". $arrLang["Error updating Sip"].": ".$pLoadExtension->errMsg."<br />";
+                    $Messages .= "Ext: $Ext - ". $arrLang["Error updating Tech"].": ".$pLoadExtension->errMsg."<br />";
                 }else{
                     
                     //Paso 2: creando en la tabla users
@@ -234,7 +234,7 @@ function load_extension_from_csv($smarty, $arrLang, $ruta_archivo, $base_dir, $p
                         $Messages .= "Ext: $Ext - ". $arrLang["Error updating Users"].": ".$pLoadExtension->errMsg."<br />";
                     
                     //Paso 3: creando en la tabla devices
-                    if(!$pLoadExtension->createDevices($Ext,"sip",$Name))
+                    if(!$pLoadExtension->createDevices($Ext,$Tech,$Name))
                         $Messages .= "Ext: $Ext - ". $arrLang["Error updating Devices"].": ".$pLoadExtension->errMsg."<br />";
                     
                     //Paso 4: creando en el archivo /etc/asterisk/voicemail.conf los voicemails
@@ -252,7 +252,7 @@ function load_extension_from_csv($smarty, $arrLang, $ruta_archivo, $base_dir, $p
                     $outboundcid = ereg_replace("\"", "'", $Outbound_CID);
                     $outboundcid = ereg_replace("\"", "'", $outboundcid);
                     $outboundcid = ereg_replace(" ", "", $outboundcid);
-                    if(!$pLoadExtension->putDataBaseFamily($data_connection, $Ext, "sip", $Name, $VoiceMail, $outboundcid))
+                    if(!$pLoadExtension->putDataBaseFamily($data_connection, $Ext, $Tech, $Name, $VoiceMail, $outboundcid))
                         $Messages .= "Ext: $Ext - ". $arrLang["Error processing Database Family"]."<br />";
                     $cont++;
                 }
@@ -281,7 +281,7 @@ function isValidCSV($arrLang, $sFilePath, &$arrayColumnas){
     //Paso 1: Obtener Cabeceras (Minimas las cabeceras: Display Name, User Extension, Secret)
     if ($hArchivo) {
         $tupla = fgetcsv($hArchivo, 4096, ",");
-        if(count($tupla)>=3)
+        if(count($tupla)>=4)
         {
             for($i=0; $i<count($tupla); $i++)
             {
@@ -301,8 +301,9 @@ function isValidCSV($arrLang, $sFilePath, &$arrayColumnas){
                 else if($tupla[$i] == 'VM Play Envelope')   $arrayColumnas[13] = $i;
                 else if($tupla[$i] == 'VM Delete Vmail')    $arrayColumnas[14] = $i;
                 else if($tupla[$i] == 'Context')            $arrayColumnas[15] = $i;
-            }
-            if(isset($arrayColumnas[0]) && isset($arrayColumnas[1]) && isset($arrayColumnas[5]))
+		else if($tupla[$i] == 'Tech')               $arrayColumnas[16] = $i;
+            }  
+            if(isset($arrayColumnas[0]) && isset($arrayColumnas[1]) && isset($arrayColumnas[5]) && isset($arrayColumnas[16]))
             {
                 //Paso 2: Obtener Datos (Validacion que esten llenos los mismos de las cabeceras)
                 $count = 2;
@@ -321,6 +322,12 @@ function isValidCSV($arrLang, $sFilePath, &$arrayColumnas){
                         $Display      = $tupla[$arrayColumnas[0]];
                         if($Display == '')
                             return $arrLang["Can't exist a display name empty. Line"].": $count. - ". $arrLang["Please read the lines in the footer"];
+
+			$Tech         = $tupla[$arrayColumnas[16]];
+                        if($Tech == '')
+                            return $arrLang["Can't exist a technology empty. Line"].": $count. - ". $arrLang["Please read the lines in the footer"];
+			else
+			    $arrTech[] = strtolower($Tech);
                     }
                     $count++;
                 }
@@ -333,10 +340,13 @@ function isValidCSV($arrLang, $sFilePath, &$arrayColumnas){
                                 return "{$arrLang["Error, extension"]} ".$values1['ext']." {$arrLang["repeat in lines"]} ".($key1 + 2)." {$arrLang["with"]} ".($key2 + 2);
                             }
                         }
+			if( $arrTech[$key1]!="sip" && $arrTech[$key1]!="iax" && $arrTech[$key1]!="iax2" ){
+                            return "{$arrLang["Error, extension"]} ".$values1['ext']." {$arrLang["has a wrong tech in line"]} ".($key1 + 2).". {$arrLang["Tech must be sip or iax"]}";
+                        }
                     }
                     return "valided";
                 }
-            }else return $arrLang["Verify the header"] ." - ". $arrLang["At minimum there must be the columns"].": \"Display Name\", \"User Extension\", \"Secret\"";
+            }else return $arrLang["Verify the header"] ." - ". $arrLang["At minimum there must be the columns"].": \"Display Name\", \"User Extension\", \"Secret\", \"Tech\"";
         }
         else return $arrLang["Verify the header"] ." - ". $arrLang["Incomplete Columns"];
     }else return $arrLang["The file is incorrect or empty"] .": $sFilePath";
@@ -398,13 +408,13 @@ function backup_extensions($pDB)
 	$csv .= "\"Display Name\",\"User Extension\",\"Direct DID\",\"Outbound CID\",\"Call Waiting\",".
                 "\"Secret\",\"Voicemail Status\",\"Voicemail Password\",\"VM Email Address\",".
                 "\"VM Pager Email Address\",\"VM Options\",\"VM Email Attachment\",".
-                "\"VM Play CID\",\"VM Play Envelope\",\"VM Delete Vmail\",\"Context\"\n";
+                "\"VM Play CID\",\"VM Play Envelope\",\"VM Delete Vmail\",\"Context\",\"Tech\"\n";
     }else{
         //cabecera
         $csv .= "\"Display Name\",\"User Extension\",\"Direct DID\",\"Outbound CID\",\"Call Waiting\",".
                 "\"Secret\",\"Voicemail Status\",\"Voicemail Password\",\"VM Email Address\",".
                 "\"VM Pager Email Address\",\"VM Options\",\"VM Email Attachment\",".
-                "\"VM Play CID\",\"VM Play Envelope\",\"VM Delete Vmail\",\"Context\"\n";
+                "\"VM Play CID\",\"VM Play Envelope\",\"VM Delete Vmail\",\"Context\",\"Tech\"\n";
         foreach($arrResult as $key => $extension)
         {
 
@@ -417,7 +427,7 @@ function backup_extensions($pDB)
                     "\"{$extension['callwaiting']}\",\"{$extension['secret']}\",\"{$extension['voicemail']}\",".
                     "\"{$extension['vm_secret']}\",\"{$extension['email_address']}\",\"{$extension['pager_email_address']}\",".
                     "\"{$extension['vm_options']}\",\"{$extension['email_attachment']}\",\"{$extension['play_cid']}\",".
-                    "\"{$extension['play_envelope']}\",\"{$extension['delete_vmail']}\",\"{$extension['context']}\"".
+                    "\"{$extension['play_envelope']}\",\"{$extension['delete_vmail']}\",\"{$extension['context']}\",\"{$extension['tech']}\"".
                     "\n";
         }
     }

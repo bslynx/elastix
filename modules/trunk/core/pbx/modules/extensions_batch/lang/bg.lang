@@ -37,7 +37,7 @@ $arrLangModule=array(
 "Invalid file extension.- It must be csv" => "Грешно файлово разширение, трябва да бъде (.csv)",
 "Possible file upload attack. Filename" => "Възможна атака с качване на файлове. Файл с име",
 "Error" => "Грешка",
-"Error updating Sip" => "Грешка при обновяване на Sip",
+"Error updating Tech" => "Грешка при обновяване на Tech",
 "Error updating Users" => "Грешка при обновяване на Users",
 "Error updating Devices" => "Грешка при обновяване на Devices",
 "Error updating Voicemail" => "Грешка при обновяване на Voicemail",
@@ -54,7 +54,7 @@ $arrLangModule=array(
 "Can't exist a secret empty. Line" => "Не е въведена парола. Ред",
 "Can't exist a display name empty. Line" => "Не е въведено име на вътрешен номер. Ред",
 "Please read the lines in the footer" => "Моля прочетете текста в долната част на страницата",
-"Header File Extensions Batch" => "Първият ред трябва да съдържа името на колоните, като файла трябва да има минимум три колони: Display Name, User Extension, Secret.<br>За повече информация относно всички поддържани параметри, моля използвайте менюто за помощ.",
+"Header File Extensions Batch" => "The first line must contains the name (or title) of the columns, and the file must have at minimum four columns: Display Name, User Extension, Secret, Tech. For more information about all the parameters supported, please read the online embedded help.",
 "About Update Extensions Batch" => "Ако заредите файл със съществуващи вътрешни номера, те ще бъдат обновени.",
 "There aren't extensions" => "Няма Вътрешни Номера",
 "Download Extensions" => "Изтегли текущите Вътрешни Номера в CSV формат",
@@ -75,6 +75,8 @@ $arrLangModule=array(
 "Message" => "Съобщение",
 "Save" => "Качи CSV Файл",
 "Error to insert or update Direct DID" => "Error to insert or update Direct DID",
-
+"Can't exist a technology empty. Line" => "Can't exist a technology empty. Line",
+"has a wrong tech in line" => "has a wrong tech in line",
+"Tech must be sip or iax" => "Tech must be sip or iax"
 );
 ?>

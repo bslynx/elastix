@@ -38,7 +38,7 @@ $arrLangModule=array(
 "Invalid file extension.- It must be csv" => "Extensie Invalida - Trebuie sa fie csv",
 "Possible file upload attack. Filename" => "Posibil atac de upload . Fisier",
 "Error" => "Eroare",
-"Error updating Sip" => "Eroare actualizare Sip",
+"Error updating Tech" => "Eroare actualizare Tech",
 "Error updating Users" => "Eroare actualizare Utilizatori",
 "Error updating Devices" => "Eroare actualizare Dispozitive",
 "Error updating Voicemail" => "Eroare actualizare Voicemail",
@@ -55,7 +55,7 @@ $arrLangModule=array(
 "Can't exist a secret empty. Line" => "Nu poate exista un secret gol. Linia",
 "Can't exist a display name empty. Line" => "Nu poate exista un nume display gol. Linia",
 "Please read the lines in the footer" => "Va rog cititi liniile din subsol.",
-"Header File Extensions Batch" => "The first line must contains the name (or title) of the columns, and the file must have at minimum three columns: Display Name, User Extension, Secret. For more information about all the parameters supported, please read the online embedded help.",
+"Header File Extensions Batch" => "The first line must contains the name (or title) of the columns, and the file must have at minimum four columns: Display Name, User Extension, Secret, Tech. For more information about all the parameters supported, please read the online embedded help.",
 "About Update Extensions Batch" => "Daca incarcati un fisier cu extensii deja create aceste extensii vor fi actualizate",
 "There aren't extensions" => "Nu sunt extensii",
 "Download Extensions" => "Download the current extensions in CSV format",
@@ -76,5 +76,8 @@ $arrLangModule=array(
 "Message" => "Mesaje",
 "Save" => "Upload CVS File",
 "Error to insert or update Direct DID" => "Error to insert or update Direct DID",
+"Can't exist a technology empty. Line" => "Can't exist a technology empty. Line",
+"has a wrong tech in line" => "has a wrong tech in line",
+"Tech must be sip or iax" => "Tech must be sip or iax"
 );
 ?>
