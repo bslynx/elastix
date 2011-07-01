@@ -37,7 +37,7 @@ $arrLangModule=array(
 "Invalid file extension.- It must be csv" => "内線用インポートファイルの形式が正しくありません。CSV形式にしてください。",
 "Possible file upload attack. Filename" => "ファイルのアップロードを開始します。ファイル名：",
 "Error" => "エラー",
-"Error updating Sip" => "SIP更新エラー",
+"Error updating Tech" => "Error updating Tech",
 "Error updating Users" => "ユーザ更新エラー",
 "Error updating Devices" => "デバイス更新エラー",
 "Error updating Voicemail" => "ボイスメール更新エラー",
@@ -54,7 +54,7 @@ $arrLangModule=array(
 "Can't exist a secret empty. Line" => "Can't exist a secret empty. Line",
 "Can't exist a display name empty. Line" => "表示名が空欄です。行：",
 "Please read the lines in the footer" => "フッター内の行内容を確認してください",
-"Header File Extensions Batch" => "The first line must contains the name (or title) of the columns, and the file must have at minimum three columns: Display Name, User Extension, Secret. For more information about all the parameters supported, please read the online embedded help.",
+"Header File Extensions Batch" => "The first line must contains the name (or title) of the columns, and the file must have at minimum four columns: Display Name, User Extension, Secret, Tech. For more information about all the parameters supported, please read the online embedded help.",
 "About Update Extensions Batch" => "すでに作成済の内線番号がロードしあ場合、新しいデータで上書きします",
 "There aren't extensions" => "内線がありません",
 "Download Extensions" => "Download the current extensions in CSV format",
@@ -75,5 +75,8 @@ $arrLangModule=array(
 "Message" => "メッセージ",
 "Save" => "Upload CVS File",
 "Error to insert or update Direct DID" => "Error to insert or update Direct DID",
+"Can't exist a technology empty. Line" => "Can't exist a technology empty. Line",
+"has a wrong tech in line" => "has a wrong tech in line",
+"Tech must be sip or iax" => "Tech must be sip or iax"
 );
 ?>

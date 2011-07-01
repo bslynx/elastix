@@ -51,61 +51,70 @@ class paloSantoLoadExtension {
         }
     }
 
-    function createSipDevices($Ext, $Secret, $VoiceMail, $Context)
+    function createTechDevices($Ext, $Secret, $VoiceMail, $Context, $Tech)
     {
         $VoiceMail = strtolower($VoiceMail);
 
         if(eregi("^enable",$VoiceMail))
             $mailbox = "$Ext@default";
         else $mailbox = "$Ext@device";
-
-        $sql = "select count(id) from sip where id='$Ext';";
+	if($Tech == "iax2")
+	    $Tech = "iax";
+        $sql = "select count(id) from $Tech where id='$Ext';";
         $result = $this->_DB->getFirstRowQuery($sql);
         if(is_array($result) && count($result)>0)
         {
             if($result[0]>0)
             {
-                $sql = "update sip set data = '$Secret'  where id='$Ext' and keyword='secret';";
+                $sql = "update $Tech set data = '$Secret'  where id='$Ext' and keyword='secret';";
                 if(!$this->_DB->genQuery($sql))
                 {
                     $this->errMsg = $this->_DB->errMsg;
                     return false;
                 }
-                $sql = "update sip set data = '$mailbox' where id='$Ext' and keyword='mailbox';";
+                $sql = "update $Tech set data = '$mailbox' where id='$Ext' and keyword='mailbox';";
                 if(!$this->_DB->genQuery($sql))
                 {
                     $this->errMsg = $this->_DB->errMsg;
                     return false;
                 }
-                $sql = "update sip set data = '$Context' where id='$Ext' and keyword='context';";
+                $sql = "update $Tech set data = '$Context' where id='$Ext' and keyword='context';";
                 if(!$this->_DB->genQuery($sql))
                 {
                     $this->errMsg = $this->_DB->errMsg;
                     return false;
                 }
             }else{
+		if($Tech == "iax")
+		    $values = ",('$Ext','dial','IAX2/$Ext')
+			       ,('$Ext','port','4569')
+			       ,('$Ext','requirecalltoken','')
+			       ,('$Ext','notransfer','yes')
+			       ,('$Ext','setvar','REALCALLERIDNUM=$Ext');";
+		else
+		    $values = ",('$Ext','dial','SIP/$Ext')
+			       ,('$Ext','pickupgroup','')
+			       ,('$Ext','callgroup','')
+			       ,('$Ext','port','5060')
+			       ,('$Ext','nat','yes')
+			       ,('$Ext','canreinvite','no')
+			       ,('$Ext','dtmfmode','rfc2833');";
                 $sql =
-                    "insert into sip (id,keyword,data) values
+                    "insert into $Tech (id,keyword,data) values
                     ('$Ext','record_out','Adhoc'),
                     ('$Ext','record_in','Adhoc'),
                     ('$Ext','callerid','device <$Ext>'),
                     ('$Ext','account','$Ext'),
                     ('$Ext','mailbox','$mailbox'),
                     ('$Ext','accountcode',''),
-                    ('$Ext','dial','SIP/$Ext'),
                     ('$Ext','allow',''),
                     ('$Ext','disallow',''),
-                    ('$Ext','pickupgroup',''),
-                    ('$Ext','callgroup',''),
                     ('$Ext','qualify','yes'),
-                    ('$Ext','port','5060'),
-                    ('$Ext','nat','yes'),
                     ('$Ext','type','friend'),
                     ('$Ext','host','dynamic'),
                     ('$Ext','context','$Context'),
-                    ('$Ext','canreinvite','no'),
-                    ('$Ext','dtmfmode','rfc2833'),
-                    ('$Ext','secret','$Secret');";
+                    ('$Ext','secret','$Secret')
+		    $values";
 
                 if(!$this->_DB->genQuery($sql))
                 {
@@ -163,8 +172,10 @@ class paloSantoLoadExtension {
         $tech = strtolower($tech);
         if($tech=='sip')
             $dial = "SIP/$Ext";
-        else if($tech=='iax2')
-            $dial = "IAX2/$Ext";
+        else if($tech=='iax2' || $tech=="iax"){
+	    $tech = "iax2";
+	    $dial = "IAX2/$Ext";
+	}
 
         $sql = "select count(*) from devices where id='$Ext';";
         $result = $this->_DB->getFirstRowQuery($sql);
@@ -241,19 +252,10 @@ class paloSantoLoadExtension {
         }
     }
 
-    function queryExtensions()
+    function processData($data)
     {
-        $path = "/etc/asterisk/voicemail.conf";
-
-        $sql = "select * from
-                    (select u.extension, u.name, u.outboundcid, d.tech from users u, devices d where u.extension=d.id) as r1,
-                    (select data as secret, id from sip where keyword='secret') as r2,
-                    (select data as context, id from sip where keyword='context') as r3
-                where r1.extension=r2.id and r1.extension=r3.id;";
-        $result = $this->_DB->fetchTable($sql, true);
-        $arrExtensions = array();
-
-        if(is_array($result) && count($result)>0){
+	$arrExtensions = array();
+	if(is_array($data) && count($data)>0){
             //Call Waiting
             $arrCallWaiting = $this->databaseCallWaiting();
             foreach($arrCallWaiting as $key => $valor)
@@ -265,7 +267,7 @@ class paloSantoLoadExtension {
             }
 
             //Extension
-            foreach($result as $key => $extension){
+            foreach($data as $key => $extension){
                 $extension['callwaiting']=isset($arrCW[$extension['extension']]) ? $arrCW[$extension['extension']] : 'DISABLED';
                 $extension['directdid'] = $this->queryDIDByExt($extension['extension']);
                 $extension['voicemail'] = 'disable';
@@ -298,6 +300,31 @@ class paloSantoLoadExtension {
             }
         }
         return $arrExtensions;
+    }
+
+    function queryExtensions()
+    {
+        $path = "/etc/asterisk/voicemail.conf";
+
+        $sql = "select * from
+                    (select u.extension, u.name, u.outboundcid, d.tech from users u, devices d where u.extension=d.id) as r1,
+                    (select data as secret, id from sip where keyword='secret') as r2,
+                    (select data as context, id from sip where keyword='context') as r3
+                where (r1.extension=r2.id and r1.extension=r3.id);";
+        $resultSIP = $this->_DB->fetchTable($sql, true);
+
+	$dataSIP = $this->processData($resultSIP);
+
+	$sql = "select * from
+                    (select u.extension, u.name, u.outboundcid, d.tech from users u, devices d where u.extension=d.id) as r1,
+                    (select data as secret, id from iax where keyword='secret') as r2,
+                    (select data as context, id from iax where keyword='context') as r3
+                where (r1.extension=r2.id and r1.extension=r3.id);";
+        $resultIAX = $this->_DB->fetchTable($sql, true);
+        
+	$dataIAX = $this->processData($resultIAX);
+	
+	return array_merge($dataSIP,$dataIAX);
     }
 ////////////////////////////////////////////////////////////////////////////////////////////
     function writeFileVoiceMail($Ext,$Name,$VoiceMail,$VoiceMail_PW,$VM_Email_Address,
@@ -427,7 +454,7 @@ class paloSantoLoadExtension {
         $tech = strtolower($tech);
         if($tech=='sip')
             $dial = "SIP/$Ext";
-        else if($tech=='iax2')
+        else if($tech=='iax2' || $tech=='iax')
             $dial = "IAX2/$Ext";
 
         $arrFamily=array(
@@ -451,9 +478,9 @@ class paloSantoLoadExtension {
                                               $arrFamily);
     }
     //Esta funcion obtiene todas las extensiones tipo SIP
-    function getExtensionSip()
+    function getExtensions()
     {
-       $query = "SELECT * FROM devices where tech='sip'";
+       $query = "SELECT * FROM devices where tech='sip' or tech='iax2'";
        $result=$this->_DB->fetchTable($query, true);
        if( $result == false ){
            $this->errMsg = $this->_DB->errMsg;
@@ -464,7 +491,7 @@ class paloSantoLoadExtension {
     }
     //PASO 1: 
     //Elimina el arbol jerarquico de cada extesion de la base de datos de asterisk
-    function deleteTreeSip($data_connection, $arrAST, $arrAMP, $arrSipExt)
+    function deleteTree($data_connection, $arrAST, $arrAMP, $arrExt)
     {
       global $arrLang;
 	  $arrAMPUSER = array();
@@ -474,17 +501,17 @@ class paloSantoLoadExtension {
 	  $arrCFB = array();
 	  $arrCFU = array();
 
-      foreach($arrSipExt as $ext)
+      foreach($arrExt as $ext)
              $arrAMPUSER[] ="database deltree AMPUSER/{$ext['id']}";
-      foreach($arrSipExt as $ext)
+      foreach($arrExt as $ext)
              $arrDEVICE[] ="database deltree DEVICE/{$ext['id']}";
-      foreach($arrSipExt as $ext)
+      foreach($arrExt as $ext)
              $arrCW[] ="database deltree CW/{$ext['id']}";
-      foreach($arrSipExt as $ext)
+      foreach($arrExt as $ext)
              $arrCF[] ="database deltree CF/{$ext['id']}";
-      foreach($arrSipExt as $ext)
+      foreach($arrExt as $ext)
              $arrCFB[] ="database deltree CFB/{$ext['id']}";
-      foreach($arrSipExt as $ext)
+      foreach($arrExt as $ext)
              $arrCFU[] ="database deltree CFU/{$ext['id']}";                              
 
       //BLQOUE AMPUSER/extension      
@@ -538,8 +565,9 @@ class paloSantoLoadExtension {
         $querys = array();
 
         $querys[] = "DELETE s FROM sip s INNER JOIN devices d ON s.id=d.id and d.tech='sip'";
-        $querys[] = "DELETE u FROM users u INNER JOIN devices d ON u.extension=d.id and d.tech='sip'";
-        $querys[] = "DELETE FROM devices WHERE tech='sip'";
+	$querys[] = "DELETE i FROM iax i INNER JOIN devices d ON i.id=d.id and d.tech='iax2'";
+        $querys[] = "DELETE u FROM users u INNER JOIN devices d ON u.extension=d.id and (d.tech='sip' or d.tech='iax2')";
+        $querys[] = "DELETE FROM devices WHERE tech='sip' or tech='iax2'";
         //$querys[] = "DELETE FROM iax";
 
         foreach($querys as $key => $query){
