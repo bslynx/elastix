@@ -44,5 +44,6 @@ $arrLangModule=array(
 "IAX Channels" => "Kanaly IAX",
 "H323 Channels" => "Kanaly H323",
 "Local Channels" => "Kanaly lokalne",
+"Nothing to show yet" => "Nothing to show yet"
 );
 ?>

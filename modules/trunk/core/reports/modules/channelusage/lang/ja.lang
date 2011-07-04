@@ -44,5 +44,6 @@ $arrLangModule=array(
 "IAX Channels" => "IAXチャネル数",
 "H323 Channels" => "H323チャネル数",
 "Local Channels" => "内線チャネル数",
+"Nothing to show yet" => "Nothing to show yet"
 );
 ?>

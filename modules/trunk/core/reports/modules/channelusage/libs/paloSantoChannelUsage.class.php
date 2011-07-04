@@ -34,7 +34,7 @@ class paloSantoChannelUsage
             'LABEL_X'=>"",'LABEL_Y'=>'','SHADOW'=>false,'SIZE'=>"570,170",'MARGIN'=>"50,140,30,50",
             'COLOR' => "#fafafa",'POS_LEYEND'=> "0.02,0.5");
 
-        $arrayResult['MESSAGES'] = array('ERROR' => 'Error', 'NOTHING_SHOW' => 'Nada que mostrar');
+        $arrayResult['MESSAGES'] = array('ERROR' => 'Error', 'NOTHING_SHOW' => _tr('Nothing to show yet'));
 
         //$oSampler->getSamplesByLineId(1)
         //retorna
@@ -61,7 +61,10 @@ class paloSantoChannelUsage
             $arrDat_N["VALUES"] = $arrValues;
             $arrDat_N["STYLE"] = $arrStyle;
 
-            $arrData["DAT_$i"] = $arrDat_N;
+            if(count($arrValues)>1)
+		$arrData["DAT_$i"] = $arrDat_N;
+	    else
+		$arrData["DAT_$i"] = array();
 
             $i++;
         }
