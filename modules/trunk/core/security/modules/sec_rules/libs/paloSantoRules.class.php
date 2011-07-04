@@ -245,7 +245,7 @@ class paloSantoRules {
      *  .
      * @return array     empty in case of an error or an array that contains the maximum order of all rules
      */
-    function getMaxOrder()
+    private function getMaxOrder()
     {
         $query = "SELECT MAX(rule_order) AS lastRule FROM filter";    
         $result = $this->_DB->fetchTable($query, true);
@@ -281,7 +281,7 @@ class paloSantoRules {
      *
      * @return bool      false if an error occurs or true if the rules have been correctly reordered
      */
-    function reorder()
+    private function reorder()
     {
         $total = $this->ObtainNumRules();
         $result = $this->ObtainRules($total,0);
@@ -328,7 +328,7 @@ class paloSantoRules {
      *
      * @return array      Array with the interfaces
      */
-    function obtener_interfases_red()
+    private function obtener_interfases_red()
     {
         $str = shell_exec("/sbin/ifconfig");
     
@@ -405,7 +405,7 @@ class paloSantoRules {
      *
      * @return array      Array with the model of the interfaces
      */
-    function obtener_modelos_interfases_red()
+    private function obtener_modelos_interfases_red()
     {
         $arrSalida=array();
         $str = shell_exec("/bin/dmesg");
@@ -466,7 +466,7 @@ class paloSantoRules {
         }
         return $this->updateNotExecutedInSystem();
     }
-
+/*
     function desactivateAll()
     {
         $query = "UPDATE filter SET activated = 0";
@@ -480,7 +480,7 @@ class paloSantoRules {
         }
         return true;
     }
-
+*/
     /**
      * Function that converts a decimal number in a binary number of 8 digits ( 10 = 00001010)
      *
@@ -488,7 +488,7 @@ class paloSantoRules {
      *
      * @return string    A string with the equivalent in binary of the given number
      */ 
-    function bitstr_8($octeto)
+    private function bitstr_8($octeto)
     {
         $octeto = ((int)$octeto) & 0x000000FF;
         $lista_bits = array_fill(0, 8, "0");
@@ -538,7 +538,7 @@ class paloSantoRules {
      *
      * @return string    String with ip address in decimal format
      */     
-    function binaryOctetos_to_decimalOctetos($binary)
+    private function binaryOctetos_to_decimalOctetos($binary)
     {
         $k=0;
         $decimalOctetos="";
@@ -664,7 +664,7 @@ class paloSantoRules {
     /**
      * Function that verify if the stickgate chains exists or not. If not it create them
      */ 
-    function verificar_cadenas_stickgate()
+    private function verificar_cadenas_stickgate()
     {
         $cadenas=array("INPUT" => "ELASTIX_INPUT", "OUTPUT"=> "ELASTIX_OUTPUT","FORWARD"=>"ELASTIX_FORWARD");
         $comando= "/sbin/iptables";
@@ -688,7 +688,7 @@ class paloSantoRules {
      *
      * @return bool      false if the chain it is not defined in the system or true if the chain is already defined in the system
      */ 
-    function buscarCadena($cadena)
+    private function buscarCadena($cadena)
     {
         $cadenas = $this->extraerCadenas();
         if (sizeof($cadenas) == 0)
@@ -707,7 +707,7 @@ class paloSantoRules {
      *
      * @return array   Array with the chains
      */ 
-    function extraerCadenas()
+    private function extraerCadenas()
     {
         exec("sudo -u root /sbin/iptables -L -n", $salida, $retorno);
         if ($retorno != 0)
@@ -736,7 +736,7 @@ class paloSantoRules {
      *
      * @return bool      false if an error occurs or true if the iptables rules are correctly saved
      */ 
-    function iptables_save(&$error)
+    private function iptables_save(&$error)
     {
         $bRetorno=FALSE;
         $bValido=TRUE;
@@ -782,7 +782,7 @@ class paloSantoRules {
      *
      * @return bool      false if an error occurs or true if the update is successful
      */ 
-    function updateNotExecutedInSystem()
+    private function updateNotExecutedInSystem()
     {
         $query = "UPDATE tmp_execute SET exec_in_sys = 0";
         $result = $this->_DB->genQuery($query);
