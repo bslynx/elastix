@@ -107,8 +107,4 @@ uucp     ALL = NOPASSWD: /bin/chmod
 asterisk ALL = NOPASSWD: /usr/sbin/hardware_detector
 asterisk ALL = NOPASSWD: /sbin/chkconfig
 
-asterisk ALL = NOPASSWD: /sbin/iptables
-asterisk ALL = NOPASSWD: /sbin/iptables-save
-asterisk ALL = NOPASSWD: /sbin/iptables-restore
-
 asterisk ALL = NOPASSWD: /usr/sbin/elastix-helper
