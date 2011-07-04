@@ -33,6 +33,7 @@ function _moduleContent(&$smarty, $module_name)
     include_once("libs/paloSantoConfig.class.php");
     include_once("libs/paloSantoGrid.class.php");
     include_once("libs/paloSantoACL.class.php");
+    include_once("libs/misc.lib.php");
     include_once "modules/$module_name/configs/default.conf.php";
     
     //include file language agree to elastix configuration
@@ -209,18 +210,18 @@ function _moduleContent(&$smarty, $module_name)
         $oForm = new paloForm($smarty, $arrFormElements);
         $contenidoModulo=$oForm->fetchForm("$local_templates_dir/new.tpl", $arrLang["New User"],$arrFillUser);
 
-    } else if(isset($_POST['edit'])) {
-
+    } else if(!is_null(getParameter("edit"))) {
+	$id_user = $pACL->getIdUser($userAccount);
         // Tengo que recuperar la data del usuario
         $pACL = new paloACL($pDB);
 
-        $arrUser = $pACL->getUsers($_POST['id_user']);
+        $arrUser = $pACL->getUsers($id_user);
 
         $arrFillUser['name'] = $arrUser[0][1];
         $arrFillUser['description'] = $arrUser[0][2];
 
         // Lleno el grupo
-        $arrMembership  = $pACL->getMembership($_POST['id_user']);
+        $arrMembership  = $pACL->getMembership($id_user);
         $id_group="";
         if(is_array($arrMembership)) {
             foreach($arrMembership as $groupName=>$groupId) {
@@ -238,14 +239,14 @@ function _moduleContent(&$smarty, $module_name)
         $arrFormElements['password2']['REQUIRED']='no';
         $oForm = new paloForm($smarty, $arrFormElements);
 
-        $listaPropiedades = leerPropiedadesWebmail($pDB, $smarty, $_POST['id_user']);
+        $listaPropiedades = leerPropiedadesWebmail($pDB, $smarty, $id_user);
         if (isset($listaPropiedades['login'])) $arrFillUser['webmailuser'] = $listaPropiedades['login'];
         if (isset($listaPropiedades['domain'])) $arrFillUser['webmaildomain'] = $listaPropiedades['domain'];
         if (isset($listaPropiedades['password'])) $arrFillUser['webmailpassword1'] = $listaPropiedades['password'];
         //if (isset($listaPropiedades['imapsvr'])) $arrFillUser['webmailimapsvr'] = $listaPropiedades['imapsvr'];
 
         $oForm->setEditMode();
-        $smarty->assign("id_user", $_POST['id_user']);
+        $smarty->assign("id_user", $id_user);
         $contenidoModulo=$oForm->fetchForm("$local_templates_dir/new.tpl", "{$arrLang['Edit User']} \"" . $arrFillUser['name'] . "\"", $arrFillUser);
 
     } else if(isset($_POST['submit_save_user'])) {
@@ -318,7 +319,13 @@ function _moduleContent(&$smarty, $module_name)
         }
 
     } else if(isset($_POST['submit_apply_changes'])) {
-
+	if(!$pACL->isUserAdministratorGroup($userAccount)){
+            if($pACL->getIdUser($userAccount) != $_POST['id_user']){
+                $smarty->assign("mb_title",$arrLang["ERROR"]);
+                $smarty->assign("mb_message",$arrLang["You are not authorized to access to information of that user"]);
+                return reportUserList($arrLang, $pACL, $idUserAccount, $smarty, $userLevel1, $userAccount);
+            }
+        }
         $arrUser = $pACL->getUsers($_POST['id_user']);
         $username = $arrUser[0][1];
         $description = $arrUser[0][2]; 
