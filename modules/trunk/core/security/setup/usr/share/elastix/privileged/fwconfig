@@ -146,17 +146,17 @@ function action_loadFirewall($opt)
             '-A '.$elastixChains[$rule['traffic']],
         );
         if ($rule['ip_destiny'] != '0.0.0.0/0' && $rule['ip_destiny'] != '')
-            $commandParams[] = "-d $rule[ip_destiny]";
+            $commandParams[] = "-d ".escapeshellarg($rule['ip_destiny']);
         if ($rule['ip_source'] != '0.0.0.0/0' && $rule['ip_source'] != '')
-            $commandParams[] = "-s $rule[ip_source]";
+            $commandParams[] = "-s ".escapeshellarg($rule['ip_source']);
         switch ($rule['protocol']) {
         case 'TCP':
         case 'UDP':
-            $commandParams[] = "-p $rule[protocol]";
+            $commandParams[] = "-p ".escapeshellarg($rule['protocol']);
             if($rule['sport'] != 'ANY')
-                $commandParams[] = "--sport $rule[sport]";
+                $commandParams[] = "--sport ".escapeshellarg($rule['sport']);
             if($rule['dport'] != 'ANY')
-                $commandParams[] = "--dport $rule[dport]";
+                $commandParams[] = "--dport ".escapeshellarg($rule['dport']);
             break;
         case 'ICMP':
             $commandParams[] = '-p icmp';
@@ -165,14 +165,14 @@ function action_loadFirewall($opt)
             $commandParams[] = '-p ip';
             break;
         case 'STATE':
-            $commandParams[] = "-m state --state $rule[state]";
+            $commandParams[] = "-m state --state ".escapeshellarg($rule['state']);
             break;
         }
         if ($rule['eth_in'] != 'ANY' && $rule['eth_in'] != '')
-            $commandParams[] = "-i $rule[eth_in]";
+            $commandParams[] = "-i ".escapeshellarg($rule['eth_in']);
         if ($rule['eth_out'] != 'ANY' && $rule['eth_out'] != '')
-            $commandParams[] = "-o $rule[eth_out]";
-        $commandParams[] = "-j $rule[target]";
+            $commandParams[] = "-o ".escapeshellarg($rule['eth_out']);
+        $commandParams[] = "-j ".escapeshellarg($rule['target']);
         
         $output = $ret = NULL;
         exec(implode(' ', $commandParams), $output, $ret);
