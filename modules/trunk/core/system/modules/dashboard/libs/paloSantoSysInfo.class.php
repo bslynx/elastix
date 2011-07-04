@@ -189,7 +189,7 @@ class paloSantoSysInfo
             'LABEL_X'=>"Etiqueta X",'LABEL_Y'=>'Etiqueta Y','SHADOW'=>false,'SIZE'=>"519,170",'MARGIN'=>"50,230,30,50",
             'COLOR' => "#fafafa",'POS_LEYEND'=> "0.02,0.5");
 
-        $arrayResult['MESSAGES'] = array('ERROR' => 'Error', 'NOTHING_SHOW' => 'Nada que mostrar');
+        $arrayResult['MESSAGES'] = array('ERROR' => 'Error', 'NOTHING_SHOW' => _tr('Nothing to show yet'));
 
         //$oSampler->getSamplesByLineId(1)
         //retorna
@@ -216,7 +216,10 @@ class paloSantoSysInfo
             $arrDat_N["VALUES"] = $arrValues;
             $arrDat_N["STYLE"] = $arrStyle;
 
-            $arrData["DAT_$i"] = $arrDat_N;
+            if(count($arrValues)>1)
+		$arrData["DAT_$i"] = $arrDat_N;
+	    else
+		$arrData["DAT_$i"] = array();
 
             $i++;
         }
