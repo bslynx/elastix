@@ -586,195 +586,33 @@ class paloSantoRules {
      */ 
     function flushRules()
     {
-        exec("sudo -u root /sbin/iptables -F", $salida, $retorno1);
-        exec("sudo -u root /sbin/iptables -X", $salida, $retorno2);
-        exec("sudo -u root /sbin/iptables -Z", $salida, $retorno3);
-        exec("sudo -u root /sbin/iptables -t nat -F", $salida, $retorno4);
-        if($retorno1 == 0 && $retorno2 == 0 && $retorno3 == 0 && $retorno4 == 0)
-            return true;
-        return false;
+        $this->errMsg = '';
+        $sComando = '/usr/bin/elastix-helper fwconfig --flush 2>&1';
+        $output = $ret = NULL;
+        exec($sComando, $output, $ret);
+        if ($ret != 0) {
+            $this->errMsg = implode('', $output);
+            return FALSE;
+        }
+        return TRUE;
     }
 
     /**
      * Function that activates the rules in the system 
      *
-     * @param array      $rules      Array with all the rules to be activated in the system
-     * @param string     $error      Variable that stores all the errors that could occur    
-     *
      * @return bool      false if an error occurs or true if the rules are correctly activated in the system
-     */ 
-    function activateRules($rules,&$error)
+     */
+    function activateRules()
     {
-        $i = 1;
-        $this->verificar_cadenas_stickgate();
-        foreach($rules as $key => $rule){
-            if($rule['traffic'] == "INPUT")
-                $traffic = "ELASTIX_INPUT";
-            if($rule['traffic'] == "OUTPUT")
-                $traffic = "ELASTIX_OUTPUT";
-            if($rule['traffic'] == "FORWARD")
-                $traffic = "ELASTIX_FORWARD";
-            $comand = "/sbin/iptables -A";
-            $parameters = "";
-            if($rule['ip_destiny']!= "0.0.0.0/0" && $rule['ip_destiny'] != "")
-                $parameters.= "-d $rule[ip_destiny] ";
-            if($rule['ip_source']!= "0.0.0.0/0" && $rule['ip_source'] != "")
-                $parameters.= "-s $rule[ip_source] ";
-            if($rule['protocol'] == "TCP" || $rule['protocol'] == "UDP"){
-		$parameters.= "-p $rule[protocol] ";
-                if($rule['sport'] != "ANY")
-                    $parameters.= "--sport $rule[sport] ";
-                if($rule['dport'] != "ANY")
-                    $parameters.= "--dport $rule[dport] ";
-            }
-            if($rule['protocol'] == "ICMP")
-                $parameters.= "-p icmp ";
-            if($rule['protocol'] == "IP")
-                $parameters.= "-p ip ";
-            if($rule['protocol'] == "STATE")
-                $parameters.= "-m state --state $rule[state]";
-            if($rule['eth_in'] != "ANY" && $rule['eth_in'] != "")
-                $parameters.= "-i $rule[eth_in] ";
-            if($rule['eth_out'] != "ANY" && $rule['eth_out'] != "")
-                $parameters.= "-o $rule[eth_out] ";
-
-            $comand = "sudo -u root $comand $traffic $parameters -j $rule[target]";
-            exec($comand,$action,$retorno[$key]);
-            if($retorno[$key] == 0){
-                $retorno[$key]= $this->iptables_save($error);
-                if(!$retorno[$key])
-                    return false;
-            }else 
-                return false;
-            /*if($i == 18){
-                $comand = "sudo -u root /sbin/iptables -A ELASTIX_INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT";
-                exec($comand,$action,$retorno[$key]);
-                if($retorno[$key] == 0){
-                    $retorno[$key]= $this->iptables_save($error);
-                    if(!$retorno[$key])
-                        return false;
-                }else 
-                    return false;
-                }
-            $i++;*/
+        $this->errMsg = '';
+        $sComando = '/usr/bin/elastix-helper fwconfig --load 2>&1';
+        $output = $ret = NULL;
+        exec($sComando, $output, $ret);
+        if ($ret != 0) {
+            $this->errMsg = implode('', $output);
+            return FALSE;
         }
-        return true;
-    }
-
-    /**
-     * Function that verify if the stickgate chains exists or not. If not it create them
-     */ 
-    private function verificar_cadenas_stickgate()
-    {
-        $cadenas=array("INPUT" => "ELASTIX_INPUT", "OUTPUT"=> "ELASTIX_OUTPUT","FORWARD"=>"ELASTIX_FORWARD");
-        $comando= "/sbin/iptables";
-        foreach ($cadenas as $key => $cadena){
-          $existe=$this->buscarCadena($cadena);
-          if (!$existe){//crear la cadena
-                  exec("sudo -u root $comando -N $cadena", $salida, $retorno);
-                  if ($retorno==0)
-                  {
-                          //ingresar la regla
-                          exec("sudo -u root $comando -A $key -j $cadena", $salida, $retorno);
-                  }           
-            }
-       }
-    }
-
-    /**
-     * Function that searches a given chain in the system
-     *
-     * @param string     $cadena     chain to be searched 
-     *
-     * @return bool      false if the chain it is not defined in the system or true if the chain is already defined in the system
-     */ 
-    private function buscarCadena($cadena)
-    {
-        $cadenas = $this->extraerCadenas();
-        if (sizeof($cadenas) == 0)
-            return "error";
-        $i = 0;
-        while ($i < sizeof($cadenas) and strcmp($cadenas[$i],$cadena) != 0)
-            $i++;
-        if ($i >= sizeof($cadenas))
-            return false; // La cadena no se encuentra entre las ya definidas
-        else
-            return true;
-    }
-
-    /**
-     * Function that returns all the chains of the system   
-     *
-     * @return array   Array with the chains
-     */ 
-    private function extraerCadenas()
-    {
-        exec("sudo -u root /sbin/iptables -L -n", $salida, $retorno);
-        if ($retorno != 0)
-            return;
-        else 
-        {
-            $pos = 0;
-            for ($i=0; $i<sizeof($salida); $i++)
-            {
-                $palabras = explode(" ", $salida[$i]);
-                if (strcmp($palabras[0],"Chain") == 0 and strcmp($palabras[1],"entrada_admin") != 0
-                    and strcmp($palabras[1],"salida_admin") != 0)
-                {
-                    $cadenas[] = $palabras[1];
-                    $pos++;
-                }
-            }
-        }   
-        return $cadenas;
-    }
-
-    /**
-     * Function that saves the iptables rules of the system 
-     *
-     * @param string     $error         Variable that stores the errors if there exist  
-     *
-     * @return bool      false if an error occurs or true if the iptables rules are correctly saved
-     */ 
-    private function iptables_save(&$error)
-    {
-        $bRetorno=FALSE;
-        $bValido=TRUE;
-        $archivo_existe=FALSE;
-        $oConfig=new paloConfig("/etc/sysconfig","iptables","","");
-        //respaldar el archivo /etc/sysconfig/iptables
-        //comprobar que exista para copiarlo
-        if (file_exists("/etc/sysconfig/iptables"))
-        {
-        //exec("/yb/bin/sudo -u root cp /etc/sysconfig/iptables /etc/sysconfig/iptables.old", $salida, $retorno);
-        $bValido=$oConfig->respaldar_archivo("iptables.bck");
-        if(!$bValido) $error=$oConfig->getMessage();
-        $archivo_existe=TRUE;
-        }
-        if ($bValido){
-            //Se deben cambiar los permisos del archivo para poder escribirlo
-            exec("sudo -u root touch /etc/sysconfig/iptables");
-            exec("sudo -u root /bin/chmod 777 /etc/sysconfig/iptables");
-            exec("sudo -u root /sbin/iptables-save > /etc/sysconfig/iptables", $salida, $retorno);
-            exec("sudo -u root /bin/chmod 744 /etc/sysconfig/iptables");
-            if ($retorno != 0){
-                $error = "Error al guardar los iptables";
-                //$error=FIREWALL_MSG_ERROR_11;
-                //hacer restore
-                if ($archivo_existe){
-                    $bValido=$oConfig->recuperar_archivo("iptables.bck");
-                    exec("sudo -u root /sbin/iptables-restore /etc/sysconfig/iptables", $salida, $retorno);
-                }
-            }
-            else
-            {
-                $bRetorno=TRUE;
-                //borrar el archivo de respaldo
-                //if ($archivo_existe)
-                    //exec("/yb/bin/sudo -u root rm /etc/sysconfig/iptables.old", $salida, $retorno);
-            }
-        }
-        return $bRetorno;
+        return TRUE;
     }
 
     /**

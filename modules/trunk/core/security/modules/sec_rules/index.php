@@ -712,20 +712,10 @@ function reportRules($smarty, $module_name, $local_templates_dir, &$pDB, $arrCon
 function execRules($smarty, $module_name, $local_templates_dir, $pDB, $arrConf)
 {
     $pRules = new paloSantoRules($pDB);
-    $activatedRules = $pRules->getActivatedRules();
-    $error = "";
-    if(!$pRules->flushRules()){
+    if (!$pRules->activateRules()) {
         $smarty->assign("mb_title", "ERROR");
         $smarty->assign("mb_message", _tr("Error during execution of rules"));
-        return reportRules($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
-    }
-    if(!$pRules->activateRules($activatedRules,$error)){
-        $smarty->assign("mb_title", "ERROR");
-        if($error == ""){
-            $smarty->assign("mb_message", _tr("Error during execution of rules"));
-        }
-        else
-            $smarty->assign("mb_message", $error);
+        if ($pRules->errMsg != '') $smarty->assign("mb_message", $pRules->errMsg);
         return reportRules($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
     }
     if($pRules->isFirstTime())
