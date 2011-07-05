@@ -8,7 +8,9 @@
     <table width="100%" cellpadding="4" cellspacing="0" border="0">
       <tr>
         <td align="left">
-          {if $mode eq 'input'}
+	  {if $editUserExtension eq 'yes'}
+          <input class="button" type="button" name="submit_apply_changes" value="{$APPLY_CHANGES}" onclick="apply_changes()">
+          {elseif $mode eq 'input'}
           <input class="button" type="submit" name="submit_save_user" value="{$SAVE}" >
           <input class="button" type="submit" name="cancel" value="{$CANCEL}"></td>
           {elseif $mode eq 'edit'}
