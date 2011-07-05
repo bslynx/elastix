@@ -45,7 +45,7 @@ $arrLangModule=array(
 "Start_Date" => "Ημερομηνία Εκκίνησης",
 "End_Date" => "Ημερομηνία Τερματισμού",
 "message_alert" => "Είστε σίγουροι οτι θέλετε να σβήσετε τις εγγραφές;",
-"no_extension" => "There is no extension number associated with the current user. Please associate an extension with your user in order to see your call recordings, by clicking <a href='index.php?menu=userlist'>here</a>",
+"no_extension" => "There is no extension number associated with the current user. Please associate an extension with your user in order to see your call recordings, by clicking <a href=\"javascript: openWindow('index.php?menu=userlist&amp;action=edit_userExtension&amp;rawmode=yes');\">here</a>",
 "no_file" => "File not found!",
 "Outgoing" => "Outgoing",
 "Incoming" => "Incoming",
@@ -54,5 +54,6 @@ $arrLangModule=array(
 "unknown" => "Unknown",
 "Filter" => "Φίλτρο",
 "delete_file_error" => "At least one of files selected cannot be deleted because it no exists",
+"contact_admin" => "There is no extension number associated with the current user. Please contact the administrator to assign it an extension"
 );
 ?>

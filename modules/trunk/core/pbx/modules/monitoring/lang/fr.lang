@@ -44,7 +44,7 @@ $arrLangModule=array(
 "Start_Date" => "Du",
 "End_Date" => "Au",
 "message_alert" => "Are you sure you wish to delete recordings?",
-"no_extension" => "Il n'y a pas un n° d'extension associé à l'utilisateur actuel. Associez une extension à votre utilisateur pour voir vos enregistrements. <a href='index.php?menu=userlist'>ici</a>",
+"no_extension" => "Il n'y a pas un n° d'extension associé à l'utilisateur actuel. Associez une extension à votre utilisateur pour voir vos enregistrements. <a href=\"javascript: openWindow('index.php?menu=userlist&amp;action=edit_userExtension&amp;rawmode=yes');\">ici</a>",
 "no_file" => "Fichier non trouvé!",
 "Outgoing" => "Sortant",
 "Incoming" => "Entrant",
@@ -54,5 +54,6 @@ $arrLangModule=array(
 "Search" => "Recherche sur",
 "Show" => "Afficher",
 "delete_file_error" => "At least one of files selected cannot be deleted because it no exists",
+"contact_admin" => "There is no extension number associated with the current user. Please contact the administrator to assign it an extension"
 );
 ?>

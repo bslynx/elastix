@@ -130,9 +130,10 @@ function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, &$
 
     if($esAdministrador)
         $totalMonitoring = $pMonitoring->getNumMonitoring($filter_field, $filter_value, null, $date_initial, $date_final);
-    else
+    elseif(!($extension=="" || is_null($extension)))
         $totalMonitoring = $pMonitoring->getNumMonitoring($filter_field, $filter_value, $extension, $date_initial, $date_final);
-
+    else
+	$totalMonitoring = 0;
     $url = array('menu' => $module_name);
     $paramFilter = array(
        'filter_field' => $filter_field,
@@ -144,7 +145,7 @@ function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, &$
     $oGrid->setURL($url);
 
     $arrData = null;
-    if($oGrid->isExportAction()){
+    if($oGrid->isExportAction()){ 
         $limit = $totalMonitoring;
         $offset = 0;
         
@@ -153,8 +154,10 @@ function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, &$
     
         if($esAdministrador)
             $arrResult =$pMonitoring->getMonitoring($limit, $offset, $filter_field, $filter_value, null, $date_initial, $date_final);
-        else
+        elseif(!($extension=="" || is_null($extension)))
             $arrResult =$pMonitoring->getMonitoring($limit, $offset, $filter_field, $filter_value, $extension, $date_initial, $date_final);
+	else
+	    $arrResult = array();
   
         if(is_array($arrResult) && $totalMonitoring>0){
             foreach($arrResult as $key => $value){
@@ -199,11 +202,16 @@ function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, &$
         
         if($esAdministrador)
             $arrResult =$pMonitoring->getMonitoring($limit, $offset, $filter_field, $filter_value, null, $date_initial, $date_final);
-        else
+        elseif(!($extension=="" || is_null($extension)))
             $arrResult =$pMonitoring->getMonitoring($limit, $offset, $filter_field, $filter_value, $extension, $date_initial, $date_final);
+	else
+	    $arrResult = array();
 
         if($user != "admin" & ($extension=="" || is_null($extension))){
-            $smarty->assign("mb_message", "<b>"._tr("no_extension")."</b>");
+	    if($esAdministrador)
+		$smarty->assign("mb_message", "<b>"._tr("no_extension")."</b>");
+	    else
+		$smarty->assign("mb_message", "<b>"._tr("contact_admin")."</b>");
         }else{
 
             if($extension=="" || is_null($extension))

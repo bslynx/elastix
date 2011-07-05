@@ -44,7 +44,7 @@ $arrLangModule=array(
 "Start Date" => "تاریخ شروع",
 "End Date" => "تاریخ پایان",
 "message_alert" => "آيا مطمئنيد که مي خواهيد فايل صوتي را حذف کنيد؟",
-"no_extension" => "There is not an extension number associated with the current user. Please associate an extension with your user in order to see your call recordings. <a href='index.php?menu=userlist'>here</a>",
+"no_extension" => "There is not an extension number associated with the current user. Please associate an extension with your user in order to see your call recordings. <a href=\"javascript: openWindow('index.php?menu=userlist&amp;action=edit_userExtension&amp;rawmode=yes');\">here</a>",
 "no_file" => "!فايل پيدا نشد",
 "Outgoing" => "خروجي",
 "Incoming" => "ورودي",
@@ -54,5 +54,6 @@ $arrLangModule=array(
 "Start_Date" => "Start Date",
 "End_Date" => "End Date",
 "delete_file_error" => "At least one of files selected cannot be deleted because it no exists",
+"contact_admin" => "There is no extension number associated with the current user. Please contact the administrator to assign it an extension"
 );
 ?>
