@@ -60,6 +60,7 @@ $arrLangModule=array(
 "no_extension" => "This file is not allowed to download",
 "Download" => "Download",
 "Listen" => "Listen",
-
+"no_extension_assigned" => "There is no extension number associated with the current user. Please associate an extension with your user in order to see your call recordings, by clicking <a href=\"javascript: openWindow('index.php?menu=userlist&amp;action=edit_userExtension&amp;rawmode=yes');\">here</a>",
+"contact_admin" => "There is no extension number associated with the current user. Please contact the administrator to assign it an extension"
 );
 ?>

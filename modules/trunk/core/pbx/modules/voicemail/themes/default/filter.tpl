@@ -8,7 +8,7 @@
         <td width="12%" align="right">{$date_end.LABEL}: <span  class="required">*</span></td>
         <td width="12%" align="left" nowrap>{$date_end.INPUT}</td>
         <td width="12%" align="center"><input class="button" type="submit" name="filter" value="{$Filter}" ></td>
-        <td width="12%" align="center"><input class="button" type="submit" name="config" value="{$CONFIG}" ></td>
+        <td width="12%" align="center"><input class="button" type="submit" name="config" value="{$CONFIG}" {$DISABLED}></td>
       </tr>
    </table>
   </td>

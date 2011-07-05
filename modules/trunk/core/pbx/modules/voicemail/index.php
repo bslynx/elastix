@@ -83,7 +83,9 @@ function _moduleContent(&$smarty, $module_name)
     }
     $arrVoiceData = array();
     $inicio= $fin = $total = 0;
-    $extension = $pACL->getUserExtension($_SESSION['elastix_user']); $ext = $extension; 
+    $extension = $pACL->getUserExtension($_SESSION['elastix_user']); $ext = $extension;
+    if(is_null($ext) || $ext=="")
+	$smarty->assign("DISABLED","DISABLED");
     $esAdministrador = $pACL->isUserAdministratorGroup($_SESSION['elastix_user']);
     if($esAdministrador)
         $extension = "[[:digit:]]+";
@@ -139,7 +141,8 @@ function _moduleContent(&$smarty, $module_name)
     }
 
     if( getParameter('config') ){
-        return form_config($smarty, $module_name, $local_templates_dir, $arrLang, $ext, $pDB_ast);
+	if(!(is_null($ext) || $ext==""))
+	    return form_config($smarty, $module_name, $local_templates_dir, $arrLang, $ext, $pDB_ast);
     }
 
     if( getParameter('save') ){
@@ -265,7 +268,9 @@ contenido;
 
     //si tiene extension consulto sino, muestro un mensaje de que no tiene asociada extension
     $archivos=array();
-    if (!is_null($extension)){
+    if (!(is_null($ext) || $ext=="") || $esAdministrador){
+	if(is_null($ext) || $ext=="")
+	    $smarty->assign("mb_message", "<b>".$arrLang["no_extension_assigned"]."</b>");
         $path = "/var/spool/asterisk/voicemail/default";
         $folder = "INBOX";
 
@@ -357,7 +362,7 @@ if($esAdministrador)
         $arrVoiceData=array_slice($arrData, $offset, $limit);
     } //fin if (!is_null(extension))
     else {
-        $smarty->assign("mb_message", "<b>".$arrLang["You don't have extension number associated with user"]."</b>");
+        $smarty->assign("mb_message", "<b>".$arrLang["contact_admin"]."</b>");
     }
 
     $arrGrid = array("title"   => $arrLang["Voicemail List"],
