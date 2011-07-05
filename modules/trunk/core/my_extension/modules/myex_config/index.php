@@ -92,8 +92,13 @@ function viewFormMyExtension($smarty, $module_name, $local_templates_dir, $pDB, 
 
      $user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
      $extension = $pACL->getUserExtension($user);
-     if($extension=="" || is_null($extension))
-            $smarty->assign("mb_message", "<b>".$arrLang["no_extension"]."</b>");
+     if($extension=="" || is_null($extension)){
+	 $smarty->assign("DISABLED","DISABLED");
+	 if($pACL->isUserAdministratorGroup($user)) 
+	    $smarty->assign("mb_message", "<b>".$arrLang["no_extension"]."</b>");
+	 else
+	    $smarty->assign("mb_message", "<b>".$arrLang["contact_admin"]."</b>");
+     }
      else{
              $_SESSION["my_extension"]["extension"] = $extension;
             if($action=="view")
@@ -179,6 +184,11 @@ function viewFormMyExtension($smarty, $module_name, $local_templates_dir, $pDB, 
 
 function saveNewMyExtension($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang,$pDBACL)
 {
+    $pACL = new paloACL($pDBACL);
+    $user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
+    $extension = $pACL->getUserExtension($user);
+    if($extension=="" || is_null($extension))
+	return viewFormMyExtension($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang,$pDBACL);
     $pMyExtension = new paloSantoMyExtension($pDB);
     $arrFormMyExtension = createFieldForm($arrLang);
     $oForm = new paloForm($smarty,$arrFormMyExtension);

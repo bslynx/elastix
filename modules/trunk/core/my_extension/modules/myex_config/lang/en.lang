@@ -29,7 +29,7 @@
 global $arrLangModule;
 $arrLangModule=array(
 "My Extension" => "My Extension",
-"no_extension" => "There is no extension number associated with the current user. Please associate an extension with your user, by clicking <a href='index.php?menu=userlist'>here</a>",
+"no_extension" => "There is no extension number associated with the current user. Please associate an extension with your user, by clicking <a href=\"javascript: openWindow('index.php?menu=userlist&amp;action=edit_userExtension&amp;rawmode=yes');\">here</a>",
 "Call Waiting" => "Call Waiting",
 "Do Not Disturb" => "Do Not Disturb",
 "Error processing CallWaiting" => "Error processing CallWaiting",
@@ -51,5 +51,6 @@ $arrLangModule=array(
 "Record Incoming" => "Record Incoming",
 "Record Outgoing" => "Record Outgoing",
 "SETTINGS FOR YOUR EXTENSION:" => "SETTINGS FOR YOUR EXTENSION:",
+"contact_admin" => "There is no extension number associated with the current user. Please contact the administrator to assign it an extension"
 );
 ?>

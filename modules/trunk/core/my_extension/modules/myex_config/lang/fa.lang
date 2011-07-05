@@ -29,7 +29,7 @@
 global $arrLangModule;
 $arrLangModule=array(
 "My Extension" => "داخلي من",
-"no_extension" => "هيچ شماره تلفن داخلي براي کاربر فعلي وجود ندارد.لطفا با کليک روي لينک مربوطه به کاربر خود يک داخلي اختصاص بدهيد <a href='index.php?menu=userlist'>here</a>",
+"no_extension" => "هيچ شماره تلفن داخلي براي کاربر فعلي وجود ندارد.لطفا با کليک روي لينک مربوطه به کاربر خود يک داخلي اختصاص بدهيد <a href=\"javascript: openWindow('index.php?menu=userlist&amp;action=edit_userExtension&amp;rawmode=yes');\">here</a>",
 "Call Waiting" => "انتظار تماس",
 "Do Not Disturb" => "مزاحم نشويد",
 "Error processing CallWaiting" => "خطا در روند انتظار تماس",
@@ -51,5 +51,6 @@ $arrLangModule=array(
 "Record Incoming" => "ضبط تماس هاي ورودي",
 "Record Outgoing" => "ضبط تماس هاي خروجي",
 "SETTINGS FOR YOUR EXTENSION:" => "تنظيمات داخلي شما:",
+"contact_admin" => "There is no extension number associated with the current user. Please contact the administrator to assign it an extension"
 );
 ?>
