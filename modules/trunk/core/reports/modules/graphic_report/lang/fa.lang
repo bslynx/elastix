@@ -45,12 +45,15 @@ $arrLangModule=array(
 "There are no data to present" => "هيچ ديتايي براي ارائه وجود ندارد",
 "Number of Calls" => "تعداد تماس ها",
 "Number Calls vs Queues" => "تعداد تماس ها در مقابل صف ها",
-"Number of calls from" => "تعداد تماس ها از",
+"Number of calls extension" => "تعداد تماس ها از",
 "Here" => "اينجا",
 "Graphic Report" => "گزارش گرافيكي",
 "All" => "همه",
 "Show"=>"نمايش",
 "No records found"=>"هيچ فايل صوتي يافت نشد",
 "No exist calls for this number" => "هيچ تماسي براي اين شماره موجود نيست",
+"The extension" => "The extension",
+"does not have calls yet" => "does not have calls yet",
+"The extension must be numeric and can not start with zero" => "The extension must be numeric and can not start with zero"
 );
 ?>

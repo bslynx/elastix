@@ -46,7 +46,7 @@ $arrLangModule=array(
 "There are no data to present" => "Il n'y a pas de donnée � présenter.",
 "Number of Calls" => "Nombre d'Appels",
 "Number Calls vs Queues" => "Nombre d'appels par files d'attente.",
-"Number of calls from" => "Nombre d'appels pour l'extension ",
+"Number of calls extension" => "Nombre d'appels pour l'extension ",
 "Here" => "ici",
 "Graphic Report" => "Rapport Graphique",
 "No exist calls for this number" => "Pas d'appel existant pour ce numéro",
@@ -55,6 +55,8 @@ $arrLangModule=array(
 "Extention(number)" => "N° d'entension",
 "All" => "All",
 "No records found" => "No records found",
-
+"The extension" => "The extension",
+"does not have calls yet" => "does not have calls yet",
+"The extension must be numeric and can not start with zero" => "The extension must be numeric and can not start with zero"
 );
 ?>

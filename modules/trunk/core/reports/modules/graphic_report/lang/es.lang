@@ -45,12 +45,15 @@ $arrLangModule=array(
 "There are no data to present" => "No hay datos para presentar",
 "Number of Calls" => "Numero de Llamadas",
 "Number Calls vs Queues" => "Numero de Llamadas vs. Queues",
-"Number of calls from" => "Numero de llamadas de",
+"Number of calls extension" => "Numero de llamadas extensión",
 "Here" => "Aqui",
 "Graphic Report" => "Reporte Grafico",
 "All" => "Todos",
 "Show" => "Mostrar",
 "No records found"=>"No se encontraron registros",
 "No exist calls for this number" => "No hay llamadas para este número",
+"The extension" => "La extensión",
+"does not have calls yet" => "no tiene llamadas todavía",
+"The extension must be numeric and can not start with zero" => "La extensión debe ser numérica y no puede empezar con cero"
 );
 ?>
