@@ -404,6 +404,7 @@ function leerDatosGrafico($type_graph, $date_start, $date_end)
 
 function ejecutarGrafico($value_criteria, $date_start, $date_end)
 {
+    global $arrLang;
     $data_graph = leerDatosGrafico($value_criteria, $date_start, $date_end);
 
     if (count($data_graph["values"])>0){
@@ -443,6 +444,26 @@ function ejecutarGrafico($value_criteria, $date_start, $date_end)
         $graph->Add($p1);
         $graph->Stroke();
     }else{
+	$graph = new CanvasGraph(630,220,"auto");
+	$title = new Text(utf8_decode($data_graph["title"]));
+	$title->ParagraphAlign('center');
+	$title->SetFont(FF_FONT2,FS_BOLD);
+	$title->SetMargin(3);
+	$title->SetAlign('center');
+	$title->Center(0,630,110);
+	$graph->AddText($title);
+
+	$t1 = new Text(utf8_decode($arrLang["No records found"]));
+	$t1->SetBox("white","black",true);
+	$t1->ParagraphAlign("center");
+	$t1->SetColor("black");
+
+	$graph->AddText($t1);
+	$graph->img->SetColor('navy');
+	$graph->img->SetTextAlign('center','bottom');
+	$graph->img->Rectangle(0,0,629,219);
+	$graph->Stroke();
+	/*
        //no hay datos - por ahora muestro una imagen en blanco con mensaje no records found
         header('Content-type: image/png');
         $titulo=utf8_decode($data_graph["title"]);
@@ -451,7 +472,7 @@ function ejecutarGrafico($value_criteria, $date_start, $date_end)
         $text_color = imagecolorallocate($im, 233, 14, 91);
         imagestring($im, 10, 5, 5, $titulo. "  -  No records found", $text_color);
         imagepng($im);
-        imagedestroy($im);
+        imagedestroy($im);*/
     }
 }
 

@@ -49,5 +49,6 @@ $arrLangModule=array(
 "default" => "pretpostavljena vrijednost",
 "Duration in seconds" => "Trajanje u sekundama",
 "Cost" => "Cijena",
+"No records found" => "No records found"
 );
 ?>

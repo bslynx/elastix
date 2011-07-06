@@ -49,5 +49,6 @@ $arrLangModule=array(
 "default" => "Padrão",
 "Duration in seconds" => "Duração em Segundos",
 "Cost" => "Custo",
+"No records found" => "No records found"
 );
 ?>

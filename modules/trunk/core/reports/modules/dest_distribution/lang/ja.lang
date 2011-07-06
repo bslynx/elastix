@@ -48,5 +48,6 @@ $arrLangModule=array(
 "default" => "デフォルト",
 "Duration in seconds" => "通話時間(秒)",
 "Cost" => "料金",
+"No records found" => "No records found"
 );
 ?>

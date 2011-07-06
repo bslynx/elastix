@@ -48,6 +48,6 @@ $arrLangModule=array(
 "default" => "по подразбиране",
 "Duration in seconds" => "Продължителност в Секунди",
 "Cost" => "Стойност",
-
+"No records found" => "No records found"
 );
 ?>
