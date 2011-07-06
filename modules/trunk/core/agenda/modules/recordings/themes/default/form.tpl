@@ -3,7 +3,7 @@
         <td class="moduleTitle" valign="middle">&nbsp;&nbsp;<img src="{$IMG}" border="0" align="absmiddle">&nbsp;&nbsp;{$TITLE}</td>
     </tr>
     <tr>
-        <td align="left" colspan='2'><input class="button" type="submit" name="save" value="{$SAVE}" /></td>
+        <td align="left" colspan='2'><input class="button" type="submit" name="save" value="{$SAVE}" {$DISABLED}/></td>
     </tr>
     <tr>
         <table class="tabForm" style="font-size: 16px;" width="100%" border='0'>
@@ -19,13 +19,13 @@
                 <td align="left" width='13%'><b>{$recording_name_Label}</b></td>
                 <td align="left">
                     <input size='30' name="recording_name" id="recording_name" type="text" value="{$filename}" />&nbsp;[.gsm|.wav] &nbsp;&nbsp;
-                    <input class="button" title={$record} type="submit" name="record" id="record" value="{$record}"  />
+                    <input class="button" title={$record} type="submit" name="record" id="record" value="{$record}"  {$DISABLED}/>
                 </td>
             </tr>
             <tr class="letra12" id='upload_option'>
                 <td align="left" width='13%'><b>{$record_Label}</b></td>
                 <td align="left">
-                    <input name="file_record" id="file_record" type="file" value="{$file_record_name}" size='30' />
+                    <input name="file_record" id="file_record" type="file" value="{$file_record_name}" size='30' {$DISABLED}/>
                 </td>
             </tr>
         </table>

@@ -42,11 +42,11 @@ $arrLangModule=array(
 "Destiny directory couldn't be created" => "Le répertoire de destination n'a pas pu être créé",
 "File Upload" => "Fichier à envoyer",
 "ERROR" => "ERREUR",
-"You don't have extension number associated with user" => "There is no extension number associated with the current user. To associate one please edit your user by going to <a href='?menu=userlist'>System->User Management->Users</a>",
+"You don't have extension number associated with user" => "There is no extension number associated with the current user. You can associate an extension number to your user by clicking <a href=\"javascript: openWindow('index.php?menu=userlist&amp;action=edit_userExtension&amp;rawmode=yes');\">here</a>",
 "The call couldn't be realized" => "L'appel ne peut être réalisé.",
 "Error copying the file" => "Erreur de copie de fichier",
 "Message" => "Message",
 "Possible file upload attack" => "Possibilit� d'attaque du fichier transmis.",
-
+"contact_admin" => "There is no extension number associated with the current user. Please contact the administrator to assign it an extension"
 );
 ?>

@@ -66,36 +66,34 @@ function _moduleContent(&$smarty, $module_name)
     $dsn_agi_manager['user'] = 'admin';
 
     $pDB = new paloDB($arrConf['dsn_conn_database']);
-
+    $pDBACL = new paloDB($arrConf['elastix_dsn']['acl']);
     $accion = getAction();
 
     $content = "";
     switch($accion)
     {
         case "record":
-            $content = new_recording($smarty, $module_name, $local_templates_dir, $arrLang, $pDB, $dsn_agi_manager, $arrConf);
+            $content = new_recording($smarty, $module_name, $local_templates_dir, $arrLang, $pDB, $dsn_agi_manager, $arrConf, $pDBACL);
             break;
         case "save":
-            $content = save_recording($smarty, $module_name, $local_templates_dir, $arrLang, $arrConf);
+            $content = save_recording($smarty, $module_name, $local_templates_dir, $arrLang, $arrConf, $pDBACL);
             break;
         default:
-            $content = form_Recordings($smarty, $module_name, $local_templates_dir, $arrLang);
+            $content = form_Recordings($smarty, $module_name, $local_templates_dir, $arrLang, $pDBACL);
             break;
     }
 
     return $content;
 }
 
-function save_recording($smarty, $module_name, $local_templates_dir, $arrLang, $arrConf)
+function save_recording($smarty, $module_name, $local_templates_dir, $arrLang, $arrConf, $pDBACL)
 {
     $bExito = true;
     $pRecording = new paloSantoRecordings($pDB);
     $extension = $pRecording->Obtain_Extension_Current_User($arrConf);
+
     if(!$extension)
-    {
-        $smarty->assign("mb_message", $arrLang["You don't have extension number associated with user"]);
-        return form_Recordings($smarty, $module_name, $local_templates_dir, $arrLang);
-    }
+        return form_Recordings($smarty, $module_name, $local_templates_dir, $arrLang, $pDBACL);
 
     $destiny_path = "/var/lib/asterisk/sounds/custom/$extension/";
 
@@ -141,7 +139,7 @@ function save_recording($smarty, $module_name, $local_templates_dir, $arrLang, $
                             $smarty->assign("mb_title", $arrLang['ERROR'].":");
                             $smarty->assign("mb_message", $arrLang["Possible file upload attack"]." $filename");
                             $bExito = false;
-                            return form_Recordings($smarty, $module_name, $local_templates_dir, $arrLang);
+                            return form_Recordings($smarty, $module_name, $local_templates_dir, $arrLang, $pDBACL);
                         }
                     }else{
                         $bExito = false;
@@ -169,7 +167,7 @@ function save_recording($smarty, $module_name, $local_templates_dir, $arrLang, $
                     $smarty->assign("mb_title", $arrLang['ERROR'].":");
                     $smarty->assign("mb_message", $arrLang["Possible file upload attack"]." $filename");
                     $bExito = false;
-                    return form_Recordings($smarty, $module_name, $local_templates_dir, $arrLang);
+                    return form_Recordings($smarty, $module_name, $local_templates_dir, $arrLang, $pDBACL);
                 }
                 if($bExito)
                 {
@@ -207,13 +205,12 @@ function save_recording($smarty, $module_name, $local_templates_dir, $arrLang, $
        $smarty->assign("mb_message", $arrLang["The recording was saved"]);
     }
 
-    return form_Recordings($smarty, $module_name, $local_templates_dir, $arrLang);
+    return form_Recordings($smarty, $module_name, $local_templates_dir, $arrLang, $pDBACL);
 }
 
-function new_recording($smarty, $module_name, $local_templates_dir, $arrLang, $pDB, $dsn_agi_manager, $arrConf)
+function new_recording($smarty, $module_name, $local_templates_dir, $arrLang, $pDB, $dsn_agi_manager, $arrConf, $pDBACL)
 {
     $recording_name = isset($_POST['recording_name'])?$_POST['recording_name']:'';
-
     if($recording_name != '')
     {
         $pRecording = new paloSantoRecordings($pDB);
@@ -232,9 +229,6 @@ function new_recording($smarty, $module_name, $local_templates_dir, $arrLang, $p
                 $smarty->assign("mb_title", $arrLang['ERROR'].":");
                 $smarty->assign("mb_message", $arrLang["The call couldn't be realized"]);
             }
-        }else{
-            $smarty->assign("mb_title", $arrLang['ERROR'].":");
-            $smarty->assign("mb_message", $arrLang["You don't have extension number associated with user"]);
         }
     }
     else{
@@ -242,11 +236,21 @@ function new_recording($smarty, $module_name, $local_templates_dir, $arrLang, $p
         $smarty->assign("mb_message", $arrLang['Insert the Recording Name']);
     }
 
-    return form_Recordings($smarty, $module_name, $local_templates_dir, $arrLang);
+    return form_Recordings($smarty, $module_name, $local_templates_dir, $arrLang, $pDBACL);
 }
 
-function form_Recordings($smarty, $module_name, $local_templates_dir, $arrLang)
+function form_Recordings($smarty, $module_name, $local_templates_dir, $arrLang, $pDBACL)
 {
+    $pACL = new paloACL($pDBACL);
+    $user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
+    $extension = $pACL->getUserExtension($user);
+    if(is_null($extension) || $extension==""){
+	$smarty->assign("DISABLED","DISABLED");
+	if($pACL->isUserAdministratorGroup($user))
+	    $smarty->assign("mb_message", "<b>".$arrLang["You don't have extension number associated with user"]."</b>");
+	else
+	    $smarty->assign("mb_message", "<b>".$arrLang["contact_admin"]."</b>");
+    }
     if(isset($_POST['option_record']) && $_POST['option_record']=='by_file')
         $smarty->assign("check_file", "checked");
     else
