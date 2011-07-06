@@ -41,7 +41,7 @@ $arrLangModule=array(
 "Start_Date" => "Fecha inicial",
 "End_Date" => "Fecha final",
 "message_alert" => "¿Está usted seguro de querer borrar las grabaciones?",
-"no_extension" => "No hay número de extensión asociado con el usuario actual. Por favor asocie una extensión con su usuario para poder ver sus grabaciones de llamadas, haciendo clic <a href=\"javascript: openWindow('index.php?menu=userlist&amp;action=edit_userExtension&amp;rawmode=yes');\">aquí</a>",
+"no_extension" => "El usuario actual no tiene un número de extensión asociado a él. Puede asociar un número de extensión a su usuario haciendo click <a href=\"javascript: openWindow('index.php?menu=userlist&amp;action=edit_userExtension&amp;rawmode=yes');\">aquí</a>",
 "no_file" => "No se encuentra el archivo!",
 "Outgoing" => "Saliente",
 "Incoming" => "Entrantes",
