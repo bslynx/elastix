@@ -40,6 +40,7 @@ $arrLangModule=array(
 "Festival is already deactivated" => "Festival is already deactivated",
 "The file /usr/share/festival/festival.scm was modified" => "El archivo /usr/share/festival/festival.scm fue modificado",
 "Festival has been successfully deactivated" => "Festival ha sido desactivado exitosamente",
-"Festival could not be deactivated" => "Festival no pudo ser desactivado"
+"Festival could not be deactivated" => "Festival no pudo ser desactivado",
+"Dismiss" => "Descartar"
 );
 ?>

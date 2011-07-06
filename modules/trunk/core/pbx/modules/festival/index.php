@@ -35,6 +35,7 @@ function _moduleContent(&$smarty, $module_name)
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
     include_once "modules/$module_name/libs/paloSantoFestival.class.php";
+    include_once "libs/paloSantoJSON.class.php";
 
     //include file language agree to elastix configuration
     //if file language not exists, then include language by default (en)
@@ -62,11 +63,9 @@ function _moduleContent(&$smarty, $module_name)
     $content = "";
 
     switch($action){
-        case "save_new":
-            $content = changeStatusFestival($smarty, $module_name, $local_templates_dir, $arrConf);
+        case "change":
+            $content = changeStatusFestival();
             break;
-        case "update":
-            $content = updateConfigurationFile($smarty, $module_name, $local_templates_dir, $arrConf);
         default: // view_form
             $content = viewFormFestival($smarty, $module_name, $local_templates_dir, $arrConf);
             break;
@@ -92,64 +91,64 @@ function viewFormFestival($smarty, $module_name, $local_templates_dir, $arrConf)
     return $content;
 }
 
-function changeStatusFestival($smarty, $module_name, $local_templates_dir, $arrConf)
+function changeStatusFestival()
 {
-    $pFestival = new paloSantoFestival();
+    $pFestival  = new paloSantoFestival();
+    $jsonObject = new PaloSantoJSON();
     $status    = getParameter("status");
     $message   = "";
-    if($status=="active"){
+    $arrMessage["button_title"] = _tr("Dismiss");
+    if($status=="activate"){
         if(!$pFestival->isConfigurationFileCorrect()){
             if($pFestival->getError()!=""){
-                $smarty->assign("mb_title",_tr("ERROR"));
-                $smarty->assign("mb_message", $pFestival->getError());
-                return viewFormFestival($smarty, $module_name, $local_templates_dir, $arrConf);
+		$arrMessage["mb_title"] = _tr("ERROR").":<br/>";
+		$arrMessage["mb_message"] = $pFestival->getError();
+                $jsonObject->set_message($arrMessage);
+		return $jsonObject->createJSON();
             }
             if(!$pFestival->setConfigurationFile()){
-                $smarty->assign("mb_title",_tr("ERROR"));
-                $smarty->assign("mb_message", $pFestival->getError());
-                return viewFormFestival($smarty, $module_name, $local_templates_dir, $arrConf);
+                $arrMessage["mb_title"] = _tr("ERROR").":<br/>";
+		$arrMessage["mb_message"] = $pFestival->getError();
+                $jsonObject->set_message($arrMessage);
+		return $jsonObject->createJSON();
             }
             $message = _tr("The file /usr/share/festival/festival.scm was modified").". ";
         }
         if($pFestival->isFestivalActivated()){
-            $smarty->assign("mb_title",_tr("ERROR"));
-            $smarty->assign("mb_message", _tr("Festival is already activated"));
-            return viewFormFestival($smarty, $module_name, $local_templates_dir, $arrConf);
+	    $arrMessage["mb_title"] = _tr("ERROR").":<br/>";
+	    $arrMessage["mb_message"] = _tr("Festival is already activated");
+            $jsonObject->set_message($arrMessage);
+	    return $jsonObject->createJSON();
         }
         if($pFestival->activateFestival()){
-	    sleep(2); //Se estima un máximo de 2 segundos en que puede llegar a demorar el levantar el servicio festival
             $message .= _tr("Festival has been successfully activated");
-            $smarty->assign("mb_title",_tr("Message"));
-            $smarty->assign("mb_message", $message);
+	    $arrMessage["mb_title"] = _tr("Message").":<br/>";
+	    $arrMessage["mb_message"] = $message;
         }
         else{
             $message .= _tr("Festival could not be activated");
-            $smarty->assign("mb_title",_tr("ERROR"));
-            $smarty->assign("mb_message", $message);
+	    $arrMessage["mb_title"] = _tr("ERROR").":<br/>";
+	    $arrMessage["mb_message"] = $message;
         }
     }
-    elseif($status=="disactive"){
+    elseif($status=="deactivate"){
         if(!$pFestival->isFestivalActivated()){
-            $smarty->assign("mb_title",_tr("ERROR"));
-            $smarty->assign("mb_message", _tr("Festival is already deactivated"));
-            return viewFormFestival($smarty, $module_name, $local_templates_dir, $arrConf);
+	    $arrMessage["mb_title"] = _tr("ERROR").":<br/>";
+	    $arrMessage["mb_message"] = _tr("Festival is already deactivated");
+            $jsonObject->set_message($arrMessage);
+	    return $jsonObject->createJSON();
         }
         if($pFestival->deactivateFestival()){
-	    sleep(1); //Se estima un máximo de 1 segundo en que puede llegar a demorar en detener el servicio festival
-            $smarty->assign("mb_title",_tr("Message"));
-            $smarty->assign("mb_message", _tr("Festival has been successfully deactivated"));
+	    $arrMessage["mb_title"] = _tr("Message").":<br/>";
+	    $arrMessage["mb_message"] = _tr("Festival has been successfully deactivated");
         }
         else{
-            $smarty->assign("mb_title",_tr("ERROR"));
-            $smarty->assign("mb_message", _tr("Festival could not be deactivated"));
+	    $arrMessage["mb_title"] = _tr("ERROR").":<br/>";
+	    $arrMessage["mb_message"] = _tr("Festival could not be deactivated");
         }
     }
-    return viewFormFestival($smarty, $module_name, $local_templates_dir, $arrConf);
-}
-
-function updateConfigurationFile($smarty, $module_name, $local_templates_dir, $arrConf)
-{
-
+    $jsonObject->set_message($arrMessage);
+    return $jsonObject->createJSON();
 }
 
 function createFieldForm()
@@ -169,19 +168,9 @@ function createFieldForm()
 
 function getAction()
 {
-    if(getParameter("save_new")) //Get parameter by POST (submit)
-        return "save_new";
-    else if(getParameter("save_edit"))
-        return "save_edit";
-    else if(getParameter("delete")) 
-        return "delete";
-    else if(getParameter("new_open")) 
-        return "view_form";
-    else if(getParameter("action")=="view")      //Get parameter by GET (command pattern, links)
-        return "view_form";
-    else if(getParameter("action")=="view_edit")
-        return "view_form";
+    if(getParameter("action") == "change") //Get parameter by POST (submit)
+        return "change";
     else
-        return "report"; //cancel
+        return "report";
 }
 ?>
