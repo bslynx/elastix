@@ -72,6 +72,7 @@ function _moduleContent(&$smarty, $module_name)
     }
 
     $arrData = array();
+    $arrData[""] = $arrLang["no extension"];
     $pACL = new paloACL($pDB);
     if(!empty($pACL->errMsg)) {
         echo "ERROR DE ACL: $pACL->errMsg <br>";

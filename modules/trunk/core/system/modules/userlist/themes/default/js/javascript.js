@@ -17,10 +17,10 @@ function apply_changes()
 	    function(arrData,statusResponse,error)
 	    {   
 		if(arrData["success"]){
-		    window.close();
 		    if (window.opener && !window.opener.closed) {
 			window.opener.location.reload();
 		    }
+		    window.close();
 		}
 		else{
 		    if(arrData["mb_title"] && arrData["mb_message"]){
