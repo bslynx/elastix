@@ -66,7 +66,7 @@ $arrLangModule=array(
 "At minimum there must be the columns" => "Au minimum il doit y avoir les colonnes",
 "Incomplete Columns" => "Colonnes Incomplètes",
 "The file is incorrect or empty" => "Le fichier est incorrect ou vide",
-"You don't have extension number associated with user" => "There is no extension number associated with the current user. To associate one please edit your user by going to <a href='?menu=userlist'>System->User Management->Users</a>",
+"You don't have extension number associated with user" => "There is no extension number associated with the current user. You can associate an extension number to your user by clicking <a href=\"javascript: openWindow('index.php?menu=userlist&amp;action=edit_userExtension&amp;rawmode=yes');\">here</a>",
 "ERROR" => "ERREUR",
 "Transfer" => "Transfer",
 "The transfer couldn't be realized, maybe you don't have any conversation now." => "The transfer couldn't be realized, maybe you don't have any conversation now.",
@@ -87,5 +87,6 @@ $arrLangModule=array(
 "Public editable" => "Public editable",
 "Public not editable" => "Public not editable",
 "Private" => "Private",
+"contact_admin" => "There is no extension number associated with the current user. Please contact the administrator to assign it an extension"
 );
 ?>

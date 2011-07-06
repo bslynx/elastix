@@ -314,8 +314,15 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
 {
     $padress_book = new paloAdressBook($pDB);
     $pACL         = new paloACL($pDB_2);
-    $id_user      = $pACL->getIdUser($_SESSION["elastix_user"]);
-
+    $user	  = $_SESSION["elastix_user"];
+    $id_user      = $pACL->getIdUser($user);
+    $extension	  = $pACL->getUserExtension($user);
+    if(is_null($extension) || $extension==""){
+	if($pACL->isUserAdministratorGroup($user))
+	    $smarty->assign("mb_message", "<b>".$arrLang["You don't have extension number associated with user"]."</b>");
+	else
+	    $smarty->assign("mb_message", "<b>".$arrLang["contact_admin"]."</b>");
+    }
     if(getParametro('select_directory_type') != null && getParametro('select_directory_type')=='external')
     {
         $smarty->assign("external_sel",'selected=selected');
@@ -921,9 +928,6 @@ function call2phone($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $
                     $smarty->assign("mb_message", $padress_book->errMsg);
                 }
             }
-            else {
-                $smarty->assign("mb_message", $arrLang["You don't have extension number associated with user"]);
-            }
         }
         else{
             $smarty->assign("mb_title", $arrLang["Validation Error"]);
@@ -978,9 +982,6 @@ function transferCALL($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2,
                     $smarty->assign("mb_title", $arrLang["Validation Error"]);
                     $smarty->assign("mb_message", $padress_book->errMsg);
                 }
-            }
-            else {
-                $smarty->assign("mb_message", $arrLang["You don't have extension number associated with user"]);
             }
         }
         else{

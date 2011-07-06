@@ -63,7 +63,7 @@ $arrLangModule=array(
 "At minimum there must be the columns" => "Como mínimo deben estar las columnas",
 "Incomplete Columns" => "Columnas Incompletas",
 "The file is incorrect or empty" => "The archivo es incorrecto o vacío",
-"You don't have extension number associated with user" => "Su usuario actual no tiene ningún número de extensión asociado a él. Para asociarle uno, edite su usuario iendo a <a href='?menu=userlist'>Sistema->Administrar Usuarios->Usuarios</a>",
+"You don't have extension number associated with user" => "El usuario actual no tiene un número de extensión asociado a él. Puede asociar un número de extensión a su usuario haciendo click <a href=\"javascript: openWindow('index.php?menu=userlist&amp;action=edit_userExtension&amp;rawmode=yes');\">aquí</a>",
 "ERROR" => "ERROR",
 "Transfer" => "Transfer",
 "The transfer couldn't be realized, maybe you don't have any conversation now." => "La transferencia no puede llevarse a cabo, a lo mejor no tienen ninguna conversación en este momento.",
