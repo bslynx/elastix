@@ -43,9 +43,9 @@ class PaloSantoRepositories
      *
      * @return array    Listado de los repositorios 
      */
-    function getRepositorios($ruta)
+    function getRepositorios($ruta,$typeRepository,$mainRepos)
     {
-        $arrArchivosRepo = $this->getArchivosRepo($ruta);
+        $arrArchivosRepo = $this->getArchivosRepo($ruta,$typeRepository,$mainRepos);
         $repositorios = array();
         foreach($arrArchivosRepo as $key => $archivoRepo){
             $auxRepo      = $this->scanFileRepo($ruta,$archivoRepo);
@@ -68,15 +68,26 @@ class PaloSantoRepositories
         return TRUE;
     }
 
-    private function getArchivosRepo($dir='/etc/yum.repos.d/')
+    private function getArchivosRepo($dir='/etc/yum.repos.d/',$typeRepository='main',$mainRepos=array())
     {
         global $arrLang;
         $arr_repositorios  = scandir($dir);
         $arr_respuesta = array();
-        
+
+	$doFilter = true;
+	$doInverseFilter = false;
+        if($typeRepository=="all")
+	    $doFilter = false;
+	elseif($typeRepository=="others")
+	    $doInverseFilter = true;
+
         if (is_array($arr_repositorios) && count($arr_repositorios) > 0) {
-            foreach($arr_repositorios as $key => $repositorio){ 
-                if(!is_dir($dir.$repositorio) && $repositorio!="." && $repositorio!=".." && strstr($repositorio,".repo")) //que se un archivo y que el archivo tenga extension .repo
+            foreach($arr_repositorios as $key => $repositorio){
+		if($doInverseFilter)
+		    $isMainRepo = !in_array($repositorio,$mainRepos);
+		else
+		    $isMainRepo = in_array($repositorio,$mainRepos);
+                if(!is_dir($dir.$repositorio) && $repositorio!="." && $repositorio!=".." && strstr($repositorio,".repo") && (!$doFilter || $isMainRepo)) //que se un archivo y que el archivo tenga extension .repo
                     $arr_respuesta[$repositorio] = $repositorio;
             }
         } 
