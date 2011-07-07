@@ -112,14 +112,25 @@ class PaloSantoPackages
 
     function getPaquetesDelRepositorio($ruta,$repositorio,$filtro, $contar=false)
     {
+	$cadena_dsn = null;
         if(file_exists($ruta.$repositorio."/primary.xml.gz.sqlite")){
             $cadena_dsn = "sqlite3:///$ruta"."$repositorio"."/primary.xml.gz.sqlite";
-
+	} 
+	elseif($repositorio == "epel"){
+	    $database = glob($ruta."epel/*-primary.sqlite");
+	    if(isset($database[0]))
+		$cadena_dsn = "sqlite3:///$database[0]";
+	}
+	elseif($repositorio == "extras"){
+	    if(file_exists($ruta.$repositorio."/primary.sqlite"))
+		$cadena_dsn = "sqlite3:///$ruta"."$repositorio"."/primary.sqlite";
+	}
+	if(isset($cadena_dsn)){
             // se conecta a la base
             $pDB = new paloDB($cadena_dsn);
 
             if(!empty($pDB->errMsg)) {
-                $this->errMsg = $arrLang["Error when connecting to database"]."<br/>".$pDB->errMsg;
+                $this->errMsg = "Error when connecting to database"."<br/>".$pDB->errMsg;
                 return array();
             }
 
