@@ -27,9 +27,12 @@
   +----------------------------------------------------------------------+
   $Id: default.conf.php,v 1.1 2008-09-01 10:09:57 jjvega Exp $ */
 require_once("libs/jpgraph/jpgraph.php");
+require_once("libs/jpgraph/jpgraph_line.php");
 require_once("libs/jpgraph/jpgraph_pie.php");
 require_once("libs/jpgraph/jpgraph_pie3d.php");
-require_once "libs/jpgraph/jpgraph_line.php";
+require_once("libs/jpgraph/jpgraph_bar.php");
+require_once("libs/jpgraph/jpgraph_canvas.php");
+require_once("libs/jpgraph/jpgraph_canvtools.php");
 require_once "libs/paloSantoDB.class.php";
 require_once "libs/paloSantoSampler.class.php";
 require_once "libs/paloSantoTrunk.class.php";
@@ -108,7 +111,10 @@ function _moduleContent(&$smarty, $module_name)
             $tot = $_GET['tot'];
             $ext = $_GET['ext'];
 
-            grafic($du, $totIn, $totOut, $tot, $ext);
+            if(preg_match("/^[1-9]{1}[[:digit:]]*$/",$ext))
+               grafic($du, $totIn, $totOut, $tot, $ext);
+            else
+               $content = report_Extention($smarty, $module_name, $local_templates_dir, $arrLang, $pDB_cdr, $pDB_ext, $arrLangModule);
             break;
         case 'grafic_queue':
             $queue = "";//isset($_GET['queue'])?$_GET['queue']:"";//queue
@@ -233,9 +239,15 @@ function report_Extention($smarty, $module_name, $local_templates_dir, $arrLang,
 
     $pExtention = new paloSantoExtention($pDB_cdr);
 
-    $ruta_img = '';
+    $ruta_img = array();
+    $error = false;
     if( $option == "Number" )
     {
+        if(!preg_match("/^[1-9]{1}[[:digit:]]*$/",$ext) && isset($ext)){
+	   $error = true;
+           $smarty->assign("mb_title",$arrLang["Validation Error"]);
+           $smarty->assign("mb_message",$arrLang["The extension must be numeric and can not start with zero"]);
+        }
         $smarty->assign("SELECTED_1","selected");
         $smarty->assign("SELECTED_2","");
         $smarty->assign("SELECTED_3","");
@@ -292,12 +304,15 @@ function report_Extention($smarty, $module_name, $local_templates_dir, $arrLang,
             "?menu={$module_name}&amp;action=grafic_trunk2&amp;trunk={$trunkT}&amp;dti={$date_ini2}&amp;dtf={$date_fin2}&amp;rawmode=yes");
 
     }
-    else{//default
-        $ruta_img = array("?menu={$module_name}&amp;action=grafic&amp;du=0%&amp;in=0&amp;out=0&amp;ext=0&amp;tot=0&amp;rawmode=yes");
-    }
-    for ($i = 0; $i < count($ruta_img); $i++) $ruta_img[$i] = "<img src='".$ruta_img[$i]."' border='0'>";
-    $smarty->assign("ruta_img",  "<tr class='letra12'><td align='center'>".implode('&nbsp;&nbsp;', $ruta_img).'<td></tr>');
+    else{
 
+    }
+    for ($i = 0; $i < count($ruta_img); $i++) 
+        $ruta_img[$i] = "<img src='".$ruta_img[$i]."' border='0'>";
+    if(count($ruta_img)>0 && !$error)
+       $smarty->assign("ruta_img",  "<tr class='letra12'><td align='center'>".implode('&nbsp;&nbsp;', $ruta_img).'<td></tr>');
+    else
+       $smarty->assign("ruta_img",  "<tr class='letra12'><td align='center'><td></tr>");
     $htmlForm = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl", $arrLangModule["Graphic Report"], $_POST);
 
     $contenidoModulo = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
@@ -442,7 +457,7 @@ function grafic($du, $totIn, $totOut, $tot, $ext)
 		//$graph->title->SetColor("#444444");
 		
 		// Set A title for the plot
-		$graph->title->Set(utf8_decode($arrLangModule["Number of calls from"]." $ext"));
+		$graph->title->Set(utf8_decode($arrLangModule["Number of calls extension"]." $ext"));
 		//$graph->title->SetFont(FF_VERDANA,FS_BOLD,18);
 		$graph->title->SetColor("#444444");
 		$graph->legend->Pos(0.1,0.2);
@@ -477,6 +492,26 @@ function grafic($du, $totIn, $totOut, $tot, $ext)
 	}
 	else
 	{
+        $graph = new CanvasGraph(500,140,"auto");
+        $title = new Text(utf8_decode($arrLangModule["The extension"]." $ext ".$arrLangModule["does not have calls yet"]));
+        $title->ParagraphAlign('center');
+        $title->SetFont(FF_FONT2,FS_BOLD);
+        $title->SetMargin(3);
+        $title->SetAlign('center');
+        $title->Center(0,500,70);
+        $graph->AddText($title);
+
+        $t1 = new Text(utf8_decode($arrLangModule["No exist calls for this number"]));
+        $t1->SetBox("white","black",true);
+        $t1->ParagraphAlign("center");
+        $t1->SetColor("black");
+
+        $graph->AddText($t1);
+        $graph->img->SetColor('navy');
+        $graph->img->SetTextAlign('center','bottom');
+        $graph->img->Rectangle(0,0,499,139);
+        $graph->Stroke();
+/*
 		$ancho = "700";
 		$margenDerecho = "100";
 		
@@ -511,7 +546,7 @@ function grafic($du, $totIn, $totOut, $tot, $ext)
 		}
 		header('Content-type: image/png');
 		imagepng($im);
-		imagedestroy($im);
+		imagedestroy($im);*/
 	}
 }
 
@@ -723,6 +758,26 @@ function grafic_trunk(&$pDB_ast_cdr, &$pDB_ast, $module_name, $trunk, $dti, $dtf
 	}
 	else
 	{
+        $graph = new CanvasGraph(400,140,"auto");
+        $title = new Text(utf8_decode($arrLangModule["Total Time"]));
+        $title->ParagraphAlign('center');
+        $title->SetFont(FF_FONT2,FS_BOLD);
+        $title->SetMargin(3);
+        $title->SetAlign('center');
+        $title->Center(0,400,70);
+        $graph->AddText($title);
+
+        $t1 = new Text(utf8_decode($arrLangModule["There are no data to present"]));
+        $t1->SetBox("white","black",true);
+        $t1->ParagraphAlign("center");
+        $t1->SetColor("black");
+
+        $graph->AddText($t1);
+        $graph->img->SetColor('navy');
+        $graph->img->SetTextAlign('center','bottom');
+        $graph->img->Rectangle(0,0,399,139);
+        $graph->Stroke();
+/*
 		$ancho = "700";
 		$margenDerecho = "100";
 		
@@ -757,7 +812,7 @@ function grafic_trunk(&$pDB_ast_cdr, &$pDB_ast, $module_name, $trunk, $dti, $dtf
 		}
 		header('Content-type: image/png');
 		imagepng($im);
-		imagedestroy($im);
+		imagedestroy($im);*/
 	}
 }
 
@@ -857,6 +912,27 @@ function grafic_trunk2(&$pDB_ast_cdr, &$pDB_ast, $module_name, $trunk, $dti, $dt
 	}
 	else
 	{
+        $graph = new CanvasGraph(400,140,"auto");
+        $title = new Text(utf8_decode($arrLangModule["Number of Calls"]));
+        $title->ParagraphAlign('center');
+        $title->SetFont(FF_FONT2,FS_BOLD);
+        $title->SetMargin(3);
+        $title->SetAlign('center');
+        $title->Center(0,400,70);
+        $graph->AddText($title);
+
+        $t1 = new Text(utf8_decode($arrLangModule["There are no data to present"]));
+        $t1->SetBox("white","black",true);
+        $t1->ParagraphAlign("center");
+        $t1->SetColor("black");
+
+        $graph->AddText($t1);
+        $graph->img->SetColor('navy');
+        $graph->img->SetTextAlign('center','bottom');
+        $graph->img->Rectangle(0,0,399,139);
+        $graph->Stroke();
+
+/*
 		$ancho = "700";
 		$margenDerecho = "100";
 		
@@ -891,7 +967,7 @@ function grafic_trunk2(&$pDB_ast_cdr, &$pDB_ast, $module_name, $trunk, $dti, $dt
 		}
 		header('Content-type: image/png');
 		imagepng($im);
-		imagedestroy($im);
+		imagedestroy($im);*/
 	}
 }
 

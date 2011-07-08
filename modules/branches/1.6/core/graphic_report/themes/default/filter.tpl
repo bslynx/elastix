@@ -27,7 +27,7 @@
         <td><input class="button" type="submit" name="show" value="{$SHOW}"></td>
     </tr>
 </table>
-<table class="tabForm" style="font-size: 16px;" width="100%" border="0">
+<table class="tabForm" style="font-size: 16px;" width="100%" border="0" height="160px">
         {$ruta_img}
 </table>
 <input type="hidden" name="nav" value="{$nav_value}" />
