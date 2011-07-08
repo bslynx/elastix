@@ -73,7 +73,16 @@ function listRepositories($smarty, $module_name, $local_templates_dir,$arrConf) 
         $oRepositories->setRepositorios($arrConf['ruta_repos'],$arrReposActivos);
     }
 
-    $arrRepositorios = $oRepositories->getRepositorios($arrConf['ruta_repos']);
+    $typeRepository = getParameter("typeRepository");
+    $option["main"]   = "";
+    $option["others"] = "";
+    $option["all"]    = "";
+    if(isset($typeRepository)){
+       $option[$typeRepository] = "selected";
+    }
+    else
+       $typeRepository = "main";
+    $arrRepositorios = $oRepositories->getRepositorios($arrConf['ruta_repos'],$typeRepository,$arrConf["main_repos"]);
     $limit  = 50;
     $total  = count($arrRepositorios); 
     $oGrid  = new paloSantoGrid($smarty);
@@ -104,7 +113,22 @@ function listRepositories($smarty, $module_name, $local_templates_dir,$arrConf) 
                             1 => array("name"      => $arrLang["Name"], 
                                        "property1" => "")));
 
-    $oGrid->showFilter( "<input type='submit' name='submit_aceptar' value='{$arrLang['Save/Update']}' class='button' /> &nbsp;&nbsp;&nbsp;<input type='button' name='default' value='{$arrLang['Default']}' class='button' onclick='defaultValues($total)' />");
+        $oGrid->showFilter( "
+      <table border='0' cellpadding='0' callspacing='0' width='100%' height='44'> 
+          <tr class='letra12'>
+               <td>
+                     <input type='submit' name='submit_aceptar' value='{$arrLang['Save/Update']}' class='button' /> &nbsp;&nbsp;&nbsp;
+                     <input type='button' name='default' value='{$arrLang['Default']}' class='button' onclick='defaultValues($total)' />
+               </td>
+               <td width='200'>{$arrLang['Type']}:&nbsp;&nbsp;
+                   <select name='typeRepository' onchange='javascript:submit();'> 
+                         <option value='main' {$option['main']}>{$arrLang['Main']}</option>
+                         <option value='others' {$option['others']}>{$arrLang['Others']}</option>
+                         <option value='all' {$option['all']}>{$arrLang['All']}</option>
+                   </select>&nbsp; &nbsp;
+                </td>
+           </tr> 
+       </table>");
     $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
     return $contenidoModulo;
 }
