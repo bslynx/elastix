@@ -35,6 +35,10 @@ $arrLangModule=array(
 "Active" => "Actif",
 "Name" => "Nom",
 "Save/Update" => "Sauver / Mettre à jour",
-"Default" => "Default"
+"Default" => "Default",
+"Type" => "Type",
+"Main" => "Main",
+"Others" => "Others",
+"All" => "All"
 );
 ?>
