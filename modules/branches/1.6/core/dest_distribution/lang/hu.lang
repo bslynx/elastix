@@ -49,5 +49,6 @@ $arrLangModule=array(
 "default" => "alapértelmezett  ",
 "Duration in seconds" => "Időtartam másodpercben",
 "Cost" => "Költség",
+"No records found" => "No records found"
 );
 ?>

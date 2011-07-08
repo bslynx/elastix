@@ -48,5 +48,6 @@ $arrLangModule=array(
 "default" => "پیش فرض",
 "Duration in seconds" => "مدت زمان به ثانیه",
 "Cost" => "هزینه",
+"No records found" => "No records found"
 );
 ?>

@@ -45,5 +45,6 @@ $arrLangModule=array(
 "default" => "초기값",
 "Duration in seconds" => "사용시간(초)",
 "Cost" => "요금",
+"No records found" => "No records found"
 );
 ?>
