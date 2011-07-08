@@ -239,9 +239,11 @@ function report_Extention($smarty, $module_name, $local_templates_dir, $arrLang,
     $pExtention = new paloSantoExtention($pDB_cdr);
 
     $ruta_img = array();
+    $error = false;
     if( $option == "Number")
     {
 	if(!preg_match("/^[1-9]{1}[[:digit:]]*$/",$ext) && isset($ext)){
+	    $error = true;
 	    $smarty->assign("mb_title",$arrLang["Validation Error"]);
 	    $smarty->assign("mb_message",$arrLang["The extension must be numeric and can not start with zero"]);
 	}
@@ -307,7 +309,7 @@ function report_Extention($smarty, $module_name, $local_templates_dir, $arrLang,
 
     for ($i = 0; $i < count($ruta_img); $i++) 
 	$ruta_img[$i] = "<img src='".$ruta_img[$i]."' border='0'>";
-    if(count($ruta_img)>0)
+    if(count($ruta_img)>0 && !$error)
 	$smarty->assign("ruta_img",  "<tr class='letra12'><td align='center'>".implode('&nbsp;&nbsp;', $ruta_img).'<td></tr>');
     else
 	$smarty->assign("ruta_img",  "<tr class='letra12'><td align='center'><td></tr>");
