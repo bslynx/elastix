@@ -225,7 +225,7 @@ function registration(){
         error = true;
         txtError += "* Phone: text or number \n";
     }
-    if(!(/^[A-Za-z\_\-\.\s\xF1\xD1]+$/.test(company)) || company == ""){
+    if(!(/^[A-Za-z0-9\_\-\.\s\xF1\xD1]+$/.test(company)) || company == ""){
         error = true;
         txtError += "* Company: text \n";
     }
