@@ -277,7 +277,7 @@ function registration(){
 function getDataWebServer()
 {
     var arrAction = "action=getDataRegisterServer&rawmode=yes";
-    $('#btnAct').hide();
+    //$('#btnAct').hide();
     $('.tdIdServer').hide();
     $.post("register.php",arrAction,
 	function(arrData,statusResponse,error)
