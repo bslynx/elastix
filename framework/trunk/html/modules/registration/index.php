@@ -101,7 +101,9 @@ function viewFormRegister($smarty, $module_name, $local_templates_dir, $pDB, $ar
     $smarty->assign("errorMsg", _tr("Impossible connect to Elastix Web services. Please check your internet connection."));
     $smarty->assign("getinfo", _tr("Getting infomation from Elastix Web Services."));
     $user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
+
     
+
     if(!is_file("/etc/elastix.key")){
 	$smarty->assign("Activate_registration", $arrLang["Activate registration"]);
     }else{
@@ -110,7 +112,7 @@ function viewFormRegister($smarty, $module_name, $local_templates_dir, $pDB, $ar
     }
     $smarty->assign("registered", $registered);
     $smarty->assign("displayError", "display: none;");
-    if($user=="admin"){
+    if($pACL->isUserAdministratorGroup($user)){
 	$htmlForm = $oForm->fetchForm("$local_templates_dir/_registration.tpl","", "");
     }else
 	$htmlForm = "<div align='center' style='font-weight: bolder;'>"._tr("Not user allowed to access this content")."</div>";
