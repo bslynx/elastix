@@ -277,7 +277,7 @@ function registration(){
 function getDataWebServer()
 {
     var arrAction = "action=getDataRegisterServer&rawmode=yes";
-    //$('#btnAct').hide();
+    $('#btnAct').hide();
     $('.tdIdServer').hide();
     $.post("register.php",arrAction,
 	function(arrData,statusResponse,error)
@@ -321,7 +321,8 @@ function getDataWebServer()
 			if(response['message']['identitykeyReg'])
 			    $('#identitykey').text(response['message']['identitykeyReg']);
 
-		    }
+		    }else
+			$('#btnAct').show();
 		}
 	    }
 	}
