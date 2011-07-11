@@ -54,18 +54,18 @@ class paloSantoMonitoring {
     function getNumMonitoring($filter_field, $filter_value, $extension, $date_initial, $date_final)
     {
         $where = "";
-        if(isset($filter_field) & $filter_field !=""){
+        if(isset($filter_field) && $filter_field !="" && isset($filter_value) && $filter_value !=""){
             if($filter_field == "userfield"){
                 $in_val = strtolower($filter_value);
                 switch($in_val){
                     case "outgoing":
-                        $where = " AND userfield like 'audio:O%' ";
+                        $where = " AND (userfield like 'audio:O%' OR userfield like 'audio:/var/spool/asterisk/monitor/O%') ";
                         break;
                     case "group":
-                        $where = " AND userfield like 'audio:g%' ";
+                        $where = " AND (userfield like 'audio:g%' OR userfield like 'audio:/var/spool/asterisk/monitor/g%') ";
                         break;
                     case "queue":
-                        $where = " AND userfield like 'audio:q%' ";
+                        $where = " AND (userfield like 'audio:q%' OR userfield like 'audio:/var/spool/asterisk/monitor/q%') ";
                         break;
                     default :
                         $where = " AND userfield REGEXP '[[:<:]]audio:[0-9]' ";
@@ -108,13 +108,13 @@ class paloSantoMonitoring {
                 $in_val = strtolower($filter_value);
                 switch($in_val){
                     case "outgoing":
-                        $where = " AND userfield like 'audio:O%' ";
+                        $where = " AND (userfield like 'audio:O%' OR userfield like 'audio:/var/spool/asterisk/monitor/O%') ";
                         break;
                     case "group":
-                        $where = " AND userfield like 'audio:g%' ";
+                        $where = " AND (userfield like 'audio:g%' OR userfield like 'audio:/var/spool/asterisk/monitor/g%') ";
                         break;
                     case "queue":
-                        $where = " AND userfield like 'audio:q%' ";
+                        $where = " AND (userfield like 'audio:q%' OR userfield like 'audio:/var/spool/asterisk/monitor/q%') ";
                         break;
                     default :
                         $where = " AND userfield REGEXP '[[:<:]]audio:[0-9]' ";

@@ -1,22 +1,18 @@
 <table width="99%" border="0" cellspacing="0" cellpadding="0" align="center">
     <tr class="letra12">
-        {if $user eq 'admin'}
-            <td width="6%" align="right">{$date_start.LABEL}: <span  class="required">*</span></td>
-            <td width="4%" align="left" nowrap>{$date_start.INPUT}</td>
-            <td width="6%" align="right">{$date_end.LABEL}: <span  class="required">*</span></td>
-            <td width="4%" align="left" nowrap>{$date_end.INPUT}</td>
-            <td width="20%" align="right">
-            {$filter_field.LABEL}:&nbsp;&nbsp;{$filter_field.INPUT}&nbsp;&nbsp;{$filter_value.INPUT}
-            <input class="button" type="submit" name="show" value="{$SHOW}" />
-            </td>
-        {else}
-            <td width="4%" align="right">{$date_start.LABEL}: <span  class="required">*</span></td>
-            <td width="4%" align="left" nowrap>{$date_start.INPUT}</td>
-            <td width="4%" align="right">{$date_end.LABEL}: <span  class="required">*</span></td>
-            <td width="6%" align="left" nowrap>{$date_end.INPUT}</td>
-            <td width="3%" align="right">
-                <input class="button" type="submit" name="show" value="{$SHOW}" />
-            </td>
-        {/if}
+	<td width="6%" align="right">{$date_start.LABEL}: <span  class="required">*</span></td>
+	<td width="4%" align="left" nowrap>{$date_start.INPUT}</td>
+	<td width="6%" align="right">{$date_end.LABEL}: <span  class="required">*</span></td>
+	<td width="4%" align="left" nowrap>{$date_end.INPUT}</td>
+	<td width="20%" align="right">
+	{$filter_field.LABEL}:&nbsp;&nbsp;{$filter_field.INPUT}&nbsp;&nbsp;{$filter_value.INPUT}
+	  <select id="filter_value_userfield" name="filter_value_userfield" size="1" style="display:none">
+                <option value="incoming" {$SELECTED_1} >{$INCOMING}</option>
+                <option value="outgoing" {$SELECTED_2} >{$OUTGOING}</option>
+                <option value="queue" {$SELECTED_3} >{$QUEUE}</option>
+		<option value="group" {$SELECTED_4} >{$GROUP}</option>
+           </select>
+	<input class="button" type="submit" name="show" value="{$SHOW}" />
+	</td>
     </tr>
 </table>

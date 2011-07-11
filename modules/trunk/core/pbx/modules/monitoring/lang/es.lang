@@ -44,7 +44,7 @@ $arrLangModule=array(
 "no_extension" => "El usuario actual no tiene un número de extensión asociado a él. Puede asociar un número de extensión a su usuario haciendo click <a href=\"javascript: openWindow('index.php?menu=userlist&amp;action=edit_userExtension&amp;rawmode=yes');\">aquí</a>",
 "no_file" => "No se encuentra el archivo!",
 "Outgoing" => "Saliente",
-"Incoming" => "Entrantes",
+"Incoming" => "Entrante",
 "Queue" => "Cola",
 "Group" => "Grupo",
 "unknown" => "Desconocido",

@@ -99,7 +99,30 @@ function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, &$
     $pMonitoring = new paloSantoMonitoring($pDB);
     $pACL = new paloACL($pDBACL);
     $filter_field = getParameter("filter_field");
-    $filter_value = getParameter("filter_value");
+    if($filter_field == "userfield"){
+	$filter_value     = getParameter("filter_value_userfield");
+	$filter	          = "";
+	$filter_userfield = $filter_value;
+    }
+    else{
+	$filter_value	  = getParameter("filter_value");
+	$filter	          = $filter_value;
+	$filter_userfield = "";
+    }
+    switch($filter_value){
+	case "outgoing":
+	      $smarty->assign("SELECTED_2", "Selected");
+	      break;
+	case "queue":
+	      $smarty->assign("SELECTED_3", "Selected");
+	      break;
+	case "group":
+	      $smarty->assign("SELECTED_4", "Selected");
+	      break;
+	default:
+	      $smarty->assign("SELECTED_1", "Selected");
+	      break;
+    }
     $date_ini = getParameter("date_start");
     $date_end = getParameter("date_end");
     
@@ -136,10 +159,11 @@ function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, &$
 	$totalMonitoring = 0;
     $url = array('menu' => $module_name);
     $paramFilter = array(
-       'filter_field' => $filter_field,
-       'filter_value' => $filter_value,
-       'date_start'   => $_POST['date_start'],
-       'date_end'     => $_POST['date_end']
+       'filter_field' 		=> $filter_field,
+       'filter_value' 		=> $filter,
+       'filter_value_userfield' => $filter_userfield,
+       'date_start'   		=> $_POST['date_start'],
+       'date_end'     		=> $_POST['date_end']
     );
     $url = array_merge($url, $paramFilter);         
     $oGrid->setURL($url);
@@ -274,9 +298,15 @@ function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, &$
     //begin section filter
     $arrFormFilterMonitoring = createFieldFilter();
     $oFilterForm = new paloForm($smarty, $arrFormFilterMonitoring);
-    $smarty->assign("SHOW", _tr("Show"));
-    $smarty->assign("user", $user);
 
+    $smarty->assign("INCOMING", _tr("Incoming"));
+    $smarty->assign("OUTGOING", _tr("Outgoing"));
+    $smarty->assign("QUEUE", _tr("Queue"));
+    $smarty->assign("GROUP", _tr("Group"));
+    $smarty->assign("SHOW", _tr("Show"));
+    $_POST["filter_field"] 	     = $filter_field;
+    $_POST["filter_value"] 	     = $filter;
+    $_POST["filter_value_userfield"] = $filter_userfield;
     $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl","",$_POST);
     //end section filter
 
@@ -297,10 +327,12 @@ function downloadFile($smarty, $module_name, $local_templates_dir, $pDB, $pDBACL
 
         $file = basename($filebyUid['userfield']);
         $file = str_replace("audio:","",$file);
+
         $path = $path_record.$file;
 
         if($file[0] == "q"){// caso de archivos de colas no se tiene el tipo de archivo gsm, wav,etc
             $arrData  = glob("$path*");
+writeLOG("access.log",print_r($arrData,true));
             $path = isset($arrData[0])?$arrData[0]:$path;
         }
 
