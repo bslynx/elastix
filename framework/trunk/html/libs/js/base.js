@@ -306,7 +306,11 @@ function getDataWebServer()
 			    $('#msnTextErr').show();
 			    $('#msnTextErr').text(response['error']);
 			    $('#btnAct').hide();
-			}
+			}else if(response['statusResponse'] == "error-update"){
+                            $('#msnTextErr').show();
+                            $('#msnTextErr').text(response['error']);
+                        }
+
 			if(response['message'] != null){
 			    if(response['message']['contactNameReg'])
 				$('#contactNameReg').val(response['message']['contactNameReg']);

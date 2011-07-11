@@ -217,7 +217,7 @@ function getDataRegistration($smarty, $module_name, $local_templates_dir, $pDB, 
 	}elseif($_DATA === "FALSE"){ // su elastix no esta registrado, el idServer enviado no existe en la base de datos
 	    $_DATA = $pRegister->getDataRegister();
 	    $jsonObject->set_error(_tr("Your Server ID is not valid. Please update your information to generate a new Server ID."));
-	    $jsonObject->set_status("error");
+	    $jsonObject->set_status("error-update");
 	    $jsonObject->set_message($_DATA);
 	}else{
 	    $jsonObject->set_message($_DATA);
