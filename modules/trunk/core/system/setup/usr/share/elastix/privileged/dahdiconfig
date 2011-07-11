@@ -219,10 +219,16 @@ function action_refreshConfiguration($opt)
         if (preg_match('/^span=(\d+)/', $sLinea, $regs)) {
         	$iSpan = (int)$regs[1];
             if (isset($spanData[$iSpan]))
-                $lineas[] = sprintf(
-                    "span=%d,%d,%d,%s,%s,crc4\n", $spanData[$iSpan]['span_num'], 
+                $spanLine = sprintf(
+                    "span=%d,%d,%d,%s,%s", $spanData[$iSpan]['span_num'], 
                     $spanData[$iSpan]['timing_source'], $spanData[$iSpan]['linebuildout'], 
                     $spanData[$iSpan]['framing'], $spanData[$iSpan]['coding']);
+                if ($spanData[$iSpan]['end'] - $spanData[$iSpan]['start'] + 1 == 31) {
+                    // Only add CRC4 for E1 spans
+                    $spanLine .= ",crc4";
+                }
+                $spanLine .= "\n";
+                $lineas[] = $spanLine;
                 if (isset($spanData[$iSpan]['echolist'])) {
                     foreach ($spanData[$iSpan]['echolist'] as $curSpan) {                    
                         $sLinea = 'echocanceller='.$curSpan['echocanceller'];
