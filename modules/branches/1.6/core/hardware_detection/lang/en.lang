@@ -32,7 +32,7 @@
 global $arrLangModule;
 $arrLangModule=array(
 "Hardware Detector" => "Hardware Detector",
-"Ports not Founds" => "Ports not Founds",
+"Ports not Founds" => "No ports found",
 "Card" => "Span",
 "Type port" => "Type",
 "No. Port" => "Port #",
@@ -67,11 +67,22 @@ $arrLangModule=array(
 "Line build out" => "Line build out",
 "Framing" => "Framing",
 "Coding" => "Coding",
-"No Ports availables" => "No Ports availables",
+"No Ports availables" => "No Available Ports",
 "Card Configured" => "Card Configured",
 "Loading SPAN" => "Loading SPAN",
 "Saving configuration" => "Saving configuration",
 "Hardware Control" => "Hardware Control",
-"Channel Empty" => "Channel Empty",
+"Channel Empty" => "Empty Channel",
+"ISDN PRI Media Type" => "ISDN PRI Media Type",
+'T1: 24 channels, USA' => 'T1: 24 channels, USA',
+'E1: 31 channels, Europe' => 'E1: 31 channels, Europe',
+'0 db (CSU) / 0-133 feet (DSX-1)' => '0 db (CSU) / 0-133 feet (DSX-1)',
+'133-266 feet (DSX-1)' => '133-266 feet (DSX-1)',
+'266-399 feet (DSX-1)' => '266-399 feet (DSX-1)',
+'399-533 feet (DSX-1)' => '399-533 feet (DSX-1)',
+'533-655 feet (DSX-1)' => '533-655 feet (DSX-1)',
+'-7.5db (CSU)' => '-7.5db (CSU)',
+'-15db (CSU)' => '-15db (CSU)',
+'-22.5db (CSU)' => '-22.5db (CSU)',
 );
 ?>

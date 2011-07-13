@@ -23,6 +23,12 @@
     color:blue;
 }
 
+#port_desc_span {
+    font-size:14px;
+    padding: 5px 0px 5px 0px;
+    color:blue;
+}
+
 #form {
     margin-left:80px;
     width:"40%";
@@ -888,27 +894,27 @@
     cursor: pointer;
 }
 
-#boxConfSPANS .b {
+.boxConfSPANS .b {
   background:url(../../../../../images/b.png);
 }
 
-#boxConfSPANS .tl {
+.boxConfSPANS .tl {
   background:url(../../../../../images/tl.png);
 }
 
-#boxConfSPANS .tr {
+.boxConfSPANS .tr {
   background:url(../../../../../images/tr.png);
 }
 
-#boxConfSPANS .bl {
+.boxConfSPANS .bl {
   background:url(../../../../../images/bl.png);
 }
 
-#boxConfSPANS .br {
+.boxConfSPANS .br {
   background:url(../../../../../images/br.png);
 }
 
-#boxConfSPANS {
+.boxConfSPANS {
   position: absolute;
   left: 50%;
   top: 50%;
@@ -920,20 +926,20 @@
   text-align: left;
 }
 
-#boxConfSPANS .popup {
+.boxConfSPANS .popup {
   position: relative;
 }
 
-#boxConfSPANS table {
+.boxConfSPANS table {
   border-collapse: collapse;
 }
 
-#boxConfSPANS td {
+.boxConfSPANS td {
   border-bottom: 0;
   padding: 0;
 }
 
-#boxConfSPANS .body {
+.boxConfSPANS .body {
   /*padding: 10px;*/
   padding: 2%;
   background: #fff;
@@ -941,27 +947,27 @@
   width: 470px;
 }
 
-#boxConfSPANS .loading {
+.boxConfSPANS .loading {
   text-align: center;
 }
 
-#boxConfSPANS .image {
+.boxConfSPANS .image {
   text-align: center;
 }
 
-#boxConfSPANS img {
+.boxConfSPANS img {
   border: 0;
   margin: 0;
 }
 
-#boxConfSPANS .footer {
+.boxConfSPANS .footer {
   border-top: 1px solid #DDDDDD;
   padding-top: 5px;
   margin-top: 10px;
   text-align: right;
 }
 
-#boxConfSPANS .tl, #boxConfSPANS .tr, #boxConfSPANS .bl, #boxConfSPANS .br {
+.boxConfSPANS .tl, .boxConfSPANS .tr, .boxConfSPANS .bl, .boxConfSPANS .br {
   height: 10px;
   width: 10px;
   overflow: hidden;

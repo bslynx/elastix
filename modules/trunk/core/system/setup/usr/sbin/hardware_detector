@@ -114,6 +114,7 @@ echo -e "HWDETECT: Starting card detection..."
 if is_asterisk_loaded ; then
     echo -e "HWDETECT: Stopping Asterisk..."
     eval "/usr/sbin/amportal stop  $null_redirect_verbose"
+    eval "/sbin/service asterisk stop $null_redirect_verbose"
 fi
 
 if [ $? = 0 ] && is_module_loaded "wanpipe" ; then
@@ -171,6 +172,7 @@ if [ $? = 0 ] ; then
     if [ $there_is_sangoma_card = true ]; then
         # This step is supposed to create /etc/dahdi/system.conf, see next comment.
     	echo -e "HWDETECT: Detecting Sangoma cards ..."
+    	rm -f /etc/wanpipe/wanpipe*.conf
     	eval "/usr/sbin/wancfg_dahdi --smg --silent --zapata_auto_conf_file=/etc/asterisk/chan_dahdi.conf.wanpipe $null_redirect_verbose"
     fi
 fi
@@ -186,6 +188,8 @@ fi
 # The Sangoma modules should be loaded before other dahdi modules, otherwise
 # the configured span data might get assigned to a different card.
 if [ $? = 0 ] && [ $there_is_sangoma_card = true ] && ! is_module_loaded "wanpipe" ; then
+	echo -e "HWDETECT: Switching media type on digital spans as required..."
+	/usr/sbin/switch_wanpipe_media
 	echo -e "HWDETECT: Temporarily restarting wanrouter service..."
 	eval "/sbin/service wanrouter restart  $null_redirect_verbose"
 fi
@@ -201,10 +205,10 @@ if [ $? = 0 ]; then
 fi
 
 # Now, dahdi_genconf will detect all of the supported dahdi cards.
-if [ $? = 0 ]; then
+#if [ $? = 0 ]; then
 	echo -e "HWDETECT: Generating configuration for detected dahdi cards..." 
 	eval "/usr/sbin/dahdi_genconf $null_redirect_verbose"
-fi
+#fi
 
 # Unload and reload Sangoma and dahdi in order to match the boot order.
 if [ $? = 0 ] && is_module_loaded "wanpipe" ; then

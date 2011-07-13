@@ -19,6 +19,7 @@ $(document).ready(function(){
         $('#idCard').val("");
         var url = "index.php";
         var arrParams = new Array();
+        arrParams["menu"]	= $('#lblModule').val();
         arrParams["action"] = "config_echo";
         arrParams["cardId"] = $(this).attr('id');
         arrParams["rawmode"] = "yes";
@@ -70,6 +71,7 @@ $(document).ready(function(){
     $('.close_boxConfSPANS, #cancel').click(function(){
         $('#fade_overlay').attr("style","display: none;");
         $('#boxConfSPANS').attr("style","display: none;");
+        $('#boxSpanParameters').attr("style","display: none;");
     });
 
     $('#save_edit').click(function(){
@@ -103,6 +105,7 @@ $(document).ready(function(){
         $("#boxRPM").attr("style","display: none;");
         $("#fade_overlay").attr("style","display: none;");
         $('#boxConfSPANS').attr("style","display: none;");
+        $('#boxSpanParameters').attr("style","display: none;");
     });
 
     $('#chkAdvance').change(function() {
@@ -112,6 +115,95 @@ $(document).ready(function(){
         }else{
             $('#optionsAdvance').attr("style","visibility: hidden;");
         }
+    });
+
+    $('a[id^=paramSPAN]').click(function() {
+        var eje_x = ((screen.width)/2) - 250;
+        $('#boxSpanParameters').attr("style","display: block;");
+        $('#boxSpanParameters').css('top','50%');
+        $('#boxSpanParameters').css('left',eje_x+"px");
+        $('#fade_overlay').attr("style","display: block;");
+        $('#idCard').val("");
+
+        var url = "index.php";
+        var module_name = $('#lblModule').val();
+        var arrParams = new Array();
+        arrParams["menu"]	= module_name;
+        arrParams["action"] = "config_span";
+        arrParams["cardId"] = $(this).attr('id');
+        arrParams["rawmode"] = "yes";
+        request(url, arrParams, false,
+        	function(arrData, statusResponse, error)
+        	{
+        		var spaninfo = arrData["spaninfo"];
+        		
+        		$('#idCard').val(arrData["card_id"]);
+        		$('#port_desc_span').text($('#'+arrData["card_id"]).text());
+        		$('.viewButton').attr("style","display: block;");
+        		
+        		/* Se llenan las listas desplegables con las opciones válidas */
+        		var coding_dropdown = $('#coding').get(0);
+        		coding_dropdown.options.length = 0;
+        		$.each(arrData['coding_options'], function() {
+        			coding_dropdown[coding_dropdown.options.length] = new Option(this, this);
+        		});
+        		var framing_dropdown = $('#framing').get(0);
+        		framing_dropdown.options.length = 0;
+        		$.each(arrData['framing_options'], function() {
+        			framing_dropdown[framing_dropdown.options.length] = new Option(this, this);
+        		});
+        		
+        		/* Asignación de los valores actuales de las listas desplegables */
+        		$('#tmsource').val(spaninfo["tmsource"]);
+        		$('#lnbuildout').val(spaninfo["lnbuildout"]);
+        		$('#framing').val(spaninfo["framing"]);
+        		$('#coding').val(spaninfo["coding"]);
+        		
+        		if (spaninfo["wanpipe_force_media"] == "T1") {
+        			$('#switch_pri_media').attr("style","display: table-row;");
+            		$('#media_pri').val(spaninfo["wanpipe_force_media"]);
+        		} else if (spaninfo["wanpipe_force_media"] == "E1") {
+        			$('#switch_pri_media').attr("style","display: table-row;");
+            		$('#media_pri').val(spaninfo["wanpipe_force_media"]);
+        		} else {
+        			$('#switch_pri_media').attr("style","display: none;");
+        		}
+        	}
+        );
+    });
+    
+    $('#save_span').click(function(){
+        // blocking screen
+        var module_name = $('#lblModule').val();
+        var urlImaLoading = "<h1><img src='modules/"+module_name+"/images/busy.gif' /> "+$('#lblSaving').val()+"...</h1>";
+        $.blockUI({ message: urlImaLoading });
+        
+        var url = "index.php";
+        var module_name = $('#lblModule').val();
+        var arrParams = new Array();
+        arrParams["menu"]	= module_name;
+        arrParams["action"] = "save_span";
+        arrParams["idSpan"]  = $('#idCard').val();
+        arrParams["rawmode"] = "yes";
+        
+        arrParams["tmsource"] = $('#tmsource').val();
+        arrParams["lnbuildout"] = $('#lnbuildout').val();
+        arrParams["framing"] = $('#framing').val();
+        arrParams["coding"] = $('#coding').val();
+        arrParams["media_pri"] = $('#media_pri').val();
+
+        request(url, arrParams, false, 
+        	function (arrData, statusResponse, error)
+        	{
+	            var message = arrData["msg"];
+	            // unblocking
+	            $.unblockUI();
+	            alert(message);
+	            if (arrData['reload']) {
+	            	location.reload();
+	            }
+        	}
+        );
     });
 
     $('#editArea1').click(function() {

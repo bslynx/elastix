@@ -203,6 +203,8 @@ function action_refreshConfiguration($opt)
     	}
     }
 
+    $bRestartWanpipe = FALSE;
+
     // Read original system.conf
     $hArchivo = fopen('/etc/dahdi/system.conf', 'r');
     if (!$hArchivo) return FALSE;
@@ -219,11 +221,35 @@ function action_refreshConfiguration($opt)
         if (preg_match('/^span=(\d+)/', $sLinea, $regs)) {
         	$iSpan = (int)$regs[1];
             if (isset($spanData[$iSpan]))
+                $bIsT1 = ($spanData[$iSpan]['end'] - $spanData[$iSpan]['start'] + 1 == 24);
+                $bIsE1 = ($spanData[$iSpan]['end'] - $spanData[$iSpan]['start'] + 1 == 31);
+                
+                // Check span parameters for either E1/BRI or T1
+                if ($bIsT1) {
+                    $validFraming = array('esf', 'd4');
+                    $validCoding = array('b8zs', 'ami');
+                } elseif ($bIsE1) {
+                    $validFraming = array('ccs', 'cas');
+                    $validCoding = array('hdb3', 'ami');
+                } else {
+                    $validFraming = array('ccs');
+                    $validCoding = array('ami'); 
+                }
+                if (!in_array($spanData[$iSpan]['framing'], $validFraming))
+                    $spanData[$iSpan]['framing'] = $validFraming[0];
+                if (!in_array($spanData[$iSpan]['coding'], $validCoding))
+                    $spanData[$iSpan]['coding'] = $validCoding[0];
+
+                if (file_exists("/etc/wanpipe/wanpipe{$iSpan}.conf")) {
+                    $bRestartWanpipe = (updateWanpipeConf("/etc/wanpipe/wanpipe{$iSpan}.conf", $spanData[$iSpan])
+                        || $bRestartWanpipe); 
+                }                    
+
                 $spanLine = sprintf(
                     "span=%d,%d,%d,%s,%s", $spanData[$iSpan]['span_num'], 
                     $spanData[$iSpan]['timing_source'], $spanData[$iSpan]['linebuildout'], 
                     $spanData[$iSpan]['framing'], $spanData[$iSpan]['coding']);
-                if ($spanData[$iSpan]['end'] - $spanData[$iSpan]['start'] + 1 == 31) {
+                if ($bIsE1) {
                     // Only add CRC4 for E1 spans
                     $spanLine .= ",crc4";
                 }
@@ -282,10 +308,49 @@ function action_refreshConfiguration($opt)
 
     // Write new configuration and restart dahdi
     file_put_contents('/etc/dahdi/system.conf', $lineas);
-    $output = $ret = NULL;
-    exec('/sbin/service dahdi restart 2>&1', $output, $ret);
-    if ($ret != 0) $bExito = FALSE;
+    if (!$bRestartWanpipe) {
+        $output = $ret = NULL;
+        exec('/sbin/service dahdi restart > /dev/null 2>&1', $output, $ret);
+        if ($ret != 0) $bExito = FALSE;
+    } else {
+        exec('/sbin/service asterisk stop > /dev/null 2>&1', $output, $ret);
+        exec('/sbin/service dahdi stop > /dev/null 2>&1', $output, $ret);
+        exec('/sbin/service wanrouter stop > /dev/null 2>&1', $output, $ret);
+        exec('/sbin/service wanrouter start > /dev/null 2>&1', $output, $ret);
+        exec('/sbin/service dahdi start > /dev/null 2>&1', $output, $ret);
+        exec('/sbin/service asterisk start > /dev/null 2>&1', $output, $ret);
+    }
     
     return $bExito;
 }
+
+function updateWanpipeConf($sWanpipe, $spanData)
+{
+    $bModified = FALSE;
+    $lineas = array();
+    foreach (file($sWanpipe) as $s) {
+        $regs = NULL;
+        if (preg_match('/^FE_LCODE\s*=\s*(\S+)/', $s, $regs)) {
+            if ($regs[1] != strtoupper($spanData['coding'])) {
+                $bModified = TRUE;
+                $lineas[] = "FE_LCODE = ".strtoupper($spanData['coding'])."\n";
+            } else {
+                $lineas[] = $s;
+            }
+        } elseif (preg_match('/^FE_SIG_MODE\s*=\s*(\S+)/', $s, $regs)) {
+            if ($regs[1] != strtoupper($spanData['framing'])) {
+                $bModified = TRUE;
+                $lineas[] = "FE_SIG_MODE = ".strtoupper($spanData['framing'])."\n";
+            } else {
+                $lineas[] = $s;
+            }
+        } else {
+            $lineas[] = $s;
+        }
+    }
+    if ($bModified)
+        file_put_contents($sWanpipe, $lineas);
+    return $bModified;
+}
+
 ?>

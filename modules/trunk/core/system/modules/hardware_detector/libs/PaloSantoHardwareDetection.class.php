@@ -93,8 +93,14 @@ class PaloSantoHardwareDetection
                         $data3['id_card']    = $pDB->DBCAMPO($regs[1]); 
                         $this->addCardManufacturer($pDB, $data3);
                    }else $this->updateCardParameter($pDB, $data3, array("id_card"=>$regs[1]));
-                   $tarjetas["TARJETA$idTarjeta"]['DESC'] = array('ID' => $regs[1], 'TIPO' => $regs[2], 'ADICIONAL' => $regs[3], 'MANUFACTURER' => $exist_data);
-                   $count++;
+                   $tarjetas["TARJETA$idTarjeta"]['DESC'] = array(
+                        'ID'                => $regs[1],
+                        'TIPO'              => $regs[2],
+                        'ADICIONAL'         => $regs[3],
+                        'MANUFACTURER'      => $exist_data,
+                        'MEDIA'             => NULL,
+                        'MEDIA_SWITCHABLE'  =>  file_exists("/etc/wanpipe/wanpipe{$idTarjeta}.conf"));
+                    $count++;
                     $data2['id_card']    = $pDB->DBCAMPO($regs[1]);
                     $data2['type']       = $pDB->DBCAMPO($regs[2]);
                     $data2['additonal']  = $pDB->DBCAMPO($regs[3]);
@@ -135,14 +141,10 @@ class PaloSantoHardwareDetection
                         $estado_dahdi_image    = "conn_ok.png";
                    }
 
-                   $tipo = $regs1[2];
                     //Tipo de las lineas
-                   /*if($regs1[3]=='FXSKS')
-                        $tipo ='FXO'; 
-                   else if($regs1[3]=='FXOKS')
-                        $tipo ='FXS';
-                   else
-                        $tipo = "PRI/BRI";*/
+                    $tipo = ($regs1[2] == 'PRI' || $regs1[2] == 'BRI') ? 'ISDN' : $regs1[2];
+                    $tarjetas["TARJETA$idTarjeta"]['DESC']['MEDIA'] = $tipo;
+                                        
                     $dataType=preg_split('/[:]/',$regs1[4],2);
                     if(count($dataType)>1){
                         $arrEcho=preg_split('/[)]/',$dataType[1],2);
@@ -259,10 +261,25 @@ class PaloSantoHardwareDetection
             // TODO: cross-check id_card with table 'card'
             $regs = NULL;
             if (preg_match('/^span=(\d+),(\d+),(\d+),(\w+),(\w+)/', $sLinea, $regs)) {
+                // Revisar si este span es un wanpipe
+                list($dummy, $iSpan, $iTimeSource, $iLBO, $sFraming, $sCoding) = $regs;
+                $sMedioWanpipe = NULL;  // T1/E1 o NULL si no es wanpipe o no es digital
+                if (file_exists("/proc/dahdi/$iSpan") && 
+                    strpos(file_get_contents("/proc/dahdi/$iSpan"), 'wanpipe') !== FALSE) {
+                    // Confirmado que es wanpipe. Se busca /etc/wanpipe/wanpipeN.conf
+                    if (file_exists("/etc/wanpipe/wanpipe$iSpan.conf")) {
+                    	foreach (file("/etc/wanpipe/wanpipe$iSpan.conf") as $sLinea) {
+                            if (preg_match('/^FE_MEDIA\s*=\s*(T1|E1)/', $sLinea, $regs)) {
+                    			$sMedioWanpipe = $regs[1];
+                    		}
+                    	}
+                    }
+                }
+
                 $pDB->genQuery(
-                    'INSERT INTO span_parameter (id_card, span_num, timing_source, linebuildout, framing, coding) '.
-                    'VALUES (?, ?, ?, ?, ?, ?)', 
-                    array($regs[1], $regs[1], $regs[2], $regs[3], $regs[4], $regs[5]));
+                    'INSERT INTO span_parameter (id_card, span_num, timing_source, linebuildout, framing, coding, wanpipe_force_media) '.
+                    'VALUES (?, ?, ?, ?, ?, ?, ?)',
+                    array($iSpan, $iSpan, $iTimeSource, $iLBO, $sFraming, $sCoding, $sMedioWanpipe));
             }
         }
     }
@@ -276,12 +293,19 @@ class PaloSantoHardwareDetection
      * @return  NULL en caso de error, o lista indexada por span_num:
      *          id_card span_num tmsource linebuildout framing coding
      */
-    function leerSpanConfig($pDB)
+    function leerSpanConfig($pDB, $iSpan = NULL)
     {
-    	$r = $pDB->fetchTable(
+    	$sPeticionSQL = 
             'SELECT id_card, span_num, timing_source AS tmsource, ' .
-                'linebuildout AS lnbuildout, framing, coding ' .
-            'FROM span_parameter ORDER BY span_num', TRUE);
+                'linebuildout AS lnbuildout, framing, coding, wanpipe_force_media ' .
+            'FROM span_parameter';            
+        $paramSQL = array();
+        if (!is_null($iSpan)) {
+        	$sPeticionSQL .= ' WHERE span_num = ?';
+            $paramSQL[] = (int)$iSpan;
+        }
+        $sPeticionSQL .= ' ORDER BY span_num';
+        $r = $pDB->fetchTable($sPeticionSQL, TRUE, $paramSQL);
         if (!is_array($r)) {
             $this->errMsg = $pDB->errMsg;
             return NULL;
@@ -305,7 +329,7 @@ class PaloSantoHardwareDetection
      * 
      * @return  bool    VERDADERO para éxito, FALSO para error
      */
-    function guardarSpanConfig($pDB, $idSpan, $tmsource, $lnbuildout, $framing, $coding)
+    function guardarSpanConfig($pDB, $idSpan, $tmsource, $lnbuildout, $framing, $coding, $force_media = NULL)
     {
     	$idSpan = (int)$idSpan;
         $tmsource = (int)$tmsource;
@@ -318,11 +342,15 @@ class PaloSantoHardwareDetection
             $this->errMsg = _tr('Invalid coding');
             return FALSE;
         }
+        if (!is_null($force_media) && !in_array($force_media, array('E1', 'T1'))) {
+            $this->errMsg = _tr('Invalid media type');
+        	return FALSE;
+        }
         $r = $pDB->genQuery(
             'UPDATE span_parameter SET timing_source = ?, linebuildout = ?, ' .
-                'framing = ?, coding = ? ' .
+                'framing = ?, coding = ?, wanpipe_force_media = ? ' .
             'WHERE span_num = ?', 
-            array($tmsource, $lnbuildout, $framing, $coding, $idSpan));
+            array($tmsource, $lnbuildout, $framing, $coding, $force_media, $idSpan));
         if (!$r) {
             $this->errMsg = $pDB->errMsg;
             return FALSE;

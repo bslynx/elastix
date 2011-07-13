@@ -35,19 +35,12 @@ function _moduleContent(&$smarty, $module_name)
     include_once "modules/$module_name/configs/default.conf.php";
     include_once "modules/$module_name/libs/paloSantoConfEcho.class.php";
 
-    $lang=get_language();
-    $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
-    $lang_file="modules/$module_name/lang/$lang.lang";
-    if (file_exists("$base_dir/$lang_file")) include_once "$lang_file";
-    else include_once "modules/$module_name/lang/en.lang";
+    load_language_module($module_name);
 
     //global variables
     global $arrConf;
     global $arrConfModule;
-    global $arrLang;
-    global $arrLangModule;
     $arrConf = array_merge($arrConf,$arrConfModule);
-    $arrLang = array_merge($arrLang,$arrLangModule);
 
     require_once "modules/$module_name/libs/PaloSantoHardwareDetection.class.php";
 
@@ -65,16 +58,22 @@ function _moduleContent(&$smarty, $module_name)
 
     switch($action){
         case "config_echo":
-            $content = viewFormConfEchoCard($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang); // para configurar echo canceler
+            $content = viewFormConfEchoCard($smarty, $module_name, $local_templates_dir, $pDB, $arrConf); // para configurar echo canceler
+            break;
+        case 'config_span':
+            $content = viewFormConfSpan($smarty, $module_name, $local_templates_dir, $pDB, $arrConf); // para configurar span
             break;
         case "save_new":
-            $content = saveNewConfEchoCard($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang); // save conf echo canceler
+            $content = saveNewConfEchoCard($smarty, $module_name, $local_templates_dir, $pDB, $arrConf); // save conf echo canceler
+            break;
+        case "save_span":
+            $content = saveNewConfSpan($smarty, $module_name, $local_templates_dir, $pDB, $arrConf); // save conf span
             break;
         case "setConfig":
             $content = setConfigHardware($pDB); 
             break;
         case "detection":
-            $content = hardwareDetect($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang); // detection button
+            $content = hardwareDetect($smarty, $module_name, $local_templates_dir, $pDB, $arrConf); // detection button
             break;
         default:
             $content = listPorts($smarty, $module_name, $local_templates_dir, $pDB);
@@ -85,7 +84,6 @@ function _moduleContent(&$smarty, $module_name)
 
 function listPorts($smarty, $module_name, $local_templates_dir, $pDB) {
 
-    global $arrLang;
     $oPortsDetails = new PaloSantoHardwareDetection();
     $contenidoModulo = "";
 
@@ -114,10 +112,12 @@ function listPorts($smarty, $module_name, $local_templates_dir, $pDB) {
     $smarty->assign("EDIT", _tr("Edit"));
     $smarty->assign("CANCEL", _tr("Cancel"));
     $smarty->assign("Configuration_Span", _tr("Configuration of Span"));
+    $smarty->assign("Parameters_Span", _tr("Span Parameters"));
     $smarty->assign("Span_Settings", _tr("Span Settings"));
     $smarty->assign("Advanced", _tr("Advanced"));
     $smarty->assign("Preferences", _tr("Preferences"));
     $smarty->assign("Timing_source", _tr("Timing source"));
+    $smarty->assign('Timing_source_title', _tr("Enter 0 if this port provides a master clock, or nonzero priority for clock source"));
     $smarty->assign("Line_build_out", _tr("Line build out"));
     $smarty->assign("Framing", _tr("Framing"));
     $smarty->assign("Coding", _tr("Coding"));
@@ -126,14 +126,15 @@ function listPorts($smarty, $module_name, $local_templates_dir, $pDB) {
     $smarty->assign("LBL_SAVING",_tr("Saving configuration"));
     $smarty->assign("HARDWARE_CONTROL",_tr("Hardware Control"));
     $smarty->assign("CHANNELS_EMPTY",_tr("Channel Empty"));
+    $smarty->assign("Media",_tr("ISDN PRI Media Type"));
 
     if($oPortsDetails->isInstalled_mISDN()){
         $smarty->assign("isInstalled_mISDN",true);
-        $smarty->assign("MSG_isInstalled_mISDN",$arrLang['mISDN Driver Installed']);
+        $smarty->assign("MSG_isInstalled_mISDN", _tr('mISDN Driver Installed'));
     }
     else{
         $smarty->assign("isInstalled_mISDN",false);
-        $smarty->assign("MSG_isInstalled_mISDN",$arrLang['mISDN Driver not Installed']);
+        $smarty->assign("MSG_isInstalled_mISDN", _tr('mISDN Driver not Installed'));
     }
 
     $arrMisdnInfo = $oPortsDetails->getMisdnPortInfo();
@@ -146,7 +147,7 @@ function listPorts($smarty, $module_name, $local_templates_dir, $pDB) {
     if(!(is_array($arrPortsDetails) && count($arrPortsDetails) >0)){
         $smarty->assign("CARDS_NOT_FOUNDS",$oPortsDetails->errMsg);
     }
-    $arrGrid = array("title"    => $arrLang['Hardware Detector'],
+    $arrGrid = array("title"    => _tr('Hardware Detector'),
             "icon"     => "modules/$module_name/images/pci.png",
             "width"    => "100%"
             );
@@ -163,6 +164,7 @@ function llenarTpl($local_templates_dir,$smarty,$arrGrid, $arrData, $arrMisdn)
     $smarty->assign("arrMisdn", $arrMisdn);
 
     //Span Parameters
+/*
     $smarty->assign('type_timing_source', array(
                               '0' => '0',
                               '1' => '1',
@@ -172,29 +174,22 @@ function llenarTpl($local_templates_dir,$smarty,$arrGrid, $arrData, $arrMisdn)
                               '5' => '5',
                               '6' => '6',
                               '7' => '7'));
+*/
 
     $smarty->assign('type_lnbuildout', array(
-                              '0' => '0',
-                              '1' => '1',
-                              '2' => '2',
-                              '3' => '3',
-                              '4' => '4',
-                              '5' => '5',
-                              '6' => '6',
-                              '7' => '7'));
+                              '0' => _tr('0 db (CSU) / 0-133 feet (DSX-1)'),
+                              '1' => _tr('133-266 feet (DSX-1)'),
+                              '2' => _tr('266-399 feet (DSX-1)'),
+                              '3' => _tr('399-533 feet (DSX-1)'),
+                              '4' => _tr('533-655 feet (DSX-1)'),
+                              '5' => _tr('-7.5db (CSU)'),
+                              '6' => _tr('-15db (CSU)'),
+                              '7' => _tr('-22.5db (CSU)')));
 
-    $smarty->assign('type_framing', array(
-                              'd4' => 'd4',
-                              'esf' => 'esf',
-                              'cas' => 'cas',
-                              'ccs' => 'ccs',
-                              'd4' => 'd4'));
-
-    $smarty->assign('type_coding', array(
-                              'ami' => 'ami',
-                              'b8zs' => 'b8zs',
-                              'hdb3' => 'hdb3'));
-
+    $smarty->assign('type_media', array(
+                              'T1' => _tr('T1: 24 channels, USA'),
+                              'E1' => _tr('E1: 31 channels, Europe')));
+/*
     //Card Manufacturer
     $smarty->assign('type_manufacturer', array(
                               'Digium' => 'Digium',
@@ -205,15 +200,19 @@ function llenarTpl($local_templates_dir,$smarty,$arrGrid, $arrData, $arrMisdn)
                               'XorCom' => 'XorCom',
                               'Dialogic' => 'Dialogic',
                               'Otros' => 'Otros' ));
-
+*/
     return $smarty->fetch($local_templates_dir."/listPorts.tpl");
 }
 
-function hardwareDetect($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
+function hardwareDetect($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf)
 {
     $chk_dahdi_replace     = getParameter("chk_dahdi_replace");
     $there_is_sangoma_card = getParameter("there_is_sangoma_card");
     $there_is_misdn_card   = getParameter("there_is_misdn_card");
+
+    // Anular la configuración anterior de cancelador. Se refrescará en listPorts()
+    $pconfEcho = new paloSantoConfEcho($pDB);
+    $pconfEcho->deleteEchoCanceller();
 
     $oHardwareDetect = new PaloSantoHardwareDetection();
     $resultado  = $oHardwareDetect->hardwareDetection($chk_dahdi_replace,"/etc/asterisk",$there_is_sangoma_card, $there_is_misdn_card);
@@ -225,7 +224,7 @@ function hardwareDetect($smarty, $module_name, $local_templates_dir, &$pDB, $arr
 }
 
 
-function viewFormConfEchoCard($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
+function viewFormConfEchoCard($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf)
 {
     $oPortsDetails = new PaloSantoHardwareDetection();
     $pconfEcho     = new paloSantoConfEcho($pDB);
@@ -260,7 +259,43 @@ function viewFormConfEchoCard($smarty, $module_name, $local_templates_dir, &$pDB
 
 }
 
-function saveNewConfEchoCard($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
+function viewFormConfSpan($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf)
+{
+    $oPortsDetails = new PaloSantoHardwareDetection();
+    $pconfEcho     = new paloSantoConfEcho($pDB);
+    $idSpan = str_replace('paramSPAN', '', getParameter('cardId'));
+    $listaSpans = $oPortsDetails->leerSpanConfig($pDB, $idSpan);
+    if (!is_array($listaSpans) || count($listaSpans) <= 0) return NULL;
+    $response = array(
+        'spaninfo'  =>  $listaSpans[$idSpan],
+        'card_id'   =>  $idSpan,
+    );
+
+    $arrPortsEcho  = $pconfEcho->getEchoCancellerByIdCard($idSpan);
+    if (!is_null($response['spaninfo']['wanpipe_force_media'])) {
+    	// Las tarjetas digitales Sangoma pueden ser E1 o T1
+        $response['framing_options'] = array('esf', 'd4', 'ccs', 'cas');
+        $response['coding_options'] = array('b8zs', 'hdb3', 'ami');
+    } elseif (count($arrPortsEcho) == 23) {
+    	// Este es un puerto T1
+        $response['framing_options'] = array('esf', 'd4');
+        $response['coding_options'] = array('b8zs', 'ami');
+    } elseif (count($arrPortsEcho) == 30) {
+    	// Este es un puerto E1
+        $response['framing_options'] = array('ccs', 'cas');
+        $response['coding_options'] = array('hdb3', 'ami');
+    } else {
+    	// Este es un puerto BRI
+        $response['framing_options'] = array('ccs');
+        $response['coding_options'] = array('ami');
+    }
+
+    $jsonObject = new PaloSantoJSON();
+    $jsonObject->set_message($response);
+    return $jsonObject->createJSON();
+} 
+
+function saveNewConfEchoCard($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf)
 {
     $pconfEcho = new paloSantoConfEcho($pDB);
 
@@ -295,13 +330,101 @@ function saveNewConfEchoCard($smarty, $module_name, $local_templates_dir, &$pDB,
     }
     $pconfEcho->refreshDahdiConfiguration();
     $jsonObject = new PaloSantoJSON();
-    $msgResponse['msg']   = $arrLang["Card Configured"];
+    $msgResponse['msg']   = _tr("Card Configured");
     $jsonObject->set_message($msgResponse);
     return $jsonObject->createJSON();
 
 }
 
-function createFieldForm($arrLang)
+function saveNewConfSpan($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf)
+{
+    $bExito = TRUE;
+    $estadoAnterior = NULL;
+    $estadoNuevo = array(
+        'span_num'              =>  getParameter('idSpan'),
+        'tmsource'              =>  getParameter('tmsource'),
+        'lnbuildout'            =>  getParameter('lnbuildout'),
+        'framing'               =>  getParameter('framing'),
+        'coding'                =>  getParameter('coding'),
+        'wanpipe_force_media'   =>  getParameter('media_pri'),
+    );
+    $response = array(
+        'msg'   =>  _tr('Saving configuration'),
+        'reload'    =>  FALSE,
+    );
+    $oPortsDetails = new PaloSantoHardwareDetection();
+    if ($bExito) {
+        $listaSpans = $oPortsDetails->leerSpanConfig($pDB, $estadoNuevo['span_num']);
+        if (!is_array($listaSpans) || count($listaSpans) <= 0) {
+        	$bExito = FALSE;
+            $response['msg'] = _tr('Span is invalid or out of range').$oPortsDetails->errMsg;
+        } else {
+        	$estadoAnterior = $listaSpans[$estadoNuevo['span_num']];
+            if (is_null($estadoAnterior['wanpipe_force_media']))
+                $estadoNuevo['wanpipe_force_media'] = NULL;
+        }
+    }
+    if ($bExito) {
+        $bExito = $oPortsDetails->guardarSpanConfig(
+            $pDB,
+            $estadoNuevo['span_num'], 
+            $estadoNuevo['tmsource'],
+            $estadoNuevo['lnbuildout'],
+            $estadoNuevo['framing'],
+            $estadoNuevo['coding'],
+            $estadoNuevo['wanpipe_force_media']);
+        if (!$bExito) {
+        	$response['msg'] = $oPortsDetails->errMsg;
+        }
+    }
+    if ($bExito) {
+    	// Se verifica si se cambia medio de tarjeta Sangoma.
+        if (!is_null($estadoAnterior['wanpipe_force_media']) && 
+            $estadoAnterior['wanpipe_force_media'] != $estadoNuevo['wanpipe_force_media']) {
+        	/* Se requiere re-enumerar las tarjetas con hardware detector. Se
+             * asume que se debe de agregar la bandera de detectar Sangoma. 
+             * También se asume que el acto de iniciar la detección de hardware
+             * no cambia el ID de span que fue modificado. */
+            $response['reload'] = TRUE;
+            $resultado  = $oPortsDetails->hardwareDetection(
+                '',
+                "/etc/asterisk",
+                'true', // Detección de Sangoma 
+                '' // TODO: qué se hace si de verdad hay tarjetas MISDN?
+                );
+            
+            /* Invalidar la configuración anterior de cancelador de eco */
+            $oPortsDetails->getPorts($pDB);
+
+            // Volver a escribir el estado deseado
+            $bExito = $oPortsDetails->guardarSpanConfig(
+                $pDB,
+                $estadoNuevo['span_num'], 
+                $estadoNuevo['tmsource'],
+                $estadoNuevo['lnbuildout'],
+                $estadoNuevo['framing'],
+                $estadoNuevo['coding'],
+                $estadoNuevo['wanpipe_force_media']);
+            if (!$bExito) {
+                $response['msg'] = $oPortsDetails->errMsg;
+            }
+        }
+    }
+    if ($bExito) {
+    	$bExito = $oPortsDetails->refreshDahdiConfiguration();
+        if (!$bExito) {
+            $response['msg'] = $oPortsDetails->errMsg;
+        }
+        $oPortsDetails->transferirSpanConfig($pDB);
+    }
+    if (!$bExito) $response['msg'] = 'FAILED: '.$response['msg'];
+
+	$jsonObject = new PaloSantoJSON();
+    $jsonObject->set_message($response);
+    return $jsonObject->createJSON();
+}
+
+function createFieldForm()
 {
     $arrTypeEcho = array('none' => 'none', 'OSLEC' => 'OSLEC', 'MG2' => 'MG2', 'KB1' => 'KB1', 'SEC2' => 'SEC2', 'SEC' => 'SEC');
 
@@ -360,12 +483,16 @@ function getAction()
         return "view_form";
     else if(getParameter("action")=="config_echo")
         return "config_echo";
+    else if(getParameter("action")=="config_span")
+        return "config_span";
     else if(getParameter("action")=="setConfig")
         return "setConfig";
     else if(getParameter("action")=="detection")
         return "detection";
     else if(getParameter("action")=="save_echo")
         return "save_new";
+    else if(getParameter("action")=="save_span")
+        return "save_span";
     else
         return "report"; //cancel
 }
