@@ -107,7 +107,7 @@ class paloSantoGeneralInformation {
        $arrData['dundi']['canonical']['number'] = 0;
        $arrData['dundi']['customers']['name'] = "dundi-priv-customers";
        $arrData['dundi']['customers']['number'] = 100;
-	   $arrData['dundi']['pstn']['name'] = "dundi-priv-via-pstn";
+       $arrData['dundi']['pstn']['name'] = "dundi-priv-via-pstn";
        $arrData['dundi']['pstn']['number'] = 400;
 
        $dundi_file = "/etc/asterisk/dundi_mappings_custom_elastix.conf";

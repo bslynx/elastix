@@ -37,8 +37,10 @@ $arrLangModule=array(
 "Email" => "Correo",
 "Phone" => "Teléfono",
 "Edit General Information" => "Editar Informacion General",
-"Upload" => "Actualizar",
+"Save" => "Guardar",
 "Validation Error" => "Error de Validación",
 "The following fields contain errors" => "Los siguientes campos contienen errores",
+"Information has been saved." => "Información has sido almacenada.",
+"Error. Please try again." => "Error. Por favor vuelva a intentar realizar la operación.",
 );
 ?>

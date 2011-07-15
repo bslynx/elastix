@@ -112,17 +112,20 @@ function uploadGeneralInformation($smarty, $module_name, $local_templates_dir, $
         $data['department']   = $_POST['department'];
         $data['secret']       = $pElastixConnection->genRandomPassword(32, "");
 
-       if($upload == "1") {
+       if($upload == "1"){
             $result = $pElastixConnection->uploadInformation('general', $data);
-            if(!$result)
-                return($pDB->errMsg);
-            else{
-
-            }
+            if(!$result){
+                $smarty->assign("mb_message", _tr("Error. Please try again."));
+		return formGeneralInformation($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+            }else
+		$smarty->assign("mb_message", _tr("Information has been saved."));
        }else{
             $result = $pElastixConnection->addInformation($data);
-            if(!$result)
-                return($pDB->errMsg);
+            if(!$result){
+		$smarty->assign("mb_message", _tr("Error. Please try again."));
+                return formGeneralInformation($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+	    }else
+		$smarty->assign("mb_message", _tr("Information has been saved."));
        }
        $serverIp = $_SERVER['SERVER_ADDR'];
        $arrEths = $pNet->obtener_interfases_red_fisicas();
@@ -151,7 +154,7 @@ function formGeneralInformation($smarty, $module_name, $local_templates_dir, &$p
     $arrFormGeneralInformation = createFieldForm($arrLang);
     $oForm = new paloForm($smarty,$arrFormGeneralInformation);
 
-    $smarty->assign("UPLOAD", $arrLang["Upload"]);
+    $smarty->assign("UPLOAD", $arrLang["Save"]);
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
     $smarty->assign("IMG", "images/list.png");
     $command = "0";
