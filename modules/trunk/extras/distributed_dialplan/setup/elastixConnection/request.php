@@ -63,7 +63,7 @@ if($ip_request == "" && $company_request == "" && $comment_request == "" && $sec
         $keyPubServer =  $pRequest->createKeyPubServer($key_answer, $mac_answer);
         $parameter = $pRequest->createPeerParameter();
         $resultParameter = $pRequest->addInformationParameter($parameter,$id['id']);
-        echo "BEGIN acept END";
+        echo "BEGIN accept END";
      }
      else
         echo "BEGIN norequest END";
