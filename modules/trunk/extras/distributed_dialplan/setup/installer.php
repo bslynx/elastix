@@ -28,57 +28,52 @@
 */
 
 $DocumentRoot = (isset($_SERVER['argv'][1]))?$_SERVER['argv'][1]:"/var/www/html";
-$DataBaseRoot = "/var/www/db";
 $tmpDir = '/tmp/new_module/distributed_dialplan';  # in this folder the load module extract the package content
 
-if(!file_exists("$DataBaseRoot/elastixconnection.db")){
-    $cmd_mv    = "mv $tmpDir/setup/elastixconnection.db $DataBaseRoot/";
-    $cmd_chown = "chown asterisk.asterisk $DataBaseRoot/elastixconnection.db";
-    exec($cmd_mv);
-    exec($cmd_chown);
-}
 writeFilesAsterisk();
-$cmd_mkdir = "mkdir -p $DocumentRoot/elastixConnection";
-$cmd_mv    = "mv $tmpDir/setup/elastixConnection/* $DocumentRoot/elastixConnection";
-$cmd_chown = "chown -R asterisk.asterisk $DocumentRoot/elastixConnection";
-exec($cmd_mkdir);
-exec($cmd_mv);
-exec($cmd_chown);
 
 function writeFilesAsterisk(){
-	//configurando dundi.conf
-	$file = "/etc/asterisk/dundi.conf";
-	$contents = getFile($file);
-	$general = "[general]\n#include dundi_general_custom_elastix.conf";
-	$mappings = "[mappings]\n#include dundi_mappings_custom_elastix.conf\n#include dundi_peers_custom_elastix.conf";
+    //configurando dundi.conf
+    $file = "/etc/asterisk/dundi.conf";
+    $contents = file_get_contents($file);
+    $general = "[general]\n#include dundi_general_custom_elastix.conf";
+    $mappings = "[mappings]\n#include dundi_mappings_custom_elastix.conf\n#include dundi_peers_custom_elastix.conf";
 
-	//verificar si ya estan incluidas las librerias
-	$exist = strstr($contents,"#include dundi_general_custom_elastix.conf");
-	if($exist==""){
-		//creando archivos dundi
-		$filename = "/etc/asterisk/dundi_general_custom_elastix.conf";
-		$filename2= "/etc/asterisk/dundi_mappings_custom_elastix.conf";
-		$filename3= "/etc/asterisk/dundi_peers_custom_elastix.conf";
-		if(!file_exists($filename)){
-			exec("touch ".$filename);
-			exec("chown asterisk.asterisk ".$filename);
-		}
-		if(!file_exists($filename2)){
-			exec("touch ".$filename2);	
-			exec("chown asterisk.asterisk ".$filename2);
-		}
-		if(!file_exists($filename3)){
-			exec("touch ".$filename3);	
-			exec("chown asterisk.asterisk ".$filename3);
-		}	
-		$new_contents = str_replace("[general]",$general,$contents);
-		$new_contents = str_replace("[mappings]",$mappings,$new_contents);
-		setFile($file, $new_contents);
+    //verificar si ya estan incluidas las librerias
+    $exist = preg_match("/#include dundi_general_custom_elastix\.conf/",$contents);
+    if(!$exist){
+	//creando archivos dundi
+	$filename = "/etc/asterisk/dundi_general_custom_elastix.conf";
+	$filename2= "/etc/asterisk/dundi_mappings_custom_elastix.conf";
+	$filename3= "/etc/asterisk/dundi_peers_custom_elastix.conf";
+	if(!$filename){
+	    touch($filename);
+	    chown($filename, "asterisk");
+	    chgrp($filename, "asterisk");
 	}
-	
-	// configurando extension.conf
-	$var = "{DIALSTATUS}";
-	$dundi = "
+	if(!file_exists($filename2)){
+	    touch($filename2);
+	    chown($filename2, "asterisk");
+	    chgrp($filename2, "asterisk");
+	}
+	if(!file_exists($filename3)){
+	    touch($filename3);
+	    chown($filename3, "asterisk");
+	    chgrp($filename3, "asterisk");
+	}
+	$new_contents = str_replace("[general]",$general,$contents);
+	$new_contents = str_replace("[mappings]",$mappings,$new_contents);
+	if(file_put_contents($file, $new_contents))
+	    echo "\n$file has been overwritten\n";
+	else
+	    echo "\n$file has not been overwritten, review the permissions of directory and if the file exists\n";
+
+    }else
+	echo "\nNo change applied in $file\n";
+
+    // configurando extension.conf
+    $var = "{DIALSTATUS}";
+    $dundi = "
 ; ********************************************
 ; CONFIGURACION PARA DUNDi
 [dundi-priv-canonical]
@@ -119,17 +114,21 @@ exten => _X.,101,Congestion(10)
 exten => s,1,Goto($"."{"."ARG1},1)
 switch => DUNDi/priv
 ; ********************************************";
-	
-	$file = "/etc/asterisk/extensions_custom.conf";
-	$contents = getFile($file);
-	$exist = strstr($contents,"[dundi-priv-lookup]");
-	if($exist==""){
-		$contents = $contents . $dundi;
-		setFile($file, $contents);
-	}
 
-	// configuracion de iax_custom.conf
-	$iax = "
+    $file = "/etc/asterisk/extensions_custom.conf";
+    $contents = file_get_contents($file);
+    $exist = preg_match("/\[dundi-priv-lookup\]/",$contents);
+    if(!$exist){
+	$contents = $contents . $dundi;
+	if(file_put_contents($file, $contents))
+	    echo "\n$file has been overwritten\n";
+	else
+	    echo "\n$file has not been overwritten, review the permissions of directory and if the file exists\n";
+    }else
+	echo "\nNo change applied in $file\n";
+
+    // configuracion de iax_custom.conf
+    $iax = "
 [dundi]
 type=user
 dbsecret=dundi/secret
@@ -138,37 +137,29 @@ disallow=all
 allow=ulaw
 allow=g726";
 	
-	$file = "/etc/asterisk/iax_custom.conf";
-	$contents = getFile($file);
-	$exist = strstr($contents,"[dundi]");
-	if($exist==""){
-		$contents = $contents . $iax;
-		setFile($file, $contents);
-	}
-	
-	//configurando extension.conf definiendo contextos
-	$buscar = "include => from-internal-xfer\ninclude => bad-number";
-	$reemplazar ="include => from-internal-xfer\n; include => bad-number\ninclude => dundi-priv-lookup";
+    $file = "/etc/asterisk/iax_custom.conf";
+    $contents = file_get_contents($file);
+    $exist = preg_match("/\[dundi\]/",$contents);
+    if(!$exist){
+	$contents = $contents . $iax;
+	if(file_put_contents($file, $contents))
+	    echo "\n$file has been overwritten\n";
+	else
+	    echo "\n$file has not been overwritten, review the permissions of directory and if the file exists\n";
+    }else
+	echo "\nNo change applied in $file\n";
 
-	$file = "/etc/asterisk/extensions.conf";
-	$contents = getFile($file);
-	$new_contents = str_replace($buscar,$reemplazar,$contents);
-	setFile($file, $new_contents);
+    //configurando extension.conf definiendo contextos
+    $buscar = "include => from-internal-xfer\ninclude => bad-number";
+    $reemplazar ="include => from-internal-xfer\n; include => bad-number\ninclude => dundi-priv-lookup";
+
+    $file = "/etc/asterisk/extensions.conf";
+    $contents = file_get_contents($file);
+    $new_contents = str_replace($buscar,$reemplazar,$contents);
+    if(file_put_contents($file, $new_contents))
+	echo "\n$file has been overwritten\n";
+    else
+	echo "\n$file has not been overwritten, review the permissions of directory and if the file exists\n";
 }
 
-
-function getFile($file){
-	$handle = fopen($file, "r+");
-	$contents = fread($handle, filesize($file));
-	fclose($handle);
-	return $contents;
-}
-
-function setFile($file, $toReplace){
-	$fh = fopen($file, "w");
-		if($fh){
-			fwrite($fh, $toReplace);
-		}
-	fclose($fh);
-}
 ?>
