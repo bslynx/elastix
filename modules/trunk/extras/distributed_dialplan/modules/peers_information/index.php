@@ -115,8 +115,8 @@ function _moduleContent(&$smarty, $module_name)
         case "connect":
             $content = connectPeersInformation($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $dsn_agi_manager); 
             break;      
-        case "acept_request":
-            $content = AceptPeerRequest($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $dsn_agi_manager);
+        case "accept_request":
+            $content = AcceptPeerRequest($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $dsn_agi_manager);
             break;
         case "reject_request":
             $content = rejectPeerRequest($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $dsn_agi_manager);
@@ -148,7 +148,7 @@ function disconnectPeersInformation($smarty, $module_name, $local_templates_dir,
 
 }
 
-function AceptPeerRequest($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $dsn_agi_manager)
+function AcceptPeerRequest($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $dsn_agi_manager)
 {
    $root_certicate = "/var/lib/asterisk/keys"; 
    $mac = $_POST['peerMac'];
@@ -197,7 +197,7 @@ function AceptPeerRequest($smarty, $module_name, $local_templates_dir, $pDB, $ar
 
       if(ereg( "^BEGIN[[:space:]](.*)[[:space:]]END", $sent, $regs ))
       {
-          if($regs[1] == "acept"){
+          if($regs[1] == "accept"){
             $smarty->assign("mb_title", $arrLang["Message"]);
             $smarty->assign("mb_message", $arrLang["Your connection has been established"]);
             $idPeer = $pPeersInformation->getIdPeer($mac);
@@ -214,7 +214,7 @@ function AceptPeerRequest($smarty, $module_name, $local_templates_dir, $pDB, $ar
   }
 
   $contenidoModulo = reportPeersInformation($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $dsn_agi_manager);
- return $contenidoModulo;
+  return $contenidoModulo;
 
 }
 
@@ -313,14 +313,14 @@ function viewPeersInformation($smarty, $module_name, $local_templates_dir, $pDB,
     $oForm   = new paloForm($smarty,$arrFormPeersInformation);
     $arrDataPeer = array();
     $arrData = array();
-    $acept = "yes";
+    $accept = "yes";
     $idPeer = $_GET['peerId'];
     $opcion = $_GET['opcion'];
     if($opcion == 1)
        $smarty->assign("MODE","view");
     else
        $smarty->assign("MODE","accept");
-    $smarty->assign("ACEPT", $arrLang["Acept"]);
+    $smarty->assign("ACEPT", $arrLang["Accept"]);
     $smarty->assign("REJECT", $arrLang["Reject"]);
     $smarty->assign("EDIT", $arrLang["Edit"]);
     $smarty->assign("DISCONNECT", $arrLang["Disconnect"]);
@@ -338,9 +338,9 @@ function viewPeersInformation($smarty, $module_name, $local_templates_dir, $pDB,
     $arrData['comment'] = $arrDataPeer['comment'];
     $arrData['company'] = $arrDataPeer['company'];
     if($arrDataPeer['status'] == "Requesting connection" || $arrDataPeer['status'] == "disconnect" || $arrDataPeer['status'] == "request accepted")
-       $acept = "no";
+       $accept = "no";
 
-    $smarty->assign("OPCION",$acept);
+    $smarty->assign("OPCION",$accept);
     $smarty->assign("peerMac", $arrData['mac']);
     $smarty->assign("ipAsk", $arrData['host']);
 
@@ -516,9 +516,11 @@ function rejectPeerRequest($smarty, $module_name, $local_templates_dir, $pDB, $a
       {
           if($regs[1] == "reject"){
              $result = $pPeersInformation->deleteInformationPeer($idPeer);
-            if(!$result)
-               return($pDB->errMsg);
-
+            if(!$result){
+	       $smarty->assign("mb_title", $arrLang["Message"]);
+	       $smarty->assign("mb_message", $arrLang["Error trying to do a reject to:"]." ".$ip_ask);
+	       return rejectPeerRequest($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $dsn_agi_manager);
+	    }
           }
       }
     $content = reportPeersInformation($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $dsn_agi_manager);
@@ -564,18 +566,24 @@ function deletePeersInformation($smarty, $module_name, $local_templates_dir, $pD
             $ip_ask = $dataPeer['host'];
             $mac_ask = $dataPeer['mac'];
             $delete = socketReject($ip_ask, $local_ip, $action);
-                if(ereg( "^BEGIN[[:space:]](.*)[[:space:]]END", $delete, $regs ))
-                {
-                    if($regs[1] == "reject")
-                    {
-                        $result = $pPeersInformation->deleteInformationPeer($tmpID);
-                        if(!$result)
-                        return($pDB->errMsg);
-                        $resultParameter = $pPeersInformation->deleteInformationParameter($tmpID);
-                        if(!$resultParameter)
-                        return($pDB->errMsg);
-                    }
-                }
+	    if(ereg( "^BEGIN[[:space:]](.*)[[:space:]]END", $delete, $regs ))
+	    {
+		if($regs[1] == "reject")
+		{
+		    $result = $pPeersInformation->deleteInformationPeer($tmpID);
+		    if(!$result){
+			$smarty->assign("mb_title", $arrLang["Message"]);
+			$smarty->assign("mb_message", $arrLang["Error trying to delete peer:"]." ".$ip_ask);
+			return reportPeersInformation($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $dsn_agi_manager);
+		    }
+		    $resultParameter = $pPeersInformation->deleteInformationParameter($tmpID);
+		    if(!$resultParameter){
+			$smarty->assign("mb_title", $arrLang["Message"]);
+			$smarty->assign("mb_message", $arrLang["Error trying to delete parameter in database:"]." ".$ip_ask);
+			return reportPeersInformation($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $dsn_agi_manager);
+		    }
+		}
+	    }
         }
     }
     $content = reportPeersInformation($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $dsn_agi_manager);
@@ -715,7 +723,8 @@ function formRequest($smarty, $module_name, $local_templates_dir, $pDB, $arrConf
     $arrFormPeersInformation = createFieldForm($arrLang);
     $oForm = new paloForm($smarty,$arrFormPeersInformation);
 
-    $smarty->assign("Request", $arrLang["Request"]);   
+    $smarty->assign("Request", $arrLang["Request"]);
+    $smarty->assign("Cancel", _tr("Cancel"));
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
     $smarty->assign("IMG", "images/list.png");
 
@@ -835,8 +844,8 @@ function getAction()
         return "delete_peer";
     else if(getParameter("disconnect"))
         return "disconnect";
-    else if(getParameter("acept_request"))
-        return "acept_request";
+    else if(getParameter("accept_request"))
+        return "accept_request";
     else if(getParameter("reject_request"))
         return "reject_request";
     else if(getParameter("action")=="show") //Get parameter by GET (command pattern, links)

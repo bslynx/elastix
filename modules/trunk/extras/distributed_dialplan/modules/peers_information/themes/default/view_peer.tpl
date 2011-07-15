@@ -6,7 +6,7 @@
     <tr class="letra12">
         <td align="left">
         {if $MODE ne "view"}
-         <input class="button" type="submit" name="acept_request" value="{$ACEPT}">&nbsp;
+         <input class="button" type="submit" name="accept_request" value="{$ACEPT}">&nbsp;
          <input class="button" type="submit" name="reject_request" value="{$REJECT}">&nbsp;
         {/if}
         {if $OPCION eq "yes"}
