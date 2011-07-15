@@ -120,7 +120,7 @@ function listRepositories($smarty, $module_name, $local_templates_dir,$arrConf) 
                      <input type='submit' name='submit_aceptar' value='{$arrLang['Save/Update']}' class='button' /> &nbsp;&nbsp;&nbsp;
                      <input type='button' name='default' value='{$arrLang['Default']}' class='button' onclick='defaultValues($total)' />
                </td>
-               <td width='200'>{$arrLang['Type']}:&nbsp;&nbsp;
+               <td width='200'>Repo:&nbsp;&nbsp;
                    <select name='typeRepository' onchange='javascript:submit();'> 
                          <option value='main' {$option['main']}>{$arrLang['Main']}</option>
                          <option value='others' {$option['others']}>{$arrLang['Others']}</option>
