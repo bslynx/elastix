@@ -116,9 +116,10 @@ function viewFormPasswordConnection($smarty, $module_name, $local_templates_dir,
     $smarty->assign("IMG", "images/list.png");
     $smarty->assign("GET_PASS", $arrLang["Get my Secret Connection"]);
     $smarty->assign("message", $arrLang["Message"]);
+    if(!$pPasswordConnection->statusGeneralRegistration())
+	$smarty->assign("mb_message", _tr("Please first fill the form in <a href='?menu=general_information'>General Information</a>"));
     $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",$arrLang["Password Connection"], $_DATA);
     $content = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
-
     return $content;
 }
 
@@ -150,7 +151,11 @@ function sendEmail($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf,
     $From = 'admin@example.com';
     $uid  = Obtain_UID_From_User($user,$arrConf);
     $pDB3 = new paloDB($arrConf['dsn_scl']);
-    $user_name = $pPasswordConnection->getNameUsers($uid,$pDB3);
+    $user_name = $pPasswordConnection->getNameUsers($uid,$pDB3,$user);
+    if(!$pPasswordConnection->statusGeneralRegistration()){
+	return viewFormPasswordConnection($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+    }
+
     if(!$oForm->validateForm($_POST)){
         // Validation basic, not empty and VALIDATION_TYPE 
         $smarty->assign("mb_title", $arrLang["Validation Error"]);
@@ -210,11 +215,12 @@ function sendEmail($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf,
             $mail->FromName = $user_name;
             $emails.=",";
             $arrEmails = explode(",",$emails);
+	    $subject = "{$arrLang['Secret Connection']} $hostname";
             for($i=0; $i<count($arrEmails)-1; $i++){
                 $To = $arrEmails[$i];
                 if($To != "" || $To !=" "){
                     $mail->ClearAddresses();
-                    $mail->Subject = "{$arrLang['Secret Connection']} $hostname"; 
+                    $mail->Subject =  utf8_decode($subject);
                     $mail->AddAddress($To, $To);
                     $mail->Send();
                 }
@@ -250,7 +256,7 @@ function createFieldForm($arrLang)
             "keyword"   => array(      "LABEL"                  => $arrLang["Keyword"],
                                             "REQUIRED"               => "yes",
                                             "INPUT_TYPE"             => "TEXT",
-                                            "INPUT_EXTRA_PARAM"      => array("id" => "keyword", "size" => "29"),
+                                            "INPUT_EXTRA_PARAM"      => array("id" => "keyword", "size" => "29", "readonly" => "readonly"),
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),

@@ -125,11 +125,10 @@ class paloSantoPasswordConnection {
         return $result;
     }
 
-    function getNameUsers($id_user,$db)
+    function getNameUsers($id_user,$db,$username)
     {
         $data = array($id_user);
         $query = "SELECT name FROM acl_user WHERE id=?";
-        $username = $_SESSION["elastix_user"];
         $result = $db->getFirstRowQuery($query,true,$data);
         if($result != FALSE || $result != "")
             return $result['name'];
@@ -156,6 +155,27 @@ class paloSantoPasswordConnection {
         if($result == FALSE || $result == "")
             return FALSE;
         return TRUE;
+    }
+
+    function statusGeneralRegistration()
+    {
+	$query = "SELECT * FROM general WHERE id=1";
+        $result = $this->_DB->getFirstRowQuery($query,true);
+	if($result != FALSE || $result != ""){
+	    $cont = 0;
+	    foreach($result as $key => $value){
+		if($key != "certificate"){
+		    if(!isset($value) || $value=="")
+			return false;
+		}
+		$cont++;
+	    }
+	    if($cont==0)
+		return false; //no hay registros en base
+	    else
+		return true;
+        }else
+	    return false;
     }
 }
 ?>
