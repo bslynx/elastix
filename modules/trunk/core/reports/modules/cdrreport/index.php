@@ -79,6 +79,7 @@ function _moduleContent(&$smarty, $module_name)
         ? '' 
         : $pACL->getUserExtension($_SESSION['elastix_user']);
 
+
     // Cadenas estáticas en la plantilla
     $smarty->assign(array(
         "Filter"    =>  _tr("Filter"),
@@ -171,18 +172,25 @@ function _moduleContent(&$smarty, $module_name)
 
     // Ejecutar el borrado, si se ha validado.
     if (isset($_POST['delete'])) {
-        if($paramFiltro['date_start'] <= $paramFiltro['date_end']){
-            $r = $oCDR->borrarCDRs($paramFiltro);
-            if (!$r) $smarty->assign(array(
-                'mb_title'      =>  _tr('ERROR'),
-                'mb_message'    =>  $oCDR->errMsg,
-            ));
-        }else{
-            $smarty->assign(array(
-                'mb_title'      =>  _tr('ERROR'),
-                'mb_message'    =>  _tr("Please End Date must be greater than Start Date"),
-            ));
-        }
+	if(!isset($sExtension) || $sExtension == ""  && !$pACL->isUserAdministratorGroup($_SESSION['elastix_user'])){
+	    $smarty->assign(array(
+		    'mb_title'      =>  _tr('ERROR'),
+		    'mb_message'    =>  _tr("Your username does not have any extension assigned."),
+		));
+	}else{
+	    if($paramFiltro['date_start'] <= $paramFiltro['date_end']){
+		$r = $oCDR->borrarCDRs($paramFiltro);
+		if (!$r) $smarty->assign(array(
+		    'mb_title'      =>  _tr('ERROR'),
+		    'mb_message'    =>  $oCDR->errMsg,
+		));
+	    }else{
+		$smarty->assign(array(
+		    'mb_title'      =>  _tr('ERROR'),
+		    'mb_message'    =>  _tr("Please End Date must be greater than Start Date"),
+		));
+	    }
+	}
     }
     
     // Generación del reporte
@@ -196,8 +204,10 @@ function _moduleContent(&$smarty, $module_name)
     $oGrid->setURL($url);
     
     $arrData = null;
-
-    $total = $oCDR->contarCDRs($paramFiltro);
+    if(!isset($sExtension) || $sExtension == ""  && !$pACL->isUserAdministratorGroup($_SESSION['elastix_user']))
+	$total = 0;
+    else
+	$total = $oCDR->contarCDRs($paramFiltro);
 
     if($oGrid->isExportAction()){
         $limit = $total;
@@ -205,8 +215,15 @@ function _moduleContent(&$smarty, $module_name)
         
         $arrColumns = array(_tr("Date"), _tr("Source"), _tr("Ring Group"), _tr("Destination"), _tr("Src. Channel"),_tr("Account Code"),_tr("Dst. Channel"),_tr("Status"),_tr("Duration"));
         $oGrid->setColumns($arrColumns);
-    
-        $arrResult = $oCDR->listarCDRs($paramFiltro, $limit, $offset);
+
+	if(!isset($sExtension) || $sExtension == ""  && !$pACL->isUserAdministratorGroup($_SESSION['elastix_user'])){
+	    $arrResult['cdrs'] = array();
+	    $smarty->assign(array(
+		    'mb_title'      =>  _tr('ERROR'),
+		    'mb_message'    =>  _tr("Your username does not have any extension assigned."),
+		));
+	}else
+	    $arrResult = $oCDR->listarCDRs($paramFiltro, $limit, $offset);
  
         if(is_array($arrResult['cdrs']) && $total>0){
             foreach($arrResult['cdrs'] as $key => $value){
@@ -242,8 +259,14 @@ function _moduleContent(&$smarty, $module_name)
         $oGrid->setTotal($total);
 
         $offset = $oGrid->calculateOffset();
-
-        $arrResult = $oCDR->listarCDRs($paramFiltro, $limit, $offset);
+	if(!isset($sExtension) || $sExtension == ""  && !$pACL->isUserAdministratorGroup($_SESSION['elastix_user'])){
+	    $arrResult['cdrs'] = array();
+	    $smarty->assign(array(
+		    'mb_title'      =>  _tr('ERROR'),
+		    'mb_message'    =>  _tr("Your username does not have any extension assigned."),
+		));
+	}else
+	    $arrResult = $oCDR->listarCDRs($paramFiltro, $limit, $offset);
 
         $arrColumns = array(_tr("Date"), _tr("Source"), _tr("Ring Group"), _tr("Destination"), _tr("Src. Channel"),_tr("Account Code"),_tr("Dst. Channel"),_tr("Status"),_tr("Duration"));
         $oGrid->setColumns($arrColumns);

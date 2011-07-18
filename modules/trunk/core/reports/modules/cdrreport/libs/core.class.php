@@ -300,18 +300,51 @@ class core_CDR
 
         // Se prepara la expresión regular para filtrar por extensión
         $sExtUsuario = $this->_leerExtension();
+
+	// nuevo realizado por eduardo cueva
+        $id_user = $this->_leerIdUser();
+	
+        $pACL = $this->_getACL();
+        $user = $pACL->getUsers($id_user);
+	$isUserAdmin = $pACL->isUserAdministratorGroup($user[0][1]);
+
+	if((!isset($sExtUsuario) || $sExtUsuario == "")  && !$isUserAdmin){
+	    $this->errMsg["fc"] = 'Not data found';
+            $this->errMsg["fm"] = 'Username does not have any extension assigned.';
+            $this->errMsg["fd"] = 'Unable to get CDRs';
+            $this->errMsg["cn"] = get_class($this);
+            return false;
+	}
+	// nuevo realizado por eduardo cueva
+
+
+
         $sRegExp = "^[[:alnum:]]+/{$sExtUsuario}[^[:digit:]]+";
         // Se construye la condición WHERE
-        $sFromWhere = "FROM cdr WHERE (channel REGEXP ? OR dstchannel REGEXP ?)";
-        $paramSQL = array($sRegExp, $sRegExp);
+        $sFromWhere = "FROM cdr ";
+	$paramSQL = array();
+
+	if(!$isUserAdmin){
+	    $sWhere = "WHERE (channel REGEXP ? OR dstchannel REGEXP ?)";
+	    $paramSQL = array($sRegExp, $sRegExp);
+	}
+        
         if (!is_null($sFechaInicio)) {
-            $sFromWhere .= " AND calldate >= ?";
+	    if(isset($sWhere))
+		$sWhere .= " AND calldate >= ?";
+	    else
+		$sWhere = " WHERE calldate >= ?";
             array_push($paramSQL, $sFechaInicio);
         }
         if (!is_null($sFechaFinal)) {
-            $sFromWhere .= " AND calldate <= ?";
+	    if(isset($sWhere))
+		$sWhere .= " AND calldate <= ?";
+	    else
+		$sWhere = " WHERE calldate <= ?";
             array_push($paramSQL, $sFechaFinal);
         }
+	if(isset($sWhere))
+	    $sFromWhere .= $sWhere;
         
         // Cuenta de registros que cumplen con las condiciones
         $pDB_AstCDR = $this->_getDB($this->_astcdrDSN);

@@ -53,5 +53,6 @@ $arrLangModule=array(
 "Please End Date must be greater than Start Date" => "Por favor la fecha final debe ser mayor a la fecha final",
 "Ring Group"=>"Grupo de Timbrado",
 "(Any ringgroup)"=>"(cualquier grupo)",
+"Your username does not have any extension assigned." => "Su usuario no tiene una extensión asignada.",
 );
 ?>

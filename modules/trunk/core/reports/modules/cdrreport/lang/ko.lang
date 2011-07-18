@@ -51,5 +51,8 @@ $arrLangModule=array(
 "Delete" => "Delete the displayed CDR(s)",
 "CDR Report" => "CDR Report",
 "Please End Date must be greater than Start Date" => "Please End Date must be greater than Start Date",
+"Ring Group"=>"Ring Group",
+"(Any ringgroup)"=>"(Any ringgroup)",
+"Your username does not have any extension assigned." => "Your username does not have any extension assigned.",
 );
 ?>
