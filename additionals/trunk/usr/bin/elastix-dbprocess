@@ -281,8 +281,13 @@ function executeSQL($data, $path_folder, $sql_export, $dbName, $action, $passwor
             $command = "";
             if($data["engine"]=="sqlite3")
                 $command = "sqlite3 $data[path]/$dbName.db '.read $path_folder/1_sqlFile.sql'";
-            if($data["engine"]=="mysql")
-                $command = "mysql -uroot \"-p$password\" < $path_folder/1_sqlFile.sql";
+            if($data["engine"]=="mysql"){
+		if(databaseExists("mysql",$dbName))
+		   $db = $dbName;
+		else
+		   $db = "";
+                $command = "mysql -uroot \"-p$password\" $db < $path_folder/1_sqlFile.sql";
+	    }
             echo "Executing $command ... \n";
             exec($command,$arrConsole,$status);
             echo "RETURN $status\n";
