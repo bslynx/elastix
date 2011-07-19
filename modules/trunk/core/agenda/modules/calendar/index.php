@@ -248,6 +248,7 @@ function viewCalendar($smarty, $module_name, $local_templates_dir, &$pDB, $arrCo
     $smarty->assign("Color", $arrLang["Color"]);
     $smarty->assign("CreateEvent", $arrLang["Create New Event"]);
     $smarty->assign("Listen", $arrLang["Listen"]);
+    $smarty->assign("Listen_here", _tr("Click here to listen"));
 
     $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",$arrLang["Calendar"], $_DATA);
     $content = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name' name='formNewEvent' id='formNewEvent'>".$htmlForm."</form>";

@@ -273,8 +273,8 @@ $(document).ready(function(){
     $('#listenTTS').click(function(){
         var number = $('#call_to').val();
         var tts    = $('textarea[name=tts]').val();
-        var order  = "action=getTextToSpeach&call_to="+number+"&tts="+tts+"&rawmode=yes";
-        if(isInteger(number)){
+        var order  = "action=getTextToSpeach&call_to="+number+"&tts=\""+tts+"\"&rawmode=yes";
+        if(isInteger(number) && number != ""){
             if(tts != ""){
                 $.post("index.php", order,function(){
                     //var message = JSONtoString(theResponse); 

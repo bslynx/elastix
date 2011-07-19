@@ -119,14 +119,6 @@
                                                 <td align="left"><b>{$ReminderTime.LABEL}: <span  class="required">*</span></b></td>
                                                 <td align="left">{$ReminderTime.INPUT}&nbsp;&nbsp;</td>
                                             </tr>
-                                            <!--<tr class="letra12 remin" height="30px" style="{$visibility_alert}">
-                                                <td align="left"><b>{$recording.LABEL}: <span  class="required">*</span></b></td>
-                                                <td align="left">{$recording.INPUT}&nbsp;&nbsp;
-                                                    <div class="new_box_rec" style="display: inline;">
-                                                        {$new_recording}
-                                                    </div>
-                                                </td>
-                                            </tr>-->
                                             <tr class="letra12 remin" height="30px" style="{$visibility_alert}">
                                                 <td align="left" colspan="2" height="80px">
                                                     <div>
@@ -136,7 +128,7 @@
                                                         <div align="right">
                                                             <b><span class="counter">140</span></b>
                                                             <a id="listenTTS" style="cursor: pointer;">
-                                                                <img src="modules/{$module_name}/images/speaker.png" style="position: relative; right: 30px;" alt="{$Listen}"/>
+                                                                <img src="modules/{$module_name}/images/speaker.png" style="position: relative; right: 30px;" alt="{$Listen}" title="{$Listen_here}"/>
                                                             </a>
                                                         </div>
                                                     </div>
