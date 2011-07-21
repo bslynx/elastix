@@ -536,7 +536,7 @@ class paloSantoAntispam {
         exec("sudo -u root chown asterisk.asterisk /etc/cron.d/");
         if(is_file($FILE))
             exec("sudo -u root chown asterisk.asterisk /etc/cron.d/checkSpamFolder.cron");
-        $line  = "59 23 * * *  root /usr/bin/php -q /var/www/checkSpamFolder.php\n";
+        $line  = "55 23 * * *  root /usr/bin/php -q /var/www/checkSpamFolder.php\n";
         $line .= "59 23 * * *  root /usr/bin/php -q /var/www/deleteSpam.php $time\n";
         $fp = fopen($FILE,'w');
         fwrite($fp,$line);
@@ -598,18 +598,26 @@ SCRIPT;
                     $uids = trim($sal[1]); //ids de mensajes
                     if($uids != ""){
                         //$bValido=$cyr_conn->command(". store 1:* +flags \Deleted");
-                        $bValido=$cyr_conn->command(". store $uids +flags \Deleted"); // messages $uids = 1 2 4 5 7 8
+			$uids = trim($uids);
+			$uids = str_replace(" ", ",",$uids);
+			if(strlen($uids)>100){
+			    $arrID = explode(",","$uids");
+			    $size = count($arrID);
+			    $limitID = $arrID[0].":".$arrID[$size-1];
+			    $bValido=$cyr_conn->command(". store $limitID +flags \Deleted");
+			}else
+			    $bValido=$cyr_conn->command(". store $uids +flags \Deleted"); // messages $uids = 1 2 4 5 7 8
                         if(!$bValido)
                             $error_msg = "error cannot be deleted the messages of Spam folder for $email:".$cyr_conn->getMessage()."<br>";
                         else{
                             $bValido=$cyr_conn->command(". expunge");
                             if(!$bValido)
                                 $error_msg = "error cannot be deleted the messages of Spam folder for $email:".$cyr_conn->getMessage()."<br>";
-                            else{
+                            /*else{
                                 $bValido=$cyr_conn->command(". noop");
                                 if(!$bValido)
                                     $error_msg = "error cannot be deleted the messages of Spam folder for $email:".$cyr_conn->getMessage()."<br>";
-                            }
+                            }*/
                         }
                     }
                 }
