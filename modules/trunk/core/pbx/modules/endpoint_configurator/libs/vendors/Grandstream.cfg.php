@@ -101,10 +101,7 @@ function PrincipalFileGrandstream($DisplayName, $id_device, $secret, $ipAdressSe
     P34 = $secret
     
     # Display Name (John Doe)
-    P3 = $DisplayName
-    
-    # DHCP support. 0 - yes, 1 - no
-    P8 = 1";
+    P3 = $DisplayName";
     }
     return $content;
 }

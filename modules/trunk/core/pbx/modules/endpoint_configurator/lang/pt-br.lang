@@ -36,7 +36,7 @@ $arrLangModule=array(
 "Discover Endpoints in this Network" => "Discover Endpoints in this Network",
 "Display Name" => "Nome de Exibição",
 "MAC Adress" => "Endereço MAC",
-"Phone Type" => "Tipo de Telefone",
+"Phone Type" => "Model",
 "IP Adress" => "Endereço IP",
 "Vendor" => "Fabricante",
 "User Extension" => "Ramal do Usuário",
@@ -65,6 +65,8 @@ $arrLangModule=array(
 "Current Extension" => "Current Extension",
 "Not Registered" => "Not Registered",
 "MESSAGE" => "MESSAGE",
-"The Extension(s) parameters have been saved. Each checked phone will be configured with the new parameters once it has finished rebooting" => "The Extension(s) parameters have been saved. Each checked phone will be configured with the new parameters once it has finished rebooting"
+"The Extension(s) parameters have been saved. Each checked phone will be configured with the new parameters once it has finished rebooting" => "The Extension(s) parameters have been saved. Each checked phone will be configured with the new parameters once it has finished rebooting",
+"Select a model" => "Select a model",
+"Not Applicable" => "Not Applicable"
 );
 ?>

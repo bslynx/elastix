@@ -116,7 +116,10 @@ class PaloSantoFileEndPoint
 
             case 'Atcom':
                 if($ArrayData['data']['model'] == "AT 320"){
-                    $contentFileAtcom = PrincipalFileAtcom320($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer,$ArrayData['data']['filename']);
+		    if($ArrayData['data']['tech'] == "iax2")
+			$contentFileAtcom = PrincipalFileAtcom320IAX($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer,$ArrayData['data']['filename']);
+		    else
+			$contentFileAtcom = PrincipalFileAtcom320SIP($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer,$ArrayData['data']['filename']);
                     $result = $this->telnet($ArrayData['data']['ip_endpoint'], "", "12345678", $contentFileAtcom);
                     if($result) return true;
                     else return false;
@@ -126,7 +129,10 @@ class PaloSantoFileEndPoint
                         $version = $ArrayData['data']['arrParameters']['versionCfg'];
                     else
                         $version = "2.0002";
-                    $contentFileAtcom = PrincipalFileAtcom530($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer,$ArrayData['data']['filename'], $version);
+		    if($ArrayData['data']['tech'] == "iax2")
+			$contentFileAtcom = PrincipalFileAtcom530IAX($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer,$ArrayData['data']['filename'], $version);
+		    else
+			$contentFileAtcom = PrincipalFileAtcom530SIP($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer,$ArrayData['data']['filename'], $version);
                     if($this->createFileConf($this->directory,"atc".$ArrayData['data']['filename'].".cfg", $contentFileAtcom))
                     {
                         $arrComandos = arrAtcom530($this->ipAdressServer, $ArrayData['data']['filename']);

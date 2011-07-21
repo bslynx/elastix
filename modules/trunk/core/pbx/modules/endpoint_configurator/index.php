@@ -33,6 +33,7 @@ function _moduleContent(&$smarty, $module_name)
     include_once "libs/paloSantoGrid.class.php";
     include_once "libs/paloSantoValidar.class.php";
     include_once "libs/paloSantoConfig.class.php";
+    include_once "libs/paloSantoJSON.class.php";
     include_once "libs/misc.lib.php";
 
     //include module files
@@ -70,6 +71,7 @@ function _moduleContent(&$smarty, $module_name)
     if(isset($_POST["endpoint_scan"])) $accion ="endpoint_scan";
     else if(isset($_POST["endpoint_set"])) $accion ="endpoint_set";
     else if(isset($_POST["endpoint_unset"])) $accion ="endpoint_unset";
+    else if(isset($_POST["action"])) $accion = $_POST["action"];
     else $accion ="endpoint_show";
     $content = "";
 
@@ -87,6 +89,9 @@ function _moduleContent(&$smarty, $module_name)
         case "endpoint_unset":
             $content = endpointConfiguratedUnset($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrLang, $arrConf);
             break;
+	case "getDevices":
+	    $content = getDevices($dsnAsterisk,$dsnSqlite);
+	    break;
         default: // endpoint_show            
             $content = buildReport($_SESSION['elastix_endpoints'], $smarty, $module_name, $arrLang, network());
             break;
@@ -98,12 +103,13 @@ function endpointConfiguratedShow($smarty, $module_name, $local_templates_dir, $
 {
     $arrData = array();
     if(!isset($_SESSION['elastix_endpoints']) || !is_array($_SESSION['elastix_endpoints']) || empty($_SESSION['elastix_endpoints'])){
-        $paloEndPoint     = new paloSantoEndPoint($dsnAsterisk,$dsnSqlite);
-        $arrEndpointsConf = $paloEndPoint->listEndpointConf();
-        $arrVendor        = $paloEndPoint->listVendor();
-        $arrDeviceFreePBX = $paloEndPoint->getDeviceFreePBX();
-        $endpoint_mask    = isset($_POST['endpoint_mask'])?$_POST['endpoint_mask']:network();
-        $pValidator       = new PaloValidar();
+        $paloEndPoint        = new paloSantoEndPoint($dsnAsterisk,$dsnSqlite);
+        $arrEndpointsConf    = $paloEndPoint->listEndpointConf();
+        $arrVendor           = $paloEndPoint->listVendor();
+        $arrDeviceFreePBX    = $paloEndPoint->getDeviceFreePBX();
+	$arrDeviceFreePBXAll = $paloEndPoint->getDeviceFreePBX(true);
+        $endpoint_mask       = isset($_POST['endpoint_mask'])?$_POST['endpoint_mask']:network();
+        $pValidator          = new PaloValidar();
 
         if(!$pValidator->validar('endpoint_mask', $endpoint_mask, 'ip/mask')){
             $smarty->assign("mb_title",$arrLang['ERROR'].":");
@@ -115,14 +121,25 @@ function endpointConfiguratedShow($smarty, $module_name, $local_templates_dir, $
             }
             $smarty->assign("mb_message",$arrLang['Invalid Format in Parameter'].": ".$strErrorMsg);
         }else{
-            $arrEndpointsMap  = $paloEndPoint->endpointMap($endpoint_mask,$arrVendor,$arrEndpointsConf);
+
+	    $pattonDevices    = $paloEndPoint->getPattonDevices();
+            $arrEndpointsMap  = $paloEndPoint->endpointMap($endpoint_mask,$arrVendor,$arrEndpointsConf,$pattonDevices);
 
             if($arrEndpointsMap==false){
                 $smarty->assign("mb_title",$arrLang['ERROR'].":");
                 $smarty->assign("mb_message",$paloEndPoint->errMsg);
             }
-            else if(is_array($arrEndpointsMap) && count($arrEndpointsMap)>0){
+
+            if(is_array($arrEndpointsMap) && count($arrEndpointsMap)>0){
                 foreach($arrEndpointsMap as $key => $endspoint){
+		    if(isset($endspoint['model_no']) && $endspoint['model_no'] != ""){
+			if($paloEndPoint->modelSupportIAX($endspoint['model_no']))
+			    $comboDevices = combo($arrDeviceFreePBXAll,$endspoint['account']);
+			else
+			    $comboDevices = combo($arrDeviceFreePBX,$endspoint['account']);
+		    }
+		    else
+			$comboDevices = combo(array("Select a model" => _tr("Select a model")),"");
                     if($endspoint['configurated']){
                         $unset  = "<input type='checkbox' name='epmac_{$endspoint['mac_adress']}'  />";
                         $report = $paloEndPoint->compareDevicesAsteriskSqlite($endspoint['account']);
@@ -132,18 +149,31 @@ function endpointConfiguratedShow($smarty, $module_name, $local_templates_dir, $
                     }
                     if($endspoint['desc_vendor'] == "Unknown")
                         $endspoint['desc_vendor'] = $paloEndPoint->getDescription($endspoint['name_vendor']);
+		    $macWithout2Points = str_replace(":","",$endspoint['mac_adress']);
                     $currentExtension = $paloEndPoint->getExtension($endspoint['ip_adress']);
-                    $arrTmp[0] = "<input type='checkbox' name='epmac_{$endspoint['mac_adress']}'  />";
-                    $arrTmp[1] = $unset;
+
+		    if($endspoint["name_vendor"] == "Patton"){
+			$arrTmp[0] = "";
+			$arrTmp[1] = "";
+			$arrTmp[5] = $endspoint["model_no"];
+			$arrTmp[6] = _tr("Not Applicable");
+			$arrTmp[7] = _tr("Not Applicable");
+		    }
+		    else{
+			$arrTmp[0] = "<input type='checkbox' name='epmac_{$endspoint['mac_adress']}'  />";
+			$arrTmp[1] = $unset;
+			$arrTmp[5] = "<select name='id_model_device_{$endspoint['mac_adress']}' onchange='getDevices(this,\"$macWithout2Points\");'>".combo($paloEndPoint->getAllModelsVendor($endspoint['name_vendor']),$endspoint['model_no'])."</select>";
+			$arrTmp[6] = "<select name='id_device_{$endspoint['mac_adress']}' id='id_device_$macWithout2Points'   >$comboDevices</select>";
+			if($currentExtension != "Not Registered")
+			    $arrTmp[7] = "<font color = 'green'>$currentExtension</font>";
+			else
+			    $arrTmp[7] = $currentExtension;
+		    }
+
                     $arrTmp[2] = $endspoint['mac_adress'];
                     $arrTmp[3] = "<a href='http://{$endspoint['ip_adress']}/' target='_blank'>{$endspoint['ip_adress']}</a><input type='hidden' name='ip_adress_endpoint_{$endspoint['mac_adress']}' value='{$endspoint['ip_adress']}' />";
                     $arrTmp[4] = $endspoint['name_vendor']." / ".$endspoint['desc_vendor']."&nbsp;<input type='hidden' name='id_vendor_device_{$endspoint['mac_adress']}' value='{$endspoint['id_vendor']}' />&nbsp;<input type='hidden' name='name_vendor_device_{$endspoint['mac_adress']}' value='{$endspoint['name_vendor']}' />";
-                    $arrTmp[5] = "<select name='id_model_device_{$endspoint['mac_adress']}' >".combo($paloEndPoint->getAllModelsVendor($endspoint['name_vendor']),$endspoint['model_no'])."</select>";
-                    $arrTmp[6] = "<select name='id_device_{$endspoint['mac_adress']}'    >".combo($arrDeviceFreePBX,$endspoint['account'])                                               ."</select>";
-                    if($currentExtension != "Not Registered")
-                        $arrTmp[7] = "<font color = 'green'>$currentExtension</font>";
-                    else
-                        $arrTmp[7] = $currentExtension;
+                  
                     $arrData[] = $arrTmp;
                 }
                 $_SESSION['elastix_endpoints'] = $arrData; 
@@ -159,6 +189,27 @@ function endpointConfiguratedShow($smarty, $module_name, $local_templates_dir, $
         $arrData = $_SESSION['elastix_endpoints'];
     }
     return buildReport($arrData,$smarty,$module_name,$arrLang, $endpoint_mask);
+}
+
+function getDevices($dsnAsterisk,$dsnSqlite)
+{
+    $jsonObject    = new PaloSantoJSON();
+    $paloEndPoint  = new paloSantoEndPoint($dsnAsterisk,$dsnSqlite);
+    $idModel	   = getParameter("id_model");
+    if($idModel == "unselected")
+	$jsonObject->set_message(array("Select a model" => _tr("Select a model")));
+    else{
+	$iaxSupport	   = $paloEndPoint->modelSupportIAX($idModel);
+	if($iaxSupport === null)
+	    $jsonObject->set_error("yes");
+	else{
+	    if($iaxSupport)
+		$jsonObject->set_message($paloEndPoint->getDeviceFreePBX(true));
+	    else
+		$jsonObject->set_message($paloEndPoint->getDeviceFreePBX());
+	}
+    }
+    return $jsonObject->createJSON();
 }
 
 function buildReport($arrData, $smarty, $module_name, $arrLang, $endpoint_mask)
@@ -234,7 +285,6 @@ function endpointConfiguratedSet($smarty, $module_name, $local_templates_dir, $d
     $paloEndPoint     = new paloSantoEndPoint($dsnAsterisk,$dsnSqlite);
     $paloFileEndPoint = new PaloSantoFileEndPoint($arrConf["tftpboot_path"]);
     $arrFindVendor    = array(); //variable de ayuda, para llamar solo una vez la funcion createFilesGlobal de cada vendor
-
     $valid = validateParameterEndpoint($_POST, $module_name,$dsnAsterisk,$dsnSqlite);
     if($valid!=false){
         $smarty->assign("mb_title",$arrLang['ERROR'].":");
@@ -246,7 +296,8 @@ function endpointConfiguratedSet($smarty, $module_name, $local_templates_dir, $d
     foreach($_POST as $key => $values){
         if(substr($key,0,6) == "epmac_"){ //encontre una mac seleccionada entoces por forma empirica con ayuda del mac_adress obtego los parametros q se relacionan con esa mac.
             $tmpMac = substr($key,6);
-            $freePBXParameters = $paloEndPoint->getDeviceFreePBXParameters($_POST["id_device_$tmpMac"]);
+	    $tech   = $paloEndPoint->getTech($_POST["id_device_$tmpMac"]);
+            $freePBXParameters = $paloEndPoint->getDeviceFreePBXParameters($_POST["id_device_$tmpMac"],$tech);
 
             $tmpEndpoint['id_device']   = $freePBXParameters['id_device'];
             $tmpEndpoint['desc_device'] = $freePBXParameters['desc_device'];
@@ -280,7 +331,8 @@ function endpointConfiguratedSet($smarty, $module_name, $local_templates_dir, $d
                         "secret"       => $tmpEndpoint['secret'],
                         "model"        => $name_model,
                         "ip_endpoint"  => $tmpEndpoint['ip_adress'],
-                        "arrParameters"=> $tmpEndpoint['arrParameters']
+                        "arrParameters"=> $tmpEndpoint['arrParameters'],
+			"tech"	       => $tech
                         );
 
                 //Falta si hay error en la creacion de un archivo, ya esta para saber q error es, el problema es como manejar un error o los errores dentro del este lazo (foreach).
@@ -312,7 +364,8 @@ function validateParameterEndpoint($arrParameters, $module_name, $dsnAsterisk, $
     closedir($h);
 
     $paloEndPoint = new paloSantoEndPoint($dsnAsterisk,$dsnSqlite);
-    $arrDeviceFreePBX = $paloEndPoint->getDeviceFreePBX();
+    $arrDeviceFreePBX    = $paloEndPoint->getDeviceFreePBX();
+    $arrDeviceFreePBXAll = $paloEndPoint->getDeviceFreePBX(true);
     $error = false;
     foreach($arrParameters as $key => $values){
         if(substr($key,0,6) == "epmac_"){ //encontre una mac seleccionada entoces por forma empirica con ayuda del mac_adress obtego los parametros q se relacionan con esa mac.
@@ -322,23 +375,46 @@ function validateParameterEndpoint($arrParameters, $module_name, $dsnAsterisk, $
             if (!preg_match('/^((([[:xdigit:]]){2}:){5}([[:xdigit:]]){2})$/i', $tmpMac))
                 $error .= "Invalid MAC address for endpoint<br />";
             
-            $tmpDevice = $arrParameters["id_device_$tmpMac"];
-            $tmpModel  = $arrParameters["id_model_device_$tmpMac"];
-            $tmpVendor = $arrParameters["name_vendor_device_$tmpMac"];
-            if($tmpDevice == "unselected" || $tmpDevice == "no_device" || $tmpModel == "unselected") //el primero que encuentre sin seleccionar mantiene el error
+            $tmpDevice       = $arrParameters["id_device_$tmpMac"];
+            $tmpModel        = $arrParameters["id_model_device_$tmpMac"];
+            $tmpVendor       = $arrParameters["name_vendor_device_$tmpMac"];
+	    $tmpidVendor     = $arrParameters["id_vendor_device_$tmpMac"];
+	    $tmpModelsVendor = $paloEndPoint->getAllModelsVendor($tmpVendor);
+	    if(!array_key_exists($tmpModel,$tmpModelsVendor))
+		$error .= "The model entered does not exist or does not belong to this vendor. <br />";
+	    $dataVendor = $paloEndPoint->getVendor(substr($tmpMac,0,8));
+	    if(!isset($dataVendor["name"]) || $dataVendor["name"] != $tmpVendor || !isset($dataVendor["id"]) || $dataVendor["id"] != $tmpidVendor)
+		$error .= "The id or/and name of vendor do not match with the mac address. <br />";
+	    if(isset($tmpModel) && $tmpModel != ""){
+		if($paloEndPoint->modelSupportIAX($tmpModel)){
+		    $comboDevices = combo($arrDeviceFreePBXAll,$tmpDevice);
+		    if(!array_key_exists($tmpDevice,$arrDeviceFreePBXAll))
+			$error .= "The assigned User Extension does not exist or is not allowed. <br />";
+		}
+		else{
+		    $comboDevices = combo($arrDeviceFreePBX,$tmpDevice);
+		    if(!array_key_exists($tmpDevice,$arrDeviceFreePBX))
+			$error .= "The assigned User Extension does not exist or is not allowed. <br />";
+		}
+	    }
+	    else
+		$comboDevices = combo(array("Select a model" => _tr("Select a model")),"");
+	    
+            if($tmpDevice == "unselected" || $tmpDevice == "no_device" || $tmpModel == "unselected" || $tmpDevice == "Select a model") //el primero que encuentre sin seleccionar mantiene el error
                 $error .= "The mac adress $tmpMac unselected Phone Type or User Extension. <br />";
 
             // Revisar que el vendedor es uno de los vendedores conocidos
             if (!in_array($tmpVendor, $vendorList))
                 $error .= "Invalid or unsupported vendor<br />";
-
+	    
+	    $macWithout2Points = str_replace(":","",$tmpMac);
             //PASO 2: Recorro el arreglo de la sesion para modificar y mantener los valores q el usuario ha decidido elegir asi cuando halla un error los datos persisten.
             if(isset($_SESSION['elastix_endpoints'])){
                 foreach($_SESSION['elastix_endpoints'] as &$data){//tomo la referencia del elemento para poder modificar su contenido por referencia.
                     if($data[2]==$tmpMac){
                         $data[0] = "<input type='checkbox' name='epmac_$tmpMac' checked='checked' />";
-                        $data[5] = "<select name='id_model_device_$tmpMac' >".combo($paloEndPoint->getAllModelsVendor($tmpVendor),$tmpModel)."</select>";
-                        $data[6] = "<select name='id_device_$tmpMac'       >".combo($arrDeviceFreePBX,$tmpDevice)                           ."</select>";
+                        $data[5] = "<select name='id_model_device_$tmpMac' onchange='getDevices(this,\"$macWithout2Points\");'>".combo($tmpModelsVendor,$tmpModel)."</select>";
+                        $data[6] = "<select name='id_device_$tmpMac' id='id_device_$macWithout2Points'>".$comboDevices."</select>";
                     }
                 }
             } 
