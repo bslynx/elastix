@@ -25,7 +25,7 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: paloSantoFileEndPoint.class.php,v 1.1 2008/01/22 15:05:57 afigueroa Exp $ */
+  $Id: paloSantoFileEndPoint.class.php,v 1.1 2008/01/22 15:05:57 asantos@palosanto.com Alberto Santos Exp $ */
 
 if (file_exists("/var/lib/asterisk/agi-bin/phpagi-asmanager.php")) {
 require_once "/var/lib/asterisk/agi-bin/phpagi-asmanager.php";
@@ -116,13 +116,23 @@ class PaloSantoFileEndPoint
 
             case 'Atcom':
                 if($ArrayData['data']['model'] == "AT 320"){
-                    $contentFileAtcom = PrincipalFileAtcom320($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer,$ArrayData['data']['filename']);
+		    if($ArrayData['data']['tech'] == "iax2")
+			$contentFileAtcom = PrincipalFileAtcom320IAX($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer,$ArrayData['data']['filename']);
+		    else
+			$contentFileAtcom = PrincipalFileAtcom320SIP($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer,$ArrayData['data']['filename']);
                     $result = $this->telnet($ArrayData['data']['ip_endpoint'], "", "12345678", $contentFileAtcom);
                     if($result) return true;
                     else return false;
                 }
                 else if($ArrayData['data']['model'] == "AT 530" || $ArrayData['data']['model'] == "AT 620R"){
-                    $contentFileAtcom = PrincipalFileAtcom530($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer,$ArrayData['data']['filename'], $ArrayData['data']['arrParameters']['versionCfg']);
+                    if(isset($ArrayData['data']['arrParameters']['versionCfg']))
+                        $version = $ArrayData['data']['arrParameters']['versionCfg'];
+                    else
+                        $version = "2.0002";
+		    if($ArrayData['data']['tech'] == "iax2")
+			$contentFileAtcom = PrincipalFileAtcom530IAX($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer,$ArrayData['data']['filename'], $version);
+		    else
+			$contentFileAtcom = PrincipalFileAtcom530SIP($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer,$ArrayData['data']['filename'], $version);
                     if($this->createFileConf($this->directory,"atc".$ArrayData['data']['filename'].".cfg", $contentFileAtcom))
                     {
                         $arrComandos = arrAtcom530($this->ipAdressServer, $ArrayData['data']['filename']);
@@ -167,6 +177,7 @@ class PaloSantoFileEndPoint
                     else return false;
                 }
                 else return false;
+
                 break;
 
             case 'AudioCodes':
@@ -174,16 +185,12 @@ class PaloSantoFileEndPoint
                 if($this->createFileConf($this->directory, $ArrayData['data']['model']."_".$ArrayData['data']['filename'].".cfg", $contentAudioCodes))
                     return true;
                 else return false;
-                break;
+            break;
 
             case 'Yealink':
-               if($ArrayData['data']['model'] == "SIP-T20/T20P" || $ArrayData['data']['model'] == "SIP-T22/T22P" || $ArrayData['data']['model'] == "SIP-T26/T26P" || $ArrayData['data']['model'] == "SIP-T28/T28P"){
+               if($ArrayData['data']['model'] == "SIP-T20/T20P" || $ArrayData['data']['model'] == "SIP-T22/T22P" || $ArrayData['data']['model'] == "SIP-T26/T26P" || $ArrayData['data']['model'] == "SIP-T28/T28P" ){
                     $contentFileYealink =PrincipalFileYealink($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer);
                         if($this->createFileConf($this->directory, $ArrayData['data']['filename'].".cfg", $contentFileYealink)){
-                            $parameters  = array('Command'=>'sip notify reboot-yealink '.$ArrayData['data']['ip_endpoint']);
-                            $result      = $this->AsteriskManagerAPI('Command',$parameters);
-                            if(!$result)
-                                return false;
                             return true;
                         }
                         return false;
@@ -213,7 +220,6 @@ class PaloSantoFileEndPoint
     function createFileConf($tftpBootPath, $nameFileConf, $contentConf)
     {
         global $arrLang;
-
         if(!is_dir($tftpBootPath)) mkdir($tftpBootPath,0755,true);
 
         if (file_exists("$tftpBootPath/$nameFileConf") && !is_writable("$tftpBootPath/$nameFileConf")) {
@@ -368,7 +374,7 @@ class PaloSantoFileEndPoint
             case 'Grandstream':
                 //Creando archivos de ejemplo.
                 $contentFileAatra = templatesFileGrandstream($this->ipAdressServer);
-                $this->createFileConf($this->directory, "gxp_config_1.1.6.46.template.cfg", $contentFileAatra);
+                $this->createFileConf($this->directory, "gxp_config_1.1.6.46.template", $contentFileAatra);
                 return true; //no es tan importante la necesidad de estos archivos solo son de ejemplo.
                 break;
 
@@ -380,7 +386,6 @@ class PaloSantoFileEndPoint
                 $this->createFileConf($this->directory, "ZIP2x2_common.template.cfg", $contentFileZultys);
                 return true; //no es tan importante la necesidad de estos archivos solo son de ejemplo.
                 break;
-
             case 'AudioCodes':
                 $contentAudioCodes = templatesFileAudioCodes($this->ipAdressServer);
                 $this->createFileConf($this->directory, "AudioCodes.template", $contentAudioCodes);

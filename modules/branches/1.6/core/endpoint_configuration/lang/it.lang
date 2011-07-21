@@ -32,11 +32,11 @@
   $Id: it.lang,v 1.7 2008/02/18 10:07:17 bmacias@palosanto.com Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Endpoint Configuration" => "Configurazione EndPoint",
-"Endpoint Scan" => "Scansione EndPoint",
+"Endpoint Configurator" => "Configurazione EndPoint",
+"Discover Endpoints in this Network" => "Scansione EndPoint",
 "Display Name" => "Nome Visualizzato",
-"MAC Adress" => "MAC Address",
-"Phone Type" => "Tipo di Telefono",
+"MAC Adress" => "MAC Adress",
+"Phone Type" => "Model",
 "IP Adress" => "Indirizzo IP",
 "Vendor" => "Venditore",
 "User Extension" => "Extension Utente",
@@ -65,6 +65,8 @@ $arrLangModule=array(
 "Current Extension" => "Current Extension",
 "Not Registered" => "Not Registered",
 "MESSAGE" => "MESSAGE",
-"The Extension(s) parameters have been saved. Each checked phone will be configured with the new parameters once it has finished rebooting" => "The Extension(s) parameters have been saved. Each checked phone will be configured with the new parameters once it has finished rebooting"
+"The Extension(s) parameters have been saved. Each checked phone will be configured with the new parameters once it has finished rebooting" => "The Extension(s) parameters have been saved. Each checked phone will be configured with the new parameters once it has finished rebooting",
+"Select a model" => "Select a model",
+"Not Applicable" => "Not Applicable"
 );
 ?>

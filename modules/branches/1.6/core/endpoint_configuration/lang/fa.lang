@@ -32,7 +32,7 @@
 global $arrLangModule;
 $arrLangModule=array(
 "Endpoint Configuration" => "تنظیمات تلفن ها",
-"Endpoint Scan" => "جستجوی تلفن ها",
+"Discover Endpoints in this Network" => "يافتن تلفن ها در اين شبکه",
 "Display Name" => "نام",
 "MAC Adress" => "آدرس مک شبکه",
 "Phone Type" => "نوع تلفن",
@@ -58,12 +58,15 @@ $arrLangModule=array(
 "No Extensions" => "بدون داخلی",
 "Invalid Format in Parameter" => "پارامتر با ساختار ناشناخته",
 "It can take several minutes, because your ip address has some devices, " => "It can take several minutes, because your ip address has some devices, ",
-"WARNING" => "WARNING",
+"WARNING" => "اخطار",
 "Status" => "وضعیت",
 "ERROR" => "خطا",
+"Endpoint Configurator" => "Endpoint Configurator",
 "Current Extension" => "Current Extension",
 "Not Registered" => "Not Registered",
 "MESSAGE" => "MESSAGE",
-"The Extension(s) parameters have been saved. Each checked phone will be configured with the new parameters once it has finished rebooting" => "The Extension(s) parameters have been saved. Each checked phone will be configured with the new parameters once it has finished rebooting"
+"The Extension(s) parameters have been saved. Each checked phone will be configured with the new parameters once it has finished rebooting" => "The Extension(s) parameters have been saved. Each checked phone will be configured with the new parameters once it has finished rebooting",
+"Select a model" => "Select a model",
+"Not Applicable" => "Not Applicable"
 );
 ?>

@@ -282,7 +282,70 @@ TEMP;
     return $content;
 }
 
-function PrincipalFileAtcom320($DisplayName, $id_device, $secret, $ipAdressServer)
+function PrincipalFileAtcom320IAX($DisplayName, $id_device, $secret, $ipAdressServer)
+{
+$arrAtcom320 = array(
+//***************Network Settings***************
+"set iptype"    => "1", //dhcp
+// "set vlan"      => "0", //disable
+
+//***************Audio Settings***************
+"set codec1"    => "2", //g711u
+// "set codec2"    => "6", //null
+// "set codec3"    => "6", //null
+// "set codec4"    => "6", //null
+// "set codec5"    => "6", //null
+// "set codec6"    => "6", //null
+// "set vad"           => "0", //disable
+// "set agc"           => "0", //disable
+// "set aec"           => "1", //enable
+// "set audioframes"   => "2",
+// "set 6.3k"          => "1", //enable
+// "set ilbcpayload"   => "97",
+// "set jittersize"    => "0",
+// "set handsetin"     => "7",
+// "set handsetout"    => "20",
+"set ringtype"      => "2", //user define
+// "set speakerout"    => "31",
+// "set speakerin"     => "15",
+
+//***************Dial Plan Settings***************
+// "set dialplan"  => "0", //disable
+// "set innerline"     => "0", //disable
+// "set callwaiting"   => "0", //disable
+// "set fwdpoweroff"   => "0", //disable
+// "set fwdalways"     => "0", //disable
+// "set fwdbusy"   => "0", //disable
+// "set fwdnoanswer"   => "0", //disable
+// "set digitmap"  => "0", //disable
+
+//***************Protocol Settings***************
+"set service"       => "1", //enable
+// "set registerttl"   => "60",
+"set serviceaddr"   => $ipAdressServer,
+"set phonenumber"   => $id_device,
+"set account"       => $id_device,
+"set pin"           => $secret,
+"set localport"     => "4569",
+// "set tos"           => "0",
+
+//***************Other Settings***************
+// "set superpassword" => "12345678",
+// "set debug"         => "0", //disable
+// "set password"      => "1234",
+// "set upgradetype"   => "0", //disable
+// "set upgradeaddr"   => "empty",
+"set sntpip"        => $ipAdressServer,
+// "set daylight"      => "0", //disable
+// "set timezone"      => "55", //(GMT+07:00)Bangkok,Jakarta,Hanoi
+//***************Save Settings***************
+"write"         => "",
+);
+
+    return $arrAtcom320;
+}
+
+function PrincipalFileAtcom320SIP($DisplayName, $id_device, $secret, $ipAdressServer)
 {
 $arrAtcom320 = array(
 //***************Network Settings***************
@@ -355,19 +418,14 @@ $arrAtcom320 = array(
     return $arrAtcom320;
 }
 
-function PrincipalFileAtcom530($DisplayName, $id_device, $secret, $ipAdressServer, $macAdress, $versionCfg)
+function PrincipalFileAtcom530SIP($DisplayName, $id_device, $secret, $ipAdressServer, $macAdress, $versionCfg)
 {
    $versionCfg = isset($versionCfg)?$versionCfg:'2.0002';
    $content=
 "<<VOIP CONFIG FILE>>Version:$versionCfg                         
 
 <GLOBAL CONFIG MODULE>
-Static IP          :
-Static NetMask     :
-Static GateWay     :
 Default Protocol   :2
-Primary DNS        :
-Alter DNS          :
 DHCP Mode          :1
 DHCP Dns           :1
 SNTP Server        :$ipAdressServer
@@ -439,6 +497,68 @@ SIP1 CLIR          :0
 SIP1 RFC Ver       :1
 SIP1 Use Mixer     :0
 SIP1 Mixer Uri     :
+
+<AUTOUPDATE CONFIG MODULE>
+Download Username  :user
+Download password  :pass
+Download Server IP :$ipAdressServer
+Config File Name   :atc$macAdress.cfg
+Config File Key    :
+Download Protocol  :2
+Download Mode      :1
+Download Interval  :1
+<<END OF FILE>>";
+
+    return $content;
+}
+
+function PrincipalFileAtcom530IAX($DisplayName, $id_device, $secret, $ipAdressServer, $macAdress, $versionCfg)
+{
+   $versionCfg = isset($versionCfg)?$versionCfg:'2.0002';
+   $content=
+"<<VOIP CONFIG FILE>>Version:$versionCfg                         
+
+<GLOBAL CONFIG MODULE>
+Default Protocol   :2
+DHCP Mode          :1
+DHCP Dns           :1
+SNTP Server        :$ipAdressServer
+Enable SNTP        :1
+Time Zone          :12
+Enable Daylight    :0
+
+<LAN CONFIG MODULE>
+Lan Ip             :192.168.10.1
+Lan NetMask        :255.255.255.0
+Bridge Mode        :1
+
+<TELE CONFIG MODULE>
+Dial End With #    :1
+Dial Fixed Length  :0
+Fixed Length       :11
+Dial With Timeout  :1
+Dial Timeout value :5
+
+<DSP CONFIG MODULE>
+VAD                :0
+Ring Type          :1
+--Port Config--    :
+P1 Codec           :1
+
+<IAX2 CONFIG MODULE>
+Server   Address   :$ipAdressServer
+Server   Port      :4569
+User     Name      :$id_device
+User     Password  :$secret
+User     Number    :$id_device
+Voice    Number    :0
+Voice    Text      :mail
+EchoTest Number    :1
+EchoTest Text      :echo
+Local    Port      :4569
+Enable   Register  :1
+Refresh  Time      :60
+Enable   G.729     :0
 
 <AUTOUPDATE CONFIG MODULE>
 Download Username  :user

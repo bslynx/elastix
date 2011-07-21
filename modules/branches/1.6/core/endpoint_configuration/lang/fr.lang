@@ -2,20 +2,15 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.0                                                  |
+  | Elastix version: 2.0                                           |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
-  | Copyright (c) 2008 Palosanto Solutions S. A.                         |
+  | Copyright (c) 2006 Palosanto Solutions S. A.                         |
   +----------------------------------------------------------------------+
   | Cdla. Nueva Kennedy Calle E 222 y 9na. Este                          |
   | Telfs. 2283-268, 2294-440, 2284-356                                  |
   | Guayaquil - Ecuador                                                  |
-  | http://www.palosanto.com 						                     |
-  |                                                                      |
-  | Translated by: Erwan DESVERGNES - SDCI                               |
-  | erwan.desvergnes@SDCI.fr                                             |
-  |   Revision 1.0-17 by Gregory BOUZINAC - GMixon                       | 
-  | greg@gmixon.com                                                      |
+  | http://www.palosanto.com                                             |
   +----------------------------------------------------------------------+
   | The contents of this file are subject to the General Public License  |
   | (GPL) Version 2 (the "License"); you may not use this file except in |
@@ -29,15 +24,18 @@
   +----------------------------------------------------------------------+
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  |                                                                      |
+  | Translate by:Dannarz                                             |
+  | Email: sesshomarurin7@palosanto.com                                                       |
   +----------------------------------------------------------------------+
-  $Id: fr.lang,v 1.8 2008/05/20 00:36:42 bmacias Exp $ */
+  $Id: fr.lang, October 25, 2010, 5:39 pm kleber andres loayza Exp $ */
 global $arrLangModule;
-$arrLangModule=array(
-"Endpoint Configuration" => "Configuration Terminal",
-"Endpoint Scan" => "Scanner",
-"Display Name" => "Afficher Nom",
+$arrLangModule=array(  
+"Endpoint Configurator" => "Configuration Terminal",
+"Discover Endpoints in this Network" => "Scanner",
+"Display Name" => "Afficher le nom",
 "MAC Adress" => "Adresse MAC",
-"Phone Type" => "Type Téléphone",
+"Phone Type" => "Modèle",
 "IP Adress" => "Adresse IP",
 "Vendor" => "Vendeur",
 "User Extension" => "Extension d'attribuer",
@@ -49,23 +47,25 @@ $arrLangModule=array(
 "Not Set" => "Non Défini",
 "Unable write the file" => "Impossible d'écrire le fichier",
 "Users" => "Utilisateurs",
-"User Name in Endpoint is" => "Le Nom d'Utilisateur dans le Terminal est",
+"User Name in Endpoint is" => "Le nom d'utilisateur dans le terminal est",
 "And secrets no equals in FreePBX and Endpoint" => "Et les mots de passe ne concordent pas entre FreePBX et le Terminal",
 "Don't exist in FreePBX extension" => "N'existe pas dans l'extension FreePBX",
 "Don't exist in Endpoint extension" => "N'existe pas dans l'extension du Terminal",
 "UPDATE" => "METTRE A JOUR",
 "Unable delete the file" => "Impossible d'effacer le fichier",
 "Unselected" => "Non Sélectionné",
-"No Models" => "Aucun Modèle",
-"No Extensions" => "Aucune Extension",
-"Invalid Format in Parameter" => "Format Invalide dans Paramètre",
-"It can take several minutes, because your ip address has some devices, " => "It can take several minutes, because your ip address has some devices, ",
+"No Models" => "Aucun modèle",
+"No Extensions" => "Aucune extension",
+"Invalid Format in Parameter" => "Format invalide dans paramètre",
+"It can take several minutes, because your ip address has some devices, " => "Ça peut prendre plusieurs minutes, parce que votre adresse ip a quelques équipements, ",
 "WARNING" => "ATTENTION",
 "Status" => "Statut",
 "ERROR" => "ERREUR",
 "Current Extension" => "Current Extension",
 "Not Registered" => "Not Registered",
 "MESSAGE" => "MESSAGE",
-"The Extension(s) parameters have been saved. Each checked phone will be configured with the new parameters once it has finished rebooting" => "The Extension(s) parameters have been saved. Each checked phone will be configured with the new parameters once it has finished rebooting"
+"The Extension(s) parameters have been saved. Each checked phone will be configured with the new parameters once it has finished rebooting" => "The Extension(s) parameters have been saved. Each checked phone will be configured with the new parameters once it has finished rebooting",
+"Select a model" => "Select a model",
+"Not Applicable" => "Not Applicable"
 );
 ?>

@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version: 1.6                                           |
+  | Elastix version: 2.0                                           |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -28,42 +28,44 @@
   | Translate by:Chavdar Iliev                                             |
   | Email: chavdar_75@yahoo.com                                                       |
   +----------------------------------------------------------------------+
-  $Id: bg.lang, October 25, 2010, 6:10 pm kleber andres loayza Exp $ */
+  $Id: bg.lang, October 25, 2010, 6:07 pm kleber andres loayza Exp $ */
 global $arrLangModule;
 $arrLangModule=array(  
-"Endpoint Configuration" => "Конфигуриране на Телефонни Апарати",
-"Endpoint Scan" => "Търси Телефонни Апарати в Мрежа",
-"Display Name" => "Дисплей Име",
-"MAC Adress" => "MAC Адрес",
-"Phone Type" => "Модел Телефон",
-"IP Adress" => "IP Адрес",
-"Vendor" => "Производител",
-"User Extension" => "Вътрешен Номер",
-"Set" => "Монтирай",
-"Unset" => "Демонтирай",
-"Are you sure you wish to unset endpoint(s)?" => "Сигурни ли сте че искате да демонтирате телефоните?",
-"Are you sure you wish to set endpoint(s)?" => "Сигурни ли сте че искате да монтирате телефоните?",
-"Configured without incident." => "Конфигуриран",
-"Not Set" => "Не е монтиран",
-"Unable write the file" => "Не може да се запише файла",
-"Users" => "Потребители",
-"User Name in Endpoint is" => "Потребителското Име в Телефона е",
-"And secrets no equals in FreePBX and Endpoint" => "И паролите не съвпадат в FreePBX и Телефона",
-"Don't exist in FreePBX extension" => "Вътрешният номер не съществува в FreePBX",
-"Don't exist in Endpoint extension" => "Вътрешният номер не съществува в Телефона",
-"UPDATE" => "ОБНОВИ",
-"Unable delete the file" => "Файлът не може да бъде изтрит",
-"Unselected" => "Немаркиран",
-"No Models" => "Няма Модели",
-"No Extensions" => "Няма Вътрешни Номера",
-"Invalid Format in Parameter" => "Грешен Формат в Параметър",
-"It can take several minutes, because your ip address has some devices, " => "Може да отнеме няколко минути, защото вашия IP адрес има няколко устройства, ",
-"WARNING" => "ВНИМАНИЕ",
-"Status" => "Състояние",
-"ERROR" => "ГРЕШКА",
+"Endpoint Configurator" => "Endpoint Configuration",
+"Discover Endpoints in this Network" => "Discover Endpoints in this Network",
+"Display Name" => "Display Name",
+"MAC Adress" => "MAC Address",
+"Phone Type" => "Model",
+"IP Adress" => "IP Address",
+"Vendor" => "Vendor",
+"User Extension" => "Extension to assign",
+"Set" => "Set",
+"Unset" => "Unset",
+"Are you sure you wish to unset endpoint(s)?" => "Are you sure you wish to unset endpoint(s)?",
+"Are you sure you wish to set endpoint(s)?" => "Are you sure you wish to set endpoint(s)?",
+"Configured without incident." => "Configured without incident.",
+"Not Set" => "Not Set",
+"Unable write the file" => "Unable write the file",
+"Users" => "Users",
+"User Name in Endpoint is" => "User Name in Endpoint is",
+"And secrets no equals in FreePBX and Endpoint" => "And secrets no equals in FreePBX and Endpoint",
+"Don't exist in FreePBX extension" => "Don't exist in FreePBX extension",
+"Don't exist in Endpoint extension" => "Don't exist in Endpoint extension",
+"UPDATE" => "UPDATE",
+"Unable delete the file" => "Unable delete the file",
+"Unselected" => "Unselected",
+"No Models" => "No Models",
+"No Extensions" => "No Extensions",
+"Invalid Format in Parameter" => "Invalid Format in Parameter",
+"It can take several minutes, because your ip address has some devices, " => "It can take several minutes, because your ip address has some devices, ",
+"WARNING" => "WARNING",
+"Status" => "Status",
+"ERROR" => "ERROR",
 "Current Extension" => "Current Extension",
 "Not Registered" => "Not Registered",
 "MESSAGE" => "MESSAGE",
-"The Extension(s) parameters have been saved. Each checked phone will be configured with the new parameters once it has finished rebooting" => "The Extension(s) parameters have been saved. Each checked phone will be configured with the new parameters once it has finished rebooting"
+"The Extension(s) parameters have been saved. Each checked phone will be configured with the new parameters once it has finished rebooting" => "The Extension(s) parameters have been saved. Each checked phone will be configured with the new parameters once it has finished rebooting",
+"Select a model" => "Select a model",
+"Not Applicable" => "Not Applicable"
 );
 ?>

@@ -31,7 +31,6 @@ include_once("libs/paloSantoDB.class.php");
 if (file_exists("/var/lib/asterisk/agi-bin/phpagi-asmanager.php")) {
 require_once "/var/lib/asterisk/agi-bin/phpagi-asmanager.php";
 }
-
 /* Clase que implementa EndPoint Configuracion */
 class paloSantoEndPoint
 {
@@ -102,6 +101,56 @@ class paloSantoEndPoint
         return ($ok1 && $ok2); //no es tan buena la validacion, ver si se puede mejorar, probabilidad de q ocurra este error es muy baja
     }
 
+    function modelSupportIAX($id_model)
+    {
+	$pDB = $this->connectDataBase("sqlite","endpoint");
+        if($pDB==false)
+            return false;
+	$query = "select iax_support from model where id=?";
+	$result = $pDB->getFirstRowQuery($query,true,array($id_model));
+	if(is_array($result) && count($result)>0){
+	    if($result['iax_support'] == '1')
+		return true;
+	    else
+		return false;
+	}
+	else
+	    return null;
+    }
+
+    function getPattonDevices()
+    {
+	$sComando = '/usr/bin/elastix-helper patton_query';
+	$output = $ret = NULL;
+        exec($sComando, $output, $ret);
+        if ($ret != 0) {
+            $this->errMsg = implode('', $output);
+            return array();
+        }
+	$pattonDevices = array();
+	$i=0;
+	if(is_array($output) && count($output) > 0){
+	    foreach($output as $value){
+		if(preg_match("/^\[(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\]$/",$value,$matches)){
+		    $i++;
+		    $pattonDevices[$i]['ip_adress'] = $matches[1];
+		    $pattonDevices[$i]['desc_vendor'] = "Patton Electronics Co.";
+		    $pattonDevices[$i]['name_vendor'] = "Patton";
+		    $pattonDevices[$i]['id_vendor'] = "";
+		    $pattonDevices[$i]['id'] = "";
+		    $pattonDevices[$i]['desc_device'] = "";
+		    $pattonDevices[$i]['account'] = "";
+		    $pattonDevices[$i]['configurated'] = "";
+		}
+		elseif(preg_match("/^type=(.+)$/",$value,$matches))
+		    $pattonDevices[$i]['model_no'] = $matches[1];
+	    }
+	    return $pattonDevices;
+	}
+	else
+	    return array();
+    }
+
 
     /*Nota: 
       No hice de esta funcion en tres funciones ya que se podia dividir, 
@@ -116,7 +165,7 @@ class paloSantoEndPoint
         output:
             $map              : array with endpoints configurated and the that can be configure.
     **/
-    function endpointMap($network,$arrVendor,$arrEndpointsConf)
+    function endpointMap($network,$arrVendor,$arrEndpointsConf,$pattonDevices)
     {
         $map=array();
         //PASO 0: VALIDACIONES DE LOS ARREGLOS
@@ -149,6 +198,12 @@ class paloSantoEndPoint
                 //PASO 3: CONSTRUNCCION DEL ARREGLO MAP
                 if($ok1 && $ok2){// correcto se encontro un endpoint con sus datos completos
                     if(is_array($arrVendor) && count($arrVendor)>0){ //filtro para solo devolver los map de los endpoints cuyos vendor (fabricantes) puede reconocer elastix.
+			foreach($pattonDevices as $key => $value){
+			    if($value["ip_adress"] == $ipAdress){
+				$value["mac_adress"] = $macAddress;
+				$map[] = $value;
+			    }
+			}
                         foreach($arrVendor as $key => $vendor){
                             //PASO 4: FILTRO SOLO LOS ENDPOINT CON VENDOR CONOCIDOS
                             if($vendor['mac']==$macVendor){
@@ -204,27 +259,57 @@ class paloSantoEndPoint
         return $map;
     }
 
-    function getDeviceFreePBX()
+    function getDeviceFreePBX($all=false)
     {
         global $arrLang;
 
         $pDB = $this->connectDataBase("mysql","asterisk");
         if($pDB==false)
             return false;
-        $sqlPeticion = "select id, concat(description,' <',user,'>') label FROM devices WHERE tech = 'sip' ORDER BY id ASC;";
+	if($all)
+	    $iax = "OR tech = 'iax2'";
+	else
+	    $iax = "";
+        $sqlPeticion = "select id, concat(description,' <',user,'>') label, tech FROM devices WHERE tech = 'sip' $iax ORDER BY id ASC;";
         $result = $pDB->fetchTable($sqlPeticion,true); //se consulta a la base asterisk
         $pDB->disconnect(); 
         $arrDevices = array();
         if(is_array($result) && count($result)>0){
                 $arrDevices['unselected'] = "-- {$arrLang['Unselected']} --";
             foreach($result as $key => $device){
-                $arrDevices[$device['id']] = $device['label'];
+                $arrDevices[$device['id']] = strtoupper($device['tech']).": ".$device['label'];
             }
         }
         else{
             $arrDevices['no_device'] = "-- {$arrLang['No Extensions']} --";
         }
 	return $arrDevices;
+    }
+
+    function getTech($extension)
+    {
+	$pDB = $this->connectDataBase("mysql","asterisk");
+        if($pDB==false)
+            return false;
+	$query  = "select tech from devices where id=?";
+	$result = $pDB->getFirstRowQuery($query,true,array($extension));
+	if(isset($result['tech']))
+	    return $result['tech'];
+	else
+	    return null;
+    }
+
+    function getVendor($mac)
+    {
+	$pDB = $this->connectDataBase("sqlite","endpoint");
+        if($pDB==false)
+            return false;
+	$query = "select v.id, v.name from vendor v, mac m where m.value=? and v.id=m.id_vendor";
+	$result = $pDB->getFirstRowQuery($query,true,array($mac));
+	if(is_array($result))
+	    return $result;
+	else
+	    return array();
     }
 
     function getAllModelsVendor($nameVendor)
@@ -265,22 +350,24 @@ class paloSantoEndPoint
         $pDB->disconnect();
     }
 
-    function getDeviceFreePBXParameters($id_device) {
+    function getDeviceFreePBXParameters($id_device, $tech) {
         $pDB = $this->connectDataBase("mysql","asterisk");
         $parameters = array();
 
         if($pDB==false)
             return false;
+	if($tech=='iax2')
+	    $tech = "iax";
         $sqlPeticion = "select 
                             d.id, 
                             d.description,
-                            s.data 
+                            t.data 
                         from 
                             devices d 
                                 inner 
-                            join sip s on d.id = s.id 
+                            join $tech t on d.id = t.id 
                         where 
-                            s.keyword = 'secret' and 
+                            t.keyword = 'secret' and 
                             d.id = '$id_device';";
         $result = $pDB->getFirstRowQuery($sqlPeticion,true); //se consulta a la base endpoints
 
@@ -379,7 +466,8 @@ class paloSantoEndPoint
         $report = "";
 
         //comprobar si existe en base asterisk
-        $deviceParametersFreePBX = $this->getDeviceFreePBXParameters($device);
+	$tech = $this->getTech($device);
+        $deviceParametersFreePBX = $this->getDeviceFreePBXParameters($device,$tech);
         if($deviceParametersFreePBX===false)
             return false;
         else if(is_array($deviceParametersFreePBX) && empty($deviceParametersFreePBX))
@@ -437,6 +525,7 @@ class paloSantoEndPoint
 
     function getExtension($ip)
     {
+	//Search in sip extensions
         $parameters = array('Command'=>"sip show peers");
         $result = $this->AsteriskManagerAPI("Command",$parameters,true); 
         $data = explode("\n",$result['data']);
@@ -453,6 +542,23 @@ class paloSantoEndPoint
                     return $match[3];
             }
         }
+
+	//Search in iax2 extensions
+	$parameters = array('Command'=>"iax2 show peers");
+        $result = $this->AsteriskManagerAPI("Command",$parameters,true); 
+        $data = explode("\n",$result['data']);
+        foreach($data as $key => $line){
+            if(preg_match("/(\d+)[[:space:]]*($ip)[[:space:]]*\([[:alpha:]]{1}\)[[:space:]]*[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+[[:space:]]*[[:digit:]]+[[:space:]]*([[:alpha:]]*)/",$line,$match)){
+                if($match[3] == "OK"){
+                    if($extension == "")
+                        $extension = $match[1];
+                    else
+                        $extension = "$extension, $match[1]";
+                }else
+                    return $match[3];
+            }
+        }
+
         if ($extension == "")
             $extension = _tr("Not Registered");
         return $extension;

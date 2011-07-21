@@ -28,14 +28,14 @@
   $Id: es.lang,v 1.7 2007/09/05 00:36:42 gcarrillo Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Endpoint Configuration" => "Configuracion de Endpoint",
-"Endpoint Scan" => "Mapear Endpoint",
+"Endpoint Configurator" => "Configurador de Endpoint",
+"Discover Endpoints in this Network" => "Descubrir Endpoints en esta Network",
 "Display Name" => "Ver Nombre",
 "MAC Adress" => "Direccion MAC",
-"Phone Type" => "Modelo Teléfono",
-"IP Adress" => "Direccion IP",
+"Phone Type" => "Modelo",
+"IP Adress" => "Dirección IP",
 "Vendor" => "Fabricante",
-"User Extension" => "Extension a asignar",
+"User Extension" => "Extensión a asignar",
 "Set" => "Configurar",
 "Unset" => "Desconfigurar",
 "Are you sure you wish to unset endpoint(s)?" => "¿Estas seguro de desconfigurar el/los endpoint(s)?",
@@ -61,6 +61,8 @@ $arrLangModule=array(
 "Current Extension" => "Extensión Actual",
 "Not Registered" => "No Registrado",
 "MESSAGE" => "MENSAJE",
-"The Extension(s) parameters have been saved. Each checked phone will be configured with the new parameters once it has finished rebooting" => "Los parámetros de la(s) extension(es) han sido guardados. Cada teléfono seleccionado será configurado con los nuevos parámetros una vez que haya finalizado el reinicio de los mismos"
+"The Extension(s) parameters have been saved. Each checked phone will be configured with the new parameters once it has finished rebooting" => "Los parámetros de la(s) extension(es) han sido guardados. Cada teléfono seleccionado será configurado con los nuevos parámetros una vez que haya finalizado el reinicio de los mismos",
+"Select a model" => "Seleccione un modelo",
+"Not Applicable" => "No Aplica"
 );
 ?>
