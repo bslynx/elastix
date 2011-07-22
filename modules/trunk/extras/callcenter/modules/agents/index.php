@@ -385,7 +385,7 @@ function formEditAgent($pDB, $smarty, $module_name, $local_templates_dir, $id_ag
         if (!isset($_POST['password1']))    $_POST['password1'] = '';
         if (!isset($_POST['password2']))    $_POST['password2'] = '';
         if (!isset($_POST['eccpwd1']))      $_POST['eccpwd1'] = '';
-        if (!isset($_POST['eccpwd2']))      $_POST['eccpwd'] = '';
+        if (!isset($_POST['eccpwd2']))      $_POST['eccpwd2'] = '';
     } else {
         // Modificación de agente existente
         if (!isset($_POST['extension']))    $_POST['extension'] = $arrAgente['number'];
@@ -393,7 +393,7 @@ function formEditAgent($pDB, $smarty, $module_name, $local_templates_dir, $id_ag
         if (!isset($_POST['password1']))    $_POST['password1'] = $arrAgente['password'];
         if (!isset($_POST['password2']))    $_POST['password2'] = $arrAgente['password'];
         if (!isset($_POST['eccpwd1']))      $_POST['eccpwd1'] = $arrAgente['eccp_password'];
-        if (!isset($_POST['eccpwd2']))      $_POST['eccpwd'] = $arrAgente['eccp_password'];
+        if (!isset($_POST['eccpwd2']))      $_POST['eccpwd2'] = $arrAgente['eccp_password'];
         
         // Volver opcional el cambio de clave de acceso
         $arrFormElements['password1']['REQUIRED'] = 'no';
