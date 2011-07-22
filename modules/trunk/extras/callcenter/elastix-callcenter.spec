@@ -3,7 +3,7 @@
 Summary: Elastix Call Center 
 Name:    elastix-callcenter
 Version: 2.0.0
-Release: 14
+Release: 15
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
@@ -92,6 +92,23 @@ fi
 /etc/logrotate.d/elastixdialer
 
 %changelog
+* Fri Jul 22 2011 Alex Villacis Lasso <a_villacis@palosanto.com> 2.0.0-15
+- Updated version, synchronized with CallCenter 1.5-4.1 (SVN revision 2847)
+- From CHANGELOG:
+    1.5-4.1 (SVN revision 2847)
+	- Dialer (ECCP): Added "extension" and "channel" fields to response for 
+	  "getagentstatus" request.
+	- Agent Console: display error diagnostic messages when pause/unpause fails. 
+	  Also display attempted hangup channel when Hangup operation failed.
+	- Agents, Break Administrator, Campaigns Out: undo use of <button> inside of <a>
+	  as this combination does not work as intended in Firefox 4.0.1. Fixes Elastix
+	  bug #864.
+	- Agents: implement setting and changing optional ECCP password for agent
+	- Agents: remove hardcoded HTML escapings in Spanish translation
+	- Agent Console: When attempting to hang an incoming call, do not expose SQL on
+	  empty recordset. Fixes Elastix bug #841.
+	- Agent Console: Remove reference to nonexistent javascript ManejadorCierre()
+
 * Mon May  9 2011 Alex Villacis Lasso <a_villacis@palosanto.com>
 - Update trunk version of specfile
 - Clear smarty cache on install/update.
