@@ -30,6 +30,6 @@
     $arrConfModule['module_name'] = 'email_domains';
     $arrConfModule['templates_dir'] = 'themes';
     $arrConfModule['dir_WebServices'] = "http://webservice.elastix.org/modules/serial_hardware_telephony/webservice/telephonyHardware.wsdl";
-    $arrConfModule['dir_RSS'] = "http://www.elastix.org/index.php?option=com_rd_rss&id=2";
+    $arrConfModule['dir_RSS'] = "http://elastix.org/index.php?option=com_mediarss&feed_id=1&format=raw";
 
 ?>
