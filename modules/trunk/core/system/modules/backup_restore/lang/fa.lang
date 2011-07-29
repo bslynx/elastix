@@ -138,5 +138,16 @@ $arrLangModule=array(
 "freepbx" => "تنظيمات تلفني",
 "elastix" => "Elastix",
 "Select All options" => "Select All options",
+"Package" => "Package",
+"elastix-pbx" => "Elastix PBX",
+"elastix-email_admin" => "Elastix Email",
+"elastix-agenda" => "Elastix Agenda",
+"elastix-fax" => "Elastix Fax",
+"elastix-vtigercrm" => "Elastix VtigerCRM",
+"elastix-a2billing" => "Elastix A2billing",
+"elastix-sugarcrm-addon" => "Elastix SugarCRM",
+"Package not installed" => "Not installed",
+"Version" => "Version",
+"Please verify if the mysql password is the correct in /etc/elastix.conf (mysqlrootpwd)" => "Please verify if the mysql password is the correct in /etc/elastix.conf (mysqlrootpwd)",
 );
 ?>

@@ -124,8 +124,8 @@ $arrLangModule=array(
 "EOP" => "EOP",
 "programs" => "Programmes",
 "Warning" => "<b><font size='2' color='red'>Attention:</font></b> Les versions restaurées sont différentes. Vous pourriez avoir des problèmes avec le comportement des programmes après avoir restauré. Cliquer sur <b>Exécuter</b> pour accepter ou annuler sinon.",
-"local_version" => "Votre version actuelle",
-"external_version" => "La version restaurée",
+"local_version" => "Actuelle",
+"external_version" => "Restaurée",
 "details" => "Voir les détails",
 "warning_details" => "Attention au détails!",
 "no_file_xml" => "<b><font size='2' color='red'>Attention:</font></b> Aucune donnée de version dans le fichier de restauration. Vous pourriez avoir des problèmes avec le comportement des programmes après avoir restauré. Cliquer sur <b>Exécuter</b> pour accepter ou annuler sinon.",
@@ -134,6 +134,16 @@ $arrLangModule=array(
 "wanpipe-util" => "Wanpipe-Util",
 "freepbx" => "Freepbx",
 "elastix" => "Elastix",
-
+"Package" => "Package",
+"elastix-pbx" => "Elastix PBX",
+"elastix-email_admin" => "Elastix Email",
+"elastix-agenda" => "Elastix Agenda",
+"elastix-fax" => "Elastix Fax",
+"elastix-vtigercrm" => "Elastix VtigerCRM",
+"elastix-a2billing" => "Elastix A2billing",
+"elastix-sugarcrm-addon" => "Elastix SugarCRM",
+"Package not installed" => "Not installed",
+"Version" => "Version",
+"Please verify if the mysql password is the correct in /etc/elastix.conf (mysqlrootpwd)" => "Please verify if the mysql password is the correct in /etc/elastix.conf (mysqlrootpwd)",
 );
 ?>

@@ -90,9 +90,6 @@ function _moduleContent(&$smarty, $module_name)
         case 'process_restore':
             $content = process_restore($smarty, $local_templates_dir, $arrLang, $dir_backup, $module_name);
             break;
-        case 'upload':
-            $content = file_upload($smarty, $module_name, $local_templates_dir, $arrLang, $dir_backup, $pDB);
-            break;
         case 'download_file':
             $content = downloadBackup($smarty, $module_name, $local_templates_dir, $arrLang, $dir_backup);
             break;
@@ -127,35 +124,13 @@ function _moduleContent(&$smarty, $module_name)
     return $content;
 }
 
-function file_upload($smarty, $module_name, $local_templates_dir, $arrLang, $dir_backup, $pDB)
-{
-    $bExito = true;
-    $tmpFile = $_FILES['file_upload']['tmp_name'];
-    $name_file = $_FILES['file_upload']['name'];
-    if (eregi('.tar$', $name_file)){
-        $cmd_cp = escapeshellcmd("mv $tmpFile $dir_backup/$name_file");
-        exec($cmd_cp,$output,$retval);
-        if ($retval!=0){
-            $bExito = false;
-            $smarty->assign("mb_message", $arrLang["Error copying the file"]);
-        }
-    }else{
-        $bExito = false;
-        $smarty->assign("mb_message", $arrLang["The backup file would have a tar extension"]);
-    }
-    if($bExito)
-        $smarty->assign("mb_message", $arrLang["The file was copied correctly"].". ".$arrLang["File"].": ".$name_file);
-
-    return report_backup_restore($smarty, $module_name, $local_templates_dir, $arrLang, $dir_backup, $pDB);
-}
-
 function report_backup_restore($smarty, $module_name, $local_templates_dir, $arrLang, $dir_backup, &$pDB)
 {
     $nombre_archivos = array();
     $num_backups = Obtener_Total_Backups($dir_backup);
     $pFTPBackup = new paloSantoFTPBackup($pDB);
     //Paginacion
-    $limit  = 5;
+    $limit  = 10;
     $total  = $num_backups;
 
 // obtencion de parametros desde la base 
@@ -180,10 +155,13 @@ function report_backup_restore($smarty, $module_name, $local_templates_dir, $arr
             $arrTmp[1] = "<a href='?menu=$module_name&action=download_file&file_name=$nombre_archivo'>$nombre_archivo</a>";
             $fecha="";
             // se parsea el archivo para obtener la fecha
-            if(ereg("[[:alnum:]]-([[:digit:]]{4})([[:digit:]]{2})([[:digit:]]{2})([[:digit:]]{2})([[:digit:]]{2})([[:digit:]]{2})-([[:alnum:]]{2}).[[:alnum:]]", $nombre_archivo, $data)) {
-                $fecha = "$data[3]/$data[2]/$data[1] $data[4]:$data[5]:$data[6]";
-                $id= "$data[1]$data[2]$data[3]$data[4]$data[5]$data[6]-$data[7]";
-            }
+	    if(preg_match("/\w*-\d{4}\d{2}\d{2}\d{2}\d{2}\d{2}-\w{2}\.\w*/",$nombre_archivo)){ //elastixbackup-20110720122759-p7.tar
+		$arrMatchFile = preg_split("/-/",$nombre_archivo);
+		$data  = $arrMatchFile[1];
+		$fecha = substr($data,-8,2)."/".substr($data,-10,2)."/".substr($data,0,4)." ".substr($data,-6,2).":".substr($data,-4,2 ).":".substr($data,-2,2);
+		$id    = $arrMatchFile[1]."-".$arrMatchFile[2];
+	    }
+
             $arrTmp[2] = $fecha;
             $arrTmp[3] = "<input type='submit' name='submit_restore[".$nombre_archivo."]' value='{$arrLang['Restore']}' class='button'>";
             $arrData[] = $arrTmp;
@@ -261,10 +239,12 @@ function automatic_backup($smarty, $module_name, $local_templates_dir, $arrLang,
             $arrTmp[1] = "<a href='?menu=$module_name&action=download_file&file_name=$nombre_archivo'>$nombre_archivo</a>";
             $fecha="";
             // se parsea el archivo para obtener la fecha
-            if(ereg("[[:alnum:]]-([[:digit:]]{4})([[:digit:]]{2})([[:digit:]]{2})([[:digit:]]{2})([[:digit:]]{2})([[:digit:]]{2})-([[:alnum:]]{2}).[[:alnum:]]", $nombre_archivo, $data)) {
-                $fecha = "$data[3]/$data[2]/$data[1] $data[4]:$data[5]:$data[6]";
-                $id= "$data[1]$data[2]$data[3]$data[4]$data[5]$data[6]-$data[7]";
-            }
+            if(preg_match("/\w*-\d{4}\d{2}\d{2}\d{2}\d{2}\d{2}-\w{2}\.\w*/",$nombre_archivo)){ //elastixbackup-20110720122759-p7.tar
+		$arrMatchFile = preg_split("/-/",$nombre_archivo);
+		$data  = $arrMatchFile[1];
+		$fecha = substr($data,-8,2)."/".substr($data,-10,2)."/".substr($data,0,4)." ".substr($data,-6,2).":".substr($data,-4,2 ).":".substr($data,-2,2);
+		$id    = $arrMatchFile[1]."-".$arrMatchFile[2];
+	    }
             $arrTmp[2] = $fecha;
             $arrTmp[3] = "<input type='submit' name='submit_restore[".$nombre_archivo."]' value='{$arrLang['Restore']}' class='button'>";
             $arrData[] = $arrTmp;
@@ -310,14 +290,14 @@ function automatic_backup($smarty, $module_name, $local_templates_dir, $arrLang,
     $htmlFilter = $smarty->fetch("$local_templates_dir/filter.tpl");
 
     $oGrid->showFilter(trim($htmlFilter));
-        //if there is data in database
-            $result = $pFTPBackup->getStatusAutomaticBackupById();
-            if(isset($result) && $result != "")
-                $pFTPBackup->updateStatus($time);
-            else
-                $pFTPBackup->insertStatus($time);
-            $smarty->assign("mb_message", $arrLang["SUCCESSFUL"]);
-        $pFTPBackup->createCronFile($time);
+    //if there is data in database
+    $result = $pFTPBackup->getStatusAutomaticBackupById();
+    if(isset($result) && $result != "")
+	$pFTPBackup->updateStatus($time);
+    else
+	$pFTPBackup->insertStatus($time);
+    $smarty->assign("mb_message", $arrLang["SUCCESSFUL"]);
+    $pFTPBackup->createCronFile($time);
     $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
 
     return $contenidoModulo;
@@ -379,7 +359,7 @@ function delete_backup($smarty, $module_name, $local_templates_dir, $arrLang, $d
                         }
                     }
                 }
-            } else {
+            }else{
                 $error = true;
             }
         }
@@ -421,7 +401,7 @@ function form_general($smarty, $local_templates_dir, $arrLang, $arrBackupOptions
     $smarty->assign("backup_asterisk", $arrBackupOptions['asterisk']);
     $smarty->assign("backup_otros", $arrBackupOptions['otros']);
     $smarty->assign("backup_otros_new", $arrBackupOptions['otros_new']);
-    //$smarty->assign("backup_otros_next", $arrBackupOptions['otros_next']);//************************
+
     $smarty->assign("module", $module_name);
     return $smarty->fetch("$local_templates_dir/backup.tpl");
 }
@@ -470,8 +450,8 @@ function restore_form($smarty, $local_templates_dir, $arrLang, $path_backup, $mo
     $smarty->assign("BACKUP_FILE", $archivo_post);
     $smarty->assign("title", $arrLang["Restore"]. ": $archivo_post");
     $smarty->assign("OPTION_URL", "restore");
-     $parameter = 0;
-     showAlert($path_backup, $smarty, $arrLang, $archivo_post, $module_name, $parameter);
+    $parameter = 0;
+    showAlert($path_backup, $smarty, $arrLang, $archivo_post, $module_name, $parameter);
 
     return form_general($smarty, $local_templates_dir, $arrLang, $arrBackupOptions, $module_name);
 }
@@ -530,12 +510,17 @@ function process_backup($smarty, $local_templates_dir, $arrLang, $module_name)
         fwrite($gestor, $xml_backup);
         fclose($gestor);
 
-        //Escribo el archo xml de versions para validaciones en el restore
+        //Escribo el archivo xml de versions para validaciones en el restore
         createVersionPrograms_XML($dir_respaldo);
 
         //hacer el respaldo de las opciones seleccionadas
         //tengo que mostrar cuales de las opciones seleccionadas, se hizo el respaldo correctamente por eso envio $arrBackupOptions
-        process_each_backup($arrSelectedOptions,$ruta_respaldo_sin_valor_unico,$arrBackupOptions);
+        $status = process_each_backup($arrSelectedOptions,$ruta_respaldo_sin_valor_unico,$arrBackupOptions);
+	/*if(!$status['status']){
+	    exec("rm $ruta_respaldo_sin_valor_unico -rf");
+	    $smarty->assign("ERROR_MSG", $arrLang["Backup Complete!"].": elastix$timestamp.tar");
+	    return backup_form($smarty, $local_templates_dir, $arrLang, $module_name);
+	}*/
         //en la carpeta backup ya deberia tener los respaldos
         //comprimo la carpeta
         //y la envio al navegador
@@ -670,7 +655,9 @@ function Array_Options($arrLang, $disabled="")
 function process_each_backup($arrSelectedOptions,$ruta_respaldo,&$arrBackupOptions)
 {
     global $arrConf;
-    
+    $arrResult = array();
+    $arrExito = array();
+    $arrExitoFolder = array();
     foreach ($arrSelectedOptions as $option)
     {
         $bExito=true;
@@ -681,26 +668,38 @@ function process_each_backup($arrSelectedOptions,$ruta_respaldo,&$arrBackupOptio
             mkdir($dir_resp_db);
 
             //Hacer mysqldump de cada base de asterisk
-            if(respaldar_base_mysql($dir_resp_db, "asterisk")!=0)
-                $bExito = false;
-            if(respaldar_base_mysql($dir_resp_db, "asteriskcdrdb")!=0)
-                $bExito = false;
-            if(respaldar_base_mysql($dir_resp_db, "asteriskrealtime")!=0)
-                $bExito = false;
+	    $arrMysqlAsterisk = respaldar_base_mysql($dir_resp_db, "asterisk");
+            if(!$arrMysqlAsterisk['status']){
+		$arrMysqlAsterisk['db'] = "asterisk";
+                $arrExito[] = $arrMysqlAsterisk;
+		$bExito = false;
+	    }
+	    $arrMysqlAsteriskCdr = respaldar_base_mysql($dir_resp_db, "asteriskcdrdb");
+            if(!$arrMysqlAsteriskCdr['status']){
+		$arrMysqlAsteriskCdr['db'] = "asteriskcdrdb";
+                $arrExito[] = $arrMysqlAsteriskCdr;
+		$bExito = false;
+            }
+	    $arrMysqlAsteriskReal = respaldar_base_mysql($dir_resp_db, "asteriskrealtime");
+	    if(!$arrMysqlAsteriskReal['status']){
+		$arrMysqlAsteriskReal['db'] = "asteriskrealtime";
+                $arrExito[] = $arrMysqlAsteriskReal;
+		$bExito = false;
+	    }
 
             //Respaldar carpeta con las bases
             $arrInfoRespaldo = array(   'folder_path'               =>  $ruta_respaldo,
                                         'folder_name'               =>  "mysqldb_asterisk",
                                         'nombre_archivo_respaldo'   =>  "mysqldb_asterisk.tgz"
                                 );
-            if(!respaldar_carpeta($arrInfoRespaldo,$ruta_respaldo,$error))
+            if(!respaldar_carpeta($arrInfoRespaldo,$ruta_respaldo,$error)){
                 $bExito = false;
+		$arrExitoFolder[]['status'] = false;
+		$arrExitoFolder[]['folder'] = "$ruta_respaldo/mysqldb_asterisk";
+	    }
 
             //Se respalda la base asterisk en /var/lib/asterisk/astdb
-
-            $comando="cp /var/lib/asterisk/astdb $ruta_respaldo";
-            exec($comando,$output,$retval);
-            if ($retval!=0) $bExito = false;
+	    if(!copy("/var/lib/asterisk/astdb", $ruta_respaldo."/astdb")) $bExito = false;
 
             //Se respalda la carpeta admin de FreePBX
 
@@ -708,8 +707,11 @@ function process_each_backup($arrSelectedOptions,$ruta_respaldo,&$arrBackupOptio
                                         'folder_name'               =>  "admin",
                                         'nombre_archivo_respaldo'   =>  "var.www.html.admin.tgz"
                                 );
-            if(!respaldar_carpeta($arrInfoRespaldo2,$ruta_respaldo,$error))
+            if(!respaldar_carpeta($arrInfoRespaldo2,$ruta_respaldo,$error)){
                 $bExito = false;
+		$arrExitoFolder[]['status'] = false;
+		$arrExitoFolder[]['folder'] = "/var/www/html/admin";
+	    }
 
             //borrar la carpeta de respaldo mysqldb
             exec("rm $ruta_respaldo/mysqldb_asterisk -rf");
@@ -720,8 +722,11 @@ function process_each_backup($arrSelectedOptions,$ruta_respaldo,&$arrBackupOptio
                                         'folder_name'               =>  "asterisk",
                                         'nombre_archivo_respaldo'   =>  "etc.asterisk.tgz"
                                 );
-            if(!respaldar_carpeta($arrInfoRespaldo,$ruta_respaldo,$error))
+            if(!respaldar_carpeta($arrInfoRespaldo,$ruta_respaldo,$error)){
                 $bExito = false;
+		$arrExitoFolder[]['status'] = false;
+		$arrExitoFolder[]['folder'] = "/etc/asterisk";
+	    }
             break;
 
         case "as_monitor":
@@ -729,8 +734,11 @@ function process_each_backup($arrSelectedOptions,$ruta_respaldo,&$arrBackupOptio
                                         'folder_name'               =>  "monitor",
                                         'nombre_archivo_respaldo'   =>  "var.spool.asterisk.monitor.tgz"
                                 );
-            if(!respaldar_carpeta($arrInfoRespaldo,$ruta_respaldo,$error))
+            if(!respaldar_carpeta($arrInfoRespaldo,$ruta_respaldo,$error)){
                 $bExito = false;
+		$arrExitoFolder[]['status'] = false;
+		$arrExitoFolder[]['folder'] = "/var/spool/asterisk/monitor";
+	    }
             break;
 
         case "as_voicemail":
@@ -738,8 +746,11 @@ function process_each_backup($arrSelectedOptions,$ruta_respaldo,&$arrBackupOptio
                                         'folder_name'               =>  "voicemail",
                                         'nombre_archivo_respaldo'   =>  "var.spool.asterisk.voicemail.tgz"
                                 );
-            if(!respaldar_carpeta($arrInfoRespaldo,$ruta_respaldo,$error))
+            if(!respaldar_carpeta($arrInfoRespaldo,$ruta_respaldo,$error)){
                 $bExito = false;
+		$arrExitoFolder[]['status'] = false;
+		$arrExitoFolder[]['folder'] = "/var/spool/asterisk/voicemail";
+	    }
             break;
 
         case "as_sounds":
@@ -747,8 +758,11 @@ function process_each_backup($arrSelectedOptions,$ruta_respaldo,&$arrBackupOptio
                                         'folder_name'               =>  "custom",
                                         'nombre_archivo_respaldo'   =>  "var.lib.asterisk.sounds.custom.tgz"
                                 );
-            if(!respaldar_carpeta($arrInfoRespaldo,$ruta_respaldo,$error))
+            if(!respaldar_carpeta($arrInfoRespaldo,$ruta_respaldo,$error)){
                 $bExito = false;
+		$arrExitoFolder[]['status'] = false;
+		$arrExitoFolder[]['folder'] = "/var/lib/asterisk/sounds/custom";
+	    }
             break;
 
         case "as_mohmp3":
@@ -756,16 +770,22 @@ function process_each_backup($arrSelectedOptions,$ruta_respaldo,&$arrBackupOptio
                                         'folder_name'               =>  "mohmp3",
                                         'nombre_archivo_respaldo'   =>  "var.lib.asterisk.mohmp3.tgz"
                                 );
-            if(!respaldar_carpeta($arrInfoRespaldo,$ruta_respaldo,$error))
+            if(!respaldar_carpeta($arrInfoRespaldo,$ruta_respaldo,$error)){
                 $bExito = false;
+		$arrExitoFolder[]['status'] = false;
+		$arrExitoFolder[]['folder'] = "/var/lib/asterisk/mohmp3";
+	    }
             
-             $arrInfoRespaldo2 = array( 'folder_path'               =>  "/var/lib/asterisk",
+            $arrInfoRespaldo2 = array( 'folder_path'               =>  "/var/lib/asterisk",
                                         'folder_name'               =>  "moh",
                                         'nombre_archivo_respaldo'   =>  "var.lib.asterisk.moh.tgz"
                                 );
            
-            if(!respaldar_carpeta($arrInfoRespaldo2,$ruta_respaldo,$error))
+            if(!respaldar_carpeta($arrInfoRespaldo2,$ruta_respaldo,$error)){
                 $bExito = false;
+		$arrExitoFolder[]['status'] = false;
+		$arrExitoFolder[]['folder'] = "/var/lib/asterisk/moh";
+	    }
             break;
 
         case "as_dahdi":
@@ -773,46 +793,52 @@ function process_each_backup($arrSelectedOptions,$ruta_respaldo,&$arrBackupOptio
                                         'folder_name'               =>  "dahdi",
                                         'nombre_archivo_respaldo'   =>  "etc.dahdi.tgz"
                                     );
-            if(!respaldar_carpeta($arrInfoRespaldo,$ruta_respaldo,$error))
+            if(!respaldar_carpeta($arrInfoRespaldo,$ruta_respaldo,$error)){
                 $bExito = false;
+		$arrExitoFolder[]['status'] = false;
+		$arrExitoFolder[]['folder'] = "/etc/dahdi";
+	    }
             break;
 
         case "fx_db":
-            exec("cp $arrConf[elastix_dbdir]/fax.db $ruta_respaldo", $output, $retval);
-            if ($retval!=0) $bExito = false;
+	    if(!copy("$arrConf[elastix_dbdir]/fax.db", $ruta_respaldo."/fax.db")) $bExito = false;
             break;
 
         case "fx_pdf":
-            $arrInfoRespaldo = array(   'folder_path'               =>  "/var/www/html",
+            $arrInfoRespaldo = array(   'folder_path'               =>  "/var/www",
                                         'folder_name'               =>  "faxes",
-                                        'nombre_archivo_respaldo'   =>  "var.www.html.faxes.tgz"
+                                        'nombre_archivo_respaldo'   =>  "var.www.faxes.tgz"
                                 );
-            if(!respaldar_carpeta($arrInfoRespaldo,$ruta_respaldo,$error))
+            if(!respaldar_carpeta($arrInfoRespaldo,$ruta_respaldo,$error)){
                 $bExito = false;
+		$arrExitoFolder[]['status'] = false;
+		$arrExitoFolder[]['folder'] = "/var/www/faxes";
+	    }
             break;
 
         case "em_db":
-            if(respaldar_base_mysql($ruta_respaldo, "roundcubedb")!=0)
-                $bExito = false;
+	    $arrMysqlRoundcube = respaldar_base_mysql($ruta_respaldo, "roundcubedb");
+            if(!$arrMysqlRoundcube){
+		$arrMysqlRoundcube['db'] = "roundcubedb";
+                $arrExito[] = $arrMysqlRoundcube;
+		$bExito = false;
+	    }
 
-            if (file_exists("$ruta_respaldo/roundcubedb.sql"))
-            {
+            if (file_exists("$ruta_respaldo/roundcubedb.sql")){
                 $comando="tar -C $ruta_respaldo -cvzf $ruta_respaldo/roundcubedb_mysql.tgz roundcubedb.sql";
                 exec($comando,$output,$retval);
                 if ($retval!=0) $bExito = false;
 
                 $comando="rm -f $ruta_respaldo/roundcubedb.sql";
                 exec($comando,$output,$retval);
-            }else if (file_exists("$ruta_respaldo/roundcubedb2.sql"))
-            {
+            }else if (file_exists("$ruta_respaldo/roundcubedb2.sql")){
                 //Si existe este archivo es porq la base esta vacia o no existe
                 $comando="rm -f $ruta_respaldo/roundcubedb2.sql";
                 exec($comando,$output,$retval);
             }else $bExito = false;
 
-            $comando="cp $arrConf[elastix_dbdir]/email.db $ruta_respaldo";
-            exec($comando,$output,$retval);
-            if ($retval!=0) $bExito = false;
+	    if(!copy("$arrConf[elastix_dbdir]/email.db", "$ruta_respaldo/email.db")) $bExito = false;
+
             break;
 
         case "em_mailbox":
@@ -826,30 +852,18 @@ function process_each_backup($arrSelectedOptions,$ruta_respaldo,&$arrBackupOptio
                                             'folder_name'               =>  "imap",
                                             'nombre_archivo_respaldo'   =>  "var.spool.imap.tgz"
                                 );
-                if(!respaldar_carpeta($arrInfoRespaldo,$ruta_respaldo,$error))
+                if(!respaldar_carpeta($arrInfoRespaldo,$ruta_respaldo,$error)){
                     $bExito = false;
-
-/*
-		$folderDomain = "domain"; //"user" if elastix 1.6
-		$arrInfoRespaldo2 = array(  'folder_path'               =>  "/var/lib/imap",
-                                            'folder_name'               =>  $folderDomain,
-                                            'nombre_archivo_respaldo'   =>  "var.lib.imap.$folderDomain.tgz"
-                                );
-                if(!respaldar_carpeta($arrInfoRespaldo2,$ruta_respaldo,$error))
-                    $bExito = false;
-*/
+		    $arrExitoFolder[]['status'] = false;
+		    $arrExitoFolder[]['folder'] = "/var/spool/imap";
+		}
             }
-/* para hacer un backup del cyrus
-	    exec("sudo -u cyrus  /usr/lib/cyrus-imapd/ctl_mboxlist -d > $ruta_respaldo/mailboxes.db",$output,$retval);
-	    if ($retval!=0) $bExito = false;
-*/
 	    $comando="sudo -u root /bin/chown cyrus:mail /var/spool/imap -R";
 	    exec($comando,$output,$retval);
             break;
 
         case "ep_db":
-            exec("cp $arrConf[elastix_dbdir]/endpoint.db $ruta_respaldo", $output, $retval);
-            if ($retval!=0) $bExito = false;
+	    if(!copy("$arrConf[elastix_dbdir]/endpoint.db", "$ruta_respaldo/endpoint.db")) $bExito = false;
             break;
 
         case "ep_config_files":
@@ -862,8 +876,11 @@ function process_each_backup($arrSelectedOptions,$ruta_respaldo,&$arrBackupOptio
             exec($comando,$output,$retval);
             if ($retval!=0) $bExito = false;
             else{
-                if(!respaldar_carpeta($arrInfoRespaldo,$ruta_respaldo,$error))
+                if(!respaldar_carpeta($arrInfoRespaldo,$ruta_respaldo,$error)){
                     $bExito = false;
+		    $arrExitoFolder[]['status'] = false;
+		    $arrExitoFolder[]['folder'] = "/tftpboot";
+		}
             }
 	    //cambio de nuevo a root
 	    $comando="sudo -u root /bin/chown root:root /tftpboot";
@@ -871,8 +888,12 @@ function process_each_backup($arrSelectedOptions,$ruta_respaldo,&$arrBackupOptio
             break;
 
         case "sugar_db":
-            if(respaldar_base_mysql($ruta_respaldo, "sugarcrm")!=0)
-                $bExito = false;
+	    $arrMysqlSugarCrm = respaldar_base_mysql($ruta_respaldo, "sugarcrm");
+	    if(!$arrMysqlSugarCrm){
+		$arrMysqlSugarCrm['db'] = "sugarcrm";
+                $arrExito[] = $arrMysqlSugarCrm;
+		$bExito = false;
+	    }
 
             if (file_exists("$ruta_respaldo/sugarcrm.sql"))
             {
@@ -891,8 +912,12 @@ function process_each_backup($arrSelectedOptions,$ruta_respaldo,&$arrBackupOptio
             break;
 
         case "vtiger_db":
-            if(respaldar_base_mysql($ruta_respaldo, "vtigercrm510")!=0)
-                $bExito = false;
+	    $arrMysqlVtigerCrm = respaldar_base_mysql($ruta_respaldo, "vtigercrm510");
+	    if(!$arrMysqlVtigerCrm){
+		$arrMysqlVtigerCrm['db'] = "vtigercrm510";
+                $arrExito[] = $arrMysqlVtigerCrm;
+		$bExito = false;
+	    }
 
             if (file_exists("$ruta_respaldo/vtigercrm510.sql"))
             {
@@ -911,8 +936,12 @@ function process_each_backup($arrSelectedOptions,$ruta_respaldo,&$arrBackupOptio
             break;
 
         case "a2billing_db":
-            if(respaldar_base_mysql($ruta_respaldo, "mya2billing")!=0)
-                $bExito = false;
+            $arrMysqlA2billing = respaldar_base_mysql($ruta_respaldo, "mya2billing");
+	    if(!$arrMysqlA2billing){
+		$arrMysqlA2billing['db'] = "mya2billing";
+                $arrExito[] = $arrMysqlA2billing;
+		$bExito = false;
+	    }
 
             if (file_exists("$ruta_respaldo/mya2billing.sql"))
             {
@@ -931,8 +960,12 @@ function process_each_backup($arrSelectedOptions,$ruta_respaldo,&$arrBackupOptio
             break;
 
         case "mysql_db":
-            if(respaldar_base_mysql($ruta_respaldo, "mysql")!=0)
-                $bExito = false;
+            $arrMysqlDb = respaldar_base_mysql($ruta_respaldo, "mysql");
+	    if(!$arrMysqlDb){
+		$arrMysqlDb['db'] = "mysql";
+                $arrExito[] = $arrMysqlDb;
+		$bExito = false;
+	    }
 
             if (file_exists("$ruta_respaldo/mysql.sql"))
             {
@@ -946,10 +979,9 @@ function process_each_backup($arrSelectedOptions,$ruta_respaldo,&$arrBackupOptio
             break;
 
         case "menus_permissions":
-            exec("cp $arrConf[elastix_dbdir]/menu.db $ruta_respaldo", $output, $retval);
-            if ($retval!=0) $bExito = false;
-            exec("cp $arrConf[elastix_dbdir]/acl.db $ruta_respaldo", $output, $retval);
-            if ($retval!=0) $bExito = false;
+	    if(!copy("$arrConf[elastix_dbdir]/menu.db", "$ruta_respaldo/menu.db")) $bExito = false;
+	    if(!copy("$arrConf[elastix_dbdir]/acl.db", "$ruta_respaldo/acl.db")) $bExito = false;
+
             break;
 
         case "fop_config":
@@ -958,29 +990,35 @@ function process_each_backup($arrSelectedOptions,$ruta_respaldo,&$arrBackupOptio
                                      'folder_name'            =>"panel/*.cfg panel/*.txt",
                                      'nombre_archivo_respaldo'=>"var.www.html.panel.tgz"
                                 );
-            if(!respaldar_carpeta($arrInfoRespaldo,$ruta_respaldo,$error))
+            if(!respaldar_carpeta($arrInfoRespaldo,$ruta_respaldo,$error)){
                 $bExito = false;
+		$arrExitoFolder[]['status'] = false;
+		$arrExitoFolder[]['folder'] = "/var/www/html/panel/*.cfg panel/*.txt";
+	    }
+	    $comando1="rpm -q --queryformat '%{version}' freePBX";
+	    $output1 = `$comando1`;
+	    if(isset($output1))
+		$version = explode(".",$output1);
+		if($version[0] >=2 && $version[1] <= 6)
+		    if(!copy("/var/lib/asterisk/bin/retrieve_op_conf_from_mysql.pl", "$ruta_respaldo/retrieve_op_conf_from_mysql.pl")) $bExito = false;
 
-            //RETRIEVE FLASH
-            exec("cp /var/lib/asterisk/bin/retrieve_op_conf_from_mysql.pl $ruta_respaldo", $output, $retval);
-            if ($retval!=0) $bExito = false;
             break;
 
         case "calendar_db":
-            $comando="cp $arrConf[elastix_dbdir]/calendar.db $ruta_respaldo";
-            exec($comando,$output,$retval);
-            if ($retval!=0) $bExito = false;
+	    if(!copy("$arrConf[elastix_dbdir]/calendar.db", "$ruta_respaldo/calendar.db")) $bExito = false;
             break;
 
         case "address_db":
-            $comando="cp $arrConf[elastix_dbdir]/address_book.db $ruta_respaldo";
-            exec($comando,$output,$retval);
-            if ($retval!=0) $bExito = false;
+	    if(!copy("$arrConf[elastix_dbdir]/address_book.db", "$ruta_respaldo/address_book.db")) $bExito = false;
             break;
 
         case "conference_db":
-            if(respaldar_base_mysql($ruta_respaldo, "meetme")!=0)
-                $bExito = false;
+            $arrMysqlMeetme = respaldar_base_mysql($ruta_respaldo, "meetme");
+	    if(!$arrMysqlMeetme){
+		$arrMysqlMeetme['db'] = "meetme";
+                $arrExito[] = $arrMysqlMeetme;
+		$bExito = false;
+	    }
 
             if (file_exists("$ruta_respaldo/meetme.sql"))
             {
@@ -999,15 +1037,16 @@ function process_each_backup($arrSelectedOptions,$ruta_respaldo,&$arrBackupOptio
             break;
 
         case "eop_db":
-            $comando="cp $arrConf[elastix_dbdir]/control_panel_design.db $ruta_respaldo";
-            exec($comando,$output,$retval);
-            if ($retval!=0) $bExito = false;
+	    if(!copy("$arrConf[elastix_dbdir]/control_panel_design.db", "$ruta_respaldo/control_panel_design.db")) $bExito = false;
             break;
-
         }
 
-        if ($bExito) $msge="[ OK ]";
-        else $msge="[ FAILED ]";
+        if ($bExito){
+	    $msge = "[ OK ]";
+	    
+        }else{
+	    $msge = "[ FAILED ]";
+	}
         $arrBackupOptions[][$option]["msg"]=$msge;
     }
 }
@@ -1027,63 +1066,40 @@ function respaldar_carpeta($arrInfoRespaldo,$ruta_respaldo,&$error)
 function respaldar_base_mysql($dir_resp_db,$base)
 {
     $respaldo ="";
+    $estructura="";
+    $arrResult = array();
     $bContinuar = FALSE;
     $host="localhost";
     $user="root";
     $pass=obtenerClaveConocidaMySQL('root');
     $dsn     = "mysql://$user:$pass@$host/$base";
-    $db=new paloDB($dsn);
-    //mysqldump solo para la estructura
+    $db = new paloDB($dsn);
+    if($db->errMsg != ""){
+	$arrResult['status'] = false;
+	$arrResult['msg'] = $db->errMsg;
+    }
+
     if(databaseExist($base, $pass, $host, $user))
-        //mysqldump solo para la estructura
+        //obtiene el dump de los inserts
         system("mysqldump -h $host -u $user -p$pass  $base -t -c > $dir_resp_db/{$base}2.sql",$retorno);
     else
         $retorno = 1;
 
     if ($retorno==0) $bContinuar = TRUE;
-/*
-    if ($bContinuar){
-        $sQuery="SHOW TABLES";
-        $tablas=$db->fetchTable($sQuery);
 
-        $num_tables=count($tablas);
-        $i=0;
-        $error="";
-        while ($i < $num_tables) {
-            $table = $tablas[$i][0];
-            $respaldo.= "--\n-- Delete Rows for Table $table\n--\nDELETE FROM `$table`;\n\n";
-            $i++;
-        }
-        if (!empty($error)){
-            $bContinuar = FALSE;
-            //$sContenido.=$tpl->crearAlerta("error","Error",$error);
-        } else {
-            $bContinuar=TRUE;
-        }
-    }
-*/
     if ($bContinuar){
+	// se obtiene la estructura de la base de datos es decir vacia.
         system("mysqldump -h $host -u $user -p$pass  $base --no-data  > $dir_resp_db/{$base}.sql",$retorno);
-        //system("mysqldump -h $host -u $user -p$pass  $base --skip-add-drop-table --no-data  > $dir_resp_db/{$base}.sql",$retorno);
         if ($retorno==0){
-
-            $estructura="";
-            //no hubo inconvenientes, se guardo la estructura
-            //se carga el contenido del archivo
             $estructura=file_get_contents("$dir_resp_db/{$base}.sql");
             $estructura=str_replace("CREATE TABLE","CREATE TABLE IF NOT EXISTS",$estructura);
-
-            //borrar el archivo
 
             if (strlen(trim($estructura))>0){
                 $respaldo=$estructura.$respaldo;
                 $bContinuar=TRUE;
-            }
-            else{
-                //si no hay estructura no se puede continuar con los datos
+            }else{//si no hay estructura no se puede continuar con los datos
                 $bContinuar=FALSE;
             }
-
         }else{
             $bContinuar = FALSE;
         }
@@ -1093,18 +1109,23 @@ function respaldar_base_mysql($dir_resp_db,$base)
         // file_put_contents("$dir_resp_db/{$base}.sql", $respaldo, FILE_APPEND);
         $open = fopen ("$dir_resp_db/{$base}2.sql","a+");
         $openSQL = fopen ("$dir_resp_db/{$base}.sql","w+");
-        rewind($open);rewind($openSQL);
+        rewind($open); //Establece el indicador de posición de archivo de handle al principio del flujo del archivo. 
+	rewind($openSQL); //Establece el indicador de posición de archivo de handle al principio del flujo del archivo. 
         $tamanio_linea=4096;
         $escribir = fwrite ($openSQL,$respaldo."\n");
         while ($linea = fgets($open,$tamanio_linea))  // [0]
         {
            $escribir = fwrite ($openSQL,$linea);
         }
-        fclose($open);        fclose($openSQL);
+        fclose($open);
+	fclose($openSQL);
         unlink("$dir_resp_db/{$base}2.sql");
+	$arrResult['status'] = true;
+	$arrResult['msg'] = "";
     }
 
-    return $bContinuar?0:($retorno>0?1:$retorno);
+    //return $bContinuar?0:($retorno>0?1:$retorno);
+    return $arrResult;
 }
 
 /* ------------------------------------------------------------------------------- */
@@ -1131,9 +1152,10 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
                     $directorio=dir($ruta_respaldo_db);
                     $arrArchivos = array();
                     while ($archivo = $directorio->read()) {
-                        if ($archivo!="." && $archivo!=".." && ereg("(.*)\.sql$",$archivo,$regs))
+                        if ($archivo!="." && $archivo!=".." && preg_match("/^.*\.sql$/",$archivo,$regs))
                         {
-                            $base = $regs[1];
+                            $baseSQL = explode(".",$regs[0]);
+			    $base = $baseSQL[0];
                             $fileSQL = $archivo;
                             $comando="mysql --password=".$root_password." --user=root $base < $ruta_respaldo_db/$fileSQL";
                             exec($comando,$output,$retval);
@@ -1166,16 +1188,15 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
                 $base_address_respaldo = "$ruta_respaldo/astdb";
                 $base_address = "/var/lib/asterisk/astdb";
 
-                $comando="mv -f $base_address_respaldo $base_address";
-                exec($comando,$output,$retval);
-                if ($retval!=0) $bExito = false;
+
+		if(!rename($base_address_respaldo, $base_address))  $bExito = false;
 
                 $comando="sudo -u root /bin/chmod 777 $base_address";
                 exec($comando,$output,$retval);
             }else $bExito = false;
 
             //Respaldo carpeta /var/www/html/admin en un tgz
-            $comando="tar cvfz /var/www/html/admin.tgz /var/www/html/admin/";
+            $comando="tar -cvzf /var/www/html/admin.tgz /var/www/html/admin/";
             exec($comando, $output, $retval);
             if ($retval!=0) $bExito = false;
             else{
@@ -1203,7 +1224,7 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
             $comando="sudo -u root chmod 777 /etc/asterisk.tgz";
             exec($comando, $output, $retval);
 
-            $comando="tar cvfz /etc/asterisk.tgz /etc/asterisk/";
+            $comando="tar -cvzf /etc/asterisk.tgz /etc/asterisk/";
             exec($comando, $output, $retval);
             if ($retval!=0) $bExito = false;
             else{
@@ -1224,7 +1245,8 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
                         $sRutaModulos = '/usr/lib/asterisk/modules';     
                         if (is_dir('/usr/lib64/asterisk/modules')) {     
                             $sRutaModulos = '/usr/lib64/asterisk/modules';   
-                        }    
+                        }
+			$arrRutas = array("/usr/lib/asterisk/modules","/usr/lib64/asterisk/modules");
                         foreach (array(  
                             '/etc/asterisk/asterisk.conf',   
                             '/etc/asterisk/extensions_additional.conf') as $sArchivo) {  
@@ -1235,10 +1257,7 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
                             // Leer archivo entero para procesar     
                             $contenido = file($sArchivo);    
                             for ($i = 0; $i < count($contenido); $i++) {     
-                                $contenido[$i] = ereg_replace(   
-                                    "^(.*)(/usr/lib(64)?/asterisk/modules)(.*)",     
-                                    "\\1$sRutaModulos\\4",   
-                                    $contenido[$i]);     
+				$contenido[$i] = str_replace($arrRutas,$sRutaModulos,$contenido[$i]);
                             }    
 
                             // Escribir contenido resultante     
@@ -1257,7 +1276,7 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
 
         case "as_monitor":
             //Respaldo carpeta /var/spool/asterisk/monitor en un tgz
-            $comando="tar cvfz /var/spool/asterisk/monitor.tgz /var/spool/asterisk/monitor/";
+            $comando="tar -cvzf /var/spool/asterisk/monitor.tgz /var/spool/asterisk/monitor/";
             exec($comando, $output, $retval);
             if ($retval!=0) $bExito = false;
             else{
@@ -1275,7 +1294,7 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
 
         case "as_voicemail":
             //Respaldo carpeta /var/spool/asterisk/voicemail en un tgz
-            $comando="tar cvfz /var/spool/asterisk/voicemail.tgz /var/spool/asterisk/voicemail/";
+            $comando="tar -cvzf /var/spool/asterisk/voicemail.tgz /var/spool/asterisk/voicemail/";
             exec($comando, $output, $retval);
             if ($retval!=0) $bExito = false;
             else{
@@ -1293,7 +1312,7 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
 
         case "as_sounds":
             //Respaldo carpeta /var/spool/asterisk/sounds en un tgz
-            $comando="tar cvfz /var/lib/asterisk/sounds/custom.tgz /var/lib/asterisk/sounds/custom/";
+            $comando="tar -cvzf /var/lib/asterisk/sounds/custom.tgz /var/lib/asterisk/sounds/custom/";
             exec($comando, $output, $retval);
             if ($retval!=0) $bExito = false;
             else{
@@ -1311,7 +1330,7 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
 
         case "as_mohmp3":
             //Respaldo carpeta /var/spool/asterisk/sounds en un tgz
-            $comando="tar cvfz /var/lib/asterisk/mohmp3.tgz /var/lib/asterisk/mohmp3/";
+            $comando="tar -cvzf /var/lib/asterisk/mohmp3.tgz /var/lib/asterisk/mohmp3/";
             exec($comando, $output, $retval);
             if ($retval!=0) $bExito = false;
             else{
@@ -1343,7 +1362,7 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
             $comando="sudo -u root chmod 777 /etc/dahdi.tgz";
             exec($comando, $output, $retval);
 
-            $comando="tar cvfz /etc/dahdi.tgz /etc/dahdi/";
+            $comando="tar -cvzf /etc/dahdi.tgz /etc/dahdi/";
             exec($comando, $output, $retval);
             if ($retval!=0) $bExito = false;
             else{
@@ -1375,9 +1394,7 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
                 //consultar en la base para crear en el sistema
                 crear_cuentas_fax($base_fax_respaldo,$base_fax);
 
-                $comando="mv -f $base_fax_respaldo $base_fax";
-                exec($comando,$output,$retval);
-                if ($retval!=0) $bExito = false;
+		if(!rename($base_fax_respaldo, $base_fax))  $bExito = false;
 
                 $comando="sudo -u root /bin/chmod 777 $base_fax";
                 exec($comando,$output,$retval);
@@ -1386,22 +1403,22 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
 
         case "fx_pdf":
             //Respaldo carpeta /etc/asterisk en un tgz
-            $comando="sudo -u root touch /var/www/html/faxes.tgz";
+            $comando="sudo -u root touch /var/www/faxes.tgz";
             exec($comando, $output, $retval);
 
-            $comando="sudo -u root chmod 777 /var/www/html/faxes.tgz";
+            $comando="sudo -u root chmod 777 /var/www/faxes.tgz";
             exec($comando, $output, $retval);
 
-            $comando="tar cvfz /var/www/html/faxes.tgz /var/www/html/faxes/";
+            $comando="tar -cvzf /var/www/faxes.tgz /var/www/faxes/";
             exec($comando, $output, $retval);
             if ($retval!=0) $bExito = false;
             else{
-                $comando="rm -rf /var/www/html/faxes/*";
+                $comando="rm -rf /var/www/faxes/*";
                 exec($comando, $output, $retval);
 
-                $arrInfoRestaurar = array(  'folder_path'               =>  "/var/www/html",
+                $arrInfoRestaurar = array(  'folder_path'               =>  "/var/www",
                                             'folder_name'               =>  "faxes",
-                                            'nombre_archivo_respaldo'   =>  "var.www.html.faxes.tgz"
+                                            'nombre_archivo_respaldo'   =>  "var.www.faxes.tgz"
                                     );
                 if(!restaurar_carpeta($arrInfoRestaurar,$ruta_respaldo,$error))
                     $bExito = false;
@@ -1446,10 +1463,7 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
                 //consultar en la base para crear en el sistema
                 if(!crear_cuentas_email($base_email_respaldo, $base_email))
                     $bExito = false;
-
-                $comando="mv -f $base_email_respaldo $base_email";
-                exec($comando,$output,$retval);
-                if ($retval!=0) $bExito = false;
+		if(!rename($base_email_respaldo, $base_email))  $bExito = false;
 
                 $comando="sudo -u root /bin/chmod 777 $base_email";
                 exec($comando,$output,$retval);
@@ -1467,7 +1481,7 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
             $comando="sudo -u root /bin/chown asterisk:asterisk /var/spool/imap -R";
             exec($comando, $output, $retval);
 
-            $comando="tar cvfz /var/spool/imap.tgz /var/spool/imap/";
+            $comando="tar -cvzf /var/spool/imap.tgz /var/spool/imap/";
             exec($comando, $output, $retval);
 
             if ($retval!=0) $bExito = false;
@@ -1491,9 +1505,8 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
             break;
 
         case "ep_db":
-            $comando="cp -f $ruta_respaldo/endpoint.db $arrConf[elastix_dbdir]/";
-            exec($comando, $output, $retval);
-            if ($retval!=0) $bExito = false;
+	    if(!copy("$ruta_respaldo/endpoint.db", "$arrConf[elastix_dbdir]/endpoint.db"))  $bExito = false;
+
             break;
 
         case "ep_config_files":
@@ -1504,7 +1517,7 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
             $comando="sudo -u root chmod 777 /tftpboot.tgz";
             exec($comando, $output, $retval);
 
-            $comando="tar cvfz /tftpboot.tgz /tftpboot/";
+            $comando="tar -cvzf /tftpboot.tgz /tftpboot/";
             exec($comando, $output, $retval);
             if ($retval!=0) $bExito = false;
             else{
@@ -1591,9 +1604,9 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
             break;
 
         case "menus_permissions":
-            $comando="cp -f $ruta_respaldo/menu.db $ruta_respaldo/acl.db $arrConf[elastix_dbdir]/";
-            exec($comando, $output, $retval);
-            if ($retval!=0) $bExito = false;
+	    if(!copy("$ruta_respaldo/menu.db", "$arrConf[elastix_dbdir]/menu.db"))  $bExito = false;
+	    if(!copy("$ruta_respaldo/acl.db", "$arrConf[elastix_dbdir]/acl.db"))   $bExito = false;
+
             break;
 
         case "fop_config":
@@ -1606,10 +1619,12 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
             if(!restaurar_carpeta($arrInfoRespaldo,$ruta_respaldo,$error))
                 $bExito = false;
 
-            //RETRIEVE FLASH
-            $comando="cp -f $ruta_respaldo/retrieve_op_conf_from_mysql.pl /var/lib/asterisk/bin/";
-            exec($comando, $output, $retval);
-            if ($retval!=0) $bExito = false;
+	    $comando1="rpm -q --queryformat '%{version}' freePBX";
+	    $output1 = `$comando1`;
+	    if(isset($output1))
+		$version = explode(".",$output1);
+		if($version[0] >=2 && $version[1] <= 6)
+		if(!copy("$ruta_respaldo/retrieve_op_conf_from_mysql.pl", "/var/lib/asterisk/bin/retrieve_op_conf_from_mysql.pl"))  $bExito = false;
 
             break;
 
@@ -1620,9 +1635,7 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
                 $base_calendar_respaldo = "$ruta_respaldo/calendar.db";
                 $base_calendar = "$arrConf[elastix_dbdir]/calendar.db";
 
-                $comando="mv -f $base_calendar_respaldo $base_calendar";
-                exec($comando,$output,$retval);
-                if ($retval!=0) $bExito = false;
+		if(!rename($base_calendar_respaldo, $base_calendar))  $bExito = false;
 
                 $comando="sudo -u root /bin/chmod 777 $base_calendar";
                 exec($comando,$output,$retval);
@@ -1636,9 +1649,7 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
                 $base_address_respaldo = "$ruta_respaldo/address_book.db";
                 $base_address = "$arrConf[elastix_dbdir]/address_book.db";
 
-                $comando="mv -f $base_address_respaldo $base_address";
-                exec($comando,$output,$retval);
-                if ($retval!=0) $bExito = false;
+		if(!rename($base_address_respaldo, $base_address))  $bExito = false;
 
                 $comando="sudo -u root /bin/chmod 777 $base_address";
                 exec($comando,$output,$retval);
@@ -1666,9 +1677,7 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
                 $base_address_respaldo = "$ruta_respaldo/control_panel_design.db";
                 $base_address = "$arrConf[elastix_dbdir]/control_panel_design.db";
 
-                $comando="mv -f $base_address_respaldo $base_address";
-                exec($comando,$output,$retval);
-                if ($retval!=0) $bExito = false;
+		if(!rename($base_address_respaldo, $base_address))  $bExito = false;
 
                 $comando="sudo -u root /bin/chmod 777 $base_address";
                 exec($comando,$output,$retval);
@@ -1726,9 +1735,7 @@ function showAlert($path_backup, $smarty, $arrLang, $backup_file, $module_name, 
                     return ;
                 }
                 $compare = compareArrays($path_backup_XML, $arr_XML);
-                // si hay alerta de versiones 
-                exec("echo 'es ".count($compare).": ".print_r($compare,true)."' > /tmp/edu");
-                //$compare = $arr_XML;
+
                 if($parameter == 0){
                     if(count($compare)>=1 && $compare!=null){
                         $warning = $arrLang["Warning"];
@@ -1748,22 +1755,92 @@ function showAlert($path_backup, $smarty, $arrLang, $backup_file, $module_name, 
 }
 
 function boxAlert($module_name, $arrLang, $programs, $external, $compare){
-    $html="<table id='version' width='100%' align='center'>
-             <tr class='moduleTitle'><td class='moduleTitle' align='center' valign='middle' colspan=4>".$arrLang['warning_details']."</td></tr>
+    $html = "<table id='version' width='750px' align='center'>".
+             "<tr class='moduleTitle'><td class='moduleTitle' align='center' valign='middle' colspan=5>".$arrLang['warning_details']."</td></tr>
              <tr class='tabForm'>
                 <td class='tabForm'><b>".$arrLang['programs']."</b></td>
-                <td class='tabForm'><b>".$arrLang['local_version']."</b></td>
-                <td class='tabForm'><b>".$arrLang['external_version']."</b></td>
+		<td class='tabForm'><b>".$arrLang['Package']."</b></td>
+		<td class='tabForm' colspan='2'>
+		    <table>
+			<tr align='center'><td width='130px' colspan='2' style='border-bottom: solid 1px #AAAAAA; font-weight: bold; color: #333333; font-family: verdana,arial,helvetica,sans-serif;'>"._tr("Version")."</td></tr>
+			<tr align='center'>
+			    <td style='color: #333333; font-weight: bold; font-family: verdana,arial,helvetica,sans-serif;'><b>".$arrLang['local_version']."</b></td>
+			    <td style='color: #333333; font-weight: bold; font-family: verdana,arial,helvetica,sans-serif;'><b>".$arrLang['external_version']."</b></td>
+			</tr>
+		    </table>
+		</td>
+		<td class='tabForm'>
+		    <table align='center'>
+			<tr align='center'><td colspan='6' style='border-bottom: solid 1px #AAAAAA; font-weight: bold; color: #333333; font-family: verdana,arial,helvetica,sans-serif;'>"._tr("Options Backup")."</td></tr>
+			<tr align='center'>
+			    <td width='60px' style='color: #333333; font-weight: bold; font-family: verdana,arial,helvetica,sans-serif;'>&nbsp;"._tr("Endpoint")."&nbsp;</td>
+			    <td width='60px' style='color: #333333; font-weight: bold; font-family: verdana,arial,helvetica,sans-serif;'>&nbsp;"._tr("Fax")."&nbsp;</td>
+			    <td width='60px' style='color: #333333; font-weight: bold; font-family: verdana,arial,helvetica,sans-serif;'>&nbsp;"._tr("Email")."&nbsp;</td>
+			    <td width='60px' style='color: #333333; font-weight: bold; font-family: verdana,arial,helvetica,sans-serif;'>&nbsp;"._tr("Asterisk")."&nbsp;</td>
+			    <td width='60px' style='color: #333333; font-weight: bold; font-family: verdana,arial,helvetica,sans-serif;'>&nbsp;"._tr("Others")."&nbsp;</td>
+			    <td width='60px' style='color: #333333; font-weight: bold; font-family: verdana,arial,helvetica,sans-serif;'>&nbsp;"._tr("Others new")."&nbsp;</td>
+			</tr>
+		    </table>
+		</td>
              </tr>";
     foreach($compare as $key => $value){
-        $html .="<tr>
-                        <td class='tdStyle'>".$arrLang[$key]."</td>
-                        <td class='tdStyle'>".$programs[$key]['version']."-".$programs[$key]['release']."</td>
-                        <td class='tdStyle'>".$external[$key]['version']."-".$external[$key]['release']."</td>
+	$externalValues = $external[$key]['version']."-".$external[$key]['release'];
+	$programsValues = $programs[$key]['version']."-".$programs[$key]['release'];
+	
+	if($external[$key]['version'] == $external[$key]['release']){
+	    $externalValues = "<span style='font-style: italic; color: red;'>"._tr("Package not installed")."</span>";
+	}
+
+	if($programs[$key]['version'] == $programs[$key]['release']){
+	    $programsValues = "<span style='font-style: italic; color: red;'>"._tr("Package not installed")."</span>";
+	}
+
+	$arrVal = getValueofBackupOption($key);
+
+        $html .="<tr onmouseout=\"this.style.backgroundColor='#ffffff';\" onmouseover=\"this.style.backgroundColor='#f2f2f2';\">
+                        <td class='tdStyle'>"._tr($key)."</td>
+			<td class='tdStyle'>$key</td>
+                        <td class='tdStyle'>$programsValues</td>
+                        <td class='tdStyle'>$externalValues</td>
+			<td class='tdStyle'>
+			    <table>
+				<tr align='center'>
+				    <td width='60px' class='tdStyle'>".$arrVal['endpoint']."</td>
+				    <td width='60px' class='tdStyle'>".$arrVal['fax']."</td>
+				    <td width='60px' class='tdStyle'>".$arrVal['email']."</td>
+				    <td width='60px' class='tdStyle'>".$arrVal['asterisk']."</td>
+				    <td width='60px' class='tdStyle'>".$arrVal['otros']."</td>
+				    <td width='60px' class='tdStyle'>".$arrVal['otros_new']."</td>
+				</tr>
+			    </table>
+			<td>
                     </tr>";
     }
     $html .="</table>";
     return $html;
+}
+
+function getValueofBackupOption($valueOp)
+{
+    $arrayOptions = array(
+	"endpoint" => array("elastix-pbx"),
+	"fax" => array("elastix-fax"),
+	"email" => array("elastix","elastix-email_admin"),
+	"asterisk" => array("asterisk","dahdi","wanpipe-util","freepbx","elastix"),
+	"otros" => array("elastix-vtigercrm","elastix-a2billing","elastix","elastix-pbx","elastix-sugarcrm-addon"),
+	"otros_new" => array("elastix-pbx","elastix-agenda")
+    );
+    $arrayResult = array();
+    foreach($arrayOptions as $key => $value)
+    {
+	for($i=0; $i<count($value); $i++){
+	    $package = $value[$i];
+	    if($valueOp == $package)
+		$arrayResult[$key] = "x";
+	    $arrayResult[$key] = isset($arrayResult[$key])?$arrayResult[$key]:"";
+	}
+    }
+    return $arrayResult;
 }
 
 function showMessageAlert($arr){
@@ -1805,19 +1882,73 @@ function getVersionPrograms_SYSTEM(){
      $output2 = `$comando2`;
      $arrPro['wanpipe-util'] = array("version" => "$output1", "release" => "$output2");
 
-     //freePBX
+     // freePBX
      $comando1="rpm -q --queryformat '%{version}' freePBX";
      $comando2="rpm -q --queryformat '%{release}' freePBX";
      $output1 = `$comando1`;
      $output2 = `$comando2`;
      $arrPro['freepbx']  = array("version" => "$output1", "release" => "$output2");
 
-    //freePBX
+     // elastix
      $comando1="rpm -q --queryformat '%{version}' elastix";
      $comando2="rpm -q --queryformat '%{release}' elastix";
      $output1 = `$comando1`;
      $output2 = `$comando2`;
      $arrPro['elastix']  = array("version" => "$output1", "release" => "$output2");
+/***************************** added ******************************************************/
+     // elastix-pbx
+     $comando1="rpm -q --queryformat '%{version}' elastix-pbx";
+     $comando2="rpm -q --queryformat '%{release}' elastix-pbx";
+     $output1 = `$comando1`;
+     $output2 = `$comando2`;
+     $arrPro['elastix-pbx']  = array("version" => "$output1", "release" => "$output2");
+
+     // elastix-email
+     $comando1="rpm -q --queryformat '%{version}' elastix-email_admin";
+     $comando2="rpm -q --queryformat '%{release}' elastix-email_admin";
+     $output1 = `$comando1`;
+     $output2 = `$comando2`;
+     $arrPro['elastix-email_admin']  = array("version" => "$output1", "release" => "$output2");
+
+     // elastix-agenda
+     $comando1="rpm -q --queryformat '%{version}' elastix-agenda";
+     $comando2="rpm -q --queryformat '%{release}' elastix-agenda";
+     $output1 = `$comando1`;
+     $output2 = `$comando2`;
+     $arrPro['elastix-agenda']  = array("version" => "$output1", "release" => "$output2");
+
+     // elastix-fax
+     $comando1="rpm -q --queryformat '%{version}' elastix-fax";
+     $comando2="rpm -q --queryformat '%{release}' elastix-fax";
+     $output1 = `$comando1`;
+     $output2 = `$comando2`;
+     $arrPro['elastix-fax']  = array("version" => "$output1", "release" => "$output2");
+
+     // elastix-vtigercrm
+     $comando1="rpm -q --queryformat '%{version}' elastix-vtigercrm";
+     $comando2="rpm -q --queryformat '%{release}' elastix-vtigercrm";
+     $output1 = `$comando1`;
+     $output2 = `$comando2`;
+     $arrPro['elastix-vtigercrm']  = array("version" => "$output1", "release" => "$output2");
+
+     // elastix-a2billing
+     $comando1="rpm -q --queryformat '%{version}' elastix-a2billing";
+     $comando2="rpm -q --queryformat '%{release}' elastix-a2billing";
+     $output1 = `$comando1`;
+     $output2 = `$comando2`;
+     $arrPro['elastix-a2billing']  = array("version" => "$output1", "release" => "$output2");
+
+     // elastix-sugarcrm-addon
+     $comando1="rpm -q --queryformat '%{version}' elastix-sugarcrm-addon";
+     $comando2="rpm -q --queryformat '%{release}' elastix-sugarcrm-addon";
+     $output1 = `$comando1`;
+     $output2 = `$comando2`;
+     if(strlen($output2)>3){
+	$output1 = _tr("Package not installed");
+	$output2 = _tr("Package not installed");
+     }
+     $arrPro['elastix-sugarcrm-addon']  = array("version" => "$output1", "release" => "$output2");
+/***************************** end added ***************************************************/
      return $arrPro;
 }
 
@@ -1927,10 +2058,23 @@ function crear_cuentas_email($ruta_base_email_respaldo,$base_email)
         #borrar las cuentas de dominos y el domino $arrConf[elastix_dbdir]
         $pDBorig = new paloDB("sqlite3:///$base_email");
 	$pEmail  = new paloEmail($pDBorig);
+
+	$separador = "";
+	$comando1="rpm -q --queryformat '%{version}' elastix";
+	$output1 = `$comando1`;
+	if(isset($output1))
+	    $version = explode(".",$output1);
+		if($version[0] == 2)
+		    $separador = "@"; //si es un elastix 2.0
+		else
+		    $separador = "\."; //si es un elastix 1.6
+
         if (!empty($pDBorig->errMsg)) {
             echo "DB ERROR: $pDBorig->errMsg \n";
         }
         else{
+
+	    // ya no se debe hacer ya que se hizo antes de llamar a esta funcion
             $query="SELECT * FROM domain";
             $result=$pDBorig->fetchTable($query,true);
             if(is_array($result) && count($result) > 0){
@@ -1940,6 +2084,7 @@ function crear_cuentas_email($ruta_base_email_respaldo,$base_email)
                     $bExito = $pEmail->eliminar_dominio($pDBorig,$arrTmp,$errMsg,$virtual);
                 }
             }
+	    // ya no se debe hacer ya que se hizo antes de llamar a esta funcion
 
             if($bExito){
                 #crear los dominios
@@ -1958,12 +2103,14 @@ function crear_cuentas_email($ruta_base_email_respaldo,$base_email)
                     if (is_array($result)){
                         foreach ($result as $infoCuenta)
                         {
-                            $username=$infoCuenta['username'];
-                            $quota=$infoCuenta['quota'];
+                            $username = $infoCuenta['username'];
+                            $quota    = $infoCuenta['quota'];
+			    $domain   = $infoCuenta['domain_name'];
                             #armo el email
-                            if (ereg("(.*)\.($infoCuenta[domain_name])",$username,$regs))
+			    $arrMatchAccount = preg_split("/$separador/",$username);
+                            if (count($arrMatchAccount) > 0)
                             {
-                                $email=$regs[1].'@'.$infoCuenta['domain_name'];
+                                $email=$arrMatchAccount[0].'@'.$infoCuenta['domain_name'];
                                 $password=$infoCuenta['password'];
                                 $bExito = $pEmail->crear_usuario_correo_sistema($email,$username,$password,$errMsg,$virtual);
                                 if ($bExito){
@@ -2247,10 +2394,10 @@ function getListUp($fileUP, $fileRemote){// fileUp toda la sita que se envia
             $up[$i] = $fileUP[$j];
             $i++;
         }else {
-                if(filesRepeted($fileUP[$j],$fileRemote) > 0){
-                    $repetidos[$k] = $fileUP[$j];
-                    $k++;
-                }
+	    if(filesRepeted($fileUP[$j],$fileRemote) > 0){
+		$repetidos[$k] = $fileUP[$j];
+		$k++;
+	    }
         }
     }
     $sal[0] = $i;
