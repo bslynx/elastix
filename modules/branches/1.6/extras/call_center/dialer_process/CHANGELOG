@@ -1,3 +1,5 @@
+* Dialer: fix accounting of parked calls (for Hold) in incoming-calls case
+
 1.5-4.1 (SVN revision 2847)
 * Dialer (ECCP): Added "extension" and "channel" fields to response for 
   "getagentstatus" request.

@@ -3963,21 +3963,32 @@ SQL_EXISTE_AUDIT;
         /* Marcar la llamada para hold, para compatibilidad con el código de
          * hold del evento OnHangup. Esta actualización debe ser visible cuando
          * se reciba el evento Hangup resultante de la redirección hold. */
-        $sPeticionSQLMarcado = 'UPDATE '.$tuplaLlamada['tabla'].' SET hold = ? WHERE id = ?';
-        $r = $this->_dbConn->query($sPeticionSQLMarcado, array('S', $tuplaLlamada['id_current_call']));
-        if (DB::isError($r)) {
-            $this->oMainLog->output('ERR: al iniciar hold: no se puede marcar la llamada como hold (1) - '.$r->getMessage());
-        	return FALSE;
-        }
+        $sqlHold[] = array(
+            'UPDATE '.$tuplaLlamada['tabla'].' SET hold = ? WHERE id = ?',
+            array(
+                'marcar_hold'   =>  array('S', $tuplaLlamada['id_current_call']),
+                'deshacer_hold' =>  array('N', $tuplaLlamada['id_current_call']),
+            )
+        );
         if ($tuplaLlamada['tabla'] == 'current_calls') {
-            $sPeticionSQLEstado = 'UPDATE calls set status = ? WHERE id = ?';
-            $r = $this->_dbConn->query($sPeticionSQLEstado, array('OnHold', $tuplaLlamada['id_call']));
+            $sqlHold[] = array(
+                'UPDATE calls set status = ? WHERE id = ?',
+                array(
+                    'marcar_hold'   =>  array('OnHold', $tuplaLlamada['id_call']),
+                    'deshacer_hold' =>  array('Success', $tuplaLlamada['id_call']),
+                ),
+            );
+        } elseif ($tuplaLlamada['tabla'] == 'current_call_entry') {
+            // FIXME: estado de call_entry se asigna en GestorLlamadasEntrantes::notificarHangup()
+        }
+        foreach ($sqlHold as $sqlIndex => $sqlInfo) {
+        	$r = $this->_dbConn->query($sqlInfo[0], $sqlInfo[1]['marcar_hold']);
             if (DB::isError($r)) {
-                $this->oMainLog->output('ERR: al iniciar hold: no se puede marcar la llamada como hold (2) - '.$r->getMessage());
+                $this->oMainLog->output(
+                    "ERR: al iniciar hold: no se puede marcar la llamada como hold ($sqlIndex) - ".
+                    $r->getMessage());
                 return FALSE;
             }
-        } else {
-        	// TODO: ¿Qué estado se asigna a las llamadas entrantes?
         }
         
         // Ejecutar realmente la redirección al hold
@@ -3989,8 +4000,14 @@ SQL_EXISTE_AUDIT;
             1);                             // priority
         if ($r['Response'] != 'Success') {
         	$this->oMainLog->output('ERR: al iniciar hold: no se puede ejecutar hold - '.$r['Message']);
-            $r = $this->_dbConn->query($sPeticionSQLMarcado, array('N', $tuplaLlamada['id_current_call']));
-            $r = $this->_dbConn->query($sPeticionSQLEstado, array('Success', $tuplaLlamada['id_call']));
+            foreach ($sqlHold as $sqlIndex => $sqlInfo) {
+                $r = $this->_dbConn->query($sqlInfo[0], $sqlInfo[1]['deshacer_hold']);
+                if (DB::isError($r)) {
+                    $this->oMainLog->output(
+                        "ERR: al iniciar hold: no se puede marcar la llamada como hold ($sqlIndex) - ".
+                        $r->getMessage());
+                }
+            }
             $this->_quitarPausaAgente($sAgente);
             return FALSE;
         }

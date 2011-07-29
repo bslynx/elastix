@@ -426,28 +426,40 @@ class GestorLlamadasEntrantes
                 print_r($this->_cacheAgentesCola, TRUE));
         }
 
-        $idCallEntry = $this->_dbConn->getOne(
-                'SELECT current_call_entry.id_call_entry '.
+        /* Esta llamada puede ser una llamada que regresa de HOLD. Entonces 
+         * current_call_entry.status debe tener "hold", y ChannelClient coincide
+         * con $sRemChannel */
+        $tuplaCallEntry = $this->_dbConn->getRow(
+                'SELECT current_call_entry.id_call_entry AS id_call_entry, current_call_entry.id AS id '.
                 'FROM current_call_entry, call_entry '.
                 'WHERE current_call_entry.id_call_entry = call_entry.id '.
                     'AND call_entry.status = "hold" '.
-                    'AND (current_call_entry.uniqueid = ? OR current_call_entry.uniqueid = ?)', 
-                array($eventParams['Uniqueid1'], $eventParams['Uniqueid2']));
-        if (DB::isError($idCallEntry)) {
-        	$this->oMainLog->output("ERR: no se puede consultar estado HOLD en llamadas entrantes - ".
-                $idCallEntry->getMessage());
-        } elseif (!is_null($idCallEntry)) {
+                    'AND current_call_entry.ChannelClient = ?', 
+                array($sRemChannel), 
+                DB_FETCHMODE_ASSOC);
+        if (DB::isError($tuplaCallEntry)) {
+            $this->oMainLog->output("ERR: no se puede consultar estado HOLD en llamadas entrantes - ".
+                $tuplaCallEntry->getMessage());
+        } elseif (!is_null($tuplaCallEntry)) {
             /* La llamada ha sido ya ingresada en current_calls, y se omite 
              * procesamiento futuro. */
             $this->oMainLog->output("DEBUG: notificarLink(): llamada ".
                 $eventParams['Uniqueid1'].'/'.$eventParams['Uniqueid2'].
                 " regresa de HOLD, se omite procesamiento futuro.");
-        	$result =& $this->_dbConn->query(
-                'UPDATE call_entry SET status = "activa" WHERE id = ?',
-                array($idCallEntry));
+            $result =& $this->_dbConn->query(
+                'UPDATE call_entry SET status = "activa", uniqueid = ? WHERE id = ?',
+                array($eventParams[$sKey_Uniqueid], $tuplaCallEntry['id_call_entry']));
             if (DB::isError($result)) {
-            	$this->oMainLog->output(
-                    "ERR: no se puede actualizar estado de llamada entrante (hold->activa) - ".
+                $this->oMainLog->output(
+                    "ERR: no se puede actualizar estado de llamada entrante (hold->activa) (1) - ".
+                    $result->getMessage());
+            }
+            $result =& $this->_dbConn->query(
+                'UPDATE current_call_entry SET uniqueid = ? WHERE id = ?',
+                array($eventParams[$sKey_Uniqueid], $tuplaCallEntry['id']));
+            if (DB::isError($result)) {
+                $this->oMainLog->output(
+                    "ERR: no se puede actualizar estado de llamada entrante (hold->activa) (2) - ".
                     $result->getMessage());
             }
             $listaColasCandidatas = NULL;
