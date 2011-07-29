@@ -9,14 +9,19 @@ $(document).ready(function() {
 			right: 'month,agendaWeek,agendaDay'
 		},
         firstDay: 1,
-		eventDrop: function(event, delta, minutes) {//linea 2613
+	eventDrop: function(event, delta, minutes) {//linea 2613
             //event.title   name's events
             //delta         numbers of days to move
             //minutes       numbers of minutes to move
             //event.start   last date start
             //event.end     last date end
-
-            var order = "menu="+module_name+"&action=set_data&id="+event._id+"&days="+delta+"&minutes="+minutes+"&dateIni="+event.start+"&dateEnd="+event.end+"&rawmode=yes";
+	    var dateIni = new String(event.start);
+	    var dateEnd = new String(event.end);
+	    dateIni = dateIni.replace("+","|mas|");
+	    dateIni = dateIni.replace("-","|menos|");
+	    dateEnd = dateEnd.replace("+","|mas|");
+	    dateEnd = dateEnd.replace("-","|menos|");
+            var order = "menu="+module_name+"&action=set_data&id="+event._id+"&days="+delta+"&minutes="+minutes+"&dateIni="+dateIni+"&dateEnd="+dateEnd+"&rawmode=yes";
             $.post("index.php", order, function(theResponse){
                 //location.reload();
                 //alert(theResponse + " eventDrop");
@@ -28,8 +33,13 @@ $(document).ready(function() {
             //minutes       numbers of minutes to move
             //event.start   last date start
             //event.end     last date end
-
-            var order = "menu="+module_name+"&action=set_data&id="+event._id+"&days="+delta+"&minutes="+minutes+"&dateIni="+event.start+"&dateEnd="+event.end+"&rawmode=yes";
+            var dateIni = new String(event.start);
+	    var dateEnd = new String(event.end);
+	    dateIni = dateIni.replace("+","|mas|");
+	    dateIni = dateIni.replace("-","|menos|");
+	    dateEnd = dateEnd.replace("+","|mas|");
+	    dateEnd = dateEnd.replace("-","|menos|");
+            var order = "menu="+module_name+"&action=set_data&id="+event._id+"&days="+delta+"&minutes="+minutes+"&dateIni="+dateIni+"&dateEnd="+dateEnd+"&rawmode=yes";
             $.post("index.php", order, function(theResponse){
                 //location.reload();
                 //alert(theResponse + " eventResize");

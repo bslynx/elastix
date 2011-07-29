@@ -242,6 +242,8 @@ function viewCalendar($smarty, $module_name, $local_templates_dir, &$pDB, $arrCo
     $smarty->assign("formatIcal",$arrLang["ical"]);
     $smarty->assign("LBL_EDIT", $arrLang["Edit Event"]);
     $smarty->assign("LBL_LOADING", $arrLang["Loading"]);
+    $smarty->assign("LBL_DELETING", $arrLang["Deleting"]);
+    $smarty->assign("LBL_SENDING", $arrLang["Sending Request"]);
     $smarty->assign("START_TYPE", $arrLang["START_TYPE"]);
     $smarty->assign("DATE_SERVER", $dateServer);
     $smarty->assign("Here", $arrLang["Here"]);
@@ -1333,6 +1335,10 @@ function setDataCalendar($arrLang,$pDB,$arrConf){
     $minutes       = getParameter('minutes');
     $dateIni       = getParameter('dateIni');
     $dateEnd       = getParameter('dateEnd');
+    $dateIni       = str_replace("|mas|","+",$dateIni);
+    $dateIni       = str_replace("|menos|","-",$dateIni);
+    $dateEnd       = str_replace("|mas|","+",$dateEnd);
+    $dateEnd       = str_replace("|menos|","-",$dateEnd);
     $id            = getParameter('id');// id_event
     $pCalendar     = new paloSantoCalendar($pDB);
     $Initial       = explode(" ",$dateIni);
@@ -1343,8 +1349,8 @@ function setDataCalendar($arrLang,$pDB,$arrConf){
     $start         = $event['startdate'];
     $end           = $event['enddate'];
     $checkbox_days = "";
-    $startdate     = date("Y-m-d",strtotime($dateIni));
-    $enddate       = date("Y-m-d",strtotime($dateEnd));
+    $startdate     = date("Y-m-d",strtotime("$dateIni")); 
+    $enddate       = date("Y-m-d",strtotime("$dateEnd"));
     $starttime     = $startdate." ".$hour_ini;
     $endtime       = $enddate." ".$hour_end;
 

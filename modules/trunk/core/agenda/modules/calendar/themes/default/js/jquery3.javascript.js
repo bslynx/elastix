@@ -94,9 +94,12 @@ $(document).ready(function(){
                     return false;
                 }
             }
+        $("#box").hide();
+        var urlImaLoading = "<h1><img src='modules/"+module_name+"/images/busy.gif' /> "+$('#lblSending').val()+"...</h1>";
+        $.blockUI({ message: urlImaLoading });
         return true;
     });
-
+    
     $('.close_box, .cancel').click(function(){
         $('#box').hide();
         $('#title_box').html("");
@@ -151,7 +154,8 @@ $(document).ready(function(){
 
     $('#delete').click(function(){ //hace un submit sin pasar por el submit validador
         var id_event = $('#id_event').val();
-        var urlImaLoading = "<h1><img src='modules/"+module_name+"/images/busy.gif' /> "+$('#lblLoading').val()+"...</h1>";
+	$("#box").hide();
+        var urlImaLoading = "<h1><img src='modules/"+module_name+"/images/busy.gif' /> "+$('#lblDeleting').val()+"...</h1>";
         $.blockUI({ message: urlImaLoading });
         var order = "menu="+module_name+"&action=delete_box&id_event="+id_event+"&rawmode=yes";
         $.post("index.php", order,
@@ -167,6 +171,7 @@ $(document).ready(function(){
                         document.formNewEvent.submit();
                         alert(error);
                     }else{
+			$('#box').show();
                         alert(error);
                     }
         });
@@ -273,7 +278,7 @@ $(document).ready(function(){
     $('#listenTTS').click(function(){
         var number = $('#call_to').val();
         var tts    = $('textarea[name=tts]').val();
-        var order  = "action=getTextToSpeach&call_to="+number+"&tts=\""+tts+"\"&rawmode=yes";
+        var order  = "action=getTextToSpeach&call_to="+number+"&tts="+tts+"&rawmode=yes";
         if(isInteger(number) && number != ""){
             if(tts != ""){
                 $.post("index.php", order,function(){
@@ -571,13 +576,31 @@ $(document).ready(function(){
                     }
             });
     }
+
+    function setBoxPosition()
+    {
+	$("html").click(function(e){
+	    var x = e.clientX;
+	    var y = e.clientY;
+	    var eje_x = ((screen.width)/2) - 250;
+	    var eje_y = ((screen.height)/2) - 250;
+	    if(y>eje_y)
+	      $('#box').css('top','75%');
+	    else
+	    $('#box').css('top','50%');
+	    alert(y+">"+eje_y);
+
+	});
+    }
+    
     // view box detail event
     function getDataAjaxForm(order){
         // blocking screen
         var urlImaLoading = "<h1><img src='modules/"+module_name+"/images/busy.gif' /> "+$('#lblLoading').val()+"...</h1>";
         $.blockUI({ message: urlImaLoading });
         var eje_x = ((screen.width)/2) - 250;
-        $('#box').css('top','50%');
+
+        $('#box').css('top','38%');
         $('#box').css('left',eje_x+"px");
         //alert(order);
         $('#new_box').attr("style","display:none;");
@@ -587,7 +610,7 @@ $(document).ready(function(){
         $('.noti_email').attr("style","display:none;");
         $('#notification_email').hide();
         $('#title_box').html("");
-        $('#box').show();
+        $('#box').hide();
         $('#lblCheckBoxNoti').attr("for","CheckBoxNoti1");
         $('#lblCheckBoxRemi').attr("for","CheckBoxRemi1");
         $('.counter').text("140");
@@ -809,13 +832,14 @@ $(document).ready(function(){
                     }
                 //unblocking
                 $.unblockUI();
+		$('#box').show();
             });
     }
 
     function displayNewEvent(){
         //centrar box
         var eje_x = ((screen.width)/2) - 250;
-        $('#box').css('top','50%');
+        $('#box').css('top','38%');
         $('#box').css('left',eje_x+"px");
 
         $('#new_box').attr("style","display:none;");

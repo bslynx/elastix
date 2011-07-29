@@ -471,7 +471,7 @@ class paloSantoCalendar {
     function makeCalled($number_org, $number_dst, $textToSpeach)
     {
         $dataExt    = $this->getDataExt($number_org);
-        $variables  = "TTS=$textToSpeach";
+        $variables  = "TTS=\"$textToSpeach\"";
         //$parameters = $this->Originate($number_org, $number_dst, $dataExt['dial'], $dataExt['cidname'], "festival-event", $variables, "Festival", "hello");
         $parameters = $this->Originate($number_org, $number_dst, $dataExt['dial'], $dataExt['cidname'], "", $variables, "Festival", $textToSpeach);
 

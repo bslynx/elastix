@@ -258,5 +258,7 @@ $arrLangModule=array(
 "Listen" => "Listen",
 "Festival is not up" => "The Festival (text-to-speech) service is not running. To activate it please go to <a href='?menu=festival'>PBX->Tools->Festival</a>",
 "Click here to listen" => "Click here to listen",
+"Deleting" => "Deleting",
+"Sending Request" => "Sending Request",
 );
 ?>

@@ -202,6 +202,8 @@
 <input class="button" type="hidden" name="id" value="{$ID}" id="id" />
 <input class="button" type="hidden" name="lblEdit" value="{$LBL_EDIT}" id="lblEdit" />
 <input class="button" type="hidden" name="lblLoading" value="{$LBL_LOADING}" id="lblLoading">
+<input class="button" type="hidden" name="lblDeleting" value="{$LBL_DELETING}" id="lblDeleting">
+<input class="button" type="hidden" name="lblSending" value="{$LBL_SENDING}" id="lblSending">
 <input class="button" type="hidden" name="typeen" value="{$START_TYPE}...." id="typeen" />
 <input class="button" type="hidden" name="dateServer" value="{$DATE_SERVER}" id="dateServer" />
 <input class="button" type="hidden" name="colorHex" id="colorHex" value="#3366CC" />

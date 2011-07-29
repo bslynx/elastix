@@ -312,7 +312,8 @@ z-index:1;
 }
 
 #box {
-  position: absolute;
+  /*position: absolute;*/
+  position: fixed;
   left: 50%;
   top: 50%;
   /*width: 50%;*/
