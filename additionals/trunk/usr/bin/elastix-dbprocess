@@ -163,25 +163,33 @@ function createSQLFile($action, $path_folder, $dbName, $engine, $sql_export, $pa
     switch($action){
         case "install":
         case "delete":
-            $arrFiles = scandir("$path_folder/$action/$dbName");
-            if(is_array($arrFiles) && count($arrFiles)>0){
-                $arrFiles = sortArray($arrFiles);
-                foreach($arrFiles as $key => $file){
-                    $extension = pathinfo($file);
-                    $extension = $extension["extension"];
-                    if(is_file("$path_folder/$action/$dbName/$file"))
-                        if($file[strlen($file)-1]!="~" &&  $file[0]!="." && $extension == "sql"){
-                            $stringSQL .= file_get_contents("$path_folder/$action/$dbName/$file");
-                            $stringSQL .= "\n";
-                        }
-                }
-            }
-            if($action == "install")
+	    if(is_dir("$path_folder/$action/$dbName")){
+		$arrFiles = scandir("$path_folder/$action/$dbName");
+		if(is_array($arrFiles) && count($arrFiles)>0){
+		    $arrFiles = sortArray($arrFiles);
+		    foreach($arrFiles as $key => $file){
+			$extension = pathinfo($file);
+			$extension = $extension["extension"];
+			if(is_file("$path_folder/$action/$dbName/$file"))
+			    if($file[strlen($file)-1]!="~" &&  $file[0]!="." && $extension == "sql"){
+				$stringSQL .= file_get_contents("$path_folder/$action/$dbName/$file");
+				$stringSQL .= "\n";
+			    }
+		    }
+		}
+	    }
+            if($action == "install"){
+                if($engine == "mysql")
+                    $stringSQL .= "USE {$dbName};\n";
                 $stringSQL .= getSQLUpdateString("0.0.0-0",$path_folder,"update",$dbName);
+            }
             break;
         case "update":
-            if(preg_match("/^\d+(\.\d+){0,2}(\-\d*((alfa|beta|rc)?|(\.\d+){0,2}))?$/",$version)) 
-                $stringSQL = getSQLUpdateString($version,$path_folder,$action,$dbName);
+            if(preg_match("/^\d+(\.\d+){0,2}(\-\d*((alfa|beta|rc)?|(\.\d+){0,2}))?$/",$version)){
+                if($engine == "mysql")
+                    $stringSQL  = "USE {$dbName};\n";
+                $stringSQL .= getSQLUpdateString($version,$path_folder,$action,$dbName);
+            }
             else
                 echo "ERROR: The version format is not supported \n";
             break;
