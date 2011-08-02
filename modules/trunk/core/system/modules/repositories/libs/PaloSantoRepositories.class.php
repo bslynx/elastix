@@ -54,8 +54,34 @@ class PaloSantoRepositories
         return $repositorios;
     }
 
-    function setRepositorios($ruta,$arrReposActivos)
+    function setRepositorios($ruta,$arrReposActivos,$typeRepository,$mainRepos)
     {
+	//Se obtienen los otros repos que no correspondan al tipo de repositorio seleccionado, para mantener los repos de ese tipo activos
+	$otherRepos = array();
+	if($typeRepository == "main")
+	    $otherRepos = $this->getRepositorios($ruta,"others",$mainRepos);
+	elseif($typeRepository == "others")
+	    $otherRepos = $this->getRepositorios($ruta,"main",$mainRepos);
+	if(is_array($otherRepos) && count($otherRepos)>0){
+	    foreach($otherRepos as $key => $repo){
+		if($repo["activo"])
+		    $arrReposActivos[] = $repo['id'];
+	    }
+	}
+
+	//Se obtienen los repos del tipo correspondiente, para convertir los id que contenga puntos a subguion debido a que asi llegan de la variable $_POST
+	$arrRepos = $this->getRepositorios($ruta,$typeRepository,$mainRepos);
+	$arrConvertRepo = array();
+	foreach($arrRepos as $repo){
+	    $arrConvertRepo[$repo["id"]] = str_replace(".","_",$repo["id"]);
+	}
+	foreach($arrReposActivos as $key => $value){
+	    if(in_array($value,$arrConvertRepo)){
+		$unconvertedValue = array_keys($arrConvertRepo,$value);
+		$arrReposActivos[$key] = $unconvertedValue[0];
+	    }
+	}
+
         $sComando = '/usr/bin/elastix-helper repoconfig '.
             implode(' ', array_map('escapeshellarg', $arrReposActivos)).
             ' 2>&1';
