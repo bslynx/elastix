@@ -29,7 +29,7 @@
     global $arrConf;
     global $arrConfModule;
 
-    $arrConfModule['module_name']       = 'email_list2';
+    $arrConfModule['module_name']       = 'email_list';
     $arrConfModule['templates_dir']     = 'themes';
     $arrConfModule['dsn_conn_database'] = "sqlite3:///$arrConf[elastix_dbdir]/email.db";
 ?>
