@@ -2426,6 +2426,23 @@ UPDATE_CALLS_ORIGINATE_RESPONSE;
             }
             return FALSE;
         }
+
+        // Recuperar el agente local y el canal remoto
+        $regs = NULL;
+        $sAgentNum = NULL;
+        $sChannel = NULL;
+        $sRemChannel = NULL;
+        if (preg_match('|^Agent/(\d+)$|', $params['Channel1'], $regs)) {
+            $sAgentNum = $regs[1];
+            $sChannel = $params['Channel1'];
+            $sRemChannel = $params['Channel2'];
+        }
+        if (preg_match('|^Agent/(\d+)$|', $params['Channel2'], $regs)) {
+            $sAgentNum = $regs[1];
+            $sChannel = $params['Channel2'];
+            $sRemChannel = $params['Channel1'];
+        }
+
         
         $sKey = NULL;
         foreach ($this->_infoLlamadas['llamadas'] as $key => $tupla) {
@@ -2434,6 +2451,36 @@ UPDATE_CALLS_ORIGINATE_RESPONSE;
                 if ($tupla->Uniqueid == $params['Uniqueid2']) $sKey = $key;
             }
             if (!is_null($sKey)) break;
+        }
+
+        if (!is_null($sKey) && is_null($sAgentNum) && 
+            !is_null($this->_infoLlamadas['llamadas'][$sKey]->start_timestamp)) {
+            /* Si la llamada ya ha sido enlazada previamente, y ahora se enlaza 
+             * a un canal distinto de un agente, se asume que ha sido transferida 
+             * a una extensión fuera de monitoreo, y ya no debe de monitorearse.
+             * Ya que Asterisk no ejecuta un Hangup en este caso, se lo debe 
+             * simular. */
+
+            if ($this->DEBUG) {
+                $this->oMainLog->output("DEBUG: Sintetizando Hangup...");                  
+            }
+            $paramsEvento = array(
+                'Event' =>  'Hangup',
+                'Privilege' =>  $params['Privilege'],
+                'Channel'   =>  $sRemChannel,
+                'Uniqueid'  =>  $this->_infoLlamadas['llamadas'][$sKey]->Uniqueid,
+                'Cause'     =>  16,
+                'Cause-txt' =>  'Normal Clearing',
+                'local_timestamp_received'  =>  time(),
+                'original_event'    =>  $params, 
+            );
+            $this->OnHangup('hangup', $paramsEvento, $sServer, $iPort);
+            if ($this->DEBUG) {
+                $this->oMainLog->output("DEBUG: Fin de Hangup sintetizado.");                  
+                $this->oMainLog->output("DEBUG: EXIT OnLink");                  
+            }
+            $sKey = NULL;
+            return FALSE;
         }
 
         if (is_null($sKey)) {
@@ -2489,20 +2536,7 @@ UPDATE_CALLS_ORIGINATE_RESPONSE;
             $this->_infoLlamadas['llamadas'][$sKey]->PendingEvents['Link'] = $params;
 
             // Generar un OriginateResponse lo antes posible.
-            if (ereg('^Agent/([[:digit:]]+)$', $params['Channel1']) || 
-                ereg('^Agent/([[:digit:]]+)$', $params['Channel2']) ) {
-
-                if (ereg('^Agent/([[:digit:]]+)$', $params['Channel1'], $regs)) {
-                    $sAgentNum = $regs[1];
-                    $sChannel = $params['Channel1'];
-                    $sRemChannel = $params['Channel2'];
-                }
-                if (ereg('^Agent/([[:digit:]]+)$', $params['Channel2'], $regs)) {
-                    $sAgentNum = $regs[1];
-                    $sChannel = $params['Channel2'];
-                    $sRemChannel = $params['Channel1'];
-                }
-
+            if (!is_null($sAgentNum)) {
                 if ($this->DEBUG) {
                     $this->oMainLog->output("DEBUG: Sintetizando OriginateResponse...");                  
                 }
@@ -2595,20 +2629,6 @@ UPDATE_CALLS_ORIGINATE_RESPONSE;
                 $this->_infoLlamadas['llamadas'][$sKey]->id_campaign, 
                 $this->_infoLlamadas['llamadas'][$sKey]->start_timestamp - $this->_infoLlamadas['llamadas'][$sKey]->OriginateStart);
 
-            $regs = NULL;
-            $sAgentNum = NULL;
-            $sChannel = NULL;
-            $sRemChannel = NULL;
-            if (ereg('^Agent/([[:digit:]]+)$', $params['Channel1'], $regs)) {
-                $sAgentNum = $regs[1];
-                $sChannel = $params['Channel1'];
-                $sRemChannel = $params['Channel2'];
-            }
-            if (ereg('^Agent/([[:digit:]]+)$', $params['Channel2'], $regs)) {
-                $sAgentNum = $regs[1];
-                $sChannel = $params['Channel2'];
-                $sRemChannel = $params['Channel1'];
-            }
             if (!is_null($sAgentNum)) {
                 if ($this->DEBUG) {
                 	$this->oMainLog->output("DEBUG: $sEvent: identificado agente $sAgentNum");
@@ -2622,7 +2642,7 @@ UPDATE_CALLS_ORIGINATE_RESPONSE;
                     $bErrorLocked = FALSE;
                     $result =& $this->_dbConn->query($sBorrado, array($sAgentNum));
                     if (DB::isError($result)) {
-                        $bErrorLocked = ereg('database is locked', $result->getMessage());
+                        $bErrorLocked = (strpos('database is locked', $result->getMessage()) !== FALSE);
                         if ($bErrorLocked) {
                             usleep(125000);
                         } else {
@@ -2671,7 +2691,7 @@ UPDATE_CALLS_ORIGINATE_RESPONSE;
                         $sChannel, 
                         $sRemChannel));
                     if (DB::isError($result)) {
-                        $bErrorLocked = ereg('database is locked', $result->getMessage());
+                        $bErrorLocked = (strpos('database is locked', $result->getMessage()) !== FALSE);
                         if ($bErrorLocked) {
                             usleep(125000);
                         } else {
@@ -3816,6 +3836,112 @@ SQL_EXISTE_AUDIT;
         // Auditoría del fin del break
         $this->marcarFinalBreakAgente($this->_infoAgentes[$sAgente]['id_break']);
         $this->_infoAgentes[$sAgente]['id_break'] = NULL;
+        return TRUE;
+    }
+
+    public function transferirLlamadaAgente($sAgente, $sExtension)
+    {
+        // Esto asume formato Agent/9000
+        $sNumAgente = NULL;
+        if (preg_match('|^Agent/(\d+)$|', $sAgente, $regs)) {
+            $sNumAgente = $regs[1];
+        } else {
+            $this->oMainLog->output('ERR: No se ha implementado este tipo de agente - '.$sAgente);
+            return FALSE;
+        }
+
+        if (!isset($this->_infoAgentes[$sAgente])) {
+            $this->oMainLog->output('ERR: (internal) al iniciar hold: no se hace seguimiento ECCP al agente: '.$sAgente);
+            return FALSE;
+        }
+        if ($this->_infoAgentes[$sAgente]['estado_consola'] != 'logged-in') {
+            $this->oMainLog->output('ERR: (internal) al iniciar hold: agente no está (todavía) logoneado: '.$sAgente);
+            return FALSE;
+        }
+
+        /* Leer de la base de datos el canal que está conversando con el agente.
+         * También debe de obtenerse el ID del registro en la tabla de 
+         * current_calls o current_call_entry, según la que se descubra primero.
+         */
+        // Verificar si llamada es entrante...
+        $tuplaLlamada = $this->_dbConn->getRow(
+            'SELECT current_call_entry.id AS id_current_call, id_call_entry AS id_call, ChannelClient '.
+            'FROM current_call_entry, agent '.
+            'WHERE current_call_entry.id_agent = agent.id '.
+                'AND agent.estatus = "A" AND agent.number = ?',
+            array($sNumAgente), DB_FETCHMODE_ASSOC);
+        if (DB::isError($tuplaLlamada)) {
+            $this->oMainLog->output('ERR: al transferir llamada: no se puede verificar llamada entrante - '.
+                $tuplaLlamada->getMessage());
+            return FALSE;
+        } elseif (count($tuplaLlamada) > 0) {
+            // Llamada es entrante
+            $tuplaLlamada['tabla'] = 'current_call_entry';
+        } else {
+            // Verificar si llamada es saliente...
+            $tuplaLlamada = $this->_dbConn->getRow(
+                'SELECT id AS id_current_call, id_call, ChannelClient '.
+                'FROM current_calls WHERE agentnum = ?',
+                array($sNumAgente), DB_FETCHMODE_ASSOC);
+            if (DB::isError($tuplaLlamada)) {
+                $this->oMainLog->output('ERR: al transferir llamada: no se puede verificar llamada saliente - '.
+                    $tuplaLlamada->getMessage());
+                return FALSE;
+            } elseif (count($tuplaLlamada) > 0) {
+                // Llamada es saliente
+                $tuplaLlamada['tabla'] = 'current_calls';
+            } else {
+                $this->oMainLog->output('WARN: al transferir llamada: el siguiente agente no está atendiendo llamada: '.$sAgente);
+                return FALSE;
+            }
+        }
+        
+        /* Los canales de tipo Local/XXX@from-internal no sirven para realizar
+         * transferencias de llamada. Se debe de averiguar el verdadero canal que 
+         * aparece en el reporte de "agent show" */
+        if (strpos($tuplaLlamada['ChannelClient'], 'Local/') === 0) {
+            if ($this->DEBUG) {
+                $this->oMainLog->output("DEBUG: agente $sAgente conectado con ".
+                    "ChannelClient={$tuplaLlamada['ChannelClient']}, buscando ".
+                    "verdadero canal...");
+            }
+            $oPredictor = new Predictivo($this->_astConn);
+            $estadoCola = $oPredictor->leerEstadoCola(''); // El parámetro vacío lista todas las colas
+            if (!isset($estadoCola['members'][$sNumAgente])) {
+                $this->oMainLog->output('ERR: (internal) al transferir llamada: agente no se encuentra: '.$sAgente);
+                return FALSE;
+            }
+            if ($estadoCola['members'][$sNumAgente]['status'] != 'inUse') {
+                $this->oMainLog->output('ERR: (internal) al transferir llamada: agente no está atendiendo llamada: '.$sAgente);
+                return FALSE;
+            }
+            if (!isset($estadoCola['members'][$sNumAgente]['clientchannel'])) {
+                $this->oMainLog->output('ERR: (internal) al transferir llamada: no se puede identificar canal remoto para agente: '.$sAgente);
+                return FALSE;
+            }
+            $tuplaLlamada['ActualChannel'] = $estadoCola['members'][$sNumAgente]['clientchannel'];
+        } else {
+            if ($this->DEBUG) {
+                $this->oMainLog->output("DEBUG: agente $sAgente conectado con ".
+                    "ChannelClient={$tuplaLlamada['ChannelClient']}, se asume ".
+                    "canal correcto.");
+            }
+            $tuplaLlamada['ActualChannel'] = $tuplaLlamada['ChannelClient'];
+        }
+         
+        // Ejecutar realmente la redirección al hold
+        $r = $this->_astConn->Redirect(
+            $tuplaLlamada['ActualChannel'], // channel 
+            '',                             // extrachannel
+            $sExtension,                   // exten
+            'from-internal',                // context
+            1);                             // priority
+        if ($r['Response'] != 'Success') {
+            $this->oMainLog->output('ERR: al transferir llamada: no se puede transferir - '.$r['Message']);
+            return FALSE;
+        }
+
+        // Al transferir llamada, la llamada será desconectada del agente.
         return TRUE;
     }
 

@@ -1,3 +1,4 @@
+* Dialer (ECCP): implement "transfercall" request
 * Dialer: write true outgoing channel, not Local@from-internal, to current_calls
   table. Also reuse stored channel at hold time instead of querying the channel
   again from Asterisk. May fix Elastix bug #796.

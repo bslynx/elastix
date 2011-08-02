@@ -1400,7 +1400,60 @@ LEER_CAMPANIA;
     {
         if (is_null($this->_sUsuarioECCP))
             return $this->_generarRespuestaFallo(401, 'Unauthorized');
-        return $this->_generarRespuestaFallo(501, 'Not Implemented');
+
+        // Verificar que agente está presentes
+        if (!isset($comando->agent_number)) 
+            return $this->_generarRespuestaFallo(400, 'Bad request');
+        $sAgente = (string)$comando->agent_number;
+
+        // Verificar que número de extensión está presente
+        if (!isset($comando->extension)) 
+            return $this->_generarRespuestaFallo(400, 'Bad request');
+        $sExtension = (string)$comando->extension;
+
+        $xml_response = new SimpleXMLElement('<response />');
+        $xml_transferResponse = $xml_response->addChild('transfercall_response');
+
+        // Verificar que el agente sea válido en el sistema
+        $listaAgentes = $this->listarAgentes();
+        if (!in_array($sAgente, array_keys($listaAgentes))) {
+            $this->_agregarRespuestaFallo($xml_transferResponse, 404, 'Specified agent not found');
+            return $xml_response;
+        }
+
+        // Verificar el hash del agente
+        if (!$this->hashValidoAgenteECCP($comando)) {
+            $this->_agregarRespuestaFallo($xml_transferResponse, 401, 'Unauthorized agent');
+            return $xml_response;
+        }
+
+        // El siguiente código asume formato Agent/9000
+        if (!preg_match('|^Agent/(\d+)$|', $sAgente, $regs)) {
+            $this->_agregarRespuestaFallo($xml_transferResponse, 404, 'Specified agent not found');
+            return $xml_response;
+        }
+        $sNumAgente = $regs[1];
+        $oPredictor = new Predictivo($this->_astConn);
+        $estadoCola = $oPredictor->leerEstadoCola(''); // El parámetro vacío lista todas las colas
+        if (!isset($estadoCola['members'][$sNumAgente])) {
+            $this->_agregarRespuestaFallo($xml_transferResponse, 404, 'Specified agent not found');
+            return $xml_response;
+        }
+        if ($estadoCola['members'][$sNumAgente]['status'] != 'inUse') {
+            $this->_agregarRespuestaFallo($xml_transferResponse, 417, 'Agent not in call');
+            return $xml_response;
+        }
+
+        // Mandar a transferir la llamada usando el canal Agent/9000
+        $r = $this->_dialProc->transferirLlamadaAgente($sAgente, $sExtension);
+        if (!$r) {
+            $this->oMainLog->output('ERR: No se puede transferir la llamada para '.$sAgente);
+            $this->_agregarRespuestaFallo($xml_transferResponse, 500, 'Cannot transfer agent call');
+            return $xml_response;
+        }
+
+        $xml_transferResponse->addChild('success');
+        return $xml_response;
     }
     
     private function Request_SaveFormData($comando)

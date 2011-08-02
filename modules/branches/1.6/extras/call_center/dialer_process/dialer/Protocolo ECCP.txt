@@ -1522,6 +1522,46 @@ Para error en Asterisk o en base de datos que impide completar:
 
 Requerimiento "transfercall"
 
+Este requerimiento se usa para transferir la llamada que atiende el agente, a
+otra extensión o a otro número externo. Al momento de transferir la llamada, el
+agente queda libre para recibir otra llamada, como si se hubiese colgado la 
+llamada. Actualmente no está soportada la transferencia hacia otro agente de 
+campaña, o hacia una cola de campañas.
+
+Atributos o argumentos:
+* agent_number: Agente que se va a pausar. Este identificador está de la forma 
+  'Agent/9000'.
+* agent_hash: Hash de autenticación para el agente.
+* extension:  Número de la extensión o número externo al cual mandar la llamada.
+
+Ejemplo:
+<request id="11">
+    <transfercall>
+        <agent_number>Agent/9000</agent_number>
+        <agent_hash>XXXXXXXXXXXXXXXXXXXXXXXXX</agent_hash>
+        <transfercall>4321</transfercall>
+    </transfercall>
+</request>
+
+Respuesta:
+Para caso de éxito:
+<response id="11">
+    <transfercall_response>
+        <success/>
+    </transfercall_response>
+</response>
+
+Para agente no encontrado, o no logoneado vía ECCP:
+<response id="11">
+    <transfercall_response>
+        <failure>
+            <code>404</code>
+            <message>Agent not found or not logged in through ECCP</message>
+        </failure>
+    </transfercall_response>
+</response>
+
+
 Requerimiento "pauseagent"
 
 Este requerimiento se usa para poner al agente en pausa debido a un break conocido.
