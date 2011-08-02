@@ -101,8 +101,8 @@ ALIASES;
 	fwrite($falias,$mailman_aliases);
 	fclose($falias);
 	exec("/usr/bin/newaliases");
-	exec("/sbin/service generic-cloexec postfix reload > /dev/null 2>&1");
-	exec("/sbin/service generic-cloexec mailman restart > /dev/null 2>&1");
+	exec("/sbin/service postfix reload > /dev/null 2>&1");
+	exec("/sbin/service mailman restart > /dev/null 2>&1");
 	exec("/sbin/chkconfig --level 2345 mailman on");
 	exit(0);
     }
@@ -114,8 +114,8 @@ function newlist($listName,$emailAdmin,$password,$domain)
 {
     $urlhost = "";
     if(isset($domain))
-	$urlhost = "--urlhost='$domain' --emailhost='$domain'";
-    exec("/usr/lib/mailman/bin/newlist $urlhost $listName $emailAdmin $password");
+	$urlhost = "--urlhost='".escapeshellarg($domain)."' --emailhost='".escapeshellarg($domain)."'";
+    exec("/usr/lib/mailman/bin/newlist $urlhost ".escapeshellarg($listName)." ".escapeshellarg($emailAdmin)." ".escapeshellarg($password));
     create_aliases($listName);
 }
 
@@ -141,8 +141,8 @@ ALIASES;
 	fwrite($falias,$virtual_alias);
 	fclose($falias);
 	exec("/usr/sbin/postmap /etc/postfix/virtual");
-	exec("/sbin/service generic-cloexec postfix reload > /dev/null 2>&1");
-	exec("/sbin/service generic-cloexec mailman restart > /dev/null 2>&1");
+	exec("/sbin/service postfix reload > /dev/null 2>&1");
+	exec("/sbin/service mailman restart > /dev/null 2>&1");
 	exit(0);
     }
     else
@@ -155,8 +155,8 @@ function add_members($members,$listName)
     exec("/usr/lib/mailman/bin/add_members -r /tmp/memberList ".escapeshellarg($listName),$output,$status);
     if($status == 0){
 	exec("/usr/sbin/postmap /etc/postfix/virtual");
-	exec("/sbin/service generic-cloexec postfix reload > /dev/null 2>&1");
-	exec("/sbin/service generic-cloexec mailman restart > /dev/null 2>&1");
+	exec("/sbin/service postfix reload > /dev/null 2>&1");
+	exec("/sbin/service mailman restart > /dev/null 2>&1");
 	unlink("/tmp/memberList");
 	exit(0);
     }
@@ -196,8 +196,8 @@ function remove_list($listName,$domain)
 	    }
 	    file_put_contents("/etc/postfix/virtual",implode("",$arrVirtualAlias));
 	    exec("/usr/sbin/postmap /etc/postfix/virtual");
-	    exec("/sbin/service generic-cloexec postfix reload > /dev/null 2>&1");
-	    exec("/sbin/service generic-cloexec mailman restart > /dev/null 2>&1");
+	    exec("/sbin/service postfix reload > /dev/null 2>&1");
+	    exec("/sbin/service mailman restart > /dev/null 2>&1");
 	    exit(0);
 	}
 	else
@@ -213,8 +213,8 @@ function remove_members($members,$listName)
     exec("/usr/lib/mailman/bin/remove_members -f /tmp/memberList ".escapeshellarg($listName),$output,$status);
     if($status == 0){
 	exec("/usr/sbin/postmap /etc/postfix/virtual");
-	exec("/sbin/service generic-cloexec postfix reload > /dev/null 2>&1");
-	exec("/sbin/service generic-cloexec mailman restart > /dev/null 2>&1");
+	exec("/sbin/service postfix reload > /dev/null 2>&1");
+	exec("/sbin/service mailman restart > /dev/null 2>&1");
 	unlink("/tmp/memberList");
 	exit(0);
     }
