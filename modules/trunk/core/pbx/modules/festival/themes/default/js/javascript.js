@@ -23,7 +23,7 @@ $(document).ready(function (){
 				var message= "<div style='background-color: rgb(255, 238, 255);' id='message_error'><table width='100%'><tr><td align='left'><b style='color:red;'>" +
 					      arrData['mb_title'] + "</b>" + arrData['mb_message'] + "</td> <td align='right'><input type='button' onclick='hide_message_error();' value='" +
 					      arrData['button_title']+ "'/></td></tr></table></div>";
-				$("body > table > tbody > tr").children(":nth-child(7)").prepend(message);
+				$("body > table > tbody > tr > td:last").prepend(message);
 			    }
 			}
 		    );
