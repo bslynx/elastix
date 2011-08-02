@@ -1,3 +1,6 @@
+* Dialer: remove use of deprecated ereg* functions from Predictivo.class.php
+* Dialer: fixed regular expression for parsing of 'agent show' report that 
+  missed DAHDI channels (and possibly other custom channels).
 * Dialer: fix accounting of parked calls (for Hold) in incoming-calls case
 
 1.5-4.1 (SVN revision 2847)

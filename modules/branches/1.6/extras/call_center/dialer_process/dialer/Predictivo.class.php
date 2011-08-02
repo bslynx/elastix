@@ -214,10 +214,11 @@ class Predictivo
             $tiempoAgente = array();
             foreach ($lineasRespuesta as $sLinea) {
             	$regs = NULL;
-                if (ereg('^[[:space:]]*([[:digit:]]{2,})', $sLinea, $regs)) {
+                // 9000         (Over 9000!!!!!) logged in on SIP/1064-00000001 talking to DAHDI/1-1 (musiconhold is 'default')
+                if (preg_match('/^\s*(\d{2,})/', $sLinea, $regs)) {
             		$sAgente = $regs[1];  // Agente ha sido identificado
                     $regs = NULL;
-                    if (eregi('talking to ((SIP|IAX|IAX2|ZAP|H323|OH323)/([[:alnum:]\-]{2,}))[[:space:]]+', $sLinea, $regs)) {
+                    if (preg_match('|talking to (\w+/\S{2,})|', $sLinea, $regs)) {
                     	$sCanalAgente = $regs[1];
                         $tiempoAgente[$sAgente]['clientchannel'] = $sCanalAgente;
                         
@@ -227,12 +228,12 @@ class Predictivo
                         $lineasCanal = explode("\n", $respuestaCanal['data']);
                         foreach ($lineasCanal as $sLineaCanal) {
                         	$regs = NULL;
-                            if (ereg('level [[:digit:]]+: start=(.*)', $sLineaCanal, $regs)) {
+                            if (preg_match('/level \d+: start=(.*)/', $sLineaCanal, $regs)) {
                             	$sFechaInicio = $regs[1];
                                 $iTimestampInicio = strtotime($sFechaInicio);
                                 $tiempoAgente[$sAgente]['talkTime'] = $iTimestampActual - $iTimestampInicio;
                             }
-                            if (ereg('^DIALEDPEERNUMBER=(.+)$', $sLineaCanal, $regs)) {
+                            if (preg_match('/^DIALEDPEERNUMBER=(.+)$/', $sLineaCanal, $regs)) {
                                 $tiempoAgente[$sAgente]['dialnumber'] = $regs[1];
                             }
                         }
@@ -253,16 +254,16 @@ class Predictivo
             $lineasRespuesta = explode("\n", $respuestaCola['data']);
             $sSeccionActual = NULL;
             foreach ($lineasRespuesta as $sLinea) {
-                if (ereg("^[[:space:]]*Members:", $sLinea)) {
+                if (preg_match('/^\s*Members:/', $sLinea)) {
                     $sSeccionActual = "members";
-                } else if (ereg("^[[:space:]]*Callers:", $sLinea)) {
+                } else if (preg_match('/^\s*Callers:/', $sLinea)) {
                     $sSeccionActual = "callers";
                 } else if (!is_null($sSeccionActual)) {
                      switch ($sSeccionActual) {
                      case 'members':
                         $sLinea = trim($sLinea);
                         $regs = NULL;
-                        if (eregi('^Agent/([[:digit:]]+)@?[[:space:]]*(.*)$', $sLinea, $regs)) {
+                        if (preg_match('|^Agent/(\d+)@?\s*(.*)$|', $sLinea, $regs)) {
                         	$sCodigoAgente = $regs[1];
                             $sInfoAgente = $regs[2];
                             $estadoCola['members'][$sCodigoAgente] = array(
@@ -274,7 +275,7 @@ class Predictivo
                             );
                             
                             // Extraer la información de penalización, si existe
-                            if (ereg('^with penalty ([[:digit:]]+)[[:space:]]+(.*)', $sInfoAgente, $regs)) {
+                            if (preg_match('/^with penalty (\d+)\s+(.*)/', $sInfoAgente, $regs)) {
                             	$sInfoAgente = $regs[2];
                             	$estadoCola['members'][$sCodigoAgente]['penalty'] = $regs[1];
                             }
@@ -282,7 +283,7 @@ class Predictivo
                             // Separar todos los atributos del agente en la cola
                             // ej: "(dynamic) (Unavailable) has taken..."
                             $regs = NULL;
-                            while (ereg('^\(([^)]+)\)[[:space:]]+(.*)', $sInfoAgente, $regs)) {
+                            while (preg_match('/^\(([^)]+)\)\s+(.*)/', $sInfoAgente, $regs)) {
                             	$estadoCola['members'][$sCodigoAgente]['attributes'][] = $regs[1];
                                 $sInfoAgente = $regs[2];                                
                                 $regs = NULL;
