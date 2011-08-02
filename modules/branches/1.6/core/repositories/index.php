@@ -65,15 +65,15 @@ function listRepositories($smarty, $module_name, $local_templates_dir,$arrConf) 
     global $arrLang;
     $oRepositories = new PaloSantoRepositories();
     $arrReposActivos=array();
+    $typeRepository = getParameter("typeRepository");
     if(isset($_POST['submit_aceptar'])){
         foreach($_POST as $key => $value){
             if(substr($key,0,5)=='repo-')
                 $arrReposActivos[]=substr($key,5);
         }
-        $oRepositories->setRepositorios($arrConf['ruta_repos'],$arrReposActivos);
+        $oRepositories->setRepositorios($arrConf['ruta_repos'],$arrReposActivos,$typeRepository,$arrConf["main_repos"]);
     }
 
-    $typeRepository = getParameter("typeRepository");
     $option["main"]   = "";
     $option["others"] = "";
     $option["all"]    = "";

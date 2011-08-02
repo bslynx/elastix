@@ -30,5 +30,5 @@ global $arrConfModule;
 $arrConfModule['module_name'] = 'repositories';
 $arrConfModule['templates_dir'] = 'themes';
 $arrConfModule['ruta_repos'] = '/etc/yum.repos.d/';
-$arrConfModule['main_repos'] = array("CentOS-Base.repo","elastix.repo","epel.repo");
+$arrConfModule['main_repos'] = array("CentOS-Base.repo","elastix.repo","epel.repo","commercial-addons.repo");
 ?>
