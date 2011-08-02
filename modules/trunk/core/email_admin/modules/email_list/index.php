@@ -2,7 +2,7 @@
   /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.6-6                                               |
+  | Elastix version 2.0.4-28                                               |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,7 +25,7 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: index.php,v 1.1 2009-08-26 09:08:29 Oscar Navarrete onavarrete@palosanto.com Exp $ */
+  $Id: index.php,v 1.1 2011-07-27 05:07:46 Alberto Santos asantos@palosanto.com Exp $ */
 //include elastix framework
 include_once "libs/paloSantoGrid.class.php";
 include_once "libs/paloSantoForm.class.php";
@@ -65,244 +65,525 @@ function _moduleContent(&$smarty, $module_name)
     $content = "";
 
     switch($action){
-        case "save_newList":
-            $content = saveNewEmaillist($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
-            break;
-        case "save_newMember":
-            $content = saveNewEmailMember($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
-            break;
-        case "new_emaillist":
-            $content = viewFormEmaillist($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
-            break;
-        case "new_memberlist":
-            $content = viewFormMemberlist($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
-            break;
-        case "delete_list":
-            $content = delete_emailList($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
-            break;
-        case "delete_member":
-            $content = delete_memberList($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
-            break;
-        default: 
-            $content = reportEmaillist($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+	case "new_emaillist":
+	    $content = viewFormEmaillist($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
+	    break;
+	case "save_newList":
+	    $content = saveNewList($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
+	    break;
+	case "new_memberlist":
+	case "remove_memberlist":
+	    $content = viewFormMemberList($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
+	    break;
+	case "save_newMember":
+	case "save_removeMember":
+	    $content = saveNewMember($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
+	    break;
+	case "delete":
+	    $content = deleteEmailList($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
+	    break;
+	case "view_memberlist":
+	    $content = viewMemberList($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
+	    break;
+        default:
+            $content = reportEmailList($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
             break;
     }
     return $content;
 }
 
-function reportEmaillist($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
+function reportEmailList($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf)
 {
-    $pEmaillist = new paloSantoEmaillist($pDB);
-    $filter_field = "";
-    $filter_value = "";
-    $action = getParameter("nav");
-    $start  = getParameter("start");
-    
-    //begin grid parameters
-    $oGrid  = new paloSantoGrid($smarty);
-    $limit  = 20;
-    $pEmaillist->ejecucion();
-    if (isset($_POST['domain'])){ 
-        $id_domain=$_POST['domain'];
-        $arrResult =$pEmaillist->getEmailListByDomainDB($id_domain);
-        $totalEmaillist = $pEmaillist->getNumEmaillist($id_domain);
-        $total  = $totalEmaillist;
-    }else{
-        $id_domain="";
-        $arrResult=null;
-        $total  = 0;
-    }
-    $oGrid->setLimit($limit);
-    $oGrid->setTotal($total);
-
-    $oGrid->calculatePagination($action,$start);
-    $offset = $oGrid->getOffsetValue();
-    $end    = $oGrid->getEnd();
-    $url    = "?menu=$module_name&id_domain=$id_domain";
-
-    $arrData = null;
-
-    if(is_array($arrResult) && count($arrResult)>0){
-        foreach($arrResult as $key => $value){
-            $arrTmp[0]  = "<input type='checkbox' name='EmaillistID_{$value['id']}'  />";
-            $arrTmp[1] = "<a href='?menu=$module_name&action=show&id=".$value['id']."'>{$value['listname']}</a>";
-            $arrMember = $pEmaillist->getMembersByListDB($value['id']);
-            $arrTmp[2] = count($arrMember);
-            $arrTmp[3] = "<a href='?menu=$module_name&action=new_memberlist&id=".$value['id']."&namelist=".$value['listname']."'>Add Members</a>";
-    
-            $arrData[] = $arrTmp;
-        }
-    }
-
-    $buttonDelete = "<input type='submit' name='delete_list' value='{$arrLang["Delete"]}' class='button' onclick=\" return confirmSubmit('{$arrLang["Are you sure you wish to delete the email list."]}');\" />";
-
-    $arrGrid = array("title"    => $arrLang["Email list"],
-                        "icon"     => "images/list.png",
-                        "width"    => "99%",
-                        "start"    => ($total==0) ? 0 : $offset + 1,
-                        "end"      => $end,
-                        "total"    => $total,
-                        "url"      => $url,
-                        "columns"  => array(
-            0 => array("name"      => $buttonDelete,
-                                   "property1" => ""),
-            1 => array("name"      => $arrLang["Name"],
-                                   "property1" => ""),
-            2 => array("name"      => $arrLang["Number of Accounts"],
-                                   "property1" => ""),
-            3 => array("name"      => $arrLang["Action"],
-                                   "property1" => ""),
-                                        )
-                    );
-    //begin section filter
+    $pEmailList = new paloSantoEmailList($pDB);
     $pEmail = new paloEmail($pDB);
-    $arrDominios    = array("0"=>'-- '.$arrLang["Select a domain"].' --');
-    $arrDomains = $pEmail->getDomains();
+    $arrDomains	    = $pEmail->getDomains();
+    if(count($arrDomains) == 0){
+	$smarty->assign("mb_message",_tr("There is no domain created. To use this module you need at least one domain. You can create a domain in the module Email->Domains"));
+    }
+    else
+	$smarty->assign("VirtualDomains",1);	
+    $arrDominios    = array("all"=> _tr("All"));
     foreach($arrDomains as $domain) {
         $arrDominios[$domain[0]] = $domain[1];
     }
+    $arrFormFilterEmailList = createFieldFilter($arrDominios);
+    $oFilterForm = new paloForm($smarty, $arrFormFilterEmailList);
+    //Verifico si en el archivo /etc/postfix/main.cf las variables alias_map y virtual_alias_map están apuntando a los archivos correctos, de no ser así se lo corrige
+    $checkPostfixFile = $pEmailList->checkPostfixFile();
 
-    $arrFormFilterEmaillist = createFieldFilter($arrLang, $arrDominios);
-    $oFilterForm = new paloForm($smarty, $arrFormFilterEmaillist);
-    $smarty->assign("SHOW", $arrLang["Show"]);
-    $smarty->assign("NEW_EMAILLIST", $arrLang["New Email list"]);
+    //begin grid parameters
+    $oGrid  = new paloSantoGrid($smarty);
+
+    if(getParameter("domain"))
+	$id_domain = getParameter("domain");
+    else
+	$id_domain = "all";
+
+    $total = $pEmailList->getNumEmailList($id_domain);
+    $limit  = 20;
+    $oGrid->setLimit($limit);
+    $oGrid->setTotal($total);
+    $oGrid->setTitle(_tr("Email List"));
+    $oGrid->setIcon("/modules/$module_name/images/email.png");
+    $oGrid->pagingShow(true); // show paging section.
+    $offset = $oGrid->calculateOffset();
+    $url    = "?menu=$module_name&id_domain=$id_domain";
+    $oGrid->setURL($url);
+    $arrResult = $pEmailList->getEmailList($id_domain,$limit,$offset);
+    $button_eliminar = "<input class=\"button\" type=\"submit\" name=\"delete\" value=\""._tr("Delete")."\" ".
+                       " onclick=\" return confirmSubmit('"._tr("Are you sure you wish to delete the Email List(s).")."?');\" >";
+    $arrColumns = array($button_eliminar,_tr("List name"),_tr("Membership"),_tr("Action"));
+    $oGrid->setColumns($arrColumns);
+    $arrData = null;
+
+    if(is_array($arrResult) && $total>0){
+        foreach($arrResult as $key => $value){ 
+	    $arrTmp[0] = "<input type='checkbox' name='".$value['id']."' id='".$value['id']."'>";
+	    $domainName = $pEmailList->getDomainName($value['id_domain']);
+	    $arrTmp[1] = "<a href='?menu=$module_name&action=view_memberlist&id=".$value['id']."'>$value[listname]@$domainName</a>";
+	    $arrTmp[2] = $pEmailList->getTotalMembers($value['id']);
+	    $arrTmp[3] = "<a href='?menu=$module_name&action=new_memberlist&id=".$value['id']."'>[ "._tr("Add Members")." ]</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='?menu=$module_name&action=remove_memberlist&id=".$value['id']."'>[ "._tr("Remove members")." ]</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='?menu=$module_name&action=view_memberlist&id=".$value['id']."'>[ "._tr("View members")." ]</a>";
+            $arrData[] = $arrTmp;
+        }
+    }
+    $oGrid->setData($arrData);
+    //begin section filter
+    $smarty->assign("NEW_EMAILLIST", _tr("New Email list"));
 
     $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl","",$_POST);
     //end section filter
 
     $oGrid->showFilter(trim($htmlFilter));
-    $contenidoModulo = "<form  method='POST' style='margin-bottom:0;' action=$url>".$oGrid->fetchGrid($arrGrid, $arrData,$arrLang)."</form>";
+    $content = "<form  method='POST' style='margin-bottom:0;' action=$url>".$oGrid->fetchGrid()."</form>";
+
     //end grid parameters
 
-    return $contenidoModulo;
+    return $content;
 }
 
-function createFieldFilter($arrLang, $arrDominios){
-
-     $arrFormElements = array(
-            "domain"   => array("LABEL"          => $arrLang["Domain"],
-                                    "REQUIRED"               => "yes",
-                                    "INPUT_TYPE"             => "SELECT",
-                                    "INPUT_EXTRA_PARAM"      => $arrDominios,
-                                    "VALIDATION_TYPE"        => "text",
-                                    "VALIDATION_EXTRA_PARAM" => "",
-                                    "EDITABLE"               => "si", ),
-                );
-    return $arrFormElements;
-}
-
-
-function viewFormEmaillist($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
+function viewFormEmaillist($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf)
 {
-    $pEmaillist = new paloSantoEmaillist($pDB);
     $pEmail = new paloEmail($pDB);
-    $arrDominios    = array("0"=>'-- '.$arrLang["Select a domain"].' --');
+    $pEmaillist = new paloSantoEmaillist($pDB);
     $arrDomains = $pEmail->getDomains();
+    $arrDominios    = array("0"=>'-- '._tr("Select a domain").' --');
     foreach($arrDomains as $domain) {
         $arrDominios[$domain[0]]    = $domain[1];
     }
-
-    $arrFormEmaillist = createFieldForm($arrLang, $arrDominios);
+    $arrFormEmaillist = createFieldForm($arrDominios);
     $oForm = new paloForm($smarty,$arrFormEmaillist);
-    
-    //begin, Form data persistence to errors and other events.
-    $_DATA  = $_POST;
-    $action = getParameter("action");
-    $id     = getParameter("id");
-    $smarty->assign("ID", $id); //persistence id with input hidden in tpl
+    $smarty->assign("REQUIRED_FIELD", _tr("Required field"));
+    $smarty->assign("CANCEL", _tr("Cancel"));
+    $smarty->assign("SAVE", _tr("Save"));
+    $smarty->assign("List_Setting", _tr("New List Settings"));
 
-    if($pEmaillist->checkFileMm_cfg()=="New"){
-        $smarty->assign("StatusNew", 1);
+
+    $MailmanListCreated = $pEmaillist->isMailmanListCreated();
+    if(is_null($MailmanListCreated)){
+	$smarty->assign("mb_title", _tr("ERROR"));
+        $smarty->assign("mb_message", $pEmaillist->getError());
+    }
+    elseif(!$MailmanListCreated){
+	$smarty->assign("StatusNew", 1);
+	$smarty->assign("Mailman_Setting", _tr("Mailman Admin Settings"));
     }
 
-    if($action=="view")
-        $oForm->setViewMode();
-    else if($action=="view_edit" || getParameter("save_edit"))
-        $oForm->setEditMode();
-    //end, Form data persistence to errors and other events.
-
-    if($action=="view" || $action=="view_edit"){ // the action is to view or view_edit.
-        $dataEmaillist = $pEmaillist->getEmaillistById($id);
-        if(is_array($dataEmaillist) & count($dataEmaillist)>0)
-            $_DATA = $dataEmaillist;
-        else{
-            $smarty->assign("mb_title", $arrLang["Error get Data"]);
-            $smarty->assign("mb_message", $pEmaillist->errMsg);
-        }
-    }
-
-    $smarty->assign("SAVE", $arrLang["Save"]);
-    $smarty->assign("EDIT", $arrLang["Edit"]);
-    $smarty->assign("CANCEL", $arrLang["Cancel"]);
-    $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
-    $smarty->assign("IMG", "images/list.png");
-
-    $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",$arrLang["Email list"], $_DATA);
+    $smarty->assign("IMG", "/modules/$module_name/images/email.png");
+    $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl", _tr("New Email List"), $_POST);
     $content = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
 
     return $content;
 }
 
-function saveNewEmaillist($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
+function saveNewList($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf)
 {
     $pEmaillist = new paloSantoEmaillist($pDB);
     $pEmail = new paloEmail($pDB);
-    $arrDominios    = array("0"=>'-- '.$arrLang["Select a domain"].' --');
+    $arrDominios    = array("0"=>'-- '._tr("Select a domain").' --');
     $arrDomains = $pEmail->getDomains();
     foreach($arrDomains as $domain) {
         $arrDominios[$domain[0]]    = $domain[1];
     }
 
-    $arrFormEmaillist = createFieldForm($arrLang, $arrDominios);
+    $arrFormEmaillist = createFieldForm($arrDominios);
     $oForm = new paloForm($smarty,$arrFormEmaillist);
 
-    if(!$oForm->validateForm($_POST)){
-        // Validation basic, not empty and VALIDATION_TYPE 
-        $smarty->assign("mb_title", $arrLang["Validation Error"]);
+    $emailmailman = (getParameter("emailmailman"))?getParameter("emailmailman"):null;
+    $passwdmailman = (getParameter("passwdmailman"))?getParameter("passwdmailman"):null;
+    $id_domain = getParameter("domain");
+    $namelist = getParameter("namelist");
+    $password = getParameter("password");
+    $passwordconfirm = getParameter("passwordconfirm");
+    $emailadmin = getParameter("emailadmin");
+    $namelist = strtolower($namelist);
+
+    if(!$oForm->validateForm($_POST)) {
+        // Falla la validación básica del formulario
+        $strErrorMsg = "<b>"._tr('The following fields contain errors').":</b><br/>";
         $arrErrores = $oForm->arrErroresValidacion;
-        $strErrorMsg = "<b>{$arrLang['The following fields contain errors']}:</b><br/>";
         if(is_array($arrErrores) && count($arrErrores) > 0){
-            foreach($arrErrores as $k=>$v)
-                $strErrorMsg .= "$k, ";
+            foreach($arrErrores as $k=>$v) {
+                $strErrorMsg .= "$k: [$v[mensaje]] <br /> ";
+            }
         }
+	$smarty->assign("mb_title", _tr("Validation Error"));
         $smarty->assign("mb_message", $strErrorMsg);
-        return $content = viewFormEmaillist($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
-    }elseif($_POST['password']!=$_POST['passwordconfirm']){
-        $smarty->assign("mb_title", $arrLang["Validation Error"]);
-        $smarty->assign("mb_message", $arrLang["The Input Password and Password Confirm aren't equals.. Please Try Again"]);
-        return $content = viewFormEmaillist($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
-
-    }else{
-        $dataEmailList = array();
-        $data = array();
-
-        $domainData = $pEmail->getDomains($_POST['domain']);
-        if(!empty($_POST['emailmailman'])){
-            $pEmaillist->execConfigMailMan_1("palosanto",$_POST['emailmailman'],$_POST['passwdmailman'], $domainData['0']['1']);
-        }
-        $dataEmailList['id_domain'] = $pDB->DBCAMPO($_POST['domain']);
-        $dataEmailList['listname'] = $pDB->DBCAMPO($_POST['namelist']);
-        $dataEmailList['password'] = $pDB->DBCAMPO($_POST['password']);
-        $dataEmailList['mailadmin'] = $pDB->DBCAMPO($_POST['emailadmin']);
-
-        $pEmaillist->addNewMailList($_POST['emailadmin'], $_POST['password'], $_POST['namelist']);
-        $result = $pEmaillist->addEmailListDB($dataEmailList);
-        
-        header("Location: ?menu=$module_name&action=new_emaillist");
+        return viewFormEmaillist($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
     }
+    elseif(!preg_match("/^[[:alpha:]]+([\-_\.]?[[:alnum:]]+)*$/",$namelist)){
+	$smarty->assign("mb_title", _tr("Validation Error"));
+        $smarty->assign("mb_message", _tr("Wrong List Name"));
+	return viewFormEmaillist($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
+    }
+    elseif($password != $passwordconfirm){
+	$smarty->assign("mb_title", _tr("Validation Error"));
+        $smarty->assign("mb_message", _tr("The Password List and Confirm Password List do not match"));
+	return viewFormEmaillist($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
+    }
+    elseif(!$pEmaillist->domainExists($id_domain)){
+	$smarty->assign("mb_title", _tr("Validation Error"));
+        $smarty->assign("mb_message", _tr("The domain selected does not exist"));
+	return viewFormEmaillist($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
+    }
+    elseif($pEmaillist->listExistsbyName($namelist)){
+	$smarty->assign("mb_title", _tr("Validation Error"));
+        $smarty->assign("mb_message", _tr("The List entered already exists"));
+	return viewFormEmaillist($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
+    }
+
+    if(isset($emailmailman) && isset($passwdmailman) && !$pEmaillist->isMailmanListCreated()){
+	if(!$pEmaillist->mailmanCreateList("mailman",$emailmailman,$passwdmailman)){
+	    $smarty->assign("mb_title", _tr("Error"));
+	    $smarty->assign("mb_message", _tr("Could not create the list")." mailman");
+	    return reportEmailList($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
+	}   
+    }
+
+    $pDB->beginTransaction();
+    if(!$pEmaillist->saveEmailList($id_domain,$namelist,$password,$emailadmin)){
+	$pDB->rollBack();
+	$smarty->assign("mb_title", _tr("Error"));
+        $smarty->assign("mb_message", $pEmaillist->getError());
+	return reportEmailList($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
+    }
+
+    $domainName = $pEmaillist->getDomainName($id_domain);
+    if(!isset($domainName)){
+	$pDB->rollBack();
+	$smarty->assign("mb_title", _tr("Validation Error"));
+        $smarty->assign("mb_message", _tr("The domain selected does not exist"));
+	return viewFormEmaillist($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
+    }
+    if(!$pEmaillist->mailmanCreateList($namelist,$emailadmin,$password,$domainName)){
+	$pDB->rollBack();
+	$smarty->assign("mb_title", _tr("Error"));
+	$smarty->assign("mb_message", _tr("Could not create the list")." $namelist");
+	return reportEmailList($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
+    }
+    
+    if(!$pEmaillist->mailmanCreateVirtualAliases($namelist,$domainName)){
+	$pDB->rollBack();
+	$smarty->assign("mb_title", _tr("Error"));
+	$smarty->assign("mb_message", _tr("Could not create the virtual alias"));
+	return reportEmailList($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
+    }
+    $pDB->commit();
+    $smarty->assign("mb_title", _tr("Message"));
+    $smarty->assign("mb_message", _tr("The List was successfully created"));
+    return reportEmailList($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
 }
 
-function createFieldForm($arrLang, $arrDominios)
+function viewFormMemberList($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf)
+{
+    $action = getParameter("action");
+    if($action == "new_memberlist"){
+	$title = _tr("New List Member");
+	$smarty->assign("MEMBER","save_newMember");
+	$info = _tr("You must enter each email line by line, like the following").":<br /><br /><b>"._tr("userEmail1@domain1.com")."<br />"._tr("userEmail2@domain2.com")."<br />"._tr("userEmail3@domain3.com")."</b><br /><br />"._tr("You can also enter a name for each email, like the following").":<br /><br /><b>"._tr("Name1 Lastname1 <userEmail1@domain1.com>")."<br />"._tr("Name2 Lastname2 <userEmail2@domain2.com>")."<br />"._tr("Name3 Lastname3 <userEmail3@domain3.com>")."</b>";
+	$smarty->assign("SAVE", _tr("Add"));
+    }
+    else{
+	$title = _tr("Remove List Member");
+	$smarty->assign("MEMBER","save_removeMember");
+	$info = _tr("You must enter each email line by line, like the following").":<br /><br /><b>"._tr("userEmail1@domain1.com")."<br />"._tr("userEmail2@domain2.com")."<br />"._tr("userEmail3@domain3.com")."</b>";
+	$smarty->assign("SAVE", _tr("Remove"));
+    }
+    $id_emailList = getParameter("id");
+    $smarty->assign("IDEMAILLIST",$id_emailList);
+    $arrFormMemberlist = createFieldFormMember();
+    $oForm = new paloForm($smarty,$arrFormMemberlist);
+
+    $smarty->assign("REQUIRED_FIELD", _tr("Required field"));
+    $smarty->assign("CANCEL", _tr("Cancel"));
+    $smarty->assign("INFO", $info);
+    $smarty->assign("IMG", "/modules/$module_name/images/email.png");
+    $htmlForm = $oForm->fetchForm("$local_templates_dir/form_member.tpl", $title, $_POST);
+    $content = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
+    return $content;
+}
+
+function saveNewMember($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf)
+{
+    $pEmaillist = new paloSantoEmaillist($pDB);
+    $arrFormMemberlist = createFieldFormMember();
+    $oForm = new paloForm($smarty,$arrFormMemberlist);
+   
+    $emailMembers = getParameter("emailmembers");
+    $id_list	  = getParameter("id_emaillist");
+    if(!$oForm->validateForm($_POST)) {
+        // Falla la validación básica del formulario
+        $strErrorMsg = "<b>"._tr('The following fields contain errors').":</b><br/>";
+        $arrErrores = $oForm->arrErroresValidacion;
+        if(is_array($arrErrores) && count($arrErrores) > 0){
+            foreach($arrErrores as $k=>$v) {
+                $strErrorMsg .= "$k: [$v[mensaje]] <br /> ";
+            }
+        }
+	$smarty->assign("mb_title", _tr("Validation Error"));
+        $smarty->assign("mb_message", $strErrorMsg);
+        return viewFormMemberList($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
+    }elseif(!$pEmaillist->listExistsbyId($id_list)){
+	$smarty->assign("mb_title", _tr("Validation Error"));
+        $smarty->assign("mb_message", _tr("The List entered does not exist"));
+	return viewFormMemberList($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
+    }
+    
+    $emailMembers = explode("\n",$emailMembers);
+    $arrMembers = array();
+    $arrErrorMembers = array();
+    $i = 0;
+    foreach($emailMembers as $key => $value){
+	$member = trim($value);
+	if(preg_match("/^[[:alnum:]]+([\._\-]?[[:alnum:]]+)*@[[:alnum:]]+([\._\-]?[[:alnum:]]+)*(\.[[:alnum:]]{2,4})+$/",$member)){
+	    if(getParameter("save_newMember")){
+		if(!$pEmaillist->isAMemberOfList($member,$id_list)){
+		    $arrMembers[$i]["member"] = $member;
+		    $arrMembers[$i]["email_member"] = $member;
+		    $i++;
+		}
+		else
+		    $arrErrorMembers[] = _tr("Already a member").": ".htmlentities($member);
+	    }
+	    else{
+		if($pEmaillist->isAMemberOfList($member,$id_list)){
+		    $arrMembers[$i]["member"] = $member;
+		    $arrMembers[$i]["email_member"] = $member;
+		    $i++;
+		}
+		else
+		    $arrErrorMembers[] = _tr("No such subscriber").": ".htmlentities($member);
+	    }
+	}
+	elseif(preg_match("/^([[:alnum:]]+([[:space:]]*[[:alnum:]]+){0,3})[[:space:]]*\<([[:alnum:]]+([\._\-]?[[:alnum:]]+)*@[[:alnum:]]+([\._\-]?[[:alnum:]]+)*(\.[[:alnum:]]{2,4})+)\>$/",$member,$matches) && getParameter("save_newMember")){
+	    if(!$pEmaillist->isAMemberOfList($matches[3],$id_list)){
+		$arrMembers[$i]["member"] = preg_replace("/[[:space:]]+/"," ",$member);
+		$arrMembers[$i]["namemember"] = $matches[1];
+		$arrMembers[$i]["email_member"] = $matches[3];
+		$i++;
+	    }
+	    else
+		$arrErrorMembers[] = _tr("Already a member").": ".htmlentities($member);
+	}
+	elseif($member!="")
+	    $arrErrorMembers[] = htmlentities($member);
+    }
+    $pDB->beginTransaction();
+    if(count($arrMembers) > 0){
+	foreach($arrMembers as $key => $value){
+	    if(getParameter("save_newMember")){
+		if(isset($value["namemember"]))
+		    $namemember = $value["namemember"];
+		else
+		    $namemember = "";
+		if(!$pEmaillist->saveMember($value["email_member"],$id_list,$namemember)){
+		    $pDB->rollBack();
+		    $smarty->assign("mb_title", _tr("Error"));
+		    $smarty->assign("mb_message", $pEmaillist->getError());
+		    return reportEmailList($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
+		}
+	    }else{
+		if(!$pEmaillist->removeMember($value["email_member"],$id_list)){
+		    $pDB->rollBack();
+		    $smarty->assign("mb_title", _tr("Error"));
+		    $smarty->assign("mb_message", $pEmaillist->getError());
+		    return reportEmailList($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
+		}
+	    }
+	}
+	if(getParameter("save_newMember")){
+	    if(!$pEmaillist->mailmanAddMembers($arrMembers,$id_list)){
+		$pDB->rollBack();
+		$smarty->assign("mb_title", _tr("Validation Error"));
+		$smarty->assign("mb_message", _tr("Mailman could not add the members"));
+		return reportEmailList($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
+	    }
+	}
+	else{
+	    if(!$pEmaillist->mailmanRemoveMembers($arrMembers,$id_list)){
+		$pDB->rollBack();
+		$smarty->assign("mb_title", _tr("Validation Error"));
+		$smarty->assign("mb_message", _tr("Mailman could not remove the members"));
+		return reportEmailList($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
+	    }
+	}
+    }
+    $pDB->commit();
+    $message = "";
+    if(count($arrMembers)>0){
+	if(getParameter("save_newMember"))
+	    $message .= "<b>"._tr("The following members were added to the list").":</b><br />";
+	else
+	    $message .= "<b>"._tr("The following members were removed from the list")."</b>:<br />";
+	foreach($arrMembers as $member)
+	    $message .= htmlentities($member["member"])."<br />";
+    }
+    if(count($arrErrorMembers)>0){
+	if(getParameter("save_newMember"))
+	    $message .= "<b>"._tr("The following members could not be added to the list").":</b><br />";
+	else
+	    $message .= "<b>"._tr("The following members could not be removed from the list")."</b>:<br />";
+	foreach($arrErrorMembers as $noMember)
+	    $message .= $noMember."<br />";
+    }
+    if($message != ""){
+	$smarty->assign("mb_title", _tr("Message"));
+	$smarty->assign("mb_message", $message);
+    }
+    return reportEmailList($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
+}
+
+function deleteEmailList($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf)
+{
+    $pEmaillist = new paloSantoEmaillist($pDB);
+    $pDB->beginTransaction();
+    foreach($_POST as $key => $value){
+        if($value == "on")
+        {
+	    if($pEmaillist->listExistsbyId($key)){
+		$listName = $pEmaillist->getListName($key);
+		if(is_null($listName)){
+		    $pDB->rollBack();
+		    $smarty->assign("mb_title", _tr("Error"));
+		    $smarty->assign("mb_message", _tr("Mailman could not remove the list"));
+		    return reportEmailList($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
+		}
+
+		$id_domain = $pEmaillist->getIdDomainofList($key);
+		if(is_null($id_domain)){
+		    $pDB->rollBack();
+		    $smarty->assign("mb_title", _tr("Error"));
+		    $smarty->assign("mb_message", _tr("Mailman could not remove the list"));
+		    return reportEmailList($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
+		}
+
+		$domainName = $pEmaillist->getDomainName($id_domain);
+		if(is_null($domainName)){
+
+		    $pDB->rollBack();
+		    $smarty->assign("mb_title", _tr("Error"));
+		    $smarty->assign("mb_message", _tr("Mailman could not remove the list"));
+		    return reportEmailList($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
+		}
+
+		if(!$pEmaillist->deleteEmailList($key)){
+		    $pDB->rollBack();
+		    $smarty->assign("mb_title", _tr("Error"));
+		    $smarty->assign("mb_message", $pEmaillist->getError());
+		    return reportEmailList($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
+		}
+
+		if(!$pEmaillist->mailmanRemoveList($listName,$domainName)){
+		    $pDB->rollBack();
+		    $smarty->assign("mb_title", _tr("Error"));
+		    $smarty->assign("mb_message", _tr("Mailman could not remove the list"));
+		    return reportEmailList($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
+		}
+	    }
+        }
+    }
+    $pDB->commit();
+    $smarty->assign("mb_title", _tr("Message"));
+    $smarty->assign("mb_message", _tr("The email list(s) were successfully deleted"));
+    return reportEmailList($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
+}
+
+function viewMemberList($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf)
+{
+    $pEmailList = new paloSantoEmailList($pDB);
+    $id_list = getParameter("id");
+    
+    if(!$pEmailList->listExistsbyId($id_list)){
+	$smarty->assign("mb_title", _tr("Validation Error"));
+        $smarty->assign("mb_message", _tr("The List entered does not exist"));
+	return reportEmailList($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
+    }
+    $field_type = getParameter("filter_type");
+    $field_pattern = getParameter("filter_txt");
+
+    $smarty->assign("IDEMAILLIST",$id_list);
+    $smarty->assign("SHOW",_tr("Show"));
+    $smarty->assign("RETURN",_tr("Return"));
+
+    $totalMembers = $pEmailList->getTotalMembers($id_list);
+
+    $oGrid  = new paloSantoGrid($smarty);
+    $limit  = 20;
+    $oGrid->setLimit($limit);
+    $oGrid->setTotal($totalMembers);
+    $oGrid->setTitle(_tr("List Members of")." ".$pEmailList->getListName($id_list));
+    $oGrid->setIcon("/modules/$module_name/images/email.png");
+    $oGrid->pagingShow(true);
+    $offset = $oGrid->calculateOffset();
+    $url = "?menu=$module_name&filter_type=$field_type&filter_txt=$field_pattern";
+    $oGrid->setURL($url);
+
+    $arrColumns = array(_tr("Member name"),_tr("Member email"));
+    $oGrid->setColumns($arrColumns);
+
+    $arrResult = $pEmailList->getMembers($limit,$offset,$id_list,$field_type,$field_pattern);
+    $arrData = null;
+
+    if(is_array($arrResult) && $totalMembers>0){
+        foreach($arrResult as $key => $value){
+	    $arrTmp[0] = $value["namemember"];
+	    $arrTmp[1] = $value["mailmember"];
+	    $arrData[] = $arrTmp;
+	}
+    }
+    $oGrid->setData($arrData);
+
+    $arrFormFilterMembers = createFieldFilterViewMembers();
+    $oFilterForm = new paloForm($smarty, $arrFormFilterMembers);
+    $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/view_members.tpl","",$_POST);
+    $oGrid->showFilter(trim($htmlFilter));
+    $content = "<form  method='POST' style='margin-bottom:0;' action=$url>".$oGrid->fetchGrid()."</form>";
+    return $content;
+}
+
+function createFieldFilter($arrDominios){
+    $arrFormElements = array(
+            "domain"   => array(    "LABEL"          	     => _tr("Domain"),
+                                    "REQUIRED"               => "yes",
+                                    "INPUT_TYPE"             => "SELECT",
+                                    "INPUT_EXTRA_PARAM"      => $arrDominios,
+                                    "VALIDATION_TYPE"        => "text",
+                                    "VALIDATION_EXTRA_PARAM" => "",
+				    "ONCHANGE"		     => "javascript:submit();"),
+                );
+    return $arrFormElements;
+}
+
+function createFieldForm($arrDominios)
 {
     $arrFields = array(
-            "emailmailman"   => array(      "LABEL"                  => $arrLang["Email Mailmam"],
+            "emailmailman"   => array(      "LABEL"                  => _tr("Email mailmam admin"),
                                             "REQUIRED"               => "yes",
                                             "INPUT_TYPE"             => "TEXT",
-                                            "INPUT_EXTRA_PARAM"      => array("style" => "width:200px","maxlength" =>"200"),
-                                            "VALIDATION_TYPE"        => "text",
+                                            "INPUT_EXTRA_PARAM"      => array("style" => "width:200px","maxlength" =>"100"),
+                                            "VALIDATION_TYPE"        => "email",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-            "passwdmailman"   => array(      "LABEL"                  => $arrLang["Password Mailman"],
+            "passwdmailman"   => array(     "LABEL"                  => _tr("Password mailman"),
                                             "REQUIRED"               => "yes",
                                             "INPUT_TYPE"             => "PASSWORD",
                                             "INPUT_EXTRA_PARAM"      => array("style" => "width:200px","maxlength" =>"200"),
@@ -310,7 +591,7 @@ function createFieldForm($arrLang, $arrDominios)
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
 
-            "domain"   => array(      "LABEL"                  => $arrLang["Domain Name"],
+            "domain"  	       => array(    "LABEL"                  => _tr("Domain name"),
                                             "REQUIRED"               => "yes",
                                             "INPUT_TYPE"             => "SELECT",
                                             "INPUT_EXTRA_PARAM"      => $arrDominios,
@@ -319,247 +600,92 @@ function createFieldForm($arrLang, $arrDominios)
                                             "EDITABLE"               => "si",
                                             ),
 
-            "namelist"   => array(      "LABEL"                  => $arrLang["Name"],
+            "namelist" 	       => array(    "LABEL"                  => _tr("List name"),
                                             "REQUIRED"               => "yes",
                                             "INPUT_TYPE"             => "TEXT",
                                             "INPUT_EXTRA_PARAM"      => array("style" => "width:200px","maxlength" =>"200"),
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-            "password"   => array(      "LABEL"                  => $arrLang["Password"],
+            "password"         => array(    "LABEL"                  => _tr("Password list"),
                                             "REQUIRED"               => "yes",
                                             "INPUT_TYPE"             => "PASSWORD",
                                             "INPUT_EXTRA_PARAM"      => array("style" => "width:200px","maxlength" =>"200"),
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-            "passwordconfirm"   => array(      "LABEL"                  => $arrLang["Password Confirm"],
+            "passwordconfirm"   => array(   "LABEL"                  => _tr("Confirm password list"),
                                             "REQUIRED"               => "yes",
                                             "INPUT_TYPE"             => "PASSWORD",
                                             "INPUT_EXTRA_PARAM"      => array("style" => "width:200px","maxlength" =>"200"),
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-            "emailadmin"   => array(      "LABEL"                  => $arrLang["Email Admin"],
+            "emailadmin"   	=> array(   "LABEL"                  => _tr("Email admin list"),
                                             "REQUIRED"               => "yes",
                                             "INPUT_TYPE"             => "TEXT",
                                             "INPUT_EXTRA_PARAM"      => array("style" => "width:200px","maxlength" =>"200"),
-                                            "VALIDATION_TYPE"        => "text",
+                                            "VALIDATION_TYPE"        => "email",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
             );
     return $arrFields;
 }
 
-function viewFormMemberlist($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
-{
-    $pEmaillist = new paloSantoEmaillist($pDB);
-
-    $arrFormEmaillist = createFieldFormMember($arrLang);
-    $oForm = new paloForm($smarty,$arrFormEmaillist);
-
-    //begin, Form data persistence to errors and other events.
-    $_DATA  = $_POST;
-    $action = getParameter("action");
-    $id     = getParameter("id");
-    $emallistname     = getParameter("namelist");
-    $smarty->assign("IDEMAILLIST", $id); //persistence id with input hidden in tpl
-    $smarty->assign("EMAILLIST", $emallistname);    
-
-    if($action=="view")
-        $oForm->setViewMode();
-    else if($action=="view_edit" || getParameter("save_edit"))
-        $oForm->setEditMode();
-
-    if($action=="view" || $action=="view_edit"){ // the action is to view or view_edit.
-        $dataEmaillist = $pEmaillist->getEmaillistById($id);
-        if(is_array($dataEmaillist) & count($dataEmaillist)>0)
-            $_DATA = $dataEmaillist;
-        else{
-            $smarty->assign("mb_title", $arrLang["Error get Data"]);
-            $smarty->assign("mb_message", $pEmaillist->errMsg);
-        }
-    }
-
-    $smarty->assign("SAVE", $arrLang["Save"]);
-    $smarty->assign("EDIT", $arrLang["Edit"]);
-    $smarty->assign("CANCEL", $arrLang["Cancel"]);
-    $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
-    $smarty->assign("IMG", "images/list.png");
-
-    $htmlForm = $oForm->fetchForm("$local_templates_dir/form_member.tpl",$arrLang["Email Member"], $_DATA);
-    $arrResult = $pEmaillist->getMembersByListDB($id);
-    if(count($arrResult)>0){
-        $htmlForm .= reportEmailMemberList($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $id, count($arrResult));
-    }
-
-    $content = "<form method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
-
-    return $content;
-}
-
-function saveNewEmailMember($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
-{
-    $pEmaillist = new paloSantoEmaillist($pDB);
-    $arrFormEmailmember = createFieldFormMember($arrLang, $arrDominios);
-    $oForm = new paloForm($smarty,$arrFormEmailmember);
-
-    if(!$oForm->validateForm($_POST)){
-        // Validation basic, not empty and VALIDATION_TYPE 
-        $smarty->assign("mb_title", $arrLang["Validation Error"]);
-        $arrErrores = $oForm->arrErroresValidacion;
-        $strErrorMsg = "<b>{$arrLang['The following fields contain errors']}:</b><br/>";
-        if(is_array($arrErrores) && count($arrErrores) > 0){
-            foreach($arrErrores as $k=>$v)
-                $strErrorMsg .= "$k, ";
-        }
-        $smarty->assign("mb_message", $strErrorMsg);
-        return $content = viewFormMemberlist($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
-    }
-    else{
-        $id_emaillist     = getParameter("id_emaillist");
-        $emaillistname     = getParameter("name_emaillist");
-        $dataEmailMember = array();
-        $dataEmailMember['id_emaillist'] = $pDB->DBCAMPO($id_emaillist);
-        $dataEmailMember['mailmember'] = $pDB->DBCAMPO($_POST['emailmember']);
-
-        $pEmaillist->addNewMember($emaillistname, $_POST['emailmember']);
-        $result = $pEmaillist->addEmailMemberDB($dataEmailMember);
-        
-        header("Location: ?menu=$module_name&action=new_memberlist&id=$id_emaillist&namelist=$emaillistname");
-    }
-
-}
-
-
-function reportEmailMemberList($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang, $id, $size)
-{
-    $pEmaillist = new paloSantoEmaillist($pDB);
-
-    $filter_field = "";
-    $filter_value = "";
-    $action = getParameter("nav");
-    $start  = getParameter("start");
-    
-    //begin grid parameters
-    $oGrid  = new paloSantoGrid($smarty);
-
-    $limit  = 20;
-    $oGrid->setLimit($limit);
-    $oGrid->pagingShow(false);
-    $oGrid->setTotal($size);
-
-    $oGrid->calculatePagination($action,$start);
-    $offset = $oGrid->getOffsetValue();
-    $end    = $oGrid->getEnd();
-    $url    = "?menu=$module_name";
-
-    $arrData = null;
-    $arrResult =$pEmaillist->getMembersByListDB($id);
-    
-    if(is_array($arrResult) && count($arrResult)>0){
-        foreach($arrResult as $key => $value){
-            $arrTmp[0]  = "<input type='checkbox' name='MailMembID_{$value['id']}'  />";
-            $arrTmp[1] = $value['mailmember'];
-                $arrData[] = $arrTmp;
-        }
-    }
-
-    $buttonDelete = "<input type='submit' name='delete_member' value='{$arrLang["Delete"]}' class='button' onclick=\" return confirmSubmit('{$arrLang["Are you sure you wish to delete the Member."]}');\" />";
-
-    $arrGrid = array("title"    => $arrLang["Email List Members"],
-                        "icon"     => "images/list.png",
-                        "width"    => "99%",
-                        "start"    => ($size==0) ? 0 : $offset + 1,
-                        "end"      => $end,
-                        "total"    => $size,
-                        "url"      => $url,
-                        "columns"  => array(
-            0 => array("name"      => $buttonDelete,
-                                   "property1" => ""),
-            1 => array("name"      => $arrLang["Name"],
-                                   "property1" => ""),
-                                        )
-                    );
-
-    $contenidoModulo = "<form  method='POST' style='margin-bottom:0;' action=$url>".$oGrid->fetchGrid($arrGrid, $arrData,$arrLang)."</form>";
-    //end grid parameters
-    return $contenidoModulo;
-}
-
-
-function createFieldFormMember($arrLang)
+function createFieldFormMember()
 {
     $arrFields = array(
-        "emailmember"   => array(      "LABEL"                  => $arrLang["Email Member"],
+        "emailmembers"   => array(       "LABEL"                  => _tr("Members emails"),
                                         "REQUIRED"               => "yes",
-                                        "INPUT_TYPE"             => "TEXT",
-                                        "INPUT_EXTRA_PARAM"      => array("style" => "width:200px","maxlength" =>"200"),
+                                        "INPUT_TYPE"             => "TEXTAREA",
+                                        "INPUT_EXTRA_PARAM"      => array("style" => "width:400px"),
                                         "VALIDATION_TYPE"        => "text",
-                                        "VALIDATION_EXTRA_PARAM" => ""
+                                        "VALIDATION_EXTRA_PARAM" => "",
+					"ROWS"			 => "9"
                                         ),
         );
     return $arrFields;
 }
 
-
-function delete_emailList($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang)
+function createFieldFilterViewMembers()
 {
-    $pEmaillist = new paloSantoEmaillist($pDB);
+    $arrType = array("name" => _tr("Name"), "email" => _tr("Email"));
 
-    foreach($_POST as $key => $values){
-        if(substr($key,0,12) == "EmaillistID_")
-        {
-            $emailListId = substr($key, 12);
-            $result = $pEmaillist->getEmaillistById($emailListId);
-            $listName = $result['listname'];
-            $pEmaillist->deleteEmailListDB($emailListId);
-            //en paralelo con comando de mailman tamb
-            $pEmaillist->deleteEmailListMM($listName);
-        }
-    }
-    header("Location: ?menu=$module_name&action=report");
-}
-
-
-function delete_memberList($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang)
-{
-    $pEmaillist = new paloSantoEmaillist($pDB);
-    
-    $id     = getParameter("id_emaillist");
-    $emallistname     = getParameter("name_emaillist");
-
-    foreach($_POST as $key => $values){
-        if(substr($key,0,11) == "MailMembID_")
-        {
-            $MemberId = substr($key, 11);
-            $result = $pEmaillist->getMemberlistByIdDB($MemberId);
-            $mailMember = $result['mailmember'];
-            $pEmaillist->deleteEmailMemberDB($MemberId);
-            //en paralelo la ejecucion con comando de mailman tamb
-            $pEmaillist->deleteEmailMemberMM(trim($emallistname), trim($mailMember));
-        }
-    }
-    header("Location: ?menu=$module_name&action=new_memberlist&id=$id&namelist=$emallistname");
-    
+    $arrFormElements = array(
+            "filter_type"  => array(   "LABEL"                  => _tr("Search"),
+                                       "REQUIRED"               => "no",
+                                       "INPUT_TYPE"             => "SELECT",
+                                       "INPUT_EXTRA_PARAM"      => $arrType,
+                                       "VALIDATION_TYPE"        => "text",
+                                       "VALIDATION_EXTRA_PARAM" => ""),
+            "filter_txt"   => array(   "LABEL"                  => "",
+                                       "REQUIRED"               => "no",
+                                       "INPUT_TYPE"             => "TEXT",
+                                       "INPUT_EXTRA_PARAM"      => "",
+                                       "VALIDATION_TYPE"        => "text",
+                                       "VALIDATION_EXTRA_PARAM" => ""),
+                    );
+    return $arrFormElements;
 }
 
 function getAction()
 {
-    if(getParameter("save_newList")) //Get parameter by POST (submit)
-        return "save_newList";
-    if(getParameter("save_newMember")) //Get parameter by POST (submit)
-        return "save_newMember";
-    else if(getParameter("new_emaillist"))
+    if(getParameter("new_emaillist")) //Get parameter by POST (submit)
         return "new_emaillist";
-    else if(getParameter("delete_member"))
-        return "delete_member";
-    else if(getParameter("delete_list")) 
-        return "delete_list";
-    else if(getParameter("action")=="view")      //Get parameter by GET (command pattern, links)
-        return "view_form";
-    else if(getParameter("action")=="new_memberlist")
-        return "new_memberlist";
+    elseif(getParameter("save_newList"))
+	return "save_newList";
+    elseif(getParameter("action") == "new_memberlist")
+	return "new_memberlist";
+    elseif(getParameter("action") == "remove_memberlist")
+	return "remove_memberlist";
+    elseif(getParameter("action") == "view_memberlist" || getParameter("show"))
+	return "view_memberlist";
+    elseif(getParameter("save_newMember"))
+	return "save_newMember";
+    elseif(getParameter("save_removeMember"))
+	return "save_removeMember";
+    elseif(getParameter("delete"))
+	return "delete";
     else
         return "report"; //cancel
 }

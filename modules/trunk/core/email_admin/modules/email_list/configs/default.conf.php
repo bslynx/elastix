@@ -2,7 +2,7 @@
   /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
-  | Elastix version 1.6-6                                               |
+  | Elastix version 2.0.4-28                                               |
   | http://www.elastix.org                                               |
   +----------------------------------------------------------------------+
   | Copyright (c) 2006 Palosanto Solutions S. A.                         |
@@ -25,12 +25,11 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: default.conf.php,v 1.1 2009-08-26 09:08:29 Oscar Navarrete onavarrete@palosanto.com Exp $ */
+  $Id: default.conf.php,v 1.1 2011-07-27 05:07:46 Alberto Santos asantos@palosanto.com Exp $ */
     global $arrConf;
     global $arrConfModule;
 
-    $arrConfModule['module_name']       = 'email_list';
+    $arrConfModule['module_name']       = 'email_list2';
     $arrConfModule['templates_dir']     = 'themes';
-    $arrConfModule['dsn_conn_database'] = 'sqlite3:////var/www/db/email.db';
-    //ex2: $arrConfModule['dsn_conn_database'] = "mysql://user:password@ip_host_sever_mysql/base_name";
+    $arrConfModule['dsn_conn_database'] = "sqlite3:///$arrConf[elastix_dbdir]/email.db";
 ?>
