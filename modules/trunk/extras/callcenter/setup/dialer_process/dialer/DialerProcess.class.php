@@ -2649,6 +2649,11 @@ UPDATE_CALLS_ORIGINATE_RESPONSE;
                 	$this->_infoLlamadas['llamadas'][$sKey]->ActualChannel = NULL;
                 }
                 
+                // El canal verdadero es más util que Local/XXX para las operaciones
+                if (strpos($sRemChannel, 'Local/') === 0 && !is_null($this->_infoLlamadas['llamadas'][$sKey]->ActualChannel))
+                    $sRemChannel = $this->_infoLlamadas['llamadas'][$sKey]->ActualChannel;
+                
+                
                 // Inserción de la llamada nueva
                 $sInsercionEvent = 
                     'INSERT INTO current_calls (fecha_inicio, Uniqueid, queue, agentnum, id_call, event, Channel, ChannelClient) '.
@@ -3938,21 +3943,35 @@ SQL_EXISTE_AUDIT;
         /* Los canales de tipo Local/XXX@from-internal no sirven para realizar
          * redirección a hold. Se debe de averiguar el verdadero canal que 
          * aparece en el reporte de "agent show" */
-        $oPredictor = new Predictivo($this->_astConn);
-        $estadoCola = $oPredictor->leerEstadoCola(''); // El parámetro vacío lista todas las colas
-        if (!isset($estadoCola['members'][$sNumAgente])) {
-            $this->oMainLog->output('ERR: (internal) al iniciar hold: agente no se encuentra: '.$sAgente);
-            return FALSE;
+        if (strpos($tuplaLlamada['ChannelClient'], 'Local/') === 0) {
+            if ($this->DEBUG) {
+            	$this->oMainLog->output("DEBUG: agente $sAgente conectado con ".
+                    "ChannelClient={$tuplaLlamada['ChannelClient']}, buscando ".
+                    "verdadero canal...");
+            }
+            $oPredictor = new Predictivo($this->_astConn);
+            $estadoCola = $oPredictor->leerEstadoCola(''); // El parámetro vacío lista todas las colas
+            if (!isset($estadoCola['members'][$sNumAgente])) {
+                $this->oMainLog->output('ERR: (internal) al iniciar hold: agente no se encuentra: '.$sAgente);
+                return FALSE;
+            }
+            if ($estadoCola['members'][$sNumAgente]['status'] != 'inUse') {
+                $this->oMainLog->output('ERR: (internal) al iniciar hold: agente no está atendiendo llamada: '.$sAgente);
+                return FALSE;
+            }
+            if (!isset($estadoCola['members'][$sNumAgente]['clientchannel'])) {
+                $this->oMainLog->output('ERR: (internal) al iniciar hold: no se puede identificar canal remoto para agente: '.$sAgente);
+            	return FALSE;
+            }
+            $tuplaLlamada['ActualChannel'] = $estadoCola['members'][$sNumAgente]['clientchannel'];
+        } else {
+        	if ($this->DEBUG) {
+        		$this->oMainLog->output("DEBUG: agente $sAgente conectado con ".
+                    "ChannelClient={$tuplaLlamada['ChannelClient']}, se asume ".
+                    "canal correcto.");
+        	}
+            $tuplaLlamada['ActualChannel'] = $tuplaLlamada['ChannelClient'];
         }
-        if ($estadoCola['members'][$sNumAgente]['status'] != 'inUse') {
-            $this->oMainLog->output('ERR: (internal) al iniciar hold: agente no está atendiendo llamada: '.$sAgente);
-            return FALSE;
-        }
-        if (!isset($estadoCola['members'][$sNumAgente]['clientchannel'])) {
-            $this->oMainLog->output('ERR: (internal) al iniciar hold: no se puede identificar canal remoto para agente: '.$sAgente);
-        	return FALSE;
-        }
-        $tuplaLlamada['ActualChannel'] = $estadoCola['members'][$sNumAgente]['clientchannel'];
          
         
         // En este punto, $tuplaLlamada tiene la información para iniciar hold

@@ -1,3 +1,6 @@
+* Dialer: write true outgoing channel, not Local@from-internal, to current_calls
+  table. Also reuse stored channel at hold time instead of querying the channel
+  again from Asterisk. May fix Elastix bug #796.
 * Dialer: remove use of deprecated ereg* functions from Predictivo.class.php
 * Dialer: fixed regular expression for parsing of 'agent show' report that 
   missed DAHDI channels (and possibly other custom channels).
