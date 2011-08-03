@@ -228,10 +228,10 @@ class paloNetwork
     {
         $this->errMsg = '';
     	$sComando = '/usr/bin/elastix-helper netconfig --genconf'.
-            ' --host '.escapeshellcmd($config_red['host']).
-            ' --gateway '.escapeshellcmd($config_red['gateway_ip']).
-            ' --dns1 '.escapeshellcmd($config_red['dns_ip_1']).
-            ' --dns2 '.escapeshellcmd($config_red['dns_ip_2']).
+            ' --host '.escapeshellarg($config_red['host']).
+            ' --gateway '.escapeshellarg($config_red['gateway_ip']).
+            ' --dns1 '.escapeshellarg($config_red['dns_ip_1']).
+            ($config_red['dns_ip_2'] == '' ? '' : ' --dns2 '.escapeshellarg($config_red['dns_ip_2'])).
             ' 2>&1';
         $output = $ret = NULL;
         exec($sComando, $output, $ret);
@@ -257,10 +257,10 @@ class paloNetwork
     {
         $this->errMsg = '';
         $sComando = '/usr/bin/elastix-helper netconfig --ifconf'.
-            ' --device '.escapeshellcmd($dev).
-            ' --bootproto '.escapeshellcmd($tipo).
-            (($ip == '') ? '' : ' --ipaddr '.escapeshellcmd($ip)).
-            (($mask == '') ? '' : ' --netmask '.escapeshellcmd($mask)).
+            ' --device '.escapeshellarg($dev).
+            ' --bootproto '.escapeshellarg($tipo).
+            (($ip == '') ? '' : ' --ipaddr '.escapeshellarg($ip)).
+            (($mask == '') ? '' : ' --netmask '.escapeshellarg($mask)).
             ' 2>&1';
         $output = $ret = NULL;
         exec($sComando, $output, $ret);
