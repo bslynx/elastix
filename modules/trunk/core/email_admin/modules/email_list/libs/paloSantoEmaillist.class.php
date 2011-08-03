@@ -368,13 +368,13 @@ class paloSantoEmailList {
 
     function getMembers($limit,$offset,$id_list,$field_type,$field_pattern)
     {
-	$query = "SELECT * FROM member_list ";
-	$arrParam = array();
+	$query = "SELECT * FROM member_list WHERE id_emaillist=? ";
+	$arrParam = array($id_list);
 	if(strlen($field_pattern)!=0){
 	    if($field_type == "name")
-		$query .= "WHERE namemember like ? ";
+		$query .= "AND namemember like ? ";
 	    else
-		$query .= "WHERE mailmember like ? ";
+		$query .= "AND mailmember like ? ";
 	    $arrParam[] = "%$field_pattern%";
 	}
 	$query .= "LIMIT ? OFFSET ?";
