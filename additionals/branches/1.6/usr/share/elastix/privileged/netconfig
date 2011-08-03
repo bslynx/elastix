@@ -74,7 +74,7 @@ function validateOptions($opt)
 	case '--host':
         if (!preg_match('/^(([[:alnum:]-]+)\.)+([[:alnum:]])+$/', $option[1]))
             error_exit('Option '.$option[0].": Invalid hostname\n");
-        if (count(explode('.', $option[1])) < 3)
+        if (count(explode('.', $option[1])) < 2)
             error_exit('Option '.$option[0].": Invalid hostname - domain-only not acceptable\n");
         break;
     case '--device':
