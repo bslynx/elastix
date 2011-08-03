@@ -138,7 +138,7 @@ function _moduleContent(&$smarty, $module_name)
             $arrNetConf['gateway_ip'] = $_POST['gateway'];
             $pNet->escribir_configuracion_red_sistema($arrNetConf);
             if(!empty($pNet->errMsg)) {
-                echo $pNet->errMsg;
+                $smarty->assign("mb_message", $pNet->errMsg);
             } else {
                 header("Location: index.php?menu=network");
             }
@@ -173,7 +173,7 @@ function _moduleContent(&$smarty, $module_name)
             if($pNet->escribirConfiguracionInterfaseRed($_POST['dev_id'], $_POST['type'], $_POST['ip'], $_POST['mask'])) {
                 header("Location: index.php?menu=network");
             } else {
-                echo $pNet->errMsg;
+                $smarty->assign("mb_message", $pNet->errMsg);
             }
         } else {
             // Error
