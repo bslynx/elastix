@@ -431,13 +431,14 @@ class paloSantoControlPanel {
                     $arrQueue[$count]['number'] = $arrReg[1]; 
                     $arrQueue[$count]['name'] = $arrReg[1]; 
                     $arrQueue[$count]['queue_wait'] = $arrReg[2]; 
-                    $arrQueue[$count]['members']="Queues attended by ";
+                    $arrQueue[$count]['members']="Not Attended";
                 }else{
-                    //$data=split('[/@]',$queue_data,3);
-                    if(ereg("^[[:space:]]+[a-zA-Z]+/([[:digit:]]+)",$queue_data, $data)){
-                        if(count($data)>1){
-                            $arrQueue[$count]['members'].=$data[1].", ";
-                        }
+                    if(preg_match("/^[[:alpha:]]+\/([[:digit:]]+)/",trim($queue_data), $data) || preg_match("/^.+\([[:alpha:]]+\/([[:digit:]]+)/",trim($queue_data),$data2)){
+			$member = isset($data[1])?$data[1]:$data2[1];
+			if($arrQueue[$count]['members'] == "Not Attended")
+			    $arrQueue[$count]['members'] = "Queue attended by $member";
+			else
+			    $arrQueue[$count]['members'] .= ", $member";
                     }
                 }
             }
