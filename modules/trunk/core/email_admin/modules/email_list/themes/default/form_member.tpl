@@ -13,7 +13,7 @@
 <table class="tabForm" style="font-size: 16px;" width="100%" >
 
     <tr class="letra12">
-        <td align="left" width="10%"><b>{$emailmembers.LABEL}: <span  class="required">*</span></b></td>
+        <td align="left" width="12%"><b>{$emailmembers.LABEL}: <span  class="required">*</span></b></td>
         <td align="left">{$emailmembers.INPUT}</td>
 	<td align="left" width="55%"><i>{$INFO}</i></td>
     </tr>
