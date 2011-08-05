@@ -286,7 +286,10 @@ function jfunction(id)
     var a_id_card = arrID[1];
     if(arrID[0]=="editMan1") openWndMan1(a_id_card);
     else getDataCard(a_id_card);
+    document.getElementById("layerCM").style.left= "160px";
+    document.getElementById("layerCM").style.top= "30px";
     $("#layerCM").show();
+    
     $('#closeCM').click(function() {
             $("#layerCM").hide();
     });

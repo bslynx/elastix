@@ -175,7 +175,7 @@ class paloSantoDataApplets
             $cardsStatus="<br /><div align='center' style='color:red;'><strong>"._tr('Cards no found')."</strong></div>";
         }
         return "<div class='tabFormTable'>$cardsStatus</div>
-                    <div id='layerCM'>
+                    <div id='layerCM' style='position:relative'>
                         <div class='layer_handle' id='closeCM'></div>
                         <div id='layerCM_content'></div>
                     </div>";
