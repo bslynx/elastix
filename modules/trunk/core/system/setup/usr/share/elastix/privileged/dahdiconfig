@@ -257,6 +257,12 @@ function action_refreshConfiguration($opt)
                 $lineas[] = $spanLine;
                 if (isset($spanData[$iSpan]['echolist'])) {
                     foreach ($spanData[$iSpan]['echolist'] as $curSpan) {                    
+                        /* Some drivers, such as opvxg400, do not accept an
+                           echocanceller setting on a control channel, not even
+                           'none'. Therefore, the echocanceller is left to its
+                           default value (which is assumed to be 'none')
+                         */
+                        if ($curSpan['echocanceller'] == 'none') continue;
                         $sLinea = 'echocanceller='.$curSpan['echocanceller'];
                         foreach ($curSpan['ranges'] as $r) {
                             if ($r[0] == $r[1])
