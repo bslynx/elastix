@@ -30,6 +30,7 @@
 include_once "libs/paloSantoGrid.class.php";
 include_once "libs/paloSantoForm.class.php";
 include_once "libs/paloSantoEmail.class.php";
+include_once "libs/paloSantoConfig.class.php";
 
 function _moduleContent(&$smarty, $module_name)
 {
@@ -583,7 +584,7 @@ function createFieldForm($arrDominios)
                                             "VALIDATION_TYPE"        => "email",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-            "passwdmailman"   => array(     "LABEL"                  => _tr("Password mailman"),
+            "passwdmailman"   => array(     "LABEL"                  => _tr("Password"),
                                             "REQUIRED"               => "yes",
                                             "INPUT_TYPE"             => "PASSWORD",
                                             "INPUT_EXTRA_PARAM"      => array("style" => "width:200px","maxlength" =>"200"),
@@ -607,7 +608,7 @@ function createFieldForm($arrDominios)
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-            "password"         => array(    "LABEL"                  => _tr("Password list"),
+            "password"         => array(    "LABEL"                  => _tr("Password"),
                                             "REQUIRED"               => "yes",
                                             "INPUT_TYPE"             => "PASSWORD",
                                             "INPUT_EXTRA_PARAM"      => array("style" => "width:200px","maxlength" =>"200"),
