@@ -1328,9 +1328,104 @@ LEER_CAMPANIA;
     {
         if (is_null($this->_sUsuarioECCP))
             return $this->_generarRespuestaFallo(401, 'Unauthorized');
-        return $this->_generarRespuestaFallo(501, 'Not Implemented');
+
+        // Verificar que id y tipo está presente
+        if (!isset($comando->campaign_id)) 
+            return $this->_generarRespuestaFallo(400, 'Bad request');
+        $idCampania = (int)$comando->campaign_id;
+        $sTipoCampania = 'outgoing';
+        if (isset($comando->campaign_type)) {
+            $sTipoCampania = (string)$comando->campaign_type;
+        }
+
+        switch ($sTipoCampania) {
+        case 'incoming':
+            return $this->_leerStatusCampaniaXML_incoming($idCampania);
+        case 'outgoing':
+            return  $this->_leerStatusCampaniaXML_outgoing($idCampania);
+        default:
+            return $this->_generarRespuestaFallo(400, 'Bad request');
+        }
     }
     
+    private function _leerStatusCampaniaXML_outgoing($idCampania)
+    {
+        $xml_response = new SimpleXMLElement('<response />');
+        $xml_GetCampaignStatusResponse = $xml_response->addChild('getcampaignstatus_response');
+
+    	$statusCampania =& $this->_dialProc->reportarEstadoCampania($idCampania);
+        if (is_null($statusCampania)) {
+            $this->_agregarRespuestaFallo($xml_GetCampaignStatusResponse, 500, 'Cannot read campaign status');
+            return $xml_response;
+        }
+        if (count($statusCampania) <= 0) {
+            $this->_agregarRespuestaFallo($xml_GetCampaignStatusResponse, 404, 'Campaign not found');
+            return $xml_response;
+        }
+        
+        $xml_statusCount = $xml_GetCampaignStatusResponse->addChild('statuscount');
+        $xml_statusCount->addChild('total', array_sum($statusCampania['status']));
+        foreach ($statusCampania['status'] as $statusKey => $statusCount)
+            $xml_statusCount->addChild(strtolower($statusKey), $statusCount);
+            
+        $xml_agents = $xml_GetCampaignStatusResponse->addChild('agents');
+        foreach ($statusCampania['queuestatus']['members'] as $sNumAgente => $infoAgente) {
+            // Este código asume agentes de formato Agent/9000
+            $xml_agent = $xml_agents->addChild('agent');
+            $xml_agent->addChild('agentchannel', 'Agent/'.$sNumAgente);
+            if ($infoAgente['status'] == 'canBeCalled') {
+            	$xml_agent->addChild('status', 'online');
+            } elseif ($infoAgente['status'] == 'inUse') {
+                $xml_agent->addChild('status', 'oncall');
+            } elseif (in_array('paused', $infoAgente['attributes'])) {
+                $xml_agent->addChild('status', 'paused');
+            } else {
+            	$xml_agent->addChild('status', 'offline');
+            }
+            if (isset($infoAgente['callid']))
+                $xml_agent->addChild('callid', $infoAgente['callid']);
+            if (isset($infoAgente['dialnumber']))
+                $xml_agent->addChild('callnumber', $infoAgente['dialnumber']);
+            if (isset($infoAgente['clientchannel']))
+                $xml_agent->addChild('callchannel', $infoAgente['clientchannel']);
+            if (isset($infoAgente['break_name']))
+                $xml_agent->addChild('pausename', $infoAgente['break_name']);
+            if (isset($infoAgente['break_id']))
+                $xml_agent->addChild('pauseid', $infoAgente['break_id']);
+            if (isset($infoAgente['datetime_breakstart']))
+                $xml_agent->addChild('pausestart', str_replace(date('Y-m-d '), '', $infoAgente['datetime_breakstart']));
+            if (isset($infoAgente['datetime_dialstart']))
+                $xml_agent->addChild('dialstart', str_replace(date('Y-m-d '), '', $infoAgente['datetime_dialstart']));
+            if (isset($infoAgente['datetime_dialend']))
+                $xml_agent->addChild('dialend', str_replace(date('Y-m-d '), '', $infoAgente['datetime_dialend']));
+            if (isset($infoAgente['datetime_enterqueue']))
+                $xml_agent->addChild('queuestart', str_replace(date('Y-m-d '), '', $infoAgente['datetime_enterqueue']));
+            if (isset($infoAgente['datetime_linkstart']))
+                $xml_agent->addChild('linkstart', str_replace(date('Y-m-d '), '', $infoAgente['datetime_linkstart']));
+        }
+        
+        $xml_activecalls = $xml_GetCampaignStatusResponse->addChild('activecalls');
+        foreach ($statusCampania['activecalls'] as $infoLlamada) {
+        	$xml_activecall = $xml_activecalls->addChild('activecall');
+            $xml_activecall->addChild('callnumber', $infoLlamada['dialnumber']);
+            $xml_activecall->addChild('callid', $infoLlamada['callid']);
+            $xml_activecall->addChild('callstatus', strtolower($infoLlamada['callstatus']));
+            if (isset($infoLlamada['datetime_dialstart']))
+                $xml_activecall->addChild('dialstart', str_replace(date('Y-m-d '), '', $infoLlamada['datetime_dialstart']));
+            if (isset($infoLlamada['datetime_dialend']))
+                $xml_activecall->addChild('dialend', str_replace(date('Y-m-d '), '', $infoLlamada['datetime_dialend']));
+            if (isset($infoLlamada['datetime_enterqueue']))
+                $xml_activecall->addChild('queuestart', str_replace(date('Y-m-d '), '', $infoLlamada['datetime_enterqueue']));
+        }
+        
+        return $xml_response;
+    }
+    
+    private function _leerStatusCampaniaXML_incoming($idCampania)
+    {
+        return $this->_generarRespuestaFallo(501, 'Not Implemented');
+    }
+
     private function Request_Dial($comando)
     {
         if (is_null($this->_sUsuarioECCP))

@@ -93,6 +93,11 @@ class DialerProcess extends AbstractProcess
     var $_iUltimoDebug = NULL;
     
     private $_agentContext = 'llamada_agendada';    // TODO: volver parametrizable
+/*
+[llamada_agendada]
+exten => _X.,1,NoOP("NUMERO DE AGENTE -------------- ${EXTEN}")
+exten => _X.,n,Dial(Agent/${EXTEN},300,t)
+ */
 
     // Variables para soportar conexiones entrantes ECCP
     private $_dialSrv = NULL;
@@ -704,6 +709,7 @@ class DialerProcess extends AbstractProcess
                     $infoCampania = $this->_leerCampania($idCampania);
                     if (!is_null($infoCampania)) {
                         // Marcar estado de fallo con esta llamada
+                        $this->_infoLlamadas['llamadas'][$k]->status = 'Failure';
                         $result = $this->_dbConn->query(
                             'UPDATE calls SET status = ?, fecha_llamada = ?, start_time = NULL, end_time = NULL '.
                                 'WHERE id_campaign = ? AND id = ?',
@@ -1184,6 +1190,7 @@ PETICION_LLAMADAS_AGENTE;
                             // y Link que se generen antes del OriginateResponse
                             $listaLlamadas[$sKey]->DialString = is_null($infoCampania->trunk) ? $sCanalTrunk : NULL;
                             
+                            $listaLlamadas[$sKey]->status = 'Placing';
                             $bErrorLocked = FALSE;
                             do {
                                 $bErrorLocked = FALSE;
@@ -1517,6 +1524,7 @@ PETICION_LLAMADAS;
                     $listaLlamadas[$sKey]->DialString = is_null($infoCampania->trunk) ? $sCanalTrunk : NULL;
                     $listaLlamadas[$sKey]->PendingEvents = NULL;
                     
+                    $listaLlamadas[$sKey]->status = 'Placing';
                     $bErrorLocked = FALSE;
                     do {
                     	$bErrorLocked = FALSE;
@@ -2178,6 +2186,7 @@ PETICION_LLAMADAS;
             $sStatus = $params['Response'];
             if ($params['Uniqueid'] == '<null>') $params['Uniqueid'] = NULL;
             if ($sStatus == 'Success') $sStatus = 'Ringing';
+            $this->_infoLlamadas['llamadas'][$sKey]->status = $sStatus;
 
             $sQuery = <<<UPDATE_CALLS_ORIGINATE_RESPONSE
 UPDATE calls 
@@ -2387,6 +2396,7 @@ UPDATE_CALLS_ORIGINATE_RESPONSE;
 
         if (!is_null($sKey)) {
             $this->_infoLlamadas['llamadas'][$sKey]->enterqueue_timestamp = time();
+            $this->_infoLlamadas['llamadas'][$sKey]->status = 'OnQueue';
             $sLlamadaEnCola = 
                 'UPDATE calls SET status = "OnQueue", datetime_entry_queue = ?, '.
                     'duration_wait = NULL, duration = NULL, start_time = NULL, '.
@@ -2578,6 +2588,7 @@ UPDATE_CALLS_ORIGINATE_RESPONSE;
                 $this->oMainLog->output("DEBUG: $sEvent: llamada ".
                     ($this->_infoLlamadas['llamadas'][$sKey]->Uniqueid).
                     " regresa de HOLD, se omite procesamiento futuro.");
+                $this->_infoLlamadas['llamadas'][$sKey]->status = 'Success';
                 $result =& $this->_dbConn->query(
                     "UPDATE calls SET status = 'Success' WHERE id = ? AND status = 'OnHold'",
                     array($this->_infoLlamadas['llamadas'][$sKey]->id));
@@ -2619,6 +2630,7 @@ UPDATE_CALLS_ORIGINATE_RESPONSE;
         }
         if (!is_null($sKey) && is_null($this->_infoLlamadas['llamadas'][$sKey]->start_timestamp)) {
             $this->_infoLlamadas['llamadas'][$sKey]->start_timestamp = time();
+            $this->_infoLlamadas['llamadas'][$sKey]->AgentChannel = $sChannel;
             
             if ($this->DEBUG) {
             	$this->oMainLog->output("DEBUG: $sEvent: llamada $sKey => ".
@@ -2719,6 +2731,7 @@ UPDATE_CALLS_ORIGINATE_RESPONSE;
                 }
 
                 // Actualización de la fecha de inicio de la llamada
+                $this->_infoLlamadas['llamadas'][$sKey]->status = 'Success';
                 if (is_null($this->_infoLlamadas['llamadas'][$sKey]->enterqueue_timestamp)) {
                     $this->oMainLog->output(
                         "ERR: $sEvent: se ha perdido evento OnJoin para llamada antes de OnLink, ".
@@ -3078,6 +3091,7 @@ INFO_FORMULARIOS;
             	/* Llamada ha sido puesta en hold. Se omite procesamiento futuro */
                 $this->oMainLog->output("DEBUG: $sEvent: llamada ".($this->_infoLlamadas['llamadas'][$sKey]->Uniqueid).
                     " ha sido puesta en HOLD en vez de colgada.");
+                $this->_infoLlamadas['llamadas'][$sKey]->status = 'OnHold';
                 $result =& $this->_dbConn->query(
                     "UPDATE calls SET status = 'OnHold' WHERE id = ?",
                     array($this->_infoLlamadas['llamadas'][$sKey]->id));
@@ -3174,6 +3188,7 @@ INFO_FORMULARIOS;
                             $this->_quitarPausaAgente($sAgente);
 
                             // Restaurar Success en lugar de OnHold para estado de llamada
+                            $this->_infoLlamadas['llamadas'][$sKey]->status = 'Success';
                             $sPeticionSQL = 'UPDATE calls SET status = ? WHERE id = ? and status = ?';
                             $r = $this->_dbConn->query($sPeticionSQL, 
                                 array('Success', $this->_infoAgentes[$sAgente]['info_hold']['id_call'], 'OnHold'));
@@ -3279,6 +3294,7 @@ INFO_FORMULARIOS;
                 if (!isset($this->_infoLlamadas['llamadas'][$sKey]->enterqueue_timestamp) || 
                     is_null($this->_infoLlamadas['llamadas'][$sKey]->enterqueue_timestamp)) {
                     // Escenario en que llamada nunca fue respondida
+                    $this->_infoLlamadas['llamadas'][$sKey]->status = 'NoAnswer';
                     $updateParams = array(
                         NULL, 
                         NULL, 
@@ -3288,6 +3304,7 @@ INFO_FORMULARIOS;
                 } else {
                     // Escenario en que llamada fue respondida y entró a cola, pero
                     // ningún agente se desocupó a tiempo para atenderla.
+                    $this->_infoLlamadas['llamadas'][$sKey]->status = 'Abandoned';
                     $updateParams = array(
                         date('Y-m-d H:i:s', $this->_infoLlamadas['llamadas'][$sKey]->enterqueue_timestamp), 
                         $this->_infoLlamadas['llamadas'][$sKey]->end_timestamp - $this->_infoLlamadas['llamadas'][$sKey]->enterqueue_timestamp, 
@@ -3314,6 +3331,7 @@ INFO_FORMULARIOS;
                     if ($this->DEBUG) {
                         $this->oMainLog->output("DEBUG: llamada fue identificada como llamada corta!");
                     }
+                    $this->_infoLlamadas['llamadas'][$sKey]->status = 'ShortCall';
                     $sActualizarLlamada = 'UPDATE calls SET end_time = ?, duration = ?, start_time = ?, status = "ShortCall" WHERE id = ?';
                     $result =& $this->_dbConn->query($sActualizarLlamada, 
                         array(date('Y-m-d H:i:s', $this->_infoLlamadas['llamadas'][$sKey]->end_timestamp), 
@@ -4170,6 +4188,7 @@ SQL_EXISTE_AUDIT;
         foreach (array_keys($this->_infoLlamadas['llamadas']) as $sKey) {
         	if ($this->_infoLlamadas['llamadas'][$sKey]->ActualChannel == $tuplaLlamada['ActualChannel']) {
                 $this->_infoLlamadas['llamadas'][$sKey]->OnHold = TRUE;
+                $this->_infoLlamadas['llamadas'][$sKey]->status = 'OnHold';
                 
                 if ($this->DEBUG) {
                 	$this->oMainLog->output('DEBUG: la siguiente llamada será puesta en HOLD vía ECCP: '.
@@ -4399,6 +4418,136 @@ Privilege: Command
             $this->oMainLog->output("DEBUG: $sEvent:\nparams => ".print_r($params, TRUE));
         }
         return FALSE;
+    }
+
+    function & reportarEstadoCampania($idCampania)
+    {
+    	// Estado de campaña - llamadas realizadas y pendientes
+        $resumen = $this->_leerResumenCampania($idCampania);
+        if (!is_null($resumen) && isset($resumen['queue'])) {
+        	$resumen['queuestatus'] = $this->_leerEstadoColaConBreaks($resumen['queue']);
+            $resumen['activecalls'] = array();
+            foreach ($this->_infoLlamadas['llamadas'] as $sKey => $infoLlamada) {
+            	if ($infoLlamada->id_campaign == $idCampania && 
+                    in_array($infoLlamada->status, array('Placing', 'Ringing', 'OnQueue'))) {
+                    $callStatus = array(
+                        'dialnumber'    =>  $infoLlamada->phone,
+                        'callid'        =>  $infoLlamada->id,
+                        'callstatus'    =>  strtolower($infoLlamada->status),
+                    );
+
+                    if (isset($infoLlamada->OriginateStart) && !is_null($infoLlamada->OriginateStart))
+                        $callStatus['datetime_dialstart'] = date('Y-m-d H:i:s', $infoLlamada->OriginateStart); 
+                    if (isset($infoLlamada->OriginateEnd) && !is_null($infoLlamada->OriginateEnd))
+                        $callStatus['datetime_dialend'] = date('Y-m-d H:i:s', $infoLlamada->OriginateEnd); 
+                    if (isset($infoLlamada->enterqueue_timestamp) && !is_null($infoLlamada->enterqueue_timestamp))
+                        $callStatus['datetime_enterqueue'] = date('Y-m-d H:i:s', $infoLlamada->enterqueue_timestamp); 
+                    $resumen['activecalls'][] = $callStatus;
+                }
+            }
+        }
+        return $resumen;
+    }
+
+    /**
+     * Método que devuelve un resumen de la información de una campaña saliente
+     * para ser mostrada en la interfaz de monitoreo.
+     *
+     * @param   int     $idCampania     ID de la campaña a interrogar
+     *
+     * @return  mixed   NULL en error, o información de la campaña
+     */
+    private function _leerResumenCampania($idCampania)
+    {
+        // Leer la información en el propio registro de la campaña
+        $sPeticionSQL = <<<LEER_RESUMEN_CAMPANIA
+SELECT id, name, datetime_init, datetime_end, daytime_init, daytime_end, 
+    retries, trunk, queue, estatus
+FROM campaign WHERE id = ?
+LEER_RESUMEN_CAMPANIA;
+        $tupla = $this->_dbConn->getRow($sPeticionSQL, array($idCampania), DB_FETCHMODE_ASSOC);
+        if (DB::isError($tupla)) {
+            //$this->errMsg = $this->_DB->errMsg;
+            $this->oMainLog->output('ERR: no se puede leer información de campaña - '.$tupla->getMessage());
+            return NULL;
+        } elseif (count($tupla) <= 0) {
+        	return array();
+        }
+
+        // Leer la clasificación por estado de las llamadas de la campaña
+        $sPeticionSQL = 'SELECT COUNT(*) AS n, status FROM calls WHERE id_campaign = ? GROUP BY status';
+        $recordset = $this->_dbConn->getAll($sPeticionSQL, array($idCampania), DB_FETCHMODE_ASSOC);
+        if (DB::isError($recordset)) {
+            $this->oMainLog->output('ERR: no se puede leer estado de llamadas de campaña - '.$recordset->getMessage());
+            return NULL;
+        }
+        $tupla['status'] = array(
+            'Pending'   =>  0,  // Llamada no ha sido realizada todavía
+
+            'Placing'   =>  0,  // Originate realizado, no se recibe OriginateResponse
+            'Ringing'   =>  0,  // Se recibió OriginateResponse, no entra a cola
+            'OnQueue'   =>  0,  // Entró a cola, no se asigna a agente todavía
+            'Success'   =>  0,  // Conectada y asignada a un agente
+            'OnHold'    =>  0,  // Llamada fue puesta en espera por agente
+            'Failure'   =>  0,  // No se puede conectar llamada
+            'ShortCall' =>  0,  // Llamada conectada pero duración es muy corta
+            'NoAnswer'  =>  0,  // Llamada estaba Ringing pero no entró a cola
+            'Abandoned' =>  0,  // Llamada estaba OnQueue pero no habían agentes            
+        );
+        foreach ($recordset as $tuplaStatus) {
+            if (is_null($tuplaStatus['status']))
+                $tupla['status']['Pending'] = $tuplaStatus['n'];
+            else $tupla['status'][$tuplaStatus['status']] = $tuplaStatus['n'];
+        }
+
+        return $tupla;
+    }
+
+    /**
+     * Procedimiento que lee el estado de la cola indicada por el parámetro. 
+     * Se invoca al método ya implementado para el marcador predictivo, y a 
+     * continuación se agrega información para identificar: en caso de break,
+     * intervalo del break y tipo del break; en caso de llamada ocupada, número,
+     * tiempo y canal de la llamada.
+     */
+    private function _leerEstadoColaConBreaks($idCola)
+    {
+        $oPredictor = new Predictivo($this->_astConn);
+        $estadoCola = $oPredictor->leerEstadoCola($idCola);
+        foreach ($estadoCola['members'] as $sNumAgente => $infoAgente) {
+            if (in_array('paused', $infoAgente['attributes'])) {
+                // El agente está en pausa. Se intenta identificar tipo de break
+                $sqlBreak = <<<LEER_TIPO_BREAK
+SELECT audit.datetime_init, break.name, break.id 
+FROM agent, audit, break 
+WHERE agent.number = ? AND agent.estatus = "A" AND agent.id = audit.id_agent 
+    AND audit.datetime_end IS NULL AND audit.id_break = break.id
+LEER_TIPO_BREAK;
+                $tuplaBreak = $this->_dbConn->getRow($sqlBreak, array($sNumAgente), DB_FETCHMODE_ASSOC);
+                if (is_array($tuplaBreak)) {
+                    $estadoCola['members'][$sNumAgente]['datetime_breakstart'] = $tuplaBreak['datetime_init'];
+                    $estadoCola['members'][$sNumAgente]['break_name'] = $tuplaBreak['name'];
+                    $estadoCola['members'][$sNumAgente]['break_id'] = $tuplaBreak['id'];
+                }
+            } elseif ($infoAgente['status'] == 'inUse') {
+                //$estadoCola['members'][$sNumAgente]['datetime_init'] = date('Y-m-d H:i:s', time() - $infoAgente['talkTime']);
+            }
+            
+            // TODO: reportar número que fue marcado para llamada saliente
+            foreach ($this->_infoLlamadas['llamadas'] as $infoLlamada) {
+            	// La siguiente comparación asume agente de forma Agent/9000
+                if (isset($infoLlamada->AgentChannel) && $infoLlamada->AgentChannel == 'Agent/'.$sNumAgente) {
+                    $estadoCola['members'][$sNumAgente]['dialnumber'] = $infoLlamada->phone;
+                    $estadoCola['members'][$sNumAgente]['callid'] = $infoLlamada->id;
+                    $estadoCola['members'][$sNumAgente]['datetime_dialstart'] = date('Y-m-d H:i:s', $infoLlamada->OriginateStart);
+                    $estadoCola['members'][$sNumAgente]['datetime_dialend'] = date('Y-m-d H:i:s', $infoLlamada->OriginateEnd);
+                    $estadoCola['members'][$sNumAgente]['datetime_enterqueue'] = date('Y-m-d H:i:s', $infoLlamada->enterqueue_timestamp);
+                    $estadoCola['members'][$sNumAgente]['datetime_linkstart'] = date('Y-m-d H:i:s', $infoLlamada->start_timestamp);
+            	}
+            }
+        }
+        ksort($estadoCola['members']);
+        return $estadoCola;
     }
 
     function _nuevoPromedio($iViejoProm, $n, $x)

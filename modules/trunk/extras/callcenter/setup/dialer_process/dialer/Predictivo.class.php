@@ -233,9 +233,11 @@ class Predictivo
                                 $iTimestampInicio = strtotime($sFechaInicio);
                                 $tiempoAgente[$sAgente]['talkTime'] = $iTimestampActual - $iTimestampInicio;
                             }
-                            if (preg_match('/^DIALEDPEERNUMBER=(.+)$/', $sLineaCanal, $regs)) {
+                            /*
+                            if (preg_match('/^NUMBER=(.+)$/', $sLineaCanal, $regs)) {
                                 $tiempoAgente[$sAgente]['dialnumber'] = $regs[1];
                             }
+                            */
                         }
                     } elseif (strpos($sLinea, 'is idle')) {
                         $listaAgentesLibres[] = $sAgente;
