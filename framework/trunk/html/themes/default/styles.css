@@ -771,7 +771,7 @@ a.letranodec:link, a.letranodec:visited {
     height:124px;
 /*     background-color:#f0f5FF; */
 /*     border: 1px solid #000; */
-    z-index: 50;
+    z-index: 2000;
     display:none;
 }
 #layerCM_content {

@@ -921,7 +921,7 @@ td.botonon {
     top:50px;
     width:349px;
     height:124px;
-    z-index: 50;
+    z-index: 2000;
     display:none;
     cursor: move;
 }
