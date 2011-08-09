@@ -84,9 +84,14 @@ function _moduleContent(&$smarty, $module_name)
     $arrVoiceData = array();
     $inicio= $fin = $total = 0;
     $extension = $pACL->getUserExtension($_SESSION['elastix_user']); $ext = $extension;
-    if(is_null($ext) || $ext=="")
-	$smarty->assign("DISABLED","DISABLED");
     $esAdministrador = $pACL->isUserAdministratorGroup($_SESSION['elastix_user']);
+    if(is_null($ext) || $ext==""){
+	$smarty->assign("DISABLED","DISABLED");
+	if(!$esAdministrador){
+	    $smarty->assign("mb_message", "<b>".$arrLang["contact_admin"]."</b>");
+	    return "";
+	}
+    }
     if($esAdministrador)
         $extension = "[[:digit:]]+";
 
@@ -284,7 +289,7 @@ contenido;
                 }
             }
         }else $directorios[] = $extension;
-if($esAdministrador)
+//if($esAdministrador)
         $arrData = array();
         foreach($directorios as $directorio)
         {
