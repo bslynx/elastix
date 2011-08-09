@@ -58,6 +58,9 @@ $arrLangModule=array(
 "Group" => "Group",
 "unknown" => "Unknown",
 "delete_file_error" => "At least one of files selected cannot be deleted because it no exists",
-"contact_admin" => "There is no extension number associated with the current user. Please contact the administrator to assign it an extension"
+"contact_admin" => "There is no extension number associated with the current user. Please contact the administrator to assign it an extension",
+"You are not authorized to download this file" => "You are not authorized to download this file",
+"You are not authorized to listen this file" => "You are not authorized to listen this file",
+"You are not authorized to delete any records" => "You are not authorized to delete any records"
 );
 ?>

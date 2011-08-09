@@ -54,6 +54,7 @@ class paloSantoMonitoring {
     function getNumMonitoring($filter_field, $filter_value, $extension, $date_initial, $date_final)
     {
         $where = "";
+	$arrParam = array();
         if(isset($filter_field) && $filter_field !="" && isset($filter_value) && $filter_value !=""){
             if($filter_field == "userfield"){
                 $in_val = strtolower($filter_value);
@@ -72,25 +73,33 @@ class paloSantoMonitoring {
                         break;
                 }
             }else{
-                $where = " AND $filter_field like '$filter_value%' AND userfield LIKE 'audio:%' ";
+		$arrParam[] = "$filter_value%";
+                $where = " AND $filter_field like ? AND userfield LIKE 'audio:%' ";
             }
          }
 
         if((isset($date_initial) & $date_initial !="") && (isset($date_final) & $date_final !="")){
-            $where .= " AND (calldate >= '$date_initial' AND calldate <= '$date_final') ";
+	    $arrParam[] = $date_initial;
+	    $arrParam[] = $date_final;
+            $where .= " AND (calldate >= ? AND calldate <= ?) ";
 
         }else{
             $date_initial = date('Y-m-d')." 00:00:00";
             $date_final   = date('Y-m-d')." 23:59:59";
-            $where .= " AND (calldate >= '$date_initial' AND calldate <= '$date_final') ";
+	    $arrParam[] = $date_initial;
+	    $arrParam[] = $date_final;
+            $where .= " AND (calldate >= ? AND calldate <= ?) ";
         }
 
-        if(isset($extension) & $extension !="")
-            $where .= " AND (src='$extension' OR dst='$extension')";
+        if(isset($extension) & $extension !=""){
+	    $arrParam[] = $extension;
+	    $arrParam[] = $extension;
+            $where .= " AND (src=? OR dst=?)";
+	}
 
         $query   = "SELECT COUNT(*) FROM cdr WHERE userfield <> '' $where";
 
-        $result=$this->_DB->getFirstRowQuery($query);
+        $result=$this->_DB->getFirstRowQuery($query,false,$arrParam);
 
         if($result==FALSE){
             $this->errMsg = $this->_DB->errMsg;
@@ -102,7 +111,7 @@ class paloSantoMonitoring {
     function getMonitoring($limit, $offset, $filter_field, $filter_value, $extension, $date_initial, $date_final)
     {
         $where = "";
-
+	$arrParam = array();
         if(isset($filter_field) & $filter_field !=""){
             if($filter_field == "userfield"){
                 $in_val = strtolower($filter_value);
@@ -121,24 +130,33 @@ class paloSantoMonitoring {
                         break;
                 }
             }else{
-                $where = " AND $filter_field like '$filter_value%' AND userfield LIKE 'audio:%' ";
-                 }
+		$arrParam[] = "$filter_value%";
+                $where = " AND $filter_field like ? AND userfield LIKE 'audio:%' ";
+            }
          }
 
         if((isset($date_initial) & $date_initial !="") && (isset($date_final) & $date_final !="")){
-            $where .= " AND (calldate >= '$date_initial' AND calldate <= '$date_final') ";
-
+	    $arrParam[] = $date_initial;
+	    $arrParam[] = $date_final;
+            $where .= " AND (calldate >= ? AND calldate <= ?) ";
         }else{
             $date_initial = date('Y-m-d')." 00:00:00";
             $date_final   = date('Y-m-d')." 23:59:59";
-            $where .= " AND (calldate >= '$date_initial' AND calldate <= '$date_final') ";
+	    $arrParam[] = $date_initial;
+	    $arrParam[] = $date_final;
+            $where .= " AND (calldate >= ? AND calldate <= ?) ";
         }
 
-        if(isset($extension) & $extension !="")
-            $where .= " AND (src='$extension' OR dst='$extension')";
+        if(isset($extension) & $extension !=""){
+	    $arrParam[] = $extension;
+	    $arrParam[] = $extension;
+            $where .= " AND (src=? OR dst=?)";
+	}
 
-        $query   = "SELECT * FROM cdr WHERE userfield <> '' $where ORDER BY uniqueid DESC LIMIT $limit OFFSET $offset";
-        $result=$this->_DB->fetchTable($query, true);
+	$arrParam[] = $limit;
+	$arrParam[] = $offset;
+        $query   = "SELECT * FROM cdr WHERE userfield <> '' $where ORDER BY uniqueid DESC LIMIT ? OFFSET ?";
+        $result=$this->_DB->fetchTable($query, true, $arrParam);
         if($result==FALSE){
             $this->errMsg = $this->_DB->errMsg;
             return array();
@@ -149,9 +167,9 @@ class paloSantoMonitoring {
 
     function getMonitoringById($id)
     {
-        $query = "SELECT * FROM cdr WHERE uniqueid=$id";
-
-        $result=$this->_DB->getFirstRowQuery($query,true);
+        $query = "SELECT * FROM cdr WHERE uniqueid=?";
+     
+        $result=$this->_DB->getFirstRowQuery($query,true,array($id));
 
         if($result==FALSE){
             $this->errMsg = $this->_DB->errMsg;
@@ -170,9 +188,9 @@ class paloSantoMonitoring {
     }
 
     function obtainExtension($db,$id){
-        $query = "SELECT extension FROM acl_user WHERE id=$id";
+        $query = "SELECT extension FROM acl_user WHERE id=?";
 
-        $result = $db->getFirstRowQuery($query,true);
+        $result = $db->getFirstRowQuery($query,true, array($id));
         if($result==FALSE){
             $this->errMsg = $this->_DB->errMsg;
             return null;
@@ -192,8 +210,8 @@ class paloSantoMonitoring {
     }
 
     function getRecordName($id){
-        $query = "SELECT userfield FROM cdr WHERE uniqueid='$id'";
-        $result = $this->_DB->getFirstRowQuery($query,true);
+        $query = "SELECT userfield FROM cdr WHERE uniqueid=?";
+        $result = $this->_DB->getFirstRowQuery($query,true,array($id));
         if($result==FALSE){
             $this->errMsg = $this->_DB->errMsg;
             return null;
@@ -215,5 +233,18 @@ class paloSantoMonitoring {
         return $result;
     }
 
+    function recordBelongsToUser($record, $extension)
+    {
+	$query = "select count(*) from cdr where uniqueid=? and (src=? or dst=?)";
+	$result=$this->_DB->getFirstRowQuery($query, false, array($record,$extension,$extension));
+	if($result===FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return false;
+        }
+	if($result[0] > 0)
+	    return true;
+	else
+	    return false;
+    }
 }
 ?>
