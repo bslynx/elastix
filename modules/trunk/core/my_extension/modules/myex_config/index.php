@@ -61,26 +61,36 @@ function _moduleContent(&$smarty, $module_name)
     $arrConf['dsn_conn_database'] = generarDSNSistema('asteriskuser', 'asterisk');
     $pDB = new paloDB($arrConf['dsn_conn_database']);
     $pDBACL = new paloDB($arrConf['elastix_dsn']['acl']);
-
+    $pACL = new paloACL($pDBACL);
+    $user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
+    $extension = $pACL->getUserExtension($user);
+    $isAdministrator = $pACL->isUserAdministratorGroup($user);
+    if($extension=="" || is_null($extension)){
+	if($isAdministrator) 
+	  $smarty->assign("mb_message", "<b>".$arrLang["no_extension"]."</b>");
+	else
+	  $smarty->assign("mb_message", "<b>".$arrLang["contact_admin"]."</b>");
+	return "";
+    }
     //actions
     $action = getAction();
     $content = "";
 
     switch($action){
         case "save_new":
-            $content = saveNewMyExtension($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang,$pDBACL);
+            $content = saveNewMyExtension($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $extension, $isAdministrator);
             break;
         default: // view_form
-            $content = viewFormMyExtension($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang,$pDBACL);
+            $content = viewFormMyExtension($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $extension);
             break;
     }
     return $content;
 }
 
-function viewFormMyExtension($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang,$pDBACL)
+function viewFormMyExtension($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $extension)
 {
     $pMyExtension = new paloSantoMyExtension($pDB);
-    $pACL = new paloACL($pDBACL);
+    
     $arrFormMyExtension = createFieldForm($arrLang);
     $oForm = new paloForm($smarty,$arrFormMyExtension);
 
@@ -90,33 +100,23 @@ function viewFormMyExtension($smarty, $module_name, $local_templates_dir, $pDB, 
     $id     = getParameter("id");
     $smarty->assign("ID", $id); //persistence id with input hidden in tpl
 
-     $user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
-     $extension = $pACL->getUserExtension($user);
-     if($extension=="" || is_null($extension)){
-	 $smarty->assign("DISABLED","DISABLED");
-	 if($pACL->isUserAdministratorGroup($user)) 
-	    $smarty->assign("mb_message", "<b>".$arrLang["no_extension"]."</b>");
-	 else
-	    $smarty->assign("mb_message", "<b>".$arrLang["contact_admin"]."</b>");
-     }
-     else{
-             $_SESSION["my_extension"]["extension"] = $extension;
-            if($action=="view")
-                $oForm->setViewMode();
-            else if($action=="view_edit" || getParameter("save_edit"))
-                $oForm->setEditMode();
-            //end, Form data persistence to errors and other events.
-        
-            if($action=="view" || $action=="view_edit"){ // the action is to view or view_edit.
-                $dataMyExtension = $pMyExtension->getMyExtensionById($id);
-                if(is_array($dataMyExtension) & count($dataMyExtension)>0)
-                    $_DATA = $dataMyExtension;
-                else{
-                    $smarty->assign("mb_title", $arrLang["Error get Data"]);
-                    $smarty->assign("mb_message", $pMyExtension->errMsg);
-                }
-            }
-     }
+    $_SESSION["my_extension"]["extension"] = $extension;
+    if($action=="view")
+	$oForm->setViewMode();
+    else if($action=="view_edit" || getParameter("save_edit"))
+	$oForm->setEditMode();
+    //end, Form data persistence to errors and other events.
+
+    if($action=="view" || $action=="view_edit"){ // the action is to view or view_edit.
+	$dataMyExtension = $pMyExtension->getMyExtensionById($id);
+	if(is_array($dataMyExtension) & count($dataMyExtension)>0)
+	    $_DATA = $dataMyExtension;
+	else{
+	    $smarty->assign("mb_title", $arrLang["Error get Data"]);
+	    $smarty->assign("mb_message", $pMyExtension->errMsg);
+	}
+    }
+
     $statusDND       = $pMyExtension->getConfig_DoNotDisturb($extension);
     $statusCW        = $pMyExtension->getConfig_CallWaiting($extension);
     $statusCF        = $pMyExtension->getConfig_CallForwarding($extension);
@@ -182,13 +182,8 @@ function viewFormMyExtension($smarty, $module_name, $local_templates_dir, $pDB, 
     return $content;
 }
 
-function saveNewMyExtension($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang,$pDBACL)
+function saveNewMyExtension($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $extension, $isAdministrator)
 {
-    $pACL = new paloACL($pDBACL);
-    $user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
-    $extension = $pACL->getUserExtension($user);
-    if($extension=="" || is_null($extension))
-	return viewFormMyExtension($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang,$pDBACL);
     $pMyExtension = new paloSantoMyExtension($pDB);
     $arrFormMyExtension = createFieldForm($arrLang);
     $oForm = new paloForm($smarty,$arrFormMyExtension);
@@ -276,11 +271,14 @@ function saveNewMyExtension($smarty, $module_name, $local_templates_dir, $pDB, $
             }
          $smarty->assign("mb_message", $message);
          }else{
-            $message =  "<b>".$arrLang["no_extension"]."</b>";
+	    if($isAdministrator)
+		$message =  "<b>".$arrLang["no_extension"]."</b>";
+	    else
+		$message =  "<b>".$arrLang["contact_admin"]."</b>";
             $smarty->assign("mb_message", $message);
         }
      }
-    $content = viewFormMyExtension($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang,$pDBACL);
+    $content = viewFormMyExtension($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang, $extension);
     return $content;
 }
 
