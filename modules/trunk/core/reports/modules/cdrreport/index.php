@@ -57,13 +57,6 @@ function _moduleContent(&$smarty, $module_name)
     $pDB     = new paloDB($dsn);
     $oCDR    = new paloSantoCDR($pDB);
 
-    // DSN para consulta de ringgroups
-    $dsn_asterisk = generarDSNSistema('asteriskuser', 'asterisk');
-    $pDB_asterisk=new paloDB($dsn_asterisk);
-    $oRG    = new RingGroup($pDB_asterisk);
-    $dataRG = $oRG->getRingGroup();
-    $dataRG[''] = _tr('(Any ringgroup)');
-
     $pDBACL = new paloDB($arrConf['elastix_dsn']['acl']);
     if (!empty($pDBACL->errMsg)) {
         return "ERROR DE DB: $pDBACL->errMsg";
@@ -73,11 +66,33 @@ function _moduleContent(&$smarty, $module_name)
         return "ERROR DE ACL: $pACL->errMsg";
     }
 
+    $exten = $pACL->getUserExtension($_SESSION['elastix_user']);
+    $isAdministrator = $pACL->isUserAdministratorGroup($_SESSION['elastix_user']);
+    if(is_null($exten) || $exten == ""){
+	if(!$isAdministrator){
+	    $smarty->assign('mb_message', "<b>"._tr("contact_admin")."</b>");
+	    return "";
+	}
+	else
+	    $smarty->assign('mb_message', "<b>"._tr("no_extension")."</b>");
+    }
+  
     // Para usuarios que no son administradores, se restringe a los CDR de la
     // propia extensión
     $sExtension = $pACL->isUserAdministratorGroup($_SESSION['elastix_user']) 
         ? '' 
         : $pACL->getUserExtension($_SESSION['elastix_user']);
+
+
+
+    // DSN para consulta de ringgroups
+    $dsn_asterisk = generarDSNSistema('asteriskuser', 'asterisk');
+    $pDB_asterisk=new paloDB($dsn_asterisk);
+    $oRG    = new RingGroup($pDB_asterisk);
+    $dataRG = $oRG->getRingGroup();
+    $dataRG[''] = _tr('(Any ringgroup)');
+
+    
 
 
     // Cadenas estáticas en la plantilla
@@ -172,24 +187,17 @@ function _moduleContent(&$smarty, $module_name)
 
     // Ejecutar el borrado, si se ha validado.
     if (isset($_POST['delete'])) {
-	if(!isset($sExtension) || $sExtension == ""  && !$pACL->isUserAdministratorGroup($_SESSION['elastix_user'])){
-	    $smarty->assign(array(
-		    'mb_title'      =>  _tr('ERROR'),
-		    'mb_message'    =>  _tr("Your username does not have any extension assigned."),
-		));
+	if($paramFiltro['date_start'] <= $paramFiltro['date_end']){
+	    $r = $oCDR->borrarCDRs($paramFiltro);
+	    if (!$r) $smarty->assign(array(
+		'mb_title'      =>  _tr('ERROR'),
+		'mb_message'    =>  $oCDR->errMsg,
+	    ));
 	}else{
-	    if($paramFiltro['date_start'] <= $paramFiltro['date_end']){
-		$r = $oCDR->borrarCDRs($paramFiltro);
-		if (!$r) $smarty->assign(array(
-		    'mb_title'      =>  _tr('ERROR'),
-		    'mb_message'    =>  $oCDR->errMsg,
-		));
-	    }else{
-		$smarty->assign(array(
-		    'mb_title'      =>  _tr('ERROR'),
-		    'mb_message'    =>  _tr("Please End Date must be greater than Start Date"),
-		));
-	    }
+	    $smarty->assign(array(
+		'mb_title'      =>  _tr('ERROR'),
+		'mb_message'    =>  _tr("Please End Date must be greater than Start Date"),
+	    ));
 	}
     }
     
@@ -216,14 +224,7 @@ function _moduleContent(&$smarty, $module_name)
         $arrColumns = array(_tr("Date"), _tr("Source"), _tr("Ring Group"), _tr("Destination"), _tr("Src. Channel"),_tr("Account Code"),_tr("Dst. Channel"),_tr("Status"),_tr("Duration"));
         $oGrid->setColumns($arrColumns);
 
-	if(!isset($sExtension) || $sExtension == ""  && !$pACL->isUserAdministratorGroup($_SESSION['elastix_user'])){
-	    $arrResult['cdrs'] = array();
-	    $smarty->assign(array(
-		    'mb_title'      =>  _tr('ERROR'),
-		    'mb_message'    =>  _tr("Your username does not have any extension assigned."),
-		));
-	}else
-	    $arrResult = $oCDR->listarCDRs($paramFiltro, $limit, $offset);
+	$arrResult = $oCDR->listarCDRs($paramFiltro, $limit, $offset);
  
         if(is_array($arrResult['cdrs']) && $total>0){
             foreach($arrResult['cdrs'] as $key => $value){
@@ -259,14 +260,7 @@ function _moduleContent(&$smarty, $module_name)
         $oGrid->setTotal($total);
 
         $offset = $oGrid->calculateOffset();
-	if(!isset($sExtension) || $sExtension == ""  && !$pACL->isUserAdministratorGroup($_SESSION['elastix_user'])){
-	    $arrResult['cdrs'] = array();
-	    $smarty->assign(array(
-		    'mb_title'      =>  _tr('ERROR'),
-		    'mb_message'    =>  _tr("Your username does not have any extension assigned."),
-		));
-	}else
-	    $arrResult = $oCDR->listarCDRs($paramFiltro, $limit, $offset);
+	$arrResult = $oCDR->listarCDRs($paramFiltro, $limit, $offset);
 
         $arrColumns = array(_tr("Date"), _tr("Source"), _tr("Ring Group"), _tr("Destination"), _tr("Src. Channel"),_tr("Account Code"),_tr("Dst. Channel"),_tr("Status"),_tr("Duration"));
         $oGrid->setColumns($arrColumns);

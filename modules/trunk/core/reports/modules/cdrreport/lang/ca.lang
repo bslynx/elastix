@@ -58,5 +58,7 @@ $arrLangModule=array(
 "Ring Group"=>"Ring Group",
 "(Any ringgroup)"=>"(Any ringgroup)",
 "Your username does not have any extension assigned." => "Your username does not have any extension assigned.",
+"contact_admin" => "There is no extension number associated with the current user. Please contact the administrator to assign it an extension",
+"no_extension" => "There is no extension number associated with the current user. You can associate an extension number to your user by clicking <a href=\"javascript: openWindow('index.php?menu=userlist&amp;action=edit_userExtension&amp;rawmode=yes');\">here</a>"
 );
 ?>
