@@ -207,6 +207,12 @@ function viewDetailAccount($smarty, $module_name, $local_templates_dir, &$pDB, $
 	$domain_name = isset($domain_name)?$domain_name:$id_domain;
 	$id_domain = $domain_name;
 	$arrDomain= $pEmail->getDomains($domain_name);
+	if($arrDomain[0][1]=="" || $domain_name==0){
+	    $smarty->assign("mb_title", $arrLang["Error"]);
+	    $smarty->assign("mb_message", _tr("You must select a domain to create an account"));
+	    $content = viewFormAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+	    return $content;
+	}
 	$domain_name="@".$arrDomain[0][1];
 	$smarty->assign("domain_name", $domain_name);
 	$smarty->assign("domainName", $arrDomain[0][1]);
