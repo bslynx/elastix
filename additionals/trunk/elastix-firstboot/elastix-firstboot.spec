@@ -99,7 +99,7 @@ rm -rf $RPM_BUILD_ROOT
 * Wed Aug 10 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-9
 - FIXED: in script elastix firstboot the step to add word
   "localhost" after "127.0.0.1" from /etc/hosts was improved
-  due to possibles problems during of updating. SVN Rev[2687]
+  due to possibles problems during of updating. SVN Rev[2887]
 - FIXED: elastix-firstboot, an error occurred when the update or
   install operation is done on a elastix 2.0.3 where the password
   of cyrus was not rewrited by firstboot(older versions) in
