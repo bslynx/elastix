@@ -2,7 +2,7 @@
 Summary: Package that installs A2Billing.
 Name: elastix-%{modname}
 Version: 1.8.1
-Release: 15
+Release: 16
 License: GPL
 Group: Applications/System
 Source0: %{modname}_%{version}.tar.gz
@@ -15,7 +15,7 @@ Patch0:  elastix-a2billing-1.8.1.patch
 BuildRoot: %{_tmppath}/%{name}-%{version}
 BuildArch: noarch
 Prereq: asterisk, php, elastix-firstboot, python-setuptools, MySQL-python, python-sqlalchemy		
-Prereq: elastix >= 2.0.4-9
+Prereq: elastix >= 2.0.4-19
 %description
 A2billing is a full featured telecom platform and softswitch providing converged services, with self contained billing (pre or post-paid), reporting and statistics for IP and TDM based voice networks and can be configured to supply a wide range of services, rate calls, prepare and send out invoices, as well as accept payments via a number of payment service providers.
 %prep
@@ -213,6 +213,10 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) /etc/a2billing.conf
 
 %changelog
+* Wed May 04 2011 Eduardo Cueva <ecueva@palosanto.com> 1.8.1-16
+- CHANGED: Changed file db.info the action installation_force by
+  ignore_backup
+
 * Sat Apr 02 2011 Eduardo Cueva <ecueva@palosanto.com> 1.8.1-15
 - FIXED: a2billing menus.xml, bad definition type menu a2b, it
   most be module. SVN Rev[2484]

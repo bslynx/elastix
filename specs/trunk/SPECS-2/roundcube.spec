@@ -1,5 +1,5 @@
 %define	name RoundCubeMail
-%define	release	9
+%define	release	10
 %define	version	0.3.1
 
 Summary: RoundCube Webmail is a browser-based multilingual IMAP client
@@ -18,7 +18,7 @@ Patch0: roundcube-config-v0.3.1.patch
 Patch1: roundcube-changepass-integracion-elastix-v0.3.1.patch
 Patch2: roundcube-elastix-integration2-v0.3.1.patch
 Prereq: php, mysql-server
-Prereq: elastix >= 2.0.0-28
+Prereq: elastix >= 2.0.4-19
 Prereq: elastix-firstboot >= 2.0.0-4
 
 %description
@@ -91,6 +91,10 @@ rm -rf $RPM_BUILD_ROOT/
 
 
 %changelog
+* Wed May 04 2011 Eduardo Cueva D. <ecueva@palosanto.com> version 0.3.1-10
+- CHANGED:   In Source rouncubemail-db changed file db.info where parameter
+  installation_force is replaced by ignore_backup
+
 * Thu Mar 31 2011 Eduardo Cueva D. <ecueva@palosanto.com> version 0.3.1-9
 - CHANGED:   Remove olds script to install and put new script sql.
 

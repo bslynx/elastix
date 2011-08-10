@@ -3,7 +3,7 @@
 Summary: Elastix Module Agenda 
 Name:    elastix-%{modname}
 Version: 2.0.4
-Release: 7
+Release: 12
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
@@ -12,8 +12,8 @@ Source1: calendarEvent.gsm
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
 Prereq: asterisk
-Prereq: freePBX >= 2.5.1
-Prereq: elastix >= 2.0.4-9
+Prereq: freePBX >= 2.8.1-1
+Prereq: elastix >= 2.0.4-24
 
 %description
 Elastix Module Agenda
@@ -40,7 +40,7 @@ mv menu.xml $RPM_BUILD_ROOT/usr/share/elastix/module_installer/%{name}-%{version
 
 # Copy required sound file
 mkdir -p $RPM_BUILD_ROOT/var/lib/asterisk/sounds/custom/
-chown -R asterisk.asterisk /var/lib/asterisk/sounds/custom
+#chown -R asterisk.asterisk /var/lib/asterisk/sounds/custom
 cp %{SOURCE1} $RPM_BUILD_ROOT/var/lib/asterisk/sounds/custom/
 
 %pre
@@ -104,8 +104,73 @@ fi
 /usr/share/elastix/module_installer/*
 /var/lib/asterisk/sounds/custom
 /var/lib/asterisk/sounds/custom/calendarEvent.gsm
+/var/lib/asterisk/sounds/custom/*
 
 %changelog
+* Fri Jul 29 2011 Eduardo Cueva <ecueva@palsoanto.com> 2.0.4-12
+- CHANGED: Agenda - Calendar:  Show message after to create an 
+  event because there are a load page as event and in a remote 
+  test there is not a feedback to the user. SVN Rev[2852]
+
+* Tue Jul 28 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-11
+- FIXED: Modules - Calendar: Fixed problem with text to speach 
+  by characters like ",". SVN Rev[2839][2836]
+- CHANGED: module address_book, when the user does not have an 
+  extension associated, a link appear to assign one extension.
+  SVN Rev[2796]
+- CHANGED: module recordings, when the user does not have an 
+  extension associated, a link appear to assign one extension. 
+  SVN Rev[2792]
+
+* Wed Jun 29 2011 Alberto Santos <asantos@palosanto.com> 2.0.4-10
+- CHANGED: module recordings, changed informative message according
+  to bug #906. SVN Rev[2759]
+- CHANGED: module address_book, changed informative message according
+  to bug #906. SVN Rev[2758]
+- CHANGED: module calendar, changed informative message according
+  to bug #903. SVN Rev[2757]
+
+* Mon Jun 13 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-9
+- CHANGED: In spec file change prereq freepbx >= 2.8.1-1 and 
+  elastix >= 2.0.4-24
+- CHANGED: Agenda/Recordings: replace direct use of paloConfig on 
+  /etc/amportal.conf with call to generarDSNSistema(). SVN Rev[2676]
+- CHANGED: Agenda/AddressBook: replace direct use of paloConfig 
+  on /etc/amportal.conf with call to generarDSNSistema(). The object 
+  is still used to get access to the AMI credentials. SVN Rev[2673]
+- CHANGED: Agenda/Calendar: replace direct use of paloConfig on 
+  /etc/amportal.conf with call to generarDSNSistema(). SVN Rev[2670]
+- CHANGED: The split function of these modules was replaced by the 
+  explode function due to that the split function was deprecated since 
+  PHP 5.3.0. SVN Rev[2650]
+
+* Tue Apr 26 2011 Alberto Santos <asantos@palosanto.com> 2.0.4-8
+- FIXED: Agenda - calendar: Fixed bug where appear a div at the bottom
+  of the big calendar
+  SVN Rev[2584] 
+- CHANGED: module calendar, changed class name to core_Calendar
+  SVN Rev[2576]
+- CHANGED: module address_book, changed class name to core_AddressBook
+  SVN Rev[2575]
+- CHANGED: module calendar, changed name from puntosF_Calendar.class.php
+  to core.class.php
+  SVN Rev[2568]
+- CHANGED: module address_book, changed the name from
+  puntosF_AddressBook.class.php to core.class.php
+  SVN Rev[2567]
+- NEW: new scenarios for SOAP in address_book and calendar
+  SVN Rev[2556]
+- FIXED: agenda - calendar: Fixed functionality of TTS
+  SVN Rev[2554]
+- CHANGED: module address_book, new grid field called picture
+  SVN Rev[2540]
+- CHANGED: file db.info, changed installation_force to ignore_backup
+  SVN Rev[2489]
+- CHANGED: Agenda - calendar : Clean the textarea when do an action 
+  to create a new event because this field was never clean it
+  SVN Rev[2470]
+- CHANGED: elastix-agenda.spec, changed prereq elastix to 2.0.4-19
+
 * Tue Mar 29 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-7
 - CHANGED:  Agenda - calendar: Change the style.css in calendar 
   where buttons to change the view fo calendar (Month, week, day) 

@@ -3,14 +3,14 @@
 Summary: Elastix Module Reports 
 Name:    elastix-reports
 Version: 2.0.4
-Release: 9
+Release: 15
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
 #Source0: %{modname}_%{version}-4.tgz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
-Prereq: elastix >= 2.0.4-10
+Prereq: elastix >= 2.0.4-29
 Prereq: asterisk
 
 %description
@@ -91,6 +91,87 @@ fi
 /usr/share/elastix/module_installer/*
 
 %changelog
+* Tue Jul 19 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-15
+- CHANGED: In spec file change prereq elastix >= 2.0.4-29
+- FIXED: Modules - cdrreport: Fixed bug where any user without 
+  an extension assigned could see all cdr in cdrreports.
+  SVN Rev[2835]
+- CHANGED: module graphic_report, in case of error no graphic 
+  is showed. SVN Rev[2809]
+- CHANGED: module graphic_report, when there is no data to show 
+  the design was changed like used in module email_stats.
+  SVN Rev[2800]
+- CHANGED: module dest_distribution, when there is no data to 
+  show the design is changed like used in module email_stats. 
+  SVN Rev[2799]
+- CHANGED: module channelusage, when there is no data to show a 
+  jpgraph error was displayed. Now in this case a blank image 
+  with the message "Nothing to show yet" and the title of it 
+  is displayed. SVN Rev[2777]
+
+* Wed Jun 29 2011 Alberto Santos <asantos@palosanto.com> 2.0.4-14
+- FIXED: module billing_report, if user press next or last without
+  pressing show button first, the user gets a blank page. Now the
+  user can press next or last without pressing show button first
+  to see the data on next page
+  SVN Rev[2767]
+- FIXED: module summary_by_extension, instead of the accent on the
+  wordsm a special character was displayed. Now the accent is showed
+  SVN Rev[2760]
+
+* Fri Jun 24 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-13
+- CHANGED: IN spec file change prereq elastix >= 2.0.4-25
+- FIXED: module graphic_report, changed action onclick to onchange 
+  on combo box. SVN Rev[2756].
+- FIXED: Bug in module Dest distribution, Error to create image.
+  PieGraph class do not exists, To solve the library 
+  paloSantoGraphImage.lib.php had to be included. SVN Rev[2754]
+- CHANGED: Module CDR Reports, change soap name 
+ class SOAP_Cdr.class.php to SOAP_CDR.class.php. SVN Rev[2750]
+
+* Mon Jun 13 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-12
+- CHANGED: Modules - Trunk: The ereg function was replaced by the 
+  preg_match function due to that the ereg function was deprecated 
+  since PHP 5.3.0. SVN Rev[2688]
+
+* Thu May 05 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-11
+- ADDED: CDR Report: Add support for filter by ringgroup. SVN Rev[2617].
+- FIXED: CDR Report: fix typo in Spanish translation. SVN Rev[2612]
+- FIXED: CDR Report: fix date comparison bug on delete scenario - 
+  dates were being compared with "d M Y" format, should be compared 
+  with ISO format. SVN Rev[2611]
+- CHANGED: CDR Report: report now uses CDR API with parameter arrays.
+  SVN Rev[2611]
+- CHANGED: paloSantoCDR: add checks for invalid parameter arrays.
+  SVN Rev[2610]
+- FIXED: module summary_by_extension, for numbers too big the 
+  leyend could overlaps the percentages. SVN Rev[2606]
+- FIXED: cdrreport: Fixed bug [#821] filters don't work if the 
+  action is "delete cdr". SVN Rev[2605]
+- FIXED: paloSantoCDR: refuse to process any query or delete that 
+  specifies a non-null date in an invalid format. SVN Rev[2604]
+- ADDED: paloSantoCDR: add support for ringgroup filtering. SVN Rev[2603]
+- CHANGED: CDR Report: create new method contarCDRs that receives 
+  a parameter array, and modify getNumCDR to forward to contarCDRs
+  SVN Rev[2599]
+- CHANGED: CDR Report: make Delete_All_CDRs() use getParam() helper.
+  SVN Rev[2599]
+
+* Tue Apr 26 2011 Alberto Santos <asantos@palosanto.com> 2.0.4-10
+- CHANGED: module cdrreport, changed class name to core_CDR
+  SVN Rev[2577]
+- CHANGED: module cdrreport, changed name from puntosF_CDR.class.php
+  to core.class.php
+  SVN Rev[2569]
+- NEW: new scenarios for SOAP in cdrreport
+  SVN Rev[2560]
+- FIXED: module cdrreport, character '}' misplaced in confirming
+  message to delete cdrs
+  SVN Rev[2525]
+- FIXED: Reports - billing reports: Fixed style.css, a class of
+  css was written bad
+  SVN Rev[2508]
+
 * Tue Apr 05 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-9
 - CHANGED:  Reports - Billing reports: Changes in styles and 
   tpl. SVN Rev[2506]

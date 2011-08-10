@@ -2,15 +2,15 @@
 
 Summary: Elastix Module System 
 Name:    elastix-%{modname}
-Version: 2.0.4
-Release: 11 
+Version: 2.2.0
+Release: 4
 License: GPL
 Group:   Applications/System
-#Source0: %{modname}_%{version}-6.tgz
+#Source0: %{modname}_%{version}-2.tgz
 Source0: %{modname}_%{version}-%{release}.tgz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
-Prereq: elastix >= 2.0.4-10
+Prereq: elastix >= 2.2.0-1
 Prereq: php-soap
 Prereq: openfire, wanpipe-util >= 3.4.1-4, dahdi
 
@@ -26,10 +26,13 @@ rm -rf $RPM_BUILD_ROOT
 # Files provided by all Elastix modules
 mkdir -p    $RPM_BUILD_ROOT/var/www/html/
 mkdir -p    $RPM_BUILD_ROOT/var/www/html/libs/
+mkdir -p    $RPM_BUILD_ROOT/var/www/backup
+mkdir -p    $RPM_BUILD_ROOT/usr/share/elastix/privileged
 mv modules/ $RPM_BUILD_ROOT/var/www/html/
 
-mv setup/paloSantoNetwork.class.php     $RPM_BUILD_ROOT/var/www/html/libs/
-
+mv setup/paloSantoNetwork.class.php      $RPM_BUILD_ROOT/var/www/html/libs/
+mv setup/automatic_backup.php            $RPM_BUILD_ROOT/var/www/backup/
+mv setup/usr/share/elastix/privileged/*  $RPM_BUILD_ROOT/usr/share/elastix/privileged
 
 # Additional (module-specific) files that can be handled by RPM
 #mkdir -p $RPM_BUILD_ROOT/opt/elastix/
@@ -41,6 +44,9 @@ mkdir -p $RPM_BUILD_ROOT/usr/sbin/
 
 # ** hardware_detector file ** #
 mv setup/usr/sbin/hardware_detector           $RPM_BUILD_ROOT/usr/sbin/
+
+# ** switch_wanpipe_media file ** #
+mv setup/usr/sbin/switch_wanpipe_media        $RPM_BUILD_ROOT/usr/sbin/
 
 # ** The following selects oslec as default echo canceller ** #
 echo "echo_can oslec" > $RPM_BUILD_ROOT/etc/dahdi/genconf_parameters
@@ -112,11 +118,239 @@ fi
 %defattr(-, asterisk, asterisk)
 %{_localstatedir}/www/html/*
 /usr/share/elastix/module_installer/*
+/var/www/backup/automatic_backup.php
 %defattr(-, root, root)
 /usr/sbin/hardware_detector
+/usr/sbin/switch_wanpipe_media
+/usr/share/elastix/privileged/*
 %config(noreplace) /etc/dahdi/genconf_parameters
 
 %changelog
+* Fri Aug 05 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-4
+- CHANGED: module dashboard, popup in applet telephony hardware
+  was appering anywhere. Now it appears near to the applet
+  SVN Rev[2876]
+- FIXED: Hardware Detector: Some drivers, such as opvxg400, do not
+  accept an echocanceller setting on a control channel, not even 
+  'none'. Therefore, the echocanceller is instead left to its 
+  default value (which is assumed to be 'none')
+  SVN Rev[2875]
+
+* Thu Aug 04 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-3
+- CHANGED: In Spec file, moved file switch_wanpipe_media to /usr/sbin
+
+* Wed Aug 03 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-2
+- FIXED: Network Parameters: use smarty assign for error message
+  instead of raw echo.
+  SVN Rev[2870]
+- FIXED: Network Parameters: relax hostname validation in order 
+  to accept localhost.localdomain.
+  SVN Rev[2869]
+- FIXED: Network Parameters: DNS 2 can be blank, so use --dns2 
+  only with nonempty parameter
+  SVN Rev[2868]
+
+* Tue Aug 02 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-1
+- FIXED: module repositories, the active repos from other type 
+  (main or others) were deactivated. Now these active repos remain active
+  SVN Rev[2864]
+- CHANGED: SQL script, userlist-profile in system, mejor definición 
+  del formato.
+  SVN Rev[2857]
+- CHANGED: In Spec file changed prereq elastix >= 2.2.0-1
+
+* Fri Jul 29 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-18
+- FIXED: System - Backup Restore: Fixed bug where a backup of 
+  mailbox of emails cannot be restored. SVN Rev[2850]
+- CHANGED: Module dashboard, RSS URL was changed. SVN Rev[2849]
+- CHANGED: module repositories, changed the word "type" to "Repo"
+  SVN Rev[2830]
+- CHANGED: Hardware Detector: implement modification of span 
+  parameters (priority, framing, coding, LBO) for ISDN digital 
+  spans. SVN Rev[2824]
+- CHANGED: Hardware Detector: implement interface for switching 
+  ISDN media type (E1 or T1) for Sangoma digital cards. SVN Rev[2824]
+- CHANGED: Hardware Detector: fix a few incorrect English translations
+  SVN Rev[2824]
+- FIXED: Hardware Detector: dahdiconfig - tighten up parameter 
+  validation for span parameters. SVN Rev[2824]
+- CHANGED: Hardware Detector: remove unexplained initializing of
+  tables with data that is always removed on hardware detection.
+  SVN Rev[2823]
+- CHANGED: Hardware Detector: dahdiconfig must only write crc4 
+  for E1 spans. SVN Rev[2819]
+- ADDED: module repositories, added some translations to other 
+  languages. SVN Rev[2804]
+- FIXED: module packages, the packages were not searched in repos 
+  extras and epel due to a wrong database name. The problem was 
+  fixed and now it is also searched in repos extras and epel.
+  SVN Rev[2802]
+- CHANGED: module repositories, the repositories were divided into 
+  three categories "main", "others" and "all". SVN Rev[2801]
+- CHANGED: module backup_restore, changed the place of the buttons 
+  save and cancel. SVN Rev[2797]
+- CHANGED: module userlist, now a user can have an empty extension.
+  SVN Rev[2791]
+- ADDED: module userlist, added a new action to edit a user extension
+  from other module. SVN Rev[2787]
+- CHANGED: System: fix license declaration on all helpers. SVN Rev[2781]
+- FIXED: module userlist, fixed security hole when editing a user
+  SVN Rev[2780]
+- CHANGED: module channelusage, when there is no data to show 
+  a jpgraph error was displayed. Now in this case a blank image 
+  with the message "Nothing to show yet" and the title of it is 
+  displayed. SVN Rev[2778]
+- CHANGED: Hardware Detector: make use of dahdiconfig helper for 
+  echocanceller and span configuration. As a side effect, fix 
+  unnecessary repeating of dahdi restart when modifying echocanceller 
+  for a span. SVN Rev[2775]
+- CHANGED: Hardware Detector: fix misspelling of KB1 as KBL. SVN Rev[2775]
+- ADDED: Hardware Detector: Introduce 'dahdiconfig' privileged 
+  helper. This makes use of the elastix-helper framework introduced 
+  in commit 2683. SVN Rev[2771]
+
+* Wed Jun 29 2011 Alberto Santos <asantos@palosanto.com> 2.0.4-17
+- FIXED: module packages, initializa the variable $filtroGrep in
+  function getPackagesInstalados
+  SVN Rev[2768]
+- FIXED: module packages, when the state is installed, the search
+  looks for a release match also. Now the match is only by the
+  package name
+  SVN Rev[2761]
+
+* Fri Jun 24 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-16
+- CHANGED: IN spec file change prereq elastix >= 2.0.4-25
+- FIXED: database network.db, the first 20 registers of table 
+  dhcp_conf were deleted because these data were inappropriate.
+  SVN Rev[2745]
+- FIXED: Hardware Detector: fix database fill using wrong field 
+  from configuration. SVN Rev[2744]
+- CHANGED: Hardware Detector: refactored code into two methods 
+  for clarity. SVN Rev[2744]
+- FIXED: System - Hardware_detector: missing image images/pci.png 
+  in hardware detector module. SVN Rev[2743]
+- CHANGED: System - Backup_restore:   Function used to create 
+  emails accounts were changes because before are in misc.lib.php  
+  and now are in palosantoEmail.class.php. 
+  This commit require SVN Rev[2738]. SVN Rev[2741]
+- CHANGED: System - Hardware Detector: Missing images pci.png 
+  this doesn't appear in the title of modules. SVN Rev[2724]
+- NEW:     Security - Change Password: New module Change Password 
+  allow to change the passwords of freePBX and enable or disables 
+  the access per browser to the freePBX non-Embedded. SVN Rev[2724]
+
+* Mon Jun 13 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-15
+- CHANGED: System, changed order of update child's, now the first 
+  is repositories and the second is packages. SVN Rev[2723]
+- CHANGED: System/Hardware Detector: (trivial) mark some methods 
+  as private. SVN Rev[2716]
+- CHANGED: System/Repositories: re-implement module library using 
+  repoconfig helper.  Requires commit 2683,2706. SVN Rev[2715]
+- CHANGED: System/Repositories: replace uses of deprecated ereg 
+  with preg_match. SVN Rev[2715]
+- CHANGED: System/Repositories: (trivial) mark two methods as 
+  private. SVN Rev[2715]
+- ADDED: System/Repositories: Introduce 'repoconfig' privileged 
+  helper. This makes use of the elastix-helper framework introduced
+  in commit 2683. SVN Rev[2714]
+- CHANGED: System/DHCP by MAC: rewrite module library around the 
+  concept of network.db database directing changes to 
+  /etc/dhcpd.conf, not the other way around as before. Also make 
+  use of "dhcpconfig --refresh" helper. Requires commit 2683,2706.
+  SVN Rev[2713]
+- FIXED: System/DHCP by MAC: fix long-standing bug in which 
+  /etc/dhcpd.conf with no host specifications resulted in inability 
+  to create first host specification, as side effect of reworking 
+  module library. SVN Rev[2713]
+- CHANGED: System/DHCP by MAC: make use of _tr() for translations 
+  instead of $arrLang. SVN Rev[2713]
+- ADDED: System/DHCP by MAC: provide Spanish translation. SVN Rev[2713]
+- CHANGED: System/DHCP by MAC: add --refresh option for dhcpconfig
+  SVN Rev[2712]
+- ADDED: System/DHCP Server: Rework dhcpconfig in preparation 
+  for alternate configuration of dhcpd.conf file. SVN Rev[2711]
+- CHANGED: System/DHCP by MAC: remove dead code and mark two 
+  methods as private in class paloSantoDHCP_Configuration.
+  SVN Rev[2710]
+- CHANGED: System/Date Time: re-implement modification of date 
+  parameters using dateconfig helper. Requires commit 2683,2706.
+  SVN Rev[2707]
+- ADDED: System/Date Time: Introduce 'dateconfig' privileged 
+  helper. This makes use of the elastix-helper framework 
+  introduced in commit 2683. SVN Rev[2705]
+- CHANGED: System/Date Time: (trivial) Sync module to be 
+  identical in 1.6 and 2.0. SVN Rev[2704]
+- CHANGED: System/DHCP Server: re-implement modification of 
+  network parameters using dhcpconfig helper. Requires commit 
+  2683. Also, remove dead code resulting from the switch. 
+  SVN Rev[2702]
+- ADDED: System/DHCP Server: Introduce 'dhcpconfig' privileged 
+  helper. This makes use of the elastix-helper framework 
+  introduced in commit 2683. SVN Rev[2701]
+- CHANGED: System/DHCP Server: No sudo required for service dhcpd 
+  status. SVN Rev[2700]
+- CHANGED: System/DHCP Server: Mark two template functions as 
+  private. SVN Rev[2700]
+- CHANGED: System/DHCP Server: Prevent access to undefined indexes 
+  on DHCP IPs not in network for current interfaces. SVN Rev[2700]
+- DELETED: System/DHCP Server: Remove sysmanip.lib.php. This 
+  library has never worked due to requiring /sg/bin/sudo 
+  which does not exist in Elastix. Additionally the result of 
+  the only method called is never used as is, and the only 
+  values used are assigned from different sources. SVN Rev[2698]
+- CHANGED: System/DHCP Server: (trivial) Sync index.php to be 
+  identical in 1.6 and 2.0. SVN Rev[2697]
+- CHANGED: System/Network Parameters: re-implement modification 
+  of network parameters using netconfig helper. Requires commit
+  2683. Also, remove dead code resulting from the switch. 
+  SVN Rev[2694]
+- FIXED: System/Network Parameters: netconfig - several settings 
+  should always exist even if they were previously absent. 
+  SVN Rev[2693]
+- CHANGED: System/Network Parameters: Invocation of netconfig 
+  --hostname should also modify /etc/hosts. SVN Rev[2692]
+- ADDED: System/Network Parameters: Introduce 'netconfig' 
+  privileged helper. This makes use of the elastix-helper 
+  framework introduced in commit 2683. SVN Rev[2689]
+- CHANGED: Modules - Trunk: The ereg function was replaced by 
+  the preg_match function due to that the ereg function was 
+  deprecated since PHP 5.3.0. SVN Rev[2688]
+
+* Tue May 31 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-14
+- CHANGED: The split function of these modules was replaced by
+  the explode function due to that the split function was
+  deprecated since PHP 5.3.0. SVN Rev[2668][2650]
+- CHANGED: Module Time Config, se cambio de lugar al módulo time 
+  config, paso de framework a modules/core/system. SVN Rev[2666]
+- FIXED: module dashboard, the applet communication activity was 
+  not displaying the correct number of trunks. Now it displays 
+  the number of trunks sip and iax. SVN Rev[2624]
+
+* Tue May 03 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-13
+- FIXED: module packages, fixed pagination. SVN Rev[2615]
+- FIXED: System - dashboard: Fixed bug [#846] from bugs.elastix.org, 
+  where script update from version 10 to version 11 is wrong and 
+  should be from 10 to 13. SVN Rev[2613]
+- FIXED: module network_parameters, text required field was 
+  displayed in the view. Now its only displayed when it is edit mode
+  SVN Rev[2600]
+
+* Wed Apr 27 2011 Alberto Santos <asantos@palosanto.com> 2.0.4-12
+- FIXED: module user_list, security hole, a non administrator user
+  can access to the information of other users. Now he can only
+  access to his own information
+  SVN Rev[2547]
+- ADDED: updated sql file for database dashboard.db, added a new
+  column called username to the table activated_applet_by_user
+  SVN Rev[2543]
+- CHANGED: module applet_admin, now the activated applets are
+  showed depending on user
+  SVN Rev[2542]
+- CHANGED: module dashboard, now the applets are showed according
+  to the applets activated by the specific login user
+  SVN Rev[2541]
+- CHANGED: In Spec file, changed prereq of elastix to 2.0.4-19
+
 * Tue Apr 12 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-11
 - FIXED:     System - hardware_detector:  Fixed bug where to 
   install a mISDN hardware this required to do a yum install

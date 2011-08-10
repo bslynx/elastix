@@ -1,12 +1,12 @@
 Summary: Elastix is a Web based software to administrate a PBX based in open source programs
 Name: elastix
 Vendor: Palosanto Solutions S.A.
-Version: 2.0.4
-Release: 18 
+Version: 2.2.0
+Release: 1
 License: GPL
 Group: Applications/System
 Source: elastix_%{version}-%{release}.tgz
-#Source: elastix_%{version}-53.tgz
+#Source: elastix_%{version}-29.tgz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
 Prereq: /sbin/chkconfig, /etc/sudoers, sudo
@@ -16,6 +16,7 @@ Prereq: perl
 Prereq: elastix-firstboot >= 2.0.0-4
 Obsoletes: elastix-additionals
 Provides: elastix-additionals
+Conflicts: elastix-system < 2.0.4-18
 
 %description
 Elastix is a Web based software to administrate a PBX based in open source programs
@@ -43,6 +44,7 @@ mkdir -p $RPM_BUILD_ROOT/usr/sbin
 mkdir -p $RPM_BUILD_ROOT/usr/bin
 mkdir -p $RPM_BUILD_ROOT/usr/share/elastix
 mkdir -p $RPM_BUILD_ROOT/usr/share/pear/DB
+mkdir -p $RPM_BUILD_ROOT/usr/share/elastix/privileged
 
 # ** /etc path ** #
 mkdir -p $RPM_BUILD_ROOT/etc/cron.d
@@ -57,20 +59,21 @@ mkdir -p $RPM_BUILD_ROOT/bin
 
 ## ** Step 2: Installation of files and folders ** ##
 # ** Installating framework elastix webinterface ** #
+rm -rf $RPM_BUILD_DIR/elastix/framework/html/modules/userlist/  # Este modulo no es el modificado para soporte de correo, eso se encuentra en modules-core
 mv $RPM_BUILD_DIR/elastix/framework/db/*                                $RPM_BUILD_ROOT/var/www/db/
 mv $RPM_BUILD_DIR/elastix/framework/html/*                              $RPM_BUILD_ROOT/var/www/html/
 
 # ** Installating modules elastix webinterface ** #
-rm -rf $RPM_BUILD_ROOT/var/www/html/modules/userlist/  # Este modulo no es el modificado para soporte de correo, eso se encuentra en modules-core
 #mv $RPM_BUILD_DIR/elastix/modules-core/*                                $RPM_BUILD_ROOT/var/www/html/modules/
 
 # ** Installating additionals elastix webinterface ** #
-mv $RPM_BUILD_DIR/elastix/additionals/db/*                              $RPM_BUILD_ROOT/var/www/db/
+#mv $RPM_BUILD_DIR/elastix/additionals/db/*                              $RPM_BUILD_ROOT/var/www/db/
 #mv $RPM_BUILD_DIR/elastix/additionals/html/libs/*                       $RPM_BUILD_ROOT/var/www/html/libs/
 #rm -rf $RPM_BUILD_DIR/elastix/additionals/html/libs/
 #mv $RPM_BUILD_DIR/elastix/additionals/html/*                            $RPM_BUILD_ROOT/var/www/html/
 
-chmod    777 $RPM_BUILD_ROOT/var/www/db/
+chmod 777 $RPM_BUILD_ROOT/var/www/db/
+chmod 755 $RPM_BUILD_ROOT/usr/share/elastix/privileged
 
 # ** Httpd and Php config ** #
 mv $RPM_BUILD_DIR/elastix/additionals/etc/httpd/conf.d/elastix.conf        $RPM_BUILD_ROOT/etc/httpd/conf.d/
@@ -105,12 +108,21 @@ mv $RPM_BUILD_DIR/elastix/additionals/usr/bin/elastix-dbprocess            $RPM_
 mv $RPM_BUILD_DIR/elastix/additionals/usr/bin/versionPaquetes.sh           $RPM_BUILD_ROOT/usr/bin/
 chmod 755 $RPM_BUILD_ROOT/usr/bin/versionPaquetes.sh
 
+# ** Moving elastix_helper
+mv $RPM_BUILD_DIR/elastix/additionals/usr/bin/elastix-helper               $RPM_BUILD_ROOT/usr/bin/
+mv $RPM_BUILD_DIR/elastix/additionals/usr/sbin/elastix-helper              $RPM_BUILD_ROOT/usr/sbin/
+
+chmod 755 $RPM_BUILD_ROOT/usr/sbin/elastix-helper
+chmod 755 $RPM_BUILD_ROOT/usr/bin/elastix-helper
+
+
+
 # ** asterisk.reload file ** #
 mv $RPM_BUILD_DIR/elastix/additionals/bin/asterisk.reload                  $RPM_BUILD_ROOT/bin/
 chmod 755 $RPM_BUILD_ROOT/bin/asterisk.reload
 
 #copio los agi y sonidos personalizados
-chown -R asterisk.asterisk $RPM_BUILD_ROOT/var/lib/asterisk/agi-bin/
+#chown -R asterisk.asterisk $RPM_BUILD_ROOT/var/lib/asterisk/agi-bin/
 #chown -R asterisk.asterisk $RPM_BUILD_ROOT/var/lib/asterisk/sounds/
 
 # ** files asterisk for agi-bin and mohmp3 ** #
@@ -129,7 +141,7 @@ mv          $RPM_BUILD_DIR/elastix/additionals/etc/logrotate.d/*           $RPM_
 
 # File Elastix Access Audit log
 mkdir -p    $RPM_BUILD_ROOT/var/log/elastix
-touch       $RPM_BUILD_ROOT/var/log/elastix/access.log
+touch       $RPM_BUILD_ROOT/var/log/elastix/audit.log
  
 %pre
 #Para conocer la version de elastix antes de actualizar o instalar
@@ -211,6 +223,7 @@ rm -rf $RPM_BUILD_ROOT
 /var/www/db
 /var/www/backup
 /var/log/elastix/*
+/var/lib/asterisk/agi-bin
 %config(noreplace) /var/www/db/*
 %defattr(- root, root)
 /usr/share/elastix/*
@@ -222,16 +235,197 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/elastix-menuremove
 /usr/bin/versionPaquetes.sh
 /usr/bin/elastix-dbprocess
+/usr/bin/elastix-helper
+/usr/sbin/elastix-helper
 %config(noreplace) /etc/cron.d/elastix.cron
 /etc/cron.daily/asterisk_cleanup
 %config(noreplace) /etc/httpd/conf.d/elastix.conf
 %config(noreplace) /etc/php.d/elastix.ini
 %config(noreplace) /etc/yum.repos.d/elastix.repo
-%config(noreplace) /etc/logrotate.d/elastixAccess.logrotate
+#%config(noreplace) /etc/logrotate.d/elastixAccess.logrotate
+%config(noreplace) /etc/logrotate.d/elastixAudit.logrotate
 /etc/init.d/generic-cloexec
 /bin/asterisk.reload
 
 %changelog
+* Mon Aug 01 2011 Bruno Macias  <bmacias@palosanto.com> 2.2.0-1
+- DELETED: SQLite database acl.db in additionals section, Database was 
+  deleted because its use is obsolete. elastix-dbprocess script and 
+  elastix-menumerge script now are responsible for permits according 
+  to the XML resources menu.xml it has defined.
+- CHANGED: elastix-dbprocess, for a database mysql, if the action 
+  is install or update added "USE $dbName".
+
+
+* Fri Jul 29 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-30
+- CHANGED: In spe file changed Conflics with elastix-system < 2.0.4-18
+
+* Tue Jul 19 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-29
+- CHANGED: Framework - registration: change in code to allow 
+  view the form register only for administrator group. SVN Rev[2822]
+
+* Mon Jul 11 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-28
+- CHANGED: Framework - base.js: Add lines to improve the process to 
+  update when the serverID is missed. SVN Rev[2818]
+- FIXED: Framework - base.js: show button activated register. This
+  button was not showed because there are a error do not handled.
+  SVN Rev[2817][2816][2815][2814]
+- FIXED: theme elastixblue, added to the menu links the word 
+  index.php in order to all the requests go through the index 
+  framework. SVN Rev[2803]
+
+* Thu Jun 30 2011 Alberto Santos <asantos@palosanto.com> 2.0.4-27
+- CHANGED: library paloSantoGraphImage.lib.php, when the graph has
+  nothing to show, the title of the image is set on the center of it
+  SVN Rev[2770]
+
+* Wed Jun 29 2011 Alberto Santos <asantos@palosanto.com> 2.0.4-26
+- FIXED: library misc.lib.php, function writeLOG wrote the hour
+  in 12-hour format. Now it writes in 24-hour format
+  SVN Rev[2765]
+
+* Fri Jun 24 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-25
+- UPDATED: Framework SOAPhandler.class.php lib, definition of 
+  name WSDL document was improved, before was defined as 
+  genericWDSDL. SVN Rev[2749]
+- FIXED: theme elastixblue, the height of the div "acerca_de" 
+  was increased in order to show the bottom of about us message 
+  in chrome. SVN Rev[2748]
+- ADDED: images of framework, added the image called pci.png.
+  SVN Rev[2747]
+- FIXED: framework elastix theme elastixwave, the height of the 
+  div acerca_de was increased in order to fix the problem of not 
+  showing the border bottom of about us in chrome. SVN Rev[2742]
+- CHANGED: Frameword - libs : Remove inclution file 
+  email_functions.lib.php in misc.lib.php. SVN Rev[2737]
+- DELETED: Frameword - libs : Delete file email_functions.lib.php, 
+  because all function in email_functions.lib.php are in 
+  PalosantoEmail.class.php. SVN Rev[2737]
+
+* Mon Jun 13 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-24
+- CHANGED: In spec file add Conflicts: elastix-system < 2.0.4-14
+- FIXED: Framework - Registration: Fixed the action when the 
+  server ID in not valid, now the system recommend update the data 
+  in Elastix Web Services to generate a new Server ID. SVN Rev[2734]
+- CHANGED: Framework - registration: Some changes was applied to 
+  improve the loading of data from Elastix Web Services in each 
+  elastix server. Using Ajax to solve the problem. SVN Rev[2731][2733]
+- CHANGED: elastix-dbprocess, better informative message in case of 
+  wrong version format. SVN Rev[2732]
+- CHANGED: elastixAudit.logrotate, changed name from 
+  "elastixAccess.logrotate" to "elastixAudit.logrotate". SVN Rev[2722]
+- CHANGED: index.php of framework and paloSantoNavigation, write in 
+  log file audit.log when a user enters a module. SVN Rev[2721]
+- CHANGED: elastix-dbprocess, new validation for version format 
+  like x.x.x-x.x.x (in particular for fop2). SVN Rev[2719]
+- CHANGED:  Framework - Registration: Add changes to show serverKey 
+  in registration's window and change the height of that window.
+  SVN Rev[2717]
+- CHANGED: Framework: Due to use of elastix-helper by System/Date 
+  Time, date no longer requires sudo privileges. SVN Rev[2709]
+- FIXED: Framework: ensure that invalid permissions make script exit 
+  with nonzero (failure) status. SVN Rev[2708]
+- FIXED: Framework: sudo wrapper script requires quotes to protect 
+  parameters with spaces. SVN Rev[2706]
+- CHANGED: Framework: Due to use of elastix-helper by 
+  System/Network Configuration, route and hostname no longer require 
+  sudo privileges. SVN Rev[2695]
+- CHANGED: Framework: add elastix-helper to /etc/sudoers. SVN Rev[2691]
+- CHANGED: Additionals: The ereg function was replaced by the 
+  preg_match function due to that the ereg function was deprecated 
+  since PHP 5.3.0. SVN Rev[2687]
+- CHANGED: Framework - paloSantoDB.class.php: The genExec function 
+  has been modified due to that returned false, in spite of that 
+  the query was executed successfully. SVN Rev[2684]
+- ADDED: Framework: introduce elastix-helper.
+  This program (elastix-helper) is intended to be a single point of 
+  entry for operations started from the web interface that require 
+  elevated privileges. The program must be installed as 
+  /usr/sbin/elastix-helper and invoked via the wrapper 
+  /usr/bin/elastix-helper which closes extra file descriptors with 
+  /usr/sbin/close-on-exec.pl and adds the sudo invocation.
+  As extra file descriptors past STDIN/STDOUT/STDERR are closed via 
+  the intended invocation, helper programs should not rely on any 
+  file descriptors being open other than the standard ones. 
+  Packages should install helper programs in 
+  /usr/share/elastix/privileged. All communication should be 
+  performed via command-line parameters. SVN Rev[2683]
+- CHANGED: Framework: mark several methods in paloConfig as 
+  private. SVN Rev[2682]
+- CHANGED: Framework: comment out methods get_archivos_directorio 
+  in paloConfig. Seems nobody is using it. Part of ongoing effort 
+  to remove sudo chown. SVN Rev[2681]
+- CHANGED: Framework: comment out methods establece_permisos in 
+  paloConfig. Seems nobody is using it. Part of ongoing effort 
+  to remove sudo chown. SVN Rev[2680]
+- CHANGED: Framework: comment out methods crear_archivo and 
+  crear_archivo_sin_establecer_permisos in paloConfig. 
+  Seems nobody is using them. Part of ongoing effort to remove 
+  sudo chown. SVN Rev[2679]
+- CHANGED: Framework: comment out method crear_directorio in 
+  paloConfig. Seems nobody is using it. Part of ongoing effort to 
+  remove sudo chown. SVN Rev[2678]
+- CHANGED: Framework: mark method privado_chown in paloConfig as 
+  private. Part of ongoing effort to remove sudo chown. SVN Rev[2677]
+- CHANGED: Framework: revert a bit of SVN commit 2674. Many 
+  ereg()-style regular expressions are scattered through the code 
+  in form definitions, and all of these must be checked for 
+  preg_match() compatibility before switching to preg_match() 
+  in form validation. SVN Rev[2675]
+- CHANGED: The ereg function of these files was replaced by the 
+  preg_match function due to that the ereg function was deprecated 
+  since PHP 5.3.0. SVN Rev[2674]
+
+* Tue May 31 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-23
+- CHANGED: Module Time Config, se cambio de lugar al módulo time
+  config, paso de framework a modules/core/system. SVN Rev[2667]
+
+* Mon May 30 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-22
+- NEW:  Add Database register.db to register the installation of a 
+  elastix. SVN Rev[2658]
+- NEW:  Framework : New Action "Register" in framework, This action 
+  allows to the users register their elastix. SVN Rev[2656]
+- CHANGED: The split function of these files was replaced by the 
+  explode function due to that the split function was deprecated 
+  since PHP 5.3.0. SVN Rev[2651]
+- FIXED: elastix-dbprocess, if the password of mysql has spaces an 
+  error occurs. Now the mysql password can have spaces. SVN Rev[2648]
+- FIXED: Framework Elastix, misc.lib.php. Name function javascript 
+  cannot  have "-" character. SVN Rev[2644]
+
+* Tue May 10 2011 Alberto Santos <asantos@palosanto.com> 2.0.4-21
+- FIXED: elastix-dbprocess, wrong variable name $dbname, the correct
+  name is $dbName also wrong name for renaming sqlite3 databases
+  it must ends in .db
+  SVN Rev[2634]
+- FIXED: elastix-dbprocess, in case of databases sqlite3 changed
+  the owner and group to asterisk
+  SVN Rev[2633]
+
+* Thu May 05 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-20
+- CHANGED: framework, changed to the new logo of elastix. 
+  SVN Rev[2596]
+- CHANGED: misc.lib.php : Separate emails function in a new file 
+  called email_functions.lib.php in branch and trunk. SVN Rev[2595]
+- FIXED:   dialog "about us", when it is showed on module antispam 
+  the bar to select the level of spam filtering (1 to 10) overlaps 
+  the box "About us". It has been fixed in all the themes. 
+  SVN Rev[2592]
+- CHANGED: elastix-dbprocess, a "{" was misplaced. SVN Rev[2582]
+- CHANGED: SOAPhandler.class.php, wrong class name in the header 
+  documentation. SVN Rev[2581]
+
+* Tue Apr 26 2011 Alberto Santos <asantos@palosanto.com> 2.0.4-19
+- NEW: new libraries WSDLcreator.class.php and SOAPhandler.class.php
+  SVN Rev[2555]
+- CHANGED: changed the height for the popup about us, because
+  was not showing the bottom border for browser google chrome
+  SVN Rev[2522]
+- CHANGED: elastix-dbprocess, new structure for elastix-dbprocess
+  SVN Rev[2502]
+- CHANGED: In Spec file, wrong path for remove module userlist from
+  framework
+
 * Mon Apr 05 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-18
 - CHANGED:  Framework - images: Resize the image  
   x-lite-4-lrg.jpg because this was too big compared with the 

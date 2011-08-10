@@ -3,7 +3,7 @@
 Summary: Elastix IM 
 Name:    elastix-%{modname}
 Version: 2.0.4
-Release: 1
+Release: 2
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
@@ -61,6 +61,11 @@ fi
 /usr/share/elastix/module_installer/*
 
 %changelog
+* Mon Jun 13 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-2
+- CHANGED: Modules - Trunk: The ereg function was replaced by the 
+  preg_match function due to that the ereg function was deprecated 
+  since PHP 5.3.0. SVN Rev[2688]
+
 * Fri Jan 28 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-1
 - Initial version.
 

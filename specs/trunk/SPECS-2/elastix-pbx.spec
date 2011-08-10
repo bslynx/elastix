@@ -2,18 +2,19 @@
 
 Summary: Elastix Module PBX 
 Name:    elastix-%{modname}
-Version: 2.0.4
-Release: 20
+Version: 2.2.0
+Release: 2
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
-#Source0: %{modname}_%{version}-16.tgz
+#Source0: %{modname}_%{version}-24.tgz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
-Prereq: elastix >= 2.0.4-10
+Prereq: elastix >= 2.2.0-1
 Prereq: elastix-my_extension >= 2.0.4-5
-Prereq: freePBX >= 2.5.1
+Prereq: freePBX >= 2.8.1-1
 Prereq: openfire, tftp-server, vsftpd
+Requires: festival >= 1.95
 
 %description
 Elastix Module PBX
@@ -35,11 +36,25 @@ mv modules/ $RPM_BUILD_ROOT/var/www/html/
 
 # ** /tftpboot path ** #
 mkdir -p $RPM_BUILD_ROOT/tftpboot
+
+# ** /asterisk path ** #
 mkdir -p $RPM_BUILD_ROOT/etc/asterisk/
+
+# ** service festival ** #
+mkdir -p $RPM_BUILD_ROOT/etc/init.d/
+mkdir -p $RPM_BUILD_ROOT/var/log/festival/
 
 # The following folder should contain all the data that is required by the installer,
 # that cannot be handled by RPM.
 mkdir -p      $RPM_BUILD_ROOT/usr/share/elastix/module_installer/%{name}-%{version}-%{release}/
+mkdir -p      $RPM_BUILD_ROOT/usr/share/elastix/privileged/
+
+# Moviendo archivos festival y sip_notify_custom_elastix.conf
+chmod +x setup/etc/asterisk/sip_notify_custom_elastix.conf
+chmod +x setup/etc/init.d/festival
+mv setup/etc/asterisk/sip_notify_custom_elastix.conf      $RPM_BUILD_ROOT/etc/asterisk/
+mv setup/etc/init.d/festival                              $RPM_BUILD_ROOT/etc/init.d/
+mv setup/usr/share/elastix/privileged/*                   $RPM_BUILD_ROOT/usr/share/elastix/privileged/
 
 # Archivos tftp and ftp
 mv setup/etc/xinetd.d/tftp                     $RPM_BUILD_ROOT/usr/share/elastix/
@@ -55,7 +70,7 @@ mv setup/tftpboot/*                           $RPM_BUILD_ROOT/tftpboot/
 mv setup/     $RPM_BUILD_ROOT/usr/share/elastix/module_installer/%{name}-%{version}-%{release}/
 mv menu.xml   $RPM_BUILD_ROOT/usr/share/elastix/module_installer/%{name}-%{version}-%{release}/
 
-chown asterisk.asterisk $RPM_BUILD_ROOT/usr/share/elastix/module_installer/%{name}-%{version}-%{release}/setup/extensions_override_elastix.conf
+#chown asterisk.asterisk $RPM_BUILD_ROOT/usr/share/elastix/module_installer/%{name}-%{version}-%{release}/setup/extensions_override_elastix.conf
 
 
 %pre
@@ -219,11 +234,152 @@ fi
 %defattr(-, asterisk, asterisk)
 %{_localstatedir}/www/html/*
 /usr/share/elastix/module_installer/*
+/etc/asterisk/sip_notify_custom_elastix.conf
+/etc/init.d/festival
+/var/log/festival
+/usr/share/elastix/module_installer/%{name}-%{version}-%{release}/setup/extensions_override_elastix.conf
 %defattr(-, root, root)
 /tftpboot/*
 /usr/share/elastix/tftp
+/usr/share/elastix/privileged/*
 
 %changelog
+* Fri Aug 03 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-2
+- FIXED: module control_panel, the queues was not showing the
+  extension or agent which attends it. Now it shows all the
+  extensions or agents that attent it
+  SVN Rev[2873]
+
+* Tue Aug 02 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-1
+- ADDED: In Spec file added requires festival >= 1.95
+- FIXED: module festival, informative message was not displayed. 
+  The error was fixed and now it is displayed
+  SVN Rev[2863]
+
+# el script de patton query debe moverse a /usr/share/elastix/priviliges en el spec
+* Fri Jul 29 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-28
+- CHANGED: in spec file changed prereq elastix >= 2.0.4-30
+- ADDED: pbx setup/db, sql script to add iax support. SVN Rev[2842]
+- ADDED: pbx setub, added the script that searchs for patton 
+  devices. SVN Rev[2841]
+- ADDED: module endpoint_configurator, added support iax 
+  (on phones that support it), also added support to smartnodes.
+  SVN Rev[2840]
+- FIXED: extensions_override_elastix.conf, when the audio file 
+  is not created the field userfield is set empty in the database
+  SVN Rev[2821]
+- FIXED: module monitoring, when user is not admin the filter 
+  options dissapear. Now those options remains with any user.
+  SVN Rev[2820]
+- CHANGED: module festival, the button save was eliminated, now 
+  when user press on or off automatically make the action. SVN Rev[2798]
+- CHANGED: module voicemail, changed message when user does not 
+  have an extension associated. SVN Rev[2794]
+- CHANGED: module monitoring, changed message when a user does 
+  not have an extension associated. SVN Rev[2793]
+- CHANGED: module voicemail, when the user does not have an 
+  extension associated, a link appear to assign one extension.
+  SVN Rev[2790]
+- CHANGED: module monitoring, The link here 
+  (when a user does not have an extension) now open a new window to 
+  edit the extension of the user logged in. SVN Rev[2788]
+- ADDED: module extensions_batch, added iax2 support. SVN Rev[2774]
+
+* Wed Jun 29 2011 Alberto Santos <asantos@palosanto.com> 2.0.4-27
+- FIXED: module festival, added a sleep of 2 seconds when the service
+  is started that is the maximum time delay. SVN Rev[2764]
+
+* Mon Jun 13 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-26
+- CHANGED: In spec file change prereq freepbx >= 2.8.1-1 and 
+  elastix >= 2.0.4-24
+- CHANGED: Modules - Trunk: The ereg function was replaced by the 
+  preg_match function due to that the ereg function was deprecated 
+  since PHP 5.3.0. SVN Rev[2688]
+- FIXED: module festival, wrong informative message the file 
+  modified is /usr/share/festival/festival.scm and not 
+  /usr/share/elastix/elastix.scm. SVN Rev[2669]
+- CHANGED: The split function of these modules was replaced by the 
+  explode function due to that the split function was deprecated 
+  since PHP 5.3.0. SVN Rev[2650]
+
+* Wed May 18 2011 Alberto Santos <asantos@palosanto.com> 2.0.4-25
+- CHANGED: change prereq of freePBX to 2.8.0-3
+
+* Wed May 18 2011 Alberto Santos <asantos@palosanto.com> 2.0.4-24
+- CHANGED: module pbxadmin, library contentFreePBX.php updated with 
+  the last code in pbxadmin
+  SVN Rev[2646]
+- CHANGED: module pbxadmin, created a library that gets the content
+  of freePBX modules
+  SVN Rev[2645]
+- FIXED: module voipprovider, when a trunk is created by voipprovider
+  and then this one is deleted in freePBX, it is not deleted in the
+  database of voipprovider. Now its deleted from the database of voipprovider
+  SVN Rev[2640]
+- ADDED: Conference: new Chinese translations for Conference interface.
+  Part of fix for Elastix bug #876
+  SVN Rev[2639]
+
+* Thu May 12 2011 Alberto Santos <asantos@palosanto.com> 2.0.4-23
+- CHANGED: renamed sql scripts 4 and 5 for updates in database endpoint
+  SVN Rev[2638]
+- FIXED: Endpoint Configurator: check that selected phone model is
+  a supported model before using include_once on it.
+  FIXED: Endpoint Configurator: check that MAC address for endpoint
+  is valid.
+  SVN Rev[2637]
+- ADDED: module endpoint_configurator, disabled other accounts in
+  YEALINK phones.
+  SVN Rev[2635]
+- FIXED: File Editor: undo use of <button> inside of <a> as this
+  combination does not work as intended in Firefox 4.0.1. Related
+  to Elastix bug #864
+  SVN Rev[2632]
+- FIXED: module pbxadmin, added a width of 330px to the informative
+  message in "Unembedded freePBX"
+  SVN Rev[2627]
+- FIXED: module pbxadmin, the option "Unembedded freePBX" was placed
+  at the end of the list, also a warning message was placed on it.
+  SVN Rev[2626]
+
+* Thu May 05 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-22
+- FIXED:    module pbxadmin, IVR did not displayed extensions, 
+  conferences, trunks, etc. Now that information is displayed 
+  according to the option selected in the combo box. SVN Rev[2620]
+- CHANGED:  PBX - monitoring: Changed  value of 
+  $arrConfModule['module_name'] = 'monitoring2' to 
+  $arrConfModule['module_name'] = 'monitoring' in default.conf.php
+  SVN Rev[2591]
+
+* Tue Apr 26 2011 Alberto Santos <asantos@palosanto.com> 2.0.4-21
+- CHANGED: installer.php, changed installer.php in order to works for
+  updates to elastix 2.0.4
+  SVN Rev[2586]
+- FIXED: module control_panel, added a validation in case there is no data
+  SVN Rev[2585]
+- ADDED: module festival, added folders lang, configs and help
+  SVN Rev[2583]
+- CHANGED: module voicemail, changed class name to core_Voicemail
+  SVN Rev[2580]
+- ADDED: added new provider called "Vozelia"
+  SVN Rev[2574]
+- CHANGED: provider vozelia was removed from the installation script
+  SVN Rev[2573]
+- CHANGED: module voicemail, changed name from puntosF_Voicemail.class.php
+  to core.class.php
+  SVN Rev[2571]
+- UPDATED: module file editor, some changes with the styles of buttons
+  SVN Rev[2561]
+- NEW: new scenarios for SOAP in voicemail
+  SVN Rev[2559]
+- NEW: new module festival
+  SVN Rev[2553]
+- ADDED: added new module in tools called Festival
+  SVN Rev[2552]
+- NEW: service festival in /etc/init.d and asterisk file sip_notify_custom_elastix.conf
+  SVN Rev[2551]
+- CHANGED: In Spec file, moved the files festival and sip_notify_custom_elastix.conf
+
 * Wed Apr 13 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-20
 - FIXED: pbx - extension_batch: Removed download_csv.php, this file 
   was removed in commit 1550 but this file was put in this package 

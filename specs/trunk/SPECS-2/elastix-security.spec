@@ -1,16 +1,16 @@
 %define modname security
 
-Summary: Elastix Addons 
+Summary: Elastix Security 
 Name:    elastix-%{modname}
-Version: 2.0.4
-Release: 11
+Version: 2.2.0
+Release: 1
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
-Prereq: elastix >= 2.0.4-10
-Prereq: freePBX >= 2.7.0-10
+Prereq: elastix >= 2.2.0-1
+Prereq: freePBX >= 2.8.1-2
 Prereq: iptables
 
 %description
@@ -24,7 +24,10 @@ rm -rf $RPM_BUILD_ROOT
 
 # Files provided by all Elastix modules
 mkdir -p    $RPM_BUILD_ROOT/var/www/html/
+mkdir -p    $RPM_BUILD_ROOT/usr/share/elastix/privileged
 mv modules/ $RPM_BUILD_ROOT/var/www/html/
+mv setup/usr/share/elastix/privileged/*  $RPM_BUILD_ROOT/usr/share/elastix/privileged
+
 
 # The following folder should contain all the data that is required by the installer,
 # that cannot be handled by RPM.
@@ -53,6 +56,7 @@ if [ $1 -eq 1 ]; then #install
     elastix-dbprocess "install" "$pathModule/setup/db"
 elif [ $1 -eq 2 ]; then #update
    # The update database
+      $pathModule/setup/checkFields "$preversion" "$pathModule"
       elastix-dbprocess "update"  "$pathModule/setup/db" "$preversion"
 fi
 
@@ -85,8 +89,67 @@ fi
 %defattr(-, asterisk, asterisk)
 %{_localstatedir}/www/html/*
 /usr/share/elastix/module_installer/*
+%defattr(-, root, root)
+/usr/share/elastix/privileged/*
 
 %changelog
+* Wed Aug 03 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-1
+- DELETED: deleted sql script update for database iptables.db
+  SVN Rev[2872]
+- NEW: new scripts checkFields and compareVersion
+  SVN Rev[2871]
+- CHANGED: In Spec file, changed prereq elastix >= 2.2.0-1
+- CHANGED: In Spec file, moved privileged files to path
+  /usr/share/elastix/privileged
+
+* Tue Jul 28 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-15
+- CHANGED: Firewall Rules: make use of fwconfig helper for 
+  flush/apply rules. SVN Rev[2785]
+- CHANGED: Firewall Rules: fwconfig: use escapeshellarg() on every 
+  value extracted from the database. SVN Rev[2784]
+- ADDED: Firewall Rules: Introduce 'fwconfig' privileged helper. 
+  This makes use of the elastix-helper framework introduced in 
+  commit 2683. SVN Rev[2783]
+- CHANGED: Security/Firewall Rules: (trivial) mark some methods 
+  as private. SVN Rev[2779]
+
+* Wed Jun 29 2011 Alberto Santos <asantos@palosanto.com> 2.0.4-14
+- FIXED: module sec_accessaudit, the exportation was only page by
+  page. Now in the exportation you have the data of all pages
+  SVN Rev[2766]
+- FIXED: module sec_advanced_settings, added the id of the menu
+  to ajax requests
+  SVN Rev[2763]
+- FIXED: module sec_rules, added the id of the menu in ajax requests
+  SVN Rev[2762]
+
+* Mon Jun 13 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-13
+- NEW: new module sec_advanced_settings created
+- CHANGED: In SPEC file changed prereq freepbx >= 2.8.1.1 and 
+  elastix >= 2.0.4-24
+- CHANGED: module sec_accessaudit, changed module name to "Audit".
+  SVN Rev[2720]
+- FIXED: module sec_rules, when a source port and destiny port 
+  are entered the word "-p protocol" in the iptable rule is written 
+  twice. Now that word its only written once. SVN Rev[2671]
+- CHANGED: The split function of these modules was replaced by the 
+  explode function due to that the split function was deprecated 
+  since PHP 5.3.0. SVN Rev[2650]
+- FIXED: module sec_rules, rules can not change order between pages. 
+  Now the user can change the order of rules to other page. 
+  SVN Rev[2630]
+
+* Wed Apr 27 2011 Alberto Santos <asantos@palosanto.com> 2.0.4-12
+- CHANGED: module sec_rules, changed informative message according
+  to bug #759
+  SVN Rev[2524]
+- CHANGED: menu.xml of security, changed 'FireWall Rules' to
+  'Firewall Rules'
+  SVN Rev[2523]
+- CHANGED: file db.info, changed installation_force to ignore_backup
+  SVN Rev[2493]
+- CHANGED: In Spec file, changed prereq of elastix to 2.0.4-19
+
 * Tue Mar 01 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-11
 - CHANGED: In spec file changed prereq elastix >= 2.0.4-10
 - FIXED: module sec_rules, changed the event from onClick to 

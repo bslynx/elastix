@@ -3,14 +3,14 @@
 Summary: Elastix Module Fax
 Name:    elastix-%{modname}
 Version: 2.0.4
-Release: 5
+Release: 7 
 License: GPL
 Group:   Applications/System
 #Source0: %{modname}_%{version}-3.tgz
 Source0: %{modname}_%{version}-%{release}.tgz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
-Prereq: elastix >= 2.0.4-9
+Prereq: elastix >= 2.0.4-19
 Prereq: iaxmodem, hylafax
 
 %description
@@ -175,6 +175,26 @@ fi
 %config(noreplace) /var/spool/hylafax/etc/config
 
 %changelog
+* Mon Jun 13 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-7
+- CHANGED: Modules - Trunk: The ereg function was replaced by 
+  the preg_match function due to that the ereg function was 
+  deprecated since PHP 5.3.0. SVN Rev[2688]
+- CHANGED: The split function of these modules was replaced by 
+  the explode function due to that the split function was 
+  deprecated since PHP 5.3.0. SVN Rev[2650]
+
+* Tue Apr 26 2011 Alberto Santos <asantos@palosanto.com> 2.0.4-6
+- CHANGED: module faxviewer, changed class name to core_Fax
+  SVN Rev[2578]
+- CHANGED: module faxviewer, changed name from puntosF_Fax.class.php
+  to core.class.php
+  SVN Rev[2570]
+- NEW: new scenarios for SOAP in faxviewer
+  SVN Rev[2557]
+- CHANGED: file db.info, changed installation_force to ignore_backup
+  SVN Rev[2491]
+- CHANGED: In Spec file, changed the prereq of elastix to 2.0.4-19
+
 * Tue Mar 29 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-5
 - CHANGED: Fax - setup hylafax:  Change the text of email 
   notification from sending a Fax. SVN Rev[2459]

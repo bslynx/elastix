@@ -2,18 +2,19 @@
 
 Summary: Elastix Module Email 
 Name:    elastix-%{modname}
-Version: 2.0.4
-Release: 12
+Version: 2.2.0
+Release: 3
 License: GPL
 Group:   Applications/System
 #Source0: %{modname}_%{version}-4.tgz
 Source0: %{modname}_%{version}-%{release}.tgz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
-Prereq: elastix >= 2.0.4-13
+Prereq: elastix >= 2.2.0-1
 Prereq: RoundCubeMail
 Prereq: php-imap
 Prereq: postfix, spamassassin, cyrus-imapd
+Requires: mailman >= 2.1.9
 
 %description
 Elastix Module Email
@@ -29,12 +30,21 @@ mkdir -p    $RPM_BUILD_ROOT/etc/postfix
 mkdir -p    $RPM_BUILD_ROOT/usr/local/bin/
 mkdir -p    $RPM_BUILD_ROOT/usr/share/elastix/module_installer/%{name}-%{version}-%{release}/
 mkdir -p    $RPM_BUILD_ROOT/var/www/html/libs/
+mkdir -p    $RPM_BUILD_ROOT/etc/cron.d/
+mkdir -p    $RPM_BUILD_ROOT/usr/local/elastix/
+mkdir -p    $RPM_BUILD_ROOT/usr/share/elastix/privileged
 
 # ** libs ** #
-mv setup/paloSantoEmail.class.php     $RPM_BUILD_ROOT/var/www/html/libs/
-mv setup/cyradm.php                   $RPM_BUILD_ROOT/var/www/html/libs/
-mv setup/checkSpamFolder.php          $RPM_BUILD_ROOT/var/www/
-mv setup/deleteSpam.php               $RPM_BUILD_ROOT/var/www/
+mv setup/paloSantoEmail.class.php        $RPM_BUILD_ROOT/var/www/html/libs/
+mv setup/cyradm.php                      $RPM_BUILD_ROOT/var/www/html/libs/
+mv setup/checkSpamFolder.php             $RPM_BUILD_ROOT/var/www/
+mv setup/deleteSpam.php                  $RPM_BUILD_ROOT/var/www/
+mv setup/stats/postfix_stats.cron        $RPM_BUILD_ROOT/etc/cron.d/
+mv setup/stats/postfix_stats.php         $RPM_BUILD_ROOT/usr/local/elastix/
+mv setup/usr/share/elastix/privileged/*  $RPM_BUILD_ROOT/usr/share/elastix/privileged
+
+# ** dando los permisos a los archivos que usara postfix stats
+chmod 644 $RPM_BUILD_ROOT/usr/local/elastix/postfix_stats.php
 
 # ** dando permisos de ejecucion ** #
 chmod +x $RPM_BUILD_ROOT/var/www/checkSpamFolder.php
@@ -132,6 +142,12 @@ elif [ $1 -eq 2 ]; then #update
     elastix-dbprocess "update"  "$pathModule/setup/db" "$preversion"
 fi
 
+# add string localhost first in /etc/hosts
+if [ -f /etc/hosts  ] ; then
+   sed -ie '/127.0.0.1/s/[\t| ]localhost[^\.]/ /g'  /etc/hosts  # busca el patron 127.0.0.1 y reemplaza [\t| ]localhost[^\.] por " "
+   sed -ie 's/127.0.0.1/127.0.0.1\tlocalhost/'  /etc/hosts      # reemplaza 127.0.0.1 por 127.0.0.1\tlocalhost
+fi
+
 # The installer script expects to be in /tmp/new_module
 mkdir -p /tmp/new_module/%{modname}
 cp -r /usr/share/elastix/module_installer/%{name}-%{version}-%{release}/* /tmp/new_module/%{modname}/
@@ -165,9 +181,85 @@ fi
 /usr/share/elastix/virtual.db
 /var/www/checkSpamFolder.php
 /var/www/deleteSpam.php
-
+/usr/local/elastix/postfix_stats.php
+/etc/cron.d/postfix_stats.cron
+/usr/share/elastix/privileged/*
 
 %changelog
+* Fri Aug 05 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-3
+- CHANGED: module email_list, deleted unnecessary include
+  SVN Rev[2878]
+- CHANGED: module email_list, changed some labels according to bug #740
+  SVN Rev[2877]
+- CHANGED: module email_list, incremented the space between label
+  and input on forms form_member.tpl and form.tpl
+  SVN Rev[2874]
+
+* Wed Aug 03 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-2
+- FIXED: module email_list, the report was displaying the members 
+  of all lists. Now only displays the members of the selected list
+  SVN Rev[2867]
+
+* Tue Aug 02 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-1
+- FIXED: mailman_config, fixed security holes
+  SVN Rev[2860]
+- CHANGED: module email_admin, in file default.conf.php was a 
+  wrong module name
+  SVN Rev[2859]
+- FIXED: module email_list, the module email_list was totally 
+  overwritten
+  SVN Rev[2858]
+- CHANGED: In Spec file changed prereq elastix >= 2.2.0-1
+- ADDED: In Spec file added requires mailman >= 2.1.9
+
+* Fri Jul 29 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-17
+- FIXED: Modules - Antispam: Fixed bug where spams were not deleted 
+  due to the command store do not receive the ids separate by ",". 
+  Other reason was the amount of spam in one line and the request 
+  sent by socket support a limit of size in bytes. SVN Rev[2846]
+
+* Thu Jun 30 2011 Alberto Santos <asantos@palosanto.com> 2.0.4-16
+- CHANGED: In Spec file changed prereq elastix >= 2.0.4-27
+- CHANGED: postfix_stats.cron, changed name of cron to "postfix_stats.php"
+  SVN Rev[2769]
+
+* Fri Jun 24 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-15
+- CHANGED: In Spec file change prereq elastix >= 2.0.4-25
+- CHANGED: Email_admin - Vacations: Change label about 
+  translations (en.lang, es.lang). SVN Rev[2752][2753]
+- CHANGED: Email_admin - Email_Domain: Better organization in 
+  structure of code. This commit require SVN Rev[2738]
+  SVN Rev[2740][2751]
+- CHANGED: Email_admin - Email_Account: Better organization in 
+  structure of code. This commit require SVN Rev[2738].
+  SVN Rev[2739]
+- CHANGED: EMAIL_ADMIN - Setup: Add new functions 
+  in paloSantoEmail.class.php. This commit require SVN Rev[2737]
+  SVN Rev[2738]
+
+* Mon Jun 13 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-14
+- NEW:     Email_admin - Vacations: New module in email to configure 
+  the automatic replies when a user is not available. SVN Rev[2718]
+- CHANGED: Email_admin - Antispam: Changes in Antispam to support 
+  the new modules Vacations. SVN Rev[2718]
+- NEW: new module email_stats. SVN Rev[2703]
+- CHANGED: Modules - Trunk: The ereg function was replaced by the 
+  preg_match function due to that the ereg function was deprecated 
+  since PHP 5.3.0. SVN Rev[2688]
+- CHANGED: The split function of these modules was replaced by the 
+  explode function due to that the split function was deprecated 
+  since PHP 5.3.0. SVN Rev[2650][2668]
+- CHANGED: Email_admin - Remote_smtp: Add validation if the server 
+  is "GMAIL, HOTMAIL or YAHOO" required add the account with password, 
+  but "OTHER"  is not necessary add account and password, so the user 
+  has the option to add or not an account whit the server is "OTHER".
+  SVN Rev[2625]
+
+* Wed Apr 27 2011 Alberto Santos <asantos@palosanto.com> 2.0.4-13
+- CHANGED: file db.info, changed installation_force to ignore_backup
+  SVN Rev[2490]
+- CHANGED: In Spec file, changed prereq of elastix to 2.0.4-19
+
 * Wed Apr 06 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0-4-12
 - FIXED:   email_admin - remote_smtp:  Fixed the event to add a 
   relay smtp host where if the host needs a certificate ,this 

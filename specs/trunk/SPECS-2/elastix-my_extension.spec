@@ -3,14 +3,14 @@
 Summary: Elastix My Extension 
 Name:    elastix-%{modname}
 Version: 2.0.4
-Release: 5
+Release: 7
 License: GPL
 Group:   Applications/System
-#Source0: %{modname}_%{version}-%{release}.tgz
-Source0: %{modname}_%{version}-4.tgz
+Source0: %{modname}_%{version}-%{release}.tgz
+#Source0: %{modname}_%{version}-4.tgz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
-Prereq: elastix >= 2.0.4-9
+Prereq: elastix >= 2.0.4-19
 Requires: yum
 
 %description
@@ -84,6 +84,24 @@ fi
 /usr/share/elastix/module_installer/*
 
 %changelog
+* Tue Jul 28 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-7
+- CHANGED: module myex_config, changed message when user does not 
+  have an extension associated. SVN Rev[2795]
+- CHANGED: module myex_config, The link here (when a user does not 
+  have an extension) now open a new window to edit the extension 
+  of the user logged in. SVN Rev[2789]
+
+* Tue Apr 26 2011 Alberto Santos <asantos@palosanto.com> 2.0.4-6
+- FIXED: module myex_config, undefined variables  
+  $request->recordIncoming and $request->recordOutgoing
+  SVN Rev[2587]
+- CHANGED: module my_extension, changed class name to 
+  core_MyExtension. SVN Rev[2579]
+- CHANGED: module my_extension, changed name from 
+  puntosF_MyExtension.class.php to core.class.php. SVN Rev[2572]
+- NEW: new scenarios for SOAP in myex_config
+- CHANGED: In Spec file add prerequisite elastix 2.0.4-19
+
 * Mon Feb 07 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-5
 - CHANGED:  In Spec file add prerequiste elastix 2.0.4-9
 

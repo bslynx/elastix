@@ -1,13 +1,13 @@
 Summary: FreePBX is the most powerful GUI configuration tool for Asterisk. It provides everything that a standard legacy phone system can, plus a huge amount of new features.
 Name: freePBX
-Version: 2.8.0
-Release: 2 
+Version: 2.8.1
+Release: 3 
 License: GPL
 Group: Applications/System
 Source0: freepbx-%{version}.tar.gz
-Source1: freepbx-modules-%{version}.4.tar.gz
+Source1: freepbx-modules-%{version}.1.tgz
 #Source2: freepbx-database-%{version}.tar.gz
-Source2: freepbx-database-dump-%{version}.4.sql
+Source2: freepbx-database-dump-%{version}.1.sql
 Source3: freepbx-rc.local
 Source4: freepbx-fake-config.php
 Source5: musiconhold_additional.conf
@@ -15,7 +15,7 @@ Source6: chan_dahdi.conf
 #Source8: extensions_override_freepbx.conf
 
 Patch0: freepbx-2.8.0_elastix_files_config.patch
-Patch1: freepbx-2.5.0_elastix_bin_freepbx_engine.patch
+Patch1: freepbx-2.8.1_elastix_bin_freepbx_engine.patch
 #Patch3: freepbx-2.5.1_dahdi-channels.patch
 Patch4: freepbx-2.3.1_agent-login.patch
 Patch5: freepbx-2.3.1_conferences.patch
@@ -27,6 +27,7 @@ Patch9: freepbx-2.5.0_weather_wakeup.patch
 Patch11: freepbx-2.7.0-remove-fallback-database-user.patch
 Patch12: freepbx-2.8.0-rename-moh-mohmp3.patch
 Patch13: freepbx-2.7.0-fix-strpos-comparison.patch
+Patch14: freepbx-2.8.1_disabled_freepbx_by_elastix.patch
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
@@ -55,6 +56,7 @@ FreePBX is the most powerful GUI configuration tool for Asterisk. It provides ev
 #%patch10 -p1
 %patch11 -p1
 %patch12 -p1
+%patch14 -p1
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -94,6 +96,7 @@ tar -xzf %{SOURCE0}
 cd freepbx-%{version}/
 patch -p1 < %{PATCH11}
 patch -p1 < %{PATCH13}
+patch -p1 < %{PATCH14}
 cd ..
 tar -czf freepbx-%{version}.tar.gz freepbx-%{version}/
 mv freepbx-%{version}.tar.gz $RPM_BUILD_ROOT/usr/share/freepbx/tmp/
@@ -107,10 +110,10 @@ cd framework/
 patch -p2 < %{PATCH11}
 patch -p1 < %{PATCH13}
 cd ..
-tar -czf ../freepbx-modules-%{version}.4.tar.gz *
+tar -czf ../freepbx-modules-%{version}.1.tgz *
 cd ..
 rm -rf temp2
-mv freepbx-modules-%{version}.4.tar.gz $RPM_BUILD_ROOT/usr/share/freepbx/tmp/
+mv freepbx-modules-%{version}.1.tgz $RPM_BUILD_ROOT/usr/share/freepbx/tmp/
 
 cd ..
 rmdir temp
@@ -181,7 +184,7 @@ chmod 755 $RPM_BUILD_ROOT/var/www/html/panel/safe_opserver
 
 # CDR dump as CSV
 mkdir -p $RPM_BUILD_ROOT/var/log/asterisk/cdr-csv/
-chown -R asterisk.asterisk $RPM_BUILD_ROOT/var/log/asterisk/
+#chown -R asterisk.asterisk $RPM_BUILD_ROOT/var/log/asterisk/
 touch $RPM_BUILD_ROOT/var/log/asterisk/cdr-csv/Master.csv
 
 %pre
@@ -216,12 +219,12 @@ if [ $res -eq 0 ]; then
         # Procedimiento de actualizacion aqui?
         # Por ahora no hago nada pero creo que se deberia invocar al instalador aqui install_amp
         echo "Installing freePBX... "
-        tar -xvzf /usr/share/freepbx/tmp/freepbx-2.8.0.tar.gz -C /usr/share/freepbx/tmp/
+        tar -xvzf /usr/share/freepbx/tmp/freepbx-2.8.1.tar.gz -C /usr/share/freepbx/tmp/
 
 	# Se copia los archivos dentro de la carpeta amp_conf/htdocs/admin/modules/
-	tar -xvzf /usr/share/freepbx/tmp/freepbx-modules-2.8.0.4.tar.gz -C /usr/share/freepbx/tmp/freepbx-2.8.0/amp_conf/htdocs/admin/modules/
+	tar -xvzf /usr/share/freepbx/tmp/freepbx-modules-2.8.1.1.tgz -C /usr/share/freepbx/tmp/freepbx-2.8.1/amp_conf/htdocs/admin/modules/
 
-        cd /usr/share/freepbx/tmp/freepbx-2.8.0/
+        cd /usr/share/freepbx/tmp/freepbx-2.8.1/
         echo a | ./install_amp
     
     # La base de datos NO existe
@@ -231,7 +234,7 @@ if [ $res -eq 0 ]; then
 
 	elastix_root_password=`grep mysqlrootpwd= /etc/elastix.conf | sed 's/^mysqlrootpwd=//'`
 	echo "Installing database from SQL dump..."
-	mysql -u root -p$elastix_root_password < /usr/share/freepbx/tmp/freepbx-database-dump-2.8.0.4.sql
+	mysql -u root -p$elastix_root_password < /usr/share/freepbx/tmp/freepbx-database-dump-2.8.1.1.sql
 	ret=$?
         if [ $ret -ne 0 ] ; then
                	exit $ret
@@ -257,7 +260,7 @@ else
     else
         # Creo la base de datos, incluido el esquema de usuario/permiso
         echo "Assumed ISO installation. Delayed database installation until first Elastix boot..."
-        cp /usr/share/freepbx/tmp/freepbx-database-dump-2.8.0.4.sql /var/spool/elastix-mysqldbscripts/01-freepbx.sql
+        cp /usr/share/freepbx/tmp/freepbx-database-dump-2.8.1.1.sql /var/spool/elastix-mysqldbscripts/01-freepbx.sql
 
         # Ruta a módulos es incorrecta en 64 bits. Se corrige a partir de ruta de Asterisk.
         RUTAREAL=`grep astmoddir /etc/asterisk/asterisk.conf | sed 's|^.* \(/.\+\)$|\1|' -`
@@ -420,6 +423,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-, asterisk, asterisk)
 /etc/asterisk.elastix/*
 /var/www/html/*
+/var/log/asterisk/*
 %config(noreplace) /var/www/html/panel/op_buttons_additional.cfg
 %config(noreplace) /var/www/html/panel/op_buttons_custom.cfg
 /var/lib/asterisk/*
@@ -432,6 +436,23 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/freepbx/tmp/*
 
 %changelog
+* Tue Jul 19 2011 Alberto Santos <asantos@palosanto.com> 2.8.1-3
+- CHANGED: patch freepbx-2.8.1_disabled_freepbx_by_elastix.patch, added a
+  validation in case the file /var/www/html/modules/sec_advanced_settings/libs/paloSantoChangePassword.class.php does not exist
+
+* Tue Jul 12 2011 Alberto Santos <asantos@palosanto.com> 2.8.1-2
+- CHANGED: patch freepbx-2.8.1_disabled_freepbx_by_elastix.patch, the image
+  on page elastix_advice.php was not displayed when the theme was not 
+  elastixwave.
+
+* Mon Jun 13 2011 Bruno Macias V. <bmacias@palosanto.com> 2.8.1-1
+- ADDED: patch freepbx-2.8.0_disabled_freepbx_by_elastix.patch, this patch disabled
+  direct access (Non-embedded) to FreePBX. Elastix module "Advanced Security Settings".
+- UPDATED: FreePBX version 2.8.1
+
+* Wed May 18 2011 Alberto Santos <asantos@palosanto.com> 2.8.0-3
+- CHANGED: patch SOURCE4 was modified
+
 * Thu Mar 31 2011 Eduardo Cueva <ecueva@palosanto.com> 2.8.0-2
 - CHANGED:  Bad path with command to create a link to file:
              /etc/asterisk/sip_notify.conf. 

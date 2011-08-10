@@ -3,14 +3,14 @@
 Summary: Elastix Addons 
 Name:    elastix-%{modname}
 Version: 2.0.4
-Release: 6
+Release: 15
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
 #Source0: %{modname}_%{version}-4.tgz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
-Prereq: elastix >= 2.0.4-9
+Prereq: elastix >= 2.0.4-25
 Prereq: chkconfig, php-soap
 Requires: yum
 
@@ -33,10 +33,12 @@ mv setup/elastix-moduleconf $RPM_BUILD_ROOT/opt/elastix/elastix-updater
 mkdir -p $RPM_BUILD_ROOT/etc/init.d/
 mv $RPM_BUILD_ROOT/opt/elastix/elastix-updater/elastix-updaterd $RPM_BUILD_ROOT/etc/init.d/
 chmod +x $RPM_BUILD_ROOT/etc/init.d/elastix-updaterd
+mkdir -p $RPM_BUILD_ROOT/etc/yum.repos.d/
 
 # The following folder should contain all the data that is required by the installer,
 # that cannot be handled by RPM.
 mkdir -p    $RPM_BUILD_ROOT/usr/share/elastix/module_installer/%{name}-%{version}-%{release}/
+mv setup/etc/yum.repos.d/commercial-addons.repo $RPM_BUILD_ROOT/etc/yum.repos.d/
 mv setup/   $RPM_BUILD_ROOT/usr/share/elastix/module_installer/%{name}-%{version}-%{release}/
 mv menu.xml $RPM_BUILD_ROOT/usr/share/elastix/module_installer/%{name}-%{version}-%{release}/
 
@@ -60,7 +62,13 @@ if [ $1 -eq 1 ]; then #install
   # The installer database
     elastix-dbprocess "install" "$pathModule/setup/db"
 elif [ $1 -eq 2 ]; then #update
+    # Removing addons_installed modules
+    elastix-menuremove "addons_installed"
+    # Removing addons_installed files
+    rm -rf /var/www/html/modules/addons_installed
     elastix-dbprocess "update"  "$pathModule/setup/db" "$preversion"
+    # restart daemon
+    /sbin/service elastix-updaterd restart
 fi
 
 
@@ -95,8 +103,61 @@ fi
 /usr/share/elastix/module_installer/*
 /opt/elastix/elastix-updater/*
 /etc/init.d/elastix-updaterd
+%defattr(-, root, root)
+/etc/yum.repos.d/*
 
 %changelog
+* Fri Jun 24 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-15
+- CHANGED: In spec file change prereq elastix >= 2.0.4-25
+- CHANGED: Addons: Change the label "Downloading" to 
+  "Initializing Donwload" in a process to install a addon when 
+  appear the bar "downloading". SVN Rev[2746]
+
+* Thu Jun 23 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-14
+- FIXED: Addons: Catch and report network errors that occur 
+  while refreshing a repository (add PACKAGE when repos are not 
+  accessible). SVN Rev[2736]
+
+* Mon Jun 06 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-13
+- CHANGED: Addons - Addons Availables: Fixed problems with css 
+  where titles of addons are overwhelmed. SVN Rev[2699]
+
+* Mon Jun 06 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-12
+- CHANGED: Addons - Addons Availables: Changes in lang files for 
+  translations, and improving toDoClean method in index.php. 
+  SVN Rev[2696]
+
+* Fri Jun 03 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-11
+- FIXED: Addons - Addons Availables:  Fixed bug where appear a 
+  warning for Smarty. SVN Rev[2686]
+- CHANGED: Addons - Addons Availables: Changed messages of error 
+  in lang files. SVN Rev[2685]
+
+* Tue May 31 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-10
+- FIXED:  Module addons: Fixed where button "try it" doesn't 
+  appear because it needs the elastix serverkey to be showing.
+  SVN Rev[2672]
+
+* Tue May 31 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-9
+- FIXED: Addons : Comment line baseurl in commercial-addons.repo.
+  SVN Rev[2663]
+
+* Thu May 26 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-8
+- CHANGED: The split function of these modules was replaced by the 
+  explode function due to that the split function was deprecated 
+  since PHP 5.3.0. SVN Rev[2655][2650]
+- NEW:    Addons - Addons_availables: Move the libs from addons_installed 
+  module to the addons_availables modules.
+  DELETE: Addons - Addons_installed:  Remove module addons installed 
+  because all funtionality is in addons Availables. SVN Rev[2654]
+- CHANGED:  modules - addons: New changes in module addons_availables, 
+  changes applied to create ELASTIX MARKET PLACE. SVN Rev[2653]
+
+* Wed Apr 27 2011 Alberto Santos <asantos@palosanto.com> 2.0.4-7
+- CHANGED: file db.info, changed installation_force to ignore_backup
+  SVN Rev[2488]
+- CHANGED: In Spec file, changed prereq of elastix to 2.0.4-19
+
 * Tue Mar 29 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-6
 - FIXED: module addons_availables, the input search didnt work. 
   Now the searching is working fine. SVN Rev[2429]

@@ -3,7 +3,7 @@
 Summary: Elastix Extras 
 Name:    elastix-%{modname}
 Version: 2.0.4
-Release: 3
+Release: 4
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
@@ -62,6 +62,13 @@ fi
 /usr/share/elastix/module_installer/*
 
 %changelog
+* Mon Jun 13 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-4
+- CHANGED: The split function of these modules was replaced by 
+  the explode function due to that the split function was 
+  deprecated since PHP 5.3.0. SVN Rev[2650]
+- FIXED: a2b menus in extras/menu.xml, deleted It is not usefull.
+  SVN Rev[2499]
+
 * Tue Apr 05 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-3
 - FIXED: a2b menus in extras/menu.xml, deleted It is not usefull.
   SVN Rev[2499]
