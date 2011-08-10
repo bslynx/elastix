@@ -57,6 +57,14 @@ if [ $1 -eq 1 ] ; then
 			echo "Installing in active system - legacy password written to /etc/elastix.conf"
 			echo "mysqlrootpwd=eLaStIx.2oo7" >> /etc/elastix.conf
 		fi
+                if [ -f /etc/elastix.conf  ] ; then
+                        grep 'cyrususerpwd' /etc/elastix.conf
+                        res=$?
+                        if [ $res != 0 ] ; then
+                            echo "cyrususerpwd=palosanto" >> /etc/elastix.conf
+                        fi
+                fi
+
 	fi
 fi
 
@@ -66,6 +74,13 @@ if [ $1 -eq 2 ] ; then
 	if [ ! -e /etc/elastix.conf ] ; then
 		echo "Updating in active system - legacy password written to /etc/elastix.conf"
 		echo "mysqlrootpwd=eLaStIx.2oo7" >> /etc/elastix.conf
+	fi
+	if [ -f /etc/elastix.conf  ] ; then
+		grep 'cyrususerpwd' /etc/elastix.conf
+		res=$?
+		if [ $res != 0 ] ; then
+		    echo "cyrususerpwd=palosanto" >> /etc/elastix.conf
+		fi
 	fi
 fi
 
@@ -81,6 +96,12 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/elastix-firstboot/compat-dbscripts/08-schema-vtiger.sql
 
 %changelog
+* Wed Aug 10 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-9
+- FIXED: elastix-firstboot, an error occurred when the update or
+  install operation is done on a elastix 2.0.3 where the password
+  of cyrus was not rewrited by firstboot(older versions) in
+  /etc/elastix.conf.
+
 * Tue May 17 2011 Alberto Santos <asantos@palosanto.com> 2.0.4-8
 - FIXED: elastix-firstboot, an error occurred when the password
   of root or mysql have spaces. Now the password can have spaces
