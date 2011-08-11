@@ -200,6 +200,25 @@ function deleteDomain($smarty, $module_name, $local_templates_dir, &$pDB, $arrCo
     // Conversion de formato
     $arrTmp['domain_name']  = $arrDomain[0][1];
     $arrTmp['id_domain']    = $arrDomain[0][0];
+
+
+    /*** preguntar si el domino que se desea eliminar tiene cuentas o listas de correos creadas ***/
+    /*** 1) Existen listas creadas asignadas a ese dominio **/
+    $arrList = $pEmail->getListByDomain($arrTmp['id_domain']);
+    if(is_array($arrList) && count($arrList)>0){
+	$smarty->assign("mb_title",_tr("Error"));
+	$smarty->assign("mb_message", _tr("Please before to delete a domain delete all email lists asociated to ").$arrTmp['domain_name']);
+	return viewFormDomain($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+    }
+    
+    /*** 2) Existen creada cuentas de correos que corresponden a ese dominio ***/
+    $arrAccounts = $pEmail->getAccountsByDomain($arrTmp['id_domain']);
+    if(is_array($arrAccounts) && count($arrAccounts)>0){
+	$smarty->assign("mb_title",_tr("Error"));
+	$smarty->assign("mb_message", _tr("Please before to delete a domain delete all email accounts asociated to ").$arrTmp['domain_name']);
+	return viewFormDomain($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+    }
+
     $pDB->beginTransaction();
     $bExito = $pEmail->eliminar_dominio($pDB,$arrTmp,$errMsg, $virtual_postfix);//el valor de FALSE es para que no escriba en el /etc/postfix/virtual
     if (!$bExito){

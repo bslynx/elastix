@@ -40,5 +40,7 @@ $arrLangModule=array(
 "Edit Domain" => "Editar Dominio",
 "Domain has been deleted" => "Dominio ha sido eliminado",
 "Domain has been created" => "Dominio ha sido creado",
+"Please before to delete a domain delete all email lists asociated to " => "Por favor antes de eliminar un dominio elimine todas las listas de correo asociadas a ",
+"Please before to delete a domain delete all email accounts asociated to " => "Por favor antes de eliminar un dominio elimine todas las cuentas de correo asociadas a ",
 );
 ?>
