@@ -705,5 +705,17 @@ class paloEmail {
 	return $bExito;
     }
 
+    function getListByDomain($id_domain)
+    {
+	 $number = 0;
+	 $data = array($id_domain);
+	 $sPeticionSQL = "SELECT id FROM email_list WHERE id_domain = ?";
+	 $arr_result = $this->_DB->fetchTable($sPeticionSQL,TRUE,$data);
+	 if (is_array($arr_result) && count($arr_result)>0) {
+	     $number=$arr_result[0];
+         }
+         return $number;
+    }
+
 }
 ?>
