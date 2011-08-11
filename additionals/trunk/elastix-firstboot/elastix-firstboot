@@ -26,6 +26,12 @@ get_mysql_option(){
 	fi
 }
 
+# Se intenta prender mysql en caso de que esté apagado
+/sbin/service mysqld status > /dev/null 2>&1
+if [ ! "$?" == "0" ] ; then
+    /sbin/service mysqld start > /dev/null 2>&1
+fi
+
 get_mysql_option mysqld datadir "/var/lib/mysql"
 datadir="$result"
 get_mysql_option mysqld socket "$datadir/mysql.sock"
@@ -156,7 +162,7 @@ elastix_prompt_web_passwd() {
 	DIALOG_PURPOSE="Several Elastix components have administrative interfaces that can be used \
 through the Web. A web login password must be set for these components in order to prevent \
 unauthorized access to these administration interfaces.\n\n\
-This screen will now ask for a password for user 'admin' that will be used for: Elastix Web Login, FreePBX, VTiger, and A2Billing.\n\n"
+This screen will now ask for a password for user 'admin' that will be used for: Elastix Web Login, FreePBX, VTiger, A2Billing and FOP.\n\n"
 	
 	MYSQL_PASSWD1=`grep mysqlrootpwd= /etc/elastix.conf | sed 's/^mysqlrootpwd=//'`
 
@@ -205,6 +211,8 @@ This screen will now ask for a password for user 'admin' that will be used for: 
 	fi
 	FREEPBX_PASSWD_ESC=`echo $FREEPBX_PASSWD1 | sed "s/&/\\\\\\&/g"`
 	cat /etc/amportal.conf | sed "s/AMPDBPASS=eLaStIx.asteriskuser.2oo7/AMPDBPASS=$FREEPBX_PASSWD_ESC/" > /tmp/amportal.conf.tmp
+	mv /tmp/amportal.conf.tmp /etc/amportal.conf
+	cat /etc/amportal.conf | sed "s/FOPPASSWORD=eLaStIx.2oo7/FOPPASSWORD=$FREEPBX_PASSWD_ESC/" > /tmp/amportal.conf.tmp
 	mv /tmp/amportal.conf.tmp /etc/amportal.conf
 	cat /etc/asterisk/res_mysql.conf | sed "s/dbpass = eLaStIx.asteriskuser.2oo7/dbpass = $FREEPBX_PASSWD_ESC/" > /tmp/res_mysql.conf.tmp
 	mv /tmp/res_mysql.conf.tmp /etc/asterisk/res_mysql.conf
