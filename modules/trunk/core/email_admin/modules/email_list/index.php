@@ -85,6 +85,9 @@ function _moduleContent(&$smarty, $module_name)
 	case "view_memberlist":
 	    $content = viewMemberList($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
 	    break;
+	case "export":
+	    $content = exportMembers($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
+	    break;
         default:
             $content = reportEmailList($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
             break;
@@ -523,6 +526,8 @@ function viewMemberList($smarty, $module_name, $local_templates_dir, &$pDB, $arr
     $smarty->assign("IDEMAILLIST",$id_list);
     $smarty->assign("SHOW",_tr("Show"));
     $smarty->assign("RETURN",_tr("Return"));
+    $smarty->assign("LINK","?menu=$module_name&action=export&id=$id_list&rawmode=yes");
+    $smarty->assign("EXPORT",_tr("Export Members"));
 
     $totalMembers = $pEmailList->getTotalMembers($id_list);
 
@@ -558,6 +563,39 @@ function viewMemberList($smarty, $module_name, $local_templates_dir, &$pDB, $arr
     $oGrid->showFilter(trim($htmlFilter));
     $content = "<form  method='POST' style='margin-bottom:0;' action=$url>".$oGrid->fetchGrid()."</form>";
     return $content;
+}
+
+function exportMembers($smarty, $module_name, $local_templates_dir, $pDB, $arrConf)
+{
+    $pEmailList = new paloSantoEmailList($pDB);
+    $id_list = getParameter("id");
+    $listName = $pEmailList->getListName($id_list);
+    $text = "";
+    if(!is_null($listName)){
+	$totalMembers = $pEmailList->getTotalMembers($id_list);
+	$members      = $pEmailList->getMembers($totalMembers,0,$id_list,null,"");
+	foreach($members as $key => $value){
+	    if($text != "")
+		$text .= "\n";
+	    if(isset($value["namemember"]) && $value["namemember"] != "")
+		$text .= $value["namemember"]." <$value[mailmember]>";
+	    else
+		$text .= $value["mailmember"];
+	}
+    }
+    else
+	$listName = "";
+    
+    header("Pragma: public");
+    header("Expires: 0");
+    header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+    header("Cache-Control: public");
+    header("Content-Description: txt file");
+    header("Content-Type: application/download");
+    header("Content-Disposition: attachment; filename=$listName"."_members.txt");
+    header("Content-Transfer-Encoding: binary");
+    header("Content-length: ".strlen($text));
+    echo $text;
 }
 
 function createFieldFilter($arrDominios){
@@ -686,6 +724,8 @@ function getAction()
 	return "save_removeMember";
     elseif(getParameter("delete"))
 	return "delete";
+    elseif(getParameter("action") == "export")
+	return "export";
     else
         return "report"; //cancel
 }
