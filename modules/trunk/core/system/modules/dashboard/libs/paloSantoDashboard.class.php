@@ -74,12 +74,12 @@ class paloSantoDashboard {
         $counter    = 0;
         
         if($email!='' && $passw!='')
-            $imap = imap_open("{localhost:143/notls}INBOX",$email,$passw);
+	    $imap = imap_open("{localhost:143/notls}INBOX",$email,$passw);
         else return $arrLang["You don't have a webmail account"];
         
         if(!$imap)
             return $arrLang["Imap: Connection error"];
-        
+
         $tmp = imap_check($imap);
         
         if($tmp->Nmsgs==0)

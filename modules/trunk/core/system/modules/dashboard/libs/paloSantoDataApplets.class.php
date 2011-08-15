@@ -338,6 +338,7 @@ class paloSantoDataApplets
 
     function getDataApplet_System()
     {
+	global $arrConf;
         $systemStatus=_tr("Error at read status system.");
 
         $pDB2 = $this->conectionAsteriskCDR();
@@ -346,9 +347,22 @@ class paloSantoDataApplets
             $arrData     = $objUserInfo->getDataUserLogon($_SESSION["elastix_user"]);
 
             if(is_array($arrData) && count($arrData)>0){
-                $email     = "{$arrData['login']}@{$arrData['domain']}";
-                $passw     = isset($arrData['password'])?$arrData['password']:"";
-                $systemStatus= $objUserInfo->getSystemStatus($email,$passw);
+		if(isset($arrData['login']) && $arrData['login'] != "" && isset($arrData['domain']) && $arrData['domain'] != ""){
+		    $email     = "{$arrData['login']}@{$arrData['domain']}";
+		    if(file_exists("$arrConf[elastix_dbdir]/email.db")){
+			$pDBemail = new paloDB("sqlite3:///$arrConf[elastix_dbdir]/email.db");
+			if($this->emailExists($email,$pDBemail)){
+			    $passw     = isset($arrData['password'])?$arrData['password']:"";
+			    $systemStatus= $objUserInfo->getSystemStatus($email,$passw);
+			}
+			else
+			    $systemStatus = "$email "._tr("does not exist locally");
+		    }
+		    else
+			$systemStatus = _tr("The following database could not be found").": $arrConf[elastix_dbdir]/email.db";
+		}
+		else
+		    $systemStatus = _tr("You don't have a webmail account");
             }
         }
         return $systemStatus;
@@ -389,20 +403,48 @@ class paloSantoDataApplets
 
     function getDataApplet_Emails()
     {
+	global $arrConf;
         $mails =_tr("Error at read yours mails.");
         $pDB2 = $this->conectionAsteriskCDR();
+	
         if($pDB2){
             $objUserInfo = new paloSantoDashboard($pDB2);
             $arrData     = $objUserInfo->getDataUserLogon($_SESSION["elastix_user"]);
-
             if(is_array($arrData) && count($arrData)>0){
-                $email     = "{$arrData['login']}@{$arrData['domain']}";
-                $passw     = isset($arrData['password'])?$arrData['password']:"";
-                $numRegs   = 8;
-                $mails     = $objUserInfo->getMails($email,$passw,$numRegs);
+		if(isset($arrData['login']) && $arrData['login'] != "" && isset($arrData['domain']) && $arrData['domain'] != ""){
+		    $email     = "{$arrData['login']}@{$arrData['domain']}";
+		    if(file_exists("$arrConf[elastix_dbdir]/email.db")){
+			  $pDBemail = new paloDB("sqlite3:///$arrConf[elastix_dbdir]/email.db");
+			  if($this->emailExists($email,$pDBemail)){
+			      $passw     = isset($arrData['password'])?$arrData['password']:"";
+			      $numRegs   = 8;
+			      $mails     = @$objUserInfo->getMails($email,$passw,$numRegs);
+			  }
+			  else
+			      $mails = "$email "._tr("does not exist locally");
+		    }
+		    else
+			$mails = _tr("The following database could not be found").": $arrConf[elastix_dbdir]/email.db";
+		}
+		else
+		    $mails = _tr("You don't have a webmail account");
             }
         }
         return $mails;
+    }
+
+    function emailExists($email,&$pDB)
+    {
+	$query = "select count(*) from accountuser where username=?";
+	$result = $pDB->getFirstRowQuery($query,false,array($email));
+	if($result==FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return false;
+        }
+        if($result[0] > 0)
+	    return true;
+	else
+	    return false;
     }
 
     function getDataApplet_Voicemails()

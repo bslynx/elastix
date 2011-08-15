@@ -21,5 +21,5 @@
 </table>
 
 <script language="javascript" type = "text/javascript">
-    loadAppletData();
+    loadAppletDataLeft(0);
 </script>
