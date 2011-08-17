@@ -1338,22 +1338,20 @@ LEER_CAMPANIA;
             $sTipoCampania = (string)$comando->campaign_type;
         }
 
-        switch ($sTipoCampania) {
-        case 'incoming':
-            return $this->_leerStatusCampaniaXML_incoming($idCampania);
+    	switch ($sTipoCampania) {
         case 'outgoing':
-            return  $this->_leerStatusCampaniaXML_outgoing($idCampania);
+            $statusCampania =& $this->_dialProc->reportarEstadoCampania($idCampania);
+            break;
+        case 'incoming':
+            $statusCampania =& $this->_dialProc->reportarEstadoCampaniaEntrante($idCampania);
+            break;
         default:
             return $this->_generarRespuestaFallo(400, 'Bad request');
         }
-    }
-    
-    private function _leerStatusCampaniaXML_outgoing($idCampania)
-    {
+
         $xml_response = new SimpleXMLElement('<response />');
         $xml_GetCampaignStatusResponse = $xml_response->addChild('getcampaignstatus_response');
 
-    	$statusCampania =& $this->_dialProc->reportarEstadoCampania($idCampania);
         if (is_null($statusCampania)) {
             $this->_agregarRespuestaFallo($xml_GetCampaignStatusResponse, 500, 'Cannot read campaign status');
             return $xml_response;
@@ -1421,11 +1419,6 @@ LEER_CAMPANIA;
         return $xml_response;
     }
     
-    private function _leerStatusCampaniaXML_incoming($idCampania)
-    {
-        return $this->_generarRespuestaFallo(501, 'Not Implemented');
-    }
-
     private function Request_Dial($comando)
     {
         if (is_null($this->_sUsuarioECCP))

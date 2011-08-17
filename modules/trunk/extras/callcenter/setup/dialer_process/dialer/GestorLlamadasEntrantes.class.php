@@ -794,5 +794,141 @@ class GestorLlamadasEntrantes
                 $result->getMessage());
         }
     }
+    
+    function & reportarEstadoCampania($idCampania)
+    {
+    	$resumen = $this->_leerResumenCampania($idCampania);
+        if (!is_null($resumen) && isset($resumen['queue'])) {
+            $resumen['queuestatus'] = $this->_leerEstadoColaConBreaks($resumen['queue']);
+            $resumen['activecalls'] = $this->_dbConn->getAll(
+                'SELECT id AS callid, callerid AS dialnumber, "OnQueue" AS callstatus, '.
+                    'datetime_entry_queue AS datetime_enterqueue '.
+                'FROM call_entry '.
+                'WHERE status = "en-cola" AND id_campaign = ? '.
+                'ORDER BY datetime_entry_queue', 
+                array($idCampania), DB_FETCHMODE_ASSOC);
+            if (DB::isError($resumen['activecalls'])) {
+                $this->oMainLog->output('ERR: no se puede leer llamadas activas - '.$resumen['activecalls']);
+                $resumen['activecalls'] = array();
+            }
+        }        
+        return $resumen;
+    }
+    
+    private function _leerResumenCampania($idCampania)
+    {
+        // Leer la información en el propio registro de la campaña
+        $sPeticionSQL = <<<LEER_RESUMEN_CAMPANIA
+SELECT ce.id, ce.name, ce.datetime_init, ce.datetime_end, ce.daytime_init, 
+    ce.daytime_end, qce.queue, ce.estatus 
+FROM campaign_entry ce, queue_call_entry qce 
+WHERE ce.id = ? AND ce.id_queue_call_entry = qce.id
+LEER_RESUMEN_CAMPANIA;
+        $tupla = $this->_dbConn->getRow($sPeticionSQL, array($idCampania), DB_FETCHMODE_ASSOC);
+        if (DB::isError($tupla)) {
+            //$this->errMsg = $this->_DB->errMsg;
+            $this->oMainLog->output('ERR: no se puede leer información de campaña - '.$tupla->getMessage());
+            return NULL;
+        } elseif (count($tupla) <= 0) {
+            return array();
+        }
+
+        // Leer la clasificación por estado de las llamadas de la campaña
+        $sPeticionSQL = 'SELECT COUNT(*) AS n, status FROM call_entry WHERE id_campaign = ? GROUP BY status';
+        $recordset = $this->_dbConn->getAll($sPeticionSQL, array($idCampania), DB_FETCHMODE_ASSOC);
+        if (DB::isError($recordset)) {
+            $this->oMainLog->output('ERR: no se puede leer estado de llamadas de campaña - '.$recordset->getMessage());
+            return NULL;
+        }
+        $tupla['status'] = array(
+            //'Pending'   =>  0,  // Llamada no ha sido realizada todavía
+
+            //'Placing'   =>  0,  // Originate realizado, no se recibe OriginateResponse
+            //'Ringing'   =>  0,  // Se recibió OriginateResponse, no entra a cola
+            'OnQueue'   =>  0,  // Entró a cola, no se asigna a agente todavía
+            'Success'   =>  0,  // Conectada y asignada a un agente
+            'OnHold'    =>  0,  // Llamada fue puesta en espera por agente
+            //'Failure'   =>  0,  // No se puede conectar llamada
+            //'ShortCall' =>  0,  // Llamada conectada pero duración es muy corta
+            //'NoAnswer'  =>  0,  // Llamada estaba Ringing pero no entró a cola
+            'Abandoned' =>  0,  // Llamada estaba OnQueue pero no habían agentes
+            'Finished'  =>  0,  // Llamada ha terminado luego de ser conectada a agente
+            'LostTrack' =>  0,  // Programa fue terminado mientras la llamada estaba activa            
+        );
+        $mapaEstados = array(
+            'en-cola'       =>  'OnQueue',
+            'activa'        =>  'Success',
+            'hold'          =>  'OnHold',
+            'abandonada'    =>  'Abandoned',             
+            'terminada'     =>  'Finished',
+            'fin-monitoreo' =>  'LostTrack',
+        );
+        foreach ($recordset as $tuplaStatus) {
+            $tupla['status'][$mapaEstados[$tuplaStatus['status']]] = $tuplaStatus['n'];
+        }
+
+        return $tupla;
+    }
+
+    /**
+     * Procedimiento que lee el estado de la cola indicada por el parámetro. 
+     * Se invoca al método ya implementado para el marcador predictivo, y a 
+     * continuación se agrega información para identificar: en caso de break,
+     * intervalo del break y tipo del break; en caso de llamada ocupada, número,
+     * tiempo y canal de la llamada.
+     */
+    private function _leerEstadoColaConBreaks($idCola)
+    {
+        $oPredictor = new Predictivo($this->_astConn);
+        $estadoCola = $oPredictor->leerEstadoCola($idCola);
+        foreach ($estadoCola['members'] as $sNumAgente => $infoAgente) {
+            if (in_array('paused', $infoAgente['attributes'])) {
+                // El agente está en pausa. Se intenta identificar tipo de break
+                $sqlBreak = <<<LEER_TIPO_BREAK
+SELECT audit.datetime_init, break.name, break.id 
+FROM agent, audit, break 
+WHERE agent.number = ? AND agent.estatus = "A" AND agent.id = audit.id_agent 
+    AND audit.datetime_end IS NULL AND audit.id_break = break.id
+LEER_TIPO_BREAK;
+                $tuplaBreak = $this->_dbConn->getRow($sqlBreak, array($sNumAgente), DB_FETCHMODE_ASSOC);
+                if (DB::isError($tuplaBreak)) {
+                	$this->oMainLog->output('ERR: no se puede leer información de agentes - '.$tuplaBreak->getMessage());
+                } elseif (is_array($tuplaBreak)) {
+                    $estadoCola['members'][$sNumAgente]['datetime_breakstart'] = $tuplaBreak['datetime_init'];
+                    $estadoCola['members'][$sNumAgente]['break_name'] = $tuplaBreak['name'];
+                    $estadoCola['members'][$sNumAgente]['break_id'] = $tuplaBreak['id'];
+                }
+            } elseif ($infoAgente['status'] == 'inUse') {
+                //$estadoCola['members'][$sNumAgente]['datetime_init'] = date('Y-m-d H:i:s', time() - $infoAgente['talkTime']);
+            }
+
+            // Listar información para llamada activa
+            if (isset($estadoCola['members'][$sNumAgente]['clientchannel'])) {
+                $sqlInfoLlamada = 
+                    'SELECT ce.callerid AS dialnumber, ce.id AS callid, '.
+                        'ce.datetime_entry_queue AS datetime_enterqueue, '.
+                        'ce.datetime_init AS datetime_linkstart '.
+                    'FROM current_call_entry cce, call_entry ce, agent a '.
+                    'WHERE cce.id_call_entry = ce.id AND cce.ChannelClient = ? '.
+                        'AND ce.id_agent = a.id AND a.number = ? '.
+                    'ORDER BY ce.datetime_init DESC LIMIT 0,1';
+                $infoLlamada = $this->_dbConn->getRow($sqlInfoLlamada, 
+                    array($estadoCola['members'][$sNumAgente]['clientchannel'], $sNumAgente), 
+                    DB_FETCHMODE_ASSOC);
+                if (DB::isError($infoLlamada)) {
+                	$this->oMainLog->output('ERR: no se puede leer información de llamada activa - '.$infoLlamada->getMessage());
+                } else {
+                    $estadoCola['members'][$sNumAgente]['dialnumber'] = $infoLlamada['dialnumber'];
+                    $estadoCola['members'][$sNumAgente]['callid'] = $infoLlamada['callid'];
+                    $estadoCola['members'][$sNumAgente]['datetime_enterqueue'] = $infoLlamada['datetime_enterqueue'];
+                    $estadoCola['members'][$sNumAgente]['datetime_linkstart'] = $infoLlamada['datetime_linkstart'];
+                }
+            }
+            
+        }
+        ksort($estadoCola['members']);
+        return $estadoCola;
+    }
+
 }
 ?>

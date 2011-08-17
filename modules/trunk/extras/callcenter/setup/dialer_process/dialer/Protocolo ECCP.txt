@@ -1057,6 +1057,173 @@ En caso de campaña no encontrada:
 
 Requerimiento "getcampaignstatus"
 
+Este requerimiento recupera información dinámica o volátil sobre la campaña. 
+Esta información incluye el estado de los agentes disponibles en la cola de la 
+campaña activa, el número de llamadas en los varios estados reconocidos, y las
+llamadas activas que todavía no han sido asignadas a agentes. 
+
+Atributos o argumentos:
+* campaign_type: Estilo de la campaña. Uno de los valores 'incoming','outgoing'
+* campaign_id: ID de la campaña. 
+
+Respuesta:
+* statuscount: elemento que contiene los siguientes atributos:
+    * total: Para llamadas salientes, este es el total de llamadas registradas
+      como parte de la campaña. Para llamadas entrantes, este es el total de
+      llamadas que se han recibido hasta el momento en la cola.
+    * pending: Cantidad de llamadas que no ha sido marcada todavía en ningún intento. 
+    * placing: Para llamadas salientes, cantidad de llamadas para las que se
+      ha mandado a Asterisk la orden de generar la llamada, pero todavía no se
+      recibe noticia de éxito o fracaso de la generación (en el evento
+      OriginateResponse). No definido para llamadas entrantes.
+    * ringing: Para llamadas salientes, cantidad de llamadas para las que se
+      recibió noticia de éxito en marcado, pero todavía no entran a la cola de
+      la campaña. No definido para llamadas entrantes.
+    * onqueue: Para llamadas salientes o entrantes, cantidad de llamadas 
+      conectadas que esperan en la cola a ser asignadas a un agente.
+    * success: Para llamadas salientes o entrantes, cantidad de llamadas que 
+      fueron asignadas a un agente. Para llamadas salientes, esta cuenta incluye
+      las llamadas que han sido terminadas correctamente luego de ser atendidas
+      por un agente. 
+    * onhold: Para llamadas salientes o entrantes, cantidad de llamadas que han
+      sido puestas en espera.
+    * failure: Para llamadas salientes, cantidad de llamadas para las cuales el
+      marcado ha fallado al menos una vez. No definido para llamadas entrantes.
+    * shortcall: Para llamadas salientes, cantidad de llamadas que fueron
+      asignadas a un agente, pero duraron muy poco como para representar una
+      interacción adecuada. No definido para llamadas entrantes.
+    * noanswer: Para llamadas salientes, cantidad de llamadas que se 
+      desconectaron luego de haber sido conectadas (según OriginateResponse) 
+      pero antes de haber entrado a la cola de la campaña. No definido para 
+      llamadas entrantes.
+    * abandoned: Para llamadas salientes y entrantes, cantidad de llamadas que
+      se desconectaron luego de haber entrado a una cola, pero antes de ser
+      asignadas a un agente.
+    * finished: Para llamadas entrantes, cantidad de llamadas ya terminadas luego
+      de ser atendidas por un agente. No definido para llamadas salientes.
+    * losttrack: Para llamadas entrantes, cantidad de llamadas que no pudieron
+      ser vigiladas hasta terminar porque se reinició el marcador. No definido
+      para llamadas salientes.
+* agents: Agentes asociados a la cola de la campaña. Este elemento es una lista
+  que contiene múltiples elementos 'agent'. Cada elemento contiene los siguientes
+  atributos:
+  * agentchannel: Canal del agente de la cola (normalmente Agent/NNNN)
+  * status: Estado del agente. Puede ser 'online', 'offline', 'oncall', 'paused'
+    como se describe en la respuesta del requerimiento 'getagentstatus'
+  * callid: ID en la base de datos de la llamada que atiende el agente. Sólo está
+    definido si el agente está logoneado y atendiendo alguna llamada.
+  * callnumber: Número telefónico del cliente al que se conecta la llamada. Sólo
+    está definido si el agente está logoneado y atendiendo alguna llamada.
+  * callclient: Canal asignado a la llamada del cliente atendido. Sólo está
+    definido si el agente está logoneado y atendiendo alguna llamada.
+  * pausename: Nombre de la pausa en la que está el agente. Sólo está definido
+    si el agente está en pausa.
+  * pauseid: ID de la pausa en la que está el agente. Sólo está definido si el 
+    agente está en pausa.
+  * pausestart: Hora en la que inició la pausa, en formato HH:MM:SS de 24 horas.
+    Sólo está definido si el agente está en pausa.
+  * dialstart: Hora en la que inició la marcación de la llamada que atiende el
+    agente. Sólo definido para campañas salientes, y si el agente está atendiendo
+    una llamada.
+  * dialend: Hora en la que terminó la marcación de la llamada que atiende el
+    agente. Sólo definido para campañas salientes, y si el agente está atendiendo
+    una llamada.
+  * queuestart: Hora en la que entró en la cola la llamada atendida por el agente.
+    Sólo definido si el agente está atendiendo una llamada.
+  * linkstart: Hora en la que la llamada fue conectada con el agente. Sólo
+    definido si el agente está atendiendo una llamada.
+* activecalls: Llamadas de la campaña que todavía no han sido asignadas a un 
+  agente. Este elemento es una lista que contiene múltiples elementos 'activecall'.
+  Cada elemento contiene los siguientes atributos:
+  * callid: ID en la base de datos de la llamada conectada al cliente
+  * callnumber: Número telefónico de la llamada conectada al cliente
+  * callstatus: Estado de la llamada de la campaña. Puede ser uno de los valores
+    'placing' (sólo campañas salientes), 'ringing' (sólo campañas salientes),
+    'onqueue' (campañas entrantes o salientes)
+  * dialstart: Hora en la que inició la marcación de la llamada. Solamente
+    definido para campañas salientes.
+  * dialend: Hora en la que se terminó la marcación de la llamada. Sólamente
+    definido para campañas salientes, y si el estado en 'callstatus' es 
+    'ringing' o 'onqueue'.
+  * queuestart: Hora en la que la llamada ingresó a la cola. Sólamente definido
+    para campañas salientes, y si el estado en 'callstatus' es 'onqueue'.
+
+Ejemplo:
+<request id="7">
+    <getcampaignstatus>
+        <campaign_type>outgoing</campaign_type>
+        <campaign_id>7</campaign_id>
+    </getcampaignstatus>
+</request>
+
+Respuesta:
+Campaña saliente:
+<response id="7">
+    <getcampaignstatus_response>
+        <statuscount>
+            <total>12</total>
+            <pending>10</pending>
+            <placing>1</placing>
+            <ringing>0</ringing>
+            <onqueue>0</onqueue>
+            <success>2</success>
+            <onhold>0</onhold>
+            <failure>0</failure>
+            <shortcall>0</shortcall>
+            <noanswer>0</noanswer>
+            <abandoned>0</abandoned>
+        </statuscount>
+        <agents>
+            <agent>
+                <agentchannel>Agent/9000</agentchannel>
+                <status>online</status>
+            </agent>
+        </agents>
+        <activecalls>
+            <activecall>
+                <callnumber>1065</callnumber>
+                <callid>65</callid>
+                <callstatus>placing</callstatus>
+                <dialstart>18:24:54</dialstart>
+            </activecall>
+        </activecalls>
+    </getcampaignstatus_response>
+</response>
+
+Campaña entrante:
+<response id="3">
+    <getcampaignstatus_response>
+        <statuscount>
+            <total>13</total>
+            <onqueue>0</onqueue>
+            <success>0</success>
+            <onhold>0</onhold>
+            <abandoned>0</abandoned>
+            <finished>12</finished>
+            <losttrack>1</losttrack>
+        </statuscount>
+        <agents>
+            <agent>
+                <agentchannel>Agent/9000</agentchannel>
+                <status>offline</status>
+            </agent>
+        </agents>
+        <activecalls/>
+    </getcampaignstatus_response>
+</response>
+
+En caso de campaña no encontrada:
+<response id="7">
+    <getcampaignstatus_response>
+        <failure>
+            <code>404</code>
+            <message>Campaign not found</message>
+        </failure>
+    </getcampaignstatus_response>
+</response>
+
+
+
 Requerimiento "getcallinfo"
 
 Este requerimiento recupera información sobre una llamada específica de una

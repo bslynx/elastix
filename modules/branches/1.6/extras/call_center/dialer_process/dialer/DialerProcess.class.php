@@ -4448,6 +4448,11 @@ Privilege: Command
         }
         return $resumen;
     }
+    
+    function & reportarEstadoCampaniaEntrante($idCampania)
+    {
+    	return $this->_oGestorEntrante->reportarEstadoCampania($idCampania);
+    }
 
     /**
      * Método que devuelve un resumen de la información de una campaña saliente
@@ -4524,7 +4529,9 @@ WHERE agent.number = ? AND agent.estatus = "A" AND agent.id = audit.id_agent
     AND audit.datetime_end IS NULL AND audit.id_break = break.id
 LEER_TIPO_BREAK;
                 $tuplaBreak = $this->_dbConn->getRow($sqlBreak, array($sNumAgente), DB_FETCHMODE_ASSOC);
-                if (is_array($tuplaBreak)) {
+                if (DB::isError($tuplaBreak)) {
+                    $this->oMainLog->output('ERR: no se puede leer información de agentes - '.$tuplaBreak->getMessage());
+                } elseif (is_array($tuplaBreak)) {
                     $estadoCola['members'][$sNumAgente]['datetime_breakstart'] = $tuplaBreak['datetime_init'];
                     $estadoCola['members'][$sNumAgente]['break_name'] = $tuplaBreak['name'];
                     $estadoCola['members'][$sNumAgente]['break_id'] = $tuplaBreak['id'];
