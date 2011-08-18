@@ -1,3 +1,5 @@
+* Dialer (ECCP): fixed a 200-byte-per-request memory leak on XML response ID 
+  assignment.
 * Dialer (ECCP): implement "getcampaignstatus" request
 * Dialer (ECCP): implement "transfercall" request
 * Dialer: write true outgoing channel, not Local@from-internal, to current_calls
