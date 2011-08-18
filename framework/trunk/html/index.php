@@ -32,6 +32,10 @@ include_once "configs/default.conf.php";
 include_once "libs/paloSantoNavigation.class.php"; 
 include_once "libs/paloSantoDB.class.php";
 include_once("libs/paloSantoACL.class.php");// Don activate unless you know what you are doing. Too risky!
+
+// Verifico si las bases del framework están, debido a la migración de dichas bases como archivos .db a archivos .sql
+checkFrameworkDatabases($arrConf['elastix_dbdir']);
+
 $developerMode=false;
 
 session_name("elastixSession");
