@@ -172,6 +172,9 @@ class XMLDialerConn extends DialerConn
                 $comando = NULL;
                 foreach ($request->children() as $c) $comando = $c;
                 switch ($comando->getName()) {
+                case 'getrequestlist':
+                    $response = $this->Request_GetRequestList($comando);
+                    break;
                 case 'login':
                     $response = $this->Request_Login($comando);
                     break;
@@ -344,6 +347,22 @@ class XMLDialerConn extends DialerConn
 
 
     // Métodos que implementan los requerimiento del protocolo ECCP
+
+    private function Request_GetRequestList($comando)
+    {
+        $xml_response = new SimpleXMLElement('<response />');
+        $xml_getRequestListResponse = $xml_response->addChild('getrequestlist_response');
+    	
+        $xml_requests = $xml_getRequestListResponse->addChild('requests');
+        foreach (array('getrequestlist', 'login', 'logout', 'loginagent', 'logoutagent', 
+            'getagentstatus', 'getcampaignstatus', 'hangup', 'hold', 'unhold', 
+            'transfercall', 'getcampaigninfo', 'getcallinfo', 'saveformdata', 
+            'pauseagent', 'unpauseagent', 'getpauses', 'setcontact') 
+            as $sReqName)
+            $xml_requests->addChild('request', $sReqName);
+
+        return $xml_response;
+    }
 
     /**
      * Procedimiento que implementa el login del cliente del protocolo. No se 

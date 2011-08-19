@@ -1,3 +1,4 @@
+* Dialer (ECCP): implement "getrequestlist" request
 * Dialer (ECCP): fixed a 200-byte-per-request memory leak on XML response ID 
   assignment.
 * Dialer (ECCP): implement "getcampaignstatus" request

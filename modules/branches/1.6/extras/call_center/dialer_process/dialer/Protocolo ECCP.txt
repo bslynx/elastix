@@ -650,6 +650,37 @@ Listado de requerimientos
 Nota: Para facilitar la legibilidad del presente documento, se presentarán aquí 
 también las "respuestas" a cada requerimiento.
 
+Requerimiento "getrequestlist"
+Este requerimiento sirve para listar la lista completa de todos los requerimientos
+conocidos por esta versión del programa.
+
+Atributos o argumentos:
+Ninguno.
+
+Respuesta:
+* requests: Elemento que contiene uno o más elementos de tipo 'request'. Cada
+  elemento 'request' tiene como contenido el nombre de un requerimiento.
+  
+Ejemplo:
+<request id="2">
+    <getrequestlist/>
+</request> 
+
+Respuesta:
+<response id="2">
+    <getrequestlist_response>
+        <requests>
+            <request>getrequestlist</request>
+            <request>login</request>
+            <request>logout</request>
+            <request>loginagent</request>
+            ...
+            <request>setcontact</request>
+        </requests>
+    </getrequestlist_response>
+</response>
+
+
 Requerimiento "login"
 
 Este requerimiento sirve para autenticar una aplicación cliente y permitirle 
