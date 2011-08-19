@@ -326,18 +326,18 @@ class Predictivo
                             	} else {
 	                                // Agente está ocupado con una llamada
 	                                $estadoCola['members'][$sCodigoAgente]['status'] = 'inUse';
-	                                if (isset($tiempoAgente[$sCodigoAgente])) {
-	                                	if (isset($tiempoAgente[$sCodigoAgente]['talkTime'])) 
-	                                	    $estadoCola['members'][$sCodigoAgente]['talkTime'] = $tiempoAgente[$sCodigoAgente]['talkTime']; 
-	                                	if (isset($tiempoAgente[$sCodigoAgente]['dialnumber'])) 
-    	                                	$estadoCola['members'][$sCodigoAgente]['dialnumber'] = $tiempoAgente[$sCodigoAgente]['dialnumber']; 
-	                                	if (isset($tiempoAgente[$sCodigoAgente]['clientchannel'])) 
-    	                                	$estadoCola['members'][$sCodigoAgente]['clientchannel'] = $tiempoAgente[$sCodigoAgente]['clientchannel']; 
-	                                }
                             	}
                             } else {
                             	// Agente no está disponible
                                 $estadoCola['members'][$sCodigoAgente]['status'] = 'unAvailable';
+                            }
+                            if (isset($tiempoAgente[$sCodigoAgente])) {
+                                if (isset($tiempoAgente[$sCodigoAgente]['talkTime'])) 
+                                    $estadoCola['members'][$sCodigoAgente]['talkTime'] = $tiempoAgente[$sCodigoAgente]['talkTime']; 
+                                if (isset($tiempoAgente[$sCodigoAgente]['dialnumber'])) 
+                                    $estadoCola['members'][$sCodigoAgente]['dialnumber'] = $tiempoAgente[$sCodigoAgente]['dialnumber']; 
+                                if (isset($tiempoAgente[$sCodigoAgente]['clientchannel'])) 
+                                    $estadoCola['members'][$sCodigoAgente]['clientchannel'] = $tiempoAgente[$sCodigoAgente]['clientchannel']; 
                             }
                         }
                         break;
