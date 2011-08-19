@@ -238,7 +238,7 @@ class XMLDialerConn extends DialerConn
                     $response = $this->_generarRespuestaFallo(501, 'Not Implemented');
                     break;
                 }
-                $response->addAttribute('id', (int)$request['id']);
+                $response->addAttribute('id', (string)$request['id']);
             }
             $s = $response->asXML();
             $this->dialSrv->encolarDatosEscribir($this->sKey, $s);
