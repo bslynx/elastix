@@ -889,6 +889,8 @@ SELECT audit.datetime_init, break.name, break.id
 FROM agent, audit, break 
 WHERE agent.number = ? AND agent.estatus = "A" AND agent.id = audit.id_agent 
     AND audit.datetime_end IS NULL AND audit.id_break = break.id
+ORDER BY audit.datetime_init DESC
+LIMIT 0,1
 LEER_TIPO_BREAK;
                 $tuplaBreak = $this->_dbConn->getRow($sqlBreak, array($sNumAgente), DB_FETCHMODE_ASSOC);
                 if (DB::isError($tuplaBreak)) {
