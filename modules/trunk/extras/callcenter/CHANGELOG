@@ -1,3 +1,4 @@
+* Dialer (ECCP): allow call to be hung up when agent is both busy and paused.
 * Dialer (ECCP): implement "getrequestlist" request
 * Dialer (ECCP): fixed a 200-byte-per-request memory leak on XML response ID 
   assignment.

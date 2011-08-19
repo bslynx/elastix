@@ -1483,7 +1483,8 @@ LEER_CAMPANIA;
             $this->_agregarRespuestaFallo($xml_hangupResponse, 404, 'Specified agent not found');
             return $xml_response;
         }
-        if ($estadoCola['members'][$sNumAgente]['status'] != 'inUse') {
+        if (!isset($estadoCola['members'][$sNumAgente]['clientchannel']) && 
+            $estadoCola['members'][$sNumAgente]['status'] != 'inUse') {
             $this->_agregarRespuestaFallo($xml_hangupResponse, 417, 'Agent not in call');
             return $xml_response;
         }
