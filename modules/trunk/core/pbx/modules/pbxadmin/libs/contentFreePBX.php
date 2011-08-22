@@ -368,7 +368,7 @@
 	// check access
 	if (!is_array($cur_menuitem) && $display != "") {
 	    showview("noaccess");
-	    exit;
+	    return '(internal) No active FreePBX modules found. Please enable Unembedded FreePBX for troubleshooting.';
 	}
 
 	// load the component from the loaded modules
