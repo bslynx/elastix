@@ -116,7 +116,9 @@ class paloSantoVacations {
 		      a.username as username,
 		      v.vacation as vacation,
 		      v.subject as subject,
-		      v.body as body
+		      v.body as body,
+		      v.ini_date as ini_date,
+		      v.end_date as end_date
 		   FROM accountuser a LEFT JOIN messages_vacations v ON a.username=v.account
 		   $where
 		   ORDER BY a.username
@@ -132,9 +134,9 @@ class paloSantoVacations {
 
     function getVacationsById($id)
     {
-        $query = "SELECT * FROM table WHERE id=$id";
-
-        $result=$this->_DB->getFirstRowQuery($query,true);
+	$data = array($id);
+        $query = "SELECT * FROM getVacationsById WHERE id=?";
+        $result=$this->_DB->getFirstRowQuery($query,true,$data);
 
         if($result==FALSE){
             $this->errMsg = $this->_DB->errMsg;
@@ -164,6 +166,10 @@ class paloSantoVacations {
         $SIEVE['AUTHUSER'] = "cyrus";
 	$SIEVE['USER'] = $email;
 
+	$existCron = $this->existCronFile();
+	if(!$existCron)
+	    $this->createCronFile();
+
         $contentVacations  = $this->getVacationScript($subject, $body);
 	$contentSpamFilter = "";
 
@@ -182,12 +188,12 @@ class paloSantoVacations {
 
 	exec("echo ".$SIEVE['PASS']." | sieveshell --username=".$SIEVE['USER']." --authname=".$SIEVE['AUTHUSER']." ".$SIEVE['HOST'].":".$SIEVE['PORT']." -e 'put $fileScript'",$flags, $status);
 	if($status!=0){
-	    $this->errMsg = $arrLang["Error: Impossible upload "]."vacations.sieve";
+	    $this->errMsg = _tr("Error: Impossible upload ")."vacations.sieve";
 	    return false;
 	}else{
 	    exec("echo ".$SIEVE['PASS']." | sieveshell --username=".$SIEVE['USER']." --authname=".$SIEVE['AUTHUSER']." ".$SIEVE['HOST'].":".$SIEVE['PORT']." -e 'activate vacations.sieve'",$flags, $status);
 	    if($status!=0){
-		$this->errMsg = $arrLang["Error: Impossible activate "]."vacations.sieve";
+		$this->errMsg = _tr("Error: Impossible activate ")."vacations.sieve";
 		return false;
 	    }
 	}
@@ -216,10 +222,14 @@ class paloSantoVacations {
         $SIEVE['AUTHUSER'] = "cyrus";
 	$SIEVE['USER'] = $email;
 
+	$existCron = $this->existCronFile();
+	if(!$existCron)
+	    $this->createCronFile();
+
 	exec("echo ".$SIEVE['PASS']." | sieveshell --username=".$SIEVE['USER']." --authname=".$SIEVE['AUTHUSER']." ".$SIEVE['HOST'].":".$SIEVE['PORT']." -e 'delete vacations.sieve'",$flags, $status);
 
 	if($status!=0){
-	    $this->errMsg = $arrLang["Error: Impossible remove "]."vacations.sieve";
+	    $this->errMsg = _tr("Error: Impossible remove ")."vacations.sieve";
 	    return false;
 	}
 
@@ -233,12 +243,12 @@ class paloSantoVacations {
 	    exec("echo ".$SIEVE['PASS']." | sieveshell --username=".$SIEVE['USER']." --authname=".$SIEVE['AUTHUSER']." ".$SIEVE['HOST'].":".$SIEVE['PORT']." -e 'put $fileScript'",$flags, $status);
 
 	    if($status!=0){
-		$this->errMsg = $arrLang["Error: Impossible upload "]."scriptTest.sieve";
+		$this->errMsg = _tr("Error: Impossible upload ")."scriptTest.sieve";
 		return false;
 	    }else{
 		exec("echo ".$SIEVE['PASS']." | sieveshell --username=".$SIEVE['USER']." --authname=".$SIEVE['AUTHUSER']." ".$SIEVE['HOST'].":".$SIEVE['PORT']." -e 'activate scriptTest.sieve'",$flags, $status);
 		if($status!=0){
-		    $this->errMsg = $arrLang["Error: Impossible activate "]."scriptTest.sieve";
+		    $this->errMsg = _tr("Error: Impossible activate ")."scriptTest.sieve";
 		    return false;
 		}
 	    }
@@ -289,7 +299,7 @@ SCRIPT;
     {
 	$data = array($idUserInt);
 	$account = "";
-	$query   = "select * from acl_profile_properties where id_profile=? order by property DESC";
+	$query   = "select app.id_profile, app.property, app.value from acl_profile_properties app, acl_user_profile aup where aup.id_user=? AND app.id_profile=aup.id_profile order by property DESC";
 	$result  = $pDBACL->fetchTable($query, true, $data);
 
         if($result==FALSE){
@@ -336,10 +346,10 @@ SCRIPT;
     /* Retorna:
     /* - $result:     Un booleano con el resultado si existe un registro de un usuario
     /*********************************************************************************/
-    function existMessage($id, $email)
+    function existMessage($email)
     {
-	$data = array($email,$id);
-	$query = "select * from messages_vacations where account=? and id=?";
+	$data = array($email);
+	$query = "select * from messages_vacations where account=?";
 	$result=$this->_DB->getFirstRowQuery($query,true,$data);
 	if($result==FALSE){
             $this->errMsg = $this->_DB->errMsg;
@@ -360,17 +370,13 @@ SCRIPT;
     /* Retorna:
     /* - $result:     Un booleano con el resultado si se inserto el registro
     /*********************************************************************************/
-    function insertMessageByUser($email, $subject, $body, $status=null)
+    function insertMessageByUser($email, $subject, $body, $ini_date, $end_date, $status)
     {
 	$data = array();
 	$query = "";
-	if(isset($status)){
-	    $query = "insert into messages_vacations(account,subject,body,vacation) values(?,?,?,?)";
-	    $data = array($email, $subject, $body, $status);
-	}else{
-	    $data = array($email, $subject, $body);
-	    $query = "insert into messages_vacations(account,subject,body) values(?,?,?)";
-	}
+	$query = "insert into messages_vacations(account,subject,body,vacation,ini_date,end_date) values(?,?,?,?,?,?)";
+	$data = array($email, $subject, $body, $status, $ini_date, $end_date);
+
 	$result=$this->_DB->genQuery($query,$data);
 	if($result==FALSE){
             $this->errMsg = $this->_DB->errMsg;
@@ -389,16 +395,10 @@ SCRIPT;
     /* Retorna:
     /* - $result:     Un booleano con el resultado si se actualizo el registro
     /*********************************************************************************/
-    function updateMessageByUser($email, $subject, $body, $id, $status=null)
+    function updateMessageByUser($email, $subject, $body, $ini_date, $end_date, $status=null)
     {
-	$data = array();
-	$vacation = "";
-	if(isset($status)){
-	    $vacation = " ,vacation=? ";
-	    $data = array($email, $subject, $body, $status, $id);
-	}else
-	    $data = array($email, $subject, $body, $id);
-	$query = "update messages_vacations set account=?, subject=?,  body=? $vacation where id=?";
+	$data = array($subject, $body, $status, $ini_date, $end_date, $email);
+	$query = "update messages_vacations set subject=?,  body=? , vacation=?, ini_date=?, end_date=?  where account=?";
 	$result=$this->_DB->genQuery($query,$data);
 	if($result==FALSE){
             $this->errMsg = $this->_DB->errMsg;
@@ -451,6 +451,63 @@ SCRIPT;
 	    $response['message'] = $arrLang["Cyrus Imap is up"];
 	}
         return $response;
+    }
+
+    /*********************************************************************************
+    /* Funcion que devuelve todos los correos electronicos con el script de vacaciones
+    /* activado:
+    /*
+    /* Retorna:
+    /* - $result:     Un arreglo con los emails con el script de vacaciones activo
+    /*********************************************************************************/
+    function getEmailsVacationON()
+    {
+	$query = "SELECT id, account, ini_date, end_date, subject, body FROM messages_vacations WHERE vacation = 'yes'";
+	$result=$this->_DB->fetchTable($query,true);
+	if($result==FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return false;
+        }
+	return $result;
+    }
+
+
+    /*********************************************************************************
+    /* Funcion que verifica si existe el archivo de cron del script de vacaciones:
+    /*
+    /* Retorna:
+    /* - $result:     Un arreglo con los emails con el script de vacaciones activo
+    /*********************************************************************************/
+    function existCronFile()
+    {
+        $this->errMsg = '';
+        $sComando = '/usr/bin/elastix-helper vacationconfig exist_cron';
+        $output = $ret = NULL;
+        exec($sComando, $output, $ret);
+        if ($ret != 0) {
+            $this->errMsg = implode('', $output);
+            return FALSE;
+        }
+        return TRUE;
+    }
+
+    /*********************************************************************************
+    /* Funcion para crear el cron de eliminacion de script de vacaciones automatica:
+    /*
+    /* Retorna:
+    /* - $result:     Un arreglo con los emails con el script de vacaciones activo
+    /*********************************************************************************/
+    function createCronFile()
+    {
+        $this->errMsg = '';
+        $sComando = '/usr/bin/elastix-helper vacationconfig create_cron';
+        $output = $ret = NULL;
+        exec($sComando, $output, $ret);
+        if ($ret != 0) {
+            $this->errMsg = implode('', $output);
+            return FALSE;
+        }
+        return TRUE;
     }
 
 
