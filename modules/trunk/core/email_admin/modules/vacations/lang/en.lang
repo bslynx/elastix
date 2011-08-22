@@ -66,5 +66,6 @@ $arrLangModule=array(
 "Date" => "Date",
 "End date should be greater than the initial date" => "End date should be greater than the initial date",
 "day(s)" => "day(s)",
+"Period" => "Period",
 );
 ?>

@@ -172,7 +172,7 @@ function viewFormVacations($smarty, $module_name, $local_templates_dir, &$pDB, &
     $smarty->assign("activate", $activate);
     $smarty->assign("link_emails", $link_emails);
     $smarty->assign("title_popup", _tr("Choose other email account"));
-    $smarty->assign("DATE", _tr("Date"));
+    $smarty->assign("DATE", _tr("Period"));
     $smarty->assign("FROM", _tr("FROM"));
     $smarty->assign("TO", _tr("TO"));
     $smarty->assign("days", _tr("day(s)"));
