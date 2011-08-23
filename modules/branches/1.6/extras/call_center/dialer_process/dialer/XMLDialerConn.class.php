@@ -871,7 +871,7 @@ LISTA_EXTENSIONES;
             $bEstadoConocido = TRUE;
         }
         if ($bEstadoConocido) {
-        	if (!is_null($sCanalExt)) $xml_getAgentStatusResponse->addChild('channel', $sCanalExt);
+        	if (!is_null($sCanalExt)) $xml_getAgentStatusResponse->addChild('channel', str_replace('&', '&amp;', $sCanalExt));
             if (!is_null($sExtension)) $xml_getAgentStatusResponse->addChild('extension', $sExtension);
         } else {
             $xml_getAgentStatusResponse->addChild('status', 'offline');
@@ -1407,9 +1407,9 @@ LEER_CAMPANIA;
             if (isset($infoAgente['dialnumber']))
                 $xml_agent->addChild('callnumber', $infoAgente['dialnumber']);
             if (isset($infoAgente['clientchannel']))
-                $xml_agent->addChild('callchannel', $infoAgente['clientchannel']);
+                $xml_agent->addChild('callchannel', str_replace('&', '&amp;', $infoAgente['clientchannel']));
             if (isset($infoAgente['break_name']))
-                $xml_agent->addChild('pausename', $infoAgente['break_name']);
+                $xml_agent->addChild('pausename', str_replace('&', '&amp;', $infoAgente['break_name']));
             if (isset($infoAgente['break_id']))
                 $xml_agent->addChild('pauseid', $infoAgente['break_id']);
             if (isset($infoAgente['datetime_breakstart']))
