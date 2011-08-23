@@ -3988,6 +3988,95 @@ SQL_EXISTE_AUDIT;
         return NULL;
     }
 
+    /* Obtener la información de la llamada que está atendiendo el agente cuyo
+     * número se indica. Se devuelve la siguiente información sobre la llamada:
+     * 
+     * tabla            current_calls para llamadas salientes, o 
+     *                  current_call_entry para llamadas entrantes
+     * id_current_call  ID en la tabla de llamadas actuales
+     * id_call          ID en la tabla de llamadas de la campaña
+     * ChannelClient    Canal que corresponde a la llamada remota
+     * ActualChannel    Canal verdadero, si ChannelClient es Local/xxx
+     * 
+     */
+    private function _obtenerLlamadaAtendidaAgente($sNumAgente)
+    {
+        // Este código asume formato Agent/9000
+        $sAgente = 'Agent/'.$sNumAgente;
+
+        /* Leer de la base de datos el canal que está conversando con el agente.
+         * También debe de obtenerse el ID del registro en la tabla de 
+         * current_calls o current_call_entry, según la que se descubra primero.
+         */
+        // Verificar si llamada es entrante...
+        $tuplaLlamada = $this->_dbConn->getRow(
+            'SELECT current_call_entry.id AS id_current_call, id_call_entry AS id_call, ChannelClient '.
+            'FROM current_call_entry, agent '.
+            'WHERE current_call_entry.id_agent = agent.id '.
+                'AND agent.estatus = "A" AND agent.number = ?',
+            array($sNumAgente), DB_FETCHMODE_ASSOC);
+        if (DB::isError($tuplaLlamada)) {
+            $this->oMainLog->output('ERR: al obtener información de llamada: no se puede verificar llamada entrante - '.
+                $tuplaLlamada->getMessage());
+            return FALSE;
+        } elseif (count($tuplaLlamada) > 0) {
+            // Llamada es entrante
+            $tuplaLlamada['tabla'] = 'current_call_entry';
+        } else {
+            // Verificar si llamada es saliente...
+            $tuplaLlamada = $this->_dbConn->getRow(
+                'SELECT id AS id_current_call, id_call, ChannelClient '.
+                'FROM current_calls WHERE agentnum = ?',
+                array($sNumAgente), DB_FETCHMODE_ASSOC);
+            if (DB::isError($tuplaLlamada)) {
+                $this->oMainLog->output('ERR: al obtener información de llamada: no se puede verificar llamada saliente - '.
+                    $tuplaLlamada->getMessage());
+                return FALSE;
+            } elseif (count($tuplaLlamada) > 0) {
+                // Llamada es saliente
+                $tuplaLlamada['tabla'] = 'current_calls';
+            } else {
+                $this->oMainLog->output('WARN: al obtener información de llamada: el siguiente '.
+                    'agente no está atendiendo llamada: '.$sAgente);
+                return FALSE;
+            }
+        }
+        
+        /* Los canales de tipo Local/XXX@from-internal no sirven para realizar
+         * redirección a hold. Se debe de averiguar el verdadero canal que 
+         * aparece en el reporte de "agent show" */
+        if (strpos($tuplaLlamada['ChannelClient'], 'Local/') === 0) {
+            if ($this->DEBUG) {
+                $this->oMainLog->output("DEBUG: agente $sAgente conectado con ".
+                    "ChannelClient={$tuplaLlamada['ChannelClient']}, buscando ".
+                    "verdadero canal...");
+            }
+            $oPredictor = new Predictivo($this->_astConn);
+            $estadoCola = $oPredictor->leerEstadoCola(''); // El parámetro vacío lista todas las colas
+            if (!isset($estadoCola['members'][$sNumAgente])) {
+                $this->oMainLog->output('ERR: (internal) al obtener información de llamada: agente no se encuentra: '.$sAgente);
+                return FALSE;
+            }
+            if ($estadoCola['members'][$sNumAgente]['status'] != 'inUse') {
+                $this->oMainLog->output('ERR: (internal) al obtener información de llamada: agente no está atendiendo llamada: '.$sAgente);
+                return FALSE;
+            }
+            if (!isset($estadoCola['members'][$sNumAgente]['clientchannel'])) {
+                $this->oMainLog->output('ERR: (internal) al obtener información de llamada: no se puede identificar canal remoto para agente: '.$sAgente);
+                return FALSE;
+            }
+            $tuplaLlamada['ActualChannel'] = $estadoCola['members'][$sNumAgente]['clientchannel'];
+        } else {
+            if ($this->DEBUG) {
+                $this->oMainLog->output("DEBUG: agente $sAgente conectado con ".
+                    "ChannelClient={$tuplaLlamada['ChannelClient']}, se asume ".
+                    "canal correcto.");
+            }
+            $tuplaLlamada['ActualChannel'] = $tuplaLlamada['ChannelClient'];
+        }
+        return $tuplaLlamada;
+    }
+
     public function iniciarHoldAgente($sAgente)
     {
         // Esto asume formato Agent/9000
@@ -4047,76 +4136,9 @@ SQL_EXISTE_AUDIT;
             return FALSE;
         }
         
-        /* Leer de la base de datos el canal que está conversando con el agente.
-         * También debe de obtenerse el ID del registro en la tabla de 
-         * current_calls o current_call_entry, según la que se descubra primero.
-         */
-        // Verificar si llamada es entrante...
-        $tuplaLlamada = $this->_dbConn->getRow(
-            'SELECT current_call_entry.id AS id_current_call, id_call_entry AS id_call, ChannelClient '.
-            'FROM current_call_entry, agent '.
-            'WHERE current_call_entry.id_agent = agent.id '.
-                'AND agent.estatus = "A" AND agent.number = ?',
-            array($sNumAgente), DB_FETCHMODE_ASSOC);
-        if (DB::isError($tuplaLlamada)) {
-            $this->oMainLog->output('ERR: al iniciar hold: no se puede verificar llamada entrante - '.
-                $tuplaLlamada->getMessage());
-        	return FALSE;
-        } elseif (count($tuplaLlamada) > 0) {
-        	// Llamada es entrante
-            $tuplaLlamada['tabla'] = 'current_call_entry';
-        } else {
-        	// Verificar si llamada es saliente...
-            $tuplaLlamada = $this->_dbConn->getRow(
-                'SELECT id AS id_current_call, id_call, ChannelClient '.
-                'FROM current_calls WHERE agentnum = ?',
-                array($sNumAgente), DB_FETCHMODE_ASSOC);
-            if (DB::isError($tuplaLlamada)) {
-                $this->oMainLog->output('ERR: al iniciar hold: no se puede verificar llamada saliente - '.
-                    $tuplaLlamada->getMessage());
-                return FALSE;
-            } elseif (count($tuplaLlamada) > 0) {
-                // Llamada es saliente
-                $tuplaLlamada['tabla'] = 'current_calls';
-            } else {
-                $this->oMainLog->output('WARN: al iniciar hold: el siguiente agente no está atendiendo llamada: '.$sAgente);
-                return FALSE;
-            }
-        }
-        
-        /* Los canales de tipo Local/XXX@from-internal no sirven para realizar
-         * redirección a hold. Se debe de averiguar el verdadero canal que 
-         * aparece en el reporte de "agent show" */
-        if (strpos($tuplaLlamada['ChannelClient'], 'Local/') === 0) {
-            if ($this->DEBUG) {
-            	$this->oMainLog->output("DEBUG: agente $sAgente conectado con ".
-                    "ChannelClient={$tuplaLlamada['ChannelClient']}, buscando ".
-                    "verdadero canal...");
-            }
-            $oPredictor = new Predictivo($this->_astConn);
-            $estadoCola = $oPredictor->leerEstadoCola(''); // El parámetro vacío lista todas las colas
-            if (!isset($estadoCola['members'][$sNumAgente])) {
-                $this->oMainLog->output('ERR: (internal) al iniciar hold: agente no se encuentra: '.$sAgente);
-                return FALSE;
-            }
-            if ($estadoCola['members'][$sNumAgente]['status'] != 'inUse') {
-                $this->oMainLog->output('ERR: (internal) al iniciar hold: agente no está atendiendo llamada: '.$sAgente);
-                return FALSE;
-            }
-            if (!isset($estadoCola['members'][$sNumAgente]['clientchannel'])) {
-                $this->oMainLog->output('ERR: (internal) al iniciar hold: no se puede identificar canal remoto para agente: '.$sAgente);
-            	return FALSE;
-            }
-            $tuplaLlamada['ActualChannel'] = $estadoCola['members'][$sNumAgente]['clientchannel'];
-        } else {
-        	if ($this->DEBUG) {
-        		$this->oMainLog->output("DEBUG: agente $sAgente conectado con ".
-                    "ChannelClient={$tuplaLlamada['ChannelClient']}, se asume ".
-                    "canal correcto.");
-        	}
-            $tuplaLlamada['ActualChannel'] = $tuplaLlamada['ChannelClient'];
-        }
-         
+        // Obtener la información de la llamada atendida por el agente
+        $tuplaLlamada = $this->_obtenerLlamadaAtendidaAgente($sNumAgente);
+        if (!is_array($tuplaLlamada)) return FALSE;
         
         // En este punto, $tuplaLlamada tiene la información para iniciar hold
         
@@ -4557,6 +4579,228 @@ LEER_TIPO_BREAK;
         }
         ksort($estadoCola['members']);
         return $estadoCola;
+    }
+
+    /**
+     * Procedimiento que crea una nueva llamada agendada en base a la llamada
+     * que está atendiendo el agente indicado por el parámetro.
+     * 
+     * @param   string  $sAgente        Agente en formato Agent/9000
+     * @param   mixed   $horario        Arreglo que define el horario como sigue:
+     *          date_init               Fecha en inicio de horario en formato YYYY-MM-DD
+     *          date_end                Fecha de fin de horario en formato YYYY-MM-DD
+     *          time_init               Hora de inicio de horario en formato HH:MM:SS
+     *          time_end                Hora de fin de horario en formato HH:MM:SS
+     *                                  NULL para agendar llamada al final de campaña
+     *                                  a cualquier fecha y hora
+     * @param   bool    $bMismoAgente   FALSO si se asigna llamada a cualquier agente
+     *                                  VERDADERO para que el mismo agente deba atenderla
+     *                                  Si VERDADERO, se requiere $horario.
+     * @param   mixed   $sNuevoTelefono Teléfono nuevo al cual marcar llamada, o NULL para mismo anterior
+     * @param   mixed   $sNuevoNombre   Nombre del nuevo contacto para llamada, o NULL para mismo anterior
+     * 
+     * @return bool VERDADERO en caso de éxito, FALSO en caso de error
+     */
+    function agendarLlamadaAgente($sAgente, $horario, $bMismoAgente, 
+        $sNuevoTelefono, $sNuevoNombre, &$errcode, &$errdesc)
+    {
+        $errcode = 0; $errdesc = 'Success';
+
+        // Esto asume formato Agent/9000
+        $sNumAgente = NULL;
+        if (preg_match('|^Agent/(\d+)$|', $sAgente, $regs)) {
+            $sNumAgente = $regs[1];
+        } else {
+            $this->oMainLog->output('ERR: (internal) No se ha implementado este tipo de agente - '.$sAgente);
+            return FALSE;
+        }
+
+        if (!isset($this->_infoAgentes[$sAgente])) {
+            $this->oMainLog->output('ERR: (internal) al agendar llamada: no se hace seguimiento ECCP al agente: '.$sAgente);
+            return FALSE;
+        }
+        if ($this->_infoAgentes[$sAgente]['estado_consola'] != 'logged-in') {
+            $this->oMainLog->output('ERR: (internal) al agendar llamada: agente no está (todavía) logoneado: '.$sAgente);
+            return FALSE;
+        }
+
+        // Revisar teléfono nuevo, si existe
+        if (!is_null($sNuevoTelefono) && !preg_match('/^\d+$/', $sNuevoTelefono)) {
+            $errcode = 400; $errdesc = 'Bad request: invalid new phone';
+        	return FALSE;
+        }
+
+        // Revisar horarios
+        if (is_array($horario)) {
+        	// Formatos correctos de fecha
+            if (!isset($horario['date_init']) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $horario['date_init'])) {
+                $this->oMainLog->output('ERR: al agendar llamada: fecha de inicio inválida, se espera YYYY-MM-DD');
+                $errcode = 400; $errdesc = 'Bad request: invalid date_init';
+        		return FALSE;
+        	} elseif (!isset($horario['date_end']) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $horario['date_end'])) {
+                $this->oMainLog->output('ERR: al agendar llamada: fecha de fin inválida, se espera YYYY-MM-DD');
+                $errcode = 400; $errdesc = 'Bad request: invalid date_end';
+        		return FALSE;
+            } elseif (!isset($horario['time_init']) || !preg_match('/^\d{2}:\d{2}:\d{2}$/', $horario['time_init'])) {
+                $this->oMainLog->output('ERR: al agendar llamada: hora de inicio inválida, se espera HH:MM:SS');
+                $errcode = 400; $errdesc = 'Bad request: invalid time_init';
+                return FALSE;
+            } elseif (!isset($horario['time_end']) || !preg_match('/^\d{2}:\d{2}:\d{2}$/', $horario['time_end'])) {
+                $this->oMainLog->output('ERR: al agendar llamada: hora de fin inválida, se espera HH:MM:SS');
+                $errcode = 400; $errdesc = 'Bad request: invalid time_end';
+                return FALSE;
+        	}
+            
+            // Ordenamiento correcto
+            if ($horario['date_init'] > $horario['date_end']) {
+            	$t = $horario['date_init'];
+                $horario['date_init'] = $horario['date_end'];
+                $horario['date_end'] = $t;
+            }
+            
+            // Fecha debe estar en el futuro
+            if ($horario['date_init'] < date('Y-m-d')) {
+                $this->oMainLog->output('ERR: al agendar llamada: fecha de inicio anterior a fecha actual');
+                $errcode = 400; $errdesc = 'Bad request: date_init before current date';
+                return FALSE;
+            }
+        } elseif (!is_null($horario)) {
+            $this->oMainLog->output('ERR: (internal) al agendar llamada: horario no es un arreglo');
+        	return FALSE;
+        }
+
+    	// Información de la llamada atendida por el agente
+        $tuplaLlamada = $this->_obtenerLlamadaAtendidaAgente($sNumAgente);
+        if (!is_array($tuplaLlamada)) {
+            $errcode = 417; $errdesc = 'Not in outgoing call';
+            return FALSE;
+        }
+        if ($tuplaLlamada['tabla'] != 'current_calls') {
+            //$this->oMainLog->output('ERR: al agendar llamada: no se puede agendar llamada entrante: '.$sAgente);
+            $errcode = 417; $errdesc = 'Not in outgoing call';
+        	return FALSE;
+        }
+        
+        // Leer toda la información de la campaña y la cola
+        $sqlLlamadaCampania = <<<SQL_LLAMADA_CAMPANIA_AGENDAMIENTO
+SELECT campaign.datetime_init, campaign.datetime_end, campaign.daytime_init, 
+    campaign.daytime_end, calls.id_campaign, calls.phone
+FROM campaign, calls
+WHERE campaign.id = calls.id_campaign AND calls.id = ?
+SQL_LLAMADA_CAMPANIA_AGENDAMIENTO;
+        $tuplaCampania = $this->_dbConn->getRow($sqlLlamadaCampania, array($tuplaLlamada['id_call']), DB_FETCHMODE_ASSOC);
+        if (DB::isError($tuplaCampania)) {
+            $this->oMainLog->output('ERR: (internal) al agendar llamada: no se '.
+                'puede leer información de campaña - '.$tuplaCampania->getMessage());
+            $errcode = 500; $errdesc = 'Failed to fetch campaign information';
+        	return FALSE;
+        }
+        
+        // Validar que el rango de fecha y hora requerido es compatible con campaña
+        if (is_array($horario)) {
+        	if (!($tuplaCampania['datetime_init'] <= $horario['date_init'] && 
+                $horario['date_end'] <= $tuplaCampania['datetime_end'])) {
+                $errcode = 417; $errdesc = 'Supplied date range outside campaign range';
+                return FALSE;
+            }
+            if (!($tuplaCampania['daytime_init'] <= $horario['time_init'] &&
+                $horario['time_end'] <= $tuplaCampania['daytime_end'])) {
+                $errcode = 417; $errdesc = 'Supplied time range outside campaign range';
+                return FALSE;
+            }
+        }
+
+        // Acumular los parámetros de la nueva llamada por insertar
+        // DEBEN PERMANECER EN ESTE ORDEN
+        $paramNuevaLlamadaSQL = array(
+            $tuplaCampania['id_campaign'],  // TODO: se puede mandar llamada a otra campaña...
+            is_null($sNuevoTelefono) ? $tuplaCampania['phone'] : $sNuevoTelefono,
+            is_null($horario) ? NULL : $horario['date_init'],
+            is_null($horario) ? NULL : $horario['date_end'],
+            is_null($horario) ? NULL : $horario['time_init'],
+            is_null($horario) ? NULL : $horario['time_end'],            
+        );
+
+        // Leer los atributos a heredar de la llamada, para (opcionalmente) modificarlos
+        $sqlLlamadaAtributos = <<<SQL_LLAMADA_ATRIBUTOS_AGENDAMIENTO
+SELECT column_number, columna, value FROM call_attribute 
+WHERE id_call = ?
+ORDER BY column_number
+SQL_LLAMADA_ATRIBUTOS_AGENDAMIENTO;
+        $attrLlamada = $this->_dbConn->getAssoc($sqlLlamadaAtributos, false, 
+            array($tuplaLlamada['id_call']));
+        if (DB::isError($attrLlamada)) {
+            $this->oMainLog->output('ERR: (internal) al agendar llamada: no se '.
+                'puede leer atributos de llamadas - '.$attrLlamada->getMessage());
+            $errcode = 500; $errdesc = 'Failed to fetch call attributes';
+        	return FALSE;
+        }
+        if (!is_null($sNuevoNombre)) {
+            // Columnas de propiedades se numeran desde 1
+            if (!isset($attrLlamada[1])) $attrLlamada[1] = array('Campo1', $sNuevoNombre);
+            $attrLlamada[1][1] = $sNuevoNombre;
+        }
+
+        // Validar que no exista una llamada por agendar al mismo número
+        $sqlExistenciaLlamadaPrevia = <<<SQL_LLAMADA_PREVIA
+SELECT COUNT(*) FROM calls 
+WHERE id_campaign = ? AND phone = ? AND date_init = ? AND date_end = ? 
+    AND time_init = ? AND time_end = ?
+SQL_LLAMADA_PREVIA;
+        $existe = $this->_dbConn->getOne($sqlExistenciaLlamadaPrevia, $paramNuevaLlamadaSQL);
+        if (DB::isError($existe)) {
+            $this->oMainLog->output('ERR: (internal) al agendar llamada: no se '.
+                'puede verificar llamada duplicada - '.$existe->getMessage());
+            $errcode = 500; $errdesc = 'Failed to check call duplicity';
+        	return FALSE;
+        } elseif ($existe > 0) {
+            $errcode = 417; $errdesc = 'Found duplicate scheduled call';
+        	return FALSE;
+        }
+        
+        // Inicio de transacción
+        $this->_dbConn->autoCommit(false);
+
+        // Agregar agente a agendar, si es necesario, e insertar
+        $paramNuevaLlamadaSQL[] = $bMismoAgente ? $sAgente : NULL;
+        $sqlInsertarLlamadaAgendada = <<<SQL_INSERTAR_AGENDAMIENTO
+INSERT INTO calls (id_campaign, phone, date_init, date_end, time_init, time_end, agent)
+VALUES (?, ?, ?, ?, ?, ?, ?)
+SQL_INSERTAR_AGENDAMIENTO;
+        $r = $this->_dbConn->query($sqlInsertarLlamadaAgendada, $paramNuevaLlamadaSQL);
+        if (DB::isError($r)) {
+            $this->oMainLog->output('ERR: (internal) al agendar llamada: no se '.
+                'puede insertar llamada agendada - '.$r->getMessage());
+            $errcode = 500; $errdesc = 'Failed to insert scheduled call';
+            $this->_dbConn->rollback();
+            $this->_dbConn->autoCommit(true);
+        	return FALSE;
+        }
+        $idNuevaLlamada = $this->_dbConn->getOne('SELECT LAST_INSERT_ID()');
+        
+        // Insertar atributos para la nueva llamada
+        foreach ($attrLlamada as $iColNum => $tuplaAttr) {
+        	// Se asume elemento 0 es 'columna', 1 es 'value' en call_attribute
+            $tuplaAttr[] = $iColNum;        // Debería ser posición 2
+            $tuplaAttr[] = $idNuevaLlamada; // Debería ser posición 3
+            $r = $this->_dbConn->query(
+                'INSERT INTO call_attribute (columna, value, column_number, id_call) '.
+                'VALUES (?, ?, ?, ?)',
+                $tuplaAttr);
+            if (DB::isError($r)) {
+                $this->oMainLog->output('ERR: (internal) al agendar llamada: no se '.
+                    'puede insertar atributo de llamada agendada - '.$r->getMessage());
+                $errcode = 500; $errdesc = 'Failed to insert scheduled call attributes';
+                $this->_dbConn->rollback();
+                $this->_dbConn->autoCommit(true);
+            	return FALSE;
+            }
+        }
+        
+        // Final de transacción
+        $this->_dbConn->commit();
+        $this->_dbConn->autoCommit(true);
+        return TRUE;
     }
 
     function _nuevoPromedio($iViejoProm, $n, $x)

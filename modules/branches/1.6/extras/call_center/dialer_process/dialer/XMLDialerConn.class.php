@@ -229,6 +229,9 @@ class XMLDialerConn extends DialerConn
                 case 'setcontact':
                     $response = $this->Request_SetContact($comando);
                     break;
+                case 'schedulecall':
+                    $response = $this->Request_ScheduleCall($comando);
+                    break;
 /*
                 case 'getcallstatus':
                     $response = $this->Request_GetCallStatus($comando);
@@ -357,7 +360,7 @@ class XMLDialerConn extends DialerConn
         foreach (array('getrequestlist', 'login', 'logout', 'loginagent', 'logoutagent', 
             'getagentstatus', 'getcampaignstatus', 'hangup', 'hold', 'unhold', 
             'transfercall', 'getcampaigninfo', 'getcallinfo', 'saveformdata', 
-            'pauseagent', 'unpauseagent', 'getpauses', 'setcontact') 
+            'pauseagent', 'unpauseagent', 'getpauses', 'setcontact', 'schedulecall') 
             as $sReqName)
             $xml_requests->addChild('request', $sReqName);
 
@@ -2000,6 +2003,87 @@ LEER_CAMPANIA;
         } else {
             $xml_unholdResponse->addChild('success');
         }
+        return $xml_response;
+    }
+
+    private function Request_ScheduleCall($comando)
+    {
+        if (is_null($this->_sUsuarioECCP))
+            return $this->_generarRespuestaFallo(401, 'Unauthorized');
+
+        // Verificar que agente está presente
+        if (!isset($comando->agent_number)) 
+            return $this->_generarRespuestaFallo(400, 'Bad request');
+        $sAgente = (string)$comando->agent_number;
+
+        $xml_response = new SimpleXMLElement('<response />');
+        $xml_scheduleResponse = $xml_response->addChild('schedulecall_response');
+
+        // El siguiente código asume formato Agent/9000
+        if (!preg_match('|^Agent/(\d+)$|', $sAgente, $regs)) {
+            $this->_agregarRespuestaFallo($xml_scheduleResponse, 417, 'Invalid agent number');
+            return $xml_response;
+        }
+        $sNumAgente = $regs[1];
+
+        // Verificar que el agente está autorizado a realizar operación
+        if (!$this->hashValidoAgenteECCP($comando)) {
+            $this->_agregarRespuestaFallo($xml_scheduleResponse, 401, 'Unauthorized agent');
+            return $xml_response;
+        }
+
+        // Verificar si el agente está siendo monitoreado
+        $infoSeguimiento = $this->_dialProc->infoSeguimientoAgente($sAgente);
+        if (is_null($infoSeguimiento)) {
+            $this->_agregarRespuestaFallo($xml_scheduleResponse, 404, 'Agent not found or not logged in through ECCP');
+            return $xml_response;
+        }
+        if ($infoSeguimiento['estado_consola'] != 'logged-in') {
+            $this->_agregarRespuestaFallo($xml_scheduleResponse, 417, 'Agent currenty not logged in');
+            return $xml_response;
+        }
+
+        $bMismoAgente = FALSE;
+        $horario = NULL;
+        $sNuevoTelefono = NULL;
+        $sNuevoNombre = NULL;
+        
+        // Verificar si se debe usar el mismo agente (requiere contexto especial)
+        if (isset($comando->sameagent) && (bool)$comando->sameagent)
+            $bMismoAgente = TRUE;
+        
+        // Verificar si se debe usar un nuevo teléfono
+        if (isset($comando->newphone)) $sNuevoTelefono = (string)$comando->newphone;
+        
+        // Verificar si se debe usar un nuevo nombre de contacto
+        if (isset($comando->newcontactname)) $sNuevoNombre = (string)$comando->newcontactname;
+        
+        // Verificar que se tiene un horario establecido
+        if (isset($comando->schedule)) {
+        	if (isset($comando->schedule->date_init) && isset($comando->schedule->date_end) && 
+                isset($comando->schedule->time_init) && isset($comando->schedule->time_end)) {
+                $horario = array(
+                    'date_init' =>  (string)$comando->schedule->date_init,
+                    'date_end'  =>  (string)$comando->schedule->date_end,
+                    'time_init' =>  (string)$comando->schedule->time_init,
+                    'time_end'  =>  (string)$comando->schedule->time_end,
+                );
+            } else {
+            	$this->_agregarRespuestaFallo($xml_scheduleResponse, 400, 'Bad request: incomplete schedule');
+                return $xml_response;
+            }
+        }
+
+        // Ejecutar el agendamiento de la llamada
+        $errcode = $errdesc = NULL;
+        $bExito = $this->_dialProc->agendarLlamadaAgente($sAgente, $horario, 
+            $bMismoAgente, $sNuevoTelefono, $sNuevoNombre, $errcode, $errdesc);
+        if (!$bExito) {
+            $this->_agregarRespuestaFallo($xml_scheduleResponse, $errcode, $errdesc);
+        } else {
+            $xml_scheduleResponse->addChild('success');
+        }
+
         return $xml_response;
     }
 

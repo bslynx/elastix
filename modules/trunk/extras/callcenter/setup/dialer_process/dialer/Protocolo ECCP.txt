@@ -1889,7 +1889,6 @@ Requerimiento "hangup"
 Este requerimiento manda a colgar la llamada en curso que está atendiendo el 
 agente. Se requiere que el agente esté logoneado y tenga una llamada activa.
 
-
 Atributos o argumentos:
 * agent_number: Agente que se va a sacar de pausa. Este identificador está de la
   forma 'Agent/9000'.
@@ -1937,6 +1936,167 @@ Para error Asterisk al momento de colgar la llamada:
         <failure>
             <code>500</code>
             <message>Cannot hangup agent call</message>
+        </failure>
+    </hangup_response>
+</response>
+
+
+Requerimiento "schedulecall"
+
+Este requerimiento intenta crear un nuevo registro de llamada en la campaña a 
+partir de la llamada que está atendiendo actualmente. Este requerimiento sólo
+funciona si el agente está atendiendo una llamada de una campaña saliente. Para
+la llamada reagendada, es posible especificar un intervalo de fechas (dentro
+del intervalo de fechas de la campaña) donde se debe de intentar la llamada
+nueva, así como un intervalo de horas en la que se intenta la llamada (también
+dentro del intervalo de horas de la campaña). También es posible marcar la 
+llamada para que se intente contactar al mismo agente que atendió la llamada 
+original, siempre que esté definido el contexto "llamada-agendada" en los
+contextos de Asterisk. Opcionalmente (por paridad con capacidades de la consola
+web para el agente) es posible especificar un número distinto para marcar, así
+como un nuevo nombre de contacto. 
+
+Los atributos que se hayan definido en la carga de las llamadas, se heredan al
+agendar la llamada. Los valores recogidos en formularios (si existen) para la 
+llamada NO SE HEREDAN en la llamada agendada.
+
+Atributos o argumentos:
+* agent_number: Agente que va a agendar la llamada. Este identificador está de la
+  forma 'Agent/9000'. Se espera que el agente esté atendiendo una llamada de 
+  campaña saliente.
+* agent_hash: Hash de autenticación para el agente.
+* schedule: Elemento que agrupa los siguientes subelementos:
+  * date_init: Fecha desde la cual debe intentarse llamada agendada. Formato YYYY-MM-DD.
+  * date_end: Fecha hasta la cual debe intentarse llamada agendada. Formato YYYY-MM-DD.
+  * time_init: Inicio de horario en que se intenta la llamada agendada. Formato HH:MM:SS.
+  * time_end: Final de horario en que se intenta la llamada agendada. Formato HH:MM:SS.
+  Si se especifica el elemento 'schedule', todos los subelementos son obligatorios.
+  Si no se especifica 'schedule', se asume que la llamada puede realizarse en 
+  cualquier momento dentro del horario de la campaña. Como detalle de 
+  implementación, la llamada tenderá a realizarse al final de todas las otras
+  llamadas.
+* sameagent: Si se especifica 1, se marcará la llamada para que se dirija al 
+  mismo agente que atendió la llamada original. Esto requiere obligatoriamente
+  especificar el horario con el elemento 'schedule'. Si 'sameagent' se omite o
+  se especifica como 0, la llamada será ruteada a cualquier agente disponible
+  en el momento de ser realizada.
+* newphone: Si se especifica, se marcará a este número en lugar de al número 
+  asociado a la llamada original.
+* newcontactname: Si se especificia, el primer atributo de la llamada (que se
+  asume es el nombre del contacto) se sobreescribe con el texto indicado. 
+  Mantenido por compatibilidad con la consola web.
+
+Ejemplo:
+<request id="14">
+    <schedulecall>
+        <agent_number>Agent/9000</agent_number>
+        <agent_hash>XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX</agent_hash>
+        <schedule>
+            <date_init>2011-08-23</date_init>
+            <date_end>2011-08-25</date_end>
+            <time_init>09:25:00</time_init>
+            <time_init>17:30:00</time_init>
+        </schedule>
+        <sameagent>1</sameagent>
+        <newphone>5551234</newphone>
+        <newcontactname>John Doe</newcontactname>
+    </schedulecall>
+</request>
+
+Respuesta:
+Para caso de éxito:
+<response id="14">
+    <hangup_response>
+        <success/>
+    </hangup_response>
+</response>
+
+Para agente inválido:
+<response id="14">
+    <hangup_response>
+        <failure>
+            <code>404</code>
+            <message>Specified agent not found</message>
+        </failure>
+    </hangup_response>
+</response>
+
+Para agente que no está atendiendo llamada, o que no está logoneado:
+<response id="14">
+    <hangup_response>
+        <failure>
+            <code>417</code>
+            <message>Agent not in call</message>
+        </failure>
+    </hangup_response>
+</response>
+
+Para horario incompleto
+<response id="14">
+    <hangup_response>
+        <failure>
+            <code>400</code>
+            <message>Bad request: incomplete schedule</message>
+        </failure>
+    </hangup_response>
+</response>
+
+Para número de teléfono no numérico
+<response id="14">
+    <hangup_response>
+        <failure>
+            <code>400</code>
+            <message>Bad request: invalid new phone</message>
+        </failure>
+    </hangup_response>
+</response>
+
+Para formatos de fecha inválidos en horario
+<response id="14">
+    <hangup_response>
+        <failure>
+            <code>400</code>
+            <message>Bad request: invalid date_init</message>
+        </failure>
+    </hangup_response>
+</response>
+
+Para fecha de inicio anterior a la fecha actual
+<response id="14">
+    <hangup_response>
+        <failure>
+            <code>400</code>
+            <message>Bad request: date_init before current date</message>
+        </failure>
+    </hangup_response>
+</response>
+
+Para agente que está atendiendo llamada que no es de campaña saliente
+<response id="14">
+    <hangup_response>
+        <failure>
+            <code>417</code>
+            <message>Not in outgoing call</message>
+        </failure>
+    </hangup_response>
+</response>
+
+Para fecha fuera del rango indicado por la campaña
+<response id="14">
+    <hangup_response>
+        <failure>
+            <code>417</code>
+            <message>Supplied date range outside campaign range</message>
+        </failure>
+    </hangup_response>
+</response>
+
+Para llamada agendada duplicada en misma fecha y hora y número telefónico
+<response id="14">
+    <hangup_response>
+        <failure>
+            <code>417</code>
+            <message>Found duplicate scheduled call</message>
         </failure>
     </hangup_response>
 </response>
