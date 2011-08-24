@@ -75,6 +75,8 @@ if (file_exists($path_script_db))
     $pDB->disconnect();
 }
 
+instalarContextosEspeciales();
+
 exit($return);
 
 function quitarColumnaSiExiste($pDB, $sDatabase, $sTabla, $sColumna)
@@ -120,6 +122,46 @@ EXISTE_COLUMNA;
         if (!$r) fputs(STDERR, "ERR: ".$pDB->errMsg."\n");
     } else {
         fputs(STDERR, "INFO: Ya existe $sTabla.$sColumna en base de datos $sDatabase.\n");
+    }
+}
+
+/**
+ * Procedimiento que instala algunos contextos especiales requeridos para algunas
+ * funcionalidades del CallCenter.
+ */
+function instalarContextosEspeciales()
+{
+	$sArchivo = '/etc/asterisk/extensions_custom.conf';
+    $sInicioContenido = "; BEGIN ELASTIX CALL-CENTER CONTEXTS DO NOT REMOVE THIS LINE\n";
+    $sFinalContenido =  "; END ELASTIX CALL-CENTER CONTEXTS DO NOT REMOVE THIS LINE\n";
+    
+    // Cargar el archivo, notando el inicio y el final del área de contextos de callcenter
+    $bEncontradoInicio = $bEncontradoFinal = FALSE;
+    $contenido = array();
+    foreach (file($sArchivo) as $sLinea) {
+    	if ($sLinea == $sInicioContenido) {
+    		$bEncontradoInicio = TRUE;
+        } elseif ($sLinea == $sFinalContenido) {
+            $bEncontradoFinal = TRUE;
+    	} elseif (!$bEncontradoInicio || $bEncontradoFinal) {
+    		$contenido[] = $sLinea;
+    	}
+    }
+    if ($bEncontradoInicio xor $bEncontradoFinal) {
+    	fputs(STDERR, "ERR: no se puede localizar correctamente segmento de contextos de Call Center\n");
+    } else {
+    	$contenido[] = $sInicioContenido;
+        $contenido[] = <<<CONTEXTOS_CALLCENTER
+
+[llamada_agendada]
+exten => _X.,1,NoOP("NUMERO DE AGENTE -------------- \${EXTEN}")
+exten => _X.,n,Dial(Agent/\${EXTEN},300,t)
+
+
+CONTEXTOS_CALLCENTER;
+        $contenido[] = $sFinalContenido;
+        file_put_contents($sArchivo, $contenido);
+        chown($sArchivo, 'asterisk'); chgrp($sArchivo, 'asterisk');
     }
 }
 ?>
