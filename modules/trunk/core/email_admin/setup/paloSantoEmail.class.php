@@ -559,9 +559,9 @@ class paloEmail {
 	$output=array();
 	$configPostfix2 = isPostfixToElastix2();
 	if($configPostfix2)
-	    exec("sudo -u root /usr/sbin/saslpasswd2 -d $email",$output);
+	    exec("sudo -u root /usr/sbin/saslpasswd2 -d ".escapeshellarg($email),$output);
 	else
-	    exec("sudo -u root /usr/sbin/saslpasswd2 -d $username@".SASL_DOMAIN,$output);
+	    exec("sudo -u root /usr/sbin/saslpasswd2 -d ".escapeshellarg($username)."@".SASL_DOMAIN,$output);
 	if(is_array($output) && count($output)>0){
 	    foreach($output as $linea)
 		$error.=$linea."<br>";
@@ -605,9 +605,9 @@ class paloEmail {
 	$output=array();
 	$configPostfix2 = isPostfixToElastix2();
 	if($configPostfix2){
-	    exec("echo \"$clave\" | sudo -u root /usr/sbin/saslpasswd2 -c $email",$output);
+	    exec("echo ".escapeshellarg($clave)." | sudo -u root /usr/sbin/saslpasswd2 -c ".escapeshellarg($email),$output);
 	}else{
-	    exec("echo \"$clave\" | sudo -u root /usr/sbin/saslpasswd2 -c $username -u ".SASL_DOMAIN,$output);
+	    exec("echo ".escapeshellarg($clave)." | sudo -u root /usr/sbin/saslpasswd2 -c ".escapeshellarg($username)." -u ".SASL_DOMAIN,$output);
 	}
 
 	if(is_array($output) && count($output)>0){
@@ -642,7 +642,7 @@ class paloEmail {
 	    $username.='@'.SASL_DOMAIN;
 	}
 	exec("sudo -u root chown asterisk /etc/postfix/virtual");
-	exec("echo \"$email \t $username\" >> /etc/postfix/virtual",$output);
+	exec("echo ".escapeshellarg("$email \t $username")." >> /etc/postfix/virtual",$output);
 
 	if(is_array($output) && count($output)>0){
 	    foreach($output as $linea)
