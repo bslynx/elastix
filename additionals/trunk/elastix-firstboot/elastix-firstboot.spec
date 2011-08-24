@@ -1,7 +1,7 @@
 Summary: Elastix First Boot Setup
 Name:    elastix-firstboot
-Version: 2.0.4
-Release: 8
+Version: 2.2.0
+Release: 1
 License: GPL
 Group:   Applications/System
 Source0: %{name}-%{version}.tar.bz2
@@ -30,7 +30,9 @@ rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT/etc/init.d/
 mkdir -p $RPM_BUILD_ROOT/var/spool/elastix-mysqldbscripts/
 mkdir -p $RPM_BUILD_ROOT/usr/share/elastix-firstboot/
+mkdir -p $RPM_BUILD_ROOT/usr/bin/
 cp elastix-firstboot $RPM_BUILD_ROOT/etc/init.d/
+cp change-passwords  $RPM_BUILD_ROOT/usr/bin/
 mv compat-dbscripts/ $RPM_BUILD_ROOT/usr/share/elastix-firstboot/
 
 %post
@@ -58,7 +60,7 @@ if [ $1 -eq 1 ] ; then
 			echo "mysqlrootpwd=eLaStIx.2oo7" >> /etc/elastix.conf
 		fi
                 if [ -f /etc/elastix.conf  ] ; then
-                        grep 'cyrususerpwd' /etc/elastix.conf
+                        grep 'cyrususerpwd' /etc/elastix.conf &> /dev/null
                         res=$?
                         if [ $res != 0 ] ; then
                             echo "cyrususerpwd=palosanto" >> /etc/elastix.conf
@@ -76,7 +78,7 @@ if [ $1 -eq 2 ] ; then
 		echo "mysqlrootpwd=eLaStIx.2oo7" >> /etc/elastix.conf
 	fi
 	if [ -f /etc/elastix.conf  ] ; then
-		grep 'cyrususerpwd' /etc/elastix.conf
+		grep 'cyrususerpwd' /etc/elastix.conf &> /dev/null
 		res=$?
 		if [ $res != 0 ] ; then
 		    echo "cyrususerpwd=palosanto" >> /etc/elastix.conf
@@ -94,8 +96,18 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/elastix-firstboot/compat-dbscripts/01-asteriskcdrdb.sql
 /usr/share/elastix-firstboot/compat-dbscripts/02-asteriskuser-password.sql
 /usr/share/elastix-firstboot/compat-dbscripts/08-schema-vtiger.sql
+/usr/bin/change-passwords
 
 %changelog
+* Wed Aug 24 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-1
+- NEW: new script that change the passwords of mysql, freePBX, 
+  user admin, fop, cyrus
+  SVN Rev[2894]
+- CHANGED: elastix-firstboot, if mysql is not running, elastix-firstboot
+  tries to start the service, also the fop password in /etc/amportal.conf
+  is set with the password entered for elastix admin
+  SVN Rev[2892]
+
 * Wed Aug 10 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-9
 - FIXED: in script elastix firstboot the step to add word
   "localhost" after "127.0.0.1" from /etc/hosts was improved
