@@ -94,6 +94,9 @@ function _moduleContent(&$smarty, $module_name)
 	case "view":
 	    $content = viewDetailAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
 	    break;
+	case "export":
+	    $content = exportAccounts($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+	    break;
         default:
             $content = viewFormAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
             break;
@@ -126,20 +129,19 @@ function viewFormAccount($smarty, $module_name, $local_templates_dir, &$pDB, $ar
     $oFilterForm = new paloForm($smarty, $arrFormElements);
     $smarty->assign("SHOW", $arrLang["Show"]);
     $smarty->assign("CREATE_ACCOUNT", $arrLang["Create Account"]);
-    $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/accounts_filter.tpl", "", $_POST);
+    
 
 
-    $oGrid->pagingShow(true);
+   // $oGrid->pagingShow(true);
     $url = array("menu" => $module_name);
     $oGrid->setURL($url);
     $oGrid->setTitle(_tr("Email Account List"));
 
-    $total = 0;
-    $limit  = 20;
-    $oGrid->setLimit($limit);
-    $oGrid->setTotal($total);
-    $offset = $oGrid->calculateOffset();
-    
+    //$total = 0;
+    //$limit  = 20;
+    //$oGrid->setLimit($limit);
+    // $oGrid->setTotal($total);
+    //$offset = $oGrid->calculateOffset();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -174,11 +176,13 @@ function viewFormAccount($smarty, $module_name, $local_templates_dir, &$pDB, $ar
 	}
     }
     $smarty->assign("id_domain",$id_domain);
+    $smarty->assign("LINK", "?menu=$module_name&action=export&domain=$id_domain&rawmode=yes");
+    $smarty->assign("EXPORT", _tr("Export Accounts"));
 
     $oGrid->setData($arrData);
     $arrColumns = array(_tr("Account Name"),_tr("Used Space"),);
     $oGrid->setColumns($arrColumns);
-    $oGrid->setData($arrData);
+    $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/accounts_filter.tpl", "", $_POST);
     $oGrid->showFilter(trim($htmlFilter));
     $content = $oGrid->fetchGrid();
     return $content;
@@ -198,6 +202,14 @@ function viewDetailAccount($smarty, $module_name, $local_templates_dir, &$pDB, $
     $domain_name = getParameter("domain");
     $address     = getParameter("address");
 
+    if(getParameter("option_create_account") && getParameter("option_create_account")=="by_file"){
+	$smarty->assign("check_file", "checked");
+	$smarty->assign("DISPLAY_SAVE_ACCOUNT", "style=display:none;");
+    }
+    else{
+	$smarty->assign("check_record", "checked");
+	$smarty->assign("DISPLAY_FILE_UPLOAD", "style=display:none;");
+    }
     if(getParameter("action") == "view"){
 	$oForm->setViewMode(); // Esto es para activar el modo "preview"
     }elseif(getParameter("submit_create_account") || getParameter("save")){
@@ -207,7 +219,7 @@ function viewDetailAccount($smarty, $module_name, $local_templates_dir, &$pDB, $
 	$domain_name = isset($domain_name)?$domain_name:$id_domain;
 	$id_domain = $domain_name;
 	$arrDomain= $pEmail->getDomains($domain_name);
-	if($arrDomain[0][1]=="" || $domain_name==0){
+	if(!is_array($arrDomain) || count($arrDomain)==0 || $domain_name==0){
 	    $smarty->assign("mb_title", $arrLang["Error"]);
 	    $smarty->assign("mb_message", _tr("You must select a domain to create an account"));
 	    $content = viewFormAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
@@ -248,6 +260,10 @@ function viewDetailAccount($smarty, $module_name, $local_templates_dir, &$pDB, $
     $smarty->assign("DELETE", $arrLang["Delete"]);
     $smarty->assign("APPLY_CHANGES", $arrLang["Apply changes"]);
     $smarty->assign("CONFIRM_CONTINUE", $arrLang["Are you sure you wish to continue?"]);
+    $smarty->assign("account", $arrLang["Account"]);
+    $smarty->assign("file_upload", $arrLang["File Upload"]);
+    $smarty->assign("file_Label", $arrLang["File Upload"]);
+    $smarty->assign("INFO", $arrLang["The format of the file must be csv (file.csv), like the following"].":<br /><br /><b>".$arrLang["Username1,Password1,Quota1(Kb)"]."</b><br /><b>".$arrLang["Username2,Password2,Quota2(Kb)"]."</b><br /><br />".$arrLang["The value of Quota(Kb) must be a number, like 1000 or 2000, etc"]);
     $content = $oForm->fetchForm("$local_templates_dir/form_account.tpl", $typeForm, $arrTmp); // hay que pasar el arreglo
     return $content;
 }
@@ -255,16 +271,97 @@ function viewDetailAccount($smarty, $module_name, $local_templates_dir, &$pDB, $
 
 function saveAccount($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
 {
+    if(getParameter("option_create_account") && getParameter("option_create_account")=="by_file"){
+	if(isset($_FILES["file_accounts"])){
+	    if($_FILES["file_accounts"]["name"] != ""){
+		$smarty->assign("file_accounts_name", $_FILES['file_accounts']['name']);
+		if (!preg_match("/^(\w|-|\.|\(|\)|\s)+\.(csv)$/",$_FILES['file_accounts']['name'])){
+		    $smarty->assign("mb_title", $arrLang['ERROR'].":");
+		    $smarty->assign("mb_message", $arrLang["Possible file upload attack. The file must end in .csv"]);
+		    return viewDetailAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+		}
+		if(!move_uploaded_file($_FILES['file_accounts']['tmp_name'], "/tmp/$_FILES[file_accounts][name]")){
+		    $smarty->assign("mb_title", $arrLang['ERROR'].":");
+		    $smarty->assign("mb_message", $arrLang["Possible file upload attack. The file must end in .csv"]);
+		    return viewDetailAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+		}
+		$file = file("/tmp/$_FILES[file_accounts][name]");
+		$arrErrorAccounts = array();
+		$arrAccounts = array();
+		foreach($file as $account){
+		    $account = explode(",",$account);
+		    if(count($account) >= 3){
+			$_POST["address"] = $account[0];
+			$_POST["password1"] = $account[1];
+			$_POST["password2"] = $account[1];
+			$_POST["quota"] = (int)$account[2];
+			$quotaIsTooGreat = false;
+			if($_POST["quota"] > 5242880){
+			    $quotaIsTooGreat = true;
+			    $_POST["quota"] = 5242880;
+			}
+			if(saveOneAccount($smarty, $pDB, $arrLang, true)){
+			    if($quotaIsTooGreat)
+				$arrAccounts[] = $account[0]." ".$arrLang["The quota was reduced to the maximum of 5242880KB, if you want to more than this, edit this account"];
+			    else
+				$arrAccounts[] = $account[0];
+			}
+			else
+			    $arrErrorAccounts[] = $account[0];
+		    }
+		    else
+			$arrErrorAccounts[] = $account[0];
+		}
+		$message = "";
+		$domain = getParameter("domain_name");
+		if(count($arrAccounts)>0){
+		    $message .= "<b>".$arrLang["The following accounts were created"].":</b><br />";
+		    foreach($arrAccounts as $account)
+			$message .= htmlentities($account."@$domain")."<br />";
+		}
+		if(count($arrErrorAccounts)>0){
+		    $message .= "<b>".$arrLang["The following accounts could not be created"].":</b><br />";
+		    foreach($arrErrorAccounts as $errAccounts)
+			$message .= htmlentities($errAccounts."@$domain")."<br />";
+		}
+		$smarty->assign("mb_message",$message);
+		unlink("/tmp/$_FILES[file_accounts][name]");
+		return viewFormAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+	    }
+	    else{
+		$smarty->assign("mb_title", $arrLang['ERROR'].":");
+		$smarty->assign("mb_message", $arrLang["Error reading the file"]);
+		return viewDetailAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+	    }
+	}
+	else{
+	    $smarty->assign("mb_title", $arrLang['ERROR'].":");
+	    $smarty->assign("mb_message", $arrLang["Error reading the file"]);
+	    return viewDetailAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+	}
+    }
+    else{
+	if(saveOneAccount($smarty, $pDB, $arrLang, false))
+	    return viewFormAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+	else
+	    return viewDetailAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+    }
+}
+
+function saveOneAccount($smarty, &$pDB, $arrLang, $isFromFile)
+{
     $pEmail = new paloEmail($pDB);
     $arrFormElements = createFieldFormNewAccount($arrLang);
     $noCambioPass = FALSE;
     $oForm = new paloForm($smarty, $arrFormElements);
+    
     $password1   = getParameter("password1");
     $password2   = getParameter("password2");
     $id_domain   = getParameter("id_domain");
     $userName    = getParameter("username");
     $domain_name = getParameter("domain_name");
-
+    $address	 = getParameter("address");
+    $quota	 = getParameter("quota");
     $error = "";
     $bExito = FALSE;
 
@@ -277,22 +374,39 @@ function saveAccount($smarty, $module_name, $local_templates_dir, &$pDB, $arrCon
 
     if(!$oForm->validateForm($_POST)) {
 	// Manejo de Error
-	$smarty->assign("mb_title", $arrLang["Validation Error"]);
-	$arrErrores=$oForm->arrErroresValidacion;
-	$strErrorMsg = "<b>{$arrLang['The following fields contain errors']}:</b><br>";
-	foreach($arrErrores as $k=>$v) {
-	    $strErrorMsg .= "$k, ";
+	if(!$isFromFile){
+	    $arrErrores=$oForm->arrErroresValidacion;
+	    $strErrorMsg = "<b>{$arrLang['The following fields contain errors']}:</b><br>";
+	    foreach($arrErrores as $k=>$v) {
+		$strErrorMsg .= "$k, ";
+	    }
+	    $strErrorMsg .= "";
+	    $smarty->assign("mb_title", $arrLang["Validation Error"]);
+	    $smarty->assign("mb_message", $strErrorMsg);
 	}
-	$strErrorMsg .= "";
-	$smarty->assign("mb_message", $strErrorMsg);
-	$content = viewDetailAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
-    } else {
+	$content = false;
+    }elseif(!preg_match("/^[a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*$/",$address) && isset($address) && $address!=""){ 
+	if(!$isFromFile){
+	    $smarty->assign("mb_title", $arrLang["Validation Error"]);
+	    $smarty->assign("mb_message", $arrLang["Wrong format for username"]);
+	}
+	$content = false;
+    }elseif($quota <= 0){
+	if(!$isFromFile){
+	    $smarty->assign("mb_title", $arrLang["Validation Error"]);
+	    $smarty->assign("mb_message", $arrLang["Quota must be greater than 0"]);
+	}
+	$content = false;
+    }
+    else{
 	if($noCambioPass) $password1 = $password2 = '';
 	if($password1 != $password2) {
 	    // Error claves
-	    $smarty->assign("mb_title", $arrLang["Error"]);
-	    $smarty->assign("mb_message", $arrLang["The passwords don't match"]);
-	    $content = viewDetailAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+	    if(!$isFromFile){
+		$smarty->assign("mb_title", $arrLang["Error"]);
+		$smarty->assign("mb_message", $arrLang["The passwords don't match"]);
+	    }
+	    $content = false;
 	}else{
 	    $pDB->beginTransaction();
 	    if(getParameter("save"))
@@ -300,27 +414,66 @@ function saveAccount($smarty, $module_name, $local_templates_dir, &$pDB, $arrCon
 	    else
 		$bExito = edit_email_account($pDB,$error);
 	    if (!$bExito || ($bExito && !empty($error))){
-		$smarty->assign("mb_message", _tr("Error applying changes").". ".$error);
+		if(!$isFromFile)
+		    $smarty->assign("mb_message", _tr("Error applying changes").". ".$error);
 		$pDB->rollBack();
-		$content = viewDetailAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+		$configPostfix2 = isPostfixToElastix2();// in misc.lib.php
+		if($configPostfix2)
+		    $username=$_POST['address'].'@'.$domain_name;
+		else
+		    $username=$_POST['address'].'.'.$domain_name;
+		$pEmail->eliminar_cuenta($pDB,$username,"",false);
+		$content = false;
 	    }
 	    else{
 		$pDB->commit();
-		$smarty->assign("mb_message", _tr("Changes Applied successfully"));
-		$content = viewFormAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+		if(!$isFromFile)
+		    $smarty->assign("mb_message", _tr("Changes Applied successfully"));
+		$content = true;
 	    }
 	}
 	/////////////////////////////////
     }
 
-    $smarty->assign("id_domain", $id_domain);
-    $smarty->assign("username", $userName);
-    $smarty->assign("old_quota", getParameter("quota"));
-    $smarty->assign("account_name_label", $arrLang['Account Name']);
-
+    if(!$isFromFile){
+	$smarty->assign("id_domain", $id_domain);
+	$smarty->assign("username", $userName);
+	$smarty->assign("old_quota", getParameter("quota"));
+	$smarty->assign("account_name_label", $arrLang['Account Name']);
+    }
     return $content;
 }
 
+function exportAccounts($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
+{
+    $pEmail = new paloEmail($pDB);
+    $id_domain = getParameter("domain");
+    $arrAccounts = $pEmail->getAccountsByDomain($id_domain);
+    $domainName = $pEmail->getDomains($id_domain);
+    if(isset($domainName[0][1]))
+	$domainName = $domainName[0][1];
+    else
+	$domainName = "no_domain";
+    $text = "";
+    if(is_array($arrAccounts) && count($arrAccounts)>0){
+	foreach($arrAccounts as $account){
+	    if($text != "")
+		$text .= "\n";
+	    $user = explode("@",$account[0]);
+	    $text .= $user[0].",".$account[1].",".$account[3];
+	}
+    }
+    header("Pragma: public");
+    header("Expires: 0");
+    header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+    header("Cache-Control: public");
+    header("Content-Description: csv file");
+    header("Content-Type: application/download");
+    header("Content-Disposition: attachment; filename=$domainName"."_accounts.csv");
+    header("Content-Transfer-Encoding: binary");
+    header("Content-length: ".strlen($text));
+    echo $text;
+}
 
 function deleteAccount($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
 {
@@ -467,7 +620,7 @@ function obtener_quota_usuario($username)
             $q_total = $quota['qmax'];
             if (! $q_total == 0){
                 $q_percent = number_format((100*$q_used/$q_total),2);
-                $tamano_usado="$quota[used] Kb / $quota[qmax] Kb ($q_percent%)";
+                $tamano_usado="$quota[used] KB / $quota[qmax] KB ($q_percent%)";
             } 
             else {
                 $tamano_usado=$arrLang["Could not obtain used disc space"];
@@ -494,7 +647,7 @@ function edit_email_account($pDB,$error)
         $bool = $pEmail->crear_usuario_correo_sistema($username,$username,$_POST['password1'],$error,$virtual); //False al final para indicar que no cree virtual
         if(!$bool){
           $error_pwd=$arrLang["Password could not be changed"];
-          $bExito=FALSE;
+	  $bExito=FALSE;
         }
     }
     if($_POST['old_quota']!=$_POST['quota']){
@@ -515,7 +668,6 @@ function edit_email_account($pDB,$error)
     }
     if ($bExito && !empty($error_pwd))
         $error=$error_pwd;
-
     return $bExito;
 }
 
@@ -527,7 +679,7 @@ function createFieldFormNewAccount($arrLang)
                                                     "INPUT_TYPE"             => "TEXT",
                                                     "INPUT_EXTRA_PARAM"      => "",
                                                     "VALIDATION_TYPE"        => "ereg",
-                                                    "VALIDATION_EXTRA_PARAM" => "^([a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*)$"),
+                                                    "VALIDATION_EXTRA_PARAM" => "^[a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*$"),
                              "quota"   => array("LABEL"                  => $arrLang["Quota (Kb)"],
                                                     "REQUIRED"               => "yes",
                                                     "INPUT_TYPE"             => "TEXT",
@@ -559,10 +711,12 @@ function createFieldFormAccount($arrLang, $arrDominios)
 				      "INPUT_TYPE"             => "SELECT",
 				      "INPUT_EXTRA_PARAM"      => $arrDominios,
 				      "VALIDATION_TYPE"        => "integer",
-				      "VALIDATION_EXTRA_PARAM" => ""),
+				      "VALIDATION_EXTRA_PARAM" => "",
+				      "ONCHANGE"	       => "javascript:submit();"),
 		);
     return $arrFields;
 }
+
 function getAction()
 {
     if(getParameter("submit_create_account")) //Get parameter by POST (submit)
@@ -571,8 +725,6 @@ function getAction()
         return "save";
     else if(getParameter("delete"))
         return "delete";
-    else if(getParameter("show"))
-	return "report";
     else if(getParameter("edit"))
 	return "edit";
     else if(getParameter("apply_changes"))
@@ -581,6 +733,8 @@ function getAction()
         return "report";
     else if(getParameter("action")=="view") //Get parameter by GET (command pattern, links)
         return "view";
+    else if(getParameter("action")=="export")
+	return "export";
     else
         return "report";
 }

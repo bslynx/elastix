@@ -7,8 +7,8 @@
       <tr class="letra12">
         <td width="10%" align="right">{$domain.LABEL}: </td>
         <td width="12%" align="left" nowrap>{$domain.INPUT}</td>
-        <td width="12%" align="center"><input class="button" type="submit" name="show" value="{$SHOW}"></td>
-        <td colspan="3" align="right"><input class="button" type="submit" name="submit_create_account" value="{$CREATE_ACCOUNT}"></td>
+        <td colspan="3" align="right"><input class="button" type="submit" name="submit_create_account" value="{$CREATE_ACCOUNT}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<a href="{$LINK}">{$EXPORT}</a></td>
       </tr>
    </table>
   </td>

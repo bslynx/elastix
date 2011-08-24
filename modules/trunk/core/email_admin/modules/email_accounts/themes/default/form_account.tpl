@@ -1,4 +1,4 @@
-<form method="POST" action='?menu=email_accounts'>
+<form method="POST" enctype='multipart/form-data' action='?menu=email_accounts'>
 <table width="99%" border="0" cellspacing="0" cellpadding="0" align="center">
 <tr class="moduleTitle">
   <td class="moduleTitle" valign="middle">&nbsp;&nbsp;<img src="images/1x1.gif" border="0" align="absmiddle">&nbsp;&nbsp;{$title}</td>
@@ -27,22 +27,41 @@
 <tr>
   <td>
     <table width="100%" border="0" cellspacing="0" cellpadding="0" class="tabForm">
-      <tr>
-        {if $mode eq 'input'}
-	        <td width="15%">{$address.LABEL}: <span  class="required">*</span></td>
-	        <td width="35%">{$address.INPUT}{$domain_name}</td>
-        {else}
-	        <td width="15%">{$account_name_label}: <span  class="required">*</span></td>
-	        <td width="35%">{$username}</td>
-        {/if}
-            <td width="15%">{$quota.LABEL}: <span  class="required">*</span></td>
-            <td width="35%">{$quota.INPUT}</td>
+      {if $mode eq 'input'}
+	  <tr class="letra12">
+	      <td colspan='2'>
+		  <input type="radio" name="option_create_account" id="by_account" value="by_account" {$check_record} onclick="Activate_Option()" />
+		  {$account} &nbsp;&nbsp;&nbsp;
+		  <input type="radio" name="option_create_account" id="upload_file" value="by_file" {$check_file} onclick="Activate_Option()" />
+		  {$file_upload}
+	      </td>
+	  </tr>
+      {/if}
+
+      <tr id="save_by_account1" {$DISPLAY_SAVE_ACCOUNT}>
+	{if $mode eq 'input'}
+		<td width="15%"><b>{$address.LABEL}:</b> <span  class="required">*</span></td>
+		<td width="35%">{$address.INPUT}{$domain_name}</td>
+	{else}
+		<td width="15%"><b>{$account_name_label}:</b> <span  class="required">*</span></td>
+		<td width="35%">{$username}</td>
+	{/if}
+	    <td width="15%"><b>{$quota.LABEL}:</b> <span  class="required">*</span></td>
+	    <td width="35%">{$quota.INPUT}</td>
       </tr>
-      <tr>
-	        <td width="20%">{$password1.LABEL}: <span  class="required">*</span></td>
-            <td width="30%">{$password1.INPUT}</td>
-	        <td width="20%">{$password2.LABEL}: <span class="required">*</span></td>
-	        <td width="30%">{$password2.INPUT}</td>
+      <tr id="save_by_account2" {$DISPLAY_SAVE_ACCOUNT}>
+		<td width="20%"><b>{$password1.LABEL}:</b> <span  class="required">*</span></td>
+	    <td width="30%">{$password1.INPUT}</td>
+		<td width="20%"><b>{$password2.LABEL}:</b> <span class="required">*</span></td>
+		<td width="30%">{$password2.INPUT}</td>
+      </tr>
+
+      <tr id="save_by_file" {$DISPLAY_FILE_UPLOAD}>
+	  <td align="left" width='13%'><b>{$file_Label}</b></td>
+	  <td align="left">
+	      <input name="file_accounts" id="file_accounts" type="file" value="{$file_accounts_name}" size='30' />
+	  </td>
+	  <td align="left" width="55%"><i>{$INFO}</i></td>
       </tr>
     </table>
     </td>
