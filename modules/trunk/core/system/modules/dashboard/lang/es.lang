@@ -139,7 +139,7 @@ $arrLangModule=array(
 "Could not get web server information. You may not have internet access or the web server is down" => "No se pudo obtener la información del servidor web. Puede que usted no tenga acceso a internet o el servidor web esté caído",
 "No News to display" => "No hay noticias para mostrar",
 "Nothing to show yet" => "Nada que mostrar todavía",
-"does not exist locally" => "no existe localmente",
+"does not exist locally or password is incorrect" => "no existe localmente o la clave es incorrecta",
 "The following database could not be found" => "La siguiente base de datos no pudo ser encontrada"
 );
 ?>

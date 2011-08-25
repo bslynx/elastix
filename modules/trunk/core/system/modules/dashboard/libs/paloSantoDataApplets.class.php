@@ -351,12 +351,12 @@ class paloSantoDataApplets
 		    $email     = "{$arrData['login']}@{$arrData['domain']}";
 		    if(file_exists("$arrConf[elastix_dbdir]/email.db")){
 			$pDBemail = new paloDB("sqlite3:///$arrConf[elastix_dbdir]/email.db");
-			if($this->emailExists($email,$pDBemail)){
-			    $passw     = isset($arrData['password'])?$arrData['password']:"";
+			$passw     = isset($arrData['password'])?$arrData['password']:"";
+			if($this->emailExists($email,$pDBemail) && $this->isPasswordCorrect($email,$passw,$pDBemail)){	    
 			    $systemStatus= $objUserInfo->getSystemStatus($email,$passw);
 			}
 			else
-			    $systemStatus = "$email "._tr("does not exist locally");
+			    $systemStatus = "$email "._tr("does not exist locally or password is incorrect");
 		    }
 		    else
 			$systemStatus = _tr("The following database could not be found").": $arrConf[elastix_dbdir]/email.db";
@@ -415,13 +415,13 @@ class paloSantoDataApplets
 		    $email     = "{$arrData['login']}@{$arrData['domain']}";
 		    if(file_exists("$arrConf[elastix_dbdir]/email.db")){
 			  $pDBemail = new paloDB("sqlite3:///$arrConf[elastix_dbdir]/email.db");
-			  if($this->emailExists($email,$pDBemail)){
-			      $passw     = isset($arrData['password'])?$arrData['password']:"";
-			      $numRegs   = 8;
+			  $passw    = isset($arrData['password'])?$arrData['password']:"";
+			  if($this->emailExists($email,$pDBemail) && $this->isPasswordCorrect($email,$passw,$pDBemail)){	      
+			      $numRegs   = 8; print_r($passw);
 			      $mails     = @$objUserInfo->getMails($email,$passw,$numRegs);
 			  }
 			  else
-			      $mails = "$email "._tr("does not exist locally");
+			      $mails = "$email "._tr("does not exist locally or password is incorrect");
 		    }
 		    else
 			$mails = _tr("The following database could not be found").": $arrConf[elastix_dbdir]/email.db";
@@ -442,6 +442,20 @@ class paloSantoDataApplets
             return false;
         }
         if($result[0] > 0)
+	    return true;
+	else
+	    return false;
+    }
+  
+    function isPasswordCorrect($email,$password,&$pDB)
+    {
+	$query = "select password from accountuser where username=?";
+	$result = $pDB->getFirstRowQuery($query,true,array($email));
+	if($result===FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return false;
+        }
+	if($password == $result["password"])
 	    return true;
 	else
 	    return false;
