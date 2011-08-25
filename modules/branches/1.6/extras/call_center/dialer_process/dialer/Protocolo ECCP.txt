@@ -1737,7 +1737,7 @@ Ejemplo:
     <transfercall>
         <agent_number>Agent/9000</agent_number>
         <agent_hash>XXXXXXXXXXXXXXXXXXXXXXXXX</agent_hash>
-        <transfercall>4321</transfercall>
+        <extension>4321</extension>
     </transfercall>
 </request>
 
