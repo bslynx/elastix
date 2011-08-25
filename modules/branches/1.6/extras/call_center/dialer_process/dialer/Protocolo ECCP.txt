@@ -2006,97 +2006,97 @@ Ejemplo:
 Respuesta:
 Para caso de éxito:
 <response id="14">
-    <hangup_response>
+    <schedulecall_response>
         <success/>
-    </hangup_response>
+    </schedulecall_response>
 </response>
 
 Para agente inválido:
 <response id="14">
-    <hangup_response>
+    <schedulecall_response>
         <failure>
             <code>404</code>
             <message>Specified agent not found</message>
         </failure>
-    </hangup_response>
+    </schedulecall_response>
 </response>
 
 Para agente que no está atendiendo llamada, o que no está logoneado:
 <response id="14">
-    <hangup_response>
+    <schedulecall_response>
         <failure>
             <code>417</code>
             <message>Agent not in call</message>
         </failure>
-    </hangup_response>
+    </schedulecall_response>
 </response>
 
 Para horario incompleto
 <response id="14">
-    <hangup_response>
+    <schedulecall_response>
         <failure>
             <code>400</code>
             <message>Bad request: incomplete schedule</message>
         </failure>
-    </hangup_response>
+    </schedulecall_response>
 </response>
 
 Para número de teléfono no numérico
 <response id="14">
-    <hangup_response>
+    <schedulecall_response>
         <failure>
             <code>400</code>
             <message>Bad request: invalid new phone</message>
         </failure>
-    </hangup_response>
+    </schedulecall_response>
 </response>
 
 Para formatos de fecha inválidos en horario
 <response id="14">
-    <hangup_response>
+    <schedulecall_response>
         <failure>
             <code>400</code>
             <message>Bad request: invalid date_init</message>
         </failure>
-    </hangup_response>
+    </schedulecall_response>
 </response>
 
 Para fecha de inicio anterior a la fecha actual
 <response id="14">
-    <hangup_response>
+    <schedulecall_response>
         <failure>
             <code>400</code>
             <message>Bad request: date_init before current date</message>
         </failure>
-    </hangup_response>
+    </schedulecall_response>
 </response>
 
 Para agente que está atendiendo llamada que no es de campaña saliente
 <response id="14">
-    <hangup_response>
+    <schedulecall_response>
         <failure>
             <code>417</code>
             <message>Not in outgoing call</message>
         </failure>
-    </hangup_response>
+    </schedulecall_response>
 </response>
 
 Para fecha fuera del rango indicado por la campaña
 <response id="14">
-    <hangup_response>
+    <schedulecall_response>
         <failure>
             <code>417</code>
             <message>Supplied date range outside campaign range</message>
         </failure>
-    </hangup_response>
+    </schedulecall_response>
 </response>
 
 Para llamada agendada duplicada en misma fecha y hora y número telefónico
 <response id="14">
-    <hangup_response>
+    <schedulecall_response>
         <failure>
             <code>417</code>
             <message>Found duplicate scheduled call</message>
         </failure>
-    </hangup_response>
+    </schedulecall_response>
 </response>
