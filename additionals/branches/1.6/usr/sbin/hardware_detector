@@ -243,6 +243,7 @@ rxgain=0.0
 txgain=0.0
 callgroup=1
 pickupgroup=1
+relaxdtmf=yes
 
 ;Uncomment these lines if you have problems with the disconection of your analog lines
 ;busydetect=yes
