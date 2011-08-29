@@ -67,6 +67,8 @@ function _moduleContent($smarty, $module_name)
     $pDataApplets = new paloSantoDataApplets($module_name,$arrConf);
 
     $action = getParameter("action");
+    $session = getSession();
+    $arrPaneles = $oPalo->getAppletsActivated($session['elastix_user']);
     switch($action){
         case "saveRegister":
             $hwd = getParameter("hwd");
@@ -92,15 +94,16 @@ function _moduleContent($smarty, $module_name)
             executeImage($module_name, $sImg);
             return '';
         case "loadAppletData":
-            $content = loadAppletData($pDataApplets);
+            $content = loadAppletData($pDataApplets,$arrPaneles,$session);
             return $content;
             break;
         default:
+	    unset($session["dashboard"]);
+	    putSession($session);
             break;
     }
 
-    $session = getSession();
-    $arrPaneles = $oPalo->getAppletsActivated($session['elastix_user']);
+
     if(is_array($arrPaneles) && count($arrPaneles) == 0){
         $result = $oPalo->setDefaultActivatedAppletsByUser($session['elastix_user']);
         if(!$result){
@@ -109,8 +112,8 @@ function _moduleContent($smarty, $module_name)
         }
         $arrPaneles = $oPalo->getAppletsActivated($session['elastix_user']);
     }
-    $AppletsPanels = createApplesTD($arrPaneles, $pDataApplets);
 
+    $AppletsPanels = createApplesTD($arrPaneles, $pDataApplets);
     $smarty->assign("module_name",  $module_name);
     $smarty->assign("AppletsPanels",$AppletsPanels);
 
@@ -151,15 +154,23 @@ function getApplet($applestUser, $pDataApplets)
     return $pDataApplets->drawApplet($applestUser['aau_id'],$applestUser['code']);
 }
 
-function loadAppletData($pDataApplets)
+function loadAppletData($pDataApplets, $arrPaneles, $session)
 {
     $jsonObject = new PaloSantoJSON();
-    $code = getParameter("code");
-    $function = "getData$code";
-    $message = array();
-    $message["data"] = $pDataApplets->$function();
-    $message["code"] = $code;
-    $jsonObject->set_message($message);
+    foreach($arrPaneles as $applet){
+	$code = $applet["code"];
+	if(!isset($session["dashboard"][$code])){
+	    $session["dashboard"][$code] = true;
+	    $function = "getData$code";
+	    $message = array();
+	    $message["data"] = $pDataApplets->$function();
+	    $message["code"] = $code;
+	    $jsonObject->set_message($message);
+	    putSession($session);
+	    return $jsonObject->createJSON();
+	}
+    }
+    $jsonObject->set_status("end");
     return $jsonObject->createJSON();
 }
 
@@ -193,6 +204,15 @@ function getSession()
     return $tmp;
 }
 
+function putSession($data)//data es un arreglo
+{
+    session_commit();
+    ini_set("session.use_cookies","0");
+    if(session_start()){
+        $_SESSION = $data;
+        session_commit();
+    }
+}
 
 ////////////////////// Begin Funciones para Applets Admin /////////////////////////////////
 function showApplets_Admin()

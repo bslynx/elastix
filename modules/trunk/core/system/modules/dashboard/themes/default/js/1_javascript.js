@@ -233,58 +233,20 @@ function arrowsExpand(){
   }
 }
 
-function loadAppletDataLeft(element)
+function loadAppletData()
 {
-    var td_left  = document.getElementById("td_columns1");
-    var children_left  = td_left.childNodes;
-    if(element == children_left.length)
-	loadAppletDataRight(0);
-    else{
-        if(children_left[element].nodeName == "DIV" || children_left[element].nodeName == "div"){
-            var id_div = children_left[element].getAttribute("id");
-            var tmp = id_div.split("-");
-            if(tmp[0] == "applet"){
-                var arrAction          = new Array();
-                arrAction["action"]    = "loadAppletData";
-                arrAction["rawmode"]   = "yes";
-                arrAction["code"]      = tmp[1];
-                request("index.php",arrAction,false,
-                    function(arrData,statusResponse,error)
-                    {
-                          document.getElementById(arrData["code"]).innerHTML = arrData["data"];
-			  element++;
-			  loadAppletDataLeft(element);
-                    }
-                );
-            }
-        }
-    }
-}
-
-function loadAppletDataRight(element)
-{
-    var td_right = document.getElementById("td_columns2");
-    var children_right = td_right.childNodes;
-    if(element != children_right.length){
-	if(children_right[element].nodeName == "DIV" || children_right[element].nodeName == "div"){
-	    var id_div = children_right[element].getAttribute("id");
-	    var tmp = id_div.split("-");
-	    if(tmp[0] == "applet"){
-		var arrAction              = new Array();
-		arrAction["action"]    = "loadAppletData";
-		arrAction["rawmode"]   = "yes";
-		arrAction["code"]      = tmp[1];
-		request("index.php",arrAction,false,
-		    function(arrData,statusResponse,error)
-		    {
-			  document.getElementById(arrData["code"]).innerHTML = arrData["data"];
-			  element++;
-			  loadAppletDataRight(element);
-		    }
-		);
+    var arrAction          = new Array();
+    arrAction["action"]    = "loadAppletData";
+    arrAction["rawmode"]   = "yes";
+    request("index.php",arrAction,false,
+	function(arrData,statusResponse,error)
+	{
+	    if(statusResponse != "end"){
+		document.getElementById(arrData["code"]).innerHTML = arrData["data"];
+		loadAppletData();
 	    }
 	}
-    }
+    );
 }
 
 function jfunction(id)

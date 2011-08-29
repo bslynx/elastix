@@ -471,7 +471,7 @@ class paloSantoSysInfo
             foreach($arrIAXs as $key => $line){
                 //ex: Name/Username    Host                 Mask             Port          Status
                 //    512              127.0.0.1       (D)  255.255.255.255  40002         OK (3 ms)
-                if(preg_match('/^[[:space:]]*([^[:space:]]+)[[:space:]]+([^[:space:]]+)[[:space:]]+[^[:space:]]+[[:space:]]+[^[:space:]]+[[:space:]]+[[:digit:]]+[[:space:]]+([[:alpha:]]+)/',$line,$arrToken)){
+                if(preg_match('/^[[:space:]]*([^[:space:]]+)[[:space:]]+([^[:space:]]+)[[:space:]]+[^[:space:]]+[[:space:]]+[^[:space:]]+[[:space:]]+[[:digit:]]+[[:space:]]+\(?[[:alpha:]]?\)?[[:space:]]+([[:alpha:]]+)/',$line,$arrToken)){
                     if(eregi("OK",$arrToken[3])){ // estado OK
 			$name = explode("/",$arrToken[1]);
                         if(in_array($name[0],$arrTrunks)) // es una troncal?, registrada
