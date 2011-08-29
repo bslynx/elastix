@@ -417,7 +417,7 @@ class paloSantoDataApplets
 			  $pDBemail = new paloDB("sqlite3:///$arrConf[elastix_dbdir]/email.db");
 			  $passw    = isset($arrData['password'])?$arrData['password']:"";
 			  if($this->emailExists($email,$pDBemail) && $this->isPasswordCorrect($email,$passw,$pDBemail)){	      
-			      $numRegs   = 8; print_r($passw);
+			      $numRegs   = 8;
 			      $mails     = @$objUserInfo->getMails($email,$passw,$numRegs);
 			  }
 			  else
