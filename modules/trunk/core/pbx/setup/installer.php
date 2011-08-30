@@ -70,7 +70,7 @@ if($provider_account['flagStatus']==0){
     $exists = (isset($arrConsole) && isset($arrConsole[0]))?true:false;
 // antes verificar si hay datos en proveedores configurados sino existen solo se reemplaza la base
     if(!$exists){
-
+        echo "Changing database trunk.db...\n";
         $pDB    = new paloDB("sqlite3:////var/www/db/trunk.db");
         $pDBNew = new paloDB("sqlite3:////var/www/db/trunk-pbx.db");
 	$pDBFreePBX = new paloDB(generarDSNSistema('asteriskuser', 'asterisk', '/var/www/html/'));
@@ -108,7 +108,7 @@ if($provider_account['flagStatus']==0){
                                 $data[0]  = $value['account_name'];
                                 $data[1]  = $value['username'];
                                 $data[2]  = $value['password'];
-				$data[3]  = "";
+		                		$data[3]  = "";
                                 $data[4]  = $value['type'];
                                 $data[5]  = $value['qualify'];
                                 $data[6]  = $value['insecure'];
@@ -124,8 +124,12 @@ if($provider_account['flagStatus']==0){
                                 $data[16] = $value['canreinvite'];
                                 $data[17] = getTechnology($value['id_provider'], $pDBNew);
                                 $data[18] = $value['id_provider'];
-                                if($value['username'] != "" && $value['password'] != "")
+                                if($value['username'] != "" && $value['password'] != ""){
+                                        echo "Inserting trunk $value[account_name]...\n";
                                         insertAccount($data, $pDBNew, $pDBFreePBX);
+                                        echo "Deleting trunk $value[account_name] from file /etc/asterisk/sip_custom.conf...\n";
+                                        deleteInSipCustom($value["account_name"]);
+                                }
                         }
                 }
         // para la tabla trunk_bill
@@ -147,6 +151,7 @@ if($provider_account['flagStatus']==0){
 	$dsn_agi_manager['user'] = $arrAMP['AMPMGRUSER']['valor'];
 	$pConfig2 = new paloConfig($arrAMP['ASTETCDIR']['valor'], "asterisk.conf", "=", "[[:space:]]*=[[:space:]]*");
 	$arrAST  = $pConfig2->leer_configuracion(false);
+    echo "Reloading asterisk...\n";
 	do_reloadAll($dsn_agi_manager, $arrAST, $arrAMP, $pDBFreePBX);
     }
     $result = existDBField("provider", "orden", "trunk.db", $DataBaseRoot);
@@ -386,6 +391,28 @@ function getIdNextTrunk(&$pDB)
 	return false;
     }
     return 1 + $result['id'];
+}
+
+function deleteInSipCustom($trunkName)
+{
+    if(file_exists("/etc/asterisk/sip_custom.conf")){
+        $file_sipCustom = file("/etc/asterisk/sip_custom.conf");
+        $arrLines = array();
+        $record = true;
+        foreach($file_sipCustom as $line){
+            if(preg_match("/^#include/",rtrim($line)))
+                $arrLines[] = $line;
+            elseif(preg_match("/^\[$trunkName\]$/",rtrim($line)))
+                $record = false;
+            elseif(preg_match("/^\[/",rtrim($line))){
+                $record = true;
+                $arrLines[] = $line;
+            }
+            elseif($record)
+                $arrLines[] = $line;
+        }
+        file_put_contents("/etc/asterisk/sip_custom.conf",implode("",$arrLines));
+    }
 }
 
 function getDataTech($data)
