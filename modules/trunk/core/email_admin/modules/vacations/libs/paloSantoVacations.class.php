@@ -407,6 +407,29 @@ SCRIPT;
 	return true;
     }
 
+    /*********************************************************************************
+    /* Funcion que elimina los registros excesivos que se encuentran en una base de datos:
+    /* - $email:      email del usuario elastix en session
+    /* - $subject:    Titulo del mensaje
+    /* - $body:       Cuerpo del mensaje
+    /* - $id:         id del mensage
+    /*
+    /* Retorna:
+    /* - $result:     Un booleano con el resultado si se actualizo el registro
+    /*********************************************************************************/
+    function deleteMessagesByUser($email, $subject, $body, $ini_date, $end_date, $status=null)
+    {
+	$data = array($email);
+	$query = "delete from messages_vacations where account=?";
+	$result=$this->_DB->genQuery($query,$data);
+	if($result==FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return false;
+        }
+	return true;
+    }
+
+
 
     /*********************************************************************************
     /* Funcion que inserta un mensaje dado los siguientes parametros:

@@ -265,7 +265,12 @@ function activateEmailVacations($smarty, $module_name, $local_templates_dir, &$p
     $band = $pVacations->existMessage($email);
     $res = "";
     if($band){//actualizacion
-	$res = $pVacations->updateMessageByUser($email, $subject, $body, $ini_date, $end_date, "yes");
+	$arr_Vaca = $pVacations->getMessageVacationByUser($email);
+	if(count($arr_Vaca) > 1){
+	    $pVacations->deleteMessagesByUser($email, $subject, $body, $ini_date, $end_date);
+	    $res = $pVacations->insertMessageByUser($email, $subject, $body, $ini_date, $end_date, "yes");
+	}else
+	    $res = $pVacations->updateMessageByUser($email, $subject, $body, $ini_date, $end_date, "yes");
     }else{// insersion
 	$res = $pVacations->insertMessageByUser($email, $subject, $body, $ini_date, $end_date, "yes");
     }
@@ -371,7 +376,12 @@ function disactivateEmailVacations($smarty, $module_name, $local_templates_dir, 
 	$band = $pVacations->existMessage($email);
 	$res = "";
 	if($band){//actualizacion
-	    $res = $pVacations->updateMessageByUser($email, $subject, $body, $ini_date, $end_date, "no");
+	    $arr_Vaca = $pVacations->getMessageVacationByUser($email);
+	    if(count($arr_Vaca) > 1){
+		$pVacations->deleteMessagesByUser($email, $subject, $body, $ini_date, $end_date);
+		$res = $pVacations->insertMessageByUser($email, $subject, $body, $ini_date, $end_date, "no");
+	    }else
+		$res = $pVacations->updateMessageByUser($email, $subject, $body, $ini_date, $end_date, "no");
 	}else{// insersion
 	    $res = $pVacations->insertMessageByUser($email, $subject, $body, $ini_date, $end_date, "no");
 	}
