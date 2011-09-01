@@ -1,7 +1,7 @@
 Summary: Elastix First Boot Setup
 Name:    elastix-firstboot
 Version: 2.2.0
-Release: 1
+Release: 2
 License: GPL
 Group:   Applications/System
 Source0: %{name}-%{version}.tar.bz2
@@ -99,6 +99,11 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/change-passwords
 
 %changelog
+* Thu Sep 01 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-2
+- CHANGED: change-passwords, when user press button cancel the
+  script does an exit
+  SVN Rev[2926]
+
 * Wed Aug 24 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-1
 - NEW: new script that change the passwords of mysql, freePBX, 
   user admin, fop, cyrus
