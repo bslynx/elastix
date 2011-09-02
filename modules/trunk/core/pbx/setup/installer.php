@@ -122,13 +122,24 @@ if($provider_account['flagStatus']==0){
                                 $data[14] = $value['trustrpid'];
                                 $data[15] = $value['sendrpid'];
                                 $data[16] = $value['canreinvite'];
-                                $data[17] = getTechnology($value['id_provider'], $pDBNew);
+                                $tech     = getTechnology($value['account_name'], $pDBNew);
+                                $data[17] = $tech;
                                 $data[18] = $value['id_provider'];
                                 if($value['username'] != "" && $value['password'] != ""){
-                                        echo "Inserting trunk $value[account_name]...\n";
-                                        insertAccount($data, $pDBNew, $pDBFreePBX);
-                                        echo "Deleting trunk $value[account_name] from file /etc/asterisk/sip_custom.conf...\n";
-                                        deleteInSipCustom($value["account_name"]);
+                                        if($value["account_name"] != "NuFone IAX"){
+                                            echo "Inserting trunk $value[account_name]...\n";
+                                            insertAccount($data, $pDBNew, $pDBFreePBX);
+                                        }
+                                        if(strtolower($tech) == "sip")
+                                            echo "Deleting trunk $value[account_name] from file /etc/asterisk/sip_custom.conf...\n";
+                                        else
+                                            echo "Deleting trunk $value[account_name] from file /etc/asterisk/iax_custom.conf...\n";
+                                        deleteInFileCustom($value["account_name"],$tech);
+                                        if(strtolower($tech) == "sip")
+                                            echo "Deleting register string of trunk $value[account_name] from file /etc/asterisk/sip_register_custom.conf...\n";
+                                        else
+                                            echo "Deleting register string of trunk $value[account_name] from file /etc/asterisk/iax_register_custom.conf...\n";
+                                        deleteInFileRegister($value["username"],$value["password"],$value["host"],$tech);
                                 }
                         }
                 }
@@ -333,10 +344,13 @@ function getTrunkBills(&$pDB)
     return $result;
 }
 
-function getTechnology($id, &$pDB)
+function getTechnology($account_name, &$pDB)
 {
-    $data   = array($id);
-    $query  = "SELECT type_trunk FROM provider WHERE id = ?;";
+    $account_name[0] = strtoupper($account_name[0]);
+    if($account_name == "NuFone IAX")
+        return "iax";
+    $data   = array($account_name);
+    $query  = "SELECT type_trunk FROM provider WHERE name = ?;";
     $result = $pDB->getFirstRowQuery($query,true,$data);
     if($result==FALSE){
         return null;
@@ -393,12 +407,17 @@ function getIdNextTrunk(&$pDB)
     return 1 + $result['id'];
 }
 
-function deleteInSipCustom($trunkName)
+function deleteInFileCustom($trunkName,$tech)
 {
-    if(file_exists("/etc/asterisk/sip_custom.conf")){
-        $file_sipCustom = file("/etc/asterisk/sip_custom.conf");
+    if(strtolower($tech) == "sip")
+        $file = "/etc/asterisk/sip_custom.conf";
+    else
+        $file = "/etc/asterisk/iax_custom.conf";
+    if(file_exists($file)){
+        $file_sipCustom = file($file);
         $arrLines = array();
         $record = true;
+        $trunkName = str_replace(" ","",$trunkName);
         foreach($file_sipCustom as $line){
             if(preg_match("/^#include/",rtrim($line)))
                 $arrLines[] = $line;
@@ -411,7 +430,30 @@ function deleteInSipCustom($trunkName)
             elseif($record)
                 $arrLines[] = $line;
         }
-        file_put_contents("/etc/asterisk/sip_custom.conf",implode("",$arrLines));
+        file_put_contents($file,implode("",$arrLines));
+    }
+}
+
+function deleteInFileRegister($user,$password,$host,$tech)
+{
+    if(strtolower($tech) == "sip"){
+        $arrFiles = array("/etc/asterisk/sip_registrations_custom.conf","/etc/asterisk/sip_registrations.conf");
+        $register = "register=$user:$password@$host/$user";
+    }
+    else{
+        $arrFiles = array("/etc/asterisk/iax_registrations_custom.conf","/etc/asterisk/iax_registrations.conf");
+        $register = "register=$user:$password@$host";
+    }
+    foreach($arrFiles as $file){
+        if(file_exists($file)){
+            $file_sipRegister = file($file);
+            $arrLines = array();
+            foreach($file_sipRegister as $line){
+                if(rtrim($line) != $register)
+                    $arrLines[] = $line;
+            }
+            file_put_contents($file,implode("",$arrLines));
+        }
     }
 }
 
