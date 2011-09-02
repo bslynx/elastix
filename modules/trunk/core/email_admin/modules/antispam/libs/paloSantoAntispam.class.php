@@ -443,7 +443,9 @@ class paloSantoAntispam {
 		    if(is_array($messageVacations) && count($messageVacations) > 0){
 			$spamCapture = false;
 			$subject = $messageVacations['subject'];
+			$end_date = $messageVacations['end_date'];
 			$body = $messageVacations['body'];
+			$body = str_replace("{END_DATE}", $end_date, $body);
 			$contentVacations = $pVacations->getVacationScript($subject, $body);
 			$contentSpamFilter = str_replace("require \"fileinto\";", "require [\"fileinto\",\"vacation\"];", $content);
 			$new_content = $contentSpamFilter."\n".$contentVacations;
@@ -505,6 +507,8 @@ class paloSantoAntispam {
 		    if(is_array($messageVacations) && $messageVacations != "" && count($messageVacations) > 0){
 			$subject = $messageVacations['subject'];
 			$body = $messageVacations['body'];
+			$end_date = $messageVacations['end_date'];
+			$body = str_replace("{END_DATE}", $end_date, $body);
 			$contentVacations = $pVacations->getVacationScript($subject, $body);
 			$requires = "require [\"fileinto\",\"vacation\"];";
 			$new_content = $requires."\n".$contentVacations;

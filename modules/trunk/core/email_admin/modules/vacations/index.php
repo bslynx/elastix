@@ -123,7 +123,7 @@ function viewFormVacations($smarty, $module_name, $local_templates_dir, &$pDB, &
 	    $id = $rowsVacations['id'];
 	}else{
 	    $_DATA['subject'] = isset($_POST['subject'])?$_POST['subject']:_tr("Auto-Reply: Out of the office");
-	    $_DATA['body']    = isset($_POST['body'])?$_POST['body']:_tr("I'm sorry I am currently out on vacations, your email will be replied as soon as I get back to the office.\n\n----\nBest Regards.");
+	    $_DATA['body']    = isset($_POST['body'])?$_POST['body']:_tr("I am sorry I am currently out of the office until {END_DATE}.\n\n----\nBest Regards.");
 	    $_DATA['ini_date'] = isset($_POST['ini_date'])?$_POST['ini_date']:date("d M Y");
 	    $_DATA['end_date'] = isset($_POST['end_date'])?$_POST['end_date']:date("d M Y");
 	}
@@ -135,7 +135,7 @@ function viewFormVacations($smarty, $module_name, $local_templates_dir, &$pDB, &
 	$_DATA['ini_date'] = isset($_POST['ini_date'])?$_POST['ini_date']:date("d M Y");
 	$_DATA['end_date'] = isset($_POST['end_date'])?$_POST['end_date']:date("d M Y");
 	$_DATA['subject'] = isset($_POST['subject'])?$_POST['subject']:_tr("Auto-Reply: Out of the office");
-	$_DATA['body']    = isset($_POST['body'])?$_POST['body']:_tr("I'm sorry I am currently out on vacations, your email will be replied as soon as I get back to the office.\n\n----\nBest Regards.");
+	$_DATA['body']    = isset($_POST['body'])?$_POST['body']:_tr("I am sorry I am currently out of the office until {END_DATE}.\n\n----\nBest Regards.");
     }
     $smarty->assign("ID", $id); //persistence id with input hidden in tpl
 
@@ -276,9 +276,10 @@ function activateEmailVacations($smarty, $module_name, $local_templates_dir, &$p
     }
 
     if($res){
-	if($timeSince >= 0)
+	if($timeSince >= 0){
+	    $body = str_replace("{END_DATE}", $end_date, $body);
 	    $result = $pVacations->uploadVacationScript($email, $subject, $body, $objAntispam, $spamCapture, $arrLang);
-	else    $result = true;
+	}else    $result = true;
     }else
 	$result = false;
 
@@ -467,7 +468,7 @@ function showAllEmails($smarty, $module_name, $local_templates_dir, &$pDB, &$pDB
 		      $value['subject'] = _tr("Auto-Reply: Out of the office");
 
 		  if(!isset($value['body']) || $value['body'] == "")
-		      $value['body'] = _tr("I'm sorry I am currently out on vacations, your email will be replied as soon as I get back to the office.\n\n----\nBest Regards.");
+		      $value['body'] = _tr("I am sorry I am currently out of the office until {END_DATE}.\n\n----\nBest Regards.");
 
 		  $arrTmp[3] = "&nbsp;<div style='display: none;'>".$value['subject']."</div>";
 		  $arrTmp[4] = "&nbsp;<div style='display: none;'>".$value['body']."</div>";
