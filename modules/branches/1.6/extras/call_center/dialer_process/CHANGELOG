@@ -1,3 +1,7 @@
+* Dialer (ECCP): fixed bug in which a transfer request of an incoming campaign
+  call into a incoming campaign queue (the same one the call came from or a 
+  different one) results in an agentunlinked event with an incomplete agent
+  number. 
 * Installer: add section in extensions_custom.conf that will hold required
   callcenter extensions for extra functionality.
 * Dialer (ECCP): implement "schedulecall" request

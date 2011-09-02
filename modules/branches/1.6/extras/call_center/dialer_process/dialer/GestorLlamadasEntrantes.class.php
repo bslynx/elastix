@@ -308,6 +308,10 @@ class GestorLlamadasEntrantes
                 'CID'   =>  $eventParams['Uniqueid'],
                 'AID'   =>  NULL,
             );
+            if ($this->DEBUG) {
+            	$this->oMainLog->output('DEBUG: OnJoin: registrado mapa Uniqueid CID='.$eventParams['Uniqueid'].' AID=NULL');
+                $this->oMainLog->output('DEBUG: OnJoin: mapa tiene ahora '.count($this->_mapaUID).' elementos');
+            }
 
             // Asterisk 1.6.2.x usa CallerIDNum y Asterisk 1.4.x usa CallerID
             $sCallerID = '';
@@ -495,7 +499,7 @@ class GestorLlamadasEntrantes
                     
                     // Buscar el ID de base de datos de la llamada a partir de su Uniqueid
                     $tuplaLlamada =& $this->_dbConn->getRow(
-                        'SELECT id, id_queue_call_entry, callerid FROM call_entry WHERE uniqueid = ?',
+                        'SELECT id, id_queue_call_entry, callerid FROM call_entry WHERE uniqueid = ? ORDER BY id DESC',
                         array($eventParams[$sKey_Uniqueid]),
                         DB_FETCHMODE_OBJECT);
                     if (DB::isError($tuplaLlamada)) {
@@ -515,6 +519,11 @@ class GestorLlamadasEntrantes
                         for ($i = 0; $i < count($this->_mapaUID); $i++) {
                             if ($this->_mapaUID[$i]['CID'] == $eventParams[$sKey_Uniqueid]) {
                                 $this->_mapaUID[$i]['AID'] = $eventParams[$sKey_Uniqueid_Agente];
+                                if ($this->DEBUG) {
+                                	$this->oMainLog->output('DEBUG: OnLink: asociado para CID='.
+                                        $eventParams[$sKey_Uniqueid].
+                                        ' AID='.$eventParams[$sKey_Uniqueid_Agente]);
+                                }
                             }
                         }
 
@@ -626,6 +635,11 @@ class GestorLlamadasEntrantes
                 $tuplaLlamada->getMessage());
             $tuplaLlamada = NULL;                	
         } elseif (is_array($tuplaLlamada)) {
+            if ($this->DEBUG) {
+            	$this->oMainLog->output(
+                    'DEBUG: notificarHangup: encontrada información de llamada directa : '.
+                    print_r($tuplaLlamada, 1));
+            }
         } else {
         	$tuplaLlamada = NULL;
         }
@@ -644,6 +658,12 @@ class GestorLlamadasEntrantes
                     'ERR: no se puede buscar registro de llamada (actual) - '.
                     $tuplaLlamada->getMessage());
                 $tuplaLlamada = NULL;                   
+            } elseif (is_array($tuplaLlamada)) {
+                if ($this->DEBUG) {
+                    $this->oMainLog->output(
+                        'DEBUG: notificarHangup: encontrada información de llamada abandonada : '.
+                        print_r($tuplaLlamada, 1));
+                }
             }
         }
         
@@ -655,6 +675,9 @@ class GestorLlamadasEntrantes
                agente. */
             for ($i = 0; $i < count($this->_mapaUID); $i++) {
                 if ($this->_mapaUID[$i]['AID'] == $eventParams['Uniqueid']) {
+                    if ($this->DEBUG) {
+                    	$this->oMainLog->output('DEBUG: OnHangup: para AID='.$eventParams['Uniqueid'].' CID='.$this->_mapaUID[$i]['CID']);
+                    }
                     $tuplaLlamada =& $this->_dbConn->getRow(
                         'SELECT current_call_entry.id AS id, call_entry.id AS id_call_entry, '.
                             'current_call_entry.hold AS hold FROM call_entry '.
@@ -667,6 +690,12 @@ class GestorLlamadasEntrantes
                             'ERR: no se puede buscar registro de llamada (actual) - '.
                             $tuplaLlamada->getMessage());
                         $tuplaLlamada = NULL;                   
+                    } elseif (is_array($tuplaLlamada)) {
+                        if ($this->DEBUG) {
+                            $this->oMainLog->output(
+                                'DEBUG: OnHangup: encontrada información de llamada por agente : '.
+                                print_r($tuplaLlamada, 1));
+                        }                    	
                     }
                 }
             }
@@ -729,6 +758,10 @@ class GestorLlamadasEntrantes
                     $temp[] = $tupla;
             }
             $this->_mapaUID = $temp;
+            if ($this->DEBUG) {
+            	$this->oMainLog->output('DEBUG: notificarHangup: quitado (CID|AID)='.$eventParams['Uniqueid'].
+                    ' mapa tiene ahora '.count($this->_mapaUID).' elementos');
+            }
             
             // Consultar la campaña a la que pertenece la llamada
             $idCampaign = NULL;
@@ -751,6 +784,9 @@ class GestorLlamadasEntrantes
             );
             if (DB::isError($tuplaAgente)) {
             	$this->oMainLog->output('ERR: no se puede consultar callerid/agente de llamada: '.$tuplaAgente->getMessage());
+            } elseif (is_null($tuplaAgente)) {
+                $this->oMainLog->output('ERR: no se encuentra el agente que atendió la llamada ID='.
+                    $tuplaLlamada['id_call_entry'].' id_campaign='.(is_null($idCampaign) ? 'NULL' : $idCampaign));
             } else{
                 // Reportar que se ha cerrado la llamada
                 $this->_dialSrv->notificarEvento_AgentUnlinked("Agent/".$tuplaAgente['number'], array(
