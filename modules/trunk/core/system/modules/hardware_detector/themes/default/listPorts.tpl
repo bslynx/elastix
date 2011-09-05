@@ -294,7 +294,7 @@
                         <div id="table_boxConfSPANS">
                            <table width="100%" border="1" cellspacing="0" cellpadding="4" align="center">
                                 <tr class="moduleTitle">
-                                    <td class="moduleTitle">&nbsp;&nbsp;{$Configuration_Span} </td>
+                                    <td class="moduleTitle">&nbsp;&nbsp;{$Parameters_Span} </td>
                                 </tr>
                                 <tr>
                                     <td>

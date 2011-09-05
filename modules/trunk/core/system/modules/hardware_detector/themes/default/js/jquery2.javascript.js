@@ -10,10 +10,10 @@ $(document).ready(function(){
         //handle: '#layer1_handle1'
     });
 
-    $('a[id^=confSPAN]').click(function() {
+    $('a[id^=confSPAN]').click(function(e) {
         var eje_x = ((screen.width)/2) - 250;
         $('#boxConfSPANS').attr("style","display: block;");
-        $('#boxConfSPANS').css('top','50%');
+        $('#boxConfSPANS').css('top',e.pageY+"px");
         $('#boxConfSPANS').css('left',eje_x+"px");
         $('#fade_overlay').attr("style","display: block;");
         $('#idCard').val("");
@@ -117,10 +117,10 @@ $(document).ready(function(){
         }
     });
 
-    $('a[id^=paramSPAN]').click(function() {
+    $('a[id^=paramSPAN]').click(function(e) {
         var eje_x = ((screen.width)/2) - 250;
         $('#boxSpanParameters').attr("style","display: block;");
-        $('#boxSpanParameters').css('top','50%');
+        $('#boxSpanParameters').css('top',e.pageY+"px");
         $('#boxSpanParameters').css('left',eje_x+"px");
         $('#fade_overlay').attr("style","display: block;");
         $('#idCard').val("");
