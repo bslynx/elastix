@@ -231,13 +231,13 @@ function getDataBox()
 
 function drawBoxGeneric(id,type_,title_,info,module_name,img_name,status_,droppable)
 {
-    var class = (droppable)?"class = 'areaDrop'":"";
+    var clase = (droppable)?"class = 'areaDrop'":"";
     if(status_ == "on")
-        var class2 = "class = 'box boxOn'";
+        var clase2 = "class = 'box boxOn'";
     else
-        var class2 = "class = 'box boxOff'";
-    var html = "<div "+class+" id = 'dev_"+id+"'>"+
-                 "<div "+class2+" id='box_"+id+"' >"+
+        var clase2 = "class = 'box boxOff'";
+    var html = "<div "+clase+" id = 'dev_"+id+"'>"+
+                 "<div "+clase2+" id='box_"+id+"' >"+
                     "<div class='box_info'>"+
                         "<a class='tooltipInfo' href='#'>"+
                             "<img class='info_img' src='modules/"+module_name+"/images/info.png' />"+

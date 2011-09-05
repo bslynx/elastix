@@ -430,28 +430,49 @@ function loadBoxesAction(&$pDB1, &$pDB2, $module_name)
     $arrDevices[3] = isset($arrDevices[3])? $arrDevices[3]:array();
     $arrDevices[4] = isset($arrDevices[4])? $arrDevices[4]:array();
     foreach($arrDevices[1] as $key => $value){
-        $arrExten[] = array("id" => $key, "type" => "extension", "title" => "<b>$key:</b>&nbsp;$value[short_name]", "info" => $value["full_name"], "module_name" => $module_name, "img_name" => "phhonez0.png", "status" => $value["status"], "droppable" => true);
+	$short_name = "<b>$key:</b>&nbsp;$value[short_name]";
+	if(strlen($value["short_name"])>12)
+	    $short_name .= "...";
+        $arrExten[] = array("id" => $key, "type" => "extension", "title" => $short_name, "info" => $value["full_name"], "module_name" => $module_name, "img_name" => "phhonez0.png", "status" => $value["status"], "droppable" => true);
     }
     foreach($arrDevices[2] as $key => $value){
-        $arrArea1[] = array("id" => $key, "type" => "area1", "title" => "<b>$key:</b>&nbsp;$value[short_name]", "info" => $value["full_name"], "module_name" => $module_name, "img_name" => "phhonez0.png", "status" => $value["status"], "droppable" => true);
+	$short_name = "<b>$key:</b>&nbsp;$value[short_name]";
+	if(strlen($value["short_name"])>12)
+	    $short_name .= "...";
+        $arrArea1[] = array("id" => $key, "type" => "area1", "title" => $short_name, "info" => $value["full_name"], "module_name" => $module_name, "img_name" => "phhonez0.png", "status" => $value["status"], "droppable" => true);
     }
     foreach($arrDevices[3] as $key => $value){
-        $arrArea2[] = array("id" => $key, "type" => "area2", "title" => "<b>$key:</b>&nbsp;$value[short_name]", "info" => $value["full_name"], "module_name" => $module_name, "img_name" => "phhonez0.png", "status" => $value["status"], "droppable" => true);
+	$short_name = "<b>$key:</b>&nbsp;$value[short_name]";
+	if(strlen($value["short_name"])>12)
+	    $short_name .= "...";
+        $arrArea2[] = array("id" => $key, "type" => "area2", "title" => $short_name, "info" => $value["full_name"], "module_name" => $module_name, "img_name" => "phhonez0.png", "status" => $value["status"], "droppable" => true);
     }
     foreach($arrDevices[4] as $key => $value){
-        $arrArea3[] = array("id" => $key, "type" => "area3", "title" => "<b>$key:</b>&nbsp;$value[short_name]", "info" => $value["full_name"], "module_name" => $module_name, "img_name" => "phhonez0.png", "status" => $value["status"], "droppable" => true);
+	$short_name = "<b>$key:</b>&nbsp;$value[short_name]";
+	if(strlen($value["short_name"])>12)
+	    $short_name .= "...";
+        $arrArea3[] = array("id" => $key, "type" => "area3", "title" => $short_name, "info" => $value["full_name"], "module_name" => $module_name, "img_name" => "phhonez0.png", "status" => $value["status"], "droppable" => true);
     }
     foreach($arrQueues as $key => $value){
-        $arrQue[] = array("id" => $value["number"], "type" => "queue", "title" => "<b>$value[number]:</b>&nbsp;".substr($value['name'],0,12), "info" => $value["members"], "module_name" => $module_name, "img_name" => "queue.png", "status" => "on", "droppable" => false);
+	$short_name = "<b>$value[number]:</b>&nbsp;".substr($value['name'],0,12);
+	if(strlen($value["name"])>12)
+	    $short_name .= "...";
+        $arrQue[] = array("id" => $value["number"], "type" => "queue", "title" => $short_name, "info" => $value["members"], "module_name" => $module_name, "img_name" => "queue.png", "status" => "on", "droppable" => false);
     }
     foreach($arrDAHDITrunks as $key => $value){
         $arrDAHDI[] = array("id" => $value, "type" => "dahdiTrunk", "title" => "<b>$value</b>", "info" => $value, "module_name" => $module_name, "img_name" => "icon_trunk2.png", "status" => "on", "droppable" => false);
     }
     foreach($arrSIPTrunks as $key => $value){
-        $arrSIP[] = array("id" => $value["name"], "type" => "sipTrunk", "title" => "<b>".substr($value['name'],0,12)."</b>", "info" => $value["name"], "module_name" => $module_name, "img_name" => "icon_trunk2.png", "status" => $value["status"], "droppable" => false);
+	$short_name = "<b>".substr($value['name'],0,12)."</b>";
+	if(strlen($value["name"])>12)
+	    $short_name .= "...";
+        $arrSIP[] = array("id" => $value["name"], "type" => "sipTrunk", "title" => $short_name, "info" => $value["name"], "module_name" => $module_name, "img_name" => "icon_trunk2.png", "status" => $value["status"], "droppable" => false);
     }
     foreach($arrConferences as $key => $value){
-        $arrCon[] = array("id" => $value["exten"], "type" => "conference", "title" => "<b>$value[exten]:</b>&nbsp;".substr($value['description'],0,12), "info" => $value["exten"].": ".$value['description'], "module_name" => $module_name, "img_name" => "conference.png", "status" => "on", "droppable" => false);
+	$short_name = "<b>$value[exten]:</b>&nbsp;".substr($value['description'],0,9);
+	if(strlen($value["description"])>12)
+	    $short_name .= "...";
+        $arrCon[] = array("id" => $value["exten"], "type" => "conference", "title" => $short_name, "info" => $value["exten"].": ".$value['description'], "module_name" => $module_name, "img_name" => "conference.png", "status" => "on", "droppable" => false);
     }
     $arrData[0] = array("length" => ceil(count($arrDevices[1])/$length[0]), "data" => $arrExten);
     $arrData[1] = array("length" => ceil(count($arrDevices[2])/$length[1]), "data" => $arrArea1);

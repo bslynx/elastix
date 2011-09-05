@@ -507,6 +507,7 @@ class paloSantoControlPanel {
             $tmp = explode("/",$value);
             $arrTrunk[$key] = array();
             $arrTrunk[$key]['name'] = $value;
+	    $arrTrunk[$key]['status'] = "off";
             if($tmp[0] == "SIP")
                 $arrTrunk[$key]['status'] = $this->getTrunkStatus($value,"SIP");
             elseif($tmp[0] == "IAX2")
