@@ -576,31 +576,21 @@ $(document).ready(function(){
                     }
             });
     }
-
-    function setBoxPosition()
-    {
-	$("html").click(function(e){
-	    var x = e.clientX;
-	    var y = e.clientY;
-	    var eje_x = ((screen.width)/2) - 250;
-	    var eje_y = ((screen.height)/2) - 250;
-	    if(y>eje_y)
-	      $('#box').css('top','75%');
-	    else
-	    $('#box').css('top','50%');
-	    alert(y+">"+eje_y);
-
-	});
-    }
     
     // view box detail event
-    function getDataAjaxForm(order){
+    function getDataAjaxForm(order, e){
         // blocking screen
         var urlImaLoading = "<h1><img src='modules/"+module_name+"/images/busy.gif' /> "+$('#lblLoading').val()+"...</h1>";
         $.blockUI({ message: urlImaLoading });
         var eje_x = ((screen.width)/2) - 250;
-
-        $('#box').css('top','38%');
+	var eje_y = e.pageY;
+	if(eje_y < 300){
+	     eje_y = eje_y; 
+	}else{
+	     eje_y = eje_y - 50;
+	}
+	//$('#box').css('position','absolute');
+        $('#box').css('top',eje_y+"px");
         $('#box').css('left',eje_x+"px");
         //alert(order);
         $('#new_box').attr("style","display:none;");
@@ -836,11 +826,15 @@ $(document).ready(function(){
             });
     }
 
-    function displayNewEvent(){
+    function displayNewEvent(e){
         //centrar box
         var eje_x = ((screen.width)/2) - 250;
-        $('#box').css('top','38%');
+        if(!e) var e = window.event;
+        var coordX = e.pageX;
+        var coordY = e.pageY + 80;
+        $('#box').css('top',coordY+"px");//'38%');
         $('#box').css('left',eje_x+"px");
+	//$('#box').css('position','absolute');	
 
         $('#new_box').attr("style","display:none;");
         $('#edit_box').attr("style","display:none;");

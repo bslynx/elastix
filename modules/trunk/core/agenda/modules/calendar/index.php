@@ -1014,7 +1014,7 @@ function getAllDataCalendar($arrLang,&$pDB,$module_name, $arrConf){
                         'end'   => $arrDates[$j]['endtime'],
                         'allDay'=> false,
                         'color' => $arrDates[$j]['color'],
-                        'url'   => "getDataAjaxForm('menu=".$module_name."&action=view_box&rawmode=yes&id_event=".$arrDates[$j]['id']."');"
+                        'url'   => "getDataAjaxForm('menu=".$module_name."&action=view_box&rawmode=yes&id_event=".$arrDates[$j]['id']."', event);"
                         );
             $arr[$k] = $arr1;
             $k += 1;
@@ -1062,7 +1062,7 @@ function getDataCalendarByEventId($arrLang,&$pDB,$module_name, $arrConf, $idEven
                         'end'   => $arrDates[$j]['endtime'],
                         'allDay'=> false,
                         'color' => $arrDates[$j]['color'],
-                        'url'   => "getDataAjaxForm('menu=".$module_name."&action=view_box&rawmode=yes&id_event=".$arrDates[$j]['id']."');"
+                        'url'   => "getDataAjaxForm('menu=".$module_name."&action=view_box&rawmode=yes&id_event=".$arrDates[$j]['id']."', event);"
                         );
             $arr[$k] = $arr1;
             $k += 1;
@@ -1296,7 +1296,7 @@ function getDataCalendar($arrLang,&$pDB,$module_name,$arrConf){
                         'end'   => $arrDates[$j]['endtime'],
                         'allDay'=> false,
                         'color' => $arrDates[$j]['color'],
-                        'url'   => "getDataAjaxForm('menu=".$module_name."&action=view_box&rawmode=yes&id_event=".$arrDates[$j]['id']."');"
+                        'url'   => "getDataAjaxForm('menu=".$module_name."&action=view_box&rawmode=yes&id_event=".$arrDates[$j]['id']."', event);"
                         );
             $arr[$k] = $arr1;
             $k += 1;
@@ -1444,7 +1444,7 @@ function getRepeatDate($each_repeat,$day_repeat,$starttime,$endtime,$j,&$k,&$arr
                         'end'   => $end,
                         'allDay'=> false,
                         'color' => $arrDates[$j]['color'],
-                        'url'   => "getDataAjaxForm('menu=".$module_name."&action=view_box&rawmode=yes&id_event=".$arrDates[$j]['id']."');"
+                        'url'   => "getDataAjaxForm('menu=".$module_name."&action=view_box&rawmode=yes&id_event=".$arrDates[$j]['id']."', event);"
                         );
                     $last_day_tmp = $start;
                     $arr[$k] = $arr1;
@@ -1494,7 +1494,7 @@ function getRepeatDate($each_repeat,$day_repeat,$starttime,$endtime,$j,&$k,&$arr
                         'end'   => $end,
                         'allDay'=> false,
                         'color' => $arrDates[$j]['color'],
-                        'url'   => "getDataAjaxForm('menu=".$module_name."&action=view_box&rawmode=yes&id_event=".$arrDates[$j]['id']."');"
+                        'url'   => "getDataAjaxForm('menu=".$module_name."&action=view_box&rawmode=yes&id_event=".$arrDates[$j]['id']."', event);"
                         );
                     $arr[$k] = $arr1;
                     $k += 1;

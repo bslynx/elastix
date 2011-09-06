@@ -8,7 +8,7 @@
         <td width="10%" align="left" valign="top" style="font-size:64%;">
             <div style="margin: 0px 10px 6px 10px;" valign="middle">
                 <div class='fc-button-add ui-state-default  ui-corner-left ui-corner-right' id="btnNewEvent" style="height: 25px;" align="center">
-                    <a id='add_news' onclick='displayNewEvent();'>
+                    <a id='add_news' onclick='displayNewEvent(event);'>
                         {$CreateEvent}
                     </a>
                 </div>
