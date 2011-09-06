@@ -16,7 +16,7 @@ $argYear=$date[0];
 $argMonth=$date[1];
 $argDay=$date[2];
 $argHour=$date[3];
-echo "The datetime is $argYear/$argMonth/$argDay $argHour" . ":00.\n";
+wlog("The datetime is $argYear/$argMonth/$argDay $argHour" . ":00.\n");
 
 // TODO: A quick check to si if the date is older than the log files. It could save time searching the logs contents one by one.
 // TODO: Actually the datetime passed as argument is also being returned in the output. But its value is not accurate. I need to remove this key.
@@ -44,18 +44,18 @@ if($argHour%6==0)
 // The foreach funcion always starts in the right order? I need it to iterate from index 0 to index n+1
 // Otherwise the log files will be analized in the wrong order
 foreach($arrLogs as $idFile=>$logFilename) {
-    echo "====================================\nSearching in file " . $logFilename . "\n====================================\n";
+    wlog("====================================\nSearching in file " . $logFilename . "\n====================================\n");
     if(file_exists($logFilename)) {
         $arrStats[$idFile] = $oFile->searchFile($logFilename, $lastStoredTS);
     } else {
-        echo "The file " . $arrLogs[$idFile] . " does not exist. Exiting.\n";
+        wlog("The file " . $arrLogs[$idFile] . " does not exist. Exiting.\n");
     }
 
     // The searcFile method fills the dateFound and wantedDateStatus variables. If the date is not found in the file
     // it can be a older or a newer date than the dates stored in the file. If the date is older i do nothing to let the
     // foreach to go to the previous maillog file. If the date is older i break because i don't need to analyze more files.
     if(!$oFile->dateFound and $oFile->wantedDateStatus=="older") {
-        echo "The wanted date was not found on this file. It seems to be an older date. Looking in the previous log file.\n";
+        wlog("The wanted date was not found on this file. It seems to be an older date. Looking in the previous log file.\n");
         // I do nothing 
     } else {
         break;
@@ -63,7 +63,7 @@ foreach($arrLogs as $idFile=>$logFilename) {
 }
 
 // Up to here i have an array  
-echo "====================================\nPreparing the output\n====================================\n";
+wlog("====================================\nPreparing the output\n====================================\n");
 
 $arrFinal = array(); $date="";
 foreach($arrStats as $arrFile) {
@@ -92,7 +92,7 @@ foreach($arrFinal as $date=>$numConn) {
 	storeInDatabase($date_mail,$unix_time,$numConn,0);
 	$i++;
     }
-    echo "$date  =  $numConn\n";
+    wlog("$date  =  $numConn\n");
 }
 
 if($storeDay && isset($unix_time)){
@@ -140,7 +140,7 @@ function deleteOldData($unix_time,$type)
     $query = "delete from statistics where unix_time < ? and type=?";
     $result = $pDB->genQuery($query,array($unix_time,$type));
     if($result==FALSE)
-	echo $pDB->errMsg."\n";
+	wlog($pDB->errMsg."\n");
 }
 
 function getDataDaysBefore($unix_time)
@@ -158,7 +158,7 @@ function getDataDaysBefore($unix_time)
     $query = "select * from statistics where unix_time>=? and type=0 order by unix_time";
     $result = $pDB->fetchTable($query,true,array($time));
     if($result===FALSE){
-	echo $pDB->errMsg."\n";
+	wlog($pDB->errMsg."\n");
 	return array();
     }
     return $result;
@@ -171,7 +171,7 @@ function getData6HoursBefore($unix_time)
     $query = "select * from statistics where unix_time>=? and type=0 order by unix_time";
     $result = $pDB->fetchTable($query,true,array($time));
     if($result===FALSE){
-	echo $pDB->errMsg."\n";
+	wlog($pDB->errMsg."\n");
 	return array();
     }
     return $result;
@@ -184,7 +184,7 @@ function storeInDatabase($date,$unix_time,$total,$type)
     $query = "insert into statistics (date,unix_time,total,type) values (?,?,?,?)";
     $result = $pDB->genQuery($query,$arrParam);
     if($result==FALSE)
-	echo $pDB->errMsg."\n";
+	wlog($pDB->errMsg."\n");
 }
 
 /* ====== THE SEARCHLOG CLASS ====== */
@@ -218,8 +218,8 @@ class searchLog {
         $this->fileMDateYear  = date('Y', filemtime($archivoLog));
         $this->fileMDateMonth = date('m', filemtime($archivoLog));
         if($this->debug) {
-            echo "The size of the file " . $archivoLog . " is: " . $this->filesize . "\n" ;
-            echo "The last modification date of the file is " . date('F d Y H:i:s.', filemtime($archivoLog)) . "\n";
+            wlog("The size of the file " . $archivoLog . " is: " . $this->filesize . "\n");
+            wlog("The last modification date of the file is " . date('F d Y H:i:s.', filemtime($archivoLog)) . "\n");
         }
         $this->f = fopen($archivoLog, "r");
 
@@ -228,21 +228,21 @@ class searchLog {
 
         if($this->dateFound==false and $this->cursor>0 and $this->methodConverges==false) {
             $this->wantedDateStatus="newer";
-            if($this->debug) echo "Date not found. The wanted date is NEWER than the ones included in the file $archivoLog\n";
+            if($this->debug) wlog("Date not found. The wanted date is NEWER than the ones included in the file $archivoLog\n");
         } else {
 
             if($this->dateFound==false and $this->cursor>0 and $this->methodConverges==true) {
-                echo "It seems that the date you are looking for is missing in the file. We will start the analysis from " .
-                     "the nearest date possible\n";
+                wlog("It seems that the date you are looking for is missing in the file. We will start the analysis from " .
+                     "the nearest date possible\n");
             }
 
             if ($this->dateFound==false and $this->cursor<=0) {    
                 $this->wantedDateStatus="older";
-                if($this->debug) echo "Date not found. The wanted date is OLDER than the ones included in the file $archivoLog\n";
-                if($this->debug) echo "Anyway, we will return the array with the dates found on this file.\n";
+                if($this->debug) wlog("Date not found. The wanted date is OLDER than the ones included in the file $archivoLog\n");
+                if($this->debug) wlog("Anyway, we will return the array with the dates found on this file.\n");
                 // Nota, en este caso la primera fecha se debe sumar con la ultima (son la misma) del archivo anterior
             }
-            echo "Analyzing the file...\n";
+            wlog("Analyzing the file...\n");
             $linea = ""; $lastDateTXT=""; $contCon=0; $year="";
             $lastMonth=""; $lastDay=""; $lastHour=""; $currentRecordTS=0; $lastRecordTS=0;
             $arrSalida = array();
@@ -274,7 +274,7 @@ class searchLog {
                             $contCon=0;
 			    $year = $this->calculateYear($this->month2digits($arrMatches[1]),$this->fileMDateYear, $this->fileMDateMonth);
                         } else {
-                            echo "Error parsing the log: A line has a date not newer than the last one. Weird!\n";
+                            wlog("Error parsing the log: A line has a date not newer than the last one. Weird!\n");
                         }
                     } else {
                         if(preg_match("/]: connect from /", $linea)) {
@@ -289,7 +289,7 @@ class searchLog {
             }
         }
         fclose($this->f);
-        echo "\n";
+        wlog("\n");
         return $arrSalida;
     }
 
@@ -300,7 +300,7 @@ class searchLog {
         $this->cursor = $nuevoCursor; // Esto esta bien?
         $this->salto = $nuevoCursor;
 	$currentTS = null;
-        echo "Searching the date position in the file to start analyzing...\n";
+        wlog("Searching the date position in the file to start analyzing...\n");
         // TODO: Prevent this loop to iteract infinitely. Maybe adding the condition to iteract only the number of bytes of the file
         do {
             // Given the current cursor, the next function seeks the start of the line and place the cursor there
@@ -308,10 +308,10 @@ class searchLog {
             $viejoCursor=$this->cursor;
             $this->cursor=$nuevoCursor;
             $this->seekStartOfLine();
-            if($this->debug) echo "Cursor position=" . $this->cursor . ". Step=" . $this->salto. "\n";
+            if($this->debug) wlog("Cursor position=" . $this->cursor . ". Step=" . $this->salto. "\n");
             // The next line checks if the method converge
             if($viejoCursor==$this->cursor) { 
-                if($this->debug) echo "The method converges\n";
+                if($this->debug) wlog("The method converges\n");
                 $this->methodConverges=true;
                 break;
             }
@@ -355,7 +355,7 @@ class searchLog {
             $this->seekStartOfLine();
         }
 
-        echo "Position set at byte $this->cursor\n";
+        wlog("Position set at byte $this->cursor\n");
     }
 
     function retrocederMarca($cursor) 
@@ -423,7 +423,15 @@ class searchLog {
 
     function printProgress()
     {
-        echo "*";
+        wlog("*");
+    }
+}
+
+function wlog($message){
+    $file = fopen("/var/log/elastix/postfix_stats.log","a");
+    if($file){
+        fwrite($file,$message);
+        fclose($file);
     }
 }
 ?>
