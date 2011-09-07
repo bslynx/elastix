@@ -44,6 +44,7 @@ INSERT INTO port(name,protocol,details,comment) VALUES ('MGCP','UDP','2727','272
 INSERT INTO port(name,protocol,details,comment) VALUES ('IAX','UDP','4569','4569');
 INSERT INTO port(name,protocol,details,comment) VALUES ('IAX1','UDP','5036','5036');
 INSERT INTO port(name,protocol,details,comment) VALUES ('DNS','UDP','53','53');
+INSERT INTO port(name,protocol,details,comment) VALUES ('TFTP','UDP','69','69');
 
 INSERT INTO filter(traffic,eth_in,eth_out,ip_source,ip_destiny,protocol,sport,dport,icmp_type,number_ip,target,rule_order,activated) VALUES ('INPUT','lo','','0.0.0.0/0','0.0.0.0/0','ALL','','','','','ACCEPT',1,1);
 INSERT INTO filter(traffic,eth_in,eth_out,ip_source,ip_destiny,protocol,sport,dport,icmp_type,number_ip,target,rule_order,activated) VALUES ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0','ICMP','','','ANY','','ACCEPT',2,1);
@@ -53,18 +54,19 @@ INSERT INTO filter(traffic,eth_in,eth_out,ip_source,ip_destiny,protocol,sport,dp
 INSERT INTO filter(traffic,eth_in,eth_out,ip_source,ip_destiny,protocol,sport,dport,icmp_type,number_ip,target,rule_order,activated) VALUES ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0','UDP','ANY','10000:20000','','','ACCEPT',6,1);
 INSERT INTO filter(traffic,eth_in,eth_out,ip_source,ip_destiny,protocol,sport,dport,icmp_type,number_ip,target,rule_order,activated) VALUES ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0','UDP','ANY','2727','','','ACCEPT',7,1);
 INSERT INTO filter(traffic,eth_in,eth_out,ip_source,ip_destiny,protocol,sport,dport,icmp_type,number_ip,target,rule_order,activated) VALUES ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0','UDP','53','ANY','','','ACCEPT',8,1);
-INSERT INTO filter(traffic,eth_in,eth_out,ip_source,ip_destiny,protocol,sport,dport,icmp_type,number_ip,target,rule_order,activated) VALUES ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0','TCP','ANY','22','','','ACCEPT',9,1);
-INSERT INTO filter(traffic,eth_in,eth_out,ip_source,ip_destiny,protocol,sport,dport,icmp_type,number_ip,target,rule_order,activated) VALUES ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0','TCP','ANY','25','','','ACCEPT',10,1);
-INSERT INTO filter(traffic,eth_in,eth_out,ip_source,ip_destiny,protocol,sport,dport,icmp_type,number_ip,target,rule_order,activated) VALUES ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0','TCP','ANY','80','','','ACCEPT',11,1);
-INSERT INTO filter(traffic,eth_in,eth_out,ip_source,ip_destiny,protocol,sport,dport,icmp_type,number_ip,target,rule_order,activated) VALUES ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0','TCP','ANY','110','','','ACCEPT',12,1);
-INSERT INTO filter(traffic,eth_in,eth_out,ip_source,ip_destiny,protocol,sport,dport,icmp_type,number_ip,target,rule_order,activated) VALUES ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0','TCP','ANY','143','','','ACCEPT',13,1);
-INSERT INTO filter(traffic,eth_in,eth_out,ip_source,ip_destiny,protocol,sport,dport,icmp_type,number_ip,target,rule_order,activated) VALUES ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0','TCP','ANY','443','','','ACCEPT',14,1);
-INSERT INTO filter(traffic,eth_in,eth_out,ip_source,ip_destiny,protocol,sport,dport,icmp_type,number_ip,target,rule_order,activated) VALUES ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0','TCP','ANY','993','','','ACCEPT',15,1);
-INSERT INTO filter(traffic,eth_in,eth_out,ip_source,ip_destiny,protocol,sport,dport,icmp_type,number_ip,target,rule_order,activated) VALUES ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0','TCP','ANY','995','','','ACCEPT',16,1);
-INSERT INTO filter(traffic,eth_in,eth_out,ip_source,ip_destiny,protocol,sport,dport,icmp_type,number_ip,target,rule_order,activated) VALUES ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0','TCP','ANY','5222','','','ACCEPT',17,1);
-INSERT INTO filter(traffic,eth_in,eth_out,ip_source,ip_destiny,protocol,sport,dport,icmp_type,number_ip,target,rule_order,activated) VALUES ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0','TCP','ANY','9090','','','ACCEPT',18,1);
-INSERT INTO filter(traffic,eth_in,eth_out,ip_source,ip_destiny,protocol,sport,dport,icmp_type,number_ip,target,rule_order,activated,state) VALUES ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0','STATE','','','','','ACCEPT',19,1,'Established,Related');
-INSERT INTO filter(traffic,eth_in,eth_out,ip_source,ip_destiny,protocol,sport,dport,icmp_type,number_ip,target,rule_order,activated) VALUES ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0','ALL','','','','','REJECT',20,1);
-INSERT INTO filter(traffic,eth_in,eth_out,ip_source,ip_destiny,protocol,sport,dport,icmp_type,number_ip,target,rule_order,activated) VALUES ('FORWARD','ANY','ANY','0.0.0.0/0','0.0.0.0/0','ALL','','','','','REJECT',21,1);
+INSERT INTO filter(traffic,eth_in,eth_out,ip_source,ip_destiny,protocol,sport,dport,icmp_type,number_ip,target,rule_order,activated) VALUES ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0','UDP','ANY','69','','','ACCEPT',9,1);
+INSERT INTO filter(traffic,eth_in,eth_out,ip_source,ip_destiny,protocol,sport,dport,icmp_type,number_ip,target,rule_order,activated) VALUES ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0','TCP','ANY','22','','','ACCEPT',10,1);
+INSERT INTO filter(traffic,eth_in,eth_out,ip_source,ip_destiny,protocol,sport,dport,icmp_type,number_ip,target,rule_order,activated) VALUES ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0','TCP','ANY','25','','','ACCEPT',11,1);
+INSERT INTO filter(traffic,eth_in,eth_out,ip_source,ip_destiny,protocol,sport,dport,icmp_type,number_ip,target,rule_order,activated) VALUES ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0','TCP','ANY','80','','','ACCEPT',12,1);
+INSERT INTO filter(traffic,eth_in,eth_out,ip_source,ip_destiny,protocol,sport,dport,icmp_type,number_ip,target,rule_order,activated) VALUES ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0','TCP','ANY','110','','','ACCEPT',13,1);
+INSERT INTO filter(traffic,eth_in,eth_out,ip_source,ip_destiny,protocol,sport,dport,icmp_type,number_ip,target,rule_order,activated) VALUES ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0','TCP','ANY','143','','','ACCEPT',14,1);
+INSERT INTO filter(traffic,eth_in,eth_out,ip_source,ip_destiny,protocol,sport,dport,icmp_type,number_ip,target,rule_order,activated) VALUES ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0','TCP','ANY','443','','','ACCEPT',15,1);
+INSERT INTO filter(traffic,eth_in,eth_out,ip_source,ip_destiny,protocol,sport,dport,icmp_type,number_ip,target,rule_order,activated) VALUES ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0','TCP','ANY','993','','','ACCEPT',16,1);
+INSERT INTO filter(traffic,eth_in,eth_out,ip_source,ip_destiny,protocol,sport,dport,icmp_type,number_ip,target,rule_order,activated) VALUES ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0','TCP','ANY','995','','','ACCEPT',17,1);
+INSERT INTO filter(traffic,eth_in,eth_out,ip_source,ip_destiny,protocol,sport,dport,icmp_type,number_ip,target,rule_order,activated) VALUES ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0','TCP','ANY','5222','','','ACCEPT',18,1);
+INSERT INTO filter(traffic,eth_in,eth_out,ip_source,ip_destiny,protocol,sport,dport,icmp_type,number_ip,target,rule_order,activated) VALUES ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0','TCP','ANY','9090','','','ACCEPT',19,1);
+INSERT INTO filter(traffic,eth_in,eth_out,ip_source,ip_destiny,protocol,sport,dport,icmp_type,number_ip,target,rule_order,activated,state) VALUES ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0','STATE','','','','','ACCEPT',20,1,'Established,Related');
+INSERT INTO filter(traffic,eth_in,eth_out,ip_source,ip_destiny,protocol,sport,dport,icmp_type,number_ip,target,rule_order,activated) VALUES ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0','ALL','','','','','REJECT',21,1);
+INSERT INTO filter(traffic,eth_in,eth_out,ip_source,ip_destiny,protocol,sport,dport,icmp_type,number_ip,target,rule_order,activated) VALUES ('FORWARD','ANY','ANY','0.0.0.0/0','0.0.0.0/0','ALL','','','','','REJECT',22,1);
 
 INSERT INTO tmp_execute(exec_in_sys,first_time) VALUES (0,1);
