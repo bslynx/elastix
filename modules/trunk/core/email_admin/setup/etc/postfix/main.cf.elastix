@@ -672,6 +672,6 @@ sample_directory = /usr/share/doc/postfix-2.5.6/samples
 #
 readme_directory = /usr/share/doc/postfix-2.5.6/README_FILES
 # Enable IPv4, and IPv6 if supported
-inet_protocols = all
+# inet_protocols = all
 
 virtual_transport = lmtp:unix:/var/lib/imap/socket/lmtp
