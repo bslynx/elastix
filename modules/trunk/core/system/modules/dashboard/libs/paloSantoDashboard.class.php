@@ -191,7 +191,7 @@ class paloSantoDashboard {
     if(is_null($extension))
                 return $arrLang["You haven't extension"];
 
-    $result = $dbFax->fetchTable("select a.pdf_file,a.company_name,a.date, a.faxpath from info_fax_recvq a,fax b where b.extension='$extension' and b.id=a.fax_destiny_id and type='in' order by a.id desc limit $numRegs");
+    $result = $dbFax->fetchTable("select a.pdf_file,a.company_name,a.date, a.id from info_fax_recvq a,fax b where b.extension='$extension' and b.id=a.fax_destiny_id and type='in' order by a.id desc limit $numRegs");
     if(!$result)
         return $arrLang["You don't recibed faxes"];
 
@@ -199,7 +199,7 @@ class paloSantoDashboard {
 
     foreach($result as $value){
         $temp = $arrLang["fax recived"];
-        $link="<a href='/faxes/$value[3]/fax.pdf'>$value[0]</a>";
+        $link="<a href='?menu=faxviewer&action=download&rawmode=yes&id=$value[3]'>$value[0]</a>";
         $temp = str_replace("{file}",$link,$temp);
         $temp = str_replace("{source}",($value[1]=="XXXXXXX")?$arrLang["unknow"]:$value[1],$temp);
         $temp = str_replace("{date}",$value[2],$temp);  
