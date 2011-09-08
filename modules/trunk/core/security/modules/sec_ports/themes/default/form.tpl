@@ -15,20 +15,22 @@
             <input class="button" type="submit" name="edit" value="{$EDIT}">&nbsp;
         {/if}
             <input class="button" type="submit" name="cancel" value="{$CANCEL}"></td>
-        <td align="right" nowrap><span class="letra12"><span  class="required">*</span> {$REQUIRED_FIELD}</span></td>
+	{if $MODE ne "view"}
+	    <td align="right" nowrap><span class="letra12"><span  class="required">*</span> {$REQUIRED_FIELD}</span></td>
+	{/if}
     </tr>
 </table>
 <table class="tabForm" style="font-size: 16px;" width="100%" >
     <tr class="letra12" id="name">
-        <td align="left" width="8%"><b>{$name.LABEL}: <span  class="required">*</span></b></td>
+        <td align="left" width="8%"><b>{$name.LABEL}: {if $MODE ne "view"}<span  class="required">*</span>{/if}</b></td>
         <td align="left">{$name.INPUT}</td>
     </tr>
     <tr class="letra12">
-        <td align="left"><b>{$protocol.LABEL}: <span  class="required">*</span></b></td>
+        <td align="left"><b>{$protocol.LABEL}: {if $MODE ne "view"}<span  class="required">*</span>{/if}</b></td>
         <td align="left">{$protocol.INPUT}</td>
     </tr>
     <tr {$port_style} class="letra12" id="port">
-        <td align="left"><b>{$port.LABEL}: <span  class="required">*</span></b></td>
+        <td align="left"><b>{$port.LABEL}: {if $MODE ne "view"}<span  class="required">*</span>{/if}</b></td>
         {if $MODE eq "new"}
         <td align="left">{$port.INPUT}&nbsp;:&nbsp;{$port2.INPUT}</td>
         {/if}
@@ -40,15 +42,15 @@
         {/if}
     </tr>
     <tr {$type_style} class="letra12" id="type">
-        <td align="left"><b>{$type.LABEL}: <span  class="required">*</span></b></td>
+        <td align="left"><b>{$type.LABEL}: {if $MODE ne "view"}<span  class="required">*</span>{/if}</b></td>
         <td align="left">{$type.INPUT}</td>
     </tr>
     <tr {$code_style} class="letra12" id="code">
-        <td align="left"><b>{$code.LABEL}: <span  class="required">*</span></b></td>
+        <td align="left"><b>{$code.LABEL}: {if $MODE ne "view"}<span  class="required">*</span>{/if}</b></td>
         <td align="left">{$code.INPUT}</td>
     </tr>
     <tr {$protocol_style} class="letra12" id="protocol_number">
-        <td align="left"><b>{$protocol_number.LABEL}: <span  class="required">*</span></b></td>
+        <td align="left"><b>{$protocol_number.LABEL}: {if $MODE ne "view"}<span  class="required">*</span>{/if}</b></td>
         <td align="left">{$protocol_number.INPUT}</td>
     </tr>
     <tr class="letra12">
