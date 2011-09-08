@@ -50,13 +50,15 @@ if (ns6) {
             <input class="button" type="submit" name="cancel" value="{$CANCEL}">
         </td>
     </tr>
+    {if $mode ne 'view'}
     <tr>
         <td align="right" nowrap><span class="letra12"><span  class="required">*</span> {$REQUIRED_FIELD}</span></td>
     </tr>
+    {/if}
     <tr><td>
         <table width="100%" cellpadding="4" cellspacing="0" border="0" class="tabForm">
             <tr>
-                <td align="left" width="20%"><b>{$conference_name.LABEL}: <span  class="required">*</span></b></td>
+                <td align="left" width="20%"><b>{$conference_name.LABEL}: {if $mode ne 'view'}<span  class="required">*</span>{/if}</b></td>
                 <td class="required" align="left">{$conference_name.INPUT}</td>
                 <td align="left"><b>{$conference_owner.LABEL}: </b></td>
                 <td align="left">{$conference_owner.INPUT}</td>
@@ -81,7 +83,7 @@ if (ns6) {
                 </td>
             </tr>
             <tr>
-                <td align="left"><b>{$start_time.LABEL}: <span  class="required">*</span></b></td>
+                <td align="left"><b>{$start_time.LABEL}: {if $mode ne 'view'}<span  class="required">*</span>{/if}</b></td>
                 <td align="left">{$start_time.INPUT}</td>
                 <td align="left"><b>{$duration.LABEL}: </b></td>
                 <td align="left">
@@ -90,9 +92,9 @@ if (ns6) {
                 </td>
             </tr>
             <tr>
-                <td align="left"><b>{$conference_number.LABEL}: <span  class="required">*</span></b></td>
+                <td align="left"><b>{$conference_number.LABEL}: {if $mode ne 'view'}<span  class="required">*</span>{/if}</b></td>
                 <td align="left">{$conference_number.INPUT}</td>
-                <td align="left"><b>{$max_participants.LABEL}: <span  class="required">*</span></b></td>
+                <td align="left"><b>{$max_participants.LABEL}: {if $mode ne 'view'}<span  class="required">*</span>{/if}</b></td>
                 <td align="left">{$max_participants.INPUT}</td>
             </tr>
 {if $WEBCONF_CONTENT}
