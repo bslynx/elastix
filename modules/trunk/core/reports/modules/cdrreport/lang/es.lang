@@ -55,6 +55,7 @@ $arrLangModule=array(
 "(Any ringgroup)"=>"(cualquier grupo)",
 "Your username does not have any extension assigned." => "Su usuario no tiene una extensión asignada.",
 "contact_admin" => "No hay número de extensión asociado con el usuario actual. Por favor contáctese con el administrador para que le asigne una extensión",
-"no_extension" => "El usuario actual no tiene un número de extensión asociado a él. Puede asociar un número de extensión a su usuario haciendo click <a href=\"javascript: openWindow('index.php?menu=userlist&amp;action=edit_userExtension&amp;rawmode=yes');\">aquí</a>"
+"no_extension" => "El usuario actual no tiene un número de extensión asociado a él. Puede asociar un número de extensión a su usuario haciendo click <a href=\"javascript: openWindow('index.php?menu=userlist&amp;action=edit_userExtension&amp;rawmode=yes');\">aquí</a>",
+"Only administrators can delete CDRs" => "Sólo los administradores puede eliminar CDRs"
 );
 ?>

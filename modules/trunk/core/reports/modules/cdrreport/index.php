@@ -77,13 +77,12 @@ function _moduleContent(&$smarty, $module_name)
 	    $smarty->assign('mb_message', "<b>"._tr("no_extension")."</b>");
     }
   
+    if($isAdministrator)
+	$smarty->assign("user","administrator");
+
     // Para usuarios que no son administradores, se restringe a los CDR de la
     // propia extensión
-    $sExtension = $pACL->isUserAdministratorGroup($_SESSION['elastix_user']) 
-        ? '' 
-        : $pACL->getUserExtension($_SESSION['elastix_user']);
-
-
+    $sExtension = ($isAdministrator)? '' : $pACL->getUserExtension($_SESSION['elastix_user']);
 
     // DSN para consulta de ringgroups
     $dsn_asterisk = generarDSNSistema('asteriskuser', 'asterisk');
@@ -187,17 +186,25 @@ function _moduleContent(&$smarty, $module_name)
 
     // Ejecutar el borrado, si se ha validado.
     if (isset($_POST['delete'])) {
-	if($paramFiltro['date_start'] <= $paramFiltro['date_end']){
-	    $r = $oCDR->borrarCDRs($paramFiltro);
-	    if (!$r) $smarty->assign(array(
-		'mb_title'      =>  _tr('ERROR'),
-		'mb_message'    =>  $oCDR->errMsg,
-	    ));
-	}else{
+	if($isAdministrator){
+	    if($paramFiltro['date_start'] <= $paramFiltro['date_end']){
+		$r = $oCDR->borrarCDRs($paramFiltro);
+		if (!$r) $smarty->assign(array(
+		    'mb_title'      =>  _tr('ERROR'),
+		    'mb_message'    =>  $oCDR->errMsg,
+		));
+	    }else{
+		$smarty->assign(array(
+		    'mb_title'      =>  _tr('ERROR'),
+		    'mb_message'    =>  _tr("Please End Date must be greater than Start Date"),
+		));
+	    }
+	}
+	else{
 	    $smarty->assign(array(
-		'mb_title'      =>  _tr('ERROR'),
-		'mb_message'    =>  _tr("Please End Date must be greater than Start Date"),
-	    ));
+		    'mb_title'      =>  _tr('ERROR'),
+		    'mb_message'    =>  _tr("Only administrators can delete CDRs"),
+		));
 	}
     }
     
@@ -212,7 +219,7 @@ function _moduleContent(&$smarty, $module_name)
     $oGrid->setURL($url);
     
     $arrData = null;
-    if(!isset($sExtension) || $sExtension == ""  && !$pACL->isUserAdministratorGroup($_SESSION['elastix_user']))
+    if(!isset($sExtension) || $sExtension == ""  && !$isAdministrator)
 	$total = 0;
     else
 	$total = $oCDR->contarCDRs($paramFiltro);
