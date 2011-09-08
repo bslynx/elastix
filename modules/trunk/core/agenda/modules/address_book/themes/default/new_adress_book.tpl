@@ -15,7 +15,9 @@
             {/if}
             <input class="button" type="submit" name="cancel" value="{$CANCEL}">
         </td>
-        <td align="right" nowrap><span class="letra12"><span  class="required">*</span> {$REQUIRED_FIELD}</span></td>
+	{if $mode ne 'view'}
+	    <td align="right" nowrap><span class="letra12"><span  class="required">*</span> {$REQUIRED_FIELD}</span></td>
+	{/if}
     </tr>
     <tr>
         <td  colspan='2'>
@@ -39,15 +41,15 @@
                     <td>
                         <table class="letra12" width="100%" cellpadding="4" cellspacing="0" border="0">
                             <tr>
-                                <td align="left" width="20%"><b>{$name.LABEL}: <span  class="required">*</span></b></td>
+                                <td align="left" width="20%"><b>{$name.LABEL}: {if $mode ne 'view'}<span  class="required">*</span>{/if}</b></td>
                                 <td class="required" align="left">{$name.INPUT}</td>
                             </tr>
                             <tr>
-                                <td align="left" width="20%"><b>{$last_name.LABEL}: <span  class="required">*</span></b></td>
+                                <td align="left" width="20%"><b>{$last_name.LABEL}: {if $mode ne 'view'}<span  class="required">*</span>{/if}</b></td>
                                 <td class="required" align="left">{$last_name.INPUT}</td>
                             </tr>
                             <tr id='tr_phone'>
-                                <td align="left" width="20%"><b>{$telefono.LABEL}: <span id="span_phone" class="required">*</span></b></td>
+                                <td align="left" width="20%"><b>{$telefono.LABEL}: {if $mode ne 'view'}<span id="span_phone" class="required">*</span>{/if}</b></td>
                                 <td class="required" align="left">{$telefono.INPUT}</td>
                             </tr>
                             <tr>
@@ -87,7 +89,7 @@
                     </td>
                 </tr>
                 <tr id="tr_from_csv">
-                    <td>{$label_file}&nbsp;(file.csv):<span  class="required">*</span></td>
+                    <td>{$label_file}&nbsp;(file.csv):{if $mode ne 'view'}<span  class="required">*</span>{/if}</td>
                     <td><input type='file' id='userfile' name='userfile'></td>
                     <td><a href="?menu={$MODULE_NAME}&amp;action=download_csv&amp;rawmode=yes" name="link_download">{$DOWNLOAD}</a></td>
                 </tr>
