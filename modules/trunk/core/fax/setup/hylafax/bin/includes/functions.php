@@ -179,14 +179,18 @@
            $path="recvd";
          else
            $path="sent";
-         exec("sudo chmod 777 -R $faxes_path/$path",$arrConsole,$flagStatus);
+         exec("sudo chmod 777 $faxes_path/$path",$arrConsole,$flagStatus);
          if($flagStatus == 0)
          {
            exec("mkdir -p $faxes_path/$path/$year/$month/$day/$number/$commID/",$arrConsole,$flagStatus2);
            faxes_log("createFolder > Creando carpetas : $faxes_path/$path/$year/$month/$day/$number/$commID");           
            if($flagStatus2 == 0){         
-              exec("sudo chmod 777 -R $faxes_path/$path",$arrConsole,$flagStatus);
-              faxes_log("sudo chmod 777 -R  > carpetas : $faxes_path/$path/$year/$month/$day/$number/$commID status: $flagStatus");           
+              exec("sudo chmod 777  $faxes_path/$path/$year",$arrConsole,$flagStatus);
+              exec("sudo chmod 777  $faxes_path/$path/$year/$month",$arrConsole,$flagStatus);
+              exec("sudo chmod 777  $faxes_path/$path/$year/$month/$day",$arrConsole,$flagStatus);
+              exec("sudo chmod 777  $faxes_path/$path/$year/$month/$day/$number",$arrConsole,$flagStatus);
+              exec("sudo chmod 777  $faxes_path/$path/$year/$month/$day/$number/$commID",$arrConsole,$flagStatus);
+              faxes_log("sudo chmod 777  > carpetas : $faxes_path/$path/$year/$month/$day/$number/$commID status: $flagStatus");           
              return $year.'/'.$month.'/'.$day.'/'.$number.'/'.$commID;
            }else
              return "Error MKDIR";
