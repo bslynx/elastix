@@ -22,7 +22,9 @@
           {else}
           <input class="button" type="submit" name="edit" value="{$EDIT}">
           {/if}
-        <td align="right" nowrap><span class="letra12"><span  class="required">*</span> {$REQUIRED_FIELD}</span></td>
+	{if $mode ne 'view'}
+	  <td align="right" nowrap><span class="letra12"><span  class="required">*</span> {$REQUIRED_FIELD}</span></td>
+	{/if}
      </tr>
    </table>
   </td>
@@ -31,21 +33,21 @@
   <td>
     <table width="100%" border="0" cellspacing="0" cellpadding="0" class="tabForm">
       <tr>
-	<td width="20%">{$name.LABEL}: <span  class="required">*</span></td>
+	<td width="20%">{$name.LABEL}: {if $mode ne 'view'}<span  class="required">*</span>{/if}</td>
 	<td width="30%">{$name.INPUT}</td>
 	<td width="25%">{$description.LABEL}:</td>
 	<td width="25%">{$description.INPUT}</td>
       </tr>
       <tr>
-	<td>{$password1.LABEL}: <span  class="required">*</span></td>
+	<td>{$password1.LABEL}: {if $mode ne 'view'}<span  class="required">*</span>{/if}</td>
 	<td>{$password1.INPUT}</td>
-	<td>{$password2.LABEL}: <span class="required">*</span></td>
+	<td>{$password2.LABEL}: {if $mode ne 'view'}<span class="required">*</span>{/if}</td>
 	<td>{$password2.INPUT}</td>
       </tr>
       <tr>
-	<td>{$group.LABEL}: <span  class="required">*</span></td>
+	<td>{$group.LABEL}: {if $mode ne 'view'}<span  class="required">*</span>{/if}</td>
 	<td>{$group.INPUT}</td>
-	<td>{$extension.LABEL}: <span class="required">*</span></td>
+	<td>{$extension.LABEL}:</td>
 	<td>{$extension.INPUT}</td>
       </tr>
 </table>
