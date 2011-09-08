@@ -18,8 +18,10 @@
           <input class="button" type="submit" name="edit" value="{$EDIT}"> 
           <input class="button" type="submit" name="delete" value="{$DELETE}"  onClick="return confirmSubmit('{$CONFIRM_CONTINUE}')">
 	  <input class="button" type="submit" name="cancel" value="{$CANCEL}"></td>
-          {/if}          
-        <td align="right" nowrap><span class="letra12"><span  class="required">*</span> {$REQUIRED_FIELD}</span></td>
+          {/if}    
+	{if $mode ne 'view'}
+	    <td align="right" nowrap><span class="letra12"><span  class="required">*</span> {$REQUIRED_FIELD}</span></td>
+	{/if}
      </tr>
    </table>
   </td>
@@ -43,21 +45,21 @@
 		<td width="15%"><b>{$address.LABEL}:</b> <span  class="required">*</span></td>
 		<td width="35%">{$address.INPUT}{$domain_name}</td>
 	{else}
-		<td width="15%"><b>{$account_name_label}:</b> <span  class="required">*</span></td>
+		<td width="15%"><b>{$account_name_label}:</b> {if $mode ne 'view'}<span  class="required">*</span>{/if}</td>
 		<td width="35%">{$username}</td>
 	{/if}
-	    <td width="15%"><b>{$quota.LABEL}:</b> <span  class="required">*</span></td>
+	    <td width="15%"><b>{$quota.LABEL}:</b> {if $mode ne 'view'}<span  class="required">*</span>{/if}</td>
 	    <td width="35%">{$quota.INPUT}</td>
       </tr>
       <tr id="save_by_account2" {$DISPLAY_SAVE_ACCOUNT}>
-		<td width="20%"><b>{$password1.LABEL}:</b> <span  class="required">*</span></td>
+		<td width="20%"><b>{$password1.LABEL}:</b> {if $mode ne 'view'}<span  class="required">*</span>{/if}</td>
 	    <td width="30%">{$password1.INPUT}</td>
-		<td width="20%"><b>{$password2.LABEL}:</b> <span class="required">*</span></td>
+		<td width="20%"><b>{$password2.LABEL}:</b> {if $mode ne 'view'}<span class="required">*</span>{/if}</td>
 		<td width="30%">{$password2.INPUT}</td>
       </tr>
 
       <tr id="save_by_file" {$DISPLAY_FILE_UPLOAD}>
-	  <td align="left" width='13%'><b>{$file_Label}</b></td>
+	  <td align="left" width='13%'><b>{$file_Label}</b> {if $mode ne 'view'}<span  class="required">*</span>{/if}</td>
 	  <td align="left">
 	      <input name="file_accounts" id="file_accounts" type="file" value="{$file_accounts_name}" size='30' />
 	  </td>
