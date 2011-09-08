@@ -214,6 +214,8 @@ This screen will now ask for a password for user 'admin' that will be used for: 
 	mv /tmp/amportal.conf.tmp /etc/amportal.conf
 	cat /etc/amportal.conf | sed "s/FOPPASSWORD=eLaStIx.2oo7/FOPPASSWORD=$FREEPBX_PASSWD_ESC/" > /tmp/amportal.conf.tmp
 	mv /tmp/amportal.conf.tmp /etc/amportal.conf
+	cat /etc/amportal.conf | sed "s/ARI_ADMIN_PASSWORD=ari_password/ARI_ADMIN_PASSWORD=$FREEPBX_PASSWD_ESC/" > /tmp/amportal.conf.tmp
+        mv /tmp/amportal.conf.tmp /etc/amportal.conf
 	cat /etc/asterisk/res_mysql.conf | sed "s/dbpass = eLaStIx.asteriskuser.2oo7/dbpass = $FREEPBX_PASSWD_ESC/" > /tmp/res_mysql.conf.tmp
 	mv /tmp/res_mysql.conf.tmp /etc/asterisk/res_mysql.conf
 	cat /etc/asterisk/cbmysql.conf | sed "s/password=eLaStIx.asteriskuser.2oo7/password=$FREEPBX_PASSWD_ESC/" > /tmp/cbmysql.conf.tmp
