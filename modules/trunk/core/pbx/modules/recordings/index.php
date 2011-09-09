@@ -88,7 +88,7 @@ function _moduleContent(&$smarty, $module_name)
 function save_recording($smarty, $module_name, $local_templates_dir, $arrLang, $arrConf, $pDBACL)
 {
     $bExito = true;
-    $pRecording = new paloSantoRecordings($pDB);
+    $pRecording = new paloSantoRecordings();
     $extension = $pRecording->Obtain_Extension_Current_User($arrConf);
 
     if(!$extension)
@@ -164,7 +164,7 @@ function save_recording($smarty, $module_name, $local_templates_dir, $arrLang, $
                 }
                 if (!preg_match("/^(\w|-|\.|\(|\)|\s)+\.(wav|WAV|Wav|gsm|GSM|Gsm|Wav49|wav49|WAV49)$/",$_FILES['file_record']['name'])) {
                     $smarty->assign("mb_title", $arrLang['ERROR'].":");
-                    $smarty->assign("mb_message", $arrLang["Possible file upload attack"]." $filename");
+                    $smarty->assign("mb_message", $arrLang["Possible file upload attack"]." ".$_FILES["file_record"]["name"]);
                     $bExito = false;
                     return form_Recordings($smarty, $module_name, $local_templates_dir, $arrLang, $pDBACL);
                 }
