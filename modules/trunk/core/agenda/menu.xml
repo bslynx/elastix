@@ -16,12 +16,5 @@
             <group id="3" name="extension" desc="extension user"></group>
         </permissions>
     </menuitem>
-    <menuitem menuid="recordings"   desc="Recordings"   parent="agenda" module="yes" link="" order="3">
-        <permissions>
-            <group id="1" name="administrator" desc="total access"></group>
-            <group id="2" name="Operator" desc="Operator"></group>
-            <group id="3" name="extension" desc="extension user"></group>
-        </permissions>
-    </menuitem>
   </menulist>
 </module>

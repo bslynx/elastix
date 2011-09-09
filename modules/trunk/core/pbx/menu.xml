@@ -67,6 +67,13 @@
         <group id="1" name="administrator" desc="total access"></group>
       </permissions>
     </menuitem>
+    <menuitem menuid="recordings"            desc="Recordings"             parent="tools"     module="yes" link=""      order="85">
+      <permissions>
+        <group id="1" name="administrator" desc="total access"></group>
+        <group id="2" name="Operator" desc="Operator"></group>
+        <group id="3" name="extension" desc="extension user"></group>
+      </permissions>
+    </menuitem>
     <menuitem menuid="fop"                    desc="Flash Operator Panel"    parent="pbxconfig" module="no"  link="panel" order="9">
         <permissions>
             <group id="1" name="administrator" desc="total access"></group>
