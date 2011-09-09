@@ -20,7 +20,6 @@
                     <a href="index.php?menu={$module_name}&action=download_icals&rawmode=yes">
                             <span>{$ical}</span>
                     </a>
-                    <div align="center"><span>{$formatIcal}</span></div>
                 </div>
             </div>
         </td>

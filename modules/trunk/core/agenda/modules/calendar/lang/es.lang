@@ -164,5 +164,6 @@ $arrLangModule=array(
 "Click here to listen" => "Click aqui para escuchar",
 "Deleting" => "Eliminando",
 "Sending Request" => "Enviando Petición",
+"Download ical calendar" => "Descargar calendario ical",
 );
 ?>

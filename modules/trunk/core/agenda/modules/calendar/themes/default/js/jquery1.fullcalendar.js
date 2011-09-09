@@ -192,9 +192,10 @@ $.fn.fullCalendar = function(options) {
 		
 		// view managing
         var tmpDate = "";
-        if(options.dateServer == "")
-            options.dateServer = (new Date()).toString();
+        if(options.dateServer == "") // add for elastix
+            options.dateServer = (new Date()).toString(); // add for elastix
 
+	
 
 		var date = new Date(options.dateServer),
 			viewName, view, // the current view
@@ -212,8 +213,7 @@ $.fn.fullCalendar = function(options) {
 		if (options.date != undefined) {
 			date.setDate(options.date);
 		}
-		
-		
+
 		
 		/* View Rendering
 		-----------------------------------------------------------------------------*/
@@ -418,8 +418,8 @@ $.fn.fullCalendar = function(options) {
 			else {
 				reportEvents(src); // src is an array
 			}
+			$("#datepicker").datepicker("setDate",date); // add for elastix
 		}
-		
 		
 		
 		/* Loading State
@@ -488,13 +488,13 @@ $.fn.fullCalendar = function(options) {
 			//
 			
 			prev: function() {
-				render(-1);//alert('previo');
-                $("#datepicker").datepicker( "setDate", date );
+				render(-1);//alert('previo '+ date);
+				$("#datepicker").datepicker( "setDate", date ); // add for elastix
 			},
 			
 			next: function() {
 				render(1);//alert('next');
-                $("#datepicker").datepicker( "setDate", date );
+				$("#datepicker").datepicker( "setDate", date ); // add for elastix
 			},
 			
 			prevYear: function() {
@@ -509,7 +509,7 @@ $.fn.fullCalendar = function(options) {
 			
 			today: function() {
 				date = new Date();//alert('today');
-                $("#datepicker").datepicker( "setDate", date );
+				$("#datepicker").datepicker( "setDate", date ); // add for elastix
 				render();
 			},
 			

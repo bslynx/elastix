@@ -87,9 +87,6 @@ function _moduleContent(&$smarty, $module_name)
         case "get_data":
             $content = getDataCalendar($arrLang,$pDB,$module_name,$arrConf);
             break;
-        case "get_contacts":
-            $content = getContactEmails($arrConf);
-            break;
         case "get_num_ext":
             $content = getNumExtesion($arrConf, $pDB, $arrLang);
             break;
@@ -114,6 +111,9 @@ function _moduleContent(&$smarty, $module_name)
         case "getTextToSpeach":
             $content = getTextToSpeach($arrLang,$pDB);
             break;
+	case "display":
+	    $content = viewCalendarById($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+	    break;
         case "phone_numbers":
 
             // Include language file for EN, then for local, and merge the two.
@@ -162,91 +162,131 @@ function getNameDayToday($arrLang)
 function viewCalendar($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
 {
     $pCalendar = new paloSantoCalendar($pDB);
-
     $arrForm = createFieldForm($arrLang);
     $oForm = new paloForm($smarty,$arrForm);
-    $anio = getParameter("year");
-    $mess = getParameter("month");
-    $_DATA['year']  = isset($anio)?$anio:date("Y");
-    $_DATA['month'] = isset($mess)?$mess:date("n");
+
     $_DATA['ReminderTime'] = isset($_DATA['ReminderTime'])?$_DATA['ReminderTime']:"10";
-    $date_ini = getParameter("date");
+
+    $date_ini = getParameter("event_date");
     $date_end = getParameter("to");
-    $options_emails = "";
     $id_event = "";
 
     $user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
     $uid = Obtain_UID_From_User($user,$arrConf);
-    $title = $arrLang["Add Event"];
 
-    $visibility        = "visibility: hidden;";
-    $visibility_repeat = "visibility: hidden;";
     $visibility_emails = "visibility: visible;";
     $visibility_alert  = "display: none;";
-    $repeat_date = "";
 
     $festival = $pCalendar->festivalUp(); // verifica si esta levantado el festival
     if(!$festival){
         $smarty->assign("mb_message", $arrLang['Festival is not up']);
     }
-    $today       = date("D");
-    $dateServer  = gmdate("D M d Y H:i:s TO (e)");//Fri Nov 12 2010 00:00:00 GMT-0500 (ECT)
-    $icalFile = $arrLang["Download"]." ".$_SESSION["elastix_user"]." ".$arrLang["Calendar"];
-    $smarty->assign("repeat_date", $repeat_date);
-    $smarty->assign("visibility", $visibility);
-    $smarty->assign("visibility_repeat", $visibility_repeat);
+		    // yyyy-mm-dd
+    if(!preg_match("/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/",$date_ini))
+	$date_ini = date("M d Y");
+
+                         //D M d Y H:i:s TO (e)
+    $dateServer = gmdate("D M d Y H:i:s TO (e)", strtotime($date_ini));//Fri Nov 12 2010 00:00:00 GMT-0500 (ECT)
+    $icalFile = $arrLang["Download ical calendar"];
+
     $smarty->assign("add_phone",$arrLang["Search in Address Book"]);
     $smarty->assign("SAVE", $arrLang["Save"]);
     $smarty->assign("EDIT", $arrLang["Edit"]);
     $smarty->assign("DELETE", $arrLang["Delete"]);
     $smarty->assign("CANCEL", $arrLang["Cancel"]);
-    $smarty->assign("Hour_ini", $arrLang["Hour_ini"]);
-    $smarty->assign("Hour_end", $arrLang["Hour_end"]);
     $smarty->assign("Start_date", $arrLang["Start_date"]);
     $smarty->assign("Notification_Alert", $arrLang["Notification_Alert"]);
-    $smarty->assign("new_recording", $arrLang["new_recording"]);
     $smarty->assign("End_date", $arrLang["End_date"]);
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
     $smarty->assign("module_name", $module_name);
     $smarty->assign("notification_email", $arrLang["notification_email"]);
-    $smarty->assign("options_emails",$options_emails);
     $smarty->assign("id_event",$id_event);
-    $smarty->assign("New_Event",$arrLang["New_Event"]);
-    $smarty->assign("Date_event",$arrLang["Date_event"]);
-    $smarty->assign("Hour_event",$arrLang["Hour_event"]);
     $smarty->assign("Call_alert",$arrLang["Call_alert"]);
-    $smarty->assign("Su",$arrLang["Su"]);
-    $smarty->assign("Mo",$arrLang["Mo"]);
-    $smarty->assign("Tu",$arrLang["Tu"]);
-    $smarty->assign("We",$arrLang["We"]);
-    $smarty->assign("Th",$arrLang["Th"]);
-    $smarty->assign("Fr",$arrLang["Fr"]);
-    $smarty->assign("Sa",$arrLang["Sa"]);
-    $smarty->assign("Email",$arrLang["Email"]);
-    $smarty->assign("Contact",$arrLang["Contact"]);
     $smarty->assign("visibility_emails",$visibility_emails);
     $smarty->assign("Export_Calendar",$arrLang["Export_Calendar"]);
     $smarty->assign("ical",$icalFile);
-    $smarty->assign("NEW", $arrLang["Add Event"]);
-    $smarty->assign("SEARCH", $arrLang["Search"]);
-    $smarty->assign("module_name", $module_name);
     $smarty->assign("IMG", "images/list.png");
-    $smarty->assign("MONTH", $arrLang["Month"]);
-    $smarty->assign("WEEK", $arrLang["Week"]);
-    $smarty->assign("DAY", $arrLang["Day"]);
     $smarty->assign("visibility_alert", $visibility_alert);
-    $smarty->assign("share_calendar", $arrLang["share_calendar"]);
-    $smarty->assign("other_calendar", $arrLang["other_calendar"]);
-    $smarty->assign("enter_emails", $arrLang["enter_emails"]);
-    $smarty->assign("Send",$arrLang["Send"]);
-    $smarty->assign("formatIcal",$arrLang["ical"]);
     $smarty->assign("LBL_EDIT", $arrLang["Edit Event"]);
     $smarty->assign("LBL_LOADING", $arrLang["Loading"]);
     $smarty->assign("LBL_DELETING", $arrLang["Deleting"]);
     $smarty->assign("LBL_SENDING", $arrLang["Sending Request"]);
     $smarty->assign("START_TYPE", $arrLang["START_TYPE"]);
     $smarty->assign("DATE_SERVER", $dateServer);
-    $smarty->assign("Here", $arrLang["Here"]);
+    $smarty->assign("Color", $arrLang["Color"]);
+    $smarty->assign("CreateEvent", $arrLang["Create New Event"]);
+    $smarty->assign("Listen", $arrLang["Listen"]);
+    $smarty->assign("Listen_here", _tr("Click here to listen"));
+
+    $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",$arrLang["Calendar"], $_DATA);
+
+    $content = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name' name='formNewEvent' id='formNewEvent'>".$htmlForm."</form>";
+
+
+    return $content;
+}
+
+function viewCalendarById($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
+{
+    $pCalendar = new paloSantoCalendar($pDB);
+
+    $arrForm = createFieldForm($arrLang);
+    $oForm = new paloForm($smarty,$arrForm);
+
+    $_DATA['ReminderTime'] = isset($_DATA['ReminderTime'])?$_DATA['ReminderTime']:"10";
+
+    $date_ini = getParameter("event_date");
+    $id = getParameter("id");
+
+    $user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
+    $uid = Obtain_UID_From_User($user,$arrConf);
+
+    $visibility_emails = "visibility: visible;";
+    $visibility_alert  = "display: none;";
+
+    $festival = $pCalendar->festivalUp(); // verifica si esta levantado el festival
+    if(!$festival){
+        $smarty->assign("mb_message", $arrLang['Festival is not up']);
+    }
+		    // yyyy-mm-dd
+    if(!preg_match("/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/",$date_ini))
+	$date_ini = date("M d Y");
+
+    if(!preg_match("/^[1-9][0-9]*$/",$id))
+	$id = "";
+
+    $id_event = "";
+
+                         //D M d Y H:i:s TO (e)
+    $dateServer = gmdate("D M d Y H:i:s TO (e)", strtotime($date_ini));//Fri Nov 12 2010 00:00:00 GMT-0500 (ECT)
+    $icalFile = $arrLang["Download ical calendar"];
+    
+
+    $smarty->assign("add_phone",$arrLang["Search in Address Book"]);
+    $smarty->assign("SAVE", $arrLang["Save"]);
+    $smarty->assign("EDIT", $arrLang["Edit"]);
+    $smarty->assign("DELETE", $arrLang["Delete"]);
+    $smarty->assign("CANCEL", $arrLang["Cancel"]);
+    $smarty->assign("Start_date", $arrLang["Start_date"]);
+    $smarty->assign("Notification_Alert", $arrLang["Notification_Alert"]);
+    $smarty->assign("End_date", $arrLang["End_date"]);
+    $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
+    $smarty->assign("module_name", $module_name);
+    $smarty->assign("notification_email", $arrLang["notification_email"]);
+    $smarty->assign("ID",$id);
+    $smarty->assign("id_event",$id_event);
+    $smarty->assign("Call_alert",$arrLang["Call_alert"]);
+    $smarty->assign("visibility_emails",$visibility_emails);
+    $smarty->assign("Export_Calendar",$arrLang["Export_Calendar"]);
+    $smarty->assign("ical",$icalFile);
+    $smarty->assign("IMG", "images/list.png");
+    $smarty->assign("visibility_alert", $visibility_alert);
+    $smarty->assign("LBL_EDIT", $arrLang["Edit Event"]);
+    $smarty->assign("LBL_LOADING", $arrLang["Loading"]);
+    $smarty->assign("LBL_DELETING", $arrLang["Deleting"]);
+    $smarty->assign("LBL_SENDING", $arrLang["Sending Request"]);
+    $smarty->assign("START_TYPE", $arrLang["START_TYPE"]);
+    $smarty->assign("DATE_SERVER", $dateServer);
     $smarty->assign("Color", $arrLang["Color"]);
     $smarty->assign("CreateEvent", $arrLang["Create New Event"]);
     $smarty->assign("Listen", $arrLang["Listen"]);
@@ -295,6 +335,8 @@ function saveEvent($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf,
 
     if(!preg_match("/^#\w{3,6}$/",$color))
         $color = "#3366CC";
+
+    $_GET['event_date'] = date("Y-m-d", strtotime($date_ini));
 
     $start_event   = strtotime($date_ini);
     $end_event     = strtotime($date_end);
@@ -1671,20 +1713,10 @@ function getAction()
         return "save_edit";
     else if(getParameter("delete")) 
         return "delete";
-    else if(getParameter("new_open")) 
-        return "view_form";
-    else if(getParameter("action")=="new_open") 
-        return "view_form";
-    else if(getParameter("action")=="view")      //Get parameter by GET (command pattern, links)
-        return "view_form";
     else if(getParameter("edit"))
         return "edit";
     else if(getParameter("action")=="edit")
         return "edit";
-    else if(getParameter("save_edit"))
-        return "save_edit";
-    else if(getParameter("action")=="view_edit")
-        return "view_form";
     else if(getParameter("action")=="get_lang")
         return "get_lang";
     else if(getParameter("action")=="get_data")
@@ -1707,6 +1739,8 @@ function getAction()
         return "get_contacts2";
     else if(getParameter("action")=="getTextToSpeach")
         return "getTextToSpeach";
+    else if(getParameter("action")=="display")
+	return "display";
     else
         return "report"; //cancel
 }

@@ -291,6 +291,11 @@ $(document).ready(function(){
             connectJSON("call_to_error");
         }
     });
+
+    var id_event = $('#id').val();
+    if(id_event != ""){
+	openBoxById(id_event);
+    }
 });
 
 
@@ -1001,4 +1006,248 @@ $(document).ready(function(){
                 img2.setAttribute("onclick","del_email_tab("+del_i+");");
             }
         }
+    }
+
+    function openBoxById(id_event){
+	if(id_event != ""){
+	    var urlImaLoading = "<h1><img src='modules/"+module_name+"/images/busy.gif' /> "+$('#lblLoading').val()+"...</h1>";
+	    $.blockUI({ message: urlImaLoading });
+	    var eje_x = ((screen.width)/2) - 250;
+	    var eje_y = 38;
+
+	    $('#box').css('top',eje_y+"%");
+	    $('#box').css('left',eje_x+"px");
+	    $('#new_box').attr("style","display:none;");
+	    $('#edit_box').attr("style","display:none;");
+	    $('#view_box').attr("style","display:none;");
+	    $('.remin').attr("style","display:none;");
+	    $('.noti_email').attr("style","display:none;");
+	    $('#notification_email').hide();
+	    $('#title_box').html("");
+	    $('#box').hide();
+	    $('#lblCheckBoxNoti').attr("for","CheckBoxNoti1");
+	    $('#lblCheckBoxRemi').attr("for","CheckBoxRemi1");
+	    $('.counter').text("140");
+	    $('textarea[name=tts]').val("");
+	    var order = "menu=calendar&action=view_box&rawmode=yes&id_event="+id_event;
+    ////// to remove checkbox status in reminder call or notification /////////////////
+	    RemoveAttributeImageCheck();
+    ///////////////////////////////////////////////////////////////////////////////////
+	    $.post("index.php", order,
+		    function(theResponse){
+			var content           = $('#table_box');
+			var box               = $('#box');
+			var message           = JSONtoString(theResponse);          //response JSON to array
+			var tts_msg           = message['recording'];                //recording name
+			var event             = message['event'];                     //name's event
+			var desc_event        = message['description'];          //description's event
+			var start             = message['date'];                      //start date event
+			var end               = message['to'];                          //end date event
+			var title_box         = message['title'];                 //title box(view event,edit event)
+			var notificacion      = message['notification'];       //notification (on, off)
+			var email_noti        = message['emails_notification'];  //emails to notify
+			var visibility_noti   = message['visibility'];      //visible or not emails_notification
+			var visibility_rep    = message['visibility_repeat'];//visible or not days_repeat
+					    var reminderTimer     = message['reminderTimer']; //reminderTimer
+			var color             = message['color'];
+		/***********************      var by DOM      **************************/
+			var title_evt         = document.getElementById('title_box');
+			var event_name        = document.getElementById('event');
+			var description_event = document.getElementsByName('description')[0];
+			var date_ini          = document.getElementById('f-calendar-field-1');
+			var date_end          = document.getElementById('f-calendar-field-2');
+			var tts               = document.getElementsByName('tts')[0];
+			var inputCallTo       = document.getElementById('call_to');
+			var chkoldnoti        = document.getElementsByName('chkoldnotification')[0];
+			var chkolremin        = document.getElementsByName('chkoldreminder')[0];
+			var inputNotification = document.getElementById('notification');
+			var id                = document.getElementById('id');
+			var id_event_input    = document.getElementById('id_event');
+			var email_to          = document.getElementById('email_to');
+			var tabla_grilla      = document.getElementById('grilla');
+		/**********************************************************************/
+
+			if(title_box == "View Event"){
+			    var i = 0; //cont
+			    //show buttons for view even
+			    $('#view_box').attr("style","display:block;");
+
+			    /*Set Color*/
+			    $('#colorSelector').ColorPickerSetColor(color);
+			    $('#colorHex').val(color);
+			    $('#colorSelector div').css('backgroundColor', color);
+			    /*end set Color*/
+
+			    //disabled all input and select
+			    event_name.setAttribute("disabled","disabled");
+			    description_event.setAttribute("disabled","disabled");
+			    date_ini.setAttribute("disabled","disabled");
+			    date_end.setAttribute("disabled","disabled");
+			    tts.setAttribute("disabled","disabled");
+			    chkoldnoti.setAttribute("disabled","disabled");
+			    inputCallTo.setAttribute("disabled","disabled");
+
+			    // add title
+			    $('#title_box').text(message['View Event']);
+			    $('#desc').show();
+			    //fill event name
+			    event_name.value = event;
+
+			    //fill event description
+			    description_event.value = desc_event;
+
+			    //fill date init event
+			    date_ini.value = start;
+
+			    //fill date end event
+			    date_end.value = end;
+
+			    $('#ReminderTime').children().each(function(){
+				var tmpRem = $(this).val();
+				if(reminderTimer == tmpRem)
+				    $(this).attr("selected","selected");
+				else
+				    $(this).removeAttr("selected");
+			    });
+			    $('#ReminderTime').attr("disabled","disabled");
+			    RemoveAttributeCheck(chkoldnoti);
+
+			    //fill email_to
+			    $('#notification_email').hide();
+			    $('#email_to').attr("style","visibility:visible;");
+			    // fill tr and td in table contacts email with DOM
+			    var size_emails = message['size_emails'];
+			    var src_img_delete = "modules/"+module_name+"/images/delete.png";
+			    $('#grilla').html("");
+			    // fill labels to table emails
+			    // create tr and td for title table emails and textnodes
+			    if(message['notification_status'] == "on"){
+				var tr_titles             = document.createElement("tr");
+				var td_spaces1            = document.createElement("td");
+				var td_spaces2            = document.createElement("td");
+				var td_contact_title      = document.createElement("td");
+				var td_email_title        = document.createElement("td");
+				var td_contact_title_text = document.createTextNode(message['Contact']);
+				var td_email_title_text   = document.createTextNode(message['Email'])
+
+				// set attributes
+				tr_titles.setAttribute("class","letra12");
+				td_contact_title.setAttribute("style","color:#666666; font-weight:bold;font-size:12px;");
+				td_contact_title.setAttribute("align","center");
+				td_email_title.setAttribute("style","color:#666666; font-weight:bold;font-size:12px;");
+				td_email_title.setAttribute("align","center");
+
+				// append tds, trs, textnodes
+				td_email_title.appendChild(td_email_title_text);
+				td_contact_title.appendChild(td_contact_title_text);
+				tr_titles.appendChild(td_spaces1);
+				tr_titles.appendChild(td_contact_title);
+				tr_titles.appendChild(td_email_title);
+				tr_titles.appendChild(td_spaces2);
+				tabla_grilla.appendChild(tr_titles);
+
+				for(i = 0; i<size_emails; i++){
+				    //create tr and tds
+				    var tr_email   = document.createElement("tr");
+				    var td_num     = document.createElement("td");
+				    var td_contact = document.createElement("td");
+				    var td_email   = document.createElement("td");
+				    var td_delete  = document.createElement("td");
+				    //create <a> for link delete
+				    var a_delete   = document.createElement("a");
+				    //create <img> for link delete
+				    var img_delete = document.createElement("img");
+				    //create textnode &nbsp;&nbsp;&nbsp;&nbsp;
+				    var spaces = document.createTextNode(" ");
+
+				    // obtain emails var
+				    var num_email  = "num_email" + i;
+				    var cont_email = "cont_email" + i;
+				    var name_email = "name_email" + i;
+
+				    // set attributes to tr_email
+				    tr_email.setAttribute("class","letra12");
+				    // set attributes to td_num
+				    td_num.setAttribute("align","center");
+				    td_contact.setAttribute("align","center");
+				    td_email.setAttribute("align","center");
+				    td_delete.setAttribute("align","center");
+				    td_delete.setAttribute("style","visibility:hidden;");
+				    td_delete.setAttribute("class","del_contact");
+				    // set attributes to <a>
+				    a_delete.setAttribute("class","delete_email");
+				    // set attributes to <img>
+				    img_delete.setAttribute("src",src_img_delete);
+				    img_delete.setAttribute("align","absmiddle");
+				    img_delete.setAttribute("onclick","del_email_tab("+i+");");
+
+				    // create textnode num, contact, email
+				    var td_num_text = document.createTextNode(message[num_email]);
+				    var td_contact_text = document.createTextNode(message[cont_email]);
+				    var td_email_text = document.createTextNode(message[name_email]);
+
+				    // append textnodes num, contact, email, a, img
+				    td_num.appendChild(td_num_text);
+				    td_contact.appendChild(td_contact_text);
+				    td_email.appendChild(td_email_text);
+				    a_delete.appendChild(spaces);
+				    a_delete.appendChild(img_delete);
+				    td_delete.appendChild(a_delete);
+
+				    //append td to tr
+				    tr_email.appendChild(td_num);
+				    tr_email.appendChild(td_contact);
+				    tr_email.appendChild(td_email);
+				    tr_email.appendChild(td_delete);
+				    tabla_grilla.appendChild(tr_email);
+				}
+			    }
+
+			    // fill checkbox my extension
+			    if(message['call_to'] != ""){ //asterisk_call_me
+				$('#reminder').val('on');
+				tts.value = tts_msg;
+				var count = tts_msg.length;
+				var available = 140 - count;
+				$('.counter').text(available);
+				chkolremin.setAttribute("checked","checked");
+				$('.remin').attr("style","visibility: visible;");
+				$('#CheckBoxRemi').attr('checked','checked');
+				$('#CheckBoxRemi').next("label").addClass("LabelSelected");
+			    }
+
+			    // fill input call_to
+			    inputCallTo.value = message['call_to'];
+
+			    // fill input uid hidden
+			    id.value = message['uid'];
+
+			    // fill input id hidden
+			    id_event_input.value = message['id'];
+
+			    // hide the messages
+			    $('#add_phone').attr("style","display: none;");
+			    //$('.new_box_rec').attr("style","display: none;");
+
+			    // fill checkbox notification emails
+			    if(message['notification_status'] == "on"){
+				chkoldnoti.setAttribute("checked","checked");
+				$('.noti_email').attr("style","visibility:visible;");
+				inputNotification.value = "on";
+				$('#CheckBoxNoti').attr('checked','checked');
+				$('#CheckBoxNoti').next("label").addClass("LabelSelected");
+				$('#grilla').attr("style","visibility:visible;");
+			    }else{
+				inputNotification.value = "off";
+				$('.noti_email').attr("style","display:none;");
+				$('#select2').html("");
+				$('#CheckBoxNoti').removeAttr('checked');
+				$('#CheckBoxNoti').next("label").removeClass("LabelSelected");
+			    }
+			}
+		    //unblocking
+		    $.unblockUI();
+		    $('#box').show();
+		});
+	}
     }
