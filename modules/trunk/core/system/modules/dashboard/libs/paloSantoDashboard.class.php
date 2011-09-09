@@ -374,7 +374,7 @@ class paloSantoDashboard {
         $i=0;
         while($i<count($arrEventos) && $i<$numRegs)
         {
-            $temp  = "<a href='?menu=calendar&action=display&id=".$arrEventos[$i]["id"]."'>".$arrEventos[$i]["subject"]."</a>";
+            $temp  = "<a href='?menu=calendar&action=display&id=".$arrEventos[$i]["id"]."&event_date=".date("Y-m-d", strtotime($arrEventos[$i]["date"]))."'>".$arrEventos[$i]["subject"]."</a>";
             $temp .= "&nbsp;&nbsp;&nbsp;";
             $temp .= "Date: ";
             $temp .= $arrEventos[$i]['date'];
