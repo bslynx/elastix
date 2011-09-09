@@ -32,26 +32,10 @@ require_once "/var/lib/asterisk/agi-bin/phpagi-asmanager.php";
 }
 
 class paloSantoRecordings {
-    var $_DB;
     var $errMsg;
 
-    function paloSantoRecordings(&$pDB)
+    function paloSantoRecordings()
     {
-        // Se recibe como parámetro una referencia a una conexión paloDB
-        if (is_object($pDB)) {
-            $this->_DB =& $pDB;
-            $this->errMsg = $this->_DB->errMsg;
-        } else {
-            $dsn = (string)$pDB;
-            $this->_DB = new paloDB($dsn);
-
-            if (!$this->_DB->connStatus) {
-                $this->errMsg = $this->_DB->errMsg;
-                // debo llenar alguna variable de error
-            } else {
-                // debo llenar alguna variable de error
-            }
-        }
     }
 
     function Obtain_Extension_Current_User($arrConf)

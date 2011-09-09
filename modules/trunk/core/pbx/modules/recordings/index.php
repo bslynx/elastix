@@ -65,7 +65,6 @@ function _moduleContent(&$smarty, $module_name)
     $dsn_agi_manager['host'] = $arrConfig['AMPDBHOST']['valor'];
     $dsn_agi_manager['user'] = 'admin';
 
-    $pDB = new paloDB($arrConf['dsn_conn_database']);
     $pDBACL = new paloDB($arrConf['elastix_dsn']['acl']);
     $accion = getAction();
 
@@ -73,7 +72,7 @@ function _moduleContent(&$smarty, $module_name)
     switch($accion)
     {
         case "record":
-            $content = new_recording($smarty, $module_name, $local_templates_dir, $arrLang, $pDB, $dsn_agi_manager, $arrConf, $pDBACL);
+            $content = new_recording($smarty, $module_name, $local_templates_dir, $arrLang, $dsn_agi_manager, $arrConf, $pDBACL);
             break;
         case "save":
             $content = save_recording($smarty, $module_name, $local_templates_dir, $arrLang, $arrConf, $pDBACL);
@@ -208,12 +207,12 @@ function save_recording($smarty, $module_name, $local_templates_dir, $arrLang, $
     return form_Recordings($smarty, $module_name, $local_templates_dir, $arrLang, $pDBACL);
 }
 
-function new_recording($smarty, $module_name, $local_templates_dir, $arrLang, $pDB, $dsn_agi_manager, $arrConf, $pDBACL)
+function new_recording($smarty, $module_name, $local_templates_dir, $arrLang, $dsn_agi_manager, $arrConf, $pDBACL)
 {
     $recording_name = isset($_POST['recording_name'])?$_POST['recording_name']:'';
     if($recording_name != '')
     {
-        $pRecording = new paloSantoRecordings($pDB);
+        $pRecording = new paloSantoRecordings();
         $result = $pRecording->Obtain_Protocol_Current_User($arrConf);
 
         $number2call = '*77';
