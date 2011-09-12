@@ -80,7 +80,6 @@ function _moduleContent(&$smarty, $module_name)
 
     //Sirve para todos los casos
     $smarty->assign("MODULE_NAME", $module_name);
-    $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
     $smarty->assign("SAVE", $arrLang["Save"]);
     $smarty->assign("DOWNLOAD", $arrLang["Download Extensions"]);
     $smarty->assign("label_file", $arrLang["File"]);
