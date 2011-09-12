@@ -1,3 +1,5 @@
+* Dialer (ECCP): extended "transfercall" request to work with calls connected
+  to an agent that were not tracked by the dialer.
 * Dialer (ECCP): fixed bug in which a transfer request of an incoming campaign
   call into an outgoing campaign queue results in a new incoming agentlinked 
   message.

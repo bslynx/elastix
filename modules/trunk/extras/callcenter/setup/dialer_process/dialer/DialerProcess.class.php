@@ -3901,7 +3901,8 @@ SQL_EXISTE_AUDIT;
         } elseif (count($tuplaLlamada) > 0) {
             // Llamada es entrante
             $tuplaLlamada['tabla'] = 'current_call_entry';
-        } else {
+        }
+        if (is_null($tuplaLlamada)) {
             // Verificar si llamada es saliente...
             $tuplaLlamada = $this->_dbConn->getRow(
                 'SELECT id AS id_current_call, id_call, ChannelClient '.
@@ -3914,10 +3915,22 @@ SQL_EXISTE_AUDIT;
             } elseif (count($tuplaLlamada) > 0) {
                 // Llamada es saliente
                 $tuplaLlamada['tabla'] = 'current_calls';
-            } else {
+            }
+        }
+        if (is_null($tuplaLlamada)) {
+        	// Preguntar el canal de la llamada directamente
+            $oPredictor = new Predictivo($this->_astConn);
+            $estadoCola = $oPredictor->leerEstadoCola(''); // El parámetro vacío lista todas las colas
+            if (!isset($estadoCola['members'][$sNumAgente])) {
+                $this->oMainLog->output('WARN: al transferir llamada: el siguiente agente no se encuentra: '.$sAgente);
+            	return FALSE;
+            }
+            if (!isset($estadoCola['members'][$sNumAgente]['clientchannel'])) {
                 $this->oMainLog->output('WARN: al transferir llamada: el siguiente agente no está atendiendo llamada: '.$sAgente);
                 return FALSE;
             }
+            $tuplaLlamada['ChannelClient'] = $estadoCola['members'][$sNumAgente]['clientchannel'];
+            $tuplaLlamada['ActualChannel'] = $estadoCola['members'][$sNumAgente]['clientchannel'];
         }
         
         /* Los canales de tipo Local/XXX@from-internal no sirven para realizar
