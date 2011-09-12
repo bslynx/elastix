@@ -499,7 +499,8 @@ class GestorLlamadasEntrantes
                     
                     // Buscar el ID de base de datos de la llamada a partir de su Uniqueid
                     $tuplaLlamada =& $this->_dbConn->getRow(
-                        'SELECT id, id_queue_call_entry, callerid FROM call_entry WHERE uniqueid = ? ORDER BY id DESC',
+                        'SELECT id, id_queue_call_entry, callerid FROM call_entry '.
+                        'WHERE uniqueid = ? AND datetime_end IS NULL ORDER BY id DESC',
                         array($eventParams[$sKey_Uniqueid]),
                         DB_FETCHMODE_OBJECT);
                     if (DB::isError($tuplaLlamada)) {
@@ -580,6 +581,9 @@ class GestorLlamadasEntrantes
                                 	$infoLlamada = $this->_dialProc->leerInfoLlamada('incoming',
                                         NULL, $tuplaLlamada->id);
                                     if (!is_null($infoLlamada)) {
+                                        if ($this->DEBUG) {
+                                        	$this->oMainLog->output('DEBUG: notificarLink: notificando evento AgentLinked');
+                                        }
                                         $this->_dialSrv->notificarEvento_AgentLinked(
                                             $sNombreAgente, $sRemChannel, $infoLlamada);
                                     }
@@ -789,6 +793,9 @@ class GestorLlamadasEntrantes
                     $tuplaLlamada['id_call_entry'].' id_campaign='.(is_null($idCampaign) ? 'NULL' : $idCampaign));
             } else{
                 // Reportar que se ha cerrado la llamada
+                if ($this->DEBUG) {
+                    $this->oMainLog->output('DEBUG: notificarHangup: notificando evento AgentUnlinked');
+                }                
                 $this->_dialSrv->notificarEvento_AgentUnlinked("Agent/".$tuplaAgente['number'], array(
                     'calltype'      =>  'incoming',
                     'campaign_id'   =>  $idCampaign,

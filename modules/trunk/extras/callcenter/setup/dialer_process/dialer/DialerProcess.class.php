@@ -2773,6 +2773,9 @@ UPDATE_CALLS_ORIGINATE_RESPONSE;
                     $this->_infoLlamadas['llamadas'][$sKey]->id_campaign, 
                     $this->_infoLlamadas['llamadas'][$sKey]->id);
                 if (!is_null($infoLlamada)) {
+                    if ($this->DEBUG) {
+                        $this->oMainLog->output('DEBUG: OnLink: notificando evento AgentLinked');
+                    }                
                     $this->_dialSrv->notificarEvento_AgentLinked($sChannel, $sRemChannel, $infoLlamada);
                 }
                 
@@ -3426,6 +3429,9 @@ INFO_FORMULARIOS;
                     
                     // Notificar que la llamada ha sido colgada
                     // FIXME: esto asume formato Agent/9000
+                    if ($this->DEBUG) {
+                        $this->oMainLog->output('DEBUG: OnHangup: notificando evento AgentUnlinked');
+                    }                
                     $this->_dialSrv->notificarEvento_AgentUnlinked("Agent/$idAgente", array(
                         'calltype'      =>  'outgoing',
                         'campaign_id'   =>  $idCampaign,
