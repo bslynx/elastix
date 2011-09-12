@@ -92,7 +92,6 @@ function generateWav($smarty, $module_name, $local_templates_dir, $arrLang)
     }else{
         $smarty->assign("GENERATE", $arrLang["Generate"]);
         $smarty->assign("BACK", $arrLang["Back"]);
-        $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
         $smarty->assign("IMG", "images/list.png");
         $smarty->assign("FORMATO", getParameter('format'));	
         $smarty->assign("DOWNLOAD",$arrLang["Download File"]);
@@ -129,7 +128,6 @@ function form_TexttoWav($smarty, $module_name, $local_templates_dir, $arrLang)
     $oForm = new paloForm($smarty,$arrFormConference);
 
     $smarty->assign("GENERATE", $arrLang["Generate"]);
-    $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
     $smarty->assign("IMG", "images/list.png");
     $arrData['format'] = (getParameter("format"))?getParameter("format"):"wav";
 
