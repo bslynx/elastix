@@ -58,5 +58,6 @@ $arrLangModule=array(
 "Colón costarricense" => "Costa Rican Colón",
 "GB Sterling" => "Great British Pound",
 "Rublo ruso" => "Russian Ruble",
+"Swiss Franc" => "Swiss Franc",
 );
 ?>

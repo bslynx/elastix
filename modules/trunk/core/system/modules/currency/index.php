@@ -180,8 +180,9 @@ function getCurrencys($arrLang)
             "₪"     => "₪ - ".$arrLang["Sheqel israelí"],
             "¢"     => "¢ - ".$arrLang["Colón salvadoreño"],
             "元"    => "元 - ".$arrLang["Yuan chino"],
-            "৳"    => "৳ - ".$arrLang["Rupia bengalí"],
+            "৳"     => "৳ - ".$arrLang["Rupia bengalí"],
             "S$"    => "S$ - ".$arrLang["Dólar de Singapur"],
+	    "CHF"   => "CHF - ".$arrLang["Swiss Franc"],
     );
 }
 ?>

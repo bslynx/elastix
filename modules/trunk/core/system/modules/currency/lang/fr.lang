@@ -60,6 +60,7 @@ $arrLangModule=array(
 "Successfully saved" => "Successfully saved",
 "Colón costarricense" => "Colon du Costa Rica",
 "GB Sterling" => "Great British Pound",
-"Rublo ruso" => "Rouble russe"
+"Rublo ruso" => "Rouble russe",
+"Swiss Franc" => "Swiss Franc",
 );
 ?>
