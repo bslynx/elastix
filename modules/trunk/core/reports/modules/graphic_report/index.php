@@ -193,7 +193,6 @@ function report_Extention($smarty, $module_name, $local_templates_dir, $arrLang,
 
     $oFilterForm = new paloForm($smarty, $arrFormElements);
     $smarty->assign("SHOW", $arrLang["Show"]);
-    $smarty->assign("REQUIRED_FIELD", $arrLangModule["Required Field"]);
     $smarty->assign("HERE", $arrLangModule["Here"]);
 
     $date_ini = getParameter("date_from");

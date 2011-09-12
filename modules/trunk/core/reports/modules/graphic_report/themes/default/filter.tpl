@@ -3,7 +3,7 @@
         <td colspan="5" class="moduleTitle" valign="middle">&nbsp;&nbsp;<img src="images/list.png" border="0" align="absmiddle">&nbsp;&nbsp;{$title}</td>
     </tr>
     <tr class="letra12">
-        <td width="30%" align="right">{$date_from.LABEL}: <span class="required">*</span></b></td>
+        <td width="30%" align="right">{$date_from.LABEL}:</b></td>
         <td width="20%" align="left" nowrap>{$date_from.INPUT} </td>
         <td width="20%" onload="show_elements();">
             <select id="classify_by" name="classify_by" size="1" onChange="show_elements();" >
@@ -12,7 +12,6 @@
                 <option value="Trunk" {$SELECTED_3} >Trunk</option>
             </select>
         </td>
-        <td align="right" nowrap><span class="letra12"><span  class="required">*</span> {$REQUIRED_FIELD}</span></td>
     </tr>
     <tr class="letra12">
         <td align="right">{$date_to.LABEL}: </td>
