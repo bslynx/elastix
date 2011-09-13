@@ -162,6 +162,8 @@ function instalarContextosEspeciales()
         } elseif ($sLinea == $sFinalContenido) {
             $bEncontradoFinal = TRUE;
         } elseif (!$bEncontradoInicio || $bEncontradoFinal) {
+            if (substr($sLinea, strlen($sLinea) - 1) != "\n")
+                $sLinea .= "\n";
             $contenido[] = $sLinea;
         }
     }
