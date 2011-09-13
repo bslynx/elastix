@@ -389,7 +389,8 @@
         //Close Button
         BTNClose.click(function () {
           //Unregister this Window
-          Window.css('display', 'none'); 
+          Window.css('display', 'none');
+          Window.parent().remove();   // add by elastix 
           return(false);          
         });
         
