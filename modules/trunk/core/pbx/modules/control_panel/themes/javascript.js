@@ -920,9 +920,17 @@ function loadSizeArea()
 }
 
 function loadArea(xmlLoad,module_name,loading){
-    parser=new DOMParser();
-    xmlDoc=parser.parseFromString(xmlLoad,"text/xml");
-
+    if (window.DOMParser)
+    {
+        parser = new DOMParser();
+        xmlDoc = parser.parseFromString(xmlLoad,"text/xml");
+    }
+    else // Internet Explorer
+    {
+        xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+        xmlDoc.async = "false";
+        xmlDoc.loadXML(xmlLoad);
+    }
 
     var db=xmlDoc.getElementsByTagName("areas");
     var area_box=db[0].getElementsByTagName("area_box");
