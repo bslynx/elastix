@@ -2049,7 +2049,7 @@ LEER_CAMPANIA;
         $sNuevoNombre = NULL;
         
         // Verificar si se debe usar el mismo agente (requiere contexto especial)
-        if (isset($comando->sameagent) && (bool)$comando->sameagent)
+        if (isset($comando->sameagent) && (int)$comando->sameagent != 0)
             $bMismoAgente = TRUE;
         
         // Verificar si se debe usar un nuevo teléfono
@@ -2072,6 +2072,11 @@ LEER_CAMPANIA;
             	$this->_agregarRespuestaFallo($xml_scheduleResponse, 400, 'Bad request: incomplete schedule');
                 return $xml_response;
             }
+        }
+
+        if ($bMismoAgente && is_null($horario)) {
+            $this->_agregarRespuestaFallo($xml_scheduleResponse, 400, 'Bad request: same-agent requires schedule');
+            return $xml_response;
         }
 
         // Ejecutar el agendamiento de la llamada
