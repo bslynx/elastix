@@ -1,3 +1,4 @@
+1.5-4.2 (SVN revision 2972)
 * Dialer (ECCP): extended "transfercall" request to work with calls connected
   to an agent that were not tracked by the dialer.
 * Dialer (ECCP): fixed bug in which a transfer request of an incoming campaign

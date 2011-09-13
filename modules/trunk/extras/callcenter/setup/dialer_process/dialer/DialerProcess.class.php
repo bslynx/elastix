@@ -2678,6 +2678,8 @@ UPDATE_CALLS_ORIGINATE_RESPONSE;
                     isset($estadoCola['members'][$sAgentNum]['clientchannel'])) {
                 	$this->_infoLlamadas['llamadas'][$sKey]->ActualChannel = $estadoCola['members'][$sAgentNum]['clientchannel']; 
                 } else {
+                    $this->oMainLog->output("WARN: $sEvent: no se puede reconocer clientchannel para ".
+                        "agente $sAgentNum: estado cola es: ".print_r($estadoCola, 1));
                 	$this->_infoLlamadas['llamadas'][$sKey]->ActualChannel = NULL;
                 }
                 

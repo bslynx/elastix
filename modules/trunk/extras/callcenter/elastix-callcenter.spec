@@ -3,7 +3,7 @@
 Summary: Elastix Call Center 
 Name:    elastix-callcenter
 Version: 2.0.0
-Release: 15
+Release: 16
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
@@ -92,6 +92,36 @@ fi
 /etc/logrotate.d/elastixdialer
 
 %changelog
+* Tue Sep 13 2011 Alex Villacis Lasso <a_villacis@palosanto.com> 2.0.0-16
+- Updated version, synchronized with CallCenter 1.5-4.2 (SVN revision 2972)
+- From CHANGELOG:
+1.5-4.2 (SVN revision 2972)
+    - Dialer (ECCP): extended "transfercall" request to work with calls connected
+      to an agent that were not tracked by the dialer.
+    - Dialer (ECCP): fixed bug in which a transfer request of an incoming campaign
+      call into an outgoing campaign queue results in a new incoming agentlinked 
+      message.
+    - Dialer (ECCP): fixed bug in which a transfer request of an incoming campaign
+      call into a incoming campaign queue (the same one the call came from or a 
+      different one) results in an agentunlinked event with an incomplete agent
+      number. 
+    - Installer: add section in extensions_custom.conf that will hold required
+      callcenter extensions for extra functionality.
+    - Dialer (ECCP): implement "schedulecall" request
+    - Dialer (ECCP): allow call to be hung up when agent is both busy and paused.
+    - Dialer (ECCP): implement "getrequestlist" request
+    - Dialer (ECCP): fixed a 200-byte-per-request memory leak on XML response ID 
+      assignment.
+    - Dialer (ECCP): implement "getcampaignstatus" request
+    - Dialer (ECCP): implement "transfercall" request
+    - Dialer: write true outgoing channel, not Local@from-internal, to current_calls
+      table. Also reuse stored channel at hold time instead of querying the channel
+      again from Asterisk. May fix Elastix bug #796.
+    - Dialer: remove use of deprecated ereg* functions from Predictivo.class.php
+    - Dialer: fixed regular expression for parsing of 'agent show' report that 
+      missed DAHDI channels (and possibly other custom channels).
+    - Dialer: fix accounting of parked calls (for Hold) in incoming-calls case
+
 * Fri Jul 22 2011 Alex Villacis Lasso <a_villacis@palosanto.com> 2.0.0-15
 - Updated version, synchronized with CallCenter 1.5-4.1 (SVN revision 2847)
 - From CHANGELOG:
