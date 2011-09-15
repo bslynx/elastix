@@ -4078,12 +4078,8 @@ SQL_EXISTE_AUDIT;
                 $this->oMainLog->output('ERR: (internal) al obtener información de llamada: agente no se encuentra: '.$sAgente);
                 return FALSE;
             }
-            if ($estadoCola['members'][$sNumAgente]['status'] != 'inUse') {
-                $this->oMainLog->output('ERR: (internal) al obtener información de llamada: agente no está atendiendo llamada: '.$sAgente);
-                return FALSE;
-            }
             if (!isset($estadoCola['members'][$sNumAgente]['clientchannel'])) {
-                $this->oMainLog->output('ERR: (internal) al obtener información de llamada: no se puede identificar canal remoto para agente: '.$sAgente);
+                $this->oMainLog->output('ERR: (internal) al obtener información de llamada: agente no está atendiendo llamada: '.$sAgente);
                 return FALSE;
             }
             $tuplaLlamada['ActualChannel'] = $estadoCola['members'][$sNumAgente]['clientchannel'];

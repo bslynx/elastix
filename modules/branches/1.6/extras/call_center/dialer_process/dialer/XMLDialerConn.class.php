@@ -1550,7 +1550,7 @@ LEER_CAMPANIA;
             $this->_agregarRespuestaFallo($xml_transferResponse, 404, 'Specified agent not found');
             return $xml_response;
         }
-        if ($estadoCola['members'][$sNumAgente]['status'] != 'inUse') {
+        if (!isset($estadoCola['members'][$sNumAgente]['clientchannel'])) {
             $this->_agregarRespuestaFallo($xml_transferResponse, 417, 'Agent not in call');
             return $xml_response;
         }
@@ -1923,7 +1923,7 @@ LEER_CAMPANIA;
             $this->_agregarRespuestaFallo($xml_holdResponse, 417, 'Agent currenty not logged in');
             return $xml_response;
         }
-        if ($estadoCola['members'][$sNumAgente]['status'] != 'inUse') {
+        if (!isset($estadoCola['members'][$sNumAgente]['clientchannel'])) {
             $this->_agregarRespuestaFallo($xml_holdResponse, 417, 'Agent currenty not handling a call');
             return $xml_response;
         }
