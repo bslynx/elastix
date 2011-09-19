@@ -97,7 +97,7 @@ class paloSantoControlPanel {
         $arrRecords = array();
         if(is_array($arrDevs) & count($arrDevs)>0){
             foreach($arrDevs as $key => $ext_data){
-                if(ereg("^/AMPUSER/([[:digit:]]+)/cidname[[:space:]]+:([[:alnum:]| |-|_|\.]+)$",$ext_data,$arrReg)){
+                if(ereg("^/AMPUSER/([[:digit:]]+)/cidname[[:space:]]+:[[:space:]]+([[:alnum:] -_\.]+)$",$ext_data,$arrReg)){
                     $value['user']    = $arrReg[1];
                     $value['cidname'] = $arrReg[2];
 
