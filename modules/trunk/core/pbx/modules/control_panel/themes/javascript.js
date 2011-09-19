@@ -919,6 +919,22 @@ function loadSizeArea()
         );
 }
 
+function insertLoadingAnimation(aTableRow, nodeValue, module_name, loading)
+{
+	//aTableRow.innerHTML = "<td id='img_"+nodeValue+"'><img class='ima' src='modules/"+module_name+"/images/loading.gif' border='0' align='absmiddle' />&nbsp;"+loading+"</td>";
+	oTD = document.createElement("td");
+	oTD.setAttribute("id", "img_"+nodeValue);
+	oIMG = document.createElement("img");
+	oIMG.setAttribute("class", "ima");
+	oIMG.setAttribute("src", "modules/"+module_name+"/images/loading.gif");
+	oIMG.setAttribute("border", "0");
+	oIMG.setAttribute("align", "absmiddle");
+	oTD.appendChild(oIMG);
+	oText = document.createTextNode("\u00a0" /* &nbsp; */ + loading);
+	oTD.appendChild(oText);
+	aTableRow.appendChild(oTD);
+}
+
 function loadArea(xmlLoad,module_name,loading){
     if (window.DOMParser)
     {
@@ -947,7 +963,9 @@ function loadArea(xmlLoad,module_name,loading){
         area.style.height = heightsize.firstChild.nodeValue+"px";
         area.style.width  = widthsize.firstChild.nodeValue+"px";
         area.style.backgroundColor = color.firstChild.nodeValue;
-        document.getElementById("table"+namearea.firstChild.nodeValue).innerHTML = "<div id='img_"+namearea.firstChild.nodeValue+"'><img class='ima' src='modules/"+module_name+"/images/loading.gif' border='0' align='absmiddle' />&nbsp;"+loading+"</div>";
+        insertLoadingAnimation(
+        	document.getElementById("table"+namearea.firstChild.nodeValue), 
+        	namearea.firstChild.nodeValue, module_name, loading);
         if(namearea.firstChild.nodeValue=="Extension"){
             var content = document.getElementById("content");
             content.style.width  = widthsize.firstChild.nodeValue+"px";
