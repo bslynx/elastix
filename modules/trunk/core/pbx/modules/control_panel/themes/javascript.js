@@ -582,13 +582,17 @@ function drawBoxArea3(arrData)
 function drawBoxTrunksDAHDI(arrData, module_name)
 {
     html = drawAreaGeneric(arrData);
-    document.getElementById("tableTrunks").innerHTML = html;
+    //document.getElementById("tableTrunks").innerHTML = html;
+    $("#img_Trunks").remove();
+    $("#tableTrunks").append(html);
 }
 
 function drawBoxTrunksSIP(arrData)
 {
     html = drawAreaGeneric(arrData);
-     document.getElementById("tableTrunksSIP").innerHTML = html;
+    //document.getElementById("tableTrunksSIP").innerHTML = html;
+    $("#img_TrunksSIP").remove();
+    $("#tableTrunksSIP").append(html);
 }
 
 function drawBoxConferences(arrData)
