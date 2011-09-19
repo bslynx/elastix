@@ -1074,11 +1074,11 @@ function actualizarQueues()
 }
 
 $(document).ready(function(){
-    $(".move").draggable({
+
+	$(".move").draggable({
         zIndex:     20,
         ghosting:   false,
-        opacity:    0.7,
-        //handle: '#layer1_handle1'
+        opacity:    0.7
     });
 
     $('#editArea2').click(function() {
