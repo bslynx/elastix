@@ -1,5 +1,17 @@
 var arrTime = new Array();
 
+// IE6 e IE8 funcionan incorrectamente al anidar draggables
+// http://bugs.jqueryui.com/ticket/4333
+$.extend($.ui.draggable.prototype, (function (orig) {
+	  return {
+	    _mouseCapture: function (event) {
+	      var result = orig.call(this, event);
+	      if (result && $.browser.msie) event.stopPropagation();
+	      return result;
+	    }
+	  };
+})($.ui.draggable.prototype["_mouseCapture"]));
+
 /////////////////////////////////////////////////////////////
 ////////////CODE FOR THE ACCORDION AND RESIZABLE/////////////
 /////////////////////////////////////////////////////////////
