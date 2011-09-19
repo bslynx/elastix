@@ -39,6 +39,13 @@
 	global $arrLangModule;
 	$arrLang = array_merge($arrLang,$arrLangModule);
 
+    // Scripts adicionales que pueden ser necesarios
+    $sScripts = '';
+    foreach (array('admin/common/jquery.toggleval.3.0.js') as $sRuta) {
+        if (file_exists($sRuta))
+            $sScripts .= "<script type='text/javascript' src='/$sRuta'></script>";
+    }
+
 	$salida="";
 	$fromElastixAdminPBX=1;
 	$headerFreePBX="
@@ -49,6 +56,7 @@
 	<script type='text/javascript' src='/modules/pbxadmin/js/script.js.php'></script>
 	<script type='text/javascript' src='/modules/pbxadmin/js/script.legacy.js'></script>
 	<script type='text/javascript' src='/modules/pbxadmin/js/libfreepbx.javascripts.js'></script>
+    $sScripts
 	<!--[if IE]>
 	<style type='text/css'>div.inyourface a{position:absolute;}</style>
 	<![endif]-->";
