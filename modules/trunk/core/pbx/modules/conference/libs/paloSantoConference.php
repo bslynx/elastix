@@ -273,5 +273,17 @@ class paloSantoConference {
         }
 	return $arrDevices;
     }
+    
+    //CB for fix issue - Phone number active
+    function ConferenceNumberExistDateRange($number,$fecha_ini)
+    {
+        $query = "SELECT COUNT(*) as NUM  FROM booking WHERE roomNo=$number AND endTime > '{$fecha_ini}'";
+        $result = $this->_DB->getFirstRowQuery($query);
+        if($result[0] > 0)
+            return true;
+        else 
+          return false;
+    }
+    //CB - END
 }
 ?>
