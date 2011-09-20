@@ -285,29 +285,28 @@ function listadoLoginLogout($pDB, $smarty, $module_name, $local_templates_dir,&$
     $sTagFinal = ($sTagInicio != '') ? '</b>' : '';
 //print_r($arrCalls);
     if (is_array($arrCalls)) {
+        $sumTimeLogin = $sumTimeCalls = 0;
         foreach($arrCalls['Data'] as $intervalo=>$calls) {
             $arrTmp[0] = $calls['number'];
 	    $arrTmp[1] = $calls['name'];
 	    $arrTmp[2] = $calls['datetime_init'];
 	    $arrTmp[3] = $calls['estado']=='En linea'? $sTagInicio.$calls['datetime_end'].$sTagFinal:$calls['datetime_end'];
-	    $arrTmp[4] = $calls['total_sesion'];
-	    $arrTmp[5] = $calls['total_sumas_in_out'];
+	    $arrTmp[4] = format_time($calls['total_sesion']);
+	    $arrTmp[5] = format_time($calls['total_sumas_in_out']);
 	    $arrTmp[6] = number_format($calls['service'],2);
 	    $arrTmp[7] = $calls['estado'];
             $arrData[] = $arrTmp;
+            
+            $sumTimeLogin += $calls['total_sesion'];
+            $sumTimeCalls += $calls['total_sumas_in_out'];
         }
 
-        $sumTimeLogin = $sumTimeCalls ="00:00:00";
-        for($i=0;$i<count($arrData);$i++){
-            $sumTimeLogin = $oCalls->getSumTime($sumTimeLogin,$arrData[$i][4]);
-            $sumTimeCalls = $oCalls->getSumTime($sumTimeCalls,$arrData[$i][5]);
-        }
         $arrTmp[0] = $sTagInicio._tr("Total").$sTagFinal;
         $arrTmp[1] = "";
         $arrTmp[2] = "";
         $arrTmp[3] = "";
-        $arrTmp[4] = $sTagInicio.$sumTimeLogin.$sTagFinal;
-        $arrTmp[5] = $sTagInicio.$sumTimeCalls.$sTagFinal;
+        $arrTmp[4] = $sTagInicio.format_time($sumTimeLogin).$sTagFinal;
+        $arrTmp[5] = $sTagInicio.format_time($sumTimeCalls).$sTagFinal;
         $arrTmp[6] = "";
         $arrTmp[7] = "";
         $arrData[] = $arrTmp;
@@ -475,6 +474,13 @@ function insertarCabeceraCalendario() {
         <script type='text/javascript' src='/libs/js/jscalendar/lang/calendar-en.js'></script>
         <script type='text/javascript' src='/libs/js/jscalendar/calendar-setup_stripped.js'></script>
     ";
+}
+
+function format_time($iSec)
+{
+	$iMin = ($iSec - ($iSec % 60)) / 60; $iSec %= 60;
+    $iHora =  ($iMin - ($iMin % 60)) / 60; $iMin %= 60;
+    return sprintf('%02d:%02d:%02d', $iHora, $iMin, $iSec);
 }
 
 ?>

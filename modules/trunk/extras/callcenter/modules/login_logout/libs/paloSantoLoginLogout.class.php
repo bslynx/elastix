@@ -100,7 +100,7 @@ class paloSantoLoginLogout
                 agent.name as name,
                 (a.datetime_init) as datetime_init,
                 if((a.datetime_end) is null, now(), a.datetime_end) as datetime_end,
-                TIMEDIFF((if((a.datetime_end) is null, now(), a.datetime_end)),(datetime_init)) as total_sesion,
+                TIME_TO_SEC(TIMEDIFF((if((a.datetime_end) is null, now(), a.datetime_end)),(datetime_init))) as total_sesion,
                 ((
                     if((select sum(ce.duration) from call_entry as ce where ce.datetime_init between a.datetime_init and (if((a.datetime_end)is null,now(),a.datetime_end)) and ce.id_agent=agent.id) is null, 0, 
                     (select sum(ce.duration) from call_entry as ce where ce.datetime_init between a.datetime_init and (if((a.datetime_end)is null,now(),a.datetime_end)) and ce.id_agent=agent.id)
@@ -110,7 +110,7 @@ class paloSantoLoginLogout
                     TIME_TO_SEC(TIMEDIFF((if((a.datetime_end)is null,now(),a.datetime_end)),a.datetime_init))
                 ) * 100 as service,
                 
-                sec_to_time(
+                (
                         if((select sum(duration) from call_entry where datetime_init between a.datetime_init and  (if((a.datetime_end)is null,now(),a.datetime_end)) and id_agent=agent.id) is null, 0, (select sum(duration) from call_entry where datetime_init between a.datetime_init and (if((a.datetime_end)is null,now(),a.datetime_end))  and id_agent=agent.id)
                         ) +
                         if((select sum(duration) from calls where start_time between a.datetime_init and (if((a.datetime_end)is null,now(),a.datetime_end)) and id_agent=agent.id) is null, 0 , (select sum(duration) from calls where start_time between a.datetime_init and (if((a.datetime_end)is null,now(),a.datetime_end)) and id_agent=agent.id))
@@ -123,28 +123,6 @@ class paloSantoLoginLogout
                         and a.id_agent = agent.id and id_break is null
 		ORDER BY agent.name, a.datetime_init" ;
 
-            /*$sPeticionSQL = "SELECT
-                                agent.number as number, 
-                                agent.name as name,
-                                a.id,
-                                agent.name as name,
-                                (a.datetime_init) as datetime_init, 
-                                if((a.datetime_end) is null, now(), a.datetime_end) as datetime_end,
-                                TIMEDIFF((if((a.datetime_end) is null, now(), a.datetime_end)),(datetime_init)) as total_sesion,
-                                ((((select sum(duration) from call_entry where datetime_init between a.datetime_init and a.datetime_end ) + (select sum(duration) from calls where start_time between a.datetime_init and a.datetime_end )) / TIME_TO_SEC(TIMEDIFF(a.datetime_end,a.datetime_init)))/60) * 100 as service,
-                                sec_to_time((select sum(duration) from call_entry where datetime_init between a.datetime_init and a.datetime_end )+(select sum(duration) from calls where start_time between a.datetime_init and a.datetime_end )) as total_sumas_in_out,
-                                if((a.datetime_end) is null, 'En Linea', '') as estado
-
-                            FROM
-                                audit a,
-                                agent
-
-                             WHERE
-                                a.datetime_init between '{$fechaInicial}' AND '{$fechaFinal}'
-                                and id_break is null
-                                and a.id_agent = agent.id";*/
-
- 
         }
         else if($tipo=='G'){//hacemos consulta GENERAL
             $sPeticionSQL =  "SELECT
@@ -159,19 +137,16 @@ class paloSantoLoginLogout
         now()
     ) as datetime_end,
 
-
-    TIME_TO_SEC(
-        sec_to_time(
-            if(
-                (select sum(duration) from call_entry where datetime_init between '{$fechaInicial}' AND '{$fechaFinal}' and call_entry.id_agent=agent.id) is null,
-                0,
-                (select sum(duration) from call_entry where datetime_init between '{$fechaInicial}' AND '{$fechaFinal}' and call_entry.id_agent=agent.id)
-            ) +
-            if(
-                (select sum(duration) from calls where start_time between '{$fechaInicial}' AND '{$fechaFinal}' and calls.id_agent=agent.id)is null,
-                0,
-                (select sum(duration) from calls where start_time between '{$fechaInicial}' AND '{$fechaFinal}' and calls.id_agent=agent.id)
-            )
+    (
+        if(
+            (select sum(duration) from call_entry where datetime_init between '{$fechaInicial}' AND '{$fechaFinal}' and call_entry.id_agent=agent.id) is null,
+            0,
+            (select sum(duration) from call_entry where datetime_init between '{$fechaInicial}' AND '{$fechaFinal}' and call_entry.id_agent=agent.id)
+        ) +
+        if(
+            (select sum(duration) from calls where start_time between '{$fechaInicial}' AND '{$fechaFinal}' and calls.id_agent=agent.id)is null,
+            0,
+            (select sum(duration) from calls where start_time between '{$fechaInicial}' AND '{$fechaFinal}' and calls.id_agent=agent.id)
         )
     ) as  total_sumas_in_out,
 
@@ -203,14 +178,14 @@ class paloSantoLoginLogout
         )
     ) * 100 as service,
 
-    TIMEDIFF(
+    TIME_TO_SEC(TIMEDIFF(
         if (
             (select count(au.datetime_end) from audit au, agent ag where au.datetime_init between '{$fechaInicial}' AND '{$fechaFinal}' and au.id_agent=agent.id and au.datetime_end is null group by au.id_agent) is null,
             max(audit.datetime_end),
             now()
         ),
         min(audit.datetime_init)
-    )  as total_sesion,
+    ))  as total_sesion,
 
     if (
         (select count(au.datetime_end) from audit au, agent ag where au.datetime_init between '{$fechaInicial}' AND '{$fechaFinal}' and au.id_agent=agent.id and au.datetime_end is null group by au.id_agent) is null,
