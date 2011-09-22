@@ -1,3 +1,5 @@
+* Dialer (ECCP): Added the following fields to response for "getagentstatus" 
+  request: onhold pauseinfo remote_channel callinfo . 
 * Login Logout: fix time format representation for time in calls.
 * Dialer (ECCP): fixed bug that prevented the hold/schedulecall/transfercall
   requirements from working after agent entered a pause while still connected

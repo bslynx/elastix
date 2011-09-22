@@ -447,9 +447,10 @@ class GestorLlamadasEntrantes
         } elseif (!is_null($tuplaCallEntry)) {
             /* La llamada ha sido ya ingresada en current_calls, y se omite 
              * procesamiento futuro. */
-            $this->oMainLog->output("DEBUG: notificarLink(): llamada ".
-                $eventParams['Uniqueid1'].'/'.$eventParams['Uniqueid2'].
-                " regresa de HOLD, se omite procesamiento futuro.");
+            if ($this->DEBUG)
+                $this->oMainLog->output("DEBUG: notificarLink(): llamada ".
+                    $eventParams['Uniqueid1'].'/'.$eventParams['Uniqueid2'].
+                    " regresa de HOLD, se omite procesamiento futuro.");
             $result =& $this->_dbConn->query(
                 'UPDATE call_entry SET status = "activa", uniqueid = ? WHERE id = ?',
                 array($eventParams[$sKey_Uniqueid], $tuplaCallEntry['id_call_entry']));
@@ -714,7 +715,8 @@ class GestorLlamadasEntrantes
                  * sobre la llamada, pero no debe de considerarse como el cierre de
                  * la llamada.
                  */
-            	$this->oMainLog->output("DEBUG: notificarUnlink - llamada ha sido puesta en HOLD en vez de colgada.");
+                if ($this->DEBUG)
+            	   $this->oMainLog->output("DEBUG: notificarUnlink - llamada ha sido puesta en HOLD en vez de colgada.");
                 $result =& $this->_dbConn->query(
                     "UPDATE call_entry SET status = 'hold' WHERE id = ?",
                     array($tuplaLlamada['id_call_entry']));
@@ -975,5 +977,43 @@ LEER_TIPO_BREAK;
         return $estadoCola;
     }
 
+    function reportarInfoLlamadaAtendida($sAgente)
+    {
+        // Esto asume formato Agent/9000
+        $sNumAgente = NULL;
+        if (preg_match('|^Agent/(\d+)$|', $sAgente, $regs)) {
+            $sNumAgente = $regs[1];
+        } else {
+            $this->oMainLog->output('ERR: No se ha implementado este tipo de agente - '.$sAgente);
+            return NULL;
+        }
+
+        $sqlInfoLlamada = 
+            'SELECT ce.callerid AS dialnumber, ce.id AS callid, '.
+                'ce.datetime_entry_queue AS datetime_enterqueue, '.
+                'ce.datetime_init AS datetime_linkstart, ' .
+                'ce.id_campaign '.
+            'FROM current_call_entry cce, call_entry ce, agent a '.
+            'WHERE cce.id_call_entry = ce.id '.
+                'AND ce.id_agent = a.id AND a.number = ? '.
+            'ORDER BY ce.datetime_init DESC LIMIT 0,1';
+        $infoLlamada = $this->_dbConn->getRow($sqlInfoLlamada, 
+            array($sNumAgente), 
+            DB_FETCHMODE_ASSOC);
+        if (DB::isError($infoLlamada)) {
+            $this->oMainLog->output('ERR: no se puede leer información de llamada activa - '.$infoLlamada->getMessage());
+        } elseif (count($infoLlamada) <= 0) {
+            return NULL;
+        } else {
+            return array(
+                'calltype'             =>  'incoming',
+                'campaign_id'           =>  $infoLlamada['id_campaign'],
+                'dialnumber'            =>  $infoLlamada['dialnumber'],
+                'callid'                =>  $infoLlamada['callid'],
+                'datetime_enterqueue'   =>  $infoLlamada['datetime_enterqueue'],
+                'datetime_linkstart'    =>  $infoLlamada['datetime_linkstart'],
+            );
+        }
+    }
 }
 ?>

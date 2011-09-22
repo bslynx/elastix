@@ -587,7 +587,7 @@ class XMLDialerConn extends DialerConn
         } else {
             // No hay canal de login. Se inicia login a través de Originate
             $r = $this->loginAgente($listaExtensiones[$sExtension], $sAgente);
-            $this->oMainLog->output("DEBUG: loginAgente responde: ".print_r($r, 1));
+            //$this->oMainLog->output("DEBUG: loginAgente responde: ".print_r($r, 1));
             return $this->Response_LoginAgentResponse('logging');            
         }
 
@@ -788,7 +788,7 @@ LISTA_EXTENSIONES;
         if (preg_match('|^Agent/(\d+)$|', $sAgente, $regs)) {
             $sNumAgente = $regs[1];
             $r = $this->_astConn->Agentlogoff($sNumAgente);
-            $this->oMainLog->output("DEBUG: Agentlogoff($sNumAgente) -> ".print_r($r, 1));
+            //$this->oMainLog->output("DEBUG: Agentlogoff($sNumAgente) -> ".print_r($r, 1));
             return $this->Response_LogoutAgentResponse('logged-out');
         }
 
@@ -854,6 +854,8 @@ LISTA_EXTENSIONES;
             }
         }
 
+        // TODO: reportar call_type campaign_id call_id 
+
         // Reportar los estados conocidos 
         $estadoAgente = $estadoCola['members'][$sNumAgente];
         $bEstadoConocido = FALSE;
@@ -870,6 +872,48 @@ LISTA_EXTENSIONES;
             $xml_getAgentStatusResponse->addChild('status', 'offline');
             $bEstadoConocido = TRUE;
         }
+
+        // Reportar el canal remoto al cual está conectado el agente
+        if (isset($estadoAgente['clientchannel'])) {
+        	$xml_getAgentStatusResponse->addChild('remote_channel', $estadoAgente['clientchannel']);
+        }
+
+        // Reportar los estados de break y hold, si aplican
+        $estadoBreak = $this->_dialProc->reportarEstadoPausaAgente($sAgente);
+        if (!is_null($estadoBreak)) {
+        	if (isset($estadoBreak['break_id'])) {
+                $xml_pauseInfo = $xml_getAgentStatusResponse->addChild('pauseinfo');
+                $xml_pauseInfo->addChild('pauseid', $estadoBreak['break_id']);
+                $xml_pauseInfo->addChild('pausename', str_replace('&', '&amp;', $estadoBreak['break_name']));
+                $xml_pauseInfo->addChild('pausestart', str_replace(date('Y-m-d '), '', $estadoBreak['datetime_breakstart']));
+            }
+            $xml_getAgentStatusResponse->addChild('onhold', $estadoBreak['on_hold'] ? 1 : 0);
+        }
+
+        // Reportar los estado de llamadas saliente y entrante
+        $infoSaliente = $this->_dialProc->reportarInfoLlamadaAtendida($sAgente);
+        $infoEntrante = $this->_dialProc->reportarInfoLlamadaAtendidaEntrante($sAgente);
+        $infoLlamada = NULL;
+        if (!is_null($infoEntrante)) {
+        	$infoLlamada = $infoEntrante;
+        } elseif (!is_null($infoSaliente)) {
+        	$infoLlamada = $infoSaliente;
+        }
+        if (!is_null($infoLlamada)) {
+            $xml_callInfo = $xml_getAgentStatusResponse->addChild('callinfo');
+            $xml_callInfo->addChild('calltype', $infoLlamada['calltype']);
+            $xml_callInfo->addChild('callid', $infoLlamada['callid']);
+            if (!is_null($infoLlamada['campaign_id']))
+                $xml_callInfo->addChild('campaign_id', $infoLlamada['campaign_id']);
+            $xml_callInfo->addChild('callnumber', $infoLlamada['dialnumber']);
+            if (isset($infoLlamada['datetime_dialstart']))
+                $xml_callInfo->addChild('dialstart', str_replace(date('Y-m-d '), '', $infoLlamada['datetime_dialstart']));
+            if (isset($infoLlamada['datetime_dialend']))
+                $xml_callInfo->addChild('dialend', str_replace(date('Y-m-d '), '', $infoLlamada['datetime_dialend']));
+            $xml_callInfo->addChild('queuestart', str_replace(date('Y-m-d '), '', $infoLlamada['datetime_enterqueue']));
+            $xml_callInfo->addChild('linkstart', str_replace(date('Y-m-d '), '', $infoLlamada['datetime_linkstart']));
+        }
+
         if ($bEstadoConocido) {
         	if (!is_null($sCanalExt)) $xml_getAgentStatusResponse->addChild('channel', str_replace('&', '&amp;', $sCanalExt));
             if (!is_null($sExtension)) $xml_getAgentStatusResponse->addChild('extension', $sExtension);

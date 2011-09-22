@@ -2585,9 +2585,11 @@ UPDATE_CALLS_ORIGINATE_RESPONSE;
             } elseif ($iCuenta > 0) {
             	/* La llamada ha sido ya ingresada en current_calls, y se omite 
                  * procesamiento futuro. */
-                $this->oMainLog->output("DEBUG: $sEvent: llamada ".
-                    ($this->_infoLlamadas['llamadas'][$sKey]->Uniqueid).
-                    " regresa de HOLD, se omite procesamiento futuro.");
+                if ($this->DEBUG) {
+                    $this->oMainLog->output("DEBUG: $sEvent: llamada ".
+                        ($this->_infoLlamadas['llamadas'][$sKey]->Uniqueid).
+                        " regresa de HOLD, se omite procesamiento futuro.");
+                }
                 $this->_infoLlamadas['llamadas'][$sKey]->status = 'Success';
                 $result =& $this->_dbConn->query(
                     "UPDATE calls SET status = 'Success' WHERE id = ? AND status = 'OnHold'",
@@ -3094,8 +3096,10 @@ INFO_FORMULARIOS;
                 $this->oMainLog->output("ERR: $sEvent: no se puede consultar petición HOLD de llamada - ".$hold->getMessage());
             } elseif ($hold == 'S') {
             	/* Llamada ha sido puesta en hold. Se omite procesamiento futuro */
-                $this->oMainLog->output("DEBUG: $sEvent: llamada ".($this->_infoLlamadas['llamadas'][$sKey]->Uniqueid).
-                    " ha sido puesta en HOLD en vez de colgada.");
+                if ($this->DEBUG) {
+                    $this->oMainLog->output("DEBUG: $sEvent: llamada ".($this->_infoLlamadas['llamadas'][$sKey]->Uniqueid).
+                        " ha sido puesta en HOLD en vez de colgada.");
+                }
                 $this->_infoLlamadas['llamadas'][$sKey]->status = 'OnHold';
                 $result =& $this->_dbConn->query(
                     "UPDATE calls SET status = 'OnHold' WHERE id = ?",
@@ -3865,6 +3869,42 @@ SQL_EXISTE_AUDIT;
         return TRUE;
     }
 
+    public function reportarEstadoPausaAgente($sAgente)
+    {
+        // Esto asume formato Agent/9000
+        $sNumAgente = NULL;
+        if (preg_match('|^Agent/(\d+)$|', $sAgente, $regs)) {
+            $sNumAgente = $regs[1];
+        } else {
+            $this->oMainLog->output('ERR: No se ha implementado este tipo de agente - '.$sAgente);
+            return FALSE;
+        }
+        if (!isset($this->_infoAgentes[$sAgente])) {
+        	return NULL;
+        }
+
+        $estadoPausa = array(
+            'on_hold'   =>  !is_null($this->_infoAgentes[$sAgente]['info_hold']),
+        );
+        if (!is_null($this->_infoAgentes[$sAgente]['id_break'])) {
+        	$sqlBreak = <<<LEER_TIPO_BREAK
+SELECT audit.datetime_init, break.name, break.id 
+FROM audit, break 
+WHERE audit.id = ? AND audit.id_break = break.id
+LEER_TIPO_BREAK;
+            $tuplaBreak = $this->_dbConn->getRow($sqlBreak, array($this->_infoAgentes[$sAgente]['id_break']), DB_FETCHMODE_ASSOC);
+            if (DB::isError($tuplaBreak)) {
+                $this->oMainLog->output('ERR: no se puede leer información de agentes - '.$tuplaBreak->getMessage());
+            } elseif (is_array($tuplaBreak)) {
+                $estadoPausa['datetime_breakstart'] = $tuplaBreak['datetime_init'];
+                $estadoPausa['break_name'] = $tuplaBreak['name'];
+                $estadoPausa['break_id'] = $tuplaBreak['id'];
+            }
+        }
+        
+        return $estadoPausa;
+    }
+
     public function transferirLlamadaAgente($sAgente, $sExtension)
     {
         // Esto asume formato Agent/9000
@@ -4596,6 +4636,38 @@ LEER_TIPO_BREAK;
         }
         ksort($estadoCola['members']);
         return $estadoCola;
+    }
+
+    function reportarInfoLlamadaAtendida($sAgente)
+    {
+        // Esto asume formato Agent/9000
+        $sNumAgente = NULL;
+        if (preg_match('|^Agent/(\d+)$|', $sAgente, $regs)) {
+            $sNumAgente = $regs[1];
+        } else {
+            $this->oMainLog->output('ERR: No se ha implementado este tipo de agente - '.$sAgente);
+            return NULL;
+        }
+        foreach ($this->_infoLlamadas['llamadas'] as $infoLlamada) {
+            if (isset($infoLlamada->AgentChannel) && $infoLlamada->AgentChannel == 'Agent/'.$sNumAgente) {
+            	return array(
+                    'calltype'     =>  'outgoing',
+                    'campaign_id'   =>  $infoLlamada->id_campaign,
+                    'dialnumber'    =>  $infoLlamada->phone,
+                    'callid'       =>  $infoLlamada->id,
+                    'datetime_dialstart' => date('Y-m-d H:i:s', $infoLlamada->OriginateStart),
+                    'datetime_dialend' => date('Y-m-d H:i:s', $infoLlamada->OriginateEnd),
+                    'datetime_enterqueue' => date('Y-m-d H:i:s', $infoLlamada->enterqueue_timestamp),
+                    'datetime_linkstart' => date('Y-m-d H:i:s', $infoLlamada->start_timestamp),
+                );
+            }
+        }
+        return NULL; // El agente indicado no está atendiendo una llamada
+    }
+    
+    function reportarInfoLlamadaAtendidaEntrante($sAgente)
+    {
+    	return $this->_oGestorEntrante->reportarInfoLlamadaAtendida($sAgente);
     }
 
     /**

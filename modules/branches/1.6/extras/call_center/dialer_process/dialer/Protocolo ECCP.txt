@@ -771,6 +771,48 @@ Atributos o argumentos:
 * agent_number: Agente que se interroga. Este identificador está de la forma 
   'Agent/9000'.
 
+Respuesta:
+* status: tiene uno de los siguientes posibles valores:
+  offline: Agente no ha iniciado sesión en la cola
+  online: Agente ha iniciado sesión, y está ocioso
+  oncall: Agente ha iniciado sesión, y está atendiendo una llamada
+  paused: Agente ha iniciado sesión, y está pausado (en break)
+* channel: contiene el canal de Asterisk usado para el login del agente. 
+* extension: contiene la extensión (derivada del canal) usada para el login del
+  agente. Si los elementos "channel" y "extension" están ausentes con "status" 
+  igual a "offline", el agente está deslogoneado. Si están presentes con 
+  "status" igual a "offline", el agente está en proceso de ingresar la 
+  contraseña de ingreso a la cola, a través del canal y extensión indicados. En 
+  todos los otros valores de "status", los elementos "channel" y "extension"
+  están siempre presentes.
+* onhold: 1 si el agente ha iniciado un hold con el requerimiento "hold", o 0.
+* pauseinfo: elemento que contiene información de la pausa (break) en la que está
+  puesto el agente. Sólo está presente en status paused. Contiene los siguientes 
+  elementos:
+  * pauseid: ID de la pausa usada en pauseagent
+  * pausename: Nombre de la pausa correspondiente al ID de pauseid
+  * pausestart: Fecha y hora correspondiente al inicio de la pausa. Si la fecha
+    es la misma fecha de hoy, sólo se reporta la hora. Formato [yyyy-mm-dd] hh:mm:ss.
+* remote_channel: canal de la llamada que ha sido enlazada con el agente. Sólo
+  presente si el agente está atendiendo una llamada.
+* callinfo: elemento que contiene información de la llamada enlazada al agente.
+  Sólo está presente si el agente está atendiendo una llamada. Contiene los
+  siguientes elementos:
+  * calltype: Valor de "outgoing" o "incoming"
+  * campaign_id: ID de la campaña correspondiente a la llamada, o NULL si la 
+    llamada entrante no pertenece a una campaña.
+  * callid: ID de la llamada.
+  * callnumber: Número telefónico marcado (llamada saliente) o Caller-ID (llamada
+    entrante) correspondiente a la llamada enlazada.
+  * dialstart: Fecha y hora en formato [yyyy-mm-dd] hh:mm:ss para inicio del 
+    marcado de la llamada saliente. Ausente para llamadas entrantes.
+  * dialend: Fecha y hora en formato [yyyy-mm-dd] hh:mm:ss para final del
+    marcado de la llamada saliente. Ausente para llamadas entrantes.
+  * queuestart: Fecha y hora en formato [yyyy-mm-dd] hh:mm:ss para entrada de
+    la llamada a la cola de la campaña.
+  * linkstart: Fecha y hora en formato [yyyy-mm-dd] hh:mm:ss para enlace de la
+    llamada al agente.
+
 Ejemplo:
 <request id="4">
     <getagentstatus>
@@ -792,24 +834,36 @@ En caso de que existe el agente, y está logoneado y ocioso:
         <status>online</status>
         <channel>SIP/1064-00000001</channel>
         <extension>1064</extension>
+        <onhold>0</onhold>
     </getagentstatus_response>
 </response>
 
-
-El elemento "status" tiene uno de los siguientes posibles valores:
-* offline: Agente no ha iniciado sesión en la cola
-* online: Agente ha iniciado sesión, y está ocioso
-* oncall: Agente ha iniciado sesión, y está atendiendo una llamada
-* paused: Agente ha iniciado sesión, y está pausado (en break)
-
-El elemento "channel" contiene el canal de Asterisk usado para el login del 
-agente. El elemento "extension" contiene la extensión (derivada del canal) usada
-para el login del agente. Si los elementos "channel" y "extension" están 
-ausentes con "status" igual a "offline", el agente está deslogoneado. Si están
-presentes con "status" igual a "offline", el agente está en proceso de ingresar
-la contraseña de ingreso a la cola, a través del canal y extensión indicados.
-En todos los otros valores de "status", los elementos "channel" y "extension"
-están siempre presentes.
+En caso de que existe el agente, y atiende llamada saliente, habiendo indicado 
+pausa:
+<response id="4">
+    <getagentstatus_response>
+        <status>paused</status>
+        <channel>SIP/1064-00000021</channel>
+        <extension>1064</extension>
+        <onhold>0</onhold>
+        <pauseinfo>
+            <pauseid>2</pauseid>
+            <pausename>Baño</pausename>
+            <pausestart>17:31:17</pausestart>
+        </pauseinfo>
+        <remote_channel>SIP/1065-00000022</remote_channel>
+        <callinfo>
+            <calltype>outgoing</calltype>
+            <callid>74</callid>
+            <campaign_id>7</campaign_id>
+            <callnumber>1065</callnumber>
+            <dialstart>17:30:16</dialstart>
+            <dialend>17:30:24</dialend>
+            <queuestart>17:30:24</queuestart>
+            <linkstart>17:30:24</linkstart>
+        </callinfo>
+    </getagentstatus_response>
+</response>
 
 En caso de que no exista el agente:
 <response id="4">
