@@ -213,6 +213,47 @@ class PaloSantoFileEndPoint
         }
     }
 
+    function buildPattonConfFile($arrData,$tone_set)
+    {
+	include_once "vendors/Patton.cfg.php";
+	$config = getPattonConfiguration($arrData,$tone_set);
+	if(!$this->createFileConf($this->directory,$arrData["mac"]."_Patton.cfg",$config))
+	    return false;
+	$arrCommands = getPattonCommands($arrData,$this->ipAdressServer);
+	$result = $this->checkTelnetCredentials($arrData["ip_address"],$arrData["telnet_username"],$arrData["telnet_password"],2);
+	if($result === true){
+	    if(!$this->telnet($arrData["ip_address"],"","",$arrCommands,2)){
+		$this->errMsg = _tr("Unable to telnet to ").$arrData["ip_address"];
+		return false;
+	    }
+	    else
+		return true;
+	}
+	else
+	    return $result;
+    }
+
+    function checkTelnetCredentials($ip,$user,$password,$sw)
+    {
+	if ($fsock = fsockopen($ip, 23, $errno, $errstr, 10))
+        {
+            fputs($fsock, "$user\r");
+	    $this->read($fsock,$sw);
+	    fputs($fsock, "$password\r");
+	    $result = $this->read($fsock,$sw);
+	    if(preg_match("/Authentication failed/",$result)){
+		$this->errMsg = _tr("The username or password are incorrect");
+		return null;
+	    }
+	    else
+		return true;
+	}
+	else{
+	    $this->errMsg = _tr("Unable to telnet to ").$ip;
+	    return false;
+	}
+    }
+
     /*
         Esta funcion nos permite crear un archivo de configuracion
         Recibe el directorio, nombre de archivo, contenido del archivo.
@@ -407,33 +448,54 @@ class PaloSantoFileEndPoint
         }
     }
 
-    function telnet($ip, $user, $password, $arrComandos){
-        if ($fsock = fsockopen($ip, 23, $errno, $errstr, 30))
+    function telnet($ip, $user, $password, $arrComandos, $sw=1)
+    {
+        if ($fsock = fsockopen($ip, 23, $errno, $errstr, 10))
         {
             if(is_array($arrComandos) && count($arrComandos)>0)
             {
                 if($user!="" && $user!=null){
                     fputs($fsock, "$user\r");
-                    fread($fsock,1024);
+                    $this->read($fsock,$sw);
                 }
                 if($password!="" && $password!=null){
                     fputs($fsock, "$password\r");
-                    fread($fsock,1024);
+                    $this->read($fsock,$sw);
                 }
                 foreach($arrComandos as $comando => $valor)
                 {
                     $line = $comando;
                     if($valor!="")
                         $line = "$comando $valor";
-
                     fputs($fsock, "$line\r");
-                    fread($fsock,1024);
+                    $this->read($fsock,$sw);
                 }
             }
             fclose($fsock);
             return true;
         }else return false;
     }
+
+    function read($fsock, $sw=1 ,$seg=1)
+    {
+	$s = ""; 
+	if($sw==1){
+	  $s = fread($fsock,1024);
+	}
+	else if($sw==2){
+	  stream_set_blocking($fsock, TRUE);
+	  stream_set_timeout($fsock,$seg);
+	  $info = stream_get_meta_data($fsock);
+	  while (true) {
+	    $char = fgetc($fsock);
+	    if(empty($char) && $info['timed_out']) break;
+	    $s .= "$char";
+	    $info = stream_get_meta_data($fsock);
+	  }
+	}
+	return $s;
+    }
+
 
     function updateArrParameters($vendor, $model, $arrParametersOld)
     {

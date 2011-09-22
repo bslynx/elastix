@@ -20,3 +20,44 @@ function getDevices(model,mac)
                 }
             );
 }
+
+function activate_option_lan()
+{
+    var static = document.getElementById('lan_static');
+    var dhcp   = document.getElementById('lan_dhcp');
+    if(static){
+	if(static.checked==true)
+	{
+	    document.getElementById('lan_ip').style.display = '';
+	    document.getElementById('lan_mask').style.display = '';
+	}
+	else
+	{
+	    document.getElementById('lan_ip').style.display = 'none';
+	    document.getElementById('lan_mask').style.display = 'none';
+	}
+    }
+}
+
+function activate_option_wan()
+{
+    var static = document.getElementById('wan_static');
+    var dhcp   = document.getElementById('wan_dhcp');
+    if(static){
+	if(static.checked==true)
+	{
+	    document.getElementById('wan_ip').style.display = '';
+	    document.getElementById('wan_mask').style.display = '';
+	}
+	else
+	{
+	    document.getElementById('wan_ip').style.display = 'none';
+	    document.getElementById('wan_mask').style.display = 'none';
+	}
+    }
+}
+
+function checkNumber()
+{
+    alert("HOLA");
+}

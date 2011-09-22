@@ -118,6 +118,53 @@ class paloSantoEndPoint
 	    return null;
     }
 
+    function getEndpointParameters($mac)
+    {
+	$pDB = $this->connectDataBase("sqlite","endpoint");
+	if($pDB==false)
+            return false;
+	$query = "select * from parameter where id_endpoint like (select id from endpoint where  mac_adress=?)";
+	$result = $pDB->fetchTable($query,true,array($mac)); //se consulta a la base endpoints
+	return $result;
+    }
+
+    function getCountries()
+    {
+	$pDB = $this->connectDataBase("sqlite","endpoint");
+	if($pDB==false)
+            return false;
+	$query = "select id,country from settings_by_country order by country";
+	$result = $pDB->fetchTable($query,true); //se consulta a la base endpoints
+	return $result;
+    }
+
+    function getToneSet($id)
+    {
+	$pDB = $this->connectDataBase("sqlite","endpoint");
+	if($pDB==false)
+            return false;
+	$query = "select fxo_fxs_profile,tone_set from settings_by_country where id=?";
+	$result = $pDB->getFirstRowQuery($query,true,array($id)); //se consulta a la base endpoints
+	return $result;
+    }
+
+    function countryExists($id)
+    {
+	$pDB = $this->connectDataBase("sqlite","endpoint");
+	if($pDB==false)
+            return false;
+	$query = "select count(*) from settings_by_country where id=?";
+	$result = $pDB->getFirstRowQuery($query,false,array($id));
+	if($result===false){
+            $this->errMsg = $pDB->errMsg;
+            return false;
+        }
+	if($result[0] > 0)
+	    return true;
+	else
+	    return false;
+    }
+
     function getPattonDevices()
     {
 	$sComando = '/usr/bin/elastix-helper patton_query';
@@ -149,6 +196,99 @@ class paloSantoEndPoint
 	}
 	else
 	    return array();
+    }
+
+    function savePattonData($arrData)
+    {
+	$pDB = $this->connectDataBase("sqlite","endpoint");
+	if($pDB==false)
+            return false;
+	$query = "select count(*) from endpoint where mac_adress=?";
+	$result = $pDB->getFirstRowQuery($query,false,array($arrData["mac"])); //se consulta a la base endpoints
+	if($result === false){
+	    $this->errMsg = $pDB->errMsg;
+	    return false;
+	}
+	if($result[0] == 0){
+	    $query = "insert into endpoint (id_model,mac_adress,id_vendor,edit_date) values ((select id from model where name='Patton'),?,(select id from vendor where name='Patton'),datetime('now','localtime'))";
+	    $result = $pDB->genQuery($query,array($arrData["mac"]));
+	    if($result == false){
+		$this->errMsg = $pDB->errMsg;
+		return false;
+	    }
+	}
+	foreach($arrData as $name => $value){
+	    if($name != "mac" && $name != "ip_address"){
+		$query = "select count(*) from parameter where name=? and id_endpoint like (select id from endpoint where mac_adress=?)";
+		$result = $pDB->getFirstRowQuery($query,false,array($name,$arrData["mac"])); //se consulta a la base endpoints
+		if($result === false){
+		    $this->errMsg = $pDB->errMsg;
+		    return false;
+		}
+		if($result[0] > 0){
+		    $query = "update parameter set value=? where name=? and id_endpoint like (select id from endpoint where mac_adress=?)";
+		    $arrParameter = array($value,$name,$arrData["mac"]);
+		}
+		else{
+		    $query = "insert into parameter (id_endpoint,name,value) values ((select id from endpoint where mac_adress=?),?,?)";
+		    $arrParameter = array($arrData["mac"],$name,$value);
+		}
+		$result = $pDB->genQuery($query,$arrParameter);
+		if($result == false){
+		    $this->errMsg = $pDB->errMsg;
+		    return false;
+		}
+	    }
+	}
+	$extension = "";
+	$trunk = "";
+	$extensionsData = array("user_name","user","authentication_user");
+	$trunksData = array("line","ID","authentication_ID");
+	$number = 0;
+	foreach($extensionsData as $extData){
+	    if($number == 0)
+		$extension .= " (name like '$extData%'";
+	    else
+		$extension .= " or (name like '$extData%'";
+	    $number++;
+	    if($extData == "user")
+		$extension .= " and name not like 'user_name%'";
+	    for($i=0;$i<$arrData["analog_extension_lines"];$i++){
+		if($i==0)
+		    $extension .= " and name not in ('{$extData}{$i}'";
+		else
+		    $extension .= ",'{$extData}{$i}'";
+		if($i==($arrData["analog_extension_lines"] - 1))
+		    $extension .= ")";
+	    }
+	    $extension .= ")";
+	}
+	$number = 0;
+	foreach($trunksData as $trunData){
+	    if($number == 0)
+		$trunk .= " (name like '$trunData%'";
+	    else
+		$trunk .= " or (name like '$trunData%'";
+	    $number++;
+	    if($trunData == "line")
+		$trunk .= " and name<>'lines_sip_port'";
+	    for($i=0;$i<$arrData["analog_trunk_lines"];$i++){
+		if($i==0)
+		    $trunk .= " and name not in ('{$trunData}{$i}'";
+		else
+		    $trunk .= ",'{$trunData}{$i}'";
+		if($i==($arrData["analog_trunk_lines"] - 1))
+		    $trunk .= ")";
+	    }
+	    $trunk .= ")";
+	}
+	$query = "delete from parameter where id_endpoint like (select id from endpoint where mac_adress=?) and ($extension or $trunk)";
+	$result = $pDB->genQuery($query,array($arrData["mac"]));
+	if($result == false){
+	    $this->errMsg = $pDB->errMsg;
+	    return false;
+	}
+	return true;
     }
 
 
