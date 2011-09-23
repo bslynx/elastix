@@ -2,15 +2,15 @@
 
 Summary: Elastix My Extension 
 Name:    elastix-%{modname}
-Version: 2.0.4
-Release: 7
+Version: 2.2.0
+Release: 1
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
 #Source0: %{modname}_%{version}-4.tgz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
-Prereq: elastix >= 2.0.4-19
+Prereq: elastix >= 2.2.0-2
 Requires: yum
 
 %description
@@ -84,6 +84,12 @@ fi
 /usr/share/elastix/module_installer/*
 
 %changelog
+* Mon Aug 29 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-1
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-2
+- CHANGED: module myex_config, if user does not have an extension
+  assigned, only a message is showed instead of the module
+  SVN Rev[2882]
+
 * Tue Jul 28 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-7
 - CHANGED: module myex_config, changed message when user does not 
   have an extension associated. SVN Rev[2795]

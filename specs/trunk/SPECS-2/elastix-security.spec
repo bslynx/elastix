@@ -3,13 +3,13 @@
 Summary: Elastix Security 
 Name:    elastix-%{modname}
 Version: 2.2.0
-Release: 1
+Release: 2
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
-Prereq: elastix >= 2.2.0-1
+Prereq: elastix >= 2.2.0-3
 Prereq: freePBX >= 2.8.1-2
 Prereq: iptables
 
@@ -93,6 +93,18 @@ fi
 /usr/share/elastix/privileged/*
 
 %changelog
+* Thu Sep 08 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-2
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-3
+- CHANGED: module sec_ports, in view mode the asterisks and word
+  required were removed
+  SVN Rev[2952]
+- ADDED: in sql script for installations, added the tftp port
+  and added new rule to accept tftp traffic
+  SVN Rev[2940]
+- FIXED: incorrect order of hierarchy in updates scripts for
+  database iptables
+  SVN Rev[2897]
+
 * Wed Aug 03 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-1
 - DELETED: deleted sql script update for database iptables.db
   SVN Rev[2872]

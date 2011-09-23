@@ -3,16 +3,17 @@
 Summary: Elastix Module PBX 
 Name:    elastix-%{modname}
 Version: 2.2.0
-Release: 2
+Release: 6
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
 #Source0: %{modname}_%{version}-24.tgz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
-Prereq: elastix >= 2.2.0-1
+Prereq: elastix >= 2.2.0-4
 Prereq: elastix-my_extension >= 2.0.4-5
 Prereq: freePBX >= 2.8.1-1
+Prereq: elastix-system >= 2.2.0-5
 Prereq: openfire, tftp-server, vsftpd
 Requires: festival >= 1.95
 
@@ -151,6 +152,26 @@ else
     touch /etc/asterisk/extensions_override_freepbx.conf
     echo "#include extensions_override_elastix.conf" > /etc/asterisk/extensions_override_freepbx.conf
 fi
+
+# verifico si se incluye a sip_notify_custom_elastix.conf
+if [ -f "/etc/asterisk/sip_notify_custom.conf" ]; then
+    echo "/etc/asterisk/sip_notify_custom.conf exists, verifying the inclusion of sip_notify_custom_elastix.conf"
+    grep "#include sip_notify_custom_elastix.conf" /etc/asterisk/sip_notify_custom.conf &> /dev/null
+    if [ $? -eq 1 ]; then
+	echo "including sip_notify_custom_elastix.conf..."
+	echo "#include sip_notify_custom_elastix.conf" > /tmp/custom_elastix.conf
+	cat /etc/asterisk/sip_notify_custom.conf >> /tmp/custom_elastix.conf
+	cat /tmp/custom_elastix.conf > /etc/asterisk/sip_notify_custom.conf
+	rm -rf /tmp/custom_elastix.conf
+    else
+	echo "sip_notify_custom_elastix.conf is already included"
+    fi
+else
+    echo "creating file /etc/asterisk/sip_notify_custom.conf"
+    touch /etc/asterisk/sip_notify_custom.conf
+    echo "#include sip_notify_custom_elastix.conf" > /etc/asterisk/sip_notify_custom.conf
+fi
+
 varwriter=1
 mv /usr/share/elastix/module_installer/%{name}-%{version}-%{release}/setup/extensions_override_elastix.conf /etc/asterisk/
 chown -R asterisk.asterisk /etc/asterisk
@@ -244,6 +265,97 @@ fi
 /usr/share/elastix/privileged/*
 
 %changelog
+* Thu Sep 22 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-6
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-4
+- ADDED: module endpoint_configurator, added the option for
+  patton configuration
+  SVN Rev[2985]
+- ADDED: added script sql for database endpoint, it creates 
+  a new table called settings_by_country and added the vendor Patton
+  SVN Rev[2984]
+- CHANGED: Conference: add new method required for verification 
+  of date range. Part of fix for Elastix bug #937.
+  SVN Rev[2983]
+- FIXED: Embedded FreePBX: include jquery.toggleval if available,
+  to fix some javascript errors.
+  SVN Rev[2981]
+- FIXED: Elastix Operator Panel: IE6 through IE8 deal incorrectly
+  with nested draggables, as detailed in http://bugs.jqueryui.com/ticket/4333.
+  Applied workaround suggested in bug report.
+  SVN Rev[2980]
+- FIXED: Elastix Operator Panel: fix incorrect regular expression 
+  that missed extension names with dashes.
+  SVN Rev[2979]
+- CHANGED: Elastix Operator Panel: remove comment and trailing comma
+  that trigger syntax error in IE6. Part of fix for Elastix bug #938.
+  SVN Rev[2978]
+- CHANGED: Elastix Operator Panel: use jQuery methods instead of
+  innerHTML to insert table information. Part of fix for Elastix bug #938.
+  SVN Rev[2977]
+- CHANGED: Elastix Operator Panel: use DOM instead of innerHTML
+  to insert loading animation. Part of fix for Elastix bug #938.
+  SVN Rev[2976]
+- FIXED: Control Panel: check for support of DOMParser and fall back
+  to IE-specific code if not supported. Partial fix for Elastix bug #938.
+  SVN Rev[2971]
+- CHANGED: module text_to_wav, deleted unnecessary asterisks
+  SVN Rev[2962]
+- CHANGED: module extensions_batch, deleted unnecessary asterisks
+  SVN Rev[2961]
+- CHANGED: module monitoring, deleted unnecessary asterisks
+  SVN Rev[2960]
+- CHANGED: module voicemail, deleted unnecessary asterisks
+  SVN Rev[2959]
+- FIXED: module recordings, variable $pDB and $filename were not defined
+  SVN Rev[2957]
+- CHANGED: module recordings, database address_book.db is not 
+  used. Deleted any relation with that database
+  SVN Rev[2954]
+
+* Fri Sep 09 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-5
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-3
+- CHANGED: module recordings, changed the location of module
+  recordings, now it is in PBX->tools
+  SVN Rev[2953]
+- CHANGED: module conference, in view mode the asterisks and
+  word required were removed
+  SVN Rev[2951]
+- FIXED: module endpoint_configurator, the version must have 4 decimals
+  SVN Rev[2939]
+- FIXED: module control_panel, word class is reserved in javascript
+  for firefox >= 5. Changed the variable name to other one
+  SVN Rev[2934]
+- CHANGED: installer.php, deleted the register string of trunks
+  created in voipprovider
+  SVN Rev[2930]
+- ADDED: added script sql for database control_panel_design.db,
+  updated the description for the trunk area
+  SVN Rev[2928]
+
+* Tue Aug 30 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-4
+- CHANGED: In spec file, verify the inclusion of
+  sip_notify_custom_elastix.conf on /etc/asterisk/sip_notify_custom.conf
+- CHANGED: installer.php, trunks created by provider_account were
+  written in file /etc/asterisk/sip_custom.conf. Now when this
+  script is executed these trunks are deleted from the mentioned
+  file because now the voipprovider trunks are created in freePBX database
+  SVN Rev[2925]
+
+* Fri Aug 26 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-3
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-2
+- ADDED: In spec file, added prereq elastix-system >= 2.2.0-5
+- CHANGED: PBX: Return a diagnostic message instead of exiting 
+  when some FreePBX issue disables all modules.
+  SVN Rev[2910]
+- CHANGED: installer.php, the trunks created in voipprovider
+  are also created in the database asterisk of freePBX
+  SVN Rev[2890]
+- FIXED: module monitoring, fixed many security holes in this module
+  SVN Rev[2885]
+- CHANGED: module voicemail, if user is not administrator and does
+  not have an extension assigned only a message is showed
+  SVN Rev[2883]
+
 * Fri Aug 03 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-2
 - FIXED: module control_panel, the queues was not showing the
   extension or agent which attends it. Now it shows all the

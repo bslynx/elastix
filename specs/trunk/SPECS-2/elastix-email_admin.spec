@@ -3,14 +3,14 @@
 Summary: Elastix Module Email 
 Name:    elastix-%{modname}
 Version: 2.2.0
-Release: 3
+Release: 6
 License: GPL
 Group:   Applications/System
 #Source0: %{modname}_%{version}-4.tgz
 Source0: %{modname}_%{version}-%{release}.tgz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
-Prereq: elastix >= 2.2.0-1
+Prereq: elastix >= 2.2.0-3
 Prereq: RoundCubeMail
 Prereq: php-imap
 Prereq: postfix, spamassassin, cyrus-imapd
@@ -33,12 +33,14 @@ mkdir -p    $RPM_BUILD_ROOT/var/www/html/libs/
 mkdir -p    $RPM_BUILD_ROOT/etc/cron.d/
 mkdir -p    $RPM_BUILD_ROOT/usr/local/elastix/
 mkdir -p    $RPM_BUILD_ROOT/usr/share/elastix/privileged
+mkdir -p    $RPM_BUILD_ROOT/var/www/
 
 # ** libs ** #
 mv setup/paloSantoEmail.class.php        $RPM_BUILD_ROOT/var/www/html/libs/
 mv setup/cyradm.php                      $RPM_BUILD_ROOT/var/www/html/libs/
 mv setup/checkSpamFolder.php             $RPM_BUILD_ROOT/var/www/
 mv setup/deleteSpam.php                  $RPM_BUILD_ROOT/var/www/
+mv setup/disable_vacations.php           $RPM_BUILD_ROOT/var/www/
 mv setup/stats/postfix_stats.cron        $RPM_BUILD_ROOT/etc/cron.d/
 mv setup/stats/postfix_stats.php         $RPM_BUILD_ROOT/usr/local/elastix/
 mv setup/usr/share/elastix/privileged/*  $RPM_BUILD_ROOT/usr/share/elastix/privileged
@@ -49,7 +51,8 @@ chmod 644 $RPM_BUILD_ROOT/usr/local/elastix/postfix_stats.php
 # ** dando permisos de ejecucion ** #
 chmod +x $RPM_BUILD_ROOT/var/www/checkSpamFolder.php
 chmod +x $RPM_BUILD_ROOT/var/www/deleteSpam.php
-
+chmod +x $RPM_BUILD_ROOT/var/www/disable_vacations.php
+chmod +x $RPM_BUILD_ROOT/usr/share/elastix/privileged/*
 
 # Files provided by all Elastix modules
 mkdir -p    $RPM_BUILD_ROOT/var/www/html/
@@ -184,8 +187,68 @@ fi
 /usr/local/elastix/postfix_stats.php
 /etc/cron.d/postfix_stats.cron
 /usr/share/elastix/privileged/*
+/var/www/disable_vacations.php
 
 %changelog
+* Fri Sep 09 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-6
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-3
+- CHANGED: module email_accounts, in view mode the asterisks
+  and word required were removed
+  SVN Rev[2949]
+- CHANGED: module email_domains, in view mode the asterisks
+  and word required were removed
+  SVN Rev[2948]
+- FIXED: main.cf.elastix, commented line inet_protocols = all 
+  due to warnings in log /var/log/maillog
+  SVN Rev[2938]
+- CHANGED: script postfix_stats.php, now the output is redirected
+  to the log /var/log/elastix/postfix_stats.log
+  SVN Rev[2936]
+- CHANGED: Email_admin - Vacations - Antispam: Change labels of
+  body of message to replay in a state "vacations". Add a new
+  parameter into the body of message, this parameter is called "{END_DATE}".
+  SVN Rev[2931]
+
+* Tue Aug 30 2011 Eduardo Cueva <ecueva@palosanto.com> 2.2.0-5
+- FIXED: Email Admin - Vacations: Fixed bug where registers was 
+  duplicated sometimes, this error was produced by updating of 
+  status vacations per account. SVN Rev[2924]
+
+* Mon Aug 29 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-4
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-2
+- CHANGED: In spec file, file /etc/hosts is modified, the word
+  localhost have to go after 127.0.0.1
+- CHANGED: lib paloSantoEmail.class.php, added the function
+  escapeshellarg for the arguments of exec
+  SVN Rev[2914]
+- ADDED: module email_accounts, added csv exportation and importation
+  SVN Rev[2913]
+- CHANGED: Email_admin - Vacations: Changed the image to help file.
+  ADDED:   Email_admin - Vacations: Added script 3_2.2.0-3_2.2.0-4.sql
+  for updating email.db
+  SVN Rev[2909]
+- NEW: Email_admin - Vacations: Added new scripts to administer
+  vacations by dates
+  SVN Rev[2908]
+- CHANGED: Email_Admin - Vacations: Add new functionality on vacations
+  modules. Now users can be setting your vacations with anticipation.
+  SVN Rev[2907]
+- CHANGED: module email_list, added exportion for members of a list
+  SVN Rev[2895]
+- CHANGED: email_admin - setup: Add new function "getListByDomain"
+  to paloSantoEmail.class.php for knowing the email lists asigned
+  a domains
+  SVN Rev[2893]
+- FIXED: Modules - email_domains: Add messages of error when an user
+  does an action to delete a domain if it has email accounts or email
+  lists created.
+  SVN Rev[2891]
+- FIXED: Modules - email_account: When a new account have to be created
+  and if the user does not selected a domain the next screen is the form
+  to create a new account instead of to show a message "You must select
+  a domain to create an account".
+  SVN Rev[2884]
+
 * Fri Aug 05 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-3
 - CHANGED: module email_list, deleted unnecessary include
   SVN Rev[2878]

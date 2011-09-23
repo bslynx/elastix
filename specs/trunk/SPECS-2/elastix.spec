@@ -2,7 +2,7 @@ Summary: Elastix is a Web based software to administrate a PBX based in open sou
 Name: elastix
 Vendor: Palosanto Solutions S.A.
 Version: 2.2.0
-Release: 1
+Release: 4
 License: GPL
 Group: Applications/System
 Source: elastix_%{version}-%{release}.tgz
@@ -13,7 +13,7 @@ Prereq: /sbin/chkconfig, /etc/sudoers, sudo
 Prereq: php, php-sqlite3, php-gd, php-pear, php-pear-DB, php-xml, php-mysql, php-pdo, php-imap, php-soap
 Prereq: httpd, mysql-server, ntp, nmap, mod_ssl
 Prereq: perl
-Prereq: elastix-firstboot >= 2.0.0-4
+Prereq: elastix-firstboot >= 2.2.0-1
 Obsoletes: elastix-additionals
 Provides: elastix-additionals
 Conflicts: elastix-system < 2.0.4-18
@@ -45,6 +45,7 @@ mkdir -p $RPM_BUILD_ROOT/usr/bin
 mkdir -p $RPM_BUILD_ROOT/usr/share/elastix
 mkdir -p $RPM_BUILD_ROOT/usr/share/pear/DB
 mkdir -p $RPM_BUILD_ROOT/usr/share/elastix/privileged
+mkdir -p $RPM_BUILD_ROOT/usr/share/elastix/module_installer/%{name}-%{version}-%{release}/
 
 # ** /etc path ** #
 mkdir -p $RPM_BUILD_ROOT/etc/cron.d
@@ -60,7 +61,6 @@ mkdir -p $RPM_BUILD_ROOT/bin
 ## ** Step 2: Installation of files and folders ** ##
 # ** Installating framework elastix webinterface ** #
 rm -rf $RPM_BUILD_DIR/elastix/framework/html/modules/userlist/  # Este modulo no es el modificado para soporte de correo, eso se encuentra en modules-core
-mv $RPM_BUILD_DIR/elastix/framework/db/*                                $RPM_BUILD_ROOT/var/www/db/
 mv $RPM_BUILD_DIR/elastix/framework/html/*                              $RPM_BUILD_ROOT/var/www/html/
 
 # ** Installating modules elastix webinterface ** #
@@ -100,6 +100,9 @@ chmod 755 $RPM_BUILD_ROOT/usr/local/sbin/motd.sh
 # ** /usr/share/ files ** #
 mv $RPM_BUILD_DIR/elastix/additionals/usr/share/elastix/menusAdminElx                  $RPM_BUILD_ROOT/usr/share/elastix/
 mv $RPM_BUILD_DIR/elastix/additionals/usr/share/pear/DB/sqlite3.php                    $RPM_BUILD_ROOT/usr/share/pear/DB/
+
+# ** setup ** #
+mv $RPM_BUILD_DIR/elastix/framework/setup/ 	$RPM_BUILD_ROOT/usr/share/elastix/module_installer/%{name}-%{version}-%{release}/
 
 # ** elastix-* file ** #
 mv $RPM_BUILD_DIR/elastix/additionals/usr/bin/elastix-menumerge            $RPM_BUILD_ROOT/usr/bin/
@@ -142,12 +145,15 @@ mv          $RPM_BUILD_DIR/elastix/additionals/etc/logrotate.d/*           $RPM_
 # File Elastix Access Audit log
 mkdir -p    $RPM_BUILD_ROOT/var/log/elastix
 touch       $RPM_BUILD_ROOT/var/log/elastix/audit.log
+touch	    $RPM_BUILD_ROOT/var/log/elastix/postfix_stats.log
  
 %pre
 #Para conocer la version de elastix antes de actualizar o instalar
-#mkdir -p /usr/share/elastix/
-#touch /usr/share/elastix/pre_elastix_version.info
-#rpm -q --queryformat='%{VERSION}' elastix > /usr/share/elastix/pre_elastix_version.info
+mkdir -p /usr/share/elastix/module_installer/%{name}-%{version}-%{release}/
+touch /usr/share/elastix/module_installer/%{name}-%{version}-%{release}/preversion_%{modname}.info
+if [ $1 -eq 2 ]; then
+    rpm -q --queryformat='%{VERSION}-%{RELEASE}' %{name} > /usr/share/elastix/module_installer/%{name}-%{version}-%{release}/preversion_%{modname}.info
+fi
 
 # if not exist add the asterisk group
 grep -c "^asterisk:" %{_sysconfdir}/group &> /dev/null
@@ -194,6 +200,18 @@ rm -f /usr/share/elastix/CentOS-Base.repo
 sed --in-place "s,User\sapache,#User apache,g" /etc/httpd/conf/httpd.conf
 sed --in-place "s,Group\sapache,#Group apache,g" /etc/httpd/conf/httpd.conf
 
+# ** Uso de elastix-dbprocess ** #
+pathModule="/usr/share/elastix/module_installer/%{name}-%{version}-%{release}"
+preversion=`cat $pathModule/preversion_%{modname}.info`
+
+if [ $1 -eq 1 ]; then #install
+  # The installer database
+    elastix-dbprocess "install" "$pathModule/setup/db"
+elif [ $1 -eq 2 ]; then #update
+    elastix-dbprocess "update"  "$pathModule/setup/db" "$preversion"
+fi
+
+
 # Actualizacion About Version Release
 # Verificar si en la base ya existe algo
 if [ "`sqlite3 /var/www/db/settings.db "select count(key) from settings where key='elastix_version_release';"`" = "0" ]; then
@@ -211,6 +229,11 @@ rm -rf /var/www/html/var/templates_c/*
 # Reverse the patching of httpd.conf
 sed --in-place "s,#User\sapache,User apache,g" /etc/httpd/conf/httpd.conf
 sed --in-place "s,#Group\sapache,Group apache,g" /etc/httpd/conf/httpd.conf
+pathModule="/usr/share/elastix/module_installer/%{name}-%{version}-%{release}"
+if [ $1 -eq 0 ] ; then # Validation for desinstall this rpm
+  echo "Dump and delete %{name} databases"
+  elastix-dbprocess "delete" "$pathModule/setup/db"
+fi
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -224,7 +247,7 @@ rm -rf $RPM_BUILD_ROOT
 /var/www/backup
 /var/log/elastix/*
 /var/lib/asterisk/agi-bin
-%config(noreplace) /var/www/db/*
+# %config(noreplace) /var/www/db/
 %defattr(- root, root)
 /usr/share/elastix/*
 /usr/share/pear/DB/sqlite3.php
@@ -244,10 +267,45 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) /etc/yum.repos.d/elastix.repo
 #%config(noreplace) /etc/logrotate.d/elastixAccess.logrotate
 %config(noreplace) /etc/logrotate.d/elastixAudit.logrotate
+%config(noreplace) /etc/logrotate.d/elastixEmailStats.logrotate
 /etc/init.d/generic-cloexec
 /bin/asterisk.reload
 
 %changelog
+* Thu Sep 22 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-4
+- FIXED: Framework - libs/js/jquery/jquery-upl-windowAero.js: 
+  The button close of a window generated by lib "jquery-upl-windowAero.js"
+  never remove the content of the windows and create a new other
+  with the same id.
+  SVN Rev[2969]
+
+* Wed Sep 07 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-3
+- CHANGED: In Spec file, creation of log /var/log/elastix/postfix_stats.log
+  and added a config(noreplace) to elastixEmailStats.logrotate
+- CHANGED: module grouplist, in view mode the asterisks and word
+  required file were removed 
+  SVN Rev[2945]
+- NEW: elastixEmailStats.logrotate, logrotate for log 
+  /var/log/elastix/postfix_stats.log
+  SVN Rev[2937]
+- ADDED: images of themes, added the image closelabel.gif in all
+  the themes because it is used in module hardware_detector 
+  SVN Rev[2933]
+
+* Mon Aug 29 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-2
+- CHANGED: In spec file, changed prereq elastix-firstboot >= 2.2.0-1
+- ADDED: misc.lib.php and index.php, added a function that checks
+  if the framework databases exist, in case they dont it tries to
+  remane their equivalent file that ends in .rpmsave
+  SVN Rev[2900]
+- CHANGED: In Spec file, added the use of elastix-dbprocess for
+  databases in framework
+- CHANGED: databases of framework, created the hierarchy of folders
+  for sql scripts exactly the same as the created for the modules
+  SVN Rev[2898]
+- FIXED: elastix themes, incremented the z-index of layerCM
+  SVN Rev[2880]
+
 * Mon Aug 01 2011 Bruno Macias  <bmacias@palosanto.com> 2.2.0-1
 - DELETED: SQLite database acl.db in additionals section, Database was 
   deleted because its use is obsolete. elastix-dbprocess script and 

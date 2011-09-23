@@ -1,7 +1,7 @@
 Summary: Elastix First Boot Setup
 Name:    elastix-firstboot
-Version: 2.0.4
-Release: 8
+Version: 2.2.0
+Release: 3
 License: GPL
 Group:   Applications/System
 Source0: %{name}-%{version}.tar.bz2
@@ -30,7 +30,9 @@ rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT/etc/init.d/
 mkdir -p $RPM_BUILD_ROOT/var/spool/elastix-mysqldbscripts/
 mkdir -p $RPM_BUILD_ROOT/usr/share/elastix-firstboot/
+mkdir -p $RPM_BUILD_ROOT/usr/bin/
 cp elastix-firstboot $RPM_BUILD_ROOT/etc/init.d/
+cp change-passwords  $RPM_BUILD_ROOT/usr/bin/
 mv compat-dbscripts/ $RPM_BUILD_ROOT/usr/share/elastix-firstboot/
 
 %post
@@ -57,6 +59,14 @@ if [ $1 -eq 1 ] ; then
 			echo "Installing in active system - legacy password written to /etc/elastix.conf"
 			echo "mysqlrootpwd=eLaStIx.2oo7" >> /etc/elastix.conf
 		fi
+                if [ -f /etc/elastix.conf  ] ; then
+                        grep 'cyrususerpwd' /etc/elastix.conf &> /dev/null
+                        res=$?
+                        if [ $res != 0 ] ; then
+                            echo "cyrususerpwd=palosanto" >> /etc/elastix.conf
+                        fi
+                fi
+
 	fi
 fi
 
@@ -66,6 +76,13 @@ if [ $1 -eq 2 ] ; then
 	if [ ! -e /etc/elastix.conf ] ; then
 		echo "Updating in active system - legacy password written to /etc/elastix.conf"
 		echo "mysqlrootpwd=eLaStIx.2oo7" >> /etc/elastix.conf
+	fi
+	if [ -f /etc/elastix.conf  ] ; then
+		grep 'cyrususerpwd' /etc/elastix.conf &> /dev/null
+		res=$?
+		if [ $res != 0 ] ; then
+		    echo "cyrususerpwd=palosanto" >> /etc/elastix.conf
+		fi
 	fi
 fi
 
@@ -79,8 +96,37 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/elastix-firstboot/compat-dbscripts/01-asteriskcdrdb.sql
 /usr/share/elastix-firstboot/compat-dbscripts/02-asteriskuser-password.sql
 /usr/share/elastix-firstboot/compat-dbscripts/08-schema-vtiger.sql
+/usr/bin/change-passwords
 
 %changelog
+* Fri Sep 09 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-3
+- CHANGED: elastix-firstboot and change-passwords, the 
+  ARI_ADMIN_PASSWORD is also changed with the password for freePBX admin
+  SVN Rev[2942]
+
+* Thu Sep 01 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-2
+- CHANGED: change-passwords, when user press button cancel the
+  script does an exit
+  SVN Rev[2926]
+
+* Wed Aug 24 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-1
+- NEW: new script that change the passwords of mysql, freePBX, 
+  user admin, fop, cyrus
+  SVN Rev[2894]
+- CHANGED: elastix-firstboot, if mysql is not running, elastix-firstboot
+  tries to start the service, also the fop password in /etc/amportal.conf
+  is set with the password entered for elastix admin
+  SVN Rev[2892]
+
+* Wed Aug 10 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-9
+- FIXED: in script elastix firstboot the step to add word
+  "localhost" after "127.0.0.1" from /etc/hosts was improved
+  due to possibles problems during of updating. SVN Rev[2887]
+- FIXED: elastix-firstboot, an error occurred when the update or
+  install operation is done on a elastix 2.0.3 where the password
+  of cyrus was not rewrited by firstboot(older versions) in
+  /etc/elastix.conf. SVN Rev[2886]
+
 * Tue May 17 2011 Alberto Santos <asantos@palosanto.com> 2.0.4-8
 - FIXED: elastix-firstboot, an error occurred when the password
   of root or mysql have spaces. Now the password can have spaces

@@ -2,8 +2,8 @@
 
 Summary: Elastix Module Agenda 
 Name:    elastix-%{modname}
-Version: 2.0.4
-Release: 12
+Version: 2.2.0
+Release: 1
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
@@ -13,7 +13,7 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
 Prereq: asterisk
 Prereq: freePBX >= 2.8.1-1
-Prereq: elastix >= 2.0.4-24
+Prereq: elastix >= 2.2.0-3
 
 %description
 Elastix Module Agenda
@@ -107,6 +107,26 @@ fi
 /var/lib/asterisk/sounds/custom/*
 
 %changelog
+* Fri Sep 09 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-1
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-3
+- FIXED: Agenda - Calendar: Fixed bug where events were showed in
+  dashboard module but the links to access the events were wrong,
+  so, this bug was solved adding support to view events by load
+  javascript with the popup when in url (by get) have a variable
+  id and the date of event to change the calendar.
+  SVN Rev[2955]
+- CHANGED: module recordings, changed the location of module
+  recordings, now it is in PBX->tools
+  SVN Rev[2953]
+- CHANGED: module address_book, in view mode the asterisks and 
+  word required were removed
+  SVN Rev[2947]
+- FIXED: Agenda - Calendar: Fixed bug where calendar popup appear
+  with style "position:fixed" and users cannot see the opcions of
+  "Notify Guests by Email" if "Configure a phone call reminder" is opened
+  SVN Rev [2935]
+
+
 * Fri Jul 29 2011 Eduardo Cueva <ecueva@palsoanto.com> 2.0.4-12
 - CHANGED: Agenda - Calendar:  Show message after to create an 
   event because there are a load page as event and in a remote 

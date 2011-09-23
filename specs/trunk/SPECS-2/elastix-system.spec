@@ -3,16 +3,17 @@
 Summary: Elastix Module System 
 Name:    elastix-%{modname}
 Version: 2.2.0
-Release: 4
+Release: 7
 License: GPL
 Group:   Applications/System
 #Source0: %{modname}_%{version}-2.tgz
 Source0: %{modname}_%{version}-%{release}.tgz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
-Prereq: elastix >= 2.2.0-1
+Prereq: elastix >= 2.2.0-4
 Prereq: php-soap
 Prereq: openfire, wanpipe-util >= 3.4.1-4, dahdi
+Conflicts: elastix-agenda < 2.2.0-1
 
 %description
 Elastix Module System
@@ -126,6 +127,49 @@ fi
 %config(noreplace) /etc/dahdi/genconf_parameters
 
 %changelog
+* Thu Sep 22 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-7
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-4
+- FIXED: Hardware Detector: remove --smg parameter from 
+  wancfg_dahdi invocation. This allows recent wanpipe-utils
+  to configure Sangoma BRI cards as DAHDI cards, since wanpipe-3.5.23.
+  SVN Rev[2974]
+- ADDED:  System - Currency: Add new currency (Swiss Franc)
+  SVN Rev[2958]
+
+* Wed Sep 07 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-6
+- ADDED: In spec file, added conflicts elastix-agenda < 2.2.0-1
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-3
+- FIXED: system - dashboard: Links to access calendar events 
+  do not work, this bug was solved adding new variable into
+  the url like event_date. This changes require commit SVN[2955].
+  SVN Rev[2956]
+- CHANGED: module userlist, in view mode the asterisks and word
+  required were removed
+  SVN Rev[2946]
+- FIXED: modules - dashboard: fixed bug in applet Faxes from 
+  dashboard module the link to download a fax do not work.
+  SVN Rev[2943]
+- FIXED: module hardware_detector, the popup for configuration of
+  span and span parameters appeared on the top of the page. Now
+  these popups appear near to the link
+  SVN Rev[2932]
+
+* Fri Aug 26 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-5
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-2
+- FIXED: module dashboard, some iax trunks was not displayed on
+  applet communication activity, according to mantis bug #962
+  SVN Rev[2923]
+- FIXED: Hardware Detector: add relaxdtmf=yes as a default parameter
+  for chan_dahdi.conf . Required for proper Sangoma analog FXS support.
+  SVN Rev[2920]
+- CHANGED: module dashboard, added a validation in case the email
+  password is incorrect
+  SVN Rev[2919]
+- CHANGED: module dashboard, the ajax requests for applets data is
+  now done one by one, this increase the velocity when changes to
+  other tab
+  SVN Rev[2896]
+
 * Fri Aug 05 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-4
 - CHANGED: module dashboard, popup in applet telephony hardware
   was appering anywhere. Now it appears near to the applet

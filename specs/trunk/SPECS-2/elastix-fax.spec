@@ -2,15 +2,15 @@
 
 Summary: Elastix Module Fax
 Name:    elastix-%{modname}
-Version: 2.0.4
-Release: 7 
+Version: 2.2.0
+Release: 1 
 License: GPL
 Group:   Applications/System
 #Source0: %{modname}_%{version}-3.tgz
 Source0: %{modname}_%{version}-%{release}.tgz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
-Prereq: elastix >= 2.0.4-19
+Prereq: elastix >= 2.2.0-3
 Prereq: iaxmodem, hylafax
 
 %description
@@ -175,6 +175,16 @@ fi
 %config(noreplace) /var/spool/hylafax/etc/config
 
 %changelog
+* Fri Sep 09 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-1
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-3
+- CHANGED: module faxnew, in view mode the asterisks and word
+  required were removed
+  SVN Rev[2950]
+- FIXED: modules - fax: Slow down on Hylafax because a chmod -R 777
+  on a huge fax folder. For more details this bug:
+  http://bugs.elastix.org/view.php?id=971 
+  SVN Rev[2944]
+
 * Mon Jun 13 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-7
 - CHANGED: Modules - Trunk: The ereg function was replaced by 
   the preg_match function due to that the ereg function was 

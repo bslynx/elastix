@@ -2,15 +2,15 @@
 
 Summary: Elastix Module Reports 
 Name:    elastix-reports
-Version: 2.0.4
-Release: 15
+Version: 2.2.0
+Release: 3
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
 #Source0: %{modname}_%{version}-4.tgz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
-Prereq: elastix >= 2.0.4-29
+Prereq: elastix >= 2.2.0-4
 Prereq: asterisk
 
 %description
@@ -91,6 +91,28 @@ fi
 /usr/share/elastix/module_installer/*
 
 %changelog
+* Thu Sep 22 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-3
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-4
+- CHANGED: module graphic_report, deleted unnecessary asterisks
+  SVN Rev[2966]
+- CHANGED: module dest_distribution, deleted unnecessary asterisks
+  SVN Rev[2965]
+- CHANGED: module billing_report, deleted unnecessary asterisks
+  SVN Rev[2964]
+- CHANGED: module cdrreport, deleted unnecessary asterisks
+  SVN Rev[2963]
+
+* Fri Sep 09 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-2
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-3
+- CHANGED: module cdrreport, only administrators can delete CDRs
+  SVN Rev[2941]
+
+* Fri Aug 26 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-1
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-2
+- CHANGED: module cdrreport, if user does not have an extension
+  assigned, a message is showed
+  SVN Rev[2881]
+
 * Tue Jul 19 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-15
 - CHANGED: In spec file change prereq elastix >= 2.0.4-29
 - FIXED: Modules - cdrreport: Fixed bug where any user without 
