@@ -799,7 +799,7 @@ Respuesta:
   Sólo está presente si el agente está atendiendo una llamada. Contiene los
   siguientes elementos:
   * calltype: Valor de "outgoing" o "incoming"
-  * campaign_id: ID de la campaña correspondiente a la llamada, o NULL si la 
+  * campaign_id: ID de la campaña correspondiente a la llamada, o ausente si la 
     llamada entrante no pertenece a una campaña.
   * callid: ID de la llamada.
   * callnumber: Número telefónico marcado (llamada saliente) o Caller-ID (llamada
