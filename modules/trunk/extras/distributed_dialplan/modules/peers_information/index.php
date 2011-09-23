@@ -420,32 +420,31 @@ function reportPeersInformation($smarty, $module_name, $local_templates_dir, &$p
 
             $arrTmp[0] = "<input type='checkbox' name='peer_{$value['id']}'  />";
             $arrTmp[1] = $value['host'];
-            $arrTmp[2] = $value['mac'];
             if($value['status'] == "disconnected" || $value['status'] == "request accepted")
                 $linkToConnect = "<a href='?menu=$module_name&action=connect&peerId=".$value['id']."'>{$arrLang['Connect']}</a>";
             else
                  $linkToConnect = "";
             if($value['status'] == "Requesting connection")
-                 $arrTmp[3] = "<a href='?menu=$module_name&action=view&peerId=".$value['id']."&opcion=2'>$status</a>";
+                 $arrTmp[2] = "<a href='?menu=$module_name&action=view&peerId=".$value['id']."&opcion=2'>$status</a>";
             else if($value['status'] == "request accepted" || $value['status'] == "connect")
-                        $arrTmp[3] = "<span style='color:green;'>".$status."</span>";
+                        $arrTmp[2] = "<span style='color:green;'>".$status."</span>";
             else if($value['status'] == "waiting response" || $value['status'] == "request reject" || $value['status'] == "request delete")
-                       $arrTmp[3] = "<span style='color:red;'>".$status."</span>";
+                       $arrTmp[2] = "<span style='color:red;'>".$status."</span>";
             else
-                $arrTmp[3] = $status;
+                $arrTmp[2] = $status;
             if($value['status'] =="waiting response" || $value['status'] == "request reject" || $value['status'] == "request delete")
-                $arrTmp[5] = "";
+                $arrTmp[4] = "";
             else
-                       $arrTmp[5] = "<a href='?menu=$module_name&action=view&peerId=".$value['id']."&opcion=1'>{$arrLang['View']}</a>&nbsp;&nbsp;".$linkToConnect;
+                       $arrTmp[4] = "<a href='?menu=$module_name&action=view&peerId=".$value['id']."&opcion=1'>{$arrLang['View']}</a>&nbsp;&nbsp;".$linkToConnect;
                 if($value['status'] == "request accepted")
-                    $arrTmp[4] = "<span style='color:red;'>".$arrLang['disconnected']."</span>";
+                    $arrTmp[3] = "<span style='color:red;'>".$arrLang['disconnected']."</span>";
                 else{  if ($status == "disconnected" && $his_status == "disconnected")
-                            $arrTmp[4] = "<span style='color:red;'>".$arrLang['disconnected']."</span>";
+                            $arrTmp[3] = "<span style='color:red;'>".$arrLang['disconnected']."</span>";
                        else{ 
                             if($status == "disconnected" && $his_status == "waiting response")
-                                $arrTmp[4] = "<span style='color:red;'>".$arrLang['disconnected']."</span>";
+                                $arrTmp[3] = "<span style='color:red;'>".$arrLang['disconnected']."</span>";
                             else
-                                $arrTmp[4] = "<span style='color:red;'>".$his_status."</span>";
+                                $arrTmp[3] = "<span style='color:red;'>".$his_status."</span>";
                        }
                     }
             $arrData[] = $arrTmp;
@@ -466,13 +465,11 @@ function reportPeersInformation($smarty, $module_name, $local_templates_dir, &$p
                                                     "property1" => ""),
             1 => array("name"      => $arrLang["Remote Host Name"],
                                                     "property1" => ""),
-            2 => array("name"      => $arrLang["MAC Address"],
+            2 => array("name"      => $arrLang["Local Status"],
                                                     "property1" => ""),
-            3 => array("name"      => $arrLang["Local Status"],
+                        3 => array("name"      => $arrLang["Remote Status"],
                                                     "property1" => ""),
-                        4 => array("name"      => $arrLang["Remote Status"],
-                                                    "property1" => ""),
-            5 => array("name"      => $arrLang["Option"],
+            4 => array("name"      => $arrLang["Option"],
                                                     "property1" => ""),
                                         )
                     );
