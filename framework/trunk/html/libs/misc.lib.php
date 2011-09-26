@@ -463,6 +463,25 @@ function obtenerClaveConocidaMySQL($sNombreUsuario, $ruta_base='')
         break;
     }
     return NULL;
+};
+
+/**
+ * Función para obtener la clave AMI del usuario admin, obtenida del archivo /etc/elastix.conf
+ *
+ * @param   string  $ruta_base          Ruta base para inclusión de librerías
+ *
+ * @return  string   clave en plaintext de AMI del usuario admin
+ */
+
+function obtenerClaveAMIAdmin($ruta_base='')
+{
+    require_once $ruta_base.'libs/paloSantoConfig.class.php';
+    $pConfig = new paloConfig("/etc", "elastix.conf", "=", "[[:space:]]*=[[:space:]]*");
+    $listaParam = $pConfig->leer_configuracion(FALSE);
+    if(isset($listaParam["amiadminpwd"]))
+        return $listaParam["amiadminpwd"]['valor'];
+    else
+        return "elastix456";
 }
 
 /**
