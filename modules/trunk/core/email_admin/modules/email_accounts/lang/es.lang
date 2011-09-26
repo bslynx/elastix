@@ -72,6 +72,9 @@ $arrLangModule=array(
 "The following accounts could not be created" => "Las siguientes cuentas no pudieron ser creadas",
 "Quota must be greater than 0" => "La cuota debe ser mayor a 0",
 "The quota was reduced to the maximum of 5242880KB, if you want to more than this, edit this account" => "La cuota fue reducida al valor máximo de 5242880KB, si usted desea más que eso, edite esta cuenta",
-"Export Accounts" => "Exportar Cuentas"
+"Export Accounts" => "Exportar Cuentas",
+"The file could not be opened" => "El archivo no pudo ser abierto",
+"At least three parameters are needed" => "Por lo menos tres parámetros son necesarios",
+"Error saving the account" => "Error al guardar la cuenta"
 );
 ?>

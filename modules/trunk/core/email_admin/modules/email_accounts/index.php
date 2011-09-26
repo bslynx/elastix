@@ -271,6 +271,8 @@ function viewDetailAccount($smarty, $module_name, $local_templates_dir, &$pDB, $
 
 function saveAccount($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
 {
+    $domain = getParameter("domain_name");
+    $pEmail = new paloEmail($pDB);
     if(getParameter("option_create_account") && getParameter("option_create_account")=="by_file"){
 	if(isset($_FILES["file_accounts"])){
 	    if($_FILES["file_accounts"]["name"] != ""){
@@ -285,44 +287,59 @@ function saveAccount($smarty, $module_name, $local_templates_dir, &$pDB, $arrCon
 		    $smarty->assign("mb_message", $arrLang["Possible file upload attack. The file must end in .csv"]);
 		    return viewDetailAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
 		}
-		$file = file("/tmp/$_FILES[file_accounts][name]");
+		$handler = fopen("/tmp/$_FILES[file_accounts][name]","r");
 		$arrErrorAccounts = array();
 		$arrAccounts = array();
-		foreach($file as $account){
-		    $account = explode(",",$account);
-		    if(count($account) >= 3){
-			$_POST["address"] = $account[0];
-			$_POST["password1"] = $account[1];
-			$_POST["password2"] = $account[1];
-			$_POST["quota"] = (int)$account[2];
-			$quotaIsTooGreat = false;
-			if($_POST["quota"] > 5242880){
-			    $quotaIsTooGreat = true;
-			    $_POST["quota"] = 5242880;
-			}
-			if(saveOneAccount($smarty, $pDB, $arrLang, true)){
-			    if($quotaIsTooGreat)
-				$arrAccounts[] = $account[0]." ".$arrLang["The quota was reduced to the maximum of 5242880KB, if you want to more than this, edit this account"];
+		if($handler !== false){
+		    while(($data = fgetcsv($handler,10000)) !== false){
+			if(count($data) >= 3){
+			    $_POST["address"] = $data[0];
+			    $_POST["password1"] = $data[1];
+			    $_POST["password2"] = $data[1];
+			    $_POST["quota"] = (int)$data[2];
+			    $quotaIsTooGreat = false;
+			    if($_POST["quota"] > 5242880){
+				$quotaIsTooGreat = true;
+				$_POST["quota"] = 5242880;
+			    }
+			    $configPostfix2 = isPostfixToElastix2();// in misc.lib.php
+			    if($configPostfix2)
+				$username=$_POST['address'].'@'.$domain;
 			    else
-				$arrAccounts[] = $account[0];
+				$username=$_POST['address'].'.'.$domain;
+			    $arrAccount=$pEmail->getAccount($username);
+			    if (is_array($arrAccount) && count($arrAccount)>0 )
+				$arrErrorAccounts[] = $data[0]."@$domain : ".$arrLang["The e-mail address already exists"];
+			    else{
+				if(saveOneAccount($smarty, $pDB, $arrLang, true)){
+				    if($quotaIsTooGreat)
+					$arrAccounts[] = $data[0]."@$domain : ".$arrLang["The quota was reduced to the maximum of 5242880KB, if you want to more than this, edit this account"];
+				    else
+					$arrAccounts[] = $data[0]."@$domain";
+				}
+				else
+				    $arrErrorAccounts[] = $data[0]."@$domain : ".$arrLang["Error saving the account"];
+			    }
 			}
 			else
-			    $arrErrorAccounts[] = $account[0];
+			    $arrErrorAccounts[] = $data[0]."@$domain : ".$arrLang["At least three parameters are needed"];
 		    }
-		    else
-			$arrErrorAccounts[] = $account[0];
+		}
+		else{
+		    $smarty->assign("mb_title", $arrLang['ERROR'].":");
+		    $smarty->assign("mb_message", $arrLang["The file could not be opened"]);
+		    return viewDetailAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
 		}
 		$message = "";
-		$domain = getParameter("domain_name");
 		if(count($arrAccounts)>0){
 		    $message .= "<b>".$arrLang["The following accounts were created"].":</b><br />";
 		    foreach($arrAccounts as $account)
-			$message .= htmlentities($account."@$domain")."<br />";
+			$message .= htmlentities($account)."<br />";
 		}
 		if(count($arrErrorAccounts)>0){
 		    $message .= "<b>".$arrLang["The following accounts could not be created"].":</b><br />";
 		    foreach($arrErrorAccounts as $errAccounts)
-			$message .= htmlentities($errAccounts."@$domain")."<br />";
+			$message .= $errAccounts."<br />";
 		}
 		$smarty->assign("mb_message",$message);
 		unlink("/tmp/$_FILES[file_accounts][name]");
