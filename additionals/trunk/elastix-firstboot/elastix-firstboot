@@ -212,6 +212,8 @@ This screen will now ask for a password for user 'admin' that will be used for: 
 	FREEPBX_PASSWD_ESC=`echo $FREEPBX_PASSWD1 | sed "s/&/\\\\\\&/g"`
 	cat /etc/amportal.conf | sed "s/AMPDBPASS=eLaStIx.asteriskuser.2oo7/AMPDBPASS=$FREEPBX_PASSWD_ESC/" > /tmp/amportal.conf.tmp
 	mv /tmp/amportal.conf.tmp /etc/amportal.conf
+        cat /etc/amportal.conf | sed "s/AMPMGRPASS=elastix456/AMPMGRPASS=$FREEPBX_PASSWD_ESC/" > /tmp/amportal.conf.tmp
+        mv /tmp/amportal.conf.tmp /etc/amportal.conf
 	cat /etc/amportal.conf | sed "s/FOPPASSWORD=eLaStIx.2oo7/FOPPASSWORD=$FREEPBX_PASSWD_ESC/" > /tmp/amportal.conf.tmp
 	mv /tmp/amportal.conf.tmp /etc/amportal.conf
 	cat /etc/amportal.conf | sed "s/ARI_ADMIN_PASSWORD=ari_password/ARI_ADMIN_PASSWORD=$FREEPBX_PASSWD_ESC/" > /tmp/amportal.conf.tmp
@@ -222,10 +224,15 @@ This screen will now ask for a password for user 'admin' that will be used for: 
 	mv /tmp/cbmysql.conf.tmp /etc/asterisk/cbmysql.conf
 	cat /etc/asterisk/cdr_mysql.conf | sed "s/password = eLaStIx.asteriskuser.2oo7/password = $FREEPBX_PASSWD_ESC/" > /tmp/cdr_mysql.conf.tmp
 	mv /tmp/cdr_mysql.conf.tmp /etc/asterisk/cdr_mysql.conf
+        cat /etc/asterisk/manager.conf | sed "s/secret = elastix456/secret = $FREEPBX_PASSWD_ESC/" > /tmp/manager.conf.tmp
+        mv /tmp/manager.conf.tmp /etc/asterisk/manager.conf
 	for i in /etc/amportal.conf /etc/asterisk/res_mysql.conf /etc/asterisk/cbmysql.conf /etc/asterisk/cdr_mysql.conf ; do
 	    chown asterisk.asterisk $i
 	    chmod 644 $i
 	done
+
+        # Set amiadminpwd in /etc/elastix.conf
+        echo "amiadminpwd=$FREEPBX_PASSWD_ESC" >> $PASSWD_PATH
 
 	# Set password for Elastix login. Requires sed, md5sum, sqlite3.
 	MD5HASH=`echo -n "$FREEPBX_PASSWD1" | md5sum | sed 's/^\(.\{32\}\)  -/\1/'`
