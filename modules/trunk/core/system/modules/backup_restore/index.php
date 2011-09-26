@@ -1178,7 +1178,7 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
                     $arrAST  = $pConfig->leer_configuracion(false);
 
                     $pEX = new paloSantoLoadExtension($pDB);
-                    $data_connection = array('host' => "127.0.0.1", 'user' => "admin", 'password' => "elastix456");
+                    $data_connection = array('host' => "127.0.0.1", 'user' => "admin", 'password' => obtenerClaveAMIAdmin());
                     $pEX->do_reloadAll($data_connection, $arrAST, $arrAMP);
                 }
             }

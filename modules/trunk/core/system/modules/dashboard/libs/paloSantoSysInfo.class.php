@@ -613,7 +613,7 @@ class paloSantoSysInfo
         $salida = array();
         $astman = new AGI_AsteriskManager();
 
-        if (!$astman->connect("127.0.0.1", "admin" , "elastix456")) {
+        if (!$astman->connect("127.0.0.1", "admin" , obtenerClaveAMIAdmin())) {
             $this->errMsg = $arrLang["Error when connecting to Asterisk Manager"];
         } else{
             $salida = $astman->send_request('Command', array('Command'=>"$command_data"));

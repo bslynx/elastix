@@ -356,7 +356,7 @@ class paloSantoLoadExtension {
     function databaseCallWaiting()
     {
         $astman = new AGI_AsteriskManager();
-        if (!$astman->connect("127.0.0.1", 'admin' , 'elastix456'))
+        if (!$astman->connect("127.0.0.1", 'admin' , obtenerClaveAMIAdmin()))
             $this->errMsg = "Error connect AGI_AsteriskManager";
         else{
             $salida = $astman->command("database show CW");
@@ -372,7 +372,7 @@ class paloSantoLoadExtension {
     {
         $callwaiting = trim(strtolower($callwaiting));
         $astman = new AGI_AsteriskManager();
-        if (!$astman->connect("127.0.0.1", 'admin' , 'elastix456'))
+        if (!$astman->connect("127.0.0.1", 'admin' , obtenerClaveAMIAdmin()))
             $this->errMsg = "Error connect AGI_AsteriskManager";
 
         if (eregi("^enable", $callwaiting)) {

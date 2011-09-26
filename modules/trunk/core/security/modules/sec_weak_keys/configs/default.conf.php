@@ -36,5 +36,5 @@
     $arrConfModule['dsn_conn_database'] = '';
     $arrConfModule['AMI_HOST'] = "127.0.0.1";
     $arrConfModule['AMI_USER'] = "admin";
-    $arrConfModule['AMI_PASS'] = "elastix456";
+    $arrConfModule['AMI_PASS'] = obtenerClaveAMIAdmin();
 ?>

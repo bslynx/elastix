@@ -116,7 +116,7 @@ function delete_all_extention(&$smarty, $module_name, $local_templates_dir, $arr
     $oPalo = new paloSantoLoadExtension($pDB);
     $arrSipExtension = array();
 
-    $data_connection = array('host' => "127.0.0.1", 'user' => "admin", 'password' => "elastix456");
+    $data_connection = array('host' => "127.0.0.1", 'user' => "admin", 'password' => obtenerClaveAMIAdmin());
     $arrData = $oPalo->getExtensions();
     foreach($arrData as $key => $value)
       $arrExtension[] = $value;
@@ -181,7 +181,7 @@ function load_extension($smarty, $module_name, $local_templates_dir, $arrLang, $
 function load_extension_from_csv($smarty, $arrLang, $ruta_archivo, $base_dir, $pDB, $arrAST, $arrAMP){
     $Messages = "";
     $arrayColumnas = array();
-    $data_connection = array('host' => "127.0.0.1", 'user' => "admin", 'password' => "elastix456");
+    $data_connection = array('host' => "127.0.0.1", 'user' => "admin", 'password' => obtenerClaveAMIAdmin());
 
     $result = isValidCSV($arrLang, $ruta_archivo, $arrayColumnas);
     if($result != "valided"){

@@ -36,7 +36,7 @@ $cadena_dsn = "mysql://asterisk:asterisk@localhost/call_center";
 
 $acceso_asterisk['ip']="127.0.0.1";
 $acceso_asterisk['user']="admin";
-$acceso_asterisk['pass']="elastix456";
+$acceso_asterisk['pass']=obtenerClaveAMIAdmin();
 
 $acceso_asterisk['ext_parqueo']="70";
 $acceso_asterisk['hardware']="SIP|IAX2|ZAP|H323|OH323";

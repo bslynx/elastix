@@ -140,8 +140,8 @@ class paloSantoMyExtension {
     {
         $astman = new AGI_AsteriskManager();
         $return = false;
-
-        if(!$astman->connect("127.0.0.1", 'admin' , 'elastix456')){
+      
+        if(!$astman->connect("127.0.0.1", 'admin' , obtenerClaveAMIAdmin())){
             $this->errMsg = "Error connect AGI_AsteriskManager";
             $return = false;
         }

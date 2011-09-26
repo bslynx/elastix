@@ -451,7 +451,7 @@ class paloSantoCalendar {
         global $arrLang;
         $astman_host = "127.0.0.1";
         $astman_user = 'admin';
-        $astman_pwrd = "elastix456";
+        $astman_pwrd = obtenerClaveAMIAdmin();
 
         $astman = new AGI_AsteriskManager();
 
