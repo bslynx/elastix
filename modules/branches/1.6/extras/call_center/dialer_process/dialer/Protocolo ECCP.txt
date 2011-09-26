@@ -762,6 +762,57 @@ Respuesta:
 </response>
 (y conexión TCP se cierra)
 
+Requerimiento "filterbyagent"
+
+Este requerimiento sirve para indicar al servidor ECCP que el cliente sólo está
+interesado en los eventos del agente indicado en la petición, y que los eventos
+asociados a otros agentes no deben ser enviados a esta sesión. De esta manera
+el cliente no debe de recibir eventos que no le interesa procesar, por ser de
+agentes distintos al que es representado por el cliente. Este filtrado afecta
+únicamente a los eventos - cualquier requerimiento que haga referencia a otro
+agente será contestado correctamente, incluso luego de aplicar el filtro. El
+filtro es local para la sesión activa - otras sesiones simultáneas con otros
+clientes no se ven afectadas.
+
+Atributos o argumentos:
+* agent_number: Agente que se filtra. Este identificador está de la forma 
+  'Agent/9000'. También se puede especificar la palabra 'any' para deshacer el
+  filtro y volver a escuchar eventos de todos los agentes.
+
+Ejemplo:
+Para recibir eventos del agente 9000 únicamente:
+<request id="4">
+    <filterbyagent>
+        <agent_number>Agent/9000</agent_number>
+    </filterbyagent>
+</request>
+
+Para recibir otra vez eventos de todos los agentes:
+<request id="4">
+    <filterbyagent>
+        <agent_number>any</agent_number>
+    </filterbyagent>
+</request>
+
+Respuesta:
+En caso de éxito:
+<response id="1000">
+    <filterbyagent>
+        <success/>
+    </filterbyagent>
+</response>
+
+En caso de agente en formato no reconocido:
+<response id="1">
+    <filterbyagent>
+        <failure>
+            <code>417</code>
+            <message>Invalid agent number</message>
+        </failure>
+    </filterbyagent>
+</response>
+
+
 Requerimiento "getagentstatus"
 
 El requerimiento "getagentstatus" informa el estado actual de disponibilidad del

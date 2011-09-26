@@ -47,6 +47,9 @@ class XMLDialerConn extends DialerConn
     private $_sAppCookie = NULL;    // Cadena a usar como cookie de la aplicación
     private $_bFinalizando = FALSE;
 
+    // Si != NULL, eventos sólo se despachan si el agente coincide con este valor
+    private $_sAgenteFiltrado = NULL;
+
     function XMLDialerConn($oMainLog)
     {
     	$this->oMainLog = $oMainLog;
@@ -232,6 +235,9 @@ class XMLDialerConn extends DialerConn
                 case 'schedulecall':
                     $response = $this->Request_ScheduleCall($comando);
                     break;
+                case 'filterbyagent':
+                    $response = $this->Request_FilterByAgent($comando);
+                    break;
 /*
                 case 'getcallstatus':
                     $response = $this->Request_GetCallStatus($comando);
@@ -360,7 +366,8 @@ class XMLDialerConn extends DialerConn
         foreach (array('getrequestlist', 'login', 'logout', 'loginagent', 'logoutagent', 
             'getagentstatus', 'getcampaignstatus', 'hangup', 'hold', 'unhold', 
             'transfercall', 'getcampaigninfo', 'getcallinfo', 'saveformdata', 
-            'pauseagent', 'unpauseagent', 'getpauses', 'setcontact', 'schedulecall') 
+            'pauseagent', 'unpauseagent', 'getpauses', 'setcontact', 'schedulecall',
+            'filterbyagent') 
             as $sReqName)
             $xml_requests->addChild('request', $sReqName);
 
@@ -2136,6 +2143,30 @@ LEER_CAMPANIA;
         return $xml_response;
     }
 
+    private function Request_FilterByAgent($comando)
+    {
+        // Verificar que agente está presente
+        if (!isset($comando->agent_number)) 
+            return $this->_generarRespuestaFallo(400, 'Bad request');
+        $sAgente = (string)$comando->agent_number;
+
+        $xml_response = new SimpleXMLElement('<response />');
+        $xml_filterbyagentResponse = $xml_response->addChild('filterbyagent_response');
+
+        // El siguiente código asume formato Agent/9000
+        if ($sAgente == 'any') {
+        	$sAgente = NULL;
+        } elseif (!preg_match('|^Agent/(\d+)$|', $sAgente, $regs)) {
+            $this->_agregarRespuestaFallo($xml_filterbyagentResponse, 417, 'Invalid agent number');
+            return $xml_response;
+        }
+        
+        $this->_sAgenteFiltrado = $sAgente;
+        $xml_filterbyagentResponse->addChild('success');
+
+        return $xml_response;
+    }
+
 /*    
     private function Request_GetCallStatus($comando)
     {
@@ -2149,6 +2180,8 @@ LEER_CAMPANIA;
     function notificarEvento_AgentLogin($sAgente, $listaColas, $bExitoLogin)
     {
         if (is_null($this->_sUsuarioECCP)) return;
+        if (!is_null($this->_sAgenteFiltrado) && $this->_sAgenteFiltrado != $sAgente) return;
+
         $xml_response = new SimpleXMLElement('<event />');
         $xml_agentLoggedIn = $bExitoLogin 
             ? $xml_response->addChild('agentloggedin')
@@ -2170,6 +2203,8 @@ LEER_CAMPANIA;
     function notificarEvento_AgentLogoff($sAgente, $listaColas)
     {
         if (is_null($this->_sUsuarioECCP)) return;
+        if (!is_null($this->_sAgenteFiltrado) && $this->_sAgenteFiltrado != $sAgente) return;
+
         $xml_response = new SimpleXMLElement('<event />');
         $xml_agentLoggedIn = $xml_response->addChild('agentloggedout');
         $xml_agentLoggedIn->addChild('agent', str_replace('&', '&amp;', $sAgente));
@@ -2187,6 +2222,7 @@ LEER_CAMPANIA;
     function notificarEvento_AgentLinked($sAgente, $sRemChannel, $infoLlamada)
     {
         if (is_null($this->_sUsuarioECCP)) return;
+        if (!is_null($this->_sAgenteFiltrado) && $this->_sAgenteFiltrado != $sAgente) return;
 
         $xml_response = new SimpleXMLElement('<event />');
         $xml_agentLinked = $xml_response->addChild('agentlinked');
@@ -2201,6 +2237,7 @@ LEER_CAMPANIA;
     function notificarEvento_AgentUnlinked($sAgente, $infoLlamada)
     {
         if (is_null($this->_sUsuarioECCP)) return;
+        if (!is_null($this->_sAgenteFiltrado) && $this->_sAgenteFiltrado != $sAgente) return;
 
         $xml_response = new SimpleXMLElement('<event />');
         $xml_agentLinked = $xml_response->addChild('agentunlinked');

@@ -1,3 +1,4 @@
+* Dialer (ECCP): implement "filterbyagent" request
 * Dialer (ECCP): Added the following fields to response for "getagentstatus" 
   request: onhold pauseinfo remote_channel callinfo . 
 * Login Logout: fix time format representation for time in calls.
