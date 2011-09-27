@@ -1,3 +1,4 @@
+* Dialer (ECCP): implement "getqueuescript" request
 * Dialer (ECCP): the "getcampaigninfo" request has been extended to return 
   additional form attributes "name" and "description" in the <form> tag.
 * Dialer (ECCP): implement "filterbyagent" request

@@ -1020,6 +1020,47 @@ En caso de que el agente no existe:
     </logoutagent_response>
 </response>
 
+
+Requerimiento "getqueuescript"
+
+Este requerimiento recupera el texto asociado a una cola de campaña entrante. 
+Este texto es el que debe mostrarse al agente cuando se recibe una llamada
+entrante en una cola monitoreada, y no existe una campaña entrante creada que
+use la cola en cuestión. Si existe una campaña entrante, debe usarse su texto
+asociado en lugar del que se recupera con este requerimiento.
+
+Atributos o argumentos:
+* queue: Número de la cola para el que se recupera el script.
+
+Respuesta:
+* script: Texto libre que debe de presentarse en la interfaz gráfica del agente.
+
+Ejemplo:
+<request id="6">
+    <getqueuescript>
+        <queue>8001</queue>
+    </getqueuescript>
+</request>
+
+Respuesta:
+En caso de éxito:
+<response id="6">
+    <getqueuescript_response>
+        <script>Texto a mostrar al agente.</script>
+    </getqueuescript_response>
+</response>
+
+En caso de cola incorrecta:
+<response id="6">
+    <getqueuescript_response>
+        <failure>
+            <code>404</code>
+            <message>Queue not found in incoming queues</message>
+        </failure>
+    </getqueuescript_response>
+</response>
+
+
 Requerimiento "getcampaigninfo"
 
 Este requerimiento recupera información estática sobre la campaña. Por 

@@ -238,6 +238,9 @@ class XMLDialerConn extends DialerConn
                 case 'filterbyagent':
                     $response = $this->Request_FilterByAgent($comando);
                     break;
+                case 'getqueuescript':
+                    $response = $this->Request_GetQueueScript($comando);
+                    break;
 /*
                 case 'getcallstatus':
                     $response = $this->Request_GetCallStatus($comando);
@@ -367,7 +370,7 @@ class XMLDialerConn extends DialerConn
             'getagentstatus', 'getcampaignstatus', 'hangup', 'hold', 'unhold', 
             'transfercall', 'getcampaigninfo', 'getcallinfo', 'saveformdata', 
             'pauseagent', 'unpauseagent', 'getpauses', 'setcontact', 'schedulecall',
-            'filterbyagent') 
+            'filterbyagent', 'getqueuescript') 
             as $sReqName)
             $xml_requests->addChild('request', $sReqName);
 
@@ -930,7 +933,37 @@ LISTA_EXTENSIONES;
         }
         return $xml_response;
     }
-    
+
+    private function Request_GetQueueScript($comando)
+    {
+        if (is_null($this->_sUsuarioECCP))
+            return $this->_generarRespuestaFallo(401, 'Unauthorized');
+
+        // Verificar que queue está presente
+        if (!isset($comando->queue)) 
+            return $this->_generarRespuestaFallo(400, 'Bad request');
+        $queue = (int)$comando->queue;
+        
+        $xml_response = new SimpleXMLElement('<response />');
+        $xml_GetQueueScriptResponse = $xml_response->addChild('getqueuescript_response');
+        
+        // Leer la información del script de la cola. El ORDER BY estatus hace
+        // que se devuelva A y luego I.
+        $queueScript = $this->_dbConn->getOne(
+            'SELECT script FROM queue_call_entry '.
+            'WHERE queue = ? ORDER BY estatus LIMIT 0,1', 
+            array($queue));
+        if (DB::isError($queueScript)) {
+            $this->_agregarRespuestaFallo($xml_GetQueueScriptResponse, 500, 'Cannot read campaign info');
+        	return $xml_response;
+        } elseif (is_null($queueScript)) {
+            $this->_agregarRespuestaFallo($xml_GetQueueScriptResponse, 404, 'Queue not found in incoming queues');
+            return $xml_response;
+        }
+        $xml_GetQueueScriptResponse->addChild('script', str_replace('&', '&amp;', $queueScript));        
+        return $xml_response;
+    }
+
     /**
      * Procedimiento que implementa la lectura de la información estática de 
      * una campaña entrante o saliente. Por información estática se entiende la
@@ -1159,7 +1192,7 @@ LEER_CAMPANIA;
                 $listaForm[$idForm] = array(
                     'name'          =>  $r['nombre'],
                     'description'   =>  $r['descripcion'],
-                    'status'        =>  $r['status'],
+                    'status'        =>  $r['estatus'],
                 );
                 foreach ($r as $tuplaCampo)
                     $listaForm[$idForm][$tuplaCampo['id']] = $tuplaCampo;
