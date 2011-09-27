@@ -3,7 +3,7 @@
 Summary: Elastix Call Center 
 Name:    elastix-callcenter
 Version: 2.0.0
-Release: 16
+Release: 17
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
@@ -92,6 +92,30 @@ fi
 /etc/logrotate.d/elastixdialer
 
 %changelog
+* Tue Sep 27 2011 Alberto Santos <asantos@palosanto.com> 2.0.0-17
+- CHANGED: module agent_console, verify if function "obtenerClaveAMIAdmin" 
+  exists, if not the password is set with "elastix456"
+  SVN Rev[2997]
+- CHANGED: changed the password "elastix456" of AMI to the password set
+  in /etc/elastix.conf
+  SVN Rev[2995]
+- ADDED: Dialer (ECCP): implement "filterbyagent" request
+  SVN Rev[2990]
+- CHANGED: Dialer(ECCP): fix inaccuracy in getagentstatus documentation.
+  SVN Rev[2988]
+- CHANGED: Dialer (ECCP): Added the following fields to response for 
+  "getagentstatus" request: onhold pauseinfo remote_channel callinfo
+  SVN Rev[2986]
+- FIXED: Login Logout: fix time format representation for time in calls.
+  Should address part of Elastix bug #705.
+  SVN Rev[2982]
+- FIXED: Dialer (ECCP): fixed bug that prevented the hold/schedulecall/transfercall
+  requirements from working after agent entered a pause while still connected to a call.
+  SVN Rev[2975]
+- FIXED: Call Center: check that the last line of context file actually ends
+  with a newline. Otherwise start boundary of callcenter contexts will not be detected.
+  SVN Rev[2973]
+
 * Tue Sep 13 2011 Alex Villacis Lasso <a_villacis@palosanto.com> 2.0.0-16
 - Updated version, synchronized with CallCenter 1.5-4.2 (SVN revision 2972)
 - From CHANGELOG:
