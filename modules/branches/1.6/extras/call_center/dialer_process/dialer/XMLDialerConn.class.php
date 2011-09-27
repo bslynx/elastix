@@ -1278,7 +1278,7 @@ LEER_CAMPANIA;
             return $this->_generarRespuestaFallo(400, 'Bad request');
 
         // El ID de campaña es opcional para campañas entrantes
-        if (!isset($comando->campaign_id) && $sTipoCampania == 'incoming') 
+        if (!isset($comando->campaign_id) && $sTipoCampania == 'outgoing') 
             return $this->_generarRespuestaFallo(400, 'Bad request');
         $idCampania = isset($comando->campaign_id) ? (int)$comando->campaign_id : NULL; 
 
