@@ -1026,6 +1026,11 @@ LEER_CAMPANIA;
             $this->_agregarRespuestaFallo($xml_GetCampaignInfoResponse, 500, 'Cannot read campaign info (formfields)');
             return $xml_response;
         }
+        $listaNombresForm = $this->_leerInfoFormulario($idxForm);
+        if (is_null($listaNombresForm)) {
+            $this->_agregarRespuestaFallo($xml_GetCampaignInfoResponse, 500, 'Cannot read campaign info (formnames)');
+            return $xml_response;
+        }
 
         // Construir la respuesta con la información del campo
         $descEstados = array(
@@ -1059,7 +1064,7 @@ LEER_CAMPANIA;
         // Construir la información de los formularios
         $xml_Forms = $xml_GetCampaignInfoResponse->addChild('forms');
         foreach ($listaForm as $idForm => $listaCampos) {
-        	$this->_agregarCamposFormulario($xml_Forms, $idForm, $listaCampos);
+        	$this->_agregarCamposFormulario($xml_Forms, $idForm, $listaCampos, $listaNombresForm[$idForm]);
         }
 
         return $xml_response;
@@ -1099,6 +1104,11 @@ LEER_CAMPANIA;
             $this->_agregarRespuestaFallo($xml_GetCampaignInfoResponse, 500, 'Cannot read campaign info (formfields)');
             return $xml_response;
         }
+        $listaNombresForm = $this->_leerInfoFormulario($idxForm);
+        if (is_null($listaNombresForm)) {
+            $this->_agregarRespuestaFallo($xml_GetCampaignInfoResponse, 500, 'Cannot read campaign info (formnames)');
+            return $xml_response;
+        }
 
         // Construir la respuesta con la información del campo
         $descEstados = array(
@@ -1128,10 +1138,34 @@ LEER_CAMPANIA;
         // Construir la información de los formularios
         $xml_Forms = $xml_GetCampaignInfoResponse->addChild('forms');
         foreach ($listaForm as $idForm => $listaCampos) {
-            $this->_agregarCamposFormulario($xml_Forms, $idForm, $listaCampos);
+            $this->_agregarCamposFormulario($xml_Forms, $idForm, $listaCampos, $listaNombresForm[$idForm]);
         }
 
         return $xml_response;
+    }
+    
+    private function _leerInfoFormulario($idxForm)
+    {
+    	$listaForm = array();
+        foreach ($idxForm as $idForm) {
+            $r = $this->_dbConn->getRow(
+                'SELECT id, nombre, descripcion, estatus FROM form WHERE id = ?',
+                array($idForm), DB_FETCHMODE_ASSOC);
+            if (DB::isError($r)) {
+                $this->oMainLog->output("ERR: no se puede leer información de la campaña (nombre) - ".
+                    $r->getMessage());
+                return NULL;
+            } elseif (count($r) > 0) {
+                $listaForm[$idForm] = array(
+                    'name'          =>  $r['nombre'],
+                    'description'   =>  $r['descripcion'],
+                    'status'        =>  $r['status'],
+                );
+                foreach ($r as $tuplaCampo)
+                    $listaForm[$idForm][$tuplaCampo['id']] = $tuplaCampo;
+            }
+        }
+        return $listaForm;
     }
     
     private function _leerCamposFormulario($idxForm)
@@ -1155,10 +1189,13 @@ LEER_CAMPANIA;
         return $listaForm;
     }
     
-    private function _agregarCamposFormulario(&$xml_GetCampaignInfoResponse, $idForm, &$listaCampos)
+    private function _agregarCamposFormulario(&$xml_GetCampaignInfoResponse, $idForm, &$listaCampos, &$nombresForm)
     {
         $xml_Form = $xml_GetCampaignInfoResponse->addChild('form');
         $xml_Form->addAttribute('id', $idForm);
+        $xml_Form->addAttribute('name', $nombresForm['name']);
+        $xml_Form->addAttribute('description', $nombresForm['description']);
+        $xml_Form->addAttribute('status', $nombresForm['status']);
         foreach ($listaCampos as $tuplaCampo) {
             $xml_Field = $xml_Form->addChild('field');
             $xml_Field->addAttribute('order', $tuplaCampo['order']);

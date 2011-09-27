@@ -1053,7 +1053,9 @@ Respuesta:
   * form: Elemento presente una o más veces. Representa un formulario que se puede
     usar para recoger información sobre las llamadas asociadas a la campaña. El
     elemento tiene los siguientes atributos:
-    * id: ID de la base de datos para el formulario. 
+    * id: ID de la base de datos para el formulario.
+    * name: Nombre corto del formulario
+    * description: Descripción larga del formulario 
     Además, el elemento contiene uno o más elementos:
     * field: Campo de entrada de información para este formulario. 
     Cada elemento field tiene los siguientes atributos:
@@ -1096,7 +1098,7 @@ Campaña saliente:
         <status>inactive</status>
         <script>Prueba ...</script>
         <forms>
-            <form id="1">
+            <form id="1" name="Prueba" description="Formulario de prueba">
                 <field order="1" id="1">
                     <label>CampoDeTexto</label>
                     <type>TEXT</type>

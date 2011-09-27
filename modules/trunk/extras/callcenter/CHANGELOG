@@ -1,5 +1,9 @@
-* CHANGED: module agent_console, verify if function "obtenerClaveAMIAdmin"        exists, if not the password is set with "elastix456"
-* CHANGED: changed the password "elastix456" of AMI to the password set in        /etc/elastix.conf
+* Dialer (ECCP): the "getcampaigninfo" request has been extended to return 
+  additional form attributes "name" and "description" in the <form> tag.
+* CHANGED: module agent_console, verify if function "obtenerClaveAMIAdmin" 
+  exists, if not the password is set with "elastix456"
+* CHANGED: changed the password "elastix456" of AMI to the password set in 
+  /etc/elastix.conf
 * Dialer (ECCP): implement "filterbyagent" request
 * Dialer (ECCP): Added the following fields to response for "getagentstatus" 
   request: onhold pauseinfo remote_channel callinfo . 
