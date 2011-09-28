@@ -257,8 +257,10 @@ function load_extension_from_csv($smarty, $arrLang, $ruta_archivo, $base_dir, $p
                 }
                 ////////////////////////////////////////////////////////////////////////
                 //Paso 7: Escribiendo en tabla incoming
-                if(!$pLoadExtension->createDirect_DID($Ext,$Direct_DID))
-                    $Messages .= "Ext: $Ext - ". $arrLang["Error to insert or update Direct DID"]."<br />";
+		if($Direct_DID !== ""){
+		    if(!$pLoadExtension->createDirect_DID($Ext,$Direct_DID))
+			$Messages .= "Ext: $Ext - ". $arrLang["Error to insert or update Direct DID"]."<br />";
+		}
                 /////////////////////////////////////////////////////////////////////////
             }
         }
