@@ -207,7 +207,7 @@ function verifyFileContent($pDB, &$errorMsg, $arrLang,$oMenu,$oACL)
                         if (!$oMenu->existeMenu($menuid))
                         {
                             $esModulo = $menuitem['module'];
-                            $arrNewMenu[] = array("menuid"=>$menuid, "tag"=>$menuitem['desc'], "module"=>$esModulo, "parent"=>$menuitem['parent']);
+                            $arrNewMenu[] = array("menuid"=>$menuid, "tag"=>$menuitem['desc'], "module"=>$esModulo, "parent"=>$menuitem['parent'], "order"=>$menuitem['order']);
                             if($esModulo == "yes")
                             {
                                 //verificar que exista una carpeta con ese nombre de menu
