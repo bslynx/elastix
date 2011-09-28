@@ -44,7 +44,7 @@ $arrLangModule=array(
 "steps" => "Usted deberia copia la clave secreta y pegarla en (Información de Peers - Nueva Conexión)",
 "sucessful_send" => "Mensaje enviado correctamente",
 "Message cannot be sent. Try again" => "Mensaje no pudo ser enviado. Por favor intente de nuevo",
-"I send you my 'secret connection', now you can send the request to share the dial plan." => "Te envio mi 'clave de conexión' ahora usted realizar una petición de conexión para compartir el plan de marcado.",
+"I send you my 'secret connection', now you can send the request to share the dial plan." => "Le envío la Clave de mi servidor Elastix necesaria para empezar a compartir el plan de marcado. Use esta Clave cuando me envíe la solicitud de conexión.",
 "Please first fill the form in <a href='?menu=general_information'>General Information</a>" => "Por favor primero llene el formulario en <a href='?menu=general_information'>Información General</a>",
 );
 ?>
