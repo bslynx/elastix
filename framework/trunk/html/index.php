@@ -136,7 +136,7 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
         //Una vez q exista en la session solo se lo sacara de ahi y no se vovera a consultar a la base.
         $_SESSION['elastix_user_permission']= $arrMenuFiltered;
     }
-
+    verifyTemplate_vm_email(); // para cambiar el template del email ue se envia al recibir un voicemail
     $arrMenuFiltered = $_SESSION['elastix_user_permission'];
 
     //traducir el menu al idioma correspondiente
