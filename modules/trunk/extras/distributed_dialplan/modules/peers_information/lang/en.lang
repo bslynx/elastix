@@ -29,7 +29,7 @@
 global $arrLangModule;
 $arrLangModule=array(
 "Connection Request" => "Connection Request",
-"Host Remote" => "Host Remote",
+"Host Remote" => "Remote Server",
 "Peers Information" => "Peers Information",
 "Delete" => "Delete",
 "Host Name" => "Host Name",
@@ -86,10 +86,10 @@ $arrLangModule=array(
 "disconnected" => "disconnected",
 "connection deleted" => "connection deleted",
 "connection rejected" => "connection rejected",
-"Secret" => "Remote Host Secret Keyword",
+"Secret" => "Remote Server's Key",
 "Error" => "Error",
 "Secret incorrect" => "Secret incorrect. Please try again to write the correct secret keyword",
-"Remote Host Name" => "Remote Host Name",
+"Remote Host Name" => "Remote Server",
 "Error trying to delete peer:" => "Error trying to delete peer:",
 "Error trying to delete parameter in database:" => "Error trying to delete parameter in database:",
 "Error trying to do a reject to:" => "Error trying to do a reject to:",
