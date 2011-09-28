@@ -170,7 +170,7 @@ function createFieldFilter(){
             "filter_value" => array("LABEL"                  => "",
                                     "REQUIRED"               => "no",
                                     "INPUT_TYPE"             => "TEXT",
-                                    "INPUT_EXTRA_PARAM"      => "",
+                                    "INPUT_EXTRA_PARAM"      => array("id" => "filter_value"),
                                     "VALIDATION_TYPE"        => "text",
                                     "VALIDATION_EXTRA_PARAM" => ""),
                     );
