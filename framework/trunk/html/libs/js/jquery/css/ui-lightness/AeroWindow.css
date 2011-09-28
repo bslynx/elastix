@@ -69,7 +69,7 @@ AeroWindow Style - Active
 .AeroWindow.active {
   position: absolute;
   background: url(WindowsAeroStyle/active/lines.png) 0px -400px;
-  z-index: 100;
+  z-index: 200;
 }
 .AeroWindow.active .table-tl {
   background: url(WindowsAeroStyle/active/tl.png);
