@@ -14,6 +14,9 @@
         <b>Description:</b>&nbsp;{$DESCRIPCION_PAQUETE|escape}
 		<input style='display:none;' class='{$PAQUETE_RPM}' value='{$PAQUETE_NOMBRE}|{$PAQUETE_RPM}|{$PAQUETE_VERSION}|{$PAQUETE_RELEASE}' />
     </div>
+    <div  class="contentStyle">
+	<b>Location:</b>&nbsp;{$LOCATION|escape}
+    </div>
     <input type="hidden" id="{$PAQUETE_RPM}_link" value="{$URL_BUY}"/>
 </div>
 

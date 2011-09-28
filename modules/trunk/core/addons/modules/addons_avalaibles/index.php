@@ -376,6 +376,7 @@ function reportAvailables($smarty, $module_name, $local_templates_dir, &$pDB, $a
 		    'ETIQUETA_DOWNLOADING'  =>  $arrLang['downloading'],
 		    'URL_IMAGEN_PAQUETE'    =>  "$arrConf[url_images]/$value[name_rpm].jpeg",
 		    'DESCRIPCION_PAQUETE'   =>  $value['description'],
+		    'LOCATION'		    =>  $value['location'],
 		    'PAQUETE_RPM'           =>  $value['name_rpm'],
 		    'PAQUETE_NOMBRE'        =>  $value['name'],
 		    'PAQUETE_VERSION'       =>  $value['version'],
@@ -406,7 +407,7 @@ function reportAvailables($smarty, $module_name, $local_templates_dir, &$pDB, $a
 
 		$smarty->assign("ACTION_INSTALL", $button);
 
-		$imgPack   = "<div style='float: left; width: 177px; height: 95px; text-align: center;'>".$smarty->fetch("$local_templates_dir/imagen_paquete.tpl")."</div>";
+		$imgPack   = "<div style='float: left; width: 177px; height: 126px; text-align: center;'>".$smarty->fetch("$local_templates_dir/imagen_paquete.tpl")."</div>";
 		$infoPack  = "<div style='width: 93%'>".$smarty->fetch("$local_templates_dir/info_paquete.tpl")."</div>";
 
 		// son dos columnas donde cada columna tendra tres divs
