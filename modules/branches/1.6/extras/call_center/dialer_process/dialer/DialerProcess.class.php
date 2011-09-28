@@ -2965,7 +2965,7 @@ INFO_LLAMADA;
         $tuplaLlamada['call_attributes'] = array();
         if (!is_null($idContact)) {
             $sPeticionSQL = <<<INFO_ATRIBUTOS
-SELECT name AS first_name, apellido AS last_name, telefono AS phone, cedula_ruc
+SELECT name AS first_name, apellido AS last_name, telefono AS phone, cedula_ruc, origen AS contact_source
 FROM contact WHERE id = ?
 INFO_ATRIBUTOS;
             $atributosLlamada = $this->_dbConn->getRow($sPeticionSQL,
@@ -2995,6 +2995,11 @@ INFO_ATRIBUTOS;
                     'label' =>  'cedula_ruc',
                     'value' =>  $atributosLlamada['cedula_ruc'],
                     'order' =>  4,
+                ),
+                array(
+                    'label' =>  'contact_source',
+                    'value' =>  $atributosLlamada['contact_source'],
+                    'order' =>  5,
                 ),
             );
         }
