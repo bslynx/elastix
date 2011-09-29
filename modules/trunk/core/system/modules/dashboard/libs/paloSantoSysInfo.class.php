@@ -438,8 +438,8 @@ class paloSantoSysInfo
 
                 //ex: Name/username              Host            Dyn Nat ACL Port     Status
                 //    412/412                    192.168.1.82     D   N   A  5060     OK (17 ms)
-		if(preg_match('/^[[:space:]]*([^[:space:]]+)[[:space:]]+([^[:space:]]+)[[:space:]]+[[:alpha:]]*[[:space:]]*[[:alpha:]]*[[:space:]]*[[:alpha:]]*[[:space:]]*([[:digit:]]+)[[:space:]]+([[:alpha:]]+)/',$line,$arrToken)){
-                    if(eregi("OK",$arrToken[4])){
+		if(preg_match("/^\s*(.+)\s+((\d{1,3}(\.\d{1,3}){1,3})|\(Unspecified\))\s+\D*\s*\D*\s*\D*\s*\d+\s+(\D+)/",$line,$arrToken)){
+                    if(preg_match("/OK/i",$arrToken[5])){
 			// estado OK
 			$name = explode("/",$arrToken[1]);
                         if(in_array($name[0],$arrTrunks)) // es una troncal?, registrada
@@ -447,7 +447,7 @@ class paloSantoSysInfo
                         else
                             $arrActivity["sip"]["ext"]["ok"]++;
                     }
-                    else if(eregi("Unmonitored ",$arrToken[4])){ // estado desconocido, un caso es cuando no esta definido el parametro quality=yes
+                    else if(preg_match("/Unmonitored/i",$arrToken[5])){ // estado desconocido, un caso es cuando no esta definido el parametro quality=yes
 			$name = explode("/",$arrToken[1]);
                         if(in_array($name[0],$arrTrunks)) // es una troncal?, registrada
                             $arrActivity["sip"]["trunk"]["unknown"]++;
@@ -471,15 +471,15 @@ class paloSantoSysInfo
             foreach($arrIAXs as $key => $line){
                 //ex: Name/Username    Host                 Mask             Port          Status
                 //    512              127.0.0.1       (D)  255.255.255.255  40002         OK (3 ms)
-                if(preg_match('/^[[:space:]]*([^[:space:]]+)[[:space:]]+([^[:space:]]+)[[:space:]]+[^[:space:]]+[[:space:]]+[^[:space:]]+[[:space:]]+[[:digit:]]+[[:space:]]+\(?[[:alpha:]]?\)?[[:space:]]+([[:alpha:]]+)/',$line,$arrToken)){
-                    if(eregi("OK",$arrToken[3])){ // estado OK
+                if(preg_match("/^\s*(.+)\s+((\d{1,3}(\.\d{1,3}){1,3})|\(null\))\s+\(\D\)\s+\d{1,3}(\.\d{1,3}){1,3}\s+\d+\s+\(?\D?\)?\s+(\D+)/",$line,$arrToken)){
+                    if(preg_match("/OK/i",$arrToken[6])){ // estado OK
 			$name = explode("/",$arrToken[1]);
                         if(in_array($name[0],$arrTrunks)) // es una troncal?, registrada
                             $arrActivity["iax"]["trunk"]["ok"]++;
                         else
                             $arrActivity["iax"]["ext"]["ok"]++;
                     }
-                    else if(eregi("Unmonitored ",$arrToken[3])){ // estado desconocido, un caso es cuando no esta definido el parametro quality=yes
+                    else if(preg_match("/Unmonitored/i",$arrToken[6])){ // estado desconocido, un caso es cuando no esta definido el parametro quality=yes
 			$name = explode("/",$arrToken[1]);
                         if(in_array($name[0],$arrTrunks)) // es una troncal?, registrada
                             $arrActivity["iax"]["trunk"]["unknown"]++;
