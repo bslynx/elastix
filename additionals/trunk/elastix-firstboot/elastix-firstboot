@@ -240,7 +240,7 @@ This screen will now ask for a password for user 'admin' that will be used for: 
 	
 	# Set password for A2Billing
         WHIRLPOOL=`php -r "echo hash('whirlpool','$FREEPBX_PASSWD1');"`
-        echo "UPDATE mya2billing.cc_ui_authen SET pwd_encoded='$WHIRLPOOL', login='admin' WHERE userid=1;" | mysql -u root "-p$MYSQL_PASSWD1"
+        echo "UPDATE mya2billing.cc_ui_authen SET pwd_encoded='$WHIRLPOOL' WHERE login='admin';" | mysql -u root "-p$MYSQL_PASSWD1"
 	#echo "UPDATE mya2billing.cc_ui_authen SET password = '$FREEPBX_PASSWD1' WHERE login = 'admin';" | mysql -u root -p$MYSQL_PASSWD1
 	ret=$?
 	if [ $? -ne 0 ]; then
