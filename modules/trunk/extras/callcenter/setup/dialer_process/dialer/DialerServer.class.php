@@ -193,5 +193,22 @@ class DialerServer extends MultiplexServer
         }
     }
 
+    function notificarEvento_PauseStart($sAgente, $infoPausa)
+    {
+        foreach ($this->_listaConn as &$oConn) {
+            if (method_exists($oConn, 'notificarEvento_PauseStart')) {
+                $oConn->notificarEvento_PauseStart($sAgente, $infoPausa);
+            }
+        }
+    }
+
+    function notificarEvento_PauseEnd($sAgente, $infoPausa)
+    {
+        foreach ($this->_listaConn as &$oConn) {
+            if (method_exists($oConn, 'notificarEvento_PauseEnd')) {
+                $oConn->notificarEvento_PauseEnd($sAgente, $infoPausa);
+            }
+        }
+    }
 }
 ?>

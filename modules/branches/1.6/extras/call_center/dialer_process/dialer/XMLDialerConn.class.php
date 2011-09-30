@@ -2319,5 +2319,37 @@ LEER_CAMPANIA;
         $s = $xml_response->asXML();
         $this->dialSrv->encolarDatosEscribir($this->sKey, $s);
     }
+    
+    function notificarEvento_PauseStart($sAgente, $infoPausa)
+    {
+        if (is_null($this->_sUsuarioECCP)) return;
+        if (!is_null($this->_sAgenteFiltrado) && $this->_sAgenteFiltrado != $sAgente) return;
+
+        $xml_response = new SimpleXMLElement('<event />');
+        $xml_agentLinked = $xml_response->addChild('pausestart');
+        $infoPausa['agent_number'] = $sAgente;
+        foreach ($infoPausa as $sKey => $valor) {
+            if (!is_null($valor)) $xml_agentLinked->addChild($sKey, str_replace('&', '&amp;', $valor));
+        }
+        
+        $s = $xml_response->asXML();
+        $this->dialSrv->encolarDatosEscribir($this->sKey, $s);
+    }
+    
+    function notificarEvento_PauseEnd($sAgente, $infoPausa)
+    {
+        if (is_null($this->_sUsuarioECCP)) return;
+        if (!is_null($this->_sAgenteFiltrado) && $this->_sAgenteFiltrado != $sAgente) return;
+
+        $xml_response = new SimpleXMLElement('<event />');
+        $xml_agentLinked = $xml_response->addChild('pauseend');
+        $infoPausa['agent_number'] = $sAgente;
+        foreach ($infoPausa as $sKey => $valor) {
+            if (!is_null($valor)) $xml_agentLinked->addChild($sKey, str_replace('&', '&amp;', $valor));
+        }
+        
+        $s = $xml_response->asXML();
+        $this->dialSrv->encolarDatosEscribir($this->sKey, $s);
+    }
 }
 ?>

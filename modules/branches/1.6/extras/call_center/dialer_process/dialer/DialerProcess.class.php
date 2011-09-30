@@ -3212,6 +3212,26 @@ INFO_FORMULARIOS;
 
                             // Auditoría del fin del hold
                             $this->marcarFinalBreakAgente($this->_infoAgentes[$sAgente]['info_hold']['id_hold']);
+
+                            $tuplaHold = $this->_dbConn->getRow(
+                                'SELECT datetime_init, datetime_end, TIME_TO_SEC(duration) AS duration_sec FROM audit WHERE id = ?', 
+                                array($this->_infoAgentes[$sAgente]['info_hold']['id_hold']),
+                                DB_FETCHMODE_ASSOC);
+                            if (DB::isError($tuplaHold)) {
+                                $this->oMainLog->output('ERR: (internal) al consultar fecha final hold - '.$tuplaHold->getMessage());
+                                $tuplaHold = array(
+                                    'datetime_init' =>  date('Y-m-d H:i:s'),
+                                    'datetime_end'  =>  date('Y-m-d H:i:s'),
+                                    'duration_sec'  =>  0,
+                                );
+                            }
+                            $this->_dialSrv->notificarEvento_PauseEnd($sAgente, array(
+                                'pause_class'   =>  'hold',
+                                'pause_start'   =>  $tuplaHold['datetime_init'],
+                                'pause_end'     =>  $tuplaHold['datetime_end'],
+                                'pause_duration'=>  $tuplaHold['duration_sec'],
+                            ));
+
                             $this->_infoAgentes[$sAgente]['info_hold'] = NULL;
                             break;
                         }
@@ -3839,6 +3859,13 @@ SQL_EXISTE_AUDIT;
             return FALSE;
         }
         $this->_infoAgentes[$sAgente]['id_break'] = $idAuditBreak;
+        $infoPausa = $this->reportarEstadoPausaAgente($sAgente);
+        $this->_dialSrv->notificarEvento_PauseStart($sAgente, array(
+            'pause_class'   =>  'break',
+            'pause_type'    =>  $idBreak,
+            'pause_name'    =>  $infoPausa['break_name'],
+            'pause_start'   =>  $infoPausa['datetime_breakstart'],
+        ));
         return TRUE;
     }
     
@@ -3870,6 +3897,33 @@ SQL_EXISTE_AUDIT;
 
         // Auditoría del fin del break
         $this->marcarFinalBreakAgente($this->_infoAgentes[$sAgente]['id_break']);
+        $tuplaBreak = $this->_dbConn->getRow(
+            'SELECT break.id AS break_id, break.name AS break_name, '.
+                'audit.datetime_init AS datetime_breakstart, audit.datetime_end AS datetime_breakend, '.
+                'TIME_TO_SEC(audit.duration) AS duration_sec '.
+            'FROM audit, break '.
+            'WHERE audit.id = ? AND audit.id_break = break.id', 
+            array($this->_infoAgentes[$sAgente]['id_break']),
+            DB_FETCHMODE_ASSOC);
+        if (DB::isError($tuplaBreak)) {
+        	$this->oMainLog->output('ERR: (internal) al terminar break: no se puede leer resumen de break - '.
+                $tuplaBreak->getMessage());
+            $tuplaBreak = array(
+                'break_id'              =>  0,
+                'break_name'            =>  '(unavailable)',
+                'datetime_breakstart'   =>  date('Y-m-d H:i:s'),
+                'datetime_breakend'     =>  date('Y-m-d H:i:s'),
+                'duration_sec'          =>  0,
+            );
+        }
+        $this->_dialSrv->notificarEvento_PauseEnd($sAgente, array(
+            'pause_class'   =>  'break',
+            'pause_type'    =>  $tuplaBreak['break_id'],
+            'pause_name'    =>  $tuplaBreak['break_name'],
+            'pause_start'   =>  $tuplaBreak['datetime_breakstart'],
+            'pause_end'     =>  $tuplaBreak['datetime_breakend'],
+            'pause_duration'=>  $tuplaBreak['duration_sec'],
+        ));
         $this->_infoAgentes[$sAgente]['id_break'] = NULL;
         return TRUE;
     }
@@ -4282,6 +4336,15 @@ LEER_TIPO_BREAK;
             }
         }
         
+        $inicioHold = $this->_dbConn->getOne('SELECT datetime_init FROM audit WHERE id = ?', array($idAuditHold));
+        if (DB::isError($inicioHold)) {
+            $this->oMainLog->output('ERR: (internal) al consultar fecha inicio hold - '.$inicioHold->getMessage());
+        	$inicioHold = date('Y-m-d H:i:s');
+        }
+        $this->_dialSrv->notificarEvento_PauseStart($sAgente, array(
+            'pause_class'   =>  'hold',
+            'pause_start'   =>  $inicioHold,
+        ));
         return TRUE;
     }
     
@@ -4405,6 +4468,27 @@ Privilege: Command
 
         // Auditoría del fin del hold
         $this->marcarFinalBreakAgente($this->_infoAgentes[$sAgente]['info_hold']['id_hold']);
+
+
+        $tuplaHold = $this->_dbConn->getRow(
+            'SELECT datetime_init, datetime_end, TIME_TO_SEC(duration) AS duration_sec FROM audit WHERE id = ?', 
+            array($this->_infoAgentes[$sAgente]['info_hold']['id_hold']),
+            DB_FETCHMODE_ASSOC);
+        if (DB::isError($tuplaHold)) {
+            $this->oMainLog->output('ERR: (internal) al consultar fecha final hold - '.$tuplaHold->getMessage());
+            $tuplaHold = array(
+                'datetime_init' =>  date('Y-m-d H:i:s'),
+                'datetime_end'  =>  date('Y-m-d H:i:s'),
+                'duration_sec'  =>  0,
+            );
+        }
+        $this->_dialSrv->notificarEvento_PauseEnd($sAgente, array(
+            'pause_class'   =>  'hold',
+            'pause_start'   =>  $tuplaHold['datetime_init'],
+            'pause_end'     =>  $tuplaHold['datetime_end'],
+            'pause_duration'=>  $tuplaHold['duration_sec'],
+        ));
+
         $this->_infoAgentes[$sAgente]['info_hold'] = NULL;
         return TRUE;
     }

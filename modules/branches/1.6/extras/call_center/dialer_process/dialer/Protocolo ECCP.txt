@@ -645,6 +645,85 @@ Ejemplo:
     </agentfailedlogin>
 </event>
 
+
+Evento "pausestart"
+
+Este evento se genera cuando el agente indicado entra en una pausa o un hold.
+
+Elementos informativos:
+* agent_number: Agente que ha entrado en pausa. Este identificador está de la 
+  forma 'Agent/9000'.
+* pause_class: Uno de los tipos 'break' o 'hold'
+* pause_type: ID de la pausa que se ha indicado en el requerimiento pauseagent.
+  Sólo presente para pause_class igual a break.
+* pause_name: Nombre de la pausa correspondiente al ID indicado por pause_type.
+  Sólo presente para pause_class igual a break.
+* pause_start: Fecha registrada como inicio de la pausa. Formato yyyy-mm-dd hh:mm:ss
+
+Ejemplo:
+Para inicio de pausa de break:
+<event>
+    <pausestart>
+        <agent_number>Agent/9000</agent_number>
+        <pause_class>break</pause_class>
+        <pause_type>2</pause_type>
+        <pause_name>Baño</pause_name>
+        <pause_start>2011-09-30 14:32:17</pause_start>
+    </pausestart>
+</event>
+
+Para inicio de pausa de hold:
+<event>
+    <pausestart>
+        <agent_number>Agent/9000</agent_number>
+        <pause_class>hold</pause_class>
+        <pause_start>2011-09-30 14:32:17</pause_start>
+    </pausestart>
+</event>
+
+
+Evento "pauseend"
+
+Este evento se genera cuando el agente indicado sale de una pausa o hold.
+
+Elementos informativos:
+* agent_number: Agente que ha salido de pausa. Este identificador está de la 
+  forma 'Agent/9000'.
+* pause_class: Uno de los tipos 'break' o 'hold'
+* pause_type: ID de la pausa que se ha indicado en el requerimiento pauseagent.
+  Sólo presente para pause_class igual a break.
+* pause_name: Nombre de la pausa correspondiente al ID indicado por pause_type.
+  Sólo presente para pause_class igual a break.
+* pause_start: Fecha registrada como inicio de la pausa. Formato yyyy-mm-dd hh:mm:ss
+* pause_end: Fecha registrada como final de la pausa. Formato yyyy-mm-dd hh:mm:ss
+* pause_duration: Duración de la pausa en segundos.
+
+Ejemplo:
+Para final de pausa de break:
+<event>
+    <pauseend>
+        <agent_number>Agent/9000</agent_number>
+        <pause_class>break</pause_class>
+        <pause_type>2</pause_type>
+        <pause_name>Baño</pause_name>
+        <pause_start>2011-09-30 14:32:17</pause_start>
+        <pause_end>2011-09-30 14:32:26</pause_end>
+        <pause_duration>9</pause_duration>
+    </pauseend>
+</event>
+
+Para final de pausa de hold:
+<event>
+    <pauseend>
+        <agent_number>Agent/9000</agent_number>
+        <pause_class>hold</pause_class>
+        <pause_start>2011-09-30 14:32:17</pause_start>
+        <pause_end>2011-09-30 14:32:26</pause_end>
+        <pause_duration>9</pause_duration>
+    </pauseend>
+</event>
+
+
 Listado de requerimientos
 -------------------------
 Nota: Para facilitar la legibilidad del presente documento, se presentarán aquí 

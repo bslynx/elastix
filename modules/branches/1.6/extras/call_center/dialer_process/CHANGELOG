@@ -1,3 +1,4 @@
+* Dialer (ECCP): implement new events "pausestart" and "pauseend"
 * Dialer (ECCP): fix incorrect parameter verification in "getcallinfo" request
 * Dialer (ECCP): implement "getqueuescript" request
 * Dialer (ECCP): the "getcampaigninfo" request has been extended to return 
