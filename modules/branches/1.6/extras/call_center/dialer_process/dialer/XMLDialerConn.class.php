@@ -866,7 +866,12 @@ LISTA_EXTENSIONES;
 
         // TODO: reportar call_type campaign_id call_id 
 
-        // Reportar los estados conocidos 
+        // Reportar los estados conocidos
+        /* ATENCION: El agente contiene brevemente el atributo Unknown cuando se
+           le acaba de ejecutar un Hangup(Agent/9000) para desconectar su llamada.
+           Esto no deslogonea al agente de la cola, pero pone el status a 
+           unAvailable y tiene que ser verificado de forma especial. 
+         */
         $estadoAgente = $estadoCola['members'][$sNumAgente];
         $bEstadoConocido = FALSE;
         if (in_array('paused', $estadoAgente['attributes'])) {
@@ -875,7 +880,8 @@ LISTA_EXTENSIONES;
         } elseif ($estadoAgente['status'] == 'inUse') {
             $xml_getAgentStatusResponse->addChild('status', 'oncall');
             $bEstadoConocido = TRUE;
-        } elseif ($estadoAgente['status'] == 'canBeCalled') {
+        } elseif ($estadoAgente['status'] == 'canBeCalled'||
+                (!is_null($sCanalExt) && in_array('Unknown', $estadoAgente['attributes']))) {
             $xml_getAgentStatusResponse->addChild('status', 'online');
             $bEstadoConocido = TRUE;
         } elseif ($estadoAgente['status'] == 'unAvailable') {
