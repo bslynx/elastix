@@ -1,3 +1,6 @@
+* Dialer: fix bug in which a request for outgoing calls would repeatedly request
+  already retried calls until the retry limit even if calls with lower retry
+  numbers were available.
 * Dialer (ECCP): fix bug in which an agent that has just been called Hangup on
   would show as offline instead of online in getagentstatus request.
 * Dialer (ECCP): implement new events "pausestart" and "pauseend".

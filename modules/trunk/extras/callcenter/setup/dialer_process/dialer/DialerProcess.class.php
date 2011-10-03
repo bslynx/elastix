@@ -1338,45 +1338,30 @@ PETICION_LLAMADAS_AGENTE;
         $sFechaSys = date('Y-m-d');
         $sHoraSys = date('H:i:s');
         $sPeticionLlamadas = <<<PETICION_LLAMADAS
-(
-SELECT id_campaign, id, phone FROM calls 
-WHERE id_campaign = ? 
-    AND status IS NULL 
-    AND dnc = 0 
-    AND date_init <= ? AND date_end >= ? AND time_init <= ? AND time_end >= ?
-    AND agent IS NULL
-ORDER BY date_end, time_end, date_init, time_init
-)
-UNION
-(
-SELECT id_campaign, id, phone FROM calls 
-WHERE id_campaign = ? 
-    AND status IS NULL 
+(SELECT 1 AS dummy_priority, id_campaign, id, phone, date_init AS dummy_date_init,
+    time_init AS dummy_time_init, date_end AS dummy_date_end,
+    time_end AS dummy_time_end, retries AS dummy_retries
+FROM calls
+WHERE id_campaign = ?
+    AND (status IS NULL 
+        OR status NOT IN ("Success", "Placing", "Ringing", "OnQueue", "OnHold")) 
+    AND retries < ?
     AND dnc = 0
-    AND date_init IS NULL AND date_end IS NULL AND time_init IS NULL AND time_end IS NULL  
-    AND agent IS NULL
-)
+    AND (? BETWEEN date_init AND date_end AND ? BETWEEN time_init AND time_end)
+    AND agent IS NULL)
 UNION
-(
-SELECT id_campaign, id, phone FROM calls 
-WHERE id_campaign = ? 
-    AND status NOT IN ("Success", "Placing", "Ringing", "OnQueue", "OnHold")
-    AND retries < ?   
-    AND dnc = 0 
-    AND date_init <= ? AND date_end >= ? AND time_init <= ? AND time_end >= ?
-    AND agent IS NULL
-ORDER BY date_end, time_end, date_init, time_init
-)
-UNION
-(
-SELECT id_campaign, id, phone FROM calls 
-WHERE id_campaign = ? 
-    AND status NOT IN ("Success", "Placing", "Ringing", "OnQueue", "OnHold")
-    AND retries < ?   
-    AND dnc = 0 
-    AND date_init IS NULL AND date_end IS NULL AND time_init IS NULL AND time_end IS NULL  
-    AND agent IS NULL
-)
+(SELECT 2 AS dummy_priority, id_campaign, id, phone, date_init AS dummy_date_init,
+    time_init AS dummy_time_init, date_end AS dummy_date_end,
+    time_end AS dummy_time_end, retries AS dummy_retries
+FROM calls
+WHERE id_campaign = ?
+    AND (status IS NULL 
+        OR status NOT IN ("Success", "Placing", "Ringing", "OnQueue", "OnHold")) 
+    AND retries < ?
+    AND dnc = 0
+    AND date_init IS NULL AND date_end IS NULL AND time_init IS NULL AND time_end IS NULL
+    AND agent IS NULL)
+ORDER BY dummy_priority, dummy_retries, dummy_date_end, dummy_time_end, dummy_date_init, dummy_time_init, id
 LIMIT 0,?
 PETICION_LLAMADAS;
 
@@ -1387,13 +1372,11 @@ PETICION_LLAMADAS;
 
         $recordset =& $this->_dbConn->query(
             $sPeticionLlamadas, 
-            array($infoCampania->id, 
-                $sFechaSys, $sFechaSys, $sHoraSys, $sHoraSys,
-                $infoCampania->id,
-                $infoCampania->id,
+            array(
+                $infoCampania->id, 
                 $infoCampania->retries,
-                $sFechaSys, $sFechaSys, $sHoraSys, $sHoraSys,
-                $infoCampania->id,
+                $sFechaSys, $sHoraSys,
+                $infoCampania->id, 
                 $infoCampania->retries,
                 $iNumLlamadasColocar));
         if (DB::isError($recordset)) {
