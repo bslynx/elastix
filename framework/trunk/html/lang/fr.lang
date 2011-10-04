@@ -227,5 +227,9 @@ En Wav",
 "htmlMode" => "Html Mode",
 "Register" => "Register",
 "Registered" => "Registered",
+"Unauthorized" => "Unauthorized",
+"You are not authorized to access to this page" => "You are not authorized to access to this page",
+"You need administrator privileges" => "You need administrator privileges",
+"Elastix Authentication" => "Elastix Authentication",
 );
 ?>
