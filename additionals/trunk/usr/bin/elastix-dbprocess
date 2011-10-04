@@ -103,9 +103,9 @@ if(isset($_SERVER['argv'][1]) && in_array($_SERVER['argv'][1],$arrActions)){
         $version     = isset($_SERVER['argv'][3])?$_SERVER['argv'][3]:false;
         $data        = getData($path_folder);
         $result      = 0;
-        if(!$data){
-            echo "Error reading the file $path_folder/db.info\n";
-            return 1;
+        if(is_null($data)){
+            echo "No databases were found in file db.info\n";
+            return 0;
         }
 
         //Doing the action for each database according to the file db.info
@@ -463,8 +463,12 @@ function compareVersion($versionReleaseStart,$versionStart)
  */
 function getData($path_folder)
 {
-    $arrData = parse_ini_file($path_folder."/db.info",true);
-    return $arrData;
+    if(file_exists($path_folder."/db.info") && filesize($path_folder."/db.info")!=0){
+        $arrData = parse_ini_file($path_folder."/db.info",true);
+        return $arrData;
+    }
+    else
+        return null;
 }
 
 /**
