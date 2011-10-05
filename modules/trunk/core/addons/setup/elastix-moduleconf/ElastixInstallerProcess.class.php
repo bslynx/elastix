@@ -179,13 +179,19 @@ class ElastixInstallerProcess extends AbstractProcess
 
                 $bFinInicio = FALSE; $sContenido = '';
                 while (!$bFinInicio) {
-		            $salidaYum = array($this->_procPipes[1], $this->_procPipes[2]);
-		            $entradaYum = NULL;
-		            $exceptYum = NULL;
-		            $iNumCambio = stream_select($salidaYum, $entradaYum, $exceptYum, 1);
-		            if ($iNumCambio === false) {
-		                $this->oMainLog->output("ERR: falla al esperar en select()");
-		                break;
+			$yumStatus = proc_get_status($this->_procYum);
+			if (!$yumStatus['running']) {
+			    $this->oMainLog->output("INFO: finalizada instancia de yum shell (2)");
+			    $bFinInicio = TRUE;
+			    break;
+			}
+			$salidaYum = array($this->_procPipes[1], $this->_procPipes[2]);
+			$entradaYum = NULL;
+			$exceptYum = NULL;
+			$iNumCambio = stream_select($salidaYum, $entradaYum, $exceptYum, 1);
+			if ($iNumCambio === false) {
+			    $this->oMainLog->output("ERR: falla al esperar en select()");
+			    break;
             		} elseif ($iNumCambio > 0) {
             		    if (in_array($this->_procPipes[2], $salidaYum)) {
             		        // Mensaje de stderr de yum, mandar a log
