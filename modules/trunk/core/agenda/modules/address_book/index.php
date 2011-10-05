@@ -352,7 +352,7 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
                                                     "INPUT_EXTRA_PARAM"      => "",
                                                     "VALIDATION_TYPE"        => "text",
                                                     "VALIDATION_EXTRA_PARAM" => "",
-                                                    "INPUT_EXTRA_PARAM"      => array('onKeyPress' => 'handleEnter(this, event)')),
+                                                    "INPUT_EXTRA_PARAM"      => array('id' => 'filter_value')),
                                 );
 
     $oFilterForm = new paloForm($smarty, $arrFormElements);
