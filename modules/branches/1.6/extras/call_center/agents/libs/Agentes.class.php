@@ -146,8 +146,9 @@ class Agentes
             return FALSE;
         }
         
-        // Asumir ninguna contraseña de ECCP (agente no será usable por ECCP)
-        if (!isset($agent[3]) || $agent[3] == '') $agent[3] = NULL;
+        /* Se debe de autogenerar una contraseña ECCP si no se especifica. 
+         * La contraseña será legible por la nueva consola de agente */
+        if (!isset($agent[3]) || $agent[3] == '') $agent[3] = sha1(time().rand());
 
         // GRABAR EN BASE DE DATOS
         $sPeticionSQL = 'INSERT INTO agent (number, password, name, eccp_password) VALUES (?, ?, ?, ?)';
@@ -196,8 +197,15 @@ class Agentes
         if (!isset($agent[3]) || $agent[3] == '') $agent[3] = NULL;
 
         // EDITAR EN BASE DE DATOS
-        $sPeticionSQL = 'UPDATE agent SET password = ?, name = ?, eccp_password = ? WHERE number = ?';
-        $paramSQL = array($agent[1], $agent[2], $agent[3], $agent[0]);
+        $sPeticionSQL = 'UPDATE agent SET password = ?, name = ?';
+        $paramSQL = array($agent[1], $agent[2]);
+        if (!is_null($agent[3])) {
+        	$sPeticionSQL .= ', eccp_password = ?';
+            $paramSQL[] = $agent[3];
+        }
+        $sPeticionSQL .= ' WHERE number = ?';
+        $paramSQL[] = $agent[0];
+
         $this->_DB->genQuery("SET AUTOCOMMIT = 0");
         $result = $this->_DB->genQuery($sPeticionSQL, $paramSQL);
         if (!$result) {
@@ -205,6 +213,21 @@ class Agentes
             $this->_DB->genQuery("ROLLBACK");
             $this->_DB->genQuery("SET AUTOCOMMIT = 1");
             return false;
+        }
+
+        /* Se debe de autogenerar una contraseña ECCP si no se especifica. 
+         * La contraseña será legible por la nueva consola de agente */
+        if (is_null($agent[3])) {
+            $agent[3] = sha1(time().rand());
+            $sPeticionSQL = 'UPDATE agent SET eccp_password = ? WHERE number = ? AND eccp_password IS NULL';
+            $paramSQL = array($agent[3], $agent[0]);
+            $result = $this->_DB->genQuery($sPeticionSQL, $paramSQL);
+            if (!$result) {
+                $this->errMsg = $this->_DB->errMsg;
+                $this->_DB->genQuery("ROLLBACK");
+                $this->_DB->genQuery("SET AUTOCOMMIT = 1");
+                return false;
+            }
         }
 
         // Leer el archivo y buscar la línea del agente a modificar
