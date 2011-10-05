@@ -207,6 +207,14 @@ class Predictivo
         $respuestaListaAgentes = $this->_astConn->Command('agent show');
         if (is_array($respuestaListaAgentes))
             $respuestaCola = $this->_astConn->Command("queue show $sNombreCola");        
+
+        $estadoCola = array(
+            'members'   =>  array(),
+            'callers'   =>  array(),
+            'agent_show_output' => $respuestaListaAgentes,
+            'show_queue_output' => $respuestaCola,
+        );
+            
         if (is_array($respuestaListaAgentes) && is_array($respuestaCola)) {
 
         	// Averiguar qué canal (si alguno) usa cada agente
@@ -239,19 +247,45 @@ class Predictivo
                             }
                             */
                         }
+
+                        if ($sNombreCola == '') {
+                            $estadoCola['members'][$sAgente] = array(
+                                'sourceline'    =>  $sLinea,
+                                'attributes'    =>  array('Busy'),
+                                'status'        =>  'inUse',
+                                'talkTime'      =>  isset($tiempoAgente[$sAgente]['talkTime']) 
+                                    ? $tiempoAgente[$sAgente]['talkTime'] : NULL,
+                                'penalty'       =>  NULL,
+                                'clientchannel' =>  $sCanalAgente,
+                            );
+                        }
                     } elseif (strpos($sLinea, 'is idle')) {
                         $listaAgentesLibres[] = $sAgente;
+                        if ($sNombreCola == '') {
+                            $estadoCola['members'][$sAgente] = array(
+                                'sourceline'    =>  $sLinea,
+                                'attributes'    =>  array('Not in use'),
+                                'status'        =>  'canBeCalled',
+                                'talkTime'      =>  NULL,
+                                'penalty'       =>  NULL,
+                                //'clientchannel' =>  NULL,
+                            );
+                        }
+                    } elseif (strpos($sLinea, 'not logged in')) {
+                        if ($sNombreCola == '') {
+                            $estadoCola['members'][$sAgente] = array(
+                                'sourceline'    =>  $sLinea,
+                                'attributes'    =>  array('Unavailable'),
+                                'status'        =>  'unAvailable',
+                                'talkTime'      =>  NULL,
+                                'penalty'       =>  NULL,
+                                //'clientchannel' =>  NULL,
+                            );
+                        }
                     }
             	}
             }
 
-            $estadoCola = array(
-                'members'   =>  array(),
-                'callers'   =>  array(),
-                'agent_show_output' => $respuestaListaAgentes,
-                'show_queue_output' => $respuestaCola,
-            );
-            
             // Parsear la salida de la lista de colas
             $lineasRespuesta = explode("\n", $respuestaCola['data']);
             $sSeccionActual = NULL;
