@@ -72,6 +72,10 @@ if (file_exists($path_script_db))
     crearColumnaSiNoExiste($pDB, 'call_center', 'agent', 
         'eccp_password', 
         "ADD COLUMN eccp_password varchar(128) default NULL");
+
+    // Asegurarse de que todo agente tiene una contraseña de ECCP
+    $pDB->genQuery('UPDATE agent SET eccp_password = SHA1(CONCAT(NOW(), RAND(), number)) WHERE eccp_password IS NULL');
+
     $pDB->disconnect();
 }
 
