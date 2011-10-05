@@ -172,7 +172,6 @@ function viewFormMyExtension($smarty, $module_name, $local_templates_dir, $pDB, 
     $smarty->assign("SAVE", $arrLang["Save Configuration"]);
     $smarty->assign("EDIT", $arrLang["Edit"]);
     $smarty->assign("CANCEL", $arrLang["Cancel"]);
-    $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
     $smarty->assign("IMG", "images/list.png");//extension
     $smarty->assign("EXTENSION",$arrLang["SETTINGS FOR YOUR EXTENSION:"]." ".$extensionCID." (".$extension.")");//extension
 
