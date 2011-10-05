@@ -70,17 +70,16 @@ class paloSantoPortService {
         $arrParm = null;
         if( strlen($field_pattern) != 0 ){
             if( $field_type == 'name' ){
-                $arrParm = array($field_pattern);
-                $query .= "WHERE name = ? ";
+                $arrParm = array("%$field_pattern%");
+                $query .= "WHERE name LIKE ? ";
             }
             else if( $field_type == 'protocol' ){
-                $arrParm = array($field_pattern);
-                $query .= "WHERE protocol = ? ";
+                $arrParm = array("%$field_pattern%");
+                $query .= "WHERE protocol LIKE ? ";
             }
         }
 
         $result = $this->_DB->getFirstRowQuery($query,false,$arrParm);
-
         if($result == FALSE)
         {
             $this->errMsg = $this->_DB->errMsg;
@@ -105,12 +104,12 @@ class paloSantoPortService {
         $query   = "SELECT * FROM port ";
         if( strlen($field_pattern) != 0 ){
             if( $field_type == 'name' ){
-                $arrParm = array($field_pattern);
-                $query .= "WHERE name = ? ";
+                $arrParm = array("%$field_pattern%");
+                $query .= "WHERE name LIKE ? ";
             }
             else if( $field_type == 'protocol' ){
-                $arrParm = array($field_pattern);
-                $query .= "WHERE protocol = ? ";
+                $arrParm = array("%$field_pattern%");
+                $query .= "WHERE protocol LIKE ? ";
             }
         }
         $arrParm[] = $limit;
