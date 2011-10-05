@@ -359,6 +359,10 @@ function getElastixKey(){
 /************************************ new end ******************************************/
 
 $(document).ready(function(){
+    //***Para los módulos con filtro se llama a la función pressKey
+    if(document.getElementById("filter_value"))
+	document.onkeypress = keyPressed;
+    //*****************************************/
     $(".close_image_box").click(function(){
             $("#boxRPM").attr("style","display: none;");
             $("#fade_overlay").attr("style","display: none;");
@@ -460,6 +464,20 @@ $(document).ready(function(){
         }
     });
 });
+
+//Si se presiona enter se hace un submit al formulario para que se aplica el filtro
+function keyPressed(e)
+{
+    var keycode;
+    if (window.event) keycode = window.event.keyCode;
+    else if (e) keycode = e.which;
+    else return true;
+    if(keycode == 13){
+	$("form").submit();
+	return false;
+    }
+}
+
 // implement JSON.parse de-serialization  
     function JSONRPMtoString(str) {
         if (str === "") str = '""';
