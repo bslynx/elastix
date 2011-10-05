@@ -1,3 +1,4 @@
+* ECCP Users: new module for administration of ECCP authorized users
 * Dialer (ECCP): fix requests for agents that are not assigned to any queue.
 * Dialer: fix bug in which a request for outgoing calls would repeatedly request
   already retried calls until the retry limit even if calls with lower retry

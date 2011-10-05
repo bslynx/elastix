@@ -13,7 +13,9 @@
     <menuitem menuid="queues" desc="Queues" parent="ingoing_calls" module="yes"></menuitem>
     <menuitem menuid="client" desc="Clients" parent="ingoing_calls" module="yes"></menuitem>
 
-    <menuitem menuid="agents" desc="Agents" parent="call_center" module="yes"></menuitem>
+    <menuitem menuid="agentoptions" desc="Agent Options" parent="call_center" module="no"></menuitem>
+    <menuitem menuid="agents" desc="Agents" parent="agentoptions" module="yes"></menuitem>
+    <menuitem menuid="eccp_users" desc="ECCP Users" parent="agentoptions" module="yes"></menuitem>
 
     <menuitem menuid="break_administrator" desc="Breaks" parent="call_center" module="yes"></menuitem>
 
