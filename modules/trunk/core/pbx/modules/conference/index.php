@@ -169,7 +169,7 @@ function report_conference($smarty, $module_name, $local_templates_dir, $pDB, $a
                                 "filter" => array(  "LABEL"                  => $arrLang["Filter"],
                                                     "REQUIRED"               => "no",
                                                     "INPUT_TYPE"             => "TEXT",
-                                                    "INPUT_EXTRA_PARAM"      => "",
+                                                    "INPUT_EXTRA_PARAM"      => array("id" => "filter_value"),
                                                     "VALIDATION_TYPE"        => "text",
                                                     "VALIDATION_EXTRA_PARAM" => ""),
                                 );
