@@ -175,7 +175,7 @@ class paloSantoPortService {
      *
      * @return bool      false if an error occurs or true if the port is correctly updated
      */
-    function updatePuertos($id, $name, $protocol, $port, $type, $code, $protocol_number, $comment)
+    function updatePuertos($id, $name, $protocol, $port, $type, $code, $protocol_number, $comment, &$desactivated)
     {
         $query = "UPDATE port SET name=?, protocol=?, details=?, comment=? ".
                  "WHERE id = ?";
@@ -197,7 +197,54 @@ class paloSantoPortService {
             $this->errMsg = $this->_DB->errMsg;
             return false;
         }
+	$query = "SELECT * FROM filter WHERE sport=? OR dport=? OR icmp_type=? OR number_ip=?";
+	$result = $this->_DB->fetchTable($query, true, array($id,$id,$id,$id));
+	if( $result === false ){
+            $this->errMsg = $this->_DB->errMsg;
+            return false;
+        }
+	if(is_array($result) && count($result)>0){
+	    $query = "UPDATE tmp_execute SET exec_in_sys = 0";
+	    $genQuery = $this->_DB->genQuery($query);
+	    if( $genQuery == false ){
+		$this->errMsg = $this->_DB->errMsg;
+		return false;
+	    }
+	    foreach($result as $key => $rule){
+		$arrParam = array();
+		$arrParam[] = $protocol;
+		$query = "UPDATE filter SET protocol=?";
+		if(($protocol == "TCP" || $protocol == "UDP") && ($rule["protocol"] == "ICMP" || $rule["protocol"] == "IP")){
+		    $query .= ", activated=0";
+		    $desactivated = true;
+		}
 
+		if($protocol == "TCP" || $protocol == "UDP"){
+		    if($rule["protocol"] == "TCP" || $rule["protocol"] == "UDP")
+			$query .= ", icmp_type='', number_ip=''";
+		    else{
+			$query .= ", sport=?, dport=?, icmp_type='', number_ip=''";
+			$arrParam[] = $id;
+			$arrParam[] = $id;
+		    }
+		}
+		elseif($protocol == "ICMP"){
+		    $query .= ", sport='', dport='', icmp_type=?, number_ip=''";
+		    $arrParam[] = $id;
+		}
+		else{
+		    $query .= ", sport='', dport='', icmp_type='', number_ip=?";
+		    $arrParam[] = $id;
+		}
+		$query .= " WHERE id=?";
+		$arrParam[] = $rule["id"];
+		$result = $this->_DB->genQuery($query,$arrParam);
+		if( $result == false ){
+		    $this->errMsg = $this->_DB->errMsg;
+		    return false;
+		}
+	    }
+	}
         return true;
     }
 
@@ -213,12 +260,12 @@ class paloSantoPortService {
      * 
      * @return bool      false the port does not exist or true if the port is already in the database
      */
-    function hasPuerto($protocol, $port, $type, $code, $protocol_number,  $id_except = 0)
+    function hasPuerto($protocol, $port, $type, $code, $protocol_number, &$name, $id_except = 0)
     {
         if($protocol == "TCP" || $protocol == "UDP")
             $value = $port;
         elseif($protocol == "ICMP")
-            $value = $type." ".$code;
+            $value = $type.":".$code;
         else
             $value = $protocol_number;
         $arrParm = array($protocol,$value);
@@ -230,11 +277,11 @@ class paloSantoPortService {
             $arrParm[] = $id_except;
             $query .= " AND id <> ? ";
         }
-        $result = $this->_DB->fetchTable($query, true, $arrParm);
+        $result = $this->_DB->getFirstRowQuery($query, true, $arrParm);
 
         if( $result == false )
             return false;
-
+	$name = $result["name"];
         return true;
     }
 
@@ -287,7 +334,7 @@ class paloSantoPortService {
      */
     function getTCPortNumbers()
     {
-        $query = "SELECT details FROM port WHERE protocol = 'TCP'";
+        $query = "SELECT id,name FROM port WHERE protocol = 'TCP'";
         $result = $this->_DB->fetchTable($query, true);
         if( $result == false ){
             $this->errMsg = $this->_DB->errMsg;
@@ -298,7 +345,7 @@ class paloSantoPortService {
 
     function getUDPortNumbers()
     {
-        $query = "SELECT details FROM port WHERE protocol = 'UDP'";
+        $query = "SELECT id,name FROM port WHERE protocol = 'UDP'";
         $result = $this->_DB->fetchTable($query, true);
         if( $result == false ){
             $this->errMsg = $this->_DB->errMsg;
@@ -314,7 +361,7 @@ class paloSantoPortService {
      */
     function getICMPType()
     {
-        $query = "SELECT details FROM port WHERE protocol = 'ICMP'";
+        $query = "SELECT id,name FROM port WHERE protocol = 'ICMP'";
         $result = $this->_DB->fetchTable($query, true);
         if( $result == false ){
             $this->errMsg = $this->_DB->errMsg;
@@ -330,13 +377,31 @@ class paloSantoPortService {
      */
     function getIPProtNumber()
     {
-        $query = "SELECT details FROM port WHERE protocol = 'IP'";
+        $query = "SELECT id,name FROM port WHERE protocol = 'IP'";
         $result = $this->_DB->fetchTable($query, true);
         if( $result == false ){
             $this->errMsg = $this->_DB->errMsg;
             return array();
         } 
         return $result;
+    }
+
+    function isPortInService($id, &$port)
+    {
+	$query = "SELECT COUNT(*) FROM filter WHERE sport=? OR dport=? OR icmp_type=? OR number_ip=?";
+	$result=$this->_DB->getFirstRowQuery($query,false,array($id,$id,$id,$id));
+
+        if($result===FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return false;
+        }
+        if($result[0] > 0){
+	    $data = $this->loadPuerto($id);
+	    $port = $data;
+	    return true;
+	}
+	else
+	    return false;
     }
 }
 ?>

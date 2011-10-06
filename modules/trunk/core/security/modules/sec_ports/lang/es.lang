@@ -61,6 +61,9 @@ $arrLangModule=array(
 "The name, type and code can not be empty fields" => "El nombre, tipo y código no pueden ser campos vacíos",
 "The name and the protocol number can not be empty fields" => "El nombre y el número de protocolo no pueden ser campos vacíos",
 "The following fields contain errors" => "Los siguientes campos contienen errores",
-"Validation Error" => "Error de Validación"
+"Validation Error" => "Error de Validación",
+"Port used in a firewall rule" => "Puerto usado en una regla del firewall",
+"You have to delete the rule related in order to delete this port" => "Usted tiene que eliminar la regla relacionada para poder eliminar este puerto",
+"Some rules could be deactivated due to these changes, please check the firewall rules" => "Algunas reglas pudieron ser desactivadas debido a estos cambios, por favor revise las reglas del corta fuegos"
 );
 ?>

@@ -370,9 +370,9 @@ function savePuerto($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf
     $isError    = false;
 
     $oPalo = new paloSantoPortService($pDB);
-
-    if($oPalo->hasPuerto($protocol, $port, $type, $code, $protocol_number, $id_except) == true ){
-        $strErrorMsg = _tr("This port had already been defined").": $port";
+    $portName = "";
+    if($oPalo->hasPuerto($protocol, $port, $type, $code, $protocol_number, $portName, $id_except) == true ){
+        $strErrorMsg = _tr("This port had already been defined").": $portName";
         $isError = true;
     }
     else if(($protocol == "TCP" || $protocol == "UDP") && ($name=="" || $port1=="")){
@@ -399,6 +399,7 @@ function savePuerto($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf
         $isError = true;
     }
 
+    $desactivated = false;
     if($isError){ // validation errors
         $smarty->assign("mb_title", _tr("Validation Error"));
         $smarty->assign("mb_message", $strErrorMsg);
@@ -416,9 +417,12 @@ function savePuerto($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf
         }
     }
     else{//edit
-        if($oPalo->updatePuertos($id_except, $name, $protocol, $port, $type, $code, $protocol_number, $comment)){
+        if($oPalo->updatePuertos($id_except, $name, $protocol, $port, $type, $code, $protocol_number, $comment, $desactivated)){
+	    $msg = _tr("Update correctly");
+	    if($desactivated)
+		$msg .= "<br />"._tr("Some rules could be deactivated due to these changes, please check the firewall rules");
             $smarty->assign("mb_title", _tr("Message"));
-            $smarty->assign("mb_message", _tr("Update correctly"));
+            $smarty->assign("mb_message", $msg);
         }
         else{
             $smarty->assign("mb_title", _tr("Error"));
@@ -436,18 +440,22 @@ function deletePuertos($smarty, $module_name, $local_templates_dir, &$pDB, $arrC
 
     foreach( $_POST as $key => $value ){
         if( $value == "on" ){
-            if( $oPalo->deletePuerto($key) == false )
-                $str_msj_error .= $oPalo->errMsg.",";
+	    $port = "";
+	    if(!$oPalo->isPortInService($key, $port)){
+		if( $oPalo->deletePuerto($key) == false )
+		    $str_msj_error .= $oPalo->errMsg."<br />";
+	    }
+	    else
+		$str_msj_error .= _tr("Port used in a firewall rule").": $port[name]. "._tr("You have to delete the rule related in order to delete this port")."<br />";
         }
     }
-
     if( strlen($str_msj_error) == 0 ){
         $smarty->assign("mb_title", _tr("Message"));
         $smarty->assign("mb_message", _tr("Delete correctly"));
     }
     else{
-        $smarty->assign("mb_title", _tr("Error"));
-        $smarty->assign("mb_message", $oPalo->errMsg);
+        $smarty->assign("mb_title", _tr("ERROR"));
+        $smarty->assign("mb_message", $str_msj_error);
     }
 
     return reportPuertos($smarty, $module_name, $local_templates_dir, $pDB, $arrConf);
