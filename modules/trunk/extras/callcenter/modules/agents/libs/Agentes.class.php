@@ -410,19 +410,9 @@ class Agentes
 
     private function _get_AGI_AsteriskManager()
     {
-        $sRutaConfig = "modules/agent_console/configs/default.conf.php";
-        if (!file_exists($sRutaConfig)) {
-            $this->errMsg = 'While connecting to Asterisk - configuration not found';
-            return NULL;
-        }
-        include $sRutaConfig;
-        if (!isset($acceso_asterisk) || !is_array($acceso_asterisk)) {
-            $this->errMsg = 'While connecting to Asterisk - invalid configuration, does not define "acceso_asterisk"';
-        	return NULL;
-        }
-        $ip_asterisk = $acceso_asterisk["ip"];
-        $user_asterisk = $acceso_asterisk["user"];
-        $pass_asterisk = $acceso_asterisk["pass"];
+        $ip_asterisk = '127.0.0.1';
+        $user_asterisk = 'admin';
+        $pass_asterisk = function_exists('obtenerClaveAMIAdmin') ? obtenerClaveAMIAdmin() : 'elastix456';
         $astman = new AGI_AsteriskManager();
         if (!$astman->connect($ip_asterisk, $user_asterisk , $pass_asterisk)) {
             $this->errMsg = "Error when connecting to Asterisk Manager";
