@@ -464,9 +464,9 @@ function buttonInstall($install, $name_rpm, $arrLang, $action, $serverKey,$url_m
 	    $actionClase = "";
 	    $tryIt = "";
 	    if($serverKey == "")
-		$actionClase = "registrationServer";
+			$actionClase = "registrationServer";
 	    else{
-		$actionClase = "buy";
+			$actionClase = "buy";
 	    }
 	    if(!$comprado)
 		$tryIt = "<input type='button' value='"._tr("Try it")."' class='install' id='$name_rpm' name='tryButton' style='display: none;' />";
@@ -529,7 +529,11 @@ function buttonUnInstall($name_rpm, $arrLang, $action, $serverKey, $versionToIns
 	$update = "&nbsp;";
 
     if($action=="buy"){
-	$buy = "<input type='button' value='"._tr("Buy")."' class='$actionClase' id='".$name_rpm."_buy' name='buyButton' style='display: none;' />";
+		if($serverKey != "")
+			$actionClase = "buy";
+		else
+			$actionClase = "registrationServer";
+		$buy = "<input type='button' value='"._tr("Buy")."' class='$actionClase' id='".$name_rpm."_buy' name='buyButton' style='display: none;' />";
     }else
     	$buy = "&nbsp;";
     
@@ -761,22 +765,28 @@ function getProgressBar($smarty, $module_name, $pDB, $arrConf, $arrLang){
     $pAddonsModules = new paloSantoAddonsModules($pDB);
     $arrStatus = $pAddonsModules->getStatus($arrConf);
 
-
     if($pAddonsModules->existsActionTMP()) {
+		$arrDataTMP = $pAddonsModules->getActionTMP();
         $valueActual = "none";
         $valueTotal = "0";
+		$time_wait = "";
         if(isset($arrStatus['package']))
             $valueActual = $arrStatus['package'];
         if(isset($arrStatus['porcent_total_ins']))
             $valueTotal = $arrStatus['porcent_total_ins'];
 
-        $arr['valueActual'] = $valueActual;
-        $arr['valueTotal']  = $valueTotal;
+		if($arrDataTMP['init_time'] == "" || !isset($arrDataTMP['init_time']))
+			$pAddonsModules->updateTimeActionTMP(strtotime(date("Y-m-d h:i:s")));
+		else
+			$time_wait = getTimeDownload($arrDataTMP['init_time'], $valueTotal);
+
+        $arr['valueActual']  = $valueActual;
+        $arr['valueTotal']   = $valueTotal;
+		$arr['timeDownload'] = $time_wait;
         $arr['status']  = "progress";
         $arr['action']  = $arrStatus['action'];
         $arr['process_installed'] = $arrLang['process_installed'];
         if($arrStatus['status'] == "idle" && $arrStatus['action'] == "none"){
-            $arrDataTMP = $pAddonsModules->getActionTMP();
             $data_exp = $arrDataTMP['data_exp'];
             if(isset($data_exp) && $data_exp != ""){
                 $arrDataInsert = explode("|",$data_exp);
@@ -789,6 +799,7 @@ function getProgressBar($smarty, $module_name, $pDB, $arrConf, $arrLang){
             unset($_SESSION['elastix_user_permission']);
             // Refrescar el estado de actualización
             $addons_installed = $pAddonsModules->getCheckAddonsInstalled();
+			setValueSessionNull($pAddonsModules);
 
             try {
                 $client = new SoapClient($arrConf['url_webservice']);
@@ -813,6 +824,39 @@ function getProgressBar($smarty, $module_name, $pDB, $arrConf, $arrLang){
 
     $json = new Services_JSON();
     return $json->encode($arr);
+}
+
+function getTimeDownload($ini_time, $valueTotal)
+{
+	if($ini_time == 0 || $ini_time == "")
+		return "";
+	else{
+		$timestamp2 = mktime(date("h"),date("i"),date("s"),date("m"),date("d"),date("Y"));
+		$timestamp1 = mktime(date("h",$ini_time),date("i",$ini_time),date("s",$ini_time),date("m",$ini_time),date("d",$ini_time),date("Y",$ini_time));
+		//resto a una fecha la otra para obtener el tiempo transcurrido en la descarga
+		$secondsTime = $timestamp2 - $timestamp1;
+
+		// obteniendo el tiempo total que se demoraria la descarga
+		$totalTime = 100 * ($secondsTime) / $valueTotal;
+		// se obtiene el tiempo que faltaria para completar la descarga
+		$timeOut = $totalTime - $secondsTime;
+		$hour    = $timeOut / 3600;
+		$hour    = abs($hour);
+		$minute  = ( $hour - floor($hour) ) * 60;
+		$minute  = abs($minute);
+		$seconds = ( $minute - floor($minute) ) * 60;
+		$seconds = abs($seconds);
+		$result  = "";
+		if(floor($hour) > 0)
+			$result .= floor($hour)."hr ";
+		if(floor($minute) > 0)
+			$result .= floor($minute)."mn ";
+		if(floor($seconds) > 0)
+			$result .= floor($seconds)."seg";
+		if($result != "")
+			$result = _tr("Remaining Time:")." ".$result;
+		return $result;
+	}
 }
 
 function checkUpdates($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
@@ -977,8 +1021,8 @@ function toDoclearAddon($module_name, &$pDB, $arrConf, $arrLang){
 function setValueSessionNull($pAddonsModules)
 {
 	$_SESSION['elastix_addons']['data_install'] = "";
-	$_SESSION['elastix_addons']['name_rpm'] = "";
-	$_SESSION['elastix_addons']['action_rpm'] = "";	
+	$_SESSION['elastix_addons']['name_rpm']     = "";
+	$_SESSION['elastix_addons']['action_rpm']   = "";
 	$pAddonsModules->clearActionTMP();
 }
 

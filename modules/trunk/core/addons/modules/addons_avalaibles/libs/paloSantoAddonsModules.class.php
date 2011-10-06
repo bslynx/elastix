@@ -476,6 +476,20 @@ class paloSantoAddonsModules {
         return true;
     }
 
+	function updateTimeActionTMP($init_time)
+    {
+        $user  = $_SESSION['elastix_user'];
+        $query = "UPDATE action_tmp SET init_time='$init_time';";
+
+        $result=$this->_DB->genQuery($query);
+
+        if($result==FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return false;
+        }
+        return true;
+    }
+
     function getActionTMP()
     {
         $query = "SELECT * FROM action_tmp;";

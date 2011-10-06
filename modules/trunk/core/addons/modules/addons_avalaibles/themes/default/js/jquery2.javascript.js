@@ -17,29 +17,30 @@ $(document).ready(function(){
     
     // nuevo para la compra de addons
     $('.buy').click(function(){
-	var nameRpm = $(this).attr("id");
-	nameRpm = nameRpm.replace(/_buy/g,"");
-	var idRpmName = "[id='"+nameRpm+"_link']";
-	var link = $(idRpmName).val();
-	window.open(link+refer);
+		var nameRpm = $(this).attr("id");
+		nameRpm = nameRpm.replace(/_buy/gi,"");
+		var idRpmName = "[id='"+nameRpm+"_link']";
+		var link = $(idRpmName).val();
+		window.open(link+refer);
     });
     
     $('.registrationServer').click(function(){
     	var arrAction = "action=getServerKey&rawmode=yes";
     	var nameRpm = $(this).attr("id");
+		nameRpm = nameRpm.replace(/_buy/gi,"");
     	var idRpmName = "[id='"+nameRpm+"_link']";
     	var link = $(idRpmName).val();
         $.post("index.php",arrAction,
             function(arrData,statusResponse,error)
             {
-		var message = JSONtoString(arrData);
-		var serverKey = message["serverKey"];
-		if(serverKey)
-		    window.open(link+"&serverkey="+serverKey);
-		else{
-		    $('#link_tmp').val(link+"&serverkey=");
-		    showPopupElastix('registrar','Register',600,400);
-		}
+				var message = JSONtoString(arrData);
+				var serverKey = message["serverKey"];
+				if(serverKey)
+					window.open(link+refer+"&serverkey="+serverKey);
+				else{
+					$('#link_tmp').val(link+refer+"&serverkey=");
+					showPopupElastix('registrar','Register',600,400);
+				}
             }
         );
     });
@@ -99,7 +100,7 @@ function installAddon(name_rpm)
 		  // se muestra la barra de progreso de la instalacion
 		  // se remueve el ultimo hijo y se añade el progressbar al final
 		  $(startId).html(" ");
-		  var progressbar  = "<div align='right'><div id='progressBarTotal' style='width: 100px;'></div><div id='percent_loaded'><span id='percentTotal' style='position: relative; top: -18px; right: 38px;'>0%</span></div></div>";
+		  var progressbar  = "<div align='right'><div id='progressBarTotal' style='width: 100px;'></div><div id='percent_loaded'><span id='percentTotal' style='position: relative; top: -18px; right: 38px;'>0%</span></div><div class='timeDownload' style='position:relative; bottom:10px; color: #363636; font-weight: bold; font-size: 10px;'></div></div>";
 		  $(startId).html(progressbar);
 		  $(idRpmNameBuy).hide();
 		  $("[id^=progressBar]").progressbar({value: 0});
@@ -208,7 +209,7 @@ function changeStatus(name_rpm, view_details ){
 	var versionAddons = $(idRpmName).parent().parent().parent().parent().parent().children(':first-child').children(':nth-child(2)').text();
 	showPogressMessage("Status: "+textInstalling+" "+nameAddons+" "+versionAddons);
 	$(startId).html(" ");
-	var progressbar  = "<div align='right'><div id='progressBarTotal' style='width: 100px; height: 1.5em;'></div><div id='percent_loaded'><span id='percentTotal' style='position: relative; top: -15px; right: 38px;'>0%</span></div></div>";
+	var progressbar  = "<div align='right'><div id='progressBarTotal' style='width: 100px; height: 1.5em;'></div><div id='percent_loaded'><span id='percentTotal' style='position: relative; top: -15px; right: 38px;'>0%</span></div><div class='timeDownload' style='position:relative; bottom:10px; color: #363636; font-weight: bold; font-size: 10px;'></div></div>";
 	$(startId).html(progressbar);
 	var valueActual = "none";
 	//$('.linkDetailBars a').attr("onclick", "showPopupSecondBars('barsDetails','Bars Details',538,345);");
@@ -289,63 +290,65 @@ function getPackagesCache(){
                 var processToDo = message['processToDo'];
                 if(message['rpm_installing'] != "nothing"){
                 	if(processToDo != "nothing"){
-                		if(processToDo == "install" || proccessToDo == "update"){
-                			var idRpmNameIns = "[id='"+rpm_installing+"']";
-                			var idRpmNameBuy = "[id='"+rpm_installing+"_buy']";
-                        	//getStatusInstall(rpm_installing);
-                        	$('#uninstallRpm').val(rpm_installing);
-                        	$('#actionToDo').val("installing");
-                        	$('.loadingAjax').hide();
-                        	$('.uninstall').show();// cambiando los demas addons a un estado de cargados
-                        	$('.install').show();
-                        	$('.buy').show();
-                        	$(idRpmNameIns).parent().parent().parent().children(':first-child').show(); // mostrando el loading del rpm que se esta instalando o actualizando
-                        	$(idRpmNameIns).hide(); // ocultando el boton install/remove del rpm que se esta instalado
-                        	$(idRpmNameBuy).hide();
-                        	getStatusInstallAddonProgress(); // haciendo el cambio de mostrar la barra de progreso
-                		}else if(processToDo == "remove"){
-                			//getStatusInstall(rpm_installing);
-                			var idRpmNameBuy = "[id='"+rpm_installing+"_buy']";
-                        	$('#uninstallRpm').val(rpm_installing);
-                        	$('#actionToDo').val("remove");
-                        	$('.loadingAjax').hide();
-                        	$('.uninstall').show();// cambiando los demas addons a un estado de cargados
-                        	$('.install').show();
-                        	$('.buy').show();
-                        	$(idRpmNameIns).parent().parent().parent().children(':first-child').show(); // ocultando el loading del rpm que se esta removiendo
-                        	$(idRpmNameIns).hide(); // ocultando el boton install/remove del rpm que se esta removiendo
-                        	$(idRpmNameBuy).hide();
-                        	getStatusInstallAddonProgress(); // haciendo el cambio de mostrar la barra de progreso
-                		}
-                	}else{
-            			there_install = false;
-            			var arr_data = message['data_cache'];
-                        var link_img = "modules/"+module_name+"/images/warning.png";
-			var errorDetails = $("#errorDetails").val();
-                        for(var i=0; i<arr_data.length; i++){
-                            var rpm_name = arr_data[i]["name_rpm"];
-                            var status = arr_data[i]["status"];
-                            var observation = arr_data[i]["observation"];
-                            var textObservation = $("#textObservation").val();
-                            var rpm_nameID = document.getElementById(rpm_name);
-                            var idRpmName = "[id='"+rpm_name+"']";
-                            var idRpmNameBuy = "[id='"+rpm_name+"_buy']";
-                            if(rpm_nameID){
-                                if(status == "1"){ // se muestra el boton de instalar
-                                    $(idRpmName).show();
-                                    $(idRpmNameBuy).show();
-                                    var tryIt = "[id='try_"+rpm_name+"']";
-                                    $(tryIt).show();
-                                    $(idRpmName).parent().parent().parent().children(':first-child').hide();// se oculta el loading
-                                }else{ // se debe mostrar el error como descripcion
-                                    $(idRpmName).parent().parent().parent().children(':first-child').attr('src',link_img);// cambiando el loading por img error
-                                }
-                                $(idRpmName).parent().parent().parent().children(':first-child').hide();
-                                var styleSeleRpm = $(idRpmName).attr("style");
-                            	if(observation!="OK")
-                            		$(idRpmName).parent().parent().parent().append("<a class='text_alert ttip' title='"+textObservation+" "+observation+"' style='float: right;'>"+errorDetails+"</a>");
-                            }
-                        }
+						if(message['statusInstall'] == "status_confirm" || message['response'] == "status_confirm"){
+							confirmOperation();
+						}
+						if(processToDo == "install" || proccessToDo == "update"){
+							var idRpmNameIns = "[id='"+rpm_installing+"']";
+							var idRpmNameBuy = "[id='"+rpm_installing+"_buy']";
+							//getStatusInstall(rpm_installing);
+							$('#uninstallRpm').val(rpm_installing);
+							$('#actionToDo').val("installing");
+							$('.loadingAjax').hide();
+							$('.uninstall').show();// cambiando los demas addons a un estado de cargados
+							$('.install').show();
+							$('.buy').show();
+							$(idRpmNameIns).parent().parent().parent().children(':first-child').show(); // mostrando el loading del rpm que se esta instalando o actualizando
+							$(idRpmNameIns).hide(); // ocultando el boton install/remove del rpm que se esta instalado
+							$(idRpmNameBuy).hide();
+							getStatusInstallAddonProgress(); // haciendo el cambio de mostrar la barra de progreso
+						}else if(processToDo == "remove"){
+							var idRpmNameBuy = "[id='"+rpm_installing+"_buy']";
+							$('#uninstallRpm').val(rpm_installing);
+							$('#actionToDo').val("remove");
+							$('.loadingAjax').hide();
+							$('.uninstall').show();// cambiando los demas addons a un estado de cargados
+							$('.install').show();
+							$('.buy').show();
+							$(idRpmNameIns).parent().parent().parent().children(':first-child').show(); // ocultando el loading del rpm que se esta removiendo
+							$(idRpmNameIns).hide(); // ocultando el boton install/remove del rpm que se esta removiendo
+							$(idRpmNameBuy).hide();
+							getStatusInstallAddonProgress(); // haciendo el cambio de mostrar la barra de progreso
+						}
+					}else{
+						there_install = false;
+						var arr_data = message['data_cache'];
+						var link_img = "modules/"+module_name+"/images/warning.png";
+						var errorDetails = $("#errorDetails").val();
+						for(var i=0; i<arr_data.length; i++){
+							var rpm_name = arr_data[i]["name_rpm"];
+							var status = arr_data[i]["status"];
+							var observation = arr_data[i]["observation"];
+							var textObservation = $("#textObservation").val();
+							var rpm_nameID = document.getElementById(rpm_name);
+							var idRpmName = "[id='"+rpm_name+"']";
+							var idRpmNameBuy = "[id='"+rpm_name+"_buy']";
+							if(rpm_nameID){
+								if(status == "1"){ // se muestra el boton de instalar
+									$(idRpmName).show();
+									$(idRpmNameBuy).show();
+									var tryIt = "[id='try_"+rpm_name+"']";
+									$(tryIt).show();
+									$(idRpmName).parent().parent().parent().children(':first-child').hide();// se oculta el loading
+								}else{ // se debe mostrar el error como descripcion
+									$(idRpmName).parent().parent().parent().children(':first-child').attr('src',link_img);// cambiando el loading por img error
+								}
+								$(idRpmName).parent().parent().parent().children(':first-child').hide();
+								var styleSeleRpm = $(idRpmName).attr("style");
+								if(observation!="OK")
+									$(idRpmName).parent().parent().parent().append("<a class='text_alert ttip' title='"+textObservation+" "+observation+"' style='float: right;'>"+errorDetails+"</a>");
+							}
+						}
                         $(".updateAddon").show();
                         $('.ttip').tipsy({fade: true, html: true }); // se agrega la accion de tooltips
             		}
@@ -354,7 +357,7 @@ function getPackagesCache(){
                 //window.open("index.php?menu="+module_name2,"_self");
             }
             else if(message['response'] == "status_confirm"){
-                var con = confirm(message['msg']);
+                var con = confirmOperation();
                 if(con){
                     getStatusInstall(message['name_rpm']);
                 }
@@ -376,7 +379,7 @@ function getPackagesCache(){
                 there_install = false;
                 var arr_data = message['data_cache'];
                 var link_img = "modules/"+module_name+"/images/warning.png";
-		var errorDetails = $("#errorDetails").val();
+				var errorDetails = $("#errorDetails").val();
                 //elastix-developer id
                 //status_elastix-developer id
                 for(var i=0; i<arr_data.length; i++){
@@ -470,7 +473,7 @@ function changeStatusButtonInstall(response){
     }else{
         var arr_data = response['data_cache'];
         var link_img = "modules/"+module_name+"/images/warning.png";
-	var errorDetails = $("#errorDetails").val();
+	    var errorDetails = $("#errorDetails").val();
         for(var i=0; i<arr_data.length; i++){
             var rpm_name = arr_data[i]["name_rpm"];
             var status = arr_data[i]["status"];
@@ -603,9 +606,11 @@ function process(response)
 {
     var valueActual = response['valueActual'];
     var valueTotal  = response['valueTotal'];
+	var timeDownload = response['timeDownload'];
     if(parseInt(valueTotal)>0){
 	    $('#progressBarTotal').progressbar('value', parseInt(valueTotal));
 	    $('#percentTotal').text(valueTotal+"%");
+		$('.timeDownload').text(timeDownload);
     }
     // if no preocess to install
 	if (response['status'] == "not_install")
@@ -820,7 +825,7 @@ function confirmOperation(){
 		    var idRpmName = "[id='"+rpmName+"']";
 		    var startId = "[id='start_"+rpmName+"']";
 		    $(startId).html(" ");
-		    var progressbar  = "<div align='right'><div id='progressBarTotal' style='width: 100px; height: 1.5em;'></div><div id='percent_loaded'><span id='percentTotal' style='position: relative; top: -15px; right: 38px;'>0%</span></div></div>";
+		    var progressbar  = "<div align='right'><div id='progressBarTotal' style='width: 100px; height: 1.5em;'></div><div id='percent_loaded'><span id='percentTotal' style='position: relative; top: -15px; right: 38px;'>0%</span></div><div class='timeDownload' style='position:relative; bottom:10px; color: #363636; font-weight: bold; font-size: 10px;'></div></div>";
 		    $(startId).html(progressbar);
 		    $("[id^=progressBar]").progressbar({value: 0});
 		}
@@ -940,7 +945,7 @@ function getStatusInstallAddonProgress(){
 		    showPogressMessage("Status: "+textInstalling+" "+nameAddons+" "+versionAddons);
 		    $(startId).html(" ");
 		    if(!document.getElementById("progressBarTotal")){
-			var progressbar  = "<div align='right'><div id='progressBarTotal' style='width: 100px; height: 1.5em;'></div><div id='percent_loaded'><span id='percentTotal' style='position: relative; top: -15px; right: 38px;'>0%</span></div></div>";
+			var progressbar  = "<div align='right'><div id='progressBarTotal' style='width: 100px; height: 1.5em;'></div><div id='percent_loaded'><span id='percentTotal' style='position: relative; top: -15px; right: 38px;'>0%</span></div><div class='timeDownload' style='position:relative; bottom:10px; color: #363636; font-weight: bold; font-size: 10px;'></div></div>";
 			$(startId).html(progressbar);
 			var valueActual = "none";
 			$("[id^=progressBar]").progressbar({value: 0});
@@ -960,7 +965,7 @@ function getStatusInstallAddonProgress(){
 		    showPogressMessage("Status: "+textRemoving+" "+nameAddons+" "+versionAddons);
 		    $(startId).html(" ");
 		    if(!document.getElementById("progressBarTotal")){
-			var progressbar  = "<div align='right'><div id='progressBarTotal' style='width: 100px; height: 1.5em;'></div><div id='percent_loaded'><span id='percentTotal' style='position: relative; top: -15px; right: 38px;'>0%</span></div></div>";
+			var progressbar  = "<div align='right'><div id='progressBarTotal' style='width: 100px; height: 1.5em;'></div><div id='percent_loaded'><span id='percentTotal' style='position: relative; top: -15px; right: 38px;'>0%</span></div><div class='timeDownload' style='position:relative; bottom:10px; color: #363636; font-weight: bold; font-size: 10px;'></div></div>";
 			$(startId).html(progressbar);
 			var valueActual = "none";
 			$("[id^=progressBar]").progressbar({value: 0});
