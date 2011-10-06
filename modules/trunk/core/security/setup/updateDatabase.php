@@ -27,6 +27,15 @@
   +----------------------------------------------------------------------+
   $Id: updateDatabase.php,v 1.2 2011-10-04 17:00:00 Alberto Santos asantos@palosanto.com Exp $ */
 
+if(!isset($argv[1])){
+    echo "The version is needed as argument\n";
+    return 1;
+}
+$version = $argv[1];
+//El script sólo se ejecuta para versiones menores o iguales a 2.2.0-3
+if(esmayor($version,"2.2.0-3"))
+   return 0;
+
 $documentRoot = "/var/www/html";
 $databasePath = "/var/www/db";
 include_once "$documentRoot/libs/paloSantoDB.class.php";
@@ -93,5 +102,77 @@ function getNextid(&$pDB)
 	return 1;
     else
 	return 1 + $result["id"];
+}
+
+function esmayor($versionRelease,$version)
+{
+    $versionRelease      = explode("-",$versionRelease);
+    $version             = explode("-",$version);
+    $versionReleaseStart = explode(".",$versionRelease[0]);
+    $versionStart        = explode(".",$version[0]);
+    $result = compareVersion($versionReleaseStart,$versionStart);
+    if(isset($result))
+    return $result;
+    preg_match("/^(\d*)([alfa|beta|rc]*)$/",$versionRelease[1],$matchVersionRelease);
+    preg_match("/^(\d*)([alfa|beta|rc]*)$/",$version[1],$matchVersion);
+    if(isset($matchVersionRelease[2])){ // Formato tipico para elastix
+    if(intval($matchVersionRelease[1]) > intval($matchVersion[1]))
+        return true;
+    if(intval($matchVersionRelease[1]) < intval($matchVersion[1]))
+        return false;
+    if(cursor($matchVersionRelease[2]) > cursor($matchVersion[2]))
+        return true;
+    return false;
+    }
+    else{ //Formato x.x.x-x.x.x (Creado especialmente para fop2)
+    $versionReleaseStart = explode(".",$versionRelease[1]);
+    $versionStart        = explode(".",$version[1]);
+    $result = compareVersion($versionReleaseStart,$versionStart);
+    if(isset($result))
+        return $result;
+    return false;
+    }
+}
+
+function compareVersion($versionReleaseStart,$versionStart)
+{
+    if(!isset($versionReleaseStart[1]))
+    $versionReleaseStart[1] = 0;
+    if(!isset($versionReleaseStart[2]))
+    $versionReleaseStart[2] = 0;
+    if(!isset($versionStart[1]))
+    $versionStart[1] = 0;
+    if(!isset($versionStart[2]))
+    $versionStart[2] = 0;
+    if(intval($versionReleaseStart[0]) > intval($versionStart[0]))
+        return true;
+    if(intval($versionReleaseStart[0]) < intval($versionStart[0]))
+        return false;
+    if(intval($versionReleaseStart[1]) > intval($versionStart[1]))
+        return true;
+    if(intval($versionReleaseStart[1]) < intval($versionStart[1]))
+        return false;
+    if(intval($versionReleaseStart[2]) > intval($versionStart[2]))
+        return true;
+    if(intval($versionReleaseStart[2]) < intval($versionStart[2]))
+        return false;
+    return null;
+}
+
+function cursor($valor)
+{
+    if($valor=="alpha")
+    {
+       return 1;
+    }
+    else if($valor=="beta")
+    {
+       return 2;
+    }
+    else if($valor=="rc")
+    {
+       return 3;
+    }
+    else if($valor=="") return 4;
 }
 ?>
