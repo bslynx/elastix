@@ -782,7 +782,7 @@ LEFT JOIN agent a
     ON c.id_agent = a.id
 WHERE
     c.id_campaign = ? AND
-    (c.status='Success' OR c.status='Failure' OR c.status='ShortCall')
+    (c.status='Success' OR c.status='Failure' OR c.status='ShortCall' OR c.status='NoAnswer' OR c.status='Abandoned')
 ORDER BY
     telefono ASC
 SQL_LLAMADAS;
@@ -826,7 +826,7 @@ SELECT
     call_attribute.column_number    AS posicion
 FROM calls, call_attribute
 WHERE calls.id_campaign = ? AND calls.id = ? AND calls.id = call_attribute.id_call AND
-    (calls.status='Success' OR calls.status='Failure' OR calls.status='ShortCall')
+    (calls.status='Success' OR calls.status='Failure' OR calls.status='ShortCall' OR c.status='NoAnswer' OR c.status='Abandoned')
 ORDER BY calls.id, call_attribute.column_number
 SQL_ATRIBUTOS;
         foreach ($datosCampania['BASE']['ID2POS'] as $id_call => $pos) {
@@ -897,7 +897,7 @@ SELECT
 FROM calls c, form_data_recolected fdr, form_field ff
 WHERE fdr.id_calls = c.id AND fdr.id_form_field = ff.id AND c.id_campaign = ?
     AND ff.tipo <> 'LABEL'
-    AND (c.status='Success' OR c.status='Failure' OR c.status='ShortCall')
+    AND (c.status='Success' OR c.status='Failure' OR c.status='ShortCall' OR c.status='NoAnswer' OR c.status='Abandoned')
 ORDER BY id_call, id_form, id_form_field
 SQL_DATOS_FORM;
         $datosRecolectados = $this->_DB->fetchTable($sqlDatosForm, TRUE, array($id_campaign));
