@@ -190,16 +190,15 @@ function createFieldForm($pDB,$arrValues = array())
     $arrTarget    = array("ACCEPT" => _tr("ACCEPT"), "DROP" => _tr("DROP"), "REJECT" => _tr("REJECT"));
     $arrType['ANY'] = _tr('ANY');
     foreach($type as $key => $value){
-        $tmp = explode(":",$value['details']);
-        $arrType[$tmp[0]] = $tmp[0];
+        $arrType[$value["id"]] = $value["name"];
     }
     $arrPort['ANY'] = _tr('ANY');
     foreach($Ports as $key => $value){
-        $arrPort[$value['details']] = $value['details'];
+        $arrPort[$value['id']] = $value['name'];
     }
     $arrIP['ANY'] = _tr('ANY');    
     foreach($protocol_number as $key => $value){
-        $arrIP[$value['details']] = $value['details'];
+        $arrIP[$value['id']] = $value['name'];
     }
     $arrFields = array(
             "interface_in"    => array( "LABEL"                  => _tr("Interface IN"),
@@ -645,12 +644,31 @@ function reportRules($smarty, $module_name, $local_templates_dir, &$pDB, $arrCon
             $arrTmp[5] = $value['ip_source'];
             $arrTmp[6] = $value['ip_destiny'];
             $arrTmp[7] = $value['protocol'];
-            if($value['protocol'] == "ICMP")
-                $arrTmp[8] = _tr("Type").": $value[icmp_type]";
-            else if($value['protocol'] == "IP")
-                $arrTmp[8] = _tr("Number Protocol IP").": $value[number_ip]";
-            else if($value['protocol'] == "TCP" || $value['protocol'] == "UDP")
-                $arrTmp[8] = _tr("Source Port").": $value[sport]"."<br />"._tr("Destiny Port").": $value[dport]";
+            if($value['protocol'] == "ICMP"){
+		if($value["icmp_type"] != "" && $value["icmp_type"] != "ANY")
+		    $protocolName = $pRules->getProtocolName($value["icmp_type"]);
+		else
+		    $protocolName = $value["icmp_type"];
+                $arrTmp[8] = _tr("Type").": $protocolName";
+	    }
+            else if($value['protocol'] == "IP"){
+		if($value["number_ip"] != "" && $value["number_ip"] != "ANY")
+		    $protocolName = $pRules->getProtocolName($value["number_ip"]);
+		else
+		    $protocolName = $value["number_ip"];
+                $arrTmp[8] = _tr("Number Protocol IP").": $protocolName";
+	    }
+            else if($value['protocol'] == "TCP" || $value['protocol'] == "UDP"){
+		if($value["sport"] != "" && $value["sport"] != "ANY")
+		    $sportName = $pRules->getProtocolName($value["sport"]);
+		else
+		    $sportName = $value["sport"];
+		if($value["dport"] != "" && $value["dport"] != "ANY")
+		    $dportName = $pRules->getProtocolName($value["dport"]);
+		else
+		    $dportName = $value["dport"];
+                $arrTmp[8] = _tr("Source Port").": $sportName"."<br />"._tr("Destiny Port").": $dportName";
+	    }
             else if($value['protocol'] == "STATE")
                 $arrTmp[8] = $value['state'];
             else
@@ -757,7 +775,7 @@ function getPorts($pDB)
         $Ports = $oPort->getUDPortNumbers();
     $arrPort['ANY'] = _tr('ANY');
     foreach($Ports as $key => $value){
-        $arrPort[$value['details']] = $value['details'];
+        $arrPort[$value['id']] = $value['name'];
     }
     $jsonObject->set_message($arrPort);
     return $jsonObject->createJSON();

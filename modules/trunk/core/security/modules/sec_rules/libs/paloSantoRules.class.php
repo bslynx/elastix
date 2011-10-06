@@ -733,5 +733,16 @@ class paloSantoRules {
 	}
 	return (isset($result[0]))?$result[0]:array();
     }
+
+    function getProtocolName($idProtocol)
+    {
+	$query = "select name from port where id=?";
+	$result=$this->_DB->getFirstRowQuery($query,true,array($idProtocol));
+        if($result==FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return "--";
+        }
+	return $result["name"];
+    }
 }
 ?>
