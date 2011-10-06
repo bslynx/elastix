@@ -153,10 +153,78 @@ function action_loadFirewall($opt)
         case 'TCP':
         case 'UDP':
             $commandParams[] = "-p ".escapeshellarg($rule['protocol']);
-            if($rule['sport'] != 'ANY')
-                $commandParams[] = "--sport ".escapeshellarg($rule['sport']);
-            if($rule['dport'] != 'ANY')
-                $commandParams[] = "--dport ".escapeshellarg($rule['dport']);
+            if($rule['sport'] != 'ANY' && $rule['sport'] != "" && !is_null($rule['sport'])){
+		$port = "";
+		try{
+		    $result = $conn->prepare("SELECT details FROM port WHERE id=?");
+		    $r = $result->execute(array($rule['sport']));
+		    if(!$r){
+			print("ERROR: failed to query firewall rules");
+			$bExito = false;
+			break 2;
+		    }
+		    $arrResult = array();
+		    if($result!=null){
+			while($row = $result->fetch(PDO::FETCH_OBJ)) {
+			    $arrResult[] = (array)$row;
+			}
+		    }
+		    else{
+			print("ERROR: failed to query firewall rules");
+			$bExito = false;
+			break 2;
+		    }
+		    if(isset($arrResult[0]["details"])){
+			$port = $arrResult[0]["details"];
+		    }
+		    else{
+			print("ERROR: some port was not found in database");
+			$bExito = false;
+			break 2;
+		    }
+		} catch (PDOException $e) {            
+		    fprintf(STDERR, "ERR: failed to query firewall rules - %s\n", $e->getMessage());
+		    $bExito = FALSE;
+		    break 2;
+		}
+                $commandParams[] = "--sport ".escapeshellarg($port);
+	    }
+            if($rule['dport'] != 'ANY' && $rule['dport'] != "" && !is_null($rule['dport'])){
+		$port = "";
+		try{
+		    $result = $conn->prepare("SELECT details FROM port WHERE id=?");
+		    $r = $result->execute(array($rule['dport']));
+		    if(!$r){
+			print("ERROR: failed to query firewall rules");
+			$bExito = false;
+			break 2;
+		    }
+		    $arrResult = array();
+		    if($result!=null){
+			while($row = $result->fetch(PDO::FETCH_OBJ)) {
+			    $arrResult[] = (array)$row;
+			}
+		    }
+		    else{
+			print("ERROR: failed to query firewall rules");
+			$bExito = false;
+			break 2;
+		    }
+		    if(isset($arrResult[0]["details"])){
+			$port = $arrResult[0]["details"];
+		    }
+		    else{
+			print("ERROR: some port was not found in database");
+			$bExito = false;
+			break 2;
+		    }
+		} catch (PDOException $e) {            
+		    fprintf(STDERR, "ERR: failed to query firewall rules - %s\n", $e->getMessage());
+		    $bExito = FALSE;
+		    break 2;
+		}
+                $commandParams[] = "--dport ".escapeshellarg($port);
+	    }
             break;
         case 'ICMP':
             $commandParams[] = '-p icmp';
