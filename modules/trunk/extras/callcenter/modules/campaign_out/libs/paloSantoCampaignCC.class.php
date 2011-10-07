@@ -826,7 +826,7 @@ SELECT
     call_attribute.column_number    AS posicion
 FROM calls, call_attribute
 WHERE calls.id_campaign = ? AND calls.id = ? AND calls.id = call_attribute.id_call AND
-    (calls.status='Success' OR calls.status='Failure' OR calls.status='ShortCall' OR c.status='NoAnswer' OR c.status='Abandoned')
+    (calls.status='Success' OR calls.status='Failure' OR calls.status='ShortCall' OR calls.status='NoAnswer' OR calls.status='Abandoned')
 ORDER BY calls.id, call_attribute.column_number
 SQL_ATRIBUTOS;
         foreach ($datosCampania['BASE']['ID2POS'] as $id_call => $pos) {
