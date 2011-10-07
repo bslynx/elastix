@@ -173,7 +173,7 @@ if [ $? = 0 ] ; then
         # This step is supposed to create /etc/dahdi/system.conf, see next comment.
     	echo -e "HWDETECT: Detecting Sangoma cards ..."
     	rm -f /etc/wanpipe/wanpipe*.conf
-    	eval "/usr/sbin/wancfg_dahdi --silent --zapata_auto_conf_file=/etc/asterisk/chan_dahdi.conf.wanpipe $null_redirect_verbose"
+    	eval "/usr/sbin/wancfg_dahdi --silent --hw_dtmf=YES --zapata_auto_conf_file=/etc/asterisk/chan_dahdi.conf.wanpipe $null_redirect_verbose"
     fi
 fi
 
