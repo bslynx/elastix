@@ -54,7 +54,6 @@ class paloSantoIncomingCampaign
         }
     }
     
-    function delete_campaign($id_campaign) {}
     function activar_campaign($id_campaign, $sNuevoEstado)
     {
     	if (!in_array($sNuevoEstado, array('A', 'I'))) {
@@ -149,5 +148,28 @@ SQL_CAMPANIAS;
         }
         return $recordset;
     }
+
+    function delete_campaign($id_campaign) 
+    {
+    	$tupla =& $this->_DB->getFirstRowQuery(
+            'SELECT COUNT(id) llamadas_realizadas FROM call_entry WHERE id_campaign = ?',
+            true, array($id_campaign));
+        if (!is_array($tupla)) {
+            $this->errMsg = $this->_DB->errMsg;
+            return FALSE;
+        }
+        if ($tupla['llamadas_realizadas'] > 0) {
+            $this->errMsg = _tr('This campaign has already received calls');
+        	return FALSE;
+        }
+        // TODO: si se implementan múltiples formularios, borrar aquí asociación
+        // TODO: si se implementan contactos por campaña, borrar aquí
+        $r = $this->_DB->genQuery('DELETE FROM campaign_entry WHERE id = ?', array($id_campaign));
+        if (!$r) {
+        	$this->errMsg = $this->_DB->errMsg;
+        }
+        return $r;
+    }
+
 }
 ?>
