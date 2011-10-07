@@ -55,7 +55,20 @@ class paloSantoIncomingCampaign
     }
     
     function delete_campaign($id_campaign) {}
-    function activar_campaign($id_campaign) {}
+    function activar_campaign($id_campaign, $sNuevoEstado)
+    {
+    	if (!in_array($sNuevoEstado, array('A', 'I'))) {
+            $this->errMsg = '(internal) Invalid new state for campaign';
+    		return FALSE;
+    	}
+        $r = $this->_DB->genQuery(
+            'UPDATE campaign_entry SET estatus = ? WHERE id = ?', 
+            array($sNuevoEstado, $id_campaign));
+        if (!$r) {
+        	$this->errMsg = $this->_DB->errMsg;
+        }
+        return $r;
+    }
 
     function countCampaigns($sEstado = 'all')
     {
