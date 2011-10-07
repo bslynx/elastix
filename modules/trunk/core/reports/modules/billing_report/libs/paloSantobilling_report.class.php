@@ -52,7 +52,7 @@ class paloSantobilling_report {
 
     /*HERE YOUR FUNCTIONS*/
 	
-	 function obtainNumReport($filter_field, $filter_value, $start_date, $end_date, $pDB, $time, $disposition, $calltype){
+	 function obtainNumReport($filter_field, $filter_value, $start_date, $end_date, $pDB, $time, $disposition, $calltype, $arrConfig){
 		  $pathLog = "/var/log/asterisk";
 		  $where = "";
 		  $where2 = "";
@@ -74,13 +74,19 @@ class paloSantobilling_report {
           if($filter_field == 'accountcode' && $filter_value!=""){
                 $where .= " AND c.accountcode = $filter_value ";
           }
-		  $trunks = $this->getTrunks($pDB);
+		  if($filter_field == 'dstchannel' && $filter_value!=""){
+				$where .= " AND c.dstchannel like $filter_value ";
+		  }
+
+                        $trunks = $this->getTrunksAll($arrConfig);
+
 			if($calltype == "outgoing"){
 				foreach($trunks as $key => $value){
-					$where2 .= " OR c.dstchannel like '%".$value['trunk']."%' ";
+					$where2 .= " OR c.dstchannel like '%".$value[1]."%' ";
 				}
 				$where .= "AND (c.dstchannel like '%DAHDI%' $where2) ";
 		  }
+
 
 		  $query="SELECT
 						count(*)
@@ -89,7 +95,6 @@ class paloSantobilling_report {
 							LEFT OUTER JOIN rate r
 								ON 
 								c.calldate >= r.fecha_creacion AND
-								c.calldate <= r.fecha_cierre AND
 								substr(c.dst,'',length(r.prefix)) = r.prefix AND
 								substr(c.dstchannel,'',length(r.trunk)) = r.trunk 
 					WHERE c.disposition = '$disposition' AND 
@@ -103,7 +108,7 @@ class paloSantobilling_report {
 
 	 }
 
-	 function obtainReport($limit, $offset, $filter_field, $filter_value, $start_date, $end_date, $pDB, $time, $disposition, $calltype){
+	 function obtainReport($limit, $offset, $filter_field, $filter_value, $start_date, $end_date, $pDB, $time, $disposition, $calltype, $arrConfig){
 
 		  $pathLog = "/var/log/asterisk";
 		  $where = "";
@@ -126,11 +131,14 @@ class paloSantobilling_report {
           if($filter_field == 'accountcode' && $filter_value!=""){
                 $where .= " AND c.accountcode = $filter_value ";
           }
-		  $trunks = $this->getTrunks($pDB);
+		  if($filter_field == 'dstchannel' && $filter_value!=""){
+				$where .= " AND c.dstchannel like $filter_value ";
+		  }
+		  $trunks = $this->getTrunksAll($arrConfig);
 
 		  if($calltype == "outgoing"){
 				foreach($trunks as $key => $value){
-					$where2 .= " OR c.dstchannel like '%".$value['trunk']."%' ";
+					$where2 .= " OR c.dstchannel like '%".$value[1]."%' ";
 				}
 				$where .= "AND (c.dstchannel like '%DAHDI%' $where2) ";
 		  }
@@ -154,7 +162,6 @@ class paloSantobilling_report {
                         rate r
 							ON 
 								c.calldate >= r.fecha_creacion AND
-                                c.calldate <= r.fecha_cierre AND
 								substr(c.dst,'',length(r.prefix)) = r.prefix AND
 								substr(c.dstchannel,'',length(r.trunk)) = r.trunk
 					WHERE 
@@ -172,6 +179,27 @@ class paloSantobilling_report {
 		  $query = "select trunk from rate where trunk <> '';"; // not default rate
 		  $result = $pDB->fetchTable($query,true);
 		  return $result;
+	 }
+
+	 function getTrunksAll($arrConfig){
+		  include_once "libs/paloSantoTrunk.class.php";
+
+		  $pDB = new paloDB("sqlite3:////var/www/db/trunk.db");
+	          $oTrunk     = new paloTrunk($pDB);
+		  $arrTrunks=array();
+		  $result = "";
+		  $dsn = $arrConfig['AMPDBENGINE']['valor'] . "://" . $arrConfig['AMPDBUSER']['valor'] . ":" . $arrConfig['AMPDBPASS']['valor'] . "@" . $arrConfig['AMPDBHOST']['valor'] . "/asterisk";
+		  $pDB = new paloDB($dsn);
+		  $arrTrunks = getTrunks($pDB);
+
+		  if (is_array($arrTrunks)) {
+			  foreach ($arrTrunks as $tupla) {
+				  if (substr($tupla[1], 0, 3) != 'DAHDI' || $tupla[1]{4} == 'g')
+					  $t[] = $tupla;
+			  }
+			  $arrTrunks = $t;
+		  }
+		  return $arrTrunks;
 	 }
 
 	 function getDefaultRate($pDB){

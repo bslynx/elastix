@@ -162,12 +162,7 @@ function reportbilling_report($smarty, $module_name, $local_templates_dir, &$pDB
         $_POST['minutos']  = $minutos;
         $_POST['segundos'] = $segundos;
         $_POST['filter_value'] = $filter_value;
-        if($filter_field == "dst"){
-            if($filter_value != "")
-                $filter_value_tmp = $pDB->DBCAMPO('%'.$filter_value.'%');
-            else
-                $filter_value_tmp = "";
-        }elseif($filter_field == "rate_applied"){
+        if($filter_field == "dst" || $filter_field == "rate_applied" || $filter_field == "dstchannel"){
             if($filter_value != "")
                 $filter_value_tmp = $pDB->DBCAMPO('%'.$filter_value.'%');
             else
@@ -207,7 +202,7 @@ function reportbilling_report($smarty, $module_name, $local_templates_dir, &$pDB
     $arrData = array();
     $arrData = null;
     $extension = "";
-    $totalbilling_report = $pbilling_report->obtainNumReport($filter_field, $filter_value_tmp, $start_date, $end_date, $pDBSQLite, $time, "ANSWERED", "outgoing");
+    $totalbilling_report = $pbilling_report->obtainNumReport($filter_field, $filter_value_tmp, $start_date, $end_date, $pDBSQLite, $time, "ANSWERED", "outgoing", $arrConfig);
 
     $url = array(
         'menu'          =>  $module_name,
@@ -230,7 +225,7 @@ function reportbilling_report($smarty, $module_name, $local_templates_dir, &$pDB
     if($oGrid->isExportAction()) {
         $limit  = $totalbilling_report; 
         $offset = 0;
-        $arrResult = $pbilling_report->obtainReport($limit, $offset, $filter_field, $filter_value_tmp, $start_date, $end_date, $pDBSQLite, $time, "ANSWERED", "outgoing");
+        $arrResult = $pbilling_report->obtainReport($limit, $offset, $filter_field, $filter_value_tmp, $start_date, $end_date, $pDBSQLite, $time, "ANSWERED", "outgoing", $arrConfig);
 
         $arrData = array();
 	    // obteniendo tarifa default
@@ -308,7 +303,7 @@ function reportbilling_report($smarty, $module_name, $local_templates_dir, &$pDB
         $oGrid->setLimit($limit);
         $oGrid->setTotal($totalbilling_report);
         $offset = $oGrid->calculateOffset();
-        $arrResult = $pbilling_report->obtainReport($limit, $offset, $filter_field, $filter_value_tmp, $start_date, $end_date, $pDBSQLite, $time, "ANSWERED", "outgoing");
+        $arrResult = $pbilling_report->obtainReport($limit, $offset, $filter_field, $filter_value_tmp, $start_date, $end_date, $pDBSQLite, $time, "ANSWERED", "outgoing", $arrConfig);
         $arrData = array();
         // obteniendo tarifa default
         $rates_default = $pbilling_report->getDefaultRate($pDBSQLite);
@@ -442,7 +437,7 @@ function createFieldFilter($arrLang){
 	    "src"           => $arrLang["Source"],
 	    "dst"           => $arrLang["Destination"],
 	    "dstchannel"    => $arrLang["Dst. Channel"],
-	    "cost"          => $arrLang["Cost"],
+	    //"cost"          => $arrLang["Cost"],
         "accountcode"   => $arrLang["Account Code"],
                     );
 
