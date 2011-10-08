@@ -131,7 +131,8 @@ class paloSantoIncomingCampaign
         $sPeticionSQL = <<<SQL_CAMPANIAS
 SELECT ce.id, ce.name, qce.queue, ce.datetime_init, ce.datetime_end, 
     ce.daytime_init, ce.daytime_end, ce.script, 
-    COUNT(call_entry.id) AS num_completadas, NULL as promedio, ce.estatus 
+    COUNT(call_entry.id) AS num_completadas, NULL as promedio, ce.estatus,
+    ce.id_form 
 FROM (campaign_entry ce, queue_call_entry qce) 
 LEFT JOIN (call_entry) ON (ce.id = call_entry.id_campaign) 
 WHERE $sWhere GROUP BY ce.id ORDER BY ce.datetime_init, ce.daytime_init
@@ -147,6 +148,210 @@ SQL_CAMPANIAS;
             return NULL;
         }
         return $recordset;
+    }
+
+    /**
+     * Procedimiento para crear una nueva campaña, vacía e inactiva. Esta campaña 
+     * debe luego llenarse con números de teléfono en sucesivas operaciones.
+     *
+     * @param   $sNombre            Nombre de la campaña
+     * @param   $sQueue             Número que identifica a la cola a conectar la campaña saliente (p.ej. '402')
+     * @param   $sFechaInicio       Fecha YYYY-MM-DD en que inicia la campaña
+     * @param   $sFechaFinal        Fecha YYYY-MM-DD en que finaliza la campaña
+     * @param   $sHoraInicio        Hora del día (HH:MM militar) en que se puede iniciar llamadas
+     * @param   $sHoraFinal         Hora del día (HH:MM militar) en que se debe dejar de hacer llamadas
+     * @param   $script             Diálogo a asociar a esta campaña
+     * @param   $id_form            ID del formulario a asociar a esta campaña, o NULL
+     * 
+     * @return  int    El ID de la campaña recién creada, o NULL en caso de error
+     */
+    function createEmptyCampaign($sNombre, $sQueue, $sFechaInicial, $sFechaFinal,
+        $sHoraInicio, $sHoraFinal, $script, $id_form = NULL)
+    {
+        $sNombre = trim($sNombre);
+        $sQueue = trim($sQueue);
+        $sFechaInicial = trim($sFechaInicial);
+        $sFechaFinal = trim($sFechaFinal);
+        $sHoraInicio = trim($sHoraInicio);
+        $sHoraFinal = trim($sHoraFinal);
+        $script = trim($script);
+
+        if ($sNombre == '') {
+            $this->errMsg = _tr('Name Campaign cannot be empty');//'Nombre de campaña no puede estar vacío';
+            return NULL;
+        }
+        if ($sQueue == '') {
+            $this->errMsg = _tr('Queue cannot be empty');//'Número de cola no puede estar vacío';
+            return NULL;
+        }
+        if (!ctype_digit($sQueue)) {
+            $this->errMsg = _tr('Queue must be numeric');//'Número de cola debe de ser numérico y entero';
+            return NULL;
+        }
+        if (!preg_match('/^[[:digit:]]{4}-[[:digit:]]{2}-[[:digit:]]{2}$/', $sFechaInicial)) {
+            $this->errMsg = _tr('Invalid Start Date');//'Fecha de inicio no es válida (se espera yyyy-mm-dd)';
+            return NULL;
+        }
+        if (!preg_match('/^[[:digit:]]{4}-[[:digit:]]{2}-[[:digit:]]{2}$/', $sFechaFinal)) {
+            $this->errMsg = _tr('Invalid End Date');//'Fecha de final no es válida (se espera yyyy-mm-dd)';
+            return NULL;
+        }
+        if ($sFechaInicial > $sFechaFinal) {
+            $this->errMsg = _tr('Start Date must be greater than End Date');//'Fecha de inicio debe ser anterior a la fecha final';
+            return NULL;
+        }
+        if (!preg_match('/^[[:digit:]]{2}:[[:digit:]]{2}$/', $sHoraInicio)) {
+            $this->errMsg = _tr('Invalid Start Time');//'Hora de inicio no es válida (se espera hh:mm)';
+            return NULL;
+        }
+        if (!preg_match('/^[[:digit:]]{2}:[[:digit:]]{2}$/', $sHoraFinal)) {
+            $this->errMsg = _tr('Invalid End Time');//'Hora de final no es válida (se espera hh:mm)';
+            return NULL;
+        }
+        if (strcmp($sFechaInicial,$sFechaFinal)==0 && strcmp ($sHoraInicio,$sHoraFinal)>=0) {
+            $this->errMsg = _tr('Start Time must be greater than End Time');//'Hora de inicio debe ser anterior a la hora final';
+            return NULL;
+        }
+        if (!is_null($id_form) && !ctype_digit($id_form)) {
+            $this->errMsg = _tr('Form ID is not numeric');
+            return NULL;
+        }
+
+        // Verificar que el nombre de la campaña es único
+        $tupla =& $this->_DB->getFirstRowQuery('SELECT COUNT(*) FROM campaign_entry WHERE name = ?', FALSE, array($sNombre));
+        if (is_array($tupla) && $tupla[0] > 0) {
+            // Ya existe una campaña duplicada
+            $this->errMsg = _tr('Name Campaign already exists');//'Nombre de campaña indicado ya está en uso';
+            return NULL;
+        }
+
+        // Obtener el ID de la cola entrante correspondiente al número
+        $idQueue = NULL;
+        $tupla = $this->_DB->getFirstRowQuery(
+            'SELECT id FROM queue_call_entry WHERE queue = ? AND estatus = "A"', 
+            FALSE, array($sQueue));
+        if (!is_array($tupla) || count($tupla) <= 0) {
+        	// No se encuentra la cola indicada
+            $this->errMsg = _tr('Incoming queue not found');
+            return NULL;
+        }
+        $idQueue = $tupla[0];
+
+        // Construir y ejecutar la orden de inserción SQL
+        $sPeticionSQL = 
+            'INSERT INTO campaign_entry (name, id_queue_call_entry, '.
+                'id_form, datetime_init, datetime_end, daytime_init, '.
+                'daytime_end, estatus, script) '.
+            'VALUES (?, ?, ?, ?, ?, ?, ?, "A", ?)';
+        $paramSQL = array($sNombre, $idQueue, $id_form, $sFechaInicial,
+            $sFechaFinal, $sHoraInicio, $sHoraFinal, $script);
+
+        $result = $this->_DB->genQuery($sPeticionSQL, $paramSQL);
+        if (!$result) {
+            $this->errMsg = $this->_DB->errMsg;
+            return NULL;
+        }
+        
+        // Leer el ID insertado por la operación
+        $sPeticionSQL = 'SELECT LAST_INSERT_ID()';
+        $tupla =& $this->_DB->getFirstRowQuery($sPeticionSQL);
+        if (!is_array($tupla)) {
+            $this->errMsg = $this->_DB->errMsg;
+            return NULL;
+        }
+        return (int)$tupla[0];
+    }
+
+    function updateCampaign($idCampaign, $sNombre, $sQueue, $sFechaInicial, $sFechaFinal,
+        $sHoraInicio, $sHoraFinal, $script, $id_form = NULL)
+    {
+        $sNombre = trim($sNombre);
+        $sQueue = trim($sQueue);
+        $sFechaInicial = trim($sFechaInicial);
+        $sFechaFinal = trim($sFechaFinal);
+        $sHoraInicio = trim($sHoraInicio);
+        $sHoraFinal = trim($sHoraFinal);
+        $script = trim($script);
+
+        if (!ctype_digit($idCampaign)) {
+        	$this->errMsg = _tr('(internal) Invalid campaign ID');
+            return false;
+        }
+        if ($sNombre == '') {
+            $this->errMsg = _tr('Name Campaign cannot be empty');//'Nombre de campaña no puede estar vacío';
+            return false;
+        }
+        if ($sQueue == '') {
+            $this->errMsg = _tr('Queue cannot be empty');//'Número de cola no puede estar vacío';
+            return false;
+        }
+        if (!ctype_digit($sQueue)) {
+            $this->errMsg = _tr('Queue must be numeric');//'Número de cola debe de ser numérico y entero';
+            return false;
+        }
+        if (!preg_match('/^[[:digit:]]{4}-[[:digit:]]{2}-[[:digit:]]{2}$/', $sFechaInicial)) {
+            $this->errMsg = _tr('Invalid Start Date');//'Fecha de inicio no es válida (se espera yyyy-mm-dd)';
+            return false;
+        }
+        if (!preg_match('/^[[:digit:]]{4}-[[:digit:]]{2}-[[:digit:]]{2}$/', $sFechaFinal)) {
+            $this->errMsg = _tr('Invalid End Date');//'Fecha de final no es válida (se espera yyyy-mm-dd)';
+            return false;
+        }
+        if ($sFechaInicial > $sFechaFinal) {
+            $this->errMsg = _tr('Start Date must be greater than End Date');//'Fecha de inicio debe ser anterior a la fecha final';
+            return false;
+        }
+        if (!preg_match('/^[[:digit:]]{2}:[[:digit:]]{2}$/', $sHoraInicio)) {
+            $this->errMsg = _tr('Invalid Start Time');//'Hora de inicio no es válida (se espera hh:mm)';
+            return false;
+        }
+        if (!preg_match('/^[[:digit:]]{2}:[[:digit:]]{2}$/', $sHoraFinal)) {
+            $this->errMsg = _tr('Invalid End Time');//'Hora de final no es válida (se espera hh:mm)';
+            return false;
+        }
+        if (strcmp($sFechaInicial,$sFechaFinal)==0 && strcmp ($sHoraInicio,$sHoraFinal)>=0) {
+            $this->errMsg = _tr('Start Time must be greater than End Time');//'Hora de inicio debe ser anterior a la hora final';
+            return false;
+        }
+        if (!is_null($id_form) && !ctype_digit($id_form)) {
+            $this->errMsg = _tr('Form ID is not numeric');
+            return false;
+        }
+
+        // Verificar que el nombre de la campaña es único
+        $tupla =& $this->_DB->getFirstRowQuery('SELECT COUNT(*) FROM campaign_entry WHERE name = ? AND id <> ?', FALSE, array($sNombre, $idCampaign));
+        if (is_array($tupla) && $tupla[0] > 0) {
+            // Ya existe una campaña duplicada
+            $this->errMsg = _tr('Name Campaign already exists');//'Nombre de campaña indicado ya está en uso';
+            return false;
+        }
+
+        // Obtener el ID de la cola entrante correspondiente al número
+        $idQueue = NULL;
+        $tupla = $this->_DB->getFirstRowQuery(
+            'SELECT id FROM queue_call_entry WHERE queue = ? AND estatus = "A"', 
+            FALSE, array($sQueue));
+        if (!is_array($tupla) || count($tupla) <= 0) {
+            // No se encuentra la cola indicada
+            $this->errMsg = _tr('Incoming queue not found');
+            return false;
+        }
+        $idQueue = $tupla[0];
+
+        // Construir y ejecutar la orden de inserción SQL
+        $sPeticionSQL = 
+            'UPDATE campaign_entry SET name = ?, id_queue_call_entry = ?, '.
+                'id_form = ?, datetime_init = ?, datetime_end = ?, '.
+                'daytime_init = ?, daytime_end = ?, script = ? '.
+            'WHERE id = ?';
+        $paramSQL = array($sNombre, $idQueue, $id_form, $sFechaInicial,
+            $sFechaFinal, $sHoraInicio, $sHoraFinal, $script, $idCampaign);
+        $result = $this->_DB->genQuery($sPeticionSQL, $paramSQL);
+        if (!$result) {
+            $this->errMsg = $this->_DB->errMsg;
+            return false;
+        }
+        return true;
     }
 
     function delete_campaign($id_campaign) 
