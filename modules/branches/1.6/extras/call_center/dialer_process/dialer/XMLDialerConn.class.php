@@ -1019,7 +1019,7 @@ LISTA_EXTENSIONES;
         case 'incoming':
             return $this->_leerInfoCampaniaXML_incoming($idCampania);
         case 'outgoing':
-            return  $this->_leerInfoCampaniaXML_outgoing($idCampania);
+            return $this->_leerInfoCampaniaXML_outgoing($idCampania);
         default:
             return $this->_generarRespuestaFallo(400, 'Bad request');
         }
@@ -1134,7 +1134,16 @@ LEER_CAMPANIA;
         }
 
         // Leer la lista de formularios asociados a esta campaña
-        $idxForm = array($tuplaCampania['id_form']);
+        $idxForm = $this->_dbConn->getCol(
+            'SELECT DISTINCT id_form FROM campaign_form_entry WHERE id_campaign = ?',
+            0, array($idCampania));
+        if (DB::isError($idxForm)) {
+            $this->oMainLog->output("ERR: no se puede leer información de la campaña (formularios) - ".$idxForm->getMessage());
+            $this->_agregarRespuestaFallo($xml_GetCampaignInfoResponse, 500, 'Cannot read campaign info (forms)');
+            return $xml_response;
+        }        
+        if (!is_null($tuplaCampania['id_form']) && !in_array($tuplaCampania['id_form'], $idxForm))
+            $idxForm[] = $tuplaCampania['id_form'];
         unset($tuplaCampania['id_form']);
         
         // Leer los campos asociados a cada formulario

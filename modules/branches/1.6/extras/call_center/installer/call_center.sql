@@ -350,6 +350,19 @@ CREATE TABLE IF NOT EXISTS form_data_recolected_entry
 ) ENGINE=InnoDB;
 
 --
+-- Table structure for table `campaign_form_entry`
+--
+CREATE TABLE IF NOT EXISTS `campaign_form_entry` (
+  `id_campaign` int(10) unsigned NOT NULL,
+  `id_form` int(10) unsigned NOT NULL,
+  PRIMARY KEY  (`id_campaign`,`id_form`),
+  KEY `id_campaign` (`id_campaign`),
+  KEY `id_form` (`id_form`),
+  CONSTRAINT `campaign_form_entry_ibfk_1` FOREIGN KEY (`id_campaign`) REFERENCES `campaign_entry` (`id`),
+  CONSTRAINT `campaign_form_entry_ibfk_2` FOREIGN KEY (`id_form`) REFERENCES `form` (`id`)
+) ENGINE=InnoDB;
+
+--
 -- Table structure for table `call_entry`
 --
 CREATE TABLE IF NOT EXISTS `call_entry` (
