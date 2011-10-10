@@ -262,6 +262,59 @@ SQL_CAMPANIAS;
         return (int)$tupla[0];
     }
 
+    function addCampaignForm($idCampaign, $formularios)
+    {
+        if (!ctype_digit("$idCampaign")) {
+            $this->errMsg = _tr('(internal) Invalid campaign ID');
+            return false;
+        }
+    	if (!is_array($formularios)) {
+            $this->errMsg = _tr('(internal) invalid form list, expected array');
+    		return FALSE;
+    	}
+        if (count($formularios) <= 0) {
+            $this->errMsg = _tr('No forms selected');
+        	return FALSE;
+        }
+        foreach ($formularios as $idForm) {
+        	$r = $this->_DB->genQuery(
+                'INSERT INTO campaign_form_entry (id_campaign, id_form) VALUES (?, ?)',
+                array($idCampaign, $idForm));
+            if (!$r) {
+                $this->errMsg = $this->_DB->errMsg;
+            	return FALSE;
+            }
+        }
+        return TRUE;
+    }
+    
+    function updateCampaignForm($id_campania,$formularios)
+    {
+    	if (!$this->_DB->genQuery(
+                'DELETE FROM campaign_form_entry WHERE id_campaign = ?', 
+                array($id_campania))) {
+    		$this->errMsg = $this->_DB->errMsg;
+            return FALSE;
+    	}
+        return $this->addCampaignForm($id_campania, $formularios);
+    }
+
+    function obtenerCampaignForm($id_campania)
+    {
+    	$recordset = $this->_DB->fetchTable(
+            'SELECT id_form FROM campaign_form_entry WHERE id_campaign = ?', 
+            FALSE, array($id_campania));
+        if (!is_array($recordset)) {
+            $this->errMsg = $this->_DB->errMsg;
+            return NULL;
+        }
+        $salida = array();
+        foreach($recordset as $key => $value) {
+            $salida[] = $value[0];
+        }
+        return $salida;
+    }
+
     function updateCampaign($idCampaign, $sNombre, $sQueue, $sFechaInicial, $sFechaFinal,
         $sHoraInicio, $sHoraFinal, $script, $id_form = NULL)
     {
@@ -367,13 +420,31 @@ SQL_CAMPANIAS;
             $this->errMsg = _tr('This campaign has already received calls');
         	return FALSE;
         }
-        // TODO: si se implementan múltiples formularios, borrar aquí asociación
-        // TODO: si se implementan contactos por campaña, borrar aquí
-        $r = $this->_DB->genQuery('DELETE FROM campaign_entry WHERE id = ?', array($id_campaign));
+        $listaSQL = array(
+            // TODO: si se implementan contactos por campaña, meter SQL aquí
+            'DELETE FROM campaign_form_entry WHERE id_campaign = ?',
+            'DELETE FROM campaign_entry WHERE id = ?'
+        );
+        
+        // Inicio de transacción
+        $r = $this->_DB->genQuery('SET AUTOCOMMIT=0');
         if (!$r) {
         	$this->errMsg = $this->_DB->errMsg;
+            return FALSE;
         }
-        return $r;
+        foreach ($listaSQL as $sql) {
+            $r = $this->_DB->genQuery($sql, array($id_campaign));
+            if (!$r) {
+            	$this->errMsg = $this->_DB->errMsg;
+                $this->_DB->genQuery('ROLLBACK');
+                $this->_DB->genQuery('SET AUTOCOMMIT=1');
+                return FALSE;
+            }
+        }
+        // Fin de transacción
+        $this->_DB->genQuery('COMMIT');
+        $this->_DB->genQuery('SET AUTOCOMMIT=1');        
+        return TRUE;
     }
 
     /**
@@ -519,6 +590,15 @@ SQL_ATRIBUTOS;
     ff.orden    AS orden
 FROM campaign_entry ce, form f, form_field ff
 WHERE ce.id_form = f.id AND f.id = ff.id_form AND ff.tipo <> 'LABEL' AND ce.id = ?)
+UNION DISTINCT
+(SELECT 
+    f.id        AS id_form,
+    ff.id       AS id_form_field,
+    ff.etiqueta AS campo_nombre,
+    f.nombre    AS formulario_nombre,
+    ff.orden    AS orden
+FROM campaign_form_entry cf, form f, form_field ff
+WHERE cf.id_form = f.id AND f.id = ff.id_form AND ff.tipo <> 'LABEL' AND cf.id_campaign = ?)
 UNION DISTINCT
 (SELECT DISTINCT
     f.id        AS id_form,

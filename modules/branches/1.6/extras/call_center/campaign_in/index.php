@@ -346,15 +346,15 @@ function formEditCampaign($pDB, $smarty, $module_name, $local_templates_dir, $id
     // Impedir mostrar el formulario si no se han definido colas o no
     // quedan colas libres para usar en campañas salientes.
     if (count($arrQueues) <= 0) {
-        $formCampos = getFormCampaign($arrDataQueues, NULL);
+        $formCampos = getFormCampaign($arrDataQueues, NULL, NULL);
         $oForm = new paloForm($smarty, $formCampos);
         $smarty->assign('no_queues', 1);
     } elseif (count($arrDataQueues) <= 0) {
-        $formCampos = getFormCampaign($arrDataQueues, NULL);
+        $formCampos = getFormCampaign($arrDataQueues, NULL, NULL);
         $oForm = new paloForm($smarty, $formCampos);
         $smarty->assign('no_outgoing_queues', 1);
     } elseif (count($arrDataForm) <= 0) {
-        $formCampos = getFormCampaign($arrDataQueues, NULL);
+        $formCampos = getFormCampaign($arrDataQueues, NULL, NULL);
         $oForm = new paloForm($smarty, $formCampos);
         $smarty->assign('no_forms', 1);
     } else {
@@ -370,14 +370,15 @@ function formEditCampaign($pDB, $smarty, $module_name, $local_templates_dir, $id
         $smarty->assign('LABEL_CALL_FILE', _tr('Call File'));
 
         // Valores por omisión para primera carga
+        $arrNoElegidos = array();   // Lista de selección de formularios elegibles
         $arrElegidos = array();     // Lista de selección de formularios ya elegidos
         $values_form = NULL;        // Selección hecha en el formulario
         if (is_null($id_campaign)) {
             if (!isset($_POST['nombre'])) $_POST['nombre']='';
             if (!isset($_POST['rte_script'])) $_POST['rte_script'] = '';
-            if (!isset($_POST['formulario'])) $_POST['formulario'] = '';
+            if (!isset($_POST['values_form'])) $_POST['values_form'] = '';
             //$_POST['formulario']= explode(",", $_POST['values_form']);
-            $values_form = explode(",", $_POST['formulario']);
+            $values_form = explode(",", $_POST['values_form']);
 
         } else {
             if (!isset($_POST['nombre']))       $_POST['nombre']       = $arrCampaign[0]['name'];
@@ -394,10 +395,12 @@ function formEditCampaign($pDB, $smarty, $module_name, $local_templates_dir, $id
             if (!isset($_POST['rte_script']))   $_POST['rte_script'] = $arrCampaign[0]['script'];
             //if (!isset($_POST['formulario']))           $_POST['formulario'] = "";
             //if (!isset($_POST['formularios_elegidos'])) $_POST['formularios_elegidos'] = "";
-            if (!isset($_POST['formulario'])) {
-                $values_form = array($arrCampaign[0]['id_form']);
+            if (!isset($_POST['values_form'])) {
+                $values_form = $oCamp->obtenerCampaignForm($id_campaign);
+                if (!is_null($arrCampaign[0]['id_form']) && !in_array($arrCampaign[0]['id_form'], $values_form))
+                    $values_form[] = $arrCampaign[0]['id_form'];
             } else {
-                $values_form = explode(",", $_POST['formulario']);
+                $values_form = explode(",", $_POST['values_form']);
             }
         }
 
@@ -406,11 +409,14 @@ function formEditCampaign($pDB, $smarty, $module_name, $local_templates_dir, $id
 
         // Clasificar los formularios elegidos y no elegidos
         foreach ($arrDataForm as $key => $form) {
-            $arrElegidos[$form['id']] = $form['nombre'];
+            if (in_array($form['id'], $values_form))
+                $arrElegidos[$form['id']] = $form['nombre'];
+            else
+                $arrNoElegidos[$form['id']] = $form['nombre'];
         }
 
         // Generación del objeto de formulario
-        $formCampos = getFormCampaign($arrDataQueues, $arrElegidos);
+        $formCampos = getFormCampaign($arrDataQueues, $arrNoElegidos, $arrElegidos);
         $oForm = new paloForm($smarty, $formCampos);
         if (!is_null($id_campaign)) {
             $oForm->setEditMode();
@@ -458,38 +464,54 @@ function formEditCampaign($pDB, $smarty, $module_name, $local_templates_dir, $id
                     $smarty->assign("mb_message", _tr('Unable to parse end time specification'));
                 } else {
 
-                    $bExito = TRUE;
-                    if ($bDoCreate) {
-                        $id_campaign = $oCamp->createEmptyCampaign(
-                                        $_POST['nombre'],
-                                        $_POST['queue'],
-                                        date('Y-m-d', $iFechaIni),
-                                        date('Y-m-d', $iFechaFin),
-                                        $time_ini,
-                                        $time_fin,
-                                        $_POST['rte_script'],
-                                        $values_form[0]);
-                        if (is_null($id_campaign)) $bExito = FALSE;
-                    } elseif ($bDoUpdate) {
-                        $bExito = $oCamp->updateCampaign(
-                                        $id_campaign,
-                                        $_POST['nombre'],
-                                        $_POST['queue'],
-                                        date('Y-m-d', $iFechaIni),
-                                        date('Y-m-d', $iFechaFin),
-                                        $time_ini,
-                                        $time_fin,
-                                        $_POST['rte_script'],
-                                        $values_form[0]);
-                    }
-                    
-                    // Confirmar o deshacer la transacción según sea apropiado
-                    if ($bExito) {
-                        header("Location: ?menu=$module_name");
+                    if(!$pDB->genQuery("SET AUTOCOMMIT=0")) {
+                        $smarty->assign("mb_message", $pDB->errMsg);
                     } else {
-                        $smarty->assign("mb_title", _tr('Validation Error'));
-                        $smarty->assign("mb_message", $oCamp->errMsg);
+                        $bExito = TRUE;
+                        if ($bDoCreate) {
+                            $id_campaign = $oCamp->createEmptyCampaign(
+                                            $_POST['nombre'],
+                                            $_POST['queue'],
+                                            date('Y-m-d', $iFechaIni),
+                                            date('Y-m-d', $iFechaFin),
+                                            $time_ini,
+                                            $time_fin,
+                                            $_POST['rte_script'],
+                                            NULL);
+                            if (is_null($id_campaign)) $bExito = FALSE;
+                        } elseif ($bDoUpdate) {
+                            $bExito = $oCamp->updateCampaign(
+                                            $id_campaign,
+                                            $_POST['nombre'],
+                                            $_POST['queue'],
+                                            date('Y-m-d', $iFechaIni),
+                                            date('Y-m-d', $iFechaFin),
+                                            $time_ini,
+                                            $time_fin,
+                                            $_POST['rte_script'],
+                                            NULL);
+                        }
+                        
+                        // Introducir o actualizar formularios
+                        if ($bExito) {
+                            if ($bDoCreate) {
+                                $bExito = $oCamp->addCampaignForm($id_campaign, $values_form);
+                            } elseif ($bDoUpdate) {
+                                $bExito = $oCamp->updateCampaignForm($id_campaign, $values_form);
+                            }
+                        }
+
+                        // Confirmar o deshacer la transacción según sea apropiado
+                        if ($bExito) {
+                            $pDB->genQuery("COMMIT");
+                            header("Location: ?menu=$module_name");
+                        } else {
+                            $pDB->genQuery("ROLLBACK");
+                            $smarty->assign("mb_title", _tr('Validation Error'));
+                            $smarty->assign("mb_message", $oCamp->errMsg);
+                        }
                     }
+                    $pDB->genQuery("SET AUTOCOMMIT=1");
                 }
             }
         }
@@ -502,7 +524,7 @@ function formEditCampaign($pDB, $smarty, $module_name, $local_templates_dir, $id
     return $contenidoModulo;
 }
 
-function getFormCampaign($arrDataQueues, $arrSelectFormElegidos)
+function getFormCampaign($arrDataQueues, $arrSelectForm, $arrSelectFormElegidos)
 {
     $horas = array();
     $i = 0;
@@ -601,11 +623,21 @@ function getFormCampaign($arrDataQueues, $arrSelectFormElegidos)
             "LABEL"                  => _tr('Form'),
             "REQUIRED"               => "yes",
             "INPUT_TYPE"             => "SELECT",
+            "INPUT_EXTRA_PARAM"      => $arrSelectForm,
+            "VALIDATION_TYPE"        => "text",
+            "VALIDATION_EXTRA_PARAM" => "",
+            "MULTIPLE"               => true,
+            "SIZE"                   => "5"
+        ),
+        'formularios_elegidos'       => array(
+            "LABEL"                  => _tr('Form'),
+            "REQUIRED"               => "yes",
+            "INPUT_TYPE"             => "SELECT",
             "INPUT_EXTRA_PARAM"      => $arrSelectFormElegidos,
             "VALIDATION_TYPE"        => "text",
             "VALIDATION_EXTRA_PARAM" => "",
-            //"MULTIPLE"               => true,
-            //"SIZE"                   => "5"
+            "MULTIPLE"               => true,
+            "SIZE"                   => "5"
         ),
         "queue" => array(
             "LABEL"                  => _tr('Queue'),

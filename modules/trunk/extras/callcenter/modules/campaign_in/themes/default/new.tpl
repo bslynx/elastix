@@ -82,7 +82,6 @@ var rte_script = new richTextEditor('rte_script');
 			</a><br><br><hr>			
 		</td>
           <td  colspan='2'>
-{*
            {if $mode eq 'edit' or $mode eq 'input'}
                 <table border='0' cellpadding='0' cellspacing='0'>
                     <tr>
@@ -100,8 +99,6 @@ var rte_script = new richTextEditor('rte_script');
            {else}
                {$formulario.INPUT}
             {/if}
-*}
-            {$formulario.INPUT}            
             </td>
 	  </tr>
       <tr height='30'>
@@ -130,6 +127,7 @@ var rte_script = new richTextEditor('rte_script');
   </tr>
 </table>
 <input type="hidden" name="id_campaign" id='id_campaign' value="{$id_campaign}" />
+<input type="hidden" name="values_form" id='values_form' value="" />    
 </form>
 
 {literal}
@@ -139,10 +137,89 @@ var rte_script = new richTextEditor('rte_script');
    se requiere atención especial para el RTF del script, y para la lista de 
    formularios elegidos. */
 function submitForm() { 
+    var lc = listaControlesFormularios();
+    var select_form = lc[1]; /* Formularios elegidos */
+    var values = "";
+    
+    for(var i=0; i < select_form.length; i++) {
+        values = values + select_form[i].value + ",";
+    }
+    if(values != "")
+        values = values.substring(0,values.length-1);
+    document.getElementById("values_form").value = values;
+
     updateRTEs();   
     return true;
 }
 
+function add_form()
+{
+    var lc = listaControlesFormularios();
+    var select_formularios = lc[0];
+    var select_formularios_elegidos = lc[1];
+
+    for(var i=0;i<select_formularios.length;i++){
+        if(select_formularios[i].selected){
+            var option_tmp = document.createElement("option");
+            option_tmp.value = select_formularios[i].value;
+            option_tmp.appendChild(document.createTextNode(select_formularios[i].firstChild.data));
+            select_formularios_elegidos.appendChild(option_tmp);
+        }
+    }
+
+    for(var i=select_formularios.length-1;i>=0;i--){
+        if(select_formularios[i].selected){
+            select_formularios.removeChild(select_formularios[i]);
+        }
+    }
+}
+
+
+function drop_form()
+{
+    var lc = listaControlesFormularios();
+    var select_formularios = lc[0];
+    var select_formularios_elegidos = lc[1];
+
+    for(var i=0;i<select_formularios_elegidos.length;i++){
+        if(select_formularios_elegidos[i].selected){
+            var option_tmp = document.createElement("option");
+            option_tmp.value = select_formularios_elegidos[i].value;
+            option_tmp.appendChild(document.createTextNode(select_formularios_elegidos[i].firstChild.data));
+            select_formularios.appendChild(option_tmp);
+        }
+    }
+
+    for(var i=select_formularios_elegidos.length-1;i>=0;i--){
+        if(select_formularios_elegidos[i].selected){
+            select_formularios_elegidos.removeChild(select_formularios_elegidos[i]);
+        }
+    }
+}
+
+/* Esta función es necesaria para lidiar con el cambio en los nombres de los 
+   controles generados por Elastix entre 1.6-12 y 1.6.2-1 */
+function listaControlesFormularios()
+{
+    var listaControles;
+    var select_formularios;
+    var select_formularios_elegidos;
+    
+    listaControles = document.getElementsByName('formulario');
+    if (listaControles.length == 0)
+        listaControles = document.getElementsByName('formulario[]');
+    select_formularios = listaControles[0];
+    
+    listaControles = document.getElementsByName('formularios_elegidos');
+    if (listaControles.length == 0)
+        listaControles = document.getElementsByName('formularios_elegidos[]');
+    select_formularios_elegidos = listaControles[0];
+
+    var lista = new Array();
+    lista[0] = select_formularios;
+    lista[1] = select_formularios_elegidos;
+    return lista;
+}
 
 </script>
 {/literal}
