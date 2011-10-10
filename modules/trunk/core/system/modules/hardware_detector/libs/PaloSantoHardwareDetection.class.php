@@ -153,7 +153,7 @@ class PaloSantoHardwareDetection
                    }
 
                     //Tipo de las lineas
-                    $tipo = ($regs1[2] == 'PRI' || $regs1[2] == 'BRI') ? 'ISDN' : $regs1[2];
+                    $tipo = $regs1[2];
                     $tarjetas["TARJETA$idTarjeta"]['DESC']['MEDIA'] = $tipo;
                                         
                     $dataType=preg_split('/[:]/',$regs1[4],2);
