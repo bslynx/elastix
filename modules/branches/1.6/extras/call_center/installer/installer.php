@@ -94,6 +94,8 @@ if (file_exists($path_script_db))
     exec("sudo -u root chmod 777 /etc/rc.d/init.d/",$arrConsole,$flagStatus);
     exec("mv $tmpDir/dialer_process/elastixdialer /etc/rc.d/init.d/",$arrConsole,$flagStatus);
     exec("sudo -u root chmod 755 /etc/rc.d/init.d/",$arrConsole,$flagStatus);
+    exec("sudo -u root chkconfig --add elastixdialer");
+    exec("sudo -u root chkconfig --level 2345 elastixdialer on");
     $return = ($flagStatus)?2:0;
 }
 

@@ -58,9 +58,9 @@ chown -R asterisk.asterisk /tmp/new_module/%{modname}
 php /tmp/new_module/%{modname}/setup/installer.php
 rm -rf /tmp/new_module
 
-# Add dialer to startup scripts, but disable it by default
+# Add dialer to startup scripts, and enable it by default
 chkconfig --add elastixdialer
-chkconfig --level 2345 elastixdialer off
+chkconfig --level 2345 elastixdialer on
 
 # Fix incorrect permissions left by earlier versions of RPM
 chown -R asterisk.asterisk /opt/elastix/dialer
@@ -92,6 +92,9 @@ fi
 /etc/logrotate.d/elastixdialer
 
 %changelog
+* Mon Oct 10 2011 Alex Villacis Lasso <a_villacis@palosanto.com>
+- Enable elastixdialer service by default.
+
 * Tue Sep 27 2011 Alberto Santos <asantos@palosanto.com> 2.0.0-17
 - CHANGED: module agent_console, verify if function "obtenerClaveAMIAdmin" 
   exists, if not the password is set with "elastix456"
