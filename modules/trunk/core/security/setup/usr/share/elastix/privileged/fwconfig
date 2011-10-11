@@ -54,6 +54,7 @@ function error_exit($sMsg, $errorcode = 1)
 // Flush all firewall rules and remove all chains.
 function action_flushFirewall($opt)
 {
+    file_put_contents("/etc/sysconfig/iptables",""); // Se blanque ese archivo para que no se vuelvan a cargar las reglas al reiniciar el servidor
 	$output = $ret = NULL;
     foreach (array(
         '/sbin/iptables -F',
