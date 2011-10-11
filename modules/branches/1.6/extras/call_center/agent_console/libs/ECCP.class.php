@@ -148,6 +148,7 @@ class ECCP
                 throw new ECCPIOException('input');
             } elseif ($iNumCambio > 0 || count($listoLeer) > 0) {
                 $s = fread($this->_hConn, 65536);
+                if ($s == '') throw new ECCPIOException('input');
                 $this->_parsearPaquetesXML($s);
             }
         } while (is_null($this->_response) && (is_null($timeout) || time() - $iTimestampInicio < $timeout));

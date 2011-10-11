@@ -194,7 +194,9 @@ class PaloSantoConsola
             $this->_astman = NULL;
         }
         if (!is_null($this->_eccp)) {
-            $this->_eccp->disconnect();
+            try {
+                $this->_eccp->disconnect();
+            } catch (Exception $e) {}
             $this->_eccp = NULL;
         }
     }
