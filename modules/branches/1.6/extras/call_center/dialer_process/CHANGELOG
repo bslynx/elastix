@@ -21,9 +21,12 @@
   - The previous Agent Console depends on the agent being willing and able to
     close the agent session correctly from within the interface. Failure to do
     this results in corrupted (stale) session and break audit records. This 
-    corruption is the probable root cause of Elastix bugs #494, #990. The new 
-    Agent Console is immune to this failure scenario, since the audit record update
+    corruption is the probable root cause of Elastix bug #494. The new Agent 
+    Console is immune to this failure scenario, since the audit record update
     is now done by the dialer daemon process.
+  - The agent audit now properly handles the case where an agent is deactivated
+    and reactivated multiple times while keeping the same agent number. Fixes
+    Elastix bug #990.
   - As a result of improved handling of the interface state, it is now possible
     to switch to other Elastix modules while the agent is logged in, then switch
     back to the Agent Console, which will display the correct interface state.
