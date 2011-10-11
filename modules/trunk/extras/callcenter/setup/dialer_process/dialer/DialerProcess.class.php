@@ -3124,6 +3124,7 @@ INFO_FORMULARIOS;
             }
             if ($sAgente !== FALSE) {
             	// Agente colgó antes de logonearse con contraseña
+                $this->quitarIntentoLoginAgente($sAgente);
                 $this->_dialSrv->notificarEvento_AgentLogin($sAgente, NULL, FALSE);
                 unset($this->_infoAgentes[$sAgente]);
                 if ($this->DEBUG) {
@@ -3540,10 +3541,17 @@ INFO_FORMULARIOS;
             }
             return FALSE;
         }
+        $this->quitarIntentoLoginAgente($sAgente);
         $this->_infoAgentes[$sAgente]['estado_consola'] = 'logged-in';
         
         // Escribir la información de auditoría en la base de datos
         $this->_infoAgentes[$sAgente]['id_sesion'] = $this->marcarInicioSesionAgente($sAgente);
+        if (is_null($this->_infoAgentes[$sAgente]['id_sesion'])) {
+            // Ha fallado la inserción del registro de auditoría
+            unset($this->_infoAgentes[$sAgente]);
+            $this->_astConn->Agentlogoff($params['Agent']);
+            $this->_dialSrv->notificarEvento_AgentLogin($sAgente, NULL, FALSE);
+        }
 
         if ($this->DEBUG) {
             $this->oMainLog->output("DEBUG: EXIT OnAgentlogin");
