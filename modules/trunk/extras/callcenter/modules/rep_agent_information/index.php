@@ -181,7 +181,8 @@ NO_QUEUE_END;
                 $tempTiempos['promedio_duracion'] = $tupla['promedio_sobre_monitoreadas'];
             }
         }
-        $tempTiempos['llamadas_por_hora'] /= $r['tiempo_conexion'] / 3600;
+        if ($r['tiempo_conexion'] > 0)
+            $tempTiempos['llamadas_por_hora'] /= $r['tiempo_conexion'] / 3600;
 
         $sFormatoMonitoreadas = sprintf(
             '%d %s(s) (%d %s, %d %s)',
