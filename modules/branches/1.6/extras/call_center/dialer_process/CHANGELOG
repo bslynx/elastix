@@ -34,6 +34,7 @@
   - The Transfer capability is expanded to any arbitrary extension/queue. Partial
     fix for Elastix bug #419.
   As a side effect of the rewrite, may also fix Elastix bugs #879, #796, #414. 
+* Incoming calls monitoring: fix use of undefined array index.
 * Agent Information: fix division by zero on no connection time.
 * Campaigns In: new module to define campaigns for incoming calls 
 * Campaigns Out: include NoAnswer and Abandoned calls in CSV report too.

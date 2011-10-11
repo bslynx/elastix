@@ -153,7 +153,9 @@ class paloSantoIncomingcallsmonitoring {
                     case "TERMINADA";
                     case "ACTIVA";
                     case "HOLD";
-                        $records[$data["queue"]]["answered"] += $data["cantidad_llamadas"];//se agregó +
+                        if (!isset($records[$data["queue"]]["answered"]))
+                            $records[$data["queue"]]["answered"] = $data["cantidad_llamadas"];
+                        else $records[$data["queue"]]["answered"] += $data["cantidad_llamadas"];//se agregó +
                         $totales["answered"] = $totales["answered"]+$data["cantidad_llamadas"];
                 }
             } // fin del foreach
