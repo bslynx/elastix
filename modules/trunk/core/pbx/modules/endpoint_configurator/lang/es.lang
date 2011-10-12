@@ -196,6 +196,7 @@ $arrLangModule=array(
 "Lines Configuration for Patton" => "Configuración de las Líneas del Patton",
 "Data Configuration" => "Configuración de los Datos",
 "Return" => "Regresar",
-"The username or password are incorrect" => "El usuario o contraseña son incorrectos"
+"The username or password are incorrect" => "El usuario o contraseña son incorrectos",
+"The following errors ocurred" => "Ocurrieron los siguientes errores"
 );
 ?>

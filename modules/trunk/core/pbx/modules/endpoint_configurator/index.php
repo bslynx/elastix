@@ -316,6 +316,7 @@ function endpointConfiguratedSet($smarty, $module_name, $local_templates_dir, $d
     $arrFindVendor    = array(); //variable de ayuda, para llamar solo una vez la funcion createFilesGlobal de cada vendor
     $valid = validateParameterEndpoint($_POST, $module_name,$dsnAsterisk,$dsnSqlite);
     $count = 0;
+    $error = "";
     if($valid!=false){
         $smarty->assign("mb_title",_tr('ERROR').":");
         $smarty->assign("mb_message",$valid);
@@ -369,13 +370,21 @@ function endpointConfiguratedSet($smarty, $module_name, $local_templates_dir, $d
 
 		//Falta si hay error en la creacion de un archivo, ya esta para saber q error es, el problema es como manejar un error o los errores dentro del este lazo (foreach).
 		//ejemplo: if($paloFile->createFiles($ArrayData)==false){ $paloFile->errMsg  (mostrar error con smarty)}
-		$paloFileEndPoint->createFiles($ArrayData);
+		if(!$paloFileEndPoint->createFiles($ArrayData)){
+		    if(isset($paloFileEndPoint->errMsg))
+			$error .= $paloFileEndPoint->errMsg."<br />";
+		}
 	    }
 	}
     }
-    if($count > 0){
+    if($count > 0 && $error == ""){
 	$smarty->assign("mb_title", _tr("MESSAGE"));
 	$smarty->assign("mb_message", _tr("The Extension(s) parameters have been saved. Each checked phone will be configured with the new parameters once it has finished rebooting"));
+    }
+    elseif(isset($error) && $error != ""){
+	$smarty->assign("mb_title", _tr("MESSAGE"));
+	$message = _tr("The following errors ocurred").":<br />".$error;
+	$smarty->assign("mb_message",$message);
     }
     unset($_SESSION['elastix_endpoints']);
     return endpointConfiguratedShow($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrConf);
