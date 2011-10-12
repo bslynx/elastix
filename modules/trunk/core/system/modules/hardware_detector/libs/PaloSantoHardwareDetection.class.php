@@ -107,29 +107,29 @@ class PaloSantoHardwareDetection
 
                     $pconfEcho->addCardParameter($data2);
                 }
-                else if(preg_match("/[[:space:]]*([[:digit:]]+) ([[:alnum:]_]+)[[:space:]]+([[:alnum:]]+)(.*)/",$linea,$regs1)){
+                else if(preg_match("/[[:space:]]*([[:digit:]]+) ([[:alnum:]_]+)[[:space:]]+([[:alnum:]-]+)[[:space:]]*(.*)/",$linea,$regs1)){
                     //Estados de las lineas
-                   if(preg_match("/Hardware-assisted/i",$regs1[3].$regs1[4]) || preg_match("/HDLCFCS/i",$regs1[3])){
-			if(preg_match("/In use.*RED/i",$regs1[4])){
-			    $estado_asterisk       = _tr('Detected by Asterisk');
-			    $estado_asterisk_color = "green";
-			    $estado_dahdi_image    = "conn_alarm_HC.png";
-			}
+                   if(preg_match("/Hardware-assisted/i",$regs1[3].$regs1[4]) || preg_match("/HDLC(FCS)?/i",$regs1[3])){
+                        if(preg_match("/In use.*RED/i",$regs1[4])){
+                            $estado_asterisk       = _tr('Detected by Asterisk');
+                            $estado_asterisk_color = "green";
+                            $estado_dahdi_image    = "conn_alarm_HC.png";
+                        }
                         else if(preg_match("/In use/i",$regs1[4])){
                             $estado_asterisk       = _tr('Detected by Asterisk');
                             $estado_asterisk_color = "green";
                             $estado_dahdi_image    = "conn_ok_HC.png";
                         }
-			else if(preg_match("/RED/i",$regs1[4])){
+                        else if(preg_match("/RED/i",$regs1[4])){
                             $estado_asterisk       = _tr('Not detected by Asterisk');
                             $estado_asterisk_color = "#FF7D7D";
                             $estado_dahdi_image    = "conn_alarm_HC.png";
                         }
-			else{
-			    $estado_asterisk       = _tr('Not detected by Asterisk');
-			    $estado_asterisk_color = "#FF7D7D";
-			    $estado_dahdi_image    = "conn_ok_HC.png";
-			}
+                        else{
+                            $estado_asterisk       = _tr('Not detected by Asterisk');
+                            $estado_asterisk_color = "#FF7D7D";
+                            $estado_dahdi_image    = "conn_ok_HC.png";
+                        }
                    }
                    else if(preg_match("/In use.*RED/i",$regs1[4])){
                         $estado_asterisk       = _tr('Detected by Asterisk');
@@ -164,7 +164,7 @@ class PaloSantoHardwareDetection
                         $data['echocanceller']   = $pDB->DBCAMPO(trim($arrEcho[0]));
                         $data['id_card']   = $pDB->DBCAMPO($count);
                         $pconfEcho->addEchoCanceller($data);
-                    }else if($regs1[3]!="HDLCFCS"){
+                    }else if($regs1[3]!="HDLCFCS" && $regs1[3] != 'Hardware-assisted'){
                         $data['num_port']       = $pDB->DBCAMPO($regs1[1]);
                         $data['name_port']       = $pDB->DBCAMPO($regs1[2]);
                         $data['echocanceller']   = $pDB->DBCAMPO("none");
