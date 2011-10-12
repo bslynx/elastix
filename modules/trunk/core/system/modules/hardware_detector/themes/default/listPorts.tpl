@@ -78,7 +78,7 @@
                                         <div valign="middle">
                                             <div>{$SET_PARAMETERS_PORTS}.</div>
                                             <div align="center"><a id="confSPAN{$data.DESC.ID}" class="confSPAN">{$Configuration_Span}</a></div>
-                                            {if $data.DESC.MEDIA eq "ISDN"}
+                                            {if $data.DESC.MEDIA eq "PRI"}
                                             <div align="center"><a id="paramSPAN{$data.DESC.ID}" class="confSPAN">{$Parameters_Span}</a></div>
                                             {/if}
                                         </div>
