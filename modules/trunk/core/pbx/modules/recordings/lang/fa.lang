@@ -47,6 +47,8 @@ $arrLangModule=array(
 "Error copying the file" => "خطا در کپی فایل",
 "Message" => "پیام ",
 "Possible file upload attack" => "Possible file upload attack",
-"contact_admin" => "There is no extension number associated with the current user. Please contact the administrator to assign it an extension"
+"contact_admin" => "There is no extension number associated with the current user. Please contact the administrator to assign it an extension",
+"You can start your recording after you hear a beep in your phone. Once you have finished recording you must press the # key and then hangup" => "You can start your recording after you hear a beep in your phone. Once you have finished recording you must press the # key and then hangup",
+"You do not need to add an extension to the record name" => "You do not need to add an extension to the record name"
 );
 ?>

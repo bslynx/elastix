@@ -263,6 +263,8 @@ function form_Recordings($smarty, $module_name, $local_templates_dir, $arrLang, 
     $smarty->assign("Record", $arrLang["Record"]);
     $smarty->assign("SAVE", $arrLang["Save"]);
     $smarty->assign("TITLE", $arrLang["Recordings"]);
+    $smarty->assign("INFO", $arrLang["You can start your recording after you hear a beep in your phone. Once you have finished recording you must press the # key and then hangup"].".");
+    $smarty->assign("NAME", $arrLang["You do not need to add an extension to the record name"].".");
     $smarty->assign("IMG", "/modules/$module_name/images/recording.png");
     $smarty->assign("module_name", $module_name);
     $smarty->assign("file_upload", $arrLang["File Upload"]);

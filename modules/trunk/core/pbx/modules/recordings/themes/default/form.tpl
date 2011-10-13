@@ -29,7 +29,11 @@
                 </td>
             </tr>
         </table>
-    <tr>
+    </tr>
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" class="tabForm" id="info">
+	<tr><td><i>{$NAME}</i></td></tr>
+	<tr><td><i>{$INFO}</i></td></tr>
+    </table>
 </table>
 <input type='hidden' name='filename' value='{$filename}' />
 
@@ -44,11 +48,13 @@
             if(record_by_phone.checked==true)
             {
                 document.getElementById('record_option').style.display = '';
+		document.getElementById('info').style.display = '';
                 document.getElementById('upload_option').style.display = 'none';
             }
             else
             {
                 document.getElementById('record_option').style.display = 'none';
+		document.getElementById('info').style.display = 'none';
                 document.getElementById('upload_option').style.display = '';
             }
         }
