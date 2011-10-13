@@ -77,12 +77,12 @@
 		</td>
 	    </tr>
 	    <tr class="letra12" id="lan_ip" {$DISPLAY_LAN}>
-		<td align="left"><b>{$lan_ip_address.LABEL}:</b></td>
+		<td align="left"><b>{$lan_ip_address.LABEL}: <span  class="required">*</span></b></td>
 		<td align="left">{$INFO21}&nbsp;&nbsp;&nbsp;&nbsp;{$lan_ip_address.INPUT}</td>
 	    </tr>
 
 	    <tr class="letra12" id="lan_mask" {$DISPLAY_LAN}>
-		<td align="left"><b>{$lan_ip_mask.LABEL}:</b></td>
+		<td align="left"><b>{$lan_ip_mask.LABEL}: <span  class="required">*</span></b></td>
 		<td align="left">{$INFO22}&nbsp;&nbsp;&nbsp;&nbsp;{$lan_ip_mask.INPUT}</td>
 	    </tr>
 
@@ -98,12 +98,12 @@
 		</td>
 	    </tr>
 	    <tr class="letra12" id="wan_ip" {$DISPLAY_WAN}>
-		<td align="left"><b>{$wan_ip_address.LABEL}:</b></td>
+		<td align="left"><b>{$wan_ip_address.LABEL}: <span  class="required">*</span></b></td>
 		<td align="left">{$INFO23}&nbsp;&nbsp;&nbsp;&nbsp;{$wan_ip_address.INPUT}</td>
 	    </tr>
 
 	    <tr class="letra12" id="wan_mask" {$DISPLAY_WAN}>
-		<td align="left"><b>{$wan_ip_mask.LABEL}:</b></td>
+		<td align="left"><b>{$wan_ip_mask.LABEL}: <span  class="required">*</span></b></td>
 		<td align="left">{$INFO24}&nbsp;&nbsp;&nbsp;&nbsp;{$wan_ip_mask.INPUT}</td>
 	    </tr>
 
