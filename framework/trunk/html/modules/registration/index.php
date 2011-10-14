@@ -192,7 +192,7 @@ function saveRegister($smarty, $module_name, $local_templates_dir, $pDB, $arrCon
 	    return $jsonObject->createJSON();
 	}else{
 	    exec("sudo -u root chown asterisk.asterisk /etc");
-	    exec("echo '$band' > /etc/elastix.key");
+        file_put_contents('/etc/elastix.key', $band);
 	    chmod("/etc/elastix.key",0600);
 	    exec("sudo -u root chown root.root /etc");
 	    $pDB->commit();
