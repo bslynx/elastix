@@ -136,6 +136,7 @@ function saveRegister($smarty, $module_name, $local_templates_dir, $pDB, $arrCon
     $country      = getParameter("countryReg");
     $idPartner    = getParameter("idPartnerReg");
     $status = FALSE;
+	$msgResponse  = array();
     // proceso de validacion de datos
     if($contact_name == "")
         return "fieldsNoComplete";
@@ -168,42 +169,40 @@ function saveRegister($smarty, $module_name, $local_templates_dir, $pDB, $arrCon
     }
        // return $pRegister->errMsg;
     if($status){
-	$rsa_key = "";
-	if(!is_file("/etc/elastix.key")){
-	    // saving to web service
-	    $rsa_key = file_get_contents('/etc/ssh/ssh_host_rsa_key.pub');
-	}else{
-	    $rsa_key = file_get_contents("/etc/elastix.key");
-	}
-	$rsa_key = trim($rsa_key);
-        $datas = array($contact_name, $email, $phone, $company, $address, $city, $country, $idPartner, $rsa_key);
-        $band = $pRegister->sendDataWebService($datas);
-        if($band==null){
-	    $pDB->rollBack();
-	    $msgResponse['status']  = "FALSE";
-	    $msgResponse['message'] = _tr("Impossible connect to Elastix Web services. Please check your internet connection.");
-	    $jsonObject->set_message($msgResponse);
-	    return $jsonObject->createJSON();
-        }elseif($band==="FALSE"){
-	    $pDB->rollBack();
-	    $msgResponse['status']  = "FALSE";
-	    $msgResponse['message'] = _tr("Your information cannot be saved. Please try again.");
-	    $jsonObject->set_message($msgResponse);
-	    return $jsonObject->createJSON();
-	}else{
-	    exec("sudo -u root chown asterisk.asterisk /etc");
-        file_put_contents('/etc/elastix.key', $band);
-	    chmod("/etc/elastix.key",0600);
-	    exec("sudo -u root chown root.root /etc");
-	    $pDB->commit();
-	    $msgResponse['estado']  = "TRUE";
-	    $msgResponse['respuesta'] = _tr("Your information has been saved.");
-	    $jsonObject->set_message($msgResponse);
-	    return $jsonObject->createJSON();
-	}
+		$rsa_key = "";
+		if(!is_file("/etc/elastix.key")){
+			// saving to web service
+			$rsa_key = file_get_contents('/etc/ssh/ssh_host_rsa_key.pub');
+		}else{
+			$rsa_key = file_get_contents("/etc/elastix.key");
+		}
+		$rsa_key = trim($rsa_key);
+		$datas = array($contact_name, $email, $phone, $company, $address, $city, $country, $idPartner, $rsa_key);
+		$band = $pRegister->sendDataWebService($datas);
+		if($band==null){
+			$pDB->rollBack();
+			$msgResponse['status']  = "FALSE";
+			$msgResponse['response'] = _tr("Impossible connect to Elastix Web services. Please check your internet connection.");
+		}elseif($band==="FALSE"){
+			$pDB->rollBack();
+			$msgResponse['status']  = "FALSE";
+			$msgResponse['response'] = _tr("Your information cannot be saved. Please try again.");
+		}else{
+			exec("sudo -u root chown asterisk.asterisk /etc");
+			file_put_contents('/etc/elastix.key', $band);
+			chmod("/etc/elastix.key",0600);
+			exec("sudo -u root chown root.root /etc");
+			$pDB->commit();
+			$msgResponse['status']  = "TRUE";
+			$msgResponse['response'] = _tr("Your information has been saved.");
+		}
     }else{
-        return "false";
+		$msgResponse['status']  = "FALSE";
+	    $msgResponse['response'] = _tr("There are some problem with the local database. Information cannot be saved in database.");
     }
+	$jsonObject->set_status($msgResponse['status']);
+	$jsonObject->set_message($msgResponse['response']);
+	return $jsonObject->createJSON();
 }
 
 function getDataRegistration($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang,$pDBACL)

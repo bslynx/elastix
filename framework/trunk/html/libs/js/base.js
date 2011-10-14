@@ -248,27 +248,27 @@ function registration(){
     if(error)
         alert(txtError);
     else{
-	$('#tdButtons').hide();
+		$('#tdButtons').hide();
         $('#tdloaWeb').attr("style", "padding-left: 5px; display: block;");
         var arrAction = "action=saveregister&contactNameReg="+contactName+"&emailReg="+email+"&phoneReg="+phone+"&companyReg="+company+"&addressReg="+address+"&cityReg="+city+"&countryReg="+country+"&idPartnerReg="+idPartner+"&rawmode=yes";
         $.post("register.php",arrAction,
             function(arrData,statusResponse,error)
             {
-		var response = JSONRPMtoString(arrData);
-		var registerText   = $('#lblRegisterCm').val();
-		var registeredText = $('#lblRegisteredCm').val();
-                alert(response["message"]["respuesta"]);
-		if(response["message"]["estado"]=="TRUE"){
-		    $('#registrar').hide();
-		    $('.register_link').css('color','#008800');
-		    $('.register_link').text(registeredText);
-		    getElastixKey();
-		}else{
-		    $('#tdButtons').show();
-		    $('.register_link').css('color','#FF0000');
-		    $('.register_link').text(registerText);
-		    $('#tdloaWeb').attr("style", "padding-left: 5px; display: none;");
-		}
+				var response = JSONRPMtoString(arrData);
+				var registerText   = $('#lblRegisterCm').val();
+				var registeredText = $('#lblRegisteredCm').val();
+                alert(response["message"]);
+				if(response["statusResponse"]=="TRUE"){
+					$('#registrar').hide();
+					$('.register_link').css('color','#008800');
+					$('.register_link').text(registeredText);
+					getElastixKey();
+				}else{
+					$('#tdButtons').show();
+					$('.register_link').css('color','#FF0000');
+					$('.register_link').text(registerText);
+					$('#tdloaWeb').attr("style", "padding-left: 5px; display: none;");
+				}
             }
         );
     }
