@@ -1,3 +1,4 @@
+1.6 (SVN revision 3087)
 * Agent Console: complete rewrite.
   This version of the Call Center module has a completely rewritten Agent 
   Console based on the Elastix CallCenter Protocol (ECCP). This rewrite is 
