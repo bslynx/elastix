@@ -2,12 +2,20 @@
 
 function getPattonConfiguration($arrData,$tone_set)
 {
-    $pbx_side = strtoupper($arrData["pbx_side"]);
+    if($arrData["router_present"] == "yes")
+	$pbx_side = strtoupper($arrData["pbx_side"]);
+    else
+	$pbx_side = "LAN";
     $config = <<<CONF
 webserver port 80 language en
+
+CONF;
+    if(isset($arrData["sntp_address"]) && $arrData["sntp_address"] != ""){
+	$config .= <<<CONF
 sntp-client server $arrData[sntp_address]
 
 CONF;
+    }
     if($arrData["dns_address"] != ""){
 	$config .= <<<CONF
 dns-client server $arrData[dns_address]
@@ -60,17 +68,19 @@ tcp adjust-mss tx mtu
 interface IF_IP_WAN
 
 CONF;
-    if($arrData["wan_type"] == "dhcp"){
-	$config .= <<<CONF
+    if($arrData["router_present"] == "yes"){
+	if($arrData["wan_type"] == "dhcp"){
+	    $config .= <<<CONF
   ipaddress dhcp
 
 CONF;
-    }
-    else{
-	$config .= <<<CONF
+	}
+	else{
+	    $config .= <<<CONF
   ipaddress $arrData[wan_ip_address] $arrData[wan_ip_mask]
 
 CONF;
+	}
     }
     $config .= <<<CONF
 tcp adjust-mss rx mtu

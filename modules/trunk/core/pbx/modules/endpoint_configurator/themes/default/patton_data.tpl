@@ -45,12 +45,12 @@
 		<td align="left"><b>{$router_present.LABEL}: <span  class="required">*</span></b></td>
 		<td align="left">{$INFO3}&nbsp;&nbsp;&nbsp;&nbsp;{$router_present.INPUT}</td>
 	    </tr>
-	    <tr class="letra12">
+	    <tr class="letra12" id="side" {$DISPLAY_PBX_SIDE}>
 		<td align="left"><b>{$pbx_side.LABEL}: <span  class="required">*</span></b></td>
 		<td align="left">{$INFO4}&nbsp;&nbsp;&nbsp;&nbsp;{$pbx_side.INPUT}</td>
 	    </tr>
 	    <tr class="letra12">
-		<td align="left"><b>{$sntp_address.LABEL}: <span  class="required">*</span></b></td>
+		<td align="left"><b>{$sntp_address.LABEL}:</b></td>
 		<td align="left">{$INFO5}&nbsp;&nbsp;&nbsp;&nbsp;{$sntp_address.INPUT}</td>
 	    </tr>
 	    <tr class="letra12">
@@ -86,10 +86,10 @@
 		<td align="left">{$INFO22}&nbsp;&nbsp;&nbsp;&nbsp;{$lan_ip_mask.INPUT}</td>
 	    </tr>
 
-	    <tr class="letra12">
+	    <tr class="letra12" id="wan" {$DISPLAY_LABEL_WAN}>
 		<td align="left"><b style="color: rgb(227, 83, 50); font-size: 12px; font-family: 'Lucida Console';">WAN</b></td>
 	    </tr>
-	    <tr class="letra12">
+	    <tr class="letra12" id="check_wan" {$DISPLAY_CHECK_WAN}>
 		<td colspan='2'>
 		    <input type="radio" name="option_network_wan" id="wan_static" value="wan_static" {$wan_check_static} onclick="activate_option_wan()" />
 		    {$wan_static} &nbsp;&nbsp;&nbsp;

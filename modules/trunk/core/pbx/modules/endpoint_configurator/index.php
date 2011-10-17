@@ -178,7 +178,7 @@ function endpointConfiguratedShow($smarty, $module_name, $local_templates_dir, $
 			    }
 			}
 			if($configured)
-			    $arrTmp[7] = _tr("Configured");
+			    $arrTmp[7] = "<font color = 'green'>"._tr("Configured")."</font>";
 			else
 			    $arrTmp[7] = _tr("Not Configured");
 			$_SESSION['endpoint_model'][$endspoint['mac_adress']] = $endspoint["model_no"];
@@ -634,6 +634,13 @@ function getPattonData($smarty, $module_name, $local_templates_dir, $dsnAsterisk
     else
 	$smarty->assign("wan_check_static", "checked");
 
+    if((getParameter("router_present") && getParameter("router_present") == "no") || (isset($_DATA["router_present"]) && $_DATA["router_present"] == "no")){
+	$smarty->assign("DISPLAY_LABEL_WAN", "style=display:none;");
+	$smarty->assign("DISPLAY_CHECK_WAN", "style=display:none;");
+	$smarty->assign("DISPLAY_WAN", "style=display:none;");
+	$smarty->assign("DISPLAY_PBX_SIDE", "style=display:none;");
+    }
+
     $smarty->assign("REQUIRED_FIELD", _tr("Required field"));
     $smarty->assign("CANCEL", _tr("Cancel"));
     $smarty->assign("NEXT", _tr("Next"));
@@ -781,9 +788,14 @@ function getExtensionsForm($smarty, $module_name, $local_templates_dir, $dsnAste
 	    $smarty->assign("mb_message", _tr("Invalid option for field caller ID presentation"));
 	    return getPattonData($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrConf);
 	}
-	elseif((getParameter("option_network_lan") == "lan_static" && (getParameter("lan_ip_address") == "" || getParameter("lan_ip_mask") == "")) || (getParameter("option_network_wan") == "wan_static") && (getParameter("wan_ip_address") == "" || getParameter("wan_ip_mask") == "")){
+	elseif(getParameter("option_network_lan") == "lan_static" && (getParameter("lan_ip_address") == "" || getParameter("lan_ip_mask") == "")){
 	    $smarty->assign("mb_title", _tr("Validation Error"));
-	    $smarty->assign("mb_message", _tr("For static ip configuration you have to enter an ip address and a mask"));
+	    $smarty->assign("mb_message", "LAN: "._tr("For static ip configuration you have to enter an ip address and a mask"));
+	    return getPattonData($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrConf);
+	}
+	elseif(getParameter("router_present") == "yes" && getParameter("option_network_wan") == "wan_static" && (getParameter("wan_ip_address") == "" || getParameter("wan_ip_mask") == "")){
+	    $smarty->assign("mb_title", _tr("Validation Error"));
+	    $smarty->assign("mb_message", "WAN: "._tr("For static ip configuration you have to enter an ip address and a mask"));
 	    return getPattonData($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrConf);
 	}
 	elseif(getParameter("timeout") != "" && getParameter("timeout") != 2 && getParameter("timeout") != 5 && getParameter("timeout") != 7){
@@ -1024,7 +1036,7 @@ function createFieldFormData($arrCountry)
     $arrYN = array("yes" => _tr("YES"), "no" => _tr("NO"));
     $arrSide = array("lan" => "LAN", "wan" => "WAN");
     $arrformat = array("etsi" => "etsi", "bell" => "bell");
-    $arrpresentation = array("pre-ring" => "pre-ring", "mid-ring" => "mid-ring", "none" => "("._tr("none").")");
+    $arrpresentation = array("mid-ring" => "mid-ring", "pre-ring" => "pre-ring", "none" => "("._tr("none").")");
     $arrTimeout = array("" => "", 2 => 2, 5 => 5, 7 => 7);
     $arrFields = array(
 	    "telnet_username" 	 	 => array(      "LABEL"      => _tr("Telnet Username"),
@@ -1062,6 +1074,7 @@ function createFieldFormData($arrCountry)
                                             "INPUT_EXTRA_PARAM"      => $arrYN,
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => "",
+					    "ONCHANGE"		     => "javascript:changeFields(this);"
                                             ),
 
             "pbx_side" 	       		 => array(    "LABEL"        => _tr("In which side is the IP PBX?"),
@@ -1072,7 +1085,7 @@ function createFieldFormData($arrCountry)
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
             "sntp_address"     	         => array(    "LABEL"        => _tr("SNTP Server address"),
-                                            "REQUIRED"               => "yes",
+                                            "REQUIRED"               => "no",
                                             "INPUT_TYPE"             => "TEXT",
                                             "INPUT_EXTRA_PARAM"      => array("style" => "width:200px","maxlength" =>"200"),
                                             "VALIDATION_TYPE"        => "text",

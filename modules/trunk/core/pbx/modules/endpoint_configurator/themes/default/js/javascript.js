@@ -57,7 +57,25 @@ function activate_option_wan()
     }
 }
 
-function checkNumber()
+function changeFields(element)
 {
-    alert("HOLA");
+    var value = $(element).val();
+    var static_wan = document.getElementById('wan_static');
+    if(value == "yes"){
+	document.getElementById('side').style.display='';
+	document.getElementById('wan').style.display='';
+	document.getElementById('check_wan').style.display='';
+	if(static_wan){
+	    if(static_wan.checked==true){
+		document.getElementById('wan_ip').style.display='';
+		document.getElementById('wan_mask').style.display='';
+	    }
+	}
+    }else if(value == "no"){
+	document.getElementById('side').style.display='none';
+	document.getElementById('wan').style.display='none';
+	document.getElementById('check_wan').style.display='none';
+	document.getElementById('wan_ip').style.display='none';
+	document.getElementById('wan_mask').style.display='none';
+    }
 }
