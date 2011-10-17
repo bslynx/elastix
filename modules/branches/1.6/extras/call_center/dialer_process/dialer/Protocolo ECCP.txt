@@ -1140,6 +1140,51 @@ En caso de cola incorrecta:
 </response>
 
 
+Requerimiento "getcampaignlist"
+
+Este requerimiento lista todas las campañas del sistema.
+
+Atributos o argumentos:
+* campaign_type: Opcional. Si se especifica, debe ser 'incoming' o 'outgoing'.
+  Si no se especifica, se leen todas las campañas.
+  
+Respuesta:
+* campaigns: Elemento que contiene cero o más elementos 'campaign'. Cada elemento
+  'campaign' contiene:
+  * id: ID de la campaña
+  * type: Tipo de la campaña: 'outgoing' o 'incoming'
+  * name: Nombre de la campaña
+  * status: Una de 'active', 'inactive', 'finished'
+
+Ejemplo:
+<request id="6">
+    <getcampaignlist>
+        <campaign_type>outgoing</campaign_type>
+    </getcampaignlist>
+</request>
+
+Respuesta: 
+Campaña saliente:
+<response id="6">
+    <getcampaignlist_response>
+        <campaigns>
+            <campaign>
+                <id>2</id>
+                <type>outgoing</type>
+                <name>Prueba</name>
+                <status>inactive</status>
+            </campaign>
+            <campaign>
+                <id>2</id>
+                <type>outgoing</type>
+                <name>Prueba 2</name>
+                <status>active</status>
+            </campaign>
+        </campaigns>
+    </getcampaignlist_response>
+</response>
+
+
 Requerimiento "getcampaigninfo"
 
 Este requerimiento recupera información estática sobre la campaña. Por 

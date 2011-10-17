@@ -196,6 +196,9 @@ class XMLDialerConn extends DialerConn
                 case 'getcampaignstatus':
                     $response = $this->Request_GetCampaignStatus($comando);
                     break;
+                case 'getcampaignlist':
+                    $response = $this->Request_GetCampaignList($comando);
+                    break;
                 case 'dial':
                     $response = $this->Request_Dial($comando);
                     break;
@@ -370,7 +373,7 @@ class XMLDialerConn extends DialerConn
             'getagentstatus', 'getcampaignstatus', 'hangup', 'hold', 'unhold', 
             'transfercall', 'getcampaigninfo', 'getcallinfo', 'saveformdata', 
             'pauseagent', 'unpauseagent', 'getpauses', 'setcontact', 'schedulecall',
-            'filterbyagent', 'getqueuescript') 
+            'filterbyagent', 'getqueuescript', 'getcampaignlist') 
             as $sReqName)
             $xml_requests->addChild('request', $sReqName);
 
@@ -967,6 +970,61 @@ LISTA_EXTENSIONES;
             return $xml_response;
         }
         $xml_GetQueueScriptResponse->addChild('script', str_replace('&', '&amp;', $queueScript));        
+        return $xml_response;
+    }
+
+    private function Request_GetCampaignList($comando)
+    {
+    	$sTipoCampania = NULL;
+        if (isset($comando->campaign_type)) {
+            $sTipoCampania = (string)$comando->campaign_type;
+        }
+        $listaTiposConocidos = array('incoming', 'outgoing');
+        if (!is_null($sTipoCampania) && !in_array($sTipoCampania, $listaTiposConocidos))
+        	return $this->_generarRespuestaFallo(400, 'Bad request');
+        if (!is_null($sTipoCampania))
+            $listaTipos = array($sTipoCampania);
+        else $listaTipos = $listaTiposConocidos;
+
+        $xml_response = new SimpleXMLElement('<response />');
+        $xml_GetCampaignListResponse = $xml_response->addChild('getcampaignlist_response');
+
+        $campaignData = array();
+        foreach ($listaTipos as $sTipo) {
+            switch ($sTipo) {
+            case 'incoming':
+                $sPeticionSQL = "SELECT 'incoming' AS campaign_type, id, name, estatus AS status FROM campaign_entry";
+                break;
+            case 'outgoing':
+                $sPeticionSQL = "SELECT 'outgoing' AS campaign_type, id, name, estatus AS status FROM campaign";
+                break;
+            }
+            $recordset = $this->_dbConn->getAll($sPeticionSQL, array(), DB_FETCHMODE_ASSOC);
+            if (DB::isError($recordset)) {
+                $this->oMainLog->output("ERR: no se puede leer información de la campaña - ".$recordset->getMessage());
+                $this->_agregarRespuestaFallo($xml_GetCampaignListResponse, 500, 'Cannot read campaign info');
+                return $xml_response;
+            }
+            $campaignData[$sTipo] = $recordset;
+        }
+
+        $descEstados = array(
+            'A' =>  'active',
+            'I' =>  'inactive',
+            'T' =>  'finished',
+        );
+
+        $xml_campaigns = $xml_GetCampaignListResponse->addChild('campaigns');
+        foreach ($campaignData as $sTipo => &$recordset) {
+        	foreach ($recordset as $tupla) {
+        		$xml_campaign = $xml_campaigns->addChild('campaign');
+                $xml_campaign->addChild('id', $tupla['id']);
+                $xml_campaign->addChild('type', $tupla['campaign_type']);
+                $xml_campaign->addChild('name', str_replace('&', '&amp;', $tupla['name']));
+                $xml_campaign->addChild('status', $descEstados[$tupla['status']]);
+        	}
+        }
+
         return $xml_response;
     }
 

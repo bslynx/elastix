@@ -490,5 +490,15 @@ class ECCP
         $xml_response = $this->send_request($xml_request);
         return $xml_response->filterbyagent_response;
     }
+
+    public function getcampaignlist($campaign_type = NULL)
+    {
+        $xml_request = new SimpleXMLElement("<request />");
+        $xml_cmdRequest = $xml_request->addChild('getcampaignlist');
+        if (!is_null($campaign_type))
+            $xml_cmdRequest->addChild('campaign_type', str_replace('&', '&amp;', $campaign_type));
+        $xml_response = $this->send_request($xml_request);
+        return $xml_response->getcampaignlist_response;
+    }
 }
 ?>

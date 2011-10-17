@@ -37,6 +37,7 @@
   - The Transfer capability is expanded to any arbitrary extension/queue. Partial
     fix for Elastix bug #419.
   As a side effect of the rewrite, may also fix Elastix bugs #879, #796, #414. 
+* Dialer (ECCP): implement "getcampaignlist" request
 * Dialer (ECCP): log out an agent immediately if login succeeded but audit 
   record cannot be inserted.
 * Incoming calls monitoring: fix use of undefined array index.
