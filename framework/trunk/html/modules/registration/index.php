@@ -127,31 +127,43 @@ function saveRegister($smarty, $module_name, $local_templates_dir, $pDB, $arrCon
     $pRegister    = new paloSantoRegistration($pDB);
     $jsonObject   = new PaloSantoJSON();
     $message      = "";
-    $contact_name = getParameter("contactNameReg");
-    $email        = getParameter("emailReg");
-    $phone        = getParameter("phoneReg");
-    $company      = getParameter("companyReg");
-    $address      = getParameter("addressReg");
-    $city         = getParameter("cityReg");
-    $country      = getParameter("countryReg");
-    $idPartner    = getParameter("idPartnerReg");
-    $status = FALSE;
+    $contact_name = trim(getParameter("contactNameReg"));
+    $email        = trim(getParameter("emailReg"));
+    $phone        = trim(getParameter("phoneReg"));
+    $company      = trim(getParameter("companyReg"));
+    $address      = trim(getParameter("addressReg"));
+    $city         = trim(getParameter("cityReg"));
+    $country      = trim(getParameter("countryReg"));
+    $idPartner    = trim(getParameter("idPartnerReg"));
+    $status       = FALSE;
 	$msgResponse  = array();
+	$str_error    = "";
     // proceso de validacion de datos
-    if($contact_name == "")
-        return "fieldsNoComplete";
-    if($email == "")
-        return "fieldsNoComplete";
-    if($phone == "")
-        return "fieldsNoComplete";
-    if($company == "")
-        return "fieldsNoComplete";
-    /*if($address == "")
-        return "fieldsNoComplete";*/
-    if($city == "")
-        return "fieldsNoComplete";
-    if($country == "")
-        return "fieldsNoComplete";
+    if(!preg_match("/^[A-Za-z\_\-\.\sñÑ]+$/",$contact_name)){
+        $str_error .= _tr("* Contact Name: Only text ")."\n";
+	}
+    if(!preg_match("/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/",$email)){
+        $str_error .= _tr("* Email: Only format email ")."\n";
+	}
+    if(!preg_match("/^[0-9\(\)\+-]+\d$/",$phone)){
+        $str_error .= _tr("* Phone: text or number ")."\n";
+	}
+	if(!preg_match("/^[A-Za-z\_\-\.\sñÑ]+$/",$company)){
+        $str_error .= _tr("* Company: text ")."\n";
+	}
+    if(!preg_match("/^[A-Za-z\_\-\.\sñÑ]+$/",$city)){
+        $str_error .= _tr("* City: text ")."\n";
+	}
+    if(!preg_match("/^.+$/",$country)){
+        $str_error .= _tr("* Country: Selected a country ")."\n";
+	}
+	if($str_error !== ""){
+		$errMsg = _tr("Please fill the correct values in fields: ")."\n".$str_error;
+		$jsonObject->set_status("FALSE");
+		$jsonObject->set_message($errMsg);
+		return $jsonObject->createJSON();
+	}
+
     /*if($idPartner == "")
         return "fieldsNoComplete";*/
 
