@@ -1,3 +1,6 @@
+* Dialer (ECCP): allow the "agentlogout" request to cancel a login that is still
+  in progress and asking for the agent numeric password.
+
 1.6 (SVN revision 3087)
 * Agent Console: complete rewrite.
   This version of the Call Center module has a completely rewritten Agent 

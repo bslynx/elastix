@@ -795,13 +795,26 @@ LISTA_EXTENSIONES;
             return $this->Response_LogoutAgentResponse('logged-out', 401, 'Unauthorized agent');
         }
 
+        // Canal que hizo el logoneo hacia la cola
+        $infoAgente = $this->_dialProc->infoSeguimientoAgente($sAgente);
+
         /* Ejecutar Agentlogoff. Esto asume que el agente está de la forma 
          * Agent/9000. La actualización de las bases de datos de auditoría y 
          * breaks se delega a los manejadores de eventos */
         if (preg_match('|^Agent/(\d+)$|', $sAgente, $regs)) {
             $sNumAgente = $regs[1];
             $r = $this->_astConn->Agentlogoff($sNumAgente);
-            //$this->oMainLog->output("DEBUG: Agentlogoff($sNumAgente) -> ".print_r($r, 1));
+            
+            /* Si el agente todavía no ha introducido la clave, el Agentlogoff
+             * anterior no tiene efecto, así que se manda a colgar el canal
+             * directamente. 
+             */
+            if (!is_null($infoAgente) && $infoAgente['estado_consola'] == 'logging') {
+                $sCanalExt = $this->obtenerCanalLoginAgente($sAgente);
+                if (is_null($sCanalExt))
+                    $sCanalExt = $this->_dialProc->obtenerIntentoLoginAgente($sAgente);
+                if (!is_null($sCanalExt)) $this->_astConn->Hangup($sCanalExt);
+            }
             return $this->Response_LogoutAgentResponse('logged-out');
         }
 
