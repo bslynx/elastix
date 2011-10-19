@@ -249,7 +249,8 @@ function do_login()
 // El siguiente código se ejecuta al presionar el botón de colgado
 function do_hangup()
 {
-    $.post('index.php?menu=' + module_name + '&rawmode=yes', {
+	$('#btn_hangup').button('disable');
+	$.post('index.php?menu=' + module_name + '&rawmode=yes', {
 		menu:		module_name, 
 		rawmode:	'yes',
 		action:		'hangup'
@@ -257,6 +258,8 @@ function do_hangup()
 	function (respuesta) {
         if (respuesta['action'] == 'error') {
         	mostrar_mensaje_error(respuesta['message']);
+        	if (estadoCliente.campaign_id != null)
+                $('#btn_hangup').button('enable');
         }
         
         // El cambio de estado de la interfaz se delega a la revisión

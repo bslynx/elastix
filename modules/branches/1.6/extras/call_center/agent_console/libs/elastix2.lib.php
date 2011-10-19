@@ -158,12 +158,38 @@ function load_language_module($module_id, $ruta_base='')
  * todos los archivos fueron incluidos por el framework de Elastix 2. En Elastix
  * 1.6 se devuelve una lista de tuplas de la forma ('js|css', 'ruta_a_archivo')
  *
+ * @param   object  $smarty         Objeto Smarty a modificar
  * @param   string  $module_name    Nombre del módulo que invoca
  * 
  * @return  mixed   Arreglo de tipos y rutas a incluir para el módulo
  */
-function generarRutaJQueryModulo($module_name)
+function generarRutaJQueryModulo(&$smarty, $module_name)
 {
+/*
+    $listaIncluir = generarRutaJQueryModulo($module_name);
+    if (count($listaIncluir) > 0) {
+        if (is_null($smarty->get_template_vars('HEADER_LIBS_JQUERY'))) {
+            // Esta versión de Elastix no soporta cabeceras JQuery
+            $smarty->assign('LISTA_JQUERY_CSS', generarRutaJQueryModulo($module_name));
+        } else {
+            // Reemplazar el JQuery del Elastix por el del módulo
+            $sIncluir = '';
+            foreach ($listaIncluir as $CURR_ITEM) {
+                if ($CURR_ITEM[0] == 'css')
+                    $sIncluir .= "<link rel=\"stylesheet\" href='{$CURR_ITEM[1]}' />\n";
+                // HEADER_MODULES ya tiene javascript.js
+                if ($CURR_ITEM[0] == 'js' && 
+                    (is_null($smarty->get_template_vars('HEADER_MODULES')) || 
+                    !preg_match('/javascript\.js$/', $CURR_ITEM[1])))
+                    $sIncluir .= "<script type=\"text/javascript\" src='{$CURR_ITEM[1]}'></script>\n";
+            }
+            $smarty->assign(array('HEADER_LIBS_JQUERY' => $sIncluir));
+        }
+    }
+*/
+    $bHayHeaderJQuery = !is_null($smarty->get_template_vars('HEADER_LIBS_JQUERY'));
+    $bHayHeaderModulo = !is_null($smarty->get_template_vars('HEADER_MODULES'));
+
     // Verificar si se está ejecutando en Elastix 2.0
     if (in_array('putHEAD_JQUERY_HTML', get_class_methods('PaloSantoNavigation'))) {
         
@@ -189,6 +215,7 @@ function generarRutaJQueryModulo($module_name)
         }
     }
     $listaRutas = array();
+    $sIncluir = ''; $sIncluirModulo = '';
     
     // Rutas de JavaScript hacia JQuery
     $listaRutasPosibles = array(
@@ -201,7 +228,11 @@ function generarRutaJQueryModulo($module_name)
         if (is_array($listaArchivos) && count($listaArchivos) > 0) {
             foreach ($listaArchivos as $sRutaArchivo) {
                 $sRutaURL = substr($sRutaArchivo, strlen($_SERVER['DOCUMENT_ROOT']) + 1);
-                $listaRutas[] = array('js', $sRutaURL);
+                if ($bHayHeaderJQuery) {
+                	$sIncluir .= "<script type=\"text/javascript\" src='$sRutaURL'></script>\n";
+                } else {
+                    $listaRutas[] = array('js', $sRutaURL);
+                }
             }
             break;
         }
@@ -217,7 +248,11 @@ function generarRutaJQueryModulo($module_name)
         if (is_array($listaArchivos) && count($listaArchivos) > 0) {
             foreach ($listaArchivos as $sRutaArchivo) {
                 $sRutaURL = substr($sRutaArchivo, strlen($_SERVER['DOCUMENT_ROOT']) + 1);
-                $listaRutas[] = array('css', $sRutaURL);
+                if ($bHayHeaderJQuery) {
+                    $sIncluir .= "<link rel=\"stylesheet\" href='$sRutaURL' />\n";
+                } else {
+                    $listaRutas[] = array('css', $sRutaURL);
+                }
             }
             break;
         }
@@ -232,7 +267,11 @@ function generarRutaJQueryModulo($module_name)
         if (is_array($listaArchivos) && count($listaArchivos) > 0) {
             foreach ($listaArchivos as $sRutaArchivo) {
                 $sRutaURL = substr($sRutaArchivo, strlen($_SERVER['DOCUMENT_ROOT']) + 1);
-                $listaRutas[] = array('js', $sRutaURL);
+                if ($bHayHeaderModulo) {
+                    $sIncluirModulo .= "<script type=\"text/javascript\" src='$sRutaURL'></script>\n";
+                } else {
+                    $listaRutas[] = array('js', $sRutaURL);
+                }
             }
             break;
         }
@@ -247,13 +286,18 @@ function generarRutaJQueryModulo($module_name)
         if (is_array($listaArchivos) && count($listaArchivos) > 0) {
             foreach ($listaArchivos as $sRutaArchivo) {
                 $sRutaURL = substr($sRutaArchivo, strlen($_SERVER['DOCUMENT_ROOT']) + 1);
-                $listaRutas[] = array('css', $sRutaURL);
+                if ($bHayHeaderModulo) {
+                    $sIncluirModulo .= "<link rel=\"stylesheet\" href='$sRutaURL' />\n";
+                } else {
+                    $listaRutas[] = array('css', $sRutaURL);
+                }
             }
             break;
         }
     }
-
-    return $listaRutas;
+    if ($sIncluir != '') $smarty->assign('HEADER_LIBS_JQUERY', $sIncluir);
+    if ($sIncluirModulo != '') $smarty->assign('HEADER_MODULES', $sIncluirModulo);
+    $smarty->assign('LISTA_JQUERY_CSS', $listaRutas);
 }
 
 ?>

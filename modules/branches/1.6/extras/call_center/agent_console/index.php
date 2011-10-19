@@ -59,7 +59,7 @@ function _moduleContent(&$smarty, $module_name)
     $smarty->assign("MODULE_NAME", $module_name);
 
     // Incluir todas las bibliotecas y CSS necesarios
-    $smarty->assign('LISTA_JQUERY_CSS', generarRutaJQueryModulo($module_name));
+    generarRutaJQueryModulo($smarty, $module_name);
 
     // Estado inicial de la consola del Call Center
     if (!isset($_SESSION['callcenter'])) $_SESSION['callcenter'] = generarEstadoInicial();
