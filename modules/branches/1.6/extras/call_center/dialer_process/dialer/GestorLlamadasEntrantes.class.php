@@ -378,6 +378,18 @@ class GestorLlamadasEntrantes
         if ($this->DEBUG) $this->oMainLog->output("DEBUG: EXIT notificarJoin");
         return $bLlamadaManejada;    	
     }
+
+    function actualizarMapaUID($id_viejo, $id_nuevo)
+    {
+        for ($i = 0; $i < count($this->_mapaUID); $i++) {
+            if ($this->_mapaUID[$i]['CID'] == $id_viejo) {
+                $this->_mapaUID[$i]['CID'] = $id_nuevo;
+                if ($this->DEBUG) {
+                    $this->oMainLog->output('DEBUG: actualizarMapaUID: asociado para CID='.$id_viejo.' cambiado a CID='.$id_nuevo);
+                }
+            }
+        }
+    }
     
     /**
      * Procedimiento que debe ser llamado para notificar un evento Link. Como

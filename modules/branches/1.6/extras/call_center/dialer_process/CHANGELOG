@@ -1,3 +1,5 @@
+* Dialer (ECCP): fix behavior when an incoming call is put on hold, and then is
+  hung up by the remote side.
 * Agent Console: specify explicit font size in CSS to prevent font size from
   varying with the selected theme. Helps fix Elastix bug #1035.
 * Agent Console: rewrite script and header inclusion so that javascript.js from

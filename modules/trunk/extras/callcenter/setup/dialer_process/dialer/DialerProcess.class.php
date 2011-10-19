@@ -3144,6 +3144,86 @@ INFO_FORMULARIOS;
             }
             return FALSE;
         }
+
+        // Verificar si es llamada entrante puesta en hold y luego colgada
+        foreach (array_keys($this->_infoAgentes) as $sAgente) {
+        	if (!is_null($this->_infoAgentes[$sAgente]['info_hold']) &&
+                $this->_infoAgentes[$sAgente]['info_hold']['tabla'] == 'current_call_entry' &&
+                $this->_infoAgentes[$sAgente]['info_hold']['ActualChannel'] == $params['Channel']) {
+                
+                if ($this->DEBUG) {
+                    $this->oMainLog->output('DEBUG: hangup de canal correspondiente a HOLD huérfano entrante');
+                }
+                
+                // Mandar a actualizar el mapa de UID para evitar fugas de memoria
+                $id_viejo = $this->_dbConn->getOne(
+                    'SELECT uniqueid FROM call_entry WHERE id = ?', 
+                    array($this->_infoAgentes[$sAgente]['info_hold']['id_call']));
+                if (DB::isError($id_viejo)) {
+                	$this->oMainLog->output('ERR: no se puede consultar uniqueid viejo para llamada entrante - '.$id_viejo->getMessage());
+                    $id_viejo = NULL;
+                } else {
+                	$this->_oGestorEntrante->actualizarMapaUID($id_viejo, $params['Uniqueid']);
+                }
+                
+                /* Quitar las banderas de hold para que notificarHangup no 
+                 * crea que la llamada recién entra en hold. */
+                $result =& $this->_dbConn->query(
+                    'UPDATE call_entry SET status = "activa", uniqueid = ? WHERE id = ?', 
+                    array($params['Uniqueid'], $this->_infoAgentes[$sAgente]['info_hold']['id_call']));
+                if (DB::isError($result)) {
+                    $this->oMainLog->output(
+                        "ERR: no se puede actualizar estado de llamada entrante (hold->activa) (1) - ".
+                        $result->getMessage());
+                }
+                $result =& $this->_dbConn->query(
+                    'UPDATE current_call_entry SET hold = "N", uniqueid = ? WHERE id = ?',
+                    array($params['Uniqueid'], $this->_infoAgentes[$sAgente]['info_hold']['id_current_call']));
+                if (DB::isError($result)) {
+                    $this->oMainLog->output(
+                        "ERR: no se puede actualizar estado de llamada entrante (hold->activa) (2) - ".
+                        $result->getMessage());
+                }
+
+                if ($this->_oGestorEntrante->notificarHangup($params)) {
+                    if ($this->DEBUG) {
+                        $this->oMainLog->output("DEBUG: llamada manejada por GestorLlamadasEntrantes::notificarHangup");
+                    }
+                } else {
+                	$this->oMainLog->output('ERR: GestorLlamadasEntrantes::notificarHangup no reconoce llamada entrante.');
+                }
+                
+                // En cualquier caso el hold ya no es válido en este punto.
+
+                // Ejecutar realmente el retiro de la pausa en todas las colas
+                $this->_quitarPausaAgente($sAgente);
+
+                // Auditoría del fin del hold
+                $this->marcarFinalBreakAgente($this->_infoAgentes[$sAgente]['info_hold']['id_hold']);
+
+                $tuplaHold = $this->_dbConn->getRow(
+                    'SELECT datetime_init, datetime_end, TIME_TO_SEC(duration) AS duration_sec FROM audit WHERE id = ?', 
+                    array($this->_infoAgentes[$sAgente]['info_hold']['id_hold']),
+                    DB_FETCHMODE_ASSOC);
+                if (DB::isError($tuplaHold)) {
+                    $this->oMainLog->output('ERR: (internal) al consultar fecha final hold - '.$tuplaHold->getMessage());
+                    $tuplaHold = array(
+                        'datetime_init' =>  date('Y-m-d H:i:s'),
+                        'datetime_end'  =>  date('Y-m-d H:i:s'),
+                        'duration_sec'  =>  0,
+                    );
+                }
+                $this->_dialSrv->notificarEvento_PauseEnd($sAgente, array(
+                    'pause_class'   =>  'hold',
+                    'pause_start'   =>  $tuplaHold['datetime_init'],
+                    'pause_end'     =>  $tuplaHold['datetime_end'],
+                    'pause_duration'=>  $tuplaHold['duration_sec'],
+                ));
+
+                $this->_infoAgentes[$sAgente]['info_hold'] = NULL;
+                break;
+            }
+        }
         
         // Revisar si la llamada es alguna de las llamadas salientes monitoreadas
         $sKey = NULL;
