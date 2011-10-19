@@ -505,16 +505,17 @@ class paloSantoDataApplets
                 </div>";
     }
 
-    function genericImage($sGraph, $extraParam = array())
+    function genericImage($sGraph, $extraParam = array(), $w = NULL, $h = NULL)
     {
-        return sprintf('<img alt="%s", src="%s" />', 
+        return sprintf('<img alt="%s" src="%s" %s/>', 
             $sGraph,
             construirURL(array_merge(array(
                 'menu'      => $this->module_name,
                 'action'    =>  'image',
                 'rawmode'   =>  'yes',
                 'image'     =>  $sGraph,
-                ), $extraParam)));
+                ), $extraParam)),
+            (is_null($w) || is_null($h) ? '' : "width=\"$w\" height=\"$h\""));
     }
 
     function getImage_CPU_Usage()
@@ -524,7 +525,7 @@ class paloSantoDataApplets
 
     function getImage_Disc_Usage($value)
     {
-        return $this->genericImage("ObtenerInfo_Particion", array('percent' => $value));
+        return $this->genericImage("ObtenerInfo_Particion", array('percent' => $value), 190, 190);
     }
 
     function getImage_Hit()
