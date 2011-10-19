@@ -256,6 +256,7 @@ if( sizeof($G_YDATAS) >= 1 )
     }
     else if( $G_TYPE == 'plot3d' )
     {
+/*
         $graph = new PieGraph($G_SIZE[0], $G_SIZE[1],"auto");
 
         if( $G_SHADOW ) $graph->SetShadow();
@@ -285,6 +286,65 @@ if( sizeof($G_YDATAS) >= 1 )
         $graph->Add($pieplot3d);
 
         $graph->Stroke();
+*/
+
+
+        $canvasx = $G_SIZE[0]; $canvasy = $canvasx;
+        $iAnchoPastel = $canvasx * 256/320; $iAltoPastel = $canvasx * 155/320;
+        $iPosCentroX = $canvasx * 141/320; $iPosCentroY = $canvasx * 91 / 320;
+
+        $thumb = imagecreatetruecolor($canvasx, $canvasy);
+        $transparent = imagecolorallocatealpha($thumb, 200, 200, 200, 127);
+        imagefill($thumb, 0, 0, $transparent);
+
+        // Asignar colores de imagen
+        $imgcolor = array();
+        foreach ($G_ARR_COLOR as $i => $sHtmlColor) {
+        	$r = $g = $b = 0;
+            sscanf($sHtmlColor, "#%02x%02x%02x", $r, $g, $b);
+            $imgcolor[$i] = imagecolorallocate($thumb, $r, $g, $b);
+        }
+
+        $colorTexto = imagecolorallocate($thumb, 0, 0, 0);
+
+        // Mostrar el gráfico de pastel
+        function displayGraph_pie($thumb, $x, $y, $w, $h, $G_YDATAS, $G_ARR_COLOR, $colorTexto)
+        {
+        	$iTotal = array_sum($G_YDATAS[0]);
+            $iFraccion = 0;
+            for ($i = 0; $i < count($G_YDATAS[0]); $i++) {
+                $degInicio = 360 - 45 - (int)(360.0 * ($iFraccion + $G_YDATAS[0][$i]) / $iTotal);
+                $degFinal = 360 - 45 - (int)(360.0 * $iFraccion / $iTotal);
+        		imagefilledarc($thumb, $x, $y, $w, $h, 
+                    $degInicio, $degFinal,
+                    $G_ARR_COLOR[$i],
+                    IMG_ARC_PIE);                
+                $iFraccion += $G_YDATAS[0][$i];
+                
+                if (!is_null($colorTexto)) {
+                    $degMitad = ($degInicio + $degFinal) / 2;
+                    $iPosTextoX = $x + 0.5 * ($w / 2.0) * cos(deg2rad($degMitad)); 
+                    $iPosTextoY = $y + 0.5 * ($h / 2.0) * sin(deg2rad($degMitad));
+                    imagestring($thumb, 5, $iPosTextoX, $iPosTextoY, $G_YDATAS[0][$i].' %', $colorTexto);
+                } 
+        	}
+        }
+        for ($i = (int)($canvasx * 60 / 320); $i > 0; $i--) {
+            displayGraph_pie($thumb, $iPosCentroX, $iPosCentroY + $i, 
+                $iAnchoPastel, $iAltoPastel, $G_YDATAS, $imgcolor, NULL);
+        }
+        displayGraph_pie($thumb, $iPosCentroX, $iPosCentroY, 
+            $iAnchoPastel, $iAltoPastel, $G_YDATAS, $imgcolor, $colorTexto);
+        
+        imagealphablending($thumb, true);
+        imagesavealpha($thumb, true);  
+
+        $source2 = imagecreatefrompng("images/pie_alpha.png");
+        imagealphablending($source2, true);
+        imagecopyresampled($thumb, $source2, 0, 0, 0, 0, $canvasx * 290 / 320, $canvasx * 294 / 320, 290, 294);
+        
+        header("Content-Type: image/png");
+        imagepng($thumb);
     }
     else if( $G_TYPE == 'barplot' )
     {
