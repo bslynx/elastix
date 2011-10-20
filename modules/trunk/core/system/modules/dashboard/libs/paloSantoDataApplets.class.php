@@ -515,7 +515,9 @@ class paloSantoDataApplets
                 'rawmode'   =>  'yes',
                 'image'     =>  $sGraph,
                 ), $extraParam)),
-            (is_null($w) || is_null($h) ? '' : "width=\"$w\" height=\"$h\""));
+            (is_null($w) ? '' : " width=\"$w\"").
+            (is_null($h) ? '' : " height=\"$h\"")
+            );
     }
 
     function getImage_CPU_Usage()
@@ -525,7 +527,7 @@ class paloSantoDataApplets
 
     function getImage_Disc_Usage($value)
     {
-        return $this->genericImage("ObtenerInfo_Particion", array('percent' => $value), 190, 190);
+        return $this->genericImage("ObtenerInfo_Particion", array('percent' => $value), 190);
     }
 
     function getImage_Hit()
