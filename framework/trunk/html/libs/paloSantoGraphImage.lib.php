@@ -295,7 +295,7 @@ if( sizeof($G_YDATAS) >= 1 )
                 $iAnchoPastel = 256 * $escala; $iAltoPastel = 155 * $escala;
                 $iPosCentroX = 141 * $escala; $iPosCentroY = 91 * $escala;
         
-                $thumb = imagecreatetruecolor($canvasx, $canvasy);
+                $thumb = imagecreatetruecolor($canvasx * 284/320, $canvasy * 250/320);
                 $transparent = imagecolorallocatealpha($thumb, 200, 200, 200, 127);
                 imagefill($thumb, 0, 0, $transparent);
         
@@ -478,7 +478,7 @@ if( sizeof($G_YDATAS) >= 1 )
     	if (!function_exists('displayGraph_draw_gauge')) {
     		function displayGraph_draw_gauge($canvasx, $percent) {
                 $escala = $canvasx / 320.0;
-                $thumb = imagecreatetruecolor($canvasx, $canvasx);
+                $thumb = imagecreatetruecolor($canvasx * 284/320, $canvasx * 284/320);
             
                 if ($percent > 100) $percent = 100.0;
                 if ($percent < 0) $percent = 0.0;
