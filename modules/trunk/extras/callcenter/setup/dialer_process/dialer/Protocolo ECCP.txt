@@ -1147,6 +1147,19 @@ Este requerimiento lista todas las campañas del sistema.
 Atributos o argumentos:
 * campaign_type: Opcional. Si se especifica, debe ser 'incoming' o 'outgoing'.
   Si no se especifica, se leen todas las campañas.
+* status: Opcional. Si se especifica, debe ser 'active', 'inactive', 'finished'.
+* filtername: Opcional. Si se especifica, el nombre de la campaña se filtrará
+  para que contenga este texto.
+* datetime_start: Opcional. El inicio de la campaña deberá ser igual o posterior
+  a esta fecha. Formato yyyy-mm-dd.
+* datetime_end: Opcional. El final de la campaña deberá ser igual o posterior a
+  esta fecha. Formato yyyy-mm-dd.
+* offset: Opcional. Si se especifica, debe también indicarse limit. Se devuelven
+  registros a partir del número indicado, con el primer registro siendo 0. Se 
+  asume 0 por omisión en caso de especificar limit sin offset.
+* limit: Opcional. Si se especifica, se devuelve como máximo el número de 
+  registros indicado por el parámetro. Si no se especifica, se devuelven todos
+  los registros posibles.
   
 Respuesta:
 * campaigns: Elemento que contiene cero o más elementos 'campaign'. Cada elemento

@@ -988,20 +988,127 @@ LISTA_EXTENSIONES;
 
     private function Request_GetCampaignList($comando)
     {
+        // Tipo de campaña 
     	$sTipoCampania = NULL;
         if (isset($comando->campaign_type)) {
             $sTipoCampania = (string)$comando->campaign_type;
         }
         $listaTiposConocidos = array('incoming', 'outgoing');
         if (!is_null($sTipoCampania) && !in_array($sTipoCampania, $listaTiposConocidos))
-        	return $this->_generarRespuestaFallo(400, 'Bad request');
+        	return $this->_generarRespuestaFallo(400, 'Bad request - invalid campaign type');
         if (!is_null($sTipoCampania))
             $listaTipos = array($sTipoCampania);
         else $listaTipos = $listaTiposConocidos;
 
+        // Filtro por nombre
+        $sNombreContiene = NULL;
+        if (isset($comando->filtername)) {
+        	$sNombreContiene = (string)$comando->filtername;
+        }
+        
+        // Filtro por status
+        $sEstado = NULL;
+        if (isset($comando->status)) {
+        	$sEstado = (string)$comando->status;
+            $listaEstadosConocidos = array(
+                'active'    =>  'A',
+                'inactive'  =>  'I',
+                'finished'  =>  'T');
+            if (!in_array($sEstado, array_keys($listaEstadosConocidos)))
+                return $this->_generarRespuestaFallo(400, 'Bad request - invalid status');
+            $sEstado = $listaEstadosConocidos[$sEstado];
+        }
+        
+        // Fechas de inicio y fin
+        $sFechaInicio = $sFechaFin = NULL;
+        if (isset($comando->datetime_start)) {
+        	$sFechaInicio = (string)$comando->datetime_start;
+            if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $sFechaInicio))
+                return $this->_generarRespuestaFallo(400, 'Bad request - invalid start date');
+        }
+        if (isset($comando->datetime_end)) {
+            $sFechaFin = (string)$comando->datetime_end;
+            if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $sFechaFin))
+                return $this->_generarRespuestaFallo(400, 'Bad request - invalid end date');
+        }
+        if (!is_null($sFechaInicio) && !is_null($sFechaFin) && $sFechaFin < $sFechaInicio) {
+        	$t = $sFechaInicio;
+            $sFechaInicio = $sFechaFin;
+            $sFechaFin = $t;
+        }
+        
+        // Offset y límite
+        $iOffset = NULL; $iLimite = NULL;
+        if (isset($comando->limit)) {
+        	$iLimite = (int)$comando->limit;
+            $iOffset = 0;
+        }
+        if (isset($comando->offset)) $iOffset = (int)$comando->offset;
+        if (!is_null($iOffset) && is_null($iLimite))
+            return $this->_generarRespuestaFallo(400, 'Bad request - offset without limit');
+
         $xml_response = new SimpleXMLElement('<response />');
         $xml_GetCampaignListResponse = $xml_response->addChild('getcampaignlist_response');
 
+        $recordset = array();
+        $listaSQL = array();
+        $paramSQL = array();
+
+        foreach ($listaTipos as $sTipo) {
+            switch ($sTipo) {
+            case 'incoming':
+                $sPeticionSQL = "SELECT 'incoming' AS campaign_type, id, name, estatus AS status FROM campaign_entry";
+                break;
+            case 'outgoing':
+                $sPeticionSQL = "SELECT 'outgoing' AS campaign_type, id, name, estatus AS status FROM campaign";
+                break;
+            }
+            
+            $listaWhere = array();
+            if (!is_null($sNombreContiene)) {
+                $listaWhere[] = 'name LIKE ?';
+                $paramSQL[] = '%'.$sNombreContiene.'%';
+            }
+            if (!is_null($sEstado)) {
+                $listaWhere[] = 'estatus = ?';
+                $paramSQL[] = $sEstado;
+            }
+            if (!is_null($sFechaInicio)) {
+                $listaWhere[] = 'datetime_init >= ?';
+                $paramSQL[] = $sFechaInicio;
+            }
+            if (!is_null($sFechaFin)) {
+                $listaWhere[] = 'datetime_init < ?';
+                $paramSQL[] = $sFechaFin;
+            }
+            
+            if (count($listaWhere) > 0) {
+                $sPeticionSQL .= ' WHERE '.implode(' AND ', $listaWhere);
+            }
+            
+            $listaSQL[] = $sPeticionSQL;
+        }
+        
+        // Preparar UNION SQL
+        if (count($listaSQL) > 0)
+            $sPeticionSQL = '('.implode(') UNION (', $listaSQL).')';
+        else $sPeticionSQL = $listaSQL[0];
+
+        $sPeticionSQL .= ' ORDER BY campaign_type, id';
+        if (!is_null($iLimite)) {
+            $sPeticionSQL .= ' LIMIT ? OFFSET ?';
+            $paramSQL[] = $iLimite;
+            $paramSQL[] = $iOffset;
+        }
+        
+        $recordset = $this->_dbConn->getAll($sPeticionSQL, $paramSQL, DB_FETCHMODE_ASSOC);
+        if (DB::isError($recordset)) {
+            $this->oMainLog->output("ERR: no se puede leer información de la campaña - ".$recordset->getMessage());
+            $this->_agregarRespuestaFallo($xml_GetCampaignListResponse, 500, 'Cannot read campaign info');
+            return $xml_response;
+        }
+
+/*
         $campaignData = array();
         foreach ($listaTipos as $sTipo) {
             switch ($sTipo) {
@@ -1012,7 +1119,38 @@ LISTA_EXTENSIONES;
                 $sPeticionSQL = "SELECT 'outgoing' AS campaign_type, id, name, estatus AS status FROM campaign";
                 break;
             }
-            $recordset = $this->_dbConn->getAll($sPeticionSQL, array(), DB_FETCHMODE_ASSOC);
+            
+            $paramSQL = array();
+            $listaWhere = array();
+            if (!is_null($sNombreContiene)) {
+            	$listaWhere[] = 'name LIKE ?';
+                $paramSQL[] = '%'.$sNombreContiene.'%';
+            }
+            if (!is_null($sEstado)) {
+            	$listaWhere[] = 'estatus = ?';
+                $paramSQL[] = $sEstado;
+            }
+            if (!is_null($sFechaInicio)) {
+            	$listaWhere[] = 'datetime_init >= ?';
+                $paramSQL[] = $sFechaInicio;
+            }
+            if (!is_null($sFechaFin)) {
+                $listaWhere[] = 'datetime_init < ?';
+                $paramSQL[] = $sFechaFin;
+            }
+            
+            if (count($listaWhere) > 0) {
+            	$sPeticionSQL .= ' WHERE '.implode(' AND ', $listaWhere);
+            }
+            $sPeticionSQL .= ' ORDER BY id';
+            
+            if (!is_null($iLimite)) {
+            	$sPeticionSQL .= ' LIMIT ? OFFSET ?';
+                $paramSQL[] = $iLimite;
+                $paramSQL[] = $iOffset;
+            }
+            
+            $recordset = $this->_dbConn->getAll($sPeticionSQL, $paramSQL, DB_FETCHMODE_ASSOC);
             if (DB::isError($recordset)) {
                 $this->oMainLog->output("ERR: no se puede leer información de la campaña - ".$recordset->getMessage());
                 $this->_agregarRespuestaFallo($xml_GetCampaignListResponse, 500, 'Cannot read campaign info');
@@ -1020,6 +1158,7 @@ LISTA_EXTENSIONES;
             }
             $campaignData[$sTipo] = $recordset;
         }
+*/
 
         $descEstados = array(
             'A' =>  'active',
@@ -1028,7 +1167,7 @@ LISTA_EXTENSIONES;
         );
 
         $xml_campaigns = $xml_GetCampaignListResponse->addChild('campaigns');
-        foreach ($campaignData as $sTipo => &$recordset) {
+//        foreach ($campaignData as $sTipo => &$recordset) {
         	foreach ($recordset as $tupla) {
         		$xml_campaign = $xml_campaigns->addChild('campaign');
                 $xml_campaign->addChild('id', $tupla['id']);
@@ -1036,7 +1175,7 @@ LISTA_EXTENSIONES;
                 $xml_campaign->addChild('name', str_replace('&', '&amp;', $tupla['name']));
                 $xml_campaign->addChild('status', $descEstados[$tupla['status']]);
         	}
-        }
+//        }
 
         return $xml_response;
     }

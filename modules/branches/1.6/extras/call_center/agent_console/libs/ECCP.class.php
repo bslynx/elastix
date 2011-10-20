@@ -491,12 +491,26 @@ class ECCP
         return $xml_response->filterbyagent_response;
     }
 
-    public function getcampaignlist($campaign_type = NULL)
+    public function getcampaignlist($campaign_type = NULL, $status = NULL, 
+        $filtername = NULL, $datetime_start = NULL, $datetime_end = NULL, 
+        $offset = NULL, $limit = NULL)
     {
         $xml_request = new SimpleXMLElement("<request />");
         $xml_cmdRequest = $xml_request->addChild('getcampaignlist');
         if (!is_null($campaign_type))
             $xml_cmdRequest->addChild('campaign_type', str_replace('&', '&amp;', $campaign_type));
+        if (!is_null($status))
+            $xml_cmdRequest->addChild('status', str_replace('&', '&amp;', $status));
+        if (!is_null($filtername))
+            $xml_cmdRequest->addChild('filtername', str_replace('&', '&amp;', $filtername));
+        if (!is_null($datetime_start))
+            $xml_cmdRequest->addChild('datetime_start', str_replace('&', '&amp;', $datetime_start));
+        if (!is_null($datetime_end))
+            $xml_cmdRequest->addChild('datetime_end', str_replace('&', '&amp;', $datetime_end));
+        if (!is_null($offset))
+            $xml_cmdRequest->addChild('offset', str_replace('&', '&amp;', $offset));
+        if (!is_null($limit))
+            $xml_cmdRequest->addChild('limit', str_replace('&', '&amp;', $limit));
         $xml_response = $this->send_request($xml_request);
         return $xml_response->getcampaignlist_response;
     }

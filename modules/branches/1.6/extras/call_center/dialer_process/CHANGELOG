@@ -1,3 +1,4 @@
+* Dialer (ECCP): extend "getcampaignlist" request to add extra filtering options
 * Dialer (ECCP): fix behavior when an incoming call is put on hold, and then is
   hung up by the remote side.
 * Agent Console: specify explicit font size in CSS to prevent font size from
