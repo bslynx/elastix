@@ -497,8 +497,14 @@ function applyChanges($userAccount,$pACL,$smarty,$arrLang,$idUserAccount,$userLe
 
 	    $pACL->updateUser($_POST['id_user'], $username, $_POST['description'],$_POST['extension']);
 	    //si se ha puesto algo en passwor se actualiza el password
-	    if (!empty($_POST['password1']))
-		$pACL->changePassword($_POST['id_user'], md5($_POST['password1']));
+	    if (!empty($_POST['password1'])){
+			$resultOp = $pACL->changePassword($_POST['id_user'], md5($_POST['password1']));
+			if($resultOp){
+				$uidCurrent = $pACL->getIdUser($userAccount);
+				if($_POST['id_user'] === $uidCurrent)
+					$_SESSION['elastix_pass'] = md5($_POST['password1']);
+			}
+		}
 		
 	    $nuevasPropiedades = array(
 		'login'     =>  $_POST['webmailuser'],
