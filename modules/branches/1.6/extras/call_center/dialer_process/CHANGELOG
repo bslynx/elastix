@@ -1,3 +1,4 @@
+1.6.1 (SVN revision 3102)
 * Agent Console: perform translation of legacy contact labels for incoming 
   calls into user-friendly values subject to i18n. Fixes Elastix bug #1039. 
 * Dialer (ECCP): extend "getcampaignlist" request to add extra filtering options

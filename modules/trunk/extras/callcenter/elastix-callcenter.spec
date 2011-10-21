@@ -2,7 +2,7 @@
 
 Summary: Elastix Call Center 
 Name:    elastix-callcenter
-Version: 2.1.0
+Version: 2.1.1
 Release: 0
 License: GPL
 Group:   Applications/System
@@ -92,6 +92,21 @@ fi
 /etc/logrotate.d/elastixdialer
 
 %changelog
+* Fri Oct 21 2011 Alex Villacis Lasso <a_villacis@palosanto.com> 2.1.1-0
+- Updated version, synchronized with CallCenter 1.6.1 (SVN revision 3102)
+- From CHANGELOG:
+    - Agent Console: perform translation of legacy contact labels for incoming 
+      calls into user-friendly values subject to i18n. Fixes Elastix bug #1039. 
+    - Dialer (ECCP): extend "getcampaignlist" request to add extra filtering options
+    - Dialer (ECCP): fix behavior when an incoming call is put on hold, and then
+      is hung up by the remote side.
+    - Agent Console: specify explicit font size in CSS to prevent font size from
+      varying with the selected theme. Helps fix Elastix bug #1035.
+    - Agent Console: rewrite script and header inclusion so that javascript.js 
+      from module is included exactly once. Fixes Elastix bug #1036.
+    - Dialer (ECCP): allow the "agentlogout" request to cancel a login that is 
+      still in progress and asking for the agent numeric password.
+
 * Mon Oct 17 2011 Alex Villacis Lasso <a_villacis@palosanto.com> 2.1.0-0
 - Updated version, synchronized with CallCenter 1.6 (SVN revision 3087)
 - From CHANGELOG:
