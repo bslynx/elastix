@@ -111,5 +111,9 @@ $arrLangModule = array(
 '(unavailable)' => '(no disponible)',
 'VTiger CRM' => 'VTiger CRM',
 'Welcome to Agent Console' => 'Bienvenido a la Consola de Agente',
+
+'First name' => 'Nombre',
+'Last name' => 'Apellido',
+'National ID' => 'Cédula/RUC',
 );
 ?>

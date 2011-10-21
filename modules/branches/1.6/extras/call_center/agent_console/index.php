@@ -659,6 +659,34 @@ function manejarSesionActiva_HTML_generarInformacion($smarty, $sDirLocalPlantill
         }
         $atributos[] = $atributo;        
     }
+    
+    // Caso especial: verificación de etiquetas de contact llamada entrante
+    if ($infoLlamada['calltype'] == 'incoming' && count($atributos) == 5) {
+    	$n = 5;
+        foreach ($atributos as $atributo) {
+    		if (in_array($atributo['label'], array('first_name', 'last_name', 'phone', 'cedula_ruc', 'contact_source')))
+                $n--;
+    	}
+        if ($n == 0) {
+            $traduccion = array(
+                'first_name'    =>  _tr('First name'),
+                'last_name'     =>  _tr('Last name'),
+                'phone'         =>  _tr('Phone number'),
+                'cedula_ruc'    =>  _tr('National ID'),                
+            );
+
+        	// Se deben copiar los atributos, excepto el contact_source
+            $t = array();
+            foreach ($atributos as $atributo) {
+            	if ($atributo['label'] != 'contact_source') {
+            		$atributo['label'] = $traduccion[$atributo['label']];
+                    $t[] = $atributo;
+            	}
+            }
+            $atributos = $t;
+        }
+    }
+    
     $smarty->assign(array(
         'LBL_INFORMACION_LLAMADA'   =>  _tr('Call Information'),
         'MSG_NO_ATTRIBUTES'         =>  _tr('No information available for this call'),
@@ -1221,6 +1249,7 @@ function construirRespuesta_holdexit()
 
 function construirRespuesta_agentlinked($smarty, $sDirLocalPlantillas, $oPaloConsola, $callinfo, $infoLlamada)
 {
+    if (!isset($infoLlamada['calltype'])) $infoLlamada['calltype'] = $callinfo['calltype'];
     if ($callinfo['calltype'] == 'incoming' && is_null($callinfo['campaign_id'])) {
         $infoCampania['queue'] = $infoLlamada['queue'];
         $infoCampania['script'] = $oPaloConsola->leerScriptCola($infoCampania['queue']);
