@@ -102,7 +102,7 @@ class paloSantoDataApplets
                             $title = $item['title'];
                             $str2 .= "<div class='scrollEl' align='center'><a href=$href target='_blank'><span>$title</span></a></div>";
                         $n++;
-                        if($n == 4) break;
+                        if($n == 7) break;
                     }
                     $str2 .= "</div>";
                 }
@@ -280,42 +280,114 @@ class paloSantoDataApplets
 
     function getDataApplet_SystemResources()
     {
+		/*include("libs/pChart/libs/pData.class");
+		include("libs/pChart/libs/pChart.class");
+		include("libs/pChart/libs/MyHorBar.class.php");*/
+
+
         $oPalo = new paloSantoSysInfo();
         $arrSysInfo = $oPalo->getSysInfo();
-        //CPU INFO
-        $cpu_info = $arrSysInfo['CpuVendor'] . " " . $arrSysInfo['CpuModel'];
+        //CPU INFO    $arrSysInfo['CpuVendor'] 
+        $cpu_info = $arrSysInfo['CpuModel'];
     
         //CPU USAGE
-        $img = $this->getImage_CPU_Usage($this->module_name);
-        $inf = number_format($arrSysInfo['CpuUsage']*100, 2)._tr('% used of')." ".number_format($arrSysInfo['CpuMHz'], 2)." MHz";
-        $cpu_usage =  $img."&nbsp;&nbsp;&nbsp;".$inf;
+        $cpu_usage = $this->getImage_CPU_Usage("140,140");//$this->module_name,
+		$inf1 = number_format($arrSysInfo['CpuUsage'], 2)." MHz";
+        //$inf1 = number_format($arrSysInfo['CpuUsage']*100, 2)._tr('% used of')." ".number_format($arrSysInfo['CpuMHz'], 2)." MHz";
+        //$cpu_usage =  $img."&nbsp;&nbsp;&nbsp;".$inf;
     
         //MEMORY USAGE
-        $mem_usage  = ($arrSysInfo['MemTotal'] - $arrSysInfo['MemFree'] - $arrSysInfo['Cached'] - $arrSysInfo['MemBuffers'])/$arrSysInfo['MemTotal'];
-        $img = $this->getImage_MEM_Usage();
-        $inf = number_format($mem_usage*100, 2)._tr('% used of')." ".number_format($arrSysInfo['MemTotal']/1024, 2)." Mb";
-        $mem_usage = $img."&nbsp;&nbsp;&nbsp;".$inf;
+        $mem_usage_val  = ($arrSysInfo['MemTotal'] - $arrSysInfo['MemFree'] - $arrSysInfo['Cached'] - $arrSysInfo['MemBuffers'])/$arrSysInfo['MemTotal'];
+        $mem_usage = $this->getImage_MEM_Usage("140,140");
+		$inf2 = number_format($arrSysInfo['MemTotal']/1024, 2)." Mb";
+        //$inf2 = number_format($mem_usage_val*100, 2)._tr('% used of')." ".number_format($arrSysInfo['MemTotal']/1024, 2)." Mb";
+        //$mem_usage = $img."&nbsp;&nbsp;&nbsp;".$inf;
     
         //SWAP USAGE
-        $swap_usage = ($arrSysInfo['SwapTotal'] - $arrSysInfo['SwapFree'])/$arrSysInfo['SwapTotal'];
-        $img = $this->getImage_Swap_Usage();
-        $inf = number_format($swap_usage*100, 2)._tr('% used of')." ".number_format($arrSysInfo['SwapTotal']/1024, 2)." Mb";
-        $swap_usage = $img."&nbsp;&nbsp;&nbsp;".$inf;
+        $swap_usage_val = ($arrSysInfo['SwapTotal'] - $arrSysInfo['SwapFree'])/$arrSysInfo['SwapTotal'];
+        $swap_usage = $this->getImage_Swap_Usage("140,140");
+		$inf3 = number_format($arrSysInfo['SwapTotal']/1024, 2)." Mb";
+        //$inf3 = number_format($swap_usage_val, 2)." ".number_format($arrSysInfo['SwapTotal']/1024, 2)." Mb";
+        //$swap_usage = $img."&nbsp;&nbsp;&nbsp;".$inf;
     
         //UPTIME
         $uptime = $arrSysInfo['SysUptime'];
-        return     "<div>
-                        <div class='type'>"._tr('CPU Info').": </div>
-                        <div class='detail'>$cpu_info</div>
-                        <div class='type'>"._tr('Uptime').":</div>
-                        <div class='detail'>$uptime</div>
-                        <div class='type'>"._tr('CPU usage').":</div>
-                        <div class='detail'>$cpu_usage</div>
-                        <div class='type'>"._tr('Memory usage').":</div>
-                        <div class='detail'>$mem_usage</div>
-                        <div class='type'>"._tr('Swap usage').":</div>
-                        <div class='detail'>$swap_usage</div>
-                    </div>";
+
+/*
+		// Dataset definition
+		$DataSet = new pData;
+		$DataSet->AddPoint(array(1,2),"Serie1");
+		$DataSet->AddPoint(array(2,3),"Serie2");
+		$DataSet->AddPoint(array(3,4),"Serie3");
+		$DataSet->AddAllSeries();
+		$DataSet->SetAbsciseLabelSerie();
+		$DataSet->SetSerieName("January","Serie1");
+		$DataSet->SetSerieName("February","Serie2");
+		$DataSet->SetSerieName("March","Serie3");
+
+		// Initialise the graph
+		//$Test = new pChart(300,100);
+		$Test = new MyHorBar(400,200);
+		$Test->setFontProperties("Fonts/tahoma.ttf",8);
+		$Test->setGraphArea(5,5,350,250);
+		$Test->drawFilledRoundedRectangle(7,7,693,223,5,240,240,240);
+		$Test->drawRoundedRectangle(5,5,695,225,5,230,230,230);
+		//$Test->drawGraphArea(255,255,255,TRUE);
+		//$Test->drawScale($DataSet->GetData(),$DataSet->GetDataDescription(),SCALE_NORMAL,150,150,150,TRUE,0,2,TRUE);
+		$Test->drawHorScale($DataSet->GetData(),$DataSet->GetDataDescription(),SCALE_NORMAL,150,150,150,TRUE,0,2,TRUE);
+		$Test->drawHorGrid(10,TRUE,230,230,230,50);
+		$Test->drawGrid(4,TRUE,230,230,230,50);
+
+		// Draw the 0 line
+		$Test->setFontProperties("Fonts/tahoma.ttf",6);
+		$Test->drawTreshold(0,143,55,72,TRUE,TRUE);
+
+		// Draw the bar graph
+		//$Test->drawBarGraph($DataSet->GetData(),$DataSet->GetDataDescription(),TRUE);
+        // Draw the bar graph
+        $Test->drawHorBarGraph($DataSet->GetData(),$DataSet->GetDataDescription(),FALSE);
+		// Finish the graph
+		$Test->setFontProperties("Fonts/tahoma.ttf",8);
+		$Test->drawLegend(596,150,$DataSet->GetDataDescription(),255,255,255);
+		$Test->setFontProperties("Fonts/tahoma.ttf",10);
+		$Test->drawTitle(50,22,"Prueba 1",50,50,50,585);
+
+		$Test->Render($_SERVER['DOCUMENT_ROOT']."/libs/pChart/tmp/pruebaIMG.png");
+*/
+
+		$html ="<div style='height:165px; position:relative; text-align:center;'>
+				  <div style='width:155px; float:left'>
+					$cpu_usage
+					<div>"._tr('CPU')."</div>
+				  </div>
+				  <div style='width:154px; float:left'>
+					$mem_usage
+					<div>"._tr('RAM')."</div>
+				  </div>
+				  <div style='width:155px; float:right'>
+					$swap_usage
+				  <div>"._tr('SWAP')."</div>
+				  </div>
+				</div>
+				<div class='neo-divisor'></div>
+				<div class=neo-applet-tline>
+				  <div class='neo-applet-titem'><strong>"._tr('CPU Info').":</strong></div>
+				  <div class='neo-applet-tdesc'>$cpu_info</div>
+				</div>
+				<div class=neo-applet-tline>
+				  <div class='neo-applet-titem'><strong>"._tr('Uptime').":</strong></div>
+				  <div class='neo-applet-tdesc'>$uptime</div>
+				</div>
+				<div class='neo-applet-tline'>
+				  <div class='neo-applet-titem'><strong>"._tr('CPU usage').":</strong></div>
+				  <div class='neo-applet-tdesc'>$inf1</div>
+				</div>
+				<div class='neo-applet-tline'>
+				  <div class='neo-applet-titem'><strong>"._tr('Memory usage').":</strong></div>
+				  <div class='neo-applet-tdesc'>RAM: $inf2 SWAP: $inf3</div>
+				</div>";
+		return $html;
+
     }
 
     function getDataApplet_Faxes()
@@ -484,18 +556,13 @@ class paloSantoDataApplets
         $title = $this->getTitle();
         return  "<div class='portlet' id='applet-{$code}-{$idApplet}'>
                     <div class='portlet_topper'>
-                        <div width='100%'>
-                            <div class='imgapplet' width='10%' style='float:left;'>
-                                <img src='modules/{$this->module_name}/images/$icon' border='0' align='absmiddle' />
-                            </div>
-                            <div class='tabapplet' width='80%' style='float:left;'>
-                                $title
-                            </div>
-                            <div class='closeapplet' align='right' width='10%'>
-                                <a href='#' class='toggle'>
-                                    <img id='imga11'  class='ima'  src='modules/{$this->module_name}/images/flecha_up.gif' border='0' align='absmiddle' />
-                                </a>
-                            </div>
+                        <div class='tabapplet' width='80%' style='float:left;'>
+                            $title
+                        </div>
+                        <div class='closeapplet' align='right' width='10%'>
+                            <a id='refresh_{$code}' style='cursor: pointer;' class='toggle' onclick='javascript:refresh(this)'>
+                                <img id='imga11'  class='ima'  src='modules/{$this->module_name}/images/reload.png' border='0' align='absmiddle' />
+                            </a>
                         </div>
                     </div>
                     <div class='portlet_content' id = '$code'>
@@ -505,29 +572,30 @@ class paloSantoDataApplets
                 </div>";
     }
 
-    function genericImage($sGraph, $extraParam = array(), $w = NULL, $h = NULL)
-    {
-        return sprintf('<img alt="%s" src="%s" %s/>', 
-            $sGraph,
-            construirURL(array_merge(array(
-                'menu'      => $this->module_name,
-                'action'    =>  'image',
-                'rawmode'   =>  'yes',
-                'image'     =>  $sGraph,
-                ), $extraParam)),
-            (is_null($w) ? '' : " width=\"$w\"").
-            (is_null($h) ? '' : " height=\"$h\"")
-            );
-    }
+   function genericImage($sGraph, $extraParam = array(), $w = NULL, $h = NULL)
+   {
+         return sprintf('<img alt="%s" src="%s" %s />',
+             $sGraph,
+             construirURL(array_merge(array(
+                  'menu'      => $this->module_name,
+                  'action'    =>  'image',
+                  'rawmode'   =>  'yes',
+                  'image'     =>  $sGraph,
+                   ), $extraParam)),
+               (is_null($w) || is_null($h) ? '' : "width=\"$w\" height=\"$h\""));
+   }
 
-    function getImage_CPU_Usage()
+    function getImage_CPU_Usage($value = null)
     {
-        return $this->genericImage("ObtenerInfo_CPU_Usage");
+		if(isset($value))
+			return $this->genericImage("ObtenerInfo_CPU_Usage", array('size' => $value), NULL, NULL);
+		else
+			return $this->genericImage("ObtenerInfo_CPU_Usage");
     }
 
     function getImage_Disc_Usage($value)
     {
-        return $this->genericImage("ObtenerInfo_Particion", array('percent' => $value), 190);
+        return $this->genericImage("ObtenerInfo_Particion", array('percent' => $value), 190, 190);
     }
 
     function getImage_Hit()
@@ -535,14 +603,20 @@ class paloSantoDataApplets
         return $this->genericImage("CallsMemoryCPU");
     }
 
-    function getImage_MEM_Usage()
+    function getImage_MEM_Usage($value = null)
     {
-        return $this->genericImage("ObtenerInfo_MemUsage");
+		if(isset($value)){
+			return $this->genericImage("ObtenerInfo_MemUsage", array('size' => $value), null, null);
+		}else
+			return $this->genericImage("ObtenerInfo_MemUsage");
     }
 
-    function getImage_Swap_Usage()
+    function getImage_Swap_Usage($value = null)
     {
-        return $this->genericImage("ObtenerInfo_SwapUsage");
+		if(isset($value))
+			return $this->genericImage("ObtenerInfo_SwapUsage", array('size' => $value), null, null);
+		else
+			return $this->genericImage("ObtenerInfo_SwapUsage");
     }
 
     function conectionAsteriskCDR()

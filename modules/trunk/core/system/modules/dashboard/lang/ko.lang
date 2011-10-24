@@ -141,6 +141,7 @@ $arrLangModule=array(
 "No News to display" => "No News to display",
 "Nothing to show yet" => "Nothing to show yet",
 "does not exist locally or password is incorrect" => "does not exist locally or password is incorrect",
-"The following database could not be found" => "The following database could not be found"
+"The following database could not be found" => "The following database could not be found",
+"Error, the following code does not exist" => "Error, the following code does not exist"
 );
 ?>

@@ -41,12 +41,12 @@ class paloSantoSysInfo
 
     }
 
-    function ObtenerInfo_CPU_Usage()
+    function ObtenerInfo_CPU_Usage($size = "90,20")
     {
         $value = $this->arrSysInfo['CpuUsage'];
 
         $result = array();
-        $result['ATTRIBUTES'] = array('TYPE'=>'bar','SIZE'=>"90,20");
+        $result['ATTRIBUTES'] = array('TYPE'=>'gauge','SIZE'=>$size);  // bar => gauge
         $result['MESSAGES'] = array('ERROR'=>'Error','NOTHING_SHOW'=>'Nada que mostrar');
 
         $temp = array();
@@ -137,12 +137,12 @@ class paloSantoSysInfo
         return $result;
     }
 
-    function ObtenerInfo_MemUsage()
+    function ObtenerInfo_MemUsage($size = "90,20")
     {
         $value = ($this->arrSysInfo['MemTotal'] - $this->arrSysInfo['MemFree'] - $this->arrSysInfo['Cached'] - $this->arrSysInfo['MemBuffers'])/$this->arrSysInfo['MemTotal'];
 
         $result = array();
-        $result['ATTRIBUTES'] = array('TYPE'=>'bar','SIZE'=>"90,20");
+        $result['ATTRIBUTES'] = array('TYPE'=>'gauge','SIZE'=>$size); // bar => gauge
         $result['MESSAGES'] = array('ERROR'=>'Error','NOTHING_SHOW'=>'Nada que mostrar');
 
         $temp = array();
@@ -152,12 +152,12 @@ class paloSantoSysInfo
         return $result;
     }
 
-    function ObtenerInfo_SwapUsage()
+    function ObtenerInfo_SwapUsage($size = "90,20")
     {
         $value = ($this->arrSysInfo['SwapTotal'] - $this->arrSysInfo['SwapFree'])/$this->arrSysInfo['SwapTotal'];
 
         $result = array();
-        $result['ATTRIBUTES'] = array('TYPE'=>'bar','SIZE'=>"90,20");
+        $result['ATTRIBUTES'] = array('TYPE'=>'gauge','SIZE'=>$size); // bar => gauge
         $result['MESSAGES'] = array('ERROR'=>'Error','NOTHING_SHOW'=>'Nada que mostrar');
 
         $temp = array();
@@ -186,8 +186,8 @@ class paloSantoSysInfo
         $oSampler->deleteDataBeforeThisTimestamp($starttime);
 
         $arrayResult['ATTRIBUTES'] = array('TITLE' => $arrGraph['name'],'TYPE'=>'lineplot_multiaxis',
-            'LABEL_X'=>"Etiqueta X",'LABEL_Y'=>'Etiqueta Y','SHADOW'=>false,'SIZE'=>"519,170",'MARGIN'=>"50,230,30,50",
-            'COLOR' => "#fafafa",'POS_LEYEND'=> "0.02,0.5");
+            'LABEL_X'=>"Etiqueta X",'LABEL_Y'=>'Etiqueta Y','SHADOW'=>false,'SIZE'=>"450,240",'MARGIN'=>"50,110,30,120",
+            'COLOR' => "#fafafa",'POS_LEYEND'=> "0.35,0.85");
 
         $arrayResult['MESSAGES'] = array('ERROR' => 'Error', 'NOTHING_SHOW' => _tr('Nothing to show yet'));
 

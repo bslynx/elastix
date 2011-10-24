@@ -19,39 +19,44 @@
 #header a
 {
     color: #E35332;
-        text-decoration:none;
+    text-decoration:none;
 }
 
 #columns td
 {
-    padding: 0 5px;
+    padding: 5px 5px;
     vertical-align: top;
     width: 50%;
 }
 
 .portlet
 {
-    background: #ffe;
-    border-color: #fff #665 #665 #fff;
-    border-style: solid;
-    border-width: 1px;
-    margin: 0 0 10px;
-    width: 100%;
+    position: relative;
+    float:left;
+    margin: 10px 20px 0px 0px;
+    padding: 0px 0px 10px 0px;
+    width: 480px;
+    height: 300px;
+    -moz-border-radius: 10px 10px 10px 10px;
+    -webkit-border-radius: 10px 10px 10px 10px;
+    border-top: 1px solid #aaa;
+    border-left: 1px solid #aaa;
+    border-right: 1px solid #999;
+    border-bottom: 1px solid #999;
+    -moz-box-shadow: 2px 2px 1px rgb(180,180,180); 
+    -webkit-box-shadow: 2px 2px 1px rgb(180,180,180);
+    background:url(../../../images/appletbg.png) repeat-x top #ddd; 
 }
 
 .portlet_topper
 {
-    /*background: #eed;*/
     padding: 5px 10px;
-    background-color:#FFFFFF;
-    background-image:url(../../../../../images/bgGray.gif);
-    border-color:#999999;
-    color:#E35332;
     font-family:verdana,arial,helvetica,sans-serif;
     font-size:13pt;
     font-weight:bold;
-    cursor: move;
+    color:#E35332;
     height:21px;
+    cursor: move;
 }
 
 .portlet_topper a
@@ -62,16 +67,17 @@
 
 .portlet_content
 {
-    border-top: 1px solid #998;
-    padding: 10px;
-    border-color: #F5F5F5;
+  /*
+    padding: 8px;
     color: #aaaaaa;
-    background-color: #fafafa;
-    background-image: url(../../../../../images/bggrisForm.gif);
     font-size: 12px;
-    background-repeat: repeat-x;
-    background-position: top;
-    height: 192px;
+    height: 278px;
+  */
+    position:absolute;
+	top:32px;
+	left:0px;
+	padding:8px 8px 8px 8px;
+	width:464px;
 }
 
 .portlet_bottom
@@ -85,11 +91,11 @@
 
 .sort_placeholder
 {
-    background: #bba;
+/*     background: #bba; */
 }
 
 .ima{
-    padding-top:5px;
+    padding-top:0px;
 }
 
 .tabFormTable {
@@ -126,7 +132,7 @@
     margin-top:3px;
     padding-bottom:2px;
     padding-top:2px;
-        color: #333333;
+    color: #333333;
     font-weight: bold;
 }
 
@@ -166,8 +172,15 @@
 }
 
 .tabapplet{
-    padding-right:2px;
-    padding-left:2px;
+    /*padding-right:2px;
+    padding-left:2px;*/
+	position: absolute;
+	top: 0px;
+	left:0px;
+	font: 13px Verdana, Arial,Helvetica,sans-serif;
+	color: #444;
+	text-shadow: 1px 1px #ccc;
+	padding: 5px 4px 4px 8px;
 }
 
 .closeapplet{
@@ -279,12 +292,12 @@
 
 .bordes_info{
     border-top: 1px solid #aaaaaa;
-        border-bottom: 1px solid #aaaaaa;
+    border-bottom: 1px solid #aaaaaa;
     height:182px;
 }
 .bordes_info2{
     border-top: 1px solid #aaaaaa;
-        border-bottom: 1px solid #aaaaaa;
+    border-bottom: 1px solid #aaaaaa;
     border-right: 1px solid #aaaaaa;
     height:182px;
 }
@@ -310,10 +323,82 @@
 .ui-sortable-placeholder{
     border: 1px dotted black;
     visibility: visible !important;
-    height: 245px !important;
-    background-color:#EEEEEE;
+    height: 300px !important;
+    background-color:#A7A7A7;
 }
 
 .ui-sortable-placeholder * {
     visibility: hidden;
+}
+/*nuevo*/
+div.neo-applet {
+	position: relative;
+	float:left;
+	margin: 10px 10px 0px 0px;
+	padding: 0px 0px 10px 0px;
+	width: 490px;
+	height: 300px;
+	-moz-border-radius: 10px 10px 10px 10px;
+	-webkit-border-radius: 10px 10px 10px 10px;
+	border-top: 1px solid #aaa;
+	border-left: 1px solid #aaa;
+	border-right: 1px solid #999;
+	border-bottom: 1px solid #999;
+	-moz-box-shadow: 2px 2px 1px rgb(180,180,180);
+	-webkit-box-shadow: 2px 2px 1px #B4B4B4;
+    background:url(../../../../../images/appletbg.png) repeat-x top #ddd;
+}
+div.neo-applet-title {
+	position: absolute;
+	top: 0px;
+	left:0px;
+	font: 13px Verdana, Arial,Helvetica,sans-serif;
+	color: #444;
+	text-shadow: 1px 1px #ccc;
+	padding: 5px 4px 4px 8px;
+}
+div.neo-applet-reload {
+	position: absolute;
+	top: 6px;
+	right:4px;
+}
+div.neo-applet-content {
+	position:absolute;
+	top:32px;
+	left:0px;
+	padding:8px 8px 8px 8px;
+	width:464px;
+}
+div.neo-applet-tline {
+	position:relative;
+	width:100%;
+	/* background-color:red; */
+	overflow:hidden;
+	height:22px;
+}
+div.neo-applet-titem {
+	position:absolute;
+	left:0px;
+	top:0px;
+	padding-left:4px;
+	width:110px;
+}
+div.neo-applet-tdesc {
+	position:absolute;
+	left:120px;
+	top:0px;
+	float:left;
+}
+div.neo-clearing {
+	clear:both;
+}
+div.neo-divisor {
+	position:relative;
+	height:2px;
+	widows:100%;
+	margin:0px 0px 8px 0px;
+	background: url(../../../images/applet_divisor.png) no-repeat bottom;
+}
+img.fullwidth {
+	width:100%;
 }

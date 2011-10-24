@@ -49,10 +49,9 @@ $(document).ready(
         });
 
 		// Toggle Single Portlet
-		$('a.toggle').click(function()
+		/*$('a.toggle').click(function()
 			{
-				var p1 = $(this).parent('div');
-				var p2 = p1.parent('div');
+				var p2 = $(this).parent('div');
 				var p3 = p2.parent('div').next('div').toggle();
 				var imgarrow = $(this).children("img").attr("src");
 				var id = $(this).children("img").attr("id");
@@ -60,7 +59,7 @@ $(document).ready(
 				$(this).children("img").attr("src",valor);
 				return false;
 			}
-		);
+		);*/
 
 		// Invert All Portlets
 		$('a#all_invert').click(function()
@@ -263,4 +262,33 @@ function jfunction(id)
             $("#layerCM").hide();
     });
     $('#layerCM').draggable();
+}
+
+function refresh(element)
+{
+    code = $(element).attr("id");
+    code = code.split("refresh_");
+    code = code[1];
+    // Se obtiene la imagen loading con su texto traducido
+    var arrAction	 = new Array();
+    arrAction["action"]  = "getImageLoading";
+    arrAction["rawmode"] = "yes";
+    request("index.php",arrAction,false,
+	  function(arrData,statusResponse,error)
+	  {
+	      $("#"+code).html(arrData);
+	      
+	      // Se realiza la petición para obtener los datos del applet
+	      var arrAction	 = new Array();
+	      arrAction["action"]  = "refreshDataApplet";
+	      arrAction["code"]    = code;
+	      arrAction["rawmode"] = "yes";
+	      request("index.php",arrAction,false,
+		    function(arrData,statusResponse,error)
+		    {
+			$("#"+code).html(arrData);
+		    }
+	      );
+	  }
+    );
 }

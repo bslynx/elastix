@@ -97,6 +97,14 @@ function _moduleContent($smarty, $module_name)
             $content = loadAppletData($pDataApplets,$arrPaneles,$session);
             return $content;
             break;
+	case "getImageLoading":
+	    $content = getImageLoading($module_name);
+	    return $content;
+	    break;
+	case "refreshDataApplet":
+	    $content = refreshDataApplet($pDataApplets);
+	    return $content;
+	    break;
         default:
 	    unset($session["dashboard"]);
 	    putSession($session);
@@ -174,13 +182,35 @@ function loadAppletData($pDataApplets, $arrPaneles, $session)
     return $jsonObject->createJSON();
 }
 
+function refreshDataApplet($pDataApplets)
+{
+    $jsonObject = new PaloSantoJSON();
+    $code = getParameter("code");
+    $function = "getData$code";
+    if(method_exists($pDataApplets,$function))
+	$message = $pDataApplets->$function();
+    else
+	$message = _tr("Error, the following code does not exist").": $code";
+    $jsonObject->set_message($message);
+    return $jsonObject->createJSON();
+}
+
+function getImageLoading($module_name)
+{
+    $jsonObject = new PaloSantoJSON();
+    $message = "<img class='ima' src='modules/{$module_name}/images/loading.gif' border='0' align='absmiddle' />&nbsp;
+                        "._tr('Loading');
+    $jsonObject->set_message($message);
+    return $jsonObject->createJSON();
+}
+
 function executeImage($module_name, $sImg)
 {
     $listaImgs = array(
         'CallsMemoryCPU'                                =>  array(null, 'functionCallback'),
-        'ObtenerInfo_CPU_Usage'                         =>  array(null, null),
-        'ObtenerInfo_MemUsage'                          =>  array(null, null),
-        'ObtenerInfo_SwapUsage'                         =>  array(null, null),
+        'ObtenerInfo_CPU_Usage'                         =>  array(array('size'), null),
+        'ObtenerInfo_MemUsage'                          =>  array(array('size'), null),
+        'ObtenerInfo_SwapUsage'                         =>  array(array('size'), null),
         'ObtenerInfo_Particion'                         =>  array(array('percent'), null),
     );
     if (isset($listaImgs[$sImg])) {
