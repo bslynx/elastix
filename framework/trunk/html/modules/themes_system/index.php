@@ -106,6 +106,7 @@ function changeTheme($pDB, $smarty, $module_name, $local_templates_dir, $formCam
     $tema_actual = $oThemes->getThemeActual(); 
     $arrTmp['themes']   = $tema_actual;
     $contenidoModulo = $oForm->fetchForm("$local_templates_dir/new.tpl", $arrLang["Change Theme"],$arrTmp);
+    $oThemes->smartyRefresh($_SERVER['DOCUMENT_ROOT']);
     return $contenidoModulo;
 }
 
