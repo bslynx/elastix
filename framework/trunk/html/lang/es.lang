@@ -189,5 +189,19 @@ $arrLang=array(
 "You are not authorized to access to this page" => "Usted no está autorizado a acceder a esta página",
 "You need administrator privileges" => "Usted necesita privilegios de administrador",
 "Elastix Authentication" => "Autenticación de Elastix",
+
+/*new*/
+"Please write your current password." => "Por favor escriba su clave actual.",
+"Please write the new password and confirm the new password." => "Por favor escriba la nueva clave y confirme la misma.",
+"The new password doesn't match with retype new password." => "La clave nueva no es igual con la confirmación de la nueva clave.",
+"Please your session id does not exist. Refresh the browser and try again." => "Por favor su id de session no existe. Refresque el navegador y vuelva a intentar.",
+"Elastix password has been changed." => "Clave de usuario Elastix ha sido cambiada.",
+"Impossible to change your Elastix password." => "Imposible cambiar su clave de usuario elastix.",
+"Impossible to change your Elastix password. User does not exits or password is wrong" => "Imposible cambiar su clave de usaurio elastix. Nombre de usuario no existe o la clave es incorrecta",
+"Change Elastix Password" => "Cambiar clave de Elastix",
+"Current Password" => "Clave Actual",
+"New Password" => "Nueva Clave",
+"Retype New Password" => "Confirme la nueva clave",
+"Change" => "Actualizar",
 );
 ?>
