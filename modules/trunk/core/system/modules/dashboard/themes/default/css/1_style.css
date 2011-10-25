@@ -33,7 +33,7 @@
 {
     position: relative;
     float:left;
-    margin: 10px 20px 0px 0px;
+    margin: 10px 5px 0px 0px;
     padding: 0px 0px 10px 0px;
     width: 480px;
     height: 300px;
@@ -382,13 +382,13 @@ div.neo-applet-titem {
 	left:0px;
 	top:0px;
 	padding-left:4px;
-	width:110px;
+	width:180px;
 }
 div.neo-applet-tdesc {
 	position:absolute;
-	left:120px;
 	top:0px;
 	float:left;
+	margin-left: 15%;
 }
 div.neo-clearing {
 	clear:both;
