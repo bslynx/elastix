@@ -192,11 +192,19 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
 
     $smarty->assign("md_message_title",$arrLang['md_message_title']);
     $smarty->assign("currentyear",date("Y"));
-	if($arrConf['mainTheme']=="elastixwave"){
+	if($arrConf['mainTheme']=="elastixwave" || $arrConf['mainTheme']=="elastixneo"){
 		$smarty->assign("ABOUT_ELASTIX2",$arrLang['About Elastix2']);
     	$smarty->assign("HELP",$arrLang['HELP']);
         $smarty->assign("USER_LOGIN",$_SESSION['elastix_user']);
-
+		$smarty->assign("CHANGE_PASSWORD", _tr("Change Password"));
+		$smarty->assign("CURRENT_PASSWORD_ALERT", _tr("Please write your current password."));
+		$smarty->assign("NEW_RETYPE_PASSWORD_ALERT", _tr("Please write the new password and confirm the new password."));
+		$smarty->assign("PASSWORDS_NOT_MATCH", _tr("The new password doesn't match with retype password."));
+		$smarty->assign("CHANGE_PASSWORD", _tr("Change Elastix Password"));
+		$smarty->assign("CURRENT_PASSWORD", _tr("Current Password"));
+		$smarty->assign("NEW_PASSWORD", _tr("New Password"));
+		$smarty->assign("RETYPE_PASSWORD", _tr("Retype New Password"));
+		$smarty->assign("CHANGE_PASSWORD_BTN", _tr("Change"));
 	}
 	else{
 		$smarty->assign("ABOUT_ELASTIX",$arrLang['About Elastix']." ".$arrConf['elastix_version']);
@@ -223,6 +231,23 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
         echo $json->encode($arrDetails);
         return;
     }
+	if(getParameter("action")=="changePasswordElastix"){
+		include_once "libs/paloSantoJSON.class.php";
+		$jsonObject = new PaloSantoJSON();
+		$output = setUserPassword();
+		if($output['status'] === TRUE){
+			$jsonObject->set_status("true");
+		}else
+		  $jsonObject->set_status("false");
+		$jsonObject->set_error($output['msg']);
+		echo $jsonObject->createJSON();
+		return;
+	}
+
+	if(getParameter("action")=="search_module"){
+		echo searchModulesByName();
+		return;
+	}
 
     if (count($arrMenuFiltered)>0)
         $smarty->assign("MENU", $oPn->showMenu($menu));
