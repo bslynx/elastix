@@ -168,7 +168,6 @@ function hide_message_error(){
     document.getElementById("message_error").style.display = 'none';
 }
 
-/*********************** new begin* *******************************/
 function showPopupElastix(id,titles,widths,heights){
     //var arrAction              = new Array();
     //arrAction["action"]        = "registration";
@@ -356,7 +355,75 @@ function getElastixKey(){
     );
 }
 
-/************************************ new end ******************************************/
+function setAdminPassword(){
+    var id = "changePasswordAdmin";
+	var titles = $('#lblChangePass').val();
+	var lblCurrentPass = $('#lblCurrentPass').val();
+	var lblNewPass = $('#lblNewPass').val();
+	var lblRetypeNewPass = $('#lblRetypePass').val();
+	var btnChange = $('#btnChagePass').val();
+	var heights = 200;
+	var widths = 400;
+	var arrData =
+	"<table class='tabForm' style='font-size: 16px;' width='100%' >" +
+	  "<tr class='letra12'><td align='center' colspan='2'><b>"+titles+"</b></td></tr>" +
+	  "<tr class='letra12'>" +
+		"<td align='left'><b>"+lblCurrentPass+"</b></td>" +
+		"<td align='left'><input type='password' id='curr_pass' name='curr_pass' value='' /></td>" +
+	  "</tr>" +
+	  "<tr class='letra12'>" +
+		"<td align='left'><b>"+lblNewPass+"</b></td>" +
+		"<td align='left'><input type='password' id='curr_pass_new' name='curr_pass_new' value='' /></td>" +
+	  "</tr>" +
+	  "<tr class='letra12'>" +
+		"<td align='left'><b>"+lblRetypeNewPass+"</b></td>" +
+		"<td align='left'><input type='password' id='curr_pass_renew' name='curr_pass_renew' value='' /></td>" +
+	  "</tr>" +
+	  "<tr class='letra12'>" +
+		"<td align='center'  colspan='2'><input type='button' id='sendChanPass' name='sendChanPss' value='"+btnChange+"' onclick='saveNewPasswordElastix()' /></td>" +
+	  "</tr>" +
+	"</table>";
+    jBoxPopupAero(id ,titles, widths, heights, arrData);
+}
+
+function saveNewPasswordElastix(){
+	var arrAction = new Array();
+	var oldPass   = $('#curr_pass').val();
+	var newPass   = $('#curr_pass_new').val();
+	var newPassRe = $('#curr_pass_renew').val();
+
+	if(oldPass == ""){
+	  var lable_err = $('#lblCurrentPassAlert').val();
+	  alert(lable_err)
+	  return
+	}
+	if(newPass == "" || newPassRe == ""){
+	  var lable_err = $('#lblNewRetypePassAlert').val();
+	  alert(lable_err);
+	  return;
+	}
+	if(newPass != newPassRe){
+	  var lable_err = $('#lblPassNoTMatchAlert').val();
+	  alert(lable_err);
+	  return;
+	}
+
+	arrAction["action"]        = "changePasswordElastix";
+	arrAction["oldPassword"]   = oldPass;
+	arrAction["newPassword"]   = newPass;
+	arrAction["newRePassword"] = newPassRe;
+	request("index.php",arrAction,false,
+		function(arrData,statusResponse,error)
+		{
+		    if(statusResponse == "false")
+				alert(error);
+			else{
+				alert(error);
+				$('#changePasswordAdmin').remove();
+			}
+		}
+	);
+}
 
 $(document).ready(function(){
     //***Para los módulos con filtro se llama a la función pressKey
@@ -463,6 +530,67 @@ $(document).ready(function(){
             $("#tdTa").attr("style","display: none;");
         }
     });
+
+	$( "#search_module_elastix" )
+		// don't navigate away from the field on tab when selecting an item
+		.bind( "keydown", function( event ) {
+			if ( event.keyCode === $.ui.keyCode.TAB && $( this ).data( "autocomplete" ).menu.active ) {
+				event.preventDefault();
+			}
+		})
+		.autocomplete({
+		    delay: 0,
+			minLength: 0,
+			source: function(request, response){
+				//$("#neo-cmenu-showbox-search").removeClass("neo-display-none");
+				$("#neo-cmenu-showbox-search").hover(
+				  function() {
+					if(!($("#search_module_elastix").is( ":focus" )))
+					  $("#search_module_elastix").focus();
+					$("#neo-cmenu-showbox-search").removeClass("neo-display-none");
+				  },
+				  function() {$("#neo-cmenu-showbox-search").removeClass("neo-display-none");}
+				);
+				$.ajax({
+					url: 'index.php?action=search_module&rawmode=yes',
+					dataType: "json",
+					data: {
+						name_module_search: ((request.term).split( /,\s*/ ) ).pop()
+					},
+					success: function( data ) {
+					    //$("#neo-cmenu-showbox-search").mouseleave(function(){alert("holad");});
+						response( $.map( data, function( item ) {
+							return {
+								label: item.caption,
+								value: item.value
+							}
+						}));
+					}
+				});
+			},
+			focus: function() {
+				// prevent value inserted on focus
+				//$("#neo-cmenu-showbox-search").removeClass("neo-display-none");
+				return false;
+			},
+			/*open: function() {
+				$( this ).removeClass( "ui-corner-all" ).addClass( "ui-corner-top" );
+			},*/
+			close: function() {
+				$("#neo-cmenu-showbox-search").addClass("neo-display-none");
+			},
+			/*change: function( event, ui ) {
+
+			},*/
+			select: function( event, ui ) {
+				//$("#neo-cmenu-showbox-search").removeClass("neo-display-none");
+				this.value = ui.item.label;
+				document.location.href = "?menu="+ui.item.value;
+				// enviando la redireccion al index.php
+				return false;
+			}
+	});
+		
 });
 
 //Si se presiona enter se hace un submit al formulario para que se aplica el filtro

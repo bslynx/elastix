@@ -619,4 +619,110 @@ function verifyTemplate_vm_email()
    }
 }
 
+
+function setUserPassword()
+{
+	include_once "libs/paloSantoACL.class.php";
+
+	$old_pass   = getParameter("oldPassword");
+	$new_pass   = getParameter("newPassword");
+	$new_repass = getParameter("newRePassword");
+	$arrResult  = array();
+	$arrResult['status'] = FALSE;
+	if($old_pass == ""){
+	  $arrResult['msg'] = _tr("Please write your current password.");
+	  return $arrResult;
+	}
+	if($new_pass == "" || $new_repass == ""){
+	  $arrResult['msg'] = _tr("Please write the new password and confirm the new password.");
+	  return $arrResult;
+	}
+	if($new_pass != $new_repass){
+	  $arrResult['msg'] = _tr("The new password doesn't match with retype new password.");
+	  return $arrResult;
+	}
+
+	$user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
+    global $arrConf;
+    $pdbACL = new paloDB("sqlite3:///$arrConf[elastix_dbdir]/acl.db");
+    $pACL = new paloACL($pdbACL);
+    $uid = $pACL->getIdUser($user);
+	if($uid===FALSE)
+        $arrResult['msg'] = _tr("Please your session id does not exist. Refresh the browser and try again.");
+	else{
+		// verificando la clave vieja
+		$val = $pACL->authenticateUser ($user, md5($old_pass));
+		if($val === TRUE){
+			$status = $pACL->changePassword($uid, md5($new_pass));
+			if($status){
+				$arrResult['status'] = TRUE;
+				$arrResult['msg'] = _tr("Elastix password has been changed.");
+				$_SESSION['elastix_pass'] = md5($new_pass);
+			}else{
+				$arrResult['msg'] = _tr("Impossible to change your Elastix password.");
+			}
+		}else{
+			$arrResult['msg'] = _tr("Impossible to change your Elastix password. User does not exist or password is wrong");
+		}
+	}
+	return $arrResult;
+}
+
+function searchModulesByName()
+{
+	include_once "libs/JSON.php";
+	include_once "modules/group_permission/libs/paloSantoGroupPermission.class.php";
+	$json = new Services_JSON();
+
+	$pGroupPermission = new paloSantoGroupPermission();
+	$name = getParameter("name_module_search");
+	$arrSessionPermissions = $_SESSION['elastix_user_permission'];
+	$result = array();
+	$arrIdMenues = array();
+	$lang=get_language();
+    global $arrLang;
+
+	// obteniendo los id de los menus permitidos
+	$arrIdMenues = array();
+	foreach($arrSessionPermissions as $key => $value){
+		$arrIdMenues[] = $value['id']; // id, IdParent, Link, Name, Type, order_no, HasChild
+	}
+
+	$parameter_to_find = array(); // arreglo con los valores del name dada la busqueda
+	// el metodo de busqueda de por nombre sera buscando en el arreglo de lenguajes y obteniendo su $key para luego buscarlo en la base de
+	// datos menu.db
+    if($lang != "en"){ // entonces se adjunta la busqueda con el arreglo de lenguajes en ingles
+	    foreach($arrLang as $key=>$value){
+            $langValue    = strtolower(trim($value));
+            $filter_value = strtolower(trim($name));
+            if($filter_value!=""){
+                if(preg_match("/^[[:alnum:]| ]*$/",$filter_value))
+                    if(preg_match("/$filter_value/",$langValue))
+			            $parameter_to_find[] = $key;
+            }
+	    }
+    }
+	$parameter_to_find[] = $name;
+
+	// buscando en la base de datos acl.db tabla acl_resource con el campo description
+	if(empty($parameter_to_find))
+		$arrResult = $pGroupPermission->ObtainResources(25, 0, $name);
+	else
+    	$arrResult = $pGroupPermission->ObtainResources(25, 0, $parameter_to_find);
+
+	foreach($arrResult as $key2 => $value2){
+		// leyendo el resultado del query
+		if(in_array($value2["name"], $arrIdMenues)){
+			$arrMenu['caption'] = _tr($value2["description"]);
+			$arrMenu['value']   = $value2["name"];
+			$result[] = $arrMenu;
+		}
+	}
+
+	header('Content-Type: application/json');
+	return $json->encode($result);
+
+}
+
+
 ?>
