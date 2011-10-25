@@ -206,7 +206,7 @@ class paloSantoNavigation {
         }
         /*************** Submenus para template elastix wine ********************/
 
-        return $this->smarty->fetch("_common/_menu.tpl");
+        //return $this->smarty->fetch("_common/_menu.tpl");
     }
 
 
