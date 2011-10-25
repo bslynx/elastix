@@ -186,7 +186,7 @@ class paloSantoSysInfo
         $oSampler->deleteDataBeforeThisTimestamp($starttime);
 
         $arrayResult['ATTRIBUTES'] = array('TITLE' => $arrGraph['name'],'TYPE'=>'lineplot_multiaxis',
-            'LABEL_X'=>"Etiqueta X",'LABEL_Y'=>'Etiqueta Y','SHADOW'=>false,'SIZE'=>"450,240",'MARGIN'=>"50,110,30,120",
+            'LABEL_X'=>"Etiqueta X",'LABEL_Y'=>'Etiqueta Y','SHADOW'=>false,'SIZE'=>"450,260",'MARGIN'=>"50,110,30,120",
             'COLOR' => "#fafafa",'POS_LEYEND'=> "0.35,0.85");
 
         $arrayResult['MESSAGES'] = array('ERROR' => 'Error', 'NOTHING_SHOW' => _tr('Nothing to show yet'));

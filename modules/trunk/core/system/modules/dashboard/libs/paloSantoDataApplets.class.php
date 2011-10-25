@@ -76,7 +76,7 @@ class paloSantoDataApplets
 
     function getDataApplet_PerformanceGraphic()
     {
-        return "<div class='tabFormTable'>".$this->getImage_Hit()."</div>";
+        return "<div class='tabFormTable' style='text-align:center;'>".$this->getImage_Hit()."</div>";
     }
 
     function getDataApplet_News()
