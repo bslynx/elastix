@@ -249,10 +249,10 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
 		return;
 	}
 
+
+    // Inicializa el objeto palosanto navigation
     if (count($arrMenuFiltered)>0)
-        $smarty->assign("MENU", $oPn->showMenu($menu));
-    else
-        $smarty->assign("MENU", "No modules");
+        $oPn->showMenu($menu);
 
     // rawmode es un modo de operacion que pasa directamente a la pantalla la salida
     // del modulo. Esto es util en ciertos casos.
@@ -266,6 +266,14 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
        // Autorizacion
         if($pACL->isUserAuthorizedById($idUser, "access", $oPn->currSubMenu) or $developerMode==true) {
             $smarty->assign("CONTENT",   $oPn->showContent());
+
+            if (count($arrMenuFiltered)>0){
+                $menu_html = $smarty->fetch("_common/_menu.tpl");
+                $smarty->assign("MENU",$menu_html);
+            }
+            else{
+                $smarty->assign("MENU","No modules");
+            }
         }
 
         $smarty->display("_common/index.tpl");
