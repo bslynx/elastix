@@ -106,7 +106,6 @@ function changeTheme($pDB, $smarty, $module_name, $local_templates_dir, $formCam
     $tema_actual = $oThemes->getThemeActual(); 
     $arrTmp['themes']   = $tema_actual;
     $contenidoModulo = $oForm->fetchForm("$local_templates_dir/new.tpl", $arrLang["Change Theme"],$arrTmp);
-    $oThemes->smartyRefresh($_SERVER['DOCUMENT_ROOT']);
     return $contenidoModulo;
 }
 
@@ -129,11 +128,17 @@ function updateTheme($pDB, $smarty, $module_name, $local_templates_dir, $formCam
         $exito   = $oThemes->updateTheme($_POST['themes']);
 
         if ($exito) {
-            $oThemes->smartyRefresh($_SERVER['DOCUMENT_ROOT']);
-            header("Location: ?menu=$module_name");
+            if($oThemes->smartyRefresh($_SERVER['DOCUMENT_ROOT'])){
+		header("Location: ?menu=$module_name");
+		die();
+	    }
+	    else{
+		$smarty->assign("mb_title", $arrLang["ERROR"]);
+		$smarty->assign("mb_message", $arrLang["The smarty cache could not be deleted"]);
+	    }
         } else {
             $smarty->assign("mb_title", $arrLang["Validation Error"]);
-            $smarty->assign("mb_message", $oBreak->errMsg);
+            $smarty->assign("mb_message", $oThemes->errMsg);
         } 
     }
 
