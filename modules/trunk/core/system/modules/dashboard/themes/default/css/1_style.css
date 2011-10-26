@@ -45,7 +45,7 @@
     border-bottom: 1px solid #999;
     -moz-box-shadow: 2px 2px 1px rgb(180,180,180); 
     -webkit-box-shadow: 2px 2px 1px rgb(180,180,180);
-    background:url(../../../images/appletbg.png) repeat-x top #ddd;
+    background:url(../../../images/appletbg.png) repeat-x top #F6F6F6;
     font-size: 13px;
 }
 
