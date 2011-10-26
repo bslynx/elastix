@@ -127,7 +127,7 @@ function _moduleContent(&$smarty, $module_name)
     $smarty->assign("EDIT", $arrLang["Edit"]);
     $smarty->assign("DELETE", $arrLang["Delete"]);
     $smarty->assign("CONFIRM_CONTINUE", $arrLang["Are you sure you wish to continue?"]);
-    $smarty->assign("IMG","/modules/$module_name/images/kfaxview.png");
+    $smarty->assign("icon","/modules/$module_name/images/kfaxview.png");
 
     if(isset($_POST['save'])) {
         if($oForm->validateForm($_POST)) {

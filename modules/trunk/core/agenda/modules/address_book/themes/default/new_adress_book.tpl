@@ -17,7 +17,6 @@
     </tr>
     <tr>
         <td  colspan='2'>
-            <br />
             <table width="100%" cellpadding="4" cellspacing="0" border="0" class="tabForm">
                 <tr class="letra12" {$style_address_options}>
                     <td colspan='2'>
