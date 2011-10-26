@@ -1,7 +1,4 @@
 <table width="{$width}" align="center" border="0" cellpadding="0" cellspacing="0">
-    <tr class="moduleTitle">
-        <td class="moduleTitle" colspan="3" valign="middle">&nbsp;&nbsp;<img src="{$icon}" border="0" align="absmiddle">&nbsp;&nbsp;{$title}</td>
-    </tr>
     <tr>
         <td colspan="3" style="padding: 10px 10px 5px 10px;">
             <input type='button' name='submit_harware_detect' value='{$HARDWARE_DETECT}'  onclick="detectar()" class='button' />
