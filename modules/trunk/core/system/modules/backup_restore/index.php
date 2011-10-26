@@ -403,7 +403,6 @@ function form_general($smarty, $local_templates_dir, $arrLang, $arrBackupOptions
     $smarty->assign("backup_otros_new", $arrBackupOptions['otros_new']);
 
     $smarty->assign("module", $module_name);
-    $smarty->assign("icon","images/1x1.gif");
     return $smarty->fetch("$local_templates_dir/backup.tpl");
 }
 
