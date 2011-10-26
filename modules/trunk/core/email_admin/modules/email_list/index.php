@@ -191,7 +191,7 @@ function viewFormEmaillist($smarty, $module_name, $local_templates_dir, &$pDB, $
 	$smarty->assign("Mailman_Setting", _tr("Mailman Admin Settings"));
     }
 
-    $smarty->assign("IMG", "/modules/$module_name/images/email.png");
+    $smarty->assign("icon", "/modules/$module_name/images/email.png");
     $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl", _tr("New Email List"), $_POST);
     $content = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
 
@@ -319,7 +319,7 @@ function viewFormMemberList($smarty, $module_name, $local_templates_dir, &$pDB, 
     $smarty->assign("REQUIRED_FIELD", _tr("Required field"));
     $smarty->assign("CANCEL", _tr("Cancel"));
     $smarty->assign("INFO", $info);
-    $smarty->assign("IMG", "/modules/$module_name/images/email.png");
+    $smarty->assign("icon", "/modules/$module_name/images/email.png");
     $htmlForm = $oForm->fetchForm("$local_templates_dir/form_member.tpl", $title, $_POST);
     $content = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
     return $content;
