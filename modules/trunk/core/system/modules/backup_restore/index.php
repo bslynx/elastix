@@ -403,6 +403,7 @@ function form_general($smarty, $local_templates_dir, $arrLang, $arrBackupOptions
     $smarty->assign("backup_otros_new", $arrBackupOptions['otros_new']);
 
     $smarty->assign("module", $module_name);
+    $smarty->assign("icon","images/1x1.gif");
     return $smarty->fetch("$local_templates_dir/backup.tpl");
 }
 
@@ -2210,7 +2211,7 @@ function viewFormFTPBackup($smarty, $module_name, $local_templates_dir, &$pDB, $
     $smarty->assign("DOWNLOAD", $arrLang["Download"]);
     $smarty->assign("TITLE", $arrLang["TITLE"]);
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
-    $smarty->assign("IMG", "images/list.png");
+    $smarty->assign("icon", "images/list.png");
     
     $dir = $arrConf['dir'];
     $array_new = $pFTPBackup->obtainFiles($dir);

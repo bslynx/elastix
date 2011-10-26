@@ -1,9 +1,6 @@
 
 
 <table width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
-    <tr class="moduleTitle">
-        <td class="moduleTitle" valign="middle" colspan='2'>&nbsp;&nbsp;<img src="{$IMG}" border="0" align="absmiddle">&nbsp;&nbsp;{$title}</td>
-    </tr>
     <tr class="letra12">
 	<td align="left">
 	    <input class="button" type="submit" name="save_new_FTP" value="{$SAVE}">&nbsp;&nbsp;
