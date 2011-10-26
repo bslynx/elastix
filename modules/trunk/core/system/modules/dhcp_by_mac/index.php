@@ -212,7 +212,7 @@ function viewFormDHCP_Configuration($smarty, $module_name, $local_templates_dir,
     $smarty->assign("EDIT", _tr('Edit'));
     $smarty->assign("CANCEL", _tr('Cancel'));
     $smarty->assign("REQUIRED_FIELD", _tr('Required field'));
-    $smarty->assign("IMG", "images/list.png");
+    $smarty->assign("icon", "images/list.png");
     $smarty->assign("HOST_NAME", _tr('ex_hostname'));
     $smarty->assign("IP_ADDRESS", _tr('ex_ipaddress'));
     $smarty->assign("MAC_ADDRESS", _tr('ex_mac_address'));
@@ -234,7 +234,7 @@ function saveDHCP_Configuration($smarty, $module_name, $local_templates_dir, &$p
     $smarty->assign("SAVE", _tr('Save'));
     $smarty->assign("EDIT", _tr('Edit'));
     $smarty->assign("CANCEL", _tr('Cancel'));
-    $smarty->assign("IMG", "images/list.png");
+    $smarty->assign("icon", "images/list.png");
     $smarty->assign("ID", getParameter('id'));
     
     if(!$oForm->validateForm($_POST)) {
@@ -274,7 +274,7 @@ function saveDHCP_Configuration($smarty, $module_name, $local_templates_dir, &$p
             $smarty->assign("REQUIRED_FIELD", _tr('Required field'));
             $smarty->assign("SAVE", _tr('Save'));
             $smarty->assign("CANCEL", _tr('Cancel'));
-            $smarty->assign("IMG", "images/list.png");
+            $smarty->assign("icon", "images/list.png");
     
             $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl", _tr('Assign IP Address to Host'), $_POST);
             $contenidoModulo = "<form  method='POST' enctype='multipart/form-data' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
