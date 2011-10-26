@@ -1,9 +1,5 @@
-<table width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
-    <tr class="moduleTitle">
-        <td class="moduleTitle" valign="middle" colspan='2'>&nbsp;&nbsp;<img src="{$IMG}" border="0" align="absmiddle">&nbsp;&nbsp;{$title}</td>
-    </tr>
-</table>
-<table class="tabForm" style="font-size: 16px;" width="100%">
+<br />
+<table style="font-size: 16px;" width="100%">
     <tr>
         <td width="10%" align="left" valign="top" style="font-size:64%;">
             <div style="margin: 0px 10px 6px 10px;" valign="middle">
@@ -45,7 +41,7 @@
                         <div id="table_box">
                             <table width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
                                 <tr height="40px" class="moduleTitle titleBox">
-                                    <td class="moduleTitle" valign="middle" colspan='2'>&nbsp;&nbsp;<img src="{$IMG}" border="0" align="absmiddle">&nbsp;&nbsp;<span id="title_box"></span></td>
+                                    <td class="moduleTitle" valign="middle" colspan='2'>&nbsp;&nbsp;<img src="{$icon}" border="0" align="absmiddle">&nbsp;&nbsp;<span id="title_box"></span></td>
                                 </tr>
                                 <tr class="letra12">
                                     <td align="left">
