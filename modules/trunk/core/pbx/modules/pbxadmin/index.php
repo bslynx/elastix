@@ -38,6 +38,7 @@ if (!function_exists('_tr')) {
 function _moduleContent(&$smarty, $module_name)
 {
     require_once "modules/$module_name/libs/contentFreePBX.php";
+    $smarty->assign("title",_tr("PBX Config"));
     $salida = getContent($smarty, $module_name, true);
     return $salida;
 }
