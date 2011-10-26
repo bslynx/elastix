@@ -292,7 +292,7 @@ class paloSantoDataApplets
     
         //CPU USAGE
         $cpu_usage = $this->getImage_CPU_Usage("140,140");//$this->module_name,
-		$inf1 = number_format($arrSysInfo['CpuUsage'], 2)." MHz";
+		$inf1 = number_format($arrSysInfo['CpuUsage'] * 100.0, 2)." %";
         //$inf1 = number_format($arrSysInfo['CpuUsage']*100, 2)._tr('% used of')." ".number_format($arrSysInfo['CpuMHz'], 2)." MHz";
         //$cpu_usage =  $img."&nbsp;&nbsp;&nbsp;".$inf;
     
