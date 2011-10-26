@@ -143,7 +143,7 @@ function _moduleContent(&$smarty, $module_name)
     $smarty->assign("APPLY_CHANGES",$arrLang["Apply changes"]);
     $smarty->assign("EMAIL_RELAY_MSG",$relay_msg);
     $smarty->assign("RELAY_CONTENT", $contenido);
-    $smarty->assign("EMAIL_RELAY",$arrLang["Networks which can RELAY"]);
+    $smarty->assign("title",$arrLang["Networks which can RELAY"]);
     $contenidoModulo=$smarty->fetch("file:$local_templates_dir/form_relay.tpl");
     return $contenidoModulo;
 }

@@ -1,8 +1,5 @@
 <form method='POST' action="?menu=email_relay">
 <table width="99%" border="0" cellspacing="0" cellpadding="0" align="center">
-<tr class="moduleTitle">
-  <td class="moduleTitle" valign="middle">&nbsp;&nbsp;<img src="images/1x1.gif" border="0" align="absmiddle">&nbsp;&nbsp;{$EMAIL_RELAY}</td>
-</tr>
 <tr>
   <td>
     <table width="100%" border="0" cellspacing="0" cellpadding="0" class="tabForm">
