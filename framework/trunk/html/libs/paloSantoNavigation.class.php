@@ -154,8 +154,33 @@ class paloSantoNavigation {
         $this->currSubMenu2 = $currSubMenu2;
         $this->currSubMenuByParents  = $currSubMenuByParents;
 
+
+
         // Get the main menu
         $arrMainMenu = $this->getArrSubMenu("");
+		/************* para elastixneo**********/
+		// modificando las posiciones de los menus para el thema elastixNeo
+		//obteniendo el menu de la posicion 7 y luego
+		$i = 0;
+		$mainMenues = array();
+		$secondMenues = array();
+		$isMainMenu = false;
+		foreach($arrMainMenu as $key => $value){
+			if($i <= 6 && $menu == $key){
+				$mainMenues[$key] = $value;
+				$isMainMenu = true;
+			}elseif($i == 6 && !$isMainMenu && $menu != $key){
+				$secondMenues[$key] = $value;
+			}elseif($i > 6 && $menu == $key){
+				$mainMenues[$key] = $value;
+				$isMainMenu = true;
+			}else{
+				$secondMenues[$key] = $value;
+			}
+			$i++;
+		}
+		echo print_r($mainMenues, true);
+		/************* para elastixneo**********/
         $this->smarty->assign("arrMainMenu", $arrMainMenu);
 
         // Get the submenu
