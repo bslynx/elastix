@@ -297,14 +297,15 @@ class paloSantoDataApplets
         //$cpu_usage =  $img."&nbsp;&nbsp;&nbsp;".$inf;
     
         //MEMORY USAGE
-        $mem_usage_val  = ($arrSysInfo['MemTotal'] - $arrSysInfo['MemFree'] - $arrSysInfo['Cached'] - $arrSysInfo['MemBuffers'])/$arrSysInfo['MemTotal'];
+        $mem_usage_val  = number_format(100.0 * ($arrSysInfo['MemTotal'] - $arrSysInfo['MemFree'] - $arrSysInfo['Cached'] - $arrSysInfo['MemBuffers'])/$arrSysInfo['MemTotal'], 2);
         $mem_usage = $this->getImage_MEM_Usage("140,140");
 		$inf2 = number_format($arrSysInfo['MemTotal']/1024, 2)." Mb";
+        
         //$inf2 = number_format($mem_usage_val*100, 2)._tr('% used of')." ".number_format($arrSysInfo['MemTotal']/1024, 2)." Mb";
         //$mem_usage = $img."&nbsp;&nbsp;&nbsp;".$inf;
     
         //SWAP USAGE
-        $swap_usage_val = ($arrSysInfo['SwapTotal'] - $arrSysInfo['SwapFree'])/$arrSysInfo['SwapTotal'];
+        $swap_usage_val = number_format(100.0 * ($arrSysInfo['SwapTotal'] - $arrSysInfo['SwapFree'])/$arrSysInfo['SwapTotal'], 2);
         $swap_usage = $this->getImage_Swap_Usage("140,140");
 		$inf3 = number_format($arrSysInfo['SwapTotal']/1024, 2)." Mb";
         //$inf3 = number_format($swap_usage_val, 2)." ".number_format($arrSysInfo['SwapTotal']/1024, 2)." Mb";
@@ -356,17 +357,17 @@ class paloSantoDataApplets
 */
 
 		$html ="<div style='height:165px; position:relative; text-align:center;'>
-				  <div style='width:155px; float:left'>
+				  <div style='width:155px; float:left; position: relative;'>
 					$cpu_usage
-					<div>"._tr('CPU')."</div>
+					<div style=\"position:absolute; top:80px; left:0px; color:#ccc; width:155px; text-align:center\">$inf1</div><div>"._tr('CPU')."</div>
 				  </div>
-				  <div style='width:154px; float:left'>
+				  <div style='width:154px; float:left; position: relative;'>
 					$mem_usage
-					<div>"._tr('RAM')."</div>
+					<div style=\"position:absolute; top:80px; left:0px; color:#ccc; width:155px; text-align:center\">$mem_usage_val %</div><div>"._tr('RAM')."</div>
 				  </div>
-				  <div style='width:155px; float:right'>
+				  <div style='width:155px; float:right; position: relative;'>
 					$swap_usage
-				  <div>"._tr('SWAP')."</div>
+				  <div style=\"position:absolute; top:80px; left:0px; color:#ccc; width:155px; text-align:center\">$swap_usage_val %</div><div>"._tr('SWAP')."</div>
 				  </div>
 				</div>
 				<div class='neo-divisor'></div>
