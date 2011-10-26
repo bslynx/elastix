@@ -197,6 +197,7 @@ function _moduleContent(&$smarty, $module_name)
     $smarty->assign("EDIT", $arrLang["Edit"]);
     $smarty->assign("DELETE", $arrLang["Delete"]);
     $smarty->assign("CONFIRM_CONTINUE", $arrLang["Are you sure you wish to continue?"]);
+    $smarty->assign("icon","images/user.png");
     $smarty->assign("title_webmail", $arrLang["Mail Profile"]); 
     if(isset($_POST['submit_create_user'])) {
         // Implementar

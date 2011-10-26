@@ -24,7 +24,10 @@ function apply_changes()
 		}
 		else{
 		    if(arrData["mb_title"] && arrData["mb_message"]){
-			document.getElementById("table_error").style.display='';
+			if(document.getElementById("table_error"))
+			  document.getElementById("table_error").style.display='';
+			else
+			  document.getElementById("message_error").style.display='';
 			document.getElementById("mb_title").innerHTML="&nbsp;" + arrData["mb_title"];
 			document.getElementById("mb_message").innerHTML= arrData["mb_message"];
 		    }

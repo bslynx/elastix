@@ -1,8 +1,5 @@
 <form method="POST" action="?menu=userlist">
 <table width="99%" border="0" cellspacing="0" cellpadding="0" align="center">
-<tr class="moduleTitle">
-  <td class="moduleTitle" valign="middle">&nbsp;&nbsp;<img src="images/user.png" border="0" align="absmiddle">&nbsp;&nbsp;{$title}</td>
-</tr>
 <tr>
   <td>
     <table width="100%" cellpadding="4" cellspacing="0" border="0">
@@ -53,7 +50,7 @@
 </table>
 <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
 <tr class="moduleTitle">
-  <td class="moduleTitle" valign="middle">{$title_webmail}</td>
+  <td class="moduleTitle" valign="middle">{if $THEMENAME eq "elastixneo"}<span class="neo-module-name" style="background:none;"><img src="images/email.png" width="22" height="22" />&nbsp;&nbsp;{$title_webmail}</span>{else}{$title_webmail}{/if}</td>
 </tr>
 </table>
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="tabForm">
