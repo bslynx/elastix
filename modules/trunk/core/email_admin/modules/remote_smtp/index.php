@@ -102,7 +102,7 @@ function viewFormEmailRelay($smarty, $module_name, $local_templates_dir, &$pDB, 
     $smarty->assign("STATUS",$arrLang['Status']);
     $smarty->assign("MSG_REMOTE_SMTP",$arrLang['Message Remote SMTP Server']);
     $smarty->assign("MSG_REMOTE_AUT",$arrLang['Message Remote Autentification']);
-    $smarty->assign("IMG", "images/list.png");
+    $smarty->assign("icon", "images/list.png");
     $smarty->assign("Example",_tr("Ex"));
     $smarty->assign("lbldomain",$arrLang["Domain"]);
 
