@@ -59,7 +59,6 @@ function _moduleContent(&$smarty, $module_name)
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
     $templates_dir=(isset($arrConfModule['templates_dir']))?$arrConfModule['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
-
     $accion = getAction();
 
     $content = "";
@@ -133,9 +132,8 @@ function formAntispam($smarty, $module_name, $local_templates_dir, $arrLang, $ar
 
     $smarty->assign("LEGEND", $arrLang["Legend"]);
     $smarty->assign("UPDATE", $arrLang["Save"]);
-    $smarty->assign("TITLE", $arrLangModule["Antispam"]);
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
-    $smarty->assign("IMG", "images/list.png");
+    $smarty->assign("icon", "images/list.png");
 
 
     $objAntispam = new paloSantoAntispam($arrConfModule['path_postfix'], $arrConfModule['path_spamassassin'],$arrConfModule['file_master_cf'], $arrConfModule['file_local_cf']);
@@ -162,7 +160,7 @@ function formAntispam($smarty, $module_name, $local_templates_dir, $arrLang, $ar
     $smarty->assign("levelNUM", $arrData['levelNUM']);
     $smarty->assign("statusSpam", $arrData['status']);
     $smarty->assign("level", $arrLang['Level']);
-    $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl", "", $arrData);
+    $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl", $arrLangModule["Antispam"], $arrData);
     $contenidoModulo = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
 
     return $contenidoModulo;
