@@ -54,8 +54,8 @@ function _moduleContent(&$smarty, $module_name)
     $templates_dir=(isset($arrConf['templates_dir']))?$arrConf['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
 
-    $smarty->assign("REPORT_TITLE",_tr("Incoming Email"));
-
+    $smarty->assign("title",_tr("Incoming Email"));
+    $smarty->assign("icon","images/bardoc.png");
     if (isset($_GET['image'])) {
         $_GET['image'] = (int)$_GET['image'];
         displayGraph($module_name, "paloSantoPostfixStats", "postfixStats",array($_GET['image']),"functionCallback");
