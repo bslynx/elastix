@@ -1,5 +1,5 @@
 <br />
-<table style="font-size: 16px;" width="100%">
+<table class="tabForm" style="font-size: 16px;" width="100%">
     <tr>
         <td width="10%" align="left" valign="top" style="font-size:64%;">
             <div style="margin: 0px 10px 6px 10px;" valign="middle">

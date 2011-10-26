@@ -1,9 +1,5 @@
 <input type='hidden' name='id' value='{$ID}'>
 <table width="99%" border="0" cellspacing="0" cellpadding="0" align="center">
-    <tr class="moduleTitle">
-        <td class="moduleTitle" valign="middle">&nbsp;&nbsp;<img src="images/list.png" border="0" align="absmiddle">&nbsp;&nbsp;{$TITLE}</td>
-        <td></td>
-    </tr>
     <tr>
         <td align="left">
             {if $Show}
@@ -21,6 +17,7 @@
     </tr>
     <tr>
         <td  colspan='2'>
+            <br />
             <table width="100%" cellpadding="4" cellspacing="0" border="0" class="tabForm">
                 <tr class="letra12" {$style_address_options}>
                     <td colspan='2'>

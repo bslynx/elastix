@@ -130,7 +130,7 @@ function _moduleContent(&$smarty, $module_name)
 function save_csv($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk)
 {
     //valido el tipo de archivo
-    if (!eregi('.csv$', $_FILES['userfile']['name'])) {
+    if (!preg_match('/\.csv$/i', $_FILES['userfile']['name'])) {
         $smarty->assign("mb_title", $arrLang["Validation Error"]);
         $smarty->assign("mb_message", $arrLang["Invalid file extension.- It must be csv"]);
     }else {
@@ -272,7 +272,8 @@ function new_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pDB
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
     $smarty->assign("SAVE", $arrLang["Save"]);
     $smarty->assign("CANCEL", $arrLang["Cancel"]);
-    $smarty->assign("TITLE", $arrLang["Address Book"]);
+    $smarty->assign("title", $arrLang["Address Book"]);
+    $smarty->assign("icon", "images/list.png");
 
     $smarty->assign("new_contact", $arrLang["New Contact"]);
     $smarty->assign("address_from_csv", $arrLang["Address Book from CSV"]);
@@ -298,7 +299,7 @@ function new_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pDB
 
     $padress_book = new paloAdressBook($pDB);
 
-    $htmlForm = $oForm->fetchForm("$local_templates_dir/new_adress_book.tpl", "", $_POST);
+    $htmlForm = $oForm->fetchForm("$local_templates_dir/new_adress_book.tpl", $arrLang["Address Book"], $_POST);
 
     $contenidoModulo = "<form  method='POST' enctype='multipart/form-data' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
 
@@ -580,7 +581,7 @@ function save_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pD
         $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
         $smarty->assign("SAVE", $arrLang["Save"]);
         $smarty->assign("CANCEL", $arrLang["Cancel"]);
-        $smarty->assign("TITLE", $arrLang["Address Book"]);
+        $smarty->assign("title", $arrLang["Address Book"]);
 
         $smarty->assign("new_contact", $arrLang["New Contact"]);
         $smarty->assign("address_from_csv", $arrLang["Address Book from CSV"]);
@@ -610,7 +611,7 @@ function save_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pD
         }else{
             $smarty->assign("Show", 1);
             $smarty->assign("ShowImg",1);
-            $htmlForm = $oForm->fetchForm("$local_templates_dir/new_adress_book.tpl", $arrLang, $_POST);
+            $htmlForm = $oForm->fetchForm("$local_templates_dir/new_adress_book.tpl", $arrLang["Address Book"], $_POST);
             $contenidoModulo = "<form  method='POST' enctype='multipart/form-data' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
             return $contenidoModulo;
         }
@@ -824,7 +825,7 @@ function view_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pD
     $smarty->assign("EDIT", $arrLang["Edit"]);
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
     $smarty->assign("CANCEL", $arrLang["Cancel"]);
-    $smarty->assign("TITLE", $arrLang["Address Book"]);
+    $smarty->assign("title", $arrLang["Address Book"]);
     $smarty->assign("FirstName",$arrLang["First Name"]);
     $smarty->assign("LastName",$arrLang["Last Name"]);
     $smarty->assign("PhoneNumber",$arrLang["Phone Number"]);
@@ -881,7 +882,7 @@ function view_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pD
     $arrData['status']        = isset($_POST['status'])?$_POST['status']:$contactData['status'];
 
     $smarty->assign("ShowImg",1);
-    $htmlForm = $oForm->fetchForm("$local_templates_dir/new_adress_book.tpl", "", $arrData);
+    $htmlForm = $oForm->fetchForm("$local_templates_dir/new_adress_book.tpl",  $arrLang["Address Book"], $arrData);
 
     $contenidoModulo = "<form  method='POST' enctype='multipart/form-data' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
 
