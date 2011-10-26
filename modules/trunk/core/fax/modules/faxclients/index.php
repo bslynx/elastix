@@ -156,7 +156,7 @@ function _moduleContent(&$smarty, $module_name)
     $smarty->assign("APPLY_CHANGES",$arrLang["Apply changes"]);
     $smarty->assign("EMAIL_RELAY_MSG",$hosts_msg);
     $smarty->assign("RELAY_CONTENT", $contenido);
-    $smarty->assign("EMAIL_RELAY",$arrLang["Clients allowed to send faxes"]);
+    $smarty->assign("title",$arrLang["Clients allowed to send faxes"]);
     $contenidoModulo=$smarty->fetch("file:$local_templates_dir/form_hosts.tpl");
     return $contenidoModulo;
 }

@@ -62,7 +62,7 @@ function _moduleContent(&$smarty, $module_name)
     $arrFormElements = getFormElements( $arrLang );
     $oForm = new paloForm($smarty, $arrFormElements);   
     $smarty->assign("SEARCH", $arrLang["Search"]);
-    $smarty->assign("IMG","/modules/$module_name/images/kfaxview.png");    
+    $smarty->assign("icon","/modules/$module_name/images/kfaxview.png");    
     $javascript_xajax = ajax_faxes($arrConf); //En paloSantoFax.class.php
     $smarty->assign("javascript_xajax", $javascript_xajax);
 
