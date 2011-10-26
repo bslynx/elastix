@@ -93,6 +93,7 @@ function _moduleContent(&$smarty, $module_name)
     $smarty->assign("SAVE", $arrLang["Save"]);
     $smarty->assign("EDIT", $arrLang["Edit"]);
     $smarty->assign("DELETE", $arrLang["Delete"]);
+    $smarty->assign("icon","images/user.png");
     $smarty->assign("CONFIRM_CONTINUE", $arrLang["Are you sure you wish to continue?"]);
     if(isset($_POST['submit_create_group'])) {
         // Implementar
@@ -306,7 +307,6 @@ function _moduleContent(&$smarty, $module_name)
         $oGrid->showFilter("<input type='submit' name='submit_create_group' value='{$arrLang['Create New Group']}' class='button' />");
         $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
     }
-
     return $contenidoModulo;
 }
 ?>
