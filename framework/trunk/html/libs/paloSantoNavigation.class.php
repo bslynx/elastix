@@ -179,7 +179,7 @@ class paloSantoNavigation {
 			}
 			$i++;
 		}
-		echo print_r($mainMenues, true);
+
 		/************* para elastixneo**********/
         $this->smarty->assign("arrMainMenu", $arrMainMenu);
 
