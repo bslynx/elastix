@@ -158,29 +158,36 @@ class paloSantoNavigation {
 
         // Get the main menu
         $arrMainMenu = $this->getArrSubMenu("");
+
 		/************* para elastixneo**********/
 		// modificando las posiciones de los menus para el thema elastixNeo
 		//obteniendo el menu de la posicion 7 y luego
-		$i = 0;
-		$mainMenues = array();
-		$secondMenues = array();
-		$isMainMenu = false;
-		foreach($arrMainMenu as $key => $value){
-			if($i <= 6 && $menu == $key){
-				$mainMenues[$key] = $value;
-				$isMainMenu = true;
-			}elseif($i == 6 && !$isMainMenu && $menu != $key){
-				$secondMenues[$key] = $value;
-			}elseif($i > 6 && $menu == $key){
-				$mainMenues[$key] = $value;
-				$isMainMenu = true;
-			}else{
-				$secondMenues[$key] = $value;
+		global $arrConf;
+		if($arrConf['mainTheme']=="elastixneo"){
+			$i = 0;
+			$mainMenues = array();
+			$secondMenues = array();
+			$isMainMenu = false;
+			foreach($arrMainMenu as $key => $value){
+				if($i <= 6 && $currMainMenu == $key){
+					$mainMenues["$key"] = $value;
+					$isMainMenu = true;
+				}elseif($i == 6 && !$isMainMenu && $currMainMenu != $key){
+					$secondMenues["$key"] = $value;
+				}elseif($i <= 6 && $currMainMenu != $key){
+					$mainMenues["$key"] = $value;
+				}elseif($i > 6 && $currMainMenu == $key){
+					$mainMenues["$key"] = $value;
+					$isMainMenu = true;
+				}else{
+					$secondMenues["$key"] = $value;
+				}
+				$i++;
 			}
-			$i++;
+			$arrMainMenu = array_merge($mainMenues, $secondMenues);
 		}
-
 		/************* para elastixneo**********/
+
         $this->smarty->assign("arrMainMenu", $arrMainMenu);
 
         // Get the submenu
@@ -262,10 +269,15 @@ class paloSantoNavigation {
     function getArrSubMenuByParents($idParent)
     {
         $arrSubMenu = array();
+		global $arrConf;
+		$themeName = $arrConf['mainTheme'];
         foreach($this->arrMenu as $id => $element) {
             if($element['IdParent']==$idParent) {
                 if($this->getArrSubMenu($element['id'])!=false){
-					$img = "<img alt='' src='images/miniArrowDown.png' align='absmiddle' style='border:0;'/>";
+					if($themeName != "elastixneo")
+						$img = "<img alt='' src='images/miniArrowDown.png' align='absmiddle' style='border:0;'/>";
+					else
+						$img = "";
                     $element['Name'] = $element['Name']." ".$img;
                     $arrSubMenu[$id] = $element;
                 }else{
@@ -322,7 +334,9 @@ class paloSantoNavigation {
             $ip_server   = $this->obtenerIpServer("eth0");
             if($ip_server==null)
                 $ip_server="127.0.0.1";
-	    $link=$bSubMenu2Framed?$this->arrMenu[$this->currSubMenu2]['Link']:$this->arrMenu[$this->currSubMenu]['Link'];
+			$title = $bSubMenu2Framed?$this->arrMenu[$this->currSubMenu2]['Name']:$this->arrMenu[$this->currSubMenu]['Name'];
+			$this->smarty->assign("title",$title);
+			$link=$bSubMenu2Framed?$this->arrMenu[$this->currSubMenu2]['Link']:$this->arrMenu[$this->currSubMenu]['Link'];
             $link = str_replace("{NAME_SERVER}",$name_server,$link);
             $link = str_replace("{IP_SERVER}",$ip_server,$link);
 

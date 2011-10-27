@@ -723,6 +723,4 @@ function searchModulesByName()
 	return $json->encode($result);
 
 }
-
-
 ?>
