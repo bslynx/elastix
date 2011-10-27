@@ -1,8 +1,5 @@
 <form  method="POST" style="margin-bottom:0;" action="{$url}">
     <table width="{$width}" align="center" border="0" cellpadding="0" cellspacing="0">
-    <tr class="moduleTitle">
-        <td class="moduleTitle" valign="middle">&nbsp;&nbsp;<img src="{$icon}" border="0" align="absmiddle">&nbsp;&nbsp;{$title}</td>
-    </tr>
     {if !empty($contentFilter)}
     <tr>
         <td><table width="100%" border="0" cellspacing="0" cellpadding="0" class="filterForm"><tr><td>{$contentFilter}</td></tr></table>
