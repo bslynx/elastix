@@ -24,10 +24,26 @@ $(document).ready(function (){
 			    $("#status_fpbx_frontend").val(value_fpbx_frontend);
 			}
 			$("#message_error").remove();
-			var message= "<div style='background-color: rgb(255, 238, 255);' id='message_error'><table width='100%'><tr><td align='left'><b style='color:red;'>" +
-				      arrData['message_title'] + "</b>" + arrData['message'] + "</td> <td align='right'><input type='button' onclick='hide_message_error();' value='" +
-				      arrData['button_title']+ "'/></td></tr></table></div>";
-			$("body > table > tbody > tr > td").prepend(message);
+			if($(".neo-module-content")){
+			  var message= "<div class='div_msg_errors' id='message_error'>" +
+					    "<div style='float:left;'>" +
+						"<b style='color:red;'>&nbsp;&nbsp;"+arrData['message_title']+"</b>" +
+					    "</div>" +
+					    "<div style='text-align:right; padding:5px'>" +
+						"<input type='button' onclick='hide_message_error();' value='"+arrData['button_title']+"'/>" +
+					    "</div>" +
+					    "<div style='position:relative; top:-12px; padding: 0px 5px'>" +
+						arrData['message'] +
+					    "</div>" +
+					"</div>";
+			  $(".neo-module-content:first").prepend(message);
+			}
+			else{
+			    var message= "<div style='background-color: rgb(255, 238, 255);' id='message_error'><table width='100%'><tr><td align='left'><b style='color:red;'>" +
+					  arrData['message_title'] + "</b>" + arrData['message'] + "</td> <td align='right'><input type='button' onclick='hide_message_error();' value='" +
+					  arrData['button_title']+ "'/></td></tr></table></div>";
+			    $("body > table > tbody > tr > td").prepend(message);
+			}
 		    }
 		);
 	    }
