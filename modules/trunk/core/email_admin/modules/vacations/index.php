@@ -74,7 +74,9 @@ function _moduleContent(&$smarty, $module_name)
 	    $content = disactivateEmailVacations($smarty, $module_name, $local_templates_dir, $pDB, $pDBACL, $arrConf, $arrLang);
 	    break;
 	case "showAllEmails":
-	    $content = showAllEmails($smarty, $module_name, $local_templates_dir, $pDB, $pDBACL, $arrConf, $arrLang);
+	    $html = showAllEmails($smarty, $module_name, $local_templates_dir, $pDB, $pDBACL, $arrConf, $arrLang);
+	    $smarty->assign("CONTENT",$html);
+	    $content = $smarty->display("$local_templates_dir/emailsGrid.tpl");
 	    break;
         default: // view_form
             $content = viewFormVacations($smarty, $module_name, $local_templates_dir, $pDB, $pDBACL, $arrConf, $arrLang);
@@ -165,7 +167,7 @@ function viewFormVacations($smarty, $module_name, $local_templates_dir, &$pDB, &
     $smarty->assign("EDIT", $arrLang["Edit"]);
     $smarty->assign("CANCEL", $arrLang["Cancel"]);
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
-    $smarty->assign("IMG", "images/list.png");
+    $smarty->assign("icon", "images/list.png");
     $smarty->assign("SAVE_MESSAGE", _tr("Save Message"));
     $smarty->assign("DISACTIVATE_MESSAGE", _tr("Disable Message Vacations"));
     $smarty->assign("ACTIVATE_MESSAGE", _tr("Enable Message Vacations"));
@@ -493,7 +495,7 @@ function showAllEmails($smarty, $module_name, $local_templates_dir, &$pDB, &$pDB
 	  $oFilterForm = new paloForm($smarty, $arrFormFilter);
 	  $smarty->assign("SHOW", $arrLang["Show"]);
 
-	  $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/emailsGrid.tpl","",$_POST);
+	  $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filterEmailGrid.tpl","",$_POST);
 	  //end section filter
 
 	  $oGrid->showFilter(trim($htmlFilter));
