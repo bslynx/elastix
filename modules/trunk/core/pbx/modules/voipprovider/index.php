@@ -142,7 +142,7 @@ function newFormVoIPProviderAccount($smarty, $module_name, $local_templates_dir,
     $smarty->assign("EDIT", _tr("Edit"));
     $smarty->assign("CANCEL", _tr("Cancel"));
     $smarty->assign("REQUIRED_FIELD", _tr("Required field"));
-    $smarty->assign("IMG", "images/list.png");
+    $smarty->assign("icon", "images/list.png");
     $smarty->assign("General_Setting", _tr("General_Setting"));
     $smarty->assign("PEER_Details", _tr("PEER_Details"));
     $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",_tr("VoIP Provider"), $_DATA);
@@ -259,7 +259,7 @@ function editFormVoIPProviderAccount($smarty, $module_name, $local_templates_dir
     $smarty->assign("CANCEL", _tr("Cancel"));
     $smarty->assign("Module_name", $module_name);
     $smarty->assign("REQUIRED_FIELD", _tr("Required field"));
-    $smarty->assign("IMG", "images/list.png");
+    $smarty->assign("icon", "images/list.png");
     $smarty->assign("General_Setting", _tr("General_Setting"));
     $smarty->assign("PEER_Details", _tr("PEER_Details"));
     $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",_tr("VoIP Provider"), $_DATA);
