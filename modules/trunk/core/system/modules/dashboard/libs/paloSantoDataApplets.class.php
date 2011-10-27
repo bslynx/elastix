@@ -81,41 +81,34 @@ class paloSantoDataApplets
 
     function getDataApplet_News()
     {
-        $RSS = $this->arrConf['dir_RSS'];
-        $str = "";
-        //$url = "http://sourceforge.net/export/rss2_projnews.php?group_id=161807";
-        $url = $RSS;
-        $rss = @fetch_rss($url);
-        $message = magpie_error();
-        if(preg_match("/HTTP Error: connection failed/",$message,$match)){
-            $str2 = _tr("Could not get web server information. You may not have internet access or the web server is down");
+        $infoRSS = @fetch_rss($this->arrConf['dir_RSS']);
+        $sMensaje = magpie_error();
+        if (preg_match("/HTTP Error: connection failed/", $sMensaje)) {
+        	return _tr('Could not get web server information. You may not have internet access or the web server is down');
         }
-        else{
-            $str2 = "";
-            if(!empty($rss)){
-                $str2  = "<font color = 'Black'><b>".$rss->channel['title'] . "</b></font><p>";
-                $str2 .= "<div id='rss_elastix'>";
-                $n = 0;
-                if(is_array($rss->items) & count($rss->items)>0){
-                    foreach ($rss->items as $item) {
-                            $href  = $item['link'];
-                            $title = $item['title'];
-                            $str2 .= "<div class='scrollEl' align='center'><a href=$href target='_blank'><span>$title</span></a></div>";
-                        $n++;
-                        if($n == 7) break;
-                    }
-                    $str2 .= "</div>";
-                }
-            }
-            else{
-                $str2 = "<span>"._tr('No News to display')."</span>";
+        $sContentList = '<div class="neo-applet-news-row">'._tr('No News to display').'</div>';
+        if (!empty($infoRSS) && is_array($infoRSS->items) && count($infoRSS->items) > 0) {
+        	$sContentList = '';
+            $sPlantilla = <<<PLANTILLA_RSS_ROW
+<div class="neo-applet-news-row">
+    <span class="neo-applet-news-row-date">%s</span>
+    <a href="https://twitter.com/share?original_referer=%s&related=&source=tweetbutton&text=%s&url=%s&via=elastixGui"  target="_blank">
+        <img src="modules/dashboard/images/twitter-icon.png" width="16" height="16" alt="tweet" />
+    </a>
+    <a href="%s" target="_blank">%s</a>
+</div>
+PLANTILLA_RSS_ROW;
+            for ($i = 0; $i < 7 && $i < count($infoRSS->items); $i++) {
+                $sContentList .= sprintf($sPlantilla, 
+                    date('Y.m.d', $infoRSS->items[$i]['date_timestamp']),
+                    urlencode('http://www.elastix.org'),
+                    urlencode($infoRSS->items[$i]['title']),
+                    urlencode($infoRSS->items[$i]['link']),
+                    $infoRSS->items[$i]['link'],
+                    htmlentities($infoRSS->items[$i]['title'], ENT_COMPAT, 'UTF-8'));
             }
         }
-        return   "<div id='wrapper'>
-                        <div id='vertical'>
-                            $str2
-                        </div>
-                    </div>";
+        return $sContentList;
     }
 
     function getDataApplet_ProcessesStatus()
