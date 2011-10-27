@@ -252,14 +252,14 @@ function html_faxes($arr_faxes)
 
     $nodoTablaInicio = "<table border='0' cellspacing='0' cellpadding='0' width='100%' align='center'>
                             <tr class='table_title_row'>
-                                <td class='table_title_row'><input type='button' name='faxes_delete' class='button' value='".$arrLang['Delete']."' onclick=\"if(confirmSubmit('{$arrLang["Are you sure you wish to delete fax (es)?"]}')) elimimar_faxes();\" /></td>
+                                <td class='table_title_row borderLeft' style='background:none;'><input type='button' name='faxes_delete' class='button' value='".$arrLang['Delete']."' onclick=\"if(confirmSubmit('{$arrLang["Are you sure you wish to delete fax (es)?"]}')) elimimar_faxes();\" /></td>
                                 <td class='table_title_row'>".$arrLang['Type']."</td>
                                 <td class='table_title_row'>".$arrLang['File']."</td>
                                 <td class='table_title_row'>".$arrLang['Company Name']."</td>
                                 <td class='table_title_row'>".$arrLang['Company Fax']."</td>
                                 <td class='table_title_row'>".$arrLang['Fax Destiny']."</td>
                                 <td class='table_title_row'><center>".$arrLang['Fax Date']."</center></td>
-					            <td class='table_title_row'>".$arrLang['Options']."</td>
+					            <td class='table_title_row borderRight'>".$arrLang['Options']."</td>
                             </tr>\n";
     $nodoTablaFin    = "</table>";
     $nodoContenido ="";
@@ -269,7 +269,7 @@ function html_faxes($arr_faxes)
         foreach($arr_faxes as $key => $fax)
         {
             $nodoContenido .= "<tr style='background-color: rgb(255, 255, 255);' onmouseover="."this.style.backgroundColor='#f2f2f2';"." onmouseout="."this.style.backgroundColor='#ffffff';".">\n";
-            $nodoContenido .= " <td class='table_data'><input type='checkbox' name='faxpdf_".$fax['pdf_file']."' id='faxpdf_".$fax['pdf_file']."' /></td>\n";
+            $nodoContenido .= " <td class='table_data borderLeft'><input type='checkbox' name='faxpdf_".$fax['pdf_file']."' id='faxpdf_".$fax['pdf_file']."' /></td>\n";
             $nodoContenido .= " <td class='table_data'>".$arrLang[$fax['type']]."</td>\n";
             if($fax['type'] == "in" || $fax['type'] == "IN"){
 	     		$fax_folder="/faxes/recvq/";
@@ -296,13 +296,13 @@ function html_faxes($arr_faxes)
             $nodoContenido .= " <td class='table_data'>".$fax['company_fax']."</td>\n";
             $nodoContenido .= " <td class='table_data'>".$fax['destiny_name']." - ".$fax['destiny_fax']."</td>\n";
             $nodoContenido .= " <td class='table_data'><center>".$fax['date']."</center></td>\n";
-            $nodoContenido .= " <td class='table_data'><a href='?menu=faxviewer&action=view&id=".$fax['id']."'>".$arrLang['Edit']."</a></td>\n";
+            $nodoContenido .= " <td class='table_data borderRight'><a href='?menu=faxviewer&action=view&id=".$fax['id']."'>".$arrLang['Edit']."</a></td>\n";
             $nodoContenido .= "</tr>\n";
         }
     }
     else
     {
-         $nodoContenido .= "<tr><td colspan='8'><center>".$arrLang['No Data Found']."</center></td></tr>";
+         $nodoContenido .= "<tr><td colspan='8' class='borderLeft borderRight'><center>".$arrLang['No Data Found']."</center></td></tr>";
     }
     return $nodoTablaInicio.$nodoContenido.$nodoTablaFin;
 }
