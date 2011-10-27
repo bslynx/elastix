@@ -512,42 +512,6 @@ function grafic($du, $totIn, $totOut, $tot, $ext)
 		$graph->img->SetTextAlign('center','bottom');
 		$graph->img->Rectangle(0,0,499,139);
 		$graph->Stroke();
-/*
-		$ancho = "700";
-		$margenDerecho = "100";
-		
-		$graph = new Graph($ancho,250);
-		$graph->SetMargin(50,$margenDerecho,30,40);
-		$graph->SetMarginColor('#fafafa');
-		$graph->SetFrame(true,'#999999');
-		
-		$graph->legend->SetFillColor("#fafafa");
-		$graph->legend->Pos(0.012, 0.5, "right","center");
-		$graph->legend->SetColor("#444444", "#999999");
-		$graph->legend->SetShadow('gray@0.6',4);
-		$graph->title->SetColor("#444444");
-		
-		// Especifico la escala
-		$graph->SetScale("intlin");
-		$graph->title->Set(utf8_decode("Gráfico de Movimientos"));
-		$graph->xaxis->SetLabelFormatCallback('MonthCallback');
-		$graph->xaxis->SetLabelAngle(90);
-		$graph->xaxis->SetColor("#666666","#444444");
-
-		$titulo=utf8_decode($arrLangModule["No exist calls for this number"]);
-		$im = imagecreate(400, 140);
-		$background_color = imagecolorallocate($im, 255, 255, 255);
-		$text_color = imagecolorallocate($im, 0, 0, 0);
-		imagestring($im, 5, 50, 0, "$titulo",$text_color);
-		$text_color = imagecolorallocate($im, 233, 14, 91);
-		imagestring($im, 2, 130, 20, "", $text_color);
-		if (!empty($msgError)){
-		    $msgError="Error data base...";
-		    imagestring($im, 2, 10, 40, $msgError, $text_color);
-		}
-		header('Content-type: image/png');
-		imagepng($im);
-		imagedestroy($im);*/
 	}
 }
 
@@ -646,26 +610,31 @@ function grafic_queue(&$pDB_ast_cdr, &$pDB_ast, $queue, $dti, $dtf)
             $graph->yaxis->SetColor("#00cc00");
         }
     }
-
     //======================================================================================
 
     if ($numResults>0)
         $graph->Stroke();
     else{
-        $titulo=utf8_decode("Gráfico");
-        $im = imagecreate(400, 140);
-        $background_color = imagecolorallocate($im, 255, 255, 255);
-        $text_color = imagecolorallocate($im, 0, 0, 0);
-        imagestring($im, 5, 50, 0, "$titulo",$text_color);
-        $text_color = imagecolorallocate($im, 233, 14, 91);
-        imagestring($im, 2, 130, 20, $arrLangModule["No records found"], $text_color);
-        if( !empty($msgError) ){
-            $msgError="Error data base...";
-            imagestring($im, 2, 10, 40, $msgError, $text_color);
-        }
-		header('Content-type: image/png');
-        imagepng($im);
-        imagedestroy($im);
+        $graph = new CanvasGraph(500,140,"auto");
+	$title = new Text(utf8_decode($arrLangModule["No records found"]));
+	$title->ParagraphAlign('center');
+	$title->SetFont(FF_FONT2,FS_BOLD);
+	$title->SetMargin(3);
+	$title->SetAlign('center');
+	$title->Center(0,500,70);
+	$graph->AddText($title);
+
+	$t1 = new Text(utf8_decode($arrLangModule["There are no data to present"]));
+	$t1->SetBox("white","black",true);
+	$t1->ParagraphAlign("center");
+	$t1->SetColor("black");
+
+	$graph->AddText($t1);
+	$graph->img->SetColor('navy');
+	$graph->img->SetTextAlign('center','bottom');
+	$graph->img->Rectangle(0,0,499,139);
+	$graph->Stroke();
+
     }
 
 }
@@ -778,43 +747,6 @@ function grafic_trunk(&$pDB_ast_cdr, &$pDB_ast, $module_name, $trunk, $dti, $dtf
 		$graph->img->SetTextAlign('center','bottom');
 		$graph->img->Rectangle(0,0,399,139);
 		$graph->Stroke();
-
-/*
-		$ancho = "700";
-		$margenDerecho = "100";
-		
-		$graph = new Graph($ancho,250);
-		$graph->SetMargin(50,$margenDerecho,30,40);
-		$graph->SetMarginColor('#fafafa');
-		$graph->SetFrame(true,'#999999');
-		
-		$graph->legend->SetFillColor("#fafafa");
-		$graph->legend->Pos(0.012, 0.5, "right","center");
-		$graph->legend->SetColor("#444444", "#999999");
-		$graph->legend->SetShadow('gray@0.6',4);
-		$graph->title->SetColor("#444444");
-		
-		// Especifico la escala
-		$graph->SetScale("intlin");
-		$graph->title->Set(utf8_decode("Gráfico de Movimientos"));
-		$graph->xaxis->SetLabelFormatCallback('MonthCallback');
-		$graph->xaxis->SetLabelAngle(90);
-		$graph->xaxis->SetColor("#666666","#444444");
-
-		$titulo=utf8_decode($arrLangModule["There are no data to present"]);
-		$im = imagecreate(400, 140);
-		$background_color = imagecolorallocate($im, 255, 255, 255);
-		$text_color = imagecolorallocate($im, 0, 0, 0);
-		imagestring($im, 5, 50, 0, "$titulo",$text_color);
-		$text_color = imagecolorallocate($im, 233, 14, 91);
-		imagestring($im, 2, 130, 20, "", $text_color);
-		if (!empty($msgError)){
-		    $msgError="Error data base...";
-		    imagestring($im, 2, 10, 40, $msgError, $text_color);
-		}
-		header('Content-type: image/png');
-		imagepng($im);
-		imagedestroy($im);*/
 	}
 }
 
@@ -935,42 +867,6 @@ function grafic_trunk2(&$pDB_ast_cdr, &$pDB_ast, $module_name, $trunk, $dti, $dt
 		$graph->img->Rectangle(0,0,399,139);
 		$graph->Stroke();
 
-/*
-		$ancho = "700";
-		$margenDerecho = "100";
-		
-		$graph = new Graph($ancho,250);
-		$graph->SetMargin(50,$margenDerecho,30,40);
-		$graph->SetMarginColor('#fafafa');
-		$graph->SetFrame(true,'#999999');
-		
-		$graph->legend->SetFillColor("#fafafa");
-		$graph->legend->Pos(0.012, 0.5, "right","center");
-		$graph->legend->SetColor("#444444", "#999999");
-		$graph->legend->SetShadow('gray@0.6',4);
-		$graph->title->SetColor("#444444");
-		
-		// Especifico la escala
-		$graph->SetScale("intlin");
-		$graph->title->Set(utf8_decode("Gráfico de Movimientos"));
-		$graph->xaxis->SetLabelFormatCallback('MonthCallback');
-		$graph->xaxis->SetLabelAngle(90);
-		$graph->xaxis->SetColor("#666666","#444444");
-
-		$titulo=utf8_decode($arrLangModule["There are no data to present"]);
-		$im = imagecreate(400, 140);
-		$background_color = imagecolorallocate($im, 255, 255, 255);
-		$text_color = imagecolorallocate($im, 0, 0, 0);
-		imagestring($im, 5, 50, 0, "$titulo",$text_color);
-		$text_color = imagecolorallocate($im, 233, 14, 91);
-		imagestring($im, 2, 130, 20, "", $text_color);
-		if (!empty($msgError)){
-		    $msgError="Error data base...";
-		    imagestring($im, 2, 10, 40, $msgError, $text_color);
-		}
-		header('Content-type: image/png');
-		imagepng($im);
-		imagedestroy($im);*/
 	}
 }
 
