@@ -36,6 +36,9 @@
                         <!-- end of Message board -->
                     {/if}
                     <table border="0" cellpadding="2" cellspacing="1" width="100%">
+			<tr class="moduleTitle">
+			  <td class="moduleTitle" valign="middle" colspan='2'>&nbsp;&nbsp;{if $icon ne null}<img src="{$icon}" border="0" align="absmiddle">&nbsp;&nbsp;{/if}{$title}</td>
+			</tr>
                         <tr>
                             <td>
                             {$CONTENT}
