@@ -181,7 +181,6 @@ function _moduleContent(&$smarty, $module_name)
     
     
     $arrGrid = array("title"    => $arrLang["Trunk Bill Configuration"],
-                     "icon"     => "images/1x1.gif",
                      "width"    => "99%",
                      "start"    => ($end==0) ? 0 : 1,
                      "end"      => $end,

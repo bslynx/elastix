@@ -211,7 +211,8 @@ function _moduleContent(&$smarty, $module_name)
         $mostrarSumario=FALSE;
     $smarty->assign("mostrarSumario", $mostrarSumario);
     $smarty->assign("contentFilter", $htmlFilter);
-    $smarty->assign("Destination_Distribution", $arrLang['Destination Distribution']);
+    $smarty->assign("title", $arrLang['Destination Distribution']);
+    $smarty->assign("icon","images/bardoc.png");
     return $smarty->fetch("file:$local_templates_dir/dest_distribution.tpl");
 }
 
