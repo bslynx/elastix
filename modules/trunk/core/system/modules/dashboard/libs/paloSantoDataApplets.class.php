@@ -115,6 +115,7 @@ PLANTILLA_RSS_ROW;
     {
         $oPalo = new paloSantoSysInfo();
         $arrServices = $oPalo->getStatusServices();
+/*
         $str = "";
         $servicesStatus = "";
         $color = "";
@@ -138,6 +139,51 @@ PLANTILLA_RSS_ROW;
             $servicesStatus .= "<div class='services'>"._tr($value['name_service'])."&nbsp;  ($key): &nbsp;&nbsp; "."$status</div><div align='center' style='background-color:".$color.";' class='status' >$serStatus</div>";
         }
         return "<div class='tabFormTable'>$servicesStatus</div>";
+*/
+
+        $sListaServicios = '';
+        
+        $listaIconos = array(
+            'Asterisk'  =>  'icon_pbx.png',
+            'OpenFire'  =>  'icon_im.png',
+            'Hylafax'   =>  'icon_fax.png',
+            'Postfix'   =>  'icon_email.png',
+            'MySQL'     =>  'icon_db.png',
+            'Apache'    =>  'icon_www.png',
+            'Dialer'    =>  'icon_headphones.png',
+        );
+        $sIconoDesconocido = 'system.png';
+        $sPlantilla = <<<PLANTILLA_PROCESS_ROW
+<div class="neo-applet-processes-row">
+    <div class="neo-applet-processes-row-icon"><img src="modules/dashboard/images/%s" width="32" height="28" alt="%s" /></div>
+    <div class="neo-applet-processes-row-name">%s</div>
+    <div class="neo-applet-processes-row-menu"><img src="modules/dashboard/images/icon_arrowdown.png" width="15" height="15" alt="menu" /></div>
+    <div class="neo-applet-processes-row-status-msg" style="color: %s">%s</div>
+    <div class="neo-applet-processes-row-status-icon"></div></div>
+PLANTILLA_PROCESS_ROW;
+        foreach ($arrServices as $sServicio => $infoServicio) {
+            switch ($infoServicio['status_service']) {
+            case 'OK':
+                $sDescStatus = _tr('Running');
+                $sColorStatus = '#006600';
+                break;
+            case 'Shutdown':
+                $sDescStatus = _tr('Not running');
+                $sColorStatus = '#880000';
+                break;
+            default:
+                $sDescStatus = _tr('Not installed');
+                $sColorStatus = '#000088';
+                break;
+            }
+            $sListaServicios .= sprintf($sPlantilla,
+                isset($listaIconos[$sServicio]) ? $listaIconos[$sServicio] : $sIconoDesconocido,
+                $sServicio,
+                _tr($infoServicio['name_service']),
+                $sColorStatus,
+                $sDescStatus);
+        }
+        return $sListaServicios;        
     }
 
     function getDataApplet_TelephonyHardware()
