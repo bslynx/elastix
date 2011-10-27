@@ -322,28 +322,27 @@ $(document).ready(function(){
 		},
 		onHide: function (colpkr) {
 			$(colpkr).fadeOut(500);
-			// lanzar el ajax
+			changeColorMenu();// lanzar el ajax
 			return false;
 		},
 		onChange: function (hsb, hex, rgb) {
 			$('#neo-smenubox').css('backgroundColor', '#' + hex);
 			$('.neo-tabhon').css('backgroundColor', '#' + hex);
+			$('#userMenuColor').val('#' + hex);
 		},
 		onSubmit: function(hsb, hex, rgb, el) {
 			$('#neo-smenubox').css('backgroundColor', '#' + hex);
 			$('.neo-tabhon').css('backgroundColor', '#' + hex);
+			$('#userMenuColor').val('#' + hex);
             $(el).ColorPickerHide();
-			// se lanza la peticion ajax
+			changeColorMenu();// se lanza la peticion ajax
         }
 	});
+	var menu_color_user = $('#userMenuColor').val();
+	$('#neo-smenubox').css('backgroundColor', menu_color_user);
+	$('.neo-tabhon').css('backgroundColor', menu_color_user);
 });
 //]]>
-
-function chageMenuColor()
-{
-	$('#userMenuColor').val();
-}
-
 </script>
 {/literal}
 
@@ -359,7 +358,7 @@ function chageMenuColor()
 <input type="hidden" id="lblRetypePass" value="{$RETYPE_PASSWORD}" />
 <input type="hidden" id="lblNewPass" value="{$NEW_PASSWORD}" />
 <input type="hidden" id="btnChagePass" value="{$CHANGE_PASSWORD_BTN}" />
-<input type="hidden" id="userMenuColor" value="" />
+<input type="hidden" id="userMenuColor" value="{$MENU_COLOR}" />
 
 <div id="neo-headerbox">
 	<div id="neo-logobox"><img src="themes/{$THEMENAME}/images/elastix_logo_mini2.png" width="200" height="59" alt="elastix" longdesc="http://www.elastix.org" /></div>

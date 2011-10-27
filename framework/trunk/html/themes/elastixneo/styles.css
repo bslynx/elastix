@@ -26,6 +26,11 @@ input {
 	font-size:14px;
 	height: 20px;/*28*/
 }
+
+input[type="checkbox"] {
+        height: 13px;
+}
+
 A
 {
     FONT-FAMILY: verdana, arial, helvetica, sans-serif;
@@ -50,7 +55,7 @@ input:focus,textarea:focus, select:focus {
         border-color: #1d8df6;
 }
 SELECT {
-    border: 1px solid #444444;
+    border: 1px solid #BCBCBC;
     COLOR: #333333;
     FONT-FAMILY: verdana, arial, helvetica, sans-serif;
     FONT-SIZE: 13px;
@@ -58,13 +63,23 @@ SELECT {
     FONT-VARIANT: normal;
     LINE-HEIGHT: normal;
     TEXT-DECORATION: none;
-    border-color: #999999;
     background-color: #fafafa;
     border-radius: 5px 5px 5px 5px;
     -moz-border-radius: 5px 5px 5px 5px;
     -webkit-border-radius: 5px 5px 5px 5px;
-    min-height: 24px
+    min-height: 24px;
+    padding: 0px;
+    margin: 0px;
+    vertical-align: top;
 }
+
+TEXTAREA {
+    border-radius: 5px 5px 5px 5px;
+    -moz-border-radius: 5px 5px 5px 5px;
+    -webkit-border-radius: 5px 5px 5px 5px;
+    border: 1px solid #BCBCBC;
+}
+
 INPUT.submit {
         border: 1px solid #999999;
         background-color: #d0d1d0;
@@ -906,7 +921,6 @@ td.botonoff a {
     color: #333333;
 }
 .message_board {
-    background-color: #fafafa;
     border-bottom: 1px solid #aaaaaa;
     padding: 5px 5px 5px 5px;
 }

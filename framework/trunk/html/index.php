@@ -189,6 +189,7 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
     }
 
     /*agregado para register*/
+	$menuColor = getMenuColorByMenu();
 
     $smarty->assign("md_message_title",$arrLang['md_message_title']);
     $smarty->assign("currentyear",date("Y"));
@@ -205,6 +206,7 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
 		$smarty->assign("NEW_PASSWORD", _tr("New Password"));
 		$smarty->assign("RETYPE_PASSWORD", _tr("Retype New Password"));
 		$smarty->assign("CHANGE_PASSWORD_BTN", _tr("Change"));
+		$smarty->assign("MENU_COLOR", $menuColor);
 	}
 	else{
 		$smarty->assign("ABOUT_ELASTIX",$arrLang['About Elastix']." ".$arrConf['elastix_version']);
@@ -246,6 +248,19 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
 
 	if(getParameter("action")=="search_module"){
 		echo searchModulesByName();
+		return;
+	}
+
+	if(getParameter("action")=="changeColorMenu"){
+		include_once "libs/paloSantoJSON.class.php";
+		$jsonObject = new PaloSantoJSON();
+		$output = changeMenuColorByUser();
+		if($output['status'] === TRUE){
+			$jsonObject->set_status("true");
+		}else
+		  $jsonObject->set_status("false");
+		$jsonObject->set_error($output['msg']);
+		echo $jsonObject->createJSON();
 		return;
 	}
 

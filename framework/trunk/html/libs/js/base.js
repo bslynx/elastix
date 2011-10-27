@@ -607,9 +607,29 @@ function keyPressed(e)
 }
 
 // implement JSON.parse de-serialization  
-    function JSONRPMtoString(str) {
-        if (str === "") str = '""';
-        eval("var p=" + str + ";");
-        return p;
-    }
+function JSONRPMtoString(str) {
+	if (str === "") str = '""';
+	eval("var p=" + str + ";");
+	return p;
+}
+
+function changeColorMenu()
+{
+	var color = $('#userMenuColor').val();
+	var arrAction = new Array();
+	if(color == ""){
+		color = "#0E3463";
+	}
+
+	arrAction["action"] = "changeColorMenu";
+	arrAction["menuColor"]  = color;
+	request("index.php",arrAction,false,
+		function(arrData,statusResponse,error)
+		{
+		    if(statusResponse == "false")
+				alert(error);
+		}
+	);
+	
+}
 

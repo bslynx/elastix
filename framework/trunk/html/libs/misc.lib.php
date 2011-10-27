@@ -723,4 +723,102 @@ function searchModulesByName()
 	return $json->encode($result);
 
 }
+
+function getMenuColorByMenu()
+{
+	include_once "libs/paloSantoACL.class.php";
+	global $arrConf;
+    $pdbACL = new paloDB("sqlite3:///$arrConf[elastix_dbdir]/acl.db");
+    $pACL = new paloACL($pdbACL);
+	$user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
+    $uid = $pACL->getIdUser($user);
+	$color = "#0E3463";
+	$id_profile = "";
+	$sPeticionID = "SELECT id_profile FROM acl_user_profile WHERE id_user = ?";
+	$tupla = $pdbACL->getFirstRowQuery($sPeticionID, FALSE, array($uid));
+	if ($tupla === FALSE) {
+		$arrResult['msg'] = _tr("ERROR DB: ").$pdbACL->errMsg;
+	} elseif (count($tupla) == 0) {
+		$id_profile = NULL;
+	} else {
+		$id_profile = $tupla[0];
+	}
+	if(isset($id_profile) && $id_profile != ""){
+		$sPeticionPropiedades = "SELECT property, value FROM acl_profile_properties WHERE id_profile = ? AND property = ?";
+		$tabla = $pdbACL->getFirstRowQuery($sPeticionPropiedades, FALSE, array($id_profile,"menuColor"));
+		if ($tabla === FALSE) {
+		  $arrResult['msg'] = _tr("ERROR DB: ").$pdbACL->errMsg;
+		} else {
+			if($tabla[0] == "menuColor")
+				$color = $tabla[1];
+		}
+	}
+	return $color;
+}
+
+function changeMenuColorByUser()
+{
+	include_once "libs/paloSantoACL.class.php";
+
+	$color = getParameter("menuColor");
+	$arrResult  = array();
+	$arrResult['status'] = FALSE;
+
+	if($color == ""){
+	   $color = "#0E3463";
+	}
+
+	$user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
+    global $arrConf;
+    $pdbACL = new paloDB("sqlite3:///$arrConf[elastix_dbdir]/acl.db");
+    $pACL = new paloACL($pdbACL);
+    $uid = $pACL->getIdUser($user);
+
+	if($uid===FALSE)
+        $arrResult['msg'] = _tr("Please your session id does not exist. Refresh the browser and try again.");
+	else{
+		//si el usuario no tiene un color establecido entonces se crea el nuevo registro caso contrario se lo inserta
+		//obteniendo el id profile del usuario
+		$id_profile = "";
+
+		$sPeticionID = "SELECT id_profile FROM acl_user_profile WHERE id_user = ?";
+		$tupla = $pdbACL->getFirstRowQuery($sPeticionID, FALSE, array($uid));
+		if ($tupla === FALSE) {
+			$arrResult['msg'] = _tr("ERROR DB: ").$pdbACL->errMsg;
+		} elseif (count($tupla) == 0) {
+			$id_profile = NULL;
+		} else {
+			$id_profile = $tupla[0];
+		}
+		if(isset($id_profile) && $id_profile != ""){
+		  $sPeticionPropiedades = "SELECT property, value FROM acl_profile_properties WHERE id_profile = ?";
+		  $existColor = false;
+		  $tabla = $pdbACL->fetchTable($sPeticionPropiedades, FALSE, array($id_profile));
+		  if ($tabla === FALSE) {
+			$arrResult['msg'] = _tr("ERROR DB: ").$pdbACL->errMsg;
+		  } else {
+			foreach ($tabla as $tupla) {
+				if($tupla[0] == "menuColor")
+				  $existColor = true;
+			}
+			if ($existColor) {
+				$sPeticionSQL = 'UPDATE acl_profile_properties SET value = ? WHERE id_profile = ? AND property = ?';
+				$params = array($color, $id_profile, "menuColor");
+			} else {
+				$sPeticionSQL = 'INSERT INTO acl_profile_properties (id_profile, property, value) VALUES (?, ?, ?)';
+				$params = array($id_profile, "menuColor", $color);
+			}
+			$r = $pdbACL->genQuery($sPeticionSQL, $params);
+			if (!$r) {
+				$arrResult['msg'] = _tr("ERROR DB: ").$pdbACL->errMsg;
+			}else{
+				$arrResult['status'] = TRUE;
+				$arrResult['msg'] = _tr("OK");
+			}
+		  }
+		}
+	}
+	return $arrResult;
+}
+
 ?>
