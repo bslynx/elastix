@@ -5,7 +5,11 @@
         </td>
     </tr>
     <tr class="filterForm">
-        <td class="filterForm" width="450px" valign="top" align="left" style="padding: 2px 2px 2px 30px;">
+	{if $THEMENAME eq "elastixneo"}
+        <td class="filterForm" width="450px" valign="top" align="left" style="padding: 2px 2px 2px 30px; border:none;">
+	{else}
+	<td class="filterForm" width="450px" valign="top" align="left" style="padding: 2px 2px 2px 30px;">
+	{/if}
             <table border="0">
                 <tr>
                     <td><input type="checkbox" name="chkAdvance" id="chkAdvance" />&nbsp; <b>{$Advanced}</b></td>
@@ -25,13 +29,21 @@
                 </tr>
             </table>
         </td>
-        <td class="filterForm" align="center">
+	{if $THEMENAME eq "elastixneo"}
+        <td class="filterForm" align="center" style="border:none;">
+	{else}
+	 <td class="filterForm" align="center">
+	{/if}
             <div class='hourglass' style="display:none" id='relojArena'>
                 <img src='images/hourglass.gif' align='absmiddle' /> 
                 <font style='font-size:12px; color:red'>{$detectandoHardware}...</font>
             </div>
         </td>
-        <td class="filterForm" valign="middle" width="300px" align="right">
+	{if $THEMENAME eq "elastixneo"}
+        <td class="filterForm" valign="middle" width="300px" align="right" style="border:none;">
+	{else}
+	<td class="filterForm" valign="middle" width="300px" align="right">
+	{/if}
             <fieldset class="fielform">
                 <legend class="sombreado">{$Status_ports}</legend>
                 <table border="0" align="left">
