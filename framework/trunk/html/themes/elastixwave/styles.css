@@ -1099,3 +1099,8 @@ td.botonon {
 .loadingRPMimg{
     padding: 10px;
 }
+
+.frameModule{
+  border: 1px solid rgb(200, 200, 200);
+  background-color: rgb(255, 255, 255);
+}

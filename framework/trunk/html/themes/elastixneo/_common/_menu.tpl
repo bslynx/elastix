@@ -218,15 +218,10 @@ $(document).ready(function(){
     
 	$("#neo-cmenu-showbox-search").hover(
 	  function() {
-		if(!($("#search_module_elastix").is( ":focus" )))
-		  $("#search_module_elastix").focus();
-		  $("#neo-cmenu-showbox-search").removeClass("neo-display-none");
+		$("#neo-cmenu-showbox-search").removeClass("neo-display-none");
 	  },
 	  function() {
-		if(!($("#search_module_elastix").is( ":focus" )))
-		  $("#search_module_elastix").focus();
 		$("#neo-cmenu-showbox-search").addClass("neo-display-none");
-		$( "#search_module_elastix" ).val("");
 	  }
 	);
 
