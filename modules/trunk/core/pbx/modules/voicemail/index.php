@@ -410,6 +410,7 @@ function form_config($smarty, $module_name, $local_templates_dir, $arrLang, $ext
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required Field"]);
     $smarty->assign("SAVE", $arrLang["Save"]);
     $smarty->assign("CANCEL", $arrLang["Cancel"]);
+    $smarty->assign("icon","images/list.png");
 
     $paloVoice = new paloSantoVoiceMail($pDB);
     $arrDat = $paloVoice->loadConfiguration($ext);

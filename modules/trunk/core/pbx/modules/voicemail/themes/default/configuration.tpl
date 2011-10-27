@@ -1,7 +1,4 @@
 <table width="99%" border="0" cellspacing="0" cellpadding="4" align="center">
-    <tr class="moduleTitle">
-        <td colspan="2" class="moduleTitle" valign="middle">&nbsp;&nbsp;<img src="images/list.png" border="0" align="absmiddle">&nbsp;&nbsp;{$title}</td>
-    </tr>
     <tr>
         <td align="left" width="30%">
             <input class="button" type="submit" name="save" value="{$SAVE}" type="submit">
