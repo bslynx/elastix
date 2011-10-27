@@ -278,6 +278,7 @@ function modificarArchivo($module_name, $smarty, $local_templates_dir, $sDirecto
     $smarty->assign('RELOAD_ASTERISK', _tr('Reload Asterisk'));
     $smarty->assign('LABEL_BACK', _tr('Back'));
     $smarty->assign('msg_status', $sMensajeStatus);
+    $smarty->assign('icon',"images/user.png");
     return $oForm->fetchForm("$local_templates_dir/file_editor.tpl", _tr("File Editor"), $_POST);
 }
 

@@ -1,7 +1,5 @@
 <!--Comentario:  He agregado variables para que se muestre la misma vista de la 160-->
 <table width="99%" border="0" cellspacing="0" cellpadding="0" align="center" >
-    <tr class="moduleTitle">
-    </tr>
     <tr>
         <td width="12%" align="right">{$file.LABEL}: </td>
         <td width="12%" align="left" nowrap>{$file.INPUT}</td>
