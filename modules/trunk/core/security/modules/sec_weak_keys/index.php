@@ -172,7 +172,7 @@ function editWeakKeys($smarty, $module_name, $local_templates_dir,$arrConf, $pDB
     $smarty->assign("REQUIRED_FIELD", _tr("Required field"));
     if($pACL->isUserAdministratorGroup($_SESSION['elastix_user']))
         $smarty->assign("DISPLAY", "display:none;");
-    $smarty->assign("IMG", "images/list.png");
+    $smarty->assign("icon", "images/list.png");
     $arrValues['Extension'] = $id;
     $htmlForm = $oForm->fetchForm("$local_templates_dir/change.tpl",_tr("Change Key"), $arrValues);
     $contenidoModulo = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";

@@ -1,8 +1,4 @@
 <table width="99%" border="0" cellspacing="0" cellpadding="4" align="center">
-    <tr class="moduleTitle">
-        <td class="moduleTitle" valign="middle">&nbsp;&nbsp;<img src="{$IMG}" border="0" align="absmiddle">&nbsp;&nbsp;{$title}</td>
-        <td>&nbsp;</td>
-    </tr>
     <tr class="letra12">
         <td align="left">
         {if $MODE eq "new"}

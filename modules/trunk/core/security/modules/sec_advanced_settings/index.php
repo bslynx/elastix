@@ -96,7 +96,7 @@ function viewFormAdvancedSecuritySettings($smarty, $module_name, $local_template
     $smarty->assign("subtittle1", _tr("Enable access"));
     $smarty->assign("subtittle2", _tr("Change Password"));
     $smarty->assign("value_fpbx_frontend", $value_fpbx_frontend);
-    $smarty->assign("IMG", "modules/".$module_name."/images/password.png");
+    $smarty->assign("icon", "modules/".$module_name."/images/password.png");
 
     $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",_tr("Advanced Security Settings"), $_DATA);
     $content = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";

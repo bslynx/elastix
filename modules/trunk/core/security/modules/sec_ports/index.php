@@ -179,7 +179,7 @@ function NewViewPuerto($smarty, $module_name, $local_templates_dir, &$pDB, $arrC
     $titulo = "";
     $smarty->assign("CANCEL", _tr("Cancel"));
     $smarty->assign("REQUIRED_FIELD", _tr("Required field"));
-    $smarty->assign("IMG", "images/list.png");
+    $smarty->assign("icon", "images/list.png");
     $protocol = getParameter("protocol");
     
     if( $action == 'new' )
