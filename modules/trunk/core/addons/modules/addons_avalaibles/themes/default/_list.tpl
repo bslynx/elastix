@@ -1,7 +1,7 @@
 
 <table width="{$width}" align="center" border="0" cellpadding="0" cellspacing="0">
   <tr class="moduleTitle">
-    <td class="moduleTitle" valign="middle">&nbsp;&nbsp;<img alt="" src="{$icon}" border="0" align="absmiddle" />&nbsp;&nbsp;{$title}</td>
+	<td></td>
 	<td width="10%" align="right">{$filter_field.INPUT}</td>
   </tr>
   <tr>
