@@ -1,7 +1,4 @@
 <table width="99%" border="0" cellspacing="0" cellpadding="4" align="center">
-    <tr class="moduleTitle">
-        <td colspan="5" class="moduleTitle" valign="middle">&nbsp;&nbsp;<img src="images/list.png" border="0" align="absmiddle">&nbsp;&nbsp;{$title}</td>
-    </tr>
     <tr class="letra12">
         <td width="30%" align="right">{$date_from.LABEL}:</b></td>
         <td width="20%" align="left" nowrap>{$date_from.INPUT} </td>
