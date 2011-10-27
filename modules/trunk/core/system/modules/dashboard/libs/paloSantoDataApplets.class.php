@@ -346,6 +346,9 @@ PLANTILLA_PROCESS_ROW;
         //UPTIME
         $uptime = $arrSysInfo['SysUptime'];
 
+        // CPU SPEED
+        $speed = number_format($arrSysInfo['CpuMHz'], 2)." MHz";
+
 /*
 		// Dataset definition
 		$DataSet = new pData;
@@ -412,8 +415,8 @@ PLANTILLA_PROCESS_ROW;
 				  <div class='neo-applet-tdesc'>$uptime</div>
 				</div>
 				<div class='neo-applet-tline'>
-				  <div class='neo-applet-titem'><strong>"._tr('CPU usage').":</strong></div>
-				  <div class='neo-applet-tdesc'>$inf1</div>
+				  <div class='neo-applet-titem'><strong>"._tr('CPU Speed').":</strong></div>
+				  <div class='neo-applet-tdesc'>$speed</div>
 				</div>
 				<div class='neo-applet-tline'>
 				  <div class='neo-applet-titem'><strong>"._tr('Memory usage').":</strong></div>
