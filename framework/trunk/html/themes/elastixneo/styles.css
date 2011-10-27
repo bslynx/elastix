@@ -8,7 +8,7 @@ body {
 	margin-top: 0px;
 	margin-right: 0px;
 	margin-bottom: 0px;
-	background-image:url(images/bggrey.png);
+	background-image:url(images/bgbodytest.png);
 	font: 13px Verdana, Arial,Helvetica,sans-serif;
 	color: #444;
 }
@@ -24,19 +24,13 @@ input {
 	-moz-border-radius: 5px 5px 5px 5px;
     -webkit-border-radius: 5px 5px 5px 5px;
 	font-size:14px;
-	height: 20px;
+	height: 20px;/*28*/
 }
 A
 {
     FONT-FAMILY: verdana, arial, helvetica, sans-serif;
     FONT-SIZE: 100%;
     COLOR: #0000FF;
-}
-BODY.login
-{
-    FONT-FAMILY: verdana, arial, helvetica, sans-serif;
-    BACKGROUND: #ededed;
-    COLOR: #000000;
 }
 TD.celda_default {
     FONT-FAMILY: verdana, arial, helvetica, sans-serif;
@@ -362,12 +356,6 @@ TD.headlinkspacer {
     PADDING-RIGHT: 0px;
     BORDER-BOTTOM: #333333 1px solid;
 }
-A.logout
-{
-    FONT-FAMILY: verdana, arial, helvetica, sans-serif;
-    FONT-SIZE: 15px;
-    COLOR: #c0d0e0;
-}
 TD.menuspacer {
     BORDER-BOTTOM: #333333 1px solid;
     BACKGROUND: #FFFFFF;
@@ -528,24 +516,16 @@ TD.menudescription {
 }
 
 A.menutable {
-    COLOR: #c0d0e0;
+    /*COLOR: #c0d0e0;*/
     FONT-SIZE: 100%;
     FONT-WEIGHT: bold;
     TEXT-DECORATION: none;
     position: relative;
     bottom: 0px; 
 }
-A.menutableOver {
-    COLOR: #c0d0e0;
-    FONT-SIZE: 100%;
-    FONT-WEIGHT: bold;
-    TEXT-DECORATION: none;
-    position: relative;
-    bottom: 6px; 
-}
 
 A.menutable2 {
-    COLOR: #feeae5;
+    /*COLOR: #feeae5;*/
     FONT-SIZE: 100%;
     FONT-WEIGHT: bold;
     TEXT-DECORATION: none;
@@ -554,7 +534,7 @@ A.menutable2 {
 }
 
 A.menutableon {
-    COLOR: #ffffff; 
+    /*COLOR: #ffffff; */
     FONT-SIZE: 100%;
     TEXT-DECORATION: none;
     position: relative;
@@ -875,21 +855,12 @@ td.botonoff a {
     FONT-WEIGHT: bold;
 }
 .tabForm {
-    /*border-color: #999;*/
-    border-color: #F5F5F5;
+/*     border-top: 1px solid #aaaaaa; */
     color: #aaaaaa;
-    /*background-color: #fafafa;
-    background-image: url(images/bggrisForm.gif);*/
-    border: 1px solid #aaaaaa;
-    /*padding: 10px 6px 12px 10px;*/
-    padding: 1px 3px 3px 1px;
+/*     padding: 1px 3px 3px 1px; */
     font-size: 12px;
-    background-repeat: repeat-x;
-    background-position: top;
-	border-radius: 5px 5px 5px 5px;
-	-moz-border-radius: 5px 5px 5px 5px;
-	-webkit-border-radius: 5px 5px 5px 5px;
 }
+
 .tabForm td {
     padding: 4px 4px 4px 4px;
     FONT-FAMILY: verdana, arial, helvetica, sans-serif;
@@ -1288,303 +1259,7 @@ td.botonon {
 
 
 /* Nuevo estilo */
-/* HEADER */
-#neo-headerbox {
-	background: url("images/headerbox-bg.png") repeat-x scroll left top #ddd;
-	position:relative;
-	height:120px;
-	width:1280px;
-	/* border-bottom: 1px solid #300; */
-}
-#neo-logobox {
-	position:absolute;
-	top: 0px;
-	left:0px;
-	width:200px;
-	height:65px;
-	margin:11px 0px 14px 0px;
-}
-/* TOPBAR */
-#neo-topbar {
-	position:absolute;
-	top: 0px;
-	right: 0px;
-	height:29px;
-	overflow: hidden;
-}
-#neo-toptools {
-	top:0px;
-	left:0px;
-	height: 24px;
-	position:relative;
-	padding: 2px 10px 2px 15px;
-	float:left;
-	border-bottom: 1px solid #666;
-	border-right: 1px solid #666;
-	background:url(images/cmenubg2.png) repeat #ddd;
-}
-#neo-cmenubox {
-	top: 0px;
-	float:right;
-	height: 24px;
-	position:relative;
-	padding: 2px 0px 2px 0px;
-	border-bottom: 1px solid #666;
-	border-left: 1px solid #999;
-    -moz-border-radius: 0px 0px 0px 10px;
-	-webkit-border-radius: 0px 0px 0px 10px;
-	background:url(images/cmenubg.png) repeat #ddd;
-}
-#neo-cmenubox span a{
-	font: 12px Verdana, Arial,Helvetica,sans-serif;
-	color: #eee;
-	text-shadow: 1px 1px #666;
-}
-div.neo-cmenutab {
-	float: left;
-	height:25px; /*Esto arregla bug de logout---- Realizado por el Sr. Don Master. Ing. Eduardo Cueva*/
-	position: relative;
-	padding:3px 9px 0px 9px;
-	background:url(images/divider2.png)  no-repeat left;
-	font: 12px Verdana, Arial,Helvetica,sans-serif;
-	color: #eee;
-	text-shadow: 1px 1px #666;
-	text-align:center;
-}
-div.neo-cmenutab-hvr {
-	background: url(images/divider2.png)  no-repeat left, url(images/tab2onbg2.png) repeat;
-}
-div.neo-cmenutableft-hvr {
-	background: url(images/tab2onbg2.png) repeat;
-}
-div.neo-cmenutableft {
-	float: left;
-	height:25px; /*Esto arregla bug de logout---- Realizado por el Sr. Don Master. Ing. Eduardo Cueva*/
-	position: relative;
-	padding:3px 9px 0px 9px;
-	font: 12px Verdana, Arial,Helvetica,sans-serif;
-	color: #eee;
-	text-shadow: 1px 1px #666;
-	text-align:center;
-}
-.neo-cmenu-showbox {
-	position:absolute;
-	right: 0px;
-	top:29px;
-	width: 220px;
-	padding: 2px 8px 8px 8px;
-	background-color:rgba(220,220,220,0.8);
-	-moz-border-radius: 6px 0px 6px 6px;
-	-webkit-border-radius: 6px 0px 6px 6px;
-	border-bottom: 1px solid #666;
-	border-left: 1px solid #999;
-	z-index:1000;
-}
-.neo-cmenu-showbox-pagination {
-	position: absolute;
-	font: 12px Verdana,Arial,Helvetica,sans-serif;
-	font-family: verdana,arial,helvetica,sans-serif;
-	right: 60px;
-	width: 90px;
-	height: 60px;
-	/*padding: 2px 8px 8px 8px;*/
-	background-color:rgba(200,200,200,0.9);
-	-moz-border-radius: 6px 0px 6px 6px;
-	-webkit-border-radius: 6px 0px 6px 6px;
-	border-bottom: 1px solid #666;
-	border-left: 1px solid #666;
-	border-top: 1px solid #666;
-	border-right: 1px solid #666;
-	z-index:1000;
-}
-.paginationBackground{
-    height: 15px;
-}
-.neo-cmenu-showbox span a{
-	color: #444444;
-	text-decoration: none;
-}
-.neo-cmenu-showbox-pagination span a{
-	text-align: left;
-	color: #444444;
-	text-decoration: none;
-}
-.neo-display-none {
-	display: none;
-}
-/* HEADER :: MENU HORIZ */
-#neo-mmenubox {
-	position:absolute;
-	bottom: 35px;
-	left: 205px;
-	height: 32px;
-}
-div.neo-tabh {
-	position: relative;
-	width: 90px;
-	height:22px;
-	padding:8px 5px 2px 5px;
-	float: left;
-	margin: 0px 2px 0px 2px;
-	-moz-border-radius: 6px 6px 0px 0px;
-	-webkit-border-radius: 6px 6px 0px 0px;
-	border: 1px solid #666;
-	font: 12px Verdana, Arial,Helvetica,sans-serif;
-	color: #666;
-	text-shadow: 1px 1px #ddd;
-	text-align:center;
-	background: url(images/mmenushadow.png) no-repeat, url(images/tabhonbg.png) repeat-x;
-}
-div.neo-tabh a{
-	font: 12px Verdana, Arial,Helvetica,sans-serif;
-	color: #666;
-	text-shadow: 1px 1px #ddd;
-}
-div.neo-tabhon {
-	position: relative;
-	width: 90px;
-	height:22px;
-	padding:8px 5px 2px 5px;
-	float: left;
-	margin: 0px 2px 0px 2px;
-	-moz-border-radius: 6px 6px 0px 0px;
-	-webkit-border-radius: 6px 6px 0px 0px;
-	border: 1px solid #c00;
-	background-color: #F83900;
-	font: 12px Verdana, Arial,Helvetica,sans-serif;
-	color: #eee;
-	text-align:center;
-	text-shadow: 1px 1px #600;
-	background-image:url(images/tabonbg.png);
-}
-div.neo-tabhon {
-	font: 12px Verdana, Arial,Helvetica,sans-serif;
-	color: #eee;
-	text-shadow: 1px 1px #600;
-}
-/* HEADER :: SEPARATOR */
-#neo-separator {
-	position: absolute;
-	top: 90px;
-	width: 1280px;
-	height: 3px;
-	background-color:#C00;
-}
-/* HEADER :: SUB MENU */
-#neo-smenubox {
-	position:absolute;
-	top: 85px;
-	width: 1280px;
-	height: 35px;
-	background-color:#9f0000;
-	background-image:url(images/men2bg.png);
-}
-div.neo-tabv {
-	position: relative;
-	width: 120px;
-	height:22px;
-	float: left;
-	margin: 6px 0px 5px 0px;
-	padding: 2px 2px 0px 2px;
-	font: 12px Verdana, Arial,Helvetica,sans-serif;
-	color: #ddd;
-	text-align:center;
-	text-shadow: 1px 1px #600;
-	background:url(images/divider.png) no-repeat right;
-}
-div.neo-tabv a{
-	font: 12px Verdana, Arial,Helvetica,sans-serif;
-	color: #ddd;
-	text-shadow: 1px 1px #600;
-	text-decoration: none;
-}
-div.neo-tabvon {
-	position: relative;
-	width: 120px;
-	height:22px;
-	float: left;
-	margin: 6px 0px 5px 0px;
-	padding: 2px 2px 0px 2px;
-	font: 12px Verdana, Arial,Helvetica,sans-serif;
-	color: #eee;
-	text-align:center;
-	text-shadow: 1px 1px #600;
-	background:url(images/divider.png) no-repeat right, url(images/tab2onbg2.png);
-}
-div.neo-tabvon a{
-	font: 12px Verdana, Arial,Helvetica,sans-serif;
-	color: #eee;
-	text-shadow: 1px 1px #600;
-}
-/* CONTENT */
-#neo-contentbox {
-	position: relative;
-	padding:5px 5px 5px 5px;
-	width:1270px;
-	background-color:#fafafa;
-	background-image:url(images/content-bg.png);
-	background-repeat:no-repeat;
-	overflow:auto;  /*FIX BUG WITH CONTAINED FLOATED DIVS */
-}
-/* FOOTER */
-#neo-footerbox {
-	position: relative;
-	width:1280px;
-	height:25px;
-	padding:10px 0px 0px 0px;
-/*	-moz-border-radius: 0px 0px 10px 0px;
-	-webkit-border-radius: 0px 0px 10px 0px; */
-	font: 12px Verdana, Arial,Helvetica,sans-serif;
-	color: #444;
-	text-shadow: 1px 1px #ccc;
-	text-align:center;
-	background:url(images/bgfooter.png) repeat #ccc;
-}
 /* CONTENT :: MENU 3ER NIVEL */
-#neo-3menubox {
-	position: relative;
-	float:left;
-	margin-top: 10px;
-	padding: 0px 0px 10px 0px;
-	width: 220px;
-	-moz-border-radius: 10px 10px 10px 10px;
-	-webkit-border-radius: 10px 10px 10px 10px;
-	border-top: 1px solid #aaa;
-	border-left: 1px solid #aaa;
-	border-right: 1px solid #999;
-	border-bottom: 1px solid #999;
-	-moz-box-shadow: 2px 2px 1px rgb(180,180,180);
-	-webkit-box-shadow: 2px 2px 1px #B4B4B4;
-	background:url(images/3menubgtop.png) repeat-x top #ddd;
-}
-div.neo-3mtab {
-	height: 26px;
-	padding: 8px 0px 0px 12px;
-	background: url(images/3menubg.png) no-repeat bottom;
-	font: 12px Verdana, Arial,Helvetica,sans-serif;
-	color: #666;
-	text-shadow: 1px 1px #ddd;
-	text-align:left;
-}
-div.neo-3mtab a{
-	font: 12px Verdana, Arial,Helvetica,sans-serif;
-	color: #666;
-	text-shadow: 1px 1px #ddd;
-}
-div.neo-3mtabon {
-	height: 26px;
-	padding: 8px 0px 0px 12px;
-	background: url(images/3menubg_on.png) no-repeat bottom;
-	font: 12px Verdana, Arial,Helvetica,sans-serif;
-	color: #555;
-	text-shadow: 1px 1px #eee;
-	text-align:left;
-}
-div.neo-3mtabon a{
-	font: 12px Verdana, Arial,Helvetica,sans-serif;
-	color: #555;
-	text-shadow: 1px 1px #eee;
-}
 #neo-modulecontent {
 	position:relative;
 	width:auto;
@@ -1595,71 +1270,21 @@ div.neo-3mtabon a{
 	margin-left: 15px;
 }
 
-/*new style for last*/
-
-div.neo-modulecontent-row {
-	position:relative;
-	width:100%;
-	padding:0px;
-}
-div.neo-applet {
+/* CONTENT */
+/* FOOTER */
+#neo-footerbox {
 	position: relative;
-	float:left;
-	margin: 10px 10px 0px 8px;
-	padding: 0px 0px 10px 0px;
-	width: 490px;
-	height: 300px;
-	-moz-border-radius: 10px 10px 10px 10px;
-	-webkit-border-radius: 10px 10px 10px 10px;
-	border-top: 1px solid #aaa;
-	border-left: 1px solid #aaa;
-	border-right: 1px solid #999;
-	border-bottom: 1px solid #999;
-	-moz-box-shadow: 2px 2px 1px rgb(180,180,180);
-    background:url(images/appletbg.png) repeat-x top #ddd;
-}
-div.neo-applet-title {
-	position: absolute;
-	top: 0px;
-	left:0px;
-	font: 13px Verdana, Arial,Helvetica,sans-serif;
+	width:1280px;
+	height:25px;
+	padding:10px 0px 0px 0px;
+	font: 12px Verdana, Arial,Helvetica,sans-serif;
 	color: #444;
 	text-shadow: 1px 1px #ccc;
-	padding: 5px 4px 4px 8px;
+	text-align:center;
+	background:url(images/bgfooter.png) repeat #ccc;
 }
-div.neo-applet-reload {
-	position: absolute;
-	top: 6px;
-	right:4px;
-}
-div.neo-applet-content {
-	position:absolute;
-	top:32px;
-	left:0px;
-	padding:8px 8px 8px 8px;
-	width:464px;
-}
-div.neo-applet-tline {
-	position:relative;
-	width:100%;
-	/* background-color:red; */
-	overflow:hidden;
-	height:22px;
-}
-div.neo-applet-titem {
-	position:absolute;
-	left:0px;
-	top:0px;
-	padding-left:4px;
-	width:110px;
-}
-div.neo-applet-tdesc {
-	position:absolute;
-	left:120px;
-	top:0px;
-	float:left;
-	overflow:hidden;
-}
+
+/*new style for last*/
 div.neo-clearing {
 	clear:both;
 }

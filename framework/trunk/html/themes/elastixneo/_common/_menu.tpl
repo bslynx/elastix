@@ -156,27 +156,38 @@ function mostrar_Menu(element)
     });
 /*newwwww*/
 $(document).ready(function(){
-	$("#neo-cmenu-help").hover(
+	$("#toggleleftcolumn, #neo-lengueta-minimized").click(function(){
+	    if($("#neo-contentbox-leftcolumn").data("neo-contentbox-leftcolum-status")=="hidden") {
+		  $("#neo-contentbox-leftcolumn").removeClass("neo-contentbox-leftcolumn-minimized");
+		  $("#neo-contentbox-maincolumn").css("width", "1025px");
+	      $("#neo-contentbox-leftcolumn").data("neo-contentbox-leftcolum-status", "visible");
+		  $("#neo-lengueta-minimized").addClass("neo-display-none");
+	    } else {
+		  $("#neo-contentbox-leftcolumn").addClass("neo-contentbox-leftcolumn-minimized");
+		  $("#neo-contentbox-maincolumn").css("width", "1245px");
+	      $("#neo-contentbox-leftcolumn").data("neo-contentbox-leftcolum-status", "hidden");
+		  $("#neo-lengueta-minimized").removeClass("neo-display-none");
+	    }
+	});
+	$("#neo-cmenu-cpallet").hover(
 	  function () {
 		$(this).addClass("neo-cmenutableft-hvr");
-		$("#neo-cmenu-showbox-help").removeClass("neo-display-none");
 		$( "#search_module_elastix" ).autocomplete( "close" );
 		$( "#search_module_elastix" ).val("");
 	  },
 	  function () {
 		$(this).removeClass("neo-cmenutableft-hvr");
-		$("#neo-cmenu-showbox-help").addClass("neo-display-none");
 	  }
 	);
 	$("#neo-cmenu-search").hover(
 	  function () {
-		$(this).addClass("neo-cmenutableft-hvr");
+		$(this).addClass("neo-cmenutab-hvr");
 		$("#neo-cmenu-showbox-search").removeClass("neo-display-none");
 		$( "#search_module_elastix" ).autocomplete( "close" );
 		$( "#search_module_elastix" ).val("");
 	  },
 	  function () {
-		$(this).removeClass("neo-cmenutableft-hvr");
+		$(this).removeClass("neo-cmenutab-hvr");
 		$("#neo-cmenu-showbox-search").addClass("neo-display-none");
 	  }
 	);
@@ -194,13 +205,13 @@ $(document).ready(function(){
 	);
 	$("#neo-cmenu-user").hover(
 	  function () {
-		$(this).addClass("neo-cmenutableft-hvr");
+		$(this).addClass("neo-cmenutab-hvr");
 		$("#neo-cmenu-showbox-user").removeClass("neo-display-none");
 		$( "#search_module_elastix" ).autocomplete( "close" );
 		$( "#search_module_elastix" ).val("");
 	  },
 	  function () {
-		$(this).removeClass("neo-cmenutableft-hvr");
+		$(this).removeClass("neo-cmenutab-hvr");
 		$("#neo-cmenu-showbox-user").addClass("neo-display-none");
 	  }
 	);
@@ -235,6 +246,17 @@ $(document).ready(function(){
 		$("#neo-cmenu-showbox-user").addClass("neo-display-none");
 	  }
 	);
+
+	$('.neo-tabh-rend').live('click', function() {
+		if($("#neo-second-showbox-menu").hasClass("neo-display-none"))
+			$("#neo-second-showbox-menu").removeClass("neo-display-none");
+		else
+			$("#neo-second-showbox-menu").addClass("neo-display-none");
+		$('body').one('click', function(e) {
+			$("#neo-second-showbox-menu").addClass("neo-display-none");
+			e.stopPropagation();
+		});
+	}); 
 
 	$("#export_button").hover(
 	  function () {
@@ -292,8 +314,36 @@ $(document).ready(function(){
 		$("#export_button").attr("aria-expanded","false");
 	  }
 	);
+	$('#neo-cmenu-cpallet').ColorPicker({
+		color: '#0000ff',
+		onShow: function (colpkr) {
+			$(colpkr).fadeIn(500);
+			return false;
+		},
+		onHide: function (colpkr) {
+			$(colpkr).fadeOut(500);
+			// lanzar el ajax
+			return false;
+		},
+		onChange: function (hsb, hex, rgb) {
+			$('#neo-smenubox').css('backgroundColor', '#' + hex);
+			$('.neo-tabhon').css('backgroundColor', '#' + hex);
+		},
+		onSubmit: function(hsb, hex, rgb, el) {
+			$('#neo-smenubox').css('backgroundColor', '#' + hex);
+			$('.neo-tabhon').css('backgroundColor', '#' + hex);
+            $(el).ColorPickerHide();
+			// se lanza la peticion ajax
+        }
+	});
 });
 //]]>
+
+function chageMenuColor()
+{
+	$('#userMenuColor').val();
+}
+
 </script>
 {/literal}
 
@@ -309,17 +359,32 @@ $(document).ready(function(){
 <input type="hidden" id="lblRetypePass" value="{$RETYPE_PASSWORD}" />
 <input type="hidden" id="lblNewPass" value="{$NEW_PASSWORD}" />
 <input type="hidden" id="btnChagePass" value="{$CHANGE_PASSWORD_BTN}" />
+<input type="hidden" id="userMenuColor" value="" />
 
 <div id="neo-headerbox">
-	<div id="neo-logobox"><img src="images/elastix_logo_mini.png" width="200" height="62" alt="elastix" longdesc="http://www.elastix.org" /></div>
+	<div id="neo-logobox"><img src="themes/{$THEMENAME}/images/elastix_logo_mini2.png" width="200" height="59" alt="elastix" longdesc="http://www.elastix.org" /></div>
 	<div id="neo-mmenubox"> <!-- mostrando contenido del menu principal -->
 	  {foreach from=$arrMainMenu key=idMenu item=menu name=menuMain}
-		{if $idMenu eq $idMainMenuSelected}
+		{if $idMenu eq $idMainMenuSelected && $smarty.foreach.menuMain.iteration lt 8}
 		  <div class="neo-tabhon"><a class='menutable2' href="index.php?menu={$idMenu}">{$menu.Name}</a></div>
-		{else}
+		{elseif $smarty.foreach.menuMain.first}
+		  <div class="neo-tabh-lend2"><a class="menutable" href="index.php?menu={$idMenu}">{$menu.Name}</a></div>
+		{elseif $smarty.foreach.menuMain.iteration lt 8 && $smarty.foreach.menuMain.last}
+		  <div class="neo-tabh-lend3"><a class="menutable" href="index.php?menu={$idMenu}">{$menu.Name}</a></div>
+		{elseif $smarty.foreach.menuMain.iteration lt 8}
 		  <div class="neo-tabh"><a class="menutable" href="index.php?menu={$idMenu}">{$menu.Name}</a></div>
+		{elseif $smarty.foreach.menuMain.iteration eq 8}
+		  <div class="neo-tabh-rend"><img src="themes/{$THEMENAME}/images/arrowdown.png" width="17" height="15" alt="arrowdown" /></div>
+		  <div id="neo-second-showbox-menu" class="neo-second-showbox-menu neo-display-none">
+			<p><a class="menutable" href="index.php?menu={$idMenu}">{$menu.Name}</a></p>
+		{elseif $smarty.foreach.menuMain.iteration ge 8 && $smarty.foreach.menuMain.last}
+			<p><a class="menutable" href="index.php?menu={$idMenu}">{$menu.Name}</a></p>
+		  </div>
+		{elseif $smarty.foreach.menuMain.iteration ge 8}
+			<p><a class="menutable" href="index.php?menu={$idMenu}">{$menu.Name}</a></p>
 		{/if}
 	  {/foreach}
+		  
 	</div>
 	<div id="neo-smenubox"> <!-- mostrando contenido del menu secundario -->
 	  {foreach from=$arrSubMenuByParents key=idSubMenu item=subMenu}
@@ -330,12 +395,10 @@ $(document).ready(function(){
 		{/if}
 	  {/foreach}
 	</div>
-	<!--<div id="neo-cmenubox">
-	  <span><a class="register_link" style="color: {$ColorRegister}; cursor: pointer; font-weight: bold; font-size: 13px;" onclick="showPopupElastix('registrar','{$Register}',538,370)">{$Registered}</a> | <span><a class="logout" id="viewDetailsRPMs">{$VersionDetails}</a></span> |  <span><a class="logout" href="javascript:mostrar();">{$ABOUT_ELASTIX2}</a></span> | <span><a class="logout" href="javascript:popUp('help/?id_nodo={$idSubMenuSelected}&amp;name_nodo={$nameSubMenuSelected}','1000','460')">{$HELP}</a></span> | <span><a class="logout" href="?logout=yes">{$LOGOUT} (<font color='#c0d0e0'>{$USER_LOGIN}</font>)</a></span>
-	</div>-->
 	<div id="neo-topbar">
 	  <div id="neo-cmenubox">
-		<div id="neo-cmenu-help" class="neo-cmenutableft"><a class="logout" href="javascript:popUp('help/?id_nodo={$idSubMenuSelected}&amp;name_nodo={$nameSubMenuSelected}','1000','460')"><img src="themes/{$THEMENAME}/images/helpw.png" width="19" height="21" alt="user_help" border="0" /></a></div>
+		<div id="neo-cmenu-cpallet" class="neo-cmenutableft"><img src="themes/{$THEMENAME}/images/cpallet.png" width="19" height="21" alt="color" /></div>
+		<!--<div id="neo-cmenu-help" class="neo-cmenutableft"><a class="logout" href="javascript:popUp('help/?id_nodo={$idSubMenuSelected}&amp;name_nodo={$nameSubMenuSelected}','1000','460')"><img src="themes/{$THEMENAME}/images/helpw.png" width="19" height="21" alt="user_help" border="0" /></a></div>-->
 		<div id="neo-cmenu-search" class="neo-cmenutab"><img src="themes/{$THEMENAME}/images/searchw.png" width="19" height="21" alt="user_search" border="0" /></div>
 		<div id="neo-cmenu-info" class="neo-cmenutab"><img src="themes/{$THEMENAME}/images/information.png" width="19" height="21" alt="user_info" border="0" /></div>
 		<div id="neo-cmenu-user" class="neo-cmenutab"><img src="themes/{$THEMENAME}/images/user.png" width="19" height="21" alt="user" border="0" /></div>
@@ -353,24 +416,45 @@ $(document).ready(function(){
 	</div>
 	<div id="neo-cmenu-showbox-user" class="neo-cmenu-showbox neo-display-none">
 	  <p><span><a style="cursor: pointer;" onclick="setAdminPassword();">{$CHANGE_PASSWORD}</a></span></p>
-	  <p><span><a class="logout" href="?logout=yes">{$LOGOUT} (<font color='#FFFFFF'><b>{$USER_LOGIN}</b></font>)</a></span></p>
+	  <p><span><a class="logout" href="?logout=yes">{$LOGOUT}</a> (<font color='#FFFFFF'><b>{$USER_LOGIN}</b></font>)</span></p>
 	</div>
 </div>
 
 <div id="neo-contentbox">
 	{if !empty($idSubMenu2Selected)}
-	<div id="neo-3menubox">  <!-- mostrando contenido del menu tercer nivel -->
-		{foreach from=$arrSubMenu2 key=idSubMenu2 item=subMenu2}
-          {if $idSubMenu2 eq $idSubMenu2Selected}
-			<div class="neo-3mtabon"><a href="index.php?menu={$idSubMenu2}" style="text-decoration: none;">{$subMenu2.Name}</a></div>
-		  {else}
-			<div class="neo-3mtab"><a href="index.php?menu={$idSubMenu2}" style="text-decoration: none;">{$subMenu2.Name}</a></div>
-		  {/if}
-		{/foreach}
+	<div id="neo-contentbox-leftcolumn">
+		<div id="neo-3menubox">  <!-- mostrando contenido del menu tercer nivel -->
+			{foreach from=$arrSubMenu2 key=idSubMenu2 item=subMenu2}
+			  {if $idSubMenu2 eq $idSubMenu2Selected}
+				<div class="neo-3mtabon"><a href="index.php?menu={$idSubMenu2}" style="text-decoration: none;">{$subMenu2.Name}</a></div>
+			  {else}
+				<div class="neo-3mtab"><a href="index.php?menu={$idSubMenu2}" style="text-decoration: none;">{$subMenu2.Name}</a></div>
+			  {/if}
+			{/foreach}
+		</div>
 	</div>
-	<div id="neo-modulecontent" style="width: 1010px;">
+	<div id="neo-contentbox-maincolumn" style="width: 1025px;">
+	    <div class="neo-module-title"><div class="neo-module-name-left"></div><span class="neo-module-name">
+	      {if $icon ne null}
+	      <img src="{$icon}" width="22" height="22" align="absmiddle" />
+	      {/if}
+	      &nbsp;{$title}</span><div class="neo-module-name-right"></div>
+	      <div class="neo-module-title-buttonstab-right"></div><span class="neo-module-title-buttonstab">
+	      <img src="images/expand.png" width="24" height="24" alt="expand" id="toggleleftcolumn" class="neo-picker" border="0"/>
+	      <a href="javascript:popUp('help/?id_nodo={$idSubMenuSelected}&amp;name_nodo={$nameSubMenuSelected}','1000','460')">
+	      <img src="images/icon-help.png" width="24" height="24" alt="help" class="neo-picker" border="0"/></a></span><div class="neo-module-title-buttonstab-left"></div></div>
+	      <div class="neo-module-content">
 	{else}
-	<div id="neo-modulecontent" style="width: 1228px;">
+	<div id="neo-contentbox-maincolumn" style="width: 1228px;">
+	    <div class="neo-module-title"><div class="neo-module-name-left"></div><span class="neo-module-name">
+	      {if $icon ne null}
+	      <img src="{$icon}" width="22" height="22" align="absmiddle" />
+	      {/if}
+	      &nbsp;{$title}</span><div class="neo-module-name-right"></div>
+	      <div class="neo-module-title-buttonstab-right"></div><span class="neo-module-title-buttonstab">
+	      <a href="javascript:popUp('help/?id_nodo={$idSubMenuSelected}&amp;name_nodo={$nameSubMenuSelected}','1000','460')">
+	      <img src="images/icon-help.png" width="24" height="24" alt="help" border="0"/></a></span><div class="neo-module-title-buttonstab-left"></div></div>
+	 <div class="neo-module-content">
 	{/if}
 
 

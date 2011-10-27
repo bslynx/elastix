@@ -4,7 +4,7 @@ body {
 	margin-top: 0px;
 	margin-right: 0px;
 	margin-bottom: 0px;
-	background-image:url(images/bggrey.png);
+	background-image:url(images/bgbodytest.png);
 	font: 13px Verdana, Arial,Helvetica,sans-serif;
 	color: #444;
 }
@@ -14,7 +14,7 @@ body {
 	background-color:rgba(40,40,40,0.5);
 	background-image:url(images/bglogin3.png);
 	background-repeat:no-repeat;
-	margin-left:-250px;;
+	margin-left:-250px;
 	margin-right:auto;
 	width:500px;
 	height:330px;

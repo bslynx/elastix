@@ -6,6 +6,10 @@
         <title>Elastix</title>
         <link rel="stylesheet" href="themes/{$THEMENAME}/styles.css" />
         <link rel="stylesheet" href="themes/{$THEMENAME}/help.css" />
+		<!--<link rel="stylesheet" media="screen" type="text/css" href="themes/{$THEMENAME}/old.theme.elastixwave.styles.css" />-->
+		<link rel="stylesheet" media="screen" type="text/css" href="themes/{$THEMENAME}/header.css" />
+		<link rel="stylesheet" media="screen" type="text/css" href="themes/{$THEMENAME}/content.css" />
+		<link rel="stylesheet" media="screen" type="text/css" href="themes/{$THEMENAME}/applet.css" />
 	{$HEADER_LIBS_JQUERY}
         <script type='text/javascript' src="libs/js/base.js"></script>
         <script type='text/javascript' src="libs/js/iframe.js"></script>
@@ -15,6 +19,7 @@
     <body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" {$BODYPARAMS}>
         {$MENU} <!-- Viene del tpl menu.tlp-->
 		{if !empty($mb_message)}
+		<br />
 	  	<div class="div_msg_errors" id="message_error">
                     <div style="float:left;">
                         <b style="color:red;">&nbsp;&nbsp;{$mb_title} </b>
@@ -27,6 +32,8 @@
 		{/if}
 				{$CONTENT}
 			</div>
+		    </div>
+		    <div id="neo-lengueta-minimized" class="neo-display-none"></div>
 		</div>
 		<div align="center" id="neo-footerbox"> <!-- mostrando el footer -->
 			<a href="http://www.elastix.org" style="color: #444; text-decoration: none;" target='_blank'>Elastix</a> is licensed under <a href="http://www.opensource.org/licenses/gpl-license.php" target='_blank' style="color: #444; text-decoration: none;" >GPL</a> by <a href="http://www.palosanto.com" target='_blank' style="color: #444; text-decoration: none;">PaloSanto Solutions</a>. 2006 - {$currentyear}.

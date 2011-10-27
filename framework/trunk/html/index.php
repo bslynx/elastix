@@ -222,7 +222,7 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
     elseif(empty($menu) and !empty($_SESSION['menu'])) $menu=$_SESSION['menu'];
     else $menu='';
 
-    $_SESSION['menu']=$menu; 
+    $_SESSION['menu']=$menu;
 
 	if(getParameter("action")=="versionRPM"){
         $arrDetails = obtenerDetallesRPMS(); // obtain RPMs Details
