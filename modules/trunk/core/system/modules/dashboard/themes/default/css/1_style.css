@@ -454,7 +454,7 @@ div.neo-applet-processes-row {
     white-space:nowrap;
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
-    background:url(modules/dashboard/images/bgicon.png) #f0f0f0;
+    background:url(../../../images/bgicon.png) #f0f0f0;
     border:1px solid #999;
 }
 div.neo-applet-processes-row-status-icon {
