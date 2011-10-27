@@ -1,7 +1,4 @@
 <table width="99%" border="0" cellspacing="0" cellpadding="4" align="center">
-    <tr class="moduleTitle">
-        <td class="moduleTitle" valign="middle">&nbsp;&nbsp;<img src="{$IMG}" border="0" align="absmiddle">&nbsp;&nbsp;{$TITLE}</td>
-    </tr>
     <tr>
         <td align="left" colspan='2'><input class="button" type="submit" name="save" value="{$SAVE}" {$DISABLED}/></td>
     </tr>
