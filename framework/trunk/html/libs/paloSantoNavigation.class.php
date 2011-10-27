@@ -340,7 +340,7 @@ class paloSantoNavigation {
             $link = str_replace("{NAME_SERVER}",$name_server,$link);
             $link = str_replace("{IP_SERVER}",$ip_server,$link);
 
-            $retVar  = "<iframe marginwidth=\"0\" marginheight=\"0\" style=\"border: 1px solid rgb(200, 200, 200); background-color: rgb(255, 255, 255);";
+            $retVar  = "<iframe marginwidth=\"0\" marginheight=\"0\" class=\"frameModule\"";
             $retVar .= "\" src=\"" . $link . "\" name=\"myframe\" id=\"myframe\" frameborder=\"0\"";
             $retVar .= " width=\"100%\" onLoad=\"calcHeight();\"></iframe>"; 
         }
