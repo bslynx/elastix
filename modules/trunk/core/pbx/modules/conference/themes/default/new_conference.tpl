@@ -38,10 +38,7 @@ if (ns6) {
 //  End -->
 </script>
 {/literal}
-<table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
-    <tr class="moduleTitle">
-        <td class="moduleTitle" valign="middle">&nbsp;&nbsp;<img src="images/conference.png" border="0" align="absmiddle">&nbsp;&nbsp;{$TITLE}</td>
-    </tr>
+<table width="99%" border="0" cellspacing="0" cellpadding="0" align="center">
     <tr>
         <td align="left">
             {if $Show}
@@ -49,14 +46,13 @@ if (ns6) {
             {/if}
             <input class="button" type="submit" name="cancel" value="{$CANCEL}">
         </td>
-    </tr>
+
     {if $mode ne 'view'}
-    <tr>
-        <td align="right" nowrap><span class="letra12"><span  class="required">*</span> {$REQUIRED_FIELD}</span></td>
-    </tr>
+	<td align="right" nowrap><span class="letra12"><span  class="required">*</span> {$REQUIRED_FIELD}</span></td>
     {/if}
+    </tr>
     <tr><td>
-        <table width="100%" cellpadding="4" cellspacing="0" border="0" class="tabForm">
+        <table width="99%" cellpadding="4" cellspacing="0" border="0" class="tabForm">
             <tr>
                 <td align="left" width="20%"><b>{$conference_name.LABEL}: {if $mode ne 'view'}<span  class="required">*</span>{/if}</b></td>
                 <td class="required" align="left">{$conference_name.INPUT}</td>

@@ -297,7 +297,7 @@ function new_conference($smarty, $module_name, $local_templates_dir, $pDB, $arrL
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
     $smarty->assign("SAVE", $arrLang["Save"]);
     $smarty->assign("CANCEL", $arrLang["Cancel"]);
-    $smarty->assign("TITLE", $arrLang["Conference"]);
+    $smarty->assign("icon","images/conference.png");
     $smarty->assign("announce", $arrLang["Announce"]);
     $smarty->assign("record", $arrLang["Record"]);
     $smarty->assign("listen_only", $arrLang["Listen Only"]);
@@ -331,7 +331,7 @@ function new_conference($smarty, $module_name, $local_templates_dir, $pDB, $arrL
         $smarty->assign('WEBCONF_SELECTED', 'checked="checked"');
     }
     $smarty->assign('WEBCONF_CONTENT', $content);
-    $htmlForm = $oForm->fetchForm("$local_templates_dir/new_conference.tpl", "", $_POST);
+    $htmlForm = $oForm->fetchForm("$local_templates_dir/new_conference.tpl", $arrLang["Conference"], $_POST);
     $contenidoModulo = "<form  method='post' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
 
     return $contenidoModulo;
@@ -753,7 +753,6 @@ function view_conference($smarty, $module_name, $local_templates_dir, $pDB, $arr
     $smarty->assign("Show", 0);
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
     $smarty->assign("CANCEL", $arrLang["Cancel"]);
-    $smarty->assign("TITLE", $arrLang["Conference"]);
     $smarty->assign("announce", $arrLang["Announce"]);
     $smarty->assign("record", $arrLang["Record"]);
     $smarty->assign("listen_only", $arrLang["Listen Only"]);
@@ -791,7 +790,7 @@ function view_conference($smarty, $module_name, $local_templates_dir, $pDB, $arr
     $arrData['duration_min'] = ($duracion%3600)/60;
 
     $oForm->setViewMode();
-    $htmlForm = $oForm->fetchForm("$local_templates_dir/new_conference.tpl", "", $arrData);
+    $htmlForm = $oForm->fetchForm("$local_templates_dir/new_conference.tpl", $arrLang["Conference"], $arrData);
 
     $contenidoModulo = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
 
