@@ -292,3 +292,68 @@ function refresh(element)
 	  }
     );
 }
+
+// Mostrar menú de administración en applet de procesos
+function neoAppletProcesses_manejarMenu(divObject, sProc, sCurrState)
+{
+	if (sCurrState != 'OK' && sCurrState != 'Shutdown') return;
+	
+	// Se recuerda qué proceso se va a manejar
+	$('#neo_applet_selected_process').val(sProc);
+	
+	$('#neo_applet_process_stop').unbind('click');
+	$('#neo_applet_process_start').unbind('click');
+	$('#neo_applet_process_restart').unbind('click');
+
+	module_name = 'dashboard';
+	$('#neo_applet_process_stop').click(function() {
+		$.post('index.php?menu=' + module_name + '&rawmode=yes', {
+			menu:		module_name, 
+			rawmode:	'yes',
+			action:		'processcontrol_stop',
+			process:	$('#neo_applet_selected_process').val()
+		},
+		function (respuesta) {
+			refresh($('#refresh_Applet_ProcessesStatus').get(0));
+		});
+	});
+	$('#neo_applet_process_start').click(function() {
+		$.post('index.php?menu=' + module_name + '&rawmode=yes', {
+			menu:		module_name, 
+			rawmode:	'yes',
+			action:		'processcontrol_start',
+			process:	$('#neo_applet_selected_process').val()
+		},
+		function (respuesta) {
+			refresh($('#refresh_Applet_ProcessesStatus').get(0));
+		});
+	});
+	$('#neo_applet_process_restart').click(function() {
+		$.post('index.php?menu=' + module_name + '&rawmode=yes', {
+			menu:		module_name, 
+			rawmode:	'yes',
+			action:		'processcontrol_restart',
+			process:	$('#neo_applet_selected_process').val()
+		},
+		function (respuesta) {
+			refresh($('#refresh_Applet_ProcessesStatus').get(0));
+		});
+	});
+	$('.neo-applet-processes-menu').toggle();
+	$('.neo-applet-processes-menu').position({
+		of: $(divObject),
+		my: "right top",
+		at: "right bottom"
+	});
+
+	if (sCurrState == 'OK') {
+		$('#neo_applet_process_stop').show();
+		$('#neo_applet_process_restart').show();
+		$('#neo_applet_process_start').hide();
+	}
+	if (sCurrState == 'Shutdown') {
+		$('#neo_applet_process_stop').hide();
+		$('#neo_applet_process_restart').hide();
+		$('#neo_applet_process_start').show();
+	}
+}

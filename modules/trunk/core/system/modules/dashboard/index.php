@@ -97,17 +97,22 @@ function _moduleContent($smarty, $module_name)
             $content = loadAppletData($pDataApplets,$arrPaneles,$session);
             return $content;
             break;
-	case "getImageLoading":
-	    $content = getImageLoading($module_name);
-	    return $content;
-	    break;
-	case "refreshDataApplet":
-	    $content = refreshDataApplet($pDataApplets);
-	    return $content;
-	    break;
+        case "getImageLoading":
+            $content = getImageLoading($module_name);
+            return $content;
+            break;
+        case "refreshDataApplet":
+            $content = refreshDataApplet($pDataApplets);
+            return $content;
+            break;
+        case 'processcontrol_stop':
+        case 'processcontrol_start':
+        case 'processcontrol_restart':
+            return processControl($action);
+            break;
         default:
-	    unset($session["dashboard"]);
-	    putSession($session);
+            unset($session["dashboard"]);
+            putSession($session);
             break;
     }
 
@@ -132,6 +137,33 @@ function _moduleContent($smarty, $module_name)
     $smarty->assign("APPLET_ADMIN",$app);
 
     return $smarty->fetch("file:$local_templates_dir/applets.tpl");
+}
+
+function processControl($action)
+{
+    global $arrConf;
+    $pDBACL = new paloDB($arrConf['elastix_dsn']['acl']);
+    if (!empty($pDBACL->errMsg)) {
+        return "ERROR DE DB: $pDBACL->errMsg";
+    }
+    $pACL = new paloACL($pDBACL);
+    if (!empty($pACL->errMsg)) {
+        return "ERROR DE ACL: $pACL->errMsg";
+    }
+    $isAdministrator = $pACL->isUserAdministratorGroup($_SESSION['elastix_user']);
+    
+    $message = 'success';
+    if (!$isAdministrator) {
+        $message = _tr('Process control restricted to administrators');
+    } else {
+        $sServicio = getParameter('process');
+        $r = paloSantoDashboard::controlServicio($sServicio, $action);
+    }
+    $jsonObject = new PaloSantoJSON();
+    $jsonObject->set_message($message);
+    Header('Content-Type: application/json');
+    return $jsonObject->createJSON();
+
 }
 
 function createApplesTD($arrPaneles, $pDataApplets){

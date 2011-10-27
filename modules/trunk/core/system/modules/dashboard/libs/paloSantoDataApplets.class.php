@@ -115,33 +115,21 @@ PLANTILLA_RSS_ROW;
     {
         $oPalo = new paloSantoSysInfo();
         $arrServices = $oPalo->getStatusServices();
-/*
-        $str = "";
-        $servicesStatus = "";
-        $color = "";
-        
-        foreach($arrServices as $key=>$value){
-            if($value["status_service"]=="OK"){
-                $status = "<font color='green'><i>"._tr('Running')."</i></font>";
-                $serStatus = _tr('OK1');
-                $color = "#10ED00";
-            }
-            elseif($value["status_service"]=="Shutdown"){
-                $status = "<font color='blue'><i>"._tr('Not running')."</i></font>";
-                $serStatus = _tr('Shutdown');
-                $color = "#0043EC";
-            }
-            else{
-                $status = "<font color='blue'><i>"._tr('Not installed')."</i></font>";
-                $serStatus = _tr('Shutdown');
-                $color = "#0043EC";
-            }
-            $servicesStatus .= "<div class='services'>"._tr($value['name_service'])."&nbsp;  ($key): &nbsp;&nbsp; "."$status</div><div align='center' style='background-color:".$color.";' class='status' >$serStatus</div>";
-        }
-        return "<div class='tabFormTable'>$servicesStatus</div>";
-*/
 
-        $sListaServicios = '';
+        $sMsgStart = _tr('Start process');
+        $sMsgStop = _tr('Stop process');
+        $sMsgRestart = _tr('Restart process');
+        $sListaServicios = <<<PLANTILLA_POSICIONABLE
+<div class="neo-applet-processes-menu">
+<input type="hidden" id="neo_applet_selected_process" value="" />
+<div id="neo-applet-processes-controles">
+<input style="width: 120px; display: block;" type="button" id="neo_applet_process_stop" value="$sMsgStop" />
+<input style="width: 120px; display: block;" type="button" id="neo_applet_process_start" value="$sMsgStart" />
+<input style="width: 120px; display: block;" type="button" id="neo_applet_process_restart" value="$sMsgRestart" />
+</div>
+<img id="neo-applet-processes-processing" src="modules/{$this->module_name}/images/reload.png" style="display: none;" alt="" />
+</div>
+PLANTILLA_POSICIONABLE;
         
         $listaIconos = array(
             'Asterisk'  =>  'icon_pbx.png',
@@ -157,7 +145,10 @@ PLANTILLA_RSS_ROW;
 <div class="neo-applet-processes-row">
     <div class="neo-applet-processes-row-icon"><img src="modules/dashboard/images/%s" width="32" height="28" alt="%s" /></div>
     <div class="neo-applet-processes-row-name">%s</div>
-    <div class="neo-applet-processes-row-menu"><img src="modules/dashboard/images/icon_arrowdown.png" width="15" height="15" alt="menu" /></div>
+    <div class="neo-applet-processes-row-menu" 
+        onclick="neoAppletProcesses_manejarMenu(this, '%s', '%s');">
+        <img src="modules/dashboard/images/icon_arrowdown.png" width="15" height="15" alt="menu" />
+    </div>
     <div class="neo-applet-processes-row-status-msg" style="color: %s">%s</div>
     <div class="neo-applet-processes-row-status-icon"></div></div>
 PLANTILLA_PROCESS_ROW;
@@ -180,10 +171,12 @@ PLANTILLA_PROCESS_ROW;
                 isset($listaIconos[$sServicio]) ? $listaIconos[$sServicio] : $sIconoDesconocido,
                 $sServicio,
                 _tr($infoServicio['name_service']),
+                $sServicio,
+                $infoServicio['status_service'],
                 $sColorStatus,
                 $sDescStatus);
         }
-        return $sListaServicios;        
+        return $sListaServicios;
     }
 
     function getDataApplet_TelephonyHardware()

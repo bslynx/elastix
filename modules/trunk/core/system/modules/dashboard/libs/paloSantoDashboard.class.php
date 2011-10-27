@@ -387,5 +387,28 @@ class paloSantoDashboard {
 
         return $data;
    }
+   
+    function controlServicio($sServicio, $sAccion)
+    {
+        $acciones = array(
+            'processcontrol_start'      =>  'start',
+            'processcontrol_restart'    =>  'restart',
+            'processcontrol_stop'       =>  'stop',
+        );
+        $servicios = array(
+            'Asterisk'  =>  'asterisk',
+            'OpenFire'  =>  'openfire',
+            'Hylafax'   =>  'hylafax',
+            'Postfix'   =>  'postfix',
+            'MySQL'     =>  'mysqld',
+            'Apache'    =>  'httpd',
+            'Dialer'    =>  'elastixdialer',
+        );
+        if (!in_array($sServicio, array_keys($servicios))) return FALSE;
+        if (!in_array($sAccion, array_keys($acciones))) return FALSE;
+        $output = $retval = NULL;
+        exec('sudo -u root service generic-cloexec '.$servicios[$sServicio].' '.$acciones[$sAccion].' 1>/dev/null 2>/dev/null');
+        return TRUE;
+    }
 }
 ?>
