@@ -63,7 +63,7 @@ SELECT {
     border-radius: 5px 5px 5px 5px;
     -moz-border-radius: 5px 5px 5px 5px;
     -webkit-border-radius: 5px 5px 5px 5px;
-    height: 24px
+    min-height: 24px
 }
 INPUT.submit {
         border: 1px solid #999999;
