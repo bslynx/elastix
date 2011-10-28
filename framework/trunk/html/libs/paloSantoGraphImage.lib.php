@@ -330,15 +330,17 @@ if( sizeof($G_YDATAS) >= 1 )
                             }
                             $iFraccion += $ydata[$i];
 
-                                $degMitad = ($degInicio + $degFinal) / 2;
-                                $iPosTextoX = $x + 0.5 * ($w / 2.0) * cos(deg2rad($degMitad));
-                                $iPosTextoY = $y + 0.5 * ($h / 2.0) * sin(deg2rad($degMitad));
-                                $etiquetas[] = array($iPosTextoX, $iPosTextoY, sprintf('%.1f %%', 100.0 * $ydata[$i] / $iTotal));
+                            $degMitad = ($degInicio + $degFinal) / 2;
+                            $iPosTextoX = $x + 0.5 * ($w / 2.0) * cos(deg2rad($degMitad));
+                            $iPosTextoY = $y + 0.5 * ($h / 2.0) * sin(deg2rad($degMitad));
+                            $etiquetas[] = array($iPosTextoX, $iPosTextoY, sprintf('%.1f %%', 100.0 * $ydata[$i] / $iTotal));
                         }
+/*
                         if (!is_null($colorTexto)) {
                             for ($i = 0; $i < count($ydata); $i++)
                                 imagestring($thumb, 5, $etiquetas[$i][0], $etiquetas[$i][1], $etiquetas[$i][2], $colorTexto);
                         }
+*/                        
                     }
                 }
                 for ($i = (int)(60  * $escala); $i > 0; $i--) {
