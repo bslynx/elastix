@@ -60,121 +60,141 @@ function VerificarCheck(chkbox, id)
             </td>
         </tr>
         <tr>
-            <td><table width="99%" BORDER=0>
-                <tr>
-                    <td colspan=4><INPUT type="checkbox" name="backup_total" id="backup_total" onClick=ChequearTodos(this);><b>{$LBL_TODOS}</b></td>
-                </tr>
-                <tr><!-- ********** E N D   P O I N T ************ -->
-                    <td width="25%"><table id="table_endpoint" width="100%" height="100px" border="0" cellspacing="0" cellpadding="0" class="tabForm"><th>
-                        <tr>
-                            <td height="10px"><b>{$ENDPOINT}</b></td>
-                        </tr>
-                        <tr>
-                            <td height="10px"><INPUT type="checkbox" name="backup_endpoint" id="backup_endpoint" onClick="ChequearTabla(this, 'table_endpoint');"><b>{$TODO_ENDPOINT}</b></td>
-                        </tr></th>
-                        <tbody>
-                            {foreach key=key item=item from=$backup_endpoint}
-                            <tr>
-                                <td><INPUT type="checkbox" {$item.disable} name="{$key}" id="{$key}" value="{$key}" onClick="VerificarCheck(this, 'backup_endpoint');" {$item.check}>{$item.desc}&nbsp;{$item.msg}</td>
-                            </tr>
-                            {/foreach}
-                        </tbody>
-                    </table></td>
+            <td>
+                <table width="99%" BORDER=0>
+                    <tr>
+                        <td colspan=4><INPUT type="checkbox" name="backup_total" id="backup_total" onClick=ChequearTodos(this);><b>{$LBL_TODOS}</b></td>
+                    </tr>
+                    <tr>
+                    <!-- ********** E N D   P O I N T ************ -->
+                        <td width="25%">
+                            <table id="table_endpoint" width="100%" height="100px" border="0" cellspacing="0" cellpadding="0" class="tabForm">
+                                <th>
+                                    <tr>
+                                        <td height="20px"><b>{$ENDPOINT}</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td height="20px"><INPUT type="checkbox" name="backup_endpoint" id="backup_endpoint" onClick="ChequearTabla(this, 'table_endpoint');"><b>{$TODO_ENDPOINT}</b></td>
+                                    </tr>
+                                </th>
+                                <tbody>
+                                    {foreach key=key item=item from=$backup_endpoint}
+                                    <tr>
+                                        <td height="20px"><INPUT type="checkbox" {$item.disable} name="{$key}" id="{$key}" value="{$key}" onClick="VerificarCheck(this, 'backup_endpoint');" {$item.check}>{$item.desc}&nbsp;{$item.msg}</td>
+                                    </tr>
+                                    {/foreach}
+                                </tbody>
+                            </table>
+                        </td>
                     <!-- ********** F A X ************ -->
-                    <td width="25%"><table id="table_fax" width="100%" height="100px" border="0" cellspacing="0" cellpadding="0" class="tabForm">
-                        <th><tr>
-                            <td height="10px"><b>{$FAX}</b></td>
-                        </tr>
-                        <tr>
-                            <td height="10px"><INPUT type="checkbox" name="backup_fax" id="backup_fax" onClick="ChequearTabla(this, 'table_fax');"><b>{$TODO_FAX}</b></td>
-                        </tr></th>
-                        <tbody>
-                            {foreach key=key item=item from=$backup_fax}
-                            <tr>
-                                <td><INPUT type="checkbox" {$item.disable} name="{$key}" id="{$key}" value="{$key}" onClick="VerificarCheck(this, 'backup_fax');" {$item.check}>{$item.desc}&nbsp;{$item.msg}</td>
-                            </tr>
-                            {/foreach}
-                        </tbody>
-                    </table></td>
+                        <td width="25%">
+                            <table id="table_fax" width="100%" height="100px" border="0" cellspacing="0" cellpadding="0" class="tabForm">
+                                <th>
+                                    <tr>
+                                        <td height="20px"><b>{$FAX}</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td height="20px"><INPUT type="checkbox" name="backup_fax" id="backup_fax" onClick="ChequearTabla(this, 'table_fax');"><b>{$TODO_FAX}</b></td>
+                                    </tr>
+                                </th>
+                                <tbody>
+                                    {foreach key=key item=item from=$backup_fax}
+                                    <tr>
+                                        <td height="20px"><INPUT type="checkbox" {$item.disable} name="{$key}" id="{$key}" value="{$key}" onClick="VerificarCheck(this, 'backup_fax');" {$item.check}>{$item.desc}&nbsp;{$item.msg}</td>
+                                    </tr>
+                                    {/foreach}
+                                </tbody>
+                            </table>
+                        </td>
                     <!-- ********** E M A I L ************ -->
-                    <td width="25%"><table id="table_email" width="100%" height="100px" border="0" cellspacing="0" cellpadding="0" class="tabForm">
-                        <th><tr>
-                            <td height="10px"><b>{$EMAIL}</b></td>
-                        </tr>
-                        <tr>
-                            <td height="10px"><INPUT type="checkbox" name="backup_email" id="backup_email" onClick="ChequearTabla(this, 'table_email');"><b>{$TODO_EMAIL}</b></td>
-                        </tr></th>
-                        <tbody>
-                            {foreach key=key item=item from=$backup_email}
-                            <tr>
-                                <td><INPUT type="checkbox" {$item.disable} name="{$key}" id="{$key}" value="{$key}" onClick="VerificarCheck(this, 'backup_email');" {$item.check}>{$item.desc}&nbsp;{$item.msg}</td>
-                            </tr>
-                            {/foreach}
-                        </tbody>
-                    </table></td>
-                </tr>
-                <tr><!-- ********** A S T E R I X ************ -->
-                    <td width="25%"><table id="table_asterisk" width="100%" height="270px" border="0" cellspacing="0" cellpadding="0" class="tabForm">
-                        <th><tr>
-                            <td height="10px"><b>{$ASTERISK}</b></td>
-                        </tr>
-                        <tr>
-                            <td height="10px"><INPUT type="checkbox" name="backup_asterisk" id="backup_asterisk" onClick="ChequearTabla(this, 'table_asterisk');"><b>{$TODO_ASTERISK}</b></td>
-                        </tr></th>
-                        <tbody>
-                            {foreach key=key item=item from=$backup_asterisk}
-                            <tr>
-                                <td><INPUT type="checkbox" {$item.disable} name="{$key}" id="{$key}" value="{$key}" onClick="VerificarCheck(this, 'backup_asterisk');" {$item.check}>{$item.desc}&nbsp;{$item.msg}</td>
-                            </tr>
-                            {/foreach}
-                        </tbody>
-                    </table></td>
+                        <td width="25%">
+                            <table id="table_email" width="100%" height="100px" border="0" cellspacing="0" cellpadding="0" class="tabForm">
+                                <th>
+                                    <tr>
+                                        <td height="20px"><b>{$EMAIL}</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td height="20px"><INPUT type="checkbox" name="backup_email" id="backup_email" onClick="ChequearTabla(this, 'table_email');"><b>{$TODO_EMAIL}</b></td>
+                                    </tr>
+                                </th>
+                                <tbody>
+                                    {foreach key=key item=item from=$backup_email}
+                                    <tr>
+                                        <td height="20px"><INPUT type="checkbox" {$item.disable} name="{$key}" id="{$key}" value="{$key}" onClick="VerificarCheck(this, 'backup_email');" {$item.check}>{$item.desc}&nbsp;{$item.msg}</td>
+                                    </tr>
+                                    {/foreach}
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                    <!-- ********** A S T E R I X ************ -->
+                        <td width="25%">
+                            <table id="table_asterisk" width="100%" height="270px" border="0" cellspacing="0" cellpadding="0" class="tabForm">
+                                <th>
+                                    <tr>
+                                        <td height="20px"><b>{$ASTERISK}</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td height="20px"><INPUT type="checkbox" name="backup_asterisk" id="backup_asterisk" onClick="ChequearTabla(this, 'table_asterisk');"><b>{$TODO_ASTERISK}</b></td>
+                                    </tr>
+                                </th>
+                                <tbody>
+                                    {foreach key=key item=item from=$backup_asterisk}
+                                    <tr>
+                                        <td height="20px"><INPUT type="checkbox" {$item.disable} name="{$key}" id="{$key}" value="{$key}" onClick="VerificarCheck(this, 'backup_asterisk');" {$item.check}>{$item.desc}&nbsp;{$item.msg}</td>
+                                    </tr>
+                                    {/foreach}
+                                </tbody>
+                            </table>
+                        </td>
                     <!-- ********** O T H E R S ************ -->
-                    <td width="25%"><table id="table_others" width="100%" height="270px" border="0" cellspacing="0" cellpadding="0" class="tabForm">
-                        <th><tr>
-                                <td height="10px"><b>{$OTROS}</b></td>
-                        </tr>
-                        <tr>
-                            <td height="10px"><INPUT type="checkbox" name="backup_others" id="backup_others" onClick="ChequearTabla(this, 'table_others');"><b>{$TODO_OTROS}</b></td>
-                        </tr></th>
-                        <tbody>
-                            {foreach key=key item=item from=$backup_otros}
-                            <tr>
-                                <td><INPUT type="checkbox" {$item.disable} name="{$key}" id="{$key}" value="{$key}" onClick="VerificarCheck(this, 'backup_others');" {$item.check}>{$item.desc}&nbsp;{$item.msg}</td>
-                            </tr>
-                            {/foreach}
-                        </tbody>
-                    </table></td>
+                        <td width="25%">
+                            <table id="table_others" width="100%" height="270px" border="0" cellspacing="0" cellpadding="0" class="tabForm">
+                                <th>
+                                    <tr>
+                                        <td height="20px"><b>{$OTROS}</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td height="20px"><INPUT type="checkbox" name="backup_others" id="backup_others" onClick="ChequearTabla(this, 'table_others');"><b>{$TODO_OTROS}</b></td>
+                                    </tr>
+                                </th>
+                                <tbody>
+                                    {foreach key=key item=item from=$backup_otros}
+                                    <tr>
+                                        <td height="20px"><INPUT type="checkbox" {$item.disable} name="{$key}" id="{$key}" value="{$key}" onClick="VerificarCheck(this, 'backup_others');" {$item.check}>{$item.desc}&nbsp;{$item.msg}</td>
+                                    </tr>
+                                    {/foreach}
+									<tr><td height="20px">&nbsp;</td></tr>
+                                </tbody>
+                            </table>
+                        </td>
                     <!-- ********** N E W   O T H E R S ************ -->
-                    <td width="25%">
-                        <table id="table_others_new" width="100%" height="270px" border="0" cellspacing="0" cellpadding="0" class="tabForm">
-                            <th>
-                                <tr>
-                                    <td height="10px">
-                                        <b>{$OTROS_NEW}</b>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td height="10px">
-                                        <INPUT type="checkbox" name="backup_others_new" id="backup_others_new" onClick="ChequearTabla(this, 'table_others_new');">      
-                                        <b>{$TODO_OTROS_NEW}</b>
-                                    </td>
-                                </tr>
-                            </th>
-                            <tbody>
-                                {foreach key=key item=item from=$backup_otros_new}
-                                <tr>
-                                    <td><INPUT type="checkbox" {$item.disable} name="{$key}" id="{$key}" value="{$key}" onClick="VerificarCheck(this, 'backup_others_new');" {$item.check}>{$item.desc}&nbsp;{$item.msg}</td>
-                                </tr>
-                                {/foreach}
-                            </tbody>
-                            <tbody>
-                                <tr><td height="80px"></td></tr>
-                            </tbody>
-                        </table>
-                    </td>
-                </tr>
-            </table></td>
+                        <td width="25%">
+                            <table id="table_others_new" width="100%" height="270px" border="0" cellspacing="0" cellpadding="0" class="tabForm">
+                                <th>
+                                    <tr>
+                                        <td height="20px"><b>{$OTROS_NEW}</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td height="20px"><INPUT type="checkbox" name="backup_others_new" id="backup_others_new" onClick="ChequearTabla(this, 'table_others_new');"><b>{$TODO_OTROS_NEW}</b></td>
+                                    </tr>
+                                </th>
+                                <tbody>
+                                    {foreach key=key item=item from=$backup_otros_new}
+                                    <tr>
+                                        <td height="20px"><INPUT type="checkbox" {$item.disable} name="{$key}" id="{$key}" value="{$key}" onClick="VerificarCheck(this, 'backup_others_new');" {$item.check}>{$item.desc}&nbsp;{$item.msg}</td>
+                                    </tr>
+                                    {/foreach}
+									<tr><td height="20px">&nbsp;</td></tr>
+									<tr><td height="20px">&nbsp;</td></tr>
+									<tr><td height="20px">&nbsp;</td></tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </td>
         </tr>
     </table>
     <INPUT type="hidden" name="option_url" id="option_url" value="{$OPTION_URL}">

@@ -392,7 +392,7 @@ function form_general($smarty, $local_templates_dir, $arrLang, $arrBackupOptions
     $smarty->assign("ENDPOINT", $arrLang["Endpoint"]);
     $smarty->assign("ASTERISK", $arrLang["Asterisk"]);
     $smarty->assign("OTROS", $arrLang["Others"]);
-    $smarty->assign("OTROS_NEW", $arrLang["Others new"]);
+    $smarty->assign("OTROS_NEW", $arrLang["Others"]);
     /*****************/
 
     $smarty->assign("backup_fax", $arrBackupOptions['fax']);

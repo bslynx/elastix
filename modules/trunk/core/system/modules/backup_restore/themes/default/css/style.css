@@ -25,19 +25,22 @@
 #sortable1, #sortable2 { 
     list-style-type: none; 
     margin: 0; 
-    padding: 0; 
     float: left;
     margin-right: 10px; 
-    background: #eee; 
-    padding: 5px; 
-    width: 320px;
+    background: #656565; 
+    padding: 2px;
+    width: 316px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
 }
     
 #sortable1 li, #sortable2 li { 
-    margin: 5px; 
+    margin: 2px;
     padding: 5px; 
     font-size: 1.2em; 
     width: 300px;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
 }
 
 #content{
@@ -109,4 +112,12 @@
 li{
     line-height:5px;
     cursor:move;
+}
+.tabFormFTP {
+    border-color: #999;
+    color: #AAA;
+    border-top: 1px solid #AAA;
+    border-bottom: 1px solid #AAA;
+    background-repeat: repeat-x;
+    background-position: top;
 }

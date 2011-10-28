@@ -10,9 +10,9 @@
     </tr>
 </table>
 
-<div id="table_center" class="tabForm2">
+<div id="table_center" class="tabFormFTP">
     <div class="letra12">
-        <b><br/>{$TITLE}</b>
+        <b><br/>&nbsp;&nbsp;{$TITLE}</b>
     </div>
     <div id="content">
         <div class="divs">
