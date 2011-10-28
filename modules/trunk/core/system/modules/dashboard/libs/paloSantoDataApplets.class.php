@@ -74,14 +74,7 @@ class paloSantoDataApplets
             $sPorcentajeLibre = number_format($iPorcentajeLibre, 0);
 
             // Intentar determinar el modelo del disco que contiene la partición
-            $sModelo = 'N/A';
-            foreach ($hdmodel as $sDisco => $sModeloDisco) {
-                if (substr($particion['fichero'], 0, strlen($sDisco)) == $sDisco &&
-                    ctype_digit(substr($particion['fichero'], strlen($sDisco)))) {
-                    $sModelo = $sModeloDisco;
-                    break;
-                }
-            }
+            $sModelo = isset($hdmodel[$particion['fichero']]) ? $hdmodel[$particion['fichero']] : 'N/A';            
             $content .= <<<PLANTILLA_DISCO
 <div>
     $sEnlaceImagen

@@ -30,7 +30,9 @@
   $Id: dhcpconfig.php,v 1.1 2007/01/09 23:49:36 alex Exp $
 */
 
-$listaDiscos = glob("/dev/[sh]d?");
+// Reporte de modelos para discos físicos
+$discosFisicos = array();
+$listaDiscos = glob('/dev/[sh]d*');
 if (is_array($listaDiscos)) foreach ($listaDiscos as $sDisco) {
     $output = NULL;
     exec("/sbin/hdparm -I $sDisco", $output);
@@ -38,9 +40,40 @@ if (is_array($listaDiscos)) foreach ($listaDiscos as $sDisco) {
         $s = trim($s);
         $regs = NULL;
         if (preg_match('/Model Number:\s*(\S.+\S)\s*$/', $s, $regs)) {
-            print "$sDisco {$regs[1]}\n";
+            $sModelo = $regs[1];
+            print "$sDisco $sModelo\n";
+            
+            // stat() no me da la información de dev mayor/menor
+            $output2 = NULL;
+            exec("/usr/bin/stat $sDisco", $output2);
+            foreach ($output2 as $p) {
+                $p = trim($p);
+                $regs = NULL;
+                if (preg_match('/Device type:\s*(\d+,\d+)/', $p, $regs)) {
+                    $discosFisicos[str_replace(' ', '', $regs[1])] = $sModelo;
+                }
+            }
             break;
         }
     }
 }
+
+// Reporte de modelos para discos LVM
+$listaDiscos = glob('/dev/mapper/VolGroup*');
+if (is_array($listaDiscos)) foreach ($listaDiscos as $sDisco) {
+    $output = NULL;
+    exec("/sbin/dmsetup deps $sDisco", $output);
+    foreach ($output as $s) {        
+        $s = str_replace(' ', '', trim($s));
+        $regs = NULL;
+        print $sDisco;        
+        while (preg_match('/\((\d+,\d+)\)(.*)/', $s, $regs)) {
+            if (isset($discosFisicos[$regs[1]]))
+                print ' '.$discosFisicos[$regs[1]];
+            $s = $regs[2];
+        }
+        print "\n";
+    }
+}
+
 ?>
