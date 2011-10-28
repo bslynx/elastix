@@ -16,7 +16,7 @@
         {$HEADER}
 	{$HEADER_MODULES}
     </head>
-    <body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" {$BODYPARAMS}>
+    <body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" class="mainBody" {$BODYPARAMS}>
         {$MENU} <!-- Viene del tpl menu.tlp-->
 		{if !empty($mb_message)}
 		<br />

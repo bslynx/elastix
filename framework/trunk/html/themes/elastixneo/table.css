@@ -8,6 +8,7 @@ div.neo-table-toolbar-button {
 	margin: 3px 3px 3px 3px;
 	-moz-border-radius: 8px 8px 8px 8px;
 	-webkit-border-radius: 8px 8px 8px 8px;
+	border-radius: 8px 8px 8px 8px;
 	text-shadow: 1px 1px #ccc;
 	padding: 5px 4px 4px 8px;
 	background-image:url(../images/bgicon.png);

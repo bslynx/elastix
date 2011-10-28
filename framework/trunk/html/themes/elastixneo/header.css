@@ -43,6 +43,7 @@
 	border-left: 1px solid #777;
     -moz-border-radius: 0px 0px 0px 10px;
 	-webkit-border-radius: 0px 0px 0px 10px;
+	border-radius: 0px 0px 0px 10px;
 	background:url(images/cmenubg.png) repeat #ddd;
 }
 /*agregado para el estilo de los links*/
@@ -88,6 +89,7 @@ div.neo-cmenutableft {
 	background-color:rgba(220,220,220,0.8);
 	-moz-border-radius: 6px 0px 6px 6px;
 	-webkit-border-radius: 6px 0px 6px 6px;
+	border-radius:  6px 0px 6px 6px;
 	border-bottom: 1px solid #666;
 	border-left: 1px solid #999;
 	z-index:1000000;
@@ -105,6 +107,7 @@ div.neo-cmenutableft {
 	background-color:rgba(220,220,220,0.8);
 	-moz-border-radius: 0px 6px 6px 0px;
 	-webkit-border-radius: 0px 6px 6px 0px;
+	border-radius: 0px 6px 6px 0px;
 	border-bottom: 1px solid #666;
 	border-right: 1px solid #999;
 	z-index:1000000;
@@ -189,6 +192,7 @@ div.neo-tabh-rend {
 	border-top: 1px solid #666;
 	-moz-border-radius: 0px 12px 0px 0px;
 	-webkit-border-radius: 0px 12px 0px 0px;
+	border-radius: 0px 12px 0px 0px;
 	cursor: pointer;
 	/* background: url(../images/tabhonbg_rend.png) no-repeat; */
 }
@@ -214,7 +218,8 @@ div.neo-tabh-lend2 {
 	float: left;
 	margin: 8px 0px 0px 0px;
 	-moz-border-radius: 12px 0px 0px 0px;
-	-webkit-border-radius: 12px 0px 0px 0px; 
+	-webkit-border-radius: 12px 0px 0px 0px;
+	border-radius: 12px 0px 0px 0px;
 	border-left: 1px solid #666;
 	border-right: 1px solid #999;
 	border-top: 1px solid #666;
@@ -238,6 +243,7 @@ div.neo-tabh-lend3 {
 	margin: 8px 0px 0px 0px;
 	-moz-border-radius: 0px 12px 0px 0px;
 	-webkit-border-radius: 0px 12px 0px 0px;
+	border-radius: 0px 12px 0px 0px;
 	border-left: 1px solid #666;
 	border-right: 1px solid #999;
 	border-top: 1px solid #666;
@@ -260,7 +266,8 @@ div.neo-tabhon {
 	float: left;
 	margin: 2px 0px 0px 0px;
 	-moz-border-radius: 6px 6px 0px 0px;
-	-webkit-border-radius: 6px 6px 0px 0px; 
+	-webkit-border-radius: 6px 6px 0px 0px;
+	border-radius: 6px 6px 0px 0px;
 	border-left: 1px solid #bbb;
 	border-right: 1px solid #999;
 	background-color: #0E3463;

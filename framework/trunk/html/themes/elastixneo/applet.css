@@ -1,7 +1,7 @@
 div.neo-applet {
 	position: relative;
 	float:left;
-	margin: 8px 6px 0px 7px; /*10px 10px 0px 8px;*/
+	margin: 8px 6px 0px 7px;
 	padding: 0px 0px 10px 0px;
 	width: 490px;
 	height: 300px;
@@ -13,6 +13,8 @@ div.neo-applet {
 	border-bottom: 1px solid #999;
 	-moz-box-shadow: 2px 2px 1px rgb(180,180,180);
 	-webkit-box-shadow: 2px 2px 1px rgb(180,180,180);
+	box-shadow: 2px 2px 1px rgb(180,180,180);
+	border-radius: 10px 10px 10px 10px;
     background:url(images/appletbg.png) repeat-x top #F6F6F6;
 	
 }
@@ -40,7 +42,6 @@ div.neo-applet-content {
 div.neo-applet-tline {
 	position:relative;
 	width:100%;
-	/* background-color:red; */
 	overflow:hidden;
 	height:22px;
 }

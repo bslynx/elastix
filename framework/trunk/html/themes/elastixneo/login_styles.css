@@ -25,6 +25,7 @@ body {
 	border-bottom: 1px solid #333;
 	-moz-border-radius: 10px 10px 10px 10px;
 	-webkit-border-radius: 10px 10px 10px 10px;
+	border-radius: 10px 10px 10px 10px;
 	/* -moz-box-shadow: 8px 8px 10px rgb(0,0,0); */
 
 }
@@ -59,12 +60,14 @@ input.neo-login-input {
 	width:200px;
 	-moz-border-radius: 4px;
 	-webkit-border-radius: 4px;
+	border-radius: 4px;
 }
 input.neo-login-submit {
 	width:120px;
 	height:34px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
+	border-radius: 5px;
     background-image:url(images/bgsubmit.png);
     background-color:rgba(40,40,40,0.4);
 	border-top: 1px solid #333;

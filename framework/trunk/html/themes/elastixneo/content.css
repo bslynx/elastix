@@ -86,7 +86,7 @@ div.neo-module-title-buttonstab-left {
 	float:right;
 	padding: 0px;
 	height:30px;
-	width:41px;
+	width:36px;
 	background:url(images/moduletitlebuttonstableft.png) no-repeat top;
 }
 div.neo-module-title-buttonstab-right {
@@ -112,10 +112,11 @@ div.neo-module-title-buttonstab-right {
 div.neo-module-content {
 	position:relative;
 	margin-top:35px;
-        padding:3px 5px 10px 0px;
+        padding:3px 5px 10px 5px;
         overflow:hidden;
 	-moz-border-radius: 0px 10px 10px 10px;
 	-webkit-border-radius: 0px 10px 10px 10px;
+	border-radius: 0px 10px 10px 10px;
         background-color:#f0f0f0;
 	border: 1px solid #999;
 }
@@ -134,6 +135,7 @@ div.neo-modulecontent-row {
 	width: 220px;
 	-moz-border-radius: 10px 10px 10px 10px;
 	-webkit-border-radius: 10px 10px 10px 10px;
+	border-radius: 10px 10px 10px 10px;
 	border-top: 1px solid #aaa;
 	border-left: 1px solid #aaa;
 	border-right: 1px solid #999;
@@ -178,11 +180,13 @@ div.neo-shortcuts-box {
 	text-align:center;
 	-moz-border-radius: 10px 10px 10px 10px;
 	-webkit-border-radius: 10px 10px 10px 10px;
+	border-radius: 10px 10px 10px 10px;
 	border-top: 1px solid #aaa;
 	border-left: 1px solid #aaa;
 	border-right: 1px solid #999;
 	border-bottom: 1px solid #999;
 	-moz-box-shadow: 2px 2px 1px rgb(180,180,180); 
-	-webkit-box-shadow: 2px 2px 1px rgb(180,180,180); 
+	-webkit-box-shadow: 2px 2px 1px rgb(180,180,180);
+	box-shadow: 2px 2px 1px rgb(180,180,180);
 	background:url(images/3menubgtop.png) repeat-x top #f0f0f0;
 }

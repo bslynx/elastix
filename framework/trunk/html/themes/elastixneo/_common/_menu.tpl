@@ -85,11 +85,13 @@
 {literal}
 <style type='text/css'>
 #acerca_de{
+    -moz-border-radius: 20px 20px 20px 20px;
+    -webkit-border-radius: 20px 20px 20px 20px;
     position:fixed;
-    background-color:#FFFFFF;
+    background-color:#D8D8D8;
     width:420px;
     height:190px;
-    border:1px solid #800000;
+    border:1px solid #9C9C9C;
     z-index: 10000;
 }
 </style>
@@ -251,7 +253,12 @@ $(document).ready(function(){
 			$("#neo-second-showbox-menu").addClass("neo-display-none");
 			e.stopPropagation();
 		});
-	}); 
+	});
+
+	$('#search_module_elastix').bind('click', function(e) {
+		//$( "#search_module_elastix" ).autocomplete( "close" );
+		$( "#search_module_elastix" ).val("");
+	});
 
 	$("#export_button").hover(
 	  function () {
@@ -337,6 +344,7 @@ $(document).ready(function(){
 	$('#neo-smenubox').css('backgroundColor', menu_color_user);
 	$('.neo-tabhon').css('backgroundColor', menu_color_user);
 });
+
 //]]>
 </script>
 {/literal}
@@ -399,8 +407,8 @@ $(document).ready(function(){
 	  </div>
 	</div>
 	<div id="neo-cmenu-showbox-search" class="neo-cmenu-showbox neo-display-none">
-	  <p>Busqueda de módulos</p>
-	  <p><input type="search"  id="search_module_elastix" name="search_module_elastix"  value="" /></p>
+	  <p>{$MODULES_SEARCH}</p>
+	  <p><input type="search"  id="search_module_elastix" name="search_module_elastix"  value="" autofocus="autofocus" placeholder="search" /></p>
 	</div>
 	<div id="neo-cmenu-showbox-info" class="neo-cmenu-showbox neo-display-none">
 	  <p><span><a class="register_link" style="color: {$ColorRegister}; cursor: pointer; font-weight: bold; font-size: 13px;" onclick="showPopupElastix('registrar','{$Register}',538,370)">{$Registered}</a></span></p>
