@@ -31,7 +31,7 @@ class paloSantoSysInfo
         for($i=1; $i<=2; $i++){
             $data = array();
             $data['VALUES'] = ($i==1) ? array('VALUE'=>$value) : array('VALUE'=>100-$value);
-            $data['STYLE'] = array('COLOR'=> ($i==1) ? '#3333cc' : '#9999cc','LEYEND'=> ($i==1) ? 'Used' : 'Free');
+            $data['STYLE'] = array('COLOR'=> ($i==1) ? '#3184d5' : '#6e407e','LEYEND'=> ($i==1) ? 'Used' : 'Free');
             $arrTemp["DAT_$i"] = $data;
         }
 

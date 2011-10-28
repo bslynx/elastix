@@ -56,21 +56,83 @@ class paloSantoDataApplets
         $str = ""; $val = null;
         foreach( $arrParticiones as $key => $particion )
         {
-            $val_1 = ( ereg("^([[:digit:]]{1,2}(\.[[:digit:]]{1,4})?)%$", trim($particion['uso_porcentaje']), $arrReg) )
-                    ? $arrReg[1]: NULL;
-            $val_2 = number_format($particion['num_bloques_total'] / 1024 / 1024, 2);
-            $content = "<div class='infoDisc'>
-                            <div class='type'><b>"._tr('Partition Name').":</b></div>
-                            <div align='center' class='detail'>".$particion['fichero']."</div>
-                            <div class='type'>"._tr('Capacity').":</div>
-                            <div align='center' class='detail'>".$val_2."GB</div>
-                            <div class='type'>"._tr('Usage').":</div>
-                            <div align='center' class='detail'>".$val_1."%</div>
-                            <div class='type'>"._tr('Mount point')."</div>
-                            <div align='center' class='detail'>".$particion['punto_montaje']."</div>
-                        </div>
-                        <div class='imgDisc'>".$this->getImage_Disc_Usage($val_1)."</div>";
+            $iPorcentajeUsado = 100.0 * $particion['num_bloques_usados'] / $particion['num_bloques_total'];
+            $iPorcentajeLibre = 100.0 - $iPorcentajeUsado;
+            $sEnlaceImagen = $this->getImage_Disc_Usage($iPorcentajeUsado);
+            $sTotalGB = number_format($particion['num_bloques_total'] / 1024 / 1024, 2);
+            $sPorcentajeUsado = number_format($iPorcentajeUsado, 0);
+            $sPorcentajeLibre = number_format($iPorcentajeLibre, 0);
+            $content .= <<<PLANTILLA_DISCO
+<div>
+    $sEnlaceImagen
+    <div class="neo-applet-hd-innerbox">
+      <div class="neo-applet-hd-innerbox-top">
+       <img src="modules/{$this->module_name}/images/light_usedspace.png" width="13" height="11" alt="used" /> {$sPorcentajeUsado}% Used &nbsp;&nbsp;<img src="modules/{$this->module_name}/images/light_freespace.png" width="13" height="11" alt="used" /> {$sPorcentajeLibre}% Available
+      </div>
+      <div class="neo-applet-hd-innerbox-bottom">
+        <div><strong>Hard Disk Capacity:</strong> {$sTotalGB}GB</div>
+        <div><strong>Mount Point:</strong> {$particion['punto_montaje']}</div>
+        <div><strong>Manufacturer:</strong> N/A</div>
+      </div>
+    </div>
+</div>
+PLANTILLA_DISCO;
         }
+
+        // Lista de directorios a buscar
+        $listaReporteDir = array(
+            'logs'  =>  array(
+                'dir'   =>  '/var/log',
+                'tag'   =>  _tr('Logs'),
+                'use'   =>  'N/A',
+            ),
+            'backups'  =>  array(
+                'dir'   =>  '/var/www/backup',
+                'tag'   =>  _tr('Local Backups'),
+                'use'   =>  'N/A',
+            ),
+            'emails'  =>  array(
+                'dir'   =>  '/var/spool/imap',
+                'tag'   =>  _tr('Emails'),
+                'use'   =>  'N/A',
+            ),
+            'config'  =>  array(
+                'dir'   =>  '/etc',
+                'tag'   =>  _tr('Configuration'),
+                'use'   =>  'N/A',
+            ),
+            'voicemails'  =>  array(
+                'dir'   =>  '/var/spool/asterisk/voicemail',
+                'tag'   =>  _tr('Voicemails'),
+                'use'   =>  'N/A',
+            ),
+            'recordings'  =>  array(
+                'dir'   =>  '/var/spool/asterisk/monitor',
+                'tag'   =>  _tr('Recordings'),
+                'use'   =>  'N/A',
+            ),
+        );
+        foreach (array_keys($listaReporteDir) as $k) {
+        	// /usr/bin/du -h /etc/ 2>/dev/null
+            if (!is_null($listaReporteDir[$k]['dir'])) {
+                $output = NULL; $regs = NULL;
+                exec("/usr/bin/du -h {$listaReporteDir[$k]['dir']} 2>/dev/null", $output);
+                if (count($output) > 0 && preg_match('/^\s*(\S+)/', $output[count($output) - 1], $regs)) {
+                	$listaReporteDir[$k]['use'] = $regs[1];
+                }
+            }
+        }
+
+        // Datos extra de directorios seleccionados
+        $content .= <<<PLANTILLA_DIRECTORIOS
+<div class="neo-divisor"></div>
+<div class="neo-applet-hd-report-row"><div class="neo-applet-hd-report-row-left"><strong>{$listaReporteDir['logs']['tag']}:</strong> {$listaReporteDir['logs']['use']}</div>
+<div class="neo-applet-hd-report-row-right"><strong>{$listaReporteDir['backups']['tag']}:</strong> {$listaReporteDir['backups']['use']}</div></div>
+<div class="neo-applet-hd-report-row"><div class="neo-applet-hd-report-row-left"><strong>{$listaReporteDir['emails']['tag']}:</strong> {$listaReporteDir['emails']['use']}</div>
+<div class="neo-applet-hd-report-row-right"><strong>{$listaReporteDir['config']['tag']}:</strong> {$listaReporteDir['config']['use']}</div></div>
+<div class="neo-applet-hd-report-row"><div class="neo-applet-hd-report-row-left"><strong>{$listaReporteDir['voicemails']['tag']}:</strong> {$listaReporteDir['voicemails']['use']}</div>
+<div class="neo-applet-hd-report-row-right"><strong>{$listaReporteDir['recordings']['tag']}:</strong> {$listaReporteDir['recordings']['use']}</div></div>
+PLANTILLA_DIRECTORIOS;
         return $content;
     }
 
@@ -612,7 +674,7 @@ PLANTILLA_PROCESS_ROW;
 
    function genericImage($sGraph, $extraParam = array(), $w = NULL, $h = NULL)
    {
-         return sprintf('<img alt="%s" src="%s" %s />',
+         return sprintf('<img alt="%s" src="%s" %s %s />',
              $sGraph,
              construirURL(array_merge(array(
                   'menu'      => $this->module_name,
@@ -620,7 +682,9 @@ PLANTILLA_PROCESS_ROW;
                   'rawmode'   =>  'yes',
                   'image'     =>  $sGraph,
                    ), $extraParam)),
-               (is_null($w) || is_null($h) ? '' : "width=\"$w\" height=\"$h\""));
+               is_null($w) ? '' : "width=\"$w\"",
+               is_null($h) ? '' : "height=\"$w\""
+               );
    }
 
     function getImage_CPU_Usage($value = null)
@@ -633,7 +697,7 @@ PLANTILLA_PROCESS_ROW;
 
     function getImage_Disc_Usage($value)
     {
-        return $this->genericImage("ObtenerInfo_Particion", array('percent' => $value), 190, 190);
+        return $this->genericImage("ObtenerInfo_Particion", array('percent' => $value), 140, NULL);
     }
 
     function getImage_Hit()
