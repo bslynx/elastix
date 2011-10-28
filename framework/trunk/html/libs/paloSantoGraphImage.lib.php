@@ -163,7 +163,7 @@ if( sizeof($result) != 0 )
                             }
                         }
                     }
-                    else if( $G_TYPE == 'plot3d' )
+                    else if( $G_TYPE == 'plot3d' || $G_TYPE == 'plot3d2' )
                     {
                         if( $key == 'VALUES' )
                         {
