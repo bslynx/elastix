@@ -207,6 +207,7 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
 		$smarty->assign("RETYPE_PASSWORD", _tr("Retype New Password"));
 		$smarty->assign("CHANGE_PASSWORD_BTN", _tr("Change"));
 		$smarty->assign("MENU_COLOR", $menuColor);
+		$smarty->assign("MODULES_SEARCH", _tr("Search modules"));
 	}
 	else{
 		$smarty->assign("ABOUT_ELASTIX",$arrLang['About Elastix']." ".$arrConf['elastix_version']);
