@@ -17,7 +17,7 @@
 }
 
 .fielform  {
-    border-color:#E35332;
+    border-color:#9C9C9C;
     border-width:thin;
     color:black;
     font-family:Verdana,Arial,Helvetica,sans-serif;
@@ -28,7 +28,7 @@
 }
 
 .sombreado {
-    color:#E35332;
+    color:#000000;
     font-family:Verdana;
     font-size:12px;
     font-weight:bold;
