@@ -131,7 +131,7 @@ function obtener_info_de_sistema()
     if($varExec=="0") {
         foreach($arrExec as $lineaParticion) {
             if(preg_match("/^([\/-_\.[:alnum:]|-]+)[[:space:]]+([[:digit:]]+)[[:space:]]+([[:digit:]]+)[[:space:]]+([[:digit:]]+)" .
-                    "[[:space:]]+([[:digit:]]{1,2}%)[[:space:]]+([\/-_\.[:alnum:]]+)$/", $lineaParticion, $arrReg)) {
+                    "[[:space:]]+([[:digit:]]{1,3}%)[[:space:]]+([\/-_\.[:alnum:]]+)$/", $lineaParticion, $arrReg)) {
                 $arrTmp="";
                 $arrTmp["fichero"]=$arrReg[1];
                 $arrTmp["num_bloques_total"]=$arrReg[2];
