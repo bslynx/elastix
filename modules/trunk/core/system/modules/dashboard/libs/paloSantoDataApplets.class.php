@@ -127,7 +127,7 @@ PLANTILLA_RSS_ROW;
 <input style="width: 120px; display: block;" type="button" id="neo_applet_process_start" value="$sMsgStart" />
 <input style="width: 120px; display: block;" type="button" id="neo_applet_process_restart" value="$sMsgRestart" />
 </div>
-<img id="neo-applet-processes-processing" src="modules/{$this->module_name}/images/reload.png" style="display: none;" alt="" />
+<img id="neo-applet-processes-processing" src="modules/{$this->module_name}/images/loading.gif" style="display: none;" alt="" />
 </div>
 PLANTILLA_POSICIONABLE;
         
@@ -145,13 +145,15 @@ PLANTILLA_POSICIONABLE;
 <div class="neo-applet-processes-row">
     <div class="neo-applet-processes-row-icon"><img src="modules/dashboard/images/%s" width="32" height="28" alt="%s" /></div>
     <div class="neo-applet-processes-row-name">%s</div>
-    <div class="neo-applet-processes-row-menu" 
-        onclick="neoAppletProcesses_manejarMenu(this, '%s', '%s');">
+    <div class="neo-applet-processes-row-menu"> 
+        <input type="hidden" name="key-servicio" id="key-servicio" value="%s" />
+        <input type="hidden" name="status-servicio" id="status-servicio" value="%s" />
         <img src="modules/dashboard/images/icon_arrowdown.png" width="15" height="15" alt="menu" />
     </div>
     <div class="neo-applet-processes-row-status-msg" style="color: %s">%s</div>
     <div class="neo-applet-processes-row-status-icon"></div></div>
 PLANTILLA_PROCESS_ROW;
+        // onclick="neoAppletProcesses_manejarMenu(this, '%s', '%s');">
         foreach ($arrServices as $sServicio => $infoServicio) {
             switch ($infoServicio['status_service']) {
             case 'OK':

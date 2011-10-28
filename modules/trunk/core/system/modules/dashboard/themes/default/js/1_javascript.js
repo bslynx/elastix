@@ -127,7 +127,9 @@ $(document).ready(
                 return false;
             }
         );
-    }
+
+        $('.neo-applet-processes-row-menu').live('click', neoAppletProcesses_manejarMenu);
+	}
 );
 
 function saveRegister(id_card)
@@ -293,67 +295,102 @@ function refresh(element)
     );
 }
 
-// Mostrar menú de administración en applet de procesos
-function neoAppletProcesses_manejarMenu(divObject, sProc, sCurrState)
+function neoAppletProcesses_esconderMenu()
 {
+	$('.neo-applet-processes-menu').unbind('click');
+	$('html').unbind('click', neoAppletProcesses_esconderMenu);
+	$('.neo-applet-processes-menu').hide();
+}
+
+// Mostrar menú de administración en applet de procesos
+//function neoAppletProcesses_manejarMenu(divObject, sProc, sCurrState)
+function neoAppletProcesses_manejarMenu(event)
+{
+	sCurrState = $(this).children('#status-servicio').val();
+	sProc = $(this).children('#key-servicio').val();
 	if (sCurrState != 'OK' && sCurrState != 'Shutdown') return;
 	
-	// Se recuerda qué proceso se va a manejar
-	$('#neo_applet_selected_process').val(sProc);
+	if ($('.neo-applet-processes-menu').is(':visible')) {
+		neoAppletProcesses_esconderMenu();
+	} else {
+		event.stopPropagation();
+
+		// Operaciones para cerrar menú cuando se hace clic fuera
+		$('.neo-applet-processes-menu').click(function(event) {
+			event.stopPropagation();
+		});
+		$('html').click(neoAppletProcesses_esconderMenu);
+
+		// Se recuerda qué proceso se va a manejar
+		$('#neo_applet_selected_process').val(sProc);
+		
+		$('#neo-applet-processes-controles').show();
+		$('#neo-applet-processes-processing').hide();
+		
+		$('#neo_applet_process_stop').unbind('click');
+		$('#neo_applet_process_start').unbind('click');
+		$('#neo_applet_process_restart').unbind('click');
 	
-	$('#neo_applet_process_stop').unbind('click');
-	$('#neo_applet_process_start').unbind('click');
-	$('#neo_applet_process_restart').unbind('click');
+		module_name = 'dashboard';
+		$('#neo_applet_process_stop').click(function() {
+			$('#neo-applet-processes-controles').hide();
+			$('#neo-applet-processes-processing').show();
+			$.post('index.php?menu=' + module_name + '&rawmode=yes', {
+				menu:		module_name, 
+				rawmode:	'yes',
+				action:		'processcontrol_stop',
+				process:	$('#neo_applet_selected_process').val()
+			},
+			function (respuesta) {
+				neoAppletProcesses_esconderMenu();
+				refresh($('#refresh_Applet_ProcessesStatus').get(0));
+			});
+		});
+		$('#neo_applet_process_start').click(function() {
+			$('#neo-applet-processes-controles').hide();
+			$('#neo-applet-processes-processing').show();
+			$.post('index.php?menu=' + module_name + '&rawmode=yes', {
+				menu:		module_name, 
+				rawmode:	'yes',
+				action:		'processcontrol_start',
+				process:	$('#neo_applet_selected_process').val()
+			},
+			function (respuesta) {
+				neoAppletProcesses_esconderMenu();
+				refresh($('#refresh_Applet_ProcessesStatus').get(0));
+			});
+		});
+		$('#neo_applet_process_restart').click(function() {
+			$('#neo-applet-processes-controles').hide();
+			$('#neo-applet-processes-processing').show();
+			$.post('index.php?menu=' + module_name + '&rawmode=yes', {
+				menu:		module_name, 
+				rawmode:	'yes',
+				action:		'processcontrol_restart',
+				process:	$('#neo_applet_selected_process').val()
+			},
+			function (respuesta) {
+				neoAppletProcesses_esconderMenu();
+				refresh($('#refresh_Applet_ProcessesStatus').get(0));
+			});
+		});
 
-	module_name = 'dashboard';
-	$('#neo_applet_process_stop').click(function() {
-		$.post('index.php?menu=' + module_name + '&rawmode=yes', {
-			menu:		module_name, 
-			rawmode:	'yes',
-			action:		'processcontrol_stop',
-			process:	$('#neo_applet_selected_process').val()
-		},
-		function (respuesta) {
-			refresh($('#refresh_Applet_ProcessesStatus').get(0));
+		$('.neo-applet-processes-menu').show();
+		$('.neo-applet-processes-menu').position({
+			of: $(this),
+			my: "right top",
+			at: "right bottom"
 		});
-	});
-	$('#neo_applet_process_start').click(function() {
-		$.post('index.php?menu=' + module_name + '&rawmode=yes', {
-			menu:		module_name, 
-			rawmode:	'yes',
-			action:		'processcontrol_start',
-			process:	$('#neo_applet_selected_process').val()
-		},
-		function (respuesta) {
-			refresh($('#refresh_Applet_ProcessesStatus').get(0));
-		});
-	});
-	$('#neo_applet_process_restart').click(function() {
-		$.post('index.php?menu=' + module_name + '&rawmode=yes', {
-			menu:		module_name, 
-			rawmode:	'yes',
-			action:		'processcontrol_restart',
-			process:	$('#neo_applet_selected_process').val()
-		},
-		function (respuesta) {
-			refresh($('#refresh_Applet_ProcessesStatus').get(0));
-		});
-	});
-	$('.neo-applet-processes-menu').toggle();
-	$('.neo-applet-processes-menu').position({
-		of: $(divObject),
-		my: "right top",
-		at: "right bottom"
-	});
-
-	if (sCurrState == 'OK') {
-		$('#neo_applet_process_stop').show();
-		$('#neo_applet_process_restart').show();
-		$('#neo_applet_process_start').hide();
-	}
-	if (sCurrState == 'Shutdown') {
-		$('#neo_applet_process_stop').hide();
-		$('#neo_applet_process_restart').hide();
-		$('#neo_applet_process_start').show();
+	
+		if (sCurrState == 'OK') {
+			$('#neo_applet_process_stop').show();
+			$('#neo_applet_process_restart').show();
+			$('#neo_applet_process_start').hide();
+		}
+		if (sCurrState == 'Shutdown') {
+			$('#neo_applet_process_stop').hide();
+			$('#neo_applet_process_restart').hide();
+			$('#neo_applet_process_start').show();
+		}
 	}
 }
