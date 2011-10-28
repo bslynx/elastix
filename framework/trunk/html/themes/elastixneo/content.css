@@ -177,7 +177,7 @@ div.neo-shortcuts-box {
 	margin-top: 20px;
 	padding: 0px 0px 10px 0px;
 	width: 220px;
-	text-align:center;
+	text-align: center;
 	-moz-border-radius: 10px 10px 10px 10px;
 	-webkit-border-radius: 10px 10px 10px 10px;
 	border-radius: 10px 10px 10px 10px;
@@ -188,5 +188,5 @@ div.neo-shortcuts-box {
 	-moz-box-shadow: 2px 2px 1px rgb(180,180,180); 
 	-webkit-box-shadow: 2px 2px 1px rgb(180,180,180);
 	box-shadow: 2px 2px 1px rgb(180,180,180);
-	background:url(images/3menubgtop.png) repeat-x top #f0f0f0;
+	background: url(images/3menubgtop.png) repeat-x top #f0f0f0;
 }
