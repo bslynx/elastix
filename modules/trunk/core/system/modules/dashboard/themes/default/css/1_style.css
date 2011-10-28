@@ -39,12 +39,14 @@
     height: 300px;
     -moz-border-radius: 10px 10px 10px 10px;
     -webkit-border-radius: 10px 10px 10px 10px;
+    border-radius: 10px 10px 10px 10px;
     border-top: 1px solid #aaa;
     border-left: 1px solid #aaa;
     border-right: 1px solid #999;
     border-bottom: 1px solid #999;
     -moz-box-shadow: 2px 2px 1px rgb(180,180,180); 
     -webkit-box-shadow: 2px 2px 1px rgb(180,180,180);
+    box-shadow: 2px 2px 1px rgb(180,180,180); 
     background:url(../../../images/appletbg.png) repeat-x top #F6F6F6;
     font-size: 13px;
 }
@@ -269,6 +271,7 @@
   text-align:center;
   -moz-border-radius: 8px;
   -webkit-border-radius: 8px;
+  border-radius: 8px;
   margin-bottom:3px;
 }
 
@@ -284,7 +287,11 @@
 
 .info_sys{
     -moz-box-shadow:#999 2px 2px 2px;
+    -webkit-box-shadow: #999 2px 2px 2px;
+    box-shadow: #999 2px 2px 2px;
     -moz-border-radius: 8px;
+    -webkit-border-radius: 8px;
+    border-radius: 8px;
     padding: 2px;
     /*height:200px;*/
     height:100%;
@@ -341,12 +348,14 @@ div.neo-applet {
 	height: 300px;
 	-moz-border-radius: 10px 10px 10px 10px;
 	-webkit-border-radius: 10px 10px 10px 10px;
+	border-radius: 10px 10px 10px 10px;
 	border-top: 1px solid #aaa;
 	border-left: 1px solid #aaa;
 	border-right: 1px solid #999;
 	border-bottom: 1px solid #999;
 	-moz-box-shadow: 2px 2px 1px rgb(180,180,180);
 	-webkit-box-shadow: 2px 2px 1px #B4B4B4;
+	box-shadow: 2px 2px 1px #B4B4B4;
     background:url(../../../../../images/appletbg.png) repeat-x top #ddd;
 }
 div.neo-applet-title {
@@ -441,6 +450,7 @@ span.neo-applet-news-row-date {
     border:1px solid #bbb;
     -moz-border-radius: 3px;
     -webkit-border-radius: 3px;
+    border-radius: 3px;
     background-color:#ffffff;
 }
 span.neo-applet-news-row-tweet {
@@ -450,6 +460,7 @@ span.neo-applet-news-row-tweet {
     border:1px solid #fff;
     -moz-border-radius: 3px;
     -webkit-border-radius: 3px;
+    border-radius: 3px;
     color:#fff;
     font: 11px Verdana, Arial,Helvetica,sans-serif;
     background-color:#E35332;
@@ -516,6 +527,7 @@ div.neo-applet-processes-row {
     white-space:nowrap;
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
+    border-radius: 5px;
     background:url(../../../images/bgicon.png) #f0f0f0;
     border:1px solid #999;
 }
