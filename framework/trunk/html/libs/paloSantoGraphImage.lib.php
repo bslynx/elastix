@@ -317,12 +317,17 @@ if( sizeof($G_YDATAS) >= 1 )
                         $iFraccion = 0;
                         $etiquetas = array();
                         for ($i = 0; $i < count($ydata); $i++) {
-                            $degInicio = 360 - 45 - (int)(360.0 * ($iFraccion + $ydata[$i]) / $iTotal);
-                            $degFinal = 360 - 45 - (int)(360.0 * $iFraccion / $iTotal);
-                            imagefilledarc($thumb, $x, $y, $w, $h,
-                                $degInicio, $degFinal,
-                                $G_ARR_COLOR[$i],
-                                IMG_ARC_PIE);
+                            if ($ydata[$i] >= $iTotal) {
+                                imagefilledellipse($thumb, $x, $y, $w, $h,
+                                    $G_ARR_COLOR[$i]);
+                            } else {
+                                $degInicio = 360 - 45 - (int)(360.0 * ($iFraccion + $ydata[$i]) / $iTotal);
+                                $degFinal = 360 - 45 - (int)(360.0 * $iFraccion / $iTotal);
+                                imagefilledarc($thumb, $x, $y, $w, $h,
+                                    $degInicio, $degFinal,
+                                    $G_ARR_COLOR[$i],
+                                    IMG_ARC_PIE);
+                            }
                             $iFraccion += $ydata[$i];
 
                                 $degMitad = ($degInicio + $degFinal) / 2;
