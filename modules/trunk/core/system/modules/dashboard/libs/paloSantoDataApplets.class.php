@@ -50,6 +50,16 @@ class paloSantoDataApplets
 
     function getDataApplet_HardDrives()
     {
+        $content = '';
+
+        $hdmodel = array();
+        $output = NULL;
+        exec('/usr/bin/elastix-helper hdmodelreport', $output);
+        foreach ($output as $s) {
+            $s = trim($s); $l = explode(' ', $s, 2);
+            if (count($l) > 1) $hdmodel[$l[0]] = $l[1];
+        }
+
         $oPalo = new paloSantoSysInfo();
         $arrSysInfo = $oPalo->getSysInfo();
         $arrParticiones = $arrSysInfo['particiones'];
@@ -62,6 +72,16 @@ class paloSantoDataApplets
             $sTotalGB = number_format($particion['num_bloques_total'] / 1024 / 1024, 2);
             $sPorcentajeUsado = number_format($iPorcentajeUsado, 0);
             $sPorcentajeLibre = number_format($iPorcentajeLibre, 0);
+
+            // Intentar determinar el modelo del disco que contiene la partición
+            $sModelo = 'N/A';
+            foreach ($hdmodel as $sDisco => $sModeloDisco) {
+                if (substr($particion['fichero'], 0, strlen($sDisco)) == $sDisco &&
+                    ctype_digit(substr($particion['fichero'], strlen($sDisco)))) {
+                    $sModelo = $sModeloDisco;
+                    break;
+                }
+            }
             $content .= <<<PLANTILLA_DISCO
 <div>
     $sEnlaceImagen
@@ -72,7 +92,7 @@ class paloSantoDataApplets
       <div class="neo-applet-hd-innerbox-bottom">
         <div><strong>Hard Disk Capacity:</strong> {$sTotalGB}GB</div>
         <div><strong>Mount Point:</strong> {$particion['punto_montaje']}</div>
-        <div><strong>Manufacturer:</strong> N/A</div>
+        <div><strong>Manufacturer:</strong> $sModelo</div>
       </div>
     </div>
 </div>
