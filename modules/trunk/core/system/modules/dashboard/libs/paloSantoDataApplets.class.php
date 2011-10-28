@@ -326,12 +326,12 @@ PLANTILLA_PROCESS_ROW;
     
         //CPU USAGE
         $cpu_usage = $this->getImage_CPU_Usage("140,140");//$this->module_name,
-		$inf1 = number_format($arrSysInfo['CpuUsage'] * 100.0, 2)." %";
+		$inf1 = number_format($arrSysInfo['CpuUsage'] * 100.0, 1);
         //$inf1 = number_format($arrSysInfo['CpuUsage']*100, 2)._tr('% used of')." ".number_format($arrSysInfo['CpuMHz'], 2)." MHz";
         //$cpu_usage =  $img."&nbsp;&nbsp;&nbsp;".$inf;
     
         //MEMORY USAGE
-        $mem_usage_val  = number_format(100.0 * ($arrSysInfo['MemTotal'] - $arrSysInfo['MemFree'] - $arrSysInfo['Cached'] - $arrSysInfo['MemBuffers'])/$arrSysInfo['MemTotal'], 2);
+        $mem_usage_val  = number_format(100.0 * ($arrSysInfo['MemTotal'] - $arrSysInfo['MemFree'] - $arrSysInfo['Cached'] - $arrSysInfo['MemBuffers'])/$arrSysInfo['MemTotal'], 1);
         $mem_usage = $this->getImage_MEM_Usage("140,140");
 		$inf2 = number_format($arrSysInfo['MemTotal']/1024, 2)." Mb";
         
@@ -339,7 +339,7 @@ PLANTILLA_PROCESS_ROW;
         //$mem_usage = $img."&nbsp;&nbsp;&nbsp;".$inf;
     
         //SWAP USAGE
-        $swap_usage_val = number_format(100.0 * ($arrSysInfo['SwapTotal'] - $arrSysInfo['SwapFree'])/$arrSysInfo['SwapTotal'], 2);
+        $swap_usage_val = number_format(100.0 * ($arrSysInfo['SwapTotal'] - $arrSysInfo['SwapFree'])/$arrSysInfo['SwapTotal'], 1);
         $swap_usage = $this->getImage_Swap_Usage("140,140");
 		$inf3 = number_format($arrSysInfo['SwapTotal']/1024, 2)." Mb";
         //$inf3 = number_format($swap_usage_val, 2)." ".number_format($arrSysInfo['SwapTotal']/1024, 2)." Mb";
@@ -396,15 +396,15 @@ PLANTILLA_PROCESS_ROW;
 		$html ="<div style='height:165px; position:relative; text-align:center;'>
 				  <div style='width:155px; float:left; position: relative;'>
 					$cpu_usage
-					<div style=\"position:absolute; top:80px; left:0px; color:#ccc; width:155px; text-align:center\">$inf1</div><div>"._tr('CPU')."</div>
+					<div class=\"neo-applet-sys-gauge-percent\">$inf1%</div><div>"._tr('CPU')."</div>
 				  </div>
 				  <div style='width:154px; float:left; position: relative;'>
 					$mem_usage
-					<div style=\"position:absolute; top:80px; left:0px; color:#ccc; width:155px; text-align:center\">$mem_usage_val %</div><div>"._tr('RAM')."</div>
+					<div class=\"neo-applet-sys-gauge-percent\">$mem_usage_val%</div><div>"._tr('RAM')."</div>
 				  </div>
 				  <div style='width:155px; float:right; position: relative;'>
 					$swap_usage
-				  <div style=\"position:absolute; top:80px; left:0px; color:#ccc; width:155px; text-align:center\">$swap_usage_val %</div><div>"._tr('SWAP')."</div>
+				  <div class=\"neo-applet-sys-gauge-percent\">$swap_usage_val%</div><div>"._tr('SWAP')."</div>
 				  </div>
 				</div>
 				<div class='neo-divisor'></div>
