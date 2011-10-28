@@ -176,7 +176,7 @@ PLANTILLA_PROCESS_ROW;
                 $sServicio,
                 $infoServicio['status_service'],
                 $sColorStatus,
-                $sDescStatus);
+                strtoupper($sDescStatus));
         }
         return $sListaServicios;
     }

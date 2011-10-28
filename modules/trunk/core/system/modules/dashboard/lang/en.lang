@@ -62,7 +62,7 @@ $arrLangModule=array(
 "Elastix Call Center Service"=>"Elastix Call Center Service",
 "Running"=>"Running",
 "Not installed"=>"Not installed",
-"Not running"=>"Service Not Activated",
+"Not running"=>"Not running",
 "OK1" => "OK",
 "Shutdown" => "N/A",
 "IAXModem Service" => "IAXModem Service",
@@ -144,5 +144,8 @@ $arrLangModule=array(
 "The following database could not be found" => "The following database could not be found",
 "Error, the following code does not exist" => "Error, the following code does not exist",
 'CPU Speed' => 'CPU Speed',
+'Start process' => 'Start process',
+'Stop process' => 'Stop process',
+'Restart process' => 'Restart process',
 );
 ?>
