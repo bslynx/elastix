@@ -27,23 +27,15 @@
     <tr>
         <td>
 	    <br />
-            <table width="100%" border="0" cellspacing="0" cellpadding="0"  align="center">
+            <table class="table_data" width="100%" border="0" cellspacing="0" cellpadding="0"  align="center">
                 <tr class="table_navigation_row">
-		    {if $THEMENAME eq "elastixneo"}
-                    <td id="td_paginacion" class="table_navigation_row_top"></td>
-		    {else}
 		    <td id="td_paginacion" class="table_navigation_row"></td>
-		    {/if}
                 </tr>
                 <tr>
                     <td id='td_contenido' vAlign='top'></td>
                 </tr>
                 <tr class="table_navigation_row">
-		    {if $THEMENAME eq "elastixneo"}
-                    <td id="td_paginacion1" class="table_navigation_row_bottom"></td>
-		    {else}
 		    <td id="td_paginacion1" class="table_navigation_row"></td>
-		    {/if}
                 </tr>
             </table>
         </td>
