@@ -32,6 +32,7 @@
 
 // Reporte de modelos para discos físicos
 $discosFisicos = array();
+$devDiscos = array();
 $listaDiscos = glob('/dev/[sh]d*');
 if (is_array($listaDiscos)) foreach ($listaDiscos as $sDisco) {
     $output = NULL;
@@ -42,6 +43,7 @@ if (is_array($listaDiscos)) foreach ($listaDiscos as $sDisco) {
         if (preg_match('/Model Number:\s*(\S.+\S)\s*$/', $s, $regs)) {
             $sModelo = $regs[1];
             print "$sDisco $sModelo\n";
+            $devDiscos[$sDisco] = $sModelo;
             
             // stat() no me da la información de dev mayor/menor
             $output2 = NULL;
@@ -76,4 +78,21 @@ if (is_array($listaDiscos)) foreach ($listaDiscos as $sDisco) {
     }
 }
 
+// Reporte de modelos para discos RAID (MD)
+foreach (file('/proc/mdstat', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $s) {
+    $regs = NULL;
+    if (preg_match('/^(md\d+)\s*:\s*(.+)/', $s, $regs)) {
+        $sDisco = '/dev/'.$regs[1];
+        print $sDisco;
+        $tokens = explode(' ', $regs[2]);
+        foreach ($tokens as $p) {
+            // sda1[0]
+            if (preg_match('/^(.+)\[\d+\]$/', $p, $regs)) {
+                $devPath = '/dev/'.$regs[1];
+                if (isset($devDiscos[$devPath])) print ' '.$devDiscos[$devPath];
+            }
+        }
+        print "\n";
+    }
+}
 ?>
