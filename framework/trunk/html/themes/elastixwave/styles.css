@@ -1104,3 +1104,11 @@ td.botonon {
   border: 1px solid rgb(200, 200, 200);
   background-color: rgb(255, 255, 255);
 }
+
+div.neo-applet-tdesc {
+	position:absolute;
+	left:120px;
+	top:0px;
+	float:left;
+	overflow:hidden;
+}
