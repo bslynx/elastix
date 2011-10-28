@@ -87,6 +87,7 @@ $arrLang=array(
 "System"=>"System",
 "System Info"=>"System Info",
 "User Management"=>"User Management",
+"Users"=>"Users",
 "Menu Administrator"=>"Menu Administrator",
 "Group Permission" => "Group Permissions",
 /*end menu*/
@@ -191,5 +192,6 @@ $arrLang=array(
 "New Password" => "New Password",
 "Retype New Password" => "Retype New Password",
 "Change" => "Change",
+"Search modules" => "Search modules",
 );
 ?>

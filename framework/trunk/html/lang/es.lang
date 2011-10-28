@@ -82,6 +82,7 @@ $arrLang=array(
 "System"=>"Sistema",
 "System Info"=>"Información del Sistema",
 "User Management"=>"Administrar Usuarios",
+"Users"=>"Usuarios",
 "Menu Administrator"=>"Administrador de Menú",
 /*end menu*/
 
@@ -203,5 +204,6 @@ $arrLang=array(
 "New Password" => "Nueva Clave",
 "Retype New Password" => "Confirme la nueva clave",
 "Change" => "Actualizar",
+"Search modules" => "Busqueda de módulos",
 );
 ?>
