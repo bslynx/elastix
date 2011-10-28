@@ -31,7 +31,7 @@ $arrLangModule=array(
 /*System Info*/
 "System Resources"=>"Recursos del Sistema",
 "CPU Info"=>"CPU",
-"Uptime"=>"Tiempo de funcionamiento",
+"Uptime"=>"Uptime",
 "CPU usage"=>"CPU usado",
 "Memory usage"=>"Memoria Utilizada",
 "Swap usage"=>"Swap Utilizado",
