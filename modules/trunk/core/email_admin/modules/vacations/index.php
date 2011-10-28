@@ -445,6 +445,7 @@ function showAllEmails($smarty, $module_name, $local_templates_dir, &$pDB, &$pDB
 
 	  $arrResult =$pVacations->getVacations($limit, $offset, $filter_field, $filter_value, $arrLang);
 	  $tmpIDs = 1;
+	  $infoHtml = "<div id='infoDataAccount'>";
 	  if(is_array($arrResult) && $total>0){
 	      foreach($arrResult as $key => $value){
 		  $tmpAccountId = $tmpIDs."Id";
@@ -472,19 +473,21 @@ function showAllEmails($smarty, $module_name, $local_templates_dir, &$pDB, &$pDB
 		  if(!isset($value['body']) || $value['body'] == "")
 		      $value['body'] = _tr("I am sorry I am currently out of the office until {END_DATE}.\n\n----\nBest Regards.");
 
-		  $arrTmp[3] = "&nbsp;<div style='display: none;'>".$value['subject']."</div>";
-		  $arrTmp[4] = "&nbsp;<div style='display: none;'>".$value['body']."</div>";
-		  $arrTmp[5] = "&nbsp;<div style='display: none;'>".$value['vacation']."</div>";
 		  $value['ini_date'] = isset($value['ini_date'])?$value['ini_date']:date("d M Y");
 		  $value['end_date'] = isset($value['end_date'])?$value['end_date']:date("d M Y");
-		  $arrTmp[6] = "&nbsp;<div style='display: none;'>".$value['ini_date']."</div>";
-		  $arrTmp[7] = "&nbsp;<div style='display: none;'>".$value['end_date']."</div>";
+		  $infoHtml .= "<div id='".$tmpIDs."Idinfo'>";
+		  $infoHtml .= "<div style='display: none;'>".$value['subject']."</div>";
+		  $infoHtml .= "<div style='display: none;'>".$value['body']."</div>";
+		  $infoHtml .= "<div style='display: none;'>".$value['vacation']."</div>";
+		  $infoHtml .= "<div style='display: none;'>".$value['ini_date']."</div>";
+		  $infoHtml .= "<div style='display: none;'>".$value['end_date']."</div>";
+		  $infoHtml .= "</div>";
 		  $arrData[] = $arrTmp;
 		  $tmpIDs++;
 	      }
 	  }
-
-	  $arrColumns = array(_tr("Account"), _tr("Vacations in progress"), _tr("Vacations Activated"), "", "", "", "", "");
+	  $infoHtml .= "</div>";
+	  $arrColumns = array(_tr("Account"), _tr("Vacations in progress"), _tr("Vacations Activated"));
 	  $oGrid->setColumns($arrColumns);
 
 	  $oGrid->setData($arrData);
@@ -500,7 +503,7 @@ function showAllEmails($smarty, $module_name, $local_templates_dir, &$pDB, &$pDB
 
 	  $oGrid->showFilter(trim($htmlFilter));
 
-	  $content = $oGrid->fetchGrid();
+	  $content = $oGrid->fetchGrid().$infoHtml;
 	  //end grid parameters
     }
     return $content;

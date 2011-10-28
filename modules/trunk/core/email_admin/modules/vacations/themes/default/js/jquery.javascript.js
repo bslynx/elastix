@@ -24,11 +24,11 @@
     }
 
     function getAccount(account,id){
-	var subject  = $('#'+id).parent().next().next().next().children(":first-child").text();
-	var body     = $('#'+id).parent().next().next().next().next().children(":first-child").text();
-	var vacation = $('#'+id).parent().next().next().next().next().next().children(":first-child").text();
-	var ini_date = $('#'+id).parent().next().next().next().next().next().next().children(":first-child").text();
-	var end_date = $('#'+id).parent().next().next().next().next().next().next().next().children(":first-child").text();
+	var subject  = $('#'+id+'info').children(":first-child").text();
+	var body     = $('#'+id+'info').children(":nth-child(2)").text();
+	var vacation = $('#'+id+'info').children(":nth-child(3)").text();
+	var ini_date = $('#'+id+'info').children(":nth-child(4)").text();
+	var end_date = $('#'+id+'info').children(":last-child").text();
 	window.opener.document.getElementById("email").value = account;
 	window.opener.document.getElementById("subject").value = subject;
 	window.opener.document.getElementById("body").value = body;
