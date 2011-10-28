@@ -365,24 +365,34 @@ function setAdminPassword(){
 	var heights = 200;
 	var widths = 400;
 	var arrData =
-	"<table class='tabForm' style='font-size: 16px;' width='100%' >" +
-	  "<tr class='letra12'><td align='center' colspan='2'><b>"+titles+"</b></td></tr>" +
-	  "<tr class='letra12'>" +
-		"<td align='left'><b>"+lblCurrentPass+"</b></td>" +
-		"<td align='left'><input type='password' id='curr_pass' name='curr_pass' value='' /></td>" +
-	  "</tr>" +
-	  "<tr class='letra12'>" +
-		"<td align='left'><b>"+lblNewPass+"</b></td>" +
-		"<td align='left'><input type='password' id='curr_pass_new' name='curr_pass_new' value='' /></td>" +
-	  "</tr>" +
-	  "<tr class='letra12'>" +
-		"<td align='left'><b>"+lblRetypeNewPass+"</b></td>" +
-		"<td align='left'><input type='password' id='curr_pass_renew' name='curr_pass_renew' value='' /></td>" +
-	  "</tr>" +
-	  "<tr class='letra12'>" +
-		"<td align='center'  colspan='2'><input type='button' id='sendChanPass' name='sendChanPss' value='"+btnChange+"' onclick='saveNewPasswordElastix()' /></td>" +
-	  "</tr>" +
-	"</table>";
+"<div style='margin: 0px auto;'>"+
+  "<div style= 'position: relative; width: 375px; float: left; margin-top: 0px; margin-right: 10px; margin-bottom: 10px; margin-left: 15px;'>"+
+	  "<div class='neo-module-title'>" +
+		  "<div class='neo-module-name-left'></div>" +
+		  "<span class='neo-module-name'>"+titles+"</span>" +
+		  "<div class='neo-module-name-right'></div>" +
+	  "</div>"+
+	  "<div class='neo-module-content'>" +
+		  "<table class='tabForm' style='font-size: 16px;' width='100%' >" +
+			"<tr class='letra12'>" +
+			  "<td align='left'><b>"+lblCurrentPass+"</b></td>" +
+			  "<td align='left'><input type='password' id='curr_pass' name='curr_pass' value='' /></td>" +
+			"</tr>" +
+			"<tr class='letra12'>" +
+			  "<td align='left'><b>"+lblNewPass+"</b></td>" +
+			  "<td align='left'><input type='password' id='curr_pass_new' name='curr_pass_new' value='' /></td>" +
+			"</tr>" +
+			"<tr class='letra12'>" +
+			  "<td align='left'><b>"+lblRetypeNewPass+"</b></td>" +
+			  "<td align='left'><input type='password' id='curr_pass_renew' name='curr_pass_renew' value='' /></td>" +
+			"</tr>" +
+			"<tr class='letra12'>" +
+			  "<td align='center'  colspan='2'><input type='button' id='sendChanPass' name='sendChanPss' value='"+btnChange+"' onclick='saveNewPasswordElastix()' /></td>" +
+			"</tr>" +
+		  "</table>" +
+	  "</div>" +
+  "</div>" +
+"</div>";
     jBoxPopupAero(id ,titles, widths, heights, arrData);
 }
 
@@ -539,17 +549,17 @@ $(document).ready(function(){
 			}
 		})
 		.autocomplete({
+			autoFocus: true,
 		    delay: 0,
 			minLength: 0,
 			source: function(request, response){
 				//$("#neo-cmenu-showbox-search").removeClass("neo-display-none");
 				$("#neo-cmenu-showbox-search").hover(
 				  function() {
-					if(!($("#search_module_elastix").is( ":focus" )))
-					  $("#search_module_elastix").focus();
 					$("#neo-cmenu-showbox-search").removeClass("neo-display-none");
 				  },
-				  function() {$("#neo-cmenu-showbox-search").removeClass("neo-display-none");}
+				  function() {
+					$("#neo-cmenu-showbox-search").removeClass("neo-display-none");}
 				);
 				$.ajax({
 					url: 'index.php?action=search_module&rawmode=yes',
@@ -558,7 +568,6 @@ $(document).ready(function(){
 						name_module_search: ((request.term).split( /,\s*/ ) ).pop()
 					},
 					success: function( data ) {
-					    //$("#neo-cmenu-showbox-search").mouseleave(function(){alert("holad");});
 						response( $.map( data, function( item ) {
 							return {
 								label: item.caption,
@@ -570,14 +579,30 @@ $(document).ready(function(){
 			},
 			focus: function() {
 				// prevent value inserted on focus
-				//$("#neo-cmenu-showbox-search").removeClass("neo-display-none");
 				return false;
 			},
 			/*open: function() {
-				$( this ).removeClass( "ui-corner-all" ).addClass( "ui-corner-top" );
+				$("#neo-cmenu-showbox-search").removeClass("neo-display-none");
 			},*/
 			close: function() {
-				$("#neo-cmenu-showbox-search").addClass("neo-display-none");
+				$('#neo-cmenu-showbox-search').one('click', function(e) {
+					//$( "#search_module_elastix" ).autocomplete( "close" );
+					$( "#search_module_elastix" ).val("");
+					e.stopPropagation();
+				});
+				$('body').one('click', function(e) {
+					$("#neo-cmenu-showbox-search").hover(
+					  function() {
+						$("#neo-cmenu-showbox-search").removeClass("neo-display-none");
+					  },
+					  function() {
+						$("#neo-cmenu-showbox-search").addClass("neo-display-none");
+					  }
+					);
+					$("#neo-cmenu-showbox-search").addClass("neo-display-none");
+					e.stopPropagation();
+				});
+				//$("#neo-cmenu-showbox-search").addClass("neo-display-none");
 			},
 			/*change: function( event, ui ) {
 
