@@ -24,7 +24,7 @@ class paloSantoSysInfo
     {
         $result = array();
 
-        $result['ATTRIBUTES'] = array('TITLE'=>'','TYPE'=>'plot3d','SIZE'=>"220,100",'POS_LEYEND' => "0.06,0.3", "COLOR" => "#fafafa", "SIZE_PIE" => "50", "MARGIN_COLOR" => "#fafafa");
+        $result['ATTRIBUTES'] = array('TITLE'=>'','TYPE'=>'plot3d2','SIZE'=>"220,100",'POS_LEYEND' => "0.06,0.3", "COLOR" => "#fafafa", "SIZE_PIE" => "50", "MARGIN_COLOR" => "#fafafa");
         $result['MESSAGES'] = array('ERROR'=>'Error','NOTHING_SHOW'=>'Nada que mostrar');
 
         $arrTemp = array();
