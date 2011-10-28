@@ -28,7 +28,7 @@
   $Id: en.lang,v 1.1 2009-01-06 09:01:38 jvega jvega@palosanto.com Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Summary by Extension" => "Summary by Extension",
+"Summary by Extension" => "Summary",
 "Start date" => "Start date",
 "End date" => "End date",
 "Extension"=>"Ext.",
