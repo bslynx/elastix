@@ -112,17 +112,14 @@ PLANTILLA_DISCO;
                 'use'   =>  'N/A',
             ),
         );
-        foreach (array_keys($listaReporteDir) as $k) {
-        	// /usr/bin/du -h /etc/ 2>/dev/null
-            if (!is_null($listaReporteDir[$k]['dir'])) {
-                $output = NULL; $regs = NULL;
-                exec("/usr/bin/du -h {$listaReporteDir[$k]['dir']} 2>/dev/null", $output);
-                if (count($output) > 0 && preg_match('/^\s*(\S+)/', $output[count($output) - 1], $regs)) {
-                	$listaReporteDir[$k]['use'] = $regs[1];
-                }
-            }
+        $output = NULL;
+        exec('/usr/bin/elastix-helper dirspacereport', $output);
+        foreach ($output as $s) {
+        	$s = trim($s); $l = explode(' ', $s);
+            if (count($l) > 1 && isset($listaReporteDir[$l[0]]))
+                $listaReporteDir[$l[0]]['use'] = $l[1];
         }
-
+        
         // Datos extra de directorios seleccionados
         $content .= <<<PLANTILLA_DIRECTORIOS
 <div class="neo-divisor"></div>
