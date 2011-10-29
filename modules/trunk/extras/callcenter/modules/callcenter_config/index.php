@@ -27,30 +27,7 @@
   +----------------------------------------------------------------------+
   $Id: default.conf.php,v 1.1 2008-09-03 01:09:56 Alex Villacís Lasso Exp $ */
 
-if (!function_exists('_tr')) {
-    function _tr($s)
-    {
-        global $arrLang;
-        return isset($arrLang[$s]) ? $arrLang[$s] : $s;
-    }
-}
-if (!function_exists('load_language_module')) {
-    function load_language_module($module_id, $ruta_base='')
-    {
-        $lang = get_language($ruta_base);
-        include_once $ruta_base."modules/$module_id/lang/en.lang";
-        $lang_file_module = $ruta_base."modules/$module_id/lang/$lang.lang";
-        if ($lang != 'en' && file_exists("$lang_file_module")) {
-            $arrLangEN = $arrLangModule;
-            include_once "$lang_file_module";
-            $arrLangModule = array_merge($arrLangEN, $arrLangModule);
-        }
-
-        global $arrLang;
-        global $arrLangModule;
-        $arrLang = array_merge($arrLang,$arrLangModule);
-    }
-}
+require_once "modules/agent_console/libs/elastix2.lib.php";
 
 function _moduleContent(&$smarty, $module_name)
 {
@@ -87,14 +64,14 @@ function _moduleContent(&$smarty, $module_name)
 function form_Configuration(&$oDB, $smarty, $module_name, $local_templates_dir)
 {
     global $arrConfig;
+    $smarty->assign('FRAMEWORK_TIENE_TITULO_MODULO', existeSoporteTituloFramework());
 
     $arrFormConference = createFieldForm();
     $oForm = new paloForm($smarty,$arrFormConference);
 
     $smarty->assign("SAVE", _tr("Save"));
-    $smarty->assign("TITLE", _tr("Configuration"));
     $smarty->assign("REQUIRED_FIELD", _tr("Required field"));
-    $smarty->assign("IMG", "images/list.png");
+    $smarty->assign("icon", "images/list.png");
 
     $objConfig =& new PaloSantoConfiguration($oDB);
     $listaConf = $objConfig->ObtainConfiguration();
@@ -213,7 +190,7 @@ function form_Configuration(&$oDB, $smarty, $module_name, $local_templates_dir)
     unset($valoresForm['asterisk_astpass_1']);
     unset($valoresForm['asterisk_astpass_2']);
 
-    $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl", "", $valoresForm);
+    $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl", _tr("Configuration"), $valoresForm);
 
     $contenidoModulo = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
 
