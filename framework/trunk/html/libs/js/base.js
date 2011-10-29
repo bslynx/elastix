@@ -643,7 +643,7 @@ function changeColorMenu()
 	var color = $('#userMenuColor').val();
 	var arrAction = new Array();
 	if(color == ""){
-		color = "#0E3463";
+		color = "#454545";
 	}
 
 	arrAction["action"] = "changeColorMenu";

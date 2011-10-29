@@ -732,7 +732,7 @@ function getMenuColorByMenu()
     $pACL = new paloACL($pdbACL);
 	$user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
     $uid = $pACL->getIdUser($user);
-	$color = "#0E3463";
+	$color = "#454545";
 	$id_profile = "";
 	$sPeticionID = "SELECT id_profile FROM acl_user_profile WHERE id_user = ?";
 	$tupla = $pdbACL->getFirstRowQuery($sPeticionID, FALSE, array($uid));
@@ -765,7 +765,7 @@ function changeMenuColorByUser()
 	$arrResult['status'] = FALSE;
 
 	if($color == ""){
-	   $color = "#0E3463";
+	   $color = "#454545";
 	}
 
 	$user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
@@ -779,16 +779,27 @@ function changeMenuColorByUser()
 	else{
 		//si el usuario no tiene un color establecido entonces se crea el nuevo registro caso contrario se lo inserta
 		//obteniendo el id profile del usuario
-		$id_profile = "";
 
+		$id_profile = "";
 		$sPeticionID = "SELECT id_profile FROM acl_user_profile WHERE id_user = ?";
 		$tupla = $pdbACL->getFirstRowQuery($sPeticionID, FALSE, array($uid));
 		if ($tupla === FALSE) {
 			$arrResult['msg'] = _tr("ERROR DB: ").$pdbACL->errMsg;
+			return $arrResult;
 		} elseif (count($tupla) == 0) {
 			$id_profile = NULL;
 		} else {
 			$id_profile = $tupla[0];
+		}
+
+		if (is_null($id_profile) || $id_profile == "") {
+			// Crear el nuevo perfil para el usuario indicado...
+			$sPeticionNuevoPerfil = 'INSERT INTO acl_user_profile (id_user, id_resource, profile) VALUES (?, ?, ?)';
+			$r = $pdbACL->genQuery($sPeticionNuevoPerfil, array($uid, "19", "default"));
+			if (!$r) {
+				$arrResult['msg'] = _tr("ERROR DE DB: ").$pDB->errMsg;
+			}
+			$id_profile = $pdbACL->getLastInsertId();
 		}
 		if(isset($id_profile) && $id_profile != ""){
 		  $sPeticionPropiedades = "SELECT property, value FROM acl_profile_properties WHERE id_profile = ?";
