@@ -1,6 +1,7 @@
-* CallCenter Configuration: fix title display under elastixneo theme
-* CallCenter Configuration: import elastix2.lib.php instead of defining 
-  functions _tr and load_language_module
+* CallCenter Configuration, Campaigns Out: fix title display under elastixneo 
+  theme
+* CallCenter Configuration, Campaigns Out: import elastix2.lib.php instead of 
+  defining functions _tr and load_language_module
 * Agent Console: add new function to check whether framework contains support
   for display of module title.
 
