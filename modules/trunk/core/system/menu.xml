@@ -2,7 +2,21 @@
 <module>
   <menulist>
     <menuitem menuid="system"               desc="System"             parent=""            module="no"  link="" order="0"></menuitem>
-    <menuitem menuid="dashboard"            desc="Dashboard"          parent="system"      module="yes" link="" order="1">
+	<menuitem menuid="sysdash"              desc="Dashboard"          parent="system"      module="yes" link="" order="1">
+        <permissions>
+            <group id="1" name="administrator" desc="total access"></group>
+            <group id="2" name="Operator" desc="Operator"></group>
+            <group id="3" name="extension" desc="extension user"></group>
+        </permissions>
+    </menuitem>
+    <menuitem menuid="dashboard"            desc="Dashboard"          parent="sysdash"      module="yes" link="" order="11">
+        <permissions>
+            <group id="1" name="administrator" desc="total access"></group>
+            <group id="2" name="Operator" desc="Operator"></group>
+            <group id="3" name="extension" desc="extension user"></group>
+        </permissions>
+    </menuitem>
+	<menuitem menuid="applet_admin"         desc="Dashboard Applet Admin" parent="sysdash" module="yes" link="" order="12">
         <permissions>
             <group id="1" name="administrator" desc="total access"></group>
             <group id="2" name="Operator" desc="Operator"></group>
@@ -91,13 +105,6 @@
     <menuitem menuid="currency"             desc="Currency"           parent="preferences" module="yes" link="" order="104">
         <permissions>
             <group id="1" name="administrator" desc="total access"></group>
-        </permissions>
-    </menuitem>
-    <menuitem menuid="applet_admin"         desc="Dashboard Applet Admin" parent="preferences" module="yes" link="" order="105">
-        <permissions>
-            <group id="1" name="administrator" desc="total access"></group>
-            <group id="2" name="Operator" desc="Operator"></group>
-            <group id="3" name="extension" desc="extension user"></group>
         </permissions>
     </menuitem>
   </menulist>
