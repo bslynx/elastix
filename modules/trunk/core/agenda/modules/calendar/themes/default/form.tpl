@@ -84,7 +84,7 @@
                                 </tr>
                                 <tr>
                                     <td align="left" colspan="4">
-                                        <div class="divCorners" style="-moz-border-radius: 10px 10px 10px 10px;" id="divReminder">
+                                        <div class="divCorners" style="-moz-border-radius: 10px; -webkit-border-radius: 10px;  border-radius: 10px;" id="divReminder">
                                             <div class="sombreado">
                                                 <input id="CheckBoxRemi" type="checkbox" class="CheckBoxClass"/>
                                                 <label id="lblCheckBoxRemi" for="CheckBoxRemi" class="CheckBoxLabelClass">{$Call_alert}</label>
@@ -135,7 +135,7 @@
                                 </tr>
                                 <tr>
                                     <td align="left" colspan="4">
-                                        <div class="divCorners" style="-moz-border-radius: 10px 10px 10px 10px;" id="divNotification">
+                                        <div class="divCorners" style="-moz-border-radius: 10px; -webkit-border-radius: 10px;  border-radius: 10px;" id="divNotification">
                                             <div class="sombreado">
                                                 <input id="CheckBoxNoti" type="checkbox" class="CheckBoxClass"/>
                                                 <label id="lblCheckBoxNoti" for="CheckBoxNoti" class="CheckBoxLabelClass">{$Notification_Alert}</label>
