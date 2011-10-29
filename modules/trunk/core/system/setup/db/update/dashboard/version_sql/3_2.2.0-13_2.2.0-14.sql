@@ -1,0 +1,3 @@
+BEGIN TRANSACTION;
+DELETE FROM activated_applet_by_user WHERE id=6;
+COMMIT;
