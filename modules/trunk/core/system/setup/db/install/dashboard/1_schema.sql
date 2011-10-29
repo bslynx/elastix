@@ -11,20 +11,7 @@ INSERT INTO "default_applet_by_user" VALUES(2, 2, 'admin');
 INSERT INTO "default_applet_by_user" VALUES(3, 3, 'admin');
 INSERT INTO "default_applet_by_user" VALUES(4, 4, 'admin');
 INSERT INTO "default_applet_by_user" VALUES(5, 5, 'admin');
-INSERT INTO "default_applet_by_user" VALUES(6, 6, 'admin');
-INSERT INTO "default_applet_by_user" VALUES(7, 7, 'admin');
-INSERT INTO "default_applet_by_user" VALUES(8, 8, 'admin');
-INSERT INTO "default_applet_by_user" VALUES(9, 9, 'admin');
-INSERT INTO "default_applet_by_user" VALUES(10, 10, 'admin');
-INSERT INTO "default_applet_by_user" VALUES(11, 11, 'admin');
-INSERT INTO "default_applet_by_user" VALUES(12, 12, 'admin');
-INSERT INTO "default_applet_by_user" VALUES(13, 5, 'no_admin');
-INSERT INTO "default_applet_by_user" VALUES(14, 7, 'no_admin');
-INSERT INTO "default_applet_by_user" VALUES(15, 8, 'no_admin');
-INSERT INTO "default_applet_by_user" VALUES(16, 9, 'no_admin');
-INSERT INTO "default_applet_by_user" VALUES(17, 10, 'no_admin');
-INSERT INTO "default_applet_by_user" VALUES(18, 11, 'no_admin');
-INSERT INTO "default_applet_by_user" VALUES(19, 13, 'admin');
+
 
 
 CREATE TABLE applet(
