@@ -10,6 +10,7 @@
 		<link rel="stylesheet" media="screen" type="text/css" href="themes/{$THEMENAME}/header.css" />
 		<link rel="stylesheet" media="screen" type="text/css" href="themes/{$THEMENAME}/content.css" />
 		<link rel="stylesheet" media="screen" type="text/css" href="themes/{$THEMENAME}/applet.css" />
+        <!--[if lte IE 8]><link rel="stylesheet" media="screen" type="text/css" href="themes/{$THEMENAME}/ie.css" /><![endif]-->
 	{$HEADER_LIBS_JQUERY}
         <script type='text/javascript' src="libs/js/base.js"></script>
         <script type='text/javascript' src="libs/js/iframe.js"></script>
