@@ -110,6 +110,7 @@ div.neo-cmenutableft {
 	border-radius: 0px 6px 6px 0px;
 	border-bottom: 1px solid #666;
 	border-right: 1px solid #999;
+	border-left: 1px solid #999;
 	z-index:1000000;
 }
 .neo-second-showbox-menu p a{
