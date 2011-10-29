@@ -298,11 +298,9 @@ a.Ntooltip:hover span {
     background-color: #6CF; /* el color de fondo por defecto */
     border: 1px solid #36F;
     
-    -moz-border-radius-topleft:12px;
-    -moz-border-radius-topright:12px;
-    -moz-border-radius-bottomleft:12px;
-    -moz-border-radius-bottomright:12px;
-    
+    -moz-border-radius:12px;
+    -webkit-border-radius:12px;
+    border-radius:12px;
     font-size:11px;
     color: #000; /* el color de los textos por defecto */
 }
@@ -320,6 +318,7 @@ a.tooltipInfo:hover {
 
 a.tooltipInfo span {
     display: none; /* el elemento va a estar oculto */
+    z-index:6000;
 }
 
 a.tooltipInfo:hover span{
@@ -329,24 +328,23 @@ a.tooltipInfo:hover span{
     left:2em; /* donde va a estar */
     width:160px; /* el ancho por defecto que va a tener */
     height:50px;
-    padding:10px; /* la separaci�n entre el contenido y los bordes */
+    padding:10px; /* la separacion entre el contenido y los bordes */
     background-color: #6CF; /* el color de fondo por defecto */
     border: 1px solid #36F;
     
-    -moz-border-radius-topleft:12px;
-    -moz-border-radius-topright:12px;
-    -moz-border-radius-bottomleft:12px;
-    -moz-border-radius-bottomright:12px;
-    
+    -moz-border-radius:12px;
+    -webkit-border-radius:12px;
+    border-radius:12px;
     font-size:11px;
     color: #000; /* el color de los textos por defecto */
     
 }
 
-
 .box{
     position:relative;
     -moz-border-radius: 9px 9px 9px 9px;
+    -webkit-border-radius: 9px;
+    border-radius:9px;
     width: 182px;
     height: 24px;
     margin: 1px 1px 1px 1px;
