@@ -28,7 +28,7 @@
   $Id: en.lang,v 1.1 2011-05-13 11:05:31 Estefanía Morán Meza emoran@palosanto.com Exp $ */
 global $arrLangModule;
 $arrLangModule=array(
-"Advanced Security Settings"                       => "Advanced Security Settings",
+"Advanced Security Settings"                       => "Advanced Settings",
 "Enable direct access (Non-embedded) to FreePBX"   => "Enable direct access (Non-embedded) to FreePBX",
 "Change Password"                                  => "Change Password",
 "Enable access"                                    => "Enable access",

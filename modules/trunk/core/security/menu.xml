@@ -27,7 +27,7 @@
             <group id="1" name="administrator" desc="total access"></group>
         </permissions>
     </menuitem>
-    <menuitem menuid="sec_advanced_settings"   desc="Advanced Security Settings"      parent="security"     module="yes" link="" order="4">
+    <menuitem menuid="sec_advanced_settings"   desc="Advanced Settings"      parent="security"     module="yes" link="" order="4">
         <permissions>
             <group id="1" name="administrator" desc="total access"></group>
         </permissions>
