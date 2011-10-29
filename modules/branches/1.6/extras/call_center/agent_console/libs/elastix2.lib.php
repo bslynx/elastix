@@ -165,28 +165,6 @@ function load_language_module($module_id, $ruta_base='')
  */
 function generarRutaJQueryModulo(&$smarty, $module_name)
 {
-/*
-    $listaIncluir = generarRutaJQueryModulo($module_name);
-    if (count($listaIncluir) > 0) {
-        if (is_null($smarty->get_template_vars('HEADER_LIBS_JQUERY'))) {
-            // Esta versión de Elastix no soporta cabeceras JQuery
-            $smarty->assign('LISTA_JQUERY_CSS', generarRutaJQueryModulo($module_name));
-        } else {
-            // Reemplazar el JQuery del Elastix por el del módulo
-            $sIncluir = '';
-            foreach ($listaIncluir as $CURR_ITEM) {
-                if ($CURR_ITEM[0] == 'css')
-                    $sIncluir .= "<link rel=\"stylesheet\" href='{$CURR_ITEM[1]}' />\n";
-                // HEADER_MODULES ya tiene javascript.js
-                if ($CURR_ITEM[0] == 'js' && 
-                    (is_null($smarty->get_template_vars('HEADER_MODULES')) || 
-                    !preg_match('/javascript\.js$/', $CURR_ITEM[1])))
-                    $sIncluir .= "<script type=\"text/javascript\" src='{$CURR_ITEM[1]}'></script>\n";
-            }
-            $smarty->assign(array('HEADER_LIBS_JQUERY' => $sIncluir));
-        }
-    }
-*/
     $bHayHeaderJQuery = !is_null($smarty->get_template_vars('HEADER_LIBS_JQUERY'));
     $bHayHeaderModulo = !is_null($smarty->get_template_vars('HEADER_MODULES'));
 
@@ -300,4 +278,36 @@ function generarRutaJQueryModulo(&$smarty, $module_name)
     $smarty->assign('LISTA_JQUERY_CSS', $listaRutas);
 }
 
+/**
+ * Procedimiento para interrogar si el framework contiene soporte de mostrar el
+ * título del formulario como parte de la plantilla del framework. Esta 
+ * verificación es necesaria para evitar mostrar títulos duplicados en los 
+ * formularios
+ * 
+ * @return bool VERDADERO si el soporte existe, FALSO si no.
+ */
+function existeSoporteTituloFramework()
+{
+	global $arrConf;
+    
+    if (!isset($arrConf['mainTheme'])) return FALSE;
+    $bExisteSoporteTitulo = FALSE;
+    foreach (array(
+        "themes/{$arrConf['mainTheme']}/_common/index.tpl",
+        "themes/{$arrConf['mainTheme']}/_common/_menu.tpl",
+    ) as $sArchivo) {
+    	$h = fopen($sArchivo, 'r');
+        if ($h) {
+            while (!feof($h)) {
+            	if (strpos(fgets($h), '$title') !== FALSE) {
+            		$bExisteSoporteTitulo = TRUE;
+                    break;
+            	}
+            }
+        	fclose($h);
+        }
+        if ($bExisteSoporteTitulo) return $bExisteSoporteTitulo;
+    }
+    return $bExisteSoporteTitulo;
+}
 ?>
