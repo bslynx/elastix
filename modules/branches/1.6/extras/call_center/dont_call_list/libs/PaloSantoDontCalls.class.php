@@ -574,7 +574,6 @@ class Cargar_File
 }
 
 function registrarNuevoNumero($pDB,$caller_id){
-global $arrLangModule;
     $SQLConsultaCallerId = 'select * from dont_call where caller_id='.paloDB::DBCAMPO($caller_id);
     $resConsultaCallerId = $pDB->fetchTable($SQLConsultaCallerId,true);
     if( !count( $resConsultaCallerId )>0 ){
@@ -592,7 +591,7 @@ global $arrLangModule;
             return "";
 	}
     }else{
-        return $arrLangModule["the number already exists"];
+        return _tr('the number already exists');
     }
 }
 
