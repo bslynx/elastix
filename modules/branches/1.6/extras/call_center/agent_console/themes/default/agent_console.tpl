@@ -57,7 +57,9 @@
 {* Marco principal de la consola de agente *}
 <div id="elastix-callcenter-area-principal">
     {* Título con nombre del módulo *}
-    <div id="elastix-callcenter-titulo-consola" class="moduleTitle">&nbsp;<img src="images/call.png" border="0" align="absmiddle" alt="" />&nbsp;{$TITULO_CONSOLA_AGENTE}</div>
+{if !$FRAMEWORK_TIENE_TITULO_MODULO}
+    <div id="elastix-callcenter-titulo-consola" class="moduleTitle">&nbsp;<img src="{$icon}" border="0" align="absmiddle" alt="" />&nbsp;{$title}</div>
+{/if}    
 	{* Estado del agente con número y nombre del agente *}
 	<div id="elastix-callcenter-estado-agente" class="{$CLASS_ESTADO_AGENTE_INICIAL}">
 	    <span style="margin-left: 8pt;" id="elastix-callcenter-estado-agente-texto">{$TEXTO_ESTADO_AGENTE_INICIAL}</span>

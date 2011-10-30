@@ -1,4 +1,4 @@
-* CallCenter Configuration, Campaigns Out, Do not Call List: 
+* CallCenter Configuration, Campaigns Out, Do not Call List, Agent Console: 
   fix title display under elastixneo theme
 * CallCenter Configuration, Campaigns Out: Do not Call List:
   import elastix2.lib.php instead of defining functions _tr and load_language_module
