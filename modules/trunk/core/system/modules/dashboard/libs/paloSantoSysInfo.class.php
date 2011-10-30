@@ -700,7 +700,7 @@ class paloSantoSysInfo
             $id_dabu = 1;
         else
             $id_dabu = 13;
-        for($i=1;$i<=6;$i++){
+        for($i=1;$i<=5;$i++){
             $query  = "insert into activated_applet_by_user (id_dabu,order_no,username) values (?,?,?)";
             $result = $pDB->genQuery($query,array($id_dabu,$i,$user));
             if($result==FALSE){
