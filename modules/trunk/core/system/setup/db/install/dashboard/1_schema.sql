@@ -64,6 +64,5 @@ INSERT INTO "activated_applet_by_user" VALUES(35, 2, 2);
 INSERT INTO "activated_applet_by_user" VALUES(36, 3, 3);
 INSERT INTO "activated_applet_by_user" VALUES(37, 4, 4);
 INSERT INTO "activated_applet_by_user" VALUES(38, 5, 5);
-INSERT INTO "activated_applet_by_user" VALUES(39, 6, 6);
 
 COMMIT;
