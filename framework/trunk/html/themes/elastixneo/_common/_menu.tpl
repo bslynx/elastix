@@ -343,6 +343,7 @@ $(document).ready(function(){
 	var menu_color_user = $('#userMenuColor').val();
 	$('#neo-smenubox').css('backgroundColor', menu_color_user);
 	$('.neo-tabhon').css('backgroundColor', menu_color_user);
+        $('#neo-cmenu-cpallet').ColorPickerSetColor(menu_color_user);
 });
 
 //]]>
