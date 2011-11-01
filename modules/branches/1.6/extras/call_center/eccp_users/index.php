@@ -30,31 +30,8 @@ require_once "libs/paloSantoConfig.class.php";
 
 require_once 'libs/UsuariosECCP.class.php';
 
+require_once "modules/agent_console/libs/elastix2.lib.php";
 
-if (!function_exists('_tr')) {
-    function _tr($s)
-    {
-        global $arrLang;
-        return isset($arrLang[$s]) ? $arrLang[$s] : $s;
-    }
-}
-if (!function_exists('load_language_module')) {
-    function load_language_module($module_id, $ruta_base='')
-    {
-        $lang = get_language($ruta_base);
-        include_once $ruta_base."modules/$module_id/lang/en.lang";
-        $lang_file_module = $ruta_base."modules/$module_id/lang/$lang.lang";
-        if ($lang != 'en' && file_exists("$lang_file_module")) {
-            $arrLangEN = $arrLangModule;
-            include_once "$lang_file_module";
-            $arrLangModule = array_merge($arrLangEN, $arrLangModule);
-        }
-
-        global $arrLang;
-        global $arrLangModule;
-        $arrLang = array_merge($arrLang,$arrLangModule);
-    }
-}
 if (!function_exists('getParameter')) {
     function getParameter($parameter)
     {
@@ -71,7 +48,6 @@ function _moduleContent(&$smarty, $module_name)
 {
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
-    //include_once "modules/$module_name/libs/paloSantoECCPUsers.class.php";
     global $arrConf;
 
     load_language_module($module_name);
@@ -206,6 +182,8 @@ function formEditUser($pDB, $smarty, $module_name, $local_templates_dir, $id_use
         return '';
     }
 
+    $smarty->assign('FRAMEWORK_TIENE_TITULO_MODULO', existeSoporteTituloFramework());
+
     // Leer los datos de la campaña, si es necesario
     $arrAgente = NULL;
     $oAgentes = new UsuariosECCP($pDB);
@@ -281,6 +259,7 @@ function formEditUser($pDB, $smarty, $module_name, $local_templates_dir, $id_use
         }
     }
 
+    $smarty->assign('icon', 'images/user.png');
     $contenidoModulo = $oForm->fetchForm(
         "$local_templates_dir/edit-users.tpl", 
         is_null($id_user) ? _tr('New user') : _tr('Edit user').' "'.$_POST['username'].'"',
