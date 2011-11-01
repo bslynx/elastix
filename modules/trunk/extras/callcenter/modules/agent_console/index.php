@@ -313,6 +313,7 @@ function manejarLogin_checkLogin()
     }
     
     if ($bContinuar && $respuesta['action'] == 'wait') {
+        $oPaloConsola->desconectarEspera();
         
         // Se inicia espera larga con el navegador...
         $iTimeoutPoll = PaloSantoConsola::recomendarIntervaloEsperaAjax();
@@ -1036,6 +1037,8 @@ function manejarSesionActiva_checkStatus($module_name, $smarty, $sDirLocalPlanti
          * con las verificaciones inmediatas de los estados. Se espera a que 
          * haya algún evento de cambio. */
         if (count($respuesta) <= 0) {
+            $oPaloConsola->desconectarEspera();
+
             $sAgente = 'Agent/'.$_SESSION['callcenter']['agente'];
         	
             // Se inicia espera larga con el navegador...

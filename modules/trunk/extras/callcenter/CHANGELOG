@@ -1,3 +1,5 @@
+* Agent Console: disconnect from databases when performing long polling since
+  open database connections are no longer used while waiting.
 * Dialer (ECCP): explicitly disconnect from DB connection to asterisk database,
   and report additional information in case of failure.
 * Dialer (ECCP): add check for failure to list extensions in loginagent request

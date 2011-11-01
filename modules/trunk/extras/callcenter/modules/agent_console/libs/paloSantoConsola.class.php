@@ -181,6 +181,25 @@ class PaloSantoConsola
      */
     function desconectarTodo()
     {
+        $this->desconectarEspera();
+        if (!is_null($this->_eccp)) {
+            try {
+                $this->_eccp->disconnect();
+            } catch (Exception $e) {}
+            $this->_eccp = NULL;
+        }
+    }
+
+    /**
+     * Método que desconecta todas las conexiones a bases de datos y a Asterisk,
+     * pero mantiene la conexión activa a ECCP. El uso esperado es 
+     * inmediatamente antes de la espera larga de la interfaz web, donde no 
+     * se esperan futuras consultas a la base de datos.
+     *
+     * @return  null
+     */
+    function desconectarEspera()
+    {
         if (!is_null($this->_oDB_asterisk)) {
             $this->_oDB_asterisk->disconnect();
             $this->_oDB_asterisk = NULL;
@@ -192,12 +211,6 @@ class PaloSantoConsola
         if (!is_null($this->_astman)) {
             $this->_astman->disconnect();
             $this->_astman = NULL;
-        }
-        if (!is_null($this->_eccp)) {
-            try {
-                $this->_eccp->disconnect();
-            } catch (Exception $e) {}
-            $this->_eccp = NULL;
         }
     }
 
