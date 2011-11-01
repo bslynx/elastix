@@ -1,8 +1,10 @@
 <form method="post">
 <table width="99%" border="0" cellspacing="0" cellpadding="0" align="center">
+{if !$FRAMEWORK_TIENE_TITULO_MODULO}
 <tr class="moduleTitle">
-  <td class="moduleTitle" valign="middle">&nbsp;&nbsp;<img src="images/user.png" border="0" align="absmiddle" />&nbsp;&nbsp;{$title}</td>
+  <td class="moduleTitle" valign="middle">&nbsp;&nbsp;<img src="{$icon}" border="0" align="absmiddle" />&nbsp;&nbsp;{$title}</td>
 </tr>
+{/if}
 <tr>
   <td>
     <table width="100%" cellpadding="4" cellspacing="0" border="0">
