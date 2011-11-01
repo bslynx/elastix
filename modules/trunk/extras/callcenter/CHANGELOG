@@ -6,9 +6,9 @@
   and report additional information in case of failure.
 * Dialer (ECCP): add check for failure to list extensions in loginagent request
 * CallCenter Configuration, Campaigns Out, Do not Call List, Agent Console, 
-  Clients: 
+  Clients, Campaign In: 
   fix title display under elastixneo theme
-* CallCenter Configuration, Campaigns Out: Do not Call List, Clients:
+* CallCenter Configuration, Campaigns Out: Do not Call List, Clients, Campaign In:
   import elastix2.lib.php instead of defining functions _tr and load_language_module
 * Do not Call List: convert module to use of _tr
 * Agent Console: add new function to check whether framework contains support
