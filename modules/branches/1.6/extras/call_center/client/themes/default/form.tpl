@@ -1,11 +1,12 @@
 <script src="modules/{$MODULE_NAME}/libs/js/base.js"></script>
 <table width="100%" cellpadding="1" cellspacing="1" height="100%" border=0>
+{if !$FRAMEWORK_TIENE_TITULO_MODULO}
     <tr class="moduleTitle">
         <td colspan="4" class="moduleTitle" align="left">
-            <img src="images/list.png" border="0" align="absmiddle">&nbsp;&nbsp;{$title}
+            <img src="{$icon}" border="0" align="absmiddle" />&nbsp;&nbsp;{$title}
         </td>
     </tr>
-
+{/if}
     <tr>
         <td>
             <form style='margin-bottom:0;' method="post" action="?menu={$MODULE_NAME}" enctype="multipart/form-data">

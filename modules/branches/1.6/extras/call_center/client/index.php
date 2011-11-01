@@ -27,20 +27,11 @@
   +----------------------------------------------------------------------+
 */
     
-    require_once "libs/paloSantoForm.class.php";
-
-if (!function_exists('_tr')) {
-    function _tr($s)
-    {
-        global $arrLang;
-        return isset($arrLang[$s]) ? $arrLang[$s] : $s;
-    }
-}
+require_once "libs/paloSantoForm.class.php";
+require_once "modules/agent_console/libs/elastix2.lib.php";
 
 function _moduleContent(&$smarty,$module_name)
 {
-    global $arrLang;
-
     include_once "modules/$module_name/configs/config.php";
     require_once "modules/$module_name/libs/paloSantoUploadFile.class.php";
 
@@ -49,21 +40,10 @@ function _moduleContent(&$smarty,$module_name)
     $templates_dir = (isset($config['templates_dir']))?$config['templates_dir']:'themes';
     $local_templates_dir = "$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConfig['theme'];
 
-    // Obtengo el idioma actual utilizado en la aplicacion.
-    $Language = get_language();
-    $script_dir = dirname($_SERVER['SCRIPT_FILENAME']);
+    load_language_module($module_name);
 
-    // Include language file for EN, then for local, and merge the two.
-    $arrLangModule = NULL;
-    include_once("modules/$module_name/lang/en.lang");
-    $arrLangModule_file="modules/$module_name/lang/$Language.lang";
-    if (file_exists("$script_dir/$arrLangModule_file")) {
-        $arrLanEN = $arrLangModule;
-        include_once($arrLangModule_file);
-        $arrLangModule = array_merge($arrLanEN, $arrLangModule);
-    }
-    $arrLang = array_merge($arrLang, $arrLangModule);
-
+    $smarty->assign('FRAMEWORK_TIENE_TITULO_MODULO', existeSoporteTituloFramework());
+    $smarty->assign('icon', 'images/list.png');
     $smarty->assign("MODULE_NAME", $module_name);
     $smarty->assign("LABEL_MESSAGE", _tr('Select file upload'));
     $smarty->assign("Format_File", _tr('Format File'));

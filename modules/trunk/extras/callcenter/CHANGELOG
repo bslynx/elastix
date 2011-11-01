@@ -5,9 +5,10 @@
 * Dialer (ECCP): explicitly disconnect from DB connection to asterisk database,
   and report additional information in case of failure.
 * Dialer (ECCP): add check for failure to list extensions in loginagent request
-* CallCenter Configuration, Campaigns Out, Do not Call List, Agent Console: 
+* CallCenter Configuration, Campaigns Out, Do not Call List, Agent Console, 
+  Clients: 
   fix title display under elastixneo theme
-* CallCenter Configuration, Campaigns Out: Do not Call List:
+* CallCenter Configuration, Campaigns Out: Do not Call List, Clients:
   import elastix2.lib.php instead of defining functions _tr and load_language_module
 * Do not Call List: convert module to use of _tr
 * Agent Console: add new function to check whether framework contains support
