@@ -118,7 +118,9 @@ class XMLDialerConn extends DialerConn
         $sConnStr = 'mysql://'.$dbParams['AMPDBUSER'].':'.$dbParams['AMPDBPASS'].'@'.$dbParams['AMPDBHOST'].'/asterisk';
         $dbConn =  DB::connect($sConnStr);
         if (DB::isError($dbConn)) {
-            $this->oMainLog->output("ERR: no se puede conectar a DB de FreePBX - ".($dbConn->getMessage()));
+            $this->oMainLog->output("ERR: no se puede conectar a DB de FreePBX - ".
+                ($dbConn->getMessage().' - '.$dbConn->getUserInfo()).
+                " - se intentó mysql://{$dbParams['AMPDBUSER']}:*****@{$dbParams['AMPDBHOST']}/asterisk desde $sNombreConfig");
             return NULL;
         }
         $dbConn->setOption('autofree', TRUE);
@@ -633,6 +635,7 @@ LISTA_EXTENSIONES;
         $recordset = $oDB->query($sPeticion);
         if (DB::isError($recordset)) {
             $this->oMainLog->output('ERR: (internal) Cannot list extensions - '.$recordset->getMessage());
+            $oDB->disconnect();
             return NULL;
         }
 
@@ -647,6 +650,7 @@ LISTA_EXTENSIONES;
                 $listaExtensiones[$tupla['extension']] = $sTecnologia.$tupla['extension'];
             }
         }
+        $oDB->disconnect();
         return $listaExtensiones;
     }
 
