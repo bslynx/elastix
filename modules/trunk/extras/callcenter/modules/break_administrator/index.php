@@ -33,6 +33,8 @@ include_once "libs/paloSantoConfig.class.php";
 include_once "libs/paloSantoGrid.class.php";
 require_once "libs/xajax/xajax.inc.php";
 
+require_once "modules/agent_console/libs/elastix2.lib.php";
+
 /*
   BASE CAMPAIGN
 CREATE TABLE break (
@@ -43,31 +45,6 @@ CREATE TABLE break (
 , status varchar(1) Not NULL default 'A');
 
 */
-
-if (!function_exists('_tr')) {
-    function _tr($s)
-    {
-        global $arrLang;
-        return isset($arrLang[$s]) ? $arrLang[$s] : $s;
-    }
-}
-if (!function_exists('load_language_module')) {
-    function load_language_module($module_id, $ruta_base='')
-    {
-        $lang = get_language($ruta_base);
-        include_once $ruta_base."modules/$module_id/lang/en.lang";
-        $lang_file_module = $ruta_base."modules/$module_id/lang/$lang.lang";
-        if ($lang != 'en' && file_exists("$lang_file_module")) {
-            $arrLangEN = $arrLangModule;
-            include_once "$lang_file_module";
-            $arrLangModule = array_merge($arrLangEN, $arrLangModule);
-        }
-
-        global $arrLang;
-        global $arrLangModule;
-        $arrLang = array_merge($arrLang,$arrLangModule);
-    }
-}
 
 function _moduleContent(&$smarty, $module_name)
 {
@@ -223,6 +200,8 @@ function mostrarFormularioModificarBreak(&$smarty, $module_name, $pDB, $local_te
         return '';
     }
 
+    $smarty->assign('FRAMEWORK_TIENE_TITULO_MODULO', existeSoporteTituloFramework());
+
     // Para modificación, se lee la información del break
     $oBreaks = new PaloSantoBreaks($pDB);
     if (!$bNuevoBreak) {
@@ -297,6 +276,7 @@ function mostrarFormularioModificarBreak(&$smarty, $module_name, $pDB, $local_te
     }
 
     // Mostrar el formulario con los valores
+    $smarty->assign('icon', 'images/kfaxview.png');
     $contenidoModulo = $oForm->fetchForm(
         "$local_templates_dir/new.tpl",
         $bNuevoBreak ? _tr('New Break') : _tr('Edit Break'),
