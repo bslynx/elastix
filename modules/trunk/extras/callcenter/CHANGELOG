@@ -11,7 +11,7 @@
 * CallCenter Configuration, Campaigns Out: Do not Call List, Clients, Campaign In, 
   Agents, ECCP Users, Break Administrator:
   import elastix2.lib.php instead of defining functions _tr and load_language_module
-* Do not Call List: convert module to use of _tr
+* Do not Call List, Form Designer: convert module to use of _tr
 * Agent Console: add new function to check whether framework contains support
   for display of module title.
 
