@@ -1,3 +1,5 @@
+* Queues: complete rewrite, fixes potential SQL injections, makes use of 
+  elastix2.lib.php functions, fix title display under elastixneo theme.
 * Agent Console: disconnect from databases when performing long polling since
   open database connections are no longer used while waiting.
 * Dialer (ECCP): explicitly disconnect from DB connection to asterisk database,
