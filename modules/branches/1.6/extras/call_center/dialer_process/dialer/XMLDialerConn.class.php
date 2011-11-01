@@ -557,6 +557,9 @@ class XMLDialerConn extends DialerConn
 
         // Verificar que la extensión y el agente son válidos en el sistema
         $listaExtensiones = $this->listarExtensiones();
+        if (!is_array($listaExtensiones)) {
+        	return $this->Response_LoginAgentResponse('logged-out', 500, 'Failed to list extensions');
+        }
         $listaAgentes = $this->listarAgentes();
         if (!in_array($sAgente, array_keys($listaAgentes))) {
             return $this->Response_LoginAgentResponse('logged-out', 404, 'Specified agent not found');
