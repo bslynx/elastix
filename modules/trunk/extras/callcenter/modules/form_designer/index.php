@@ -32,7 +32,8 @@ require_once "libs/paloSantoTrunk.class.php";
 include_once "libs/paloSantoGrid.class.php";
 require_once "libs/misc.lib.php";
 require_once "libs/xajax/xajax.inc.php";
-//require "configs/db.conf.php";
+
+require_once "modules/agent_console/libs/elastix2.lib.php";
 
 function _moduleContent(&$smarty, $module_name)
 {
@@ -224,7 +225,9 @@ function new_form($pDB, $smarty, $module_name, $local_templates_dir, $formCampos
     global $arrLangModule;
     $oDataForm = new paloSantoDataForm($pDB);
     $id_nuevo_formulario = $oDataForm->proximo_id_formulario();
+    $smarty->assign('FRAMEWORK_TIENE_TITULO_MODULO', existeSoporteTituloFramework());
     $smarty->assign("id_formulario_actual",$id_nuevo_formulario); // obtengo el id para crear el nuevo formulario
+    $smarty->assign('icon', 'images/kfaxview.png');
     $contenidoModulo = $oForm->fetchForm("$local_templates_dir/form.tpl", $arrLangModule["New Form"],$_POST);  
     return $contenidoModulo;
 }
@@ -232,6 +235,8 @@ function new_form($pDB, $smarty, $module_name, $local_templates_dir, $formCampos
 function view_form($pDB, $smarty, $module_name, $local_templates_dir, $formCampos, $oForm) {
     global $arrLang;
     global $arrLangModule;
+
+    $smarty->assign('FRAMEWORK_TIENE_TITULO_MODULO', existeSoporteTituloFramework());
 
     $oForm->setViewMode(); // Esto es para activar el modo "preview"
 
@@ -250,6 +255,7 @@ function view_form($pDB, $smarty, $module_name, $local_templates_dir, $formCampo
     $smarty->assign("style_field","style='display:none;'");
     $html_campos = html_campos_formulario($arrFieldForm,false);
     $smarty->assign("solo_contenido_en_vista",$html_campos);
+    $smarty->assign('icon', 'images/kfaxview.png');
     $contenidoModulo=$oForm->fetchForm("$local_templates_dir/form.tpl", $arrLangModule["View Form"], $arrTmp); // hay que pasar el arreglo
     return $contenidoModulo;
 }
@@ -257,6 +263,8 @@ function view_form($pDB, $smarty, $module_name, $local_templates_dir, $formCampo
 function edit_form($pDB, $smarty, $module_name, $local_templates_dir, $formCampos, $oForm) {
     global $arrLang;
     global $arrLangModule;
+
+    $smarty->assign('FRAMEWORK_TIENE_TITULO_MODULO', existeSoporteTituloFramework());
 
     // Tengo que recuperar los datos del formulario
     $oDataForm = new paloSantoDataForm($pDB);
@@ -271,6 +279,7 @@ function edit_form($pDB, $smarty, $module_name, $local_templates_dir, $formCampo
     $smarty->assign("id_formulario_actual", $_GET['id']);
     $html_campos = html_campos_formulario($arrFieldForm);
     $smarty->assign("solo_contenido_en_vista",$html_campos);
+    $smarty->assign('icon', 'images/kfaxview.png');
     $contenidoModulo=$oForm->fetchForm("$local_templates_dir/form.tpl", $arrLangModule['Edit Form']." \"".$arrTmp['form_nombre']."\"", $arrTmp);
     return $contenidoModulo;
 }

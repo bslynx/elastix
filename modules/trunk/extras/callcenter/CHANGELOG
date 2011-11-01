@@ -6,7 +6,7 @@
   and report additional information in case of failure.
 * Dialer (ECCP): add check for failure to list extensions in loginagent request
 * CallCenter Configuration, Campaigns Out, Do not Call List, Agent Console, 
-  Clients, Campaign In, Agents, ECCP Users, Break Administrator: 
+  Clients, Campaign In, Agents, ECCP Users, Break Administrator, Form Designer: 
   fix title display under elastixneo theme
 * CallCenter Configuration, Campaigns Out: Do not Call List, Clients, Campaign In, 
   Agents, ECCP Users, Break Administrator:
