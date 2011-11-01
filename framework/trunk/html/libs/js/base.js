@@ -581,9 +581,19 @@ $(document).ready(function(){
 				// prevent value inserted on focus
 				return false;
 			},
-			/*open: function() {
-				$("#neo-cmenu-showbox-search").removeClass("neo-display-none");
-			},*/
+			open: function() { // parche que resuelve el bug del panel de busqueda de modulo en PBX
+				var top_var  = $('.ui-autocomplete').css("top");
+				var left_var = $('.ui-autocomplete').css("left");
+				if(top_var == "0px" & left_var == "0px"){
+					var searchPosition = $('#search_module_elastix').position();
+					var top = searchPosition.top + 53;
+					if (/Chrome[\/\s](\d+\.\d+)/.test(navigator.userAgent))
+						top = searchPosition.top + 50;
+					$('.ui-autocomplete').css("top",top+"px");
+					$('.ui-autocomplete').css("left","1054px");
+					$('.ui-autocomplete').css("width","174px");
+				}
+			},
 			close: function() {
 				$('#neo-cmenu-showbox-search').one('click', function(e) {
 					//$( "#search_module_elastix" ).autocomplete( "close" );
