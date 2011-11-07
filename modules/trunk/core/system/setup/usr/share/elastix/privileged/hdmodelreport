@@ -51,8 +51,9 @@ if (is_array($listaDiscos)) foreach ($listaDiscos as $sDisco) {
             foreach ($output2 as $p) {
                 $p = trim($p);
                 $regs = NULL;
-                if (preg_match('/Device type:\s*(\d+,\d+)/', $p, $regs)) {
-                    $discosFisicos[str_replace(' ', '', $regs[1])] = $sModelo;
+                if (preg_match('/Device type:\s*([0-9a-fA-F]+,[0-9a-fA-F]+)/', $p, $regs)) {
+                    list($iMajor, $iMinor) = sscanf($regs[1], '%x,%x');
+                    $discosFisicos["$iMajor,$iMinor"] = $sModelo;
                 }
             }
             break;
