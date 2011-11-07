@@ -1,3 +1,4 @@
+* Form Preview: replace HTML entity in Spanish translation
 * Queues: complete rewrite, fixes potential SQL injections, makes use of 
   elastix2.lib.php functions, fix title display under elastixneo theme.
 * Agent Console: disconnect from databases when performing long polling since
