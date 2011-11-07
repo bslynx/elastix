@@ -1115,58 +1115,6 @@ LISTA_EXTENSIONES;
             return $xml_response;
         }
 
-/*
-        $campaignData = array();
-        foreach ($listaTipos as $sTipo) {
-            switch ($sTipo) {
-            case 'incoming':
-                $sPeticionSQL = "SELECT 'incoming' AS campaign_type, id, name, estatus AS status FROM campaign_entry";
-                break;
-            case 'outgoing':
-                $sPeticionSQL = "SELECT 'outgoing' AS campaign_type, id, name, estatus AS status FROM campaign";
-                break;
-            }
-            
-            $paramSQL = array();
-            $listaWhere = array();
-            if (!is_null($sNombreContiene)) {
-            	$listaWhere[] = 'name LIKE ?';
-                $paramSQL[] = '%'.$sNombreContiene.'%';
-            }
-            if (!is_null($sEstado)) {
-            	$listaWhere[] = 'estatus = ?';
-                $paramSQL[] = $sEstado;
-            }
-            if (!is_null($sFechaInicio)) {
-            	$listaWhere[] = 'datetime_init >= ?';
-                $paramSQL[] = $sFechaInicio;
-            }
-            if (!is_null($sFechaFin)) {
-                $listaWhere[] = 'datetime_init < ?';
-                $paramSQL[] = $sFechaFin;
-            }
-            
-            if (count($listaWhere) > 0) {
-            	$sPeticionSQL .= ' WHERE '.implode(' AND ', $listaWhere);
-            }
-            $sPeticionSQL .= ' ORDER BY id';
-            
-            if (!is_null($iLimite)) {
-            	$sPeticionSQL .= ' LIMIT ? OFFSET ?';
-                $paramSQL[] = $iLimite;
-                $paramSQL[] = $iOffset;
-            }
-            
-            $recordset = $this->_dbConn->getAll($sPeticionSQL, $paramSQL, DB_FETCHMODE_ASSOC);
-            if (DB::isError($recordset)) {
-                $this->oMainLog->output("ERR: no se puede leer información de la campaña - ".$recordset->getMessage());
-                $this->_agregarRespuestaFallo($xml_GetCampaignListResponse, 500, 'Cannot read campaign info');
-                return $xml_response;
-            }
-            $campaignData[$sTipo] = $recordset;
-        }
-*/
-
         $descEstados = array(
             'A' =>  'active',
             'I' =>  'inactive',
@@ -1174,15 +1122,13 @@ LISTA_EXTENSIONES;
         );
 
         $xml_campaigns = $xml_GetCampaignListResponse->addChild('campaigns');
-//        foreach ($campaignData as $sTipo => &$recordset) {
-        	foreach ($recordset as $tupla) {
-        		$xml_campaign = $xml_campaigns->addChild('campaign');
-                $xml_campaign->addChild('id', $tupla['id']);
-                $xml_campaign->addChild('type', $tupla['campaign_type']);
-                $xml_campaign->addChild('name', str_replace('&', '&amp;', $tupla['name']));
-                $xml_campaign->addChild('status', $descEstados[$tupla['status']]);
-        	}
-//        }
+    	foreach ($recordset as $tupla) {
+    		$xml_campaign = $xml_campaigns->addChild('campaign');
+            $xml_campaign->addChild('id', $tupla['id']);
+            $xml_campaign->addChild('type', $tupla['campaign_type']);
+            $xml_campaign->addChild('name', str_replace('&', '&amp;', $tupla['name']));
+            $xml_campaign->addChild('status', $descEstados[$tupla['status']]);
+    	}
 
         return $xml_response;
     }
