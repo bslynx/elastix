@@ -32,7 +32,8 @@ require_once "libs/paloSantoTrunk.class.php";
 include_once "libs/paloSantoGrid.class.php";
 require_once "libs/misc.lib.php";
 require_once "libs/xajax/xajax.inc.php";
-//require "configs/db.conf.php";
+
+require_once "modules/agent_console/libs/elastix2.lib.php";
 
 function _moduleContent(&$smarty, $module_name)
 {
@@ -129,6 +130,8 @@ function _moduleContent(&$smarty, $module_name)
 
 function preview_form($pDB, $smarty, $module_name, $local_templates_dir, $formCampos, $oForm,$arrLangModule) {
 
+    $smarty->assign('FRAMEWORK_TIENE_TITULO_MODULO', existeSoporteTituloFramework());
+
     $oForm->setViewMode(); // Esto es para activar el modo "preview"
 
     if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
@@ -137,7 +140,6 @@ function preview_form($pDB, $smarty, $module_name, $local_templates_dir, $formCa
     $oDataForm = new paloSantoDataForm($pDB);
     $arrDataForm = $oDataForm->getFormularios($_GET['id']);
     $arrFieldForm = $oDataForm->obtener_campos_formulario($_GET['id']);
-    //echo $arrFieldForm;
    
     // Conversion de formato
     $arrTmp['form_nombre']       = $arrDataForm[0]['nombre'];
@@ -151,8 +153,7 @@ function preview_form($pDB, $smarty, $module_name, $local_templates_dir, $formCa
     $smarty->assign("style_field","style='display:none;'");
     $smarty->assign("formulario",$arrFieldForm);
  
-    //$html_campos = html_campos_formulario($arrFieldForm,false);
-    //$smarty->assign("solo_contenido_en_vista",$html_campos);
+    $smarty->assign('icon', 'images/kfaxview.png');
     $contenidoModulo=$oForm->fetchForm("$local_templates_dir/preview.tpl", $arrLangModule['Form'], $arrTmp); // hay que pasar el arreglo
     return $contenidoModulo;
 }
