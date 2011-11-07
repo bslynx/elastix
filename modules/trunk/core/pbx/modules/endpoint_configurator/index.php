@@ -297,7 +297,7 @@ function buildReport($arrData, $smarty, $module_name, $endpoint_mask)
                             7 => array("name"      => _tr("Current Extension"),
                                        "property1" => "")));
     $html_filter = "<input type='submit' name='endpoint_scan' value='"._tr('Discover Endpoints in this Network')."' class='button' />";
-    $html_filter.= "&nbsp;&nbsp;<input type='text' name='endpoint_mask' value='$endpoint_mask' style='text-align:right; width:90px;' />";
+    $html_filter.= "&nbsp;&nbsp;<input type='text' name='endpoint_mask' value='$endpoint_mask' style='width:130px;' />";
     $oGrid->showFilter($html_filter);
     $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrDataPorcion);
     return $contenidoModulo;
