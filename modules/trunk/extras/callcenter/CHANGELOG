@@ -1,3 +1,5 @@
+* Agent Console: wait up to 1 second after login request in order to catch
+  early login failure.
 * Form Preview: replace HTML entity in Spanish translation
 * Queues: complete rewrite, fixes potential SQL injections, makes use of 
   elastix2.lib.php functions, fix title display under elastixneo theme.

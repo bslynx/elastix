@@ -252,6 +252,25 @@ function manejarLogin_doLogin()
             $_SESSION['callcenter']['extension'] = $sExtension;
             $respuesta['status'] = TRUE;
             $respuesta['message'] = _tr('Logging agent in. Please wait...');
+            
+            if ($estado['estadofinal'] != 'logged-in') {
+                // Esperar hasta 1 segundo para evento de fallo de login.
+                $sEstado = $oPaloConsola->esperarResultadoLogin();
+                if ($sEstado == 'logged-in') {
+                    // El agente ha podido logonearse. Se procede a mostrar el formulario
+                    $_SESSION['callcenter']['estado_consola'] = 'logged-in';
+                } elseif ($sEstado == 'logged-out') {
+                    // El procedimiento de login ha fallado, sin causa conocida
+                    $_SESSION['callcenter'] = generarEstadoInicial();
+                    $respuesta['status'] = FALSE;
+                    $respuesta['message'] = _tr('Agent log-in failed!');
+                } elseif ($sEstado == 'error') {
+                    // Ocurre un error al consultar el estado del agente
+                    $_SESSION['callcenter'] = generarEstadoInicial();
+                    $respuesta['status'] = FALSE;
+                    $respuesta['message'] = _tr('Agent log-in failed!').' - '.$oPaloConsola->errMsg;
+                }
+            }
             break;
         }
     }
@@ -343,19 +362,6 @@ function manejarLogin_checkLogin()
                 $respuesta['action'] = 'error';
                 $respuesta['message'] = _tr('Agent log-in terminated.');
                 $bContinuar = FALSE;
-            /*
-            } elseif ($sEstado == 'mismatch') {
-                // Reiniciar la sesión para poder modificar las variables
-                session_start();
-
-                // Otra extensión ya ocupa el login del agente indicado.
-                $_SESSION['callcenter']['estado_consola'] = 'logged-out';
-                $_SESSION['callcenter']['agente'] = NULL;
-                $_SESSION['callcenter']['extension'] = NULL;
-                $respuesta['action'] = 'error';
-                $respuesta['message'] = _tr('Specified agent already connected to extension');
-                $bContinuar = FALSE;
-            */
             } elseif ($sEstado == 'error') {
                 // Reiniciar la sesión para poder modificar las variables
                 session_start();
