@@ -665,6 +665,7 @@ class paloSantoEndPoint
 
     function getExtension($ip)
     {
+	unset($_SESSION['endpoint_configurator']['extensions_registered'][$ip]);
 	//Search in sip extensions
         $parameters = array('Command'=>"sip show peers");
         $result = $this->AsteriskManagerAPI("Command",$parameters,true); 
@@ -674,6 +675,7 @@ class paloSantoEndPoint
             if(preg_match("/(\d+\/\d+)[[:space:]]*($ip)[[:space:]]*[[:alpha:]]*[[:space:]]*[[:alpha:]]*[[:space:]]*[[:alpha:]]{0,1}[[:space:]]*[[:digit:]]*[[:space:]]*([[:alpha:]]*)/",$line,$match)){
                 if($match[3] == "OK"){
                     $tmp = explode("/",$match[1]);
+		    $_SESSION['endpoint_configurator']['extensions_registered'][$ip][] = "SIP:$tmp[0]";
                     if($extension == "")
                         $extension = $tmp[0];
                     else
@@ -690,6 +692,7 @@ class paloSantoEndPoint
         foreach($data as $key => $line){
             if(preg_match("/(\d+)[[:space:]]*($ip)[[:space:]]*\([[:alpha:]]{1}\)[[:space:]]*[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+[[:space:]]*[[:digit:]]+[[:space:]]*([[:alpha:]]*)/",$line,$match)){
                 if($match[3] == "OK"){
+		    $_SESSION['endpoint_configurator']['extensions_registered'][$ip][] = "IAX2:$match[1]";
                     if($extension == "")
                         $extension = $match[1];
                     else

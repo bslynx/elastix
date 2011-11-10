@@ -71,6 +71,7 @@ class PaloSantoFileEndPoint
     function createFiles($ArrayData)
     {
         include_once "vendors/{$ArrayData['vendor']}.cfg.php";
+	$return = false;
         switch($ArrayData['vendor']){
             case 'Polycom':
                 //Header Polycom
@@ -81,9 +82,9 @@ class PaloSantoFileEndPoint
                     $contentFilePolycom = PrincipalFilePolycom($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret']);
 
                     if($this->createFileConf($this->directory, $ArrayData['data']['filename']."reg.cfg", $contentFilePolycom))
-                        return true;
-                    else return false;
-                }else return false;
+                        $return = true;
+                    else $return = false;
+                }else $return = false;
 
                 break;
 
@@ -91,26 +92,26 @@ class PaloSantoFileEndPoint
                 $contentFileLinksys = PrincipalFileLinksys($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer);
                 if($this->createFileConf($this->directory, "spa".$ArrayData['data']['filename'].".cfg", $contentFileLinksys)){
                     if(conexionHTTP($ArrayData['data']['ip_endpoint'], $this->ipAdressServer, $ArrayData['data']['filename']))
-                        return true;
-                    else return false;
+                        $return = true;
+                    else $return = false;
                 }
-                else return false;
+                else $return = false;
 
                 break;
 
             case 'Aastra':
                 $contentFileAastra = PrincipalFileAastra($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer);
                 if($this->createFileConf($this->directory, strtoupper($ArrayData['data']['filename']).".cfg", $contentFileAastra) )
-                    return true;
-                else return false;
+                    $return = true;
+                else $return = false;
 
                 break;
 
             case 'Cisco':
                  $contentFileCisco = PrincipalFileCisco($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer, $this->find_version() );
                 if($this->createFileConf($this->directory, strtoupper("SIP".$ArrayData['data']['filename']).".cnf", $contentFileCisco))
-                    return true;
-                else return false;
+                    $return = true;
+                else $return = false;
 
                 break;
 
@@ -121,8 +122,8 @@ class PaloSantoFileEndPoint
 		    else
 			$contentFileAtcom = PrincipalFileAtcom320SIP($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer,$ArrayData['data']['filename']);
                     $result = $this->telnet($ArrayData['data']['ip_endpoint'], "", "12345678", $contentFileAtcom);
-                    if($result) return true;
-                    else return false;
+                    if($result) $return = true;
+                    else $return = false;
                 }
                 else if($ArrayData['data']['model'] == "AT 530" || $ArrayData['data']['model'] == "AT 620R"){
                     if(isset($ArrayData['data']['arrParameters']['versionCfg']))
@@ -137,9 +138,9 @@ class PaloSantoFileEndPoint
                     {
                         $arrComandos = arrAtcom530($this->ipAdressServer, $ArrayData['data']['filename']);
                         $result = $this->telnet($ArrayData['data']['ip_endpoint'], "admin", "admin", $arrComandos);
-                        if($result) return true;
-                        else return false;
-                    }else return false;
+                        if($result) $return = true;
+                        else $return = false;
+                    }else $return = false;
                 }
 
                 break;
@@ -147,8 +148,8 @@ class PaloSantoFileEndPoint
             case 'Snom':
                 $contentFileSnom = PrincipalFileSnom($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer);
                 if($this->createFileConf($this->directory, "snom".$ArrayData['data']['model']."-".strtoupper($ArrayData['data']['filename']).".htm", $contentFileSnom))
-                    return true;
-                else return false;
+                    $return = true;
+                else $return = false;
 
                 break;
 
@@ -160,9 +161,9 @@ class PaloSantoFileEndPoint
 		    exec("/tftpboot/GS_CFG_GEN/bin/encode.sh {$ArrayData['data']['filename']} /tftpboot/gxp{$ArrayData['data']['filename']} /tftpboot/cfg{$ArrayData['data']['filename']}",$arrConsole,$flagStatus);
 		    exec("sudo -u root chmod o-rx /opt/openfire");
                     if($flagStatus == 0)
-			return true;
+			$return = true;
 		}
-                else return false;
+                else $return = false;
 
                 break;
 
@@ -173,27 +174,31 @@ class PaloSantoFileEndPoint
                     //Archivo Principal
                     $contentFileZultys = PrincipalFileZultys($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret']);
                     if($this->createFileConf("{$this->directory}/{$ArrayData['data']['model']}",strtoupper($ArrayData['data']['filename']).".cfg",$contentFileZultys))
-                        return true;
-                    else return false;
+                        $return = true;
+                    else $return = false;
                 }
-                else return false;
+                else $return = false;
 
                 break;
 
             case 'AudioCodes':
                 $contentAudioCodes = PrincipalFileAudioCodes($ArrayData['data']['id_device'],$ArrayData['data']['secret'],$this->ipAdressServer,$ArrayData['data']['model'],$ArrayData['data']['filename']);
                 if($this->createFileConf($this->directory, $ArrayData['data']['model']."_".$ArrayData['data']['filename'].".cfg", $contentAudioCodes))
-                    return true;
-                else return false;
+                    $return = true;
+                else $return = false;
             break;
 
             case 'Yealink':
                if($ArrayData['data']['model'] == "SIP-T20/T20P" || $ArrayData['data']['model'] == "SIP-T22/T22P" || $ArrayData['data']['model'] == "SIP-T26/T26P" || $ArrayData['data']['model'] == "SIP-T28/T28P" ){
                     $contentFileYealink =PrincipalFileYealink($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer);
                         if($this->createFileConf($this->directory, $ArrayData['data']['filename'].".cfg", $contentFileYealink)){
-                            return true;
+                            $parameters  = array('Command'=>'sip notify reboot-yealink '.$ArrayData['data']['ip_endpoint']);
+                            $result      = $this->AsteriskManagerAPI('Command',$parameters);
+                            if(!$result)
+                                $return = false;
+                            $return = true;
                         }
-                        return false;
+                        $return = false;
                 }
                 break;
 
@@ -204,13 +209,25 @@ class PaloSantoFileEndPoint
                         $parameters  = array('Command'=>'sip notify reboot-yealink '.$ArrayData['data']['ip_endpoint']);
                             $result      = $this->AsteriskManagerAPI('Command',$parameters);
                             if(!$result)
-                                return false;
-                            return true;
+                                $return = false;
+                            $return = true;
                     }
-                    return false;
+                    $return = false;
                 }
                 break;
         }
+	if(isset($_SESSION['endpoint_configurator']['extensions_registered'][$ArrayData['data']['ip_endpoint']])){
+	    if(is_array($_SESSION['endpoint_configurator']['extensions_registered'][$ArrayData['data']['ip_endpoint']]) && count($_SESSION['endpoint_configurator']['extensions_registered'][$ArrayData['data']['ip_endpoint']]) > 0){
+		foreach($_SESSION['endpoint_configurator']['extensions_registered'][$ArrayData['data']['ip_endpoint']] as $extension){
+		    $tmp = explode(":",$extension);
+		    $tech = strtolower($tmp[0]);
+		    $number = $tmp[1];
+		    $parameters  = array('Command'=>"$tech unregister $number");
+                    $result      = $this->AsteriskManagerAPI('Command',$parameters);
+		}
+	    }
+	}
+	return $return;
     }
 
     function buildPattonConfFile($arrData,$tone_set)
