@@ -1,6 +1,6 @@
 /* CONTENT */
 #neo-contentbox {
-	position: relative;
+	/*position: relative;*/
 	padding:5px 5px 5px 5px;
 	width:1270px;
 	background-color:#fafafa;
@@ -27,7 +27,7 @@
 	display:none;
 }
 #neo-contentbox-maincolumn {
-	position:relative;
+	/*position:relative;*/
 	width:1025px;
 	float:left;
 	margin-top: 0px;
@@ -39,11 +39,12 @@
 	width:1245px;
 }
 div.neo-module-title {
-	position:absolute;
+	/*position:absolute;*/
 	top:0px;
 	left:0px;
 	width:100%;
-	padding:5px 0px 4px 0px;
+	/*padding:5px 0px 4px 0px;*/
+        padding:5px 0px 0px 0px;
 	overflow:auto;
 	z-index:10;	
 }
@@ -110,8 +111,9 @@ div.neo-module-title-buttonstab-right {
 	background:url(images/lengueta_minimizada.png) no-repeat top;
 }
 div.neo-module-content {
-	position:relative;
-	margin-top:35px;
+	/*position:relative;*/
+	/*margin-top:35px;*/
+        margin-top:-3px;
         padding:3px 5px 10px 5px;
         overflow:hidden;
 	-moz-border-radius: 0px 10px 10px 10px;
