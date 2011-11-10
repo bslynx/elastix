@@ -1539,6 +1539,80 @@ En caso de campaña no encontrada:
 </response>
 
 
+Requerimiento "getcampaignqueuewait"
+
+Este requerimiento calcula un histograma de la cantidad de segundos que tarda
+una llamada en la campaña elegida desde que entra a la cola hasta que es 
+asignada a un agente. El histograma se calcula en intervalos de 5 segundos hasta
+30 segundos, más una categoría de llamadas atendidas luego de 30 segundos, y 
+además una cuenta de llamadas abandonadas.
+
+Atributos o argumentos:
+* campaign_type: Estilo de la campaña. Uno de los valores 'incoming','outgoing'
+* campaign_id: ID de la campaña. 
+
+Respuesta:
+* histogram: lista que contiene elementos "interval". Cada elemento interval
+  contiene los siguientes campos:
+  * lower: Valor inferior de tiempo de espera (inclusive) abarcado por intervalo
+  * upper: Valor superior de tiempo de espera (inclusive) abarcado por intervalo.
+    Para el último intervalo, se omite este elemento porque representa las 
+    llamadas iguales o mayores a 30 segundos.
+  * count: Número de llamadas que han caído dentro del intervalo
+* abandoned: Contiene el número de llamadas que fueron abandonadas, es decir, 
+  que entraron a la cola, pero terminaron antes de ser asignadas a un agente.
+
+Ejemplo:
+<request id="7">
+    <getcampaignqueuewait>
+        <campaign_type>incoming</campaign_type>
+        <campaign_id>1</campaign_id>
+    </getcampaignqueuewait>
+</request>
+
+Respuesta:
+<response id="3">
+    <getcampaignqueuewait_response>
+        <histogram>
+            <interval>
+                <lower>0</lower>
+                <upper>4</upper>
+                <count>86</count>
+            </interval>
+            <interval>
+                <lower>5</lower>
+                <upper>9</upper>
+                <count>0</count>
+            </interval>
+            <interval>
+                <lower>10</lower>
+                <upper>14</upper>
+                <count>1</count>
+            </interval>
+            <interval>
+                <lower>15</lower>
+                <upper>19</upper>
+                <count>2</count>
+            </interval>
+            <interval>
+                <lower>20</lower>
+                <upper>24</upper>
+                <count>1</count>
+            </interval>
+            <interval>
+                <lower>25</lower>
+                <upper>29</upper>
+                <count>2</count>
+            </interval>
+            <interval>
+                <lower>30</lower>
+                <count>3</count>
+            </interval>
+        </histogram>
+        <abandoned>6</abandoned>
+    </getcampaignqueuewait_response>
+</response>
+
 
 Requerimiento "getcallinfo"
 

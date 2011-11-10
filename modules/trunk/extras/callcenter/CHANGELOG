@@ -1,3 +1,5 @@
+* Dialer (ECCP): implement "getcampaignqueuewait" request for sampling of queue
+  wait times before calls are handled by an agent.
 * Agent Console: wait up to 1 second after login request in order to catch
   early login failure.
 * Form Preview: replace HTML entity in Spanish translation

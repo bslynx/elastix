@@ -514,5 +514,15 @@ class ECCP
         $xml_response = $this->send_request($xml_request);
         return $xml_response->getcampaignlist_response;
     }
+
+    public function getcampaignqueuewait($campaign_type, $campaign_id)
+    {
+        $xml_request = new SimpleXMLElement("<request />");
+        $xml_cmdRequest = $xml_request->addChild('getcampaignqueuewait');
+        $xml_cmdRequest->addChild('campaign_type', str_replace('&', '&amp;', $campaign_type));
+        $xml_cmdRequest->addChild('campaign_id', str_replace('&', '&amp;', $campaign_id));
+        $xml_response = $this->send_request($xml_request);
+        return $xml_response->getcampaignqueuewait_response;
+    }
 }
 ?>

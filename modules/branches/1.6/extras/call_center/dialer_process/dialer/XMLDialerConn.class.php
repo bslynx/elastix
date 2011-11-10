@@ -246,6 +246,9 @@ class XMLDialerConn extends DialerConn
                 case 'getqueuescript':
                     $response = $this->Request_GetQueueScript($comando);
                     break;
+                case 'getcampaignqueuewait':
+                    $response = $this->Request_GetCampaignQueueWait($comando);
+                    break;
 /*
                 case 'getcallstatus':
                     $response = $this->Request_GetCallStatus($comando);
@@ -375,7 +378,7 @@ class XMLDialerConn extends DialerConn
             'getagentstatus', 'getcampaignstatus', 'hangup', 'hold', 'unhold', 
             'transfercall', 'getcampaigninfo', 'getcallinfo', 'saveformdata', 
             'pauseagent', 'unpauseagent', 'getpauses', 'setcontact', 'schedulecall',
-            'filterbyagent', 'getqueuescript', 'getcampaignlist') 
+            'filterbyagent', 'getqueuescript', 'getcampaignlist', 'getcampaignqueuewait') 
             as $sReqName)
             $xml_requests->addChild('request', $sReqName);
 
@@ -1129,6 +1132,76 @@ LISTA_EXTENSIONES;
             $xml_campaign->addChild('name', str_replace('&', '&amp;', $tupla['name']));
             $xml_campaign->addChild('status', $descEstados[$tupla['status']]);
     	}
+
+        return $xml_response;
+    }
+
+    private function Request_GetCampaignQueueWait($comando)
+    {
+        if (is_null($this->_sUsuarioECCP))
+            return $this->_generarRespuestaFallo(401, 'Unauthorized');
+
+        // Verificar que id y tipo está presente
+        if (!isset($comando->campaign_id)) 
+            return $this->_generarRespuestaFallo(400, 'Bad request');
+        if (!isset($comando->campaign_type)) 
+            return $this->_generarRespuestaFallo(400, 'Bad request');
+        $idCampania = (int)$comando->campaign_id;
+        $sTipoCampania = (string)$comando->campaign_type;
+
+        // Elegir SQL a partir del tipo de campaña requerida
+        if ($sTipoCampania == 'incoming') {
+            $sqlLlamadasExito = 'SELECT COUNT(*) AS N, duration_wait FROM call_entry WHERE id_campaign = ? AND (status = "activa" OR status = "terminada") GROUP BY duration_wait';
+            $sqlLlamadasAbandonadas = 'SELECT COUNT(*) AS N FROM call_entry WHERE id_campaign = ? AND status = "abandonada"';
+        } elseif ($sTipoCampania == 'outgoing') {
+            $sqlLlamadasExito = 'SELECT COUNT(*) AS N, duration_wait FROM calls WHERE id_campaign = ? AND status = "Success" GROUP BY duration_wait';
+            $sqlLlamadasAbandonadas = 'SELECT COUNT(*) AS N FROM calls WHERE id_campaign = ? AND status = "Abandoned"';
+        } else {
+        	return $this->_generarRespuestaFallo(400, 'Bad request');
+        }
+
+        $xml_response = new SimpleXMLElement('<response />');
+        $xml_GetCampaignQueueWaitResponse = $xml_response->addChild('getcampaignqueuewait_response');
+
+        $recordset = $this->_dbConn->getAll($sqlLlamadasExito, array($idCampania), DB_FETCHMODE_ASSOC);
+        if (DB::isError($recordset)) {
+            $this->oMainLog->output("ERR: no se puede leer histograma de la campaña - ".$recordset->getMessage());
+            $this->_agregarRespuestaFallo($xml_GetCampaignQueueWaitResponse, 500, 'Cannot read campaign histogram');
+            return $xml_response;
+        }
+
+        $tuplaAbandonadas = $this->_dbConn->getRow($sqlLlamadasAbandonadas, array($idCampania), DB_FETCHMODE_ASSOC);
+        if (DB::isError($recordset)) {
+            $this->oMainLog->output("ERR: no se puede leer histograma de la campaña (abandonadas) - ".$recordset->getMessage());
+            $this->_agregarRespuestaFallo($xml_GetCampaignQueueWaitResponse, 500, 'Cannot read campaign histogram');
+            return $xml_response;
+        }
+        
+        // División del histograma: tamaño de intervalos y límite máximo
+        $iValorIntervalo = 5; $iMaxValor = 30;
+        $histograma = array();
+        for ($i = 0; $i <= $iMaxValor; $i += $iValorIntervalo) {
+        	$histograma[$i / $iValorIntervalo] = 0;
+        }
+        foreach ($recordset as $tupla) {
+        	$iPosHistograma = ($tupla['duration_wait'] >= $iMaxValor)
+                ? count($histograma) - 1
+                : (int)($tupla['duration_wait'] / $iValorIntervalo);
+            $histograma[$iPosHistograma] += $tupla['N'];
+        }
+
+        // Construcción de la respuesta
+        $xml_histograma = $xml_GetCampaignQueueWaitResponse->addChild('histogram');
+        foreach ($histograma as $iPosHistograma => $iCuentaHistograma) {
+        	$iValorInferior = $iPosHistograma * $iValorIntervalo;
+            $iValorSuperior = $iValorInferior + $iValorIntervalo - 1;
+            $xml_intervalo = $xml_histograma->addChild('interval');
+            $xml_intervalo->addChild('lower', $iValorInferior);
+            if ($iPosHistograma != count($histograma) - 1)
+                $xml_intervalo->addChild('upper', $iValorSuperior);
+            $xml_intervalo->addChild('count', $iCuentaHistograma);
+        }
+        $xml_GetCampaignQueueWaitResponse->addChild('abandoned', $tuplaAbandonadas['N']);
 
         return $xml_response;
     }
