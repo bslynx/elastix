@@ -218,7 +218,6 @@ function report_delete_module($smarty, $module_name, $local_templates_dir, $arrL
 
     $oForm = new paloForm($smarty, array());
     $smarty->assign("DELETE", $arrLangModule["Delete"]);
-    $smarty->assign("TITLE", $arrLangModule["Delete Module"]);
 
     $smarty->assign("REQUIRED_FIELD", $arrLangModule["Required field"]);
 
@@ -229,8 +228,9 @@ function report_delete_module($smarty, $module_name, $local_templates_dir, $arrL
     $smarty->assign("Delete_Files", $arrLangModule['Delete Files']);
 
     $smarty->assign("CONFIRM_CONTINUE", $arrLangModule["Are you sure you wish to continue?"]);
+    $smarty->assign("icon","images/conference.png");
 
-    $html = $oForm->fetchForm("$local_templates_dir/delete_module.tpl", "", $_POST);
+    $html = $oForm->fetchForm("$local_templates_dir/delete_module.tpl", $arrLangModule["Delete Module"], $_POST);
 
     $contenidoModulo = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$html."</form>";
 
