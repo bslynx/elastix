@@ -326,7 +326,7 @@ function viewPeersInformation($smarty, $module_name, $local_templates_dir, $pDB,
     $smarty->assign("DISCONNECT", $arrLang["Disconnect"]);
     $smarty->assign("CANCEL", $arrLang["Cancel"]);
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
-    $smarty->assign("IMG", "images/list.png");
+    $smarty->assign("icon", "images/list.png");
     $smarty->assign("peerId", $idPeer);
 
     $arrDataPeer = $pPeersInformation->ObtainPeersDataById($idPeer);
@@ -655,7 +655,7 @@ function sendConnectionRequest($smarty, $module_name, $local_templates_dir, $pDB
 
         $smarty->assign("Request", $arrLang["Request"]);
         $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
-        $smarty->assign("IMG", "images/list.png");
+        $smarty->assign("icon", "images/list.png");
 
         if(!$oForm->validateForm($_POST)){
             $smarty->assign("mb_title", $arrLang["Validation Error"]);
@@ -723,7 +723,7 @@ function formRequest($smarty, $module_name, $local_templates_dir, $pDB, $arrConf
     $smarty->assign("Request", $arrLang["Request"]);
     $smarty->assign("Cancel", _tr("Cancel"));
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
-    $smarty->assign("IMG", "images/list.png");
+    $smarty->assign("icon", "images/list.png");
 
     $htmlForm = $oForm->fetchForm("$local_templates_dir/request.tpl",$arrLang["Connection Request"], $_POST);
     $contenidoModulo = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
