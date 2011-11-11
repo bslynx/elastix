@@ -156,7 +156,7 @@ function formGeneralInformation($smarty, $module_name, $local_templates_dir, &$p
 
     $smarty->assign("UPLOAD", $arrLang["Save"]);
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
-    $smarty->assign("IMG", "images/list.png");
+    $smarty->assign("icon", "images/list.png");
     $command = "0";
     $arrData = array();//array que se envia al $htmlForm para que muestre siempre los datos
     $datos = array();//array que usuamos para definir si le enviamos $_POST o $arrData a $htmlForm
