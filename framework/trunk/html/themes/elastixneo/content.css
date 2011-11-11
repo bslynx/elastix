@@ -103,7 +103,7 @@ div.neo-module-title-buttonstab-right {
 }
 #neo-lengueta-minimized {
 	position:absolute;
-	top: 0px;
+	top: 103px;
 	left:0px;
 	width:13px;
 	height:69px;
@@ -191,4 +191,39 @@ div.neo-shortcuts-box {
 	-webkit-box-shadow: 2px 2px 1px rgb(180,180,180);
 	box-shadow: 2px 2px 1px rgb(180,180,180);
 	background: url(images/3menubgtop.png) repeat-x top #f0f0f0;
+}
+#neo-historybox {
+	position: relative;
+	margin-top: 20px;
+	padding: 0px 0px 10px 0px;
+	width: 220px;
+}
+div.neo-historybox-tab {
+	height: 26px;
+	padding: 8px 0px 0px 12px;
+	background: url(images/3menubg.png) no-repeat bottom;
+	font: 12px Verdana, Arial,Helvetica,sans-serif;
+	color: #666;
+	text-shadow: 1px 1px #ddd;
+	text-align:left;
+	overflow: hidden;
+}
+div.neo-historybox-tabon {
+	height: 26px;
+	padding: 8px 0px 0px 12px;
+	background: url(images/historyboxbg.png) no-repeat bottom;
+	font: 12px Verdana, Arial,Helvetica,sans-serif;
+	color: #555;
+	text-shadow: 1px 1px #eee;
+	text-align:center;
+}
+div.neo-historybox-tabmid {
+	height: 26px;
+	padding: 8px 0px 0px 12px;
+	/* background: url(../images/3menubg.png) no-repeat bottom; */
+	font: 12px Verdana, Arial,Helvetica,sans-serif;
+	color: #666;
+	text-shadow: 1px 1px #ddd;
+	text-align:left;
+	overflow: hidden;
 }
