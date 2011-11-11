@@ -563,7 +563,9 @@ function viewMemberList($smarty, $module_name, $local_templates_dir, &$pDB, $arr
     $oFilterForm = new paloForm($smarty, $arrFormFilterMembers);
     $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/view_members.tpl","",$_POST);
     $oGrid->showFilter(trim($htmlFilter));
-    $content = "<form  method='POST' style='margin-bottom:0;' action=$url>".$oGrid->fetchGrid()."</form>";
+    $content = $oGrid->fetchGrid();
+    if (strpos($content, '<form') === FALSE)
+        $content = "<form  method='POST' style='margin-bottom:0;' action=$url>$content</form>";
     return $content;
 }
 
