@@ -113,7 +113,7 @@ function viewFormPasswordConnection($smarty, $module_name, $local_templates_dir,
     $smarty->assign("EDIT", $arrLang["Edit"]);
     $smarty->assign("CANCEL", $arrLang["Cancel"]);
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
-    $smarty->assign("IMG", "images/list.png");
+    $smarty->assign("icon", "images/list.png");
     $smarty->assign("GET_PASS", $arrLang["Get my Secret Connection"]);
     $smarty->assign("message", $arrLang["Message"]);
     if(!$pPasswordConnection->statusGeneralRegistration())
