@@ -111,7 +111,6 @@ function new_module($smarty, $module_name, $local_templates_dir, $arrLangModule,
 
     $oForm = new paloForm($smarty, $arrFormElements);
     $smarty->assign("SAVE", $arrLangModule["Save"]);
-    $smarty->assign("TITLE", $arrLangModule["Build Module"]);
     $smarty->assign("REQUIRED_FIELD", $arrLangModule["Required field"]);
 
     $smarty->assign("general_information", $arrLangModule["General Information"]);
@@ -147,8 +146,9 @@ function new_module($smarty, $module_name, $local_templates_dir, $arrLangModule,
     $smarty->assign("module_level", $arrLangModule["Module Level"]);
     $smarty->assign("level_1_parent_name", $arrLangModule["Level 1 Parent Name"]);
     $smarty->assign("level_1_parent_id", $arrLangModule["Level 1 Parent Id"]);
+    $smarty->assign("icon", "images/conference.png");
 
-    $html = $oForm->fetchForm("$local_templates_dir/new_module.tpl", "", $_POST);
+    $html = $oForm->fetchForm("$local_templates_dir/new_module.tpl", $arrLangModule["Build Module"], $_POST);
 
     $contenidoModulo = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$html."</form>";
 

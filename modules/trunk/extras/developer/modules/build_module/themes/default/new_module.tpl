@@ -1,10 +1,6 @@
 <div id='error' name='error'></div>
 <div>
 <table width="99%" cellspacing="0" cellpadding="4" align="center">
-    <tr class="moduleTitle">
-        <td class="moduleTitle" valign="middle">&nbsp;&nbsp;<img src="images/conference.png" border="0" align="absmiddle">&nbsp;&nbsp;{$TITLE}</td>
-        <td></td>
-    </tr>
     <tr>
         <td align="left"><input class="button" type="button" name="save" value="{$SAVE}" onclick="save_module()"></td>
         <td align="right" nowrap><span class="letra12"><span  class="required">*</span> {$REQUIRED_FIELD}</span></td>
@@ -137,7 +133,7 @@
    </td>
   </tr>
 </table>
-
+</div>
 {literal}
 <script type="text/javascript">
     function mostrar_menu()
