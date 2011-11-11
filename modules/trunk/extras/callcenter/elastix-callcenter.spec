@@ -2,7 +2,7 @@
 
 Summary: Elastix Call Center 
 Name:    elastix-callcenter
-Version: 2.1.1
+Version: 2.1.2
 Release: 0
 License: GPL
 Group:   Applications/System
@@ -92,6 +92,34 @@ fi
 /etc/logrotate.d/elastixdialer
 
 %changelog
+* Fri Nov 11 2011 Alex Villacis Lasso <a_villacis@palosanto.com> 2.1.2-0
+- Updated version,  synchronized with CallCenter 1.6.2 (SVN revision 3289)
+- From CHANGELOG:
+- Dialer: fix bug in which linked call could get assigned to an inactive version
+  of an agent even if an active version exists.
+- Dialer (ECCP): implement "getcampaignqueuewait" request for sampling of queue
+  wait times before calls are handled by an agent.
+- Agent Console: wait up to 1 second after login request in order to catch
+  early login failure.
+- Form Preview: replace HTML entity in Spanish translation
+- Queues: complete rewrite, fixes potential SQL injections, makes use of 
+  elastix2.lib.php functions, fix title display under elastixneo theme.
+- Agent Console: disconnect from databases when performing long polling since
+  open database connections are no longer used while waiting.
+- Dialer (ECCP): explicitly disconnect from DB connection to asterisk database,
+  and report additional information in case of failure. Should fix Elastix bug
+  #1053
+- Dialer (ECCP): add check for failure to list extensions in loginagent request
+- CallCenter Configuration, Campaigns Out, Do not Call List, Agent Console, 
+  Clients, Campaign In, Agents, ECCP Users, Break Administrator, Form Designer,
+  Form Preview: fix title display under elastixneo theme
+- CallCenter Configuration, Campaigns Out: Do not Call List, Clients, Campaign In, 
+  Agents, ECCP Users, Break Administrator:
+  import elastix2.lib.php instead of defining functions _tr and load_language_module
+- Do not Call List, Form Designer, Form Preview: convert module to use of _tr
+- Agent Console: add new function to check whether framework contains support
+  for display of module title.
+
 * Fri Oct 21 2011 Alex Villacis Lasso <a_villacis@palosanto.com> 2.1.1-0
 - Updated version, synchronized with CallCenter 1.6.1 (SVN revision 3102)
 - From CHANGELOG:
