@@ -150,7 +150,9 @@ function reportDhcpClientlist($smarty, $module_name, $local_templates_dir, &$pDB
     //end section filter
 
   //  $oGrid->showFilter(trim($htmlFilter));
-    $contenidoModulo = "<form  method='POST' style='margin-bottom:0;' action=$url>".$oGrid->fetchGrid($arrGrid, $arrData,$arrLang)."</form>";
+    $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
+    if (strpos($contenidoModulo, '<form') === FALSE)
+        $contenidoModulo = "<form  method='POST' style='margin-bottom:0;' action=$url>$contenidoModulo</form>";
     //end grid parameters
 
     return $contenidoModulo;
