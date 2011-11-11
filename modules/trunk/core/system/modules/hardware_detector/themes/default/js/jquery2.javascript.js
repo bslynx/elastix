@@ -45,23 +45,48 @@ $(document).ready(function(){
                 }
                 $('#config_echo_div').html("");
                 html += "<table align='center' width='80%'>";
+				
+				var i = 0;
                 for(key in PortsEcho){
                     key2 = "";
                     lastKey2 = "";
-                    html +=     "<tr><td align='center' style='padding: 5px;'><b>" + key + "</b> " + PortsEcho[key]['name_port'] + "</td>" +
-                                "<td align='center' style='padding: 5px;'><select id='typeecho_" + key + "' name='typeecho_" + key + "'>";
-                    for(key2 in echoNames){
-                        if(PortsEcho[key]['type_echo'] == key2){
-                            html +=      "<option value='" + key2 +"' selected='selected'>" + echoNames[key2] + "</option>";
-                            lastKey2 = key2;
-                        }else{
-                            html +=      "<option value='" + key2 +"'>" + echoNames[key2] + "</option>";
-                        }
-                    }
-                    html +=          "</select>" +
-                                     "<input type='hidden' value='" +lastKey2+ "' id='tmpTypeEcho" + key + "' name='tmpTypeEcho" + key + "' />" +
-                                "</td></tr>";
+					if((i % 2) == 0){
+						html += "<tr>";
+						html += "<td align='center' style='padding: 5px;'><b>" + key + "</b> " + PortsEcho[key]['name_port'] + "</td>" +
+								"<td align='center' style='padding: 5px;'><select id='typeecho_" + key + "' name='typeecho_" + key + "'>";
+						for(key2 in echoNames){
+							if(PortsEcho[key]['type_echo'] == key2){
+								html += "<option value='" + key2 +"' selected='selected'>" + echoNames[key2] + "</option>";
+								lastKey2 = key2;
+							}else{
+								html += "<option value='" + key2 +"'>" + echoNames[key2] + "</option>";
+							}
+						}
+						html += "</select>" +
+								"<input type='hidden' value='" +lastKey2+ "' id='tmpTypeEcho" + key + "' name='tmpTypeEcho" + key + "' />" +
+								"</td>";
+					}else{
+						html += "<td align='center' style='padding: 5px;'><b>" + key + "</b> " + PortsEcho[key]['name_port'] + "</td>" +
+								"<td align='center' style='padding: 5px;'><select id='typeecho_" + key + "' name='typeecho_" + key + "'>";
+						for(key2 in echoNames){
+							if(PortsEcho[key]['type_echo'] == key2){
+								html += "<option value='" + key2 +"' selected='selected'>" + echoNames[key2] + "</option>";
+								lastKey2 = key2;
+							}else{
+								html += "<option value='" + key2 +"'>" + echoNames[key2] + "</option>";
+							}
+						}
+						html += "</select>" +
+								"<input type='hidden' value='" +lastKey2+ "' id='tmpTypeEcho" + key + "' name='tmpTypeEcho" + key + "' />" +
+								"</td>";
+						html += "</tr>";
+					}
+					i++;
                 }
+                if((i % 2) != 0){ // si el ultimo td es impar entonces solo tiene un td y no 2 en el tr
+					html += "<td colspan='2'></td>";
+					html += "</tr>";
+				}
                 html += "</table>";
                 $('#config_echo_div').html(html);
             }
