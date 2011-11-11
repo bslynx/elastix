@@ -721,7 +721,9 @@ function reportRules($smarty, $module_name, $local_templates_dir, &$pDB, $arrCon
     //end section filter
 
     $oGrid->showFilter(trim($htmlFilter));
-    $contenidoModulo = "<form  method='POST' style='margin-bottom:0;' action=$url>".$oGrid->fetchGrid()."</form>";
+    $contenidoModulo = $oGrid->fetchGrid();
+    if (strpos($contenidoModulo, '<form') === FALSE)
+        $contenidoModulo = "<form  method='POST' style='margin-bottom:0;' action=$url>$contenidoModulo</form>";
     //end grid parameters
 
     return $contenidoModulo;
