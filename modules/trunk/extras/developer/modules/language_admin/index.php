@@ -143,6 +143,7 @@ function newLanguage($smarty,$module_name, $local_templates_dir, $arrLang, $arrL
     $smarty->assign("new_language", $arrLangModule["New Language"]);
     $smarty->assign("new_traslate", $arrLangModule["New Traslate"]);
     $smarty->assign("new_language_ej", $arrLangModule["Ej: For English: en.lang"]);
+    $smarty->assign("icon","images/list.png");
 
     $tmpLangEnglish   = getParameter('lang_english');
     $tmpLangTranslate = getParameter('lang_traslate');
