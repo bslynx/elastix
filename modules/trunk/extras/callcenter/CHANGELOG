@@ -1,3 +1,5 @@
+* Dialer: fix bug in which linked call could get assigned to an inactive version
+  of an agent even if an active version exists.
 * Dialer (ECCP): implement "getcampaignqueuewait" request for sampling of queue
   wait times before calls are handled by an agent.
 * Agent Console: wait up to 1 second after login request in order to catch

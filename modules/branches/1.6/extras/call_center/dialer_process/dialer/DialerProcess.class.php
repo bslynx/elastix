@@ -2707,7 +2707,8 @@ UPDATE_CALLS_ORIGINATE_RESPONSE;
                 $sDatosAgente = 
                     'SELECT id '.
                     'FROM agent '.
-                    'WHERE number = ? ';
+                    'WHERE number = ? '.
+                    'ORDER BY estatus, id LIMIT 1';
                 $tupla = $this->_dbConn->getRow($sDatosAgente, array($sAgentNum), DB_FETCHMODE_OBJECT);
                 if (DB::isError($tupla)) {
                     $this->oMainLog->output("ERR: $sEvent: no se puede consultar los datos del agente $sAgentNum- ".$tupla->getMessage());
