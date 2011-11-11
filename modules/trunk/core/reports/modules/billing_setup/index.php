@@ -195,9 +195,10 @@ function _moduleContent(&$smarty, $module_name)
     $oGrid = new paloSantoGrid($smarty);
     $oGrid->showFilter(
         "<input type='submit' name='submit_bill_trunks' value='{$arrLang['Billing Capable']}' class='button'>");
-    $trunk_config=
-        "<form style='margin-bottom:0;' method='POST' action='?menu=billing_setup'>" .
-        $oGrid->fetchGrid($arrGrid, $arrData,$arrLang)."</form>";
+    $trunk_config = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
+    if (strpos($trunk_config, '<form') === FALSE)
+        $trunk_config =
+            "<form style='margin-bottom:0;' method='POST' action='?menu=billing_setup'>$trunk_config</form>";
    //mostrar los dos formularios
     $contenido.=$strReturn.$trunk_config;
     return $contenido;
