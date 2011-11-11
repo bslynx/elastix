@@ -157,7 +157,9 @@ function reportEmailList($smarty, $module_name, $local_templates_dir, &$pDB, $ar
     //end section filter
 
     $oGrid->showFilter(trim($htmlFilter));
-    $content = "<form  method='POST' style='margin-bottom:0;' action=$url>".$oGrid->fetchGrid()."</form>";
+    $content = $oGrid->fetchGrid();
+    if (strpos($content, '<form') === FALSE)
+        $content = "<form  method='POST' style='margin-bottom:0;' action=$url>$content</form>";
 
     //end grid parameters
 
