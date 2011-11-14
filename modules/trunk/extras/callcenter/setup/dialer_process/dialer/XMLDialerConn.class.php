@@ -704,13 +704,13 @@ LISTA_EXTENSIONES;
         $r = $this->_astConn->Command('core show channels');
         if (isset($r['data'])) {
             $listaLineas = explode("\n", $r['data']);
-            
-            // TODO: el *8888 debería parametrizarse
-            $sPista1 = '*8888'.$sAgente.'@';
-            $sPista2 = 'AgentLogin('.$sAgente.')';
+
+            $sAppMasDatos = 'AgentLogin('.$sAgente.')';
             foreach ($listaLineas as $sLinea) {
                 $tupla = preg_split('/\s+/', $sLinea);
-                if (count($tupla) >= 3 && substr($tupla[1], 0, strlen($sPista1)) == $sPista1 && $tupla[3] == $sPista2)
+                if (count($tupla) >= 4
+                    && $tupla[2] == 'Up'
+                    && $tupla[3] == $sAppMasDatos)
                     return $tupla[0];
             }
         }
@@ -735,10 +735,10 @@ LISTA_EXTENSIONES;
         $sNumAgente = $regs[1];
         $r = $this->_astConn->Originate(
             $sExtension,        // channel
-            "*8888".$sNumAgente,   // extension
-            'from-internal',    // context
-            1,                  // priority
-            NULL,NULL, NULL, NULL, NULL, NULL,
+            NULL, NULL, NULL,   // extension, context, priority
+            'AgentLogin',       // application
+            $sNumAgente,        // data
+            NULL, NULL, NULL, NULL,
             TRUE,               // async
             'ECCP:1.0:'.posix_getpid().':AgentLogin:'.$sAgente     // action-id
             );
