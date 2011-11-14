@@ -717,5 +717,18 @@ class paloEmail {
          return $number;
     }
 
+    function accountExists($account)
+    {
+	$query = "SELECT COUNT(*) FROM accountuser WHERE username=?";
+	$result = $this->_DB->getFirstRowQuery($query,false,array($account));
+	if($result==FALSE){
+            $this->errMsg = $this->_DB->errMsg;
+            return false;
+        }
+        if($result[0] > 0)
+	    return true;
+	else
+	    return false;
+    }
 }
 ?>
