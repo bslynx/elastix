@@ -97,6 +97,12 @@ function _moduleContent(&$smarty, $module_name)
 	case "export":
 	    $content = exportAccounts($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
 	    break;
+	case "viewFormEditQuota":
+	    $content = viewFormEditQuota($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+	    break;
+	case "edit_quota":
+	    $content = edit_quota($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+	    break;
         default:
             $content = viewFormAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
             break;
@@ -167,8 +173,8 @@ function viewFormAccount($smarty, $module_name, $local_templates_dir, &$pDB, $ar
 	    }
 	    $id_domain=$account[2];
 	    $arrTmp[0]=$direcciones;*/
-	    $arrTmp[0] = "&nbsp;<a href='?menu=email_accounts&action=view&username=$username'>$username</a>";
-	    $arrTmp[1] = obtener_quota_usuario($username);
+	    $arrTmp[0] = "&nbsp;<a href='?menu=$module_name&action=view&username=$username'>$username</a>";
+	    $arrTmp[1] = obtener_quota_usuario($username,$module_name,$arrLang);
 	    $link_agregar_direccion="<a href='?action=add_address&id_domain=$id_domain&username=$username'>Add Address</a>";
 	    $link_modificar_direccion="<a href='?action=edit_addresses&id_domain=$id_domain&username=$username'>Addresses</a>";
 	    //$arrTmp[3]=$link_agregar_direccion."&nbsp;&nbsp; ".$link_modificar_direccion;
@@ -242,8 +248,8 @@ function viewDetailAccount($smarty, $module_name, $local_templates_dir, &$pDB, $
 	$arrAccount = $pEmail->getAccount($userName);
 	//username, password, id_domain, quota
 	$arrTmp['username']  = $arrAccount[0][0];
-	$arrTmp['password1'] = "";
-	$arrTmp['password2'] = "";
+	$arrTmp['password1'] = "****";
+	$arrTmp['password2'] = "****";
 	$arrTmp['quota']     = isset($quota)?$quota:$arrAccount[0][3];
 	$id_domain           = $arrAccount[0][2];
 	$smarty->assign("username", $userName);
@@ -461,6 +467,82 @@ function saveOneAccount($smarty, &$pDB, $arrLang, $isFromFile)
     return $content;
 }
 
+function viewFormEditQuota($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
+{
+    $pEmail = new paloEmail($pDB);
+    $username = getParameter("username");
+    $quota    = getParameter("quota");
+    if(!$pEmail->accountExists($username)){
+	$smarty->assign("mb_title", $arrLang["ERROR"]);
+        $smarty->assign("mb_message", $arrLang["The following account does not exist"].": $username");
+	return viewFormAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+    }
+    $arrFormElements = createFieldFormEditQuota($arrLang);
+    $oForm = new paloForm($smarty, $arrFormElements);
+    $arrAccount = $pEmail->getAccount($username);
+    $smarty->assign("CANCEL", $arrLang["Cancel"]);
+    $smarty->assign("EDIT", $arrLang["Edit"]);
+    $smarty->assign("username", $username);
+    $smarty->assign("old_quota", $arrAccount[0][3]);
+    $smarty->assign("icon", "images/list.png");
+    $_POST["quota"] = (isset($quota))?$quota:$arrAccount[0][3];
+    $htmlForm = $oForm->fetchForm("$local_templates_dir/edit_quota.tpl", _tr("Edit quota to").": $username", $_POST);
+    $content = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
+    return $content;
+}
+
+function edit_quota($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
+{
+    $pEmail = new paloEmail($pDB);
+    $username = getParameter("username");
+    $quota    = getParameter("quota");
+    $old_quota = getParameter("old_quota");
+    if(!$pEmail->accountExists($username)){
+	$smarty->assign("mb_title", $arrLang["ERROR"]);
+        $smarty->assign("mb_message", $arrLang["The following account does not exist"].": $username");
+	return viewFormAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+    }
+    $arrFormElements = createFieldFormEditQuota($arrLang);
+    $oForm = new paloForm($smarty, $arrFormElements);
+    if(!$oForm->validateForm($_POST)) {
+        // Falla la validación básica del formulario
+        $strErrorMsg = "<b>".$arrLang['The following fields contain errors'].":</b><br/>";
+        $arrErrores = $oForm->arrErroresValidacion;
+        if(is_array($arrErrores) && count($arrErrores) > 0){
+            foreach($arrErrores as $k=>$v) {
+                $strErrorMsg .= "$k: [$v[mensaje]] <br /> ";
+            }
+        }
+	$smarty->assign("mb_title", $arrLang["Validation Error"]);
+        $smarty->assign("mb_message", $strErrorMsg);
+        return viewFormEditQuota($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+    }
+    $bExito=TRUE;
+    $error = "";
+    if($old_quota!=$quota){
+        $cyr_conn = new cyradm;
+        $cyr_conn->imap_login();
+        $bContinuar=$cyr_conn->setmbquota("user" . "/".$username, $quota);
+        if ($bContinuar){
+           //actualizar en la base de datos
+            $bExito=$pEmail->updateAccount($username, $quota);
+            if (!$bExito){
+                $error=(isset($arrLang[$pEmail->errMsg]))?$arrLang[$pEmail->errMsg]:$pEmail->errMsg;
+                $bExito=FALSE;
+            }
+        }else{
+            $error=$cyr_conn->getMessage();
+            $bExito=FALSE;
+        }
+    }
+    if(!$bExito){
+	$smarty->assign("mb_title", $arrLang["ERROR"]);
+        $smarty->assign("mb_message", $arrLang["Error applying changes"].". $error");
+    }else
+        $smarty->assign("mb_message", $arrLang["Changes Applied successfully"]);
+    return viewFormAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+}
+
 function exportAccounts($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
 {
     $pEmail = new paloEmail($pDB);
@@ -622,13 +704,13 @@ function crear_mailbox_usuario($db,$email,$username,&$error_msg){
 }
 
 
-function obtener_quota_usuario($username)
+function obtener_quota_usuario($username,$module_name,$arrLang)
 {
     global $CYRUS;
     global $arrLang;
     $cyr_conn = new cyradm;
     $cyr_conn->imap_login();
-
+    $edit_quota = $arrLang["Edit quota"];
     $quota = $cyr_conn->getquota("user/" . $username);
     $tamano_usado=$arrLang["Could not query used disc space"];
     if(is_array($quota) && count($quota)>0){
@@ -637,7 +719,7 @@ function obtener_quota_usuario($username)
             $q_total = $quota['qmax'];
             if (! $q_total == 0){
                 $q_percent = number_format((100*$q_used/$q_total),2);
-                $tamano_usado="$quota[used] KB / $quota[qmax] KB ($q_percent%)";
+                $tamano_usado="$quota[used] KB / <a href='?menu=$module_name&action=viewFormEditQuota&username=$username' title='$edit_quota'>$quota[qmax] KB</a> ($q_percent%)";
             } 
             else {
                 $tamano_usado=$arrLang["Could not obtain used disc space"];
@@ -650,7 +732,7 @@ function obtener_quota_usuario($username)
 }
 
 
-function edit_email_account($pDB,$error)
+function edit_email_account($pDB,&$error)
 {
     global $CYRUS;
     global $arrLang;
@@ -720,6 +802,20 @@ function createFieldFormNewAccount($arrLang)
     return $arrFields;
 }
 
+function createFieldFormEditQuota($arrLang)
+{
+    $arrFields = array(
+                             "quota"   => array("LABEL"                  => $arrLang["Quota (Kb)"],
+                                                    "REQUIRED"               => "yes",
+                                                    "INPUT_TYPE"             => "TEXT",
+                                                    "INPUT_EXTRA_PARAM"      => "",
+                                                    "VALIDATION_TYPE"        => "numeric",
+                                                    "VALIDATION_EXTRA_PARAM" => ""),
+                         );
+
+    return $arrFields;
+}
+
 function createFieldFormAccount($arrLang, $arrDominios)
 {
     $arrFields = array(
@@ -748,10 +844,14 @@ function getAction()
         return "apply_changes";
     else if(getParameter("cancel"))
         return "report";
+    else if(getParameter("edit_quota"))
+	return "edit_quota";
     else if(getParameter("action")=="view") //Get parameter by GET (command pattern, links)
         return "view";
     else if(getParameter("action")=="export")
 	return "export";
+    else if(getParameter("action")=="viewFormEditQuota")
+	return "viewFormEditQuota";
     else
         return "report";
 }
