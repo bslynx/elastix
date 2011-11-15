@@ -58,6 +58,7 @@ body.elx-blackmin-login>form>div>div div.input
     text-align: left;
     height: 32px;
 }
+
 /* Los siguientes estilos son básicos para la apariencia de la página */
 body
 {
@@ -66,6 +67,44 @@ body
     color: #000000;
     font-size: 9pt;
     margin: 0;
+}
+
+input
+{
+    color: #333333;
+    background: #fafafa;
+    border-top: 1px #999999 solid; 
+    border-left: 1px #999999 solid; 
+    border-bottom: 1px #cccccc solid; 
+    border-right: 1px #cccccc solid; 
+}
+textarea
+{
+    color: #333333;
+    background: #fafafa;
+    border-top: 1px #999999 solid; 
+    border-left: 1px #999999 solid; 
+    border-bottom: 1px #cccccc solid; 
+    border-right: 1px #cccccc solid; 
+}
+select
+{
+    color: #333333;
+    background: #fafafa;
+    border-top: 1px #999999 solid; 
+    border-left: 1px #999999 solid; 
+    border-bottom: 1px #cccccc solid; 
+    border-right: 1px #cccccc solid; 
+}
+input.button, input.submit
+{
+	border: 1px solid #999999;
+	background-color: #ffffff;
+}
+input:focus, textarea:focus, select:focus
+{
+    background-color: #ffffff;
+    border-color: #000000;
 }
 
 #elx-blackmin-content-menu
