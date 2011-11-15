@@ -205,5 +205,9 @@ $arrLang=array(
 "Retype New Password" => "Confirme la nueva clave",
 "Change" => "Actualizar",
 "Search modules" => "Busqueda de módulos",
+"Unauthorized" => "No Autorizado",
+"You are not authorized to access this page." => "Usted no está autorizado a acceder a esta página",
+"You have not permissions to access to Flash Operator Panel. Please contact your administrator." => "Usted no tiene permisos para acceder al Flash Operator Panel. Por favor contacte a su administrador.",
+"Advice" => "Advertencia"
 );
 ?>
