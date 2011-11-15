@@ -268,6 +268,10 @@ form.elx-blackmin-form-table>table>tfoot
     background: #000000;
     color: #ffffff;
 }
+form.elx-blackmin-form-table>table>thead>tr>th
+{
+    border-bottom: 1px #aaaaaa solid;
+}
 table.tabForm
 {
 	background: #fafafa;
