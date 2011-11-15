@@ -141,7 +141,6 @@ input:focus, textarea:focus, select:focus
 /* Definición del menú de la página */
 #elx-blackmin-menu
 {
-/*    background: rgba(0, 0, 0, 0.9);*/
 	background: #000000;
     color: #ffffff;
     position: absolute;
@@ -155,6 +154,10 @@ input:focus, textarea:focus, select:focus
 #elx-blackmin-menu ul
 {
     list-style-type: none;
+}
+#elx-blackmin-menu li
+{
+    line-height: normal;
 }
 #elx-blackmin-menu>ul
 {
