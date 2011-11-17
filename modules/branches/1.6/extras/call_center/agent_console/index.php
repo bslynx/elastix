@@ -867,15 +867,22 @@ function manejarSesionActiva_scheduleCall($oPaloConsola)
         'message'   =>  _tr('Call successfully scheduled'),
     );
 
-    $schedule = (getParameter('schedule_use_daterange') == 'true') ? array(
-        'date_init' =>  getParameter('schedule_date_start'),
-        'date_end'  =>  getParameter('schedule_date_end'), 
-        'time_init' =>  getParameter('schedule_time_start'),
-        'time_end'  =>  getParameter('schedule_time_end'),
+    $infoAgendar = getParameter('data');
+    foreach (array('schedule_new_phone', 'schedule_new_name', 
+        'schedule_use_daterange', 'schedule_use_sameagent', 
+        'schedule_date_start', 'schedule_date_end', 'schedule_time_start',
+        'schedule_time_end') as $k) 
+        if (!isset($infoAgendar[$k])) $infoAgendar[$k] = NULL;
+    
+    $schedule = ($infoAgendar['schedule_use_daterange'] == 'true') ? array(
+        'date_init' =>  $infoAgendar['schedule_date_start'],
+        'date_end'  =>  $infoAgendar['schedule_date_end'], 
+        'time_init' =>  $infoAgendar['schedule_time_start'],
+        'time_end'  =>  $infoAgendar['schedule_time_end'],
     ) : NULL;
-    $sameagent = (getParameter('schedule_use_sameagent') == 'true');
-    $newphone = getParameter('schedule_new_phone');
-    $newname = getParameter('schedule_new_name');
+    $sameagent = ($infoAgendar['schedule_use_sameagent'] == 'true');
+    $newphone = $infoAgendar['schedule_new_phone'];
+    $newname = $infoAgendar['schedule_new_name'];
     
     if (is_array($schedule) && ($schedule['date_init'] == '' || $schedule['date_end'] == '' ||
         $schedule['time_init'] == '' || $schedule['time_end'] == '')) {
