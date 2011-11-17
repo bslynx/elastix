@@ -1,3 +1,4 @@
+* Agent Console: allow scrolling on right panel. Fixes Elastix bug #1082.
 * Dialer (ECCP): Do not dial to *8888 anymore for agent login. Instead, dial
   channel directly into the AgentLogin application. This frees the dialer from
   having to know a special dialstring for agent login. Fixes Elastix bug #1076.
