@@ -441,7 +441,10 @@ function addBookmark(){
 	arrAction["rawmode"] = "yes";
 	var srcimg = $('#neo-logobox').find('img:first').attr("src");
 	var theme = srcimg.split("/",2);
-	var urlImaLoading = "<h1><img src='themes/"+theme[1]+"/images/busy.gif' /> "+$('#lblSending_request').val()+"...</h1>";
+	var urlImaLoading = "<h1><img src='themes/"+theme[1]+"/images/busy.gif' /> "+$('#toolTip_addingBookmark').val()+"...</h1>";
+	var imgBookmark = $("#togglebookmark").attr('src');
+	if(/bookmarkon.png/.test(imgBookmark))
+		urlImaLoading = "<h1><img src='themes/"+theme[1]+"/images/busy.gif' /> "+$('#toolTip_removingBookmark').val()+"...</h1>";
 	$.blockUI({ message: urlImaLoading });
 	request("index.php",arrAction,false,
 		function(arrData,statusResponse,error)
@@ -452,8 +455,12 @@ function addBookmark(){
 				var themeName = source_img.split("/",2);
 				var imgBookmark = $("#togglebookmark").attr('src');
 				if(/bookmarkon.png/.test(imgBookmark)) {
+				  var labeli = $("#toolTip_addBookmark").val();
+				  $("#togglebookmark").attr('title', labeli);
 				  $("#togglebookmark").attr('src',"themes/"+themeName[1]+"/images/bookmark.png");
 				} else {
+				  var labeli = $("#toolTip_removeBookmark").val();
+				  $("#togglebookmark").attr('title', labeli);
 				  $("#togglebookmark").attr('src',"themes/"+themeName[1]+"/images/bookmarkon.png");
 				}
 				alert(error);
@@ -463,6 +470,8 @@ function addBookmark(){
 				var idmenu = arrData['idmenu'];
 				var namemenu = arrData['menu_session'];
 				if(action == "add"){
+					var labeli = $("#toolTip_removeBookmark").val();
+					$("#togglebookmark").attr('title', labeli);
 					var link = "<div class='neo-historybox-tab' id='menu"+idmenu+"'><a href='index.php?menu="+namemenu+"' >"+menu+"</a></div>";
 					if($('div[id^=menu]').length == 0){
 						link = "<div class='neo-historybox-tabmid' id='menu"+idmenu+"'><a href='index.php?menu="+namemenu+"' >"+menu+"</a></div>";
@@ -471,6 +480,8 @@ function addBookmark(){
 					$('#neo-bookmarkID').after(link);
 				}
 				if(action == "delete"){
+					var labeli = $("#toolTip_addBookmark").val();
+					$("#togglebookmark").attr('title', labeli);
 					// el anterior debe tener la clase neo-historybox-tabmid
 					$('#menu'+idmenu).remove();
 					if($('div[id^=menu]').length == 0){
@@ -501,7 +512,9 @@ function saveToggleTab(){
 	arrAction["rawmode"] = "yes";
 	var srcimg = $('#neo-logobox').find('img:first').attr("src");
 	var theme = srcimg.split("/",2);
-	var urlImaLoading = "<h1><img src='themes/"+theme[1]+"/images/busy.gif' /> "+$('#lblSending_request').val()+"...</h1>";
+	var urlImaLoading = "<h1><img src='themes/"+theme[1]+"/images/busy.gif' /> "+$('#toolTip_hidingTab').val()+"...</h1>";
+	if(arrAction["statusTab"] == "false")
+		urlImaLoading = "<h1><img src='themes/"+theme[1]+"/images/busy.gif' /> "+$('#toolTip_showingTab').val()+"...</h1>";
 	$.blockUI({ message: urlImaLoading });
 	request("index.php",arrAction,false,
 		function(arrData,statusResponse,error)
@@ -509,16 +522,27 @@ function saveToggleTab(){
 			$.unblockUI();
 			if(statusResponse == "false"){
 				if(!$('#neo-lengueta-minimized').hasClass('neo-display-none')){
-				  $("#neo-contentbox-leftcolumn").removeClass("neo-contentbox-leftcolumn-minimized");
-				  $("#neo-contentbox-maincolumn").css("width", "1025px");
-				  $("#neo-contentbox-leftcolumn").data("neo-contentbox-leftcolum-status", "visible");
-				  $("#neo-lengueta-minimized").addClass("neo-display-none");
-				}else{
-				  $("#neo-contentbox-leftcolumn").addClass("neo-contentbox-leftcolumn-minimized");
-				  $("#neo-contentbox-maincolumn").css("width", "1245px");
-				  $("#neo-contentbox-leftcolumn").data("neo-contentbox-leftcolum-status", "hidden");
-				  $("#neo-lengueta-minimized").removeClass("neo-display-none");
-				}
+					  $("#neo-contentbox-leftcolumn").removeClass("neo-contentbox-leftcolumn-minimized");
+					  $("#neo-contentbox-maincolumn").css("width", "1025px");
+					  $("#neo-contentbox-leftcolumn").data("neo-contentbox-leftcolum-status", "visible");
+					  $("#neo-lengueta-minimized").addClass("neo-display-none");
+					  if($('#toggleleftcolumn')){
+						  var labeli = $('#toolTip_hideTab').val();
+						  $('#toggleleftcolumn').attr('title',labeli);
+						  $('#toggleleftcolumn').attr('src',"images/expand.png");
+						  
+					  }
+					}else{
+					  $("#neo-contentbox-leftcolumn").addClass("neo-contentbox-leftcolumn-minimized");
+					  $("#neo-contentbox-maincolumn").css("width", "1245px");
+					  $("#neo-contentbox-leftcolumn").data("neo-contentbox-leftcolum-status", "hidden");
+					  $("#neo-lengueta-minimized").removeClass("neo-display-none");
+					  if($('#toggleleftcolumn')){
+						  var labeli = $('#toolTip_showTab').val();
+						  $('#toggleleftcolumn').attr('title',labeli);
+						  $('#toggleleftcolumn').attr('src',"images/expandOut.png");
+					  }
+					}
 				alert(error);
 			}
 		}

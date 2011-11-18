@@ -208,8 +208,15 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
 		$smarty->assign("CHANGE_PASSWORD_BTN", _tr("Change"));
 		$smarty->assign("MENU_COLOR", $menuColor);
 		$smarty->assign("MODULES_SEARCH", _tr("Search modules"));
-		$smarty->assign("SEND_REQUEST", _tr("Sending Request"));
 		$smarty->assign("viewMenuTab", getStatusNeoTabToggle());
+		$smarty->assign("ADD_BOOKMARK", _tr("Add Bookmark"));
+		$smarty->assign("REMOVE_BOOKMARK", _tr("Remove Bookmark"));
+		$smarty->assign("ADDING_BOOKMARK", _tr("Adding Bookmark"));
+		$smarty->assign("REMOVING_BOOKMARK", _tr("Removing Bookmark"));
+		$smarty->assign("HIDING_IZQTAB", _tr("Hiding left panel"));
+		$smarty->assign("SHOWING_IZQTAB", _tr("Loading left panel"));
+		$smarty->assign("HIDE_IZQTAB", _tr("Hide left panel"));
+		$smarty->assign("SHOW_IZQTAB", _tr("Load left panel"));
 	}
 	else{
 		$smarty->assign("ABOUT_ELASTIX",$arrLang['About Elastix']." ".$arrConf['elastix_version']);
