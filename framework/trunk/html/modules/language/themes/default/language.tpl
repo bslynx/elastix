@@ -12,7 +12,7 @@
 </table>
 <table class="tabForm" style="font-size: 16px;" width="100%" >
     <tr class="letra12">
-        <td width="15%"><b>{$language.LABEL}:</b></td>
+        <td width="9%"><b>{$language.LABEL}:</b></td>
 	<td width="35%">{$language.INPUT}</td>
     </tr>
 </table>
