@@ -1,3 +1,4 @@
+<form method="POST">
 <table width="99%" border="0" cellspacing="0" cellpadding="4" align="center">
     <tr class="letra12">
 	<td>
@@ -15,3 +16,4 @@
 	<td width="35%">{$language.INPUT}</td>
     </tr>
 </table>
+</form>
