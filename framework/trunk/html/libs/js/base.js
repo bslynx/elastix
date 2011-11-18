@@ -486,7 +486,6 @@ function addBookmark(){
 
 					}
 				}
-				alert(error);
 			}
 		}
 	);
@@ -520,8 +519,8 @@ function saveToggleTab(){
 				  $("#neo-contentbox-leftcolumn").data("neo-contentbox-leftcolum-status", "hidden");
 				  $("#neo-lengueta-minimized").removeClass("neo-display-none");
 				}
+				alert(error);
 			}
-			alert(error);
 		}
 	);
 }
