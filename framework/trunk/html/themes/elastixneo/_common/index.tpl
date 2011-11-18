@@ -45,13 +45,7 @@
 			<div id="neo-lengueta-minimized" class="neo-display-none"></div>
 				{/if}
 			{else}
-				{if $viewMenuTab eq 'true'}
 			<div id="neo-lengueta-minimized"></div>
-				{elseif $viewMenuTab eq 'false'}
-			<div id="neo-lengueta-minimized" class="neo-display-none"></div>
-				{else}
-			<div id="neo-lengueta-minimized"></div>
-				{/if}
 			{/if}
 		</div>
 		<div align="center" id="neo-footerbox"> <!-- mostrando el footer -->

@@ -164,11 +164,21 @@ $(document).ready(function(){
 		  $("#neo-contentbox-maincolumn").css("width", "1025px");
 	      $("#neo-contentbox-leftcolumn").data("neo-contentbox-leftcolum-status", "visible");
 		  $("#neo-lengueta-minimized").addClass("neo-display-none");
+		  if($('#toggleleftcolumn')){
+			  var labeli = $('#toolTip_hideTab').val();
+			  $('#toggleleftcolumn').attr('title',labeli);
+			  $('#toggleleftcolumn').attr('src',"images/expand.png");
+		  }
 	    }else{
 		  $("#neo-contentbox-leftcolumn").addClass("neo-contentbox-leftcolumn-minimized");
 		  $("#neo-contentbox-maincolumn").css("width", "1245px");
 		  $("#neo-contentbox-leftcolumn").data("neo-contentbox-leftcolum-status", "hidden");
 		  $("#neo-lengueta-minimized").removeClass("neo-display-none");
+		  if($('#toggleleftcolumn')){
+			  var labeli = $('#toolTip_showTab').val();
+			  $('#toggleleftcolumn').attr('title',labeli);
+			  $('#toggleleftcolumn').attr('src',"images/expandOut.png");
+		  }
 		}
 	});
 	$("#togglebookmark").click(function() {
@@ -176,9 +186,9 @@ $(document).ready(function(){
 		var themeName = source_img.split("/",2);
 		var imgBookmark = $("#togglebookmark").attr('src');
 		if(/bookmarkon.png/.test(imgBookmark)) {
-		  $("#togglebookmark").attr('src',"themes/"+themeName[1]+"/images/bookmark.png");
+			$("#togglebookmark").attr('src',"themes/"+themeName[1]+"/images/bookmark.png");
 		} else {
-		  $("#togglebookmark").attr('src',"themes/"+themeName[1]+"/images/bookmarkon.png");
+			$("#togglebookmark").attr('src',"themes/"+themeName[1]+"/images/bookmarkon.png");
 		}
 	});
 	$("#neo-cmenu-cpallet").hover(
@@ -408,6 +418,14 @@ $(document).ready(function(){
 <input type="hidden" id="btnChagePass" value="{$CHANGE_PASSWORD_BTN}" />
 <input type="hidden" id="userMenuColor" value="{$MENU_COLOR}" />
 <input type="hidden" id="lblSending_request" value="{$SEND_REQUEST}" />
+<input type="hidden" id="toolTip_addBookmark" value="{$ADD_BOOKMARK}" />
+<input type="hidden" id="toolTip_removeBookmark" value="{$REMOVE_BOOKMARK}" />
+<input type="hidden" id="toolTip_addingBookmark" value="{$ADDING_BOOKMARK}" />
+<input type="hidden" id="toolTip_removingBookmark" value="{$REMOVING_BOOKMARK}" />
+<input type="hidden" id="toolTip_hideTab" value="{$HIDE_IZQTAB}" />
+<input type="hidden" id="toolTip_showTab" value="{$SHOW_IZQTAB}" />
+<input type="hidden" id="toolTip_hidingTab" value="{$HIDING_IZQTAB}" />
+<input type="hidden" id="toolTip_showingTab" value="{$SHOWING_IZQTAB}" />
 
 <div id="neo-headerbox">
 	<div id="neo-logobox"><img src="themes/{$THEMENAME}/images/elastix_logo_mini2.png" width="200" height="59" alt="elastix" longdesc="http://www.elastix.org" /></div>
@@ -508,38 +526,39 @@ $(document).ready(function(){
 	      {/if}
 	      &nbsp;{$title}</span><div class="neo-module-name-right"></div>
 	      <div class="neo-module-title-buttonstab-right"></div><span class="neo-module-title-buttonstab">
-	      <img src="images/expand.png" width="24" height="24" alt="expand" id="toggleleftcolumn" class="neo-picker" border="0" onclick='saveToggleTab()'/>
-		  <img src="themes/{$THEMENAME}/images/{$IMG_BOOKMARKS}" width="24" height="24" alt="bookmark" id="togglebookmark" style="cursor: pointer;" onclick='addBookmark()' />
+		  {if $viewMenuTab eq 'true'}
+	      <img src="images/expandOut.png" width="24" height="24" alt="expand" id="toggleleftcolumn" class="neo-picker" border="0" onclick='saveToggleTab()' title="{$SHOW_IZQTAB}" />
+		  {elseif $viewMenuTab eq 'false'}
+		   <img src="images/expand.png" width="24" height="24" alt="expand" id="toggleleftcolumn" class="neo-picker" border="0" onclick='saveToggleTab()' title="{$HIDE_IZQTAB}" />
+		  {else}
+		   <img src="images/expand.png" width="24" height="24" alt="expand" id="toggleleftcolumn" class="neo-picker" border="0" onclick='saveToggleTab()' title="{$HIDE_IZQTAB}" />
+		  {/if}
+		  {if $IMG_BOOKMARKS eq 'bookmark.png'}
+		  <img src="themes/{$THEMENAME}/images/{$IMG_BOOKMARKS}" width="24" height="24" alt="bookmark" title="{$ADD_BOOKMARK}" id="togglebookmark" style="cursor: pointer;" onclick='addBookmark()' />
+		  {else}
+		  <img src="themes/{$THEMENAME}/images/{$IMG_BOOKMARKS}" width="24" height="24" alt="bookmark" title="{$REMOVE_BOOKMARK}" id="togglebookmark" style="cursor: pointer;" onclick='addBookmark()' />
+		  {/if}
 	      <a href="javascript:popUp('help/?id_nodo={$idSubMenuSelected}&amp;name_nodo={$nameSubMenuSelected}','1000','460')">
-	      <img src="images/icon-help.png" width="24" height="24" alt="help" class="neo-picker" border="0"/></a></span><div class="neo-module-title-buttonstab-left"></div></div>
+	      <img src="images/icon-help.png" width="24" height="24" alt="help" title="{$HELP}" class="neo-picker" border="0"/></a></span><div class="neo-module-title-buttonstab-left"></div></div>
 	      <div class="neo-module-content">
 	{else}
-		{if $viewMenuTab eq 'true'}
 	<div id="neo-contentbox-leftcolumn" class="neo-contentbox-leftcolumn-minimized">
-		{elseif $viewMenuTab eq 'false'}
-	<div id="neo-contentbox-leftcolumn">
-		{else}
-	<div id="neo-contentbox-leftcolumn" class="neo-contentbox-leftcolumn-minimized">
-		{/if}
 		<div id="neo-historybox">
 			{$SHORTCUT}
 		</div>
 	</div>
-		{if $viewMenuTab eq 'true'}
 	<div id="neo-contentbox-maincolumn" style="width: 1245px;">
-		{elseif $viewMenuTab eq 'false'}
-	<div id="neo-contentbox-maincolumn" style="width: 1025px;">
-		{else}
-	<div id="neo-contentbox-maincolumn" style="width: 1245px;">
-		{/if}
 	    <div class="neo-module-title"><div class="neo-module-name-left"></div><span class="neo-module-name">
 	      {if $icon ne null}
 	      <img src="{$icon}" width="22" height="22" align="absmiddle" />
 	      {/if}
 	      &nbsp;{$title}</span><div class="neo-module-name-right"></div>
 	      <div class="neo-module-title-buttonstab-right"></div><span class="neo-module-title-buttonstab">
-		  <img src="images/expand.png" width="24" height="24" alt="expand" id="toggleleftcolumn" class="neo-picker" border="0" onclick='saveToggleTab()'/>
-		  <img src="themes/{$THEMENAME}/images/{$IMG_BOOKMARKS}" width="24" height="24" alt="bookmark" id="togglebookmark" style="cursor: pointer;" onclick='addBookmark();'/>
+		  {if $IMG_BOOKMARKS eq 'bookmark.png'}
+		  <img src="themes/{$THEMENAME}/images/{$IMG_BOOKMARKS}" width="24" height="24" alt="bookmark" title="{$ADD_BOOKMARK}" id="togglebookmark" style="cursor: pointer;" onclick='addBookmark()' />
+		  {else}
+		  <img src="themes/{$THEMENAME}/images/{$IMG_BOOKMARKS}" width="24" height="24" alt="bookmark" title="{$REMOVE_BOOKMARK}" id="togglebookmark" style="cursor: pointer;" onclick='addBookmark()' />
+		  {/if}
 	      <a href="javascript:popUp('help/?id_nodo={$idSubMenuSelected}&amp;name_nodo={$nameSubMenuSelected}','1000','460')">
 	      <img src="images/icon-help.png" width="24" height="24" alt="help" border="0"/></a></span><div class="neo-module-title-buttonstab-left"></div></div>
 	 <div class="neo-module-content">
