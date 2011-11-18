@@ -74,7 +74,7 @@ function _moduleContent(&$smarty, $module_name)
 
     // Definición del formulario de nueva campaña
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
-    $smarty->assign("CHANGE", $arrLang["Change"]);
+    $smarty->assign("CHANGE", $arrLang["Save"]);
 
     $oThemes = new PaloSantoThemes($pDB); 
     $arr_themes = $oThemes->getThemes("$base_dir/themes/");
