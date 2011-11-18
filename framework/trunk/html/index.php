@@ -208,6 +208,8 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
 		$smarty->assign("CHANGE_PASSWORD_BTN", _tr("Change"));
 		$smarty->assign("MENU_COLOR", $menuColor);
 		$smarty->assign("MODULES_SEARCH", _tr("Search modules"));
+		$smarty->assign("SEND_REQUEST", _tr("Sending Request"));
+		$smarty->assign("viewMenuTab", getStatusNeoTabToggle());
 	}
 	else{
 		$smarty->assign("ABOUT_ELASTIX",$arrLang['About Elastix']." ".$arrConf['elastix_version']);
@@ -265,6 +267,56 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
 		return;
 	}
 
+	$arrParentMenuId = $oPn->getIdParentMenu($menu);
+	$menuBookmark = $menu;
+	if($arrParentMenuId == ""){ // no tiene padre entonces es un menu de 1 nivel
+		$menuBookmark = $oPn->getIdFirstSubMenu($menu);
+		$salRes = $oPn->getIdFirstSubMenu($menuBookmark);
+		if($salRes !== FALSE)
+			$menuBookmark = $salRes;
+	}else{ // tiene padre entonces puede ser un menu de 2 o 3 nivel
+		// se pregunta si tiene un primer hijo
+		$salRes = $oPn->getIdFirstSubMenu($menu);
+		if($salRes !== FALSE){ // si no tiene un hijo entonces es de 2 nivel
+			$menuBookmark = $salRes;
+		}else{ // es de 3 nivel
+			$menuBookmark = $menu;
+		}
+	}
+
+	if(getParameter("action") == "addBookmark"){
+		include_once "libs/paloSantoJSON.class.php";
+		$jsonObject = new PaloSantoJSON();
+		$output = putMenuAsBookmark($menuBookmark);
+		if($output['status'] === TRUE){
+			$jsonObject->set_status("true");
+		}else
+			$jsonObject->set_status("false");
+		$jsonObject->set_error($output['msg']);
+		$jsonObject->set_message($output['data']);
+		echo $jsonObject->createJSON();
+		return;
+	}
+
+	if(menuIsBookmark($menuBookmark))
+		$smarty->assign("IMG_BOOKMARKS", "bookmarkon.png");
+	else
+		$smarty->assign("IMG_BOOKMARKS", "bookmark.png");
+
+
+	if(getParameter("action") == "saveNeoToggleTab"){
+		include_once "libs/paloSantoJSON.class.php";
+		$jsonObject = new PaloSantoJSON();
+		$statusTab  = getParameter("statusTab");
+		$output = saveNeoToggleTabByUser($menuBookmark, $statusTab);
+		if($output['status'] === TRUE){
+			$jsonObject->set_status("true");
+		}else
+			$jsonObject->set_status("false");
+		$jsonObject->set_error($output['msg']);
+		echo $jsonObject->createJSON();
+		return;
+	}
 
     // Inicializa el objeto palosanto navigation
     if (count($arrMenuFiltered)>0)
@@ -286,6 +338,9 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
             if (count($arrMenuFiltered)>0){
                 $menu_html = $smarty->fetch("_common/_menu.tpl");
                 $smarty->assign("MENU",$menu_html);
+				// agregar el menu como modulo visitado recientemente
+				
+				putMenuAsHistory($menuBookmark);
             }
             else{
                 $smarty->assign("MENU","No modules");

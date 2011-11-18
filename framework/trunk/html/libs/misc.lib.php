@@ -749,8 +749,9 @@ function getMenuColorByMenu()
 		if ($tabla === FALSE) {
 		  $arrResult['msg'] = _tr("ERROR DB: ").$pdbACL->errMsg;
 		} else {
-			if($tabla[0] == "menuColor")
-				$color = $tabla[1];
+			if(count($tabla) > 0)
+				if($tabla[0] == "menuColor")
+					$color = $tabla[1];
 		}
 	}
 	return $color;
@@ -830,6 +831,254 @@ function changeMenuColorByUser()
 		}
 	}
 	return $arrResult;
+}
+
+function putMenuAsHistory($menu)
+{
+	include_once "libs/paloSantoACL.class.php";
+	$success = false;
+	if($menu != ""){
+		$user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
+		global $arrConf;
+		$pdbACL = new paloDB("sqlite3:///$arrConf[elastix_dbdir]/acl.db");
+		$pACL = new paloACL($pdbACL);
+		$uid = $pACL->getIdUser($user);
+		if($uid!==FALSE){
+			//verificar de que ya no este en la base de datos
+			$id_resource = $pACL->getResourceId($menu);
+			$exist = false;
+			$history = "SELECT aus.id AS id, ar.id AS id_menu, ar.name AS name, ar.description AS description FROM acl_user_shortcut aus, acl_resource ar WHERE id_user = ? AND type = 'history' AND ar.id = aus.id_resource ORDER BY aus.id DESC";
+			
+			$arr_result1 = $pdbACL->fetchTable($history, TRUE, array($uid));
+			if($arr_result1 !== FALSE){
+				// verificar si ya existe menu en tabla acl_user_shortcut con ese usuario
+				$i = 0;
+				$arrIDS = array();
+				foreach($arr_result1 as $key => $value){
+					$arrNew[] = $value;
+					$arrIDS[] = $value['id'];
+					if($value['name'] == $menu){
+						$exist = true;
+						if($i==0) return true;
+					}
+					$i++;
+				}
+				if(!$exist && count($arr_result1) <= 4){
+					$pdbACL->beginTransaction();
+					$query = "INSERT INTO acl_user_shortcut(id_user, id_resource, type) VALUES(?, ?, ?)";
+					$r = $pdbACL->genQuery($query, array($uid, $id_resource, "history"));
+					if(!$r){
+						$pdbACL->rollBack();
+						return false;
+					}else{
+						$pdbACL->commit();
+						return true;
+					}
+				}else{
+					$pdbACL->beginTransaction();
+					$success = true;
+					$tmp = "";
+					$query = "UPDATE acl_user_shortcut SET id_resource = ? WHERE id_user = ? AND id = ? AND type = ?";
+					for($i=0; $i<count($arrIDS); $i++){
+						$id = $arrIDS[$i];
+						$id_menu = $arrNew[$i]["id_menu"];
+						
+						$r = true;
+						if($i==0){
+							$tmp = $id_menu;
+							$r = $pdbACL->genQuery($query, array($id_resource, $uid, $id, "history"));
+						}else{
+							if($id_menu != $id_resource){
+								if($tmp != $id_resource && $tmp != ""){
+									$r = $pdbACL->genQuery($query, array($tmp, $uid, $id, "history"));
+									$tmp = $id_menu;
+								}else
+									$tmp = "";
+							}else{
+								$r = $pdbACL->genQuery($query, array($tmp, $uid, $id, "history"));
+								$tmp = $id_menu;
+							}
+						}
+						if(!$r)
+							$success = false;
+					}
+					if($success)
+						$pdbACL->commit();
+					else
+						$pdbACL->rollBack();
+				}
+			}
+		}
+	}
+	return $success;
+}
+
+function putMenuAsBookmark($menu)
+{
+	include_once "libs/paloSantoACL.class.php";
+	$arrResult['status'] = FALSE;
+	$arrResult['data'] = array("action" => "none", "menu" => "$menu");
+	$arrResult['msg'] = _tr("Please your session id does not exist. Refresh the browser and try again.");
+	if($menu != ""){
+		$user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
+		global $arrConf;
+		$pdbACL = new paloDB("sqlite3:///$arrConf[elastix_dbdir]/acl.db");
+		$pACL = new paloACL($pdbACL);
+		$uid = $pACL->getIdUser($user);
+		if($uid!==FALSE){
+			$id_resource = $pACL->getResourceId($menu);
+			$resource = $pACL->getResources($id_resource);
+			$exist = false;
+			$bookmarks = "SELECT aus.id AS id, ar.id AS id_menu, ar.name AS name, ar.description AS description FROM acl_user_shortcut aus, acl_resource ar WHERE id_user = ? AND type = 'bookmark' AND ar.id = aus.id_resource ORDER BY aus.id DESC";
+			$arr_result1 = $pdbACL->fetchTable($bookmarks, TRUE, array($uid));
+			if($arr_result1 !== FALSE){
+				$i = 0;
+				$arrIDS = array();
+				foreach($arr_result1 as $key => $value){
+					if($value['id_menu'] == $id_resource)
+						$exist = true;
+				}
+				if($exist){
+					$pdbACL->beginTransaction();
+					$query = "DELETE FROM acl_user_shortcut WHERE id_user = ? AND id_resource = ? AND type = ?";
+					$r = $pdbACL->genQuery($query, array($uid, $id_resource, "bookmark"));
+					if(!$r){
+						$pdbACL->rollBack();
+						$arrResult['status'] = FALSE;
+						$arrResult['data'] = array("action" => "delete", "menu" => _tr($resource[0][2]), "idmenu" => $id_resource, "menu_session" => $menu);
+						$arrResult['msg'] = _tr("Bookmark cannot be removed. Please try again or contact with your elastix administrator and notify the next error: ").$pdbACL->errMsg;
+						return $arrResult;
+					}else{
+						$pdbACL->commit();
+						$arrResult['status'] = TRUE;
+						$arrResult['data'] = array("action" => "delete", "menu" => _tr($resource[0][2]), "idmenu" => $id_resource,  "menu_session" => $menu);
+						$arrResult['msg'] = _tr("Bookmark has been removed.");
+						return $arrResult;
+					}
+				}
+
+				if(count($arr_result1) > 4){
+					$arrResult['msg'] = _tr("The bookmark maximum is 5. Please uncheck one in order to add this bookmark");
+				}else{
+					$pdbACL->beginTransaction();
+					$query = "INSERT INTO acl_user_shortcut(id_user, id_resource, type) VALUES(?, ?, ?)";
+					$r = $pdbACL->genQuery($query, array($uid, $id_resource, "bookmark"));
+					if(!$r){
+						$pdbACL->rollBack();
+						$arrResult['status'] = FALSE;
+						$arrResult['data'] = array("action" => "add", "menu" => _tr($resource[0][2]), "idmenu" => $id_resource,  "menu_session" => $menu );
+						$arrResult['msg'] = _tr("Bookmark cannot be added. Please try again or contact with your elastix administrator and notify the next error: ").$pdbACL->errMsg;
+					}else{
+						$pdbACL->commit();
+						$arrResult['status'] = TRUE;
+					    $arrResult['data'] = array("action" => "add", "menu" => _tr($resource[0][2]), "idmenu" => $id_resource,  "menu_session" => $menu );
+						$arrResult['msg'] = _tr("Bookmark has been added.");
+						return $arrResult;
+					}
+				}
+			}
+		}
+	}
+	return $arrResult;
+}
+
+function menuIsBookmark($menu)
+{
+	include_once "libs/paloSantoACL.class.php";
+	if($menu != ""){
+		$user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
+		global $arrConf;
+		$pdbACL = new paloDB("sqlite3:///$arrConf[elastix_dbdir]/acl.db");
+		$pACL = new paloACL($pdbACL);
+		$uid = $pACL->getIdUser($user);
+		if($uid!==FALSE){
+			$id_resource = $pACL->getResourceId($menu);
+			$bookmarks = "SELECT id FROM acl_user_shortcut WHERE id_user = ? AND id_resource = ? AND type = ?";
+			$arr_result1 = $pdbACL->fetchTable($bookmarks, TRUE, array($uid,$id_resource,"bookmark"));
+			if($arr_result1 !== FALSE){
+				if(count($arr_result1) > 0)
+					return true;
+				else
+					return false;
+			}else
+				return false;
+		}
+	}
+	return false;
+}
+
+function saveNeoToggleTabByUser($menu, $action_status)
+{
+	include_once "libs/paloSantoACL.class.php";
+	$arrResult['status'] = FALSE;
+	$arrResult['msg'] = _tr("Please your session id does not exist. Refresh the browser and try again.");
+	if($menu != ""){
+		$user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
+		global $arrConf;
+		$pdbACL = new paloDB("sqlite3:///$arrConf[elastix_dbdir]/acl.db");
+		$pACL = new paloACL($pdbACL);
+		$uid = $pACL->getIdUser($user);
+		if($uid!==FALSE){
+			$exist = false;
+			$togglesTabs = "SELECT * FROM acl_user_shortcut WHERE id_user = ? AND type = 'NeoToggleTab'";
+			$arr_result1 = $pdbACL->getFirstRowQuery($togglesTabs, TRUE, array($uid));
+			if($arr_result1 !== FALSE && count($arr_result1) > 0)
+				$exist = true;
+
+			if($exist){
+				$pdbACL->beginTransaction();
+				$query = "UPDATE acl_user_shortcut SET description = ? WHERE id_user = ? AND type = ?";
+				$r = $pdbACL->genQuery($query, array($action_status, $uid, "NeoToggleTab"));
+				if(!$r){
+					$pdbACL->rollBack();
+					$arrResult['status'] = FALSE;
+					$arrResult['msg'] = _tr("Request cannot be completed. Please try again or contact with your elastix administrator and notify the next error: ").$pdbACL->errMsg;
+					return $arrResult;
+				}else{
+					$pdbACL->commit();
+					$arrResult['status'] = TRUE;
+					$arrResult['msg'] = _tr("Request has been sent.");
+					return $arrResult;
+				}
+			}else{
+				$pdbACL->beginTransaction();
+				$query = "INSERT INTO acl_user_shortcut(id_user, id_resource, type, description) VALUES(?, ?, ?, ?)";
+				$r = $pdbACL->genQuery($query, array($uid, $uid, "NeoToggleTab", $action_status));
+				if(!$r){
+					$pdbACL->rollBack();
+					$arrResult['status'] = FALSE;
+					$arrResult['msg'] = _tr("Request cannot be completed. Please try again or contact with your elastix administrator and notify the next error: ").$pdbACL->errMsg;
+					return $arrResult;
+				}else{
+					$pdbACL->commit();
+					$arrResult['status'] = TRUE;
+					$arrResult['msg'] = _tr("Request has been sent.");
+					return $arrResult;
+				}
+			}
+		}
+	}
+	return $arrResult;
+}
+
+function getStatusNeoTabToggle()
+{
+	include_once "libs/paloSantoACL.class.php";
+	$user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
+	global $arrConf;
+	$exist = false;
+	$pdbACL = new paloDB("sqlite3:///$arrConf[elastix_dbdir]/acl.db");
+	$pACL = new paloACL($pdbACL);
+	$uid = $pACL->getIdUser($user);
+	$togglesTabs = "SELECT * FROM acl_user_shortcut WHERE id_user = ? AND type = 'NeoToggleTab'";
+	$arr_result1 = $pdbACL->getFirstRowQuery($togglesTabs, TRUE, array($uid));
+	if($arr_result1 !== FALSE && count($arr_result1) > 0)
+		$exist = true;
+	if($exist){
+		return $arr_result1['description'];
+	}else{
+	  return "none";
+	}
 }
 
 ?>

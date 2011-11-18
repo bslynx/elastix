@@ -95,6 +95,7 @@ class paloSantoNavigation {
     function showMenu($idMenuSelected)
     {
         $arrIds=array();
+		$isThirdLevel = "off";////////////////////////////////////////////////////////
         // Valido el menu que se paso como argumento
         if(!empty($idMenuSelected) and $this->isValidMenu($idMenuSelected)) {
 
@@ -185,6 +186,7 @@ class paloSantoNavigation {
 				$i++;
 			}
 			$arrMainMenu = array_merge($mainMenues, $secondMenues);
+			$this->smarty->assign("SHORTCUT",$this->loadShortcut());///////////////////////////
 		}
 		/************* para elastixneo**********/
 
@@ -197,6 +199,8 @@ class paloSantoNavigation {
         // Get the 3th level menu
         $arrSubMenu2 = $this->getArrSubMenu($currSubMenu); 
         $this->smarty->assign("arrSubMenu2", $arrSubMenu2);
+		if(is_array($arrSubMenu2) && !empty($arrSubMenu2))////////////////////////////////////////////
+			$isThirdLevel = "on";//////////////////////////////////////////////
 
         $arrSubMenuByParents = $this->getArrSubMenuByParents($currMainMenu); // added by eduardo
         $this->smarty->assign("arrSubMenuByParents", $arrSubMenuByParents);   // added by eduardo
@@ -207,6 +211,7 @@ class paloSantoNavigation {
         $this->smarty->assign("nameMainMenuSelected", $arrMainMenu[$currMainMenu]['Name']);
         $this->smarty->assign("nameSubMenuSelected",  $arrSubMenu[$currSubMenu]['Name']);
         $this->smarty->assign("nameSubMenu2Selected",  $arrSubMenu2[$currSubMenu2]['Name']);
+		$this->smarty->assign("isThirdLevel", $isThirdLevel);//////////////////////////////////////////////////////////
 
 	if(isset($_GET) && count($_GET) == 1 && isset($_GET['menu'])){
 	  $navigation  = $arrMainMenu[$currMainMenu]['Name']." >> ".$arrSubMenu[$currSubMenu]['Name'];
@@ -386,7 +391,7 @@ class paloSantoNavigation {
     *   This function put the tags css and js per each module and the libs of the framework
     *
     * Example: 
-    *   $array = obtainFiles('calendar');
+    *   $array = putHEAD_MODULE_HTML('calendar');
     *
     * Developer: 
     *   Eduardo Cueva
@@ -479,12 +484,56 @@ class paloSantoNavigation {
     *   ecueva@palosanto.com
     */
     function obtainFiles($dir,$type){
-            $files =  glob($dir."/{*.$type}",GLOB_BRACE);
-            $names ="";
-            foreach ($files as $ima)
-                $names[]=array_pop(explode("/",$ima));
-            if(!$names) return false;
-            return $names;
+		$files =  glob($dir."/{*.$type}",GLOB_BRACE);
+		$names ="";
+		foreach ($files as $ima)
+			$names[]=array_pop(explode("/",$ima));
+		if(!$names) return false;
+		return $names;
     }
+
+	function loadShortcut()
+	{
+		include_once "libs/paloSantoACL.class.php";
+		$user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
+		global $arrConf;
+		$pdbACL = new paloDB("sqlite3:///$arrConf[elastix_dbdir]/acl.db");
+		$pACL = new paloACL($pdbACL);
+		$uid = $pACL->getIdUser($user);
+		$htmlData = "";
+		
+		if($uid===FALSE)
+			$htmlData = "";
+		else{
+			$bookmarks = "SELECT aus.id AS id, ar.description AS name, ar.id AS id_menu, ar.name AS namemenu FROM acl_user_shortcut aus, acl_resource ar WHERE id_user = ? AND type = 'bookmark' AND ar.id = aus.id_resource ORDER BY aus.id DESC";
+			$history   = "SELECT aus.id AS id, ar.description AS name, ar.id AS id_menu, ar.name AS namemenu FROM acl_user_shortcut aus, acl_resource ar WHERE id_user = ? AND type = 'history' AND ar.id = aus.id_resource ORDER BY aus.id DESC";
+
+			$arr_result1 = $pdbACL->fetchTable($bookmarks, TRUE, array($uid));
+			if ($arr_result1 !== FALSE && count($arr_result1) > 0) {
+				$htmlData .= "<div id='neo-bookmarkID' class='neo-historybox-tabon'>"._tr("Bookmarks")."</div>";
+				$cont = 1;
+				foreach($arr_result1 as $key => $value){
+					if($cont < count($arr_result1))
+						$htmlData .= "<div class='neo-historybox-tab' id='menu".$value['id_menu']."' ><a href='index.php?menu=".$value['namemenu']."' >"._tr($value['name'])."</a></div>";
+					else
+						$htmlData .= "<div class='neo-historybox-tabmid' id='menu".$value['id_menu']."' ><a href='index.php?menu=".$value['namemenu']."' >"._tr($value['name'])."</a></div>";
+					$cont++;
+				}
+			}else{
+				$htmlData .= "<div id='neo-bookmarkID' class='neo-historybox-tabon'>"._tr("Bookmarks")."</div><br />";
+			}
+
+			$arr_result2 = $pdbACL->fetchTable($history, TRUE, array($uid));
+			if ($arr_result2 !== FALSE && count($arr_result2) > 0) {
+				$htmlData .= "<div id='neo-historyID' class='neo-historybox-tabon'>"._tr("History")."</div>";
+				foreach($arr_result2 as $key2 => $value2){
+					$htmlData .= "<div class='neo-historybox-tab'><a href='index.php?menu=".$value2['namemenu']."' >"._tr($value2['name'])."</a></div>";
+				}
+			}else{
+				$htmlData .= "<div id='neo-historyID' class='neo-historybox-tabon'>"._tr("History")."</div>";
+			}
+		}
+		return $htmlData;
+	}
 }
 ?>
