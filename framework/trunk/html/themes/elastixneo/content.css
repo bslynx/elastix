@@ -208,6 +208,12 @@ div.neo-historybox-tab {
 	text-align:left;
 	overflow: hidden;
 }
+div.neo-historybox-tab a{
+	font: 12px Verdana, Arial,Helvetica,sans-serif;
+	color: #666;
+	text-shadow: 1px 1px #ddd;
+	text-decoration: none;
+}
 div.neo-historybox-tabon {
 	height: 26px;
 	padding: 8px 0px 0px 12px;
@@ -226,4 +232,10 @@ div.neo-historybox-tabmid {
 	text-shadow: 1px 1px #ddd;
 	text-align:left;
 	overflow: hidden;
+}
+div.neo-historybox-tabmid a{
+	font: 12px Verdana, Arial,Helvetica,sans-serif;
+	color: #666;
+	text-shadow: 1px 1px #ddd;
+	text-decoration: none;
 }

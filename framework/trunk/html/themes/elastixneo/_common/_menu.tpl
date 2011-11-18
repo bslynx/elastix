@@ -134,7 +134,7 @@ function mostrar_Menu(element)
 
 //<![CDATA[
     $(".menutabletaboff").mouseover(function(){
-        var source_img = $('.menulogo').find('a:first').find('img:first').attr("src");
+        var source_img = $('#neo-logobox').find('img:first').attr("src");
         var themeName = source_img.split("/",2);
         $(this).css("background-image","url(themes/"+themeName[1]+"/images/fondo_boton_center2.gif)");
         $(this).css("height","47px");
@@ -146,7 +146,7 @@ function mostrar_Menu(element)
     });
 
     $(".menutabletaboff").mouseout(function(){
-        var source_img = $('.menulogo').find('a:first').find('img:first').attr("src");
+        var source_img = $('#neo-logobox').find('img:first').attr("src");
         var themeName = source_img.split("/",2);
         $(this).css("background-image","url(themes/"+themeName[1]+"/images/fondo_boton_center.gif)");
         $(this).css("height","37px");
@@ -159,17 +159,27 @@ function mostrar_Menu(element)
 /*newwwww*/
 $(document).ready(function(){
 	$("#toggleleftcolumn, #neo-lengueta-minimized").click(function(){
-	    if($("#neo-contentbox-leftcolumn").data("neo-contentbox-leftcolum-status")=="hidden") {
+	    if(!$('#neo-lengueta-minimized').hasClass('neo-display-none')){
 		  $("#neo-contentbox-leftcolumn").removeClass("neo-contentbox-leftcolumn-minimized");
 		  $("#neo-contentbox-maincolumn").css("width", "1025px");
 	      $("#neo-contentbox-leftcolumn").data("neo-contentbox-leftcolum-status", "visible");
 		  $("#neo-lengueta-minimized").addClass("neo-display-none");
-	    } else {
+	    }else{
 		  $("#neo-contentbox-leftcolumn").addClass("neo-contentbox-leftcolumn-minimized");
 		  $("#neo-contentbox-maincolumn").css("width", "1245px");
-	      $("#neo-contentbox-leftcolumn").data("neo-contentbox-leftcolum-status", "hidden");
+		  $("#neo-contentbox-leftcolumn").data("neo-contentbox-leftcolum-status", "hidden");
 		  $("#neo-lengueta-minimized").removeClass("neo-display-none");
-	    }
+		}
+	});
+	$("#togglebookmark").click(function() {
+		var source_img = $('#neo-logobox').find('img:first').attr("src");
+		var themeName = source_img.split("/",2);
+		var imgBookmark = $("#togglebookmark").attr('src');
+		if(/bookmarkon.png/.test(imgBookmark)) {
+		  $("#togglebookmark").attr('src',"themes/"+themeName[1]+"/images/bookmark.png");
+		} else {
+		  $("#togglebookmark").attr('src',"themes/"+themeName[1]+"/images/bookmarkon.png");
+		}
 	});
 	$("#neo-cmenu-cpallet").hover(
 	  function () {
@@ -343,7 +353,41 @@ $(document).ready(function(){
 	var menu_color_user = $('#userMenuColor').val();
 	$('#neo-smenubox').css('backgroundColor', menu_color_user);
 	$('.neo-tabhon').css('backgroundColor', menu_color_user);
-        $('#neo-cmenu-cpallet').ColorPickerSetColor(menu_color_user);
+    $('#neo-cmenu-cpallet').ColorPickerSetColor(menu_color_user);
+
+	  // Scroll automático en caso de que el contenido del menú de segundo nivel se reboce
+    // ---------------------------------------------------------------------------------
+    var smenuoverflow = false; var offsetright = 0; var lastleft = 0; var accumulated_width = 0; var longpaso = 60;
+
+	$("#neo-smenubox div.neo-tabv,div.neo-tabvon").each(function(index) {
+		accumulated_width += $(this).outerWidth();
+		// Si el offset.left del elemento anterior es mayor que el actual quiere decir que el elemento
+		// actual hizo una especio de retorno de carro
+		if(lastleft>$(this).offset().left) smenuoverflow = true;
+		lastleft = $(this).offset().left;
+		// Si el offset.left+width del elemento actual es mayor al area de neo-smenubox entonces
+		// evidentemente se rebozo
+		offsetright = $(this).offset().left+$(this).outerWidth();
+		if(offsetright>$("#neo-smenubox").outerWidth()) smenuoverflow = true;
+	});
+	if(smenuoverflow==true) {
+	  $("#neo-smenubox-innerdiv").width(accumulated_width+longpaso+"px");
+	  $("#neo-smenubox-arrow-more").removeClass("neo-display-none");
+	}
+
+	$('.neo-smenubox-arrow-more-right').click(function() {
+	  if(($('#neo-smenubox-innerdiv').offset().left+$('#neo-smenubox-innerdiv').outerWidth()+longpaso)>($("#neo-smenubox").offset().left+$("#neo-smenubox").outerWidth())) {
+		  $('#neo-smenubox-innerdiv').animate({left:'-='+longpaso}, 150, function() {});
+	  }
+	});
+	$('.neo-smenubox-arrow-more-left').click(function() {
+	  if($('#neo-smenubox-innerdiv').offset().left<-longpaso) {
+		  $('#neo-smenubox-innerdiv').animate({left:'+='+longpaso}, 150, function() {});
+	  } else {
+		  $('#neo-smenubox-innerdiv').css("left", "0px");
+	  }
+	});
+
 });
 
 //]]>
@@ -363,6 +407,7 @@ $(document).ready(function(){
 <input type="hidden" id="lblNewPass" value="{$NEW_PASSWORD}" />
 <input type="hidden" id="btnChagePass" value="{$CHANGE_PASSWORD_BTN}" />
 <input type="hidden" id="userMenuColor" value="{$MENU_COLOR}" />
+<input type="hidden" id="lblSending_request" value="{$SEND_REQUEST}" />
 
 <div id="neo-headerbox">
 	<div id="neo-logobox"><img src="themes/{$THEMENAME}/images/elastix_logo_mini2.png" width="200" height="59" alt="elastix" longdesc="http://www.elastix.org" /></div>
@@ -390,18 +435,23 @@ $(document).ready(function(){
 		  
 	</div>
 	<div id="neo-smenubox"> <!-- mostrando contenido del menu secundario -->
-	  {foreach from=$arrSubMenuByParents key=idSubMenu item=subMenu}
-		{if $idSubMenu eq $idSubMenuSelected}
-		  <div class="neo-tabvon"><a href="?menu={$idSubMenu}" class="submenu_on">{$subMenu.Name}</a></div>
-		{else}
-		  <div class="neo-tabv"><a href="index.php?menu={$idSubMenu}">{$subMenu.Name}</a></div>
-		{/if}
-	  {/foreach}
+	  <div id="neo-smenubox-innerdiv">
+		{foreach from=$arrSubMenuByParents key=idSubMenu item=subMenu}
+		  {if $idSubMenu eq $idSubMenuSelected}
+			<div class="neo-tabvon"><a href="?menu={$idSubMenu}" class="submenu_on">{$subMenu.Name}</a></div>
+		  {else}
+			<div class="neo-tabv"><a href="index.php?menu={$idSubMenu}">{$subMenu.Name}</a></div>
+		  {/if}
+		{/foreach}
+	  </div>
+	  <div id="neo-smenubox-arrow-more" class="neo-display-none">
+		  <img src="themes/{$THEMENAME}/images/icon_arrowleft.png" width="15" height="17" alt="arrowleft" class="neo-smenubox-arrow-more-left" style="cursor: pointer;" />
+		  <img src="themes/{$THEMENAME}/images/icon_arrowright.png" width="15" height="17" alt="arrowright" class="neo-smenubox-arrow-more-right" style="cursor: pointer;" />
+	  </div>
 	</div>
 	<div id="neo-topbar">
 	  <div id="neo-cmenubox">
 		<div id="neo-cmenu-cpallet" class="neo-cmenutableft"><img src="themes/{$THEMENAME}/images/cpallet.png" width="19" height="21" alt="color" /></div>
-		<!--<div id="neo-cmenu-help" class="neo-cmenutableft"><a class="logout" href="javascript:popUp('help/?id_nodo={$idSubMenuSelected}&amp;name_nodo={$nameSubMenuSelected}','1000','460')"><img src="themes/{$THEMENAME}/images/helpw.png" width="19" height="21" alt="user_help" border="0" /></a></div>-->
 		<div id="neo-cmenu-search" class="neo-cmenutab"><img src="themes/{$THEMENAME}/images/searchw.png" width="19" height="21" alt="user_search" border="0" /></div>
 		<div id="neo-cmenu-info" class="neo-cmenutab"><img src="themes/{$THEMENAME}/images/information.png" width="19" height="21" alt="user_info" border="0" /></div>
 		<div id="neo-cmenu-user" class="neo-cmenutab"><img src="themes/{$THEMENAME}/images/user.png" width="19" height="21" alt="user" border="0" /></div>
@@ -425,7 +475,13 @@ $(document).ready(function(){
 
 <div id="neo-contentbox">
 	{if !empty($idSubMenu2Selected)}
+		{if $viewMenuTab eq 'true'}
+	<div id="neo-contentbox-leftcolumn" class="neo-contentbox-leftcolumn-minimized">
+		{elseif $viewMenuTab eq 'false'}
 	<div id="neo-contentbox-leftcolumn">
+		{else}
+	<div id="neo-contentbox-leftcolumn">
+		{/if}
 		<div id="neo-3menubox">  <!-- mostrando contenido del menu tercer nivel -->
 			{foreach from=$arrSubMenu2 key=idSubMenu2 item=subMenu2}
 			  {if $idSubMenu2 eq $idSubMenu2Selected}
@@ -435,26 +491,55 @@ $(document).ready(function(){
 			  {/if}
 			{/foreach}
 		</div>
+		<div id="neo-historybox">
+			{$SHORTCUT}
+		</div>
 	</div>
+		{if $viewMenuTab eq 'true'}
+	<div id="neo-contentbox-maincolumn" style="width: 1245px;">
+		{elseif $viewMenuTab eq 'false'}
 	<div id="neo-contentbox-maincolumn" style="width: 1025px;">
+		{else}
+	<div id="neo-contentbox-maincolumn" style="width: 1025px;">
+		{/if}
 	    <div class="neo-module-title"><div class="neo-module-name-left"></div><span class="neo-module-name">
 	      {if $icon ne null}
 	      <img src="{$icon}" width="22" height="22" align="absmiddle" />
 	      {/if}
 	      &nbsp;{$title}</span><div class="neo-module-name-right"></div>
 	      <div class="neo-module-title-buttonstab-right"></div><span class="neo-module-title-buttonstab">
-	      <img src="images/expand.png" width="24" height="24" alt="expand" id="toggleleftcolumn" class="neo-picker" border="0"/>
+	      <img src="images/expand.png" width="24" height="24" alt="expand" id="toggleleftcolumn" class="neo-picker" border="0" onclick='saveToggleTab()'/>
+		  <img src="themes/{$THEMENAME}/images/{$IMG_BOOKMARKS}" width="24" height="24" alt="bookmark" id="togglebookmark" style="cursor: pointer;" onclick='addBookmark()' />
 	      <a href="javascript:popUp('help/?id_nodo={$idSubMenuSelected}&amp;name_nodo={$nameSubMenuSelected}','1000','460')">
 	      <img src="images/icon-help.png" width="24" height="24" alt="help" class="neo-picker" border="0"/></a></span><div class="neo-module-title-buttonstab-left"></div></div>
 	      <div class="neo-module-content">
 	{else}
-	<div id="neo-contentbox-maincolumn" style="width: 1228px;">
+		{if $viewMenuTab eq 'true'}
+	<div id="neo-contentbox-leftcolumn" class="neo-contentbox-leftcolumn-minimized">
+		{elseif $viewMenuTab eq 'false'}
+	<div id="neo-contentbox-leftcolumn">
+		{else}
+	<div id="neo-contentbox-leftcolumn" class="neo-contentbox-leftcolumn-minimized">
+		{/if}
+		<div id="neo-historybox">
+			{$SHORTCUT}
+		</div>
+	</div>
+		{if $viewMenuTab eq 'true'}
+	<div id="neo-contentbox-maincolumn" style="width: 1245px;">
+		{elseif $viewMenuTab eq 'false'}
+	<div id="neo-contentbox-maincolumn" style="width: 1025px;">
+		{else}
+	<div id="neo-contentbox-maincolumn" style="width: 1245px;">
+		{/if}
 	    <div class="neo-module-title"><div class="neo-module-name-left"></div><span class="neo-module-name">
 	      {if $icon ne null}
 	      <img src="{$icon}" width="22" height="22" align="absmiddle" />
 	      {/if}
 	      &nbsp;{$title}</span><div class="neo-module-name-right"></div>
 	      <div class="neo-module-title-buttonstab-right"></div><span class="neo-module-title-buttonstab">
+		  <img src="images/expand.png" width="24" height="24" alt="expand" id="toggleleftcolumn" class="neo-picker" border="0" onclick='saveToggleTab()'/>
+		  <img src="themes/{$THEMENAME}/images/{$IMG_BOOKMARKS}" width="24" height="24" alt="bookmark" id="togglebookmark" style="cursor: pointer;" onclick='addBookmark();'/>
 	      <a href="javascript:popUp('help/?id_nodo={$idSubMenuSelected}&amp;name_nodo={$nameSubMenuSelected}','1000','460')">
 	      <img src="images/icon-help.png" width="24" height="24" alt="help" border="0"/></a></span><div class="neo-module-title-buttonstab-left"></div></div>
 	 <div class="neo-module-content">

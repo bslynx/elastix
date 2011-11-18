@@ -36,7 +36,23 @@
 				{$CONTENT}
 			</div>
 		    </div>
-		    <div id="neo-lengueta-minimized" class="neo-display-none"></div>
+			{if $isThirdLevel eq 'on'}
+				{if $viewMenuTab eq 'true'}
+		    <div id="neo-lengueta-minimized"></div>
+				{elseif $viewMenuTab eq 'false'}
+			<div id="neo-lengueta-minimized" class="neo-display-none"></div>
+				{else}
+			<div id="neo-lengueta-minimized" class="neo-display-none"></div>
+				{/if}
+			{else}
+				{if $viewMenuTab eq 'true'}
+			<div id="neo-lengueta-minimized"></div>
+				{elseif $viewMenuTab eq 'false'}
+			<div id="neo-lengueta-minimized" class="neo-display-none"></div>
+				{else}
+			<div id="neo-lengueta-minimized"></div>
+				{/if}
+			{/if}
 		</div>
 		<div align="center" id="neo-footerbox"> <!-- mostrando el footer -->
 			<a href="http://www.elastix.org" style="color: #444; text-decoration: none;" target='_blank'>Elastix</a> is licensed under <a href="http://www.opensource.org/licenses/gpl-license.php" target='_blank' style="color: #444; text-decoration: none;" >GPL</a> by <a href="http://www.palosanto.com" target='_blank' style="color: #444; text-decoration: none;">PaloSanto Solutions</a>. 2006 - {$currentyear}.
