@@ -219,5 +219,13 @@ $arrLang=array(
 "Sending Request" => "Enviando Petición",
 "Request cannot be completed. Please try again or contact with your elastix administrator and notify the next error: " => "Requerimiento no pudo ser completado. Por favor intente otra vez o contacte con el administrador de su elastix y notifique el siguiente error: ",
 "Request has been sent." => "Requerimiento ha sido enviado.",
+"Add Bookmark" => "Agregar Bookmark",
+"Remove Bookmark" => "Quitar Bookmark",
+"Adding Bookmark" => "Agregando Bookmark",
+"Removing Bookmark" => "Quitando Bookmark",
+"Hiding left panel" => "Ocultando panel izquierdo",
+"Loading left panel" => "Cargando panel izquierdo",
+"Hide left panel" => "Ocultar panel izquierdo",
+"Load left panel" => "Cargar panel izquierdo",
 );
 ?>
