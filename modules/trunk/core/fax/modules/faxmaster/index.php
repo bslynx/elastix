@@ -79,7 +79,7 @@ function _moduleContent(&$smarty, $module_name)
     $smarty->assign("FAXMASTER_MSG", $arrLang["Write the email address which will receive the notifications of received messages, errors and activity summary of the Fax Server"]);
 
     
-    $smarty->assign("APPLY_CHANGES", $arrLang["Apply changes"]);
+    $smarty->assign("APPLY_CHANGES", $arrLang["Save"]);
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
     $strReturn = $oForm->fetchForm("$local_templates_dir/fax_master.tpl", $arrLang["Fax Master Configuration"], $arrDefault);
 
@@ -110,7 +110,7 @@ function _moduleContent(&$smarty, $module_name)
             $smarty->assign("mb_title", $arrLang["Validation Error"]);
             $smarty->assign("mb_message", $mensaje);
 
-            $smarty->assign("APPLY_CHANGES", $arrLang["Apply changes"]);
+            $smarty->assign("APPLY_CHANGES", $arrLang["Save"]);
             $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
             $strReturn = $oForm->fetchForm("$local_templates_dir/fax_master.tpl", $arrLang["Fax Master Configuration"], $arrDefault);
         }
