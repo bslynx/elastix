@@ -153,7 +153,7 @@ function _moduleContent(&$smarty, $module_name)
 
 
     $hosts_msg=$arrLang["These IPs are allowed to send faxes through Elastix.  You must insert one IP per row.  We recommend keeping localhost and 127.0.0.1  in the configuration because some processes could need them."];
-    $smarty->assign("APPLY_CHANGES",$arrLang["Apply changes"]);
+    $smarty->assign("APPLY_CHANGES",$arrLang["Save"]);
     $smarty->assign("EMAIL_RELAY_MSG",$hosts_msg);
     $smarty->assign("RELAY_CONTENT", $contenido);
     $smarty->assign("title",$arrLang["Clients allowed to send faxes"]);
