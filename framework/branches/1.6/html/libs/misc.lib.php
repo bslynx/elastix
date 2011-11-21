@@ -206,32 +206,26 @@ function translateDate($dateOrig)
         return false;
     }
 }
-function get_key_settings($pDB,$key){
-    $value='';
-    $sQuery="SELECT value FROM settings WHERE key='$key'";
-    //$oResult=$pDB->conn->getOne($sQuery,array($key));
-    $oResult=$pDB->getFirstRowQuery($sQuery, FALSE);
-    if($oResult && count($oResult)>0)
-        $value=$oResult[0];
-    return $value;
+function get_key_settings($pDB,$key)
+{
+    $r = $pDB->getFirstRowQuery(
+        'SELECT value FROM settings WHERE key = ?',
+        FALSE, array($key));
+    return ($r && count($r) > 0) ? $r[0] : '';
 }
-function set_key_settings($pDB,$key,$value){
-    $bExito=FALSE;
-    //tengo que verificar si existe el valor de configuracion 
-    $sQuery="SELECT count(*) FROM settings WHERE key='$key'";
-    $oResult=$pDB->getFirstRowQuery($sQuery, FALSE);
-    if ($oResult){
-        if($oResult[0]>0){
-            $sQuery="UPDATE settings SET value ='$value' WHERE key='$key'";
-            $oResult=$pDB->genQuery($sQuery);
-            if ($oResult) $bExito=TRUE;
-        }else{
-            $sQuery="INSERT INTO settings (key,value) VALUES ( '$key', '$value' )";
-            $oResult=$pDB->genQuery($sQuery);
-            if ($oResult) $bExito=TRUE;
-        }
-    }
-    return $bExito;
+function set_key_settings($pDB,$key,$value)
+{
+    // Verificar si existe el valor de configuración
+    $r = $pDB->getFirstRowQuery(
+        'SELECT COUNT(*) FROM settings WHERE key = ?',
+        FALSE, array($key));
+    if (!$r) return FALSE;
+    $r = $pDB->genQuery(
+        (($r[0] > 0) 
+            ? 'UPDATE settings SET value = ? WHERE key = ?' 
+            : 'INSERT INTO settings (value, key) VALUES (?, ?)'),
+        array($value, $key));
+    return $r ? TRUE : FALSE;    
 }
 
 function load_version_elastix($ruta_base='')
