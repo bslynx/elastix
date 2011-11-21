@@ -220,7 +220,7 @@ PLANTILLA_POSICIONABLE;
     <div class="neo-applet-processes-row-menu"> 
         <input type="hidden" name="key-servicio" id="key-servicio" value="%s" />
         <input type="hidden" name="status-servicio" id="status-servicio" value="%s" />
-        <img src="modules/dashboard/images/icon_arrowdown.png" width="15" height="15" alt="menu" />
+        <img src="modules/dashboard/images/%s" width="15" height="15" alt="menu" />
     </div>
     <div class="neo-applet-processes-row-status-msg" style="color: %s">%s</div>
     <div class="neo-applet-processes-row-status-icon"></div></div>
@@ -247,6 +247,7 @@ PLANTILLA_PROCESS_ROW;
                 _tr($infoServicio['name_service']),
                 $sServicio,
                 $infoServicio['status_service'],
+                (in_array($infoServicio['status_service'], array('OK', 'Shutdown'))) ? 'icon_arrowdown.png' : 'icon_arrowdown-disabled.png',
                 $sColorStatus,
                 strtoupper($sDescStatus));
         }
