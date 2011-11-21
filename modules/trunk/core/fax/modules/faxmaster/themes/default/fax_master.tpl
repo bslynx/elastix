@@ -5,7 +5,7 @@
     <table width="100%" cellpadding="4" cellspacing="0" border="0">
       <tr>
         <td align="left">
-        <input type='submit' name='save_default' value='{$APPLY_CHANGES}'></td>
+        <input class='button' type='submit' name='save_default' value='{$APPLY_CHANGES}'></td>
      </tr>
    </table>
   </td>
