@@ -106,7 +106,11 @@ input:focus, textarea:focus, select:focus
     background-color: #ffffff;
     border-color: #000000;
 }
-
+INPUT:disabled {
+	background-color: #F2F2F2;
+	color: #E6E6E6;
+	border: #E6E6E6 1px solid;
+}
 #elx-blackmin-content-menu
 {
     position: relative;

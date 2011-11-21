@@ -89,6 +89,11 @@ INPUT.submit {
         background-repeat: repeat-x;
         background-position: top;
 }
+INPUT:disabled {
+	background-color: #F2F2F2;
+	color: #E6E6E6;
+	border: #E6E6E6 1px solid;
+}
 /*
 tr.fila_listado td {
     BORDER-BOTTOM: 1px #eeeeee solid;
