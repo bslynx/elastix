@@ -213,7 +213,7 @@ class paloFax {
     // Esta funcion compara los archivos de configuracion de iaxmodem y hylafax
     // y sugiere un ID entero que puede usarse.
     // TODO: Debo hacer mejor manejo de errores
-    function _getNextAvailableDevId()
+    private function _getNextAvailableDevId()
     {
         $arrConfIaxmodem = $this->_getConfigFiles($this->dirIaxmodemConf, "iaxmodem-cfg.ttyIAX");
         $arrConfHylafax  = $this->_getConfigFiles($this->dirHylafaxConf, "config.ttyIAX");
@@ -240,7 +240,7 @@ class paloFax {
     }
 
     // TODO: Hacer mejor manejo de errores 
-    function _createFaxIntoDB($name, $extension, $secret, $email, $devId, $clidname, $clidnumber, $port,$countryCode, $areaCode)
+    private function _createFaxIntoDB($name, $extension, $secret, $email, $devId, $clidname, $clidnumber, $port,$countryCode, $areaCode)
     {
         $errMsg="";
         $dateNow=date("Y-m-d H:i:s");
@@ -255,7 +255,7 @@ class paloFax {
 
     }
    
-    function _deleteFaxFromDB($idFax) {
+    private function _deleteFaxFromDB($idFax) {
         
         $query  = "DELETE FROM fax WHERE id=$idFax";
         $bExito = $this->_db->genQuery($query);
@@ -269,7 +269,7 @@ class paloFax {
 
     }
 
-    function _getConfigFiles($folder, $filePrefix)
+    private function _getConfigFiles($folder, $filePrefix)
     {
         $arrReg    = array();
         $arrSalida = array();
@@ -289,7 +289,7 @@ class paloFax {
         }
     }
 
-    function _getIaxcomContents($devId, $port, $iaxExtension, $iaxSecret, $CLIDName, $CLIDNumber)
+    private function _getIaxcomContents($devId, $port, $iaxExtension, $iaxSecret, $CLIDName, $CLIDNumber)
     {
         $strContents =  "device          /dev/$devId\n" .
                         "owner           uucp:uucp\n" .
@@ -306,7 +306,7 @@ class paloFax {
         return $strContents;
     }
 
-    function _getHylafaxContents($CLIDNumber, $CLIDName, $countryCode, $areaCode)
+    private function _getHylafaxContents($CLIDNumber, $CLIDName, $countryCode, $areaCode)
     {
         $strContents = 
                         "CountryCode:            $countryCode\n" .
@@ -383,7 +383,7 @@ class paloFax {
 
     // TODO: Por ahora busco siempre el puerto mayor pero tambien tengo que
     //       buscar si existen huecos.
-    function _getNextAvailablePort()
+    private function _getNextAvailablePort()
     {
         $arrPorts=array();
 
@@ -430,7 +430,7 @@ class paloFax {
     // Esta funcion aniade unas lineas en el archivo inittab.
     // Debe buscar antes un bloque identificador, si no existe tal bloque
     // entonces aniade las lineas al final del archivo
-    function _writeInittab($devId)
+    private function _writeInittab($devId)
     {
         // Bloque identificador
         $strBloque = "# Don't remove or modify this comment. The following block is for fax setup.";
@@ -516,7 +516,7 @@ class paloFax {
     }
 
     // TODO: Seria bueno que la funcion no tome parametros
-    function _writeFaxDispatch()
+    private function _writeFaxDispatch()
     {
         $strFaxDispatch  = "SENDTO=root;\n" .
                            "FILETYPE=pdf;\n" .
@@ -547,7 +547,7 @@ class paloFax {
         exec("sudo -u root chmod 644 $this->rutaFaxDispatch");
     }
 
-    function _configureIaxmodem($devId, $nextPort, $extNumber, $extSecret, $CIDName, $CIDNumber)
+    private function _configureIaxmodem($devId, $nextPort, $extNumber, $extSecret, $CIDName, $CIDNumber)
     {
         $nextIaxmodemConfFilename = $this->dirIaxmodemConf . "/iaxmodem-cfg.ttyIAX" . $devId;
         $contenidoArchivoIaxcomConf=$this->_getIaxcomContents("ttyIAX" . $devId, $nextPort, $extNumber, $extSecret, $CIDName, $CIDNumber);
@@ -565,7 +565,7 @@ class paloFax {
         // Debo reiniciar Iaxmodem?
     }
 
-    function _configureHylafax($devId, $destinationEmail, $CIDNumber, $CIDName, $countryCode, $areaCode)
+    private function _configureHylafax($devId, $destinationEmail, $CIDNumber, $CIDName, $countryCode, $areaCode)
     {
         // Escribo el archivo FaxDispatch
         $this->_writeFaxDispatch();
@@ -624,7 +624,7 @@ class paloFax {
         $this->_configureHylafax($devId, $destinationEmail, $CIDNumber, $CIDName, $countryCode, $areaCode);
     }
 
-    function _editFaxInDB($idFax, $name, $extension, $secret, $email, $devId, $clidname, $clidnumber, $port,$countryCode, $areaCode) {
+    private function _editFaxInDB($idFax, $name, $extension, $secret, $email, $devId, $clidname, $clidnumber, $port,$countryCode, $areaCode) {
         $errMsg="";
         //if ($db = sqlite3_open($this->rutaDB)) {
         $query  = "UPDATE fax set
