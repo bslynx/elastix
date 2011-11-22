@@ -178,7 +178,7 @@ function sendNewSendFax($smarty, $module_name, $local_templates_dir, &$pDB, $arr
                 // Validation of type file
                 $ext = explode(".",$_FILES['file_record']['name']);
                 $size_ext = count($ext) - 1;
-                if($ext[$size_ext]!="pdf" && $ext[$size_ext]!="tiff" && $ext[$size_ext]!="txt"){
+				if(strtolower($ext[$size_ext])!="pdf" && $ext[$size_ext]!="tiff" && strtolower($ext[$size_ext])!="tif" && strtolower($ext[$size_ext])!="txt"){
                     $smarty->assign("mb_title", $arrLang["Validation Error"]);
                     $smarty->assign("mb_message", $arrLang["Wrong type of file"]);
                     return $content = viewFormSendFax($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
