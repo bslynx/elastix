@@ -98,10 +98,12 @@ class paloFax {
         $nextPort=$this->_getNextAvailablePort(); 
 
         // 2) Creo la extension en la base de datos
-        $this->_createFaxIntoDB($virtualFaxName, $extNumber, $extSecret, $destinationEmail, $devId, $CIDName, $CIDNumber, $nextPort,$countryCode, $areaCode);
+        $bExito = $this->_createFaxIntoDB($virtualFaxName, $extNumber, $extSecret, $destinationEmail, $devId, $CIDName, $CIDNumber, $nextPort,$countryCode, $areaCode);
+        if (!$bExito) return FALSE;
 
         // 3) Create fax system
         $this->_createFaxSystem($devId, $nextPort, $extNumber, $extSecret, $CIDName, $CIDNumber, $destinationEmail, $countryCode, $areaCode);
+        return TRUE;
     }
 
     function _createFaxSystem($devId, $nextPort, $extNumber, $extSecret, $CIDName, $CIDNumber, $destinationEmail, $countryCode, $areaCode)
@@ -125,54 +127,33 @@ class paloFax {
 
     function getFaxList()
     {
-        $errMsg="";
-        $sqliteError='';
-        $arrReturn=array();
-        //if ($db = sqlite3_open($this->rutaDB)) {
-        $query  = "SELECT id, name, extension, secret, clid_name, clid_number, dev_id, date_creation, email, country_code, area_code FROM fax";
+        $query  = 
+            'SELECT id, name, extension, secret, clid_name, clid_number, '.
+                'dev_id, date_creation, email, country_code, area_code '.
+            'FROM fax';
         $arrReturn = $this->_db->fetchTable($query, true);
-        if($arrReturn==FALSE)
-        {
+        if($arrReturn == FALSE) {
             $this->errMsg = $this->_db->errMsg;
             return array();
         }
-            //$result = sqlite3_query($db, $query);
-/*
-            if(isset($result))
-            {
-                while ($row = sqlite3_fetch_array($result)) {
-                    $arrReturn[]=$row;
-                }
-            }
-*/
-        /*} else {
-            $errMsg = $sqliteError;
-        }*/
-
         return $arrReturn;
     }
 
     function getFaxById($id)
     {
-        $errMsg="";
-        $sqliteError='';
         // El id es mayor a cero?
-        if($id<=0) return false;
+        if ($id <= 0) return false;
 
-        //if ($db = sqlite3_open($this->rutaDB)) {
-        $query  = "SELECT id, name, extension, secret, clid_name, clid_number, dev_id, date_creation, email, port, country_code, area_code FROM fax WHERE id=$id";
-        $arrReturn = $this->_db->getFirstRowQuery($query, true);
-        if($arrReturn==FALSE)
-        {
+        $arrReturn = $this->_db->getFirstRowQuery(
+            'SELECT id, name, extension, secret, clid_name, clid_number, '.
+                'dev_id, date_creation, email, port, country_code, area_code '.
+            'FROM fax WHERE id = ?',
+            true, array($id));
+        if($arrReturn == FALSE) {
             $this->errMsg = $this->_db->errMsg;
             return array();
         }
         return $arrReturn;
-        /*    $result = @sqlite3_query($db, $query);
-            return @sqlite3_fetch_array($result);
-        } else {
-            $errMsg = $sqliteError;
-        }*/
     }
    
     function deleteFaxExtensionById($idFax)
@@ -240,33 +221,32 @@ class paloFax {
     }
 
     // TODO: Hacer mejor manejo de errores 
-    private function _createFaxIntoDB($name, $extension, $secret, $email, $devId, $clidname, $clidnumber, $port,$countryCode, $areaCode)
+    private function _createFaxIntoDB($name, $extension, $secret, $email,
+        $devId, $clidname, $clidnumber, $port, $countryCode, $areaCode)
     {
-        $errMsg="";
-        $dateNow=date("Y-m-d H:i:s");
-        $query  = "INSERT INTO fax (name, extension, secret, clid_name, clid_number, dev_id, date_creation, email, port,country_code, area_code) ";
-        $query .= "values ('$name','$extension', '$secret', '$clidname', '$clidnumber', '$devId', '$dateNow', '$email', '$port','$countryCode', '$areaCode')";
-        $bExito = $this->_db->genQuery($query);
+        $bExito = $this->_db->genQuery(
+            'INSERT INTO fax (name, extension, secret, clid_name, clid_number, '.
+                'dev_id, date_creation, email, port, country_code, area_code) '.
+                'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            array($name, $extension, $secret, $clidname, $clidnumber, $devId, 
+                date('Y-m-d H:i:s'), $email, $port, $countryCode, $areaCode));
         if (!$bExito) {
             $this->errMsg = $this->_db->errMsg;
             return false;
         }
         return true;
-
     }
    
-    private function _deleteFaxFromDB($idFax) {
-        
-        $query  = "DELETE FROM fax WHERE id=$idFax";
-        $bExito = $this->_db->genQuery($query);
+    private function _deleteFaxFromDB($idFax)
+    {
+        $bExito = $this->_db->genQuery(
+            'DELETE FROM fax WHERE id = ?', 
+            array($idFax));
         if (!$bExito) {
             $this->errMsg = $this->_db->errMsg;
             return false;
         }
-
         return true;
-
-
     }
 
     private function _getConfigFiles($folder, $filePrefix)
@@ -606,108 +586,59 @@ class paloFax {
 
     function editFaxExtension($idFax,$virtualFaxName, $extNumber, $extSecret, $destinationEmail, $CIDName, $CIDNumber, $devId, $port,$countryCode, $areaCode)
     {
-        $errMsg = "";
-        
-        // 1) Verificar que las 2 carpetas donde residen los archivos de configuracion son escribibles
-        if(!is_writable($this->dirIaxmodemConf) or !is_writable($this->dirHylafaxConf)) {
-            $errMsg = "The directories \"" . $this->dirIaxmodemConf. "\" and \"" . $this->dirHylafaxConf . "\" must be writeable.";
-        }
-        
-       
         // 2) Editar la extension en la base de datos 
-        $this->_editFaxInDB($idFax,$virtualFaxName, $extNumber, $extSecret, $destinationEmail, $devId, $CIDName, $CIDNumber, $port,$countryCode, $areaCode);
+        $bExito = $this->_editFaxInDB($idFax,$virtualFaxName, $extNumber, $extSecret, $destinationEmail, $devId, $CIDName, $CIDNumber, $port,$countryCode, $areaCode);
+        if (!$bExito) return FALSE;
 
         // 3) Modificar el archivo de configuracion de iaxmodem
         $this->_configureIaxmodem($devId, $port, $extNumber, $extSecret, $CIDName, $CIDNumber);
         
         // 4) Modificar el archivo de configuracion de hylafax
         $this->_configureHylafax($devId, $destinationEmail, $CIDNumber, $CIDName, $countryCode, $areaCode);
+        
+        return TRUE;
     }
 
-    private function _editFaxInDB($idFax, $name, $extension, $secret, $email, $devId, $clidname, $clidnumber, $port,$countryCode, $areaCode) {
-        $errMsg="";
-        //if ($db = sqlite3_open($this->rutaDB)) {
-        $query  = "UPDATE fax set
-                        name='$name',
-                        extension='$extension',
-                        secret='$secret',
-                        clid_name='$clidname',
-                        clid_number='$clidnumber',
-                        dev_id='$devId',
-                        email='$email',
-                        port='$port',
-                        area_code='$areaCode',
-                        country_code='$countryCode'
-                    where id=$idFax;";
-        $bExito = $this->_db->genQuery($query);
+    private function _editFaxInDB($idFax, $name, $extension, $secret, $email, 
+        $devId, $clidname, $clidnumber, $port, $countryCode, $areaCode)
+    {
+        $bExito = $this->_db->genQuery(
+            'UPDATE fax SET name = ?, extension = ?, secret = ?, clid_name = ?, '.
+                'clid_number = ?, dev_id = ?, email = ?, port = ?, '.
+                'area_code = ?, country_code = ? '.
+            'WHERE id = ?', 
+            array($name, $extension, $secret, $clidname, $clidnumber, $devId, 
+                $email, $port, $areaCode, $countryCode, $idFax));
         if (!$bExito) {
             $this->errMsg = $this->_db->errMsg;
             return false;
         }
-        /*} else {
-            $errMsg = $sqliteError;
-        }*/
+        return TRUE;
     }
 
     function getConfigurationSendingFaxMail()
     {
-        $errMsg="";
-        $sqliteError='';
-        $arrReturn=-1;
-        //if ($db = sqlite3_open($this->rutaDB)) {
-        $query  = " select
-                        remite,remitente,subject,content
-                    from
-                        configuration_fax_mail
-                    where
-                        id=1";
-
-        $arrReturn = $this->_db->getFirstRowQuery($query, true);
-        if($arrReturn==FALSE)
-        {
+        $arrReturn = $this->_db->getFirstRowQuery(
+            'SELECT remite, remitente, subject, content '.
+            'FROM configuration_fax_mail WHERE id = 1', true);
+        if($arrReturn == FALSE) {
             $this->errMsg = $this->_db->errMsg;
             return array();
         }
-/*
-            $result = @sqlite3_query($db, $query);
-            if(count($result)>0){
-                while ($row = @sqlite3_fetch_array($result)) {
-                    $arrReturn=$row;
-                }
-            }
-        } 
-        else 
-        {
-            $errMsg = $sqliteError;
-        }
-*/
         return $arrReturn;
     }
 
-    function setConfigurationSendingFaxMail($remite, $remitente, $subject, $content) {
-        $errMsg="";
+    function setConfigurationSendingFaxMail($remite, $remitente, $subject, $content)
+    {
         $bExito = false;
-        //if ($db = sqlite3_open($this->rutaDB)) {
-        $query  = " update
-                        configuration_fax_mail
-                    set
-                        remite='$remite',
-                        remitente='$remitente',
-                        subject='$subject',
-                        content='$content'
-                    where
-                        id=1;";
-
-        $bExito = $this->_db->genQuery($query);
+        $bExito = $this->_db->genQuery(
+            'UPDATE configuration_fax_mail SET remite = ?, remitente = ?, '.
+                'subject = ?, content = ? WHERE id = 1',
+            array($remite, $remitente, $subject, $content));
         if (!$bExito) {
             $this->errMsg = $this->_db->errMsg;
         }
         return $bExito; 
-/*        } 
-        else {
-            $this->errMsg = $this->_db->errMsg;
-        }*/
-        return $bExito;
     }
 
     function restartFax() {
