@@ -524,8 +524,6 @@ cursor: pointer;
 /*para color picker*/
 
 
-
-
 #colorSelector {
 
     position: relative;
@@ -539,21 +537,14 @@ cursor: pointer;
 }
 
 #colorSelector div {
-
     position: absolute;
-
     top: 4px;
-
     left: 4px;
-
     width: 28px;
-
     height: 28px;
-
     background: url(../../../images/select2.png) center;
-
 }
-
+/*
 .colorpicker_hue div {
 
     background-image: url(../../../images/custom_indic.gif);
@@ -625,7 +616,7 @@ cursor: pointer;
 .colorpicker_current_color{
     display: none;
 }
-
+*/
 .spaceTD{
     height:30px;
 }
