@@ -275,6 +275,14 @@ $(document).ready(function(){
 		});
 	});
 
+        $('#neo-cmenu-cpallet').click(function(e){
+		if($("#colorpicker_framework").css("display")=="none")
+			$("#colorpicker_framework").fadeIn(500);
+		else
+			$("#colorpicker_framework").fadeOut(500);
+		oneClickEvent();
+	});
+
 	$('#search_module_elastix').bind('click', function(e) {
 		//$( "#search_module_elastix" ).autocomplete( "close" );
 		$( "#search_module_elastix" ).val("");
@@ -339,11 +347,9 @@ $(document).ready(function(){
 	$('#neo-cmenu-cpallet').ColorPicker({
 		color: '#0000ff',
 		onShow: function (colpkr) {
-			$(colpkr).fadeIn(500);
 			return false;
 		},
 		onHide: function (colpkr) {
-			$(colpkr).fadeOut(500);
 			changeColorMenu();// lanzar el ajax
 			return false;
 		},
@@ -356,9 +362,10 @@ $(document).ready(function(){
 			$('#neo-smenubox').css('backgroundColor', '#' + hex);
 			$('.neo-tabhon').css('backgroundColor', '#' + hex);
 			$('#userMenuColor').val('#' + hex);
-            $(el).ColorPickerHide();
+        	        $(el).ColorPickerHide();
 			changeColorMenu();// se lanza la peticion ajax
-        }
+	        },
+		id_colorPicker: 'colorpicker_framework',
 	});
 	var menu_color_user = $('#userMenuColor').val();
 	$('#neo-smenubox').css('backgroundColor', menu_color_user);
@@ -400,6 +407,20 @@ $(document).ready(function(){
 
 });
 
+function oneClickEvent()
+{
+    $('body').one('click', function(e) {
+	var element = e.target;
+	var hide = true;
+	if($(element).parents('#colorpicker_framework').length > 0)
+	    hide = false
+	if(hide)
+	    $("#colorpicker_framework").fadeOut(500);
+	else
+	    oneClickEvent();
+	e.stopPropagation();
+    });
+}
 //]]>
 </script>
 {/literal}
