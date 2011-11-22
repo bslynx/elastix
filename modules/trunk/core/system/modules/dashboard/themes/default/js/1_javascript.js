@@ -300,6 +300,7 @@ function neoAppletProcesses_esconderMenu()
 	$('.neo-applet-processes-menu').unbind('click');
 	$('html').unbind('click', neoAppletProcesses_esconderMenu);
 	$('.neo-applet-processes-menu').hide();
+	return false;
 }
 
 // Mostrar menú de administración en applet de procesos
