@@ -152,7 +152,7 @@ function report_backup_restore($smarty, $module_name, $local_templates_dir, $arr
     if(is_array($nombre_archivos) && $total>0){
         foreach($nombre_archivos as $key => $nombre_archivo){
             $arrTmp[0] = "<input type='checkbox' name='chk[".$nombre_archivo."]' id='chk[".$nombre_archivo."]'>";
-            $arrTmp[1] = "<a href='?menu=$module_name&action=download_file&file_name=$nombre_archivo'>$nombre_archivo</a>";
+            $arrTmp[1] = "<a href='?menu=$module_name&action=download_file&file_name=$nombre_archivo&rawmode=yes'>$nombre_archivo</a>";
             $fecha="";
             // se parsea el archivo para obtener la fecha
             if(ereg("[[:alnum:]]-([[:digit:]]{4})([[:digit:]]{2})([[:digit:]]{2})([[:digit:]]{2})([[:digit:]]{2})([[:digit:]]{2})-([[:alnum:]]{2}).[[:alnum:]]", $nombre_archivo, $data)) {
@@ -204,7 +204,6 @@ function downloadBackup($smarty, $module_name, $local_templates_dir, $arrLang, $
     header("Content-Disposition: attachment; filename=$file_name");
 
     readfile("$dir_backup/$file_name");
-    return report_backup_restore($smarty, $module_name, $local_templates_dir, $arrLang, $dir_backup);
 }
 
 
