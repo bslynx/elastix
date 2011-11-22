@@ -204,7 +204,7 @@ class paloSantoNavigation {
 
         $arrSubMenuByParents = $this->getArrSubMenuByParents($currMainMenu); // added by eduardo
         $this->smarty->assign("arrSubMenuByParents", $arrSubMenuByParents);   // added by eduardo
-
+		$_SESSION['menu'] = $currMainMenu;
         $this->smarty->assign("idMainMenuSelected",   $currMainMenu);
         $this->smarty->assign("idSubMenuSelected",    $currSubMenu);
         $this->smarty->assign("idSubMenu2Selected",    $currSubMenu2);

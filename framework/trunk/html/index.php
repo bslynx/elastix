@@ -274,20 +274,24 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
 		return;
 	}
 
-	$arrParentMenuId = $oPn->getIdParentMenu($menu);
-	$menuBookmark = $menu;
+    // Inicializa el objeto palosanto navigation
+    if (count($arrMenuFiltered)>0)
+        $oPn->showMenu($menu);
+
+	$arrParentMenuId = $oPn->getIdParentMenu($_SESSION['menu']);
+	$menuBookmark = $_SESSION['menu'];
 	if($arrParentMenuId == ""){ // no tiene padre entonces es un menu de 1 nivel
-		$menuBookmark = $oPn->getIdFirstSubMenu($menu);
+		$menuBookmark = $oPn->getIdFirstSubMenu($_SESSION['menu']);
 		$salRes = $oPn->getIdFirstSubMenu($menuBookmark);
 		if($salRes !== FALSE)
 			$menuBookmark = $salRes;
 	}else{ // tiene padre entonces puede ser un menu de 2 o 3 nivel
 		// se pregunta si tiene un primer hijo
-		$salRes = $oPn->getIdFirstSubMenu($menu);
+		$salRes = $oPn->getIdFirstSubMenu($_SESSION['menu']);
 		if($salRes !== FALSE){ // si no tiene un hijo entonces es de 2 nivel
 			$menuBookmark = $salRes;
 		}else{ // es de 3 nivel
-			$menuBookmark = $menu;
+			$menuBookmark = $_SESSION['menu'];
 		}
 	}
 
@@ -324,10 +328,6 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
 		echo $jsonObject->createJSON();
 		return;
 	}
-
-    // Inicializa el objeto palosanto navigation
-    if (count($arrMenuFiltered)>0)
-        $oPn->showMenu($menu);
 
     // rawmode es un modo de operacion que pasa directamente a la pantalla la salida
     // del modulo. Esto es util en ciertos casos.
