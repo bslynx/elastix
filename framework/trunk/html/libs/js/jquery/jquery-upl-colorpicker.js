@@ -23,6 +23,7 @@
 				onSubmit: function () {},
 				color: 'ff0000',
 				livePreview: true,
+				id_colorPicker: 'collorpicker_' + parseInt(Math.random() * 1000),
 				flat: false
 			},
 			fillRGBFields = function  (hsb, cal) {
@@ -387,7 +388,7 @@
 					if (!$(this).data('colorpickerId')) {
 						var options = $.extend({}, opt);
 						options.origColor = opt.color;
-						var id = 'collorpicker_' + parseInt(Math.random() * 1000);
+						var id = opt.id_colorPicker;//'collorpicker_' + parseInt(Math.random() * 1000); // cambio para elastix
 						$(this).data('colorpickerId', id);
 						var cal = $(tpl).attr('id', id);
 						if (options.flat) {
