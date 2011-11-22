@@ -136,7 +136,6 @@ function _moduleContent(&$smarty, $module_name)
             // TODO: Debo revisar por errores aqui
             $oFax->createFaxExtension($_POST['name'], $_POST['extension'], $_POST['secret'], $_POST['email'], 
                                       $_POST['clid_name'], $_POST['clid_number'],$_POST['country_code'],$_POST['area_code']);
-            $oFax->restartFax();
             header("Location: ?menu=faxlist");
         } else {
             // Error
@@ -161,7 +160,6 @@ function _moduleContent(&$smarty, $module_name)
                               $_POST['secret'], $_POST['email'],$_POST['clid_name'],
                               $_POST['clid_number'],$_POST['dev_id'],
                               $_POST['port'],$_POST['country_code'],$_POST['area_code']);
-            $oFax->restartFax();
             header("Location: ?menu=faxlist");
         } else {
             // Error
@@ -181,7 +179,6 @@ function _moduleContent(&$smarty, $module_name)
         //- TODO: Validar el id de fax
         $oFax = new paloFax(); 
         $oFax->deleteFaxExtensionById($_POST['id_fax']);
-        $oFax->restartFax();
         header("Location: ?menu=faxlist");
 
     } else if(isset($_POST['edit'])) {

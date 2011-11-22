@@ -63,10 +63,10 @@ class paloFax {
     var $dirHylafaxConf;
     var $rutaDB;
     var $firstPort;
-    var $rutaFaxDispatch;
-    var $rutaInittab;
-    var $usuarioWeb;
-    var $grupoWeb;
+    //var $rutaFaxDispatch;
+    //var $rutaInittab;
+    //var $usuarioWeb;
+    //var $grupoWeb;
     var $_db;
     var $errMsg;
 
@@ -78,10 +78,6 @@ class paloFax {
         $this->dirHylafaxConf  = "/var/spool/hylafax/etc";
         $this->rutaDB = "$arrConf[elastix_dbdir]/fax.db";
         $this->firstPort=40000;
-        $this->rutaFaxDispatch = "/var/spool/hylafax/etc/FaxDispatch";
-        $this->rutaInittab = "/etc/inittab";
-        $this->usuarioWeb = "asterisk";
-        $this->grupoWeb   = "asterisk";
         //instanciar clase paloDB
         $pDB = new paloDB("sqlite3:///".$this->rutaDB);
         if(!empty($pDB->errMsg)) {
@@ -91,38 +87,21 @@ class paloFax {
         }
     }
 
-    function createFaxExtension($virtualFaxName, $extNumber, $extSecret, $destinationEmail, $CIDName="", $CIDNumber="",$countryCode, $areaCode)
+    function createFaxExtension($virtualFaxName, $extNumber, $extSecret, 
+        $destinationEmail, $CIDName="", $CIDNumber="", $countryCode, $areaCode)
     {
         // 1) Averiguar el numero de dispositivo que se puede usar y el numero de puerto
         $devId = $this->_getNextAvailableDevId();
         $nextPort=$this->_getNextAvailablePort(); 
 
         // 2) Creo la extension en la base de datos
-        $bExito = $this->_createFaxIntoDB($virtualFaxName, $extNumber, $extSecret, $destinationEmail, $devId, $CIDName, $CIDNumber, $nextPort,$countryCode, $areaCode);
+        $bExito = $this->_createFaxIntoDB($virtualFaxName, $extNumber, 
+            $extSecret, $destinationEmail, $devId, $CIDName, $CIDNumber, 
+            $nextPort, $countryCode, $areaCode);
         if (!$bExito) return FALSE;
 
-        // 3) Create fax system
-        $this->_createFaxSystem($devId, $nextPort, $extNumber, $extSecret, $CIDName, $CIDNumber, $destinationEmail, $countryCode, $areaCode);
-        return TRUE;
-    }
-
-    function _createFaxSystem($devId, $nextPort, $extNumber, $extSecret, $CIDName, $CIDNumber, $destinationEmail, $countryCode, $areaCode)
-    {
-        $errMsg = "";
-
-        // 1) Verificar que las 2 carpetas donde residen los archivos de configuracion son escribibles
-        if(!is_writable($this->dirIaxmodemConf) or !is_writable($this->dirHylafaxConf)) {
-            $errMsg = "The directories \"" . $this->dirIaxmodemConf. "\" and \"" . $this->dirHylafaxConf . "\" must be writeable.";
-        }
-
-        // 2) Escribir el archivo de configuracion de iaxmodem
-        $this->_configureIaxmodem($devId, $nextPort, $extNumber, $extSecret, $CIDName, $CIDNumber);
-
-        // 3) Escribir el archivo de configuracion de hylafax
-        $this->_configureHylafax($devId, $destinationEmail, $CIDNumber, $CIDName, $countryCode, $areaCode);
-
-        // 4) Escribo el inittab
-        $this->_writeInittab($devId);
+        // 3) Refrescar la configuración
+        return $this->refreshFaxConfiguration();
     }
 
     function getFaxList()
@@ -158,37 +137,8 @@ class paloFax {
    
     function deleteFaxExtensionById($idFax)
     {
-        // consulto a la DB para obtener el devId 
-        $arrFax = $this->getFaxById($idFax);
-        $devId  = $arrFax['dev_id'];
-        //- OJO: Aqui estoy suponiendo que los dispositivos comenzaran en ttyIAX1
-        if($devId>0) {
-            // Elimino el archivo de configuracion de Iaxmodem        
-            $archivoIaxmodem    = $this->dirIaxmodemConf . "/iaxmodem-cfg.ttyIAX" . $devId;
-            exec("sudo -u root chmod 757 $this->dirIaxmodemConf");
-            exec("sudo -u root chmod 646 $archivoIaxmodem");
-            @unlink($archivoIaxmodem);    
-            exec("sudo -u root chmod 755 $this->dirIaxmodemConf");
-
-            // Elimino el archivo de configuracin de Hylafax
-            $archivoHylafax     = $this->dirHylafaxConf . "/config.ttyIAX" . $devId;
-            exec("sudo -u root chmod 757 $this->dirHylafaxConf");
-            exec("sudo -u root chmod 646 $archivoHylafax");
-            @unlink($archivoHylafax);    
-            exec("sudo -u root chmod 755 $this->dirHylafaxConf");
- 
-            // Elimino las lineas respectivas en el archivo inittab
-            $this->_deleteLinesFromInittab($devId);
-
-            // actualizo DB
-            $this->_deleteFaxFromDB($idFax);
-
-            // regenero el archivo FaxDispatch
-            $this->_writeFaxDispatch();
-
-        } else {
-            // Error
-        }
+        $this->_deleteFaxFromDB($idFax);
+        return $this->refreshFaxConfiguration();
     }
 
     // Esta funcion compara los archivos de configuracion de iaxmodem y hylafax
@@ -269,98 +219,6 @@ class paloFax {
         }
     }
 
-    private function _getIaxcomContents($devId, $port, $iaxExtension, $iaxSecret, $CLIDName, $CLIDNumber)
-    {
-        $strContents =  "device          /dev/$devId\n" .
-                        "owner           uucp:uucp\n" .
-                        "mode            660\n" .
-                        "port            $port\n" .
-                        "refresh         300\n" .
-                        "server          127.0.0.1\n" .
-                        "peername        $iaxExtension\n" .
-                        "secret          $iaxSecret\n" .
-                        "cidname         $CLIDName\n" .
-                        "cidnumber       $CLIDNumber\n" .
-                        "codec           slinear";
-
-        return $strContents;
-    }
-
-    private function _getHylafaxContents($CLIDNumber, $CLIDName, $countryCode, $areaCode)
-    {
-        $strContents = 
-                        "CountryCode:            $countryCode\n" .
-                        "AreaCode:               $areaCode\n" .
-                        "FAXNumber:              $CLIDNumber\n" .
-                        "LongDistancePrefix:     1\n" .
-                        "InternationalPrefix:    011\n" .
-                        "DialStringRules:        etc/dialrules\n" .
-                        "ServerTracing:          0xFFF\n" .
-                        "SessionTracing:         0xFFF\n" .
-                        "RecvFileMode:           0600\n" .
-                        "LogFileMode:            0600\n" .
-                        "DeviceMode:             0600\n" .
-                        "RingsBeforeAnswer:      1\n" .
-                        "SpeakerVolume:          off\n" .
-                        "GettyArgs:              \"-h %l dx_%s\"\n" . 
-                        "LocalIdentifier:        \"$CLIDName\"\n" .
-                        "TagLineFont:            etc/lutRS18.pcf\n" .
-                        "TagLineFormat:          \"From %%l|%c|Page %%P of %%T\"\n" .
-                        "MaxRecvPages:           200\n" .
-                        "#\n" .
-                        "#\n" .
-                        "# Modem-related stuff: should reflect modem command interface\n" .
-                        "# and hardware connection/cabling (e.g. flow control).\n" .
-                        "#\n" .
-                        "ModemType:              Class1          # use this to supply a hint\n" .
-                        "\n" .
-                        "#\n" .
-                        "# Enabling this will use the hfaxd-protocol to set Caller*ID\n" .
-                        "#\n" .
-                        "#ModemSetOriginCmd:     AT+VSID=\"%s\",\"%d\"\n" .
-                        "\n" .
-                        "#\n" .
-                        "# If \"glare\" during initialization becomes a problem then take\n" .
-                        "# the modem off-hook during initialization, and then place it\n" .
-                        "# back on-hook when done.\n" .
-                        "#\n" .
-                        "#ModemResetCmds:        \"ATH1\\nAT+VCID=1\"       # enables CallID display\n" .
-                        "#ModemReadyCmds:        ATH0\n" .
-                        "\n" . 
-                        "\n" .
-                        "Class1AdaptRecvCmd:     AT+FAR=1\n" .
-                        "Class1TMConnectDelay:   400             # counteract quick CONNECT response\n" .
-                        "\n" .
-                        "Class1RMQueryCmd:       \"!24,48,72,96\"  # enable this to disable V.17\n" .
-                        "\n" .
-                        "#\n" .
-                        "# You'll likely want Caller*ID display (also displays DID) enabled.\n" .
-                        "#\n" .
-                        "ModemResetCmds:         AT+VCID=1       # enables CallID display\n" .
-                        "\n" .
-                        "#\n" .
-                        "# If you are \"missing\" Caller*ID data on some calls (but not all)\n" .
-                        "# and if you do not have adequate glare protection you may want to\n" .
-                        "# not answer based on RINGs, but rather enable the CallIDAnswerLength\n" .
-                        "# for NDID, disable AT+VCID=1 and do this:\n" .
-                        "#\n" .
-                        "#RingsBeforeAnswer: 0\n" .
-                        "#ModemRingResponse: AT+VRID=1\n" .
-                        "\n" .
-                        "CallIDPattern:          \"NMBR=\"\n" .
-                        "CallIDPattern:          \"NAME=\"\n" .
-                        "CallIDPattern:          \"ANID=\"\n" .
-                        "CallIDPattern:          \"NDID=\"\n" .
-                        "#CallIDAnswerLength:    4\n" .
-                        "# Uncomment these if you really want them, but you probably don't.\n" .
-                        "#CallIDPattern:          \"DATE=\"\n" .
-                        "#CallIDPattern:          \"TIME=\"\n" .
-                        "FaxRcvdCmd:              bin/faxrcvd.php\n" .
-                        "UseJobTSI:               true\n";
-
-        return $strContents;
-    }
-
     // TODO: Por ahora busco siempre el puerto mayor pero tambien tengo que
     //       buscar si existen huecos.
     private function _getNextAvailablePort()
@@ -407,168 +265,6 @@ class paloFax {
         }
     }
 
-    // Esta funcion aniade unas lineas en el archivo inittab.
-    // Debe buscar antes un bloque identificador, si no existe tal bloque
-    // entonces aniade las lineas al final del archivo
-    private function _writeInittab($devId)
-    {
-        // Bloque identificador
-        $strBloque = "# Don't remove or modify this comment. The following block is for fax setup.";
-        $contenidoInittab = "";
-        $bloqueEncontrado = false;
-        $rutaInittabBackup = "/var/www/html/var/backups/inittab.old";
-
-        // $strNuevasLineas  = "iax:2345:respawn:/usr/local/bin/iaxmodem ttyIAX &> /var/log/iaxmodem-ttyIAX$devId\n";
-        // $strNuevasLineas .= "fax:2345:respawn:/usr/sbin/faxgetty ttyIAX$devId\n";
-
-        // Nota: El id de la línea del inittab, que se encuentra compuesto de "fx$devIdHex" no puede ser de más
-        //       de 4 caracteres. Es una limitante del inittab. Esto quiere decir que despues de poner el prefijo
-        //       fx solo tenemos 2 caracteres más. Para aprovecharlos mejor usamos un número en hexadecimal en lugar
-        //       de decimal. Esto nos deja 255 (FF) posibilidades o un número máximo de 255 faxes virtuales que se 
-        //       pueden crear.
-
-        $devIdHex = dechex($devId);
-        $strNuevasLineas = "fx$devIdHex:2345:respawn:/usr/sbin/faxgetty ttyIAX$devId\n";
-
-        if($fh=fopen($this->rutaInittab, "r")) {
-            while(!feof($fh)) {
-                $linea = fgets($fh, 10240);
-                $contenidoInittab .= $linea;
-
-                if(preg_match("/^$strBloque/", $linea)) {
-                    $contenidoInittab .= $strNuevasLineas;                    
-                    $bloqueEncontrado  = true;
-                }
-            }
-            fclose($fh);
-            if($bloqueEncontrado==false) {
-                $contenidoInittab .= "\n$strBloque\n";
-                $contenidoInittab .= $strNuevasLineas;
-            }
-
-            // Respaldamos el inittab antes de escribirlo
-            @copy($this->rutaInittab, $rutaInittabBackup);
-
-            // Ahora abrimos el inittab pero para escribirlo
-            exec("sudo -u root chmod 646 $this->rutaInittab");
-            if($fh=fopen($this->rutaInittab, "w")) {
-                fwrite($fh, $contenidoInittab);
-                fclose($fh);
-            } else {
-                // Error
-            }
-            exec("sudo -u root chmod 644 $this->rutaInittab");
-        } else {
-            // Error
-        }      
-    }
-
-    function _deleteLinesFromInittab($devId)
-    {
-        $contenidoInittab = "";
-        $rutaInittabBackup = "/var/www/html/var/backups/inittab.old";
-
-        if($fh=fopen($this->rutaInittab, "r")) {
-            while(!feof($fh)) {
-                $linea = fgets($fh, 10240);
-
-                if(!(preg_match("/^(iax|fx)[[:alnum:]]{1,2}:2345:respawn/", $linea) and preg_match("/ttyIAX$devId/", $linea))) {
-                    $contenidoInittab .= $linea;
-                }
-            }
-            fclose($fh);
-
-            // Respaldamos el inittab antes de escribirlo
-            @copy($this->rutaInittab, $rutaInittabBackup);
-
-            // Ahora abrimos el inittab pero para escribirlo
-            exec("sudo -u root chmod 646 $this->rutaInittab");
-            if($fh=fopen($this->rutaInittab, "w")) {
-                fwrite($fh, $contenidoInittab);
-                fclose($fh);
-            } else {
-                // Error
-            }
-            exec("sudo -u root chmod 644 $this->rutaInittab");
-        } else {
-            // Error
-        }
-    }
-
-    // TODO: Seria bueno que la funcion no tome parametros
-    private function _writeFaxDispatch()
-    {
-        $strFaxDispatch  = "SENDTO=root;\n" .
-                           "FILETYPE=pdf;\n" .
-                           "\n" .
-                           "case \"\$DEVICE\" in\n";
-        $arrFax = array();
-        $arrFax = $this->getFaxList(); 
-        if(is_array($arrFax) and count($arrFax)>0) {
-           foreach($arrFax as $fax) {
-               $strFaxDispatch .= "  ttyIAX" . $fax['dev_id'] . ") SENDTO=" . $fax['email'] . ";;\n";
-            }
-        }
-        $strFaxDispatch .= "esac\n";
-
-        // Ya tengo el contenido, ahora escribo el archivo
-        // Lo sobreescribo nomas. Si no existe lo creo con touch
-        if(!file_exists($this->rutaFaxDispatch)) {
-            exec("sudo -u root touch $this->rutaFaxDispatch");
-        }
-
-        exec("sudo -u root chmod 646 $this->rutaFaxDispatch");            
-        if($fh=fopen($this->rutaFaxDispatch, "w")) {
-            fwrite($fh, $strFaxDispatch);
-            fclose($fh);
-        } else {
-            // Error
-        }
-        exec("sudo -u root chmod 644 $this->rutaFaxDispatch");
-    }
-
-    private function _configureIaxmodem($devId, $nextPort, $extNumber, $extSecret, $CIDName, $CIDNumber)
-    {
-        $nextIaxmodemConfFilename = $this->dirIaxmodemConf . "/iaxmodem-cfg.ttyIAX" . $devId;
-        $contenidoArchivoIaxcomConf=$this->_getIaxcomContents("ttyIAX" . $devId, $nextPort, $extNumber, $extSecret, $CIDName, $CIDNumber);
-
-        exec("sudo -u root touch $nextIaxmodemConfFilename");
-        exec("sudo -u root chmod 646 $nextIaxmodemConfFilename");
-
-        if($fh = fopen($nextIaxmodemConfFilename, "w")) {
-            fwrite($fh, $contenidoArchivoIaxcomConf);
-            fclose($fh);
-        } else {
-            // Error
-        }
-
-        // Debo reiniciar Iaxmodem?
-    }
-
-    private function _configureHylafax($devId, $destinationEmail, $CIDNumber, $CIDName, $countryCode, $areaCode)
-    {
-        // Escribo el archivo FaxDispatch
-        $this->_writeFaxDispatch();
-
-        $nextHylafaxConfFilename = $this->dirHylafaxConf . "/config.ttyIAX" . $devId;
-        $contenidoArchivoHylafaxConf=$this->_getHylafaxContents($CIDNumber, $CIDName, $countryCode, $areaCode);
-
-        exec("sudo -u root touch $nextHylafaxConfFilename");
-        exec("sudo -u root chmod 646 $nextHylafaxConfFilename");
-        exec("sudo -u root chown uucp.uucp $nextHylafaxConfFilename");
-
-        if($fh = fopen($nextHylafaxConfFilename, "w")) {
-            fwrite($fh, $contenidoArchivoHylafaxConf);
-            fclose($fh);
-        } else {
-            // Error
-        }
-
-        exec("sudo -u root chmod 644 $nextHylafaxConfFilename");
-        
-        // Debo reiniciar Hylafax
-    }
-
     function getFaxStatus()
     {
         $arrStatus = array();
@@ -589,14 +285,7 @@ class paloFax {
         // 2) Editar la extension en la base de datos 
         $bExito = $this->_editFaxInDB($idFax,$virtualFaxName, $extNumber, $extSecret, $destinationEmail, $devId, $CIDName, $CIDNumber, $port,$countryCode, $areaCode);
         if (!$bExito) return FALSE;
-
-        // 3) Modificar el archivo de configuracion de iaxmodem
-        $this->_configureIaxmodem($devId, $port, $extNumber, $extSecret, $CIDName, $CIDNumber);
-        
-        // 4) Modificar el archivo de configuracion de hylafax
-        $this->_configureHylafax($devId, $destinationEmail, $CIDNumber, $CIDName, $countryCode, $areaCode);
-        
-        return TRUE;
+        return $this->refreshFaxConfiguration();
     }
 
     private function _editFaxInDB($idFax, $name, $extension, $secret, $email, 
@@ -641,10 +330,24 @@ class paloFax {
         return $bExito; 
     }
 
-    function restartFax() {
-        exec("sudo -u root init q");
-        exec("sudo -u root service generic-cloexec iaxmodem restart");
-        exec("sudo -u root service generic-cloexec hylafax restart");
+    /**
+     * Procedimiento que llama al ayudante faxconfig para que modifique la
+     * información de faxes virtuales para que se ajuste a lo almacenado en la
+     * base de datos.
+     * 
+     * @return bool VERDADERO en caso de éxito, FALSO en error
+     */
+    function refreshFaxConfiguration()
+    {
+        $this->errMsg = '';
+        $sComando = '/usr/bin/elastix-helper faxconfig --refresh 2>&1';
+        $output = $ret = NULL;
+        exec($sComando, $output, $ret);
+        if ($ret != 0) {
+            $this->errMsg = implode('', $output);
+            return FALSE;
+        }
+        return TRUE;
     }
 }
 ?>

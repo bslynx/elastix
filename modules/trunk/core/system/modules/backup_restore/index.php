@@ -1391,14 +1391,18 @@ function process_each_restore($arrSelectedOptions,$ruta_respaldo,$ruta_restaurar
                 $base_fax_respaldo = "$ruta_respaldo/fax.db";
                 $base_fax= "$arrConf[elastix_dbdir]/fax.db";
 
-                //consultar en la base para crear en el sistema
-                crear_cuentas_fax($base_fax_respaldo,$base_fax);
+                if (!rename($base_fax_respaldo, $base_fax)) {
+                	$bExito = false;
+                } else {
 
-		if(!rename($base_fax_respaldo, $base_fax))  $bExito = false;
-
-                $comando="sudo -u root /bin/chmod 777 $base_fax";
-                exec($comando,$output,$retval);
-            }else $bExito = false;
+                    $comando="sudo -u root /bin/chmod 644 $base_fax";
+                    exec($comando,$output,$retval);
+                    
+                    //consultar en la base para crear en el sistema
+                    $oFax = new paloFax();
+                    $oFax->refreshFaxConfiguration();
+                }
+            } else $bExito = false;
             break;
 
         case "fx_pdf":
@@ -2004,45 +2008,6 @@ function restaurar_carpeta($arrInfoRestaurar,$ruta_respaldo,&$error)
     if ($retval<>0) $bExito=false;
 
     return $bExito;
-}
-
-function crear_cuentas_fax($ruta_base_fax_respaldo,$base_fax)
-{
-    $result=array();
-    $oFax = new paloFax();
-
-    #borrar las cuentas de fax de $arrConf[elastix_dbdir]
-    $pDBorig = new paloDB("sqlite3:///$base_fax");
-    if (!empty($pDBorig->errMsg)) {
-        echo "DB ERROR: $pDBorig->errMsg \n";
-    }
-    else{
-        #TODO:
-        #antes de borrar de la base de datos deberia seleccionar cada una e ir borrando del equipo
-        $query="SELECT id FROM fax";
-        $result=$pDBorig->fetchTable($query,true);
-        if(is_array($result) && count($result) > 0){
-            foreach($result as $key => $value)
-                $oFax->deleteFaxExtensionById($value['id']);
-        }
-    }
-
-    $pDB = new paloDB("sqlite3:///$ruta_base_fax_respaldo");
-    if (!empty($pDB->errMsg)) {
-        echo "DB ERROR: $pDB->errMsg \n";
-    }else{
-        $query="SELECT * FROM fax";
-        $result=$pDB->fetchTable($query,true);
-        if (is_array($result) && count($result) > 0){
-            foreach ($result as $arrFax)
-            {
-                $arrFax['country_code'] = isset($arrFax['country_code'])?$arrFax['country_code']:"";
-                $arrFax['area_code']    = isset($arrFax['area_code'])?$arrFax['area_code']:"";
-                $oFax->_deleteLinesFromInittab($arrFax['dev_id']);
-                $oFax->_createFaxSystem($arrFax['dev_id'], $arrFax['port'], $arrFax['extension'], $arrFax['secret'], $arrFax['clid_name'], $arrFax['clid_number'], $arrFax['email'], $arrFax['country_code'], $arrFax['area_code']);
-            }
-        }
-    }
 }
 
 function crear_cuentas_email($ruta_base_email_respaldo,$base_email)
