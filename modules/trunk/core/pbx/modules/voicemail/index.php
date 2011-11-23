@@ -396,7 +396,7 @@ contenido;
 
     $oGrid = new paloSantoGrid($smarty);
     $oGrid->showFilter($htmlFilter);
-    $contenidoModulo  .= $oGrid->fetchGrid($arrGrid, $arrVoiceData,$arrLang);
+    $contenidoModulo  = $oGrid->fetchGrid($arrGrid, $arrVoiceData,$arrLang);
     if (strpos($contenidoModulo, '<form') === FALSE)
     $contenidoModulo  = "<form style='margin-bottom:0;' method='POST' action='?menu=$module_name'>$contenidoModulo</form>";
     return $contenidoModulo;
