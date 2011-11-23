@@ -441,10 +441,10 @@ function addBookmark(){
 	arrAction["rawmode"] = "yes";
 	var srcimg = $('#neo-logobox').find('img:first').attr("src");
 	var theme = srcimg.split("/",2);
-	var urlImaLoading = "<h1><img src='themes/"+theme[1]+"/images/busy.gif' /> "+$('#toolTip_addingBookmark').val()+"...</h1>";
+	var urlImaLoading = "<div style='margin: 10px;'><img src='themes/"+theme[1]+"/images/busy.gif' />&nbsp;<span style='font-size: 20px; '>"+$('#toolTip_addingBookmark').val()+"...</span></div>";
 	var imgBookmark = $("#togglebookmark").attr('src');
 	if(/bookmarkon.png/.test(imgBookmark))
-		urlImaLoading = "<h1><img src='themes/"+theme[1]+"/images/busy.gif' /> "+$('#toolTip_removingBookmark').val()+"...</h1>";
+		urlImaLoading = "<div style='margin: 10px;'><img src='themes/"+theme[1]+"/images/busy.gif' />&nbsp;<span style='font-size: 20px; '>"+$('#toolTip_removingBookmark').val()+"...</span></div>";
 	$.blockUI({ message: urlImaLoading });
 	request("index.php",arrAction,false,
 		function(arrData,statusResponse,error)
@@ -474,8 +474,9 @@ function addBookmark(){
 					$("#togglebookmark").attr('title', labeli);
 					var link = "<div class='neo-historybox-tab' id='menu"+idmenu+"'><a href='index.php?menu="+namemenu+"' >"+menu+"</a></div>";
 					if($('div[id^=menu]').length == 0){
+						$('#neo-bookmarkID').attr("style","");
 						link = "<div class='neo-historybox-tabmid' id='menu"+idmenu+"'><a href='index.php?menu="+namemenu+"' >"+menu+"</a></div>";
-						$('#neo-historybox').find("br").remove();
+						//$('#neo-historybox').find("br").remove();
 					}
 					$('#neo-bookmarkID').after(link);
 				}
@@ -485,13 +486,15 @@ function addBookmark(){
 					// el anterior debe tener la clase neo-historybox-tabmid
 					$('#menu'+idmenu).remove();
 					if($('div[id^=menu]').length == 0){
-						$('#neo-bookmarkID').after("<br />");
+						//$('#neo-bookmarkID').after("<br />");
+						$('#neo-bookmarkID').attr("style","display:none;");
 					}else{
 						$('div[id^=menu]').each(function(indice,valor){
 							var tam = $('div[id^=menu]').length;
 							if(indice == (tam - 1)){
 								$(this).removeClass('neo-historybox-tab');
 								$(this).addClass('neo-historybox-tabmid');
+
 							}
 						});
 
@@ -510,16 +513,16 @@ function saveToggleTab(){
 	else
 		arrAction["statusTab"]  = "false";
 	arrAction["rawmode"] = "yes";
-	var srcimg = $('#neo-logobox').find('img:first').attr("src");
+	/*var srcimg = $('#neo-logobox').find('img:first').attr("src");
 	var theme = srcimg.split("/",2);
 	var urlImaLoading = "<h1><img src='themes/"+theme[1]+"/images/busy.gif' /> "+$('#toolTip_hidingTab').val()+"...</h1>";
 	if(arrAction["statusTab"] == "false")
 		urlImaLoading = "<h1><img src='themes/"+theme[1]+"/images/busy.gif' /> "+$('#toolTip_showingTab').val()+"...</h1>";
-	$.blockUI({ message: urlImaLoading });
+	$.blockUI({ message: urlImaLoading });*/
 	request("index.php",arrAction,false,
 		function(arrData,statusResponse,error)
 		{
-			$.unblockUI();
+			/*$.unblockUI();*/
 			if(statusResponse == "false"){
 				if(!$('#neo-lengueta-minimized').hasClass('neo-display-none')){
 					  $("#neo-contentbox-leftcolumn").removeClass("neo-contentbox-leftcolumn-minimized");
@@ -530,7 +533,7 @@ function saveToggleTab(){
 						  var labeli = $('#toolTip_hideTab').val();
 						  $('#toggleleftcolumn').attr('title',labeli);
 						  $('#toggleleftcolumn').attr('src',"images/expand.png");
-						  
+
 					  }
 					}else{
 					  $("#neo-contentbox-leftcolumn").addClass("neo-contentbox-leftcolumn-minimized");
@@ -578,7 +581,7 @@ $(document).ready(function(){
             $("#fade_overlay").attr("style","display: block;");
             $("#changeMode").attr("style", "visibility: visible;");
             var message = JSONRPMtoString(theResponse);
-            var html = ""; 
+            var html = "";
             var html2 = "";
             var key = "";
             var key2 = "";
@@ -643,7 +646,7 @@ $(document).ready(function(){
             //change lbltextMode
             var lblhtmlMode = $("#lblHtmlMode").val();
             $("#changeMode").text("("+lblhtmlMode+")");
-            
+
             $("#tdRpm").attr("style","display: none;");
             $("#tdTa").attr("style","display: block;");
         }else{
@@ -739,7 +742,7 @@ $(document).ready(function(){
 				return false;
 			}
 	});
-		
+
 });
 
 //Si se presiona enter se hace un submit al formulario para que se aplica el filtro
@@ -755,7 +758,7 @@ function keyPressed(e)
     }
 }
 
-// implement JSON.parse de-serialization  
+// implement JSON.parse de-serialization
 function JSONRPMtoString(str) {
 	if (str === "") str = '""';
 	eval("var p=" + str + ";");
@@ -779,6 +782,6 @@ function changeColorMenu()
 				alert(error);
 		}
 	);
-	
+
 }
 

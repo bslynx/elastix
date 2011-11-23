@@ -502,7 +502,7 @@ class paloSantoNavigation {
 		$pACL = new paloACL($pdbACL);
 		$uid = $pACL->getIdUser($user);
 		$htmlData = "";
-		
+
 		if($uid===FALSE)
 			$htmlData = "";
 		else{
@@ -521,7 +521,7 @@ class paloSantoNavigation {
 					$cont++;
 				}
 			}else{
-				$htmlData .= "<div id='neo-bookmarkID' class='neo-historybox-tabon'>"._tr("Bookmarks")."</div><br />";
+				$htmlData .= "<div id='neo-bookmarkID' class='neo-historybox-tabon' style='display: none'>"._tr("Bookmarks")."</div>";
 			}
 
 			$arr_result2 = $pdbACL->fetchTable($history, TRUE, array($uid));
@@ -531,7 +531,7 @@ class paloSantoNavigation {
 					$htmlData .= "<div class='neo-historybox-tab'><a href='index.php?menu=".$value2['namemenu']."' >"._tr($value2['name'])."</a></div>";
 				}
 			}else{
-				$htmlData .= "<div id='neo-historyID' class='neo-historybox-tabon'>"._tr("History")."</div>";
+				$htmlData .= "<div id='neo-historyID' class='neo-historybox-tabon' style='display: none;'>"._tr("History")."</div>";
 			}
 		}
 		return $htmlData;
