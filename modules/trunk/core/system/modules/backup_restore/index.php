@@ -304,16 +304,34 @@ function automatic_backup($smarty, $module_name, $local_templates_dir, $arrLang,
 }
 
 
-function downloadBackup($smarty, $module_name, $local_templates_dir, $arrLang, $dir_backup, &$pDB){
+function downloadBackup($smarty, $module_name, $local_templates_dir, $arrLang, $dir_backup, &$pDB)
+{
+    $bArchivoValido = TRUE;
+
     $file_name = getParameter("file_name");
+    if (basename($file_name) != $file_name) {
+    	$bArchivoValido = FALSE;
+    } elseif (!preg_match('/^elastixbackup-\d{14}-\w{2}\.tar$/', $file_name)) {
+    	$bArchivoValido = FALSE;
+    }
 
-    header("Cache-Control: private");
-    header("Pragma: cache");
-    header('Content-Type: application/octec-stream');
-    header("Content-Length: ".filesize("$dir_backup/$file_name"));  
-    header("Content-Disposition: attachment; filename=$file_name");
-
-    readfile("$dir_backup/$file_name");
+    if ($bArchivoValido) {
+        if (file_exists("$dir_backup/$file_name")) {
+            header("Cache-Control: private");
+            header("Pragma: cache");
+            header('Content-Type: application/octet-stream');
+            header("Content-Length: ".filesize("$dir_backup/$file_name"));  
+            header("Content-Disposition: attachment; filename=$file_name");
+        
+            readfile("$dir_backup/$file_name");
+        } else {
+            header("HTTP/1.1 404 Not Found");
+            print "File not found";
+        }
+    } else {
+    	header("HTTP/1.1 403 Forbidden");
+        print "Invalid file";
+    }
 }
 
 
