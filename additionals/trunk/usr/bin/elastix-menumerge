@@ -93,7 +93,7 @@ if(isset($_SERVER['argv'][1])){
                     $newMenu["order"]=$menuitem['order'];
                     $oInstaller->UpdateMenu($oMenu,$newMenu);
 					if($newMenu['parent']!="") //agregar los permisos
-                        $oInstaller->updateResourceMembership($oACL,$newMenu,$newPermission);
+                        $oInstaller->updateResourceMembership($oACL,$newMenu);
                 }
             }
             else{
