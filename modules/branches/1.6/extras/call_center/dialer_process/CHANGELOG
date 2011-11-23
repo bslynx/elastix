@@ -1,3 +1,6 @@
+* Dialer (ECCP): fix copy/paste error in "getcampaignqueuewait" request on error
+  path.
+
 1.6.3 (SVN revision 3327)
 * Agent Console: fix broken POST variable parsing when scheduling a call. Fixes
   Elastix bux #1083. 

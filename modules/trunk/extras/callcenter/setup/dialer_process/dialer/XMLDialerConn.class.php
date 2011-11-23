@@ -1171,8 +1171,8 @@ LISTA_EXTENSIONES;
         }
 
         $tuplaAbandonadas = $this->_dbConn->getRow($sqlLlamadasAbandonadas, array($idCampania), DB_FETCHMODE_ASSOC);
-        if (DB::isError($recordset)) {
-            $this->oMainLog->output("ERR: no se puede leer histograma de la campaña (abandonadas) - ".$recordset->getMessage());
+        if (DB::isError($tuplaAbandonadas)) {
+            $this->oMainLog->output("ERR: no se puede leer histograma de la campaña (abandonadas) - ".$tuplaAbandonadas->getMessage());
             $this->_agregarRespuestaFallo($xml_GetCampaignQueueWaitResponse, 500, 'Cannot read campaign histogram');
             return $xml_response;
         }
