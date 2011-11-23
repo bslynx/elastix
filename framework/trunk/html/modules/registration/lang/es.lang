@@ -58,5 +58,6 @@ $arrLangModule=array(
 "* Country: Selected a country " => "* País: Escojer un País ",
 "* Address: text " => "* Dirección: text ",
 "Please fill the correct values in fields: " => "Por favor llene correctamente los valores en los campos: ",
+"The table register does not exist and could not be created" => "La table register no existe y no pudo ser creada",
 );
 ?>
