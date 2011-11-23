@@ -52,7 +52,7 @@ class paloSantoNavigation {
     }
 
 
-    function getArrParentIds($idMenuSelected)  
+    function getArrParentIds($idMenuSelected)
     {
         $idMenuActual = $this->getIdParentMenu($idMenuSelected);
         $limite=10;
@@ -62,7 +62,7 @@ class paloSantoNavigation {
                 break;
             } else {
                 $arrIdParentMenus[]=$idMenuActual;
-                $idMenuActual=$this->getIdParentMenu($idMenuActual);    
+                $idMenuActual=$this->getIdParentMenu($idMenuActual);
             }
             if($i==$limite) {
                 // Si llego hasta aqui, probablemente no encontre el menu raiz
@@ -71,7 +71,7 @@ class paloSantoNavigation {
         }
 
        $arrResult=array_reverse($arrIdParentMenus);
-       return $arrResult; 
+       return $arrResult;
     }
 
     function getArrChildrenIds($idMenuSelected)
@@ -81,7 +81,7 @@ class paloSantoNavigation {
         $idSubMenu=$this->getIdFirstSubMenu($idMenuSelected);
         for($i=1; $i<=$limite; $i++) {
             if($idSubMenu==false) {
-                break;  
+                break;
             } else {
                 $arrResult[]=$idSubMenu;
                 $idSubMenu=$this->getIdFirstSubMenu($idSubMenu);
@@ -100,7 +100,7 @@ class paloSantoNavigation {
         if(!empty($idMenuSelected) and $this->isValidMenu($idMenuSelected)) {
 
             // Debo encontrar entonces sus menus padres y sus menus hijos
-    
+
             // Encuentro todos los menus padres
             $arrIdParentMenus=$this->getArrParentIds($idMenuSelected);
             if(is_array($arrIdParentMenus)) {
@@ -109,8 +109,8 @@ class paloSantoNavigation {
 
             // Le sumo el menu actual
             $arrIds[]=$idMenuSelected;
-    
-            // Encuentro los menus hijos. 
+
+            // Encuentro los menus hijos.
             $arrIdChildrenMenus=$this->getArrChildrenIds($idMenuSelected);
 
             if(is_array($arrIdChildrenMenus)) {
@@ -118,11 +118,11 @@ class paloSantoNavigation {
                     $arrIds[]=$elemento;
                 }
             }
-   
-            //print_r($arrIds); 
+
+            //print_r($arrIds);
             // En este punto $arrIds deberia contener los Ids activos de cada menu para los n niveles
             // Como por ahora manejamos hasta 3 niveles unicamente voy a mapear los 3 primeros elementos
-           
+
             $currMainMenu=NULL;
             $currSubMenu =NULL;
             $currSubMenu2=NULL;
@@ -186,26 +186,45 @@ class paloSantoNavigation {
 				$i++;
 			}
 			$arrMainMenu = array_merge($mainMenues, $secondMenues);
-			$this->smarty->assign("SHORTCUT",$this->loadShortcut());///////////////////////////
+			if(!isset($_SESSION['menu']) || $_SESSION['menu'] == "")
+				$_SESSION['menu'] = $currMainMenu;
+
+			$arrParentMenuId = $this->getIdParentMenu($_SESSION['menu']);
+			$menuBookmark = $_SESSION['menu'];
+			if($arrParentMenuId == ""){ // no tiene padre entonces es un menu de 1 nivel
+				$menuBookmark = $this->getIdFirstSubMenu($_SESSION['menu']);
+				$salRes = $this->getIdFirstSubMenu($menuBookmark);
+				if($salRes !== FALSE)
+					$menuBookmark = $salRes;
+			}else{ // tiene padre entonces puede ser un menu de 2 o 3 nivel
+				// se pregunta si tiene un primer hijo
+				$salRes = $this->getIdFirstSubMenu($_SESSION['menu']);
+				if($salRes !== FALSE){ // si no tiene un hijo entonces es de 2 nivel
+					$menuBookmark = $salRes;
+				}else{ // es de 3 nivel
+					$menuBookmark = $_SESSION['menu'];
+				}
+			}
+			putMenuAsHistory($menuBookmark);
+			$this->smarty->assign("SHORTCUT",$this->loadShortcut($currMainMenu));///////////////////////////
 		}
 		/************* para elastixneo**********/
 
         $this->smarty->assign("arrMainMenu", $arrMainMenu);
 
         // Get the submenu
-        $arrSubMenu = $this->getArrSubMenu($currMainMenu); 
+        $arrSubMenu = $this->getArrSubMenu($currMainMenu);
         $this->smarty->assign("arrSubMenu", $arrSubMenu);
 
         // Get the 3th level menu
-        $arrSubMenu2 = $this->getArrSubMenu($currSubMenu); 
+        $arrSubMenu2 = $this->getArrSubMenu($currSubMenu);
         $this->smarty->assign("arrSubMenu2", $arrSubMenu2);
 		if(is_array($arrSubMenu2) && !empty($arrSubMenu2))////////////////////////////////////////////
 			$isThirdLevel = "on";//////////////////////////////////////////////
 
         $arrSubMenuByParents = $this->getArrSubMenuByParents($currMainMenu); // added by eduardo
         $this->smarty->assign("arrSubMenuByParents", $arrSubMenuByParents);   // added by eduardo
-		if(!isset($_SESSION['menu']) || $_SESSION['menu'] == "")
-			$_SESSION['menu'] = $currMainMenu;
+
         $this->smarty->assign("idMainMenuSelected",   $currMainMenu);
         $this->smarty->assign("idSubMenuSelected",    $currSubMenu);
         $this->smarty->assign("idSubMenu2Selected",    $currSubMenu2);
@@ -235,7 +254,7 @@ class paloSantoNavigation {
                 $idSub = $valorSub['id'];
                 //ALL: with this function getArrSubMenu our can to add the third level.
                 $arrTmp2 =$this->getArrSubMenu($idSub);
-                if($arrTmp2)$valorSub['Name'] = $valorSub['Name'].'...'; 
+                if($arrTmp2)$valorSub['Name'] = $valorSub['Name'].'...';
                 $arrMenuTotal[$idMenu] .= "<tr><td>";
                 $arrMenuTotal[$idMenu] .= "<a href=\"index.php?menu={$valorSub['id']}\">{$valorSub['Name']}</a>";
                 $arrMenuTotal[$idMenu] .= "</td></tr>";
@@ -334,9 +353,9 @@ class paloSantoNavigation {
             $retVar  = "<iframe marginwidth=\"0\" marginheight=\"0\" style=\"border: 1px solid rgb(200, 200, 200); background-color: rgb(255, 255, 255);";
             $retVar .= "\" src=\"" . $this->arrMenu[$this->currSubMenu]['Link'] . "\" name=\"myframe\" id=\"myframe\" frameborder=\"0\"";
             $retVar .= " width=\"100%\"></iframe>";
-*/ 
+*/
             /*Version 0.9 agregado variable $ip*/
-            $name_server = $this->obtenerNameServer();	
+            $name_server = $this->obtenerNameServer();
             $ip_server   = $this->obtenerIpServer("eth0");
             if($ip_server==null)
                 $ip_server="127.0.0.1";
@@ -348,7 +367,7 @@ class paloSantoNavigation {
 
             $retVar  = "<iframe marginwidth=\"0\" marginheight=\"0\" class=\"frameModule\"";
             $retVar .= "\" src=\"" . $link . "\" name=\"myframe\" id=\"myframe\" frameborder=\"0\"";
-            $retVar .= " width=\"100%\" onLoad=\"calcHeight();\"></iframe>"; 
+            $retVar .= " width=\"100%\" onLoad=\"calcHeight();\"></iframe>";
         }
         return $retVar;
     }
@@ -383,7 +402,7 @@ class paloSantoNavigation {
 
     function obtenerNameServer()
     {
-        return $_SERVER['SERVER_NAME']; 
+        return $_SERVER['SERVER_NAME'];
     }
 
     /**
@@ -391,13 +410,13 @@ class paloSantoNavigation {
     * Description:
     *   This function put the tags css and js per each module and the libs of the framework
     *
-    * Example: 
+    * Example:
     *   $array = putHEAD_MODULE_HTML('calendar');
     *
-    * Developer: 
+    * Developer:
     *   Eduardo Cueva
     *
-    * e-mail: 
+    * e-mail:
     *   ecueva@palosanto.com
     */
     function putHEAD_MODULE_HTML($menuLibs)  // add by eduardo
@@ -409,7 +428,7 @@ class paloSantoNavigation {
         $directory = "$documentRoot/modules/".$menuLibs;
         $HEADER_MODULES = "";
         if(is_dir($directory)){
-            // FIXED: The theme default shouldn't be static. 
+            // FIXED: The theme default shouldn't be static.
             $directoryScrips = "$documentRoot/modules/$menuLibs/themes/default/js/";
             $directoryCss = "$documentRoot/modules/$menuLibs/themes/default/css/";
             if(is_dir($directoryScrips)){
@@ -435,7 +454,7 @@ class paloSantoNavigation {
         $this->smarty->assign("HEADER_MODULES",$HEADER_MODULES);
     }
 
-    function putHEAD_JQUERY_HTML()   
+    function putHEAD_JQUERY_HTML()
     {
         $documentRoot = $_SERVER["DOCUMENT_ROOT"];
         // include file of framework
@@ -475,13 +494,13 @@ class paloSantoNavigation {
     * Description:
     *   This function Obtain all name files into of a directory where $type is the extension of the file
     *
-    * Example: 
+    * Example:
     *   $array = obtainFiles('/var/www/html/modules/calendar/themes/default/js/','js');
     *
-    * Developer: 
+    * Developer:
     *   Eduardo Cueva
     *
-    * e-mail: 
+    * e-mail:
     *   ecueva@palosanto.com
     */
     function obtainFiles($dir,$type){
@@ -502,7 +521,7 @@ class paloSantoNavigation {
 		$pACL = new paloACL($pdbACL);
 		$uid = $pACL->getIdUser($user);
 		$htmlData = "";
-
+		$menu = "";
 		if($uid===FALSE)
 			$htmlData = "";
 		else{
@@ -531,7 +550,7 @@ class paloSantoNavigation {
 					$htmlData .= "<div class='neo-historybox-tab'><a href='index.php?menu=".$value2['namemenu']."' >"._tr($value2['name'])."</a></div>";
 				}
 			}else{
-				$htmlData .= "<div id='neo-historyID' class='neo-historybox-tabon' style='display: none;'>"._tr("History")."</div>";
+				$htmlData .= "<div id='neo-historyID' class='neo-historybox-tabon'>"._tr("History")."</div>";
 			}
 		}
 		return $htmlData;

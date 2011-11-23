@@ -345,9 +345,6 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
             if (count($arrMenuFiltered)>0){
                 $menu_html = $smarty->fetch("_common/_menu.tpl");
                 $smarty->assign("MENU",$menu_html);
-				// agregar el menu como modulo visitado recientemente
-				
-				putMenuAsHistory($menuBookmark);
             }
             else{
                 $smarty->assign("MENU","No modules");
