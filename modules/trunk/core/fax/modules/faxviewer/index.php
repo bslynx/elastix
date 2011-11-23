@@ -390,7 +390,6 @@ function download_faxFile($smarty, $module_name, $arrLang, $oForm, $local_templa
 	header('Content-Type: application/octec-stream');
 	header("Content-Length: ".filesize("$dir_backup/$file_path"));  
     header("Content-disposition: attachment; filename=$file_name");
-	exec("echo '$dir_backup/$file_path' > /tmp/tmp.log");
 	readfile("$dir_backup/$file_path");
 }
 
