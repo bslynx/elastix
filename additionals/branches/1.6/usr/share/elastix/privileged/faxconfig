@@ -34,16 +34,23 @@ require_once 'Console/Getopt.php';
 define('CONFIGDIR_IAXMODEM', '/etc/iaxmodem');
 define('CONFIGDIR_HYLAFAX', '/var/spool/hylafax/etc');
 define('INITTAB_MARKER', "# Don't remove or modify this comment. The following block is for fax setup.");
+define('HYLAFAX_ALLOWED_HOSTS', 'hosts.hfaxd');
 
 // Parse command-line options
 $opt = Console_Getopt::getopt($argv, '', array(
     'refresh',  // Refresh configuration from database
+    'getfaxhosts',  // Read allowed fax hosts from /var/spool/hylafax/etc/hosts.hfaxd
+    'setfaxhosts',  // Set allowed fax hosts in /var/spool/hylafax/etc/hosts.hfaxd
 ));
 if (PEAR::isError($opt)) error_exit($opt->getMessage()."\n");
 //validateOptions($opt);
 foreach ($opt[0] as $option) switch ($option[0]) {
 case '--refresh':
     exit(action_refreshConfiguration($opt) ? 0 : 1);
+case '--getfaxhosts':
+    exit(action_getFaxHosts($opt) ? 0 : 1);
+case '--setfaxhosts':
+    exit(action_setFaxHosts($opt) ? 0 : 1);
 }
 error_exit("No action specified (--refresh)\n");
 
@@ -269,5 +276,25 @@ HYLAFAX_CONFIG;
     file_put_contents($sRutaArchivo, $sContenido);
     chown($sRutaArchivo, 'uucp'); chgrp($sRutaArchivo, 'uucp');
     chmod($sRutaArchivo, 0644);
+}
+
+/* Report the list of hosts that are allowed to send fax through this machine */
+function action_getFaxHosts($opt)
+{
+    return (readfile(CONFIGDIR_HYLAFAX.'/'.HYLAFAX_ALLOWED_HOSTS) !== FALSE);
+}
+
+/* Set the list of hosts that are allowed to send fax. */
+function action_setFaxHosts($opt)
+{
+    // These hosts are always required.
+    $listaHosts = array('localhost', '127.0.0.1');
+    
+    foreach ($opt[1] as $sNewHost) if (!in_array($sNewHost, $listaHosts)) {
+        if (!preg_match('/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/', $sNewHost))
+            error_exit("Invalid host IP: $sNewHost\n");
+        $listaHosts[] = $sNewHost;
+    }
+    return (file_put_contents(CONFIGDIR_HYLAFAX.'/'.HYLAFAX_ALLOWED_HOSTS, implode("\n", $listaHosts)."\n") !== FALSE);
 }
 ?>
