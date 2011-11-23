@@ -41,6 +41,7 @@ $opt = Console_Getopt::getopt($argv, '', array(
     'refresh',  // Refresh configuration from database
     'getfaxhosts',  // Read allowed fax hosts from /var/spool/hylafax/etc/hosts.hfaxd
     'setfaxhosts',  // Set allowed fax hosts in /var/spool/hylafax/etc/hosts.hfaxd
+    'faxmaster',    // Update /etc/postfix/virtual with FaxMaster from settings.db
 ));
 if (PEAR::isError($opt)) error_exit($opt->getMessage()."\n");
 //validateOptions($opt);
@@ -51,6 +52,8 @@ case '--getfaxhosts':
     exit(action_getFaxHosts($opt) ? 0 : 1);
 case '--setfaxhosts':
     exit(action_setFaxHosts($opt) ? 0 : 1);
+case '--faxmaster':
+    exit(action_refreshFaxMaster($opt) ? 0 : 1);
 }
 error_exit("No action specified (--refresh)\n");
 
@@ -296,5 +299,35 @@ function action_setFaxHosts($opt)
         $listaHosts[] = $sNewHost;
     }
     return (file_put_contents(CONFIGDIR_HYLAFAX.'/'.HYLAFAX_ALLOWED_HOSTS, implode("\n", $listaHosts)."\n") !== FALSE);
+}
+
+/* Refresh FaxMaster setting from /var/www/db/settings.db */
+function action_refreshFaxMaster($opt)
+{
+    // Read current value of faxmaster
+    try {
+        $conn = new PDO('sqlite:/var/www/db/settings.db');
+        
+        // Read all the fax configuration information
+        $sth = $conn->query('SELECT value FROM settings WHERE key = "fax_master"');
+        $sFaxMaster = $sth->fetchColumn();
+    } catch (PDOException $e) {            
+        fprintf(STDERR, "ERR: failed to query fax master - %s\n", $e->getMessage());
+        return FALSE;
+    }
+
+    // Add content to /etc/postfix/virtual
+    $lineas = array();
+    foreach (file('/etc/postfix/virtual') as $s) {
+        if (strpos($s, 'FaxMaster') !== 0) $lineas[] = $s;
+    }
+    if ($sFaxMaster !== FALSE) $lineas[] = "FaxMaster\t$sFaxMaster\n";
+    if (file_put_contents('/etc/postfix/virtual', $lineas) === FALSE)
+        return FALSE;
+    
+    // Update map
+    $retval = NULL;
+    system('/usr/sbin/postmap /etc/postfix/virtual', $retval);
+    return ($retval == 0);
 }
 ?>
