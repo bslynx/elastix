@@ -97,15 +97,12 @@ function listarFaxes(&$smarty, $module_name, $local_templates_dir)
     if (isset($_POST['faxes_delete']) && isset($_POST['faxes']) && 
         is_array($_POST['faxes']) && count($_POST['faxes']) > 0) {
         $msgError = NULL;
-        foreach ($_POST['faxes'] as $pdf_file) {
-            $path_file = $oFax->getPathByPdfFile($pdf_file);
-            $oFax->_db->conn->beginTransaction();
-            if ($oFax->deleteInfoFaxFromDB($pdf_file)) {               
-                if(!$oFax->deleteInfoFaxFromPathFile($path_file)) {
+        foreach ($_POST['faxes'] as $idFax) {
+            if (!$oFax->deleteInfoFax($idFax)) {
+                if ($oFax->errMsg = '')
                     $msgError = _tr('Unable to eliminate pdf file from the path.');
-                    $oFax->_db->conn->rollBack();
-                } else $oFax->_db->conn->commit();
-            } else $msgError = _tr('Unable to eliminate pdf file from the database.');
+                else $msgError = _tr('Unable to eliminate pdf file from the database.').' - '.$oFax->errMsg;
+            }
         }
         if (!is_null($msgError)) {
             $smarty->assign(array(
@@ -150,7 +147,7 @@ function listarFaxes(&$smarty, $module_name, $local_templates_dir)
             foreach (array('pdf_file', 'company_name', 'company_fax', 'destiny_name', 'destiny_fax') as $k)
                 $fax[$k] = htmlentities($fax[$k], ENT_COMPAT, 'UTF-8');
             $arrData[] = array(
-                '<input type="checkbox" name="faxes[]" value="'.$fax['pdf_file'].'" />',
+                '<input type="checkbox" name="faxes[]" value="'.$fax['id'].'" />',
                 _tr($fax['type']),
                 (strtolower($fax['type']) == 'in' || strpos($fax['pdf_file'], '.pdf') !== FALSE) 
                     ? "<a href='?menu=$module_name&action=download&id=".$fax['id']."&rawmode=yes'>".$fax['pdf_file']."</a>" 

@@ -46,7 +46,7 @@ CREATE TABLE info_fax_recvq
 
 class paloFaxVisor
 {
-    var $_db;
+    private $_db;
     var $errMsg;
 
     function paloFaxVisor()
@@ -175,18 +175,6 @@ class paloFaxVisor
         return $arrReturn['cantidad'];
     }
 
-    function deleteInfoFaxFromDB($pdfFileInfoFax)
-    {
-        $bExito = $this->_db->genQuery(
-            'DELETE FROM info_fax_recvq WHERE pdf_file = ?',
-            array($pdfFileInfoFax));
-        if (!$bExito) {
-            $this->errMsg = $this->_db->errMsg;
-            return false;
-        }
-        return true;
-    }
-
     function updateInfoFaxFromDB($idFax, $company_name, $company_fax)
     {
         if (!$this->_db->genQuery(
@@ -198,22 +186,29 @@ class paloFaxVisor
         return true;
     }
 
-    function deleteInfoFaxFromPathFile($path_file)
+    function deleteInfoFax($idFax)
     {
-        $file = "/var/www/faxes/$path_file/fax.pdf";
-        return file_exists($file) ? unlink($file) : TRUE;
-    }
+        $this->errMsg = '';
+        $bExito = TRUE;
+        
+        // Leer la información del fax
+        $infoFax = $this->obtener_fax($idFax);
+        if (count($infoFax) == 0) return ($infoFax->errMsg == '');
 
-    function getPathByPdfFile($pdfFile)
-    {
-        $arrReturn = $this->_db->getFirstRowQuery(
-            'SELECT faxpath FROM info_fax_recvq WHERE pdf_file = ?',
-            TRUE, array($pdfFile));
-        if (!is_array($arrReturn)) {
-            $this->errMsg = $this->_db->errMsg;
-        	return '';
-        }
-        return (count($arrReturn) > 0) ? $arrReturn['faxpath'] : '';
+        // Borrar la información y el documento asociado
+        $this->_db->conn->beginTransaction();
+        $bExito = $this->_db->genQuery(
+            'DELETE FROM info_fax_recvq WHERE id = ?',
+            array($infoFax['id']));
+        if (!$bExito) $this->errMsg = $this->_db->errMsg;
+        if ($bExito) {
+            $file = "/var/www/faxes/{$infoFax['faxpath']}/fax.pdf";
+            $bExito = file_exists($file) ? unlink($file) : TRUE;
+        } 
+        if ($bExito)
+            $this->_db->conn->commit();
+        else $this->_db->conn->rollback();
+        return $bExito;
     }
 }
 ?>
