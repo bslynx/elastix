@@ -44,16 +44,8 @@ CREATE TABLE info_fax_recvq
 );
 */
 
-class paloFaxVisor {
-
-    var $dirIaxmodemConf;
-    var $dirHylafaxConf;
-    var $rutaDB;
-    var $firstPort;
-    var $rutaFaxDispatch;
-    var $rutaInittab;
-    var $usuarioWeb;
-    var $grupoWeb;
+class paloFaxVisor
+{
     var $_db;
     var $errMsg;
 
@@ -61,147 +53,160 @@ class paloFaxVisor {
     {
         global $arrConf;
         
-        $this->dirIaxmodemConf = "/etc/iaxmodem";
-        $this->dirHylafaxConf  = "/var/spool/hylafax/etc";
-        $this->rutaDB = "$arrConf[elastix_dbdir]/fax.db";
-        $this->firstPort=40000;
-        $this->rutaFaxDispatch = "/var/spool/hylafax/etc/FaxDispatch";
-        $this->rutaInittab = "/etc/inittab";
-        $this->usuarioWeb = "asterisk";
-        $this->grupoWeb   = "asterisk";
         //instanciar clase paloDB
-        $pDB = new paloDB("sqlite3:///".$this->rutaDB);
-    	if(!empty($pDB->errMsg)) {
-            echo "$pDB->errMsg <br>";
-    	}else{
+        $pDB = new paloDB("sqlite3:///$arrConf[elastix_dbdir]/fax.db");
+    	if (!empty($pDB->errMsg)) {
+            $this->errMsg = $pDB->errMsg;
+    	} else{
        		$this->_db = $pDB;
     	}
     }
 
-    function obtener_faxes($company_name,$company_fax,$fecha_fax,$offset,$cantidad,$type)
+    function obtener_faxes($company_name, $company_fax, $fecha_fax, $offset, $cantidad, $type)
     {
-        $errMsg="";
-        $sqliteError='';
-        $arrReturn=array();
-        //if ($db = sqlite3_open($this->rutaDB)) {
-
-        $str = " ";
-        if( $type == 'in' || $type == 'IN' || $type == 'In' ) $str = " AND type='in'";
-        else if( $type == 'out' || $type == 'OUT' || $type == 'Out' ) $str = " AND type='out'";
-
-        $query = "SELECT r.id,r.pdf_file,r.modemdev,r.commID,r.errormsg,r.company_name,r.company_fax,r.fax_destiny_id,r.date,r.type,r.faxpath, f.name destiny_name,f.extension destiny_fax ".
-                 "FROM info_fax_recvq r inner join fax f on f.id = r.fax_destiny_id ".
-                 "WHERE company_name like '%$company_name%' and company_fax like '%$company_fax%' and date like '%$fecha_fax%' $str ".
-                 "order by r.id desc ".
-                 "limit $cantidad offset $offset";
-
-        $arrReturn = $this->_db->fetchTable($query, true);
-        if($arrReturn==FALSE)
-        {
+        if (empty($company_name)) $company_name = NULL;
+        if (empty($company_fax)) $company_fax = NULL;
+        if (empty($fecha_fax)) $fecha_fax = NULL;
+        if (empty($type)) $type = NULL;
+        if (!is_null($fecha_fax) && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha_fax)) {
+            $this->errMsg = '(internal) Invalid date for query, expected yyyy-mm-dd';
+        	return NULL;
+        }
+        if (!ctype_digit("$offset") || !ctype_digit("$cantidad")) {
+        	$this->errMsg = '(internal) Invalid offset/limit';
+            return NULL;
+        }
+        if (!is_null($type)) {
+        	$type = strtolower($type);
+            if (!in_array($type, array('in', 'out'))) $type = NULL;
+        }
+        
+        $sPeticionSQL = 
+            'SELECT r.id, r.pdf_file, r.modemdev, r.commID, r.errormsg, '.
+                'r.company_name, r.company_fax, r.fax_destiny_id, r.date, '.
+                'r.type, r.faxpath, f.name destiny_name, f.extension destiny_fax '.
+            'FROM info_fax_recvq r, fax f '.
+            'WHERE ';
+        $listaWhere = array('f.id = r.fax_destiny_id');
+        $paramSQL = array();
+        if (!is_null($company_name)) {
+        	$listaWhere[] = 'company_name LIKE ?';
+            $paramSQL[] = "%$company_name%";
+        }
+        if (!is_null($company_fax)) {
+            $listaWhere[] = 'company_fax LIKE ?';
+            $paramSQL[] = "%$company_fax%";
+        }
+        if (!is_null($fecha_fax)) {
+            $listaWhere[] = 'date BETWEEN ? AND ?';
+            $paramSQL[] = "$fecha_fax 00:00:00";
+            $paramSQL[] = "$fecha_fax 23:59:59";
+        }
+        if (!is_null($type)) {
+        	$listaWhere[] = 'type = ?';
+            $paramSQL[] = $type;
+        }
+        $sPeticionSQL .= implode(' AND ', $listaWhere).' ORDER BY r.id desc LIMIT ? OFFSET ?';
+        $paramSQL[] = $cantidad; $paramSQL[] = $offset;
+        
+        $arrReturn = $this->_db->fetchTable($sPeticionSQL, TRUE, $paramSQL);
+        if ($arrReturn == FALSE) {
             $this->errMsg = $this->_db->errMsg;
             return array();
         }
-/*
-            $result = @sqlite3_query($db, $query);
-            if(count($result)>0){
-                while ($row = @sqlite3_fetch_array($result)) {
-                    $arrReturn[]=$row;
-                }
-            }
-        } 
-        else 
-        {
-            $errMsg = $sqliteError;
-         }*/
-
         return $arrReturn;
     }
 
     function obtener_fax($idFax)
     {
-        $arrReturn=array();
-        $query = "SELECT * FROM info_fax_recvq WHERE id=$idFax";
-
-        $arrReturn = $this->_db->getFirstRowQuery($query, true);
-        if($arrReturn==FALSE){
+        $arrReturn = $this->_db->getFirstRowQuery(
+            'SELECT * FROM info_fax_recvq WHERE id = ?', 
+            TRUE, array($idFax));
+        if ($arrReturn == FALSE){
             $this->errMsg = $this->_db->errMsg;
             return array();
         }
         return $arrReturn;
     }
 
-    function obtener_cantidad_faxes($company_name,$company_fax,$fecha_fax,$type)
+    function obtener_cantidad_faxes($company_name, $company_fax, $fecha_fax, $type)
     {
-        $errMsg="";
-        $sqliteError='';
-        $arrReturn = -1;
-        //if ($db = sqlite3_open($this->rutaDB)) {
+        if (empty($company_name)) $company_name = NULL;
+        if (empty($company_fax)) $company_fax = NULL;
+        if (empty($fecha_fax)) $fecha_fax = NULL;
+        if (empty($type)) $type = NULL;
+        if (!is_null($fecha_fax) && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha_fax)) {
+            $this->errMsg = '(internal) Invalid date for query, expected yyyy-mm-dd';
+            return NULL;
+        }
+        if (!is_null($type)) {
+            $type = strtolower($type);
+            if (!in_array($type, array('in', 'out'))) $type = NULL;
+        }
 
-        $str = " ";
-        if( $type == 'in' || $type == 'IN' || $type == 'In' ) $str = " AND type='in'";
-        else if( $type == 'out' || $type == 'OUT' || $type == 'Out' ) $str = " AND type='out'";
+        $sPeticionSQL = 'SELECT COUNT(*) cantidad FROM info_fax_recvq';
+        $listaWhere = array();
+        $paramSQL = array();
+        if (!is_null($company_name)) {
+            $listaWhere[] = 'company_name LIKE ?';
+            $paramSQL[] = "%$company_name%";
+        }
+        if (!is_null($company_fax)) {
+            $listaWhere[] = 'company_fax LIKE ?';
+            $paramSQL[] = "%$company_fax%";
+        }
+        if (!is_null($fecha_fax)) {
+            $listaWhere[] = 'date BETWEEN ? AND ?';
+            $paramSQL[] = "$fecha_fax 00:00:00";
+            $paramSQL[] = "$fecha_fax 23:59:59";
+        }
+        if (!is_null($type)) {
+            $listaWhere[] = 'type = ?';
+            $paramSQL[] = $type;
+        }
+        if (count($listaWhere) > 0) $sPeticionSQL .= ' WHERE '.implode(' AND ', $listaWhere);
+        
+        $arrReturn = $this->_db->getFirstRowQuery($sPeticionSQL, TRUE, $paramSQL);
 
-        $query  = "SELECT count(*) cantidad ".
-                  "FROM (SELECT pdf_file,modemdev,commID,errormsg,company_name,company_fax,fax_destiny_id,date ".
-                        "FROM info_fax_recvq ".
-                        "WHERE company_name like '%$company_name%' and company_fax like '%$company_fax%' and date like '%$fecha_fax%' $str)";
-
-        $arrReturn = $this->_db->getFirstRowQuery($query, true);
-        if($arrReturn==FALSE)
-        {
+        if ($arrReturn == FALSE) {
             $this->errMsg = $this->_db->errMsg;
             return array();
         }
-/*
-            $result = @sqlite3_query($db, $query);
-            if(count($result)>0){
-                while ($row = @sqlite3_fetch_array($result)) {
-                    $arrReturn=$row['cantidad'];
-                }
-            }
-        } 
-        else 
-        {
-            $errMsg = $sqliteError;
-        }
-*/
         return $arrReturn['cantidad'];
     }
 
-    function deleteInfoFaxFromDB($pdfFileInfoFax) {
-        $query  = "DELETE FROM info_fax_recvq WHERE pdf_file='$pdfFileInfoFax'";
-        $bExito = $this->_db->genQuery($query);
-        if (!$bExito) {
-            $this->errMsg = $this->_db->errMsg;
-            return false;
-        }
-        return true;
-    }
-
-    function updateInfoFaxFromDB($idFax, $company_name, $company_fax) {
-        $query  = "UPDATE info_fax_recvq set
-                    company_name='$company_name',
-                    company_fax='$company_fax'
-                   WHERE id=$idFax";
-        $bExito = $this->_db->genQuery($query);
-        if (!$bExito) {
-            $this->errMsg = $this->_db->errMsg;
-            return false;
-        }
-        return true;
-    }
-
-    function updateFileFaxSend($oldfile, $newfile)
+    function deleteInfoFaxFromDB($pdfFileInfoFax)
     {
-        $query  = "UPDATE info_fax_recvq set
-                   pdf_file='$newfile' WHERE pdf_file='$oldfile'";
-        $bExito = $this->_db->genQuery($query);
+        $bExito = $this->_db->genQuery(
+            'DELETE FROM info_fax_recvq WHERE pdf_file = ?',
+            array($pdfFileInfoFax));
         if (!$bExito) {
             $this->errMsg = $this->_db->errMsg;
             return false;
         }
         return true;
+    }
 
+    function updateInfoFaxFromDB($idFax, $company_name, $company_fax)
+    {
+        if (!$this->_db->genQuery(
+            'UPDATE info_fax_recvq SET company_name = ?, company_fax = ? WHERE id = ?', 
+            array($company_name, $company_fax, $idFax))) {
+            $this->errMsg = $this->_db->errMsg;
+            return false;
+        }
+        return true;
+    }
+
+    private function updateFileFaxSend($oldfile, $newfile)
+    {
+        if (!$this->_db->genQuery(
+            'UPDATE info_fax_recvq SET pdf_file = ? WHERE pdf_file = ?',
+            array($newfile, $oldfile))) {
+            $this->errMsg = $this->_db->errMsg;
+            return false;
+        }
+        return true;
     }
 
     function testFile($file)
@@ -223,30 +228,22 @@ class paloFaxVisor {
         return $return;
     }
 
-    function deleteInfoFaxFromPathFile($path_file){
-       $path = "/var/www/faxes";
-       $file = "$path/$path_file/fax.pdf";
-
-       if(file_exists($file)){
-	    unlink($file);
-	    return true;
-       }		
-       return false;
+    function deleteInfoFaxFromPathFile($path_file)
+    {
+        $file = "/var/www/faxes/$path_file/fax.pdf";
+        return file_exists($file) ? unlink($file) : TRUE;
     }
 
-    function getPathByPdfFile($pdfFile){
-        $arrReturn= "";
-        $query = "SELECT faxpath FROM info_fax_recvq WHERE pdf_file='$pdfFile'";
-        $arrReturn = $this->_db->getFirstRowQuery($query, true);
-        if($arrReturn['faxpath']==""){
+    function getPathByPdfFile($pdfFile)
+    {
+        $arrReturn = $this->_db->getFirstRowQuery(
+            'SELECT faxpath FROM info_fax_recvq WHERE pdf_file = ?',
+            TRUE, array($pdfFile));
+        if (!is_array($arrReturn)) {
             $this->errMsg = $this->_db->errMsg;
-            return "";
-        }else
-        	return $arrReturn['faxpath'];
+        	return '';
+        }
+        return (count($arrReturn) > 0) ? $arrReturn['faxpath'] : '';
     }
-
-	//function createFolder()
-	
-
 }
 ?>
