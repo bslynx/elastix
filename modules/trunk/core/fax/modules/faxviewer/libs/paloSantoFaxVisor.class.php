@@ -198,36 +198,6 @@ class paloFaxVisor
         return true;
     }
 
-    private function updateFileFaxSend($oldfile, $newfile)
-    {
-        if (!$this->_db->genQuery(
-            'UPDATE info_fax_recvq SET pdf_file = ? WHERE pdf_file = ?',
-            array($newfile, $oldfile))) {
-            $this->errMsg = $this->_db->errMsg;
-            return false;
-        }
-        return true;
-    }
-
-    function testFile($file)
-    {
-        $temp_file = "";
-        $return = "";
-        exec("sudo -u root chmod 777 /var/spool/hylafax/docq/$file",$arrConsole,$flagStatus);
-        if($flagStatus==0){
-			exec("ls /var/spool/hylafax/docq/$file",$arrConsole2,$flagStatus);
-            if($flagStatus == 0){ //existe por lo tanto ya esta completo
-                $temp_file = basename($arrConsole2[0],".ps");
-                if($this->updateFileFaxSend($file, $temp_file.".pdf"))
-                    $return = $temp_file.".pdf";
-                else
-                    $return = "";
-            }
-        }
-        exec("sudo -u root chmod 740 /var/spool/hylafax/docq/$file",$arrConsole,$flagStatus);
-        return $return;
-    }
-
     function deleteInfoFaxFromPathFile($path_file)
     {
         $file = "/var/www/faxes/$path_file/fax.pdf";
