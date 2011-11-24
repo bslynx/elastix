@@ -50,7 +50,7 @@ function _moduleContent(&$smarty, $module_name)
     global $arrConfModule;
     global $arrLang;
     global $arrLangModule;
-	$_SESSION['module_name_tmp'] = $module_name;
+    $_SESSION['module_name_tmp'] = $module_name;
     $arrConf = array_merge($arrConf,$arrConfModule);
     $arrLang = array_merge($arrLang,$arrLangModule);
 
@@ -79,9 +79,9 @@ function _moduleContent(&$smarty, $module_name)
         case "cancel":
             header("Location: ?menu=$module_name");
             break;
-		case "download_faxFile":
-			$contenidoModulo = download_faxFile($smarty, $module_name, $arrLang, $oForm, $local_templates_dir);
-			break;
+        case "download_faxFile":
+            $contenidoModulo = download_faxFile($smarty, $module_name, $arrLang, $oForm, $local_templates_dir);
+            break;
         default:
             $contenidoModulo=$oForm->fetchForm("$local_templates_dir/visor.tpl", $arrLang["Fax Viewer"],$_POST);
             break;
@@ -239,8 +239,8 @@ function faxes($company_name,$company_fax,$fecha_fax,$inicio_paginacion,$accion,
 
 function html_faxes($arr_faxes)
 { 
-    global $arrLang; 
-	$module_name = $_SESSION['module_name_tmp'];
+    global $arrLang;
+    $module_name = $_SESSION['module_name_tmp'];
     $fax_folder="";
     $en_proceso="  file in process..";
 	$oFax = new paloFaxVisor();
@@ -272,10 +272,9 @@ function html_faxes($arr_faxes)
             $nodoContenido .= " <td class='table_data'><input type='checkbox' name='faxpdf_".$fax['pdf_file']."' id='faxpdf_".$fax['pdf_file']."' /></td>\n";
             $nodoContenido .= " <td class='table_data'>".$arrLang[$fax['type']]."</td>\n";
             if($fax['type'] == "in" || $fax['type'] == "IN"){
-	     		$fax_folder="/faxes/recvq/";
-                //$nodoContenido .= " <td class='table_data'><a href='".$self."/faxes/".$fax['faxpath'].'/fax.pdf'."'".">".$fax['pdf_file']."</a></td>\n";
-				$nodoContenido .= " <td class='table_data'><a href='?menu=$module_name&action=download&id=".$fax['id']."&rawmode=yes'>".$fax['pdf_file']."</a></td>\n";
-			}else{
+                $fax_folder="/faxes/recvq/";
+                $nodoContenido .= " <td class='table_data'><a href='?menu=$module_name&action=download&id=".$fax['id']."&rawmode=yes'>".$fax['pdf_file']."</a></td>\n";
+            }else{
                 /*Codigo de validacion de archivo doc13.ps to doc13.ps2 to doc13.pdf */
                 $newfile = $fax['pdf_file'];
 				$tmp_pd = "";
@@ -284,10 +283,9 @@ function html_faxes($arr_faxes)
                     if($newfileTmp != "") //ya existe el archivo y esta completo
                         $newfile = $newfileTmp;
                 }
-				$fax_folder="/faxes/sendq/";
+                $fax_folder="/faxes/sendq/";
                 if(ereg("(\.pdf)",$fax['pdf_file'])){
-					//$nodoContenido .= " <td class='table_data'><a href='".$self."/faxes/".$fax['faxpath'].'/fax.pdf'."'".">".$newfile."</a></td>\n";
-					$nodoContenido .= " <td class='table_data'><a href='?menu=$module_name&action=download&id=".$fax['id']."&rawmode=yes'>".$newfile."</a></td>\n";
+                    $nodoContenido .= " <td class='table_data'><a href='?menu=$module_name&action=download&id=".$fax['id']."&rawmode=yes'>".$newfile."</a></td>\n";
 				}else
                 	$nodoContenido .= " <td class='table_data'>$newfile</td>\n";
             }			
@@ -296,7 +294,7 @@ function html_faxes($arr_faxes)
             $nodoContenido .= " <td class='table_data'>".$fax['company_fax']."</td>\n";
             $nodoContenido .= " <td class='table_data'>".$fax['destiny_name']." - ".$fax['destiny_fax']."</td>\n";
             $nodoContenido .= " <td class='table_data'><center>".$fax['date']."</center></td>\n";
-            $nodoContenido .= " <td class='table_data '><a href='?menu=faxviewer&action=view&id=".$fax['id']."'>".$arrLang['Edit']."</a></td>\n";
+            $nodoContenido .= " <td class='table_data'><a href='?menu=faxviewer&action=view&id=".$fax['id']."'>".$arrLang['Edit']."</a></td>\n";
             $nodoContenido .= "</tr>\n";
         }
     }
@@ -329,7 +327,7 @@ function html_paginacion_faxes($regPrimeroMostrado,$regTotal,$tamanio_busqueda,$
         $parteIzquierda .= "<img src='$ruta_image/previous_off.gif' width='8' height='11' alt='' align='absmiddle' />&nbsp;".$arrLang['Previous'];
     }
 
-    $search_title = "(".($regPrimeroMostrado)." - ".$regUltimoMostrado." of ".$regTotal.")";
+    $search_title = "(".($regPrimeroMostrado + 1)." - ".$regUltimoMostrado." of ".$regTotal.")";
     $parteCentro  = "&nbsp;<span class='pageNumbers'>".$search_title."</span> 
      <input type='hidden' name='primer_registro_mostrado_paginacion' id='primer_registro_mostrado_paginacion' value='".$regPrimeroMostrado."' />
      <input type='hidden' name='ultimo_registro_mostrado_paginacion' id='ultimo_registro_mostrado_paginacion' value='".$regUltimoMostrado."' />
@@ -378,19 +376,19 @@ function deleteFaxes($csv_files,$company_name,$company_fax,$fecha_fax,$inicio_pa
 
 function download_faxFile($smarty, $module_name, $arrLang, $oForm, $local_templates_dir)
 {
-	$oFax       = new paloFaxVisor(); 
-	$idFax      = getParameter("id");
-	$arrFax     = $oFax->obtener_fax($idFax);
-	$dir_backup = "/var/www/faxes";
-	$file_path  = $arrFax['faxpath']."/fax.pdf";
-	$file_name  = $arrFax['pdf_file'];
-	
+    $oFax       = new paloFaxVisor(); 
+    $idFax      = getParameter("id");
+    $arrFax     = $oFax->obtener_fax($idFax);
+    $dir_backup = "/var/www/faxes";
+    $file_path  = $arrFax['faxpath']."/fax.pdf";
+    $file_name  = $arrFax['pdf_file'];
+    
     header("Cache-Control: private");
     header("Pragma: cache");
-	header('Content-Type: application/octec-stream');
-	header("Content-Length: ".filesize("$dir_backup/$file_path"));  
+    header('Content-Type: application/octec-stream');
+    header("Content-Length: ".filesize("$dir_backup/$file_path"));  
     header("Content-disposition: attachment; filename=$file_name");
-	readfile("$dir_backup/$file_path");
+    readfile("$dir_backup/$file_path");
 }
 
 function getAction()
@@ -403,8 +401,8 @@ function getAction()
         return "cancel";
     else if(getParameter("action")=="view") //Get parameter by GET (command pattern, links)
         return "view";
-	else if(getParameter("action")=="download")
-		return "download_faxFile";
+    else if(getParameter("action")=="download")
+        return "download_faxFile";
     else
         return "report";
 }

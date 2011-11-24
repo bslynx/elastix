@@ -231,6 +231,7 @@ function faxes($company_name,$company_fax,$fecha_fax,$inicio_paginacion,$accion,
     $respuesta = new xajaxResponse();
     $respuesta->addAssign("td_paginacion","innerHTML",$html_paginacion);
     $respuesta->addAssign("td_contenido","innerHTML",$html_faxes);
+    $respuesta->addAssign("td_paginacion1","innerHTML",$html_paginacion);
 
    //tenemos que devolver la instanciación del objeto xajaxResponse
     return $respuesta;
@@ -251,7 +252,7 @@ function html_faxes($arr_faxes)
 
     $nodoTablaInicio = "<table border='0' cellspacing='0' cellpadding='0' width='100%' align='center'>
                             <tr class='table_title_row'>
-                                <td class='table_title_row'><input type='button' name='faxes_delete' class='button' value='".$arrLang['Delete']."' onclick=\"if(confirmSubmit('{$arrLang["Are you sure you wish to delete fax (es)?"]}')) elimimar_faxes();\" /></td>
+                                <td class='table_title_row' style='background:none;'><input type='button' name='faxes_delete' class='button' value='".$arrLang['Delete']."' onclick=\"if(confirmSubmit('{$arrLang["Are you sure you wish to delete fax (es)?"]}')) elimimar_faxes();\" /></td>
                                 <td class='table_title_row'>".$arrLang['Type']."</td>
                                 <td class='table_title_row'>".$arrLang['File']."</td>
                                 <td class='table_title_row'>".$arrLang['Company Name']."</td>
@@ -271,7 +272,7 @@ function html_faxes($arr_faxes)
             $nodoContenido .= " <td class='table_data'><input type='checkbox' name='faxpdf_".$fax['pdf_file']."' id='faxpdf_".$fax['pdf_file']."' /></td>\n";
             $nodoContenido .= " <td class='table_data'>".$arrLang[$fax['type']]."</td>\n";
             if($fax['type'] == "in" || $fax['type'] == "IN"){
-	     		$fax_folder="/faxes/recvq/";
+                $fax_folder="/faxes/recvq/";
                 $nodoContenido .= " <td class='table_data'><a href='?menu=$module_name&action=download&id=".$fax['id']."&rawmode=yes'>".$fax['pdf_file']."</a></td>\n";
             }else{
                 /*Codigo de validacion de archivo doc13.ps to doc13.ps2 to doc13.pdf */
@@ -282,7 +283,7 @@ function html_faxes($arr_faxes)
                     if($newfileTmp != "") //ya existe el archivo y esta completo
                         $newfile = $newfileTmp;
                 }
-		        $fax_folder="/faxes/sendq/";
+                $fax_folder="/faxes/sendq/";
                 if(ereg("(\.pdf)",$fax['pdf_file'])){
                     $nodoContenido .= " <td class='table_data'><a href='?menu=$module_name&action=download&id=".$fax['id']."&rawmode=yes'>".$newfile."</a></td>\n";
 				}else
@@ -299,7 +300,7 @@ function html_faxes($arr_faxes)
     }
     else
     {
-         $nodoContenido .= "<tr><td colspan='8'><center>".$arrLang['No Data Found']."</center></td></tr>";
+         $nodoContenido .= "<tr><td colspan='8' style='font-size:10pt'><center>".$arrLang['No Data Found']."</center></td></tr>";
     }
     return $nodoTablaInicio.$nodoContenido.$nodoTablaFin;
 }
