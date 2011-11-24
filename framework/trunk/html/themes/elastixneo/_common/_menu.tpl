@@ -375,7 +375,7 @@ $(document).ready(function(){
 	  // Scroll automático en caso de que el contenido del menú de segundo nivel se reboce
     // ---------------------------------------------------------------------------------
     var smenuoverflow = false; var offsetright = 0; var lastleft = 0; var accumulated_width = 0; var longpaso = 60;
-
+	var move = "";
 	$("#neo-smenubox div.neo-tabv,div.neo-tabvon").each(function(index) {
 		accumulated_width += $(this).outerWidth();
 		// Si el offset.left del elemento anterior es mayor que el actual quiere decir que el elemento
@@ -391,21 +391,38 @@ $(document).ready(function(){
 	  $("#neo-smenubox-innerdiv").width(accumulated_width+longpaso+"px");
 	  $("#neo-smenubox-arrow-more").removeClass("neo-display-none");
 	}
-
-	$('.neo-smenubox-arrow-more-right').click(function() {
-	  if(($('#neo-smenubox-innerdiv').offset().left+$('#neo-smenubox-innerdiv').outerWidth()+longpaso)>($("#neo-smenubox").offset().left+$("#neo-smenubox").outerWidth())) {
-		  $('#neo-smenubox-innerdiv').animate({left:'-='+longpaso}, 150, function() {});
-	  }
+	$('.neo-smenubox-arrow-more-right').mouseup(function() {
+	  clearInterval(move);
+	}).mousedown(function(e) {
+	  move = setInterval("moveRight()",90);
 	});
-	$('.neo-smenubox-arrow-more-left').click(function() {
-	  if($('#neo-smenubox-innerdiv').offset().left<-longpaso) {
-		  $('#neo-smenubox-innerdiv').animate({left:'+='+longpaso}, 150, function() {});
-	  } else {
-		  $('#neo-smenubox-innerdiv').css("left", "0px");
-	  }
+	$('.neo-smenubox-arrow-more-left').mouseup(function() {
+	  clearInterval(move);
+	}).mousedown(function(e) {
+	  move = setInterval("moveLeft()",90);
 	});
 
 });
+
+function moveLeft()
+{
+	var longpaso = 60;
+	var leftvar = $('#neo-smenubox-innerdiv').css("left");
+	leftvarArr = leftvar.split("px");
+	if($('#neo-smenubox-innerdiv').offset().left<-longpaso && leftvarArr[0] < 0 ) {
+		$('#neo-smenubox-innerdiv').animate({left:'+='+longpaso}, 70, function() {});
+	} else {
+		$('#neo-smenubox-innerdiv').css("left", "0px");
+	}
+}
+
+function moveRight()
+{
+	var longpaso = 60;
+	if(($('#neo-smenubox-innerdiv').offset().left+$('#neo-smenubox-innerdiv').outerWidth()+longpaso)>($("#neo-smenubox").offset().left+$("#neo-smenubox").outerWidth())) {
+		  $('#neo-smenubox-innerdiv').animate({left:'-='+longpaso}, 70, function() {});
+	};
+}
 
 function oneClickEvent()
 {
