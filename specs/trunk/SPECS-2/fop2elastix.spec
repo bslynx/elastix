@@ -5,7 +5,7 @@ Summary: FOP2
 Vendor: asternic.biz
 Name: %{modname}
 Version: 2
-Release: 2.24
+Release: 2.26
 License: GPL
 Group: Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
@@ -30,6 +30,7 @@ mkdir -p                     $RPM_BUILD_ROOT/usr/share/elastix/module_installer/
 mkdir -p                     $RPM_BUILD_ROOT/var/www/html/admin/modules
 mkdir -p                     $RPM_BUILD_ROOT/etc/asterisk
 mkdir -p                     $RPM_BUILD_ROOT/etc/rc.d/init.d
+mkdir -p                     $RPM_BUILD_ROOT/etc/sysconfig
 mkdir -p                     $RPM_BUILD_ROOT/usr/local
 mkdir -p                     $RPM_BUILD_ROOT/usr/share/doc
 mkdir -p		     $RPM_BUILD_ROOT/var/www/html/modules
@@ -46,6 +47,7 @@ mv modules/fop2permissions   $RPM_BUILD_ROOT/var/www/html/modules
 
 mv setup/etc/asterisk/*      $RPM_BUILD_ROOT/etc/asterisk
 mv setup/etc/rc.d/init.d/*   $RPM_BUILD_ROOT/etc/rc.d/init.d
+mv setup/etc/sysconfig/*     $RPM_BUILD_ROOT/etc/sysconfig
 
 mv setup/usr/local/fop2      $RPM_BUILD_ROOT/usr/local
 mv setup/usr/share/doc/fop2  $RPM_BUILD_ROOT/usr/share/doc
@@ -83,7 +85,7 @@ if [ $1 -eq 1 ]; then #install
     killall op_server.pl
     chkconfig --add fop2
     service fop2 start
-    grep -q extensions_override_fop2 /etc/asterisk/extensions_override_freepbx.conf || echo "#include extensions_override_fop2.conf" >> /etc/asterisk/extensions_override_freepbx.conf
+    /etc/asterisk/fop2/generate_override_contexts.pl -w
   # Removing fop menu
     echo "Delete fop menu"
     elastix-menuremove "fop"
@@ -147,12 +149,15 @@ fi
 /usr/local/fop2/FOP2Callbacks.pm 
 /etc/asterisk/fop2/buttons.cfg.sample
 /etc/asterisk/fop2/autobuttons.cfg
-/etc/asterisk/extensions_override_fop2.conf
+/etc/asterisk/fop2/generate_override_contexts.pl
+/etc/asterisk/fop2/claveami.sh
 
 %attr(751, asterisk, asterisk) /etc/asterisk/fop2/autoconfig-buttons-freepbx.sh
 %attr(751, asterisk, asterisk) /etc/asterisk/fop2/autoconfig-users-freepbx.sh
+%attr(751, asterisk, asterisk) /etc/asterisk/fop2/generate_override_contexts.pl
+%attr(751, asterisk, asterisk) /etc/asterisk/fop2/claveami.sh
 %attr(751, asterisk, asterisk) /usr/local/fop2/fop2_server
-%attr(751, asterisk, asterisk) /usr/local/fop2/fop2recording.pl
+%attr(751, asterisk, asterisk) /usr/local/fop2/recording_fop2.pl
 %attr(751, asterisk, asterisk) /usr/local/fop2/tovoicemail.pl
 
 %defattr(644,root,root)
@@ -161,11 +166,20 @@ fi
 
 %defattr(644,asterisk,asterisk)
 %config /etc/asterisk/fop2/fop2.cfg
+%config /etc/sysconfig/fop2
 
 %defattr(-,root,root)
 /etc/rc.d/init.d/fop2
+/etc/sysconfig/fop2
 
 %changelog
+* Tue Nov 08 2011 Alberto Santos <asantos@palosanto.com> 2-2.26
+- Fixed javascript fop2.js
+
+* Tue Oct 31 2011 Nicolas Gudino <nicolas.gudino@asternic.biz> 2-2.25
+- Upgrade fop2admin to 1.2.9 
+- Updated fop2 to latest 2.4
+
 * Wed May 31 2011 Nicolas Gudino <nicolas.gudino@asternic.biz> 2-2.24
 - Added new modules fop2groups, fop2permissions.
 - Updated fop2 to latest

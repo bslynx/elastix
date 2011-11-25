@@ -1,7 +1,7 @@
 Summary: Elastix First Boot Setup
 Name:    elastix-firstboot
 Version: 2.2.0
-Release: 3
+Release: 5
 License: GPL
 Group:   Applications/System
 Source0: %{name}-%{version}.tar.bz2
@@ -99,6 +99,19 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/change-passwords
 
 %changelog
+* Fri Oct 07 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-5
+- CHANGED: elastix-firstboot and change-passwords, changed the
+  query to database mya2billing, changed "where userid=1" to
+  "where login='admin'", in case the id of user admin is not 1
+  SVN Rev[3018]
+
+* Tue Sep 27 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-4
+- FIXED: change-passwords, new validation in case the word amiadminpwd
+  is not present in file /etc/elastix.conf
+  SVN Rev[3000]
+- CHANGED: elastix-firstboot and change-passwords, change the AMI password
+  SVN Rev[2993]
+
 * Fri Sep 09 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-3
 - CHANGED: elastix-firstboot and change-passwords, the 
   ARI_ADMIN_PASSWORD is also changed with the password for freePBX admin

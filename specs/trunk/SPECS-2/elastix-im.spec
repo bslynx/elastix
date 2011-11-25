@@ -2,14 +2,14 @@
 
 Summary: Elastix IM 
 Name:    elastix-%{modname}
-Version: 2.0.4
-Release: 2
+Version: 2.2.0
+Release: 1
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
-Prereq: elastix >= 2.0.4-9
+Prereq: elastix >= 2.2.0-15
 Requires: yum
 
 %description
@@ -61,6 +61,13 @@ fi
 /usr/share/elastix/module_installer/*
 
 %changelog
+* Tue Nov 22 2011 Eduardo Cueva <ecueva@palosanto.com> 2.2.0-1
+- Changed: In spec file changed prereq elastix >= 2.2.0-15
+- CHANGED: openfireWrapper.php, now only administrators can use 
+  this script, this resolves the security hole of entering to 
+  url https://[ip.elast.ix.server]/openfireWrapper.php 
+  without any authentication. SVN Rev[3307]
+
 * Mon Jun 13 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-2
 - CHANGED: Modules - Trunk: The ereg function was replaced by the 
   preg_match function due to that the ereg function was deprecated 

@@ -3,14 +3,14 @@
 Summary: Elastix Module Reports 
 Name:    elastix-reports
 Version: 2.2.0
-Release: 3
+Release: 7
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
-#Source0: %{modname}_%{version}-4.tgz
+#Source0: %{modname}_%{version}-5.tgz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
-Prereq: elastix >= 2.2.0-4
+Prereq: elastix >= 2.2.0-15
 Prereq: asterisk
 
 %description
@@ -91,6 +91,42 @@ fi
 /usr/share/elastix/module_installer/*
 
 %changelog
+* Tue Nov 22 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-7
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-15
+- FIXED: Billing Setup: remove nested <form> tag
+  SVN Rev[3276]
+
+* Sat Oct 29 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-6
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-13
+
+* Sat Oct 29 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-5
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-12
+- CHANGED: Modules - Summary By Extension: changed size of popup in 
+  Summary By Extension. SVN Rev[3227]
+- FIXED: Modules - Summary by extension: Changed the image flecha.png 
+  with background blank with transparent as background.
+  CHANGED: Modules - menu.xml: Changed label of summary by extension
+  by summary and User Management with users.
+  SVN Rev[3204]
+- CHANGED: module dest_distribution, changed the style of the module
+  to adapt it to the new theme elastixneo
+  SVN Rev[3198]
+- CHANGED: module graphic_report, changed the way to present a graphic
+  in case there is no records for queues
+  SVN Rev[3191]
+- UPDATED: reports modules  templates files support new elastixneo theme
+  SVN Rev[3154]
+- UPDATED: reports modules  templates files support new elastixneo theme
+  SVN Rev[3152]
+
+* Fri Oct 07 2011 Eduardo Cueva <ecueva@palosanto.com> 2.2.0-4
+- FIXED: Modules - Billing Reports: Fixed bug where trunk SIP 
+  or IAX were not showed in billing reports. SVN Rev[3065]
+- CHANGED: module billing_rates, the word "required field" was 
+  deleted for view mode. SVN Rev[3027]
+- CHANGED: module billing_setup, the asterisks in labels and word 
+  "required field" were removed for view mode. SVN Rev[3020]
+
 * Thu Sep 22 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-3
 - CHANGED: In spec file, changed prereq elastix >= 2.2.0-4
 - CHANGED: module graphic_report, deleted unnecessary asterisks

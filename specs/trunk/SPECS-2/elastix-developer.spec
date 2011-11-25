@@ -2,8 +2,8 @@
 
 Summary: Elastix Module Developer 
 Name:    elastix-%{modname}
-Version: 2.0.4
-Release: 2
+Version: 2.2.0
+Release: 1
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
@@ -62,6 +62,15 @@ fi
 /usr/share/elastix/module_installer/*
 
 %changelog
+* Wed Sep 28 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-1
+- FIXED: module load_module, the value of "order" is now
+  considered for adding a new menu
+  SVN Rev[3013]
+- CHANGED: The split function of these modules was replaced
+  by the explode function due to that the split function was
+  deprecated since PHP 5.3.0.
+  SVN Rev[2650]
+
 * Tue Apr 05 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-2
 - CHANGED: module build_module, missed tag >. SVN Rev[2513]
 

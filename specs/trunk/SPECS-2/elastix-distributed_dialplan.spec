@@ -2,8 +2,8 @@
 
 Summary: Elastix Module Distributed Dial Plan
 Name:    elastix-%{modname}
-Version: 2.0.4
-Release: 2
+Version: 2.2.0
+Release: 1
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
@@ -89,6 +89,20 @@ fi
 /var/www/html/elastixConnection/*
 
 %changelog
+* Wed Sep 28 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-1
+- CHANGED: module peers_information, changed some labels
+  in the module
+  SVN Rev[3010]
+- CHANGED: module password_connection, changed some labels
+  in the module
+  SVN Rev[3009]
+- CHANGED: module general_information, changed label 
+  "locality" to "City"
+  SVN Rev[3007]
+- CHANGED: module peers_information, deleted field 
+  "mac address" in the grid
+  SVN Rev[2989]
+
 * Fri Jul 15 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-2
 - CHANGED: In Spec file change prereq elastix >= 2.0.4-28
 - FIXED: Modules - Distributed DialPlan:  Error trying to 

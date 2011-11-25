@@ -3,13 +3,14 @@
 Summary: Elastix Security 
 Name:    elastix-%{modname}
 Version: 2.2.0
-Release: 2
+Release: 8
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
+#Source0: %{modname}_%{version}-6.tgz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
-Prereq: elastix >= 2.2.0-3
+Prereq: elastix >= 2.2.0-15
 Prereq: freePBX >= 2.8.1-2
 Prereq: iptables
 
@@ -28,7 +29,7 @@ mkdir -p    $RPM_BUILD_ROOT/usr/share/elastix/privileged
 mv modules/ $RPM_BUILD_ROOT/var/www/html/
 mv setup/usr/share/elastix/privileged/*  $RPM_BUILD_ROOT/usr/share/elastix/privileged
 
-
+chmod +x setup/updateDatabase
 # The following folder should contain all the data that is required by the installer,
 # that cannot be handled by RPM.
 mkdir -p    $RPM_BUILD_ROOT/usr/share/elastix/module_installer/%{name}-%{version}-%{release}/
@@ -58,6 +59,7 @@ elif [ $1 -eq 2 ]; then #update
    # The update database
       $pathModule/setup/checkFields "$preversion" "$pathModule"
       elastix-dbprocess "update"  "$pathModule/setup/db" "$preversion"
+      $pathModule/setup/updateDatabase "$preversion"
 fi
 
 #chown asterisk.asterisk $pathSQLiteDB/iptables.db
@@ -93,6 +95,65 @@ fi
 /usr/share/elastix/privileged/*
 
 %changelog
+* Tue Nov 22 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-8
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-15
+- FIXED: Define Ports: remove nested <form> tag
+  SVN Rev[3278]
+- FIXED: Firewall Rules: remove nested <form> tag
+  SVN Rev[3277]
+
+* Sat Oct 29 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-7
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-13
+
+* Sat Oct 29 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-6
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-12
+- CHANGED: Modules - Security: Changee label of modules Advance
+  security settings to Advence
+  SVN Rev[3222]
+- CHANGED: module sec_rules, changed the color of fieldset border
+  SVN Rev[3201]
+- FIXED: module sec_advanced_settings, the feedback message was
+  not displayed for theme elastixneo
+  SVN Rev[3186]
+- UPDATED: my extesion modules  templates files support new elastixneo theme
+  SVN Rev[3159]
+
+* Thu Oct 13 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-5
+- FIXED: script privileged fwconfig, when flushin rules the file
+  /etc/sysconfig/iptables is now blanked
+  SVN Rev[3077]
+
+* Thu Oct 06 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-4
+- CHANGED: script updateDatabase, added the line "#!/usr/bin/php"
+  at the beginning of the script
+  SVN Rev[3049]
+- CHANGED: script updateDatabase.php, this script will only be
+  excecuted if the version is less than 2.2.0-4
+  SVN Rev[3045]
+- CHANGED: script fwconfig, now the source port and destination
+  port have to be queried to the table port
+  SVN Rev[3044]
+- CHANGED: module sec_rules, changed the number of the ports
+  by its name
+  SVN Rev[3043]
+- CHANGED: module sec_ports, now ports used in firewall rules
+  can not be deleted
+  SVN Rev[3042]
+- CHANGED: added new script updateDatabase.php that changes the
+  value of the port for its ids, also this change is made in
+  script 1_schema.sql for new installations
+  SVN Rev[3041]
+- FIXED: module sec_ports, added an id of "filter_value" to the 
+  filter text box, also the filter now looks for any coincidence
+  that has the word entered in the filter
+  SVN Rev[3031]
+
+* Tue Sep 27 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-3
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-5
+- CHANGED: changed the password "elastix456" of AMI to the 
+  password set in /etc/elastix.conf
+  SVN Rev[2995]
+
 * Thu Sep 08 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-2
 - CHANGED: In spec file, changed prereq elastix >= 2.2.0-3
 - CHANGED: module sec_ports, in view mode the asterisks and word

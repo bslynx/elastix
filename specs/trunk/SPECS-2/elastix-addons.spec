@@ -2,15 +2,15 @@
 
 Summary: Elastix Addons 
 Name:    elastix-%{modname}
-Version: 2.0.4
-Release: 15
+Version: 2.2.0
+Release: 4
 License: GPL
 Group:   Applications/System
-Source0: %{modname}_%{version}-%{release}.tgz
-#Source0: %{modname}_%{version}-4.tgz
+#Source0: %{modname}_%{version}-%{release}.tgz
+Source0: %{modname}_%{version}-3.tgz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
-Prereq: elastix >= 2.0.4-25
+Prereq: elastix >= 2.2.0-13
 Prereq: chkconfig, php-soap
 Requires: yum
 
@@ -107,6 +107,42 @@ fi
 /etc/yum.repos.d/*
 
 %changelog
+* Sat Oct 29 2011 Eduardo Cueva <ecueva@palosanto.com> 2.2.0-4
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-13
+
+* Sat Oct 29 2011 Eduardo Cueva <ecueva@palosanto.com> 2.2.0-3
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-12
+- CHANGED: Modules -Addons: Added css property border-radius in 
+  addons's styles. SVN Rev[3224]
+- UPDATED: addons modules  templates files support new elastixneo 
+  theme. SVN Rev[3161]
+
+* Fri Oct 07 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-2
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-8
+- NEW: Modules - Addons Availables: Add new field in table
+  action_tmp from addons.db, this parameter "init_time" has
+  the time remaining to download an addon.
+  SVN Rev[3051]
+- FIXED: Modules - Addons Availables: Bugs about registration 
+  process from addons availables module. This bug doesn't show 
+  the correct link to buy an addons with the parameter "refered"
+  by GET Request.
+  CHANGED: Modules - Addons Availables: Add property to see the 
+  download remaining time of an addon.
+  SVN Rev[3048]
+- FIXED: Modules - Addons: Addons daemon was in status "off"
+  despite of the process id is running. The problem occur in the
+  moment to install the queuemetrics addon and after this process
+  the daemon is down. 
+  SVN Rev[3030]
+
+* Wed Sep 28 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-1
+- CHANGED: module addons_availables, changed word "Upgrade" to "Update"
+  SVN Rev[3016]
+- ADDED: module addons_available, added the location information
+  of the addon
+  SVN Rev[3012]
+
 * Fri Jun 24 2011 Eduardo Cueva <ecueva@palosanto.com> 2.0.4-15
 - CHANGED: In spec file change prereq elastix >= 2.0.4-25
 - CHANGED: Addons: Change the label "Downloading" to 

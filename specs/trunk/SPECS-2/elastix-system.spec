@@ -3,14 +3,15 @@
 Summary: Elastix Module System 
 Name:    elastix-%{modname}
 Version: 2.2.0
-Release: 7
+Release: 15
 License: GPL
 Group:   Applications/System
 #Source0: %{modname}_%{version}-2.tgz
 Source0: %{modname}_%{version}-%{release}.tgz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
-Prereq: elastix >= 2.2.0-4
+Prereq: elastix >= 2.2.0-15
+Prereq: elastix-fax >= 2.2.0-4 
 Prereq: php-soap
 Prereq: openfire, wanpipe-util >= 3.4.1-4, dahdi
 Conflicts: elastix-agenda < 2.2.0-1
@@ -120,13 +121,227 @@ fi
 %{_localstatedir}/www/html/*
 /usr/share/elastix/module_installer/*
 /var/www/backup/automatic_backup.php
-%defattr(-, root, root)
+%defattr(755, root, root)
 /usr/sbin/hardware_detector
 /usr/sbin/switch_wanpipe_media
 /usr/share/elastix/privileged/*
 %config(noreplace) /etc/dahdi/genconf_parameters
 
 %changelog
+* Tue Nov 22 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-15
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-15
+- ADDED: In spec file, added prereq elastix-fax >= 2.2.0-4 due to
+  the module backup_restore
+- FIXED: Dashboard: allow popup menu for process control to close
+  when clicking on drop-down arrow. Fixes Elastix bug #1073.
+  SVN Rev[3333]
+- CHANGED: menu.xml, changed the order of userlist to 41
+  SVN Rev[3329]
+- FIXED: Dashboard: use grayed-out image for service that is not
+  installed. Fixes Elastix bug #1075.
+  SVN Rev[3322]
+- CHANGED: module currency, the asterisks and word "Required field"
+  were removed
+  SVN Rev[3320]
+- CHANGED: module dhcp_by_mac, the asterisks were removed in view
+  forms, also the word "Required field"
+  SVN Rev[3319]
+- CHANGED:  System - Hardware detector:  Changed javascript to show
+  in "Configuration of Span" the spans in 2 columns
+  SVN Rev[3279]
+- FIXED: DHCP Client List: /var/lib/dhcpd/dhcpd.leases may have 
+  comments which must be skipped.
+  SVN Rev[3273]
+- FIXED: DHCP Client List: remove nested <form> tag
+  SVN Rev[3272]
+- FIXED: Dashboard: The privileged script hdmodelreport cannot
+  use hdparm -I because doing it on a non-disk block device may
+  make scaaaary error messages appear on syslog. Reorganize to
+  use hdparm -i instead. Fixes Elastix bug #1055.
+  SVN Rev[3266]
+- FIXED: Dashboard: /usr/bin/stat reports major/minor number
+  in hexadecimal. Fix accordingly.
+  SVN Rev[3259]
+- UPDATE: Module dashboard delete default applet communication activity.
+  SVN Rev[3242]
+
+* Sat Oct 29 2011 Eduardo Cueva <ecueva@palosanto.com> 2.2.0-14
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-13
+- CHANGED: Module dashboard delete default applet communication 
+  activity. SVN Rev[3241]
+- ADDED: Modules - Dashboard : Added new sql script to update 
+  dashboard.db. SVN Rev[3230]
+
+* Sat Oct 29 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-13
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-12
+- CHANGED: In spec file, changed %defattr(-, root, root) to
+  %defattr(-, root, root)
+- CHANGED: Modules - System: Changed menu.xml to move Applet Admin 
+  from Preference to Dashboard. SVN Rev[3226]
+- CHANGED: module backup_restore, added style border-radius
+  SVN Rev[3223]
+- CHANGED: module dashboard, added border radius to the styles
+  SVN Rev[3221]
+- CHANGED: Dashboard: System: display "Uptime" in Spanish translation.
+  SVN Rev[3212]
+- CHANGED: Dashboard: Hard disks: switch graph type to plot3d2
+  SVN Rev[3211]
+- CHANGED: Dashboard: Hard disks: attempt to report hard disk model
+  for softraid devices.
+  SVN Rev[3207]
+- CHANGED: Dashboard: Hard disks: attempt to report hard disk model
+  for LVM mappings. Does not work (yet) for softraid devices.
+  SVN Rev[3206]
+- FIXED: Modules - Summary by extension: Changed the image flecha.png
+  with background blank with transparent as background.
+  CHANGED: Modules - menu.xml: Changed label of summary by extension
+  by summary and User Management with users.
+  SVN Rev[3204]
+- CHANGED: Dashboard: Hard disks: attempt to report hard disk model
+  for physical partitions. Does not work (yet) for LVM mappings.
+  SVN Rev[3203]
+- FIXED: Dashboard: Hard disks: changed implementation of disk usage
+  query to use privileged script, required for /var/spool/imap
+  SVN Rev[3202]
+- FIXED: Modules - Backup/Restore: Fixed template in backup restore.
+  Columns Other has a bad position compare with others columns in
+  Chrome. Support by elastixNeo Theme.
+  SVN Rev[3200]
+- FIXED: Dashboard: Hard disks: new layout with used space for
+  selected directories.
+  SVN Rev[3197]
+- FIXED: Dashboard: process states must be capitalized. Also 
+  internationalized properly (Spanish).
+  FIXED: Dashboard: process names internationalized properly (Spanish).
+  SVN Rev[3195]
+- CHANGED: Dashboard: System Resources: define single class for 
+  percentages on gauges
+  CHANGED: Dashboard: System Resources: use one decimal, not two,
+  for percentages
+  CHANGED: Dashboard: System Resources: remove space between value
+  and percent sign
+  SVN Rev[3194]
+- CHANGED: Dashboard: update icons
+  SVN Rev[3193]
+- CHANGED: Dashboard: allow closing of process control menu by 
+  clicking anywhere in the document.
+  SVN Rev[3192]
+- FIXED: Dashboard: change to commit 3142 - value displayed for CPU 
+  Usage was really intended to be CPU Speed but was using the wrong counter.
+  SVN Rev[3190]
+- FIXED: Dashboard: System resources applet - values must also have 
+  nowrap specification.
+  SVN Rev[3189]
+- CHANGED: Dashboard: implement process control menu in System Process applet.
+  SVN Rev[3188]
+- CHANGED: system menu.xml, module applet_admin now can be accessed
+  by users of group extension and operator by default
+  SVN Rev[3184]
+- FIXED: Dashboard: fixed path for background image in CSS.
+  SVN Rev[3180]
+- CHANGED: module hardware_detector, in theme elastixneo a style of
+  "border:none;"is set for the tds that have a class "filterForm"
+  SVN Rev[3179]
+- CHANGED: Dashboard: new layout for process list with icons
+  SVN Rev[3177]
+- CHANGED: Dashboard: new Twitter icon, required for previous commit.
+  SVN Rev[3175]
+- CHANGED: Dashboard: new layout for RSS feed, now includes news date 
+  and Twitter link.
+  SVN Rev[3174]
+- CHANGED: Dashboard: add numeric percents as direct values on top of gauges.
+  SVN Rev[3146]
+- FIXED: Dashboard: CpuUsage is a percent value, not a megahertz value.
+  SVN Rev[3142]
+- CHANGED: module currency, the module title is now handled by the framework
+  SVN Rev[3131]
+- CHANGED: module time_config, the module title is now handled by the framework
+  SVN Rev[3129]
+- CHANGED: module backup_restore, icon with image 1x1.gif was removed
+  SVN Rev[3127]
+- CHANGED: module backup_restore, the module title is now handled by
+  the framework
+  SVN Rev[3126]
+- CHANGED: module hardware_detector, the module title is now handled
+  by the framework
+  SVN Rev[3125]
+- CHANGED: module shutdown, the module title is now handled by the framework
+  SVN Rev[3124]
+- CHANGED: module userlist, the module title is now handled by the framework
+  SVN Rev[3123]
+- FIXED: Modules - Dashboard: Change the background-color of clase .porter
+  to #f6f6f6 to theme elastixNeo
+  SVN Rev[3121]
+- CHANGED: module dhcp_by_mac, the module title is now handled by the framework
+  SVN Rev[3119]
+- CHANGED: module dhcp_clientlist, the module title is now handled by
+  the framework
+  SVN Rev[3118]
+- CHANGED: module dhcp_server, the module title is now handled by the framework
+  SVN Rev[3117]
+- CHANGED: module network_parameters, the module title is now handled
+  by the framework
+  SVN Rev[3116]
+- CHANGED: module applet_admin, now the module title is handled by the framework
+  SVN Rev[3115]
+- CHANGED: module dashboard, changed the title of module to "dashboard"
+  SVN Rev[3114]
+- CHANGED: module dashboard, changed the location of leyend for graphic
+  in applet "Performance Graphic"
+  SVN Rev[3108]
+- CHANGED: module dashboard, the module dashboard was redesigned
+  SVN Rev[3106]
+- FIXED: Modules - Userlist: Add validation when the administrator user
+  change your password account , this action  must not to destroy the
+  current session
+  SVN Rev[3103]
+- CHANGED: Dashboard: allow image width and height to be specified 
+  independently.
+  SVN Rev[3099]
+- CHANGED: Dashboard: add extra parameters to force fixed size in image tag.
+  SVN Rev[3092]
+
+* Thu Oct 13 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-12
+- FIXED: Hardware Detector: do not offer an echo canceller option
+  for the D-Channel of a BRI span.
+  SVN Rev[3080]
+- FIXED: Hardware Detector: Commit 3067 introduces a regression - ISDN
+  PRI spans no longer offer a "Span Parameters" option. Fix by
+  changing media type test.
+  SVN Rev[3079]
+
+* Mon Oct 10 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-11
+- CHANGED: module hardware_detector,changed the word "ISDN"
+  to "PRI" or "BRI"
+  SVN Rev[3067]
+
+* Fri Oct 07 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-10
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-8
+- FIXED: module hardware_detector, in some cards the word
+  "HDLCFCS" identify a hardware controlled
+  SVN Rev[3064]
+- Hardware Detector: add --hw_dtmf=YES to wancfg_dahdi invocation 
+  to enable hardware DTMF detection. Fixes Elastix bug #967.
+  SVN Rev[3062]
+- CHANGED: module dhcp_by_mac, deleted the folder js because
+  it is no longer necessary
+  SVN Rev[3033]
+- CHANGED: module dashboard, changed the regular expression
+  to parse the extensions and trunks
+  SVN Rev[3019]
+
+* Wed Sep 28 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-9
+- FIXED: module dhcp_by_mac, when user press enter in filter 
+  text box, the page is redirected to the form for button
+  "Assign ip Address". Now it shows the results of the filter
+  SVN Rev[3004]
+
+* Tue Sep 27 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-8
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-5
+- CHANGED: changed the password "elastix456" of AMI to the
+  password set in /etc/elastix.conf
+  SVN Rev[2995]
+
 * Thu Sep 22 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-7
 - CHANGED: In spec file, changed prereq elastix >= 2.2.0-4
 - FIXED: Hardware Detector: remove --smg parameter from 

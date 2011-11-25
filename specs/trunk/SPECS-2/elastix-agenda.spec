@@ -3,17 +3,17 @@
 Summary: Elastix Module Agenda 
 Name:    elastix-%{modname}
 Version: 2.2.0
-Release: 1
+Release: 6
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
-#Source0: %{modname}_%{version}-5.tgz
+#Source0: %{modname}_%{version}-4.tgz
 Source1: calendarEvent.gsm
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
 Prereq: asterisk
 Prereq: freePBX >= 2.8.1-1
-Prereq: elastix >= 2.2.0-3
+Prereq: elastix >= 2.2.0-15
 
 %description
 Elastix Module Agenda
@@ -107,6 +107,41 @@ fi
 /var/lib/asterisk/sounds/custom/*
 
 %changelog
+* Tue Nov 22 2011 Eduardo Cueva <ecueva@palosanto.com> 2.2.0-6
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-15
+- REMOVED: Modules - Calendar: Removed jquery01.blockUI.js 
+  and moved to the framework. SVN Rev[3337]
+- REMOVED: Modules - Agenda: Removed files style4.colorpicker.css 
+  and jquery02.colorpicker.js in calendar modules because this 
+  libs are in framework. SVN Rev[3336]
+
+* Sat Oct 29 2011 Eduardo Cueva <ecueva@palosanto.com> 2.2.0-5
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-13
+
+* Sat Oct 29 2011 Eduardo Cueva <ecueva@palosanto.com> 2.2.0-4
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-12
+- CHANGED: Modules - Calendar: Added css property border-radius 
+  in calendar. SVN Rev[3225]
+- UPDATED: fax new  templates files support new elastixneo theme
+  SVN Rev[3144]
+- UPDATED: address book templates files support new elastixneo 
+  theme. SVN Rev[3140]
+- UPDATED: calendar templates files support new elastixneo theme
+  SVN Rev[3134] 
+
+* Fri Oct 07 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-3
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-8
+- FIXED: module address_book, added an id of "filter_value" to 
+  the filter text box, also the event onkeypress was removed
+  from this text box
+  SVN Rev[3034]
+
+* Tue Sep 27 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-2
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-5
+- CHANGED: changed the password "elastix456" of AMI to the
+  password set in /etc/elastix.conf
+  SVN Rev[2995]
+
 * Fri Sep 09 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-1
 - CHANGED: In spec file, changed prereq elastix >= 2.2.0-3
 - FIXED: Agenda - Calendar: Fixed bug where events were showed in

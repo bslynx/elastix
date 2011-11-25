@@ -3,14 +3,14 @@
 Summary: Elastix Module Fax
 Name:    elastix-%{modname}
 Version: 2.2.0
-Release: 1 
+Release: 5 
 License: GPL
 Group:   Applications/System
 #Source0: %{modname}_%{version}-3.tgz
 Source0: %{modname}_%{version}-%{release}.tgz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
-Prereq: elastix >= 2.2.0-3
+Prereq: elastix >= 2.2.0-15
 Prereq: iaxmodem, hylafax
 
 %description
@@ -29,6 +29,7 @@ mv modules/ $RPM_BUILD_ROOT/var/www/html/
 # Files personalities for hylafax
 mkdir -p $RPM_BUILD_ROOT/var/spool/hylafax/bin/
 mkdir -p $RPM_BUILD_ROOT/var/spool/hylafax/etc/
+mkdir -p $RPM_BUILD_ROOT/usr/share/elastix/privileged
 mv setup/hylafax/bin/includes                 $RPM_BUILD_ROOT/var/spool/hylafax/bin/
 mv setup/hylafax/bin/faxrcvd-elastix.php      $RPM_BUILD_ROOT/var/spool/hylafax/bin/
 mv setup/hylafax/bin/faxrcvd.php              $RPM_BUILD_ROOT/var/spool/hylafax/bin/
@@ -37,6 +38,7 @@ mv setup/hylafax/bin/notify.php               $RPM_BUILD_ROOT/var/spool/hylafax/
 mv setup/hylafax/etc/FaxDictionary            $RPM_BUILD_ROOT/var/spool/hylafax/etc/
 mv setup/hylafax/etc/config                   $RPM_BUILD_ROOT/var/spool/hylafax/etc/
 mv setup/hylafax/etc/setup.cache              $RPM_BUILD_ROOT/var/spool/hylafax/etc/
+mv setup/usr/share/elastix/privileged/*       $RPM_BUILD_ROOT/usr/share/elastix/privileged
 rm -rf setup/hylafax
 
 chmod -R 755 $RPM_BUILD_ROOT/var/spool/hylafax/bin/includes
@@ -167,6 +169,8 @@ fi
 %defattr(- root, root)
 /var/spool/hylafax/bin/*
 /var/spool/hylafax/etc/setup.cache
+%defattr(755, root, root)
+/usr/share/elastix/privileged/*
 
 %dir
 /var/log/iaxmodem
@@ -175,6 +179,44 @@ fi
 %config(noreplace) /var/spool/hylafax/etc/config
 
 %changelog
+* Tue Nov 22 2011 Eduardo Cueva <ecueva@palosanto.com> 2.2.0-5
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-15
+- CHANGED: Fax: use SQL query parameters in all database manipulation 
+  methods. SVN Rev[3338]
+- CHANGED: Fax: removed dead code. SVN Rev[3338]
+- FIXED: Modules - Send Fax: Fixed validation of type of files 
+  pdf, tiff, tif and txt when the name of files is in upper case.
+  SVN Rev[3332]
+- ADDED: Fax: Introduce 'faxconfig' privileged helper. SVN Rev[3331]
+- CHANGED: module faxmaster, added the class "button" to the button
+  SVN Rev[3325]
+- CHANGED: module faxclients, changed the value and location 
+  of the button. SVN Rev[3324]
+- CHANGED: module faxmaster, the asterisks and word "Required field" 
+  were removed. SVN Rev[3323]
+- CHANGED: Fax: mark internal methods of paloFax class as private
+  SVN Rev[3318]
+- CHANGED: module faxviewer, changed style of table. SVN Rev[3218]
+
+* Sat Oct 29 2011 Eduardo Cueva <ecueva@palosanto.com> 2.2.0-4
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-13
+
+* Sat Oct 29 2011 Eduardo Cueva <ecueva@palosanto.com> 2.2.0-3
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-12
+- CHANGED: module faxviewer, changed style of table. 
+  SVN Rev[3218][3187]
+- UPDATED: fax modules  templates files support new elastixneo 
+  theme. SVN Rev[3148]
+- UPDATED: sendfax  templates files support new elastixneo theme
+  SVN Rev[3145]
+- UPDATED: fax new  templates files support new elastixneo theme
+  SVN Rev[3144]
+
+* Tue Sep 27 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-2
+- CHANGED: module email_template, eliminated asterisks in fields
+  and the word "required field" in view mode
+  SVN Rev[2996]
+
 * Fri Sep 09 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-1
 - CHANGED: In spec file, changed prereq elastix >= 2.2.0-3
 - CHANGED: module faxnew, in view mode the asterisks and word

@@ -3,16 +3,16 @@
 Summary: Elastix Module PBX 
 Name:    elastix-%{modname}
 Version: 2.2.0
-Release: 6
+Release: 16
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
-#Source0: %{modname}_%{version}-24.tgz
+#Source0: %{modname}_%{version}-12.tgz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
-Prereq: elastix >= 2.2.0-4
+Prereq: elastix >= 2.2.0-17
 Prereq: elastix-my_extension >= 2.0.4-5
-Prereq: freePBX >= 2.8.1-1
+Prereq: freePBX >= 2.8.1-7
 Prereq: elastix-system >= 2.2.0-5
 Prereq: openfire, tftp-server, vsftpd
 Requires: festival >= 1.95
@@ -265,6 +265,97 @@ fi
 /usr/share/elastix/privileged/*
 
 %changelog
+* Wed Nov 23 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-16
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-17
+- FIXED: module voicemail, wrong concatenation of variable 
+  $contenidoModulo, consecuence of this the filter is showed twice
+  SVN Rev[3353]
+
+* Tue Nov 22 2011 Eduardo Cueva <ecueva@palosanto.com> 2.2.0-15
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-15
+- FIXED: Voicemail: remove nested <form> tag. SVN Rev[3270]
+- CHANGED: module endpoint_configurator, extensions showed 
+  in field "Current Extension" are unregistered when the 
+  button set is pressed. SVN Rev[3267]
+- CHANGED: module endpoint_configurator, changed width and 
+  align in input for discovering endpoints. SVN Rev[3263]
+
+* Tue Nov 01 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-14
+- CHANGED: In spec file, changed prereq freePBX >= 2.8.1-7
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-14
+- CHANGED: module pbxadmin, was increased the width of warning
+  message in option "Unembedded FreePBX"
+  SVN Rev[3249]
+
+* Sat Oct 29 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-13
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-13
+
+* Sat Oct 29 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-12
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-12
+- CHANGED: module pbxadmin, added a margin-top negative to the
+  informative message in Unembedded FreePBX
+  SVN Rev[3229]
+- CHANGED: module control_panel, added a border-radius to the style
+  SVN Rev[3228]
+- CHANGED: module voipprovider, changed the color of fieldset border and title
+  SVN Rev[3199]
+- FIXED: module festival, messages was not displaying for theme elastixneo
+  SVN Rev[3185]
+- CHANGED: module voipprovider, the module title is now handled by the framework
+  SVN Rev[3162]
+- CHANGED: module recordings, the module title is now handled by the framework
+  SVN Rev[3160]
+- CHANGED: module text_to_wav, the module title is now handled by the framework
+  SVN Rev[3158]
+- CHANGED: module file_editor, the module title is now handled by the framework
+  SVN Rev[3157]
+- CHANGED: module asterisk_cli, the module title is now handled by the framework
+  SVN Rev[3155]
+- CHANGED: module extensions_batch, the module title is now handled by the framework
+  SVN Rev[3153]
+- CHANGED: module conference, the module title is now handled by the framework
+  SVN Rev[3151]
+- CHANGED: module voicemail, the module title is now handled by the framework
+  SVN Rev[3150]
+- CHANGED: module pbxadmin, changed the module title to "PBX Configuration"
+  SVN Rev[3149]
+- CHANGED: module pbxadmin, added a title to the module pbxadmin
+  SVN Rev[3147]
+
+* Mon Oct 17 2011 Eduardo Cueva <ecueva@palosanto.com> 2.2.0-11
+- CHANGED: module endpoint_configurator, when a patton does not 
+  have 2 ethernet ports, the WAN options are not displayed.
+  SVN Rev[3087]
+- CHANGED: module recordings, added information. SVN Rev[3082]
+
+* Thu Oct 13 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-10
+- CHANGED: module endpoint_configurator, added asterisks in some
+  required fields
+  SVN Rev[3081]
+- CHANGED: module endpoint_configurator, in case an error occurs
+  and a file can not be created, a message is showed
+  SVN Rev[3078]
+
+* Fri Oct 07 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-9
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-8
+- FIXED: module conference, added an id of "filter_value" to the
+  filter text box
+  SVN Rev[3035]
+
+* Wed Sep 28 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-8
+- FIXED: module extensions_batch, wrong name of button, changed
+  "CVS" to "CSV"
+  SVN Rev[3006]
+- FIXED: module extensions_batch, only if the field "Direct DID"
+  is entered, an inbound route is created
+  SVN Rev[3005]
+
+* Tue Sep 27 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-7
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-5
+- CHANGED: changed the password "elastix456" of AMI to the
+  password set in /etc/elastix.conf
+  SVN Rev[2995]
+
 * Thu Sep 22 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-6
 - CHANGED: In spec file, changed prereq elastix >= 2.2.0-4
 - ADDED: module endpoint_configurator, added the option for

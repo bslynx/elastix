@@ -3,14 +3,14 @@
 Summary: Elastix Module Email 
 Name:    elastix-%{modname}
 Version: 2.2.0
-Release: 6
+Release: 10
 License: GPL
 Group:   Applications/System
-#Source0: %{modname}_%{version}-4.tgz
+#Source0: %{modname}_%{version}-8.tgz
 Source0: %{modname}_%{version}-%{release}.tgz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
-Prereq: elastix >= 2.2.0-3
+Prereq: elastix >= 2.2.0-15
 Prereq: RoundCubeMail
 Prereq: php-imap
 Prereq: postfix, spamassassin, cyrus-imapd
@@ -190,6 +190,54 @@ fi
 /var/www/disable_vacations.php
 
 %changelog
+* Tue Nov 22 2011 Eduardo Cueva <ecueva@palosanto.com> 2.2.0-10
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-15
+- CHANGED: module email_accounts, the asterisks and word 
+  "Required field" were removed when option "File Upload" is 
+  activated. SVN Rev[3326]
+- CHANGED: module email_domains, the asterisks and word 
+  "Requiered field" were removed from the form. SVN Rev[3321]
+- CHANGED: module email_accounts, in spanish changed the word 
+  "quota" to "cuota". SVN Rev[3292]
+- CHANGED: module email_accounts, now the administrator can 
+  change the quota of an account without changing the password
+  SVN Rev[3291]
+- CHANGED: library paloSantoEmail.class.php, added a function 
+  called "accountExists" that determines if an account given 
+  exists or not. SVN Rev[3290]
+- FIXED: Email List: remove nested <form> tag, again in 
+  membership report. SVN Rev[3275]
+- FIXED: Email List: remove nested <form> tag. SVN Rev[3274]
+
+* Sat Oct 29 2011 Eduardo Cueva <ecueva@palosanto.com> 2.2.0-9
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-13
+
+* Sat Oct 29 2011 Eduardo Cueva <ecueva@palosanto.com> 2.2.0-8
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-12
+- FIXED: Modules - Vacations: Fixed template to get data by user 
+  account (popup) in theme elastixNeo. SVN Rev[3196]
+- CHANGED: module vacations, the module title is now handled by 
+  the framework. SVN Rev[3176]
+- CHANGED: module email_stats, the module title is now handled 
+  by the framework. SVN Rev[3143]
+- CHANGED: module email_list, the module title is now handled 
+  by the framework. SVN Rev[3141]
+- CHANGED: module remote_smtp, the module title is now handled
+  by the framework. SVN Rev[3139]
+- CHANGED: module antispam, the module title is now handled by
+  the framework. SVN Rev[3138]
+- CHANGED: module email_relay, the module title is now handled
+  by the framework. SVN Rev[3135]
+- CHANGED: module email_accounts, the module title is now handled
+  by the framework. SVN Rev[3133]
+- CHANGED: module email_domains, the module title is now handled
+  by the framework. SVN Rev[3132]
+
+* Tue Sep 27 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-7
+- CHANGED: module email_accounts, use of function fgetcsv to 
+  parse the csv file
+  SVN Rev[2991]
+
 * Fri Sep 09 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-6
 - CHANGED: In spec file, changed prereq elastix >= 2.2.0-3
 - CHANGED: module email_accounts, in view mode the asterisks

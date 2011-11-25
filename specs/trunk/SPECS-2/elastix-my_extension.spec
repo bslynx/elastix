@@ -3,14 +3,14 @@
 Summary: Elastix My Extension 
 Name:    elastix-%{modname}
 Version: 2.2.0
-Release: 1
+Release: 5
 License: GPL
 Group:   Applications/System
-Source0: %{modname}_%{version}-%{release}.tgz
-#Source0: %{modname}_%{version}-4.tgz
+#Source0: %{modname}_%{version}-%{release}.tgz
+Source0: %{modname}_%{version}-4.tgz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
-Prereq: elastix >= 2.2.0-2
+Prereq: elastix >= 2.2.0-13
 Requires: yum
 
 %description
@@ -84,6 +84,25 @@ fi
 /usr/share/elastix/module_installer/*
 
 %changelog
+* Sat Oct 29 2011 Eduardo Cueva <ecueva@palosanto.com> 2.2.0-5
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-13
+
+* Sat Oct 29 2011 Eduardo Cueva <ecueva@palosanto.com> 2.2.0-4
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-12
+- UPDATED: my extesion modules  templates files support new 
+  elastixneo theme. SVN Rev[3156]
+
+* Fri Oct 07 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-3
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-8
+- CHANGED: module my_exconfig, the word "required field" was deleted
+  SVN Rev[3028]
+
+* Tue Sep 27 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-2
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-5
+- CHANGED: changed the password "elastix456" of AMI to the
+  password set in /etc/elastix.conf
+  SVN Rev[2995]
+
 * Mon Aug 29 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-1
 - CHANGED: In spec file, changed prereq elastix >= 2.2.0-2
 - CHANGED: module myex_config, if user does not have an extension

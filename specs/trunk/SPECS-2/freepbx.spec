@@ -1,7 +1,7 @@
 Summary: FreePBX is the most powerful GUI configuration tool for Asterisk. It provides everything that a standard legacy phone system can, plus a huge amount of new features.
 Name: freePBX
 Version: 2.8.1
-Release: 3 
+Release: 8 
 License: GPL
 Group: Applications/System
 Source0: freepbx-%{version}.tar.gz
@@ -16,6 +16,7 @@ Source6: chan_dahdi.conf
 
 Patch0: freepbx-2.8.0_elastix_files_config.patch
 Patch1: freepbx-2.8.1_elastix_bin_freepbx_engine.patch
+Patch2: freepbx-2.8.1_elastix_files_config_vmemail.patch
 #Patch3: freepbx-2.5.1_dahdi-channels.patch
 Patch4: freepbx-2.3.1_agent-login.patch
 Patch5: freepbx-2.3.1_conferences.patch
@@ -28,12 +29,19 @@ Patch11: freepbx-2.7.0-remove-fallback-database-user.patch
 Patch12: freepbx-2.8.0-rename-moh-mohmp3.patch
 Patch13: freepbx-2.7.0-fix-strpos-comparison.patch
 Patch14: freepbx-2.8.1_disabled_freepbx_by_elastix.patch
+#Patch 15 only apply to freepbx-modules tar (SOURCE1)
+Patch15: freepbx-2.8.1_changed_message_faxlicense.patch 
+Patch16: freepbx-2.8.1_htaccess.patch
+Patch17: freepbx-2.8.1_flash_operator_panel_validation.patch
+Patch18: freepbx-2.8.1_call_limit_functions.patch
+Patch19: freepbx-2.8.1_call_limit_libfreepbx.patch
+Patch20: freepbx-2.8.1_backupFiles.patch
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
 PreReq: asterisk >= 1.6.2.13, /sbin/service, /bin/tar, elastix-firstboot
 PreReq: php
-Requires: elastix >= 2.0
+Requires: elastix >= 2.2.0-15
 AutoReqProv: no
 #Obsoletes: /var/www/html/modules/pbxadmin/index.php
 #Obsoletes: freePBX < 2.3.1
@@ -46,6 +54,7 @@ FreePBX is the most powerful GUI configuration tool for Asterisk. It provides ev
 
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 #%patch3 -p1
 %patch4 -p1
 %patch5 -p1 
@@ -57,6 +66,11 @@ FreePBX is the most powerful GUI configuration tool for Asterisk. It provides ev
 %patch11 -p1
 %patch12 -p1
 %patch14 -p1
+%patch16 -p1
+%patch17 -p1
+%patch18 -p1
+%patch19 -p1
+%patch20 -p1
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -97,6 +111,10 @@ cd freepbx-%{version}/
 patch -p1 < %{PATCH11}
 patch -p1 < %{PATCH13}
 patch -p1 < %{PATCH14}
+patch -p1 < %{PATCH17}
+patch -p1 < %{PATCH18}
+patch -p1 < %{PATCH19}
+patch -p1 < %{PATCH20}
 cd ..
 tar -czf freepbx-%{version}.tar.gz freepbx-%{version}/
 mv freepbx-%{version}.tar.gz $RPM_BUILD_ROOT/usr/share/freepbx/tmp/
@@ -109,7 +127,13 @@ tar -xzf %{SOURCE1}
 cd framework/
 patch -p2 < %{PATCH11}
 patch -p1 < %{PATCH13}
+patch -p2 < %{PATCH19}
 cd ..
+patch -p1 < %{PATCH15}
+cd fw_fop/
+patch -p2 < %{PATCH17}
+cd ..
+patch -p5 < %{PATCH18}
 tar -czf ../freepbx-modules-%{version}.1.tgz *
 cd ..
 rm -rf temp2
@@ -138,7 +162,10 @@ mv $RPM_BUILD_DIR/freepbx-%{version}/amp_conf/bin/* $RPM_BUILD_ROOT/var/lib/aste
 
 # Copying modules
 mv $RPM_BUILD_DIR/freepbx-%{version}/amp_conf/htdocs/admin/modules/* $RPM_BUILD_ROOT/var/www/html/admin/modules/
-tar -xvzf %{SOURCE1} -C $RPM_BUILD_ROOT/var/www/html/admin/modules/
+#tar -xvzf %{SOURCE1} -C $RPM_BUILD_ROOT/var/www/html/admin/modules/
+#Es mejor usar el freepbx-modules-*.tgz ya que esta parchado, %{SOURCE1} referencia a la fuente sin parches
+tar -xvzf $RPM_BUILD_ROOT/usr/share/freepbx/tmp/freepbx-modules-%{version}.1.tgz -C $RPM_BUILD_ROOT/var/www/html/admin/modules/
+
 mv $RPM_BUILD_DIR/freepbx-%{version}/amp_conf/htdocs/admin/modules/.htaccess $RPM_BUILD_ROOT/var/www/html/admin/modules/
 rm -rf $RPM_BUILD_DIR/freepbx-%{version}/amp_conf/htdocs/admin/modules
 
@@ -436,6 +463,30 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/freepbx/tmp/*
 
 %changelog
+* Wed Nov 16 2011 Alberto Santos <asantos@palosanto.com> 2.8.1-8
+- ADDED: In spec file, added patch freepbx-2.8.1_flash_operator_panel_validation.patch
+- ADDED: In spec file, added patch freepbx-2.8.1_call_limit_functions.patch
+- ADDED: In spec file, added patch freepbx-2.8.1_call_limit_libfreepbx.patch
+- ADDED: In spec file, added patch freepbx-2.8.1_backupFiles.patch
+- CHANGED: In spec file, changed prereq elastix >= 2.2.0-15
+
+* Tue Nov 01 2011 Alberto Santos <asantos@palosanto.com> 2.8.1-7
+- CHANGED: patch freepbx-2.8.1_disabled_freepbx_by_elastix.patch, some changes
+  were made to introduce correctly the new theme elastixneo
+
+* Wed Oct 12 2011 Alberto Santos <asantos@palosanto.com> 2.8.1-6
+- FIXED: patch freepbx-2.8.0_elastix_files_config.patch had an improperly
+  comment
+
+* Mon Oct 10 2011 Alberto Santos <asantos@palosanto.com> 2.8.1-5
+- NEW: patch freepbx-2.8.1_htaccess.patch, adds files .htaccess in subfolders
+  of folder admin/
+
+* Wed Sep 28 2011 Bruno Macias <bmacias@palosanto.com> 2.8.1-4
+- NEW: patch freepbx-2.8.1_elastix_files_config_vmemail.patch, better email  message.
+- NEW: patch freepbx-2.8.1_changed_message_faxlicense.patch, patch 15 only apply to 
+  freepbx-modules tar (SOURCE1).
+
 * Tue Jul 19 2011 Alberto Santos <asantos@palosanto.com> 2.8.1-3
 - CHANGED: patch freepbx-2.8.1_disabled_freepbx_by_elastix.patch, added a
   validation in case the file /var/www/html/modules/sec_advanced_settings/libs/paloSantoChangePassword.class.php does not exist

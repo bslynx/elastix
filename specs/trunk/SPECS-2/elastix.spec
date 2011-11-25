@@ -2,21 +2,22 @@ Summary: Elastix is a Web based software to administrate a PBX based in open sou
 Name: elastix
 Vendor: Palosanto Solutions S.A.
 Version: 2.2.0
-Release: 4
+Release: 17
 License: GPL
 Group: Applications/System
 Source: elastix_%{version}-%{release}.tgz
-#Source: elastix_%{version}-29.tgz
+#Source: elastix_%{version}-8.tgz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
 Prereq: /sbin/chkconfig, /etc/sudoers, sudo
 Prereq: php, php-sqlite3, php-gd, php-pear, php-pear-DB, php-xml, php-mysql, php-pdo, php-imap, php-soap
 Prereq: httpd, mysql-server, ntp, nmap, mod_ssl
 Prereq: perl
-Prereq: elastix-firstboot >= 2.2.0-1
+Prereq: elastix-firstboot >= 2.2.0-5
 Obsoletes: elastix-additionals
 Provides: elastix-additionals
 Conflicts: elastix-system < 2.0.4-18
+Conflicts: elastix-callcenter <= 2.0.0-16
 
 %description
 Elastix is a Web based software to administrate a PBX based in open source programs
@@ -77,6 +78,7 @@ chmod 755 $RPM_BUILD_ROOT/usr/share/elastix/privileged
 
 # ** Httpd and Php config ** #
 mv $RPM_BUILD_DIR/elastix/additionals/etc/httpd/conf.d/elastix.conf        $RPM_BUILD_ROOT/etc/httpd/conf.d/
+mv $RPM_BUILD_DIR/elastix/additionals/etc/httpd/conf.d/elastix-htaccess.conf  $RPM_BUILD_ROOT/etc/httpd/conf.d/
 mv $RPM_BUILD_DIR/elastix/additionals/etc/php.d/elastix.ini                $RPM_BUILD_ROOT/etc/php.d/
 
 # ** crons config ** #
@@ -109,6 +111,8 @@ mv $RPM_BUILD_DIR/elastix/additionals/usr/bin/elastix-menumerge            $RPM_
 mv $RPM_BUILD_DIR/elastix/additionals/usr/bin/elastix-menuremove           $RPM_BUILD_ROOT/usr/bin/
 mv $RPM_BUILD_DIR/elastix/additionals/usr/bin/elastix-dbprocess            $RPM_BUILD_ROOT/usr/bin/
 mv $RPM_BUILD_DIR/elastix/additionals/usr/bin/versionPaquetes.sh           $RPM_BUILD_ROOT/usr/bin/
+mv $RPM_BUILD_DIR/elastix/additionals/usr/bin/compareVersion		   $RPM_BUILD_ROOT/usr/bin/
+chmod 755 $RPM_BUILD_ROOT/usr/bin/compareVersion
 chmod 755 $RPM_BUILD_ROOT/usr/bin/versionPaquetes.sh
 
 # ** Moving elastix_helper
@@ -207,10 +211,23 @@ preversion=`cat $pathModule/preversion_%{modname}.info`
 if [ $1 -eq 1 ]; then #install
   # The installer database
     elastix-dbprocess "install" "$pathModule/setup/db"
+    /sbin/service httpd status > /dev/null 2>&1
+    if [ "$?" == "0" ]; then
+    	echo "Restarting apache..."
+    	/sbin/service httpd restart > /dev/null 2>&1
+    fi
 elif [ $1 -eq 2 ]; then #update
     elastix-dbprocess "update"  "$pathModule/setup/db" "$preversion"
+    /sbin/service httpd status > /dev/null 2>&1
+    if [ "$?" == "0" ]; then
+    	# Para versiones menores a 2.2.0-15 se debe reiniciar el apache debido a cambios en elastix.conf
+    	compareVersion "$preversion" "2.2.0-15"
+    	if [ "$?" == "9" ]; then
+        	echo "Restarting apache..."
+        	/sbin/service httpd restart > /dev/null 2>&1
+    	fi
+    fi
 fi
-
 
 # Actualizacion About Version Release
 # Verificar si en la base ya existe algo
@@ -259,6 +276,7 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/versionPaquetes.sh
 /usr/bin/elastix-dbprocess
 /usr/bin/elastix-helper
+/usr/bin/compareVersion
 /usr/sbin/elastix-helper
 %config(noreplace) /etc/cron.d/elastix.cron
 /etc/cron.daily/asterisk_cleanup
@@ -268,10 +286,308 @@ rm -rf $RPM_BUILD_ROOT
 #%config(noreplace) /etc/logrotate.d/elastixAccess.logrotate
 %config(noreplace) /etc/logrotate.d/elastixAudit.logrotate
 %config(noreplace) /etc/logrotate.d/elastixEmailStats.logrotate
+%config /etc/httpd/conf.d/elastix-htaccess.conf
 /etc/init.d/generic-cloexec
 /bin/asterisk.reload
 
 %changelog
+* Wed Nov 23 2011 Eduardo Cueva <ecueva@palosanto.com> 2.2.0-17
+- FIXED: Framework - PalosantoNavigator: Changes applied in 
+  palosantoNavigator to include the menu current as part of the 
+  history  in the view of web interface. SVN Rev[3349][3351]
+- FIXED: Additional - elastix-menumerge: Changes applied to update 
+  the description of a menu in process updating. SVN Rev[3349]
+- CHANGED: Additionals - motd.sh: Changed the files motd.sh to 
+  include a message. SVN Rev[3349]
+- CHANGED: module registration, changed the message displayed when 
+  the data can not be saved in the database, to the following 
+  "The register information could not be saved in the local database."
+  SVN Rev[3347]
+- FIXED: module registration, if the database register.db or table 
+  register do not exist, are automatically created. SVN Rev[3346]
+
+* Wed Nov 23 2011 Eduardo Cueva <ecueva@palosanto.com> 2.2.0-16
+- CHANGED: Framework - base.js: Changes in style of blockui action 
+  for add bookmark and remove the blockui in action saveToggleTab
+  SVN Rev[3344]
+- FIXED:  Framework - PalosantoNavigator: Fixed bug when menu of 3
+  level cannot be saved as bookmark. SVN Rev[3342]
+
+* Tue Nov 22 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-15
+- FIXED:   Changes in index.php and palosantoNavigator to set in 
+  var $_SESSION['menu'] when is is empty. SVN Rev[3339]
+- CHANGED: jquery-upl-colorpicker.js plugin, added an option to 
+  pass as a parameter the id of the element
+  SVN Rev[3335]
+- CHANGED: theme elastixneo, the colorpicker is now also closed
+  when user clicks on its icon
+  SVN Rev[3334]
+- CHANGED: elastix themes, added a new style for input disabled
+  SVN Rev[3330]
+- ADDED: update sql script, this script changes the order of modules
+  userlist to 41, grouplist to 42 and group_permission to 43
+  SVN Rev[3328]
+- FIXED: Framework: use SQL query parameters in get_key_settings 
+  and set_key_settings
+  SVN Rev[3317]
+- CHANGED: Framework - Base.js : Changed javascript in bookmark to
+  put a new label of images (title) and add a new image expandOut.png
+  SVN Rev[3316]
+- CHANGED: Framework - Themes: Changed labels of bookmarks in elastixneo.
+  SVN Rev[3315]
+- CHANGED: Framework - Languages: Added new labels of languages in
+  english and spanish
+  SVN Rev[3314]
+- CHANGED: module themes_system, changed the value of the button to
+  "Save" and changed its location
+  SVN Rev[3313]
+- CHANGED: module language, changed the width to label "language"
+  SVN Rev[3312]
+- CHANGED: module language, added the tag <form> to language.tpl
+  SVN Rev[3311]
+- CHANGED: module language, changed the name of the button to
+  "Save" and change its location
+  SVN Rev[3310]
+- CHANGED: Framework - base.js: Changes in base js to remove alerts
+  of message when operation of add or remove a bokmark is done.
+  Only the alert appear when there are an error.
+  SVN Rev[3309]
+- CHANGED: Framework - libs: Changes in palosantoNavigator and
+  misc.lib and others files to support the action to add a bookmark
+  and save a database acl the history
+  SVN Rev[3308]
+- CHANGED: Framework - Themes: Changes in elastixneo to support
+  bookmarks and history.
+  SVN Rev[3306]
+- ADDED: Framework - Language: Added new words for traslating in
+  english and spanish. This labels are used in elastixneo theme
+  SVN Rev[3305]
+- NEW: script elastix_warning_authentication, new script that
+  shows a template with information about elastix authentication
+  or permissions
+  SVN Rev[3304]
+- NEW: Framework - js: Add library jquery-upl-blockUI.js to windows
+  loading for elastixneo in bookmarks
+  SVN Rev[3301]
+- CHANGED: elastix-htaccess.conf, allowed the use of files
+  .htaccess in /var/www/html/panel
+  SVN Rev[3300]
+- Framework: (blackmin) work around strange CSS in Backup/Restore
+  module that makes Elastix menu items too narrow.
+  SVN Rev[3298]
+- Framework: (blackmin) introduce gray line that is visible
+  on empty reports
+  SVN Rev[3297]
+- Framework: (blackmin) standarize widget appearance as done 
+  for other themes.
+  SVN Rev[3296]
+- CHANGED: framework lang, added new translations
+  SVN Rev[3295]
+- Framework: first version of new theme blackmin. This is a
+  minimalistic theme with shades of gray, that dedicates as much
+  space as possible to the module itself. Click on the logo at
+  the upper-left corner for the Elastix menu.
+  SVN Rev[3294]
+- FIXED: Framework - themes: Elastix neo appear the 
+  lengueta-minimized above of div module content
+  SVN Rev[3284]
+- Fixed: Framework - Themes: Fixed bug where popup with position
+  absolute do not appear correctly.
+  SVN Rev[3269]
+
+* Tue Nov 01 2011 Eduardo Cueva <ecueva@palosanto.com> 2.2.0-14
+- CHANGED: styles.css in theme elastixneo, changed the background
+  image for class "menulogo2"
+  SVN Rev[3251]
+- FIXED: Framework - base.js: Added patch to fix the bug when the 
+  list of modules in a action to search appear in other position.
+  SVN Rev[3246]
+- CHANGED: Framework - images : changed image expand.png. 
+  SVN Rev[3244]
+- CHANGED: Framework - Themes: After the change de color this do 
+  not appear selected in reference of colorPicker library, this 
+  is solved change the color of colorPicker with the actual color 
+  value. SVN Rev[3243]
+
+* Sat Oct 29 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-13
+- CHANGED: theme elastixneo, added a border left to the neo-second-showbox-menu
+  SVN Rev[3233]
+- CHANGED: theme elastixneo, added a validation for versions of
+  internet explorer 8 or less
+  SVN Rev[3232]
+- FIXED: Framework - libs: Fixed bug when a user administrator has
+  not a profile assigned in the acl.db
+  SVN Rev[3231]
+- ADDED: Framework - Setup : Added new sql script to update dashboard.db
+  and setting.db
+  SVN Rev[3230]
+
+* Sat Oct 29 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-12
+- CHANGED: Framework - Themes: changes in themes/elastixneo/content.css
+  SVN Rev[3220]
+- UPDATED: update themes
+  SVN Rev[3219]
+- FIXED: Framework: remove percentages from pie graph
+  SVN Rev[3217]
+- CHANGED: Framework - Themes : Changed styles for support the new dashboard.
+  SVN Rev[3216]
+- FIXED: Framework - index.php: Added smarty variable to label
+  "Search Module" in _menmu.tpl
+  SVN Rev[3215]
+- FIXED: Framework: fix plot of 0%/100% of a pie slice.
+  SVN Rev[3214]
+- CHANGED:  Framework - Base.js: Change the style for popup of change password
+  SVN Rev[3213]
+- FIXED: Framework: complete separation to plot3d2
+  SVN Rev[3210]
+- FIXED: Framework - paloSantoGraphImage.lib.php: Restore type graph
+  plod3d and add plod3d2 by "displayGraph_draw_pie3d" function
+  SVN Rev[3209]
+- FIXED: Framework: fix regexp on disk usage so that it still matches
+  on a full partition (100%)
+  SVN Rev[3208]
+- CHANGED: Framework - images: Changed images images/flecha_asc.png and
+  images/flecha_desc.png with background blank by the same images with
+  transparence
+  SVN Rev[3205]
+- CHANGED: elastix themes, added a class called "frameModule"
+  SVN Rev[3183]
+- CHANGED: theme al, added a class called "frameModule"
+  SVN Rev[3182]
+- CHANGED: library paloSantoNavigation.class.php, added a class to
+  iframe for frame modules 
+  SVN Rev[3181]
+- CHANGED: Framework - themes: Changes in styles of ElastixNeo theme
+  SVN Rev[3178]
+- CHANGED: Framework: ElastixNeo - use min-height instead of height
+  for select, unbreaks multiline select controls.
+  SVN Rev[3173]
+- NEW: Framework - Themes: Added new styles for ElastixNeo Theme
+  SVN Rev[3172]
+- CHANGED: Framework - libs: changes in palosantoNavigator to support
+  ElastixNeo theme.
+  SVN Rev[3171]
+- CHANGED: FRAMEWORK - themes : changes in ElastixNeo
+  SVN Rev[3170]
+- CHANGED: theme slashdot, the module title is now handled by the framework
+  SVN Rev[3169]
+- CHANGED: theme giox, the module title is now handled by the framework
+  SVN Rev[3168]
+- CHANGED: theme elastixwine, the module title is now handled by the framework
+  SVN Rev[3167]
+- CHANGED: theme elastixwave, the module title is now handled by the framework
+  SVN Rev[3166]
+- CHANGED: theme elastixblue, the module title is now handled by the framework
+  SVN Rev[3165]
+- CHANGED: theme default, the module title is now handled by the framework
+  SVN Rev[3164]
+- CHANGED: theme al, the module title is now handled by the framework
+  SVN Rev[3163]
+- FIXED: Framework: remove stray print_r
+  SVN Rev[3137]
+- CHANGED: library paloSantoNavigation.class.php, added a title for
+  frame modules
+  SVN Rev[3136]
+- CHANGED: module themes_system, the module title is now handled by the
+  framework
+  SVN Rev[3130]
+- CHANGED: module language, the module title is now handled by the framework
+  SVN Rev[3128]
+- ADDED: added new image email.png to the framework
+  SVN Rev[3122]
+- CHANGED: module grouplist, the module title is now handled by the framework
+  SVN Rev[3120]
+- CHANGED: library paloSantoNavigation.class.php, now it is no longer
+  necessary to fetch the menu.tpl because this is done now in index.php
+  SVN Rev[3113]
+- FIXED: index.php of framework, now smarty variables used in list.tpl
+  can be used in menu.tpl
+  SVN Rev[3112]
+- NEW: FRAMEWORK - themes: New theme elastix Neo.
+  CHANGED: FRAMEWORK - misc.lib: Support to function in ElastixNeo
+  CHANGED: FRAMEWORK - base.js:  SUpport new javascripts to ElastixNeo
+  SVN Rev[3111]
+- CHANGED: Framework - index.php:  Support to the new theme ElastixNeo
+  in index.php
+  SVN Rev[3110]
+- CHANGED: module themes_system, better way to fix the refresh theme bug.
+  SVN Rev[3109]
+- FIXED: module themes_system, the smarty cache is also refreshed when
+  entering to the module
+  SVN Rev[3107]
+- CHANGED: index of framework, the index was changed in order to a user
+  can not access to a menu which its parent is not authorized
+  SVN Rev[3105]
+- CHANGED: Framework - lang: Add new key of languages to support the new theme
+  SVN Rev[3104]
+- FIXED: Framework: fix new pie and gauge not being centered.
+  SVN Rev[3098]
+- CHANGED: Framework: encapsulate 3d pie into internal function
+  SVN Rev[3096]
+- ADDED: Framework: new graph type 'gauge'
+  SVN Rev[3093]
+- CHANGED: Framework: new method of displaying pie graph with alpha image
+  SVN Rev[3091]
+
+* Mon Oct 17 2011 Eduardo Cueva <ecueva@palosanto.com> 2.2.0-11
+- FIXED: Framework - Registration: Validation from server about register 
+  information to send elastix web service. SVN Rev[3085]
+- FIXED: Framework - registration: Added error message if the database 
+  register.db doesn't exist and the JSON Array is changed to send from 
+  server to the clients. SVN Rev[3084]
+- FIXED: Registration: replace exec of echo with file_put_contents 
+  for write of registration SID. SVN Rev[3083]
+
+* Fri Oct 14 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-10
+- ADDED: In spec file, added conflicts elastix-callcenter <= 2.0.0-16
+
+* Mon Oct 10 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-9
+- CHANGED: In spec file, for installations the apache is restarted
+
+* Fri Oct 07 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-8
+- CHANGED: In spec file, changed prereq elastix-firstboot >= 2.2.0-5
+- ADDED: added a configuration file that allows files .htaccess
+  in /var/www/html/admin and in /var/www/html/mail
+  SVN Rev[3058]
+- CHANGED: elastix.conf, reverted the changes of commit 3053
+  SVN Rev[3056]
+- NEW: new script bash that compares two versions with elastix format
+  SVN Rev[3054]
+- FIXED: elastix.conf, added new directories in order to files
+  .htaccess take effect in these directories
+  SVN Rev[3053]
+- CHANGED: base.js, for modules that have the filter_value text box,
+  call a function that submits the form in case the key "enter" was pressed
+  SVN Rev[3032]
+
+* Tue Oct 04 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-7
+- ADDED: framework lang, added new translations
+  SVN Rev[3026]
+- FIXED: elastix-dbprocess, added a validation in case the
+  file db.info does not exist or it is empty
+  SVN Rev[3025]
+
+* Wed Sep 28 2011 Eduardo Cueva <ecueva@palosanto.com> 2.2.0-6
+- FIXED: Framework: Bad format of email template when a voicemail 
+  is sent. This bug is fixed with function verifyTemplate_vm_email(). 
+  This commit solved the commit 3014 where ip is not replaced in 
+  /etc/asterisk/vm_email.inc. SVN Rev[3017][3014]
+- FIXED: Framework: Fixed bug where appear images over the popup 
+  register (over main menu), this bug appear in theme elastixwine
+  SVN Rev[3015]
+- ADDED: added new images to framework. SVN Rev[3011]
+
+* Tue Sep 27 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-5
+- CHANGED: In spec file, changed prereq elastix-firstboot >= 2.2.0-4
+- ADDED: misc.lib.php, added new function that gets the
+  AMI password in file /etc/elastix.conf
+  SVN Rev[2994]
+- CHANGED: framework, changed the location of function
+  checkFrameworkDatabases. Now it is called in file default.conf.php
+  just before calling the function load_theme to prevent any error
+  in themes due to the non-existence of database settings.db
+  SVN Rev[2992]
+
 * Thu Sep 22 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-4
 - FIXED: Framework - libs/js/jquery/jquery-upl-windowAero.js: 
   The button close of a window generated by lib "jquery-upl-windowAero.js"
