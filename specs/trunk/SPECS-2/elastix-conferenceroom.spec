@@ -2,8 +2,8 @@
 
 Summary: Elastix Conference Room 
 Name:    elastix-conferenceroom
-Version: 0.0.0
-Release: 13
+Version: 2.2.0
+Release: 1
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
@@ -11,17 +11,37 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
 Requires: unoconv >= 0.3, ImageMagick >= 6.4.0.10, openoffice.org-headless, openoffice.org-calc, openoffice.org-impress, openoffice.org-draw, openoffice.org-graphicfilter, openoffice.org-writer
 Requires(post): /usr/bin/elastix-menumerge
-Requires: elastix-pbx >= 2.0.0-4
-Prereq: elastix >= 2.0.0-13
+Requires: elastix-pbx >= 2.2.0-6
+Prereq: elastix-framework >= 2.2.0-18
+Prereq: elastix-red5
+Requires: SabreAMF
+#Requires: javasqlite
+BuildRequires: elastix-red5
+BuildRequires: apache-ant-bin
+BuildRequires: apache-ivy-bin
+BuildRequires: flex-sdk-bin
 
 %description
-This module implements a conference room in which a conference host can display a document
-for review by a number of guests that log on into a particular conference room. This
-module also provides a document repository for relevant documents. 
-
+This module implements a conference room in which a conference host can display
+a document for review by a number of guests that log on into a particular 
+conference room. This module also provides a document repository for relevant 
+documents. This module also enables limited video support via Red5 and a Flash
+object embedded in the conference interface.
 
 %prep
 %setup -n %{modname}
+
+%build
+
+# Client-side flash support runs here
+cd setup/flash-video/client
+/opt/apache-ant/bin/ant -DFLEX_HOME=/opt/flex-sdk/
+
+# Server-side flash support runs here
+cd ../server
+# LANG is required because rpmbuild sets LANG=C, which breaks javac for Spanish
+# comments. We need to set it back to UTF-8
+LANG=en_US.UTF-8 RED5_HOME=/opt/red5 /opt/apache-ant/bin/ant
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -34,6 +54,9 @@ mv modules/ $RPM_BUILD_ROOT/var/www/html/
 mv setup/conference.php $RPM_BUILD_ROOT/var/www/html/
 #mv setup/conferencechat.php $RPM_BUILD_ROOT/var/www/html/
 mv setup/themes/ $RPM_BUILD_ROOT/var/www/html/
+mv setup/flash-video/client/bin/release/elastix-conference-video.swf $RPM_BUILD_ROOT/var/www/html/modules/conferenceroom_presentation/
+mv setup/flash-video/server/dist/elastixConferenceVideo.war setup/
+rm -rf setup/flash-video/
 
 # The following folder should contain all the data that is required by the installer,
 # that cannot be handled by RPM.
@@ -90,6 +113,13 @@ chown -R asterisk.asterisk /tmp/new_module/%{modname}
 php /tmp/new_module/%{modname}/setup/installer.php
 rm -rf /tmp/new_module
 
+# Install Red5 server support
+service elastix-red5 stop
+rm -rf /opt/red5/webapps/elastixConferenceVideo/
+cp /usr/share/elastix/module_installer/%{name}-%{version}-%{release}/setup/elastixConferenceVideo.war /opt/red5/webapps/
+chown asterisk.asterisk /opt/red5/webapps/elastixConferenceVideo.war
+service elastix-red5 start
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -110,6 +140,35 @@ fi
 %config(noreplace) /var/www/db/conferencia.db
 
 %changelog
+* Fri Nov 25 2011 Eduardo Cueva <ecueva@palosanto.com> 2.2.0-1
+- CHANGED: In spec file change Prereq elastix to elastix-framework >= 2.2.0-18
+- FIXED: fix changelog for already-committed Chinese translation.
+- FIXED: Conference Room: Actually return FALSE on error in conferenceroom creation.
+
+* Tue Sep 20 2011 Alex Villacis Lasso <a_villacis@palosanto.com>
+- FIXED: Merged fix for date range collision in conference phone assignment.
+  Fixes Elastix bug #937. 
+- CHANGED: Bump minimum version of elastix-pbx, as module requires a new function
+  defined in elastix-pbx as part of fix for Elastix bug #937.
+
+* Wed Jun  1 2011 Alex Villacis Lasso <a_villacis@palosanto.com>
+- FIXED: Bump minimum version of elastix, as module now requires newer framework
+  support of paloSantoGrid.
+
+* Sat May 14 2011 Alex Villacis Lasso <a_villacis@palosanto.com>
+- ADDED: New Chinese translations for Conference Room interface. Part of fix for
+  Elastix bug #876.
+
+* Mon May  2 2011 Alex Villacis Lasso <a_villacis@palosanto.com> 2.0.0-1
+- FIXED: Fix leftover hardcoding of local testing IP in flash client.
+
+* Thu Apr 21 2011 Alex Villacis Lasso <a_villacis@palosanto.com> 2.0.0-0
+- Include code for client and server video support
+
+* Fri Apr 15 2011 Alex Villacis Lasso <a_villacis@palosanto.com>
+- Bump release
+- Add requirements for Red5 and SabreAMF for video support
+
 * Fri Apr 08 2011 Bruno Macias <bmacias@palosanto.com> 0.0.0-13
 - FIXED: Bug database conference.db, When process update database
    was deleted or rename as confenrece.db.rpmsave because now database 

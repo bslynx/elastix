@@ -3,13 +3,13 @@
 Summary: Elastix Call Center 
 Name:    elastix-callcenter
 Version: 2.1.3
-Release: 0
+Release: 1
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
-Prereq: elastix >= 2.0.0-35
+Prereq: elastix-framework >= 2.2.0-18
 Requires: asterisk
 Requires: freePBX
 Requires: php-mbstring
@@ -92,6 +92,11 @@ fi
 /etc/logrotate.d/elastixdialer
 
 %changelog
+* Fri Nov 25 2011 Eduardo Cueva <ecueva@palosanto.com> 2.1.3-1
+- Changes in Spec file in Prereq elastix to elastix-framework >= 2.2.0-18
+- FIXED: Dialer (ECCP): fix copy/paste error in "getcampaignqueuewait" request 
+  on error path. (SVN revision 3350)
+
 * Mon Nov 21 2011 Alex Villacis Lasso <a_villacis@palosanto.com> 2.1.3-0
 - Updated version, synchronized with CallCenter 1.6.3 (SVN revision 3327)
 - From CHANGELOG:
