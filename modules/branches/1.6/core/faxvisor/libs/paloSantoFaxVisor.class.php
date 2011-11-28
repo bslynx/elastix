@@ -193,7 +193,7 @@ class paloFaxVisor
         
         // Leer la información del fax
         $infoFax = $this->obtener_fax($idFax);
-        if (count($infoFax) == 0) return ($infoFax->errMsg == '');
+        if (count($infoFax) == 0) return ($this->errMsg == '');
 
         // Borrar la información y el documento asociado
         $this->_db->conn->beginTransaction();
