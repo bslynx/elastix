@@ -394,11 +394,13 @@ $(document).ready(function(){
 	$('.neo-smenubox-arrow-more-right').mouseup(function() {
 	  clearInterval(move);
 	}).mousedown(function(e) {
+	  clearInterval(move);
 	  move = setInterval("moveRight()",90);
 	});
 	$('.neo-smenubox-arrow-more-left').mouseup(function() {
 	  clearInterval(move);
 	}).mousedown(function(e) {
+	  clearInterval(move);
 	  move = setInterval("moveLeft()",90);
 	});
 
@@ -406,22 +408,36 @@ $(document).ready(function(){
 
 function moveLeft()
 {
+	var source_img = $('#neo-logobox').find('img:first').attr("src");
+	var themeName = source_img.split("/",2);
+	var img = $('#neo-smenubox-arrow-more').children(':first-child').attr('src');
 	var longpaso = 60;
 	var leftvar = $('#neo-smenubox-innerdiv').css("left");
 	leftvarArr = leftvar.split("px");
 	if($('#neo-smenubox-innerdiv').offset().left<-longpaso && leftvarArr[0] < 0 ) {
 		$('#neo-smenubox-innerdiv').animate({left:'+='+longpaso}, 70, function() {});
+		$('#neo-smenubox-arrow-more').children(':first-child').attr('src', 'themes/'+themeName[1]+'/images/icon_arrowleft.png');
+		$('#neo-smenubox-arrow-more').children(':last-child').attr('src', 'themes/'+themeName[1]+'/images/icon_arrowright.png');
 	} else {
 		$('#neo-smenubox-innerdiv').css("left", "0px");
+		if(/icon_arrowleft.png/.test(img))
+			$('#neo-smenubox-arrow-more').children(':first-child').attr('src', 'themes/'+themeName[1]+'/images/icon_arrowleft_no.png');
 	}
 }
 
 function moveRight()
 {
+	var source_img = $('#neo-logobox').find('img:first').attr("src");
+	var themeName = source_img.split("/",2);
+	var img = $('#neo-smenubox-arrow-more').children(':last-child').attr('src');
 	var longpaso = 60;
 	if(($('#neo-smenubox-innerdiv').offset().left+$('#neo-smenubox-innerdiv').outerWidth()+longpaso)>($("#neo-smenubox").offset().left+$("#neo-smenubox").outerWidth())) {
-		  $('#neo-smenubox-innerdiv').animate({left:'-='+longpaso}, 70, function() {});
-	};
+		$('#neo-smenubox-innerdiv').animate({left:'-='+longpaso}, 70, function() {});
+		$('#neo-smenubox-arrow-more').children(':first-child').attr('src', 'themes/'+themeName[1]+'/images/icon_arrowleft.png');
+	} else {
+		if(/icon_arrowright.png/.test(img))
+			$('#neo-smenubox-arrow-more').children(':last-child').attr('src', 'themes/'+themeName[1]+'/images/icon_arrowright_no.png');
+	}
 }
 
 function oneClickEvent()
@@ -501,7 +517,7 @@ function oneClickEvent()
 		{/foreach}
 	  </div>
 	  <div id="neo-smenubox-arrow-more" class="neo-display-none">
-		  <img src="themes/{$THEMENAME}/images/icon_arrowleft.png" width="15" height="17" alt="arrowleft" class="neo-smenubox-arrow-more-left" style="cursor: pointer;" />
+		  <img src="themes/{$THEMENAME}/images/icon_arrowleft_no.png" width="15" height="17" alt="arrowleft" class="neo-smenubox-arrow-more-left" style="cursor: pointer;" />
 		  <img src="themes/{$THEMENAME}/images/icon_arrowright.png" width="15" height="17" alt="arrowright" class="neo-smenubox-arrow-more-right" style="cursor: pointer;" />
 	  </div>
 	</div>
