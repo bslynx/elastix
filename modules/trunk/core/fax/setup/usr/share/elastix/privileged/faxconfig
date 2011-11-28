@@ -240,7 +240,7 @@ ModemType:              Class1          # use this to supply a hint
 # the modem off-hook during initialization, and then place it
 # back on-hook when done.
 #
-#ModemResetCmds:        "ATH1\nAT+VCID=1"       # enables CallID display
+#ModemResetCmds:        "ATH1\\nAT+VCID=1"       # enables CallID display
 #ModemReadyCmds:        ATH0
 
 
