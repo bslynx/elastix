@@ -270,7 +270,10 @@ class paloSantoNavigation {
     function getIdParentMenu($id)
     {
         // verificar que $this->arrMenu[$id] exista
-        return $this->arrMenu[$id]['IdParent'];
+		if(isset($this->arrMenu[$id]))
+			return $this->arrMenu[$id]['IdParent'];
+		else
+			return NULL;
     }
 
     function isValidMenu($id)

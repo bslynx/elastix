@@ -280,7 +280,7 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
 
 	$arrParentMenuId = $oPn->getIdParentMenu($_SESSION['menu']);
 	$menuBookmark = $_SESSION['menu'];
-	if($arrParentMenuId == ""){ // no tiene padre entonces es un menu de 1 nivel
+	if($arrParentMenuId == "" || !isset($arrParentMenuId)){ // no tiene padre entonces es un menu de 1 nivel
 		$menuBookmark = $oPn->getIdFirstSubMenu($_SESSION['menu']);
 		$salRes = $oPn->getIdFirstSubMenu($menuBookmark);
 		if($salRes !== FALSE)
