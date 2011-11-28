@@ -56,7 +56,7 @@ class paloSantoSendFax {
         $destine = escapeshellarg($destine);
         $data = escapeshellarg($data);
         $output = $retval = NULL;
-        exec("sendfax -h $faxhost -n -d $destine $data", $output, $retval);
+        exec("sendfax -D -h $faxhost -n -d $destine $data", $output, $retval);
         return ($retval == 0);
     }
 }
