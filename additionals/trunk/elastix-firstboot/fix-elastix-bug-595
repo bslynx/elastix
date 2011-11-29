@@ -53,14 +53,21 @@ foreach ($elastixConf as $sLinea) {
 
 print "Checking for Elastix bug #595 (http://bugs.elastix.org/view.php?id=595) ...\n\n";
 
+// What kind of kernel is running? Normal or XEN?
+$sRunningKernel = `uname -r`;
+$bXen = (strpos($sRunningKernel, 'xen') !== FALSE);
+print "Configuring for ".($bXen ? 'XEN' : 'ordinary')." kernel...\n";
+
 // Pick up target kernel release
-$sDahdiRequires = `rpm -q --requires kernel-module-dahdi | grep '^kernel = '`;
+$sDahdiRequires = $bXen
+    ? `rpm -q --requires kernel-module-dahdi-xen | grep '^kernel-xen = '`
+    : `rpm -q --requires kernel-module-dahdi | grep '^kernel = '`;
 $sDahdiRequires = trim($sDahdiRequires);
-if (!preg_match('/^kernel\s*=\s*(\S+)/', $sDahdiRequires, $regs)) {
+if (!preg_match('/^kernel(-xen)?\s*=\s*(\S+)/', $sDahdiRequires, $regs)) {
 	fputs(STDERR, "FATAL: failed to list required kernel for kernel-module-dahdi !\n");
     exit(2);
 }
-$sTargetKernel = $regs[1];
+$sTargetKernel = $regs[2];
 print "Required kernel release is: $sTargetKernel\n";
 
 // Sanity check for permissions
@@ -86,12 +93,21 @@ foreach ($lineas as $iPos => $sLinea) {
     	$kernelInfo = array(
             'title'     =>  $regs[1],
             'kernelver' =>  NULL,
+            'xen'       =>  FALSE,
         );
         $kernelList[] =& $kernelInfo;
     }
     if (preg_match('|^\s*kernel\s+.*/vmlinuz-(\S+)|', $sLinea, $regs)) {
     	$kernelInfo['kernelver'] = $regs[1];
-        if ($kernelInfo['kernelver'] == $sTargetKernel)
+        if (!$bXen && $kernelInfo['kernelver'] == $sTargetKernel)
+            $iPosTarget = count($kernelList) - 1;
+        unset($kernelInfo);
+        $kernelInfo = NULL;
+    }
+    if (preg_match('|^\s*kernel\s+.*/xen.gz-(\S+)|', $sLinea, $regs)) {
+        $kernelInfo['kernelver'] = $regs[1];
+        $kernelInfo['xen'] = TRUE;
+        if ($bXen && $kernelInfo['kernelver'] == $sTargetKernel)
             $iPosTarget = count($kernelList) - 1;
         unset($kernelInfo);
         $kernelInfo = NULL;
@@ -116,13 +132,14 @@ if (count($kernelList) <= $iPosDefault) {
     fputs(STDERR, "FATAL: default entry past identified entries - parsing failed!\n");
     exit(2);
 }
-if (is_null($kernelList[$iPosDefault])) {
+if (is_null($kernelList[$iPosDefault]['kernelver'])) {
     fputs(STDERR, "FATAL: default entry has no kernel version - parsing failed!\n");
     exit(2);
 }
 print "Available kernels are:\n";
 foreach ($kernelList as $iPos => $kernelInfo) {
-	printf("\t%02d %s %s\n", $iPos, $kernelInfo['kernelver'], $kernelInfo['title']);
+	printf("\t%02d %s %s %s\n", $iPos, ($kernelInfo['xen'] ? 'XEN' : '   '), 
+	   $kernelInfo['kernelver'], $kernelInfo['title']);
 }
 print "Default entry is: $iPosDefault\n";
 print "Target entry is: $iPosTarget\n";
