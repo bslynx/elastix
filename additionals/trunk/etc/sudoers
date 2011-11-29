@@ -103,7 +103,6 @@ asterisk ALL = NOPASSWD: /sbin/init
 asterisk ALL = NOPASSWD: /usr/sbin/postmap
 asterisk ALL = NOPASSWD: /usr/sbin/postfix
 asterisk ALL = NOPASSWD: /usr/sbin/saslpasswd2
-uucp     ALL = NOPASSWD: /bin/chmod
 asterisk ALL = NOPASSWD: /usr/sbin/hardware_detector
 asterisk ALL = NOPASSWD: /sbin/chkconfig
 
