@@ -156,13 +156,11 @@ class PaloSantoFileEndPoint
             case 'Grandstream':
         	$contentFileGrandstream = PrincipalFileGrandstream($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer,$ArrayData['data']['model']);
                 if($this->createFileConf($this->directory, "gxp".$ArrayData['data']['filename'], $contentFileGrandstream)) {
-		    exec("sudo -u root chmod o+rx /opt/openfire");
                     //ex: . /tftpboot/GS_CFG_GEN/bin/encode.sh 000945531b3b /tftpboot/gxp_config_1.1.6.46.template.cfg /tftpboot/cfg000945531b3b
-		    exec("/tftpboot/GS_CFG_GEN/bin/encode.sh {$ArrayData['data']['filename']} /tftpboot/gxp{$ArrayData['data']['filename']} /tftpboot/cfg{$ArrayData['data']['filename']}",$arrConsole,$flagStatus);
-		    exec("sudo -u root chmod o-rx /opt/openfire");
+                    exec("/tftpboot/GS_CFG_GEN/bin/encode.sh {$ArrayData['data']['filename']} /tftpboot/gxp{$ArrayData['data']['filename']} /tftpboot/cfg{$ArrayData['data']['filename']}",$arrConsole,$flagStatus);
                     if($flagStatus == 0)
-			$return = true;
-		}
+                        $return = true;
+                }
                 else $return = false;
 
                 break;
