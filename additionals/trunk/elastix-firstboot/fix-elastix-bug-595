@@ -1,0 +1,148 @@
+#!/usr/bin/php
+<?php
+/*
+  vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
+  Codificación: UTF-8
+  +----------------------------------------------------------------------+
+  | Elastix version 2.0                                                  |
+  | http://www.elastix.org                                               |
+  +----------------------------------------------------------------------+
+  | Copyright (c) 2006 Palosanto Solutions S. A.                         |
+  +----------------------------------------------------------------------+
+  | Cdla. Nueva Kennedy Calle E 222 y 9na. Este                          |
+  | Telfs. 2283-268, 2294-440, 2284-356                                  |
+  | Guayaquil - Ecuador                                                  |
+  | http://www.palosanto.com                                             |
+  +----------------------------------------------------------------------+
+  | The contents of this file are subject to the General Public License  |
+  | (GPL) Version 2 (the "License"); you may not use this file except in |
+  | compliance with the License. You may obtain a copy of the License at |
+  | http://www.opensource.org/licenses/gpl-license.php                   |
+  |                                                                      |
+  | Software distributed under the License is distributed on an "AS IS"  |
+  | basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See  |
+  | the License for the specific language governing rights and           |
+  | limitations under the License.                                       |
+  +----------------------------------------------------------------------+
+  | The Original Code is: Elastix Open Source.                           |
+  | The Initial Developer of the Original Code is PaloSanto Solutions    |
+  +----------------------------------------------------------------------+
+  $Id: faxconfig.php,v 1.1 2007/01/09 23:49:36 alex Exp $
+*/
+
+/*
+ * This script intends to fix driver breakage caused by updating a system 
+ * affected by Elastix bug #595. In this bug, an incorrect exclude= directive
+ * in the Elastix repos causes the default CentOS kernel to become available
+ * for update, before any telephony drivers are compiled for it. This script
+ * works around the issue by modifying /boot/grub/grub.conf so that it points
+ * to the kernel for which there are dahdi drivers available.
+ * 
+ * Exit status - 0 for no action, 1 for successful modification, 2 for error 
+ */
+
+define('GRUB_CONF', '/boot/grub/grub.conf');
+
+// Verify if checking needs to be done
+$elastixConf = file('/etc/elastix.conf');
+foreach ($elastixConf as $sLinea) {
+	if (strpos($sLinea, 'bug595checked=1') !== FALSE) {
+		exit(0);
+	}
+}
+
+print "Checking for Elastix bug #595 (http://bugs.elastix.org/view.php?id=595) ...\n\n";
+
+// Pick up target kernel release
+$sDahdiRequires = `rpm -q --requires kernel-module-dahdi | grep '^kernel = '`;
+$sDahdiRequires = trim($sDahdiRequires);
+if (!preg_match('/^kernel\s*=\s*(\S+)/', $sDahdiRequires, $regs)) {
+	fputs(STDERR, "FATAL: failed to list required kernel for kernel-module-dahdi !\n");
+    exit(2);
+}
+$sTargetKernel = $regs[1];
+print "Required kernel release is: $sTargetKernel\n";
+
+// Sanity check for permissions
+if (!is_writable(GRUB_CONF)) {
+    fputs(STDERR, "FATAL: GRUB configuration not writable (maybe not running as root)!\n");
+	exit(2);
+}
+
+// Read and scan GRUB configuration
+$lineas = file(GRUB_CONF);
+$iPosDefault = NULL;
+$iLineaDefault = NULL;
+$iPosTarget = NULL;
+$kernelList = array();
+$kernelInfo = NULL;
+foreach ($lineas as $iPos => $sLinea) {
+	$regs = NULL;
+    if (is_null($iPosDefault) && preg_match('/^default\s*=\s*(\d+)/', $sLinea, $regs)) {
+		$iPosDefault = (int)$regs[1];
+        $iLineaDefault = $iPos;
+	}
+    if (preg_match('/^\s*title\s+(\S.+\S)/', $sLinea, $regs)) {
+    	$kernelInfo = array(
+            'title'     =>  $regs[1],
+            'kernelver' =>  NULL,
+        );
+        $kernelList[] =& $kernelInfo;
+    }
+    if (preg_match('|^\s*kernel\s+.*/vmlinuz-(\S+)|', $sLinea, $regs)) {
+    	$kernelInfo['kernelver'] = $regs[1];
+        if ($kernelInfo['kernelver'] == $sTargetKernel)
+            $iPosTarget = count($kernelList) - 1;
+        unset($kernelInfo);
+        $kernelInfo = NULL;
+    }
+}
+
+
+// Print out scanned information
+if (is_null($iPosDefault)) {
+    fputs(STDERR, "FATAL: failed to locate default GRUB entry!\n");
+	exit(2);
+}
+if (is_null($iPosTarget)) {
+    fputs(STDERR, "FATAL: failed to locate GRUB entry for required kernel!\n");
+    exit(2);
+}
+if (count($kernelList) <= 0) {
+    fputs(STDERR, "FATAL: failed to identify GRUB entries!\n");
+    exit(2);
+}
+if (count($kernelList) <= $iPosDefault) {
+    fputs(STDERR, "FATAL: default entry past identified entries - parsing failed!\n");
+    exit(2);
+}
+if (is_null($kernelList[$iPosDefault])) {
+    fputs(STDERR, "FATAL: default entry has no kernel version - parsing failed!\n");
+    exit(2);
+}
+print "Available kernels are:\n";
+foreach ($kernelList as $iPos => $kernelInfo) {
+	printf("\t%02d %s %s\n", $iPos, $kernelInfo['kernelver'], $kernelInfo['title']);
+}
+print "Default entry is: $iPosDefault\n";
+print "Target entry is: $iPosTarget\n";
+
+// Modify configuration if required
+if ($iPosDefault == $iPosTarget) {
+	print "No action required.\n";
+    file_put_contents('/etc/elastix.conf', "bug595checked=1\n", FILE_APPEND);
+    exit(0);
+} else {
+	print "Changing default kernel to entry $iPosTarget ...";
+    $lineas[$iLineaDefault] = "default=$iPosTarget\n";
+    $iNumEscrito = file_put_contents(GRUB_CONF, $lineas);
+    if ($iNumEscrito !== FALSE) {
+    	print " done!\n";
+        file_put_contents('/etc/elastix.conf', "bug595checked=1\n", FILE_APPEND);
+        exit(1);
+    } else {
+        fputs(STDERR, "Failed to write new configuration!\n");
+    	exit(2);
+    }
+}
+?>

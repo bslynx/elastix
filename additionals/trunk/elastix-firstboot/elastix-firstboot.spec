@@ -1,7 +1,7 @@
 Summary: Elastix First Boot Setup
 Name:    elastix-firstboot
 Version: 2.2.0
-Release: 2
+Release: 3
 License: GPL
 Group:   Applications/System
 Source0: %{name}-%{version}.tar.bz2
@@ -33,6 +33,7 @@ mkdir -p $RPM_BUILD_ROOT/usr/share/elastix-firstboot/
 mkdir -p $RPM_BUILD_ROOT/usr/bin/
 cp elastix-firstboot $RPM_BUILD_ROOT/etc/init.d/
 cp change-passwords  $RPM_BUILD_ROOT/usr/bin/
+cp fix-elastix-bug-595  $RPM_BUILD_ROOT/usr/sbin/
 mv compat-dbscripts/ $RPM_BUILD_ROOT/usr/share/elastix-firstboot/
 
 %post
@@ -97,8 +98,12 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/elastix-firstboot/compat-dbscripts/02-asteriskuser-password.sql
 /usr/share/elastix-firstboot/compat-dbscripts/08-schema-vtiger.sql
 /usr/bin/change-passwords
+/usr/sbin/fix-elastix-bug-595
 
 %changelog
+* Tue Nov 29 2011 Alex Villacis Lasso <a_villacis@palosanto.com> 2.2.0-3
+- ADDED: new script fix-elastix-bug-595 to fix breakage in kernel update.
+
 * Thu Sep 01 2011 Alberto Santos <asantos@palosanto.com> 2.2.0-2
 - CHANGED: change-passwords, when user press button cancel the
   script does an exit

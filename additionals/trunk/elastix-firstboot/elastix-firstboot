@@ -265,6 +265,20 @@ This screen will now ask for a password for user 'admin' that will be used for: 
 start(){
 	ret=0
 
+	# Run check for Elastix bug #595 (should pass with noop)
+	/usr/sbin/fix-elastix-bug-595
+	if [ $? -eq 1 ] ; then
+		echo "*** WARNING *** *** WARNING *** *** WARNING *** *** WARNING ***"
+		echo "YOUR DEFAULT BOOT CONFIGURATION IN /boot/grub/grub.conf WAS MODIFIED"
+		echo "TO FIX ELASTIX BUG #595. YOU ARE PROBABLY RUNNING A KERNEL WITHOUT"
+		echo "DAHDI DRIVERS. YOUR SYSTEM MUST BE REBOOTED TO ENSURE THAT DAHDI"
+		echo "DRIVERS ARE LOADED."
+		echo "YOUR SYSTEM WILL REBOOT IN 10 SECONDS."
+		sleep 10
+		/sbin/reboot
+		return 1
+	fi
+
 	# Perform all tasks that require a running MySQL database
         MYSQLPID=`cat "$mypidfile"  2>/dev/null `
         if [ -n "$MYSQLPID" ]; then
@@ -279,6 +293,8 @@ start(){
 }
 
 stop(){
+	# Run check for Elastix bug #595
+	/usr/sbin/fix-elastix-bug-595
 	return 0
 }
 
