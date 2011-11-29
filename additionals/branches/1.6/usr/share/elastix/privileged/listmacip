@@ -45,7 +45,7 @@ foreach ($output as $linea) {
 	if (preg_match('/^Host ([\.|[:digit:]]*) /', $linea, $regs))
         $sIP = $regs[1];
     if (preg_match('/^MAC Address: ([:|[:alnum:]]*) \((.*)\)/', $linea, $regs)) {
-    	print "$regs[1] $sIP\n";
+    	print "$regs[1] $sIP $regs[2]\n";
     }
 }
 exit($retval);
