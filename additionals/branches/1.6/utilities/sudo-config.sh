@@ -58,8 +58,3 @@ if ! grep "asterisk ALL = NOPASSWD: /usr/sbin/saslpasswd2" /etc/sudoers >/dev/nu
 	echo "asterisk ALL = NOPASSWD: /usr/sbin/saslpasswd2" >> /etc/sudoers
 	echo "asterisk ALL = NOPASSWD: /usr/sbin/saslpasswd2 added to /etc/sudoers"
 fi
-
-if ! grep "uucp ALL = NOPASSWD: /bin/chmod" /etc/sudoers >/dev/null 2>&1; then
-	echo "uucp ALL = NOPASSWD: /bin/chmod" >> /etc/sudoers
-	echo "uucp ALL = NOPASSWD: /bin/chmod added to /etc/sudoers"
-fi
