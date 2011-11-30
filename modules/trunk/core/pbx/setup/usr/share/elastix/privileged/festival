@@ -55,6 +55,10 @@ function action_enableFestival($opt)
 {
     // Add function definition to configuration file
     $sArchivo = '/usr/share/festival/festival.scm';
+    if (!file_exists($sArchivo)) {
+        error_exit("FATAL: $sArchivo not found!\n");
+    }
+
     $sDefinicionTTS = <<<TEMP
 (define (tts_textasterisk string mode)
 "(tts_textasterisk STRING MODE)
