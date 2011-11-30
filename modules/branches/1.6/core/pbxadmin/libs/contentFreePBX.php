@@ -489,7 +489,7 @@
 	}
 
 	//$salida .= @ob_get_flush();
-	$htmlFPBX .= @ob_get_contents();
+	$htmlFPBX = @ob_get_contents();
 	ob_end_clean();
 
 	// Aqui reviso si hay modulos deshabilitados
