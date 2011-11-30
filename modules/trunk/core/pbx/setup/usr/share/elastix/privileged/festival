@@ -93,7 +93,6 @@ function action_disableFestival($opt)
 {
     // Remove service to load on startup
 	system('/sbin/chkconfig festival off');
-    system('/sbin/chkconfig --del festival');
     
     // Return immediately if service is not running 
     $retval = NULL; $output = NULL;
