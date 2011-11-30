@@ -1,5 +1,4 @@
 <?php
-
     function getContent(&$smarty, $module_name, $withList)
     {
 	require_once "libs/misc.lib.php";
@@ -108,6 +107,7 @@
 	/*************************************************************/
 
 	// include base functions
+    global $amp_conf_defaults;
 	require_once('/var/www/html/admin/functions.inc.php');
 	require_once('/var/www/html/admin/common/php-asmanager.php');
 
@@ -555,9 +555,8 @@
 	    $smarty->assign("INFO", $arrLang["Warning: Updating FreePBX through its web interface will cause it to install versions that may have not yet been properly integrated with Elastix. To avoid conflicts, it is always recommended to search/install updates only through the linux command \"yum update freePBX\"."]);
 	}
 
-	$smarty->assign("htmlFPBX", $htmlFPBX);
-	$salida .= $smarty->fetch("$local_templates_dir/main.tpl");
-	return $salida;
+        $smarty->assign("htmlFPBX", $htmlFPBX);
+        $salida .= $smarty->fetch("$local_templates_dir/main.tpl");
+        return $salida;
     }
-
 ?>

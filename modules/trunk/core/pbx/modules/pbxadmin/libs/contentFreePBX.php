@@ -1,5 +1,4 @@
 <?php
-    
     function getContent(&$smarty, $module_name, $withList)
     {
 	require_once "libs/misc.lib.php";
@@ -42,7 +41,7 @@
     // Scripts adicionales que pueden ser necesarios
     $sScripts = '';
     foreach (array('admin/common/jquery.toggleval.3.0.js') as $sRuta) {
-    	if (file_exists($sRuta))
+        if (file_exists($sRuta))
             $sScripts .= "<script type='text/javascript' src='/$sRuta'></script>";
     }
 
@@ -73,7 +72,7 @@
 	$bodyParams = @$smarty->fetch("BODYPARAMS");
 	$bodyParams .= "onload='body_loaded();'";
 	$smarty->assign("BODYPARAMS", $bodyParams);
-	
+
 	$_SESSION["AMP_user"]=NULL;
 	/* benchmark */
 	function microtime_float() { list($usec,$sec) = explode(' ',microtime()); return ((float)$usec+(float)$sec); }
@@ -108,6 +107,7 @@
 	/*************************************************************/
 
 	// include base functions
+    global $amp_conf_defaults;
 	require_once('/var/www/html/admin/functions.inc.php');
 	require_once('/var/www/html/admin/common/php-asmanager.php');
 
@@ -555,9 +555,7 @@
 	    $smarty->assign("INFO", _tr("Warning: Updating FreePBX through its web interface will cause it to install versions that may have not yet been properly integrated with Elastix. To avoid conflicts, it is always recommended to search/install updates only through the linux command \"yum update freePBX\"."));
 	}
         $smarty->assign("htmlFPBX", $htmlFPBX);
-	$salida .= $smarty->fetch("$local_templates_dir/main.tpl");
-	return $salida;
-
+        $salida .= $smarty->fetch("$local_templates_dir/main.tpl");
+        return $salida;
     }
-
 ?>
