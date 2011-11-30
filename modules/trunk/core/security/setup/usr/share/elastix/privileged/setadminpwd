@@ -59,8 +59,10 @@ foreach ($tablaModificar as $itemModificar) {
             $lineas[] = $sLinea;
     	}
         if (file_put_contents($sRutaArchivo, $lineas) === FALSE) {
-            fprintf(STDERR, "ERR: failed to modify $sRutaArchivo\n");
+            print "FAILED {$itemModificar['name']}\n";
         	$bExito = FALSE;
+        } else {
+            print "CHANGED {$itemModificar['name']}\n";
         }
     }
 }
