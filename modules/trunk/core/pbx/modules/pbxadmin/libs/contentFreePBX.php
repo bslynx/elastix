@@ -13,6 +13,14 @@
 	}
 	$skip_astman = NULL;
 
+    // En el FreePBX original, siempre se define display y setup en GET
+    if (!isset($_REQUEST['display'])) {
+    	$_REQUEST['display'] = 'extensions';
+        $_REQUEST['type'] = 'setup';
+        $_GET['display'] = 'extensions';
+        $_GET['type'] = 'setup';
+    }
+
 	/*interprete language to freepbx, todavia no funciona de todo bien :)
 	  en_US - English
 	  bg_BG - Bulgarian
