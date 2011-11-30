@@ -99,37 +99,20 @@ function changeStatusFestival()
     $message   = "";
     $arrMessage["button_title"] = _tr("Dismiss");
     if($status=="activate"){
-        if(!$pFestival->isConfigurationFileCorrect()){
-            if($pFestival->getError()!=""){
-		$arrMessage["mb_title"] = _tr("ERROR").":<br/>";
-		$arrMessage["mb_message"] = $pFestival->getError();
-                $jsonObject->set_message($arrMessage);
-		return $jsonObject->createJSON();
-            }
-            if(!$pFestival->setConfigurationFile()){
-                $arrMessage["mb_title"] = _tr("ERROR").":<br/>";
-		$arrMessage["mb_message"] = $pFestival->getError();
-                $jsonObject->set_message($arrMessage);
-		return $jsonObject->createJSON();
-            }
-            $message = _tr("The file /usr/share/festival/festival.scm was modified").". ";
-        }
-        if($pFestival->isFestivalActivated()){
-	    $arrMessage["mb_title"] = _tr("ERROR").":<br/>";
-	    $arrMessage["mb_message"] = _tr("Festival is already activated");
-            $jsonObject->set_message($arrMessage);
-	    return $jsonObject->createJSON();
-        }
-        if($pFestival->activateFestival()){
-            $message .= _tr("Festival has been successfully activated");
-	    $arrMessage["mb_title"] = _tr("Message").":<br/>";
-	    $arrMessage["mb_message"] = $message;
-        }
-        else{
-            $message .= _tr("Festival could not be activated");
-	    $arrMessage["mb_title"] = _tr("ERROR").":<br/>";
-	    $arrMessage["mb_message"] = $message;
-        }
+        $arrMessage["mb_message"] = '';
+        $arrMessage["mb_title"] = _tr("Message").":<br/>";
+        switch ($pFestival->activateFestival()) {
+        case 1:     // Servicio iniciado, se modificó archivo
+            $arrMessage["mb_message"] = _tr("The file /usr/share/festival/festival.scm was modified").". ";
+        // cae al siguiente caso
+        case 0:     // Servicio iniciado, sin modificación
+            $arrMessage["mb_message"] .= _tr("Festival has been successfully activated");
+            break;
+        case -1:    // Error al iniciar servicio
+            $arrMessage["mb_title"] = _tr("ERROR").":<br/>";
+            $arrMessage["mb_message"] = $pFestival->getError();
+            break;
+        }        
     }
     elseif($status=="deactivate"){
         if(!$pFestival->isFestivalActivated()){
