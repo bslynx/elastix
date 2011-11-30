@@ -146,7 +146,7 @@ TEMP;
      */
     function isFestivalActivated()
     {
-        exec("sudo /sbin/service generic-cloexec festival status",$result,$status);
+        exec("/sbin/service festival status",$result,$status);
         if($status == 0){
             if(preg_match("/pid/",$result[0]))
                 return true;
