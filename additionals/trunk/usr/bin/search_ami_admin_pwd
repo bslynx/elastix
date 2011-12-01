@@ -177,6 +177,12 @@ function checkAmportalFile($ami_secret,&$doReload)
 	$conf_file->escribir_configuracion($arr_replace);
 	$doReload = true;
     }
+    $amportal_file = file("/etc/amportal.conf");
+    $content = array();
+    foreach($amportal_file as $line){
+    $content[] = preg_replace("/^(\w+)\s*=\s*(.+)/","$1=$2",$line);
+    }
+    file_put_contents("/etc/amportal.conf",implode("",$content));
 }
 
 ?>
