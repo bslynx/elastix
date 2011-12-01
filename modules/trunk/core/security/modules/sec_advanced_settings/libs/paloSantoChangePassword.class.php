@@ -134,8 +134,24 @@ class paloSantoAdvancedSecuritySettings{
       return (get_key_settings($pDBSettings,"activatedFreePBX"));
    }
 
+    function isActivatedAnonymousSIP()
+    {
+        $bValorPrevio = TRUE;   // allowguest es yes hasta encontrar seteo
+        foreach (file('/etc/asterisk/sip_general_custom.conf') as $sLinea) {
+            $regs = NULL;
+            if (preg_match('/^allowguest\s*=\s*(\S+)$/', trim($sLinea), $regs)) {
+                $bValorPrevio = in_array(strtolower($regs[1]), array('yes', '1', 'true'));
+            }
+        }
+        return $bValorPrevio;
+    }
+    
+    function updateStatusAnonymousSIP($bNuevoEstado)
+    {
+    	$output = $retval = NULL;
+        exec('/usr/bin/elastix-helper anonymoussip '.($bNuevoEstado ? '--enable' : '--disable'),
+            $output, $retval);
+        return ($retval == 0);
+    }
 }
-
-
-
 ?>
