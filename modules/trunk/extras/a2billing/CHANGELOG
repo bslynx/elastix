@@ -1,4 +1,16 @@
 %changelog
+* Thu Dec 01 2011 Eduardo Cueva <ecueva@palosanto.com> 1.9.4-1
+- CHANGED: In spec files changes to support updating of a2billing
+- UPDATE:  Update a2billing to 1.9.4.
+
+* Fri Nov 25 2011 Eduardo Cueva <ecueva@palosanto.com> 1.8.1-17
+- CHANGED: In spec file changed Prereq elastix to
+  elastix-framework >= 2.2.0-18
+
+* Wed May 04 2011 Eduardo Cueva <ecueva@palosanto.com> 1.8.1-16
+- CHANGED: Changed file db.info the action installation_force by
+  ignore_backup
+
 * Sat Apr 02 2011 Eduardo Cueva <ecueva@palosanto.com> 1.8.1-15
 - FIXED: a2billing menus.xml, bad definition type menu a2b, it 
   most be module. SVN Rev[2484]
