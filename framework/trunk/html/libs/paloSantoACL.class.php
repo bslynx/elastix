@@ -859,12 +859,12 @@ class paloACL {
     function getUserExtension($username)
     {
         $extension = null;
-        if (!is_null($username) && !preg_match('/^[[:alnum:]]+$/', "$username")) {
+        if (is_null($username)) {
             $this->errMsg = "Username is not valid";
         } else {
             $this->errMsg = "";
-            $sPeticionSQL = "SELECT extension FROM acl_user WHERE name = '$username'";
-            $result = $this->_DB->getFirstRowQuery($sPeticionSQL, FALSE);
+            $sPeticionSQL = "SELECT extension FROM acl_user WHERE name = ?";
+            $result = $this->_DB->getFirstRowQuery($sPeticionSQL, FALSE, array($username));
             if ($result && is_array($result) && count($result)>0) {
                 $extension = $result[0];
             }else $this->errMsg = $this->_DB->errMsg;
