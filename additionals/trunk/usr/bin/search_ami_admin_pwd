@@ -27,6 +27,8 @@
 $dosearch = true;
 $doReload = false;
 if(file_exists("/etc/elastix.conf")){
+    $content = array();
+    $rewrite_file = false;
     $file = file("/etc/elastix.conf");
     foreach($file as $line){
 	if(preg_match("/^\s*amiadminpwd\s*=\s*(.+)$/",rtrim($line),$matches)){
@@ -34,6 +36,17 @@ if(file_exists("/etc/elastix.conf")){
 	    $secret = $matches[1];
 	    $dosearch = false;
 	}
+	if(!preg_match("/\n$/",$line)){
+            $rewrite_file = true;
+            $content[] = $line."\n";
+        }
+        else
+            $content[] = $line;
+    }
+    if($rewrite_file){
+        file_put_contents("/etc/elastix.conf",implode("",$content));
+	chown("/etc/elastix.conf","asterisk");
+	chgrp("/etc/elastix.conf","asterisk");
     }
 }
 
@@ -64,7 +77,7 @@ TEMP;
 
     $fhandler = fopen("/etc/elastix.conf","a");
     echo "Writing the key amiadminpwd in /etc/elastix.conf\n";
-    fwrite($fhandler,"amiadminpwd=$secret"); 
+    fwrite($fhandler,"amiadminpwd=$secret\n"); 
     fclose($fhandler);
     chown("/etc/elastix.conf","asterisk");
     chgrp("/etc/elastix.conf","asterisk");
