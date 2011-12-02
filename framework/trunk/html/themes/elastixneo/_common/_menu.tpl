@@ -497,12 +497,12 @@ function oneClickEvent()
 		  <div class="neo-tabh-rend"><img src="themes/{$THEMENAME}/images/arrowdown.png" width="17" height="15" alt="arrowdown" /></div>
 		  <div id="neo-second-showbox-menu" class="neo-second-showbox-menu neo-display-none">
 			<p><a class="menutable" href="index.php?menu={$idMenu}">{$menu.Name}</a></p>
-		{elseif $smarty.foreach.menuMain.iteration ge 8 && $smarty.foreach.menuMain.last}
-			<p><a class="menutable" href="index.php?menu={$idMenu}">{$menu.Name}</a></p>
-		  </div>
 		{elseif $smarty.foreach.menuMain.iteration ge 8}
 			<p><a class="menutable" href="index.php?menu={$idMenu}">{$menu.Name}</a></p>
 		{/if}
+        {if $smarty.foreach.menuMain.iteration ge 8 && $smarty.foreach.menuMain.last}
+           </div>
+        {/if}
 	  {/foreach}
 		  
 	</div>
