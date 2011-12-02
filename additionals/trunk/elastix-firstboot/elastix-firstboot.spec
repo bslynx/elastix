@@ -1,7 +1,7 @@
 Summary: Elastix First Boot Setup
 Name:    elastix-firstboot
 Version: 2.2.0
-Release: 6
+Release: 7
 License: GPL
 Group:   Applications/System
 Source0: %{name}-%{version}.tar.bz2
@@ -102,6 +102,11 @@ rm -rf $RPM_BUILD_ROOT
 /usr/sbin/fix-elastix-bug-595
 
 %changelog
+* Fri Dec 02 2011 Eduardo Cueva <ecueva@palosanto.com> 2.2.0-7
+- FIXED: Additional - elastix-firstboot: Changes scripts elastix-firstboot
+  and change-passwords to change the user root to admin in a2billing database.
+  SVN Rev[3410]
+
 * Tue Nov 29 2011 Alex Villacis Lasso <a_villacis@palosanto.com> 2.2.0-6
 - ADDED: new script fix-elastix-bug-595 to fix breakage in kernel update.
 
