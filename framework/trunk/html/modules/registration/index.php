@@ -210,10 +210,9 @@ function saveRegister($smarty, $module_name, $local_templates_dir, &$pDB, $arrCo
 			    $msgResponse['status']  = "FALSE";
 			    $msgResponse['response'] = _tr("Your information cannot be saved. Please try again.");
 		    }else{
-			    exec("sudo -u root chown asterisk.asterisk /etc");
-			    file_put_contents('/etc/elastix.key', $band);
-			    chmod("/etc/elastix.key",0600);
-			    exec("sudo -u root chown root.root /etc");
+                $h = popen('/usr/bin/elastix-helper elastixkey', 'w');
+                fwrite($h, $band);
+                pclose($h);
 			    $pDB->commit();
 			    $msgResponse['status']  = "TRUE";
 			    $msgResponse['response'] = _tr("Your information has been saved.");
