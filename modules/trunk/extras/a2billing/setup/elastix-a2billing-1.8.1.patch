@@ -1,25 +1,27 @@
 diff -Naur a2billing.org/a2billing.conf a2billing/a2billing.conf
---- a2billing.org/a2billing.conf	2010-05-05 11:02:17.000000000 -0500
-+++ a2billing/a2billing.conf	2010-10-04 19:25:53.000000000 -0500
-@@ -9,12 +9,17 @@
+--- a2billing.org/a2billing.conf	2011-05-31 14:39:39.000000000 -0500
++++ a2billing/a2billing.conf	2011-12-01 17:58:11.000000000 -0500
+@@ -8,13 +8,18 @@
+ [database]
  hostname = localhost
  ; port for postgres is 5432 by default
- port = 
+-port =
 -user = a2billing_dbuser
 -password = a2billing_dbpassword
 -dbname = a2billing_dbname
++port = 3306
 +user = a2billinguser
 +password = a2billing
 +dbname = mya2billing
  ; dbtype setting can either be mysql or postgres
  dbtype = mysql
- 
+
 +[global]
 +; MANAGER CONNECTION PARAMETERS
 +manager_host = localhost
 +manager_username = a2billinguser
 +manager_secret = a2billing
- 
+
  ; config for the daemon process
  [daemon-info]
 diff -Naur a2billing.org/extensions_a2billing.conf a2billing/extensions_a2billing.conf

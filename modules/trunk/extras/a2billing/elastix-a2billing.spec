@@ -164,6 +164,7 @@ if [ $? -eq 1 ]; then
    echo "including additional_a2billing_sip.conf in /etc/asterisk/sip.conf..."
    echo "" >> /etc/asterisk/sip.conf
    echo \#include additional_a2billing_sip.conf >> /etc/asterisk/sip.conf
+   echo "" >> /etc/asterisk/sip.conf
 else
    echo "additional_a2billing_sip.conf in /etc/asterisk/sip.conf is already included"
 fi
@@ -174,6 +175,7 @@ if [ $? -eq 1 ]; then
    echo "including additional_a2billing_iax.conf in /etc/asterisk/iax.conf..."
    echo "" >> /etc/asterisk/iax.conf
    echo \#include additional_a2billing_iax.conf >> /etc/asterisk/iax.conf
+   echo "" >> /etc/asterisk/iax.conf
 else
    echo "additional_a2billing_iax.conf in /etc/asterisk/iax.conf is already included"
 fi
@@ -185,6 +187,7 @@ if [ $? -eq 1 ]; then
    echo "including extension_a2billing_additionals.conf in /etc/asterisk/extensions.conf..."
    echo "" >> /etc/asterisk/extensions.conf
    echo \#include extension_a2billing_additionals.conf >> /etc/asterisk/extensions.conf
+   echo "" >> /etc/asterisk/extensions.conf
 else
    echo "extension_a2billing_additionals.conf in /etc/asterisk/extensions.conf is already included"
 fi
@@ -248,12 +251,14 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/a2billing/*
 /etc/asterisk/additional_a2billing_sip.conf
 /etc/asterisk/additional_a2billing_iax.conf
+/etc/asterisk/extension_a2billing_additionals.conf
 %config(noreplace) /etc/a2billing.conf
 
 %changelog
-* Thu Dec 01 2011 Eduardo Cueva <ecueva@palosanto.com> 1.9.4-1
+* Fri Dec 02 2011 Eduardo Cueva <ecueva@palosanto.com> 1.9.4-1
 - CHANGED: In spec files changes to support updating of a2billing
-- UPDATE:  Update a2billing to 1.9.4.
+- UPDATED: In elastix-a2billing-1.8.1.patch add the port by default
+- UPDATED: Update a2billing to 1.9.4.
 
 * Fri Nov 25 2011 Eduardo Cueva <ecueva@palosanto.com> 1.8.1-17
 - CHANGED: In spec file changed Prereq elastix to 
