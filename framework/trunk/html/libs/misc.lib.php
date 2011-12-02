@@ -301,24 +301,6 @@ function _tr($s)
     return isset($arrLang[$s]) ? $arrLang[$s] : $s;
 }
 
-function cargar_menu($db)
-{
-   //leer el contenido de la tabla menu y devolver un arreglo con la estructura
-    $menu = array ();
-    $query="Select m1.*, (Select count(*) from menu m2 where m2.IdParent=m1.id) as HasChild from menu m1 order by order_no asc;";
-    $oRecordset=$db->fetchTable($query, true);
-    if ($oRecordset){
-        foreach($oRecordset as $key => $value)
-        {
-            if($value['HasChild']>0)
-                $value['HasChild'] = true;
-            else $value['HasChild'] = false;
-            $menu[$value['id']]= $value;
-        }
-    }
-    return $menu;
-}
-
 function get_language($ruta_base='')
 {
     require_once $ruta_base."configs/default.conf.php";

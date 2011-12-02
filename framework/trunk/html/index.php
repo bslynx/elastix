@@ -98,8 +98,8 @@ if(isset($_POST['submit_login']) and !empty($_POST['input_user'])) {
 }
 
 $pDBMenu = new paloDB($arrConf['elastix_dsn']['menu']);
-$arrMenu = cargar_menu($pDBMenu);
 $pMenu = new paloMenu($pDBMenu);
+$arrMenu = $pMenu->cargar_menu();
 
 // 2) Autentico usuario
 if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL->authenticateUser($_SESSION['elastix_user'], $_SESSION['elastix_pass']) or $developerMode==true) {
