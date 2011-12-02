@@ -169,7 +169,7 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
 
     //traducir el menu al idioma correspondiente
     foreach($arrMenuFiltered as $idMenu=>$arrMenuItem) {
-        $arrMenuFiltered[$idMenu]['Name']=isset($arrLang[$arrMenuItem['Name']])?$arrLang[$arrMenuItem['Name']]:$arrMenuItem['Name'];
+        $arrMenuFiltered[$idMenu]['Name'] = _tr($arrMenuItem['Name']);
     }
     $oPn = new paloSantoNavigation($arrConf, $arrMenuFiltered, $smarty);
 
@@ -191,11 +191,11 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
     /*agregado para register*/
 	$menuColor = getMenuColorByMenu();
 
-    $smarty->assign("md_message_title",$arrLang['md_message_title']);
+    $smarty->assign("md_message_title", _tr('md_message_title'));
     $smarty->assign("currentyear",date("Y"));
 	if($arrConf['mainTheme']=="elastixwave" || $arrConf['mainTheme']=="elastixneo"){
-		$smarty->assign("ABOUT_ELASTIX2",$arrLang['About Elastix2']);
-    	$smarty->assign("HELP",$arrLang['HELP']);
+		$smarty->assign("ABOUT_ELASTIX2", _tr('About Elastix2'));
+    	$smarty->assign("HELP", _tr('HELP'));
         $smarty->assign("USER_LOGIN",$_SESSION['elastix_user']);
 		$smarty->assign("CHANGE_PASSWORD", _tr("Change Password"));
 		$smarty->assign("CURRENT_PASSWORD_ALERT", _tr("Please write your current password."));
@@ -219,15 +219,15 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
 		$smarty->assign("SHOW_IZQTAB", _tr("Load left panel"));
 	}
 	else{
-		$smarty->assign("ABOUT_ELASTIX",$arrLang['About Elastix']." ".$arrConf['elastix_version']);
+		$smarty->assign("ABOUT_ELASTIX", _tr('About Elastix')." ".$arrConf['elastix_version']);
 	}
-    $smarty->assign("ABOUT_ELASTIX_CONTENT",$arrLang['About Elastix Content']);
-    $smarty->assign("ABOUT_CLOSED",$arrLang['About Elastix Closed']);
-    $smarty->assign("LOGOUT",$arrLang['Logout']);
-    $smarty->assign("VersionDetails",$arrLang['VersionDetails']);
-    $smarty->assign("VersionPackage",$arrLang['VersionPackage']);
-	$smarty->assign("textMode",$arrLang['textMode']);
-    $smarty->assign("htmlMode",$arrLang['htmlMode']);
+    $smarty->assign("ABOUT_ELASTIX_CONTENT", _tr('About Elastix Content'));
+    $smarty->assign("ABOUT_CLOSED", _tr('About Elastix Closed'));
+    $smarty->assign("LOGOUT", _tr('Logout'));
+    $smarty->assign("VersionDetails", _tr('VersionDetails'));
+    $smarty->assign("VersionPackage", _tr('VersionPackage'));
+	$smarty->assign("textMode", _tr('textMode'));
+    $smarty->assign("htmlMode", _tr('htmlMode'));
     //$menu= (isset($_GET['menu']))?$_GET['menu']:'';
     if (isset($_POST['menu'])) $menu = $_POST['menu'];
     elseif (isset($_GET['menu'])) $menu=$_GET['menu'];
@@ -357,14 +357,13 @@ if(isset($_SESSION['elastix_user']) && isset($_SESSION['elastix_pass']) && $pACL
 } else {
     $smarty->assign("THEMENAME", $arrConf['mainTheme']);
     $smarty->assign("currentyear",date("Y"));
-    $smarty->assign("PAGE_NAME",$arrLang['Login page']);
-    $smarty->assign("WELCOME",$arrLang['Welcome to Elastix']);
-    $smarty->assign("ENTER_USER_PASSWORD",$arrLang['Please enter your username and password']);
-    $smarty->assign("USERNAME",$arrLang['Username']);
-    $smarty->assign("PASSWORD",$arrLang['Password']);
-    $smarty->assign("SUBMIT",$arrLang['Submit']);
+    $smarty->assign("PAGE_NAME", _tr('Login page'));
+    $smarty->assign("WELCOME", _tr('Welcome to Elastix'));
+    $smarty->assign("ENTER_USER_PASSWORD", _tr('Please enter your username and password'));
+    $smarty->assign("USERNAME", _tr('Username'));
+    $smarty->assign("PASSWORD", _tr('Password'));
+    $smarty->assign("SUBMIT", _tr('Submit'));
 
     $smarty->display("_common/login.tpl");
-
 }
 ?>
