@@ -75,6 +75,62 @@ class paloMenu {
         return $menu;
     }
 
+    function filterAuthorizedMenus($idUser, $pACL)
+    {
+        $arrMenu = $this->cargar_menu();
+        $arrMenuFiltered=array();
+        //- TODO: Mejorar el siguiente bloque. Seguro debe de haber una forma mas 
+        //-       eficiente de hacerlo
+        //- Primero me barro todos los submenus
+        $arrSubmenu=array();
+        foreach ($arrMenu as $idMenu=>$arrMenuItem) {
+            if (!empty($arrMenuItem['IdParent'])) {
+                if ($pACL->isUserAuthorizedById($idUser, "access", $arrMenuItem['IdParent']) || 
+                    empty($arrMenu[$arrMenuItem['IdParent']]['IdParent'])){
+                    if ($pACL->isUserAuthorizedById($idUser, "access", $idMenu)) {
+                        $arrSubmenu[$idMenu] = $arrMenuItem;
+                        $arrMenuFiltered[$idMenu] = $arrMenuItem;
+                    }
+                } else {
+                    // En caso de que no se tenga acceso al padre, entonces no se tendrá acceso a este menú ni a sus hijos
+                    $childs = $pMenu->getChilds($idMenu);
+                    if(is_array($childs) && count($childs)>0){
+                        foreach($childs as $child)
+                        unset($arrMenuFiltered[$child['id']]);
+                    }
+                }
+            }
+        }
+
+        // Ahora pregunto por los menus que tienen hijos, en caso de que no se 
+        // tenga acceso a ningún hijo, entonces es innecesario mostrar la 
+        // pestaña del padre
+        foreach ($arrMenuFiltered as $idMenu => $menuFiltered) {
+            $childs = $pMenu->getChilds($idMenu);
+            if(is_array($childs) && count($childs)>0) {
+                $noActiveChilds = true;
+                foreach($childs as $child) {
+                    if(array_key_exists($child['id'],$arrMenuFiltered)){
+                        $noActiveChilds = false;
+                        break;
+                    }
+                }
+                if ($noActiveChilds) unset($arrMenuFiltered[$idMenu]);
+            }
+        }
+
+        //- Ahora me barro el menu principal
+        foreach($arrMenu as $idMenu=>$arrMenuItem) {
+            if(empty($arrMenuItem['IdParent'])) {
+                foreach($arrSubmenu as $idSubMenu=>$arrSubMenuItem) {
+                    if($arrSubMenuItem['IdParent']==$idMenu) {
+                        $arrMenuFiltered[$idMenu] = $arrMenuItem;
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * Procedimiento para obtener el listado de los menus
      *
