@@ -75,7 +75,7 @@ class paloMenu {
         return $menu;
     }
 
-    function filterAuthorizedMenus($idUser, $dummy)
+    function filterAuthorizedMenus($idUser)
     {
     	global $arrConf;
 
@@ -103,7 +103,7 @@ FROM menu, (
     WHERE acl_user_permission.id_user = ?
         AND acl_user_permission.id_resource = acl_resource.id 
 )
-WHERE acl_resource_name = id;
+WHERE acl_resource_name = id ORDER BY order_no;
 INFO_AUTH_MODULO;
         $arrMenuFiltered = array();
         $menuSuperior = array();
