@@ -129,6 +129,7 @@ class paloMenu {
                 }
             }
         }
+        return $arrMenuFiltered;
     }
 
     /**
