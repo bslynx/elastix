@@ -1,7 +1,7 @@
 Summary: Elastix First Boot Setup
 Name:    elastix-firstboot
 Version: 2.2.0
-Release: 7
+Release: 8
 License: GPL
 Group:   Applications/System
 Source0: %{name}-%{version}.tar.bz2
@@ -39,6 +39,7 @@ mv compat-dbscripts/ $RPM_BUILD_ROOT/usr/share/elastix-firstboot/
 
 %post
 
+chkconfig --del elastix-firstboot
 chkconfig --add elastix-firstboot
 chkconfig --level 2345 elastix-firstboot on
 
@@ -88,6 +89,11 @@ if [ $1 -eq 2 ] ; then
 	fi
 fi
 
+# If updating, ensure elastix-firstboot now runs at shutdown
+if [ $1 -eq 2 ] ; then
+    touch /var/lock/subsys/elastix-firstboot
+fi
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -102,6 +108,10 @@ rm -rf $RPM_BUILD_ROOT
 /usr/sbin/fix-elastix-bug-595
 
 %changelog
+* Mon Dec 05 2011 Alex Villacis Lasso <a_villacis@palosanto.com> 2.2.0-8
+- FIXED: fix elastix-firstboot so that it will actually run at shutdown
+- FIXED: fix-elastix-bug-595 will now run yum to install the required kernel
+
 * Fri Dec 02 2011 Eduardo Cueva <ecueva@palosanto.com> 2.2.0-7
 - FIXED: Additional - elastix-firstboot: Changes scripts elastix-firstboot
   and change-passwords to change the user root to admin in a2billing database.

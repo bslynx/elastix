@@ -4,7 +4,7 @@
 #                       modules that need an initialized database to work. Other tasks
 #                       to be performed on first boot should be placed here.
 #
-# chkconfig: - 66 36
+# chkconfig: 2345 66 1
 # description:	Elastix setup for first boot.
 
 # Source function library.
@@ -240,31 +240,13 @@ This screen will now ask for a password for user 'admin' that will be used for: 
 	
 	# Set password for A2Billing
         WHIRLPOOL=`php -r "echo hash('whirlpool','$FREEPBX_PASSWD1');"`
-        echo "UPDATE mya2billing.cc_ui_authen SET pwd_encoded='$WHIRLPOOL' WHERE login='admin' OR login='root';" | mysql -u root "-p$MYSQL_PASSWD1"
+        echo "UPDATE mya2billing.cc_ui_authen SET pwd_encoded='$WHIRLPOOL' WHERE login='admin';" | mysql -u root "-p$MYSQL_PASSWD1"
 	#echo "UPDATE mya2billing.cc_ui_authen SET password = '$FREEPBX_PASSWD1' WHERE login = 'admin';" | mysql -u root -p$MYSQL_PASSWD1
 	ret=$?
 	if [ $? -ne 0 ]; then
 	    echo "Unable to set admin password for A2Billing !"
 	    return 1
 	fi
-
-    #preguntando si existe el usuario admin
-    echo "SELECT count(*) FROM mya2billing.cc_ui_authen WHERE login='admin';" | mysql -u root "-p$MYSQL_PASSWD1" > /tmp/mys2billingTest
-    ret=$?
-    if [ $? -ne 0 ]; then
-       echo "Unable to find admin user for A2Billing !"
-    else
-       rels=`sed -n '2p' "/tmp/mys2billingTest"`
-        if [ $rels -le 0 ]; then # si la count es menor o igual a 0 entonces no existe el usuario admin por lo tanto cambio el usuario root a admin
-           echo "UPDATE mya2billing.cc_ui_authen SET login='admin' WHERE login='root';" | mysql -u root "-p$MYSQL_PASSWD1"
-           echo "Updating user 'root' to 'admin' in A2billing"
-        else  # existe en usuario admin y por lo tanto elimino al usuario root
-           echo "DELETE FROM mya2billing.cc_ui_authen WHERE login = 'root';" | mysql -u root "-p$MYSQL_PASSWD1"
-           echo "User 'root' of A2billing has been deleted because exist user 'admin' as Administrator"
-        fi
-    fi
-    rm -rf /tmp/mys2billingTest
-
 	
 	# Remove redundant root login from A2Billing
 	# echo "DELETE FROM mya2billing.cc_ui_authen WHERE login = 'root';" | mysql -u root -p$MYSQL_PASSWD1
@@ -307,12 +289,14 @@ start(){
 		ret=1
 	fi
 
+	[ $ret -eq 0 -a -d /var/lock/subsys ] && touch /var/lock/subsys/elastix-firstboot
 	return $ret
 }
 
 stop(){
 	# Run check for Elastix bug #595
 	/usr/sbin/fix-elastix-bug-595
+	[ -f "/var/lock/subsys/elastix-firstboot" ] && rm -f /var/lock/subsys/elastix-firstboot
 	return 0
 }
 

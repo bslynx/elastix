@@ -77,72 +77,88 @@ if (!is_writable(GRUB_CONF)) {
 }
 
 // Read and scan GRUB configuration
-$lineas = file(GRUB_CONF);
-$iPosDefault = NULL;
-$iLineaDefault = NULL;
 $iPosTarget = NULL;
-$kernelList = array();
-$kernelInfo = NULL;
-foreach ($lineas as $iPos => $sLinea) {
-	$regs = NULL;
-    if (is_null($iPosDefault) && preg_match('/^default\s*=\s*(\d+)/', $sLinea, $regs)) {
-		$iPosDefault = (int)$regs[1];
-        $iLineaDefault = $iPos;
-	}
-    if (preg_match('/^\s*title\s+(\S.+\S)/', $sLinea, $regs)) {
-    	$kernelInfo = array(
-            'title'     =>  $regs[1],
-            'kernelver' =>  NULL,
-            'xen'       =>  FALSE,
-        );
-        $kernelList[] =& $kernelInfo;
+$bTriedYum = FALSE;
+while (is_null($iPosTarget)) {
+    $lineas = file(GRUB_CONF);
+    $iPosDefault = NULL;
+    $iLineaDefault = NULL;
+    $kernelList = array();
+    $kernelInfo = NULL;
+    foreach ($lineas as $iPos => $sLinea) {
+	    $regs = NULL;
+        if (is_null($iPosDefault) && preg_match('/^default\s*=\s*(\d+)/', $sLinea, $regs)) {
+		    $iPosDefault = (int)$regs[1];
+            $iLineaDefault = $iPos;
+	    }
+        if (preg_match('/^\s*title\s+(\S.+\S)/', $sLinea, $regs)) {
+        	$kernelInfo = array(
+                'title'     =>  $regs[1],
+                'kernelver' =>  NULL,
+                'xen'       =>  FALSE,
+            );
+            $kernelList[] =& $kernelInfo;
+        }
+        if (preg_match('|^\s*kernel\s+.*/vmlinuz-(\S+)|', $sLinea, $regs)) {
+        	$kernelInfo['kernelver'] = $regs[1];
+            if (!$bXen && $kernelInfo['kernelver'] == $sTargetKernel)
+                $iPosTarget = count($kernelList) - 1;
+            unset($kernelInfo);
+            $kernelInfo = NULL;
+        }
+        if (preg_match('|^\s*kernel\s+.*/xen.gz-(\S+)|', $sLinea, $regs)) {
+            $kernelInfo['kernelver'] = $regs[1];
+            $kernelInfo['xen'] = TRUE;
+            if ($bXen && $kernelInfo['kernelver'] == $sTargetKernel)
+                $iPosTarget = count($kernelList) - 1;
+            unset($kernelInfo);
+            $kernelInfo = NULL;
+        }
     }
-    if (preg_match('|^\s*kernel\s+.*/vmlinuz-(\S+)|', $sLinea, $regs)) {
-    	$kernelInfo['kernelver'] = $regs[1];
-        if (!$bXen && $kernelInfo['kernelver'] == $sTargetKernel)
-            $iPosTarget = count($kernelList) - 1;
-        unset($kernelInfo);
-        $kernelInfo = NULL;
-    }
-    if (preg_match('|^\s*kernel\s+.*/xen.gz-(\S+)|', $sLinea, $regs)) {
-        $kernelInfo['kernelver'] = $regs[1];
-        $kernelInfo['xen'] = TRUE;
-        if ($bXen && $kernelInfo['kernelver'] == $sTargetKernel)
-            $iPosTarget = count($kernelList) - 1;
-        unset($kernelInfo);
-        $kernelInfo = NULL;
-    }
-}
 
 
-// Print out scanned information
-if (is_null($iPosDefault)) {
-    fputs(STDERR, "FATAL: failed to locate default GRUB entry!\n");
-	exit(2);
+    // Print out scanned information
+    if (is_null($iPosDefault)) {
+        fputs(STDERR, "FATAL: failed to locate default GRUB entry!\n");
+	    exit(2);
+    }
+    if (count($kernelList) <= 0) {
+        fputs(STDERR, "FATAL: failed to identify GRUB entries!\n");
+        exit(2);
+    }
+    if (count($kernelList) <= $iPosDefault) {
+        fputs(STDERR, "FATAL: default entry past identified entries - parsing failed!\n");
+        exit(2);
+    }
+    if (is_null($kernelList[$iPosDefault]['kernelver'])) {
+        fputs(STDERR, "FATAL: default entry has no kernel version - parsing failed!\n");
+        exit(2);
+    }
+    print "Available kernels are:\n";
+    foreach ($kernelList as $iPos => $kernelInfo) {
+	    printf("\t%02d %s %s %s\n", $iPos, ($kernelInfo['xen'] ? 'XEN' : '   '), 
+	       $kernelInfo['kernelver'], $kernelInfo['title']);
+    }
+    print "Default entry is: $iPosDefault\n";
+    print "Target entry is: $iPosTarget\n";
+
+    if (is_null($iPosTarget)) {
+        if ($bTriedYum) {
+            fputs(STDERR, "FATAL: failed to locate GRUB entry for required kernel!\n");
+            exit(2);
+        } else {
+            print "INFO: required kernel seems not installed, installing via YUM...\n";
+            $retval = NULL;
+            $sBasePaquete = 'kernel'.($bXen ? '-xen' : '');
+            passthru("/usr/bin/yum --disablerepo=* --enablerepo=elastix* -y install $sBasePaquete-$sTargetKernel $sBasePaquete-devel-$sTargetKernel", $retval);
+            if ($retval != 0) {
+                fputs(STDERR, "FATAL: failed to install required kernel via YUM!\n");
+                exit(2);
+            }
+            $bTriedYum = TRUE;
+        }
+    }
 }
-if (is_null($iPosTarget)) {
-    fputs(STDERR, "FATAL: failed to locate GRUB entry for required kernel!\n");
-    exit(2);
-}
-if (count($kernelList) <= 0) {
-    fputs(STDERR, "FATAL: failed to identify GRUB entries!\n");
-    exit(2);
-}
-if (count($kernelList) <= $iPosDefault) {
-    fputs(STDERR, "FATAL: default entry past identified entries - parsing failed!\n");
-    exit(2);
-}
-if (is_null($kernelList[$iPosDefault]['kernelver'])) {
-    fputs(STDERR, "FATAL: default entry has no kernel version - parsing failed!\n");
-    exit(2);
-}
-print "Available kernels are:\n";
-foreach ($kernelList as $iPos => $kernelInfo) {
-	printf("\t%02d %s %s %s\n", $iPos, ($kernelInfo['xen'] ? 'XEN' : '   '), 
-	   $kernelInfo['kernelver'], $kernelInfo['title']);
-}
-print "Default entry is: $iPosDefault\n";
-print "Target entry is: $iPosTarget\n";
 
 // Modify configuration if required
 if ($iPosDefault == $iPosTarget) {
