@@ -259,6 +259,8 @@ rm -rf $RPM_BUILD_ROOT
 - CHANGED: In spec files changes to support updating of a2billing
 - UPDATED: In elastix-a2billing-1.8.1.patch add the port by default
 - UPDATED: Update a2billing to 1.9.4.
+- CHANGED: Modules - Extra: Changes in a2billing to fix the bug with 
+  user "root" and password without encode. SVN Rev[3418]
 
 * Fri Nov 25 2011 Eduardo Cueva <ecueva@palosanto.com> 1.8.1-17
 - CHANGED: In spec file changed Prereq elastix to 

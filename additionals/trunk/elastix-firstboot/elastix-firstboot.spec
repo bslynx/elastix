@@ -109,6 +109,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %changelog
 * Mon Dec 05 2011 Alex Villacis Lasso <a_villacis@palosanto.com> 2.2.0-8
+- CHANGED: Elastix-firstboot: Reverted some changes of commit 3415 on 3414
 - FIXED: fix elastix-firstboot so that it will actually run at shutdown
 - FIXED: fix-elastix-bug-595 will now run yum to install the required kernel
 
