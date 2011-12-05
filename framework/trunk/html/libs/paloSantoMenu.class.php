@@ -75,60 +75,106 @@ class paloMenu {
         return $menu;
     }
 
-    function filterAuthorizedMenus($idUser, $pACL)
+    function filterAuthorizedMenus($idUser, $dummy)
     {
-        $arrMenu = $this->cargar_menu();
-        $arrMenuFiltered=array();
-        //- TODO: Mejorar el siguiente bloque. Seguro debe de haber una forma mas 
-        //-       eficiente de hacerlo
-        //- Primero me barro todos los submenus
-        $arrSubmenu=array();
-        foreach ($arrMenu as $idMenu=>$arrMenuItem) {
-            if (!empty($arrMenuItem['IdParent'])) {
-                if ($pACL->isUserAuthorizedById($idUser, "access", $arrMenuItem['IdParent']) || 
-                    empty($arrMenu[$arrMenuItem['IdParent']]['IdParent'])){
-                    if ($pACL->isUserAuthorizedById($idUser, "access", $idMenu)) {
-                        $arrSubmenu[$idMenu] = $arrMenuItem;
-                        $arrMenuFiltered[$idMenu] = $arrMenuItem;
-                    }
+    	global $arrConf;
+
+        // Adjuntar base de datos de ACL para acelerar búsqueda
+        $bExito = $this->_DB->genQuery('ATTACH DATABASE ? AS acl', 
+            array(str_replace('sqlite3:////', '/', $arrConf['elastix_dsn']['acl'])));
+        if (!$bExito) {
+            $this->errMsg = $this->_DB->errMsg;
+            return NULL;
+        }
+
+        // Obtener todos los módulos autorizados
+        $sPeticionSQL = <<<INFO_AUTH_MODULO
+SELECT id, IdParent, Link, Name, Type, order_no
+FROM menu, (
+    SELECT acl_resource.name AS acl_resource_name, acl_group.name AS acl_name
+    FROM acl_membership, acl_group, acl_group_permission, acl_resource
+    WHERE acl_membership.id_user = ?
+        AND acl_membership.id_group = acl_group.id 
+        AND acl_group.id = acl_group_permission.id_group 
+        AND acl_group_permission.id_resource = acl_resource.id 
+    UNION
+    SELECT acl_resource.name AS acl_resource_name, acl_user.name AS acl_name
+    FROM acl_user, acl_user_permission, acl_resource
+    WHERE acl_user_permission.id_user = ?
+        AND acl_user_permission.id_resource = acl_resource.id 
+)
+WHERE acl_resource_name = id;
+INFO_AUTH_MODULO;
+        $arrMenuFiltered = array();
+        $menuSuperior = array();
+        $r = $this->_DB->fetchTable($sPeticionSQL, TRUE, array($idUser, $idUser));
+        if (!is_array($r)) {
+            $this->errMsg = $this->_DB->errMsg;
+        	return NULL;
+        }
+        $this->_DB->genQuery('DETACH DATABASE acl');
+        foreach ($r as $tupla) {
+        	$tupla['HasChild'] = FALSE;
+            $arrMenuFiltered[$tupla['id']] = $tupla;
+        }
+
+        // Resolver internamente las referencias de menú superior
+        $menuSuperior = array();
+        foreach (array_keys($arrMenuFiltered) as $k) {
+        	$kp = $arrMenuFiltered[$k]['IdParent'];
+            if (isset($arrMenuFiltered[$kp])) {
+            	$arrMenuFiltered[$kp]['HasChild'] = TRUE;
+            } elseif (!in_array($kp, $menuSuperior)) {
+            	$menuSuperior[] = $kp;
+            }
+        }
+
+        /* Leer los menús de nivel superior referenciados. Si el menú leído
+         * tiene a su vez un menú padre, entonces es un menú de segundo nivel
+         * que no está autorizado para el usuario actual, por lo que no fue 
+         * leído en las autorizaciones, y todos los menús que tengan como padre
+         * a este menú leído deben quitarse. */
+        $menusDesautorizados = array();
+        while (count($menuSuperior) > 0) {
+            $temp = (count($menuSuperior) > 16)
+                ? array_slice($menuSuperior, 0, 16)
+                : array_slice($menuSuperior, 0, count($menuSuperior));
+            $s = "SELECT id, IdParent, Link, Name, Type, order_no, 1 AS HasChild ".
+                "FROM menu WHERE id IN (".implode(", ", array_fill(0, count($temp), '?')).")";
+            $r = $this->_DB->fetchTable(
+                $s,
+                TRUE, $temp);
+            if (!is_array($r)) {
+                $this->errMsg = $this->_DB->errMsg;
+                return NULL;
+            }
+            $menuLeidos = array();
+            foreach ($r as $tupla) {
+                $menuLeidos[] = $tupla['id'];
+            	$tupla['HasChild'] = (bool)$tupla['HasChild'];
+                if (!empty($tupla['IdParent'])) {
+                	if (!in_array($tupla['id'], $menusDesautorizados))
+                        $menusDesautorizados[] = $tupla['id'];
                 } else {
-                    // En caso de que no se tenga acceso al padre, entonces no se tendrá acceso a este menú ni a sus hijos
-                    $childs = $this->getChilds($idMenu);
-                    if(is_array($childs) && count($childs)>0){
-                        foreach($childs as $child)
-                        unset($arrMenuFiltered[$child['id']]);
-                    }
+                	$arrMenuFiltered[$tupla['id']] = $tupla;
                 }
             }
+            
+            // Quitar los menús ya procesados. 
+            $menuSuperior = array_diff($menuSuperior, $menuLeidos);
         }
-
-        // Ahora pregunto por los menus que tienen hijos, en caso de que no se 
-        // tenga acceso a ningún hijo, entonces es innecesario mostrar la 
-        // pestaña del padre
-        foreach ($arrMenuFiltered as $idMenu => $menuFiltered) {
-            $childs = $this->getChilds($idMenu);
-            if(is_array($childs) && count($childs)>0) {
-                $noActiveChilds = true;
-                foreach($childs as $child) {
-                    if(array_key_exists($child['id'],$arrMenuFiltered)){
-                        $noActiveChilds = false;
-                        break;
-                    }
-                }
-                if ($noActiveChilds) unset($arrMenuFiltered[$idMenu]);
+        
+        /* Quitar todos los menús desautorizados. Se puede hacer en una pasada
+         * porque no hay más de 3 niveles */
+        if (count($menusDesautorizados) > 0) {
+            $t = array(); 
+            foreach ($arrMenuFiltered as $k => $tupla) {
+            	if (!in_array($tupla['IdParent'], $menusDesautorizados))
+                    $t[$k] = $tupla;
             }
+            $arrMenuFiltered = $t;
         }
-
-        //- Ahora me barro el menu principal
-        foreach($arrMenu as $idMenu=>$arrMenuItem) {
-            if(empty($arrMenuItem['IdParent'])) {
-                foreach($arrSubmenu as $idSubMenu=>$arrSubMenuItem) {
-                    if($arrSubMenuItem['IdParent']==$idMenu) {
-                        $arrMenuFiltered[$idMenu] = $arrMenuItem;
-                    }
-                }
-            }
-        }
+        
         return $arrMenuFiltered;
     }
 
