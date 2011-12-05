@@ -93,7 +93,7 @@ class paloMenu {
                     }
                 } else {
                     // En caso de que no se tenga acceso al padre, entonces no se tendrá acceso a este menú ni a sus hijos
-                    $childs = $pMenu->getChilds($idMenu);
+                    $childs = $this->getChilds($idMenu);
                     if(is_array($childs) && count($childs)>0){
                         foreach($childs as $child)
                         unset($arrMenuFiltered[$child['id']]);
@@ -106,7 +106,7 @@ class paloMenu {
         // tenga acceso a ningún hijo, entonces es innecesario mostrar la 
         // pestaña del padre
         foreach ($arrMenuFiltered as $idMenu => $menuFiltered) {
-            $childs = $pMenu->getChilds($idMenu);
+            $childs = $this->getChilds($idMenu);
             if(is_array($childs) && count($childs)>0) {
                 $noActiveChilds = true;
                 foreach($childs as $child) {
