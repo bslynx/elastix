@@ -652,13 +652,16 @@ function searchModulesByName()
 
 	$pGroupPermission = new paloSantoGroupPermission();
 	$name = getParameter("name_module_search");
-	$arrSessionPermissions = $_SESSION['elastix_user_permission'];
 	$result = array();
 	$arrIdMenues = array();
 	$lang=get_language();
     global $arrLang;
 
 	// obteniendo los id de los menus permitidos
+    global $arrConf;
+    $pACL = new paloACL($arrConf['elastix_dsn']['acl']);
+    $pMenu = new paloMenu($arrConf['elastix_dsn']['menu']);
+    $arrSessionPermissions = $pMenu->filterAuthorizedMenus($pACL->getIdUser($_SESSION['elastix_user']));
 	$arrIdMenues = array();
 	foreach($arrSessionPermissions as $key => $value){
 		$arrIdMenues[] = $value['id']; // id, IdParent, Link, Name, Type, order_no, HasChild

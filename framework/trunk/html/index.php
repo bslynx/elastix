@@ -48,18 +48,11 @@ if(isset($_GET['logout']) && $_GET['logout']=='yes') {
     header("Location: index.php");
     exit;
 }
+
 //cargar el archivo de idioma
-//$lang=isset($arrConf['language'])?$arrConf['language']:"en";
-//include_once("lang/".$lang.".lang");
 load_language();
 
-$pDB = new paloDB($arrConf['elastix_dsn']['acl']);
-
-if(!empty($pDB->errMsg)) {
-    echo "ERROR DE DB: $pDB->errMsg <br>";
-}
-
-$pACL = new paloACL($pDB);
+$pACL = new paloACL($arrConf['elastix_dsn']['acl']);
 
 if(!empty($pACL->errMsg)) {
     echo "ERROR DE DB: $pACL->errMsg <br>";
@@ -103,24 +96,15 @@ if (isset($_SESSION['elastix_user']) &&
     $pACL->authenticateUser($_SESSION['elastix_user'], $_SESSION['elastix_pass']) 
     or $developerMode==true) {
     
-    $pDBMenu = new paloDB($arrConf['elastix_dsn']['menu']);
-    $pMenu = new paloMenu($pDBMenu);
+    $pMenu = new paloMenu($arrConf['elastix_dsn']['menu']);
 
     $idUser = $pACL->getIdUser($_SESSION['elastix_user']);
 
-    if (!isset($_SESSION['elastix_user_permission'])) {
-        if ($developerMode!=true) {
-            $arrMenuFiltered = $pMenu->filterAuthorizedMenus($idUser, $pACL);
-        } else {    
-            $arrMenuFiltered = $pMenu->cargar_menu();
-        }
-        //Guardo en la session los menus q tiene con permisos el usuario logoneado, esto se implementó para mejorar 
-        //el proceso del httpd ya que consumia mucho recurso. Reportado por Ana Vivar <avivar@palosanto.com>
-        //Una vez q exista en la session solo se lo sacara de ahi y no se vovera a consultar a la base.
-        $_SESSION['elastix_user_permission']= $arrMenuFiltered;
-    }
+    $arrMenuFiltered = $developerMode 
+        ? $pMenu->cargar_menu()
+        : $pMenu->filterAuthorizedMenus($idUser);
+
     verifyTemplate_vm_email(); // para cambiar el template del email ue se envia al recibir un voicemail
-    $arrMenuFiltered = $_SESSION['elastix_user_permission'];
 
     //traducir el menu al idioma correspondiente
     foreach($arrMenuFiltered as $idMenu=>$arrMenuItem) {
