@@ -1,3 +1,5 @@
+* Dialer: subsys lock file must have the same name as the service in 
+  /etc/init.d in order to shutdown properly.
 * Dialer (ECCP): fix copy/paste error in "getcampaignqueuewait" request on error
   path.
 
