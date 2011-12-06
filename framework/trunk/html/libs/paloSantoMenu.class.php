@@ -129,41 +129,28 @@ INFO_AUTH_MODULO;
             }
         }
 
-        /* Leer los menús de nivel superior referenciados. Si el menú leído
-         * tiene a su vez un menú padre, entonces es un menú de segundo nivel
-         * que no está autorizado para el usuario actual, por lo que no fue 
-         * leído en las autorizaciones, y todos los menús que tengan como padre
-         * a este menú leído deben quitarse. */
-        $menusDesautorizados = array();
-        while (count($menuSuperior) > 0) {
-            $temp = (count($menuSuperior) > 16)
-                ? array_slice($menuSuperior, 0, 16)
-                : array_slice($menuSuperior, 0, count($menuSuperior));
-            $s = "SELECT id, IdParent, Link, Name, Type, order_no, 1 AS HasChild ".
-                "FROM menu WHERE id IN (".implode(", ", array_fill(0, count($temp), '?')).")";
-            $r = $this->_DB->fetchTable(
-                $s,
-                TRUE, $temp);
-            if (!is_array($r)) {
-                $this->errMsg = $this->_DB->errMsg;
-                return NULL;
-            }
-            $menuLeidos = array();
-            foreach ($r as $tupla) {
-                $menuLeidos[] = $tupla['id'];
-            	$tupla['HasChild'] = (bool)$tupla['HasChild'];
-                if (!empty($tupla['IdParent'])) {
-                	if (!in_array($tupla['id'], $menusDesautorizados))
-                        $menusDesautorizados[] = $tupla['id'];
-                } else {
-                	$arrMenuFiltered[$tupla['id']] = $tupla;
-                }
-            }
-            
-            // Quitar los menús ya procesados. 
-            $menuSuperior = array_diff($menuSuperior, $menuLeidos);
+        /* Leer los menús de primer nivel. Si el menú leído se encuentra entre
+         * los menús superiores referenciados, se agrega a la lista a devolver.
+         * Todos los menús superiores que no fueron de primer nivel son menús
+         * de segundo nivel que no están autorizados para el usuario actual
+         * y deben de quitarse. */
+        $menuLeidos = array();
+        $r = $this->_DB->fetchTable(
+            'SELECT id, IdParent, Link, Name, Type, order_no, 1 AS HasChild '.
+            'FROM menu WHERE IdParent = "" ORDER BY order_no', TRUE);
+        if (!is_array($r)) {
+            $this->errMsg = $this->_DB->errMsg;
+            return NULL;
         }
-        
+        foreach ($r as $tupla) {
+        	if (in_array($tupla['id'], $menuSuperior)) {
+        		$tupla['HasChild'] = (bool)$tupla['HasChild'];
+                $arrMenuFiltered[$tupla['id']] = $tupla;
+                $menuLeidos[] = $tupla['id'];
+        	}
+        }
+        $menusDesautorizados = array_diff($menuSuperior, $menuLeidos);
+
         /* Quitar todos los menús desautorizados. Se puede hacer en una pasada
          * porque no hay más de 3 niveles */
         if (count($menusDesautorizados) > 0) {
