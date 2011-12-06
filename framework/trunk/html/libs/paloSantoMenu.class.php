@@ -106,7 +106,6 @@ FROM menu, (
 WHERE acl_resource_name = id ORDER BY order_no;
 INFO_AUTH_MODULO;
         $arrMenuFiltered = array();
-        $menuSuperior = array();
         $r = $this->_DB->fetchTable($sPeticionSQL, TRUE, array($idUser, $idUser));
         if (!is_array($r)) {
             $this->errMsg = $this->_DB->errMsg;
@@ -118,23 +117,7 @@ INFO_AUTH_MODULO;
             $arrMenuFiltered[$tupla['id']] = $tupla;
         }
 
-        // Resolver internamente las referencias de menú superior
-        $menuSuperior = array();
-        foreach (array_keys($arrMenuFiltered) as $k) {
-        	$kp = $arrMenuFiltered[$k]['IdParent'];
-            if (isset($arrMenuFiltered[$kp])) {
-            	$arrMenuFiltered[$kp]['HasChild'] = TRUE;
-            } elseif (!in_array($kp, $menuSuperior)) {
-            	$menuSuperior[] = $kp;
-            }
-        }
-
-        /* Leer los menús de primer nivel. Si el menú leído se encuentra entre
-         * los menús superiores referenciados, se agrega a la lista a devolver.
-         * Todos los menús superiores que no fueron de primer nivel son menús
-         * de segundo nivel que no están autorizados para el usuario actual
-         * y deben de quitarse. */
-        $menuLeidos = array();
+        // Leer los menús de primer nivel
         $r = $this->_DB->fetchTable(
             'SELECT id, IdParent, Link, Name, Type, order_no, 1 AS HasChild '.
             'FROM menu WHERE IdParent = "" ORDER BY order_no', TRUE);
@@ -142,26 +125,31 @@ INFO_AUTH_MODULO;
             $this->errMsg = $this->_DB->errMsg;
             return NULL;
         }
+        $menuPrimerNivel = array();
         foreach ($r as $tupla) {
-        	if (in_array($tupla['id'], $menuSuperior)) {
-        		$tupla['HasChild'] = (bool)$tupla['HasChild'];
-                $arrMenuFiltered[$tupla['id']] = $tupla;
-                $menuLeidos[] = $tupla['id'];
-        	}
+            $tupla['HasChild'] = (bool)$tupla['HasChild'];
+            $menuPrimerNivel[$tupla['id']] = $tupla;
         }
-        $menusDesautorizados = array_diff($menuSuperior, $menuLeidos);
 
-        /* Quitar todos los menús desautorizados. Se puede hacer en una pasada
-         * porque no hay más de 3 niveles */
-        if (count($menusDesautorizados) > 0) {
-            $t = array(); 
-            foreach ($arrMenuFiltered as $k => $tupla) {
-            	if (!in_array($tupla['IdParent'], $menusDesautorizados))
-                    $t[$k] = $tupla;
+        // Resolver internamente las referencias de menú superior
+        $menuSuperior = array();
+        foreach (array_keys($arrMenuFiltered) as $k) {
+        	$kp = $arrMenuFiltered[$k]['IdParent'];
+            if (isset($arrMenuFiltered[$kp])) {
+            	$arrMenuFiltered[$kp]['HasChild'] = TRUE;
+            } elseif (isset($menuPrimerNivel[$kp])) {
+                $menuSuperior[$kp] = $kp;
+            } else {
+                // Menú es de segundo nivel y no estaba autorizado
+                unset($arrMenuFiltered[$k]);
             }
-            $arrMenuFiltered = $t;
         }
-        
+
+        // Copiar al arreglo filtrado los menús de primer nivel EN EL ORDEN LEÍDO
+        $arrMenuFiltered = array_merge(
+            $arrMenuFiltered,
+            array_intersect_key($menuPrimerNivel, $menuSuperior));
+                
         return $arrMenuFiltered;
     }
 
