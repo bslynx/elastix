@@ -157,7 +157,7 @@ div.neo-cmenutableft {
 }
 div.neo-tabh {
 	position: relative;
-	width: 90px;
+	min-width: 90px;
 	height:22px;
 	padding:8px 5px 2px 5px;
 	float: left;
@@ -178,7 +178,7 @@ div.neo-tabh a{
 }
 div.neo-tabh-rend {
 	position: relative;
-	width: 22px;
+	min-width: 22px;
 	height:32px;
 	padding:8px 0px 0px 0px;
 	float: left;
@@ -261,7 +261,7 @@ div.neo-tabh-lend3 a{
 }
 div.neo-tabhon {
 	position: relative;
-	width: 90px;
+	min-width: 90px;
 	height:28px;
 	padding:14px 5px 2px 5px;
 	float: left;
@@ -313,7 +313,7 @@ div.neo-tabhon a {
 }
 div.neo-tabv {
 	position: relative;
-	width: 120px;
+	min-width: 120px;
 	height:22px;
 	float: left;
 	margin: 6px 0px 5px 0px;
@@ -332,7 +332,7 @@ div.neo-tabv a{
 }
 div.neo-tabvon {
 	position: relative;
-	width: 120px;
+	min-width: 120px;
 	height:22px;
 	float: left;
 	margin: 6px 0px 5px 0px;
