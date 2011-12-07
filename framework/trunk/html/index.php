@@ -294,6 +294,8 @@ if (isset($_SESSION['elastix_user']) &&
     }
 
 } else {
+    $oPn = new paloSantoNavigation($arrConf, array(), $smarty);
+    $oPn->putHEAD_JQUERY_HTML();
     $smarty->assign("THEMENAME", $arrConf['mainTheme']);
     $smarty->assign("currentyear",date("Y"));
     $smarty->assign("PAGE_NAME", _tr('Login page'));
