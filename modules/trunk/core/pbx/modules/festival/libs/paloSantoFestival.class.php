@@ -81,16 +81,14 @@ class paloSantoFestival{
      */
     function isFestivalActivated()
     {
-        exec("/sbin/service festival status",$result,$status);
-        if($status == 0){
-            if(preg_match("/pid/",$result[0]))
-                return true;
-            return false;
+        // Se requiere usar pidof directamente en lugar de service festival status
+        // https://bugzilla.redhat.com/show_bug.cgi?id=684881
+        $output = $retval = NULL;
+        exec('/sbin/pidof -o $$ -o $PPID -o %PPID -x festival', $output, $retval);
+        foreach ($output as $linea) {
+        	if (preg_match('/\d+/', $linea)) return TRUE;
         }
-        else{
-            $this->errMsg = _tr("Error determining status of festival");
-            return false;
-        }
+        return FALSE;
     }
 
     /**
