@@ -404,7 +404,20 @@ $(document).ready(function(){
 	  move = setInterval("moveLeft()",90);
 	});
 
+	$('.neo-historybox-tab,.neo-historybox-tabmid').hover(function() {
+	  $(this).find('div').removeClass('neo-display-none');
+	}, function() {
+	  $(this).find('div').addClass('neo-display-none');
+	});
 });
+
+function removeNeoDisplayOnMouseOut(ref){
+	$(ref).find('div').addClass('neo-display-none');
+}
+
+function removeNeoDisplayOnMouseOver(ref){
+	$(ref).find('div').removeClass('neo-display-none');
+}
 
 function moveLeft()
 {

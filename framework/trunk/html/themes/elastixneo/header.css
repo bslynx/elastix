@@ -313,11 +313,11 @@ div.neo-tabhon a {
 }
 div.neo-tabv {
 	position: relative;
-	min-width: 120px;
+	min-width: 108px;
 	height:22px;
 	float: left;
 	margin: 6px 0px 5px 0px;
-	padding: 2px 2px 0px 2px;
+	padding: 2px 8px 0px 8px;
 	font: 12px Verdana, Arial,Helvetica,sans-serif;
 	color: #eee;
 	text-align:center;

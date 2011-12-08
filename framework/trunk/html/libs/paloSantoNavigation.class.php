@@ -537,9 +537,9 @@ class paloSantoNavigation {
 				$cont = 1;
 				foreach($arr_result1 as $key => $value){
 					if($cont < count($arr_result1))
-						$htmlData .= "<div class='neo-historybox-tab' id='menu".$value['id_menu']."' ><a href='index.php?menu=".$value['namemenu']."' >"._tr($value['name'])."</a></div>";
+						$htmlData .= "<div class='neo-historybox-tab' id='menu".$value['id_menu']."' ><a href='index.php?menu=".$value['namemenu']."' >"._tr($value['name'])."</a><div class='neo-bookmarks-equis neo-display-none' onclick='deleteBookmarkByEquis(this);'></div></div>";
 					else
-						$htmlData .= "<div class='neo-historybox-tabmid' id='menu".$value['id_menu']."' ><a href='index.php?menu=".$value['namemenu']."' >"._tr($value['name'])."</a></div>";
+						$htmlData .= "<div class='neo-historybox-tabmid' id='menu".$value['id_menu']."' ><a href='index.php?menu=".$value['namemenu']."' >"._tr($value['name'])."</a><div class='neo-bookmarks-equis neo-display-none' onclick='deleteBookmarkByEquis(this);'></div></div>";
 					$cont++;
 				}
 			}else{
@@ -557,6 +557,27 @@ class paloSantoNavigation {
 			}
 		}
 		return $htmlData;
+	}
+
+	function getFirstChildOfMainMenuByBookmark($menu_session)
+	{
+		$arrParentMenuId = $this->getIdParentMenu($menu_session);
+		$menuBookmark = $menu_session;
+		if($arrParentMenuId == "" || !isset($arrParentMenuId)){ // no tiene padre entonces es un menu de 1 nivel
+			$menuBookmark = $this->getIdFirstSubMenu($menu_session);
+			$salRes = $this->getIdFirstSubMenu($menuBookmark);
+			if($salRes !== FALSE)
+				$menuBookmark = $salRes;
+		}else{ // tiene padre entonces puede ser un menu de 2 o 3 nivel
+			// se pregunta si tiene un primer hijo
+			$salRes = $this->getIdFirstSubMenu($menu_session);
+			if($salRes !== FALSE){ // si no tiene un hijo entonces es de 2 nivel
+				$menuBookmark = $salRes;
+			}else{ // es de 3 nivel
+				$menuBookmark = $menu_session;
+			}
+		}
+		return $menuBookmark;
 	}
 }
 ?>

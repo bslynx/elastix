@@ -217,27 +217,19 @@ if (isset($_SESSION['elastix_user']) &&
     if (count($arrMenuFiltered)>0)
         $oPn->showMenu($menu);
 
-	$arrParentMenuId = $oPn->getIdParentMenu($_SESSION['menu']);
-	$menuBookmark = $_SESSION['menu'];
-	if($arrParentMenuId == "" || !isset($arrParentMenuId)){ // no tiene padre entonces es un menu de 1 nivel
-		$menuBookmark = $oPn->getIdFirstSubMenu($_SESSION['menu']);
-		$salRes = $oPn->getIdFirstSubMenu($menuBookmark);
-		if($salRes !== FALSE)
-			$menuBookmark = $salRes;
-	}else{ // tiene padre entonces puede ser un menu de 2 o 3 nivel
-		// se pregunta si tiene un primer hijo
-		$salRes = $oPn->getIdFirstSubMenu($_SESSION['menu']);
-		if($salRes !== FALSE){ // si no tiene un hijo entonces es de 2 nivel
-			$menuBookmark = $salRes;
-		}else{ // es de 3 nivel
-			$menuBookmark = $_SESSION['menu'];
-		}
-	}
-
-	if(getParameter("action") == "addBookmark"){
+	$menuBookmark = $oPn->getFirstChildOfMainMenuByBookmark($_SESSION['menu']);
+	if(getParameter("action") == "addBookmark" || getParameter("action") == "deleteBookmark"){
 		include_once "libs/paloSantoJSON.class.php";
 		$jsonObject = new PaloSantoJSON();
-		$output = putMenuAsBookmark($menuBookmark);
+		$id_menu = getParameter("id_menu");
+		$output = "";
+		$menuUrl = "";
+		if(isset($id_menu) && $id_menu !=""){
+			$menuUrl = getParameter("menu_url");
+			$output  = putMenuAsBookmark($id_menu);
+			$output["data"]["menu_url"] = $oPn->getFirstChildOfMainMenuByBookmark($menuUrl);
+		}else
+			$output = putMenuAsBookmark($menuBookmark);
 		if($output['status'] === TRUE){
 			$jsonObject->set_status("true");
 		}else

@@ -472,10 +472,10 @@ function addBookmark(){
 				if(action == "add"){
 					var labeli = $("#toolTip_removeBookmark").val();
 					$("#togglebookmark").attr('title', labeli);
-					var link = "<div class='neo-historybox-tab' id='menu"+idmenu+"'><a href='index.php?menu="+namemenu+"' >"+menu+"</a></div>";
+					var link = "<div class='neo-historybox-tab' id='menu"+idmenu+"' onMouseOut='removeNeoDisplayOnMouseOut(this);' onMouseOver='removeNeoDisplayOnMouseOver(this);'><a href='index.php?menu="+namemenu+"' >"+menu+"</a><div class='neo-bookmarks-equis neo-display-none' onclick='deleteBookmarkByEquis(this);'></div></div>";
 					if($('div[id^=menu]').length == 0){
 						$('#neo-bookmarkID').attr("style","");
-						link = "<div class='neo-historybox-tabmid' id='menu"+idmenu+"'><a href='index.php?menu="+namemenu+"' >"+menu+"</a></div>";
+						link = "<div class='neo-historybox-tabmid' id='menu"+idmenu+"' onMouseOut='removeNeoDisplayOnMouseOut(this);' onMouseOver='removeNeoDisplayOnMouseOver(this);'><a href='index.php?menu="+namemenu+"' >"+menu+"</a><div class='neo-bookmarks-equis neo-display-none' onclick='deleteBookmarkByEquis(this);'></div></div>";
 						//$('#neo-historybox').find("br").remove();
 					}
 					$('#neo-bookmarkID').after(link);
@@ -495,6 +495,75 @@ function addBookmark(){
 								$(this).removeClass('neo-historybox-tab');
 								$(this).addClass('neo-historybox-tabmid');
 
+							}
+						});
+
+					}
+				}
+			}
+		}
+	);
+}
+
+function deleteBookmarkByEquis(ref){
+    // obteniendo el id del menu.
+    var linkMenu = $(ref).parent().children(':first-child').attr('href');
+	var arrLinkMenu = linkMenu.split("menu=",2);
+	var id_menu = arrLinkMenu[1];
+	// menu actual
+	var url = document.location.href;
+	var arrLinkMenuAct = url.split("menu=",2);
+	var menu_actualArr = arrLinkMenuAct[1].split("&",2);
+	var menu_actual = menu_actualArr[0];
+	var arrAction = new Array();
+	arrAction["action"]  = "deleteBookmark";
+	arrAction["rawmode"] = "yes";
+	arrAction["id_menu"] = id_menu;
+	arrAction["menu_url"] = menu_actual;
+	var srcimg = $('#neo-logobox').find('img:first').attr("src");
+	var theme = srcimg.split("/",2);
+	var urlImaLoading = "<div style='margin: 10px;'><img src='themes/"+theme[1]+"/images/busy.gif' />&nbsp;<span style='font-size: 20px; '>"+$('#toolTip_removingBookmark').val()+"...</span></div>";
+	$.blockUI({ message: urlImaLoading });
+	request("index.php",arrAction,false,
+		function(arrData,statusResponse,error)
+		{
+			$.unblockUI();
+			var source_img = $('#neo-logobox').find('img:first').attr("src");
+			var menu_actual = arrData['menu_url'];
+		    if(statusResponse == "false"){
+				var menuchanged = arrData['menu_session'];
+				var source_img = $('#neo-logobox').find('img:first').attr("src");
+				var themeName = source_img.split("/",2);
+				alert(error);
+			}else{
+				var action = arrData['action'];
+				var menu   = arrData['menu'];
+				var idmenu = arrData['idmenu'];
+				var namemenu = arrData['menu_session'];
+
+				if(action == "delete"){
+					var imgBookmark = $("#togglebookmark").attr('src');
+					// solo hacer esto si el menu actual es el que se esta eliminando
+					if(namemenu == menu_actual){
+						var themeName = source_img.split("/",2);
+						var labeli = $("#toolTip_addBookmark").val();
+						$("#togglebookmark").attr('title', labeli);
+						$("#togglebookmark").attr('src',"themes/"+themeName[1]+"/images/bookmark.png");
+					}
+					
+					var labeli = $("#toolTip_addBookmark").val();
+					$("#togglebookmark").attr('title', labeli);
+					// el anterior debe tener la clase neo-historybox-tabmid
+					$('#menu'+idmenu).remove();
+					if($('div[id^=menu]').length == 0){
+						//$('#neo-bookmarkID').after("<br />");
+						$('#neo-bookmarkID').attr("style","display:none;");
+					}else{
+						$('div[id^=menu]').each(function(indice,valor){
+							var tam = $('div[id^=menu]').length;
+							if(indice == (tam - 1)){
+								$(this).removeClass('neo-historybox-tab');
+								$(this).addClass('neo-historybox-tabmid');
 							}
 						});
 

@@ -207,6 +207,7 @@ div.neo-historybox-tab {
 	text-shadow: 1px 1px #ddd;
 	text-align:left;
 	overflow: hidden;
+        position: relative;
 }
 div.neo-historybox-tab a{
 	font: 12px Verdana, Arial,Helvetica,sans-serif;
@@ -232,10 +233,20 @@ div.neo-historybox-tabmid {
 	text-shadow: 1px 1px #ddd;
 	text-align:left;
 	overflow: hidden;
+        position: relative;
 }
 div.neo-historybox-tabmid a{
 	font: 12px Verdana, Arial,Helvetica,sans-serif;
 	color: #666;
 	text-shadow: 1px 1px #ddd;
 	text-decoration: none;
+}
+.neo-bookmarks-equis {
+	position:absolute;
+	width:18px;
+	height:15px;
+	right:10px;
+	top:10px;
+	background:url(images/bookmarks_equis.png) no-repeat;
+        cursor: pointer;
 }
