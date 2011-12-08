@@ -302,7 +302,9 @@ function reportAvailables($smarty, $module_name, $local_templates_dir, &$pDB, $a
 
     ini_set("soap.wsdl_cache_enabled", "0");
     try {
-        $client = new SoapClient($arrConf['url_webservice']);
+        $client = new SoapClient(
+            $arrConf['url_webservice'],
+            array('compression' => SOAP_COMPRESSION_ACCEPT | SOAP_COMPRESSION_GZIP));
     } catch (SoapFault $e) {
         $smarty->assign("mb_title", _tr("ERROR").": ");
         $smarty->assign("mb_message",_tr("The system can not connect to the Web Service resource. Please check your Internet connection."));
@@ -569,7 +571,9 @@ function quitSpecialCharacters($str)
 function getPackagesCache($arrConf, &$pDB, $arrLang){
 
     try{
-    $client = new SoapClient($arrConf['url_webservice']);
+    $client = new SoapClient(
+        $arrConf['url_webservice'],
+        array('compression' => SOAP_COMPRESSION_ACCEPT | SOAP_COMPRESSION_GZIP));
     $packages = $client->getAllAddons("2.0.4");
 
     $pAddonsModules = new paloSantoAddonsModules($pDB);
@@ -651,7 +655,9 @@ function getStatusCache(&$pDB, $arrConf, $arrLang){
         //$salida = $pAddonsModules->clearAddon($arrConf);
         //if(ereg("OK",$salida)){
             $arrSal['response'] = "OK";
-            $client = new SoapClient($arrConf['url_webservice']);
+            $client = new SoapClient(
+                $arrConf['url_webservice'],
+                array('compression' => SOAP_COMPRESSION_ACCEPT | SOAP_COMPRESSION_GZIP));
             $packages = $client->getAllAddons("2.0.4");
 
             $arr_packages = explode(" ",$packages);
@@ -686,7 +692,9 @@ function getStatusCache(&$pDB, $arrConf, $arrLang){
             }
         }
 
-        $client = new SoapClient($arrConf['url_webservice']);
+        $client = new SoapClient(
+            $arrConf['url_webservice'],
+            array('compression' => SOAP_COMPRESSION_ACCEPT | SOAP_COMPRESSION_GZIP));
         $packages = $client->getAllAddons("2.0.4");
 
         $arr_packages = explode(" ",$packages);
@@ -802,7 +810,9 @@ function getProgressBar($smarty, $module_name, $pDB, $arrConf, $arrLang){
 			setValueSessionNull($pAddonsModules);
 
             try {
-                $client = new SoapClient($arrConf['url_webservice']);
+                $client = new SoapClient(
+                    $arrConf['url_webservice'],
+                    array('compression' => SOAP_COMPRESSION_ACCEPT | SOAP_COMPRESSION_GZIP));
                 $arrAddons = $client->getCheckAddonsUpdate($addons_installed);
                 $arrAddons = explode(",",$arrAddons);
                 $pAddonsModules->updateInDB($arrAddons);
@@ -865,7 +875,9 @@ function checkUpdates($smarty, $module_name, $local_templates_dir, &$pDB, $arrCo
     $addons_installed = $pAddonsModules->getCheckAddonsInstalled();
 
     ini_set("soap.wsdl_cache_enabled", "0");
-    $client = new SoapClient($arrConf['url_webservice']);
+    $client = new SoapClient(
+        $arrConf['url_webservice'],
+        array('compression' => SOAP_COMPRESSION_ACCEPT | SOAP_COMPRESSION_GZIP));
     $arrAddons = $client->getCheckAddonsUpdate($addons_installed);
 
     //se deben mostrar los links de updates para mostrar
