@@ -4396,7 +4396,8 @@ LEER_TIPO_BREAK;
         
         // Se marca la llamada correspondiente al canal para hold
         foreach (array_keys($this->_infoLlamadas['llamadas']) as $sKey) {
-        	if ($this->_infoLlamadas['llamadas'][$sKey]->ActualChannel == $tuplaLlamada['ActualChannel']) {
+        	if (isset($this->_infoLlamadas['llamadas'][$sKey]->ActualChannel) && 
+                $this->_infoLlamadas['llamadas'][$sKey]->ActualChannel == $tuplaLlamada['ActualChannel']) {
                 $this->_infoLlamadas['llamadas'][$sKey]->OnHold = TRUE;
                 $this->_infoLlamadas['llamadas'][$sKey]->status = 'OnHold';
                 
