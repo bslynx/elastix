@@ -4394,7 +4394,9 @@ LEER_TIPO_BREAK;
             'from-internal',                // context
             1);                             // priority
         if ($r['Response'] != 'Success') {
-        	$this->oMainLog->output('ERR: al iniciar hold: no se puede ejecutar hold - '.$r['Message']);
+        	$this->oMainLog->output(
+                "ERR: al iniciar hold: no se puede ejecutar hold ".
+                "(Redirect {$tuplaLlamada['ActualChannel']} --> {$sExtParqueo}) - {$r['Message']}");
             foreach ($sqlHold as $sqlIndex => $sqlInfo) {
                 $r = $this->_dbConn->query($sqlInfo[0], $sqlInfo[1]['deshacer_hold']);
                 if (DB::isError($r)) {
