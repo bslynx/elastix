@@ -1868,6 +1868,7 @@ LEER_CAMPANIA;
         $r = $this->_astConn->Hangup($sAgente);
         if ($r['Response'] != 'Success') {
             $this->oMainLog->output('ERR: No se puede colgar la llamada para '.$sAgente.' - '.$r['Message']);
+            $this->oMainLog->output('ERR: Estado de la cola al intentar colgado es: '.print_r($estadoCola, 1));
         	$this->_agregarRespuestaFallo($xml_hangupResponse, 500, 'Cannot hangup agent call');
             return $xml_response;
         }
