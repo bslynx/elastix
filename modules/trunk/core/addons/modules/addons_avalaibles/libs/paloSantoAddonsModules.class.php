@@ -311,8 +311,8 @@ class paloSantoAddonsModules {
         if($rpm[$arrAddon['name_rpm']]){ //esta instalado en el sistema
             $query  = "SELECT id, version, release FROM addons WHERE name_rpm='$arrAddon[name_rpm]'";
             $result = $this->_DB->getFirstRowQuery($query,true);
-            $versionInstalled = $result['version']."-".$result['release'];
             if(is_array($result) && count($result) > 0){//existe, en la base
+                $versionInstalled = $result['version']."-".$result['release'];
                 if($version===$versionInstalled)
                 	return true; // esta instalado ...
                 else{
