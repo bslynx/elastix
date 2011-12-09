@@ -1,3 +1,6 @@
+* Dialer: at hangup, the check for scheduled calls requires access to campaign
+  data, but the campaign may already have ended, so it might not be in the
+  campaign array. Read campaign data from database if required.
 * Dialer (ECCP): fix access to possibly-undefined property 'ActualChannel' when
   looping through calls - ActualChannel is set OnLink, but loop also visits 
   unlinked calls in progress. 

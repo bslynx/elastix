@@ -3539,11 +3539,19 @@ INFO_FORMULARIOS;
             } /* is_null(start_timestamp) */
 
             // Sacar de pausa al agente cuya llamada ha terminado
-            $infoCampania = $this->_infoLlamadas['campanias'][$idCampaign];
             if (!is_null($idAgente)) {
                 $sAgent = "Agent/$idAgente";
                 if (isset($this->_infoLlamadas['agentes_reservados'][$idAgente])) {
                     $this->_infoLlamadas['agentes_reservados'][$idAgente] = 1;
+
+                    if (isset($this->_infoLlamadas['campanias'][$idCampaign])) {
+                        $infoCampania = $this->_infoLlamadas['campanias'][$idCampaign];
+                    } else {
+                        // Puede ocurrir que se hayan originado llamadas, pero en la
+                        // siguiente iteración la campaña haya terminado. Todavía
+                        // debe de seguirse la pista de la campaña.
+                        $infoCampania = $this->_leerCampania($idCampaign);
+                    }
 
                     // El agente debe ser sacado de pausa sólo si no hay más llamadas en reserva
                     $l = $this->_contarLlamadasAgendablesReserva($infoCampania, $idAgente);
