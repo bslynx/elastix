@@ -510,16 +510,10 @@ function deleteBookmarkByEquis(ref){
     var linkMenu = $(ref).parent().children(':first-child').attr('href');
 	var arrLinkMenu = linkMenu.split("menu=",2);
 	var id_menu = arrLinkMenu[1];
-	// menu actual
-	var url = document.location.href;
-	var arrLinkMenuAct = url.split("menu=",2);
-	var menu_actualArr = arrLinkMenuAct[1].split("&",2);
-	var menu_actual = menu_actualArr[0];
 	var arrAction = new Array();
 	arrAction["action"]  = "deleteBookmark";
 	arrAction["rawmode"] = "yes";
 	arrAction["id_menu"] = id_menu;
-	arrAction["menu_url"] = menu_actual;
 	var srcimg = $('#neo-logobox').find('img:first').attr("src");
 	var theme = srcimg.split("/",2);
 	var urlImaLoading = "<div style='margin: 10px;'><img src='themes/"+theme[1]+"/images/busy.gif' />&nbsp;<span style='font-size: 20px; '>"+$('#toolTip_removingBookmark').val()+"...</span></div>";

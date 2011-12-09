@@ -223,11 +223,9 @@ if (isset($_SESSION['elastix_user']) &&
 		$jsonObject = new PaloSantoJSON();
 		$id_menu = getParameter("id_menu");
 		$output = "";
-		$menuUrl = "";
 		if(isset($id_menu) && $id_menu !=""){
-			$menuUrl = getParameter("menu_url");
 			$output  = putMenuAsBookmark($id_menu);
-			$output["data"]["menu_url"] = $oPn->getFirstChildOfMainMenuByBookmark($menuUrl);
+			$output["data"]["menu_url"] = $oPn->getFirstChildOfMainMenuByBookmark($_SESSION['menu']);
 		}else
 			$output = putMenuAsBookmark($menuBookmark);
 		if($output['status'] === TRUE){
