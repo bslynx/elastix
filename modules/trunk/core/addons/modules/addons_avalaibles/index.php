@@ -847,7 +847,7 @@ function getTimeDownload($ini_time, $valueTotal)
 		$secondsTime = $timestamp2 - $timestamp1;
 
 		// obteniendo el tiempo total que se demoraria la descarga
-		$totalTime = 100 * ($secondsTime) / $valueTotal;
+		$totalTime = ($valueTotal > 0) ? 100 * ($secondsTime) / $valueTotal : 0;
 		// se obtiene el tiempo que faltaria para completar la descarga
 		$timeOut = $totalTime - $secondsTime;
 		$hour    = $timeOut / 3600;
