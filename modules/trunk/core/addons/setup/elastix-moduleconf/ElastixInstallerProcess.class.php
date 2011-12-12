@@ -44,6 +44,7 @@ class ElastixInstallerProcess extends AbstractProcess
     private $_timestampUltimoUso = NULL;    // timestamp de la última vez que se requirió yum shell
 
     private $_customStatus = '';    // Estado arbitrario para compartir con interfaz web
+    private $_numAsignacionesCustom = 0;    // Número de veces que ha cambiado el estado arbitrario
 
     function inicioPostDemonio($infoConfig, &$oMainLog)
     {
@@ -496,6 +497,7 @@ Interfaz simple de comandos vía socket:
 
         $sReporte .= "status ".$this->_estadoPaquete['status']."\n";
         $sReporte .= "action ".$this->_estadoPaquete['action']."\n"; // none confirm reporefresh depsolving downloading applying
+        $sReporte .= "custom ".$this->_numAsignacionesCustom."\n";
         foreach ($this->_estadoPaquete['progreso'] as $infoProgreso) {
             $sReporte .= 'package'.
                 ' '.$infoProgreso['pkgaction']. // pkgaction puede ser: install update remove
@@ -919,7 +921,11 @@ Installing for dependencies:
 
     private function _procesarSetCustom(&$listaArgs)
     {
-        $this->_customStatus = implode(' ', $listaArgs);
+        $sNuevoStatus = implode(' ', $listaArgs);
+        if ($this->_customStatus != $sNuevoStatus) {
+            $this->_customStatus = $sNuevoStatus;
+            $this->_numAsignacionesCustom++;
+        }
         return "OK Stored\n";
     }
 
