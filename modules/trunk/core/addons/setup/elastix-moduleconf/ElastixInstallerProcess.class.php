@@ -106,7 +106,7 @@ class ElastixInstallerProcess extends AbstractProcess
 	            2	=>	array('pipe', 'w'),
             );
             $this->_procPipes = NULL; $cwd = '/';
-            $this->_procYum = proc_open('/usr/bin/yum -y shell', $descriptores, $this->_procPipes, $cwd);
+            $this->_procYum = proc_open('/usr/sbin/close-on-exec.pl /usr/bin/yum -y shell', $descriptores, $this->_procPipes, $cwd);
             if (!is_resource($this->_procYum)) {
                 $this->oMainLog->output("ERR: no se puede iniciar instancia de yum shell");
                 $bContinuar = FALSE;
@@ -966,6 +966,7 @@ Installing for dependencies:
                 $pos = strpos($this->_sContenido, "Transaction Summary");
                 if ($pos !== FALSE) {
                     $this->_estadoPaquete['status'] = 'idle';
+                    $this->_estadoPaquete['action'] = 'none';
                     $lineas = explode("\n", $this->_sContenido);
                     $bReporteInstalado = FALSE;
                     foreach ($lineas as $sLinea) {
