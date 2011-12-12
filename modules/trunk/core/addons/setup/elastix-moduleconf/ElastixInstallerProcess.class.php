@@ -72,6 +72,7 @@ class ElastixInstallerProcess extends AbstractProcess
             'status'    =>  'idle',
             'action'    =>  'none',
             'testonly'  =>  FALSE,
+            'autoconfirm'   =>  FALSE,
 
             'iniciales' =>  array(),
             'progreso'  =>  array(),
@@ -433,11 +434,17 @@ Interfaz simple de comandos vía socket:
         case 'add':
             $sTextoSalida = $this->_procesarAdd($listaComando);
             break;
+        case 'addconfirm':
+            $sTextoSalida = $this->_procesarAddConfirm($listaComando);
+            break;
         case 'testadd':
             $sTextoSalida = $this->_procesarTestAdd($listaComando);
             break;
         case 'remove':
             $sTextoSalida = $this->_procesarRemove($listaComando);
+            break;
+        case 'removeconfirm':
+            $sTextoSalida = $this->_procesarRemoveConfirm($listaComando);
             break;
         case 'clear':
             $sTextoSalida = $this->_procesarClear($listaComando);
@@ -447,6 +454,9 @@ Interfaz simple de comandos vía socket:
             break;
         case 'update':
             $sTextoSalida = $this->_procesarUpdate($listaComando);
+            break;
+        case 'updateconfirm':
+            $sTextoSalida = $this->_procesarUpdateConfirm($listaComando);
             break;
         case 'testupdate':
             $sTextoSalida = $this->_procesarTestUpdate($listaComando);
@@ -735,6 +745,14 @@ Installing for dependencies:
         fwrite($this->_procPipes[0], $sComando);
         return "OK Processing\n";
     }
+    
+    private function _procesarAddConfirm(&$listaArgs)
+    {
+    	$r = $this->_procesarAdd($listaArgs);
+        if (substr($r, 0, 2) == 'OK')
+            $this->_estadoPaquete['autoconfirm'] = TRUE;
+        return $r;
+    }
 
     private function _procesarTestAdd(&$listaArgs)
     {
@@ -781,6 +799,14 @@ Installing for dependencies:
             return "ERR Unable to start Yum Shell\n";
         fwrite($this->_procPipes[0], $sComando);
         return "OK Processing\n";
+    }
+
+    private function _procesarUpdateConfirm(&$listaArgs)
+    {
+        $r = $this->_procesarUpdate($listaArgs);
+        if (substr($r, 0, 2) == 'OK')
+            $this->_estadoPaquete['autoconfirm'] = TRUE;
+        return $r;
     }
 
     private function _procesarTestUpdate(&$listaArgs)
@@ -881,6 +907,7 @@ Installing for dependencies:
         $this->_estadoPaquete['warning'] = array();
         $this->_estadoPaquete['instalado'] = array();
         $this->_estadoPaquete['testonly'] = FALSE;
+        $this->_estadoPaquete['autoconfirm'] = FALSE;
 
         $sComando = "run\n";
         if (!$this->_asegurarYumShellIniciado())
@@ -981,6 +1008,14 @@ Installing for dependencies:
                             $this->_estadoPaquete['action'] = 'confirm';
                             $this->_estadoPaquete['testonly'] = FALSE;
                             $this->_recogerPaquetesTransaccion();
+                            
+                            // Proceder directamente a operación en caso de autoconfirm
+                            if ($this->_estadoPaquete['autoconfirm'] &&
+                                $this->_estadoPaquete['status'] == 'idle' &&
+                                $this->_estadoPaquete['action'] == 'confirm') {
+                            	$dummy = NULL;
+                                $this->_procesarConfirm($dummy);
+                            }
                         }
                         
                     }
@@ -1393,5 +1428,14 @@ Installing for dependencies:
         fwrite($this->_procPipes[0], $sComando);
         return "OK Processing\n";
     }
+
+    private function _procesarRemoveConfirm(&$listaArgs)
+    {
+        $r = $this->_procesarRemove($listaArgs);
+        if (substr($r, 0, 2) == 'OK')
+            $this->_estadoPaquete['autoconfirm'] = TRUE;
+        return $r;
+    }
+
 }
 ?>
