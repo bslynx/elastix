@@ -176,6 +176,7 @@ class XMLDialerConn extends DialerConn
             } else {
                 $comando = NULL;
                 foreach ($request->children() as $c) $comando = $c;
+                $iTimestampInicio = microtime(TRUE);
                 switch ($comando->getName()) {
                 case 'getrequestlist':
                     $response = $this->Request_GetRequestList($comando);
@@ -257,6 +258,11 @@ class XMLDialerConn extends DialerConn
                 default:
                     $response = $this->_generarRespuestaFallo(501, 'Not Implemented');
                     break;
+                }
+                $iTimestampFinal = microtime(TRUE);
+                if ($iTimestampFinal - $iTimestampInicio > 1.0) {
+                	$this->oMainLog->output('WARN: requerimiento '.$comando->getName().
+                        ' requirió mucho tiempo ('.($iTimestampFinal - $iTimestampInicio).' s.)');
                 }
                 $response->addAttribute('id', (string)$request['id']);
             }
