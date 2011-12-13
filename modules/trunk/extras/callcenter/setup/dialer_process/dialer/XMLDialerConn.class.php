@@ -1475,8 +1475,11 @@ LEER_CAMPANIA;
     {
         $xml_Form = $xml_GetCampaignInfoResponse->addChild('form');
         $xml_Form->addAttribute('id', $idForm);
-        $xml_Form->addAttribute('name', $nombresForm['name']);
-        $xml_Form->addAttribute('description', $nombresForm['description']);
+        // Rodeo para bug PHP https://bugs.php.net/bug.php?id=41175
+        if ($nombresForm['name'] != '')
+            $xml_Form->addAttribute('name', $nombresForm['name']);
+        if ($nombresForm['description'] != '')
+            $xml_Form->addAttribute('description', $nombresForm['description']);
         $xml_Form->addAttribute('status', $nombresForm['status']);
         foreach ($listaCampos as $tuplaCampo) {
             $xml_Field = $xml_Form->addChild('field');
