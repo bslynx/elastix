@@ -2679,7 +2679,7 @@ UPDATE_CALLS_ORIGINATE_RESPONSE;
                 } while ($r < 5 && is_null($this->_infoLlamadas['llamadas'][$sKey]->ActualChannel));
                 if (is_null($this->_infoLlamadas['llamadas'][$sKey]->ActualChannel)) {
                     $this->oMainLog->output("WARN: $sEvent: no se puede reconocer clientchannel para ".
-                        "agente $sAgentNum luego de $r intentos: estado cola es: ".print_r($estadoCola, 1));
+                        "agente $sAgentNum luego de $r intentos.");
                 }
                 
                 // El canal verdadero es más util que Local/XXX para las operaciones
