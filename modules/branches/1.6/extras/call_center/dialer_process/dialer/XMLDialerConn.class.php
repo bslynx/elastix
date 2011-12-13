@@ -1445,8 +1445,6 @@ LEER_CAMPANIA;
                     'description'   =>  $r['descripcion'],
                     'status'        =>  $r['estatus'],
                 );
-                foreach ($r as $tuplaCampo)
-                    $listaForm[$idForm][$tuplaCampo['id']] = $tuplaCampo;
             }
         }
         return $listaForm;

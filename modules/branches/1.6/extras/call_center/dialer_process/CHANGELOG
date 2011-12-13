@@ -1,3 +1,4 @@
+* Dialer (ECCP): remove bogus copy-paste leftover in form information fetching.
 * Dialer: try harder to find client channel the agent is talking to. Apparently
   OnLink may be received before 'agent status' is properly updated.
 * Dialer: at hangup, the check for scheduled calls requires access to campaign
