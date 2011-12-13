@@ -1,3 +1,5 @@
+* Dialer (ECCP): on hangup request, check clientchannel present instead of status
+  for reporting that agent is not in call. 
 * Agent Console: reorder code so that ECCP call to 'getcampaigninfo' happens at
   most once in status check.
 * Dialer (ECCP): work around https://bugs.php.net/bug.php?id=41175 which throws

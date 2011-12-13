@@ -1865,8 +1865,12 @@ LEER_CAMPANIA;
             $this->_agregarRespuestaFallo($xml_hangupResponse, 404, 'Specified agent not found');
             return $xml_response;
         }
-        if (!isset($estadoCola['members'][$sNumAgente]['clientchannel']) && 
-            $estadoCola['members'][$sNumAgente]['status'] != 'inUse') {
+        if (!isset($estadoCola['members'][$sNumAgente]['clientchannel'])) {
+            if ($estadoCola['members'][$sNumAgente]['status'] == 'inUse') {
+            	$this->oMainLog->output('WARN: al intentar colgar llamada - '.
+                    'el siguiente agente está ocupado en las colas pero ocioso '.
+                    'en agent show: '.$sAgente);
+            }
             $this->_agregarRespuestaFallo($xml_hangupResponse, 417, 'Agent not in call');
             return $xml_response;
         }
