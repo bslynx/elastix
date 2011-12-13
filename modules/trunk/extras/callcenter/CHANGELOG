@@ -1,3 +1,5 @@
+* Agent Console: reorder code so that ECCP call to 'getcampaigninfo' happens at
+  most once in status check.
 * Dialer (ECCP): work around https://bugs.php.net/bug.php?id=41175 which throws
   a warning on an attempt to set a XML attribute to an empty string. Triggered
   by a form with an empty description. 

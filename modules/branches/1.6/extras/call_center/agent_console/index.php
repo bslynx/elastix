@@ -1040,7 +1040,8 @@ function manejarSesionActiva_checkStatus($module_name, $smarty, $sDirLocalPlanti
             $_SESSION['callcenter']['ultimo_callsurvey']['call_survey'] = $infoLlamada['call_survey'];
             $_SESSION['callcenter']['ultimo_campaignform']['forms'] = $infoCampania['forms'];
 
-            $respuesta[] = construirRespuesta_agentlinked($smarty, $sDirLocalPlantillas, $oPaloConsola, $estado['callinfo'], $infoLlamada);
+            $respuesta[] = construirRespuesta_agentlinked($smarty, $sDirLocalPlantillas, 
+                $oPaloConsola, $estado['callinfo'], $infoLlamada, $infoCampania);
         } elseif (!is_null($estadoCliente['calltype']) && is_null($estado['callinfo'])) {
         	// La consola dejó de atender una llamada
             $respuesta[] = construirRespuesta_agentunlinked();
@@ -1136,8 +1137,6 @@ function manejarSesionActiva_checkStatus($module_name, $smarty, $sDirLocalPlanti
                             'callnumber'    =>  $evento['phone'],
                         );
                         $iDuracionLlamada = time() - strtotime($nuevoEstado['linkstart']);
-                        $respuestaEventos['llamada'] = construirRespuesta_agentlinked(
-                            $smarty, $sDirLocalPlantillas, $oPaloConsola, $nuevoEstado, $evento);
 
                         // Leer información del formulario de la campaña
                         if ($nuevoEstado['calltype'] == 'incoming' && is_null($nuevoEstado['campaign_id'])) {
@@ -1154,6 +1153,10 @@ function manejarSesionActiva_checkStatus($module_name, $smarty, $sDirLocalPlanti
                         $_SESSION['callcenter']['ultimo_callid'] = $nuevoEstado['callid'];
                         $_SESSION['callcenter']['ultimo_callsurvey']['call_survey'] = $evento['call_survey'];
                         $_SESSION['callcenter']['ultimo_campaignform']['forms'] = $infoCampania['forms'];
+
+                        $respuestaEventos['llamada'] = construirRespuesta_agentlinked(
+                            $smarty, $sDirLocalPlantillas, $oPaloConsola, $nuevoEstado, 
+                            $evento, $infoCampania);
                     }
                     break;
                 case 'agentunlinked':
@@ -1268,17 +1271,14 @@ function construirRespuesta_holdexit()
     );
 }
 
-function construirRespuesta_agentlinked($smarty, $sDirLocalPlantillas, $oPaloConsola, $callinfo, $infoLlamada)
+function construirRespuesta_agentlinked($smarty, $sDirLocalPlantillas, 
+    $oPaloConsola, $callinfo, $infoLlamada, &$infoCampania)
 {
     if (!isset($infoLlamada['calltype'])) $infoLlamada['calltype'] = $callinfo['calltype'];
     if ($callinfo['calltype'] == 'incoming' && is_null($callinfo['campaign_id'])) {
         $infoCampania['queue'] = $infoLlamada['queue'];
         $infoCampania['script'] = $oPaloConsola->leerScriptCola($infoCampania['queue']);
         $infoCampania['forms'] = NULL;
-    } else {
-        $infoCampania = $oPaloConsola->leerInfoCampania(
-            $callinfo['calltype'],
-            $callinfo['campaign_id']);
     }
     if (is_null($infoCampania['script']) || $infoCampania['script'] == '')
         $infoCampania['script'] = _tr('(No script available)');
