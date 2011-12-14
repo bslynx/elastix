@@ -365,7 +365,7 @@ $(document).ready(function(){
         	        $(el).ColorPickerHide();
 			changeColorMenu();// se lanza la peticion ajax
 	        },
-		id_colorPicker: 'colorpicker_framework',
+		id_colorPicker: 'colorpicker_framework'
 	});
 	var menu_color_user = $('#userMenuColor').val();
 	$('#neo-smenubox').css('backgroundColor', menu_color_user);
