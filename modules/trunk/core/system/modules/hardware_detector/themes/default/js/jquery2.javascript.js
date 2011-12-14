@@ -6,8 +6,7 @@ $(document).ready(function(){
     $(".move").draggable({
         zIndex:     20,
         ghosting:   false,
-        opacity:    0.7,
-        //handle: '#layer1_handle1'
+        opacity:    0.7
     });
 
     $('a[id^=confSPAN]').click(function(e) {
