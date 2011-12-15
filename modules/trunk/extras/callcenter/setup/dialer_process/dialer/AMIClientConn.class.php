@@ -73,8 +73,11 @@ class AMIClientConn extends DialerConn
          * guarda individualmente. */ 
         foreach ($listaPaquetes as $paquete) {
         	if (isset($paquete['Event'])) {
-                $paquete['local_timestamp_received'] = time();
-                $this->_listaEventos[] = $paquete;                
+                $e = strtolower($paquete['Event']);
+                if (isset($this->event_handlers[$e]) || isset($this->event_handlers['*'])) {
+                    $paquete['local_timestamp_received'] = microtime(TRUE);
+                    $this->_listaEventos[] = $paquete;
+                }
             } elseif (isset($paquete['Response'])) {
             	if (!is_null($this->_response)) {
             		$this->oLogger->output("ERR: segundo Response sobreescribe primer Response no procesado: ".

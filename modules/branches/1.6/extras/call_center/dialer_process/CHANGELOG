@@ -1,3 +1,5 @@
+* Dialer: discard AMI events for which there are no handlers upon reception. Also
+  put a microsecond timestamp for benchmarking.
 * Dialer (ECCP): on hangup request, check clientchannel present instead of status
   for reporting that agent is not in call. 
 * Agent Console: reorder code so that ECCP call to 'getcampaigninfo' happens at
