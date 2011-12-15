@@ -251,7 +251,7 @@ class paloSantoLoadExtension {
         }
     }
 
-    function processData($data)
+    function processData($data, $path)
     {
 	$arrExtensions = array();
 	if(is_array($data) && count($data)>0){
@@ -312,7 +312,7 @@ class paloSantoLoadExtension {
                 where (r1.extension=r2.id and r1.extension=r3.id);";
         $resultSIP = $this->_DB->fetchTable($sql, true);
 
-	$dataSIP = $this->processData($resultSIP);
+	$dataSIP = $this->processData($resultSIP,$path);
 
 	$sql = "select * from
                     (select u.extension, u.name, u.outboundcid, d.tech from users u, devices d where u.extension=d.id) as r1,
@@ -321,7 +321,7 @@ class paloSantoLoadExtension {
                 where (r1.extension=r2.id and r1.extension=r3.id);";
         $resultIAX = $this->_DB->fetchTable($sql, true);
         
-	$dataIAX = $this->processData($resultIAX);
+	$dataIAX = $this->processData($resultIAX,$path);
 	
 	return array_merge($dataSIP,$dataIAX);
     }
