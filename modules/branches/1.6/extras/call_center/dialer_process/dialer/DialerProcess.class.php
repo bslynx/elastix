@@ -2659,27 +2659,15 @@ UPDATE_CALLS_ORIGINATE_RESPONSE;
                  * la llamada que hay que recoger de vuelta. */
                 $oPredictor = new Predictivo($this->_astConn);
 
-                /* Se requiere un bucle porque aparentemente, incluso luego de
-                 * recibir el evento OnLink, puede ocurrir que no se haya 
-                 * actualizado todavía el estado del agente en 'agent show'.
-                 * Por el hecho de haber entrado aquí, se sabe que está enlazado
-                 * con un canal. Se reintenta hasta 5 veces si no se puede a la
-                 * primera. */
-                $r = 0;
                 $this->_infoLlamadas['llamadas'][$sKey]->ActualChannel = NULL;
-                do {
-                    $r++;
-                    $estadoCola = $oPredictor->leerEstadoCola(''); // El parámetro vacío lista todas las colas
-                    if (isset($estadoCola['members'][$sAgentNum]) && 
-                        isset($estadoCola['members'][$sAgentNum]['clientchannel'])) {
-                        $this->_infoLlamadas['llamadas'][$sKey]->ActualChannel = $estadoCola['members'][$sAgentNum]['clientchannel']; 
-                    } else {
-                        usleep(100000); // 0.1 segundos
-                    }                	
-                } while ($r < 5 && is_null($this->_infoLlamadas['llamadas'][$sKey]->ActualChannel));
+                $estadoCola = $oPredictor->leerEstadoCola(''); // El parámetro vacío lista todas las colas
+                if (isset($estadoCola['members'][$sAgentNum]) && 
+                    isset($estadoCola['members'][$sAgentNum]['clientchannel'])) {
+                    $this->_infoLlamadas['llamadas'][$sKey]->ActualChannel = $estadoCola['members'][$sAgentNum]['clientchannel']; 
+                }                	
                 if (is_null($this->_infoLlamadas['llamadas'][$sKey]->ActualChannel)) {
                     $this->oMainLog->output("WARN: $sEvent: no se puede reconocer clientchannel para ".
-                        "agente $sAgentNum luego de $r intentos.");
+                        "agente $sAgentNum.");
                 }
                 
                 // El canal verdadero es más util que Local/XXX para las operaciones

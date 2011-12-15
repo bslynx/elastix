@@ -6,8 +6,6 @@
   a warning on an attempt to set a XML attribute to an empty string. Triggered
   by a form with an empty description. 
 * Dialer (ECCP): remove bogus copy-paste leftover in form information fetching.
-* Dialer: try harder to find client channel the agent is talking to. Apparently
-  OnLink may be received before 'agent status' is properly updated.
 * Dialer: at hangup, the check for scheduled calls requires access to campaign
   data, but the campaign may already have ended, so it might not be in the
   campaign array. Read campaign data from database if required.
