@@ -174,6 +174,10 @@ class XMLDialerConn extends DialerConn
                 // La petición debe tener un identificador
                 $response = $this->_generarRespuestaFallo(400, 'Bad request');
             } else {
+$iTimestampRecibido = (double)$request['received'];
+$proc_start = microtime(TRUE);
+$this->oMainLog->output('DEBUG: '.__METHOD__.' - retraso (sec) hasta procesar: '.($proc_start - $iTimestampRecibido));
+                
                 $comando = NULL;
                 foreach ($request->children() as $c) $comando = $c;
                 $iTimestampInicio = microtime(TRUE);
@@ -318,7 +322,9 @@ class XMLDialerConn extends DialerConn
         $r = xml_parse($this->_parser, $data);
         while (!is_null($this->_iPosFinal)) {
             if ($this->_sTipoDoc == 'request') {
-                $this->_listaReq[] = simplexml_load_string(substr($this->_bufferXML, 0, $this->_iPosFinal));
+                $request = simplexml_load_string(substr($this->_bufferXML, 0, $this->_iPosFinal));
+                $request->addAttribute('received', microtime(TRUE));
+                $this->_listaReq[] = $request;
             } else {
                 $this->_listaReq[] = array(
                     'errorcode'     =>  -1,
