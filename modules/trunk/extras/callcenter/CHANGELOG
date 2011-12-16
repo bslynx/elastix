@@ -1,3 +1,5 @@
+* Agent Console: fix typo that caused web console to refresh the agent status
+  twice on agent link.
 * Dialer: discard AMI events for which there are no handlers upon reception. Also
   put a microsecond timestamp for benchmarking.
 * Dialer (ECCP): on hangup request, check clientchannel present instead of status

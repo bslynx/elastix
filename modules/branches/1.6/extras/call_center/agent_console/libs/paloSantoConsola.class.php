@@ -799,7 +799,7 @@ LISTA_EXTENSIONES;
                     $evento['call_survey'] = isset($evt->call_survey) ? $this->_traducirCallSurvey($evt->call_survey) : NULL;
                     // Cae al siguiente caso
                 case 'agentunlinked':
-                    $evento['call_type'] = (string)$evt->call_type;
+                    $evento['call_type'] = (string)$evt->calltype;
                     $evento['campaign_id'] = isset($evt->campaign_id) ? (int)$evt->campaign_id : NULL;
                     $evento['call_id'] = (int)$evt->call_id;
                     $evento['phone'] = (string)$evt->phone;
