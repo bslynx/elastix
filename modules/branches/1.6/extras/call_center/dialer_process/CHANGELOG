@@ -1,3 +1,11 @@
+* Dialer: add cache for output of 'agent show' and 'queue show' commands. These 
+  commands are expensive to execute and greatly slow down the 'getagentstatus' 
+  ECCP procedure. The current cache lifetime is 1.5 seconds.
+* Dialer: add utility function Predictivo::leerEstadoAgente() that will make use
+  of the output cache if possible.
+* Dialer: add trimmed down function Predictivo::obtenerCanalRemotoAgente() that
+  only runs 'agent show' instead of building the entire queue report, just to 
+  discard almost all of it.
 * Dialer (ECCP): new ECCP diagnostic script getagentstatusloop.php
 * Agent Console: fix typo that caused web console to refresh the agent status
   twice on agent link.

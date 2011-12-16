@@ -34,6 +34,9 @@ class Predictivo
     private $_estadisticasCola = NULL;
     private $_conflictReport = array();
     
+    private static $_cacheTimestamp = NULL;
+    private static $_cacheEstado = NULL;
+    
     function Predictivo(&$astman)
     {
         $this->_estadisticasCola = array();
@@ -169,6 +172,19 @@ class Predictivo
         return $iNumLlamadasColocar;
     }
 
+    function leerEstadoCola($sNombreCola)
+    {
+    	return $this->_leerEstadoCola_filtroAgente($sNombreCola, NULL);
+    }
+    
+    function leerEstadoAgente($sNumAgente)
+    {
+    	$estadoCola = $this->_leerEstadoCola_filtroAgente('', $sNumAgente);
+        return isset($estadoCola['members'][$sNumAgente]) 
+            ? $estadoCola['members'][$sNumAgente]
+            : NULL; 
+    }
+
     /**
      * Procedimiento para interrogar al Asterisk sobre el estado de los agentes 
      * logoneados en una cola de código $sNombreCola. Con respecto a los agentes,
@@ -192,7 +208,7 @@ class Predictivo
      *      ),
      * )
      */
-    function leerEstadoCola($sNombreCola)
+    private function _leerEstadoCola_filtroAgente($sNombreCola, $sNumAgenteFiltro = NULL)
     {
     	$iTimestampActual = time();
         $estadoCola = NULL;
@@ -202,11 +218,24 @@ class Predictivo
         $respuestaCola = NULL;
         $respuestaListaAgentes = NULL;
         $listaAgentesLibres = array();
-                
-        // Leer información inmediata (que no depende de canal)
-        $respuestaListaAgentes = $this->_astConn->Command('agent show');
-        if (is_array($respuestaListaAgentes))
-            $respuestaCola = $this->_astConn->Command("queue show $sNombreCola");        
+
+        if ($sNombreCola == '') {
+            $iTimestamp = microtime(TRUE);
+            if (is_null(self::$_cacheTimestamp) || ($iTimestamp - self::$_cacheTimestamp) >= 1.5) {
+            	self::$_cacheEstado = array(
+                    'agent show'    =>  $this->_astConn->Command('agent show'),
+                    'queue show'    =>  $this->_astConn->Command('queue show')
+                );
+                self::$_cacheTimestamp = $iTimestamp;
+            }
+            $respuestaListaAgentes = self::$_cacheEstado['agent show'];
+            $respuestaCola = self::$_cacheEstado['queue show'];
+        } else {
+            // Leer información inmediata (que no depende de canal)
+            $respuestaListaAgentes = $this->_astConn->Command('agent show');
+            if (is_array($respuestaListaAgentes))
+                $respuestaCola = $this->_astConn->Command("queue show $sNombreCola");        
+        }
 
         $estadoCola = array(
             'members'   =>  array(),
@@ -226,7 +255,13 @@ class Predictivo
                 if (preg_match('/^\s*(\d{2,})/', $sLinea, $regs)) {
             		$sAgente = $regs[1];  // Agente ha sido identificado
                     $regs = NULL;
-                    if (preg_match('|talking to (\w+/\S{2,})|', $sLinea, $regs)) {
+                    
+                    // Filtrar agentes que no me interesan
+                    if (!is_null($sNumAgenteFiltro) && $sAgente != $sNumAgenteFiltro) continue;                        
+                    
+                    // El strpos se hace antes para descartar rápidamente el agente ocioso
+                    if (strpos($sLinea, 'talking to') && 
+                        preg_match('|talking to (\w+/\S{2,})|', $sLinea, $regs)) {
                     	$sCanalAgente = $regs[1];
                         $tiempoAgente[$sAgente]['clientchannel'] = $sCanalAgente;
                         
@@ -300,6 +335,10 @@ class Predictivo
                         $sLinea = trim($sLinea);
                         $regs = NULL;
                         if (preg_match('|^Agent/(\d+)@?\s*(.*)$|', $sLinea, $regs)) {
+
+                            // Saltar fuera del switch y al final del foreach
+                            if (!is_null($sNumAgenteFiltro) && $regs[1] != $sNumAgenteFiltro) continue 2; 
+
                         	$sCodigoAgente = $regs[1];
                             $sInfoAgente = $regs[2];
                             $estadoCola['members'][$sCodigoAgente] = array(
@@ -385,6 +424,31 @@ class Predictivo
             }
         }
         return $estadoCola;
+    }
+
+    function obtenerCanalRemotoAgente($sAgentNum)
+    {
+        // Leer información inmediata (que no depende de canal)
+        $iTimestamp = microtime(TRUE);
+        if (is_null(self::$_cacheTimestamp) || ($iTimestamp - self::$_cacheTimestamp) >= 1.0) {
+            $respuestaListaAgentes = $this->_astConn->Command('agent show');
+        } else {
+        	$respuestaListaAgentes = self::$_cacheEstado['agent show'];
+        }
+        if (!is_array($respuestaListaAgentes)) return NULL;
+        $lineasRespuesta = explode("\n", $respuestaListaAgentes['data']);
+        foreach ($lineasRespuesta as $sLinea) {
+            if (preg_match('/^(\d{2,})\s+\(/', $sLinea, $regs)) {
+                if ($regs[1] == $sAgentNum) {
+                	if (preg_match('|talking to (\w+/\S{2,})|', $sLinea, $regs)) {
+                        return $regs[1];
+                    } else {
+                    	return '';
+                    }
+                }
+            }
+        }
+        return NULL;
     }
 
     private function _probabilidadErlangAcumulada($x, $k, $lambda)
