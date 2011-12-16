@@ -135,6 +135,61 @@ abstract class MultiplexServer
         return $bNuevosDatos;
     }
 
+    /**
+     * Procedimiento que intenta vaciar los búferes de escritura con un timeout
+     * de 0. Si ningún búfer está pendiente de escribir, se regresa 
+     * inmediatamente.
+     * 
+     * @return  VERDADERO si alguna conexión tuvo actividad
+     */
+    function vaciarBuferesEscritura()
+    {
+        $bNuevosDatos = FALSE;
+        $listoLeer = NULL;
+        $listoEscribir = array();
+        $listoErr = NULL;
+
+        // Recolectar todos los descriptores que se monitorean
+        foreach ($this->_conexiones as &$conexion) {
+            if (strlen($conexion['pendiente_escribir']) > 0) {
+                $listoEscribir[] = $conexion['socket'];                
+            }
+        }
+        if (count($listoEscribir) <= 0) return FALSE;
+        $iNumCambio = stream_select($listoLeer, $listoEscribir, $listoErr, 0);
+        if ($iNumCambio === false) {
+            // Interrupción, tal vez una señal
+            $this->_oLog->output("INFO: select() finaliza con fallo - señal pendiente?");
+        } elseif ($iNumCambio > 0 || count($listoEscribir) > 0) {
+            foreach ($this->_conexiones as $sKey => &$conexion) {
+                if (in_array($conexion['socket'], $listoEscribir)) {
+                    // Escribir lo más que se puede de los datos pendientes por mostrar
+                    $iBytesEscritos = fwrite($conexion['socket'], $conexion['pendiente_escribir']);
+                    if ($iBytesEscritos === FALSE) {
+                        $this->oMainLog->output("ERR: error al escribir datos a ".$conexion['socket']);
+                        $this->_cerrarConexion($sKey);
+                    } else {
+                        $conexion['pendiente_escribir'] = substr($conexion['pendiente_escribir'], $iBytesEscritos);
+                        $bNuevosDatos = TRUE;                        
+                    }
+                }
+            }
+
+            // Cerrar todas las conexiones que no tienen más datos que mostrar
+            // y que han marcado que deben terminarse
+            foreach ($this->_conexiones as $sKey => &$conexion) {
+                if (is_array($conexion) && $conexion['exit_request'] && strlen($conexion['pendiente_escribir']) <= 0) {
+                    $this->_cerrarConexion($sKey);
+                }
+            }
+
+            // Remover todos los elementos seteados a FALSE
+            $this->_conexiones = array_filter($this->_conexiones);
+        }
+        
+        return $bNuevosDatos;
+    }
+
 	// Procesar una nueva conexión que ingresa al servidor
     private function _procesarConexionNueva()
     {

@@ -1,3 +1,9 @@
+* Dialer: add new function MultiplexServer::vaciarBuferesEscritura() to flush 
+  all output buffers.
+* Dialer: modify packet processing algorithm to prioritize the Asterisk AMI 
+  connection over other connections.
+* Dialer: flush output buffers after every packet processing to ensure events 
+  are delivered as soon as possible.
 * Dialer: add cache for output of 'agent show' and 'queue show' commands. These 
   commands are expensive to execute and greatly slow down the 'getagentstatus' 
   ECCP procedure. The current cache lifetime is 1.5 seconds.

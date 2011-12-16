@@ -109,11 +109,24 @@ class DialerServer extends MultiplexServer
     
     function procesarPaquetes()
     {
-    	$bHayProcesados = FALSE;
+    	$oConnAMI = NULL;
+        
+        $bHayProcesados = FALSE;
+        foreach ($this->_listaConn as &$oConn) {
+            if (is_a($oConn, 'AMIClientConn')) { 
+                $oConnAMI = $oConn;
+                if ($oConn->hayPaquetes()) {
+                    $bHayProcesados = TRUE;
+                    $oConnAMI->procesarPaquete();
+                    $this->vaciarBuferesEscritura();
+                }
+            }
+        }
         foreach ($this->_listaConn as &$oConn) {
         	if ($oConn->hayPaquetes()) {
         		$bHayProcesados = TRUE;
                 $oConn->procesarPaquete();
+                $this->vaciarBuferesEscritura();
         	}
         }
         return $bHayProcesados;
