@@ -1,0 +1,20 @@
+#activateRegister a{
+    color: #000000;
+    font-weight: bold;
+}
+#activateRegister a:hover{
+    background-color: #E35332;
+    color: #FFFFFF;
+    border-color: #FFFFFF;
+    font-weight: bold;
+}
+#noAsk a{
+    color: #000000;
+    font-weight: bold;
+}
+#noAsk a:hover{
+    background-color: #E35332;
+    color: #FFFFFF;
+    border-color: #FFFFFF;
+    font-weight: bold;
+}
