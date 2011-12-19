@@ -227,5 +227,11 @@ $arrLang=array(
 "Loading left panel" => "Cargando panel izquierdo",
 "Hide left panel" => "Ocultar panel izquierdo",
 "Load left panel" => "Cargar panel izquierdo",
+"characters left" => "caracteres faltantes",
+"Save Note" => "Guardar Nota",
+"Saving Note" => "Guardando Nota",
+"Loading Note" => "Cargando Nota",
+"Click here to leave a note." => "Click aquí para dejar una nota.",
+"Your session has expired. Press 'Accept' to return to the login page." => "Su sesion ha expirado. Presione 'Aceptar' para regresar a la pagina de ingreso.",
 );
 ?>
