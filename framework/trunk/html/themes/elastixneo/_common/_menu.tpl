@@ -493,6 +493,9 @@ function oneClickEvent()
 <input type="hidden" id="toolTip_showTab" value="{$SHOW_IZQTAB}" />
 <input type="hidden" id="toolTip_hidingTab" value="{$HIDING_IZQTAB}" />
 <input type="hidden" id="toolTip_showingTab" value="{$SHOWING_IZQTAB}" />
+<input type="hidden" id="amount_char_label" value="{$AMOUNT_CHARACTERS}" />
+<input type="hidden" id="save_note_label" value="{$MSG_SAVE_NOTE}" />
+<input type="hidden" id="get_note_label" value="{$MSG_GET_NOTE}" />
 
 <div id="neo-headerbox">
 	<div id="neo-logobox"><img src="themes/{$THEMENAME}/images/elastix_logo_mini2.png" width="200" height="59" alt="elastix" longdesc="http://www.elastix.org" /></div>
@@ -593,6 +596,7 @@ function oneClickEvent()
 	      {/if}
 	      &nbsp;{$title}</span><div class="neo-module-name-right"></div>
 	      <div class="neo-module-title-buttonstab-right"></div><span class="neo-module-title-buttonstab">
+		  <img src="themes/{$THEMENAME}/images/tab_notes.png" width="23" height="21" alt="tabnotes" id="togglestickynote" style="cursor: pointer;" />
 		  {if $viewMenuTab eq 'true'}
 	      <img src="images/expandOut.png" width="24" height="24" alt="expand" id="toggleleftcolumn" class="neo-picker" border="0" onclick='saveToggleTab()' title="{$SHOW_IZQTAB}" />
 		  {elseif $viewMenuTab eq 'false'}
@@ -621,6 +625,7 @@ function oneClickEvent()
 	      {/if}
 	      &nbsp;{$title}</span><div class="neo-module-name-right"></div>
 	      <div class="neo-module-title-buttonstab-right"></div><span class="neo-module-title-buttonstab">
+		  <img src="themes/{$THEMENAME}/images/tab_notes.png" width="23" height="21" alt="tabnotes" id="togglestickynote" style="cursor: pointer;" />
 		  {if $IMG_BOOKMARKS eq 'bookmark.png'}
 		  <img src="themes/{$THEMENAME}/images/{$IMG_BOOKMARKS}" width="24" height="24" alt="bookmark" title="{$ADD_BOOKMARK}" id="togglebookmark" style="cursor: pointer;" onclick='addBookmark()' />
 		  {else}

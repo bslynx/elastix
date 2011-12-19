@@ -10,9 +10,11 @@
 		<link rel="stylesheet" media="screen" type="text/css" href="themes/{$THEMENAME}/header.css" />
 		<link rel="stylesheet" media="screen" type="text/css" href="themes/{$THEMENAME}/content.css" />
 		<link rel="stylesheet" media="screen" type="text/css" href="themes/{$THEMENAME}/applet.css" />
+		<link rel="stylesheet" media="screen" type="text/css" href="themes/{$THEMENAME}/ticky_note.css" />
         <!--[if lte IE 8]><link rel="stylesheet" media="screen" type="text/css" href="themes/{$THEMENAME}/ie.css" /><![endif]-->
 	{$HEADER_LIBS_JQUERY}
         <script type='text/javascript' src="libs/js/base.js"></script>
+	<script type='text/javascript' src="libs/js/ticky_note.js"></script>
         <script type='text/javascript' src="libs/js/iframe.js"></script>
         {$HEADER}
 	{$HEADER_MODULES}
@@ -50,6 +52,15 @@
 		</div>
 		<div align="center" id="neo-footerbox"> <!-- mostrando el footer -->
 			<a href="http://www.elastix.org" style="color: #444; text-decoration: none;" target='_blank'>Elastix</a> is licensed under <a href="http://www.opensource.org/licenses/gpl-license.php" target='_blank' style="color: #444; text-decoration: none;" >GPL</a> by <a href="http://www.palosanto.com" target='_blank' style="color: #444; text-decoration: none;">PaloSanto Solutions</a>. 2006 - {$currentyear}.
+		</div>
+		<div id="neo-sticky-note" class="neo-display-none">
+		  <div id="neo-sticky-note-text"></div>
+		  <div id="neo-sticky-note-text-edit" class="neo-display-none">
+			<textarea id="neo-sticky-note-textarea"></textarea>
+			<div id="neo-sticky-note-text-char-count"></div>
+			<input type="button" value="{$SAVE_NOTE}" class="neo-submit-button" onclick="send_ticky_note()" />
+			<div id=neo-sticky-note-text-edit-delete></div>
+		  </div>
 		</div>
     </body>
 </html>

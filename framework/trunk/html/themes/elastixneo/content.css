@@ -133,6 +133,7 @@ div.neo-modulecontent-row {
 #neo-3menubox {
 	position: relative;
 	margin-top: 6px;
+	margin-bottom: 18px;
 	padding: 0px 0px 10px 0px;
 	width: 220px;
 	-moz-border-radius: 10px 10px 10px 10px;
@@ -194,7 +195,7 @@ div.neo-shortcuts-box {
 }
 #neo-historybox {
 	position: relative;
-	margin-top: 20px;
+	margin-top: 8px;
 	padding: 0px 0px 10px 0px;
 	width: 220px;
 }
