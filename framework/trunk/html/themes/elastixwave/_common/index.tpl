@@ -6,9 +6,11 @@
         <title>Elastix</title>
         <link rel="stylesheet" href="themes/{$THEMENAME}/styles.css" />
         <link rel="stylesheet" href="themes/{$THEMENAME}/help.css" />
+		<link rel="stylesheet" media="screen" type="text/css" href="themes/{$THEMENAME}/ticky_note.css" />
 	{$HEADER_LIBS_JQUERY}
         <script type='text/javascript' src="libs/js/base.js"></script>
         <script type='text/javascript' src="libs/js/iframe.js"></script>
+		<script type='text/javascript' src="libs/js/ticky_note.js"></script>
         {$HEADER}
 	{$HEADER_MODULES}
     </head>
@@ -50,5 +52,14 @@
                 </td>
             </tr>
         </table>
+		<div id="neo-sticky-note" class="neo-display-none">
+		  <div id="neo-sticky-note-text"></div>
+		  <div id="neo-sticky-note-text-edit" class="neo-display-none">
+			<textarea id="neo-sticky-note-textarea"></textarea>
+			<div id="neo-sticky-note-text-char-count"></div>
+			<input type="button" value="{$SAVE_NOTE}" class="neo-submit-button" onclick="send_ticky_note()" />
+			<div id="neo-sticky-note-text-edit-delete"></div>
+		  </div>
+		</div>
     </body>
 </html>

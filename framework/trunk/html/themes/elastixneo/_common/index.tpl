@@ -59,7 +59,7 @@
 			<textarea id="neo-sticky-note-textarea"></textarea>
 			<div id="neo-sticky-note-text-char-count"></div>
 			<input type="button" value="{$SAVE_NOTE}" class="neo-submit-button" onclick="send_ticky_note()" />
-			<div id=neo-sticky-note-text-edit-delete></div>
+			<div id="neo-sticky-note-text-edit-delete"></div>
 		  </div>
 		</div>
     </body>

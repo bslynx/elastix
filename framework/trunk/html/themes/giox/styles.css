@@ -1041,3 +1041,7 @@ div.neo-applet-tdesc {
 	float:left;
 	overflow:hidden;
 }
+
+.neo-display-none {
+	display: none;
+}

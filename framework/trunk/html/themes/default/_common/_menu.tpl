@@ -81,7 +81,9 @@
                 </tr>
               </table>
             </td>
-            <td align="right" valign="middle"><a href="javascript:popUp('help/?id_nodo={$idSubMenuSelected}&name_nodo={$nameSubMenuSelected}','1000','460')"><img
+            <td align="right" valign="middle">
+				<img src="themes/{$THEMENAME}/images/tab_notes.png" alt="tabnotes" id="togglestickynote1" class="togglestickynote" style="cursor: pointer;" />&nbsp;
+				<a href="javascript:popUp('help/?id_nodo={$idSubMenuSelected}&name_nodo={$nameSubMenuSelected}','1000','460')"><img
                 src="images/help_top.gif" border="0"></a>&nbsp;&nbsp;<a href="javascript:changeMenu()"><img
                 src="images/arrow_top.gif" border="0"></a>&nbsp;&nbsp;</td>
           </tr>
@@ -95,6 +97,8 @@
     <tr>
       <td><img src="images/logo_elastix_new_mini.png" border="0"></td>
       <td align="right" class="letra_gris" valign="middle">{$nameMainMenuSelected} &rarr; {$nameSubMenuSelected} {if !empty($idSubMenu2Selected)} &rarr; {$nameSubMenu2Selected} {/if}
+		  &nbsp;&nbsp;<img src="themes/{$THEMENAME}/images/tab_notes_bottom.png" alt="tabnotes" id="togglestickynote2" class="togglestickynote" style="cursor: pointer;" border="0"
+          align="absmiddle" />
           &nbsp;&nbsp;<a href="javascript:popUp('help/?id_nodo={$idSubMenuSelected}&name_nodo={$nameSubMenuSelected}','1000','460')"><img src="images/help_bottom.gif" border="0" 
           align="absmiddle"></a>
           &nbsp;&nbsp;<a href="javascript:changeMenu()"><img src="images/arrow_bottom.gif" border="0" align="absmiddle"></a>&nbsp;&nbsp;
@@ -216,3 +220,6 @@ function mostrar()
 <input type="hidden" id="lblHtmlMode" value="{$htmlMode}" />
 <input type="hidden" id="lblRegisterCm"   value="{$lblRegisterCm}" />
 <input type="hidden" id="lblRegisteredCm" value="{$lblRegisteredCm}" />
+<input type="hidden" id="amount_char_label" value="{$AMOUNT_CHARACTERS}" />
+<input type="hidden" id="save_note_label" value="{$MSG_SAVE_NOTE}" />
+<input type="hidden" id="get_note_label" value="{$MSG_GET_NOTE}" />
