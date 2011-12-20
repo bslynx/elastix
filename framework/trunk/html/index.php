@@ -167,6 +167,10 @@ if (isset($_SESSION['elastix_user']) &&
     $smarty->assign("VersionPackage", _tr('VersionPackage'));
 	$smarty->assign("textMode", _tr('textMode'));
     $smarty->assign("htmlMode", _tr('htmlMode'));
+	$smarty->assign("AMOUNT_CHARACTERS", _tr("characters left"));
+	$smarty->assign("SAVE_NOTE", _tr("Save Note"));
+	$smarty->assign("MSG_SAVE_NOTE", _tr("Saving Note"));
+	$smarty->assign("MSG_GET_NOTE", _tr("Loading Note"));
     //$menu= (isset($_GET['menu']))?$_GET['menu']:'';
     if (isset($_POST['menu'])) $menu = $_POST['menu'];
     elseif (isset($_GET['menu'])) $menu=$_GET['menu'];
@@ -238,6 +242,34 @@ if (isset($_SESSION['elastix_user']) &&
 		return;
 	}
 
+	if(getParameter("action") == "save_ticky_note"){
+		include_once "libs/paloSantoJSON.class.php";
+		$jsonObject = new PaloSantoJSON();
+		$description_note = getParameter("description");
+		$output = saveTickyNote($menuBookmark, $description_note);
+		if($output['status'] === TRUE){
+			$jsonObject->set_status("OK");
+		}else
+			$jsonObject->set_status("ERROR");
+		$jsonObject->set_error($output['msg']);
+		echo $jsonObject->createJSON();
+		return;
+	}
+
+	if(getParameter("action") == "get_ticky_note"){
+		include_once "libs/paloSantoJSON.class.php";
+		$jsonObject = new PaloSantoJSON();
+		$output = getTickyNote($menuBookmark);
+		if($output['status'] === TRUE){
+			$jsonObject->set_status("OK");
+		}else
+			$jsonObject->set_status("ERROR");
+		$jsonObject->set_error($output['msg']);
+		$jsonObject->set_message($output['data']);
+		echo $jsonObject->createJSON();
+		return;
+	}
+
 	if(menuIsBookmark($menuBookmark))
 		$smarty->assign("IMG_BOOKMARKS", "bookmarkon.png");
 	else
@@ -284,17 +316,28 @@ if (isset($_SESSION['elastix_user']) &&
     }
 
 } else {
-    $oPn = new paloSantoNavigation($arrConf, array(), $smarty);
-    $oPn->putHEAD_JQUERY_HTML();
-    $smarty->assign("THEMENAME", $arrConf['mainTheme']);
-    $smarty->assign("currentyear",date("Y"));
-    $smarty->assign("PAGE_NAME", _tr('Login page'));
-    $smarty->assign("WELCOME", _tr('Welcome to Elastix'));
-    $smarty->assign("ENTER_USER_PASSWORD", _tr('Please enter your username and password'));
-    $smarty->assign("USERNAME", _tr('Username'));
-    $smarty->assign("PASSWORD", _tr('Password'));
-    $smarty->assign("SUBMIT", _tr('Submit'));
+	$rawmode = getParameter("rawmode");
+    if(isset($rawmode) && $rawmode=='yes'){
+        include_once "libs/paloSantoJSON.class.php";
+        $jsonObject = new PaloSantoJSON();
+        $jsonObject->set_status("ERROR_SESSION");
+        $jsonObject->set_error(_tr("Your session has expired. If you want to do a login please press the button 'Accept'."));
+        $jsonObject->set_message(null);
+        echo $jsonObject->createJSON();
+    }
+    else{
+		$oPn = new paloSantoNavigation($arrConf, array(), $smarty);
+		$oPn->putHEAD_JQUERY_HTML();
+		$smarty->assign("THEMENAME", $arrConf['mainTheme']);
+		$smarty->assign("currentyear",date("Y"));
+		$smarty->assign("PAGE_NAME", _tr('Login page'));
+		$smarty->assign("WELCOME", _tr('Welcome to Elastix'));
+		$smarty->assign("ENTER_USER_PASSWORD", _tr('Please enter your username and password'));
+		$smarty->assign("USERNAME", _tr('Username'));
+		$smarty->assign("PASSWORD", _tr('Password'));
+		$smarty->assign("SUBMIT", _tr('Submit'));
 
-    $smarty->display("_common/login.tpl");
+		$smarty->display("_common/login.tpl");
+	}
 }
 ?>

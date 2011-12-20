@@ -1060,4 +1060,115 @@ function getStatusNeoTabToggle()
 	}
 }
 
+/**
+ * Funcion que se encarga obtener un ticky note.
+ *
+ * @return array con la informacion como mensaje y estado de resultado
+ * @param string $menu nombre del menu al cual se le va a agregar la nota
+ *
+ * @author Eduardo Cueva
+ * @author ecueva@palosanto.com
+ */
+function getTickyNote($menu)
+{
+	include_once "libs/paloSantoACL.class.php";
+	$arrResult['status'] = FALSE;
+	$arrResult['msg'] = _tr("Please your session id does not exist. Refresh the browser and try again.");
+	if($menu != ""){
+		$user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
+		global $arrConf;
+		$pdbACL = new paloDB("sqlite3:///$arrConf[elastix_dbdir]/acl.db");
+		$pACL = new paloACL($pdbACL);
+		$id_resource = $pACL->getResourceId($menu);
+		$uid = $pACL->getIdUser($user);
+		$date_edit = date("Y-m-d h:i:s");
+		if($uid!==FALSE){
+			$exist = false;
+			$query = "SELECT * FROM ticky_note WHERE id_user = ? AND id_resource = ?";
+			$arr_result1 = $pdbACL->getFirstRowQuery($query, TRUE, array($uid, $id_resource));
+			if($arr_result1 !== FALSE && count($arr_result1) > 0)
+				$exist = true;
+
+			if($exist){
+				$arrResult['status'] = TRUE;
+				$arrResult['msg'] = "";
+				$arrResult['data'] = $arr_result1['description'];
+				return $arrResult;
+			}else{
+				$arrResult['status'] = FALSE;
+				$arrResult['msg'] = "no_data";
+				$arrResult['data'] = _tr("Click here to leave a note.");
+				return $arrResult;
+			}
+		}
+	}
+	return $arrResult;
+}
+
+/**
+ * Funcion que se encarga de guardar o editar una nota de tipo ticky note.
+ *
+ * @return array con la informacion como mensaje y estado de resultado
+ * @param string $menu nombre del menu al cual se le va a agregar la nota
+ * @param string $description contenido de la nota que se desea agregar o editar
+ *
+ * @author Eduardo Cueva
+ * @author ecueva@palosanto.com
+ */
+function saveTickyNote($menu, $description)
+{
+	include_once "libs/paloSantoACL.class.php";
+	$arrResult['status'] = FALSE;
+	$arrResult['msg'] = _tr("Please your session id does not exist. Refresh the browser and try again.");
+	if($menu != ""){
+		$user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
+		global $arrConf;
+		$pdbACL = new paloDB("sqlite3:///$arrConf[elastix_dbdir]/acl.db");
+		$pACL = new paloACL($pdbACL);
+		$id_resource = $pACL->getResourceId($menu);
+		$uid = $pACL->getIdUser($user);
+		$date_edit = date("Y-m-d h:i:s");
+		if($uid!==FALSE){
+			$exist = false;
+			$query = "SELECT * FROM ticky_note WHERE id_user = ? AND id_resource = ?";
+			$arr_result1 = $pdbACL->getFirstRowQuery($query, TRUE, array($uid, $id_resource));
+			if($arr_result1 !== FALSE && count($arr_result1) > 0)
+				$exist = true;
+
+			if($exist){
+				$pdbACL->beginTransaction();
+				$query = "UPDATE ticky_note SET description = ?, date_edit = ? WHERE id_user = ? AND id_resource = ?";
+				$r = $pdbACL->genQuery($query, array($description, $date_edit, $uid, $id_resource));
+				if(!$r){
+					$pdbACL->rollBack();
+					$arrResult['status'] = FALSE;
+					$arrResult['msg'] = _tr("Request cannot be completed. Please try again or contact with your elastix administrator and notify the next error: ").$pdbACL->errMsg;
+					return $arrResult;
+				}else{
+					$pdbACL->commit();
+					$arrResult['status'] = TRUE;
+					$arrResult['msg'] = "";
+					return $arrResult;
+				}
+			}else{
+				$pdbACL->beginTransaction();
+				$query = "INSERT INTO ticky_note(id_user, id_resource, date_edit, description) VALUES(?, ?, ?, ?)";
+				$r = $pdbACL->genQuery($query, array($uid, $id_resource, $date_edit, $description));
+				if(!$r){
+					$pdbACL->rollBack();
+					$arrResult['status'] = FALSE;
+					$arrResult['msg'] = _tr("Request cannot be completed. Please try again or contact with your elastix administrator and notify the next error: ").$pdbACL->errMsg;
+					return $arrResult;
+				}else{
+					$pdbACL->commit();
+					$arrResult['status'] = TRUE;
+					$arrResult['msg'] = "";
+					return $arrResult;
+				}
+			}
+		}
+	}
+	return $arrResult;
+}
+
 ?>

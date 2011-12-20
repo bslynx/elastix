@@ -110,7 +110,7 @@ function request(url,arrParams, recursive, callback)
     callback           = callback  || null;
     recursive          = recursive || null;
 
-    // Comienza petición por ajax
+     // Comienza petición por ajax
     $.post(url,
         queryString,
         function(dataResponse){
@@ -118,6 +118,14 @@ function request(url,arrParams, recursive, callback)
             var statusResponse = dataResponse.statusResponse;
             var error          = dataResponse.error;
             var stop_recursive = false;
+
+			if(statusResponse == "ERROR_SESSION"){
+				$.unblockUI();
+				var r = confirm(error);
+				if (r==true)
+				  location.href = 'index.php';
+				return;
+			}
 
             if(callback)
                 stop_recursive = callback(message,statusResponse,error);
