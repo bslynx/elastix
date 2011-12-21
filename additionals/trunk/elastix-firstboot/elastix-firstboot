@@ -267,10 +267,26 @@ This screen will now ask for a password for user 'admin' that will be used for: 
 
 	# Remove redundant root login from A2Billing
 	# echo "DELETE FROM mya2billing.cc_ui_authen WHERE login = 'root';" | mysql -u root -p$MYSQL_PASSWD1
+
+	# Exist vtigercrm521 in mysql
+	echo "show databases;" | mysql -u root "-p$MYSQL_PASSWD1" | grep 'vtigercrm521'
+	dbvtiger="vtigercrm521"
+	if [ $? -eq 0 ]; then
+	  echo "vtigercrm521 database has been found it. Applying changes..."
+	else
+	  echo "show databases;" | mysql -u root "-p$MYSQL_PASSWD1" | grep 'vtigercrm510'
+	  if [ $? -eq 0 ]; then
+		dbvtiger="vtigercrm510"
+		echo "vtigercrm510 database has been found it. Applying changes..."
+	  else
+		echo "No vtiger database found."
+	  fi
+	fi
+
 	
 	# Set password for VTiger. This assumes the vtigercrm521 database is already created. 
 	# This procedure works for VTigerCRM 5.2.1
-	echo "UPDATE vtigercrm521.vtiger_users SET user_password = ENCRYPT('$FREEPBX_PASSWD1', CONCAT('\$1\$', SUBSTRING('admin' FROM 1 FOR 2), '\$')), user_hash = md5('$FREEPBX_PASSWD1') WHERE user_name = 'admin'" | mysql -u root "-p$MYSQL_PASSWD1"
+	echo "UPDATE $dbvtiger.vtiger_users SET user_password = ENCRYPT('$FREEPBX_PASSWD1', CONCAT('\$1\$', SUBSTRING('admin' FROM 1 FOR 2), '\$')), user_hash = md5('$FREEPBX_PASSWD1') WHERE user_name = 'admin'" | mysql -u root "-p$MYSQL_PASSWD1"
 	ret=$?
 	if [ $? -ne 0 ]; then
 	    echo "Unable to set admin password for VTiger !"
