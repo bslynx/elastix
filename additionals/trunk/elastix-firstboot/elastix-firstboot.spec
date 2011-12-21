@@ -1,7 +1,7 @@
 Summary: Elastix First Boot Setup
 Name:    elastix-firstboot
 Version: 2.2.0
-Release: 8
+Release: 9
 License: GPL
 Group:   Applications/System
 Source0: %{name}-%{version}.tar.bz2
@@ -48,10 +48,6 @@ chkconfig --level 2345 elastix-firstboot on
 # corresponding package does this by itself.
 if [ ! -d /var/lib/mysql/asteriskcdrdb ] ; then
 	cp /usr/share/elastix-firstboot/compat-dbscripts/01-asteriskcdrdb.sql /usr/share/elastix-firstboot/compat-dbscripts/02-asteriskuser-password.sql /var/spool/elastix-mysqldbscripts/
-fi
-
-if [ ! -d /var/lib/mysql/vtigercrm510 ] ; then
-	cp /usr/share/elastix-firstboot/compat-dbscripts/08-schema-vtiger.sql /var/spool/elastix-mysqldbscripts/
 fi
 
 # If installing, the system might have mysql running (upgrading from a RC). 
@@ -103,11 +99,17 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_localstatedir}/spool/elastix-mysqldbscripts/
 /usr/share/elastix-firstboot/compat-dbscripts/01-asteriskcdrdb.sql
 /usr/share/elastix-firstboot/compat-dbscripts/02-asteriskuser-password.sql
-/usr/share/elastix-firstboot/compat-dbscripts/08-schema-vtiger.sql
 /usr/bin/change-passwords
 /usr/sbin/fix-elastix-bug-595
 
 %changelog
+* Wed Dec 21 2011 Eduardo Cueva <ecueva@palosanto.com> 2.2.0-9
+- CHANGED: In spec file remove actions over vtiger database because the
+  package vtiger do that task.
+- CHANGED: Elastix-Firstboot: Support update change password to
+  vtigercrm 510 and 521. This changes was applied in elastix-firstboot
+  and change-passwords scripts. SVN Rev[3476]
+
 * Mon Dec 05 2011 Alex Villacis Lasso <a_villacis@palosanto.com> 2.2.0-8
 - CHANGED: Elastix-firstboot: Reverted some changes of commit 3415 on 3414
 - FIXED: fix elastix-firstboot so that it will actually run at shutdown
