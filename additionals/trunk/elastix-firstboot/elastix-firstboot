@@ -48,7 +48,8 @@ OPTFILE="/tmp/option.$$"
 elastix_mysql_init(){
 	# Check if process has been already done
 	FIRSTBOOT=0
-	if [ ! -e $PASSWD_PATH ] ; then
+	mysqlpass=`grep mysqlrootpwd= /etc/elastix.conf | sed 's/^mysqlrootpwd=//'`
+	if [ ! -e $PASSWD_PATH ] || [ "$mysqlpass" == ""  ] ; then
 		# Prompt for the MySQL password for this system
 		FIRSTBOOT=1
 		elastix_prompt_mysql_passwd

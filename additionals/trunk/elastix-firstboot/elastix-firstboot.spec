@@ -106,6 +106,8 @@ rm -rf $RPM_BUILD_ROOT
 * Wed Dec 21 2011 Eduardo Cueva <ecueva@palosanto.com> 2.2.0-9
 - CHANGED: In spec file remove actions over vtiger database because the
   package vtiger do that task.
+- FIXED: Fixed bug in  "elastix-firstboot" after intallation of an iso
+  where all passwords are never changed after the first reboot. SVN Rev[3478]
 - CHANGED: Elastix-Firstboot: Support update change password to
   vtigercrm 510 and 521. This changes was applied in elastix-firstboot
   and change-passwords scripts. SVN Rev[3476]
