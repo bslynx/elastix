@@ -881,7 +881,8 @@ Installing for dependencies:
         if ($this->_estadoPaquete['status'] != 'busy')
             return "ERR Nothing to cancel\n";
         if (!($this->_estadoPaquete['action'] == 'downloading' || 
-            $this->_estadoPaquete['action'] == 'reporefresh'))
+            $this->_estadoPaquete['action'] == 'reporefresh' ||
+            $this->_estadoPaquete['action'] == 'depsolving'))
             return "ERR Cannot cancel\n";
 
         // YUM requiere dos SIGINT para cancelar una descarga. El primero se 
