@@ -555,7 +555,7 @@ Installing for dependencies:
             } elseif ($bReporte) {
                 $regs = NULL;
                 $sLineaCompleta = ' '.$sLineaPrevia.$sLinea;
-                if (preg_match('/^\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+[kM]/', $sLineaCompleta, $regs)) {
+                if (preg_match('/^\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+[kM]?/', $sLineaCompleta, $regs)) {
                     $this->_estadoPaquete['progreso'][] = array(
                         'pkgaction' =>  $sOperacion,
                         'nombre'    =>  $regs[1],
