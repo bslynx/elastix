@@ -356,7 +356,7 @@ function getElastixKey(){
 		var link = $('#link_tmp').val();
 		if(link && link !=""){
 		    link += serverKey;
-		    window.open(link);
+		    location.href = link;
 		}
 	    }
 	}
