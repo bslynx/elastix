@@ -82,13 +82,7 @@ class paloSantoAddons
         }
         return null;
     }
-/*
-    function invalidarCacheAddons()
-    {
-    	unset($_SESSION['addonlist_timestamp']);
-        unset($_SESSION['addonlist']);
-    }
-*/
+
     private function _getAddons($sNombre)
     {
         $this->_errMsg = '';

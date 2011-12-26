@@ -18,18 +18,11 @@
         <option value="update_available">Update Available</option>
       </select>
     </div>
-    <div class="neo-addons-header-row-filter">  
-      Sort by:
-      <select class="neo-addons-header-row-select">
-        <option>Alphabeticall</option>
-        <option>Popularity</option>
-      </select>
-    </div>
-    <div class="neo-addons-header-row-filter">  
-      Name:
+    <div class="neo-addons-header-row-filter">
+      <span style="vertical-align:top;">Name:</span>
       <input type="text" id="filter_namerpm" value="" name="filter_namerpm" onkeypress="javascript:keyPressed(event)">
       <a onclick="javascript:do_listarAddons(null)" href="#">
-      <img width="15" height="15" border="0" align="absmiddle" src="modules/addons_avalaibles/images/lupa.png" alt="">
+      <img width="19" height="21" border="0" align="absmiddle" src="themes/{$THEMENAME}/images/searchw.png" alt="">
       </a>
     </div>
     <div class="neo-addons-header-row-navigation">

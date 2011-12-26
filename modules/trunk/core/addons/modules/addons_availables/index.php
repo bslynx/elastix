@@ -491,16 +491,6 @@ function do_deleteActionTmp($smarty, $module_name, $local_templates_dir)
     $oAddons->deleteActionTmp();
     return $json->encode();
 }
-/*
-function do_invalidarCacheAddons($smarty, $module_name, $local_templates_dir)
-{
-    $json = new Services_JSON();
-    Header('Content-Type: application/json');
-
-    $oAddons = new paloSantoAddons();
-    $oAddons->invalidarCacheAddons();
-    return $json->encode();
-}*/
 
 function do_getServerKey($smarty, $module_name, $local_templates_dir)
 {

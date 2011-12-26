@@ -11,6 +11,7 @@ var intervalCheckStatus = null;
 var dialogo_progreso_abierto = false;
 var transaction_in_progress = false;
 var checking_dependencies = false;
+var transaction_cancelled = false;
 var refer = document.URL;
 
 /* El siguiente objeto es el estado de la interfaz del Addon Market. Al comparar
@@ -102,7 +103,6 @@ function do_listarAddons(list_offset)
 			$('.neo-addons-row-button-uninstall-left, .neo-addons-row-button-uninstall-right').unbind('click');
 			$('.neo-addons-row-moreinfo').unbind('click');
 			$('.neo-progress-bar-close').unbind('click');
-			// TODO: trial
 			$('.neo-addons-row-button-buy-left, .neo-addons-row-button-buy-right').click(function (e) {
 				estadoCliente.name_rpm = $(this).parent().children('#name_rpm').val();
 				do_checkDependencies(estadoCliente.name_rpm);
@@ -124,7 +124,6 @@ function do_listarAddons(list_offset)
 				if(answer)
 				    cancelTransaction();
 			});
-			//alert(screen.availHeight);
 			// Iniciar la revisión del status de la instalación
 			do_checkStatus();
 		}
@@ -326,7 +325,6 @@ function do_checkStatus()
 		  clearInterval(intervalCheckStatus);
 		  $('#feedback').text('');
 		  if(transaction_in_progress){
-		//      do_invalidarCacheAddons();
 		      if(respuesta["transaction_status"])
 			  mostrar_mensaje(respuesta["transaction_status"],false);
 		      if(!checking_dependencies)
@@ -334,10 +332,12 @@ function do_checkStatus()
 		      transaction_in_progress = false;
 		  }
 		  if(checking_dependencies){
-		      checkServerID(estadoCliente.name_rpm);
+		      if(!transaction_cancelled)
+			  checkServerID(estadoCliente.name_rpm);
 		      checking_dependencies = false;
 		  }
 		  estadoCliente.name_rpm = null;
+		  transaction_cancelled = false;
 	      }
 	});
 }
@@ -376,21 +376,10 @@ function cancelTransaction()
 		alert(respuesta["error"]);
 	    else if(respuesta["db_error"])
 		alert(respuesta["db_error"]);
+	    else
+		transaction_cancelled = true;
 	});
 }
-
-/*
-function do_invalidarCacheAddons()
-{
-      $.post('index.php?menu=' + module_name + '&rawmode=yes', {
-		menu:		module_name, 
-		rawmode:	'yes',
-		action:		'invalidarCacheAddons'
-	},
-	function (respuesta) {
-	     do_listarAddons(null);
-	});
-}*/
 
 function do_checkDependencies(name_rpm)
 {
