@@ -75,7 +75,12 @@ function action_enableAnonymous($opt, $bEnable, $bExplicitSet)
         return FALSE;
     
     $output = $retval = NULL;
-    exec('/sbin/service asterisk reload > /dev/null 2>&1', $output, $retval);
-    return ($retval == 0);
+    exec("/sbin/service asterisk status", $flag, $status);
+    if($status==0){
+        exec('/sbin/service asterisk reload > /dev/null 2>&1', $output, $retval);
+        return ($retval == 0);
+    }else
+        return true;
+
 }
 ?>
