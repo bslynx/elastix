@@ -82,9 +82,18 @@ function do_listarAddons(list_offset)
 		if (respuesta['action'] == 'error') {
 			mostrar_mensaje(respuesta['message'],true);
 		} else {
-			$('#addonlist')
+			if(respuesta['empty_addons']){
+			    $('#addonlist')
 				.empty()
-				.append(respuesta['addonlist_html']);
+				.append("<br />"+respuesta['empty_addons']);
+			    $('#addonlist').attr('align','center');
+			}
+			else{
+			    $('#addonlist')
+				    .empty()
+				    .append(respuesta['addonlist_html']);
+			    $('#addonlist').attr('align','');
+			}
 			addonlist_offset = respuesta['offset'];
 			addonlist_limit = respuesta['limit'];
 			addonlist_total = respuesta['total'];

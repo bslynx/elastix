@@ -46,5 +46,6 @@ $arrLangModule = array(
 "Cancelling. This process could take several minutes, please wait" => "Cancelling. This process could take several minutes, please wait",
 "The cancel signal was already sent, this could take several minutes, please wait" => "The cancel signal was already sent, this could take several minutes, please wait",
 "Sorry, another transaction is already in process" => "Sorry, another transaction is already in process",
+"No addons match your search criteria" => "No addons match your search criteria"
 );
 ?>

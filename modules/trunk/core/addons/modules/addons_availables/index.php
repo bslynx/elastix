@@ -212,6 +212,10 @@ function do_listarAddons($smarty, $module_name, $local_templates_dir)
             $oAddons->errMsg;
         return $json->encode($respuesta);
     }
+    if(count($listaAddons) <= 0){
+	$respuesta['empty_addons'] = _tr("No addons match your search criteria");
+	return $json->encode($respuesta);
+    }
     $server_key = $oAddons->getSID();
     if(is_null($server_key))
 	$server_key = "";
@@ -222,6 +226,7 @@ function do_listarAddons($smarty, $module_name, $local_templates_dir)
         'arrData'       =>  $listaAddons,
 	'server_key'	=>  $server_key,
     ));
+
     $respuesta['addonlist_html'] = $smarty->fetch("$local_templates_dir/reporte_addons_lista.tpl");
     return $json->encode($respuesta);
 }
