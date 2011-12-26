@@ -242,11 +242,11 @@ if (isset($_SESSION['elastix_user']) &&
 		return;
 	}
 
-	if(getParameter("action") == "save_ticky_note"){
+	if(getParameter("action") == "save_sticky_note"){
 		include_once "libs/paloSantoJSON.class.php";
 		$jsonObject = new PaloSantoJSON();
 		$description_note = getParameter("description");
-		$output = saveTickyNote($menuBookmark, $description_note);
+		$output = saveStickyNote($menuBookmark, $description_note);
 		if($output['status'] === TRUE){
 			$jsonObject->set_status("OK");
 		}else
@@ -256,10 +256,10 @@ if (isset($_SESSION['elastix_user']) &&
 		return;
 	}
 
-	if(getParameter("action") == "get_ticky_note"){
+	if(getParameter("action") == "get_sticky_note"){
 		include_once "libs/paloSantoJSON.class.php";
 		$jsonObject = new PaloSantoJSON();
-		$output = getTickyNote($menuBookmark);
+		$output = getStickyNote($menuBookmark);
 		if($output['status'] === TRUE){
 			$jsonObject->set_status("OK");
 		}else

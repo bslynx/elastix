@@ -1061,7 +1061,7 @@ function getStatusNeoTabToggle()
 }
 
 /**
- * Funcion que se encarga obtener un ticky note.
+ * Funcion que se encarga obtener un sticky note.
  *
  * @return array con la informacion como mensaje y estado de resultado
  * @param string $menu nombre del menu al cual se le va a agregar la nota
@@ -1069,7 +1069,7 @@ function getStatusNeoTabToggle()
  * @author Eduardo Cueva
  * @author ecueva@palosanto.com
  */
-function getTickyNote($menu)
+function getStickyNote($menu)
 {
 	include_once "libs/paloSantoACL.class.php";
 	$arrResult['status'] = FALSE;
@@ -1084,7 +1084,7 @@ function getTickyNote($menu)
 		$date_edit = date("Y-m-d h:i:s");
 		if($uid!==FALSE){
 			$exist = false;
-			$query = "SELECT * FROM ticky_note WHERE id_user = ? AND id_resource = ?";
+			$query = "SELECT * FROM sticky_note WHERE id_user = ? AND id_resource = ?";
 			$arr_result1 = $pdbACL->getFirstRowQuery($query, TRUE, array($uid, $id_resource));
 			if($arr_result1 !== FALSE && count($arr_result1) > 0)
 				$exist = true;
@@ -1106,7 +1106,7 @@ function getTickyNote($menu)
 }
 
 /**
- * Funcion que se encarga de guardar o editar una nota de tipo ticky note.
+ * Funcion que se encarga de guardar o editar una nota de tipo sticky note.
  *
  * @return array con la informacion como mensaje y estado de resultado
  * @param string $menu nombre del menu al cual se le va a agregar la nota
@@ -1115,7 +1115,7 @@ function getTickyNote($menu)
  * @author Eduardo Cueva
  * @author ecueva@palosanto.com
  */
-function saveTickyNote($menu, $description)
+function saveStickyNote($menu, $description)
 {
 	include_once "libs/paloSantoACL.class.php";
 	$arrResult['status'] = FALSE;
@@ -1130,14 +1130,14 @@ function saveTickyNote($menu, $description)
 		$date_edit = date("Y-m-d h:i:s");
 		if($uid!==FALSE){
 			$exist = false;
-			$query = "SELECT * FROM ticky_note WHERE id_user = ? AND id_resource = ?";
+			$query = "SELECT * FROM sticky_note WHERE id_user = ? AND id_resource = ?";
 			$arr_result1 = $pdbACL->getFirstRowQuery($query, TRUE, array($uid, $id_resource));
 			if($arr_result1 !== FALSE && count($arr_result1) > 0)
 				$exist = true;
 
 			if($exist){
 				$pdbACL->beginTransaction();
-				$query = "UPDATE ticky_note SET description = ?, date_edit = ? WHERE id_user = ? AND id_resource = ?";
+				$query = "UPDATE sticky_note SET description = ?, date_edit = ? WHERE id_user = ? AND id_resource = ?";
 				$r = $pdbACL->genQuery($query, array($description, $date_edit, $uid, $id_resource));
 				if(!$r){
 					$pdbACL->rollBack();
@@ -1152,7 +1152,7 @@ function saveTickyNote($menu, $description)
 				}
 			}else{
 				$pdbACL->beginTransaction();
-				$query = "INSERT INTO ticky_note(id_user, id_resource, date_edit, description) VALUES(?, ?, ?, ?)";
+				$query = "INSERT INTO sticky_note(id_user, id_resource, date_edit, description) VALUES(?, ?, ?, ?)";
 				$r = $pdbACL->genQuery($query, array($uid, $id_resource, $date_edit, $description));
 				if(!$r){
 					$pdbACL->rollBack();

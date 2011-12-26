@@ -10,11 +10,11 @@
 		<link rel="stylesheet" media="screen" type="text/css" href="themes/{$THEMENAME}/header.css" />
 		<link rel="stylesheet" media="screen" type="text/css" href="themes/{$THEMENAME}/content.css" />
 		<link rel="stylesheet" media="screen" type="text/css" href="themes/{$THEMENAME}/applet.css" />
-		<link rel="stylesheet" media="screen" type="text/css" href="themes/{$THEMENAME}/ticky_note.css" />
+		<link rel="stylesheet" media="screen" type="text/css" href="themes/{$THEMENAME}/sticky_note.css" />
         <!--[if lte IE 8]><link rel="stylesheet" media="screen" type="text/css" href="themes/{$THEMENAME}/ie.css" /><![endif]-->
 	{$HEADER_LIBS_JQUERY}
         <script type='text/javascript' src="libs/js/base.js"></script>
-	<script type='text/javascript' src="libs/js/ticky_note.js"></script>
+	<script type='text/javascript' src="libs/js/sticky_note.js"></script>
         <script type='text/javascript' src="libs/js/iframe.js"></script>
         {$HEADER}
 	{$HEADER_MODULES}
@@ -58,7 +58,7 @@
 		  <div id="neo-sticky-note-text-edit" class="neo-display-none">
 			<textarea id="neo-sticky-note-textarea"></textarea>
 			<div id="neo-sticky-note-text-char-count"></div>
-			<input type="button" value="{$SAVE_NOTE}" class="neo-submit-button" onclick="send_ticky_note()" />
+			<input type="button" value="{$SAVE_NOTE}" class="neo-submit-button" onclick="send_sticky_note()" />
 			<div id="neo-sticky-note-text-edit-delete"></div>
 		  </div>
 		</div>

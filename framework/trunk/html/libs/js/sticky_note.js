@@ -30,7 +30,7 @@ $(document).ready(function(){
 	e.stopPropagation(); // Para evitar q el click se propague hasta el "document"
 	if($("#neo-sticky-note").data("neo-sticky-note-status")=="hidden") {
 		var arrAction = new Array();
-		arrAction["action"]  = "get_ticky_note";
+		arrAction["action"]  = "get_sticky_note";
 		arrAction["rawmode"] = "yes";
 		var urlImaLoading = "<div style='margin: 10px;'><img src='images/busy.gif' />&nbsp;<span style='font-size: 20px; '>"+$('#get_note_label').val()+"...</span></div>";
 		$.blockUI({ message: urlImaLoading });
@@ -103,9 +103,9 @@ function showCharCount() {
 /**
  * Funcion que envia la peticion de guardar o editar una nota.
  */
-function send_ticky_note(){
+function send_sticky_note(){
 	var arrAction = new Array();
-	arrAction["action"]  = "save_ticky_note";
+	arrAction["action"]  = "save_sticky_note";
 	arrAction["description"]  = $("#neo-sticky-note-textarea").val();
 	arrAction["rawmode"] = "yes";
 	var urlImaLoading = "<div style='margin: 10px;'><img src='images/busy.gif' />&nbsp;<span style='font-size: 20px; '>"+$('#save_note_label').val()+"...</span></div>";
