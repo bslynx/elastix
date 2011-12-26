@@ -103,13 +103,16 @@ rm -rf $RPM_BUILD_ROOT
 /usr/sbin/fix-elastix-bug-595
 
 %changelog
-* Wed Dec 21 2011 Eduardo Cueva <ecueva@palosanto.com> 2.2.0-9
+* Wed Dec 22 2011 Eduardo Cueva <ecueva@palosanto.com> 2.2.0-9
 - CHANGED: In spec file remove actions over vtiger database because the
   package vtiger do that task.
-- FIXED: Fixed bug in  "elastix-firstboot" after intallation of an iso
+- FIXED: Elastix-firstboot: Changes in elastix-firstboot script to fix 
+  the bug with elastix.conf where is created that file by elastix-framework 
+  for adding "amiadminpwd" to ami password.
+- FIXED: Fixed bug in  "elastix-firstboot" after intallation of an iso 
   where all passwords are never changed after the first reboot. SVN Rev[3478]
-- CHANGED: Elastix-Firstboot: Support update change password to
-  vtigercrm 510 and 521. This changes was applied in elastix-firstboot
+- CHANGED: Elastix-Firstboot: Support update change password to 
+  vtigercrm 510 and 521. This changes was applied in elastix-firstboot 
   and change-passwords scripts. SVN Rev[3476]
 
 * Mon Dec 05 2011 Alex Villacis Lasso <a_villacis@palosanto.com> 2.2.0-8
