@@ -350,8 +350,7 @@ function getElastixKey(){
     $.post("index.php",arrAction,
 	function(arrData,statusResponse,error)
 	{
-	    var message = JSONRPMtoString(arrData);
-	    var serverKey = message["serverKey"];
+	    var serverKey = arrData["server_key"];
 	    if(serverKey && serverKey != ""){
 		var link = $('#link_tmp').val();
 		if(link && link !=""){
