@@ -12,6 +12,7 @@ var dialogo_progreso_abierto = false;
 var transaction_in_progress = false;
 var checking_dependencies = false;
 var transaction_cancelled = false;
+var cancel_confirm = "";
 var refer = document.URL;
 
 /* El siguiente objeto es el estado de la interfaz del Addon Market. Al comparar
@@ -113,14 +114,20 @@ function do_listarAddons(list_offset)
 			$('.neo-addons-row-moreinfo').unbind('click');
 			$('.neo-progress-bar-close').unbind('click');
 			$('.neo-addons-row-button-buy-left, .neo-addons-row-button-buy-right').click(function (e) {
+				$('body').css('cursor','wait');
+				$(this).css('cursor','wait');
 				estadoCliente.name_rpm = $(this).parent().children('#name_rpm').val();
 				do_checkDependencies(estadoCliente.name_rpm);
 			});
 			$('.neo-addons-row-button-install-left, .neo-addons-row-button-install-right, .neo-addons-row-button-trial-left, .neo-addons-row-button-trial-right').click(function () {
+				$('body').css('cursor','wait');
+				$(this).css('cursor','wait');
 				estadoCliente.name_rpm = $(this).parent().children('#name_rpm').val();
 				do_iniciarInstallUpdate(estadoCliente.name_rpm);
 			});
 			$('.neo-addons-row-button-uninstall-left, .neo-addons-row-button-uninstall-right').click(function () {
+				$('body').css('cursor','wait');
+				$(this).css('cursor','wait');
 				estadoCliente.name_rpm = $(this).parent().children('#name_rpm').val();
 				do_iniciarUninstall(estadoCliente.name_rpm);
 			});
@@ -129,7 +136,7 @@ function do_listarAddons(list_offset)
 				window.open(url_moreinfo);
 			});
 			$('.neo-progress-bar-close').click(function () {
-				var answer = confirm("Are you sure you want to cancel this transaction?");
+				var answer = confirm(respuesta["cancel_confirm"]);
 				if(answer)
 				    cancelTransaction();
 			});
@@ -206,12 +213,18 @@ function do_iniciarInstallUpdate(name_rpm)
 		name_rpm:	name_rpm
 	},
 	function (respuesta) {
+		$('body').css('cursor','default');
+		$('.neo-addons-row-button-install-left.neo-addons-row-button-install-right.neo-addons-row-button-trial-left.neo-addons-row-button-trial-right').css('cursor','pointer');
 		if(respuesta["db_error"])
 		    mostrar_mensaje(respuesta["db_error"],true);
+		else if(respuesta["error"]){
+		    mostrar_mensaje(respuesta["error"],true);
+		    do_checkStatus();
+		}
 		else{
 		    transaction_in_progress = true;
 		    mostrar_dialogo_progreso();
-		    $(".neo-progress-bar-title").text("Installing/Updating "+name_rpm);
+		    $(".neo-progress-bar-title").text(respuesta["title"]+" "+name_rpm);
 		    intervalCheckStatus = setInterval("do_checkStatus()",1000);
 		}
 	});
@@ -226,12 +239,18 @@ function do_iniciarUninstall(name_rpm)
 		name_rpm:	name_rpm
 	},
 	function (respuesta) {
+		$('body').css('cursor','default');
+		$('.neo-addons-row-button-uninstall-left.neo-addons-row-button-uninstall-right').css('cursor','pointer');
 		if(respuesta["db_error"])
 		    mostrar_mensaje(respuesta["db_error"],true);
+		else if(respuesta["error"]){
+		    mostrar_mensaje(respuesta["error"],true);
+		    do_checkStatus();
+		}
 		else{
 		    transaction_in_progress = true;
 		    mostrar_dialogo_progreso();
-		    $(".neo-progress-bar-title").text("Uninstalling "+name_rpm);
+		    $(".neo-progress-bar-title").text(respuesta["title"]+" "+name_rpm);
 		    intervalCheckStatus = setInterval("do_checkStatus()",1000);
 		}
 	});
@@ -399,13 +418,19 @@ function do_checkDependencies(name_rpm)
 		name_rpm:	name_rpm
 	},
 	function (respuesta) {
-	     if(respuesta["db_error"])
+		$('body').css('cursor','default');
+		$('.neo-addons-row-button-buy-left.neo-addons-row-button-buy-right').css('cursor','pointer');
+		if(respuesta["db_error"])
 		    mostrar_mensaje(respuesta["db_error"],true);
+		else if(respuesta["error"]){
+		    mostrar_mensaje(respuesta["error"],true);
+		    do_checkStatus();
+		}
 		else{
 		    transaction_in_progress = true;
 		    checking_dependencies = true;
 		    mostrar_dialogo_progreso();
-		    $(".neo-progress-bar-title").text("Checking Dependencies "+name_rpm);
+		    $(".neo-progress-bar-title").text(respuesta["title"]+" "+name_rpm);
 		    intervalCheckStatus = setInterval("do_checkStatus()",1000);
 		}
 	});

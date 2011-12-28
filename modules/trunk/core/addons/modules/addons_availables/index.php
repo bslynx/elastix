@@ -159,8 +159,16 @@ function _moduleContent(&$smarty, $module_name)
 function do_listarAddonsHTML($smarty, $module_name, $local_templates_dir)
 {
 	$smarty->assign(array(
-        'title'     =>  _tr('Addon Market'),
-        'icon'      =>  'modules/'.$module_name.'/images/module_icon_addons.png',
+        'title'     	   =>  _tr('Addon Market'),
+        'icon'      	   =>  'modules/'.$module_name.'/images/module_icon_addons.png',
+	'filter_by' 	   =>  _tr('Filter by'),
+	'available' 	   =>  _tr('Available'),
+	'installed' 	   =>  _tr('Installed'),
+	'purchased' 	   =>  _tr('Purchased'),
+	'update_available' =>  _tr('Update Available'),
+	'name'		   =>  _tr('Name'),
+	'showing'	   =>  _tr('Showing'),
+	'of'		   =>  _tr('of')
     ));
     return $smarty->fetch($local_templates_dir.'/reporte_addons.tpl');
 }
@@ -182,13 +190,15 @@ function do_listarAddons($smarty, $module_name, $local_templates_dir)
     $filter_nameRpm = getParameter('filter_nameRpm');
     $oAddons = new paloSantoAddons();
 
+    $respuesta['cancel_confirm'] = _tr("Are you sure you want to cancel this transaction?");
+
     // Consultar el número de addons
     $total = $oAddons->contarAddons($filter_type, $filter_nameRpm);
     if (is_null($total)) {
         $respuesta['action'] = 'error';
         $respuesta['message'] = 
-            _tr('The system can not connect to the Web Service resource. Please check your Internet connection.').
-            $oAddons->errMsg;
+            _tr('The system can not connect to the Web Service resource. Please check your Internet connection.').' '.
+            $oAddons->getErrMsg();
         return $json->encode($respuesta);
     }
     $limit = 10;
@@ -225,8 +235,14 @@ function do_listarAddons($smarty, $module_name, $local_templates_dir)
         'url_images'    =>  $arrConf['url_images'],
         'arrData'       =>  $listaAddons,
 	'server_key'	=>  $server_key,
+	'by'		=>  _tr('by'),
+	'TRIAL'		=>  _tr('TRIAL'),
+	'BUY'		=>  _tr('BUY'),
+	'INSTALL'	=>  _tr('INSTALL'),
+	'UPDATE'	=>  _tr('UPDATE'),
+	'UNINSTALL'	=>  _tr('UNINSTALL'),
+	'more_info'	=>  _tr('More info')
     ));
-
     $respuesta['addonlist_html'] = $smarty->fetch("$local_templates_dir/reporte_addons_lista.tpl");
     return $json->encode($respuesta);
 }
@@ -245,14 +261,16 @@ function do_iniciarInstallUpdate($smarty, $module_name, $local_templates_dir)
 	return $json->encode($respuesta);
     }
     else{
-	$respuesta = $oAddons->installAddon($name_rpm);
+	$respuesta["status"] = $oAddons->installAddon($name_rpm);
 	$user = $_SESSION["elastix_user"];
 	if(!$oAddons->saveActionTmp($name_rpm,"Installing/Updating", $user)){
 	    $respuesta["db_error"] = $oAddons->getErrMsg();
 	    return $json->encode($respuesta);
 	}
-	else
+	else{
+	    $respuesta["title"] = _tr("Installing/Updating");
 	    return $json->encode($respuesta);
+	}
     }
 }
 
@@ -270,14 +288,16 @@ function do_iniciarUninstall($smarty, $module_name, $local_templates_dir)
 	return $json->encode($respuesta);
     }
     else{
-	$respuesta = $oAddons->uninstallAddon($name_rpm);
+	$respuesta["status"] = $oAddons->uninstallAddon($name_rpm);
 	$user = $_SESSION["elastix_user"];
 	if(!$oAddons->saveActionTmp($name_rpm,"Uninstalling", $user)){
 	    $respuesta["db_error"] = $oAddons->getErrMsg();
 	    return $json->encode($respuesta);
 	}
-	else
+	else{
+	    $respuesta["title"] = _tr("Uninstalling");
 	    return $json->encode($respuesta);
+	}
     }
 }
 
@@ -295,14 +315,16 @@ function do_checkDependencies($smarty, $module_name, $local_templates_dir)
 	return $json->encode($respuesta);
     }
     else{
-	$respuesta = $oAddons->checkDependencies($name_rpm);
+	$respuesta["status"] = $oAddons->checkDependencies($name_rpm);
 	$user = $_SESSION["elastix_user"];
 	if(!$oAddons->saveActionTmp($name_rpm,"Checking Dependencies", $user)){
 	    $respuesta["db_error"] = $oAddons->getErrMsg();
 	    return $json->encode($respuesta);
 	}
-	else
+	else{
+	    $respuesta["title"] = _tr("Checking Dependencies");
 	    return $json->encode($respuesta);
+	}
     }
 }
 

@@ -46,6 +46,23 @@ $arrLangModule = array(
 "Cancelling. This process could take several minutes, please wait" => "Cancelling. This process could take several minutes, please wait",
 "The cancel signal was already sent, this could take several minutes, please wait" => "The cancel signal was already sent, this could take several minutes, please wait",
 "Sorry, another transaction is already in process" => "Sorry, another transaction is already in process",
-"No addons match your search criteria" => "No addons match your search criteria"
+"No addons match your search criteria" => "No addons match your search criteria",
+"Filter by" => "Filter by",
+"Available" => "Available",
+"Installed" => "Installed",
+"Purchased" => "Purchased",
+"Update Available" => "Update Available",
+"Name" => "Name",
+"Showing" => "Showing",
+"of" => "of",
+"by" => "by",
+"TRIAL" => "TRIAL",
+"BUY" => "BUY",
+"INSTALL" => "INSTALL",
+"UPDATE" => "UPDATE",
+"UNINSTALL" => "UNINSTALL",
+"More info" => "More info",
+"Addon Market" => "Addon Market",
+"Are you sure you want to cancel this transaction?" => "Are you sure you want to cancel this transaction?"
 );
 ?>

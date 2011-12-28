@@ -404,6 +404,13 @@ class paloSantoAddons
         $r = fgets($socket);
     }
 
+    /**
+     * Procedimiento que le indica al demonio que debe iniciar una instalación o actualización
+     * 
+     * @param  string     $name_rpm        Nombre del rpm a instalar
+     *
+     * @return string  Respuesta del demonio
+     */
     function installAddon($name_rpm)
     {
 	$socket = $this->_getUpdater();
@@ -451,6 +458,17 @@ class paloSantoAddons
 	return TRUE;
     }
 
+    /**
+     * Procedimiento que almacena en la base local addons.db en la tabla action_tmp, la transacción que está en progreso
+     * 
+     * @param  string     $name_rpm        Nombre del rpm
+     * @param  string     $action          Acción a realizar (instalación/actualización, desinstalación, chequear dependencias, 	*				      cancelar transacción) 
+     * @param  string     $user        	   Usuario que realiza la transacción
+     * @param  string     $status      	   Estado de la transacción (reporefresh, depsolving, downloading, applying)
+     * @param  integer    $percentage      Porcentaje de progreso de la transacción
+     *
+     * @return bool     TRUE en caso de éxito, FALSE caso contrario
+     */
     function saveActionTmp($name_rpm, $action, $user, $status="reporefresh", $percentage=0)
     {
 	$pDB = $this->_getDB();
@@ -463,6 +481,11 @@ class paloSantoAddons
 	return TRUE;
     }
 
+    /**
+     * Procedimiento que obtiene la transacción en progreso en caso de haberla
+     * 
+     * @return mixed  NULL en caso de error, caso contrario un arreglo con los datos de la tabla action_tmp
+     */
     function getActionTmp()
     {
 	$pDB = $this->_getDB();
@@ -475,6 +498,15 @@ class paloSantoAddons
 	return $result;
     }
 
+    /**
+     * Procedimiento que actualiza en la base local addons.db en la tabla action_tmp, la transacción que está en progreso
+     * 
+     * @param  string     $status      	   Estado de la transacción (reporefresh, depsolving, downloading, applying)
+     * @param  integer    $percentage      Porcentaje de progreso de la transacción
+     * @param  string     $action_rpm      Acción a realizar (instalación/actualización, desinstalación, chequear dependencias, 	*				      cancelar transacción)
+     *
+     * @return  bool     TRUE en caso de éxito, FALSE caso contrario
+     */
     function updateActionTmp($status,$percentage=NULL,$action_rpm=NULL)
     {
 	$pDB = $this->_getDB();
