@@ -560,7 +560,6 @@ function oneClickEvent()
 	  <p><span><a class="logout" href="?logout=yes">{$LOGOUT}</a> (<font color='#FFFFFF'><b>{$USER_LOGIN}</b></font>)</span></p>
 	</div>
 </div>
-
 <div id="neo-contentbox">
 	{if !empty($idSubMenu2Selected)}
 		{if $viewMenuTab eq 'true'}
@@ -626,6 +625,7 @@ function oneClickEvent()
 	      &nbsp;{$title}</span><div class="neo-module-name-right"></div>
 	      <div class="neo-module-title-buttonstab-right"></div><span class="neo-module-title-buttonstab">
 		  <img src="themes/{$THEMENAME}/images/tab_notes.png" width="23" height="21" alt="tabnotes" id="togglestickynote1" style="cursor: pointer;" class="togglestickynote" />
+		  <img src="images/expandOut.png" width="24" height="24" alt="expand" id="toggleleftcolumn" class="neo-picker" border="0"  title="{$SHOW_IZQTAB}" />
 		  {if $IMG_BOOKMARKS eq 'bookmark.png'}
 		  <img src="themes/{$THEMENAME}/images/{$IMG_BOOKMARKS}" width="24" height="24" alt="bookmark" title="{$ADD_BOOKMARK}" id="togglebookmark" style="cursor: pointer;" onclick='addBookmark()' />
 		  {else}
