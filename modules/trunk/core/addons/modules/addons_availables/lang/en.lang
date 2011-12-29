@@ -63,6 +63,7 @@ $arrLangModule = array(
 "UNINSTALL" => "UNINSTALL",
 "More info" => "More info",
 "Addon Market" => "Addon Market",
-"Are you sure you want to cancel this transaction?" => "Are you sure you want to cancel this transaction?"
+"Are you sure you want to cancel this transaction?" => "Are you sure you want to cancel this transaction?",
+"Location" => "Location"
 );
 ?>

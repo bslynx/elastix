@@ -63,7 +63,13 @@
 .neo-addons-row-desc {
 	position:relative;
 	margin: 16px 0px 0px 0px;
+	width: 950px;
 }
+
+.neo-addons-row-author{
+	font-weight: bold;
+}
+
 .neo-addons-row-icon img {
 	position:relative;
 	width:60px;
