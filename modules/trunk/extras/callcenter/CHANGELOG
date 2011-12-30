@@ -1,3 +1,5 @@
+* Agent Console: fail more gracefully when shutting down dialer process, by 
+  logging out the agent instead of getting stuck in an infinite loop.
 * Dialer: add new function MultiplexServer::vaciarBuferesEscritura() to flush 
   all output buffers.
 * Dialer: modify packet processing algorithm to prioritize the Asterisk AMI 

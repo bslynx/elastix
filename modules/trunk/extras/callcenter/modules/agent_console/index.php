@@ -1067,6 +1067,20 @@ function manejarSesionActiva_checkStatus($module_name, $smarty, $sDirLocalPlanti
             	&& time() - $iTimestampInicio <  $iTimeoutPoll) {
                 
                 $listaEventos = $oPaloConsola->esperarEventoSesionActiva();
+                if (is_null($listaEventos)) {
+                	// Ocurrió una excepción al esperar eventos
+                    session_start();
+    
+                    $respuesta[] = array(
+                        'event' =>  'logged-out',
+                    );
+
+                    // Eliminar la información de login
+                    $_SESSION['callcenter'] = generarEstadoInicial();
+                    $bReinicioSesion = TRUE;
+                    break;
+                }
+                
                 foreach ($listaEventos as $evento) 
                 if (isset($evento['agent_number']) && $evento['agent_number'] == $sAgente) 
                 switch ($evento['event']) {
