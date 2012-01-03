@@ -98,6 +98,30 @@ function do_listarAddons(list_offset)
 			addonlist_offset = respuesta['offset'];
 			addonlist_limit = respuesta['limit'];
 			addonlist_total = respuesta['total'];
+			// se coloca opacidad en la botones de pagineo en caso de ser necesario
+			if (addonlist_offset == null || addonlist_offset <= 0)
+			      $('#imgPrimero').css('opacity',0.3);
+			else
+			      $('#imgPrimero').css('opacity','');
+			if (addonlist_offset == null || addonlist_offset < addonlist_limit)
+			      $('#imgAnterior').css('opacity',0.3);
+			else
+			      $('#imgAnterior').css('opacity','');
+			if (addonlist_offset == null || addonlist_offset + addonlist_limit >= addonlist_total)
+			      $('#imgSiguiente').css('opacity',0.3);
+			else
+			      $('#imgSiguiente').css('opacity','');
+			if (addonlist_offset != null){
+			      var offsetfinal = addonlist_total - (addonlist_total % addonlist_limit);
+			      if (offsetfinal == addonlist_total)
+				      offsetfinal -= addonlist_limit;
+			      if (offsetfinal <= addonlist_offset)
+				      $('#imgFinal').css('opacity',0.3);
+			      else
+				      $('#imgFinal').css('opacity','');
+			}
+			else
+			       $('#imgFinal').css('opacity',0.3);
 			if(addonlist_total == 0)
 			    $('#addonlist_start_range').text(0);
 			else
