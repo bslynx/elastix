@@ -518,9 +518,11 @@ function do_checkstatus()
 					.text(respuesta[i].txt_btn_break);
 				break;
 			case 'holdenter':
+				estadoCliente.onhold = true;
 				// TODO
 				break;
 			case 'holdexit':
+				estadoCliente.onhold = false;
 				// TODO
 				break;
 			case 'agentlinked':
