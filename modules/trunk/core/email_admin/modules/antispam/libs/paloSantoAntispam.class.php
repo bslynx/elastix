@@ -149,8 +149,11 @@ class paloSantoAntispam {
         if($flagStatus != 0){
             $this->errMsg = $arrLangModule["Could not start the service antispam"];
             $return = false;
-        }else
+        }
+        else{
+            exec("/sbin/chkconfig --level 2345 spamassassin on");
             $return = true;
+        }
         return $return;
     }
 
@@ -166,8 +169,11 @@ class paloSantoAntispam {
         exec("sudo /sbin/service generic-cloexec spamassassin stop",$arrConsole,$flagStatus);
         if($flagStatus != 0){
             $this->errMsg = $arrLangModule["Could not stop the service antispam"];
-        }else
+        }
+        else{
+            exec("/sbin/chkconfig --level 2345 spamassassin off");
             $return = true;
+        }
         return $return;
     }
 
