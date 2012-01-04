@@ -380,7 +380,8 @@ function neoAppletProcesses_manejarMenu(event)
 		$('.neo-applet-processes-menu').position({
 			of: $(this),
 			my: "right top",
-			at: "right bottom"
+			at: "right bottom",
+			offset: "-7 1"
 		});
 	
 		if (sCurrState == 'OK') {

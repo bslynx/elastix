@@ -576,10 +576,15 @@ div.neo-applet-processes-row-menu {
     border-left:1px solid #ccc;
 }
 div.neo-applet-processes-menu {
-    position: absolute;
-    border: 1px solid #000;
+    background-color: #EFEFEF;
+    border-bottom: 1px solid #888888;
+    border-left: 1px solid #888888;
+    border-right: 1px solid #888888;
     display: none;
-    background-color: #ffffff;
     padding: 8px;
+    position: absolute;
     z-index: 1000000;
+    border-radius: 0px 0px 5px 5px;
+    -moz-border-radius: 0px 0px 5px 5px;
+    -webkit-border-radius: 0px 0px 5px 5px;
 }
