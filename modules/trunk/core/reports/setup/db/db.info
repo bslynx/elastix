@@ -5,7 +5,7 @@ path   = /var/www/db
 deletable = yes
 
 [asteriskcdrdb]
-ignore_backup = no
+ignore_backup = yes
 engine = mysql
 path   = /var/lib/mysql
-deletable = yes
+deletable = no
