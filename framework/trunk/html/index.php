@@ -171,6 +171,7 @@ if (isset($_SESSION['elastix_user']) &&
 	$smarty->assign("SAVE_NOTE", _tr("Save Note"));
 	$smarty->assign("MSG_SAVE_NOTE", _tr("Saving Note"));
 	$smarty->assign("MSG_GET_NOTE", _tr("Loading Note"));
+	$smarty->assign("LBL_NO_STICKY", _tr("Click here to leave a note."));
     //$menu= (isset($_GET['menu']))?$_GET['menu']:'';
     if (isset($_POST['menu'])) $menu = $_POST['menu'];
     elseif (isset($_GET['menu'])) $menu=$_GET['menu'];
@@ -290,6 +291,16 @@ if (isset($_SESSION['elastix_user']) &&
 		return;
 	}
 
+	$statusStickyNote = getStickyNote($menuBookmark); // se obtiene si ese menu tiene una nota agregada
+	
+	if($statusStickyNote['status'] === TRUE){
+		if($statusStickyNote['data'] != "")
+			$smarty->assign("STATUS_STICKY_NOTE", "true");
+		else
+			$smarty->assign("STATUS_STICKY_NOTE", "false");
+	}else
+		$smarty->assign("STATUS_STICKY_NOTE", "false");
+
     // rawmode es un modo de operacion que pasa directamente a la pantalla la salida
     // del modulo. Esto es util en ciertos casos.
     $rawmode = getParameter("rawmode");
@@ -311,7 +322,6 @@ if (isset($_SESSION['elastix_user']) &&
                 $smarty->assign("MENU","No modules");
             }
         }
-
         $smarty->display("_common/index.tpl");
     }
 
