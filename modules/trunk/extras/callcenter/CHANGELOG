@@ -1,3 +1,5 @@
+* Agent Console: fix incorrect function reference that caused login process to
+  hang if user navigates to a different module and back during login process. 
 * Agent Console: do not loop endlessly when some other client puts *our* agent
   on hold.
 * Agent Console: fail more gracefully when shutting down dialer process, by 

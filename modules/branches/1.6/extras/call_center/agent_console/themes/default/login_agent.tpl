@@ -106,7 +106,7 @@
 
 {if $REANUDAR_VERIFICACION}
 <script type="text/javascript">
-checkLogin();
+do_checklogin();
 </script>
 {/if}
 {/if}
