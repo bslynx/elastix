@@ -116,7 +116,7 @@ class PaloSantoFileEndPoint
                 break;
 
             case 'Atcom':
-                if($ArrayData['data']['model'] == "AT 320"){
+                if($ArrayData['data']['model'] == "AT320"){
 		    if($ArrayData['data']['tech'] == "iax2")
 			$contentFileAtcom = PrincipalFileAtcom320IAX($ArrayData['data']['DisplayName'], $ArrayData['data']['id_device'], $ArrayData['data']['secret'],$this->ipAdressServer,$ArrayData['data']['filename']);
 		    else
@@ -125,7 +125,7 @@ class PaloSantoFileEndPoint
                     if($result) $return = true;
                     else $return = false;
                 }
-                else if($ArrayData['data']['model'] == "AT 530" || $ArrayData['data']['model'] == "AT 620R"){
+                else if($ArrayData['data']['model'] == "AT530" || $ArrayData['data']['model'] == "AT620" || $ArrayData['data']['model'] == "AT610" || $ArrayData['data']['model'] == "AT640"){
                     if(isset($ArrayData['data']['arrParameters']['versionCfg']))
                         $version = $ArrayData['data']['arrParameters']['versionCfg'];
                     else
