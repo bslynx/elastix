@@ -1,3 +1,10 @@
+* Agent Console: implement status refresh via Server-Sent Events. This mode of
+  operation saves further bandwidth by removing a POST request after an event
+  is received or after the 2-minute timeout. Long polling is kept as a fallback
+  for Internet Explorer.
+* Agent Console: fix incorrect initial break state that caused console to 
+  immediately refresh break state if agent console is entered while agent is
+  in break.
 * Agent Console: fix incorrect function reference that caused login process to
   hang if user navigates to a different module and back during login process. 
 * Agent Console: do not loop endlessly when some other client puts *our* agent

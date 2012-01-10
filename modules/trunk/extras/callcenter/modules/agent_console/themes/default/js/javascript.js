@@ -25,6 +25,9 @@ var estadoCliente =
 var fechaInicio = null;
 var timer = null;
 
+// Objeto EventSource, si está soportado por el navegador
+var evtSource = null;
+
 $(document).ready(function() {
 	$('#elastix-callcenter-error-message').hide();
 	$('#elastix-callcenter-info-message').hide();
@@ -472,18 +475,27 @@ function do_save_forms()
 
 function do_checkstatus()
 {
-	$.post('index.php?menu=' + module_name + '&rawmode=yes', {
+	params = {
 		menu:		module_name, 
 		rawmode:	'yes',
 		action:		'checkStatus',
 		clientstate: estadoCliente
-	},
-	function (respuesta) {
-		manejarRespuestaStatus(respuesta);
-		
-		// Lanzar el método de inmediato
-		setTimeout(do_checkstatus, 1);
-	});
+	};
+	if (window.EventSource) {
+		params['serverevents'] = true;
+		evtSource = new EventSource('index.php?' + $.param(params));
+		evtSource.onmessage = function(event) {
+			manejarRespuestaStatus($.parseJSON(event.data));
+		}
+	} else {
+		$.post('index.php?menu=' + module_name + '&rawmode=yes', params,
+		function (respuesta) {
+			manejarRespuestaStatus(respuesta);
+			
+			// Lanzar el método de inmediato
+			setTimeout(do_checkstatus, 1);
+		});
+	}
 }
 
 function manejarRespuestaStatus(respuesta)
