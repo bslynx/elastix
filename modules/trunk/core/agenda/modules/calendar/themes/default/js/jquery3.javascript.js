@@ -95,7 +95,7 @@ $(document).ready(function(){
                 }
             }
         $("#box").hide();
-        var urlImaLoading = "<h1><img src='modules/"+module_name+"/images/busy.gif' /> "+$('#lblSending').val()+"...</h1>";
+        var urlImaLoading = "<div style='margin: 10px;'><div align='center'><img src='images/loading2.gif' /></div><div align='center'><span style='font-size: 14px; '>"+$('#lblSending').val()+"</span></div></div>";
         $.blockUI({ message: urlImaLoading });
         return true;
     });
@@ -155,7 +155,7 @@ $(document).ready(function(){
     $('#delete').click(function(){ //hace un submit sin pasar por el submit validador
         var id_event = $('#id_event').val();
 	$("#box").hide();
-        var urlImaLoading = "<h1><img src='modules/"+module_name+"/images/busy.gif' /> "+$('#lblDeleting').val()+"...</h1>";
+        var urlImaLoading = "<div style='margin: 10px;'><div align='center'><img src='images/loading2.gif' /></div><div align='center'><span style='font-size: 14px; '>"+$('#lblDeleting').val()+"</span></div></div>";
         $.blockUI({ message: urlImaLoading });
         var order = "menu="+module_name+"&action=delete_box&id_event="+id_event+"&rawmode=yes";
         $.post("index.php", order,
@@ -585,7 +585,7 @@ $(document).ready(function(){
     // view box detail event
     function getDataAjaxForm(order, e){
         // blocking screen
-        var urlImaLoading = "<h1><img src='modules/"+module_name+"/images/busy.gif' /> "+$('#lblLoading').val()+"...</h1>";
+        var urlImaLoading = "<div style='margin: 10px;'><div align='center'><img src='images/loading2.gif' /></div><div align='center'><span style='font-size: 14px; '>"+$('#lblLoading').val()+"</span></div></div>";
         $.blockUI({ message: urlImaLoading });
         var eje_x = ((screen.width)/2) - 250;
 	var eje_y = e.pageY;
@@ -1010,7 +1010,7 @@ $(document).ready(function(){
 
     function openBoxById(id_event){
 	if(id_event != ""){
-	    var urlImaLoading = "<h1><img src='modules/"+module_name+"/images/busy.gif' /> "+$('#lblLoading').val()+"...</h1>";
+	    var urlImaLoading = "<div style='margin: 10px;'><div align='center'><img src='images/loading2.gif' /></div><div align='center'><span style='font-size: 14px; '>"+$('#lblLoading').val()+"</span></div></div>";
 	    $.blockUI({ message: urlImaLoading });
 	    var eje_x = ((screen.width)/2) - 250;
 	    var eje_y = 38;
