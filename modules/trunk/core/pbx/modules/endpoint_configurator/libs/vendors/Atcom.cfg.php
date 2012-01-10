@@ -286,7 +286,7 @@ function PrincipalFileAtcom320IAX($DisplayName, $id_device, $secret, $ipAdressSe
 {
 $arrAtcom320 = array(
 //***************Network Settings***************
-"set iptype"    => "1", //dhcp
+//"set iptype"    => "1", //dhcp
 // "set vlan"      => "0", //disable
 
 //***************Audio Settings***************
@@ -349,7 +349,7 @@ function PrincipalFileAtcom320SIP($DisplayName, $id_device, $secret, $ipAdressSe
 {
 $arrAtcom320 = array(
 //***************Network Settings***************
-"set iptype"    => "1", //dhcp
+//"set iptype"    => "1", //dhcp
 // "set vlan"      => "0", //disable
 
 //***************Audio Settings***************
@@ -425,18 +425,8 @@ function PrincipalFileAtcom530SIP($DisplayName, $id_device, $secret, $ipAdressSe
 "<<VOIP CONFIG FILE>>Version:$versionCfg                         
 
 <GLOBAL CONFIG MODULE>
-Default Protocol   :2
-DHCP Mode          :1
-DHCP Dns           :1
 SNTP Server        :$ipAdressServer
 Enable SNTP        :1
-Time Zone          :12
-Enable Daylight    :0
-
-<LAN CONFIG MODULE>
-Lan Ip             :192.168.10.1
-Lan NetMask        :255.255.255.0
-Bridge Mode        :1
 
 <TELE CONFIG MODULE>
 Dial End With #    :1
@@ -519,18 +509,8 @@ function PrincipalFileAtcom530IAX($DisplayName, $id_device, $secret, $ipAdressSe
 "<<VOIP CONFIG FILE>>Version:$versionCfg                         
 
 <GLOBAL CONFIG MODULE>
-Default Protocol   :2
-DHCP Mode          :1
-DHCP Dns           :1
 SNTP Server        :$ipAdressServer
 Enable SNTP        :1
-Time Zone          :12
-Enable Daylight    :0
-
-<LAN CONFIG MODULE>
-Lan Ip             :192.168.10.1
-Lan NetMask        :255.255.255.0
-Bridge Mode        :1
 
 <TELE CONFIG MODULE>
 Dial End With #    :1

@@ -528,7 +528,7 @@ class PaloSantoFileEndPoint
                 break;
 
             case 'Atcom':
-                if($model == 'AT 530' || $model == 'AT 620R'){
+                if($model == 'AT530' || $model == 'AT620' || $model == 'AT610' || $model == 'AT640'){
                     if(isset($arrParametersOld['versionCfg'])){
                         $arrParametersOld['versionCfg'] = $arrParametersOld['versionCfg'] + 0.0001;
 			if(strlen($arrParametersOld['versionCfg']) == 1)
