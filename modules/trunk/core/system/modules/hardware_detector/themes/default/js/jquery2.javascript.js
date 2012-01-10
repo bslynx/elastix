@@ -101,7 +101,7 @@ $(document).ready(function(){
     $('#save_edit').click(function(){
         // blocking screen
         var module_name = $('#lblModule').val();
-        var urlImaLoading = "<h1><img src='modules/"+module_name+"/images/busy.gif' /> "+$('#lblSaving').val()+"...</h1>";
+        var urlImaLoading = "<div style='margin: 10px;'><div align='center'><img src='images/loading2.gif' /></div><div align='center'><span style='font-size: 14px; '>"+$('#lblSaving').val()+"</span></div></div>";
         $.blockUI({ message: urlImaLoading });
         var values           = getSelectEchoPort();
         var valuesActual     = getActualEchoPort();
@@ -199,7 +199,7 @@ $(document).ready(function(){
     $('#save_span').click(function(){
         // blocking screen
         var module_name = $('#lblModule').val();
-        var urlImaLoading = "<h1><img src='modules/"+module_name+"/images/busy.gif' /> "+$('#lblSaving').val()+"...</h1>";
+        var urlImaLoading = "<div style='margin: 10px;'><div align='center'><img src='images/loading2.gif' /></div><div align='center'><span style='font-size: 14px; '>"+$('#lblSaving').val()+"</span></div></div>";
         $.blockUI({ message: urlImaLoading });
         
         var url = "index.php";
