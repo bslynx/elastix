@@ -346,3 +346,5 @@ function mostrar_Menu(element)
 <input type="hidden" id="amount_char_label" value="{$AMOUNT_CHARACTERS}" />
 <input type="hidden" id="save_note_label" value="{$MSG_SAVE_NOTE}" />
 <input type="hidden" id="get_note_label" value="{$MSG_GET_NOTE}" />
+<input type="hidden" id="elastix_theme_name" value="{$THEMENAME}" />
+<input type="hidden" id="lbl_no_description" value="{$LBL_NO_STICKY}" />

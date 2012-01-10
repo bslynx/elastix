@@ -496,6 +496,8 @@ function oneClickEvent()
 <input type="hidden" id="amount_char_label" value="{$AMOUNT_CHARACTERS}" />
 <input type="hidden" id="save_note_label" value="{$MSG_SAVE_NOTE}" />
 <input type="hidden" id="get_note_label" value="{$MSG_GET_NOTE}" />
+<input type="hidden" id="elastix_theme_name" value="{$THEMENAME}" />
+<input type="hidden" id="lbl_no_description" value="{$LBL_NO_STICKY}" />
 
 <div id="neo-headerbox">
 	<div id="neo-logobox"><img src="themes/{$THEMENAME}/images/elastix_logo_mini2.png" width="200" height="59" alt="elastix" longdesc="http://www.elastix.org" /></div>
@@ -595,7 +597,11 @@ function oneClickEvent()
 	      {/if}
 	      &nbsp;{$title}</span><div class="neo-module-name-right"></div>
 	      <div class="neo-module-title-buttonstab-right"></div><span class="neo-module-title-buttonstab">
+	      {if $STATUS_STICKY_NOTE eq 'true'}
+		  <img src="themes/{$THEMENAME}/images/tab_notes_on.png" width="23" height="21" alt="tabnotes" id="togglestickynote1" class="togglestickynote" style="cursor: pointer;" />
+		  {else}
 		  <img src="themes/{$THEMENAME}/images/tab_notes.png" width="23" height="21" alt="tabnotes" id="togglestickynote1" class="togglestickynote" style="cursor: pointer;" />
+		  {/if}
 		  {if $viewMenuTab eq 'true'}
 	      <img src="images/expandOut.png" width="24" height="24" alt="expand" id="toggleleftcolumn" class="neo-picker" border="0" onclick='saveToggleTab()' title="{$SHOW_IZQTAB}" />
 		  {elseif $viewMenuTab eq 'false'}
@@ -624,7 +630,11 @@ function oneClickEvent()
 	      {/if}
 	      &nbsp;{$title}</span><div class="neo-module-name-right"></div>
 	      <div class="neo-module-title-buttonstab-right"></div><span class="neo-module-title-buttonstab">
+	      {if $STATUS_STICKY_NOTE eq 'true'}
+		  <img src="themes/{$THEMENAME}/images/tab_notes_on.png" width="23" height="21" alt="tabnotes" id="togglestickynote1" style="cursor: pointer;" class="togglestickynote" />
+		  {else}
 		  <img src="themes/{$THEMENAME}/images/tab_notes.png" width="23" height="21" alt="tabnotes" id="togglestickynote1" style="cursor: pointer;" class="togglestickynote" />
+		  {/if}
 		  <img src="images/expandOut.png" width="24" height="24" alt="expand" id="toggleleftcolumn" class="neo-picker" border="0"  title="{$SHOW_IZQTAB}" />
 		  {if $IMG_BOOKMARKS eq 'bookmark.png'}
 		  <img src="themes/{$THEMENAME}/images/{$IMG_BOOKMARKS}" width="24" height="24" alt="bookmark" title="{$ADD_BOOKMARK}" id="togglebookmark" style="cursor: pointer;" onclick='addBookmark()' />
