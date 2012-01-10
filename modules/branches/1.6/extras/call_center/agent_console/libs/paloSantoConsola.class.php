@@ -33,7 +33,6 @@
 
 require_once 'libs/paloSantoDB.class.php';
 require_once 'ECCP.class.php';
-require_once '/opt/elastix/dialer/phpagi-asmanager-elastix.php';
 
 class PaloSantoConsola
 {
@@ -77,16 +76,6 @@ class PaloSantoConsola
             }
             $this->_oDB_asterisk = $oDB;
             return $this->_oDB_asterisk;
-            break;
-        case 'AMI':
-            if (!is_null($this->_astman)) return $this->_astman;
-            $oAst = new AGI_AsteriskManager();
-            $tuplaLogin = $this->_leerConfigManager();
-            if (!is_array($tuplaLogin)) die($this->_errMsg);
-            if (!$oAst->connect('127.0.0.1', $tuplaLogin[0], $tuplaLogin[1]))
-                die('(internal) Cannot connect to AMI');
-            $this->_astman = $oAst;
-            return $this->_astman;
             break;
         case 'ECCP':
             if (!is_null($this->_eccp)) return $this->_eccp;
