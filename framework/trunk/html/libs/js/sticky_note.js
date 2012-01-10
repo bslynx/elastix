@@ -32,8 +32,10 @@ $(document).ready(function(){
 		var arrAction = new Array();
 		arrAction["action"]  = "get_sticky_note";
 		arrAction["rawmode"] = "yes";
-		var urlImaLoading = "<div style='margin: 10px;'><img src='images/busy.gif' />&nbsp;<span style='font-size: 20px; '>"+$('#get_note_label').val()+"...</span></div>";
-		$.blockUI({ message: urlImaLoading });
+		var urlImaLoading = "<div style='margin: 10px;'><div align='center'><img src='images/loading2.gif' /></div><div align='center'><span style='font-size: 14px; '>"+$('#get_note_label').val()+"</span></div></div>";
+		$.blockUI({
+		  message: urlImaLoading
+		});
 		request("index.php",arrAction,false,
 			function(arrData,statusResponse,error)
 			{
@@ -41,7 +43,12 @@ $(document).ready(function(){
 				var description = arrData;
 				if(statusResponse == "OK"){
 					if(description != "no_data"){
-						$("#neo-sticky-note-text").text(description);
+						if(description != "")
+							$("#neo-sticky-note-text").text(description);
+						else{
+							var lbl_no_description = $("#lbl_no_description").val();
+							$("#neo-sticky-note-text").text(lbl_no_description);
+						}
 						$("#neo-sticky-note-textarea").val(description);
 						if($("#neo-sticky-note").data("neo-sticky-note-status")=="visible") {
 							$("#neo-sticky-note").addClass("neo-display-none");
@@ -108,8 +115,10 @@ function send_sticky_note(){
 	arrAction["action"]  = "save_sticky_note";
 	arrAction["description"]  = $("#neo-sticky-note-textarea").val();
 	arrAction["rawmode"] = "yes";
-	var urlImaLoading = "<div style='margin: 10px;'><img src='images/busy.gif' />&nbsp;<span style='font-size: 20px; '>"+$('#save_note_label').val()+"...</span></div>";
-	$.blockUI({ message: urlImaLoading });
+	var urlImaLoading = "<div style='margin: 10px;'><div align='center'><img src='images/loading2.gif' /></div><div align='center'><span style='font-size: 14px; '>"+$('#save_note_label').val()+"</span></div></div>";
+	$.blockUI({
+	  message: urlImaLoading
+	});
 	request("index.php",arrAction,false,
 		function(arrData,statusResponse,error)
 		{
@@ -119,6 +128,16 @@ function send_sticky_note(){
 				$("#neo-sticky-note-text").removeClass("neo-display-none");
 				$("#neo-sticky-note-text-edit").addClass("neo-display-none");
 				$("#neo-sticky-note").data("neo-sticky-note-status", "hidden");
+				var themeName = $('#elastix_theme_name').val();
+				if(themeName == "elastixneo"){
+					if(arrAction['description'] != ""){
+						var imgName = "themes/elastixneo/images/tab_notes_on.png";
+						$('#togglestickynote1').attr('src',imgName);
+					}else{
+						var imgName = "themes/elastixneo/images/tab_notes.png";
+						$('#togglestickynote1').attr('src',imgName);
+					}
+				}
 			}else{
 				alert(error);
 			}

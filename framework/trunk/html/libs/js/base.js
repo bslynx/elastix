@@ -448,10 +448,10 @@ function addBookmark(){
 	arrAction["rawmode"] = "yes";
 	var srcimg = $('#neo-logobox').find('img:first').attr("src");
 	var theme = srcimg.split("/",2);
-	var urlImaLoading = "<div style='margin: 10px;'><img src='themes/"+theme[1]+"/images/busy.gif' />&nbsp;<span style='font-size: 20px; '>"+$('#toolTip_addingBookmark').val()+"...</span></div>";
+	var urlImaLoading = "<div style='margin: 10px;'><div align='center'><img src='images/loading2.gif' /></div><div align='center'><span style='font-size: 14px; '>"+$('#toolTip_addingBookmark').val()+"</span></div></div>";
 	var imgBookmark = $("#togglebookmark").attr('src');
 	if(/bookmarkon.png/.test(imgBookmark))
-		urlImaLoading = "<div style='margin: 10px;'><img src='themes/"+theme[1]+"/images/busy.gif' />&nbsp;<span style='font-size: 20px; '>"+$('#toolTip_removingBookmark').val()+"...</span></div>";
+		urlImaLoading = "<div style='margin: 10px;'><div align='center'><img src='images/loading2.gif' /></div><div align='center'><span style='font-size: 14px; '>"+$('#toolTip_removingBookmark').val()+"</span></div></div>";
 	$.blockUI({ message: urlImaLoading });
 	request("index.php",arrAction,false,
 		function(arrData,statusResponse,error)
@@ -523,7 +523,7 @@ function deleteBookmarkByEquis(ref){
 	arrAction["id_menu"] = id_menu;
 	var srcimg = $('#neo-logobox').find('img:first').attr("src");
 	var theme = srcimg.split("/",2);
-	var urlImaLoading = "<div style='margin: 10px;'><img src='themes/"+theme[1]+"/images/busy.gif' />&nbsp;<span style='font-size: 20px; '>"+$('#toolTip_removingBookmark').val()+"...</span></div>";
+	var urlImaLoading = "<div style='margin: 10px;'><div align='center'><img src='images/loading2.gif' /></div><div align='center'><span style='font-size: 14px; '>"+$('#toolTip_removingBookmark').val()+"</span></div></div>";
 	$.blockUI({ message: urlImaLoading });
 	request("index.php",arrAction,false,
 		function(arrData,statusResponse,error)
@@ -583,12 +583,6 @@ function saveToggleTab(){
 	else
 		arrAction["statusTab"]  = "false";
 	arrAction["rawmode"] = "yes";
-	/*var srcimg = $('#neo-logobox').find('img:first').attr("src");
-	var theme = srcimg.split("/",2);
-	var urlImaLoading = "<h1><img src='themes/"+theme[1]+"/images/busy.gif' /> "+$('#toolTip_hidingTab').val()+"...</h1>";
-	if(arrAction["statusTab"] == "false")
-		urlImaLoading = "<h1><img src='themes/"+theme[1]+"/images/busy.gif' /> "+$('#toolTip_showingTab').val()+"...</h1>";
-	$.blockUI({ message: urlImaLoading });*/
 	request("index.php",arrAction,false,
 		function(arrData,statusResponse,error)
 		{

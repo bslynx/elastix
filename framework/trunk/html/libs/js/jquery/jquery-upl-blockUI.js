@@ -83,14 +83,17 @@ $.blockUI.defaults = {
 	css: {
 		padding:	0,
 		margin:		0,
-		width:		'30%',
+		width:		'15%',
 		top:		'40%',
-		left:		'35%',
+		left:		'45%',
 		textAlign:	'center',
 		color:		'#000',
-		border:		'3px solid #aaa',
+		border: '0px',
 		backgroundColor:'#fff',
-		cursor:		'wait'
+		cursor:		'wait',
+		'-moz-border-radius': '6px',
+		'border-radius': '6px',
+		'-webkit-border-radius': '6px',
 	},
 	
 	// minimal style set used when themes are used
