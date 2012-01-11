@@ -37,9 +37,26 @@ class PaloSantoFileEndPoint
     var $errMsg;
     var $ipAdressServer;
 
-    function PaloSantoFileEndPoint($dir){
+    function PaloSantoFileEndPoint($dir,$endpoint_mask=NULL){
         $this->directory = $dir;
-        $this->ipAdressServer = $_SERVER['SERVER_ADDR'];
+	if(is_null($endpoint_mask))
+	    $this->ipAdressServer = $_SERVER['SERVER_ADDR'];
+	else{
+	    $pNetwork = new paloNetwork();
+	    $pInterfaces = $pNetwork->obtener_interfases_red();
+	    $endpoint_mask = explode("/",$endpoint_mask);
+	    $endpoint_network = $pNetwork->getNetAdress($endpoint_mask[0],$endpoint_mask[1]);
+	    foreach($pInterfaces as $interface){
+		$mask = $pNetwork->maskToDecimalFormat($interface["Mask"]);
+		$network = $pNetwork->getNetAdress($interface["Inet Addr"],$mask);
+		if($network == $endpoint_network){
+		    $this->ipAdressServer = $interface["Inet Addr"];
+		    break;
+		}
+	    }
+	    if(!isset($this->ipAdressServer))
+		$this->ipAdressServer = $_SERVER['SERVER_ADDR'];
+	}
     }
 
     function AsteriskManagerAPI($action, $parameters, $return_data=false) 

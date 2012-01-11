@@ -37,6 +37,7 @@ function _moduleContent(&$smarty, $module_name)
     include_once "libs/paloSantoJSON.class.php";
     include_once "libs/paloSantoForm.class.php";
     include_once "libs/misc.lib.php";
+    include_once "libs/paloSantoNetwork.class.php";
 
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
@@ -122,6 +123,7 @@ function endpointConfiguratedShow($smarty, $module_name, $local_templates_dir, $
         $arrDeviceFreePBX    = $paloEndPoint->getDeviceFreePBX();
 	$arrDeviceFreePBXAll = $paloEndPoint->getDeviceFreePBX(true);
         $endpoint_mask       = isset($_POST['endpoint_mask'])?$_POST['endpoint_mask']:network();
+	$_SESSION["endpoint_mask"] = $endpoint_mask;
         $pValidator          = new PaloValidar();
 
         if(!$pValidator->validar('endpoint_mask', $endpoint_mask, 'ip/mask')){
@@ -312,7 +314,7 @@ function endpointScan($smarty, $module_name, $local_templates_dir, $dsnAsterisk,
 function endpointConfiguratedSet($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrConf)
 {
     $paloEndPoint     = new paloSantoEndPoint($dsnAsterisk,$dsnSqlite);
-    $paloFileEndPoint = new PaloSantoFileEndPoint($arrConf["tftpboot_path"]);
+    $paloFileEndPoint = new PaloSantoFileEndPoint($arrConf["tftpboot_path"],$_SESSION["endpoint_mask"]);
     $arrFindVendor    = array(); //variable de ayuda, para llamar solo una vez la funcion createFilesGlobal de cada vendor
     $valid = validateParameterEndpoint($_POST, $module_name,$dsnAsterisk,$dsnSqlite);
     $count = 0;
@@ -982,7 +984,7 @@ function getLinesForm($smarty, $module_name, $local_templates_dir, $dsnAsterisk,
 function savePatton($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrConf)
 {
     $paloEndPoint = new paloSantoEndPoint($dsnAsterisk,$dsnSqlite);
-    $paloFileEndPoint = new PaloSantoFileEndPoint($arrConf["tftpboot_path"]);
+    $paloFileEndPoint = new PaloSantoFileEndPoint($arrConf["tftpboot_path"],$_SESSION["endpoint_mask"]);
     $arrSession = getSession();
     for($i = 0;$i < $arrSession["endpoint_configurator"]["analog_trunk_lines"];$i++){
 	if(getParameter("line$i") == "" || getParameter("ID$i") == "" || getParameter("authentication_ID$i") == ""){
