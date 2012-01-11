@@ -377,7 +377,11 @@ function do_checkStatus()
 		  clearInterval(intervalCheckStatus);
 		  $('#feedback').text('');
 		  if(transaction_in_progress){
-		      if(respuesta["transaction_status"])
+		      if(respuesta["warnmsg"]){
+			  mostrar_mensaje(respuesta["warnmsg"],true);
+			  checking_dependencies = false;
+		      }
+		      else if(respuesta["transaction_status"])
 			  mostrar_mensaje(respuesta["transaction_status"],false);
 		      if(!checking_dependencies)
 			  do_listarAddons(null);
