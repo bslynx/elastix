@@ -270,5 +270,96 @@ class paloNetwork
         }
         return TRUE;
     }
+
+    /**
+     * Function that converts a decimal number in a binary number of 8 digits ( 10 = 00001010)
+     *
+     * @param integer    $octeto         Number to be converted to binary
+     *
+     * @return string    A string with the equivalent in binary of the given number
+     */ 
+    private function bitstr_8($octeto)
+    {
+        $octeto = ((int)$octeto) & 0x000000FF;
+        $lista_bits = array_fill(0, 8, "0");
+        for ($i = 0; $i < 8; $i++)
+        {
+            $mascara = 0x80 >> $i;
+            if ($octeto & $mascara) $lista_bits[$i] = "1";
+        }
+        return implode("", $lista_bits);
+    }
+
+    /**
+     * Function that returns the network address of the given ip for the given mask 
+     *
+     * @param string     $ip         ip address
+     * @param string     $mask       mask of the ip address (in decimal format)    
+     *
+     * @return string    String with the network address
+     */ 
+    function getNetAdress($ip,$mask)
+    {
+        $octetos_ip = explode(".",$ip);
+        for($k=0;$k<$mask;$k++)
+            $octetos_mask[$k] = "1";
+        $res = 32 - $k;
+        for($k=0;$k<$res;$k++)
+            $octetos_mask[] = "0";
+        $k = 0;
+        for($i=0;$i<4;$i++){
+            $binary_octeto_ip = $this->bitstr_8($octetos_ip[$i]);
+            for($j=0;$j<8;$j++){
+                if($binary_octeto_ip[$j] && $octetos_mask[$k])
+                    $netAddress_binary[] = "1";
+                else
+                    $netAddress_binary[] = "0";
+                $k++;
+            }
+        }
+       $netAddress_decimal = $this->binaryOctetos_to_decimalOctetos($netAddress_binary);
+       return $netAddress_decimal; 
+    }
+
+    /**
+     * Function that converts an ip address in binary format to decimal format 
+     *
+     * @param string     $binary         ip address in binary format 
+     *
+     * @return string    String with ip address in decimal format
+     */     
+    private function binaryOctetos_to_decimalOctetos($binary)
+    {
+        $k=0;
+        $decimalOctetos="";
+        for($i=0;$i<4;$i++){
+            $sum = 128;
+            $result = 0;
+            for($j=0;$j<8;$j++){
+                if($binary[$k])
+                    $result = $result + $sum;
+                $k++;
+                $sum = $sum/2;
+            }
+            $decimalOctetos.=$result;
+            if($i!=3)
+                $decimalOctetos.=".";
+        }
+        return $decimalOctetos;
+    }
+
+    function maskToDecimalFormat($mask)
+    {
+        $mask = explode(".",$mask);
+        $decimal = 0;
+        foreach($mask as $octeto){
+            $binary = $this->bitstr_8($octeto);
+            for($i=0;$i<strlen($binary);$i++){
+            if($binary[$i] == 1)
+                $decimal++;
+            }
+        }
+        return $decimal;
+    }
 }
 ?>
