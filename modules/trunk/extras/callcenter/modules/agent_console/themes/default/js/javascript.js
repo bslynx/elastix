@@ -100,6 +100,13 @@ $(document).ready(function() {
     });
 });
 
+$(window).unload(function() {
+	if (evtSource != null) {
+		evtSource.close();
+		evtSource = null;
+	}
+});
+
 function apply_form_styles()
 {
     $('#elastix-callcenter-cejillas-formulario').tabs();
