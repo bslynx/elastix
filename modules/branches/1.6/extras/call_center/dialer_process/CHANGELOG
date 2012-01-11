@@ -1,3 +1,5 @@
+* CallCenter Configuration: add new flag to completely disable dial prediction
+  in dialer.
 * Agent Console: implement status refresh via Server-Sent Events. This mode of
   operation saves further bandwidth by removing a POST request after an event
   is received or after the 2-minute timeout. Long polling is kept as a fallback

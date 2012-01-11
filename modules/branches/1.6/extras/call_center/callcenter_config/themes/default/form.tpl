@@ -27,19 +27,23 @@
 			</tr>
 			<tr class="letra12">
 				<td align="right">{$asterisk_astpass_1.LABEL}:</td><td align="left">{$asterisk_astpass_1.INPUT}</td>
-				<td align="right">{$dialer_debug.LABEL}:</td><td align="left">{$dialer_debug.INPUT}</td>				
+				<td align="right">{$dialer_qos.LABEL}:</td><td align="left">{$dialer_qos.INPUT}</td>								
 			</tr>
 			<tr class="letra12">
 				<td align="right">{$asterisk_astpass_2.LABEL}:</td><td align="left">{$asterisk_astpass_2.INPUT}</td>
-				<td align="right">{$dialer_allevents.LABEL}:</td><td align="left">{$dialer_allevents.INPUT}</td>				
+				<td align="right">{$dialer_debug.LABEL}:</td><td align="left">{$dialer_debug.INPUT}</td>
 			</tr>
             <tr class="letra12">
                 <td align="right">{$asterisk_duracion_sesion.LABEL}:</td><td align="left">{$asterisk_duracion_sesion.INPUT}</td>
+                <td align="right">{$dialer_allevents.LABEL}:</td><td align="left">{$dialer_allevents.INPUT}</td>                
+            </tr>
+            <tr class="letra12">
+                <td colspan="2">&nbsp;</td>
                 <td align="right">{$dialer_overcommit.LABEL}:</td><td align="left">{$dialer_overcommit.INPUT}</td>                
             </tr>
             <tr class="letra12">
                 <td colspan="2">&nbsp;</td>
-                <td align="right">{$dialer_qos.LABEL}:</td><td align="left">{$dialer_qos.INPUT}</td>
+                <td align="right">{$dialer_predictivo.LABEL}:</td><td align="left">{$dialer_predictivo.INPUT}</td>                
             </tr>
         </table>
     </td></tr>

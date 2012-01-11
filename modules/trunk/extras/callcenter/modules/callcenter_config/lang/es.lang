@@ -53,5 +53,6 @@ $arrLangModule=array(
 'Enable overcommit of outgoing calls' => 'Permitir sobre-colocar llamadas salientes',
 'AMI Session Duration' => 'Duración de sesión de AMI (0 para persistente)',
 'Service percent' => 'Porcentaje servicio',
+'Enable predictive dialer behavior' => 'Activar comportamiento predictivo del marcado',
 );
 ?>

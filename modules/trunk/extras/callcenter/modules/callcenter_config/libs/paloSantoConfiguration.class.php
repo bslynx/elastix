@@ -65,6 +65,7 @@ class paloSantoConfiguration {
                 'dialer.allevents' => '0',
                 'dialer.overcommit' => '0',
                 'dialer.qos' => '0.97',
+                'dialer.predictivo' => '1',
             );
             foreach ($listaConf as $tupla) $t[$tupla[0]] = $tupla[1];
             $listaConf = $t;
