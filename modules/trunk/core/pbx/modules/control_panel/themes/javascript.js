@@ -1,4 +1,5 @@
 var arrTime = new Array();
+var is_refreshing = false;
 
 // IE6 e IE8 funcionan incorrectamente al anidar draggables
 // http://bugs.jqueryui.com/ticket/4333
@@ -115,55 +116,58 @@ $(function(){
 
 function actualizar()
 {
-    var arrAction              = new Array();
-        arrAction["action"]    = "refresh";
-        arrAction["rawmode"]   = "yes";
-        request("index.php",arrAction,true,
-            function(arrData,statusResponse,error)
-            {
+    if(!is_refreshing){
+	is_refreshing = true;
+	var arrAction              = new Array();
+	    arrAction["action"]    = "refresh";
+	    arrAction["rawmode"]   = "yes";
+	    request("index.php",arrAction,true,
+		function(arrData,statusResponse,error)
+		{
 
-                    if(statusResponse == "CHANGED"){
+			if(statusResponse == "CHANGED"){
 
-                        for(key in arrData){
-                            for(key2 in arrData[key]["data"]){
-                                if(key2 == "speak_time"){
-                                    if(arrData[key]["data"][key2] != " "){
-                                        if(arrData[key]["Tipo"] == "extension")
-                                            arrTime[arrData[key]["key"]] = arrData[key]["Tipo"]+"_"+arrData[key]["data"][key2]; //reloadSpeakTime(arrData[key]["key"],arrData[key]["data"][key2],1);
-                                        else if(arrData[key]["Tipo"] == "trunk"){
-                                            var clave = arrData[key]["key"].split("_");
-                                            arrTime[clave[0]] = arrData[key]["Tipo"]+"_"+arrData[key]["data"][key2]+"_"+clave[1];
-                                        }
-                                    }
-                                }
-                                else if(key2 == "call_dstn")
-                                     eventCallDstn(arrData[key]["key"],arrData[key]["data"][key2]);
-                                else if(key2 == "status")
-                                     eventStatus(arrData[key]["key"],arrData[key]["data"][key2]);
-                                else if(key2 == "voicemail")
-                                     eventVoicemail(arrData[key]["key"],arrData[key]["data"][key2]);
-                                else if(key2 == "state_call")
-                                     eventStateCall(arrData[key]["key"],arrData[key]["data"][key2]);
-                                else if(key2 == "parties")
-                                     eventParties(arrData[key]["key"],arrData[key]["data"][key2]);
-                                else if(key2 == "activity")
-                                     arrTime[arrData[key]["key"]] = arrData[key]["Tipo"]+"_"+arrData[key]["data"][key2];//reloadActivity(arrData[key]["key"],arrData[key]["data"][key2]);
-                                else if(key2 == "statusConf")
-                                     eventStatusConf(arrData[key]["key"],arrData[key]["data"][key2]);
-                                else if(key2 == "statusTrunk")
-                                     eventStatusTrunk(arrData[key]["key"],arrData[key]["data"][key2]);
-                                else if(key2 == "waiting")
-                                     eventWaiting(arrData[key]["key"],arrData[key]["data"][key2]);
-                                else if(key2 == "time")
-                                     arrTime[arrData[key]["key"]] = arrData[key]["Tipo"]+"_"+arrData[key]["data"][key2];//reloadTimeParking(arrData[key]["key"],arrData[key]["data"][key2]);
-                                else if(key2 == "extension")
-                                     eventExtensionParking(arrData[key]["key"],arrData[key]["data"][key2]);
-                            }
-                        }
-                        //reloadDevices(arrData);
-                    }
-            }
-        );
+			    for(key in arrData){
+				for(key2 in arrData[key]["data"]){
+				    if(key2 == "speak_time"){
+					if(arrData[key]["data"][key2] != " "){
+					    if(arrData[key]["Tipo"] == "extension")
+						arrTime[arrData[key]["key"]] = arrData[key]["Tipo"]+"_"+arrData[key]["data"][key2]; //reloadSpeakTime(arrData[key]["key"],arrData[key]["data"][key2],1);
+					    else if(arrData[key]["Tipo"] == "trunk"){
+						var clave = arrData[key]["key"].split("_");
+						arrTime[clave[0]] = arrData[key]["Tipo"]+"_"+arrData[key]["data"][key2]+"_"+clave[1];
+					    }
+					}
+				    }
+				    else if(key2 == "call_dstn")
+					eventCallDstn(arrData[key]["key"],arrData[key]["data"][key2]);
+				    else if(key2 == "status")
+					eventStatus(arrData[key]["key"],arrData[key]["data"][key2]);
+				    else if(key2 == "voicemail")
+					eventVoicemail(arrData[key]["key"],arrData[key]["data"][key2]);
+				    else if(key2 == "state_call")
+					eventStateCall(arrData[key]["key"],arrData[key]["data"][key2]);
+				    else if(key2 == "parties")
+					eventParties(arrData[key]["key"],arrData[key]["data"][key2]);
+				    else if(key2 == "activity")
+					arrTime[arrData[key]["key"]] = arrData[key]["Tipo"]+"_"+arrData[key]["data"][key2];//reloadActivity(arrData[key]["key"],arrData[key]["data"][key2]);
+				    else if(key2 == "statusConf")
+					eventStatusConf(arrData[key]["key"],arrData[key]["data"][key2]);
+				    else if(key2 == "statusTrunk")
+					eventStatusTrunk(arrData[key]["key"],arrData[key]["data"][key2]);
+				    else if(key2 == "waiting")
+					eventWaiting(arrData[key]["key"],arrData[key]["data"][key2]);
+				    else if(key2 == "time")
+					arrTime[arrData[key]["key"]] = arrData[key]["Tipo"]+"_"+arrData[key]["data"][key2];//reloadTimeParking(arrData[key]["key"],arrData[key]["data"][key2]);
+				    else if(key2 == "extension")
+					eventExtensionParking(arrData[key]["key"],arrData[key]["data"][key2]);
+				}
+			    }
+			    //reloadDevices(arrData);
+			}
+		}
+	    );
+    }
 }
 
 function getAllData()
@@ -234,7 +238,8 @@ function getDataBox()
                 drawBoxTrunksSIP(arrData[6]);
                 drawBoxConferences(arrData[7]);
                 drawBoxParkinglot(arrData[8]);
-                setInterval("recorrerArrTime()",1000);
+		if(!is_refreshing)
+		    setInterval("recorrerArrTime()",1000);
                 getAllData();
             }
         );
@@ -334,7 +339,7 @@ function drawBoxParkinglot(arrData)
                     "});"+
                     "</SCRIPT>";
     $("#img_Parkinglots").remove();
-    $("#tableParkinglots").append(html);
+    $("#tableParkinglots").empty().append(html);
 
 }
 
@@ -412,7 +417,7 @@ function drawBoxArea1(arrData)
                 "</SCRIPT>";
     if(document.getElementById("tableArea1")){
         $("#img_Area1").remove();
-        $("#tableArea1").append(html);
+        $("#tableArea1").empty().append(html);
     }
 }
 
@@ -490,7 +495,7 @@ function drawBoxArea2(arrData)
                 "</SCRIPT>";
     if(document.getElementById("tableArea2")){
         $("#img_Area2").remove();
-        $("#tableArea2").append(html);
+        $("#tableArea2").empty().append(html);
     }
 }
 
@@ -587,7 +592,7 @@ function drawBoxArea3(arrData)
                     "</SCRIPT>";
         if(document.getElementById("tableArea3")){
             $("#img_Area3").remove();
-            $("#tableArea3").append(html);
+            $("#tableArea3").empty().append(html);
         }
 }
 
@@ -596,7 +601,7 @@ function drawBoxTrunksDAHDI(arrData, module_name)
     html = drawAreaGeneric(arrData);
     //document.getElementById("tableTrunks").innerHTML = html;
     $("#img_Trunks").remove();
-    $("#tableTrunks").append(html);
+    $("#tableTrunks").empty().append(html);
 }
 
 function drawBoxTrunksSIP(arrData)
@@ -604,21 +609,21 @@ function drawBoxTrunksSIP(arrData)
     html = drawAreaGeneric(arrData);
     //document.getElementById("tableTrunksSIP").innerHTML = html;
     $("#img_TrunksSIP").remove();
-    $("#tableTrunksSIP").append(html);
+    $("#tableTrunksSIP").empty().append(html);
 }
 
 function drawBoxConferences(arrData)
 {
     html = drawAreaGeneric(arrData);
     $("#img_Conferences").remove();
-    $("#tableConferences").append(html);
+    $("#tableConferences").empty().append(html);
 }
 
 function drawBoxQueues(arrData)
 {
     html = drawAreaGeneric(arrData);
     $("#img_Queues").remove();
-    $("#tableQueues").append(html);
+    $("#tableQueues").empty().append(html);
 }
 
 function recorrerArrTime()
@@ -711,7 +716,7 @@ function drawBoxExtension(arrData)
 {
     html = drawAreaGeneric(arrData);
     $("#img_Extension").remove();
-    $("#tableExtension").append(html);
+    $("#tableExtension").empty().append(html);
 }
 
 function eventExtensionParking(parkingLot, extension){
@@ -924,6 +929,7 @@ function reloadDevices(arrRefresh){
 
 function loadSizeArea()
 {
+    $('div[id*="box_"]').remove();
     var arrAction              = new Array();
         arrAction["action"]    = "loadArea";
         arrAction["rawmode"]   = "yes";
@@ -948,7 +954,7 @@ function insertLoadingAnimation(aTableRow, nodeValue, module_name, loading)
 	oTD.appendChild(oIMG);
 	oText = document.createTextNode("\u00a0" /* &nbsp; */ + loading);
 	oTD.appendChild(oText);
-	aTableRow.appendChild(oTD);
+	$('#'+aTableRow).empty().append(oTD);
 }
 
 function loadArea(xmlLoad,module_name,loading){
@@ -979,9 +985,7 @@ function loadArea(xmlLoad,module_name,loading){
         area.style.height = heightsize.firstChild.nodeValue+"px";
         area.style.width  = widthsize.firstChild.nodeValue+"px";
         area.style.backgroundColor = color.firstChild.nodeValue;
-        insertLoadingAnimation(
-        	document.getElementById("table"+namearea.firstChild.nodeValue), 
-        	namearea.firstChild.nodeValue, module_name, loading);
+        insertLoadingAnimation("table"+namearea.firstChild.nodeValue, namearea.firstChild.nodeValue, module_name, loading);
         if(namearea.firstChild.nodeValue=="Extension"){
             var content = document.getElementById("content");
             content.style.width  = widthsize.firstChild.nodeValue+"px";

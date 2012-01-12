@@ -145,8 +145,8 @@ class paloSantoControlPanel {
                         'state' => $tmp[4],
                         'data' => $tmp[6],//para ver la troncal que es casi igual a tmp[11]
                         //'callerid' => $tmp[8],
-                        'time' => $this->Sec2HHMMSS($tmp[10]),
-                        'dstn' => $tmp[11],
+                        'time' => $this->Sec2HHMMSS($tmp[11]),
+                        'dstn' => $tmp[12],
                         'ext' => $tmp[2]
                         //'brigedto' => $tmp[12],
                     );
@@ -231,11 +231,12 @@ class paloSantoControlPanel {
         }
         $arrParkinglots = $this->getParkinglots();
         $arrParking = $this->getDataParkinglots();
+	$numslots = 0;
         foreach($arrParkinglots as $key => $value){
-        if($value["keyword"] == "numslots")
-            $numslots = $value["data"];
-        elseif($value["keyword"] == "parkext")
-            $parkext = $value["data"];
+	    if($value["keyword"] == "numslots")
+		$numslots = $value["data"];
+	    elseif($value["keyword"] == "parkext")
+		$parkext = $value["data"];
         }
         for($i=0;$i<$numslots;$i++){
             $time = " ";
