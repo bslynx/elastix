@@ -1364,7 +1364,8 @@ class AMIEventProcess extends TuberiaProcess
         	if (is_null($llamada->timestamp_link)) {
                 /* Si se detecta el Hangup antes del OriginateResponse, se marca 
                  * la llamada como fallida y se deja de monitorear. */
-                if (is_null($llamada->timestamp_originateend)) {
+                if (is_null($llamada->timestamp_originateend) && 
+                    !is_null($llamada->timestamp_originatestart)) {
                     if ($this->DEBUG) {
                         $this->_log->output("DEBUG: ".__METHOD__.": Hangup de llamada por fallo de Originate");                        
                     }
@@ -1372,7 +1373,6 @@ class AMIEventProcess extends TuberiaProcess
                         $params['Uniqueid'], $params['Channel'], 'Failure',
                         $params['Cause'], $params['Cause-txt']);
                 } else {
-                	// Se ha observado que ocasionalmente se pierde el evento Link
                     $llamada->llamadaFinalizaSeguimiento(
                         $params['local_timestamp_received'],
                         $this->_config['dialer']['llamada_corta']);
